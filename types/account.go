@@ -1,8 +1,8 @@
 package types
 
 import (
+	"github.com/cosmos/cosmos-sdk/codec"
 	sdkTypes "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/wire"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 )
 
@@ -10,12 +10,14 @@ var _ auth.Account = (*AppAccount)(nil)
 
 type AppAccount struct {
 	auth.BaseAccount
+
 	Name string `json:"name"`
 }
 
 func (acc AppAccount) GetName() string {
 	return acc.Name
 }
+
 func (acc *AppAccount) SetName(name string) {
 	acc.Name = name
 }
@@ -27,7 +29,7 @@ func NewAppAccount(name string, baseAcct auth.BaseAccount) *AppAccount {
 	}
 }
 
-func GetAccountDecoder(cdc *wire.Codec) auth.AccountDecoder {
+func GetAccountDecoder(cdc *codec.Codec) auth.AccountDecoder {
 	return func(accBytes []byte) (auth.Account, error) {
 		if len(accBytes) == 0 {
 			return nil, sdkTypes.ErrTxDecode("accBytes are empty")

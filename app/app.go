@@ -2,39 +2,45 @@ package app
 
 import (
 	"encoding/json"
+	"os"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
-
 	sdkTypes "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/wire"
+	"github.com/tendermint/tendermint/libs/common"
+
+	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/cosmos/cosmos-sdk/x/bank"
 	"github.com/cosmos/cosmos-sdk/x/ibc"
 	"github.com/ironman0x7b2/sentinel-hub/types"
 	abciTypes "github.com/tendermint/tendermint/abci/types"
-	"github.com/tendermint/tendermint/libs/common"
-	tmDB "github.com/tendermint/tendermint/libs/db"
+	tmDb "github.com/tendermint/tendermint/libs/db"
 	"github.com/tendermint/tendermint/libs/log"
 	tmTypes "github.com/tendermint/tendermint/types"
 )
 
 const appName = "Sentinel Hub"
 
+var (
+	DefaultCLIHome  = os.ExpandEnv("$HOME/.sentinel-hub-cli")
+	DefaultNodeHome = os.ExpandEnv("$HOME/.sentinel-hubd")
+)
+
 type SentinelHub struct {
 	*baseapp.BaseApp
-	cdc *wire.Codec
+	cdc *codec.Codec
 
 	keyMain    *sdkTypes.KVStoreKey
 	keyAccount *sdkTypes.KVStoreKey
 	keyIBC     *sdkTypes.KVStoreKey
 
-	accountMapper       auth.AccountMapper
+	accountKeeper       auth.AccountKeeper
 	feeCollectionKeeper auth.FeeCollectionKeeper
-	coinKeeper          bank.Keeper
+	bankKeeper          bank.Keeper
 	ibcMapper           ibc.Mapper
 }
 
-func NewSentinelHub(logger log.Logger, db tmDB.DB, baseAppOptions ...func(*baseapp.BaseApp)) *SentinelHub {
+func NewSentinelHub(logger log.Logger, db tmDb.DB, baseAppOptions ...func(*baseapp.BaseApp)) *SentinelHub {
 	cdc := MakeCodec()
 
 	var app = &SentinelHub{
@@ -45,24 +51,24 @@ func NewSentinelHub(logger log.Logger, db tmDB.DB, baseAppOptions ...func(*basea
 		keyIBC:     sdkTypes.NewKVStoreKey("ibc"),
 	}
 
-	app.accountMapper = auth.NewAccountMapper(
+	app.accountKeeper = auth.NewAccountKeeper(
 		cdc,
 		app.keyAccount,
 		func() auth.Account {
 			return &types.AppAccount{}
 		},
 	)
-	app.coinKeeper = bank.NewKeeper(app.accountMapper)
+	app.bankKeeper = bank.NewBaseKeeper(app.accountKeeper)
 	app.ibcMapper = ibc.NewMapper(app.cdc, app.keyIBC, app.RegisterCodespace(ibc.DefaultCodespace))
 
 	app.Router().
-		AddRoute("bank", bank.NewHandler(app.coinKeeper)).
-		AddRoute("ibc", ibc.NewHandler(app.ibcMapper, app.coinKeeper))
+		AddRoute("bank", bank.NewHandler(app.bankKeeper)).
+		AddRoute("ibc", ibc.NewHandler(app.ibcMapper, app.bankKeeper))
 
 	app.SetInitChainer(app.initChainer)
 	app.SetBeginBlocker(app.BeginBlocker)
 	app.SetEndBlocker(app.EndBlocker)
-	app.SetAnteHandler(auth.NewAnteHandler(app.accountMapper, app.feeCollectionKeeper))
+	app.SetAnteHandler(auth.NewAnteHandler(app.accountKeeper, app.feeCollectionKeeper))
 
 	app.MountStoresIAVL(app.keyMain, app.keyAccount, app.keyIBC)
 	err := app.LoadLatestVersion(app.keyMain)
@@ -75,14 +81,14 @@ func NewSentinelHub(logger log.Logger, db tmDB.DB, baseAppOptions ...func(*basea
 	return app
 }
 
-func MakeCodec() *wire.Codec {
-	cdc := wire.NewCodec()
+func MakeCodec() *codec.Codec {
+	cdc := codec.New()
 
-	wire.RegisterCrypto(cdc)
-	sdkTypes.RegisterWire(cdc)
-	bank.RegisterWire(cdc)
-	ibc.RegisterWire(cdc)
-	auth.RegisterWire(cdc)
+	codec.RegisterCrypto(cdc)
+	sdkTypes.RegisterCodec(cdc)
+	bank.RegisterCodec(cdc)
+	ibc.RegisterCodec(cdc)
+	auth.RegisterCodec(cdc)
 
 	cdc.RegisterConcrete(&types.AppAccount{}, "sentinel-hub/Account", nil)
 
@@ -116,8 +122,8 @@ func (app *SentinelHub) initChainer(ctx sdkTypes.Context, req abciTypes.RequestI
 			panic(err)
 		}
 
-		acc.AccountNumber = app.accountMapper.GetNextAccountNumber(ctx)
-		app.accountMapper.SetAccount(ctx, acc)
+		acc.AccountNumber = app.accountKeeper.GetNextAccountNumber(ctx)
+		app.accountKeeper.SetAccount(ctx, acc)
 	}
 
 	return abciTypes.ResponseInitChain{}
@@ -137,10 +143,10 @@ func (app *SentinelHub) ExportAppStateAndValidators() (appState json.RawMessage,
 		return false
 	}
 
-	app.accountMapper.IterateAccounts(ctx, appendAccountsFn)
+	app.accountKeeper.IterateAccounts(ctx, appendAccountsFn)
 
 	genState := types.GenesisState{Accounts: accounts}
-	appState, err = wire.MarshalJSONIndent(app.cdc, genState)
+	appState, err = codec.MarshalJSONIndent(app.cdc, genState)
 	if err != nil {
 		return nil, nil, err
 	}
