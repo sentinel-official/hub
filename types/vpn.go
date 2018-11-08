@@ -2,22 +2,22 @@ package types
 
 import sdkTypes "github.com/cosmos/cosmos-sdk/types"
 
-type Registervpn struct {
+type VpnDetails struct {
 	Ip         string
 	Port       string
 	NetSpeed   NetSpeed
 	PricePerGb int64
 	EncMethod  string
 	Location   Location
-	NodeType   string
 	Status     bool
 	Version    string
 }
 
 type NetSpeed struct {
-	UploadSpeed   int64
-	DownloadSpeed int64
+	Upload   int64
+	Download int64
 }
+
 type Location struct {
 	Latitude  int64
 	Longitude int64
@@ -32,4 +32,9 @@ type VpnIBCPacket struct {
 	DestChain string
 }
 
+type IBCMsgRegisterVpn struct {
+	VpnId    string
+	Address   sdkTypes.AccAddress
+	Coins      sdkTypes.Coins
+}
 

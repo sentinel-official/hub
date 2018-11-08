@@ -2,29 +2,34 @@ package vpn
 
 import (
 	"reflect"
-
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdkTypes "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/x/ibc"
-	vpnTypes "github.com/ironman0x7b2/sentinel-hub/types"
+	hubTypes "github.com/ironman0x7b2/sentinel-hub/types"
+	"github.com/ironman0x7b2/sentinel-hub/x/ibc"
 )
 
+func NewHandler(k Keeper, im ibc.Keeper) sdkTypes.Handler {
 
-func NewHandler(k Keeper, im ibc.Mapper) sdkTypes.Handler {
 	return func(ctx sdkTypes.Context, msg sdkTypes.Msg) sdkTypes.Result {
+
 		switch msg := msg.(type) {
+
 		case MsgRegisterVpn:
 			return handleRegisterVpn(ctx, k, im, msg)
+
 		default:
 			errMsg := "Unrecognized vpn Msg type: " + reflect.TypeOf(msg).Name()
 			return sdkTypes.ErrUnknownRequest(errMsg).Result()
+
 		}
+
 	}
+
 }
 
-func handleRegisterVpn(ctx sdkTypes.Context, k Keeper, im ibc.Mapper, msg MsgRegisterVpn) sdkTypes.Result {
+func handleRegisterVpn(ctx sdkTypes.Context, k Keeper, ik ibc.Keeper, msg MsgRegisterVpn) sdkTypes.Result {
 
-	vpnId := msg.Register.Ip + msg.Register.Port
+	vpnId := msg.Details.Ip + msg.Details.Port
 	vpnStore := ctx.KVStore(k.VpnStoreKey)
 	vpnIdBytes := []byte(vpnId)
 	cdc := codec.New()
@@ -33,27 +38,34 @@ func handleRegisterVpn(ctx sdkTypes.Context, k Keeper, im ibc.Mapper, msg MsgReg
 	if vpnData != nil {
 		panic("Already registered")
 	}
-	vpnId, err := k.SetVpnDetails(ctx, msg.Register, vpnId)
+
+	err := k.SetVpnDetails(ctx, msg.Details, vpnId)
+
 	if err != nil {
 		panic(err)
 	}
 
-	Packet := vpnTypes.VpnIBCPacket{
-		VpnId:     vpnId,
-		Address:   msg.From,
-		Coin:      msg.Coin,
-		DestChain: "Hub",
+	ibcPacket := hubTypes.IBCPacket{
+		SrcChainId:  "vpn",
+		DestChainId: "Sentinel-hub",
+		Message: hubTypes.IBCMsgRegisterVpn{
+			VpnId:   vpnId,
+			Address: msg.From,
+			Coins: msg.Coins ,
+		},
 	}
 
-	err = PostIBCPacket(ctx, k, im, Packet)
+	err = ik.PostIBCPacket(ctx, ibcPacket)
+
 	if err != nil {
 		panic(err)
 	}
+
 	tags := sdkTypes.NewTags("Registered Vpn address:", []byte(msg.From.String()))
 	data, _ := cdc.MarshalJSON(msg)
+
 	return sdkTypes.Result{
 		Tags: tags,
 		Data: data,
 	}
-
 }
