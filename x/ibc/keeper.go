@@ -15,21 +15,21 @@ type Keeper struct {
 
 func (ibc Keeper) PostIBCPacket(ctx sdkTypes.Context, packet hubTypes.IBCPacket) sdkTypes.Error {
 	store := ctx.KVStore(ibc.IBCKey)
-	index := ibc.getEgressLength(store, packet.DestChain)
+	index := ibc.getEgressLength(store, packet.DestChainId)
 	bz, err := ibc.cdc.MarshalBinary(packet)
 
 	if err != nil {
 		panic(err)
 	}
 
-	store.Set(EgressKey(packet.DestChain, index), bz)
+	store.Set(EgressKey(packet.DestChainId, index), bz)
 	bz, err = ibc.cdc.MarshalBinary(index + 1)
 
 	if err != nil {
 		panic(err)
 	}
 
-	store.Set(EgressLengthKey(packet.DestChain), bz)
+	store.Set(EgressLengthKey(packet.DestChainId), bz)
 
 	return nil
 }

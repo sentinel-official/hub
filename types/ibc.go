@@ -1,7 +1,7 @@
 package types
 
 type IBCPacket struct {
-	SrcChain  string      `json:"src_chain"`
-	DestChain string      `json:"dest_chain"`
-	Message   interface{} `json:"message"`
+	SrcChainId  string      `json:"src_chain_id"`
+	DestChainId string      `json:"dest_chain_id"`
+	Message     interface{} `json:"message"`
 }
