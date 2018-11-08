@@ -6,6 +6,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	sdkTypes "github.com/cosmos/cosmos-sdk/types"
+	"github.com/ironman0x7b2/sentinel-hub/x/vpn"
 	"github.com/tendermint/tendermint/libs/common"
 
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -33,11 +34,13 @@ type SentinelHub struct {
 	keyMain    *sdkTypes.KVStoreKey
 	keyAccount *sdkTypes.KVStoreKey
 	keyIBC     *sdkTypes.KVStoreKey
+	keyVpn     *sdkTypes.KVStoreKey
 
 	accountKeeper       auth.AccountKeeper
 	feeCollectionKeeper auth.FeeCollectionKeeper
 	bankKeeper          bank.Keeper
 	ibcMapper           ibc.Mapper
+	vpnKeeper           vpn.Keeper
 }
 
 func NewSentinelHub(logger log.Logger, db tmDb.DB, baseAppOptions ...func(*baseapp.BaseApp)) *SentinelHub {
@@ -49,6 +52,7 @@ func NewSentinelHub(logger log.Logger, db tmDb.DB, baseAppOptions ...func(*basea
 		keyMain:    sdkTypes.NewKVStoreKey("main"),
 		keyAccount: sdkTypes.NewKVStoreKey("acc"),
 		keyIBC:     sdkTypes.NewKVStoreKey("ibc"),
+		keyVpn:     sdkTypes.NewKVStoreKey("vpn"),
 	}
 
 	app.accountKeeper = auth.NewAccountKeeper(
@@ -60,17 +64,19 @@ func NewSentinelHub(logger log.Logger, db tmDb.DB, baseAppOptions ...func(*basea
 	)
 	app.bankKeeper = bank.NewBaseKeeper(app.accountKeeper)
 	app.ibcMapper = ibc.NewMapper(app.cdc, app.keyIBC, app.RegisterCodespace(ibc.DefaultCodespace))
+	app.vpnKeeper = vpn.NewKeeper(app.keyVpn, app.keyIBC)
 
 	app.Router().
 		AddRoute("bank", bank.NewHandler(app.bankKeeper)).
-		AddRoute("ibc", ibc.NewHandler(app.ibcMapper, app.bankKeeper))
+		AddRoute("ibc", ibc.NewHandler(app.ibcMapper, app.bankKeeper)).
+		AddRoute("vpn", vpn.NewHandler(app.vpnKeeper, app.ibcMapper))
 
 	app.SetInitChainer(app.initChainer)
 	app.SetBeginBlocker(app.BeginBlocker)
 	app.SetEndBlocker(app.EndBlocker)
 	app.SetAnteHandler(auth.NewAnteHandler(app.accountKeeper, app.feeCollectionKeeper))
 
-	app.MountStoresIAVL(app.keyMain, app.keyAccount, app.keyIBC)
+	app.MountStoresIAVL(app.keyMain, app.keyAccount, app.keyIBC, app.keyVpn)
 	err := app.LoadLatestVersion(app.keyMain)
 	if err != nil {
 		common.Exit(err.Error())
@@ -89,6 +95,7 @@ func MakeCodec() *codec.Codec {
 	bank.RegisterCodec(cdc)
 	ibc.RegisterCodec(cdc)
 	auth.RegisterCodec(cdc)
+	vpn.RegisterCodec(cdc)
 
 	cdc.RegisterConcrete(&types.AppAccount{}, "sentinel-hub/Account", nil)
 

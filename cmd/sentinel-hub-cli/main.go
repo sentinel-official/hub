@@ -11,8 +11,7 @@ import (
 	authCli "github.com/cosmos/cosmos-sdk/x/auth/client/cli"
 	bankCli "github.com/cosmos/cosmos-sdk/x/bank/client/cli"
 	ibcCli "github.com/cosmos/cosmos-sdk/x/ibc/client/cli"
-	slashingCli "github.com/cosmos/cosmos-sdk/x/slashing/client/cli"
-	stakeCli "github.com/cosmos/cosmos-sdk/x/stake/client/cli"
+	vpnCli "github.com/ironman0x7b2/sentinel-hub/x/vpn/client/cli"
 	"github.com/ironman0x7b2/sentinel-hub/app"
 	"github.com/ironman0x7b2/sentinel-hub/types"
 	"github.com/spf13/cobra"
@@ -36,17 +35,6 @@ func main() {
 
 	rootCmd.AddCommand(
 		client.GetCommands(
-			stakeCli.GetCmdQueryValidator("stake", cdc),
-			stakeCli.GetCmdQueryValidators("stake", cdc),
-			stakeCli.GetCmdQueryDelegation("stake", cdc),
-			stakeCli.GetCmdQueryDelegations("stake", cdc),
-			stakeCli.GetCmdQueryPool("stake", cdc),
-			stakeCli.GetCmdQueryParams("stake", cdc),
-			stakeCli.GetCmdQueryUnbondingDelegation("stake", cdc),
-			stakeCli.GetCmdQueryUnbondingDelegations("stake", cdc),
-			stakeCli.GetCmdQueryRedelegation("stake", cdc),
-			stakeCli.GetCmdQueryRedelegations("stake", cdc),
-			slashingCli.GetCmdQuerySigningInfo("slashing", cdc),
 			authCli.GetAccountCmd("acc", cdc, types.GetAccountDecoder(cdc)),
 		)...)
 
@@ -55,12 +43,7 @@ func main() {
 			bankCli.SendTxCmd(cdc),
 			ibcCli.IBCTransferCmd(cdc),
 			ibcCli.IBCRelayCmd(cdc),
-			stakeCli.GetCmdCreateValidator(cdc),
-			stakeCli.GetCmdEditValidator(cdc),
-			stakeCli.GetCmdDelegate(cdc),
-			stakeCli.GetCmdUnbond("stake", cdc),
-			stakeCli.GetCmdRedelegate("stake", cdc),
-			slashingCli.GetCmdUnjail(cdc),
+			vpnCli.RegisterVpnCmd(cdc),
 		)...)
 
 	rootCmd.AddCommand(

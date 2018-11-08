@@ -28,6 +28,8 @@ type Location struct {
 type VpnIBCPacket struct {
 	VpnId     string
 	Address   sdkTypes.AccAddress
-	Coin      sdkTypes.Coin
+	Coin      sdkTypes.Coins
 	DestChain string
 }
+
+

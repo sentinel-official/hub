@@ -1,14 +1,29 @@
 package vpn
 
 import (
+	"reflect"
+
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdkTypes "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/ibc"
 	vpnTypes "github.com/ironman0x7b2/sentinel-hub/types"
-	"github.com/ironman0x7b2/sentinel-hub/x"
 )
 
+
+func NewHandler(k Keeper, im ibc.Mapper) sdkTypes.Handler {
+	return func(ctx sdkTypes.Context, msg sdkTypes.Msg) sdkTypes.Result {
+		switch msg := msg.(type) {
+		case MsgRegisterVpn:
+			return handleRegisterVpn(ctx, k, im, msg)
+		default:
+			errMsg := "Unrecognized vpn Msg type: " + reflect.TypeOf(msg).Name()
+			return sdkTypes.ErrUnknownRequest(errMsg).Result()
+		}
+	}
+}
+
 func handleRegisterVpn(ctx sdkTypes.Context, k Keeper, im ibc.Mapper, msg MsgRegisterVpn) sdkTypes.Result {
+
 	vpnId := msg.Register.Ip + msg.Register.Port
 	vpnStore := ctx.KVStore(k.VpnStoreKey)
 	vpnIdBytes := []byte(vpnId)
@@ -18,7 +33,7 @@ func handleRegisterVpn(ctx sdkTypes.Context, k Keeper, im ibc.Mapper, msg MsgReg
 	if vpnData != nil {
 		panic("Already registered")
 	}
-	id, err := k.SetVpnDetails(ctx, msg.Register, vpnId)
+	vpnId, err := k.SetVpnDetails(ctx, msg.Register, vpnId)
 	if err != nil {
 		panic(err)
 	}
@@ -30,7 +45,7 @@ func handleRegisterVpn(ctx sdkTypes.Context, k Keeper, im ibc.Mapper, msg MsgReg
 		DestChain: "Hub",
 	}
 
-	err = x.PostIBCPacket(ctx, k, im, Packet)
+	err = PostIBCPacket(ctx, k, im, Packet)
 	if err != nil {
 		panic(err)
 	}

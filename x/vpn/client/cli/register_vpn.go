@@ -1,18 +1,16 @@
 package cli
 
 import (
-
-"github.com/cosmos/cosmos-sdk/client/context"
-"github.com/cosmos/cosmos-sdk/client/utils"
-"github.com/cosmos/cosmos-sdk/codec"
-sdkTypes "github.com/cosmos/cosmos-sdk/types"
-authCmd "github.com/cosmos/cosmos-sdk/x/auth/client/cli"
-authtxb "github.com/cosmos/cosmos-sdk/x/auth/client/txbuilder"
-"github.com/ironman0x7b2/sentinel-hub/x/vpn"
-"github.com/pkg/errors"
-"github.com/spf13/cobra"
-"github.com/spf13/viper"
-
+	"github.com/cosmos/cosmos-sdk/client/context"
+	"github.com/cosmos/cosmos-sdk/client/utils"
+	"github.com/cosmos/cosmos-sdk/codec"
+	sdkTypes "github.com/cosmos/cosmos-sdk/types"
+	authCmd "github.com/cosmos/cosmos-sdk/x/auth/client/cli"
+	authtxb "github.com/cosmos/cosmos-sdk/x/auth/client/txbuilder"
+	"github.com/ironman0x7b2/sentinel-hub/x/vpn"
+	"github.com/pkg/errors"
+	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 const (
@@ -62,7 +60,7 @@ func RegisterVpnCmd(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			coins, err := sdkTypes.ParseCoins("100SENT")
+			coins, err := sdkTypes.ParseCoins("100mycoin")
 			if err != nil {
 				return err
 			}
@@ -81,17 +79,17 @@ func RegisterVpnCmd(cdc *codec.Codec) *cobra.Command {
 			return utils.CompleteAndBroadcastTxCli(txBldr, CliCtx, []sdkTypes.Msg{msg})
 		},
 	}
-	cmd.Flags().String(FlagIP, "", "ddress")
-	cmd.Flags().String(FlagPort, "", "ip")
-	cmd.Flags().Int64(FlagUploadSpeed, -1, "net speed")
-	cmd.Flags().Int64(FlagDownloadSpeed, -1, "price per gb")
-	cmd.Flags().Int64(FlagPricePerGB,-1, "location of vpn service provider")
-	cmd.Flags().String(FlagLocationLatitude, "", "ddress")
-	cmd.Flags().String(FlagLocationLongitude, "", "ddress")
-	cmd.Flags().String(FlagLocationCity, "", "ddress")
-	cmd.Flags().String(FlagLocationCountry, "", "ddress")
-	cmd.Flags().String(FlagEncMethod, "", "ddress")
-	cmd.Flags().String(FlagNodeType, "", "ddress")
-	cmd.Flags().String(FlagNodeType, "", "ddress")
+	cmd.Flags().String(FlagIP, "", "ip")
+	cmd.Flags().String(FlagPort, "", "port")
+	cmd.Flags().Int64(FlagUploadSpeed, -1, "upload_speed")
+	cmd.Flags().Int64(FlagDownloadSpeed, -1, "download_speed")
+	cmd.Flags().Int64(FlagPricePerGB, -1, "price_per_gb")
+	cmd.Flags().String(FlagLocationLatitude, "", "location_latitude")
+	cmd.Flags().String(FlagLocationLongitude, "", "location_longitude")
+	cmd.Flags().String(FlagLocationCity, "", "location_city")
+	cmd.Flags().String(FlagLocationCountry, "", "location_country")
+	cmd.Flags().String(FlagEncMethod, "", "enc_method")
+	cmd.Flags().String(FlagNodeType, "", "node type")
+	cmd.Flags().String(FlagVersion, "", "version")
 	return cmd
 }

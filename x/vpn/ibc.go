@@ -1,14 +1,13 @@
-package x
+package vpn
 
 import (
 	"github.com/cosmos/cosmos-sdk/codec"
-	sdkTypes "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/ibc"
+	sdkTypes "github.com/cosmos/cosmos-sdk/types"
 	vpnTypes "github.com/ironman0x7b2/sentinel-hub/types"
-	"github.com/ironman0x7b2/sentinel-hub/x/vpn"
 )
 
-func PostIBCPacket(ctx sdkTypes.Context, k vpn.Keeper, ibcm ibc.Mapper, packet vpnTypes.VpnIBCPacket) sdkTypes.Error {
+func PostIBCPacket(ctx sdkTypes.Context, k Keeper, ibcm ibc.Mapper, packet vpnTypes.VpnIBCPacket) sdkTypes.Error {
 	// write everything into the state
 	cdc := codec.New()
 	store := ctx.KVStore(k.IbcStoreKey)
@@ -55,3 +54,5 @@ func unmarshalBinaryPanic(cdc *codec.Codec, bz []byte, ptr interface{}) {
 		panic(err)
 	}
 }
+
+
