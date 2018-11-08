@@ -6,24 +6,22 @@ import (
 )
 
 func handleLockCoins(ctx sdkTypes.Context, k Keeper, msg MsgLockCoins) sdkTypes.Result {
-	lockId := msg.LockId
-	addr := msg.Address
-	coins := msg.Coins
-	lockedCoins := k.GetLockedCoins(ctx, lockId)
+	locker := k.GetLocker(ctx, msg.LockerId)
 
-	if lockedCoins.Address != nil {
+	if locker != nil {
 		return sdkTypes.Result{}
 	}
 
-	k.LockCoins(ctx, lockId, addr, coins)
+	k.LockCoins(ctx, msg.LockerId, msg.Address, msg.Coins)
 
 	ibcPacket := hubTypes.IBCPacket{
 		SrcChain:  "sentinel-hub",
-		DestChain: msg.ChainId,
-		Msg: hubTypes.IBCMsgLockCoins{
-			LockId:  lockId,
-			Address: addr,
-			Coins:   coins,
+		DestChain: msg.FromChainId,
+		Message: hubTypes.IBCMsgCoinLocker{
+			LockerId: msg.LockerId,
+			Address:  msg.Address,
+			Coins:    msg.Coins,
+			Locked:   true,
 		},
 	}
 
@@ -35,22 +33,22 @@ func handleLockCoins(ctx sdkTypes.Context, k Keeper, msg MsgLockCoins) sdkTypes.
 }
 
 func handleUnlockCoins(ctx sdkTypes.Context, k Keeper, msg MsgUnlockCoins) sdkTypes.Result {
-	lockId := msg.LockId
-	lockedCoins := k.GetLockedCoins(ctx, lockId)
+	locker := k.GetLocker(ctx, msg.LockerId)
 
-	if lockedCoins.Address == nil {
+	if locker == nil {
 		return sdkTypes.Result{}
 	}
 
-	k.UnlockCoins(ctx, lockId)
+	k.UnlockCoins(ctx, msg.LockerId)
 
 	ibcPacket := hubTypes.IBCPacket{
 		SrcChain:  "sentinel-hub",
-		DestChain: msg.ChainId,
-		Msg: hubTypes.IBCMsgLockCoins{
-			LockId:  lockId,
-			Address: lockedCoins.Address,
-			Coins:   lockedCoins.Coins,
+		DestChain: msg.FromChainId,
+		Message: hubTypes.IBCMsgCoinLocker{
+			LockerId: msg.LockerId,
+			Address:  locker.Address,
+			Coins:    locker.Coins,
+			Locked:   false,
 		},
 	}
 
@@ -61,24 +59,23 @@ func handleUnlockCoins(ctx sdkTypes.Context, k Keeper, msg MsgUnlockCoins) sdkTy
 	return sdkTypes.Result{}
 }
 
-func handleSplitUnlockCoins(ctx sdkTypes.Context, k Keeper, msg MsgSplitUnlockCoins) sdkTypes.Result {
-	lockId := msg.LockId
-	splits := msg.Splits
-	lockedCoins := k.GetLockedCoins(ctx, lockId)
+func handleUnlockAndShareCoins(ctx sdkTypes.Context, k Keeper, msg MsgUnlockAndShareCoins) sdkTypes.Result {
+	locker := k.GetLocker(ctx, msg.LockerId)
 
-	if lockedCoins.Address == nil {
+	if locker == nil {
 		return sdkTypes.Result{}
 	}
 
-	k.SplitUnlockCoins(ctx, lockId, splits)
+	k.UnlockAndShareCoins(ctx, msg.LockerId, msg.Addrs, msg.Shares)
 
 	ibcPacket := hubTypes.IBCPacket{
 		SrcChain:  "sentinel-hub",
-		DestChain: msg.ChainId,
-		Msg: hubTypes.IBCMsgLockCoins{
-			LockId:  lockId,
-			Address: lockedCoins.Address,
-			Coins:   lockedCoins.Coins,
+		DestChain: msg.FromChainId,
+		Message: hubTypes.IBCMsgCoinLocker{
+			LockerId: msg.LockerId,
+			Address:  locker.Address,
+			Coins:    locker.Coins,
+			Locked:   false,
 		},
 	}
 
