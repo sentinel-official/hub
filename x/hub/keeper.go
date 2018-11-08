@@ -23,10 +23,10 @@ func NewKeeper(coinLockerKey sdkTypes.StoreKey, bankKeeper bank.Keeper) Keeper {
 	}
 }
 
-func (k Keeper) SetLockedCoins(ctx sdkTypes.Context, lockId string, coins hubTypes.LockedCoins) {
+func (k Keeper) SetLocker(ctx sdkTypes.Context, lockerId string, locker *hubTypes.CoinLocker) {
 	store := ctx.KVStore(k.coinLockerKey)
-	keyBytes := []byte(lockId)
-	valueBytes, err := json.Marshal(coins)
+	keyBytes := []byte(lockerId)
+	valueBytes, err := json.Marshal(&locker)
 
 	if err != nil {
 		panic(err)
@@ -35,45 +35,40 @@ func (k Keeper) SetLockedCoins(ctx sdkTypes.Context, lockId string, coins hubTyp
 	store.Set(keyBytes, valueBytes)
 }
 
-func (k Keeper) GetLockedCoins(ctx sdkTypes.Context, lockId string) hubTypes.LockedCoins {
+func (k Keeper) GetLocker(ctx sdkTypes.Context, lockerId string) *hubTypes.CoinLocker {
 	store := ctx.KVStore(k.coinLockerKey)
-	keyBytes := []byte(lockId)
+	keyBytes := []byte(lockerId)
 	valueBytes := store.Get(keyBytes)
 
-	var lockedCoins hubTypes.LockedCoins
+	var locker hubTypes.CoinLocker
 
-	if err := json.Unmarshal(valueBytes, &lockedCoins); err != nil {
+	if err := json.Unmarshal(valueBytes, &locker); err != nil {
 		panic(err)
 	}
 
-	return lockedCoins
+	return &locker
 }
 
-func (k Keeper) DeleteLockedCoins(ctx sdkTypes.Context, lockId string) {
-	store := ctx.KVStore(k.coinLockerKey)
-	keyBytes := []byte(lockId)
-	store.Delete(keyBytes)
-}
-
-func (k Keeper) LockCoins(ctx sdkTypes.Context, lockId string, addr sdkTypes.AccAddress, coins sdkTypes.Coins) {
+func (k Keeper) LockCoins(ctx sdkTypes.Context, lockerId string, addr sdkTypes.AccAddress, coins sdkTypes.Coins) {
 	_, _, err := k.bankKeeper.SubtractCoins(ctx, addr, coins)
 
 	if err != nil {
 		panic(err)
 	}
 
-	lockedCoins := hubTypes.LockedCoins{
+	locker := hubTypes.CoinLocker{
 		Address: addr,
 		Coins:   coins,
+		Locked:  true,
 	}
 
-	k.SetLockedCoins(ctx, lockId, lockedCoins)
+	k.SetLocker(ctx, lockerId, &locker)
 }
 
-func (k Keeper) UnlockCoins(ctx sdkTypes.Context, lockId string) {
-	lockedCoins := k.GetLockedCoins(ctx, lockId)
-	addr := lockedCoins.Address
-	coins := lockedCoins.Coins
+func (k Keeper) UnlockCoins(ctx sdkTypes.Context, lockerId string) {
+	locker := k.GetLocker(ctx, lockerId)
+	addr := locker.Address
+	coins := locker.Coins
 
 	_, _, err := k.bankKeeper.AddCoins(ctx, addr, coins)
 
@@ -81,19 +76,21 @@ func (k Keeper) UnlockCoins(ctx sdkTypes.Context, lockId string) {
 		panic(err)
 	}
 
-	k.DeleteLockedCoins(ctx, lockId)
+	locker.Locked = false
+	k.SetLocker(ctx, lockerId, locker)
 }
 
-func (k Keeper) SplitUnlockCoins(ctx sdkTypes.Context, lockId string, splits []hubTypes.LockedCoins) {
-	for _, split := range splits {
-		addr := split.Address
-		coins := split.Coins
-		_, _, err := k.bankKeeper.AddCoins(ctx, addr, coins)
+func (k Keeper) UnlockAndShareCoins(ctx sdkTypes.Context, lockerId string, addrs []sdkTypes.AccAddress, shares []sdkTypes.Coins) {
+	locker := k.GetLocker(ctx, lockerId)
+
+	for i := range addrs {
+		_, _, err := k.bankKeeper.AddCoins(ctx, addrs[i], shares[i])
 
 		if err != nil {
 			panic(err)
 		}
 	}
 
-	k.DeleteLockedCoins(ctx, lockId)
+	locker.Locked = false
+	k.SetLocker(ctx, lockerId, locker)
 }

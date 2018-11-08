@@ -4,19 +4,16 @@ import (
 	sdkTypes "github.com/cosmos/cosmos-sdk/types"
 )
 
-type LockedCoins struct {
+type CoinLocker struct {
 	Address sdkTypes.AccAddress `json:"address"`
 	Coins   sdkTypes.Coins      `json:"coins"`
+	Locked  bool                `json:"locked"`
 }
 
-type IBCMsgLockCoins struct {
-	LockId  string              `json:"lock_id"`
-	Address sdkTypes.AccAddress `json:"address"`
-	Coins   sdkTypes.Coins      `json:"coins"`
-}
+type IBCMsgCoinLocker struct {
+	LockerId string `json:"locker_id"`
 
-type IBCMsgUnLockCoins struct {
-	LockId  string              `json:"lock_id"`
 	Address sdkTypes.AccAddress `json:"address"`
 	Coins   sdkTypes.Coins      `json:"coins"`
+	Locked  bool                `json:"locked"`
 }
