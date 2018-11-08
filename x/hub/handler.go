@@ -1,9 +1,27 @@
 package hub
 
 import (
+	"fmt"
+
 	sdkTypes "github.com/cosmos/cosmos-sdk/types"
 	hubTypes "github.com/ironman0x7b2/sentinel-hub/types"
 )
+
+func NewHandler(k Keeper) sdkTypes.Handler {
+	return func(ctx sdkTypes.Context, msg sdkTypes.Msg) sdkTypes.Result {
+		switch msg := msg.(type) {
+		case MsgLockCoins:
+			return handleLockCoins(ctx, k, msg)
+		case MsgUnlockCoins:
+			return handleUnlockCoins(ctx, k, msg)
+		case MsgUnlockAndShareCoins:
+			return handleUnlockAndShareCoins(ctx, k, msg)
+		default:
+			errMsg := fmt.Sprintf("Unrecognized Msg type: %v", msg.Type())
+			return sdkTypes.ErrUnknownRequest(errMsg).Result()
+		}
+	}
+}
 
 func handleLockCoins(ctx sdkTypes.Context, k Keeper, msg MsgLockCoins) sdkTypes.Result {
 	locker := k.GetLocker(ctx, msg.LockerId)
