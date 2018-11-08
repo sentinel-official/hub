@@ -6,12 +6,14 @@ import (
 	sdkTypes "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/bank"
 	hubTypes "github.com/ironman0x7b2/sentinel-hub/types"
+	"github.com/ironman0x7b2/sentinel-hub/x/ibc"
 )
 
 type Keeper struct {
 	coinLockerKey sdkTypes.StoreKey
 
 	bankKeeper bank.Keeper
+	ibcKeeper  ibc.Keeper
 }
 
 func NewKeeper(coinLockerKey sdkTypes.StoreKey, bankKeeper bank.Keeper) Keeper {
@@ -68,7 +70,7 @@ func (k Keeper) LockCoins(ctx sdkTypes.Context, lockId string, addr sdkTypes.Acc
 	k.SetLockedCoins(ctx, lockId, lockedCoins)
 }
 
-func (k Keeper) ReleaseCoins(ctx sdkTypes.Context, lockId string) {
+func (k Keeper) UnlockCoins(ctx sdkTypes.Context, lockId string) {
 	lockedCoins := k.GetLockedCoins(ctx, lockId)
 	addr := lockedCoins.Address
 	coins := lockedCoins.Coins
@@ -77,6 +79,20 @@ func (k Keeper) ReleaseCoins(ctx sdkTypes.Context, lockId string) {
 
 	if err != nil {
 		panic(err)
+	}
+
+	k.DeleteLockedCoins(ctx, lockId)
+}
+
+func (k Keeper) SplitUnlockCoins(ctx sdkTypes.Context, lockId string, splits []hubTypes.LockedCoins) {
+	for _, split := range splits {
+		addr := split.Address
+		coins := split.Coins
+		_, _, err := k.bankKeeper.AddCoins(ctx, addr, coins)
+
+		if err != nil {
+			panic(err)
+		}
 	}
 
 	k.DeleteLockedCoins(ctx, lockId)

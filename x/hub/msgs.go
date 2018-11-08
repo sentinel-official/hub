@@ -4,10 +4,12 @@ import (
 	"encoding/json"
 
 	sdkTypes "github.com/cosmos/cosmos-sdk/types"
+	hubTypes "github.com/ironman0x7b2/sentinel-hub/types"
 )
 
 type MsgLockCoins struct {
 	FromAddress sdkTypes.AccAddress `json:"from_address"`
+	ChainId     string              `json:"chain_id"`
 	LockId      string              `json:"lock_id"`
 	Address     sdkTypes.AccAddress `json:"address"`
 	Coins       sdkTypes.Coins      `json:"coins"`
@@ -35,24 +37,54 @@ func (msg MsgLockCoins) GetSignBytes() []byte {
 	return signBytes
 }
 
-type MsgReleaseCoins struct {
+type MsgUnlockCoins struct {
 	FromAddress sdkTypes.AccAddress `json:"from_address"`
+	ChainId     string              `json:"chain_id"`
 	LockId      string              `json:"lock_id"`
 }
 
-func (msg MsgReleaseCoins) Type() string {
-	return "release_coins"
+func (msg MsgUnlockCoins) Type() string {
+	return "unlock_coins"
 }
 
-func (msg MsgReleaseCoins) ValidateBasic() sdkTypes.Error {
+func (msg MsgUnlockCoins) ValidateBasic() sdkTypes.Error {
 	return nil
 }
 
-func (msg MsgReleaseCoins) GetSigners() []sdkTypes.AccAddress {
+func (msg MsgUnlockCoins) GetSigners() []sdkTypes.AccAddress {
 	return []sdkTypes.AccAddress{msg.FromAddress}
 }
 
-func (msg MsgReleaseCoins) GetSignBytes() []byte {
+func (msg MsgUnlockCoins) GetSignBytes() []byte {
+	signBytes, err := json.Marshal(msg)
+
+	if err != nil {
+		panic(err)
+	}
+
+	return signBytes
+}
+
+type MsgSplitUnlockCoins struct {
+	FromAddress sdkTypes.AccAddress    `json:"from_address"`
+	ChainId     string                 `json:"chain_id"`
+	LockId      string                 `json:"lock_id"`
+	Splits      []hubTypes.LockedCoins `json:"splits"`
+}
+
+func (msg MsgSplitUnlockCoins) Type() string {
+	return "split_unlock_coins"
+}
+
+func (msg MsgSplitUnlockCoins) ValidateBasic() sdkTypes.Error {
+	return nil
+}
+
+func (msg MsgSplitUnlockCoins) GetSigners() []sdkTypes.AccAddress {
+	return []sdkTypes.AccAddress{msg.FromAddress}
+}
+
+func (msg MsgSplitUnlockCoins) GetSignBytes() []byte {
 	signBytes, err := json.Marshal(msg)
 
 	if err != nil {
