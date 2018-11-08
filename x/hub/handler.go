@@ -15,8 +15,8 @@ func handleLockCoins(ctx sdkTypes.Context, k Keeper, msg MsgLockCoins) sdkTypes.
 	k.LockCoins(ctx, msg.LockerId, msg.Address, msg.Coins)
 
 	ibcPacket := hubTypes.IBCPacket{
-		SrcChain:  "sentinel-hub",
-		DestChain: msg.FromChainId,
+		SrcChainId:  "sentinel-hub",
+		DestChainId: msg.FromChainId,
 		Message: hubTypes.IBCMsgCoinLocker{
 			LockerId: msg.LockerId,
 			Address:  msg.Address,
@@ -42,8 +42,8 @@ func handleUnlockCoins(ctx sdkTypes.Context, k Keeper, msg MsgUnlockCoins) sdkTy
 	k.UnlockCoins(ctx, msg.LockerId)
 
 	ibcPacket := hubTypes.IBCPacket{
-		SrcChain:  "sentinel-hub",
-		DestChain: msg.FromChainId,
+		SrcChainId:  "sentinel-hub",
+		DestChainId: msg.FromChainId,
 		Message: hubTypes.IBCMsgCoinLocker{
 			LockerId: msg.LockerId,
 			Address:  locker.Address,
@@ -69,8 +69,8 @@ func handleUnlockAndShareCoins(ctx sdkTypes.Context, k Keeper, msg MsgUnlockAndS
 	k.UnlockAndShareCoins(ctx, msg.LockerId, msg.Addrs, msg.Shares)
 
 	ibcPacket := hubTypes.IBCPacket{
-		SrcChain:  "sentinel-hub",
-		DestChain: msg.FromChainId,
+		SrcChainId:  "sentinel-hub",
+		DestChainId: msg.FromChainId,
 		Message: hubTypes.IBCMsgCoinLocker{
 			LockerId: msg.LockerId,
 			Address:  locker.Address,
