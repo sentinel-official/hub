@@ -36,6 +36,7 @@ func RegisterVpnCmd(cdc *codec.Codec) *cobra.Command {
 
 			txBldr := authtxb.NewTxBuilderFromCLI().WithCodec(cdc)
 			CliCtx := context.NewCLIContext().WithCodec(cdc).WithAccountDecoder(authCmd.GetAccountDecoder(cdc))
+
 			ip := viper.GetString(FlagIP)
 			port := viper.GetString(FlagPort)
 			amount := viper.GetString(FlagAmount)
@@ -48,19 +49,25 @@ func RegisterVpnCmd(cdc *codec.Codec) *cobra.Command {
 			country := viper.GetString(FlagLocationCountry)
 			enc_method := viper.GetString(FlagEncMethod)
 			version := viper.GetString(FlagVersion)
+
 			if err := CliCtx.EnsureAccountExists(); err != nil {
 				return err
 			}
+
 			from, err := CliCtx.GetFromAddress()
+
 			if err != nil {
 				return err
 			}
+
 			account, err := CliCtx.GetAccount(from)
+
 			if err != nil {
 				return err
 			}
 
 			coins, err := sdkTypes.ParseCoins(amount)
+
 			if err != nil {
 				return err
 			}
@@ -79,6 +86,7 @@ func RegisterVpnCmd(cdc *codec.Codec) *cobra.Command {
 			return utils.CompleteAndBroadcastTxCli(txBldr, CliCtx, []sdkTypes.Msg{msg})
 		},
 	}
+
 	cmd.Flags().String(FlagIP, "", "ip")
 	cmd.Flags().String(FlagPort, "", "port")
 	cmd.Flags().String(FlagAmount, "1000SentCoins", "amount")
@@ -91,5 +99,6 @@ func RegisterVpnCmd(cdc *codec.Codec) *cobra.Command {
 	cmd.Flags().String(FlagLocationCountry, "", "location_country")
 	cmd.Flags().String(FlagEncMethod, "", "enc_method")
 	cmd.Flags().String(FlagVersion, "", "version")
+
 	return cmd
 }
