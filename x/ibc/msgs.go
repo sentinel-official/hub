@@ -39,7 +39,7 @@ type MsgIBCTransaction struct {
 }
 
 func (msg MsgIBCTransaction) Route() string {
-	return msg.Type()
+	return "ibc"
 }
 
 func (msg MsgIBCTransaction) Type() string {
