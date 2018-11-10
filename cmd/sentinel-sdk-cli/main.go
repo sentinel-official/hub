@@ -10,9 +10,9 @@ import (
 	"github.com/cosmos/cosmos-sdk/version"
 	authCli "github.com/cosmos/cosmos-sdk/x/auth/client/cli"
 	bankCli "github.com/cosmos/cosmos-sdk/x/bank/client/cli"
-	ibcCli "github.com/cosmos/cosmos-sdk/x/ibc/client/cli"
 	"github.com/ironman0x7b2/sentinel-sdk/app"
 	"github.com/ironman0x7b2/sentinel-sdk/types"
+	ibcCli "github.com/ironman0x7b2/sentinel-sdk/x/ibc/client/cli"
 	vpnCli "github.com/ironman0x7b2/sentinel-sdk/x/vpn/client/cli"
 	"github.com/spf13/cobra"
 	"github.com/tendermint/tendermint/libs/cli"
@@ -41,7 +41,6 @@ func main() {
 	rootCmd.AddCommand(
 		client.PostCommands(
 			bankCli.SendTxCmd(cdc),
-			ibcCli.IBCTransferCmd(cdc),
 			ibcCli.IBCRelayCmd(cdc),
 			vpnCli.RegisterVpnCmd(cdc),
 		)...)

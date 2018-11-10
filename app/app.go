@@ -13,7 +13,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/cosmos/cosmos-sdk/x/bank"
-	"github.com/ironman0x7b2/sentinel-sdk/types"
+	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
 	"github.com/ironman0x7b2/sentinel-sdk/x/ibc"
 	abciTypes "github.com/tendermint/tendermint/abci/types"
 	tmDb "github.com/tendermint/tendermint/libs/db"
@@ -63,7 +63,7 @@ func NewSentinelHub(logger log.Logger, db tmDb.DB, baseAppOptions ...func(*basea
 		cdc,
 		app.keyAccount,
 		func() auth.Account {
-			return &types.AppAccount{}
+			return &sdkTypes.AppAccount{}
 		},
 	)
 	app.bankKeeper = bank.NewBaseKeeper(app.accountKeeper)
@@ -81,7 +81,7 @@ func NewSentinelHub(logger log.Logger, db tmDb.DB, baseAppOptions ...func(*basea
 	app.SetEndBlocker(app.EndBlocker)
 	app.SetAnteHandler(auth.NewAnteHandler(app.accountKeeper, app.feeCollectionKeeper))
 
-	app.MountStoresIAVL(app.keyMain, app.keyAccount, app.keyIBC, app.keyVPN)
+	app.MountStoresIAVL(app.keyMain, app.keyAccount, app.keyIBC, app.keyCoinLocker, app.keyVPN)
 	err := app.LoadLatestVersion(app.keyMain)
 	if err != nil {
 		common.Exit(err.Error())
@@ -97,12 +97,14 @@ func MakeCodec() *codec.Codec {
 
 	codec.RegisterCrypto(cdc)
 	csdkTypes.RegisterCodec(cdc)
+	sdkTypes.RegisterCodec(cdc)
 	bank.RegisterCodec(cdc)
 	ibc.RegisterCodec(cdc)
 	auth.RegisterCodec(cdc)
+	hub.RegisterCodec(cdc)
 	vpn.RegisterCodec(cdc)
 
-	cdc.RegisterConcrete(&types.AppAccount{}, "sentinel-sdk/Account", nil)
+	cdc.RegisterConcrete(&sdkTypes.AppAccount{}, "sentinel-sdk/Account", nil)
 
 	cdc.Seal()
 
@@ -120,7 +122,7 @@ func (app *SentinelHub) EndBlocker(_ csdkTypes.Context, _ abciTypes.RequestEndBl
 func (app *SentinelHub) initChainer(ctx csdkTypes.Context, req abciTypes.RequestInitChain) abciTypes.ResponseInitChain {
 	stateJSON := req.AppStateBytes
 
-	genesisState := new(types.GenesisState)
+	genesisState := new(sdkTypes.GenesisState)
 	err := app.cdc.UnmarshalJSON(stateJSON, genesisState)
 	if err != nil {
 		// TODO: https://github.com/cosmos/cosmos-sdk/issues/468
@@ -143,10 +145,10 @@ func (app *SentinelHub) initChainer(ctx csdkTypes.Context, req abciTypes.Request
 
 func (app *SentinelHub) ExportAppStateAndValidators() (appState json.RawMessage, validators []tmTypes.GenesisValidator, err error) {
 	ctx := app.NewContext(true, abciTypes.Header{})
-	accounts := []*types.GenesisAccount{}
+	accounts := []*sdkTypes.GenesisAccount{}
 
 	appendAccountsFn := func(acc auth.Account) bool {
-		account := &types.GenesisAccount{
+		account := &sdkTypes.GenesisAccount{
 			Address: acc.GetAddress(),
 			Coins:   acc.GetCoins(),
 		}
@@ -157,7 +159,7 @@ func (app *SentinelHub) ExportAppStateAndValidators() (appState json.RawMessage,
 
 	app.accountKeeper.IterateAccounts(ctx, appendAccountsFn)
 
-	genState := types.GenesisState{Accounts: accounts}
+	genState := sdkTypes.GenesisState{Accounts: accounts}
 	appState, err = codec.MarshalJSONIndent(app.cdc, genState)
 	if err != nil {
 		return nil, nil, err

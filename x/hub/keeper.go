@@ -49,6 +49,10 @@ func (k BaseKeeper) GetLocker(ctx csdkTypes.Context, lockerId string) *sdkTypes.
 
 	var locker sdkTypes.CoinLocker
 
+	if valueBytes == nil {
+		return nil
+	}
+
 	if err := json.Unmarshal(valueBytes, &locker); err != nil {
 		panic(err)
 	}

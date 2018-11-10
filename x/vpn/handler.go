@@ -7,6 +7,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
 	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
+	"github.com/ironman0x7b2/sentinel-sdk/x/hub"
 	"github.com/ironman0x7b2/sentinel-sdk/x/ibc"
 )
 
@@ -46,12 +47,12 @@ func handleRegisterVpn(ctx csdkTypes.Context, k Keeper, ik ibc.Keeper, msg MsgRe
 	}
 
 	ibcPacket := sdkTypes.IBCPacket{
-		SrcChainId:  "vpn",
-		DestChainId: "Sentinel-hub",
-		Message: sdkTypes.IBCMsgRegisterVpn{
-			VpnId:   vpnId,
-			Address: msg.From,
-			Coins:   msg.Coins,
+		SrcChainId:  "sentinel-vpn",
+		DestChainId: "sentinel-hub",
+		Message: hub.MsgLockCoins{
+			LockerId: vpnId.String(),
+			Address:  msg.From,
+			Coins:    msg.Coins,
 		},
 	}
 
