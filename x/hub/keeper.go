@@ -6,24 +6,31 @@ import (
 	sdkTypes "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/bank"
 	hubTypes "github.com/ironman0x7b2/sentinel-hub/types"
-	"github.com/ironman0x7b2/sentinel-hub/x/ibc"
 )
 
-type Keeper struct {
-	coinLockerKey sdkTypes.StoreKey
+type Keeper interface {
+	GetLocker(ctx sdkTypes.Context, lockerId string) *hubTypes.CoinLocker
 
-	bankKeeper bank.Keeper
-	ibcKeeper  ibc.Keeper
+	LockCoins(ctx sdkTypes.Context, lockerId string, address sdkTypes.AccAddress, coins sdkTypes.Coins)
+	ReleaseCoins(ctx sdkTypes.Context, lockerId string)
+	ReleaseCoinsToMany(ctx sdkTypes.Context, lockerId string, addresses []sdkTypes.AccAddress, shares []sdkTypes.Coins)
 }
 
-func NewKeeper(coinLockerKey sdkTypes.StoreKey, bankKeeper bank.Keeper) Keeper {
-	return Keeper{
+var _ Keeper = (*BaseKeeper)(nil)
+
+type BaseKeeper struct {
+	coinLockerKey sdkTypes.StoreKey
+	bankKeeper    bank.Keeper
+}
+
+func NewBaseKeeper(coinLockerKey sdkTypes.StoreKey, bankKeeper bank.Keeper) BaseKeeper {
+	return BaseKeeper{
 		coinLockerKey: coinLockerKey,
 		bankKeeper:    bankKeeper,
 	}
 }
 
-func (k Keeper) SetLocker(ctx sdkTypes.Context, lockerId string, locker *hubTypes.CoinLocker) {
+func (k BaseKeeper) SetLocker(ctx sdkTypes.Context, lockerId string, locker *hubTypes.CoinLocker) {
 	store := ctx.KVStore(k.coinLockerKey)
 	keyBytes := []byte(lockerId)
 	valueBytes, err := json.Marshal(&locker)
@@ -35,7 +42,7 @@ func (k Keeper) SetLocker(ctx sdkTypes.Context, lockerId string, locker *hubType
 	store.Set(keyBytes, valueBytes)
 }
 
-func (k Keeper) GetLocker(ctx sdkTypes.Context, lockerId string) *hubTypes.CoinLocker {
+func (k BaseKeeper) GetLocker(ctx sdkTypes.Context, lockerId string) *hubTypes.CoinLocker {
 	store := ctx.KVStore(k.coinLockerKey)
 	keyBytes := []byte(lockerId)
 	valueBytes := store.Get(keyBytes)
@@ -49,15 +56,16 @@ func (k Keeper) GetLocker(ctx sdkTypes.Context, lockerId string) *hubTypes.CoinL
 	return &locker
 }
 
-func (k Keeper) LockCoins(ctx sdkTypes.Context, lockerId string, addr sdkTypes.AccAddress, coins sdkTypes.Coins) {
-	_, _, err := k.bankKeeper.SubtractCoins(ctx, addr, coins)
+func (k BaseKeeper) LockCoins(ctx sdkTypes.Context, lockerId string,
+	address sdkTypes.AccAddress, coins sdkTypes.Coins) {
+	_, _, err := k.bankKeeper.SubtractCoins(ctx, address, coins)
 
 	if err != nil {
 		panic(err)
 	}
 
 	locker := hubTypes.CoinLocker{
-		Address: addr,
+		Address: address,
 		Coins:   coins,
 		Locked:  true,
 	}
@@ -65,7 +73,7 @@ func (k Keeper) LockCoins(ctx sdkTypes.Context, lockerId string, addr sdkTypes.A
 	k.SetLocker(ctx, lockerId, &locker)
 }
 
-func (k Keeper) UnlockCoins(ctx sdkTypes.Context, lockerId string) {
+func (k BaseKeeper) ReleaseCoins(ctx sdkTypes.Context, lockerId string) {
 	locker := k.GetLocker(ctx, lockerId)
 	addr := locker.Address
 	coins := locker.Coins
@@ -80,11 +88,12 @@ func (k Keeper) UnlockCoins(ctx sdkTypes.Context, lockerId string) {
 	k.SetLocker(ctx, lockerId, locker)
 }
 
-func (k Keeper) UnlockAndShareCoins(ctx sdkTypes.Context, lockerId string, addrs []sdkTypes.AccAddress, shares []sdkTypes.Coins) {
+func (k BaseKeeper) ReleaseCoinsToMany(ctx sdkTypes.Context, lockerId string,
+	addresses []sdkTypes.AccAddress, shares []sdkTypes.Coins) {
 	locker := k.GetLocker(ctx, lockerId)
 
-	for i := range addrs {
-		_, _, err := k.bankKeeper.AddCoins(ctx, addrs[i], shares[i])
+	for i := range addresses {
+		_, _, err := k.bankKeeper.AddCoins(ctx, addresses[i], shares[i])
 
 		if err != nil {
 			panic(err)
