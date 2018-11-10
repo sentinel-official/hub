@@ -9,8 +9,8 @@ type VpnDetails struct {
 	PricePerGb int64
 	EncMethod  string
 	Location   Location
-	Status     bool
 	Version    string
+	Info       Info
 }
 
 type NetSpeed struct {
@@ -32,9 +32,13 @@ type VpnIBCPacket struct {
 	DestChain string
 }
 
-type IBCMsgRegisterVpn struct {
-	VpnId    string
-	Address   sdkTypes.AccAddress
-	Coins      sdkTypes.Coins
+type Info struct {
+	Status bool
+	BlockHeight int64
 }
 
+type IBCMsgRegisterVpn struct {
+	VpnId   sdkTypes.AccAddress
+	Address sdkTypes.AccAddress
+	Coins   sdkTypes.Coins
+}

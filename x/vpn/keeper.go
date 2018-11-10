@@ -19,10 +19,11 @@ func NewKeeper(vpnKey sdkTypes.StoreKey, ibcKey sdkTypes.StoreKey) Keeper {
 	}
 }
 
-func (k Keeper) SetVpnDetails(ctx sdkTypes.Context, vpnDetails hubTypes.VpnDetails, vpnId string) error {
+func (k Keeper) SetVpnDetails(ctx sdkTypes.Context, vpnId sdkTypes.AccAddress, vpnDetails hubTypes.VpnDetails) error {
 
 	vpnStore := ctx.KVStore(k.VpnStoreKey)
 	vpnIdBytes := []byte(vpnId)
+
 	vpnDetailsBytes, err := json.Marshal(vpnDetails)
 
 	if err != nil {
@@ -34,17 +35,28 @@ func (k Keeper) SetVpnDetails(ctx sdkTypes.Context, vpnDetails hubTypes.VpnDetai
 	return nil
 }
 
-func (k Keeper) GetVpnDetails(ctx sdkTypes.Context, vpnId string) (hubTypes.VpnDetails, error) {
-	var Details hubTypes.VpnDetails
+func (k Keeper) GetVpnDetails(ctx sdkTypes.Context, vpnId sdkTypes.AccAddress) ([]byte, error) {
 
 	store := ctx.KVStore(k.VpnStoreKey)
 	vpnIdBytes := []byte(vpnId)
 	vpnDetailsBytes := store.Get(vpnIdBytes)
-	err := json.Unmarshal(vpnDetailsBytes, &Details)
+
+	return vpnDetailsBytes, nil
+}
+
+func (k Keeper) SetAliveNode(ctx sdkTypes.Context, vpnId sdkTypes.AccAddress, Details hubTypes.VpnDetails) error {
+	store := ctx.KVStore(k.VpnStoreKey)
+
+	Details.Info.Status = true
+	Details.Info.BlockHeight = ctx.BlockHeight()
+
+	DetailsBytes, err := json.Marshal(Details)
 
 	if err != nil {
-		return hubTypes.VpnDetails{}, err
+		panic(err)
 	}
 
-	return Details, nil
+	store.Set(vpnId, DetailsBytes)
+
+	return nil
 }

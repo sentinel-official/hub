@@ -14,7 +14,7 @@ type MsgRegisterVpn struct {
 }
 
 func (msg MsgRegisterVpn) Type() string {
-	return "RegisterVpn"
+	return "vpn"
 }
 
 func (msg MsgRegisterVpn) ValidateBasic() sdkTypes.Error {
@@ -23,9 +23,11 @@ func (msg MsgRegisterVpn) ValidateBasic() sdkTypes.Error {
 
 func (msg MsgRegisterVpn) GetSignBytes() []byte {
 	MsgBytes, err := json.Marshal(msg)
+
 	if err != nil {
 		return nil
 	}
+
 	return MsgBytes
 }
 
@@ -33,7 +35,9 @@ func (msg MsgRegisterVpn) GetSigners() []sdkTypes.AccAddress {
 	return []sdkTypes.AccAddress{msg.From}
 }
 
-func (msg MsgRegisterVpn) Route() string { return msg.Type() }
+func (msg MsgRegisterVpn) Route() string {
+	return msg.Type()
+}
 
 func NewRegisterVpnMsg(from sdkTypes.AccAddress, ip string, port string, coins sdkTypes.Coins, pricePerGb int64, upload int64, download int64,
 	latitude int64, longitude int64, city string, country string, enc_method string, version string) *MsgRegisterVpn {
@@ -57,6 +61,40 @@ func NewRegisterVpnMsg(from sdkTypes.AccAddress, ip string, port string, coins s
 			},
 			Version:   version,
 			EncMethod: enc_method,
+			Info: hubtypes.Info{
+				Status:      false,
+				BlockHeight: 0,
+			},
 		},
 	}
+}
+
+type MsgAliveNode struct {
+	From sdkTypes.AccAddress
+}
+
+func (msg MsgAliveNode) Type() string {
+	return "AliveNode"
+}
+
+func (msg MsgAliveNode) ValidateBasic() sdkTypes.Error {
+	return nil
+}
+
+func (msg MsgAliveNode) GetSignBytes() []byte {
+	MsgBytes, err := json.Marshal(msg)
+
+	if err != nil {
+		return nil
+	}
+
+	return MsgBytes
+}
+
+func (msg MsgAliveNode) GetSigners() []sdkTypes.AccAddress {
+	return []sdkTypes.AccAddress{msg.From}
+}
+
+func (msg MsgAliveNode) Route() string {
+	return msg.Type()
 }

@@ -6,6 +6,7 @@ import (
 	sdkTypes "github.com/cosmos/cosmos-sdk/types"
 	hubTypes "github.com/ironman0x7b2/sentinel-hub/types"
 	"github.com/ironman0x7b2/sentinel-hub/x/ibc"
+	"encoding/json"
 )
 
 func NewHandler(k Keeper, im ibc.Keeper) sdkTypes.Handler {
@@ -16,7 +17,8 @@ func NewHandler(k Keeper, im ibc.Keeper) sdkTypes.Handler {
 
 		case MsgRegisterVpn:
 			return handleRegisterVpn(ctx, k, im, msg)
-
+		case MsgAliveNode:
+			return handleAliveNode(ctx, k, msg)
 		default:
 			errMsg := "Unrecognized vpn Msg type: " + reflect.TypeOf(msg).Name()
 			return sdkTypes.ErrUnknownRequest(errMsg).Result()
@@ -29,17 +31,19 @@ func NewHandler(k Keeper, im ibc.Keeper) sdkTypes.Handler {
 
 func handleRegisterVpn(ctx sdkTypes.Context, k Keeper, ik ibc.Keeper, msg MsgRegisterVpn) sdkTypes.Result {
 
-	vpnId := msg.Details.Ip + msg.Details.Port
-	vpnStore := ctx.KVStore(k.VpnStoreKey)
-	vpnIdBytes := []byte(vpnId)
+	vpnId := msg.From
 	cdc := codec.New()
-	vpnData := vpnStore.Get(vpnIdBytes)
+	vpnData, err := k.GetVpnDetails(ctx, vpnId)
+
+	if err != nil {
+		panic(err)
+	}
 
 	if vpnData != nil {
 		panic("Already registered")
 	}
 
-	err := k.SetVpnDetails(ctx, msg.Details, vpnId)
+	err = k.SetVpnDetails(ctx, vpnId, msg.Details)
 
 	if err != nil {
 		panic(err)
@@ -51,7 +55,7 @@ func handleRegisterVpn(ctx sdkTypes.Context, k Keeper, ik ibc.Keeper, msg MsgReg
 		Message: hubTypes.IBCMsgRegisterVpn{
 			VpnId:   vpnId,
 			Address: msg.From,
-			Coins: msg.Coins ,
+			Coins:   msg.Coins,
 		},
 	}
 
@@ -68,4 +72,33 @@ func handleRegisterVpn(ctx sdkTypes.Context, k Keeper, ik ibc.Keeper, msg MsgReg
 		Tags: tags,
 		Data: data,
 	}
+}
+
+func handleAliveNode(ctx sdkTypes.Context, k Keeper, msg MsgAliveNode) sdkTypes.Result {
+	var Data hubTypes.VpnDetails
+
+	vpnId := msg.From
+	vpnData, err := k.GetVpnDetails(ctx, vpnId)
+
+	if err != nil {
+		panic(err)
+	}
+
+	if vpnData != nil {
+		panic("Already registered")
+	}
+
+	err = json.Unmarshal(vpnData, &Data)
+
+	if err != nil {
+		panic(err)
+	}
+
+	err = k.SetAliveNode(ctx, vpnId, Data)
+
+	if err != nil {
+		panic(err)
+	}
+
+	return sdkTypes.Result{}
 }

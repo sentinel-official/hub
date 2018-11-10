@@ -35,7 +35,7 @@ func RegisterVpnCmd(cdc *codec.Codec) *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 
 			txBldr := authtxb.NewTxBuilderFromCLI().WithCodec(cdc)
-			CliCtx := context.NewCLIContext().WithCodec(cdc).WithAccountDecoder(authCmd.GetAccountDecoder(cdc))
+			cliCtx := context.NewCLIContext().WithCodec(cdc).WithAccountDecoder(authCmd.GetAccountDecoder(cdc))
 
 			ip := viper.GetString(FlagIP)
 			port := viper.GetString(FlagPort)
@@ -50,17 +50,17 @@ func RegisterVpnCmd(cdc *codec.Codec) *cobra.Command {
 			enc_method := viper.GetString(FlagEncMethod)
 			version := viper.GetString(FlagVersion)
 
-			if err := CliCtx.EnsureAccountExists(); err != nil {
+			if err := cliCtx.EnsureAccountExists(); err != nil {
 				return err
 			}
 
-			from, err := CliCtx.GetFromAddress()
+			from, err := cliCtx.GetFromAddress()
 
 			if err != nil {
 				return err
 			}
 
-			account, err := CliCtx.GetAccount(from)
+			account, err := cliCtx.GetAccount(from)
 
 			if err != nil {
 				return err
@@ -77,13 +77,14 @@ func RegisterVpnCmd(cdc *codec.Codec) *cobra.Command {
 				return errors.Errorf("Address %s doesn't have enough coins to pay for this transaction.", from)
 			}
 
-			msg := vpn.NewRegisterVpnMsg(from, ip, port, coins, price_per_gb, upload, download, latitude, longitude, city, country, enc_method, version)
+			msg := vpn.NewRegisterVpnMsg(from, ip, port, coins, price_per_gb, upload, download, latitude, longitude,
+				city, country, enc_method, version)
 
-			if CliCtx.GenerateOnly {
-				return utils.PrintUnsignedStdTx(txBldr, CliCtx, []sdkTypes.Msg{msg}, false)
+			if cliCtx.GenerateOnly {
+				return utils.PrintUnsignedStdTx(txBldr, cliCtx, []sdkTypes.Msg{msg}, false)
 			}
 
-			return utils.CompleteAndBroadcastTxCli(txBldr, CliCtx, []sdkTypes.Msg{msg})
+			return utils.CompleteAndBroadcastTxCli(txBldr, cliCtx, []sdkTypes.Msg{msg})
 		},
 	}
 
