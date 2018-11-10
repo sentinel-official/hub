@@ -3,14 +3,14 @@ package ibc
 import (
 	"encoding/json"
 
-	csdkTypes "github.com/cosmos/cosmos-sdk/types"
-	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
+	ccsdkTypes "github.com/cosmos/cosmos-sdk/types"
+	csdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
 )
 
 type MsgIBCTransaction struct {
-	Relayer   csdkTypes.AccAddress `json:"relayer"`
-	Sequence  int64                `json:"sequence"`
-	IBCPacket sdkTypes.IBCPacket   `json:"ibc_packet"`
+	Relayer   ccsdkTypes.AccAddress `json:"relayer"`
+	Sequence  int64                 `json:"sequence"`
+	IBCPacket csdkTypes.IBCPacket   `json:"ibc_packet"`
 }
 
 func (msg MsgIBCTransaction) Route() string {
@@ -21,12 +21,12 @@ func (msg MsgIBCTransaction) Type() string {
 	return "msg_ibc_transaction"
 }
 
-func (msg MsgIBCTransaction) ValidateBasic() csdkTypes.Error {
+func (msg MsgIBCTransaction) ValidateBasic() ccsdkTypes.Error {
 	return nil
 }
 
-func (msg MsgIBCTransaction) GetSigners() []csdkTypes.AccAddress {
-	return []csdkTypes.AccAddress{msg.Relayer}
+func (msg MsgIBCTransaction) GetSigners() []ccsdkTypes.AccAddress {
+	return []ccsdkTypes.AccAddress{msg.Relayer}
 }
 
 func (msg MsgIBCTransaction) GetSignBytes() []byte {

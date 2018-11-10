@@ -3,13 +3,13 @@ package ibc
 import (
 	"fmt"
 
-	csdkTypes "github.com/cosmos/cosmos-sdk/types"
-	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
+	ccsdkTypes "github.com/cosmos/cosmos-sdk/types"
+	csdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
 	"github.com/ironman0x7b2/sentinel-sdk/x/hub"
 )
 
-func NewHandler(ibc Keeper, hubKeeper hub.Keeper) csdkTypes.Handler {
-	return func(ctx csdkTypes.Context, msg csdkTypes.Msg) csdkTypes.Result {
+func NewHandler(ibc Keeper, hubKeeper hub.Keeper) ccsdkTypes.Handler {
+	return func(ctx ccsdkTypes.Context, msg ccsdkTypes.Msg) ccsdkTypes.Result {
 		switch msg := msg.(type) {
 		case MsgIBCTransaction:
 			switch ibcMsg := msg.IBCPacket.Message.(type) {
@@ -21,26 +21,26 @@ func NewHandler(ibc Keeper, hubKeeper hub.Keeper) csdkTypes.Handler {
 				return handleReleaseCoinsToMany(ctx, ibc, hubKeeper, ibcMsg)
 			default:
 				errMsg := fmt.Sprintf("Unrecognized IBC Msg : %v", ibcMsg)
-				return csdkTypes.ErrUnknownRequest(errMsg).Result()
+				return ccsdkTypes.ErrUnknownRequest(errMsg).Result()
 			}
 		default:
 			errMsg := fmt.Sprintf("Unrecognized Msg type: %v", msg.Type())
-			return csdkTypes.ErrUnknownRequest(errMsg).Result()
+			return ccsdkTypes.ErrUnknownRequest(errMsg).Result()
 		}
 	}
 }
 
-func handleLockCoins(ctx csdkTypes.Context, ibc Keeper, hubKeeper hub.Keeper, ibcMsg IBCMsgLockCoins) csdkTypes.Result {
+func handleLockCoins(ctx ccsdkTypes.Context, ibc Keeper, hubKeeper hub.Keeper, ibcMsg IBCMsgLockCoins) ccsdkTypes.Result {
 	msg := ibcMsg.Message
 	locker := hubKeeper.GetLocker(ctx, msg.LockerId)
 
 	if locker != nil {
-		return csdkTypes.Result{}
+		return ccsdkTypes.Result{}
 	}
 
 	hubKeeper.LockCoins(ctx, msg.LockerId, msg.Address, msg.Coins)
 
-	ibcPacket := sdkTypes.IBCPacket{
+	ibcPacket := csdkTypes.IBCPacket{
 		SrcChainId:  ibcMsg.DestChainId,
 		DestChainId: ibcMsg.SrcChainId,
 		Message: hub.MsgCoinLocker{
@@ -55,20 +55,20 @@ func handleLockCoins(ctx csdkTypes.Context, ibc Keeper, hubKeeper hub.Keeper, ib
 		panic(err)
 	}
 
-	return csdkTypes.Result{}
+	return ccsdkTypes.Result{}
 }
 
-func handleReleaseCoins(ctx csdkTypes.Context, ibc Keeper, hubKeeper hub.Keeper, ibcMsg IBCMsgReleaseCoins) csdkTypes.Result {
+func handleReleaseCoins(ctx ccsdkTypes.Context, ibc Keeper, hubKeeper hub.Keeper, ibcMsg IBCMsgReleaseCoins) ccsdkTypes.Result {
 	msg := ibcMsg.Message
 	locker := hubKeeper.GetLocker(ctx, msg.LockerId)
 
 	if locker == nil {
-		return csdkTypes.Result{}
+		return ccsdkTypes.Result{}
 	}
 
 	hubKeeper.ReleaseCoins(ctx, msg.LockerId)
 
-	ibcPacket := sdkTypes.IBCPacket{
+	ibcPacket := csdkTypes.IBCPacket{
 		SrcChainId:  ibcMsg.DestChainId,
 		DestChainId: ibcMsg.SrcChainId,
 		Message: hub.MsgCoinLocker{
@@ -83,20 +83,20 @@ func handleReleaseCoins(ctx csdkTypes.Context, ibc Keeper, hubKeeper hub.Keeper,
 		panic(err)
 	}
 
-	return csdkTypes.Result{}
+	return ccsdkTypes.Result{}
 }
 
-func handleReleaseCoinsToMany(ctx csdkTypes.Context, ibc Keeper, hubKeeper hub.Keeper, ibcMsg IBCMsgReleaseCoinsToMany) csdkTypes.Result {
+func handleReleaseCoinsToMany(ctx ccsdkTypes.Context, ibc Keeper, hubKeeper hub.Keeper, ibcMsg IBCMsgReleaseCoinsToMany) ccsdkTypes.Result {
 	msg := ibcMsg.Message
 	locker := hubKeeper.GetLocker(ctx, msg.LockerId)
 
 	if locker == nil {
-		return csdkTypes.Result{}
+		return ccsdkTypes.Result{}
 	}
 
 	hubKeeper.ReleaseCoinsToMany(ctx, msg.LockerId, msg.Addresses, msg.Shares)
 
-	ibcPacket := sdkTypes.IBCPacket{
+	ibcPacket := csdkTypes.IBCPacket{
 		SrcChainId:  ibcMsg.DestChainId,
 		DestChainId: ibcMsg.SrcChainId,
 		Message: hub.MsgCoinLocker{
@@ -111,5 +111,5 @@ func handleReleaseCoinsToMany(ctx csdkTypes.Context, ibc Keeper, hubKeeper hub.K
 		panic(err)
 	}
 
-	return csdkTypes.Result{}
+	return ccsdkTypes.Result{}
 }
