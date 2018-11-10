@@ -11,8 +11,6 @@ import (
 	authCli "github.com/cosmos/cosmos-sdk/x/auth/client/cli"
 	bankCli "github.com/cosmos/cosmos-sdk/x/bank/client/cli"
 	ibcCli "github.com/cosmos/cosmos-sdk/x/ibc/client/cli"
-	slashingCli "github.com/cosmos/cosmos-sdk/x/slashing/client/cli"
-	stakeCli "github.com/cosmos/cosmos-sdk/x/stake/client/cli"
 	"github.com/ironman0x7b2/sentinel-sdk/app"
 	"github.com/ironman0x7b2/sentinel-sdk/types"
 	"github.com/spf13/cobra"

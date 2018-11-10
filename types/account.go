@@ -2,7 +2,7 @@ package types
 
 import (
 	"github.com/cosmos/cosmos-sdk/codec"
-	csdkTypes "github.com/cosmos/cosmos-sdk/types"
+	ccsdkTypes "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 )
 
@@ -32,7 +32,7 @@ func NewAppAccount(name string, baseAcct auth.BaseAccount) *AppAccount {
 func GetAccountDecoder(cdc *codec.Codec) auth.AccountDecoder {
 	return func(accBytes []byte) (auth.Account, error) {
 		if len(accBytes) == 0 {
-			return nil, csdkTypes.ErrTxDecode("accBytes are empty")
+			return nil, ccsdkTypes.ErrTxDecode("accBytes are empty")
 		}
 
 		acct := new(AppAccount)
@@ -50,9 +50,9 @@ type GenesisState struct {
 }
 
 type GenesisAccount struct {
-	Name    string               `json:"name"`
-	Address csdkTypes.AccAddress `json:"address"`
-	Coins   csdkTypes.Coins      `json:"coins"`
+	Name    string                `json:"name"`
+	Address ccsdkTypes.AccAddress `json:"address"`
+	Coins   ccsdkTypes.Coins      `json:"coins"`
 }
 
 func NewGenesisAccount(aa *AppAccount) *GenesisAccount {

@@ -3,22 +3,22 @@ package vpn
 import (
 	"encoding/json"
 
-	sdkTypes "github.com/cosmos/cosmos-sdk/types"
-	hubTypes "github.com/ironman0x7b2/sentinel-hub/types"
+	csdkTypes "github.com/cosmos/cosmos-sdk/types"
+	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
 )
 
 type Keeper struct {
-	VpnStoreKey sdkTypes.StoreKey
+	VpnStoreKey csdkTypes.StoreKey
 }
 
-func NewKeeper(vpnKey sdkTypes.StoreKey) Keeper {
+func NewKeeper(vpnKey csdkTypes.StoreKey) Keeper {
 
 	return Keeper{
 		VpnStoreKey: vpnKey,
 	}
 }
 
-func (k Keeper) SetVpnDetails(ctx sdkTypes.Context, vpnId sdkTypes.AccAddress, vpnDetails hubTypes.VpnDetails) error {
+func (k Keeper) SetVpnDetails(ctx csdkTypes.Context, vpnId csdkTypes.AccAddress, vpnDetails sdkTypes.VpnDetails) error {
 
 	vpnStore := ctx.KVStore(k.VpnStoreKey)
 	vpnIdBytes := []byte(vpnId)
@@ -34,7 +34,7 @@ func (k Keeper) SetVpnDetails(ctx sdkTypes.Context, vpnId sdkTypes.AccAddress, v
 	return nil
 }
 
-func (k Keeper) GetVpnDetails(ctx sdkTypes.Context, vpnId sdkTypes.AccAddress) ([]byte, error) {
+func (k Keeper) GetVpnDetails(ctx csdkTypes.Context, vpnId csdkTypes.AccAddress) ([]byte, error) {
 
 	store := ctx.KVStore(k.VpnStoreKey)
 	vpnIdBytes := []byte(vpnId)
@@ -43,7 +43,7 @@ func (k Keeper) GetVpnDetails(ctx sdkTypes.Context, vpnId sdkTypes.AccAddress) (
 	return vpnDetailsBytes, nil
 }
 
-func (k Keeper) SetVpnStatus(ctx sdkTypes.Context, vpnId sdkTypes.AccAddress, vpnDetails hubTypes.VpnDetails) error {
+func (k Keeper) SetVpnStatus(ctx csdkTypes.Context, vpnId csdkTypes.AccAddress, vpnDetails sdkTypes.VpnDetails) error {
 	store := ctx.KVStore(k.VpnStoreKey)
 
 	vpnDetails.Info.Status = true

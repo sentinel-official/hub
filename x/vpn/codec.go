@@ -2,7 +2,7 @@ package vpn
 
 import (
 	"github.com/cosmos/cosmos-sdk/codec"
-	"github.com/ironman0x7b2/sentinel-hub/types"
+	"github.com/ironman0x7b2/sentinel-sdk/types"
 )
 
 func RegisterCodec(cdc *codec.Codec) {

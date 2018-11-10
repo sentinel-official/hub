@@ -5,13 +5,13 @@ import (
 	"reflect"
 
 	"github.com/cosmos/cosmos-sdk/codec"
-	sdkTypes "github.com/cosmos/cosmos-sdk/types"
-	hubTypes "github.com/ironman0x7b2/sentinel-hub/types"
-	"github.com/ironman0x7b2/sentinel-hub/x/ibc"
+	csdkTypes "github.com/cosmos/cosmos-sdk/types"
+	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
+	"github.com/ironman0x7b2/sentinel-sdk/x/ibc"
 )
 
-func NewHandler(k Keeper, im ibc.Keeper) sdkTypes.Handler {
-	return func(ctx sdkTypes.Context, msg sdkTypes.Msg) sdkTypes.Result {
+func NewHandler(k Keeper, im ibc.Keeper) csdkTypes.Handler {
+	return func(ctx csdkTypes.Context, msg csdkTypes.Msg) csdkTypes.Result {
 		switch msg := msg.(type) {
 		case MsgRegisterVpn:
 			return handleRegisterVpn(ctx, k, im, msg)
@@ -20,12 +20,12 @@ func NewHandler(k Keeper, im ibc.Keeper) sdkTypes.Handler {
 		default:
 			errMsg := "Unrecognized vpn Msg type: " + reflect.TypeOf(msg).Name()
 
-			return sdkTypes.ErrUnknownRequest(errMsg).Result()
+			return csdkTypes.ErrUnknownRequest(errMsg).Result()
 		}
 	}
 }
 
-func handleRegisterVpn(ctx sdkTypes.Context, k Keeper, ik ibc.Keeper, msg MsgRegisterVpn) sdkTypes.Result {
+func handleRegisterVpn(ctx csdkTypes.Context, k Keeper, ik ibc.Keeper, msg MsgRegisterVpn) csdkTypes.Result {
 
 	vpnId := msg.From
 	cdc := codec.New()
@@ -45,10 +45,10 @@ func handleRegisterVpn(ctx sdkTypes.Context, k Keeper, ik ibc.Keeper, msg MsgReg
 		panic(err)
 	}
 
-	ibcPacket := hubTypes.IBCPacket{
+	ibcPacket := sdkTypes.IBCPacket{
 		SrcChainId:  "vpn",
 		DestChainId: "Sentinel-hub",
-		Message: hubTypes.IBCMsgRegisterVpn{
+		Message: sdkTypes.IBCMsgRegisterVpn{
 			VpnId:   vpnId,
 			Address: msg.From,
 			Coins:   msg.Coins,
@@ -61,17 +61,17 @@ func handleRegisterVpn(ctx sdkTypes.Context, k Keeper, ik ibc.Keeper, msg MsgReg
 		panic(err)
 	}
 
-	tags := sdkTypes.NewTags("Registered Vpn address:", []byte(msg.From.String()))
+	tags := csdkTypes.NewTags("Registered Vpn address:", []byte(msg.From.String()))
 	data, _ := cdc.MarshalJSON(msg)
 
-	return sdkTypes.Result{
+	return csdkTypes.Result{
 		Tags: tags,
 		Data: data,
 	}
 }
 
-func handleAliveNode(ctx sdkTypes.Context, k Keeper, msg MsgAliveNode) sdkTypes.Result {
-	var Data hubTypes.VpnDetails
+func handleAliveNode(ctx csdkTypes.Context, k Keeper, msg MsgAliveNode) csdkTypes.Result {
+	var Data sdkTypes.VpnDetails
 
 	vpnId := msg.From
 	vpnData, err := k.GetVpnDetails(ctx, vpnId)
@@ -96,5 +96,5 @@ func handleAliveNode(ctx sdkTypes.Context, k Keeper, msg MsgAliveNode) sdkTypes.
 		panic(err)
 	}
 
-	return sdkTypes.Result{}
+	return csdkTypes.Result{}
 }

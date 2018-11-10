@@ -4,10 +4,10 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/client/utils"
 	"github.com/cosmos/cosmos-sdk/codec"
-	sdkTypes "github.com/cosmos/cosmos-sdk/types"
+	csdkTypes "github.com/cosmos/cosmos-sdk/types"
 	authCmd "github.com/cosmos/cosmos-sdk/x/auth/client/cli"
 	authtxb "github.com/cosmos/cosmos-sdk/x/auth/client/txbuilder"
-	"github.com/ironman0x7b2/sentinel-hub/x/vpn"
+	"github.com/ironman0x7b2/sentinel-sdk/x/vpn"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -66,7 +66,7 @@ func RegisterVpnCmd(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			coins, err := sdkTypes.ParseCoins(amount)
+			coins, err := csdkTypes.ParseCoins(amount)
 
 			if err != nil {
 				return err
@@ -81,10 +81,10 @@ func RegisterVpnCmd(cdc *codec.Codec) *cobra.Command {
 				city, country, enc_method, version)
 
 			if cliCtx.GenerateOnly {
-				return utils.PrintUnsignedStdTx(txBldr, cliCtx, []sdkTypes.Msg{msg}, false)
+				return utils.PrintUnsignedStdTx(txBldr, cliCtx, []csdkTypes.Msg{msg}, false)
 			}
 
-			return utils.CompleteAndBroadcastTxCli(txBldr, cliCtx, []sdkTypes.Msg{msg})
+			return utils.CompleteAndBroadcastTxCli(txBldr, cliCtx, []csdkTypes.Msg{msg})
 		},
 	}
 

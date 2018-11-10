@@ -5,7 +5,7 @@ import (
 	"os"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
-	csdkTypes "github.com/cosmos/cosmos-sdk/types"
+	ccsdkTypes "github.com/cosmos/cosmos-sdk/types"
 	"github.com/tendermint/tendermint/libs/common"
 
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -30,9 +30,9 @@ type SentinelHub struct {
 	*baseapp.BaseApp
 	cdc *codec.Codec
 
-	keyMain    *csdkTypes.KVStoreKey
-	keyAccount *csdkTypes.KVStoreKey
-	keyIBC     *csdkTypes.KVStoreKey
+	keyMain    *ccsdkTypes.KVStoreKey
+	keyAccount *ccsdkTypes.KVStoreKey
+	keyIBC     *ccsdkTypes.KVStoreKey
 
 	accountKeeper       auth.AccountKeeper
 	feeCollectionKeeper auth.FeeCollectionKeeper
@@ -47,9 +47,9 @@ func NewSentinelHub(logger log.Logger, db tmDb.DB, baseAppOptions ...func(*basea
 	var app = &SentinelHub{
 		cdc:        cdc,
 		BaseApp:    baseapp.NewBaseApp(appName, logger, db, auth.DefaultTxDecoder(cdc), baseAppOptions...),
-		keyMain:    csdkTypes.NewKVStoreKey("main"),
-		keyAccount: csdkTypes.NewKVStoreKey("acc"),
-		keyIBC:     csdkTypes.NewKVStoreKey("ibc"),
+		keyMain:    ccsdkTypes.NewKVStoreKey("main"),
+		keyAccount: ccsdkTypes.NewKVStoreKey("acc"),
+		keyIBC:     ccsdkTypes.NewKVStoreKey("ibc"),
 	}
 
 	app.accountKeeper = auth.NewAccountKeeper(
@@ -88,7 +88,7 @@ func MakeCodec() *codec.Codec {
 	cdc := codec.New()
 
 	codec.RegisterCrypto(cdc)
-	csdkTypes.RegisterCodec(cdc)
+	ccsdkTypes.RegisterCodec(cdc)
 	bank.RegisterCodec(cdc)
 	ibc.RegisterCodec(cdc)
 	auth.RegisterCodec(cdc)
@@ -101,15 +101,15 @@ func MakeCodec() *codec.Codec {
 	return cdc
 }
 
-func (app *SentinelHub) BeginBlocker(_ csdkTypes.Context, _ abciTypes.RequestBeginBlock) abciTypes.ResponseBeginBlock {
+func (app *SentinelHub) BeginBlocker(_ ccsdkTypes.Context, _ abciTypes.RequestBeginBlock) abciTypes.ResponseBeginBlock {
 	return abciTypes.ResponseBeginBlock{}
 }
 
-func (app *SentinelHub) EndBlocker(_ csdkTypes.Context, _ abciTypes.RequestEndBlock) abciTypes.ResponseEndBlock {
+func (app *SentinelHub) EndBlocker(_ ccsdkTypes.Context, _ abciTypes.RequestEndBlock) abciTypes.ResponseEndBlock {
 	return abciTypes.ResponseEndBlock{}
 }
 
-func (app *SentinelHub) initChainer(ctx csdkTypes.Context, req abciTypes.RequestInitChain) abciTypes.ResponseInitChain {
+func (app *SentinelHub) initChainer(ctx ccsdkTypes.Context, req abciTypes.RequestInitChain) abciTypes.ResponseInitChain {
 	stateJSON := req.AppStateBytes
 
 	genesisState := new(types.GenesisState)
