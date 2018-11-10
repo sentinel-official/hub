@@ -13,6 +13,13 @@ type Keeper struct {
 	cdc    *codec.Codec
 }
 
+func NewKeeper(ibcKey sdkTypes.StoreKey, cdc *codec.Codec) Keeper {
+	return Keeper{
+		IBCKey: ibcKey,
+		cdc:    cdc,
+	}
+}
+
 func (ibc Keeper) PostIBCPacket(ctx sdkTypes.Context, packet hubTypes.IBCPacket) sdkTypes.Error {
 	store := ctx.KVStore(ibc.IBCKey)
 	index := ibc.getEgressLength(store, packet.DestChainId)
