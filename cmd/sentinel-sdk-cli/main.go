@@ -11,15 +11,16 @@ import (
 	authCli "github.com/cosmos/cosmos-sdk/x/auth/client/cli"
 	bankCli "github.com/cosmos/cosmos-sdk/x/bank/client/cli"
 	ibcCli "github.com/cosmos/cosmos-sdk/x/ibc/client/cli"
-	"github.com/ironman0x7b2/sentinel-hub/app"
-	"github.com/ironman0x7b2/sentinel-hub/types"
-	vpnCli "github.com/ironman0x7b2/sentinel-hub/x/vpn/client/cli"
+	slashingCli "github.com/cosmos/cosmos-sdk/x/slashing/client/cli"
+	stakeCli "github.com/cosmos/cosmos-sdk/x/stake/client/cli"
+	"github.com/ironman0x7b2/sentinel-sdk/app"
+	"github.com/ironman0x7b2/sentinel-sdk/types"
 	"github.com/spf13/cobra"
 	"github.com/tendermint/tendermint/libs/cli"
 )
 
 var rootCmd = &cobra.Command{
-	Use:   "sentinel-hub-cli",
+	Use:   "sentinel-sdk-cli",
 	Short: "Sentinel Hub light-client",
 }
 

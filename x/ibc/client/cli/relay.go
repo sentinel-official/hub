@@ -7,12 +7,12 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/client/keys"
 	"github.com/cosmos/cosmos-sdk/codec"
-	sdkTypes "github.com/cosmos/cosmos-sdk/types"
+	csdkTypes "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	authCli "github.com/cosmos/cosmos-sdk/x/auth/client/cli"
 	authTxBuilder "github.com/cosmos/cosmos-sdk/x/auth/client/txbuilder"
-	"github.com/ironman0x7b2/sentinel-hub/types"
-	"github.com/ironman0x7b2/sentinel-hub/x/ibc"
+	"github.com/ironman0x7b2/sentinel-sdk/types"
+	"github.com/ironman0x7b2/sentinel-sdk/x/ibc"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"github.com/tendermint/tendermint/libs/log"
@@ -29,7 +29,7 @@ type relayCommander struct {
 	cdc        *codec.Codec
 	accDecoder auth.AccountDecoder
 
-	address     sdkTypes.AccAddress
+	address     csdkTypes.AccAddress
 	ibcStoreKey string
 	accStoreKey string
 
@@ -205,7 +205,7 @@ func (c relayCommander) refine(bz []byte, sequence int64, passphrase string) []b
 		panic(err)
 	}
 
-	res, err := txBuilder.BuildAndSign(name, passphrase, []sdkTypes.Msg{msg})
+	res, err := txBuilder.BuildAndSign(name, passphrase, []csdkTypes.Msg{msg})
 
 	if err != nil {
 		panic(err)

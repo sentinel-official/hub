@@ -5,15 +5,14 @@ import (
 	"os"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
-	sdkTypes "github.com/cosmos/cosmos-sdk/types"
-	"github.com/ironman0x7b2/sentinel-hub/x/vpn"
+	csdkTypes "github.com/cosmos/cosmos-sdk/types"
 	"github.com/tendermint/tendermint/libs/common"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/cosmos/cosmos-sdk/x/bank"
 	"github.com/cosmos/cosmos-sdk/x/ibc"
-	"github.com/ironman0x7b2/sentinel-hub/types"
+	"github.com/ironman0x7b2/sentinel-sdk/types"
 	abciTypes "github.com/tendermint/tendermint/abci/types"
 	tmDb "github.com/tendermint/tendermint/libs/db"
 	"github.com/tendermint/tendermint/libs/log"
@@ -23,18 +22,17 @@ import (
 const appName = "Sentinel Hub"
 
 var (
-	DefaultCLIHome  = os.ExpandEnv("$HOME/.sentinel-hub-cli")
-	DefaultNodeHome = os.ExpandEnv("$HOME/.sentinel-hubd")
+	DefaultCLIHome  = os.ExpandEnv("$HOME/.sentinel-sdk-cli")
+	DefaultNodeHome = os.ExpandEnv("$HOME/.sentinel-sdkd")
 )
 
 type SentinelHub struct {
 	*baseapp.BaseApp
 	cdc *codec.Codec
 
-	keyMain    *sdkTypes.KVStoreKey
-	keyAccount *sdkTypes.KVStoreKey
-	keyIBC     *sdkTypes.KVStoreKey
-	keyVpn     *sdkTypes.KVStoreKey
+	keyMain    *csdkTypes.KVStoreKey
+	keyAccount *csdkTypes.KVStoreKey
+	keyIBC     *csdkTypes.KVStoreKey
 
 	accountKeeper       auth.AccountKeeper
 	feeCollectionKeeper auth.FeeCollectionKeeper
@@ -49,10 +47,9 @@ func NewSentinelHub(logger log.Logger, db tmDb.DB, baseAppOptions ...func(*basea
 	var app = &SentinelHub{
 		cdc:        cdc,
 		BaseApp:    baseapp.NewBaseApp(appName, logger, db, auth.DefaultTxDecoder(cdc), baseAppOptions...),
-		keyMain:    sdkTypes.NewKVStoreKey("main"),
-		keyAccount: sdkTypes.NewKVStoreKey("acc"),
-		keyIBC:     sdkTypes.NewKVStoreKey("ibc"),
-		keyVpn:     sdkTypes.NewKVStoreKey("vpn"),
+		keyMain:    csdkTypes.NewKVStoreKey("main"),
+		keyAccount: csdkTypes.NewKVStoreKey("acc"),
+		keyIBC:     csdkTypes.NewKVStoreKey("ibc"),
 	}
 
 	app.accountKeeper = auth.NewAccountKeeper(
@@ -91,28 +88,28 @@ func MakeCodec() *codec.Codec {
 	cdc := codec.New()
 
 	codec.RegisterCrypto(cdc)
-	sdkTypes.RegisterCodec(cdc)
+	csdkTypes.RegisterCodec(cdc)
 	bank.RegisterCodec(cdc)
 	ibc.RegisterCodec(cdc)
 	auth.RegisterCodec(cdc)
 	vpn.RegisterCodec(cdc)
 
-	cdc.RegisterConcrete(&types.AppAccount{}, "sentinel-hub/Account", nil)
+	cdc.RegisterConcrete(&types.AppAccount{}, "sentinel-sdk/Account", nil)
 
 	cdc.Seal()
 
 	return cdc
 }
 
-func (app *SentinelHub) BeginBlocker(_ sdkTypes.Context, _ abciTypes.RequestBeginBlock) abciTypes.ResponseBeginBlock {
+func (app *SentinelHub) BeginBlocker(_ csdkTypes.Context, _ abciTypes.RequestBeginBlock) abciTypes.ResponseBeginBlock {
 	return abciTypes.ResponseBeginBlock{}
 }
 
-func (app *SentinelHub) EndBlocker(_ sdkTypes.Context, _ abciTypes.RequestEndBlock) abciTypes.ResponseEndBlock {
+func (app *SentinelHub) EndBlocker(_ csdkTypes.Context, _ abciTypes.RequestEndBlock) abciTypes.ResponseEndBlock {
 	return abciTypes.ResponseEndBlock{}
 }
 
-func (app *SentinelHub) initChainer(ctx sdkTypes.Context, req abciTypes.RequestInitChain) abciTypes.ResponseInitChain {
+func (app *SentinelHub) initChainer(ctx csdkTypes.Context, req abciTypes.RequestInitChain) abciTypes.ResponseInitChain {
 	stateJSON := req.AppStateBytes
 
 	genesisState := new(types.GenesisState)

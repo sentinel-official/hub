@@ -1,6 +1,6 @@
 package ibc
 
-import "github.com/ironman0x7b2/sentinel-hub/x/hub"
+import "github.com/ironman0x7b2/sentinel-sdk/x/hub"
 
 type IBCMsgCoinLocker struct {
 	SrcChainId  string            `json:"src_chain_id"`
