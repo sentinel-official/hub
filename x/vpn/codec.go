@@ -8,7 +8,7 @@ import (
 func RegisterCodec(cdc *codec.Codec) {
 	cdc.RegisterConcrete(MsgRegisterVpn{}, "vpn/register", nil)
 	cdc.RegisterConcrete(MsgAliveNode{}, "vpn/AliveNode", nil)
-	cdc.RegisterConcrete(types.IBCMsgRegisterVpn{},"vpn/ibc",nil)
+	cdc.RegisterConcrete(types.IBCMsgRegisterVpn{}, "vpn/ibc", nil)
 }
 
 var msgCdc = codec.New()

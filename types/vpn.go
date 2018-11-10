@@ -33,7 +33,7 @@ type VpnIBCPacket struct {
 }
 
 type Info struct {
-	Status bool
+	Status      bool
 	BlockHeight int64
 }
 

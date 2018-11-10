@@ -1,32 +1,28 @@
 package vpn
 
 import (
+	"encoding/json"
 	"reflect"
+
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdkTypes "github.com/cosmos/cosmos-sdk/types"
 	hubTypes "github.com/ironman0x7b2/sentinel-hub/types"
 	"github.com/ironman0x7b2/sentinel-hub/x/ibc"
-	"encoding/json"
 )
 
 func NewHandler(k Keeper, im ibc.Keeper) sdkTypes.Handler {
-
 	return func(ctx sdkTypes.Context, msg sdkTypes.Msg) sdkTypes.Result {
-
 		switch msg := msg.(type) {
-
 		case MsgRegisterVpn:
 			return handleRegisterVpn(ctx, k, im, msg)
 		case MsgAliveNode:
 			return handleAliveNode(ctx, k, msg)
 		default:
 			errMsg := "Unrecognized vpn Msg type: " + reflect.TypeOf(msg).Name()
+
 			return sdkTypes.ErrUnknownRequest(errMsg).Result()
-
 		}
-
 	}
-
 }
 
 func handleRegisterVpn(ctx sdkTypes.Context, k Keeper, ik ibc.Keeper, msg MsgRegisterVpn) sdkTypes.Result {
@@ -94,7 +90,7 @@ func handleAliveNode(ctx sdkTypes.Context, k Keeper, msg MsgAliveNode) sdkTypes.
 		panic(err)
 	}
 
-	err = k.SetAliveNode(ctx, vpnId, Data)
+	err = k.SetVpnStatus(ctx, vpnId, Data)
 
 	if err != nil {
 		panic(err)
