@@ -11,7 +11,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	authCli "github.com/cosmos/cosmos-sdk/x/auth/client/cli"
 	authTxBuilder "github.com/cosmos/cosmos-sdk/x/auth/client/txbuilder"
-	hubTypes "github.com/ironman0x7b2/sentinel-hub/types"
+	"github.com/ironman0x7b2/sentinel-hub/types"
 	"github.com/ironman0x7b2/sentinel-hub/x/ibc"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -186,16 +186,16 @@ func (c relayCommander) getSequence(nodeURI string) int64 {
 }
 
 func (c relayCommander) refine(bz []byte, sequence int64, passphrase string) []byte {
-	var packet hubTypes.IBCPacket
+	var packet types.IBCPacket
 
 	if err := c.cdc.UnmarshalBinary(bz, &packet); err != nil {
 		panic(err)
 	}
 
-	msg := ibc.MsgIBCReceive{
-		IBCPacket: packet,
+	msg := ibc.MsgIBCTransaction{
 		Relayer:   c.address,
 		Sequence:  sequence,
+		IBCPacket: packet,
 	}
 	txBuilder := authTxBuilder.NewTxBuilderFromCLI().WithSequence(sequence).WithCodec(c.cdc)
 	cliCtx := context.NewCLIContext()
