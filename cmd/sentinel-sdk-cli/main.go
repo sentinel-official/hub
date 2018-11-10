@@ -13,6 +13,7 @@ import (
 	ibcCli "github.com/cosmos/cosmos-sdk/x/ibc/client/cli"
 	"github.com/ironman0x7b2/sentinel-sdk/app"
 	"github.com/ironman0x7b2/sentinel-sdk/types"
+	vpnCli "github.com/ironman0x7b2/sentinel-sdk/x/vpn/client/cli"
 	"github.com/spf13/cobra"
 	"github.com/tendermint/tendermint/libs/cli"
 )

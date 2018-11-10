@@ -5,8 +5,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/utils"
 	"github.com/cosmos/cosmos-sdk/codec"
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
-	authCmd "github.com/cosmos/cosmos-sdk/x/auth/client/cli"
-	authtxb "github.com/cosmos/cosmos-sdk/x/auth/client/txbuilder"
+	authCli "github.com/cosmos/cosmos-sdk/x/auth/client/cli"
+	authTxBuilder "github.com/cosmos/cosmos-sdk/x/auth/client/txbuilder"
 	"github.com/ironman0x7b2/sentinel-sdk/x/vpn"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
@@ -21,7 +21,7 @@ const (
 	FlagDownloadSpeed     = "download"
 	FlagPricePerGB        = "price-per-gb"
 	FlagLocationLatitude  = "latitude"
-	FlagLocationLongitude = "logitude"
+	FlagLocationLongitude = "longitude"
 	FlagLocationCity      = "city"
 	FlagLocationCountry   = "country"
 	FlagEncMethod         = "enc-method"
@@ -34,20 +34,20 @@ func RegisterVpnCmd(cdc *codec.Codec) *cobra.Command {
 		Short: "Register for sentinel vpn service",
 		RunE: func(cmd *cobra.Command, args []string) error {
 
-			txBldr := authtxb.NewTxBuilderFromCLI().WithCodec(cdc)
-			cliCtx := context.NewCLIContext().WithCodec(cdc).WithAccountDecoder(authCmd.GetAccountDecoder(cdc))
+			txBldr := authTxBuilder.NewTxBuilderFromCLI().WithCodec(cdc)
+			cliCtx := context.NewCLIContext().WithCodec(cdc).WithAccountDecoder(authCli.GetAccountDecoder(cdc))
 
 			ip := viper.GetString(FlagIP)
 			port := viper.GetString(FlagPort)
 			amount := viper.GetString(FlagAmount)
-			price_per_gb := viper.GetInt64(FlagPricePerGB)
+			pricePerGb := viper.GetInt64(FlagPricePerGB)
 			upload := viper.GetInt64(FlagUploadSpeed)
 			download := viper.GetInt64(FlagDownloadSpeed)
 			latitude := viper.GetInt64(FlagLocationLatitude)
 			longitude := viper.GetInt64(FlagLocationLongitude)
 			city := viper.GetString(FlagLocationCity)
 			country := viper.GetString(FlagLocationCountry)
-			enc_method := viper.GetString(FlagEncMethod)
+			encMethod := viper.GetString(FlagEncMethod)
 			version := viper.GetString(FlagVersion)
 
 			if err := cliCtx.EnsureAccountExists(); err != nil {
@@ -77,8 +77,8 @@ func RegisterVpnCmd(cdc *codec.Codec) *cobra.Command {
 				return errors.Errorf("Address %s doesn't have enough coins to pay for this transaction.", from)
 			}
 
-			msg := vpn.NewRegisterVpnMsg(from, ip, port, coins, price_per_gb, upload, download, latitude, longitude,
-				city, country, enc_method, version)
+			msg := vpn.NewRegisterVpnMsg(from, ip, port, coins, pricePerGb, upload, download, latitude, longitude,
+				city, country, encMethod, version)
 
 			if cliCtx.GenerateOnly {
 				return utils.PrintUnsignedStdTx(txBldr, cliCtx, []csdkTypes.Msg{msg}, false)

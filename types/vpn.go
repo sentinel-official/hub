@@ -1,6 +1,6 @@
 package types
 
-import csdkTypes "github.com/cosmos/cosmos-sdk/types"
+import sdkTypes "github.com/cosmos/cosmos-sdk/types"
 
 type VpnDetails struct {
 	Ip         string
@@ -27,8 +27,8 @@ type Location struct {
 
 type VpnIBCPacket struct {
 	VpnId     string
-	Address   csdkTypes.AccAddress
-	Coin      csdkTypes.Coins
+	Address   sdkTypes.AccAddress
+	Coin      sdkTypes.Coins
 	DestChain string
 }
 
@@ -38,7 +38,7 @@ type Info struct {
 }
 
 type IBCMsgRegisterVpn struct {
-	VpnId   csdkTypes.AccAddress
-	Address csdkTypes.AccAddress
-	Coins   csdkTypes.Coins
+	VpnId   sdkTypes.AccAddress
+	Address sdkTypes.AccAddress
+	Coins   sdkTypes.Coins
 }

@@ -4,13 +4,13 @@ import (
 	"encoding/json"
 
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
-	hubtypes "github.com/ironman0x7b2/sentinel-sdk/types"
+	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
 )
 
 type MsgRegisterVpn struct {
 	From    csdkTypes.AccAddress
 	Coins   csdkTypes.Coins
-	Details hubtypes.VpnDetails
+	Details sdkTypes.VpnDetails
 }
 
 func (msg MsgRegisterVpn) Type() string {
@@ -40,28 +40,28 @@ func (msg MsgRegisterVpn) Route() string {
 }
 
 func NewRegisterVpnMsg(from csdkTypes.AccAddress, ip string, port string, coins csdkTypes.Coins, pricePerGb int64, upload int64, download int64,
-	latitude int64, longitude int64, city string, country string, enc_method string, version string) *MsgRegisterVpn {
+	latitude int64, longitude int64, city string, country string, encMethod string, version string) *MsgRegisterVpn {
 
 	return &MsgRegisterVpn{
 		From:  from,
 		Coins: coins,
-		Details: hubtypes.VpnDetails{
+		Details: sdkTypes.VpnDetails{
 			Ip:         ip,
 			Port:       port,
 			PricePerGb: pricePerGb,
-			NetSpeed: hubtypes.NetSpeed{
+			NetSpeed: sdkTypes.NetSpeed{
 				Upload:   upload,
 				Download: download,
 			},
-			Location: hubtypes.Location{
+			Location: sdkTypes.Location{
 				Latitude:  latitude,
 				Longitude: longitude,
 				City:      city,
 				Country:   country,
 			},
 			Version:   version,
-			EncMethod: enc_method,
-			Info: hubtypes.Info{
+			EncMethod: encMethod,
+			Info: sdkTypes.Info{
 				Status:      false,
 				BlockHeight: 0,
 			},

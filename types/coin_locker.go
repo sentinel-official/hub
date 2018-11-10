@@ -1,11 +1,11 @@
 package types
 
 import (
-	ccsdkTypes "github.com/cosmos/cosmos-sdk/types"
+	csdkTypes "github.com/cosmos/cosmos-sdk/types"
 )
 
 type CoinLocker struct {
-	Address ccsdkTypes.AccAddress `json:"address"`
-	Coins   ccsdkTypes.Coins      `json:"coins"`
-	Locked  bool                  `json:"locked"`
+	Address csdkTypes.AccAddress `json:"address"`
+	Coins   csdkTypes.Coins      `json:"coins"`
+	Locked  bool                 `json:"locked"`
 }

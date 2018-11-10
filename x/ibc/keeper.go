@@ -4,23 +4,23 @@ import (
 	"fmt"
 
 	"github.com/cosmos/cosmos-sdk/codec"
-	ccsdkTypes "github.com/cosmos/cosmos-sdk/types"
-	csdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
+	csdkTypes "github.com/cosmos/cosmos-sdk/types"
+	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
 )
 
 type Keeper struct {
-	IBCKey ccsdkTypes.StoreKey
+	IBCKey csdkTypes.StoreKey
 	cdc    *codec.Codec
 }
 
-func NewKeeper(ibcKey ccsdkTypes.StoreKey, cdc *codec.Codec) Keeper {
+func NewKeeper(ibcKey csdkTypes.StoreKey, cdc *codec.Codec) Keeper {
 	return Keeper{
 		IBCKey: ibcKey,
 		cdc:    cdc,
 	}
 }
 
-func (ibc Keeper) PostIBCPacket(ctx ccsdkTypes.Context, packet csdkTypes.IBCPacket) ccsdkTypes.Error {
+func (ibc Keeper) PostIBCPacket(ctx csdkTypes.Context, packet sdkTypes.IBCPacket) csdkTypes.Error {
 	store := ctx.KVStore(ibc.IBCKey)
 	index := ibc.getEgressLength(store, packet.DestChainId)
 	bz, err := ibc.cdc.MarshalBinary(packet)
@@ -59,7 +59,7 @@ func unmarshalBinaryPanic(cdc *codec.Codec, bz []byte, ptr interface{}) {
 	}
 }
 
-func (ibc Keeper) getEgressLength(store ccsdkTypes.KVStore, destChain string) int64 {
+func (ibc Keeper) getEgressLength(store csdkTypes.KVStore, destChain string) int64 {
 	bz := store.Get(EgressLengthKey(destChain))
 
 	if bz == nil {

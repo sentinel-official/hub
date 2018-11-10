@@ -7,7 +7,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/client/keys"
 	"github.com/cosmos/cosmos-sdk/codec"
-	ccsdkTypes "github.com/cosmos/cosmos-sdk/types"
+	csdkTypes "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	authCli "github.com/cosmos/cosmos-sdk/x/auth/client/cli"
 	authTxBuilder "github.com/cosmos/cosmos-sdk/x/auth/client/txbuilder"
@@ -29,7 +29,7 @@ type relayCommander struct {
 	cdc        *codec.Codec
 	accDecoder auth.AccountDecoder
 
-	address     ccsdkTypes.AccAddress
+	address     csdkTypes.AccAddress
 	ibcStoreKey string
 	accStoreKey string
 
@@ -205,7 +205,7 @@ func (c relayCommander) refine(bz []byte, sequence int64, passphrase string) []b
 		panic(err)
 	}
 
-	res, err := txBuilder.BuildAndSign(name, passphrase, []ccsdkTypes.Msg{msg})
+	res, err := txBuilder.BuildAndSign(name, passphrase, []csdkTypes.Msg{msg})
 
 	if err != nil {
 		panic(err)

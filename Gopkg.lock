@@ -49,7 +49,7 @@
   revision = "d4cc87b860166d00d6b5b9e0d3b3d71d6088d4d4"
 
 [[projects]]
-  digest = "1:d0026643c30ee4ee1104c0dd139773c9890678456a5f6388a4da36afb652477b"
+  digest = "1:a1d51c94f2ca10678f6f8bbce55c18994da6507bdc4ce9d623b5f368df764185"
   name = "github.com/cosmos/cosmos-sdk"
   packages = [
     "baseapp",
@@ -98,7 +98,6 @@
     "x/params",
     "x/params/subspace",
     "x/slashing",
-    "x/slashing/client/cli",
     "x/slashing/client/rest",
     "x/stake",
     "x/stake/client/cli",
@@ -739,10 +738,7 @@
     "github.com/cosmos/cosmos-sdk/x/auth/client/txbuilder",
     "github.com/cosmos/cosmos-sdk/x/bank",
     "github.com/cosmos/cosmos-sdk/x/bank/client/cli",
-    "github.com/cosmos/cosmos-sdk/x/ibc",
     "github.com/cosmos/cosmos-sdk/x/ibc/client/cli",
-    "github.com/cosmos/cosmos-sdk/x/slashing/client/cli",
-    "github.com/cosmos/cosmos-sdk/x/stake/client/cli",
     "github.com/pkg/errors",
     "github.com/spf13/cobra",
     "github.com/spf13/viper",
