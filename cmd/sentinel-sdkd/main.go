@@ -15,7 +15,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/server"
-	"github.com/ironman0x7b2/sentinel-hub/app"
+	"github.com/ironman0x7b2/sentinel-sdk/app"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	abciTypes "github.com/tendermint/tendermint/abci/types"
@@ -32,7 +32,7 @@ func main() {
 	ctx := server.NewDefaultContext()
 
 	rootCmd := &cobra.Command{
-		Use:               "sentinel-hubd",
+		Use:               "sentinel-sdkd",
 		Short:             "Sentinel Hub Daemon (server)",
 		PersistentPreRunE: server.PersistentPreRunEFn(ctx),
 	}
@@ -44,7 +44,7 @@ func main() {
 	server.AddCommands(ctx, cdc, rootCmd, appInit,
 		newApp, exportAppStateAndTMValidators)
 
-	rootDir := os.ExpandEnv("$HOME/.sentinel-hubd")
+	rootDir := os.ExpandEnv("$HOME/.sentinel-sdkd")
 	executor := cli.PrepareBaseCmd(rootCmd, "BC", rootDir)
 
 	err := executor.Execute()

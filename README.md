@@ -1,1 +1,1 @@
-# sentinel-hub
+# sentinel-sdk
