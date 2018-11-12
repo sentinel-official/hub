@@ -1,7 +1,6 @@
 package ibc
 
 import (
-	"encoding/json"
 	"fmt"
 	"reflect"
 
@@ -22,7 +21,7 @@ func NewHandler(ibc Keeper, hubKeeper hub.Keeper) csdkTypes.Handler {
 			case hub.MsgReleaseCoinsToMany:
 				return handleReleaseCoinsToMany(ctx, ibc, hubKeeper, msg.IBCPacket)
 			default:
-				errMsg := fmt.Sprintf("Unrecognized IBC Msg : %v", reflect.TypeOf(ibcMsg))
+				errMsg := fmt.Sprintf("Unrecognized IBC Msg: %v", reflect.TypeOf(ibcMsg))
 				return csdkTypes.ErrUnknownRequest(errMsg).Result()
 			}
 		default:
@@ -33,11 +32,7 @@ func NewHandler(ibc Keeper, hubKeeper hub.Keeper) csdkTypes.Handler {
 }
 
 func handleLockCoins(ctx csdkTypes.Context, ibc Keeper, hubKeeper hub.Keeper, ibcPacket sdkTypes.IBCPacket) csdkTypes.Result {
-	var ibcMsg IBCMsgLockCoins
-	ibcPacketBytes, _ := json.Marshal(ibcPacket)
-	json.Unmarshal(ibcPacketBytes, &ibcMsg)
-
-	msg := ibcMsg.Message
+	msg, _ := ibcPacket.Message.(hub.MsgLockCoins)
 	locker := hubKeeper.GetLocker(ctx, msg.LockerId)
 
 	if locker != nil {
@@ -47,8 +42,8 @@ func handleLockCoins(ctx csdkTypes.Context, ibc Keeper, hubKeeper hub.Keeper, ib
 	hubKeeper.LockCoins(ctx, msg.LockerId, msg.Address, msg.Coins)
 
 	packet := sdkTypes.IBCPacket{
-		SrcChainId:  ibcMsg.DestChainId,
-		DestChainId: ibcMsg.SrcChainId,
+		SrcChainId:  ibcPacket.DestChainId,
+		DestChainId: ibcPacket.SrcChainId,
 		Message: hub.MsgCoinLocker{
 			LockerId: msg.LockerId,
 			Address:  msg.Address,
@@ -65,11 +60,7 @@ func handleLockCoins(ctx csdkTypes.Context, ibc Keeper, hubKeeper hub.Keeper, ib
 }
 
 func handleReleaseCoins(ctx csdkTypes.Context, ibc Keeper, hubKeeper hub.Keeper, ibcPacket sdkTypes.IBCPacket) csdkTypes.Result {
-	var ibcMsg IBCMsgReleaseCoins
-	ibcPacketBytes, _ := json.Marshal(ibcPacket)
-	json.Unmarshal(ibcPacketBytes, &ibcMsg)
-
-	msg := ibcMsg.Message
+	msg, _ := ibcPacket.Message.(hub.MsgReleaseCoins)
 	locker := hubKeeper.GetLocker(ctx, msg.LockerId)
 
 	if locker == nil {
@@ -79,8 +70,8 @@ func handleReleaseCoins(ctx csdkTypes.Context, ibc Keeper, hubKeeper hub.Keeper,
 	hubKeeper.ReleaseCoins(ctx, msg.LockerId)
 
 	packet := sdkTypes.IBCPacket{
-		SrcChainId:  ibcMsg.DestChainId,
-		DestChainId: ibcMsg.SrcChainId,
+		SrcChainId:  ibcPacket.DestChainId,
+		DestChainId: ibcPacket.SrcChainId,
 		Message: hub.MsgCoinLocker{
 			LockerId: msg.LockerId,
 			Address:  locker.Address,
@@ -97,11 +88,7 @@ func handleReleaseCoins(ctx csdkTypes.Context, ibc Keeper, hubKeeper hub.Keeper,
 }
 
 func handleReleaseCoinsToMany(ctx csdkTypes.Context, ibc Keeper, hubKeeper hub.Keeper, ibcPacket sdkTypes.IBCPacket) csdkTypes.Result {
-	var ibcMsg IBCMsgReleaseCoinsToMany
-	ibcPacketBytes, _ := json.Marshal(ibcPacket)
-	json.Unmarshal(ibcPacketBytes, &ibcMsg)
-
-	msg := ibcMsg.Message
+	msg, _ := ibcPacket.Message.(hub.MsgReleaseCoinsToMany)
 	locker := hubKeeper.GetLocker(ctx, msg.LockerId)
 
 	if locker == nil {
@@ -111,8 +98,8 @@ func handleReleaseCoinsToMany(ctx csdkTypes.Context, ibc Keeper, hubKeeper hub.K
 	hubKeeper.ReleaseCoinsToMany(ctx, msg.LockerId, msg.Addresses, msg.Shares)
 
 	packet := sdkTypes.IBCPacket{
-		SrcChainId:  ibcMsg.DestChainId,
-		DestChainId: ibcMsg.SrcChainId,
+		SrcChainId:  ibcPacket.DestChainId,
+		DestChainId: ibcPacket.SrcChainId,
 		Message: hub.MsgCoinLocker{
 			LockerId: msg.LockerId,
 			Address:  locker.Address,
