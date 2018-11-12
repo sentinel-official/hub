@@ -11,13 +11,13 @@ import (
 	"github.com/ironman0x7b2/sentinel-sdk/x/ibc"
 )
 
-func NewHandler(k Keeper, im ibc.Keeper) csdkTypes.Handler {
+func NewHandler(k Keeper, ik ibc.Keeper) csdkTypes.Handler {
 	return func(ctx csdkTypes.Context, msg csdkTypes.Msg) csdkTypes.Result {
 		switch msg := msg.(type) {
 		case MsgRegisterVpn:
-			return handleRegisterVpn(ctx, k, im, msg)
-		case MsgAliveNode:
-			return handleAliveNode(ctx, k, msg)
+			return handleRegisterVpn(ctx, k, ik, msg)
+		case MsgNodeStatus:
+			return handleSetNodeStatus(ctx, k, msg)
 		default:
 			errMsg := "Unrecognized vpn Msg type: " + reflect.TypeOf(msg).Name()
 
@@ -28,7 +28,7 @@ func NewHandler(k Keeper, im ibc.Keeper) csdkTypes.Handler {
 
 func handleRegisterVpn(ctx csdkTypes.Context, k Keeper, ik ibc.Keeper, msg MsgRegisterVpn) csdkTypes.Result {
 
-	vpnId := msg.From
+	vpnId := msg.From.String()
 	cdc := codec.New()
 	vpnData, err := k.GetVpnDetails(ctx, vpnId)
 
@@ -50,7 +50,7 @@ func handleRegisterVpn(ctx csdkTypes.Context, k Keeper, ik ibc.Keeper, msg MsgRe
 		SrcChainId:  "sentinel-vpn",
 		DestChainId: "sentinel-hub",
 		Message: hub.MsgLockCoins{
-			LockerId: vpnId.String(),
+			LockerId: vpnId,
 			Address:  msg.From,
 			Coins:    msg.Coins,
 		},
@@ -71,10 +71,11 @@ func handleRegisterVpn(ctx csdkTypes.Context, k Keeper, ik ibc.Keeper, msg MsgRe
 	}
 }
 
-func handleAliveNode(ctx csdkTypes.Context, k Keeper, msg MsgAliveNode) csdkTypes.Result {
+func handleSetNodeStatus(ctx csdkTypes.Context, k Keeper, msg MsgNodeStatus) csdkTypes.Result {
 	var Data sdkTypes.VpnDetails
 
-	vpnId := msg.From
+	vpnId := msg.VpnId
+	status := msg.Status
 	vpnData, err := k.GetVpnDetails(ctx, vpnId)
 
 	if err != nil {
@@ -91,7 +92,7 @@ func handleAliveNode(ctx csdkTypes.Context, k Keeper, msg MsgAliveNode) csdkType
 		panic(err)
 	}
 
-	err = k.SetVpnStatus(ctx, vpnId, Data)
+	err = k.SetVpnStatus(ctx, vpnId, Data, status)
 
 	if err != nil {
 		panic(err)
