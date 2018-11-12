@@ -26,14 +26,14 @@ var (
 	DefaultNodeHome = os.ExpandEnv("$HOME/.sentinel-vpnd")
 )
 
-type SentinelVpn struct {
+type SentinelVPN struct {
 	*baseapp.BaseApp
 	cdc *codec.Codec
 
 	keyMain    *csdkTypes.KVStoreKey
 	keyAccount *csdkTypes.KVStoreKey
 	keyIBC     *csdkTypes.KVStoreKey
-	keyVpn     *csdkTypes.KVStoreKey
+	keyVPN     *csdkTypes.KVStoreKey
 
 	accountKeeper       auth.AccountKeeper
 	ibcKeeper           ibc.Keeper
@@ -41,16 +41,16 @@ type SentinelVpn struct {
 	feeCollectionKeeper auth.FeeCollectionKeeper
 }
 
-func NewSentinelVpn(logger log.Logger, db tmDb.DB, baseAppOptions ...func(*baseapp.BaseApp)) *SentinelVpn {
+func NewSentinelVPN(logger log.Logger, db tmDb.DB, baseAppOptions ...func(*baseapp.BaseApp)) *SentinelVPN {
 	cdc := MakeCodec()
 
-	var app = &SentinelVpn{
+	var app = &SentinelVPN{
 		cdc:        cdc,
 		BaseApp:    baseapp.NewBaseApp(appName, logger, db, auth.DefaultTxDecoder(cdc), baseAppOptions...),
 		keyMain:    csdkTypes.NewKVStoreKey("main"),
 		keyAccount: csdkTypes.NewKVStoreKey("acc"),
 		keyIBC:     csdkTypes.NewKVStoreKey("ibc"),
-		keyVpn:     csdkTypes.NewKVStoreKey("vpn"),
+		keyVPN:     csdkTypes.NewKVStoreKey("vpn"),
 	}
 
 	app.accountKeeper = auth.NewAccountKeeper(
@@ -64,14 +64,14 @@ func NewSentinelVpn(logger log.Logger, db tmDb.DB, baseAppOptions ...func(*basea
 
 	app.Router().
 		AddRoute("vpn", vpn.NewHandler(app.vpnKeeper, app.ibcKeeper))
-	// AddRoute("ibc", ibc.NewVpnHandler(app.ibcKeeper, app.vpnKeeper))
+	// AddRoute("ibc", ibc.NewVPNHandler(app.ibcKeeper, app.vpnKeeper))
 
 	app.SetInitChainer(app.initChainer)
 	app.SetBeginBlocker(app.BeginBlocker)
 	app.SetEndBlocker(app.EndBlocker)
 	app.SetAnteHandler(auth.NewAnteHandler(app.accountKeeper, app.feeCollectionKeeper))
 
-	app.MountStoresIAVL(app.keyMain, app.keyAccount, app.keyIBC, app.keyVpn)
+	app.MountStoresIAVL(app.keyMain, app.keyAccount, app.keyIBC, app.keyVPN)
 	err := app.LoadLatestVersion(app.keyMain)
 	if err != nil {
 		common.Exit(err.Error())
@@ -87,26 +87,25 @@ func MakeCodec() *codec.Codec {
 
 	codec.RegisterCrypto(cdc)
 	csdkTypes.RegisterCodec(cdc)
-	ibc.RegisterCodec(cdc)
 	auth.RegisterCodec(cdc)
+	sdkTypes.RegisterCodec(cdc)
+	ibc.RegisterCodec(cdc)
 	vpn.RegisterCodec(cdc)
-
-	cdc.RegisterConcrete(&sdkTypes.AppAccount{}, "sentinel-vpn/Account", nil)
 
 	cdc.Seal()
 
 	return cdc
 }
 
-func (app *SentinelVpn) BeginBlocker(_ csdkTypes.Context, _ abciTypes.RequestBeginBlock) abciTypes.ResponseBeginBlock {
+func (app *SentinelVPN) BeginBlocker(_ csdkTypes.Context, _ abciTypes.RequestBeginBlock) abciTypes.ResponseBeginBlock {
 	return abciTypes.ResponseBeginBlock{}
 }
 
-func (app *SentinelVpn) EndBlocker(_ csdkTypes.Context, _ abciTypes.RequestEndBlock) abciTypes.ResponseEndBlock {
+func (app *SentinelVPN) EndBlocker(_ csdkTypes.Context, _ abciTypes.RequestEndBlock) abciTypes.ResponseEndBlock {
 	return abciTypes.ResponseEndBlock{}
 }
 
-func (app *SentinelVpn) initChainer(ctx csdkTypes.Context, req abciTypes.RequestInitChain) abciTypes.ResponseInitChain {
+func (app *SentinelVPN) initChainer(ctx csdkTypes.Context, req abciTypes.RequestInitChain) abciTypes.ResponseInitChain {
 	stateJSON := req.AppStateBytes
 
 	genesisState := new(sdkTypes.GenesisState)
@@ -130,7 +129,7 @@ func (app *SentinelVpn) initChainer(ctx csdkTypes.Context, req abciTypes.Request
 	return abciTypes.ResponseInitChain{}
 }
 
-func (app *SentinelVpn) ExportAppStateAndValidators() (appState json.RawMessage, validators []tmTypes.GenesisValidator, err error) {
+func (app *SentinelVPN) ExportAppStateAndValidators() (appState json.RawMessage, validators []tmTypes.GenesisValidator, err error) {
 	ctx := app.NewContext(true, abciTypes.Header{})
 	accounts := []*sdkTypes.GenesisAccount{}
 

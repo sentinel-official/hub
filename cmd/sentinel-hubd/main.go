@@ -41,8 +41,7 @@ func main() {
 	rootCmd.AddCommand(InitCmd(ctx, cdc, appInit))
 	rootCmd.AddCommand(gaiaInit.TestnetFilesCmd(ctx, cdc, appInit))
 
-	server.AddCommands(ctx, cdc, rootCmd, appInit,
-		newApp, exportAppStateAndTMValidators)
+	server.AddCommands(ctx, cdc, rootCmd, appInit, newApp, exportAppStateAndTMValidators)
 
 	rootDir := app.DefaultNodeHome
 	executor := cli.PrepareBaseCmd(rootCmd, "SH", rootDir)

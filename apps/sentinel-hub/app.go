@@ -91,13 +91,11 @@ func MakeCodec() *codec.Codec {
 
 	codec.RegisterCrypto(cdc)
 	csdkTypes.RegisterCodec(cdc)
-	sdkTypes.RegisterCodec(cdc)
 	bank.RegisterCodec(cdc)
-	ibc.RegisterCodec(cdc)
 	auth.RegisterCodec(cdc)
+	sdkTypes.RegisterCodec(cdc)
+	ibc.RegisterCodec(cdc)
 	hub.RegisterCodec(cdc)
-
-	cdc.RegisterConcrete(&sdkTypes.AppAccount{}, "sentinel-sdk/Account", nil)
 
 	cdc.Seal()
 

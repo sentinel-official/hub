@@ -41,8 +41,7 @@ func main() {
 	rootCmd.AddCommand(InitCmd(ctx, cdc, appInit))
 	rootCmd.AddCommand(gaiaInit.TestnetFilesCmd(ctx, cdc, appInit))
 
-	server.AddCommands(ctx, cdc, rootCmd, appInit,
-		newApp, exportAppStateAndTMValidators)
+	server.AddCommands(ctx, cdc, rootCmd, appInit, newApp, exportAppStateAndTMValidators)
 
 	rootDir := app.DefaultNodeHome
 	executor := cli.PrepareBaseCmd(rootCmd, "SV", rootDir)
@@ -115,10 +114,10 @@ func InitCmd(ctx *server.Context, cdc *codec.Codec, appInit server.AppInit) *cob
 }
 
 func newApp(logger log.Logger, db tmDb.DB, storeTracer io.Writer) abciTypes.Application {
-	return app.NewSentinelVpn(logger, db, baseapp.SetPruning(viper.GetString("pruning")))
+	return app.NewSentinelVPN(logger, db, baseapp.SetPruning(viper.GetString("pruning")))
 }
 
 func exportAppStateAndTMValidators(logger log.Logger, db tmDb.DB, storeTracer io.Writer) (json.RawMessage, []tmTypes.GenesisValidator, error) {
-	bapp := app.NewSentinelVpn(logger, db)
+	bapp := app.NewSentinelVPN(logger, db)
 	return bapp.ExportAppStateAndValidators()
 }
