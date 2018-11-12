@@ -2,11 +2,12 @@ package sentinel_vpn
 
 import (
 	"encoding/json"
+	"os"
+
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
 	"github.com/ironman0x7b2/sentinel-sdk/x/vpn"
 	"github.com/tendermint/tendermint/libs/common"
-	"os"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/x/auth"
@@ -25,7 +26,7 @@ var (
 	DefaultNodeHome = os.ExpandEnv("$HOME/.sentinel-vpnd")
 )
 
-type SentinelHub struct {
+type SentinelVpn struct {
 	*baseapp.BaseApp
 	cdc *codec.Codec
 
@@ -40,10 +41,10 @@ type SentinelHub struct {
 	feeCollectionKeeper auth.FeeCollectionKeeper
 }
 
-func NewSentinelVpn(logger log.Logger, db tmDb.DB, baseAppOptions ...func(*baseapp.BaseApp)) *SentinelHub {
+func NewSentinelVpn(logger log.Logger, db tmDb.DB, baseAppOptions ...func(*baseapp.BaseApp)) *SentinelVpn {
 	cdc := MakeCodec()
 
-	var app = &SentinelHub{
+	var app = &SentinelVpn{
 		cdc:        cdc,
 		BaseApp:    baseapp.NewBaseApp(appName, logger, db, auth.DefaultTxDecoder(cdc), baseAppOptions...),
 		keyMain:    csdkTypes.NewKVStoreKey("main"),
@@ -63,7 +64,7 @@ func NewSentinelVpn(logger log.Logger, db tmDb.DB, baseAppOptions ...func(*basea
 
 	app.Router().
 		AddRoute("vpn", vpn.NewHandler(app.vpnKeeper, app.ibcKeeper))
-		//AddRoute("ibc", ibc.NewVpnHandler(app.ibcKeeper, app.vpnKeeper))
+	//AddRoute("ibc", ibc.NewVpnHandler(app.ibcKeeper, app.vpnKeeper))
 
 	app.SetInitChainer(app.initChainer)
 	app.SetBeginBlocker(app.BeginBlocker)
@@ -97,15 +98,15 @@ func MakeCodec() *codec.Codec {
 	return cdc
 }
 
-func (app *SentinelHub) BeginBlocker(_ csdkTypes.Context, _ abciTypes.RequestBeginBlock) abciTypes.ResponseBeginBlock {
+func (app *SentinelVpn) BeginBlocker(_ csdkTypes.Context, _ abciTypes.RequestBeginBlock) abciTypes.ResponseBeginBlock {
 	return abciTypes.ResponseBeginBlock{}
 }
 
-func (app *SentinelHub) EndBlocker(_ csdkTypes.Context, _ abciTypes.RequestEndBlock) abciTypes.ResponseEndBlock {
+func (app *SentinelVpn) EndBlocker(_ csdkTypes.Context, _ abciTypes.RequestEndBlock) abciTypes.ResponseEndBlock {
 	return abciTypes.ResponseEndBlock{}
 }
 
-func (app *SentinelHub) initChainer(ctx csdkTypes.Context, req abciTypes.RequestInitChain) abciTypes.ResponseInitChain {
+func (app *SentinelVpn) initChainer(ctx csdkTypes.Context, req abciTypes.RequestInitChain) abciTypes.ResponseInitChain {
 	stateJSON := req.AppStateBytes
 
 	genesisState := new(sdkTypes.GenesisState)
@@ -129,7 +130,7 @@ func (app *SentinelHub) initChainer(ctx csdkTypes.Context, req abciTypes.Request
 	return abciTypes.ResponseInitChain{}
 }
 
-func (app *SentinelHub) ExportAppStateAndValidators() (appState json.RawMessage, validators []tmTypes.GenesisValidator, err error) {
+func (app *SentinelVpn) ExportAppStateAndValidators() (appState json.RawMessage, validators []tmTypes.GenesisValidator, err error) {
 	ctx := app.NewContext(true, abciTypes.Header{})
 	accounts := []*sdkTypes.GenesisAccount{}
 
