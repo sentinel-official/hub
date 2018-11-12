@@ -10,16 +10,15 @@ import (
 	"github.com/cosmos/cosmos-sdk/version"
 	authCli "github.com/cosmos/cosmos-sdk/x/auth/client/cli"
 	bankCli "github.com/cosmos/cosmos-sdk/x/bank/client/cli"
-	"github.com/ironman0x7b2/sentinel-sdk/app"
+	app "github.com/ironman0x7b2/sentinel-sdk/apps/sentinel-hub"
 	"github.com/ironman0x7b2/sentinel-sdk/types"
 	ibcCli "github.com/ironman0x7b2/sentinel-sdk/x/ibc/client/cli"
-	vpnCli "github.com/ironman0x7b2/sentinel-sdk/x/vpn/client/cli"
 	"github.com/spf13/cobra"
 	"github.com/tendermint/tendermint/libs/cli"
 )
 
 var rootCmd = &cobra.Command{
-	Use:   "sentinel-sdk-cli",
+	Use:   "sentinel-hub-cli",
 	Short: "Sentinel Hub light-client",
 }
 
@@ -42,7 +41,6 @@ func main() {
 		client.PostCommands(
 			bankCli.SendTxCmd(cdc),
 			ibcCli.IBCRelayCmd(cdc),
-			vpnCli.RegisterVpnCmd(cdc),
 		)...)
 
 	rootCmd.AddCommand(
@@ -53,7 +51,7 @@ func main() {
 		version.VersionCmd,
 	)
 
-	executor := cli.PrepareMainCmd(rootCmd, "BC", app.DefaultCLIHome)
+	executor := cli.PrepareMainCmd(rootCmd, "SH", app.DefaultCLIHome)
 	err := executor.Execute()
 	if err != nil {
 		panic(err)
