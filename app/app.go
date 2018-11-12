@@ -73,7 +73,7 @@ func NewSentinelHub(logger log.Logger, db tmDb.DB, baseAppOptions ...func(*basea
 
 	app.Router().
 		AddRoute("bank", bank.NewHandler(app.bankKeeper)).
-		AddRoute("ibc", ibc.NewHandler(app.ibcKeeper, app.hubKeeper)).
+		AddRoute("ibc", ibc.NewHubHandler(app.ibcKeeper, app.hubKeeper)).
 		AddRoute("vpn", vpn.NewHandler(app.vpnKeeper, app.ibcKeeper))
 
 	app.SetInitChainer(app.initChainer)

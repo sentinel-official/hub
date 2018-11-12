@@ -9,7 +9,7 @@ import (
 	"github.com/ironman0x7b2/sentinel-sdk/x/hub"
 )
 
-func NewHandler(ibc Keeper, hubKeeper hub.Keeper) csdkTypes.Handler {
+func NewHubHandler(ibc Keeper, hubKeeper hub.Keeper) csdkTypes.Handler {
 	return func(ctx csdkTypes.Context, msg csdkTypes.Msg) csdkTypes.Result {
 		switch msg := msg.(type) {
 		case MsgIBCTransaction:
