@@ -1,7 +1,6 @@
 package ibc
 
 import (
-	"encoding/json"
 	"fmt"
 	"reflect"
 
@@ -11,7 +10,7 @@ import (
 	"github.com/ironman0x7b2/sentinel-sdk/x/vpn"
 )
 
-func NewVpnHandler(k vpn.Keeper) csdkTypes.Handler {
+func NewVPNHandler(k vpn.Keeper) csdkTypes.Handler {
 	return func(ctx csdkTypes.Context, msg csdkTypes.Msg) csdkTypes.Result {
 		switch msg := msg.(type) {
 		case MsgIBCTransaction:
@@ -31,28 +30,17 @@ func NewVpnHandler(k vpn.Keeper) csdkTypes.Handler {
 }
 
 func handleSetNodeStatus(ctx csdkTypes.Context, k vpn.Keeper, ibcPacket sdkTypes.IBCPacket) csdkTypes.Result {
-
-	var Data sdkTypes.VpnDetails
 	msg, _ := ibcPacket.Message.(hub.MsgCoinLocker)
 	vpnId := msg.LockerId
 	status := msg.Locked
-	vpnData, err := k.GetVpnDetails(ctx, vpnId)
 
-	if err != nil {
-		panic(err)
+	vpnDeatils := k.GetVPNDetails(ctx, vpnId)
+
+	if vpnDeatils == nil {
+		panic("VPN not registered")
 	}
 
-	err = json.Unmarshal(vpnData, &Data)
-
-	if err != nil {
-		panic(err)
-	}
-
-	err = k.SetVpnStatus(ctx, vpnId, Data, status)
-
-	if err != nil {
-		panic(err)
-	}
+	k.SetVPNStatus(ctx, vpnId, status)
 
 	return csdkTypes.Result{}
 }

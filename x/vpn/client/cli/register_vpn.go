@@ -14,41 +14,41 @@ import (
 )
 
 const (
-	FlagIP                = "ip"
-	FlagPort              = "port"
-	FlagAmount            = "amount"
-	FlagUploadSpeed       = "upload"
-	FlagDownloadSpeed     = "download"
-	FlagPricePerGB        = "price-per-gb"
-	FlagLocationLatitude  = "latitude"
-	FlagLocationLongitude = "longitude"
-	FlagLocationCity      = "city"
-	FlagLocationCountry   = "country"
-	FlagEncMethod         = "enc-method"
-	FlagVersion           = "version"
+	flagIP                = "ip"
+	flagPort              = "port"
+	flagAmount            = "amount"
+	flagUploadSpeed       = "upload"
+	flagDownloadSpeed     = "download"
+	flagPricePerGB        = "price-per-gb"
+	flagLocationLatitude  = "latitude"
+	flagLocationLongitude = "longitude"
+	flagLocationCity      = "city"
+	flagLocationCountry   = "country"
+	flagEncMethod         = "enc-method"
+	flagVersion           = "version"
 )
 
-func RegisterVpnCmd(cdc *codec.Codec) *cobra.Command {
+func RegisterVPNCmd(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "register_vpn",
+		Use:   "register-vpn",
 		Short: "Register for sentinel vpn service",
 		RunE: func(cmd *cobra.Command, args []string) error {
 
 			txBldr := authTxBuilder.NewTxBuilderFromCLI().WithCodec(cdc)
 			cliCtx := context.NewCLIContext().WithCodec(cdc).WithAccountDecoder(authCli.GetAccountDecoder(cdc))
 
-			ip := viper.GetString(FlagIP)
-			port := viper.GetString(FlagPort)
-			amount := viper.GetString(FlagAmount)
-			pricePerGb := viper.GetInt64(FlagPricePerGB)
-			upload := viper.GetInt64(FlagUploadSpeed)
-			download := viper.GetInt64(FlagDownloadSpeed)
-			latitude := viper.GetInt64(FlagLocationLatitude)
-			longitude := viper.GetInt64(FlagLocationLongitude)
-			city := viper.GetString(FlagLocationCity)
-			country := viper.GetString(FlagLocationCountry)
-			encMethod := viper.GetString(FlagEncMethod)
-			version := viper.GetString(FlagVersion)
+			ip := viper.GetString(flagIP)
+			port := viper.GetString(flagPort)
+			amount := viper.GetString(flagAmount)
+			pricePerGb := viper.GetInt64(flagPricePerGB)
+			upload := viper.GetInt64(flagUploadSpeed)
+			download := viper.GetInt64(flagDownloadSpeed)
+			latitude := viper.GetInt64(flagLocationLatitude)
+			longitude := viper.GetInt64(flagLocationLongitude)
+			city := viper.GetString(flagLocationCity)
+			country := viper.GetString(flagLocationCountry)
+			encMethod := viper.GetString(flagEncMethod)
+			version := viper.GetString(flagVersion)
 
 			if err := cliCtx.EnsureAccountExists(); err != nil {
 				return err
@@ -77,8 +77,11 @@ func RegisterVpnCmd(cdc *codec.Codec) *cobra.Command {
 				return errors.Errorf("Address %s doesn't have enough coins to pay for this transaction.", from)
 			}
 
-			msg := vpn.NewRegisterVpnMsg(from, ip, port, coins, pricePerGb, upload, download, latitude, longitude,
-				city, country, encMethod, version)
+			msg := vpn.NewRegisterVPNMsg(from, coins,
+				ip, port,
+				upload, download,
+				latitude, longitude, city, country,
+				pricePerGb, encMethod, version)
 
 			if cliCtx.GenerateOnly {
 				return utils.PrintUnsignedStdTx(txBldr, cliCtx, []csdkTypes.Msg{msg}, false)
@@ -88,18 +91,18 @@ func RegisterVpnCmd(cdc *codec.Codec) *cobra.Command {
 		},
 	}
 
-	cmd.Flags().String(FlagIP, "", "ip")
-	cmd.Flags().String(FlagPort, "", "port")
-	cmd.Flags().String(FlagAmount, "1000SentCoins", "amount")
-	cmd.Flags().Int64(FlagUploadSpeed, -1, "upload_speed")
-	cmd.Flags().Int64(FlagDownloadSpeed, -1, "download_speed")
-	cmd.Flags().Int64(FlagPricePerGB, -1, "price_per_gb")
-	cmd.Flags().String(FlagLocationLatitude, "", "location_latitude")
-	cmd.Flags().String(FlagLocationLongitude, "", "location_longitude")
-	cmd.Flags().String(FlagLocationCity, "", "location_city")
-	cmd.Flags().String(FlagLocationCountry, "", "location_country")
-	cmd.Flags().String(FlagEncMethod, "", "enc_method")
-	cmd.Flags().String(FlagVersion, "", "version")
+	cmd.Flags().String(flagIP, "", "ip")
+	cmd.Flags().String(flagPort, "", "port")
+	cmd.Flags().String(flagAmount, "1000SentCoins", "amount")
+	cmd.Flags().Int64(flagUploadSpeed, -1, "upload_speed")
+	cmd.Flags().Int64(flagDownloadSpeed, -1, "download_speed")
+	cmd.Flags().Int64(flagPricePerGB, -1, "price_per_gb")
+	cmd.Flags().String(flagLocationLatitude, "", "location_latitude")
+	cmd.Flags().String(flagLocationLongitude, "", "location_longitude")
+	cmd.Flags().String(flagLocationCity, "", "location_city")
+	cmd.Flags().String(flagLocationCountry, "", "location_country")
+	cmd.Flags().String(flagEncMethod, "", "enc_method")
+	cmd.Flags().String(flagVersion, "", "version")
 
 	return cmd
 }

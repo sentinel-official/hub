@@ -5,8 +5,8 @@ import (
 )
 
 func RegisterCodec(cdc *codec.Codec) {
-	cdc.RegisterConcrete(MsgRegisterVpn{}, "x/vpn/msg_register_vpn", nil)
-	cdc.RegisterConcrete(MsgNodeStatus{}, "x/vpn/msg_alive_node", nil)
+	cdc.RegisterConcrete(MsgRegisterNode{}, "x/vpn/msg_register_node", nil)
+	cdc.RegisterConcrete(MsgUpdateNodeStatus{}, "x/vpn/msg_update_node_status", nil)
 }
 
 var msgCdc = codec.New()

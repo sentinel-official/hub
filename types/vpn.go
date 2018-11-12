@@ -1,6 +1,6 @@
 package types
 
-type VpnDetails struct {
+type VPNDetails struct {
 	Ip         string
 	Port       string
 	NetSpeed   NetSpeed

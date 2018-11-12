@@ -8,54 +8,57 @@ import (
 )
 
 type Keeper struct {
-	VpnStoreKey csdkTypes.StoreKey
+	VPNStoreKey csdkTypes.StoreKey
 }
 
 func NewKeeper(vpnKey csdkTypes.StoreKey) Keeper {
-
 	return Keeper{
-		VpnStoreKey: vpnKey,
+		VPNStoreKey: vpnKey,
 	}
 }
 
-func (k Keeper) SetVpnDetails(ctx csdkTypes.Context, vpnId string, vpnDetails sdkTypes.VpnDetails) error {
-
-	vpnStore := ctx.KVStore(k.VpnStoreKey)
+func (k Keeper) SetVPNDetails(ctx csdkTypes.Context, vpnId string, vpnDetails sdkTypes.VPNDetails) {
+	vpnStore := ctx.KVStore(k.VPNStoreKey)
 	vpnIdBytes := []byte(vpnId)
-
 	vpnDetailsBytes, err := json.Marshal(vpnDetails)
-
-	if err != nil {
-		return err
-	}
-
-	vpnStore.Set(vpnIdBytes, vpnDetailsBytes)
-
-	return nil
-}
-
-func (k Keeper) GetVpnDetails(ctx csdkTypes.Context, vpnId string) ([]byte, error) {
-
-	store := ctx.KVStore(k.VpnStoreKey)
-	vpnIdBytes := []byte(vpnId)
-	vpnDetailsBytes := store.Get(vpnIdBytes)
-
-	return vpnDetailsBytes, nil
-}
-
-func (k Keeper) SetVpnStatus(ctx csdkTypes.Context, vpnId string, vpnDetails sdkTypes.VpnDetails, status bool) error {
-	store := ctx.KVStore(k.VpnStoreKey)
-
-	vpnDetails.Info.Status = status
-	vpnDetails.Info.BlockHeight = ctx.BlockHeight()
-	vpnIdBytes := []byte(vpnId)
-	DetailsBytes, err := json.Marshal(vpnDetails)
 
 	if err != nil {
 		panic(err)
 	}
 
-	store.Set(vpnIdBytes, DetailsBytes)
+	vpnStore.Set(vpnIdBytes, vpnDetailsBytes)
+}
 
-	return nil
+func (k Keeper) GetVPNDetails(ctx csdkTypes.Context, vpnId string) *sdkTypes.VPNDetails {
+	store := ctx.KVStore(k.VPNStoreKey)
+	vpnIdBytes := []byte(vpnId)
+	vpnDetailsBytes := store.Get(vpnIdBytes)
+
+	if vpnDetailsBytes == nil {
+		return nil
+	}
+
+	var vpnDetails sdkTypes.VPNDetails
+
+	if err := json.Unmarshal(vpnDetailsBytes, &vpnDetails); err != nil {
+		panic(err)
+	}
+
+	return &vpnDetails
+}
+
+func (k Keeper) SetVPNStatus(ctx csdkTypes.Context, vpnId string, status bool) {
+	vpnDetails := k.GetVPNDetails(ctx, vpnId)
+	vpnDetails.Info.Status = status
+	vpnDetails.Info.BlockHeight = ctx.BlockHeight()
+
+	vpnIdBytes := []byte(vpnId)
+	vpnDetailsBytes, err := json.Marshal(vpnDetails)
+
+	if err != nil {
+		panic(err)
+	}
+
+	store := ctx.KVStore(k.VPNStoreKey)
+	store.Set(vpnIdBytes, vpnDetailsBytes)
 }

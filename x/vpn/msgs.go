@@ -7,21 +7,21 @@ import (
 	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
 )
 
-type MsgRegisterVpn struct {
+type MsgRegisterNode struct {
 	From    csdkTypes.AccAddress
 	Coins   csdkTypes.Coins
-	Details sdkTypes.VpnDetails
+	Details sdkTypes.VPNDetails
 }
 
-func (msg MsgRegisterVpn) Type() string {
-	return "vpn"
+func (msg MsgRegisterNode) Type() string {
+	return "msg_register_node"
 }
 
-func (msg MsgRegisterVpn) ValidateBasic() csdkTypes.Error {
+func (msg MsgRegisterNode) ValidateBasic() csdkTypes.Error {
 	return nil
 }
 
-func (msg MsgRegisterVpn) GetSignBytes() []byte {
+func (msg MsgRegisterNode) GetSignBytes() []byte {
 	MsgBytes, err := json.Marshal(msg)
 
 	if err != nil {
@@ -31,21 +31,23 @@ func (msg MsgRegisterVpn) GetSignBytes() []byte {
 	return MsgBytes
 }
 
-func (msg MsgRegisterVpn) GetSigners() []csdkTypes.AccAddress {
+func (msg MsgRegisterNode) GetSigners() []csdkTypes.AccAddress {
 	return []csdkTypes.AccAddress{msg.From}
 }
 
-func (msg MsgRegisterVpn) Route() string {
-	return msg.Type()
+func (msg MsgRegisterNode) Route() string {
+	return "vpn"
 }
 
-func NewRegisterVpnMsg(from csdkTypes.AccAddress, ip string, port string, coins csdkTypes.Coins, pricePerGb int64, upload int64, download int64,
-	latitude int64, longitude int64, city string, country string, encMethod string, version string) *MsgRegisterVpn {
-
-	return &MsgRegisterVpn{
+func NewRegisterVPNMsg(from csdkTypes.AccAddress, coins csdkTypes.Coins,
+	ip string, port string,
+	upload int64, download int64,
+	latitude int64, longitude int64, city string, country string,
+	pricePerGb int64, encMethod string, version string) *MsgRegisterNode {
+	return &MsgRegisterNode{
 		From:  from,
 		Coins: coins,
-		Details: sdkTypes.VpnDetails{
+		Details: sdkTypes.VPNDetails{
 			Ip:         ip,
 			Port:       port,
 			PricePerGb: pricePerGb,
@@ -69,21 +71,21 @@ func NewRegisterVpnMsg(from csdkTypes.AccAddress, ip string, port string, coins 
 	}
 }
 
-type MsgNodeStatus struct {
+type MsgUpdateNodeStatus struct {
 	From   csdkTypes.AccAddress
-	VpnId  string
+	VPNId  string
 	Status bool
 }
 
-func (msg MsgNodeStatus) Type() string {
-	return "AliveNode"
+func (msg MsgUpdateNodeStatus) Type() string {
+	return "msg_update_node_status"
 }
 
-func (msg MsgNodeStatus) ValidateBasic() csdkTypes.Error {
+func (msg MsgUpdateNodeStatus) ValidateBasic() csdkTypes.Error {
 	return nil
 }
 
-func (msg MsgNodeStatus) GetSignBytes() []byte {
+func (msg MsgUpdateNodeStatus) GetSignBytes() []byte {
 	MsgBytes, err := json.Marshal(msg)
 
 	if err != nil {
@@ -93,18 +95,18 @@ func (msg MsgNodeStatus) GetSignBytes() []byte {
 	return MsgBytes
 }
 
-func (msg MsgNodeStatus) GetSigners() []csdkTypes.AccAddress {
+func (msg MsgUpdateNodeStatus) GetSigners() []csdkTypes.AccAddress {
 	return []csdkTypes.AccAddress{msg.From}
 }
 
-func (msg MsgNodeStatus) Route() string {
-	return msg.Type()
+func (msg MsgUpdateNodeStatus) Route() string {
+	return "vpn"
 }
 
-func NewNodeStatusMsg(from csdkTypes.AccAddress, vpnId string, status bool) MsgNodeStatus {
-	return MsgNodeStatus{
+func NewNodeStatusMsg(from csdkTypes.AccAddress, vpnId string, status bool) MsgUpdateNodeStatus {
+	return MsgUpdateNodeStatus{
 		From:   from,
-		VpnId:  vpnId,
+		VPNId:  vpnId,
 		Status: status,
 	}
 }

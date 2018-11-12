@@ -13,21 +13,19 @@ import (
 )
 
 const (
-	flagVpnId  = "vpn-id"
+	flagVPNId  = "vpn-node-id"
 	flagStatus = "status"
 )
 
 func ChangeNodeStatusCommand(cdc *codec.Codec) *cobra.Command {
-
 	cmd := &cobra.Command{
-		Use:   "register_vpn",
-		Short: "Register for sentinel vpn service",
+		Use:   "update-node-status",
+		Short: "Update VPN node status",
 		RunE: func(cmd *cobra.Command, args []string) error {
-
 			txBldr := authTxBuilder.NewTxBuilderFromCLI().WithCodec(cdc)
 			cliCtx := context.NewCLIContext().WithCodec(cdc).WithAccountDecoder(authCli.GetAccountDecoder(cdc))
 
-			vpnId := viper.GetString(flagVpnId)
+			vpnId := viper.GetString(flagVPNId)
 			status := viper.GetBool(flagStatus)
 
 			if err := cliCtx.EnsureAccountExists(); err != nil {
@@ -56,8 +54,8 @@ func ChangeNodeStatusCommand(cdc *codec.Codec) *cobra.Command {
 		},
 	}
 
-	cmd.Flags().String(flagVpnId, "", "vpn id")
-	cmd.Flags().Bool(flagStatus, false, "node status")
+	cmd.Flags().String(flagVPNId, "", "VPN node ID")
+	cmd.Flags().Bool(flagStatus, false, "Node status")
 
 	return cmd
 
