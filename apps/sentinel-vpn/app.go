@@ -1,18 +1,15 @@
-package app
+package sentinel_vpn
 
 import (
 	"encoding/json"
-	"os"
-
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
-	"github.com/ironman0x7b2/sentinel-sdk/x/hub"
 	"github.com/ironman0x7b2/sentinel-sdk/x/vpn"
 	"github.com/tendermint/tendermint/libs/common"
+	"os"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/x/auth"
-	"github.com/cosmos/cosmos-sdk/x/bank"
 	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
 	"github.com/ironman0x7b2/sentinel-sdk/x/ibc"
 	abciTypes "github.com/tendermint/tendermint/abci/types"
@@ -21,42 +18,38 @@ import (
 	tmTypes "github.com/tendermint/tendermint/types"
 )
 
-const appName = "Sentinel Hub"
+const appName = "Sentinel VPN"
 
 var (
-	DefaultCLIHome  = os.ExpandEnv("$HOME/.sentinel-sdk-cli")
-	DefaultNodeHome = os.ExpandEnv("$HOME/.sentinel-sdkd")
+	DefaultCLIHome  = os.ExpandEnv("$HOME/.sentinel-vpn-cli")
+	DefaultNodeHome = os.ExpandEnv("$HOME/.sentinel-vpnd")
 )
 
 type SentinelHub struct {
 	*baseapp.BaseApp
 	cdc *codec.Codec
 
-	keyMain       *csdkTypes.KVStoreKey
-	keyAccount    *csdkTypes.KVStoreKey
-	keyIBC        *csdkTypes.KVStoreKey
-	keyCoinLocker *csdkTypes.KVStoreKey
-	keyVPN        *csdkTypes.KVStoreKey
+	keyMain    *csdkTypes.KVStoreKey
+	keyAccount *csdkTypes.KVStoreKey
+	keyIBC     *csdkTypes.KVStoreKey
+	keyVpn     *csdkTypes.KVStoreKey
 
 	accountKeeper       auth.AccountKeeper
-	feeCollectionKeeper auth.FeeCollectionKeeper
-	bankKeeper          bank.Keeper
 	ibcKeeper           ibc.Keeper
-	hubKeeper           hub.BaseKeeper
 	vpnKeeper           vpn.Keeper
+	feeCollectionKeeper auth.FeeCollectionKeeper
 }
 
-func NewSentinelHub(logger log.Logger, db tmDb.DB, baseAppOptions ...func(*baseapp.BaseApp)) *SentinelHub {
+func NewSentinelVpn(logger log.Logger, db tmDb.DB, baseAppOptions ...func(*baseapp.BaseApp)) *SentinelHub {
 	cdc := MakeCodec()
 
 	var app = &SentinelHub{
-		cdc:           cdc,
-		BaseApp:       baseapp.NewBaseApp(appName, logger, db, auth.DefaultTxDecoder(cdc), baseAppOptions...),
-		keyMain:       csdkTypes.NewKVStoreKey("main"),
-		keyAccount:    csdkTypes.NewKVStoreKey("acc"),
-		keyIBC:        csdkTypes.NewKVStoreKey("ibc"),
-		keyCoinLocker: csdkTypes.NewKVStoreKey("coin_locker"),
-		keyVPN:        csdkTypes.NewKVStoreKey("vpn"),
+		cdc:        cdc,
+		BaseApp:    baseapp.NewBaseApp(appName, logger, db, auth.DefaultTxDecoder(cdc), baseAppOptions...),
+		keyMain:    csdkTypes.NewKVStoreKey("main"),
+		keyAccount: csdkTypes.NewKVStoreKey("acc"),
+		keyIBC:     csdkTypes.NewKVStoreKey("ibc"),
+		keyVpn:     csdkTypes.NewKVStoreKey("vpn"),
 	}
 
 	app.accountKeeper = auth.NewAccountKeeper(
@@ -66,22 +59,18 @@ func NewSentinelHub(logger log.Logger, db tmDb.DB, baseAppOptions ...func(*basea
 			return &sdkTypes.AppAccount{}
 		},
 	)
-	app.bankKeeper = bank.NewBaseKeeper(app.accountKeeper)
 	app.ibcKeeper = ibc.NewKeeper(app.keyIBC, app.cdc)
-	app.hubKeeper = hub.NewBaseKeeper(app.keyCoinLocker, app.bankKeeper)
-	app.vpnKeeper = vpn.NewKeeper(app.keyVPN)
 
 	app.Router().
-		AddRoute("bank", bank.NewHandler(app.bankKeeper)).
-		AddRoute("ibc", ibc.NewHubHandler(app.ibcKeeper, app.hubKeeper)).
 		AddRoute("vpn", vpn.NewHandler(app.vpnKeeper, app.ibcKeeper))
+		//AddRoute("ibc", ibc.NewVpnHandler(app.ibcKeeper, app.vpnKeeper))
 
 	app.SetInitChainer(app.initChainer)
 	app.SetBeginBlocker(app.BeginBlocker)
 	app.SetEndBlocker(app.EndBlocker)
 	app.SetAnteHandler(auth.NewAnteHandler(app.accountKeeper, app.feeCollectionKeeper))
 
-	app.MountStoresIAVL(app.keyMain, app.keyAccount, app.keyIBC, app.keyCoinLocker, app.keyVPN)
+	app.MountStoresIAVL(app.keyMain, app.keyAccount, app.keyIBC, app.keyVpn)
 	err := app.LoadLatestVersion(app.keyMain)
 	if err != nil {
 		common.Exit(err.Error())
@@ -97,14 +86,11 @@ func MakeCodec() *codec.Codec {
 
 	codec.RegisterCrypto(cdc)
 	csdkTypes.RegisterCodec(cdc)
-	sdkTypes.RegisterCodec(cdc)
-	bank.RegisterCodec(cdc)
 	ibc.RegisterCodec(cdc)
 	auth.RegisterCodec(cdc)
-	hub.RegisterCodec(cdc)
 	vpn.RegisterCodec(cdc)
 
-	cdc.RegisterConcrete(&sdkTypes.AppAccount{}, "sentinel-sdk/Account", nil)
+	cdc.RegisterConcrete(&sdkTypes.AppAccount{}, "sentinel-vpn/Account", nil)
 
 	cdc.Seal()
 

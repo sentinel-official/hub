@@ -15,7 +15,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/server"
-	"github.com/ironman0x7b2/sentinel-sdk/app"
+	app "github.com/ironman0x7b2/sentinel-sdk/apps/sentinel-vpn"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	abciTypes "github.com/tendermint/tendermint/abci/types"
@@ -32,8 +32,8 @@ func main() {
 	ctx := server.NewDefaultContext()
 
 	rootCmd := &cobra.Command{
-		Use:               "sentinel-sdkd",
-		Short:             "Sentinel Hub Daemon (server)",
+		Use:               "sentinel-vpnd",
+		Short:             "Sentinel VPN Daemon (server)",
 		PersistentPreRunE: server.PersistentPreRunEFn(ctx),
 	}
 
@@ -44,8 +44,8 @@ func main() {
 	server.AddCommands(ctx, cdc, rootCmd, appInit,
 		newApp, exportAppStateAndTMValidators)
 
-	rootDir := os.ExpandEnv("$HOME/.sentinel-sdkd")
-	executor := cli.PrepareBaseCmd(rootCmd, "BC", rootDir)
+	rootDir := app.DefaultNodeHome
+	executor := cli.PrepareBaseCmd(rootCmd, "SV", rootDir)
 
 	err := executor.Execute()
 	if err != nil {
@@ -115,10 +115,10 @@ func InitCmd(ctx *server.Context, cdc *codec.Codec, appInit server.AppInit) *cob
 }
 
 func newApp(logger log.Logger, db tmDb.DB, storeTracer io.Writer) abciTypes.Application {
-	return app.NewSentinelHub(logger, db, baseapp.SetPruning(viper.GetString("pruning")))
+	return app.NewSentinelVpn(logger, db, baseapp.SetPruning(viper.GetString("pruning")))
 }
 
 func exportAppStateAndTMValidators(logger log.Logger, db tmDb.DB, storeTracer io.Writer) (json.RawMessage, []tmTypes.GenesisValidator, error) {
-	bapp := app.NewSentinelHub(logger, db)
+	bapp := app.NewSentinelVpn(logger, db)
 	return bapp.ExportAppStateAndValidators()
 }
