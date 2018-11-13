@@ -1,4 +1,4 @@
-package ibc
+package hub
 
 import (
 	"fmt"
@@ -6,20 +6,20 @@ import (
 
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
 	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
-	"github.com/ironman0x7b2/sentinel-sdk/x/hub"
+	"github.com/ironman0x7b2/sentinel-sdk/x/ibc"
 )
 
-func NewHubHandler(ibc Keeper, hubKeeper hub.Keeper) csdkTypes.Handler {
+func NewIBCHubHandler(ibcKeeper ibc.Keeper, hubKeeper Keeper) csdkTypes.Handler {
 	return func(ctx csdkTypes.Context, msg csdkTypes.Msg) csdkTypes.Result {
 		switch msg := msg.(type) {
-		case MsgIBCTransaction:
+		case ibc.MsgIBCTransaction:
 			switch ibcMsg := msg.IBCPacket.Message.(type) {
-			case hub.MsgLockCoins:
-				return handleLockCoins(ctx, ibc, hubKeeper, msg.IBCPacket)
-			case hub.MsgReleaseCoins:
-				return handleReleaseCoins(ctx, ibc, hubKeeper, msg.IBCPacket)
-			case hub.MsgReleaseCoinsToMany:
-				return handleReleaseCoinsToMany(ctx, ibc, hubKeeper, msg.IBCPacket)
+			case MsgLockCoins:
+				return handleLockCoins(ctx, ibcKeeper, hubKeeper, msg.IBCPacket)
+			case MsgReleaseCoins:
+				return handleReleaseCoins(ctx, ibcKeeper, hubKeeper, msg.IBCPacket)
+			case MsgReleaseCoinsToMany:
+				return handleReleaseCoinsToMany(ctx, ibcKeeper, hubKeeper, msg.IBCPacket)
 			default:
 				errMsg := fmt.Sprintf("Unrecognized IBC Msg: %v", reflect.TypeOf(ibcMsg))
 				return csdkTypes.ErrUnknownRequest(errMsg).Result()
@@ -31,8 +31,8 @@ func NewHubHandler(ibc Keeper, hubKeeper hub.Keeper) csdkTypes.Handler {
 	}
 }
 
-func handleLockCoins(ctx csdkTypes.Context, ibc Keeper, hubKeeper hub.Keeper, ibcPacket sdkTypes.IBCPacket) csdkTypes.Result {
-	msg, _ := ibcPacket.Message.(hub.MsgLockCoins)
+func handleLockCoins(ctx csdkTypes.Context, ibcKeeper ibc.Keeper, hubKeeper Keeper, ibcPacket sdkTypes.IBCPacket) csdkTypes.Result {
+	msg, _ := ibcPacket.Message.(MsgLockCoins)
 	locker := hubKeeper.GetLocker(ctx, msg.LockerId)
 
 	if locker != nil {
@@ -44,7 +44,7 @@ func handleLockCoins(ctx csdkTypes.Context, ibc Keeper, hubKeeper hub.Keeper, ib
 	packet := sdkTypes.IBCPacket{
 		SrcChainId:  ibcPacket.DestChainId,
 		DestChainId: ibcPacket.SrcChainId,
-		Message: hub.MsgCoinLocker{
+		Message: MsgCoinLocker{
 			LockerId: msg.LockerId,
 			Address:  msg.Address,
 			Coins:    msg.Coins,
@@ -52,15 +52,15 @@ func handleLockCoins(ctx csdkTypes.Context, ibc Keeper, hubKeeper hub.Keeper, ib
 		},
 	}
 
-	if err := ibc.PostIBCPacket(ctx, packet); err != nil {
+	if err := ibcKeeper.PostIBCPacket(ctx, packet); err != nil {
 		panic(err)
 	}
 
 	return csdkTypes.Result{}
 }
 
-func handleReleaseCoins(ctx csdkTypes.Context, ibc Keeper, hubKeeper hub.Keeper, ibcPacket sdkTypes.IBCPacket) csdkTypes.Result {
-	msg, _ := ibcPacket.Message.(hub.MsgReleaseCoins)
+func handleReleaseCoins(ctx csdkTypes.Context, ibc ibc.Keeper, hubKeeper Keeper, ibcPacket sdkTypes.IBCPacket) csdkTypes.Result {
+	msg, _ := ibcPacket.Message.(MsgReleaseCoins)
 	locker := hubKeeper.GetLocker(ctx, msg.LockerId)
 
 	if locker == nil {
@@ -72,7 +72,7 @@ func handleReleaseCoins(ctx csdkTypes.Context, ibc Keeper, hubKeeper hub.Keeper,
 	packet := sdkTypes.IBCPacket{
 		SrcChainId:  ibcPacket.DestChainId,
 		DestChainId: ibcPacket.SrcChainId,
-		Message: hub.MsgCoinLocker{
+		Message: MsgCoinLocker{
 			LockerId: msg.LockerId,
 			Address:  locker.Address,
 			Coins:    locker.Coins,
@@ -87,8 +87,8 @@ func handleReleaseCoins(ctx csdkTypes.Context, ibc Keeper, hubKeeper hub.Keeper,
 	return csdkTypes.Result{}
 }
 
-func handleReleaseCoinsToMany(ctx csdkTypes.Context, ibc Keeper, hubKeeper hub.Keeper, ibcPacket sdkTypes.IBCPacket) csdkTypes.Result {
-	msg, _ := ibcPacket.Message.(hub.MsgReleaseCoinsToMany)
+func handleReleaseCoinsToMany(ctx csdkTypes.Context, ibc ibc.Keeper, hubKeeper Keeper, ibcPacket sdkTypes.IBCPacket) csdkTypes.Result {
+	msg, _ := ibcPacket.Message.(MsgReleaseCoinsToMany)
 	locker := hubKeeper.GetLocker(ctx, msg.LockerId)
 
 	if locker == nil {
@@ -100,7 +100,7 @@ func handleReleaseCoinsToMany(ctx csdkTypes.Context, ibc Keeper, hubKeeper hub.K
 	packet := sdkTypes.IBCPacket{
 		SrcChainId:  ibcPacket.DestChainId,
 		DestChainId: ibcPacket.SrcChainId,
-		Message: hub.MsgCoinLocker{
+		Message: MsgCoinLocker{
 			LockerId: msg.LockerId,
 			Address:  locker.Address,
 			Coins:    locker.Coins,
