@@ -1,4 +1,4 @@
-package ibc
+package vpn
 
 import (
 	"fmt"
@@ -7,13 +7,13 @@ import (
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
 	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
 	"github.com/ironman0x7b2/sentinel-sdk/x/hub"
-	"github.com/ironman0x7b2/sentinel-sdk/x/vpn"
+	"github.com/ironman0x7b2/sentinel-sdk/x/ibc"
 )
 
-func NewVPNHandler(k vpn.Keeper) csdkTypes.Handler {
+func NewIBCVPNHandler(k Keeper) csdkTypes.Handler {
 	return func(ctx csdkTypes.Context, msg csdkTypes.Msg) csdkTypes.Result {
 		switch msg := msg.(type) {
-		case MsgIBCTransaction:
+		case ibc.MsgIBCTransaction:
 			switch ibcMsg := msg.IBCPacket.Message.(type) {
 			case hub.MsgCoinLocker:
 				return handleSetNodeStatus(ctx, k, msg.IBCPacket)
@@ -29,7 +29,7 @@ func NewVPNHandler(k vpn.Keeper) csdkTypes.Handler {
 	}
 }
 
-func handleSetNodeStatus(ctx csdkTypes.Context, k vpn.Keeper, ibcPacket sdkTypes.IBCPacket) csdkTypes.Result {
+func handleSetNodeStatus(ctx csdkTypes.Context, k Keeper, ibcPacket sdkTypes.IBCPacket) csdkTypes.Result {
 	msg, _ := ibcPacket.Message.(hub.MsgCoinLocker)
 	vpnId := msg.LockerId
 	status := msg.Locked

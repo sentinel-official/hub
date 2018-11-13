@@ -43,6 +43,7 @@ func handleRegisterNode(ctx csdkTypes.Context, k Keeper, ik ibc.Keeper, msg MsgR
 			Coins:    msg.Coins,
 		},
 	}
+
 	if err := ik.PostIBCPacket(ctx, ibcPacket); err != nil {
 		panic(err)
 	}

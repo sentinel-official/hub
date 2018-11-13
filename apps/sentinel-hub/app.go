@@ -68,7 +68,7 @@ func NewSentinelHub(logger log.Logger, db tmDb.DB, baseAppOptions ...func(*basea
 
 	app.Router().
 		AddRoute("bank", bank.NewHandler(app.bankKeeper)).
-		AddRoute("ibc", ibc.NewHubHandler(app.ibcKeeper, app.hubKeeper))
+		AddRoute("hub_ibc", hub.NewIBCHubHandler(app.ibcKeeper, app.hubKeeper))
 
 	app.SetInitChainer(app.initChainer)
 	app.SetBeginBlocker(app.BeginBlocker)
