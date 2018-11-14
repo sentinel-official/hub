@@ -1,8 +1,7 @@
 package hub
 
 import (
-	"encoding/json"
-
+	"github.com/cosmos/cosmos-sdk/codec"
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/bank"
 	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
@@ -19,12 +18,14 @@ type Keeper interface {
 var _ Keeper = (*BaseKeeper)(nil)
 
 type BaseKeeper struct {
+	cdc           *codec.Codec
 	coinLockerKey csdkTypes.StoreKey
 	bankKeeper    bank.Keeper
 }
 
-func NewBaseKeeper(coinLockerKey csdkTypes.StoreKey, bankKeeper bank.Keeper) BaseKeeper {
+func NewBaseKeeper(cdc *codec.Codec, coinLockerKey csdkTypes.StoreKey, bankKeeper bank.Keeper) BaseKeeper {
 	return BaseKeeper{
+		cdc:           cdc,
 		coinLockerKey: coinLockerKey,
 		bankKeeper:    bankKeeper,
 	}
@@ -32,13 +33,8 @@ func NewBaseKeeper(coinLockerKey csdkTypes.StoreKey, bankKeeper bank.Keeper) Bas
 
 func (k BaseKeeper) SetLocker(ctx csdkTypes.Context, lockerId string, locker *sdkTypes.CoinLocker) {
 	store := ctx.KVStore(k.coinLockerKey)
-	keyBytes := []byte(lockerId)
-	valueBytes, err := json.Marshal(&locker)
-
-	if err != nil {
-		panic(err)
-	}
-
+	keyBytes := k.cdc.MustMarshalBinary(lockerId)
+	valueBytes := k.cdc.MustMarshalBinary(&locker)
 	store.Set(keyBytes, valueBytes)
 }
 
@@ -47,15 +43,13 @@ func (k BaseKeeper) GetLocker(ctx csdkTypes.Context, lockerId string) *sdkTypes.
 	keyBytes := []byte(lockerId)
 	valueBytes := store.Get(keyBytes)
 
-	var locker sdkTypes.CoinLocker
-
 	if valueBytes == nil {
 		return nil
 	}
 
-	if err := json.Unmarshal(valueBytes, &locker); err != nil {
-		panic(err)
-	}
+	var locker sdkTypes.CoinLocker
+
+	k.cdc.MustUnmarshalBinary(valueBytes, &locker)
 
 	return &locker
 }
@@ -79,10 +73,8 @@ func (k BaseKeeper) LockCoins(ctx csdkTypes.Context, lockerId string,
 
 func (k BaseKeeper) ReleaseCoins(ctx csdkTypes.Context, lockerId string) {
 	locker := k.GetLocker(ctx, lockerId)
-	addr := locker.Address
-	coins := locker.Coins
 
-	_, _, err := k.bankKeeper.AddCoins(ctx, addr, coins)
+	_, _, err := k.bankKeeper.AddCoins(ctx, locker.Address, locker.Coins)
 
 	if err != nil {
 		panic(err)
