@@ -64,7 +64,7 @@ func NewSentinelHub(logger log.Logger, db tmDb.DB, baseAppOptions ...func(*basea
 	)
 	app.bankKeeper = bank.NewBaseKeeper(app.accountKeeper)
 	app.ibcKeeper = ibc.NewKeeper(app.keyIBC, app.cdc)
-	app.hubKeeper = hub.NewBaseKeeper(app.keyCoinLocker, app.bankKeeper)
+	app.hubKeeper = hub.NewBaseKeeper(app.cdc, app.keyCoinLocker, app.bankKeeper)
 
 	app.Router().
 		AddRoute("bank", bank.NewHandler(app.bankKeeper)).
