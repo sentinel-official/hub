@@ -5,15 +5,18 @@ import (
 
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
 	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
+	"github.com/cosmos/cosmos-sdk/x/auth"
 )
 
 type Keeper struct {
 	VPNStoreKey csdkTypes.StoreKey
+	Account auth.AccountKeeper
 }
 
-func NewKeeper(vpnKey csdkTypes.StoreKey) Keeper {
+func NewKeeper(vpnKey csdkTypes.StoreKey, ak auth.AccountKeeper) Keeper {
 	return Keeper{
 		VPNStoreKey: vpnKey,
+		Account:ak,
 	}
 }
 
@@ -61,4 +64,16 @@ func (k Keeper) SetVPNStatus(ctx csdkTypes.Context, vpnId string, status bool) {
 
 	store := ctx.KVStore(k.VPNStoreKey)
 	store.Set(vpnIdBytes, vpnDetailsBytes)
+}
+
+func (k Keeper) SetSessionDetails(ctx csdkTypes.Context, session sdkTypes.Session, sessionKey string)  {
+	store := ctx.KVStore(k.VPNStoreKey)
+
+	sessionData, err := json.Marshal(session)
+
+	if err != nil{
+		panic(err)
+	}
+
+	store.Set([]byte(sessionKey),sessionData)
 }

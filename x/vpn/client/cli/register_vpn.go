@@ -14,8 +14,8 @@ import (
 )
 
 const (
-	flagIP                = "ip"
-	flagPort              = "port"
+	flagApiPort           = "api-port"
+	flagVpnPort           = "vpn-port"
 	flagAmount            = "amount"
 	flagUploadSpeed       = "upload"
 	flagDownloadSpeed     = "download"
@@ -37,8 +37,8 @@ func RegisterVPNCmd(cdc *codec.Codec) *cobra.Command {
 			txBldr := authTxBuilder.NewTxBuilderFromCLI().WithCodec(cdc)
 			cliCtx := context.NewCLIContext().WithCodec(cdc).WithAccountDecoder(authCli.GetAccountDecoder(cdc))
 
-			ip := viper.GetString(flagIP)
-			port := viper.GetString(flagPort)
+			apiPort := viper.GetString(flagApiPort)
+			vpnPort := viper.GetString(flagVpnPort)
 			amount := viper.GetString(flagAmount)
 			pricePerGb := viper.GetInt64(flagPricePerGB)
 			upload := viper.GetInt64(flagUploadSpeed)
@@ -66,6 +66,8 @@ func RegisterVPNCmd(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
+			pubkey := account.GetPubKey()
+
 			coins, err := csdkTypes.ParseCoins(amount)
 
 			if err != nil {
@@ -78,7 +80,7 @@ func RegisterVPNCmd(cdc *codec.Codec) *cobra.Command {
 			}
 
 			msg := vpn.NewRegisterVPNMsg(from, coins,
-				ip, port,
+				apiPort, vpnPort, pubkey,
 				upload, download,
 				latitude, longitude, city, country,
 				pricePerGb, encMethod, version)
@@ -91,9 +93,9 @@ func RegisterVPNCmd(cdc *codec.Codec) *cobra.Command {
 		},
 	}
 
-	cmd.Flags().String(flagIP, "", "ip")
-	cmd.Flags().String(flagPort, "", "port")
-	cmd.Flags().String(flagAmount, "1000SentCoins", "amount")
+	cmd.Flags().String(flagApiPort, "", "api port")
+	cmd.Flags().String(flagVpnPort, "", " vpn port")
+	cmd.Flags().String(flagAmount, "100mycoin", "amount")
 	cmd.Flags().Int64(flagUploadSpeed, -1, "upload_speed")
 	cmd.Flags().Int64(flagDownloadSpeed, -1, "download_speed")
 	cmd.Flags().Int64(flagPricePerGB, -1, "price_per_gb")

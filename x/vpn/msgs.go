@@ -5,6 +5,7 @@ import (
 
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
 	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
+	"github.com/tendermint/tendermint/crypto"
 )
 
 type MsgRegisterNode struct {
@@ -23,7 +24,6 @@ func (msg MsgRegisterNode) ValidateBasic() csdkTypes.Error {
 
 func (msg MsgRegisterNode) GetSignBytes() []byte {
 	MsgBytes, err := json.Marshal(msg)
-
 	if err != nil {
 		return nil
 	}
@@ -40,7 +40,7 @@ func (msg MsgRegisterNode) Route() string {
 }
 
 func NewRegisterVPNMsg(from csdkTypes.AccAddress, coins csdkTypes.Coins,
-	ip string, port string,
+	apiPort string, vpnPort string, pubkey crypto.PubKey,
 	upload int64, download int64,
 	latitude int64, longitude int64, city string, country string,
 	pricePerGb int64, encMethod string, version string) *MsgRegisterNode {
@@ -48,8 +48,10 @@ func NewRegisterVPNMsg(from csdkTypes.AccAddress, coins csdkTypes.Coins,
 		From:  from,
 		Coins: coins,
 		Details: sdkTypes.VPNDetails{
-			Ip:         ip,
-			Port:       port,
+			ApiPort:    apiPort,
+			VpnPort:    vpnPort,
+			Pubkey:     pubkey,
+			Address:    from,
 			PricePerGb: pricePerGb,
 			NetSpeed: sdkTypes.NetSpeed{
 				Upload:   upload,
@@ -109,4 +111,45 @@ func NewNodeStatusMsg(from csdkTypes.AccAddress, vpnId string, status bool) MsgU
 		VPNId:  vpnId,
 		Status: status,
 	}
+}
+
+type MsgPayVpnService struct {
+	Coins   csdkTypes.Coins
+	Vpnaddr csdkTypes.AccAddress
+	From    csdkTypes.AccAddress
+	Pubkey  crypto.PubKey
+}
+
+func NewMsgPayVpnService(coins csdkTypes.Coins, vaddr csdkTypes.AccAddress, from csdkTypes.AccAddress, pubkey crypto.PubKey) MsgPayVpnService {
+	return MsgPayVpnService{
+		Coins:   coins,
+		Vpnaddr: vaddr,
+		From:    from,
+		Pubkey:  pubkey,
+	}
+
+}
+
+func (msg MsgPayVpnService) Type() string {
+	return "pay-vpn-service"
+}
+
+func (msg MsgPayVpnService) GetSignBytes() []byte {
+	byte_format, err := json.Marshal(msg)
+	if err != nil {
+		return nil
+	}
+	return byte_format
+}
+
+func (msg MsgPayVpnService) ValidateBasic() csdkTypes.Error {
+	return nil
+}
+
+func (msg MsgPayVpnService) GetSigners() []csdkTypes.AccAddress {
+	return []csdkTypes.AccAddress{msg.From}
+}
+
+func (msc MsgPayVpnService) Route() string {
+	return "vpn"
 }
