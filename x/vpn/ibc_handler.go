@@ -18,10 +18,10 @@ func NewIBCVPNHandler(k Keeper) csdkTypes.Handler {
 			switch ibcMsg := msg.IBCPacket.Message.(type) {
 			case hub.MsgCoinLocker:
 				newMsg, _ := msg.IBCPacket.Message.(hub.MsgCoinLocker)
-				if strings.Contains(newMsg.LockerId, "vpn") {
+				if strings.HasPrefix(newMsg.LockerId, "vpn") {
 					return handleSetNodeStatus(ctx, k, msg.IBCPacket)
 				}
-				if strings.Contains(newMsg.LockerId, "session") {
+				if strings.HasPrefix(newMsg.LockerId, "session") {
 					return handleSetSessionStatus(ctx, k, msg.IBCPacket)
 				}
 
