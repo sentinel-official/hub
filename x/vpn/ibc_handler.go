@@ -8,6 +8,7 @@ import (
 	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
 	"github.com/ironman0x7b2/sentinel-sdk/x/hub"
 	"github.com/ironman0x7b2/sentinel-sdk/x/ibc"
+	"strings"
 )
 
 func NewIBCVPNHandler(k Keeper) csdkTypes.Handler {
@@ -16,7 +17,14 @@ func NewIBCVPNHandler(k Keeper) csdkTypes.Handler {
 		case ibc.MsgIBCTransaction:
 			switch ibcMsg := msg.IBCPacket.Message.(type) {
 			case hub.MsgCoinLocker:
-				return handleSetNodeStatus(ctx, k, msg.IBCPacket)
+				newMsg, _ := msg.IBCPacket.Message.(hub.MsgCoinLocker)
+				if strings.Contains(newMsg.LockerId, "vpn") {
+					return handleSetNodeStatus(ctx, k, msg.IBCPacket)
+				}
+				if strings.Contains(newMsg.LockerId, "session") {
+					return handleSetSessionStatus(ctx, k, msg.IBCPacket)
+				}
+
 			default:
 				errMsg := "Unrecognized vpn Msg type: " + reflect.TypeOf(ibcMsg).Name()
 
@@ -43,4 +51,21 @@ func handleSetNodeStatus(ctx csdkTypes.Context, k Keeper, ibcPacket sdkTypes.IBC
 	k.SetVPNStatus(ctx, vpnId, status)
 
 	return csdkTypes.Result{}
+}
+
+func handleSetSessionStatus(ctx csdkTypes.Context, k Keeper, ibcPacket sdkTypes.IBCPacket) csdkTypes.Result {
+	msg, _ := ibcPacket.Message.(hub.MsgCoinLocker)
+	sessionId := msg.LockerId
+	status := msg.Locked
+
+	sessionDetails := k.GetSessionDetails(ctx, sessionId)
+
+	if sessionDetails == nil {
+		panic("No session found")
+	}
+
+	k.SetSessionStatus(ctx, sessionId, status)
+
+	return csdkTypes.Result{}
+
 }

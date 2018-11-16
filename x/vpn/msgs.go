@@ -114,18 +114,19 @@ func NewNodeStatusMsg(from csdkTypes.AccAddress, vpnId string, status bool) MsgU
 }
 
 type MsgPayVpnService struct {
-	Coins   csdkTypes.Coins
-	Vpnaddr csdkTypes.AccAddress
-	From    csdkTypes.AccAddress
-	Pubkey  crypto.PubKey
+	Coins  csdkTypes.Coins
+	VpnId  string
+	From   csdkTypes.AccAddress
+	Pubkey crypto.PubKey
 }
 
-func NewMsgPayVpnService(coins csdkTypes.Coins, vaddr csdkTypes.AccAddress, from csdkTypes.AccAddress, pubkey crypto.PubKey) MsgPayVpnService {
+func NewMsgPayVpnService(coins csdkTypes.Coins, vpnId string, from csdkTypes.AccAddress, pubkey crypto.PubKey) MsgPayVpnService {
+
 	return MsgPayVpnService{
-		Coins:   coins,
-		Vpnaddr: vaddr,
-		From:    from,
-		Pubkey:  pubkey,
+		Coins:  coins,
+		VpnId:  vpnId,
+		From:   from,
+		Pubkey: pubkey,
 	}
 
 }
@@ -152,4 +153,44 @@ func (msg MsgPayVpnService) GetSigners() []csdkTypes.AccAddress {
 
 func (msc MsgPayVpnService) Route() string {
 	return "vpn"
+}
+
+type MsgUpdateSessionStatus struct {
+	From      csdkTypes.AccAddress
+	SessionId string
+	Status    bool
+}
+
+func (msg MsgUpdateSessionStatus) Type() string {
+	return "msg_update_node_status"
+}
+
+func (msg MsgUpdateSessionStatus) ValidateBasic() csdkTypes.Error {
+	return nil
+}
+
+func (msg MsgUpdateSessionStatus) GetSignBytes() []byte {
+	MsgBytes, err := json.Marshal(msg)
+
+	if err != nil {
+		return nil
+	}
+
+	return MsgBytes
+}
+
+func (msg MsgUpdateSessionStatus) GetSigners() []csdkTypes.AccAddress {
+	return []csdkTypes.AccAddress{msg.From}
+}
+
+func (msg MsgUpdateSessionStatus) Route() string {
+	return "vpn"
+}
+
+func NewSessionStatusMsg(from csdkTypes.AccAddress, sessionId string, status bool) MsgUpdateSessionStatus {
+	return MsgUpdateSessionStatus{
+		From:      from,
+		SessionId: sessionId,
+		Status:    status,
+	}
 }

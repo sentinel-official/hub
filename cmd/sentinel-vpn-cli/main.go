@@ -14,6 +14,7 @@ import (
 	ibcCli "github.com/ironman0x7b2/sentinel-sdk/x/ibc/client/cli"
 	"github.com/spf13/cobra"
 	"github.com/tendermint/tendermint/libs/cli"
+	vpnCli "github.com/ironman0x7b2/sentinel-sdk/x/vpn/client/cli"
 )
 
 var rootCmd = &cobra.Command{
@@ -39,6 +40,10 @@ func main() {
 	rootCmd.AddCommand(
 		client.PostCommands(
 			ibcCli.IBCRelayCmd(cdc),
+			vpnCli.PayVpnServiceCommand(cdc),
+			vpnCli.ChangeNodeStatusCommand(cdc),
+			vpnCli.RegisterVPNCmd(cdc),
+			vpnCli.ChangeSessionStatusCommand(cdc),
 		)...)
 
 	rootCmd.AddCommand(

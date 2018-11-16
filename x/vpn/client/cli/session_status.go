@@ -10,19 +10,23 @@ import (
 	"github.com/ironman0x7b2/sentinel-sdk/x/vpn"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"github.com/pkg/errors"
 )
 
-func PayVpnServiceCommand(cdc *codec.Codec) *cobra.Command {
+const (
+	flagSessionId = "session-id"
+)
+
+func ChangeSessionStatusCommand(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "pay-vpn",
-		Short: "pay for vpn",
+		Use:   "update-node-status",
+		Short: "Update VPN node status",
 		RunE: func(cmd *cobra.Command, args []string) error {
+
 			txBldr := authTxBuilder.NewTxBuilderFromCLI().WithCodec(cdc)
 			cliCtx := context.NewCLIContext().WithCodec(cdc).WithAccountDecoder(authCli.GetAccountDecoder(cdc))
 
-			vpnId := viper.GetString(flagVPNId)
-			amount := viper.GetString(flagAmount)
+			sessionId := viper.GetString(flagSessionId)
+			status := viper.GetBool(flagStatus)
 
 			if err := cliCtx.EnsureAccountExists(); err != nil {
 				return err
@@ -34,24 +38,14 @@ func PayVpnServiceCommand(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			account, err := cliCtx.GetAccount(from)
+			sessionIdBytes, err := csdkTypes.AccAddressFromBech32(sessionId)
 
 			if err != nil {
 				return err
 			}
 
-			coins, err := csdkTypes.ParseCoins(amount)
+			msg := vpn.NewSessionStatusMsg(from, sessionIdBytes.String(), status)
 
-			if err != nil {
-				return err
-			}
-
-			// ensure account has enough coins
-			if !account.GetCoins().IsGTE(coins) {
-				return errors.Errorf("Address %s doesn't have enough coins to pay for this transaction.", from)
-			}
-
-			msg := vpn.NewMsgPayVpnService(coins, vpnId, from, account.GetPubKey())
 			if cliCtx.GenerateOnly {
 				return utils.PrintUnsignedStdTx(txBldr, cliCtx, []csdkTypes.Msg{msg}, false)
 			}
@@ -60,8 +54,8 @@ func PayVpnServiceCommand(cdc *codec.Codec) *cobra.Command {
 		},
 	}
 
-	cmd.Flags().String(flagVPNId, "", "VPN id")
-	cmd.Flags().String(flagAmount, "", "Amount of coins")
+	cmd.Flags().String(flagSessionId, "", "Session ID")
+	cmd.Flags().Bool(flagStatus, false, "session status")
 
 	return cmd
 

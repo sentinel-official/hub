@@ -10,13 +10,13 @@ import (
 
 type Keeper struct {
 	VPNStoreKey csdkTypes.StoreKey
-	Account auth.AccountKeeper
+	Account     auth.AccountKeeper
 }
 
 func NewKeeper(vpnKey csdkTypes.StoreKey, ak auth.AccountKeeper) Keeper {
 	return Keeper{
 		VPNStoreKey: vpnKey,
-		Account:ak,
+		Account:     ak,
 	}
 }
 
@@ -66,14 +66,44 @@ func (k Keeper) SetVPNStatus(ctx csdkTypes.Context, vpnId string, status bool) {
 	store.Set(vpnIdBytes, vpnDetailsBytes)
 }
 
-func (k Keeper) SetSessionDetails(ctx csdkTypes.Context, session sdkTypes.Session, sessionKey string)  {
+func (k Keeper) SetSessionDetails(ctx csdkTypes.Context, session sdkTypes.Session, sessionKey string) {
 	store := ctx.KVStore(k.VPNStoreKey)
 
 	sessionData, err := json.Marshal(session)
 
-	if err != nil{
+	if err != nil {
 		panic(err)
 	}
 
-	store.Set([]byte(sessionKey),sessionData)
+	store.Set([]byte(sessionKey), sessionData)
+}
+
+func (k Keeper) GetSessionDetails(ctx csdkTypes.Context, sessionId string) *sdkTypes.Session {
+	store := ctx.KVStore(k.VPNStoreKey)
+
+	var details sdkTypes.Session
+	sessionData := store.Get([]byte(sessionId))
+
+	err := json.Unmarshal(sessionData, &details)
+	if err != nil {
+		panic(err)
+	}
+
+	return &details
+}
+
+func (k Keeper) SetSessionStatus(ctx csdkTypes.Context, sessionId string, status bool) {
+	sessionDetails := k.GetSessionDetails(ctx, sessionId)
+	sessionDetails.Status = status
+	sessionDetails.StartTime = ctx.BlockHeader().Time
+
+	sessionIdBytes := []byte(sessionId)
+	sessionDetailsBytes, err := json.Marshal(sessionDetails)
+
+	if err != nil {
+		panic(err)
+	}
+
+	store := ctx.KVStore(k.VPNStoreKey)
+	store.Set(sessionDetailsBytes, sessionIdBytes)
 }
