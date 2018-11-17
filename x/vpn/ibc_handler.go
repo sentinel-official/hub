@@ -15,7 +15,7 @@ func NewIBCVPNHandler(k Keeper) csdkTypes.Handler {
 		switch msg := msg.(type) {
 		case ibc.MsgIBCTransaction:
 			switch ibcMsg := msg.IBCPacket.Message.(type) {
-			case hub.MsgCoinLocker:
+			case hub.MsgLockerStatus:
 				return handleSetNodeStatus(ctx, k, msg.IBCPacket)
 			default:
 				errMsg := "Unrecognized vpn Msg type: " + reflect.TypeOf(ibcMsg).Name()
@@ -30,9 +30,9 @@ func NewIBCVPNHandler(k Keeper) csdkTypes.Handler {
 }
 
 func handleSetNodeStatus(ctx csdkTypes.Context, k Keeper, ibcPacket sdkTypes.IBCPacket) csdkTypes.Result {
-	msg, _ := ibcPacket.Message.(hub.MsgCoinLocker)
+	msg, _ := ibcPacket.Message.(hub.MsgLockerStatus)
 	vpnId := msg.LockerId
-	status := msg.Locked
+	status := msg.Status == "LOCKED"
 
 	vpnDeatils := k.GetVPNDetails(ctx, vpnId)
 

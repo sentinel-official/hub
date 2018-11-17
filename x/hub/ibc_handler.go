@@ -36,81 +36,93 @@ func handleLockCoins(ctx csdkTypes.Context, ibcKeeper ibc.Keeper, hubKeeper Keep
 	locker := hubKeeper.GetLocker(ctx, msg.LockerId)
 
 	if locker != nil {
+		// TODO: Replace with ErrLockerAlreadyExists
 		return csdkTypes.Result{}
 	}
 
-	hubKeeper.LockCoins(ctx, msg.LockerId, msg.Address, msg.Coins)
+	if err := hubKeeper.LockCoins(ctx, msg.LockerId, msg.Address, msg.Coins); err != nil {
+		// TODO: Replace with ErrLockCoins
+		return csdkTypes.Result{}
+	}
 
 	packet := sdkTypes.IBCPacket{
 		SrcChainId:  ibcPacket.DestChainId,
 		DestChainId: ibcPacket.SrcChainId,
-		Message: MsgCoinLocker{
+		Message: MsgLockerStatus{
 			LockerId: msg.LockerId,
-			Address:  msg.Address,
-			Coins:    msg.Coins,
-			Locked:   true,
+			Status:   "LOCKED",
 		},
 	}
 
 	if err := ibcKeeper.PostIBCPacket(ctx, packet); err != nil {
-		panic(err)
+		// TODO: Replace with ErrPostIBCPacket
+		return csdkTypes.Result{}
 	}
 
+	// TODO: Replace with SuccessLockCoins
 	return csdkTypes.Result{}
 }
 
-func handleReleaseCoins(ctx csdkTypes.Context, ibc ibc.Keeper, hubKeeper Keeper, ibcPacket sdkTypes.IBCPacket) csdkTypes.Result {
+func handleReleaseCoins(ctx csdkTypes.Context, ibcKeeper ibc.Keeper, hubKeeper Keeper, ibcPacket sdkTypes.IBCPacket) csdkTypes.Result {
 	msg, _ := ibcPacket.Message.(MsgReleaseCoins)
 	locker := hubKeeper.GetLocker(ctx, msg.LockerId)
 
 	if locker == nil {
+		// TODO: Replace with ErrLockerNotExists
 		return csdkTypes.Result{}
 	}
 
-	hubKeeper.ReleaseCoins(ctx, msg.LockerId)
+	if err := hubKeeper.ReleaseCoins(ctx, msg.LockerId); err != nil {
+		// TODO: Replace with ErrReleaseCoins
+		return csdkTypes.Result{}
+	}
 
 	packet := sdkTypes.IBCPacket{
 		SrcChainId:  ibcPacket.DestChainId,
 		DestChainId: ibcPacket.SrcChainId,
-		Message: MsgCoinLocker{
+		Message: MsgLockerStatus{
 			LockerId: msg.LockerId,
-			Address:  locker.Address,
-			Coins:    locker.Coins,
-			Locked:   false,
+			Status:   "RELEASED",
 		},
 	}
 
-	if err := ibc.PostIBCPacket(ctx, packet); err != nil {
-		panic(err)
+	if err := ibcKeeper.PostIBCPacket(ctx, packet); err != nil {
+		// TODO: Replace with ErrPostIBCPacket
+		return csdkTypes.Result{}
 	}
 
+	// TODO: Replace with SuccessReleaseCoins
 	return csdkTypes.Result{}
 }
 
-func handleReleaseCoinsToMany(ctx csdkTypes.Context, ibc ibc.Keeper, hubKeeper Keeper, ibcPacket sdkTypes.IBCPacket) csdkTypes.Result {
+func handleReleaseCoinsToMany(ctx csdkTypes.Context, ibcKeeper ibc.Keeper, hubKeeper Keeper, ibcPacket sdkTypes.IBCPacket) csdkTypes.Result {
 	msg, _ := ibcPacket.Message.(MsgReleaseCoinsToMany)
 	locker := hubKeeper.GetLocker(ctx, msg.LockerId)
 
 	if locker == nil {
+		// TODO: Replace with ErrLockerNotExists
 		return csdkTypes.Result{}
 	}
 
-	hubKeeper.ReleaseCoinsToMany(ctx, msg.LockerId, msg.Addresses, msg.Shares)
+	if err := hubKeeper.ReleaseCoinsToMany(ctx, msg.LockerId, msg.Addresses, msg.Shares); err != nil {
+		// TODO: Replace with ErrReleaseCoinsToMany
+		return csdkTypes.Result{}
+	}
 
 	packet := sdkTypes.IBCPacket{
 		SrcChainId:  ibcPacket.DestChainId,
 		DestChainId: ibcPacket.SrcChainId,
-		Message: MsgCoinLocker{
+		Message: MsgLockerStatus{
 			LockerId: msg.LockerId,
-			Address:  locker.Address,
-			Coins:    locker.Coins,
-			Locked:   false,
+			Status:   "RELEASED",
 		},
 	}
 
-	if err := ibc.PostIBCPacket(ctx, packet); err != nil {
-		panic(err)
+	if err := ibcKeeper.PostIBCPacket(ctx, packet); err != nil {
+		// TODO: Replace with ErrPostIBCPacket
+		return csdkTypes.Result{}
 	}
 
+	// TODO: Replace with SuccessReleaseCoinsToMany
 	return csdkTypes.Result{}
 }
