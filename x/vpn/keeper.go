@@ -1,49 +1,63 @@
 package vpn
 
 import (
-	"encoding/json"
+	"sort"
 
+	"github.com/cosmos/cosmos-sdk/codec"
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
-	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
+	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
 )
 
 type Keeper struct {
-	VPNStoreKey csdkTypes.StoreKey
-	Account     auth.AccountKeeper
+	VPNStoreKey     csdkTypes.StoreKey
+	SessionStoreKey csdkTypes.StoreKey
+	cdc             *codec.Codec
+	AccountKeeper   auth.AccountKeeper
 }
 
-func NewKeeper(vpnKey csdkTypes.StoreKey, ak auth.AccountKeeper) Keeper {
+func NewKeeper(cdc *codec.Codec, vpnKey csdkTypes.StoreKey, accountKeeper auth.AccountKeeper) Keeper {
 	return Keeper{
-		VPNStoreKey: vpnKey,
-		Account:     ak,
+		VPNStoreKey:   vpnKey,
+		cdc:           cdc,
+		AccountKeeper: accountKeeper,
 	}
 }
 
-func (k Keeper) SetVPNDetails(ctx csdkTypes.Context, vpnID string, vpnDetails sdkTypes.VPNDetails) {
+func (k Keeper) SetVPNDetails(ctx csdkTypes.Context, vpnID string, vpnDetails *sdkTypes.VPNDetails) {
 	vpnStore := ctx.KVStore(k.VPNStoreKey)
-	vpnIDBytes := []byte(vpnID)
-	vpnDetailsBytes, err := json.Marshal(vpnDetails)
+	keyBytes, err := k.cdc.MarshalBinary(vpnID)
 
 	if err != nil {
 		panic(err)
 	}
 
-	vpnStore.Set(vpnIDBytes, vpnDetailsBytes)
+	valueBytes, err := k.cdc.MarshalBinary(vpnDetails)
+
+	if err != nil {
+		panic(err)
+	}
+
+	vpnStore.Set(keyBytes, valueBytes)
 }
 
 func (k Keeper) GetVPNDetails(ctx csdkTypes.Context, vpnID string) *sdkTypes.VPNDetails {
 	store := ctx.KVStore(k.VPNStoreKey)
-	vpnIDBytes := []byte(vpnID)
-	vpnDetailsBytes := store.Get(vpnIDBytes)
+	keyBytes, err := k.cdc.MarshalBinary(vpnID)
 
-	if vpnDetailsBytes == nil {
+	if err != nil {
+		panic(err)
+	}
+
+	valueBytes := store.Get(keyBytes)
+
+	if valueBytes == nil {
 		return nil
 	}
 
 	var vpnDetails sdkTypes.VPNDetails
 
-	if err := json.Unmarshal(vpnDetailsBytes, &vpnDetails); err != nil {
+	if err := k.cdc.UnmarshalBinary(valueBytes, &vpnDetails); err != nil {
 		panic(err)
 	}
 
@@ -55,106 +69,104 @@ func (k Keeper) SetVPNStatus(ctx csdkTypes.Context, vpnID string, status bool) {
 	vpnDetails.Info.Status = status
 	vpnDetails.Info.BlockHeight = ctx.BlockHeight()
 
-	vpnIDBytes := []byte(vpnID)
-	vpnDetailsBytes, err := json.Marshal(vpnDetails)
-
-	if err != nil {
-		panic(err)
-	}
-
-	store := ctx.KVStore(k.VPNStoreKey)
-	store.Set(vpnIDBytes, vpnDetailsBytes)
+	k.SetVPNDetails(ctx, vpnID, vpnDetails)
 }
 
-func (k Keeper) SetSessionDetails(ctx csdkTypes.Context, session sdkTypes.Session, sessionKey string) {
-	store := ctx.KVStore(k.VPNStoreKey)
-
-	sessionData, err := json.Marshal(session)
+func (k Keeper) SetSessionDetails(ctx csdkTypes.Context, sessionID string, sessionDetails *sdkTypes.Session) {
+	store := ctx.KVStore(k.SessionStoreKey)
+	keyBytes, err := k.cdc.MarshalBinary(sessionID)
 
 	if err != nil {
 		panic(err)
 	}
 
-	store.Set([]byte(sessionKey), sessionData)
+	valueBytes, err := k.cdc.MarshalBinary(sessionDetails)
+
+	if err != nil {
+		panic(err)
+	}
+
+	store.Set(keyBytes, valueBytes)
 }
 
 func (k Keeper) GetSessionDetails(ctx csdkTypes.Context, sessionID string) *sdkTypes.Session {
-	store := ctx.KVStore(k.VPNStoreKey)
+	store := ctx.KVStore(k.SessionStoreKey)
+	keyBytes, err := k.cdc.MarshalBinary(sessionID)
 
-	var details sdkTypes.Session
-	sessionData := store.Get([]byte(sessionID))
-
-	err := json.Unmarshal(sessionData, &details)
 	if err != nil {
 		panic(err)
 	}
 
-	return &details
+	valueBytes := store.Get(keyBytes)
+
+	if valueBytes == nil {
+		return nil
+	}
+
+	var sessionDetails sdkTypes.Session
+
+	if err := k.cdc.UnmarshalBinary(valueBytes, &sessionDetails); err != nil {
+		panic(err)
+	}
+
+	return &sessionDetails
 }
 
 func (k Keeper) SetSessionStatus(ctx csdkTypes.Context, sessionID string, status bool) {
-
 	sessionDetails := k.GetSessionDetails(ctx, sessionID)
 	sessionDetails.Status = status
-	sessionDetails.StartTime = ctx.BlockHeader().Time
+	blockTime := ctx.BlockHeader().Time.UTC()
+	sessionDetails.StartTime = &blockTime
 
-	sessionIDBytes := []byte(sessionID)
-	sessionDetailsBytes, err := json.Marshal(sessionDetails)
+	k.SetSessionDetails(ctx, sessionID, sessionDetails)
+}
+
+func (k Keeper) SetActiveSessionIDs(ctx csdkTypes.Context, sessionIDs []string) {
+	keyBytes, err := k.cdc.MarshalBinary("ACTIVE_SESSION_IDS")
 
 	if err != nil {
 		panic(err)
 	}
 
-	store := ctx.KVStore(k.VPNStoreKey)
-	store.Set(sessionDetailsBytes, sessionIDBytes)
+	sort.Strings(sessionIDs)
+	valueBytes, err := k.cdc.MarshalBinary(sessionIDs)
 
-	activeSessions := k.GetActiveSessions(ctx)
-	k.SetActiveSessions(ctx, activeSessions, sessionID, status)
-}
-
-func (k Keeper) SetActiveSessions(ctx csdkTypes.Context, activeSessions []string, sessionID string, status bool) {
-	if status {
-		activeSessions := append(activeSessions, sessionID)
-
-		activeSessionBytes, err := json.Marshal(activeSessions)
-		if err != nil {
-			panic(err)
-		}
-
-		store := ctx.KVStore(k.VPNStoreKey)
-		store.Set([]byte("activeSessions"), activeSessionBytes)
-	}
-
-	if !status {
-		var list []string
-		for _, session := range activeSessions {
-			if session == sessionID {
-				continue
-			} else {
-				list = append(list, session)
-			}
-		}
-
-		activeSessionListBytes, err := json.Marshal(list)
-
-		if err != nil {
-			panic(err)
-		}
-		store := ctx.KVStore(k.VPNStoreKey)
-		store.Set([]byte("activeSessions"), activeSessionListBytes)
-	}
-}
-
-func (k Keeper) GetActiveSessions(ctx csdkTypes.Context) []string {
-
-	var activeSessions sdkTypes.ActiveSessions
-	store := ctx.KVStore(k.VPNStoreKey)
-	activeSessionDetails := store.Get([]byte("activeSessions"))
-
-	err := json.Unmarshal(activeSessionDetails, activeSessions)
 	if err != nil {
 		panic(err)
 	}
 
-	return activeSessions
+	store := ctx.KVStore(k.SessionStoreKey)
+	store.Set(keyBytes, valueBytes)
+}
+
+func (k Keeper) GetActiveSessionIDs(ctx csdkTypes.Context) []string {
+	store := ctx.KVStore(k.SessionStoreKey)
+	valueBytes := store.Get([]byte("ACTIVE_SESSION_IDS"))
+
+	var sessionIDs []string
+
+	if err := k.cdc.UnmarshalBinary(valueBytes, &sessionIDs); err != nil {
+		panic(err)
+	}
+
+	return sessionIDs
+}
+
+func (k Keeper) AddActiveSession(ctx csdkTypes.Context, sessionID string) {
+	sessionIDs := k.GetActiveSessionIDs(ctx)
+	sessionIDs = append(sessionIDs, sessionID)
+	k.SetActiveSessionIDs(ctx, sessionIDs)
+}
+
+func (k Keeper) RemoveActiveSession(ctx csdkTypes.Context, sessionID string) {
+	oldSessionIDs := k.GetActiveSessionIDs(ctx)
+	var sessionIDs []string
+
+	for _, id := range oldSessionIDs {
+		if id != sessionID {
+			sessionIDs = append(sessionIDs, id)
+		}
+	}
+
+	k.SetActiveSessionIDs(ctx, sessionIDs)
 }
