@@ -19,13 +19,13 @@ func NewIBCVPNHandler(k Keeper) csdkTypes.Handler {
 			switch ibcMsg := msg.IBCPacket.Message.(type) {
 			case hub.MsgLockerStatus:
 				newMsg, _ := msg.IBCPacket.Message.(hub.MsgLockerStatus)
-				if strings.HasPrefix(newMsg.LockerId, "vpn") {
+				if strings.HasPrefix(newMsg.LockerID, "vpn") {
 					return handleSetNodeStatus(ctx, k, msg.IBCPacket)
 				}
-				if strings.HasPrefix(newMsg.LockerId, "session") {
+				if strings.HasPrefix(newMsg.LockerID, "session") {
 					return handleSetSessionStatus(ctx, k, msg.IBCPacket)
 				} else {
-					errMsg := "Unrecognized locker id: " + newMsg.LockerId
+					errMsg := "Unrecognized locker id: " + newMsg.LockerID
 					return csdkTypes.ErrUnknownRequest(errMsg).Result()
 				}
 			default:
@@ -41,32 +41,32 @@ func NewIBCVPNHandler(k Keeper) csdkTypes.Handler {
 
 func handleSetNodeStatus(ctx csdkTypes.Context, k Keeper, ibcPacket sdkTypes.IBCPacket) csdkTypes.Result {
 	msg, _ := ibcPacket.Message.(hub.MsgLockerStatus)
-	vpnId := msg.LockerId
+	vpnID := msg.LockerID
 	status := msg.Status == "LOCKED"
 
-	vpnDeatils := k.GetVPNDetails(ctx, vpnId)
+	vpnDeatils := k.GetVPNDetails(ctx, vpnID)
 
 	if vpnDeatils == nil {
 		panic("VPN not registered")
 	}
 
-	k.SetVPNStatus(ctx, vpnId, status)
+	k.SetVPNStatus(ctx, vpnID, status)
 
 	return csdkTypes.Result{}
 }
 
 func handleSetSessionStatus(ctx csdkTypes.Context, k Keeper, ibcPacket sdkTypes.IBCPacket) csdkTypes.Result {
 	msg, _ := ibcPacket.Message.(hub.MsgLockerStatus)
-	sessionId := msg.LockerId
+	sessionID := msg.LockerID
 	status := msg.Status == "LOCKED"
 
-	sessionDetails := k.GetSessionDetails(ctx, sessionId)
+	sessionDetails := k.GetSessionDetails(ctx, sessionID)
 
 	if sessionDetails == nil {
 		panic("No session found")
 	}
 
-	k.SetSessionStatus(ctx, sessionId, status)
+	k.SetSessionStatus(ctx, sessionID, status)
 
 	return csdkTypes.Result{}
 

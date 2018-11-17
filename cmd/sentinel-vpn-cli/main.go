@@ -40,7 +40,7 @@ func main() {
 	rootCmd.AddCommand(
 		client.PostCommands(
 			ibcCli.IBCRelayCmd(cdc),
-			vpnCli.PayVpnServiceCommand(cdc),
+			vpnCli.PayVPNServiceCommand(cdc),
 			vpnCli.ChangeNodeStatusCommand(cdc),
 			vpnCli.RegisterVPNCmd(cdc),
 			vpnCli.ChangeSessionStatusCommand(cdc),

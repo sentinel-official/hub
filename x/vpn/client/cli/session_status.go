@@ -13,7 +13,7 @@ import (
 )
 
 const (
-	flagSessionId = "session-id"
+	flagSessionID = "session-id"
 )
 
 func ChangeSessionStatusCommand(cdc *codec.Codec) *cobra.Command {
@@ -25,7 +25,7 @@ func ChangeSessionStatusCommand(cdc *codec.Codec) *cobra.Command {
 			txBldr := authTxBuilder.NewTxBuilderFromCLI().WithCodec(cdc)
 			cliCtx := context.NewCLIContext().WithCodec(cdc).WithAccountDecoder(authCli.GetAccountDecoder(cdc))
 
-			sessionId := viper.GetString(flagSessionId)
+			sessionID := viper.GetString(flagSessionID)
 			status := viper.GetBool(flagStatus)
 
 			if err := cliCtx.EnsureAccountExists(); err != nil {
@@ -38,13 +38,13 @@ func ChangeSessionStatusCommand(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			sessionIdBytes, err := csdkTypes.AccAddressFromBech32(sessionId)
+			sessionIDBytes, err := csdkTypes.AccAddressFromBech32(sessionID)
 
 			if err != nil {
 				return err
 			}
 
-			msg := vpn.NewSessionStatusMsg(from, sessionIdBytes.String(), status)
+			msg := vpn.NewSessionStatusMsg(from, sessionIDBytes.String(), status)
 
 			if cliCtx.GenerateOnly {
 				return utils.PrintUnsignedStdTx(txBldr, cliCtx, []csdkTypes.Msg{msg}, false)
@@ -54,7 +54,7 @@ func ChangeSessionStatusCommand(cdc *codec.Codec) *cobra.Command {
 		},
 	}
 
-	cmd.Flags().String(flagSessionId, "", "Session ID")
+	cmd.Flags().String(flagSessionID, "", "Session ID")
 	cmd.Flags().Bool(flagStatus, false, "session status")
 
 	return cmd

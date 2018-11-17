@@ -20,22 +20,22 @@ func NewKeeper(vpnKey csdkTypes.StoreKey, ak auth.AccountKeeper) Keeper {
 	}
 }
 
-func (k Keeper) SetVPNDetails(ctx csdkTypes.Context, vpnId string, vpnDetails sdkTypes.VPNDetails) {
+func (k Keeper) SetVPNDetails(ctx csdkTypes.Context, vpnID string, vpnDetails sdkTypes.VPNDetails) {
 	vpnStore := ctx.KVStore(k.VPNStoreKey)
-	vpnIdBytes := []byte(vpnId)
+	vpnIDBytes := []byte(vpnID)
 	vpnDetailsBytes, err := json.Marshal(vpnDetails)
 
 	if err != nil {
 		panic(err)
 	}
 
-	vpnStore.Set(vpnIdBytes, vpnDetailsBytes)
+	vpnStore.Set(vpnIDBytes, vpnDetailsBytes)
 }
 
-func (k Keeper) GetVPNDetails(ctx csdkTypes.Context, vpnId string) *sdkTypes.VPNDetails {
+func (k Keeper) GetVPNDetails(ctx csdkTypes.Context, vpnID string) *sdkTypes.VPNDetails {
 	store := ctx.KVStore(k.VPNStoreKey)
-	vpnIdBytes := []byte(vpnId)
-	vpnDetailsBytes := store.Get(vpnIdBytes)
+	vpnIDBytes := []byte(vpnID)
+	vpnDetailsBytes := store.Get(vpnIDBytes)
 
 	if vpnDetailsBytes == nil {
 		return nil
@@ -50,12 +50,12 @@ func (k Keeper) GetVPNDetails(ctx csdkTypes.Context, vpnId string) *sdkTypes.VPN
 	return &vpnDetails
 }
 
-func (k Keeper) SetVPNStatus(ctx csdkTypes.Context, vpnId string, status bool) {
-	vpnDetails := k.GetVPNDetails(ctx, vpnId)
+func (k Keeper) SetVPNStatus(ctx csdkTypes.Context, vpnID string, status bool) {
+	vpnDetails := k.GetVPNDetails(ctx, vpnID)
 	vpnDetails.Info.Status = status
 	vpnDetails.Info.BlockHeight = ctx.BlockHeight()
 
-	vpnIdBytes := []byte(vpnId)
+	vpnIDBytes := []byte(vpnID)
 	vpnDetailsBytes, err := json.Marshal(vpnDetails)
 
 	if err != nil {
@@ -63,7 +63,7 @@ func (k Keeper) SetVPNStatus(ctx csdkTypes.Context, vpnId string, status bool) {
 	}
 
 	store := ctx.KVStore(k.VPNStoreKey)
-	store.Set(vpnIdBytes, vpnDetailsBytes)
+	store.Set(vpnIDBytes, vpnDetailsBytes)
 }
 
 func (k Keeper) SetSessionDetails(ctx csdkTypes.Context, session sdkTypes.Session, sessionKey string) {
@@ -78,11 +78,11 @@ func (k Keeper) SetSessionDetails(ctx csdkTypes.Context, session sdkTypes.Sessio
 	store.Set([]byte(sessionKey), sessionData)
 }
 
-func (k Keeper) GetSessionDetails(ctx csdkTypes.Context, sessionId string) *sdkTypes.Session {
+func (k Keeper) GetSessionDetails(ctx csdkTypes.Context, sessionID string) *sdkTypes.Session {
 	store := ctx.KVStore(k.VPNStoreKey)
 
 	var details sdkTypes.Session
-	sessionData := store.Get([]byte(sessionId))
+	sessionData := store.Get([]byte(sessionID))
 
 	err := json.Unmarshal(sessionData, &details)
 	if err != nil {
@@ -92,13 +92,13 @@ func (k Keeper) GetSessionDetails(ctx csdkTypes.Context, sessionId string) *sdkT
 	return &details
 }
 
-func (k Keeper) SetSessionStatus(ctx csdkTypes.Context, sessionId string, status bool) {
+func (k Keeper) SetSessionStatus(ctx csdkTypes.Context, sessionID string, status bool) {
 
-	sessionDetails := k.GetSessionDetails(ctx, sessionId)
+	sessionDetails := k.GetSessionDetails(ctx, sessionID)
 	sessionDetails.Status = status
 	sessionDetails.StartTime = ctx.BlockHeader().Time
 
-	sessionIdBytes := []byte(sessionId)
+	sessionIDBytes := []byte(sessionID)
 	sessionDetailsBytes, err := json.Marshal(sessionDetails)
 
 	if err != nil {
@@ -106,15 +106,15 @@ func (k Keeper) SetSessionStatus(ctx csdkTypes.Context, sessionId string, status
 	}
 
 	store := ctx.KVStore(k.VPNStoreKey)
-	store.Set(sessionDetailsBytes, sessionIdBytes)
+	store.Set(sessionDetailsBytes, sessionIDBytes)
 
 	activeSessions := k.GetActiveSessions(ctx)
-	k.SetActiveSessions(ctx, activeSessions, sessionId, status)
+	k.SetActiveSessions(ctx, activeSessions, sessionID, status)
 }
 
-func (k Keeper) SetActiveSessions(ctx csdkTypes.Context, activeSessions []string, sessionId string, status bool) {
+func (k Keeper) SetActiveSessions(ctx csdkTypes.Context, activeSessions []string, sessionID string, status bool) {
 	if status {
-		activeSessions := append(activeSessions, sessionId)
+		activeSessions := append(activeSessions, sessionID)
 
 		activeSessionBytes, err := json.Marshal(activeSessions)
 		if err != nil {
@@ -128,7 +128,7 @@ func (k Keeper) SetActiveSessions(ctx csdkTypes.Context, activeSessions []string
 	if !status {
 		var list []string
 		for _, session := range activeSessions {
-			if session == sessionId {
+			if session == sessionID {
 				continue
 			} else {
 				list = append(list, session)

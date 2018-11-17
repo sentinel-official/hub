@@ -13,7 +13,7 @@ import (
 )
 
 const (
-	flagVPNId  = "vpn-node-id"
+	flagVPNID  = "vpn-node-id"
 	flagStatus = "status"
 )
 
@@ -25,7 +25,7 @@ func ChangeNodeStatusCommand(cdc *codec.Codec) *cobra.Command {
 			txBldr := authTxBuilder.NewTxBuilderFromCLI().WithCodec(cdc)
 			cliCtx := context.NewCLIContext().WithCodec(cdc).WithAccountDecoder(authCli.GetAccountDecoder(cdc))
 
-			vpnId := viper.GetString(flagVPNId)
+			vpnID := viper.GetString(flagVPNID)
 			status := viper.GetBool(flagStatus)
 
 			if err := cliCtx.EnsureAccountExists(); err != nil {
@@ -38,13 +38,13 @@ func ChangeNodeStatusCommand(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			vpnIdBytes, err := csdkTypes.AccAddressFromBech32(vpnId)
+			vpnIDBytes, err := csdkTypes.AccAddressFromBech32(vpnID)
 
 			if err != nil {
 				return err
 			}
 
-			msg := vpn.NewNodeStatusMsg(from, vpnIdBytes.String(), status)
+			msg := vpn.NewNodeStatusMsg(from, vpnIDBytes.String(), status)
 
 			if cliCtx.GenerateOnly {
 				return utils.PrintUnsignedStdTx(txBldr, cliCtx, []csdkTypes.Msg{msg}, false)
@@ -54,7 +54,7 @@ func ChangeNodeStatusCommand(cdc *codec.Codec) *cobra.Command {
 		},
 	}
 
-	cmd.Flags().String(flagVPNId, "", "VPN node ID")
+	cmd.Flags().String(flagVPNID, "", "VPN node ID")
 	cmd.Flags().Bool(flagStatus, false, "Node status")
 
 	return cmd

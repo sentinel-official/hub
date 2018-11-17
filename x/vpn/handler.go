@@ -17,8 +17,8 @@ func NewHandler(k Keeper, ik ibc.Keeper) csdkTypes.Handler {
 			return handleRegisterNode(ctx, k, ik, msg)
 		case MsgUpdateNodeStatus:
 			return handleUpdateNodeStatus(ctx, k, msg)
-		case MsgPayVpnService:
-			return handlePayVpnService(ctx, k, ik, msg)
+		case MsgPayVPNService:
+			return handlePayVPNService(ctx, k, ik, msg)
 		default:
 			errMsg := "Unrecognized vpn Msg type: " + reflect.TypeOf(msg).Name()
 
@@ -32,21 +32,21 @@ func handleRegisterNode(ctx csdkTypes.Context, k Keeper, ik ibc.Keeper, msg MsgR
 	if err != nil {
 		panic(err)
 	}
-	vpnId := msg.From.String() + "" + strconv.Itoa(int(sequence))
+	vpnID := msg.From.String() + "" + strconv.Itoa(int(sequence))
 
-	vpnDetails := k.GetVPNDetails(ctx, vpnId)
+	vpnDetails := k.GetVPNDetails(ctx, vpnID)
 
 	if vpnDetails != nil {
 		panic("Already registered")
 	}
 
-	k.SetVPNDetails(ctx, vpnId, msg.Details)
+	k.SetVPNDetails(ctx, vpnID, msg.Details)
 
 	ibcPacket := sdkTypes.IBCPacket{
-		SrcChainId:  "sentinel-vpn",
-		DestChainId: "sentinel-hub",
+		SrcChainID:  "sentinel-vpn",
+		DestChainID: "sentinel-hub",
 		Message: hub.MsgLockCoins{
-			LockerId: "vpn/" + vpnId,
+			LockerID: "vpn/" + vpnID,
 			Address:  msg.From,
 			Coins:    msg.Coins,
 		},
@@ -60,18 +60,18 @@ func handleRegisterNode(ctx csdkTypes.Context, k Keeper, ik ibc.Keeper, msg MsgR
 }
 
 func handleUpdateNodeStatus(ctx csdkTypes.Context, k Keeper, msg MsgUpdateNodeStatus) csdkTypes.Result {
-	vpnDetails := k.GetVPNDetails(ctx, msg.VPNId)
+	vpnDetails := k.GetVPNDetails(ctx, msg.VPNID)
 
 	if vpnDetails == nil {
 		panic("VPN not registered")
 	}
 
-	k.SetVPNStatus(ctx, msg.VPNId, msg.Status)
+	k.SetVPNStatus(ctx, msg.VPNID, msg.Status)
 
 	return csdkTypes.Result{}
 }
 
-func handlePayVpnService(ctx csdkTypes.Context, k Keeper, ik ibc.Keeper, msg MsgPayVpnService) csdkTypes.Result {
+func handlePayVPNService(ctx csdkTypes.Context, k Keeper, ik ibc.Keeper, msg MsgPayVPNService) csdkTypes.Result {
 	sequence, err := k.Account.GetSequence(ctx, msg.From)
 
 	if err != nil {
@@ -79,18 +79,18 @@ func handlePayVpnService(ctx csdkTypes.Context, k Keeper, ik ibc.Keeper, msg Msg
 	}
 
 	sessionKey := msg.From.String() + "" + strconv.Itoa(int(sequence))
-	vpnDetails := k.GetVPNDetails(ctx, msg.VpnId)
+	vpnDetails := k.GetVPNDetails(ctx, msg.VPNID)
 
-	session := sdkTypes.GetNewSessionMap(msg.VpnId, msg.From, vpnDetails.PricePerGb, vpnDetails.PricePerGb,
+	session := sdkTypes.GetNewSessionMap(msg.VPNID, msg.From, vpnDetails.PricePerGb, vpnDetails.PricePerGb,
 		vpnDetails.NetSpeed.Upload, vpnDetails.NetSpeed.Download)
 
 	k.SetSessionDetails(ctx, session, sessionKey)
 
 	ibcPacket := sdkTypes.IBCPacket{
-		SrcChainId:  "sentinel-vpn",
-		DestChainId: "sentinel-hub",
+		SrcChainID:  "sentinel-vpn",
+		DestChainID: "sentinel-hub",
 		Message: hub.MsgLockCoins{
-			LockerId: "session/" + sessionKey,
+			LockerID: "session/" + sessionKey,
 			Address:  msg.From,
 			Coins:    msg.Coins,
 		},

@@ -49,7 +49,7 @@ func NewRegisterVPNMsg(from csdkTypes.AccAddress, coins csdkTypes.Coins,
 		Coins: coins,
 		Details: sdkTypes.VPNDetails{
 			ApiPort:    apiPort,
-			VpnPort:    vpnPort,
+			VPNPort:    vpnPort,
 			Pubkey:     pubkey,
 			Address:    from,
 			PricePerGb: pricePerGb,
@@ -75,7 +75,7 @@ func NewRegisterVPNMsg(from csdkTypes.AccAddress, coins csdkTypes.Coins,
 
 type MsgUpdateNodeStatus struct {
 	From   csdkTypes.AccAddress
-	VPNId  string
+	VPNID  string
 	Status bool
 }
 
@@ -105,37 +105,37 @@ func (msg MsgUpdateNodeStatus) Route() string {
 	return "vpn"
 }
 
-func NewNodeStatusMsg(from csdkTypes.AccAddress, vpnId string, status bool) MsgUpdateNodeStatus {
+func NewNodeStatusMsg(from csdkTypes.AccAddress, vpnID string, status bool) MsgUpdateNodeStatus {
 	return MsgUpdateNodeStatus{
 		From:   from,
-		VPNId:  vpnId,
+		VPNID:  vpnID,
 		Status: status,
 	}
 }
 
-type MsgPayVpnService struct {
+type MsgPayVPNService struct {
 	Coins  csdkTypes.Coins
-	VpnId  string
+	VPNID  string
 	From   csdkTypes.AccAddress
 	Pubkey crypto.PubKey
 }
 
-func NewMsgPayVpnService(coins csdkTypes.Coins, vpnId string, from csdkTypes.AccAddress, pubkey crypto.PubKey) MsgPayVpnService {
+func NewMsgPayVPNService(coins csdkTypes.Coins, vpnID string, from csdkTypes.AccAddress, pubkey crypto.PubKey) MsgPayVPNService {
 
-	return MsgPayVpnService{
+	return MsgPayVPNService{
 		Coins:  coins,
-		VpnId:  vpnId,
+		VPNID:  vpnID,
 		From:   from,
 		Pubkey: pubkey,
 	}
 
 }
 
-func (msg MsgPayVpnService) Type() string {
+func (msg MsgPayVPNService) Type() string {
 	return "pay-vpn-service"
 }
 
-func (msg MsgPayVpnService) GetSignBytes() []byte {
+func (msg MsgPayVPNService) GetSignBytes() []byte {
 	byte_format, err := json.Marshal(msg)
 	if err != nil {
 		return nil
@@ -143,21 +143,21 @@ func (msg MsgPayVpnService) GetSignBytes() []byte {
 	return byte_format
 }
 
-func (msg MsgPayVpnService) ValidateBasic() csdkTypes.Error {
+func (msg MsgPayVPNService) ValidateBasic() csdkTypes.Error {
 	return nil
 }
 
-func (msg MsgPayVpnService) GetSigners() []csdkTypes.AccAddress {
+func (msg MsgPayVPNService) GetSigners() []csdkTypes.AccAddress {
 	return []csdkTypes.AccAddress{msg.From}
 }
 
-func (msc MsgPayVpnService) Route() string {
+func (msc MsgPayVPNService) Route() string {
 	return "vpn"
 }
 
 type MsgUpdateSessionStatus struct {
 	From      csdkTypes.AccAddress
-	SessionId string
+	SessionID string
 	Status    bool
 }
 
@@ -187,10 +187,10 @@ func (msg MsgUpdateSessionStatus) Route() string {
 	return "vpn"
 }
 
-func NewSessionStatusMsg(from csdkTypes.AccAddress, sessionId string, status bool) MsgUpdateSessionStatus {
+func NewSessionStatusMsg(from csdkTypes.AccAddress, sessionID string, status bool) MsgUpdateSessionStatus {
 	return MsgUpdateSessionStatus{
 		From:      from,
-		SessionId: sessionId,
+		SessionID: sessionID,
 		Status:    status,
 	}
 }

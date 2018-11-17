@@ -22,21 +22,21 @@ func NewKeeper(ibcKey csdkTypes.StoreKey, cdc *codec.Codec) Keeper {
 
 func (ibc Keeper) PostIBCPacket(ctx csdkTypes.Context, packet sdkTypes.IBCPacket) csdkTypes.Error {
 	store := ctx.KVStore(ibc.IBCKey)
-	index := ibc.getEgressLength(store, packet.DestChainId)
+	index := ibc.getEgressLength(store, packet.DestChainID)
 	bz, err := ibc.cdc.MarshalBinary(packet)
 
 	if err != nil {
 		panic(err)
 	}
 
-	store.Set(EgressKey(packet.DestChainId, index), bz)
+	store.Set(EgressKey(packet.DestChainID, index), bz)
 	bz, err = ibc.cdc.MarshalBinary(index + 1)
 
 	if err != nil {
 		panic(err)
 	}
 
-	store.Set(EgressLengthKey(packet.DestChainId), bz)
+	store.Set(EgressLengthKey(packet.DestChainID), bz)
 
 	return nil
 }

@@ -13,7 +13,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-func PayVpnServiceCommand(cdc *codec.Codec) *cobra.Command {
+func PayVPNServiceCommand(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "pay-vpn",
 		Short: "pay for vpn",
@@ -21,7 +21,7 @@ func PayVpnServiceCommand(cdc *codec.Codec) *cobra.Command {
 			txBldr := authTxBuilder.NewTxBuilderFromCLI().WithCodec(cdc)
 			cliCtx := context.NewCLIContext().WithCodec(cdc).WithAccountDecoder(authCli.GetAccountDecoder(cdc))
 
-			vpnId := viper.GetString(flagVPNId)
+			vpnID := viper.GetString(flagVPNID)
 			amount := viper.GetString(flagAmount)
 
 			if err := cliCtx.EnsureAccountExists(); err != nil {
@@ -51,7 +51,7 @@ func PayVpnServiceCommand(cdc *codec.Codec) *cobra.Command {
 				return errors.Errorf("Address %s doesn't have enough coins to pay for this transaction.", from)
 			}
 
-			msg := vpn.NewMsgPayVpnService(coins, vpnId, from, account.GetPubKey())
+			msg := vpn.NewMsgPayVPNService(coins, vpnID, from, account.GetPubKey())
 			if cliCtx.GenerateOnly {
 				return utils.PrintUnsignedStdTx(txBldr, cliCtx, []csdkTypes.Msg{msg}, false)
 			}
@@ -60,7 +60,7 @@ func PayVpnServiceCommand(cdc *codec.Codec) *cobra.Command {
 		},
 	}
 
-	cmd.Flags().String(flagVPNId, "", "VPN id")
+	cmd.Flags().String(flagVPNID, "", "VPN id")
 	cmd.Flags().String(flagAmount, "", "Amount of coins")
 
 	return cmd

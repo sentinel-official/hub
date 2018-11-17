@@ -8,7 +8,7 @@ import (
 
 type VPNDetails struct {
 	ApiPort    string
-	VpnPort    string
+	VPNPort    string
 	Pubkey     crypto.PubKey
 	Address    csdkTypes.AccAddress
 	NetSpeed   NetSpeed
@@ -37,7 +37,7 @@ type Info struct {
 }
 
 type Session struct {
-	VpnId        string
+	VPNID        string
 	ClienAddress csdkTypes.AccAddress
 	GbToProvide  int64
 	PricePerGb   int64
@@ -49,10 +49,10 @@ type Session struct {
 	Locked       bool
 }
 
-func GetNewSessionMap(vpnId string, clientAddress csdkTypes.AccAddress, gbToProvide int64,
+func GetNewSessionMap(vpnID string, clientAddress csdkTypes.AccAddress, gbToProvide int64,
 	pricePerGb int64, upload int64, download int64) Session {
 	return Session{
-		VpnId:        vpnId,
+		VPNID:        vpnID,
 		ClienAddress: clientAddress,
 		GbToProvide:  gbToProvide,
 		PricePerGb:   pricePerGb,
