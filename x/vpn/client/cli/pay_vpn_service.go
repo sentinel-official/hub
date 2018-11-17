@@ -8,9 +8,9 @@ import (
 	authCli "github.com/cosmos/cosmos-sdk/x/auth/client/cli"
 	authTxBuilder "github.com/cosmos/cosmos-sdk/x/auth/client/txbuilder"
 	"github.com/ironman0x7b2/sentinel-sdk/x/vpn"
+	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"github.com/pkg/errors"
 )
 
 func PayVPNServiceCommand(cdc *codec.Codec) *cobra.Command {

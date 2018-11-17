@@ -39,7 +39,7 @@ func (k BaseKeeper) SetLocker(ctx csdkTypes.Context, lockerID string, locker *sd
 		panic(err)
 	}
 
-	valueBytes, err := k.cdc.MarshalBinary(&locker)
+	valueBytes, err := k.cdc.MarshalBinary(locker)
 
 	if err != nil {
 		panic(err)

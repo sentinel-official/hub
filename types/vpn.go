@@ -1,9 +1,10 @@
 package types
 
 import (
-	"github.com/tendermint/tendermint/crypto"
-	csdkTypes "github.com/cosmos/cosmos-sdk/types"
 	"time"
+
+	csdkTypes "github.com/cosmos/cosmos-sdk/types"
+	"github.com/tendermint/tendermint/crypto"
 )
 
 type VPNDetails struct {
@@ -44,23 +45,18 @@ type Session struct {
 	Status       bool
 	Upload       int64
 	Download     int64
-	StartTime    time.Time
-	EndTime      time.Time
+	StartTime    *time.Time
+	EndTime      *time.Time
 	Locked       bool
 }
 
-func GetNewSessionMap(vpnID string, clientAddress csdkTypes.AccAddress, gbToProvide int64,
-	pricePerGb int64, upload int64, download int64) Session {
+func GetNewSession(vpnID string, clientAddress csdkTypes.AccAddress, gbToProvide int64, pricePerGb int64) Session {
 	return Session{
 		VPNID:        vpnID,
 		ClienAddress: clientAddress,
 		GbToProvide:  gbToProvide,
 		PricePerGb:   pricePerGb,
 		Status:       false,
-		Upload:       upload,
-		Download:     download,
-		StartTime:    time.Time{},
-		EndTime:      time.Time{},
 		Locked:       false,
 	}
 

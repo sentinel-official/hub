@@ -3,11 +3,12 @@ package vpn
 import (
 	"reflect"
 
+	"strconv"
+
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
 	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
 	"github.com/ironman0x7b2/sentinel-sdk/x/hub"
 	"github.com/ironman0x7b2/sentinel-sdk/x/ibc"
-	"strconv"
 )
 
 func NewHandler(k Keeper, ik ibc.Keeper) csdkTypes.Handler {
@@ -21,49 +22,51 @@ func NewHandler(k Keeper, ik ibc.Keeper) csdkTypes.Handler {
 			return handlePayVPNService(ctx, k, ik, msg)
 		default:
 			errMsg := "Unrecognized vpn Msg type: " + reflect.TypeOf(msg).Name()
-
 			return csdkTypes.ErrUnknownRequest(errMsg).Result()
 		}
 	}
 }
 
 func handleRegisterNode(ctx csdkTypes.Context, k Keeper, ik ibc.Keeper, msg MsgRegisterNode) csdkTypes.Result {
-	sequence, err := k.Account.GetSequence(ctx, msg.From)
+	sequence, err := k.AccountKeeper.GetSequence(ctx, msg.From)
+
 	if err != nil {
-		panic(err)
-	}
-	vpnID := msg.From.String() + "" + strconv.Itoa(int(sequence))
-
-	vpnDetails := k.GetVPNDetails(ctx, vpnID)
-
-	if vpnDetails != nil {
-		panic("Already registered")
+		// TODO: Replace with ErrGetSequence
+		return csdkTypes.Result{}
 	}
 
-	k.SetVPNDetails(ctx, vpnID, msg.Details)
+	vpnID := msg.From.String() + "/" + strconv.Itoa(int(sequence))
+
+	if vpnDetails := k.GetVPNDetails(ctx, vpnID); vpnDetails != nil {
+		// TODO: Replace with ErrVPNAlreadyExists
+		return csdkTypes.Result{}
+	}
+
+	k.SetVPNDetails(ctx, vpnID, &msg.Details)
 
 	ibcPacket := sdkTypes.IBCPacket{
 		SrcChainID:  "sentinel-vpn",
 		DestChainID: "sentinel-hub",
 		Message: hub.MsgLockCoins{
-			LockerID: "vpn/" + vpnID,
+			LockerID: k.VPNStoreKey.String() + "/" + vpnID,
 			Address:  msg.From,
 			Coins:    msg.Coins,
 		},
 	}
 
 	if err := ik.PostIBCPacket(ctx, ibcPacket); err != nil {
-		panic(err)
+		// TODO: Replace with ErrPostIBCPacket
+		return csdkTypes.Result{}
 	}
 
+	// TODO: Replace with SuccessRegisterNode
 	return csdkTypes.Result{}
 }
 
 func handleUpdateNodeStatus(ctx csdkTypes.Context, k Keeper, msg MsgUpdateNodeStatus) csdkTypes.Result {
-	vpnDetails := k.GetVPNDetails(ctx, msg.VPNID)
-
-	if vpnDetails == nil {
-		panic("VPN not registered")
+	if vpnDetails := k.GetVPNDetails(ctx, msg.VPNID); vpnDetails == nil {
+		// TODO: Replace with ErrVPNNotExists
+		return csdkTypes.Result{}
 	}
 
 	k.SetVPNStatus(ctx, msg.VPNID, msg.Status)
@@ -72,34 +75,44 @@ func handleUpdateNodeStatus(ctx csdkTypes.Context, k Keeper, msg MsgUpdateNodeSt
 }
 
 func handlePayVPNService(ctx csdkTypes.Context, k Keeper, ik ibc.Keeper, msg MsgPayVPNService) csdkTypes.Result {
-	sequence, err := k.Account.GetSequence(ctx, msg.From)
+	sequence, err := k.AccountKeeper.GetSequence(ctx, msg.From)
 
 	if err != nil {
-		panic(err)
+		// TODO: Replace with ErrGetSequence
+		return csdkTypes.Result{}
 	}
 
-	sessionKey := msg.From.String() + "" + strconv.Itoa(int(sequence))
+	sessionID := msg.From.String() + "/" + strconv.Itoa(int(sequence))
+
+	if session := k.GetSessionDetails(ctx, sessionID); session != nil {
+		// TODO: Replace wtih ErrSessionAlreadyExists
+		return csdkTypes.Result{}
+	}
+
 	vpnDetails := k.GetVPNDetails(ctx, msg.VPNID)
 
-	session := sdkTypes.GetNewSessionMap(msg.VPNID, msg.From, vpnDetails.PricePerGb, vpnDetails.PricePerGb,
-		vpnDetails.NetSpeed.Upload, vpnDetails.NetSpeed.Download)
+	if vpnDetails == nil {
+		// TODO: Replace with ErrVPNNotExists
+		return csdkTypes.Result{}
+	}
 
-	k.SetSessionDetails(ctx, session, sessionKey)
-
+	session := sdkTypes.GetNewSession(msg.VPNID, msg.From, vpnDetails.PricePerGb, vpnDetails.PricePerGb)
+	k.SetSessionDetails(ctx, sessionID, &session)
 	ibcPacket := sdkTypes.IBCPacket{
 		SrcChainID:  "sentinel-vpn",
 		DestChainID: "sentinel-hub",
 		Message: hub.MsgLockCoins{
-			LockerID: "session/" + sessionKey,
+			LockerID: k.SessionStoreKey.String() + "/" + sessionID,
 			Address:  msg.From,
 			Coins:    msg.Coins,
 		},
 	}
 
 	if err := ik.PostIBCPacket(ctx, ibcPacket); err != nil {
-		panic(err)
+		// TODO: Replace with ErrPostIBCPacket
+		return csdkTypes.Result{}
 	}
 
+	// TODO: Replace with SuccessRegisterNode
 	return csdkTypes.Result{}
-
 }

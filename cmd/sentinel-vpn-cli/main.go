@@ -12,9 +12,9 @@ import (
 	app "github.com/ironman0x7b2/sentinel-sdk/apps/sentinel-vpn"
 	"github.com/ironman0x7b2/sentinel-sdk/types"
 	ibcCli "github.com/ironman0x7b2/sentinel-sdk/x/ibc/client/cli"
+	vpnCli "github.com/ironman0x7b2/sentinel-sdk/x/vpn/client/cli"
 	"github.com/spf13/cobra"
 	"github.com/tendermint/tendermint/libs/cli"
-	vpnCli "github.com/ironman0x7b2/sentinel-sdk/x/vpn/client/cli"
 )
 
 var rootCmd = &cobra.Command{
