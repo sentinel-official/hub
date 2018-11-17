@@ -65,3 +65,5 @@ func GetNewSessionMap(vpnId string, clientAddress csdkTypes.AccAddress, gbToProv
 	}
 
 }
+
+type ActiveSessions []string

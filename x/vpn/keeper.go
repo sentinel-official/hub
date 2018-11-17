@@ -93,6 +93,7 @@ func (k Keeper) GetSessionDetails(ctx csdkTypes.Context, sessionId string) *sdkT
 }
 
 func (k Keeper) SetSessionStatus(ctx csdkTypes.Context, sessionId string, status bool) {
+
 	sessionDetails := k.GetSessionDetails(ctx, sessionId)
 	sessionDetails.Status = status
 	sessionDetails.StartTime = ctx.BlockHeader().Time
@@ -106,4 +107,54 @@ func (k Keeper) SetSessionStatus(ctx csdkTypes.Context, sessionId string, status
 
 	store := ctx.KVStore(k.VPNStoreKey)
 	store.Set(sessionDetailsBytes, sessionIdBytes)
+
+	activeSessions := k.GetActiveSessions(ctx, sessionId)
+	k.SetActiveSessions(ctx, activeSessions, sessionId, status)
+}
+
+func (k Keeper) SetActiveSessions(ctx csdkTypes.Context, activeSessions []string, sessionId string, status bool) {
+	if status {
+		activeSessions := append(activeSessions, sessionId)
+
+		activeSessionBytes, err := json.Marshal(activeSessions)
+		if err != nil {
+			panic(err)
+		}
+
+		store := ctx.KVStore(k.VPNStoreKey)
+		store.Set([]byte("activeSessions"), activeSessionBytes)
+	}
+
+	if !status {
+		var list []string
+		for _, session := range activeSessions {
+			if session == sessionId {
+				continue
+			} else {
+				list = append(list, session)
+			}
+		}
+
+		activeSessionListBytes, err := json.Marshal(list)
+
+		if err != nil {
+			panic(err)
+		}
+		store := ctx.KVStore(k.VPNStoreKey)
+		store.Set([]byte("activeSessions"), activeSessionListBytes)
+	}
+}
+
+func (k Keeper) GetActiveSessions(ctx csdkTypes.Context) []string {
+
+	var activeSessions sdkTypes.ActiveSessions
+	store := ctx.KVStore(k.VPNStoreKey)
+	activeSessionDetails := store.Get([]byte("activeSessions"))
+
+	err := json.Unmarshal(activeSessionDetails, activeSessions)
+	if err != nil {
+		panic(err)
+	}
+
+	return activeSessions
 }
