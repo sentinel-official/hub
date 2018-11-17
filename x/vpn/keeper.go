@@ -108,7 +108,7 @@ func (k Keeper) SetSessionStatus(ctx csdkTypes.Context, sessionId string, status
 	store := ctx.KVStore(k.VPNStoreKey)
 	store.Set(sessionDetailsBytes, sessionIdBytes)
 
-	activeSessions := k.GetActiveSessions(ctx, sessionId)
+	activeSessions := k.GetActiveSessions(ctx)
 	k.SetActiveSessions(ctx, activeSessions, sessionId, status)
 }
 

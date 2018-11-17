@@ -46,7 +46,7 @@ func handleRegisterNode(ctx csdkTypes.Context, k Keeper, ik ibc.Keeper, msg MsgR
 		SrcChainId:  "sentinel-vpn",
 		DestChainId: "sentinel-hub",
 		Message: hub.MsgLockCoins{
-			LockerId: "vpn/"+vpnId,
+			LockerId: "vpn/" + vpnId,
 			Address:  msg.From,
 			Coins:    msg.Coins,
 		},
@@ -79,10 +79,10 @@ func handlePayVpnService(ctx csdkTypes.Context, k Keeper, ik ibc.Keeper, msg Msg
 	}
 
 	sessionKey := msg.From.String() + "" + strconv.Itoa(int(sequence))
-	vpnDetails := k.GetVPNDetails(ctx,msg.VpnId)
+	vpnDetails := k.GetVPNDetails(ctx, msg.VpnId)
 
-	session := sdkTypes.GetNewSessionMap(msg.VpnId,msg.From,vpnDetails.PricePerGb,vpnDetails.PricePerGb,
-		vpnDetails.NetSpeed.Upload,vpnDetails.NetSpeed.Download)
+	session := sdkTypes.GetNewSessionMap(msg.VpnId, msg.From, vpnDetails.PricePerGb, vpnDetails.PricePerGb,
+		vpnDetails.NetSpeed.Upload, vpnDetails.NetSpeed.Download)
 
 	k.SetSessionDetails(ctx, session, sessionKey)
 
@@ -90,7 +90,7 @@ func handlePayVpnService(ctx csdkTypes.Context, k Keeper, ik ibc.Keeper, msg Msg
 		SrcChainId:  "sentinel-vpn",
 		DestChainId: "sentinel-hub",
 		Message: hub.MsgLockCoins{
-			LockerId: "session/"+sessionKey,
+			LockerId: "session/" + sessionKey,
 			Address:  msg.From,
 			Coins:    msg.Coins,
 		},
