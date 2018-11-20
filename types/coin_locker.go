@@ -7,5 +7,5 @@ import (
 type CoinLocker struct {
 	Address csdkTypes.AccAddress `json:"address"`
 	Coins   csdkTypes.Coins      `json:"coins"`
-	Locked  bool                 `json:"locked"`
+	Status  string               `json:"status"`
 }

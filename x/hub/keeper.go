@@ -82,7 +82,7 @@ func (k BaseKeeper) LockCoins(ctx csdkTypes.Context, lockerID string,
 	locker := sdkTypes.CoinLocker{
 		Address: address,
 		Coins:   coins,
-		Locked:  true,
+		Status:  "LOCKED",
 	}
 
 	k.SetLocker(ctx, lockerID, &locker)
@@ -98,7 +98,7 @@ func (k BaseKeeper) ReleaseCoins(ctx csdkTypes.Context, lockerID string) csdkTyp
 		return err
 	}
 
-	locker.Locked = false
+	locker.Status = "RELEASED"
 	k.SetLocker(ctx, lockerID, locker)
 
 	return nil
@@ -116,7 +116,7 @@ func (k BaseKeeper) ReleaseCoinsToMany(ctx csdkTypes.Context, lockerID string,
 		}
 	}
 
-	locker.Locked = false
+	locker.Status = "RELEASED"
 	k.SetLocker(ctx, lockerID, locker)
 
 	return nil
