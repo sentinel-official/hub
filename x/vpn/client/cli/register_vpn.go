@@ -1,24 +1,24 @@
 package cli
 
 import (
+	"strconv"
+
 	"github.com/cosmos/cosmos-sdk/client/context"
+	ckeys "github.com/cosmos/cosmos-sdk/client/keys"
 	"github.com/cosmos/cosmos-sdk/client/utils"
 	"github.com/cosmos/cosmos-sdk/codec"
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
 	authCli "github.com/cosmos/cosmos-sdk/x/auth/client/cli"
 	authTxBuilder "github.com/cosmos/cosmos-sdk/x/auth/client/txbuilder"
+	"github.com/ironman0x7b2/sentinel-sdk/x/hub"
 	"github.com/ironman0x7b2/sentinel-sdk/x/vpn"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	ckeys "github.com/cosmos/cosmos-sdk/client/keys"
-	"github.com/cosmos/cosmos-sdk/crypto/keys"
-	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
 )
 
 const (
-	flagApiPort           = "api-port"
-	flagVPNPort           = "vpn-port"
+	flagAPIPort           = "api-port"
 	flagAmount            = "amount"
 	flagUploadSpeed       = "upload"
 	flagDownloadSpeed     = "download"
@@ -37,14 +37,12 @@ func RegisterVPNCmd(cdc *codec.Codec) *cobra.Command {
 		Short: "Register for sentinel vpn service",
 		RunE: func(cmd *cobra.Command, args []string) error {
 
-			var kb keys.Keybase
 			txBldr := authTxBuilder.NewTxBuilderFromCLI().WithCodec(cdc)
 			cliCtx := context.NewCLIContext().WithCodec(cdc).WithAccountDecoder(authCli.GetAccountDecoder(cdc))
 
-			apiPort := viper.GetString(flagApiPort)
-			vpnPort := viper.GetString(flagVPNPort)
+			apiPort := viper.GetString(flagAPIPort)
 			amount := viper.GetString(flagAmount)
-			pricePerGb := viper.GetInt64(flagPricePerGB)
+			pricePerGB := viper.GetInt64(flagPricePerGB)
 			upload := viper.GetInt64(flagUploadSpeed)
 			download := viper.GetInt64(flagDownloadSpeed)
 			latitude := viper.GetInt64(flagLocationLatitude)
@@ -70,15 +68,13 @@ func RegisterVPNCmd(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			pubkey := account.GetPubKey()
-
+			pubKey := account.GetPubKey()
 			coins, err := csdkTypes.ParseCoins(amount)
 
 			if err != nil {
 				return err
 			}
 
-			// ensure account has enough coins
 			if !account.GetCoins().IsGTE(coins) {
 				return errors.Errorf("Address %s doesn't have enough coins to pay for this transaction.", from)
 			}
@@ -89,9 +85,17 @@ func RegisterVPNCmd(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			unSignBytes := sdkTypes.GetUnSignBytes(from, sequence, coins, pubkey)
+			lockerID := "vpn" + "/" + from.String() + "/" + strconv.Itoa(int(sequence))
+			msgLockerCoins := hub.MsgLockCoins{
+				LockerID: lockerID,
+				Coins:    coins,
+				PubKey:   pubKey,
+			}
+			kb, err := ckeys.GetKeyBase()
 
-			kb, err = ckeys.GetKeyBase()
+			if err != nil {
+				return err
+			}
 
 			name, err := cliCtx.GetFromName()
 
@@ -105,17 +109,17 @@ func RegisterVPNCmd(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			signature, _, err := kb.Sign(name, passPhrase, unSignBytes)
+			signature, _, err := kb.Sign(name, passPhrase, msgLockerCoins.GetUnSignBytes())
 
 			if err != nil {
 				return err
 			}
 
-			msg := vpn.NewRegisterVPNMsg(from, coins,
-				apiPort, vpnPort, pubkey,
-				upload, download,
+			msg := vpn.NewMsgRegisterNode(from, apiPort,
 				latitude, longitude, city, country,
-				pricePerGb, encMethod, version, sequence, signature)
+				upload, download,
+				encMethod, pricePerGB, version,
+				lockerID, coins, pubKey, signature)
 
 			if cliCtx.GenerateOnly {
 				return utils.PrintUnsignedStdTx(txBldr, cliCtx, []csdkTypes.Msg{msg}, false)
@@ -125,8 +129,7 @@ func RegisterVPNCmd(cdc *codec.Codec) *cobra.Command {
 		},
 	}
 
-	cmd.Flags().String(flagApiPort, "", "api port")
-	cmd.Flags().String(flagVPNPort, "", " vpn port")
+	cmd.Flags().String(flagAPIPort, "", "api port")
 	cmd.Flags().String(flagAmount, "100mycoin", "amount")
 	cmd.Flags().Int64(flagUploadSpeed, -1, "upload_speed")
 	cmd.Flags().Int64(flagDownloadSpeed, -1, "download_speed")

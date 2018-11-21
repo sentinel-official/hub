@@ -38,13 +38,7 @@ func ChangeNodeStatusCommand(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			vpnIDBytes, err := csdkTypes.AccAddressFromBech32(vpnID)
-
-			if err != nil {
-				return err
-			}
-
-			msg := vpn.NewNodeStatusMsg(from, vpnIDBytes.String(), status)
+			msg := vpn.NewMsgUpdateNodeStatus(from, vpnID, status)
 
 			if cliCtx.GenerateOnly {
 				return utils.PrintUnsignedStdTx(txBldr, cliCtx, []csdkTypes.Msg{msg}, false)
@@ -58,5 +52,4 @@ func ChangeNodeStatusCommand(cdc *codec.Codec) *cobra.Command {
 	cmd.Flags().Bool(flagStatus, false, "Node status")
 
 	return cmd
-
 }

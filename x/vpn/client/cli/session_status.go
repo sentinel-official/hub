@@ -38,13 +38,7 @@ func ChangeSessionStatusCommand(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			sessionIDBytes, err := csdkTypes.AccAddressFromBech32(sessionID)
-
-			if err != nil {
-				return err
-			}
-
-			msg := vpn.NewSessionStatusMsg(from, sessionIDBytes.String(), status)
+			msg := vpn.NewMsgUpdateSessionStatus(from, sessionID, status)
 
 			if cliCtx.GenerateOnly {
 				return utils.PrintUnsignedStdTx(txBldr, cliCtx, []csdkTypes.Msg{msg}, false)
@@ -58,5 +52,4 @@ func ChangeSessionStatusCommand(cdc *codec.Codec) *cobra.Command {
 	cmd.Flags().Bool(flagStatus, false, "session status")
 
 	return cmd
-
 }

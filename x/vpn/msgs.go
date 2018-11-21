@@ -6,13 +6,22 @@ import (
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
 	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
 	"github.com/tendermint/tendermint/crypto"
-	"strconv"
 )
 
 type MsgRegisterNode struct {
-	From    csdkTypes.AccAddress
-	Coins   csdkTypes.Coins
-	Details sdkTypes.VPNDetails
+	From csdkTypes.AccAddress `json:"from"`
+
+	APIPort    string            `json:"api_port"`
+	Location   sdkTypes.Location `json:"location"`
+	NetSpeed   sdkTypes.NetSpeed `json:"net_speed"`
+	EncMethod  string            `json:"enc_method"`
+	PricePerGB int64             `json:"price_per_gb"`
+	Version    string            `json:"version"`
+
+	LockerID  string          `json:"locker_id"`
+	Coins     csdkTypes.Coins `json:"coins"`
+	PubKey    crypto.PubKey   `json:"pub_key"`
+	Signature []byte          `json:"signature"`
 }
 
 func (msg MsgRegisterNode) Type() string {
@@ -24,12 +33,13 @@ func (msg MsgRegisterNode) ValidateBasic() csdkTypes.Error {
 }
 
 func (msg MsgRegisterNode) GetSignBytes() []byte {
-	MsgBytes, err := json.Marshal(msg)
+	msgBytes, err := json.Marshal(msg)
+
 	if err != nil {
 		return nil
 	}
 
-	return MsgBytes
+	return msgBytes
 }
 
 func (msg MsgRegisterNode) GetSigners() []csdkTypes.AccAddress {
@@ -40,51 +50,40 @@ func (msg MsgRegisterNode) Route() string {
 	return "vpn"
 }
 
-func NewRegisterVPNMsg(from csdkTypes.AccAddress, coins csdkTypes.Coins,
-	apiPort string, vpnPort string, pubkey crypto.PubKey,
-	upload int64, download int64,
+func NewMsgRegisterNode(from csdkTypes.AccAddress, apiPort string,
 	latitude int64, longitude int64, city string, country string,
-	pricePerGb int64, encMethod string, version string, sequence int64, signature []byte) *MsgRegisterNode {
-
-	vpnID := from.String() + "/" + strconv.Itoa(int(sequence))
-	storeKey := "vpn"
-	//TODO: Replace vpnID with keeper.storeKey type
+	upload int64, download int64,
+	encMethod string, pricePerGB int64, version string,
+	lockerID string, coins csdkTypes.Coins, pubKey crypto.PubKey, signature []byte) *MsgRegisterNode {
 
 	return &MsgRegisterNode{
-		From:  from,
-		Coins: coins,
-		Details: sdkTypes.VPNDetails{
-			ApiPort:    apiPort,
-			VPNPort:    vpnPort,
-			Pubkey:     pubkey,
-			Address:    from,
-			PricePerGb: pricePerGb,
-			NetSpeed: sdkTypes.NetSpeed{
-				Upload:   upload,
-				Download: download,
-			},
-			Location: sdkTypes.Location{
-				Latitude:  latitude,
-				Longitude: longitude,
-				City:      city,
-				Country:   country,
-			},
-			Version:   version,
-			EncMethod: encMethod,
-			Info: sdkTypes.Info{
-				Status:      false,
-				BlockHeight: 0,
-			},
-			LockerId:  storeKey + "/" + vpnID,
-			Signature: signature,
+		From:    from,
+		APIPort: apiPort,
+		Location: sdkTypes.Location{
+			Latitude:  latitude,
+			Longitude: longitude,
+			City:      city,
+			Country:   country,
 		},
+		NetSpeed: sdkTypes.NetSpeed{
+			Upload:   upload,
+			Download: download,
+		},
+		EncMethod:  encMethod,
+		PricePerGB: pricePerGB,
+		Version:    version,
+		LockerID:   lockerID,
+		Coins:      coins,
+		PubKey:     pubKey,
+		Signature:  signature,
 	}
 }
 
 type MsgUpdateNodeStatus struct {
-	From   csdkTypes.AccAddress
-	VPNID  string
-	Status bool
+	From csdkTypes.AccAddress `json:"from"`
+
+	VPNID  string `json:"vpnid"`
+	Status bool   `json:"status"`
 }
 
 func (msg MsgUpdateNodeStatus) Type() string {
@@ -96,13 +95,13 @@ func (msg MsgUpdateNodeStatus) ValidateBasic() csdkTypes.Error {
 }
 
 func (msg MsgUpdateNodeStatus) GetSignBytes() []byte {
-	MsgBytes, err := json.Marshal(msg)
+	msgBytes, err := json.Marshal(msg)
 
 	if err != nil {
 		return nil
 	}
 
-	return MsgBytes
+	return msgBytes
 }
 
 func (msg MsgUpdateNodeStatus) GetSigners() []csdkTypes.AccAddress {
@@ -113,8 +112,8 @@ func (msg MsgUpdateNodeStatus) Route() string {
 	return "vpn"
 }
 
-func NewNodeStatusMsg(from csdkTypes.AccAddress, vpnID string, status bool) MsgUpdateNodeStatus {
-	return MsgUpdateNodeStatus{
+func NewMsgUpdateNodeStatus(from csdkTypes.AccAddress, vpnID string, status bool) *MsgUpdateNodeStatus {
+	return &MsgUpdateNodeStatus{
 		From:   from,
 		VPNID:  vpnID,
 		Status: status,
@@ -122,40 +121,28 @@ func NewNodeStatusMsg(from csdkTypes.AccAddress, vpnID string, status bool) MsgU
 }
 
 type MsgPayVPNService struct {
-	Coins     csdkTypes.Coins
-	VPNID     string
-	From      csdkTypes.AccAddress
-	Pubkey    crypto.PubKey
-	LockerId  string
-	Signature []byte
-}
+	From csdkTypes.AccAddress `json:"from"`
 
-func NewMsgPayVPNService(coins csdkTypes.Coins, vpnID string, from csdkTypes.AccAddress, sequence int64, pubkey crypto.PubKey, signature []byte) MsgPayVPNService {
+	VPNID string `json:"vpnid"`
 
-	sessionID := from.String() + "/" + strconv.Itoa(int(sequence))
-	storeKey := "session"
-
-	return MsgPayVPNService{
-		Coins:     coins,
-		VPNID:     vpnID,
-		From:      from,
-		Pubkey:    pubkey,
-		LockerId:  storeKey + "/" + sessionID,
-		Signature: signature,
-	}
-
+	LockerID  string          `json:"locker_id"`
+	Coins     csdkTypes.Coins `json:"coins"`
+	PubKey    crypto.PubKey   `json:"pub_key"`
+	Signature []byte          `json:"signature"`
 }
 
 func (msg MsgPayVPNService) Type() string {
-	return "pay-vpn-service"
+	return "msg_pay_vpn_service"
 }
 
 func (msg MsgPayVPNService) GetSignBytes() []byte {
-	byte_format, err := json.Marshal(msg)
+	msgBytes, err := json.Marshal(msg)
+
 	if err != nil {
 		return nil
 	}
-	return byte_format
+
+	return msgBytes
 }
 
 func (msg MsgPayVPNService) ValidateBasic() csdkTypes.Error {
@@ -170,14 +157,28 @@ func (msc MsgPayVPNService) Route() string {
 	return "vpn"
 }
 
+func NewMsgPayVPNService(from csdkTypes.AccAddress, vpnID string,
+	lockerID string, coins csdkTypes.Coins, pubKey crypto.PubKey, signature []byte) *MsgPayVPNService {
+
+	return &MsgPayVPNService{
+		From:      from,
+		VPNID:     vpnID,
+		LockerID:  lockerID,
+		Coins:     coins,
+		PubKey:    pubKey,
+		Signature: signature,
+	}
+}
+
 type MsgUpdateSessionStatus struct {
-	From      csdkTypes.AccAddress
-	SessionID string
-	Status    bool
+	From csdkTypes.AccAddress `json:"from"`
+
+	SessionID string `json:"session_id"`
+	Status    bool   `json:"status"`
 }
 
 func (msg MsgUpdateSessionStatus) Type() string {
-	return "msg_update_node_status"
+	return "msg_update_session_status"
 }
 
 func (msg MsgUpdateSessionStatus) ValidateBasic() csdkTypes.Error {
@@ -185,13 +186,13 @@ func (msg MsgUpdateSessionStatus) ValidateBasic() csdkTypes.Error {
 }
 
 func (msg MsgUpdateSessionStatus) GetSignBytes() []byte {
-	MsgBytes, err := json.Marshal(msg)
+	msgBytes, err := json.Marshal(msg)
 
 	if err != nil {
 		return nil
 	}
 
-	return MsgBytes
+	return msgBytes
 }
 
 func (msg MsgUpdateSessionStatus) GetSigners() []csdkTypes.AccAddress {
@@ -202,8 +203,8 @@ func (msg MsgUpdateSessionStatus) Route() string {
 	return "vpn"
 }
 
-func NewSessionStatusMsg(from csdkTypes.AccAddress, sessionID string, status bool) MsgUpdateSessionStatus {
-	return MsgUpdateSessionStatus{
+func NewMsgUpdateSessionStatus(from csdkTypes.AccAddress, sessionID string, status bool) *MsgUpdateSessionStatus {
+	return &MsgUpdateSessionStatus{
 		From:      from,
 		SessionID: sessionID,
 		Status:    status,

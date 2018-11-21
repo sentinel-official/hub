@@ -1,19 +1,20 @@
 package cli
 
 import (
+	"strconv"
+
 	"github.com/cosmos/cosmos-sdk/client/context"
+	ckeys "github.com/cosmos/cosmos-sdk/client/keys"
 	"github.com/cosmos/cosmos-sdk/client/utils"
 	"github.com/cosmos/cosmos-sdk/codec"
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
 	authCli "github.com/cosmos/cosmos-sdk/x/auth/client/cli"
 	authTxBuilder "github.com/cosmos/cosmos-sdk/x/auth/client/txbuilder"
+	"github.com/ironman0x7b2/sentinel-sdk/x/hub"
 	"github.com/ironman0x7b2/sentinel-sdk/x/vpn"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	ckeys "github.com/cosmos/cosmos-sdk/client/keys"
-	"github.com/cosmos/cosmos-sdk/crypto/keys"
-	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
 )
 
 func PayVPNServiceCommand(cdc *codec.Codec) *cobra.Command {
@@ -22,7 +23,6 @@ func PayVPNServiceCommand(cdc *codec.Codec) *cobra.Command {
 		Short: "pay for vpn",
 		RunE: func(cmd *cobra.Command, args []string) error {
 
-			var kb keys.Keybase
 			txBldr := authTxBuilder.NewTxBuilderFromCLI().WithCodec(cdc)
 			cliCtx := context.NewCLIContext().WithCodec(cdc).WithAccountDecoder(authCli.GetAccountDecoder(cdc))
 
@@ -51,7 +51,6 @@ func PayVPNServiceCommand(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			// ensure account has enough coins
 			if !account.GetCoins().IsGTE(coins) {
 				return errors.Errorf("Address %s doesn't have enough coins to pay for this transaction.", from)
 			}
@@ -62,11 +61,18 @@ func PayVPNServiceCommand(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			pubkey := account.GetPubKey()
+			lockerID := "vpn" + "/" + from.String() + "/" + strconv.Itoa(int(sequence))
+			pubKey := account.GetPubKey()
+			msgLockerCoins := hub.MsgLockCoins{
+				LockerID: lockerID,
+				Coins:    coins,
+				PubKey:   pubKey,
+			}
+			kb, err := ckeys.GetKeyBase()
 
-			unSignBytes := sdkTypes.GetUnSignBytes(from, sequence, coins, pubkey)
-
-			kb, err = ckeys.GetKeyBase()
+			if err != nil {
+				return err
+			}
 
 			name, err := cliCtx.GetFromName()
 
@@ -80,13 +86,14 @@ func PayVPNServiceCommand(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			signature, _, err := kb.Sign(name, passPhrase, unSignBytes)
+			signature, _, err := kb.Sign(name, passPhrase, msgLockerCoins.GetUnSignBytes())
 
 			if err != nil {
 				return err
 			}
 
-			msg := vpn.NewMsgPayVPNService(coins, vpnID, from, sequence, pubkey, signature)
+			msg := vpn.NewMsgPayVPNService(from, vpnID, lockerID, coins, pubKey, signature)
+
 			if cliCtx.GenerateOnly {
 				return utils.PrintUnsignedStdTx(txBldr, cliCtx, []csdkTypes.Msg{msg}, false)
 			}
@@ -99,5 +106,4 @@ func PayVPNServiceCommand(cdc *codec.Codec) *cobra.Command {
 	cmd.Flags().String(flagAmount, "", "Amount of coins")
 
 	return cmd
-
 }
