@@ -33,14 +33,18 @@ func NewIBCHubHandler(ibcKeeper ibc.Keeper, hubKeeper Keeper) csdkTypes.Handler 
 
 func handleLockCoins(ctx csdkTypes.Context, ibcKeeper ibc.Keeper, hubKeeper Keeper, ibcPacket sdkTypes.IBCPacket) csdkTypes.Result {
 	msg, _ := ibcPacket.Message.(MsgLockCoins)
-	locker := hubKeeper.GetLocker(ctx, msg.LockerID)
+
+	lockerID := ibcPacket.SrcChainID + "/" + msg.LockerID
+	address := msg.PubKey.Address().Bytes()
+
+	locker := hubKeeper.GetLocker(ctx, lockerID)
 
 	if locker != nil {
 		// TODO: Replace with ErrLockerAlreadyExists
 		return csdkTypes.Result{}
 	}
 
-	if err := hubKeeper.LockCoins(ctx, msg.LockerID, msg.Address, msg.Coins); err != nil {
+	if err := hubKeeper.LockCoins(ctx, lockerID, address, msg.Coins); err != nil {
 		// TODO: Replace with ErrLockCoins
 		return csdkTypes.Result{}
 	}
@@ -65,10 +69,19 @@ func handleLockCoins(ctx csdkTypes.Context, ibcKeeper ibc.Keeper, hubKeeper Keep
 
 func handleReleaseCoins(ctx csdkTypes.Context, ibcKeeper ibc.Keeper, hubKeeper Keeper, ibcPacket sdkTypes.IBCPacket) csdkTypes.Result {
 	msg, _ := ibcPacket.Message.(MsgReleaseCoins)
-	locker := hubKeeper.GetLocker(ctx, msg.LockerID)
+
+	lockerID := ibcPacket.SrcChainID + "/" + msg.LockerID
+	address := msg.PubKey.Address().Bytes()
+
+	locker := hubKeeper.GetLocker(ctx, lockerID)
 
 	if locker == nil {
 		// TODO: Replace with ErrLockerNotExists
+		return csdkTypes.Result{}
+	}
+
+	if !locker.Address.Equals(address) {
+		// TODO: Replace with ErrInvalidLockerOwnerAddress
 		return csdkTypes.Result{}
 	}
 
@@ -97,10 +110,19 @@ func handleReleaseCoins(ctx csdkTypes.Context, ibcKeeper ibc.Keeper, hubKeeper K
 
 func handleReleaseCoinsToMany(ctx csdkTypes.Context, ibcKeeper ibc.Keeper, hubKeeper Keeper, ibcPacket sdkTypes.IBCPacket) csdkTypes.Result {
 	msg, _ := ibcPacket.Message.(MsgReleaseCoinsToMany)
-	locker := hubKeeper.GetLocker(ctx, msg.LockerID)
+
+	lockerID := ibcPacket.SrcChainID + "/" + msg.LockerID
+	address := msg.PubKey.Address().Bytes()
+
+	locker := hubKeeper.GetLocker(ctx, lockerID)
 
 	if locker == nil {
 		// TODO: Replace with ErrLockerNotExists
+		return csdkTypes.Result{}
+	}
+
+	if !locker.Address.Equals(address) {
+		// TODO: Replace with ErrInvalidLockerOwnerAddress
 		return csdkTypes.Result{}
 	}
 
