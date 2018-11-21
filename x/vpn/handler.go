@@ -37,21 +37,37 @@ func handleRegisterNode(ctx csdkTypes.Context, k Keeper, ik ibc.Keeper, msg MsgR
 
 	vpnID := msg.From.String() + "/" + strconv.Itoa(int(sequence))
 
+	if lockerID := k.VPNStoreKey.String() + "/" + vpnID; msg.LockerID != lockerID {
+		// TODO: Replace with ErrLockerIDMismatch
+		return csdkTypes.Result{}
+	}
+
 	if vpnDetails := k.GetVPNDetails(ctx, vpnID); vpnDetails != nil {
 		// TODO: Replace with ErrVPNAlreadyExists
 		return csdkTypes.Result{}
 	}
 
-	k.SetVPNDetails(ctx, vpnID, &msg.Details)
+	vpnDetails := sdkTypes.VPNDetails{
+		Address:    msg.From,
+		APIPort:    msg.APIPort,
+		Location:   msg.Location,
+		NetSpeed:   msg.NetSpeed,
+		EncMethod:  msg.EncMethod,
+		PricePerGB: msg.PricePerGB,
+		Version:    msg.Version,
+		LockerID:   msg.LockerID,
+	}
+
+	k.SetVPNDetails(ctx, vpnID, &vpnDetails)
 
 	ibcPacket := sdkTypes.IBCPacket{
 		SrcChainID:  "sentinel-vpn",
 		DestChainID: "sentinel-hub",
 		Message: hub.MsgLockCoins{
-			LockerID:  msg.Details.LockerId,
+			LockerID:  msg.LockerID,
 			Coins:     msg.Coins,
-			PubKey:    msg.Details.Pubkey,
-			Signature: msg.Details.Signature,
+			PubKey:    msg.PubKey,
+			Signature: msg.Signature,
 		},
 	}
 
@@ -72,6 +88,7 @@ func handleUpdateNodeStatus(ctx csdkTypes.Context, k Keeper, msg MsgUpdateNodeSt
 
 	k.SetVPNStatus(ctx, msg.VPNID, msg.Status)
 
+	// TODO: Replace with SuccessUpdateNodeStatus
 	return csdkTypes.Result{}
 }
 
@@ -85,7 +102,12 @@ func handlePayVPNService(ctx csdkTypes.Context, k Keeper, ik ibc.Keeper, msg Msg
 
 	sessionID := msg.From.String() + "/" + strconv.Itoa(int(sequence))
 
-	if session := k.GetSessionDetails(ctx, sessionID); session != nil {
+	if lockerID := k.SessionStoreKey.String() + "/" + sessionID; lockerID != msg.LockerID {
+		// TODO: Replace with ErrLockerIDMismatch
+		return csdkTypes.Result{}
+	}
+
+	if sessionDetails := k.GetSessionDetails(ctx, sessionID); sessionDetails != nil {
 		// TODO: Replace wtih ErrSessionAlreadyExists
 		return csdkTypes.Result{}
 	}
@@ -97,22 +119,22 @@ func handlePayVPNService(ctx csdkTypes.Context, k Keeper, ik ibc.Keeper, msg Msg
 		return csdkTypes.Result{}
 	}
 
-	session := sdkTypes.GetNewSession(msg.VPNID, msg.From, vpnDetails.PricePerGb, vpnDetails.PricePerGb)
-	k.SetSessionDetails(ctx, sessionID, &session)
-
-	pubkey, err := k.AccountKeeper.GetPubKey(ctx, msg.From)
-
-	if err != nil {
-		panic(err)
+	sessionDetails := sdkTypes.SessionDetails{
+		VPNID:         msg.VPNID,
+		ClientAddress: msg.From,
+		GBToProvide:   0,
+		PricePerGB:    vpnDetails.PricePerGB,
 	}
+
+	k.SetSessionDetails(ctx, sessionID, &sessionDetails)
 
 	ibcPacket := sdkTypes.IBCPacket{
 		SrcChainID:  "sentinel-vpn",
 		DestChainID: "sentinel-hub",
 		Message: hub.MsgLockCoins{
-			LockerID:  msg.LockerId,
+			LockerID:  msg.LockerID,
 			Coins:     msg.Coins,
-			PubKey:    pubkey,
+			PubKey:    msg.PubKey,
 			Signature: msg.Signature,
 		},
 	}
@@ -122,6 +144,6 @@ func handlePayVPNService(ctx csdkTypes.Context, k Keeper, ik ibc.Keeper, msg Msg
 		return csdkTypes.Result{}
 	}
 
-	// TODO: Replace with SuccessRegisterNode
+	// TODO: Replace with SuccessPayVPNService
 	return csdkTypes.Result{}
 }

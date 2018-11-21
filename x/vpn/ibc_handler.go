@@ -69,5 +69,4 @@ func handleSetSessionStatus(ctx csdkTypes.Context, k Keeper, ibcPacket sdkTypes.
 	k.SetSessionStatus(ctx, sessionID, status)
 
 	return csdkTypes.Result{}
-
 }

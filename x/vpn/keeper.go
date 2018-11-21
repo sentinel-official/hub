@@ -72,7 +72,7 @@ func (k Keeper) SetVPNStatus(ctx csdkTypes.Context, vpnID string, status bool) {
 	k.SetVPNDetails(ctx, vpnID, vpnDetails)
 }
 
-func (k Keeper) SetSessionDetails(ctx csdkTypes.Context, sessionID string, sessionDetails *sdkTypes.Session) {
+func (k Keeper) SetSessionDetails(ctx csdkTypes.Context, sessionID string, sessionDetails *sdkTypes.SessionDetails) {
 	store := ctx.KVStore(k.SessionStoreKey)
 	keyBytes, err := k.cdc.MarshalBinary(sessionID)
 
@@ -89,7 +89,7 @@ func (k Keeper) SetSessionDetails(ctx csdkTypes.Context, sessionID string, sessi
 	store.Set(keyBytes, valueBytes)
 }
 
-func (k Keeper) GetSessionDetails(ctx csdkTypes.Context, sessionID string) *sdkTypes.Session {
+func (k Keeper) GetSessionDetails(ctx csdkTypes.Context, sessionID string) *sdkTypes.SessionDetails {
 	store := ctx.KVStore(k.SessionStoreKey)
 	keyBytes, err := k.cdc.MarshalBinary(sessionID)
 
@@ -103,7 +103,7 @@ func (k Keeper) GetSessionDetails(ctx csdkTypes.Context, sessionID string) *sdkT
 		return nil
 	}
 
-	var sessionDetails sdkTypes.Session
+	var sessionDetails sdkTypes.SessionDetails
 
 	if err := k.cdc.UnmarshalBinary(valueBytes, &sessionDetails); err != nil {
 		panic(err)
