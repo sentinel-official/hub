@@ -5,7 +5,6 @@ import (
 
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
 	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
-	"github.com/ironman0x7b2/sentinel-sdk/x/hub"
 )
 
 type MsgIBCTransaction struct {
@@ -29,17 +28,17 @@ func (msg MsgIBCTransaction) ValidateBasic() csdkTypes.Error {
 
 	success := false
 
-	switch m := msg.IBCPacket.Message.(type) {
-	case hub.MsgLockCoins:
-		success = m.Verify()
-	case hub.MsgReleaseCoins:
-		success = m.Verify()
-	case hub.MsgReleaseCoinsToMany:
-		success = m.Verify()
-	default:
-		// TODO: Replace with ErrInvalidIBCPacketMsgType
-		return nil
-	}
+	// switch m := msg.IBCPacket.Message.(type) {
+	// case hub.MsgLockCoins:
+	// 	success = m.Verify()
+	// case hub.MsgReleaseCoins:
+	// 	success = m.Verify()
+	// case hub.MsgReleaseCoinsToMany:
+	// 	success = m.Verify()
+	// default:
+	// 	// TODO: Replace with ErrInvalidIBCPacketMsgType
+	// 	return nil
+	// }
 
 	if !success {
 		// TODO: Replace with ErrMsgVerificationFailed
