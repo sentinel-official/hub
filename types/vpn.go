@@ -5,6 +5,8 @@ import (
 
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
 	"github.com/tendermint/tendermint/crypto"
+	"strconv"
+	"encoding/json"
 )
 
 type VPNDetails struct {
@@ -18,6 +20,8 @@ type VPNDetails struct {
 	Location   Location
 	Version    string
 	Info       Info
+	LockerId   string
+	Signature  []byte
 }
 
 type NetSpeed struct {
@@ -63,3 +67,26 @@ func GetNewSession(vpnID string, clientAddress csdkTypes.AccAddress, gbToProvide
 }
 
 type ActiveSessions []string
+
+type SignDetails struct {
+	Coins    csdkTypes.Coins
+	LockerId string
+	Pubkey   crypto.PubKey
+}
+
+func GetUnSignBytes(from csdkTypes.AccAddress, sequence int64, coins csdkTypes.Coins, pubkey crypto.PubKey) []byte {
+	vpnID := from.String() + "/" + strconv.Itoa(int(sequence))
+	storeKey := "vpn"
+
+	bytes, err := json.Marshal(SignDetails{
+		Coins:    coins,
+		LockerId: storeKey + "/" + vpnID,
+		Pubkey:   pubkey,
+	})
+
+	if err != nil {
+		panic(err)
+	}
+
+	return bytes
+}

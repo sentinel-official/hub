@@ -6,6 +6,7 @@ import (
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
 	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
 	"github.com/tendermint/tendermint/crypto"
+	"strconv"
 )
 
 type MsgRegisterNode struct {
@@ -43,7 +44,12 @@ func NewRegisterVPNMsg(from csdkTypes.AccAddress, coins csdkTypes.Coins,
 	apiPort string, vpnPort string, pubkey crypto.PubKey,
 	upload int64, download int64,
 	latitude int64, longitude int64, city string, country string,
-	pricePerGb int64, encMethod string, version string) *MsgRegisterNode {
+	pricePerGb int64, encMethod string, version string, sequence int64, signature []byte) *MsgRegisterNode {
+
+	vpnID := from.String() + "/" + strconv.Itoa(int(sequence))
+	storeKey := "vpn"
+	//TODO: Replace vpnID with keeper.storeKey type
+
 	return &MsgRegisterNode{
 		From:  from,
 		Coins: coins,
@@ -69,6 +75,8 @@ func NewRegisterVPNMsg(from csdkTypes.AccAddress, coins csdkTypes.Coins,
 				Status:      false,
 				BlockHeight: 0,
 			},
+			LockerId:  storeKey + "/" + vpnID,
+			Signature: signature,
 		},
 	}
 }
@@ -114,19 +122,26 @@ func NewNodeStatusMsg(from csdkTypes.AccAddress, vpnID string, status bool) MsgU
 }
 
 type MsgPayVPNService struct {
-	Coins  csdkTypes.Coins
-	VPNID  string
-	From   csdkTypes.AccAddress
-	Pubkey crypto.PubKey
+	Coins     csdkTypes.Coins
+	VPNID     string
+	From      csdkTypes.AccAddress
+	Pubkey    crypto.PubKey
+	LockerId  string
+	Signature []byte
 }
 
-func NewMsgPayVPNService(coins csdkTypes.Coins, vpnID string, from csdkTypes.AccAddress, pubkey crypto.PubKey) MsgPayVPNService {
+func NewMsgPayVPNService(coins csdkTypes.Coins, vpnID string, from csdkTypes.AccAddress, sequence int64, pubkey crypto.PubKey, signature []byte) MsgPayVPNService {
+
+	sessionID := from.String() + "/" + strconv.Itoa(int(sequence))
+	storeKey := "session"
 
 	return MsgPayVPNService{
-		Coins:  coins,
-		VPNID:  vpnID,
-		From:   from,
-		Pubkey: pubkey,
+		Coins:     coins,
+		VPNID:     vpnID,
+		From:      from,
+		Pubkey:    pubkey,
+		LockerId:  storeKey + "/" + sessionID,
+		Signature: signature,
 	}
 
 }

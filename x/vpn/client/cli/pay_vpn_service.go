@@ -11,6 +11,9 @@ import (
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	ckeys "github.com/cosmos/cosmos-sdk/client/keys"
+	"github.com/cosmos/cosmos-sdk/crypto/keys"
+	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
 )
 
 func PayVPNServiceCommand(cdc *codec.Codec) *cobra.Command {
@@ -18,6 +21,8 @@ func PayVPNServiceCommand(cdc *codec.Codec) *cobra.Command {
 		Use:   "pay-vpn",
 		Short: "pay for vpn",
 		RunE: func(cmd *cobra.Command, args []string) error {
+
+			var kb keys.Keybase
 			txBldr := authTxBuilder.NewTxBuilderFromCLI().WithCodec(cdc)
 			cliCtx := context.NewCLIContext().WithCodec(cdc).WithAccountDecoder(authCli.GetAccountDecoder(cdc))
 
@@ -51,7 +56,37 @@ func PayVPNServiceCommand(cdc *codec.Codec) *cobra.Command {
 				return errors.Errorf("Address %s doesn't have enough coins to pay for this transaction.", from)
 			}
 
-			msg := vpn.NewMsgPayVPNService(coins, vpnID, from, account.GetPubKey())
+			sequence, err := cliCtx.GetAccountSequence(from)
+
+			if err != nil {
+				return err
+			}
+
+			pubkey := account.GetPubKey()
+
+			unSignBytes := sdkTypes.GetUnSignBytes(from, sequence, coins, pubkey)
+
+			kb, err = ckeys.GetKeyBase()
+
+			name, err := cliCtx.GetFromName()
+
+			if err != nil {
+				return err
+			}
+
+			passPhrase, err := ckeys.GetPassphrase(name)
+
+			if err != nil {
+				return err
+			}
+
+			signature, _, err := kb.Sign(name, passPhrase, unSignBytes)
+
+			if err != nil {
+				return err
+			}
+
+			msg := vpn.NewMsgPayVPNService(coins, vpnID, from, sequence, pubkey, signature)
 			if cliCtx.GenerateOnly {
 				return utils.PrintUnsignedStdTx(txBldr, cliCtx, []csdkTypes.Msg{msg}, false)
 			}

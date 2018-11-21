@@ -48,9 +48,10 @@ func handleRegisterNode(ctx csdkTypes.Context, k Keeper, ik ibc.Keeper, msg MsgR
 		SrcChainID:  "sentinel-vpn",
 		DestChainID: "sentinel-hub",
 		Message: hub.MsgLockCoins{
-			LockerID: k.VPNStoreKey.String() + "/" + vpnID,
-			Address:  msg.From,
-			Coins:    msg.Coins,
+			LockerID:  msg.Details.LockerId,
+			Coins:     msg.Coins,
+			PubKey:    msg.Details.Pubkey,
+			Signature: msg.Details.Signature,
 		},
 	}
 
@@ -98,13 +99,21 @@ func handlePayVPNService(ctx csdkTypes.Context, k Keeper, ik ibc.Keeper, msg Msg
 
 	session := sdkTypes.GetNewSession(msg.VPNID, msg.From, vpnDetails.PricePerGb, vpnDetails.PricePerGb)
 	k.SetSessionDetails(ctx, sessionID, &session)
+
+	pubkey, err := k.AccountKeeper.GetPubKey(ctx, msg.From)
+
+	if err != nil {
+		panic(err)
+	}
+
 	ibcPacket := sdkTypes.IBCPacket{
 		SrcChainID:  "sentinel-vpn",
 		DestChainID: "sentinel-hub",
 		Message: hub.MsgLockCoins{
-			LockerID: k.SessionStoreKey.String() + "/" + sessionID,
-			Address:  msg.From,
-			Coins:    msg.Coins,
+			LockerID:  msg.LockerId,
+			Coins:     msg.Coins,
+			PubKey:    pubkey,
+			Signature: msg.Signature,
 		},
 	}
 
