@@ -26,13 +26,13 @@ func NewKeeper(cdc *codec.Codec, vpnKey csdkTypes.StoreKey, accountKeeper auth.A
 
 func (k Keeper) SetVPNDetails(ctx csdkTypes.Context, vpnID string, vpnDetails *sdkTypes.VPNDetails) {
 	vpnStore := ctx.KVStore(k.VPNStoreKey)
-	keyBytes, err := k.cdc.MarshalBinary(vpnID)
+	keyBytes, err := k.cdc.MarshalBinaryLengthPrefixed(vpnID)
 
 	if err != nil {
 		panic(err)
 	}
 
-	valueBytes, err := k.cdc.MarshalBinary(vpnDetails)
+	valueBytes, err := k.cdc.MarshalBinaryLengthPrefixed(vpnDetails)
 
 	if err != nil {
 		panic(err)
@@ -43,7 +43,7 @@ func (k Keeper) SetVPNDetails(ctx csdkTypes.Context, vpnID string, vpnDetails *s
 
 func (k Keeper) GetVPNDetails(ctx csdkTypes.Context, vpnID string) *sdkTypes.VPNDetails {
 	store := ctx.KVStore(k.VPNStoreKey)
-	keyBytes, err := k.cdc.MarshalBinary(vpnID)
+	keyBytes, err := k.cdc.MarshalBinaryLengthPrefixed(vpnID)
 
 	if err != nil {
 		panic(err)
@@ -57,7 +57,7 @@ func (k Keeper) GetVPNDetails(ctx csdkTypes.Context, vpnID string) *sdkTypes.VPN
 
 	var vpnDetails sdkTypes.VPNDetails
 
-	if err := k.cdc.UnmarshalBinary(valueBytes, &vpnDetails); err != nil {
+	if err := k.cdc.UnmarshalBinaryLengthPrefixed(valueBytes, &vpnDetails); err != nil {
 		panic(err)
 	}
 
@@ -74,13 +74,13 @@ func (k Keeper) SetVPNStatus(ctx csdkTypes.Context, vpnID string, status bool) {
 
 func (k Keeper) SetSessionDetails(ctx csdkTypes.Context, sessionID string, sessionDetails *sdkTypes.SessionDetails) {
 	store := ctx.KVStore(k.SessionStoreKey)
-	keyBytes, err := k.cdc.MarshalBinary(sessionID)
+	keyBytes, err := k.cdc.MarshalBinaryLengthPrefixed(sessionID)
 
 	if err != nil {
 		panic(err)
 	}
 
-	valueBytes, err := k.cdc.MarshalBinary(sessionDetails)
+	valueBytes, err := k.cdc.MarshalBinaryLengthPrefixed(sessionDetails)
 
 	if err != nil {
 		panic(err)
@@ -91,7 +91,7 @@ func (k Keeper) SetSessionDetails(ctx csdkTypes.Context, sessionID string, sessi
 
 func (k Keeper) GetSessionDetails(ctx csdkTypes.Context, sessionID string) *sdkTypes.SessionDetails {
 	store := ctx.KVStore(k.SessionStoreKey)
-	keyBytes, err := k.cdc.MarshalBinary(sessionID)
+	keyBytes, err := k.cdc.MarshalBinaryLengthPrefixed(sessionID)
 
 	if err != nil {
 		panic(err)
@@ -105,7 +105,7 @@ func (k Keeper) GetSessionDetails(ctx csdkTypes.Context, sessionID string) *sdkT
 
 	var sessionDetails sdkTypes.SessionDetails
 
-	if err := k.cdc.UnmarshalBinary(valueBytes, &sessionDetails); err != nil {
+	if err := k.cdc.UnmarshalBinaryLengthPrefixed(valueBytes, &sessionDetails); err != nil {
 		panic(err)
 	}
 
@@ -122,14 +122,14 @@ func (k Keeper) SetSessionStatus(ctx csdkTypes.Context, sessionID string, status
 }
 
 func (k Keeper) SetActiveSessionIDs(ctx csdkTypes.Context, sessionIDs []string) {
-	keyBytes, err := k.cdc.MarshalBinary("ACTIVE_SESSION_IDS")
+	keyBytes, err := k.cdc.MarshalBinaryLengthPrefixed("ACTIVE_SESSION_IDS")
 
 	if err != nil {
 		panic(err)
 	}
 
 	sort.Strings(sessionIDs)
-	valueBytes, err := k.cdc.MarshalBinary(sessionIDs)
+	valueBytes, err := k.cdc.MarshalBinaryLengthPrefixed(sessionIDs)
 
 	if err != nil {
 		panic(err)
@@ -145,7 +145,7 @@ func (k Keeper) GetActiveSessionIDs(ctx csdkTypes.Context) []string {
 
 	var sessionIDs []string
 
-	if err := k.cdc.UnmarshalBinary(valueBytes, &sessionIDs); err != nil {
+	if err := k.cdc.UnmarshalBinaryLengthPrefixed(valueBytes, &sessionIDs); err != nil {
 		panic(err)
 	}
 

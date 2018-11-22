@@ -23,14 +23,14 @@ func NewKeeper(ibcKey csdkTypes.StoreKey, cdc *codec.Codec) Keeper {
 func (ibc Keeper) PostIBCPacket(ctx csdkTypes.Context, packet sdkTypes.IBCPacket) csdkTypes.Error {
 	store := ctx.KVStore(ibc.IBCKey)
 	index := ibc.getEgressLength(store, packet.DestChainID)
-	bz, err := ibc.cdc.MarshalBinary(packet)
+	bz, err := ibc.cdc.MarshalBinaryLengthPrefixed(packet)
 
 	if err != nil {
 		panic(err)
 	}
 
 	store.Set(EgressKey(packet.DestChainID, index), bz)
-	bz, err = ibc.cdc.MarshalBinary(index + 1)
+	bz, err = ibc.cdc.MarshalBinaryLengthPrefixed(index + 1)
 
 	if err != nil {
 		panic(err)
@@ -42,7 +42,7 @@ func (ibc Keeper) PostIBCPacket(ctx csdkTypes.Context, packet sdkTypes.IBCPacket
 }
 
 func marshalBinaryPanic(cdc *codec.Codec, value interface{}) []byte {
-	res, err := cdc.MarshalBinary(value)
+	res, err := cdc.MarshalBinaryLengthPrefixed(value)
 
 	if err != nil {
 		panic(err)
@@ -52,7 +52,7 @@ func marshalBinaryPanic(cdc *codec.Codec, value interface{}) []byte {
 }
 
 func unmarshalBinaryPanic(cdc *codec.Codec, bz []byte, ptr interface{}) {
-	err := cdc.UnmarshalBinary(bz, ptr)
+	err := cdc.UnmarshalBinaryLengthPrefixed(bz, ptr)
 
 	if err != nil {
 		panic(err)

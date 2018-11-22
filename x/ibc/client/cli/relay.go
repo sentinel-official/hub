@@ -110,7 +110,7 @@ func (c relayCommander) loop(fromChainID, fromChainNodeURI, toChainID, toChainNo
 
 		if processedBytes == nil {
 			processed = 0
-		} else if err = c.cdc.UnmarshalBinary(processedBytes, &processed); err != nil {
+		} else if err = c.cdc.UnmarshalBinaryLengthPrefixed(processedBytes, &processed); err != nil {
 			panic(err)
 		}
 
@@ -123,7 +123,7 @@ func (c relayCommander) loop(fromChainID, fromChainNodeURI, toChainID, toChainNo
 
 		if egressLengthBytes == nil {
 			egressLength = 0
-		} else if err = c.cdc.UnmarshalBinary(egressLengthBytes, &egressLength); err != nil {
+		} else if err = c.cdc.UnmarshalBinaryLengthPrefixed(egressLengthBytes, &egressLength); err != nil {
 			panic(err)
 		}
 
@@ -188,7 +188,7 @@ func (c relayCommander) getSequence(nodeURI string) int64 {
 func (c relayCommander) refine(bz []byte, sequence int64, passphrase string) []byte {
 	var packet types.IBCPacket
 
-	if err := c.cdc.UnmarshalBinary(bz, &packet); err != nil {
+	if err := c.cdc.UnmarshalBinaryLengthPrefixed(bz, &packet); err != nil {
 		panic(err)
 	}
 

@@ -78,7 +78,7 @@ func InitCmd(ctx *server.Context, cdc *codec.Codec, appInit server.AppInit) *cob
 				return err
 			}
 
-			appState, err := appInit.AppGenState(cdc, []json.RawMessage{genTx})
+			appState, err := appInit.AppGenState(cdc, tmTypes.GenesisDoc{}, []json.RawMessage{genTx})
 			if err != nil {
 				return err
 			}
@@ -101,7 +101,7 @@ func InitCmd(ctx *server.Context, cdc *codec.Codec, appInit server.AppInit) *cob
 				return err
 			}
 			fmt.Fprintf(os.Stderr, "%s\n", string(out))
-			return gaiaInit.WriteGenesisFile(config.GenesisFile(), chainID, []tmTypes.GenesisValidator{validator}, appStateJSON)
+			return gaiaInit.ExportGenesisFile(config.GenesisFile(), chainID, []tmTypes.GenesisValidator{validator}, appStateJSON)
 		},
 	}
 
