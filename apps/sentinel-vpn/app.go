@@ -139,7 +139,7 @@ func (app *SentinelVPN) initChainer(ctx csdkTypes.Context, req abciTypes.Request
 
 func (app *SentinelVPN) ExportAppStateAndValidators() (appState json.RawMessage, validators []tmTypes.GenesisValidator, err error) {
 	ctx := app.NewContext(true, abciTypes.Header{})
-	accounts := []*sdkTypes.GenesisAccount{}
+	var accounts []*sdkTypes.GenesisAccount
 
 	appendAccountsFn := func(acc auth.Account) bool {
 		account := &sdkTypes.GenesisAccount{

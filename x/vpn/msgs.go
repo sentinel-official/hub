@@ -153,7 +153,7 @@ func (msg MsgPayVPNService) GetSigners() []csdkTypes.AccAddress {
 	return []csdkTypes.AccAddress{msg.From}
 }
 
-func (msc MsgPayVPNService) Route() string {
+func (msg MsgPayVPNService) Route() string {
 	return "vpn"
 }
 
