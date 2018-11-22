@@ -9,6 +9,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	"github.com/cosmos/cosmos-sdk/version"
 	authCli "github.com/cosmos/cosmos-sdk/x/auth/client/cli"
+	bankCli "github.com/cosmos/cosmos-sdk/x/bank/client/cli"
 	app "github.com/ironman0x7b2/sentinel-sdk/apps/sentinel-vpn"
 	"github.com/ironman0x7b2/sentinel-sdk/types"
 	ibcCli "github.com/ironman0x7b2/sentinel-sdk/x/ibc/client/cli"
@@ -39,6 +40,7 @@ func main() {
 
 	rootCmd.AddCommand(
 		client.PostCommands(
+			bankCli.SendTxCmd(cdc),
 			ibcCli.IBCRelayCmd(cdc),
 			vpnCli.PayVPNServiceCommand(cdc),
 			vpnCli.ChangeNodeStatusCommand(cdc),

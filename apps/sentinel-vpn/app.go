@@ -6,6 +6,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/x/bank"
 	"github.com/ironman0x7b2/sentinel-sdk/x/vpn"
 	"github.com/tendermint/tendermint/libs/common"
 
@@ -36,6 +37,7 @@ type SentinelVPN struct {
 	keyVPN     *csdkTypes.KVStoreKey
 
 	accountKeeper       auth.AccountKeeper
+	bankKeeper          bank.Keeper
 	ibcKeeper           ibc.Keeper
 	vpnKeeper           vpn.Keeper
 	feeCollectionKeeper auth.FeeCollectionKeeper
@@ -60,10 +62,12 @@ func NewSentinelVPN(logger log.Logger, db tmDb.DB, baseAppOptions ...func(*basea
 			return &sdkTypes.AppAccount{}
 		},
 	)
+	app.bankKeeper = bank.NewBaseKeeper(app.accountKeeper)
 	app.ibcKeeper = ibc.NewKeeper(app.keyIBC, app.cdc)
 	app.vpnKeeper = vpn.NewKeeper(app.cdc, app.keyVPN, app.accountKeeper)
 
 	app.Router().
+		AddRoute("bank", bank.NewHandler(app.bankKeeper)).
 		AddRoute("vpn", vpn.NewHandler(app.vpnKeeper, app.ibcKeeper)).
 		AddRoute("ibc", vpn.NewIBCVPNHandler(app.vpnKeeper))
 
@@ -89,6 +93,7 @@ func MakeCodec() *codec.Codec {
 	codec.RegisterCrypto(cdc)
 	csdkTypes.RegisterCodec(cdc)
 	auth.RegisterCodec(cdc)
+	bank.RegisterCodec(cdc)
 	sdkTypes.RegisterCodec(cdc)
 	ibc.RegisterCodec(cdc)
 	vpn.RegisterCodec(cdc)
