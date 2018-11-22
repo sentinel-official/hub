@@ -47,7 +47,7 @@ func handleSetNodeStatus(ctx csdkTypes.Context, k Keeper, ibcPacket sdkTypes.IBC
 	vpnDeatils := k.GetVPNDetails(ctx, vpnID)
 
 	if vpnDeatils == nil {
-		panic("VPN not registered")
+		panic("vpndetails == nil")
 	}
 
 	k.SetVPNStatus(ctx, vpnID, status)
@@ -63,7 +63,7 @@ func handleSetSessionStatus(ctx csdkTypes.Context, k Keeper, ibcPacket sdkTypes.
 	sessionDetails := k.GetSessionDetails(ctx, sessionID)
 
 	if sessionDetails == nil {
-		panic("No session found")
+		panic("sessiondetails == nil")
 	}
 
 	k.SetSessionStatus(ctx, sessionID, status)

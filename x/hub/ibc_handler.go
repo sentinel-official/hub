@@ -41,12 +41,12 @@ func handleLockCoins(ctx csdkTypes.Context, ibcKeeper ibc.Keeper, hubKeeper Keep
 
 	if locker != nil {
 		// TODO: Replace with ErrLockerAlreadyExists
-		return csdkTypes.Result{}
+		panic("locker != nil")
 	}
 
 	if err := hubKeeper.LockCoins(ctx, lockerID, address, msg.Coins); err != nil {
 		// TODO: Replace with ErrLockCoins
-		return csdkTypes.Result{}
+		panic(err)
 	}
 
 	packet := sdkTypes.IBCPacket{
@@ -60,7 +60,7 @@ func handleLockCoins(ctx csdkTypes.Context, ibcKeeper ibc.Keeper, hubKeeper Keep
 
 	if err := ibcKeeper.PostIBCPacket(ctx, packet); err != nil {
 		// TODO: Replace with ErrPostIBCPacket
-		return csdkTypes.Result{}
+		panic(err)
 	}
 
 	// TODO: Replace with SuccessLockCoins
@@ -77,17 +77,17 @@ func handleReleaseCoins(ctx csdkTypes.Context, ibcKeeper ibc.Keeper, hubKeeper K
 
 	if locker == nil {
 		// TODO: Replace with ErrLockerNotExists
-		return csdkTypes.Result{}
+		panic("locker == nil")
 	}
 
 	if !locker.Address.Equals(address) {
 		// TODO: Replace with ErrInvalidLockerOwnerAddress
-		return csdkTypes.Result{}
+		panic("locker.address != address")
 	}
 
 	if err := hubKeeper.ReleaseCoins(ctx, msg.LockerID); err != nil {
 		// TODO: Replace with ErrReleaseCoins
-		return csdkTypes.Result{}
+		panic(err)
 	}
 
 	packet := sdkTypes.IBCPacket{
@@ -101,7 +101,7 @@ func handleReleaseCoins(ctx csdkTypes.Context, ibcKeeper ibc.Keeper, hubKeeper K
 
 	if err := ibcKeeper.PostIBCPacket(ctx, packet); err != nil {
 		// TODO: Replace with ErrPostIBCPacket
-		return csdkTypes.Result{}
+		panic(err)
 	}
 
 	// TODO: Replace with SuccessReleaseCoins
@@ -118,17 +118,17 @@ func handleReleaseCoinsToMany(ctx csdkTypes.Context, ibcKeeper ibc.Keeper, hubKe
 
 	if locker == nil {
 		// TODO: Replace with ErrLockerNotExists
-		return csdkTypes.Result{}
+		panic("locker == nil")
 	}
 
 	if !locker.Address.Equals(address) {
 		// TODO: Replace with ErrInvalidLockerOwnerAddress
-		return csdkTypes.Result{}
+		panic("locker.address != address")
 	}
 
 	if err := hubKeeper.ReleaseCoinsToMany(ctx, msg.LockerID, msg.Addresses, msg.Shares); err != nil {
 		// TODO: Replace with ErrReleaseCoinsToMany
-		return csdkTypes.Result{}
+		panic(err)
 	}
 
 	packet := sdkTypes.IBCPacket{
@@ -142,7 +142,7 @@ func handleReleaseCoinsToMany(ctx csdkTypes.Context, ibcKeeper ibc.Keeper, hubKe
 
 	if err := ibcKeeper.PostIBCPacket(ctx, packet); err != nil {
 		// TODO: Replace with ErrPostIBCPacket
-		return csdkTypes.Result{}
+		panic(err)
 	}
 
 	// TODO: Replace with SuccessReleaseCoinsToMany

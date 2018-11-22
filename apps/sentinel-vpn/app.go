@@ -7,6 +7,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/bank"
+	"github.com/ironman0x7b2/sentinel-sdk/x/hub"
 	"github.com/ironman0x7b2/sentinel-sdk/x/vpn"
 	"github.com/tendermint/tendermint/libs/common"
 
@@ -96,6 +97,7 @@ func MakeCodec() *codec.Codec {
 	bank.RegisterCodec(cdc)
 	sdkTypes.RegisterCodec(cdc)
 	ibc.RegisterCodec(cdc)
+	hub.RegisterCodec(cdc)
 	vpn.RegisterCodec(cdc)
 
 	cdc.Seal()

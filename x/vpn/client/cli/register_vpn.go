@@ -85,7 +85,7 @@ func RegisterVPNCmd(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			lockerID := "vpn" + "/" + from.String() + "/" + strconv.Itoa(int(sequence))
+			lockerID := "vpn" + "/" + from.String() + "/" + strconv.Itoa(int(sequence)+1)
 			msgLockerCoins := hub.MsgLockCoins{
 				LockerID: lockerID,
 				Coins:    coins,

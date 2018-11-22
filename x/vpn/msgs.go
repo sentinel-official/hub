@@ -36,7 +36,7 @@ func (msg MsgRegisterNode) GetSignBytes() []byte {
 	msgBytes, err := json.Marshal(msg)
 
 	if err != nil {
-		return nil
+		panic(err)
 	}
 
 	return msgBytes
@@ -98,7 +98,7 @@ func (msg MsgUpdateNodeStatus) GetSignBytes() []byte {
 	msgBytes, err := json.Marshal(msg)
 
 	if err != nil {
-		return nil
+		panic(err)
 	}
 
 	return msgBytes
@@ -139,7 +139,7 @@ func (msg MsgPayVPNService) GetSignBytes() []byte {
 	msgBytes, err := json.Marshal(msg)
 
 	if err != nil {
-		return nil
+		panic(err)
 	}
 
 	return msgBytes
@@ -189,7 +189,7 @@ func (msg MsgUpdateSessionStatus) GetSignBytes() []byte {
 	msgBytes, err := json.Marshal(msg)
 
 	if err != nil {
-		return nil
+		panic(err)
 	}
 
 	return msgBytes

@@ -18,8 +18,8 @@ const (
 
 func ChangeSessionStatusCommand(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "update-node-status",
-		Short: "Update VPN node status",
+		Use:   "update-session-status",
+		Short: "Update VPN session status",
 		RunE: func(cmd *cobra.Command, args []string) error {
 
 			txBldr := authTxBuilder.NewTxBuilderFromCLI().WithCodec(cdc)

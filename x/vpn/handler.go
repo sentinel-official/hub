@@ -21,7 +21,7 @@ func NewHandler(k Keeper, ik ibc.Keeper) csdkTypes.Handler {
 		case MsgPayVPNService:
 			return handlePayVPNService(ctx, k, ik, msg)
 		default:
-			errMsg := "Unrecognized vpn Msg type: " + reflect.TypeOf(msg).Name()
+			errMsg := "Unrecognized vpn Msg type: " + reflect.TypeOf(msg).String()
 			return csdkTypes.ErrUnknownRequest(errMsg).Result()
 		}
 	}
@@ -32,19 +32,19 @@ func handleRegisterNode(ctx csdkTypes.Context, k Keeper, ik ibc.Keeper, msg MsgR
 
 	if err != nil {
 		// TODO: Replace with ErrGetSequence
-		return csdkTypes.Result{}
+		panic(err)
 	}
 
 	vpnID := msg.From.String() + "/" + strconv.Itoa(int(sequence))
 
-	if lockerID := k.VPNStoreKey.String() + "/" + vpnID; msg.LockerID != lockerID {
+	if lockerID := k.VPNStoreKey.Name() + "/" + vpnID; msg.LockerID != lockerID {
 		// TODO: Replace with ErrLockerIDMismatch
-		return csdkTypes.Result{}
+		panic("msg.lockerid != lockerid")
 	}
 
 	if vpnDetails := k.GetVPNDetails(ctx, vpnID); vpnDetails != nil {
 		// TODO: Replace with ErrVPNAlreadyExists
-		return csdkTypes.Result{}
+		panic("vpndetails != nil")
 	}
 
 	vpnDetails := sdkTypes.VPNDetails{
@@ -73,7 +73,7 @@ func handleRegisterNode(ctx csdkTypes.Context, k Keeper, ik ibc.Keeper, msg MsgR
 
 	if err := ik.PostIBCPacket(ctx, ibcPacket); err != nil {
 		// TODO: Replace with ErrPostIBCPacket
-		return csdkTypes.Result{}
+		panic(err)
 	}
 
 	// TODO: Replace with SuccessRegisterNode
@@ -83,7 +83,7 @@ func handleRegisterNode(ctx csdkTypes.Context, k Keeper, ik ibc.Keeper, msg MsgR
 func handleUpdateNodeStatus(ctx csdkTypes.Context, k Keeper, msg MsgUpdateNodeStatus) csdkTypes.Result {
 	if vpnDetails := k.GetVPNDetails(ctx, msg.VPNID); vpnDetails == nil {
 		// TODO: Replace with ErrVPNNotExists
-		return csdkTypes.Result{}
+		panic("vpndetails == nil")
 	}
 
 	k.SetVPNStatus(ctx, msg.VPNID, msg.Status)
@@ -97,26 +97,26 @@ func handlePayVPNService(ctx csdkTypes.Context, k Keeper, ik ibc.Keeper, msg Msg
 
 	if err != nil {
 		// TODO: Replace with ErrGetSequence
-		return csdkTypes.Result{}
+		panic(err)
 	}
 
 	sessionID := msg.From.String() + "/" + strconv.Itoa(int(sequence))
 
-	if lockerID := k.SessionStoreKey.String() + "/" + sessionID; lockerID != msg.LockerID {
+	if lockerID := k.SessionStoreKey.Name() + "/" + sessionID; msg.LockerID != lockerID {
 		// TODO: Replace with ErrLockerIDMismatch
-		return csdkTypes.Result{}
+		panic("msg.lockerid != lockerid")
 	}
 
 	if sessionDetails := k.GetSessionDetails(ctx, sessionID); sessionDetails != nil {
 		// TODO: Replace wtih ErrSessionAlreadyExists
-		return csdkTypes.Result{}
+		panic("sessiondetails != nil")
 	}
 
 	vpnDetails := k.GetVPNDetails(ctx, msg.VPNID)
 
 	if vpnDetails == nil {
 		// TODO: Replace with ErrVPNNotExists
-		return csdkTypes.Result{}
+		panic("vpndetails == nil")
 	}
 
 	sessionDetails := sdkTypes.SessionDetails{
@@ -141,7 +141,7 @@ func handlePayVPNService(ctx csdkTypes.Context, k Keeper, ik ibc.Keeper, msg Msg
 
 	if err := ik.PostIBCPacket(ctx, ibcPacket); err != nil {
 		// TODO: Replace with ErrPostIBCPacket
-		return csdkTypes.Result{}
+		panic(err)
 	}
 
 	// TODO: Replace with SuccessPayVPNService

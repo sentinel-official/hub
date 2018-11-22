@@ -98,7 +98,7 @@ func (c relayCommander) loop(fromChainID, fromChainNodeURI, toChainID, toChainNo
 	}
 
 	ingressKey := ibc.IngressSequenceKey(fromChainID)
-	eggressLengthKey := ibc.EgressLengthKey(toChainID)
+	egressLengthKey := ibc.EgressLengthKey(toChainID)
 
 	for {
 		var processed, egressLength int64
@@ -114,7 +114,7 @@ func (c relayCommander) loop(fromChainID, fromChainNodeURI, toChainID, toChainNo
 			panic(err)
 		}
 
-		egressLengthBytes, err := query(fromChainNodeURI, eggressLengthKey, c.ibcStoreKey)
+		egressLengthBytes, err := query(fromChainNodeURI, egressLengthKey, c.ibcStoreKey)
 
 		if err != nil {
 			c.logger.Error("error querying outgoing packet list length", "err", err)
