@@ -1,6 +1,8 @@
 package hub
 
-import "github.com/cosmos/cosmos-sdk/codec"
+import (
+	"github.com/cosmos/cosmos-sdk/codec"
+)
 
 func RegisterCodec(cdc *codec.Codec) {
 	cdc.RegisterConcrete(MsgLockerStatus{}, "x/hub/msg_locker_status", nil)

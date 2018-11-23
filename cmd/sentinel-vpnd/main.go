@@ -6,16 +6,11 @@ import (
 	"io"
 	"os"
 
-	"github.com/tendermint/tendermint/p2p"
-	tmTypes "github.com/tendermint/tendermint/types"
-
 	"github.com/cosmos/cosmos-sdk/baseapp"
-	gaiaInit "github.com/cosmos/cosmos-sdk/cmd/gaia/init"
-
 	"github.com/cosmos/cosmos-sdk/client"
+	gaiaInit "github.com/cosmos/cosmos-sdk/cmd/gaia/init"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/server"
-	app "github.com/ironman0x7b2/sentinel-sdk/apps/sentinel-vpn"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	abciTypes "github.com/tendermint/tendermint/abci/types"
@@ -23,6 +18,10 @@ import (
 	"github.com/tendermint/tendermint/libs/common"
 	tmDb "github.com/tendermint/tendermint/libs/db"
 	"github.com/tendermint/tendermint/libs/log"
+	"github.com/tendermint/tendermint/p2p"
+	tmTypes "github.com/tendermint/tendermint/types"
+
+	app "github.com/ironman0x7b2/sentinel-sdk/apps/sentinel-vpn"
 )
 
 const flagClientHome = "home-client"
@@ -100,7 +99,7 @@ func InitCmd(ctx *server.Context, cdc *codec.Codec, appInit server.AppInit) *cob
 			if err != nil {
 				return err
 			}
-			fmt.Fprintf(os.Stderr, "%s\n", string(out))
+			_, _ = fmt.Fprintf(os.Stderr, "%s\n", string(out))
 			return gaiaInit.ExportGenesisFile(config.GenesisFile(), chainID, []tmTypes.GenesisValidator{validator}, appStateJSON)
 		},
 	}
@@ -109,7 +108,7 @@ func InitCmd(ctx *server.Context, cdc *codec.Codec, appInit server.AppInit) *cob
 	cmd.Flags().String(flagClientHome, app.DefaultCLIHome, "client's home directory")
 	cmd.Flags().String(client.FlagChainID, "", "genesis file chain-id, if left blank will be randomly created")
 	cmd.Flags().String(client.FlagName, "", "validator's moniker")
-	cmd.MarkFlagRequired(client.FlagName)
+	_ = cmd.MarkFlagRequired(client.FlagName)
 	return cmd
 }
 

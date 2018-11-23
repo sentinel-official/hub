@@ -1,6 +1,8 @@
 package types
 
-import "github.com/cosmos/cosmos-sdk/codec"
+import (
+	"github.com/cosmos/cosmos-sdk/codec"
+)
 
 func RegisterCodec(cdc *codec.Codec) {
 	cdc.RegisterInterface((*Interface)(nil), nil)

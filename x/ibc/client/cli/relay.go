@@ -11,11 +11,12 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	authCli "github.com/cosmos/cosmos-sdk/x/auth/client/cli"
 	authTxBuilder "github.com/cosmos/cosmos-sdk/x/auth/client/txbuilder"
-	"github.com/ironman0x7b2/sentinel-sdk/types"
-	"github.com/ironman0x7b2/sentinel-sdk/x/ibc"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"github.com/tendermint/tendermint/libs/log"
+
+	"github.com/ironman0x7b2/sentinel-sdk/types"
+	"github.com/ironman0x7b2/sentinel-sdk/x/ibc"
 )
 
 const (
@@ -55,15 +56,15 @@ func IBCRelayCmd(cdc *codec.Codec) *cobra.Command {
 	cmd.Flags().String(flagToChainID, "", "Chain ID for ibc node to broadcast incoming packets")
 	cmd.Flags().String(flagToChainNodeURI, "tcp://localhost:36657", "<host>:<port> to tendermint rpc interface for this chain")
 
-	cmd.MarkFlagRequired(flagFromChainID)
-	cmd.MarkFlagRequired(flagFromChainNodeURI)
-	cmd.MarkFlagRequired(flagToChainID)
-	cmd.MarkFlagRequired(flagToChainNodeURI)
+	_ = cmd.MarkFlagRequired(flagFromChainID)
+	_ = cmd.MarkFlagRequired(flagFromChainNodeURI)
+	_ = cmd.MarkFlagRequired(flagToChainID)
+	_ = cmd.MarkFlagRequired(flagToChainNodeURI)
 
-	viper.BindPFlag(flagFromChainID, cmd.Flags().Lookup(flagFromChainID))
-	viper.BindPFlag(flagFromChainNodeURI, cmd.Flags().Lookup(flagFromChainNodeURI))
-	viper.BindPFlag(flagToChainID, cmd.Flags().Lookup(flagToChainID))
-	viper.BindPFlag(flagToChainNodeURI, cmd.Flags().Lookup(flagToChainNodeURI))
+	_ = viper.BindPFlag(flagFromChainID, cmd.Flags().Lookup(flagFromChainID))
+	_ = viper.BindPFlag(flagFromChainNodeURI, cmd.Flags().Lookup(flagFromChainNodeURI))
+	_ = viper.BindPFlag(flagToChainID, cmd.Flags().Lookup(flagToChainID))
+	_ = viper.BindPFlag(flagToChainNodeURI, cmd.Flags().Lookup(flagToChainNodeURI))
 
 	return cmd
 }

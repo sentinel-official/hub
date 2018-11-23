@@ -7,9 +7,10 @@ import (
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
 	authCli "github.com/cosmos/cosmos-sdk/x/auth/client/cli"
 	authTxBuilder "github.com/cosmos/cosmos-sdk/x/auth/client/txbuilder"
-	"github.com/ironman0x7b2/sentinel-sdk/x/vpn"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+
+	"github.com/ironman0x7b2/sentinel-sdk/x/vpn"
 )
 
 const (

@@ -10,11 +10,12 @@ import (
 	"github.com/cosmos/cosmos-sdk/version"
 	authCli "github.com/cosmos/cosmos-sdk/x/auth/client/cli"
 	bankCli "github.com/cosmos/cosmos-sdk/x/bank/client/cli"
+	"github.com/spf13/cobra"
+	"github.com/tendermint/tendermint/libs/cli"
+
 	app "github.com/ironman0x7b2/sentinel-sdk/apps/sentinel-hub"
 	"github.com/ironman0x7b2/sentinel-sdk/types"
 	ibcCli "github.com/ironman0x7b2/sentinel-sdk/x/ibc/client/cli"
-	"github.com/spf13/cobra"
-	"github.com/tendermint/tendermint/libs/cli"
 )
 
 var rootCmd = &cobra.Command{
