@@ -15,11 +15,11 @@ func NewIBCHubHandler(ibcKeeper ibc.Keeper, hubKeeper Keeper) csdkTypes.Handler 
 		case ibc.MsgIBCTransaction:
 			switch ibcMsg := msg.IBCPacket.Message.(type) {
 			case MsgLockCoins:
-				return handleLockCoins(ctx, ibcKeeper, hubKeeper, msg.IBCPacket)
+				return handleLockCoins(ctx, ibcKeeper, hubKeeper, msg)
 			case MsgReleaseCoins:
-				return handleReleaseCoins(ctx, ibcKeeper, hubKeeper, msg.IBCPacket)
+				return handleReleaseCoins(ctx, ibcKeeper, hubKeeper, msg)
 			case MsgReleaseCoinsToMany:
-				return handleReleaseCoinsToMany(ctx, ibcKeeper, hubKeeper, msg.IBCPacket)
+				return handleReleaseCoinsToMany(ctx, ibcKeeper, hubKeeper, msg)
 			default:
 				errMsg := fmt.Sprintf("Unrecognized IBC Msg: %v", reflect.TypeOf(ibcMsg))
 				return csdkTypes.ErrUnknownRequest(errMsg).Result()
@@ -31,12 +31,22 @@ func NewIBCHubHandler(ibcKeeper ibc.Keeper, hubKeeper Keeper) csdkTypes.Handler 
 	}
 }
 
-func handleLockCoins(ctx csdkTypes.Context, ibcKeeper ibc.Keeper, hubKeeper Keeper, ibcPacket sdkTypes.IBCPacket) csdkTypes.Result {
-	msg, _ := ibcPacket.Message.(MsgLockCoins)
+func handleLockCoins(ctx csdkTypes.Context, ibcKeeper ibc.Keeper, hubKeeper Keeper, ibcMsg ibc.MsgIBCTransaction) csdkTypes.Result {
+	msg, _ := ibcMsg.IBCPacket.Message.(MsgLockCoins)
+	sequence := ibcKeeper.GetIngressLength(ctx, string(ibc.IngressLengthKey(ibcMsg.IBCPacket.SrcChainID)))
 
-	lockerID := ibcPacket.SrcChainID + "/" + msg.LockerID
+	if ibcMsg.Sequence != sequence {
+		// TODO: Replace with ErrInvalidIBCSequence
+		panic("ibcmsg.sequence != sequence")
+	}
+
+	if !msg.Verify() {
+		// TODO: Replace with ErrIBCPacketMsgVerificationFailed
+		panic("!msg.verify()")
+	}
+
+	lockerID := ibcMsg.IBCPacket.SrcChainID + "/" + msg.LockerID
 	address := msg.PubKey.Address().Bytes()
-
 	locker := hubKeeper.GetLocker(ctx, lockerID)
 
 	if locker != nil {
@@ -50,8 +60,8 @@ func handleLockCoins(ctx csdkTypes.Context, ibcKeeper ibc.Keeper, hubKeeper Keep
 	}
 
 	packet := sdkTypes.IBCPacket{
-		SrcChainID:  ibcPacket.DestChainID,
-		DestChainID: ibcPacket.SrcChainID,
+		SrcChainID:  ibcMsg.IBCPacket.DestChainID,
+		DestChainID: ibcMsg.IBCPacket.SrcChainID,
 		Message: MsgLockerStatus{
 			LockerID: msg.LockerID,
 			Status:   "LOCKED",
@@ -63,16 +73,28 @@ func handleLockCoins(ctx csdkTypes.Context, ibcKeeper ibc.Keeper, hubKeeper Keep
 		panic(err)
 	}
 
+	ibcKeeper.SetIngressLength(ctx, string(ibc.IngressLengthKey(ibcMsg.IBCPacket.SrcChainID)), sequence+1)
+
 	// TODO: Replace with SuccessLockCoins
 	return csdkTypes.Result{}
 }
 
-func handleReleaseCoins(ctx csdkTypes.Context, ibcKeeper ibc.Keeper, hubKeeper Keeper, ibcPacket sdkTypes.IBCPacket) csdkTypes.Result {
-	msg, _ := ibcPacket.Message.(MsgReleaseCoins)
+func handleReleaseCoins(ctx csdkTypes.Context, ibcKeeper ibc.Keeper, hubKeeper Keeper, ibcMsg ibc.MsgIBCTransaction) csdkTypes.Result {
+	msg, _ := ibcMsg.IBCPacket.Message.(MsgReleaseCoins)
+	sequence := ibcKeeper.GetIngressLength(ctx, string(ibc.IngressLengthKey(ibcMsg.IBCPacket.SrcChainID)))
 
-	lockerID := ibcPacket.SrcChainID + "/" + msg.LockerID
+	if ibcMsg.Sequence != sequence {
+		// TODO: Replace with ErrInvalidIBCSequence
+		panic("ibcmsg.sequence != sequence")
+	}
+
+	if !msg.Verify() {
+		// TODO: Replace with ErrIBCPacketMsgVerificationFailed
+		panic("!msg.verify()")
+	}
+
+	lockerID := ibcMsg.IBCPacket.SrcChainID + "/" + msg.LockerID
 	address := msg.PubKey.Address().Bytes()
-
 	locker := hubKeeper.GetLocker(ctx, lockerID)
 
 	if locker == nil {
@@ -91,8 +113,8 @@ func handleReleaseCoins(ctx csdkTypes.Context, ibcKeeper ibc.Keeper, hubKeeper K
 	}
 
 	packet := sdkTypes.IBCPacket{
-		SrcChainID:  ibcPacket.DestChainID,
-		DestChainID: ibcPacket.SrcChainID,
+		SrcChainID:  ibcMsg.IBCPacket.DestChainID,
+		DestChainID: ibcMsg.IBCPacket.SrcChainID,
 		Message: MsgLockerStatus{
 			LockerID: msg.LockerID,
 			Status:   "RELEASED",
@@ -104,16 +126,28 @@ func handleReleaseCoins(ctx csdkTypes.Context, ibcKeeper ibc.Keeper, hubKeeper K
 		panic(err)
 	}
 
+	ibcKeeper.SetIngressLength(ctx, string(ibc.IngressLengthKey(ibcMsg.IBCPacket.SrcChainID)), sequence+1)
+
 	// TODO: Replace with SuccessReleaseCoins
 	return csdkTypes.Result{}
 }
 
-func handleReleaseCoinsToMany(ctx csdkTypes.Context, ibcKeeper ibc.Keeper, hubKeeper Keeper, ibcPacket sdkTypes.IBCPacket) csdkTypes.Result {
-	msg, _ := ibcPacket.Message.(MsgReleaseCoinsToMany)
+func handleReleaseCoinsToMany(ctx csdkTypes.Context, ibcKeeper ibc.Keeper, hubKeeper Keeper, ibcMsg ibc.MsgIBCTransaction) csdkTypes.Result {
+	msg, _ := ibcMsg.IBCPacket.Message.(MsgReleaseCoinsToMany)
+	sequence := ibcKeeper.GetIngressLength(ctx, string(ibc.IngressLengthKey(ibcMsg.IBCPacket.SrcChainID)))
 
-	lockerID := ibcPacket.SrcChainID + "/" + msg.LockerID
+	if ibcMsg.Sequence != sequence {
+		// TODO: Replace with ErrInvalidIBCSequence
+		panic("ibcmsg.sequence != sequence")
+	}
+
+	if !msg.Verify() {
+		// TODO: Replace with ErrIBCPacketMsgVerificationFailed
+		panic("!msg.verify()")
+	}
+
+	lockerID := ibcMsg.IBCPacket.SrcChainID + "/" + msg.LockerID
 	address := msg.PubKey.Address().Bytes()
-
 	locker := hubKeeper.GetLocker(ctx, lockerID)
 
 	if locker == nil {
@@ -132,8 +166,8 @@ func handleReleaseCoinsToMany(ctx csdkTypes.Context, ibcKeeper ibc.Keeper, hubKe
 	}
 
 	packet := sdkTypes.IBCPacket{
-		SrcChainID:  ibcPacket.DestChainID,
-		DestChainID: ibcPacket.SrcChainID,
+		SrcChainID:  ibcMsg.IBCPacket.DestChainID,
+		DestChainID: ibcMsg.IBCPacket.SrcChainID,
 		Message: MsgLockerStatus{
 			LockerID: msg.LockerID,
 			Status:   "RELEASED",
@@ -144,6 +178,8 @@ func handleReleaseCoinsToMany(ctx csdkTypes.Context, ibcKeeper ibc.Keeper, hubKe
 		// TODO: Replace with ErrPostIBCPacket
 		panic(err)
 	}
+
+	ibcKeeper.SetIngressLength(ctx, string(ibc.IngressLengthKey(ibcMsg.IBCPacket.SrcChainID)), sequence+1)
 
 	// TODO: Replace with SuccessReleaseCoinsToMany
 	return csdkTypes.Result{}

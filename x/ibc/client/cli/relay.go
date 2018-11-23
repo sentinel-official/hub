@@ -97,28 +97,27 @@ func (c relayCommander) loop(fromChainID, fromChainNodeURI, toChainID, toChainNo
 		panic(err)
 	}
 
-	ingressKey := ibc.IngressSequenceKey(fromChainID)
+	ingressLengthKey := ibc.IngressLengthKey(fromChainID)
 	egressLengthKey := ibc.EgressLengthKey(toChainID)
 
 	for {
-		var processed, egressLength int64
-		processedBytes, err := query(toChainNodeURI, ingressKey, c.ibcStoreKey)
+		var ingressLength, egressLength int64
+		ingressLengthBytes, err := query(toChainNodeURI, ingressLengthKey, c.ibcStoreKey)
 
 		if err != nil {
 			panic(err)
 		}
 
-		if processedBytes == nil {
-			processed = 0
-		} else if err = c.cdc.UnmarshalBinaryLengthPrefixed(processedBytes, &processed); err != nil {
+		if ingressLengthBytes == nil {
+			ingressLength = 0
+		} else if err = c.cdc.UnmarshalBinaryLengthPrefixed(ingressLengthBytes, &ingressLength); err != nil {
 			panic(err)
 		}
 
 		egressLengthBytes, err := query(fromChainNodeURI, egressLengthKey, c.ibcStoreKey)
 
 		if err != nil {
-			c.logger.Error("error querying outgoing packet list length", "err", err)
-			break
+			panic(err)
 		}
 
 		if egressLengthBytes == nil {
@@ -127,13 +126,13 @@ func (c relayCommander) loop(fromChainID, fromChainNodeURI, toChainID, toChainNo
 			panic(err)
 		}
 
-		if egressLength > processed {
+		if egressLength > ingressLength {
 			c.logger.Info("Detected IBC packet", "number", egressLength-1)
 		}
 
 		seq := c.getSequence(toChainNodeURI)
 
-		for i := processed; i < egressLength; i++ {
+		for i := ingressLength; i < egressLength; i++ {
 			egressbz, err := query(fromChainNodeURI, ibc.EgressKey(toChainID, i), c.ibcStoreKey)
 
 			if err != nil {
@@ -141,7 +140,7 @@ func (c relayCommander) loop(fromChainID, fromChainNodeURI, toChainID, toChainNo
 				break
 			}
 
-			err = c.broadcastTx(seq+i-processed, toChainNodeURI, c.refine(egressbz, i, passphrase))
+			err = c.broadcastTx(seq+i-ingressLength, toChainNodeURI, c.refine(egressbz, i, passphrase))
 
 			if err != nil {
 				c.logger.Error("error broadcasting ingress packet", "err", err)
