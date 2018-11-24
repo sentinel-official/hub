@@ -99,8 +99,8 @@ func (c relayCommander) loop(fromChainID, fromChainNodeURI, toChainID, toChainNo
 		panic(err)
 	}
 
-	ingressLengthKey, _ := c.cdc.MarshalBinaryBare(ibc.IngressLengthKey(fromChainID))
-	egressLengthKey, _ := c.cdc.MarshalBinaryBare(ibc.EgressLengthKey(toChainID))
+	ingressLengthKey, _ := c.cdc.MarshalBinaryLengthPrefixed(ibc.IngressLengthKey(fromChainID))
+	egressLengthKey, _ := c.cdc.MarshalBinaryLengthPrefixed(ibc.EgressLengthKey(toChainID))
 
 	for {
 		var ingressLength, egressLength int64
@@ -112,7 +112,7 @@ func (c relayCommander) loop(fromChainID, fromChainNodeURI, toChainID, toChainNo
 
 		if ingressLengthBytes == nil {
 			ingressLength = 0
-		} else if err = c.cdc.UnmarshalBinaryBare(ingressLengthBytes, &ingressLength); err != nil {
+		} else if err = c.cdc.UnmarshalBinaryLengthPrefixed(ingressLengthBytes, &ingressLength); err != nil {
 			panic(err)
 		}
 
@@ -124,7 +124,7 @@ func (c relayCommander) loop(fromChainID, fromChainNodeURI, toChainID, toChainNo
 
 		if egressLengthBytes == nil {
 			egressLength = 0
-		} else if err = c.cdc.UnmarshalBinaryBare(egressLengthBytes, &egressLength); err != nil {
+		} else if err = c.cdc.UnmarshalBinaryLengthPrefixed(egressLengthBytes, &egressLength); err != nil {
 			panic(err)
 		}
 
@@ -137,7 +137,7 @@ func (c relayCommander) loop(fromChainID, fromChainNodeURI, toChainID, toChainNo
 		seq := c.getSequence(toChainNodeURI)
 
 		for i := ingressLength; i < egressLength; i++ {
-			egressKey, _ := c.cdc.MarshalBinaryBare(ibc.EgressKey(toChainID, i))
+			egressKey, _ := c.cdc.MarshalBinaryLengthPrefixed(ibc.EgressKey(toChainID, i))
 			egressbz, err := query(fromChainNodeURI, egressKey, c.ibcStoreKey)
 
 			if err != nil {
@@ -192,7 +192,7 @@ func (c relayCommander) getSequence(nodeURI string) int64 {
 func (c relayCommander) refine(bz []byte, sequence int64, passphrase string) []byte {
 	var packet types.IBCPacket
 
-	if err := c.cdc.UnmarshalBinaryBare(bz, &packet); err != nil {
+	if err := c.cdc.UnmarshalBinaryLengthPrefixed(bz, &packet); err != nil {
 		panic(err)
 	}
 
