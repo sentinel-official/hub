@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"fmt"
 	"os"
 	"time"
 
@@ -98,8 +99,8 @@ func (c relayCommander) loop(fromChainID, fromChainNodeURI, toChainID, toChainNo
 		panic(err)
 	}
 
-	ingressLengthKey := ibc.IngressLengthKey(fromChainID)
-	egressLengthKey := ibc.EgressLengthKey(toChainID)
+	ingressLengthKey, _ := c.cdc.MarshalBinaryLengthPrefixed(ibc.IngressLengthKey(fromChainID))
+	egressLengthKey, _ := c.cdc.MarshalBinaryLengthPrefixed(ibc.EgressLengthKey(toChainID))
 
 	for {
 		var ingressLength, egressLength int64
@@ -127,6 +128,8 @@ func (c relayCommander) loop(fromChainID, fromChainNodeURI, toChainID, toChainNo
 			panic(err)
 		}
 
+		fmt.Println(string(ingressLengthKey), ingressLengthBytes, ingressLength, string(egressLengthKey), egressLengthBytes, egressLength)
+
 		if egressLength > ingressLength {
 			c.logger.Info("Detected IBC packet", "number", egressLength-1)
 		}
@@ -134,7 +137,8 @@ func (c relayCommander) loop(fromChainID, fromChainNodeURI, toChainID, toChainNo
 		seq := c.getSequence(toChainNodeURI)
 
 		for i := ingressLength; i < egressLength; i++ {
-			egressbz, err := query(fromChainNodeURI, ibc.EgressKey(toChainID, i), c.ibcStoreKey)
+			egressKey, _ := c.cdc.MarshalBinaryLengthPrefixed(ibc.EgressKey(toChainID, i))
+			egressbz, err := query(fromChainNodeURI, egressKey, c.ibcStoreKey)
 
 			if err != nil {
 				c.logger.Error("error querying egress packet", "err", err)

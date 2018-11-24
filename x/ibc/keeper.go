@@ -9,20 +9,20 @@ import (
 	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
 )
 
-func EgressKey(destChain string, length int64) []byte {
-	return []byte(fmt.Sprintf("egress/%s/%d", destChain, length))
+func EgressKey(destChainID string, length int64) string {
+	return fmt.Sprintf("egress/%s/%d", destChainID, length)
 }
 
-func EgressLengthKey(destChain string) []byte {
-	return []byte(fmt.Sprintf("egress/%s", destChain))
+func EgressLengthKey(destChainID string) string {
+	return fmt.Sprintf("egress/%s", destChainID)
 }
 
-func IngressKey(srcChain string, length int64) []byte {
-	return []byte(fmt.Sprintf("ingress/%s/%d", srcChain, length))
+func IngressKey(srcChainID string, length int64) string {
+	return fmt.Sprintf("ingress/%s/%d", srcChainID, length)
 }
 
-func IngressLengthKey(srcChain string) []byte {
-	return []byte(fmt.Sprintf("ingress/%s", srcChain))
+func IngressLengthKey(srcChainID string) string {
+	return fmt.Sprintf("ingress/%s", srcChainID)
 }
 
 type Keeper struct {
@@ -158,9 +158,9 @@ func (k Keeper) GetIngressLength(ctx csdkTypes.Context, ingressKey string) int64
 }
 
 func (k Keeper) PostIBCPacket(ctx csdkTypes.Context, packet sdkTypes.IBCPacket) csdkTypes.Error {
-	egressLength := k.GetEgressLength(ctx, string(EgressLengthKey(packet.DestChainID)))
-	k.SetIBCPacket(ctx, string(EgressKey(packet.DestChainID, egressLength)), packet)
-	k.SetEgressLength(ctx, string(EgressLengthKey(packet.DestChainID)), egressLength+1)
+	egressLength := k.GetEgressLength(ctx, EgressLengthKey(packet.DestChainID))
+	k.SetIBCPacket(ctx, EgressKey(packet.DestChainID, egressLength), packet)
+	k.SetEgressLength(ctx, EgressLengthKey(packet.DestChainID), egressLength+1)
 
 	return nil
 }

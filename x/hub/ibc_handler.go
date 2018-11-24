@@ -34,7 +34,7 @@ func NewIBCHubHandler(ibcKeeper ibc.Keeper, hubKeeper Keeper) csdkTypes.Handler 
 
 func handleLockCoins(ctx csdkTypes.Context, ibcKeeper ibc.Keeper, hubKeeper Keeper, ibcMsg ibc.MsgIBCTransaction) csdkTypes.Result {
 	msg, _ := ibcMsg.IBCPacket.Message.(MsgLockCoins)
-	sequence := ibcKeeper.GetIngressLength(ctx, string(ibc.IngressLengthKey(ibcMsg.IBCPacket.SrcChainID)))
+	sequence := ibcKeeper.GetIngressLength(ctx, ibc.IngressLengthKey(ibcMsg.IBCPacket.SrcChainID))
 
 	if ibcMsg.Sequence != sequence {
 		// TODO: Replace with ErrInvalidIBCSequence
@@ -74,7 +74,7 @@ func handleLockCoins(ctx csdkTypes.Context, ibcKeeper ibc.Keeper, hubKeeper Keep
 		panic(err)
 	}
 
-	ibcKeeper.SetIngressLength(ctx, string(ibc.IngressLengthKey(ibcMsg.IBCPacket.SrcChainID)), sequence+1)
+	ibcKeeper.SetIngressLength(ctx, ibc.IngressLengthKey(ibcMsg.IBCPacket.SrcChainID), sequence+1)
 
 	// TODO: Replace with SuccessLockCoins
 	return csdkTypes.Result{}
@@ -82,7 +82,7 @@ func handleLockCoins(ctx csdkTypes.Context, ibcKeeper ibc.Keeper, hubKeeper Keep
 
 func handleReleaseCoins(ctx csdkTypes.Context, ibcKeeper ibc.Keeper, hubKeeper Keeper, ibcMsg ibc.MsgIBCTransaction) csdkTypes.Result {
 	msg, _ := ibcMsg.IBCPacket.Message.(MsgReleaseCoins)
-	sequence := ibcKeeper.GetIngressLength(ctx, string(ibc.IngressLengthKey(ibcMsg.IBCPacket.SrcChainID)))
+	sequence := ibcKeeper.GetIngressLength(ctx, ibc.IngressLengthKey(ibcMsg.IBCPacket.SrcChainID))
 
 	if ibcMsg.Sequence != sequence {
 		// TODO: Replace with ErrInvalidIBCSequence
@@ -127,7 +127,7 @@ func handleReleaseCoins(ctx csdkTypes.Context, ibcKeeper ibc.Keeper, hubKeeper K
 		panic(err)
 	}
 
-	ibcKeeper.SetIngressLength(ctx, string(ibc.IngressLengthKey(ibcMsg.IBCPacket.SrcChainID)), sequence+1)
+	ibcKeeper.SetIngressLength(ctx, ibc.IngressLengthKey(ibcMsg.IBCPacket.SrcChainID), sequence+1)
 
 	// TODO: Replace with SuccessReleaseCoins
 	return csdkTypes.Result{}
@@ -135,7 +135,7 @@ func handleReleaseCoins(ctx csdkTypes.Context, ibcKeeper ibc.Keeper, hubKeeper K
 
 func handleReleaseCoinsToMany(ctx csdkTypes.Context, ibcKeeper ibc.Keeper, hubKeeper Keeper, ibcMsg ibc.MsgIBCTransaction) csdkTypes.Result {
 	msg, _ := ibcMsg.IBCPacket.Message.(MsgReleaseCoinsToMany)
-	sequence := ibcKeeper.GetIngressLength(ctx, string(ibc.IngressLengthKey(ibcMsg.IBCPacket.SrcChainID)))
+	sequence := ibcKeeper.GetIngressLength(ctx, ibc.IngressLengthKey(ibcMsg.IBCPacket.SrcChainID))
 
 	if ibcMsg.Sequence != sequence {
 		// TODO: Replace with ErrInvalidIBCSequence
@@ -180,7 +180,7 @@ func handleReleaseCoinsToMany(ctx csdkTypes.Context, ibcKeeper ibc.Keeper, hubKe
 		panic(err)
 	}
 
-	ibcKeeper.SetIngressLength(ctx, string(ibc.IngressLengthKey(ibcMsg.IBCPacket.SrcChainID)), sequence+1)
+	ibcKeeper.SetIngressLength(ctx, ibc.IngressLengthKey(ibcMsg.IBCPacket.SrcChainID), sequence+1)
 
 	// TODO: Replace with SuccessReleaseCoinsToMany
 	return csdkTypes.Result{}
