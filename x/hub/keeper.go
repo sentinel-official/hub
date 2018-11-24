@@ -34,13 +34,13 @@ func NewBaseKeeper(cdc *codec.Codec, coinLockerKey csdkTypes.StoreKey, bankKeepe
 
 func (k BaseKeeper) SetLocker(ctx csdkTypes.Context, lockerID string, locker *sdkTypes.CoinLocker) {
 	store := ctx.KVStore(k.coinLockerKey)
-	keyBytes, err := k.cdc.MarshalBinaryLengthPrefixed(lockerID)
+	keyBytes, err := k.cdc.MarshalBinaryBare(lockerID)
 
 	if err != nil {
 		panic(err)
 	}
 
-	valueBytes, err := k.cdc.MarshalBinaryLengthPrefixed(locker)
+	valueBytes, err := k.cdc.MarshalBinaryBare(locker)
 
 	if err != nil {
 		panic(err)
@@ -51,7 +51,7 @@ func (k BaseKeeper) SetLocker(ctx csdkTypes.Context, lockerID string, locker *sd
 
 func (k BaseKeeper) GetLocker(ctx csdkTypes.Context, lockerID string) *sdkTypes.CoinLocker {
 	store := ctx.KVStore(k.coinLockerKey)
-	keyBytes, err := k.cdc.MarshalBinaryLengthPrefixed(lockerID)
+	keyBytes, err := k.cdc.MarshalBinaryBare(lockerID)
 
 	if err != nil {
 		panic(err)
@@ -65,7 +65,7 @@ func (k BaseKeeper) GetLocker(ctx csdkTypes.Context, lockerID string) *sdkTypes.
 
 	var locker sdkTypes.CoinLocker
 
-	if err := k.cdc.UnmarshalBinaryLengthPrefixed(valueBytes, &locker); err != nil {
+	if err := k.cdc.UnmarshalBinaryBare(valueBytes, &locker); err != nil {
 		panic(err)
 	}
 

@@ -9,20 +9,20 @@ import (
 	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
 )
 
-func EgressKey(destChain string, length int64) []byte {
-	return []byte(fmt.Sprintf("egress/%s/%d", destChain, length))
+func EgressKey(destChainID string, length int64) string {
+	return fmt.Sprintf("egress/%s/%d", destChainID, length)
 }
 
-func EgressLengthKey(destChain string) []byte {
-	return []byte(fmt.Sprintf("egress/%s", destChain))
+func EgressLengthKey(destChainID string) string {
+	return fmt.Sprintf("egress/%s", destChainID)
 }
 
-func IngressKey(srcChain string, length int64) []byte {
-	return []byte(fmt.Sprintf("ingress/%s/%d", srcChain, length))
+func IngressKey(srcChainID string, length int64) string {
+	return fmt.Sprintf("ingress/%s/%d", srcChainID, length)
 }
 
-func IngressLengthKey(srcChain string) []byte {
-	return []byte(fmt.Sprintf("ingress/%s", srcChain))
+func IngressLengthKey(srcChainID string) string {
+	return fmt.Sprintf("ingress/%s", srcChainID)
 }
 
 type Keeper struct {
@@ -39,13 +39,13 @@ func NewKeeper(ibcKey csdkTypes.StoreKey, cdc *codec.Codec) Keeper {
 
 func (k Keeper) SetIBCPacket(ctx csdkTypes.Context, packetID string, packet sdkTypes.IBCPacket) {
 	store := ctx.KVStore(k.IBCKey)
-	keyBytes, err := k.cdc.MarshalBinaryLengthPrefixed(packetID)
+	keyBytes, err := k.cdc.MarshalBinaryBare(packetID)
 
 	if err != nil {
 		panic(err)
 	}
 
-	valueBytes, err := k.cdc.MarshalBinaryLengthPrefixed(packet)
+	valueBytes, err := k.cdc.MarshalBinaryBare(packet)
 
 	if err != nil {
 		panic(err)
@@ -56,7 +56,7 @@ func (k Keeper) SetIBCPacket(ctx csdkTypes.Context, packetID string, packet sdkT
 
 func (k Keeper) GetIBCPacket(ctx csdkTypes.Context, packetID string) *sdkTypes.IBCPacket {
 	store := ctx.KVStore(k.IBCKey)
-	keyBytes, err := k.cdc.MarshalBinaryLengthPrefixed(packetID)
+	keyBytes, err := k.cdc.MarshalBinaryBare(packetID)
 
 	if err != nil {
 		panic(err)
@@ -70,7 +70,7 @@ func (k Keeper) GetIBCPacket(ctx csdkTypes.Context, packetID string) *sdkTypes.I
 
 	var packet sdkTypes.IBCPacket
 
-	if err := k.cdc.UnmarshalBinaryLengthPrefixed(valueBytes, &packet); err != nil {
+	if err := k.cdc.UnmarshalBinaryBare(valueBytes, &packet); err != nil {
 		panic(err)
 	}
 
@@ -79,13 +79,13 @@ func (k Keeper) GetIBCPacket(ctx csdkTypes.Context, packetID string) *sdkTypes.I
 
 func (k Keeper) SetEgressLength(ctx csdkTypes.Context, egressKey string, length int64) {
 	store := ctx.KVStore(k.IBCKey)
-	keyBytes, err := k.cdc.MarshalBinaryLengthPrefixed(egressKey)
+	keyBytes, err := k.cdc.MarshalBinaryBare(egressKey)
 
 	if err != nil {
 		panic(err)
 	}
 
-	valueBytes, err := k.cdc.MarshalBinaryLengthPrefixed(length)
+	valueBytes, err := k.cdc.MarshalBinaryBare(length)
 
 	if err != nil {
 		panic(err)
@@ -96,7 +96,7 @@ func (k Keeper) SetEgressLength(ctx csdkTypes.Context, egressKey string, length 
 
 func (k Keeper) GetEgressLength(ctx csdkTypes.Context, egressKey string) int64 {
 	store := ctx.KVStore(k.IBCKey)
-	keyBytes, err := k.cdc.MarshalBinaryLengthPrefixed(egressKey)
+	keyBytes, err := k.cdc.MarshalBinaryBare(egressKey)
 
 	if err != nil {
 		panic(err)
@@ -110,7 +110,7 @@ func (k Keeper) GetEgressLength(ctx csdkTypes.Context, egressKey string) int64 {
 
 	var length int64
 
-	if err := k.cdc.UnmarshalBinaryLengthPrefixed(valueBytes, &length); err != nil {
+	if err := k.cdc.UnmarshalBinaryBare(valueBytes, &length); err != nil {
 		panic(err)
 	}
 
@@ -119,13 +119,13 @@ func (k Keeper) GetEgressLength(ctx csdkTypes.Context, egressKey string) int64 {
 
 func (k Keeper) SetIngressLength(ctx csdkTypes.Context, ingressKey string, length int64) {
 	store := ctx.KVStore(k.IBCKey)
-	keyBytes, err := k.cdc.MarshalBinaryLengthPrefixed(ingressKey)
+	keyBytes, err := k.cdc.MarshalBinaryBare(ingressKey)
 
 	if err != nil {
 		panic(err)
 	}
 
-	valueBytes, err := k.cdc.MarshalBinaryLengthPrefixed(length)
+	valueBytes, err := k.cdc.MarshalBinaryBare(length)
 
 	if err != nil {
 		panic(err)
@@ -136,7 +136,7 @@ func (k Keeper) SetIngressLength(ctx csdkTypes.Context, ingressKey string, lengt
 
 func (k Keeper) GetIngressLength(ctx csdkTypes.Context, ingressKey string) int64 {
 	store := ctx.KVStore(k.IBCKey)
-	keyBytes, err := k.cdc.MarshalBinaryLengthPrefixed(ingressKey)
+	keyBytes, err := k.cdc.MarshalBinaryBare(ingressKey)
 
 	if err != nil {
 		panic(err)
@@ -150,7 +150,7 @@ func (k Keeper) GetIngressLength(ctx csdkTypes.Context, ingressKey string) int64
 
 	var length int64
 
-	if err := k.cdc.UnmarshalBinaryLengthPrefixed(valueBytes, &length); err != nil {
+	if err := k.cdc.UnmarshalBinaryBare(valueBytes, &length); err != nil {
 		panic(err)
 	}
 
@@ -158,9 +158,9 @@ func (k Keeper) GetIngressLength(ctx csdkTypes.Context, ingressKey string) int64
 }
 
 func (k Keeper) PostIBCPacket(ctx csdkTypes.Context, packet sdkTypes.IBCPacket) csdkTypes.Error {
-	egressLength := k.GetEgressLength(ctx, string(EgressLengthKey(packet.DestChainID)))
-	k.SetIBCPacket(ctx, string(EgressKey(packet.DestChainID, egressLength)), packet)
-	k.SetEgressLength(ctx, string(EgressLengthKey(packet.DestChainID)), egressLength+1)
+	egressLength := k.GetEgressLength(ctx, EgressLengthKey(packet.DestChainID))
+	k.SetIBCPacket(ctx, EgressKey(packet.DestChainID, egressLength), packet)
+	k.SetEgressLength(ctx, EgressLengthKey(packet.DestChainID), egressLength+1)
 
 	return nil
 }
