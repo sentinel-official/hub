@@ -20,6 +20,8 @@ func NewHandler(k Keeper, ik ibc.Keeper) csdkTypes.Handler {
 			return handleUpdateNodeStatus(ctx, k, msg)
 		case MsgPayVPNService:
 			return handlePayVPNService(ctx, k, ik, msg)
+		case MsgDeregisterVPN:
+			return handleDeregisterVPN(ctx, k, ik, msg)
 		default:
 			errMsg := "Unrecognized vpn Msg type: " + reflect.TypeOf(msg).String()
 			return csdkTypes.ErrUnknownRequest(errMsg).Result()
@@ -146,4 +148,31 @@ func handlePayVPNService(ctx csdkTypes.Context, k Keeper, ik ibc.Keeper, msg Msg
 
 	// TODO: Replace with SuccessPayVPNService
 	return csdkTypes.Result{}
+}
+
+func handleDeregisterVPN(ctx csdkTypes.Context, k Keeper, ik ibc.Keeper, msg MsgDeregisterVPN) csdkTypes.Result {
+
+	if vpnDetails := k.GetVPNDetails(ctx, msg.VPNID); vpnDetails != nil {
+		// TODO: Replace with ErrVPNAlreadyExists
+		panic("vpndetails != nil")
+	}
+
+	ibcPacket := sdkTypes.IBCPacket{
+		SrcChainID:  "sentinel-vpn",
+		DestChainID: "sentinel-hub",
+		Message: hub.MsgReleaseCoins{
+			LockerID:  msg.LockerID,
+			PubKey:    msg.PubKey,
+			Signature: msg.Signature,
+		},
+	}
+
+	if err := ik.PostIBCPacket(ctx, ibcPacket); err != nil {
+		// TODO: Replace with ErrPostIBCPacket
+		panic(err)
+	}
+
+	// TODO: Replace with SuccessPayVPNService
+	return csdkTypes.Result{}
+
 }

@@ -171,3 +171,10 @@ func (k Keeper) RemoveActiveSession(ctx csdkTypes.Context, sessionID string) {
 
 	k.SetActiveSessionIDs(ctx, sessionIDs)
 }
+
+func (k Keeper) RemoveVPNDetails(ctx csdkTypes.Context, vpnID string) {
+	store := ctx.KVStore(k.VPNStoreKey)
+
+	vpnIDBytes := []byte(vpnID)
+	store.Delete(vpnIDBytes)
+}

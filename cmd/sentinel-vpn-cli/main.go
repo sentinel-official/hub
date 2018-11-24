@@ -47,6 +47,7 @@ func main() {
 			vpnCli.ChangeNodeStatusCommand(cdc),
 			vpnCli.RegisterVPNCmd(cdc),
 			vpnCli.ChangeSessionStatusCommand(cdc),
+			vpnCli.DeregisterVPNCmd(cdc),
 		)...)
 
 	rootCmd.AddCommand(
