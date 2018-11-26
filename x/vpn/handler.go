@@ -17,7 +17,7 @@ func NewHandler(k Keeper, ik ibc.Keeper) csdkTypes.Handler {
 		case MsgRegisterNode:
 			return handleRegisterNode(ctx, k, ik, msg)
 		case MsgPayVPNService:
-			return handlePayVPNService(ctx, k, ik, msg)
+			return handleSessionPayment(ctx, k, ik, msg)
 		case MsgDeregisterNode:
 			return handleDeregisterNode(ctx, k, ik, msg)
 		default:
@@ -28,14 +28,8 @@ func NewHandler(k Keeper, ik ibc.Keeper) csdkTypes.Handler {
 }
 
 func handleRegisterNode(ctx csdkTypes.Context, k Keeper, ik ibc.Keeper, msg MsgRegisterNode) csdkTypes.Result {
-	sequence, err := k.AccountKeeper.GetSequence(ctx, msg.From)
-
-	if err != nil {
-		// TODO: Replace with ErrGetSequence
-		panic(err)
-	}
-
-	vpnID := msg.From.String() + "/" + strconv.Itoa(int(sequence))
+	vpnsCount := k.GetVPNsCount(ctx)
+	vpnID := msg.From.String() + "/" + strconv.Itoa(int(vpnsCount))
 
 	if lockerID := k.VPNStoreKey.Name() + "/" + vpnID; msg.LockerID != lockerID {
 		// TODO: Replace with ErrLockerIDMismatch
@@ -81,15 +75,9 @@ func handleRegisterNode(ctx csdkTypes.Context, k Keeper, ik ibc.Keeper, msg MsgR
 	return csdkTypes.Result{}
 }
 
-func handlePayVPNService(ctx csdkTypes.Context, k Keeper, ik ibc.Keeper, msg MsgPayVPNService) csdkTypes.Result {
-	sequence, err := k.AccountKeeper.GetSequence(ctx, msg.From)
-
-	if err != nil {
-		// TODO: Replace with ErrGetSequence
-		panic(err)
-	}
-
-	sessionID := msg.From.String() + "/" + strconv.Itoa(int(sequence))
+func handleSessionPayment(ctx csdkTypes.Context, k Keeper, ik ibc.Keeper, msg MsgPayVPNService) csdkTypes.Result {
+	sessionsCount := k.GetSessionsCount(ctx)
+	sessionID := msg.From.String() + "/" + strconv.Itoa(int(sessionsCount))
 
 	if lockerID := k.SessionStoreKey.Name() + "/" + sessionID; msg.LockerID != lockerID {
 		// TODO: Replace with ErrLockerIDMismatch
@@ -113,6 +101,7 @@ func handlePayVPNService(ctx csdkTypes.Context, k Keeper, ik ibc.Keeper, msg Msg
 		ClientAddress: msg.From,
 		GBToProvide:   0,
 		PricePerGB:    vpnDetails.PricePerGB,
+		Status:        "STARTED",
 	}
 
 	k.SetSessionDetails(ctx, sessionID, &sessionDetails)
@@ -156,6 +145,7 @@ func handleDeregisterNode(ctx csdkTypes.Context, k Keeper, ik ibc.Keeper, msg Ms
 	}
 
 	k.SetVPNStatus(ctx, msg.VPNID, "INACTIVE")
+	k.RemoveActiveNodeID(ctx, msg.VPNID)
 
 	ibcPacket := sdkTypes.IBCPacket{
 		SrcChainID:  "sentinel-vpn",

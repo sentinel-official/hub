@@ -36,6 +36,7 @@ type SentinelVPN struct {
 	keyAccount *csdkTypes.KVStoreKey
 	keyIBC     *csdkTypes.KVStoreKey
 	keyVPN     *csdkTypes.KVStoreKey
+	keySession *csdkTypes.KVStoreKey
 
 	accountKeeper       auth.AccountKeeper
 	bankKeeper          bank.Keeper
@@ -54,6 +55,7 @@ func NewSentinelVPN(logger log.Logger, db tmDb.DB, baseAppOptions ...func(*basea
 		keyAccount: csdkTypes.NewKVStoreKey("acc"),
 		keyIBC:     csdkTypes.NewKVStoreKey("ibc"),
 		keyVPN:     csdkTypes.NewKVStoreKey("vpn"),
+		keySession: csdkTypes.NewKVStoreKey("session"),
 	}
 
 	app.accountKeeper = auth.NewAccountKeeper(
@@ -65,7 +67,7 @@ func NewSentinelVPN(logger log.Logger, db tmDb.DB, baseAppOptions ...func(*basea
 	)
 	app.bankKeeper = bank.NewBaseKeeper(app.accountKeeper)
 	app.ibcKeeper = ibc.NewKeeper(app.keyIBC, app.cdc)
-	app.vpnKeeper = vpn.NewKeeper(app.cdc, app.keyVPN, app.accountKeeper)
+	app.vpnKeeper = vpn.NewKeeper(app.cdc, app.keyVPN, app.keySession)
 
 	app.Router().
 		AddRoute("bank", bank.NewHandler(app.bankKeeper)).
@@ -77,7 +79,7 @@ func NewSentinelVPN(logger log.Logger, db tmDb.DB, baseAppOptions ...func(*basea
 	app.SetEndBlocker(app.EndBlocker)
 	app.SetAnteHandler(auth.NewAnteHandler(app.accountKeeper, app.feeCollectionKeeper))
 
-	app.MountStoresIAVL(app.keyMain, app.keyAccount, app.keyIBC, app.keyVPN)
+	app.MountStoresIAVL(app.keyMain, app.keyAccount, app.keyIBC, app.keyVPN, app.keySession)
 	err := app.LoadLatestVersion(app.keyMain)
 	if err != nil {
 		common.Exit(err.Error())
