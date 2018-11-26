@@ -34,9 +34,11 @@ func TestLockCoins(t *testing.T) {
 	account3 := auth.NewBaseAccountWithAddress(addr3)
 	accountMapper.SetAccount(ctx, &account3)
 
-	if err := keeper.LockCoins(ctx, lockerId, addr1, coins2); err != nil {
-		panic(err)
-	}
+	err := keeper.LockCoins(ctx, lockerId, addr1, coins2)
+	require.Nil(t, err)
+
+	err = keeper.LockCoins(ctx, "", addr1, csdkTypes.Coins{coin3})
+	require.NotNil(t, err)
 
 	getAccount1 := accountMapper.GetAccount(ctx, addr1)
 	require.Equal(t, getAccount1.GetCoins(), csdkTypes.Coins{coin1, coin2})
@@ -44,21 +46,40 @@ func TestLockCoins(t *testing.T) {
 	locker := keeper.GetLocker(ctx, lockerId)
 	require.Equal(t, locker.Coins, coins2)
 
-	if err := keeper.ReleaseCoins(ctx, lockerId); err != nil {
-		panic(err)
-	}
+	err = keeper.ReleaseCoins(ctx, lockerId)
+	require.Nil(t, err)
 
-	getAccountStatus := accountMapper.GetAccount(ctx, addr1)
-	require.Equal(t, getAccountStatus.GetCoins(), account1.GetCoins())
+	//check releasecoins called multiple times
+	//err=keeper.ReleaseCoins(ctx,lockerId)
+	//require.Nil(t,err)
+	//
+	//err = keeper.ReleaseCoins(ctx, lockerId)
+	//require.Nil(t,err)
 
-	if err := keeper.ReleaseCoinsToMany(ctx, lockerId, []csdkTypes.AccAddress{addr1, addr2, addr3}, []csdkTypes.Coins{csdkTypes.Coins{
+	keeper.SetLocker(ctx, lockerId3, emptyLocker1)
+	err = keeper.ReleaseCoins(ctx, lockerId3)
+	require.NotNil(t, err)
+
+	getAccount2 := accountMapper.GetAccount(ctx, addr1)
+	require.Equal(t, getAccount2.GetCoins(), account1.GetCoins())
+
+	err = keeper.ReleaseCoinsToMany(ctx, lockerId, []csdkTypes.AccAddress{addr1, addr2, addr3}, []csdkTypes.Coins{csdkTypes.Coins{
 		csdkTypes.NewCoin("sent", csdkTypes.NewInt(10))},
 		csdkTypes.Coins{csdkTypes.NewCoin("sent", csdkTypes.NewInt(10))},
-		csdkTypes.Coins{csdkTypes.NewCoin("sent", csdkTypes.NewInt(10))}}); err != nil {
-		panic(err)
-	}
+		csdkTypes.Coins{csdkTypes.NewCoin("sent", csdkTypes.NewInt(10))}})
+
+	require.Nil(t, err)
+
+	err = keeper.ReleaseCoinsToMany(ctx, lockerId, []csdkTypes.AccAddress{addr1, {}, addr3}, []csdkTypes.Coins{csdkTypes.Coins{
+		csdkTypes.NewCoin("sent", csdkTypes.NewInt(10))},
+		csdkTypes.Coins{csdkTypes.NewCoin("sent", csdkTypes.NewInt(0))},
+		csdkTypes.Coins{csdkTypes.NewCoin("sent", csdkTypes.NewInt(-100))}})
+
+	require.NotNil(t, err)
 
 	getAccount3 := accountMapper.GetAccount(ctx, addr3)
 	require.Equal(t, getAccount3.GetCoins(), csdkTypes.Coins{csdkTypes.NewCoin("sent", csdkTypes.NewInt(10))})
 
+	respose := keeper.GetLocker(ctx, "")
+	require.Nil(t, respose)
 }
