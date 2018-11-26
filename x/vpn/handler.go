@@ -57,6 +57,7 @@ func handleRegisterNode(ctx csdkTypes.Context, k Keeper, ik ibc.Keeper, msg MsgR
 		EncMethod:  msg.EncMethod,
 		PricePerGB: msg.PricePerGB,
 		Version:    msg.Version,
+		Status:     "REGISTERED",
 		LockerID:   msg.LockerID,
 	}
 
@@ -167,6 +168,8 @@ func handleDeregisterNode(ctx csdkTypes.Context, k Keeper, ik ibc.Keeper, msg Ms
 		// TODO: Replace with ErrLockerIDMismatch
 		panic("msg.lockerid != vpndetails.lockerid")
 	}
+
+	k.SetVPNStatus(ctx, msg.VPNID, "INACTIVE")
 
 	ibcPacket := sdkTypes.IBCPacket{
 		SrcChainID:  "sentinel-vpn",

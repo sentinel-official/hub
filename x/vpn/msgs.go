@@ -84,7 +84,7 @@ type MsgUpdateNodeStatus struct {
 	From csdkTypes.AccAddress `json:"from"`
 
 	VPNID  string `json:"vpnid"`
-	Status bool   `json:"status"`
+	Status string `json:"status"`
 }
 
 func (msg MsgUpdateNodeStatus) Type() string {
@@ -113,7 +113,7 @@ func (msg MsgUpdateNodeStatus) Route() string {
 	return "vpn"
 }
 
-func NewMsgUpdateNodeStatus(from csdkTypes.AccAddress, vpnID string, status bool) *MsgUpdateNodeStatus {
+func NewMsgUpdateNodeStatus(from csdkTypes.AccAddress, vpnID string, status string) *MsgUpdateNodeStatus {
 	return &MsgUpdateNodeStatus{
 		From:   from,
 		VPNID:  vpnID,

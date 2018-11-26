@@ -18,11 +18,6 @@ type Location struct {
 	Country   string `json:"country"`
 }
 
-type Info struct {
-	Status      bool
-	BlockHeight int64
-}
-
 type VPNDetails struct {
 	Address    csdkTypes.AccAddress
 	APIPort    int64
@@ -31,7 +26,7 @@ type VPNDetails struct {
 	EncMethod  string
 	PricePerGB int64
 	Version    string
-	Info       Info
+	Status     string
 	LockerID   string
 }
 

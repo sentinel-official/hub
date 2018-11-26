@@ -65,10 +65,9 @@ func (k Keeper) GetVPNDetails(ctx csdkTypes.Context, vpnID string) *sdkTypes.VPN
 	return &vpnDetails
 }
 
-func (k Keeper) SetVPNStatus(ctx csdkTypes.Context, vpnID string, status bool) {
+func (k Keeper) SetVPNStatus(ctx csdkTypes.Context, vpnID string, status string) {
 	vpnDetails := k.GetVPNDetails(ctx, vpnID)
-	vpnDetails.Info.Status = status
-	vpnDetails.Info.BlockHeight = ctx.BlockHeight()
+	vpnDetails.Status = status
 
 	k.SetVPNDetails(ctx, vpnID, vpnDetails)
 }
