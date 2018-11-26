@@ -50,7 +50,6 @@ func main() {
 		client.PostCommands(
 			vpnCli.RegisterCommand(cdc),
 			vpnCli.PaymentCommand(cdc),
-			vpnCli.UpdateNodeStatusCommand(cdc),
 			vpnCli.UpdateSessionStatusCommand(cdc),
 			vpnCli.DeregisterCommand(cdc),
 		)...)

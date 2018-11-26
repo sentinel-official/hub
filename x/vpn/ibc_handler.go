@@ -20,7 +20,7 @@ func NewIBCVPNHandler(k Keeper) csdkTypes.Handler {
 			case hub.MsgLockerStatus:
 				newMsg, _ := msg.IBCPacket.Message.(hub.MsgLockerStatus)
 				if strings.HasPrefix(newMsg.LockerID, k.VPNStoreKey.Name()+"/") {
-					return handleSetNodeStatus(ctx, k, msg.IBCPacket)
+					return handleUpdateNodeStatus(ctx, k, msg.IBCPacket)
 				}
 				if strings.HasPrefix(newMsg.LockerID, k.SessionStoreKey.Name()+"/") {
 					return handleSetSessionStatus(ctx, k, msg.IBCPacket)
@@ -39,11 +39,12 @@ func NewIBCVPNHandler(k Keeper) csdkTypes.Handler {
 	}
 }
 
-func handleSetNodeStatus(ctx csdkTypes.Context, k Keeper, ibcPacket sdkTypes.IBCPacket) csdkTypes.Result {
+func handleUpdateNodeStatus(ctx csdkTypes.Context, k Keeper, ibcPacket sdkTypes.IBCPacket) csdkTypes.Result {
 	msg, _ := ibcPacket.Message.(hub.MsgLockerStatus)
 	vpnID := msg.LockerID[len(k.VPNStoreKey.Name())+1:]
 
 	if vpnDeatils := k.GetVPNDetails(ctx, vpnID); vpnDeatils == nil {
+		// TODO: Replace with ErrVPNNotExists
 		panic("vpndetails == nil")
 	}
 
@@ -57,6 +58,7 @@ func handleSetNodeStatus(ctx csdkTypes.Context, k Keeper, ibcPacket sdkTypes.IBC
 		panic("invalid locker id status")
 	}
 
+	// TODO: Replace with SuccessSetNodeStatus
 	return csdkTypes.Result{}
 }
 

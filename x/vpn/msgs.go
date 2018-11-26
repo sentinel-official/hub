@@ -80,47 +80,6 @@ func NewMsgRegisterNode(from csdkTypes.AccAddress, apiPort int64,
 	}
 }
 
-type MsgUpdateNodeStatus struct {
-	From csdkTypes.AccAddress `json:"from"`
-
-	VPNID  string `json:"vpnid"`
-	Status string `json:"status"`
-}
-
-func (msg MsgUpdateNodeStatus) Type() string {
-	return "msg_update_node_status"
-}
-
-func (msg MsgUpdateNodeStatus) ValidateBasic() csdkTypes.Error {
-	return nil
-}
-
-func (msg MsgUpdateNodeStatus) GetSignBytes() []byte {
-	msgBytes, err := json.Marshal(msg)
-
-	if err != nil {
-		panic(err)
-	}
-
-	return msgBytes
-}
-
-func (msg MsgUpdateNodeStatus) GetSigners() []csdkTypes.AccAddress {
-	return []csdkTypes.AccAddress{msg.From}
-}
-
-func (msg MsgUpdateNodeStatus) Route() string {
-	return "vpn"
-}
-
-func NewMsgUpdateNodeStatus(from csdkTypes.AccAddress, vpnID string, status string) *MsgUpdateNodeStatus {
-	return &MsgUpdateNodeStatus{
-		From:   from,
-		VPNID:  vpnID,
-		Status: status,
-	}
-}
-
 type MsgPayVPNService struct {
 	From csdkTypes.AccAddress `json:"from"`
 

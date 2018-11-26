@@ -18,8 +18,6 @@ func NewHandler(k Keeper, ik ibc.Keeper) csdkTypes.Handler {
 			return handleRegisterNode(ctx, k, ik, msg)
 		case MsgPayVPNService:
 			return handlePayVPNService(ctx, k, ik, msg)
-		case MsgUpdateNodeStatus:
-			return handleUpdateNodeStatus(ctx, k, msg)
 		case MsgDeregisterNode:
 			return handleDeregisterNode(ctx, k, ik, msg)
 		default:
@@ -80,18 +78,6 @@ func handleRegisterNode(ctx csdkTypes.Context, k Keeper, ik ibc.Keeper, msg MsgR
 	}
 
 	// TODO: Replace with SuccessRegisterNode
-	return csdkTypes.Result{}
-}
-
-func handleUpdateNodeStatus(ctx csdkTypes.Context, k Keeper, msg MsgUpdateNodeStatus) csdkTypes.Result {
-	if vpnDetails := k.GetVPNDetails(ctx, msg.VPNID); vpnDetails == nil {
-		// TODO: Replace with ErrVPNNotExists
-		panic("vpndetails == nil")
-	}
-
-	k.SetVPNStatus(ctx, msg.VPNID, msg.Status)
-
-	// TODO: Replace with SuccessUpdateNodeStatus
 	return csdkTypes.Result{}
 }
 
