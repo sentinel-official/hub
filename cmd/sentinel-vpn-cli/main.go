@@ -43,11 +43,15 @@ func main() {
 		client.PostCommands(
 			bankCli.SendTxCmd(cdc),
 			ibcCli.IBCRelayCmd(cdc),
-			vpnCli.PayVPNServiceCommand(cdc),
-			vpnCli.ChangeNodeStatusCommand(cdc),
-			vpnCli.RegisterVPNCmd(cdc),
-			vpnCli.ChangeSessionStatusCommand(cdc),
-			vpnCli.DeregisterVPNCmd(cdc),
+		)...)
+
+	rootCmd.AddCommand(client.LineBreak)
+	rootCmd.AddCommand(
+		client.PostCommands(
+			vpnCli.RegisterCommand(cdc),
+			vpnCli.PaymentCommand(cdc),
+			vpnCli.UpdateNodeStatusCommand(cdc),
+			vpnCli.UpdateSessionStatusCommand(cdc),
 		)...)
 
 	rootCmd.AddCommand(

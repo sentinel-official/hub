@@ -13,16 +13,11 @@ import (
 	"github.com/ironman0x7b2/sentinel-sdk/x/vpn"
 )
 
-const (
-	flagSessionID = "session-id"
-)
-
-func ChangeSessionStatusCommand(cdc *codec.Codec) *cobra.Command {
+func UpdateSessionStatusCommand(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "update-session-status",
 		Short: "Update VPN session status",
 		RunE: func(cmd *cobra.Command, args []string) error {
-
 			txBldr := authTxBuilder.NewTxBuilderFromCLI().WithCodec(cdc)
 			cliCtx := context.NewCLIContext().WithCodec(cdc).WithAccountDecoder(authCli.GetAccountDecoder(cdc))
 
@@ -50,7 +45,7 @@ func ChangeSessionStatusCommand(cdc *codec.Codec) *cobra.Command {
 	}
 
 	cmd.Flags().String(flagSessionID, "", "Session ID")
-	cmd.Flags().Bool(flagStatus, false, "session status")
+	cmd.Flags().Bool(flagStatus, false, "Session status")
 
 	return cmd
 }

@@ -18,15 +18,15 @@ import (
 	"github.com/ironman0x7b2/sentinel-sdk/x/vpn"
 )
 
-func PayVPNServiceCommand(cdc *codec.Codec) *cobra.Command {
+func PaymentCommand(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "pay-vpn",
-		Short: "pay for vpn",
+		Use:   "payment",
+		Short: "Pay amount for using the VPN service",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			txBldr := authTxBuilder.NewTxBuilderFromCLI().WithCodec(cdc)
 			cliCtx := context.NewCLIContext().WithCodec(cdc).WithAccountDecoder(authCli.GetAccountDecoder(cdc))
 
-			vpnID := viper.GetString(flagVPNID)
+			nodeID := viper.GetString(flagNodeID)
 			amount := viper.GetString(flagAmount)
 
 			if err := cliCtx.EnsureAccountExists(); err != nil {
@@ -40,6 +40,22 @@ func PayVPNServiceCommand(cdc *codec.Codec) *cobra.Command {
 			}
 
 			account, err := cliCtx.GetAccount(from)
+
+			if err != nil {
+				return err
+			}
+
+			coins, err := csdkTypes.ParseCoins(amount)
+
+			if err != nil {
+				return err
+			}
+
+			if !account.GetCoins().IsAllGTE(coins) {
+				return errors.Errorf("Address %s doesn't have enough coins to pay for this transaction.", from)
+			}
+
+			sequence, err := cliCtx.GetAccountSequence(from)
 
 			if err != nil {
 				return err
@@ -64,23 +80,7 @@ func PayVPNServiceCommand(cdc *codec.Codec) *cobra.Command {
 			}
 
 			pubKey := keyInfo.GetPubKey()
-			coins, err := csdkTypes.ParseCoins(amount)
-
-			if err != nil {
-				return err
-			}
-
-			if !account.GetCoins().IsAllGTE(coins) {
-				return errors.Errorf("Address %s doesn't have enough coins to pay for this transaction.", from)
-			}
-
-			sequence, err := cliCtx.GetAccountSequence(from)
-
-			if err != nil {
-				return err
-			}
-
-			lockerID := "vpn" + "/" + from.String() + "/" + strconv.Itoa(int(sequence))
+			lockerID := "session" + "/" + from.String() + "/" + strconv.Itoa(int(sequence))
 			msgLockerCoins := hub.MsgLockCoins{
 				LockerID: lockerID,
 				Coins:    coins,
@@ -99,7 +99,7 @@ func PayVPNServiceCommand(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			msg := vpn.NewMsgPayVPNService(from, vpnID, lockerID, coins, pubKey, signature)
+			msg := vpn.NewMsgPayVPNService(from, nodeID, lockerID, coins, pubKey, signature)
 
 			if cliCtx.GenerateOnly {
 				return utils.PrintUnsignedStdTx(txBldr, cliCtx, []csdkTypes.Msg{msg}, false)
@@ -109,8 +109,8 @@ func PayVPNServiceCommand(cdc *codec.Codec) *cobra.Command {
 		},
 	}
 
-	cmd.Flags().String(flagVPNID, "", "VPN id")
-	cmd.Flags().String(flagAmount, "", "Amount of coins")
+	cmd.Flags().String(flagNodeID, "", "VPN Node ID")
+	cmd.Flags().String(flagAmount, "100sent", "Amount of coins that you want to lock")
 
 	return cmd
 }

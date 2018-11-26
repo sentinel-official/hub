@@ -28,7 +28,7 @@ func DeregisterVPNCmd(cdc *codec.Codec) *cobra.Command {
 			txBldr := authTxBuilder.NewTxBuilderFromCLI().WithCodec(cdc)
 			cliCtx := context.NewCLIContext().WithCodec(cdc).WithAccountDecoder(authCli.GetAccountDecoder(cdc))
 
-			vpnID := viper.GetString(flagVPNID)
+			vpnID := viper.GetString(flagNodeID)
 			lockerID := viper.GetString(flagLockerID)
 
 			if err := cliCtx.EnsureAccountExists(); err != nil {
@@ -87,7 +87,7 @@ func DeregisterVPNCmd(cdc *codec.Codec) *cobra.Command {
 		},
 	}
 
-	cmd.Flags().String(flagVPNID, "", "VPN node ID")
+	cmd.Flags().String(flagNodeID, "", "VPN node ID")
 	cmd.Flags().String(flagLockerID, "", "VPN locker ID")
 
 	return cmd
