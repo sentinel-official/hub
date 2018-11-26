@@ -212,23 +212,25 @@ func NewMsgUpdateSessionStatus(from csdkTypes.AccAddress, sessionID string, stat
 	}
 }
 
-type MsgDeregisterVPN struct {
-	From      csdkTypes.AccAddress `json:"from"`
-	VPNID     string               `json:"vpn_id"`
-	LockerID  string               `json:"locker_id"`
-	PubKey    crypto.PubKey        `json:pub_key`
-	Signature []byte               `json:"signature"`
+type MsgDeregisterNode struct {
+	From csdkTypes.AccAddress `json:"from"`
+
+	VPNID string `json:"vpnid"`
+
+	LockerID  string        `json:"locker_id"`
+	PubKey    crypto.PubKey `json:"pub_key"`
+	Signature []byte        `json:"signature"`
 }
 
-func (msg MsgDeregisterVPN) Type() string {
-	return "msg_deregister_vpn"
+func (msg MsgDeregisterNode) Type() string {
+	return "msg_deregister_node"
 }
 
-func (msg MsgDeregisterVPN) ValidateBasic() csdkTypes.Error {
+func (msg MsgDeregisterNode) ValidateBasic() csdkTypes.Error {
 	return nil
 }
 
-func (msg MsgDeregisterVPN) GetSignBytes() []byte {
+func (msg MsgDeregisterNode) GetSignBytes() []byte {
 	msgBytes, err := json.Marshal(msg)
 
 	if err != nil {
@@ -238,16 +240,18 @@ func (msg MsgDeregisterVPN) GetSignBytes() []byte {
 	return msgBytes
 }
 
-func (msg MsgDeregisterVPN) GetSigners() []csdkTypes.AccAddress {
+func (msg MsgDeregisterNode) GetSigners() []csdkTypes.AccAddress {
 	return []csdkTypes.AccAddress{msg.From}
 }
 
-func (msg MsgDeregisterVPN) Route() string {
+func (msg MsgDeregisterNode) Route() string {
 	return "vpn"
 }
 
-func NewMsgDeregisterVPN(from csdkTypes.AccAddress, vpnID string, lockerID string, pubKey crypto.PubKey, signature []byte) *MsgDeregisterVPN {
-	return &MsgDeregisterVPN{
+func NewMsgDeregisterNode(from csdkTypes.AccAddress, vpnID string,
+	lockerID string, pubKey crypto.PubKey, signature []byte) *MsgDeregisterNode {
+
+	return &MsgDeregisterNode{
 		From:      from,
 		VPNID:     vpnID,
 		LockerID:  lockerID,

@@ -11,21 +11,21 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
+	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
 	"github.com/ironman0x7b2/sentinel-sdk/x/hub"
 	"github.com/ironman0x7b2/sentinel-sdk/x/vpn"
-	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
 )
 
-func DeregisterVPNCmd(cdc *codec.Codec) *cobra.Command {
+func DeregisterCommand(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "deregister-vpn",
-		Short: "deregister for sentinel vpn service",
+		Use:   "deregister",
+		Short: "Deregister Sentinel VPN service node",
 		RunE: func(cmd *cobra.Command, args []string) error {
-
 			txBldr := authTxBuilder.NewTxBuilderFromCLI().WithCodec(cdc)
 			cliCtx := context.NewCLIContext().WithCodec(cdc).WithAccountDecoder(authCli.GetAccountDecoder(cdc))
 
-			vpnID := viper.GetString(flagNodeID)
+			nodeID := viper.GetString(flagNodeID)
+
 			if err := cliCtx.EnsureAccountExists(); err != nil {
 				return err
 			}
@@ -56,17 +56,14 @@ func DeregisterVPNCmd(cdc *codec.Codec) *cobra.Command {
 
 			pubKey := keyInfo.GetPubKey()
 
-			VPNDetailsBytes, err := cliCtx.QueryStore([]byte(vpnID), "vpn")
+			var vpnDetails sdkTypes.VPNDetails
+			vpnDetailsBytes, err := cliCtx.QueryStore(cdc.MustMarshalBinaryLengthPrefixed(nodeID), "vpn")
 
-			var VPNDetails sdkTypes.VPNDetails
-
-			err = cdc.UnmarshalBinaryLengthPrefixed(VPNDetailsBytes, VPNDetails)
-
-			if err != nil {
+			if err := cdc.UnmarshalBinaryLengthPrefixed(vpnDetailsBytes, vpnDetails); err != nil {
 				return err
 			}
 
-			lockerID := VPNDetails.LockerID
+			lockerID := vpnDetails.LockerID
 			msgReleaseCoins := hub.MsgReleaseCoins{
 				LockerID: lockerID,
 				PubKey:   pubKey,
@@ -84,7 +81,7 @@ func DeregisterVPNCmd(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			msg := vpn.NewMsgDeregisterVPN(from, vpnID, lockerID, pubKey, signature)
+			msg := vpn.NewMsgDeregisterNode(from, nodeID, lockerID, pubKey, signature)
 
 			if cliCtx.GenerateOnly {
 				return utils.PrintUnsignedStdTx(txBldr, cliCtx, []csdkTypes.Msg{msg}, false)

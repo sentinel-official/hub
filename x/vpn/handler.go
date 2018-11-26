@@ -16,12 +16,12 @@ func NewHandler(k Keeper, ik ibc.Keeper) csdkTypes.Handler {
 		switch msg := msg.(type) {
 		case MsgRegisterNode:
 			return handleRegisterNode(ctx, k, ik, msg)
-		case MsgUpdateNodeStatus:
-			return handleUpdateNodeStatus(ctx, k, msg)
 		case MsgPayVPNService:
 			return handlePayVPNService(ctx, k, ik, msg)
-		case MsgDeregisterVPN:
-			return handleDeregisterVPN(ctx, k, ik, msg)
+		case MsgUpdateNodeStatus:
+			return handleUpdateNodeStatus(ctx, k, msg)
+		case MsgDeregisterNode:
+			return handleDeregisterNode(ctx, k, ik, msg)
 		default:
 			errMsg := "Unrecognized vpn Msg type: " + reflect.TypeOf(msg).String()
 			return csdkTypes.ErrUnknownRequest(errMsg).Result()
@@ -150,11 +150,22 @@ func handlePayVPNService(ctx csdkTypes.Context, k Keeper, ik ibc.Keeper, msg Msg
 	return csdkTypes.Result{}
 }
 
-func handleDeregisterVPN(ctx csdkTypes.Context, k Keeper, ik ibc.Keeper, msg MsgDeregisterVPN) csdkTypes.Result {
+func handleDeregisterNode(ctx csdkTypes.Context, k Keeper, ik ibc.Keeper, msg MsgDeregisterNode) csdkTypes.Result {
+	vpnDetails := k.GetVPNDetails(ctx, msg.VPNID)
 
-	if vpnDetails := k.GetVPNDetails(ctx, msg.VPNID); vpnDetails != nil {
-		// TODO: Replace with ErrVPNAlreadyExists
-		panic("vpndetails != nil")
+	if vpnDetails == nil {
+		// TODO: Replace with ErrVPNNotExists
+		panic("vpndetails == nil")
+	}
+
+	if !msg.From.Equals(vpnDetails.Address) {
+		// TODO: Replace with ErrInvalidNodeOwnerAddress
+		panic("!msg.from.equals(vpndetails.address)")
+	}
+
+	if msg.LockerID != vpnDetails.LockerID {
+		// TODO: Replace with ErrLockerIDMismatch
+		panic("msg.lockerid != vpndetails.lockerid")
 	}
 
 	ibcPacket := sdkTypes.IBCPacket{
@@ -172,7 +183,6 @@ func handleDeregisterVPN(ctx csdkTypes.Context, k Keeper, ik ibc.Keeper, msg Msg
 		panic(err)
 	}
 
-	// TODO: Replace with SuccessPayVPNService
+	// TODO: Replace with SuccessDeregisterNode
 	return csdkTypes.Result{}
-
 }

@@ -52,7 +52,7 @@ func main() {
 			vpnCli.PaymentCommand(cdc),
 			vpnCli.UpdateNodeStatusCommand(cdc),
 			vpnCli.UpdateSessionStatusCommand(cdc),
-			vpnCli.DeregisterVPNCmd(cdc),
+			vpnCli.DeregisterCommand(cdc),
 		)...)
 
 	rootCmd.AddCommand(
