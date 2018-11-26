@@ -18,39 +18,25 @@ import (
 	"github.com/ironman0x7b2/sentinel-sdk/x/vpn"
 )
 
-const (
-	flagAPIPort           = "api-port"
-	flagAmount            = "amount"
-	flagUploadSpeed       = "upload"
-	flagDownloadSpeed     = "download"
-	flagPricePerGB        = "price-per-gb"
-	flagLocationLatitude  = "latitude"
-	flagLocationLongitude = "longitude"
-	flagLocationCity      = "city"
-	flagLocationCountry   = "country"
-	flagEncMethod         = "enc-method"
-	flagVersion           = "version"
-)
-
-func RegisterVPNCmd(cdc *codec.Codec) *cobra.Command {
+func RegisterCommand(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "register-vpn",
-		Short: "Register for sentinel vpn service",
+		Use:   "register",
+		Short: "Register Sentinel VPN service node",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			txBldr := authTxBuilder.NewTxBuilderFromCLI().WithCodec(cdc)
 			cliCtx := context.NewCLIContext().WithCodec(cdc).WithAccountDecoder(authCli.GetAccountDecoder(cdc))
 
-			apiPort := viper.GetString(flagAPIPort)
-			amount := viper.GetString(flagAmount)
-			pricePerGB := viper.GetInt64(flagPricePerGB)
-			upload := viper.GetInt64(flagUploadSpeed)
-			download := viper.GetInt64(flagDownloadSpeed)
+			apiPort := viper.GetInt64(flagAPIPort)
 			latitude := viper.GetInt64(flagLocationLatitude)
 			longitude := viper.GetInt64(flagLocationLongitude)
 			city := viper.GetString(flagLocationCity)
 			country := viper.GetString(flagLocationCountry)
+			upload := viper.GetInt64(flagUploadSpeed)
+			download := viper.GetInt64(flagDownloadSpeed)
 			encMethod := viper.GetString(flagEncMethod)
+			pricePerGB := viper.GetInt64(flagPricePerGB)
 			version := viper.GetString(flagVersion)
+			amount := viper.GetString(flagAmount)
 
 			if err := cliCtx.EnsureAccountExists(); err != nil {
 				return err
@@ -63,6 +49,22 @@ func RegisterVPNCmd(cdc *codec.Codec) *cobra.Command {
 			}
 
 			account, err := cliCtx.GetAccount(from)
+
+			if err != nil {
+				return err
+			}
+
+			coins, err := csdkTypes.ParseCoins(amount)
+
+			if err != nil {
+				return err
+			}
+
+			if !account.GetCoins().IsAllGTE(coins) {
+				return errors.Errorf("Address %s doesn't have enough coins to pay for this transaction.", from)
+			}
+
+			sequence, err := cliCtx.GetAccountSequence(from)
 
 			if err != nil {
 				return err
@@ -87,22 +89,6 @@ func RegisterVPNCmd(cdc *codec.Codec) *cobra.Command {
 			}
 
 			pubKey := keyInfo.GetPubKey()
-			coins, err := csdkTypes.ParseCoins(amount)
-
-			if err != nil {
-				return err
-			}
-
-			if !account.GetCoins().IsAllGTE(coins) {
-				return errors.Errorf("Address %s doesn't have enough coins to pay for this transaction.", from)
-			}
-
-			sequence, err := cliCtx.GetAccountSequence(from)
-
-			if err != nil {
-				return err
-			}
-
 			lockerID := "vpn" + "/" + from.String() + "/" + strconv.Itoa(int(sequence)+1)
 			msgLockerCoins := hub.MsgLockCoins{
 				LockerID: lockerID,
@@ -136,17 +122,17 @@ func RegisterVPNCmd(cdc *codec.Codec) *cobra.Command {
 		},
 	}
 
-	cmd.Flags().String(flagAPIPort, "", "api port")
-	cmd.Flags().String(flagAmount, "100mycoin", "amount")
-	cmd.Flags().Int64(flagUploadSpeed, -1, "upload_speed")
-	cmd.Flags().Int64(flagDownloadSpeed, -1, "download_speed")
-	cmd.Flags().Int64(flagPricePerGB, -1, "price_per_gb")
-	cmd.Flags().String(flagLocationLatitude, "", "location_latitude")
-	cmd.Flags().String(flagLocationLongitude, "", "location_longitude")
-	cmd.Flags().String(flagLocationCity, "", "location_city")
-	cmd.Flags().String(flagLocationCountry, "", "location_country")
-	cmd.Flags().String(flagEncMethod, "", "enc_method")
-	cmd.Flags().String(flagVersion, "", "version")
+	cmd.Flags().Int64(flagAPIPort, 3000, "Node API port")
+	cmd.Flags().Int64(flagLocationLatitude, 0, "Latitude")
+	cmd.Flags().Int64(flagLocationLongitude, 0, "Longitude")
+	cmd.Flags().String(flagLocationCity, "", "City name")
+	cmd.Flags().String(flagLocationCountry, "", "Country name")
+	cmd.Flags().Int64(flagUploadSpeed, 0, "Internet upload speed in bytes/sec")
+	cmd.Flags().Int64(flagDownloadSpeed, 0, "Internet download speed in bytes/sec")
+	cmd.Flags().String(flagEncMethod, "", "VPN tunnel encryption method")
+	cmd.Flags().Int64(flagPricePerGB, 0, "Usage price per 1 GB in sent")
+	cmd.Flags().String(flagVersion, "", "Node version")
+	cmd.Flags().String(flagAmount, "100sent", "Amount of coins that you want to lock")
 
 	return cmd
 }

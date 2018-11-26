@@ -13,12 +13,7 @@ import (
 	"github.com/ironman0x7b2/sentinel-sdk/x/vpn"
 )
 
-const (
-	flagVPNID  = "vpn-node-id"
-	flagStatus = "status"
-)
-
-func ChangeNodeStatusCommand(cdc *codec.Codec) *cobra.Command {
+func UpdateNodeStatusCommand(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "update-node-status",
 		Short: "Update VPN node status",
@@ -26,7 +21,7 @@ func ChangeNodeStatusCommand(cdc *codec.Codec) *cobra.Command {
 			txBldr := authTxBuilder.NewTxBuilderFromCLI().WithCodec(cdc)
 			cliCtx := context.NewCLIContext().WithCodec(cdc).WithAccountDecoder(authCli.GetAccountDecoder(cdc))
 
-			vpnID := viper.GetString(flagVPNID)
+			nodeID := viper.GetString(flagNodeID)
 			status := viper.GetBool(flagStatus)
 
 			if err := cliCtx.EnsureAccountExists(); err != nil {
@@ -39,7 +34,7 @@ func ChangeNodeStatusCommand(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			msg := vpn.NewMsgUpdateNodeStatus(from, vpnID, status)
+			msg := vpn.NewMsgUpdateNodeStatus(from, nodeID, status)
 
 			if cliCtx.GenerateOnly {
 				return utils.PrintUnsignedStdTx(txBldr, cliCtx, []csdkTypes.Msg{msg}, false)
@@ -49,7 +44,7 @@ func ChangeNodeStatusCommand(cdc *codec.Codec) *cobra.Command {
 		},
 	}
 
-	cmd.Flags().String(flagVPNID, "", "VPN node ID")
+	cmd.Flags().String(flagNodeID, "", "VPN node ID")
 	cmd.Flags().Bool(flagStatus, false, "Node status")
 
 	return cmd

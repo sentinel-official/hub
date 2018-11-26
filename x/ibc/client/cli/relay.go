@@ -48,8 +48,9 @@ func IBCRelayCmd(cdc *codec.Codec) *cobra.Command {
 	}
 
 	cmd := &cobra.Command{
-		Use: "relay",
-		Run: cmdr.runIBCRelay,
+		Use:   "relay",
+		Short: "Relay IBC packets from one chain to another",
+		Run:   cmdr.runIBCRelay,
 	}
 
 	cmd.Flags().String(flagFromChainID, "", "Chain ID for ibc node to check outgoing packets")

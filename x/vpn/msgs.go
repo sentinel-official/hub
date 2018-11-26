@@ -12,7 +12,7 @@ import (
 type MsgRegisterNode struct {
 	From csdkTypes.AccAddress `json:"from"`
 
-	APIPort    string            `json:"api_port"`
+	APIPort    int64             `json:"api_port"`
 	Location   sdkTypes.Location `json:"location"`
 	NetSpeed   sdkTypes.NetSpeed `json:"net_speed"`
 	EncMethod  string            `json:"enc_method"`
@@ -51,7 +51,7 @@ func (msg MsgRegisterNode) Route() string {
 	return "vpn"
 }
 
-func NewMsgRegisterNode(from csdkTypes.AccAddress, apiPort string,
+func NewMsgRegisterNode(from csdkTypes.AccAddress, apiPort int64,
 	latitude int64, longitude int64, city string, country string,
 	upload int64, download int64,
 	encMethod string, pricePerGB int64, version string,

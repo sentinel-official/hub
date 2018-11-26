@@ -25,7 +25,7 @@ type Info struct {
 
 type VPNDetails struct {
 	Address    csdkTypes.AccAddress
-	APIPort    string
+	APIPort    int64
 	Location   Location
 	NetSpeed   NetSpeed
 	EncMethod  string
