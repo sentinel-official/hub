@@ -55,16 +55,18 @@ func PaymentCommand(cdc *codec.Codec) *cobra.Command {
 				return errors.Errorf("Address %s doesn't have enough coins to pay for this transaction.", from)
 			}
 
-			sequenceBytes, err := cliCtx.QueryStore(cdc.MustMarshalBinaryLengthPrefixed("SESSIONS_COUNT"), "session")
+			sessionsCountBytes, err := cliCtx.QueryStore(cdc.MustMarshalBinaryLengthPrefixed("SESSIONS_COUNT"), "session")
 
 			if err != nil {
 				return err
 			}
 
-			var sequence uint64
+			var sessionsCount uint64
 
-			if err := cdc.UnmarshalBinaryLengthPrefixed(sequenceBytes, &sequence); err != nil {
-				return err
+			if sessionsCountBytes != nil {
+				if err := cdc.UnmarshalBinaryLengthPrefixed(sessionsCountBytes, &sessionsCount); err != nil {
+					return err
+				}
 			}
 
 			kb, err := ckeys.GetKeyBase()
@@ -86,7 +88,7 @@ func PaymentCommand(cdc *codec.Codec) *cobra.Command {
 			}
 
 			pubKey := keyInfo.GetPubKey()
-			lockerID := "session" + "/" + from.String() + "/" + strconv.Itoa(int(sequence))
+			lockerID := "session" + "/" + from.String() + "/" + strconv.Itoa(int(sessionsCount))
 			msgLockerCoins := hub.MsgLockCoins{
 				LockerID: lockerID,
 				Coins:    coins,
