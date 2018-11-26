@@ -99,8 +99,8 @@ func (c relayCommander) loop(fromChainID, fromChainNodeURI, toChainID, toChainNo
 		panic(err)
 	}
 
-	ingressLengthKey, _ := c.cdc.MarshalBinaryBare(ibc.IngressLengthKey(fromChainID))
-	egressLengthKey, _ := c.cdc.MarshalBinaryBare(ibc.EgressLengthKey(toChainID))
+	ingressLengthKey, _ := c.cdc.MarshalBinaryLengthPrefixed(ibc.IngressLengthKey(fromChainID))
+	egressLengthKey, _ := c.cdc.MarshalBinaryLengthPrefixed(ibc.EgressLengthKey(toChainID))
 
 	for {
 		var ingressLength, egressLength int64
@@ -112,7 +112,7 @@ func (c relayCommander) loop(fromChainID, fromChainNodeURI, toChainID, toChainNo
 
 		if ingressLengthBytes == nil {
 			ingressLength = 0
-		} else if err = c.cdc.UnmarshalBinaryBare(ingressLengthBytes, &ingressLength); err != nil {
+		} else if err = c.cdc.UnmarshalBinaryLengthPrefixed(ingressLengthBytes, &ingressLength); err != nil {
 			panic(err)
 		}
 
@@ -124,7 +124,7 @@ func (c relayCommander) loop(fromChainID, fromChainNodeURI, toChainID, toChainNo
 
 		if egressLengthBytes == nil {
 			egressLength = 0
-		} else if err = c.cdc.UnmarshalBinaryBare(egressLengthBytes, &egressLength); err != nil {
+		} else if err = c.cdc.UnmarshalBinaryLengthPrefixed(egressLengthBytes, &egressLength); err != nil {
 			panic(err)
 		}
 
@@ -134,10 +134,10 @@ func (c relayCommander) loop(fromChainID, fromChainNodeURI, toChainID, toChainNo
 			c.logger.Info("Detected IBC packet", "number", egressLength-1)
 		}
 
-		seq := c.getSequence(toChainNodeURI)
+		accSeq := c.getSequence(toChainNodeURI)
 
 		for i := ingressLength; i < egressLength; i++ {
-			egressKey, _ := c.cdc.MarshalBinaryBare(ibc.EgressKey(toChainID, i))
+			egressKey, _ := c.cdc.MarshalBinaryLengthPrefixed(ibc.EgressKey(toChainID, i))
 			egressbz, err := query(fromChainNodeURI, egressKey, c.ibcStoreKey)
 
 			if err != nil {
@@ -145,7 +145,7 @@ func (c relayCommander) loop(fromChainID, fromChainNodeURI, toChainID, toChainNo
 				break
 			}
 
-			err = c.broadcastTx(seq+i-ingressLength, toChainNodeURI, c.refine(egressbz, i, passphrase))
+			err = c.broadcastTx(toChainNodeURI, c.refine(egressbz, i, accSeq+i-ingressLength, passphrase))
 
 			if err != nil {
 				c.logger.Error("error broadcasting ingress packet", "err", err)
@@ -163,20 +163,20 @@ func query(nodeURI string, key []byte, storeName string) (res []byte, err error)
 	return context.NewCLIContext().WithNodeURI(nodeURI).QueryStore(key, storeName)
 }
 
-func (c relayCommander) broadcastTx(seq int64, nodeURI string, tx []byte) error {
+func (c relayCommander) broadcastTx(nodeURI string, tx []byte) error {
 	_, err := context.NewCLIContext().WithNodeURI(nodeURI).BroadcastTx(tx)
 
 	return err
 }
 
 func (c relayCommander) getSequence(nodeURI string) int64 {
-	res, err := query(nodeURI, c.address, c.accStoreKey)
+	res, err := query(nodeURI, auth.AddressStoreKey(c.address), c.accStoreKey)
 
 	if err != nil {
 		panic(err)
 	}
 
-	if nil != res {
+	if res != nil {
 		account, err := c.accDecoder(res)
 
 		if err != nil {
@@ -189,19 +189,19 @@ func (c relayCommander) getSequence(nodeURI string) int64 {
 	return 0
 }
 
-func (c relayCommander) refine(bz []byte, sequence int64, passphrase string) []byte {
+func (c relayCommander) refine(bz []byte, ibcSeq, accSeq int64, passphrase string) []byte {
 	var packet types.IBCPacket
 
-	if err := c.cdc.UnmarshalBinaryBare(bz, &packet); err != nil {
+	if err := c.cdc.UnmarshalBinaryLengthPrefixed(bz, &packet); err != nil {
 		panic(err)
 	}
 
 	msg := ibc.MsgIBCTransaction{
 		Relayer:   c.address,
-		Sequence:  sequence,
+		Sequence:  ibcSeq,
 		IBCPacket: packet,
 	}
-	txBuilder := authTxBuilder.NewTxBuilderFromCLI().WithSequence(sequence).WithCodec(c.cdc)
+	txBuilder := authTxBuilder.NewTxBuilderFromCLI().WithSequence(accSeq).WithCodec(c.cdc)
 	cliCtx := context.NewCLIContext()
 	name, err := cliCtx.GetFromName()
 

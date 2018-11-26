@@ -37,7 +37,6 @@ func RegisterVPNCmd(cdc *codec.Codec) *cobra.Command {
 		Use:   "register-vpn",
 		Short: "Register for sentinel vpn service",
 		RunE: func(cmd *cobra.Command, args []string) error {
-
 			txBldr := authTxBuilder.NewTxBuilderFromCLI().WithCodec(cdc)
 			cliCtx := context.NewCLIContext().WithCodec(cdc).WithAccountDecoder(authCli.GetAccountDecoder(cdc))
 
@@ -69,7 +68,25 @@ func RegisterVPNCmd(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			pubKey := account.GetPubKey()
+			kb, err := ckeys.GetKeyBase()
+
+			if err != nil {
+				return err
+			}
+
+			name, err := cliCtx.GetFromName()
+
+			if err != nil {
+				return err
+			}
+
+			keyInfo, err := kb.Get(name)
+
+			if err != nil {
+				return err
+			}
+
+			pubKey := keyInfo.GetPubKey()
 			coins, err := csdkTypes.ParseCoins(amount)
 
 			if err != nil {
@@ -91,17 +108,6 @@ func RegisterVPNCmd(cdc *codec.Codec) *cobra.Command {
 				LockerID: lockerID,
 				Coins:    coins,
 				PubKey:   pubKey,
-			}
-			kb, err := ckeys.GetKeyBase()
-
-			if err != nil {
-				return err
-			}
-
-			name, err := cliCtx.GetFromName()
-
-			if err != nil {
-				return err
 			}
 
 			passPhrase, err := ckeys.GetPassphrase(name)
