@@ -64,9 +64,15 @@ func RegisterCommand(cdc *codec.Codec) *cobra.Command {
 				return errors.Errorf("Address %s doesn't have enough coins to pay for this transaction.", from)
 			}
 
-			sequence, err := cliCtx.GetAccountSequence(from)
+			sequenceBytes, err := cliCtx.QueryStore(cdc.MustMarshalBinaryLengthPrefixed("VPNS_COUNT"), "vpn")
 
 			if err != nil {
+				return err
+			}
+
+			var sequence uint64
+
+			if err := cdc.UnmarshalBinaryLengthPrefixed(sequenceBytes, &sequence); err != nil {
 				return err
 			}
 
@@ -89,7 +95,7 @@ func RegisterCommand(cdc *codec.Codec) *cobra.Command {
 			}
 
 			pubKey := keyInfo.GetPubKey()
-			lockerID := "vpn" + "/" + from.String() + "/" + strconv.Itoa(int(sequence)+1)
+			lockerID := "vpn" + "/" + from.String() + "/" + strconv.Itoa(int(sequence))
 			msgLockerCoins := hub.MsgLockCoins{
 				LockerID: lockerID,
 				Coins:    coins,

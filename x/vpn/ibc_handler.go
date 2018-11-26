@@ -21,9 +21,8 @@ func NewIBCVPNHandler(k Keeper) csdkTypes.Handler {
 				newMsg, _ := msg.IBCPacket.Message.(hub.MsgLockerStatus)
 				if strings.HasPrefix(newMsg.LockerID, k.VPNStoreKey.Name()+"/") {
 					return handleUpdateNodeStatus(ctx, k, msg.IBCPacket)
-				}
-				if strings.HasPrefix(newMsg.LockerID, k.SessionStoreKey.Name()+"/") {
-					return handleSetSessionStatus(ctx, k, msg.IBCPacket)
+				} else if strings.HasPrefix(newMsg.LockerID, k.SessionStoreKey.Name()+"/") {
+					return handleUpdateSessionStatus(ctx, k, msg.IBCPacket)
 				} else {
 					errMsg := "Unrecognized locker id: " + newMsg.LockerID
 					return csdkTypes.ErrUnknownRequest(errMsg).Result()
@@ -41,39 +40,47 @@ func NewIBCVPNHandler(k Keeper) csdkTypes.Handler {
 
 func handleUpdateNodeStatus(ctx csdkTypes.Context, k Keeper, ibcPacket sdkTypes.IBCPacket) csdkTypes.Result {
 	msg, _ := ibcPacket.Message.(hub.MsgLockerStatus)
-	vpnID := msg.LockerID[len(k.VPNStoreKey.Name())+1:]
+	nodeID := msg.LockerID[len(k.VPNStoreKey.Name())+1:]
 
-	if vpnDeatils := k.GetVPNDetails(ctx, vpnID); vpnDeatils == nil {
+	if vpnDetails := k.GetVPNDetails(ctx, nodeID); vpnDetails == nil {
 		// TODO: Replace with ErrVPNNotExists
 		panic("vpndetails == nil")
 	}
 
 	switch msg.Status {
 	case "LOCKED":
-		k.SetVPNStatus(ctx, vpnID, "ACTIVE")
+		k.SetVPNStatus(ctx, nodeID, "ACTIVE")
+		k.AddActiveNodeID(ctx, nodeID)
 	case "RELEASED":
-		k.SetVPNStatus(ctx, vpnID, "DEREGISTERED")
+		k.SetVPNStatus(ctx, nodeID, "DEREGISTERED")
 	default:
 		// TODO: Replace with ErrInvalidLockStatus
 		panic("invalid locker id status")
 	}
 
-	// TODO: Replace with SuccessSetNodeStatus
+	// TODO: Replace with SuccessUpdateNodeStatus
 	return csdkTypes.Result{}
 }
 
-func handleSetSessionStatus(ctx csdkTypes.Context, k Keeper, ibcPacket sdkTypes.IBCPacket) csdkTypes.Result {
+func handleUpdateSessionStatus(ctx csdkTypes.Context, k Keeper, ibcPacket sdkTypes.IBCPacket) csdkTypes.Result {
 	msg, _ := ibcPacket.Message.(hub.MsgLockerStatus)
-	sessionID := msg.LockerID
-	status := msg.Status == "LOCKED"
+	sessionID := msg.LockerID[len(k.SessionStoreKey.Name())+1:]
 
-	sessionDetails := k.GetSessionDetails(ctx, sessionID)
-
-	if sessionDetails == nil {
+	if sessionDetails := k.GetSessionDetails(ctx, sessionID); sessionDetails == nil {
 		panic("sessiondetails == nil")
 	}
 
-	k.SetSessionStatus(ctx, sessionID, status)
+	switch msg.Status {
+	case "LOCKED":
+		k.SetSessionStatus(ctx, sessionID, "ACTIVE")
+		k.AddActiveSessionID(ctx, sessionID)
+	case "RELEASED":
+		k.SetVPNStatus(ctx, sessionID, "ENDED")
+	default:
+		// TODO: Replace with ErrInvalidLockStatus
+		panic("invalid locker id status")
+	}
 
+	// TODO: Replace with SuccessUpdateSessionStatus
 	return csdkTypes.Result{}
 }

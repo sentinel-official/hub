@@ -35,12 +35,9 @@ type SessionDetails struct {
 	ClientAddress csdkTypes.AccAddress
 	GBToProvide   int64
 	PricePerGB    int64
-	Status        bool
 	Upload        int64
 	Download      int64
 	StartTime     *time.Time
 	EndTime       *time.Time
-	Locked        bool
+	Status        string
 }
-
-type ActiveSessions []string
