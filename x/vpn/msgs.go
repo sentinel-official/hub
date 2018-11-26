@@ -211,3 +211,47 @@ func NewMsgUpdateSessionStatus(from csdkTypes.AccAddress, sessionID string, stat
 		Status:    status,
 	}
 }
+
+type MsgDeregisterVPN struct {
+	From      csdkTypes.AccAddress `json:"from"`
+	VPNID     string               `json:"vpn_id"`
+	LockerID  string               `json:"locker_id"`
+	PubKey    crypto.PubKey        `json:pub_key`
+	Signature []byte               `json:"signature"`
+}
+
+func (msg MsgDeregisterVPN) Type() string {
+	return "msg_deregister_vpn"
+}
+
+func (msg MsgDeregisterVPN) ValidateBasic() csdkTypes.Error {
+	return nil
+}
+
+func (msg MsgDeregisterVPN) GetSignBytes() []byte {
+	msgBytes, err := json.Marshal(msg)
+
+	if err != nil {
+		panic(err)
+	}
+
+	return msgBytes
+}
+
+func (msg MsgDeregisterVPN) GetSigners() []csdkTypes.AccAddress {
+	return []csdkTypes.AccAddress{msg.From}
+}
+
+func (msg MsgDeregisterVPN) Route() string {
+	return "vpn"
+}
+
+func NewMsgDeregisterVPN(from csdkTypes.AccAddress, vpnID string, lockerID string, pubKey crypto.PubKey, signature []byte) *MsgDeregisterVPN {
+	return &MsgDeregisterVPN{
+		From:      from,
+		VPNID:     vpnID,
+		LockerID:  lockerID,
+		PubKey:    pubKey,
+		Signature: signature,
+	}
+}
