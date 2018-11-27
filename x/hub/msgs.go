@@ -2,7 +2,6 @@ package hub
 
 import (
 	"encoding/json"
-
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
 	"github.com/tendermint/tendermint/crypto"
 )
@@ -33,6 +32,25 @@ func (msg MsgLockCoins) GetUnSignBytes() []byte {
 	return bytes
 }
 
+func (msg MsgLockCoins) ValidateBasic() csdkTypes.Error {
+	if msg.LockerID == "" {
+		//TODO:ErrorInValidLockerId
+		return csdkTypes.NewError(19,1,"LockerId is empty")
+	}
+	if msg.Coins.IsZero() || !(msg.Coins.IsPositive()) {
+		return csdkTypes.ErrInsufficientCoins("Amount is not positive")
+	}
+	if msg.PubKey == nil {
+		return csdkTypes.ErrInvalidPubKey("PubKey is not found")
+	}
+	if len(msg.Signature) == 0 {
+		//TODO:ErrorInvalidSignature
+		return csdkTypes.NewError(19,2,"Signature is not valid")
+	}
+
+	return nil
+
+}
 func (msg MsgLockCoins) Verify() bool {
 	return msg.PubKey.VerifyBytes(msg.GetUnSignBytes(), msg.Signature)
 }
@@ -54,6 +72,22 @@ func (msg MsgReleaseCoins) GetUnSignBytes() []byte {
 	}
 
 	return bytes
+}
+
+func (msg MsgReleaseCoins) ValidateBasic() csdkTypes.Error {
+	if msg.LockerID == "" {
+		//TODO:ErrorInValidLockerId
+		return csdkTypes.NewError(19,1,"LockerId is empty")
+	}
+	if msg.PubKey == nil {
+		return csdkTypes.ErrInvalidPubKey("PubKey is not found")
+	}
+	if len(msg.Signature) == 0 {
+		//TODO:ErrorInvalidSignature
+		return csdkTypes.NewError(19,2,"Signature is not valid")
+	}
+
+	return nil
 }
 
 func (msg MsgReleaseCoins) Verify() bool {
@@ -83,6 +117,31 @@ func (msg MsgReleaseCoinsToMany) GetUnSignBytes() []byte {
 	return bytes
 }
 
+func (msg MsgReleaseCoinsToMany) ValidateBasic() csdkTypes.Error {
+	if msg.LockerID == "" {
+		//TODO:ErrorInValidLockerId
+		return csdkTypes.NewError(19,1,"LockerId is empty")
+	}
+	if msg.PubKey == nil {
+		return csdkTypes.ErrInvalidPubKey("PubKey is not found")
+	}
+	if len(msg.Signature) == 0 {
+		//TODO:ErrorInvalidSignature
+		return csdkTypes.NewError(19,2,"Signature is not valid")
+	}
+
+	//Verify this code###
+	for index, addr := range msg.Addresses {
+		if len(addr) == 0 {
+			return csdkTypes.ErrInvalidAddress("Address is empty")
+		}
+		if !msg.Shares[index].IsPositive() {
+			return csdkTypes.ErrInsufficientCoins("Amount is not postive")
+		}
+	}
+
+	return nil
+}
 func (msg MsgReleaseCoinsToMany) Verify() bool {
 	return msg.PubKey.VerifyBytes(msg.GetUnSignBytes(), msg.Signature)
 }
