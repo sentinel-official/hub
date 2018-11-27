@@ -1,5 +1,6 @@
-PACKAGES=$(shell go list ./... | grep -v '/vendor/')
-BUILD_FLAGS= -ldflags="-s -w"
+PACKAGES = $(shell go list ./... | grep -v '/vendor/')
+VERSION = $(shell git rev-parse --short HEAD)
+BUILD_FLAGS = -ldflags "-X github.com/ironman0x7b2/sentinel-sdk/vendor/github.com/cosmos/cosmos-sdk/version.Version=${VERSION} -s -w"
 
 all: get_tools get_vendor_deps build test
 
