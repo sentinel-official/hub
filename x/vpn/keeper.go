@@ -7,6 +7,7 @@ import (
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
 
 	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
+	"fmt"
 )
 
 type Keeper struct {
@@ -153,7 +154,7 @@ func (k Keeper) SetSessionDetails(ctx csdkTypes.Context, sessionID string, sessi
 		panic(err)
 	}
 
-	valueBytes, err := k.cdc.MarshalBinaryLengthPrefixed(sessionDetails)
+	valueBytes, err := k.cdc.MarshalBinaryLengthPrefixed(*sessionDetails)
 
 	if err != nil {
 		panic(err)
@@ -179,6 +180,8 @@ func (k Keeper) GetSessionDetails(ctx csdkTypes.Context, sessionID string) *sdkT
 	}
 
 	var sessionDetails sdkTypes.SessionDetails
+
+	fmt.Println(sessionDetails)
 
 	if err := k.cdc.UnmarshalBinaryLengthPrefixed(valueBytes, &sessionDetails); err != nil {
 		panic(err)
@@ -277,7 +280,7 @@ func (k Keeper) SetVPNStatus(ctx csdkTypes.Context, vpnID string, status string)
 func (k Keeper) AddActiveNodeID(ctx csdkTypes.Context, nodeID string) {
 	nodeIDs := k.GetActiveNodeIDs(ctx)
 	nodeIDs = append(nodeIDs, nodeID)
-	k.SetActiveSessionIDs(ctx, nodeIDs)
+	k.SetActiveNodeIDs(ctx, nodeIDs)
 }
 
 func (k Keeper) RemoveActiveNodeID(ctx csdkTypes.Context, nodeID string) {
