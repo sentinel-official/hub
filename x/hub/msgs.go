@@ -2,6 +2,7 @@ package hub
 
 import (
 	"encoding/json"
+
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
 	"github.com/tendermint/tendermint/crypto"
 )
@@ -33,26 +34,27 @@ func (msg MsgLockCoins) GetUnSignBytes() []byte {
 }
 
 func (msg MsgLockCoins) ValidateBasic() csdkTypes.Error {
-	if msg.LockerID == "" {
-		//TODO:ErrorInValidLockerId
-		return csdkTypes.NewError(19,1,"LockerId is empty")
+	if len(msg.LockerID) == 0 {
+		return errorEmptyLockerID()
 	}
-	if msg.Coins.IsZero() || !(msg.Coins.IsPositive()) {
-		return csdkTypes.ErrInsufficientCoins("Amount is not positive")
+
+	if msg.Coins.Len() == 0 || msg.Coins.IsValid() == false || msg.Coins.IsPositive() == false {
+		return errorInvalidCoins()
 	}
-	if msg.PubKey == nil {
-		return csdkTypes.ErrInvalidPubKey("PubKey is not found")
+
+	if len(msg.PubKey.Bytes()) == 0 {
+		return errorEmptyPubKey()
 	}
+
 	if len(msg.Signature) == 0 {
-		//TODO:ErrorInvalidSignature
-		return csdkTypes.NewError(19,2,"Signature is not valid")
+		return errorEmptySignature()
+	}
+
+	if msg.PubKey.VerifyBytes(msg.GetUnSignBytes(), msg.Signature) == false {
+		return errorSignatureVerificationFailed()
 	}
 
 	return nil
-
-}
-func (msg MsgLockCoins) Verify() bool {
-	return msg.PubKey.VerifyBytes(msg.GetUnSignBytes(), msg.Signature)
 }
 
 type MsgReleaseCoins struct {
@@ -75,23 +77,23 @@ func (msg MsgReleaseCoins) GetUnSignBytes() []byte {
 }
 
 func (msg MsgReleaseCoins) ValidateBasic() csdkTypes.Error {
-	if msg.LockerID == "" {
-		//TODO:ErrorInValidLockerId
-		return csdkTypes.NewError(19,1,"LockerId is empty")
+	if len(msg.LockerID) == 0 {
+		return errorEmptyLockerID()
 	}
-	if msg.PubKey == nil {
-		return csdkTypes.ErrInvalidPubKey("PubKey is not found")
+
+	if len(msg.PubKey.Bytes()) == 0 {
+		return errorEmptyPubKey()
 	}
+
 	if len(msg.Signature) == 0 {
-		//TODO:ErrorInvalidSignature
-		return csdkTypes.NewError(19,2,"Signature is not valid")
+		return errorEmptySignature()
+	}
+
+	if msg.PubKey.VerifyBytes(msg.GetUnSignBytes(), msg.Signature) == false {
+		return errorSignatureVerificationFailed()
 	}
 
 	return nil
-}
-
-func (msg MsgReleaseCoins) Verify() bool {
-	return msg.PubKey.VerifyBytes(msg.GetUnSignBytes(), msg.Signature)
 }
 
 type MsgReleaseCoinsToMany struct {
@@ -118,30 +120,45 @@ func (msg MsgReleaseCoinsToMany) GetUnSignBytes() []byte {
 }
 
 func (msg MsgReleaseCoinsToMany) ValidateBasic() csdkTypes.Error {
-	if msg.LockerID == "" {
-		//TODO:ErrorInValidLockerId
-		return csdkTypes.NewError(19,1,"LockerId is empty")
-	}
-	if msg.PubKey == nil {
-		return csdkTypes.ErrInvalidPubKey("PubKey is not found")
-	}
-	if len(msg.Signature) == 0 {
-		//TODO:ErrorInvalidSignature
-		return csdkTypes.NewError(19,2,"Signature is not valid")
+	if len(msg.LockerID) == 0 {
+		return errorEmptyLockerID()
 	}
 
-	//Verify this code###
-	for index, addr := range msg.Addresses {
-		if len(addr) == 0 {
-			return csdkTypes.ErrInvalidAddress("Address is empty")
+	if len(msg.Addresses) == 0 {
+		return errorEmptyAddresses()
+	}
+
+	for _, address := range msg.Addresses {
+		if address.Empty() {
+			return errorEmptyAddress()
 		}
-		if !msg.Shares[index].IsPositive() {
-			return csdkTypes.ErrInsufficientCoins("Amount is not postive")
+	}
+
+	if len(msg.Shares) == 0 {
+		return errorEmptyShares()
+	}
+
+	for _, share := range msg.Shares {
+		if share.Len() == 0 || share.IsValid() == false || share.IsPositive() == false {
+			return errorInvalidCoins()
 		}
+	}
+
+	if len(msg.Addresses) != len(msg.Shares) {
+		return errorAddressesSharesLengthMismatch()
+	}
+
+	if len(msg.PubKey.Bytes()) == 0 {
+		return errorEmptyPubKey()
+	}
+
+	if len(msg.Signature) == 0 {
+		return errorEmptySignature()
+	}
+
+	if msg.PubKey.VerifyBytes(msg.GetUnSignBytes(), msg.Signature) == false {
+		return errorSignatureVerificationFailed()
 	}
 
 	return nil
-}
-func (msg MsgReleaseCoinsToMany) Verify() bool {
-	return msg.PubKey.VerifyBytes(msg.GetUnSignBytes(), msg.Signature)
 }

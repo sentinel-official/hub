@@ -41,3 +41,10 @@ type SessionDetails struct {
 	EndTime       *time.Time
 	Status        string
 }
+
+const (
+	MinLatitude  = -90 * 100000
+	MinLongitude = -180 * 100000
+	MaxLatitude  = 90 * 100000
+	MaxLongitude = 180 * 100000
+)

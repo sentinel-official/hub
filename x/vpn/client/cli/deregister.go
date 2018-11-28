@@ -59,7 +59,7 @@ func DeregisterCommand(cdc *codec.Codec) *cobra.Command {
 			var vpnDetails sdkTypes.VPNDetails
 			vpnDetailsBytes, err := cliCtx.QueryStore(cdc.MustMarshalBinaryLengthPrefixed(nodeID), "vpn")
 
-			if err := cdc.UnmarshalBinaryLengthPrefixed(vpnDetailsBytes, vpnDetails); err != nil {
+			if err := cdc.UnmarshalBinaryLengthPrefixed(vpnDetailsBytes, &vpnDetails); err != nil {
 				return err
 			}
 

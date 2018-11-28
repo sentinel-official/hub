@@ -9,15 +9,23 @@ import (
 const (
 	codeSpaceHub = 300
 
-	errCodeLockerAlreadyExists       = 301
-	errCodeLockerNotExists           = 302
-	errCodeInvalidLockerOwnerAddress = 303
-	errCodeInvalidLockerStatus       = 304
+	errCodeLockerAlreadyExists           = 301
+	errCodeLockerNotExists               = 302
+	errCodeInvalidLockerOwnerAddress     = 303
+	errCodeInvalidLockerStatus           = 304
+	errCodeSignatureVerificationFailed   = 305
+	errCodeEmptyAddresses                = 306
+	errCodeEmptyShares                   = 307
+	errCodeAddressesSharesLengthMismatch = 308
 
-	errMsgLockerAlreadyExists       = "Locker already exists"
-	errMsgLockerNotExists           = "Locker not exists"
-	errMsgInvalidLockerOwnerAddress = "Invalid locker owner address"
-	errMsgInvalidLockerStatus       = "Invalid locker status"
+	errMsgLockerAlreadyExists           = "Locker already exists"
+	errMsgLockerNotExists               = "Locker not exists"
+	errMsgInvalidLockerOwnerAddress     = "Invalid locker owner address"
+	errMsgInvalidLockerStatus           = "Invalid locker status"
+	errMsgSignatureVerificationFailed   = "Signature verification failed"
+	errMsgEmptyAddresses                = "Empty addresses"
+	errMsgEmptyShares                   = "Empty shares"
+	errMsgAddressesSharesLengthMismatch = "Addresses and shares length mismatch"
 )
 
 func errorMarshal() csdkTypes.Error {
@@ -30,10 +38,6 @@ func errorUnmarshal() csdkTypes.Error {
 
 func errorInvalidIBCSequence() csdkTypes.Error {
 	return csdkTypes.NewError(codeSpaceHub, sdkTypes.ErrCodeInvalidIBCSequence, sdkTypes.ErrMsgInvalidIBCSequence)
-}
-
-func errorIBCPacketMsgVerificationFailed() csdkTypes.Error {
-	return csdkTypes.NewError(codeSpaceHub, sdkTypes.ErrCodeIBCPacketMsgVerificationFailed, sdkTypes.ErrMsgIBCPacketMsgVerificationFailed)
 }
 
 func errorCodeLockerAlreadyExists() csdkTypes.Error {
@@ -50,4 +54,40 @@ func errorInvalidLockerOwnerAddress() csdkTypes.Error {
 
 func errorInvalidLockerStatus() csdkTypes.Error {
 	return csdkTypes.NewError(codeSpaceHub, errCodeInvalidLockerStatus, errMsgInvalidLockerStatus)
+}
+
+func errorEmptyPubKey() csdkTypes.Error {
+	return csdkTypes.NewError(codeSpaceHub, sdkTypes.ErrCodeEmptyPubKey, sdkTypes.ErrMsgEmptyPubKey)
+}
+
+func errorInvalidCoins() csdkTypes.Error {
+	return csdkTypes.NewError(codeSpaceHub, sdkTypes.ErrCodeInvalidCoins, sdkTypes.ErrMsgInvalidCoins)
+}
+
+func errorEmptySignature() csdkTypes.Error {
+	return csdkTypes.NewError(codeSpaceHub, sdkTypes.ErrCodeEmptySignature, sdkTypes.ErrMsgEmptySignature)
+}
+
+func errorSignatureVerificationFailed() csdkTypes.Error {
+	return csdkTypes.NewError(codeSpaceHub, errCodeSignatureVerificationFailed, errMsgSignatureVerificationFailed)
+}
+
+func errorEmptyAddresses() csdkTypes.Error {
+	return csdkTypes.NewError(codeSpaceHub, errCodeEmptyAddresses, errMsgEmptyAddresses)
+}
+
+func errorEmptyLockerID() csdkTypes.Error {
+	return csdkTypes.NewError(codeSpaceHub, sdkTypes.ErrCodeEmptyLockerID, sdkTypes.ErrMsgEmptyLockerID)
+}
+
+func errorEmptyAddress() csdkTypes.Error {
+	return csdkTypes.NewError(codeSpaceHub, sdkTypes.ErrCodeEmptyAddress, sdkTypes.ErrMsgEmptyAddress)
+}
+
+func errorEmptyShares() csdkTypes.Error {
+	return csdkTypes.NewError(codeSpaceHub, errCodeEmptyShares, errMsgEmptyShares)
+}
+
+func errorAddressesSharesLengthMismatch() csdkTypes.Error {
+	return csdkTypes.NewError(codeSpaceHub, errCodeAddressesSharesLengthMismatch, errMsgAddressesSharesLengthMismatch)
 }

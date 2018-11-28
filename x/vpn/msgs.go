@@ -30,6 +30,52 @@ func (msg MsgRegisterNode) Type() string {
 }
 
 func (msg MsgRegisterNode) ValidateBasic() csdkTypes.Error {
+	if msg.From.Empty() {
+		return errorEmptyAddress()
+	}
+
+	if msg.APIPort <= 1024 || msg.APIPort > 65535 {
+		return errorInvalidAPIPort()
+	}
+
+	if len(msg.Location.City) == 0 || len(msg.Location.Country) == 0 ||
+		msg.Location.Latitude < sdkTypes.MinLatitude || msg.Location.Latitude > sdkTypes.MaxLatitude ||
+		msg.Location.Longitude < sdkTypes.MinLongitude || msg.Location.Longitude > sdkTypes.MaxLongitude {
+		return errorInvalidLocation()
+	}
+
+	if msg.NetSpeed.Download <= 0 || msg.NetSpeed.Upload <= 0 {
+		return errorInvalidNetSpeed()
+	}
+
+	if len(msg.EncMethod) == 0 {
+		return errorEmptyEncMethod()
+	}
+
+	if msg.PricePerGB < 0 {
+		return errorInvalidPricePerGB()
+	}
+
+	if len(msg.Version) == 0 {
+		return errorEmptyVersion()
+	}
+
+	if len(msg.LockerID) == 0 {
+		return errorEmptyLockerID()
+	}
+
+	if msg.Coins.Len() == 0 || msg.Coins.IsValid() == false || msg.Coins.IsPositive() == false {
+		return errorInvalidCoins()
+	}
+
+	if len(msg.PubKey.Bytes()) == 0 {
+		return errorEmptyPubKey()
+	}
+
+	if len(msg.Signature) == 0 {
+		return errorEmptySignature()
+	}
+
 	return nil
 }
 
@@ -106,6 +152,30 @@ func (msg MsgPayVPNService) GetSignBytes() []byte {
 }
 
 func (msg MsgPayVPNService) ValidateBasic() csdkTypes.Error {
+	if msg.From.Empty() {
+		return errorEmptyAddress()
+	}
+
+	if len(msg.VPNID) == 0 {
+		return errorEmptyVPNID()
+	}
+
+	if len(msg.LockerID) == 0 {
+		return errorEmptyLockerID()
+	}
+
+	if msg.Coins.Len() == 0 || msg.Coins.IsValid() == false || msg.Coins.IsPositive() == false {
+		return errorInvalidCoins()
+	}
+
+	if len(msg.PubKey.Bytes()) == 0 {
+		return errorEmptyPubKey()
+	}
+
+	if len(msg.Signature) == 0 {
+		return errorEmptySignature()
+	}
+
 	return nil
 }
 
@@ -142,6 +212,18 @@ func (msg MsgUpdateSessionStatus) Type() string {
 }
 
 func (msg MsgUpdateSessionStatus) ValidateBasic() csdkTypes.Error {
+	if msg.From.Empty() {
+		return errorEmptyAddress()
+	}
+
+	if len(msg.SessionID) == 0 {
+		return errorEmptySessionID()
+	}
+
+	if msg.Status != "ACTIVE" && msg.Status != "INACTIVE" {
+		return errorInvalidSessionStatus()
+	}
+
 	return nil
 }
 
@@ -186,6 +268,26 @@ func (msg MsgDeregisterNode) Type() string {
 }
 
 func (msg MsgDeregisterNode) ValidateBasic() csdkTypes.Error {
+	if msg.From.Empty() {
+		return errorEmptyAddress()
+	}
+
+	if len(msg.VPNID) == 0 {
+		return errorEmptyVPNID()
+	}
+
+	if len(msg.LockerID) == 0 {
+		return errorEmptyLockerID()
+	}
+
+	if len(msg.PubKey.Bytes()) == 0 {
+		return errorEmptyPubKey()
+	}
+
+	if len(msg.Signature) == 0 {
+		return errorEmptySignature()
+	}
+
 	return nil
 }
 

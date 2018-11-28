@@ -8,6 +8,16 @@ import (
 
 const (
 	codeSpaceIBC = 200
+
+	errCodeEmptyRelayer     = 201
+	errCodeInvalidSequence  = 202
+	errCodeEmptySrcChainID  = 203
+	errCodeEmptyDestChainID = 204
+
+	errMsgEmptyRelayer     = "Empty relayer"
+	errMsgInvalidSequence  = "Invalid sequence"
+	errMsgEmptySrcChainID  = "Empty source chain ID"
+	errMsgEmptyDestChainID = "Empty destination chain ID"
 )
 
 func errorMarshal() csdkTypes.Error {
@@ -16,4 +26,20 @@ func errorMarshal() csdkTypes.Error {
 
 func errorUnmarshal() csdkTypes.Error {
 	return csdkTypes.NewError(codeSpaceIBC, sdkTypes.ErrCodeUnmarshal, sdkTypes.ErrMsgUnmarshal)
+}
+
+func errorEmptyRelayer() csdkTypes.Error {
+	return csdkTypes.NewError(codeSpaceIBC, errCodeEmptyRelayer, errMsgEmptyRelayer)
+}
+
+func errorInvalidSequence() csdkTypes.Error {
+	return csdkTypes.NewError(codeSpaceIBC, errCodeInvalidSequence, errMsgInvalidSequence)
+}
+
+func errorEmptySrcChainID() csdkTypes.Error {
+	return csdkTypes.NewError(codeSpaceIBC, errCodeEmptySrcChainID, errMsgEmptySrcChainID)
+}
+
+func errorEmptyDestChainID() csdkTypes.Error {
+	return csdkTypes.NewError(codeSpaceIBC, errCodeEmptyDestChainID, errMsgEmptyDestChainID)
 }

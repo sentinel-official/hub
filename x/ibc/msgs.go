@@ -24,7 +24,19 @@ func (msg MsgIBCTransaction) Type() string {
 
 func (msg MsgIBCTransaction) ValidateBasic() csdkTypes.Error {
 	if msg.Relayer.Empty() {
-		return csdkTypes.ErrInvalidAddress("relayer address length should not be zero")
+		return errorEmptyRelayer()
+	}
+
+	if msg.Sequence < 0 {
+		return errorInvalidSequence()
+	}
+
+	if len(msg.IBCPacket.SrcChainID) == 0 {
+		return errorEmptySrcChainID()
+	}
+
+	if len(msg.IBCPacket.DestChainID) == 0 {
+		return errorEmptyDestChainID()
 	}
 
 	return nil
