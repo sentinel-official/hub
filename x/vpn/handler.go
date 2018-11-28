@@ -90,7 +90,6 @@ func handleSessionPayment(ctx csdkTypes.Context, k Keeper, ik ibc.Keeper, msg Ms
 	if err != nil {
 		return err.Result()
 	}
-
 	sessionID := msg.From.String() + "/" + strconv.Itoa(int(sessionsCount))
 
 	if lockerID := k.SessionStoreKey.Name() + "/" + sessionID; msg.LockerID != lockerID {
@@ -187,6 +186,6 @@ func handleDeregisterNode(ctx csdkTypes.Context, k Keeper, ik ibc.Keeper, msg Ms
 	if err := ik.PostIBCPacket(ctx, ibcPacket); err != nil {
 		return err.Result()
 	}
-	
+
 	return csdkTypes.Result{}
 }

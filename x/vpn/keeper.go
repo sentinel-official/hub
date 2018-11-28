@@ -7,7 +7,6 @@ import (
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
 
 	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
-	"fmt"
 )
 
 type Keeper struct {
@@ -185,8 +184,6 @@ func (k Keeper) GetSessionDetails(ctx csdkTypes.Context, sessionID string) (*sdk
 
 	var sessionDetails sdkTypes.SessionDetails
 
-	fmt.Println(sessionDetails)
-
 	if err := k.cdc.UnmarshalBinaryLengthPrefixed(valueBytes, &sessionDetails); err != nil {
 		return nil, errorUnmarshal()
 	}
@@ -338,7 +335,6 @@ func (k Keeper) SetSessionStatus(ctx csdkTypes.Context, sessionID string, status
 	if err != nil {
 		return err
 	}
-
 	sessionDetails.Status = status
 
 	if err := k.SetSessionDetails(ctx, sessionID, sessionDetails); err != nil {

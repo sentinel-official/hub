@@ -44,6 +44,7 @@ func handleUpdateNodeStatus(ctx csdkTypes.Context, k Keeper, ibcPacket sdkTypes.
 
 	if vpnDetails, err := k.GetVPNDetails(ctx, nodeID); true {
 		if err != nil {
+
 			return err.Result()
 		}
 
@@ -74,7 +75,6 @@ func handleUpdateNodeStatus(ctx csdkTypes.Context, k Keeper, ibcPacket sdkTypes.
 func handleUpdateSessionStatus(ctx csdkTypes.Context, k Keeper, ibcPacket sdkTypes.IBCPacket) csdkTypes.Result {
 	msg, _ := ibcPacket.Message.(hub.MsgLockerStatus)
 	sessionID := msg.LockerID[len(k.SessionStoreKey.Name())+1:]
-
 	if sessionDetails, err := k.GetSessionDetails(ctx, sessionID); true {
 		if err != nil {
 			return err.Result()

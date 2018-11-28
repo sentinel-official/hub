@@ -134,7 +134,7 @@ type MsgUpdateSessionStatus struct {
 	From csdkTypes.AccAddress `json:"from"`
 
 	SessionID string `json:"session_id"`
-	Status    bool   `json:"status"`
+	Status    string `json:"status"`
 }
 
 func (msg MsgUpdateSessionStatus) Type() string {
@@ -163,7 +163,7 @@ func (msg MsgUpdateSessionStatus) Route() string {
 	return "vpn"
 }
 
-func NewMsgUpdateSessionStatus(from csdkTypes.AccAddress, sessionID string, status bool) *MsgUpdateSessionStatus {
+func NewMsgUpdateSessionStatus(from csdkTypes.AccAddress, sessionID string, status string) *MsgUpdateSessionStatus {
 	return &MsgUpdateSessionStatus{
 		From:      from,
 		SessionID: sessionID,

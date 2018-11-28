@@ -22,7 +22,7 @@ func UpdateSessionStatusCommand(cdc *codec.Codec) *cobra.Command {
 			cliCtx := context.NewCLIContext().WithCodec(cdc).WithAccountDecoder(authCli.GetAccountDecoder(cdc))
 
 			sessionID := viper.GetString(flagSessionID)
-			status := viper.GetBool(flagStatus)
+			status := viper.GetString(flagStatus)
 
 			if err := cliCtx.EnsureAccountExists(); err != nil {
 				return err
