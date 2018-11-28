@@ -108,6 +108,11 @@ func handleReleaseCoins(ctx csdkTypes.Context, ibcKeeper ibc.Keeper, hubKeeper K
 		panic("locker.address != address")
 	}
 
+	if locker.Status != "LOCKED" {
+		// TODO: Replace with ErrInvalidLockerStatus
+		panic("locker.status != locked")
+	}
+
 	if err := hubKeeper.ReleaseCoins(ctx, msg.LockerID); err != nil {
 		// TODO: Replace with ErrReleaseCoins
 		panic(err)
@@ -159,6 +164,11 @@ func handleReleaseCoinsToMany(ctx csdkTypes.Context, ibcKeeper ibc.Keeper, hubKe
 	if !locker.Address.Equals(address) {
 		// TODO: Replace with ErrInvalidLockerOwnerAddress
 		panic("locker.address != address")
+	}
+
+	if locker.Status != "LOCKED" {
+		// TODO: Replace with ErrInvalidLockerStatus
+		panic("locker.status != locked")
 	}
 
 	if err := hubKeeper.ReleaseCoinsToMany(ctx, msg.LockerID, msg.Addresses, msg.Shares); err != nil {
