@@ -9,7 +9,7 @@ import (
 )
 
 type Keeper interface {
-	GetLocker(ctx csdkTypes.Context, lockerID string) *sdkTypes.CoinLocker
+	GetLocker(ctx csdkTypes.Context, lockerID string) (*sdkTypes.CoinLocker, csdkTypes.Error)
 
 	LockCoins(ctx csdkTypes.Context, lockerID string, address csdkTypes.AccAddress, coins csdkTypes.Coins) csdkTypes.Error
 	ReleaseCoins(ctx csdkTypes.Context, lockerID string) csdkTypes.Error
@@ -32,51 +32,52 @@ func NewBaseKeeper(cdc *codec.Codec, coinLockerKey csdkTypes.StoreKey, bankKeepe
 	}
 }
 
-func (k BaseKeeper) SetLocker(ctx csdkTypes.Context, lockerID string, locker *sdkTypes.CoinLocker) {
+func (k BaseKeeper) SetLocker(ctx csdkTypes.Context, lockerID string, locker *sdkTypes.CoinLocker) csdkTypes.Error {
 	store := ctx.KVStore(k.coinLockerKey)
 	keyBytes, err := k.cdc.MarshalBinaryLengthPrefixed(lockerID)
 
 	if err != nil {
-		panic(err)
+		return errorMarshal()
 	}
 
 	valueBytes, err := k.cdc.MarshalBinaryLengthPrefixed(locker)
 
 	if err != nil {
-		panic(err)
+		return errorMarshal()
 	}
 
 	store.Set(keyBytes, valueBytes)
+
+	return nil
 }
 
-func (k BaseKeeper) GetLocker(ctx csdkTypes.Context, lockerID string) *sdkTypes.CoinLocker {
+func (k BaseKeeper) GetLocker(ctx csdkTypes.Context, lockerID string) (*sdkTypes.CoinLocker, csdkTypes.Error) {
 	store := ctx.KVStore(k.coinLockerKey)
 	keyBytes, err := k.cdc.MarshalBinaryLengthPrefixed(lockerID)
 
 	if err != nil {
-		panic(err)
+		return nil, errorMarshal()
 	}
 
 	valueBytes := store.Get(keyBytes)
 
 	if valueBytes == nil {
-		return nil
+		return nil, nil
 	}
 
 	var locker sdkTypes.CoinLocker
 
 	if err := k.cdc.UnmarshalBinaryLengthPrefixed(valueBytes, &locker); err != nil {
-		panic(err)
+		return nil, errorUnmarshal()
 	}
 
-	return &locker
+	return &locker, nil
 }
 
 func (k BaseKeeper) LockCoins(ctx csdkTypes.Context, lockerID string,
 	address csdkTypes.AccAddress, coins csdkTypes.Coins) csdkTypes.Error {
-	_, _, err := k.bankKeeper.SubtractCoins(ctx, address, coins)
 
-	if err != nil {
+	if _, _, err := k.bankKeeper.SubtractCoins(ctx, address, coins); err != nil {
 		return err
 	}
 
@@ -86,39 +87,52 @@ func (k BaseKeeper) LockCoins(ctx csdkTypes.Context, lockerID string,
 		Status:  "LOCKED",
 	}
 
-	k.SetLocker(ctx, lockerID, &locker)
+	if err := k.SetLocker(ctx, lockerID, &locker); err != nil {
+		return err
+	}
 
 	return nil
 }
 
 func (k BaseKeeper) ReleaseCoins(ctx csdkTypes.Context, lockerID string) csdkTypes.Error {
-	locker := k.GetLocker(ctx, lockerID)
-	_, _, err := k.bankKeeper.AddCoins(ctx, locker.Address, locker.Coins)
+	locker, err := k.GetLocker(ctx, lockerID)
 
 	if err != nil {
 		return err
 	}
 
+	if _, _, err := k.bankKeeper.AddCoins(ctx, locker.Address, locker.Coins); err != nil {
+		return err
+	}
+
 	locker.Status = "RELEASED"
-	k.SetLocker(ctx, lockerID, locker)
+
+	if err := k.SetLocker(ctx, lockerID, locker); err != nil {
+		return err
+	}
 
 	return nil
 }
 
 func (k BaseKeeper) ReleaseCoinsToMany(ctx csdkTypes.Context, lockerID string,
 	addresses []csdkTypes.AccAddress, shares []csdkTypes.Coins) csdkTypes.Error {
-	locker := k.GetLocker(ctx, lockerID)
+	locker, err := k.GetLocker(ctx, lockerID)
 
-	for i := range addresses {
-		_, _, err := k.bankKeeper.AddCoins(ctx, addresses[i], shares[i])
+	if err != nil {
+		return err
+	}
 
-		if err != nil {
+	for index := range addresses {
+		if _, _, err := k.bankKeeper.AddCoins(ctx, addresses[index], shares[index]); err != nil {
 			return err
 		}
 	}
 
 	locker.Status = "RELEASED"
-	k.SetLocker(ctx, lockerID, locker)
+
+	if err := k.SetLocker(ctx, lockerID, locker); err != nil {
+		return err
+	}
 
 	return nil
 }

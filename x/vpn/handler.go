@@ -28,17 +28,26 @@ func NewHandler(k Keeper, ik ibc.Keeper) csdkTypes.Handler {
 }
 
 func handleRegisterNode(ctx csdkTypes.Context, k Keeper, ik ibc.Keeper, msg MsgRegisterNode) csdkTypes.Result {
-	vpnsCount := k.GetVPNsCount(ctx)
+	vpnsCount, err := k.GetVPNsCount(ctx)
+
+	if err != nil {
+		return err.Result()
+	}
+
 	vpnID := msg.From.String() + "/" + strconv.Itoa(int(vpnsCount))
 
 	if lockerID := k.VPNStoreKey.Name() + "/" + vpnID; msg.LockerID != lockerID {
-		// TODO: Replace with ErrLockerIDMismatch
-		panic("msg.lockerid != lockerid")
+		return errorLockerIDMismatch().Result()
 	}
 
-	if vpnDetails := k.GetVPNDetails(ctx, vpnID); vpnDetails != nil {
-		// TODO: Replace with ErrVPNAlreadyExists
-		panic("vpndetails != nil")
+	if vpnDetails, err := k.GetVPNDetails(ctx, vpnID); true {
+		if err != nil {
+			return err.Result()
+		}
+
+		if vpnDetails != nil {
+			return errorVPNAlreadyExists().Result()
+		}
 	}
 
 	vpnDetails := sdkTypes.VPNDetails{
@@ -53,7 +62,9 @@ func handleRegisterNode(ctx csdkTypes.Context, k Keeper, ik ibc.Keeper, msg MsgR
 		LockerID:   msg.LockerID,
 	}
 
-	k.SetVPNDetails(ctx, vpnID, &vpnDetails)
+	if err := k.AddVPN(ctx, vpnID, &vpnDetails); err != nil {
+		return err.Result()
+	}
 
 	ibcPacket := sdkTypes.IBCPacket{
 		SrcChainID:  "sentinel-vpn",
@@ -67,33 +78,43 @@ func handleRegisterNode(ctx csdkTypes.Context, k Keeper, ik ibc.Keeper, msg MsgR
 	}
 
 	if err := ik.PostIBCPacket(ctx, ibcPacket); err != nil {
-		// TODO: Replace with ErrPostIBCPacket
-		panic(err)
+		return err.Result()
 	}
 
-	// TODO: Replace with SuccessRegisterNode
 	return csdkTypes.Result{}
 }
 
 func handleSessionPayment(ctx csdkTypes.Context, k Keeper, ik ibc.Keeper, msg MsgPayVPNService) csdkTypes.Result {
-	sessionsCount := k.GetSessionsCount(ctx)
+	sessionsCount, err := k.GetSessionsCount(ctx)
+
+	if err != nil {
+		return err.Result()
+	}
+
 	sessionID := msg.From.String() + "/" + strconv.Itoa(int(sessionsCount))
 
 	if lockerID := k.SessionStoreKey.Name() + "/" + sessionID; msg.LockerID != lockerID {
-		// TODO: Replace with ErrLockerIDMismatch
-		panic("msg.lockerid != lockerid")
+		return errorLockerIDMismatch().Result()
 	}
 
-	if sessionDetails := k.GetSessionDetails(ctx, sessionID); sessionDetails != nil {
-		// TODO: Replace wtih ErrSessionAlreadyExists
-		panic("sessiondetails != nil")
+	if sessionDetails, err := k.GetSessionDetails(ctx, sessionID); true {
+		if err != nil {
+			return err.Result()
+		}
+
+		if sessionDetails != nil {
+			return errorSessionAlreadyExists().Result()
+		}
 	}
 
-	vpnDetails := k.GetVPNDetails(ctx, msg.VPNID)
+	vpnDetails, err := k.GetVPNDetails(ctx, msg.VPNID)
+
+	if err != nil {
+		return err.Result()
+	}
 
 	if vpnDetails == nil {
-		// TODO: Replace with ErrVPNNotExists
-		panic("vpndetails == nil")
+		return errorVPNNotExists().Result()
 	}
 
 	sessionDetails := sdkTypes.SessionDetails{
@@ -104,7 +125,9 @@ func handleSessionPayment(ctx csdkTypes.Context, k Keeper, ik ibc.Keeper, msg Ms
 		Status:        "STARTED",
 	}
 
-	k.SetSessionDetails(ctx, sessionID, &sessionDetails)
+	if err := k.AddSession(ctx, sessionID, &sessionDetails); err != nil {
+		return err.Result()
+	}
 
 	ibcPacket := sdkTypes.IBCPacket{
 		SrcChainID:  "sentinel-vpn",
@@ -118,34 +141,38 @@ func handleSessionPayment(ctx csdkTypes.Context, k Keeper, ik ibc.Keeper, msg Ms
 	}
 
 	if err := ik.PostIBCPacket(ctx, ibcPacket); err != nil {
-		// TODO: Replace with ErrPostIBCPacket
-		panic(err)
+		return err.Result()
 	}
 
-	// TODO: Replace with SuccessPayVPNService
 	return csdkTypes.Result{}
 }
 
 func handleDeregisterNode(ctx csdkTypes.Context, k Keeper, ik ibc.Keeper, msg MsgDeregisterNode) csdkTypes.Result {
-	vpnDetails := k.GetVPNDetails(ctx, msg.VPNID)
+	vpnDetails, err := k.GetVPNDetails(ctx, msg.VPNID)
+
+	if err != nil {
+		return err.Result()
+	}
 
 	if vpnDetails == nil {
-		// TODO: Replace with ErrVPNNotExists
-		panic("vpndetails == nil")
+		return errorVPNNotExists().Result()
 	}
 
 	if !msg.From.Equals(vpnDetails.Address) {
-		// TODO: Replace with ErrInvalidNodeOwnerAddress
-		panic("!msg.from.equals(vpndetails.address)")
+		return errorInvalidNodeOwnerAddress().Result()
 	}
 
 	if msg.LockerID != vpnDetails.LockerID {
-		// TODO: Replace with ErrLockerIDMismatch
-		panic("msg.lockerid != vpndetails.lockerid")
+		return errorLockerIDMismatch().Result()
 	}
 
-	k.SetVPNStatus(ctx, msg.VPNID, "INACTIVE")
-	k.RemoveActiveNodeID(ctx, msg.VPNID)
+	if err := k.SetVPNStatus(ctx, msg.VPNID, "INACTIVE"); err != nil {
+		return err.Result()
+	}
+
+	if err := k.RemoveActiveNodeID(ctx, msg.VPNID); err != nil {
+		return err.Result()
+	}
 
 	ibcPacket := sdkTypes.IBCPacket{
 		SrcChainID:  "sentinel-vpn",
@@ -158,10 +185,8 @@ func handleDeregisterNode(ctx csdkTypes.Context, k Keeper, ik ibc.Keeper, msg Ms
 	}
 
 	if err := ik.PostIBCPacket(ctx, ibcPacket); err != nil {
-		// TODO: Replace with ErrPostIBCPacket
-		panic(err)
+		return err.Result()
 	}
-
-	// TODO: Replace with SuccessDeregisterNode
+	
 	return csdkTypes.Result{}
 }

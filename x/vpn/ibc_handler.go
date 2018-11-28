@@ -42,23 +42,32 @@ func handleUpdateNodeStatus(ctx csdkTypes.Context, k Keeper, ibcPacket sdkTypes.
 	msg, _ := ibcPacket.Message.(hub.MsgLockerStatus)
 	nodeID := msg.LockerID[len(k.VPNStoreKey.Name())+1:]
 
-	if vpnDetails := k.GetVPNDetails(ctx, nodeID); vpnDetails == nil {
-		// TODO: Replace with ErrVPNNotExists
-		panic("vpndetails == nil")
+	if vpnDetails, err := k.GetVPNDetails(ctx, nodeID); true {
+		if err != nil {
+			return err.Result()
+		}
+
+		if vpnDetails == nil {
+			return errorVPNNotExists().Result()
+		}
 	}
 
 	switch msg.Status {
 	case "LOCKED":
-		k.SetVPNStatus(ctx, nodeID, "ACTIVE")
-		k.AddActiveNodeID(ctx, nodeID)
+		if err := k.SetVPNStatus(ctx, nodeID, "ACTIVE"); err != nil {
+			return err.Result()
+		}
+		if err := k.AddActiveNodeID(ctx, nodeID); err != nil {
+			return err.Result()
+		}
 	case "RELEASED":
-		k.SetVPNStatus(ctx, nodeID, "DEREGISTERED")
+		if err := k.SetVPNStatus(ctx, nodeID, "DEREGISTERED"); err != nil {
+			return err.Result()
+		}
 	default:
-		// TODO: Replace with ErrInvalidLockStatus
-		panic("invalid locker id status")
+		return errorInvalidLockStatus().Result()
 	}
 
-	// TODO: Replace with SuccessUpdateNodeStatus
 	return csdkTypes.Result{}
 }
 
@@ -66,21 +75,31 @@ func handleUpdateSessionStatus(ctx csdkTypes.Context, k Keeper, ibcPacket sdkTyp
 	msg, _ := ibcPacket.Message.(hub.MsgLockerStatus)
 	sessionID := msg.LockerID[len(k.SessionStoreKey.Name())+1:]
 
-	if sessionDetails := k.GetSessionDetails(ctx, sessionID); sessionDetails == nil {
-		panic("sessiondetails == nil")
+	if sessionDetails, err := k.GetSessionDetails(ctx, sessionID); true {
+		if err != nil {
+			return err.Result()
+		}
+
+		if sessionDetails == nil {
+			return errorSessionNotExists().Result()
+		}
 	}
 
 	switch msg.Status {
 	case "LOCKED":
-		k.SetSessionStatus(ctx, sessionID, "ACTIVE")
-		k.AddActiveSessionID(ctx, sessionID)
+		if err := k.SetSessionStatus(ctx, sessionID, "ACTIVE"); err != nil {
+			return err.Result()
+		}
+		if err := k.AddActiveSessionID(ctx, sessionID); err != nil {
+			return err.Result()
+		}
 	case "RELEASED":
-		k.SetVPNStatus(ctx, sessionID, "ENDED")
+		if err := k.SetVPNStatus(ctx, sessionID, "ENDED"); err != nil {
+			return err.Result()
+		}
 	default:
-		// TODO: Replace with ErrInvalidLockStatus
-		panic("invalid locker id status")
+		return errorInvalidLockStatus().Result()
 	}
 
-	// TODO: Replace with SuccessUpdateSessionStatus
 	return csdkTypes.Result{}
 }
