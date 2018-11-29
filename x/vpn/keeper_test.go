@@ -10,7 +10,6 @@ import (
 	"github.com/stretchr/testify/require"
 	abci "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/libs/log"
-	"fmt"
 )
 
 func TestKeeper_SetVPNDetails(t *testing.T) {
@@ -266,7 +265,6 @@ func TestKeeper_AddActiveNodeID(t *testing.T) {
 	keeper.AddActiveNodeID(ctx, vpnID2)
 
 	nodeIDs, err = keeper.GetActiveNodeIDs(ctx)
-	fmt.Println(nodeIDs)
 	nodes = []string{vpnID1, vpnID2}
 	sort.Strings(nodes)
 	require.Nil(t, err)

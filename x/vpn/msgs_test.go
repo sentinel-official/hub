@@ -2,6 +2,7 @@ package vpn
 
 import (
 	"encoding/json"
+	"fmt"
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
 	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
 	"github.com/stretchr/testify/require"
@@ -52,6 +53,7 @@ func TestMsgRegisterNode_ValidateBasic(t *testing.T) {
 		},
 			EncMethod: "AES-256", PricePerGB: 100, Version: "1.0", LockerID: lockerID1,
 			Coins: csdkTypes.Coins{coin1}, PubKey: pubKey1, Signature: sign1}, expectedPass: false},
+
 		{name: "test3", fields: fields{From: addr3, APIPort: -1, Location: sdkTypes.Location{
 			Latitude:  100,
 			Longitude: 100,
@@ -63,8 +65,9 @@ func TestMsgRegisterNode_ValidateBasic(t *testing.T) {
 		},
 			EncMethod: "AES-256", PricePerGB: 100, Version: "1.0", LockerID: lockerID1,
 			Coins: csdkTypes.Coins{coin1}, PubKey: pubKey1, Signature: sign1}, expectedPass: false},
+
 		{name: "test4", fields: fields{From: addr3, APIPort: 1234, Location: sdkTypes.Location{
-			Latitude:  -1,
+			Latitude:  -9000000000,
 			Longitude: -1,
 			City:      "city",
 			Country:   "country",
@@ -106,8 +109,8 @@ func TestMsgRegisterNode_ValidateBasic(t *testing.T) {
 			Download: 100,
 		},
 			EncMethod: "AES-256", PricePerGB: 0, Version: "1.0", LockerID: lockerID1,
-			Coins: csdkTypes.Coins{coin1}, PubKey: pubKey1, Signature: sign1}, expectedPass: false},
-		{name: "test1", fields: fields{From: addr3, APIPort: 1234, Location: sdkTypes.Location{
+			Coins: csdkTypes.Coins{coin1}, PubKey: pubKey1, Signature: sign1}, expectedPass: true},
+		{name: "test8", fields: fields{From: addr3, APIPort: 1234, Location: sdkTypes.Location{
 			Latitude:  100,
 			Longitude: 100,
 			City:      "city",
@@ -128,7 +131,6 @@ func TestMsgRegisterNode_ValidateBasic(t *testing.T) {
 			val.fields.Version, val.fields.LockerID,
 			val.fields.Coins, val.fields.PubKey, val.fields.Signature,
 		}
-
 		if val.expectedPass {
 			require.Nil(t, msg.ValidateBasic())
 		} else {
@@ -192,12 +194,23 @@ func TestMsgPayVPNService_ValidateBasic(t *testing.T) {
 	}{
 		{name: "test1", fields: fields{From: addr3, VPNID: vpnID, LockerID: lockerID1, Coins: csdkTypes.Coins{coin1},
 			PubKey: pubKey1, Signature: sign1}, expectedPass: true},
+		{name: "test2", fields: fields{From: nil, VPNID: vpnID, LockerID: lockerID1, Coins: csdkTypes.Coins{coin1},
+			PubKey: pubKey1, Signature: sign1}, expectedPass: false},
+		{name: "test3", fields: fields{From: addr3, VPNID: "", LockerID: lockerID1, Coins: csdkTypes.Coins{coin1},
+			PubKey: pubKey1, Signature: sign1}, expectedPass: false},
+		{name: "test4", fields: fields{From: addr3, VPNID: vpnID, LockerID: "", Coins: csdkTypes.Coins{coin1},
+			PubKey: pubKey1, Signature: sign1}, expectedPass: false},
+		{name: "test5", fields: fields{From: addr3, VPNID: vpnID, LockerID: lockerID1, Coins: nil,
+			PubKey: pubKey1, Signature: sign1}, expectedPass: false},
+		{name: "test6", fields: fields{From: addr3, VPNID: vpnID, LockerID: lockerID1, Coins: csdkTypes.Coins{coin1},
+			PubKey: nil, Signature: sign1}, expectedPass: false},
+		{name: "test7", fields: fields{From: addr3, VPNID: vpnID, LockerID: lockerID1, Coins: csdkTypes.Coins{coin1},
+			PubKey: pubKey1, Signature: nil}, expectedPass: false},
 	}
 
 	for _, val := range tests {
 		msg := MsgPayVPNService{From: val.fields.From, VPNID: val.fields.VPNID, LockerID: val.fields.LockerID,
 			Coins: val.fields.Coins, PubKey: val.fields.PubKey, Signature: val.fields.Signature}
-
 		if val.expectedPass {
 			require.Nil(t, msg.ValidateBasic())
 		} else {
@@ -233,6 +246,13 @@ func TestMsgPayVPNService_Route(t *testing.T) {
 	require.Equal(t, vpnRoute, functionRoute)
 }
 
+func TestMsgPayVPNService_Type(t *testing.T) {
+	msg := TestGetMsgPayVpnService()
+	functionType := msg.Type()
+
+	require.Equal(t, functionType, payVpnServiceType)
+}
+
 func TestMsgUpdateSessionStatus_ValidateBasic(t *testing.T) {
 	type fields struct {
 		From      csdkTypes.AccAddress
@@ -246,6 +266,9 @@ func TestMsgUpdateSessionStatus_ValidateBasic(t *testing.T) {
 		expectedPass bool
 	}{
 		{name: "test1", fields: fields{From: addr3, SessionId: sessionID1, Status: status}, expectedPass: true},
+		{name: "test2", fields: fields{From: nil, SessionId: sessionID1, Status: status}, expectedPass: false},
+		{name: "test3", fields: fields{From: addr3, SessionId: "", Status: status}, expectedPass: false},
+		{name: "test4", fields: fields{From: addr3, SessionId: sessionID1, Status: ""}, expectedPass: false},
 	}
 
 	for _, val := range tests {
@@ -257,4 +280,108 @@ func TestMsgUpdateSessionStatus_ValidateBasic(t *testing.T) {
 			require.NotNil(t, msg.ValidateBasic())
 		}
 	}
+}
+
+func TestMsgUpdateSessionStatus_GetSignBytes(t *testing.T) {
+	msg := TestGetMsgUpdateSessionStatus()
+	bytes, _ := json.Marshal(msg)
+	functionBytes := msg.GetSignBytes()
+
+	require.Equal(t, bytes, functionBytes)
+
+}
+
+func TestMsgUpdateSessionStatus_GetSigners(t *testing.T) {
+	msg := TestGetMsgUpdateSessionStatus()
+	signer := msg.From
+	functionSigners := msg.GetSigners()
+
+	require.Equal(t, functionSigners, []csdkTypes.AccAddress{signer})
+}
+
+func TestMsgUpdateSessionStatus_Route(t *testing.T) {
+	msg := TestGetMsgUpdateSessionStatus()
+	function_route := msg.Route()
+
+	require.Equal(t, function_route, sessionRoute)
+}
+
+func TestMsgUpdateSessionStatus_Type(t *testing.T) {
+	msg := TestGetMsgUpdateSessionStatus()
+	functionType := msg.Type()
+
+	require.Equal(t, functionType, updatedSessionStatusType)
+}
+
+func TestMsgDeregisterNode_ValidateBasic(t *testing.T) {
+	type fields struct {
+		From      csdkTypes.AccAddress
+		VpnID     string
+		LockerID  string
+		PubKey    crypto.PubKey
+		Signature []byte
+	}
+
+	tests := []struct {
+		name         string
+		fields       fields
+		expectedPass bool
+	}{
+		{name: "test1", fields: fields{From: addr3, VpnID: vpnID, LockerID: lockerID1, PubKey: pubKey1, Signature: sign1},
+			expectedPass: true},
+		{name: "test2", fields: fields{From: nil, VpnID: vpnID, LockerID: lockerID1, PubKey: pubKey1, Signature: sign1},
+			expectedPass: false},
+		{name: "test3", fields: fields{From: addr3, VpnID: "", LockerID: lockerID1, PubKey: pubKey1, Signature: sign1},
+			expectedPass: false},
+		{name: "test4", fields: fields{From: addr3, VpnID: vpnID, LockerID: "", PubKey: pubKey1, Signature: sign1},
+			expectedPass: false},
+		{name: "test5", fields: fields{From: addr3, VpnID: vpnID, LockerID: lockerID1, PubKey: nil, Signature: sign1},
+			expectedPass: false},
+		{name: "test6", fields: fields{From: addr3, VpnID: vpnID, LockerID: lockerID1, PubKey: pubKey1, Signature: nil},
+			expectedPass: false},
+	}
+
+	for _, val := range tests {
+
+		msg := MsgDeregisterNode{From: val.fields.From, VPNID: val.fields.VpnID, LockerID: val.fields.LockerID,
+			PubKey: val.fields.PubKey, Signature: val.fields.Signature}
+
+		if val.expectedPass {
+			require.Nil(t, msg.ValidateBasic())
+		} else {
+			require.NotNil(t, msg.ValidateBasic())
+		}
+	}
+}
+
+func TestMsgDeregisterNode_GetSignBytes(t *testing.T) {
+	msg := TestGetMsgDeregisterNode()
+
+	bytes, _ := json.Marshal(msg)
+	functionBytes := msg.GetSignBytes()
+
+	require.Equal(t, bytes, functionBytes)
+}
+
+func TestMsgDeregisterNode_GetSigners(t *testing.T) {
+	msg := TestGetMsgDeregisterNode()
+
+	signers := msg.From
+	functionSigners := msg.GetSigners()
+
+	require.Equal(t, []csdkTypes.AccAddress{signers}, functionSigners)
+}
+
+func TestMsgDeregisterNode_Route(t *testing.T) {
+	msg := TestGetMsgDeregisterNode()
+	functionRoute := msg.Route()
+
+	require.Equal(t, functionRoute, vpnRoute)
+}
+
+func TestMsgDeregisterNode_Type(t *testing.T) {
+	msg := TestGetMsgDeregisterNode()
+	functionType := msg.Type()
+	fmt.Println(functionType, deregisterNodeIDType)
+	require.Equal(t, functionType, deregisterNodeIDType)
 }

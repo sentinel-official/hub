@@ -5,6 +5,7 @@ import (
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
 	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
 	"github.com/ironman0x7b2/sentinel-sdk/x/hub"
+	"github.com/ironman0x7b2/sentinel-sdk/x/ibc"
 	"github.com/stretchr/testify/require"
 	abci "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/libs/log"
@@ -17,20 +18,22 @@ func TestIBCHandler_UpdateNodeStatus(t *testing.T) {
 	codec.RegisterCrypto(cdc)
 	sdkTypes.RegisterCodec(cdc)
 	hub.RegisterCodec(cdc)
+	ibc.RegisterCodec(cdc)
 
-	ms, _, vpnStoreKey, sessionStoreKey := setupMultiStore()
+	ms, ibcStoreKey, vpnStoreKey, sessionStoreKey := setupMultiStore()
 	ctx := csdkTypes.NewContext(ms, abci.Header{}, false, log.NewNopLogger())
 	keeper := NewKeeper(cdc, vpnStoreKey, sessionStoreKey)
 
-	ibcPacket := TestGetIBCPacket()
+	ibcMsg := TestGetNodeIBCPacket()
+	ibcKeeper := ibc.NewKeeper(ibcStoreKey, cdc)
 
-	res := handleUpdateNodeStatus(ctx, keeper, *ibcPacket)
+	res := handleUpdateNodeStatus(ctx, ibcKeeper, keeper, *ibcMsg)
 	require.False(t, res.IsOK())
 
 	vpnMsg := TestGetVPNDetails()
 	keeper.SetVPNDetails(ctx, vpnID, vpnMsg)
 
-	res1 := handleUpdateNodeStatus(ctx, keeper, *ibcPacket)
+	res1 := handleUpdateNodeStatus(ctx, ibcKeeper, keeper, *ibcMsg)
 	require.True(t, res1.IsOK())
 
 	vpnDetails, err := keeper.GetVPNDetails(ctx, vpnID)
@@ -46,21 +49,23 @@ func TestIBCHandler_UpdateSessionStatus(t *testing.T) {
 	codec.RegisterCrypto(cdc)
 	sdkTypes.RegisterCodec(cdc)
 	hub.RegisterCodec(cdc)
+	ibc.RegisterCodec(cdc)
 
-	ms, _, vpnStoreKey, sessionStoreKey := setupMultiStore()
+	ms, ibcStoreKey, vpnStoreKey, sessionStoreKey := setupMultiStore()
 	ctx := csdkTypes.NewContext(ms, abci.Header{}, false, log.NewNopLogger())
 	keeper := NewKeeper(cdc, vpnStoreKey, sessionStoreKey)
 
-	ibcPacket := TestGetSessionIBCPacket()
+	ibcMsg := TestGetSessionIBCPacket()
+	ibcKeeper := ibc.NewKeeper(ibcStoreKey, cdc)
 
-	res := handleUpdateSessionStatus(ctx, keeper, *ibcPacket)
+	res := handleUpdateSessionStatus(ctx, ibcKeeper, keeper, *ibcMsg)
 	require.False(t, res.IsOK())
 
 	sessionMsg := TestGetSessionDetails()
 	err := keeper.SetSessionDetails(ctx, sessionID1, sessionMsg)
 	require.Nil(t, err)
 
-	res1 := handleUpdateSessionStatus(ctx, keeper, *ibcPacket)
+	res1 := handleUpdateSessionStatus(ctx, ibcKeeper, keeper, *ibcMsg)
 	require.True(t, res1.IsOK())
 
 	sessionDetails, err := keeper.GetSessionDetails(ctx, sessionID1)

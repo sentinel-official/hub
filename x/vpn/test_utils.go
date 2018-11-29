@@ -6,6 +6,7 @@ import (
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
 	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
 	"github.com/ironman0x7b2/sentinel-sdk/x/hub"
+	"github.com/ironman0x7b2/sentinel-sdk/x/ibc"
 	"github.com/tendermint/tendermint/crypto/ed25519"
 	dbm "github.com/tendermint/tendermint/libs/db"
 	"strconv"
@@ -16,29 +17,37 @@ var count = uint64(0)
 var addr1 = csdkTypes.AccAddress([]byte("some-address1"))
 var addr2 = csdkTypes.AccAddress([]byte("some-address2"))
 
-var coin1 = csdkTypes.NewCoin("SENT", csdkTypes.NewInt(100))
-var coin2 = csdkTypes.NewCoin("sent", csdkTypes.NewInt(100))
+var (
+	coin1 = csdkTypes.NewCoin("SENT", csdkTypes.NewInt(100))
+	coin2 = csdkTypes.NewCoin("sent", csdkTypes.NewInt(100))
+)
 
-var pvk1 = ed25519.GenPrivKey()
+var (
+	pvk1 = ed25519.GenPrivKey()
+	pvk2 = ed25519.GenPrivKey()
+)
 
-var pubKey1 = pvk1.PubKey()
+var (
+	pubKey1 = pvk1.PubKey()
+	pubKey2 = pvk2.PubKey()
+)
 
-var vpnRoute = "vpn"
-var sessionRoute = "session"
+var (
+	sign1, _ = pvk1.Sign(msgLockCoinsSignatureBytes())
+	sign2, _ = pvk2.Sign(msgLockCoinsSignatureBytes())
+)
 
-var vpnRegisterType = "msg_register_node"
+var (
+	vpnRoute     = "vpn"
+	sessionRoute = "session"
+)
 
-func msgLockCoinsSignatureBytes() []byte {
-	bytes, _ := json.Marshal(hub.MsgLockCoins{
-		lockerID1,
-		csdkTypes.Coins{coin1},
-		pubKey1,
-		nil,
-	})
-	return bytes
-}
-
-var sign1, _ = pvk1.Sign(msgLockCoinsSignatureBytes())
+var (
+	vpnRegisterType          = "msg_register_node"
+	payVpnServiceType        = "msg_pay_vpn_service"
+	updatedSessionStatusType = "msg_update_session_status"
+	deregisterNodeIDType     = "msg_deregister_node"
+)
 
 var addr3 = csdkTypes.AccAddress(pubKey1.Address())
 
@@ -50,7 +59,17 @@ var sessionID1 = addr3.String() + "/" + strconv.Itoa(int(count))
 
 var lockerID2 = "session" + "/" + sessionID1
 
-var status = "STATUS"
+var status = "ACTIVE"
+
+func msgLockCoinsSignatureBytes() []byte {
+	bytes, _ := json.Marshal(hub.MsgLockCoins{
+		lockerID1,
+		csdkTypes.Coins{coin1},
+		pubKey1,
+		nil,
+	})
+	return bytes
+}
 
 func setupMultiStore() (csdkTypes.MultiStore, *csdkTypes.KVStoreKey, *csdkTypes.KVStoreKey, *csdkTypes.KVStoreKey) {
 	db := dbm.NewMemDB()
@@ -146,25 +165,42 @@ func TestGetMsgDeregisterNode() *MsgDeregisterNode {
 	}
 }
 
-func TestGetIBCPacket() *sdkTypes.IBCPacket {
-	return &sdkTypes.IBCPacket{
-		SrcChainID:  "sentinel-vpn",
-		DestChainID: "sentinel-hub",
-		Message: hub.MsgLockerStatus{
-			LockerID: lockerID1,
-			Status:   "LOCKED",
+func TestGetMsgUpdateSessionStatus() *MsgUpdateSessionStatus {
+	return &MsgUpdateSessionStatus{
+		From:      addr3,
+		SessionID: sessionID1,
+		Status:    "LOCKED",
+	}
+
+}
+
+func TestGetNodeIBCPacket() *ibc.MsgIBCTransaction {
+	return &ibc.MsgIBCTransaction{
+		Relayer:  addr1,
+		Sequence: 0,
+		IBCPacket: sdkTypes.IBCPacket{
+			SrcChainID:  "sentinel-vpn",
+			DestChainID: "sentinel-hub",
+			Message: hub.MsgLockerStatus{
+				LockerID: lockerID1,
+				Status:   "LOCKED",
+			},
 		},
 	}
 
 }
 
-func TestGetSessionIBCPacket() *sdkTypes.IBCPacket {
-	return &sdkTypes.IBCPacket{
-		SrcChainID:  "sentinel-vpn",
-		DestChainID: "sentinel-hub",
-		Message: hub.MsgLockerStatus{
-			LockerID: lockerID2,
-			Status:   "LOCKED",
+func TestGetSessionIBCPacket() *ibc.MsgIBCTransaction {
+	return &ibc.MsgIBCTransaction{
+		Relayer:  addr1,
+		Sequence: 0,
+		IBCPacket: sdkTypes.IBCPacket{
+			SrcChainID:  "sentinel-vpn",
+			DestChainID: "sentinel-hub",
+			Message: hub.MsgLockerStatus{
+				LockerID: lockerID2,
+				Status:   "LOCKED",
+			},
 		},
 	}
 
