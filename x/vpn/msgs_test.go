@@ -31,7 +31,7 @@ func TestMsgRegisterNode_ValidateBasic(t *testing.T) {
 		fields       fields
 		expectedPass bool
 	}{
-		{name: "test1", fields: fields{From: addr3, APIPort: 1234, Location: sdkTypes.Location{
+		{name: "valid", fields: fields{From: addr3, APIPort: 1234, Location: sdkTypes.Location{
 			Latitude:  100,
 			Longitude: 100,
 			City:      "city",
@@ -42,7 +42,8 @@ func TestMsgRegisterNode_ValidateBasic(t *testing.T) {
 		},
 			EncMethod: "AES-256", PricePerGB: 100, Version: "1.0", LockerID: lockerID1,
 			Coins: csdkTypes.Coins{coin1}, PubKey: pubKey1, Signature: sign1}, expectedPass: true},
-		{name: "test2", fields: fields{From: nil, APIPort: 1234, Location: sdkTypes.Location{
+
+		{name: "empty address", fields: fields{From: nil, APIPort: 1234, Location: sdkTypes.Location{
 			Latitude:  100,
 			Longitude: 100,
 			City:      "city",
@@ -54,7 +55,7 @@ func TestMsgRegisterNode_ValidateBasic(t *testing.T) {
 			EncMethod: "AES-256", PricePerGB: 100, Version: "1.0", LockerID: lockerID1,
 			Coins: csdkTypes.Coins{coin1}, PubKey: pubKey1, Signature: sign1}, expectedPass: false},
 
-		{name: "test3", fields: fields{From: addr3, APIPort: -1, Location: sdkTypes.Location{
+		{name: "negative apiport", fields: fields{From: addr3, APIPort: -1, Location: sdkTypes.Location{
 			Latitude:  100,
 			Longitude: 100,
 			City:      "city",
@@ -66,7 +67,7 @@ func TestMsgRegisterNode_ValidateBasic(t *testing.T) {
 			EncMethod: "AES-256", PricePerGB: 100, Version: "1.0", LockerID: lockerID1,
 			Coins: csdkTypes.Coins{coin1}, PubKey: pubKey1, Signature: sign1}, expectedPass: false},
 
-		{name: "test4", fields: fields{From: addr3, APIPort: 1234, Location: sdkTypes.Location{
+		{name: "invalid latitude", fields: fields{From: addr3, APIPort: 1234, Location: sdkTypes.Location{
 			Latitude:  -9000000000,
 			Longitude: -1,
 			City:      "city",
@@ -77,29 +78,92 @@ func TestMsgRegisterNode_ValidateBasic(t *testing.T) {
 		},
 			EncMethod: "AES-256", PricePerGB: 100, Version: "1.0", LockerID: lockerID1,
 			Coins: csdkTypes.Coins{coin1}, PubKey: pubKey1, Signature: sign1}, expectedPass: false},
-		{name: "test5", fields: fields{From: addr3, APIPort: 1234, Location: sdkTypes.Location{
-			Latitude:  100,
-			Longitude: 100,
-			City:      "",
-			Country:   "",
+
+		{name: "invalid latitude", fields: fields{From: addr3, APIPort: 1234, Location: sdkTypes.Location{
+			Latitude:  9000000000,
+			Longitude: -1,
+			City:      "city",
+			Country:   "country",
 		}, NetSpeed: sdkTypes.NetSpeed{
 			Upload:   100,
 			Download: 100,
 		},
 			EncMethod: "AES-256", PricePerGB: 100, Version: "1.0", LockerID: lockerID1,
 			Coins: csdkTypes.Coins{coin1}, PubKey: pubKey1, Signature: sign1}, expectedPass: false},
-		{name: "test6", fields: fields{From: addr3, APIPort: 1234, Location: sdkTypes.Location{
+
+		{name: "invalid longitude", fields: fields{From: addr3, APIPort: 1234, Location: sdkTypes.Location{
+			Latitude:  -180000000000,
+			Longitude: -1,
+			City:      "city",
+			Country:   "country",
+		}, NetSpeed: sdkTypes.NetSpeed{
+			Upload:   100,
+			Download: 100,
+		},
+			EncMethod: "AES-256", PricePerGB: 100, Version: "1.0", LockerID: lockerID1,
+			Coins: csdkTypes.Coins{coin1}, PubKey: pubKey1, Signature: sign1}, expectedPass: false},
+
+		{name: "invalid longitude", fields: fields{From: addr3, APIPort: 1234, Location: sdkTypes.Location{
+			Latitude:  180000000000,
+			Longitude: -1,
+			City:      "city",
+			Country:   "country",
+		}, NetSpeed: sdkTypes.NetSpeed{
+			Upload:   100,
+			Download: 100,
+		},
+			EncMethod: "AES-256", PricePerGB: 100, Version: "1.0", LockerID: lockerID1,
+			Coins: csdkTypes.Coins{coin1}, PubKey: pubKey1, Signature: sign1}, expectedPass: false},
+
+		{name: "empty city", fields: fields{From: addr3, APIPort: 1234, Location: sdkTypes.Location{
+			Latitude:  100,
+			Longitude: 100,
+			City:      "",
+			Country:   "country",
+		}, NetSpeed: sdkTypes.NetSpeed{
+			Upload:   100,
+			Download: 100,
+		},
+			EncMethod: "AES-256", PricePerGB: 100, Version: "1.0", LockerID: lockerID1,
+			Coins: csdkTypes.Coins{coin1}, PubKey: pubKey1, Signature: sign1}, expectedPass: false},
+
+		{name: "empty country", fields: fields{From: addr3, APIPort: 1234, Location: sdkTypes.Location{
+			Latitude:  100,
+			Longitude: 100,
+			City:      "",
+			Country:   "country",
+		}, NetSpeed: sdkTypes.NetSpeed{
+			Upload:   100,
+			Download: 100,
+		},
+			EncMethod: "AES-256", PricePerGB: 100, Version: "1.0", LockerID: lockerID1,
+			Coins: csdkTypes.Coins{coin1}, PubKey: pubKey1, Signature: sign1}, expectedPass: false},
+
+		{name: "negative upload speed", fields: fields{From: addr3, APIPort: 1234, Location: sdkTypes.Location{
 			Latitude:  100,
 			Longitude: 100,
 			City:      "city",
 			Country:   "country",
 		}, NetSpeed: sdkTypes.NetSpeed{
 			Upload:   -1,
-			Download: -1,
+			Download: 10,
 		},
 			EncMethod: "AES-256", PricePerGB: 100, Version: "1.0", LockerID: lockerID1,
 			Coins: csdkTypes.Coins{coin1}, PubKey: pubKey1, Signature: sign1}, expectedPass: false},
-		{name: "test7", fields: fields{From: addr3, APIPort: 1234, Location: sdkTypes.Location{
+
+		{name: "negative download speed", fields: fields{From: addr3, APIPort: 1234, Location: sdkTypes.Location{
+			Latitude:  100,
+			Longitude: 100,
+			City:      "city",
+			Country:   "country",
+		}, NetSpeed: sdkTypes.NetSpeed{
+			Upload:   1,
+			Download: -10,
+		},
+			EncMethod: "AES-256", PricePerGB: 100, Version: "1.0", LockerID: lockerID1,
+			Coins: csdkTypes.Coins{coin1}, PubKey: pubKey1, Signature: sign1}, expectedPass: false},
+
+		{name: "empty enc_method", fields: fields{From: addr3, APIPort: 1234, Location: sdkTypes.Location{
 			Latitude:  100,
 			Longitude: 100,
 			City:      "city",
@@ -108,9 +172,70 @@ func TestMsgRegisterNode_ValidateBasic(t *testing.T) {
 			Upload:   100,
 			Download: 100,
 		},
-			EncMethod: "AES-256", PricePerGB: 0, Version: "1.0", LockerID: lockerID1,
-			Coins: csdkTypes.Coins{coin1}, PubKey: pubKey1, Signature: sign1}, expectedPass: true},
-		{name: "test8", fields: fields{From: addr3, APIPort: 1234, Location: sdkTypes.Location{
+			EncMethod: "", PricePerGB: 0, Version: "1.0", LockerID: lockerID1,
+			Coins: csdkTypes.Coins{coin1}, PubKey: pubKey1, Signature: sign1}, expectedPass: false},
+
+		{name: "negative price_per_gb", fields: fields{From: addr3, APIPort: 1234, Location: sdkTypes.Location{
+			Latitude:  100,
+			Longitude: 100,
+			City:      "city",
+			Country:   "country",
+		}, NetSpeed: sdkTypes.NetSpeed{
+			Upload:   100,
+			Download: 100,
+		},
+			EncMethod: "AES-256", PricePerGB: -1, Version: "1.0", LockerID: lockerID1,
+			Coins: csdkTypes.Coins{coin1}, PubKey: pubKey1, Signature: sign1}, expectedPass: false},
+
+		{name: "empty version", fields: fields{From: addr3, APIPort: 1234, Location: sdkTypes.Location{
+			Latitude:  100,
+			Longitude: 100,
+			City:      "city",
+			Country:   "country",
+		}, NetSpeed: sdkTypes.NetSpeed{
+			Upload:   100,
+			Download: 100,
+		},
+			EncMethod: "AES-256", PricePerGB: -1, Version: "", LockerID: lockerID1,
+			Coins: csdkTypes.Coins{coin1}, PubKey: pubKey1, Signature: sign1}, expectedPass: false},
+
+		{name: "empty locker_id", fields: fields{From: addr3, APIPort: 1234, Location: sdkTypes.Location{
+			Latitude:  100,
+			Longitude: 100,
+			City:      "city",
+			Country:   "country",
+		}, NetSpeed: sdkTypes.NetSpeed{
+			Upload:   100,
+			Download: 100,
+		},
+			EncMethod: "AES-256", PricePerGB: -1, Version: "1.0", LockerID: "",
+			Coins: csdkTypes.Coins{coin1}, PubKey: pubKey1, Signature: sign1}, expectedPass: false},
+
+		{name: "coins length zero", fields: fields{From: addr3, APIPort: 1234, Location: sdkTypes.Location{
+			Latitude:  100,
+			Longitude: 100,
+			City:      "city",
+			Country:   "country",
+		}, NetSpeed: sdkTypes.NetSpeed{
+			Upload:   100,
+			Download: 100,
+		},
+			EncMethod: "AES-256", PricePerGB: -1, Version: "1.0", LockerID: "",
+			Coins: csdkTypes.Coins{}, PubKey: pubKey1, Signature: sign1}, expectedPass: false},
+
+		{name: "nil coins", fields: fields{From: addr3, APIPort: 1234, Location: sdkTypes.Location{
+			Latitude:  100,
+			Longitude: 100,
+			City:      "city",
+			Country:   "country",
+		}, NetSpeed: sdkTypes.NetSpeed{
+			Upload:   100,
+			Download: 100,
+		},
+			EncMethod: "AES-256", PricePerGB: -1, Version: "1.0", LockerID: "",
+			Coins: nil, PubKey: pubKey1, Signature: sign1}, expectedPass: false},
+
+		{name: "nil public key", fields: fields{From: addr3, APIPort: 1234, Location: sdkTypes.Location{
 			Latitude:  100,
 			Longitude: 100,
 			City:      "city",
@@ -120,7 +245,19 @@ func TestMsgRegisterNode_ValidateBasic(t *testing.T) {
 			Download: 100,
 		},
 			EncMethod: "AES-256", PricePerGB: 100, Version: "1.0", LockerID: lockerID1,
-			Coins: csdkTypes.Coins{coin1}, PubKey: nil, Signature: nil}, expectedPass: false},
+			Coins: csdkTypes.Coins{coin1}, PubKey: nil, Signature: sign1}, expectedPass: false},
+
+		{name: "nil signature", fields: fields{From: addr3, APIPort: 1234, Location: sdkTypes.Location{
+			Latitude:  100,
+			Longitude: 100,
+			City:      "city",
+			Country:   "country",
+		}, NetSpeed: sdkTypes.NetSpeed{
+			Upload:   100,
+			Download: 100,
+		},
+			EncMethod: "AES-256", PricePerGB: 100, Version: "1.0", LockerID: lockerID1,
+			Coins: csdkTypes.Coins{coin1}, PubKey: pubKey1, Signature: nil}, expectedPass: false},
 	}
 
 	for _, val := range tests {
@@ -192,19 +329,21 @@ func TestMsgPayVPNService_ValidateBasic(t *testing.T) {
 		fields       fields
 		expectedPass bool
 	}{
-		{name: "test1", fields: fields{From: addr3, VPNID: vpnID, LockerID: lockerID1, Coins: csdkTypes.Coins{coin1},
+		{name: "valid", fields: fields{From: addr3, VPNID: vpnID, LockerID: lockerID1, Coins: csdkTypes.Coins{coin1},
 			PubKey: pubKey1, Signature: sign1}, expectedPass: true},
-		{name: "test2", fields: fields{From: nil, VPNID: vpnID, LockerID: lockerID1, Coins: csdkTypes.Coins{coin1},
+		{name: "empty address", fields: fields{From: nil, VPNID: vpnID, LockerID: lockerID1, Coins: csdkTypes.Coins{coin1},
 			PubKey: pubKey1, Signature: sign1}, expectedPass: false},
-		{name: "test3", fields: fields{From: addr3, VPNID: "", LockerID: lockerID1, Coins: csdkTypes.Coins{coin1},
+		{name: "empty vpn_id", fields: fields{From: addr3, VPNID: "", LockerID: lockerID1, Coins: csdkTypes.Coins{coin1},
 			PubKey: pubKey1, Signature: sign1}, expectedPass: false},
-		{name: "test4", fields: fields{From: addr3, VPNID: vpnID, LockerID: "", Coins: csdkTypes.Coins{coin1},
+		{name: "empty locker_id", fields: fields{From: addr3, VPNID: vpnID, LockerID: "", Coins: csdkTypes.Coins{coin1},
 			PubKey: pubKey1, Signature: sign1}, expectedPass: false},
-		{name: "test5", fields: fields{From: addr3, VPNID: vpnID, LockerID: lockerID1, Coins: nil,
+		{name: "nil coins", fields: fields{From: addr3, VPNID: vpnID, LockerID: lockerID1, Coins: nil,
 			PubKey: pubKey1, Signature: sign1}, expectedPass: false},
-		{name: "test6", fields: fields{From: addr3, VPNID: vpnID, LockerID: lockerID1, Coins: csdkTypes.Coins{coin1},
+		{name: "coins length zero", fields: fields{From: addr3, VPNID: vpnID, LockerID: lockerID1, Coins: csdkTypes.Coins{},
+			PubKey: pubKey1, Signature: sign1}, expectedPass: false},
+		{name: "nil public key", fields: fields{From: addr3, VPNID: vpnID, LockerID: lockerID1, Coins: csdkTypes.Coins{coin1},
 			PubKey: nil, Signature: sign1}, expectedPass: false},
-		{name: "test7", fields: fields{From: addr3, VPNID: vpnID, LockerID: lockerID1, Coins: csdkTypes.Coins{coin1},
+		{name: "nil signature", fields: fields{From: addr3, VPNID: vpnID, LockerID: lockerID1, Coins: csdkTypes.Coins{coin1},
 			PubKey: pubKey1, Signature: nil}, expectedPass: false},
 	}
 
@@ -265,10 +404,10 @@ func TestMsgUpdateSessionStatus_ValidateBasic(t *testing.T) {
 		fields       fields
 		expectedPass bool
 	}{
-		{name: "test1", fields: fields{From: addr3, SessionId: sessionID1, Status: status}, expectedPass: true},
-		{name: "test2", fields: fields{From: nil, SessionId: sessionID1, Status: status}, expectedPass: false},
-		{name: "test3", fields: fields{From: addr3, SessionId: "", Status: status}, expectedPass: false},
-		{name: "test4", fields: fields{From: addr3, SessionId: sessionID1, Status: ""}, expectedPass: false},
+		{name: "valid", fields: fields{From: addr3, SessionId: sessionID1, Status: status}, expectedPass: true},
+		{name: "empty address", fields: fields{From: nil, SessionId: sessionID1, Status: status}, expectedPass: false},
+		{name: "empty session_id", fields: fields{From: addr3, SessionId: "", Status: status}, expectedPass: false},
+		{name: "empty status", fields: fields{From: addr3, SessionId: sessionID1, Status: ""}, expectedPass: false},
 	}
 
 	for _, val := range tests {
@@ -327,17 +466,17 @@ func TestMsgDeregisterNode_ValidateBasic(t *testing.T) {
 		fields       fields
 		expectedPass bool
 	}{
-		{name: "test1", fields: fields{From: addr3, VpnID: vpnID, LockerID: lockerID1, PubKey: pubKey1, Signature: sign1},
+		{name: "valid", fields: fields{From: addr3, VpnID: vpnID, LockerID: lockerID1, PubKey: pubKey1, Signature: sign1},
 			expectedPass: true},
-		{name: "test2", fields: fields{From: nil, VpnID: vpnID, LockerID: lockerID1, PubKey: pubKey1, Signature: sign1},
+		{name: "empty address", fields: fields{From: nil, VpnID: vpnID, LockerID: lockerID1, PubKey: pubKey1, Signature: sign1},
 			expectedPass: false},
-		{name: "test3", fields: fields{From: addr3, VpnID: "", LockerID: lockerID1, PubKey: pubKey1, Signature: sign1},
+		{name: "empty vpn_id", fields: fields{From: addr3, VpnID: "", LockerID: lockerID1, PubKey: pubKey1, Signature: sign1},
 			expectedPass: false},
-		{name: "test4", fields: fields{From: addr3, VpnID: vpnID, LockerID: "", PubKey: pubKey1, Signature: sign1},
+		{name: "empty locker_id", fields: fields{From: addr3, VpnID: vpnID, LockerID: "", PubKey: pubKey1, Signature: sign1},
 			expectedPass: false},
-		{name: "test5", fields: fields{From: addr3, VpnID: vpnID, LockerID: lockerID1, PubKey: nil, Signature: sign1},
+		{name: "nil public key", fields: fields{From: addr3, VpnID: vpnID, LockerID: lockerID1, PubKey: nil, Signature: sign1},
 			expectedPass: false},
-		{name: "test6", fields: fields{From: addr3, VpnID: vpnID, LockerID: lockerID1, PubKey: pubKey1, Signature: nil},
+		{name: "nil signature", fields: fields{From: addr3, VpnID: vpnID, LockerID: lockerID1, PubKey: pubKey1, Signature: nil},
 			expectedPass: false},
 	}
 
