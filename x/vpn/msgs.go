@@ -30,7 +30,7 @@ func (msg MsgRegisterNode) Type() string {
 }
 
 func (msg MsgRegisterNode) ValidateBasic() csdkTypes.Error {
-	if msg.From.Empty() {
+	if msg.From == nil || msg.From.Empty() {
 		return errorEmptyAddress()
 	}
 
@@ -64,11 +64,11 @@ func (msg MsgRegisterNode) ValidateBasic() csdkTypes.Error {
 		return errorEmptyLockerID()
 	}
 
-	if msg.Coins.Len() == 0 || msg.Coins.IsValid() == false || msg.Coins.IsPositive() == false {
+	if msg.Coins == nil || msg.Coins.Len() == 0 || msg.Coins.IsValid() == false || msg.Coins.IsPositive() == false {
 		return errorInvalidCoins()
 	}
 
-	if len(msg.PubKey.Bytes()) == 0 {
+	if msg.PubKey == nil || len(msg.PubKey.Bytes()) == 0 {
 		return errorEmptyPubKey()
 	}
 
@@ -152,7 +152,7 @@ func (msg MsgPayVPNService) GetSignBytes() []byte {
 }
 
 func (msg MsgPayVPNService) ValidateBasic() csdkTypes.Error {
-	if msg.From.Empty() {
+	if msg.From == nil || msg.From.Empty() {
 		return errorEmptyAddress()
 	}
 
@@ -164,11 +164,11 @@ func (msg MsgPayVPNService) ValidateBasic() csdkTypes.Error {
 		return errorEmptyLockerID()
 	}
 
-	if msg.Coins.Len() == 0 || msg.Coins.IsValid() == false || msg.Coins.IsPositive() == false {
+	if msg.Coins == nil || msg.Coins.Len() == 0 || msg.Coins.IsValid() == false || msg.Coins.IsPositive() == false {
 		return errorInvalidCoins()
 	}
 
-	if len(msg.PubKey.Bytes()) == 0 {
+	if msg.PubKey == nil || len(msg.PubKey.Bytes()) == 0 {
 		return errorEmptyPubKey()
 	}
 
@@ -212,7 +212,7 @@ func (msg MsgUpdateSessionStatus) Type() string {
 }
 
 func (msg MsgUpdateSessionStatus) ValidateBasic() csdkTypes.Error {
-	if msg.From.Empty() {
+	if msg.From == nil || msg.From.Empty() {
 		return errorEmptyAddress()
 	}
 
@@ -268,7 +268,7 @@ func (msg MsgDeregisterNode) Type() string {
 }
 
 func (msg MsgDeregisterNode) ValidateBasic() csdkTypes.Error {
-	if msg.From.Empty() {
+	if msg.From == nil || msg.From.Empty() {
 		return errorEmptyAddress()
 	}
 
@@ -280,7 +280,7 @@ func (msg MsgDeregisterNode) ValidateBasic() csdkTypes.Error {
 		return errorEmptyLockerID()
 	}
 
-	if len(msg.PubKey.Bytes()) == 0 {
+	if msg.PubKey == nil || len(msg.PubKey.Bytes()) == 0 {
 		return errorEmptyPubKey()
 	}
 

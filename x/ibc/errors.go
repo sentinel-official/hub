@@ -32,8 +32,8 @@ func errorEmptyRelayer() csdkTypes.Error {
 	return csdkTypes.NewError(codeSpaceIBC, errCodeEmptyRelayer, errMsgEmptyRelayer)
 }
 
-func errorInvalidSequence() csdkTypes.Error {
-	return csdkTypes.NewError(codeSpaceIBC, errCodeInvalidSequence, errMsgInvalidSequence)
+func errorInvalidIBCSequence() csdkTypes.Error {
+	return csdkTypes.NewError(codeSpaceIBC, sdkTypes.ErrCodeInvalidIBCSequence, sdkTypes.ErrMsgInvalidIBCSequence)
 }
 
 func errorEmptySrcChainID() csdkTypes.Error {

@@ -135,3 +135,7 @@ func errorEmptySessionID() csdkTypes.Error {
 func errorInvalidSessionStatus() csdkTypes.Error {
 	return csdkTypes.NewError(codeSpaceVPN, errCodeInvalidSessionStatus, errMsgInvalidSessionStatus)
 }
+
+func errorInvalidIBCSequence() csdkTypes.Error {
+	return csdkTypes.NewError(codeSpaceVPN, sdkTypes.ErrCodeInvalidIBCSequence, sdkTypes.ErrMsgInvalidIBCSequence)
+}

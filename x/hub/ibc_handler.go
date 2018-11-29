@@ -65,10 +65,6 @@ func handleLockCoins(ctx csdkTypes.Context, ibcKeeper ibc.Keeper, hubKeeper Keep
 		return err.Result()
 	}
 
-	if err := ibcKeeper.SetIngressLength(ctx, ibc.IngressLengthKey(ibcMsg.IBCPacket.SrcChainID), sequence+1); err != nil {
-		return err.Result()
-	}
-
 	packet := sdkTypes.IBCPacket{
 		SrcChainID:  ibcMsg.IBCPacket.DestChainID,
 		DestChainID: ibcMsg.IBCPacket.SrcChainID,
@@ -79,6 +75,10 @@ func handleLockCoins(ctx csdkTypes.Context, ibcKeeper ibc.Keeper, hubKeeper Keep
 	}
 
 	if err := ibcKeeper.PostIBCPacket(ctx, packet); err != nil {
+		return err.Result()
+	}
+
+	if err := ibcKeeper.SetIngressLength(ctx, ibc.IngressLengthKey(ibcMsg.IBCPacket.SrcChainID), sequence+1); err != nil {
 		return err.Result()
 	}
 
@@ -122,11 +122,7 @@ func handleReleaseCoins(ctx csdkTypes.Context, ibcKeeper ibc.Keeper, hubKeeper K
 		return errorInvalidLockerStatus().Result()
 	}
 
-	if err := hubKeeper.ReleaseCoins(ctx, msg.LockerID); err != nil {
-		return err.Result()
-	}
-
-	if err := ibcKeeper.SetIngressLength(ctx, ibc.IngressLengthKey(ibcMsg.IBCPacket.SrcChainID), sequence+1); err != nil {
+	if err := hubKeeper.ReleaseCoins(ctx, lockerID); err != nil {
 		return err.Result()
 	}
 
@@ -140,6 +136,10 @@ func handleReleaseCoins(ctx csdkTypes.Context, ibcKeeper ibc.Keeper, hubKeeper K
 	}
 
 	if err := ibcKeeper.PostIBCPacket(ctx, packet); err != nil {
+		return err.Result()
+	}
+
+	if err := ibcKeeper.SetIngressLength(ctx, ibc.IngressLengthKey(ibcMsg.IBCPacket.SrcChainID), sequence+1); err != nil {
 		return err.Result()
 	}
 
@@ -183,11 +183,7 @@ func handleReleaseCoinsToMany(ctx csdkTypes.Context, ibcKeeper ibc.Keeper, hubKe
 		return errorInvalidLockerStatus().Result()
 	}
 
-	if err := hubKeeper.ReleaseCoinsToMany(ctx, msg.LockerID, msg.Addresses, msg.Shares); err != nil {
-		return err.Result()
-	}
-
-	if err := ibcKeeper.SetIngressLength(ctx, ibc.IngressLengthKey(ibcMsg.IBCPacket.SrcChainID), sequence+1); err != nil {
+	if err := hubKeeper.ReleaseCoinsToMany(ctx, lockerID, msg.Addresses, msg.Shares); err != nil {
 		return err.Result()
 	}
 
@@ -201,6 +197,10 @@ func handleReleaseCoinsToMany(ctx csdkTypes.Context, ibcKeeper ibc.Keeper, hubKe
 	}
 
 	if err := ibcKeeper.PostIBCPacket(ctx, packet); err != nil {
+		return err.Result()
+	}
+
+	if err := ibcKeeper.SetIngressLength(ctx, ibc.IngressLengthKey(ibcMsg.IBCPacket.SrcChainID), sequence+1); err != nil {
 		return err.Result()
 	}
 

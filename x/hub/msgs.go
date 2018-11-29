@@ -38,11 +38,11 @@ func (msg MsgLockCoins) ValidateBasic() csdkTypes.Error {
 		return errorEmptyLockerID()
 	}
 
-	if msg.Coins.Len() == 0 || msg.Coins.IsValid() == false || msg.Coins.IsPositive() == false {
+	if msg.Coins == nil || msg.Coins.Len() == 0 || msg.Coins.IsValid() == false || msg.Coins.IsPositive() == false {
 		return errorInvalidCoins()
 	}
 
-	if len(msg.PubKey.Bytes()) == 0 {
+	if msg.PubKey == nil || len(msg.PubKey.Bytes()) == 0 {
 		return errorEmptyPubKey()
 	}
 
@@ -81,7 +81,7 @@ func (msg MsgReleaseCoins) ValidateBasic() csdkTypes.Error {
 		return errorEmptyLockerID()
 	}
 
-	if len(msg.PubKey.Bytes()) == 0 {
+	if msg.PubKey == nil || len(msg.PubKey.Bytes()) == 0 {
 		return errorEmptyPubKey()
 	}
 
@@ -129,7 +129,7 @@ func (msg MsgReleaseCoinsToMany) ValidateBasic() csdkTypes.Error {
 	}
 
 	for _, address := range msg.Addresses {
-		if address.Empty() {
+		if address == nil || address.Empty() {
 			return errorEmptyAddress()
 		}
 	}
@@ -139,7 +139,7 @@ func (msg MsgReleaseCoinsToMany) ValidateBasic() csdkTypes.Error {
 	}
 
 	for _, share := range msg.Shares {
-		if share.Len() == 0 || share.IsValid() == false || share.IsPositive() == false {
+		if share == nil || share.Len() == 0 || share.IsValid() == false || share.IsPositive() == false {
 			return errorInvalidCoins()
 		}
 	}
@@ -148,7 +148,7 @@ func (msg MsgReleaseCoinsToMany) ValidateBasic() csdkTypes.Error {
 		return errorAddressesSharesLengthMismatch()
 	}
 
-	if len(msg.PubKey.Bytes()) == 0 {
+	if msg.PubKey == nil || len(msg.PubKey.Bytes()) == 0 {
 		return errorEmptyPubKey()
 	}
 
