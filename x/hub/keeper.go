@@ -101,6 +101,10 @@ func (k BaseKeeper) ReleaseCoins(ctx csdkTypes.Context, lockerID string) csdkTyp
 		return err
 	}
 
+	if locker == nil {
+		return errorLockerNotExists()
+	}
+
 	if _, _, err := k.bankKeeper.AddCoins(ctx, locker.Address, locker.Coins); err != nil {
 		return err
 	}
@@ -120,6 +124,10 @@ func (k BaseKeeper) ReleaseCoinsToMany(ctx csdkTypes.Context, lockerID string,
 
 	if err != nil {
 		return err
+	}
+
+	if locker == nil {
+		return errorLockerNotExists()
 	}
 
 	for index := range addresses {

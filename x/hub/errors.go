@@ -40,7 +40,7 @@ func errorInvalidIBCSequence() csdkTypes.Error {
 	return csdkTypes.NewError(codeSpaceHub, sdkTypes.ErrCodeInvalidIBCSequence, sdkTypes.ErrMsgInvalidIBCSequence)
 }
 
-func errorCodeLockerAlreadyExists() csdkTypes.Error {
+func errorLockerAlreadyExists() csdkTypes.Error {
 	return csdkTypes.NewError(codeSpaceHub, errCodeLockerAlreadyExists, errMsgLockerAlreadyExists)
 }
 

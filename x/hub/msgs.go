@@ -2,6 +2,7 @@ package hub
 
 import (
 	"encoding/json"
+
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
 	"github.com/tendermint/tendermint/crypto"
 )

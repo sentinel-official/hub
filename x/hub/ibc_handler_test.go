@@ -1,58 +1,258 @@
 package hub
 
 import (
+	"testing"
+
 	"github.com/cosmos/cosmos-sdk/codec"
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/cosmos/cosmos-sdk/x/bank"
-	"github.com/ironman0x7b2/sentinel-sdk/types"
-	"github.com/ironman0x7b2/sentinel-sdk/x/ibc"
 	"github.com/stretchr/testify/require"
 	abci "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/libs/log"
-	"testing"
+
+	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
+	"github.com/ironman0x7b2/sentinel-sdk/x/ibc"
 )
 
-func TestMsgLockCoinsHandler(t *testing.T) {
-	cdc := codec.New()
-	cdc.RegisterInterface((*types.Interface)(nil), nil)
-	cdc.RegisterConcrete(MsgLockerStatus{}, "", nil)
-
-	multiStore, authKey, hubKey, ibcKey := setupMultiStore()
-
+func Test_handleLockCoins(t *testing.T) {
+	multiStore, authKey, ibcKey, coinLockerKey := setupMultiStore()
 	ctx := csdkTypes.NewContext(multiStore, abci.Header{}, false, log.NewNopLogger())
-	auth.RegisterBaseAccount(cdc)
 
-	accountMapper := auth.NewAccountKeeper(cdc, authKey, auth.ProtoBaseAccount)
+	cdc := codec.New()
 
-	account1 := auth.NewBaseAccountWithAddress(csdkTypes.AccAddress(pk1.Address()))
-	account1.SetCoins(coins1)
-	account1.SetPubKey(pk1)
-	accountMapper.SetAccount(ctx, &account1)
+	codec.RegisterCrypto(cdc)
+	csdkTypes.RegisterCodec(cdc)
+	bank.RegisterCodec(cdc)
+	auth.RegisterCodec(cdc)
+	sdkTypes.RegisterCodec(cdc)
+	ibc.RegisterCodec(cdc)
+	RegisterCodec(cdc)
 
-	account2 := auth.NewBaseAccountWithAddress(csdkTypes.AccAddress(pk2.Address()))
-	account2.SetCoins(coins1)
-	account2.SetPubKey(pk2)
-	accountMapper.SetAccount(ctx, &account2)
-
-	bankKeeper := bank.NewBaseKeeper(accountMapper)
-	keeper := NewBaseKeeper(cdc, hubKey, bankKeeper)
+	accountKeeper := auth.NewAccountKeeper(cdc, authKey, auth.ProtoBaseAccount)
+	bankKeeper := bank.NewBaseKeeper(accountKeeper)
 	ibcKeeper := ibc.NewKeeper(ibcKey, cdc)
-	handler := NewIBCHubHandler(ibcKeeper, keeper)
+	hubKeeper := NewBaseKeeper(cdc, coinLockerKey, bankKeeper)
 
-	msgLockCoins1 := TestNewMsgIBCTransactionForLockCoins1()
-	msgLockCoinsRes1 := handler(ctx, msgLockCoins1)
-	require.EqualValues(t, csdkTypes.ToABCICode(codeSpaceHub, types.ErrCodeIBCPacketMsgVerificationFailed), msgLockCoinsRes1.Code)
+	var result csdkTypes.Result
 
-	msgLockCoins2 := TestNewMsgIBCTransactionForLockCoins2()
-	msgLockCoinsRes2 := handler(ctx, msgLockCoins2)
-	require.True(t, msgLockCoinsRes2.IsOK(), "expected coins to lock but %v got", msgLockCoinsRes2)
+	account1 := auth.NewBaseAccountWithAddress(accAddress1)
+	account2 := auth.NewBaseAccountWithAddress(accAddress2)
 
-	msgReleaseCoins := TestNewMsgIBCTransactionForReleaseCoins()
-	msgReleaseCoinsRes := handler(ctx, msgReleaseCoins)
-	require.True(t, msgReleaseCoinsRes.IsOK(), "expected coins to release but %v got", msgReleaseCoinsRes)
+	if err := account1.SetCoins(csdkTypes.Coins{coin(100, "x")}); err != nil {
+		panic(err)
+	}
 
-	getAccount2 := accountMapper.GetAccount(ctx, csdkTypes.AccAddress(pk2.Address()))
-	require.Equal(t, getAccount2.GetCoins(), coins1)
+	if err := account2.SetCoins(csdkTypes.Coins{coin(100, "x")}); err != nil {
+		panic(err)
+	}
 
+	if err := account1.SetPubKey(pubKey1); err != nil {
+		panic(err)
+	}
+
+	if err := account2.SetPubKey(pubKey2); err != nil {
+		panic(err)
+	}
+
+	accountKeeper.SetAccount(ctx, &account1)
+	accountKeeper.SetAccount(ctx, &account2)
+
+	result = handleLockCoins(ctx, ibcKeeper, hubKeeper,
+		ibc.MsgIBCTransaction{accAddress2, 0, getIBCPacketMsgLockCoins("locker_id")})
+	require.Equal(t, csdkTypes.Result{}, result)
+
+	result = handleLockCoins(ctx, ibcKeeper, hubKeeper,
+		ibc.MsgIBCTransaction{accAddress2, 0, getIBCPacketMsgLockCoins("locker_id")})
+	require.Equal(t, errorInvalidIBCSequence().Result(), result)
+
+	result = handleLockCoins(ctx, ibcKeeper, hubKeeper,
+		ibc.MsgIBCTransaction{accAddress2, 1, getIBCPacketMsgLockCoins("locker_id")})
+	require.Equal(t, errorLockerAlreadyExists().Result(), result)
+}
+
+func Test_handleReleaseCoins(t *testing.T) {
+	multiStore, authKey, ibcKey, coinLockerKey := setupMultiStore()
+	ctx := csdkTypes.NewContext(multiStore, abci.Header{}, false, log.NewNopLogger())
+
+	cdc := codec.New()
+
+	codec.RegisterCrypto(cdc)
+	csdkTypes.RegisterCodec(cdc)
+	bank.RegisterCodec(cdc)
+	auth.RegisterCodec(cdc)
+	sdkTypes.RegisterCodec(cdc)
+	ibc.RegisterCodec(cdc)
+	RegisterCodec(cdc)
+
+	accountKeeper := auth.NewAccountKeeper(cdc, authKey, auth.ProtoBaseAccount)
+	bankKeeper := bank.NewBaseKeeper(accountKeeper)
+	ibcKeeper := ibc.NewKeeper(ibcKey, cdc)
+	hubKeeper := NewBaseKeeper(cdc, coinLockerKey, bankKeeper)
+
+	var result csdkTypes.Result
+
+	account1 := auth.NewBaseAccountWithAddress(accAddress1)
+	account2 := auth.NewBaseAccountWithAddress(accAddress2)
+
+	if err := account1.SetCoins(csdkTypes.Coins{coin(100, "x")}); err != nil {
+		panic(err)
+	}
+
+	if err := account2.SetCoins(csdkTypes.Coins{coin(100, "x")}); err != nil {
+		panic(err)
+	}
+
+	if err := account1.SetPubKey(pubKey1); err != nil {
+		panic(err)
+	}
+
+	if err := account2.SetPubKey(pubKey2); err != nil {
+		panic(err)
+	}
+
+	accountKeeper.SetAccount(ctx, &account1)
+	accountKeeper.SetAccount(ctx, &account2)
+
+	result = handleLockCoins(ctx, ibcKeeper, hubKeeper,
+		ibc.MsgIBCTransaction{accAddress2, 0, getIBCPacketMsgLockCoins("locker_id")})
+	require.Equal(t, csdkTypes.Result{}, result)
+
+	result = handleReleaseCoins(ctx, ibcKeeper, hubKeeper,
+		ibc.MsgIBCTransaction{accAddress2, 0, getIBCPacketMsgReleaseCoins("locker_id")})
+	require.Equal(t, errorInvalidIBCSequence().Result(), result)
+
+	result = handleReleaseCoins(ctx, ibcKeeper, hubKeeper,
+		ibc.MsgIBCTransaction{accAddress2, 1, getIBCPacketMsgReleaseCoins("locker_id_x")})
+	require.Equal(t, errorLockerNotExists().Result(), result)
+
+	result = handleReleaseCoins(ctx, ibcKeeper, hubKeeper,
+		ibc.MsgIBCTransaction{accAddress2, 1, getIBCPacketMsgReleaseCoins("locker_id")})
+	require.Equal(t, csdkTypes.Result{}, result)
+
+	result = handleReleaseCoins(ctx, ibcKeeper, hubKeeper,
+		ibc.MsgIBCTransaction{accAddress2, 2, getIBCPacketMsgReleaseCoins("locker_id")})
+	require.Equal(t, errorInvalidLockerStatus().Result(), result)
+}
+
+func Test_handleReleaseCoinsToMany(t *testing.T) {
+	multiStore, authKey, ibcKey, coinLockerKey := setupMultiStore()
+	ctx := csdkTypes.NewContext(multiStore, abci.Header{}, false, log.NewNopLogger())
+
+	cdc := codec.New()
+
+	codec.RegisterCrypto(cdc)
+	csdkTypes.RegisterCodec(cdc)
+	bank.RegisterCodec(cdc)
+	auth.RegisterCodec(cdc)
+	sdkTypes.RegisterCodec(cdc)
+	ibc.RegisterCodec(cdc)
+	RegisterCodec(cdc)
+
+	accountKeeper := auth.NewAccountKeeper(cdc, authKey, auth.ProtoBaseAccount)
+	bankKeeper := bank.NewBaseKeeper(accountKeeper)
+	ibcKeeper := ibc.NewKeeper(ibcKey, cdc)
+	hubKeeper := NewBaseKeeper(cdc, coinLockerKey, bankKeeper)
+
+	var result csdkTypes.Result
+
+	account1 := auth.NewBaseAccountWithAddress(accAddress1)
+	account2 := auth.NewBaseAccountWithAddress(accAddress2)
+
+	if err := account1.SetCoins(csdkTypes.Coins{coin(100, "x")}); err != nil {
+		panic(err)
+	}
+
+	if err := account2.SetCoins(csdkTypes.Coins{coin(100, "x")}); err != nil {
+		panic(err)
+	}
+
+	if err := account1.SetPubKey(pubKey1); err != nil {
+		panic(err)
+	}
+
+	if err := account2.SetPubKey(pubKey2); err != nil {
+		panic(err)
+	}
+
+	accountKeeper.SetAccount(ctx, &account1)
+	accountKeeper.SetAccount(ctx, &account2)
+
+	result = handleLockCoins(ctx, ibcKeeper, hubKeeper,
+		ibc.MsgIBCTransaction{accAddress2, 0, getIBCPacketMsgLockCoins("locker_id")})
+	require.Equal(t, csdkTypes.Result{}, result)
+
+	result = handleReleaseCoinsToMany(ctx, ibcKeeper, hubKeeper,
+		ibc.MsgIBCTransaction{accAddress2, 0, getIBCPacketMsgReleaseCoinsToMany("locker_id")})
+	require.Equal(t, errorInvalidIBCSequence().Result(), result)
+
+	result = handleReleaseCoinsToMany(ctx, ibcKeeper, hubKeeper,
+		ibc.MsgIBCTransaction{accAddress2, 1, getIBCPacketMsgReleaseCoinsToMany("locker_id_x")})
+	require.Equal(t, errorLockerNotExists().Result(), result)
+
+	result = handleReleaseCoinsToMany(ctx, ibcKeeper, hubKeeper,
+		ibc.MsgIBCTransaction{accAddress2, 1, getIBCPacketMsgReleaseCoinsToMany("locker_id")})
+	require.Equal(t, csdkTypes.Result{}, result)
+
+	result = handleReleaseCoinsToMany(ctx, ibcKeeper, hubKeeper,
+		ibc.MsgIBCTransaction{accAddress2, 2, getIBCPacketMsgReleaseCoinsToMany("locker_id")})
+	require.Equal(t, errorInvalidLockerStatus().Result(), result)
+}
+
+func Test_NewIBCHubHandler(t *testing.T) {
+	multiStore, authKey, ibcKey, coinLockerKey := setupMultiStore()
+	ctx := csdkTypes.NewContext(multiStore, abci.Header{}, false, log.NewNopLogger())
+
+	cdc := codec.New()
+
+	codec.RegisterCrypto(cdc)
+	csdkTypes.RegisterCodec(cdc)
+	bank.RegisterCodec(cdc)
+	auth.RegisterCodec(cdc)
+	sdkTypes.RegisterCodec(cdc)
+	ibc.RegisterCodec(cdc)
+	RegisterCodec(cdc)
+
+	accountKeeper := auth.NewAccountKeeper(cdc, authKey, auth.ProtoBaseAccount)
+	bankKeeper := bank.NewBaseKeeper(accountKeeper)
+	ibcKeeper := ibc.NewKeeper(ibcKey, cdc)
+	hubKeeper := NewBaseKeeper(cdc, coinLockerKey, bankKeeper)
+
+	var result csdkTypes.Result
+
+	account1 := auth.NewBaseAccountWithAddress(accAddress1)
+	account2 := auth.NewBaseAccountWithAddress(accAddress2)
+
+	if err := account1.SetCoins(csdkTypes.Coins{coin(100, "x")}); err != nil {
+		panic(err)
+	}
+
+	if err := account2.SetCoins(csdkTypes.Coins{coin(100, "x")}); err != nil {
+		panic(err)
+	}
+
+	if err := account1.SetPubKey(pubKey1); err != nil {
+		panic(err)
+	}
+
+	if err := account2.SetPubKey(pubKey2); err != nil {
+		panic(err)
+	}
+
+	accountKeeper.SetAccount(ctx, &account1)
+	accountKeeper.SetAccount(ctx, &account2)
+
+	handler := NewIBCHubHandler(ibcKeeper, hubKeeper)
+
+	result = handler(ctx, ibc.MsgIBCTransaction{accAddress2, 0, getIBCPacketMsgLockCoins("locker_id_1")})
+	require.Equal(t, csdkTypes.Result{}, result)
+
+	result = handler(ctx, ibc.MsgIBCTransaction{accAddress2, 1, getIBCPacketMsgReleaseCoins("locker_id_1")})
+	require.Equal(t, csdkTypes.Result{}, result)
+
+	result = handler(ctx, ibc.MsgIBCTransaction{accAddress2, 2, getIBCPacketMsgLockCoins("locker_id_2")})
+	require.Equal(t, csdkTypes.Result{}, result)
+
+	result = handler(ctx, ibc.MsgIBCTransaction{accAddress2, 3, getIBCPacketMsgReleaseCoinsToMany("locker_id_2")})
+	require.Equal(t, csdkTypes.Result{}, result)
 }

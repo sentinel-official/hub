@@ -10,71 +10,84 @@ import (
 	"github.com/stretchr/testify/require"
 	abci "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/libs/log"
+
+	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
+	"github.com/ironman0x7b2/sentinel-sdk/x/ibc"
 )
 
-//TestLockCoins: lock the coins respective address based on the lockerId
-//and release the coins
-func TestLockCoins(t *testing.T) {
+func TestKeeper(t *testing.T) {
+	multiStore, authKey, _, coinLockerKey := setupMultiStore()
+	ctx := csdkTypes.NewContext(multiStore, abci.Header{}, false, log.NewNopLogger())
+
 	cdc := codec.New()
 
-	multiStore, authKey, hubKey, _ := setupMultiStore()
-	ctx := csdkTypes.NewContext(multiStore, abci.Header{}, false, log.NewNopLogger())
-	auth.RegisterBaseAccount(cdc)
+	codec.RegisterCrypto(cdc)
+	csdkTypes.RegisterCodec(cdc)
+	bank.RegisterCodec(cdc)
+	auth.RegisterCodec(cdc)
+	sdkTypes.RegisterCodec(cdc)
+	ibc.RegisterCodec(cdc)
+	RegisterCodec(cdc)
 
-	accountMapper := auth.NewAccountKeeper(cdc, authKey, auth.ProtoBaseAccount)
-	bankKeeper := bank.NewBaseKeeper(accountMapper)
-	keeper := NewBaseKeeper(cdc, hubKey, bankKeeper)
+	accountKeeper := auth.NewAccountKeeper(cdc, authKey, auth.ProtoBaseAccount)
+	bankKeeper := bank.NewBaseKeeper(accountKeeper)
+	hubKeeper := NewBaseKeeper(cdc, coinLockerKey, bankKeeper)
 
-	account1 := auth.NewBaseAccountWithAddress(addr1)
-	account1.SetCoins(coins1)
-	accountMapper.SetAccount(ctx, &account1)
+	var err csdkTypes.Error
+	var locker *sdkTypes.CoinLocker
 
-	account2 := auth.NewBaseAccountWithAddress(addr2)
-	accountMapper.SetAccount(ctx, &account2)
+	account1 := auth.NewBaseAccountWithAddress(accAddress1)
 
-	account3 := auth.NewBaseAccountWithAddress(addr3)
-	accountMapper.SetAccount(ctx, &account3)
+	if err := account1.SetCoins(csdkTypes.Coins{
+		coin(100, "x"),
+	}); err != nil {
+		panic(err)
+	}
 
-	err := keeper.LockCoins(ctx, lockerId, addr1, coins2)
+	accountKeeper.SetAccount(ctx, &account1)
+
+	err = hubKeeper.LockCoins(ctx, "locker_id_2", accAddress1, csdkTypes.Coins{coin(10, "x")})
 	require.Nil(t, err)
 
-	err = keeper.LockCoins(ctx, "", addr1, csdkTypes.Coins{coin3})
+	require.Equal(t, accountKeeper.GetAccount(ctx, accAddress1).GetCoins(), csdkTypes.Coins{coin(90, "x")})
+
+	locker, err = hubKeeper.GetLocker(ctx, "locker_id_2")
+	require.Nil(t, err)
+	require.Equal(t, locker.Address, accAddress1)
+	require.Equal(t, locker.Coins, csdkTypes.Coins{coin(10, "x")})
+	require.Equal(t, locker.Status, "LOCKED")
+
+	err = hubKeeper.ReleaseCoins(ctx, "locker_id_2")
+	require.Nil(t, err)
+	require.Equal(t, accountKeeper.GetAccount(ctx, accAddress1).GetCoins(), csdkTypes.Coins{coin(100, "x")})
+
+	locker, err = hubKeeper.GetLocker(ctx, "locker_id_2")
+	require.Nil(t, err)
+	require.Equal(t, locker.Address, accAddress1)
+	require.Equal(t, locker.Coins, csdkTypes.Coins{coin(10, "x")})
+	require.Equal(t, locker.Status, "RELEASED")
+
+	err = hubKeeper.LockCoins(ctx, "locker_id_3", accAddress1, csdkTypes.Coins{coin(10, "unknown")})
 	require.NotNil(t, err)
 
-	getAccount1 := accountMapper.GetAccount(ctx, addr1)
-	require.Equal(t, getAccount1.GetCoins(), csdkTypes.Coins{coin1, coin2})
-
-	locker, err := keeper.GetLocker(ctx, lockerId)
-	require.Nil(t, err)
-	require.Equal(t, locker.Coins, coins2)
-
-	err = keeper.ReleaseCoins(ctx, lockerId)
+	locker, err = hubKeeper.GetLocker(ctx, "locker_id_3")
+	require.Nil(t, locker)
 	require.Nil(t, err)
 
-	keeper.SetLocker(ctx, lockerId3, emptyLocker1)
-	err = keeper.ReleaseCoins(ctx, lockerId3)
-	require.NotNil(t, err)
-
-	getAccount2 := accountMapper.GetAccount(ctx, addr1)
-	require.Equal(t, getAccount2.GetCoins(), account1.GetCoins())
-
-	err = keeper.ReleaseCoinsToMany(ctx, lockerId, []csdkTypes.AccAddress{addr1, addr2, addr3}, []csdkTypes.Coins{{
-		csdkTypes.NewCoin("sent", csdkTypes.NewInt(10))},
-		{csdkTypes.NewCoin("sent", csdkTypes.NewInt(10))},
-		{csdkTypes.NewCoin("sent", csdkTypes.NewInt(10))}})
-
+	err = hubKeeper.LockCoins(ctx, "locker_id_4", accAddress1, csdkTypes.Coins{coin(6, "x")})
 	require.Nil(t, err)
 
-	err = keeper.ReleaseCoinsToMany(ctx, lockerId, []csdkTypes.AccAddress{addr1, {}, addr3}, []csdkTypes.Coins{{
-		csdkTypes.NewCoin("sent", csdkTypes.NewInt(10))},
-		{csdkTypes.NewCoin("sent", csdkTypes.NewInt(0))},
-		{csdkTypes.NewCoin("sent", csdkTypes.NewInt(-100))}})
+	err = hubKeeper.ReleaseCoinsToMany(ctx, "locker_id_4",
+		[]csdkTypes.AccAddress{accAddress1, accAddress2, accAddress3},
+		[]csdkTypes.Coins{{coin(2, "x")}, {coin(2, "x")}, {coin(2, "x")}})
+	require.Nil(t, err)
+	require.Equal(t, accountKeeper.GetAccount(ctx, accAddress1).GetCoins(), csdkTypes.Coins{coin(96, "x")})
+	require.Equal(t, accountKeeper.GetAccount(ctx, accAddress2).GetCoins(), csdkTypes.Coins{coin(2, "x")})
+	require.Equal(t, accountKeeper.GetAccount(ctx, accAddress3).GetCoins(), csdkTypes.Coins{coin(2, "x")})
 
-	require.NotNil(t, err)
-
-	getAccount3 := accountMapper.GetAccount(ctx, addr3)
-	require.Equal(t, getAccount3.GetCoins(), csdkTypes.Coins{csdkTypes.NewCoin("sent", csdkTypes.NewInt(10))})
-
-	respose, err := keeper.GetLocker(ctx, "")
-	require.Nil(t, respose)
+	locker, err = hubKeeper.GetLocker(ctx, "locker_id_4")
+	require.Nil(t, err)
+	require.Equal(t, locker.Address, accAddress1)
+	require.Equal(t, locker.Coins, csdkTypes.Coins{coin(6, "x")})
+	require.Equal(t, locker.Status, "RELEASED")
 }

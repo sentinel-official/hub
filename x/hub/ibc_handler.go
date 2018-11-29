@@ -58,7 +58,7 @@ func handleLockCoins(ctx csdkTypes.Context, ibcKeeper ibc.Keeper, hubKeeper Keep
 	}
 
 	if locker != nil {
-		return errorCodeLockerAlreadyExists().Result()
+		return errorLockerAlreadyExists().Result()
 	}
 
 	if err := hubKeeper.LockCoins(ctx, lockerID, address, msg.Coins); err != nil {
