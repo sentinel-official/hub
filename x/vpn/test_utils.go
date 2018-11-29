@@ -136,15 +136,6 @@ func TestGetMsgPayVpnService() *MsgPayVPNService {
 
 }
 
-func TestGetMsgUpdateSessionSTatus() *MsgUpdateSessionStatus {
-	return &MsgUpdateSessionStatus{
-		From:      addr3,
-		SessionID: sessionID1,
-		Status:    status,
-	}
-
-}
-
 func TestGetMsgDeregisterNode() *MsgDeregisterNode {
 	return &MsgDeregisterNode{
 		From:      addr3,

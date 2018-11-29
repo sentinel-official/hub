@@ -1,14 +1,16 @@
 package vpn
 
 import (
+	"sort"
+	"strconv"
+	"testing"
+
 	"github.com/cosmos/cosmos-sdk/codec"
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
 	abci "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/libs/log"
-	"sort"
-	"strconv"
-	"testing"
+	"fmt"
 )
 
 func TestKeeper_SetVPNDetails(t *testing.T) {
@@ -63,7 +65,7 @@ func TestKeeper_SetActiveNodeIDs(t *testing.T) {
 	require.Equal(t, vpnsCount, count)
 
 	vpnID1 := addr1.String() + "/" + strconv.Itoa(int(vpnsCount))
-	vpnID2 := addr1.String() + "/" + strconv.Itoa(int(vpnsCount))
+	vpnID2 := addr2.String() + "/" + strconv.Itoa(int(vpnsCount))
 
 	nodes, err := keeper.GetActiveNodeIDs(ctx)
 	require.Nil(t, err)
@@ -152,7 +154,7 @@ func TestKeeper_SetActiveSessionIDs(t *testing.T) {
 	require.Equal(t, sessionsCount, count)
 
 	sessionID1 := addr1.String() + "/" + strconv.Itoa(int(sessionsCount))
-	sessionID2 := addr1.String() + "/" + strconv.Itoa(int(sessionsCount))
+	sessionID2 := addr2.String() + "/" + strconv.Itoa(int(sessionsCount))
 
 	session, err := keeper.GetActiveSessionIDs(ctx)
 	require.Nil(t, err)
@@ -246,7 +248,7 @@ func TestKeeper_AddActiveNodeID(t *testing.T) {
 	require.Equal(t, vpnsCount, count)
 
 	vpnID1 := addr1.String() + "/" + strconv.Itoa(int(vpnsCount))
-	vpnID2 := addr1.String() + "/" + strconv.Itoa(int(vpnsCount))
+	vpnID2 := addr2.String() + "/" + strconv.Itoa(int(vpnsCount))
 
 	nodes, err := keeper.GetActiveNodeIDs(ctx)
 	require.Nil(t, err)
@@ -264,10 +266,12 @@ func TestKeeper_AddActiveNodeID(t *testing.T) {
 	keeper.AddActiveNodeID(ctx, vpnID2)
 
 	nodeIDs, err = keeper.GetActiveNodeIDs(ctx)
+	fmt.Println(nodeIDs)
+	nodes = []string{vpnID1, vpnID2}
+	sort.Strings(nodes)
 	require.Nil(t, err)
 	require.NotNil(t, nodeIDs)
-	require.Equal(t, nodeIDs[0], vpnID1)
-	require.Equal(t, nodeIDs[1], vpnID2)
+	require.Equal(t, nodeIDs, nodes)
 
 }
 
