@@ -1,6 +1,8 @@
 package hub
 
 import (
+	"testing"
+
 	"github.com/cosmos/cosmos-sdk/codec"
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
@@ -8,7 +10,6 @@ import (
 	"github.com/stretchr/testify/require"
 	abci "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/libs/log"
-	"testing"
 )
 
 //TestLockCoins: lock the coins respective address based on the lockerId
@@ -16,11 +17,11 @@ import (
 func TestLockCoins(t *testing.T) {
 	cdc := codec.New()
 
-	multiStore, authkey, hubKey := setupMultiStore()
+	multiStore, authKey, hubKey, _ := setupMultiStore()
 	ctx := csdkTypes.NewContext(multiStore, abci.Header{}, false, log.NewNopLogger())
 	auth.RegisterBaseAccount(cdc)
 
-	accountMapper := auth.NewAccountKeeper(cdc, authkey, auth.ProtoBaseAccount)
+	accountMapper := auth.NewAccountKeeper(cdc, authKey, auth.ProtoBaseAccount)
 	bankKeeper := bank.NewBaseKeeper(accountMapper)
 	keeper := NewBaseKeeper(cdc, hubKey, bankKeeper)
 
@@ -43,18 +44,12 @@ func TestLockCoins(t *testing.T) {
 	getAccount1 := accountMapper.GetAccount(ctx, addr1)
 	require.Equal(t, getAccount1.GetCoins(), csdkTypes.Coins{coin1, coin2})
 
-	locker := keeper.GetLocker(ctx, lockerId)
+	locker, err := keeper.GetLocker(ctx, lockerId)
+	require.Nil(t, err)
 	require.Equal(t, locker.Coins, coins2)
 
 	err = keeper.ReleaseCoins(ctx, lockerId)
 	require.Nil(t, err)
-
-	//check releasecoins called multiple times
-	//err=keeper.ReleaseCoins(ctx,lockerId)
-	//require.Nil(t,err)
-	//
-	//err = keeper.ReleaseCoins(ctx, lockerId)
-	//require.Nil(t,err)
 
 	keeper.SetLocker(ctx, lockerId3, emptyLocker1)
 	err = keeper.ReleaseCoins(ctx, lockerId3)
@@ -63,23 +58,23 @@ func TestLockCoins(t *testing.T) {
 	getAccount2 := accountMapper.GetAccount(ctx, addr1)
 	require.Equal(t, getAccount2.GetCoins(), account1.GetCoins())
 
-	err = keeper.ReleaseCoinsToMany(ctx, lockerId, []csdkTypes.AccAddress{addr1, addr2, addr3}, []csdkTypes.Coins{csdkTypes.Coins{
+	err = keeper.ReleaseCoinsToMany(ctx, lockerId, []csdkTypes.AccAddress{addr1, addr2, addr3}, []csdkTypes.Coins{{
 		csdkTypes.NewCoin("sent", csdkTypes.NewInt(10))},
-		csdkTypes.Coins{csdkTypes.NewCoin("sent", csdkTypes.NewInt(10))},
-		csdkTypes.Coins{csdkTypes.NewCoin("sent", csdkTypes.NewInt(10))}})
+		{csdkTypes.NewCoin("sent", csdkTypes.NewInt(10))},
+		{csdkTypes.NewCoin("sent", csdkTypes.NewInt(10))}})
 
 	require.Nil(t, err)
 
-	err = keeper.ReleaseCoinsToMany(ctx, lockerId, []csdkTypes.AccAddress{addr1, {}, addr3}, []csdkTypes.Coins{csdkTypes.Coins{
+	err = keeper.ReleaseCoinsToMany(ctx, lockerId, []csdkTypes.AccAddress{addr1, {}, addr3}, []csdkTypes.Coins{{
 		csdkTypes.NewCoin("sent", csdkTypes.NewInt(10))},
-		csdkTypes.Coins{csdkTypes.NewCoin("sent", csdkTypes.NewInt(0))},
-		csdkTypes.Coins{csdkTypes.NewCoin("sent", csdkTypes.NewInt(-100))}})
+		{csdkTypes.NewCoin("sent", csdkTypes.NewInt(0))},
+		{csdkTypes.NewCoin("sent", csdkTypes.NewInt(-100))}})
 
 	require.NotNil(t, err)
 
 	getAccount3 := accountMapper.GetAccount(ctx, addr3)
 	require.Equal(t, getAccount3.GetCoins(), csdkTypes.Coins{csdkTypes.NewCoin("sent", csdkTypes.NewInt(10))})
 
-	respose := keeper.GetLocker(ctx, "")
+	respose, err := keeper.GetLocker(ctx, "")
 	require.Nil(t, respose)
 }
