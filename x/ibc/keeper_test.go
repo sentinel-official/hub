@@ -24,30 +24,30 @@ func TestIBC(t *testing.T) {
 	ibcPacketRes1 := ibcKeeper.PostIBCPacket(ctx, ibcPacket1)
 	require.Nil(t, ibcPacketRes1)
 
-	getIBCPacket1, err := ibcKeeper.GetIBCPacket(ctx, EgressKey(ibcPacket1.DestChainID, uint64(0)))
+	getIBCPacket1, err := ibcKeeper.GetIBCPacket(ctx, sdkTypes.EgressKey(ibcPacket1.DestChainID, uint64(0)))
 	require.Nil(t, err)
 	require.Equal(t, getIBCPacket1, &ibcPacket1)
 	require.Equal(t, getIBCPacket1.DestChainID, ibcPacket1.DestChainID)
 
-	err = ibcKeeper.SetIngressLength(ctx, IngressLengthKey(ibcPacket1.SrcChainID), uint64(1))
+	err = ibcKeeper.SetIngressLength(ctx, sdkTypes.IngressLengthKey(ibcPacket1.SrcChainID), uint64(1))
 	require.Nil(t, err)
 
-	getIBCPacket2, err := ibcKeeper.GetIBCPacket(ctx, EgressKey(ibcPacket1.DestChainID, uint64(1)))
+	getIBCPacket2, err := ibcKeeper.GetIBCPacket(ctx, sdkTypes.EgressKey(ibcPacket1.DestChainID, uint64(1)))
 	require.Nil(t, getIBCPacket2)
 
-	err = ibcKeeper.SetEgressLength(ctx, EgressLengthKey(ibcPacket1.DestChainID), uint64(1))
+	err = ibcKeeper.SetEgressLength(ctx, sdkTypes.EgressLengthKey(ibcPacket1.DestChainID), uint64(1))
 	require.Nil(t, err)
 
 	ibcPacket2 := TestNewIBCPacket()
 	ibcPacketRes2 := ibcKeeper.PostIBCPacket(ctx, ibcPacket2)
 	require.Nil(t, ibcPacketRes2)
 
-	egressLength1, err := ibcKeeper.GetEgressLength(ctx, EgressLengthKey(ibcPacket1.DestChainID))
+	egressLength1, err := ibcKeeper.GetEgressLength(ctx, sdkTypes.EgressLengthKey(ibcPacket1.DestChainID))
 	require.Nil(t, err)
 
 	require.Equal(t, uint64(2), egressLength1)
 
-	ingressLength1, err := ibcKeeper.GetIngressLength(ctx, IngressLengthKey(ibcPacket1.SrcChainID))
+	ingressLength1, err := ibcKeeper.GetIngressLength(ctx, sdkTypes.IngressLengthKey(ibcPacket1.SrcChainID))
 	require.Nil(t, err)
 	require.Equal(t, uint64(1), ingressLength1)
 
