@@ -12,9 +12,6 @@ import (
 
 func TestIBC(t *testing.T) {
 
-	//var egressKey int64
-	//var ingressKey int64
-
 	cdc := codec.New()
 	cdc.RegisterConcrete(vpn.MsgRegisterNode{},"test/ibc/msg_register_node",nil)
 	multiStore, vpnKey, _, ibcKey, sessionKey := DefaultSetup()
