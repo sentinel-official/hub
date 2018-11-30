@@ -2,7 +2,6 @@ package vpn
 
 import (
 	"encoding/json"
-	"fmt"
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
 	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
 	"github.com/stretchr/testify/require"
@@ -521,6 +520,5 @@ func TestMsgDeregisterNode_Route(t *testing.T) {
 func TestMsgDeregisterNode_Type(t *testing.T) {
 	msg := TestGetMsgDeregisterNode()
 	functionType := msg.Type()
-	fmt.Println(functionType, deregisterNodeIDType)
 	require.Equal(t, functionType, deregisterNodeIDType)
 }

@@ -242,7 +242,7 @@ func (msg MsgUpdateSessionStatus) GetSigners() []csdkTypes.AccAddress {
 }
 
 func (msg MsgUpdateSessionStatus) Route() string {
-	return sdkTypes.KeyVPN
+	return sdkTypes.KeySession
 }
 
 func NewMsgUpdateSessionStatus(from csdkTypes.AccAddress, sessionID string, status string) *MsgUpdateSessionStatus {
