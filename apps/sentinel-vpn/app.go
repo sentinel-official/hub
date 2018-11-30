@@ -51,11 +51,11 @@ func NewSentinelVPN(logger log.Logger, db tmDb.DB, baseAppOptions ...func(*basea
 	var app = &SentinelVPN{
 		cdc:        cdc,
 		BaseApp:    baseapp.NewBaseApp(appName, logger, db, auth.DefaultTxDecoder(cdc), baseAppOptions...),
-		keyMain:    csdkTypes.NewKVStoreKey("main"),
-		keyAccount: csdkTypes.NewKVStoreKey("acc"),
-		keyIBC:     csdkTypes.NewKVStoreKey("ibc"),
-		keyVPN:     csdkTypes.NewKVStoreKey("vpn"),
-		keySession: csdkTypes.NewKVStoreKey("session"),
+		keyMain:    csdkTypes.NewKVStoreKey(sdkTypes.KeyMain),
+		keyAccount: csdkTypes.NewKVStoreKey(sdkTypes.KeyAccount),
+		keyIBC:     csdkTypes.NewKVStoreKey(sdkTypes.KeyIBC),
+		keyVPN:     csdkTypes.NewKVStoreKey(sdkTypes.KeyVPN),
+		keySession: csdkTypes.NewKVStoreKey(sdkTypes.KeySession),
 	}
 
 	app.accountKeeper = auth.NewAccountKeeper(
@@ -70,9 +70,9 @@ func NewSentinelVPN(logger log.Logger, db tmDb.DB, baseAppOptions ...func(*basea
 	app.vpnKeeper = vpn.NewKeeper(app.cdc, app.keyVPN, app.keySession)
 
 	app.Router().
-		AddRoute("bank", bank.NewHandler(app.bankKeeper)).
-		AddRoute("vpn", vpn.NewHandler(app.vpnKeeper, app.ibcKeeper)).
-		AddRoute("ibc", vpn.NewIBCVPNHandler(app.ibcKeeper, app.vpnKeeper))
+		AddRoute(sdkTypes.KeyBank, bank.NewHandler(app.bankKeeper)).
+		AddRoute(sdkTypes.KeyVPN, vpn.NewHandler(app.vpnKeeper, app.ibcKeeper)).
+		AddRoute(sdkTypes.KeySession, vpn.NewIBCVPNHandler(app.ibcKeeper, app.vpnKeeper))
 
 	app.SetInitChainer(app.initChainer)
 	app.SetBeginBlocker(app.BeginBlocker)

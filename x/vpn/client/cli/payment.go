@@ -14,6 +14,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
+	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
 	"github.com/ironman0x7b2/sentinel-sdk/x/hub"
 	"github.com/ironman0x7b2/sentinel-sdk/x/vpn"
 )
@@ -55,7 +56,7 @@ func PaymentCommand(cdc *codec.Codec) *cobra.Command {
 				return errors.Errorf("Address %s doesn't have enough coins to pay for this transaction.", from)
 			}
 
-			sessionsCountBytes, err := cliCtx.QueryStore(cdc.MustMarshalBinaryLengthPrefixed("SESSIONS_COUNT"), "session")
+			sessionsCountBytes, err := cliCtx.QueryStore(cdc.MustMarshalBinaryLengthPrefixed(sdkTypes.KeySessionsCount), sdkTypes.KeySession)
 
 			if err != nil {
 				return err
@@ -88,7 +89,7 @@ func PaymentCommand(cdc *codec.Codec) *cobra.Command {
 			}
 
 			pubKey := keyInfo.GetPubKey()
-			lockerID := "session" + "/" + from.String() + "/" + strconv.Itoa(int(sessionsCount))
+			lockerID := sdkTypes.KeySession + "/" + from.String() + "/" + strconv.Itoa(int(sessionsCount))
 			msgLockerCoins := hub.MsgLockCoins{
 				LockerID: lockerID,
 				Coins:    coins,

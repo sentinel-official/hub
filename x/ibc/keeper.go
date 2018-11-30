@@ -1,29 +1,11 @@
 package ibc
 
 import (
-	"fmt"
-
 	"github.com/cosmos/cosmos-sdk/codec"
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
 
 	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
 )
-
-func EgressKey(destChainID string, length uint64) string {
-	return fmt.Sprintf("egress/%s/%d", destChainID, length)
-}
-
-func EgressLengthKey(destChainID string) string {
-	return fmt.Sprintf("egress/%s", destChainID)
-}
-
-func IngressKey(srcChainID string, length uint64) string {
-	return fmt.Sprintf("ingress/%s/%d", srcChainID, length)
-}
-
-func IngressLengthKey(srcChainID string) string {
-	return fmt.Sprintf("ingress/%s", srcChainID)
-}
 
 type Keeper struct {
 	IBCKey csdkTypes.StoreKey
@@ -164,17 +146,17 @@ func (k Keeper) GetIngressLength(ctx csdkTypes.Context, ingressKey string) (uint
 }
 
 func (k Keeper) PostIBCPacket(ctx csdkTypes.Context, packet sdkTypes.IBCPacket) csdkTypes.Error {
-	egressLength, err := k.GetEgressLength(ctx, EgressLengthKey(packet.DestChainID))
+	egressLength, err := k.GetEgressLength(ctx, sdkTypes.EgressLengthKey(packet.DestChainID))
 
 	if err != nil {
 		return err
 	}
 
-	if err := k.SetIBCPacket(ctx, EgressKey(packet.DestChainID, egressLength), packet); err != nil {
+	if err := k.SetIBCPacket(ctx, sdkTypes.EgressKey(packet.DestChainID, egressLength), packet); err != nil {
 		return err
 	}
 
-	if err := k.SetEgressLength(ctx, EgressLengthKey(packet.DestChainID), egressLength+1); err != nil {
+	if err := k.SetEgressLength(ctx, sdkTypes.EgressLengthKey(packet.DestChainID), egressLength+1); err != nil {
 		return err
 	}
 

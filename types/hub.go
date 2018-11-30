@@ -9,3 +9,10 @@ type CoinLocker struct {
 	Coins   csdkTypes.Coins      `json:"coins"`
 	Status  string               `json:"status"`
 }
+
+const (
+	KeyCoinLocker = "coin_locker"
+
+	StatusLock    = "LOCKED"
+	StatusRelease = "RELEASED"
+)

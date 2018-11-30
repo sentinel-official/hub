@@ -58,7 +58,7 @@ func DeregisterCommand(cdc *codec.Codec) *cobra.Command {
 			pubKey := keyInfo.GetPubKey()
 
 			var vpnDetails sdkTypes.VPNDetails
-			vpnDetailsBytes, err := cliCtx.QueryStore(cdc.MustMarshalBinaryLengthPrefixed(nodeID), "vpn")
+			vpnDetailsBytes, err := cliCtx.QueryStore(cdc.MustMarshalBinaryLengthPrefixed(nodeID), sdkTypes.KeyVPN)
 
 			if err := cdc.UnmarshalBinaryLengthPrefixed(vpnDetailsBytes, &vpnDetails); err != nil {
 				return err

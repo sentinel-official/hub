@@ -39,7 +39,7 @@ func handleLockCoins(ctx csdkTypes.Context, ibcKeeper ibc.Keeper, hubKeeper Keep
 		return err.Result()
 	}
 
-	sequence, err := ibcKeeper.GetIngressLength(ctx, ibc.IngressLengthKey(ibcMsg.IBCPacket.SrcChainID))
+	sequence, err := ibcKeeper.GetIngressLength(ctx, sdkTypes.IngressLengthKey(ibcMsg.IBCPacket.SrcChainID))
 
 	if err != nil {
 		return err.Result()
@@ -70,7 +70,7 @@ func handleLockCoins(ctx csdkTypes.Context, ibcKeeper ibc.Keeper, hubKeeper Keep
 		DestChainID: ibcMsg.IBCPacket.SrcChainID,
 		Message: MsgLockerStatus{
 			LockerID: msg.LockerID,
-			Status:   "LOCKED",
+			Status:   sdkTypes.StatusLock,
 		},
 	}
 
@@ -78,7 +78,7 @@ func handleLockCoins(ctx csdkTypes.Context, ibcKeeper ibc.Keeper, hubKeeper Keep
 		return err.Result()
 	}
 
-	if err := ibcKeeper.SetIngressLength(ctx, ibc.IngressLengthKey(ibcMsg.IBCPacket.SrcChainID), sequence+1); err != nil {
+	if err := ibcKeeper.SetIngressLength(ctx, sdkTypes.IngressLengthKey(ibcMsg.IBCPacket.SrcChainID), sequence+1); err != nil {
 		return err.Result()
 	}
 
@@ -92,7 +92,7 @@ func handleReleaseCoins(ctx csdkTypes.Context, ibcKeeper ibc.Keeper, hubKeeper K
 		return err.Result()
 	}
 
-	sequence, err := ibcKeeper.GetIngressLength(ctx, ibc.IngressLengthKey(ibcMsg.IBCPacket.SrcChainID))
+	sequence, err := ibcKeeper.GetIngressLength(ctx, sdkTypes.IngressLengthKey(ibcMsg.IBCPacket.SrcChainID))
 
 	if err != nil {
 		return err.Result()
@@ -118,7 +118,7 @@ func handleReleaseCoins(ctx csdkTypes.Context, ibcKeeper ibc.Keeper, hubKeeper K
 		return errorInvalidLockerOwnerAddress().Result()
 	}
 
-	if locker.Status != "LOCKED" {
+	if locker.Status != sdkTypes.StatusLock {
 		return errorInvalidLockerStatus().Result()
 	}
 
@@ -131,7 +131,7 @@ func handleReleaseCoins(ctx csdkTypes.Context, ibcKeeper ibc.Keeper, hubKeeper K
 		DestChainID: ibcMsg.IBCPacket.SrcChainID,
 		Message: MsgLockerStatus{
 			LockerID: msg.LockerID,
-			Status:   "RELEASED",
+			Status:   sdkTypes.StatusRelease,
 		},
 	}
 
@@ -139,7 +139,7 @@ func handleReleaseCoins(ctx csdkTypes.Context, ibcKeeper ibc.Keeper, hubKeeper K
 		return err.Result()
 	}
 
-	if err := ibcKeeper.SetIngressLength(ctx, ibc.IngressLengthKey(ibcMsg.IBCPacket.SrcChainID), sequence+1); err != nil {
+	if err := ibcKeeper.SetIngressLength(ctx, sdkTypes.IngressLengthKey(ibcMsg.IBCPacket.SrcChainID), sequence+1); err != nil {
 		return err.Result()
 	}
 
@@ -153,7 +153,7 @@ func handleReleaseCoinsToMany(ctx csdkTypes.Context, ibcKeeper ibc.Keeper, hubKe
 		return err.Result()
 	}
 
-	sequence, err := ibcKeeper.GetIngressLength(ctx, ibc.IngressLengthKey(ibcMsg.IBCPacket.SrcChainID))
+	sequence, err := ibcKeeper.GetIngressLength(ctx, sdkTypes.IngressLengthKey(ibcMsg.IBCPacket.SrcChainID))
 
 	if err != nil {
 		return err.Result()
@@ -179,7 +179,7 @@ func handleReleaseCoinsToMany(ctx csdkTypes.Context, ibcKeeper ibc.Keeper, hubKe
 		return errorInvalidLockerOwnerAddress().Result()
 	}
 
-	if locker.Status != "LOCKED" {
+	if locker.Status != sdkTypes.StatusLock {
 		return errorInvalidLockerStatus().Result()
 	}
 
@@ -192,7 +192,7 @@ func handleReleaseCoinsToMany(ctx csdkTypes.Context, ibcKeeper ibc.Keeper, hubKe
 		DestChainID: ibcMsg.IBCPacket.SrcChainID,
 		Message: MsgLockerStatus{
 			LockerID: msg.LockerID,
-			Status:   "RELEASED",
+			Status:   sdkTypes.StatusRelease,
 		},
 	}
 
@@ -200,7 +200,7 @@ func handleReleaseCoinsToMany(ctx csdkTypes.Context, ibcKeeper ibc.Keeper, hubKe
 		return err.Result()
 	}
 
-	if err := ibcKeeper.SetIngressLength(ctx, ibc.IngressLengthKey(ibcMsg.IBCPacket.SrcChainID), sequence+1); err != nil {
+	if err := ibcKeeper.SetIngressLength(ctx, sdkTypes.IngressLengthKey(ibcMsg.IBCPacket.SrcChainID), sequence+1); err != nil {
 		return err.Result()
 	}
 

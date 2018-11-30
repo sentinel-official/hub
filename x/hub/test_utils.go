@@ -12,12 +12,12 @@ import (
 func setupMultiStore() (csdkTypes.MultiStore, *csdkTypes.KVStoreKey, *csdkTypes.KVStoreKey, *csdkTypes.KVStoreKey) {
 	db := dbm.NewMemDB()
 
-	authKey := csdkTypes.NewKVStoreKey("acc")
-	ibcKey := csdkTypes.NewKVStoreKey("ibc")
-	coinLockerKey := csdkTypes.NewKVStoreKey("coin_locker")
+	accKey := csdkTypes.NewKVStoreKey(sdkTypes.KeyAccount)
+	ibcKey := csdkTypes.NewKVStoreKey(sdkTypes.KeyIBC)
+	coinLockerKey := csdkTypes.NewKVStoreKey(sdkTypes.KeyCoinLocker)
 
 	ms := store.NewCommitMultiStore(db)
-	ms.MountStoreWithDB(authKey, csdkTypes.StoreTypeIAVL, db)
+	ms.MountStoreWithDB(accKey, csdkTypes.StoreTypeIAVL, db)
 	ms.MountStoreWithDB(ibcKey, csdkTypes.StoreTypeIAVL, db)
 	ms.MountStoreWithDB(coinLockerKey, csdkTypes.StoreTypeIAVL, db)
 
@@ -25,7 +25,7 @@ func setupMultiStore() (csdkTypes.MultiStore, *csdkTypes.KVStoreKey, *csdkTypes.
 		panic(err)
 	}
 
-	return ms, authKey, ibcKey, coinLockerKey
+	return ms, accKey, ibcKey, coinLockerKey
 }
 
 var (

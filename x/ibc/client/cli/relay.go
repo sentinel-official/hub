@@ -15,7 +15,7 @@ import (
 	"github.com/spf13/viper"
 	"github.com/tendermint/tendermint/libs/log"
 
-	"github.com/ironman0x7b2/sentinel-sdk/types"
+	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
 	"github.com/ironman0x7b2/sentinel-sdk/x/ibc"
 )
 
@@ -37,12 +37,12 @@ type relayCommander struct {
 	logger log.Logger
 }
 
-func IBCRelayCmd(cdc *codec.Codec) *cobra.Command {
+func IBCRelayCmd(cdc *codec.Codec, ibcKey, accountKey string) *cobra.Command {
 	cmdr := relayCommander{
 		cdc:         cdc,
 		accDecoder:  context.GetAccountDecoder(cdc),
-		ibcStoreKey: "ibc",
-		accStoreKey: "acc",
+		ibcStoreKey: ibcKey,
+		accStoreKey: accountKey,
 		logger:      log.NewTMLogger(log.NewSyncWriter(os.Stdout)),
 	}
 
@@ -99,8 +99,8 @@ func (c relayCommander) loop(fromChainID, fromChainNodeURI, toChainID, toChainNo
 		panic(err)
 	}
 
-	ingressLengthKey, _ := c.cdc.MarshalBinaryLengthPrefixed(ibc.IngressLengthKey(fromChainID))
-	egressLengthKey, _ := c.cdc.MarshalBinaryLengthPrefixed(ibc.EgressLengthKey(toChainID))
+	ingressLengthKey, _ := c.cdc.MarshalBinaryLengthPrefixed(sdkTypes.IngressLengthKey(fromChainID))
+	egressLengthKey, _ := c.cdc.MarshalBinaryLengthPrefixed(sdkTypes.EgressLengthKey(toChainID))
 
 	for {
 		var ingressLength, egressLength uint64
@@ -137,7 +137,7 @@ func (c relayCommander) loop(fromChainID, fromChainNodeURI, toChainID, toChainNo
 		accSeq := c.getSequence(toChainNodeURI)
 
 		for i := ingressLength; i < egressLength; i++ {
-			egressKey, _ := c.cdc.MarshalBinaryLengthPrefixed(ibc.EgressKey(toChainID, i))
+			egressKey, _ := c.cdc.MarshalBinaryLengthPrefixed(sdkTypes.EgressKey(toChainID, i))
 			egressbz, err := query(fromChainNodeURI, egressKey, c.ibcStoreKey)
 
 			if err != nil {
@@ -190,7 +190,7 @@ func (c relayCommander) getSequence(nodeURI string) uint64 {
 }
 
 func (c relayCommander) refine(bz []byte, ibcSeq, accSeq uint64, passphrase string) []byte {
-	var packet types.IBCPacket
+	var packet sdkTypes.IBCPacket
 
 	if err := c.cdc.UnmarshalBinaryLengthPrefixed(bz, &packet); err != nil {
 		panic(err)

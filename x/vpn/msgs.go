@@ -94,7 +94,7 @@ func (msg MsgRegisterNode) GetSigners() []csdkTypes.AccAddress {
 }
 
 func (msg MsgRegisterNode) Route() string {
-	return "vpn"
+	return sdkTypes.KeyVPN
 }
 
 func NewMsgRegisterNode(from csdkTypes.AccAddress, apiPort int64,
@@ -184,7 +184,7 @@ func (msg MsgPayVPNService) GetSigners() []csdkTypes.AccAddress {
 }
 
 func (msg MsgPayVPNService) Route() string {
-	return "vpn"
+	return sdkTypes.KeyVPN
 }
 
 func NewMsgPayVPNService(from csdkTypes.AccAddress, vpnID string,
@@ -242,7 +242,7 @@ func (msg MsgUpdateSessionStatus) GetSigners() []csdkTypes.AccAddress {
 }
 
 func (msg MsgUpdateSessionStatus) Route() string {
-	return "session"
+	return sdkTypes.KeyVPN
 }
 
 func NewMsgUpdateSessionStatus(from csdkTypes.AccAddress, sessionID string, status string) *MsgUpdateSessionStatus {
@@ -306,7 +306,7 @@ func (msg MsgDeregisterNode) GetSigners() []csdkTypes.AccAddress {
 }
 
 func (msg MsgDeregisterNode) Route() string {
-	return "vpn"
+	return sdkTypes.KeyVPN
 }
 
 func NewMsgDeregisterNode(from csdkTypes.AccAddress, vpnID string,

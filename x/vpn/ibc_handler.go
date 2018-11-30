@@ -7,6 +7,7 @@ import (
 
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
 
+	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
 	"github.com/ironman0x7b2/sentinel-sdk/x/hub"
 	"github.com/ironman0x7b2/sentinel-sdk/x/ibc"
 )
@@ -39,7 +40,7 @@ func NewIBCVPNHandler(ibcKeeper ibc.Keeper, vpnKeeper Keeper) csdkTypes.Handler 
 
 func handleUpdateNodeStatus(ctx csdkTypes.Context, ibcKeeper ibc.Keeper, vpnKeeper Keeper, ibcMsg ibc.MsgIBCTransaction) csdkTypes.Result {
 	msg, _ := ibcMsg.IBCPacket.Message.(hub.MsgLockerStatus)
-	sequence, err := ibcKeeper.GetIngressLength(ctx, ibc.IngressLengthKey(ibcMsg.IBCPacket.SrcChainID))
+	sequence, err := ibcKeeper.GetIngressLength(ctx, sdkTypes.IngressLengthKey(ibcMsg.IBCPacket.SrcChainID))
 
 	if err != nil {
 		return err.Result()
@@ -63,23 +64,23 @@ func handleUpdateNodeStatus(ctx csdkTypes.Context, ibcKeeper ibc.Keeper, vpnKeep
 	}
 
 	switch msg.Status {
-	case "LOCKED":
-		if err := vpnKeeper.SetVPNStatus(ctx, nodeID, "ACTIVE"); err != nil {
+	case sdkTypes.StatusLock:
+		if err := vpnKeeper.SetVPNStatus(ctx, nodeID, sdkTypes.StatusActive); err != nil {
 			return err.Result()
 		}
 
 		if err := vpnKeeper.AddActiveNodeID(ctx, nodeID); err != nil {
 			return err.Result()
 		}
-	case "RELEASED":
-		if err := vpnKeeper.SetVPNStatus(ctx, nodeID, "DEREGISTERED"); err != nil {
+	case sdkTypes.StatusRelease:
+		if err := vpnKeeper.SetVPNStatus(ctx, nodeID, sdkTypes.StatusDeregister); err != nil {
 			return err.Result()
 		}
 	default:
 		return errorInvalidLockStatus().Result()
 	}
 
-	if err := ibcKeeper.SetIngressLength(ctx, ibc.IngressLengthKey(ibcMsg.IBCPacket.SrcChainID), sequence+1); err != nil {
+	if err := ibcKeeper.SetIngressLength(ctx, sdkTypes.IngressLengthKey(ibcMsg.IBCPacket.SrcChainID), sequence+1); err != nil {
 		return err.Result()
 	}
 
@@ -88,7 +89,7 @@ func handleUpdateNodeStatus(ctx csdkTypes.Context, ibcKeeper ibc.Keeper, vpnKeep
 
 func handleUpdateSessionStatus(ctx csdkTypes.Context, ibcKeeper ibc.Keeper, vpnKeeper Keeper, ibcMsg ibc.MsgIBCTransaction) csdkTypes.Result {
 	msg, _ := ibcMsg.IBCPacket.Message.(hub.MsgLockerStatus)
-	sequence, err := ibcKeeper.GetIngressLength(ctx, ibc.IngressLengthKey(ibcMsg.IBCPacket.SrcChainID))
+	sequence, err := ibcKeeper.GetIngressLength(ctx, sdkTypes.IngressLengthKey(ibcMsg.IBCPacket.SrcChainID))
 
 	if err != nil {
 		return err.Result()
@@ -111,23 +112,23 @@ func handleUpdateSessionStatus(ctx csdkTypes.Context, ibcKeeper ibc.Keeper, vpnK
 	}
 
 	switch msg.Status {
-	case "LOCKED":
-		if err := vpnKeeper.SetSessionStatus(ctx, sessionID, "ACTIVE"); err != nil {
+	case sdkTypes.StatusLock:
+		if err := vpnKeeper.SetSessionStatus(ctx, sessionID, sdkTypes.StatusActive); err != nil {
 			return err.Result()
 		}
 
 		if err := vpnKeeper.AddActiveSessionID(ctx, sessionID); err != nil {
 			return err.Result()
 		}
-	case "RELEASED":
-		if err := vpnKeeper.SetVPNStatus(ctx, sessionID, "ENDED"); err != nil {
+	case sdkTypes.StatusRelease:
+		if err := vpnKeeper.SetVPNStatus(ctx, sessionID, sdkTypes.StatusEnd); err != nil {
 			return err.Result()
 		}
 	default:
 		return errorInvalidLockStatus().Result()
 	}
 
-	if err := ibcKeeper.SetIngressLength(ctx, ibc.IngressLengthKey(ibcMsg.IBCPacket.SrcChainID), sequence+1); err != nil {
+	if err := ibcKeeper.SetIngressLength(ctx, sdkTypes.IngressLengthKey(ibcMsg.IBCPacket.SrcChainID), sequence+1); err != nil {
 		return err.Result()
 	}
 

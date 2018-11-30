@@ -58,7 +58,7 @@ func handleRegisterNode(ctx csdkTypes.Context, k Keeper, ik ibc.Keeper, msg MsgR
 		EncMethod:  msg.EncMethod,
 		PricePerGB: msg.PricePerGB,
 		Version:    msg.Version,
-		Status:     "REGISTERED",
+		Status:     sdkTypes.StatusRegister,
 		LockerID:   msg.LockerID,
 	}
 
@@ -121,7 +121,7 @@ func handleSessionPayment(ctx csdkTypes.Context, k Keeper, ik ibc.Keeper, msg Ms
 		ClientAddress: msg.From,
 		GBToProvide:   0,
 		PricePerGB:    vpnDetails.PricePerGB,
-		Status:        "STARTED",
+		Status:        sdkTypes.StatusStart,
 	}
 
 	if err := k.AddSession(ctx, sessionID, &sessionDetails); err != nil {
@@ -165,7 +165,7 @@ func handleDeregisterNode(ctx csdkTypes.Context, k Keeper, ik ibc.Keeper, msg Ms
 		return errorLockerIDMismatch().Result()
 	}
 
-	if err := k.SetVPNStatus(ctx, msg.VPNID, "INACTIVE"); err != nil {
+	if err := k.SetVPNStatus(ctx, msg.VPNID, sdkTypes.StatusInactive); err != nil {
 		return err.Result()
 	}
 

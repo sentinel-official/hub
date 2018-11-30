@@ -15,7 +15,7 @@ type MsgIBCTransaction struct {
 }
 
 func (msg MsgIBCTransaction) Route() string {
-	return "ibc"
+	return sdkTypes.KeyIBC
 }
 
 func (msg MsgIBCTransaction) Type() string {

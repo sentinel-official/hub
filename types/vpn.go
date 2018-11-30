@@ -47,4 +47,18 @@ const (
 	MinLongitude = -180 * 100000
 	MaxLatitude  = 90 * 100000
 	MaxLongitude = 180 * 100000
+
+	KeyActiveNodeIDs    = "ACTIVE_NODE_IDS"
+	KeyActiveSessionIDs = "ACTIVE_SESSION_IDS"
+	KeySession          = "session"
+	KeySessionsCount    = "SESSIONS_COUNT"
+	KeyVPN              = "vpn"
+	KeyVPNsCount        = "VPNS_COUNT"
+
+	StatusActive     = "ACTIVE"
+	StatusDeregister = "DEREGISTERED"
+	StatusEnd        = "ENDED"
+	StatusInactive   = "INACTIVE"
+	StatusRegister   = "REGISTERED"
+	StatusStart      = "STARTED"
 )

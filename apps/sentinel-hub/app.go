@@ -49,10 +49,10 @@ func NewSentinelHub(logger log.Logger, db tmDb.DB, baseAppOptions ...func(*basea
 	var app = &SentinelHub{
 		cdc:           cdc,
 		BaseApp:       baseapp.NewBaseApp(appName, logger, db, auth.DefaultTxDecoder(cdc), baseAppOptions...),
-		keyMain:       csdkTypes.NewKVStoreKey("main"),
-		keyAccount:    csdkTypes.NewKVStoreKey("acc"),
-		keyIBC:        csdkTypes.NewKVStoreKey("ibc"),
-		keyCoinLocker: csdkTypes.NewKVStoreKey("coin_locker"),
+		keyMain:       csdkTypes.NewKVStoreKey(sdkTypes.KeyMain),
+		keyAccount:    csdkTypes.NewKVStoreKey(sdkTypes.KeyAccount),
+		keyIBC:        csdkTypes.NewKVStoreKey(sdkTypes.KeyIBC),
+		keyCoinLocker: csdkTypes.NewKVStoreKey(sdkTypes.KeyCoinLocker),
 	}
 
 	app.accountKeeper = auth.NewAccountKeeper(
@@ -67,8 +67,8 @@ func NewSentinelHub(logger log.Logger, db tmDb.DB, baseAppOptions ...func(*basea
 	app.hubKeeper = hub.NewBaseKeeper(app.cdc, app.keyCoinLocker, app.bankKeeper)
 
 	app.Router().
-		AddRoute("bank", bank.NewHandler(app.bankKeeper)).
-		AddRoute("ibc", hub.NewIBCHubHandler(app.ibcKeeper, app.hubKeeper))
+		AddRoute(sdkTypes.KeyBank, bank.NewHandler(app.bankKeeper)).
+		AddRoute(sdkTypes.KeyIBC, hub.NewIBCHubHandler(app.ibcKeeper, app.hubKeeper))
 
 	app.SetInitChainer(app.initChainer)
 	app.SetBeginBlocker(app.BeginBlocker)

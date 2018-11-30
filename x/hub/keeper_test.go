@@ -16,7 +16,7 @@ import (
 )
 
 func TestKeeper(t *testing.T) {
-	multiStore, authKey, _, coinLockerKey := setupMultiStore()
+	multiStore, accKey, _, coinLockerKey := setupMultiStore()
 	ctx := csdkTypes.NewContext(multiStore, abci.Header{}, false, log.NewNopLogger())
 
 	cdc := codec.New()
@@ -29,7 +29,7 @@ func TestKeeper(t *testing.T) {
 	ibc.RegisterCodec(cdc)
 	RegisterCodec(cdc)
 
-	accountKeeper := auth.NewAccountKeeper(cdc, authKey, auth.ProtoBaseAccount)
+	accountKeeper := auth.NewAccountKeeper(cdc, accKey, auth.ProtoBaseAccount)
 	bankKeeper := bank.NewBaseKeeper(accountKeeper)
 	hubKeeper := NewBaseKeeper(cdc, coinLockerKey, bankKeeper)
 
@@ -55,7 +55,7 @@ func TestKeeper(t *testing.T) {
 	require.Nil(t, err)
 	require.Equal(t, locker.Address, accAddress1)
 	require.Equal(t, locker.Coins, csdkTypes.Coins{coin(10, "x")})
-	require.Equal(t, locker.Status, "LOCKED")
+	require.Equal(t, locker.Status, sdkTypes.StatusLock)
 
 	err = hubKeeper.ReleaseCoins(ctx, "locker_id_2")
 	require.Nil(t, err)
@@ -65,7 +65,7 @@ func TestKeeper(t *testing.T) {
 	require.Nil(t, err)
 	require.Equal(t, locker.Address, accAddress1)
 	require.Equal(t, locker.Coins, csdkTypes.Coins{coin(10, "x")})
-	require.Equal(t, locker.Status, "RELEASED")
+	require.Equal(t, locker.Status, sdkTypes.StatusRelease)
 
 	err = hubKeeper.LockCoins(ctx, "locker_id_3", accAddress1, csdkTypes.Coins{coin(10, "unknown")})
 	require.NotNil(t, err)
@@ -89,5 +89,5 @@ func TestKeeper(t *testing.T) {
 	require.Nil(t, err)
 	require.Equal(t, locker.Address, accAddress1)
 	require.Equal(t, locker.Coins, csdkTypes.Coins{coin(6, "x")})
-	require.Equal(t, locker.Status, "RELEASED")
+	require.Equal(t, locker.Status, sdkTypes.StatusRelease)
 }

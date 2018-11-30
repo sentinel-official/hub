@@ -21,16 +21,12 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/tendermint/tendermint/libs/cli"
 
+	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
+
 	ibcCli "github.com/ironman0x7b2/sentinel-sdk/x/ibc/client/cli"
 
 	app "github.com/ironman0x7b2/sentinel-sdk/apps/sentinel-vpn"
 	vpnCli "github.com/ironman0x7b2/sentinel-sdk/x/vpn/client/cli"
-)
-
-const (
-	storeAcc      = "acc"
-	storeSlashing = "slashing"
-	storeStake    = "stake"
 )
 
 var rootCmd = &cobra.Command{
@@ -59,32 +55,32 @@ func main() {
 	)
 
 	rootCmd.AddCommand(
-		stakeCli.GetCmdQueryValidator(storeStake, cdc),
-		stakeCli.GetCmdQueryValidators(storeStake, cdc),
-		stakeCli.GetCmdQueryValidatorUnbondingDelegations(storeStake, cdc),
-		stakeCli.GetCmdQueryValidatorRedelegations(storeStake, cdc),
-		stakeCli.GetCmdQueryDelegation(storeStake, cdc),
-		stakeCli.GetCmdQueryDelegations(storeStake, cdc),
-		stakeCli.GetCmdQueryPool(storeStake, cdc),
-		stakeCli.GetCmdQueryParams(storeStake, cdc),
-		stakeCli.GetCmdQueryUnbondingDelegation(storeStake, cdc),
-		stakeCli.GetCmdQueryUnbondingDelegations(storeStake, cdc),
-		stakeCli.GetCmdQueryRedelegation(storeStake, cdc),
-		stakeCli.GetCmdQueryRedelegations(storeStake, cdc),
-		slashingCli.GetCmdQuerySigningInfo(storeSlashing, cdc),
-		stakeCli.GetCmdQueryValidatorDelegations(storeStake, cdc),
-		authCli.GetAccountCmd(storeAcc, cdc),
+		stakeCli.GetCmdQueryValidator(sdkTypes.KeyStake, cdc),
+		stakeCli.GetCmdQueryValidators(sdkTypes.KeyStake, cdc),
+		stakeCli.GetCmdQueryValidatorUnbondingDelegations(sdkTypes.KeyStake, cdc),
+		stakeCli.GetCmdQueryValidatorRedelegations(sdkTypes.KeyStake, cdc),
+		stakeCli.GetCmdQueryDelegation(sdkTypes.KeyStake, cdc),
+		stakeCli.GetCmdQueryDelegations(sdkTypes.KeyStake, cdc),
+		stakeCli.GetCmdQueryPool(sdkTypes.KeyStake, cdc),
+		stakeCli.GetCmdQueryParams(sdkTypes.KeyStake, cdc),
+		stakeCli.GetCmdQueryUnbondingDelegation(sdkTypes.KeyStake, cdc),
+		stakeCli.GetCmdQueryUnbondingDelegations(sdkTypes.KeyStake, cdc),
+		stakeCli.GetCmdQueryRedelegation(sdkTypes.KeyStake, cdc),
+		stakeCli.GetCmdQueryRedelegations(sdkTypes.KeyStake, cdc),
+		slashingCli.GetCmdQuerySigningInfo(sdkTypes.KeySlashing, cdc),
+		stakeCli.GetCmdQueryValidatorDelegations(sdkTypes.KeyStake, cdc),
+		authCli.GetAccountCmd(sdkTypes.KeyAccount, cdc),
 	)
 
 	rootCmd.AddCommand(
 		bankCli.SendTxCmd(cdc),
 		cIBCCli.IBCTransferCmd(cdc),
-		ibcCli.IBCRelayCmd(cdc),
+		ibcCli.IBCRelayCmd(cdc, sdkTypes.KeyIBC, sdkTypes.KeyAccount),
 		stakeCli.GetCmdCreateValidator(cdc),
 		stakeCli.GetCmdEditValidator(cdc),
 		stakeCli.GetCmdDelegate(cdc),
-		stakeCli.GetCmdUnbond(storeStake, cdc),
-		stakeCli.GetCmdRedelegate(storeStake, cdc),
+		stakeCli.GetCmdUnbond(sdkTypes.KeyStake, cdc),
+		stakeCli.GetCmdRedelegate(sdkTypes.KeyStake, cdc),
 		slashingCli.GetCmdUnjail(cdc),
 	)
 
@@ -116,7 +112,7 @@ func registerRoutes(rs *lcd.RestServer) {
 	keys.RegisterRoutes(rs.Mux, rs.CliCtx.Indent)
 	rpc.RegisterRoutes(rs.CliCtx, rs.Mux)
 	tx.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc)
-	authRest.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, storeAcc)
+	authRest.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, sdkTypes.KeyAccount)
 	bankRest.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, rs.KeyBase)
 	stakeRest.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, rs.KeyBase)
 	slashingRest.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, rs.KeyBase)

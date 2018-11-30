@@ -66,7 +66,7 @@ func (k Keeper) GetVPNDetails(ctx csdkTypes.Context, vpnID string) (*sdkTypes.VP
 }
 
 func (k Keeper) SetActiveNodeIDs(ctx csdkTypes.Context, nodeIDs []string) csdkTypes.Error {
-	keyBytes, err := k.cdc.MarshalBinaryLengthPrefixed("ACTIVE_NODE_IDS")
+	keyBytes, err := k.cdc.MarshalBinaryLengthPrefixed(sdkTypes.KeyActiveNodeIDs)
 
 	if err != nil {
 		return errorMarshal()
@@ -86,7 +86,7 @@ func (k Keeper) SetActiveNodeIDs(ctx csdkTypes.Context, nodeIDs []string) csdkTy
 }
 
 func (k Keeper) GetActiveNodeIDs(ctx csdkTypes.Context) ([]string, csdkTypes.Error) {
-	keyBytes, err := k.cdc.MarshalBinaryLengthPrefixed("ACTIVE_NODE_IDS")
+	keyBytes, err := k.cdc.MarshalBinaryLengthPrefixed(sdkTypes.KeyActiveNodeIDs)
 
 	if err != nil {
 		return nil, errorMarshal()
@@ -108,7 +108,7 @@ func (k Keeper) GetActiveNodeIDs(ctx csdkTypes.Context) ([]string, csdkTypes.Err
 }
 
 func (k Keeper) SetVPNsCount(ctx csdkTypes.Context, count uint64) csdkTypes.Error {
-	keyBytes, err := k.cdc.MarshalBinaryLengthPrefixed("VPNS_COUNT")
+	keyBytes, err := k.cdc.MarshalBinaryLengthPrefixed(sdkTypes.KeyVPNsCount)
 
 	if err != nil {
 		return errorMarshal()
@@ -127,7 +127,7 @@ func (k Keeper) SetVPNsCount(ctx csdkTypes.Context, count uint64) csdkTypes.Erro
 }
 
 func (k Keeper) GetVPNsCount(ctx csdkTypes.Context) (uint64, csdkTypes.Error) {
-	keyBytes, err := k.cdc.MarshalBinaryLengthPrefixed("VPNS_COUNT")
+	keyBytes, err := k.cdc.MarshalBinaryLengthPrefixed(sdkTypes.KeyVPNsCount)
 
 	if err != nil {
 		return 0, errorMarshal()
@@ -192,7 +192,7 @@ func (k Keeper) GetSessionDetails(ctx csdkTypes.Context, sessionID string) (*sdk
 }
 
 func (k Keeper) SetActiveSessionIDs(ctx csdkTypes.Context, sessionIDs []string) csdkTypes.Error {
-	keyBytes, err := k.cdc.MarshalBinaryLengthPrefixed("ACTIVE_SESSION_IDS")
+	keyBytes, err := k.cdc.MarshalBinaryLengthPrefixed(sdkTypes.KeyActiveSessionIDs)
 
 	if err != nil {
 		return errorMarshal()
@@ -212,7 +212,7 @@ func (k Keeper) SetActiveSessionIDs(ctx csdkTypes.Context, sessionIDs []string) 
 }
 
 func (k Keeper) GetActiveSessionIDs(ctx csdkTypes.Context) ([]string, csdkTypes.Error) {
-	keyBytes, err := k.cdc.MarshalBinaryLengthPrefixed("ACTIVE_SESSION_IDS")
+	keyBytes, err := k.cdc.MarshalBinaryLengthPrefixed(sdkTypes.KeyActiveSessionIDs)
 
 	if err != nil {
 		return nil, errorMarshal()
@@ -234,7 +234,7 @@ func (k Keeper) GetActiveSessionIDs(ctx csdkTypes.Context) ([]string, csdkTypes.
 }
 
 func (k Keeper) SetSessionsCount(ctx csdkTypes.Context, count uint64) csdkTypes.Error {
-	keyBytes, err := k.cdc.MarshalBinaryLengthPrefixed("SESSIONS_COUNT")
+	keyBytes, err := k.cdc.MarshalBinaryLengthPrefixed(sdkTypes.KeySessionsCount)
 
 	if err != nil {
 		return errorMarshal()
@@ -253,7 +253,7 @@ func (k Keeper) SetSessionsCount(ctx csdkTypes.Context, count uint64) csdkTypes.
 }
 
 func (k Keeper) GetSessionsCount(ctx csdkTypes.Context) (uint64, csdkTypes.Error) {
-	keyBytes, err := k.cdc.MarshalBinaryLengthPrefixed("SESSIONS_COUNT")
+	keyBytes, err := k.cdc.MarshalBinaryLengthPrefixed(sdkTypes.KeySessionsCount)
 
 	if err != nil {
 		return 0, errorMarshal()
