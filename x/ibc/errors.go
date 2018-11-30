@@ -7,15 +7,13 @@ import (
 )
 
 const (
-	codeSpaceIBC = 200
+	codeSpaceIBC = csdkTypes.CodespaceType(200)
 
 	errCodeEmptyRelayer     = 201
-	errCodeInvalidSequence  = 202
-	errCodeEmptySrcChainID  = 203
-	errCodeEmptyDestChainID = 204
+	errCodeEmptySrcChainID  = 202
+	errCodeEmptyDestChainID = 203
 
 	errMsgEmptyRelayer     = "Empty relayer"
-	errMsgInvalidSequence  = "Invalid sequence"
 	errMsgEmptySrcChainID  = "Empty source chain ID"
 	errMsgEmptyDestChainID = "Empty destination chain ID"
 )

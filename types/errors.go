@@ -5,7 +5,7 @@ import (
 )
 
 const (
-	codeSpaceSDK = 100
+	codeSpaceSDK = csdkTypes.CodespaceType(100)
 
 	ErrCodeMarshal            = 101
 	ErrCodeUnmarshal          = 102

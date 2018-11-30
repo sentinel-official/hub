@@ -1,11 +1,12 @@
 package cli
 
 import (
+	"os"
+
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/client/utils"
 	"github.com/cosmos/cosmos-sdk/codec"
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
-	authCli "github.com/cosmos/cosmos-sdk/x/auth/client/cli"
 	authTxBuilder "github.com/cosmos/cosmos-sdk/x/auth/client/txbuilder"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -19,7 +20,7 @@ func UpdateSessionStatusCommand(cdc *codec.Codec) *cobra.Command {
 		Short: "Update VPN session status",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			txBldr := authTxBuilder.NewTxBuilderFromCLI().WithCodec(cdc)
-			cliCtx := context.NewCLIContext().WithCodec(cdc).WithAccountDecoder(authCli.GetAccountDecoder(cdc))
+			cliCtx := context.NewCLIContext().WithCodec(cdc).WithAccountDecoder(cdc)
 
 			sessionID := viper.GetString(flagSessionID)
 			status := viper.GetString(flagStatus)
@@ -37,7 +38,7 @@ func UpdateSessionStatusCommand(cdc *codec.Codec) *cobra.Command {
 			msg := vpn.NewMsgUpdateSessionStatus(from, sessionID, status)
 
 			if cliCtx.GenerateOnly {
-				return utils.PrintUnsignedStdTx(txBldr, cliCtx, []csdkTypes.Msg{msg}, false)
+				return utils.PrintUnsignedStdTx(os.Stdout, txBldr, cliCtx, []csdkTypes.Msg{msg}, false)
 			}
 
 			return utils.CompleteAndBroadcastTxCli(txBldr, cliCtx, []csdkTypes.Msg{msg})

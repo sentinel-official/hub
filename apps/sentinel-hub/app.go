@@ -75,7 +75,7 @@ func NewSentinelHub(logger log.Logger, db tmDb.DB, baseAppOptions ...func(*basea
 	app.SetEndBlocker(app.EndBlocker)
 	app.SetAnteHandler(auth.NewAnteHandler(app.accountKeeper, app.feeCollectionKeeper))
 
-	app.MountStoresIAVL(app.keyMain, app.keyAccount, app.keyIBC, app.keyCoinLocker)
+	app.MountStores(app.keyMain, app.keyAccount, app.keyIBC, app.keyCoinLocker)
 	err := app.LoadLatestVersion(app.keyMain)
 	if err != nil {
 		common.Exit(err.Error())

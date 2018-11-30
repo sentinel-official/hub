@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"os"
 	"strconv"
 
 	"github.com/cosmos/cosmos-sdk/client/context"
@@ -8,7 +9,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/utils"
 	"github.com/cosmos/cosmos-sdk/codec"
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
-	authCli "github.com/cosmos/cosmos-sdk/x/auth/client/cli"
 	authTxBuilder "github.com/cosmos/cosmos-sdk/x/auth/client/txbuilder"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
@@ -24,7 +24,7 @@ func PaymentCommand(cdc *codec.Codec) *cobra.Command {
 		Short: "Pay amount for using the VPN service",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			txBldr := authTxBuilder.NewTxBuilderFromCLI().WithCodec(cdc)
-			cliCtx := context.NewCLIContext().WithCodec(cdc).WithAccountDecoder(authCli.GetAccountDecoder(cdc))
+			cliCtx := context.NewCLIContext().WithCodec(cdc).WithAccountDecoder(cdc)
 
 			nodeID := viper.GetString(flagNodeID)
 			amount := viper.GetString(flagAmount)
@@ -110,7 +110,7 @@ func PaymentCommand(cdc *codec.Codec) *cobra.Command {
 			msg := vpn.NewMsgPayVPNService(from, nodeID, lockerID, coins, pubKey, signature)
 
 			if cliCtx.GenerateOnly {
-				return utils.PrintUnsignedStdTx(txBldr, cliCtx, []csdkTypes.Msg{msg}, false)
+				return utils.PrintUnsignedStdTx(os.Stdout, txBldr, cliCtx, []csdkTypes.Msg{msg}, false)
 			}
 
 			return utils.CompleteAndBroadcastTxCli(txBldr, cliCtx, []csdkTypes.Msg{msg})

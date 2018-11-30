@@ -10,7 +10,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
-	authCli "github.com/cosmos/cosmos-sdk/x/auth/client/cli"
 	authTxBuilder "github.com/cosmos/cosmos-sdk/x/auth/client/txbuilder"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -41,7 +40,7 @@ type relayCommander struct {
 func IBCRelayCmd(cdc *codec.Codec) *cobra.Command {
 	cmdr := relayCommander{
 		cdc:         cdc,
-		accDecoder:  authCli.GetAccountDecoder(cdc),
+		accDecoder:  context.GetAccountDecoder(cdc),
 		ibcStoreKey: "ibc",
 		accStoreKey: "acc",
 		logger:      log.NewTMLogger(log.NewSyncWriter(os.Stdout)),
@@ -104,7 +103,7 @@ func (c relayCommander) loop(fromChainID, fromChainNodeURI, toChainID, toChainNo
 	egressLengthKey, _ := c.cdc.MarshalBinaryLengthPrefixed(ibc.EgressLengthKey(toChainID))
 
 	for {
-		var ingressLength, egressLength int64
+		var ingressLength, egressLength uint64
 		ingressLengthBytes, err := query(toChainNodeURI, ingressLengthKey, c.ibcStoreKey)
 
 		if err != nil {
@@ -170,7 +169,7 @@ func (c relayCommander) broadcastTx(nodeURI string, tx []byte) error {
 	return err
 }
 
-func (c relayCommander) getSequence(nodeURI string) int64 {
+func (c relayCommander) getSequence(nodeURI string) uint64 {
 	res, err := query(nodeURI, auth.AddressStoreKey(c.address), c.accStoreKey)
 
 	if err != nil {
@@ -190,7 +189,7 @@ func (c relayCommander) getSequence(nodeURI string) int64 {
 	return 0
 }
 
-func (c relayCommander) refine(bz []byte, ibcSeq, accSeq int64, passphrase string) []byte {
+func (c relayCommander) refine(bz []byte, ibcSeq, accSeq uint64, passphrase string) []byte {
 	var packet types.IBCPacket
 
 	if err := c.cdc.UnmarshalBinaryLengthPrefixed(bz, &packet); err != nil {

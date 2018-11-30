@@ -7,7 +7,7 @@ import (
 )
 
 const (
-	codeSpaceVPN = 400
+	codeSpaceVPN = csdkTypes.CodespaceType(400)
 
 	errCodeLockerIDMismatch        = 401
 	errCodeVPNAlreadyExists        = 402

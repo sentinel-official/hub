@@ -16,7 +16,7 @@ import (
 	abciTypes "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/libs/cli"
 	"github.com/tendermint/tendermint/libs/common"
-	tmDb "github.com/tendermint/tendermint/libs/db"
+	tmDB "github.com/tendermint/tendermint/libs/db"
 	"github.com/tendermint/tendermint/libs/log"
 	"github.com/tendermint/tendermint/p2p"
 	tmTypes "github.com/tendermint/tendermint/types"
@@ -36,11 +36,10 @@ func main() {
 		PersistentPreRunE: server.PersistentPreRunEFn(ctx),
 	}
 
-	appInit := server.DefaultAppInit
-	rootCmd.AddCommand(InitCmd(ctx, cdc, appInit))
-	rootCmd.AddCommand(gaiaInit.TestnetFilesCmd(ctx, cdc, appInit))
+	rootCmd.AddCommand(InitCmd(ctx, cdc))
+	rootCmd.AddCommand(gaiaInit.TestnetFilesCmd(ctx, cdc))
 
-	server.AddCommands(ctx, cdc, rootCmd, appInit, newApp, exportAppStateAndTMValidators)
+	server.AddCommands(ctx, cdc, rootCmd, newApp, exportAppStateAndTMValidators)
 
 	rootDir := app.DefaultNodeHome
 	executor := cli.PrepareBaseCmd(rootCmd, "SH", rootDir)
@@ -51,7 +50,7 @@ func main() {
 	}
 }
 
-func InitCmd(ctx *server.Context, cdc *codec.Codec, appInit server.AppInit) *cobra.Command {
+func InitCmd(ctx *server.Context, cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "init",
 		Short: "Initialize genesis config, priv-validator file, and p2p-node file",
@@ -77,7 +76,7 @@ func InitCmd(ctx *server.Context, cdc *codec.Codec, appInit server.AppInit) *cob
 				return err
 			}
 
-			appState, err := appInit.AppGenState(cdc, tmTypes.GenesisDoc{}, []json.RawMessage{genTx})
+			appState, err := server.SimpleAppGenState(cdc, tmTypes.GenesisDoc{}, []json.RawMessage{genTx})
 			if err != nil {
 				return err
 			}
@@ -112,11 +111,13 @@ func InitCmd(ctx *server.Context, cdc *codec.Codec, appInit server.AppInit) *cob
 	return cmd
 }
 
-func newApp(logger log.Logger, db tmDb.DB, storeTracer io.Writer) abciTypes.Application {
+func newApp(logger log.Logger, db tmDB.DB, storeTracer io.Writer) abciTypes.Application {
 	return app.NewSentinelHub(logger, db, baseapp.SetPruning(viper.GetString("pruning")))
 }
 
-func exportAppStateAndTMValidators(logger log.Logger, db tmDb.DB, storeTracer io.Writer) (json.RawMessage, []tmTypes.GenesisValidator, error) {
+func exportAppStateAndTMValidators(logger log.Logger, db tmDB.DB, storeTracer io.Writer, _ int64, _ bool) (
+	json.RawMessage, []tmTypes.GenesisValidator, error) {
 	bapp := app.NewSentinelHub(logger, db)
+
 	return bapp.ExportAppStateAndValidators()
 }

@@ -7,7 +7,7 @@ import (
 )
 
 const (
-	codeSpaceHub = 300
+	codeSpaceHub = csdkTypes.CodespaceType(300)
 
 	errCodeLockerAlreadyExists           = 301
 	errCodeLockerNotExists               = 302

@@ -7,15 +7,29 @@ import (
 	_ "github.com/cosmos/cosmos-sdk/client/lcd/statik"
 	"github.com/cosmos/cosmos-sdk/client/rpc"
 	"github.com/cosmos/cosmos-sdk/client/tx"
+	csdkTypes "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/version"
 	authCli "github.com/cosmos/cosmos-sdk/x/auth/client/cli"
+	authRest "github.com/cosmos/cosmos-sdk/x/auth/client/rest"
 	bankCli "github.com/cosmos/cosmos-sdk/x/bank/client/cli"
+	bankRest "github.com/cosmos/cosmos-sdk/x/bank/client/rest"
+	cIBCCli "github.com/cosmos/cosmos-sdk/x/ibc/client/cli"
+	slashingCli "github.com/cosmos/cosmos-sdk/x/slashing/client/cli"
+	slashingRest "github.com/cosmos/cosmos-sdk/x/slashing/client/rest"
+	stakeCli "github.com/cosmos/cosmos-sdk/x/stake/client/cli"
+	stakeRest "github.com/cosmos/cosmos-sdk/x/stake/client/rest"
 	"github.com/spf13/cobra"
 	"github.com/tendermint/tendermint/libs/cli"
 
-	app "github.com/ironman0x7b2/sentinel-sdk/apps/sentinel-hub"
-	"github.com/ironman0x7b2/sentinel-sdk/types"
 	ibcCli "github.com/ironman0x7b2/sentinel-sdk/x/ibc/client/cli"
+
+	app "github.com/ironman0x7b2/sentinel-sdk/apps/sentinel-hub"
+)
+
+const (
+	storeAcc      = "acc"
+	storeSlashing = "slashing"
+	storeStake    = "stake"
 )
 
 var rootCmd = &cobra.Command{
@@ -28,25 +42,54 @@ func main() {
 
 	cdc := app.MakeCodec()
 
-	rpc.AddCommands(rootCmd)
-	rootCmd.AddCommand(client.LineBreak)
-	tx.AddCommands(rootCmd, cdc)
-	rootCmd.AddCommand(client.LineBreak)
+	config := csdkTypes.GetConfig()
+	config.SetBech32PrefixForAccount("sentacc", "sentpub")
+	config.SetBech32PrefixForValidator("sentval", "sentvalpub")
+	config.SetBech32PrefixForConsensusNode("sentcons", "sentconspub")
+	config.Seal()
 
 	rootCmd.AddCommand(
-		client.GetCommands(
-			authCli.GetAccountCmd("acc", cdc, types.GetAccountDecoder(cdc)),
-		)...)
+		rpc.InitClientCommand(),
+		rpc.StatusCommand(),
+		client.LineBreak,
+		tx.SearchTxCmd(cdc),
+		tx.QueryTxCmd(cdc),
+		client.LineBreak,
+	)
 
 	rootCmd.AddCommand(
-		client.PostCommands(
-			bankCli.SendTxCmd(cdc),
-			ibcCli.IBCRelayCmd(cdc),
-		)...)
+		stakeCli.GetCmdQueryValidator(storeStake, cdc),
+		stakeCli.GetCmdQueryValidators(storeStake, cdc),
+		stakeCli.GetCmdQueryValidatorUnbondingDelegations(storeStake, cdc),
+		stakeCli.GetCmdQueryValidatorRedelegations(storeStake, cdc),
+		stakeCli.GetCmdQueryDelegation(storeStake, cdc),
+		stakeCli.GetCmdQueryDelegations(storeStake, cdc),
+		stakeCli.GetCmdQueryPool(storeStake, cdc),
+		stakeCli.GetCmdQueryParams(storeStake, cdc),
+		stakeCli.GetCmdQueryUnbondingDelegation(storeStake, cdc),
+		stakeCli.GetCmdQueryUnbondingDelegations(storeStake, cdc),
+		stakeCli.GetCmdQueryRedelegation(storeStake, cdc),
+		stakeCli.GetCmdQueryRedelegations(storeStake, cdc),
+		slashingCli.GetCmdQuerySigningInfo(storeSlashing, cdc),
+		stakeCli.GetCmdQueryValidatorDelegations(storeStake, cdc),
+		authCli.GetAccountCmd(storeAcc, cdc),
+	)
+
+	rootCmd.AddCommand(
+		bankCli.SendTxCmd(cdc),
+		cIBCCli.IBCTransferCmd(cdc),
+		ibcCli.IBCRelayCmd(cdc),
+		stakeCli.GetCmdCreateValidator(cdc),
+		stakeCli.GetCmdEditValidator(cdc),
+		stakeCli.GetCmdDelegate(cdc),
+		stakeCli.GetCmdUnbond(storeStake, cdc),
+		stakeCli.GetCmdRedelegate(storeStake, cdc),
+		slashingCli.GetCmdUnjail(cdc),
+	)
 
 	rootCmd.AddCommand(
 		client.LineBreak,
-		lcd.ServeCommand(cdc),
+		lcd.ServeCommand(cdc, registerRoutes),
 		keys.Commands(),
 		client.LineBreak,
 		version.VersionCmd,
@@ -57,4 +100,14 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+}
+
+func registerRoutes(rs *lcd.RestServer) {
+	keys.RegisterRoutes(rs.Mux, rs.CliCtx.Indent)
+	rpc.RegisterRoutes(rs.CliCtx, rs.Mux)
+	tx.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc)
+	authRest.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, storeAcc)
+	bankRest.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, rs.KeyBase)
+	stakeRest.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, rs.KeyBase)
+	slashingRest.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, rs.KeyBase)
 }

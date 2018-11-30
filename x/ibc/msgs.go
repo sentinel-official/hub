@@ -10,7 +10,7 @@ import (
 
 type MsgIBCTransaction struct {
 	Relayer   csdkTypes.AccAddress `json:"relayer"`
-	Sequence  int64                `json:"sequence"`
+	Sequence  uint64               `json:"sequence"`
 	IBCPacket sdkTypes.IBCPacket   `json:"ibc_packet"`
 }
 
