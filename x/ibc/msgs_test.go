@@ -13,7 +13,7 @@ import (
 func TestMsgIBCTransaction_ValidateBasic(t *testing.T) {
 	type fields struct {
 		Relayer   csdkTypes.AccAddress
-		Sequence  int64
+		Sequence  uint64
 		IBCPacket sdkTypes.IBCPacket
 	}
 	tests := []struct {
@@ -23,31 +23,19 @@ func TestMsgIBCTransaction_ValidateBasic(t *testing.T) {
 	}{
 		{"testSourceChainID", fields{
 			Relayer:  accAddress1,
-			Sequence: int64(0),
+			Sequence: uint64(0),
 			IBCPacket: sdkTypes.IBCPacket{
 				SrcChainID:  "",
 				DestChainID: "sentinel-hub",
 				Message:     nil,
 			},
 		},
-			csdkTypes.NewError(200, 203, "Empty source chain ID"),
-		},
-
-		{"testIBCSequence", fields{
-			Relayer:  accAddress1,
-			Sequence: -4,
-			IBCPacket: sdkTypes.IBCPacket{
-				SrcChainID:  "sentinel-vpn",
-				DestChainID: "sentinel-hub",
-				Message:     nil,
-			},
-		},
-			csdkTypes.NewError(200, 103, "Invalid IBC sequence"),
+			errorEmptySrcChainID(),
 		},
 
 		{"testMsgValid", fields{
 			Relayer:  accAddress1,
-			Sequence: int64(0),
+			Sequence: uint64(2),
 			IBCPacket: sdkTypes.IBCPacket{
 				SrcChainID:  "sentinel-vpn",
 				DestChainID: "sentinel-hub",
@@ -59,26 +47,26 @@ func TestMsgIBCTransaction_ValidateBasic(t *testing.T) {
 
 		{"testRelayAddress", fields{
 			Relayer:  nil,
-			Sequence: int64(0),
+			Sequence: uint64(1),
 			IBCPacket: sdkTypes.IBCPacket{
 				SrcChainID:  "sentinel-vpn",
 				DestChainID: "sentinel-hub",
 				Message:     nil,
 			},
 		},
-			csdkTypes.NewError(200, 201, "Empty relayer"),
+			errorEmptyRelayer(),
 		},
 
 		{"testDestinationChainID", fields{
 			Relayer:  accAddress2,
-			Sequence: int64(0),
+			Sequence: uint64(0),
 			IBCPacket: sdkTypes.IBCPacket{
 				SrcChainID:  "sentinel-vpn",
 				DestChainID: "",
 				Message:     nil,
 			},
 		},
-			csdkTypes.NewError(200, 204, "Empty destination chain ID"),
+			errorEmptyDestChainID(),
 		},
 	}
 
@@ -99,7 +87,7 @@ func TestMsgIBCTransaction_ValidateBasic(t *testing.T) {
 func TestMsgIBCTransaction_GetSigners(t *testing.T) {
 	msg := MsgIBCTransaction{
 		csdkTypes.AccAddress("TestMsgIBCTransaction"),
-		int64(0),
+		0,
 		sdkTypes.IBCPacket{
 			"sentinel-vpn",
 			"sentinel-hub",
@@ -115,21 +103,21 @@ func TestMsgIBCTransaction_GetSignBytes(t *testing.T) {
 
 	msg := MsgIBCTransaction{
 		csdkTypes.AccAddress("TestMsgIBCTransaction"),
-		int64(0),
+		1,
 		sdkTypes.IBCPacket{
 			"sentinel-vpn",
 			"sentinel-hub",
 			nil,
 		},
 	}
-	expected := `{"relayer":"cosmos123jhxazdwdn5jsjr23exzmnnv93hg6t0dcm0snjh","sequence":0,"ibc_packet":{"src_chain_id":"sentinel-vpn","dest_chain_id":"sentinel-hub","message":null}}`
+	expected := `{"relayer":"cosmos123jhxazdwdn5jsjr23exzmnnv93hg6t0dcm0snjh","sequence":1,"ibc_packet":{"src_chain_id":"sentinel-vpn","dest_chain_id":"sentinel-hub","message":null}}`
 	require.Equal(t, expected, string(msg.GetSignBytes()))
 }
 
 func TestMsgIBCTransaction_Route(t *testing.T) {
 	msg := MsgIBCTransaction{
 		csdkTypes.AccAddress("TestMsgIBCTransaction"),
-		int64(0),
+		1,
 		sdkTypes.IBCPacket{
 			"sentinel-vpn",
 			"sentinel-hub",
@@ -143,7 +131,7 @@ func TestMsgIBCTransaction_Route(t *testing.T) {
 func TestMsgIBCTransaction_Type(t *testing.T) {
 	msg := MsgIBCTransaction{
 		csdkTypes.AccAddress("TestMsgIBCTransaction"),
-		int64(0),
+		3,
 		sdkTypes.IBCPacket{
 			"sentinel-vpn",
 			"sentinel-hub",
