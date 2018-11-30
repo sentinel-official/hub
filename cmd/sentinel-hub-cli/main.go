@@ -21,11 +21,9 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/tendermint/tendermint/libs/cli"
 
-	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
-
-	ibcCli "github.com/ironman0x7b2/sentinel-sdk/x/ibc/client/cli"
-
 	app "github.com/ironman0x7b2/sentinel-sdk/apps/sentinel-hub"
+	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
+	ibcCli "github.com/ironman0x7b2/sentinel-sdk/x/ibc/client/cli"
 )
 
 var rootCmd = &cobra.Command{

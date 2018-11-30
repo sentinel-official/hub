@@ -4,13 +4,13 @@ import (
 	"github.com/cosmos/cosmos-sdk/store"
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
 	"github.com/tendermint/tendermint/crypto/ed25519"
-	dbm "github.com/tendermint/tendermint/libs/db"
+	tmDB "github.com/tendermint/tendermint/libs/db"
 
 	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
 )
 
 func setupMultiStore() (csdkTypes.MultiStore, *csdkTypes.KVStoreKey, *csdkTypes.KVStoreKey, *csdkTypes.KVStoreKey) {
-	db := dbm.NewMemDB()
+	db := tmDB.NewMemDB()
 
 	accKey := csdkTypes.NewKVStoreKey(sdkTypes.KeyAccount)
 	ibcKey := csdkTypes.NewKVStoreKey(sdkTypes.KeyIBC)
