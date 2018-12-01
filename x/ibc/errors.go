@@ -9,11 +9,11 @@ import (
 const (
 	codeSpaceIBC = csdkTypes.CodespaceType(200)
 
-	errCodeEmptyRelayer     = 201
+	errCodeInvalidRelayer   = 201
 	errCodeEmptySrcChainID  = 202
 	errCodeEmptyDestChainID = 203
 
-	errMsgEmptyRelayer     = "Empty relayer"
+	errMsgInvalidRelayer   = "Invalid relayer"
 	errMsgEmptySrcChainID  = "Empty source chain ID"
 	errMsgEmptyDestChainID = "Empty destination chain ID"
 )
@@ -26,12 +26,8 @@ func errorUnmarshal() csdkTypes.Error {
 	return csdkTypes.NewError(codeSpaceIBC, sdkTypes.ErrCodeUnmarshal, sdkTypes.ErrMsgUnmarshal)
 }
 
-func errorEmptyRelayer() csdkTypes.Error {
-	return csdkTypes.NewError(codeSpaceIBC, errCodeEmptyRelayer, errMsgEmptyRelayer)
-}
-
-func errorInvalidIBCSequence() csdkTypes.Error {
-	return csdkTypes.NewError(codeSpaceIBC, sdkTypes.ErrCodeInvalidIBCSequence, sdkTypes.ErrMsgInvalidIBCSequence)
+func errorInvalidRelayer() csdkTypes.Error {
+	return csdkTypes.NewError(codeSpaceIBC, errCodeInvalidRelayer, errMsgInvalidRelayer)
 }
 
 func errorEmptySrcChainID() csdkTypes.Error {

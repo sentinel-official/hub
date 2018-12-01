@@ -96,8 +96,8 @@ func getMsgReleaseCoinsToManySignature(lockerID string, addresses []csdkTypes.Ac
 
 func getIBCPacketMsgLockCoins(lockerID string) sdkTypes.IBCPacket {
 	return sdkTypes.IBCPacket{
-		"src-chain-id",
-		"dest-chain-id",
+		"src_chain_id",
+		"dest_chain_id",
 		MsgLockCoins{
 			lockerID,
 			csdkTypes.Coins{coin(10, "x")},
@@ -109,8 +109,8 @@ func getIBCPacketMsgLockCoins(lockerID string) sdkTypes.IBCPacket {
 
 func getIBCPacketMsgReleaseCoins(lockerID string) sdkTypes.IBCPacket {
 	return sdkTypes.IBCPacket{
-		"src-chain-id",
-		"dest-chain-id",
+		"src_chain_id",
+		"dest_chain_id",
 		MsgReleaseCoins{
 			lockerID,
 			pubKey1,
@@ -121,8 +121,8 @@ func getIBCPacketMsgReleaseCoins(lockerID string) sdkTypes.IBCPacket {
 
 func getIBCPacketMsgReleaseCoinsToMany(lockerID string) sdkTypes.IBCPacket {
 	return sdkTypes.IBCPacket{
-		"src-chain-id",
-		"dest-chain-id",
+		"src_chain_id",
+		"dest_chain_id",
 		MsgReleaseCoinsToMany{
 			lockerID,
 			[]csdkTypes.AccAddress{accAddress1, accAddress2, accAddress3},

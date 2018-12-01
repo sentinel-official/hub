@@ -24,11 +24,7 @@ func (msg MsgIBCTransaction) Type() string {
 
 func (msg MsgIBCTransaction) ValidateBasic() csdkTypes.Error {
 	if msg.Relayer == nil || msg.Relayer.Empty() {
-		return errorEmptyRelayer()
-	}
-
-	if msg.Sequence < 0 {
-		return errorInvalidIBCSequence()
+		return errorInvalidRelayer()
 	}
 
 	if len(msg.IBCPacket.SrcChainID) == 0 {

@@ -8,7 +8,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/cosmos/cosmos-sdk/x/bank"
 	"github.com/stretchr/testify/require"
-	abci "github.com/tendermint/tendermint/abci/types"
+	abciTypes "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/libs/log"
 
 	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
@@ -16,20 +16,17 @@ import (
 )
 
 func Test_handleLockCoins(t *testing.T) {
-	multiStore, authKey, ibcKey, coinLockerKey := setupMultiStore()
-	ctx := csdkTypes.NewContext(multiStore, abci.Header{}, false, log.NewNopLogger())
+	multiStore, accountKey, ibcKey, coinLockerKey := setupMultiStore()
+	ctx := csdkTypes.NewContext(multiStore, abciTypes.Header{}, false, log.NewNopLogger())
 
 	cdc := codec.New()
 
 	codec.RegisterCrypto(cdc)
-	csdkTypes.RegisterCodec(cdc)
-	bank.RegisterCodec(cdc)
 	auth.RegisterCodec(cdc)
 	sdkTypes.RegisterCodec(cdc)
-	ibc.RegisterCodec(cdc)
 	RegisterCodec(cdc)
 
-	accountKeeper := auth.NewAccountKeeper(cdc, authKey, auth.ProtoBaseAccount)
+	accountKeeper := auth.NewAccountKeeper(cdc, accountKey, auth.ProtoBaseAccount)
 	bankKeeper := bank.NewBaseKeeper(accountKeeper)
 	ibcKeeper := ibc.NewKeeper(ibcKey, cdc)
 	hubKeeper := NewBaseKeeper(cdc, coinLockerKey, bankKeeper)
@@ -72,20 +69,17 @@ func Test_handleLockCoins(t *testing.T) {
 }
 
 func Test_handleReleaseCoins(t *testing.T) {
-	multiStore, authKey, ibcKey, coinLockerKey := setupMultiStore()
-	ctx := csdkTypes.NewContext(multiStore, abci.Header{}, false, log.NewNopLogger())
+	multiStore, accountKey, ibcKey, coinLockerKey := setupMultiStore()
+	ctx := csdkTypes.NewContext(multiStore, abciTypes.Header{}, false, log.NewNopLogger())
 
 	cdc := codec.New()
 
 	codec.RegisterCrypto(cdc)
-	csdkTypes.RegisterCodec(cdc)
-	bank.RegisterCodec(cdc)
 	auth.RegisterCodec(cdc)
 	sdkTypes.RegisterCodec(cdc)
-	ibc.RegisterCodec(cdc)
 	RegisterCodec(cdc)
 
-	accountKeeper := auth.NewAccountKeeper(cdc, authKey, auth.ProtoBaseAccount)
+	accountKeeper := auth.NewAccountKeeper(cdc, accountKey, auth.ProtoBaseAccount)
 	bankKeeper := bank.NewBaseKeeper(accountKeeper)
 	ibcKeeper := ibc.NewKeeper(ibcKey, cdc)
 	hubKeeper := NewBaseKeeper(cdc, coinLockerKey, bankKeeper)
@@ -136,20 +130,17 @@ func Test_handleReleaseCoins(t *testing.T) {
 }
 
 func Test_handleReleaseCoinsToMany(t *testing.T) {
-	multiStore, authKey, ibcKey, coinLockerKey := setupMultiStore()
-	ctx := csdkTypes.NewContext(multiStore, abci.Header{}, false, log.NewNopLogger())
+	multiStore, accountKey, ibcKey, coinLockerKey := setupMultiStore()
+	ctx := csdkTypes.NewContext(multiStore, abciTypes.Header{}, false, log.NewNopLogger())
 
 	cdc := codec.New()
 
 	codec.RegisterCrypto(cdc)
-	csdkTypes.RegisterCodec(cdc)
-	bank.RegisterCodec(cdc)
 	auth.RegisterCodec(cdc)
 	sdkTypes.RegisterCodec(cdc)
-	ibc.RegisterCodec(cdc)
 	RegisterCodec(cdc)
 
-	accountKeeper := auth.NewAccountKeeper(cdc, authKey, auth.ProtoBaseAccount)
+	accountKeeper := auth.NewAccountKeeper(cdc, accountKey, auth.ProtoBaseAccount)
 	bankKeeper := bank.NewBaseKeeper(accountKeeper)
 	ibcKeeper := ibc.NewKeeper(ibcKey, cdc)
 	hubKeeper := NewBaseKeeper(cdc, coinLockerKey, bankKeeper)
@@ -200,20 +191,17 @@ func Test_handleReleaseCoinsToMany(t *testing.T) {
 }
 
 func Test_NewIBCHubHandler(t *testing.T) {
-	multiStore, authKey, ibcKey, coinLockerKey := setupMultiStore()
-	ctx := csdkTypes.NewContext(multiStore, abci.Header{}, false, log.NewNopLogger())
+	multiStore, accountKey, ibcKey, coinLockerKey := setupMultiStore()
+	ctx := csdkTypes.NewContext(multiStore, abciTypes.Header{}, false, log.NewNopLogger())
 
 	cdc := codec.New()
 
 	codec.RegisterCrypto(cdc)
-	csdkTypes.RegisterCodec(cdc)
-	bank.RegisterCodec(cdc)
 	auth.RegisterCodec(cdc)
 	sdkTypes.RegisterCodec(cdc)
-	ibc.RegisterCodec(cdc)
 	RegisterCodec(cdc)
 
-	accountKeeper := auth.NewAccountKeeper(cdc, authKey, auth.ProtoBaseAccount)
+	accountKeeper := auth.NewAccountKeeper(cdc, accountKey, auth.ProtoBaseAccount)
 	bankKeeper := bank.NewBaseKeeper(accountKeeper)
 	ibcKeeper := ibc.NewKeeper(ibcKey, cdc)
 	hubKeeper := NewBaseKeeper(cdc, coinLockerKey, bankKeeper)

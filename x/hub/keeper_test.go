@@ -8,28 +8,22 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/cosmos/cosmos-sdk/x/bank"
 	"github.com/stretchr/testify/require"
-	abci "github.com/tendermint/tendermint/abci/types"
+	abciTypes "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/libs/log"
 
 	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
-	"github.com/ironman0x7b2/sentinel-sdk/x/ibc"
 )
 
 func TestKeeper(t *testing.T) {
-	multiStore, accKey, _, coinLockerKey := setupMultiStore()
-	ctx := csdkTypes.NewContext(multiStore, abci.Header{}, false, log.NewNopLogger())
+	multiStore, accountKey, _, coinLockerKey := setupMultiStore()
+	ctx := csdkTypes.NewContext(multiStore, abciTypes.Header{}, false, log.NewNopLogger())
 
 	cdc := codec.New()
 
 	codec.RegisterCrypto(cdc)
-	csdkTypes.RegisterCodec(cdc)
-	bank.RegisterCodec(cdc)
 	auth.RegisterCodec(cdc)
-	sdkTypes.RegisterCodec(cdc)
-	ibc.RegisterCodec(cdc)
-	RegisterCodec(cdc)
 
-	accountKeeper := auth.NewAccountKeeper(cdc, accKey, auth.ProtoBaseAccount)
+	accountKeeper := auth.NewAccountKeeper(cdc, accountKey, auth.ProtoBaseAccount)
 	bankKeeper := bank.NewBaseKeeper(accountKeeper)
 	hubKeeper := NewBaseKeeper(cdc, coinLockerKey, bankKeeper)
 
@@ -38,9 +32,7 @@ func TestKeeper(t *testing.T) {
 
 	account1 := auth.NewBaseAccountWithAddress(accAddress1)
 
-	if err := account1.SetCoins(csdkTypes.Coins{
-		coin(100, "x"),
-	}); err != nil {
+	if err := account1.SetCoins(csdkTypes.Coins{coin(100, "x")}); err != nil {
 		panic(err)
 	}
 
