@@ -22,11 +22,11 @@ func NewIBCHubHandler(ibcKeeper ibc.Keeper, hubKeeper Keeper) csdkTypes.Handler 
 			case MsgReleaseCoinsToMany:
 				return handleReleaseCoinsToMany(ctx, ibcKeeper, hubKeeper, msg)
 			default:
-				errMsg := fmt.Sprintf("Unrecognized IBC Msg: %v", reflect.TypeOf(ibcMsg))
+				errMsg := fmt.Sprintf("Unrecognized IBC msg: %v", reflect.TypeOf(ibcMsg).Name())
 				return csdkTypes.ErrUnknownRequest(errMsg).Result()
 			}
 		default:
-			errMsg := fmt.Sprintf("Unrecognized Msg type: %v", msg.Type())
+			errMsg := fmt.Sprintf("Unrecognized msg type: %v", reflect.TypeOf(msg).Name())
 			return csdkTypes.ErrUnknownRequest(errMsg).Result()
 		}
 	}

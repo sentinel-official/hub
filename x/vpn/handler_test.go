@@ -156,5 +156,5 @@ func TestNewHandler(t *testing.T) {
 	require.Equal(t, csdkTypes.Result{}, result)
 
 	result = handler(ctx, msg3)
-	require.Equal(t, csdkTypes.ErrUnknownRequest("Unrecognized Msg type: " + reflect.TypeOf(msg3).Name()).Result(), result)
+	require.Equal(t, csdkTypes.ErrUnknownRequest("Unrecognized msg type: " + reflect.TypeOf(msg3).Name()).Result(), result)
 }

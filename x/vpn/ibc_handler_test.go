@@ -189,7 +189,7 @@ func TestNewIBCVPNHandler(t *testing.T) {
 
 	msg3.IBCPacket.Message = csdkTypes.TestMsg{}
 	result = handler(ctx, msg3)
-	require.Equal(t, csdkTypes.ErrUnknownRequest("Unrecognized ibc msg type: " + reflect.TypeOf(msg3.IBCPacket.Message).Name()).Result(), result)
+	require.Equal(t, csdkTypes.ErrUnknownRequest("Unrecognized IBC msg type: " + reflect.TypeOf(msg3.IBCPacket.Message).Name()).Result(), result)
 
 	result = handler(ctx, msg4)
 	require.Equal(t, csdkTypes.ErrUnknownRequest("Unrecognized msg type: " + reflect.TypeOf(msg4).Name()).Result(), result)

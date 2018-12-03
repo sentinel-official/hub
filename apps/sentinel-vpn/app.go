@@ -72,7 +72,7 @@ func NewSentinelVPN(logger log.Logger, db tmDb.DB, baseAppOptions ...func(*basea
 	app.Router().
 		AddRoute(sdkTypes.KeyBank, bank.NewHandler(app.bankKeeper)).
 		AddRoute(sdkTypes.KeyVPN, vpn.NewHandler(app.vpnKeeper, app.ibcKeeper)).
-		AddRoute(sdkTypes.KeySession, vpn.NewIBCVPNHandler(app.ibcKeeper, app.vpnKeeper))
+		AddRoute(sdkTypes.KeyIBC, vpn.NewIBCVPNHandler(app.ibcKeeper, app.vpnKeeper))
 
 	app.SetInitChainer(app.initChainer)
 	app.SetBeginBlocker(app.BeginBlocker)

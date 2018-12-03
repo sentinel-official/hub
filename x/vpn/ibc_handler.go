@@ -27,7 +27,7 @@ func NewIBCVPNHandler(ibcKeeper ibc.Keeper, vpnKeeper Keeper) csdkTypes.Handler 
 					return csdkTypes.ErrUnknownRequest(errMsg).Result()
 				}
 			default:
-				errMsg := "Unrecognized ibc msg type: " + reflect.TypeOf(ibcMsg).Name()
+				errMsg := "Unrecognized IBC msg type: " + reflect.TypeOf(ibcMsg).Name()
 				return csdkTypes.ErrUnknownRequest(errMsg).Result()
 			}
 		default:

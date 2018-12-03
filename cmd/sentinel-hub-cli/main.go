@@ -37,9 +37,9 @@ func main() {
 	cdc := app.MakeCodec()
 
 	config := csdkTypes.GetConfig()
-	config.SetBech32PrefixForAccount("sentacc", "sentpub")
-	config.SetBech32PrefixForValidator("sentval", "sentvalpub")
-	config.SetBech32PrefixForConsensusNode("sentcons", "sentconspub")
+	config.SetBech32PrefixForAccount("cosmos", "cosmospub")
+	config.SetBech32PrefixForValidator("cosmosvaloper", "cosmosvaloperpub")
+	config.SetBech32PrefixForConsensusNode("cosmosvalcons", "cosmosvalconspub")
 	config.Seal()
 
 	rootCmd.AddCommand(
@@ -72,7 +72,6 @@ func main() {
 	rootCmd.AddCommand(
 		bankCli.SendTxCmd(cdc),
 		cIBCCli.IBCTransferCmd(cdc),
-		ibcCli.IBCRelayCmd(cdc, sdkTypes.KeyIBC, sdkTypes.KeyAccount),
 		stakeCli.GetCmdCreateValidator(cdc),
 		stakeCli.GetCmdEditValidator(cdc),
 		stakeCli.GetCmdDelegate(cdc),
@@ -80,6 +79,12 @@ func main() {
 		stakeCli.GetCmdRedelegate(sdkTypes.KeyStake, cdc),
 		slashingCli.GetCmdUnjail(cdc),
 	)
+
+	rootCmd.AddCommand(client.LineBreak)
+	rootCmd.AddCommand(
+		client.PostCommands(
+			ibcCli.IBCRelayCmd(cdc, sdkTypes.KeyIBC, sdkTypes.KeyAccount),
+		)...)
 
 	rootCmd.AddCommand(
 		client.LineBreak,

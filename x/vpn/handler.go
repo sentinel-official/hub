@@ -21,7 +21,7 @@ func NewHandler(k Keeper, ik ibc.Keeper) csdkTypes.Handler {
 		case MsgDeregisterNode:
 			return handleDeregisterNode(ctx, k, ik, msg)
 		default:
-			errMsg := "Unrecognized Msg type: " + reflect.TypeOf(msg).Name()
+			errMsg := "Unrecognized msg type: " + reflect.TypeOf(msg).Name()
 			return csdkTypes.ErrUnknownRequest(errMsg).Result()
 		}
 	}
