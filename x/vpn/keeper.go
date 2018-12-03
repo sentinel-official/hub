@@ -107,8 +107,8 @@ func (k Keeper) GetActiveNodeIDs(ctx csdkTypes.Context) ([]string, csdkTypes.Err
 	return nodeIDs, nil
 }
 
-func (k Keeper) SetVPNsCount(ctx csdkTypes.Context, count uint64) csdkTypes.Error {
-	keyBytes, err := k.cdc.MarshalBinaryLengthPrefixed(sdkTypes.KeyVPNsCount)
+func (k Keeper) SetVPNsCount(ctx csdkTypes.Context, address csdkTypes.AccAddress, count uint64) csdkTypes.Error {
+	keyBytes, err := k.cdc.MarshalBinaryLengthPrefixed(sdkTypes.VPNsCountKey(address))
 
 	if err != nil {
 		return errorMarshal()
@@ -126,8 +126,8 @@ func (k Keeper) SetVPNsCount(ctx csdkTypes.Context, count uint64) csdkTypes.Erro
 	return nil
 }
 
-func (k Keeper) GetVPNsCount(ctx csdkTypes.Context) (uint64, csdkTypes.Error) {
-	keyBytes, err := k.cdc.MarshalBinaryLengthPrefixed(sdkTypes.KeyVPNsCount)
+func (k Keeper) GetVPNsCount(ctx csdkTypes.Context, address csdkTypes.AccAddress) (uint64, csdkTypes.Error) {
+	keyBytes, err := k.cdc.MarshalBinaryLengthPrefixed(sdkTypes.VPNsCountKey(address))
 
 	if err != nil {
 		return 0, errorMarshal()
@@ -233,8 +233,8 @@ func (k Keeper) GetActiveSessionIDs(ctx csdkTypes.Context) ([]string, csdkTypes.
 	return sessionIDs, nil
 }
 
-func (k Keeper) SetSessionsCount(ctx csdkTypes.Context, count uint64) csdkTypes.Error {
-	keyBytes, err := k.cdc.MarshalBinaryLengthPrefixed(sdkTypes.KeySessionsCount)
+func (k Keeper) SetSessionsCount(ctx csdkTypes.Context, address csdkTypes.AccAddress, count uint64) csdkTypes.Error {
+	keyBytes, err := k.cdc.MarshalBinaryLengthPrefixed(sdkTypes.SessionsCountKey(address))
 
 	if err != nil {
 		return errorMarshal()
@@ -252,8 +252,8 @@ func (k Keeper) SetSessionsCount(ctx csdkTypes.Context, count uint64) csdkTypes.
 	return nil
 }
 
-func (k Keeper) GetSessionsCount(ctx csdkTypes.Context) (uint64, csdkTypes.Error) {
-	keyBytes, err := k.cdc.MarshalBinaryLengthPrefixed(sdkTypes.KeySessionsCount)
+func (k Keeper) GetSessionsCount(ctx csdkTypes.Context, address csdkTypes.AccAddress) (uint64, csdkTypes.Error) {
+	keyBytes, err := k.cdc.MarshalBinaryLengthPrefixed(sdkTypes.SessionsCountKey(address))
 
 	if err != nil {
 		return 0, errorMarshal()
@@ -387,13 +387,13 @@ func (k Keeper) AddVPN(ctx csdkTypes.Context, vpnID string, vpnDetails *sdkTypes
 		return err
 	}
 
-	vpnsCount, err := k.GetVPNsCount(ctx)
+	vpnsCount, err := k.GetVPNsCount(ctx, vpnDetails.Address)
 
 	if err != nil {
 		return err
 	}
 
-	if err := k.SetVPNsCount(ctx, vpnsCount+1); err != nil {
+	if err := k.SetVPNsCount(ctx, vpnDetails.Address, vpnsCount+1); err != nil {
 		return err
 	}
 
@@ -405,13 +405,13 @@ func (k Keeper) AddSession(ctx csdkTypes.Context, sessionID string, sessionDetai
 		return err
 	}
 
-	sessionsCount, err := k.GetSessionsCount(ctx)
+	sessionsCount, err := k.GetSessionsCount(ctx, sessionDetails.ClientAddress)
 
 	if err != nil {
 		return err
 	}
 
-	if err := k.SetSessionsCount(ctx, sessionsCount+1); err != nil {
+	if err := k.SetSessionsCount(ctx, sessionDetails.ClientAddress, sessionsCount+1); err != nil {
 		return err
 	}
 

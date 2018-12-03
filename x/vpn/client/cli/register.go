@@ -65,7 +65,7 @@ func RegisterCommand(cdc *codec.Codec) *cobra.Command {
 				return errors.Errorf("Address %s doesn't have enough coins to pay for this transaction.", from)
 			}
 
-			vpnsCountBytes, err := cliCtx.QueryStore(cdc.MustMarshalBinaryLengthPrefixed(sdkTypes.KeyVPNsCount), sdkTypes.KeyVPN)
+			vpnsCountBytes, err := cliCtx.QueryStore(cdc.MustMarshalBinaryLengthPrefixed(sdkTypes.VPNsCountKey(from)), sdkTypes.KeyVPN)
 
 			if err != nil {
 				return err

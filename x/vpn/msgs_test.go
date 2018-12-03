@@ -2,523 +2,369 @@ package vpn
 
 import (
 	"encoding/json"
-	csdkTypes "github.com/cosmos/cosmos-sdk/types"
-	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
-	"github.com/stretchr/testify/require"
-	"github.com/tendermint/tendermint/crypto"
 	"testing"
+
+	csdkTypes "github.com/cosmos/cosmos-sdk/types"
+	"github.com/stretchr/testify/require"
+
+	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
 )
 
 func TestMsgRegisterNode_ValidateBasic(t *testing.T) {
-	type fields struct {
-		From csdkTypes.AccAddress
-
-		APIPort    int64
-		Location   sdkTypes.Location
-		NetSpeed   sdkTypes.NetSpeed
-		EncMethod  string
-		PricePerGB int64
-		Version    string
-
-		LockerID  string
-		Coins     csdkTypes.Coins
-		PubKey    crypto.PubKey
-		Signature []byte
-	}
 	tests := []struct {
-		name         string
-		fields       fields
-		expectedPass bool
+		name string
+		msg  *MsgRegisterNode
+		want csdkTypes.Error
 	}{
-		{name: "valid", fields: fields{From: addr3, APIPort: 1234, Location: sdkTypes.Location{
-			Latitude:  100,
-			Longitude: 100,
-			City:      "city",
-			Country:   "country",
-		}, NetSpeed: sdkTypes.NetSpeed{
-			Upload:   100,
-			Download: 100,
+		{"From nil", NewMsgRegisterNode(
+			nil, 3000, 0, 0, "city", "country", 1024, 1024, "enc_method", 0, "version", "locker_id",
+			csdkTypes.Coins{coin(100, "x")}, pubKey1, getMsgLockCoinsSignature("locker_id", csdkTypes.Coins{coin(100, "x")})),
+			errorEmptyAddress(),
 		},
-			EncMethod: "AES-256", PricePerGB: 100, Version: "1.0", LockerID: lockerID1,
-			Coins: csdkTypes.Coins{coin1}, PubKey: pubKey1, Signature: sign1}, expectedPass: true},
-
-		{name: "empty address", fields: fields{From: nil, APIPort: 1234, Location: sdkTypes.Location{
-			Latitude:  100,
-			Longitude: 100,
-			City:      "city",
-			Country:   "country",
-		}, NetSpeed: sdkTypes.NetSpeed{
-			Upload:   100,
-			Download: 100,
+		{"From empty", NewMsgRegisterNode(
+			csdkTypes.AccAddress{}, 3000, 0, 0, "city", "country", 1024, 1024, "enc_method", 0, "version", "locker_id",
+			csdkTypes.Coins{coin(100, "x")}, pubKey1, getMsgLockCoinsSignature("locker_id", csdkTypes.Coins{coin(100, "x")})),
+			errorEmptyAddress(),
 		},
-			EncMethod: "AES-256", PricePerGB: 100, Version: "1.0", LockerID: lockerID1,
-			Coins: csdkTypes.Coins{coin1}, PubKey: pubKey1, Signature: sign1}, expectedPass: false},
-
-		{name: "negative apiport", fields: fields{From: addr3, APIPort: -1, Location: sdkTypes.Location{
-			Latitude:  100,
-			Longitude: 100,
-			City:      "city",
-			Country:   "country",
-		}, NetSpeed: sdkTypes.NetSpeed{
-			Upload:   100,
-			Download: 100,
+		{"API port small", NewMsgRegisterNode(
+			accAddress1, 1000, 0, 0, "city", "country", 1024, 1024, "enc_method", 0, "version", "locker_id",
+			csdkTypes.Coins{coin(100, "x")}, pubKey1, getMsgLockCoinsSignature("locker_id", csdkTypes.Coins{coin(100, "x")})),
+			errorInvalidAPIPort(),
 		},
-			EncMethod: "AES-256", PricePerGB: 100, Version: "1.0", LockerID: lockerID1,
-			Coins: csdkTypes.Coins{coin1}, PubKey: pubKey1, Signature: sign1}, expectedPass: false},
-
-		{name: "invalid latitude", fields: fields{From: addr3, APIPort: 1234, Location: sdkTypes.Location{
-			Latitude:  -9000000000,
-			Longitude: -1,
-			City:      "city",
-			Country:   "country",
-		}, NetSpeed: sdkTypes.NetSpeed{
-			Upload:   100,
-			Download: 100,
+		{"API port large", NewMsgRegisterNode(
+			accAddress1, 65600, 0, 0, "city", "country", 1024, 1024, "enc_method", 0, "version", "locker_id",
+			csdkTypes.Coins{coin(100, "x")}, pubKey1, getMsgLockCoinsSignature("locker_id", csdkTypes.Coins{coin(100, "x")})),
+			errorInvalidAPIPort(),
 		},
-			EncMethod: "AES-256", PricePerGB: 100, Version: "1.0", LockerID: lockerID1,
-			Coins: csdkTypes.Coins{coin1}, PubKey: pubKey1, Signature: sign1}, expectedPass: false},
-
-		{name: "invalid latitude", fields: fields{From: addr3, APIPort: 1234, Location: sdkTypes.Location{
-			Latitude:  9000000000,
-			Longitude: -1,
-			City:      "city",
-			Country:   "country",
-		}, NetSpeed: sdkTypes.NetSpeed{
-			Upload:   100,
-			Download: 100,
+		{"City empty", NewMsgRegisterNode(
+			accAddress1, 3000, 0, 0, "", "country", 1024, 1024, "enc_method", 0, "version", "locker_id",
+			csdkTypes.Coins{coin(100, "x")}, pubKey1, getMsgLockCoinsSignature("locker_id", csdkTypes.Coins{coin(100, "x")})),
+			errorInvalidLocation(),
 		},
-			EncMethod: "AES-256", PricePerGB: 100, Version: "1.0", LockerID: lockerID1,
-			Coins: csdkTypes.Coins{coin1}, PubKey: pubKey1, Signature: sign1}, expectedPass: false},
-
-		{name: "invalid longitude", fields: fields{From: addr3, APIPort: 1234, Location: sdkTypes.Location{
-			Latitude:  -180000000000,
-			Longitude: -1,
-			City:      "city",
-			Country:   "country",
-		}, NetSpeed: sdkTypes.NetSpeed{
-			Upload:   100,
-			Download: 100,
+		{"Country empty", NewMsgRegisterNode(
+			accAddress1, 3000, 0, 0, "city", "", 1024, 1024, "enc_method", 0, "version", "locker_id",
+			csdkTypes.Coins{coin(100, "x")}, pubKey1, getMsgLockCoinsSignature("locker_id", csdkTypes.Coins{coin(100, "x")})),
+			errorInvalidLocation(),
 		},
-			EncMethod: "AES-256", PricePerGB: 100, Version: "1.0", LockerID: lockerID1,
-			Coins: csdkTypes.Coins{coin1}, PubKey: pubKey1, Signature: sign1}, expectedPass: false},
-
-		{name: "invalid longitude", fields: fields{From: addr3, APIPort: 1234, Location: sdkTypes.Location{
-			Latitude:  180000000000,
-			Longitude: -1,
-			City:      "city",
-			Country:   "country",
-		}, NetSpeed: sdkTypes.NetSpeed{
-			Upload:   100,
-			Download: 100,
+		{
+			"Download speed negative", NewMsgRegisterNode(
+			accAddress1, 3000, 0, 0, "city", "country", 1024, -1024, "enc_method", 0, "version", "locker_id",
+			csdkTypes.Coins{coin(100, "x")}, pubKey1, getMsgLockCoinsSignature("locker_id", csdkTypes.Coins{coin(100, "x")})),
+			errorInvalidNetSpeed(),
 		},
-			EncMethod: "AES-256", PricePerGB: 100, Version: "1.0", LockerID: lockerID1,
-			Coins: csdkTypes.Coins{coin1}, PubKey: pubKey1, Signature: sign1}, expectedPass: false},
-
-		{name: "empty city", fields: fields{From: addr3, APIPort: 1234, Location: sdkTypes.Location{
-			Latitude:  100,
-			Longitude: 100,
-			City:      "",
-			Country:   "country",
-		}, NetSpeed: sdkTypes.NetSpeed{
-			Upload:   100,
-			Download: 100,
+		{
+			"Upload speed negative", NewMsgRegisterNode(
+			accAddress1, 3000, 0, 0, "city", "country", -1024, 1024, "enc_method", 0, "version", "locker_id",
+			csdkTypes.Coins{coin(100, "x")}, pubKey1, getMsgLockCoinsSignature("locker_id", csdkTypes.Coins{coin(100, "x")})),
+			errorInvalidNetSpeed(),
 		},
-			EncMethod: "AES-256", PricePerGB: 100, Version: "1.0", LockerID: lockerID1,
-			Coins: csdkTypes.Coins{coin1}, PubKey: pubKey1, Signature: sign1}, expectedPass: false},
-
-		{name: "empty country", fields: fields{From: addr3, APIPort: 1234, Location: sdkTypes.Location{
-			Latitude:  100,
-			Longitude: 100,
-			City:      "",
-			Country:   "country",
-		}, NetSpeed: sdkTypes.NetSpeed{
-			Upload:   100,
-			Download: 100,
+		{
+			"Encryption method empty", NewMsgRegisterNode(
+			accAddress1, 3000, 0, 0, "city", "country", 1024, 1024, "", 0, "version", "locker_id",
+			csdkTypes.Coins{coin(100, "x")}, pubKey1, getMsgLockCoinsSignature("locker_id", csdkTypes.Coins{coin(100, "x")})),
+			errorEmptyEncMethod(),
 		},
-			EncMethod: "AES-256", PricePerGB: 100, Version: "1.0", LockerID: lockerID1,
-			Coins: csdkTypes.Coins{coin1}, PubKey: pubKey1, Signature: sign1}, expectedPass: false},
-
-		{name: "negative upload speed", fields: fields{From: addr3, APIPort: 1234, Location: sdkTypes.Location{
-			Latitude:  100,
-			Longitude: 100,
-			City:      "city",
-			Country:   "country",
-		}, NetSpeed: sdkTypes.NetSpeed{
-			Upload:   -1,
-			Download: 10,
+		{
+			"Price per GB negative", NewMsgRegisterNode(
+			accAddress1, 3000, 0, 0, "city", "country", 1024, 1024, "enc_method", -1, "version", "locker_id",
+			csdkTypes.Coins{coin(100, "x")}, pubKey1, getMsgLockCoinsSignature("locker_id", csdkTypes.Coins{coin(100, "x")})),
+			errorInvalidPricePerGB(),
 		},
-			EncMethod: "AES-256", PricePerGB: 100, Version: "1.0", LockerID: lockerID1,
-			Coins: csdkTypes.Coins{coin1}, PubKey: pubKey1, Signature: sign1}, expectedPass: false},
-
-		{name: "negative download speed", fields: fields{From: addr3, APIPort: 1234, Location: sdkTypes.Location{
-			Latitude:  100,
-			Longitude: 100,
-			City:      "city",
-			Country:   "country",
-		}, NetSpeed: sdkTypes.NetSpeed{
-			Upload:   1,
-			Download: -10,
+		{
+			"Version empty", NewMsgRegisterNode(
+			accAddress1, 3000, 0, 0, "city", "country", 1024, 1024, "enc_method", 0, "", "locker_id",
+			csdkTypes.Coins{coin(100, "x")}, pubKey1, getMsgLockCoinsSignature("locker_id", csdkTypes.Coins{coin(100, "x")})),
+			errorEmptyVersion(),
 		},
-			EncMethod: "AES-256", PricePerGB: 100, Version: "1.0", LockerID: lockerID1,
-			Coins: csdkTypes.Coins{coin1}, PubKey: pubKey1, Signature: sign1}, expectedPass: false},
-
-		{name: "empty enc_method", fields: fields{From: addr3, APIPort: 1234, Location: sdkTypes.Location{
-			Latitude:  100,
-			Longitude: 100,
-			City:      "city",
-			Country:   "country",
-		}, NetSpeed: sdkTypes.NetSpeed{
-			Upload:   100,
-			Download: 100,
+		{
+			"Locker ID empty", NewMsgRegisterNode(
+			accAddress1, 3000, 0, 0, "city", "country", 1024, 1024, "enc_method", 0, "version", "",
+			csdkTypes.Coins{coin(100, "x")}, pubKey1, getMsgLockCoinsSignature("", csdkTypes.Coins{coin(100, "x")})),
+			errorEmptyLockerID(),
 		},
-			EncMethod: "", PricePerGB: 0, Version: "1.0", LockerID: lockerID1,
-			Coins: csdkTypes.Coins{coin1}, PubKey: pubKey1, Signature: sign1}, expectedPass: false},
-
-		{name: "negative price_per_gb", fields: fields{From: addr3, APIPort: 1234, Location: sdkTypes.Location{
-			Latitude:  100,
-			Longitude: 100,
-			City:      "city",
-			Country:   "country",
-		}, NetSpeed: sdkTypes.NetSpeed{
-			Upload:   100,
-			Download: 100,
+		{
+			"Coins nil", NewMsgRegisterNode(
+			accAddress1, 3000, 0, 0, "city", "country", 1024, 1024, "enc_method", 0, "version", "locker_id",
+			nil, pubKey1, getMsgLockCoinsSignature("locker_id", nil)),
+			errorInvalidCoins(),
 		},
-			EncMethod: "AES-256", PricePerGB: -1, Version: "1.0", LockerID: lockerID1,
-			Coins: csdkTypes.Coins{coin1}, PubKey: pubKey1, Signature: sign1}, expectedPass: false},
-
-		{name: "empty version", fields: fields{From: addr3, APIPort: 1234, Location: sdkTypes.Location{
-			Latitude:  100,
-			Longitude: 100,
-			City:      "city",
-			Country:   "country",
-		}, NetSpeed: sdkTypes.NetSpeed{
-			Upload:   100,
-			Download: 100,
+		{
+			"Coins empty", NewMsgRegisterNode(
+			accAddress1, 3000, 0, 0, "city", "country", 1024, 1024, "enc_method", 0, "version", "locker_id",
+			csdkTypes.Coins{}, pubKey1, getMsgLockCoinsSignature("locker_id", csdkTypes.Coins{})),
+			errorInvalidCoins(),
 		},
-			EncMethod: "AES-256", PricePerGB: -1, Version: "", LockerID: lockerID1,
-			Coins: csdkTypes.Coins{coin1}, PubKey: pubKey1, Signature: sign1}, expectedPass: false},
-
-		{name: "empty locker_id", fields: fields{From: addr3, APIPort: 1234, Location: sdkTypes.Location{
-			Latitude:  100,
-			Longitude: 100,
-			City:      "city",
-			Country:   "country",
-		}, NetSpeed: sdkTypes.NetSpeed{
-			Upload:   100,
-			Download: 100,
+		{
+			"Coins invalid", NewMsgRegisterNode(
+			accAddress1, 3000, 0, 0, "city", "country", 1024, 1024, "enc_method", 0, "version", "locker_id",
+			csdkTypes.Coins{coin(100, "y"), coin(100, "x")}, pubKey1, getMsgLockCoinsSignature("locker_id", csdkTypes.Coins{coin(100, "y"), coin(100, "x")})),
+			errorInvalidCoins(),
 		},
-			EncMethod: "AES-256", PricePerGB: -1, Version: "1.0", LockerID: "",
-			Coins: csdkTypes.Coins{coin1}, PubKey: pubKey1, Signature: sign1}, expectedPass: false},
-
-		{name: "coins length zero", fields: fields{From: addr3, APIPort: 1234, Location: sdkTypes.Location{
-			Latitude:  100,
-			Longitude: 100,
-			City:      "city",
-			Country:   "country",
-		}, NetSpeed: sdkTypes.NetSpeed{
-			Upload:   100,
-			Download: 100,
+		{
+			"Coins negative", NewMsgRegisterNode(
+			accAddress1, 3000, 0, 0, "city", "country", 1024, 1024, "enc_method", 0, "version", "locker_id",
+			csdkTypes.Coins{coin(-100, "x")}, pubKey1, getMsgLockCoinsSignature("locker_id", csdkTypes.Coins{coin(-100, "x")})),
+			errorInvalidCoins(),
 		},
-			EncMethod: "AES-256", PricePerGB: -1, Version: "1.0", LockerID: "",
-			Coins: csdkTypes.Coins{}, PubKey: pubKey1, Signature: sign1}, expectedPass: false},
-
-		{name: "nil coins", fields: fields{From: addr3, APIPort: 1234, Location: sdkTypes.Location{
-			Latitude:  100,
-			Longitude: 100,
-			City:      "city",
-			Country:   "country",
-		}, NetSpeed: sdkTypes.NetSpeed{
-			Upload:   100,
-			Download: 100,
+		{
+			"Public key nil", NewMsgRegisterNode(
+			accAddress1, 3000, 0, 0, "city", "country", 1024, 1024, "enc_method", 0, "version", "locker_id",
+			csdkTypes.Coins{coin(100, "x")}, nil, getMsgLockCoinsSignature("locker_id", csdkTypes.Coins{coin(100, "x")})),
+			errorEmptyPubKey(),
 		},
-			EncMethod: "AES-256", PricePerGB: -1, Version: "1.0", LockerID: "",
-			Coins: nil, PubKey: pubKey1, Signature: sign1}, expectedPass: false},
-
-		{name: "nil public key", fields: fields{From: addr3, APIPort: 1234, Location: sdkTypes.Location{
-			Latitude:  100,
-			Longitude: 100,
-			City:      "city",
-			Country:   "country",
-		}, NetSpeed: sdkTypes.NetSpeed{
-			Upload:   100,
-			Download: 100,
+		{
+			"Signature empty", NewMsgRegisterNode(
+			accAddress1, 3000, 0, 0, "city", "country", 1024, 1024, "enc_method", 0, "version", "locker_id",
+			csdkTypes.Coins{coin(100, "x")}, pubKey1, []byte("")),
+			errorEmptySignature(),
 		},
-			EncMethod: "AES-256", PricePerGB: 100, Version: "1.0", LockerID: lockerID1,
-			Coins: csdkTypes.Coins{coin1}, PubKey: nil, Signature: sign1}, expectedPass: false},
-
-		{name: "nil signature", fields: fields{From: addr3, APIPort: 1234, Location: sdkTypes.Location{
-			Latitude:  100,
-			Longitude: 100,
-			City:      "city",
-			Country:   "country",
-		}, NetSpeed: sdkTypes.NetSpeed{
-			Upload:   100,
-			Download: 100,
+		{
+			"Valid", msgRegisterNode, nil,
 		},
-			EncMethod: "AES-256", PricePerGB: 100, Version: "1.0", LockerID: lockerID1,
-			Coins: csdkTypes.Coins{coin1}, PubKey: pubKey1, Signature: nil}, expectedPass: false},
 	}
 
-	for _, val := range tests {
-
-		msg := MsgRegisterNode{
-			val.fields.From, val.fields.APIPort, val.fields.Location,
-			val.fields.NetSpeed, val.fields.EncMethod, val.fields.PricePerGB,
-			val.fields.Version, val.fields.LockerID,
-			val.fields.Coins, val.fields.PubKey, val.fields.Signature,
-		}
-		if val.expectedPass {
-			require.Nil(t, msg.ValidateBasic())
-		} else {
-			require.NotNil(t, msg.ValidateBasic())
-		}
+	for _, tc := range tests {
+		require.Equal(t, tc.want, tc.msg.ValidateBasic())
 	}
-
 }
 
 func TestMsgRegisterNode_GetSignBytes(t *testing.T) {
-	msg := TestGetMsgRegisterNode()
+	msg := msgRegisterNode
+	msgBytes, err := json.Marshal(msg)
 
-	bytes, _ := json.Marshal(msg)
+	if err != nil {
+		panic(err)
+	}
 
-	functionBytes := msg.GetSignBytes()
-	require.Equal(t, bytes, functionBytes)
-
+	require.Equal(t, msgBytes, msg.GetSignBytes())
 }
 
 func TestMsgRegisterNode_GetSigners(t *testing.T) {
-	signer := []csdkTypes.AccAddress{addr3}
-
-	msg := TestGetMsgRegisterNode()
-
-	functionSigner := msg.GetSigners()
-
-	require.Equal(t, signer, functionSigner)
+	msg := msgRegisterNode
+	require.Equal(t, []csdkTypes.AccAddress{accAddress1}, msg.GetSigners())
 }
 
 func TestMsgRegisterNode_Route(t *testing.T) {
-	msg := TestGetMsgRegisterNode()
-
-	functionRoute := msg.Route()
-	require.Equal(t, vpnRoute, functionRoute)
+	msg := msgRegisterNode
+	require.Equal(t, sdkTypes.KeyVPN, msg.Route())
 }
 
 func TestMsgRegisterNode_Type(t *testing.T) {
-	msg := TestGetMsgRegisterNode()
-
-	functionType := msg.Type()
-	require.Equal(t, functionType, vpnRegisterType)
+	msg := msgRegisterNode
+	require.Equal(t, "msg_register_node", msg.Type())
 }
 
 func TestMsgPayVPNService_ValidateBasic(t *testing.T) {
-
-	type fields struct {
-		From csdkTypes.AccAddress
-
-		VPNID string
-
-		LockerID  string
-		Coins     csdkTypes.Coins
-		PubKey    crypto.PubKey
-		Signature []byte
-	}
-
 	tests := []struct {
-		name         string
-		fields       fields
-		expectedPass bool
+		name string
+		msg  *MsgPayVPNService
+		want csdkTypes.Error
 	}{
-		{name: "valid", fields: fields{From: addr3, VPNID: vpnID, LockerID: lockerID1, Coins: csdkTypes.Coins{coin1},
-			PubKey: pubKey1, Signature: sign1}, expectedPass: true},
-		{name: "empty address", fields: fields{From: nil, VPNID: vpnID, LockerID: lockerID1, Coins: csdkTypes.Coins{coin1},
-			PubKey: pubKey1, Signature: sign1}, expectedPass: false},
-		{name: "empty vpn_id", fields: fields{From: addr3, VPNID: "", LockerID: lockerID1, Coins: csdkTypes.Coins{coin1},
-			PubKey: pubKey1, Signature: sign1}, expectedPass: false},
-		{name: "empty locker_id", fields: fields{From: addr3, VPNID: vpnID, LockerID: "", Coins: csdkTypes.Coins{coin1},
-			PubKey: pubKey1, Signature: sign1}, expectedPass: false},
-		{name: "nil coins", fields: fields{From: addr3, VPNID: vpnID, LockerID: lockerID1, Coins: nil,
-			PubKey: pubKey1, Signature: sign1}, expectedPass: false},
-		{name: "coins length zero", fields: fields{From: addr3, VPNID: vpnID, LockerID: lockerID1, Coins: csdkTypes.Coins{},
-			PubKey: pubKey1, Signature: sign1}, expectedPass: false},
-		{name: "nil public key", fields: fields{From: addr3, VPNID: vpnID, LockerID: lockerID1, Coins: csdkTypes.Coins{coin1},
-			PubKey: nil, Signature: sign1}, expectedPass: false},
-		{name: "nil signature", fields: fields{From: addr3, VPNID: vpnID, LockerID: lockerID1, Coins: csdkTypes.Coins{coin1},
-			PubKey: pubKey1, Signature: nil}, expectedPass: false},
+		{"From nil", NewMsgPayVPNService(
+			nil, "vpn_id", "locker_id", csdkTypes.Coins{coin(100, "x")}, pubKey1,
+			getMsgLockCoinsSignature("locker_id", csdkTypes.Coins{coin(100, "x")})),
+			errorEmptyAddress(),
+		},
+		{"From empty", NewMsgPayVPNService(
+			csdkTypes.AccAddress{}, "vpn_id", "locker_id", csdkTypes.Coins{coin(100, "x")}, pubKey1,
+			getMsgLockCoinsSignature("locker_id", csdkTypes.Coins{coin(100, "x")})),
+			errorEmptyAddress(),
+		},
+		{"VPN ID empty", NewMsgPayVPNService(
+			accAddress1, "", "locker_id", csdkTypes.Coins{coin(100, "x")}, pubKey1,
+			getMsgLockCoinsSignature("locker_id", csdkTypes.Coins{coin(100, "x")})),
+			errorEmptyVPNID(),
+		},
+		{"Locker ID empty", NewMsgPayVPNService(
+			accAddress1, "vpn_id", "", csdkTypes.Coins{coin(100, "x")}, pubKey1,
+			getMsgLockCoinsSignature("", csdkTypes.Coins{coin(100, "x")})),
+			errorEmptyLockerID(),
+		},
+		{"Coins nil", NewMsgPayVPNService(
+			accAddress1, "vpn_id", "locker_id", nil, pubKey1,
+			getMsgLockCoinsSignature("locker_id", nil)),
+			errorInvalidCoins(),
+		},
+		{"Coins empty", NewMsgPayVPNService(
+			accAddress1, "vpn_id", "locker_id", csdkTypes.Coins{}, pubKey1,
+			getMsgLockCoinsSignature("locker_id", csdkTypes.Coins{})),
+			errorInvalidCoins(),
+		},
+		{"Coins invalid", NewMsgPayVPNService(
+			accAddress1, "vpn_id", "locker_id", csdkTypes.Coins{coin(100, "y"), coin(100, "x")}, pubKey1,
+			getMsgLockCoinsSignature("locker_id", csdkTypes.Coins{coin(100, "y"), coin(100, "x")})),
+			errorInvalidCoins(),
+		},
+		{"Coins negative", NewMsgPayVPNService(
+			accAddress1, "vpn_id", "locker_id", csdkTypes.Coins{coin(-100, "x")}, pubKey1,
+			getMsgLockCoinsSignature("locker_id", csdkTypes.Coins{coin(-100, "x")})),
+			errorInvalidCoins(),
+		},
+		{"Public key nil", NewMsgPayVPNService(
+			accAddress1, "vpn_id", "locker_id", csdkTypes.Coins{coin(100, "x")}, nil,
+			getMsgLockCoinsSignature("locker_id", csdkTypes.Coins{coin(100, "x")})),
+			errorEmptyPubKey(),
+		},
+		{"Signature empty", NewMsgPayVPNService(
+			accAddress1, "vpn_id", "locker_id", csdkTypes.Coins{coin(100, "x")}, pubKey1,
+			[]byte("")),
+			errorEmptySignature(),
+		},
+		{
+			"Valid", msgPayVPNService, nil,
+		},
 	}
-
-	for _, val := range tests {
-		msg := MsgPayVPNService{From: val.fields.From, VPNID: val.fields.VPNID, LockerID: val.fields.LockerID,
-			Coins: val.fields.Coins, PubKey: val.fields.PubKey, Signature: val.fields.Signature}
-		if val.expectedPass {
-			require.Nil(t, msg.ValidateBasic())
-		} else {
-			require.NotNil(t, msg.ValidateBasic())
-		}
+	for _, tc := range tests {
+		require.Equal(t, tc.want, tc.msg.ValidateBasic())
 	}
-
 }
 
 func TestMsgPayVPNService_GetSignBytes(t *testing.T) {
-	msg := TestGetMsgPayVpnService()
+	msg := msgPayVPNService
+	msgBytes, err := json.Marshal(msg)
 
-	bytes, _ := json.Marshal(msg)
+	if err != nil {
+		panic(err)
+	}
 
-	functionBytes := msg.GetSignBytes()
-
-	require.Equal(t, bytes, functionBytes)
+	require.Equal(t, msgBytes, msg.GetSignBytes())
 }
 
 func TestMsgPayVPNService_GetSigners(t *testing.T) {
-	msg := TestGetMsgPayVpnService()
-
-	signer := addr3
-
-	functionSigner := msg.GetSigners()
-	require.Equal(t, []csdkTypes.AccAddress{signer}, functionSigner)
+	msg := msgPayVPNService
+	require.Equal(t, []csdkTypes.AccAddress{accAddress1}, msg.GetSigners())
 }
 
 func TestMsgPayVPNService_Route(t *testing.T) {
-	msg := TestGetMsgPayVpnService()
-	functionRoute := msg.Route()
-
-	require.Equal(t, vpnRoute, functionRoute)
+	msg := msgPayVPNService
+	require.Equal(t, sdkTypes.KeyVPN, msg.Route())
 }
 
 func TestMsgPayVPNService_Type(t *testing.T) {
-	msg := TestGetMsgPayVpnService()
-	functionType := msg.Type()
-
-	require.Equal(t, functionType, payVpnServiceType)
+	msg := msgPayVPNService
+	require.Equal(t, "msg_pay_vpn_service", msg.Type())
 }
 
 func TestMsgUpdateSessionStatus_ValidateBasic(t *testing.T) {
-	type fields struct {
-		From      csdkTypes.AccAddress
-		SessionId string
-		Status    string
-	}
-
 	tests := []struct {
-		name         string
-		fields       fields
-		expectedPass bool
+		name string
+		msg  *MsgUpdateSessionStatus
+		want csdkTypes.Error
 	}{
-		{name: "valid", fields: fields{From: addr3, SessionId: sessionID1, Status: status}, expectedPass: true},
-		{name: "empty address", fields: fields{From: nil, SessionId: sessionID1, Status: status}, expectedPass: false},
-		{name: "empty session_id", fields: fields{From: addr3, SessionId: "", Status: status}, expectedPass: false},
-		{name: "empty status", fields: fields{From: addr3, SessionId: sessionID1, Status: ""}, expectedPass: false},
+		{"From nil", NewMsgUpdateSessionStatus(
+			nil, "session_id", sdkTypes.StatusInactive),
+			errorEmptyAddress(),
+		},
+		{"From empty", NewMsgUpdateSessionStatus(
+			csdkTypes.AccAddress{}, "session_id", sdkTypes.StatusInactive),
+			errorEmptyAddress(),
+		},
+		{"Session ID empty", NewMsgUpdateSessionStatus(
+			accAddress1, "", sdkTypes.StatusInactive),
+			errorEmptySessionID(),
+		},
+		{"Status invalid", NewMsgUpdateSessionStatus(
+			accAddress1, "session_id", "INVALID"),
+			errorInvalidSessionStatus(),
+		},
+		{
+			"Valid", msgUpdateSessionStatus, nil,
+		},
 	}
 
-	for _, val := range tests {
-		msg := MsgUpdateSessionStatus{From: val.fields.From, SessionID: val.fields.SessionId, Status: val.fields.Status}
-
-		if val.expectedPass {
-			require.Nil(t, msg.ValidateBasic())
-		} else {
-			require.NotNil(t, msg.ValidateBasic())
-		}
+	for _, tc := range tests {
+		require.Equal(t, tc.want, tc.msg.ValidateBasic())
 	}
 }
 
 func TestMsgUpdateSessionStatus_GetSignBytes(t *testing.T) {
-	msg := TestGetMsgUpdateSessionStatus()
-	bytes, _ := json.Marshal(msg)
-	functionBytes := msg.GetSignBytes()
+	msg := msgUpdateSessionStatus
+	msgBytes, err := json.Marshal(msg)
 
-	require.Equal(t, bytes, functionBytes)
+	if err != nil {
+		panic(err)
+	}
 
+	require.Equal(t, msgBytes, msg.GetSignBytes())
 }
 
 func TestMsgUpdateSessionStatus_GetSigners(t *testing.T) {
-	msg := TestGetMsgUpdateSessionStatus()
-	signer := msg.From
-	functionSigners := msg.GetSigners()
-
-	require.Equal(t, functionSigners, []csdkTypes.AccAddress{signer})
+	msg := msgUpdateSessionStatus
+	require.Equal(t, []csdkTypes.AccAddress{accAddress1}, msg.GetSigners())
 }
 
 func TestMsgUpdateSessionStatus_Route(t *testing.T) {
-	msg := TestGetMsgUpdateSessionStatus()
-	function_route := msg.Route()
-
-	require.Equal(t, function_route, sessionRoute)
+	msg := msgUpdateSessionStatus
+	require.Equal(t, sdkTypes.KeySession, msg.Route())
 }
 
 func TestMsgUpdateSessionStatus_Type(t *testing.T) {
-	msg := TestGetMsgUpdateSessionStatus()
-	functionType := msg.Type()
-
-	require.Equal(t, functionType, updatedSessionStatusType)
+	msg := msgUpdateSessionStatus
+	require.Equal(t, "msg_update_session_status", msg.Type())
 }
 
 func TestMsgDeregisterNode_ValidateBasic(t *testing.T) {
-	type fields struct {
-		From      csdkTypes.AccAddress
-		VpnID     string
-		LockerID  string
-		PubKey    crypto.PubKey
-		Signature []byte
-	}
-
 	tests := []struct {
-		name         string
-		fields       fields
-		expectedPass bool
+		name string
+		msg  *MsgDeregisterNode
+		want csdkTypes.Error
 	}{
-		{name: "valid", fields: fields{From: addr3, VpnID: vpnID, LockerID: lockerID1, PubKey: pubKey1, Signature: sign1},
-			expectedPass: true},
-		{name: "empty address", fields: fields{From: nil, VpnID: vpnID, LockerID: lockerID1, PubKey: pubKey1, Signature: sign1},
-			expectedPass: false},
-		{name: "empty vpn_id", fields: fields{From: addr3, VpnID: "", LockerID: lockerID1, PubKey: pubKey1, Signature: sign1},
-			expectedPass: false},
-		{name: "empty locker_id", fields: fields{From: addr3, VpnID: vpnID, LockerID: "", PubKey: pubKey1, Signature: sign1},
-			expectedPass: false},
-		{name: "nil public key", fields: fields{From: addr3, VpnID: vpnID, LockerID: lockerID1, PubKey: nil, Signature: sign1},
-			expectedPass: false},
-		{name: "nil signature", fields: fields{From: addr3, VpnID: vpnID, LockerID: lockerID1, PubKey: pubKey1, Signature: nil},
-			expectedPass: false},
+		{"From nil", NewMsgDeregisterNode(
+			nil, "vpn_id", "locker_id", pubKey1, getMsgReleaseCoinsSignature("locker_id")),
+			errorEmptyAddress(),
+		},
+		{"From empty", NewMsgDeregisterNode(
+			csdkTypes.AccAddress{}, "vpn_id", "locker_id", pubKey1, getMsgReleaseCoinsSignature("locker_id")),
+			errorEmptyAddress(),
+		},
+		{"VPN ID empty", NewMsgDeregisterNode(
+			accAddress1, "", "locker_id", pubKey1, getMsgReleaseCoinsSignature("locker_id")),
+			errorEmptyVPNID(),
+		},
+		{"Locker ID empty", NewMsgDeregisterNode(
+			accAddress1, "vpn_id", "", pubKey1, getMsgReleaseCoinsSignature("")),
+			errorEmptyLockerID(),
+		},
+		{"Public key nil", NewMsgDeregisterNode(
+			accAddress1, "vpn_id", "locker_id", nil, getMsgReleaseCoinsSignature("locker_id")),
+			errorEmptyPubKey(),
+		},
+		{"Signature empty", NewMsgDeregisterNode(
+			accAddress1, "vpn_id", "locker_id", pubKey1, []byte("")),
+			errorEmptySignature(),
+		},
+		{
+			"Valid", msgDeregisterNode, nil,
+		},
 	}
 
-	for _, val := range tests {
-
-		msg := MsgDeregisterNode{From: val.fields.From, VPNID: val.fields.VpnID, LockerID: val.fields.LockerID,
-			PubKey: val.fields.PubKey, Signature: val.fields.Signature}
-
-		if val.expectedPass {
-			require.Nil(t, msg.ValidateBasic())
-		} else {
-			require.NotNil(t, msg.ValidateBasic())
-		}
+	for _, tc := range tests {
+		require.Equal(t, tc.want, tc.msg.ValidateBasic())
 	}
 }
 
 func TestMsgDeregisterNode_GetSignBytes(t *testing.T) {
-	msg := TestGetMsgDeregisterNode()
+	msg := msgDeregisterNode
+	msgBytes, err := json.Marshal(msg)
 
-	bytes, _ := json.Marshal(msg)
-	functionBytes := msg.GetSignBytes()
+	if err != nil {
+		panic(err)
+	}
 
-	require.Equal(t, bytes, functionBytes)
+	require.Equal(t, msgBytes, msg.GetSignBytes())
 }
 
 func TestMsgDeregisterNode_GetSigners(t *testing.T) {
-	msg := TestGetMsgDeregisterNode()
-
-	signers := msg.From
-	functionSigners := msg.GetSigners()
-
-	require.Equal(t, []csdkTypes.AccAddress{signers}, functionSigners)
+	msg := msgDeregisterNode
+	require.Equal(t, []csdkTypes.AccAddress{accAddress1}, msg.GetSigners())
 }
 
 func TestMsgDeregisterNode_Route(t *testing.T) {
-	msg := TestGetMsgDeregisterNode()
-	functionRoute := msg.Route()
-
-	require.Equal(t, functionRoute, vpnRoute)
+	msg := msgDeregisterNode
+	require.Equal(t, sdkTypes.KeyVPN, msg.Route())
 }
 
 func TestMsgDeregisterNode_Type(t *testing.T) {
-	msg := TestGetMsgDeregisterNode()
-	functionType := msg.Type()
-	require.Equal(t, functionType, deregisterNodeIDType)
+	msg := msgDeregisterNode
+	require.Equal(t, "msg_deregister_node", msg.Type())
 }

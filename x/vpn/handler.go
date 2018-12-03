@@ -21,14 +21,14 @@ func NewHandler(k Keeper, ik ibc.Keeper) csdkTypes.Handler {
 		case MsgDeregisterNode:
 			return handleDeregisterNode(ctx, k, ik, msg)
 		default:
-			errMsg := "Unrecognized vpn Msg type: " + reflect.TypeOf(msg).String()
+			errMsg := "Unrecognized Msg type: " + reflect.TypeOf(msg).Name()
 			return csdkTypes.ErrUnknownRequest(errMsg).Result()
 		}
 	}
 }
 
 func handleRegisterNode(ctx csdkTypes.Context, k Keeper, ik ibc.Keeper, msg MsgRegisterNode) csdkTypes.Result {
-	vpnsCount, err := k.GetVPNsCount(ctx)
+	vpnsCount, err := k.GetVPNsCount(ctx, msg.From)
 
 	if err != nil {
 		return err.Result()
@@ -85,7 +85,7 @@ func handleRegisterNode(ctx csdkTypes.Context, k Keeper, ik ibc.Keeper, msg MsgR
 }
 
 func handleSessionPayment(ctx csdkTypes.Context, k Keeper, ik ibc.Keeper, msg MsgPayVPNService) csdkTypes.Result {
-	sessionsCount, err := k.GetSessionsCount(ctx)
+	sessionsCount, err := k.GetSessionsCount(ctx, msg.From)
 
 	if err != nil {
 		return err.Result()

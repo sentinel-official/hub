@@ -1,6 +1,7 @@
 package types
 
 import (
+	"fmt"
 	"time"
 
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
@@ -42,6 +43,14 @@ type SessionDetails struct {
 	Status        string
 }
 
+func SessionsCountKey(accAddress csdkTypes.AccAddress) string {
+	return fmt.Sprintf("sessions_count/%s", accAddress.String())
+}
+
+func VPNsCountKey(accAddress csdkTypes.AccAddress) string {
+	return fmt.Sprintf("vpns_count/%s", accAddress.String())
+}
+
 const (
 	MinLatitude  = -90 * 100000
 	MinLongitude = -180 * 100000
@@ -51,9 +60,7 @@ const (
 	KeyActiveNodeIDs    = "ACTIVE_NODE_IDS"
 	KeyActiveSessionIDs = "ACTIVE_SESSION_IDS"
 	KeySession          = "session"
-	KeySessionsCount    = "SESSIONS_COUNT"
 	KeyVPN              = "vpn"
-	KeyVPNsCount        = "VPNS_COUNT"
 
 	StatusActive     = "ACTIVE"
 	StatusDeregister = "DEREGISTERED"

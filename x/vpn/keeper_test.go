@@ -1,468 +1,363 @@
 package vpn
 
 import (
-	"sort"
-	"strconv"
 	"testing"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
-	abci "github.com/tendermint/tendermint/abci/types"
+	abciTypes "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/libs/log"
+
+	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
 )
 
 func TestKeeper_SetVPNDetails(t *testing.T) {
 	cdc := codec.New()
 
-	ms, _, vpnStoreKey, sessionStoreKey := setupMultiStore()
-	ctx := csdkTypes.NewContext(ms, abci.Header{}, false, log.NewNopLogger())
-	keeper := NewKeeper(cdc, vpnStoreKey, sessionStoreKey)
+	ms, _, vpnKey, sessionKey := setupMultiStore()
+	ctx := csdkTypes.NewContext(ms, abciTypes.Header{}, false, log.NewNopLogger())
+	vpnKeeper := NewKeeper(cdc, vpnKey, sessionKey)
 
-	vpnsCount, err := keeper.GetVPNsCount(ctx)
+	var err csdkTypes.Error
+
+	vpnDetails0, err := vpnKeeper.GetVPNDetails(ctx, "vpn_id")
 	require.Nil(t, err)
-	require.Equal(t, vpnsCount, uint64(0))
+	require.Nil(t, vpnDetails0)
 
-	keeper.SetVPNsCount(ctx, count)
+	vpnDetails1 := vpnDetails
 
-	vpnsCount, err = keeper.GetVPNsCount(ctx)
+	err = vpnKeeper.SetVPNDetails(ctx, "vpn_id", &vpnDetails1)
 	require.Nil(t, err)
-	require.NotNil(t, vpnsCount)
-	require.Equal(t, vpnsCount, count)
 
-	vpnID1 := addr1.String() + "/" + strconv.Itoa(int(vpnsCount))
-
-	vpnDetails, err := keeper.GetVPNDetails(ctx, vpnID1)
+	vpnDetails2, err := vpnKeeper.GetVPNDetails(ctx, "vpn_id")
 	require.Nil(t, err)
-	require.Nil(t, vpnDetails)
-
-	testVpnDetails := TestGetVPNDetails()
-	keeper.SetVPNDetails(ctx, vpnID1, testVpnDetails)
-
-	vpnDetails, err = keeper.GetVPNDetails(ctx, vpnID1)
-	require.Nil(t, err)
-	require.NotNil(t, vpnDetails)
-	require.Equal(t, testVpnDetails, vpnDetails)
-
+	require.Equal(t, &vpnDetails1, vpnDetails2)
 }
 
 func TestKeeper_SetActiveNodeIDs(t *testing.T) {
 	cdc := codec.New()
-	ms, _, vpnStoreKey, sessionStoreKey := setupMultiStore()
-	ctx := csdkTypes.NewContext(ms, abci.Header{}, false, log.NewNopLogger())
-	keeper := NewKeeper(cdc, vpnStoreKey, sessionStoreKey)
 
-	vpnsCount, err := keeper.GetVPNsCount(ctx)
+	ms, _, vpnKey, sessionKey := setupMultiStore()
+	ctx := csdkTypes.NewContext(ms, abciTypes.Header{}, false, log.NewNopLogger())
+	vpnKeeper := NewKeeper(cdc, vpnKey, sessionKey)
+
+	var err csdkTypes.Error
+
+	activeNodeIDs, err := vpnKeeper.GetActiveNodeIDs(ctx)
 	require.Nil(t, err)
-	require.Equal(t, vpnsCount, uint64(0))
+	require.Equal(t, []string(nil), activeNodeIDs)
 
-	keeper.SetVPNsCount(ctx, count)
-
-	vpnsCount, err = keeper.GetVPNsCount(ctx)
+	err = vpnKeeper.SetActiveNodeIDs(ctx, []string{"node_id_0", "node_id_1"})
 	require.Nil(t, err)
-	require.NotNil(t, vpnsCount)
-	require.Equal(t, vpnsCount, count)
 
-	vpnID1 := addr1.String() + "/" + strconv.Itoa(int(vpnsCount))
-	vpnID2 := addr2.String() + "/" + strconv.Itoa(int(vpnsCount))
-
-	nodes, err := keeper.GetActiveNodeIDs(ctx)
+	activeNodeIDs, err = vpnKeeper.GetActiveNodeIDs(ctx)
 	require.Nil(t, err)
-	require.Nil(t, nodes)
-
-	newNodeIDs := []string{vpnID1, vpnID2}
-
-	keeper.SetActiveNodeIDs(ctx, newNodeIDs)
-
-	nodeIDs, err := keeper.GetActiveNodeIDs(ctx)
-	require.Nil(t, err)
-	require.NotNil(t, nodeIDs)
-	require.Equal(t, newNodeIDs, nodeIDs)
-
+	require.Equal(t, []string{"node_id_0", "node_id_1"}, activeNodeIDs)
 }
 
 func TestKeeper_SetVPNsCount(t *testing.T) {
 	cdc := codec.New()
-	ms, _, vpnStoreKey, sessionStoreKey := setupMultiStore()
-	ctx := csdkTypes.NewContext(ms, abci.Header{}, false, log.NewNopLogger())
-	keeper := NewKeeper(cdc, vpnStoreKey, sessionStoreKey)
 
-	vpnsCount, err := keeper.GetVPNsCount(ctx)
+	ms, _, vpnKey, sessionKey := setupMultiStore()
+	ctx := csdkTypes.NewContext(ms, abciTypes.Header{}, false, log.NewNopLogger())
+	vpnKeeper := NewKeeper(cdc, vpnKey, sessionKey)
+
+	var err csdkTypes.Error
+
+	vpnsCount, err := vpnKeeper.GetVPNsCount(ctx, accAddress1)
 	require.Nil(t, err)
-	require.Equal(t, vpnsCount, uint64(0))
+	require.Equal(t, uint64(0), vpnsCount)
 
-	keeper.SetVPNsCount(ctx, count)
-
-	vpnsCount, err = keeper.GetVPNsCount(ctx)
+	err = vpnKeeper.SetVPNsCount(ctx, accAddress1, uint64(1))
 	require.Nil(t, err)
-	require.NotNil(t, vpnsCount)
-	require.Equal(t, vpnsCount, count)
 
+	vpnsCount, err = vpnKeeper.GetVPNsCount(ctx, accAddress1)
+	require.Nil(t, err)
+	require.Equal(t, uint64(1), vpnsCount)
 }
 
 func TestKeeper_SetSessionDetails(t *testing.T) {
-
 	cdc := codec.New()
-	ms, _, vpnStoreKey, sessionStoreKey := setupMultiStore()
-	ctx := csdkTypes.NewContext(ms, abci.Header{}, false, log.NewNopLogger())
-	keeper := NewKeeper(cdc, vpnStoreKey, sessionStoreKey)
 
-	sessionsCount, err := keeper.GetSessionsCount(ctx)
+	ms, _, vpnKey, sessionKey := setupMultiStore()
+	ctx := csdkTypes.NewContext(ms, abciTypes.Header{}, false, log.NewNopLogger())
+	vpnKeeper := NewKeeper(cdc, vpnKey, sessionKey)
+
+	var err csdkTypes.Error
+
+	sessionDetails0, err := vpnKeeper.GetSessionDetails(ctx, "session_id")
 	require.Nil(t, err)
-	require.Equal(t, sessionsCount, uint64(0))
+	require.Nil(t, sessionDetails0)
 
-	keeper.SetSessionsCount(ctx, count)
+	sessionDetails1 := sessionDetails
 
-	sessionsCount, err = keeper.GetSessionsCount(ctx)
+	err = vpnKeeper.SetSessionDetails(ctx, "session_id", &sessionDetails1)
 	require.Nil(t, err)
-	require.NotNil(t, sessionsCount)
-	require.Equal(t, sessionsCount, count)
 
-	sessionID := addr1.String() + "/" + strconv.Itoa(int(sessionsCount))
-
-	sessionDetails, err := keeper.GetSessionDetails(ctx, sessionID)
+	sessionDetails2, err := vpnKeeper.GetSessionDetails(ctx, "session_id")
 	require.Nil(t, err)
-	require.Nil(t, sessionDetails)
-
-	testSessionDetails := TestGetSessionDetails()
-
-	keeper.SetSessionDetails(ctx, sessionID, testSessionDetails)
-
-	sessionDetails, err = keeper.GetSessionDetails(ctx, sessionID)
-	require.Nil(t, err)
-	require.NotNil(t, sessionDetails)
-	//	require.Equal(t, testSessionDetails, sessionDetails)
-
+	require.Equal(t, &sessionDetails1, sessionDetails2)
 }
 
 func TestKeeper_SetActiveSessionIDs(t *testing.T) {
 	cdc := codec.New()
-	ms, _, vpnStoreKey, sessionStoreKey := setupMultiStore()
-	ctx := csdkTypes.NewContext(ms, abci.Header{}, false, log.NewNopLogger())
-	keeper := NewKeeper(cdc, vpnStoreKey, sessionStoreKey)
 
-	sessionsCount, err := keeper.GetSessionsCount(ctx)
+	ms, _, vpnKey, sessionKey := setupMultiStore()
+	ctx := csdkTypes.NewContext(ms, abciTypes.Header{}, false, log.NewNopLogger())
+	vpnKeeper := NewKeeper(cdc, vpnKey, sessionKey)
+
+	var err csdkTypes.Error
+
+	activeSessionIDs, err := vpnKeeper.GetActiveSessionIDs(ctx)
 	require.Nil(t, err)
-	require.Equal(t, sessionsCount, uint64(0))
+	require.Equal(t, []string(nil), activeSessionIDs)
 
-	keeper.SetSessionsCount(ctx, count)
-
-	sessionsCount, err = keeper.GetSessionsCount(ctx)
+	err = vpnKeeper.SetActiveSessionIDs(ctx, []string{"session_id_0", "session_id_1"})
 	require.Nil(t, err)
-	require.NotNil(t, sessionsCount)
-	require.Equal(t, sessionsCount, count)
 
-	sessionID1 := addr1.String() + "/" + strconv.Itoa(int(sessionsCount))
-	sessionID2 := addr2.String() + "/" + strconv.Itoa(int(sessionsCount))
-
-	session, err := keeper.GetActiveSessionIDs(ctx)
+	activeSessionIDs, err = vpnKeeper.GetActiveSessionIDs(ctx)
 	require.Nil(t, err)
-	require.Nil(t, session)
-
-	newSessionIDs := []string{sessionID1, sessionID2}
-
-	keeper.SetActiveSessionIDs(ctx, newSessionIDs)
-
-	sessionIDs, err := keeper.GetActiveSessionIDs(ctx)
-	require.Nil(t, err)
-	require.NotNil(t, sessionIDs)
-	require.Equal(t, newSessionIDs, sessionIDs)
-
+	require.Equal(t, []string{"session_id_0", "session_id_1"}, activeSessionIDs)
 }
 
 func TestKeeper_SetSessionsCount(t *testing.T) {
 	cdc := codec.New()
-	ms, _, vpnStoreKey, sessionStoreKey := setupMultiStore()
-	ctx := csdkTypes.NewContext(ms, abci.Header{}, false, log.NewNopLogger())
-	keeper := NewKeeper(cdc, vpnStoreKey, sessionStoreKey)
 
-	sessionsCount, err := keeper.GetSessionsCount(ctx)
+	ms, _, vpnKey, sessionKey := setupMultiStore()
+	ctx := csdkTypes.NewContext(ms, abciTypes.Header{}, false, log.NewNopLogger())
+	vpnKeeper := NewKeeper(cdc, vpnKey, sessionKey)
+
+	var err csdkTypes.Error
+
+	sessionsCount, err := vpnKeeper.GetSessionsCount(ctx, accAddress1)
 	require.Nil(t, err)
-	require.Equal(t, sessionsCount, uint64(0))
+	require.Equal(t, uint64(0), sessionsCount)
 
-	keeper.SetSessionsCount(ctx, count)
-
-	newSessionsCount, err := keeper.GetSessionsCount(ctx)
+	err = vpnKeeper.SetSessionsCount(ctx, accAddress1, uint64(1))
 	require.Nil(t, err)
-	require.NotNil(t, newSessionsCount)
-	require.Equal(t, count, newSessionsCount)
 
+	sessionsCount, err = vpnKeeper.GetSessionsCount(ctx, accAddress1)
+	require.Nil(t, err)
+	require.Equal(t, uint64(1), sessionsCount)
 }
 
 func TestKeeper_SetVPNStatus(t *testing.T) {
 	cdc := codec.New()
-	ms, _, vpnStoreKey, sessionStoreKey := setupMultiStore()
-	ctx := csdkTypes.NewContext(ms, abci.Header{}, false, log.NewNopLogger())
-	keeper := NewKeeper(cdc, vpnStoreKey, sessionStoreKey)
 
-	vpnsCount, err := keeper.GetVPNsCount(ctx)
+	ms, _, vpnKey, sessionKey := setupMultiStore()
+	ctx := csdkTypes.NewContext(ms, abciTypes.Header{}, false, log.NewNopLogger())
+	vpnKeeper := NewKeeper(cdc, vpnKey, sessionKey)
+
+	var err csdkTypes.Error
+
+	vpnDetails0, err := vpnKeeper.GetVPNDetails(ctx, "vpn_id")
 	require.Nil(t, err)
-	require.Equal(t, vpnsCount, uint64(0))
+	require.Nil(t, vpnDetails0)
 
-	keeper.SetVPNsCount(ctx, count)
+	vpnDetails1 := vpnDetails
 
-	vpnsCount, err = keeper.GetVPNsCount(ctx)
+	err = vpnKeeper.SetVPNDetails(ctx, "vpn_id", &vpnDetails1)
 	require.Nil(t, err)
-	require.NotNil(t, vpnsCount)
-	require.Equal(t, vpnsCount, count)
 
-	vpnID1 := addr1.String() + "/" + strconv.Itoa(int(vpnsCount))
-
-	vpnDetails, err := keeper.GetVPNDetails(ctx, vpnID1)
+	vpnDetails2, err := vpnKeeper.GetVPNDetails(ctx, "vpn_id")
 	require.Nil(t, err)
-	require.Nil(t, vpnDetails)
+	require.Equal(t, &vpnDetails1, vpnDetails2)
 
-	testVpnDetails := TestGetVPNDetails()
-	keeper.SetVPNDetails(ctx, vpnID1, testVpnDetails)
-
-	vpnDetails, err = keeper.GetVPNDetails(ctx, vpnID1)
+	err = vpnKeeper.SetVPNStatus(ctx, "vpn_id", sdkTypes.StatusActive)
 	require.Nil(t, err)
-	require.NotNil(t, vpnDetails)
-	require.Equal(t, testVpnDetails, vpnDetails)
 
-	keeper.SetVPNStatus(ctx, vpnID1, status)
-
-	vpnDetails, err = keeper.GetVPNDetails(ctx, vpnID1)
+	vpnDetails1.Status = sdkTypes.StatusActive
+	vpnDetails3, err := vpnKeeper.GetVPNDetails(ctx, "vpn_id")
 	require.Nil(t, err)
-	require.NotNil(t, vpnDetails)
-	require.Equal(t, status, vpnDetails.Status)
-
+	require.Equal(t, &vpnDetails1, vpnDetails3)
 }
 
 func TestKeeper_AddActiveNodeID(t *testing.T) {
 	cdc := codec.New()
-	ms, _, vpnStoreKey, sessionStoreKey := setupMultiStore()
-	ctx := csdkTypes.NewContext(ms, abci.Header{}, false, log.NewNopLogger())
-	keeper := NewKeeper(cdc, vpnStoreKey, sessionStoreKey)
 
-	vpnsCount, err := keeper.GetVPNsCount(ctx)
+	ms, _, vpnKey, sessionKey := setupMultiStore()
+	ctx := csdkTypes.NewContext(ms, abciTypes.Header{}, false, log.NewNopLogger())
+	vpnKeeper := NewKeeper(cdc, vpnKey, sessionKey)
+
+	var err csdkTypes.Error
+
+	activeNodeIDs, err := vpnKeeper.GetActiveNodeIDs(ctx)
 	require.Nil(t, err)
-	require.Equal(t, vpnsCount, uint64(0))
+	require.Equal(t, []string(nil), activeNodeIDs)
 
-	keeper.SetVPNsCount(ctx, count)
-
-	vpnsCount, err = keeper.GetVPNsCount(ctx)
+	err = vpnKeeper.AddActiveNodeID(ctx, "node_id")
 	require.Nil(t, err)
-	require.NotNil(t, vpnsCount)
-	require.Equal(t, vpnsCount, count)
 
-	vpnID1 := addr1.String() + "/" + strconv.Itoa(int(vpnsCount))
-	vpnID2 := addr2.String() + "/" + strconv.Itoa(int(vpnsCount))
-
-	nodes, err := keeper.GetActiveNodeIDs(ctx)
+	activeNodeIDs, err = vpnKeeper.GetActiveNodeIDs(ctx)
 	require.Nil(t, err)
-	require.Nil(t, nodes)
-
-	nodeIDs := []string{vpnID1}
-
-	keeper.SetActiveNodeIDs(ctx, nodeIDs)
-
-	nodeIDs, err = keeper.GetActiveNodeIDs(ctx)
-	require.Nil(t, err)
-	require.NotNil(t, nodeIDs)
-	require.Equal(t, nodeIDs[0], vpnID1)
-
-	keeper.AddActiveNodeID(ctx, vpnID2)
-
-	nodeIDs, err = keeper.GetActiveNodeIDs(ctx)
-	nodes = []string{vpnID1, vpnID2}
-	sort.Strings(nodes)
-	require.Nil(t, err)
-	require.NotNil(t, nodeIDs)
-	require.Equal(t, nodeIDs, nodes)
-
+	require.Equal(t, []string{"node_id"}, activeNodeIDs)
 }
 
 func TestKeeper_RemoveActiveNodeID(t *testing.T) {
 	cdc := codec.New()
-	ms, _, vpnStoreKey, sessionStoreKey := setupMultiStore()
-	ctx := csdkTypes.NewContext(ms, abci.Header{}, false, log.NewNopLogger())
-	keeper := NewKeeper(cdc, vpnStoreKey, sessionStoreKey)
 
-	vpnsCount, err := keeper.GetVPNsCount(ctx)
-	require.Nil(t, err)
-	require.Equal(t, vpnsCount, uint64(0))
+	ms, _, vpnKey, sessionKey := setupMultiStore()
+	ctx := csdkTypes.NewContext(ms, abciTypes.Header{}, false, log.NewNopLogger())
+	vpnKeeper := NewKeeper(cdc, vpnKey, sessionKey)
 
-	keeper.SetVPNsCount(ctx, count)
+	var err csdkTypes.Error
 
-	vpnsCount, err = keeper.GetVPNsCount(ctx)
-	require.Nil(t, err)
-	require.NotNil(t, vpnsCount)
-	require.Equal(t, vpnsCount, count)
-
-	vpnID1 := addr1.String() + "/" + strconv.Itoa(int(vpnsCount))
-	vpnID2 := addr2.String() + "/" + strconv.Itoa(int(vpnsCount))
-
-	nodes, err := keeper.GetActiveNodeIDs(ctx)
-	require.Nil(t, err)
-	require.Nil(t, nodes)
-
-	nodeIDs := []string{vpnID1}
-
-	keeper.SetActiveNodeIDs(ctx, nodeIDs)
-
-	newNodeIDs, err := keeper.GetActiveNodeIDs(ctx)
-	require.Nil(t, err)
-	require.NotNil(t, newNodeIDs)
-	require.Equal(t, newNodeIDs[0], vpnID1)
-
-	keeper.AddActiveNodeID(ctx, vpnID2)
-
-	nodes = append(nodeIDs, vpnID2)
-	sort.Strings(nodes)
-
-	newNodeIDs, err = keeper.GetActiveNodeIDs(ctx)
-	require.Nil(t, err)
-	require.Equal(t, newNodeIDs, nodes)
-
-	keeper.RemoveActiveNodeID(ctx, vpnID2)
-	newNodeIDs, err = keeper.GetActiveNodeIDs(ctx)
+	err = vpnKeeper.AddActiveNodeID(ctx, "node_id_0")
 	require.Nil(t, err)
 
-	require.Equal(t, newNodeIDs, nodeIDs)
+	err = vpnKeeper.AddActiveNodeID(ctx, "node_id_1")
+	require.Nil(t, err)
 
+	activeNodeIDs, err := vpnKeeper.GetActiveNodeIDs(ctx)
+	require.Nil(t, err)
+	require.Equal(t, []string{"node_id_0", "node_id_1"}, activeNodeIDs)
+
+	err = vpnKeeper.RemoveActiveNodeID(ctx, "node_id_0")
+	require.Nil(t, err)
+
+	activeNodeIDs, err = vpnKeeper.GetActiveNodeIDs(ctx)
+	require.Nil(t, err)
+	require.Equal(t, []string{"node_id_1"}, activeNodeIDs)
 }
 
 func TestKeeper_SetSessionStatus(t *testing.T) {
 	cdc := codec.New()
-	ms, _, vpnStoreKey, sessionStoreKey := setupMultiStore()
-	ctx := csdkTypes.NewContext(ms, abci.Header{}, false, log.NewNopLogger())
-	keeper := NewKeeper(cdc, vpnStoreKey, sessionStoreKey)
 
-	sessionsCount, err := keeper.GetSessionsCount(ctx)
+	ms, _, vpnKey, sessionKey := setupMultiStore()
+	ctx := csdkTypes.NewContext(ms, abciTypes.Header{}, false, log.NewNopLogger())
+	vpnKeeper := NewKeeper(cdc, vpnKey, sessionKey)
+
+	var err csdkTypes.Error
+
+	sessionDetails0, err := vpnKeeper.GetSessionDetails(ctx, "session_id")
 	require.Nil(t, err)
-	require.Equal(t, sessionsCount, uint64(0))
+	require.Nil(t, sessionDetails0)
 
-	keeper.SetSessionsCount(ctx, count)
+	sessionDetails1 := sessionDetails
 
-	sessionsCount, err = keeper.GetSessionsCount(ctx)
+	err = vpnKeeper.SetSessionDetails(ctx, "session_id", &sessionDetails1)
 	require.Nil(t, err)
-	require.NotNil(t, sessionsCount)
-	require.Equal(t, sessionsCount, count)
 
-	sessionID1 := addr1.String() + "/" + strconv.Itoa(int(sessionsCount))
-
-	session, err := keeper.GetActiveSessionIDs(ctx)
+	sessionDetails2, err := vpnKeeper.GetSessionDetails(ctx, "session_id")
 	require.Nil(t, err)
-	require.Nil(t, session)
+	require.Equal(t, &sessionDetails1, sessionDetails2)
 
-	newSessionIDs := []string{sessionID1}
-
-	keeper.SetActiveSessionIDs(ctx, newSessionIDs)
-
-	sessionIDs, err := keeper.GetActiveSessionIDs(ctx)
+	err = vpnKeeper.SetSessionStatus(ctx, "session_id", sdkTypes.StatusActive)
 	require.Nil(t, err)
-	require.NotNil(t, sessionIDs)
-	require.Equal(t, newSessionIDs, sessionIDs)
 
-	sessionDetails, err := keeper.GetSessionDetails(ctx, sessionID1)
+	sessionDetails1.Status = sdkTypes.StatusActive
+	sessionDetails2, err = vpnKeeper.GetSessionDetails(ctx, "session_id")
 	require.Nil(t, err)
-	require.Nil(t, sessionDetails)
-
-	testSessionDetails := TestGetSessionDetails()
-
-	keeper.SetSessionDetails(ctx, sessionID1, testSessionDetails)
-
-	sessionDetails, err = keeper.GetSessionDetails(ctx, sessionID1)
-	require.Nil(t, err)
-	require.NotNil(t, sessionDetails)
-
-	keeper.SetSessionStatus(ctx, sessionID1, status)
-
-	sessionDetails, err = keeper.GetSessionDetails(ctx, sessionID1)
-	require.Nil(t, err)
-	require.NotNil(t, sessionDetails)
-	require.Equal(t, sessionDetails.Status, status)
-
+	require.Equal(t, &sessionDetails1, sessionDetails2)
 }
 
 func TestKeeper_AddActiveSessionID(t *testing.T) {
 	cdc := codec.New()
-	ms, _, vpnStoreKey, sessionStoreKey := setupMultiStore()
-	ctx := csdkTypes.NewContext(ms, abci.Header{}, false, log.NewNopLogger())
-	keeper := NewKeeper(cdc, vpnStoreKey, sessionStoreKey)
 
-	sessionsCount, err := keeper.GetSessionsCount(ctx)
+	ms, _, vpnKey, sessionKey := setupMultiStore()
+	ctx := csdkTypes.NewContext(ms, abciTypes.Header{}, false, log.NewNopLogger())
+	vpnKeeper := NewKeeper(cdc, vpnKey, sessionKey)
+
+	var err csdkTypes.Error
+
+	activeSessionIDs, err := vpnKeeper.GetActiveSessionIDs(ctx)
 	require.Nil(t, err)
-	require.Equal(t, sessionsCount, uint64(0))
+	require.Equal(t, []string(nil), activeSessionIDs)
 
-	keeper.SetSessionsCount(ctx, count)
-
-	sessionsCount, err = keeper.GetSessionsCount(ctx)
-	require.NotNil(t, sessionsCount)
-	require.Equal(t, sessionsCount, count)
-
-	sessionID1 := addr1.String() + "/" + strconv.Itoa(int(sessionsCount))
-	sessionID2 := addr2.String() + "/" + strconv.Itoa(int(sessionsCount))
-
-	session, err := keeper.GetActiveSessionIDs(ctx)
+	err = vpnKeeper.AddActiveSessionID(ctx, "session_id")
 	require.Nil(t, err)
-	require.Nil(t, session)
 
-	newSessionIDs := []string{sessionID1}
-
-	keeper.SetActiveSessionIDs(ctx, newSessionIDs)
-
-	sessionIDs, err := keeper.GetActiveSessionIDs(ctx)
+	activeSessionIDs, err = vpnKeeper.GetActiveSessionIDs(ctx)
 	require.Nil(t, err)
-	require.NotNil(t, sessionIDs)
-	require.Equal(t, newSessionIDs, sessionIDs)
-
-	keeper.AddActiveSessionID(ctx, sessionID2)
-
-	sessionIDs, err = keeper.GetActiveSessionIDs(ctx)
-	require.NotNil(t, sessionIDs)
-	sessions := []string{sessionID1, sessionID2}
-	sort.Strings(sessions)
-	require.Equal(t, sessionIDs, sessions)
-
+	require.Equal(t, []string{"session_id"}, activeSessionIDs)
 }
 
 func TestKeeper_RemoveActiveSessionID(t *testing.T) {
 	cdc := codec.New()
-	ms, _, vpnStoreKey, sessionStoreKey := setupMultiStore()
-	ctx := csdkTypes.NewContext(ms, abci.Header{}, false, log.NewNopLogger())
-	keeper := NewKeeper(cdc, vpnStoreKey, sessionStoreKey)
 
-	sessionsCount, err := keeper.GetSessionsCount(ctx)
+	ms, _, vpnKey, sessionKey := setupMultiStore()
+	ctx := csdkTypes.NewContext(ms, abciTypes.Header{}, false, log.NewNopLogger())
+	vpnKeeper := NewKeeper(cdc, vpnKey, sessionKey)
+
+	var err csdkTypes.Error
+
+	err = vpnKeeper.AddActiveSessionID(ctx, "session_id_0")
 	require.Nil(t, err)
-	require.Equal(t, sessionsCount, uint64(0))
 
-	keeper.SetSessionsCount(ctx, count)
-
-	sessionsCount, err = keeper.GetSessionsCount(ctx)
+	err = vpnKeeper.AddActiveSessionID(ctx, "session_id_1")
 	require.Nil(t, err)
-	require.NotNil(t, sessionsCount)
-	require.Equal(t, sessionsCount, count)
 
-	sessionID1 := addr1.String() + "/" + strconv.Itoa(int(sessionsCount))
-	sessionID2 := addr2.String() + "/" + strconv.Itoa(int(sessionsCount))
-
-	session, err := keeper.GetActiveSessionIDs(ctx)
+	activeSessionIDs, err := vpnKeeper.GetActiveSessionIDs(ctx)
 	require.Nil(t, err)
-	require.Nil(t, session)
+	require.Equal(t, []string{"session_id_0", "session_id_1"}, activeSessionIDs)
 
-	newSessionIDs := []string{sessionID1}
-
-	keeper.SetActiveSessionIDs(ctx, newSessionIDs)
-
-	sessionIDs, err := keeper.GetActiveSessionIDs(ctx)
+	err = vpnKeeper.RemoveActiveSessionID(ctx, "session_id_0")
 	require.Nil(t, err)
-	require.NotNil(t, sessionIDs)
-	require.Equal(t, newSessionIDs, sessionIDs)
 
-	keeper.AddActiveSessionID(ctx, sessionID2)
-
-	sessionIDs, err = keeper.GetActiveSessionIDs(ctx)
+	activeSessionIDs, err = vpnKeeper.GetActiveSessionIDs(ctx)
 	require.Nil(t, err)
-	require.NotNil(t, sessionIDs)
-	sessions := []string{sessionID1, sessionID2}
-	sort.Strings(sessions)
-	require.Equal(t, sessionIDs, sessions)
+	require.Equal(t, []string{"session_id_1"}, activeSessionIDs)
+}
 
-	keeper.RemoveActiveSessionID(ctx, sessionID2)
+func TestKeeper_AddVPN(t *testing.T) {
+	cdc := codec.New()
 
-	sessionIDs, err = keeper.GetActiveSessionIDs(ctx)
+	ms, _, vpnKey, sessionKey := setupMultiStore()
+	ctx := csdkTypes.NewContext(ms, abciTypes.Header{}, false, log.NewNopLogger())
+	vpnKeeper := NewKeeper(cdc, vpnKey, sessionKey)
+
+	var err csdkTypes.Error
+
+	vpnsCount, err := vpnKeeper.GetVPNsCount(ctx, accAddress1)
 	require.Nil(t, err)
-	require.Equal(t, sessionIDs, newSessionIDs)
+	require.Equal(t, uint64(0), vpnsCount)
+
+	vpnDetails0, err := vpnKeeper.GetVPNDetails(ctx, "vpn_id")
+	require.Nil(t, err)
+	require.Nil(t, vpnDetails0)
+
+	vpnDetails1 := vpnDetails
+
+	err = vpnKeeper.AddVPN(ctx, "vpn_id", &vpnDetails1)
+	require.Nil(t, err)
+
+	vpnsCount, err = vpnKeeper.GetVPNsCount(ctx, accAddress1)
+	require.Nil(t, err)
+	require.Equal(t, uint64(1), vpnsCount)
+
+	vpnDetails2, err := vpnKeeper.GetVPNDetails(ctx, "vpn_id")
+	require.Nil(t, err)
+	require.Equal(t, &vpnDetails1, vpnDetails2)
+}
+
+func TestKeeper_AddSession(t *testing.T) {
+	cdc := codec.New()
+
+	ms, _, vpnKey, sessionKey := setupMultiStore()
+	ctx := csdkTypes.NewContext(ms, abciTypes.Header{}, false, log.NewNopLogger())
+	vpnKeeper := NewKeeper(cdc, vpnKey, sessionKey)
+
+	var err csdkTypes.Error
+
+	sessionsCount, err := vpnKeeper.GetSessionsCount(ctx, accAddress1)
+	require.Nil(t, err)
+	require.Equal(t, uint64(0), sessionsCount)
+
+	sessionDetails0, err := vpnKeeper.GetSessionDetails(ctx, "session_id")
+	require.Nil(t, err)
+	require.Nil(t, sessionDetails0)
+
+	sessionDetails1 := sessionDetails
+
+	err = vpnKeeper.AddSession(ctx, "session_id", &sessionDetails1)
+	require.Nil(t, err)
+
+	sessionsCount, err = vpnKeeper.GetSessionsCount(ctx, accAddress1)
+	require.Nil(t, err)
+	require.Equal(t, uint64(1), sessionsCount)
+
+	sessionDetails2, err := vpnKeeper.GetSessionDetails(ctx, "session_id")
+	require.Nil(t, err)
+	require.Equal(t, &sessionDetails1, sessionDetails2)
 }

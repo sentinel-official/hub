@@ -1,7 +1,7 @@
 package types
 
 const (
-	KeyAccount  = "account"
+	KeyAccount  = "acc"
 	KeyBank     = "bank"
 	KeyIBC      = "ibc"
 	KeyMain     = "main"

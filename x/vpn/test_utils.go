@@ -1,207 +1,152 @@
 package vpn
 
 import (
-	"encoding/json"
+	"strconv"
+	"time"
+
 	"github.com/cosmos/cosmos-sdk/store"
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
+	"github.com/tendermint/tendermint/crypto/ed25519"
+	tmDB "github.com/tendermint/tendermint/libs/db"
+
 	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
 	"github.com/ironman0x7b2/sentinel-sdk/x/hub"
 	"github.com/ironman0x7b2/sentinel-sdk/x/ibc"
-	"github.com/tendermint/tendermint/crypto/ed25519"
-	dbm "github.com/tendermint/tendermint/libs/db"
-	"strconv"
 )
-
-var count = uint64(0)
-
-var addr1 = csdkTypes.AccAddress([]byte("some-address1"))
-var addr2 = csdkTypes.AccAddress([]byte("some-address2"))
-
-var (
-	coin1 = csdkTypes.NewCoin("SENT", csdkTypes.NewInt(100))
-	coin2 = csdkTypes.NewCoin("sent", csdkTypes.NewInt(100))
-)
-
-var (
-	pvk1 = ed25519.GenPrivKey()
-	pvk2 = ed25519.GenPrivKey()
-)
-
-var (
-	pubKey1 = pvk1.PubKey()
-	pubKey2 = pvk2.PubKey()
-)
-
-var (
-	sign1, _ = pvk1.Sign(msgLockCoinsSignatureBytes())
-	sign2, _ = pvk2.Sign(msgLockCoinsSignatureBytes())
-)
-
-var (
-	vpnRoute     = "vpn"
-	sessionRoute = "session"
-)
-
-var (
-	vpnRegisterType          = "msg_register_node"
-	payVpnServiceType        = "msg_pay_vpn_service"
-	updatedSessionStatusType = "msg_update_session_status"
-	deregisterNodeIDType     = "msg_deregister_node"
-)
-
-var addr3 = csdkTypes.AccAddress(pubKey1.Address())
-
-var vpnID = addr3.String() + "/" + strconv.Itoa(int(0))
-
-var lockerID1 = "vpn" + "/" + vpnID
-
-var sessionID1 = addr3.String() + "/" + strconv.Itoa(int(count))
-
-var lockerID2 = "session" + "/" + sessionID1
-
-var status = "ACTIVE"
-
-func msgLockCoinsSignatureBytes() []byte {
-	bytes, _ := json.Marshal(hub.MsgLockCoins{
-		lockerID1,
-		csdkTypes.Coins{coin1},
-		pubKey1,
-		nil,
-	})
-	return bytes
-}
 
 func setupMultiStore() (csdkTypes.MultiStore, *csdkTypes.KVStoreKey, *csdkTypes.KVStoreKey, *csdkTypes.KVStoreKey) {
-	db := dbm.NewMemDB()
-	ibcStoreKey := csdkTypes.NewKVStoreKey("ibc")
-	vpnStoreKey := csdkTypes.NewKVStoreKey("vpn")
-	sessionStoreKey := csdkTypes.NewKVStoreKey("session")
+	db := tmDB.NewMemDB()
+
+	ibcKey := csdkTypes.NewKVStoreKey(sdkTypes.KeyIBC)
+	vpnKey := csdkTypes.NewKVStoreKey(sdkTypes.KeyVPN)
+	sessionKey := csdkTypes.NewKVStoreKey(sdkTypes.KeySession)
 
 	ms := store.NewCommitMultiStore(db)
 
-	ms.MountStoreWithDB(ibcStoreKey, csdkTypes.StoreTypeIAVL, db)
-	ms.MountStoreWithDB(vpnStoreKey, csdkTypes.StoreTypeIAVL, db)
-	ms.MountStoreWithDB(sessionStoreKey, csdkTypes.StoreTypeIAVL, db)
+	ms.MountStoreWithDB(ibcKey, csdkTypes.StoreTypeIAVL, db)
+	ms.MountStoreWithDB(vpnKey, csdkTypes.StoreTypeIAVL, db)
+	ms.MountStoreWithDB(sessionKey, csdkTypes.StoreTypeIAVL, db)
 
-	ms.LoadLatestVersion()
-	return ms, ibcStoreKey, vpnStoreKey, sessionStoreKey
-}
-
-func TestGetVPNDetails() *sdkTypes.VPNDetails {
-
-	return &sdkTypes.VPNDetails{
-		Address: addr3,
-		APIPort: 8080,
-		Location: sdkTypes.Location{
-			City:      "city",
-			Country:   "country",
-			Latitude:  1234,
-			Longitude: 4321,
-		},
-		NetSpeed: sdkTypes.NetSpeed{
-			Upload:   1000,
-			Download: 1000,
-		},
-		EncMethod:  "AES-256",
-		PricePerGB: 100,
-		Version:    "1.0",
-		Status:     "REGISTERED",
-		LockerID:   lockerID1,
+	if err := ms.LoadLatestVersion(); err != nil {
+		panic(err)
 	}
 
+	return ms, ibcKey, vpnKey, sessionKey
 }
 
-func TestGetSessionDetails() *sdkTypes.SessionDetails {
-	return &sdkTypes.SessionDetails{
-		VPNID:         vpnID,
-		ClientAddress: addr1,
-		GBToProvide:   10,
-		PricePerGB:    100,
-		Upload:        100,
-		Download:      100,
-		StartTime:     nil,
-		EndTime:       nil,
-		Status:        "LOCKED",
+var (
+	privKey1 = ed25519.GenPrivKey()
+	privKey2 = ed25519.GenPrivKey()
+
+	pubKey1 = privKey1.PubKey()
+	pubKey2 = privKey2.PubKey()
+
+	accAddress1 = csdkTypes.AccAddress(pubKey1.Address())
+	accAddress2 = csdkTypes.AccAddress(pubKey2.Address())
+
+	now        = time.Now().UTC()
+	vpnDetails = sdkTypes.VPNDetails{
+		accAddress1,
+		3000,
+		sdkTypes.Location{0, 0, "city", "country"},
+		sdkTypes.NetSpeed{1024, 1024},
+		"enc_method",
+		0,
+		"version",
+		sdkTypes.StatusRegister,
+		"locker_id",
 	}
-}
-
-func TestGetMsgRegisterNode() *MsgRegisterNode {
-	return &MsgRegisterNode{
-		From: addr3, APIPort: 1234, Location: sdkTypes.Location{
-			Latitude:  100,
-			Longitude: 100,
-			City:      "city",
-			Country:   "country",
-		}, NetSpeed: sdkTypes.NetSpeed{
-			Upload:   100,
-			Download: 100,
-		},
-		EncMethod: "AES-256", PricePerGB: 100, Version: "1.0", LockerID: lockerID1,
-		Coins: csdkTypes.Coins{coin1}, PubKey: pubKey1, Signature: sign1}
-
-}
-
-func TestGetMsgPayVpnService() *MsgPayVPNService {
-
-	return &MsgPayVPNService{
-		From:  addr3,
-		VPNID: vpnID,
-
-		LockerID:  lockerID2,
-		Coins:     csdkTypes.Coins{coin1},
-		PubKey:    pubKey1,
-		Signature: sign1,
+	sessionDetails = sdkTypes.SessionDetails{
+		"vpn_id",
+		accAddress1,
+		1024,
+		0,
+		1024,
+		1024,
+		&now,
+		&now,
+		sdkTypes.StatusStart,
 	}
 
-}
+	msgRegisterNode = NewMsgRegisterNode(
+		accAddress1,
+		3000,
+		0, 0, "city", "country",
+		1024, 1024,
+		"enc_method",
+		0,
+		"version",
+		sdkTypes.KeyVPN+"/"+accAddress1.String()+"/"+strconv.Itoa(0),
+		csdkTypes.Coins{coin(100, "x")},
+		pubKey1,
+		getMsgLockCoinsSignature(sdkTypes.KeyVPN+"/"+accAddress1.String()+"/"+strconv.Itoa(0), csdkTypes.Coins{coin(100, "x")}),
+	)
+	msgPayVPNService = NewMsgPayVPNService(
+		accAddress1,
+		accAddress1.String()+"/"+strconv.Itoa(0),
+		sdkTypes.KeySession+"/"+accAddress1.String()+"/"+strconv.Itoa(0),
+		csdkTypes.Coins{coin(100, "x")},
+		pubKey1,
+		getMsgLockCoinsSignature(sdkTypes.KeySession+"/"+accAddress1.String()+"/"+strconv.Itoa(0), csdkTypes.Coins{coin(100, "x")}),
+	)
+	msgUpdateSessionStatus = NewMsgUpdateSessionStatus(
+		accAddress1,
+		"session_id",
+		sdkTypes.StatusInactive,
+	)
+	msgDeregisterNode = NewMsgDeregisterNode(
+		accAddress1,
+		accAddress1.String()+"/"+strconv.Itoa(0),
+		sdkTypes.KeyVPN+"/"+accAddress1.String()+"/"+strconv.Itoa(0),
+		pubKey1,
+		getMsgReleaseCoinsSignature(sdkTypes.KeyVPN+"/"+accAddress1.String()+"/"+strconv.Itoa(0)),
+	)
 
-func TestGetMsgDeregisterNode() *MsgDeregisterNode {
-	return &MsgDeregisterNode{
-		From:      addr3,
-		VPNID:     vpnID,
-		LockerID:  lockerID1,
-		PubKey:    pubKey1,
-		Signature: sign1,
-	}
-}
-
-func TestGetMsgUpdateSessionStatus() *MsgUpdateSessionStatus {
-	return &MsgUpdateSessionStatus{
-		From:      addr3,
-		SessionID: sessionID1,
-		Status:    "LOCKED",
-	}
-
-}
-
-func TestGetNodeIBCPacket() *ibc.MsgIBCTransaction {
-	return &ibc.MsgIBCTransaction{
-		Relayer:  addr1,
-		Sequence: 0,
-		IBCPacket: sdkTypes.IBCPacket{
-			SrcChainID:  "sentinel-vpn",
-			DestChainID: "sentinel-hub",
-			Message: hub.MsgLockerStatus{
-				LockerID: lockerID1,
-				Status:   "LOCKED",
+	msgIBCTransaction = ibc.MsgIBCTransaction{
+		accAddress2,
+		0,
+		sdkTypes.IBCPacket{
+			"src_chain_id",
+			"dest_chain_id",
+			hub.MsgLockerStatus{
+				sdkTypes.KeyVPN + "/" + accAddress1.String() + "/" + strconv.Itoa(0),
+				sdkTypes.StatusLock,
 			},
 		},
 	}
+)
 
+func coin(value int64, name string) csdkTypes.Coin {
+	return csdkTypes.Coin{name, csdkTypes.NewInt(value)}
 }
 
-func TestGetSessionIBCPacket() *ibc.MsgIBCTransaction {
-	return &ibc.MsgIBCTransaction{
-		Relayer:  addr1,
-		Sequence: 0,
-		IBCPacket: sdkTypes.IBCPacket{
-			SrcChainID:  "sentinel-vpn",
-			DestChainID: "sentinel-hub",
-			Message: hub.MsgLockerStatus{
-				LockerID: lockerID2,
-				Status:   "LOCKED",
-			},
-		},
+func getMsgLockCoinsSignature(lockerID string, coins csdkTypes.Coins) []byte {
+	msg := hub.MsgLockCoins{
+		LockerID: lockerID,
+		Coins:    coins,
+		PubKey:   pubKey1,
 	}
 
+	sign, err := privKey1.Sign(msg.GetUnSignBytes())
+
+	if err != nil {
+		panic(err)
+	}
+
+	return sign
+}
+
+func getMsgReleaseCoinsSignature(lockerID string) []byte {
+	msg := hub.MsgLockCoins{
+		LockerID: lockerID,
+		PubKey:   pubKey1,
+	}
+
+	sign, err := privKey1.Sign(msg.GetUnSignBytes())
+
+	if err != nil {
+		panic(err)
+	}
+
+	return sign
 }

@@ -56,7 +56,7 @@ func PaymentCommand(cdc *codec.Codec) *cobra.Command {
 				return errors.Errorf("Address %s doesn't have enough coins to pay for this transaction.", from)
 			}
 
-			sessionsCountBytes, err := cliCtx.QueryStore(cdc.MustMarshalBinaryLengthPrefixed(sdkTypes.KeySessionsCount), sdkTypes.KeySession)
+			sessionsCountBytes, err := cliCtx.QueryStore(cdc.MustMarshalBinaryLengthPrefixed(sdkTypes.SessionsCountKey(from)), sdkTypes.KeySession)
 
 			if err != nil {
 				return err

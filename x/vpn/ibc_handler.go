@@ -1,7 +1,6 @@
 package vpn
 
 import (
-	"fmt"
 	"reflect"
 	"strings"
 
@@ -28,11 +27,11 @@ func NewIBCVPNHandler(ibcKeeper ibc.Keeper, vpnKeeper Keeper) csdkTypes.Handler 
 					return csdkTypes.ErrUnknownRequest(errMsg).Result()
 				}
 			default:
-				errMsg := "Unrecognized vpn Msg type: " + reflect.TypeOf(ibcMsg).Name()
+				errMsg := "Unrecognized ibc msg type: " + reflect.TypeOf(ibcMsg).Name()
 				return csdkTypes.ErrUnknownRequest(errMsg).Result()
 			}
 		default:
-			errMsg := fmt.Sprintf("Unrecognized Msg type: %v", msg.Type())
+			errMsg := "Unrecognized msg type: " + reflect.TypeOf(msg).Name()
 			return csdkTypes.ErrUnknownRequest(errMsg).Result()
 		}
 	}
@@ -54,7 +53,6 @@ func handleUpdateNodeStatus(ctx csdkTypes.Context, ibcKeeper ibc.Keeper, vpnKeep
 
 	if vpnDetails, err := vpnKeeper.GetVPNDetails(ctx, nodeID); true {
 		if err != nil {
-
 			return err.Result()
 		}
 
