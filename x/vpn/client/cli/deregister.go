@@ -22,7 +22,7 @@ func DeregisterCommand(cdc *codec.Codec) *cobra.Command {
 		Use:   "deregister",
 		Short: "Deregister Sentinel VPN service node",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			txBldr := authTxBuilder.NewTxBuilderFromCLI().WithCodec(cdc)
+			txBldr := authTxBuilder.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
 			cliCtx := context.NewCLIContext().WithCodec(cdc).WithAccountDecoder(cdc)
 
 			nodeID := viper.GetString(flagNodeID)

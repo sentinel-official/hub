@@ -7,6 +7,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/client/keys"
+	"github.com/cosmos/cosmos-sdk/client/utils"
 	"github.com/cosmos/cosmos-sdk/codec"
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
@@ -201,7 +202,7 @@ func (c relayCommander) refine(bz []byte, ibcSeq, accSeq uint64, passphrase stri
 		Sequence:  ibcSeq,
 		IBCPacket: packet,
 	}
-	txBuilder := authTxBuilder.NewTxBuilderFromCLI().WithSequence(accSeq).WithCodec(c.cdc)
+	txBuilder := authTxBuilder.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(c.cdc)).WithSequence(accSeq)
 	cliCtx := context.NewCLIContext()
 	name, err := cliCtx.GetFromName()
 

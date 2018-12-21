@@ -57,7 +57,7 @@
   revision = "d4cc87b860166d00d6b5b9e0d3b3d71d6088d4d4"
 
 [[projects]]
-  digest = "1:797e408abc15cc0f6b8f6ef97bcdc3be0bc466416206408f6186a740d3abf815"
+  digest = "1:d8d313937beddc28797bdc45f70daf858b51ca062c885801ba45d2edd8033943"
   name = "github.com/cosmos/cosmos-sdk"
   packages = [
     "baseapp",
@@ -121,8 +121,8 @@
     "x/stake/types",
   ]
   pruneopts = "UT"
-  revision = "68019bef65ae4192021ed022aaea62dc97c8ab0b"
-  version = "v0.28.0"
+  revision = "2b3842c58305a4e26d457d3d3bd6cf849ffddcdd"
+  version = "v0.29.0"
 
 [[projects]]
   digest = "1:e8a3550c8786316675ff54ad6f09d265d129c9d986919af7f541afba50d87ce2"
@@ -513,7 +513,7 @@
   version = "v0.12.0"
 
 [[projects]]
-  digest = "1:23c49a2a0f3f8a8258982bbb1567d60d74253c18a454dbe4189126f7e94834e6"
+  digest = "1:f94f468c7cd1fc3693ebc16011f26ec26538761cdcd182b3a28faa649a7d55e2"
   name = "github.com/tendermint/tendermint"
   packages = [
     "abci/client",
@@ -578,8 +578,8 @@
     "version",
   ]
   pruneopts = "UT"
-  revision = "9c236ffd6c56add84f3c17930ae75c26c68d61ec"
-  version = "v0.27.0"
+  revision = "0138530df202f5b8e8be1edb9c2f705e404a79cb"
+  version = "v0.27.3"
 
 [[projects]]
   digest = "1:a7485b2a69f996923f9d3406a9a853fd8eb31818515e985a830d71f88f6a925b"

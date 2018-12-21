@@ -24,7 +24,7 @@ func RegisterCommand(cdc *codec.Codec) *cobra.Command {
 		Use:   "register",
 		Short: "Register Sentinel VPN service node",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			txBldr := authTxBuilder.NewTxBuilderFromCLI().WithCodec(cdc)
+			txBldr := authTxBuilder.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
 			cliCtx := context.NewCLIContext().WithCodec(cdc).WithAccountDecoder(cdc)
 
 			apiPort := viper.GetInt64(flagAPIPort)
