@@ -7,6 +7,7 @@ import (
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/cosmos/cosmos-sdk/x/bank"
+	"github.com/cosmos/cosmos-sdk/x/params"
 	"github.com/stretchr/testify/require"
 	abciTypes "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/libs/log"
@@ -26,7 +27,10 @@ func Test_handleLockCoins(t *testing.T) {
 	sdkTypes.RegisterCodec(cdc)
 	RegisterCodec(cdc)
 
-	accountKeeper := auth.NewAccountKeeper(cdc, accountKey, auth.ProtoBaseAccount)
+	keyParams := csdkTypes.NewKVStoreKey(params.StoreKey)
+	tkeyParams := csdkTypes.NewTransientStoreKey(params.TStoreKey)
+	paramsKeeper := params.NewKeeper(cdc, keyParams, tkeyParams)
+	accountKeeper := auth.NewAccountKeeper(cdc, accountKey, paramsKeeper.Subspace(auth.DefaultParamspace), auth.ProtoBaseAccount)
 	bankKeeper := bank.NewBaseKeeper(accountKeeper)
 	ibcKeeper := ibc.NewKeeper(ibcKey, cdc)
 	hubKeeper := NewBaseKeeper(cdc, coinLockerKey, bankKeeper)
@@ -79,7 +83,10 @@ func Test_handleReleaseCoins(t *testing.T) {
 	sdkTypes.RegisterCodec(cdc)
 	RegisterCodec(cdc)
 
-	accountKeeper := auth.NewAccountKeeper(cdc, accountKey, auth.ProtoBaseAccount)
+	keyParams := csdkTypes.NewKVStoreKey(params.StoreKey)
+	tkeyParams := csdkTypes.NewTransientStoreKey(params.TStoreKey)
+	paramsKeeper := params.NewKeeper(cdc, keyParams, tkeyParams)
+	accountKeeper := auth.NewAccountKeeper(cdc, accountKey, paramsKeeper.Subspace(auth.DefaultParamspace), auth.ProtoBaseAccount)
 	bankKeeper := bank.NewBaseKeeper(accountKeeper)
 	ibcKeeper := ibc.NewKeeper(ibcKey, cdc)
 	hubKeeper := NewBaseKeeper(cdc, coinLockerKey, bankKeeper)
@@ -140,7 +147,10 @@ func Test_handleReleaseCoinsToMany(t *testing.T) {
 	sdkTypes.RegisterCodec(cdc)
 	RegisterCodec(cdc)
 
-	accountKeeper := auth.NewAccountKeeper(cdc, accountKey, auth.ProtoBaseAccount)
+	keyParams := csdkTypes.NewKVStoreKey(params.StoreKey)
+	tkeyParams := csdkTypes.NewTransientStoreKey(params.TStoreKey)
+	paramsKeeper := params.NewKeeper(cdc, keyParams, tkeyParams)
+	accountKeeper := auth.NewAccountKeeper(cdc, accountKey, paramsKeeper.Subspace(auth.DefaultParamspace), auth.ProtoBaseAccount)
 	bankKeeper := bank.NewBaseKeeper(accountKeeper)
 	ibcKeeper := ibc.NewKeeper(ibcKey, cdc)
 	hubKeeper := NewBaseKeeper(cdc, coinLockerKey, bankKeeper)
@@ -201,7 +211,10 @@ func Test_NewIBCHubHandler(t *testing.T) {
 	sdkTypes.RegisterCodec(cdc)
 	RegisterCodec(cdc)
 
-	accountKeeper := auth.NewAccountKeeper(cdc, accountKey, auth.ProtoBaseAccount)
+	keyParams := csdkTypes.NewKVStoreKey(params.StoreKey)
+	tkeyParams := csdkTypes.NewTransientStoreKey(params.TStoreKey)
+	paramsKeeper := params.NewKeeper(cdc, keyParams, tkeyParams)
+	accountKeeper := auth.NewAccountKeeper(cdc, accountKey, paramsKeeper.Subspace(auth.DefaultParamspace), auth.ProtoBaseAccount)
 	bankKeeper := bank.NewBaseKeeper(accountKeeper)
 	ibcKeeper := ibc.NewKeeper(ibcKey, cdc)
 	hubKeeper := NewBaseKeeper(cdc, coinLockerKey, bankKeeper)

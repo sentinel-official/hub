@@ -103,7 +103,7 @@ func handleReleaseCoins(ctx csdkTypes.Context, ibcKeeper ibc.Keeper, hubKeeper K
 	}
 
 	lockerID := ibcMsg.IBCPacket.SrcChainID + "/" + msg.LockerID
-	address := msg.PubKey.Address().Bytes()
+	address := csdkTypes.AccAddress(msg.PubKey.Address().Bytes())
 	locker, err := hubKeeper.GetLocker(ctx, lockerID)
 
 	if err != nil {
@@ -164,7 +164,7 @@ func handleReleaseCoinsToMany(ctx csdkTypes.Context, ibcKeeper ibc.Keeper, hubKe
 	}
 
 	lockerID := ibcMsg.IBCPacket.SrcChainID + "/" + msg.LockerID
-	address := msg.PubKey.Address().Bytes()
+	address := csdkTypes.AccAddress(msg.PubKey.Address().Bytes())
 	locker, err := hubKeeper.GetLocker(ctx, lockerID)
 
 	if err != nil {

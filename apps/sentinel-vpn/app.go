@@ -2,6 +2,7 @@ package sentinel_vpn
 
 import (
 	"encoding/json"
+	"io"
 	"os"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
@@ -9,9 +10,10 @@ import (
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/cosmos/cosmos-sdk/x/bank"
+	"github.com/cosmos/cosmos-sdk/x/params"
 	abciTypes "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/libs/common"
-	tmDb "github.com/tendermint/tendermint/libs/db"
+	tmDB "github.com/tendermint/tendermint/libs/db"
 	"github.com/tendermint/tendermint/libs/log"
 	tmTypes "github.com/tendermint/tendermint/types"
 
@@ -32,57 +34,70 @@ type SentinelVPN struct {
 	*baseapp.BaseApp
 	cdc *codec.Codec
 
-	keyMain    *csdkTypes.KVStoreKey
-	keyAccount *csdkTypes.KVStoreKey
-	keyIBC     *csdkTypes.KVStoreKey
-	keyVPN     *csdkTypes.KVStoreKey
-	keySession *csdkTypes.KVStoreKey
+	keyMain          *csdkTypes.KVStoreKey
+	keyAccount       *csdkTypes.KVStoreKey
+	keyFeeCollection *csdkTypes.KVStoreKey
+	keyParams        *csdkTypes.KVStoreKey
+	keyIBC           *csdkTypes.KVStoreKey
+	keyVPN           *csdkTypes.KVStoreKey
+	keySession       *csdkTypes.KVStoreKey
+
+	tkeyParams *csdkTypes.TransientStoreKey
 
 	accountKeeper       auth.AccountKeeper
+	feeCollectionKeeper auth.FeeCollectionKeeper
 	bankKeeper          bank.Keeper
+	paramsKeeper        params.Keeper
 	ibcKeeper           ibc.Keeper
 	vpnKeeper           vpn.Keeper
-	feeCollectionKeeper auth.FeeCollectionKeeper
 }
 
-func NewSentinelVPN(logger log.Logger, db tmDb.DB, baseAppOptions ...func(*baseapp.BaseApp)) *SentinelVPN {
+func NewSentinelVPN(logger log.Logger, db tmDB.DB, traceStore io.Writer, loadLatest bool, baseAppOptions ...func(*baseapp.BaseApp)) *SentinelVPN {
 	cdc := MakeCodec()
 
+	bApp := baseapp.NewBaseApp(appName, logger, db, auth.DefaultTxDecoder(cdc), baseAppOptions...)
+	bApp.SetCommitMultiStoreTracer(traceStore)
+
 	var app = &SentinelVPN{
-		cdc:        cdc,
-		BaseApp:    baseapp.NewBaseApp(appName, logger, db, auth.DefaultTxDecoder(cdc), baseAppOptions...),
-		keyMain:    csdkTypes.NewKVStoreKey(sdkTypes.KeyMain),
-		keyAccount: csdkTypes.NewKVStoreKey(sdkTypes.KeyAccount),
-		keyIBC:     csdkTypes.NewKVStoreKey(sdkTypes.KeyIBC),
-		keyVPN:     csdkTypes.NewKVStoreKey(sdkTypes.KeyVPN),
-		keySession: csdkTypes.NewKVStoreKey(sdkTypes.KeySession),
+		BaseApp:          bApp,
+		keyMain:          csdkTypes.NewKVStoreKey(baseapp.MainStoreKey),
+		keyAccount:       csdkTypes.NewKVStoreKey(auth.StoreKey),
+		keyFeeCollection: csdkTypes.NewKVStoreKey(auth.FeeStoreKey),
+		keyParams:        csdkTypes.NewKVStoreKey(params.StoreKey),
+		tkeyParams:       csdkTypes.NewTransientStoreKey(params.TStoreKey),
+		keyIBC:           csdkTypes.NewKVStoreKey(sdkTypes.KeyIBC),
+		keyVPN:           csdkTypes.NewKVStoreKey(sdkTypes.KeyVPN),
+		keySession:       csdkTypes.NewKVStoreKey(sdkTypes.KeySession),
 	}
 
+	app.paramsKeeper = params.NewKeeper(app.cdc, app.keyParams, app.tkeyParams)
 	app.accountKeeper = auth.NewAccountKeeper(
-		cdc,
+		app.cdc,
 		app.keyAccount,
-		func() auth.Account {
-			return &sdkTypes.AppAccount{}
-		},
+		app.paramsKeeper.Subspace(auth.DefaultParamspace),
+		auth.ProtoBaseAccount,
 	)
 	app.bankKeeper = bank.NewBaseKeeper(app.accountKeeper)
 	app.ibcKeeper = ibc.NewKeeper(app.keyIBC, app.cdc)
 	app.vpnKeeper = vpn.NewKeeper(app.cdc, app.keyVPN, app.keySession)
 
 	app.Router().
-		AddRoute(sdkTypes.KeyBank, bank.NewHandler(app.bankKeeper)).
+		AddRoute(bank.RouterKey, bank.NewHandler(app.bankKeeper)).
 		AddRoute(sdkTypes.KeyVPN, vpn.NewHandler(app.vpnKeeper, app.ibcKeeper)).
 		AddRoute(sdkTypes.KeyIBC, vpn.NewIBCVPNHandler(app.ibcKeeper, app.vpnKeeper))
 
+	app.MountStores(app.keyMain, app.keyAccount, app.keyFeeCollection, app.keyParams, app.keyIBC, app.keyVPN, app.keySession)
 	app.SetInitChainer(app.initChainer)
 	app.SetBeginBlocker(app.BeginBlocker)
-	app.SetEndBlocker(app.EndBlocker)
 	app.SetAnteHandler(auth.NewAnteHandler(app.accountKeeper, app.feeCollectionKeeper))
+	app.MountStoresTransient(app.tkeyParams)
+	app.SetEndBlocker(app.EndBlocker)
 
-	app.MountStores(app.keyMain, app.keyAccount, app.keyIBC, app.keyVPN, app.keySession)
-	err := app.LoadLatestVersion(app.keyMain)
-	if err != nil {
-		common.Exit(err.Error())
+	if loadLatest {
+		err := app.LoadLatestVersion(app.keyMain)
+		if err != nil {
+			common.Exit(err.Error())
+		}
 	}
 
 	app.Seal()
@@ -121,14 +136,12 @@ func (app *SentinelVPN) initChainer(ctx csdkTypes.Context, req abciTypes.Request
 	genesisState := new(sdkTypes.GenesisState)
 	err := app.cdc.UnmarshalJSON(stateJSON, genesisState)
 	if err != nil {
-		// TODO: https://github.com/cosmos/cosmos-sdk/issues/468
 		panic(err)
 	}
 
 	for _, gacc := range genesisState.Accounts {
 		acc, err := gacc.ToAppAccount()
 		if err != nil {
-			// TODO: https://github.com/cosmos/cosmos-sdk/issues/468
 			panic(err)
 		}
 

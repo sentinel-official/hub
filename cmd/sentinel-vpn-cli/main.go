@@ -1,6 +1,10 @@
 package main
 
 import (
+	"net/http"
+	"os"
+	"path"
+
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/keys"
 	"github.com/cosmos/cosmos-sdk/client/lcd"
@@ -9,16 +13,15 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/version"
+	"github.com/cosmos/cosmos-sdk/x/auth"
 	authCli "github.com/cosmos/cosmos-sdk/x/auth/client/cli"
 	authRest "github.com/cosmos/cosmos-sdk/x/auth/client/rest"
 	bankCli "github.com/cosmos/cosmos-sdk/x/bank/client/cli"
 	bankRest "github.com/cosmos/cosmos-sdk/x/bank/client/rest"
-	cIBCCli "github.com/cosmos/cosmos-sdk/x/ibc/client/cli"
-	slashingCli "github.com/cosmos/cosmos-sdk/x/slashing/client/cli"
-	slashingRest "github.com/cosmos/cosmos-sdk/x/slashing/client/rest"
-	stakeCli "github.com/cosmos/cosmos-sdk/x/stake/client/cli"
-	stakeRest "github.com/cosmos/cosmos-sdk/x/stake/client/rest"
+	"github.com/rakyll/statik/fs"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
+	"github.com/tendermint/go-amino"
 	"github.com/tendermint/tendermint/libs/cli"
 
 	app "github.com/ironman0x7b2/sentinel-sdk/apps/sentinel-vpn"
@@ -27,91 +30,137 @@ import (
 	vpnCli "github.com/ironman0x7b2/sentinel-sdk/x/vpn/client/cli"
 )
 
-var rootCmd = &cobra.Command{
-	Use:   "sentinel-vpn-cli",
-	Short: "Sentinel VPN light-client",
-}
-
 func main() {
 	cobra.EnableCommandSorting = false
 
 	cdc := app.MakeCodec()
 
 	config := csdkTypes.GetConfig()
-	config.SetBech32PrefixForAccount("cosmos", "cosmospub")
-	config.SetBech32PrefixForValidator("cosmosvaloper", "cosmosvaloperpub")
-	config.SetBech32PrefixForConsensusNode("cosmosvalcons", "cosmosvalconspub")
+	config.SetBech32PrefixForAccount(csdkTypes.Bech32PrefixAccAddr, csdkTypes.Bech32PrefixAccPub)
+	config.SetBech32PrefixForValidator(csdkTypes.Bech32PrefixValAddr, csdkTypes.Bech32PrefixValPub)
+	config.SetBech32PrefixForConsensusNode(csdkTypes.Bech32PrefixConsAddr, csdkTypes.Bech32PrefixConsPub)
 	config.Seal()
 
+	mc := []csdkTypes.ModuleClients{}
+
+	var rootCmd = &cobra.Command{
+		Use:   "sentinel-vpn-cli",
+		Short: "Sentinel VPN light-client",
+	}
+
+	rootCmd.PersistentFlags().String(client.FlagChainID, "", "Chain ID of tendermint node")
+	rootCmd.PersistentPreRunE = func(_ *cobra.Command, _ []string) error {
+		return initConfig(rootCmd)
+	}
+
 	rootCmd.AddCommand(
-		rpc.InitClientCommand(),
 		rpc.StatusCommand(),
-		client.LineBreak,
-		tx.SearchTxCmd(cdc),
-		tx.QueryTxCmd(cdc),
-		client.LineBreak,
-	)
-
-	rootCmd.AddCommand(
-		stakeCli.GetCmdQueryValidator(sdkTypes.KeyStake, cdc),
-		stakeCli.GetCmdQueryValidators(sdkTypes.KeyStake, cdc),
-		stakeCli.GetCmdQueryValidatorUnbondingDelegations(sdkTypes.KeyStake, cdc),
-		stakeCli.GetCmdQueryValidatorRedelegations(sdkTypes.KeyStake, cdc),
-		stakeCli.GetCmdQueryDelegation(sdkTypes.KeyStake, cdc),
-		stakeCli.GetCmdQueryDelegations(sdkTypes.KeyStake, cdc),
-		stakeCli.GetCmdQueryPool(sdkTypes.KeyStake, cdc),
-		stakeCli.GetCmdQueryParams(sdkTypes.KeyStake, cdc),
-		stakeCli.GetCmdQueryUnbondingDelegation(sdkTypes.KeyStake, cdc),
-		stakeCli.GetCmdQueryUnbondingDelegations(sdkTypes.KeyStake, cdc),
-		stakeCli.GetCmdQueryRedelegation(sdkTypes.KeyStake, cdc),
-		stakeCli.GetCmdQueryRedelegations(sdkTypes.KeyStake, cdc),
-		slashingCli.GetCmdQuerySigningInfo(sdkTypes.KeySlashing, cdc),
-		stakeCli.GetCmdQueryValidatorDelegations(sdkTypes.KeyStake, cdc),
-		authCli.GetAccountCmd(sdkTypes.KeyAccount, cdc),
-	)
-
-	rootCmd.AddCommand(
-		bankCli.SendTxCmd(cdc),
-		cIBCCli.IBCTransferCmd(cdc),
-		stakeCli.GetCmdCreateValidator(cdc),
-		stakeCli.GetCmdEditValidator(cdc),
-		stakeCli.GetCmdDelegate(cdc),
-		stakeCli.GetCmdUnbond(sdkTypes.KeyStake, cdc),
-		stakeCli.GetCmdRedelegate(sdkTypes.KeyStake, cdc),
-		slashingCli.GetCmdUnjail(cdc),
-	)
-
-	rootCmd.AddCommand(client.LineBreak)
-	rootCmd.AddCommand(
-		client.PostCommands(
-			ibcCli.IBCRelayCmd(cdc, sdkTypes.KeyIBC, sdkTypes.KeyAccount),
-			vpnCli.RegisterCommand(cdc),
-			vpnCli.PaymentCommand(cdc),
-			vpnCli.UpdateSessionStatusCommand(cdc),
-			vpnCli.DeregisterCommand(cdc),
-		)...)
-
-	rootCmd.AddCommand(
+		client.ConfigCmd(),
+		queryCmd(cdc, mc),
+		txCmd(cdc, mc),
 		client.LineBreak,
 		lcd.ServeCommand(cdc, registerRoutes),
+		client.LineBreak,
 		keys.Commands(),
 		client.LineBreak,
 		version.VersionCmd,
+		client.NewCompletionCmd(rootCmd, true),
 	)
 
-	executor := cli.PrepareMainCmd(rootCmd, "SV", app.DefaultCLIHome)
+	executor := cli.PrepareMainCmd(rootCmd, "SH", app.DefaultCLIHome)
 	err := executor.Execute()
 	if err != nil {
 		panic(err)
 	}
 }
 
+func queryCmd(cdc *amino.Codec, mc []csdkTypes.ModuleClients) *cobra.Command {
+	queryCmd := &cobra.Command{
+		Use:     "query",
+		Aliases: []string{"q"},
+		Short:   "Querying subcommands",
+	}
+
+	queryCmd.AddCommand(
+		rpc.ValidatorCommand(),
+		rpc.BlockCommand(),
+		tx.SearchTxCmd(cdc),
+		tx.QueryTxCmd(cdc),
+		client.LineBreak,
+		authCli.GetAccountCmd(auth.StoreKey, cdc),
+	)
+
+	for _, m := range mc {
+		queryCmd.AddCommand(m.GetQueryCmd())
+	}
+
+	return queryCmd
+}
+
+func txCmd(cdc *amino.Codec, mc []csdkTypes.ModuleClients) *cobra.Command {
+	txCmd := &cobra.Command{
+		Use:   "tx",
+		Short: "Transactions subcommands",
+	}
+
+	txCmd.AddCommand(
+		bankCli.SendTxCmd(cdc),
+		client.LineBreak,
+		authCli.GetSignCommand(cdc),
+		authCli.GetMultiSignCommand(cdc),
+		bankCli.GetBroadcastCommand(cdc),
+		ibcCli.IBCRelayCmd(cdc, sdkTypes.KeyIBC, sdkTypes.KeyAccount),
+		vpnCli.RegisterCommand(cdc),
+		vpnCli.PaymentCommand(cdc),
+		vpnCli.UpdateSessionStatusCommand(cdc),
+		vpnCli.DeregisterCommand(cdc),
+		client.LineBreak,
+	)
+
+	for _, m := range mc {
+		txCmd.AddCommand(m.GetTxCmd())
+	}
+
+	return txCmd
+}
+
 func registerRoutes(rs *lcd.RestServer) {
+	registerSwaggerUI(rs)
 	keys.RegisterRoutes(rs.Mux, rs.CliCtx.Indent)
 	rpc.RegisterRoutes(rs.CliCtx, rs.Mux)
 	tx.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc)
 	authRest.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, sdkTypes.KeyAccount)
 	bankRest.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, rs.KeyBase)
-	stakeRest.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, rs.KeyBase)
-	slashingRest.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, rs.KeyBase)
+}
+
+func registerSwaggerUI(rs *lcd.RestServer) {
+	statikFS, err := fs.New()
+	if err != nil {
+		panic(err)
+	}
+	staticServer := http.FileServer(statikFS)
+	rs.Mux.PathPrefix("/swagger-ui/").Handler(http.StripPrefix("/swagger-ui/", staticServer))
+}
+
+func initConfig(cmd *cobra.Command) error {
+	home, err := cmd.PersistentFlags().GetString(cli.HomeFlag)
+	if err != nil {
+		return err
+	}
+
+	cfgFile := path.Join(home, "config", "config.toml")
+	if _, err := os.Stat(cfgFile); err == nil {
+		viper.SetConfigFile(cfgFile)
+
+		if err := viper.ReadInConfig(); err != nil {
+			return err
+		}
+	}
+	if err := viper.BindPFlag(client.FlagChainID, cmd.PersistentFlags().Lookup(client.FlagChainID)); err != nil {
+		return err
+	}
+	if err := viper.BindPFlag(cli.EncodingFlag, cmd.PersistentFlags().Lookup(cli.EncodingFlag)); err != nil {
+		return err
+	}
+	return viper.BindPFlag(cli.OutputFlag, cmd.PersistentFlags().Lookup(cli.OutputFlag))
 }
