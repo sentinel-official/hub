@@ -22,6 +22,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/gov"
 	govClient "github.com/cosmos/cosmos-sdk/x/gov/client"
 	govRest "github.com/cosmos/cosmos-sdk/x/gov/client/rest"
+	ibcCli "github.com/cosmos/cosmos-sdk/x/ibc/client/cli"
 	"github.com/cosmos/cosmos-sdk/x/slashing"
 	slashingClient "github.com/cosmos/cosmos-sdk/x/slashing/client"
 	slashingRest "github.com/cosmos/cosmos-sdk/x/slashing/client/rest"
@@ -120,6 +121,8 @@ func txCmd(cdc *amino.Codec, mc []csdkTypes.ModuleClients) *cobra.Command {
 		authCli.GetSignCommand(cdc),
 		authCli.GetMultiSignCommand(cdc),
 		bankCli.GetBroadcastCommand(cdc),
+		ibcCli.IBCTransferCmd(cdc),
+		ibcCli.IBCRelayCmd(cdc),
 		client.LineBreak,
 	)
 

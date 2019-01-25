@@ -13,6 +13,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/bank"
 	"github.com/cosmos/cosmos-sdk/x/distribution"
 	"github.com/cosmos/cosmos-sdk/x/gov"
+	"github.com/cosmos/cosmos-sdk/x/ibc"
 	"github.com/cosmos/cosmos-sdk/x/mint"
 	"github.com/cosmos/cosmos-sdk/x/params"
 	"github.com/cosmos/cosmos-sdk/x/slashing"
@@ -44,6 +45,7 @@ type Hub struct {
 	keyDistribution  *csdkTypes.KVStoreKey
 	keyGov           *csdkTypes.KVStoreKey
 	keyMint          *csdkTypes.KVStoreKey
+	keyIBC           *csdkTypes.KVStoreKey
 
 	tkeyParams       *csdkTypes.TransientStoreKey
 	tkeyStaking      *csdkTypes.TransientStoreKey
@@ -58,6 +60,7 @@ type Hub struct {
 	distributionKeeper  distribution.Keeper
 	govKeeper           gov.Keeper
 	mintKeeper          mint.Keeper
+	ibcMapper           ibc.Mapper
 }
 
 func NewHub(logger log.Logger, db tmDB.DB, traceStore io.Writer, loadLatest bool, baseAppOptions ...func(*baseapp.BaseApp)) *Hub {
@@ -78,6 +81,7 @@ func NewHub(logger log.Logger, db tmDB.DB, traceStore io.Writer, loadLatest bool
 		keyDistribution:  csdkTypes.NewKVStoreKey(distribution.StoreKey),
 		keyGov:           csdkTypes.NewKVStoreKey(gov.StoreKey),
 		keyMint:          csdkTypes.NewKVStoreKey(mint.StoreKey),
+		keyIBC:           csdkTypes.NewKVStoreKey("ibc"),
 		tkeyParams:       csdkTypes.NewTransientStoreKey(params.TStoreKey),
 		tkeyStaking:      csdkTypes.NewTransientStoreKey(staking.TStoreKey),
 		tkeyDistribution: csdkTypes.NewTransientStoreKey(distribution.TStoreKey),
@@ -124,13 +128,15 @@ func NewHub(logger log.Logger, db tmDB.DB, traceStore io.Writer, loadLatest bool
 		&stakingKeeper,
 		app.feeCollectionKeeper)
 	app.stakingKeeper = *stakingKeeper.SetHooks(NewStakingHooks(app.distributionKeeper.Hooks(), app.slashingKeeper.Hooks()))
+	app.ibcMapper = ibc.NewMapper(app.cdc, app.keyIBC, ibc.DefaultCodespace)
 
 	app.Router().
 		AddRoute(bank.RouterKey, bank.NewHandler(app.bankKeeper)).
 		AddRoute(staking.RouterKey, staking.NewHandler(app.stakingKeeper)).
 		AddRoute(slashing.RouterKey, slashing.NewHandler(app.slashingKeeper)).
 		AddRoute(distribution.RouterKey, distribution.NewHandler(app.distributionKeeper)).
-		AddRoute(gov.RouterKey, gov.NewHandler(app.govKeeper))
+		AddRoute(gov.RouterKey, gov.NewHandler(app.govKeeper)).
+		AddRoute("ibc", ibc.NewHandler(app.ibcMapper, app.bankKeeper))
 
 	app.QueryRouter().
 		AddRoute(staking.QuerierRoute, staking.NewQuerier(app.stakingKeeper, app.cdc)).
@@ -141,7 +147,8 @@ func NewHub(logger log.Logger, db tmDB.DB, traceStore io.Writer, loadLatest bool
 	app.MountStores(app.keyMain, app.keyParams,
 		app.keyAccount, app.keyFeeCollection,
 		app.keyStaking, app.keySlashing,
-		app.keyDistribution, app.keyGov, app.keyMint)
+		app.keyDistribution, app.keyGov,
+		app.keyMint, app.keyIBC)
 	app.SetInitChainer(app.initChainer)
 	app.SetBeginBlocker(app.BeginBlocker)
 	app.SetAnteHandler(auth.NewAnteHandler(app.accountKeeper, app.feeCollectionKeeper))
@@ -171,6 +178,7 @@ func MakeCodec() *codec.Codec {
 	slashing.RegisterCodec(cdc)
 	distribution.RegisterCodec(cdc)
 	gov.RegisterCodec(cdc)
+	ibc.RegisterCodec(cdc)
 
 	cdc.Seal()
 
