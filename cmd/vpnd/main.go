@@ -6,7 +6,6 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
-	gaiaInit "github.com/cosmos/cosmos-sdk/cmd/gaia/init"
 	"github.com/cosmos/cosmos-sdk/server"
 	"github.com/cosmos/cosmos-sdk/store"
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
@@ -18,10 +17,8 @@ import (
 	"github.com/tendermint/tendermint/libs/log"
 	tmTypes "github.com/tendermint/tendermint/types"
 
-	app "github.com/ironman0x7b2/sentinel-sdk/apps/sentinel-hub"
+	app "github.com/ironman0x7b2/sentinel-sdk/apps/vpn"
 )
-
-const flagClientHome = "home-client"
 
 func main() {
 	cdc := app.MakeCodec()
@@ -35,12 +32,11 @@ func main() {
 	ctx := server.NewDefaultContext()
 	cobra.EnableCommandSorting = false
 	rootCmd := &cobra.Command{
-		Use:               "sentinel-hubd",
-		Short:             "Sentinel Hub Daemon (server)",
+		Use:               "vpnd",
+		Short:             "VPN Daemon (server)",
 		PersistentPreRunE: server.PersistentPreRunEFn(ctx),
 	}
 
-	rootCmd.AddCommand(gaiaInit.InitCmd(ctx, cdc))
 	rootCmd.AddCommand(client.NewCompletionCmd(rootCmd, true))
 
 	server.AddCommands(ctx, cdc, rootCmd, newApp, exportAppStateAndTMValidators)
@@ -53,16 +49,23 @@ func main() {
 }
 
 func newApp(logger log.Logger, db tmDB.DB, traceStore io.Writer) abciTypes.Application {
-	return app.NewSentinelHub(
+	return app.NewVPN(
 		logger, db, traceStore, true,
 		baseapp.SetPruning(store.NewPruningOptions(viper.GetString("pruning"))),
 		baseapp.SetMinGasPrices(viper.GetString(server.FlagMinGasPrices)),
 	)
 }
 
-func exportAppStateAndTMValidators(logger log.Logger, db tmDB.DB, storeTracer io.Writer, _ int64, _ bool) (
-	json.RawMessage, []tmTypes.GenesisValidator, error) {
-	bapp := app.NewSentinelHub(logger, db, storeTracer, false)
-
-	return bapp.ExportAppStateAndValidators()
+func exportAppStateAndTMValidators(logger log.Logger, db tmDB.DB, traceStore io.Writer, height int64,
+	forZeroHeight bool) (json.RawMessage, []tmTypes.GenesisValidator, error) {
+	if height != -1 {
+		vpn := app.NewVPN(logger, db, traceStore, false)
+		err := vpn.LoadHeight(height)
+		if err != nil {
+			return nil, nil, err
+		}
+		return vpn.ExportAppStateAndValidators(forZeroHeight)
+	}
+	vpn := app.NewVPN(logger, db, traceStore, true)
+	return vpn.ExportAppStateAndValidators(forZeroHeight)
 }

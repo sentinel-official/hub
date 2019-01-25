@@ -1,21 +1,28 @@
 PACKAGES = $(shell go list ./... | grep -v '/vendor/')
 VERSION = $(shell git rev-parse --short HEAD)
-BUILD_FLAGS = -ldflags "-X github.com/ironman0x7b2/sentinel-sdk/vendor/github.com/cosmos/cosmos-sdk/version.Version=${VERSION} -s -w"
+COMMIT := $(shell git log -1 --format='%H')
+CAT := $(if $(filter $(OS),Windows_NT),type,cat)
+BUILD_TAGS = netgo
+BUILD_FLAGS = -tags "${BUILD_TAGS}" -ldflags \
+	"-X github.com/ironman0x7b2/sentinel-sdk/vendor/github.com/cosmos/cosmos-sdk/version.Version=${VERSION} \
+	-X github.com/ironman0x7b2/sentinel-sdk/vendor/github.com/cosmos/cosmos-sdk/version.Commit=${COMMIT} \
+	-X github.com/ironman0x7b2/sentinel-sdk/vendor/github.com/cosmos/cosmos-sdk/version.VendorDirHash=$(shell $(CAT) .vendor_version)"
 
 all: get_tools get_vendor_deps build test
 
 build:
-	go build $(BUILD_FLAGS) -o bin/sentinel-hub-cli cmd/sentinel-hub-cli/main.go
-	go build $(BUILD_FLAGS) -o bin/sentinel-hubd cmd/sentinel-hubd/main.go
-	go build $(BUILD_FLAGS) -o bin/sentinel-vpn-cli cmd/sentinel-vpn-cli/main.go
-	go build $(BUILD_FLAGS) -o bin/sentinel-vpnd cmd/sentinel-vpnd/main.go
+	go build $(BUILD_FLAGS) -o bin/hub-cli cmd/hub-cli/main.go
+	go build $(BUILD_FLAGS) -o bin/hubd cmd/hubd/main.go
+	go build $(BUILD_FLAGS) -o bin/vpn-cli cmd/vpn-cli/main.go
+	go build $(BUILD_FLAGS) -o bin/vpnd cmd/vpnd/main.go
 
 get_tools:
 	go get github.com/golang/dep/cmd/dep
 
 get_vendor_deps:
-	@rm -rf vendor/
+	@rm -rf vendor/ .vendor-new/
 	@dep ensure -v
+	tar -c vendor/ | sha1sum | cut -d' ' -f1 > ".vendor_version"
 
 test:
 	@go test -cover $(PACKAGES)

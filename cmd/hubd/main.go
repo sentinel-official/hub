@@ -6,7 +6,6 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
-	gaiaInit "github.com/cosmos/cosmos-sdk/cmd/gaia/init"
 	"github.com/cosmos/cosmos-sdk/server"
 	"github.com/cosmos/cosmos-sdk/store"
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
@@ -18,10 +17,8 @@ import (
 	"github.com/tendermint/tendermint/libs/log"
 	tmTypes "github.com/tendermint/tendermint/types"
 
-	app "github.com/ironman0x7b2/sentinel-sdk/apps/sentinel-vpn"
+	app "github.com/ironman0x7b2/sentinel-sdk/apps/hub"
 )
-
-const flagClientHome = "home-client"
 
 func main() {
 	cdc := app.MakeCodec()
@@ -35,12 +32,11 @@ func main() {
 	ctx := server.NewDefaultContext()
 	cobra.EnableCommandSorting = false
 	rootCmd := &cobra.Command{
-		Use:               "sentinel-vpnd",
-		Short:             "Sentinel VPN Daemon (server)",
+		Use:               "hubd",
+		Short:             "Hub Daemon (server)",
 		PersistentPreRunE: server.PersistentPreRunEFn(ctx),
 	}
 
-	rootCmd.AddCommand(gaiaInit.InitCmd(ctx, cdc))
 	rootCmd.AddCommand(client.NewCompletionCmd(rootCmd, true))
 
 	server.AddCommands(ctx, cdc, rootCmd, newApp, exportAppStateAndTMValidators)
@@ -53,16 +49,23 @@ func main() {
 }
 
 func newApp(logger log.Logger, db tmDB.DB, traceStore io.Writer) abciTypes.Application {
-	return app.NewSentinelVPN(
+	return app.NewHub(
 		logger, db, traceStore, true,
 		baseapp.SetPruning(store.NewPruningOptions(viper.GetString("pruning"))),
 		baseapp.SetMinGasPrices(viper.GetString(server.FlagMinGasPrices)),
 	)
 }
 
-func exportAppStateAndTMValidators(logger log.Logger, db tmDB.DB, storeTracer io.Writer, _ int64, _ bool) (
-	json.RawMessage, []tmTypes.GenesisValidator, error) {
-	bapp := app.NewSentinelVPN(logger, db, storeTracer, false)
-
-	return bapp.ExportAppStateAndValidators()
+func exportAppStateAndTMValidators(logger log.Logger, db tmDB.DB, traceStore io.Writer, height int64,
+	forZeroHeight bool) (json.RawMessage, []tmTypes.GenesisValidator, error) {
+	if height != -1 {
+		hub := app.NewHub(logger, db, traceStore, false)
+		err := hub.LoadHeight(height)
+		if err != nil {
+			return nil, nil, err
+		}
+		return hub.ExportAppStateAndValidators(forZeroHeight)
+	}
+	hub := app.NewHub(logger, db, traceStore, true)
+	return hub.ExportAppStateAndValidators(forZeroHeight)
 }

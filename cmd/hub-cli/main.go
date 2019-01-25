@@ -8,7 +8,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/keys"
 	"github.com/cosmos/cosmos-sdk/client/lcd"
-	_ "github.com/cosmos/cosmos-sdk/client/lcd/statik"
 	"github.com/cosmos/cosmos-sdk/client/rpc"
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
@@ -18,21 +17,30 @@ import (
 	authRest "github.com/cosmos/cosmos-sdk/x/auth/client/rest"
 	bankCli "github.com/cosmos/cosmos-sdk/x/bank/client/cli"
 	bankRest "github.com/cosmos/cosmos-sdk/x/bank/client/rest"
+	"github.com/cosmos/cosmos-sdk/x/distribution"
+	distClient "github.com/cosmos/cosmos-sdk/x/distribution/client"
+	"github.com/cosmos/cosmos-sdk/x/gov"
+	govClient "github.com/cosmos/cosmos-sdk/x/gov/client"
+	govRest "github.com/cosmos/cosmos-sdk/x/gov/client/rest"
+	"github.com/cosmos/cosmos-sdk/x/slashing"
+	slashingClient "github.com/cosmos/cosmos-sdk/x/slashing/client"
+	slashingRest "github.com/cosmos/cosmos-sdk/x/slashing/client/rest"
+	"github.com/cosmos/cosmos-sdk/x/staking"
+	stakingClient "github.com/cosmos/cosmos-sdk/x/staking/client"
+	stakingRest "github.com/cosmos/cosmos-sdk/x/staking/client/rest"
 	"github.com/rakyll/statik/fs"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"github.com/tendermint/go-amino"
 	"github.com/tendermint/tendermint/libs/cli"
 
-	app "github.com/ironman0x7b2/sentinel-sdk/apps/sentinel-hub"
+	app "github.com/ironman0x7b2/sentinel-sdk/apps/hub"
 	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
-	ibcCli "github.com/ironman0x7b2/sentinel-sdk/x/ibc/client/cli"
 )
 
 func main() {
-	cobra.EnableCommandSorting = false
-
 	cdc := app.MakeCodec()
+	cobra.EnableCommandSorting = false
 
 	config := csdkTypes.GetConfig()
 	config.SetBech32PrefixForAccount(csdkTypes.Bech32PrefixAccAddr, csdkTypes.Bech32PrefixAccPub)
@@ -40,11 +48,16 @@ func main() {
 	config.SetBech32PrefixForConsensusNode(csdkTypes.Bech32PrefixConsAddr, csdkTypes.Bech32PrefixConsPub)
 	config.Seal()
 
-	mc := []csdkTypes.ModuleClients{}
+	mc := []csdkTypes.ModuleClients{
+		govClient.NewModuleClient(gov.StoreKey, cdc),
+		distClient.NewModuleClient(distribution.StoreKey, cdc),
+		stakingClient.NewModuleClient(staking.StoreKey, cdc),
+		slashingClient.NewModuleClient(slashing.StoreKey, cdc),
+	}
 
-	var rootCmd = &cobra.Command{
-		Use:   "sentinel-hub-cli",
-		Short: "Sentinel Hub light-client",
+	rootCmd := &cobra.Command{
+		Use:   "hub-cli",
+		Short: "Hub light-client",
 	}
 
 	rootCmd.PersistentFlags().String(client.FlagChainID, "", "Chain ID of tendermint node")
@@ -66,9 +79,8 @@ func main() {
 		client.NewCompletionCmd(rootCmd, true),
 	)
 
-	executor := cli.PrepareMainCmd(rootCmd, "SH", app.DefaultCLIHome)
-	err := executor.Execute()
-	if err != nil {
+	executor := cli.PrepareMainCmd(rootCmd, "HUB", app.DefaultCLIHome)
+	if err := executor.Execute(); err != nil {
 		panic(err)
 	}
 }
@@ -108,7 +120,6 @@ func txCmd(cdc *amino.Codec, mc []csdkTypes.ModuleClients) *cobra.Command {
 		authCli.GetSignCommand(cdc),
 		authCli.GetMultiSignCommand(cdc),
 		bankCli.GetBroadcastCommand(cdc),
-		ibcCli.IBCRelayCmd(cdc, sdkTypes.KeyIBC, sdkTypes.KeyAccount),
 		client.LineBreak,
 	)
 
@@ -126,6 +137,9 @@ func registerRoutes(rs *lcd.RestServer) {
 	tx.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc)
 	authRest.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, sdkTypes.KeyAccount)
 	bankRest.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, rs.KeyBase)
+	stakingRest.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, rs.KeyBase)
+	slashingRest.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, rs.KeyBase)
+	govRest.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc)
 }
 
 func registerSwaggerUI(rs *lcd.RestServer) {
