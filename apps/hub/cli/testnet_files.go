@@ -42,14 +42,14 @@ func TestnetFilesCmd(ctx *server.Context, cdc *codec.Codec) *cobra.Command {
 
 	cmd := &cobra.Command{
 		Use:   "testnet",
-		Short: "Initialize files for a Gaiad testnet",
+		Short: "Initialize files for a Hubd testnet",
 		Long: `testnet will create "v" number of directories and populate each with
 necessary files (private validator, genesis, config, etc.).
 
 Note, strict routability for addresses is turned off in the config file.
 
 Example:
-	gaiad testnet --v 4 --output-dir ./output --starting-ip-address 192.168.10.2
+	hubd testnet --v 4 --output-dir ./output --starting-ip-address 192.168.10.2
 	`,
 		RunE: func(_ *cobra.Command, _ []string) error {
 			config := ctx.Config
@@ -66,10 +66,10 @@ Example:
 	cmd.Flags().String(flagNodeDirPrefix, "node",
 		"Prefix the directory name for each node with (node results in node0, node1, ...)",
 	)
-	cmd.Flags().String(flagNodeDaemonHome, "gaiad",
+	cmd.Flags().String(flagNodeDaemonHome, "hubd",
 		"Home directory of the node's daemon configuration",
 	)
-	cmd.Flags().String(flagNodeCliHome, "gaiacli",
+	cmd.Flags().String(flagNodeCliHome, "hubcli",
 		"Home directory of the node's cli configuration",
 	)
 	cmd.Flags().String(flagStartingIPAddress, "192.168.0.1",
@@ -101,8 +101,8 @@ func initTestnet(config *tmConfig.Config, cdc *codec.Codec) error {
 	nodeIDs := make([]string, numValidators)
 	valPubKeys := make([]crypto.PubKey, numValidators)
 
-	gaiaConfig := serverConfig.DefaultConfig()
-	gaiaConfig.MinGasPrices = viper.GetString(server.FlagMinGasPrices)
+	hubConfig := serverConfig.DefaultConfig()
+	hubConfig.MinGasPrices = viper.GetString(server.FlagMinGasPrices)
 
 	var (
 		accs     []hub.GenesisAccount
@@ -217,8 +217,8 @@ func initTestnet(config *tmConfig.Config, cdc *codec.Codec) error {
 			return err
 		}
 
-		gaiaConfigFilePath := filepath.Join(nodeDir, "config/gaiad.toml")
-		serverConfig.WriteConfigFile(gaiaConfigFilePath, gaiaConfig)
+		hubConfigFilePath := filepath.Join(nodeDir, "config/hubd.toml")
+		serverConfig.WriteConfigFile(hubConfigFilePath, hubConfig)
 	}
 
 	if err := initGenFiles(cdc, chainID, accs, genFiles, numValidators); err != nil {
