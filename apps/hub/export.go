@@ -32,13 +32,15 @@ func (app *Hub) ExportAppStateAndValidators(forZeroHeight bool) (
 	}
 	app.accountKeeper.IterateAccounts(ctx, appendAccount)
 
-	genState := NewGenesisState(accounts,
+	genState := NewGenesisState(
+		accounts,
 		auth.ExportGenesis(ctx, app.accountKeeper, app.feeCollectionKeeper),
 		staking.ExportGenesis(ctx, app.stakingKeeper),
-		slashing.ExportGenesis(ctx, app.slashingKeeper),
+		mint.ExportGenesis(ctx, app.mintKeeper),
 		distribution.ExportGenesis(ctx, app.distributionKeeper),
 		gov.ExportGenesis(ctx, app.govKeeper),
-		mint.ExportGenesis(ctx, app.mintKeeper))
+		slashing.ExportGenesis(ctx, app.slashingKeeper),
+	)
 	appState, err = codec.MarshalJSONIndent(app.cdc, genState)
 	if err != nil {
 		return nil, nil, err
@@ -48,7 +50,9 @@ func (app *Hub) ExportAppStateAndValidators(forZeroHeight bool) (
 }
 
 func (app *Hub) prepForZeroHeightGenesis(ctx csdkTypes.Context) {
+
 	app.assertRuntimeInvariantsOnContext(ctx)
+
 	app.stakingKeeper.IterateValidators(ctx, func(_ int64, val csdkTypes.Validator) (stop bool) {
 		_ = app.distributionKeeper.WithdrawValidatorCommission(ctx, val.GetOperator())
 		return false
@@ -58,7 +62,9 @@ func (app *Hub) prepForZeroHeightGenesis(ctx csdkTypes.Context) {
 	for _, delegation := range dels {
 		_ = app.distributionKeeper.WithdrawDelegationRewards(ctx, delegation.DelegatorAddr, delegation.ValidatorAddr)
 	}
+
 	app.distributionKeeper.DeleteAllValidatorSlashEvents(ctx)
+
 	app.distributionKeeper.DeleteAllValidatorHistoricalRewards(ctx)
 
 	height := ctx.BlockHeight()
@@ -110,6 +116,7 @@ func (app *Hub) prepForZeroHeightGenesis(ctx csdkTypes.Context) {
 		app.stakingKeeper.SetValidator(ctx, validator)
 		counter++
 	}
+
 	iter.Close()
 
 	app.slashingKeeper.IterateValidatorSigningInfos(

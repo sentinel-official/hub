@@ -36,7 +36,6 @@ import (
 	"github.com/tendermint/tendermint/libs/cli"
 
 	app "github.com/ironman0x7b2/sentinel-sdk/apps/hub"
-	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
 )
 
 func main() {
@@ -138,7 +137,7 @@ func registerRoutes(rs *lcd.RestServer) {
 	keys.RegisterRoutes(rs.Mux, rs.CliCtx.Indent)
 	rpc.RegisterRoutes(rs.CliCtx, rs.Mux)
 	tx.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc)
-	authRest.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, sdkTypes.KeyAccount)
+	authRest.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, auth.StoreKey)
 	bankRest.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, rs.KeyBase)
 	stakingRest.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, rs.KeyBase)
 	slashingRest.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, rs.KeyBase)

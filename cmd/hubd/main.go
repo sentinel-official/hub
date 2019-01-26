@@ -18,6 +18,7 @@ import (
 	tmTypes "github.com/tendermint/tendermint/types"
 
 	app "github.com/ironman0x7b2/sentinel-sdk/apps/hub"
+	hubCli "github.com/ironman0x7b2/sentinel-sdk/apps/hub/cli"
 )
 
 func main() {
@@ -37,6 +38,11 @@ func main() {
 		PersistentPreRunE: server.PersistentPreRunEFn(ctx),
 	}
 
+	rootCmd.AddCommand(hubCli.InitCmd(ctx, cdc))
+	rootCmd.AddCommand(hubCli.CollectGenTxsCmd(ctx, cdc))
+	rootCmd.AddCommand(hubCli.TestnetFilesCmd(ctx, cdc))
+	rootCmd.AddCommand(hubCli.GenTxCmd(ctx, cdc))
+	rootCmd.AddCommand(hubCli.AddGenesisAccountCmd(ctx, cdc))
 	rootCmd.AddCommand(client.NewCompletionCmd(rootCmd, true))
 
 	server.AddCommands(ctx, cdc, rootCmd, newApp, exportAppStateAndTMValidators)

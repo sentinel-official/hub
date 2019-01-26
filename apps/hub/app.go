@@ -24,7 +24,10 @@ import (
 	"github.com/tendermint/tendermint/libs/log"
 )
 
-const appName = "Sentinel Hub"
+const (
+	appName        = "Sentinel Hub"
+	DefaultKeyPass = "0123456789"
+)
 
 var (
 	DefaultCLIHome  = os.ExpandEnv("$HOME/.hubcli")
@@ -128,7 +131,6 @@ func NewHub(logger log.Logger, db tmDB.DB, traceStore io.Writer, loadLatest bool
 		&stakingKeeper,
 		app.feeCollectionKeeper)
 	app.stakingKeeper = *stakingKeeper.SetHooks(NewStakingHooks(app.distributionKeeper.Hooks(), app.slashingKeeper.Hooks()))
-	app.ibcMapper = ibc.NewMapper(app.cdc, app.keyIBC, ibc.DefaultCodespace)
 
 	app.Router().
 		AddRoute(bank.RouterKey, bank.NewHandler(app.bankKeeper)).
@@ -147,8 +149,8 @@ func NewHub(logger log.Logger, db tmDB.DB, traceStore io.Writer, loadLatest bool
 	app.MountStores(app.keyMain, app.keyParams,
 		app.keyAccount, app.keyFeeCollection,
 		app.keyStaking, app.keySlashing,
-		app.keyDistribution, app.keyGov,
-		app.keyMint, app.keyIBC)
+		app.keyDistribution, app.keyGov, app.keyMint,
+		app.keyIBC)
 	app.SetInitChainer(app.initChainer)
 	app.SetBeginBlocker(app.BeginBlocker)
 	app.SetAnteHandler(auth.NewAnteHandler(app.accountKeeper, app.feeCollectionKeeper))
@@ -162,14 +164,11 @@ func NewHub(logger log.Logger, db tmDB.DB, traceStore io.Writer, loadLatest bool
 		}
 	}
 
-	app.Seal()
-
 	return app
 }
 
 func MakeCodec() *codec.Codec {
-	cdc := codec.New()
-
+	var cdc = codec.New()
 	codec.RegisterCrypto(cdc)
 	csdkTypes.RegisterCodec(cdc)
 	auth.RegisterCodec(cdc)
@@ -179,16 +178,12 @@ func MakeCodec() *codec.Codec {
 	distribution.RegisterCodec(cdc)
 	gov.RegisterCodec(cdc)
 	ibc.RegisterCodec(cdc)
-
-	cdc.Seal()
-
 	return cdc
 }
 
 func (app *Hub) BeginBlocker(ctx csdkTypes.Context, req abciTypes.RequestBeginBlock) abciTypes.ResponseBeginBlock {
 	mint.BeginBlocker(ctx, app.mintKeeper)
 	distribution.BeginBlocker(ctx, req, app.distributionKeeper)
-
 	tags := slashing.BeginBlocker(ctx, req, app.slashingKeeper)
 
 	return abciTypes.ResponseBeginBlock{
@@ -220,19 +215,20 @@ func (app *Hub) initFromGenesisState(ctx csdkTypes.Context, genesisState Genesis
 		app.accountKeeper.SetAccount(ctx, acc)
 	}
 
-	distribution.InitGenesis(ctx, app.distributionKeeper, genesisState.Distribution)
+	distribution.InitGenesis(ctx, app.distributionKeeper, genesisState.DistrData)
 
-	validators, err := staking.InitGenesis(ctx, app.stakingKeeper, genesisState.Staking)
+	validators, err := staking.InitGenesis(ctx, app.stakingKeeper, genesisState.StakingData)
 	if err != nil {
 		panic(err)
 	}
 
-	auth.InitGenesis(ctx, app.accountKeeper, app.feeCollectionKeeper, genesisState.Auth)
-	slashing.InitGenesis(ctx, app.slashingKeeper, genesisState.Slashing, genesisState.Staking)
-	gov.InitGenesis(ctx, app.govKeeper, genesisState.Gov)
-	mint.InitGenesis(ctx, app.mintKeeper, genesisState.Mint)
+	auth.InitGenesis(ctx, app.accountKeeper, app.feeCollectionKeeper, genesisState.AuthData)
+	slashing.InitGenesis(ctx, app.slashingKeeper, genesisState.SlashingData, genesisState.StakingData)
+	gov.InitGenesis(ctx, app.govKeeper, genesisState.GovData)
+	mint.InitGenesis(ctx, app.mintKeeper, genesisState.MintData)
 
-	if err := HubValidateGenesisState(genesisState); err != nil {
+	err = HubValidateGenesisState(genesisState)
+	if err != nil {
 		panic(err)
 	}
 
@@ -259,7 +255,8 @@ func (app *Hub) initChainer(ctx csdkTypes.Context, req abciTypes.RequestInitChai
 	stateJSON := req.AppStateBytes
 
 	var genesisState GenesisState
-	if err := app.cdc.UnmarshalJSON(stateJSON, &genesisState); err != nil {
+	err := app.cdc.UnmarshalJSON(stateJSON, &genesisState)
+	if err != nil {
 		panic(err)
 	}
 
@@ -333,7 +330,6 @@ func (h StakingHooks) BeforeDelegationCreated(ctx csdkTypes.Context, delAddr csd
 	h.dh.BeforeDelegationCreated(ctx, delAddr, valAddr)
 	h.sh.BeforeDelegationCreated(ctx, delAddr, valAddr)
 }
-
 func (h StakingHooks) BeforeDelegationSharesModified(ctx csdkTypes.Context, delAddr csdkTypes.AccAddress, valAddr csdkTypes.ValAddress) {
 	h.dh.BeforeDelegationSharesModified(ctx, delAddr, valAddr)
 	h.sh.BeforeDelegationSharesModified(ctx, delAddr, valAddr)
