@@ -7,135 +7,45 @@ import (
 )
 
 const (
-	codeSpaceVPN = csdkTypes.CodespaceType(400)
+	codespaceVPN = csdkTypes.CodespaceType("node")
 
-	errCodeLockerIDMismatch        = 401
-	errCodeVPNAlreadyExists        = 402
-	errCodeSessionAlreadyExists    = 403
-	errCodeVPNNotExists            = 404
-	errCodeInvalidNodeOwnerAddress = 405
-	errCodeInvalidLockStatus       = 406
-	errCodeSessionNotExists        = 407
-	errCodeInvalidAPIPort          = 408
-	errCodeInvalidLocation         = 409
-	errCodeInvalidNetSpeed         = 410
-	errCodeEmptyEncMethod          = 411
-	errCodeInvalidPricePerGB       = 412
-	errCodeEmptyVersion            = 413
-	errCodeEmptyVPNID              = 414
-	errCodeEmptySessionID          = 415
-	errCodeInvalidSessionStatus    = 416
+	errCodeUnknownMsgType    = 201
+	errCodeNodeAlreadyExists = 202
+	errCodeNodeNotFound      = 203
+	errCodeUnauthorized      = 204
+	errCodeInvalidField      = 205
 
-	errMsgLockerIDMismatch        = "Locker ID mismatch"
-	errMsgVPNAlreadyExists        = "VPN already exists"
-	errMsgSessionAlreadyExists    = "Session already exists"
-	errMsgVPNNotExists            = "VPN not exits"
-	errMsgInvalidNodeOwnerAddress = "Invalid node owner address"
-	errMsgInvalidLockStatus       = "Invalid lock status"
-	errMsgSessionNotExists        = "Session not exists"
-	errMsgInvalidAPIPort          = "Invalid API port"
-	errMsgInvalidLocation         = "Invalid location"
-	errMsgInvalidNetSpeed         = "Invalid net speed"
-	errMsgEmptyEncMethod          = "Empty encryption method"
-	errMsgInvalidPricePerGB       = "Invalid price per GB"
-	errMsgEmptyVersion            = "Empty version"
-	errMsgEmptyVPNID              = "Empty VPN ID"
-	errMsgEmptySessionID          = "Empty session ID"
-	errMsgInvalidSessionStatus    = "Invalid session status"
+	errMsgUnknownMsgType    = "Unknown message type: "
+	errMsgNodeAlreadyExists = "Node already exists"
+	errMsgNodeNotFound      = "Node not found"
+	errMsgUnauthorized      = "Transaction is unauthorized"
+	errMsgInvalidField      = "Invalid field: "
 )
 
 func errorMarshal() csdkTypes.Error {
-	return csdkTypes.NewError(codeSpaceVPN, sdkTypes.ErrCodeMarshal, sdkTypes.ErrMsgMarshal)
+	return csdkTypes.NewError(codespaceVPN, sdkTypes.ErrCodeMarshal, sdkTypes.ErrMsgMarshal)
 }
 
 func errorUnmarshal() csdkTypes.Error {
-	return csdkTypes.NewError(codeSpaceVPN, sdkTypes.ErrCodeUnmarshal, sdkTypes.ErrMsgUnmarshal)
+	return csdkTypes.NewError(codespaceVPN, sdkTypes.ErrCodeUnmarshal, sdkTypes.ErrMsgUnmarshal)
 }
 
-func errorLockerIDMismatch() csdkTypes.Error {
-	return csdkTypes.NewError(codeSpaceVPN, errCodeLockerIDMismatch, errMsgLockerIDMismatch)
+func errorUnknownMsgType(msgType string) csdkTypes.Error {
+	return csdkTypes.NewError(codespaceVPN, errCodeUnknownMsgType, errMsgUnknownMsgType+msgType)
 }
 
-func errorVPNAlreadyExists() csdkTypes.Error {
-	return csdkTypes.NewError(codeSpaceVPN, errCodeVPNAlreadyExists, errMsgVPNAlreadyExists)
+func errorNodeAlreadyExists() csdkTypes.Error {
+	return csdkTypes.NewError(codespaceVPN, errCodeNodeAlreadyExists, errMsgNodeAlreadyExists)
 }
 
-func errorSessionAlreadyExists() csdkTypes.Error {
-	return csdkTypes.NewError(codeSpaceVPN, errCodeSessionAlreadyExists, errMsgSessionAlreadyExists)
+func errorNodeNotFound() csdkTypes.Error {
+	return csdkTypes.NewError(codespaceVPN, errCodeNodeNotFound, errMsgNodeNotFound)
 }
 
-func errorVPNNotExists() csdkTypes.Error {
-	return csdkTypes.NewError(codeSpaceVPN, errCodeVPNNotExists, errMsgVPNNotExists)
+func errorUnauthorized() csdkTypes.Error {
+	return csdkTypes.NewError(codespaceVPN, errCodeUnauthorized, errMsgUnauthorized)
 }
 
-func errorInvalidNodeOwnerAddress() csdkTypes.Error {
-	return csdkTypes.NewError(codeSpaceVPN, errCodeInvalidNodeOwnerAddress, errMsgInvalidNodeOwnerAddress)
-}
-
-func errorInvalidLockStatus() csdkTypes.Error {
-	return csdkTypes.NewError(codeSpaceVPN, errCodeInvalidLockStatus, errMsgInvalidLockStatus)
-}
-
-func errorSessionNotExists() csdkTypes.Error {
-	return csdkTypes.NewError(codeSpaceVPN, errCodeSessionNotExists, errMsgSessionNotExists)
-}
-
-func errorEmptyAddress() csdkTypes.Error {
-	return csdkTypes.NewError(codeSpaceVPN, sdkTypes.ErrCodeEmptyAddress, sdkTypes.ErrMsgEmptyAddress)
-}
-
-func errorInvalidAPIPort() csdkTypes.Error {
-	return csdkTypes.NewError(codeSpaceVPN, errCodeInvalidAPIPort, errMsgInvalidAPIPort)
-}
-
-func errorInvalidLocation() csdkTypes.Error {
-	return csdkTypes.NewError(codeSpaceVPN, errCodeInvalidLocation, errMsgInvalidLocation)
-}
-
-func errorInvalidNetSpeed() csdkTypes.Error {
-	return csdkTypes.NewError(codeSpaceVPN, errCodeInvalidNetSpeed, errMsgInvalidNetSpeed)
-}
-
-func errorEmptyEncMethod() csdkTypes.Error {
-	return csdkTypes.NewError(codeSpaceVPN, errCodeEmptyEncMethod, errMsgEmptyEncMethod)
-}
-
-func errorInvalidPricePerGB() csdkTypes.Error {
-	return csdkTypes.NewError(codeSpaceVPN, errCodeInvalidPricePerGB, errMsgInvalidPricePerGB)
-}
-
-func errorEmptyVersion() csdkTypes.Error {
-	return csdkTypes.NewError(codeSpaceVPN, errCodeEmptyVersion, errMsgEmptyVersion)
-}
-
-func errorEmptyLockerID() csdkTypes.Error {
-	return csdkTypes.NewError(codeSpaceVPN, sdkTypes.ErrCodeEmptyLockerID, sdkTypes.ErrMsgEmptyLockerID)
-}
-
-func errorInvalidCoins() csdkTypes.Error {
-	return csdkTypes.NewError(codeSpaceVPN, sdkTypes.ErrCodeInvalidCoins, sdkTypes.ErrMsgInvalidCoins)
-}
-
-func errorEmptyPubKey() csdkTypes.Error {
-	return csdkTypes.NewError(codeSpaceVPN, sdkTypes.ErrCodeEmptyPubKey, sdkTypes.ErrMsgEmptyPubKey)
-}
-
-func errorEmptySignature() csdkTypes.Error {
-	return csdkTypes.NewError(codeSpaceVPN, sdkTypes.ErrCodeEmptySignature, sdkTypes.ErrMsgEmptySignature)
-}
-
-func errorEmptyVPNID() csdkTypes.Error {
-	return csdkTypes.NewError(codeSpaceVPN, errCodeEmptyVPNID, errMsgEmptyVPNID)
-}
-
-func errorEmptySessionID() csdkTypes.Error {
-	return csdkTypes.NewError(codeSpaceVPN, errCodeEmptySessionID, errMsgEmptySessionID)
-}
-
-func errorInvalidSessionStatus() csdkTypes.Error {
-	return csdkTypes.NewError(codeSpaceVPN, errCodeInvalidSessionStatus, errMsgInvalidSessionStatus)
-}
-
-func errorInvalidIBCSequence() csdkTypes.Error {
-	return csdkTypes.NewError(codeSpaceVPN, sdkTypes.ErrCodeInvalidIBCSequence, sdkTypes.ErrMsgInvalidIBCSequence)
+func errorInvalidField(field string) csdkTypes.Error {
+	return csdkTypes.NewError(codespaceVPN, errCodeInvalidField, errMsgInvalidField+field)
 }

@@ -5,415 +5,285 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/x/bank"
 
 	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
 )
 
 type Keeper struct {
-	VPNStoreKey     csdkTypes.StoreKey
+	NodeStoreKey    csdkTypes.StoreKey
 	SessionStoreKey csdkTypes.StoreKey
 	cdc             *codec.Codec
 }
 
-func NewKeeper(cdc *codec.Codec, vpnKey, sessionKey csdkTypes.StoreKey) Keeper {
+func NewKeeper(cdc *codec.Codec, nodeKey, sessionKey csdkTypes.StoreKey) Keeper {
 	return Keeper{
-		VPNStoreKey:     vpnKey,
+		NodeStoreKey:    nodeKey,
 		SessionStoreKey: sessionKey,
 		cdc:             cdc,
 	}
 }
 
-func (k Keeper) SetVPNDetails(ctx csdkTypes.Context, vpnID string, vpnDetails *sdkTypes.VPNDetails) csdkTypes.Error {
-	vpnStore := ctx.KVStore(k.VPNStoreKey)
-	keyBytes, err := k.cdc.MarshalBinaryLengthPrefixed(vpnID)
-
+func (k Keeper) SetNodeDetails(ctx csdkTypes.Context, id string, details *sdkTypes.VPNNodeDetails) csdkTypes.Error {
+	key, err := k.cdc.MarshalBinaryLengthPrefixed(id)
 	if err != nil {
 		return errorMarshal()
 	}
 
-	valueBytes, err := k.cdc.MarshalBinaryLengthPrefixed(vpnDetails)
-
+	value, err := k.cdc.MarshalBinaryLengthPrefixed(details)
 	if err != nil {
 		return errorMarshal()
 	}
 
-	vpnStore.Set(keyBytes, valueBytes)
+	store := ctx.KVStore(k.NodeStoreKey)
+	store.Set(key, value)
 
 	return nil
 }
 
-func (k Keeper) GetVPNDetails(ctx csdkTypes.Context, vpnID string) (*sdkTypes.VPNDetails, csdkTypes.Error) {
-	store := ctx.KVStore(k.VPNStoreKey)
-	keyBytes, err := k.cdc.MarshalBinaryLengthPrefixed(vpnID)
-
+func (k Keeper) GetNodeDetails(ctx csdkTypes.Context, id string) (*sdkTypes.VPNNodeDetails, csdkTypes.Error) {
+	key, err := k.cdc.MarshalBinaryLengthPrefixed(id)
 	if err != nil {
 		return nil, errorMarshal()
 	}
 
-	valueBytes := store.Get(keyBytes)
-
-	if valueBytes == nil {
+	store := ctx.KVStore(k.NodeStoreKey)
+	value := store.Get(key)
+	if value == nil {
 		return nil, nil
 	}
 
-	var vpnDetails sdkTypes.VPNDetails
-
-	if err := k.cdc.UnmarshalBinaryLengthPrefixed(valueBytes, &vpnDetails); err != nil {
+	var details sdkTypes.VPNNodeDetails
+	if err := k.cdc.UnmarshalBinaryLengthPrefixed(value, &details); err != nil {
 		return nil, errorUnmarshal()
 	}
 
-	return &vpnDetails, nil
+	return &details, nil
 }
 
-func (k Keeper) SetActiveNodeIDs(ctx csdkTypes.Context, nodeIDs []string) csdkTypes.Error {
-	keyBytes, err := k.cdc.MarshalBinaryLengthPrefixed(sdkTypes.KeyActiveNodeIDs)
-
+func (k Keeper) SetActiveNodeIDs(ctx csdkTypes.Context, ids []string) csdkTypes.Error {
+	key, err := k.cdc.MarshalBinaryLengthPrefixed(sdkTypes.KeyActiveNodeIDs)
 	if err != nil {
 		return errorMarshal()
 	}
 
-	sort.Strings(nodeIDs)
-	valueBytes, err := k.cdc.MarshalBinaryLengthPrefixed(nodeIDs)
-
+	sort.Strings(ids)
+	value, err := k.cdc.MarshalBinaryLengthPrefixed(ids)
 	if err != nil {
 		return errorMarshal()
 	}
 
-	store := ctx.KVStore(k.VPNStoreKey)
-	store.Set(keyBytes, valueBytes)
+	store := ctx.KVStore(k.NodeStoreKey)
+	store.Set(key, value)
 
 	return nil
 }
 
 func (k Keeper) GetActiveNodeIDs(ctx csdkTypes.Context) ([]string, csdkTypes.Error) {
-	keyBytes, err := k.cdc.MarshalBinaryLengthPrefixed(sdkTypes.KeyActiveNodeIDs)
-
+	key, err := k.cdc.MarshalBinaryLengthPrefixed(sdkTypes.KeyActiveNodeIDs)
 	if err != nil {
 		return nil, errorMarshal()
 	}
 
-	var nodeIDs []string
-	store := ctx.KVStore(k.VPNStoreKey)
-	valueBytes := store.Get(keyBytes)
+	var ids []string
 
-	if valueBytes == nil {
-		return nodeIDs, nil
+	store := ctx.KVStore(k.NodeStoreKey)
+	value := store.Get(key)
+	if value == nil {
+		return ids, nil
 	}
 
-	if err := k.cdc.UnmarshalBinaryLengthPrefixed(valueBytes, &nodeIDs); err != nil {
+	if err := k.cdc.UnmarshalBinaryLengthPrefixed(value, &ids); err != nil {
 		return nil, errorUnmarshal()
 	}
 
-	return nodeIDs, nil
+	return ids, nil
 }
 
-func (k Keeper) SetVPNsCount(ctx csdkTypes.Context, address csdkTypes.AccAddress, count uint64) csdkTypes.Error {
-	keyBytes, err := k.cdc.MarshalBinaryLengthPrefixed(sdkTypes.VPNsCountKey(address))
-
+func (k Keeper) SetNodesCount(ctx csdkTypes.Context, owner csdkTypes.AccAddress, count uint64) csdkTypes.Error {
+	key, err := k.cdc.MarshalBinaryLengthPrefixed(sdkTypes.VPNNodesCountKey(owner))
 	if err != nil {
 		return errorMarshal()
 	}
 
-	valueBytes, err := k.cdc.MarshalBinaryLengthPrefixed(count)
-
+	value, err := k.cdc.MarshalBinaryLengthPrefixed(count)
 	if err != nil {
 		return errorMarshal()
 	}
 
-	store := ctx.KVStore(k.VPNStoreKey)
-	store.Set(keyBytes, valueBytes)
+	store := ctx.KVStore(k.NodeStoreKey)
+	store.Set(key, value)
 
 	return nil
 }
 
-func (k Keeper) GetVPNsCount(ctx csdkTypes.Context, address csdkTypes.AccAddress) (uint64, csdkTypes.Error) {
-	keyBytes, err := k.cdc.MarshalBinaryLengthPrefixed(sdkTypes.VPNsCountKey(address))
-
+func (k Keeper) GetNodesCount(ctx csdkTypes.Context, owner csdkTypes.AccAddress) (uint64, csdkTypes.Error) {
+	key, err := k.cdc.MarshalBinaryLengthPrefixed(sdkTypes.VPNNodesCountKey(owner))
 	if err != nil {
 		return 0, errorMarshal()
 	}
 
-	store := ctx.KVStore(k.VPNStoreKey)
-	valueBytes := store.Get(keyBytes)
-
-	if valueBytes == nil {
+	store := ctx.KVStore(k.NodeStoreKey)
+	value := store.Get(key)
+	if value == nil {
 		return 0, nil
 	}
 
 	var count uint64
-
-	if err := k.cdc.UnmarshalBinaryLengthPrefixed(valueBytes, &count); err != nil {
+	if err := k.cdc.UnmarshalBinaryLengthPrefixed(value, &count); err != nil {
 		return 0, errorUnmarshal()
 	}
 
 	return count, nil
 }
 
-func (k Keeper) SetSessionDetails(ctx csdkTypes.Context, sessionID string, sessionDetails *sdkTypes.SessionDetails) csdkTypes.Error {
+func (k Keeper) SetSessionDetails(ctx csdkTypes.Context, id string, details *sdkTypes.VPNSessionDetails) csdkTypes.Error {
+	key, err := k.cdc.MarshalBinaryLengthPrefixed(id)
+	if err != nil {
+		return errorMarshal()
+	}
+
+	value, err := k.cdc.MarshalBinaryLengthPrefixed(details)
+	if err != nil {
+		return errorMarshal()
+	}
+
 	store := ctx.KVStore(k.SessionStoreKey)
-	keyBytes, err := k.cdc.MarshalBinaryLengthPrefixed(sessionID)
-
-	if err != nil {
-		return errorMarshal()
-	}
-
-	valueBytes, err := k.cdc.MarshalBinaryLengthPrefixed(*sessionDetails)
-
-	if err != nil {
-		return errorMarshal()
-	}
-
-	store.Set(keyBytes, valueBytes)
+	store.Set(key, value)
 
 	return nil
 }
 
-func (k Keeper) GetSessionDetails(ctx csdkTypes.Context, sessionID string) (*sdkTypes.SessionDetails, csdkTypes.Error) {
-	store := ctx.KVStore(k.SessionStoreKey)
-	keyBytes, err := k.cdc.MarshalBinaryLengthPrefixed(sessionID)
-
+func (k Keeper) GetSessionDetails(ctx csdkTypes.Context, id string) (*sdkTypes.VPNSessionDetails, csdkTypes.Error) {
+	key, err := k.cdc.MarshalBinaryLengthPrefixed(id)
 	if err != nil {
 		return nil, errorMarshal()
 	}
 
-	valueBytes := store.Get(keyBytes)
-
-	if valueBytes == nil {
+	store := ctx.KVStore(k.SessionStoreKey)
+	value := store.Get(key)
+	if value == nil {
 		return nil, nil
 	}
 
-	var sessionDetails sdkTypes.SessionDetails
-
-	if err := k.cdc.UnmarshalBinaryLengthPrefixed(valueBytes, &sessionDetails); err != nil {
+	var details sdkTypes.VPNSessionDetails
+	if err := k.cdc.UnmarshalBinaryLengthPrefixed(value, &details); err != nil {
 		return nil, errorUnmarshal()
 	}
 
-	return &sessionDetails, nil
+	return &details, nil
 }
 
-func (k Keeper) SetActiveSessionIDs(ctx csdkTypes.Context, sessionIDs []string) csdkTypes.Error {
-	keyBytes, err := k.cdc.MarshalBinaryLengthPrefixed(sdkTypes.KeyActiveSessionIDs)
-
+func (k Keeper) SetActiveSessionIDs(ctx csdkTypes.Context, ids []string) csdkTypes.Error {
+	key, err := k.cdc.MarshalBinaryLengthPrefixed(sdkTypes.KeyActiveSessionIDs)
 	if err != nil {
 		return errorMarshal()
 	}
 
-	sort.Strings(sessionIDs)
-	valueBytes, err := k.cdc.MarshalBinaryLengthPrefixed(sessionIDs)
-
+	sort.Strings(ids)
+	value, err := k.cdc.MarshalBinaryLengthPrefixed(ids)
 	if err != nil {
 		return errorMarshal()
 	}
 
 	store := ctx.KVStore(k.SessionStoreKey)
-	store.Set(keyBytes, valueBytes)
+	store.Set(key, value)
 
 	return nil
 }
 
 func (k Keeper) GetActiveSessionIDs(ctx csdkTypes.Context) ([]string, csdkTypes.Error) {
-	keyBytes, err := k.cdc.MarshalBinaryLengthPrefixed(sdkTypes.KeyActiveSessionIDs)
-
+	key, err := k.cdc.MarshalBinaryLengthPrefixed(sdkTypes.KeyActiveSessionIDs)
 	if err != nil {
 		return nil, errorMarshal()
 	}
 
-	var sessionIDs []string
-	store := ctx.KVStore(k.SessionStoreKey)
-	valueBytes := store.Get(keyBytes)
+	var ids []string
 
-	if valueBytes == nil {
-		return sessionIDs, nil
+	store := ctx.KVStore(k.SessionStoreKey)
+	value := store.Get(key)
+	if value == nil {
+		return ids, nil
 	}
 
-	if err := k.cdc.UnmarshalBinaryLengthPrefixed(valueBytes, &sessionIDs); err != nil {
+	if err := k.cdc.UnmarshalBinaryLengthPrefixed(value, &ids); err != nil {
 		return nil, errorUnmarshal()
 	}
 
-	return sessionIDs, nil
+	return ids, nil
 }
 
-func (k Keeper) SetSessionsCount(ctx csdkTypes.Context, address csdkTypes.AccAddress, count uint64) csdkTypes.Error {
-	keyBytes, err := k.cdc.MarshalBinaryLengthPrefixed(sdkTypes.SessionsCountKey(address))
-
+func (k Keeper) SetSessionsCount(ctx csdkTypes.Context, owner csdkTypes.AccAddress, count uint64) csdkTypes.Error {
+	key, err := k.cdc.MarshalBinaryLengthPrefixed(sdkTypes.VPNSessionsCountKey(owner))
 	if err != nil {
 		return errorMarshal()
 	}
 
-	valueBytes, err := k.cdc.MarshalBinaryLengthPrefixed(count)
-
+	value, err := k.cdc.MarshalBinaryLengthPrefixed(count)
 	if err != nil {
 		return errorMarshal()
 	}
 
 	store := ctx.KVStore(k.SessionStoreKey)
-	store.Set(keyBytes, valueBytes)
+	store.Set(key, value)
 
 	return nil
 }
 
-func (k Keeper) GetSessionsCount(ctx csdkTypes.Context, address csdkTypes.AccAddress) (uint64, csdkTypes.Error) {
-	keyBytes, err := k.cdc.MarshalBinaryLengthPrefixed(sdkTypes.SessionsCountKey(address))
-
+func (k Keeper) GetSessionsCount(ctx csdkTypes.Context, owner csdkTypes.AccAddress) (uint64, csdkTypes.Error) {
+	key, err := k.cdc.MarshalBinaryLengthPrefixed(sdkTypes.VPNSessionsCountKey(owner))
 	if err != nil {
 		return 0, errorMarshal()
 	}
 
 	store := ctx.KVStore(k.SessionStoreKey)
-	valueBytes := store.Get(keyBytes)
-
-	if valueBytes == nil {
+	value := store.Get(key)
+	if value == nil {
 		return 0, nil
 	}
 
 	var count uint64
-
-	if err := k.cdc.UnmarshalBinaryLengthPrefixed(valueBytes, &count); err != nil {
+	if err := k.cdc.UnmarshalBinaryLengthPrefixed(value, &count); err != nil {
 		return 0, errorUnmarshal()
 	}
 
 	return count, nil
 }
 
-func (k Keeper) SetVPNStatus(ctx csdkTypes.Context, vpnID string, status string) csdkTypes.Error {
-	vpnDetails, err := k.GetVPNDetails(ctx, vpnID)
+/* ____________________________________________________________________________________________________ */
 
+func AddVPN(ctx csdkTypes.Context, nodeKeeper Keeper, bankKeeper bank.Keeper, details *sdkTypes.VPNNodeDetails) (csdkTypes.Tags, csdkTypes.Error) {
+	allTags := csdkTypes.EmptyTags()
+	count, err := nodeKeeper.GetNodesCount(ctx, details.Owner)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	vpnDetails.Status = status
-
-	if err := k.SetVPNDetails(ctx, vpnID, vpnDetails); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (k Keeper) AddActiveNodeID(ctx csdkTypes.Context, nodeID string) csdkTypes.Error {
-	nodeIDs, err := k.GetActiveNodeIDs(ctx)
-
-	if err != nil {
-		return err
-	}
-
-	nodeIDs = append(nodeIDs, nodeID)
-
-	if err := k.SetActiveNodeIDs(ctx, nodeIDs); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (k Keeper) RemoveActiveNodeID(ctx csdkTypes.Context, nodeID string) csdkTypes.Error {
-	oldNodeIDs, err := k.GetActiveNodeIDs(ctx)
-
-	if err != nil {
-		return err
-	}
-
-	var nodeIDs []string
-
-	for _, id := range oldNodeIDs {
-		if id != nodeID {
-			nodeIDs = append(nodeIDs, id)
+	id := sdkTypes.VPNNodeKey(details.Owner, count)
+	if details, err := nodeKeeper.GetNodeDetails(ctx, id); true {
+		if err != nil {
+			return nil, err
+		}
+		if details != nil {
+			return nil, nil
 		}
 	}
 
-	if err := k.SetActiveNodeIDs(ctx, nodeIDs); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (k Keeper) SetSessionStatus(ctx csdkTypes.Context, sessionID string, status string) csdkTypes.Error {
-	sessionDetails, err := k.GetSessionDetails(ctx, sessionID)
-
+	_, tags, err := bankKeeper.SubtractCoins(ctx, details.Owner, details.LockedAmount)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	sessionDetails.Status = status
+	allTags.AppendTags(tags)
 
-	if err := k.SetSessionDetails(ctx, sessionID, sessionDetails); err != nil {
-		return err
+	details.Status = sdkTypes.StatusRegister
+	if err := nodeKeeper.SetNodeDetails(ctx, id, details); err != nil {
+		return nil, err
 	}
+	allTags.AppendTag("node_id", []byte(id))
 
-	return nil
-}
-
-func (k Keeper) AddActiveSessionID(ctx csdkTypes.Context, sessionID string) csdkTypes.Error {
-	sessionIDs, err := k.GetActiveSessionIDs(ctx)
-
-	if err != nil {
-		return err
+	if err := nodeKeeper.SetNodesCount(ctx, details.Owner, count+1); err != nil {
+		return nil, err
 	}
 
-	sessionIDs = append(sessionIDs, sessionID)
-
-	if err := k.SetActiveSessionIDs(ctx, sessionIDs); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (k Keeper) RemoveActiveSessionID(ctx csdkTypes.Context, sessionID string) csdkTypes.Error {
-	oldSessionIDs, err := k.GetActiveSessionIDs(ctx)
-
-	if err != nil {
-		return err
-	}
-
-	var sessionIDs []string
-
-	for _, id := range oldSessionIDs {
-		if id != sessionID {
-			sessionIDs = append(sessionIDs, id)
-		}
-	}
-
-	if err := k.SetActiveSessionIDs(ctx, sessionIDs); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (k Keeper) AddVPN(ctx csdkTypes.Context, vpnID string, vpnDetails *sdkTypes.VPNDetails) csdkTypes.Error {
-	if err := k.SetVPNDetails(ctx, vpnID, vpnDetails); err != nil {
-		return err
-	}
-
-	vpnsCount, err := k.GetVPNsCount(ctx, vpnDetails.Address)
-
-	if err != nil {
-		return err
-	}
-
-	if err := k.SetVPNsCount(ctx, vpnDetails.Address, vpnsCount+1); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (k Keeper) AddSession(ctx csdkTypes.Context, sessionID string, sessionDetails *sdkTypes.SessionDetails) csdkTypes.Error {
-	if err := k.SetSessionDetails(ctx, sessionID, sessionDetails); err != nil {
-		return err
-	}
-
-	sessionsCount, err := k.GetSessionsCount(ctx, sessionDetails.ClientAddress)
-
-	if err != nil {
-		return err
-	}
-
-	if err := k.SetSessionsCount(ctx, sessionDetails.ClientAddress, sessionsCount+1); err != nil {
-		return err
-	}
-
-	return nil
+	return allTags, nil
 }

@@ -7,60 +7,46 @@ import (
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
 )
 
-type NetSpeed struct {
-	Upload   int64 `json:"upload"`
-	Download int64 `json:"download"`
+type VPNNodeDetails struct {
+	Owner        csdkTypes.AccAddress
+	LockedAmount csdkTypes.Coins
+	APIPort      uint16
+	NetSpeed     Bandwidth
+	EncMethod    string
+	PerGBAmount  csdkTypes.Coins
+	Version      string
+	Status       string
 }
 
-type Location struct {
-	Latitude  int64  `json:"latitude"`
-	Longitude int64  `json:"longitude"`
-	City      string `json:"city"`
-	Country   string `json:"country"`
+type VPNSessionDetails struct {
+	VPNOwnerAddress    csdkTypes.AccAddress
+	ClientAddress      csdkTypes.AccAddress
+	PerGBAmount        csdkTypes.Coins
+	BandwidthToProvide Bandwidth
+	BandwidthConsumed  Bandwidth
+	StartTime          *time.Time
+	EndTime            *time.Time
+	Status             string
 }
 
-type VPNDetails struct {
-	Address    csdkTypes.AccAddress
-	APIPort    int64
-	Location   Location
-	NetSpeed   NetSpeed
-	EncMethod  string
-	PricePerGB int64
-	Version    string
-	Status     string
-	LockerID   string
+func VPNNodesCountKey(accAddress csdkTypes.AccAddress) string {
+	return fmt.Sprintf("vpn/nodes_count/%s", accAddress.String())
 }
 
-type SessionDetails struct {
-	VPNID         string
-	ClientAddress csdkTypes.AccAddress
-	GBToProvide   int64
-	PricePerGB    int64
-	Upload        int64
-	Download      int64
-	StartTime     *time.Time
-	EndTime       *time.Time
-	Status        string
+func VPNSessionsCountKey(accAddress csdkTypes.AccAddress) string {
+	return fmt.Sprintf("vpn/sessions_count/%s", accAddress.String())
 }
 
-func SessionsCountKey(accAddress csdkTypes.AccAddress) string {
-	return fmt.Sprintf("sessions_count/%s", accAddress.String())
-}
-
-func VPNsCountKey(accAddress csdkTypes.AccAddress) string {
-	return fmt.Sprintf("vpns_count/%s", accAddress.String())
+func VPNNodeKey(accAddress csdkTypes.AccAddress, count uint64) string {
+	return fmt.Sprintf("%s/%d", accAddress.String(), count)
 }
 
 const (
-	MinLatitude  = -90 * 100000
-	MinLongitude = -180 * 100000
-	MaxLatitude  = 90 * 100000
-	MaxLongitude = 180 * 100000
-
 	KeyActiveNodeIDs    = "ACTIVE_NODE_IDS"
 	KeyActiveSessionIDs = "ACTIVE_SESSION_IDS"
-	KeySession          = "session"
-	KeyVPN              = "vpn"
+
+	StoreKeyVPNSession = "vpn_session"
+	StoreKeyVPNNode    = "vpn_node"
 
 	StatusActive     = "ACTIVE"
 	StatusDeregister = "DEREGISTERED"
