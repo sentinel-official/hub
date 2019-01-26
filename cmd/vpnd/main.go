@@ -18,6 +18,7 @@ import (
 	tmTypes "github.com/tendermint/tendermint/types"
 
 	app "github.com/ironman0x7b2/sentinel-sdk/apps/vpn"
+	vpnCli "github.com/ironman0x7b2/sentinel-sdk/apps/vpn/cli"
 )
 
 func main() {
@@ -37,6 +38,11 @@ func main() {
 		PersistentPreRunE: server.PersistentPreRunEFn(ctx),
 	}
 
+	rootCmd.AddCommand(vpnCli.InitCmd(ctx, cdc))
+	rootCmd.AddCommand(vpnCli.CollectGenTxsCmd(ctx, cdc))
+	rootCmd.AddCommand(vpnCli.TestnetFilesCmd(ctx, cdc))
+	rootCmd.AddCommand(vpnCli.GenTxCmd(ctx, cdc))
+	rootCmd.AddCommand(vpnCli.AddGenesisAccountCmd(ctx, cdc))
 	rootCmd.AddCommand(client.NewCompletionCmd(rootCmd, true))
 
 	server.AddCommands(ctx, cdc, rootCmd, newApp, exportAppStateAndTMValidators)
