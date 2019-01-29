@@ -9,9 +9,7 @@ import (
 )
 
 type MsgRegisterNode struct {
-	From csdkTypes.AccAddress `json:"from"`
-
-	Owner        csdkTypes.AccAddress `json:"owner"`
+	From         csdkTypes.AccAddress `json:"from"`
 	AmountToLock csdkTypes.Coin       `json:"amount_to_lock"`
 	APIPort      uint16               `json:"api_port"`
 	NetSpeed     sdkTypes.Bandwidth   `json:"net_speed"`
@@ -27,9 +25,6 @@ func (msg MsgRegisterNode) Type() string {
 func (msg MsgRegisterNode) ValidateBasic() csdkTypes.Error {
 	if msg.From == nil || msg.From.Empty() {
 		return errorInvalidField("from")
-	}
-	if msg.Owner == nil || msg.Owner.Empty() {
-		return errorInvalidField("owner")
 	}
 	if msg.AmountToLock.IsPositive() == false || msg.AmountToLock.Denom != "sent" {
 		return errorInvalidField("amount_to_lock")
@@ -72,14 +67,12 @@ func (msg MsgRegisterNode) Route() string {
 }
 
 func NewMsgRegisterNode(from csdkTypes.AccAddress,
-	owner csdkTypes.AccAddress, apiPort uint16,
-	upload uint64, download uint64,
+	apiPort uint16, upload uint64, download uint64,
 	encMethod string, perGBAmount csdkTypes.Coins, version string,
 	amountToLock csdkTypes.Coin) *MsgRegisterNode {
 
 	return &MsgRegisterNode{
 		From:         from,
-		Owner:        owner,
 		AmountToLock: amountToLock,
 		APIPort:      apiPort,
 		NetSpeed: sdkTypes.Bandwidth{

@@ -27,12 +27,12 @@ func NewHandler(nk Keeper, bk bank.Keeper) csdkTypes.Handler {
 func handleRegisterNode(ctx csdkTypes.Context, nk Keeper, bk bank.Keeper, msg MsgRegisterNode) csdkTypes.Result {
 	allTags := csdkTypes.EmptyTags()
 
-	count, err := nk.GetNodesCount(ctx, msg.Owner)
+	count, err := nk.GetNodesCount(ctx, msg.From)
 	if err != nil {
 		return err.Result()
 	}
 
-	id := sdkTypes.VPNNodeKey(msg.Owner, count)
+	id := sdkTypes.VPNNodeKey(msg.From, count)
 	if details, err := nk.GetNodeDetails(ctx, id); true {
 		if err != nil {
 			return err.Result()
@@ -43,14 +43,14 @@ func handleRegisterNode(ctx csdkTypes.Context, nk Keeper, bk bank.Keeper, msg Ms
 	}
 
 	lockAmount := csdkTypes.Coins{msg.AmountToLock}
-	_, tags, err := bk.SubtractCoins(ctx, msg.Owner, lockAmount)
+	_, tags, err := bk.SubtractCoins(ctx, msg.From, lockAmount)
 	if err != nil {
 		return err.Result()
 	}
 	allTags.AppendTags(tags)
 
 	details := sdkTypes.VPNNodeDetails{
-		Owner:          msg.Owner,
+		Owner:          msg.From,
 		LockedAmount:   msg.AmountToLock,
 		APIPort:        msg.APIPort,
 		NetSpeed:       msg.NetSpeed,
@@ -65,7 +65,7 @@ func handleRegisterNode(ctx csdkTypes.Context, nk Keeper, bk bank.Keeper, msg Ms
 	}
 	allTags.AppendTag("node_id", []byte(id))
 
-	if err := nk.SetNodesCount(ctx, msg.Owner, count+1); err != nil {
+	if err := nk.SetNodesCount(ctx, msg.From, count+1); err != nil {
 		return err.Result()
 	}
 

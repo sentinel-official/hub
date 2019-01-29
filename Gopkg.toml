@@ -27,7 +27,7 @@
 
 [[constraint]]
   name = "github.com/cosmos/cosmos-sdk"
-  version = "0.30.0"
+  revision = "9e21ca25ced2787dd5220582eaf2dbbbbff19a03"
 
 [[constraint]]
   name = "github.com/spf13/cobra"

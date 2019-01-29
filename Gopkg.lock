@@ -57,7 +57,7 @@
   revision = "d4cc87b860166d00d6b5b9e0d3b3d71d6088d4d4"
 
 [[projects]]
-  digest = "1:7130a39348db4079704460340a7b5711037029c1947edb1141dc6cc976115572"
+  digest = "1:29004b91f147a54d6fd554cafbfaea55cfbd01f30fd0650d29592d02171ff79e"
   name = "github.com/cosmos/cosmos-sdk"
   packages = [
     "baseapp",
@@ -127,8 +127,7 @@
     "x/staking/types",
   ]
   pruneopts = "UT"
-  revision = "e003c5ebe02bed51056e46d5ff1a232e2bd00dda"
-  version = "v0.30.0"
+  revision = "9e21ca25ced2787dd5220582eaf2dbbbbff19a03"
 
 [[projects]]
   digest = "1:e8a3550c8786316675ff54ad6f09d265d129c9d986919af7f541afba50d87ce2"
