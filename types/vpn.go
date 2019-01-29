@@ -8,14 +8,16 @@ import (
 )
 
 type VPNNodeDetails struct {
-	Owner        csdkTypes.AccAddress
-	LockedAmount csdkTypes.Coin
-	APIPort      uint16
-	NetSpeed     Bandwidth
-	EncMethod    string
-	PerGBAmount  csdkTypes.Coins
-	Version      string
-	Status       string
+	Owner           csdkTypes.AccAddress
+	LockedAmount    csdkTypes.Coin
+	APIPort         uint16
+	NetSpeed        Bandwidth
+	EncMethod       string
+	PerGBAmount     csdkTypes.Coins
+	Version         string
+	Status          string
+	StatusAtHeight  int64
+	UpdatedAtHeight int64
 }
 
 type VPNSessionDetails struct {
@@ -48,10 +50,10 @@ const (
 	StoreKeyVPNSession = "vpn_session"
 	StoreKeyVPNNode    = "vpn_node"
 
-	StatusActive     = "ACTIVE"
-	StatusDeregister = "DEREGISTERED"
-	StatusEnd        = "ENDED"
-	StatusInactive   = "INACTIVE"
-	StatusRegister   = "REGISTERED"
-	StatusStart      = "STARTED"
+	StatusRegistered   = "REGISTERED"
+	StatusActive       = "ACTIVE"
+	StatusInactive     = "INACTIVE"
+	StatusDeregistered = "DEREGISTERED"
+	StatusStart        = "STARTED"
+	StatusEnd          = "ENDED"
 )

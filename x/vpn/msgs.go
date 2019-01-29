@@ -91,3 +91,116 @@ func NewMsgRegisterNode(from csdkTypes.AccAddress,
 		Version:     version,
 	}
 }
+
+type MsgUpdateNode struct {
+	From        csdkTypes.AccAddress `json:"from"`
+	ID          string               `json:"id"`
+	APIPort     uint16               `json:"api_port"`
+	NetSpeed    sdkTypes.Bandwidth   `json:"net_speed"`
+	EncMethod   string               `json:"enc_method"`
+	PerGBAmount csdkTypes.Coins      `json:"per_gb_amount"`
+	Version     string               `json:"version"`
+}
+
+func (msg MsgUpdateNode) Type() string {
+	return "msg_update_node"
+}
+
+func (msg MsgUpdateNode) ValidateBasic() csdkTypes.Error {
+	if msg.From == nil || msg.From.Empty() {
+		return errorInvalidField("from")
+	}
+	if len(msg.ID) == 0 {
+		return errorInvalidField("id")
+	}
+	if msg.APIPort < 0 || msg.APIPort > 65535 {
+		return errorInvalidField("api_port")
+	}
+	if msg.NetSpeed.Download < 0 || msg.NetSpeed.Upload < 0 {
+		return errorInvalidField("net_speed")
+	}
+	if (msg.PerGBAmount != nil && msg.PerGBAmount.Len() != 0) &&
+		(msg.PerGBAmount.IsValid() == false || msg.PerGBAmount.IsPositive() == false) {
+		return errorInvalidField("per_gb_amount")
+	}
+
+	return nil
+}
+
+func (msg MsgUpdateNode) GetSignBytes() []byte {
+	msgBytes, err := json.Marshal(msg)
+	if err != nil {
+		panic(err)
+	}
+
+	return msgBytes
+}
+
+func (msg MsgUpdateNode) GetSigners() []csdkTypes.AccAddress {
+	return []csdkTypes.AccAddress{msg.From}
+}
+
+func (msg MsgUpdateNode) Route() string {
+	return sdkTypes.StoreKeyVPNNode
+}
+
+func NewMsgUpdateNode(from csdkTypes.AccAddress,
+	apiPort uint16, upload uint64, download uint64,
+	encMethod string, perGBAmount csdkTypes.Coins, version string) *MsgUpdateNode {
+
+	return &MsgUpdateNode{
+		From:    from,
+		APIPort: apiPort,
+		NetSpeed: sdkTypes.Bandwidth{
+			Upload:   upload,
+			Download: download,
+		},
+		EncMethod:   encMethod,
+		PerGBAmount: perGBAmount,
+		Version:     version,
+	}
+}
+
+type MsgDeregisterNode struct {
+	From csdkTypes.AccAddress `json:"from"`
+	ID   string               `json:"id"`
+}
+
+func (msg MsgDeregisterNode) Type() string {
+	return "msg_deregister_node"
+}
+
+func (msg MsgDeregisterNode) ValidateBasic() csdkTypes.Error {
+	if msg.From == nil || msg.From.Empty() {
+		return errorInvalidField("from")
+	}
+	if len(msg.ID) == 0 {
+		return errorInvalidField("id")
+	}
+
+	return nil
+}
+
+func (msg MsgDeregisterNode) GetSignBytes() []byte {
+	msgBytes, err := json.Marshal(msg)
+	if err != nil {
+		panic(err)
+	}
+
+	return msgBytes
+}
+
+func (msg MsgDeregisterNode) GetSigners() []csdkTypes.AccAddress {
+	return []csdkTypes.AccAddress{msg.From}
+}
+
+func (msg MsgDeregisterNode) Route() string {
+	return sdkTypes.StoreKeyVPNNode
+}
+
+func NewMsgDeregisterNode(from csdkTypes.AccAddress, id string) *MsgDeregisterNode {
+	return &MsgDeregisterNode{
+		From: from,
+		ID:   id,
+	}
+}

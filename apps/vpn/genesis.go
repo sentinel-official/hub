@@ -156,7 +156,7 @@ func VPNGenState(cdc *codec.Codec, genDoc tmTypes.GenesisDoc, appGenTxs []json.R
 
 		if _, ok := msgs[0].(staking.MsgCreateValidator); !ok {
 			return genesisState, fmt.Errorf(
-				"Genesis transaction %v does not contain a MsgCreateValidator", i)
+				"genesis transaction %v does not contain a MsgCreateValidator", i)
 		}
 	}
 
@@ -229,7 +229,7 @@ func validateGenesisStateAccounts(accs []GenesisAccount) error {
 		acc := accs[i]
 		strAddr := string(acc.Address)
 		if _, ok := addrMap[strAddr]; ok {
-			return fmt.Errorf("Duplicate account in genesis state: Address %v", acc.Address)
+			return fmt.Errorf("duplicate account in genesis state: Address %v", acc.Address)
 		}
 		addrMap[strAddr] = true
 	}

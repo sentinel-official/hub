@@ -11,17 +11,19 @@ const (
 
 	errCodeUnknownMsgType    = 201
 	errCodeNodeAlreadyExists = 202
-	errCodeNodeNotFound      = 203
+	errCodeNodeNotExists     = 203
 	errCodeUnauthorized      = 204
 	errCodeInvalidField      = 205
 	errCodeInvalidLockDenom  = 206
+	errCodeInvalidNodeStatus = 207
 
 	errMsgUnknownMsgType    = "Unknown message type: "
 	errMsgNodeAlreadyExists = "Node already exists"
-	errMsgNodeNotFound      = "Node not found"
+	errMsgNodeNotExists     = "Node not exists"
 	errMsgUnauthorized      = "Transaction is unauthorized"
 	errMsgInvalidField      = "Invalid field: "
 	errMsgInvalidLockDenom  = "Invalid lock denom"
+	errMsgInvalidNodeStatus = "Invalid node status"
 )
 
 func errorMarshal() csdkTypes.Error {
@@ -40,8 +42,8 @@ func errorNodeAlreadyExists() csdkTypes.Error {
 	return csdkTypes.NewError(codespaceVPN, errCodeNodeAlreadyExists, errMsgNodeAlreadyExists)
 }
 
-func errorNodeNotFound() csdkTypes.Error {
-	return csdkTypes.NewError(codespaceVPN, errCodeNodeNotFound, errMsgNodeNotFound)
+func errorNodeNotExists() csdkTypes.Error {
+	return csdkTypes.NewError(codespaceVPN, errCodeNodeNotExists, errMsgNodeNotExists)
 }
 
 func errorUnauthorized() csdkTypes.Error {
@@ -54,4 +56,8 @@ func errorInvalidField(field string) csdkTypes.Error {
 
 func errorInvalidLockDenom() csdkTypes.Error {
 	return csdkTypes.NewError(codespaceVPN, errCodeInvalidLockDenom, errMsgInvalidLockDenom)
+}
+
+func errorInvalidNodeStatus() csdkTypes.Error {
+	return csdkTypes.NewError(codespaceVPN, errCodeInvalidNodeStatus, errMsgInvalidNodeStatus)
 }

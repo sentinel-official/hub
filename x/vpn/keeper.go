@@ -5,7 +5,6 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/x/bank"
 
 	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
 )
@@ -248,43 +247,4 @@ func (k Keeper) GetSessionsCount(ctx csdkTypes.Context, owner csdkTypes.AccAddre
 	}
 
 	return count, nil
-}
-
-/* ____________________________________________________________________________________________________ */
-
-func AddVPN(ctx csdkTypes.Context, nodeKeeper Keeper, bankKeeper bank.Keeper, details *sdkTypes.VPNNodeDetails) (csdkTypes.Tags, csdkTypes.Error) {
-	allTags := csdkTypes.EmptyTags()
-	count, err := nodeKeeper.GetNodesCount(ctx, details.Owner)
-	if err != nil {
-		return nil, err
-	}
-
-	id := sdkTypes.VPNNodeKey(details.Owner, count)
-	if details, err := nodeKeeper.GetNodeDetails(ctx, id); true {
-		if err != nil {
-			return nil, err
-		}
-		if details != nil {
-			return nil, errorNodeAlreadyExists()
-		}
-	}
-
-	lockAmount := csdkTypes.Coins{details.LockedAmount}
-	_, tags, err := bankKeeper.SubtractCoins(ctx, details.Owner, lockAmount)
-	if err != nil {
-		return nil, err
-	}
-	allTags.AppendTags(tags)
-
-	details.Status = sdkTypes.StatusRegister
-	if err := nodeKeeper.SetNodeDetails(ctx, id, details); err != nil {
-		return nil, err
-	}
-	allTags.AppendTag("node_id", []byte(id))
-
-	if err := nodeKeeper.SetNodesCount(ctx, details.Owner, count+1); err != nil {
-		return nil, err
-	}
-
-	return allTags, nil
 }
