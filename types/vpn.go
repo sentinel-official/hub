@@ -9,7 +9,7 @@ import (
 
 type VPNNodeDetails struct {
 	Owner        csdkTypes.AccAddress
-	LockedAmount csdkTypes.Coins
+	LockedAmount csdkTypes.Coin
 	APIPort      uint16
 	NetSpeed     Bandwidth
 	EncMethod    string

@@ -15,7 +15,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	authTxBuilder "github.com/cosmos/cosmos-sdk/x/auth/client/txbuilder"
 	"github.com/cosmos/cosmos-sdk/x/staking"
-	stakingTypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	tmConfig "github.com/tendermint/tendermint/config"
@@ -79,8 +78,8 @@ Example:
 		client.FlagChainID, "", "genesis file chain-id, if left blank will be randomly created",
 	)
 	cmd.Flags().String(
-		server.FlagMinGasPrices, fmt.Sprintf("0.000006%s", stakingTypes.DefaultBondDenom),
-		"Minimum gas prices to accept for transactions; All fees in a tx must meet this minimum (e.g. 0.01photino,0.001stake)",
+		server.FlagMinGasPrices, fmt.Sprintf("0.000006%s", "sent"),
+		"Minimum gas prices to accept for transactions; All fees in a tx must meet this minimum (e.g. 0.01sut,0.001sent)",
 	)
 
 	return cmd
@@ -185,14 +184,14 @@ func initTestnet(config *tmConfig.Config, cdc *codec.Codec) error {
 			Address: addr,
 			Coins: csdkTypes.Coins{
 				csdkTypes.NewInt64Coin(fmt.Sprintf("%stoken", nodeDirName), 1000),
-				csdkTypes.NewInt64Coin(stakingTypes.DefaultBondDenom, 500),
+				csdkTypes.NewInt64Coin("sent", 500),
 			},
 		})
 
 		msg := staking.NewMsgCreateValidator(
 			csdkTypes.ValAddress(addr),
 			valPubKeys[i],
-			csdkTypes.NewInt64Coin(stakingTypes.DefaultBondDenom, 100),
+			csdkTypes.NewInt64Coin("sent", 100),
 			staking.NewDescription(nodeDirName, "", "", ""),
 			staking.NewCommissionMsg(csdkTypes.ZeroDec(), csdkTypes.ZeroDec(), csdkTypes.ZeroDec()),
 		)

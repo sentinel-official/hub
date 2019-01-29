@@ -15,7 +15,7 @@ import (
 func (app *VPN) runtimeInvariants() []mockSim.Invariant {
 	return []mockSim.Invariant{
 		bankSim.NonnegativeBalanceInvariant(app.accountKeeper),
-		stakingSim.SupplyInvariants(app.bankKeeper, app.stakingKeeper, app.feeCollectionKeeper, app.distributionKeeper, app.accountKeeper),
+		// stakingSim.SupplyInvariants(app.bankKeeper, app.stakingKeeper, app.feeCollectionKeeper, app.distributionKeeper, app.accountKeeper),
 		stakingSim.NonNegativePowerInvariant(app.stakingKeeper),
 		distributionSim.NonNegativeOutstandingInvariant(app.distributionKeeper),
 	}

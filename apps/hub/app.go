@@ -248,6 +248,7 @@ func (app *Hub) initFromGenesisState(ctx csdkTypes.Context, genesisState Genesis
 
 		validators = app.stakingKeeper.ApplyAndReturnValidatorSetUpdates(ctx)
 	}
+
 	return validators
 }
 

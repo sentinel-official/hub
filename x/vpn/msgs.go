@@ -12,7 +12,7 @@ type MsgRegisterNode struct {
 	From csdkTypes.AccAddress `json:"from"`
 
 	Owner        csdkTypes.AccAddress `json:"owner"`
-	AmountToLock csdkTypes.Coins      `json:"amount_to_lock"`
+	AmountToLock csdkTypes.Coin       `json:"amount_to_lock"`
 	APIPort      uint16               `json:"api_port"`
 	NetSpeed     sdkTypes.Bandwidth   `json:"net_speed"`
 	EncMethod    string               `json:"enc_method"`
@@ -31,8 +31,7 @@ func (msg MsgRegisterNode) ValidateBasic() csdkTypes.Error {
 	if msg.Owner == nil || msg.Owner.Empty() {
 		return errorInvalidField("owner")
 	}
-	if msg.AmountToLock == nil || msg.AmountToLock.Len() == 0 ||
-		msg.AmountToLock.IsValid() == false || msg.AmountToLock.IsPositive() == false {
+	if msg.AmountToLock.IsPositive() == false || msg.AmountToLock.Denom != "sent" {
 		return errorInvalidField("amount_to_lock")
 	}
 	if msg.APIPort <= 0 || msg.APIPort > 65535 {
@@ -76,7 +75,7 @@ func NewMsgRegisterNode(from csdkTypes.AccAddress,
 	owner csdkTypes.AccAddress, apiPort uint16,
 	upload uint64, download uint64,
 	encMethod string, perGBAmount csdkTypes.Coins, version string,
-	amountToLock csdkTypes.Coins) *MsgRegisterNode {
+	amountToLock csdkTypes.Coin) *MsgRegisterNode {
 
 	return &MsgRegisterNode{
 		From:         from,

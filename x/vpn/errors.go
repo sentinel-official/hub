@@ -14,12 +14,14 @@ const (
 	errCodeNodeNotFound      = 203
 	errCodeUnauthorized      = 204
 	errCodeInvalidField      = 205
+	errCodeInvalidLockDenom  = 206
 
 	errMsgUnknownMsgType    = "Unknown message type: "
 	errMsgNodeAlreadyExists = "Node already exists"
 	errMsgNodeNotFound      = "Node not found"
 	errMsgUnauthorized      = "Transaction is unauthorized"
 	errMsgInvalidField      = "Invalid field: "
+	errMsgInvalidLockDenom  = "Invalid lock denom"
 )
 
 func errorMarshal() csdkTypes.Error {
@@ -48,4 +50,8 @@ func errorUnauthorized() csdkTypes.Error {
 
 func errorInvalidField(field string) csdkTypes.Error {
 	return csdkTypes.NewError(codespaceVPN, errCodeInvalidField, errMsgInvalidField+field)
+}
+
+func errorInvalidLockDenom() csdkTypes.Error {
+	return csdkTypes.NewError(codespaceVPN, errCodeInvalidLockDenom, errMsgInvalidLockDenom)
 }

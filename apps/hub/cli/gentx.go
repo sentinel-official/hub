@@ -18,7 +18,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	authTxBuiler "github.com/cosmos/cosmos-sdk/x/auth/client/txbuilder"
 	"github.com/cosmos/cosmos-sdk/x/staking/client/cli"
-	stakingTypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	cfg "github.com/tendermint/tendermint/config"
@@ -30,7 +29,7 @@ import (
 )
 
 const (
-	defaultAmount                  = "100" + stakingTypes.DefaultBondDenom
+	defaultAmount                  = "100" + "sent"
 	defaultCommissionRate          = "0.1"
 	defaultCommissionMaxRate       = "0.2"
 	defaultCommissionMaxChangeRate = "0.01"

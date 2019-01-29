@@ -18,14 +18,13 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/mint"
 	"github.com/cosmos/cosmos-sdk/x/slashing"
 	"github.com/cosmos/cosmos-sdk/x/staking"
-	stakingTypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	tmTypes "github.com/tendermint/tendermint/types"
 )
 
 var (
 	freeFermionVal  = int64(100)
 	freeFermionsAcc = csdkTypes.NewInt(150)
-	bondDenom       = stakingTypes.DefaultBondDenom
+	bondDenom       = "sent"
 )
 
 type GenesisState struct {
@@ -177,7 +176,7 @@ func HubGenState(cdc *codec.Codec, genDoc tmTypes.GenesisDoc, appGenTxs []json.R
 }
 
 func NewDefaultGenesisState() GenesisState {
-	return GenesisState{
+	state := GenesisState{
 		Accounts:     nil,
 		AuthData:     auth.DefaultGenesisState(),
 		StakingData:  staking.DefaultGenesisState(),
@@ -187,6 +186,12 @@ func NewDefaultGenesisState() GenesisState {
 		SlashingData: slashing.DefaultGenesisState(),
 		GenTxs:       nil,
 	}
+
+	state.StakingData.Params.BondDenom = bondDenom
+	state.GovData.DepositParams.MinDeposit = csdkTypes.Coins{csdkTypes.NewInt64Coin(bondDenom, 10)}
+	state.MintData.Params.MintDenom = bondDenom
+
+	return state
 }
 
 func HubValidateGenesisState(genesisState GenesisState) error {

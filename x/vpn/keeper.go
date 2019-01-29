@@ -265,11 +265,12 @@ func AddVPN(ctx csdkTypes.Context, nodeKeeper Keeper, bankKeeper bank.Keeper, de
 			return nil, err
 		}
 		if details != nil {
-			return nil, nil
+			return nil, errorNodeAlreadyExists()
 		}
 	}
 
-	_, tags, err := bankKeeper.SubtractCoins(ctx, details.Owner, details.LockedAmount)
+	lockAmount := csdkTypes.Coins{details.LockedAmount}
+	_, tags, err := bankKeeper.SubtractCoins(ctx, details.Owner, lockAmount)
 	if err != nil {
 		return nil, err
 	}

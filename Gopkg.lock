@@ -767,7 +767,6 @@
     "github.com/cosmos/cosmos-sdk/x/staking/client/cli",
     "github.com/cosmos/cosmos-sdk/x/staking/client/rest",
     "github.com/cosmos/cosmos-sdk/x/staking/simulation",
-    "github.com/cosmos/cosmos-sdk/x/staking/types",
     "github.com/rakyll/statik/fs",
     "github.com/spf13/cobra",
     "github.com/spf13/viper",

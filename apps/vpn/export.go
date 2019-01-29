@@ -50,7 +50,6 @@ func (app *VPN) ExportAppStateAndValidators(forZeroHeight bool) (
 }
 
 func (app *VPN) prepForZeroHeightGenesis(ctx csdkTypes.Context) {
-
 	app.assertRuntimeInvariantsOnContext(ctx)
 
 	app.stakingKeeper.IterateValidators(ctx, func(_ int64, val csdkTypes.Validator) (stop bool) {
@@ -64,7 +63,6 @@ func (app *VPN) prepForZeroHeightGenesis(ctx csdkTypes.Context) {
 	}
 
 	app.distributionKeeper.DeleteAllValidatorSlashEvents(ctx)
-
 	app.distributionKeeper.DeleteAllValidatorHistoricalRewards(ctx)
 
 	height := ctx.BlockHeight()
