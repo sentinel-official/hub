@@ -22,6 +22,9 @@ import (
 	"github.com/tendermint/tendermint/libs/common"
 	tmDB "github.com/tendermint/tendermint/libs/db"
 	"github.com/tendermint/tendermint/libs/log"
+
+	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
+	"github.com/ironman0x7b2/sentinel-sdk/x/vpn"
 )
 
 const (
@@ -50,6 +53,9 @@ type VPN struct {
 	keyMint          *csdkTypes.KVStoreKey
 	keyIBC           *csdkTypes.KVStoreKey
 
+	keyVPNNode    *csdkTypes.KVStoreKey
+	keyVPNSession *csdkTypes.KVStoreKey
+
 	tkeyParams       *csdkTypes.TransientStoreKey
 	tkeyStaking      *csdkTypes.TransientStoreKey
 	tkeyDistribution *csdkTypes.TransientStoreKey
@@ -64,6 +70,8 @@ type VPN struct {
 	govKeeper           gov.Keeper
 	mintKeeper          mint.Keeper
 	ibcMapper           ibc.Mapper
+
+	vpnKeeper vpn.Keeper
 }
 
 func NewVPN(logger log.Logger, db tmDB.DB, traceStore io.Writer, loadLatest bool, baseAppOptions ...func(*baseapp.BaseApp)) *VPN {
@@ -85,6 +93,8 @@ func NewVPN(logger log.Logger, db tmDB.DB, traceStore io.Writer, loadLatest bool
 		keyGov:           csdkTypes.NewKVStoreKey(gov.StoreKey),
 		keyMint:          csdkTypes.NewKVStoreKey(mint.StoreKey),
 		keyIBC:           csdkTypes.NewKVStoreKey("ibc"),
+		keyVPNNode:       csdkTypes.NewKVStoreKey(sdkTypes.StoreKeyVPNNode),
+		keyVPNSession:    csdkTypes.NewKVStoreKey(sdkTypes.StoreKeyVPNSession),
 		tkeyParams:       csdkTypes.NewTransientStoreKey(params.TStoreKey),
 		tkeyStaking:      csdkTypes.NewTransientStoreKey(staking.TStoreKey),
 		tkeyDistribution: csdkTypes.NewTransientStoreKey(distribution.TStoreKey),
@@ -131,6 +141,7 @@ func NewVPN(logger log.Logger, db tmDB.DB, traceStore io.Writer, loadLatest bool
 		&stakingKeeper,
 		app.feeCollectionKeeper)
 	app.stakingKeeper = *stakingKeeper.SetHooks(NewStakingHooks(app.distributionKeeper.Hooks(), app.slashingKeeper.Hooks()))
+	app.vpnKeeper = vpn.NewKeeper(app.cdc, app.keyVPNNode, app.keyVPNSession)
 
 	app.Router().
 		AddRoute(bank.RouterKey, bank.NewHandler(app.bankKeeper)).
@@ -150,7 +161,7 @@ func NewVPN(logger log.Logger, db tmDB.DB, traceStore io.Writer, loadLatest bool
 		app.keyAccount, app.keyFeeCollection,
 		app.keyStaking, app.keySlashing,
 		app.keyDistribution, app.keyGov, app.keyMint,
-		app.keyIBC)
+		app.keyIBC, app.keyVPNNode, app.keyVPNSession)
 	app.SetInitChainer(app.initChainer)
 	app.SetBeginBlocker(app.BeginBlocker)
 	app.SetAnteHandler(auth.NewAnteHandler(app.accountKeeper, app.feeCollectionKeeper))
@@ -178,6 +189,8 @@ func MakeCodec() *codec.Codec {
 	distribution.RegisterCodec(cdc)
 	gov.RegisterCodec(cdc)
 	ibc.RegisterCodec(cdc)
+
+	vpn.RegisterCodec(cdc)
 	return cdc
 }
 

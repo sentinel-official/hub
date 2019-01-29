@@ -63,7 +63,7 @@ func (msg MsgRegisterNode) GetSigners() []csdkTypes.AccAddress {
 }
 
 func (msg MsgRegisterNode) Route() string {
-	return sdkTypes.StoreKeyVPNNode
+	return sdkTypes.RouteVPN
 }
 
 func NewMsgRegisterNode(from csdkTypes.AccAddress,
@@ -134,7 +134,7 @@ func (msg MsgUpdateNode) GetSigners() []csdkTypes.AccAddress {
 }
 
 func (msg MsgUpdateNode) Route() string {
-	return sdkTypes.StoreKeyVPNNode
+	return sdkTypes.RouteVPN
 }
 
 func NewMsgUpdateNode(from csdkTypes.AccAddress,
@@ -188,7 +188,7 @@ func (msg MsgDeregisterNode) GetSigners() []csdkTypes.AccAddress {
 }
 
 func (msg MsgDeregisterNode) Route() string {
-	return sdkTypes.StoreKeyVPNNode
+	return sdkTypes.RouteVPN
 }
 
 func NewMsgDeregisterNode(from csdkTypes.AccAddress, id string) *MsgDeregisterNode {
