@@ -138,11 +138,12 @@ func (msg MsgUpdateNode) Route() string {
 }
 
 func NewMsgUpdateNode(from csdkTypes.AccAddress,
-	apiPort uint16, upload uint64, download uint64,
+	id string, apiPort uint16, upload uint64, download uint64,
 	encMethod string, perGBAmount csdkTypes.Coins, version string) *MsgUpdateNode {
 
 	return &MsgUpdateNode{
 		From:    from,
+		ID:      id,
 		APIPort: apiPort,
 		NetSpeed: sdkTypes.Bandwidth{
 			Upload:   upload,
