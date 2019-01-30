@@ -8,5 +8,10 @@ import (
 )
 
 func RegisterRoutes(cliCtx context.CLIContext, r *mux.Router, cdc *codec.Codec, kb keys.Keybase) {
-	registerTxRoutes(cliCtx, r, cdc, kb)
+	r.HandleFunc("/nodes", registerNodeHandlerFunc(cliCtx, cdc, kb)).
+		Methods("POST")
+	r.HandleFunc("/nodes/{nodeID:[^/]+/[^/]+}", updateNodeHandlerFunc(cliCtx, cdc, kb)).
+		Methods("PUT")
+	r.HandleFunc("/nodes/{nodeID:[^/]+/[^/]+}/deregister", deregisterNodeHandlerFunc(cliCtx, cdc, kb)).
+		Methods("POST")
 }

@@ -8,17 +8,10 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/crypto/keys"
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
-	"github.com/gorilla/mux"
 
 	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
 	"github.com/ironman0x7b2/sentinel-sdk/x/vpn"
 )
-
-func registerTxRoutes(cliCtx context.CLIContext, r *mux.Router, cdc *codec.Codec, kb keys.Keybase) {
-	r.HandleFunc("/nodes", registerNodeHandlerFunc(cliCtx, cdc, kb)).Methods("POST")
-	r.HandleFunc("/nodes/{nodeID}/deregister",deregisterNodeHandlerFunc(cliCtx,cdc,kb)).Methods("POST")
-	r.HandleFunc("/nodes/{nodeID}",updateNodeHandlerFunc(cliCtx,cdc,kb)).Methods("PUT")
-}
 
 type msgRegisterNode struct {
 	BaseReq      utils.BaseReq      `json:"base_req"`

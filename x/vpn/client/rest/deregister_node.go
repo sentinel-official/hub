@@ -21,12 +21,12 @@ func deregisterNodeHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec, kb k
 	return func(w http.ResponseWriter, r *http.Request) {
 		var req msgDeregisterNode
 
-		vars := mux.Vars(r)
-		id := vars["nodeID"]
-
 		if err := utils.ReadRESTReq(w, r, cdc, &req); err != nil {
 			utils.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 		}
+
+		vars := mux.Vars(r)
+		id := vars["nodeID"]
 
 		cliCtx.WithGenerateOnly(req.BaseReq.GenerateOnly)
 		cliCtx.WithSimulation(req.BaseReq.Simulate)
