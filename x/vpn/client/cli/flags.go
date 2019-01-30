@@ -8,4 +8,5 @@ const (
 	flagEncMethod     = "enc-method"
 	flagPerGBAmount   = "per-gb-amount"
 	flagVersion       = "version"
+	flagNodeID        = "node-id"
 )

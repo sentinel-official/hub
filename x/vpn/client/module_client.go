@@ -39,6 +39,7 @@ func (mc ModuleClient) GetTxCmd() *cobra.Command {
 
 	vpnTxCmd.AddCommand(client.PostCommands(
 		vpnCli.RegisterNodeTxCmd(mc.cdc),
+		vpnCli.UpdateNodeTxCmd(mc.cdc),
 	)...)
 
 	return vpnTxCmd
