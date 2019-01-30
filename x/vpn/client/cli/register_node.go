@@ -3,7 +3,6 @@ package cli
 import (
 	"os"
 
-	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/client/utils"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -77,5 +76,5 @@ func RegisterNodeTxCmd(cdc *codec.Codec) *cobra.Command {
 	_ = cmd.MarkFlagRequired(flagPerGBAmount)
 	_ = cmd.MarkFlagRequired(flagVersion)
 
-	return client.PostCommands(cmd)[0]
+	return cmd
 }

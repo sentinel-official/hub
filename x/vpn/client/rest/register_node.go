@@ -15,17 +15,17 @@ import (
 )
 
 func registerTxRoutes(cliCtx context.CLIContext, r *mux.Router, cdc *codec.Codec, kb keys.Keybase) {
-	r.HandleFunc("/nodes", registerNodeHandlerFunc(cliCtx, cdc, kb), ).Methods("POST")
+	r.HandleFunc("/nodes", registerNodeHandlerFunc(cliCtx, cdc, kb)).Methods("POST")
 }
 
 type msgRegisterNode struct {
 	BaseReq      utils.BaseReq      `json:"base_req"`
-	AmountToLock string             `json:"amount_to_lock,required"`
-	APIPort      uint16             `json:"api_port,required"`
-	NetSpeed     sdkTypes.Bandwidth `json:"net_speed,required"`
-	EncMethod    string             `json:"enc_method,required"`
-	PerGBAmount  string             `json:"per_gb_amount,required"`
-	Version      string             `json:"version,required"`
+	AmountToLock string             `json:"amount_to_lock"`
+	APIPort      uint16             `json:"api_port"`
+	NetSpeed     sdkTypes.Bandwidth `json:"net_speed"`
+	EncMethod    string             `json:"enc_method"`
+	PerGBAmount  string             `json:"per_gb_amount"`
+	Version      string             `json:"version"`
 }
 
 func registerNodeHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec, kb keys.Keybase) http.HandlerFunc {
@@ -51,7 +51,7 @@ func registerNodeHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec, kb key
 			utils.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 		}
 
-		amount, err := csdkTypes.ParseCoin(req.AmountToLock)
+		amountToLock, err := csdkTypes.ParseCoin(req.AmountToLock)
 		if err != nil {
 			utils.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 		}
@@ -63,7 +63,7 @@ func registerNodeHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec, kb key
 
 		msg := vpn.NewMsgRegisterNode(info.GetAddress(),
 			req.APIPort, req.NetSpeed.Upload, req.NetSpeed.Download,
-			req.EncMethod, perGBAmount, req.Version, amount)
+			req.EncMethod, perGBAmount, req.Version, amountToLock)
 		if err := msg.ValidateBasic(); err != nil {
 			utils.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 		}
@@ -71,5 +71,4 @@ func registerNodeHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec, kb key
 		utils.CompleteAndBroadcastTxREST(w, r, cliCtx, baseReq, []csdkTypes.Msg{msg}, cdc)
 		return
 	}
-
 }
