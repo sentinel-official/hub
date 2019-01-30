@@ -36,6 +36,7 @@ import (
 	"github.com/tendermint/tendermint/libs/cli"
 
 	app "github.com/ironman0x7b2/sentinel-sdk/apps/vpn"
+	vpnCli "github.com/ironman0x7b2/sentinel-sdk/x/vpn/client/cli"
 )
 
 func main() {
@@ -123,6 +124,7 @@ func txCmd(cdc *amino.Codec, mc []csdkTypes.ModuleClients) *cobra.Command {
 		ibcCli.IBCTransferCmd(cdc),
 		ibcCli.IBCRelayCmd(cdc),
 		client.LineBreak,
+		vpnCli.RegisterNodeTxCmd(cdc),
 	)
 
 	for _, m := range mc {
