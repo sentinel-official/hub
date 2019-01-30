@@ -45,7 +45,7 @@ func handleRegisterNode(ctx csdkTypes.Context, nk Keeper, bk bank.Keeper, msg Ms
 	if err != nil {
 		return err.Result()
 	}
-	allTags.AppendTags(tags)
+	allTags = allTags.AppendTags(tags)
 
 	details := NodeDetails{
 		Owner:          msg.From,
@@ -61,7 +61,7 @@ func handleRegisterNode(ctx csdkTypes.Context, nk Keeper, bk bank.Keeper, msg Ms
 	if err := nk.SetNodeDetails(ctx, id, &details); err != nil {
 		return err.Result()
 	}
-	allTags.AppendTag("node_id", []byte(id))
+	allTags = allTags.AppendTag("node_id", []byte(id))
 
 	if err := nk.SetNodesCount(ctx, msg.From, count+1); err != nil {
 		return err.Result()
@@ -109,7 +109,7 @@ func handleUpdateNode(ctx csdkTypes.Context, nk Keeper, msg MsgUpdateNode) csdkT
 	if err := nk.SetNodeDetails(ctx, msg.ID, details); err != nil {
 		return err.Result()
 	}
-	allTags.AppendTag("node_id", []byte(msg.ID))
+	allTags = allTags.AppendTag("node_id", []byte(msg.ID))
 
 	return csdkTypes.Result{Tags: allTags}
 }
@@ -144,7 +144,7 @@ func handleDeregisterNode(ctx csdkTypes.Context, nk Keeper, bk bank.Keeper, msg 
 	if err != nil {
 		return err.Result()
 	}
-	allTags.AppendTags(tags)
+	allTags = allTags.AppendTags(tags)
 
 	return csdkTypes.Result{Tags: allTags}
 }
