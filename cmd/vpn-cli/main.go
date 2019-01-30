@@ -36,7 +36,8 @@ import (
 	"github.com/tendermint/tendermint/libs/cli"
 
 	app "github.com/ironman0x7b2/sentinel-sdk/apps/vpn"
-	vpnCli "github.com/ironman0x7b2/sentinel-sdk/x/vpn/client/cli"
+	"github.com/ironman0x7b2/sentinel-sdk/x/vpn"
+	vpnClient "github.com/ironman0x7b2/sentinel-sdk/x/vpn/client"
 )
 
 func main() {
@@ -54,6 +55,7 @@ func main() {
 		distClient.NewModuleClient(distribution.StoreKey, cdc),
 		stakingClient.NewModuleClient(staking.StoreKey, cdc),
 		slashingClient.NewModuleClient(slashing.StoreKey, cdc),
+		vpnClient.NewModuleClient(vpn.StoreKeyNode, vpn.StoreKeySession, cdc),
 	}
 
 	rootCmd := &cobra.Command{
@@ -123,8 +125,6 @@ func txCmd(cdc *amino.Codec, mc []csdkTypes.ModuleClients) *cobra.Command {
 		bankCli.GetBroadcastCommand(cdc),
 		ibcCli.IBCTransferCmd(cdc),
 		ibcCli.IBCRelayCmd(cdc),
-		client.LineBreak,
-		vpnCli.RegisterNodeTxCmd(cdc),
 		client.LineBreak,
 	)
 
