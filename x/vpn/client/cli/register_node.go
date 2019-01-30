@@ -33,6 +33,7 @@ func RegisterNodeTxCmd(cdc *codec.Codec) *cobra.Command {
 			encMethod := viper.GetString(flagEncMethod)
 			perGBAmount := viper.GetString(flagPerGBAmount)
 			version := viper.GetString(flagVersion)
+			nodeType := viper.GetString(flagNodeType)
 
 			parsedAmountToLock, err := csdkTypes.ParseCoin(amountToLock)
 			if err != nil {
@@ -51,7 +52,7 @@ func RegisterNodeTxCmd(cdc *codec.Codec) *cobra.Command {
 
 			msg := vpn.NewMsgRegisterNode(fromAddress,
 				uint16(apiPort), uint64(uploadSpeed), uint64(downloadSpeed),
-				encMethod, parsedPerGBAmount, version, parsedAmountToLock)
+				encMethod, parsedPerGBAmount, version, nodeType, parsedAmountToLock)
 			if cliCtx.GenerateOnly {
 				return utils.PrintUnsignedStdTx(os.Stdout, txBldr, cliCtx, []csdkTypes.Msg{msg}, false)
 			}
@@ -67,6 +68,7 @@ func RegisterNodeTxCmd(cdc *codec.Codec) *cobra.Command {
 	cmd.Flags().String(flagEncMethod, "", "VPN tunnel encryption method")
 	cmd.Flags().String(flagPerGBAmount, "100sent,1000sut", "Price for one GB of data")
 	cmd.Flags().String(flagVersion, "", "Node version")
+	cmd.Flags().String(flagNodeType, "OpenVPN", "Type of VPN node")
 
 	_ = cmd.MarkFlagRequired(flagAmountToLock)
 	_ = cmd.MarkFlagRequired(flagAPIPort)
@@ -75,6 +77,7 @@ func RegisterNodeTxCmd(cdc *codec.Codec) *cobra.Command {
 	_ = cmd.MarkFlagRequired(flagEncMethod)
 	_ = cmd.MarkFlagRequired(flagPerGBAmount)
 	_ = cmd.MarkFlagRequired(flagVersion)
+	_ = cmd.MarkFlagRequired(flagNodeType)
 
 	return cmd
 }

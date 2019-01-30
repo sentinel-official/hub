@@ -16,6 +16,7 @@ type MsgRegisterNode struct {
 	EncMethod    string               `json:"enc_method"`
 	PerGBAmount  csdkTypes.Coins      `json:"per_gb_amount"`
 	Version      string               `json:"version"`
+	NodeType     string               `json:"node_type"`
 }
 
 func (msg MsgRegisterNode) Type() string {
@@ -45,6 +46,9 @@ func (msg MsgRegisterNode) ValidateBasic() csdkTypes.Error {
 	if len(msg.Version) == 0 {
 		return errorInvalidField("version")
 	}
+	if len(msg.NodeType) == 0 {
+		return errorInvalidField("node_type")
+	}
 
 	return nil
 }
@@ -68,7 +72,8 @@ func (msg MsgRegisterNode) Route() string {
 
 func NewMsgRegisterNode(from csdkTypes.AccAddress,
 	apiPort uint16, upload uint64, download uint64,
-	encMethod string, perGBAmount csdkTypes.Coins, version string,
+	encMethod string, perGBAmount csdkTypes.Coins,
+	version string, nodeType string,
 	amountToLock csdkTypes.Coin) *MsgRegisterNode {
 
 	return &MsgRegisterNode{
@@ -82,6 +87,7 @@ func NewMsgRegisterNode(from csdkTypes.AccAddress,
 		EncMethod:   encMethod,
 		PerGBAmount: perGBAmount,
 		Version:     version,
+		NodeType:    nodeType,
 	}
 }
 

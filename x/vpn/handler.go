@@ -55,6 +55,7 @@ func handleRegisterNode(ctx csdkTypes.Context, nk Keeper, bk bank.Keeper, msg Ms
 		EncMethod:      msg.EncMethod,
 		PerGBAmount:    msg.PerGBAmount,
 		Version:        msg.Version,
+		NodeType:       msg.NodeType,
 		Status:         StatusRegistered,
 		StatusAtHeight: ctx.BlockHeight(),
 	}

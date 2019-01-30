@@ -21,6 +21,7 @@ type msgRegisterNode struct {
 	EncMethod    string             `json:"enc_method"`
 	PerGBAmount  string             `json:"per_gb_amount"`
 	Version      string             `json:"version"`
+	NodeType     string             `json:"node_type"`
 }
 
 func registerNodeHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec, kb keys.Keybase) http.HandlerFunc {
@@ -58,7 +59,7 @@ func registerNodeHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec, kb key
 
 		msg := vpn.NewMsgRegisterNode(info.GetAddress(),
 			req.APIPort, req.NetSpeed.Upload, req.NetSpeed.Download,
-			req.EncMethod, perGBAmount, req.Version, amountToLock)
+			req.EncMethod, perGBAmount, req.Version, req.NodeType, amountToLock)
 		if err := msg.ValidateBasic(); err != nil {
 			utils.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 		}

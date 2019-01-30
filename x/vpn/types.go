@@ -16,6 +16,7 @@ type NodeDetails struct {
 	NetSpeed        types.Bandwidth
 	EncMethod       string
 	PerGBAmount     csdkTypes.Coins
+	NodeType        string
 	Version         string
 	Status          string
 	StatusAtHeight  int64
