@@ -38,6 +38,7 @@ import (
 	app "github.com/ironman0x7b2/sentinel-sdk/apps/vpn"
 	"github.com/ironman0x7b2/sentinel-sdk/x/vpn"
 	vpnClient "github.com/ironman0x7b2/sentinel-sdk/x/vpn/client"
+	vpnRest "github.com/ironman0x7b2/sentinel-sdk/x/vpn/client/rest"
 )
 
 func main() {
@@ -145,6 +146,7 @@ func registerRoutes(rs *lcd.RestServer) {
 	stakingRest.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, rs.KeyBase)
 	slashingRest.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, rs.KeyBase)
 	govRest.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc)
+	vpnRest.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, rs.KeyBase)
 }
 
 func registerSwaggerUI(rs *lcd.RestServer) {
