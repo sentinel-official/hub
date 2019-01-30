@@ -125,6 +125,7 @@ func txCmd(cdc *amino.Codec, mc []csdkTypes.ModuleClients) *cobra.Command {
 		ibcCli.IBCRelayCmd(cdc),
 		client.LineBreak,
 		vpnCli.RegisterNodeTxCmd(cdc),
+		client.LineBreak,
 	)
 
 	for _, m := range mc {
