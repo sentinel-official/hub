@@ -5,8 +5,6 @@ import (
 
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/bank"
-
-	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
 )
 
 func NewHandler(nk Keeper, bk bank.Keeper) csdkTypes.Handler {
@@ -32,7 +30,7 @@ func handleRegisterNode(ctx csdkTypes.Context, nk Keeper, bk bank.Keeper, msg Ms
 		return err.Result()
 	}
 
-	id := sdkTypes.VPNNodeKey(msg.From, count)
+	id := NodeKey(msg.From, count)
 	if details, err := nk.GetNodeDetails(ctx, id); true {
 		if err != nil {
 			return err.Result()
@@ -49,7 +47,7 @@ func handleRegisterNode(ctx csdkTypes.Context, nk Keeper, bk bank.Keeper, msg Ms
 	}
 	allTags.AppendTags(tags)
 
-	details := sdkTypes.VPNNodeDetails{
+	details := NodeDetails{
 		Owner:          msg.From,
 		LockedAmount:   msg.AmountToLock,
 		APIPort:        msg.APIPort,
@@ -57,7 +55,7 @@ func handleRegisterNode(ctx csdkTypes.Context, nk Keeper, bk bank.Keeper, msg Ms
 		EncMethod:      msg.EncMethod,
 		PerGBAmount:    msg.PerGBAmount,
 		Version:        msg.Version,
-		Status:         sdkTypes.StatusRegistered,
+		Status:         StatusRegistered,
 		StatusAtHeight: ctx.BlockHeight(),
 	}
 	if err := nk.SetNodeDetails(ctx, id, &details); err != nil {
@@ -85,9 +83,9 @@ func handleUpdateNode(ctx csdkTypes.Context, nk Keeper, msg MsgUpdateNode) csdkT
 	if !details.Owner.Equals(msg.From) {
 		return errorUnauthorized().Result()
 	}
-	if details.Status != sdkTypes.StatusRegistered &&
-		details.Status != sdkTypes.StatusActive &&
-		details.Status != sdkTypes.StatusInactive {
+	if details.Status != StatusRegistered &&
+		details.Status != StatusActive &&
+		details.Status != StatusInactive {
 		return errorInvalidNodeStatus().Result()
 	}
 
@@ -129,12 +127,12 @@ func handleDeregisterNode(ctx csdkTypes.Context, nk Keeper, bk bank.Keeper, msg 
 	if !msg.From.Equals(details.Owner) {
 		return errorUnauthorized().Result()
 	}
-	if details.Status != sdkTypes.StatusRegistered &&
-		details.Status != sdkTypes.StatusInactive {
+	if details.Status != StatusRegistered &&
+		details.Status != StatusInactive {
 		return errorInvalidNodeStatus().Result()
 	}
 
-	details.Status = sdkTypes.StatusDeregistered
+	details.Status = StatusDeregistered
 	details.StatusAtHeight = ctx.BlockHeight()
 	if err := nk.SetNodeDetails(ctx, msg.ID, details); err != nil {
 		return err.Result()

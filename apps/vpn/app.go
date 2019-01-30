@@ -23,7 +23,6 @@ import (
 	tmDB "github.com/tendermint/tendermint/libs/db"
 	"github.com/tendermint/tendermint/libs/log"
 
-	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
 	"github.com/ironman0x7b2/sentinel-sdk/x/vpn"
 )
 
@@ -93,8 +92,8 @@ func NewVPN(logger log.Logger, db tmDB.DB, traceStore io.Writer, loadLatest bool
 		keyGov:           csdkTypes.NewKVStoreKey(gov.StoreKey),
 		keyMint:          csdkTypes.NewKVStoreKey(mint.StoreKey),
 		keyIBC:           csdkTypes.NewKVStoreKey("ibc"),
-		keyVPNNode:       csdkTypes.NewKVStoreKey(sdkTypes.StoreKeyVPNNode),
-		keyVPNSession:    csdkTypes.NewKVStoreKey(sdkTypes.StoreKeyVPNSession),
+		keyVPNNode:       csdkTypes.NewKVStoreKey(vpn.StoreKeyNode),
+		keyVPNSession:    csdkTypes.NewKVStoreKey(vpn.StoreKeySession),
 		tkeyParams:       csdkTypes.NewTransientStoreKey(params.TStoreKey),
 		tkeyStaking:      csdkTypes.NewTransientStoreKey(staking.TStoreKey),
 		tkeyDistribution: csdkTypes.NewTransientStoreKey(distribution.TStoreKey),
@@ -150,7 +149,7 @@ func NewVPN(logger log.Logger, db tmDB.DB, traceStore io.Writer, loadLatest bool
 		AddRoute(distribution.RouterKey, distribution.NewHandler(app.distributionKeeper)).
 		AddRoute(gov.RouterKey, gov.NewHandler(app.govKeeper)).
 		AddRoute("ibc", ibc.NewHandler(app.ibcMapper, app.bankKeeper)).
-		AddRoute(sdkTypes.RouteVPN, vpn.NewHandler(app.vpnKeeper, app.bankKeeper))
+		AddRoute(vpn.RouteKey, vpn.NewHandler(app.vpnKeeper, app.bankKeeper))
 
 	app.QueryRouter().
 		AddRoute(staking.QuerierRoute, staking.NewQuerier(app.stakingKeeper, app.cdc)).

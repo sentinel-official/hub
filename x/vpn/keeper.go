@@ -5,8 +5,6 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
-
-	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
 )
 
 type Keeper struct {
@@ -23,7 +21,7 @@ func NewKeeper(cdc *codec.Codec, nodeKey, sessionKey csdkTypes.StoreKey) Keeper 
 	}
 }
 
-func (k Keeper) SetNodeDetails(ctx csdkTypes.Context, id string, details *sdkTypes.VPNNodeDetails) csdkTypes.Error {
+func (k Keeper) SetNodeDetails(ctx csdkTypes.Context, id string, details *NodeDetails) csdkTypes.Error {
 	key, err := k.cdc.MarshalBinaryLengthPrefixed(id)
 	if err != nil {
 		return errorMarshal()
@@ -40,7 +38,7 @@ func (k Keeper) SetNodeDetails(ctx csdkTypes.Context, id string, details *sdkTyp
 	return nil
 }
 
-func (k Keeper) GetNodeDetails(ctx csdkTypes.Context, id string) (*sdkTypes.VPNNodeDetails, csdkTypes.Error) {
+func (k Keeper) GetNodeDetails(ctx csdkTypes.Context, id string) (*NodeDetails, csdkTypes.Error) {
 	key, err := k.cdc.MarshalBinaryLengthPrefixed(id)
 	if err != nil {
 		return nil, errorMarshal()
@@ -52,7 +50,7 @@ func (k Keeper) GetNodeDetails(ctx csdkTypes.Context, id string) (*sdkTypes.VPNN
 		return nil, nil
 	}
 
-	var details sdkTypes.VPNNodeDetails
+	var details NodeDetails
 	if err := k.cdc.UnmarshalBinaryLengthPrefixed(value, &details); err != nil {
 		return nil, errorUnmarshal()
 	}
@@ -61,7 +59,7 @@ func (k Keeper) GetNodeDetails(ctx csdkTypes.Context, id string) (*sdkTypes.VPNN
 }
 
 func (k Keeper) SetActiveNodeIDs(ctx csdkTypes.Context, ids []string) csdkTypes.Error {
-	key, err := k.cdc.MarshalBinaryLengthPrefixed(sdkTypes.KeyActiveNodeIDs)
+	key, err := k.cdc.MarshalBinaryLengthPrefixed(KeyActiveNodeIDs)
 	if err != nil {
 		return errorMarshal()
 	}
@@ -79,7 +77,7 @@ func (k Keeper) SetActiveNodeIDs(ctx csdkTypes.Context, ids []string) csdkTypes.
 }
 
 func (k Keeper) GetActiveNodeIDs(ctx csdkTypes.Context) ([]string, csdkTypes.Error) {
-	key, err := k.cdc.MarshalBinaryLengthPrefixed(sdkTypes.KeyActiveNodeIDs)
+	key, err := k.cdc.MarshalBinaryLengthPrefixed(KeyActiveNodeIDs)
 	if err != nil {
 		return nil, errorMarshal()
 	}
@@ -100,7 +98,7 @@ func (k Keeper) GetActiveNodeIDs(ctx csdkTypes.Context) ([]string, csdkTypes.Err
 }
 
 func (k Keeper) SetNodesCount(ctx csdkTypes.Context, owner csdkTypes.AccAddress, count uint64) csdkTypes.Error {
-	key, err := k.cdc.MarshalBinaryLengthPrefixed(sdkTypes.VPNNodesCountKey(owner))
+	key, err := k.cdc.MarshalBinaryLengthPrefixed(NodesCountKey(owner))
 	if err != nil {
 		return errorMarshal()
 	}
@@ -117,7 +115,7 @@ func (k Keeper) SetNodesCount(ctx csdkTypes.Context, owner csdkTypes.AccAddress,
 }
 
 func (k Keeper) GetNodesCount(ctx csdkTypes.Context, owner csdkTypes.AccAddress) (uint64, csdkTypes.Error) {
-	key, err := k.cdc.MarshalBinaryLengthPrefixed(sdkTypes.VPNNodesCountKey(owner))
+	key, err := k.cdc.MarshalBinaryLengthPrefixed(NodesCountKey(owner))
 	if err != nil {
 		return 0, errorMarshal()
 	}
@@ -136,7 +134,7 @@ func (k Keeper) GetNodesCount(ctx csdkTypes.Context, owner csdkTypes.AccAddress)
 	return count, nil
 }
 
-func (k Keeper) SetSessionDetails(ctx csdkTypes.Context, id string, details *sdkTypes.VPNSessionDetails) csdkTypes.Error {
+func (k Keeper) SetSessionDetails(ctx csdkTypes.Context, id string, details *SessionDetails) csdkTypes.Error {
 	key, err := k.cdc.MarshalBinaryLengthPrefixed(id)
 	if err != nil {
 		return errorMarshal()
@@ -153,7 +151,7 @@ func (k Keeper) SetSessionDetails(ctx csdkTypes.Context, id string, details *sdk
 	return nil
 }
 
-func (k Keeper) GetSessionDetails(ctx csdkTypes.Context, id string) (*sdkTypes.VPNSessionDetails, csdkTypes.Error) {
+func (k Keeper) GetSessionDetails(ctx csdkTypes.Context, id string) (*SessionDetails, csdkTypes.Error) {
 	key, err := k.cdc.MarshalBinaryLengthPrefixed(id)
 	if err != nil {
 		return nil, errorMarshal()
@@ -165,7 +163,7 @@ func (k Keeper) GetSessionDetails(ctx csdkTypes.Context, id string) (*sdkTypes.V
 		return nil, nil
 	}
 
-	var details sdkTypes.VPNSessionDetails
+	var details SessionDetails
 	if err := k.cdc.UnmarshalBinaryLengthPrefixed(value, &details); err != nil {
 		return nil, errorUnmarshal()
 	}
@@ -174,7 +172,7 @@ func (k Keeper) GetSessionDetails(ctx csdkTypes.Context, id string) (*sdkTypes.V
 }
 
 func (k Keeper) SetActiveSessionIDs(ctx csdkTypes.Context, ids []string) csdkTypes.Error {
-	key, err := k.cdc.MarshalBinaryLengthPrefixed(sdkTypes.KeyActiveSessionIDs)
+	key, err := k.cdc.MarshalBinaryLengthPrefixed(KeyActiveSessionIDs)
 	if err != nil {
 		return errorMarshal()
 	}
@@ -192,7 +190,7 @@ func (k Keeper) SetActiveSessionIDs(ctx csdkTypes.Context, ids []string) csdkTyp
 }
 
 func (k Keeper) GetActiveSessionIDs(ctx csdkTypes.Context) ([]string, csdkTypes.Error) {
-	key, err := k.cdc.MarshalBinaryLengthPrefixed(sdkTypes.KeyActiveSessionIDs)
+	key, err := k.cdc.MarshalBinaryLengthPrefixed(KeyActiveSessionIDs)
 	if err != nil {
 		return nil, errorMarshal()
 	}
@@ -213,7 +211,7 @@ func (k Keeper) GetActiveSessionIDs(ctx csdkTypes.Context) ([]string, csdkTypes.
 }
 
 func (k Keeper) SetSessionsCount(ctx csdkTypes.Context, owner csdkTypes.AccAddress, count uint64) csdkTypes.Error {
-	key, err := k.cdc.MarshalBinaryLengthPrefixed(sdkTypes.VPNSessionsCountKey(owner))
+	key, err := k.cdc.MarshalBinaryLengthPrefixed(SessionsCountKey(owner))
 	if err != nil {
 		return errorMarshal()
 	}
@@ -230,7 +228,7 @@ func (k Keeper) SetSessionsCount(ctx csdkTypes.Context, owner csdkTypes.AccAddre
 }
 
 func (k Keeper) GetSessionsCount(ctx csdkTypes.Context, owner csdkTypes.AccAddress) (uint64, csdkTypes.Error) {
-	key, err := k.cdc.MarshalBinaryLengthPrefixed(sdkTypes.VPNSessionsCountKey(owner))
+	key, err := k.cdc.MarshalBinaryLengthPrefixed(SessionsCountKey(owner))
 	if err != nil {
 		return 0, errorMarshal()
 	}

@@ -1,17 +1,19 @@
-package types
+package vpn
 
 import (
 	"fmt"
 	"time"
 
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
+
+	"github.com/ironman0x7b2/sentinel-sdk/types"
 )
 
-type VPNNodeDetails struct {
+type NodeDetails struct {
 	Owner           csdkTypes.AccAddress
 	LockedAmount    csdkTypes.Coin
 	APIPort         uint16
-	NetSpeed        Bandwidth
+	NetSpeed        types.Bandwidth
 	EncMethod       string
 	PerGBAmount     csdkTypes.Coins
 	Version         string
@@ -20,26 +22,26 @@ type VPNNodeDetails struct {
 	UpdatedAtHeight int64
 }
 
-type VPNSessionDetails struct {
+type SessionDetails struct {
 	VPNOwnerAddress    csdkTypes.AccAddress
 	ClientAddress      csdkTypes.AccAddress
 	PerGBAmount        csdkTypes.Coins
-	BandwidthToProvide Bandwidth
-	BandwidthConsumed  Bandwidth
+	BandwidthToProvide types.Bandwidth
+	BandwidthConsumed  types.Bandwidth
 	StartTime          *time.Time
 	EndTime            *time.Time
 	Status             string
 }
 
-func VPNNodesCountKey(accAddress csdkTypes.AccAddress) string {
+func NodesCountKey(accAddress csdkTypes.AccAddress) string {
 	return fmt.Sprintf("vpn/nodes_count/%s", accAddress.String())
 }
 
-func VPNSessionsCountKey(accAddress csdkTypes.AccAddress) string {
+func SessionsCountKey(accAddress csdkTypes.AccAddress) string {
 	return fmt.Sprintf("vpn/sessions_count/%s", accAddress.String())
 }
 
-func VPNNodeKey(accAddress csdkTypes.AccAddress, count uint64) string {
+func NodeKey(accAddress csdkTypes.AccAddress, count uint64) string {
 	return fmt.Sprintf("%s/%d", accAddress.String(), count)
 }
 
@@ -47,10 +49,10 @@ const (
 	KeyActiveNodeIDs    = "ACTIVE_NODE_IDS"
 	KeyActiveSessionIDs = "ACTIVE_SESSION_IDS"
 
-	StoreKeyVPNSession = "vpn_session"
-	StoreKeyVPNNode    = "vpn_node"
+	StoreKeySession = "vpn_session"
+	StoreKeyNode    = "vpn_node"
 
-	RouteVPN = "vpn"
+	RouteKey = "vpn"
 
 	StatusRegistered   = "REGISTERED"
 	StatusActive       = "ACTIVE"
