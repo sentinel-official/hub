@@ -58,6 +58,45 @@ func (k Keeper) GetNodeDetails(ctx csdkTypes.Context, id string) (*NodeDetails, 
 	return &details, nil
 }
 
+func (k Keeper) SetNodeOwners(ctx csdkTypes.Context, owners []string) csdkTypes.Error {
+	key, err := k.cdc.MarshalBinaryLengthPrefixed(KeyNodeOwners)
+	if err != nil {
+		return errorMarshal()
+	}
+
+	sort.Strings(owners)
+	value, err := k.cdc.MarshalBinaryLengthPrefixed(owners)
+	if err != nil {
+		return errorMarshal()
+	}
+
+	store := ctx.KVStore(k.NodeStoreKey)
+	store.Set(key, value)
+
+	return nil
+}
+
+func (k Keeper) GetNodeOwners(ctx csdkTypes.Context) ([]string, csdkTypes.Error) {
+	key, err := k.cdc.MarshalBinaryLengthPrefixed(KeyNodeOwners)
+	if err != nil {
+		return nil, errorMarshal()
+	}
+
+	var owners []string
+
+	store := ctx.KVStore(k.NodeStoreKey)
+	value := store.Get(key)
+	if value == nil {
+		return owners, nil
+	}
+
+	if err := k.cdc.UnmarshalBinaryLengthPrefixed(value, &owners); err != nil {
+		return nil, errorUnmarshal()
+	}
+
+	return owners, nil
+}
+
 func (k Keeper) SetActiveNodeIDs(ctx csdkTypes.Context, ids []string) csdkTypes.Error {
 	key, err := k.cdc.MarshalBinaryLengthPrefixed(KeyActiveNodeIDs)
 	if err != nil {
@@ -245,4 +284,22 @@ func (k Keeper) GetSessionsCount(ctx csdkTypes.Context, owner csdkTypes.AccAddre
 	}
 
 	return count, nil
+}
+
+func AddNodeOwner(ctx csdkTypes.Context, nk Keeper, owner string) csdkTypes.Error {
+	owners, err := nk.GetNodeOwners(ctx)
+	if err != nil {
+		return err
+	}
+
+	if sort.SearchStrings(owners, owner) != len(owners) {
+		return nil
+	}
+
+	owners = append(owners, owner)
+	if err := nk.SetNodeOwners(ctx, owners); err != nil {
+		return err
+	}
+
+	return nil
 }

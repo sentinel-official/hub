@@ -67,6 +67,10 @@ func handleRegisterNode(ctx csdkTypes.Context, nk Keeper, bk bank.Keeper, msg Ms
 		return err.Result()
 	}
 
+	if err := AddNodeOwner(ctx, nk, msg.From.String()); err != nil {
+		return err.Result()
+	}
+
 	return csdkTypes.Result{Tags: allTags}
 }
 
