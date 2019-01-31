@@ -7,7 +7,8 @@ import (
 )
 
 const (
-	QueryNode = "node"
+	QueryNode  = "node"
+	QueryNodes = "nodes"
 )
 
 func NewQuerier(k Keeper, cdc *codec.Codec) csdkTypes.Querier {
@@ -15,6 +16,8 @@ func NewQuerier(k Keeper, cdc *codec.Codec) csdkTypes.Querier {
 		switch path[0] {
 		case QueryNode:
 			return queryNode(ctx, cdc, req, k)
+		case QueryNodes:
+			return queryNodes(ctx, cdc, k)
 		default:
 			return nil, errorInvalidQueryType(path[0])
 		}
@@ -43,6 +46,20 @@ func queryNode(ctx csdkTypes.Context, cdc *codec.Codec, req abciTypes.RequestQue
 	}
 
 	res, errRes := cdc.MarshalJSON(details)
+	if errRes != nil {
+		return nil, errorMarshal()
+	}
+
+	return res, nil
+}
+
+func queryNodes(ctx csdkTypes.Context, cdc *codec.Codec, k Keeper) ([]byte, csdkTypes.Error) {
+	nodes, err := k.GetNodes(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	res, errRes := cdc.MarshalJSON(nodes)
 	if errRes != nil {
 		return nil, errorMarshal()
 	}

@@ -230,3 +230,42 @@ func (k Keeper) GetSessionsCount(ctx csdkTypes.Context, owner csdkTypes.AccAddre
 
 	return count, nil
 }
+
+func (k Keeper) GetNodesOfOwner(ctx csdkTypes.Context, owner csdkTypes.AccAddress, count uint64) (*[]*NodeDetails, csdkTypes.Error) {
+	var nodes []*NodeDetails
+	for index := uint64(0); index < count; index++ {
+		details, err := k.GetNodeDetails(ctx, NodeKey(owner, index))
+		if err != nil {
+			return nil, err
+		}
+
+		nodes = append(nodes, details)
+	}
+
+	return &nodes, nil
+}
+
+func (k Keeper) GetNodes(ctx csdkTypes.Context) (*[]*NodeDetails, csdkTypes.Error) {
+	var allNodes []*NodeDetails
+	store := ctx.KVStore(k.NodeStoreKey)
+
+	iter := csdkTypes.KVStorePrefixIterator(store, NodesCountKeyPrefix)
+	defer iter.Close()
+
+	for ; iter.Valid(); iter.Next() {
+		var count uint64
+		owner := csdkTypes.AccAddress(iter.Key()[len(NodesCountKeyPrefix):])
+		if err := k.cdc.UnmarshalBinaryLengthPrefixed(iter.Value(), &count); err != nil {
+			return nil, errorUnmarshal()
+		}
+
+		nodes, err := k.GetNodesOfOwner(ctx, owner, count)
+		if err != nil {
+			return nil, err
+		}
+
+		allNodes = append(allNodes, *nodes...)
+	}
+
+	return &allNodes, nil
+}
