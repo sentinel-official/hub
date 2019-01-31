@@ -34,12 +34,17 @@ type SessionDetails struct {
 	Status             string
 }
 
-func NodesCountKey(accAddress csdkTypes.AccAddress) string {
-	return fmt.Sprintf("nodes_count/%s", accAddress.String())
+var (
+	NodesCountKeyPrefix    = []byte("NODES_COUNT")
+	SessionsCountKeyPrefix = []byte("SESSION_COUNT")
+)
+
+func NodesCountKey(accAddress csdkTypes.AccAddress) []byte {
+	return append(NodesCountKeyPrefix, accAddress.Bytes()...)
 }
 
-func SessionsCountKey(accAddress csdkTypes.AccAddress) string {
-	return fmt.Sprintf("sessions_count/%s", accAddress.String())
+func SessionsCountKey(accAddress csdkTypes.AccAddress) []byte {
+	return append(SessionsCountKeyPrefix, accAddress.Bytes()...)
 }
 
 func NodeKey(accAddress csdkTypes.AccAddress, count uint64) string {
@@ -49,7 +54,6 @@ func NodeKey(accAddress csdkTypes.AccAddress, count uint64) string {
 const (
 	KeyActiveNodeIDs    = "ACTIVE_NODE_IDS"
 	KeyActiveSessionIDs = "ACTIVE_SESSION_IDS"
-	KeyNodeOwners       = "NODE_OWNERS"
 
 	StoreKeySession = "vpn_session"
 	StoreKeyNode    = "vpn_node"

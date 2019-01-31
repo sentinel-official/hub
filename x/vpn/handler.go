@@ -68,10 +68,6 @@ func handleRegisterNode(ctx csdkTypes.Context, nk Keeper, bk bank.Keeper, msg Ms
 		return err.Result()
 	}
 
-	if err := AddNodeOwner(ctx, nk, msg.From.String()); err != nil {
-		return err.Result()
-	}
-
 	return csdkTypes.Result{Tags: allTags}
 }
 
@@ -142,7 +138,7 @@ func handleDeregisterNode(ctx csdkTypes.Context, nk Keeper, bk bank.Keeper, msg 
 	if err := nk.SetNodeDetails(ctx, msg.ID, details); err != nil {
 		return err.Result()
 	}
-	allTags.AppendTag("node_id", []byte(msg.ID))
+	allTags = allTags.AppendTag("node_id", []byte(msg.ID))
 
 	releaseAmount := csdkTypes.Coins{details.LockedAmount}
 	_, tags, err := bk.AddCoins(ctx, msg.From, releaseAmount)
