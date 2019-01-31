@@ -7,8 +7,9 @@ import (
 )
 
 const (
-	QueryNode  = "node"
-	QueryNodes = "nodes"
+	QueryNode         = "node"
+	QueryNodes        = "nodes"
+	QueryNodesOfOwner = "nodesOfOwner"
 )
 
 func NewQuerier(k Keeper, cdc *codec.Codec) csdkTypes.Querier {
@@ -18,6 +19,8 @@ func NewQuerier(k Keeper, cdc *codec.Codec) csdkTypes.Querier {
 			return queryNode(ctx, cdc, req, k)
 		case QueryNodes:
 			return queryNodes(ctx, cdc, k)
+		case QueryNodesOfOwner:
+			return queryNodesOfOwner(ctx, cdc, req, k)
 		default:
 			return nil, errorInvalidQueryType(path[0])
 		}
@@ -44,9 +47,41 @@ func queryNode(ctx csdkTypes.Context, cdc *codec.Codec, req abciTypes.RequestQue
 	if err != nil {
 		return nil, err
 	}
+	if details == nil {
+		return nil, nil
+	}
 
-	res, errRes := cdc.MarshalJSON(details)
-	if errRes != nil {
+	res, resErr := cdc.MarshalJSON(details)
+	if resErr != nil {
+		return nil, errorMarshal()
+	}
+
+	return res, nil
+}
+
+type QueryNodesOfOwnerPrams struct {
+	Owner csdkTypes.AccAddress
+}
+
+func NewQueryNodesOfOwnerParams(owner csdkTypes.AccAddress) QueryNodesOfOwnerPrams {
+	return QueryNodesOfOwnerPrams{
+		Owner: owner,
+	}
+}
+
+func queryNodesOfOwner(ctx csdkTypes.Context, cdc *codec.Codec, req abciTypes.RequestQuery, k Keeper) ([]byte, csdkTypes.Error) {
+	var params QueryNodesOfOwnerPrams
+	if err := cdc.UnmarshalJSON(req.Data, &params); err != nil {
+		return nil, errorUnmarshal()
+	}
+
+	nodes, err := k.GetNodesOfOwner(ctx, params.Owner)
+	if err != nil {
+		return nil, err
+	}
+
+	res, resErr := cdc.MarshalJSON(nodes)
+	if resErr != nil {
 		return nil, errorMarshal()
 	}
 
@@ -59,8 +94,8 @@ func queryNodes(ctx csdkTypes.Context, cdc *codec.Codec, k Keeper) ([]byte, csdk
 		return nil, err
 	}
 
-	res, errRes := cdc.MarshalJSON(nodes)
-	if errRes != nil {
+	res, resErr := cdc.MarshalJSON(nodes)
+	if resErr != nil {
 		return nil, errorMarshal()
 	}
 
