@@ -58,7 +58,8 @@ const (
 	StoreKeySession = "vpn_session"
 	StoreKeyNode    = "vpn_node"
 
-	RouteKey = "vpn"
+	RouterKey    = "vpn"
+	QuerierRoute = "vpn"
 
 	StatusRegistered   = "REGISTERED"
 	StatusActive       = "ACTIVE"

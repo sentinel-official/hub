@@ -67,7 +67,7 @@ func (msg MsgRegisterNode) GetSigners() []csdkTypes.AccAddress {
 }
 
 func (msg MsgRegisterNode) Route() string {
-	return RouteKey
+	return RouterKey
 }
 
 func NewMsgRegisterNode(from csdkTypes.AccAddress,
@@ -140,7 +140,7 @@ func (msg MsgUpdateNode) GetSigners() []csdkTypes.AccAddress {
 }
 
 func (msg MsgUpdateNode) Route() string {
-	return RouteKey
+	return RouterKey
 }
 
 func NewMsgUpdateNode(from csdkTypes.AccAddress,
@@ -195,7 +195,7 @@ func (msg MsgDeregisterNode) GetSigners() []csdkTypes.AccAddress {
 }
 
 func (msg MsgDeregisterNode) Route() string {
-	return RouteKey
+	return RouterKey
 }
 
 func NewMsgDeregisterNode(from csdkTypes.AccAddress, id string) *MsgDeregisterNode {

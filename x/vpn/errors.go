@@ -16,6 +16,7 @@ const (
 	errCodeInvalidField      = 205
 	errCodeInvalidLockDenom  = 206
 	errCodeInvalidNodeStatus = 207
+	errCodeInvalidQueryType  = 208
 
 	errMsgUnknownMsgType    = "Unknown message type: "
 	errMsgNodeAlreadyExists = "Node already exists"
@@ -24,6 +25,7 @@ const (
 	errMsgInvalidField      = "Invalid field: "
 	errMsgInvalidLockDenom  = "Invalid lock denom"
 	errMsgInvalidNodeStatus = "Invalid node status"
+	errMsgInvalidQueryType  = "Invalid query type: "
 )
 
 func errorMarshal() csdkTypes.Error {
@@ -60,4 +62,8 @@ func errorInvalidLockDenom() csdkTypes.Error {
 
 func errorInvalidNodeStatus() csdkTypes.Error {
 	return csdkTypes.NewError(codespace, errCodeInvalidNodeStatus, errMsgInvalidNodeStatus)
+}
+
+func errorInvalidQueryType(queryType string) csdkTypes.Error {
+	return csdkTypes.NewError(codespace, errCodeInvalidQueryType, errMsgInvalidQueryType+queryType)
 }
