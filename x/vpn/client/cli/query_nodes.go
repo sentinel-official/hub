@@ -6,7 +6,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/codec"
-	"github.com/cosmos/cosmos-sdk/types"
+	csdkTypes "github.com/cosmos/cosmos-sdk/types"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
@@ -53,42 +53,70 @@ func QueryNodeCmd(cdc *codec.Codec) *cobra.Command {
 	return cmd
 }
 
+func queryNodes(cliCtx context.CLIContext, cdc *codec.Codec) ([]vpn.NodeDetails, error) {
+	res, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s", vpn.QuerierRoute, vpn.QueryNodes), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	var nodes []vpn.NodeDetails
+	if err = cdc.UnmarshalJSON(res, &nodes); err != nil {
+		return nil, err
+	}
+
+	return nodes, nil
+}
+
+func queryNodesOfOwner(cliCtx context.CLIContext, cdc *codec.Codec, owner csdkTypes.AccAddress) ([]vpn.NodeDetails, error) {
+	params := vpn.NewQueryNodesOfOwnerParams(owner)
+	paramBytes, err := cdc.MarshalJSON(params)
+	if err != nil {
+		return nil, err
+	}
+
+	res, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s", vpn.QuerierRoute, vpn.QueryNodes), paramBytes)
+	if err != nil {
+		return nil, err
+	}
+
+	var nodes []vpn.NodeDetails
+	if err = cdc.UnmarshalJSON(res, &nodes); err != nil {
+		return nil, err
+	}
+
+	return nodes, nil
+}
+
 func QueryNodesCmd(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "nodes",
 		Short: "Get details of nodes",
-		RunE: func(cmd *cobra.Command, args []string) error {
+		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			cliCtx := context.NewCLIContext().WithCodec(cdc).WithAccountDecoder(cdc)
 
-			ownerAddress := viper.GetString(flagOwner)
-
-			var paramBytes []byte
-			var querier string
-			var err error
-
-			if ownerAddress == "" {
-				querier = vpn.QueryNodes
-			} else {
-				querier = vpn.QueryNodesOfOwner
-				accAddress, err := types.AccAddressFromBech32(ownerAddress)
-				if err != nil {
-					return err
-				}
-				params := vpn.NewQueryNodesOfOwnerParams(accAddress)
-				paramBytes, err = cdc.MarshalJSON(params)
-				if err != nil {
-					return err
-				}
-			}
-
-			res, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s", vpn.QuerierRoute, querier), paramBytes)
-			if err != nil {
-				return err
-			}
+			owner := viper.GetString(flagOwnerAddress)
 
 			var nodes []vpn.NodeDetails
-			if err = cdc.UnmarshalJSON(res, &nodes); err != nil {
-				return err
+
+			if owner == "" {
+				nodes, err = queryNodes(cliCtx, cdc)
+				if err != nil {
+					return err
+				}
+			} else {
+				owner, err := csdkTypes.AccAddressFromBech32(owner)
+				if err != nil {
+					return err
+				}
+
+				nodes, err = queryNodesOfOwner(cliCtx, cdc, owner)
+				if err != nil {
+					return err
+				}
+			}
+
+			if nodes == nil || len(nodes) == 0 {
+				return fmt.Errorf("no nodes found")
 			}
 
 			nodesData, err := json.MarshalIndent(nodes, "", "  ")
@@ -102,7 +130,7 @@ func QueryNodesCmd(cdc *codec.Codec) *cobra.Command {
 		},
 	}
 
-	cmd.Flags().String(flagOwner, "", "Owner address")
+	cmd.Flags().String(flagOwnerAddress, "", "Owner address")
 
 	return cmd
 }
