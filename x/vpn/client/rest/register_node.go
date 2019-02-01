@@ -30,31 +30,32 @@ func registerNodeHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec, kb key
 
 		if err := utils.ReadRESTReq(w, r, cdc, &req); err != nil {
 			utils.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+			return
 		}
-
-		cliCtx = cliCtx.WithGenerateOnly(req.BaseReq.GenerateOnly)
-		cliCtx = cliCtx.WithSimulation(req.BaseReq.Simulate)
 
 		baseReq := req.BaseReq.Sanitize()
 		if !baseReq.ValidateBasic(w) {
 			return
 		}
 
-		cliCtx = cliCtx.WithFrom(req.BaseReq.Name)
+		cliCtx.WithGenerateOnly(req.BaseReq.GenerateOnly).WithSimulation(req.BaseReq.Simulate)
 
 		info, err := kb.Get(req.BaseReq.Name)
 		if err != nil {
 			utils.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+			return
 		}
 
 		amountToLock, err := csdkTypes.ParseCoin(req.AmountToLock)
 		if err != nil {
 			utils.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+			return
 		}
 
 		perGBAmount, err := csdkTypes.ParseCoins(req.PerGBAmount)
 		if err != nil {
 			utils.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+			return
 		}
 
 		msg := vpn.NewMsgRegisterNode(info.GetAddress(),
@@ -62,6 +63,7 @@ func registerNodeHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec, kb key
 			req.EncMethod, perGBAmount, req.Version, req.NodeType, amountToLock)
 		if err := msg.ValidateBasic(); err != nil {
 			utils.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+			return
 		}
 
 		utils.CompleteAndBroadcastTxREST(w, r, cliCtx, baseReq, []csdkTypes.Msg{msg}, cdc)

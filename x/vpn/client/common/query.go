@@ -31,5 +31,5 @@ func QueryNodesOfOwner(cliCtx context.CLIContext, cdc *codec.Codec, owner csdkTy
 		return nil, err
 	}
 
-	return cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s", vpn.QuerierRoute, vpn.QueryNodes), paramBytes)
+	return cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s", vpn.QuerierRoute, vpn.QueryNodesOfOwner), paramBytes)
 }
