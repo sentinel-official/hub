@@ -12,8 +12,10 @@ func NewHandler(nk Keeper, bk bank.Keeper) csdkTypes.Handler {
 		switch msg := msg.(type) {
 		case MsgRegisterNode:
 			return handleRegisterNode(ctx, nk, bk, msg)
-		case MsgUpdateNode:
-			return handleUpdateNode(ctx, nk, msg)
+		case MsgUpdateNodeDetails:
+			return handleUpdateNodeDetails(ctx, nk, msg)
+		case MsgUpdateNodeStatus:
+			return handleUpdateNodeStatus(ctx, nk, msg)
 		case MsgDeregisterNode:
 			return handleDeregisterNode(ctx, nk, bk, msg)
 		default:
@@ -71,7 +73,7 @@ func handleRegisterNode(ctx csdkTypes.Context, nk Keeper, bk bank.Keeper, msg Ms
 	return csdkTypes.Result{Tags: allTags}
 }
 
-func handleUpdateNode(ctx csdkTypes.Context, nk Keeper, msg MsgUpdateNode) csdkTypes.Result {
+func handleUpdateNodeDetails(ctx csdkTypes.Context, nk Keeper, msg MsgUpdateNodeDetails) csdkTypes.Result {
 	allTags := csdkTypes.EmptyTags()
 
 	details, err := nk.GetNodeDetails(ctx, msg.ID)
@@ -105,7 +107,7 @@ func handleUpdateNode(ctx csdkTypes.Context, nk Keeper, msg MsgUpdateNode) csdkT
 	if len(msg.Version) != 0 {
 		details.Version = msg.Version
 	}
-	details.UpdatedAtHeight = ctx.BlockHeight()
+	details.DetailsAtHeight = ctx.BlockHeight()
 
 	if err := nk.SetNodeDetails(ctx, msg.ID, details); err != nil {
 		return err.Result()
@@ -146,6 +148,36 @@ func handleDeregisterNode(ctx csdkTypes.Context, nk Keeper, bk bank.Keeper, msg 
 		return err.Result()
 	}
 	allTags = allTags.AppendTags(tags)
+
+	return csdkTypes.Result{Tags: allTags}
+}
+
+func handleUpdateNodeStatus(ctx csdkTypes.Context, nk Keeper, msg MsgUpdateNodeStatus) csdkTypes.Result {
+	allTags := csdkTypes.EmptyTags()
+
+	details, err := nk.GetNodeDetails(ctx, msg.ID)
+	if err != nil {
+		return err.Result()
+	}
+	if details == nil {
+		return errorNodeNotExists().Result()
+	}
+	if !details.Owner.Equals(msg.From) {
+		return errorUnauthorized().Result()
+	}
+	if details.Status != StatusRegistered &&
+		details.Status != StatusActive &&
+		details.Status != StatusInactive {
+		return errorInvalidNodeStatus().Result()
+	}
+
+	details.Status = msg.Status
+	details.StatusAtHeight = ctx.BlockHeight()
+
+	if err := nk.SetNodeDetails(ctx, msg.ID, details); err != nil {
+		return err.Result()
+	}
+	allTags = allTags.AppendTag("node_id", []byte(msg.ID))
 
 	return csdkTypes.Result{Tags: allTags}
 }

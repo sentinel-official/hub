@@ -71,9 +71,9 @@ func (msg MsgRegisterNode) Route() string {
 }
 
 func NewMsgRegisterNode(from csdkTypes.AccAddress,
-	apiPort uint16, upload uint64, download uint64,
+	apiPort uint16, upload, download uint64,
 	encMethod string, perGBAmount csdkTypes.Coins,
-	version string, nodeType string,
+	version, nodeType string,
 	amountToLock csdkTypes.Coin) *MsgRegisterNode {
 
 	return &MsgRegisterNode{
@@ -91,7 +91,7 @@ func NewMsgRegisterNode(from csdkTypes.AccAddress,
 	}
 }
 
-type MsgUpdateNode struct {
+type MsgUpdateNodeDetails struct {
 	From        csdkTypes.AccAddress `json:"from"`
 	ID          string               `json:"id"`
 	APIPort     uint16               `json:"api_port"`
@@ -101,11 +101,11 @@ type MsgUpdateNode struct {
 	Version     string               `json:"version"`
 }
 
-func (msg MsgUpdateNode) Type() string {
-	return "msg_update_node"
+func (msg MsgUpdateNodeDetails) Type() string {
+	return "msg_update_node_details"
 }
 
-func (msg MsgUpdateNode) ValidateBasic() csdkTypes.Error {
+func (msg MsgUpdateNodeDetails) ValidateBasic() csdkTypes.Error {
 	if msg.From == nil || msg.From.Empty() {
 		return errorInvalidField("from")
 	}
@@ -126,7 +126,7 @@ func (msg MsgUpdateNode) ValidateBasic() csdkTypes.Error {
 	return nil
 }
 
-func (msg MsgUpdateNode) GetSignBytes() []byte {
+func (msg MsgUpdateNodeDetails) GetSignBytes() []byte {
 	msgBytes, err := json.Marshal(msg)
 	if err != nil {
 		panic(err)
@@ -135,19 +135,19 @@ func (msg MsgUpdateNode) GetSignBytes() []byte {
 	return msgBytes
 }
 
-func (msg MsgUpdateNode) GetSigners() []csdkTypes.AccAddress {
+func (msg MsgUpdateNodeDetails) GetSigners() []csdkTypes.AccAddress {
 	return []csdkTypes.AccAddress{msg.From}
 }
 
-func (msg MsgUpdateNode) Route() string {
+func (msg MsgUpdateNodeDetails) Route() string {
 	return RouterKey
 }
 
-func NewMsgUpdateNode(from csdkTypes.AccAddress,
-	id string, apiPort uint16, upload uint64, download uint64,
-	encMethod string, perGBAmount csdkTypes.Coins, version string) *MsgUpdateNode {
+func NewMsgUpdateNodeDetails(from csdkTypes.AccAddress,
+	id string, apiPort uint16, upload, download uint64,
+	encMethod string, perGBAmount csdkTypes.Coins, version string) *MsgUpdateNodeDetails {
 
-	return &MsgUpdateNode{
+	return &MsgUpdateNodeDetails{
 		From:    from,
 		ID:      id,
 		APIPort: apiPort,
@@ -202,5 +202,54 @@ func NewMsgDeregisterNode(from csdkTypes.AccAddress, id string) *MsgDeregisterNo
 	return &MsgDeregisterNode{
 		From: from,
 		ID:   id,
+	}
+}
+
+type MsgUpdateNodeStatus struct {
+	From   csdkTypes.AccAddress `json:"from"`
+	ID     string               `json:"id"`
+	Status string               `json:"status"`
+}
+
+func (msg MsgUpdateNodeStatus) Type() string {
+	return "msg_update_node_status"
+}
+
+func (msg MsgUpdateNodeStatus) ValidateBasic() csdkTypes.Error {
+	if msg.From == nil || msg.From.Empty() {
+		return errorInvalidField("from")
+	}
+	if len(msg.ID) == 0 {
+		return errorInvalidField("id")
+	}
+	if msg.Status != StatusActive && msg.Status != StatusInactive {
+		return errorInvalidField("status")
+	}
+
+	return nil
+}
+
+func (msg MsgUpdateNodeStatus) GetSignBytes() []byte {
+	msgBytes, err := json.Marshal(msg)
+	if err != nil {
+		panic(err)
+	}
+
+	return msgBytes
+}
+
+func (msg MsgUpdateNodeStatus) GetSigners() []csdkTypes.AccAddress {
+	return []csdkTypes.AccAddress{msg.From}
+}
+
+func (msg MsgUpdateNodeStatus) Route() string {
+	return RouterKey
+}
+
+func NewMsgUpdateNodeStatus(from csdkTypes.AccAddress, id, status string) *MsgUpdateNodeStatus {
+	return &MsgUpdateNodeStatus{
+		From:   from,
+		ID:     id,
+		Status: status,
 	}
 }

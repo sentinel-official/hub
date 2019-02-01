@@ -2,7 +2,9 @@ package cli
 
 import (
 	"os"
+	"strings"
 
+	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/client/utils"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -14,10 +16,24 @@ import (
 	"github.com/ironman0x7b2/sentinel-sdk/x/vpn"
 )
 
-func UpdateNodeTxCmd(cdc *codec.Codec) *cobra.Command {
-	cmd := &cobra.Command{
+func UpdateNodeInfoTxCmd(cdc *codec.Codec) *cobra.Command {
+	updateNodeCmd := &cobra.Command{
 		Use:   "update",
-		Short: "Update node",
+		Short: "Update node information",
+	}
+
+	updateNodeCmd.AddCommand(client.PostCommands(
+		updateNodeDetailsTxCmd(cdc),
+		updateNodeStatusTxCmd(cdc),
+	)...)
+
+	return updateNodeCmd
+}
+
+func updateNodeDetailsTxCmd(cdc *codec.Codec) *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "details",
+		Short: "Update details of the node",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			txBldr := authTxBuilder.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
 			cliCtx := context.NewCLIContext().WithCodec(cdc).WithAccountDecoder(cdc)
@@ -44,7 +60,7 @@ func UpdateNodeTxCmd(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			msg := vpn.NewMsgUpdateNode(fromAddress, nodeID,
+			msg := vpn.NewMsgUpdateNodeDetails(fromAddress, nodeID,
 				uint16(apiPort), uint64(uploadSpeed), uint64(downloadSpeed),
 				encMethod, parsedPerGBAmount, version)
 			if cliCtx.GenerateOnly {
@@ -64,12 +80,39 @@ func UpdateNodeTxCmd(cdc *codec.Codec) *cobra.Command {
 	cmd.Flags().String(flagVersion, "", "Node version")
 
 	_ = cmd.MarkFlagRequired(flagNodeID)
-	_ = cmd.MarkFlagRequired(flagAPIPort)
-	_ = cmd.MarkFlagRequired(flagUploadSpeed)
-	_ = cmd.MarkFlagRequired(flagDownloadSpeed)
-	_ = cmd.MarkFlagRequired(flagEncMethod)
-	_ = cmd.MarkFlagRequired(flagPerGBAmount)
-	_ = cmd.MarkFlagRequired(flagVersion)
+
+	return cmd
+}
+
+func updateNodeStatusTxCmd(cdc *codec.Codec) *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "status",
+		Short: "Update status of the node",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			txBldr := authTxBuilder.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
+			cliCtx := context.NewCLIContext().WithCodec(cdc).WithAccountDecoder(cdc)
+
+			if err := cliCtx.EnsureAccountExists(); err != nil {
+				return err
+			}
+
+			nodeID := viper.GetString(flagNodeID)
+			status := strings.ToUpper(args[0])
+
+			fromAddress, err := cliCtx.GetFromAddress()
+			if err != nil {
+				return err
+			}
+
+			msg := vpn.NewMsgUpdateNodeStatus(fromAddress, nodeID, status)
+			if cliCtx.GenerateOnly {
+				return utils.PrintUnsignedStdTx(os.Stdout, txBldr, cliCtx, []csdkTypes.Msg{msg}, false)
+			}
+
+			return utils.CompleteAndBroadcastTxCli(txBldr, cliCtx, []csdkTypes.Msg{msg})
+		},
+	}
 
 	return cmd
 }

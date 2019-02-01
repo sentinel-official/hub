@@ -2,6 +2,7 @@ package rest
 
 import (
 	"net/http"
+	"strings"
 
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/client/utils"
@@ -14,7 +15,7 @@ import (
 	"github.com/ironman0x7b2/sentinel-sdk/x/vpn"
 )
 
-type msgUpdateNode struct {
+type msgUpdateNodeDetails struct {
 	BaseReq     utils.BaseReq      `json:"base_req"`
 	APIPort     uint16             `json:"api_port"`
 	NetSpeed    sdkTypes.Bandwidth `json:"net_speed"`
@@ -23,9 +24,9 @@ type msgUpdateNode struct {
 	Version     string             `json:"version"`
 }
 
-func updateNodeHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec, kb keys.Keybase) http.HandlerFunc {
+func updateNodeDetailsHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec, kb keys.Keybase) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var req msgUpdateNode
+		var req msgUpdateNodeDetails
 
 		if err := utils.ReadRESTReq(w, r, cdc, &req); err != nil {
 			utils.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
@@ -54,9 +55,51 @@ func updateNodeHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec, kb keys.
 		vars := mux.Vars(r)
 		id := vars["nodeID"]
 
-		msg := vpn.NewMsgUpdateNode(info.GetAddress(), id, req.APIPort,
+		msg := vpn.NewMsgUpdateNodeDetails(info.GetAddress(), id, req.APIPort,
 			req.NetSpeed.Upload, req.NetSpeed.Download, req.EncMethod,
 			perGBAmount, req.Version)
+		if err := msg.ValidateBasic(); err != nil {
+			utils.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+			return
+		}
+
+		utils.CompleteAndBroadcastTxREST(w, r, cliCtx, baseReq, []csdkTypes.Msg{msg}, cdc)
+		return
+	}
+}
+
+type msgUpdateNodeStatus struct {
+	BaseReq utils.BaseReq `json:"base_req"`
+	Status  string        `json:"status"`
+}
+
+func updateNodeStatusHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec, kb keys.Keybase) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		var req msgUpdateNodeStatus
+
+		if err := utils.ReadRESTReq(w, r, cdc, &req); err != nil {
+			utils.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+			return
+		}
+
+		baseReq := req.BaseReq.Sanitize()
+		if !baseReq.ValidateBasic(w) {
+			return
+		}
+
+		cliCtx.WithGenerateOnly(req.BaseReq.GenerateOnly).WithSimulation(req.BaseReq.Simulate)
+
+		info, err := kb.Get(req.BaseReq.Name)
+		if err != nil {
+			utils.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		vars := mux.Vars(r)
+		id := vars["nodeID"]
+		status := strings.ToUpper(req.Status)
+
+		msg := vpn.NewMsgUpdateNodeStatus(info.GetAddress(), id, status)
 		if err := msg.ValidateBasic(); err != nil {
 			utils.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return

@@ -20,7 +20,7 @@ type NodeDetails struct {
 	Version         string
 	Status          string
 	StatusAtHeight  int64
-	UpdatedAtHeight int64
+	DetailsAtHeight int64
 }
 
 type SessionDetails struct {

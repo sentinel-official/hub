@@ -41,11 +41,9 @@ func (mc ModuleClient) GetTxCmd() *cobra.Command {
 		Short: "VPN transactions subcommands",
 	}
 
-	vpnTxCmd.AddCommand(client.PostCommands(
-		vpnCli.RegisterNodeTxCmd(mc.cdc),
-		vpnCli.UpdateNodeTxCmd(mc.cdc),
-		vpnCli.DeregisterNodeTxCmd(mc.cdc),
-	)...)
+	vpnTxCmd.AddCommand(client.PostCommands(vpnCli.RegisterNodeTxCmd(mc.cdc))...)
+	vpnTxCmd.AddCommand(vpnCli.UpdateNodeInfoTxCmd(mc.cdc))
+	vpnTxCmd.AddCommand(client.PostCommands(vpnCli.DeregisterNodeTxCmd(mc.cdc))...)
 
 	return vpnTxCmd
 }
