@@ -10,4 +10,5 @@ const (
 	flagVersion       = "version"
 	flagNodeType      = "node-type"
 	flagNodeID        = "node-id"
+	flagOwner         = "owner"
 )
