@@ -38,7 +38,7 @@ func deregisterNodeHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec, kb k
 
 		info, err := kb.Get(req.BaseReq.Name)
 		if err != nil {
-			utils.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+			utils.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 		}
 
 		msg := vpn.NewMsgDeregisterNode(info.GetAddress(), id)

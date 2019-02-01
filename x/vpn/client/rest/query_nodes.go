@@ -7,48 +7,13 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/client/utils"
 	"github.com/cosmos/cosmos-sdk/codec"
-	"github.com/cosmos/cosmos-sdk/types"
+	csdkTypes "github.com/cosmos/cosmos-sdk/types"
 	"github.com/gorilla/mux"
 
-	"github.com/ironman0x7b2/sentinel-sdk/x/vpn"
+	"github.com/ironman0x7b2/sentinel-sdk/x/vpn/client/common"
 )
 
-func getNodes(cliCtx context.CLIContext, cdc *codec.Codec) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("content-type", "application/json")
-
-		var res []byte
-		var err error
-
-		ownerAddress := r.URL.Query().Get("address")
-		if len(ownerAddress) > 0 {
-			res, err = queryNodesofOwner(cliCtx, cdc, ownerAddress)
-			if err != nil {
-				utils.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
-				return
-			}
-
-		} else {
-			res, err = cliCtx.QueryWithData("/custom/vpn/nodes", nil)
-			if err != nil {
-				utils.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
-				return
-			}
-
-		}
-
-		if string(res) == "null" {
-			err = errors.New("details are not found")
-			utils.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
-			return
-		}
-
-		utils.PostProcessResponse(w, cdc, res, cliCtx.Indent)
-		return
-	}
-}
-
-func getNode(cliCtx context.CLIContext, cdc *codec.Codec) http.HandlerFunc {
+func getNodeHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("content-type", "application/json")
 		vars := mux.Vars(r)
@@ -59,24 +24,9 @@ func getNode(cliCtx context.CLIContext, cdc *codec.Codec) http.HandlerFunc {
 			utils.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 		}
 
-		params := vpn.NewQueryNodeParams(nodeID)
-
-		bz, err := cdc.MarshalJSON(params)
+		res, err := common.QueryNode(cliCtx, cdc, nodeID)
 		if err != nil {
-			utils.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
-			return
-		}
-
-		res, err := cliCtx.QueryWithData("/custom/vpn/node", bz)
-		if res == nil {
-			err = errors.New("details are not found")
-			utils.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
-			return
-		}
-
-		if err != nil {
-			utils.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
-			return
+			utils.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 		}
 
 		utils.PostProcessResponse(w, cdc, res, cliCtx.Indent)
@@ -84,24 +34,35 @@ func getNode(cliCtx context.CLIContext, cdc *codec.Codec) http.HandlerFunc {
 	}
 }
 
-func queryNodesofOwner(cliCtx context.CLIContext, cdc *codec.Codec, ownerAddress string) ([]byte, error) {
+func getNodesHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("content-type", "application/json")
 
-	address, err := types.AccAddressFromBech32(ownerAddress)
-	if err != nil {
-		return nil, err
+		var res []byte
+		var err error
+
+		owner := r.URL.Query().Get("owner")
+		if owner == "" {
+			res, err = common.QueryNodes(cliCtx, cdc)
+			if err != nil {
+				utils.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+				return
+			}
+		} else {
+			owner, err := csdkTypes.AccAddressFromBech32(owner)
+			if err != nil {
+				utils.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+				return
+			}
+
+			res, err = common.QueryNodesOfOwner(cliCtx, cdc, owner)
+			if err != nil {
+				utils.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+				return
+			}
+		}
+
+		utils.PostProcessResponse(w, cdc, res, cliCtx.Indent)
+		return
 	}
-
-	params := vpn.NewQueryNodesOfOwnerParams(address)
-
-	bz, err := cdc.MarshalJSON(params)
-	if err != nil {
-		return nil, err
-	}
-
-	res, err := cliCtx.QueryWithData("/custom/vpn/nodesOfOwner", bz)
-	if err != nil {
-		err = errors.New("details are not found")
-		return nil, err
-	}
-	return res, nil
 }

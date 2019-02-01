@@ -44,7 +44,7 @@ func registerNodeHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec, kb key
 
 		info, err := kb.Get(req.BaseReq.Name)
 		if err != nil {
-			utils.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+			utils.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 		}
 
 		amountToLock, err := csdkTypes.ParseCoin(req.AmountToLock)

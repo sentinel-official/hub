@@ -8,15 +8,23 @@ import (
 )
 
 func RegisterRoutes(cliCtx context.CLIContext, r *mux.Router, cdc *codec.Codec, kb keys.Keybase) {
+	registerTxRoutes(cliCtx, r, cdc, kb)
+	registerQueryRoutes(cliCtx, r, cdc, kb)
+}
+
+func registerTxRoutes(cliCtx context.CLIContext, r *mux.Router, cdc *codec.Codec, kb keys.Keybase) {
 	r.HandleFunc("/nodes", registerNodeHandlerFunc(cliCtx, cdc, kb)).
 		Methods("POST")
-	r.HandleFunc("/nodes/{nodeID:[^/]+/[^/]+}", updateNodeHandlerFunc(cliCtx, cdc, kb)).
-		Methods("PUT")
 	r.HandleFunc("/nodes/{nodeID:[^/]+/[^/]+}/deregister", deregisterNodeHandlerFunc(cliCtx, cdc, kb)).
 		Methods("POST")
 
-	r.HandleFunc("/nodes", getNodes(cliCtx, cdc)).
+	r.HandleFunc("/nodes/{nodeID:[^/]+/[^/]+}", updateNodeHandlerFunc(cliCtx, cdc, kb)).
+		Methods("PUT")
+}
+
+func registerQueryRoutes(cliCtx context.CLIContext, r *mux.Router, cdc *codec.Codec, kb keys.Keybase) {
+	r.HandleFunc("/nodes", getNodesHandlerFunc(cliCtx, cdc)).
 		Methods("GET")
-	r.HandleFunc("/nodes/{nodeID:[^/]+/[^/]+}", getNode(cliCtx, cdc)).
+	r.HandleFunc("/nodes/{nodeID:[^/]+/[^/]+}", getNodeHandlerFunc(cliCtx, cdc)).
 		Methods("GET")
 }

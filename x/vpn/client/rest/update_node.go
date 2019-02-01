@@ -44,7 +44,7 @@ func updateNodeHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec, kb keys.
 
 		info, err := kb.Get(req.BaseReq.Name)
 		if err != nil {
-			utils.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+			utils.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 		}
 
 		perGBAmount, err := csdkTypes.ParseCoins(req.PerGBAmount)
