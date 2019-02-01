@@ -1,7 +1,6 @@
 package cli
 
 import (
-	"encoding/json"
 	"fmt"
 
 	"github.com/cosmos/cosmos-sdk/client/context"
@@ -22,12 +21,21 @@ func QueryNodeCmd(cdc *codec.Codec) *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cliCtx := context.NewCLIContext().WithCodec(cdc).WithAccountDecoder(cdc)
 
-			node, err := common.QueryNode(cliCtx, cdc, args[0])
+			res, err := common.QueryNode(cliCtx, cdc, args[0])
 			if err != nil {
 				return err
 			}
 
-			nodeData, err := json.MarshalIndent(node, "", "  ")
+			if res == nil || len(res) == 0 {
+				return fmt.Errorf("no node found")
+			}
+
+			var node vpn.NodeDetails
+			if err := cdc.UnmarshalJSON(res, &node); err != nil {
+				return err
+			}
+
+			nodeData, err := cdc.MarshalJSONIndent(node, "", "  ")
 			if err != nil {
 				return err
 			}
@@ -79,7 +87,7 @@ func QueryNodesCmd(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			nodesData, err := json.MarshalIndent(nodes, "", "  ")
+			nodesData, err := cdc.MarshalJSONIndent(nodes, "", "  ")
 			if err != nil {
 				return err
 			}

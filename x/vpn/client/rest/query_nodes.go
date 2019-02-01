@@ -29,6 +29,11 @@ func getNodeHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) http.Handle
 			utils.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 		}
 
+		if res == nil || len(res) == 0 {
+			err := errors.New("no node found")
+			utils.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+		}
+
 		utils.PostProcessResponse(w, cdc, res, cliCtx.Indent)
 		return
 	}
@@ -60,6 +65,11 @@ func getNodesHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) http.Handl
 				utils.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 				return
 			}
+		}
+
+		if res == nil || len(res) == 0 {
+			err := errors.New("no nodes found")
+			utils.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 		}
 
 		utils.PostProcessResponse(w, cdc, res, cliCtx.Indent)
