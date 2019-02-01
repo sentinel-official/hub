@@ -14,4 +14,9 @@ func RegisterRoutes(cliCtx context.CLIContext, r *mux.Router, cdc *codec.Codec, 
 		Methods("PUT")
 	r.HandleFunc("/nodes/{nodeID:[^/]+/[^/]+}/deregister", deregisterNodeHandlerFunc(cliCtx, cdc, kb)).
 		Methods("POST")
+
+	r.HandleFunc("/nodes", getNodes(cliCtx, cdc)).
+		Methods("GET")
+	r.HandleFunc("/nodes/{nodeID:[^/]+/[^/]+}", getNode(cliCtx, cdc)).
+		Methods("GET")
 }
