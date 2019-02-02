@@ -4,13 +4,14 @@ import (
 	"reflect"
 
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/cosmos/cosmos-sdk/x/bank"
 
 	"github.com/ironman0x7b2/sentinel-sdk/x/vpn/keeper"
 	"github.com/ironman0x7b2/sentinel-sdk/x/vpn/types"
 )
 
-func NewHandler(vk keeper.Keeper, bk bank.Keeper) csdkTypes.Handler {
+func NewHandler(vk keeper.Keeper, ak auth.AccountKeeper, bk bank.Keeper) csdkTypes.Handler {
 	return func(ctx csdkTypes.Context, msg csdkTypes.Msg) csdkTypes.Result {
 		switch msg := msg.(type) {
 		case types.MsgRegisterNode:
@@ -24,7 +25,7 @@ func NewHandler(vk keeper.Keeper, bk bank.Keeper) csdkTypes.Handler {
 		case types.MsgInitSession:
 			return handleInitSession(ctx, vk, bk, msg)
 		case types.MsgUpdateSessionBandwidth:
-			return handleUpdateSessionBandwidth(ctx, vk, msg)
+			return handleUpdateSessionBandwidth(ctx, vk, ak, msg)
 		default:
 			return types.ErrorUnknownMsgType(reflect.TypeOf(msg).Name()).Result()
 		}
@@ -200,6 +201,9 @@ func handleInitSession(ctx csdkTypes.Context, vk keeper.Keeper, bk bank.Keeper, 
 	if node == nil {
 		return types.ErrorNodeNotExists().Result()
 	}
+	if node.Status != types.StatusActive {
+		return types.ErrorInvalidNodeStatus().Result()
+	}
 
 	pricePerGB := node.FindPricePerGB(msg.AmountToLock.Denom)
 	bandwidth, err := node.CalculateBandwidth(msg.AmountToLock)
@@ -230,11 +234,11 @@ func handleInitSession(ctx csdkTypes.Context, vk keeper.Keeper, bk bank.Keeper, 
 	allTags = allTags.AppendTags(tags)
 
 	details := types.SessionDetails{
-		ID:            id,
-		NodeID:        msg.NodeID,
-		ClientAddress: msg.From,
-		LockedAmount:  msg.AmountToLock,
-		PricePerGB:    pricePerGB,
+		ID:           id,
+		NodeID:       msg.NodeID,
+		Client:       msg.From,
+		LockedAmount: msg.AmountToLock,
+		PricePerGB:   pricePerGB,
 		Bandwidth: types.SessionBandwidth{
 			ToProvide: bandwidth,
 		},
@@ -254,6 +258,64 @@ func handleInitSession(ctx csdkTypes.Context, vk keeper.Keeper, bk bank.Keeper, 
 	return csdkTypes.Result{Tags: allTags}
 }
 
-func handleUpdateSessionBandwidth(ctx csdkTypes.Context, vk keeper.Keeper, msg types.MsgUpdateSessionBandwidth) csdkTypes.Result {
-	return csdkTypes.Result{}
+func handleUpdateSessionBandwidth(ctx csdkTypes.Context, vk keeper.Keeper, ak auth.AccountKeeper, msg types.MsgUpdateSessionBandwidth) csdkTypes.Result {
+	allTags := csdkTypes.EmptyTags()
+
+	session, err := vk.GetSessionDetails(ctx, msg.SessionID)
+	if err != nil {
+		return err.Result()
+	}
+	if session == nil {
+		return types.ErrorSessionNotExists().Result()
+	}
+	if session.Status != types.StatusInit &&
+		session.Status != types.StatusActive &&
+		session.Status != types.StatusInactive {
+		return types.ErrorInvalidSessionStatus().Result()
+	}
+
+	if msg.Bandwidth.LTE(session.Bandwidth.Consumed) ||
+		session.Bandwidth.ToProvide.LT(msg.Bandwidth) {
+		return types.ErrorInvalidBandwidth().Result()
+	}
+
+	node, err := vk.GetNodeDetails(ctx, session.NodeID)
+	if err != nil {
+		return err.Result()
+	}
+	if node == nil {
+		return types.ErrorNodeNotExists().Result()
+	}
+	if node.Status != types.StatusActive {
+		return types.ErrorInvalidNodeStatus().Result()
+	}
+
+	signData := types.NewBandwidthSignData(msg.SessionID, msg.Bandwidth, node.Owner, session.Client)
+	signBytes, err := signData.GetBytes()
+	if err != nil {
+		return err.Result()
+	}
+
+	nodeOwner := ak.GetAccount(ctx, node.Owner)
+	client := ak.GetAccount(ctx, session.Client)
+
+	if !client.GetPubKey().VerifyBytes(signBytes, msg.ClientSign) ||
+		!nodeOwner.GetPubKey().VerifyBytes(signBytes, msg.NodeOwnerSign) {
+		return types.ErrorInvalidSign().Result()
+	}
+
+	session.Bandwidth.Consumed = msg.Bandwidth
+	session.Bandwidth.ClientSign = msg.ClientSign
+	session.Bandwidth.NodeOwnerSign = msg.NodeOwnerSign
+	session.Bandwidth.UpdatedAt = ctx.BlockHeader().Time
+	if session.Status == types.StatusInit {
+		session.Status = types.StatusActive
+		session.StatusAt = ctx.BlockHeader().Time
+	}
+
+	if err := vk.SetSessionDetails(ctx, msg.SessionID, session); err != nil {
+		return err.Result()
+	}
+
+	return csdkTypes.Result{Tags: allTags}
 }

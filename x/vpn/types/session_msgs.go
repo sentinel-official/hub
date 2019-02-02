@@ -60,11 +60,11 @@ func NewMsgInitSession(from csdkTypes.AccAddress,
 }
 
 type MsgUpdateSessionBandwidth struct {
-	From              csdkTypes.AccAddress `json:"from"`
-	SessionID         string               `json:"session_id"`
-	ConsumedBandwidth sdkTypes.Bandwidth   `json:"consumed_bandwidth"`
-	ClientSign        []byte               `json:"client_sign"`
-	NodeOwnerSign     []byte               `json:"node_owner_sign"`
+	From          csdkTypes.AccAddress `json:"from"`
+	SessionID     string               `json:"session_id"`
+	Bandwidth     sdkTypes.Bandwidth   `json:"bandwidth"`
+	ClientSign    []byte               `json:"client_sign"`
+	NodeOwnerSign []byte               `json:"node_owner_sign"`
 }
 
 func (msg MsgUpdateSessionBandwidth) Type() string {
@@ -78,7 +78,7 @@ func (msg MsgUpdateSessionBandwidth) ValidateBasic() csdkTypes.Error {
 	if len(msg.SessionID) == 0 {
 		return ErrorInvalidField("session_id")
 	}
-	if !msg.ConsumedBandwidth.Upload.IsPositive() || !msg.ConsumedBandwidth.Download.IsPositive() {
+	if !msg.Bandwidth.Upload.IsPositive() || !msg.Bandwidth.Download.IsPositive() {
 		return ErrorInvalidField("consumed_bandwidth")
 	}
 	if len(msg.ClientSign) == 0 {
@@ -115,7 +115,7 @@ func NewMsgUpdateSessionBandwidth(from csdkTypes.AccAddress,
 	return &MsgUpdateSessionBandwidth{
 		From:      from,
 		SessionID: sessionID,
-		ConsumedBandwidth: sdkTypes.Bandwidth{
+		Bandwidth: sdkTypes.Bandwidth{
 			Upload:   upload,
 			Download: download,
 		},

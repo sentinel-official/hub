@@ -17,8 +17,12 @@ const (
 	errCodeInvalidLockDenom     = 206
 	errCodeInvalidNodeStatus    = 207
 	errCodeInvalidQueryType     = 208
-	errCodeSessionAlreadyExists = 209
-	errCodeInvalidPriceDenom    = 210
+	errCodeSessionAlreadyExists = 251
+	errCodeInvalidPriceDenom    = 252
+	errCodeSessionNotExists     = 253
+	errCodeInvalidBandwidth     = 254
+	errCodeInvalidSign          = 255
+	errCodeInvalidSessionStatus = 256
 
 	errMsgUnknownMsgType       = "Unknown message type: "
 	errMsgNodeAlreadyExists    = "Node already exists"
@@ -30,6 +34,10 @@ const (
 	errMsgInvalidQueryType     = "Invalid query type: "
 	errMsgSessionAlreadyExists = "Session already exists"
 	errMsgInvalidPriceDenom    = "Invalid price denom"
+	errMsgSessionNotExists     = "Session not exists"
+	errMsgInvalidBandwidth     = "Invalid bandwidth"
+	errMsgInvalidSign          = "Invalid sign"
+	errMsgInvalidSessionStatus = "Invalid session status"
 )
 
 func ErrorMarshal() csdkTypes.Error {
@@ -78,4 +86,20 @@ func ErrorSessionAlreadyExists() csdkTypes.Error {
 
 func ErrorInvalidPriceDenom() csdkTypes.Error {
 	return csdkTypes.NewError(codespace, errCodeInvalidPriceDenom, errMsgInvalidPriceDenom)
+}
+
+func ErrorSessionNotExists() csdkTypes.Error {
+	return csdkTypes.NewError(codespace, errCodeSessionNotExists, errMsgSessionNotExists)
+}
+
+func ErrorInvalidBandwidth() csdkTypes.Error {
+	return csdkTypes.NewError(codespace, errCodeInvalidBandwidth, errMsgInvalidBandwidth)
+}
+
+func ErrorInvalidSign() csdkTypes.Error {
+	return csdkTypes.NewError(codespace, errCodeInvalidSign, errMsgInvalidSign)
+}
+
+func ErrorInvalidSessionStatus() csdkTypes.Error {
+	return csdkTypes.NewError(codespace, errCodeInvalidSessionStatus, errMsgInvalidSessionStatus)
 }
