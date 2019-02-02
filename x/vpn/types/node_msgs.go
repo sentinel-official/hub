@@ -1,4 +1,4 @@
-package vpn
+package types
 
 import (
 	"encoding/json"
@@ -25,29 +25,29 @@ func (msg MsgRegisterNode) Type() string {
 
 func (msg MsgRegisterNode) ValidateBasic() csdkTypes.Error {
 	if msg.From == nil || msg.From.Empty() {
-		return errorInvalidField("from")
+		return ErrorInvalidField("from")
 	}
 	if msg.AmountToLock.IsPositive() == false || msg.AmountToLock.Denom != "sent" {
-		return errorInvalidField("amount_to_lock")
+		return ErrorInvalidField("amount_to_lock")
 	}
 	if msg.APIPort <= 0 || msg.APIPort > 65535 {
-		return errorInvalidField("api_port")
+		return ErrorInvalidField("api_port")
 	}
 	if msg.NetSpeed.Download <= 0 || msg.NetSpeed.Upload <= 0 {
-		return errorInvalidField("net_speed")
+		return ErrorInvalidField("net_speed")
 	}
 	if len(msg.EncMethod) == 0 {
-		return errorInvalidField("enc_method")
+		return ErrorInvalidField("enc_method")
 	}
 	if msg.PricesPerGB == nil || msg.PricesPerGB.Len() == 0 ||
 		msg.PricesPerGB.IsValid() == false || msg.PricesPerGB.IsPositive() == false {
-		return errorInvalidField("prices_per_gb")
+		return ErrorInvalidField("prices_per_gb")
 	}
 	if len(msg.Version) == 0 {
-		return errorInvalidField("version")
+		return ErrorInvalidField("version")
 	}
 	if len(msg.NodeType) == 0 {
-		return errorInvalidField("node_type")
+		return ErrorInvalidField("node_type")
 	}
 
 	return nil
@@ -107,20 +107,20 @@ func (msg MsgUpdateNodeDetails) Type() string {
 
 func (msg MsgUpdateNodeDetails) ValidateBasic() csdkTypes.Error {
 	if msg.From == nil || msg.From.Empty() {
-		return errorInvalidField("from")
+		return ErrorInvalidField("from")
 	}
 	if len(msg.ID) == 0 {
-		return errorInvalidField("id")
+		return ErrorInvalidField("id")
 	}
 	if msg.APIPort < 0 || msg.APIPort > 65535 {
-		return errorInvalidField("api_port")
+		return ErrorInvalidField("api_port")
 	}
 	if msg.NetSpeed.Download < 0 || msg.NetSpeed.Upload < 0 {
-		return errorInvalidField("net_speed")
+		return ErrorInvalidField("net_speed")
 	}
 	if (msg.PricesPerGB != nil && msg.PricesPerGB.Len() != 0) &&
 		(msg.PricesPerGB.IsValid() == false || msg.PricesPerGB.IsPositive() == false) {
-		return errorInvalidField("prices_per_gb")
+		return ErrorInvalidField("prices_per_gb")
 	}
 
 	return nil
@@ -161,50 +161,6 @@ func NewMsgUpdateNodeDetails(from csdkTypes.AccAddress,
 	}
 }
 
-type MsgDeregisterNode struct {
-	From csdkTypes.AccAddress `json:"from"`
-	ID   string               `json:"id"`
-}
-
-func (msg MsgDeregisterNode) Type() string {
-	return "msg_deregister_node"
-}
-
-func (msg MsgDeregisterNode) ValidateBasic() csdkTypes.Error {
-	if msg.From == nil || msg.From.Empty() {
-		return errorInvalidField("from")
-	}
-	if len(msg.ID) == 0 {
-		return errorInvalidField("id")
-	}
-
-	return nil
-}
-
-func (msg MsgDeregisterNode) GetSignBytes() []byte {
-	msgBytes, err := json.Marshal(msg)
-	if err != nil {
-		panic(err)
-	}
-
-	return msgBytes
-}
-
-func (msg MsgDeregisterNode) GetSigners() []csdkTypes.AccAddress {
-	return []csdkTypes.AccAddress{msg.From}
-}
-
-func (msg MsgDeregisterNode) Route() string {
-	return RouterKey
-}
-
-func NewMsgDeregisterNode(from csdkTypes.AccAddress, id string) *MsgDeregisterNode {
-	return &MsgDeregisterNode{
-		From: from,
-		ID:   id,
-	}
-}
-
 type MsgUpdateNodeStatus struct {
 	From   csdkTypes.AccAddress `json:"from"`
 	ID     string               `json:"id"`
@@ -217,13 +173,13 @@ func (msg MsgUpdateNodeStatus) Type() string {
 
 func (msg MsgUpdateNodeStatus) ValidateBasic() csdkTypes.Error {
 	if msg.From == nil || msg.From.Empty() {
-		return errorInvalidField("from")
+		return ErrorInvalidField("from")
 	}
 	if len(msg.ID) == 0 {
-		return errorInvalidField("id")
+		return ErrorInvalidField("id")
 	}
 	if msg.Status != StatusActive && msg.Status != StatusInactive {
-		return errorInvalidField("status")
+		return ErrorInvalidField("status")
 	}
 
 	return nil
@@ -254,31 +210,27 @@ func NewMsgUpdateNodeStatus(from csdkTypes.AccAddress, id, status string) *MsgUp
 	}
 }
 
-type MsgAddSession struct {
-	From         csdkTypes.AccAddress `json:"from"`
-	NodeID       string               `json:"node_id"`
-	AmountToLock csdkTypes.Coin       `json:"amount_to_lock"`
+type MsgDeregisterNode struct {
+	From csdkTypes.AccAddress `json:"from"`
+	ID   string               `json:"id"`
 }
 
-func (msg MsgAddSession) Type() string {
-	return "msg_add_session"
+func (msg MsgDeregisterNode) Type() string {
+	return "msg_deregister_node"
 }
 
-func (msg MsgAddSession) ValidateBasic() csdkTypes.Error {
+func (msg MsgDeregisterNode) ValidateBasic() csdkTypes.Error {
 	if msg.From == nil || msg.From.Empty() {
-		return errorInvalidField("from")
+		return ErrorInvalidField("from")
 	}
-	if len(msg.NodeID) == 0 {
-		return errorInvalidField("node_id")
-	}
-	if msg.AmountToLock.IsPositive() == false {
-		return errorInvalidField("amount_to_lock")
+	if len(msg.ID) == 0 {
+		return ErrorInvalidField("id")
 	}
 
 	return nil
 }
 
-func (msg MsgAddSession) GetSignBytes() []byte {
+func (msg MsgDeregisterNode) GetSignBytes() []byte {
 	msgBytes, err := json.Marshal(msg)
 	if err != nil {
 		panic(err)
@@ -287,83 +239,17 @@ func (msg MsgAddSession) GetSignBytes() []byte {
 	return msgBytes
 }
 
-func (msg MsgAddSession) GetSigners() []csdkTypes.AccAddress {
+func (msg MsgDeregisterNode) GetSigners() []csdkTypes.AccAddress {
 	return []csdkTypes.AccAddress{msg.From}
 }
 
-func (msg MsgAddSession) Route() string {
+func (msg MsgDeregisterNode) Route() string {
 	return RouterKey
 }
 
-func NewMsgAddSession(from csdkTypes.AccAddress,
-	nodeID string, amountToLock csdkTypes.Coin) *MsgAddSession {
-	return &MsgAddSession{
-		From:         from,
-		NodeID:       nodeID,
-		AmountToLock: amountToLock,
-	}
-}
-
-type MsgUpdateSessionBandwidth struct {
-	From              csdkTypes.AccAddress `json:"from"`
-	SessionID         string               `json:"session_id"`
-	ConsumedBandwidth sdkTypes.Bandwidth   `json:"consumed_bandwidth"`
-	ClientSign        []byte               `json:"client_sign"`
-	NodeOwnerSign     []byte               `json:"node_owner_sign"`
-}
-
-func (msg MsgUpdateSessionBandwidth) Type() string {
-	return "msg_update_session_bandwidth"
-}
-
-func (msg MsgUpdateSessionBandwidth) ValidateBasic() csdkTypes.Error {
-	if msg.From == nil || msg.From.Empty() {
-		return errorInvalidField("from")
-	}
-	if len(msg.SessionID) == 0 {
-		return errorInvalidField("session_id")
-	}
-	if msg.ConsumedBandwidth.Upload == 0 || msg.ConsumedBandwidth.Download == 0 {
-		return errorInvalidField("consumed_bandwidth")
-	}
-	if len(msg.ClientSign) == 0 {
-		return errorInvalidField("client_sign")
-	}
-	if len(msg.NodeOwnerSign) == 0 {
-		return errorInvalidField("node_owner_sign")
-	}
-
-	return nil
-}
-
-func (msg MsgUpdateSessionBandwidth) GetSignBytes() []byte {
-	msgBytes, err := json.Marshal(msg)
-	if err != nil {
-		panic(err)
-	}
-
-	return msgBytes
-}
-
-func (msg MsgUpdateSessionBandwidth) GetSigners() []csdkTypes.AccAddress {
-	return []csdkTypes.AccAddress{msg.From}
-}
-
-func (msg MsgUpdateSessionBandwidth) Route() string {
-	return RouterKey
-}
-
-func NewMsgUpdateSessionBandwidth(from csdkTypes.AccAddress,
-	sessionID string, consumedUpload, consumedDownload uint64,
-	clientSign []byte, nodeOwnerSign []byte) *MsgUpdateSessionBandwidth {
-	return &MsgUpdateSessionBandwidth{
-		From:      from,
-		SessionID: sessionID,
-		ConsumedBandwidth: sdkTypes.Bandwidth{
-			Upload:   consumedUpload,
-			Download: consumedDownload,
-		},
-		ClientSign:    clientSign,
-		NodeOwnerSign: nodeOwnerSign,
+func NewMsgDeregisterNode(from csdkTypes.AccAddress, id string) *MsgDeregisterNode {
+	return &MsgDeregisterNode{
+		From: from,
+		ID:   id,
 	}
 }

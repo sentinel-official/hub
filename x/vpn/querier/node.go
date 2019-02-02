@@ -1,9 +1,12 @@
-package vpn
+package querier
 
 import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
 	abciTypes "github.com/tendermint/tendermint/abci/types"
+
+	"github.com/ironman0x7b2/sentinel-sdk/x/vpn/keeper"
+	"github.com/ironman0x7b2/sentinel-sdk/x/vpn/types"
 )
 
 const (
@@ -12,17 +15,17 @@ const (
 	QueryNodesOfOwner = "nodesOfOwner"
 )
 
-func NewQuerier(k Keeper, cdc *codec.Codec) csdkTypes.Querier {
+func NewQuerier(vk keeper.Keeper, cdc *codec.Codec) csdkTypes.Querier {
 	return func(ctx csdkTypes.Context, path []string, req abciTypes.RequestQuery) (res []byte, err csdkTypes.Error) {
 		switch path[0] {
 		case QueryNode:
-			return queryNode(ctx, cdc, req, k)
+			return queryNode(ctx, cdc, req, vk)
 		case QueryNodes:
-			return queryNodes(ctx, cdc, k)
+			return queryNodes(ctx, cdc, vk)
 		case QueryNodesOfOwner:
-			return queryNodesOfOwner(ctx, cdc, req, k)
+			return queryNodesOfOwner(ctx, cdc, req, vk)
 		default:
-			return nil, errorInvalidQueryType(path[0])
+			return nil, types.ErrorInvalidQueryType(path[0])
 		}
 	}
 }
@@ -37,13 +40,13 @@ func NewQueryNodeParams(id string) QueryNodeParams {
 	}
 }
 
-func queryNode(ctx csdkTypes.Context, cdc *codec.Codec, req abciTypes.RequestQuery, k Keeper) ([]byte, csdkTypes.Error) {
+func queryNode(ctx csdkTypes.Context, cdc *codec.Codec, req abciTypes.RequestQuery, vk keeper.Keeper) ([]byte, csdkTypes.Error) {
 	var params QueryNodeParams
 	if err := cdc.UnmarshalJSON(req.Data, &params); err != nil {
-		return nil, errorUnmarshal()
+		return nil, types.ErrorUnmarshal()
 	}
 
-	details, err := k.GetNodeDetails(ctx, params.ID)
+	details, err := vk.GetNodeDetails(ctx, params.ID)
 	if err != nil {
 		return nil, err
 	}
@@ -53,7 +56,7 @@ func queryNode(ctx csdkTypes.Context, cdc *codec.Codec, req abciTypes.RequestQue
 
 	res, resErr := cdc.MarshalJSON(details)
 	if resErr != nil {
-		return nil, errorMarshal()
+		return nil, types.ErrorMarshal()
 	}
 
 	return res, nil
@@ -69,34 +72,34 @@ func NewQueryNodesOfOwnerParams(owner csdkTypes.AccAddress) QueryNodesOfOwnerPra
 	}
 }
 
-func queryNodesOfOwner(ctx csdkTypes.Context, cdc *codec.Codec, req abciTypes.RequestQuery, k Keeper) ([]byte, csdkTypes.Error) {
+func queryNodesOfOwner(ctx csdkTypes.Context, cdc *codec.Codec, req abciTypes.RequestQuery, vk keeper.Keeper) ([]byte, csdkTypes.Error) {
 	var params QueryNodesOfOwnerPrams
 	if err := cdc.UnmarshalJSON(req.Data, &params); err != nil {
-		return nil, errorUnmarshal()
+		return nil, types.ErrorUnmarshal()
 	}
 
-	nodes, err := k.GetNodesOfOwner(ctx, params.Owner)
+	nodes, err := vk.GetNodesOfOwner(ctx, params.Owner)
 	if err != nil {
 		return nil, err
 	}
 
 	res, resErr := cdc.MarshalJSON(nodes)
 	if resErr != nil {
-		return nil, errorMarshal()
+		return nil, types.ErrorMarshal()
 	}
 
 	return res, nil
 }
 
-func queryNodes(ctx csdkTypes.Context, cdc *codec.Codec, k Keeper) ([]byte, csdkTypes.Error) {
-	nodes, err := k.GetNodes(ctx)
+func queryNodes(ctx csdkTypes.Context, cdc *codec.Codec, vk keeper.Keeper) ([]byte, csdkTypes.Error) {
+	nodes, err := vk.GetNodes(ctx)
 	if err != nil {
 		return nil, err
 	}
 
 	res, resErr := cdc.MarshalJSON(nodes)
 	if resErr != nil {
-		return nil, errorMarshal()
+		return nil, types.ErrorMarshal()
 	}
 
 	return res, nil

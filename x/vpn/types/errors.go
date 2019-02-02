@@ -1,4 +1,4 @@
-package vpn
+package types
 
 import (
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
@@ -28,42 +28,42 @@ const (
 	errMsgInvalidQueryType  = "Invalid query type: "
 )
 
-func errorMarshal() csdkTypes.Error {
+func ErrorMarshal() csdkTypes.Error {
 	return csdkTypes.NewError(codespace, sdkTypes.ErrCodeMarshal, sdkTypes.ErrMsgMarshal)
 }
 
-func errorUnmarshal() csdkTypes.Error {
+func ErrorUnmarshal() csdkTypes.Error {
 	return csdkTypes.NewError(codespace, sdkTypes.ErrCodeUnmarshal, sdkTypes.ErrMsgUnmarshal)
 }
 
-func errorUnknownMsgType(msgType string) csdkTypes.Error {
+func ErrorUnknownMsgType(msgType string) csdkTypes.Error {
 	return csdkTypes.NewError(codespace, errCodeUnknownMsgType, errMsgUnknownMsgType+msgType)
 }
 
-func errorNodeAlreadyExists() csdkTypes.Error {
+func ErrorNodeAlreadyExists() csdkTypes.Error {
 	return csdkTypes.NewError(codespace, errCodeNodeAlreadyExists, errMsgNodeAlreadyExists)
 }
 
-func errorNodeNotExists() csdkTypes.Error {
+func ErrorNodeNotExists() csdkTypes.Error {
 	return csdkTypes.NewError(codespace, errCodeNodeNotExists, errMsgNodeNotExists)
 }
 
-func errorUnauthorized() csdkTypes.Error {
+func ErrorUnauthorized() csdkTypes.Error {
 	return csdkTypes.NewError(codespace, errCodeUnauthorized, errMsgUnauthorized)
 }
 
-func errorInvalidField(field string) csdkTypes.Error {
+func ErrorInvalidField(field string) csdkTypes.Error {
 	return csdkTypes.NewError(codespace, errCodeInvalidField, errMsgInvalidField+field)
 }
 
-func errorInvalidLockDenom() csdkTypes.Error {
+func ErrorInvalidLockDenom() csdkTypes.Error {
 	return csdkTypes.NewError(codespace, errCodeInvalidLockDenom, errMsgInvalidLockDenom)
 }
 
-func errorInvalidNodeStatus() csdkTypes.Error {
+func ErrorInvalidNodeStatus() csdkTypes.Error {
 	return csdkTypes.NewError(codespace, errCodeInvalidNodeStatus, errMsgInvalidNodeStatus)
 }
 
-func errorInvalidQueryType(queryType string) csdkTypes.Error {
+func ErrorInvalidQueryType(queryType string) csdkTypes.Error {
 	return csdkTypes.NewError(codespace, errCodeInvalidQueryType, errMsgInvalidQueryType+queryType)
 }
