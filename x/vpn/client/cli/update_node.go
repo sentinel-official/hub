@@ -114,5 +114,9 @@ func updateNodeStatusTxCmd(cdc *codec.Codec) *cobra.Command {
 		},
 	}
 
+	cmd.Flags().String(flagNodeID, "", "Node ID")
+
+	_ = cmd.MarkFlagRequired(flagNodeID)
+
 	return cmd
 }
