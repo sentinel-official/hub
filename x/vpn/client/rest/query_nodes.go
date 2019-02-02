@@ -51,7 +51,7 @@ func getNodesHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) http.Handl
 
 		owner := r.URL.Query().Get("owner")
 		if owner == "" {
-			res, err = common.QueryNodes(cliCtx, cdc)
+			res, err = common.QueryNodes(cliCtx)
 			if err != nil {
 				utils.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 				return

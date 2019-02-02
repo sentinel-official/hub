@@ -1,6 +1,17 @@
 package types
 
+import (
+	csdkTypes "github.com/cosmos/cosmos-sdk/types"
+)
+
 type Bandwidth struct {
-	Upload   uint64 `json:"upload"`
-	Download uint64 `json:"download"`
+	Upload   csdkTypes.Int `json:"upload"`
+	Download csdkTypes.Int `json:"download"`
+}
+
+func NewBandwidth(upload, download csdkTypes.Int) Bandwidth {
+	return Bandwidth{
+		Upload:   upload,
+		Download: download,
+	}
 }

@@ -8,17 +8,17 @@ import (
 	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
 )
 
-type MsgAddSession struct {
+type MsgInitSession struct {
 	From         csdkTypes.AccAddress `json:"from"`
 	NodeID       string               `json:"node_id"`
 	AmountToLock csdkTypes.Coin       `json:"amount_to_lock"`
 }
 
-func (msg MsgAddSession) Type() string {
-	return "msg_add_session"
+func (msg MsgInitSession) Type() string {
+	return "msg_init_session"
 }
 
-func (msg MsgAddSession) ValidateBasic() csdkTypes.Error {
+func (msg MsgInitSession) ValidateBasic() csdkTypes.Error {
 	if msg.From == nil || msg.From.Empty() {
 		return ErrorInvalidField("from")
 	}
@@ -32,7 +32,7 @@ func (msg MsgAddSession) ValidateBasic() csdkTypes.Error {
 	return nil
 }
 
-func (msg MsgAddSession) GetSignBytes() []byte {
+func (msg MsgInitSession) GetSignBytes() []byte {
 	msgBytes, err := json.Marshal(msg)
 	if err != nil {
 		panic(err)
@@ -41,18 +41,18 @@ func (msg MsgAddSession) GetSignBytes() []byte {
 	return msgBytes
 }
 
-func (msg MsgAddSession) GetSigners() []csdkTypes.AccAddress {
+func (msg MsgInitSession) GetSigners() []csdkTypes.AccAddress {
 	return []csdkTypes.AccAddress{msg.From}
 }
 
-func (msg MsgAddSession) Route() string {
+func (msg MsgInitSession) Route() string {
 	return RouterKey
 }
 
-func NewMsgAddSession(from csdkTypes.AccAddress,
-	nodeID string, amountToLock csdkTypes.Coin) *MsgAddSession {
+func NewMsgInitSession(from csdkTypes.AccAddress,
+	nodeID string, amountToLock csdkTypes.Coin) *MsgInitSession {
 
-	return &MsgAddSession{
+	return &MsgInitSession{
 		From:         from,
 		NodeID:       nodeID,
 		AmountToLock: amountToLock,
@@ -78,7 +78,7 @@ func (msg MsgUpdateSessionBandwidth) ValidateBasic() csdkTypes.Error {
 	if len(msg.SessionID) == 0 {
 		return ErrorInvalidField("session_id")
 	}
-	if msg.ConsumedBandwidth.Upload == 0 || msg.ConsumedBandwidth.Download == 0 {
+	if !msg.ConsumedBandwidth.Upload.IsPositive() || !msg.ConsumedBandwidth.Download.IsPositive() {
 		return ErrorInvalidField("consumed_bandwidth")
 	}
 	if len(msg.ClientSign) == 0 {
@@ -109,15 +109,15 @@ func (msg MsgUpdateSessionBandwidth) Route() string {
 }
 
 func NewMsgUpdateSessionBandwidth(from csdkTypes.AccAddress,
-	sessionID string, consumedUpload, consumedDownload uint64,
+	sessionID string, upload, download csdkTypes.Int,
 	clientSign []byte, nodeOwnerSign []byte) *MsgUpdateSessionBandwidth {
 
 	return &MsgUpdateSessionBandwidth{
 		From:      from,
 		SessionID: sessionID,
 		ConsumedBandwidth: sdkTypes.Bandwidth{
-			Upload:   consumedUpload,
-			Download: consumedDownload,
+			Upload:   upload,
+			Download: download,
 		},
 		ClientSign:    clientSign,
 		NodeOwnerSign: nodeOwnerSign,

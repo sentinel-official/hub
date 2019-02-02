@@ -20,7 +20,7 @@ const (
 	StatusActive       = types.StatusActive
 	StatusInactive     = types.StatusInactive
 	StatusDeregistered = types.StatusDeregistered
-	StatusStart        = types.StatusDeregistered
+	StatusInit         = types.StatusInit
 	StatusEnd          = types.StatusEnd
 
 	QueryNode         = querier.QueryNode
@@ -36,7 +36,7 @@ type (
 	MsgUpdateNodeDetails = types.MsgUpdateNodeDetails
 	MsgUpdateNodeStatus = types.MsgUpdateNodeStatus
 	MsgDeregisterNode = types.MsgDeregisterNode
-	MsgAddSession = types.MsgAddSession
+	MsgInitSession = types.MsgInitSession
 	MsgUpdateSessionBandwidth = types.MsgUpdateSessionBandwidth
 
 	Keeper = keeper.Keeper
@@ -48,10 +48,12 @@ type (
 var (
 	RegisterCodec = types.RegisterCodec
 
-	NewMsgRegisterNode      = types.NewMsgRegisterNode
-	NewMsgUpdateNodeDetails = types.NewMsgUpdateNodeDetails
-	NewMsgUpdateNodeStatus  = types.NewMsgUpdateNodeStatus
-	NewMsgDeregisterNode    = types.NewMsgDeregisterNode
+	NewMsgRegisterNode           = types.NewMsgRegisterNode
+	NewMsgUpdateNodeDetails      = types.NewMsgUpdateNodeDetails
+	NewMsgUpdateNodeStatus       = types.NewMsgUpdateNodeStatus
+	NewMsgDeregisterNode         = types.NewMsgDeregisterNode
+	NewMsgInitSession            = types.NewMsgInitSession
+	NewMsgUpdateSessionBandwidth = types.NewMsgUpdateSessionBandwidth
 
 	NewKeeper = keeper.NewKeeper
 

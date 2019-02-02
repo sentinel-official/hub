@@ -21,6 +21,10 @@ func NewHandler(vk keeper.Keeper, bk bank.Keeper) csdkTypes.Handler {
 			return handleUpdateNodeStatus(ctx, vk, msg)
 		case types.MsgDeregisterNode:
 			return handleDeregisterNode(ctx, vk, bk, msg)
+		case types.MsgInitSession:
+			return handleInitSession(ctx, vk, bk, msg)
+		case types.MsgUpdateSessionBandwidth:
+			return handleUpdateSessionBandwidth(ctx, vk, msg)
 		default:
 			return types.ErrorUnknownMsgType(reflect.TypeOf(msg).Name()).Result()
 		}
@@ -99,7 +103,7 @@ func handleUpdateNodeDetails(ctx csdkTypes.Context, vk keeper.Keeper, msg types.
 	if msg.APIPort != 0 {
 		details.APIPort = msg.APIPort
 	}
-	if msg.NetSpeed.Download != 0 && msg.NetSpeed.Upload != 0 {
+	if !msg.NetSpeed.Download.IsZero() && !msg.NetSpeed.Upload.IsZero() {
 		details.NetSpeed = msg.NetSpeed
 	}
 	if len(msg.EncMethod) != 0 {
@@ -184,4 +188,72 @@ func handleUpdateNodeStatus(ctx csdkTypes.Context, vk keeper.Keeper, msg types.M
 	allTags = allTags.AppendTag("node_id", []byte(msg.ID))
 
 	return csdkTypes.Result{Tags: allTags}
+}
+
+func handleInitSession(ctx csdkTypes.Context, vk keeper.Keeper, bk bank.Keeper, msg types.MsgInitSession) csdkTypes.Result {
+	allTags := csdkTypes.EmptyTags()
+
+	node, err := vk.GetNodeDetails(ctx, msg.NodeID)
+	if err != nil {
+		return err.Result()
+	}
+	if node == nil {
+		return types.ErrorNodeNotExists().Result()
+	}
+
+	pricePerGB := node.FindPricePerGB(msg.AmountToLock.Denom)
+	bandwidth, err := node.CalculateBandwidth(msg.AmountToLock)
+	if err != nil {
+		return err.Result()
+	}
+
+	count, err := vk.GetSessionsCount(ctx, msg.From)
+	if err != nil {
+		return err.Result()
+	}
+
+	id := types.SessionKey(msg.From, count)
+	if details, err := vk.GetSessionDetails(ctx, id); true {
+		if err != nil {
+			return err.Result()
+		}
+		if details != nil {
+			return types.ErrorSessionAlreadyExists().Result()
+		}
+	}
+
+	lockAmount := csdkTypes.Coins{msg.AmountToLock}
+	_, tags, err := bk.SubtractCoins(ctx, msg.From, lockAmount)
+	if err != nil {
+		return err.Result()
+	}
+	allTags = allTags.AppendTags(tags)
+
+	details := types.SessionDetails{
+		ID:            id,
+		NodeID:        msg.NodeID,
+		ClientAddress: msg.From,
+		LockedAmount:  msg.AmountToLock,
+		PricePerGB:    pricePerGB,
+		Bandwidth: types.SessionBandwidth{
+			ToProvide: bandwidth,
+		},
+		Status:   types.StatusInit,
+		StatusAt: ctx.BlockHeader().Time,
+	}
+
+	if err := vk.SetSessionDetails(ctx, id, &details); err != nil {
+		return err.Result()
+	}
+	allTags = allTags.AppendTag("session_id", []byte(id))
+
+	if err := vk.SetSessionsCount(ctx, msg.From, count+1); err != nil {
+		return err.Result()
+	}
+
+	return csdkTypes.Result{Tags: allTags}
+}
+
+func handleUpdateSessionBandwidth(ctx csdkTypes.Context, vk keeper.Keeper, msg types.MsgUpdateSessionBandwidth) csdkTypes.Result {
+	return csdkTypes.Result{}
 }

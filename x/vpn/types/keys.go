@@ -9,6 +9,8 @@ import (
 var (
 	NodesCountKeyPrefix    = []byte("NODES_COUNT")
 	SessionsCountKeyPrefix = []byte("SESSION_COUNT")
+
+	GB = csdkTypes.NewInt(1000000000)
 )
 
 func NodesCountKey(accAddress csdkTypes.AccAddress) []byte {
@@ -41,6 +43,6 @@ const (
 	StatusActive       = "ACTIVE"
 	StatusInactive     = "INACTIVE"
 	StatusDeregistered = "DEREGISTERED"
-	StatusStart        = "STARTED"
+	StatusInit         = "INIT"
 	StatusEnd          = "ENDED"
 )

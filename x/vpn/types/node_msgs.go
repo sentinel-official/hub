@@ -33,7 +33,7 @@ func (msg MsgRegisterNode) ValidateBasic() csdkTypes.Error {
 	if msg.APIPort <= 0 || msg.APIPort > 65535 {
 		return ErrorInvalidField("api_port")
 	}
-	if msg.NetSpeed.Download <= 0 || msg.NetSpeed.Upload <= 0 {
+	if !msg.NetSpeed.Download.IsPositive() || !msg.NetSpeed.Upload.IsPositive() {
 		return ErrorInvalidField("net_speed")
 	}
 	if len(msg.EncMethod) == 0 {
@@ -71,7 +71,7 @@ func (msg MsgRegisterNode) Route() string {
 }
 
 func NewMsgRegisterNode(from csdkTypes.AccAddress,
-	apiPort uint16, upload, download uint64,
+	apiPort uint16, upload, download csdkTypes.Int,
 	encMethod string, pricesPerGB csdkTypes.Coins,
 	version, nodeType string,
 	amountToLock csdkTypes.Coin) *MsgRegisterNode {
@@ -115,7 +115,7 @@ func (msg MsgUpdateNodeDetails) ValidateBasic() csdkTypes.Error {
 	if msg.APIPort < 0 || msg.APIPort > 65535 {
 		return ErrorInvalidField("api_port")
 	}
-	if msg.NetSpeed.Download < 0 || msg.NetSpeed.Upload < 0 {
+	if msg.NetSpeed.Download.IsNegative() || msg.NetSpeed.Upload.IsNegative() {
 		return ErrorInvalidField("net_speed")
 	}
 	if (msg.PricesPerGB != nil && msg.PricesPerGB.Len() != 0) &&
@@ -144,7 +144,7 @@ func (msg MsgUpdateNodeDetails) Route() string {
 }
 
 func NewMsgUpdateNodeDetails(from csdkTypes.AccAddress,
-	id string, apiPort uint16, upload, download uint64,
+	id string, apiPort uint16, upload, download csdkTypes.Int,
 	encMethod string, pricesPerGB csdkTypes.Coins, version string) *MsgUpdateNodeDetails {
 
 	return &MsgUpdateNodeDetails{

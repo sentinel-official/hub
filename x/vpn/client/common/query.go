@@ -20,7 +20,7 @@ func QueryNode(cliCtx context.CLIContext, cdc *codec.Codec, nodeID string) ([]by
 	return cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s", vpn.QuerierRoute, vpn.QueryNode), paramBytes)
 }
 
-func QueryNodes(cliCtx context.CLIContext, cdc *codec.Codec) ([]byte, error) {
+func QueryNodes(cliCtx context.CLIContext) ([]byte, error) {
 	return cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s", vpn.QuerierRoute, vpn.QueryNodes), nil)
 }
 

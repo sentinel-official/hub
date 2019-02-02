@@ -62,7 +62,7 @@ func QueryNodesCmd(cdc *codec.Codec) *cobra.Command {
 			var err error
 
 			if owner == "" {
-				res, err = common.QueryNodes(cliCtx, cdc)
+				res, err = common.QueryNodes(cliCtx)
 				if err != nil {
 					return err
 				}
