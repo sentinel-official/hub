@@ -6,7 +6,7 @@ const (
 	flagUploadSpeed   = "upload-speed"
 	flagDownloadSpeed = "download-speed"
 	flagEncMethod     = "enc-method"
-	flagPerGBAmount   = "per-gb-amount"
+	flagPricesPerGB   = "prices-per-gb"
 	flagVersion       = "version"
 	flagNodeType      = "node-type"
 	flagNodeID        = "node-id"

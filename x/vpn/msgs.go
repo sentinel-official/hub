@@ -14,7 +14,7 @@ type MsgRegisterNode struct {
 	APIPort      uint16               `json:"api_port"`
 	NetSpeed     sdkTypes.Bandwidth   `json:"net_speed"`
 	EncMethod    string               `json:"enc_method"`
-	PerGBAmount  csdkTypes.Coins      `json:"per_gb_amount"`
+	PricesPerGB  csdkTypes.Coins      `json:"prices_per_gb"`
 	Version      string               `json:"version"`
 	NodeType     string               `json:"node_type"`
 }
@@ -39,9 +39,9 @@ func (msg MsgRegisterNode) ValidateBasic() csdkTypes.Error {
 	if len(msg.EncMethod) == 0 {
 		return errorInvalidField("enc_method")
 	}
-	if msg.PerGBAmount == nil || msg.PerGBAmount.Len() == 0 ||
-		msg.PerGBAmount.IsValid() == false || msg.PerGBAmount.IsPositive() == false {
-		return errorInvalidField("per_gb_amount")
+	if msg.PricesPerGB == nil || msg.PricesPerGB.Len() == 0 ||
+		msg.PricesPerGB.IsValid() == false || msg.PricesPerGB.IsPositive() == false {
+		return errorInvalidField("prices_per_gb")
 	}
 	if len(msg.Version) == 0 {
 		return errorInvalidField("version")
@@ -72,7 +72,7 @@ func (msg MsgRegisterNode) Route() string {
 
 func NewMsgRegisterNode(from csdkTypes.AccAddress,
 	apiPort uint16, upload, download uint64,
-	encMethod string, perGBAmount csdkTypes.Coins,
+	encMethod string, pricesPerGB csdkTypes.Coins,
 	version, nodeType string,
 	amountToLock csdkTypes.Coin) *MsgRegisterNode {
 
@@ -85,7 +85,7 @@ func NewMsgRegisterNode(from csdkTypes.AccAddress,
 			Download: download,
 		},
 		EncMethod:   encMethod,
-		PerGBAmount: perGBAmount,
+		PricesPerGB: pricesPerGB,
 		Version:     version,
 		NodeType:    nodeType,
 	}
@@ -97,7 +97,7 @@ type MsgUpdateNodeDetails struct {
 	APIPort     uint16               `json:"api_port"`
 	NetSpeed    sdkTypes.Bandwidth   `json:"net_speed"`
 	EncMethod   string               `json:"enc_method"`
-	PerGBAmount csdkTypes.Coins      `json:"per_gb_amount"`
+	PricesPerGB csdkTypes.Coins      `json:"prices_per_gb"`
 	Version     string               `json:"version"`
 }
 
@@ -118,9 +118,9 @@ func (msg MsgUpdateNodeDetails) ValidateBasic() csdkTypes.Error {
 	if msg.NetSpeed.Download < 0 || msg.NetSpeed.Upload < 0 {
 		return errorInvalidField("net_speed")
 	}
-	if (msg.PerGBAmount != nil && msg.PerGBAmount.Len() != 0) &&
-		(msg.PerGBAmount.IsValid() == false || msg.PerGBAmount.IsPositive() == false) {
-		return errorInvalidField("per_gb_amount")
+	if (msg.PricesPerGB != nil && msg.PricesPerGB.Len() != 0) &&
+		(msg.PricesPerGB.IsValid() == false || msg.PricesPerGB.IsPositive() == false) {
+		return errorInvalidField("prices_per_gb")
 	}
 
 	return nil
@@ -145,7 +145,7 @@ func (msg MsgUpdateNodeDetails) Route() string {
 
 func NewMsgUpdateNodeDetails(from csdkTypes.AccAddress,
 	id string, apiPort uint16, upload, download uint64,
-	encMethod string, perGBAmount csdkTypes.Coins, version string) *MsgUpdateNodeDetails {
+	encMethod string, pricesPerGB csdkTypes.Coins, version string) *MsgUpdateNodeDetails {
 
 	return &MsgUpdateNodeDetails{
 		From:    from,
@@ -156,7 +156,7 @@ func NewMsgUpdateNodeDetails(from csdkTypes.AccAddress,
 			Download: download,
 		},
 		EncMethod:   encMethod,
-		PerGBAmount: perGBAmount,
+		PricesPerGB: pricesPerGB,
 		Version:     version,
 	}
 }
@@ -251,5 +251,119 @@ func NewMsgUpdateNodeStatus(from csdkTypes.AccAddress, id, status string) *MsgUp
 		From:   from,
 		ID:     id,
 		Status: status,
+	}
+}
+
+type MsgAddSession struct {
+	From         csdkTypes.AccAddress `json:"from"`
+	NodeID       string               `json:"node_id"`
+	AmountToLock csdkTypes.Coin       `json:"amount_to_lock"`
+}
+
+func (msg MsgAddSession) Type() string {
+	return "msg_add_session"
+}
+
+func (msg MsgAddSession) ValidateBasic() csdkTypes.Error {
+	if msg.From == nil || msg.From.Empty() {
+		return errorInvalidField("from")
+	}
+	if len(msg.NodeID) == 0 {
+		return errorInvalidField("node_id")
+	}
+	if msg.AmountToLock.IsPositive() == false {
+		return errorInvalidField("amount_to_lock")
+	}
+
+	return nil
+}
+
+func (msg MsgAddSession) GetSignBytes() []byte {
+	msgBytes, err := json.Marshal(msg)
+	if err != nil {
+		panic(err)
+	}
+
+	return msgBytes
+}
+
+func (msg MsgAddSession) GetSigners() []csdkTypes.AccAddress {
+	return []csdkTypes.AccAddress{msg.From}
+}
+
+func (msg MsgAddSession) Route() string {
+	return RouterKey
+}
+
+func NewMsgAddSession(from csdkTypes.AccAddress,
+	nodeID string, amountToLock csdkTypes.Coin) *MsgAddSession {
+	return &MsgAddSession{
+		From:         from,
+		NodeID:       nodeID,
+		AmountToLock: amountToLock,
+	}
+}
+
+type MsgUpdateSessionBandwidth struct {
+	From              csdkTypes.AccAddress `json:"from"`
+	SessionID         string               `json:"session_id"`
+	ConsumedBandwidth sdkTypes.Bandwidth   `json:"consumed_bandwidth"`
+	ClientSign        []byte               `json:"client_sign"`
+	NodeOwnerSign     []byte               `json:"node_owner_sign"`
+}
+
+func (msg MsgUpdateSessionBandwidth) Type() string {
+	return "msg_update_session_bandwidth"
+}
+
+func (msg MsgUpdateSessionBandwidth) ValidateBasic() csdkTypes.Error {
+	if msg.From == nil || msg.From.Empty() {
+		return errorInvalidField("from")
+	}
+	if len(msg.SessionID) == 0 {
+		return errorInvalidField("session_id")
+	}
+	if msg.ConsumedBandwidth.Upload == 0 || msg.ConsumedBandwidth.Download == 0 {
+		return errorInvalidField("consumed_bandwidth")
+	}
+	if len(msg.ClientSign) == 0 {
+		return errorInvalidField("client_sign")
+	}
+	if len(msg.NodeOwnerSign) == 0 {
+		return errorInvalidField("node_owner_sign")
+	}
+
+	return nil
+}
+
+func (msg MsgUpdateSessionBandwidth) GetSignBytes() []byte {
+	msgBytes, err := json.Marshal(msg)
+	if err != nil {
+		panic(err)
+	}
+
+	return msgBytes
+}
+
+func (msg MsgUpdateSessionBandwidth) GetSigners() []csdkTypes.AccAddress {
+	return []csdkTypes.AccAddress{msg.From}
+}
+
+func (msg MsgUpdateSessionBandwidth) Route() string {
+	return RouterKey
+}
+
+func NewMsgUpdateSessionBandwidth(from csdkTypes.AccAddress,
+	sessionID string, consumedUpload, consumedDownload uint64,
+	clientSign []byte, nodeOwnerSign []byte) *MsgUpdateSessionBandwidth {
+	return &MsgUpdateSessionBandwidth{
+		From:      from,
+		SessionID: sessionID,
+		ConsumedBandwidth: sdkTypes.Bandwidth{
+			Upload:   consumedUpload,
+			Download: consumedDownload,
+		},
+		ClientSign:    clientSign,
+		NodeOwnerSign: nodeOwnerSign,
 	}
 }

@@ -20,7 +20,7 @@ type msgUpdateNodeDetails struct {
 	APIPort     uint16             `json:"api_port"`
 	NetSpeed    sdkTypes.Bandwidth `json:"net_speed"`
 	EncMethod   string             `json:"enc_method"`
-	PerGBAmount string             `json:"per_gb_amount"`
+	PricesPerGB string             `json:"prices_per_gb"`
 	Version     string             `json:"version"`
 }
 
@@ -46,7 +46,7 @@ func updateNodeDetailsHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec, k
 			return
 		}
 
-		perGBAmount, err := csdkTypes.ParseCoins(req.PerGBAmount)
+		pricesPerGB, err := csdkTypes.ParseCoins(req.PricesPerGB)
 		if err != nil {
 			utils.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
@@ -57,7 +57,7 @@ func updateNodeDetailsHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec, k
 
 		msg := vpn.NewMsgUpdateNodeDetails(info.GetAddress(), id, req.APIPort,
 			req.NetSpeed.Upload, req.NetSpeed.Download, req.EncMethod,
-			perGBAmount, req.Version)
+			pricesPerGB, req.Version)
 		if err := msg.ValidateBasic(); err != nil {
 			utils.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return

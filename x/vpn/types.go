@@ -10,28 +10,37 @@ import (
 )
 
 type NodeDetails struct {
-	Owner           csdkTypes.AccAddress
-	LockedAmount    csdkTypes.Coin
-	APIPort         uint16
-	NetSpeed        types.Bandwidth
-	EncMethod       string
-	PerGBAmount     csdkTypes.Coins
-	NodeType        string
-	Version         string
-	Status          string
-	StatusAtHeight  int64
-	DetailsAtHeight int64
+	ID           string
+	Owner        csdkTypes.AccAddress
+	LockedAmount csdkTypes.Coin
+	APIPort      uint16
+	NetSpeed     types.Bandwidth
+	EncMethod    string
+	PricesPerGB  csdkTypes.Coins
+	NodeType     string
+	Version      string
+	Status       string
+	StatusAt     time.Time
+	DetailsAt    time.Time
 }
 
 type SessionDetails struct {
-	VPNOwnerAddress    csdkTypes.AccAddress
-	ClientAddress      csdkTypes.AccAddress
-	PerGBAmount        csdkTypes.Coins
-	BandwidthToProvide types.Bandwidth
-	BandwidthConsumed  types.Bandwidth
-	StartTime          *time.Time
-	EndTime            *time.Time
-	Status             string
+	ID            string
+	NodeID        string
+	ClientAddress csdkTypes.AccAddress
+	LockedAmount  csdkTypes.Coin
+	PricePerGB    csdkTypes.Coin
+	Bandwidth     struct {
+		ToProvide     types.Bandwidth
+		Consumed      types.Bandwidth
+		NodeOwnerSign []byte
+		ClientSign    []byte
+		UpdatedAt     time.Time
+	}
+	Status    string
+	StatusAt  time.Time
+	StartedAt time.Time
+	EndedAt   time.Time
 }
 
 var (
@@ -48,6 +57,10 @@ func SessionsCountKey(accAddress csdkTypes.AccAddress) []byte {
 }
 
 func NodeKey(accAddress csdkTypes.AccAddress, count uint64) string {
+	return fmt.Sprintf("%s/%d", accAddress.String(), count)
+}
+
+func SessionKey(accAddress csdkTypes.AccAddress, count uint64) string {
 	return fmt.Sprintf("%s/%d", accAddress.String(), count)
 }
 

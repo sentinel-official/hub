@@ -50,16 +50,17 @@ func handleRegisterNode(ctx csdkTypes.Context, nk Keeper, bk bank.Keeper, msg Ms
 	allTags = allTags.AppendTags(tags)
 
 	details := NodeDetails{
-		Owner:          msg.From,
-		LockedAmount:   msg.AmountToLock,
-		APIPort:        msg.APIPort,
-		NetSpeed:       msg.NetSpeed,
-		EncMethod:      msg.EncMethod,
-		PerGBAmount:    msg.PerGBAmount,
-		Version:        msg.Version,
-		NodeType:       msg.NodeType,
-		Status:         StatusRegistered,
-		StatusAtHeight: ctx.BlockHeight(),
+		ID:           id,
+		Owner:        msg.From,
+		LockedAmount: msg.AmountToLock,
+		APIPort:      msg.APIPort,
+		NetSpeed:     msg.NetSpeed,
+		EncMethod:    msg.EncMethod,
+		PricesPerGB:  msg.PricesPerGB,
+		Version:      msg.Version,
+		NodeType:     msg.NodeType,
+		Status:       StatusRegistered,
+		StatusAt:     ctx.BlockHeader().Time,
 	}
 	if err := nk.SetNodeDetails(ctx, id, &details); err != nil {
 		return err.Result()
@@ -101,13 +102,13 @@ func handleUpdateNodeDetails(ctx csdkTypes.Context, nk Keeper, msg MsgUpdateNode
 	if len(msg.EncMethod) != 0 {
 		details.EncMethod = msg.EncMethod
 	}
-	if msg.PerGBAmount != nil && msg.PerGBAmount.Len() != 0 {
-		details.PerGBAmount = msg.PerGBAmount
+	if msg.PricesPerGB != nil && msg.PricesPerGB.Len() != 0 {
+		details.PricesPerGB = msg.PricesPerGB
 	}
 	if len(msg.Version) != 0 {
 		details.Version = msg.Version
 	}
-	details.DetailsAtHeight = ctx.BlockHeight()
+	details.DetailsAt = ctx.BlockHeader().Time
 
 	if err := nk.SetNodeDetails(ctx, msg.ID, details); err != nil {
 		return err.Result()
@@ -136,7 +137,7 @@ func handleDeregisterNode(ctx csdkTypes.Context, nk Keeper, bk bank.Keeper, msg 
 	}
 
 	details.Status = StatusDeregistered
-	details.StatusAtHeight = ctx.BlockHeight()
+	details.StatusAt = ctx.BlockHeader().Time
 	if err := nk.SetNodeDetails(ctx, msg.ID, details); err != nil {
 		return err.Result()
 	}
@@ -172,7 +173,7 @@ func handleUpdateNodeStatus(ctx csdkTypes.Context, nk Keeper, msg MsgUpdateNodeS
 	}
 
 	details.Status = msg.Status
-	details.StatusAtHeight = ctx.BlockHeight()
+	details.StatusAt = ctx.BlockHeader().Time
 
 	if err := nk.SetNodeDetails(ctx, msg.ID, details); err != nil {
 		return err.Result()

@@ -47,10 +47,10 @@ func updateNodeDetailsTxCmd(cdc *codec.Codec) *cobra.Command {
 			uploadSpeed := viper.GetInt64(flagUploadSpeed)
 			downloadSpeed := viper.GetInt64(flagDownloadSpeed)
 			encMethod := viper.GetString(flagEncMethod)
-			perGBAmount := viper.GetString(flagPerGBAmount)
+			pricesPerGB := viper.GetString(flagPricesPerGB)
 			version := viper.GetString(flagVersion)
 
-			parsedPerGBAmount, err := csdkTypes.ParseCoins(perGBAmount)
+			parsedPricesPerGB, err := csdkTypes.ParseCoins(pricesPerGB)
 			if err != nil {
 				return err
 			}
@@ -62,7 +62,7 @@ func updateNodeDetailsTxCmd(cdc *codec.Codec) *cobra.Command {
 
 			msg := vpn.NewMsgUpdateNodeDetails(fromAddress, nodeID,
 				uint16(apiPort), uint64(uploadSpeed), uint64(downloadSpeed),
-				encMethod, parsedPerGBAmount, version)
+				encMethod, parsedPricesPerGB, version)
 			if cliCtx.GenerateOnly {
 				return utils.PrintUnsignedStdTx(os.Stdout, txBldr, cliCtx, []csdkTypes.Msg{msg}, false)
 			}
@@ -76,7 +76,7 @@ func updateNodeDetailsTxCmd(cdc *codec.Codec) *cobra.Command {
 	cmd.Flags().Int64(flagUploadSpeed, 0, "Internet upload speed in bytes/sec")
 	cmd.Flags().Int64(flagDownloadSpeed, 0, "Internet download speed in bytes/sec")
 	cmd.Flags().String(flagEncMethod, "", "VPN tunnel encryption method")
-	cmd.Flags().String(flagPerGBAmount, "100sent,1000sut", "Price for one GB of data")
+	cmd.Flags().String(flagPricesPerGB, "100sent,1000sut", "Prices for one GB of data")
 	cmd.Flags().String(flagVersion, "", "Node version")
 
 	_ = cmd.MarkFlagRequired(flagNodeID)
