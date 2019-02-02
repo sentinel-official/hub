@@ -31,6 +31,8 @@ const (
 type (
 	NodeDetails = types.NodeDetails
 	SessionDetails = types.SessionDetails
+	SessionBandwidth = types.SessionBandwidth
+	BandwidthSignData = types.BandwidthSignData
 
 	MsgRegisterNode = types.MsgRegisterNode
 	MsgUpdateNodeDetails = types.MsgUpdateNodeDetails
@@ -46,7 +48,12 @@ type (
 )
 
 var (
-	RegisterCodec = types.RegisterCodec
+	GB                     = types.GB
+	NodesCountKeyPrefix    = types.NodesCountKeyPrefix
+	SessionsCountKeyPrefix = types.SessionsCountKeyPrefix
+	NodesCountKey          = types.NodesCountKey
+	SessionCountKey        = types.SessionsCountKey
+	RegisterCodec          = types.RegisterCodec
 
 	NewMsgRegisterNode           = types.NewMsgRegisterNode
 	NewMsgUpdateNodeDetails      = types.NewMsgUpdateNodeDetails
@@ -54,6 +61,7 @@ var (
 	NewMsgDeregisterNode         = types.NewMsgDeregisterNode
 	NewMsgInitSession            = types.NewMsgInitSession
 	NewMsgUpdateSessionBandwidth = types.NewMsgUpdateSessionBandwidth
+	NewBandwidthSignData         = types.NewBandwidthSignData
 
 	NewKeeper = keeper.NewKeeper
 
