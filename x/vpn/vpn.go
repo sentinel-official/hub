@@ -21,7 +21,6 @@ const (
 	StatusEnd          = types.StatusEnd
 
 	QueryNode         = querier.QueryNode
-	QueryNodes        = querier.QueryNodes
 	QueryNodesOfOwner = querier.QueryNodesOfOwner
 )
 
@@ -48,9 +47,13 @@ type (
 
 var (
 	GB                     = types.GB
+	NodeKeyPrefix          = types.NodeKeyPrefix
 	NodesCountKeyPrefix    = types.NodesCountKeyPrefix
-	SessionsCountKeyPrefix = types.SessionsCountKeyPrefix
+	NodeKey                = types.NodeKey
 	NodesCountKey          = types.NodesCountKey
+	SessionKeyPrefix       = types.SessionKeyPrefix
+	SessionsCountKeyPrefix = types.SessionsCountKeyPrefix
+	SessionKey             = types.SessionKey
 	SessionCountKey        = types.SessionsCountKey
 	RegisterCodec          = types.RegisterCodec
 

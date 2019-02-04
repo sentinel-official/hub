@@ -20,10 +20,6 @@ func QueryNode(cliCtx context.CLIContext, cdc *codec.Codec, id vpn.NodeID) ([]by
 	return cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s", vpn.QuerierRoute, vpn.QueryNode), paramBytes)
 }
 
-func QueryNodes(cliCtx context.CLIContext) ([]byte, error) {
-	return cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s", vpn.QuerierRoute, vpn.QueryNodes), nil)
-}
-
 func QueryNodesOfOwner(cliCtx context.CLIContext, cdc *codec.Codec, owner csdkTypes.AccAddress) ([]byte, error) {
 	params := vpn.NewQueryNodesOfOwnerParams(owner)
 	paramBytes, err := cdc.MarshalJSON(params)

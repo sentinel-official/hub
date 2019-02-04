@@ -60,13 +60,23 @@ func QueryNodesCmd(cdc *codec.Codec) *cobra.Command {
 
 			owner := viper.GetString(flagOwnerAddress)
 
-			var res []byte
-			var err error
-
-			if owner == "" {
-				res, err = common.QueryNodes(cliCtx)
+			var nodes []vpn.NodeDetails
+			if len(owner) == 0 {
+				res, err := cliCtx.QuerySubspace(vpn.NodeKeyPrefix, vpn.StoreKeyNode)
 				if err != nil {
 					return err
+				}
+				if len(res) == 0 {
+					return fmt.Errorf("no nodes found")
+				}
+
+				for _, kv := range res {
+					var details vpn.NodeDetails
+					if err := cdc.UnmarshalBinaryLengthPrefixed(kv.Value, &details); err != nil {
+						return err
+					}
+
+					nodes = append(nodes, details)
 				}
 			} else {
 				owner, err := csdkTypes.AccAddressFromBech32(owner)
@@ -74,19 +84,17 @@ func QueryNodesCmd(cdc *codec.Codec) *cobra.Command {
 					return err
 				}
 
-				res, err = common.QueryNodesOfOwner(cliCtx, cdc, owner)
+				res, err := common.QueryNodesOfOwner(cliCtx, cdc, owner)
 				if err != nil {
 					return err
 				}
-			}
+				if string(res) == "null" {
+					return fmt.Errorf("no nodes found")
+				}
 
-			if string(res) == "null" {
-				return fmt.Errorf("no nodes found")
-			}
-
-			var nodes []vpn.NodeDetails
-			if err := cdc.UnmarshalJSON(res, &nodes); err != nil {
-				return err
+				if err := cdc.UnmarshalJSON(res, &nodes); err != nil {
+					return err
+				}
 			}
 
 			nodesData, err := cdc.MarshalJSONIndent(nodes, "", "  ")

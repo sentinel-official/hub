@@ -61,7 +61,7 @@ func (nd *NodeDetails) UpdateDetails(details NodeDetails) {
 	if details.Owner != nil && !details.Owner.Empty() {
 		nd.Owner = details.Owner
 	}
-	if !details.LockedAmount.IsZero() {
+	if len(details.LockedAmount.Denom) != 0 && !details.LockedAmount.IsZero() {
 		nd.LockedAmount = details.LockedAmount
 	}
 	if details.PricesPerGB != nil && details.PricesPerGB.Len() > 0 {

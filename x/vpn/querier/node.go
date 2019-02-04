@@ -11,7 +11,6 @@ import (
 
 const (
 	QueryNode         = "node"
-	QueryNodes        = "nodes"
 	QueryNodesOfOwner = "nodesOfOwner"
 )
 
@@ -20,8 +19,6 @@ func NewQuerier(vk keeper.Keeper, cdc *codec.Codec) csdkTypes.Querier {
 		switch path[0] {
 		case QueryNode:
 			return queryNode(ctx, cdc, req, vk)
-		case QueryNodes:
-			return queryNodes(ctx, cdc, vk)
 		case QueryNodesOfOwner:
 			return queryNodesOfOwner(ctx, cdc, req, vk)
 		default:
@@ -79,20 +76,6 @@ func queryNodesOfOwner(ctx csdkTypes.Context, cdc *codec.Codec, req abciTypes.Re
 	}
 
 	nodes, err := vk.GetNodesOfOwner(ctx, params.Owner)
-	if err != nil {
-		return nil, err
-	}
-
-	res, resErr := cdc.MarshalJSON(nodes)
-	if resErr != nil {
-		return nil, types.ErrorMarshal()
-	}
-
-	return res, nil
-}
-
-func queryNodes(ctx csdkTypes.Context, cdc *codec.Codec, vk keeper.Keeper) ([]byte, csdkTypes.Error) {
-	nodes, err := vk.GetNodes(ctx)
 	if err != nil {
 		return nil, err
 	}

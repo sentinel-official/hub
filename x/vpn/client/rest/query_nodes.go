@@ -44,12 +44,32 @@ func getNodeHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) http.Handle
 func getNodesHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var res []byte
-		var err error
 
 		owner := r.URL.Query().Get("owner")
-		if owner == "" {
-			res, err = common.QueryNodes(cliCtx)
+		if len(owner) == 0 {
+			kvs, err := cliCtx.QuerySubspace(vpn.NodeKeyPrefix, vpn.StoreKeyNode)
 			if err != nil {
+				utils.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+				return
+			}
+			if len(kvs) == 0 {
+				err := errors.New("no nodes found")
+				utils.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+				return
+			}
+
+			var nodes []vpn.NodeDetails
+			for _, kv := range kvs {
+				var details vpn.NodeDetails
+				if err := cdc.UnmarshalBinaryLengthPrefixed(kv.Value, &details); err != nil {
+					utils.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+					return
+				}
+
+				nodes = append(nodes, details)
+			}
+
+			if res, err = cdc.MarshalJSON(nodes); err != nil {
 				utils.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 				return
 			}
@@ -65,12 +85,11 @@ func getNodesHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) http.Handl
 				utils.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 				return
 			}
-		}
-
-		if string(res) == "null" {
-			err := errors.New("no nodes found")
-			utils.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
-			return
+			if string(res) == "null" {
+				err := errors.New("no nodes found")
+				utils.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+				return
+			}
 		}
 
 		utils.PostProcessResponse(w, cdc, res, cliCtx.Indent)
