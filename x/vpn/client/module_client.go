@@ -31,6 +31,7 @@ func (mc ModuleClient) GetQueryCmd() *cobra.Command {
 	vpnQueryCmd.AddCommand(client.GetCommands(
 		vpnCli.QueryNodeCmd(mc.cdc),
 		vpnCli.QueryNodesCmd(mc.cdc),
+		vpnCli.QuerySessionCmd(mc.sessionStoreKey, mc.cdc),
 	)...)
 	return vpnQueryCmd
 }
