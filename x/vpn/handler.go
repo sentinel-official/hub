@@ -32,7 +32,9 @@ func NewHandler(vk keeper.Keeper, ak auth.AccountKeeper, bk bank.Keeper) csdkTyp
 	}
 }
 
-func handleRegisterNode(ctx csdkTypes.Context, vk keeper.Keeper, bk bank.Keeper, msg types.MsgRegisterNode) csdkTypes.Result {
+func handleRegisterNode(ctx csdkTypes.Context, vk keeper.Keeper, bk bank.Keeper,
+	msg types.MsgRegisterNode) csdkTypes.Result {
+
 	allTags := csdkTypes.EmptyTags()
 
 	lockAmount := csdkTypes.Coins{msg.AmountToLock}
@@ -65,7 +67,9 @@ func handleRegisterNode(ctx csdkTypes.Context, vk keeper.Keeper, bk bank.Keeper,
 	return csdkTypes.Result{Tags: allTags}
 }
 
-func handleUpdateNodeDetails(ctx csdkTypes.Context, vk keeper.Keeper, msg types.MsgUpdateNodeDetails) csdkTypes.Result {
+func handleUpdateNodeDetails(ctx csdkTypes.Context, vk keeper.Keeper,
+	msg types.MsgUpdateNodeDetails) csdkTypes.Result {
+
 	allTags := csdkTypes.EmptyTags()
 
 	details, err := vk.GetNodeDetails(ctx, msg.ID)
@@ -102,7 +106,9 @@ func handleUpdateNodeDetails(ctx csdkTypes.Context, vk keeper.Keeper, msg types.
 	return csdkTypes.Result{Tags: allTags}
 }
 
-func handleUpdateNodeStatus(ctx csdkTypes.Context, vk keeper.Keeper, msg types.MsgUpdateNodeStatus) csdkTypes.Result {
+func handleUpdateNodeStatus(ctx csdkTypes.Context, vk keeper.Keeper,
+	msg types.MsgUpdateNodeStatus) csdkTypes.Result {
+
 	allTags := csdkTypes.EmptyTags()
 
 	details, err := vk.GetNodeDetails(ctx, msg.ID)
@@ -132,7 +138,9 @@ func handleUpdateNodeStatus(ctx csdkTypes.Context, vk keeper.Keeper, msg types.M
 	return csdkTypes.Result{Tags: allTags}
 }
 
-func handleDeregisterNode(ctx csdkTypes.Context, vk keeper.Keeper, bk bank.Keeper, msg types.MsgDeregisterNode) csdkTypes.Result {
+func handleDeregisterNode(ctx csdkTypes.Context, vk keeper.Keeper, bk bank.Keeper,
+	msg types.MsgDeregisterNode) csdkTypes.Result {
+
 	allTags := csdkTypes.EmptyTags()
 
 	details, err := vk.GetNodeDetails(ctx, msg.ID)
@@ -167,7 +175,9 @@ func handleDeregisterNode(ctx csdkTypes.Context, vk keeper.Keeper, bk bank.Keepe
 	return csdkTypes.Result{Tags: allTags}
 }
 
-func handleInitSession(ctx csdkTypes.Context, vk keeper.Keeper, bk bank.Keeper, msg types.MsgInitSession) csdkTypes.Result {
+func handleInitSession(ctx csdkTypes.Context, vk keeper.Keeper, bk bank.Keeper,
+	msg types.MsgInitSession) csdkTypes.Result {
+
 	allTags := csdkTypes.EmptyTags()
 
 	node, err := vk.GetNodeDetails(ctx, msg.NodeID)
@@ -216,7 +226,9 @@ func handleInitSession(ctx csdkTypes.Context, vk keeper.Keeper, bk bank.Keeper, 
 	return csdkTypes.Result{Tags: allTags}
 }
 
-func handleUpdateSessionBandwidth(ctx csdkTypes.Context, vk keeper.Keeper, ak auth.AccountKeeper, msg types.MsgUpdateSessionBandwidth) csdkTypes.Result {
+func handleUpdateSessionBandwidth(ctx csdkTypes.Context, vk keeper.Keeper, ak auth.AccountKeeper,
+	msg types.MsgUpdateSessionBandwidth) csdkTypes.Result {
+
 	allTags := csdkTypes.EmptyTags()
 
 	session, err := vk.GetSessionDetails(ctx, msg.SessionID)
@@ -243,35 +255,10 @@ func handleUpdateSessionBandwidth(ctx csdkTypes.Context, vk keeper.Keeper, ak au
 		return types.ErrorInvalidNodeStatus().Result()
 	}
 
-	if msg.Bandwidth.LTE(session.Bandwidth.Consumed) ||
-		session.Bandwidth.ToProvide.LT(msg.Bandwidth) {
-		return types.ErrorInvalidBandwidth().Result()
-	}
-
 	sign := types.NewBandwidthSign(msg.SessionID, msg.Bandwidth, node.Owner, session.Client)
-	signBytes, err := sign.GetBytes()
-	if err != nil {
+	if err := keeper.VerifyAndUpdateSessionBandwidth(ctx, ak, session, sign,
+		msg.ClientSign, msg.NodeOwnerSign); err != nil {
 		return err.Result()
-	}
-
-	nodeOwner := ak.GetAccount(ctx, node.Owner)
-	client := ak.GetAccount(ctx, session.Client)
-
-	if !client.GetPubKey().VerifyBytes(signBytes, msg.ClientSign) ||
-		!nodeOwner.GetPubKey().VerifyBytes(signBytes, msg.NodeOwnerSign) {
-		return types.ErrorInvalidSign().Result()
-	}
-
-	session.Bandwidth.Consumed = msg.Bandwidth
-	session.Bandwidth.ClientSign = msg.ClientSign
-	session.Bandwidth.NodeOwnerSign = msg.NodeOwnerSign
-	session.Bandwidth.UpdatedAt = ctx.BlockHeader().Time
-	if session.Status == types.StatusInit {
-		session.StartedAt = ctx.BlockHeader().Time
-	}
-	if session.Status != types.StatusActive {
-		session.Status = types.StatusActive
-		session.StatusAt = ctx.BlockHeader().Time
 	}
 
 	if err := vk.SetSessionDetails(ctx, msg.SessionID, session); err != nil {
