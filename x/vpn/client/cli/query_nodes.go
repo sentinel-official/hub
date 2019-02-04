@@ -21,23 +21,12 @@ func QueryNodeCmd(cdc *codec.Codec) *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cliCtx := context.NewCLIContext().WithCodec(cdc).WithAccountDecoder(cdc)
 
-			nodeID := vpn.NewNodeID(args[0])
-
-			res, err := common.QueryNode(cliCtx, cdc, nodeID)
+			res, err := common.QueryNode(cliCtx, cdc, args[0])
 			if err != nil {
 				return err
 			}
 
-			if len(res) == 0 {
-				return fmt.Errorf("no node found")
-			}
-
-			var node vpn.NodeDetails
-			if err := cdc.UnmarshalJSON(res, &node); err != nil {
-				return err
-			}
-
-			nodeData, err := cdc.MarshalJSONIndent(node, "", "  ")
+			nodeData, err := cdc.MarshalJSONIndent(res, "", "  ")
 			if err != nil {
 				return err
 			}

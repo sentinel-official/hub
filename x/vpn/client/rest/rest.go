@@ -24,11 +24,10 @@ func registerTxRoutes(cliCtx context.CLIContext, r *mux.Router, cdc *codec.Codec
 
 	r.HandleFunc("/sessions", initSessionHandlerFunc(cliCtx, cdc, kb)).
 		Methods("POST")
-	r.HandleFunc("/sessions/{sessionID:[^/]+/[^/]+}/sign", signSessionByClientHandlerFunc(cliCtx, cdc, kb)).
+	r.HandleFunc("/sessions/{sessionID:[^/]+/[^/]+}/bandwidth/sign", signSessionBandwidthHandlerFunc(cliCtx, cdc, kb)).
 		Methods("POST")
-	r.HandleFunc("/sessions/{sessionID:[^/]+/[^/]+}/update", updateSessionBandwidthHandlerFunc(cliCtx, cdc, kb)).
+	r.HandleFunc("/sessions/{sessionID:[^/]+/[^/]+}/bandwidth", updateSessionBandwidthHandlerFunc(cliCtx, cdc, kb)).
 		Methods("PUT")
-
 }
 
 func registerQueryRoutes(cliCtx context.CLIContext, r *mux.Router, cdc *codec.Codec, kb keys.Keybase) {
