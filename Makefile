@@ -4,9 +4,9 @@ COMMIT := $(shell git log -1 --format='%H')
 CAT := $(if $(filter $(OS),Windows_NT),type,cat)
 BUILD_TAGS = netgo
 BUILD_FLAGS = -tags "${BUILD_TAGS}" -ldflags \
-	"-X github.com/ironman0x7b2/sentinel-sdk/vendor/github.com/cosmos/cosmos-sdk/version.Version=${VERSION} \
-	-X github.com/ironman0x7b2/sentinel-sdk/vendor/github.com/cosmos/cosmos-sdk/version.Commit=${COMMIT} \
-	-X github.com/ironman0x7b2/sentinel-sdk/vendor/github.com/cosmos/cosmos-sdk/version.VendorDirHash=$(shell $(CAT) .vendor_version) \
+	"-X github.com/ironman0x7b2/sentinel-sdk/version.Version=${VERSION} \
+	-X github.com/ironman0x7b2/sentinel-sdk/version.Commit=${COMMIT} \
+	-X github.com/ironman0x7b2/sentinel-sdk/version.VendorDirHash=$(shell $(CAT) .vendor_version) \
 	-s -w"
 
 all: get_tools get_vendor_deps install test

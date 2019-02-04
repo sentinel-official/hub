@@ -6,7 +6,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
-	"github.com/cosmos/cosmos-sdk/server"
+	csdkServer "github.com/cosmos/cosmos-sdk/server"
 	"github.com/cosmos/cosmos-sdk/store"
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
 	"github.com/spf13/cobra"
@@ -19,6 +19,7 @@ import (
 
 	app "github.com/ironman0x7b2/sentinel-sdk/apps/vpn"
 	vpnCli "github.com/ironman0x7b2/sentinel-sdk/apps/vpn/cli"
+	sdkServer "github.com/ironman0x7b2/sentinel-sdk/server"
 )
 
 func main() {
@@ -30,12 +31,12 @@ func main() {
 	config.SetBech32PrefixForConsensusNode(csdkTypes.Bech32PrefixConsAddr, csdkTypes.Bech32PrefixConsPub)
 	config.Seal()
 
-	ctx := server.NewDefaultContext()
+	ctx := csdkServer.NewDefaultContext()
 	cobra.EnableCommandSorting = false
 	rootCmd := &cobra.Command{
 		Use:               "vpnd",
 		Short:             "VPN Daemon (server)",
-		PersistentPreRunE: server.PersistentPreRunEFn(ctx),
+		PersistentPreRunE: csdkServer.PersistentPreRunEFn(ctx),
 	}
 
 	rootCmd.AddCommand(vpnCli.InitCmd(ctx, cdc))
@@ -45,9 +46,9 @@ func main() {
 	rootCmd.AddCommand(vpnCli.AddGenesisAccountCmd(ctx, cdc))
 	rootCmd.AddCommand(client.NewCompletionCmd(rootCmd, true))
 
-	server.AddCommands(ctx, cdc, rootCmd, newApp, exportAppStateAndTMValidators)
+	sdkServer.AddCommands(ctx, cdc, rootCmd, newApp, exportAppStateAndTMValidators)
 
-	executor := cli.PrepareBaseCmd(rootCmd, "SH", app.DefaultNodeHome)
+	executor := cli.PrepareBaseCmd(rootCmd, "SV", app.DefaultNodeHome)
 	err := executor.Execute()
 	if err != nil {
 		panic(err)
@@ -58,7 +59,7 @@ func newApp(logger log.Logger, db tmDB.DB, traceStore io.Writer) abciTypes.Appli
 	return app.NewVPN(
 		logger, db, traceStore, true,
 		baseapp.SetPruning(store.NewPruningOptions(viper.GetString("pruning"))),
-		baseapp.SetMinGasPrices(viper.GetString(server.FlagMinGasPrices)),
+		baseapp.SetMinGasPrices(viper.GetString(csdkServer.FlagMinGasPrices)),
 	)
 }
 

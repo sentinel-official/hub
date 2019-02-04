@@ -11,7 +11,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/rpc"
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/version"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	authCli "github.com/cosmos/cosmos-sdk/x/auth/client/cli"
 	authRest "github.com/cosmos/cosmos-sdk/x/auth/client/rest"
@@ -36,6 +35,7 @@ import (
 	"github.com/tendermint/tendermint/libs/cli"
 
 	app "github.com/ironman0x7b2/sentinel-sdk/apps/hub"
+	"github.com/ironman0x7b2/sentinel-sdk/version"
 )
 
 func main() {
