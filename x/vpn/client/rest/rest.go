@@ -17,13 +17,18 @@ func registerTxRoutes(cliCtx context.CLIContext, r *mux.Router, cdc *codec.Codec
 		Methods("POST")
 	r.HandleFunc("/nodes/{nodeID:[^/]+/[^/]+}/deregister", deregisterNodeHandlerFunc(cliCtx, cdc, kb)).
 		Methods("POST")
-	r.HandleFunc("/sessions", initSessionHandlerFunc(cliCtx, cdc, kb)).
-		Methods("POST")
-
 	r.HandleFunc("/nodes/{nodeID:[^/]+/[^/]+}/details", updateNodeDetailsHandlerFunc(cliCtx, cdc, kb)).
 		Methods("PUT")
 	r.HandleFunc("/nodes/{nodeID:[^/]+/[^/]+}/status", updateNodeStatusHandlerFunc(cliCtx, cdc, kb)).
 		Methods("PUT")
+
+	r.HandleFunc("/sessions", initSessionHandlerFunc(cliCtx, cdc, kb)).
+		Methods("POST")
+	r.HandleFunc("/sessions/{sessionID:[^/]+/[^/]+}/sign", signSessionByClientHandlerFunc(cliCtx, cdc, kb)).
+		Methods("POST")
+	r.HandleFunc("/sessions/{sessionID:[^/]+/[^/]+}/update", updateSessionBandwidthHandlerFunc(cliCtx, cdc, kb)).
+		Methods("PUT")
+
 }
 
 func registerQueryRoutes(cliCtx context.CLIContext, r *mux.Router, cdc *codec.Codec, kb keys.Keybase) {
