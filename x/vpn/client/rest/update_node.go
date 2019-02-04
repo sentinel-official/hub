@@ -17,7 +17,7 @@ import (
 
 type msgUpdateNodeDetails struct {
 	BaseReq     utils.BaseReq      `json:"base_req"`
-	APIPort     uint16             `json:"api_port"`
+	APIPort     uint32             `json:"api_port"`
 	NetSpeed    sdkTypes.Bandwidth `json:"net_speed"`
 	EncMethod   string             `json:"enc_method"`
 	PricesPerGB string             `json:"prices_per_gb"`
@@ -53,11 +53,12 @@ func updateNodeDetailsHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec, k
 		}
 
 		vars := mux.Vars(r)
-		id := vars["nodeID"]
+		id := vpn.NewNodeID(vars["nodeID"])
+		apiPort := vpn.NewAPIPort(req.APIPort)
 
-		msg := vpn.NewMsgUpdateNodeDetails(info.GetAddress(), id, req.APIPort,
-			req.NetSpeed.Upload, req.NetSpeed.Download, req.EncMethod,
-			pricesPerGB, req.Version)
+		msg := vpn.NewMsgUpdateNodeDetails(info.GetAddress(), id,
+			pricesPerGB, req.NetSpeed.Upload, req.NetSpeed.Download,
+			apiPort, req.EncMethod, req.Version)
 		if err := msg.ValidateBasic(); err != nil {
 			utils.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
@@ -95,7 +96,7 @@ func updateNodeStatusHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec, kb
 		}
 
 		vars := mux.Vars(r)
-		id := vars["nodeID"]
+		id := vpn.NewNodeID(vars["nodeID"])
 		status := strings.ToUpper(req.Status)
 
 		msg := vpn.NewMsgUpdateNodeStatus(info.GetAddress(), id, status)

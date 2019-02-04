@@ -24,8 +24,18 @@ func (b Bandwidth) LTE(bandwidth Bandwidth) bool {
 }
 
 func (b Bandwidth) IsZero() bool {
-	return b.Upload.IsZero() &&
+	return b.Upload.IsZero() ||
 		b.Download.IsZero()
+}
+
+func (b Bandwidth) IsPositive() bool {
+	return b.Upload.IsPositive() &&
+		b.Download.IsPositive()
+}
+
+func (b Bandwidth) IsNegative() bool {
+	return b.Upload.IsNegative() ||
+		b.Download.IsNegative()
 }
 
 func NewBandwidth(upload, download csdkTypes.Int) Bandwidth {

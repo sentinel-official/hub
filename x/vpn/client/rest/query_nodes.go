@@ -10,6 +10,7 @@ import (
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
 	"github.com/gorilla/mux"
 
+	"github.com/ironman0x7b2/sentinel-sdk/x/vpn"
 	"github.com/ironman0x7b2/sentinel-sdk/x/vpn/client/common"
 )
 
@@ -17,7 +18,7 @@ func getNodeHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) http.Handle
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 
-		nodeID := vars["nodeID"]
+		nodeID := vpn.NewNodeID(vars["nodeID"])
 		if len(nodeID) == 0 {
 			err := errors.New("nodeID is empty")
 			utils.WriteErrorResponse(w, http.StatusBadRequest, err.Error())

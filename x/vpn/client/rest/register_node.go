@@ -16,10 +16,10 @@ import (
 type msgRegisterNode struct {
 	BaseReq      utils.BaseReq      `json:"base_req"`
 	AmountToLock string             `json:"amount_to_lock"`
-	APIPort      uint16             `json:"api_port"`
-	NetSpeed     sdkTypes.Bandwidth `json:"net_speed"`
-	EncMethod    string             `json:"enc_method"`
 	PricesPerGB  string             `json:"prices_per_gb"`
+	NetSpeed     sdkTypes.Bandwidth `json:"net_speed"`
+	APIPort      uint32             `json:"api_port"`
+	EncMethod    string             `json:"enc_method"`
 	Version      string             `json:"version"`
 	NodeType     string             `json:"node_type"`
 }
@@ -58,9 +58,11 @@ func registerNodeHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec, kb key
 			return
 		}
 
+		apiPort := vpn.NewAPIPort(req.APIPort)
+
 		msg := vpn.NewMsgRegisterNode(info.GetAddress(),
-			req.APIPort, req.NetSpeed.Upload, req.NetSpeed.Download,
-			req.EncMethod, pricesPerGB, req.Version, req.NodeType, amountToLock)
+			amountToLock, pricesPerGB, req.NetSpeed.Upload, req.NetSpeed.Download,
+			apiPort, req.EncMethod, req.NodeType, req.Version)
 		if err := msg.ValidateBasic(); err != nil {
 			utils.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return

@@ -13,9 +13,6 @@ const (
 	RouterKey    = types.RouterKey
 	QuerierRoute = types.QuerierRoute
 
-	KeyActiveNodeIDs    = types.KeyActiveNodeIDs
-	KeyActiveSessionIDs = types.KeyActiveSessionIDs
-
 	StatusRegistered   = types.StatusRegistered
 	StatusActive       = types.StatusActive
 	StatusInactive     = types.StatusInactive
@@ -29,6 +26,8 @@ const (
 )
 
 type (
+	NodeID = types.NodeID
+	SessionID = types.SessionID
 	NodeDetails = types.NodeDetails
 	SessionDetails = types.SessionDetails
 	SessionBandwidth = types.SessionBandwidth
@@ -55,13 +54,20 @@ var (
 	SessionCountKey        = types.SessionsCountKey
 	RegisterCodec          = types.RegisterCodec
 
+	KeyActiveNodeIDs    = types.KeyActiveNodeIDs
+	KeyActiveSessionIDs = types.KeyActiveSessionIDs
+
 	NewMsgRegisterNode           = types.NewMsgRegisterNode
 	NewMsgUpdateNodeDetails      = types.NewMsgUpdateNodeDetails
 	NewMsgUpdateNodeStatus       = types.NewMsgUpdateNodeStatus
 	NewMsgDeregisterNode         = types.NewMsgDeregisterNode
 	NewMsgInitSession            = types.NewMsgInitSession
 	NewMsgUpdateSessionBandwidth = types.NewMsgUpdateSessionBandwidth
-	NewBandwidthSign             = types.NewBandwidthSign
+
+	NewNodeID        = types.NewNodeID
+	NewSessionID     = types.NewSessionID
+	NewAPIPort       = types.NewAPIPort
+	NewBandwidthSign = types.NewBandwidthSign
 
 	NewKeeper = keeper.NewKeeper
 

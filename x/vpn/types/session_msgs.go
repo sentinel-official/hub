@@ -10,7 +10,7 @@ import (
 
 type MsgInitSession struct {
 	From         csdkTypes.AccAddress `json:"from"`
-	NodeID       string               `json:"node_id"`
+	NodeID       NodeID               `json:"node_id"`
 	AmountToLock csdkTypes.Coin       `json:"amount_to_lock"`
 }
 
@@ -22,8 +22,8 @@ func (msg MsgInitSession) ValidateBasic() csdkTypes.Error {
 	if msg.From == nil || msg.From.Empty() {
 		return ErrorInvalidField("from")
 	}
-	if len(msg.NodeID) == 0 {
-		return ErrorInvalidField("node_id")
+	if msg.NodeID.Len() == 0 || !msg.NodeID.Valid() {
+		return ErrorInvalidField("id")
 	}
 	if !msg.AmountToLock.IsPositive() {
 		return ErrorInvalidField("amount_to_lock")
@@ -50,7 +50,7 @@ func (msg MsgInitSession) Route() string {
 }
 
 func NewMsgInitSession(from csdkTypes.AccAddress,
-	nodeID string, amountToLock csdkTypes.Coin) *MsgInitSession {
+	nodeID NodeID, amountToLock csdkTypes.Coin) *MsgInitSession {
 
 	return &MsgInitSession{
 		From:         from,
@@ -61,7 +61,7 @@ func NewMsgInitSession(from csdkTypes.AccAddress,
 
 type MsgUpdateSessionBandwidth struct {
 	From          csdkTypes.AccAddress `json:"from"`
-	SessionID     string               `json:"session_id"`
+	SessionID     SessionID            `json:"session_id"`
 	Bandwidth     sdkTypes.Bandwidth   `json:"bandwidth"`
 	ClientSign    []byte               `json:"client_sign"`
 	NodeOwnerSign []byte               `json:"node_owner_sign"`
@@ -75,11 +75,11 @@ func (msg MsgUpdateSessionBandwidth) ValidateBasic() csdkTypes.Error {
 	if msg.From == nil || msg.From.Empty() {
 		return ErrorInvalidField("from")
 	}
-	if len(msg.SessionID) == 0 {
+	if msg.SessionID.Len() == 0 || !msg.SessionID.Valid() {
 		return ErrorInvalidField("session_id")
 	}
-	if !msg.Bandwidth.Upload.IsPositive() || !msg.Bandwidth.Download.IsPositive() {
-		return ErrorInvalidField("consumed_bandwidth")
+	if !msg.Bandwidth.IsPositive() {
+		return ErrorInvalidField("bandwidth")
 	}
 	if len(msg.ClientSign) == 0 {
 		return ErrorInvalidField("client_sign")
@@ -109,7 +109,7 @@ func (msg MsgUpdateSessionBandwidth) Route() string {
 }
 
 func NewMsgUpdateSessionBandwidth(from csdkTypes.AccAddress,
-	sessionID string, upload, download csdkTypes.Int,
+	sessionID SessionID, upload, download csdkTypes.Int,
 	clientSign []byte, nodeOwnerSign []byte) *MsgUpdateSessionBandwidth {
 
 	return &MsgUpdateSessionBandwidth{

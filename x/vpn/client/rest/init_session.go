@@ -40,13 +40,15 @@ func initSessionHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec, kb keys
 			return
 		}
 
+		nodeID := vpn.NewNodeID(req.NodeID)
+
 		amountToLock, err := csdkTypes.ParseCoin(req.AmountToLock)
 		if err != nil {
 			utils.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
 		}
 
-		msg := vpn.NewMsgInitSession(info.GetAddress(), req.NodeID, amountToLock)
+		msg := vpn.NewMsgInitSession(info.GetAddress(), nodeID, amountToLock)
 		if err := msg.ValidateBasic(); err != nil {
 			utils.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return

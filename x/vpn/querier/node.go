@@ -31,10 +31,10 @@ func NewQuerier(vk keeper.Keeper, cdc *codec.Codec) csdkTypes.Querier {
 }
 
 type QueryNodeParams struct {
-	ID string
+	ID types.NodeID
 }
 
-func NewQueryNodeParams(id string) QueryNodeParams {
+func NewQueryNodeParams(id types.NodeID) QueryNodeParams {
 	return QueryNodeParams{
 		ID: id,
 	}

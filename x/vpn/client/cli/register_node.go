@@ -27,13 +27,13 @@ func RegisterNodeTxCmd(cdc *codec.Codec) *cobra.Command {
 			}
 
 			amountToLock := viper.GetString(flagAmountToLock)
-			apiPort := viper.GetInt(flagAPIPort)
+			pricesPerGB := viper.GetString(flagPricesPerGB)
 			uploadSpeed := csdkTypes.NewInt(viper.GetInt64(flagUploadSpeed))
 			downloadSpeed := csdkTypes.NewInt(viper.GetInt64(flagDownloadSpeed))
+			apiPort := vpn.NewAPIPort(uint32(viper.GetInt(flagAPIPort)))
 			encMethod := viper.GetString(flagEncMethod)
-			pricesPerGB := viper.GetString(flagPricesPerGB)
-			version := viper.GetString(flagVersion)
 			nodeType := viper.GetString(flagNodeType)
+			version := viper.GetString(flagVersion)
 
 			parsedAmountToLock, err := csdkTypes.ParseCoin(amountToLock)
 			if err != nil {
@@ -51,8 +51,8 @@ func RegisterNodeTxCmd(cdc *codec.Codec) *cobra.Command {
 			}
 
 			msg := vpn.NewMsgRegisterNode(fromAddress,
-				uint16(apiPort), uploadSpeed, downloadSpeed,
-				encMethod, parsedPricesPerGB, version, nodeType, parsedAmountToLock)
+				parsedAmountToLock, parsedPricesPerGB, uploadSpeed, downloadSpeed,
+				apiPort, encMethod, nodeType, version)
 			if cliCtx.GenerateOnly {
 				return utils.PrintUnsignedStdTx(os.Stdout, txBldr, cliCtx, []csdkTypes.Msg{msg}, false)
 			}

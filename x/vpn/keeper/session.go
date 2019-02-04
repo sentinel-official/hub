@@ -8,12 +8,8 @@ import (
 	"github.com/ironman0x7b2/sentinel-sdk/x/vpn/types"
 )
 
-func (k Keeper) SetSessionDetails(ctx csdkTypes.Context, id string, details *types.SessionDetails) csdkTypes.Error {
-	key, err := k.cdc.MarshalBinaryLengthPrefixed(id)
-	if err != nil {
-		return types.ErrorMarshal()
-	}
-
+func (k Keeper) SetSessionDetails(ctx csdkTypes.Context, details *types.SessionDetails) csdkTypes.Error {
+	key := types.SessionKey(details.ID)
 	value, err := k.cdc.MarshalBinaryLengthPrefixed(details)
 	if err != nil {
 		return types.ErrorMarshal()
@@ -25,12 +21,8 @@ func (k Keeper) SetSessionDetails(ctx csdkTypes.Context, id string, details *typ
 	return nil
 }
 
-func (k Keeper) GetSessionDetails(ctx csdkTypes.Context, id string) (*types.SessionDetails, csdkTypes.Error) {
-	key, err := k.cdc.MarshalBinaryLengthPrefixed(id)
-	if err != nil {
-		return nil, types.ErrorMarshal()
-	}
-
+func (k Keeper) GetSessionDetails(ctx csdkTypes.Context, id types.SessionID) (*types.SessionDetails, csdkTypes.Error) {
+	key := types.SessionKey(id)
 	store := ctx.KVStore(k.SessionStoreKey)
 	value := store.Get(key)
 	if value == nil {
@@ -46,10 +38,7 @@ func (k Keeper) GetSessionDetails(ctx csdkTypes.Context, id string) (*types.Sess
 }
 
 func (k Keeper) SetActiveSessionIDs(ctx csdkTypes.Context, ids []string) csdkTypes.Error {
-	key, err := k.cdc.MarshalBinaryLengthPrefixed(types.KeyActiveSessionIDs)
-	if err != nil {
-		return types.ErrorMarshal()
-	}
+	key := types.KeyActiveSessionIDs
 
 	sort.Strings(ids)
 	value, err := k.cdc.MarshalBinaryLengthPrefixed(ids)
@@ -64,13 +53,9 @@ func (k Keeper) SetActiveSessionIDs(ctx csdkTypes.Context, ids []string) csdkTyp
 }
 
 func (k Keeper) GetActiveSessionIDs(ctx csdkTypes.Context) ([]string, csdkTypes.Error) {
-	key, err := k.cdc.MarshalBinaryLengthPrefixed(types.KeyActiveSessionIDs)
-	if err != nil {
-		return nil, types.ErrorMarshal()
-	}
+	key := types.KeyActiveSessionIDs
 
 	var ids []string
-
 	store := ctx.KVStore(k.SessionStoreKey)
 	value := store.Get(key)
 	if value == nil {
@@ -121,11 +106,11 @@ func (k Keeper) AddSession(ctx csdkTypes.Context, details *types.SessionDetails)
 		return nil, err
 	}
 
-	details.ID = types.SessionKey(details.Client, count)
-	if err := k.SetSessionDetails(ctx, details.ID, details); err != nil {
+	details.ID = types.SessionIDFromOwnerCount(details.Client, count)
+	if err := k.SetSessionDetails(ctx, details); err != nil {
 		return nil, err
 	}
-	tags = tags.AppendTag("session_id", []byte(details.ID))
+	tags = tags.AppendTag("session_id", details.ID.Bytes())
 
 	if err := k.SetSessionsCount(ctx, details.Client, count+1); err != nil {
 		return nil, err

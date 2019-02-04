@@ -26,7 +26,7 @@ func InitSessionTxCmd(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			nodeID := viper.GetString(flagNodeID)
+			nodeID := vpn.NewNodeID(viper.GetString(flagNodeID))
 			amountToLock := viper.GetString(flagAmountToLock)
 
 			parsedAmountToLock, err := csdkTypes.ParseCoin(amountToLock)

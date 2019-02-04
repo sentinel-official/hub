@@ -21,7 +21,9 @@ func QueryNodeCmd(cdc *codec.Codec) *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cliCtx := context.NewCLIContext().WithCodec(cdc).WithAccountDecoder(cdc)
 
-			res, err := common.QueryNode(cliCtx, cdc, args[0])
+			nodeID := vpn.NewNodeID(args[0])
+
+			res, err := common.QueryNode(cliCtx, cdc, nodeID)
 			if err != nil {
 				return err
 			}

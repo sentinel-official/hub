@@ -1,38 +1,38 @@
 package types
 
 import (
-	"fmt"
-
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
 )
 
 var (
-	NodesCountKeyPrefix    = []byte("NODES_COUNT")
-	SessionsCountKeyPrefix = []byte("SESSION_COUNT")
+	NodeKeyPrefix          = []byte{0x01}
+	NodesCountKeyPrefix    = []byte{0x02}
+	SessionKeyPrefix       = []byte{0x01}
+	SessionsCountKeyPrefix = []byte{0x02}
+
+	KeyActiveNodeIDs    = []byte("ACTIVE_NODE_IDS")
+	KeyActiveSessionIDs = []byte("ACTIVE_SESSION_IDS")
 
 	GB = csdkTypes.NewInt(1000000000)
 )
 
-func NodesCountKey(accAddress csdkTypes.AccAddress) []byte {
-	return append(NodesCountKeyPrefix, accAddress.Bytes()...)
+func NodeKey(id NodeID) []byte {
+	return append(NodeKeyPrefix, id.Bytes()...)
 }
 
-func SessionsCountKey(accAddress csdkTypes.AccAddress) []byte {
-	return append(SessionsCountKeyPrefix, accAddress.Bytes()...)
+func SessionKey(id SessionID) []byte {
+	return append(SessionKeyPrefix, id.Bytes()...)
 }
 
-func NodeKey(accAddress csdkTypes.AccAddress, count uint64) string {
-	return fmt.Sprintf("%s/%d", accAddress.String(), count)
+func NodesCountKey(address csdkTypes.Address) []byte {
+	return append(NodesCountKeyPrefix, address.Bytes()...)
 }
 
-func SessionKey(accAddress csdkTypes.AccAddress, count uint64) string {
-	return fmt.Sprintf("%s/%d", accAddress.String(), count)
+func SessionsCountKey(address csdkTypes.Address) []byte {
+	return append(SessionsCountKeyPrefix, address.Bytes()...)
 }
 
 const (
-	KeyActiveNodeIDs    = "ACTIVE_NODE_IDS"
-	KeyActiveSessionIDs = "ACTIVE_SESSION_IDS"
-
 	StoreKeySession = "vpn_session"
 	StoreKeyNode    = "vpn_node"
 

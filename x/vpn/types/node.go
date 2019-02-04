@@ -1,7 +1,9 @@
 package types
 
 import (
+	"fmt"
 	"sort"
+	"strings"
 	"time"
 
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
@@ -9,14 +11,42 @@ import (
 	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
 )
 
+type NodeID string
+
+func (n NodeID) Bytes() []byte  { return []byte(n) }
+func (n NodeID) String() string { return string(n) }
+func (n NodeID) Len() int       { return len(n) }
+func (n NodeID) Valid() bool {
+	splits := strings.Split(n.String(), "/")
+	return len(splits) == 2
+}
+
+func NewNodeID(str string) NodeID {
+	return NodeID(str)
+}
+
+func NodeIDFromOwnerCount(address csdkTypes.Address, count uint64) NodeID {
+	id := fmt.Sprintf("%s/%d", address.String(), count)
+	return NewNodeID(id)
+}
+
+type APIPort uint32
+
+func (a APIPort) IsZero() bool { return a == 0 }
+func (a APIPort) Valid() bool  { return a > 0 && a <= 65535 }
+
+func NewAPIPort(num uint32) APIPort {
+	return APIPort(num)
+}
+
 type NodeDetails struct {
-	ID           string
+	ID           NodeID
 	Owner        csdkTypes.AccAddress
 	LockedAmount csdkTypes.Coin
-	APIPort      uint16
-	NetSpeed     sdkTypes.Bandwidth
-	EncMethod    string
 	PricesPerGB  csdkTypes.Coins
+	NetSpeed     sdkTypes.Bandwidth
+	APIPort      APIPort
+	EncMethod    string
 	NodeType     string
 	Version      string
 	Status       string
@@ -25,7 +55,7 @@ type NodeDetails struct {
 }
 
 func (nd *NodeDetails) UpdateDetails(details NodeDetails) {
-	if len(details.ID) != 0 {
+	if details.ID.Len() != 0 {
 		nd.ID = details.ID
 	}
 	if details.Owner != nil && !details.Owner.Empty() {
@@ -34,17 +64,17 @@ func (nd *NodeDetails) UpdateDetails(details NodeDetails) {
 	if !details.LockedAmount.IsZero() {
 		nd.LockedAmount = details.LockedAmount
 	}
-	if details.APIPort != 0 {
-		nd.APIPort = details.APIPort
+	if details.PricesPerGB != nil && details.PricesPerGB.Len() > 0 {
+		nd.PricesPerGB = details.PricesPerGB
 	}
-	if !details.NetSpeed.IsZero() {
+	if details.NetSpeed.IsPositive() {
 		nd.NetSpeed = details.NetSpeed
+	}
+	if details.APIPort.IsZero() {
+		nd.APIPort = details.APIPort
 	}
 	if len(details.EncMethod) != 0 {
 		nd.EncMethod = details.EncMethod
-	}
-	if details.PricesPerGB != nil && details.PricesPerGB.Len() > 0 {
-		nd.PricesPerGB = details.PricesPerGB
 	}
 	if len(details.NodeType) != 0 {
 		nd.NodeType = details.NodeType

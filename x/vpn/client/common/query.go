@@ -10,8 +10,8 @@ import (
 	"github.com/ironman0x7b2/sentinel-sdk/x/vpn"
 )
 
-func QueryNode(cliCtx context.CLIContext, cdc *codec.Codec, nodeID string) ([]byte, error) {
-	params := vpn.NewQueryNodeParams(nodeID)
+func QueryNode(cliCtx context.CLIContext, cdc *codec.Codec, id vpn.NodeID) ([]byte, error) {
+	params := vpn.NewQueryNodeParams(id)
 	paramBytes, err := cdc.MarshalJSON(params)
 	if err != nil {
 		return nil, err

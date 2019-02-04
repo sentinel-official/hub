@@ -98,7 +98,7 @@ func handleUpdateNodeDetails(ctx csdkTypes.Context, vk keeper.Keeper,
 	details.UpdateDetails(newDetails)
 	details.DetailsAt = ctx.BlockHeader().Time
 
-	if err := vk.SetNodeDetails(ctx, msg.ID, details); err != nil {
+	if err := vk.SetNodeDetails(ctx, details); err != nil {
 		return err.Result()
 	}
 	allTags = allTags.AppendTag("node_id", []byte(msg.ID))
@@ -130,7 +130,7 @@ func handleUpdateNodeStatus(ctx csdkTypes.Context, vk keeper.Keeper,
 	details.Status = msg.Status
 	details.StatusAt = ctx.BlockHeader().Time
 
-	if err := vk.SetNodeDetails(ctx, msg.ID, details); err != nil {
+	if err := vk.SetNodeDetails(ctx, details); err != nil {
 		return err.Result()
 	}
 	allTags = allTags.AppendTag("node_id", []byte(msg.ID))
@@ -160,7 +160,7 @@ func handleDeregisterNode(ctx csdkTypes.Context, vk keeper.Keeper, bk bank.Keepe
 
 	details.Status = types.StatusDeregistered
 	details.StatusAt = ctx.BlockHeader().Time
-	if err := vk.SetNodeDetails(ctx, msg.ID, details); err != nil {
+	if err := vk.SetNodeDetails(ctx, details); err != nil {
 		return err.Result()
 	}
 	allTags = allTags.AppendTag("node_id", []byte(msg.ID))
@@ -261,7 +261,7 @@ func handleUpdateSessionBandwidth(ctx csdkTypes.Context, vk keeper.Keeper, ak au
 		return err.Result()
 	}
 
-	if err := vk.SetSessionDetails(ctx, msg.SessionID, session); err != nil {
+	if err := vk.SetSessionDetails(ctx, session); err != nil {
 		return err.Result()
 	}
 

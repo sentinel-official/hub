@@ -8,12 +8,8 @@ import (
 	"github.com/ironman0x7b2/sentinel-sdk/x/vpn/types"
 )
 
-func (k Keeper) SetNodeDetails(ctx csdkTypes.Context, id string, details *types.NodeDetails) csdkTypes.Error {
-	key, err := k.cdc.MarshalBinaryLengthPrefixed(id)
-	if err != nil {
-		return types.ErrorMarshal()
-	}
-
+func (k Keeper) SetNodeDetails(ctx csdkTypes.Context, details *types.NodeDetails) csdkTypes.Error {
+	key := types.NodeKey(details.ID)
 	value, err := k.cdc.MarshalBinaryLengthPrefixed(details)
 	if err != nil {
 		return types.ErrorMarshal()
@@ -25,12 +21,8 @@ func (k Keeper) SetNodeDetails(ctx csdkTypes.Context, id string, details *types.
 	return nil
 }
 
-func (k Keeper) GetNodeDetails(ctx csdkTypes.Context, id string) (*types.NodeDetails, csdkTypes.Error) {
-	key, err := k.cdc.MarshalBinaryLengthPrefixed(id)
-	if err != nil {
-		return nil, types.ErrorMarshal()
-	}
-
+func (k Keeper) GetNodeDetails(ctx csdkTypes.Context, id types.NodeID) (*types.NodeDetails, csdkTypes.Error) {
+	key := types.NodeKey(id)
 	store := ctx.KVStore(k.NodeStoreKey)
 	value := store.Get(key)
 	if value == nil {
@@ -46,10 +38,7 @@ func (k Keeper) GetNodeDetails(ctx csdkTypes.Context, id string) (*types.NodeDet
 }
 
 func (k Keeper) SetActiveNodeIDs(ctx csdkTypes.Context, ids []string) csdkTypes.Error {
-	key, err := k.cdc.MarshalBinaryLengthPrefixed(types.KeyActiveNodeIDs)
-	if err != nil {
-		return types.ErrorMarshal()
-	}
+	key := types.KeyActiveNodeIDs
 
 	sort.Strings(ids)
 	value, err := k.cdc.MarshalBinaryLengthPrefixed(ids)
@@ -64,13 +53,9 @@ func (k Keeper) SetActiveNodeIDs(ctx csdkTypes.Context, ids []string) csdkTypes.
 }
 
 func (k Keeper) GetActiveNodeIDs(ctx csdkTypes.Context) ([]string, csdkTypes.Error) {
-	key, err := k.cdc.MarshalBinaryLengthPrefixed(types.KeyActiveNodeIDs)
-	if err != nil {
-		return nil, types.ErrorMarshal()
-	}
+	key := types.KeyActiveNodeIDs
 
 	var ids []string
-
 	store := ctx.KVStore(k.NodeStoreKey)
 	value := store.Get(key)
 	if value == nil {
@@ -121,7 +106,7 @@ func (k Keeper) GetNodesOfOwner(ctx csdkTypes.Context, owner csdkTypes.AccAddres
 
 	var nodes []*types.NodeDetails
 	for index := uint64(0); index < count; index++ {
-		id := types.NodeKey(owner, index)
+		id := types.NodeIDFromOwnerCount(owner, index)
 		details, err := k.GetNodeDetails(ctx, id)
 		if err != nil {
 			return nil, err
@@ -137,17 +122,16 @@ func (k Keeper) GetNodes(ctx csdkTypes.Context) ([]*types.NodeDetails, csdkTypes
 	var nodes []*types.NodeDetails
 	store := ctx.KVStore(k.NodeStoreKey)
 
-	iter := csdkTypes.KVStorePrefixIterator(store, types.NodesCountKeyPrefix)
+	iter := csdkTypes.KVStorePrefixIterator(store, types.NodeKeyPrefix)
 	defer iter.Close()
 
 	for ; iter.Valid(); iter.Next() {
-		owner := csdkTypes.AccAddress(iter.Key()[len(types.NodesCountKeyPrefix):])
-		_nodes, err := k.GetNodesOfOwner(ctx, owner)
-		if err != nil {
-			return nil, err
+		var details types.NodeDetails
+		if err := k.cdc.UnmarshalBinaryLengthPrefixed(iter.Value(), &details); err != nil {
+			return nil, types.ErrorUnmarshal()
 		}
 
-		nodes = append(nodes, _nodes...)
+		nodes = append(nodes, &details)
 	}
 
 	return nodes, nil
@@ -161,11 +145,11 @@ func (k Keeper) AddNode(ctx csdkTypes.Context, details *types.NodeDetails) (csdk
 		return nil, err
 	}
 
-	details.ID = types.NodeKey(details.Owner, count)
-	if err := k.SetNodeDetails(ctx, details.ID, details); err != nil {
+	details.ID = types.NodeIDFromOwnerCount(details.Owner, count)
+	if err := k.SetNodeDetails(ctx, details); err != nil {
 		return nil, err
 	}
-	tags = tags.AppendTag("node_id", []byte(details.ID))
+	tags = tags.AppendTag("node_id", details.ID.Bytes())
 
 	if err := k.SetNodesCount(ctx, details.Owner, count+1); err != nil {
 		return nil, err

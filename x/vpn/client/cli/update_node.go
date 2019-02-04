@@ -42,12 +42,12 @@ func updateNodeDetailsTxCmd(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			nodeID := viper.GetString(flagNodeID)
-			apiPort := viper.GetInt(flagAPIPort)
+			nodeID := vpn.NewNodeID(viper.GetString(flagNodeID))
+			pricesPerGB := viper.GetString(flagPricesPerGB)
 			uploadSpeed := csdkTypes.NewInt(viper.GetInt64(flagUploadSpeed))
 			downloadSpeed := csdkTypes.NewInt(viper.GetInt64(flagDownloadSpeed))
+			apiPort := vpn.NewAPIPort(uint32(viper.GetInt(flagAPIPort)))
 			encMethod := viper.GetString(flagEncMethod)
-			pricesPerGB := viper.GetString(flagPricesPerGB)
 			version := viper.GetString(flagVersion)
 
 			parsedPricesPerGB, err := csdkTypes.ParseCoins(pricesPerGB)
@@ -61,8 +61,8 @@ func updateNodeDetailsTxCmd(cdc *codec.Codec) *cobra.Command {
 			}
 
 			msg := vpn.NewMsgUpdateNodeDetails(fromAddress, nodeID,
-				uint16(apiPort), uploadSpeed, downloadSpeed,
-				encMethod, parsedPricesPerGB, version)
+				parsedPricesPerGB, uploadSpeed, downloadSpeed,
+				apiPort, encMethod, version)
 			if cliCtx.GenerateOnly {
 				return utils.PrintUnsignedStdTx(os.Stdout, txBldr, cliCtx, []csdkTypes.Msg{msg}, false)
 			}
@@ -97,7 +97,7 @@ func updateNodeStatusTxCmd(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			nodeID := viper.GetString(flagNodeID)
+			nodeID := vpn.NewNodeID(viper.GetString(flagNodeID))
 			status := strings.ToUpper(args[0])
 
 			fromAddress, err := cliCtx.GetFromAddress()
