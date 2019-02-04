@@ -15,7 +15,6 @@ import (
 
 func getNodeHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("content-type", "application/json")
 		vars := mux.Vars(r)
 
 		nodeID := vars["nodeID"]
@@ -31,21 +30,18 @@ func getNodeHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) http.Handle
 			return
 		}
 
-		if res == nil || len(res) == 0 {
+		if len(res) == 0 {
 			err := errors.New("no node found")
 			utils.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
 		}
 
 		utils.PostProcessResponse(w, cdc, res, cliCtx.Indent)
-		return
 	}
 }
 
 func getNodesHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("content-type", "application/json")
-
 		var res []byte
 		var err error
 
@@ -70,13 +66,12 @@ func getNodesHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) http.Handl
 			}
 		}
 
-		if res == nil || len(res) == 0 {
+		if string(res) == "null" {
 			err := errors.New("no nodes found")
 			utils.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
 		}
 
 		utils.PostProcessResponse(w, cdc, res, cliCtx.Indent)
-		return
 	}
 }

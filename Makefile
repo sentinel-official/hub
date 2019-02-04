@@ -6,15 +6,22 @@ BUILD_TAGS = netgo
 BUILD_FLAGS = -tags "${BUILD_TAGS}" -ldflags \
 	"-X github.com/ironman0x7b2/sentinel-sdk/vendor/github.com/cosmos/cosmos-sdk/version.Version=${VERSION} \
 	-X github.com/ironman0x7b2/sentinel-sdk/vendor/github.com/cosmos/cosmos-sdk/version.Commit=${COMMIT} \
-	-X github.com/ironman0x7b2/sentinel-sdk/vendor/github.com/cosmos/cosmos-sdk/version.VendorDirHash=$(shell $(CAT) .vendor_version)"
+	-X github.com/ironman0x7b2/sentinel-sdk/vendor/github.com/cosmos/cosmos-sdk/version.VendorDirHash=$(shell $(CAT) .vendor_version) \
+	-s -w"
 
-all: get_tools get_vendor_deps build test
+all: get_tools get_vendor_deps install test
 
 build:
 	go build $(BUILD_FLAGS) -o bin/hub-cli cmd/hub-cli/main.go
 	go build $(BUILD_FLAGS) -o bin/hubd cmd/hubd/main.go
 	go build $(BUILD_FLAGS) -o bin/vpn-cli cmd/vpn-cli/main.go
 	go build $(BUILD_FLAGS) -o bin/vpnd cmd/vpnd/main.go
+
+install:
+	go install $(BUILD_FLAGS) ./cmd/hub-cli
+	go install $(BUILD_FLAGS) ./cmd/hubd
+	go install $(BUILD_FLAGS) ./cmd/vpn-cli
+	go install $(BUILD_FLAGS) ./cmd/vpnd
 
 get_tools:
 	go get github.com/golang/dep/cmd/dep

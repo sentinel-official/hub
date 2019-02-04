@@ -30,14 +30,14 @@ type SessionDetails struct {
 	EndedAt      time.Time
 }
 
-type BandwidthSignData struct {
+type BandwidthSign struct {
 	SessionID string
 	Bandwidth sdkTypes.Bandwidth
 	NodeOwner csdkTypes.AccAddress
 	Client    csdkTypes.AccAddress
 }
 
-func (bsd BandwidthSignData) GetBytes() ([]byte, csdkTypes.Error) {
+func (bsd BandwidthSign) GetBytes() ([]byte, csdkTypes.Error) {
 	bsdBytes, err := json.Marshal(bsd)
 	if err != nil {
 		return nil, ErrorMarshal()
@@ -46,10 +46,10 @@ func (bsd BandwidthSignData) GetBytes() ([]byte, csdkTypes.Error) {
 	return bsdBytes, nil
 }
 
-func NewBandwidthSignData(sessionID string, bandwidth sdkTypes.Bandwidth,
-	nodeOwner, client csdkTypes.AccAddress) BandwidthSignData {
+func NewBandwidthSign(sessionID string, bandwidth sdkTypes.Bandwidth,
+	nodeOwner, client csdkTypes.AccAddress) *BandwidthSign {
 
-	return BandwidthSignData{
+	return &BandwidthSign{
 		SessionID: sessionID,
 		Bandwidth: bandwidth,
 		NodeOwner: nodeOwner,

@@ -53,6 +53,5 @@ func initSessionHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec, kb keys
 		}
 
 		utils.CompleteAndBroadcastTxREST(w, r, cliCtx, baseReq, []csdkTypes.Msg{msg}, cdc)
-		return
 	}
 }

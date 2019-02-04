@@ -27,7 +27,7 @@ func (msg MsgRegisterNode) ValidateBasic() csdkTypes.Error {
 	if msg.From == nil || msg.From.Empty() {
 		return ErrorInvalidField("from")
 	}
-	if msg.AmountToLock.IsPositive() == false || msg.AmountToLock.Denom != "sent" {
+	if !msg.AmountToLock.IsPositive() || msg.AmountToLock.Denom != "sent" {
 		return ErrorInvalidField("amount_to_lock")
 	}
 	if msg.APIPort <= 0 || msg.APIPort > 65535 {
@@ -40,7 +40,7 @@ func (msg MsgRegisterNode) ValidateBasic() csdkTypes.Error {
 		return ErrorInvalidField("enc_method")
 	}
 	if msg.PricesPerGB == nil || msg.PricesPerGB.Len() == 0 ||
-		msg.PricesPerGB.IsValid() == false || msg.PricesPerGB.IsPositive() == false {
+		!msg.PricesPerGB.IsValid() || !msg.PricesPerGB.IsPositive() {
 		return ErrorInvalidField("prices_per_gb")
 	}
 	if len(msg.Version) == 0 {
@@ -112,14 +112,14 @@ func (msg MsgUpdateNodeDetails) ValidateBasic() csdkTypes.Error {
 	if len(msg.ID) == 0 {
 		return ErrorInvalidField("id")
 	}
-	if msg.APIPort < 0 || msg.APIPort > 65535 {
+	if msg.APIPort > 65535 {
 		return ErrorInvalidField("api_port")
 	}
 	if msg.NetSpeed.Download.IsNegative() || msg.NetSpeed.Upload.IsNegative() {
 		return ErrorInvalidField("net_speed")
 	}
 	if (msg.PricesPerGB != nil && msg.PricesPerGB.Len() != 0) &&
-		(msg.PricesPerGB.IsValid() == false || msg.PricesPerGB.IsPositive() == false) {
+		(!msg.PricesPerGB.IsValid() || !msg.PricesPerGB.IsPositive()) {
 		return ErrorInvalidField("prices_per_gb")
 	}
 

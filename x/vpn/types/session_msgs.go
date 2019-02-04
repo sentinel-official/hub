@@ -25,7 +25,7 @@ func (msg MsgInitSession) ValidateBasic() csdkTypes.Error {
 	if len(msg.NodeID) == 0 {
 		return ErrorInvalidField("node_id")
 	}
-	if msg.AmountToLock.IsPositive() == false {
+	if !msg.AmountToLock.IsPositive() {
 		return ErrorInvalidField("amount_to_lock")
 	}
 

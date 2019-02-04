@@ -32,7 +32,7 @@ type (
 	NodeDetails = types.NodeDetails
 	SessionDetails = types.SessionDetails
 	SessionBandwidth = types.SessionBandwidth
-	BandwidthSignData = types.BandwidthSignData
+	BandwidthSign = types.BandwidthSign
 
 	MsgRegisterNode = types.MsgRegisterNode
 	MsgUpdateNodeDetails = types.MsgUpdateNodeDetails
@@ -61,7 +61,7 @@ var (
 	NewMsgDeregisterNode         = types.NewMsgDeregisterNode
 	NewMsgInitSession            = types.NewMsgInitSession
 	NewMsgUpdateSessionBandwidth = types.NewMsgUpdateSessionBandwidth
-	NewBandwidthSignData         = types.NewBandwidthSignData
+	NewBandwidthSign             = types.NewBandwidthSign
 
 	NewKeeper = keeper.NewKeeper
 

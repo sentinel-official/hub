@@ -112,3 +112,24 @@ func (k Keeper) GetSessionsCount(ctx csdkTypes.Context, owner csdkTypes.AccAddre
 
 	return count, nil
 }
+
+func (k Keeper) AddSession(ctx csdkTypes.Context, details *types.SessionDetails) (csdkTypes.Tags, csdkTypes.Error) {
+	tags := csdkTypes.EmptyTags()
+
+	count, err := k.GetSessionsCount(ctx, details.Client)
+	if err != nil {
+		return nil, err
+	}
+
+	details.ID = types.SessionKey(details.Client, count)
+	if err := k.SetSessionDetails(ctx, details.ID, details); err != nil {
+		return nil, err
+	}
+	tags = tags.AppendTag("session_id", []byte(details.ID))
+
+	if err := k.SetSessionsCount(ctx, details.Client, count+1); err != nil {
+		return nil, err
+	}
+
+	return tags, nil
+}

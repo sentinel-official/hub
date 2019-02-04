@@ -26,7 +26,7 @@ func QueryNodeCmd(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			if res == nil || len(res) == 0 {
+			if len(res) == 0 {
 				return fmt.Errorf("no node found")
 			}
 
@@ -78,7 +78,7 @@ func QueryNodesCmd(cdc *codec.Codec) *cobra.Command {
 				}
 			}
 
-			if res == nil || len(res) == 0 {
+			if string(res) == "null" {
 				return fmt.Errorf("no nodes found")
 			}
 

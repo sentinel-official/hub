@@ -113,13 +113,13 @@ func (k Keeper) GetNodesCount(ctx csdkTypes.Context, owner csdkTypes.AccAddress)
 	return count, nil
 }
 
-func (k Keeper) GetNodesOfOwner(ctx csdkTypes.Context, owner csdkTypes.AccAddress) ([]types.NodeDetails, csdkTypes.Error) {
+func (k Keeper) GetNodesOfOwner(ctx csdkTypes.Context, owner csdkTypes.AccAddress) ([]*types.NodeDetails, csdkTypes.Error) {
 	count, err := k.GetNodesCount(ctx, owner)
 	if err != nil {
 		return nil, err
 	}
 
-	var nodes []types.NodeDetails
+	var nodes []*types.NodeDetails
 	for index := uint64(0); index < count; index++ {
 		id := types.NodeKey(owner, index)
 		details, err := k.GetNodeDetails(ctx, id)
@@ -127,14 +127,14 @@ func (k Keeper) GetNodesOfOwner(ctx csdkTypes.Context, owner csdkTypes.AccAddres
 			return nil, err
 		}
 
-		nodes = append(nodes, *details)
+		nodes = append(nodes, details)
 	}
 
 	return nodes, nil
 }
 
-func (k Keeper) GetNodes(ctx csdkTypes.Context) ([]types.NodeDetails, csdkTypes.Error) {
-	var nodes []types.NodeDetails
+func (k Keeper) GetNodes(ctx csdkTypes.Context) ([]*types.NodeDetails, csdkTypes.Error) {
+	var nodes []*types.NodeDetails
 	store := ctx.KVStore(k.NodeStoreKey)
 
 	iter := csdkTypes.KVStorePrefixIterator(store, types.NodesCountKeyPrefix)
@@ -151,4 +151,25 @@ func (k Keeper) GetNodes(ctx csdkTypes.Context) ([]types.NodeDetails, csdkTypes.
 	}
 
 	return nodes, nil
+}
+
+func (k Keeper) AddNode(ctx csdkTypes.Context, details *types.NodeDetails) (csdkTypes.Tags, csdkTypes.Error) {
+	tags := csdkTypes.EmptyTags()
+
+	count, err := k.GetNodesCount(ctx, details.Owner)
+	if err != nil {
+		return nil, err
+	}
+
+	details.ID = types.NodeKey(details.Owner, count)
+	if err := k.SetNodeDetails(ctx, details.ID, details); err != nil {
+		return nil, err
+	}
+	tags = tags.AppendTag("node_id", []byte(details.ID))
+
+	if err := k.SetNodesCount(ctx, details.Owner, count+1); err != nil {
+		return nil, err
+	}
+
+	return tags, nil
 }
