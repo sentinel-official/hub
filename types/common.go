@@ -4,6 +4,8 @@ import (
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
 )
 
+var GB = csdkTypes.NewInt(1000000000)
+
 type Bandwidth struct {
 	Upload   csdkTypes.Int `json:"upload"`
 	Download csdkTypes.Int `json:"download"`

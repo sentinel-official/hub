@@ -5,15 +5,14 @@ import (
 )
 
 var (
-	NodeKeyPrefix          = []byte{0x01}
-	NodesCountKeyPrefix    = []byte{0x02}
-	SessionKeyPrefix       = []byte{0x01}
-	SessionsCountKeyPrefix = []byte{0x02}
+	NodeKeyPrefix       = []byte{0x01}
+	NodesCountKeyPrefix = []byte{0x02}
 
-	KeyActiveNodeIDs    = []byte("ACTIVE_NODE_IDS")
-	KeyActiveSessionIDs = []byte("ACTIVE_SESSION_IDS")
+	SessionKeyPrefix               = []byte{0x01}
+	SessionsCountKeyPrefix         = []byte{0x02}
+	NodesActiveSessionIDsKeyPrefix = []byte{0x03}
 
-	GB = csdkTypes.NewInt(1000000000)
+	KeyActiveNodeIDs = []byte("ACTIVE_NODE_IDS")
 )
 
 func NodeKey(id NodeID) []byte {
@@ -30,6 +29,10 @@ func NodesCountKey(address csdkTypes.Address) []byte {
 
 func SessionsCountKey(address csdkTypes.Address) []byte {
 	return append(SessionsCountKeyPrefix, address.Bytes()...)
+}
+
+func NodesActiveSessionIDsKey(id NodeID) []byte {
+	return append(NodesActiveSessionIDsKeyPrefix, id.Bytes()...)
 }
 
 const (

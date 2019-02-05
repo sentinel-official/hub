@@ -1,8 +1,6 @@
 package keeper
 
 import (
-	"sort"
-
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/ironman0x7b2/sentinel-sdk/x/vpn/types"
@@ -37,10 +35,10 @@ func (k Keeper) GetNodeDetails(ctx csdkTypes.Context, id types.NodeID) (*types.N
 	return &details, nil
 }
 
-func (k Keeper) SetActiveNodeIDs(ctx csdkTypes.Context, ids []string) csdkTypes.Error {
+func (k Keeper) SetActiveNodeIDs(ctx csdkTypes.Context, ids types.NodeIDs) csdkTypes.Error {
 	key := types.KeyActiveNodeIDs
 
-	sort.Strings(ids)
+	ids = ids.Sort()
 	value, err := k.cdc.MarshalBinaryLengthPrefixed(ids)
 	if err != nil {
 		return types.ErrorMarshal()
@@ -52,10 +50,10 @@ func (k Keeper) SetActiveNodeIDs(ctx csdkTypes.Context, ids []string) csdkTypes.
 	return nil
 }
 
-func (k Keeper) GetActiveNodeIDs(ctx csdkTypes.Context) ([]string, csdkTypes.Error) {
+func (k Keeper) GetActiveNodeIDs(ctx csdkTypes.Context) (types.NodeIDs, csdkTypes.Error) {
 	key := types.KeyActiveNodeIDs
 
-	var ids []string
+	var ids types.NodeIDs
 	store := ctx.KVStore(k.NodeStoreKey)
 	value := store.Get(key)
 	if value == nil {
@@ -156,4 +154,33 @@ func (k Keeper) AddNode(ctx csdkTypes.Context, details *types.NodeDetails) (csdk
 	}
 
 	return tags, nil
+}
+
+func (k Keeper) AddActiveNodeID(ctx csdkTypes.Context, id types.NodeID) csdkTypes.Error {
+	ids, err := k.GetActiveNodeIDs(ctx)
+	if err != nil {
+		return err
+	}
+
+	if ids.Search(id) != ids.Len() {
+		return nil
+	}
+
+	ids = ids.Append(id)
+	return k.SetActiveNodeIDs(ctx, ids)
+}
+
+func (k Keeper) RemoveActiveNodeID(ctx csdkTypes.Context, id types.NodeID) csdkTypes.Error {
+	ids, err := k.GetActiveNodeIDs(ctx)
+	if err != nil {
+		return err
+	}
+
+	index := ids.Search(id)
+	if index == ids.Len() {
+		return nil
+	}
+
+	ids = types.EmptyNodeIDs().Append(ids[:index]...).Append(ids[index+1:]...)
+	return k.SetActiveNodeIDs(ctx, ids)
 }

@@ -46,7 +46,6 @@ type (
 )
 
 var (
-	GB                     = types.GB
 	NodeKeyPrefix          = types.NodeKeyPrefix
 	NodesCountKeyPrefix    = types.NodesCountKeyPrefix
 	NodeKey                = types.NodeKey
@@ -57,8 +56,7 @@ var (
 	SessionCountKey        = types.SessionsCountKey
 	RegisterCodec          = types.RegisterCodec
 
-	KeyActiveNodeIDs    = types.KeyActiveNodeIDs
-	KeyActiveSessionIDs = types.KeyActiveSessionIDs
+	KeyActiveNodeIDs = types.KeyActiveNodeIDs
 
 	NewMsgRegisterNode           = types.NewMsgRegisterNode
 	NewMsgUpdateNodeDetails      = types.NewMsgUpdateNodeDetails

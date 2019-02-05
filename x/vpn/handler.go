@@ -2,6 +2,7 @@ package vpn
 
 import (
 	"reflect"
+	"time"
 
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
@@ -30,6 +31,105 @@ func NewHandler(vk keeper.Keeper, ak auth.AccountKeeper, bk bank.Keeper) csdkTyp
 			return types.ErrorUnknownMsgType(reflect.TypeOf(msg).Name()).Result()
 		}
 	}
+}
+
+func endBlockNodes(ctx csdkTypes.Context, vk keeper.Keeper) {
+	inactiveTime := ctx.BlockHeader().Time.Add(-1 * time.Duration(1) * time.Minute)
+
+	nodeIDs, err := vk.GetActiveNodeIDs(ctx)
+	if err != nil {
+		panic(err)
+	}
+
+	for _, nodeID := range nodeIDs {
+		node, err := vk.GetNodeDetails(ctx, nodeID)
+		if err != nil {
+			panic(err)
+		}
+
+		if node.StatusAt.After(inactiveTime) {
+			continue
+		}
+
+		if err := vk.RemoveActiveNodeID(ctx, node.ID); err != nil {
+			panic(err)
+		}
+
+		node.Status = types.StatusInactive
+		node.StatusAt = ctx.BlockHeader().Time
+		if err := vk.SetNodeDetails(ctx, node); err != nil {
+			panic(err)
+		}
+	}
+}
+
+func endBlockSessions(ctx csdkTypes.Context, vk keeper.Keeper, bk bank.Keeper) {
+	inactiveTime := ctx.BlockHeader().Time.Add(-1 * time.Duration(2) * time.Minute)
+	endTime := ctx.BlockHeader().Time.Add(-1 * time.Duration(3) * time.Minute)
+
+	sessionIDs, err := vk.GetActiveSessionIDs(ctx)
+	if err != nil {
+		panic(err)
+	}
+
+	for _, sessionID := range sessionIDs {
+		session, err := vk.GetSessionDetails(ctx, sessionID)
+		if err != nil {
+			panic(err)
+		}
+
+		if session.StatusAt.After(inactiveTime) {
+			continue
+		}
+
+		if err := vk.RemoveNodesActiveSessionID(ctx, session.NodeID, sessionID); err != nil {
+			panic(err)
+		}
+
+		if session.StatusAt.Before(inactiveTime) {
+			session.Status = types.StatusInactive
+		}
+		if session.StatusAt.Before(endTime) {
+			session.Status = types.StatusEnd
+		}
+		session.StatusAt = ctx.BlockHeader().Time
+
+		if err := vk.SetSessionDetails(ctx, session); err != nil {
+			panic(err)
+		}
+
+		if session.Status == types.StatusEnd {
+			node, err := vk.GetNodeDetails(ctx, session.NodeID)
+			if err != nil {
+				panic(err)
+			}
+			if node == nil {
+				panic(err)
+			}
+
+			payAmount := session.Amount()
+			remainingAmount := session.LockedAmount.Minus(payAmount)
+
+			if !payAmount.IsZero() {
+				_, _, err := bk.AddCoins(ctx, node.Owner, csdkTypes.Coins{payAmount})
+				if err != nil {
+					panic(err)
+				}
+			}
+
+			if !remainingAmount.IsZero() {
+				_, _, err := bk.AddCoins(ctx, session.Client, csdkTypes.Coins{remainingAmount})
+				if err != nil {
+					panic(err)
+				}
+			}
+		}
+	}
+}
+
+func EndBlock(ctx csdkTypes.Context, vk keeper.Keeper, bk bank.Keeper) {
+	endBlockNodes(ctx, vk)
+	endBlockSessions(ctx, vk, bk)
 }
 
 func handleRegisterNode(ctx csdkTypes.Context, vk keeper.Keeper, bk bank.Keeper,
@@ -127,9 +227,23 @@ func handleUpdateNodeStatus(ctx csdkTypes.Context, vk keeper.Keeper,
 		return types.ErrorInvalidNodeStatus().Result()
 	}
 
+	if details.Status != msg.Status {
+		switch msg.Status {
+		case types.StatusActive:
+			if err := vk.AddActiveNodeID(ctx, details.ID); err != nil {
+				return err.Result()
+			}
+		case types.StatusInactive:
+			if err := vk.RemoveActiveNodeID(ctx, details.ID); err != nil {
+				return err.Result()
+			}
+		default:
+			// Do nothing
+		}
+	}
+
 	details.Status = msg.Status
 	details.StatusAt = ctx.BlockHeader().Time
-
 	if err := vk.SetNodeDetails(ctx, details); err != nil {
 		return err.Result()
 	}
@@ -156,6 +270,10 @@ func handleDeregisterNode(ctx csdkTypes.Context, vk keeper.Keeper, bk bank.Keepe
 	if details.Status != types.StatusRegistered &&
 		details.Status != types.StatusInactive {
 		return types.ErrorInvalidNodeStatus().Result()
+	}
+
+	if err := vk.RemoveActiveNodeID(ctx, details.ID); err != nil {
+		return err.Result()
 	}
 
 	details.Status = types.StatusDeregistered
@@ -253,6 +371,12 @@ func handleUpdateSessionBandwidth(ctx csdkTypes.Context, vk keeper.Keeper, ak au
 	}
 	if node.Status != types.StatusActive {
 		return types.ErrorInvalidNodeStatus().Result()
+	}
+
+	if session.Status != types.StatusActive {
+		if err := vk.AddNodesActiveSessionID(ctx, session.NodeID, session.ID); err != nil {
+			return err.Result()
+		}
 	}
 
 	sign := types.NewBandwidthSign(msg.SessionID, msg.Bandwidth, node.Owner, session.Client)

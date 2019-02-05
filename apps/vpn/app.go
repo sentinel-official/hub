@@ -209,6 +209,7 @@ func (app *VPN) EndBlocker(ctx csdkTypes.Context, req abciTypes.RequestEndBlock)
 	tags := gov.EndBlocker(ctx, app.govKeeper)
 	validatorUpdates, endBlockerTags := staking.EndBlocker(ctx, app.stakingKeeper)
 	tags = append(tags, endBlockerTags...)
+	vpn.EndBlock(ctx, app.vpnKeeper, app.bankKeeper)
 
 	app.assertRuntimeInvariants()
 

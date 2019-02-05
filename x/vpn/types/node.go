@@ -16,6 +16,7 @@ type NodeID string
 func (n NodeID) Bytes() []byte  { return []byte(n) }
 func (n NodeID) String() string { return string(n) }
 func (n NodeID) Len() int       { return len(n) }
+
 func (n NodeID) Valid() bool {
 	splits := strings.Split(n.String(), "/")
 	return len(splits) == 2
@@ -28,6 +29,34 @@ func NewNodeID(str string) NodeID {
 func NodeIDFromOwnerCount(address csdkTypes.Address, count uint64) NodeID {
 	id := fmt.Sprintf("%s/%d", address.String(), count)
 	return NewNodeID(id)
+}
+
+type NodeIDs []NodeID
+
+func (n NodeIDs) Append(id ...NodeID) NodeIDs { return append(n, id...) }
+func (n NodeIDs) Len() int                    { return len(n) }
+func (n NodeIDs) Less(i, j int) bool          { return n[i].String() < n[j].String() }
+func (n NodeIDs) Swap(i, j int)               { n[i], n[j] = n[j], n[i] }
+
+func (n NodeIDs) Sort() NodeIDs {
+	sort.Sort(n)
+	return n
+}
+
+func (n NodeIDs) Search(id NodeID) int {
+	index := sort.Search(len(n), func(i int) bool {
+		return n[i].String() >= id.String()
+	})
+
+	if index < n.Len() && n[index].String() != id.String() {
+		return n.Len()
+	}
+
+	return index
+}
+
+func EmptyNodeIDs() NodeIDs {
+	return NodeIDs{}
 }
 
 type APIPort uint32
@@ -89,7 +118,7 @@ func (nd NodeDetails) FindPricePerGB(denom string) csdkTypes.Coin {
 		return nd.PricesPerGB[i].Denom >= denom
 	})
 
-	if index == nd.PricesPerGB.Len() {
+	if index < nd.PricesPerGB.Len() && nd.PricesPerGB[index].Denom != denom {
 		return csdkTypes.Coin{}
 	}
 
@@ -102,8 +131,8 @@ func (nd NodeDetails) CalculateBandwidth(amount csdkTypes.Coin) (sdkTypes.Bandwi
 		return sdkTypes.Bandwidth{}, ErrorInvalidPriceDenom()
 	}
 
-	upload := amount.Amount.Div(pricePerGB.Amount).Mul(GB)
-	download := amount.Amount.Div(pricePerGB.Amount).Mul(GB)
+	upload := amount.Amount.Div(pricePerGB.Amount).Mul(sdkTypes.GB)
+	download := amount.Amount.Div(pricePerGB.Amount).Mul(sdkTypes.GB)
 	bandwidth := sdkTypes.NewBandwidth(upload, download)
 
 	return bandwidth, nil
