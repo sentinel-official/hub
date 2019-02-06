@@ -11,4 +11,7 @@ const (
 	flagNodeType      = "node-type"
 	flagNodeID        = "node-id"
 	flagOwnerAddress  = "owner-address"
+	flagSessionID     = "session-id"
+	flagClientSign    = "client-sign"
+	flagNodeOwnerSign = "node-owner-sign"
 )
