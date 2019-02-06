@@ -4,7 +4,6 @@ import (
 	"os"
 	"strings"
 
-	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/client/utils"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -16,23 +15,9 @@ import (
 	"github.com/ironman0x7b2/sentinel-sdk/x/vpn"
 )
 
-func UpdateNodeInfoTxCmd(cdc *codec.Codec) *cobra.Command {
-	updateNodeCmd := &cobra.Command{
-		Use:   "update",
-		Short: "Update node information",
-	}
-
-	updateNodeCmd.AddCommand(client.PostCommands(
-		updateNodeDetailsTxCmd(cdc),
-		updateNodeStatusTxCmd(cdc),
-	)...)
-
-	return updateNodeCmd
-}
-
-func updateNodeDetailsTxCmd(cdc *codec.Codec) *cobra.Command {
+func UpdateNodeDetailsTxCmd(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "details",
+		Use:   "update-details",
 		Short: "Update details of the node",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			txBldr := authTxBuilder.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
@@ -84,9 +69,9 @@ func updateNodeDetailsTxCmd(cdc *codec.Codec) *cobra.Command {
 	return cmd
 }
 
-func updateNodeStatusTxCmd(cdc *codec.Codec) *cobra.Command {
+func UpdateNodeStatusTxCmd(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "status",
+		Use:   "update-status",
 		Short: "Update status of the node",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {

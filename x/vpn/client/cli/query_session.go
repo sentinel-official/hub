@@ -13,10 +13,11 @@ import (
 func QuerySessionCmd(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "session",
-		Args:  cobra.ExactArgs(1),
 		Short: "Get details of a session",
+		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cliCtx := context.NewCLIContext().WithCodec(cdc).WithAccountDecoder(cdc)
+
 			res, err := common.QuerySession(cliCtx, cdc, args[0])
 			if err != nil {
 				return err

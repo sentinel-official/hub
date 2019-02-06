@@ -38,5 +38,4 @@ func registerQueryRoutes(cliCtx context.CLIContext, r *mux.Router, cdc *codec.Co
 
 	r.HandleFunc("/sessions/{sessionID:[^/]+/[^/]+}", getSessionHandlerFunc(cliCtx, cdc)).
 		Methods("GET")
-
 }
