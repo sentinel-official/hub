@@ -2,7 +2,6 @@ package vpn
 
 import (
 	"reflect"
-	"time"
 
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
@@ -34,9 +33,12 @@ func NewHandler(vk keeper.Keeper, ak auth.AccountKeeper, bk bank.Keeper) csdkTyp
 }
 
 func endBlockNodes(ctx csdkTypes.Context, vk keeper.Keeper) {
-	inactiveTime := ctx.BlockHeader().Time.Add(-1 * time.Duration(1) * time.Minute)
+	inactiveHeight := ctx.BlockHeight() - 50
+	if inactiveHeight <= 0 {
+		return
+	}
 
-	nodeIDs, err := vk.GetActiveNodeIDs(ctx)
+	nodeIDs, err := vk.GetActiveNodeIDsAtHeight(ctx, inactiveHeight)
 	if err != nil {
 		panic(err)
 	}
@@ -47,27 +49,25 @@ func endBlockNodes(ctx csdkTypes.Context, vk keeper.Keeper) {
 			panic(err)
 		}
 
-		if node.StatusAt.After(inactiveTime) {
-			continue
-		}
-
-		if err := vk.RemoveActiveNodeID(ctx, node.ID); err != nil {
-			panic(err)
-		}
-
 		node.Status = types.StatusInactive
-		node.StatusAt = ctx.BlockHeader().Time
+		node.StatusAtHeight = ctx.BlockHeight()
 		if err := vk.SetNodeDetails(ctx, node); err != nil {
 			panic(err)
 		}
 	}
+
+	if err := vk.SetActiveNodeIDsAtHeight(ctx, inactiveHeight, nil); err != nil {
+		panic(err)
+	}
 }
 
 func endBlockSessions(ctx csdkTypes.Context, vk keeper.Keeper, bk bank.Keeper) {
-	inactiveTime := ctx.BlockHeader().Time.Add(-1 * time.Duration(2) * time.Minute)
-	endTime := ctx.BlockHeader().Time.Add(-1 * time.Duration(3) * time.Minute)
+	endHeight := ctx.BlockHeight() - 35
+	if endHeight <= 0 {
+		return
+	}
 
-	sessionIDs, err := vk.GetActiveSessionIDs(ctx)
+	sessionIDs, err := vk.GetActiveSessionIDsAtHeight(ctx, endHeight)
 	if err != nil {
 		panic(err)
 	}
@@ -78,52 +78,37 @@ func endBlockSessions(ctx csdkTypes.Context, vk keeper.Keeper, bk bank.Keeper) {
 			panic(err)
 		}
 
-		if session.StatusAt.After(inactiveTime) {
-			continue
-		}
-
-		if err := vk.RemoveNodesActiveSessionID(ctx, session.NodeID, sessionID); err != nil {
-			panic(err)
-		}
-
-		if session.StatusAt.Before(inactiveTime) {
-			session.Status = types.StatusInactive
-		}
-		if session.StatusAt.Before(endTime) {
-			session.Status = types.StatusEnd
-		}
-		session.StatusAt = ctx.BlockHeader().Time
-
+		session.Status = types.StatusEnd
+		session.StatusAtHeight = ctx.BlockHeight()
 		if err := vk.SetSessionDetails(ctx, session); err != nil {
 			panic(err)
 		}
 
-		if session.Status == types.StatusEnd {
-			node, err := vk.GetNodeDetails(ctx, session.NodeID)
+		node, err := vk.GetNodeDetails(ctx, session.NodeID)
+		if err != nil {
+			panic(err)
+		}
+
+		payAmount := session.Amount()
+		remainingAmount := session.LockedAmount.Minus(payAmount)
+
+		if !payAmount.IsZero() {
+			_, _, err := bk.AddCoins(ctx, node.Owner, csdkTypes.Coins{payAmount})
 			if err != nil {
 				panic(err)
 			}
-			if node == nil {
+		}
+
+		if !remainingAmount.IsZero() {
+			_, _, err := bk.AddCoins(ctx, session.Client, csdkTypes.Coins{remainingAmount})
+			if err != nil {
 				panic(err)
 			}
-
-			payAmount := session.Amount()
-			remainingAmount := session.LockedAmount.Minus(payAmount)
-
-			if !payAmount.IsZero() {
-				_, _, err := bk.AddCoins(ctx, node.Owner, csdkTypes.Coins{payAmount})
-				if err != nil {
-					panic(err)
-				}
-			}
-
-			if !remainingAmount.IsZero() {
-				_, _, err := bk.AddCoins(ctx, session.Client, csdkTypes.Coins{remainingAmount})
-				if err != nil {
-					panic(err)
-				}
-			}
 		}
+	}
+
+	if err := vk.SetActiveSessionIDsAtHeight(ctx, endHeight, nil); err != nil {
+		panic(err)
 	}
 }
 
@@ -145,17 +130,17 @@ func handleRegisterNode(ctx csdkTypes.Context, vk keeper.Keeper, bk bank.Keeper,
 	allTags = allTags.AppendTags(tags)
 
 	details := types.NodeDetails{
-		Owner:        msg.From,
-		LockedAmount: msg.AmountToLock,
-		APIPort:      msg.APIPort,
-		NetSpeed:     msg.NetSpeed,
-		EncMethod:    msg.EncMethod,
-		PricesPerGB:  msg.PricesPerGB,
-		Version:      msg.Version,
-		NodeType:     msg.NodeType,
-		Status:       types.StatusRegistered,
-		StatusAt:     ctx.BlockHeader().Time,
-		DetailsAt:    ctx.BlockHeader().Time,
+		Owner:           msg.From,
+		LockedAmount:    msg.AmountToLock,
+		APIPort:         msg.APIPort,
+		NetSpeed:        msg.NetSpeed,
+		EncMethod:       msg.EncMethod,
+		PricesPerGB:     msg.PricesPerGB,
+		Version:         msg.Version,
+		NodeType:        msg.NodeType,
+		Status:          types.StatusRegistered,
+		StatusAtHeight:  ctx.BlockHeight(),
+		DetailsAtHeight: ctx.BlockHeight(),
 	}
 
 	tags, err = vk.AddNode(ctx, &details)
@@ -196,7 +181,7 @@ func handleUpdateNodeDetails(ctx csdkTypes.Context, vk keeper.Keeper,
 		Version:     msg.Version,
 	}
 	details.UpdateDetails(newDetails)
-	details.DetailsAt = ctx.BlockHeader().Time
+	details.DetailsAtHeight = ctx.BlockHeight()
 
 	if err := vk.SetNodeDetails(ctx, details); err != nil {
 		return err.Result()
@@ -227,23 +212,17 @@ func handleUpdateNodeStatus(ctx csdkTypes.Context, vk keeper.Keeper,
 		return types.ErrorInvalidNodeStatus().Result()
 	}
 
-	if details.Status != msg.Status {
-		switch msg.Status {
-		case types.StatusActive:
-			if err := vk.AddActiveNodeID(ctx, details.ID); err != nil {
-				return err.Result()
-			}
-		case types.StatusInactive:
-			if err := vk.RemoveActiveNodeID(ctx, details.ID); err != nil {
-				return err.Result()
-			}
-		default:
-			// Do nothing
+	if err := vk.RemoveActiveNodeIDAtHeight(ctx, details.StatusAtHeight, details.ID); err != nil {
+		return err.Result()
+	}
+	if msg.Status == types.StatusActive {
+		if err := vk.AddActiveNodeIDAtHeight(ctx, ctx.BlockHeight(), details.ID); err != nil {
+			return err.Result()
 		}
 	}
 
 	details.Status = msg.Status
-	details.StatusAt = ctx.BlockHeader().Time
+	details.StatusAtHeight = ctx.BlockHeight()
 	if err := vk.SetNodeDetails(ctx, details); err != nil {
 		return err.Result()
 	}
@@ -272,12 +251,12 @@ func handleDeregisterNode(ctx csdkTypes.Context, vk keeper.Keeper, bk bank.Keepe
 		return types.ErrorInvalidNodeStatus().Result()
 	}
 
-	if err := vk.RemoveActiveNodeID(ctx, details.ID); err != nil {
+	if err := vk.RemoveActiveNodeIDAtHeight(ctx, details.StatusAtHeight, details.ID); err != nil {
 		return err.Result()
 	}
 
 	details.Status = types.StatusDeregistered
-	details.StatusAt = ctx.BlockHeader().Time
+	details.StatusAtHeight = ctx.BlockHeight()
 	if err := vk.SetNodeDetails(ctx, details); err != nil {
 		return err.Result()
 	}
@@ -328,11 +307,11 @@ func handleInitSession(ctx csdkTypes.Context, vk keeper.Keeper, bk bank.Keeper,
 		LockedAmount: msg.AmountToLock,
 		PricePerGB:   pricePerGB,
 		Bandwidth: types.SessionBandwidth{
-			ToProvide: bandwidth,
-			UpdatedAt: ctx.BlockHeader().Time,
+			ToProvide:       bandwidth,
+			UpdatedAtHeight: ctx.BlockHeight(),
 		},
-		Status:   types.StatusInit,
-		StatusAt: ctx.BlockHeader().Time,
+		Status:         types.StatusInit,
+		StatusAtHeight: ctx.BlockHeight(),
 	}
 
 	tags, err = vk.AddSession(ctx, &details)
@@ -373,10 +352,11 @@ func handleUpdateSessionBandwidth(ctx csdkTypes.Context, vk keeper.Keeper, ak au
 		return types.ErrorInvalidNodeStatus().Result()
 	}
 
-	if session.Status != types.StatusActive {
-		if err := vk.AddNodesActiveSessionID(ctx, session.NodeID, session.ID); err != nil {
-			return err.Result()
-		}
+	if err := vk.RemoveActiveSessionIDsAtHeight(ctx, session.StatusAtHeight, session.ID); err != nil {
+		return err.Result()
+	}
+	if err := vk.AddActiveSessionIDsAtHeight(ctx, ctx.BlockHeight(), session.ID); err != nil {
+		return err.Result()
 	}
 
 	sign := types.NewBandwidthSign(msg.SessionID, msg.Bandwidth, node.Owner, session.Client)

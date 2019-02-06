@@ -35,8 +35,8 @@ func (k Keeper) GetSessionDetails(ctx csdkTypes.Context, id types.SessionID) (*t
 	return &details, nil
 }
 
-func (k Keeper) SetNodesActiveSessionIDs(ctx csdkTypes.Context, nodeID types.NodeID, ids types.SessionIDs) csdkTypes.Error {
-	key := types.NodesActiveSessionIDsKey(nodeID)
+func (k Keeper) SetActiveSessionIDsAtHeight(ctx csdkTypes.Context, height int64, ids types.SessionIDs) csdkTypes.Error {
+	key := types.ActiveSessionIDsAtHeightKey(height)
 
 	ids = ids.Sort()
 	value, err := k.cdc.MarshalBinaryLengthPrefixed(ids)
@@ -50,8 +50,8 @@ func (k Keeper) SetNodesActiveSessionIDs(ctx csdkTypes.Context, nodeID types.Nod
 	return nil
 }
 
-func (k Keeper) GetNodesActiveSessionIDs(ctx csdkTypes.Context, nodeID types.NodeID) (types.SessionIDs, csdkTypes.Error) {
-	key := types.NodesActiveSessionIDsKey(nodeID)
+func (k Keeper) GetActiveSessionIDsAtHeight(ctx csdkTypes.Context, height int64) (types.SessionIDs, csdkTypes.Error) {
+	key := types.ActiveSessionIDsAtHeightKey(height)
 
 	var ids types.SessionIDs
 	store := ctx.KVStore(k.SessionStoreKey)
@@ -117,8 +117,8 @@ func (k Keeper) AddSession(ctx csdkTypes.Context, details *types.SessionDetails)
 	return tags, nil
 }
 
-func (k Keeper) AddNodesActiveSessionID(ctx csdkTypes.Context, nodeID types.NodeID, id types.SessionID) csdkTypes.Error {
-	ids, err := k.GetNodesActiveSessionIDs(ctx, nodeID)
+func (k Keeper) AddActiveSessionIDsAtHeight(ctx csdkTypes.Context, height int64, id types.SessionID) csdkTypes.Error {
+	ids, err := k.GetActiveSessionIDsAtHeight(ctx, height)
 	if err != nil {
 		return err
 	}
@@ -128,11 +128,11 @@ func (k Keeper) AddNodesActiveSessionID(ctx csdkTypes.Context, nodeID types.Node
 	}
 
 	ids = ids.Append(id)
-	return k.SetNodesActiveSessionIDs(ctx, nodeID, ids)
+	return k.SetActiveSessionIDsAtHeight(ctx, height, ids)
 }
 
-func (k Keeper) RemoveNodesActiveSessionID(ctx csdkTypes.Context, nodeID types.NodeID, id types.SessionID) csdkTypes.Error {
-	ids, err := k.GetNodesActiveSessionIDs(ctx, nodeID)
+func (k Keeper) RemoveActiveSessionIDsAtHeight(ctx csdkTypes.Context, height int64, id types.SessionID) csdkTypes.Error {
+	ids, err := k.GetActiveSessionIDsAtHeight(ctx, height)
 	if err != nil {
 		return err
 	}
@@ -143,24 +143,5 @@ func (k Keeper) RemoveNodesActiveSessionID(ctx csdkTypes.Context, nodeID types.N
 	}
 
 	ids = types.EmptySessionIDs().Append(ids[:index]...).Append(ids[index+1:]...)
-	return k.SetNodesActiveSessionIDs(ctx, nodeID, ids)
-}
-
-func (k Keeper) GetActiveSessionIDs(ctx csdkTypes.Context) (types.SessionIDs, csdkTypes.Error) {
-	var ids types.SessionIDs
-
-	store := ctx.KVStore(k.SessionStoreKey)
-	iter := csdkTypes.KVStorePrefixIterator(store, types.NodesActiveSessionIDsKeyPrefix)
-	defer iter.Close()
-
-	for ; iter.Valid(); iter.Next() {
-		var _ids types.SessionIDs
-		if err := k.cdc.UnmarshalBinaryLengthPrefixed(iter.Value(), &_ids); err != nil {
-			return nil, types.ErrorUnmarshal()
-		}
-
-		ids = ids.Append(_ids...)
-	}
-
-	return ids, nil
+	return k.SetActiveSessionIDsAtHeight(ctx, height, ids)
 }

@@ -32,14 +32,15 @@ func VerifyAndUpdateSessionBandwidth(ctx csdkTypes.Context, ak auth.AccountKeepe
 	session.Bandwidth.Consumed = sign.Bandwidth
 	session.Bandwidth.ClientSign = clientSign
 	session.Bandwidth.NodeOwnerSign = nodeOwnerSign
-	session.Bandwidth.UpdatedAt = ctx.BlockHeader().Time
+	session.Bandwidth.UpdatedAtHeight = ctx.BlockHeight()
 
 	if session.Status == types.StatusInit {
-		session.StartedAt = ctx.BlockHeader().Time
+		session.StartedAtHeight = ctx.BlockHeight()
 	}
 	if session.Status != types.StatusActive {
 		session.Status = types.StatusActive
-		session.StatusAt = ctx.BlockHeader().Time
+		session.StatusAtHeight = ctx.BlockHeight()
+		session.StatusAtHeight = ctx.BlockHeight()
 	}
 
 	return nil

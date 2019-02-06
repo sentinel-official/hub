@@ -35,8 +35,8 @@ func (k Keeper) GetNodeDetails(ctx csdkTypes.Context, id types.NodeID) (*types.N
 	return &details, nil
 }
 
-func (k Keeper) SetActiveNodeIDs(ctx csdkTypes.Context, ids types.NodeIDs) csdkTypes.Error {
-	key := types.KeyActiveNodeIDs
+func (k Keeper) SetActiveNodeIDsAtHeight(ctx csdkTypes.Context, height int64, ids types.NodeIDs) csdkTypes.Error {
+	key := types.ActiveNodeIDsAtHeightKey(height)
 
 	ids = ids.Sort()
 	value, err := k.cdc.MarshalBinaryLengthPrefixed(ids)
@@ -50,8 +50,8 @@ func (k Keeper) SetActiveNodeIDs(ctx csdkTypes.Context, ids types.NodeIDs) csdkT
 	return nil
 }
 
-func (k Keeper) GetActiveNodeIDs(ctx csdkTypes.Context) (types.NodeIDs, csdkTypes.Error) {
-	key := types.KeyActiveNodeIDs
+func (k Keeper) GetActiveNodeIDsAtHeight(ctx csdkTypes.Context, height int64) (types.NodeIDs, csdkTypes.Error) {
+	key := types.ActiveNodeIDsAtHeightKey(height)
 
 	var ids types.NodeIDs
 	store := ctx.KVStore(k.NodeStoreKey)
@@ -156,8 +156,8 @@ func (k Keeper) AddNode(ctx csdkTypes.Context, details *types.NodeDetails) (csdk
 	return tags, nil
 }
 
-func (k Keeper) AddActiveNodeID(ctx csdkTypes.Context, id types.NodeID) csdkTypes.Error {
-	ids, err := k.GetActiveNodeIDs(ctx)
+func (k Keeper) AddActiveNodeIDAtHeight(ctx csdkTypes.Context, height int64, id types.NodeID) csdkTypes.Error {
+	ids, err := k.GetActiveNodeIDsAtHeight(ctx, height)
 	if err != nil {
 		return err
 	}
@@ -167,11 +167,11 @@ func (k Keeper) AddActiveNodeID(ctx csdkTypes.Context, id types.NodeID) csdkType
 	}
 
 	ids = ids.Append(id)
-	return k.SetActiveNodeIDs(ctx, ids)
+	return k.SetActiveNodeIDsAtHeight(ctx, height, ids)
 }
 
-func (k Keeper) RemoveActiveNodeID(ctx csdkTypes.Context, id types.NodeID) csdkTypes.Error {
-	ids, err := k.GetActiveNodeIDs(ctx)
+func (k Keeper) RemoveActiveNodeIDAtHeight(ctx csdkTypes.Context, height int64, id types.NodeID) csdkTypes.Error {
+	ids, err := k.GetActiveNodeIDsAtHeight(ctx, height)
 	if err != nil {
 		return err
 	}
@@ -182,5 +182,5 @@ func (k Keeper) RemoveActiveNodeID(ctx csdkTypes.Context, id types.NodeID) csdkT
 	}
 
 	ids = types.EmptyNodeIDs().Append(ids[:index]...).Append(ids[index+1:]...)
-	return k.SetActiveNodeIDs(ctx, ids)
+	return k.SetActiveNodeIDsAtHeight(ctx, height, ids)
 }

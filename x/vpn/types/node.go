@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"sort"
 	"strings"
-	"time"
 
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
 
@@ -69,18 +68,18 @@ func NewAPIPort(num uint32) APIPort {
 }
 
 type NodeDetails struct {
-	ID           NodeID
-	Owner        csdkTypes.AccAddress
-	LockedAmount csdkTypes.Coin
-	PricesPerGB  csdkTypes.Coins
-	NetSpeed     sdkTypes.Bandwidth
-	APIPort      APIPort
-	EncMethod    string
-	NodeType     string
-	Version      string
-	Status       string
-	StatusAt     time.Time
-	DetailsAt    time.Time
+	ID              NodeID
+	Owner           csdkTypes.AccAddress
+	LockedAmount    csdkTypes.Coin
+	PricesPerGB     csdkTypes.Coins
+	NetSpeed        sdkTypes.Bandwidth
+	APIPort         APIPort
+	EncMethod       string
+	NodeType        string
+	Version         string
+	Status          string
+	StatusAtHeight  int64
+	DetailsAtHeight int64
 }
 
 func (nd *NodeDetails) UpdateDetails(details NodeDetails) {

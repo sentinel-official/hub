@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"sort"
 	"strings"
-	"time"
 
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
 
@@ -61,23 +60,23 @@ func EmptySessionIDs() SessionIDs {
 }
 
 type SessionBandwidth struct {
-	ToProvide     sdkTypes.Bandwidth
-	Consumed      sdkTypes.Bandwidth
-	NodeOwnerSign []byte
-	ClientSign    []byte
-	UpdatedAt     time.Time
+	ToProvide       sdkTypes.Bandwidth
+	Consumed        sdkTypes.Bandwidth
+	NodeOwnerSign   []byte
+	ClientSign      []byte
+	UpdatedAtHeight int64
 }
 type SessionDetails struct {
-	ID           SessionID
-	NodeID       NodeID
-	Client       csdkTypes.AccAddress
-	LockedAmount csdkTypes.Coin
-	PricePerGB   csdkTypes.Coin
-	Bandwidth    SessionBandwidth
-	Status       string
-	StatusAt     time.Time
-	StartedAt    time.Time
-	EndedAt      time.Time
+	ID              SessionID
+	NodeID          NodeID
+	Client          csdkTypes.AccAddress
+	LockedAmount    csdkTypes.Coin
+	PricePerGB      csdkTypes.Coin
+	Bandwidth       SessionBandwidth
+	Status          string
+	StatusAtHeight  int64
+	StartedAtHeight int64
+	EndedAtHeight   int64
 }
 
 func (s SessionDetails) Amount() csdkTypes.Coin {
