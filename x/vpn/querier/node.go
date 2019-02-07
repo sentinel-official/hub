@@ -1,6 +1,8 @@
 package querier
 
 import (
+	"fmt"
+
 	"github.com/cosmos/cosmos-sdk/codec"
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
 	abciTypes "github.com/tendermint/tendermint/abci/types"
@@ -74,7 +76,7 @@ func queryNodesOfOwner(ctx csdkTypes.Context, cdc *codec.Codec, req abciTypes.Re
 	if err := cdc.UnmarshalJSON(req.Data, &params); err != nil {
 		return nil, types.ErrorUnmarshal()
 	}
-
+	fmt.Println("Address", params.Owner)
 	nodes, err := vk.GetNodesOfOwner(ctx, params.Owner)
 	if err != nil {
 		return nil, err

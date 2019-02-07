@@ -43,6 +43,7 @@ func signSessionBandwidthHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec
 		}
 
 		_, _ = w.Write([]byte(base64.StdEncoding.EncodeToString(signature)))
+
 	}
 }
 
