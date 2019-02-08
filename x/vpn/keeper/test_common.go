@@ -4,25 +4,24 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/store"
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/x/auth"
+	"github.com/cosmos/cosmos-sdk/x/params"
+	abciTypes "github.com/tendermint/tendermint/abci/types"
+	tmDB "github.com/tendermint/tendermint/libs/db"
 	"github.com/tendermint/tendermint/libs/log"
 
-	"github.com/ironman0x7b2/sentinel-sdk/x/vpn/types"
-
-	abci "github.com/tendermint/tendermint/abci/types"
-	dbm "github.com/tendermint/tendermint/libs/db"
-
 	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
+	"github.com/ironman0x7b2/sentinel-sdk/x/vpn/types"
 )
 
-type nodeList []types.NodeDetails
+func TestCreateInput() (csdkTypes.Context, Keeper, auth.AccountKeeper) {
+	keyNode := csdkTypes.NewKVStoreKey("node")
+	keySession := csdkTypes.NewKVStoreKey("session")
+	keyAccount := csdkTypes.NewKVStoreKey("acc")
+	keyParams := csdkTypes.NewKVStoreKey("params")
+	tkeyParams := csdkTypes.NewTransientStoreKey("params")
 
-type sessionList []types.SessionDetails
-
-func CreateTestInput() (Keeper, csdkTypes.Context) {
-	keyNode := csdkTypes.NewKVStoreKey("store1")
-	keySession := csdkTypes.NewKVStoreKey("store2")
-
-	db := dbm.NewMemDB()
+	db := tmDB.NewMemDB()
 	ms := store.NewCommitMultiStore(db)
 	ms.MountStoreWithDB(keyNode, csdkTypes.StoreTypeIAVL, db)
 	ms.MountStoreWithDB(keySession, csdkTypes.StoreTypeIAVL, db)
@@ -31,92 +30,62 @@ func CreateTestInput() (Keeper, csdkTypes.Context) {
 		panic(err)
 	}
 
-	cdc := MakeCdc()
-
-	ctx := csdkTypes.NewContext(ms, abci.Header{ChainID: "chaind-id"}, false, log.NewNopLogger())
-
+	cdc := TestMakeCodec()
+	ctx := csdkTypes.NewContext(ms, abciTypes.Header{ChainID: "chain-id"}, false, log.NewNopLogger())
 	keeper := NewKeeper(cdc, keyNode, keySession)
+	paramsKeeper := params.NewKeeper(cdc, keyParams, tkeyParams)
+	accountKeeper := auth.NewAccountKeeper(cdc, keyAccount, paramsKeeper.Subspace(auth.DefaultParamspace), auth.ProtoBaseAccount)
 
-	return keeper, ctx
+	return ctx, keeper, accountKeeper
 }
 
-func MakeCdc() *codec.Codec {
+func TestMakeCodec() *codec.Codec {
 	var cdc = codec.New()
 	return cdc
 }
 
-func ParamsOfNodeDetails() []types.NodeDetails {
+var (
+	TestNodeValid = types.NodeDetails{
+		ID:              types.TestNodeIDValid,
+		Owner:           types.TestAddress,
+		LockedAmount:    types.TestCoinPos,
+		PricesPerGB:     types.TestCoinsPos,
+		NetSpeed:        sdkTypes.NewBandwidth(types.TestUploadPos, types.TestDownloadPos),
+		APIPort:         types.TestAPIPortValid,
+		EncMethod:       types.TestEncMethod,
+		NodeType:        types.TestNodeType,
+		Version:         types.TestVersion,
+		Status:          types.StatusRegistered,
+		StatusAtHeight:  1,
+		DetailsAtHeight: 1,
+	}
+	TestNodeEmpty     = types.NodeDetails{}
+	TestNodeIDsEmpty  = types.NodeIDs(nil)
+	TestNodeIDsValid  = types.NodeIDs{types.TestNodeIDValid, types.TestNodeIDValid}
+	TestNodesEmpty    = []*types.NodeDetails(nil)
+	TestNodeTagsValid = csdkTypes.EmptyTags().AppendTag("node_id", types.TestNodeIDValid.Bytes())
 
-	id1 := types.NodeDetails{
-		ID:           types.NewNodeID("new-node-id-1"),
-		Owner:        types.NodeAddress1,
-		LockedAmount: types.Coin,
-		PricesPerGB:  types.Coins,
-		NetSpeed: sdkTypes.Bandwidth{
-			csdkTypes.NewInt(12),
-			csdkTypes.NewInt(12),
+	TestSessionValid = types.SessionDetails{
+		ID:           types.TestSessionIDValid,
+		NodeID:       types.TestNodeIDValid,
+		Client:       types.TestAddress,
+		LockedAmount: types.TestCoinPos,
+		PricePerGB:   types.TestCoinPos,
+		Bandwidth: types.SessionBandwidth{
+			ToProvide:       sdkTypes.NewBandwidth(types.TestUploadPos, types.TestDownloadPos),
+			Consumed:        sdkTypes.NewBandwidth(types.TestUploadPos, types.TestDownloadPos),
+			NodeOwnerSign:   types.TestNodeOwnerSign,
+			ClientSign:      types.TestClientSign,
+			UpdatedAtHeight: 2,
 		},
-		APIPort:         types.NewAPIPort(uint32(1000)),
-		EncMethod:       "EncMethod-1",
-		NodeType:        "NodeType-1",
-		Version:         "0.01",
-		Status:          types.StatusRegistered,
-		StatusAtHeight:  8,
-		DetailsAtHeight: 8,
+		Status:          types.StatusInit,
+		StatusAtHeight:  1,
+		StartedAtHeight: 2,
+		EndedAtHeight:   3,
 	}
-
-	id2 := types.NodeDetails{
-		ID:           types.NewNodeID("new-node-id-2"),
-		Owner:        types.NodeAddress2,
-		LockedAmount: types.Coin,
-		PricesPerGB:  types.Coins,
-		NetSpeed: sdkTypes.Bandwidth{
-			csdkTypes.NewInt(12),
-			csdkTypes.NewInt(12),
-		},
-		APIPort:         types.NewAPIPort(uint32(1000)),
-		EncMethod:       "EncMethod-2",
-		NodeType:        "NodeType-1",
-		Version:         "0.01",
-		Status:          types.StatusRegistered,
-		StatusAtHeight:  10,
-		DetailsAtHeight: 10,
-	}
-
-	id3 := types.NodeDetails{}
-
-	return nodeList{id1, id2, id3}
-}
-
-func ParamsOfSessionDetails() []types.SessionDetails {
-
-	id1 := types.SessionDetails{
-		ID:              types.NewSessionID("new-session-id-1"),
-		NodeID:          types.NewNodeID("new-node-id-1"),
-		Client:          types.ClientAddress1,
-		LockedAmount:    types.Coin,
-		PricePerGB:      types.Coin,
-		Bandwidth:       types.SessionBandwidth{},
-		Status:          types.StatusActive,
-		StatusAtHeight:  12,
-		StartedAtHeight: 10,
-		EndedAtHeight:   20,
-	}
-
-	id2 := types.SessionDetails{
-		ID:              types.NewSessionID("new-session-id-2"),
-		NodeID:          types.NewNodeID("new-node-id-1"),
-		Client:          types.ClientAddress1,
-		LockedAmount:    types.Coin,
-		PricePerGB:      types.Coin,
-		Bandwidth:       types.SessionBandwidth{},
-		Status:          types.StatusRegistered,
-		StatusAtHeight:  12,
-		StartedAtHeight: 10,
-		EndedAtHeight:   20,
-	}
-
-	id3 := types.SessionDetails{}
-
-	return sessionList{id1, id2, id3}
-}
+	TestSessionEmpty     = types.SessionDetails{}
+	TestSessionIDsEmpty  = types.SessionIDs(nil)
+	TestSessionIDsValid  = types.SessionIDs{types.TestSessionIDValid, types.TestSessionIDValid}
+	TestSessionsEmpty    = []*types.SessionDetails(nil)
+	TestSessionTagsValid = csdkTypes.EmptyTags().AppendTag("session_id", types.TestSessionIDValid.Bytes())
+)

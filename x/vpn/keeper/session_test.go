@@ -9,64 +9,147 @@ import (
 	"github.com/ironman0x7b2/sentinel-sdk/x/vpn/types"
 )
 
+func TestKeeper_SetSessionDetails(t *testing.T) {
+	var err csdkTypes.Error
+	ctx, keeper, _ := TestCreateInput()
+
+	err = keeper.SetSessionDetails(ctx, &TestSessionEmpty)
+	require.Nil(t, err)
+
+	err = keeper.SetSessionDetails(ctx, &TestSessionValid)
+	require.Nil(t, err)
+	result1, err := keeper.GetSessionDetails(ctx, TestSessionValid.ID)
+	require.Nil(t, err)
+	require.Equal(t, &TestSessionValid, result1)
+}
+
+func TestKeeper_GetSessionDetails(t *testing.T) {
+	var err csdkTypes.Error
+	ctx, keeper, _ := TestCreateInput()
+
+	result1, err := keeper.GetSessionDetails(ctx, TestSessionValid.ID)
+	require.Nil(t, err)
+	require.Nil(t, result1)
+
+	err = keeper.SetSessionDetails(ctx, &TestSessionValid)
+	require.Nil(t, err)
+	result2, err := keeper.GetSessionDetails(ctx, TestSessionValid.ID)
+	require.Nil(t, err)
+	require.Equal(t, &TestSessionValid, result2)
+}
+
+func TestKeeper_SetActiveSessionIDsAtHeight(t *testing.T) {
+	var err csdkTypes.Error
+	ctx, keeper, _ := TestCreateInput()
+
+	err = keeper.SetActiveSessionIDsAtHeight(ctx, 0, TestSessionIDsEmpty)
+	require.Nil(t, err)
+	result1, err := keeper.GetActiveSessionIDsAtHeight(ctx, 0)
+	require.Nil(t, err)
+	require.Equal(t, TestSessionIDsEmpty, result1)
+
+	err = keeper.SetActiveSessionIDsAtHeight(ctx, 0, TestSessionIDsValid)
+	require.Nil(t, err)
+	result2, err := keeper.GetActiveSessionIDsAtHeight(ctx, 0)
+	require.Nil(t, err)
+	require.Equal(t, TestSessionIDsValid, result2)
+}
+
+func TestKeeper_GetActiveSessionIDsAtHeight(t *testing.T) {
+	var err csdkTypes.Error
+	ctx, keeper, _ := TestCreateInput()
+
+	result1, err := keeper.GetActiveSessionIDsAtHeight(ctx, 0)
+	require.Nil(t, err)
+	require.Nil(t, result1)
+
+	err = keeper.SetActiveSessionIDsAtHeight(ctx, 0, TestSessionIDsValid)
+	require.Nil(t, err)
+	result2, err := keeper.GetActiveSessionIDsAtHeight(ctx, 0)
+	require.Nil(t, err)
+	require.Equal(t, TestSessionIDsValid, result2)
+}
+
+func TestKeeper_SetSessionsCount(t *testing.T) {
+	var err csdkTypes.Error
+	ctx, keeper, _ := TestCreateInput()
+
+	err = keeper.SetSessionsCount(ctx, types.TestAddress, 0)
+	require.Nil(t, err)
+	result1, err := keeper.GetSessionsCount(ctx, types.TestAddress)
+	require.Nil(t, err)
+	require.Equal(t, uint64(0), result1)
+
+	err = keeper.SetSessionsCount(ctx, types.TestAddress, 1)
+	require.Nil(t, err)
+	result2, err := keeper.GetSessionsCount(ctx, types.TestAddress)
+	require.Nil(t, err)
+	require.Equal(t, uint64(1), result2)
+}
+
+func TestKeeper_GetSessionsCount(t *testing.T) {
+	var err csdkTypes.Error
+	ctx, keeper, _ := TestCreateInput()
+
+	result1, err := keeper.GetSessionsCount(ctx, types.TestAddress)
+	require.Nil(t, err)
+	require.Equal(t, uint64(0), result1)
+
+	err = keeper.SetSessionsCount(ctx, types.TestAddress, 1)
+	require.Nil(t, err)
+	result2, err := keeper.GetSessionsCount(ctx, types.TestAddress)
+	require.Nil(t, err)
+	require.Equal(t, uint64(1), result2)
+}
+
 func TestKeeper_AddSession(t *testing.T) {
-	keeper, ctx := CreateTestInput()
+	var err csdkTypes.Error
+	ctx, keeper, _ := TestCreateInput()
 
-	tags, err := keeper.AddSession(ctx, &ParamsOfSessionDetails()[0])
+	tags, err := keeper.AddSession(ctx, &TestSessionValid)
 	require.Nil(t, err)
-	require.Equal(t, csdkTypes.MakeTag("session_id", []byte("cosmos1vdkxjetww3qkgerjv4ehxtf30dsznq/0")), tags[0])
+	require.Equal(t, TestSessionTagsValid, tags)
+	result1, err := keeper.GetSessionsCount(ctx, types.TestAddress)
+	require.Nil(t, err)
+	require.Equal(t, uint64(1), result1)
+	result2, err := keeper.GetSessionDetails(ctx, TestSessionValid.ID)
+	require.Nil(t, err)
+	require.Equal(t, &TestSessionValid, result2)
 }
 
-func TestKeeper_SessionDetails(t *testing.T) {
-	keeper, ctx := CreateTestInput()
+func TestKeeper_AddActiveSessionIDsAtHeight(t *testing.T) {
+	var err csdkTypes.Error
+	ctx, keeper, _ := TestCreateInput()
 
-	for _, sessionDetails := range ParamsOfSessionDetails() {
-		err := keeper.SetSessionDetails(ctx, &sessionDetails)
-		require.Nil(t, err)
-	}
-
-	res, err := keeper.GetSessionDetails(ctx, types.NewSessionID("new-session-id-2"))
+	err = keeper.AddActiveSessionIDsAtHeight(ctx, 0, types.TestSessionIDValid)
 	require.Nil(t, err)
-	require.Equal(t, types.NewNodeID("new-node-id-1"), res.NodeID)
-
-	res, err = keeper.GetSessionDetails(ctx, "id/0")
-	require.Nil(t, res)
+	result1, err := keeper.GetActiveSessionIDsAtHeight(ctx, 0)
+	require.Nil(t, err)
+	require.Equal(t, types.SessionIDs{types.TestSessionIDValid}, result1)
+	err = keeper.AddActiveSessionIDsAtHeight(ctx, 0, types.TestSessionIDValid)
+	require.Nil(t, err)
+	result2, err := keeper.GetActiveSessionIDsAtHeight(ctx, 0)
+	require.Nil(t, err)
+	require.Equal(t, types.SessionIDs{types.TestSessionIDValid}, result2)
 }
 
-func TestKeeper_SessionsCount(t *testing.T) {
-	keeper, ctx := CreateTestInput()
+func TestKeeper_RemoveActiveSessionIDsAtHeight(t *testing.T) {
+	var err csdkTypes.Error
+	ctx, keeper, _ := TestCreateInput()
 
-	res, err := keeper.GetSessionsCount(ctx, types.ClientAddress1)
-	require.Equal(t, uint64(0), res)
+	err = keeper.RemoveActiveSessionIDsAtHeight(ctx, 0, types.TestSessionIDValid)
 	require.Nil(t, err)
 
-	err = keeper.SetSessionsCount(ctx, types.ClientAddress2, uint64(10))
+	err = keeper.AddActiveSessionIDsAtHeight(ctx, 0, types.TestSessionIDValid)
 	require.Nil(t, err)
-
-	res, err = keeper.GetSessionsCount(ctx, types.ClientAddress2)
-	require.Equal(t, uint64(10), res)
-}
-
-func TestKeeper_ActiveSessionIDsAtHeight(t *testing.T) {
-	keeper, ctx := CreateTestInput()
-
-	for _, sessionDetails := range ParamsOfSessionDetails() {
-		err := keeper.AddActiveSessionIDsAtHeight(ctx, sessionDetails.StartedAtHeight, sessionDetails.ID)
-		require.Nil(t, err)
-	}
-
-	res, err := keeper.GetActiveSessionIDsAtHeight(ctx, 10)
+	result1, err := keeper.GetActiveSessionIDsAtHeight(ctx, 0)
 	require.Nil(t, err)
-	require.Equal(t, 2, len(res))
+	require.Equal(t, types.SessionIDs{types.TestSessionIDValid}, result1)
 
-	err = keeper.RemoveActiveSessionIDsAtHeight(ctx, 10, ParamsOfSessionDetails()[0].ID)
+	err = keeper.RemoveActiveSessionIDsAtHeight(ctx, 0, types.TestSessionIDValid)
 	require.Nil(t, err)
-
-	res, err = keeper.GetActiveSessionIDsAtHeight(ctx, 10)
+	require.Equal(t, types.SessionIDs{types.TestSessionIDValid}, result1)
+	result2, err := keeper.GetActiveSessionIDsAtHeight(ctx, 0)
 	require.Nil(t, err)
-	require.Equal(t, types.NewSessionID("new-session-id-2"), res[0])
-	require.Equal(t, 1, len(res))
-
-	err = keeper.AddActiveSessionIDsAtHeight(ctx, 10, types.NewSessionID("new-session-id-2"))
-	require.Equal(t, nil, err)
+	require.Nil(t, result2)
 }

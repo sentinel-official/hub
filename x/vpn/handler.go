@@ -328,7 +328,7 @@ func handleUpdateSessionBandwidth(ctx csdkTypes.Context, vk keeper.Keeper, ak au
 
 	allTags := csdkTypes.EmptyTags()
 
-	session, err := vk.GetSessionDetails(ctx, msg.SessionID)
+	session, err := vk.GetSessionDetails(ctx, msg.ID)
 	if err != nil {
 		return err.Result()
 	}
@@ -359,7 +359,7 @@ func handleUpdateSessionBandwidth(ctx csdkTypes.Context, vk keeper.Keeper, ak au
 		return err.Result()
 	}
 
-	sign := types.NewBandwidthSign(msg.SessionID, msg.Bandwidth, node.Owner, session.Client)
+	sign := types.NewBandwidthSign(msg.ID, msg.Bandwidth, node.Owner, session.Client)
 	if err := keeper.VerifyAndUpdateSessionBandwidth(ctx, ak, session, sign,
 		msg.ClientSign, msg.NodeOwnerSign); err != nil {
 		return err.Result()

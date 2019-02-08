@@ -1,70 +1,109 @@
 package querier
 
 import (
-	"strings"
+	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"github.com/tendermint/tendermint/abci/types"
+	abciTypes "github.com/tendermint/tendermint/abci/types"
 
-	vk "github.com/ironman0x7b2/sentinel-sdk/x/vpn/keeper"
-	vpnTypes "github.com/ironman0x7b2/sentinel-sdk/x/vpn/types"
-)
-
-const (
-	store = "custom"
-	acc   = "vpn"
+	"github.com/ironman0x7b2/sentinel-sdk/x/vpn/keeper"
+	"github.com/ironman0x7b2/sentinel-sdk/x/vpn/types"
 )
 
 func TestNewQueryNodeParams(t *testing.T) {
-	keeper, ctx := vk.CreateTestInput()
-	cdc := vk.MakeCdc()
-	qurier := NewQuerier(keeper, cdc)
+	cdc := keeper.TestMakeCodec()
+	ctx, vpnKeeper, _ := keeper.TestCreateInput()
+	querier := NewQuerier(vpnKeeper, cdc)
 
-	for _, nodeDetails := range vk.ParamsOfNodeDetails() {
-		err := keeper.SetNodeDetails(ctx, &nodeDetails)
-		require.Nil(t, err)
+	data := NewQueryNodeParams(types.TestNodeIDValid)
+	require.NotNil(t, data)
+
+	query := abciTypes.RequestQuery{
+		Path: fmt.Sprintf("custom/%s/%s", types.QuerierRoute, QueryNode),
+		Data: cdc.MustMarshalJSON(data),
 	}
-
-	query := types.RequestQuery{
-		Path: strings.Join([]string{store, acc, QueryNode}, "/"),
-		Data: cdc.MustMarshalJSON(NewQueryNodeParams(vpnTypes.NewNodeID("new-node-id-1"))),
-	}
-
-	res, err := qurier(ctx, []string{QueryNode}, query)
+	res1, err := querier(ctx, []string{QueryNode}, query)
 	require.Nil(t, err)
+	require.Nil(t, res1)
 
-	var nodeDetails vpnTypes.NodeDetails
-	err1 := cdc.UnmarshalJSON(res, &nodeDetails)
-	require.Equal(t, nil, err1)
+	tags, err := vpnKeeper.AddNode(ctx, &keeper.TestNodeValid)
+	require.Nil(t, err)
+	require.NotNil(t, tags)
 
-	query.Data = []byte{}
+	res2, err := querier(ctx, []string{QueryNode}, query)
+	require.Nil(t, err)
+	require.NotNil(t, res2)
 
-	res, err = qurier(ctx, []string{QueryNode}, query)
-	require.NotNil(t, err)
+	var node types.NodeDetails
+	err1 := cdc.UnmarshalJSON(res2, &node)
+	require.Nil(t, err1)
+	require.Equal(t, keeper.TestNodeValid, node)
+
+	query.Data = cdc.MustMarshalJSON(NewQueryNodeParams(types.TestNodeIDEmpty))
+	res3, err := querier(ctx, []string{QueryNode}, query)
+	require.Nil(t, err)
+	require.Nil(t, res3)
+
+	query.Data = cdc.MustMarshalJSON("")
+	res4, err := querier(ctx, []string{QueryNode}, query)
+	require.Equal(t, err, types.ErrorUnmarshal())
+	require.Nil(t, res4)
 }
 
 func TestNewQueryNodesOfOwnerParams(t *testing.T) {
-	keeper, ctx := vk.CreateTestInput()
-	cdc := vk.MakeCdc()
-	querier := NewQuerier(keeper, cdc)
+	cdc := keeper.TestMakeCodec()
+	ctx, vpnKeeper, _ := keeper.TestCreateInput()
+	querier := NewQuerier(vpnKeeper, cdc)
 
-	for _, nodeDetails := range vk.ParamsOfNodeDetails() {
-		tags, err := keeper.AddNode(ctx, &nodeDetails)
-		require.Nil(t, err)
-		require.NotNil(t, tags)
+	data := NewQueryNodesOfOwnerParams(types.TestAddress)
+	require.NotNil(t, data)
+
+	query := abciTypes.RequestQuery{
+		Path: fmt.Sprintf("custom/%s/%s", types.QuerierRoute, QueryNodesOfOwner),
+		Data: cdc.MustMarshalJSON(data),
 	}
-
-	query := types.RequestQuery{
-		Path: strings.Join([]string{store, acc, QueryNodesOfOwner}, "/"),
-		Data: cdc.MustMarshalJSON(NewQueryNodesOfOwnerParams(vpnTypes.NodeAddress1)),
-	}
-
-	res, err := querier(ctx, []string{QueryNodesOfOwner}, query)
+	res1, err := querier(ctx, []string{QueryNodesOfOwner}, query)
 	require.Nil(t, err)
-	t.Log(res)
+	require.Equal(t, []byte("null"), res1)
 
-	var nodes []vpnTypes.NodeDetails
-	err1 := cdc.UnmarshalJSON(res, &nodes)
+	tags, err := vpnKeeper.AddNode(ctx, &keeper.TestNodeValid)
+	require.Nil(t, err)
+	require.NotNil(t, tags)
+
+	res2, err := querier(ctx, []string{QueryNodesOfOwner}, query)
+	require.Nil(t, err)
+	require.NotNil(t, res2)
+
+	var nodes []types.NodeDetails
+	err1 := cdc.UnmarshalJSON(res2, &nodes)
 	require.Nil(t, err1)
+	require.Equal(t, []types.NodeDetails{keeper.TestNodeValid}, nodes)
+
+	query.Data = cdc.MustMarshalJSON(NewQueryNodeParams(types.TestNodeIDEmpty))
+	res3, err := querier(ctx, []string{QueryNodesOfOwner}, query)
+	require.Nil(t, err)
+	require.Equal(t, []byte("null"), res3)
+
+	query.Data = cdc.MustMarshalJSON("")
+	res4, err := querier(ctx, []string{QueryNodesOfOwner}, query)
+	require.Equal(t, err, types.ErrorUnmarshal())
+	require.Nil(t, res4)
+}
+
+func TestNewQuerier(t *testing.T) {
+	cdc := keeper.TestMakeCodec()
+	ctx, vpnKeeper, _ := keeper.TestCreateInput()
+	querier := NewQuerier(vpnKeeper, cdc)
+
+	data := NewQueryNodeParams(types.TestNodeIDValid)
+	require.NotNil(t, data)
+
+	query := abciTypes.RequestQuery{
+		Path: fmt.Sprintf("custom/%s/%s", types.QuerierRoute, "query_type"),
+		Data: cdc.MustMarshalJSON(data),
+	}
+	res1, err := querier(ctx, []string{"query_type"}, query)
+	require.Equal(t, err, types.ErrorInvalidQueryType("query_type"))
+	require.Nil(t, res1)
 }

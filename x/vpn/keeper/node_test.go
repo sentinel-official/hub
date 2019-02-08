@@ -3,97 +3,185 @@ package keeper
 import (
 	"testing"
 
-	"github.com/stretchr/testify/assert"
+	csdkTypes "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
 
-	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/x/vpn/types"
+	"github.com/ironman0x7b2/sentinel-sdk/x/vpn/types"
 )
 
-func TestKeeper_NodeDetails(t *testing.T) {
-	keeper, ctx := CreateTestInput()
+func TestKeeper_SetNodeDetails(t *testing.T) {
+	var err csdkTypes.Error
+	ctx, keeper, _ := TestCreateInput()
 
-	for _, vpnDetails := range ParamsOfNodeDetails() {
-		err := keeper.SetNodeDetails(ctx, &vpnDetails)
-		require.Nil(t, err)
-	}
-
-	res, err := keeper.GetNodeDetails(ctx, ParamsOfNodeDetails()[0].ID)
+	err = keeper.SetNodeDetails(ctx, &TestNodeEmpty)
 	require.Nil(t, err)
-	require.Equal(t, sdkTypes.NewNodeID("new-node-id-1"), res.ID)
 
-	nilRes, err := keeper.GetNodeDetails(ctx, "data/0")
+	err = keeper.SetNodeDetails(ctx, &TestNodeValid)
 	require.Nil(t, err)
-	require.Nil(t, nilRes)
+	result1, err := keeper.GetNodeDetails(ctx, TestNodeValid.ID)
+	require.Nil(t, err)
+	require.Equal(t, &TestNodeValid, result1)
 }
 
-func TestKeeper_NodesCount(t *testing.T) {
-	keeper, ctx := CreateTestInput()
+func TestKeeper_GetNodeDetails(t *testing.T) {
+	var err csdkTypes.Error
+	ctx, keeper, _ := TestCreateInput()
 
-	err := keeper.SetNodesCount(ctx, sdkTypes.NodeAddress1, uint64(10))
+	result1, err := keeper.GetNodeDetails(ctx, TestNodeValid.ID)
 	require.Nil(t, err)
+	require.Nil(t, result1)
 
-	res, err := keeper.GetNodesCount(ctx, sdkTypes.NodeAddress2)
-	require.Equal(t, uint64(0), res)
+	err = keeper.SetNodeDetails(ctx, &TestNodeValid)
 	require.Nil(t, err)
-
-	res, err = keeper.GetNodesCount(ctx, sdkTypes.NodeAddress1)
-	assert.NotNil(t, res)
-	assert.Equal(t, uint64(10), res)
+	result2, err := keeper.GetNodeDetails(ctx, TestNodeValid.ID)
+	require.Nil(t, err)
+	require.Equal(t, &TestNodeValid, result2)
 }
 
-func TestKeeper_GetNodes(t *testing.T) {
-	keeper, ctx := CreateTestInput()
+func TestKeeper_SetActiveNodeIDsAtHeight(t *testing.T) {
+	var err csdkTypes.Error
+	ctx, keeper, _ := TestCreateInput()
 
-	for _, vpnDetails := range ParamsOfNodeDetails() {
-		err := keeper.SetNodeDetails(ctx, &vpnDetails)
-		require.Nil(t, err)
-	}
-
-	res, err := keeper.GetNodes(ctx)
+	err = keeper.SetActiveNodeIDsAtHeight(ctx, 0, TestNodeIDsEmpty)
 	require.Nil(t, err)
-	require.Equal(t, sdkTypes.NewNodeID("new-node-id-1"), res[1].ID)
-	require.NotEqual(t, []*sdkTypes.NodeDetails{}, res)
+	result1, err := keeper.GetActiveNodeIDsAtHeight(ctx, 0)
+	require.Nil(t, err)
+	require.Equal(t, TestNodeIDsEmpty, result1)
+
+	err = keeper.SetActiveNodeIDsAtHeight(ctx, 0, TestNodeIDsValid)
+	require.Nil(t, err)
+	result2, err := keeper.GetActiveNodeIDsAtHeight(ctx, 0)
+	require.Nil(t, err)
+	require.Equal(t, TestNodeIDsValid, result2)
+}
+
+func TestKeeper_GetActiveNodeIDsAtHeight(t *testing.T) {
+	var err csdkTypes.Error
+	ctx, keeper, _ := TestCreateInput()
+
+	result1, err := keeper.GetActiveNodeIDsAtHeight(ctx, 0)
+	require.Nil(t, err)
+	require.Nil(t, result1)
+
+	err = keeper.SetActiveNodeIDsAtHeight(ctx, 0, TestNodeIDsValid)
+	require.Nil(t, err)
+	result2, err := keeper.GetActiveNodeIDsAtHeight(ctx, 0)
+	require.Nil(t, err)
+	require.Equal(t, TestNodeIDsValid, result2)
+}
+
+func TestKeeper_SetNodesCount(t *testing.T) {
+	var err csdkTypes.Error
+	ctx, keeper, _ := TestCreateInput()
+
+	err = keeper.SetNodesCount(ctx, types.TestAddress, 0)
+	require.Nil(t, err)
+	result1, err := keeper.GetNodesCount(ctx, types.TestAddress)
+	require.Nil(t, err)
+	require.Equal(t, uint64(0), result1)
+
+	err = keeper.SetNodesCount(ctx, types.TestAddress, 1)
+	require.Nil(t, err)
+	result2, err := keeper.GetNodesCount(ctx, types.TestAddress)
+	require.Nil(t, err)
+	require.Equal(t, uint64(1), result2)
+}
+
+func TestKeeper_GetNodesCount(t *testing.T) {
+	var err csdkTypes.Error
+	ctx, keeper, _ := TestCreateInput()
+
+	result1, err := keeper.GetNodesCount(ctx, types.TestAddress)
+	require.Nil(t, err)
+	require.Equal(t, uint64(0), result1)
+
+	err = keeper.SetNodesCount(ctx, types.TestAddress, 1)
+	require.Nil(t, err)
+	result2, err := keeper.GetNodesCount(ctx, types.TestAddress)
+	require.Nil(t, err)
+	require.Equal(t, uint64(1), result2)
 }
 
 func TestKeeper_GetNodesOfOwner(t *testing.T) {
-	keeper, ctx := CreateTestInput()
+	var err csdkTypes.Error
+	ctx, keeper, _ := TestCreateInput()
 
-	for _, vpnDetails := range ParamsOfNodeDetails() {
-		_, err := keeper.AddNode(ctx, &vpnDetails)
-		require.Nil(t, err)
-	}
-
-	res2, err := keeper.GetNodesOfOwner(ctx, sdkTypes.NodeAddress2)
+	result1, err := keeper.GetNodesOfOwner(ctx, types.TestAddress)
 	require.Nil(t, err)
-	require.Equal(t, sdkTypes.NodeAddress2, res2[0].Owner)
+	require.Equal(t, TestNodesEmpty, result1)
+
+	err = keeper.SetNodeDetails(ctx, &TestNodeValid)
+	require.Nil(t, err)
+	err = keeper.SetNodesCount(ctx, types.TestAddress, 1)
+	require.Nil(t, err)
+	result2, err := keeper.GetNodesOfOwner(ctx, types.TestAddress)
+	require.Nil(t, err)
+	require.Equal(t, []*types.NodeDetails{&TestNodeValid}, result2)
 }
 
-func TestKeeper_NodeIDAtHeight(t *testing.T) {
-	keeper, ctx := CreateTestInput()
+func TestKeeper_GetNodes(t *testing.T) {
+	var err csdkTypes.Error
+	ctx, keeper, _ := TestCreateInput()
 
-	for _, vpnDetails := range ParamsOfNodeDetails() {
-		err := keeper.SetNodeDetails(ctx, &vpnDetails)
-		require.Nil(t, err)
-
-		err = keeper.AddActiveNodeIDAtHeight(ctx, 6, vpnDetails.ID)
-		require.Nil(t, err)
-	}
-
-	res, err := keeper.GetActiveNodeIDsAtHeight(ctx, 6)
-
-	err = keeper.AddActiveNodeIDAtHeight(ctx, 6, sdkTypes.NewNodeID("str1"))
-	require.Equal(t, nil, err)
-
-	res2, err := keeper.GetNodeDetails(ctx, res[1])
+	result1, err := keeper.GetNodes(ctx)
 	require.Nil(t, err)
-	require.Equal(t, int64(8), res2.StatusAtHeight)
+	require.Equal(t, TestNodesEmpty, result1)
 
-	err = keeper.AddActiveNodeIDAtHeight(ctx, 6, sdkTypes.NewNodeID("str1"))
-	require.Equal(t, nil, err)
+	err = keeper.SetNodeDetails(ctx, &TestNodeValid)
+	require.Nil(t, err)
+	result2, err := keeper.GetNodes(ctx)
+	require.Nil(t, err)
+	require.Equal(t, []*types.NodeDetails{&TestNodeValid}, result2)
+}
 
-	err = keeper.RemoveActiveNodeIDAtHeight(ctx, 6, sdkTypes.NewNodeID("str1"))
+func TestKeeper_AddNode(t *testing.T) {
+	var err csdkTypes.Error
+	ctx, keeper, _ := TestCreateInput()
+
+	tags, err := keeper.AddNode(ctx, &TestNodeValid)
+	require.Nil(t, err)
+	require.Equal(t, TestNodeTagsValid, tags)
+	result1, err := keeper.GetNodesCount(ctx, types.TestAddress)
+	require.Nil(t, err)
+	require.Equal(t, uint64(1), result1)
+	result2, err := keeper.GetNodeDetails(ctx, TestNodeValid.ID)
+	require.Nil(t, err)
+	require.Equal(t, &TestNodeValid, result2)
+}
+
+func TestKeeper_AddActiveNodeIDAtHeight(t *testing.T) {
+	var err csdkTypes.Error
+	ctx, keeper, _ := TestCreateInput()
+
+	err = keeper.AddActiveNodeIDAtHeight(ctx, 0, types.TestNodeIDValid)
+	require.Nil(t, err)
+	result1, err := keeper.GetActiveNodeIDsAtHeight(ctx, 0)
+	require.Nil(t, err)
+	require.Equal(t, types.NodeIDs{types.TestNodeIDValid}, result1)
+	err = keeper.AddActiveNodeIDAtHeight(ctx, 0, types.TestNodeIDValid)
+	require.Nil(t, err)
+	result2, err := keeper.GetActiveNodeIDsAtHeight(ctx, 0)
+	require.Nil(t, err)
+	require.Equal(t, types.NodeIDs{types.TestNodeIDValid}, result2)
+}
+
+func TestKeeper_RemoveActiveNodeIDAtHeight(t *testing.T) {
+	var err csdkTypes.Error
+	ctx, keeper, _ := TestCreateInput()
+
+	err = keeper.RemoveActiveNodeIDAtHeight(ctx, 0, types.TestNodeIDValid)
 	require.Nil(t, err)
 
-	res, err = keeper.GetActiveNodeIDsAtHeight(ctx, 6)
-	require.Equal(t, 3, res.Len())
+	err = keeper.AddActiveNodeIDAtHeight(ctx, 0, types.TestNodeIDValid)
+	require.Nil(t, err)
+	result1, err := keeper.GetActiveNodeIDsAtHeight(ctx, 0)
+	require.Nil(t, err)
+	require.Equal(t, types.NodeIDs{types.TestNodeIDValid}, result1)
+
+	err = keeper.RemoveActiveNodeIDAtHeight(ctx, 0, types.TestNodeIDValid)
+	require.Nil(t, err)
+	require.Equal(t, types.NodeIDs{types.TestNodeIDValid}, result1)
+	result2, err := keeper.GetActiveNodeIDsAtHeight(ctx, 0)
+	require.Nil(t, err)
+	require.Nil(t, result2)
 }
