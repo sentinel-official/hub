@@ -23,9 +23,9 @@ func (msg MsgInitSession) ValidateBasic() csdkTypes.Error {
 		return ErrorInvalidField("from")
 	}
 	if msg.NodeID.Len() == 0 || !msg.NodeID.Valid() {
-		return ErrorInvalidField("id")
+		return ErrorInvalidField("node_id")
 	}
-	if !msg.AmountToLock.IsPositive() {
+	if len(msg.AmountToLock.Denom) == 0 || !msg.AmountToLock.IsPositive() {
 		return ErrorInvalidField("amount_to_lock")
 	}
 
@@ -61,7 +61,7 @@ func NewMsgInitSession(from csdkTypes.AccAddress,
 
 type MsgUpdateSessionBandwidth struct {
 	From          csdkTypes.AccAddress `json:"from"`
-	SessionID     SessionID            `json:"session_id"`
+	ID            SessionID            `json:"id"`
 	Bandwidth     sdkTypes.Bandwidth   `json:"bandwidth"`
 	ClientSign    []byte               `json:"client_sign"`
 	NodeOwnerSign []byte               `json:"node_owner_sign"`
@@ -75,8 +75,8 @@ func (msg MsgUpdateSessionBandwidth) ValidateBasic() csdkTypes.Error {
 	if msg.From == nil || msg.From.Empty() {
 		return ErrorInvalidField("from")
 	}
-	if msg.SessionID.Len() == 0 || !msg.SessionID.Valid() {
-		return ErrorInvalidField("session_id")
+	if msg.ID.Len() == 0 || !msg.ID.Valid() {
+		return ErrorInvalidField("id")
 	}
 	if !msg.Bandwidth.IsPositive() {
 		return ErrorInvalidField("bandwidth")
@@ -109,12 +109,12 @@ func (msg MsgUpdateSessionBandwidth) Route() string {
 }
 
 func NewMsgUpdateSessionBandwidth(from csdkTypes.AccAddress,
-	sessionID SessionID, upload, download csdkTypes.Int,
+	id SessionID, upload, download csdkTypes.Int,
 	clientSign []byte, nodeOwnerSign []byte) *MsgUpdateSessionBandwidth {
 
 	return &MsgUpdateSessionBandwidth{
-		From:      from,
-		SessionID: sessionID,
+		From: from,
+		ID:   id,
 		Bandwidth: sdkTypes.Bandwidth{
 			Upload:   upload,
 			Download: download,
