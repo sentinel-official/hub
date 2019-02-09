@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
+	"github.com/tendermint/tendermint/crypto/ed25519"
 
 	"github.com/ironman0x7b2/sentinel-sdk/types"
 )
@@ -21,7 +22,15 @@ var (
 	TestCoinsInvalid = csdkTypes.Coins{csdkTypes.NewInt64Coin("sut", 100), TestCoinZero}
 	TestCoinsEmpty   = csdkTypes.Coins{}
 
-	TestAddress      = csdkTypes.AccAddress([]byte("address_1"))
+	TestPrivKey1 = ed25519.GenPrivKey()
+	TestPrivKey2 = ed25519.GenPrivKey()
+
+	TestPubkey1 = TestPrivKey1.PubKey()
+	TestPubkey2 = TestPrivKey2.PubKey()
+
+	TestAddress1 = csdkTypes.AccAddress(TestPubkey1.Address())
+	TestAddress2 = csdkTypes.AccAddress(TestPubkey2.Address())
+
 	TestAddressEmpty = csdkTypes.AccAddress([]byte(""))
 
 	TestUploadNeg  = csdkTypes.NewInt(-1000000000)
@@ -43,13 +52,13 @@ var (
 	TestNodeType  = "node_type"
 	TestVersion   = "version"
 
-	TestNodeIDValid   = NewNodeID(fmt.Sprintf("%s/%d", TestAddress.String(), 0))
+	TestNodeIDValid   = NewNodeID(fmt.Sprintf("%s/%d", TestAddress1.String(), 0))
 	TestNodeIDInvalid = NewNodeID("invalid")
 	TestNodeIDEmpty   = NewNodeID("")
 
 	TestStatusInvalid = "invalid"
 
-	TestSessionIDValid   = NewSessionID(fmt.Sprintf("%s/%d", TestAddress.String(), 0))
+	TestSessionIDValid   = NewSessionID(fmt.Sprintf("%s/%d", TestAddress2.String(), 0))
 	TestSessionIDInvalid = NewSessionID("invalid")
 	TestSessionIDEmpty   = NewSessionID("")
 

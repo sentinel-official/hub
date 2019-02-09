@@ -5,16 +5,16 @@ import (
 	"github.com/cosmos/cosmos-sdk/store"
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
+	"github.com/cosmos/cosmos-sdk/x/bank"
 	"github.com/cosmos/cosmos-sdk/x/params"
 	abciTypes "github.com/tendermint/tendermint/abci/types"
 	tmDB "github.com/tendermint/tendermint/libs/db"
 	"github.com/tendermint/tendermint/libs/log"
 
-	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
 	"github.com/ironman0x7b2/sentinel-sdk/x/vpn/types"
 )
 
-func TestCreateInput() (csdkTypes.Context, Keeper, auth.AccountKeeper) {
+func TestCreateInput() (csdkTypes.Context, *codec.Codec, Keeper, auth.AccountKeeper, bank.BaseKeeper) {
 	keyNode := csdkTypes.NewKVStoreKey("node")
 	keySession := csdkTypes.NewKVStoreKey("session")
 	keyAccount := csdkTypes.NewKVStoreKey("acc")
@@ -35,12 +35,16 @@ func TestCreateInput() (csdkTypes.Context, Keeper, auth.AccountKeeper) {
 
 	cdc := TestMakeCodec()
 	ctx := csdkTypes.NewContext(ms, abciTypes.Header{ChainID: "chain-id"}, false, log.NewNopLogger())
+
 	keeper := NewKeeper(cdc, keyNode, keySession)
 	paramsKeeper := params.NewKeeper(cdc, keyParams, tkeyParams)
 	accountKeeper := auth.NewAccountKeeper(cdc, keyAccount, paramsKeeper.Subspace(auth.DefaultParamspace), auth.ProtoBaseAccount)
+	bankKeeper := bank.NewBaseKeeper(accountKeeper)
+
+	types.RegisterCodec(cdc)
 	auth.RegisterBaseAccount(cdc)
 
-	return ctx, keeper, accountKeeper
+	return ctx, cdc, keeper, accountKeeper, bankKeeper
 }
 
 func TestMakeCodec() *codec.Codec {
@@ -51,17 +55,17 @@ func TestMakeCodec() *codec.Codec {
 var (
 	TestNodeValid = types.NodeDetails{
 		ID:              types.TestNodeIDValid,
-		Owner:           types.TestAddress,
+		Owner:           types.TestAddress1,
 		LockedAmount:    types.TestCoinPos,
 		PricesPerGB:     types.TestCoinsPos,
-		NetSpeed:        sdkTypes.NewBandwidth(types.TestUploadPos, types.TestDownloadPos),
+		NetSpeed:        types.TestBandwidthPos,
 		APIPort:         types.TestAPIPortValid,
 		EncMethod:       types.TestEncMethod,
 		NodeType:        types.TestNodeType,
 		Version:         types.TestVersion,
 		Status:          types.StatusRegistered,
-		StatusAtHeight:  1,
-		DetailsAtHeight: 1,
+		StatusAtHeight:  0,
+		DetailsAtHeight: 0,
 	}
 	TestNodeEmpty     = types.NodeDetails{}
 	TestNodeIDsEmpty  = types.NodeIDs(nil)
@@ -72,20 +76,20 @@ var (
 	TestSessionValid = types.SessionDetails{
 		ID:           types.TestSessionIDValid,
 		NodeID:       types.TestNodeIDValid,
-		Client:       types.TestAddress,
+		Client:       types.TestAddress2,
 		LockedAmount: types.TestCoinPos,
 		PricePerGB:   types.TestCoinPos,
 		Bandwidth: types.SessionBandwidth{
-			ToProvide:       sdkTypes.NewBandwidth(types.TestUploadPos, types.TestDownloadPos),
-			Consumed:        sdkTypes.NewBandwidth(types.TestUploadPos, types.TestDownloadPos),
+			ToProvide:       types.TestBandwidthPos,
+			Consumed:        types.TestBandwidthZero,
 			NodeOwnerSign:   types.TestNodeOwnerSign,
 			ClientSign:      types.TestClientSign,
-			UpdatedAtHeight: 2,
+			UpdatedAtHeight: 0,
 		},
 		Status:          types.StatusInit,
-		StatusAtHeight:  1,
-		StartedAtHeight: 2,
-		EndedAtHeight:   3,
+		StatusAtHeight:  0,
+		StartedAtHeight: 0,
+		EndedAtHeight:   0,
 	}
 	TestSessionEmpty     = types.SessionDetails{}
 	TestSessionIDsEmpty  = types.SessionIDs(nil)

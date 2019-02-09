@@ -25,31 +25,31 @@ func TestMsgInitSession_ValidateBasic(t *testing.T) {
 			ErrorInvalidField("from"),
 		}, {
 			"node_id is empty",
-			NewMsgInitSession(TestAddress, TestNodeIDEmpty, TestCoinPos),
+			NewMsgInitSession(TestAddress2, TestNodeIDEmpty, TestCoinPos),
 			ErrorInvalidField("node_id"),
 		}, {
 			"node_id is invalid",
-			NewMsgInitSession(TestAddress, TestNodeIDInvalid, TestCoinPos),
+			NewMsgInitSession(TestAddress2, TestNodeIDInvalid, TestCoinPos),
 			ErrorInvalidField("node_id"),
 		}, {
 			"amount_to_lock is nil",
-			NewMsgInitSession(TestAddress, TestNodeIDValid, TestCoinNil),
+			NewMsgInitSession(TestAddress2, TestNodeIDValid, TestCoinNil),
 			ErrorInvalidField("amount_to_lock"),
 		}, {
 			"amount_to_lock is empty",
-			NewMsgInitSession(TestAddress, TestNodeIDValid, TestCoinEmpty),
+			NewMsgInitSession(TestAddress2, TestNodeIDValid, TestCoinEmpty),
 			ErrorInvalidField("amount_to_lock"),
 		}, {
 			"amount_to_lock is negative",
-			NewMsgInitSession(TestAddress, TestNodeIDValid, TestCoinNeg),
+			NewMsgInitSession(TestAddress2, TestNodeIDValid, TestCoinNeg),
 			ErrorInvalidField("amount_to_lock"),
 		}, {
 			"amount_to_lock is zero",
-			NewMsgInitSession(TestAddress, TestNodeIDValid, TestCoinZero),
+			NewMsgInitSession(TestAddress2, TestNodeIDValid, TestCoinZero),
 			ErrorInvalidField("amount_to_lock"),
 		}, {
 			"valid",
-			NewMsgInitSession(TestAddress, TestNodeIDValid, TestCoinPos),
+			NewMsgInitSession(TestAddress2, TestNodeIDValid, TestCoinPos),
 			nil,
 		},
 	}
@@ -64,7 +64,7 @@ func TestMsgInitSession_ValidateBasic(t *testing.T) {
 }
 
 func TestMsgInitSession_GetSignBytes(t *testing.T) {
-	msg := NewMsgInitSession(TestAddress, TestNodeIDValid, TestCoinPos)
+	msg := NewMsgInitSession(TestAddress2, TestNodeIDValid, TestCoinPos)
 	msgBytes, err := json.Marshal(msg)
 	if err != nil {
 		panic(err)
@@ -74,17 +74,17 @@ func TestMsgInitSession_GetSignBytes(t *testing.T) {
 }
 
 func TestMsgInitSession_GetSigners(t *testing.T) {
-	msg := NewMsgInitSession(TestAddress, TestNodeIDValid, TestCoinPos)
-	require.Equal(t, []csdkTypes.AccAddress{TestAddress}, msg.GetSigners())
+	msg := NewMsgInitSession(TestAddress2, TestNodeIDValid, TestCoinPos)
+	require.Equal(t, []csdkTypes.AccAddress{TestAddress2}, msg.GetSigners())
 }
 
 func TestMsgInitSession_Type(t *testing.T) {
-	msg := NewMsgInitSession(TestAddress, TestNodeIDValid, TestCoinPos)
+	msg := NewMsgInitSession(TestAddress2, TestNodeIDValid, TestCoinPos)
 	require.Equal(t, "msg_init_session", msg.Type())
 }
 
 func TestMsgInitSession_Route(t *testing.T) {
-	msg := NewMsgInitSession(TestAddress, TestNodeIDValid, TestCoinPos)
+	msg := NewMsgInitSession(TestAddress2, TestNodeIDValid, TestCoinPos)
 	require.Equal(t, RouterKey, msg.Route())
 }
 
@@ -104,47 +104,47 @@ func TestMsgUpdateSessionBandwidth_ValidateBasic(t *testing.T) {
 			ErrorInvalidField("from"),
 		}, {
 			"id is empty",
-			NewMsgUpdateSessionBandwidth(TestAddress, TestSessionIDEmpty, TestUploadPos, TestDownloadPos, TestClientSign, TestNodeOwnerSign),
+			NewMsgUpdateSessionBandwidth(TestAddress1, TestSessionIDEmpty, TestUploadPos, TestDownloadPos, TestClientSign, TestNodeOwnerSign),
 			ErrorInvalidField("id"),
 		}, {
 			"id is invalid",
-			NewMsgUpdateSessionBandwidth(TestAddress, TestSessionIDInvalid, TestUploadPos, TestDownloadPos, TestClientSign, TestNodeOwnerSign),
+			NewMsgUpdateSessionBandwidth(TestAddress1, TestSessionIDInvalid, TestUploadPos, TestDownloadPos, TestClientSign, TestNodeOwnerSign),
 			ErrorInvalidField("id"),
 		}, {
 			"upload is negative",
-			NewMsgUpdateSessionBandwidth(TestAddress, TestSessionIDValid, TestUploadNeg, TestDownloadPos, TestClientSign, TestNodeOwnerSign),
+			NewMsgUpdateSessionBandwidth(TestAddress1, TestSessionIDValid, TestUploadNeg, TestDownloadPos, TestClientSign, TestNodeOwnerSign),
 			ErrorInvalidField("bandwidth"),
 		}, {
 			"upload is zero",
-			NewMsgUpdateSessionBandwidth(TestAddress, TestSessionIDValid, TestUploadZero, TestDownloadPos, TestClientSign, TestNodeOwnerSign),
+			NewMsgUpdateSessionBandwidth(TestAddress1, TestSessionIDValid, TestUploadZero, TestDownloadPos, TestClientSign, TestNodeOwnerSign),
 			ErrorInvalidField("bandwidth"),
 		}, {
 			"download is negative",
-			NewMsgUpdateSessionBandwidth(TestAddress, TestSessionIDValid, TestUploadPos, TestDownloadNeg, TestClientSign, TestNodeOwnerSign),
+			NewMsgUpdateSessionBandwidth(TestAddress1, TestSessionIDValid, TestUploadPos, TestDownloadNeg, TestClientSign, TestNodeOwnerSign),
 			ErrorInvalidField("bandwidth"),
 		}, {
 			"download is zero",
-			NewMsgUpdateSessionBandwidth(TestAddress, TestSessionIDValid, TestUploadPos, TestDownloadNeg, TestClientSign, TestNodeOwnerSign),
+			NewMsgUpdateSessionBandwidth(TestAddress1, TestSessionIDValid, TestUploadPos, TestDownloadNeg, TestClientSign, TestNodeOwnerSign),
 			ErrorInvalidField("bandwidth"),
 		}, {
 			"client_sign is nil",
-			NewMsgUpdateSessionBandwidth(TestAddress, TestSessionIDValid, TestUploadPos, TestDownloadPos, nil, TestNodeOwnerSign),
+			NewMsgUpdateSessionBandwidth(TestAddress1, TestSessionIDValid, TestUploadPos, TestDownloadPos, nil, TestNodeOwnerSign),
 			ErrorInvalidField("client_sign"),
 		}, {
 			"client_sign is empty",
-			NewMsgUpdateSessionBandwidth(TestAddress, TestSessionIDValid, TestUploadPos, TestDownloadPos, []byte{}, TestNodeOwnerSign),
+			NewMsgUpdateSessionBandwidth(TestAddress1, TestSessionIDValid, TestUploadPos, TestDownloadPos, []byte{}, TestNodeOwnerSign),
 			ErrorInvalidField("client_sign"),
 		}, {
 			"node_owner_sign is nil",
-			NewMsgUpdateSessionBandwidth(TestAddress, TestSessionIDValid, TestUploadPos, TestDownloadPos, TestClientSign, nil),
+			NewMsgUpdateSessionBandwidth(TestAddress1, TestSessionIDValid, TestUploadPos, TestDownloadPos, TestClientSign, nil),
 			ErrorInvalidField("node_owner_sign"),
 		}, {
 			"node_owner_sign is empty",
-			NewMsgUpdateSessionBandwidth(TestAddress, TestSessionIDValid, TestUploadPos, TestDownloadPos, TestClientSign, []byte{}),
+			NewMsgUpdateSessionBandwidth(TestAddress1, TestSessionIDValid, TestUploadPos, TestDownloadPos, TestClientSign, []byte{}),
 			ErrorInvalidField("node_owner_sign"),
 		}, {
 			"valid",
-			NewMsgUpdateSessionBandwidth(TestAddress, TestSessionIDValid, TestUploadPos, TestDownloadPos, TestClientSign, TestNodeOwnerSign),
+			NewMsgUpdateSessionBandwidth(TestAddress1, TestSessionIDValid, TestUploadPos, TestDownloadPos, TestClientSign, TestNodeOwnerSign),
 			nil,
 		},
 	}
@@ -159,7 +159,7 @@ func TestMsgUpdateSessionBandwidth_ValidateBasic(t *testing.T) {
 }
 
 func TestMsgUpdateSessionBandwidth_GetSignBytes(t *testing.T) {
-	msg := NewMsgUpdateSessionBandwidth(TestAddress, TestSessionIDValid, TestUploadPos, TestDownloadPos, TestClientSign, TestNodeOwnerSign)
+	msg := NewMsgUpdateSessionBandwidth(TestAddress2, TestSessionIDValid, TestUploadPos, TestDownloadPos, TestClientSign, TestNodeOwnerSign)
 	msgBytes, err := json.Marshal(msg)
 	if err != nil {
 		panic(err)
@@ -169,16 +169,16 @@ func TestMsgUpdateSessionBandwidth_GetSignBytes(t *testing.T) {
 }
 
 func TestMsgUpdateSessionBandwidth_GetSigners(t *testing.T) {
-	msg := NewMsgUpdateSessionBandwidth(TestAddress, TestSessionIDValid, TestUploadPos, TestDownloadPos, TestClientSign, TestNodeOwnerSign)
-	require.Equal(t, []csdkTypes.AccAddress{TestAddress}, msg.GetSigners())
+	msg := NewMsgUpdateSessionBandwidth(TestAddress2, TestSessionIDValid, TestUploadPos, TestDownloadPos, TestClientSign, TestNodeOwnerSign)
+	require.Equal(t, []csdkTypes.AccAddress{TestAddress2}, msg.GetSigners())
 }
 
 func TestMsgUpdateSessionBandwidth_Type(t *testing.T) {
-	msg := NewMsgUpdateSessionBandwidth(TestAddress, TestSessionIDValid, TestUploadPos, TestDownloadPos, TestClientSign, TestNodeOwnerSign)
+	msg := NewMsgUpdateSessionBandwidth(TestAddress2, TestSessionIDValid, TestUploadPos, TestDownloadPos, TestClientSign, TestNodeOwnerSign)
 	require.Equal(t, "msg_update_session_bandwidth", msg.Type())
 }
 
 func TestMsgUpdateSessionBandwidth_Route(t *testing.T) {
-	msg := NewMsgUpdateSessionBandwidth(TestAddress, TestSessionIDValid, TestUploadPos, TestDownloadPos, TestClientSign, TestNodeOwnerSign)
+	msg := NewMsgUpdateSessionBandwidth(TestAddress2, TestSessionIDValid, TestUploadPos, TestDownloadPos, TestClientSign, TestNodeOwnerSign)
 	require.Equal(t, RouterKey, msg.Route())
 }

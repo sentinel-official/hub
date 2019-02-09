@@ -235,6 +235,7 @@ func handleDeregisterNode(ctx csdkTypes.Context, vk keeper.Keeper, bk bank.Keepe
 	msg types.MsgDeregisterNode) csdkTypes.Result {
 
 	allTags := csdkTypes.EmptyTags()
+
 	details, err := vk.GetNodeDetails(ctx, msg.ID)
 	if err != nil {
 		return err.Result()
@@ -245,7 +246,6 @@ func handleDeregisterNode(ctx csdkTypes.Context, vk keeper.Keeper, bk bank.Keepe
 	if !msg.From.Equals(details.Owner) {
 		return types.ErrorUnauthorized().Result()
 	}
-
 	if details.Status != types.StatusRegistered &&
 		details.Status != types.StatusInactive {
 		return types.ErrorInvalidNodeStatus().Result()

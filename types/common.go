@@ -51,3 +51,7 @@ func NewBandwidth(upload, download csdkTypes.Int) Bandwidth {
 		Download: download,
 	}
 }
+
+func NewBandwidthFromInt64(upload, download int64) Bandwidth {
+	return NewBandwidth(csdkTypes.NewInt(upload), csdkTypes.NewInt(download))
+}

@@ -19,11 +19,11 @@ func TestNewNodeID(t *testing.T) {
 }
 
 func TestNodeIDFromOwnerCount(t *testing.T) {
-	id1 := NodeIDFromOwnerCount(TestAddress, 0)
-	require.Equal(t, NodeID("cosmos1v9jxgun9wde47vgctxqm2/0"), id1)
-	require.Equal(t, []byte("cosmos1v9jxgun9wde47vgctxqm2/0"), id1.Bytes())
-	require.Equal(t, "cosmos1v9jxgun9wde47vgctxqm2/0", id1.String())
-	require.Equal(t, 30, id1.Len())
+	id1 := NodeIDFromOwnerCount(TestAddress1, 0)
+	require.Equal(t, NodeID(TestAddress1.String()+"/0"), id1)
+	require.Equal(t, []byte(TestAddress1.String()+"/0"), id1.Bytes())
+	require.Equal(t, TestAddress1.String()+"/0", id1.String())
+	require.Equal(t, 47, id1.Len())
 	require.Equal(t, true, id1.Valid())
 }
 
@@ -94,8 +94,8 @@ func TestNodeDetails_UpdateDetails(t *testing.T) {
 			NodeDetails{},
 		}, {
 			"owner is valid",
-			NodeDetails{Owner: TestAddress},
-			NodeDetails{Owner: TestAddress},
+			NodeDetails{Owner: TestAddress1},
+			NodeDetails{Owner: TestAddress1},
 		}, {
 			"locked_amount is nil",
 			NodeDetails{LockedAmount: TestCoinNil},

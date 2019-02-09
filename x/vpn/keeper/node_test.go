@@ -11,7 +11,7 @@ import (
 
 func TestKeeper_SetNodeDetails(t *testing.T) {
 	var err csdkTypes.Error
-	ctx, keeper, _ := TestCreateInput()
+	ctx, _, keeper, _, _ := TestCreateInput()
 
 	err = keeper.SetNodeDetails(ctx, &TestNodeEmpty)
 	require.Nil(t, err)
@@ -25,7 +25,7 @@ func TestKeeper_SetNodeDetails(t *testing.T) {
 
 func TestKeeper_GetNodeDetails(t *testing.T) {
 	var err csdkTypes.Error
-	ctx, keeper, _ := TestCreateInput()
+	ctx, _, keeper, _, _ := TestCreateInput()
 
 	result1, err := keeper.GetNodeDetails(ctx, TestNodeValid.ID)
 	require.Nil(t, err)
@@ -40,7 +40,7 @@ func TestKeeper_GetNodeDetails(t *testing.T) {
 
 func TestKeeper_SetActiveNodeIDsAtHeight(t *testing.T) {
 	var err csdkTypes.Error
-	ctx, keeper, _ := TestCreateInput()
+	ctx, _, keeper, _, _ := TestCreateInput()
 
 	err = keeper.SetActiveNodeIDsAtHeight(ctx, 0, TestNodeIDsEmpty)
 	require.Nil(t, err)
@@ -57,7 +57,7 @@ func TestKeeper_SetActiveNodeIDsAtHeight(t *testing.T) {
 
 func TestKeeper_GetActiveNodeIDsAtHeight(t *testing.T) {
 	var err csdkTypes.Error
-	ctx, keeper, _ := TestCreateInput()
+	ctx, _, keeper, _, _ := TestCreateInput()
 
 	result1, err := keeper.GetActiveNodeIDsAtHeight(ctx, 0)
 	require.Nil(t, err)
@@ -72,56 +72,56 @@ func TestKeeper_GetActiveNodeIDsAtHeight(t *testing.T) {
 
 func TestKeeper_SetNodesCount(t *testing.T) {
 	var err csdkTypes.Error
-	ctx, keeper, _ := TestCreateInput()
+	ctx, _, keeper, _, _ := TestCreateInput()
 
-	err = keeper.SetNodesCount(ctx, types.TestAddress, 0)
+	err = keeper.SetNodesCount(ctx, types.TestAddress1, 0)
 	require.Nil(t, err)
-	result1, err := keeper.GetNodesCount(ctx, types.TestAddress)
+	result1, err := keeper.GetNodesCount(ctx, types.TestAddress1)
 	require.Nil(t, err)
 	require.Equal(t, uint64(0), result1)
 
-	err = keeper.SetNodesCount(ctx, types.TestAddress, 1)
+	err = keeper.SetNodesCount(ctx, types.TestAddress1, 1)
 	require.Nil(t, err)
-	result2, err := keeper.GetNodesCount(ctx, types.TestAddress)
+	result2, err := keeper.GetNodesCount(ctx, types.TestAddress1)
 	require.Nil(t, err)
 	require.Equal(t, uint64(1), result2)
 }
 
 func TestKeeper_GetNodesCount(t *testing.T) {
 	var err csdkTypes.Error
-	ctx, keeper, _ := TestCreateInput()
+	ctx, _, keeper, _, _ := TestCreateInput()
 
-	result1, err := keeper.GetNodesCount(ctx, types.TestAddress)
+	result1, err := keeper.GetNodesCount(ctx, types.TestAddress1)
 	require.Nil(t, err)
 	require.Equal(t, uint64(0), result1)
 
-	err = keeper.SetNodesCount(ctx, types.TestAddress, 1)
+	err = keeper.SetNodesCount(ctx, types.TestAddress1, 1)
 	require.Nil(t, err)
-	result2, err := keeper.GetNodesCount(ctx, types.TestAddress)
+	result2, err := keeper.GetNodesCount(ctx, types.TestAddress1)
 	require.Nil(t, err)
 	require.Equal(t, uint64(1), result2)
 }
 
 func TestKeeper_GetNodesOfOwner(t *testing.T) {
 	var err csdkTypes.Error
-	ctx, keeper, _ := TestCreateInput()
+	ctx, _, keeper, _, _ := TestCreateInput()
 
-	result1, err := keeper.GetNodesOfOwner(ctx, types.TestAddress)
+	result1, err := keeper.GetNodesOfOwner(ctx, types.TestAddress1)
 	require.Nil(t, err)
 	require.Equal(t, TestNodesEmpty, result1)
 
 	err = keeper.SetNodeDetails(ctx, &TestNodeValid)
 	require.Nil(t, err)
-	err = keeper.SetNodesCount(ctx, types.TestAddress, 1)
+	err = keeper.SetNodesCount(ctx, types.TestAddress1, 1)
 	require.Nil(t, err)
-	result2, err := keeper.GetNodesOfOwner(ctx, types.TestAddress)
+	result2, err := keeper.GetNodesOfOwner(ctx, types.TestAddress1)
 	require.Nil(t, err)
 	require.Equal(t, []*types.NodeDetails{&TestNodeValid}, result2)
 }
 
 func TestKeeper_GetNodes(t *testing.T) {
 	var err csdkTypes.Error
-	ctx, keeper, _ := TestCreateInput()
+	ctx, _, keeper, _, _ := TestCreateInput()
 
 	result1, err := keeper.GetNodes(ctx)
 	require.Nil(t, err)
@@ -136,12 +136,12 @@ func TestKeeper_GetNodes(t *testing.T) {
 
 func TestKeeper_AddNode(t *testing.T) {
 	var err csdkTypes.Error
-	ctx, keeper, _ := TestCreateInput()
+	ctx, _, keeper, _, _ := TestCreateInput()
 
 	tags, err := keeper.AddNode(ctx, &TestNodeValid)
 	require.Nil(t, err)
 	require.Equal(t, TestNodeTagsValid, tags)
-	result1, err := keeper.GetNodesCount(ctx, types.TestAddress)
+	result1, err := keeper.GetNodesCount(ctx, types.TestAddress1)
 	require.Nil(t, err)
 	require.Equal(t, uint64(1), result1)
 	result2, err := keeper.GetNodeDetails(ctx, TestNodeValid.ID)
@@ -151,7 +151,7 @@ func TestKeeper_AddNode(t *testing.T) {
 
 func TestKeeper_AddActiveNodeIDAtHeight(t *testing.T) {
 	var err csdkTypes.Error
-	ctx, keeper, _ := TestCreateInput()
+	ctx, _, keeper, _, _ := TestCreateInput()
 
 	err = keeper.AddActiveNodeIDAtHeight(ctx, 0, types.TestNodeIDValid)
 	require.Nil(t, err)
@@ -167,7 +167,7 @@ func TestKeeper_AddActiveNodeIDAtHeight(t *testing.T) {
 
 func TestKeeper_RemoveActiveNodeIDAtHeight(t *testing.T) {
 	var err csdkTypes.Error
-	ctx, keeper, _ := TestCreateInput()
+	ctx, _, keeper, _, _ := TestCreateInput()
 
 	err = keeper.RemoveActiveNodeIDAtHeight(ctx, 0, types.TestNodeIDValid)
 	require.Nil(t, err)

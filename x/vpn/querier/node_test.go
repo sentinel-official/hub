@@ -13,7 +13,7 @@ import (
 
 func TestNewQueryNodeParams(t *testing.T) {
 	cdc := keeper.TestMakeCodec()
-	ctx, vpnKeeper, _ := keeper.TestCreateInput()
+	ctx, _, vpnKeeper, _, _ := keeper.TestCreateInput()
 	querier := NewQuerier(vpnKeeper, cdc)
 
 	data := NewQueryNodeParams(types.TestNodeIDValid)
@@ -53,10 +53,10 @@ func TestNewQueryNodeParams(t *testing.T) {
 
 func TestNewQueryNodesOfOwnerParams(t *testing.T) {
 	cdc := keeper.TestMakeCodec()
-	ctx, vpnKeeper, _ := keeper.TestCreateInput()
+	ctx, _, vpnKeeper, _, _ := keeper.TestCreateInput()
 	querier := NewQuerier(vpnKeeper, cdc)
 
-	data := NewQueryNodesOfOwnerParams(types.TestAddress)
+	data := NewQueryNodesOfOwnerParams(types.TestAddress1)
 	require.NotNil(t, data)
 
 	query := abciTypes.RequestQuery{
@@ -93,7 +93,7 @@ func TestNewQueryNodesOfOwnerParams(t *testing.T) {
 
 func TestNewQuerier(t *testing.T) {
 	cdc := keeper.TestMakeCodec()
-	ctx, vpnKeeper, _ := keeper.TestCreateInput()
+	ctx, _, vpnKeeper, _, _ := keeper.TestCreateInput()
 	querier := NewQuerier(vpnKeeper, cdc)
 
 	data := NewQueryNodeParams(types.TestNodeIDValid)
