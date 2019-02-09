@@ -19,12 +19,15 @@ func TestCreateInput() (csdkTypes.Context, Keeper, auth.AccountKeeper) {
 	keySession := csdkTypes.NewKVStoreKey("session")
 	keyAccount := csdkTypes.NewKVStoreKey("acc")
 	keyParams := csdkTypes.NewKVStoreKey("params")
-	tkeyParams := csdkTypes.NewTransientStoreKey("params")
+	tkeyParams := csdkTypes.NewTransientStoreKey("tparams")
 
 	db := tmDB.NewMemDB()
 	ms := store.NewCommitMultiStore(db)
 	ms.MountStoreWithDB(keyNode, csdkTypes.StoreTypeIAVL, db)
 	ms.MountStoreWithDB(keySession, csdkTypes.StoreTypeIAVL, db)
+	ms.MountStoreWithDB(keyAccount, csdkTypes.StoreTypeIAVL, db)
+	ms.MountStoreWithDB(keyParams, csdkTypes.StoreTypeIAVL, db)
+	ms.MountStoreWithDB(tkeyParams, csdkTypes.StoreTypeTransient, db)
 	err := ms.LoadLatestVersion()
 	if err != nil {
 		panic(err)
@@ -35,6 +38,7 @@ func TestCreateInput() (csdkTypes.Context, Keeper, auth.AccountKeeper) {
 	keeper := NewKeeper(cdc, keyNode, keySession)
 	paramsKeeper := params.NewKeeper(cdc, keyParams, tkeyParams)
 	accountKeeper := auth.NewAccountKeeper(cdc, keyAccount, paramsKeeper.Subspace(auth.DefaultParamspace), auth.ProtoBaseAccount)
+	auth.RegisterBaseAccount(cdc)
 
 	return ctx, keeper, accountKeeper
 }
