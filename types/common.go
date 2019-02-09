@@ -40,6 +40,11 @@ func (b Bandwidth) IsNegative() bool {
 		b.Download.IsNegative()
 }
 
+func (b Bandwidth) IsNil() bool {
+	return b.Upload == csdkTypes.Int{} ||
+		b.Download == csdkTypes.Int{}
+}
+
 func NewBandwidth(upload, download csdkTypes.Int) Bandwidth {
 	return Bandwidth{
 		Upload:   upload,

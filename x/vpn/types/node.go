@@ -47,7 +47,8 @@ func (n NodeIDs) Search(id NodeID) int {
 		return n[i].String() >= id.String()
 	})
 
-	if index < n.Len() && n[index].String() != id.String() {
+	if (index == n.Len()) ||
+		(index < n.Len() && n[index].String() != id.String()) {
 		return n.Len()
 	}
 
@@ -83,22 +84,23 @@ type NodeDetails struct {
 }
 
 func (nd *NodeDetails) UpdateDetails(details NodeDetails) {
-	if details.ID.Len() != 0 {
+	if details.ID.Len() != 0 && details.ID.Valid() {
 		nd.ID = details.ID
 	}
 	if details.Owner != nil && !details.Owner.Empty() {
 		nd.Owner = details.Owner
 	}
-	if len(details.LockedAmount.Denom) != 0 && !details.LockedAmount.IsZero() {
+	if len(details.LockedAmount.Denom) != 0 && details.LockedAmount.IsPositive() {
 		nd.LockedAmount = details.LockedAmount
 	}
-	if details.PricesPerGB != nil && details.PricesPerGB.Len() > 0 {
+	if details.PricesPerGB != nil && details.PricesPerGB.Len() > 0 &&
+		details.PricesPerGB.IsValid() && details.PricesPerGB.IsPositive() {
 		nd.PricesPerGB = details.PricesPerGB
 	}
-	if details.NetSpeed.IsPositive() {
+	if !details.NetSpeed.IsNil() && details.NetSpeed.IsPositive() {
 		nd.NetSpeed = details.NetSpeed
 	}
-	if details.APIPort.IsZero() {
+	if !details.APIPort.IsZero() {
 		nd.APIPort = details.APIPort
 	}
 	if len(details.EncMethod) != 0 {
@@ -117,7 +119,8 @@ func (nd NodeDetails) FindPricePerGB(denom string) csdkTypes.Coin {
 		return nd.PricesPerGB[i].Denom >= denom
 	})
 
-	if index < nd.PricesPerGB.Len() && nd.PricesPerGB[index].Denom != denom {
+	if index == nd.PricesPerGB.Len() ||
+		(index < nd.PricesPerGB.Len() && nd.PricesPerGB[index].Denom != denom) {
 		return csdkTypes.Coin{}
 	}
 
