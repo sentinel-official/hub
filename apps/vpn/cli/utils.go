@@ -10,14 +10,14 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/server"
 	"github.com/tendermint/go-amino"
-	cfg "github.com/tendermint/tendermint/config"
+	tmConfig "github.com/tendermint/tendermint/config"
 	"github.com/tendermint/tendermint/crypto"
 	"github.com/tendermint/tendermint/libs/common"
 	"github.com/tendermint/tendermint/p2p"
 	"github.com/tendermint/tendermint/privval"
 	"github.com/tendermint/tendermint/types"
 
-	"github.com/ironman0x7b2/sentinel-sdk/apps/vpn"
+	app "github.com/ironman0x7b2/sentinel-sdk/apps/vpn"
 )
 
 func ExportGenesisFile(genFile, chainID string, validators []types.GenesisValidator, appState json.RawMessage) error {
@@ -34,7 +34,9 @@ func ExportGenesisFile(genFile, chainID string, validators []types.GenesisValida
 	return genDoc.SaveAs(genFile)
 }
 
-func ExportGenesisFileWithTime(genFile, chainID string, validators []types.GenesisValidator, appState json.RawMessage, genTime time.Time) error {
+func ExportGenesisFileWithTime(genFile, chainID string, validators []types.GenesisValidator,
+	appState json.RawMessage, genTime time.Time) error {
+
 	genDoc := types.GenesisDoc{
 		GenesisTime: genTime,
 		ChainID:     chainID,
@@ -49,7 +51,7 @@ func ExportGenesisFileWithTime(genFile, chainID string, validators []types.Genes
 	return genDoc.SaveAs(genFile)
 }
 
-func InitializeNodeValidatorFiles(config *cfg.Config) (nodeID string, valPubKey crypto.PubKey, err error) {
+func InitializeNodeValidatorFiles(config *tmConfig.Config) (nodeID string, valPubKey crypto.PubKey, err error) {
 	nodeKey, err := p2p.LoadOrGenNodeKey(config.NodeKeyFile())
 	if err != nil {
 		return nodeID, valPubKey, err
@@ -91,5 +93,5 @@ func initializeEmptyGenesis(cdc *codec.Codec, genFile, chainID string, overwrite
 		return nil, fmt.Errorf("genesis.json file already exists: %v", genFile)
 	}
 
-	return codec.MarshalJSONIndent(cdc, vpn.NewDefaultGenesisState())
+	return codec.MarshalJSONIndent(cdc, app.NewDefaultGenesisState())
 }

@@ -147,7 +147,7 @@ func (k Keeper) AddNode(ctx csdkTypes.Context, details *types.NodeDetails) (csdk
 	if err := k.SetNodeDetails(ctx, details); err != nil {
 		return nil, err
 	}
-	tags = tags.AppendTag("node_id", details.ID.Bytes())
+	tags = tags.AppendTag("node_id", details.ID.String())
 
 	if err := k.SetNodesCount(ctx, details.Owner, count+1); err != nil {
 		return nil, err

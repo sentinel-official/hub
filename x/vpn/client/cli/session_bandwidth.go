@@ -3,7 +3,6 @@ package cli
 import (
 	"encoding/base64"
 	"fmt"
-	"os"
 
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/client/keys"
@@ -43,17 +42,14 @@ func SignSessionBandwidthTxCmd(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			fromName, err := cliCtx.GetFromName()
-			if err != nil {
-				return err
-			}
+			fromName := cliCtx.GetFromName()
 
 			password, err := keys.GetPassphrase(fromName)
 			if err != nil {
 				return err
 			}
 
-			kb, err := keys.GetKeyBase()
+			kb, err := keys.NewKeyBaseFromHomeFlag()
 			if err != nil {
 				return err
 			}
@@ -98,10 +94,7 @@ func UpdateSessionBandwidthTxCmd(cdc *codec.Codec) *cobra.Command {
 			clientSign := viper.GetString(flagClientSign)
 			nodeOwnerSign := viper.GetString(flagNodeOwnerSign)
 
-			fromAddress, err := cliCtx.GetFromAddress()
-			if err != nil {
-				return err
-			}
+			fromAddress := cliCtx.GetFromAddress()
 
 			clientSignBytes, err := base64.StdEncoding.DecodeString(clientSign)
 			if err != nil {
@@ -115,11 +108,7 @@ func UpdateSessionBandwidthTxCmd(cdc *codec.Codec) *cobra.Command {
 
 			msg := vpn.NewMsgUpdateSessionBandwidth(fromAddress, sessionID, upload, download,
 				clientSignBytes, nodeOwnerSignBytes)
-			if cliCtx.GenerateOnly {
-				return utils.PrintUnsignedStdTx(os.Stdout, txBldr, cliCtx, []csdkTypes.Msg{msg}, false)
-			}
-
-			return utils.CompleteAndBroadcastTxCli(txBldr, cliCtx, []csdkTypes.Msg{msg})
+			return utils.GenerateOrBroadcastMsgs(cliCtx, txBldr, []csdkTypes.Msg{msg}, false)
 		},
 	}
 

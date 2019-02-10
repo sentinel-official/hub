@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/cosmos/cosmos-sdk/client/context"
-	"github.com/cosmos/cosmos-sdk/client/utils"
+	"github.com/cosmos/cosmos-sdk/client/rest"
 	"github.com/cosmos/cosmos-sdk/codec"
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
 	"github.com/gorilla/mux"
@@ -20,11 +20,11 @@ func getNodeHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) http.Handle
 
 		res, err := common.QueryNode(cliCtx, cdc, vars["nodeID"])
 		if err != nil {
-			utils.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
 		}
 
-		utils.PostProcessResponse(w, cdc, res, cliCtx.Indent)
+		rest.PostProcessResponse(w, cdc, res, cliCtx.Indent)
 	}
 }
 
@@ -36,12 +36,12 @@ func getNodesHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) http.Handl
 		if len(owner) == 0 {
 			kvs, err := cliCtx.QuerySubspace(vpn.NodeKeyPrefix, vpn.StoreKeyNode)
 			if err != nil {
-				utils.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+				rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 				return
 			}
 			if len(kvs) == 0 {
 				err := errors.New("no nodes found")
-				utils.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+				rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 				return
 			}
 
@@ -49,7 +49,7 @@ func getNodesHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) http.Handl
 			for _, kv := range kvs {
 				var details vpn.NodeDetails
 				if err := cdc.UnmarshalBinaryLengthPrefixed(kv.Value, &details); err != nil {
-					utils.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+					rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 					return
 				}
 
@@ -57,28 +57,28 @@ func getNodesHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) http.Handl
 			}
 
 			if res, err = cdc.MarshalJSON(nodes); err != nil {
-				utils.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+				rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 				return
 			}
 		} else {
 			owner, err := csdkTypes.AccAddressFromBech32(owner)
 			if err != nil {
-				utils.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+				rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 				return
 			}
 
 			res, err = common.QueryNodesOfOwner(cliCtx, cdc, owner)
 			if err != nil {
-				utils.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+				rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 				return
 			}
 			if string(res) == "null" {
 				err := errors.New("no nodes found")
-				utils.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+				rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 				return
 			}
 		}
 
-		utils.PostProcessResponse(w, cdc, res, cliCtx.Indent)
+		rest.PostProcessResponse(w, cdc, res, cliCtx.Indent)
 	}
 }

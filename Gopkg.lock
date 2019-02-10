@@ -2,22 +2,6 @@
 
 
 [[projects]]
-  digest = "1:7736fc6da04620727f8f3aa2ced8d77be8e074a302820937aa5993848c769b27"
-  name = "github.com/ZondaX/hid-go"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "48b08affede2cea076a3cf13b2e3f72ed262b743"
-  version = "v0.4.0"
-
-[[projects]]
-  digest = "1:1ba351898f7efc68c7c9ff3145b920e478f716b077fdaaf06b967c5d883fa988"
-  name = "github.com/ZondaX/ledger-go"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "c3225ab10c2f53397d4aa419a588466493572b22"
-  version = "v0.4.0"
-
-[[projects]]
   branch = "master"
   digest = "1:09a7f74eb6bb3c0f14d8926610c87f569c5cff68e978d30e9a3540aeb626fdf0"
   name = "github.com/bartekn/go-bip39"
@@ -42,12 +26,11 @@
   version = "v0.1.0"
 
 [[projects]]
-  branch = "master"
   digest = "1:093bf93a65962e8191e3e8cd8fc6c363f83d43caca9739c906531ba7210a9904"
   name = "github.com/btcsuite/btcd"
   packages = ["btcec"]
   pruneopts = "UT"
-  revision = "7d2daa5bfef28c5e282571bc06416516936115ee"
+  revision = "ed77733ec07dfc8a513741138419b8d9d3de9d2d"
 
 [[projects]]
   digest = "1:386de157f7d19259a7f9c81f26ce011223ce0f090353c1152ffdf730d7d10ac2"
@@ -57,7 +40,7 @@
   revision = "d4cc87b860166d00d6b5b9e0d3b3d71d6088d4d4"
 
 [[projects]]
-  digest = "1:29004b91f147a54d6fd554cafbfaea55cfbd01f30fd0650d29592d02171ff79e"
+  digest = "1:e64b80b6f46e98fb0c3081469e562277992f03c07d380198acc42cae974f1deb"
   name = "github.com/cosmos/cosmos-sdk"
   packages = [
     "baseapp",
@@ -66,6 +49,7 @@
     "client/keys",
     "client/lcd",
     "client/lcd/statik",
+    "client/rest",
     "client/rpc",
     "client/tx",
     "client/utils",
@@ -79,21 +63,34 @@
     "server",
     "server/config",
     "store",
+    "store/cachekv",
+    "store/cachemulti",
+    "store/dbadapter",
+    "store/errors",
+    "store/gaskv",
+    "store/iavl",
+    "store/prefix",
+    "store/rootmulti",
+    "store/tracekv",
+    "store/transient",
+    "store/types",
     "tests",
     "types",
     "version",
     "x/auth",
+    "x/auth/client",
     "x/auth/client/cli",
     "x/auth/client/rest",
     "x/auth/client/txbuilder",
     "x/bank",
-    "x/bank/client",
     "x/bank/client/cli",
     "x/bank/client/rest",
     "x/bank/simulation",
     "x/distribution",
     "x/distribution/client",
     "x/distribution/client/cli",
+    "x/distribution/client/common",
+    "x/distribution/client/rest",
     "x/distribution/keeper",
     "x/distribution/simulation",
     "x/distribution/tags",
@@ -127,7 +124,8 @@
     "x/staking/types",
   ]
   pruneopts = "UT"
-  revision = "9e21ca25ced2787dd5220582eaf2dbbbbff19a03"
+  revision = "b9e523212ec47910a00db00be2f1b7935e201ee7"
+  version = "v0.31.1"
 
 [[projects]]
   digest = "1:e8a3550c8786316675ff54ad6f09d265d129c9d986919af7f541afba50d87ce2"
@@ -143,6 +141,14 @@
   pruneopts = "UT"
   revision = "8991bc29aa16c548c550c7ff78260e27b9ab7c73"
   version = "v1.1.1"
+
+[[projects]]
+  digest = "1:fed20bf7f0da387c96d4cfc140a95572e5aba4bb984beb7de910e090ae39849b"
+  name = "github.com/ethereum/go-ethereum"
+  packages = ["crypto/secp256k1"]
+  pruneopts = "UT"
+  revision = "7fa3509e2eaf1a4ebc12344590e5699406690f15"
+  version = "v1.8.22"
 
 [[projects]]
   digest = "1:abeb38ade3f32a92943e5be54f55ed6d6e3b6602761d74b4aab4c9dd45c18abd"
@@ -519,7 +525,7 @@
   version = "v0.12.0"
 
 [[projects]]
-  digest = "1:aace73b95970da5d83dacf1c2866a4c0444454d91cabb8584aabfc2021ca8cf1"
+  digest = "1:89f6fe8d02b427996828fbf43720ed1297a2e92c930b98dd302767b5ad796579"
   name = "github.com/tendermint/tendermint"
   packages = [
     "abci/client",
@@ -585,16 +591,32 @@
     "version",
   ]
   pruneopts = "UT"
-  revision = "4d7b29cd8f8ef998cf8f7141f3a100b0a4fa718d"
-  version = "v0.29.1"
+  revision = "28d75ec8016b7fb043735cbe4c4d92ec73355de7"
+  version = "v0.30.0"
 
 [[projects]]
-  digest = "1:a7485b2a69f996923f9d3406a9a853fd8eb31818515e985a830d71f88f6a925b"
+  digest = "1:5a736f4722932d9a45d28852e85b83f68292d9af2ef0be29d4e5fe6fd89d5d96"
+  name = "github.com/zondax/hid"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "302fd402163c34626286195dfa9adac758334acc"
+  version = "v0.9.0"
+
+[[projects]]
+  digest = "1:fca24169988a61ea725d1326de30910d8049fe68bcbc194d28803f9a76dda380"
   name = "github.com/zondax/ledger-cosmos-go"
   packages = ["."]
   pruneopts = "UT"
-  revision = "d4aed6d929a703bb555a2d79fe9c470afe61f648"
-  version = "v0.9.2"
+  revision = "69fdb8ce5e5b9d9c3b22b9248e117b231d4f06dd"
+  version = "v0.9.7"
+
+[[projects]]
+  digest = "1:f8e4c0b959174a1fa5946b12f1f2ac7ea5651bef20a9e4a8dac55dbffcaa6cd6"
+  name = "github.com/zondax/ledger-go"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "69c15f1333a9b6866e5f66096561c7d138894bc5"
+  version = "v0.8.0"
 
 [[projects]]
   digest = "1:6f6dc6060c4e9ba73cf28aa88f12a69a030d3d19d518ef8e931879eaa099628d"
@@ -730,6 +752,7 @@
     "github.com/cosmos/cosmos-sdk/client/context",
     "github.com/cosmos/cosmos-sdk/client/keys",
     "github.com/cosmos/cosmos-sdk/client/lcd",
+    "github.com/cosmos/cosmos-sdk/client/rest",
     "github.com/cosmos/cosmos-sdk/client/rpc",
     "github.com/cosmos/cosmos-sdk/client/tx",
     "github.com/cosmos/cosmos-sdk/client/utils",
@@ -749,6 +772,7 @@
     "github.com/cosmos/cosmos-sdk/x/bank/simulation",
     "github.com/cosmos/cosmos-sdk/x/distribution",
     "github.com/cosmos/cosmos-sdk/x/distribution/client",
+    "github.com/cosmos/cosmos-sdk/x/distribution/client/rest",
     "github.com/cosmos/cosmos-sdk/x/distribution/simulation",
     "github.com/cosmos/cosmos-sdk/x/gov",
     "github.com/cosmos/cosmos-sdk/x/gov/client",

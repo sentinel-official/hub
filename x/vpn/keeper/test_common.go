@@ -39,7 +39,7 @@ func TestCreateInput() (csdkTypes.Context, *codec.Codec, Keeper, auth.AccountKee
 	keeper := NewKeeper(cdc, keyNode, keySession)
 	paramsKeeper := params.NewKeeper(cdc, keyParams, tkeyParams)
 	accountKeeper := auth.NewAccountKeeper(cdc, keyAccount, paramsKeeper.Subspace(auth.DefaultParamspace), auth.ProtoBaseAccount)
-	bankKeeper := bank.NewBaseKeeper(accountKeeper)
+	bankKeeper := bank.NewBaseKeeper(accountKeeper, paramsKeeper.Subspace(bank.DefaultParamspace), bank.DefaultCodespace)
 
 	types.RegisterCodec(cdc)
 	auth.RegisterBaseAccount(cdc)
@@ -71,7 +71,7 @@ var (
 	TestNodeIDsEmpty  = types.NodeIDs(nil)
 	TestNodeIDsValid  = types.NodeIDs{types.TestNodeIDValid, types.TestNodeIDValid}
 	TestNodesEmpty    = []*types.NodeDetails(nil)
-	TestNodeTagsValid = csdkTypes.EmptyTags().AppendTag("node_id", types.TestNodeIDValid.Bytes())
+	TestNodeTagsValid = csdkTypes.EmptyTags().AppendTag("node_id", types.TestNodeIDValid.String())
 
 	TestSessionValid = types.SessionDetails{
 		ID:           types.TestSessionIDValid,
@@ -95,5 +95,5 @@ var (
 	TestSessionIDsEmpty  = types.SessionIDs(nil)
 	TestSessionIDsValid  = types.SessionIDs{types.TestSessionIDValid, types.TestSessionIDValid}
 	TestSessionsEmpty    = []*types.SessionDetails(nil)
-	TestSessionTagsValid = csdkTypes.EmptyTags().AppendTag("session_id", types.TestSessionIDValid.Bytes())
+	TestSessionTagsValid = csdkTypes.EmptyTags().AppendTag("session_id", types.TestSessionIDValid.String())
 )

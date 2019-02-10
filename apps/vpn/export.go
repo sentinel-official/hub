@@ -2,10 +2,12 @@ package vpn
 
 import (
 	"encoding/json"
+	"log"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
+	"github.com/cosmos/cosmos-sdk/x/bank"
 	"github.com/cosmos/cosmos-sdk/x/distribution"
 	"github.com/cosmos/cosmos-sdk/x/gov"
 	"github.com/cosmos/cosmos-sdk/x/mint"
@@ -15,13 +17,13 @@ import (
 	tmTypes "github.com/tendermint/tendermint/types"
 )
 
-func (app *VPN) ExportAppStateAndValidators(forZeroHeight bool) (
+func (app *VPN) ExportAppStateAndValidators(forZeroHeight bool, jailWhiteList []string) (
 	appState json.RawMessage, validators []tmTypes.GenesisValidator, err error) {
 
 	ctx := app.NewContext(true, abciTypes.Header{Height: app.LastBlockHeight()})
 
 	if forZeroHeight {
-		app.prepForZeroHeightGenesis(ctx)
+		app.prepForZeroHeightGenesis(ctx, jailWhiteList)
 	}
 
 	accounts := []GenesisAccount{}
@@ -35,6 +37,7 @@ func (app *VPN) ExportAppStateAndValidators(forZeroHeight bool) (
 	genState := NewGenesisState(
 		accounts,
 		auth.ExportGenesis(ctx, app.accountKeeper, app.feeCollectionKeeper),
+		bank.ExportGenesis(ctx, app.bankKeeper),
 		staking.ExportGenesis(ctx, app.stakingKeeper),
 		mint.ExportGenesis(ctx, app.mintKeeper),
 		distribution.ExportGenesis(ctx, app.distributionKeeper),
@@ -49,7 +52,23 @@ func (app *VPN) ExportAppStateAndValidators(forZeroHeight bool) (
 	return appState, validators, nil
 }
 
-func (app *VPN) prepForZeroHeightGenesis(ctx csdkTypes.Context) {
+func (app *VPN) prepForZeroHeightGenesis(ctx csdkTypes.Context, jailWhiteList []string) {
+	applyWhiteList := false
+
+	if len(jailWhiteList) > 0 {
+		applyWhiteList = true
+	}
+
+	whiteListMap := make(map[string]bool)
+
+	for _, addr := range jailWhiteList {
+		_, err := csdkTypes.ValAddressFromBech32(addr)
+		if err != nil {
+			log.Fatal(err)
+		}
+		whiteListMap[addr] = true
+	}
+
 	app.assertRuntimeInvariantsOnContext(ctx)
 
 	app.stakingKeeper.IterateValidators(ctx, func(_ int64, val csdkTypes.Validator) (stop bool) {
@@ -107,15 +126,19 @@ func (app *VPN) prepForZeroHeightGenesis(ctx csdkTypes.Context) {
 			panic("expected validator, not found")
 		}
 
-		validator.BondHeight = 0
 		validator.UnbondingHeight = 0
 		valConsAddrs = append(valConsAddrs, validator.ConsAddress())
+		if applyWhiteList && !whiteListMap[addr.String()] {
+			validator.Jailed = true
+		}
 
 		app.stakingKeeper.SetValidator(ctx, validator)
 		counter++
 	}
 
 	iter.Close()
+
+	_ = app.stakingKeeper.ApplyAndReturnValidatorSetUpdates(ctx)
 
 	app.slashingKeeper.IterateValidatorSigningInfos(
 		ctx,

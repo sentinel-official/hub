@@ -108,7 +108,7 @@ func (k Keeper) AddSession(ctx csdkTypes.Context, details *types.SessionDetails)
 	if err := k.SetSessionDetails(ctx, details); err != nil {
 		return nil, err
 	}
-	tags = tags.AppendTag("session_id", details.ID.Bytes())
+	tags = tags.AppendTag("session_id", details.ID.String())
 
 	if err := k.SetSessionsCount(ctx, details.Client, count+1); err != nil {
 		return nil, err

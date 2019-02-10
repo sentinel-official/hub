@@ -9,8 +9,7 @@ import (
 	"github.com/ironman0x7b2/sentinel-sdk/version"
 )
 
-func AddCommands(ctx *server.Context, cdc *codec.Codec,
-	rootCmd *cobra.Command,
+func AddCommands(ctx *server.Context, cdc *codec.Codec, rootCmd *cobra.Command,
 	appCreator server.AppCreator, appExport server.AppExporter) {
 
 	rootCmd.PersistentFlags().String("log_level", ctx.Config.LogLevel, "Log level")

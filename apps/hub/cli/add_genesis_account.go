@@ -1,20 +1,19 @@
 package cli
 
 import (
-	"encoding/json"
 	"fmt"
 
 	"github.com/cosmos/cosmos-sdk/client/keys"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/server"
-	sdk "github.com/cosmos/cosmos-sdk/types"
+	csdkTypes "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"github.com/tendermint/tendermint/libs/cli"
 	"github.com/tendermint/tendermint/libs/common"
 
-	"github.com/ironman0x7b2/sentinel-sdk/apps/hub"
+	app "github.com/ironman0x7b2/sentinel-sdk/apps/hub"
 )
 
 func AddGenesisAccountCmd(ctx *server.Context, cdc *codec.Codec) *cobra.Command {
@@ -26,39 +25,54 @@ func AddGenesisAccountCmd(ctx *server.Context, cdc *codec.Codec) *cobra.Command 
 			config := ctx.Config
 			config.SetRoot(viper.GetString(cli.HomeFlag))
 
-			addr, err := sdk.AccAddressFromBech32(args[0])
+			addr, err := csdkTypes.AccAddressFromBech32(args[0])
 			if err != nil {
-				kb, err := keys.GetKeyBaseFromDir(viper.GetString(flagClientHome))
+				kb, err := keys.NewKeyBaseFromDir(viper.GetString(flagClientHome))
 				if err != nil {
 					return err
 				}
+
 				info, err := kb.Get(args[0])
 				if err != nil {
 					return err
 				}
+
 				addr = info.GetAddress()
 			}
-			coins, err := sdk.ParseCoins(args[1])
+
+			coins, err := csdkTypes.ParseCoins(args[1])
 			if err != nil {
 				return err
 			}
-			coins.Sort()
+
+			vestingStart := viper.GetInt64(flagVestingStart)
+			vestingEnd := viper.GetInt64(flagVestingEnd)
+			vestingAmt, err := csdkTypes.ParseCoins(viper.GetString(flagVestingAmt))
+			if err != nil {
+				return err
+			}
 
 			genFile := config.GenesisFile()
 			if !common.FileExists(genFile) {
 				return fmt.Errorf("%s does not exist, run `hubd init` first", genFile)
 			}
+
 			genDoc, err := loadGenesisDoc(cdc, genFile)
 			if err != nil {
 				return err
 			}
 
-			var appState hub.GenesisState
+			var appState app.GenesisState
 			if err = cdc.UnmarshalJSON(genDoc.AppState, &appState); err != nil {
 				return err
 			}
 
-			appStateJSON, err := addGenesisAccount(cdc, appState, addr, coins)
+			appState, err = addGenesisAccount(cdc, appState, addr, coins, vestingAmt, vestingStart, vestingEnd)
+			if err != nil {
+				return err
+			}
+
+			appStateJSON, err := cdc.MarshalJSON(appState)
 			if err != nil {
 				return err
 			}
@@ -67,20 +81,58 @@ func AddGenesisAccountCmd(ctx *server.Context, cdc *codec.Codec) *cobra.Command 
 		},
 	}
 
-	cmd.Flags().String(cli.HomeFlag, hub.DefaultNodeHome, "node's home directory")
-	cmd.Flags().String(flagClientHome, hub.DefaultCLIHome, "client's home directory")
+	cmd.Flags().String(cli.HomeFlag, app.DefaultNodeHome, "node's home directory")
+	cmd.Flags().String(flagClientHome, app.DefaultCLIHome, "client's home directory")
+	cmd.Flags().String(flagVestingAmt, "", "amount of coins for vesting accounts")
+	cmd.Flags().Uint64(flagVestingStart, 0, "schedule start time (unix epoch) for vesting accounts")
+	cmd.Flags().Uint64(flagVestingEnd, 0, "schedule end time (unix epoch) for vesting accounts")
+
 	return cmd
 }
 
-func addGenesisAccount(cdc *codec.Codec, appState hub.GenesisState, addr sdk.AccAddress, coins sdk.Coins) (json.RawMessage, error) {
+func addGenesisAccount(cdc *codec.Codec, appState app.GenesisState, addr csdkTypes.AccAddress,
+	coins, vestingAmt csdkTypes.Coins, vestingStart, vestingEnd int64, ) (app.GenesisState, error) {
+
 	for _, stateAcc := range appState.Accounts {
 		if stateAcc.Address.Equals(addr) {
-			return nil, fmt.Errorf("the application state already contains account %v", addr)
+			return appState, fmt.Errorf("the application state already contains account %v", addr)
 		}
 	}
 
 	acc := auth.NewBaseAccountWithAddress(addr)
 	acc.Coins = coins
-	appState.Accounts = append(appState.Accounts, hub.NewGenesisAccount(&acc))
-	return cdc.MarshalJSON(appState)
+
+	if !vestingAmt.IsZero() {
+		var vacc auth.VestingAccount
+
+		bvacc := &auth.BaseVestingAccount{
+			BaseAccount:     &acc,
+			OriginalVesting: vestingAmt,
+			EndTime:         vestingEnd,
+		}
+
+		if bvacc.OriginalVesting.IsAllGT(acc.Coins) {
+			return appState, fmt.Errorf("vesting amount cannot be greater than total amount")
+		}
+		if vestingStart >= vestingEnd {
+			return appState, fmt.Errorf("vesting start time must before end time")
+		}
+
+		if vestingStart != 0 {
+			vacc = &auth.ContinuousVestingAccount{
+				BaseVestingAccount: bvacc,
+				StartTime:          vestingStart,
+			}
+		} else {
+			vacc = &auth.DelayedVestingAccount{
+				BaseVestingAccount: bvacc,
+			}
+		}
+
+		appState.Accounts = append(appState.Accounts, app.NewGenesisAccountI(vacc))
+	} else {
+		appState.Accounts = append(appState.Accounts, app.NewGenesisAccount(&acc))
+	}
+
+	return appState, nil
 }

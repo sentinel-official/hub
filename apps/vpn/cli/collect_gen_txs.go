@@ -10,12 +10,12 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	cfg "github.com/tendermint/tendermint/config"
+	tmConfig "github.com/tendermint/tendermint/config"
 	"github.com/tendermint/tendermint/crypto"
 	"github.com/tendermint/tendermint/libs/cli"
 	"github.com/tendermint/tendermint/types"
 
-	"github.com/ironman0x7b2/sentinel-sdk/apps/vpn"
+	app "github.com/ironman0x7b2/sentinel-sdk/apps/vpn"
 )
 
 const (
@@ -67,14 +67,15 @@ func CollectGenTxsCmd(ctx *server.Context, cdc *codec.Codec) *cobra.Command {
 		},
 	}
 
-	cmd.Flags().String(cli.HomeFlag, vpn.DefaultNodeHome, "node's home directory")
+	cmd.Flags().String(cli.HomeFlag, app.DefaultNodeHome, "node's home directory")
 	cmd.Flags().String(flagGenTxDir, "",
 		"override default \"gentx\" directory from which collect and execute "+
 			"genesis transactions; default [--home]/config/gentx/")
 	return cmd
 }
 
-func genAppStateFromConfig(cdc *codec.Codec, config *cfg.Config, initCfg initConfig, genDoc types.GenesisDoc) (appState json.RawMessage, err error) {
+func genAppStateFromConfig(cdc *codec.Codec, config *tmConfig.Config, initCfg initConfig,
+	genDoc types.GenesisDoc) (appState json.RawMessage, err error) {
 
 	genFile := config.GenesisFile()
 	var (
@@ -84,7 +85,7 @@ func genAppStateFromConfig(cdc *codec.Codec, config *cfg.Config, initCfg initCon
 		jsonRawTx       json.RawMessage
 	)
 
-	appGenTxs, persistentPeers, err = vpn.CollectStdTxs(
+	appGenTxs, persistentPeers, err = app.CollectStdTxs(
 		cdc, config.Moniker, initCfg.GenTxsDir, genDoc,
 	)
 	if err != nil {
@@ -102,9 +103,9 @@ func genAppStateFromConfig(cdc *codec.Codec, config *cfg.Config, initCfg initCon
 		genTxs[i] = jsonRawTx
 	}
 
-	cfg.WriteConfigFile(filepath.Join(config.RootDir, "config", "config.toml"), config)
+	tmConfig.WriteConfigFile(filepath.Join(config.RootDir, "config", "config.toml"), config)
 
-	appState, err = vpn.VPNGenStateJSON(cdc, genDoc, genTxs)
+	appState, err = app.VPNGenStateJSON(cdc, genDoc, genTxs)
 	if err != nil {
 		return
 	}
@@ -113,7 +114,8 @@ func genAppStateFromConfig(cdc *codec.Codec, config *cfg.Config, initCfg initCon
 	return
 }
 
-func newInitConfig(chainID, genTxsDir, name, nodeID string, valPubKey crypto.PubKey) initConfig {
+func newInitConfig(chainID, genTxsDir, name, nodeID string,
+	valPubKey crypto.PubKey) initConfig {
 
 	return initConfig{
 		ChainID:   chainID,
@@ -124,7 +126,8 @@ func newInitConfig(chainID, genTxsDir, name, nodeID string, valPubKey crypto.Pub
 	}
 }
 
-func newPrintInfo(moniker, chainID, nodeID, genTxsDir string, appMessage json.RawMessage) printInfo {
+func newPrintInfo(moniker, chainID, nodeID, genTxsDir string,
+	appMessage json.RawMessage) printInfo {
 
 	return printInfo{
 		Moniker:    moniker,

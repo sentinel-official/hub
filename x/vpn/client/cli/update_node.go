@@ -1,7 +1,6 @@
 package cli
 
 import (
-	"os"
 	"strings"
 
 	"github.com/cosmos/cosmos-sdk/client/context"
@@ -40,19 +39,12 @@ func UpdateNodeDetailsTxCmd(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			fromAddress, err := cliCtx.GetFromAddress()
-			if err != nil {
-				return err
-			}
+			fromAddress := cliCtx.GetFromAddress()
 
 			msg := vpn.NewMsgUpdateNodeDetails(fromAddress, nodeID,
 				parsedPricesPerGB, uploadSpeed, downloadSpeed,
 				apiPort, encMethod, version)
-			if cliCtx.GenerateOnly {
-				return utils.PrintUnsignedStdTx(os.Stdout, txBldr, cliCtx, []csdkTypes.Msg{msg}, false)
-			}
-
-			return utils.CompleteAndBroadcastTxCli(txBldr, cliCtx, []csdkTypes.Msg{msg})
+			return utils.GenerateOrBroadcastMsgs(cliCtx, txBldr, []csdkTypes.Msg{msg}, false)
 		},
 	}
 
@@ -85,17 +77,10 @@ func UpdateNodeStatusTxCmd(cdc *codec.Codec) *cobra.Command {
 			nodeID := vpn.NewNodeID(viper.GetString(flagNodeID))
 			status := strings.ToUpper(args[0])
 
-			fromAddress, err := cliCtx.GetFromAddress()
-			if err != nil {
-				return err
-			}
+			fromAddress := cliCtx.GetFromAddress()
 
 			msg := vpn.NewMsgUpdateNodeStatus(fromAddress, nodeID, status)
-			if cliCtx.GenerateOnly {
-				return utils.PrintUnsignedStdTx(os.Stdout, txBldr, cliCtx, []csdkTypes.Msg{msg}, false)
-			}
-
-			return utils.CompleteAndBroadcastTxCli(txBldr, cliCtx, []csdkTypes.Msg{msg})
+			return utils.GenerateOrBroadcastMsgs(cliCtx, txBldr, []csdkTypes.Msg{msg}, false)
 		},
 	}
 

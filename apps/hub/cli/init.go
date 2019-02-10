@@ -11,17 +11,19 @@ import (
 	"github.com/cosmos/cosmos-sdk/server"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	cfg "github.com/tendermint/tendermint/config"
+	tmConfig "github.com/tendermint/tendermint/config"
 	"github.com/tendermint/tendermint/libs/cli"
 	"github.com/tendermint/tendermint/libs/common"
 
-	"github.com/ironman0x7b2/sentinel-sdk/apps/hub"
+	app "github.com/ironman0x7b2/sentinel-sdk/apps/hub"
 )
 
 const (
-	flagOverwrite  = "overwrite"
-	flagClientHome = "home-client"
-	flagMoniker    = "moniker"
+	flagOverwrite    = "overwrite"
+	flagClientHome   = "home-client"
+	flagVestingStart = "vesting-start-time"
+	flagVestingEnd   = "vesting-end-time"
+	flagVestingAmt   = "vesting-amount"
 )
 
 type printInfo struct {
@@ -43,11 +45,11 @@ func displayInfo(cdc *codec.Codec, info printInfo) error {
 
 func InitCmd(ctx *server.Context, cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "init",
+		Use:   "init [moniker]",
 		Short: "Initialize private validator, p2p, genesis, and application configuration files",
 		Long:  `Initialize validators's and node's configuration files.`,
-		Args:  cobra.NoArgs,
-		RunE: func(_ *cobra.Command, _ []string) error {
+		Args:  cobra.ExactArgs(1),
+		RunE: func(_ *cobra.Command, args []string) error {
 			config := ctx.Config
 			config.SetRoot(viper.GetString(cli.HomeFlag))
 
@@ -61,7 +63,7 @@ func InitCmd(ctx *server.Context, cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			config.Moniker = viper.GetString(flagMoniker)
+			config.Moniker = args[0]
 
 			var appState json.RawMessage
 			genFile := config.GenesisFile()
@@ -76,17 +78,15 @@ func InitCmd(ctx *server.Context, cdc *codec.Codec) *cobra.Command {
 			}
 
 			toPrint := newPrintInfo(config.Moniker, chainID, nodeID, "", appState)
-			cfg.WriteConfigFile(filepath.Join(config.RootDir, "config", "config.toml"), config)
+			tmConfig.WriteConfigFile(filepath.Join(config.RootDir, "config", "config.toml"), config)
 
 			return displayInfo(cdc, toPrint)
 		},
 	}
 
-	cmd.Flags().String(cli.HomeFlag, hub.DefaultNodeHome, "node's home directory")
+	cmd.Flags().String(cli.HomeFlag, app.DefaultNodeHome, "node's home directory")
 	cmd.Flags().BoolP(flagOverwrite, "o", false, "overwrite the genesis.json file")
 	cmd.Flags().String(client.FlagChainID, "", "genesis file chain-id, if left blank will be randomly created")
-	cmd.Flags().String(flagMoniker, "", "set the validator's moniker")
-	_ = cmd.MarkFlagRequired(flagMoniker)
 
 	return cmd
 }

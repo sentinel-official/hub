@@ -1,8 +1,6 @@
 package cli
 
 import (
-	"os"
-
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/client/utils"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -27,18 +25,10 @@ func DeregisterNodeTxCmd(cdc *codec.Codec) *cobra.Command {
 			}
 
 			nodeID := vpn.NewNodeID(viper.GetString(flagNodeID))
-
-			fromAddress, err := cliCtx.GetFromAddress()
-			if err != nil {
-				return err
-			}
+			fromAddress := cliCtx.GetFromAddress()
 
 			msg := vpn.NewMsgDeregisterNode(fromAddress, nodeID)
-			if cliCtx.GenerateOnly {
-				return utils.PrintUnsignedStdTx(os.Stdout, txBldr, cliCtx, []csdkTypes.Msg{msg}, false)
-			}
-
-			return utils.CompleteAndBroadcastTxCli(txBldr, cliCtx, []csdkTypes.Msg{msg})
+			return utils.GenerateOrBroadcastMsgs(cliCtx, txBldr, []csdkTypes.Msg{msg}, false)
 		},
 	}
 

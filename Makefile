@@ -12,15 +12,15 @@ BUILD_FLAGS = -tags "${BUILD_TAGS}" -ldflags \
 all: get_tools get_vendor_deps install test
 
 build:
-	go build $(BUILD_FLAGS) -o bin/hub-cli cmd/hub-cli/main.go
+	go build $(BUILD_FLAGS) -o bin/hubcli cmd/hubcli/main.go
 	go build $(BUILD_FLAGS) -o bin/hubd cmd/hubd/main.go
-	go build $(BUILD_FLAGS) -o bin/vpn-cli cmd/vpn-cli/main.go
+	go build $(BUILD_FLAGS) -o bin/vpncli cmd/vpncli/main.go
 	go build $(BUILD_FLAGS) -o bin/vpnd cmd/vpnd/main.go
 
 install:
-	go install $(BUILD_FLAGS) ./cmd/hub-cli
+	go install $(BUILD_FLAGS) ./cmd/hubcli
 	go install $(BUILD_FLAGS) ./cmd/hubd
-	go install $(BUILD_FLAGS) ./cmd/vpn-cli
+	go install $(BUILD_FLAGS) ./cmd/vpncli
 	go install $(BUILD_FLAGS) ./cmd/vpnd
 
 get_tools:

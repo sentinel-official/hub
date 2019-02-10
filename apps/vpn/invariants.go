@@ -36,5 +36,5 @@ func (app *VPN) assertRuntimeInvariantsOnContext(ctx csdkTypes.Context) {
 	}
 	end := time.Now()
 	diff := end.Sub(start)
-	app.BaseApp.Logger.With("module", "invariants").Info("Asserted all invariants", "duration", diff)
+	app.BaseApp.Logger().With("module", "invariants").Info("Asserted all invariants", "duration", diff)
 }

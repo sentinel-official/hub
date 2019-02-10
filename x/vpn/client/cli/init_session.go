@@ -1,8 +1,6 @@
 package cli
 
 import (
-	"os"
-
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/client/utils"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -34,17 +32,10 @@ func InitSessionTxCmd(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			fromAddress, err := cliCtx.GetFromAddress()
-			if err != nil {
-				return err
-			}
+			fromAddress := cliCtx.GetFromAddress()
 
 			msg := vpn.NewMsgInitSession(fromAddress, nodeID, parsedAmountToLock)
-			if cliCtx.GenerateOnly {
-				return utils.PrintUnsignedStdTx(os.Stdout, txBldr, cliCtx, []csdkTypes.Msg{msg}, false)
-			}
-
-			return utils.CompleteAndBroadcastTxCli(txBldr, cliCtx, []csdkTypes.Msg{msg})
+			return utils.GenerateOrBroadcastMsgs(cliCtx, txBldr, []csdkTypes.Msg{msg}, false)
 		},
 	}
 

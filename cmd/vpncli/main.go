@@ -18,6 +18,7 @@ import (
 	bankRest "github.com/cosmos/cosmos-sdk/x/bank/client/rest"
 	"github.com/cosmos/cosmos-sdk/x/distribution"
 	distClient "github.com/cosmos/cosmos-sdk/x/distribution/client"
+	distRest "github.com/cosmos/cosmos-sdk/x/distribution/client/rest"
 	"github.com/cosmos/cosmos-sdk/x/gov"
 	govClient "github.com/cosmos/cosmos-sdk/x/gov/client"
 	govRest "github.com/cosmos/cosmos-sdk/x/gov/client/rest"
@@ -34,13 +35,15 @@ import (
 	"github.com/tendermint/go-amino"
 	"github.com/tendermint/tendermint/libs/cli"
 
-	app "github.com/ironman0x7b2/sentinel-sdk/apps/hub"
+	app "github.com/ironman0x7b2/sentinel-sdk/apps/vpn"
 	"github.com/ironman0x7b2/sentinel-sdk/version"
+	"github.com/ironman0x7b2/sentinel-sdk/x/vpn"
+	vpnClient "github.com/ironman0x7b2/sentinel-sdk/x/vpn/client"
+	vpnRest "github.com/ironman0x7b2/sentinel-sdk/x/vpn/client/rest"
 )
 
 func main() {
 	cdc := app.MakeCodec()
-	cobra.EnableCommandSorting = false
 
 	config := csdkTypes.GetConfig()
 	config.SetBech32PrefixForAccount(csdkTypes.Bech32PrefixAccAddr, csdkTypes.Bech32PrefixAccPub)
@@ -53,11 +56,13 @@ func main() {
 		distClient.NewModuleClient(distribution.StoreKey, cdc),
 		stakingClient.NewModuleClient(staking.StoreKey, cdc),
 		slashingClient.NewModuleClient(slashing.StoreKey, cdc),
+		vpnClient.NewModuleClient(vpn.StoreKeyNode, vpn.StoreKeySession, cdc),
 	}
 
+	cobra.EnableCommandSorting = false
 	rootCmd := &cobra.Command{
-		Use:   "hub-cli",
-		Short: "Hub light-client",
+		Use:   "vpncli",
+		Short: "VPN light-client",
 	}
 
 	rootCmd.PersistentFlags().String(client.FlagChainID, "", "Chain ID of tendermint node")
@@ -67,7 +72,7 @@ func main() {
 
 	rootCmd.AddCommand(
 		rpc.StatusCommand(),
-		client.ConfigCmd(),
+		client.ConfigCmd(app.DefaultCLIHome),
 		queryCmd(cdc, mc),
 		txCmd(cdc, mc),
 		client.LineBreak,
@@ -79,7 +84,7 @@ func main() {
 		client.NewCompletionCmd(rootCmd, true),
 	)
 
-	executor := cli.PrepareMainCmd(rootCmd, "HUB", app.DefaultCLIHome)
+	executor := cli.PrepareMainCmd(rootCmd, "VPN", app.DefaultCLIHome)
 	if err := executor.Execute(); err != nil {
 		panic(err)
 	}
@@ -93,7 +98,7 @@ func queryCmd(cdc *amino.Codec, mc []csdkTypes.ModuleClients) *cobra.Command {
 	}
 
 	queryCmd.AddCommand(
-		rpc.ValidatorCommand(),
+		rpc.ValidatorCommand(cdc),
 		rpc.BlockCommand(),
 		tx.SearchTxCmd(cdc),
 		tx.QueryTxCmd(cdc),
@@ -119,7 +124,8 @@ func txCmd(cdc *amino.Codec, mc []csdkTypes.ModuleClients) *cobra.Command {
 		client.LineBreak,
 		authCli.GetSignCommand(cdc),
 		authCli.GetMultiSignCommand(cdc),
-		bankCli.GetBroadcastCommand(cdc),
+		authCli.GetBroadcastCommand(cdc),
+		authCli.GetEncodeCommand(cdc),
 		ibcCli.IBCTransferCmd(cdc),
 		ibcCli.IBCRelayCmd(cdc),
 		client.LineBreak,
@@ -141,7 +147,9 @@ func registerRoutes(rs *lcd.RestServer) {
 	bankRest.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, rs.KeyBase)
 	stakingRest.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, rs.KeyBase)
 	slashingRest.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, rs.KeyBase)
+	distRest.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, distribution.StoreKey)
 	govRest.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc)
+	vpnRest.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, rs.KeyBase)
 }
 
 func registerSwaggerUI(rs *lcd.RestServer) {

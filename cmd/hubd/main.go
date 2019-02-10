@@ -49,8 +49,7 @@ func main() {
 	sdkServer.AddCommands(ctx, cdc, rootCmd, newApp, exportAppStateAndTMValidators)
 
 	executor := cli.PrepareBaseCmd(rootCmd, "SH", app.DefaultNodeHome)
-	err := executor.Execute()
-	if err != nil {
+	if err := executor.Execute(); err != nil {
 		panic(err)
 	}
 }
@@ -58,21 +57,22 @@ func main() {
 func newApp(logger log.Logger, db tmDB.DB, traceStore io.Writer) abciTypes.Application {
 	return app.NewHub(
 		logger, db, traceStore, true,
-		baseapp.SetPruning(store.NewPruningOptions(viper.GetString("pruning"))),
+		baseapp.SetPruning(store.NewPruningOptionsFromString(viper.GetString("pruning"))),
 		baseapp.SetMinGasPrices(viper.GetString(csdkServer.FlagMinGasPrices)),
 	)
 }
 
 func exportAppStateAndTMValidators(logger log.Logger, db tmDB.DB, traceStore io.Writer, height int64,
-	forZeroHeight bool) (json.RawMessage, []tmTypes.GenesisValidator, error) {
+	forZeroHeight bool, jailWhiteList []string) (json.RawMessage, []tmTypes.GenesisValidator, error) {
+
 	if height != -1 {
 		hub := app.NewHub(logger, db, traceStore, false)
 		err := hub.LoadHeight(height)
 		if err != nil {
 			return nil, nil, err
 		}
-		return hub.ExportAppStateAndValidators(forZeroHeight)
+		return hub.ExportAppStateAndValidators(forZeroHeight, jailWhiteList)
 	}
 	hub := app.NewHub(logger, db, traceStore, true)
-	return hub.ExportAppStateAndValidators(forZeroHeight)
+	return hub.ExportAppStateAndValidators(forZeroHeight, jailWhiteList)
 }

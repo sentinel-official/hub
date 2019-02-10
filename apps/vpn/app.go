@@ -28,7 +28,7 @@ import (
 
 const (
 	appName        = "Sentinel VPN"
-	DefaultKeyPass = "0123456789"
+	DefaultKeyPass = "1234567890"
 )
 
 var (
@@ -106,7 +106,9 @@ func NewVPN(logger log.Logger, db tmDB.DB, traceStore io.Writer, loadLatest bool
 		app.keyAccount,
 		app.paramsKeeper.Subspace(auth.DefaultParamspace),
 		auth.ProtoBaseAccount)
-	app.bankKeeper = bank.NewBaseKeeper(app.accountKeeper)
+	app.bankKeeper = bank.NewBaseKeeper(app.accountKeeper,
+		app.paramsKeeper.Subspace(bank.DefaultParamspace),
+		bank.DefaultCodespace)
 	app.feeCollectionKeeper = auth.NewFeeCollectionKeeper(app.cdc,
 		app.keyFeeCollection)
 	stakingKeeper := staking.NewKeeper(app.cdc,
@@ -162,16 +164,15 @@ func NewVPN(logger log.Logger, db tmDB.DB, traceStore io.Writer, loadLatest bool
 		app.keyAccount, app.keyFeeCollection,
 		app.keyStaking, app.keySlashing,
 		app.keyDistribution, app.keyGov, app.keyMint,
-		app.keyIBC, app.keyVPNNode, app.keyVPNSession)
+		app.keyIBC, app.keyVPNNode, app.keyVPNSession,
+		app.tkeyParams, app.tkeyStaking, app.tkeyDistribution)
 	app.SetInitChainer(app.initChainer)
 	app.SetBeginBlocker(app.BeginBlocker)
 	app.SetAnteHandler(auth.NewAnteHandler(app.accountKeeper, app.feeCollectionKeeper))
-	app.MountStoresTransient(app.tkeyParams, app.tkeyStaking, app.tkeyDistribution)
 	app.SetEndBlocker(app.EndBlocker)
 
 	if loadLatest {
-		err := app.LoadLatestVersion(app.keyMain)
-		if err != nil {
+		if err := app.LoadLatestVersion(app.keyMain); err != nil {
 			common.Exit(err.Error())
 		}
 	}
@@ -220,9 +221,7 @@ func (app *VPN) EndBlocker(ctx csdkTypes.Context, req abciTypes.RequestEndBlock)
 }
 
 func (app *VPN) initFromGenesisState(ctx csdkTypes.Context, genesisState GenesisState) []abciTypes.ValidatorUpdate {
-	sort.Slice(genesisState.Accounts, func(i, j int) bool {
-		return genesisState.Accounts[i].AccountNumber < genesisState.Accounts[j].AccountNumber
-	})
+	genesisState.Sanitize()
 
 	for _, gacc := range genesisState.Accounts {
 		acc := gacc.ToAccount()
@@ -238,20 +237,19 @@ func (app *VPN) initFromGenesisState(ctx csdkTypes.Context, genesisState Genesis
 	}
 
 	auth.InitGenesis(ctx, app.accountKeeper, app.feeCollectionKeeper, genesisState.AuthData)
+	bank.InitGenesis(ctx, app.bankKeeper, genesisState.BankData)
 	slashing.InitGenesis(ctx, app.slashingKeeper, genesisState.SlashingData, genesisState.StakingData)
 	gov.InitGenesis(ctx, app.govKeeper, genesisState.GovData)
 	mint.InitGenesis(ctx, app.mintKeeper, genesisState.MintData)
 
-	err = VPNValidateGenesisState(genesisState)
-	if err != nil {
+	if err = VPNValidateGenesisState(genesisState); err != nil {
 		panic(err)
 	}
 
 	if len(genesisState.GenTxs) > 0 {
 		for _, genTx := range genesisState.GenTxs {
 			var tx auth.StdTx
-			err = app.cdc.UnmarshalJSON(genTx, &tx)
-			if err != nil {
+			if err = app.cdc.UnmarshalJSON(genTx, &tx); err != nil {
 				panic(err)
 			}
 			bz := app.cdc.MustMarshalBinaryLengthPrefixed(tx)
@@ -271,8 +269,7 @@ func (app *VPN) initChainer(ctx csdkTypes.Context, req abciTypes.RequestInitChai
 	stateJSON := req.AppStateBytes
 
 	var genesisState GenesisState
-	err := app.cdc.UnmarshalJSON(stateJSON, &genesisState)
-	if err != nil {
+	if err := app.cdc.UnmarshalJSON(stateJSON, &genesisState); err != nil {
 		panic(err)
 	}
 
@@ -332,11 +329,6 @@ func (h StakingHooks) AfterValidatorBonded(ctx csdkTypes.Context, consAddr csdkT
 	h.sh.AfterValidatorBonded(ctx, consAddr, valAddr)
 }
 
-func (h StakingHooks) AfterValidatorPowerDidChange(ctx csdkTypes.Context, consAddr csdkTypes.ConsAddress, valAddr csdkTypes.ValAddress) {
-	h.dh.AfterValidatorPowerDidChange(ctx, consAddr, valAddr)
-	h.sh.AfterValidatorPowerDidChange(ctx, consAddr, valAddr)
-}
-
 func (h StakingHooks) AfterValidatorBeginUnbonding(ctx csdkTypes.Context, consAddr csdkTypes.ConsAddress, valAddr csdkTypes.ValAddress) {
 	h.dh.AfterValidatorBeginUnbonding(ctx, consAddr, valAddr)
 	h.sh.AfterValidatorBeginUnbonding(ctx, consAddr, valAddr)
@@ -346,6 +338,7 @@ func (h StakingHooks) BeforeDelegationCreated(ctx csdkTypes.Context, delAddr csd
 	h.dh.BeforeDelegationCreated(ctx, delAddr, valAddr)
 	h.sh.BeforeDelegationCreated(ctx, delAddr, valAddr)
 }
+
 func (h StakingHooks) BeforeDelegationSharesModified(ctx csdkTypes.Context, delAddr csdkTypes.AccAddress, valAddr csdkTypes.ValAddress) {
 	h.dh.BeforeDelegationSharesModified(ctx, delAddr, valAddr)
 	h.sh.BeforeDelegationSharesModified(ctx, delAddr, valAddr)

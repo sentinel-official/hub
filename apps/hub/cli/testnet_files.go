@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 
 	"github.com/cosmos/cosmos-sdk/client"
+	"github.com/cosmos/cosmos-sdk/client/keys"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/server"
 	serverConfig "github.com/cosmos/cosmos-sdk/server/config"
@@ -23,7 +24,7 @@ import (
 	"github.com/tendermint/tendermint/types"
 	tmTime "github.com/tendermint/tendermint/types/time"
 
-	"github.com/ironman0x7b2/sentinel-sdk/apps/hub"
+	app "github.com/ironman0x7b2/sentinel-sdk/apps/hub"
 )
 
 var (
@@ -104,7 +105,7 @@ func initTestnet(config *tmConfig.Config, cdc *codec.Codec) error {
 	hubConfig.MinGasPrices = viper.GetString(server.FlagMinGasPrices)
 
 	var (
-		accs     []hub.GenesisAccount
+		accs     []app.GenesisAccount
 		genFiles []string
 	)
 
@@ -150,7 +151,7 @@ func initTestnet(config *tmConfig.Config, cdc *codec.Codec) error {
 
 		buf := client.BufferStdin()
 		prompt := fmt.Sprintf(
-			"Password for account '%s' (default %s):", nodeDirName, hub.DefaultKeyPass,
+			"Password for account '%s' (default %s):", nodeDirName, app.DefaultKeyPass,
 		)
 
 		keyPass, err := client.GetPassword(prompt, buf)
@@ -159,7 +160,7 @@ func initTestnet(config *tmConfig.Config, cdc *codec.Codec) error {
 		}
 
 		if keyPass == "" {
-			keyPass = hub.DefaultKeyPass
+			keyPass = app.DefaultKeyPass
 		}
 
 		addr, secret, err := server.GenerateSaveCoinKey(clientDir, nodeDirName, keyPass, true)
@@ -180,25 +181,33 @@ func initTestnet(config *tmConfig.Config, cdc *codec.Codec) error {
 			return err
 		}
 
-		accs = append(accs, hub.GenesisAccount{
+		accTokens := staking.TokensFromTendermintPower(1000)
+		accStakingTokens := staking.TokensFromTendermintPower(500)
+		accs = append(accs, app.GenesisAccount{
 			Address: addr,
 			Coins: csdkTypes.Coins{
-				csdkTypes.NewInt64Coin(fmt.Sprintf("%stoken", nodeDirName), 1000),
-				csdkTypes.NewInt64Coin("sent", 500),
+				csdkTypes.NewCoin(fmt.Sprintf("%stoken", nodeDirName), accTokens),
+				csdkTypes.NewCoin("sent", accStakingTokens),
 			},
 		})
 
+		valTokens := staking.TokensFromTendermintPower(100)
 		msg := staking.NewMsgCreateValidator(
 			csdkTypes.ValAddress(addr),
 			valPubKeys[i],
-			csdkTypes.NewInt64Coin("sent", 100),
+			csdkTypes.NewCoin("sent", valTokens),
 			staking.NewDescription(nodeDirName, "", "", ""),
 			staking.NewCommissionMsg(csdkTypes.ZeroDec(), csdkTypes.ZeroDec(), csdkTypes.ZeroDec()),
+			csdkTypes.OneInt(),
 		)
+		kb, err := keys.NewKeyBaseFromDir(clientDir)
+		if err != nil {
+			return err
+		}
 		tx := auth.NewStdTx([]csdkTypes.Msg{msg}, auth.StdFee{}, []auth.StdSignature{}, memo)
-		txBldr := authTxBuilder.NewTxBuilderFromCLI().WithChainID(chainID).WithMemo(memo)
+		txBldr := authTxBuilder.NewTxBuilderFromCLI().WithChainID(chainID).WithMemo(memo).WithKeybase(kb)
 
-		signedTx, err := txBldr.SignStdTx(nodeDirName, hub.DefaultKeyPass, tx, false)
+		signedTx, err := txBldr.SignStdTx(nodeDirName, app.DefaultKeyPass, tx, false)
 		if err != nil {
 			_ = os.RemoveAll(outDir)
 			return err
@@ -236,11 +245,10 @@ func initTestnet(config *tmConfig.Config, cdc *codec.Codec) error {
 	return nil
 }
 
-func initGenFiles(
-	cdc *codec.Codec, chainID string, accs []hub.GenesisAccount,
+func initGenFiles(cdc *codec.Codec, chainID string, accs []app.GenesisAccount,
 	genFiles []string, numValidators int) error {
 
-	appGenState := hub.NewDefaultGenesisState()
+	appGenState := app.NewDefaultGenesisState()
 	appGenState.Accounts = accs
 
 	appGenStateJSON, err := codec.MarshalJSONIndent(cdc, appGenState)
@@ -263,8 +271,7 @@ func initGenFiles(
 	return nil
 }
 
-func collectGenFiles(
-	cdc *codec.Codec, config *tmConfig.Config, chainID string,
+func collectGenFiles(cdc *codec.Codec, config *tmConfig.Config, chainID string,
 	monikers, nodeIDs []string, valPubKeys []crypto.PubKey,
 	numValidators int, outDir, nodeDirPrefix, nodeDaemonHomeName string) error {
 

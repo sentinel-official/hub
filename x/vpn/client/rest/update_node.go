@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"github.com/cosmos/cosmos-sdk/client/context"
-	"github.com/cosmos/cosmos-sdk/client/utils"
+	"github.com/cosmos/cosmos-sdk/client/rest"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/crypto/keys"
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
@@ -16,7 +16,7 @@ import (
 )
 
 type msgUpdateNodeDetails struct {
-	BaseReq     utils.BaseReq      `json:"base_req"`
+	BaseReq     rest.BaseReq       `json:"base_req"`
 	APIPort     uint32             `json:"api_port"`
 	NetSpeed    sdkTypes.Bandwidth `json:"net_speed"`
 	EncMethod   string             `json:"enc_method"`
@@ -28,27 +28,26 @@ func updateNodeDetailsHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec, k
 	return func(w http.ResponseWriter, r *http.Request) {
 		var req msgUpdateNodeDetails
 
-		if err := utils.ReadRESTReq(w, r, cdc, &req); err != nil {
-			utils.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+		if !rest.ReadRESTReq(w, r, cdc, &req) {
 			return
 		}
 
-		baseReq := req.BaseReq.Sanitize()
-		if !baseReq.ValidateBasic(w) {
+		req.BaseReq = req.BaseReq.Sanitize()
+		if !req.BaseReq.ValidateBasic(w) {
 			return
 		}
 
 		cliCtx.WithGenerateOnly(req.BaseReq.GenerateOnly).WithSimulation(req.BaseReq.Simulate)
 
-		info, err := kb.Get(req.BaseReq.Name)
+		info, err := kb.Get(req.BaseReq.From)
 		if err != nil {
-			utils.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
 		}
 
 		pricesPerGB, err := csdkTypes.ParseCoins(req.PricesPerGB)
 		if err != nil {
-			utils.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
 		}
 
@@ -60,38 +59,37 @@ func updateNodeDetailsHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec, k
 			pricesPerGB, req.NetSpeed.Upload, req.NetSpeed.Download,
 			apiPort, req.EncMethod, req.Version)
 		if err := msg.ValidateBasic(); err != nil {
-			utils.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
 		}
 
-		utils.CompleteAndBroadcastTxREST(w, r, cliCtx, baseReq, []csdkTypes.Msg{msg}, cdc)
+		rest.CompleteAndBroadcastTxREST(w, r, cliCtx, req.BaseReq, []csdkTypes.Msg{msg}, cdc)
 	}
 }
 
 type msgUpdateNodeStatus struct {
-	BaseReq utils.BaseReq `json:"base_req"`
-	Status  string        `json:"status"`
+	BaseReq rest.BaseReq `json:"base_req"`
+	Status  string       `json:"status"`
 }
 
 func updateNodeStatusHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec, kb keys.Keybase) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var req msgUpdateNodeStatus
 
-		if err := utils.ReadRESTReq(w, r, cdc, &req); err != nil {
-			utils.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+		if !rest.ReadRESTReq(w, r, cdc, &req) {
 			return
 		}
 
-		baseReq := req.BaseReq.Sanitize()
-		if !baseReq.ValidateBasic(w) {
+		req.BaseReq = req.BaseReq.Sanitize()
+		if !req.BaseReq.ValidateBasic(w) {
 			return
 		}
 
 		cliCtx.WithGenerateOnly(req.BaseReq.GenerateOnly).WithSimulation(req.BaseReq.Simulate)
 
-		info, err := kb.Get(req.BaseReq.Name)
+		info, err := kb.Get(req.BaseReq.From)
 		if err != nil {
-			utils.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
 		}
 
@@ -101,10 +99,10 @@ func updateNodeStatusHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec, kb
 
 		msg := vpn.NewMsgUpdateNodeStatus(info.GetAddress(), id, status)
 		if err := msg.ValidateBasic(); err != nil {
-			utils.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
 		}
 
-		utils.CompleteAndBroadcastTxREST(w, r, cliCtx, baseReq, []csdkTypes.Msg{msg}, cdc)
+		rest.CompleteAndBroadcastTxREST(w, r, cliCtx, req.BaseReq, []csdkTypes.Msg{msg}, cdc)
 	}
 }
