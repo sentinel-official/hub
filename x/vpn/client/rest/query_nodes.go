@@ -18,7 +18,7 @@ func getNodeHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) http.Handle
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 
-		res, err := common.QueryNode(cliCtx, cdc, vars["nodeID"])
+		res, err := common.QueryNode(cliCtx, cdc, vpn.NewNodeID(vars["nodeID"]))
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return

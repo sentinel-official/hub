@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/cosmos/cosmos-sdk/client/context"
-	ckeys "github.com/cosmos/cosmos-sdk/client/keys"
+	clientKeys "github.com/cosmos/cosmos-sdk/client/keys"
 	"github.com/cosmos/cosmos-sdk/client/rest"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/crypto/keys"
@@ -29,7 +29,7 @@ func signSessionBandwidthHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec
 			return
 		}
 
-		keybase, err := ckeys.NewKeyBaseFromHomeFlag()
+		keybase, err := clientKeys.NewKeyBaseFromHomeFlag()
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
@@ -75,7 +75,7 @@ func updateSessionBandwidthHandlerFunc(cliCtx context.CLIContext, cdc *codec.Cod
 
 		cliCtx.WithGenerateOnly(req.BaseReq.GenerateOnly).WithSimulation(req.BaseReq.Simulate)
 
-		keybase, err := ckeys.NewKeyBaseFromHomeFlag()
+		keybase, err := clientKeys.NewKeyBaseFromHomeFlag()
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return

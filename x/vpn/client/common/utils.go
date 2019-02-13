@@ -15,7 +15,7 @@ func GetSessionBandwidthSignBytes(cliCtx context.CLIContext, cdc *codec.Codec,
 		return nil, err
 	}
 
-	node, err := QueryNode(cliCtx, cdc, session.NodeID.String())
+	node, err := QueryNode(cliCtx, cdc, session.NodeID)
 	if err != nil {
 		return nil, err
 	}

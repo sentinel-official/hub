@@ -10,18 +10,23 @@ import (
 	"github.com/ironman0x7b2/sentinel-sdk/x/vpn"
 )
 
-func QueryNode(cliCtx context.CLIContext, cdc *codec.Codec, id string) (*vpn.NodeDetails, error) {
-	nodeKey := vpn.NodeKey(vpn.NewNodeID(id))
-	res, err := cliCtx.QueryStore(nodeKey, vpn.StoreKeyNode)
+func QueryNode(cliCtx context.CLIContext, cdc *codec.Codec, id vpn.NodeID) (*vpn.NodeDetails, error) {
+	params := vpn.NewQueryNodeParams(id)
+	paramBytes, err := cdc.MarshalJSON(params)
 	if err != nil {
 		return nil, err
 	}
-	if len(res) == 0 {
+
+	res, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s", vpn.QuerierRoute, vpn.QueryNode), paramBytes)
+	if err != nil {
+		return nil, err
+	}
+	if res == nil {
 		return nil, fmt.Errorf("no node found")
 	}
 
 	var details vpn.NodeDetails
-	if err := cdc.UnmarshalBinaryLengthPrefixed(res, &details); err != nil {
+	if err := cdc.UnmarshalJSON(res, &details); err != nil {
 		return nil, err
 	}
 
