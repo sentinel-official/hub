@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/cosmos/cosmos-sdk/client/context"
+	ckeys "github.com/cosmos/cosmos-sdk/client/keys"
 	"github.com/cosmos/cosmos-sdk/client/rest"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/crypto/keys"
@@ -32,7 +33,13 @@ func deregisterNodeHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec, kb k
 
 		cliCtx.WithGenerateOnly(req.BaseReq.GenerateOnly).WithSimulation(req.BaseReq.Simulate)
 
-		info, err := kb.Get(req.BaseReq.From)
+		keybase, err := ckeys.NewKeyBaseFromHomeFlag()
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		info, err := keybase.Get(req.BaseReq.From)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
