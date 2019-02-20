@@ -6,7 +6,7 @@ import (
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
 	"github.com/tendermint/tendermint/crypto/ed25519"
 
-	"github.com/ironman0x7b2/sentinel-sdk/types"
+	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
 )
 
 var (
@@ -41,9 +41,9 @@ var (
 	TestDownloadZero = csdkTypes.NewInt(0)
 	TestDownloadPos  = csdkTypes.NewInt(1000000000)
 
-	TestBandwidthNeg  = types.NewBandwidth(TestUploadNeg, TestDownloadNeg)
-	TestBandwidthZero = types.NewBandwidth(TestUploadZero, TestDownloadZero)
-	TestBandwidthPos  = types.NewBandwidth(TestUploadPos, TestDownloadPos)
+	TestBandwidthNeg  = sdkTypes.NewBandwidth(TestUploadNeg, TestDownloadNeg)
+	TestBandwidthZero = sdkTypes.NewBandwidth(TestUploadZero, TestDownloadZero)
+	TestBandwidthPos  = sdkTypes.NewBandwidth(TestUploadPos, TestDownloadPos)
 
 	TestAPIPortValid   = NewAPIPort(8000)
 	TestAPIPortInvalid = NewAPIPort(0)
@@ -52,15 +52,15 @@ var (
 	TestNodeType  = "node_type"
 	TestVersion   = "version"
 
-	TestNodeIDValid   = NewNodeID(fmt.Sprintf("%s/%d", TestAddress1.String(), 0))
-	TestNodeIDInvalid = NewNodeID("invalid")
-	TestNodeIDEmpty   = NewNodeID("")
+	TestNodeIDValid   = sdkTypes.NewID(fmt.Sprintf("%s/%d", TestAddress1.String(), 0))
+	TestNodeIDInvalid = sdkTypes.NewID("invalid")
+	TestNodeIDEmpty   = sdkTypes.NewID("")
 
 	TestStatusInvalid = "invalid"
 
-	TestSessionIDValid   = NewSessionID(fmt.Sprintf("%s/%d", TestAddress2.String(), 0))
-	TestSessionIDInvalid = NewSessionID("invalid")
-	TestSessionIDEmpty   = NewSessionID("")
+	TestSessionIDValid   = sdkTypes.NewID(fmt.Sprintf("%s/%d", TestAddress2.String(), 0))
+	TestSessionIDInvalid = sdkTypes.NewID("invalid")
+	TestSessionIDEmpty   = sdkTypes.NewID("")
 
 	TestClientSign    = []byte("client_sign")
 	TestNodeOwnerSign = []byte("node_owner_sign")

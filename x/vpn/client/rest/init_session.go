@@ -4,13 +4,13 @@ import (
 	"net/http"
 
 	"github.com/cosmos/cosmos-sdk/client/context"
-	clientKeys "github.com/cosmos/cosmos-sdk/client/keys"
 	clientRest "github.com/cosmos/cosmos-sdk/client/rest"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/crypto/keys"
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/rest"
 
+	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
 	"github.com/ironman0x7b2/sentinel-sdk/x/vpn"
 )
 
@@ -35,19 +35,13 @@ func initSessionHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec, kb keys
 
 		cliCtx.WithGenerateOnly(req.BaseReq.GenerateOnly).WithSimulation(req.BaseReq.Simulate)
 
-		keybase, err := clientKeys.NewKeyBaseFromHomeFlag()
+		info, err := kb.Get(req.BaseReq.From)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
 		}
 
-		info, err := keybase.Get(req.BaseReq.From)
-		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
-			return
-		}
-
-		nodeID := vpn.NewNodeID(req.NodeID)
+		nodeID := sdkTypes.NewID(req.NodeID)
 
 		amountToLock, err := csdkTypes.ParseCoin(req.AmountToLock)
 		if err != nil {

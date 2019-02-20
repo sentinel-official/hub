@@ -3,6 +3,7 @@ package keeper
 import (
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
 
+	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
 	"github.com/ironman0x7b2/sentinel-sdk/x/vpn/types"
 )
 
@@ -19,7 +20,7 @@ func (k Keeper) SetNodeDetails(ctx csdkTypes.Context, details *types.NodeDetails
 	return nil
 }
 
-func (k Keeper) GetNodeDetails(ctx csdkTypes.Context, id types.NodeID) (*types.NodeDetails, csdkTypes.Error) {
+func (k Keeper) GetNodeDetails(ctx csdkTypes.Context, id sdkTypes.ID) (*types.NodeDetails, csdkTypes.Error) {
 	key := types.NodeKey(id)
 	store := ctx.KVStore(k.NodeStoreKey)
 	value := store.Get(key)
@@ -35,7 +36,7 @@ func (k Keeper) GetNodeDetails(ctx csdkTypes.Context, id types.NodeID) (*types.N
 	return &details, nil
 }
 
-func (k Keeper) SetActiveNodeIDsAtHeight(ctx csdkTypes.Context, height int64, ids types.NodeIDs) csdkTypes.Error {
+func (k Keeper) SetActiveNodeIDsAtHeight(ctx csdkTypes.Context, height int64, ids sdkTypes.IDs) csdkTypes.Error {
 	key := types.ActiveNodeIDsAtHeightKey(height)
 
 	ids = ids.Sort()
@@ -50,10 +51,10 @@ func (k Keeper) SetActiveNodeIDsAtHeight(ctx csdkTypes.Context, height int64, id
 	return nil
 }
 
-func (k Keeper) GetActiveNodeIDsAtHeight(ctx csdkTypes.Context, height int64) (types.NodeIDs, csdkTypes.Error) {
+func (k Keeper) GetActiveNodeIDsAtHeight(ctx csdkTypes.Context, height int64) (sdkTypes.IDs, csdkTypes.Error) {
 	key := types.ActiveNodeIDsAtHeightKey(height)
 
-	var ids types.NodeIDs
+	var ids sdkTypes.IDs
 	store := ctx.KVStore(k.NodeStoreKey)
 	value := store.Get(key)
 	if value == nil {
@@ -104,7 +105,7 @@ func (k Keeper) GetNodesOfOwner(ctx csdkTypes.Context, owner csdkTypes.AccAddres
 
 	var nodes []*types.NodeDetails
 	for index := uint64(0); index < count; index++ {
-		id := types.NodeIDFromOwnerCount(owner, index)
+		id := sdkTypes.IDFromOwnerAndCount(owner, index)
 		details, err := k.GetNodeDetails(ctx, id)
 		if err != nil {
 			return nil, err
@@ -143,7 +144,7 @@ func (k Keeper) AddNode(ctx csdkTypes.Context, details *types.NodeDetails) (csdk
 		return nil, err
 	}
 
-	details.ID = types.NodeIDFromOwnerCount(details.Owner, count)
+	details.ID = sdkTypes.IDFromOwnerAndCount(details.Owner, count)
 	if err := k.SetNodeDetails(ctx, details); err != nil {
 		return nil, err
 	}
@@ -156,7 +157,7 @@ func (k Keeper) AddNode(ctx csdkTypes.Context, details *types.NodeDetails) (csdk
 	return tags, nil
 }
 
-func (k Keeper) AddActiveNodeIDAtHeight(ctx csdkTypes.Context, height int64, id types.NodeID) csdkTypes.Error {
+func (k Keeper) AddActiveNodeIDAtHeight(ctx csdkTypes.Context, height int64, id sdkTypes.ID) csdkTypes.Error {
 	ids, err := k.GetActiveNodeIDsAtHeight(ctx, height)
 	if err != nil {
 		return err
@@ -170,7 +171,7 @@ func (k Keeper) AddActiveNodeIDAtHeight(ctx csdkTypes.Context, height int64, id 
 	return k.SetActiveNodeIDsAtHeight(ctx, height, ids)
 }
 
-func (k Keeper) RemoveActiveNodeIDAtHeight(ctx csdkTypes.Context, height int64, id types.NodeID) csdkTypes.Error {
+func (k Keeper) RemoveActiveNodeIDAtHeight(ctx csdkTypes.Context, height int64, id sdkTypes.ID) csdkTypes.Error {
 	ids, err := k.GetActiveNodeIDsAtHeight(ctx, height)
 	if err != nil {
 		return err
@@ -181,6 +182,6 @@ func (k Keeper) RemoveActiveNodeIDAtHeight(ctx csdkTypes.Context, height int64, 
 		return nil
 	}
 
-	ids = types.EmptyNodeIDs().Append(ids[:index]...).Append(ids[index+1:]...)
+	ids = sdkTypes.NewIDs().Append(ids[:index]...).Append(ids[index+1:]...)
 	return k.SetActiveNodeIDsAtHeight(ctx, height, ids)
 }

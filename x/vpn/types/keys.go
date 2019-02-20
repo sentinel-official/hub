@@ -4,6 +4,8 @@ import (
 	"fmt"
 
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
+
+	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
 )
 
 var (
@@ -18,11 +20,11 @@ var (
 	KeyActiveNodeIDs = []byte("ACTIVE_NODE_IDS")
 )
 
-func NodeKey(id NodeID) []byte {
+func NodeKey(id sdkTypes.ID) []byte {
 	return append(NodeKeyPrefix, id.Bytes()...)
 }
 
-func SessionKey(id SessionID) []byte {
+func SessionKey(id sdkTypes.ID) []byte {
 	return append(SessionKeyPrefix, id.Bytes()...)
 }
 

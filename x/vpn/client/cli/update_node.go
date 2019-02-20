@@ -11,6 +11,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
+	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
 	"github.com/ironman0x7b2/sentinel-sdk/x/vpn"
 )
 
@@ -26,7 +27,7 @@ func UpdateNodeDetailsTxCmd(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			nodeID := vpn.NewNodeID(viper.GetString(flagNodeID))
+			nodeID := sdkTypes.NewID(viper.GetString(flagNodeID))
 			pricesPerGB := viper.GetString(flagPricesPerGB)
 			uploadSpeed := csdkTypes.NewInt(viper.GetInt64(flagUploadSpeed))
 			downloadSpeed := csdkTypes.NewInt(viper.GetInt64(flagDownloadSpeed))
@@ -74,7 +75,7 @@ func UpdateNodeStatusTxCmd(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			nodeID := vpn.NewNodeID(viper.GetString(flagNodeID))
+			nodeID := sdkTypes.NewID(viper.GetString(flagNodeID))
 			status := strings.ToUpper(args[0])
 
 			fromAddress := cliCtx.GetFromAddress()

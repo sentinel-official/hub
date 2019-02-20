@@ -5,7 +5,6 @@ import (
 	"strings"
 
 	"github.com/cosmos/cosmos-sdk/client/context"
-	clientKeys "github.com/cosmos/cosmos-sdk/client/keys"
 	clientRest "github.com/cosmos/cosmos-sdk/client/rest"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/crypto/keys"
@@ -41,13 +40,7 @@ func updateNodeDetailsHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec, k
 
 		cliCtx.WithGenerateOnly(req.BaseReq.GenerateOnly).WithSimulation(req.BaseReq.Simulate)
 
-		keybase, err := clientKeys.NewKeyBaseFromHomeFlag()
-		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
-			return
-		}
-
-		info, err := keybase.Get(req.BaseReq.From)
+		info, err := kb.Get(req.BaseReq.From)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
@@ -60,7 +53,7 @@ func updateNodeDetailsHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec, k
 		}
 
 		vars := mux.Vars(r)
-		id := vpn.NewNodeID(vars["nodeID"])
+		id := sdkTypes.NewID(vars["nodeID"])
 		apiPort := vpn.NewAPIPort(req.APIPort)
 
 		msg := vpn.NewMsgUpdateNodeDetails(info.GetAddress(), id,
@@ -95,20 +88,14 @@ func updateNodeStatusHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec, kb
 
 		cliCtx.WithGenerateOnly(req.BaseReq.GenerateOnly).WithSimulation(req.BaseReq.Simulate)
 
-		keybase, err := clientKeys.NewKeyBaseFromHomeFlag()
-		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
-			return
-		}
-
-		info, err := keybase.Get(req.BaseReq.From)
+		info, err := kb.Get(req.BaseReq.From)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
 		}
 
 		vars := mux.Vars(r)
-		id := vpn.NewNodeID(vars["nodeID"])
+		id := sdkTypes.NewID(vars["nodeID"])
 		status := strings.ToUpper(req.Status)
 
 		msg := vpn.NewMsgUpdateNodeStatus(info.GetAddress(), id, status)

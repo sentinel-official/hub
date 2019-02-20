@@ -7,10 +7,11 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
 
+	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
 	"github.com/ironman0x7b2/sentinel-sdk/x/vpn"
 )
 
-func QueryNode(cliCtx context.CLIContext, cdc *codec.Codec, id vpn.NodeID) (*vpn.NodeDetails, error) {
+func QueryNode(cliCtx context.CLIContext, cdc *codec.Codec, id sdkTypes.ID) (*vpn.NodeDetails, error) {
 	params := vpn.NewQueryNodeParams(id)
 	paramBytes, err := cdc.MarshalJSON(params)
 	if err != nil {
@@ -44,7 +45,7 @@ func QueryNodesOfOwner(cliCtx context.CLIContext, cdc *codec.Codec, owner csdkTy
 }
 
 func QuerySession(cliCtx context.CLIContext, cdc *codec.Codec, id string) (*vpn.SessionDetails, error) {
-	sessionKey := vpn.SessionKey(vpn.NewSessionID(id))
+	sessionKey := vpn.SessionKey(sdkTypes.NewID(id))
 	res, err := cliCtx.QueryStore(sessionKey, vpn.StoreKeySession)
 	if err != nil {
 		return nil, err

@@ -11,6 +11,7 @@ import (
 	tmDB "github.com/tendermint/tendermint/libs/db"
 	"github.com/tendermint/tendermint/libs/log"
 
+	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
 	"github.com/ironman0x7b2/sentinel-sdk/x/vpn/types"
 )
 
@@ -41,14 +42,13 @@ func TestCreateInput() (csdkTypes.Context, *codec.Codec, Keeper, auth.AccountKee
 	accountKeeper := auth.NewAccountKeeper(cdc, keyAccount, paramsKeeper.Subspace(auth.DefaultParamspace), auth.ProtoBaseAccount)
 	bankKeeper := bank.NewBaseKeeper(accountKeeper, paramsKeeper.Subspace(bank.DefaultParamspace), bank.DefaultCodespace)
 
-	types.RegisterCodec(cdc)
-	auth.RegisterBaseAccount(cdc)
-
 	return ctx, cdc, keeper, accountKeeper, bankKeeper
 }
 
 func TestMakeCodec() *codec.Codec {
 	var cdc = codec.New()
+	types.RegisterCodec(cdc)
+	auth.RegisterBaseAccount(cdc)
 	return cdc
 }
 
@@ -56,6 +56,7 @@ var (
 	TestNodeValid = types.NodeDetails{
 		ID:              types.TestNodeIDValid,
 		Owner:           types.TestAddress1,
+		PubKey:          types.TestPubkey1,
 		LockedAmount:    types.TestCoinPos,
 		PricesPerGB:     types.TestCoinsPos,
 		NetSpeed:        types.TestBandwidthPos,
@@ -68,17 +69,20 @@ var (
 		DetailsAtHeight: 0,
 	}
 	TestNodeEmpty     = types.NodeDetails{}
-	TestNodeIDsEmpty  = types.NodeIDs(nil)
-	TestNodeIDsValid  = types.NodeIDs{types.TestNodeIDValid, types.TestNodeIDValid}
+	TestNodeIDsEmpty  = sdkTypes.IDs(nil)
+	TestNodeIDsValid  = sdkTypes.IDs{types.TestNodeIDValid, types.TestNodeIDValid}
 	TestNodesEmpty    = []*types.NodeDetails(nil)
 	TestNodeTagsValid = csdkTypes.EmptyTags().AppendTag("node_id", types.TestNodeIDValid.String())
 
 	TestSessionValid = types.SessionDetails{
-		ID:           types.TestSessionIDValid,
-		NodeID:       types.TestNodeIDValid,
-		Client:       types.TestAddress2,
-		LockedAmount: types.TestCoinPos,
-		PricePerGB:   types.TestCoinPos,
+		ID:              types.TestSessionIDValid,
+		NodeID:          types.TestNodeIDValid,
+		NodeOwner:       types.TestAddress1,
+		NodeOwnerPubKey: types.TestPubkey1,
+		Client:          types.TestAddress2,
+		ClientPubKey:    types.TestPubkey2,
+		LockedAmount:    types.TestCoinPos,
+		PricePerGB:      types.TestCoinPos,
 		Bandwidth: types.SessionBandwidth{
 			ToProvide:       types.TestBandwidthPos,
 			Consumed:        types.TestBandwidthZero,
@@ -92,8 +96,8 @@ var (
 		EndedAtHeight:   0,
 	}
 	TestSessionEmpty     = types.SessionDetails{}
-	TestSessionIDsEmpty  = types.SessionIDs(nil)
-	TestSessionIDsValid  = types.SessionIDs{types.TestSessionIDValid, types.TestSessionIDValid}
+	TestSessionIDsEmpty  = sdkTypes.IDs(nil)
+	TestSessionIDsValid  = sdkTypes.IDs{types.TestSessionIDValid, types.TestSessionIDValid}
 	TestSessionsEmpty    = []*types.SessionDetails(nil)
 	TestSessionTagsValid = csdkTypes.EmptyTags().AppendTag("session_id", types.TestSessionIDValid.String())
 )

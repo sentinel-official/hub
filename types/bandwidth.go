@@ -1,6 +1,8 @@
 package types
 
 import (
+	"encoding/json"
+
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -9,6 +11,13 @@ var GB = csdkTypes.NewInt(1000000000)
 type Bandwidth struct {
 	Upload   csdkTypes.Int `json:"upload"`
 	Download csdkTypes.Int `json:"download"`
+}
+
+func NewBandwidth(upload, download csdkTypes.Int) Bandwidth {
+	return Bandwidth{
+		Upload:   upload,
+		Download: download,
+	}
 }
 
 func (b Bandwidth) LT(bandwidth Bandwidth) bool {
@@ -45,13 +54,31 @@ func (b Bandwidth) IsNil() bool {
 		b.Download == csdkTypes.Int{}
 }
 
-func NewBandwidth(upload, download csdkTypes.Int) Bandwidth {
-	return Bandwidth{
-		Upload:   upload,
-		Download: download,
+func NewBandwidthFromInt64(upload, download int64) Bandwidth {
+	return NewBandwidth(csdkTypes.NewInt(upload), csdkTypes.NewInt(download))
+}
+
+type BandwidthSign struct {
+	ID        ID
+	Bandwidth Bandwidth
+	NodeOwner csdkTypes.AccAddress
+	Client    csdkTypes.AccAddress
+}
+
+func NewBandwidthSign(id ID, bandwidth Bandwidth, nodeOwner, client csdkTypes.AccAddress) *BandwidthSign {
+	return &BandwidthSign{
+		ID:        id,
+		Bandwidth: bandwidth,
+		NodeOwner: nodeOwner,
+		Client:    client,
 	}
 }
 
-func NewBandwidthFromInt64(upload, download int64) Bandwidth {
-	return NewBandwidth(csdkTypes.NewInt(upload), csdkTypes.NewInt(download))
+func (bsd BandwidthSign) GetBytes() []byte {
+	bsdBytes, err := json.Marshal(bsd)
+	if err != nil {
+		panic(err)
+	}
+
+	return bsdBytes
 }

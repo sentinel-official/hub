@@ -5,7 +5,6 @@ import (
 	"net/http"
 
 	"github.com/cosmos/cosmos-sdk/client/context"
-	clientKeys "github.com/cosmos/cosmos-sdk/client/keys"
 	clientRest "github.com/cosmos/cosmos-sdk/client/rest"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/crypto/keys"
@@ -30,12 +29,6 @@ func signSessionBandwidthHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec
 			return
 		}
 
-		keybase, err := clientKeys.NewKeyBaseFromHomeFlag()
-		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
-			return
-		}
-
 		vars := mux.Vars(r)
 		signBytes, err := common.GetSessionBandwidthSignBytes(cliCtx, cdc, vars["sessionID"], req.Bandwidth)
 		if err != nil {
@@ -43,7 +36,7 @@ func signSessionBandwidthHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec
 			return
 		}
 
-		signature, _, err := keybase.Sign(req.BaseReq.From, req.BaseReq.Password, signBytes)
+		signature, _, err := kb.Sign(req.BaseReq.From, req.BaseReq.Password, signBytes)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
@@ -76,13 +69,7 @@ func updateSessionBandwidthHandlerFunc(cliCtx context.CLIContext, cdc *codec.Cod
 
 		cliCtx.WithGenerateOnly(req.BaseReq.GenerateOnly).WithSimulation(req.BaseReq.Simulate)
 
-		keybase, err := clientKeys.NewKeyBaseFromHomeFlag()
-		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
-			return
-		}
-
-		info, err := keybase.Get(req.BaseReq.From)
+		info, err := kb.Get(req.BaseReq.From)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
@@ -101,7 +88,7 @@ func updateSessionBandwidthHandlerFunc(cliCtx context.CLIContext, cdc *codec.Cod
 		}
 
 		vars := mux.Vars(r)
-		sessionID := vpn.NewSessionID(vars["sessionID"])
+		sessionID := sdkTypes.NewID(vars["sessionID"])
 
 		msg := vpn.NewMsgUpdateSessionBandwidth(info.GetAddress(), sessionID,
 			req.Bandwidth.Upload, req.Bandwidth.Download, clientSign, nodeOwnerSign)

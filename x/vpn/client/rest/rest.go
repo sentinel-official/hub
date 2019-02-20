@@ -9,7 +9,7 @@ import (
 
 func RegisterRoutes(cliCtx context.CLIContext, r *mux.Router, cdc *codec.Codec, kb keys.Keybase) {
 	registerTxRoutes(cliCtx, r, cdc, kb)
-	registerQueryRoutes(cliCtx, r, cdc, kb)
+	registerQueryRoutes(cliCtx, r, cdc)
 }
 
 func registerTxRoutes(cliCtx context.CLIContext, r *mux.Router, cdc *codec.Codec, kb keys.Keybase) {
@@ -30,7 +30,7 @@ func registerTxRoutes(cliCtx context.CLIContext, r *mux.Router, cdc *codec.Codec
 		Methods("PUT")
 }
 
-func registerQueryRoutes(cliCtx context.CLIContext, r *mux.Router, cdc *codec.Codec, kb keys.Keybase) {
+func registerQueryRoutes(cliCtx context.CLIContext, r *mux.Router, cdc *codec.Codec) {
 	r.HandleFunc("/nodes", getNodesHandlerFunc(cliCtx, cdc)).
 		Methods("GET")
 	r.HandleFunc("/nodes/{nodeID:[^/]+/[^/]+}", getNodeHandlerFunc(cliCtx, cdc)).

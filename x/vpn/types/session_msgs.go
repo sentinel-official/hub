@@ -10,7 +10,7 @@ import (
 
 type MsgInitSession struct {
 	From         csdkTypes.AccAddress `json:"from"`
-	NodeID       NodeID               `json:"node_id"`
+	NodeID       sdkTypes.ID          `json:"node_id"`
 	AmountToLock csdkTypes.Coin       `json:"amount_to_lock"`
 }
 
@@ -50,7 +50,7 @@ func (msg MsgInitSession) Route() string {
 }
 
 func NewMsgInitSession(from csdkTypes.AccAddress,
-	nodeID NodeID, amountToLock csdkTypes.Coin) *MsgInitSession {
+	nodeID sdkTypes.ID, amountToLock csdkTypes.Coin) *MsgInitSession {
 
 	return &MsgInitSession{
 		From:         from,
@@ -61,7 +61,7 @@ func NewMsgInitSession(from csdkTypes.AccAddress,
 
 type MsgUpdateSessionBandwidth struct {
 	From          csdkTypes.AccAddress `json:"from"`
-	ID            SessionID            `json:"id"`
+	ID            sdkTypes.ID          `json:"id"`
 	Bandwidth     sdkTypes.Bandwidth   `json:"bandwidth"`
 	ClientSign    []byte               `json:"client_sign"`
 	NodeOwnerSign []byte               `json:"node_owner_sign"`
@@ -109,7 +109,7 @@ func (msg MsgUpdateSessionBandwidth) Route() string {
 }
 
 func NewMsgUpdateSessionBandwidth(from csdkTypes.AccAddress,
-	id SessionID, upload, download csdkTypes.Int,
+	id sdkTypes.ID, upload, download csdkTypes.Int,
 	clientSign []byte, nodeOwnerSign []byte) *MsgUpdateSessionBandwidth {
 
 	return &MsgUpdateSessionBandwidth{

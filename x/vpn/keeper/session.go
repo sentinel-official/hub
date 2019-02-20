@@ -3,6 +3,7 @@ package keeper
 import (
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
 
+	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
 	"github.com/ironman0x7b2/sentinel-sdk/x/vpn/types"
 )
 
@@ -19,7 +20,7 @@ func (k Keeper) SetSessionDetails(ctx csdkTypes.Context, details *types.SessionD
 	return nil
 }
 
-func (k Keeper) GetSessionDetails(ctx csdkTypes.Context, id types.SessionID) (*types.SessionDetails, csdkTypes.Error) {
+func (k Keeper) GetSessionDetails(ctx csdkTypes.Context, id sdkTypes.ID) (*types.SessionDetails, csdkTypes.Error) {
 	key := types.SessionKey(id)
 	store := ctx.KVStore(k.SessionStoreKey)
 	value := store.Get(key)
@@ -35,7 +36,7 @@ func (k Keeper) GetSessionDetails(ctx csdkTypes.Context, id types.SessionID) (*t
 	return &details, nil
 }
 
-func (k Keeper) SetActiveSessionIDsAtHeight(ctx csdkTypes.Context, height int64, ids types.SessionIDs) csdkTypes.Error {
+func (k Keeper) SetActiveSessionIDsAtHeight(ctx csdkTypes.Context, height int64, ids sdkTypes.IDs) csdkTypes.Error {
 	key := types.ActiveSessionIDsAtHeightKey(height)
 
 	ids = ids.Sort()
@@ -50,10 +51,10 @@ func (k Keeper) SetActiveSessionIDsAtHeight(ctx csdkTypes.Context, height int64,
 	return nil
 }
 
-func (k Keeper) GetActiveSessionIDsAtHeight(ctx csdkTypes.Context, height int64) (types.SessionIDs, csdkTypes.Error) {
+func (k Keeper) GetActiveSessionIDsAtHeight(ctx csdkTypes.Context, height int64) (sdkTypes.IDs, csdkTypes.Error) {
 	key := types.ActiveSessionIDsAtHeightKey(height)
 
-	var ids types.SessionIDs
+	var ids sdkTypes.IDs
 	store := ctx.KVStore(k.SessionStoreKey)
 	value := store.Get(key)
 	if value == nil {
@@ -104,7 +105,7 @@ func (k Keeper) AddSession(ctx csdkTypes.Context, details *types.SessionDetails)
 		return nil, err
 	}
 
-	details.ID = types.SessionIDFromOwnerCount(details.Client, count)
+	details.ID = sdkTypes.IDFromOwnerAndCount(details.Client, count)
 	if err := k.SetSessionDetails(ctx, details); err != nil {
 		return nil, err
 	}
@@ -117,7 +118,7 @@ func (k Keeper) AddSession(ctx csdkTypes.Context, details *types.SessionDetails)
 	return tags, nil
 }
 
-func (k Keeper) AddActiveSessionIDsAtHeight(ctx csdkTypes.Context, height int64, id types.SessionID) csdkTypes.Error {
+func (k Keeper) AddActiveSessionIDsAtHeight(ctx csdkTypes.Context, height int64, id sdkTypes.ID) csdkTypes.Error {
 	ids, err := k.GetActiveSessionIDsAtHeight(ctx, height)
 	if err != nil {
 		return err
@@ -131,7 +132,7 @@ func (k Keeper) AddActiveSessionIDsAtHeight(ctx csdkTypes.Context, height int64,
 	return k.SetActiveSessionIDsAtHeight(ctx, height, ids)
 }
 
-func (k Keeper) RemoveActiveSessionIDsAtHeight(ctx csdkTypes.Context, height int64, id types.SessionID) csdkTypes.Error {
+func (k Keeper) RemoveActiveSessionIDsAtHeight(ctx csdkTypes.Context, height int64, id sdkTypes.ID) csdkTypes.Error {
 	ids, err := k.GetActiveSessionIDsAtHeight(ctx, height)
 	if err != nil {
 		return err
@@ -142,6 +143,6 @@ func (k Keeper) RemoveActiveSessionIDsAtHeight(ctx csdkTypes.Context, height int
 		return nil
 	}
 
-	ids = types.EmptySessionIDs().Append(ids[:index]...).Append(ids[index+1:]...)
+	ids = sdkTypes.NewIDs().Append(ids[:index]...).Append(ids[index+1:]...)
 	return k.SetActiveSessionIDsAtHeight(ctx, height, ids)
 }

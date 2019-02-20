@@ -20,9 +20,8 @@ const (
 	errCodeSessionAlreadyExists = 251
 	errCodeInvalidPriceDenom    = 252
 	errCodeSessionNotExists     = 253
-	errCodeInvalidBandwidth     = 254
-	errCodeInvalidSign          = 255
-	errCodeInvalidSessionStatus = 256
+	errCodeBandwidthUpdate      = 254
+	errCodeInvalidSessionStatus = 255
 
 	errMsgUnknownMsgType       = "Unknown message type: "
 	errMsgNodeAlreadyExists    = "Node already exists"
@@ -92,12 +91,8 @@ func ErrorSessionNotExists() csdkTypes.Error {
 	return csdkTypes.NewError(codespace, errCodeSessionNotExists, errMsgSessionNotExists)
 }
 
-func ErrorInvalidBandwidth() csdkTypes.Error {
-	return csdkTypes.NewError(codespace, errCodeInvalidBandwidth, errMsgInvalidBandwidth)
-}
-
-func ErrorInvalidSign() csdkTypes.Error {
-	return csdkTypes.NewError(codespace, errCodeInvalidSign, errMsgInvalidSign)
+func ErrorBandwidthUpdate(msg string) csdkTypes.Error {
+	return csdkTypes.NewError(codespace, errCodeBandwidthUpdate, msg)
 }
 
 func ErrorInvalidSessionStatus() csdkTypes.Error {

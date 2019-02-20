@@ -1,98 +1,42 @@
 package types
 
 import (
-	"fmt"
 	"sort"
-	"strings"
 
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
+	"github.com/tendermint/tendermint/crypto"
 
 	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
 )
 
-type NodeID string
-
-func (n NodeID) Bytes() []byte  { return []byte(n) }
-func (n NodeID) String() string { return string(n) }
-func (n NodeID) Len() int       { return len(n) }
-
-func (n NodeID) Valid() bool {
-	splits := strings.Split(n.String(), "/")
-	return len(splits) == 2
-}
-
-func NewNodeID(str string) NodeID {
-	return NodeID(str)
-}
-
-func NodeIDFromOwnerCount(address csdkTypes.Address, count uint64) NodeID {
-	id := fmt.Sprintf("%s/%d", address.String(), count)
-	return NewNodeID(id)
-}
-
-type NodeIDs []NodeID
-
-func (n NodeIDs) Append(id ...NodeID) NodeIDs { return append(n, id...) }
-func (n NodeIDs) Len() int                    { return len(n) }
-func (n NodeIDs) Less(i, j int) bool          { return n[i].String() < n[j].String() }
-func (n NodeIDs) Swap(i, j int)               { n[i], n[j] = n[j], n[i] }
-
-func (n NodeIDs) Sort() NodeIDs {
-	sort.Sort(n)
-	return n
-}
-
-func (n NodeIDs) Search(id NodeID) int {
-	index := sort.Search(len(n), func(i int) bool {
-		return n[i].String() >= id.String()
-	})
-
-	if (index == n.Len()) ||
-		(index < n.Len() && n[index].String() != id.String()) {
-		return n.Len()
-	}
-
-	return index
-}
-
-func EmptyNodeIDs() NodeIDs {
-	return NodeIDs{}
-}
-
 type APIPort uint32
-
-func (a APIPort) IsZero() bool { return a == 0 }
-func (a APIPort) Valid() bool  { return a > 0 && a <= 65535 }
 
 func NewAPIPort(num uint32) APIPort {
 	return APIPort(num)
 }
 
+func (a APIPort) IsZero() bool { return a == 0 }
+func (a APIPort) Valid() bool  { return a > 0 && a <= 65535 }
+
 type NodeDetails struct {
-	ID              NodeID
-	Owner           csdkTypes.AccAddress
-	LockedAmount    csdkTypes.Coin
-	PricesPerGB     csdkTypes.Coins
-	NetSpeed        sdkTypes.Bandwidth
-	APIPort         APIPort
-	EncMethod       string
-	NodeType        string
-	Version         string
+	ID           sdkTypes.ID
+	Owner        csdkTypes.AccAddress
+	PubKey       crypto.PubKey
+	LockedAmount csdkTypes.Coin
+
+	PricesPerGB csdkTypes.Coins
+	NetSpeed    sdkTypes.Bandwidth
+	APIPort     APIPort
+	EncMethod   string
+	NodeType    string
+	Version     string
+
 	Status          string
 	StatusAtHeight  int64
 	DetailsAtHeight int64
 }
 
 func (nd *NodeDetails) UpdateDetails(details NodeDetails) {
-	if details.ID.Len() != 0 && details.ID.Valid() {
-		nd.ID = details.ID
-	}
-	if details.Owner != nil && !details.Owner.Empty() {
-		nd.Owner = details.Owner
-	}
-	if len(details.LockedAmount.Denom) != 0 && details.LockedAmount.IsPositive() {
-		nd.LockedAmount = details.LockedAmount
-	}
 	if details.PricesPerGB != nil && details.PricesPerGB.Len() > 0 &&
 		details.PricesPerGB.IsValid() && details.PricesPerGB.IsAllPositive() {
 		nd.PricesPerGB = details.PricesPerGB

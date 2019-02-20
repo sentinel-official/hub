@@ -9,51 +9,6 @@ import (
 	"github.com/ironman0x7b2/sentinel-sdk/types"
 )
 
-func TestNewNodeID(t *testing.T) {
-	id1 := NewNodeID("")
-	require.Equal(t, NodeID(""), id1)
-	require.Equal(t, []byte{}, id1.Bytes())
-	require.Equal(t, "", id1.String())
-	require.Equal(t, 0, id1.Len())
-	require.Equal(t, false, id1.Valid())
-}
-
-func TestNodeIDFromOwnerCount(t *testing.T) {
-	id1 := NodeIDFromOwnerCount(TestAddress1, 0)
-	require.Equal(t, NodeID(TestAddress1.String()+"/0"), id1)
-	require.Equal(t, []byte(TestAddress1.String()+"/0"), id1.Bytes())
-	require.Equal(t, TestAddress1.String()+"/0", id1.String())
-	require.Equal(t, 47, id1.Len())
-	require.Equal(t, true, id1.Valid())
-}
-
-func TestEmptyNodeIDs(t *testing.T) {
-	ids := EmptyNodeIDs()
-	require.Equal(t, 0, ids.Len())
-	require.Equal(t, NodeIDs{}, ids.Sort())
-
-	ids = ids.Append(NodeID("address/0"))
-	require.Equal(t, 1, ids.Len())
-	require.Equal(t, NodeIDs{NodeID("address/0")}, ids.Sort())
-	ids = ids.Append(NodeID("address/10"))
-	require.Equal(t, 2, ids.Len())
-	require.Equal(t, NodeIDs{NodeID("address/0"), NodeID("address/10")}, ids.Sort())
-	ids = ids.Append(NodeID("address/5"))
-	require.Equal(t, 3, ids.Len())
-	require.Equal(t, NodeIDs{NodeID("address/0"), NodeID("address/10"), NodeID("address/5")}, ids.Sort())
-
-	require.Equal(t, 0, ids.Search(NodeID("address/0")))
-	require.Equal(t, 1, ids.Search(NodeID("address/10")))
-	require.Equal(t, 2, ids.Search(NodeID("address/5")))
-	require.Equal(t, 3, ids.Search(NodeID("address/-1")))
-	require.Equal(t, 3, ids.Search(NodeID("address/1")))
-	require.Equal(t, 3, ids.Search(NodeID("address/6")))
-	require.Equal(t, 3, ids.Search(NodeID("address/11")))
-
-	ids.Swap(1, 2)
-	require.Equal(t, NodeIDs{NodeID("address/0"), NodeID("address/5"), NodeID("address/10")}, ids)
-}
-
 func TestNewAPIPort(t *testing.T) {
 	apiPort1 := NewAPIPort(0)
 	require.Equal(t, APIPort(0), apiPort1)
@@ -73,54 +28,6 @@ func TestNodeDetails_UpdateDetails(t *testing.T) {
 		want    NodeDetails
 	}{
 		{
-			"id is empty",
-			NodeDetails{ID: TestNodeIDEmpty},
-			NodeDetails{},
-		}, {
-			"id is invalid",
-			NodeDetails{ID: TestNodeIDInvalid},
-			NodeDetails{},
-		}, {
-			"id is valid",
-			NodeDetails{ID: TestNodeIDValid},
-			NodeDetails{ID: TestNodeIDValid},
-		}, {
-			"owner is nil",
-			NodeDetails{Owner: nil},
-			NodeDetails{},
-		}, {
-			"owner is empty",
-			NodeDetails{Owner: TestAddressEmpty},
-			NodeDetails{},
-		}, {
-			"owner is valid",
-			NodeDetails{Owner: TestAddress1},
-			NodeDetails{Owner: TestAddress1},
-		}, {
-			"locked_amount is nil",
-			NodeDetails{LockedAmount: TestCoinNil},
-			NodeDetails{},
-		}, {
-			"locked_amount is empty",
-			NodeDetails{LockedAmount: TestCoinEmpty},
-			NodeDetails{},
-		}, {
-			"locked_amount is zero",
-			NodeDetails{LockedAmount: TestCoinZero},
-			NodeDetails{},
-		}, {
-			"locked_amount is negative",
-			NodeDetails{LockedAmount: TestCoinNeg},
-			NodeDetails{},
-		}, {
-			"locked_amount is zero",
-			NodeDetails{LockedAmount: TestCoinZero},
-			NodeDetails{},
-		}, {
-			"locked_amount is positive",
-			NodeDetails{LockedAmount: TestCoinPos},
-			NodeDetails{LockedAmount: TestCoinPos},
-		}, {
 			"prices_per_gb is nil",
 			NodeDetails{PricesPerGB: nil},
 			NodeDetails{},

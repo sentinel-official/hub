@@ -92,7 +92,7 @@ func NewMsgRegisterNode(from csdkTypes.AccAddress,
 
 type MsgUpdateNodeDetails struct {
 	From        csdkTypes.AccAddress `json:"from"`
-	ID          NodeID               `json:"id"`
+	ID          sdkTypes.ID          `json:"id"`
 	PricesPerGB csdkTypes.Coins      `json:"prices_per_gb"`
 	NetSpeed    sdkTypes.Bandwidth   `json:"net_speed"`
 	APIPort     APIPort              `json:"api_port"`
@@ -143,7 +143,7 @@ func (msg MsgUpdateNodeDetails) Route() string {
 }
 
 func NewMsgUpdateNodeDetails(from csdkTypes.AccAddress,
-	id NodeID, pricesPerGB csdkTypes.Coins, upload, download csdkTypes.Int,
+	id sdkTypes.ID, pricesPerGB csdkTypes.Coins, upload, download csdkTypes.Int,
 	apiPort APIPort, encMethod string, version string) *MsgUpdateNodeDetails {
 
 	return &MsgUpdateNodeDetails{
@@ -162,7 +162,7 @@ func NewMsgUpdateNodeDetails(from csdkTypes.AccAddress,
 
 type MsgUpdateNodeStatus struct {
 	From   csdkTypes.AccAddress `json:"from"`
-	ID     NodeID               `json:"id"`
+	ID     sdkTypes.ID          `json:"id"`
 	Status string               `json:"status"`
 }
 
@@ -202,7 +202,7 @@ func (msg MsgUpdateNodeStatus) Route() string {
 }
 
 func NewMsgUpdateNodeStatus(from csdkTypes.AccAddress,
-	id NodeID, status string) *MsgUpdateNodeStatus {
+	id sdkTypes.ID, status string) *MsgUpdateNodeStatus {
 
 	return &MsgUpdateNodeStatus{
 		From:   from,
@@ -213,7 +213,7 @@ func NewMsgUpdateNodeStatus(from csdkTypes.AccAddress,
 
 type MsgDeregisterNode struct {
 	From csdkTypes.AccAddress `json:"from"`
-	ID   NodeID               `json:"id"`
+	ID   sdkTypes.ID          `json:"id"`
 }
 
 func (msg MsgDeregisterNode) Type() string {
@@ -249,7 +249,7 @@ func (msg MsgDeregisterNode) Route() string {
 }
 
 func NewMsgDeregisterNode(from csdkTypes.AccAddress,
-	id NodeID) *MsgDeregisterNode {
+	id sdkTypes.ID) *MsgDeregisterNode {
 
 	return &MsgDeregisterNode{
 		From: from,

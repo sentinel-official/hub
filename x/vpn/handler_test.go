@@ -16,6 +16,7 @@ func Test_handleRegisterNode(t *testing.T) {
 	handler := NewHandler(vpnKeeper, accountKeeper, bankKeeper)
 
 	account := accountKeeper.NewAccountWithAddress(ctx, types.TestAddress1)
+	require.Nil(t, account.SetPubKey(types.TestPubkey1))
 	require.Nil(t, account.SetCoins(types.TestCoinsPos))
 	accountKeeper.SetAccount(ctx, account)
 
@@ -28,7 +29,7 @@ func Test_handleRegisterNode(t *testing.T) {
 		node.NetSpeed.Download, node.APIPort, node.EncMethod, node.NodeType, node.Version)
 	res := handler(ctx, *msg)
 	require.True(t, res.IsOK())
-	require.Equal(t, types.TestNodeIDValid, NewNodeID(string(res.Tags[1].Value)))
+	require.Equal(t, types.TestNodeIDValid, sdkTypes.NewID(string(res.Tags[1].Value)))
 
 	account = accountKeeper.GetAccount(ctx, node.Owner)
 	require.Equal(t, types.TestCoinsPos.Minus(csdkTypes.Coins{node.LockedAmount}), account.GetCoins())
@@ -43,6 +44,7 @@ func Test_handleUpdateNodeDetails(t *testing.T) {
 	handler := NewHandler(vpnKeeper, accountKeeper, bankKeeper)
 
 	account := accountKeeper.NewAccountWithAddress(ctx, types.TestAddress1)
+	require.Nil(t, account.SetPubKey(types.TestPubkey1))
 	require.Nil(t, account.SetCoins(types.TestCoinsPos))
 	accountKeeper.SetAccount(ctx, account)
 
@@ -55,7 +57,7 @@ func Test_handleUpdateNodeDetails(t *testing.T) {
 		node.NetSpeed.Download, node.APIPort, node.EncMethod, node.NodeType, node.Version)
 	res := handler(ctx, *msg)
 	require.True(t, res.IsOK())
-	require.Equal(t, types.TestNodeIDValid, NewNodeID(string(res.Tags[1].Value)))
+	require.Equal(t, types.TestNodeIDValid, sdkTypes.NewID(string(res.Tags[1].Value)))
 
 	account = accountKeeper.GetAccount(ctx, types.TestAddress1)
 	require.Equal(t, types.TestCoinsPos.Minus(csdkTypes.Coins{node.LockedAmount}), account.GetCoins())
@@ -83,7 +85,7 @@ func Test_handleUpdateNodeDetails(t *testing.T) {
 		csdkTypes.NewInt(100), csdkTypes.NewInt(100), types.NewAPIPort(8080), "", "")
 	res = handler(ctx, *msgUpdateNodeDetails)
 	require.True(t, res.IsOK())
-	require.Equal(t, types.TestNodeIDValid, NewNodeID(string(res.Tags[0].Value)))
+	require.Equal(t, types.TestNodeIDValid, sdkTypes.NewID(string(res.Tags[0].Value)))
 
 	nodeRes, err = vpnKeeper.GetNodeDetails(ctx, types.TestNodeIDValid)
 	require.Nil(t, err)
@@ -99,6 +101,7 @@ func Test_handleUpdateNodeStatus(t *testing.T) {
 	handler := NewHandler(vpnKeeper, accountKeeper, bankKeeper)
 
 	account := accountKeeper.NewAccountWithAddress(ctx, types.TestAddress1)
+	require.Nil(t, account.SetPubKey(types.TestPubkey1))
 	require.Nil(t, account.SetCoins(types.TestCoinsPos))
 	accountKeeper.SetAccount(ctx, account)
 
@@ -111,7 +114,7 @@ func Test_handleUpdateNodeStatus(t *testing.T) {
 		node.NetSpeed.Download, node.APIPort, node.EncMethod, node.NodeType, node.Version)
 	res := handler(ctx, *msg)
 	require.True(t, res.IsOK())
-	require.Equal(t, types.TestNodeIDValid, NewNodeID(string(res.Tags[1].Value)))
+	require.Equal(t, types.TestNodeIDValid, sdkTypes.NewID(string(res.Tags[1].Value)))
 
 	account = accountKeeper.GetAccount(ctx, types.TestAddress1)
 	require.Equal(t, types.TestCoinsPos.Minus(csdkTypes.Coins{node.LockedAmount}), account.GetCoins())
@@ -133,7 +136,7 @@ func Test_handleUpdateNodeStatus(t *testing.T) {
 	msgUpdateNodeStatus = types.NewMsgUpdateNodeStatus(node.Owner, node.ID, types.StatusActive)
 	res = handler(ctx, *msgUpdateNodeStatus)
 	require.True(t, res.IsOK())
-	require.Equal(t, types.TestNodeIDValid, NewNodeID(string(res.Tags[0].Value)))
+	require.Equal(t, types.TestNodeIDValid, sdkTypes.NewID(string(res.Tags[0].Value)))
 
 	nodeRes, err = vpnKeeper.GetNodeDetails(ctx, types.TestNodeIDValid)
 	require.Nil(t, err)
@@ -142,7 +145,7 @@ func Test_handleUpdateNodeStatus(t *testing.T) {
 
 	nodes, err := vpnKeeper.GetActiveNodeIDsAtHeight(ctx, 0)
 	require.Nil(t, err)
-	require.Equal(t, types.NodeIDs{node.ID}, nodes)
+	require.Equal(t, sdkTypes.IDs{node.ID}, nodes)
 }
 
 func Test_handleDeregisterNode(t *testing.T) {
@@ -150,6 +153,7 @@ func Test_handleDeregisterNode(t *testing.T) {
 	handler := NewHandler(vpnKeeper, accountKeeper, bankKeeper)
 
 	account := accountKeeper.NewAccountWithAddress(ctx, types.TestAddress1)
+	require.Nil(t, account.SetPubKey(types.TestPubkey1))
 	require.Nil(t, account.SetCoins(types.TestCoinsPos))
 	accountKeeper.SetAccount(ctx, account)
 
@@ -162,7 +166,7 @@ func Test_handleDeregisterNode(t *testing.T) {
 		node.NetSpeed.Download, node.APIPort, node.EncMethod, node.NodeType, node.Version)
 	res := handler(ctx, *msg)
 	require.True(t, res.IsOK())
-	require.Equal(t, types.TestNodeIDValid, NewNodeID(string(res.Tags[1].Value)))
+	require.Equal(t, types.TestNodeIDValid, sdkTypes.NewID(string(res.Tags[1].Value)))
 
 	account = accountKeeper.GetAccount(ctx, types.TestAddress1)
 	require.Equal(t, types.TestCoinsPos.Minus(csdkTypes.Coins{node.LockedAmount}), account.GetCoins())
@@ -184,7 +188,7 @@ func Test_handleDeregisterNode(t *testing.T) {
 	msgDeregister = types.NewMsgDeregisterNode(node.Owner, node.ID)
 	res = handler(ctx, *msgDeregister)
 	require.True(t, res.IsOK())
-	require.Equal(t, types.TestNodeIDValid, NewNodeID(string(res.Tags[0].Value)))
+	require.Equal(t, types.TestNodeIDValid, sdkTypes.NewID(string(res.Tags[0].Value)))
 
 	nodeRes, err = vpnKeeper.GetNodeDetails(ctx, types.TestNodeIDValid)
 	require.Nil(t, err)
@@ -200,6 +204,7 @@ func Test_handleInitSession(t *testing.T) {
 	handler := NewHandler(vpnKeeper, accountKeeper, bankKeeper)
 
 	account := accountKeeper.NewAccountWithAddress(ctx, types.TestAddress1)
+	require.Nil(t, account.SetPubKey(types.TestPubkey1))
 	require.Nil(t, account.SetCoins(types.TestCoinsPos))
 	accountKeeper.SetAccount(ctx, account)
 
@@ -212,7 +217,7 @@ func Test_handleInitSession(t *testing.T) {
 		node.NetSpeed.Download, node.APIPort, node.EncMethod, node.NodeType, node.Version)
 	res := handler(ctx, *msg)
 	require.True(t, res.IsOK())
-	require.Equal(t, types.TestNodeIDValid, NewNodeID(string(res.Tags[1].Value)))
+	require.Equal(t, types.TestNodeIDValid, sdkTypes.NewID(string(res.Tags[1].Value)))
 
 	account = accountKeeper.GetAccount(ctx, types.TestAddress1)
 	require.Equal(t, types.TestCoinsPos.Minus(csdkTypes.Coins{node.LockedAmount}), account.GetCoins())
@@ -253,13 +258,14 @@ func Test_handleInitSession(t *testing.T) {
 	require.Equal(t, csdkTypes.CodeType(10), res.Code)
 
 	account = accountKeeper.GetAccount(ctx, types.TestAddress2)
+	require.Nil(t, account.SetPubKey(types.TestPubkey2))
 	require.Nil(t, account.SetCoins(types.TestCoinsPos))
 	accountKeeper.SetAccount(ctx, account)
 
 	msgInitSession = types.NewMsgInitSession(types.TestAddress2, node.ID, types.TestCoinPos)
 	res = handler(ctx, *msgInitSession)
 	require.True(t, res.IsOK())
-	require.Equal(t, types.TestSessionIDValid, NewSessionID(string(res.Tags[1].Value)))
+	require.Equal(t, types.TestSessionIDValid, sdkTypes.NewID(string(res.Tags[1].Value)))
 
 	account = accountKeeper.GetAccount(ctx, types.TestAddress2)
 	require.Equal(t, types.TestCoinsPos.Minus(csdkTypes.Coins{types.TestCoinPos}), account.GetCoins())
@@ -287,7 +293,7 @@ func Test_handleUpdateSessionBandwidth(t *testing.T) {
 		node.NetSpeed.Download, node.APIPort, node.EncMethod, node.NodeType, node.Version)
 	res := handler(ctx, *msg)
 	require.True(t, res.IsOK())
-	require.Equal(t, types.TestNodeIDValid, NewNodeID(string(res.Tags[1].Value)))
+	require.Equal(t, types.TestNodeIDValid, sdkTypes.NewID(string(res.Tags[1].Value)))
 
 	account = accountKeeper.GetAccount(ctx, types.TestAddress1)
 	require.Equal(t, types.TestCoinsPos.Minus(csdkTypes.Coins{node.LockedAmount}), account.GetCoins())
@@ -328,13 +334,14 @@ func Test_handleUpdateSessionBandwidth(t *testing.T) {
 	require.Equal(t, csdkTypes.CodeType(10), res.Code)
 
 	account = accountKeeper.GetAccount(ctx, types.TestAddress2)
+	require.Nil(t, account.SetPubKey(types.TestPubkey2))
 	require.Nil(t, account.SetCoins(types.TestCoinsPos))
 	accountKeeper.SetAccount(ctx, account)
 
 	msgInitSession = types.NewMsgInitSession(types.TestAddress2, node.ID, types.TestCoinPos)
 	res = handler(ctx, *msgInitSession)
 	require.True(t, res.IsOK())
-	require.Equal(t, types.TestSessionIDValid, NewSessionID(string(res.Tags[1].Value)))
+	require.Equal(t, types.TestSessionIDValid, sdkTypes.NewID(string(res.Tags[1].Value)))
 
 	account = accountKeeper.GetAccount(ctx, types.TestAddress2)
 	require.Equal(t, types.TestCoinsPos.Minus(csdkTypes.Coins{types.TestCoinPos}), account.GetCoins())
@@ -343,8 +350,7 @@ func Test_handleUpdateSessionBandwidth(t *testing.T) {
 	require.Nil(t, err)
 	require.Equal(t, types.TestSessionIDValid, session.ID)
 
-	signBytes, err := types.NewBandwidthSign(session.ID, types.TestBandwidthPos, node.Owner, session.Client).GetBytes()
-	require.Nil(t, err)
+	signBytes := sdkTypes.NewBandwidthSign(session.ID, types.TestBandwidthPos, node.Owner, session.Client).GetBytes()
 	nodeOwnerSign, err1 := types.TestPrivKey1.Sign(signBytes)
 	require.Nil(t, err1)
 	clientSign, err1 := types.TestPrivKey2.Sign(signBytes)
@@ -373,5 +379,5 @@ func Test_handleUpdateSessionBandwidth(t *testing.T) {
 
 	sessions, err := vpnKeeper.GetActiveSessionIDsAtHeight(ctx, 0)
 	require.Nil(t, err)
-	require.Equal(t, types.SessionIDs{types.TestSessionIDValid}, sessions)
+	require.Equal(t, sdkTypes.IDs{types.TestSessionIDValid}, sessions)
 }

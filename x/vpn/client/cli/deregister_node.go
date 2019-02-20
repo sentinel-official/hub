@@ -9,6 +9,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
+	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
 	"github.com/ironman0x7b2/sentinel-sdk/x/vpn"
 )
 
@@ -24,7 +25,7 @@ func DeregisterNodeTxCmd(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			nodeID := vpn.NewNodeID(viper.GetString(flagNodeID))
+			nodeID := sdkTypes.NewID(viper.GetString(flagNodeID))
 			fromAddress := cliCtx.GetFromAddress()
 
 			msg := vpn.NewMsgDeregisterNode(fromAddress, nodeID)

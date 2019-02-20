@@ -13,7 +13,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
-	"github.com/ironman0x7b2/sentinel-sdk/types"
+	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
 	"github.com/ironman0x7b2/sentinel-sdk/x/vpn"
 	"github.com/ironman0x7b2/sentinel-sdk/x/vpn/client/common"
 )
@@ -33,7 +33,7 @@ func SignSessionBandwidthTxCmd(cdc *codec.Codec) *cobra.Command {
 			uploadSpeed := csdkTypes.NewInt(viper.GetInt64(flagUploadSpeed))
 			downloadSpeed := csdkTypes.NewInt(viper.GetInt64(flagDownloadSpeed))
 
-			bandwidth := types.Bandwidth{
+			bandwidth := sdkTypes.Bandwidth{
 				Upload:   uploadSpeed,
 				Download: downloadSpeed,
 			}
@@ -88,7 +88,7 @@ func UpdateSessionBandwidthTxCmd(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			sessionID := vpn.NewSessionID(viper.GetString(flagSessionID))
+			sessionID := sdkTypes.NewID(viper.GetString(flagSessionID))
 			upload := csdkTypes.NewInt(viper.GetInt64(flagUploadSpeed))
 			download := csdkTypes.NewInt(viper.GetInt64(flagDownloadSpeed))
 			clientSign := viper.GetString(flagClientSign)

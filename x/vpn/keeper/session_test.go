@@ -6,6 +6,7 @@ import (
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
 
+	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
 	"github.com/ironman0x7b2/sentinel-sdk/x/vpn/types"
 )
 
@@ -125,12 +126,12 @@ func TestKeeper_AddActiveSessionIDsAtHeight(t *testing.T) {
 	require.Nil(t, err)
 	result1, err := keeper.GetActiveSessionIDsAtHeight(ctx, 0)
 	require.Nil(t, err)
-	require.Equal(t, types.SessionIDs{types.TestSessionIDValid}, result1)
+	require.Equal(t, sdkTypes.IDs{types.TestSessionIDValid}, result1)
 	err = keeper.AddActiveSessionIDsAtHeight(ctx, 0, types.TestSessionIDValid)
 	require.Nil(t, err)
 	result2, err := keeper.GetActiveSessionIDsAtHeight(ctx, 0)
 	require.Nil(t, err)
-	require.Equal(t, types.SessionIDs{types.TestSessionIDValid}, result2)
+	require.Equal(t, sdkTypes.IDs{types.TestSessionIDValid}, result2)
 }
 
 func TestKeeper_RemoveActiveSessionIDsAtHeight(t *testing.T) {
@@ -144,11 +145,11 @@ func TestKeeper_RemoveActiveSessionIDsAtHeight(t *testing.T) {
 	require.Nil(t, err)
 	result1, err := keeper.GetActiveSessionIDsAtHeight(ctx, 0)
 	require.Nil(t, err)
-	require.Equal(t, types.SessionIDs{types.TestSessionIDValid}, result1)
+	require.Equal(t, sdkTypes.IDs{types.TestSessionIDValid}, result1)
 
 	err = keeper.RemoveActiveSessionIDsAtHeight(ctx, 0, types.TestSessionIDValid)
 	require.Nil(t, err)
-	require.Equal(t, types.SessionIDs{types.TestSessionIDValid}, result1)
+	require.Equal(t, sdkTypes.IDs{types.TestSessionIDValid}, result1)
 	result2, err := keeper.GetActiveSessionIDsAtHeight(ctx, 0)
 	require.Nil(t, err)
 	require.Nil(t, result2)

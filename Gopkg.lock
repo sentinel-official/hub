@@ -792,6 +792,7 @@
     "github.com/cosmos/cosmos-sdk/x/staking/client/rest",
     "github.com/cosmos/cosmos-sdk/x/staking/simulation",
     "github.com/gorilla/mux",
+    "github.com/pkg/errors",
     "github.com/rakyll/statik/fs",
     "github.com/spf13/cobra",
     "github.com/spf13/viper",

@@ -1,63 +1,12 @@
 package types
 
 import (
-	"encoding/json"
-	"fmt"
-	"sort"
-	"strings"
-
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
+	"github.com/pkg/errors"
+	"github.com/tendermint/tendermint/crypto"
 
 	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
 )
-
-type SessionID string
-
-func (s SessionID) Bytes() []byte  { return []byte(s) }
-func (s SessionID) String() string { return string(s) }
-func (s SessionID) Len() int       { return len(s) }
-
-func (s SessionID) Valid() bool {
-	splits := strings.Split(s.String(), "/")
-	return len(splits) == 2
-}
-
-func NewSessionID(str string) SessionID {
-	return SessionID(str)
-}
-
-func SessionIDFromOwnerCount(address csdkTypes.Address, count uint64) SessionID {
-	id := fmt.Sprintf("%s/%d", address.String(), count)
-	return NewSessionID(id)
-}
-
-type SessionIDs []SessionID
-
-func (s SessionIDs) Append(id ...SessionID) SessionIDs { return append(s, id...) }
-func (s SessionIDs) Len() int                          { return len(s) }
-func (s SessionIDs) Less(i, j int) bool                { return s[i].String() < s[j].String() }
-func (s SessionIDs) Swap(i, j int)                     { s[i], s[j] = s[j], s[i] }
-
-func (s SessionIDs) Sort() SessionIDs {
-	sort.Sort(s)
-	return s
-}
-
-func (s SessionIDs) Search(id SessionID) int {
-	index := sort.Search(len(s), func(i int) bool {
-		return s[i].String() >= id.String()
-	})
-
-	if index < s.Len() && s[index].String() != id.String() {
-		return s.Len()
-	}
-
-	return index
-}
-
-func EmptySessionIDs() SessionIDs {
-	return SessionIDs{}
-}
 
 type SessionBandwidth struct {
 	ToProvide       sdkTypes.Bandwidth
@@ -66,13 +15,19 @@ type SessionBandwidth struct {
 	ClientSign      []byte
 	UpdatedAtHeight int64
 }
+
 type SessionDetails struct {
-	ID              SessionID
-	NodeID          NodeID
+	ID              sdkTypes.ID
+	NodeID          sdkTypes.ID
+	NodeOwner       csdkTypes.AccAddress
+	NodeOwnerPubKey crypto.PubKey
 	Client          csdkTypes.AccAddress
+	ClientPubKey    crypto.PubKey
 	LockedAmount    csdkTypes.Coin
 	PricePerGB      csdkTypes.Coin
-	Bandwidth       SessionBandwidth
+
+	Bandwidth SessionBandwidth
+
 	Status          string
 	StatusAtHeight  int64
 	StartedAtHeight int64
@@ -91,29 +46,24 @@ func (s SessionDetails) Amount() csdkTypes.Coin {
 	return amount
 }
 
-type BandwidthSign struct {
-	SessionID SessionID
-	Bandwidth sdkTypes.Bandwidth
-	NodeOwner csdkTypes.AccAddress
-	Client    csdkTypes.AccAddress
-}
+func (s *SessionDetails) SetNewSessionBandwidth(sign *sdkTypes.BandwidthSign,
+	clientSign, nodeOwnerSign []byte, height int64) error {
 
-func (bsd BandwidthSign) GetBytes() ([]byte, csdkTypes.Error) {
-	bsdBytes, err := json.Marshal(bsd)
-	if err != nil {
-		return nil, ErrorMarshal()
+	if sign.Bandwidth.LTE(s.Bandwidth.Consumed) ||
+		s.Bandwidth.ToProvide.LT(sign.Bandwidth) {
+		return errors.New("Invalid bandwidth")
 	}
 
-	return bsdBytes, nil
-}
-
-func NewBandwidthSign(sessionID SessionID, bandwidth sdkTypes.Bandwidth,
-	nodeOwner, client csdkTypes.AccAddress) *BandwidthSign {
-
-	return &BandwidthSign{
-		SessionID: sessionID,
-		Bandwidth: bandwidth,
-		NodeOwner: nodeOwner,
-		Client:    client,
+	signBytes := sign.GetBytes()
+	if !s.ClientPubKey.VerifyBytes(signBytes, clientSign) ||
+		!s.NodeOwnerPubKey.VerifyBytes(signBytes, nodeOwnerSign) {
+		return errors.New("Invalid client sign or node owner sign")
 	}
+
+	s.Bandwidth.Consumed = sign.Bandwidth
+	s.Bandwidth.ClientSign = clientSign
+	s.Bandwidth.NodeOwnerSign = nodeOwnerSign
+	s.Bandwidth.UpdatedAtHeight = height
+
+	return nil
 }

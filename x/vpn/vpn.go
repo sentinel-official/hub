@@ -25,12 +25,9 @@ const (
 )
 
 type (
-	NodeID = types.NodeID
-	SessionID = types.SessionID
 	NodeDetails = types.NodeDetails
 	SessionDetails = types.SessionDetails
 	SessionBandwidth = types.SessionBandwidth
-	BandwidthSign = types.BandwidthSign
 
 	MsgRegisterNode = types.MsgRegisterNode
 	MsgUpdateNodeDetails = types.MsgUpdateNodeDetails
@@ -65,10 +62,7 @@ var (
 	NewMsgInitSession            = types.NewMsgInitSession
 	NewMsgUpdateSessionBandwidth = types.NewMsgUpdateSessionBandwidth
 
-	NewNodeID        = types.NewNodeID
-	NewSessionID     = types.NewSessionID
-	NewAPIPort       = types.NewAPIPort
-	NewBandwidthSign = types.NewBandwidthSign
+	NewAPIPort = types.NewAPIPort
 
 	NewKeeper = keeper.NewKeeper
 
