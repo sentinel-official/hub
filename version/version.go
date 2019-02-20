@@ -19,7 +19,7 @@ type versionInfo struct {
 }
 
 func (v versionInfo) String() string {
-	return fmt.Sprintf(`cosmos-sdk: %s
+	return fmt.Sprintf(`sentinel-sdk: %s
 git commit: %s
 vendor hash: %s
 %s`, v.SentinelSDK, v.GitCommit, v.VendorDirHash, v.GoVersion)
