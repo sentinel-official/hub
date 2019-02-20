@@ -27,7 +27,7 @@
 
 [[constraint]]
   name = "github.com/cosmos/cosmos-sdk"
-  version = "0.31.1"
+  version = "0.32.0"
 
 [[constraint]]
   name = "github.com/spf13/cobra"
@@ -77,3 +77,6 @@
 [prune]
   go-tests = true
   unused-packages = true
+  [[prune.project]]
+      name = "github.com/zondax/hid"
+      unused-packages = false

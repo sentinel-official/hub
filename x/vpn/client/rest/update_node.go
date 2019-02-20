@@ -6,10 +6,11 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/client/context"
 	clientKeys "github.com/cosmos/cosmos-sdk/client/keys"
-	"github.com/cosmos/cosmos-sdk/client/rest"
+	clientRest "github.com/cosmos/cosmos-sdk/client/rest"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/crypto/keys"
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/rest"
 	"github.com/gorilla/mux"
 
 	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
@@ -70,7 +71,7 @@ func updateNodeDetailsHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec, k
 			return
 		}
 
-		rest.CompleteAndBroadcastTxREST(w, r, cliCtx, req.BaseReq, []csdkTypes.Msg{msg}, cdc)
+		clientRest.CompleteAndBroadcastTxREST(w, cliCtx, req.BaseReq, []csdkTypes.Msg{msg}, cdc)
 	}
 }
 
@@ -116,6 +117,6 @@ func updateNodeStatusHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec, kb
 			return
 		}
 
-		rest.CompleteAndBroadcastTxREST(w, r, cliCtx, req.BaseReq, []csdkTypes.Msg{msg}, cdc)
+		clientRest.CompleteAndBroadcastTxREST(w, cliCtx, req.BaseReq, []csdkTypes.Msg{msg}, cdc)
 	}
 }

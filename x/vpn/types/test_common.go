@@ -13,7 +13,7 @@ var (
 	TestCoinPos   = csdkTypes.NewInt64Coin("sent", 10)
 	TestCoinNeg   = csdkTypes.Coin{"sent", csdkTypes.NewInt(-10)}
 	TestCoinZero  = csdkTypes.NewInt64Coin("sent", 0)
-	TestCoinEmpty = csdkTypes.NewInt64Coin("", 0)
+	TestCoinEmpty = csdkTypes.NewInt64Coin("empty", 0)
 	TestCoinNil   = csdkTypes.Coin{}
 
 	TestCoinsPos     = csdkTypes.Coins{TestCoinPos, csdkTypes.NewInt64Coin("sut", 100)}

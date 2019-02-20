@@ -40,7 +40,7 @@
   revision = "d4cc87b860166d00d6b5b9e0d3b3d71d6088d4d4"
 
 [[projects]]
-  digest = "1:e64b80b6f46e98fb0c3081469e562277992f03c07d380198acc42cae974f1deb"
+  digest = "1:12c838ffe22539efe729932054b138967ba13681d0c2547085c7647a07cf9452"
   name = "github.com/cosmos/cosmos-sdk"
   packages = [
     "baseapp",
@@ -76,6 +76,7 @@
     "store/types",
     "tests",
     "types",
+    "types/rest",
     "version",
     "x/auth",
     "x/auth/client",
@@ -124,8 +125,8 @@
     "x/staking/types",
   ]
   pruneopts = "UT"
-  revision = "b9e523212ec47910a00db00be2f1b7935e201ee7"
-  version = "v0.31.1"
+  revision = "906e9509cfcae3330584416c8b8e9cfe6c8d2766"
+  version = "v0.32.0"
 
 [[projects]]
   digest = "1:e8a3550c8786316675ff54ad6f09d265d129c9d986919af7f541afba50d87ce2"
@@ -595,10 +596,10 @@
   version = "v0.30.0"
 
 [[projects]]
-  digest = "1:5a736f4722932d9a45d28852e85b83f68292d9af2ef0be29d4e5fe6fd89d5d96"
+  digest = "1:b73f5e117bc7c6e8fc47128f20db48a873324ad5cfeeebfc505e85c58682b5e4"
   name = "github.com/zondax/hid"
   packages = ["."]
-  pruneopts = "UT"
+  pruneopts = "T"
   revision = "302fd402163c34626286195dfa9adac758334acc"
   version = "v0.9.0"
 
@@ -762,6 +763,7 @@
     "github.com/cosmos/cosmos-sdk/server/config",
     "github.com/cosmos/cosmos-sdk/store",
     "github.com/cosmos/cosmos-sdk/types",
+    "github.com/cosmos/cosmos-sdk/types/rest",
     "github.com/cosmos/cosmos-sdk/x/auth",
     "github.com/cosmos/cosmos-sdk/x/auth/client/cli",
     "github.com/cosmos/cosmos-sdk/x/auth/client/rest",
@@ -780,7 +782,6 @@
     "github.com/cosmos/cosmos-sdk/x/ibc",
     "github.com/cosmos/cosmos-sdk/x/ibc/client/cli",
     "github.com/cosmos/cosmos-sdk/x/mint",
-    "github.com/cosmos/cosmos-sdk/x/mock/simulation",
     "github.com/cosmos/cosmos-sdk/x/params",
     "github.com/cosmos/cosmos-sdk/x/slashing",
     "github.com/cosmos/cosmos-sdk/x/slashing/client",

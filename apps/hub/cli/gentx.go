@@ -17,7 +17,6 @@ import (
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	authTxBuiler "github.com/cosmos/cosmos-sdk/x/auth/client/txbuilder"
-	"github.com/cosmos/cosmos-sdk/x/staking"
 	"github.com/cosmos/cosmos-sdk/x/staking/client/cli"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -30,7 +29,7 @@ import (
 )
 
 var (
-	defaultTokens                  = staking.TokensFromTendermintPower(100)
+	defaultTokens                  = csdkTypes.TokensFromTendermintPower(100)
 	defaultAmount                  = defaultTokens.String() + "sent"
 	defaultCommissionRate          = "0.1"
 	defaultCommissionMaxRate       = "0.2"

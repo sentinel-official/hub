@@ -7,15 +7,14 @@ import (
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
 	bankSim "github.com/cosmos/cosmos-sdk/x/bank/simulation"
 	distributionSim "github.com/cosmos/cosmos-sdk/x/distribution/simulation"
-	mockSim "github.com/cosmos/cosmos-sdk/x/mock/simulation"
 	stakingSim "github.com/cosmos/cosmos-sdk/x/staking/simulation"
 	abciTypes "github.com/tendermint/tendermint/abci/types"
 )
 
-func (app *Hub) runtimeInvariants() []mockSim.Invariant {
-	return []mockSim.Invariant{
+func (app *Hub) runtimeInvariants() []csdkTypes.Invariant {
+	return []csdkTypes.Invariant{
 		bankSim.NonnegativeBalanceInvariant(app.accountKeeper),
-		// stakingSim.SupplyInvariants(app.bankKeeper, app.stakingKeeper, app.feeCollectionKeeper, app.distributionKeeper, app.accountKeeper),
+		// stakingSim.SupplyInvariants(app.stakingKeeper, app.feeCollectionKeeper, app.distributionKeeper, app.accountKeeper),
 		stakingSim.NonNegativePowerInvariant(app.stakingKeeper),
 		distributionSim.NonNegativeOutstandingInvariant(app.distributionKeeper),
 	}

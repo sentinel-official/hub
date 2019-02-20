@@ -24,7 +24,7 @@ import (
 )
 
 var (
-	freeFermionsAcc  = staking.TokensFromTendermintPower(150)
+	freeFermionsAcc  = csdkTypes.TokensFromTendermintPower(150)
 	defaultBondDenom = "sent"
 )
 

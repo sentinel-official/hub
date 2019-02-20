@@ -94,7 +94,7 @@ func (nd *NodeDetails) UpdateDetails(details NodeDetails) {
 		nd.LockedAmount = details.LockedAmount
 	}
 	if details.PricesPerGB != nil && details.PricesPerGB.Len() > 0 &&
-		details.PricesPerGB.IsValid() && details.PricesPerGB.IsPositive() {
+		details.PricesPerGB.IsValid() && details.PricesPerGB.IsAllPositive() {
 		nd.PricesPerGB = details.PricesPerGB
 	}
 	if !details.NetSpeed.IsNil() && details.NetSpeed.IsPositive() {

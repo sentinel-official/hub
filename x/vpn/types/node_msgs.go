@@ -31,7 +31,7 @@ func (msg MsgRegisterNode) ValidateBasic() csdkTypes.Error {
 		return ErrorInvalidField("amount_to_lock")
 	}
 	if msg.PricesPerGB == nil || msg.PricesPerGB.Len() == 0 ||
-		!msg.PricesPerGB.IsValid() || !msg.PricesPerGB.IsPositive() {
+		!msg.PricesPerGB.IsValid() || !msg.PricesPerGB.IsAllPositive() {
 		return ErrorInvalidField("prices_per_gb")
 	}
 	if !msg.NetSpeed.IsPositive() {
@@ -112,7 +112,7 @@ func (msg MsgUpdateNodeDetails) ValidateBasic() csdkTypes.Error {
 		return ErrorInvalidField("id")
 	}
 	if msg.PricesPerGB != nil && (msg.PricesPerGB.Len() == 0 ||
-		!msg.PricesPerGB.IsValid() || !msg.PricesPerGB.IsPositive()) {
+		!msg.PricesPerGB.IsValid() || !msg.PricesPerGB.IsAllPositive()) {
 		return ErrorInvalidField("prices_per_gb")
 	}
 	if msg.NetSpeed.IsNegative() {
