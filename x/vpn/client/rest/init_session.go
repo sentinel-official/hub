@@ -6,7 +6,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/context"
 	clientRest "github.com/cosmos/cosmos-sdk/client/rest"
 	"github.com/cosmos/cosmos-sdk/codec"
-	"github.com/cosmos/cosmos-sdk/crypto/keys"
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/rest"
 
@@ -20,7 +19,7 @@ type msgInitSession struct {
 	NodeID       string       `json:"node_id"`
 }
 
-func initSessionHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec, kb keys.Keybase) http.HandlerFunc {
+func initSessionHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var req msgInitSession
 
@@ -33,11 +32,9 @@ func initSessionHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec, kb keys
 			return
 		}
 
-		cliCtx.WithGenerateOnly(req.BaseReq.GenerateOnly).WithSimulation(req.BaseReq.Simulate)
-
-		info, err := kb.Get(req.BaseReq.From)
+		fromAddress, fromName, err := context.GetFromFields(req.BaseReq.From)
 		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
 		}
 
@@ -49,7 +46,10 @@ func initSessionHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec, kb keys
 			return
 		}
 
-		msg := vpn.NewMsgInitSession(info.GetAddress(), nodeID, amountToLock)
+		cliCtx = cliCtx.WithGenerateOnly(req.BaseReq.GenerateOnly).WithSimulation(req.BaseReq.Simulate).
+			WithFromName(fromName).WithFromAddress(fromAddress)
+
+		msg := vpn.NewMsgInitSession(fromAddress, nodeID, amountToLock)
 		if err := msg.ValidateBasic(); err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return

@@ -3,30 +3,29 @@ package rest
 import (
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/codec"
-	"github.com/cosmos/cosmos-sdk/crypto/keys"
 	"github.com/gorilla/mux"
 )
 
-func RegisterRoutes(cliCtx context.CLIContext, r *mux.Router, cdc *codec.Codec, kb keys.Keybase) {
-	registerTxRoutes(cliCtx, r, cdc, kb)
+func RegisterRoutes(cliCtx context.CLIContext, r *mux.Router, cdc *codec.Codec) {
+	registerTxRoutes(cliCtx, r, cdc)
 	registerQueryRoutes(cliCtx, r, cdc)
 }
 
-func registerTxRoutes(cliCtx context.CLIContext, r *mux.Router, cdc *codec.Codec, kb keys.Keybase) {
-	r.HandleFunc("/nodes", registerNodeHandlerFunc(cliCtx, cdc, kb)).
+func registerTxRoutes(cliCtx context.CLIContext, r *mux.Router, cdc *codec.Codec) {
+	r.HandleFunc("/nodes", registerNodeHandlerFunc(cliCtx, cdc)).
 		Methods("POST")
-	r.HandleFunc("/nodes/{nodeID:[^/]+/[^/]+}/deregister", deregisterNodeHandlerFunc(cliCtx, cdc, kb)).
+	r.HandleFunc("/nodes/{nodeID:[^/]+/[^/]+}/deregister", deregisterNodeHandlerFunc(cliCtx, cdc)).
 		Methods("POST")
-	r.HandleFunc("/nodes/{nodeID:[^/]+/[^/]+}/details", updateNodeDetailsHandlerFunc(cliCtx, cdc, kb)).
+	r.HandleFunc("/nodes/{nodeID:[^/]+/[^/]+}/details", updateNodeDetailsHandlerFunc(cliCtx, cdc)).
 		Methods("PUT")
-	r.HandleFunc("/nodes/{nodeID:[^/]+/[^/]+}/status", updateNodeStatusHandlerFunc(cliCtx, cdc, kb)).
+	r.HandleFunc("/nodes/{nodeID:[^/]+/[^/]+}/status", updateNodeStatusHandlerFunc(cliCtx, cdc)).
 		Methods("PUT")
 
-	r.HandleFunc("/sessions", initSessionHandlerFunc(cliCtx, cdc, kb)).
+	r.HandleFunc("/sessions", initSessionHandlerFunc(cliCtx, cdc)).
 		Methods("POST")
-	r.HandleFunc("/sessions/{sessionID:[^/]+/[^/]+}/bandwidth/sign", signSessionBandwidthHandlerFunc(cliCtx, cdc, kb)).
+	r.HandleFunc("/sessions/{sessionID:[^/]+/[^/]+}/bandwidth/sign", signSessionBandwidthHandlerFunc(cliCtx, cdc)).
 		Methods("POST")
-	r.HandleFunc("/sessions/{sessionID:[^/]+/[^/]+}/bandwidth", updateSessionBandwidthHandlerFunc(cliCtx, cdc, kb)).
+	r.HandleFunc("/sessions/{sessionID:[^/]+/[^/]+}/bandwidth", updateSessionBandwidthHandlerFunc(cliCtx, cdc)).
 		Methods("PUT")
 }
 

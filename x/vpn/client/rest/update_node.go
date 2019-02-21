@@ -7,7 +7,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/context"
 	clientRest "github.com/cosmos/cosmos-sdk/client/rest"
 	"github.com/cosmos/cosmos-sdk/codec"
-	"github.com/cosmos/cosmos-sdk/crypto/keys"
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/rest"
 	"github.com/gorilla/mux"
@@ -25,7 +24,7 @@ type msgUpdateNodeDetails struct {
 	Version     string             `json:"version"`
 }
 
-func updateNodeDetailsHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec, kb keys.Keybase) http.HandlerFunc {
+func updateNodeDetailsHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var req msgUpdateNodeDetails
 
@@ -38,11 +37,9 @@ func updateNodeDetailsHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec, k
 			return
 		}
 
-		cliCtx.WithGenerateOnly(req.BaseReq.GenerateOnly).WithSimulation(req.BaseReq.Simulate)
-
-		info, err := kb.Get(req.BaseReq.From)
+		fromAddress, fromName, err := context.GetFromFields(req.BaseReq.From)
 		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
 		}
 
@@ -56,7 +53,10 @@ func updateNodeDetailsHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec, k
 		id := sdkTypes.NewID(vars["nodeID"])
 		apiPort := vpn.NewAPIPort(req.APIPort)
 
-		msg := vpn.NewMsgUpdateNodeDetails(info.GetAddress(), id,
+		cliCtx = cliCtx.WithGenerateOnly(req.BaseReq.GenerateOnly).WithSimulation(req.BaseReq.Simulate).
+			WithFromName(fromName).WithFromAddress(fromAddress)
+
+		msg := vpn.NewMsgUpdateNodeDetails(fromAddress, id,
 			pricesPerGB, req.NetSpeed.Upload, req.NetSpeed.Download,
 			apiPort, req.EncMethod, req.Version)
 		if err := msg.ValidateBasic(); err != nil {
@@ -73,7 +73,7 @@ type msgUpdateNodeStatus struct {
 	Status  string       `json:"status"`
 }
 
-func updateNodeStatusHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec, kb keys.Keybase) http.HandlerFunc {
+func updateNodeStatusHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var req msgUpdateNodeStatus
 
@@ -86,11 +86,9 @@ func updateNodeStatusHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec, kb
 			return
 		}
 
-		cliCtx.WithGenerateOnly(req.BaseReq.GenerateOnly).WithSimulation(req.BaseReq.Simulate)
-
-		info, err := kb.Get(req.BaseReq.From)
+		fromAddress, fromName, err := context.GetFromFields(req.BaseReq.From)
 		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
 		}
 
@@ -98,7 +96,10 @@ func updateNodeStatusHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec, kb
 		id := sdkTypes.NewID(vars["nodeID"])
 		status := strings.ToUpper(req.Status)
 
-		msg := vpn.NewMsgUpdateNodeStatus(info.GetAddress(), id, status)
+		cliCtx = cliCtx.WithGenerateOnly(req.BaseReq.GenerateOnly).WithSimulation(req.BaseReq.Simulate).
+			WithFromName(fromName).WithFromAddress(fromAddress)
+
+		msg := vpn.NewMsgUpdateNodeStatus(fromAddress, id, status)
 		if err := msg.ValidateBasic(); err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return

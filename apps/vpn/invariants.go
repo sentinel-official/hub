@@ -14,7 +14,7 @@ import (
 func (app *VPN) runtimeInvariants() []csdkTypes.Invariant {
 	return []csdkTypes.Invariant{
 		bankSim.NonnegativeBalanceInvariant(app.accountKeeper),
-		stakingSim.SupplyInvariants(app.stakingKeeper, app.feeCollectionKeeper, app.distributionKeeper, app.accountKeeper),
+		// stakingSim.SupplyInvariants(app.stakingKeeper, app.feeCollectionKeeper, app.distributionKeeper, app.accountKeeper),
 		stakingSim.NonNegativePowerInvariant(app.stakingKeeper),
 		distributionSim.NonNegativeOutstandingInvariant(app.distributionKeeper),
 	}

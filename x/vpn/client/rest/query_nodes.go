@@ -40,6 +40,7 @@ func getNodesHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) http.Handl
 				rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 				return
 			}
+
 			if len(kvs) == 0 {
 				err := errors.New("no nodes found")
 				rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
@@ -73,6 +74,7 @@ func getNodesHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) http.Handl
 				rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 				return
 			}
+
 			if string(res) == "null" {
 				err := errors.New("no nodes found")
 				rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())

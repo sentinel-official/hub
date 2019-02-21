@@ -5,9 +5,9 @@ import (
 	"net/http"
 
 	"github.com/cosmos/cosmos-sdk/client/context"
+	clientKeys "github.com/cosmos/cosmos-sdk/client/keys"
 	clientRest "github.com/cosmos/cosmos-sdk/client/rest"
 	"github.com/cosmos/cosmos-sdk/codec"
-	"github.com/cosmos/cosmos-sdk/crypto/keys"
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/rest"
 	"github.com/gorilla/mux"
@@ -22,9 +22,10 @@ type msgSignSessionBandwidth struct {
 	Bandwidth sdkTypes.Bandwidth `json:"bandwidth"`
 }
 
-func signSessionBandwidthHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec, kb keys.Keybase) http.HandlerFunc {
+func signSessionBandwidthHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var req msgSignSessionBandwidth
+
 		if !rest.ReadRESTReq(w, r, cdc, &req) {
 			return
 		}
@@ -36,14 +37,28 @@ func signSessionBandwidthHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec
 			return
 		}
 
-		signature, _, err := kb.Sign(req.BaseReq.From, req.BaseReq.Password, signBytes)
+		keybase, err := clientKeys.NewKeyBaseFromHomeFlag()
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		fromAddress, fromName, err := context.GetFromFields(req.BaseReq.From)
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+			return
+		}
+
+		cliCtx = cliCtx.WithGenerateOnly(req.BaseReq.GenerateOnly).WithSimulation(req.BaseReq.Simulate).
+			WithFromName(fromName).WithFromAddress(fromAddress)
+
+		signature, _, err := keybase.Sign(fromName, req.BaseReq.Password, signBytes)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
 		}
 
 		_, _ = w.Write([]byte(base64.StdEncoding.EncodeToString(signature)))
-
 	}
 }
 
@@ -54,7 +69,7 @@ type msgUpdateSessionBandwidth struct {
 	Bandwidth     sdkTypes.Bandwidth `json:"bandwidth"`
 }
 
-func updateSessionBandwidthHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec, kb keys.Keybase) http.HandlerFunc {
+func updateSessionBandwidthHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var req msgUpdateSessionBandwidth
 
@@ -67,11 +82,9 @@ func updateSessionBandwidthHandlerFunc(cliCtx context.CLIContext, cdc *codec.Cod
 			return
 		}
 
-		cliCtx.WithGenerateOnly(req.BaseReq.GenerateOnly).WithSimulation(req.BaseReq.Simulate)
-
-		info, err := kb.Get(req.BaseReq.From)
+		fromAddress, fromName, err := context.GetFromFields(req.BaseReq.From)
 		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
 		}
 
@@ -90,7 +103,10 @@ func updateSessionBandwidthHandlerFunc(cliCtx context.CLIContext, cdc *codec.Cod
 		vars := mux.Vars(r)
 		sessionID := sdkTypes.NewID(vars["sessionID"])
 
-		msg := vpn.NewMsgUpdateSessionBandwidth(info.GetAddress(), sessionID,
+		cliCtx = cliCtx.WithGenerateOnly(req.BaseReq.GenerateOnly).WithSimulation(req.BaseReq.Simulate).
+			WithFromName(fromName).WithFromAddress(fromAddress)
+
+		msg := vpn.NewMsgUpdateSessionBandwidth(fromAddress, sessionID,
 			req.Bandwidth.Upload, req.Bandwidth.Download, clientSign, nodeOwnerSign)
 		if err := msg.ValidateBasic(); err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())

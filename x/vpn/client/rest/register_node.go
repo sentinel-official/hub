@@ -6,7 +6,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/context"
 	clientRest "github.com/cosmos/cosmos-sdk/client/rest"
 	"github.com/cosmos/cosmos-sdk/codec"
-	"github.com/cosmos/cosmos-sdk/crypto/keys"
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/rest"
 
@@ -25,7 +24,7 @@ type msgRegisterNode struct {
 	NodeType     string             `json:"node_type"`
 }
 
-func registerNodeHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec, kb keys.Keybase) http.HandlerFunc {
+func registerNodeHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var req msgRegisterNode
 
@@ -37,12 +36,10 @@ func registerNodeHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec, kb key
 		if !req.BaseReq.ValidateBasic(w) {
 			return
 		}
-		cliCtx.WithGenerateOnly(req.BaseReq.GenerateOnly).WithSimulation(req.BaseReq.Simulate)
 
-		info, err := kb.Get(req.BaseReq.From)
+		fromAddress, fromName, err := context.GetFromFields(req.BaseReq.From)
 		if err != nil {
-
-			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
 		}
 
@@ -60,7 +57,10 @@ func registerNodeHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec, kb key
 
 		apiPort := vpn.NewAPIPort(req.APIPort)
 
-		msg := vpn.NewMsgRegisterNode(info.GetAddress(),
+		cliCtx = cliCtx.WithGenerateOnly(req.BaseReq.GenerateOnly).WithSimulation(req.BaseReq.Simulate).
+			WithFromName(fromName).WithFromAddress(fromAddress)
+
+		msg := vpn.NewMsgRegisterNode(fromAddress,
 			amountToLock, pricesPerGB, req.NetSpeed.Upload, req.NetSpeed.Download,
 			apiPort, req.EncMethod, req.NodeType, req.Version)
 		if err := msg.ValidateBasic(); err != nil {
