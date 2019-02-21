@@ -350,10 +350,10 @@ func Test_handleUpdateSessionBandwidth(t *testing.T) {
 	require.Nil(t, err)
 	require.Equal(t, types.TestSessionIDValid, session.ID)
 
-	signBytes := sdkTypes.NewBandwidthSign(session.ID, types.TestBandwidthPos, node.Owner, session.Client).GetBytes()
-	nodeOwnerSign, err1 := types.TestPrivKey1.Sign(signBytes)
+	signDataBytes := sdkTypes.NewBandwidthSignData(session.ID, types.TestBandwidthPos, node.Owner, session.Client).GetBytes()
+	nodeOwnerSign, err1 := types.TestPrivKey1.Sign(signDataBytes)
 	require.Nil(t, err1)
-	clientSign, err1 := types.TestPrivKey2.Sign(signBytes)
+	clientSign, err1 := types.TestPrivKey2.Sign(signDataBytes)
 	require.Nil(t, err1)
 
 	msgUpdateSessionBandwidth := types.NewMsgUpdateSessionBandwidth(session.Client, types.TestSessionIDInvalid,

@@ -37,7 +37,7 @@ func SignSessionBandwidthTxCmd(cdc *codec.Codec) *cobra.Command {
 				Upload:   uploadSpeed,
 				Download: downloadSpeed,
 			}
-			signBytes, err := common.GetSessionBandwidthSignBytes(cliCtx, cdc, sessionID, bandwidth)
+			signBytes, err := common.GetSessionBandwidthSignDataBytes(cliCtx, cdc, sessionID, bandwidth)
 			if err != nil {
 				return err
 			}

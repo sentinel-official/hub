@@ -58,15 +58,15 @@ func NewBandwidthFromInt64(upload, download int64) Bandwidth {
 	return NewBandwidth(csdkTypes.NewInt(upload), csdkTypes.NewInt(download))
 }
 
-type BandwidthSign struct {
+type BandwidthSignData struct {
 	ID        ID
 	Bandwidth Bandwidth
 	NodeOwner csdkTypes.AccAddress
 	Client    csdkTypes.AccAddress
 }
 
-func NewBandwidthSign(id ID, bandwidth Bandwidth, nodeOwner, client csdkTypes.AccAddress) *BandwidthSign {
-	return &BandwidthSign{
+func NewBandwidthSignData(id ID, bandwidth Bandwidth, nodeOwner, client csdkTypes.AccAddress) *BandwidthSignData {
+	return &BandwidthSignData{
 		ID:        id,
 		Bandwidth: bandwidth,
 		NodeOwner: nodeOwner,
@@ -74,11 +74,11 @@ func NewBandwidthSign(id ID, bandwidth Bandwidth, nodeOwner, client csdkTypes.Ac
 	}
 }
 
-func (bsd BandwidthSign) GetBytes() []byte {
-	bsdBytes, err := json.Marshal(bsd)
+func (b BandwidthSignData) GetBytes() []byte {
+	bytes, err := json.Marshal(b)
 	if err != nil {
 		panic(err)
 	}
 
-	return bsdBytes
+	return bytes
 }

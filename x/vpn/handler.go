@@ -350,8 +350,8 @@ func handleUpdateSessionBandwidth(ctx csdkTypes.Context, vk keeper.Keeper,
 		return err.Result()
 	}
 
-	sign := sdkTypes.NewBandwidthSign(msg.ID, msg.Bandwidth, session.NodeOwner, session.Client)
-	if err := session.SetNewSessionBandwidth(sign, msg.ClientSign, msg.NodeOwnerSign, ctx.BlockHeight()); err != nil {
+	signData := sdkTypes.NewBandwidthSignData(msg.ID, msg.Bandwidth, session.NodeOwner, session.Client)
+	if err := session.SetNewSessionBandwidth(signData, msg.ClientSign, msg.NodeOwnerSign, ctx.BlockHeight()); err != nil {
 		return types.ErrorBandwidthUpdate(err.Error()).Result()
 	}
 	if session.Status == StatusInit {

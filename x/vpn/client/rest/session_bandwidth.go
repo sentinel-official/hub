@@ -31,7 +31,7 @@ func signSessionBandwidthHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec
 		}
 
 		vars := mux.Vars(r)
-		signBytes, err := common.GetSessionBandwidthSignBytes(cliCtx, cdc, vars["sessionID"], req.Bandwidth)
+		signBytes, err := common.GetSessionBandwidthSignDataBytes(cliCtx, cdc, vars["sessionID"], req.Bandwidth)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
