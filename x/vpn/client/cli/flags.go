@@ -5,7 +5,7 @@ const (
 	flagAPIPort       = "api-port"
 	flagUploadSpeed   = "upload-speed"
 	flagDownloadSpeed = "download-speed"
-	flagEncMethod     = "enc-method"
+	flagEncryption    = "encryption"
 	flagPricesPerGB   = "prices-per-gb"
 	flagVersion       = "version"
 	flagNodeType      = "node-type"

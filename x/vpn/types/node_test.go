@@ -9,18 +9,6 @@ import (
 	"github.com/ironman0x7b2/sentinel-sdk/types"
 )
 
-func TestNewAPIPort(t *testing.T) {
-	apiPort1 := NewAPIPort(0)
-	require.Equal(t, APIPort(0), apiPort1)
-	require.Equal(t, false, apiPort1.Valid())
-	require.Equal(t, true, apiPort1.IsZero())
-
-	apiPort2 := NewAPIPort(8000)
-	require.Equal(t, APIPort(8000), apiPort2)
-	require.Equal(t, true, apiPort2.Valid())
-	require.Equal(t, false, apiPort2.IsZero())
-}
-
 func TestNodeDetails_UpdateDetails(t *testing.T) {
 	tests := []struct {
 		name    string
@@ -69,20 +57,20 @@ func TestNodeDetails_UpdateDetails(t *testing.T) {
 			NodeDetails{NetSpeed: types.NewBandwidth(TestUploadPos, TestDownloadPos)},
 		}, {
 			"api_port is zero",
-			NodeDetails{APIPort: NewAPIPort(0)},
+			NodeDetails{APIPort: 0},
 			NodeDetails{},
 		}, {
 			"api_port is positive",
-			NodeDetails{APIPort: NewAPIPort(8000)},
-			NodeDetails{APIPort: NewAPIPort(8000)},
+			NodeDetails{APIPort: 8000},
+			NodeDetails{APIPort: 8000},
 		}, {
-			"enc_method is empty",
-			NodeDetails{EncMethod: ""},
+			"encryption is empty",
+			NodeDetails{Encryption: ""},
 			NodeDetails{},
 		}, {
-			"enc_method is valid",
-			NodeDetails{EncMethod: TestEncMethod},
-			NodeDetails{EncMethod: TestEncMethod},
+			"encryption is valid",
+			NodeDetails{Encryption: TestEncryption},
+			NodeDetails{Encryption: TestEncryption},
 		}, {
 			"node_type is empty",
 			NodeDetails{NodeType: ""},

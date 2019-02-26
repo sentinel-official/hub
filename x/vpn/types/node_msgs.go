@@ -13,8 +13,8 @@ type MsgRegisterNode struct {
 	AmountToLock csdkTypes.Coin       `json:"amount_to_lock"`
 	PricesPerGB  csdkTypes.Coins      `json:"prices_per_gb"`
 	NetSpeed     sdkTypes.Bandwidth   `json:"net_speed"`
-	APIPort      APIPort              `json:"api_port"`
-	EncMethod    string               `json:"enc_method"`
+	APIPort      uint16               `json:"api_port"`
+	Encryption   string               `json:"encryption"`
 	NodeType     string               `json:"node_type"`
 	Version      string               `json:"version"`
 }
@@ -37,11 +37,11 @@ func (msg MsgRegisterNode) ValidateBasic() csdkTypes.Error {
 	if !msg.NetSpeed.IsPositive() {
 		return ErrorInvalidField("net_speed")
 	}
-	if !msg.APIPort.Valid() {
+	if msg.APIPort == 0 {
 		return ErrorInvalidField("api_port")
 	}
-	if len(msg.EncMethod) == 0 {
-		return ErrorInvalidField("enc_method")
+	if len(msg.Encryption) == 0 {
+		return ErrorInvalidField("encryption")
 	}
 	if len(msg.NodeType) == 0 {
 		return ErrorInvalidField("node_type")
@@ -72,8 +72,8 @@ func (msg MsgRegisterNode) Route() string {
 
 func NewMsgRegisterNode(from csdkTypes.AccAddress,
 	amountToLock csdkTypes.Coin, pricesPerGB csdkTypes.Coins,
-	upload, download csdkTypes.Int, apiPort APIPort,
-	encMethod, nodeType, version string) *MsgRegisterNode {
+	upload, download csdkTypes.Int, apiPort uint16,
+	encryption, nodeType, version string) *MsgRegisterNode {
 
 	return &MsgRegisterNode{
 		From:         from,
@@ -83,10 +83,10 @@ func NewMsgRegisterNode(from csdkTypes.AccAddress,
 			Upload:   upload,
 			Download: download,
 		},
-		APIPort:   apiPort,
-		EncMethod: encMethod,
-		NodeType:  nodeType,
-		Version:   version,
+		APIPort:    apiPort,
+		Encryption: encryption,
+		NodeType:   nodeType,
+		Version:    version,
 	}
 }
 
@@ -95,8 +95,8 @@ type MsgUpdateNodeDetails struct {
 	ID          sdkTypes.ID          `json:"id"`
 	PricesPerGB csdkTypes.Coins      `json:"prices_per_gb"`
 	NetSpeed    sdkTypes.Bandwidth   `json:"net_speed"`
-	APIPort     APIPort              `json:"api_port"`
-	EncMethod   string               `json:"enc_method"`
+	APIPort     uint16               `json:"api_port"`
+	Encryption  string               `json:"encryption"`
 	Version     string               `json:"version"`
 }
 
@@ -118,7 +118,7 @@ func (msg MsgUpdateNodeDetails) ValidateBasic() csdkTypes.Error {
 	if msg.NetSpeed.IsNegative() {
 		return ErrorInvalidField("net_speed")
 	}
-	if !msg.APIPort.Valid() {
+	if msg.APIPort == 0 {
 		return ErrorInvalidField("api_port")
 	}
 
@@ -144,7 +144,7 @@ func (msg MsgUpdateNodeDetails) Route() string {
 
 func NewMsgUpdateNodeDetails(from csdkTypes.AccAddress,
 	id sdkTypes.ID, pricesPerGB csdkTypes.Coins, upload, download csdkTypes.Int,
-	apiPort APIPort, encMethod string, version string) *MsgUpdateNodeDetails {
+	apiPort uint16, encryption string, version string) *MsgUpdateNodeDetails {
 
 	return &MsgUpdateNodeDetails{
 		From:        from,
@@ -154,9 +154,9 @@ func NewMsgUpdateNodeDetails(from csdkTypes.AccAddress,
 			Upload:   upload,
 			Download: download,
 		},
-		APIPort:   apiPort,
-		EncMethod: encMethod,
-		Version:   version,
+		APIPort:    apiPort,
+		Encryption: encryption,
+		Version:    version,
 	}
 }
 

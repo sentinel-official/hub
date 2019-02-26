@@ -9,15 +9,6 @@ import (
 	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
 )
 
-type APIPort uint32
-
-func NewAPIPort(num uint32) APIPort {
-	return APIPort(num)
-}
-
-func (a APIPort) IsZero() bool { return a == 0 }
-func (a APIPort) Valid() bool  { return a > 0 && a <= 65535 }
-
 type NodeDetails struct {
 	ID           sdkTypes.ID
 	Owner        csdkTypes.AccAddress
@@ -26,8 +17,8 @@ type NodeDetails struct {
 
 	PricesPerGB csdkTypes.Coins
 	NetSpeed    sdkTypes.Bandwidth
-	APIPort     APIPort
-	EncMethod   string
+	APIPort     uint16
+	Encryption  string
 	NodeType    string
 	Version     string
 
@@ -44,11 +35,11 @@ func (nd *NodeDetails) UpdateDetails(details NodeDetails) {
 	if !details.NetSpeed.IsNil() && details.NetSpeed.IsPositive() {
 		nd.NetSpeed = details.NetSpeed
 	}
-	if !details.APIPort.IsZero() {
+	if details.APIPort != 0 {
 		nd.APIPort = details.APIPort
 	}
-	if len(details.EncMethod) != 0 {
-		nd.EncMethod = details.EncMethod
+	if len(details.Encryption) != 0 {
+		nd.Encryption = details.Encryption
 	}
 	if len(details.NodeType) != 0 {
 		nd.NodeType = details.NodeType

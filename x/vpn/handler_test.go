@@ -26,7 +26,7 @@ func Test_handleRegisterNode(t *testing.T) {
 	node := keeper.TestNodeValid
 
 	msg := types.NewMsgRegisterNode(node.Owner, node.LockedAmount, node.PricesPerGB, node.NetSpeed.Upload,
-		node.NetSpeed.Download, node.APIPort, node.EncMethod, node.NodeType, node.Version)
+		node.NetSpeed.Download, node.APIPort, node.Encryption, node.NodeType, node.Version)
 	res := handler(ctx, *msg)
 	require.True(t, res.IsOK())
 	require.Equal(t, types.TestNodeIDValid, sdkTypes.NewID(string(res.Tags[1].Value)))
@@ -54,7 +54,7 @@ func Test_handleUpdateNodeDetails(t *testing.T) {
 	node := keeper.TestNodeValid
 
 	msg := types.NewMsgRegisterNode(node.Owner, node.LockedAmount, node.PricesPerGB, node.NetSpeed.Upload,
-		node.NetSpeed.Download, node.APIPort, node.EncMethod, node.NodeType, node.Version)
+		node.NetSpeed.Download, node.APIPort, node.Encryption, node.NodeType, node.Version)
 	res := handler(ctx, *msg)
 	require.True(t, res.IsOK())
 	require.Equal(t, types.TestNodeIDValid, sdkTypes.NewID(string(res.Tags[1].Value)))
@@ -68,21 +68,21 @@ func Test_handleUpdateNodeDetails(t *testing.T) {
 
 	msgUpdateNodeDetails := types.NewMsgUpdateNodeDetails(node.Owner, types.TestNodeIDInvalid,
 		csdkTypes.Coins{csdkTypes.NewInt64Coin("coin_1", 1)},
-		csdkTypes.NewInt(100), csdkTypes.NewInt(100), types.NewAPIPort(8080), "", "")
+		csdkTypes.NewInt(100), csdkTypes.NewInt(100), uint16(8080), "", "")
 	res = handler(ctx, *msgUpdateNodeDetails)
 	require.False(t, res.IsOK())
 	require.Equal(t, types.ErrorNodeNotExists().Code(), res.Code)
 
 	msgUpdateNodeDetails = types.NewMsgUpdateNodeDetails(csdkTypes.AccAddress([]byte("invalid_address")), types.TestNodeIDValid,
 		csdkTypes.Coins{csdkTypes.NewInt64Coin("coin_1", 1)},
-		csdkTypes.NewInt(100), csdkTypes.NewInt(100), types.NewAPIPort(8080), "", "")
+		csdkTypes.NewInt(100), csdkTypes.NewInt(100), uint16(8080), "", "")
 	res = handler(ctx, *msgUpdateNodeDetails)
 	require.False(t, res.IsOK())
 	require.Equal(t, types.ErrorUnauthorized().Code(), res.Code)
 
 	msgUpdateNodeDetails = types.NewMsgUpdateNodeDetails(node.Owner, types.TestNodeIDValid,
 		csdkTypes.Coins{csdkTypes.NewInt64Coin("coin_1", 1)},
-		csdkTypes.NewInt(100), csdkTypes.NewInt(100), types.NewAPIPort(8080), "", "")
+		csdkTypes.NewInt(100), csdkTypes.NewInt(100), uint16(8080), "", "")
 	res = handler(ctx, *msgUpdateNodeDetails)
 	require.True(t, res.IsOK())
 	require.Equal(t, types.TestNodeIDValid, sdkTypes.NewID(string(res.Tags[0].Value)))
@@ -91,8 +91,8 @@ func Test_handleUpdateNodeDetails(t *testing.T) {
 	require.Nil(t, err)
 	require.Equal(t, csdkTypes.Coins{csdkTypes.NewInt64Coin("coin_1", 1)}, nodeRes.PricesPerGB)
 	require.Equal(t, sdkTypes.NewBandwidthFromInt64(100, 100), nodeRes.NetSpeed)
-	require.Equal(t, types.NewAPIPort(8080), nodeRes.APIPort)
-	require.Equal(t, types.TestEncMethod, nodeRes.EncMethod)
+	require.Equal(t, uint16(8080), nodeRes.APIPort)
+	require.Equal(t, types.TestEncryption, nodeRes.Encryption)
 	require.Equal(t, types.TestVersion, nodeRes.Version)
 }
 
@@ -111,7 +111,7 @@ func Test_handleUpdateNodeStatus(t *testing.T) {
 	node := keeper.TestNodeValid
 
 	msg := types.NewMsgRegisterNode(node.Owner, node.LockedAmount, node.PricesPerGB, node.NetSpeed.Upload,
-		node.NetSpeed.Download, node.APIPort, node.EncMethod, node.NodeType, node.Version)
+		node.NetSpeed.Download, node.APIPort, node.Encryption, node.NodeType, node.Version)
 	res := handler(ctx, *msg)
 	require.True(t, res.IsOK())
 	require.Equal(t, types.TestNodeIDValid, sdkTypes.NewID(string(res.Tags[1].Value)))
@@ -163,7 +163,7 @@ func Test_handleDeregisterNode(t *testing.T) {
 	node := keeper.TestNodeValid
 
 	msg := types.NewMsgRegisterNode(node.Owner, node.LockedAmount, node.PricesPerGB, node.NetSpeed.Upload,
-		node.NetSpeed.Download, node.APIPort, node.EncMethod, node.NodeType, node.Version)
+		node.NetSpeed.Download, node.APIPort, node.Encryption, node.NodeType, node.Version)
 	res := handler(ctx, *msg)
 	require.True(t, res.IsOK())
 	require.Equal(t, types.TestNodeIDValid, sdkTypes.NewID(string(res.Tags[1].Value)))
@@ -214,7 +214,7 @@ func Test_handleInitSession(t *testing.T) {
 	node := keeper.TestNodeValid
 
 	msg := types.NewMsgRegisterNode(node.Owner, node.LockedAmount, node.PricesPerGB, node.NetSpeed.Upload,
-		node.NetSpeed.Download, node.APIPort, node.EncMethod, node.NodeType, node.Version)
+		node.NetSpeed.Download, node.APIPort, node.Encryption, node.NodeType, node.Version)
 	res := handler(ctx, *msg)
 	require.True(t, res.IsOK())
 	require.Equal(t, types.TestNodeIDValid, sdkTypes.NewID(string(res.Tags[1].Value)))
@@ -290,7 +290,7 @@ func Test_handleUpdateSessionBandwidth(t *testing.T) {
 	node := keeper.TestNodeValid
 
 	msg := types.NewMsgRegisterNode(node.Owner, node.LockedAmount, node.PricesPerGB, node.NetSpeed.Upload,
-		node.NetSpeed.Download, node.APIPort, node.EncMethod, node.NodeType, node.Version)
+		node.NetSpeed.Download, node.APIPort, node.Encryption, node.NodeType, node.Version)
 	res := handler(ctx, *msg)
 	require.True(t, res.IsOK())
 	require.Equal(t, types.TestNodeIDValid, sdkTypes.NewID(string(res.Tags[1].Value)))

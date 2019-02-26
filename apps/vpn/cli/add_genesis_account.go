@@ -91,7 +91,7 @@ func AddGenesisAccountCmd(ctx *server.Context, cdc *codec.Codec) *cobra.Command 
 }
 
 func addGenesisAccount(cdc *codec.Codec, appState app.GenesisState, addr csdkTypes.AccAddress,
-	coins, vestingAmt csdkTypes.Coins, vestingStart, vestingEnd int64, ) (app.GenesisState, error) {
+	coins, vestingAmt csdkTypes.Coins, vestingStart, vestingEnd int64) (app.GenesisState, error) {
 
 	for _, stateAcc := range appState.Accounts {
 		if stateAcc.Address.Equals(addr) {

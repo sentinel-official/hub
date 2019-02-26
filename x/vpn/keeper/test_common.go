@@ -61,7 +61,7 @@ var (
 		PricesPerGB:     types.TestCoinsPos,
 		NetSpeed:        types.TestBandwidthPos,
 		APIPort:         types.TestAPIPortValid,
-		EncMethod:       types.TestEncMethod,
+		Encryption:      types.TestEncryption,
 		NodeType:        types.TestNodeType,
 		Version:         types.TestVersion,
 		Status:          types.StatusRegistered,

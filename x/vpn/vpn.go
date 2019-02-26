@@ -62,8 +62,6 @@ var (
 	NewMsgInitSession            = types.NewMsgInitSession
 	NewMsgUpdateSessionBandwidth = types.NewMsgUpdateSessionBandwidth
 
-	NewAPIPort = types.NewAPIPort
-
 	NewKeeper = keeper.NewKeeper
 
 	NewQuerier                 = querier.NewQuerier

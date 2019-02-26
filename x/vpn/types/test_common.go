@@ -45,12 +45,12 @@ var (
 	TestBandwidthZero = sdkTypes.NewBandwidth(TestUploadZero, TestDownloadZero)
 	TestBandwidthPos  = sdkTypes.NewBandwidth(TestUploadPos, TestDownloadPos)
 
-	TestAPIPortValid   = NewAPIPort(8000)
-	TestAPIPortInvalid = NewAPIPort(0)
+	TestAPIPortValid   = uint16(8000)
+	TestAPIPortInvalid = uint16(0)
 
-	TestEncMethod = "enc_method"
-	TestNodeType  = "node_type"
-	TestVersion   = "version"
+	TestEncryption = "encryption"
+	TestNodeType   = "node_type"
+	TestVersion    = "version"
 
 	TestNodeIDValid   = sdkTypes.NewID(fmt.Sprintf("%s/%d", TestAddress1.String(), 0))
 	TestNodeIDInvalid = sdkTypes.NewID("invalid")

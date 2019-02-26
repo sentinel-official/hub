@@ -128,7 +128,7 @@ func handleRegisterNode(ctx csdkTypes.Context, vk keeper.Keeper, ak auth.Account
 		LockedAmount:    msg.AmountToLock,
 		APIPort:         msg.APIPort,
 		NetSpeed:        msg.NetSpeed,
-		EncMethod:       msg.EncMethod,
+		Encryption:      msg.Encryption,
 		PricesPerGB:     msg.PricesPerGB,
 		Version:         msg.Version,
 		NodeType:        msg.NodeType,
@@ -170,7 +170,7 @@ func handleUpdateNodeDetails(ctx csdkTypes.Context, vk keeper.Keeper,
 	newDetails := types.NodeDetails{
 		APIPort:     msg.APIPort,
 		NetSpeed:    msg.NetSpeed,
-		EncMethod:   msg.EncMethod,
+		Encryption:  msg.Encryption,
 		PricesPerGB: msg.PricesPerGB,
 		Version:     msg.Version,
 	}
