@@ -1,12 +1,13 @@
 package types
 
 import (
+	"encoding/hex"
 	"fmt"
 	"sort"
 	"strings"
 
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
-	"github.com/tendermint/tendermint/libs/common"
+	"github.com/tendermint/tendermint/crypto/tmhash"
 )
 
 type ID string
@@ -19,13 +20,19 @@ func (n ID) Bytes() []byte  { return []byte(n) }
 func (n ID) String() string { return string(n) }
 func (n ID) Len() int       { return len(n) }
 
+func (n ID) Hash() string {
+	hash := tmhash.Sum(n.Bytes())
+	return hex.EncodeToString(hash)
+}
+
+func (n ID) HashTruncated() string {
+	hash := tmhash.SumTruncated(n.Bytes())
+	return hex.EncodeToString(hash)
+}
+
 func (n ID) Valid() bool {
 	splits := strings.Split(n.String(), "/")
 	return len(splits) == 2
-}
-
-func (n ID) Hash() string {
-	return common.HexBytes(n.Bytes()).String()
 }
 
 func IDFromOwnerAndCount(address csdkTypes.Address, count uint64) ID {
