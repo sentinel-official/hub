@@ -7,6 +7,6 @@ import (
 
 var (
 	TestPrivKey1 = ed25519.GenPrivKey()
-	TestPubkey1  = TestPrivKey1.PubKey()
-	TestAddress1 = csdkTypes.AccAddress(TestPubkey1.Address())
+	TestPubKey1  = TestPrivKey1.PubKey()
+	TestAddress1 = csdkTypes.AccAddress(TestPubKey1.Address())
 )

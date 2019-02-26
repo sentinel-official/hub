@@ -25,20 +25,20 @@ const (
 )
 
 type (
-	NodeDetails = types.NodeDetails
-	SessionDetails = types.SessionDetails
+	NodeDetails      = types.NodeDetails
+	SessionDetails   = types.SessionDetails
 	SessionBandwidth = types.SessionBandwidth
 
-	MsgRegisterNode = types.MsgRegisterNode
-	MsgUpdateNodeDetails = types.MsgUpdateNodeDetails
-	MsgUpdateNodeStatus = types.MsgUpdateNodeStatus
-	MsgDeregisterNode = types.MsgDeregisterNode
-	MsgInitSession = types.MsgInitSession
+	MsgRegisterNode           = types.MsgRegisterNode
+	MsgUpdateNodeDetails      = types.MsgUpdateNodeDetails
+	MsgUpdateNodeStatus       = types.MsgUpdateNodeStatus
+	MsgDeregisterNode         = types.MsgDeregisterNode
+	MsgInitSession            = types.MsgInitSession
 	MsgUpdateSessionBandwidth = types.MsgUpdateSessionBandwidth
 
 	Keeper = keeper.Keeper
 
-	QueryNodeParams = querier.QueryNodeParams
+	QueryNodeParams        = querier.QueryNodeParams
 	QueryNodesOfOwnerPrams = querier.QueryNodesOfOwnerPrams
 )
 
