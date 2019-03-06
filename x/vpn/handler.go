@@ -7,7 +7,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/cosmos/cosmos-sdk/x/bank"
 
-	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
 	"github.com/ironman0x7b2/sentinel-sdk/x/vpn/keeper"
 	"github.com/ironman0x7b2/sentinel-sdk/x/vpn/types"
 )
@@ -33,8 +32,8 @@ func NewHandler(vk keeper.Keeper, ak auth.AccountKeeper, bk bank.Keeper) csdkTyp
 	}
 }
 
-func endBlockNodes(ctx csdkTypes.Context, vk keeper.Keeper) {
-	inactiveHeight := ctx.BlockHeight() - 50
+func endBlockNodes(ctx csdkTypes.Context, vk keeper.Keeper, height int64) {
+	inactiveHeight := height - 50
 	nodeIDs, err := vk.GetActiveNodeIDsAtHeight(ctx, inactiveHeight)
 	if err != nil {
 		panic(err)
@@ -47,7 +46,7 @@ func endBlockNodes(ctx csdkTypes.Context, vk keeper.Keeper) {
 		}
 
 		node.Status = types.StatusInactive
-		node.StatusAtHeight = ctx.BlockHeight()
+		node.StatusAtHeight = height
 		if err := vk.SetNodeDetails(ctx, node); err != nil {
 			panic(err)
 		}
@@ -58,8 +57,8 @@ func endBlockNodes(ctx csdkTypes.Context, vk keeper.Keeper) {
 	}
 }
 
-func endBlockSessions(ctx csdkTypes.Context, vk keeper.Keeper, bk bank.Keeper) {
-	inactiveHeight := ctx.BlockHeight() - 25
+func endBlockSessions(ctx csdkTypes.Context, vk keeper.Keeper, bk bank.Keeper, height int64) {
+	inactiveHeight := height - 25
 	sessionIDs, err := vk.GetActiveSessionIDsAtHeight(ctx, inactiveHeight)
 	if err != nil {
 		panic(err)
@@ -72,7 +71,7 @@ func endBlockSessions(ctx csdkTypes.Context, vk keeper.Keeper, bk bank.Keeper) {
 		}
 
 		session.Status = types.StatusEnd
-		session.StatusAtHeight = ctx.BlockHeight()
+		session.StatusAtHeight = height
 		if err := vk.SetSessionDetails(ctx, session); err != nil {
 			panic(err)
 		}
@@ -101,8 +100,9 @@ func endBlockSessions(ctx csdkTypes.Context, vk keeper.Keeper, bk bank.Keeper) {
 }
 
 func EndBlock(ctx csdkTypes.Context, vk keeper.Keeper, bk bank.Keeper) {
-	endBlockNodes(ctx, vk)
-	endBlockSessions(ctx, vk, bk)
+	height := ctx.BlockHeight()
+	endBlockNodes(ctx, vk, height)
+	endBlockSessions(ctx, vk, bk, height)
 }
 
 func handleRegisterNode(ctx csdkTypes.Context, vk keeper.Keeper, ak auth.AccountKeeper, bk bank.Keeper,
@@ -122,6 +122,7 @@ func handleRegisterNode(ctx csdkTypes.Context, vk keeper.Keeper, ak auth.Account
 		return err.Result()
 	}
 
+	height := ctx.BlockHeight()
 	details := types.NodeDetails{
 		Owner:           msg.From,
 		PubKey:          nodeOwnerPubKey,
@@ -133,8 +134,8 @@ func handleRegisterNode(ctx csdkTypes.Context, vk keeper.Keeper, ak auth.Account
 		Version:         msg.Version,
 		NodeType:        msg.NodeType,
 		Status:          types.StatusRegistered,
-		StatusAtHeight:  ctx.BlockHeight(),
-		DetailsAtHeight: ctx.BlockHeight(),
+		StatusAtHeight:  height,
+		DetailsAtHeight: height,
 	}
 
 	tags, err = vk.AddNode(ctx, &details)
@@ -209,14 +210,16 @@ func handleUpdateNodeStatus(ctx csdkTypes.Context, vk keeper.Keeper,
 	if err := vk.RemoveActiveNodeIDAtHeight(ctx, details.StatusAtHeight, details.ID); err != nil {
 		return err.Result()
 	}
+
+	height := ctx.BlockHeight()
 	if msg.Status == types.StatusActive {
-		if err := vk.AddActiveNodeIDAtHeight(ctx, ctx.BlockHeight(), details.ID); err != nil {
+		if err := vk.AddActiveNodeIDAtHeight(ctx, height, details.ID); err != nil {
 			return err.Result()
 		}
 	}
 
 	details.Status = msg.Status
-	details.StatusAtHeight = ctx.BlockHeight()
+	details.StatusAtHeight = height
 	if err := vk.SetNodeDetails(ctx, details); err != nil {
 		return err.Result()
 	}
@@ -300,6 +303,7 @@ func handleInitSession(ctx csdkTypes.Context, vk keeper.Keeper, ak auth.AccountK
 		return err.Result()
 	}
 
+	height := ctx.BlockHeight()
 	details := types.SessionDetails{
 		NodeID:          msg.NodeID,
 		NodeOwner:       node.Owner,
@@ -310,10 +314,10 @@ func handleInitSession(ctx csdkTypes.Context, vk keeper.Keeper, ak auth.AccountK
 		PricePerGB:      pricePerGB,
 		Bandwidth: types.SessionBandwidth{
 			ToProvide:       bandwidth,
-			UpdatedAtHeight: ctx.BlockHeight(),
+			UpdatedAtHeight: height,
 		},
 		Status:         types.StatusInit,
-		StatusAtHeight: ctx.BlockHeight(),
+		StatusAtHeight: height,
 	}
 
 	tags, err = vk.AddSession(ctx, &details)
@@ -346,20 +350,21 @@ func handleUpdateSessionBandwidth(ctx csdkTypes.Context, vk keeper.Keeper,
 	if err := vk.RemoveActiveSessionIDsAtHeight(ctx, session.StatusAtHeight, session.ID); err != nil {
 		return err.Result()
 	}
-	if err := vk.AddActiveSessionIDsAtHeight(ctx, ctx.BlockHeight(), session.ID); err != nil {
+
+	height := ctx.BlockHeight()
+	if err := vk.AddActiveSessionIDsAtHeight(ctx, height, session.ID); err != nil {
 		return err.Result()
 	}
 
-	signData := sdkTypes.NewBandwidthSignData(msg.ID, msg.Bandwidth, session.NodeOwner, session.Client)
-	if err := session.SetNewSessionBandwidth(signData, msg.ClientSign, msg.NodeOwnerSign, ctx.BlockHeight()); err != nil {
+	if err := session.SetNewSessionBandwidth(msg.Bandwidth, msg.ClientSign, msg.NodeOwnerSign, height); err != nil {
 		return types.ErrorBandwidthUpdate(err.Error()).Result()
 	}
 	if session.Status == StatusInit {
-		session.StartedAtHeight = ctx.BlockHeight()
+		session.StartedAtHeight = height
 	}
 	if session.Status != StatusActive {
 		session.Status = StatusActive
-		session.StatusAtHeight = ctx.BlockHeight()
+		session.StatusAtHeight = height
 	}
 
 	if err := vk.SetSessionDetails(ctx, session); err != nil {

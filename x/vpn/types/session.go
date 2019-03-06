@@ -46,21 +46,21 @@ func (s SessionDetails) Amount() csdkTypes.Coin {
 	return amount
 }
 
-func (s *SessionDetails) SetNewSessionBandwidth(signData *sdkTypes.BandwidthSignData,
+func (s *SessionDetails) SetNewSessionBandwidth(bandwidth sdkTypes.Bandwidth,
 	clientSign, nodeOwnerSign []byte, height int64) error {
 
-	if signData.Bandwidth.LTE(s.Bandwidth.Consumed) ||
-		s.Bandwidth.ToProvide.LT(signData.Bandwidth) {
+	if bandwidth.LT(s.Bandwidth.Consumed) ||
+		s.Bandwidth.ToProvide.LT(bandwidth) {
 		return errors.New("Invalid bandwidth")
 	}
 
-	signDataBytes := signData.GetBytes()
+	signDataBytes := sdkTypes.NewBandwidthSignData(s.ID, bandwidth, s.NodeOwner, s.Client).GetBytes()
 	if !s.ClientPubKey.VerifyBytes(signDataBytes, clientSign) ||
 		!s.NodeOwnerPubKey.VerifyBytes(signDataBytes, nodeOwnerSign) {
 		return errors.New("Invalid client sign or node owner sign")
 	}
 
-	s.Bandwidth.Consumed = signData.Bandwidth
+	s.Bandwidth.Consumed = bandwidth
 	s.Bandwidth.ClientSign = clientSign
 	s.Bandwidth.NodeOwnerSign = nodeOwnerSign
 	s.Bandwidth.UpdatedAtHeight = height
