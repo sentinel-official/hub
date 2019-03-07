@@ -13,15 +13,19 @@ func TestNewID(t *testing.T) {
 	require.Equal(t, "", id1.String())
 	require.Equal(t, 0, id1.Len())
 	require.Equal(t, false, id1.Valid())
+	require.Equal(t, "e3b0c44298fc1c149afbf4c8996fb92427ae41e4", id1.HashTruncated())
+	require.Equal(t, "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", id1.Hash())
 }
 
 func TestIDFromOwnerAndCount(t *testing.T) {
-	id1 := IDFromOwnerAndCount(TestAddress1, 0)
-	require.Equal(t, ID(TestAddress1.String()+"/0"), id1)
-	require.Equal(t, []byte(TestAddress1.String()+"/0"), id1.Bytes())
-	require.Equal(t, TestAddress1.String()+"/0", id1.String())
+	id1 := IDFromOwnerAndCount(testAddress1, 0)
+	require.Equal(t, ID(testAddress1.String()+"/0"), id1)
+	require.Equal(t, []byte(testAddress1.String()+"/0"), id1.Bytes())
+	require.Equal(t, testAddress1.String()+"/0", id1.String())
 	require.Equal(t, 47, id1.Len())
 	require.Equal(t, true, id1.Valid())
+	require.Equal(t, "82aa4944e08aa7b651bd5945355a303bfc040966", id1.HashTruncated())
+	require.Equal(t, "82aa4944e08aa7b651bd5945355a303bfc0409668a9bff24f78aac0710893481", id1.Hash())
 }
 
 func TestNewIDs(t *testing.T) {

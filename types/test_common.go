@@ -6,7 +6,17 @@ import (
 )
 
 var (
-	TestPrivKey1 = ed25519.GenPrivKey()
-	TestPubKey1  = TestPrivKey1.PubKey()
-	TestAddress1 = csdkTypes.AccAddress(TestPubKey1.Address())
+	testPrivKey1 = ed25519.GenPrivKeyFromSecret([]byte("priv_key_1"))
+	testPubKey1  = testPrivKey1.PubKey()
+	testAddress1 = csdkTypes.AccAddress(testPubKey1.Address())
+
+	testPrivKey2 = ed25519.GenPrivKeyFromSecret([]byte("priv_key_2"))
+	testPubKey2  = testPrivKey2.PubKey()
+	testAddress2 = csdkTypes.AccAddress(testPubKey2.Address())
+
+	testUpload    = csdkTypes.NewInt(1000000000)
+	testDownload  = csdkTypes.NewInt(1000000000)
+	testBandwidth = NewBandwidth(testUpload, testDownload)
+
+	testID = IDFromOwnerAndCount(testAddress1, 0)
 )

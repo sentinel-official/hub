@@ -51,13 +51,13 @@ func (s *SessionDetails) SetNewSessionBandwidth(bandwidth sdkTypes.Bandwidth,
 
 	if bandwidth.LT(s.Bandwidth.Consumed) ||
 		s.Bandwidth.ToProvide.LT(bandwidth) {
-		return errors.New("Invalid bandwidth")
+		return errors.New(errMsgInvalidBandwidth)
 	}
 
 	signDataBytes := sdkTypes.NewBandwidthSignData(s.ID, bandwidth, s.NodeOwner, s.Client).GetBytes()
 	if !s.ClientPubKey.VerifyBytes(signDataBytes, clientSign) ||
 		!s.NodeOwnerPubKey.VerifyBytes(signDataBytes, nodeOwnerSign) {
-		return errors.New("Invalid client sign or node owner sign")
+		return errors.New(errMsgInvalidBandwidthSigns)
 	}
 
 	s.Bandwidth.Consumed = bandwidth
