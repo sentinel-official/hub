@@ -78,7 +78,7 @@ func (app *Hub) prepForZeroHeightGenesis(ctx csdkTypes.Context, jailWhiteList []
 
 	dels := app.stakingKeeper.GetAllDelegations(ctx)
 	for _, delegation := range dels {
-		_ = app.distributionKeeper.WithdrawDelegationRewards(ctx, delegation.DelegatorAddr, delegation.ValidatorAddr)
+		_ = app.distributionKeeper.WithdrawDelegationRewards(ctx, delegation.DelegatorAddress, delegation.ValidatorAddress)
 	}
 
 	app.distributionKeeper.DeleteAllValidatorSlashEvents(ctx)
@@ -88,12 +88,17 @@ func (app *Hub) prepForZeroHeightGenesis(ctx csdkTypes.Context, jailWhiteList []
 	ctx = ctx.WithBlockHeight(0)
 
 	app.stakingKeeper.IterateValidators(ctx, func(_ int64, val csdkTypes.Validator) (stop bool) {
+		scraps := app.distributionKeeper.GetValidatorOutstandingRewards(ctx, val.GetOperator())
+		feePool := app.distributionKeeper.GetFeePool(ctx)
+		feePool.CommunityPool = feePool.CommunityPool.Add(scraps)
+		app.distributionKeeper.SetFeePool(ctx, feePool)
+
 		app.distributionKeeper.Hooks().AfterValidatorCreated(ctx, val.GetOperator())
 		return false
 	})
 
 	for _, del := range dels {
-		app.distributionKeeper.Hooks().BeforeDelegationCreated(ctx, del.DelegatorAddr, del.ValidatorAddr)
+		app.distributionKeeper.Hooks().BeforeDelegationCreated(ctx, del.DelegatorAddress, del.ValidatorAddress)
 	}
 
 	ctx = ctx.WithBlockHeight(height)

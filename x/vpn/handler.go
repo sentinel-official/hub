@@ -77,7 +77,7 @@ func endBlockSessions(ctx csdkTypes.Context, vk keeper.Keeper, bk bank.Keeper, h
 		}
 
 		payAmount := session.Amount()
-		remainingAmount := session.LockedAmount.Minus(payAmount)
+		remainingAmount := session.LockedAmount.Sub(payAmount)
 
 		if !payAmount.IsZero() {
 			_, _, err := bk.AddCoins(ctx, session.NodeOwner, csdkTypes.Coins{payAmount})

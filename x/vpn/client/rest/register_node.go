@@ -37,7 +37,7 @@ func registerNodeHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) http.H
 			return
 		}
 
-		fromAddress, fromName, err := context.GetFromFields(req.BaseReq.From)
+		fromAddress, err := csdkTypes.AccAddressFromBech32(req.BaseReq.From)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
@@ -55,9 +55,6 @@ func registerNodeHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) http.H
 			return
 		}
 
-		cliCtx = cliCtx.WithGenerateOnly(req.BaseReq.GenerateOnly).WithSimulation(req.BaseReq.Simulate).
-			WithFromName(fromName).WithFromAddress(fromAddress)
-
 		msg := vpn.NewMsgRegisterNode(fromAddress,
 			amountToLock, pricesPerGB, req.NetSpeed.Upload, req.NetSpeed.Download,
 			req.APIPort, req.Encryption, req.NodeType, req.Version)
@@ -66,6 +63,6 @@ func registerNodeHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) http.H
 			return
 		}
 
-		clientRest.CompleteAndBroadcastTxREST(w, cliCtx, req.BaseReq, []csdkTypes.Msg{msg}, cdc)
+		clientRest.WriteGenerateStdTxResponse(w, cdc, cliCtx, req.BaseReq, []csdkTypes.Msg{msg})
 	}
 }

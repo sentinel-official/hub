@@ -143,6 +143,7 @@ func NewHub(logger log.Logger, db tmDB.DB, traceStore io.Writer, loadLatest bool
 		AddRoute("ibc", ibc.NewHandler(app.ibcMapper, app.bankKeeper))
 
 	app.QueryRouter().
+		AddRoute(auth.QuerierRoute, auth.NewQuerier(app.accountKeeper)).
 		AddRoute(staking.QuerierRoute, staking.NewQuerier(app.stakingKeeper, app.cdc)).
 		AddRoute(slashing.QuerierRoute, slashing.NewQuerier(app.slashingKeeper, app.cdc)).
 		AddRoute(distribution.QuerierRoute, distribution.NewQuerier(app.distributionKeeper)).

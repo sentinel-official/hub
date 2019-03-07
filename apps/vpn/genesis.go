@@ -332,8 +332,8 @@ func CollectStdTxs(cdc *codec.Codec, moniker string, genTxsDir string, genDoc tm
 		}
 
 		msg := msgs[0].(staking.MsgCreateValidator)
-		delAddr := msg.DelegatorAddr.String()
-		valAddr := csdkTypes.AccAddress(msg.ValidatorAddr).String()
+		delAddr := msg.DelegatorAddress.String()
+		valAddr := csdkTypes.AccAddress(msg.ValidatorAddress).String()
 
 		delAcc, delOk := addrMap[delAddr]
 		_, valOk := addrMap[valAddr]

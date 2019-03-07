@@ -120,8 +120,8 @@ func txCmd(cdc *amino.Codec, mc []csdkTypes.ModuleClients) *cobra.Command {
 		client.LineBreak,
 		authCli.GetSignCommand(cdc),
 		authCli.GetMultiSignCommand(cdc),
-		authCli.GetBroadcastCommand(cdc),
-		authCli.GetEncodeCommand(cdc),
+		tx.GetBroadcastCommand(cdc),
+		tx.GetEncodeCommand(cdc),
 		ibcCli.IBCTransferCmd(cdc),
 		ibcCli.IBCRelayCmd(cdc),
 		client.LineBreak,
@@ -136,7 +136,6 @@ func txCmd(cdc *amino.Codec, mc []csdkTypes.ModuleClients) *cobra.Command {
 
 func registerRoutes(rs *lcd.RestServer) {
 	// registerSwaggerUI(rs)
-	keys.RegisterRoutes(rs.Mux, rs.CliCtx.Indent)
 	rpc.RegisterRoutes(rs.CliCtx, rs.Mux)
 	tx.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc)
 	authRest.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, auth.StoreKey)

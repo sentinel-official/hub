@@ -31,7 +31,7 @@ func deregisterNodeHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) http
 			return
 		}
 
-		fromAddress, fromName, err := context.GetFromFields(req.BaseReq.From)
+		fromAddress, err := csdkTypes.AccAddressFromBech32(req.BaseReq.From)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
@@ -39,8 +39,6 @@ func deregisterNodeHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) http
 
 		vars := mux.Vars(r)
 		id := sdkTypes.NewID(vars["nodeID"])
-		cliCtx = cliCtx.WithGenerateOnly(req.BaseReq.GenerateOnly).WithSimulation(req.BaseReq.Simulate).
-			WithFromName(fromName).WithFromAddress(fromAddress)
 
 		msg := vpn.NewMsgDeregisterNode(fromAddress, id)
 		if err := msg.ValidateBasic(); err != nil {
@@ -48,6 +46,6 @@ func deregisterNodeHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) http
 			return
 		}
 
-		clientRest.CompleteAndBroadcastTxREST(w, cliCtx, req.BaseReq, []csdkTypes.Msg{msg}, cdc)
+		clientRest.WriteGenerateStdTxResponse(w, cdc, cliCtx, req.BaseReq, []csdkTypes.Msg{msg})
 	}
 }

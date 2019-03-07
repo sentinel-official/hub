@@ -37,7 +37,7 @@ func updateNodeDetailsHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) h
 			return
 		}
 
-		fromAddress, fromName, err := context.GetFromFields(req.BaseReq.From)
+		fromAddress, err := csdkTypes.AccAddressFromBech32(req.BaseReq.From)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
@@ -52,9 +52,6 @@ func updateNodeDetailsHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) h
 		vars := mux.Vars(r)
 		id := sdkTypes.NewID(vars["nodeID"])
 
-		cliCtx = cliCtx.WithGenerateOnly(req.BaseReq.GenerateOnly).WithSimulation(req.BaseReq.Simulate).
-			WithFromName(fromName).WithFromAddress(fromAddress)
-
 		msg := vpn.NewMsgUpdateNodeDetails(fromAddress, id,
 			pricesPerGB, req.NetSpeed.Upload, req.NetSpeed.Download,
 			req.APIPort, req.Encryption, req.Version)
@@ -63,7 +60,7 @@ func updateNodeDetailsHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) h
 			return
 		}
 
-		clientRest.CompleteAndBroadcastTxREST(w, cliCtx, req.BaseReq, []csdkTypes.Msg{msg}, cdc)
+		clientRest.WriteGenerateStdTxResponse(w, cdc, cliCtx, req.BaseReq, []csdkTypes.Msg{msg})
 	}
 }
 
@@ -85,7 +82,7 @@ func updateNodeStatusHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) ht
 			return
 		}
 
-		fromAddress, fromName, err := context.GetFromFields(req.BaseReq.From)
+		fromAddress, err := csdkTypes.AccAddressFromBech32(req.BaseReq.From)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
@@ -95,15 +92,12 @@ func updateNodeStatusHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) ht
 		id := sdkTypes.NewID(vars["nodeID"])
 		status := strings.ToUpper(req.Status)
 
-		cliCtx = cliCtx.WithGenerateOnly(req.BaseReq.GenerateOnly).WithSimulation(req.BaseReq.Simulate).
-			WithFromName(fromName).WithFromAddress(fromAddress)
-
 		msg := vpn.NewMsgUpdateNodeStatus(fromAddress, id, status)
 		if err := msg.ValidateBasic(); err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
 		}
 
-		clientRest.CompleteAndBroadcastTxREST(w, cliCtx, req.BaseReq, []csdkTypes.Msg{msg}, cdc)
+		clientRest.WriteGenerateStdTxResponse(w, cdc, cliCtx, req.BaseReq, []csdkTypes.Msg{msg})
 	}
 }

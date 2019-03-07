@@ -40,7 +40,7 @@
   revision = "d4cc87b860166d00d6b5b9e0d3b3d71d6088d4d4"
 
 [[projects]]
-  digest = "1:12c838ffe22539efe729932054b138967ba13681d0c2547085c7647a07cf9452"
+  digest = "1:9c0a839f202b5f18d084b8e560281e4de0c03a37159e92d93dac93f353255f1c"
   name = "github.com/cosmos/cosmos-sdk"
   packages = [
     "baseapp",
@@ -54,6 +54,7 @@
     "client/tx",
     "client/utils",
     "cmd/gaia/app",
+    "cmd/gaia/app/x/bank",
     "codec",
     "crypto",
     "crypto/keys",
@@ -79,7 +80,6 @@
     "types/rest",
     "version",
     "x/auth",
-    "x/auth/client",
     "x/auth/client/cli",
     "x/auth/client/rest",
     "x/auth/client/txbuilder",
@@ -125,8 +125,8 @@
     "x/staking/types",
   ]
   pruneopts = "UT"
-  revision = "906e9509cfcae3330584416c8b8e9cfe6c8d2766"
-  version = "v0.32.0"
+  revision = "06f741609bbce747643e9f1f2abf67040ad78e16"
+  version = "v0.33.0"
 
 [[projects]]
   digest = "1:e8a3550c8786316675ff54ad6f09d265d129c9d986919af7f541afba50d87ce2"
@@ -134,6 +134,14 @@
   packages = ["."]
   pruneopts = "UT"
   revision = "52158e4697b87de16ed390e1bdaf813e581008fa"
+
+[[projects]]
+  digest = "1:a2b34d1436ac24a0db176f84c015d80438602eeec12f2f8358bb72749711ab52"
+  name = "github.com/cosmos/ledger-cosmos-go"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "e2f595b3b7b222e1cbe9daf89e73e4dcab02d54c"
+  version = "v0.9.8"
 
 [[projects]]
   digest = "1:ffe9824d294da03b391f44e1ae8281281b4afc1bdaa9588c9097785e3af10cec"
@@ -377,7 +385,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:bfc66a1fd78dc8f14d419fd52a5a42db1d572e887ebcc80b98c1a515a8f2d837"
+  digest = "1:01cd0cd47758f04c5604daa3be4637e2afa1e0c15af7e08289e95360369e4f48"
   name = "github.com/prometheus/procfs"
   packages = [
     ".",
@@ -387,7 +395,7 @@
     "xfs",
   ]
   pruneopts = "UT"
-  revision = "bbced9601137e764853b2fad7ec3e2dc4c504e02"
+  revision = "d0f344d83b0c80a1bc03b547a2374a9ec6711144"
 
 [[projects]]
   digest = "1:ea0700160aca4ef099f4e06686a665a87691f4248dddd40796925eda2e46bd64"
@@ -520,7 +528,7 @@
   version = "v0.12.1"
 
 [[projects]]
-  digest = "1:89f6fe8d02b427996828fbf43720ed1297a2e92c930b98dd302767b5ad796579"
+  digest = "1:088088db7ae1174ce66abecbca6924e969cd05632053532ed7dadc7cc35f7885"
   name = "github.com/tendermint/tendermint"
   packages = [
     "abci/client",
@@ -586,8 +594,7 @@
     "version",
   ]
   pruneopts = "UT"
-  revision = "28d75ec8016b7fb043735cbe4c4d92ec73355de7"
-  version = "v0.30.0"
+  revision = "v0.31.0-dev0"
 
 [[projects]]
   digest = "1:5a736f4722932d9a45d28852e85b83f68292d9af2ef0be29d4e5fe6fd89d5d96"
@@ -596,14 +603,6 @@
   pruneopts = "UT"
   revision = "302fd402163c34626286195dfa9adac758334acc"
   version = "v0.9.0"
-
-[[projects]]
-  digest = "1:fca24169988a61ea725d1326de30910d8049fe68bcbc194d28803f9a76dda380"
-  name = "github.com/zondax/ledger-cosmos-go"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "69fdb8ce5e5b9d9c3b22b9248e117b231d4f06dd"
-  version = "v0.9.7"
 
 [[projects]]
   digest = "1:f8e4c0b959174a1fa5946b12f1f2ac7ea5651bef20a9e4a8dac55dbffcaa6cd6"
@@ -657,14 +656,14 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:cdaa9bc684e709ff885b3747eff4a31f6ca70c76a681a6503cb6096e981d79b4"
+  digest = "1:394fc8dcc8112869c316975bff3b4d2309a8f3e457b391cb353fbd5827c31591"
   name = "golang.org/x/sys"
   packages = [
     "cpu",
     "unix",
   ]
   pruneopts = "UT"
-  revision = "a98ae47d97a5abb3a3e9045da36315f9f8312970"
+  revision = "b294cbcfc56d2a65a30c02c78722b5df061e99b8"
 
 [[projects]]
   digest = "1:a2ab62866c75542dd18d2b069fec854577a20211d7c0ea6ae746072a1dccdd18"
@@ -695,7 +694,7 @@
   name = "google.golang.org/genproto"
   packages = ["googleapis/rpc/status"]
   pruneopts = "UT"
-  revision = "c21a8b77f9f040598af1c8c5c0870568f1959df3"
+  revision = "6e86cb5d2f12401bdd82a5eccbd701b5a697e63e"
 
 [[projects]]
   digest = "1:cbc746de4662c66fd24a037501bd65aa0f8ad0bfca0c92576e0abb88864e3741"
@@ -759,6 +758,7 @@
     "github.com/cosmos/cosmos-sdk/client/tx",
     "github.com/cosmos/cosmos-sdk/client/utils",
     "github.com/cosmos/cosmos-sdk/codec",
+    "github.com/cosmos/cosmos-sdk/crypto/keys",
     "github.com/cosmos/cosmos-sdk/server",
     "github.com/cosmos/cosmos-sdk/server/config",
     "github.com/cosmos/cosmos-sdk/store",

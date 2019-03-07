@@ -32,7 +32,7 @@ func initSessionHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) http.Ha
 			return
 		}
 
-		fromAddress, fromName, err := context.GetFromFields(req.BaseReq.From)
+		fromAddress, err := csdkTypes.AccAddressFromBech32(req.BaseReq.From)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
@@ -46,15 +46,12 @@ func initSessionHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) http.Ha
 			return
 		}
 
-		cliCtx = cliCtx.WithGenerateOnly(req.BaseReq.GenerateOnly).WithSimulation(req.BaseReq.Simulate).
-			WithFromName(fromName).WithFromAddress(fromAddress)
-
 		msg := vpn.NewMsgInitSession(fromAddress, nodeID, amountToLock)
 		if err := msg.ValidateBasic(); err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
 		}
 
-		clientRest.CompleteAndBroadcastTxREST(w, cliCtx, req.BaseReq, []csdkTypes.Msg{msg}, cdc)
+		clientRest.WriteGenerateStdTxResponse(w, cdc, cliCtx, req.BaseReq, []csdkTypes.Msg{msg})
 	}
 }

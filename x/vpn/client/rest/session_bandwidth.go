@@ -20,6 +20,7 @@ import (
 type msgSignSessionBandwidth struct {
 	BaseReq   rest.BaseReq       `json:"base_req"`
 	Bandwidth sdkTypes.Bandwidth `json:"bandwidth"`
+	Password  string             `json:"password"`
 }
 
 func signSessionBandwidthHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) http.HandlerFunc {
@@ -49,10 +50,10 @@ func signSessionBandwidthHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec
 			return
 		}
 
-		cliCtx = cliCtx.WithGenerateOnly(req.BaseReq.GenerateOnly).WithSimulation(req.BaseReq.Simulate).
+		cliCtx = cliCtx.WithGenerateOnly(true).WithSimulation(req.BaseReq.Simulate).
 			WithFromName(fromName).WithFromAddress(fromAddress)
 
-		signature, _, err := keybase.Sign(fromName, req.BaseReq.Password, signBytes)
+		signature, _, err := keybase.Sign(fromName, req.Password, signBytes)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
@@ -82,7 +83,7 @@ func updateSessionBandwidthHandlerFunc(cliCtx context.CLIContext, cdc *codec.Cod
 			return
 		}
 
-		fromAddress, fromName, err := context.GetFromFields(req.BaseReq.From)
+		fromAddress, err := csdkTypes.AccAddressFromBech32(req.BaseReq.From)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
@@ -103,9 +104,6 @@ func updateSessionBandwidthHandlerFunc(cliCtx context.CLIContext, cdc *codec.Cod
 		vars := mux.Vars(r)
 		sessionID := sdkTypes.NewID(vars["sessionID"])
 
-		cliCtx = cliCtx.WithGenerateOnly(req.BaseReq.GenerateOnly).WithSimulation(req.BaseReq.Simulate).
-			WithFromName(fromName).WithFromAddress(fromAddress)
-
 		msg := vpn.NewMsgUpdateSessionBandwidth(fromAddress, sessionID,
 			req.Bandwidth.Upload, req.Bandwidth.Download, clientSign, nodeOwnerSign)
 		if err := msg.ValidateBasic(); err != nil {
@@ -113,6 +111,6 @@ func updateSessionBandwidthHandlerFunc(cliCtx context.CLIContext, cdc *codec.Cod
 			return
 		}
 
-		clientRest.CompleteAndBroadcastTxREST(w, cliCtx, req.BaseReq, []csdkTypes.Msg{msg}, cdc)
+		clientRest.WriteGenerateStdTxResponse(w, cdc, cliCtx, req.BaseReq, []csdkTypes.Msg{msg})
 	}
 }

@@ -36,7 +36,7 @@ type SessionDetails struct {
 
 func (s SessionDetails) Amount() csdkTypes.Coin {
 	consumedBandwidth := s.Bandwidth.Consumed.Upload.Add(s.Bandwidth.Consumed.Download)
-	amountInt := consumedBandwidth.Div(sdkTypes.GB.Add(sdkTypes.GB)).Mul(s.PricePerGB.Amount)
+	amountInt := consumedBandwidth.Quo(sdkTypes.GB.Add(sdkTypes.GB)).Mul(s.PricePerGB.Amount)
 
 	amount := csdkTypes.NewCoin(s.PricePerGB.Denom, amountInt)
 	if s.LockedAmount.IsLT(amount) || s.LockedAmount.IsEqual(amount) {

@@ -68,8 +68,8 @@ func (nd NodeDetails) CalculateBandwidth(amount csdkTypes.Coin) (sdkTypes.Bandwi
 		return sdkTypes.Bandwidth{}, ErrorInvalidPriceDenom()
 	}
 
-	upload := amount.Amount.Div(pricePerGB.Amount).Mul(sdkTypes.GB)
-	download := amount.Amount.Div(pricePerGB.Amount).Mul(sdkTypes.GB)
+	upload := amount.Amount.Quo(pricePerGB.Amount).Mul(sdkTypes.GB)
+	download := amount.Amount.Quo(pricePerGB.Amount).Mul(sdkTypes.GB)
 	bandwidth := sdkTypes.NewBandwidth(upload, download)
 
 	return bandwidth, nil

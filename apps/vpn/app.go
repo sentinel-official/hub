@@ -154,6 +154,7 @@ func NewVPN(logger log.Logger, db tmDB.DB, traceStore io.Writer, loadLatest bool
 		AddRoute(vpn.RouterKey, vpn.NewHandler(app.vpnKeeper, app.accountKeeper, app.bankKeeper))
 
 	app.QueryRouter().
+		AddRoute(auth.QuerierRoute, auth.NewQuerier(app.accountKeeper)).
 		AddRoute(staking.QuerierRoute, staking.NewQuerier(app.stakingKeeper, app.cdc)).
 		AddRoute(slashing.QuerierRoute, slashing.NewQuerier(app.slashingKeeper, app.cdc)).
 		AddRoute(distribution.QuerierRoute, distribution.NewQuerier(app.distributionKeeper)).
