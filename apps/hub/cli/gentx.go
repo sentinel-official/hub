@@ -42,6 +42,7 @@ func GenTxCmd(ctx *server.Context, cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "gentx",
 		Short: "Generate a genesis tx carrying a self delegation",
+		Args:  cobra.NoArgs,
 		Long: fmt.Sprintf(`This command is an alias of the 'hubd tx create-validator' command'.
 
 It creates a genesis piece carrying a self delegation with the
@@ -81,6 +82,10 @@ following delegation and commission default parameters:
 				return err
 			}
 
+			if err = app.HubValidateGenesisState(genesisState); err != nil {
+				return err
+			}
+
 			kb, err := keys.NewKeyBaseFromDir(viper.GetString(flagClientHome))
 			if err != nil {
 				return err
@@ -99,7 +104,11 @@ following delegation and commission default parameters:
 				}
 			}
 
-			prepareFlagsForTxCreateValidator(config, nodeID, ip, genDoc.ChainID, valPubKey)
+			website := viper.GetString(cli.FlagWebsite)
+			details := viper.GetString(cli.FlagDetails)
+			identity := viper.GetString(cli.FlagIdentity)
+
+			prepareFlagsForTxCreateValidator(config, nodeID, ip, genDoc.ChainID, valPubKey, website, details, identity)
 
 			amount := viper.GetString(cli.FlagAmount)
 			coins, err := csdkTypes.ParseCoins(amount)
@@ -114,6 +123,9 @@ following delegation and commission default parameters:
 
 			txBldr := authTxBuiler.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
 			cliCtx := context.NewCLIContext().WithCodec(cdc)
+
+			viper.Set(client.FlagGenerateOnly, true)
+
 			txBldr, msg, err := cli.BuildCreateValidatorMsg(cliCtx, txBldr)
 			if err != nil {
 				return err
@@ -171,6 +183,9 @@ following delegation and commission default parameters:
 		"write the genesis transaction JSON document to the given file instead of the default location")
 	cmd.Flags().String(cli.FlagIP, ip, "The node's public IP")
 	cmd.Flags().String(cli.FlagNodeID, "", "The node's NodeID")
+	cmd.Flags().String(cli.FlagWebsite, "", "The validator's (optional) website")
+	cmd.Flags().String(cli.FlagDetails, "", "The validator's (optional) details")
+	cmd.Flags().String(cli.FlagIdentity, "", "The (optional) identity signature (ex. UPort or Keybase)")
 	cmd.Flags().AddFlagSet(cli.FsCommissionCreate)
 	cmd.Flags().AddFlagSet(cli.FsMinSelfDelegation)
 	cmd.Flags().AddFlagSet(cli.FsAmount)
@@ -207,15 +222,18 @@ func accountInGenesis(genesisState app.GenesisState, key csdkTypes.AccAddress, c
 }
 
 func prepareFlagsForTxCreateValidator(config *tmConfig.Config, nodeID, ip, chainID string,
-	valPubKey crypto.PubKey) {
+	valPubKey crypto.PubKey, website, details, identity string) {
 	viper.Set(tmCli.HomeFlag, viper.GetString(flagClientHome))
 	viper.Set(client.FlagChainID, chainID)
 	viper.Set(client.FlagFrom, viper.GetString(client.FlagName))
 	viper.Set(cli.FlagNodeID, nodeID)
 	viper.Set(cli.FlagIP, ip)
 	viper.Set(cli.FlagPubKey, csdkTypes.MustBech32ifyConsPub(valPubKey))
-	viper.Set(client.FlagGenerateOnly, true)
 	viper.Set(cli.FlagMoniker, config.Moniker)
+	viper.Set(cli.FlagWebsite, website)
+	viper.Set(cli.FlagDetails, details)
+	viper.Set(cli.FlagIdentity, identity)
+
 	if config.Moniker == "" {
 		viper.Set(cli.FlagMoniker, viper.GetString(client.FlagName))
 	}

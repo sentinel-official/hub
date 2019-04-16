@@ -44,7 +44,7 @@ func signSessionBandwidthHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec
 			return
 		}
 
-		fromAddress, fromName, err := context.GetFromFields(req.BaseReq.From)
+		fromAddress, fromName, err := context.GetFromFields(req.BaseReq.From, false)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return

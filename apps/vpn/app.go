@@ -11,6 +11,7 @@ import (
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/cosmos/cosmos-sdk/x/bank"
+	"github.com/cosmos/cosmos-sdk/x/crisis"
 	"github.com/cosmos/cosmos-sdk/x/distribution"
 	"github.com/cosmos/cosmos-sdk/x/gov"
 	"github.com/cosmos/cosmos-sdk/x/ibc"
@@ -40,6 +41,8 @@ type VPN struct {
 	*baseapp.BaseApp
 	cdc *codec.Codec
 
+	assertInvariantsBlockly bool
+
 	keyMain *csdkTypes.KVStoreKey
 
 	keyParams        *csdkTypes.KVStoreKey
@@ -68,35 +71,39 @@ type VPN struct {
 	distributionKeeper  distribution.Keeper
 	govKeeper           gov.Keeper
 	mintKeeper          mint.Keeper
+	crisisKeeper        crisis.Keeper
 	ibcMapper           ibc.Mapper
 
 	vpnKeeper vpn.Keeper
 }
 
-func NewVPN(logger log.Logger, db tmDB.DB, traceStore io.Writer, loadLatest bool, baseAppOptions ...func(*baseapp.BaseApp)) *VPN {
+func NewVPN(logger log.Logger, db tmDB.DB, traceStore io.Writer, loadLatest, assertInvariantsBlockly bool,
+	baseAppOptions ...func(*baseapp.BaseApp)) *VPN {
+
 	cdc := MakeCodec()
 
 	bApp := baseapp.NewBaseApp(appName, logger, db, auth.DefaultTxDecoder(cdc), baseAppOptions...)
 	bApp.SetCommitMultiStoreTracer(traceStore)
 
 	var app = &VPN{
-		BaseApp:          bApp,
-		cdc:              cdc,
-		keyParams:        csdkTypes.NewKVStoreKey(params.StoreKey),
-		keyMain:          csdkTypes.NewKVStoreKey(baseapp.MainStoreKey),
-		keyAccount:       csdkTypes.NewKVStoreKey(auth.StoreKey),
-		keyFeeCollection: csdkTypes.NewKVStoreKey(auth.FeeStoreKey),
-		keyStaking:       csdkTypes.NewKVStoreKey(staking.StoreKey),
-		keySlashing:      csdkTypes.NewKVStoreKey(slashing.StoreKey),
-		keyDistribution:  csdkTypes.NewKVStoreKey(distribution.StoreKey),
-		keyGov:           csdkTypes.NewKVStoreKey(gov.StoreKey),
-		keyMint:          csdkTypes.NewKVStoreKey(mint.StoreKey),
-		keyIBC:           csdkTypes.NewKVStoreKey("ibc"),
-		keyVPNNode:       csdkTypes.NewKVStoreKey(vpn.StoreKeyNode),
-		keyVPNSession:    csdkTypes.NewKVStoreKey(vpn.StoreKeySession),
-		tkeyParams:       csdkTypes.NewTransientStoreKey(params.TStoreKey),
-		tkeyStaking:      csdkTypes.NewTransientStoreKey(staking.TStoreKey),
-		tkeyDistribution: csdkTypes.NewTransientStoreKey(distribution.TStoreKey),
+		BaseApp:                 bApp,
+		cdc:                     cdc,
+		assertInvariantsBlockly: assertInvariantsBlockly,
+		keyParams:               csdkTypes.NewKVStoreKey(params.StoreKey),
+		keyMain:                 csdkTypes.NewKVStoreKey(baseapp.MainStoreKey),
+		keyAccount:              csdkTypes.NewKVStoreKey(auth.StoreKey),
+		keyFeeCollection:        csdkTypes.NewKVStoreKey(auth.FeeStoreKey),
+		keyStaking:              csdkTypes.NewKVStoreKey(staking.StoreKey),
+		keySlashing:             csdkTypes.NewKVStoreKey(slashing.StoreKey),
+		keyDistribution:         csdkTypes.NewKVStoreKey(distribution.StoreKey),
+		keyGov:                  csdkTypes.NewKVStoreKey(gov.StoreKey),
+		keyMint:                 csdkTypes.NewKVStoreKey(mint.StoreKey),
+		keyIBC:                  csdkTypes.NewKVStoreKey("ibc"),
+		keyVPNNode:              csdkTypes.NewKVStoreKey(vpn.StoreKeyNode),
+		keyVPNSession:           csdkTypes.NewKVStoreKey(vpn.StoreKeySession),
+		tkeyParams:              csdkTypes.NewTransientStoreKey(params.TStoreKey),
+		tkeyStaking:             csdkTypes.NewTransientStoreKey(staking.TStoreKey),
+		tkeyDistribution:        csdkTypes.NewTransientStoreKey(distribution.TStoreKey),
 	}
 
 	app.paramsKeeper = params.NewKeeper(app.cdc,
@@ -142,7 +149,15 @@ func NewVPN(logger log.Logger, db tmDB.DB, traceStore io.Writer, loadLatest bool
 		&stakingKeeper,
 		app.feeCollectionKeeper)
 	app.stakingKeeper = *stakingKeeper.SetHooks(NewStakingHooks(app.distributionKeeper.Hooks(), app.slashingKeeper.Hooks()))
+	app.crisisKeeper = crisis.NewKeeper(app.paramsKeeper.Subspace(crisis.DefaultParamspace),
+		app.distributionKeeper,
+		app.bankKeeper,
+		app.feeCollectionKeeper)
 	app.vpnKeeper = vpn.NewKeeper(app.cdc, app.keyVPNNode, app.keyVPNSession)
+
+	bank.RegisterInvariants(&app.crisisKeeper, app.accountKeeper)
+	distribution.RegisterInvariants(&app.crisisKeeper, app.distributionKeeper, app.stakingKeeper)
+	staking.RegisterInvariants(&app.crisisKeeper, app.stakingKeeper, app.feeCollectionKeeper, app.distributionKeeper, app.accountKeeper)
 
 	app.Router().
 		AddRoute(bank.RouterKey, bank.NewHandler(app.bankKeeper)).
@@ -150,6 +165,7 @@ func NewVPN(logger log.Logger, db tmDB.DB, traceStore io.Writer, loadLatest bool
 		AddRoute(slashing.RouterKey, slashing.NewHandler(app.slashingKeeper)).
 		AddRoute(distribution.RouterKey, distribution.NewHandler(app.distributionKeeper)).
 		AddRoute(gov.RouterKey, gov.NewHandler(app.govKeeper)).
+		AddRoute(crisis.RouterKey, crisis.NewHandler(app.crisisKeeper)).
 		AddRoute("ibc", ibc.NewHandler(app.ibcMapper, app.bankKeeper)).
 		AddRoute(vpn.RouterKey, vpn.NewHandler(app.vpnKeeper, app.accountKeeper, app.bankKeeper))
 
@@ -159,6 +175,7 @@ func NewVPN(logger log.Logger, db tmDB.DB, traceStore io.Writer, loadLatest bool
 		AddRoute(slashing.QuerierRoute, slashing.NewQuerier(app.slashingKeeper, app.cdc)).
 		AddRoute(distribution.QuerierRoute, distribution.NewQuerier(app.distributionKeeper)).
 		AddRoute(gov.QuerierRoute, gov.NewQuerier(app.govKeeper)).
+		AddRoute(mint.QuerierRoute, mint.NewQuerier(app.mintKeeper)).
 		AddRoute(vpn.QuerierRoute, vpn.NewQuerier(app.vpnKeeper, app.cdc))
 
 	app.MountStores(app.keyMain, app.keyParams,
@@ -191,6 +208,7 @@ func MakeCodec() *codec.Codec {
 	slashing.RegisterCodec(cdc)
 	distribution.RegisterCodec(cdc)
 	gov.RegisterCodec(cdc)
+	crisis.RegisterCodec(cdc)
 	ibc.RegisterCodec(cdc)
 
 	vpn.RegisterCodec(cdc)
@@ -213,7 +231,9 @@ func (app *VPN) EndBlocker(ctx csdkTypes.Context, req abciTypes.RequestEndBlock)
 	tags = append(tags, endBlockerTags...)
 	vpn.EndBlock(ctx, app.vpnKeeper, app.bankKeeper)
 
-	app.assertRuntimeInvariants()
+	if app.assertInvariantsBlockly {
+		app.assertRuntimeInvariants()
+	}
 
 	return abciTypes.ResponseEndBlock{
 		ValidatorUpdates: validatorUpdates,
@@ -242,6 +262,7 @@ func (app *VPN) initFromGenesisState(ctx csdkTypes.Context, genesisState Genesis
 	slashing.InitGenesis(ctx, app.slashingKeeper, genesisState.SlashingData, genesisState.StakingData.Validators.ToSDKValidators())
 	gov.InitGenesis(ctx, app.govKeeper, genesisState.GovData)
 	mint.InitGenesis(ctx, app.mintKeeper, genesisState.MintData)
+	crisis.InitGenesis(ctx, app.crisisKeeper, genesisState.CrisisData)
 
 	if err = VPNValidateGenesisState(genesisState); err != nil {
 		panic(err)

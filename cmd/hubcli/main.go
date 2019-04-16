@@ -16,6 +16,7 @@ import (
 	authRest "github.com/cosmos/cosmos-sdk/x/auth/client/rest"
 	bankCli "github.com/cosmos/cosmos-sdk/x/bank/client/cli"
 	bankRest "github.com/cosmos/cosmos-sdk/x/bank/client/rest"
+	crisisClient "github.com/cosmos/cosmos-sdk/x/crisis/client"
 	"github.com/cosmos/cosmos-sdk/x/distribution"
 	distClient "github.com/cosmos/cosmos-sdk/x/distribution/client"
 	distRest "github.com/cosmos/cosmos-sdk/x/distribution/client/rest"
@@ -23,6 +24,9 @@ import (
 	govClient "github.com/cosmos/cosmos-sdk/x/gov/client"
 	govRest "github.com/cosmos/cosmos-sdk/x/gov/client/rest"
 	ibcCli "github.com/cosmos/cosmos-sdk/x/ibc/client/cli"
+	"github.com/cosmos/cosmos-sdk/x/mint"
+	mintClient "github.com/cosmos/cosmos-sdk/x/mint/client"
+	mintRest "github.com/cosmos/cosmos-sdk/x/mint/client/rest"
 	"github.com/cosmos/cosmos-sdk/x/slashing"
 	slashingClient "github.com/cosmos/cosmos-sdk/x/slashing/client"
 	slashingRest "github.com/cosmos/cosmos-sdk/x/slashing/client/rest"
@@ -53,6 +57,8 @@ func main() {
 		distClient.NewModuleClient(distribution.StoreKey, cdc),
 		stakingClient.NewModuleClient(staking.StoreKey, cdc),
 		slashingClient.NewModuleClient(slashing.StoreKey, cdc),
+		mintClient.NewModuleClient(mint.StoreKey, cdc),
+		crisisClient.NewModuleClient(slashing.StoreKey, cdc),
 	}
 
 	cobra.EnableCommandSorting = false
@@ -103,7 +109,10 @@ func queryCmd(cdc *amino.Codec, mc []csdkTypes.ModuleClients) *cobra.Command {
 	)
 
 	for _, m := range mc {
-		queryCmd.AddCommand(m.GetQueryCmd())
+		mQueryCmd := m.GetQueryCmd()
+		if mQueryCmd != nil {
+			queryCmd.AddCommand(mQueryCmd)
+		}
 	}
 
 	return queryCmd
@@ -144,6 +153,7 @@ func registerRoutes(rs *lcd.RestServer) {
 	slashingRest.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, rs.KeyBase)
 	distRest.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, distribution.StoreKey)
 	govRest.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc)
+	mintRest.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc)
 }
 
 func registerSwaggerUI(rs *lcd.RestServer) {

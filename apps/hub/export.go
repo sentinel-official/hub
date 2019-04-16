@@ -8,6 +8,7 @@ import (
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/cosmos/cosmos-sdk/x/bank"
+	"github.com/cosmos/cosmos-sdk/x/crisis"
 	"github.com/cosmos/cosmos-sdk/x/distribution"
 	"github.com/cosmos/cosmos-sdk/x/gov"
 	"github.com/cosmos/cosmos-sdk/x/mint"
@@ -42,6 +43,7 @@ func (app *Hub) ExportAppStateAndValidators(forZeroHeight bool, jailWhiteList []
 		mint.ExportGenesis(ctx, app.mintKeeper),
 		distribution.ExportGenesis(ctx, app.distributionKeeper),
 		gov.ExportGenesis(ctx, app.govKeeper),
+		crisis.ExportGenesis(ctx, app.crisisKeeper),
 		slashing.ExportGenesis(ctx, app.slashingKeeper),
 	)
 	appState, err = codec.MarshalJSONIndent(app.cdc, genState)
@@ -99,6 +101,7 @@ func (app *Hub) prepForZeroHeightGenesis(ctx csdkTypes.Context, jailWhiteList []
 
 	for _, del := range dels {
 		app.distributionKeeper.Hooks().BeforeDelegationCreated(ctx, del.DelegatorAddress, del.ValidatorAddress)
+		app.distributionKeeper.Hooks().AfterDelegationModified(ctx, del.DelegatorAddress, del.ValidatorAddress)
 	}
 
 	ctx = ctx.WithBlockHeight(height)

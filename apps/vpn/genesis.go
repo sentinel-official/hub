@@ -15,6 +15,7 @@ import (
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/cosmos/cosmos-sdk/x/bank"
+	"github.com/cosmos/cosmos-sdk/x/crisis"
 	"github.com/cosmos/cosmos-sdk/x/distribution"
 	"github.com/cosmos/cosmos-sdk/x/gov"
 	"github.com/cosmos/cosmos-sdk/x/mint"
@@ -36,6 +37,7 @@ type GenesisState struct {
 	MintData     mint.GenesisState         `json:"mint"`
 	DistrData    distribution.GenesisState `json:"distr"`
 	GovData      gov.GenesisState          `json:"gov"`
+	CrisisData   crisis.GenesisState       `json:"crisis"`
 	SlashingData slashing.GenesisState     `json:"slashing"`
 	GenTxs       []json.RawMessage         `json:"gentxs"`
 }
@@ -43,7 +45,7 @@ type GenesisState struct {
 func NewGenesisState(accounts []GenesisAccount, authData auth.GenesisState,
 	bankData bank.GenesisState,
 	stakingData staking.GenesisState, mintData mint.GenesisState,
-	distrData distribution.GenesisState, govData gov.GenesisState,
+	distrData distribution.GenesisState, govData gov.GenesisState, crisisData crisis.GenesisState,
 	slashingData slashing.GenesisState) GenesisState {
 
 	return GenesisState{
@@ -54,6 +56,7 @@ func NewGenesisState(accounts []GenesisAccount, authData auth.GenesisState,
 		MintData:     mintData,
 		DistrData:    distrData,
 		GovData:      govData,
+		CrisisData:   crisisData,
 		SlashingData: slashingData,
 	}
 }
@@ -198,6 +201,7 @@ func NewDefaultGenesisState() GenesisState {
 		MintData:     mint.DefaultGenesisState(),
 		DistrData:    distribution.DefaultGenesisState(),
 		GovData:      gov.DefaultGenesisState(),
+		CrisisData:   crisis.DefaultGenesisState(),
 		SlashingData: slashing.DefaultGenesisState(),
 		GenTxs:       nil,
 	}
@@ -212,6 +216,9 @@ func NewDefaultGenesisState() GenesisState {
 func VPNValidateGenesisState(genesisState GenesisState) error {
 	if err := validateGenesisStateAccounts(genesisState.Accounts); err != nil {
 		return err
+	}
+	if len(genesisState.GenTxs) > 0 {
+		return nil
 	}
 	if err := auth.ValidateGenesis(genesisState.AuthData); err != nil {
 		return err
@@ -234,11 +241,8 @@ func VPNValidateGenesisState(genesisState GenesisState) error {
 	if err := mint.ValidateGenesis(genesisState.MintData); err != nil {
 		return err
 	}
-	if len(genesisState.GenTxs) > 0 {
-		return nil
-	}
 
-	return nil
+	return crisis.ValidateGenesis(genesisState.CrisisData)
 }
 
 func validateGenesisStateAccounts(accs []GenesisAccount) error {

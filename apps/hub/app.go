@@ -11,6 +11,7 @@ import (
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/cosmos/cosmos-sdk/x/bank"
+	"github.com/cosmos/cosmos-sdk/x/crisis"
 	"github.com/cosmos/cosmos-sdk/x/distribution"
 	"github.com/cosmos/cosmos-sdk/x/gov"
 	"github.com/cosmos/cosmos-sdk/x/ibc"
@@ -38,6 +39,8 @@ type Hub struct {
 	*baseapp.BaseApp
 	cdc *codec.Codec
 
+	assertInvariantsBlockly bool
+
 	keyMain *csdkTypes.KVStoreKey
 
 	keyParams        *csdkTypes.KVStoreKey
@@ -63,31 +66,35 @@ type Hub struct {
 	distributionKeeper  distribution.Keeper
 	govKeeper           gov.Keeper
 	mintKeeper          mint.Keeper
+	crisisKeeper        crisis.Keeper
 	ibcMapper           ibc.Mapper
 }
 
-func NewHub(logger log.Logger, db tmDB.DB, traceStore io.Writer, loadLatest bool, baseAppOptions ...func(*baseapp.BaseApp)) *Hub {
+func NewHub(logger log.Logger, db tmDB.DB, traceStore io.Writer, loadLatest, assertInvariantsBlockly bool,
+	baseAppOptions ...func(*baseapp.BaseApp)) *Hub {
+
 	cdc := MakeCodec()
 
 	bApp := baseapp.NewBaseApp(appName, logger, db, auth.DefaultTxDecoder(cdc), baseAppOptions...)
 	bApp.SetCommitMultiStoreTracer(traceStore)
 
 	var app = &Hub{
-		BaseApp:          bApp,
-		cdc:              cdc,
-		keyParams:        csdkTypes.NewKVStoreKey(params.StoreKey),
-		keyMain:          csdkTypes.NewKVStoreKey(baseapp.MainStoreKey),
-		keyAccount:       csdkTypes.NewKVStoreKey(auth.StoreKey),
-		keyFeeCollection: csdkTypes.NewKVStoreKey(auth.FeeStoreKey),
-		keyStaking:       csdkTypes.NewKVStoreKey(staking.StoreKey),
-		keySlashing:      csdkTypes.NewKVStoreKey(slashing.StoreKey),
-		keyDistribution:  csdkTypes.NewKVStoreKey(distribution.StoreKey),
-		keyGov:           csdkTypes.NewKVStoreKey(gov.StoreKey),
-		keyMint:          csdkTypes.NewKVStoreKey(mint.StoreKey),
-		keyIBC:           csdkTypes.NewKVStoreKey("ibc"),
-		tkeyParams:       csdkTypes.NewTransientStoreKey(params.TStoreKey),
-		tkeyStaking:      csdkTypes.NewTransientStoreKey(staking.TStoreKey),
-		tkeyDistribution: csdkTypes.NewTransientStoreKey(distribution.TStoreKey),
+		BaseApp:                 bApp,
+		cdc:                     cdc,
+		assertInvariantsBlockly: assertInvariantsBlockly,
+		keyParams:               csdkTypes.NewKVStoreKey(params.StoreKey),
+		keyMain:                 csdkTypes.NewKVStoreKey(baseapp.MainStoreKey),
+		keyAccount:              csdkTypes.NewKVStoreKey(auth.StoreKey),
+		keyFeeCollection:        csdkTypes.NewKVStoreKey(auth.FeeStoreKey),
+		keyStaking:              csdkTypes.NewKVStoreKey(staking.StoreKey),
+		keySlashing:             csdkTypes.NewKVStoreKey(slashing.StoreKey),
+		keyDistribution:         csdkTypes.NewKVStoreKey(distribution.StoreKey),
+		keyGov:                  csdkTypes.NewKVStoreKey(gov.StoreKey),
+		keyMint:                 csdkTypes.NewKVStoreKey(mint.StoreKey),
+		keyIBC:                  csdkTypes.NewKVStoreKey("ibc"),
+		tkeyParams:              csdkTypes.NewTransientStoreKey(params.TStoreKey),
+		tkeyStaking:             csdkTypes.NewTransientStoreKey(staking.TStoreKey),
+		tkeyDistribution:        csdkTypes.NewTransientStoreKey(distribution.TStoreKey),
 	}
 
 	app.paramsKeeper = params.NewKeeper(app.cdc,
@@ -133,6 +140,14 @@ func NewHub(logger log.Logger, db tmDB.DB, traceStore io.Writer, loadLatest bool
 		&stakingKeeper,
 		app.feeCollectionKeeper)
 	app.stakingKeeper = *stakingKeeper.SetHooks(NewStakingHooks(app.distributionKeeper.Hooks(), app.slashingKeeper.Hooks()))
+	app.crisisKeeper = crisis.NewKeeper(app.paramsKeeper.Subspace(crisis.DefaultParamspace),
+		app.distributionKeeper,
+		app.bankKeeper,
+		app.feeCollectionKeeper)
+
+	bank.RegisterInvariants(&app.crisisKeeper, app.accountKeeper)
+	distribution.RegisterInvariants(&app.crisisKeeper, app.distributionKeeper, app.stakingKeeper)
+	staking.RegisterInvariants(&app.crisisKeeper, app.stakingKeeper, app.feeCollectionKeeper, app.distributionKeeper, app.accountKeeper)
 
 	app.Router().
 		AddRoute(bank.RouterKey, bank.NewHandler(app.bankKeeper)).
@@ -140,6 +155,7 @@ func NewHub(logger log.Logger, db tmDB.DB, traceStore io.Writer, loadLatest bool
 		AddRoute(slashing.RouterKey, slashing.NewHandler(app.slashingKeeper)).
 		AddRoute(distribution.RouterKey, distribution.NewHandler(app.distributionKeeper)).
 		AddRoute(gov.RouterKey, gov.NewHandler(app.govKeeper)).
+		AddRoute(crisis.RouterKey, crisis.NewHandler(app.crisisKeeper)).
 		AddRoute("ibc", ibc.NewHandler(app.ibcMapper, app.bankKeeper))
 
 	app.QueryRouter().
@@ -147,7 +163,8 @@ func NewHub(logger log.Logger, db tmDB.DB, traceStore io.Writer, loadLatest bool
 		AddRoute(staking.QuerierRoute, staking.NewQuerier(app.stakingKeeper, app.cdc)).
 		AddRoute(slashing.QuerierRoute, slashing.NewQuerier(app.slashingKeeper, app.cdc)).
 		AddRoute(distribution.QuerierRoute, distribution.NewQuerier(app.distributionKeeper)).
-		AddRoute(gov.QuerierRoute, gov.NewQuerier(app.govKeeper))
+		AddRoute(gov.QuerierRoute, gov.NewQuerier(app.govKeeper)).
+		AddRoute(mint.QuerierRoute, mint.NewQuerier(app.mintKeeper))
 
 	app.MountStores(app.keyMain, app.keyParams,
 		app.keyAccount, app.keyFeeCollection,
@@ -179,6 +196,7 @@ func MakeCodec() *codec.Codec {
 	slashing.RegisterCodec(cdc)
 	distribution.RegisterCodec(cdc)
 	gov.RegisterCodec(cdc)
+	crisis.RegisterCodec(cdc)
 	ibc.RegisterCodec(cdc)
 	return cdc
 }
@@ -198,7 +216,9 @@ func (app *Hub) EndBlocker(ctx csdkTypes.Context, req abciTypes.RequestEndBlock)
 	validatorUpdates, endBlockerTags := staking.EndBlocker(ctx, app.stakingKeeper)
 	tags = append(tags, endBlockerTags...)
 
-	app.assertRuntimeInvariants()
+	if app.assertInvariantsBlockly {
+		app.assertRuntimeInvariants()
+	}
 
 	return abciTypes.ResponseEndBlock{
 		ValidatorUpdates: validatorUpdates,
@@ -227,6 +247,7 @@ func (app *Hub) initFromGenesisState(ctx csdkTypes.Context, genesisState Genesis
 	slashing.InitGenesis(ctx, app.slashingKeeper, genesisState.SlashingData, genesisState.StakingData.Validators.ToSDKValidators())
 	gov.InitGenesis(ctx, app.govKeeper, genesisState.GovData)
 	mint.InitGenesis(ctx, app.mintKeeper, genesisState.MintData)
+	crisis.InitGenesis(ctx, app.crisisKeeper, genesisState.CrisisData)
 
 	if err := HubValidateGenesisState(genesisState); err != nil {
 		panic(err)
