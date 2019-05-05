@@ -39,7 +39,7 @@ type Hub struct {
 	*baseapp.BaseApp
 	cdc *codec.Codec
 
-	assertInvariantsBlockly bool
+	invCheckPeriod uint
 
 	keyMain *csdkTypes.KVStoreKey
 
@@ -70,7 +70,7 @@ type Hub struct {
 	ibcMapper           ibc.Mapper
 }
 
-func NewHub(logger log.Logger, db tmDB.DB, traceStore io.Writer, loadLatest, assertInvariantsBlockly bool,
+func NewHub(logger log.Logger, db tmDB.DB, traceStore io.Writer, loadLatest bool, invCheckPeriod uint,
 	baseAppOptions ...func(*baseapp.BaseApp)) *Hub {
 
 	cdc := MakeCodec()
@@ -79,22 +79,22 @@ func NewHub(logger log.Logger, db tmDB.DB, traceStore io.Writer, loadLatest, ass
 	bApp.SetCommitMultiStoreTracer(traceStore)
 
 	var app = &Hub{
-		BaseApp:                 bApp,
-		cdc:                     cdc,
-		assertInvariantsBlockly: assertInvariantsBlockly,
-		keyParams:               csdkTypes.NewKVStoreKey(params.StoreKey),
-		keyMain:                 csdkTypes.NewKVStoreKey(baseapp.MainStoreKey),
-		keyAccount:              csdkTypes.NewKVStoreKey(auth.StoreKey),
-		keyFeeCollection:        csdkTypes.NewKVStoreKey(auth.FeeStoreKey),
-		keyStaking:              csdkTypes.NewKVStoreKey(staking.StoreKey),
-		keySlashing:             csdkTypes.NewKVStoreKey(slashing.StoreKey),
-		keyDistribution:         csdkTypes.NewKVStoreKey(distribution.StoreKey),
-		keyGov:                  csdkTypes.NewKVStoreKey(gov.StoreKey),
-		keyMint:                 csdkTypes.NewKVStoreKey(mint.StoreKey),
-		keyIBC:                  csdkTypes.NewKVStoreKey("ibc"),
-		tkeyParams:              csdkTypes.NewTransientStoreKey(params.TStoreKey),
-		tkeyStaking:             csdkTypes.NewTransientStoreKey(staking.TStoreKey),
-		tkeyDistribution:        csdkTypes.NewTransientStoreKey(distribution.TStoreKey),
+		BaseApp:          bApp,
+		cdc:              cdc,
+		invCheckPeriod:   invCheckPeriod,
+		keyParams:        csdkTypes.NewKVStoreKey(params.StoreKey),
+		keyMain:          csdkTypes.NewKVStoreKey(baseapp.MainStoreKey),
+		keyAccount:       csdkTypes.NewKVStoreKey(auth.StoreKey),
+		keyFeeCollection: csdkTypes.NewKVStoreKey(auth.FeeStoreKey),
+		keyStaking:       csdkTypes.NewKVStoreKey(staking.StoreKey),
+		keySlashing:      csdkTypes.NewKVStoreKey(slashing.StoreKey),
+		keyDistribution:  csdkTypes.NewKVStoreKey(distribution.StoreKey),
+		keyGov:           csdkTypes.NewKVStoreKey(gov.StoreKey),
+		keyMint:          csdkTypes.NewKVStoreKey(mint.StoreKey),
+		keyIBC:           csdkTypes.NewKVStoreKey("ibc"),
+		tkeyParams:       csdkTypes.NewTransientStoreKey(params.TStoreKey),
+		tkeyStaking:      csdkTypes.NewTransientStoreKey(staking.TStoreKey),
+		tkeyDistribution: csdkTypes.NewTransientStoreKey(distribution.TStoreKey),
 	}
 
 	app.paramsKeeper = params.NewKeeper(app.cdc,
@@ -216,7 +216,7 @@ func (app *Hub) EndBlocker(ctx csdkTypes.Context, req abciTypes.RequestEndBlock)
 	validatorUpdates, endBlockerTags := staking.EndBlocker(ctx, app.stakingKeeper)
 	tags = append(tags, endBlockerTags...)
 
-	if app.assertInvariantsBlockly {
+	if app.invCheckPeriod != 0 && ctx.BlockHeight()%int64(app.invCheckPeriod) == 0 {
 		app.assertRuntimeInvariants()
 	}
 

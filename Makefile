@@ -38,4 +38,4 @@ test:
 benchmark:
 	@go test -bench=. $(PACKAGES)
 
-.PHONY: all build test benchmark
+.PHONY: all build get_tools get_vendor_deps test benchmark

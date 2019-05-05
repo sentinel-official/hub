@@ -41,7 +41,7 @@ type VPN struct {
 	*baseapp.BaseApp
 	cdc *codec.Codec
 
-	assertInvariantsBlockly bool
+	invCheckPeriod uint
 
 	keyMain *csdkTypes.KVStoreKey
 
@@ -77,7 +77,7 @@ type VPN struct {
 	vpnKeeper vpn.Keeper
 }
 
-func NewVPN(logger log.Logger, db tmDB.DB, traceStore io.Writer, loadLatest, assertInvariantsBlockly bool,
+func NewVPN(logger log.Logger, db tmDB.DB, traceStore io.Writer, loadLatest bool, invCheckPeriod uint,
 	baseAppOptions ...func(*baseapp.BaseApp)) *VPN {
 
 	cdc := MakeCodec()
@@ -86,24 +86,24 @@ func NewVPN(logger log.Logger, db tmDB.DB, traceStore io.Writer, loadLatest, ass
 	bApp.SetCommitMultiStoreTracer(traceStore)
 
 	var app = &VPN{
-		BaseApp:                 bApp,
-		cdc:                     cdc,
-		assertInvariantsBlockly: assertInvariantsBlockly,
-		keyParams:               csdkTypes.NewKVStoreKey(params.StoreKey),
-		keyMain:                 csdkTypes.NewKVStoreKey(baseapp.MainStoreKey),
-		keyAccount:              csdkTypes.NewKVStoreKey(auth.StoreKey),
-		keyFeeCollection:        csdkTypes.NewKVStoreKey(auth.FeeStoreKey),
-		keyStaking:              csdkTypes.NewKVStoreKey(staking.StoreKey),
-		keySlashing:             csdkTypes.NewKVStoreKey(slashing.StoreKey),
-		keyDistribution:         csdkTypes.NewKVStoreKey(distribution.StoreKey),
-		keyGov:                  csdkTypes.NewKVStoreKey(gov.StoreKey),
-		keyMint:                 csdkTypes.NewKVStoreKey(mint.StoreKey),
-		keyIBC:                  csdkTypes.NewKVStoreKey("ibc"),
-		keyVPNNode:              csdkTypes.NewKVStoreKey(vpn.StoreKeyNode),
-		keyVPNSession:           csdkTypes.NewKVStoreKey(vpn.StoreKeySession),
-		tkeyParams:              csdkTypes.NewTransientStoreKey(params.TStoreKey),
-		tkeyStaking:             csdkTypes.NewTransientStoreKey(staking.TStoreKey),
-		tkeyDistribution:        csdkTypes.NewTransientStoreKey(distribution.TStoreKey),
+		BaseApp:          bApp,
+		cdc:              cdc,
+		invCheckPeriod:   invCheckPeriod,
+		keyParams:        csdkTypes.NewKVStoreKey(params.StoreKey),
+		keyMain:          csdkTypes.NewKVStoreKey(baseapp.MainStoreKey),
+		keyAccount:       csdkTypes.NewKVStoreKey(auth.StoreKey),
+		keyFeeCollection: csdkTypes.NewKVStoreKey(auth.FeeStoreKey),
+		keyStaking:       csdkTypes.NewKVStoreKey(staking.StoreKey),
+		keySlashing:      csdkTypes.NewKVStoreKey(slashing.StoreKey),
+		keyDistribution:  csdkTypes.NewKVStoreKey(distribution.StoreKey),
+		keyGov:           csdkTypes.NewKVStoreKey(gov.StoreKey),
+		keyMint:          csdkTypes.NewKVStoreKey(mint.StoreKey),
+		keyIBC:           csdkTypes.NewKVStoreKey("ibc"),
+		keyVPNNode:       csdkTypes.NewKVStoreKey(vpn.StoreKeyNode),
+		keyVPNSession:    csdkTypes.NewKVStoreKey(vpn.StoreKeySession),
+		tkeyParams:       csdkTypes.NewTransientStoreKey(params.TStoreKey),
+		tkeyStaking:      csdkTypes.NewTransientStoreKey(staking.TStoreKey),
+		tkeyDistribution: csdkTypes.NewTransientStoreKey(distribution.TStoreKey),
 	}
 
 	app.paramsKeeper = params.NewKeeper(app.cdc,
@@ -231,7 +231,7 @@ func (app *VPN) EndBlocker(ctx csdkTypes.Context, req abciTypes.RequestEndBlock)
 	tags = append(tags, endBlockerTags...)
 	vpn.EndBlock(ctx, app.vpnKeeper, app.bankKeeper)
 
-	if app.assertInvariantsBlockly {
+	if app.invCheckPeriod != 0 && ctx.BlockHeight()%int64(app.invCheckPeriod) == 0 {
 		app.assertRuntimeInvariants()
 	}
 

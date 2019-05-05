@@ -22,9 +22,9 @@ import (
 	sdkServer "github.com/ironman0x7b2/sentinel-sdk/server"
 )
 
-const flagAssertInvariantsBlockly = "assert-invariants-blockly"
+const flagInvCheckPeriod = "inv-check-period"
 
-var assertInvariantsBlockly bool
+var invCheckPeriod uint
 
 func main() {
 	cdc := app.MakeCodec()
@@ -53,8 +53,8 @@ func main() {
 	sdkServer.AddCommands(ctx, cdc, rootCmd, newApp, exportAppStateAndTMValidators)
 
 	executor := cli.PrepareBaseCmd(rootCmd, "SV", app.DefaultNodeHome)
-	rootCmd.PersistentFlags().BoolVar(&assertInvariantsBlockly, flagAssertInvariantsBlockly,
-		false, "Assert registered invariants on a blockly basis")
+	rootCmd.PersistentFlags().UintVar(&invCheckPeriod, flagInvCheckPeriod,
+		0, "Assert registered invariants every N blocks")
 
 	if err := executor.Execute(); err != nil {
 		panic(err)
@@ -63,7 +63,7 @@ func main() {
 
 func newApp(logger log.Logger, db tmDB.DB, traceStore io.Writer) abciTypes.Application {
 	return app.NewVPN(
-		logger, db, traceStore, true, assertInvariantsBlockly,
+		logger, db, traceStore, true, invCheckPeriod,
 		baseapp.SetPruning(store.NewPruningOptionsFromString(viper.GetString("pruning"))),
 		baseapp.SetMinGasPrices(viper.GetString(csdkServer.FlagMinGasPrices)),
 	)
@@ -73,13 +73,13 @@ func exportAppStateAndTMValidators(logger log.Logger, db tmDB.DB, traceStore io.
 	forZeroHeight bool, jailWhiteList []string) (json.RawMessage, []tmTypes.GenesisValidator, error) {
 
 	if height != -1 {
-		vpn := app.NewVPN(logger, db, traceStore, false, false)
+		vpn := app.NewVPN(logger, db, traceStore, false, uint(1))
 		err := vpn.LoadHeight(height)
 		if err != nil {
 			return nil, nil, err
 		}
 		return vpn.ExportAppStateAndValidators(forZeroHeight, jailWhiteList)
 	}
-	vpn := app.NewVPN(logger, db, traceStore, true, false)
+	vpn := app.NewVPN(logger, db, traceStore, true, uint(1))
 	return vpn.ExportAppStateAndValidators(forZeroHeight, jailWhiteList)
 }
