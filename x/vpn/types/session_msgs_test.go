@@ -96,47 +96,47 @@ func TestMsgUpdateSessionBandwidth_ValidateBasic(t *testing.T) {
 	}{
 		{
 			"from is nil",
-			NewMsgUpdateSessionBandwidth(nil, TestSessionIDValid, TestBandwidthPos, TestNodeOwnerSign, TestClientSign),
+			NewMsgUpdateSessionBandwidth(nil, TestSessionIDValid, TestBandwidthPos1, TestNodeOwnerSignBandWidthPos1, TestClientSignBandWidthPos1),
 			ErrorInvalidField("from"),
 		}, {
 			"from is empty",
-			NewMsgUpdateSessionBandwidth(TestAddressEmpty, TestSessionIDValid, TestBandwidthPos, TestNodeOwnerSign, TestClientSign),
+			NewMsgUpdateSessionBandwidth(TestAddressEmpty, TestSessionIDValid, TestBandwidthPos1, TestNodeOwnerSignBandWidthPos1, TestClientSignBandWidthPos1),
 			ErrorInvalidField("from"),
 		}, {
 			"id is empty",
-			NewMsgUpdateSessionBandwidth(TestAddress1, TestSessionIDEmpty, TestBandwidthPos, TestNodeOwnerSign, TestClientSign),
+			NewMsgUpdateSessionBandwidth(TestAddress1, TestSessionIDEmpty, TestBandwidthPos1, TestNodeOwnerSignBandWidthPos1, TestClientSignBandWidthPos1),
 			ErrorInvalidField("id"),
 		}, {
 			"id is invalid",
-			NewMsgUpdateSessionBandwidth(TestAddress1, TestSessionIDInvalid, TestBandwidthPos, TestNodeOwnerSign, TestClientSign),
+			NewMsgUpdateSessionBandwidth(TestAddress1, TestSessionIDInvalid, TestBandwidthPos1, TestNodeOwnerSignBandWidthPos1, TestClientSignBandWidthPos1),
 			ErrorInvalidField("id"),
 		}, {
 			"net_speed is negative",
-			NewMsgUpdateSessionBandwidth(TestAddress1, TestSessionIDValid, TestBandwidthNeg, TestNodeOwnerSign, TestClientSign),
+			NewMsgUpdateSessionBandwidth(TestAddress1, TestSessionIDValid, TestBandwidthNeg, TestNodeOwnerSignBandWidthPos1, TestClientSignBandWidthPos1),
 			ErrorInvalidField("bandwidth"),
 		}, {
 			"net_speed is zero",
-			NewMsgUpdateSessionBandwidth(TestAddress1, TestSessionIDValid, TestBandwidthZero, TestNodeOwnerSign, TestClientSign),
+			NewMsgUpdateSessionBandwidth(TestAddress1, TestSessionIDValid, TestBandwidthZero, TestNodeOwnerSignBandWidthPos1, TestClientSignBandWidthPos1),
 			ErrorInvalidField("bandwidth"),
 		}, {
 			"client_sign is nil",
-			NewMsgUpdateSessionBandwidth(TestAddress1, TestSessionIDValid, TestBandwidthPos, TestNodeOwnerSign, nil),
+			NewMsgUpdateSessionBandwidth(TestAddress1, TestSessionIDValid, TestBandwidthPos1, TestNodeOwnerSignBandWidthPos1, nil),
 			ErrorInvalidField("client_sign"),
 		}, {
 			"client_sign is empty",
-			NewMsgUpdateSessionBandwidth(TestAddress1, TestSessionIDValid, TestBandwidthPos, TestNodeOwnerSign, []byte{}),
+			NewMsgUpdateSessionBandwidth(TestAddress1, TestSessionIDValid, TestBandwidthPos1, TestNodeOwnerSignBandWidthPos1, []byte{}),
 			ErrorInvalidField("client_sign"),
 		}, {
 			"node_owner_sign is nil",
-			NewMsgUpdateSessionBandwidth(TestAddress1, TestSessionIDValid, TestBandwidthPos, nil, TestClientSign),
+			NewMsgUpdateSessionBandwidth(TestAddress1, TestSessionIDValid, TestBandwidthPos1, nil, TestClientSignBandWidthPos1),
 			ErrorInvalidField("node_owner_sign"),
 		}, {
 			"node_owner_sign is empty",
-			NewMsgUpdateSessionBandwidth(TestAddress1, TestSessionIDValid, TestBandwidthPos, []byte{}, TestClientSign),
+			NewMsgUpdateSessionBandwidth(TestAddress1, TestSessionIDValid, TestBandwidthPos1, []byte{}, TestClientSignBandWidthPos1),
 			ErrorInvalidField("node_owner_sign"),
 		}, {
 			"valid",
-			NewMsgUpdateSessionBandwidth(TestAddress1, TestSessionIDValid, TestBandwidthPos, TestNodeOwnerSign, TestClientSign),
+			NewMsgUpdateSessionBandwidth(TestAddress1, TestSessionIDValid, TestBandwidthPos1, TestNodeOwnerSignBandWidthPos1, TestClientSignBandWidthPos1),
 			nil,
 		},
 	}
@@ -151,7 +151,7 @@ func TestMsgUpdateSessionBandwidth_ValidateBasic(t *testing.T) {
 }
 
 func TestMsgUpdateSessionBandwidth_GetSignBytes(t *testing.T) {
-	msg := NewMsgUpdateSessionBandwidth(TestAddress2, TestSessionIDValid, TestBandwidthPos, TestClientSign, TestNodeOwnerSign)
+	msg := NewMsgUpdateSessionBandwidth(TestAddress2, TestSessionIDValid, TestBandwidthPos1, TestClientSignBandWidthPos1, TestNodeOwnerSignBandWidthPos1)
 	msgBytes, err := json.Marshal(msg)
 	if err != nil {
 		panic(err)
@@ -161,16 +161,16 @@ func TestMsgUpdateSessionBandwidth_GetSignBytes(t *testing.T) {
 }
 
 func TestMsgUpdateSessionBandwidth_GetSigners(t *testing.T) {
-	msg := NewMsgUpdateSessionBandwidth(TestAddress2, TestSessionIDValid, TestBandwidthPos, TestClientSign, TestNodeOwnerSign)
+	msg := NewMsgUpdateSessionBandwidth(TestAddress2, TestSessionIDValid, TestBandwidthPos1, TestClientSignBandWidthPos1, TestNodeOwnerSignBandWidthPos1)
 	require.Equal(t, []csdkTypes.AccAddress{TestAddress2}, msg.GetSigners())
 }
 
 func TestMsgUpdateSessionBandwidth_Type(t *testing.T) {
-	msg := NewMsgUpdateSessionBandwidth(TestAddress2, TestSessionIDValid, TestBandwidthPos, TestClientSign, TestNodeOwnerSign)
+	msg := NewMsgUpdateSessionBandwidth(TestAddress2, TestSessionIDValid, TestBandwidthPos1, TestClientSignBandWidthPos1, TestNodeOwnerSignBandWidthPos1)
 	require.Equal(t, "msg_update_session_bandwidth", msg.Type())
 }
 
 func TestMsgUpdateSessionBandwidth_Route(t *testing.T) {
-	msg := NewMsgUpdateSessionBandwidth(TestAddress2, TestSessionIDValid, TestBandwidthPos, TestClientSign, TestNodeOwnerSign)
+	msg := NewMsgUpdateSessionBandwidth(TestAddress2, TestSessionIDValid, TestBandwidthPos1, TestClientSignBandWidthPos1, TestNodeOwnerSignBandWidthPos1)
 	require.Equal(t, RouterKey, msg.Route())
 }

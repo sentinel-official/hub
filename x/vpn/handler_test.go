@@ -68,21 +68,21 @@ func Test_handleUpdateNode(t *testing.T) {
 
 	msgUpdateNode := types.NewMsgUpdateNodeDetails(node.Owner, types.TestNodeIDInvalid, types.TestMonikerValid,
 		csdkTypes.Coins{csdkTypes.NewInt64Coin("coin1", 1)},
-		types.TestBandwidthPos, uint16(8080), "", "", "")
+		types.TestBandwidthPos1, uint16(8080), "", "", "")
 	res = handler(ctx, *msgUpdateNode)
 	require.False(t, res.IsOK())
 	require.Equal(t, types.ErrorNodeNotExists().Code(), res.Code)
 
 	msgUpdateNode = types.NewMsgUpdateNodeDetails(csdkTypes.AccAddress([]byte("invalid_address")), types.TestNodeIDValid,
 		types.TestMonikerValid, csdkTypes.Coins{csdkTypes.NewInt64Coin("coin1", 1)},
-		types.TestBandwidthPos, uint16(8080), "", "", "")
+		types.TestBandwidthPos1, uint16(8080), "", "", "")
 	res = handler(ctx, *msgUpdateNode)
 	require.False(t, res.IsOK())
 	require.Equal(t, types.ErrorUnauthorized().Code(), res.Code)
 
 	msgUpdateNode = types.NewMsgUpdateNodeDetails(node.Owner, types.TestNodeIDValid, types.TestMonikerValid,
 		csdkTypes.Coins{csdkTypes.NewInt64Coin("coin1", 1)},
-		types.TestBandwidthPos, 8080, "", "", "")
+		types.TestBandwidthPos1, 8080, "", "", "")
 	res = handler(ctx, *msgUpdateNode)
 	require.True(t, res.IsOK())
 	require.Equal(t, types.TestNodeIDValid, sdkTypes.NewID(string(res.Tags[0].Value)))
@@ -90,7 +90,7 @@ func Test_handleUpdateNode(t *testing.T) {
 	nodeRes, err = vpnKeeper.GetNode(ctx, types.TestNodeIDValid)
 	require.Nil(t, err)
 	require.Equal(t, csdkTypes.Coins{csdkTypes.NewInt64Coin("coin1", 1)}, nodeRes.PricesPerGB)
-	require.Equal(t, types.TestBandwidthPos, nodeRes.NetSpeed)
+	require.Equal(t, types.TestBandwidthPos1, nodeRes.NetSpeed)
 	require.Equal(t, uint16(8080), nodeRes.APIPort)
 	require.Equal(t, types.TestEncryptionMethod, nodeRes.EncryptionMethod)
 	require.Equal(t, types.TestVersion, nodeRes.Version)
@@ -350,14 +350,14 @@ func Test_handleUpdateSessionBandwidth(t *testing.T) {
 	require.Nil(t, err)
 	require.Equal(t, types.TestSessionIDValid, session.ID)
 
-	signDataBytes := sdkTypes.NewBandwidthSignData(session.ID, types.TestBandwidthPos, node.Owner, session.Client).GetBytes()
+	signDataBytes := sdkTypes.NewBandwidthSignData(session.ID, types.TestBandwidthPos1, node.Owner, session.Client).GetBytes()
 	nodeOwnerSign, err1 := types.TestPrivKey1.Sign(signDataBytes)
 	require.Nil(t, err1)
 	clientSign, err1 := types.TestPrivKey2.Sign(signDataBytes)
 	require.Nil(t, err1)
 
 	msgUpdateSessionBandwidth := types.NewMsgUpdateSessionBandwidth(session.Client, types.TestSessionIDInvalid,
-		types.TestBandwidthPos, clientSign, nodeOwnerSign)
+		types.TestBandwidthPos1, clientSign, nodeOwnerSign)
 	res = handler(ctx, *msgUpdateSessionBandwidth)
 	require.False(t, res.IsOK())
 	require.Equal(t, types.ErrorSessionNotExists().Code(), res.Code)
@@ -367,13 +367,13 @@ func Test_handleUpdateSessionBandwidth(t *testing.T) {
 	require.Equal(t, types.TestBandwidthZero, sessionRes.BandwidthInfo.Consumed)
 
 	msgUpdateSessionBandwidth = types.NewMsgUpdateSessionBandwidth(session.Client, session.ID,
-		types.TestBandwidthPos, nodeOwnerSign, clientSign)
+		types.TestBandwidthPos1, nodeOwnerSign, clientSign)
 	res = handler(ctx, *msgUpdateSessionBandwidth)
 	require.True(t, res.IsOK())
 
 	sessionRes, err = vpnKeeper.GetSession(ctx, session.ID)
 	require.Nil(t, err)
-	require.Equal(t, types.TestBandwidthPos, sessionRes.BandwidthInfo.Consumed)
+	require.Equal(t, types.TestBandwidthPos1, sessionRes.BandwidthInfo.Consumed)
 	require.Equal(t, clientSign, sessionRes.BandwidthInfo.ClientSign)
 	require.Equal(t, nodeOwnerSign, sessionRes.BandwidthInfo.NodeOwnerSign)
 

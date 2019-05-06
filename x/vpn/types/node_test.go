@@ -53,8 +53,8 @@ func TestNode_UpdateDetails(t *testing.T) {
 			Node{},
 		}, {
 			"net_speed is positive",
-			Node{NetSpeed: types.NewBandwidth(TestUploadPos, TestDownloadPos)},
-			Node{NetSpeed: types.NewBandwidth(TestUploadPos, TestDownloadPos)},
+			Node{NetSpeed: types.NewBandwidth(TestUploadPos1, TestDownloadPos1)},
+			Node{NetSpeed: types.NewBandwidth(TestUploadPos1, TestDownloadPos1)},
 		}, {
 			"api_port is zero",
 			Node{APIPort: 0},
@@ -128,5 +128,5 @@ func TestNode_CalculateBandwidth(t *testing.T) {
 
 	b, err = node.CalculateBandwidth(TestCoinPos)
 	require.Nil(t, err)
-	require.Equal(t, b, TestBandwidthPos)
+	require.Equal(t, b, TestBandwidthPos1)
 }
