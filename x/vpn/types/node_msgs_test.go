@@ -17,83 +17,79 @@ func TestMsgRegisterNode_ValidateBasic(t *testing.T) {
 	}{
 		{
 			"from is nil",
-			NewMsgRegisterNode(nil, TestCoinPos, TestCoinsPos, TestUploadPos, TestDownloadPos, TestAPIPortValid, TestEncryption, TestNodeType, TestVersion),
+			NewMsgRegisterNode(nil, TestMonikerValid, TestCoinPos, TestCoinsPos, TestBandwidthPos, TestAPIPortValid, TestEncryptionMethod, TestNodeType, TestVersion),
 			ErrorInvalidField("from"),
 		}, {
 			"from is empty",
-			NewMsgRegisterNode(TestAddressEmpty, TestCoinPos, TestCoinsPos, TestUploadPos, TestDownloadPos, TestAPIPortValid, TestEncryption, TestNodeType, TestVersion),
+			NewMsgRegisterNode(TestAddressEmpty, TestMonikerValid, TestCoinPos, TestCoinsPos, TestBandwidthPos, TestAPIPortValid, TestEncryptionMethod, TestNodeType, TestVersion),
 			ErrorInvalidField("from"),
 		}, {
+			"node_moniker length is more",
+			NewMsgRegisterNode(TestAddress1, TestMonikerLenGT128, TestCoinPos, TestCoinsPos, TestBandwidthPos, TestAPIPortValid, TestEncryptionMethod, TestNodeType, TestVersion),
+			ErrorInvalidField("moniker"),
+		}, {
 			"amount_to_lock is nil",
-			NewMsgRegisterNode(TestAddress1, TestCoinNil, TestCoinsPos, TestUploadPos, TestDownloadPos, TestAPIPortValid, TestEncryption, TestNodeType, TestVersion),
+			NewMsgRegisterNode(TestAddress1, TestMonikerValid, TestCoinNil, TestCoinsPos, TestBandwidthPos, TestAPIPortValid, TestEncryptionMethod, TestNodeType, TestVersion),
 			ErrorInvalidField("amount_to_lock"),
 		}, {
 			"amount_to_lock is empty",
-			NewMsgRegisterNode(TestAddress1, TestCoinNeg, TestCoinsPos, TestUploadPos, TestDownloadPos, TestAPIPortValid, TestEncryption, TestNodeType, TestVersion),
+			NewMsgRegisterNode(TestAddress1, TestMonikerValid, TestCoinNeg, TestCoinsPos, TestBandwidthPos, TestAPIPortValid, TestEncryptionMethod, TestNodeType, TestVersion),
 			ErrorInvalidField("amount_to_lock"),
 		}, {
 			"amount_to_lock is negative",
-			NewMsgRegisterNode(TestAddress1, TestCoinNeg, TestCoinsPos, TestUploadPos, TestDownloadPos, TestAPIPortValid, TestEncryption, TestNodeType, TestVersion),
+			NewMsgRegisterNode(TestAddress1, TestMonikerValid, TestCoinNeg, TestCoinsPos, TestBandwidthPos, TestAPIPortValid, TestEncryptionMethod, TestNodeType, TestVersion),
 			ErrorInvalidField("amount_to_lock"),
 		}, {
 			"amount_to_lock is zero",
-			NewMsgRegisterNode(TestAddress1, TestCoinZero, TestCoinsPos, TestUploadPos, TestDownloadPos, TestAPIPortValid, TestEncryption, TestNodeType, TestVersion),
+			NewMsgRegisterNode(TestAddress1, TestMonikerValid, TestCoinZero, TestCoinsPos, TestBandwidthPos, TestAPIPortValid, TestEncryptionMethod, TestNodeType, TestVersion),
 			ErrorInvalidField("amount_to_lock"),
 		}, {
 			"prices_per_gb is nil",
-			NewMsgRegisterNode(TestAddress1, TestCoinPos, nil, TestUploadPos, TestDownloadPos, TestAPIPortValid, TestEncryption, TestNodeType, TestVersion),
+			NewMsgRegisterNode(TestAddress1, TestMonikerValid, TestCoinPos, nil, TestBandwidthPos, TestAPIPortValid, TestEncryptionMethod, TestNodeType, TestVersion),
 			ErrorInvalidField("prices_per_gb"),
 		}, {
 			"prices_per_gb is empty",
-			NewMsgRegisterNode(TestAddress1, TestCoinPos, TestCoinsEmpty, TestUploadPos, TestDownloadPos, TestAPIPortValid, TestEncryption, TestNodeType, TestVersion),
+			NewMsgRegisterNode(TestAddress1, TestMonikerValid, TestCoinPos, TestCoinsEmpty, TestBandwidthPos, TestAPIPortValid, TestEncryptionMethod, TestNodeType, TestVersion),
 			ErrorInvalidField("prices_per_gb"),
 		}, {
 			"prices_per_gb is invalid",
-			NewMsgRegisterNode(TestAddress1, TestCoinPos, TestCoinsInvalid, TestUploadPos, TestDownloadPos, TestAPIPortValid, TestEncryption, TestNodeType, TestVersion),
+			NewMsgRegisterNode(TestAddress1, TestMonikerValid, TestCoinPos, TestCoinsInvalid, TestBandwidthPos, TestAPIPortValid, TestEncryptionMethod, TestNodeType, TestVersion),
 			ErrorInvalidField("prices_per_gb"),
 		}, {
 			"prices_per_gb is negative",
-			NewMsgRegisterNode(TestAddress1, TestCoinPos, TestCoinsNeg, TestUploadPos, TestDownloadPos, TestAPIPortValid, TestEncryption, TestNodeType, TestVersion),
+			NewMsgRegisterNode(TestAddress1, TestMonikerValid, TestCoinPos, TestCoinsNeg, TestBandwidthPos, TestAPIPortValid, TestEncryptionMethod, TestNodeType, TestVersion),
 			ErrorInvalidField("prices_per_gb"),
 		}, {
 			"prices_per_gb is zero",
-			NewMsgRegisterNode(TestAddress1, TestCoinPos, TestCoinsZero, TestUploadPos, TestDownloadPos, TestAPIPortValid, TestEncryption, TestNodeType, TestVersion),
+			NewMsgRegisterNode(TestAddress1, TestMonikerValid, TestCoinPos, TestCoinsZero, TestBandwidthPos, TestAPIPortValid, TestEncryptionMethod, TestNodeType, TestVersion),
 			ErrorInvalidField("prices_per_gb"),
 		}, {
-			"upload is negative",
-			NewMsgRegisterNode(TestAddress1, TestCoinPos, TestCoinsPos, TestUploadNeg, TestDownloadPos, TestAPIPortValid, TestEncryption, TestNodeType, TestVersion),
+			"net_speed is negative",
+			NewMsgRegisterNode(TestAddress1, TestMonikerValid, TestCoinPos, TestCoinsPos, TestBandwidthNeg, TestAPIPortValid, TestEncryptionMethod, TestNodeType, TestVersion),
 			ErrorInvalidField("net_speed"),
 		}, {
-			"upload is zero",
-			NewMsgRegisterNode(TestAddress1, TestCoinPos, TestCoinsPos, TestUploadZero, TestDownloadPos, TestAPIPortValid, TestEncryption, TestNodeType, TestVersion),
-			ErrorInvalidField("net_speed"),
-		}, {
-			"download is negative",
-			NewMsgRegisterNode(TestAddress1, TestCoinPos, TestCoinsPos, TestUploadPos, TestDownloadNeg, TestAPIPortValid, TestEncryption, TestNodeType, TestVersion),
-			ErrorInvalidField("net_speed"),
-		}, {
-			"download is zero",
-			NewMsgRegisterNode(TestAddress1, TestCoinPos, TestCoinsPos, TestUploadPos, TestDownloadZero, TestAPIPortValid, TestEncryption, TestNodeType, TestVersion),
+			"net_speed is zero",
+			NewMsgRegisterNode(TestAddress1, TestMonikerValid, TestCoinPos, TestCoinsPos, TestBandwidthZero, TestAPIPortValid, TestEncryptionMethod, TestNodeType, TestVersion),
 			ErrorInvalidField("net_speed"),
 		}, {
 			"api_port is invalid",
-			NewMsgRegisterNode(TestAddress1, TestCoinPos, TestCoinsPos, TestUploadPos, TestDownloadPos, TestAPIPortInvalid, TestEncryption, TestNodeType, TestVersion),
+			NewMsgRegisterNode(TestAddress1, TestMonikerValid, TestCoinPos, TestCoinsPos, TestBandwidthPos, TestAPIPortInvalid, TestEncryptionMethod, TestNodeType, TestVersion),
 			ErrorInvalidField("api_port"),
 		}, {
 			"encryption id empty",
-			NewMsgRegisterNode(TestAddress1, TestCoinPos, TestCoinsPos, TestUploadPos, TestDownloadPos, TestAPIPortValid, "", TestNodeType, TestVersion),
-			ErrorInvalidField("encryption"),
+			NewMsgRegisterNode(TestAddress1, TestMonikerValid, TestCoinPos, TestCoinsPos, TestBandwidthPos, TestAPIPortValid, "", TestNodeType, TestVersion),
+			ErrorInvalidField("encryption_method"),
 		}, {
 			"node_type is empty",
-			NewMsgRegisterNode(TestAddress1, TestCoinPos, TestCoinsPos, TestUploadPos, TestDownloadPos, TestAPIPortValid, TestEncryption, "", TestVersion),
-			ErrorInvalidField("node_type"),
+			NewMsgRegisterNode(TestAddress1, TestMonikerValid, TestCoinPos, TestCoinsPos, TestBandwidthPos, TestAPIPortValid, TestEncryptionMethod, "", TestVersion),
+			ErrorInvalidField("type_"),
 		}, {
 			"version is empty",
-			NewMsgRegisterNode(TestAddress1, TestCoinPos, TestCoinsPos, TestUploadPos, TestDownloadPos, TestAPIPortValid, TestEncryption, TestNodeType, ""),
+			NewMsgRegisterNode(TestAddress1, TestMonikerValid, TestCoinPos, TestCoinsPos, TestBandwidthPos, TestAPIPortValid, TestEncryptionMethod, TestNodeType, ""),
 			ErrorInvalidField("version"),
 		}, {
 			"",
-			NewMsgRegisterNode(TestAddress1, TestCoinPos, TestCoinsPos, TestUploadPos, TestDownloadPos, TestAPIPortValid, TestEncryption, TestNodeType, TestVersion),
+			NewMsgRegisterNode(TestAddress1, TestMonikerValid, TestCoinPos, TestCoinsPos, TestBandwidthPos, TestAPIPortValid, TestEncryptionMethod, TestNodeType, TestVersion),
 			nil,
 		},
 	}
@@ -108,7 +104,7 @@ func TestMsgRegisterNode_ValidateBasic(t *testing.T) {
 }
 
 func TestMsgRegisterNode_GetSignBytes(t *testing.T) {
-	msg := NewMsgRegisterNode(TestAddress1, TestCoinPos, TestCoinsPos, TestUploadPos, TestDownloadPos, TestAPIPortValid, TestEncryption, TestNodeType, TestVersion)
+	msg := NewMsgRegisterNode(TestAddress1, TestMonikerValid, TestCoinPos, TestCoinsPos, TestBandwidthPos, TestAPIPortValid, TestEncryptionMethod, TestNodeType, TestVersion)
 	msgBytes, err := json.Marshal(msg)
 	if err != nil {
 		panic(err)
@@ -118,93 +114,93 @@ func TestMsgRegisterNode_GetSignBytes(t *testing.T) {
 }
 
 func TestMsgRegisterNode_GetSigners(t *testing.T) {
-	msg := NewMsgRegisterNode(TestAddress1, TestCoinPos, TestCoinsPos, TestUploadPos, TestDownloadPos, TestAPIPortValid, TestEncryption, TestNodeType, TestVersion)
+	msg := NewMsgRegisterNode(TestAddress1, TestMonikerValid, TestCoinPos, TestCoinsPos, TestBandwidthPos, TestAPIPortValid, TestEncryptionMethod, TestNodeType, TestVersion)
 	require.Equal(t, []csdkTypes.AccAddress{TestAddress1}, msg.GetSigners())
 }
 
 func TestMsgRegisterNode_Type(t *testing.T) {
-	msg := NewMsgRegisterNode(TestAddress1, TestCoinPos, TestCoinsPos, TestUploadPos, TestDownloadPos, TestAPIPortValid, TestEncryption, TestNodeType, TestVersion)
+	msg := NewMsgRegisterNode(TestAddress1, TestMonikerValid, TestCoinPos, TestCoinsPos, TestBandwidthPos, TestAPIPortValid, TestEncryptionMethod, TestNodeType, TestVersion)
 	require.Equal(t, "msg_register_node", msg.Type())
 }
 
 func TestMsgRegisterNode_Route(t *testing.T) {
-	msg := NewMsgRegisterNode(TestAddress1, TestCoinPos, TestCoinsPos, TestUploadPos, TestDownloadPos, TestAPIPortValid, TestEncryption, TestNodeType, TestVersion)
+	msg := NewMsgRegisterNode(TestAddress1, TestMonikerValid, TestCoinPos, TestCoinsPos, TestBandwidthPos, TestAPIPortValid, TestEncryptionMethod, TestNodeType, TestVersion)
 	require.Equal(t, RouterKey, msg.Route())
 }
 
 func TestMsgUpdateNode_ValidateBasic(t *testing.T) {
 	tests := []struct {
 		name string
-		msg  *MsgUpdateNode
+		msg  *MsgUpdateNodeDetails
 		want csdkTypes.Error
 	}{
 		{
 			"from is nil",
-			NewMsgUpdateNode(nil, TestNodeIDValid, TestCoinsPos, TestUploadPos, TestDownloadPos, TestAPIPortValid, TestEncryption, TestVersion),
+			NewMsgUpdateNodeDetails(nil, TestNodeIDValid, TestMonikerValid, TestCoinsPos, TestBandwidthPos, TestAPIPortValid, TestEncryptionMethod, TestNodeType, TestVersion),
 			ErrorInvalidField("from"),
 		}, {
 			"from is empty",
-			NewMsgUpdateNode(TestAddressEmpty, TestNodeIDValid, TestCoinsPos, TestUploadPos, TestDownloadPos, TestAPIPortValid, TestEncryption, TestVersion),
+			NewMsgUpdateNodeDetails(TestAddressEmpty, TestNodeIDValid, TestMonikerValid, TestCoinsPos, TestBandwidthPos, TestAPIPortValid, TestEncryptionMethod, TestNodeType, TestVersion),
 			ErrorInvalidField("from"),
 		}, {
+			"node_moniker length is more",
+			NewMsgUpdateNodeDetails(TestAddress1, TestNodeIDValid, TestMonikerLenGT128, TestCoinsPos, TestBandwidthPos, TestAPIPortValid, TestEncryptionMethod, TestNodeType, TestVersion),
+			ErrorInvalidField("moniker"),
+		}, {
 			"id is empty",
-			NewMsgUpdateNode(TestAddress1, TestNodeIDEmpty, TestCoinsPos, TestUploadPos, TestDownloadPos, TestAPIPortValid, TestEncryption, TestVersion),
+			NewMsgUpdateNodeDetails(TestAddress1, TestNodeIDEmpty, TestMonikerValid, TestCoinsPos, TestBandwidthPos, TestAPIPortValid, TestEncryptionMethod, TestNodeType, TestVersion),
 			ErrorInvalidField("id"),
 		}, {
 			"id in invalid",
-			NewMsgUpdateNode(TestAddress1, TestNodeIDInvalid, TestCoinsPos, TestUploadPos, TestDownloadPos, TestAPIPortValid, TestEncryption, TestVersion),
+			NewMsgUpdateNodeDetails(TestAddress1, TestNodeIDInvalid, TestMonikerValid, TestCoinsPos, TestBandwidthPos, TestAPIPortValid, TestEncryptionMethod, TestNodeType, TestVersion),
 			ErrorInvalidField("id"),
 		}, {
 			"prices_per_gb is nil",
-			NewMsgUpdateNode(TestAddress1, TestNodeIDValid, nil, TestUploadPos, TestDownloadPos, TestAPIPortValid, TestEncryption, TestVersion),
+			NewMsgUpdateNodeDetails(TestAddress1, TestNodeIDValid, TestMonikerValid, nil, TestBandwidthPos, TestAPIPortValid, TestEncryptionMethod, TestNodeType, TestVersion),
 			nil,
 		}, {
 			"prices_per_gb is empty",
-			NewMsgUpdateNode(TestAddress1, TestNodeIDValid, TestCoinsEmpty, TestUploadPos, TestDownloadPos, TestAPIPortValid, TestEncryption, TestVersion),
+			NewMsgUpdateNodeDetails(TestAddress1, TestNodeIDValid, TestMonikerValid, TestCoinsEmpty, TestBandwidthPos, TestAPIPortValid, TestEncryptionMethod, TestNodeType, TestVersion),
 			ErrorInvalidField("prices_per_gb"),
 		}, {
 			"prices_per_gb is invalid",
-			NewMsgUpdateNode(TestAddress1, TestNodeIDValid, TestCoinsInvalid, TestUploadPos, TestDownloadPos, TestAPIPortValid, TestEncryption, TestVersion),
+			NewMsgUpdateNodeDetails(TestAddress1, TestNodeIDValid, TestMonikerValid, TestCoinsInvalid, TestBandwidthPos, TestAPIPortValid, TestEncryptionMethod, TestNodeType, TestVersion),
 			ErrorInvalidField("prices_per_gb"),
 		}, {
 			"prices_per_gb is negative",
-			NewMsgUpdateNode(TestAddress1, TestNodeIDValid, TestCoinsNeg, TestUploadPos, TestDownloadPos, TestAPIPortValid, TestEncryption, TestVersion),
+			NewMsgUpdateNodeDetails(TestAddress1, TestNodeIDValid, TestMonikerValid, TestCoinsNeg, TestBandwidthPos, TestAPIPortValid, TestEncryptionMethod, TestNodeType, TestVersion),
 			ErrorInvalidField("prices_per_gb"),
 		}, {
 			"prices_per_gb is zero",
-			NewMsgUpdateNode(TestAddress1, TestNodeIDValid, TestCoinsZero, TestUploadPos, TestDownloadPos, TestAPIPortValid, TestEncryption, TestVersion),
+			NewMsgUpdateNodeDetails(TestAddress1, TestNodeIDValid, TestMonikerValid, TestCoinsZero, TestBandwidthPos, TestAPIPortValid, TestEncryptionMethod, TestNodeType, TestVersion),
 			ErrorInvalidField("prices_per_gb"),
 		}, {
-			"upload is zero",
-			NewMsgUpdateNode(TestAddress1, TestNodeIDValid, TestCoinsPos, TestUploadZero, TestDownloadPos, TestAPIPortValid, TestEncryption, TestVersion),
+			"net_speed is zero",
+			NewMsgUpdateNodeDetails(TestAddress1, TestNodeIDValid, TestMonikerValid, TestCoinsPos, TestBandwidthPos, TestAPIPortValid, TestEncryptionMethod, TestNodeType, TestVersion),
 			nil,
 		}, {
-			"upload is negative",
-			NewMsgUpdateNode(TestAddress1, TestNodeIDValid, TestCoinsPos, TestUploadNeg, TestDownloadPos, TestAPIPortValid, TestEncryption, TestVersion),
-			ErrorInvalidField("net_speed"),
-		}, {
-			"download is zero",
-			NewMsgUpdateNode(TestAddress1, TestNodeIDValid, TestCoinsPos, TestUploadPos, TestDownloadZero, TestAPIPortValid, TestEncryption, TestVersion),
-			nil,
-		}, {
-			"download is negative",
-			NewMsgUpdateNode(TestAddress1, TestNodeIDValid, TestCoinsPos, TestUploadPos, TestDownloadNeg, TestAPIPortValid, TestEncryption, TestVersion),
+			"net_speed is negative",
+			NewMsgUpdateNodeDetails(TestAddress1, TestNodeIDValid, TestMonikerValid, TestCoinsPos, TestBandwidthNeg, TestAPIPortValid, TestEncryptionMethod, TestNodeType, TestVersion),
 			ErrorInvalidField("net_speed"),
 		}, {
 			"api_port is invalid",
-			NewMsgUpdateNode(TestAddress1, TestNodeIDValid, TestCoinsPos, TestUploadPos, TestDownloadPos, TestAPIPortInvalid, TestEncryption, TestVersion),
+			NewMsgUpdateNodeDetails(TestAddress1, TestNodeIDValid, TestMonikerValid, TestCoinsPos, TestBandwidthPos, TestAPIPortInvalid, TestEncryptionMethod, TestNodeType, TestVersion),
 			ErrorInvalidField("api_port"),
 		}, {
 			"encryption is empty",
-			NewMsgUpdateNode(TestAddress1, TestNodeIDValid, TestCoinsPos, TestUploadPos, TestDownloadPos, TestAPIPortValid, "", TestVersion),
+			NewMsgUpdateNodeDetails(TestAddress1, TestNodeIDValid, TestMonikerValid, TestCoinsPos, TestBandwidthPos, TestAPIPortValid, "", TestNodeType, TestVersion),
+			nil,
+		}, {
+			"type is empty",
+			NewMsgUpdateNodeDetails(TestAddress1, TestNodeIDValid, TestMonikerValid, TestCoinsPos, TestBandwidthPos, TestAPIPortValid, TestEncryptionMethod, "", TestVersion),
 			nil,
 		}, {
 			"version is empty",
-			NewMsgUpdateNode(TestAddress1, TestNodeIDValid, TestCoinsPos, TestUploadPos, TestDownloadPos, TestAPIPortValid, TestEncryption, ""),
+			NewMsgUpdateNodeDetails(TestAddress1, TestNodeIDValid, TestMonikerValid, TestCoinsPos, TestBandwidthPos, TestAPIPortValid, TestEncryptionMethod, TestNodeType, ""),
 			nil,
 		}, {
 			"valid",
-			NewMsgUpdateNode(TestAddress1, TestNodeIDValid, TestCoinsPos, TestUploadPos, TestDownloadPos, TestAPIPortValid, TestEncryption, TestVersion),
+			NewMsgUpdateNodeDetails(TestAddress1, TestNodeIDValid, TestMonikerValid, TestCoinsPos, TestBandwidthPos, TestAPIPortValid, TestEncryptionMethod, TestNodeType, TestVersion),
 			nil,
 		},
 	}
@@ -219,7 +215,7 @@ func TestMsgUpdateNode_ValidateBasic(t *testing.T) {
 }
 
 func TestMsgUpdateNode_GetSignBytes(t *testing.T) {
-	msg := NewMsgUpdateNode(TestAddress1, TestNodeIDValid, TestCoinsPos, TestUploadPos, TestDownloadPos, TestAPIPortValid, TestEncryption, TestVersion)
+	msg := NewMsgUpdateNodeDetails(TestAddress1, TestNodeIDValid, TestMonikerValid, TestCoinsPos, TestBandwidthPos, TestAPIPortValid, TestEncryptionMethod, TestNodeType, TestVersion)
 	msgBytes, err := json.Marshal(msg)
 	if err != nil {
 		panic(err)
@@ -229,17 +225,17 @@ func TestMsgUpdateNode_GetSignBytes(t *testing.T) {
 }
 
 func TestMsgUpdateNode_GetSigners(t *testing.T) {
-	msg := NewMsgUpdateNode(TestAddress1, TestNodeIDValid, TestCoinsPos, TestUploadPos, TestDownloadPos, TestAPIPortValid, TestEncryption, TestVersion)
+	msg := NewMsgUpdateNodeDetails(TestAddress1, TestNodeIDValid, TestMonikerValid, TestCoinsPos, TestBandwidthPos, TestAPIPortValid, TestEncryptionMethod, TestNodeType, TestVersion)
 	require.Equal(t, []csdkTypes.AccAddress{TestAddress1}, msg.GetSigners())
 }
 
 func TestMsgUpdateNode_Type(t *testing.T) {
-	msg := NewMsgUpdateNode(TestAddress1, TestNodeIDValid, TestCoinsPos, TestUploadPos, TestDownloadPos, TestAPIPortValid, TestEncryption, TestVersion)
+	msg := NewMsgUpdateNodeDetails(TestAddress1, TestNodeIDValid, TestMonikerValid, TestCoinsPos, TestBandwidthPos, TestAPIPortValid, TestEncryptionMethod, TestNodeType, TestVersion)
 	require.Equal(t, "msg_update_node_details", msg.Type())
 }
 
 func TestMsgUpdateNode_Route(t *testing.T) {
-	msg := NewMsgUpdateNode(TestAddress1, TestNodeIDValid, TestCoinsPos, TestUploadPos, TestDownloadPos, TestAPIPortValid, TestEncryption, TestVersion)
+	msg := NewMsgUpdateNodeDetails(TestAddress1, TestNodeIDValid, TestMonikerValid, TestCoinsPos, TestBandwidthPos, TestAPIPortValid, TestEncryptionMethod, TestNodeType, TestVersion)
 	require.Equal(t, RouterKey, msg.Route())
 }
 

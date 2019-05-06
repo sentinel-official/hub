@@ -10,6 +10,11 @@ import (
 )
 
 var (
+	TestMonikerLenZero  = ""
+	TestMonikerValid    = "MONIKER"
+	TestMonikerLenGT128 = "MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM" +
+		                  "MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM"
+
 	TestCoinPos   = csdkTypes.NewInt64Coin("sent", 10)
 	TestCoinNeg   = csdkTypes.Coin{"sent", csdkTypes.NewInt(-10)}
 	TestCoinZero  = csdkTypes.NewInt64Coin("sent", 0)
@@ -48,9 +53,9 @@ var (
 	TestAPIPortValid   = uint16(8000)
 	TestAPIPortInvalid = uint16(0)
 
-	TestEncryption = "encryption"
-	TestNodeType   = "node_type"
-	TestVersion    = "version"
+	TestEncryptionMethod = "encryption-method"
+	TestNodeType         = "node_type"
+	TestVersion          = "version"
 
 	TestNodeIDValid   = sdkTypes.NewID(fmt.Sprintf("%s/%d", TestAddress1.String(), 0))
 	TestNodeIDInvalid = sdkTypes.NewID("invalid")

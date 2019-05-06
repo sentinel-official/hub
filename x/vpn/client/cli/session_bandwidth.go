@@ -122,6 +122,6 @@ func UpdateSessionBandwidthTxCmd(cdc *codec.Codec) *cobra.Command {
 	_ = cmd.MarkFlagRequired(flagDownloadSpeed)
 	_ = cmd.MarkFlagRequired(flagNodeOwnerSign)
 	_ = cmd.MarkFlagRequired(flagClientSign)
-	
+
 	return cmd
 }

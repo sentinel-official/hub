@@ -54,19 +54,20 @@ func TestMakeCodec() *codec.Codec {
 
 var (
 	TestNodeValid = types.Node{
-		ID:              types.TestNodeIDValid,
-		Owner:           types.TestAddress1,
-		PubKey:          types.TestPubkey1,
-		LockedAmount:    types.TestCoinPos,
-		PricesPerGB:     types.TestCoinsPos,
-		NetSpeed:        types.TestBandwidthPos,
-		APIPort:         types.TestAPIPortValid,
-		Encryption:      types.TestEncryption,
-		NodeType:        types.TestNodeType,
-		Version:         types.TestVersion,
-		Status:          types.StatusRegistered,
-		StatusAtHeight:  0,
-		DetailsAtHeight: 0,
+		ID:                      types.TestNodeIDValid,
+		Owner:                   types.TestAddress1,
+		OwnerPubKey:             types.TestPubkey1,
+		LockedAmount:            types.TestCoinPos,
+		Moniker:                 types.TestMonikerValid,
+		PricesPerGB:             types.TestCoinsPos,
+		NetSpeed:                types.TestBandwidthPos,
+		APIPort:                 types.TestAPIPortValid,
+		EncryptionMethod:        types.TestEncryptionMethod,
+		Type:                    types.TestNodeType,
+		Version:                 types.TestVersion,
+		Status:                  types.StatusRegistered,
+		StatusModifiedAtHeight:  0,
+		DetailsModifiedAtHeight: 0,
 	}
 	TestNodeEmpty     = types.Node{}
 	TestNodeIDsEmpty  = sdkTypes.IDs(nil)
@@ -83,17 +84,17 @@ var (
 		ClientPubKey:    types.TestPubkey2,
 		LockedAmount:    types.TestCoinPos,
 		PricePerGB:      types.TestCoinPos,
-		Bandwidth: types.SessionBandwidth{
-			ToProvide:       types.TestBandwidthPos,
-			Consumed:        types.TestBandwidthZero,
-			NodeOwnerSign:   types.TestNodeOwnerSign,
-			ClientSign:      types.TestClientSign,
-			UpdatedAtHeight: 0,
+		BandwidthInfo: types.SessionBandwidthInfo{
+			ToProvide:        types.TestBandwidthPos,
+			Consumed:         types.TestBandwidthZero,
+			NodeOwnerSign:    types.TestNodeOwnerSign,
+			ClientSign:       types.TestClientSign,
+			ModifiedAtHeight: 0,
 		},
-		Status:          types.StatusInit,
-		StatusAtHeight:  0,
-		StartedAtHeight: 0,
-		EndedAtHeight:   0,
+		Status:                 types.StatusInit,
+		StatusModifiedAtHeight: 0,
+		StartedAtHeight:        0,
+		EndedAtHeight:          0,
 	}
 	TestSessionEmpty     = types.Session{}
 	TestSessionIDsEmpty  = sdkTypes.IDs(nil)

@@ -25,8 +25,8 @@ func Test_handleRegisterNode(t *testing.T) {
 
 	node := keeper.TestNodeValid
 
-	msg := types.NewMsgRegisterNode(node.Owner, node.LockedAmount, node.PricesPerGB, node.NetSpeed.Upload,
-		node.NetSpeed.Download, node.APIPort, node.Encryption, node.NodeType, node.Version)
+	msg := types.NewMsgRegisterNode(node.Owner, node.Moniker, node.LockedAmount, node.PricesPerGB, node.NetSpeed,
+		node.APIPort, node.EncryptionMethod, node.Type, node.Version)
 	res := handler(ctx, *msg)
 	require.True(t, res.IsOK())
 	require.Equal(t, types.TestNodeIDValid, sdkTypes.NewID(string(res.Tags[1].Value)))
@@ -53,8 +53,8 @@ func Test_handleUpdateNode(t *testing.T) {
 
 	node := keeper.TestNodeValid
 
-	msg := types.NewMsgRegisterNode(node.Owner, node.LockedAmount, node.PricesPerGB, node.NetSpeed.Upload,
-		node.NetSpeed.Download, node.APIPort, node.Encryption, node.NodeType, node.Version)
+	msg := types.NewMsgRegisterNode(node.Owner, node.Moniker, node.LockedAmount, node.PricesPerGB, node.NetSpeed,
+		node.APIPort, node.EncryptionMethod, node.Type, node.Version)
 	res := handler(ctx, *msg)
 	require.True(t, res.IsOK())
 	require.Equal(t, types.TestNodeIDValid, sdkTypes.NewID(string(res.Tags[1].Value)))
@@ -66,23 +66,23 @@ func Test_handleUpdateNode(t *testing.T) {
 	require.Nil(t, err)
 	require.Equal(t, &node, nodeRes)
 
-	msgUpdateNode := types.NewMsgUpdateNode(node.Owner, types.TestNodeIDInvalid,
+	msgUpdateNode := types.NewMsgUpdateNodeDetails(node.Owner, types.TestNodeIDInvalid, types.TestMonikerValid,
 		csdkTypes.Coins{csdkTypes.NewInt64Coin("coin1", 1)},
-		csdkTypes.NewInt(100), csdkTypes.NewInt(100), uint16(8080), "", "")
+		types.TestBandwidthPos, uint16(8080), "", "", "")
 	res = handler(ctx, *msgUpdateNode)
 	require.False(t, res.IsOK())
 	require.Equal(t, types.ErrorNodeNotExists().Code(), res.Code)
 
-	msgUpdateNode = types.NewMsgUpdateNode(csdkTypes.AccAddress([]byte("invalid_address")), types.TestNodeIDValid,
-		csdkTypes.Coins{csdkTypes.NewInt64Coin("coin1", 1)},
-		csdkTypes.NewInt(100), csdkTypes.NewInt(100), uint16(8080), "", "")
+	msgUpdateNode = types.NewMsgUpdateNodeDetails(csdkTypes.AccAddress([]byte("invalid_address")), types.TestNodeIDValid,
+		types.TestMonikerValid, csdkTypes.Coins{csdkTypes.NewInt64Coin("coin1", 1)},
+		types.TestBandwidthPos, uint16(8080), "", "", "")
 	res = handler(ctx, *msgUpdateNode)
 	require.False(t, res.IsOK())
 	require.Equal(t, types.ErrorUnauthorized().Code(), res.Code)
 
-	msgUpdateNode = types.NewMsgUpdateNode(node.Owner, types.TestNodeIDValid,
+	msgUpdateNode = types.NewMsgUpdateNodeDetails(node.Owner, types.TestNodeIDValid, types.TestMonikerValid,
 		csdkTypes.Coins{csdkTypes.NewInt64Coin("coin1", 1)},
-		csdkTypes.NewInt(100), csdkTypes.NewInt(100), uint16(8080), "", "")
+		types.TestBandwidthPos, 8080, "", "", "")
 	res = handler(ctx, *msgUpdateNode)
 	require.True(t, res.IsOK())
 	require.Equal(t, types.TestNodeIDValid, sdkTypes.NewID(string(res.Tags[0].Value)))
@@ -90,9 +90,9 @@ func Test_handleUpdateNode(t *testing.T) {
 	nodeRes, err = vpnKeeper.GetNode(ctx, types.TestNodeIDValid)
 	require.Nil(t, err)
 	require.Equal(t, csdkTypes.Coins{csdkTypes.NewInt64Coin("coin1", 1)}, nodeRes.PricesPerGB)
-	require.Equal(t, sdkTypes.NewBandwidthFromInt64(100, 100), nodeRes.NetSpeed)
+	require.Equal(t, types.TestBandwidthPos, nodeRes.NetSpeed)
 	require.Equal(t, uint16(8080), nodeRes.APIPort)
-	require.Equal(t, types.TestEncryption, nodeRes.Encryption)
+	require.Equal(t, types.TestEncryptionMethod, nodeRes.EncryptionMethod)
 	require.Equal(t, types.TestVersion, nodeRes.Version)
 }
 
@@ -110,8 +110,8 @@ func Test_handleUpdateNodeStatus(t *testing.T) {
 
 	node := keeper.TestNodeValid
 
-	msg := types.NewMsgRegisterNode(node.Owner, node.LockedAmount, node.PricesPerGB, node.NetSpeed.Upload,
-		node.NetSpeed.Download, node.APIPort, node.Encryption, node.NodeType, node.Version)
+	msg := types.NewMsgRegisterNode(node.Owner, node.Moniker, node.LockedAmount, node.PricesPerGB, node.NetSpeed,
+		node.APIPort, node.EncryptionMethod, node.Type, node.Version)
 	res := handler(ctx, *msg)
 	require.True(t, res.IsOK())
 	require.Equal(t, types.TestNodeIDValid, sdkTypes.NewID(string(res.Tags[1].Value)))
@@ -141,7 +141,7 @@ func Test_handleUpdateNodeStatus(t *testing.T) {
 	nodeRes, err = vpnKeeper.GetNode(ctx, types.TestNodeIDValid)
 	require.Nil(t, err)
 	require.Equal(t, types.StatusActive, nodeRes.Status)
-	require.Equal(t, int64(0), nodeRes.StatusAtHeight)
+	require.Equal(t, int64(0), nodeRes.StatusModifiedAtHeight)
 
 	nodes, err := vpnKeeper.GetActiveNodeIDsAtHeight(ctx, 0)
 	require.Nil(t, err)
@@ -162,8 +162,8 @@ func Test_handleDeregisterNode(t *testing.T) {
 
 	node := keeper.TestNodeValid
 
-	msg := types.NewMsgRegisterNode(node.Owner, node.LockedAmount, node.PricesPerGB, node.NetSpeed.Upload,
-		node.NetSpeed.Download, node.APIPort, node.Encryption, node.NodeType, node.Version)
+	msg := types.NewMsgRegisterNode(node.Owner, node.Moniker, node.LockedAmount, node.PricesPerGB, node.NetSpeed,
+		node.APIPort, node.EncryptionMethod, node.Type, node.Version)
 	res := handler(ctx, *msg)
 	require.True(t, res.IsOK())
 	require.Equal(t, types.TestNodeIDValid, sdkTypes.NewID(string(res.Tags[1].Value)))
@@ -193,7 +193,7 @@ func Test_handleDeregisterNode(t *testing.T) {
 	nodeRes, err = vpnKeeper.GetNode(ctx, types.TestNodeIDValid)
 	require.Nil(t, err)
 	require.Equal(t, types.StatusDeregistered, nodeRes.Status)
-	require.Equal(t, int64(0), nodeRes.StatusAtHeight)
+	require.Equal(t, int64(0), nodeRes.StatusModifiedAtHeight)
 
 	account = accountKeeper.GetAccount(ctx, node.Owner)
 	require.Equal(t, types.TestCoinsPos, account.GetCoins())
@@ -213,8 +213,8 @@ func Test_handleInitSession(t *testing.T) {
 
 	node := keeper.TestNodeValid
 
-	msg := types.NewMsgRegisterNode(node.Owner, node.LockedAmount, node.PricesPerGB, node.NetSpeed.Upload,
-		node.NetSpeed.Download, node.APIPort, node.Encryption, node.NodeType, node.Version)
+	msg := types.NewMsgRegisterNode(node.Owner, node.Moniker, node.LockedAmount, node.PricesPerGB, node.NetSpeed,
+		node.APIPort, node.EncryptionMethod, node.Type, node.Version)
 	res := handler(ctx, *msg)
 	require.True(t, res.IsOK())
 	require.Equal(t, types.TestNodeIDValid, sdkTypes.NewID(string(res.Tags[1].Value)))
@@ -289,8 +289,8 @@ func Test_handleUpdateSessionBandwidth(t *testing.T) {
 
 	node := keeper.TestNodeValid
 
-	msg := types.NewMsgRegisterNode(node.Owner, node.LockedAmount, node.PricesPerGB, node.NetSpeed.Upload,
-		node.NetSpeed.Download, node.APIPort, node.Encryption, node.NodeType, node.Version)
+	msg := types.NewMsgRegisterNode(node.Owner, node.Moniker, node.LockedAmount, node.PricesPerGB, node.NetSpeed,
+		node.APIPort, node.EncryptionMethod, node.Type, node.Version)
 	res := handler(ctx, *msg)
 	require.True(t, res.IsOK())
 	require.Equal(t, types.TestNodeIDValid, sdkTypes.NewID(string(res.Tags[1].Value)))
@@ -357,25 +357,25 @@ func Test_handleUpdateSessionBandwidth(t *testing.T) {
 	require.Nil(t, err1)
 
 	msgUpdateSessionBandwidth := types.NewMsgUpdateSessionBandwidth(session.Client, types.TestSessionIDInvalid,
-		types.TestUploadPos, types.TestDownloadPos, clientSign, nodeOwnerSign)
+		types.TestBandwidthPos, clientSign, nodeOwnerSign)
 	res = handler(ctx, *msgUpdateSessionBandwidth)
 	require.False(t, res.IsOK())
 	require.Equal(t, types.ErrorSessionNotExists().Code(), res.Code)
 
 	sessionRes, err := vpnKeeper.GetSession(ctx, session.ID)
 	require.Nil(t, err)
-	require.Equal(t, types.TestBandwidthZero, sessionRes.Bandwidth.Consumed)
+	require.Equal(t, types.TestBandwidthZero, sessionRes.BandwidthInfo.Consumed)
 
 	msgUpdateSessionBandwidth = types.NewMsgUpdateSessionBandwidth(session.Client, session.ID,
-		types.TestUploadPos, types.TestDownloadPos, clientSign, nodeOwnerSign)
+		types.TestBandwidthPos, nodeOwnerSign, clientSign)
 	res = handler(ctx, *msgUpdateSessionBandwidth)
 	require.True(t, res.IsOK())
 
 	sessionRes, err = vpnKeeper.GetSession(ctx, session.ID)
 	require.Nil(t, err)
-	require.Equal(t, types.TestBandwidthPos, sessionRes.Bandwidth.Consumed)
-	require.Equal(t, clientSign, sessionRes.Bandwidth.ClientSign)
-	require.Equal(t, nodeOwnerSign, sessionRes.Bandwidth.NodeOwnerSign)
+	require.Equal(t, types.TestBandwidthPos, sessionRes.BandwidthInfo.Consumed)
+	require.Equal(t, clientSign, sessionRes.BandwidthInfo.ClientSign)
+	require.Equal(t, nodeOwnerSign, sessionRes.BandwidthInfo.NodeOwnerSign)
 
 	sessions, err := vpnKeeper.GetActiveSessionIDsAtHeight(ctx, 0)
 	require.Nil(t, err)

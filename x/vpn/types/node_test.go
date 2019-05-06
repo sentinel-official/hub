@@ -65,20 +65,20 @@ func TestNode_UpdateDetails(t *testing.T) {
 			Node{APIPort: 8000},
 		}, {
 			"encryption is empty",
-			Node{Encryption: ""},
+			Node{EncryptionMethod: ""},
 			Node{},
 		}, {
 			"encryption is valid",
-			Node{Encryption: TestEncryption},
-			Node{Encryption: TestEncryption},
+			Node{EncryptionMethod: TestEncryptionMethod},
+			Node{EncryptionMethod: TestEncryptionMethod},
 		}, {
 			"node_type is empty",
-			Node{NodeType: ""},
+			Node{Type: ""},
 			Node{},
 		}, {
 			"node_type is valid",
-			Node{NodeType: TestNodeType},
-			Node{NodeType: TestNodeType},
+			Node{Type: TestNodeType},
+			Node{Type: TestNodeType},
 		}, {
 			"version is empty",
 			Node{Version: ""},
