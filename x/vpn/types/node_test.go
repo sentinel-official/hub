@@ -9,90 +9,90 @@ import (
 	"github.com/ironman0x7b2/sentinel-sdk/types"
 )
 
-func TestNodeDetails_UpdateDetails(t *testing.T) {
+func TestNode_UpdateDetails(t *testing.T) {
 	tests := []struct {
 		name    string
-		details NodeDetails
-		want    NodeDetails
+		details Node
+		want    Node
 	}{
 		{
 			"prices_per_gb is nil",
-			NodeDetails{PricesPerGB: nil},
-			NodeDetails{},
+			Node{PricesPerGB: nil},
+			Node{},
 		}, {
 			"prices_per_gb is empty",
-			NodeDetails{PricesPerGB: TestCoinsEmpty},
-			NodeDetails{},
+			Node{PricesPerGB: TestCoinsEmpty},
+			Node{},
 		}, {
 			"prices_per_gb is invalid",
-			NodeDetails{PricesPerGB: TestCoinsInvalid},
-			NodeDetails{},
+			Node{PricesPerGB: TestCoinsInvalid},
+			Node{},
 		}, {
 			"prices_per_gb is negative",
-			NodeDetails{PricesPerGB: TestCoinsNeg},
-			NodeDetails{},
+			Node{PricesPerGB: TestCoinsNeg},
+			Node{},
 		}, {
 			"prices_per_gb is zero",
-			NodeDetails{PricesPerGB: TestCoinsZero},
-			NodeDetails{},
+			Node{PricesPerGB: TestCoinsZero},
+			Node{},
 		}, {
 			"prices_per_gb is positive",
-			NodeDetails{PricesPerGB: TestCoinsPos},
-			NodeDetails{PricesPerGB: TestCoinsPos},
+			Node{PricesPerGB: TestCoinsPos},
+			Node{PricesPerGB: TestCoinsPos},
 		}, {
 			"net_speed is empty",
-			NodeDetails{NetSpeed: types.Bandwidth{}},
-			NodeDetails{},
+			Node{NetSpeed: types.Bandwidth{}},
+			Node{},
 		}, {
 			"net_speed is negative",
-			NodeDetails{NetSpeed: types.NewBandwidth(TestUploadNeg, TestDownloadNeg)},
-			NodeDetails{},
+			Node{NetSpeed: types.NewBandwidth(TestUploadNeg, TestDownloadNeg)},
+			Node{},
 		}, {
 			"net_speed is zero",
-			NodeDetails{NetSpeed: types.NewBandwidth(TestUploadZero, TestDownloadZero)},
-			NodeDetails{},
+			Node{NetSpeed: types.NewBandwidth(TestUploadZero, TestDownloadZero)},
+			Node{},
 		}, {
 			"net_speed is positive",
-			NodeDetails{NetSpeed: types.NewBandwidth(TestUploadPos, TestDownloadPos)},
-			NodeDetails{NetSpeed: types.NewBandwidth(TestUploadPos, TestDownloadPos)},
+			Node{NetSpeed: types.NewBandwidth(TestUploadPos, TestDownloadPos)},
+			Node{NetSpeed: types.NewBandwidth(TestUploadPos, TestDownloadPos)},
 		}, {
 			"api_port is zero",
-			NodeDetails{APIPort: 0},
-			NodeDetails{},
+			Node{APIPort: 0},
+			Node{},
 		}, {
 			"api_port is positive",
-			NodeDetails{APIPort: 8000},
-			NodeDetails{APIPort: 8000},
+			Node{APIPort: 8000},
+			Node{APIPort: 8000},
 		}, {
 			"encryption is empty",
-			NodeDetails{Encryption: ""},
-			NodeDetails{},
+			Node{Encryption: ""},
+			Node{},
 		}, {
 			"encryption is valid",
-			NodeDetails{Encryption: TestEncryption},
-			NodeDetails{Encryption: TestEncryption},
+			Node{Encryption: TestEncryption},
+			Node{Encryption: TestEncryption},
 		}, {
 			"node_type is empty",
-			NodeDetails{NodeType: ""},
-			NodeDetails{},
+			Node{NodeType: ""},
+			Node{},
 		}, {
 			"node_type is valid",
-			NodeDetails{NodeType: TestNodeType},
-			NodeDetails{NodeType: TestNodeType},
+			Node{NodeType: TestNodeType},
+			Node{NodeType: TestNodeType},
 		}, {
 			"version is empty",
-			NodeDetails{Version: ""},
-			NodeDetails{},
+			Node{Version: ""},
+			Node{},
 		}, {
 			"version is valid",
-			NodeDetails{Version: TestVersion},
-			NodeDetails{Version: TestVersion},
+			Node{Version: TestVersion},
+			Node{Version: TestVersion},
 		},
 	}
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			node := NodeDetails{}
+			node := Node{}
 			if node.UpdateDetails(tc.details); !reflect.DeepEqual(node, tc.want) {
 				t.Errorf("\ngot = %vwant = %v", node, tc.want)
 			}
@@ -100,19 +100,19 @@ func TestNodeDetails_UpdateDetails(t *testing.T) {
 	}
 }
 
-func TestNodeDetails_FindPricePerGB(t *testing.T) {
-	var node NodeDetails
+func TestNode_FindPricePerGB(t *testing.T) {
+	var node Node
 	require.Equal(t, node.FindPricePerGB("sent"), TestCoinNil)
-	node = NodeDetails{PricesPerGB: nil}
+	node = Node{PricesPerGB: nil}
 	require.Equal(t, node.FindPricePerGB("sent"), TestCoinNil)
-	node = NodeDetails{PricesPerGB: TestCoinsEmpty}
+	node = Node{PricesPerGB: TestCoinsEmpty}
 	require.Equal(t, node.FindPricePerGB("sent"), TestCoinNil)
-	node = NodeDetails{PricesPerGB: TestCoinsPos}
+	node = Node{PricesPerGB: TestCoinsPos}
 	require.Equal(t, node.FindPricePerGB("sent"), TestCoinPos)
 }
 
-func TestNodeDetails_CalculateBandwidth(t *testing.T) {
-	node := NodeDetails{PricesPerGB: TestCoinsPos}
+func TestNode_CalculateBandwidth(t *testing.T) {
+	node := Node{PricesPerGB: TestCoinsPos}
 
 	b, err := node.CalculateBandwidth(TestCoinNil)
 	require.Equal(t, err, ErrorInvalidPriceDenom())

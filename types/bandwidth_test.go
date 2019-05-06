@@ -34,7 +34,7 @@ func TestNewBandwidthFromInt64(t *testing.T) {
 
 func TestNewBandwidthSignData(t *testing.T) {
 	b := NewBandwidthSignData(testID, testBandwidth, testAddress1, testAddress2)
-	require.Equal(t, b.ID, testID)
+	require.Equal(t, b.SessionID, testID)
 	require.Equal(t, b.Bandwidth, testBandwidth)
 	require.Equal(t, b.NodeOwner, testAddress1)
 	require.Equal(t, b.Client, testAddress2)

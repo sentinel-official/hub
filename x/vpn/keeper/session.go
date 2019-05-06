@@ -7,9 +7,9 @@ import (
 	"github.com/ironman0x7b2/sentinel-sdk/x/vpn/types"
 )
 
-func (k Keeper) SetSessionDetails(ctx csdkTypes.Context, details *types.SessionDetails) csdkTypes.Error {
-	key := types.SessionKey(details.ID)
-	value, err := k.cdc.MarshalBinaryLengthPrefixed(details)
+func (k Keeper) SetSession(ctx csdkTypes.Context, session *types.Session) csdkTypes.Error {
+	key := types.SessionKey(session.ID)
+	value, err := k.cdc.MarshalBinaryLengthPrefixed(session)
 	if err != nil {
 		return types.ErrorMarshal()
 	}
@@ -20,20 +20,21 @@ func (k Keeper) SetSessionDetails(ctx csdkTypes.Context, details *types.SessionD
 	return nil
 }
 
-func (k Keeper) GetSessionDetails(ctx csdkTypes.Context, id sdkTypes.ID) (*types.SessionDetails, csdkTypes.Error) {
+func (k Keeper) GetSession(ctx csdkTypes.Context, id sdkTypes.ID) (*types.Session, csdkTypes.Error) {
 	key := types.SessionKey(id)
+
 	store := ctx.KVStore(k.SessionStoreKey)
 	value := store.Get(key)
 	if value == nil {
 		return nil, nil
 	}
 
-	var details types.SessionDetails
-	if err := k.cdc.UnmarshalBinaryLengthPrefixed(value, &details); err != nil {
+	var session types.Session
+	if err := k.cdc.UnmarshalBinaryLengthPrefixed(value, &session); err != nil {
 		return nil, types.ErrorUnmarshal()
 	}
 
-	return &details, nil
+	return &session, nil
 }
 
 func (k Keeper) SetActiveSessionIDsAtHeight(ctx csdkTypes.Context, height int64, ids sdkTypes.IDs) csdkTypes.Error {
@@ -83,6 +84,7 @@ func (k Keeper) SetSessionsCount(ctx csdkTypes.Context, owner csdkTypes.AccAddre
 
 func (k Keeper) GetSessionsCount(ctx csdkTypes.Context, owner csdkTypes.AccAddress) (uint64, csdkTypes.Error) {
 	key := types.SessionsCountKey(owner)
+
 	store := ctx.KVStore(k.SessionStoreKey)
 	value := store.Get(key)
 	if value == nil {
@@ -97,21 +99,21 @@ func (k Keeper) GetSessionsCount(ctx csdkTypes.Context, owner csdkTypes.AccAddre
 	return count, nil
 }
 
-func (k Keeper) AddSession(ctx csdkTypes.Context, details *types.SessionDetails) (csdkTypes.Tags, csdkTypes.Error) {
+func (k Keeper) AddSession(ctx csdkTypes.Context, session *types.Session) (csdkTypes.Tags, csdkTypes.Error) {
 	tags := csdkTypes.EmptyTags()
 
-	count, err := k.GetSessionsCount(ctx, details.Client)
+	count, err := k.GetSessionsCount(ctx, session.Client)
 	if err != nil {
 		return nil, err
 	}
 
-	details.ID = sdkTypes.IDFromOwnerAndCount(details.Client, count)
-	if err := k.SetSessionDetails(ctx, details); err != nil {
+	session.ID = sdkTypes.IDFromOwnerAndCount(session.Client, count)
+	if err := k.SetSession(ctx, session); err != nil {
 		return nil, err
 	}
-	tags = tags.AppendTag("session_id", details.ID.String())
+	tags = tags.AppendTag("session_id", session.ID.String())
 
-	if err := k.SetSessionsCount(ctx, details.Client, count+1); err != nil {
+	if err := k.SetSessionsCount(ctx, session.Client, count+1); err != nil {
 		return nil, err
 	}
 

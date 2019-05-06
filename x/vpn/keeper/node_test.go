@@ -10,31 +10,31 @@ import (
 	"github.com/ironman0x7b2/sentinel-sdk/x/vpn/types"
 )
 
-func TestKeeper_SetNodeDetails(t *testing.T) {
+func TestKeeper_SetNode(t *testing.T) {
 	var err csdkTypes.Error
 	ctx, _, keeper, _, _ := TestCreateInput()
 
-	err = keeper.SetNodeDetails(ctx, &TestNodeEmpty)
+	err = keeper.SetNode(ctx, &TestNodeEmpty)
 	require.Nil(t, err)
 
-	err = keeper.SetNodeDetails(ctx, &TestNodeValid)
+	err = keeper.SetNode(ctx, &TestNodeValid)
 	require.Nil(t, err)
-	result1, err := keeper.GetNodeDetails(ctx, TestNodeValid.ID)
+	result1, err := keeper.GetNode(ctx, TestNodeValid.ID)
 	require.Nil(t, err)
 	require.Equal(t, &TestNodeValid, result1)
 }
 
-func TestKeeper_GetNodeDetails(t *testing.T) {
+func TestKeeper_GetNode(t *testing.T) {
 	var err csdkTypes.Error
 	ctx, _, keeper, _, _ := TestCreateInput()
 
-	result1, err := keeper.GetNodeDetails(ctx, TestNodeValid.ID)
+	result1, err := keeper.GetNode(ctx, TestNodeValid.ID)
 	require.Nil(t, err)
 	require.Nil(t, result1)
 
-	err = keeper.SetNodeDetails(ctx, &TestNodeValid)
+	err = keeper.SetNode(ctx, &TestNodeValid)
 	require.Nil(t, err)
-	result2, err := keeper.GetNodeDetails(ctx, TestNodeValid.ID)
+	result2, err := keeper.GetNode(ctx, TestNodeValid.ID)
 	require.Nil(t, err)
 	require.Equal(t, &TestNodeValid, result2)
 }
@@ -111,13 +111,13 @@ func TestKeeper_GetNodesOfOwner(t *testing.T) {
 	require.Nil(t, err)
 	require.Equal(t, TestNodesEmpty, result1)
 
-	err = keeper.SetNodeDetails(ctx, &TestNodeValid)
+	err = keeper.SetNode(ctx, &TestNodeValid)
 	require.Nil(t, err)
 	err = keeper.SetNodesCount(ctx, types.TestAddress1, 1)
 	require.Nil(t, err)
 	result2, err := keeper.GetNodesOfOwner(ctx, types.TestAddress1)
 	require.Nil(t, err)
-	require.Equal(t, []*types.NodeDetails{&TestNodeValid}, result2)
+	require.Equal(t, []*types.Node{&TestNodeValid}, result2)
 }
 
 func TestKeeper_GetNodes(t *testing.T) {
@@ -128,11 +128,11 @@ func TestKeeper_GetNodes(t *testing.T) {
 	require.Nil(t, err)
 	require.Equal(t, TestNodesEmpty, result1)
 
-	err = keeper.SetNodeDetails(ctx, &TestNodeValid)
+	err = keeper.SetNode(ctx, &TestNodeValid)
 	require.Nil(t, err)
 	result2, err := keeper.GetNodes(ctx)
 	require.Nil(t, err)
-	require.Equal(t, []*types.NodeDetails{&TestNodeValid}, result2)
+	require.Equal(t, []*types.Node{&TestNodeValid}, result2)
 }
 
 func TestKeeper_AddNode(t *testing.T) {
@@ -145,7 +145,7 @@ func TestKeeper_AddNode(t *testing.T) {
 	result1, err := keeper.GetNodesCount(ctx, types.TestAddress1)
 	require.Nil(t, err)
 	require.Equal(t, uint64(1), result1)
-	result2, err := keeper.GetNodeDetails(ctx, TestNodeValid.ID)
+	result2, err := keeper.GetNode(ctx, TestNodeValid.ID)
 	require.Nil(t, err)
 	require.Equal(t, &TestNodeValid, result2)
 }

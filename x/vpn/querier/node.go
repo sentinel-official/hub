@@ -12,7 +12,7 @@ import (
 
 const (
 	QueryNode         = "node"
-	QueryNodesOfOwner = "nodesOfOwner"
+	QueryNodesOfOwner = "nodes_of_owner"
 )
 
 func NewQuerier(vk keeper.Keeper, cdc *codec.Codec) csdkTypes.Querier {
@@ -44,15 +44,15 @@ func queryNode(ctx csdkTypes.Context, cdc *codec.Codec, req abciTypes.RequestQue
 		return nil, types.ErrorUnmarshal()
 	}
 
-	details, err := vk.GetNodeDetails(ctx, params.ID)
+	node, err := vk.GetNode(ctx, params.ID)
 	if err != nil {
 		return nil, err
 	}
-	if details == nil {
+	if node == nil {
 		return nil, nil
 	}
 
-	res, resErr := cdc.MarshalJSON(details)
+	res, resErr := cdc.MarshalJSON(node)
 	if resErr != nil {
 		return nil, types.ErrorMarshal()
 	}
@@ -75,6 +75,7 @@ func queryNodesOfOwner(ctx csdkTypes.Context, cdc *codec.Codec, req abciTypes.Re
 	if err := cdc.UnmarshalJSON(req.Data, &params); err != nil {
 		return nil, types.ErrorUnmarshal()
 	}
+
 	nodes, err := vk.GetNodesOfOwner(ctx, params.Owner)
 	if err != nil {
 		return nil, err

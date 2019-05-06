@@ -35,7 +35,7 @@ func TestNewQueryNodeParams(t *testing.T) {
 	require.Nil(t, err)
 	require.NotNil(t, res2)
 
-	var node types.NodeDetails
+	var node types.Node
 	err1 := cdc.UnmarshalJSON(res2, &node)
 	require.Nil(t, err1)
 	require.Equal(t, keeper.TestNodeValid, node)
@@ -75,10 +75,10 @@ func TestNewQueryNodesOfOwnerParams(t *testing.T) {
 	require.Nil(t, err)
 	require.NotNil(t, res2)
 
-	var nodes []types.NodeDetails
+	var nodes []types.Node
 	err1 := cdc.UnmarshalJSON(res2, &nodes)
 	require.Nil(t, err1)
-	require.Equal(t, []types.NodeDetails{keeper.TestNodeValid}, nodes)
+	require.Equal(t, []types.Node{keeper.TestNodeValid}, nodes)
 
 	query.Data = cdc.MustMarshalJSON(NewQueryNodeParams(types.TestNodeIDEmpty))
 	res3, err := querier(ctx, []string{QueryNodesOfOwner}, query)

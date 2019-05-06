@@ -53,7 +53,7 @@ func TestMakeCodec() *codec.Codec {
 }
 
 var (
-	TestNodeValid = types.NodeDetails{
+	TestNodeValid = types.Node{
 		ID:              types.TestNodeIDValid,
 		Owner:           types.TestAddress1,
 		PubKey:          types.TestPubkey1,
@@ -68,13 +68,13 @@ var (
 		StatusAtHeight:  0,
 		DetailsAtHeight: 0,
 	}
-	TestNodeEmpty     = types.NodeDetails{}
+	TestNodeEmpty     = types.Node{}
 	TestNodeIDsEmpty  = sdkTypes.IDs(nil)
 	TestNodeIDsValid  = sdkTypes.IDs{types.TestNodeIDValid, types.TestNodeIDValid}
-	TestNodesEmpty    = []*types.NodeDetails(nil)
+	TestNodesEmpty    = []*types.Node(nil)
 	TestNodeTagsValid = csdkTypes.EmptyTags().AppendTag("node_id", types.TestNodeIDValid.String())
 
-	TestSessionValid = types.SessionDetails{
+	TestSessionValid = types.Session{
 		ID:              types.TestSessionIDValid,
 		NodeID:          types.TestNodeIDValid,
 		NodeOwner:       types.TestAddress1,
@@ -95,9 +95,9 @@ var (
 		StartedAtHeight: 0,
 		EndedAtHeight:   0,
 	}
-	TestSessionEmpty     = types.SessionDetails{}
+	TestSessionEmpty     = types.Session{}
 	TestSessionIDsEmpty  = sdkTypes.IDs(nil)
 	TestSessionIDsValid  = sdkTypes.IDs{types.TestSessionIDValid, types.TestSessionIDValid}
-	TestSessionsEmpty    = []*types.SessionDetails(nil)
+	TestSessionsEmpty    = []*types.Session(nil)
 	TestSessionTagsValid = csdkTypes.EmptyTags().AppendTag("session_id", types.TestSessionIDValid.String())
 )

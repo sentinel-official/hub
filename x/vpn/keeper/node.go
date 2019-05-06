@@ -7,9 +7,9 @@ import (
 	"github.com/ironman0x7b2/sentinel-sdk/x/vpn/types"
 )
 
-func (k Keeper) SetNodeDetails(ctx csdkTypes.Context, details *types.NodeDetails) csdkTypes.Error {
-	key := types.NodeKey(details.ID)
-	value, err := k.cdc.MarshalBinaryLengthPrefixed(details)
+func (k Keeper) SetNode(ctx csdkTypes.Context, node *types.Node) csdkTypes.Error {
+	key := types.NodeKey(node.ID)
+	value, err := k.cdc.MarshalBinaryLengthPrefixed(node)
 	if err != nil {
 		return types.ErrorMarshal()
 	}
@@ -20,20 +20,21 @@ func (k Keeper) SetNodeDetails(ctx csdkTypes.Context, details *types.NodeDetails
 	return nil
 }
 
-func (k Keeper) GetNodeDetails(ctx csdkTypes.Context, id sdkTypes.ID) (*types.NodeDetails, csdkTypes.Error) {
+func (k Keeper) GetNode(ctx csdkTypes.Context, id sdkTypes.ID) (*types.Node, csdkTypes.Error) {
 	key := types.NodeKey(id)
+
 	store := ctx.KVStore(k.NodeStoreKey)
 	value := store.Get(key)
 	if value == nil {
 		return nil, nil
 	}
 
-	var details types.NodeDetails
-	if err := k.cdc.UnmarshalBinaryLengthPrefixed(value, &details); err != nil {
+	var node types.Node
+	if err := k.cdc.UnmarshalBinaryLengthPrefixed(value, &node); err != nil {
 		return nil, types.ErrorUnmarshal()
 	}
 
-	return &details, nil
+	return &node, nil
 }
 
 func (k Keeper) SetActiveNodeIDsAtHeight(ctx csdkTypes.Context, height int64, ids sdkTypes.IDs) csdkTypes.Error {
@@ -83,6 +84,7 @@ func (k Keeper) SetNodesCount(ctx csdkTypes.Context, owner csdkTypes.AccAddress,
 
 func (k Keeper) GetNodesCount(ctx csdkTypes.Context, owner csdkTypes.AccAddress) (uint64, csdkTypes.Error) {
 	key := types.NodesCountKey(owner)
+
 	store := ctx.KVStore(k.NodeStoreKey)
 	value := store.Get(key)
 	if value == nil {
@@ -97,60 +99,60 @@ func (k Keeper) GetNodesCount(ctx csdkTypes.Context, owner csdkTypes.AccAddress)
 	return count, nil
 }
 
-func (k Keeper) GetNodesOfOwner(ctx csdkTypes.Context, owner csdkTypes.AccAddress) ([]*types.NodeDetails, csdkTypes.Error) {
+func (k Keeper) GetNodesOfOwner(ctx csdkTypes.Context, owner csdkTypes.AccAddress) ([]*types.Node, csdkTypes.Error) {
 	count, err := k.GetNodesCount(ctx, owner)
 	if err != nil {
 		return nil, err
 	}
 
-	var nodes []*types.NodeDetails
+	var nodes []*types.Node
 	for index := uint64(0); index < count; index++ {
 		id := sdkTypes.IDFromOwnerAndCount(owner, index)
-		details, err := k.GetNodeDetails(ctx, id)
+		node, err := k.GetNode(ctx, id)
 		if err != nil {
 			return nil, err
 		}
 
-		nodes = append(nodes, details)
+		nodes = append(nodes, node)
 	}
 
 	return nodes, nil
 }
 
-func (k Keeper) GetNodes(ctx csdkTypes.Context) ([]*types.NodeDetails, csdkTypes.Error) {
-	var nodes []*types.NodeDetails
+func (k Keeper) GetNodes(ctx csdkTypes.Context) ([]*types.Node, csdkTypes.Error) {
+	var nodes []*types.Node
 	store := ctx.KVStore(k.NodeStoreKey)
 
 	iter := csdkTypes.KVStorePrefixIterator(store, types.NodeKeyPrefix)
 	defer iter.Close()
 
 	for ; iter.Valid(); iter.Next() {
-		var details types.NodeDetails
-		if err := k.cdc.UnmarshalBinaryLengthPrefixed(iter.Value(), &details); err != nil {
+		var node types.Node
+		if err := k.cdc.UnmarshalBinaryLengthPrefixed(iter.Value(), &node); err != nil {
 			return nil, types.ErrorUnmarshal()
 		}
 
-		nodes = append(nodes, &details)
+		nodes = append(nodes, &node)
 	}
 
 	return nodes, nil
 }
 
-func (k Keeper) AddNode(ctx csdkTypes.Context, details *types.NodeDetails) (csdkTypes.Tags, csdkTypes.Error) {
+func (k Keeper) AddNode(ctx csdkTypes.Context, node *types.Node) (csdkTypes.Tags, csdkTypes.Error) {
 	tags := csdkTypes.EmptyTags()
 
-	count, err := k.GetNodesCount(ctx, details.Owner)
+	count, err := k.GetNodesCount(ctx, node.Owner)
 	if err != nil {
 		return nil, err
 	}
 
-	details.ID = sdkTypes.IDFromOwnerAndCount(details.Owner, count)
-	if err := k.SetNodeDetails(ctx, details); err != nil {
+	node.ID = sdkTypes.IDFromOwnerAndCount(node.Owner, count)
+	if err := k.SetNode(ctx, node); err != nil {
 		return nil, err
 	}
-	tags = tags.AppendTag("node_id", details.ID.String())
+	tags = tags.AppendTag("node_id", node.ID.String())
 
-	if err := k.SetNodesCount(ctx, details.Owner, count+1); err != nil {
+	if err := k.SetNodesCount(ctx, node.Owner, count+1); err != nil {
 		return nil, err
 	}
 

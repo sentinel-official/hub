@@ -16,7 +16,7 @@ func registerTxRoutes(cliCtx context.CLIContext, r *mux.Router, cdc *codec.Codec
 		Methods("POST")
 	r.HandleFunc("/nodes/{nodeID:[^/]+/[^/]+}/deregister", deregisterNodeHandlerFunc(cliCtx, cdc)).
 		Methods("POST")
-	r.HandleFunc("/nodes/{nodeID:[^/]+/[^/]+}/details", updateNodeDetailsHandlerFunc(cliCtx, cdc)).
+	r.HandleFunc("/nodes/{nodeID:[^/]+/[^/]+}/details", updateNodeHandlerFunc(cliCtx, cdc)).
 		Methods("PUT")
 	r.HandleFunc("/nodes/{nodeID:[^/]+/[^/]+}/status", updateNodeStatusHandlerFunc(cliCtx, cdc)).
 		Methods("PUT")

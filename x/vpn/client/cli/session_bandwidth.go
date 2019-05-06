@@ -30,12 +30,9 @@ func SignSessionBandwidthTxCmd(cdc *codec.Codec) *cobra.Command {
 			}
 
 			sessionID := viper.GetString(flagSessionID)
-			uploadSpeed := csdkTypes.NewInt(viper.GetInt64(flagUploadSpeed))
-			downloadSpeed := csdkTypes.NewInt(viper.GetInt64(flagDownloadSpeed))
-
 			bandwidth := sdkTypes.Bandwidth{
-				Upload:   uploadSpeed,
-				Download: downloadSpeed,
+				Upload:   csdkTypes.NewInt(viper.GetInt64(flagUploadSpeed)),
+				Download: csdkTypes.NewInt(viper.GetInt64(flagDownloadSpeed)),
 			}
 			signBytes, err := common.GetSessionBandwidthSignDataBytes(cliCtx, cdc, sessionID, bandwidth)
 			if err != nil {
@@ -89,8 +86,10 @@ func UpdateSessionBandwidthTxCmd(cdc *codec.Codec) *cobra.Command {
 			}
 
 			sessionID := sdkTypes.NewID(viper.GetString(flagSessionID))
-			upload := csdkTypes.NewInt(viper.GetInt64(flagUploadSpeed))
-			download := csdkTypes.NewInt(viper.GetInt64(flagDownloadSpeed))
+			bandwidth := sdkTypes.Bandwidth{
+				Upload:   csdkTypes.NewInt(viper.GetInt64(flagUploadSpeed)),
+				Download: csdkTypes.NewInt(viper.GetInt64(flagDownloadSpeed)),
+			}
 			clientSign := viper.GetString(flagClientSign)
 			nodeOwnerSign := viper.GetString(flagNodeOwnerSign)
 
@@ -106,8 +105,8 @@ func UpdateSessionBandwidthTxCmd(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			msg := vpn.NewMsgUpdateSessionBandwidth(fromAddress, sessionID, upload, download,
-				clientSignBytes, nodeOwnerSignBytes)
+			msg := vpn.NewMsgUpdateSessionBandwidth(fromAddress, sessionID, bandwidth,
+				nodeOwnerSignBytes, clientSignBytes)
 			return utils.GenerateOrBroadcastMsgs(cliCtx, txBldr, []csdkTypes.Msg{msg}, false)
 		},
 	}
@@ -115,14 +114,14 @@ func UpdateSessionBandwidthTxCmd(cdc *codec.Codec) *cobra.Command {
 	cmd.Flags().String(flagSessionID, "", "Session ID")
 	cmd.Flags().Int64(flagDownloadSpeed, 0, "Internet upload speed in bytes/sec")
 	cmd.Flags().Int64(flagUploadSpeed, 0, "Internet upload speed in bytes/sec")
-	cmd.Flags().String(flagClientSign, "", "Bandwidth signature of the client")
 	cmd.Flags().String(flagNodeOwnerSign, "", "Bandwidth signature of the node owner")
+	cmd.Flags().String(flagClientSign, "", "Bandwidth signature of the client")
 
 	_ = cmd.MarkFlagRequired(flagSessionID)
 	_ = cmd.MarkFlagRequired(flagDownloadSpeed)
 	_ = cmd.MarkFlagRequired(flagDownloadSpeed)
-	_ = cmd.MarkFlagRequired(flagClientSign)
 	_ = cmd.MarkFlagRequired(flagNodeOwnerSign)
-
+	_ = cmd.MarkFlagRequired(flagClientSign)
+	
 	return cmd
 }

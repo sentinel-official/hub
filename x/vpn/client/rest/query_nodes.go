@@ -47,15 +47,15 @@ func getNodesHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) http.Handl
 				return
 			}
 
-			var nodes []vpn.NodeDetails
+			var nodes []vpn.Node
 			for _, kv := range kvs {
-				var details vpn.NodeDetails
-				if err := cdc.UnmarshalBinaryLengthPrefixed(kv.Value, &details); err != nil {
+				var node vpn.Node
+				if err := cdc.UnmarshalBinaryLengthPrefixed(kv.Value, &node); err != nil {
 					rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 					return
 				}
 
-				nodes = append(nodes, details)
+				nodes = append(nodes, node)
 			}
 
 			if res, err = cdc.MarshalJSON(nodes); err != nil {

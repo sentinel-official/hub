@@ -9,9 +9,10 @@ import (
 )
 
 type MsgInitSession struct {
-	From         csdkTypes.AccAddress `json:"from"`
-	NodeID       sdkTypes.ID          `json:"node_id"`
-	AmountToLock csdkTypes.Coin       `json:"amount_to_lock"`
+	From csdkTypes.AccAddress `json:"from"`
+
+	NodeID       sdkTypes.ID    `json:"node_id"`
+	AmountToLock csdkTypes.Coin `json:"amount_to_lock"`
 }
 
 func (msg MsgInitSession) Type() string {
@@ -22,6 +23,7 @@ func (msg MsgInitSession) ValidateBasic() csdkTypes.Error {
 	if msg.From == nil || msg.From.Empty() {
 		return ErrorInvalidField("from")
 	}
+
 	if msg.NodeID.Len() == 0 || !msg.NodeID.Valid() {
 		return ErrorInvalidField("node_id")
 	}
@@ -53,18 +55,20 @@ func NewMsgInitSession(from csdkTypes.AccAddress,
 	nodeID sdkTypes.ID, amountToLock csdkTypes.Coin) *MsgInitSession {
 
 	return &MsgInitSession{
-		From:         from,
+		From: from,
+
 		NodeID:       nodeID,
 		AmountToLock: amountToLock,
 	}
 }
 
 type MsgUpdateSessionBandwidth struct {
-	From          csdkTypes.AccAddress `json:"from"`
-	ID            sdkTypes.ID          `json:"id"`
-	Bandwidth     sdkTypes.Bandwidth   `json:"bandwidth"`
-	ClientSign    []byte               `json:"client_sign"`
-	NodeOwnerSign []byte               `json:"node_owner_sign"`
+	From csdkTypes.AccAddress `json:"from"`
+	ID   sdkTypes.ID          `json:"id"`
+
+	Bandwidth     sdkTypes.Bandwidth `json:"bandwidth"`
+	NodeOwnerSign []byte             `json:"node_owner_sign"`
+	ClientSign    []byte             `json:"client_sign"`
 }
 
 func (msg MsgUpdateSessionBandwidth) Type() string {
@@ -78,14 +82,15 @@ func (msg MsgUpdateSessionBandwidth) ValidateBasic() csdkTypes.Error {
 	if msg.ID.Len() == 0 || !msg.ID.Valid() {
 		return ErrorInvalidField("id")
 	}
+
 	if !msg.Bandwidth.IsPositive() {
 		return ErrorInvalidField("bandwidth")
 	}
-	if len(msg.ClientSign) == 0 {
-		return ErrorInvalidField("client_sign")
-	}
 	if len(msg.NodeOwnerSign) == 0 {
 		return ErrorInvalidField("node_owner_sign")
+	}
+	if len(msg.ClientSign) == 0 {
+		return ErrorInvalidField("client_sign")
 	}
 
 	return nil
@@ -109,17 +114,15 @@ func (msg MsgUpdateSessionBandwidth) Route() string {
 }
 
 func NewMsgUpdateSessionBandwidth(from csdkTypes.AccAddress,
-	id sdkTypes.ID, upload, download csdkTypes.Int,
-	clientSign []byte, nodeOwnerSign []byte) *MsgUpdateSessionBandwidth {
+	id sdkTypes.ID, bandwidth sdkTypes.Bandwidth,
+	nodeOwnerSign, clientSign []byte) *MsgUpdateSessionBandwidth {
 
 	return &MsgUpdateSessionBandwidth{
 		From: from,
 		ID:   id,
-		Bandwidth: sdkTypes.Bandwidth{
-			Upload:   upload,
-			Download: download,
-		},
-		ClientSign:    clientSign,
+
+		Bandwidth:     bandwidth,
 		NodeOwnerSign: nodeOwnerSign,
+		ClientSign:    clientSign,
 	}
 }

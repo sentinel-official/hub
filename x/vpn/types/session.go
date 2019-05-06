@@ -8,15 +8,15 @@ import (
 	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
 )
 
-type SessionBandwidth struct {
-	ToProvide       sdkTypes.Bandwidth
-	Consumed        sdkTypes.Bandwidth
-	NodeOwnerSign   []byte
-	ClientSign      []byte
-	UpdatedAtHeight int64
+type SessionBandwidthInfo struct {
+	ToProvide        sdkTypes.Bandwidth
+	Consumed         sdkTypes.Bandwidth
+	NodeOwnerSign    []byte
+	ClientSign       []byte
+	ModifiedAtHeight int64
 }
 
-type SessionDetails struct {
+type Session struct {
 	ID              sdkTypes.ID
 	NodeID          sdkTypes.ID
 	NodeOwner       csdkTypes.AccAddress
@@ -26,16 +26,16 @@ type SessionDetails struct {
 	LockedAmount    csdkTypes.Coin
 	PricePerGB      csdkTypes.Coin
 
-	Bandwidth SessionBandwidth
+	BandwidthInfo SessionBandwidthInfo
 
-	Status          string
-	StatusAtHeight  int64
-	StartedAtHeight int64
-	EndedAtHeight   int64
+	Status                 string
+	StatusModifiedAtHeight int64
+	StartedAtHeight        int64
+	EndedAtHeight          int64
 }
 
-func (s SessionDetails) Amount() csdkTypes.Coin {
-	consumedBandwidth := s.Bandwidth.Consumed.Upload.Add(s.Bandwidth.Consumed.Download)
+func (s Session) Amount() csdkTypes.Coin {
+	consumedBandwidth := s.BandwidthInfo.Consumed.Upload.Add(s.BandwidthInfo.Consumed.Download)
 	amountInt := consumedBandwidth.Quo(sdkTypes.GB.Add(sdkTypes.GB)).Mul(s.PricePerGB.Amount)
 
 	amount := csdkTypes.NewCoin(s.PricePerGB.Denom, amountInt)
@@ -46,24 +46,24 @@ func (s SessionDetails) Amount() csdkTypes.Coin {
 	return amount
 }
 
-func (s *SessionDetails) SetNewSessionBandwidth(bandwidth sdkTypes.Bandwidth,
-	clientSign, nodeOwnerSign []byte, height int64) error {
+func (s *Session) SetNewSessionBandwidth(bandwidth sdkTypes.Bandwidth,
+	nodeOwnerSign, clientSign []byte, height int64) error {
 
-	if bandwidth.LT(s.Bandwidth.Consumed) ||
-		s.Bandwidth.ToProvide.LT(bandwidth) {
+	if bandwidth.LT(s.BandwidthInfo.Consumed) ||
+		s.BandwidthInfo.ToProvide.LT(bandwidth) {
 		return errors.New(errMsgInvalidBandwidth)
 	}
 
 	signDataBytes := sdkTypes.NewBandwidthSignData(s.ID, bandwidth, s.NodeOwner, s.Client).GetBytes()
-	if !s.ClientPubKey.VerifyBytes(signDataBytes, clientSign) ||
-		!s.NodeOwnerPubKey.VerifyBytes(signDataBytes, nodeOwnerSign) {
+	if !s.NodeOwnerPubKey.VerifyBytes(signDataBytes, nodeOwnerSign) ||
+		!s.ClientPubKey.VerifyBytes(signDataBytes, clientSign) {
 		return errors.New(errMsgInvalidBandwidthSigns)
 	}
 
-	s.Bandwidth.Consumed = bandwidth
-	s.Bandwidth.ClientSign = clientSign
-	s.Bandwidth.NodeOwnerSign = nodeOwnerSign
-	s.Bandwidth.UpdatedAtHeight = height
+	s.BandwidthInfo.Consumed = bandwidth
+	s.BandwidthInfo.NodeOwnerSign = nodeOwnerSign
+	s.BandwidthInfo.ClientSign = clientSign
+	s.BandwidthInfo.ModifiedAtHeight = height
 
 	return nil
 }

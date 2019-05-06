@@ -15,18 +15,20 @@ import (
 	"github.com/ironman0x7b2/sentinel-sdk/x/vpn"
 )
 
-type msgUpdateNodeDetails struct {
-	BaseReq     rest.BaseReq       `json:"base_req"`
-	APIPort     uint16             `json:"api_port"`
-	NetSpeed    sdkTypes.Bandwidth `json:"net_speed"`
-	Encryption  string             `json:"encryption"`
-	PricesPerGB string             `json:"prices_per_gb"`
-	Version     string             `json:"version"`
+type msgUpdateNode struct {
+	BaseReq          rest.BaseReq       `json:"base_req"`
+	Moniker          string             `json:"moniker"`
+	APIPort          uint16             `json:"api_port"`
+	NetSpeed         sdkTypes.Bandwidth `json:"net_speed"`
+	EncryptionMethod string             `json:"encryption_method"`
+	PricesPerGB      string             `json:"prices_per_gb"`
+	Type             string             `json:"type"`
+	Version          string             `json:"version"`
 }
 
-func updateNodeDetailsHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) http.HandlerFunc {
+func updateNodeHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var req msgUpdateNodeDetails
+		var req msgUpdateNode
 
 		if !rest.ReadRESTReq(w, r, cdc, &req) {
 			return
@@ -53,8 +55,8 @@ func updateNodeDetailsHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) h
 		id := sdkTypes.NewID(vars["nodeID"])
 
 		msg := vpn.NewMsgUpdateNodeDetails(fromAddress, id,
-			pricesPerGB, req.NetSpeed.Upload, req.NetSpeed.Download,
-			req.APIPort, req.Encryption, req.Version)
+			req.Moniker, pricesPerGB, req.NetSpeed,
+			req.APIPort, req.EncryptionMethod, req.Type, req.Version)
 		if err := msg.ValidateBasic(); err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return

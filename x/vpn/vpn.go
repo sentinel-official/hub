@@ -25,9 +25,9 @@ const (
 )
 
 type (
-	NodeDetails = types.NodeDetails
-	SessionDetails = types.SessionDetails
-	SessionBandwidth = types.SessionBandwidth
+	Node = types.Node
+	Session = types.Session
+	SessionBandwidthInfo = types.SessionBandwidthInfo
 
 	MsgRegisterNode = types.MsgRegisterNode
 	MsgUpdateNodeDetails = types.MsgUpdateNodeDetails

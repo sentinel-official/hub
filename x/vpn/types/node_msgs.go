@@ -9,14 +9,16 @@ import (
 )
 
 type MsgRegisterNode struct {
-	From         csdkTypes.AccAddress `json:"from"`
-	AmountToLock csdkTypes.Coin       `json:"amount_to_lock"`
-	PricesPerGB  csdkTypes.Coins      `json:"prices_per_gb"`
-	NetSpeed     sdkTypes.Bandwidth   `json:"net_speed"`
-	APIPort      uint16               `json:"api_port"`
-	Encryption   string               `json:"encryption"`
-	NodeType     string               `json:"node_type"`
-	Version      string               `json:"version"`
+	From csdkTypes.AccAddress `json:"from"`
+
+	Moniker          string             `json:"moniker"`
+	AmountToLock     csdkTypes.Coin     `json:"amount_to_lock"`
+	PricesPerGB      csdkTypes.Coins    `json:"prices_per_gb"`
+	NetSpeed         sdkTypes.Bandwidth `json:"net_speed"`
+	APIPort          uint16             `json:"api_port"`
+	EncryptionMethod string             `json:"encryption_method"`
+	Type_            string             `json:"type_"`
+	Version          string             `json:"version"`
 }
 
 func (msg MsgRegisterNode) Type() string {
@@ -26,6 +28,10 @@ func (msg MsgRegisterNode) Type() string {
 func (msg MsgRegisterNode) ValidateBasic() csdkTypes.Error {
 	if msg.From == nil || msg.From.Empty() {
 		return ErrorInvalidField("from")
+	}
+
+	if len(msg.Moniker) > 128 {
+		return ErrorInvalidField("moniker")
 	}
 	if msg.AmountToLock.Denom != "sent" || !msg.AmountToLock.IsPositive() {
 		return ErrorInvalidField("amount_to_lock")
@@ -40,11 +46,11 @@ func (msg MsgRegisterNode) ValidateBasic() csdkTypes.Error {
 	if msg.APIPort == 0 {
 		return ErrorInvalidField("api_port")
 	}
-	if len(msg.Encryption) == 0 {
-		return ErrorInvalidField("encryption")
+	if len(msg.EncryptionMethod) == 0 {
+		return ErrorInvalidField("encryption_method")
 	}
-	if len(msg.NodeType) == 0 {
-		return ErrorInvalidField("node_type")
+	if len(msg.Type_) == 0 {
+		return ErrorInvalidField("type_")
 	}
 	if len(msg.Version) == 0 {
 		return ErrorInvalidField("version")
@@ -71,33 +77,35 @@ func (msg MsgRegisterNode) Route() string {
 }
 
 func NewMsgRegisterNode(from csdkTypes.AccAddress,
-	amountToLock csdkTypes.Coin, pricesPerGB csdkTypes.Coins,
-	upload, download csdkTypes.Int, apiPort uint16,
-	encryption, nodeType, version string) *MsgRegisterNode {
+	moniker string, amountToLock csdkTypes.Coin, pricesPerGB csdkTypes.Coins,
+	netSpeed sdkTypes.Bandwidth, apiPort uint16,
+	encryptionMethod, type_, version string) *MsgRegisterNode {
 
 	return &MsgRegisterNode{
-		From:         from,
-		AmountToLock: amountToLock,
-		PricesPerGB:  pricesPerGB,
-		NetSpeed: sdkTypes.Bandwidth{
-			Upload:   upload,
-			Download: download,
-		},
-		APIPort:    apiPort,
-		Encryption: encryption,
-		NodeType:   nodeType,
-		Version:    version,
+		From: from,
+
+		Moniker:          moniker,
+		AmountToLock:     amountToLock,
+		PricesPerGB:      pricesPerGB,
+		NetSpeed:         netSpeed,
+		APIPort:          apiPort,
+		EncryptionMethod: encryptionMethod,
+		Type_:            type_,
+		Version:          version,
 	}
 }
 
 type MsgUpdateNodeDetails struct {
-	From        csdkTypes.AccAddress `json:"from"`
-	ID          sdkTypes.ID          `json:"id"`
-	PricesPerGB csdkTypes.Coins      `json:"prices_per_gb"`
-	NetSpeed    sdkTypes.Bandwidth   `json:"net_speed"`
-	APIPort     uint16               `json:"api_port"`
-	Encryption  string               `json:"encryption"`
-	Version     string               `json:"version"`
+	From csdkTypes.AccAddress `json:"from"`
+	ID   sdkTypes.ID          `json:"id"`
+
+	Moniker          string             `json:"moniker"`
+	PricesPerGB      csdkTypes.Coins    `json:"prices_per_gb"`
+	NetSpeed         sdkTypes.Bandwidth `json:"net_speed"`
+	APIPort          uint16             `json:"api_port"`
+	EncryptionMethod string             `json:"encryption_method"`
+	Type_            string             `json:"type_"`
+	Version          string             `json:"version"`
 }
 
 func (msg MsgUpdateNodeDetails) Type() string {
@@ -110,6 +118,10 @@ func (msg MsgUpdateNodeDetails) ValidateBasic() csdkTypes.Error {
 	}
 	if msg.ID.Len() == 0 || !msg.ID.Valid() {
 		return ErrorInvalidField("id")
+	}
+
+	if len(msg.Moniker) > 128 {
+		return ErrorInvalidField("moniker")
 	}
 	if msg.PricesPerGB != nil && (msg.PricesPerGB.Len() == 0 ||
 		!msg.PricesPerGB.IsValid() || !msg.PricesPerGB.IsAllPositive()) {
@@ -142,28 +154,29 @@ func (msg MsgUpdateNodeDetails) Route() string {
 	return RouterKey
 }
 
-func NewMsgUpdateNodeDetails(from csdkTypes.AccAddress,
-	id sdkTypes.ID, pricesPerGB csdkTypes.Coins, upload, download csdkTypes.Int,
-	apiPort uint16, encryption string, version string) *MsgUpdateNodeDetails {
+func NewMsgUpdateNodeDetails(from csdkTypes.AccAddress, id sdkTypes.ID,
+	moniker string, pricesPerGB csdkTypes.Coins, netSpeed sdkTypes.Bandwidth,
+	apiPort uint16, encryptionMethod, type_, version string) *MsgUpdateNodeDetails {
 
 	return &MsgUpdateNodeDetails{
-		From:        from,
-		ID:          id,
-		PricesPerGB: pricesPerGB,
-		NetSpeed: sdkTypes.Bandwidth{
-			Upload:   upload,
-			Download: download,
-		},
-		APIPort:    apiPort,
-		Encryption: encryption,
-		Version:    version,
+		From: from,
+		ID:   id,
+
+		Moniker:          moniker,
+		PricesPerGB:      pricesPerGB,
+		NetSpeed:         netSpeed,
+		APIPort:          apiPort,
+		EncryptionMethod: encryptionMethod,
+		Type_:            type_,
+		Version:          version,
 	}
 }
 
 type MsgUpdateNodeStatus struct {
-	From   csdkTypes.AccAddress `json:"from"`
-	ID     sdkTypes.ID          `json:"id"`
-	Status string               `json:"status"`
+	From csdkTypes.AccAddress `json:"from"`
+	ID   sdkTypes.ID          `json:"id"`
+
+	Status string `json:"status"`
 }
 
 func (msg MsgUpdateNodeStatus) Type() string {
@@ -177,6 +190,7 @@ func (msg MsgUpdateNodeStatus) ValidateBasic() csdkTypes.Error {
 	if msg.ID.Len() == 0 || !msg.ID.Valid() {
 		return ErrorInvalidField("id")
 	}
+
 	if msg.Status != StatusActive && msg.Status != StatusInactive {
 		return ErrorInvalidField("status")
 	}
@@ -201,12 +215,13 @@ func (msg MsgUpdateNodeStatus) Route() string {
 	return RouterKey
 }
 
-func NewMsgUpdateNodeStatus(from csdkTypes.AccAddress,
-	id sdkTypes.ID, status string) *MsgUpdateNodeStatus {
+func NewMsgUpdateNodeStatus(from csdkTypes.AccAddress, id sdkTypes.ID,
+	status string) *MsgUpdateNodeStatus {
 
 	return &MsgUpdateNodeStatus{
-		From:   from,
-		ID:     id,
+		From: from,
+		ID:   id,
+
 		Status: status,
 	}
 }
@@ -248,9 +263,7 @@ func (msg MsgDeregisterNode) Route() string {
 	return RouterKey
 }
 
-func NewMsgDeregisterNode(from csdkTypes.AccAddress,
-	id sdkTypes.ID) *MsgDeregisterNode {
-
+func NewMsgDeregisterNode(from csdkTypes.AccAddress, id sdkTypes.ID) *MsgDeregisterNode {
 	return &MsgDeregisterNode{
 		From: from,
 		ID:   id,

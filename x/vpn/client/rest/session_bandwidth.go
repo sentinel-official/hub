@@ -65,9 +65,9 @@ func signSessionBandwidthHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec
 
 type msgUpdateSessionBandwidth struct {
 	BaseReq       rest.BaseReq       `json:"base_req"`
-	ClientSign    string             `json:"client_sign"`
-	NodeOwnerSign string             `json:"node_owner_sign"`
 	Bandwidth     sdkTypes.Bandwidth `json:"bandwidth"`
+	NodeOwnerSign string             `json:"node_owner_sign"`
+	ClientSign    string             `json:"client_sign"`
 }
 
 func updateSessionBandwidthHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) http.HandlerFunc {
@@ -105,7 +105,7 @@ func updateSessionBandwidthHandlerFunc(cliCtx context.CLIContext, cdc *codec.Cod
 		sessionID := sdkTypes.NewID(vars["sessionID"])
 
 		msg := vpn.NewMsgUpdateSessionBandwidth(fromAddress, sessionID,
-			req.Bandwidth.Upload, req.Bandwidth.Download, clientSign, nodeOwnerSign)
+			req.Bandwidth, nodeOwnerSign, clientSign)
 		if err := msg.ValidateBasic(); err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return

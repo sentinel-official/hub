@@ -11,7 +11,7 @@ import (
 	"github.com/ironman0x7b2/sentinel-sdk/x/vpn"
 )
 
-func QueryNode(cliCtx context.CLIContext, cdc *codec.Codec, id sdkTypes.ID) (*vpn.NodeDetails, error) {
+func QueryNode(cliCtx context.CLIContext, cdc *codec.Codec, id sdkTypes.ID) (*vpn.Node, error) {
 	params := vpn.NewQueryNodeParams(id)
 	paramBytes, err := cdc.MarshalJSON(params)
 	if err != nil {
@@ -26,7 +26,7 @@ func QueryNode(cliCtx context.CLIContext, cdc *codec.Codec, id sdkTypes.ID) (*vp
 		return nil, fmt.Errorf("no node found")
 	}
 
-	var details vpn.NodeDetails
+	var details vpn.Node
 	if err := cdc.UnmarshalJSON(res, &details); err != nil {
 		return nil, err
 	}
@@ -44,7 +44,7 @@ func QueryNodesOfOwner(cliCtx context.CLIContext, cdc *codec.Codec, owner csdkTy
 	return cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s", vpn.QuerierRoute, vpn.QueryNodesOfOwner), paramBytes)
 }
 
-func QuerySession(cliCtx context.CLIContext, cdc *codec.Codec, id string) (*vpn.SessionDetails, error) {
+func QuerySession(cliCtx context.CLIContext, cdc *codec.Codec, id string) (*vpn.Session, error) {
 	sessionKey := vpn.SessionKey(sdkTypes.NewID(id))
 	res, err := cliCtx.QueryStore(sessionKey, vpn.StoreKeySession)
 	if err != nil {
@@ -54,7 +54,7 @@ func QuerySession(cliCtx context.CLIContext, cdc *codec.Codec, id string) (*vpn.
 		return nil, fmt.Errorf("no session found")
 	}
 
-	var details vpn.SessionDetails
+	var details vpn.Session
 	if err := cdc.UnmarshalBinaryLengthPrefixed(res, &details); err != nil {
 		return nil, err
 	}

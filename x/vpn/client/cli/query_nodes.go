@@ -17,7 +17,7 @@ import (
 func QueryNodeCmd(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "node",
-		Short: "Get details of a node",
+		Short: "Get node",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cliCtx := context.NewCLIContext().WithCodec(cdc).WithAccountDecoder(cdc)
@@ -44,13 +44,13 @@ func QueryNodeCmd(cdc *codec.Codec) *cobra.Command {
 func QueryNodesCmd(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "nodes",
-		Short: "Get details of nodes",
+		Short: "Get nodes",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cliCtx := context.NewCLIContext().WithCodec(cdc).WithAccountDecoder(cdc)
 
 			owner := viper.GetString(flagOwnerAddress)
 
-			var nodes []vpn.NodeDetails
+			var nodes []vpn.Node
 			if len(owner) == 0 {
 				res, err := cliCtx.QuerySubspace(vpn.NodeKeyPrefix, vpn.StoreKeyNode)
 				if err != nil {
@@ -61,12 +61,12 @@ func QueryNodesCmd(cdc *codec.Codec) *cobra.Command {
 				}
 
 				for _, kv := range res {
-					var details vpn.NodeDetails
-					if err := cdc.UnmarshalBinaryLengthPrefixed(kv.Value, &details); err != nil {
+					var node vpn.Node
+					if err := cdc.UnmarshalBinaryLengthPrefixed(kv.Value, &node); err != nil {
 						return err
 					}
 
-					nodes = append(nodes, details)
+					nodes = append(nodes, node)
 				}
 			} else {
 				owner, err := csdkTypes.AccAddressFromBech32(owner)

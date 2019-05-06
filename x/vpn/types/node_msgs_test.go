@@ -132,79 +132,79 @@ func TestMsgRegisterNode_Route(t *testing.T) {
 	require.Equal(t, RouterKey, msg.Route())
 }
 
-func TestMsgUpdateNodeDetails_ValidateBasic(t *testing.T) {
+func TestMsgUpdateNode_ValidateBasic(t *testing.T) {
 	tests := []struct {
 		name string
-		msg  *MsgUpdateNodeDetails
+		msg  *MsgUpdateNode
 		want csdkTypes.Error
 	}{
 		{
 			"from is nil",
-			NewMsgUpdateNodeDetails(nil, TestNodeIDValid, TestCoinsPos, TestUploadPos, TestDownloadPos, TestAPIPortValid, TestEncryption, TestVersion),
+			NewMsgUpdateNode(nil, TestNodeIDValid, TestCoinsPos, TestUploadPos, TestDownloadPos, TestAPIPortValid, TestEncryption, TestVersion),
 			ErrorInvalidField("from"),
 		}, {
 			"from is empty",
-			NewMsgUpdateNodeDetails(TestAddressEmpty, TestNodeIDValid, TestCoinsPos, TestUploadPos, TestDownloadPos, TestAPIPortValid, TestEncryption, TestVersion),
+			NewMsgUpdateNode(TestAddressEmpty, TestNodeIDValid, TestCoinsPos, TestUploadPos, TestDownloadPos, TestAPIPortValid, TestEncryption, TestVersion),
 			ErrorInvalidField("from"),
 		}, {
 			"id is empty",
-			NewMsgUpdateNodeDetails(TestAddress1, TestNodeIDEmpty, TestCoinsPos, TestUploadPos, TestDownloadPos, TestAPIPortValid, TestEncryption, TestVersion),
+			NewMsgUpdateNode(TestAddress1, TestNodeIDEmpty, TestCoinsPos, TestUploadPos, TestDownloadPos, TestAPIPortValid, TestEncryption, TestVersion),
 			ErrorInvalidField("id"),
 		}, {
 			"id in invalid",
-			NewMsgUpdateNodeDetails(TestAddress1, TestNodeIDInvalid, TestCoinsPos, TestUploadPos, TestDownloadPos, TestAPIPortValid, TestEncryption, TestVersion),
+			NewMsgUpdateNode(TestAddress1, TestNodeIDInvalid, TestCoinsPos, TestUploadPos, TestDownloadPos, TestAPIPortValid, TestEncryption, TestVersion),
 			ErrorInvalidField("id"),
 		}, {
 			"prices_per_gb is nil",
-			NewMsgUpdateNodeDetails(TestAddress1, TestNodeIDValid, nil, TestUploadPos, TestDownloadPos, TestAPIPortValid, TestEncryption, TestVersion),
+			NewMsgUpdateNode(TestAddress1, TestNodeIDValid, nil, TestUploadPos, TestDownloadPos, TestAPIPortValid, TestEncryption, TestVersion),
 			nil,
 		}, {
 			"prices_per_gb is empty",
-			NewMsgUpdateNodeDetails(TestAddress1, TestNodeIDValid, TestCoinsEmpty, TestUploadPos, TestDownloadPos, TestAPIPortValid, TestEncryption, TestVersion),
+			NewMsgUpdateNode(TestAddress1, TestNodeIDValid, TestCoinsEmpty, TestUploadPos, TestDownloadPos, TestAPIPortValid, TestEncryption, TestVersion),
 			ErrorInvalidField("prices_per_gb"),
 		}, {
 			"prices_per_gb is invalid",
-			NewMsgUpdateNodeDetails(TestAddress1, TestNodeIDValid, TestCoinsInvalid, TestUploadPos, TestDownloadPos, TestAPIPortValid, TestEncryption, TestVersion),
+			NewMsgUpdateNode(TestAddress1, TestNodeIDValid, TestCoinsInvalid, TestUploadPos, TestDownloadPos, TestAPIPortValid, TestEncryption, TestVersion),
 			ErrorInvalidField("prices_per_gb"),
 		}, {
 			"prices_per_gb is negative",
-			NewMsgUpdateNodeDetails(TestAddress1, TestNodeIDValid, TestCoinsNeg, TestUploadPos, TestDownloadPos, TestAPIPortValid, TestEncryption, TestVersion),
+			NewMsgUpdateNode(TestAddress1, TestNodeIDValid, TestCoinsNeg, TestUploadPos, TestDownloadPos, TestAPIPortValid, TestEncryption, TestVersion),
 			ErrorInvalidField("prices_per_gb"),
 		}, {
 			"prices_per_gb is zero",
-			NewMsgUpdateNodeDetails(TestAddress1, TestNodeIDValid, TestCoinsZero, TestUploadPos, TestDownloadPos, TestAPIPortValid, TestEncryption, TestVersion),
+			NewMsgUpdateNode(TestAddress1, TestNodeIDValid, TestCoinsZero, TestUploadPos, TestDownloadPos, TestAPIPortValid, TestEncryption, TestVersion),
 			ErrorInvalidField("prices_per_gb"),
 		}, {
 			"upload is zero",
-			NewMsgUpdateNodeDetails(TestAddress1, TestNodeIDValid, TestCoinsPos, TestUploadZero, TestDownloadPos, TestAPIPortValid, TestEncryption, TestVersion),
+			NewMsgUpdateNode(TestAddress1, TestNodeIDValid, TestCoinsPos, TestUploadZero, TestDownloadPos, TestAPIPortValid, TestEncryption, TestVersion),
 			nil,
 		}, {
 			"upload is negative",
-			NewMsgUpdateNodeDetails(TestAddress1, TestNodeIDValid, TestCoinsPos, TestUploadNeg, TestDownloadPos, TestAPIPortValid, TestEncryption, TestVersion),
+			NewMsgUpdateNode(TestAddress1, TestNodeIDValid, TestCoinsPos, TestUploadNeg, TestDownloadPos, TestAPIPortValid, TestEncryption, TestVersion),
 			ErrorInvalidField("net_speed"),
 		}, {
 			"download is zero",
-			NewMsgUpdateNodeDetails(TestAddress1, TestNodeIDValid, TestCoinsPos, TestUploadPos, TestDownloadZero, TestAPIPortValid, TestEncryption, TestVersion),
+			NewMsgUpdateNode(TestAddress1, TestNodeIDValid, TestCoinsPos, TestUploadPos, TestDownloadZero, TestAPIPortValid, TestEncryption, TestVersion),
 			nil,
 		}, {
 			"download is negative",
-			NewMsgUpdateNodeDetails(TestAddress1, TestNodeIDValid, TestCoinsPos, TestUploadPos, TestDownloadNeg, TestAPIPortValid, TestEncryption, TestVersion),
+			NewMsgUpdateNode(TestAddress1, TestNodeIDValid, TestCoinsPos, TestUploadPos, TestDownloadNeg, TestAPIPortValid, TestEncryption, TestVersion),
 			ErrorInvalidField("net_speed"),
 		}, {
 			"api_port is invalid",
-			NewMsgUpdateNodeDetails(TestAddress1, TestNodeIDValid, TestCoinsPos, TestUploadPos, TestDownloadPos, TestAPIPortInvalid, TestEncryption, TestVersion),
+			NewMsgUpdateNode(TestAddress1, TestNodeIDValid, TestCoinsPos, TestUploadPos, TestDownloadPos, TestAPIPortInvalid, TestEncryption, TestVersion),
 			ErrorInvalidField("api_port"),
 		}, {
 			"encryption is empty",
-			NewMsgUpdateNodeDetails(TestAddress1, TestNodeIDValid, TestCoinsPos, TestUploadPos, TestDownloadPos, TestAPIPortValid, "", TestVersion),
+			NewMsgUpdateNode(TestAddress1, TestNodeIDValid, TestCoinsPos, TestUploadPos, TestDownloadPos, TestAPIPortValid, "", TestVersion),
 			nil,
 		}, {
 			"version is empty",
-			NewMsgUpdateNodeDetails(TestAddress1, TestNodeIDValid, TestCoinsPos, TestUploadPos, TestDownloadPos, TestAPIPortValid, TestEncryption, ""),
+			NewMsgUpdateNode(TestAddress1, TestNodeIDValid, TestCoinsPos, TestUploadPos, TestDownloadPos, TestAPIPortValid, TestEncryption, ""),
 			nil,
 		}, {
 			"valid",
-			NewMsgUpdateNodeDetails(TestAddress1, TestNodeIDValid, TestCoinsPos, TestUploadPos, TestDownloadPos, TestAPIPortValid, TestEncryption, TestVersion),
+			NewMsgUpdateNode(TestAddress1, TestNodeIDValid, TestCoinsPos, TestUploadPos, TestDownloadPos, TestAPIPortValid, TestEncryption, TestVersion),
 			nil,
 		},
 	}
@@ -218,8 +218,8 @@ func TestMsgUpdateNodeDetails_ValidateBasic(t *testing.T) {
 	}
 }
 
-func TestMsgUpdateNodeDetails_GetSignBytes(t *testing.T) {
-	msg := NewMsgUpdateNodeDetails(TestAddress1, TestNodeIDValid, TestCoinsPos, TestUploadPos, TestDownloadPos, TestAPIPortValid, TestEncryption, TestVersion)
+func TestMsgUpdateNode_GetSignBytes(t *testing.T) {
+	msg := NewMsgUpdateNode(TestAddress1, TestNodeIDValid, TestCoinsPos, TestUploadPos, TestDownloadPos, TestAPIPortValid, TestEncryption, TestVersion)
 	msgBytes, err := json.Marshal(msg)
 	if err != nil {
 		panic(err)
@@ -228,18 +228,18 @@ func TestMsgUpdateNodeDetails_GetSignBytes(t *testing.T) {
 	require.Equal(t, msgBytes, msg.GetSignBytes())
 }
 
-func TestMsgUpdateNodeDetails_GetSigners(t *testing.T) {
-	msg := NewMsgUpdateNodeDetails(TestAddress1, TestNodeIDValid, TestCoinsPos, TestUploadPos, TestDownloadPos, TestAPIPortValid, TestEncryption, TestVersion)
+func TestMsgUpdateNode_GetSigners(t *testing.T) {
+	msg := NewMsgUpdateNode(TestAddress1, TestNodeIDValid, TestCoinsPos, TestUploadPos, TestDownloadPos, TestAPIPortValid, TestEncryption, TestVersion)
 	require.Equal(t, []csdkTypes.AccAddress{TestAddress1}, msg.GetSigners())
 }
 
-func TestMsgUpdateNodeDetails_Type(t *testing.T) {
-	msg := NewMsgUpdateNodeDetails(TestAddress1, TestNodeIDValid, TestCoinsPos, TestUploadPos, TestDownloadPos, TestAPIPortValid, TestEncryption, TestVersion)
+func TestMsgUpdateNode_Type(t *testing.T) {
+	msg := NewMsgUpdateNode(TestAddress1, TestNodeIDValid, TestCoinsPos, TestUploadPos, TestDownloadPos, TestAPIPortValid, TestEncryption, TestVersion)
 	require.Equal(t, "msg_update_node_details", msg.Type())
 }
 
-func TestMsgUpdateNodeDetails_Route(t *testing.T) {
-	msg := NewMsgUpdateNodeDetails(TestAddress1, TestNodeIDValid, TestCoinsPos, TestUploadPos, TestDownloadPos, TestAPIPortValid, TestEncryption, TestVersion)
+func TestMsgUpdateNode_Route(t *testing.T) {
+	msg := NewMsgUpdateNode(TestAddress1, TestNodeIDValid, TestCoinsPos, TestUploadPos, TestDownloadPos, TestAPIPortValid, TestEncryption, TestVersion)
 	require.Equal(t, RouterKey, msg.Route())
 }
 
