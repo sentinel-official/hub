@@ -74,13 +74,14 @@ func (app *Hub) prepForZeroHeightGenesis(ctx csdkTypes.Context, jailWhiteList []
 	app.assertRuntimeInvariantsOnContext(ctx)
 
 	app.stakingKeeper.IterateValidators(ctx, func(_ int64, val csdkTypes.Validator) (stop bool) {
-		_ = app.distributionKeeper.WithdrawValidatorCommission(ctx, val.GetOperator())
+		_, _ = app.distributionKeeper.WithdrawValidatorCommission(ctx, val.GetOperator())
 		return false
 	})
 
 	dels := app.stakingKeeper.GetAllDelegations(ctx)
 	for _, delegation := range dels {
-		_ = app.distributionKeeper.WithdrawDelegationRewards(ctx, delegation.DelegatorAddress, delegation.ValidatorAddress)
+		_, _ = app.distributionKeeper.WithdrawDelegationRewards(ctx, delegation.DelegatorAddress,
+			delegation.ValidatorAddress)
 	}
 
 	app.distributionKeeper.DeleteAllValidatorSlashEvents(ctx)
