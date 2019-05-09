@@ -14,15 +14,11 @@ all: get_tools get_vendor_deps install test
 
 build:
 	go build $(BUILD_FLAGS) -o bin/hubd cmd/hubd/main.go
-	go build $(BUILD_FLAGS) -o bin/vpnd cmd/vpnd/main.go
 	go build $(BUILD_FLAGS) -o bin/hubcli cmd/hubcli/main.go
-	go build $(BUILD_FLAGS) -o bin/vpncli cmd/vpncli/main.go
 
 install:
 	go install $(BUILD_FLAGS) ./cmd/hubd
-	go install $(BUILD_FLAGS) ./cmd/vpnd
 	go install $(BUILD_FLAGS) ./cmd/hubcli
-	go install $(BUILD_FLAGS) ./cmd/vpncli
 
 get_tools:
 	go get github.com/golang/dep/cmd/dep

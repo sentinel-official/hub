@@ -31,7 +31,7 @@ import (
 
 var (
 	defaultTokens                  = csdkTypes.TokensFromTendermintPower(100)
-	defaultAmount                  = defaultTokens.String() + "sent"
+	defaultAmount                  = defaultTokens.String() + "usent"
 	defaultCommissionRate          = "0.1"
 	defaultCommissionMaxRate       = "0.2"
 	defaultCommissionMaxChangeRate = "0.01"

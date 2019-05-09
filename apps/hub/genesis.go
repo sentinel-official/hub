@@ -26,7 +26,7 @@ import (
 
 var (
 	freeFermionsAcc  = csdkTypes.TokensFromTendermintPower(150)
-	defaultBondDenom = "sent"
+	defaultBondDenom = "usent"
 )
 
 type GenesisState struct {
@@ -209,6 +209,7 @@ func NewDefaultGenesisState() GenesisState {
 	state.StakingData.Params.BondDenom = defaultBondDenom
 	state.GovData.DepositParams.MinDeposit = csdkTypes.Coins{csdkTypes.NewInt64Coin(defaultBondDenom, 10)}
 	state.MintData.Params.MintDenom = defaultBondDenom
+	state.CrisisData.ConstantFee = csdkTypes.NewCoin(defaultBondDenom, csdkTypes.NewInt(1000))
 
 	return state
 }
@@ -330,6 +331,7 @@ func CollectStdTxs(cdc *codec.Codec, moniker string, genTxsDir string, genDoc tm
 
 		msgs := genStdTx.GetMsgs()
 		if len(msgs) != 1 {
+
 			return appGenTxs, persistentPeers, errors.New(
 				"each genesis transaction must provide a single genesis message")
 		}
@@ -341,7 +343,7 @@ func CollectStdTxs(cdc *codec.Codec, moniker string, genTxsDir string, genDoc tm
 		delAcc, delOk := addrMap[delAddr]
 		_, valOk := addrMap[valAddr]
 
-		accsNotInGenesis := []string{}
+		var accsNotInGenesis []string
 		if !delOk {
 			accsNotInGenesis = append(accsNotInGenesis, delAddr)
 		}

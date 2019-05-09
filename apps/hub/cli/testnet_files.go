@@ -42,7 +42,7 @@ func TestnetFilesCmd(ctx *server.Context, cdc *codec.Codec) *cobra.Command {
 
 	cmd := &cobra.Command{
 		Use:   "testnet",
-		Short: "Initialize files for a Hubd testnet",
+		Short: "Initialize files for a hubd testnet",
 		Long: `testnet will create "v" number of directories and populate each with
 necessary files (private validator, genesis, config, etc.).
 
@@ -79,8 +79,8 @@ Example:
 		client.FlagChainID, "", "genesis file chain-id, if left blank will be randomly created",
 	)
 	cmd.Flags().String(
-		server.FlagMinGasPrices, fmt.Sprintf("0.000006%s", "sent"),
-		"Minimum gas prices to accept for transactions; All fees in a tx must meet this minimum (e.g. 0.01sut,0.001sent)",
+		server.FlagMinGasPrices, fmt.Sprintf("0.000006%s", "usent"),
+		"Minimum gas prices to accept for transactions; All fees in a tx must meet this minimum (e.g. 0.001usent)",
 	)
 
 	return cmd
@@ -187,7 +187,7 @@ func initTestnet(config *tmConfig.Config, cdc *codec.Codec) error {
 			Address: addr,
 			Coins: csdkTypes.Coins{
 				csdkTypes.NewCoin(fmt.Sprintf("%stoken", nodeDirName), accTokens),
-				csdkTypes.NewCoin("sent", accStakingTokens),
+				csdkTypes.NewCoin("usent", accStakingTokens),
 			},
 		})
 
@@ -195,7 +195,7 @@ func initTestnet(config *tmConfig.Config, cdc *codec.Codec) error {
 		msg := staking.NewMsgCreateValidator(
 			csdkTypes.ValAddress(addr),
 			valPubKeys[i],
-			csdkTypes.NewCoin("sent", valTokens),
+			csdkTypes.NewCoin("usent", valTokens),
 			staking.NewDescription(nodeDirName, "", "", ""),
 			staking.NewCommissionMsg(csdkTypes.ZeroDec(), csdkTypes.ZeroDec(), csdkTypes.ZeroDec()),
 			csdkTypes.OneInt(),

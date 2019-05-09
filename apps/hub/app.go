@@ -23,6 +23,8 @@ import (
 	"github.com/tendermint/tendermint/libs/common"
 	tmDB "github.com/tendermint/tendermint/libs/db"
 	"github.com/tendermint/tendermint/libs/log"
+
+	"github.com/ironman0x7b2/sentinel-sdk/x/vpn"
 )
 
 const (
@@ -53,6 +55,9 @@ type Hub struct {
 	keyMint          *csdkTypes.KVStoreKey
 	keyIBC           *csdkTypes.KVStoreKey
 
+	keyVPNNode    *csdkTypes.KVStoreKey
+	keyVPNSession *csdkTypes.KVStoreKey
+
 	tkeyParams       *csdkTypes.TransientStoreKey
 	tkeyStaking      *csdkTypes.TransientStoreKey
 	tkeyDistribution *csdkTypes.TransientStoreKey
@@ -68,6 +73,8 @@ type Hub struct {
 	mintKeeper          mint.Keeper
 	crisisKeeper        crisis.Keeper
 	ibcMapper           ibc.Mapper
+
+	vpnKeeper vpn.Keeper
 }
 
 func NewHub(logger log.Logger, db tmDB.DB, traceStore io.Writer, loadLatest bool, invCheckPeriod uint,
@@ -92,6 +99,8 @@ func NewHub(logger log.Logger, db tmDB.DB, traceStore io.Writer, loadLatest bool
 		keyGov:           csdkTypes.NewKVStoreKey(gov.StoreKey),
 		keyMint:          csdkTypes.NewKVStoreKey(mint.StoreKey),
 		keyIBC:           csdkTypes.NewKVStoreKey("ibc"),
+		keyVPNNode:       csdkTypes.NewKVStoreKey(vpn.StoreKeyNode),
+		keyVPNSession:    csdkTypes.NewKVStoreKey(vpn.StoreKeySession),
 		tkeyParams:       csdkTypes.NewTransientStoreKey(params.TStoreKey),
 		tkeyStaking:      csdkTypes.NewTransientStoreKey(staking.TStoreKey),
 		tkeyDistribution: csdkTypes.NewTransientStoreKey(distribution.TStoreKey),
@@ -144,6 +153,7 @@ func NewHub(logger log.Logger, db tmDB.DB, traceStore io.Writer, loadLatest bool
 		app.distributionKeeper,
 		app.bankKeeper,
 		app.feeCollectionKeeper)
+	app.vpnKeeper = vpn.NewKeeper(app.cdc, app.keyVPNNode, app.keyVPNSession)
 
 	bank.RegisterInvariants(&app.crisisKeeper, app.accountKeeper)
 	distribution.RegisterInvariants(&app.crisisKeeper, app.distributionKeeper, app.stakingKeeper)
@@ -156,7 +166,8 @@ func NewHub(logger log.Logger, db tmDB.DB, traceStore io.Writer, loadLatest bool
 		AddRoute(distribution.RouterKey, distribution.NewHandler(app.distributionKeeper)).
 		AddRoute(gov.RouterKey, gov.NewHandler(app.govKeeper)).
 		AddRoute(crisis.RouterKey, crisis.NewHandler(app.crisisKeeper)).
-		AddRoute("ibc", ibc.NewHandler(app.ibcMapper, app.bankKeeper))
+		AddRoute("ibc", ibc.NewHandler(app.ibcMapper, app.bankKeeper)).
+		AddRoute(vpn.RouterKey, vpn.NewHandler(app.vpnKeeper, app.accountKeeper, app.bankKeeper))
 
 	app.QueryRouter().
 		AddRoute(auth.QuerierRoute, auth.NewQuerier(app.accountKeeper)).
@@ -164,13 +175,14 @@ func NewHub(logger log.Logger, db tmDB.DB, traceStore io.Writer, loadLatest bool
 		AddRoute(slashing.QuerierRoute, slashing.NewQuerier(app.slashingKeeper, app.cdc)).
 		AddRoute(distribution.QuerierRoute, distribution.NewQuerier(app.distributionKeeper)).
 		AddRoute(gov.QuerierRoute, gov.NewQuerier(app.govKeeper)).
-		AddRoute(mint.QuerierRoute, mint.NewQuerier(app.mintKeeper))
+		AddRoute(mint.QuerierRoute, mint.NewQuerier(app.mintKeeper)).
+		AddRoute(vpn.QuerierRoute, vpn.NewQuerier(app.vpnKeeper, app.cdc))
 
 	app.MountStores(app.keyMain, app.keyParams,
 		app.keyAccount, app.keyFeeCollection,
 		app.keyStaking, app.keySlashing,
 		app.keyDistribution, app.keyGov, app.keyMint,
-		app.keyIBC,
+		app.keyIBC, app.keyVPNNode, app.keyVPNSession,
 		app.tkeyParams, app.tkeyStaking, app.tkeyDistribution)
 	app.SetInitChainer(app.initChainer)
 	app.SetBeginBlocker(app.BeginBlocker)
@@ -198,6 +210,8 @@ func MakeCodec() *codec.Codec {
 	gov.RegisterCodec(cdc)
 	crisis.RegisterCodec(cdc)
 	ibc.RegisterCodec(cdc)
+
+	vpn.RegisterCodec(cdc)
 	return cdc
 }
 
@@ -215,6 +229,7 @@ func (app *Hub) EndBlocker(ctx csdkTypes.Context, req abciTypes.RequestEndBlock)
 	tags := gov.EndBlocker(ctx, app.govKeeper)
 	validatorUpdates, endBlockerTags := staking.EndBlocker(ctx, app.stakingKeeper)
 	tags = append(tags, endBlockerTags...)
+	vpn.EndBlock(ctx, app.vpnKeeper, app.bankKeeper)
 
 	if app.invCheckPeriod != 0 && ctx.BlockHeight()%int64(app.invCheckPeriod) == 0 {
 		app.assertRuntimeInvariants()
@@ -249,7 +264,7 @@ func (app *Hub) initFromGenesisState(ctx csdkTypes.Context, genesisState Genesis
 	mint.InitGenesis(ctx, app.mintKeeper, genesisState.MintData)
 	crisis.InitGenesis(ctx, app.crisisKeeper, genesisState.CrisisData)
 
-	if err := HubValidateGenesisState(genesisState); err != nil {
+	if err = HubValidateGenesisState(genesisState); err != nil {
 		panic(err)
 	}
 

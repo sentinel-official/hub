@@ -52,7 +52,7 @@ func main() {
 
 	sdkServer.AddCommands(ctx, cdc, rootCmd, newApp, exportAppStateAndTMValidators)
 
-	executor := cli.PrepareBaseCmd(rootCmd, "SH", app.DefaultNodeHome)
+	executor := cli.PrepareBaseCmd(rootCmd, "HUB", app.DefaultNodeHome)
 	rootCmd.PersistentFlags().UintVar(&invCheckPeriod, flagInvCheckPeriod,
 		0, "Assert registered invariants every N blocks")
 

@@ -41,6 +41,9 @@ import (
 
 	app "github.com/ironman0x7b2/sentinel-sdk/apps/hub"
 	"github.com/ironman0x7b2/sentinel-sdk/version"
+	"github.com/ironman0x7b2/sentinel-sdk/x/vpn"
+	vpnClient "github.com/ironman0x7b2/sentinel-sdk/x/vpn/client"
+	vpnRest "github.com/ironman0x7b2/sentinel-sdk/x/vpn/client/rest"
 )
 
 func main() {
@@ -59,6 +62,7 @@ func main() {
 		slashingClient.NewModuleClient(slashing.StoreKey, cdc),
 		mintClient.NewModuleClient(mint.StoreKey, cdc),
 		crisisClient.NewModuleClient(slashing.StoreKey, cdc),
+		vpnClient.NewModuleClient(vpn.StoreKeyNode, vpn.StoreKeySession, cdc),
 	}
 
 	cobra.EnableCommandSorting = false
@@ -154,6 +158,7 @@ func registerRoutes(rs *lcd.RestServer) {
 	distRest.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, distribution.StoreKey)
 	govRest.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc)
 	mintRest.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc)
+	vpnRest.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc)
 }
 
 func registerSwaggerUI(rs *lcd.RestServer) {
