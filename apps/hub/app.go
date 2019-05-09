@@ -14,7 +14,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/crisis"
 	"github.com/cosmos/cosmos-sdk/x/distribution"
 	"github.com/cosmos/cosmos-sdk/x/gov"
-	"github.com/cosmos/cosmos-sdk/x/ibc"
 	"github.com/cosmos/cosmos-sdk/x/mint"
 	"github.com/cosmos/cosmos-sdk/x/params"
 	"github.com/cosmos/cosmos-sdk/x/slashing"
@@ -53,7 +52,6 @@ type Hub struct {
 	keyDistribution  *csdkTypes.KVStoreKey
 	keyGov           *csdkTypes.KVStoreKey
 	keyMint          *csdkTypes.KVStoreKey
-	keyIBC           *csdkTypes.KVStoreKey
 
 	keyVPNNode    *csdkTypes.KVStoreKey
 	keyVPNSession *csdkTypes.KVStoreKey
@@ -72,7 +70,6 @@ type Hub struct {
 	govKeeper           gov.Keeper
 	mintKeeper          mint.Keeper
 	crisisKeeper        crisis.Keeper
-	ibcMapper           ibc.Mapper
 
 	vpnKeeper vpn.Keeper
 }
@@ -98,7 +95,6 @@ func NewHub(logger log.Logger, db tmDB.DB, traceStore io.Writer, loadLatest bool
 		keyDistribution:  csdkTypes.NewKVStoreKey(distribution.StoreKey),
 		keyGov:           csdkTypes.NewKVStoreKey(gov.StoreKey),
 		keyMint:          csdkTypes.NewKVStoreKey(mint.StoreKey),
-		keyIBC:           csdkTypes.NewKVStoreKey("ibc"),
 		keyVPNNode:       csdkTypes.NewKVStoreKey(vpn.StoreKeyNode),
 		keyVPNSession:    csdkTypes.NewKVStoreKey(vpn.StoreKeySession),
 		tkeyParams:       csdkTypes.NewTransientStoreKey(params.TStoreKey),
@@ -166,7 +162,6 @@ func NewHub(logger log.Logger, db tmDB.DB, traceStore io.Writer, loadLatest bool
 		AddRoute(distribution.RouterKey, distribution.NewHandler(app.distributionKeeper)).
 		AddRoute(gov.RouterKey, gov.NewHandler(app.govKeeper)).
 		AddRoute(crisis.RouterKey, crisis.NewHandler(app.crisisKeeper)).
-		AddRoute("ibc", ibc.NewHandler(app.ibcMapper, app.bankKeeper)).
 		AddRoute(vpn.RouterKey, vpn.NewHandler(app.vpnKeeper, app.accountKeeper, app.bankKeeper))
 
 	app.QueryRouter().
@@ -182,7 +177,7 @@ func NewHub(logger log.Logger, db tmDB.DB, traceStore io.Writer, loadLatest bool
 		app.keyAccount, app.keyFeeCollection,
 		app.keyStaking, app.keySlashing,
 		app.keyDistribution, app.keyGov, app.keyMint,
-		app.keyIBC, app.keyVPNNode, app.keyVPNSession,
+		app.keyVPNNode, app.keyVPNSession,
 		app.tkeyParams, app.tkeyStaking, app.tkeyDistribution)
 	app.SetInitChainer(app.initChainer)
 	app.SetBeginBlocker(app.BeginBlocker)
@@ -209,7 +204,6 @@ func MakeCodec() *codec.Codec {
 	distribution.RegisterCodec(cdc)
 	gov.RegisterCodec(cdc)
 	crisis.RegisterCodec(cdc)
-	ibc.RegisterCodec(cdc)
 
 	vpn.RegisterCodec(cdc)
 	return cdc

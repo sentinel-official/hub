@@ -23,7 +23,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/gov"
 	govClient "github.com/cosmos/cosmos-sdk/x/gov/client"
 	govRest "github.com/cosmos/cosmos-sdk/x/gov/client/rest"
-	ibcCli "github.com/cosmos/cosmos-sdk/x/ibc/client/cli"
 	"github.com/cosmos/cosmos-sdk/x/mint"
 	mintClient "github.com/cosmos/cosmos-sdk/x/mint/client"
 	mintRest "github.com/cosmos/cosmos-sdk/x/mint/client/rest"
@@ -135,8 +134,6 @@ func txCmd(cdc *amino.Codec, mc []csdkTypes.ModuleClients) *cobra.Command {
 		authCli.GetMultiSignCommand(cdc),
 		tx.GetBroadcastCommand(cdc),
 		tx.GetEncodeCommand(cdc),
-		ibcCli.IBCTransferCmd(cdc),
-		ibcCli.IBCRelayCmd(cdc),
 		client.LineBreak,
 	)
 

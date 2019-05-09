@@ -42,7 +42,7 @@
   revision = "9e5f4b9a998d263e3ce9c56664a7816001ac8000"
 
 [[projects]]
-  digest = "1:469dfae6e9ac0aeb2784d0f0efe027d249def5b33b9cdf8eaae6a8ab2f9a4045"
+  digest = "1:7280a0524a56b68b79e8b7d8b8c65dd0a8f54952bff8919f44467e88cabdb76f"
   name = "github.com/cosmos/cosmos-sdk"
   packages = [
     "baseapp",
@@ -104,8 +104,6 @@
     "x/gov/client/rest",
     "x/gov/client/utils",
     "x/gov/tags",
-    "x/ibc",
-    "x/ibc/client/cli",
     "x/mint",
     "x/mint/client",
     "x/mint/client/cli",
@@ -779,8 +777,6 @@
     "github.com/cosmos/cosmos-sdk/x/gov",
     "github.com/cosmos/cosmos-sdk/x/gov/client",
     "github.com/cosmos/cosmos-sdk/x/gov/client/rest",
-    "github.com/cosmos/cosmos-sdk/x/ibc",
-    "github.com/cosmos/cosmos-sdk/x/ibc/client/cli",
     "github.com/cosmos/cosmos-sdk/x/mint",
     "github.com/cosmos/cosmos-sdk/x/mint/client",
     "github.com/cosmos/cosmos-sdk/x/mint/client/rest",
