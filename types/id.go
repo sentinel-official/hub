@@ -16,22 +16,22 @@ func NewID(str string) ID {
 	return ID(str)
 }
 
-func (n ID) Bytes() []byte  { return []byte(n) }
-func (n ID) String() string { return string(n) }
-func (n ID) Len() int       { return len(n) }
+func (id ID) Bytes() []byte  { return []byte(id) }
+func (id ID) String() string { return string(id) }
+func (id ID) Len() int       { return len(id) }
 
-func (n ID) Hash() string {
-	hash := tmhash.Sum(n.Bytes())
+func (id ID) Hash() string {
+	hash := tmhash.Sum(id.Bytes())
 	return hex.EncodeToString(hash)
 }
 
-func (n ID) HashTruncated() string {
-	hash := tmhash.SumTruncated(n.Bytes())
+func (id ID) HashTruncated() string {
+	hash := tmhash.SumTruncated(id.Bytes())
 	return hex.EncodeToString(hash)
 }
 
-func (n ID) Valid() bool {
-	splits := strings.Split(n.String(), "/")
+func (id ID) Valid() bool {
+	splits := strings.Split(id.String(), "/")
 	return len(splits) == 2
 }
 
@@ -46,24 +46,24 @@ func NewIDs() IDs {
 	return IDs{}
 }
 
-func (n IDs) Append(id ...ID) IDs { return append(n, id...) }
-func (n IDs) Len() int            { return len(n) }
-func (n IDs) Less(i, j int) bool  { return n[i].String() < n[j].String() }
-func (n IDs) Swap(i, j int)       { n[i], n[j] = n[j], n[i] }
+func (ids IDs) Append(id ...ID) IDs { return append(ids, id...) }
+func (ids IDs) Len() int            { return len(ids) }
+func (ids IDs) Less(i, j int) bool  { return ids[i].String() < ids[j].String() }
+func (ids IDs) Swap(i, j int)       { ids[i], ids[j] = ids[j], ids[i] }
 
-func (n IDs) Sort() IDs {
-	sort.Sort(n)
-	return n
+func (ids IDs) Sort() IDs {
+	sort.Sort(ids)
+	return ids
 }
 
-func (n IDs) Search(id ID) int {
-	index := sort.Search(len(n), func(i int) bool {
-		return n[i].String() >= id.String()
+func (ids IDs) Search(id ID) int {
+	index := sort.Search(len(ids), func(i int) bool {
+		return ids[i].String() >= id.String()
 	})
 
-	if (index == n.Len()) ||
-		(index < n.Len() && n[index].String() != id.String()) {
-		return n.Len()
+	if (index == ids.Len()) ||
+		(index < ids.Len() && ids[index].String() != id.String()) {
+		return ids.Len()
 	}
 
 	return index
