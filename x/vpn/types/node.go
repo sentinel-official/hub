@@ -10,22 +10,21 @@ import (
 )
 
 type Node struct {
-	ID           sdkTypes.ID
-	Owner        csdkTypes.AccAddress
-	OwnerPubKey  crypto.PubKey
-	LockedAmount csdkTypes.Coin
+	ID            sdkTypes.ID
+	Owner         csdkTypes.AccAddress
+	OwnerPubKey   crypto.PubKey
+	DepositAmount csdkTypes.Coin
 
 	Moniker          string
 	PricesPerGB      csdkTypes.Coins
-	NetSpeed         sdkTypes.Bandwidth
-	APIPort          uint16
+	InternetSpeed    sdkTypes.Bandwidth
 	EncryptionMethod string
 	Type             string
 	Version          string
 
-	Status                  string
-	StatusModifiedAtHeight  int64
-	DetailsModifiedAtHeight int64
+	ModifiedAtHeight       int64
+	Status                 string
+	StatusModifiedAtHeight int64
 }
 
 func (n *Node) UpdateDetails(_node Node) {
@@ -36,11 +35,8 @@ func (n *Node) UpdateDetails(_node Node) {
 		_node.PricesPerGB.IsValid() && _node.PricesPerGB.IsAllPositive() {
 		n.PricesPerGB = _node.PricesPerGB
 	}
-	if !_node.NetSpeed.IsNil() && _node.NetSpeed.IsPositive() {
-		n.NetSpeed = _node.NetSpeed
-	}
-	if _node.APIPort != 0 {
-		n.APIPort = _node.APIPort
+	if !_node.InternetSpeed.IsNil() && _node.InternetSpeed.IsPositive() {
+		n.InternetSpeed = _node.InternetSpeed
 	}
 	if len(_node.EncryptionMethod) != 0 {
 		n.EncryptionMethod = _node.EncryptionMethod
@@ -66,7 +62,7 @@ func (n Node) FindPricePerGB(denom string) csdkTypes.Coin {
 	return n.PricesPerGB[index]
 }
 
-func (n Node) CalculateBandwidth(amount csdkTypes.Coin) (sdkTypes.Bandwidth, csdkTypes.Error) {
+func (n Node) AmountToBandwidth(amount csdkTypes.Coin) (sdkTypes.Bandwidth, csdkTypes.Error) {
 	pricePerGB := n.FindPricePerGB(amount.Denom)
 	if len(pricePerGB.Denom) == 0 || pricePerGB.Amount.IsZero() {
 		return sdkTypes.Bandwidth{}, ErrorInvalidPriceDenom()

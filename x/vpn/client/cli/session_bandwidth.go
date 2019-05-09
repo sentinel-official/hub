@@ -31,10 +31,10 @@ func SignSessionBandwidthTxCmd(cdc *codec.Codec) *cobra.Command {
 
 			sessionID := viper.GetString(flagSessionID)
 			bandwidth := sdkTypes.Bandwidth{
-				Upload:   csdkTypes.NewInt(viper.GetInt64(flagUploadSpeed)),
-				Download: csdkTypes.NewInt(viper.GetInt64(flagDownloadSpeed)),
+				Upload:   csdkTypes.NewInt(viper.GetInt64(flagUpload)),
+				Download: csdkTypes.NewInt(viper.GetInt64(flagDownload)),
 			}
-			signBytes, err := common.GetSessionBandwidthSignDataBytes(cliCtx, cdc, sessionID, bandwidth)
+			signBytes, err := common.GetSessionBandwidthSignBytes(cliCtx, cdc, sessionID, bandwidth)
 			if err != nil {
 				return err
 			}
@@ -63,19 +63,19 @@ func SignSessionBandwidthTxCmd(cdc *codec.Codec) *cobra.Command {
 	}
 
 	cmd.Flags().String(flagSessionID, "", "Session ID")
-	cmd.Flags().Int64(flagDownloadSpeed, 0, "Internet upload speed in bytes/sec")
-	cmd.Flags().Int64(flagUploadSpeed, 0, "Internet upload speed in bytes/sec")
+	cmd.Flags().Int64(flagUpload, 0, "Upload in in bytes")
+	cmd.Flags().Int64(flagDownload, 0, "Download in bytes")
 
 	_ = cmd.MarkFlagRequired(flagSessionID)
-	_ = cmd.MarkFlagRequired(flagDownloadSpeed)
-	_ = cmd.MarkFlagRequired(flagDownloadSpeed)
+	_ = cmd.MarkFlagRequired(flagUpload)
+	_ = cmd.MarkFlagRequired(flagDownload)
 
 	return cmd
 }
 
-func UpdateSessionBandwidthTxCmd(cdc *codec.Codec) *cobra.Command {
+func UpdateSessionBandwidthInfoTxCmd(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "update-bandwidth",
+		Use:   "update-bandwidth-info",
 		Short: "Update session bandwidth details",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			txBldr := authTxBuilder.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
@@ -86,12 +86,12 @@ func UpdateSessionBandwidthTxCmd(cdc *codec.Codec) *cobra.Command {
 			}
 
 			sessionID := sdkTypes.NewID(viper.GetString(flagSessionID))
-			bandwidth := sdkTypes.Bandwidth{
-				Upload:   csdkTypes.NewInt(viper.GetInt64(flagUploadSpeed)),
-				Download: csdkTypes.NewInt(viper.GetInt64(flagDownloadSpeed)),
+			consumed := sdkTypes.Bandwidth{
+				Upload:   csdkTypes.NewInt(viper.GetInt64(flagUpload)),
+				Download: csdkTypes.NewInt(viper.GetInt64(flagDownload)),
 			}
-			clientSign := viper.GetString(flagClientSign)
 			nodeOwnerSign := viper.GetString(flagNodeOwnerSign)
+			clientSign := viper.GetString(flagClientSign)
 
 			fromAddress := cliCtx.GetFromAddress()
 
@@ -105,21 +105,21 @@ func UpdateSessionBandwidthTxCmd(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			msg := vpn.NewMsgUpdateSessionBandwidth(fromAddress, sessionID, bandwidth,
-				nodeOwnerSignBytes, clientSignBytes)
+			msg := vpn.NewMsgUpdateSessionBandwidthInfo(fromAddress,
+				sessionID, consumed, nodeOwnerSignBytes, clientSignBytes)
 			return utils.GenerateOrBroadcastMsgs(cliCtx, txBldr, []csdkTypes.Msg{msg}, false)
 		},
 	}
 
 	cmd.Flags().String(flagSessionID, "", "Session ID")
-	cmd.Flags().Int64(flagDownloadSpeed, 0, "Internet upload speed in bytes/sec")
-	cmd.Flags().Int64(flagUploadSpeed, 0, "Internet upload speed in bytes/sec")
+	cmd.Flags().Int64(flagUpload, 0, "Upload in in bytes")
+	cmd.Flags().Int64(flagDownload, 0, "Download in bytes")
 	cmd.Flags().String(flagNodeOwnerSign, "", "Bandwidth signature of the node owner")
 	cmd.Flags().String(flagClientSign, "", "Bandwidth signature of the client")
 
 	_ = cmd.MarkFlagRequired(flagSessionID)
-	_ = cmd.MarkFlagRequired(flagDownloadSpeed)
-	_ = cmd.MarkFlagRequired(flagDownloadSpeed)
+	_ = cmd.MarkFlagRequired(flagUpload)
+	_ = cmd.MarkFlagRequired(flagDownload)
 	_ = cmd.MarkFlagRequired(flagNodeOwnerSign)
 	_ = cmd.MarkFlagRequired(flagClientSign)
 

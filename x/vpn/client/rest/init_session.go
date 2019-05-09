@@ -14,9 +14,9 @@ import (
 )
 
 type msgInitSession struct {
-	BaseReq      rest.BaseReq `json:"base_req"`
-	AmountToLock string       `json:"amount_to_lock"`
-	NodeID       string       `json:"node_id"`
+	BaseReq       rest.BaseReq `json:"base_req"`
+	NodeID        string       `json:"node_id"`
+	DepositAmount string       `json:"deposit_amount"`
 }
 
 func initSessionHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) http.HandlerFunc {
@@ -40,13 +40,13 @@ func initSessionHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) http.Ha
 
 		nodeID := sdkTypes.NewID(req.NodeID)
 
-		amountToLock, err := csdkTypes.ParseCoin(req.AmountToLock)
+		depositAmount, err := csdkTypes.ParseCoin(req.DepositAmount)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
 		}
 
-		msg := vpn.NewMsgInitSession(fromAddress, nodeID, amountToLock)
+		msg := vpn.NewMsgInitSession(fromAddress, nodeID, depositAmount)
 		if err := msg.ValidateBasic(); err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return

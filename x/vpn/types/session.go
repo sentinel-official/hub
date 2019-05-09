@@ -23,15 +23,14 @@ type Session struct {
 	NodeOwnerPubKey crypto.PubKey
 	Client          csdkTypes.AccAddress
 	ClientPubKey    crypto.PubKey
-	LockedAmount    csdkTypes.Coin
+	DepositAmount   csdkTypes.Coin
 	PricePerGB      csdkTypes.Coin
 
-	BandwidthInfo SessionBandwidthInfo
-
-	Status                 string
-	StatusModifiedAtHeight int64
+	BandwidthInfo          SessionBandwidthInfo
 	StartedAtHeight        int64
 	EndedAtHeight          int64
+	Status                 string
+	StatusModifiedAtHeight int64
 }
 
 func (s Session) Amount() csdkTypes.Coin {
@@ -39,28 +38,28 @@ func (s Session) Amount() csdkTypes.Coin {
 	amountInt := consumedBandwidth.Quo(sdkTypes.GB.Add(sdkTypes.GB)).Mul(s.PricePerGB.Amount)
 
 	amount := csdkTypes.NewCoin(s.PricePerGB.Denom, amountInt)
-	if s.LockedAmount.IsLT(amount) || s.LockedAmount.IsEqual(amount) {
-		return s.LockedAmount
+	if s.DepositAmount.IsLT(amount) || s.DepositAmount.IsEqual(amount) {
+		return s.DepositAmount
 	}
 
 	return amount
 }
 
-func (s *Session) SetNewSessionBandwidth(bandwidth sdkTypes.Bandwidth,
+func (s *Session) UpdateSessionBandwidthInfo(consumed sdkTypes.Bandwidth,
 	nodeOwnerSign, clientSign []byte, height int64) error {
 
-	if bandwidth.LT(s.BandwidthInfo.Consumed) ||
-		s.BandwidthInfo.ToProvide.LT(bandwidth) {
+	if consumed.LT(s.BandwidthInfo.Consumed) ||
+		s.BandwidthInfo.ToProvide.LT(consumed) {
 		return errors.New(errMsgInvalidBandwidth)
 	}
 
-	signDataBytes := sdkTypes.NewBandwidthSignData(s.ID, bandwidth, s.NodeOwner, s.Client).GetBytes()
-	if !s.NodeOwnerPubKey.VerifyBytes(signDataBytes, nodeOwnerSign) ||
-		!s.ClientPubKey.VerifyBytes(signDataBytes, clientSign) {
+	data := sdkTypes.NewBandwidthSign(s.ID, consumed, s.NodeOwner, s.Client).GetBytes()
+	if !s.NodeOwnerPubKey.VerifyBytes(data, nodeOwnerSign) ||
+		!s.ClientPubKey.VerifyBytes(data, clientSign) {
 		return errors.New(errMsgInvalidBandwidthSigns)
 	}
 
-	s.BandwidthInfo.Consumed = bandwidth
+	s.BandwidthInfo.Consumed = consumed
 	s.BandwidthInfo.NodeOwnerSign = nodeOwnerSign
 	s.BandwidthInfo.ClientSign = clientSign
 	s.BandwidthInfo.ModifiedAtHeight = height

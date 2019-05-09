@@ -74,7 +74,7 @@ func sessionTxCmd(cdc *codec.Codec) *cobra.Command {
 	sessionTxCmd.AddCommand(client.PostCommands(
 		vpnCli.InitSessionTxCmd(cdc),
 		vpnCli.SignSessionBandwidthTxCmd(cdc),
-		vpnCli.UpdateSessionBandwidthTxCmd(cdc),
+		vpnCli.UpdateSessionBandwidthInfoTxCmd(cdc),
 	)...)
 
 	return sessionTxCmd

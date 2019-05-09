@@ -25,7 +25,7 @@ func registerTxRoutes(cliCtx context.CLIContext, r *mux.Router, cdc *codec.Codec
 		Methods("POST")
 	r.HandleFunc("/sessions/{sessionID:[^/]+/[^/]+}/bandwidth/sign", signSessionBandwidthHandlerFunc(cliCtx, cdc)).
 		Methods("POST")
-	r.HandleFunc("/sessions/{sessionID:[^/]+/[^/]+}/bandwidth", updateSessionBandwidthHandlerFunc(cliCtx, cdc)).
+	r.HandleFunc("/sessions/{sessionID:[^/]+/[^/]+}/bandwidth", updateSessionBandwidthInfoHandlerFunc(cliCtx, cdc)).
 		Methods("PUT")
 }
 

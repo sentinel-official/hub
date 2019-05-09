@@ -98,7 +98,7 @@ func QueryNodesCmd(cdc *codec.Codec) *cobra.Command {
 		},
 	}
 
-	cmd.Flags().String(flagOwnerAddress, "", "Owner address")
+	cmd.Flags().String(flagOwnerAddress, "", "VPN node owner address")
 
 	return cmd
 }

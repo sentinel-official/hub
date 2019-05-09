@@ -11,11 +11,11 @@ func RegisterCodec(cdc *codec.Codec) {
 	cdc.RegisterConcrete(MsgDeregisterNode{}, "x/vpn/msg_deregister_node", nil)
 
 	cdc.RegisterConcrete(MsgInitSession{}, "x/vpn/msg_init_session", nil)
-	cdc.RegisterConcrete(MsgUpdateSessionBandwidth{}, "x/vpn/msg_update_session_bandwidth", nil)
+	cdc.RegisterConcrete(MsgUpdateSessionBandwidthInfo{}, "x/vpn/msg_update_session_bandwidth_info", nil)
 }
 
-var vpnCdc = codec.New()
+var cdc = codec.New()
 
 func init() {
-	RegisterCodec(vpnCdc)
+	RegisterCodec(cdc)
 }

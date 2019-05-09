@@ -11,8 +11,8 @@ import (
 type MsgInitSession struct {
 	From csdkTypes.AccAddress `json:"from"`
 
-	NodeID       sdkTypes.ID    `json:"node_id"`
-	AmountToLock csdkTypes.Coin `json:"amount_to_lock"`
+	NodeID        sdkTypes.ID    `json:"node_id"`
+	DepositAmount csdkTypes.Coin `json:"deposit_amount"`
 }
 
 func (msg MsgInitSession) Type() string {
@@ -27,8 +27,8 @@ func (msg MsgInitSession) ValidateBasic() csdkTypes.Error {
 	if msg.NodeID.Len() == 0 || !msg.NodeID.Valid() {
 		return ErrorInvalidField("node_id")
 	}
-	if len(msg.AmountToLock.Denom) == 0 || !msg.AmountToLock.IsPositive() {
-		return ErrorInvalidField("amount_to_lock")
+	if len(msg.DepositAmount.Denom) == 0 || !msg.DepositAmount.IsPositive() {
+		return ErrorInvalidField("deposit_amount")
 	}
 
 	return nil
@@ -52,30 +52,30 @@ func (msg MsgInitSession) Route() string {
 }
 
 func NewMsgInitSession(from csdkTypes.AccAddress,
-	nodeID sdkTypes.ID, amountToLock csdkTypes.Coin) *MsgInitSession {
+	nodeID sdkTypes.ID, depositAmount csdkTypes.Coin) *MsgInitSession {
 
 	return &MsgInitSession{
 		From: from,
 
-		NodeID:       nodeID,
-		AmountToLock: amountToLock,
+		NodeID:        nodeID,
+		DepositAmount: depositAmount,
 	}
 }
 
-type MsgUpdateSessionBandwidth struct {
+type MsgUpdateSessionBandwidthInfo struct {
 	From csdkTypes.AccAddress `json:"from"`
 	ID   sdkTypes.ID          `json:"id"`
 
-	Bandwidth     sdkTypes.Bandwidth `json:"bandwidth"`
+	Consumed      sdkTypes.Bandwidth `json:"consumed"`
 	NodeOwnerSign []byte             `json:"node_owner_sign"`
 	ClientSign    []byte             `json:"client_sign"`
 }
 
-func (msg MsgUpdateSessionBandwidth) Type() string {
-	return "msg_update_session_bandwidth"
+func (msg MsgUpdateSessionBandwidthInfo) Type() string {
+	return "msg_update_session_bandwidth_info"
 }
 
-func (msg MsgUpdateSessionBandwidth) ValidateBasic() csdkTypes.Error {
+func (msg MsgUpdateSessionBandwidthInfo) ValidateBasic() csdkTypes.Error {
 	if msg.From == nil || msg.From.Empty() {
 		return ErrorInvalidField("from")
 	}
@@ -83,8 +83,8 @@ func (msg MsgUpdateSessionBandwidth) ValidateBasic() csdkTypes.Error {
 		return ErrorInvalidField("id")
 	}
 
-	if !msg.Bandwidth.IsPositive() {
-		return ErrorInvalidField("bandwidth")
+	if !msg.Consumed.IsPositive() {
+		return ErrorInvalidField("consumed")
 	}
 	if len(msg.NodeOwnerSign) == 0 {
 		return ErrorInvalidField("node_owner_sign")
@@ -96,7 +96,7 @@ func (msg MsgUpdateSessionBandwidth) ValidateBasic() csdkTypes.Error {
 	return nil
 }
 
-func (msg MsgUpdateSessionBandwidth) GetSignBytes() []byte {
+func (msg MsgUpdateSessionBandwidthInfo) GetSignBytes() []byte {
 	msgBytes, err := json.Marshal(msg)
 	if err != nil {
 		panic(err)
@@ -105,23 +105,23 @@ func (msg MsgUpdateSessionBandwidth) GetSignBytes() []byte {
 	return msgBytes
 }
 
-func (msg MsgUpdateSessionBandwidth) GetSigners() []csdkTypes.AccAddress {
+func (msg MsgUpdateSessionBandwidthInfo) GetSigners() []csdkTypes.AccAddress {
 	return []csdkTypes.AccAddress{msg.From}
 }
 
-func (msg MsgUpdateSessionBandwidth) Route() string {
+func (msg MsgUpdateSessionBandwidthInfo) Route() string {
 	return RouterKey
 }
 
-func NewMsgUpdateSessionBandwidth(from csdkTypes.AccAddress,
-	id sdkTypes.ID, bandwidth sdkTypes.Bandwidth,
-	nodeOwnerSign, clientSign []byte) *MsgUpdateSessionBandwidth {
+func NewMsgUpdateSessionBandwidthInfo(from csdkTypes.AccAddress,
+	id sdkTypes.ID, consumed sdkTypes.Bandwidth,
+	nodeOwnerSign, clientSign []byte) *MsgUpdateSessionBandwidthInfo {
 
-	return &MsgUpdateSessionBandwidth{
+	return &MsgUpdateSessionBandwidthInfo{
 		From: from,
 		ID:   id,
 
-		Bandwidth:     bandwidth,
+		Consumed:      consumed,
 		NodeOwnerSign: nodeOwnerSign,
 		ClientSign:    clientSign,
 	}

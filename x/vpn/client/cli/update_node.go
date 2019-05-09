@@ -30,11 +30,10 @@ func UpdateNodeDetailsTxCmd(cdc *codec.Codec) *cobra.Command {
 			nodeID := sdkTypes.NewID(viper.GetString(flagNodeID))
 			moniker := viper.GetString(flagMoniker)
 			pricesPerGB := viper.GetString(flagPricesPerGB)
-			netSpeed := sdkTypes.Bandwidth{
+			internetSpeed := sdkTypes.Bandwidth{
 				Upload:   csdkTypes.NewInt(viper.GetInt64(flagUploadSpeed)),
 				Download: csdkTypes.NewInt(viper.GetInt64(flagDownloadSpeed)),
 			}
-			apiPort := uint16(viper.GetInt(flagAPIPort))
 			encryptionMethod := viper.GetString(flagEncryptionMethod)
 			type_ := viper.GetString(flagType)
 			version := viper.GetString(flagVersion)
@@ -47,21 +46,20 @@ func UpdateNodeDetailsTxCmd(cdc *codec.Codec) *cobra.Command {
 			fromAddress := cliCtx.GetFromAddress()
 
 			msg := vpn.NewMsgUpdateNodeDetails(fromAddress, nodeID,
-				moniker, parsedPricesPerGB, netSpeed,
-				apiPort, encryptionMethod, type_, version)
+				moniker, parsedPricesPerGB, internetSpeed,
+				encryptionMethod, type_, version)
 			return utils.GenerateOrBroadcastMsgs(cliCtx, txBldr, []csdkTypes.Msg{msg}, false)
 		},
 	}
 
 	cmd.Flags().String(flagNodeID, "", "Node ID")
-	cmd.Flags().String(flagMoniker, "", "Node moniker")
-	cmd.Flags().Int64(flagAPIPort, 8000, "Node API port")
+	cmd.Flags().String(flagMoniker, "", "Moniker")
+	cmd.Flags().String(flagPricesPerGB, "", "Prices per GB")
 	cmd.Flags().Int64(flagUploadSpeed, 0, "Internet upload speed in bytes/sec")
 	cmd.Flags().Int64(flagDownloadSpeed, 0, "Internet download speed in bytes/sec")
-	cmd.Flags().String(flagEncryptionMethod, "", "VPN tunnel encryption method")
-	cmd.Flags().String(flagPricesPerGB, "100sent,1000sut", "Prices for one GB of data")
-	cmd.Flags().String(flagType, "OpenVPN", "Type of VPN node")
-	cmd.Flags().String(flagVersion, "", "Node version")
+	cmd.Flags().String(flagEncryptionMethod, "", "VPN encryption method")
+	cmd.Flags().String(flagType, "", "VPN node type")
+	cmd.Flags().String(flagVersion, "", "VPN node version")
 
 	_ = cmd.MarkFlagRequired(flagNodeID)
 

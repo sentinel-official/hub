@@ -56,5 +56,5 @@ const (
 	StatusInactive     = "INACTIVE"
 	StatusDeregistered = "DEREGISTERED"
 	StatusInit         = "INIT"
-	StatusEnd          = "ENDED"
+	StatusEnd          = "END"
 )

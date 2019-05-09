@@ -24,8 +24,8 @@ func NewHandler(vk keeper.Keeper, ak auth.AccountKeeper, bk bank.Keeper) csdkTyp
 			return handleDeregisterNode(ctx, vk, bk, msg)
 		case types.MsgInitSession:
 			return handleInitSession(ctx, vk, ak, bk, msg)
-		case types.MsgUpdateSessionBandwidth:
-			return handleUpdateSessionBandwidth(ctx, vk, msg)
+		case types.MsgUpdateSessionBandwidthInfo:
+			return handleUpdateSessionBandwidthInfo(ctx, vk, msg)
 		default:
 			return types.ErrorUnknownMsgType(reflect.TypeOf(msg).Name()).Result()
 		}
@@ -77,7 +77,7 @@ func endBlockSessions(ctx csdkTypes.Context, vk keeper.Keeper, bk bank.Keeper, h
 		}
 
 		payAmount := session.Amount()
-		remainingAmount := session.LockedAmount.Sub(payAmount)
+		remainingAmount := session.DepositAmount.Sub(payAmount)
 
 		if !payAmount.IsZero() {
 			_, _, err := bk.AddCoins(ctx, session.NodeOwner, csdkTypes.Coins{payAmount})
@@ -110,8 +110,8 @@ func handleRegisterNode(ctx csdkTypes.Context, vk keeper.Keeper, ak auth.Account
 
 	allTags := csdkTypes.EmptyTags()
 
-	lockAmount := csdkTypes.Coins{msg.AmountToLock}
-	_, tags, err := bk.SubtractCoins(ctx, msg.From, lockAmount)
+	depositAmount := csdkTypes.Coins{msg.DepositAmount}
+	_, tags, err := bk.SubtractCoins(ctx, msg.From, depositAmount)
 	if err != nil {
 		return err.Result()
 	}
@@ -124,19 +124,18 @@ func handleRegisterNode(ctx csdkTypes.Context, vk keeper.Keeper, ak auth.Account
 
 	height := ctx.BlockHeight()
 	node := types.Node{
-		Owner:                   msg.From,
-		OwnerPubKey:             ownerPubKey,
-		LockedAmount:            msg.AmountToLock,
-		Moniker:                 msg.Moniker,
-		PricesPerGB:             msg.PricesPerGB,
-		NetSpeed:                msg.NetSpeed,
-		APIPort:                 msg.APIPort,
-		EncryptionMethod:        msg.EncryptionMethod,
-		Version:                 msg.Version,
-		Type:                    msg.Type_,
-		Status:                  types.StatusRegistered,
-		StatusModifiedAtHeight:  height,
-		DetailsModifiedAtHeight: height,
+		Owner:                  msg.From,
+		OwnerPubKey:            ownerPubKey,
+		DepositAmount:          msg.DepositAmount,
+		Moniker:                msg.Moniker,
+		PricesPerGB:            msg.PricesPerGB,
+		InternetSpeed:          msg.InternetSpeed,
+		EncryptionMethod:       msg.EncryptionMethod,
+		Type:                   msg.Type_,
+		Version:                msg.Version,
+		ModifiedAtHeight:       height,
+		Status:                 types.StatusRegistered,
+		StatusModifiedAtHeight: height,
 	}
 
 	tags, err = vk.AddNode(ctx, &node)
@@ -172,14 +171,13 @@ func handleUpdateNodeDetails(ctx csdkTypes.Context, vk keeper.Keeper,
 	_node := types.Node{
 		Moniker:          msg.Moniker,
 		PricesPerGB:      msg.PricesPerGB,
-		NetSpeed:         msg.NetSpeed,
-		APIPort:          msg.APIPort,
+		InternetSpeed:    msg.InternetSpeed,
 		EncryptionMethod: msg.EncryptionMethod,
 		Type:             msg.Type_,
 		Version:          msg.Version,
 	}
 	node.UpdateDetails(_node)
-	node.DetailsModifiedAtHeight = ctx.BlockHeight()
+	node.ModifiedAtHeight = ctx.BlockHeight()
 
 	if err := vk.SetNode(ctx, node); err != nil {
 		return err.Result()
@@ -262,7 +260,7 @@ func handleDeregisterNode(ctx csdkTypes.Context, vk keeper.Keeper, bk bank.Keepe
 	}
 	allTags = allTags.AppendTag("node_id", msg.ID.String())
 
-	releaseAmount := csdkTypes.Coins{node.LockedAmount}
+	releaseAmount := csdkTypes.Coins{node.DepositAmount}
 	_, tags, err := bk.AddCoins(ctx, msg.From, releaseAmount)
 	if err != nil {
 		return err.Result()
@@ -288,13 +286,13 @@ func handleInitSession(ctx csdkTypes.Context, vk keeper.Keeper, ak auth.AccountK
 		return types.ErrorInvalidNodeStatus().Result()
 	}
 
-	pricePerGB := node.FindPricePerGB(msg.AmountToLock.Denom)
-	toProvide, err := node.CalculateBandwidth(msg.AmountToLock)
+	pricePerGB := node.FindPricePerGB(msg.DepositAmount.Denom)
+	toProvide, err := node.AmountToBandwidth(msg.DepositAmount)
 	if err != nil {
 		return err.Result()
 	}
 
-	lockAmount := csdkTypes.Coins{msg.AmountToLock}
+	lockAmount := csdkTypes.Coins{msg.DepositAmount}
 	_, tags, err := bk.SubtractCoins(ctx, msg.From, lockAmount)
 	if err != nil {
 		return err.Result()
@@ -313,7 +311,7 @@ func handleInitSession(ctx csdkTypes.Context, vk keeper.Keeper, ak auth.AccountK
 		NodeOwnerPubKey: node.OwnerPubKey,
 		Client:          msg.From,
 		ClientPubKey:    clientPubKey,
-		LockedAmount:    msg.AmountToLock,
+		DepositAmount:   msg.DepositAmount,
 		PricePerGB:      pricePerGB,
 		BandwidthInfo: types.SessionBandwidthInfo{
 			ToProvide:        toProvide,
@@ -332,8 +330,8 @@ func handleInitSession(ctx csdkTypes.Context, vk keeper.Keeper, ak auth.AccountK
 	return csdkTypes.Result{Tags: allTags}
 }
 
-func handleUpdateSessionBandwidth(ctx csdkTypes.Context, vk keeper.Keeper,
-	msg types.MsgUpdateSessionBandwidth) csdkTypes.Result {
+func handleUpdateSessionBandwidthInfo(ctx csdkTypes.Context, vk keeper.Keeper,
+	msg types.MsgUpdateSessionBandwidthInfo) csdkTypes.Result {
 
 	allTags := csdkTypes.EmptyTags()
 
@@ -359,7 +357,7 @@ func handleUpdateSessionBandwidth(ctx csdkTypes.Context, vk keeper.Keeper,
 		return err.Result()
 	}
 
-	if err := session.SetNewSessionBandwidth(msg.Bandwidth, msg.NodeOwnerSign, msg.ClientSign, height); err != nil {
+	if err := session.UpdateSessionBandwidthInfo(msg.Consumed, msg.NodeOwnerSign, msg.ClientSign, height); err != nil {
 		return types.ErrorBandwidthUpdate(err.Error()).Result()
 	}
 	if session.Status == StatusInit {

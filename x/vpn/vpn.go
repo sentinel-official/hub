@@ -34,7 +34,7 @@ type (
 	MsgUpdateNodeStatus = types.MsgUpdateNodeStatus
 	MsgDeregisterNode = types.MsgDeregisterNode
 	MsgInitSession = types.MsgInitSession
-	MsgUpdateSessionBandwidth = types.MsgUpdateSessionBandwidth
+	MsgUpdateSessionBandwidthInfo = types.MsgUpdateSessionBandwidthInfo
 
 	Keeper = keeper.Keeper
 
@@ -55,12 +55,12 @@ var (
 
 	KeyActiveNodeIDs = types.KeyActiveNodeIDs
 
-	NewMsgRegisterNode           = types.NewMsgRegisterNode
-	NewMsgUpdateNodeDetails      = types.NewMsgUpdateNodeDetails
-	NewMsgUpdateNodeStatus       = types.NewMsgUpdateNodeStatus
-	NewMsgDeregisterNode         = types.NewMsgDeregisterNode
-	NewMsgInitSession            = types.NewMsgInitSession
-	NewMsgUpdateSessionBandwidth = types.NewMsgUpdateSessionBandwidth
+	NewMsgRegisterNode               = types.NewMsgRegisterNode
+	NewMsgUpdateNodeDetails          = types.NewMsgUpdateNodeDetails
+	NewMsgUpdateNodeStatus           = types.NewMsgUpdateNodeStatus
+	NewMsgDeregisterNode             = types.NewMsgDeregisterNode
+	NewMsgInitSession                = types.NewMsgInitSession
+	NewMsgUpdateSessionBandwidthInfo = types.NewMsgUpdateSessionBandwidthInfo
 
 	NewKeeper = keeper.NewKeeper
 

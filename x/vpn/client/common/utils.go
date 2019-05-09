@@ -7,7 +7,7 @@ import (
 	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
 )
 
-func GetSessionBandwidthSignDataBytes(cliCtx context.CLIContext, cdc *codec.Codec,
+func GetSessionBandwidthSignBytes(cliCtx context.CLIContext, cdc *codec.Codec,
 	sessionID string, bandwidth sdkTypes.Bandwidth) ([]byte, error) {
 	session, err := QuerySession(cliCtx, cdc, sessionID)
 	if err != nil {
@@ -19,6 +19,6 @@ func GetSessionBandwidthSignDataBytes(cliCtx context.CLIContext, cdc *codec.Code
 		return nil, err
 	}
 
-	signData := sdkTypes.NewBandwidthSignData(session.ID, bandwidth, node.Owner, session.Client)
+	signData := sdkTypes.NewBandwidthSign(session.ID, bandwidth, node.Owner, session.Client)
 	return signData.GetBytes(), nil
 }

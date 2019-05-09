@@ -12,10 +12,9 @@ type MsgRegisterNode struct {
 	From csdkTypes.AccAddress `json:"from"`
 
 	Moniker          string             `json:"moniker"`
-	AmountToLock     csdkTypes.Coin     `json:"amount_to_lock"`
+	DepositAmount    csdkTypes.Coin     `json:"deposit_amount"`
 	PricesPerGB      csdkTypes.Coins    `json:"prices_per_gb"`
-	NetSpeed         sdkTypes.Bandwidth `json:"net_speed"`
-	APIPort          uint16             `json:"api_port"`
+	InternetSpeed    sdkTypes.Bandwidth `json:"internet_speed"`
 	EncryptionMethod string             `json:"encryption_method"`
 	Type_            string             `json:"type_"`
 	Version          string             `json:"version"`
@@ -33,18 +32,15 @@ func (msg MsgRegisterNode) ValidateBasic() csdkTypes.Error {
 	if len(msg.Moniker) > 128 {
 		return ErrorInvalidField("moniker")
 	}
-	if msg.AmountToLock.Denom != "sent" || !msg.AmountToLock.IsPositive() {
-		return ErrorInvalidField("amount_to_lock")
+	if msg.DepositAmount.Denom != "sent" || !msg.DepositAmount.IsPositive() {
+		return ErrorInvalidField("deposit_amount")
 	}
 	if msg.PricesPerGB == nil || msg.PricesPerGB.Len() == 0 ||
 		!msg.PricesPerGB.IsValid() || !msg.PricesPerGB.IsAllPositive() {
 		return ErrorInvalidField("prices_per_gb")
 	}
-	if !msg.NetSpeed.IsPositive() {
-		return ErrorInvalidField("net_speed")
-	}
-	if msg.APIPort == 0 {
-		return ErrorInvalidField("api_port")
+	if !msg.InternetSpeed.IsPositive() {
+		return ErrorInvalidField("internet_speed")
 	}
 	if len(msg.EncryptionMethod) == 0 {
 		return ErrorInvalidField("encryption_method")
@@ -77,18 +73,16 @@ func (msg MsgRegisterNode) Route() string {
 }
 
 func NewMsgRegisterNode(from csdkTypes.AccAddress,
-	moniker string, amountToLock csdkTypes.Coin, pricesPerGB csdkTypes.Coins,
-	netSpeed sdkTypes.Bandwidth, apiPort uint16,
-	encryptionMethod, type_, version string) *MsgRegisterNode {
+	moniker string, depositAmount csdkTypes.Coin, pricesPerGB csdkTypes.Coins,
+	internetSpeed sdkTypes.Bandwidth, encryptionMethod, type_, version string) *MsgRegisterNode {
 
 	return &MsgRegisterNode{
 		From: from,
 
 		Moniker:          moniker,
-		AmountToLock:     amountToLock,
+		DepositAmount:    depositAmount,
 		PricesPerGB:      pricesPerGB,
-		NetSpeed:         netSpeed,
-		APIPort:          apiPort,
+		InternetSpeed:    internetSpeed,
 		EncryptionMethod: encryptionMethod,
 		Type_:            type_,
 		Version:          version,
@@ -101,8 +95,7 @@ type MsgUpdateNodeDetails struct {
 
 	Moniker          string             `json:"moniker"`
 	PricesPerGB      csdkTypes.Coins    `json:"prices_per_gb"`
-	NetSpeed         sdkTypes.Bandwidth `json:"net_speed"`
-	APIPort          uint16             `json:"api_port"`
+	InternetSpeed    sdkTypes.Bandwidth `json:"internet_speed"`
 	EncryptionMethod string             `json:"encryption_method"`
 	Type_            string             `json:"type_"`
 	Version          string             `json:"version"`
@@ -127,11 +120,8 @@ func (msg MsgUpdateNodeDetails) ValidateBasic() csdkTypes.Error {
 		!msg.PricesPerGB.IsValid() || !msg.PricesPerGB.IsAllPositive()) {
 		return ErrorInvalidField("prices_per_gb")
 	}
-	if msg.NetSpeed.IsNegative() {
-		return ErrorInvalidField("net_speed")
-	}
-	if msg.APIPort == 0 {
-		return ErrorInvalidField("api_port")
+	if msg.InternetSpeed.IsNegative() {
+		return ErrorInvalidField("internet_speed")
 	}
 
 	return nil
@@ -155,8 +145,8 @@ func (msg MsgUpdateNodeDetails) Route() string {
 }
 
 func NewMsgUpdateNodeDetails(from csdkTypes.AccAddress, id sdkTypes.ID,
-	moniker string, pricesPerGB csdkTypes.Coins, netSpeed sdkTypes.Bandwidth,
-	apiPort uint16, encryptionMethod, type_, version string) *MsgUpdateNodeDetails {
+	moniker string, pricesPerGB csdkTypes.Coins, internetSpeed sdkTypes.Bandwidth,
+	encryptionMethod, type_, version string) *MsgUpdateNodeDetails {
 
 	return &MsgUpdateNodeDetails{
 		From: from,
@@ -164,8 +154,7 @@ func NewMsgUpdateNodeDetails(from csdkTypes.AccAddress, id sdkTypes.ID,
 
 		Moniker:          moniker,
 		PricesPerGB:      pricesPerGB,
-		NetSpeed:         netSpeed,
-		APIPort:          apiPort,
+		InternetSpeed:    internetSpeed,
 		EncryptionMethod: encryptionMethod,
 		Type_:            type_,
 		Version:          version,

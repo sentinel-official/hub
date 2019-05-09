@@ -16,10 +16,9 @@ import (
 type msgRegisterNode struct {
 	BaseReq          rest.BaseReq       `json:"base_req"`
 	Moniker          string             `json:"moniker"`
-	AmountToLock     string             `json:"amount_to_lock"`
+	DepositAmount    string             `json:"deposit_amount"`
 	PricesPerGB      string             `json:"prices_per_gb"`
-	NetSpeed         sdkTypes.Bandwidth `json:"net_speed"`
-	APIPort          uint16             `json:"api_port"`
+	InternetSpeed    sdkTypes.Bandwidth `json:"internet_speed"`
 	EncryptionMethod string             `json:"encryption_method"`
 	Type             string             `json:"type"`
 	Version          string             `json:"version"`
@@ -44,7 +43,7 @@ func registerNodeHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) http.H
 			return
 		}
 
-		amountToLock, err := csdkTypes.ParseCoin(req.AmountToLock)
+		depositAmount, err := csdkTypes.ParseCoin(req.DepositAmount)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
@@ -57,8 +56,8 @@ func registerNodeHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) http.H
 		}
 
 		msg := vpn.NewMsgRegisterNode(fromAddress,
-			req.Moniker, amountToLock, pricesPerGB, req.NetSpeed,
-			req.APIPort, req.EncryptionMethod, req.Type, req.Version)
+			req.Moniker, depositAmount, pricesPerGB, req.InternetSpeed,
+			req.EncryptionMethod, req.Type, req.Version)
 		if err := msg.ValidateBasic(); err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return

@@ -26,25 +26,25 @@ func InitSessionTxCmd(cdc *codec.Codec) *cobra.Command {
 			}
 
 			nodeID := sdkTypes.NewID(viper.GetString(flagNodeID))
-			amountToLock := viper.GetString(flagAmountToLock)
+			depositAmount := viper.GetString(flagDepositAmount)
 
-			parsedAmountToLock, err := csdkTypes.ParseCoin(amountToLock)
+			parsedDepositAmount, err := csdkTypes.ParseCoin(depositAmount)
 			if err != nil {
 				return err
 			}
 
 			fromAddress := cliCtx.GetFromAddress()
 
-			msg := vpn.NewMsgInitSession(fromAddress, nodeID, parsedAmountToLock)
+			msg := vpn.NewMsgInitSession(fromAddress, nodeID, parsedDepositAmount)
 			return utils.GenerateOrBroadcastMsgs(cliCtx, txBldr, []csdkTypes.Msg{msg}, false)
 		},
 	}
 
 	cmd.Flags().String(flagNodeID, "", "Node ID")
-	cmd.Flags().String(flagAmountToLock, "1000sut", "Amount to lock for session")
+	cmd.Flags().String(flagDepositAmount, "", "Deposit amount")
 
 	_ = cmd.MarkFlagRequired(flagNodeID)
-	_ = cmd.MarkFlagRequired(flagAmountToLock)
+	_ = cmd.MarkFlagRequired(flagDepositAmount)
 
 	return cmd
 }
