@@ -35,10 +35,10 @@ import (
 	"github.com/rakyll/statik/fs"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"github.com/tendermint/go-amino"
+	_amino "github.com/tendermint/go-amino"
 	"github.com/tendermint/tendermint/libs/cli"
 
-	app "github.com/ironman0x7b2/sentinel-sdk/apps/hub"
+	app "github.com/ironman0x7b2/sentinel-sdk/app/hub"
 	"github.com/ironman0x7b2/sentinel-sdk/version"
 	"github.com/ironman0x7b2/sentinel-sdk/x/vpn"
 	vpnClient "github.com/ironman0x7b2/sentinel-sdk/x/vpn/client"
@@ -95,7 +95,7 @@ func main() {
 	}
 }
 
-func queryCmd(cdc *amino.Codec, mc []csdkTypes.ModuleClients) *cobra.Command {
+func queryCmd(cdc *_amino.Codec, mc []csdkTypes.ModuleClients) *cobra.Command {
 	queryCmd := &cobra.Command{
 		Use:     "query",
 		Aliases: []string{"q"},
@@ -121,7 +121,7 @@ func queryCmd(cdc *amino.Codec, mc []csdkTypes.ModuleClients) *cobra.Command {
 	return queryCmd
 }
 
-func txCmd(cdc *amino.Codec, mc []csdkTypes.ModuleClients) *cobra.Command {
+func txCmd(cdc *_amino.Codec, mc []csdkTypes.ModuleClients) *cobra.Command {
 	txCmd := &cobra.Command{
 		Use:   "tx",
 		Short: "Transactions subcommands",

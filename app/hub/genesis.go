@@ -22,42 +22,43 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/slashing"
 	"github.com/cosmos/cosmos-sdk/x/staking"
 	tmTypes "github.com/tendermint/tendermint/types"
-)
 
-var (
-	freeFermionsAcc  = csdkTypes.TokensFromTendermintPower(150)
-	defaultBondDenom = "usent"
+	"github.com/ironman0x7b2/sentinel-sdk/x/deposit"
+	"github.com/ironman0x7b2/sentinel-sdk/x/vpn"
 )
 
 type GenesisState struct {
-	Accounts     []GenesisAccount          `json:"accounts"`
-	AuthData     auth.GenesisState         `json:"auth"`
-	BankData     bank.GenesisState         `json:"bank"`
-	StakingData  staking.GenesisState      `json:"staking"`
-	MintData     mint.GenesisState         `json:"mint"`
-	DistrData    distribution.GenesisState `json:"distr"`
-	GovData      gov.GenesisState          `json:"gov"`
-	CrisisData   crisis.GenesisState       `json:"crisis"`
-	SlashingData slashing.GenesisState     `json:"slashing"`
-	GenTxs       []json.RawMessage         `json:"gentxs"`
+	Accounts         []GenesisAccount          `json:"accounts"`
+	AuthData         auth.GenesisState         `json:"auth_data"`
+	BankData         bank.GenesisState         `json:"bank_data"`
+	StakingData      staking.GenesisState      `json:"staking_data"`
+	MintData         mint.GenesisState         `json:"mint_data"`
+	DistributionData distribution.GenesisState `json:"distribution_data"`
+	GovData          gov.GenesisState          `json:"gov_data"`
+	CrisisData       crisis.GenesisState       `json:"crisis_data"`
+	SlashingData     slashing.GenesisState     `json:"slashing_data"`
+	DepositData      deposit.GenesisState      `json:"deposit_data"`
+	VPNData          vpn.GenesisState          `json:"vpn_data"`
+	GenTxs           []json.RawMessage         `json:"gen_txs"`
 }
 
-func NewGenesisState(accounts []GenesisAccount, authData auth.GenesisState,
-	bankData bank.GenesisState,
-	stakingData staking.GenesisState, mintData mint.GenesisState,
-	distrData distribution.GenesisState, govData gov.GenesisState, crisisData crisis.GenesisState,
-	slashingData slashing.GenesisState) GenesisState {
+func NewGenesisState(accounts []GenesisAccount, authData auth.GenesisState, bankData bank.GenesisState,
+	stakingData staking.GenesisState, mintData mint.GenesisState, distributionData distribution.GenesisState,
+	govData gov.GenesisState, crisisData crisis.GenesisState, slashingData slashing.GenesisState,
+	depositData deposit.GenesisState, vpnData vpn.GenesisState) GenesisState {
 
 	return GenesisState{
-		Accounts:     accounts,
-		AuthData:     authData,
-		BankData:     bankData,
-		StakingData:  stakingData,
-		MintData:     mintData,
-		DistrData:    distrData,
-		GovData:      govData,
-		CrisisData:   crisisData,
-		SlashingData: slashingData,
+		Accounts:         accounts,
+		AuthData:         authData,
+		BankData:         bankData,
+		StakingData:      stakingData,
+		MintData:         mintData,
+		DistributionData: distributionData,
+		GovData:          govData,
+		CrisisData:       crisisData,
+		SlashingData:     slashingData,
+		DepositData:      depositData,
+		VPNData:          vpnData,
 	}
 }
 
@@ -69,19 +70,34 @@ func (gs GenesisState) Sanitize() {
 	for _, acc := range gs.Accounts {
 		acc.Coins = acc.Coins.Sort()
 	}
+
+	sort.Slice(gs.DepositData, func(i, j int) bool {
+		return gs.DepositData[i].Address.String() < gs.DepositData[j].Address.String()
+	})
+
+	for _, dep := range gs.DepositData {
+		dep.Coins = dep.Coins.Sort()
+	}
+
+	sort.Slice(gs.VPNData.Nodes, func(i, j int) bool {
+		return gs.VPNData.Nodes[i].ID < gs.VPNData.Nodes[i].ID
+	})
+
+	sort.Slice(gs.VPNData.Sessions, func(i, j int) bool {
+		return gs.VPNData.Sessions[i].ID < gs.VPNData.Sessions[i].ID
+	})
 }
 
 type GenesisAccount struct {
-	Address       csdkTypes.AccAddress `json:"address"`
-	Coins         csdkTypes.Coins      `json:"coins"`
-	Sequence      uint64               `json:"sequence_number"`
-	AccountNumber uint64               `json:"account_number"`
-
-	OriginalVesting  csdkTypes.Coins `json:"original_vesting"`
-	DelegatedFree    csdkTypes.Coins `json:"delegated_free"`
-	DelegatedVesting csdkTypes.Coins `json:"delegated_vesting"`
-	StartTime        int64           `json:"start_time"`
-	EndTime          int64           `json:"end_time"`
+	Address          csdkTypes.AccAddress `json:"address"`
+	Coins            csdkTypes.Coins      `json:"coins"`
+	Sequence         uint64               `json:"sequence_number"`
+	AccountNumber    uint64               `json:"account_number"`
+	OriginalVesting  csdkTypes.Coins      `json:"original_vesting"`
+	DelegatedFree    csdkTypes.Coins      `json:"delegated_free"`
+	DelegatedVesting csdkTypes.Coins      `json:"delegated_vesting"`
+	StartTime        int64                `json:"start_time"`
+	EndTime          int64                `json:"end_time"`
 }
 
 func NewGenesisAccount(acc *auth.BaseAccount) GenesisAccount {
@@ -94,27 +110,27 @@ func NewGenesisAccount(acc *auth.BaseAccount) GenesisAccount {
 }
 
 func NewGenesisAccountI(acc auth.Account) GenesisAccount {
-	gacc := GenesisAccount{
+	genesisAccount := GenesisAccount{
 		Address:       acc.GetAddress(),
 		Coins:         acc.GetCoins(),
 		AccountNumber: acc.GetAccountNumber(),
 		Sequence:      acc.GetSequence(),
 	}
 
-	vacc, ok := acc.(auth.VestingAccount)
+	vestingAccount, ok := acc.(auth.VestingAccount)
 	if ok {
-		gacc.OriginalVesting = vacc.GetOriginalVesting()
-		gacc.DelegatedFree = vacc.GetDelegatedFree()
-		gacc.DelegatedVesting = vacc.GetDelegatedVesting()
-		gacc.StartTime = vacc.GetStartTime()
-		gacc.EndTime = vacc.GetEndTime()
+		genesisAccount.OriginalVesting = vestingAccount.GetOriginalVesting()
+		genesisAccount.DelegatedFree = vestingAccount.GetDelegatedFree()
+		genesisAccount.DelegatedVesting = vestingAccount.GetDelegatedVesting()
+		genesisAccount.StartTime = vestingAccount.GetStartTime()
+		genesisAccount.EndTime = vestingAccount.GetEndTime()
 	}
 
-	return gacc
+	return genesisAccount
 }
 
 func (ga *GenesisAccount) ToAccount() auth.Account {
-	bacc := &auth.BaseAccount{
+	baseAccount := &auth.BaseAccount{
 		Address:       ga.Address,
 		Coins:         ga.Coins.Sort(),
 		AccountNumber: ga.AccountNumber,
@@ -123,7 +139,7 @@ func (ga *GenesisAccount) ToAccount() auth.Account {
 
 	if !ga.OriginalVesting.IsZero() {
 		baseVestingAcc := &auth.BaseVestingAccount{
-			BaseAccount:      bacc,
+			BaseAccount:      baseAccount,
 			OriginalVesting:  ga.OriginalVesting,
 			DelegatedFree:    ga.DelegatedFree,
 			DelegatedVesting: ga.DelegatedVesting,
@@ -144,13 +160,13 @@ func (ga *GenesisAccount) ToAccount() auth.Account {
 		}
 	}
 
-	return bacc
+	return baseAccount
 }
 
-func HubGenState(cdc *codec.Codec, genDoc tmTypes.GenesisDoc, appGenTxs []json.RawMessage) (
-	genesisState GenesisState, err error) {
+func GenGenesisState(cdc *codec.Codec, genesisDoc tmTypes.GenesisDoc,
+	appGenTxs []json.RawMessage) (genesisState GenesisState, err error) {
 
-	if err = cdc.UnmarshalJSON(genDoc.AppState, &genesisState); err != nil {
+	if err = cdc.UnmarshalJSON(genesisDoc.AppState, &genesisState); err != nil {
 		return genesisState, err
 	}
 
@@ -180,8 +196,7 @@ func HubGenState(cdc *codec.Codec, genDoc tmTypes.GenesisDoc, appGenTxs []json.R
 	for _, acc := range genesisState.Accounts {
 		for _, coin := range acc.Coins {
 			if coin.Denom == genesisState.StakingData.Params.BondDenom {
-				stakingData.Pool.NotBondedTokens = stakingData.Pool.NotBondedTokens.
-					Add(coin.Amount)
+				stakingData.Pool.NotBondedTokens = stakingData.Pool.NotBondedTokens.Add(coin.Amount)
 			}
 		}
 	}
@@ -194,27 +209,24 @@ func HubGenState(cdc *codec.Codec, genDoc tmTypes.GenesisDoc, appGenTxs []json.R
 
 func NewDefaultGenesisState() GenesisState {
 	state := GenesisState{
-		Accounts:     nil,
-		AuthData:     auth.DefaultGenesisState(),
-		BankData:     bank.DefaultGenesisState(),
-		StakingData:  staking.DefaultGenesisState(),
-		MintData:     mint.DefaultGenesisState(),
-		DistrData:    distribution.DefaultGenesisState(),
-		GovData:      gov.DefaultGenesisState(),
-		CrisisData:   crisis.DefaultGenesisState(),
-		SlashingData: slashing.DefaultGenesisState(),
-		GenTxs:       nil,
+		Accounts:         nil,
+		AuthData:         auth.DefaultGenesisState(),
+		BankData:         bank.DefaultGenesisState(),
+		StakingData:      staking.DefaultGenesisState(),
+		MintData:         mint.DefaultGenesisState(),
+		DistributionData: distribution.DefaultGenesisState(),
+		GovData:          gov.DefaultGenesisState(),
+		CrisisData:       crisis.DefaultGenesisState(),
+		SlashingData:     slashing.DefaultGenesisState(),
+		DepositData:      deposit.DefaultGenesisState(),
+		VPNData:          vpn.DefaultGenesisState(),
+		GenTxs:           nil,
 	}
-
-	state.StakingData.Params.BondDenom = defaultBondDenom
-	state.GovData.DepositParams.MinDeposit = csdkTypes.Coins{csdkTypes.NewInt64Coin(defaultBondDenom, 10)}
-	state.MintData.Params.MintDenom = defaultBondDenom
-	state.CrisisData.ConstantFee = csdkTypes.NewCoin(defaultBondDenom, csdkTypes.NewInt(1000))
 
 	return state
 }
 
-func HubValidateGenesisState(genesisState GenesisState) error {
+func ValidateGenesisState(genesisState GenesisState) error {
 	if err := validateGenesisStateAccounts(genesisState.Accounts); err != nil {
 		return err
 	}
@@ -233,7 +245,7 @@ func HubValidateGenesisState(genesisState GenesisState) error {
 	if err := slashing.ValidateGenesis(genesisState.SlashingData); err != nil {
 		return err
 	}
-	if err := distribution.ValidateGenesis(genesisState.DistrData); err != nil {
+	if err := distribution.ValidateGenesis(genesisState.DistributionData); err != nil {
 		return err
 	}
 	if err := gov.ValidateGenesis(genesisState.GovData); err != nil {
@@ -242,13 +254,19 @@ func HubValidateGenesisState(genesisState GenesisState) error {
 	if err := mint.ValidateGenesis(genesisState.MintData); err != nil {
 		return err
 	}
+	if err := crisis.ValidateGenesis(genesisState.CrisisData); err != nil {
+		return err
+	}
+	if err := deposit.ValidateGenesis(genesisState.DepositData); err != nil {
+		return err
+	}
 
-	return crisis.ValidateGenesis(genesisState.CrisisData)
+	return vpn.ValidateGenesis(genesisState.VPNData)
 }
 
-func validateGenesisStateAccounts(accs []GenesisAccount) error {
-	addrMap := make(map[string]bool, len(accs))
-	for _, acc := range accs {
+func validateGenesisStateAccounts(accounts []GenesisAccount) error {
+	addrMap := make(map[string]bool, len(accounts))
+	for _, acc := range accounts {
 		addrStr := acc.Address.String()
 
 		if _, ok := addrMap[addrStr]; ok {
@@ -276,17 +294,19 @@ func validateGenesisStateAccounts(accs []GenesisAccount) error {
 	return nil
 }
 
-func HubGenStateJSON(cdc *codec.Codec, genDoc tmTypes.GenesisDoc, appGenTxs []json.RawMessage) (
-	appState json.RawMessage, err error) {
-	genesisState, err := HubGenState(cdc, genDoc, appGenTxs)
+func GenGenesisStateJSON(cdc *codec.Codec, genDoc tmTypes.GenesisDoc,
+	appGenTxs []json.RawMessage) (appState json.RawMessage, err error) {
+
+	genesisState, err := GenGenesisState(cdc, genDoc, appGenTxs)
 	if err != nil {
 		return nil, err
 	}
+
 	return codec.MarshalJSONIndent(cdc, genesisState)
 }
 
-func CollectStdTxs(cdc *codec.Codec, moniker string, genTxsDir string, genDoc tmTypes.GenesisDoc) (
-	appGenTxs []auth.StdTx, persistentPeers string, err error) {
+func CollectStdTxs(cdc *codec.Codec, moniker string, genTxsDir string,
+	genDoc tmTypes.GenesisDoc) (appGenTxs []auth.StdTx, persistentPeers string, err error) {
 
 	var fos []os.FileInfo
 	fos, err = ioutil.ReadDir(genTxsDir)
@@ -343,16 +363,16 @@ func CollectStdTxs(cdc *codec.Codec, moniker string, genTxsDir string, genDoc tm
 		delAcc, delOk := addrMap[delAddr]
 		_, valOk := addrMap[valAddr]
 
-		var accsNotInGenesis []string
+		var accountsNotInGeneses []string
 		if !delOk {
-			accsNotInGenesis = append(accsNotInGenesis, delAddr)
+			accountsNotInGeneses = append(accountsNotInGeneses, delAddr)
 		}
 		if !valOk {
-			accsNotInGenesis = append(accsNotInGenesis, valAddr)
+			accountsNotInGeneses = append(accountsNotInGeneses, valAddr)
 		}
-		if len(accsNotInGenesis) != 0 {
+		if len(accountsNotInGeneses) != 0 {
 			return appGenTxs, persistentPeers, fmt.Errorf(
-				"account(s) %v not in genesis.json: %+v", strings.Join(accsNotInGenesis, " "), addrMap)
+				"account(s) %v not in genesis.json: %+v", strings.Join(accountsNotInGeneses, " "), addrMap)
 		}
 
 		if delAcc.Coins.AmountOf(msg.Value.Denom).LT(msg.Value.Amount) {
@@ -371,17 +391,4 @@ func CollectStdTxs(cdc *codec.Codec, moniker string, genTxsDir string, genDoc tm
 	persistentPeers = strings.Join(addressesIPs, ",")
 
 	return appGenTxs, persistentPeers, nil
-}
-
-func NewDefaultGenesisAccount(addr csdkTypes.AccAddress) GenesisAccount {
-	accAuth := auth.NewBaseAccountWithAddress(addr)
-	coins := csdkTypes.Coins{
-		csdkTypes.NewCoin("footoken", csdkTypes.NewInt(1000)),
-		csdkTypes.NewCoin(defaultBondDenom, freeFermionsAcc),
-	}
-
-	coins.Sort()
-
-	accAuth.Coins = coins
-	return NewGenesisAccount(&accAuth)
 }

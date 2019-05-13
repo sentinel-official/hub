@@ -9,7 +9,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/server"
-	"github.com/tendermint/go-amino"
+	_amino "github.com/tendermint/go-amino"
 	tmConfig "github.com/tendermint/tendermint/config"
 	"github.com/tendermint/tendermint/crypto"
 	"github.com/tendermint/tendermint/libs/common"
@@ -17,7 +17,7 @@ import (
 	"github.com/tendermint/tendermint/privval"
 	"github.com/tendermint/tendermint/types"
 
-	app "github.com/ironman0x7b2/sentinel-sdk/apps/hub"
+	app "github.com/ironman0x7b2/sentinel-sdk/app/hub"
 )
 
 func ExportGenesisFile(genFile, chainID string, validators []types.GenesisValidator, appState json.RawMessage) error {
@@ -75,7 +75,7 @@ func InitializeNodeValidatorFiles(config *tmConfig.Config) (nodeID string, valPu
 	return nodeID, valPubKey, nil
 }
 
-func loadGenesisDoc(cdc *amino.Codec, genFile string) (genDoc types.GenesisDoc, err error) {
+func loadGenesisDoc(cdc *_amino.Codec, genFile string) (genDoc types.GenesisDoc, err error) {
 	genContents, err := ioutil.ReadFile(genFile)
 	if err != nil {
 		return genDoc, err

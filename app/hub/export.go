@@ -16,6 +16,9 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/staking"
 	abciTypes "github.com/tendermint/tendermint/abci/types"
 	tmTypes "github.com/tendermint/tendermint/types"
+
+	"github.com/ironman0x7b2/sentinel-sdk/x/deposit"
+	"github.com/ironman0x7b2/sentinel-sdk/x/vpn"
 )
 
 func (app *Hub) ExportAppStateAndValidators(forZeroHeight bool, jailWhiteList []string) (
@@ -45,6 +48,8 @@ func (app *Hub) ExportAppStateAndValidators(forZeroHeight bool, jailWhiteList []
 		gov.ExportGenesis(ctx, app.govKeeper),
 		crisis.ExportGenesis(ctx, app.crisisKeeper),
 		slashing.ExportGenesis(ctx, app.slashingKeeper),
+		deposit.ExportGenesis(ctx, app.depositKeeper),
+		vpn.ExportGenesis(ctx, app.vpnKeeper),
 	)
 	appState, err = codec.MarshalJSONIndent(app.cdc, genState)
 	if err != nil {
@@ -78,8 +83,8 @@ func (app *Hub) prepForZeroHeightGenesis(ctx csdkTypes.Context, jailWhiteList []
 		return false
 	})
 
-	dels := app.stakingKeeper.GetAllDelegations(ctx)
-	for _, delegation := range dels {
+	delegations := app.stakingKeeper.GetAllDelegations(ctx)
+	for _, delegation := range delegations {
 		_, _ = app.distributionKeeper.WithdrawDelegationRewards(ctx, delegation.DelegatorAddress,
 			delegation.ValidatorAddress)
 	}
@@ -100,7 +105,7 @@ func (app *Hub) prepForZeroHeightGenesis(ctx csdkTypes.Context, jailWhiteList []
 		return false
 	})
 
-	for _, del := range dels {
+	for _, del := range delegations {
 		app.distributionKeeper.Hooks().BeforeDelegationCreated(ctx, del.DelegatorAddress, del.ValidatorAddress)
 		app.distributionKeeper.Hooks().AfterDelegationModified(ctx, del.DelegatorAddress, del.ValidatorAddress)
 	}
@@ -127,7 +132,7 @@ func (app *Hub) prepForZeroHeightGenesis(ctx csdkTypes.Context, jailWhiteList []
 	iter := csdkTypes.KVStoreReversePrefixIterator(store, staking.ValidatorsKey)
 	counter := int16(0)
 
-	var valConsAddrs []csdkTypes.ConsAddress
+	var consAddresses []csdkTypes.ConsAddress
 	for ; iter.Valid(); iter.Next() {
 		addr := csdkTypes.ValAddress(iter.Key()[1:])
 		validator, found := app.stakingKeeper.GetValidator(ctx, addr)
@@ -136,7 +141,7 @@ func (app *Hub) prepForZeroHeightGenesis(ctx csdkTypes.Context, jailWhiteList []
 		}
 
 		validator.UnbondingHeight = 0
-		valConsAddrs = append(valConsAddrs, validator.ConsAddress())
+		consAddresses = append(consAddresses, validator.ConsAddress())
 		if applyWhiteList && !whiteListMap[addr.String()] {
 			validator.Jailed = true
 		}

@@ -26,12 +26,12 @@ import (
 	tmCli "github.com/tendermint/tendermint/libs/cli"
 	"github.com/tendermint/tendermint/libs/common"
 
-	app "github.com/ironman0x7b2/sentinel-sdk/apps/hub"
+	app "github.com/ironman0x7b2/sentinel-sdk/app/hub"
 )
 
 var (
 	defaultTokens                  = csdkTypes.TokensFromTendermintPower(100)
-	defaultAmount                  = defaultTokens.String() + "usent"
+	defaultAmount                  = defaultTokens.String() + "stake"
 	defaultCommissionRate          = "0.1"
 	defaultCommissionMaxRate       = "0.2"
 	defaultCommissionMaxChangeRate = "0.01"
@@ -82,7 +82,7 @@ following delegation and commission default parameters:
 				return err
 			}
 
-			if err = app.HubValidateGenesisState(genesisState); err != nil {
+			if err = app.ValidateGenesisState(genesisState); err != nil {
 				return err
 			}
 
@@ -137,7 +137,7 @@ following delegation and commission default parameters:
 			}
 
 			if info.GetType() == cryptoKeys.TypeOffline || info.GetType() == cryptoKeys.TypeMulti {
-				fmt.Println("Offline key passed in. Use `gaiacli tx sign` command to sign:")
+				fmt.Println("Offline key passed in. Use `hubcli tx sign` command to sign:")
 				return utils.PrintUnsignedStdTx(txBldr, cliCtx, []csdkTypes.Msg{msg}, true)
 			}
 

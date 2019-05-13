@@ -8,7 +8,11 @@
 rm -rf $HOME/.hubd $HOME/.hubcli && \
 hubd init --chain-id hub testing && \
 hubcli keys add genesis && \
-hubd add-genesis-account $(hubcli keys show genesis -a) 2000000000000000usent && \
+hubd add-genesis-account $(hubcli keys show genesis -a) 2000000000stake && \
 hubd gentx --name genesis && \
 hubd collect-gentxs
+```
+
+```
+hubd start --inv-check-period 1
 ```

@@ -15,7 +15,7 @@ import (
 	"github.com/tendermint/tendermint/libs/cli"
 	"github.com/tendermint/tendermint/types"
 
-	app "github.com/ironman0x7b2/sentinel-sdk/apps/hub"
+	app "github.com/ironman0x7b2/sentinel-sdk/app/hub"
 )
 
 const (
@@ -105,7 +105,7 @@ func genAppStateFromConfig(cdc *codec.Codec, config *tmConfig.Config, initCfg in
 
 	tmConfig.WriteConfigFile(filepath.Join(config.RootDir, "config", "config.toml"), config)
 
-	appState, err = app.HubGenStateJSON(cdc, genDoc, genTxs)
+	appState, err = app.GenGenesisStateJSON(cdc, genDoc, genTxs)
 	if err != nil {
 		return
 	}

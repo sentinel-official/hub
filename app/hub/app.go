@@ -23,6 +23,8 @@ import (
 	tmDB "github.com/tendermint/tendermint/libs/db"
 	"github.com/tendermint/tendermint/libs/log"
 
+	"github.com/ironman0x7b2/sentinel-sdk/x/deposit"
+	_staking "github.com/ironman0x7b2/sentinel-sdk/x/staking"
 	"github.com/ironman0x7b2/sentinel-sdk/x/vpn"
 )
 
@@ -53,6 +55,7 @@ type Hub struct {
 	keyGov           *csdkTypes.KVStoreKey
 	keyMint          *csdkTypes.KVStoreKey
 
+	keyDeposit    *csdkTypes.KVStoreKey
 	keyVPNNode    *csdkTypes.KVStoreKey
 	keyVPNSession *csdkTypes.KVStoreKey
 
@@ -71,7 +74,8 @@ type Hub struct {
 	mintKeeper          mint.Keeper
 	crisisKeeper        crisis.Keeper
 
-	vpnKeeper vpn.Keeper
+	depositKeeper deposit.Keeper
+	vpnKeeper     vpn.Keeper
 }
 
 func NewHub(logger log.Logger, db tmDB.DB, traceStore io.Writer, loadLatest bool, invCheckPeriod uint,
@@ -95,6 +99,7 @@ func NewHub(logger log.Logger, db tmDB.DB, traceStore io.Writer, loadLatest bool
 		keyDistribution:  csdkTypes.NewKVStoreKey(distribution.StoreKey),
 		keyGov:           csdkTypes.NewKVStoreKey(gov.StoreKey),
 		keyMint:          csdkTypes.NewKVStoreKey(mint.StoreKey),
+		keyDeposit:       csdkTypes.NewKVStoreKey(deposit.StoreKey),
 		keyVPNNode:       csdkTypes.NewKVStoreKey(vpn.StoreKeyNode),
 		keyVPNSession:    csdkTypes.NewKVStoreKey(vpn.StoreKeySession),
 		tkeyParams:       csdkTypes.NewTransientStoreKey(params.TStoreKey),
@@ -149,11 +154,28 @@ func NewHub(logger log.Logger, db tmDB.DB, traceStore io.Writer, loadLatest bool
 		app.distributionKeeper,
 		app.bankKeeper,
 		app.feeCollectionKeeper)
-	app.vpnKeeper = vpn.NewKeeper(app.cdc, app.keyVPNNode, app.keyVPNSession)
 
-	bank.RegisterInvariants(&app.crisisKeeper, app.accountKeeper)
-	distribution.RegisterInvariants(&app.crisisKeeper, app.distributionKeeper, app.stakingKeeper)
-	staking.RegisterInvariants(&app.crisisKeeper, app.stakingKeeper, app.feeCollectionKeeper, app.distributionKeeper, app.accountKeeper)
+	app.depositKeeper = deposit.NewKeeper(app.cdc,
+		app.keyDeposit,
+		app.bankKeeper)
+	app.vpnKeeper = vpn.NewKeeper(app.cdc,
+		app.keyVPNNode,
+		app.keyVPNSession,
+		app.paramsKeeper.Subspace(vpn.DefaultParamspace),
+		app.accountKeeper,
+		app.depositKeeper)
+
+	bank.RegisterInvariants(&app.crisisKeeper,
+		app.accountKeeper)
+	distribution.RegisterInvariants(&app.crisisKeeper,
+		app.distributionKeeper,
+		app.stakingKeeper)
+	_staking.RegisterInvariants(&app.crisisKeeper,
+		app.stakingKeeper,
+		app.feeCollectionKeeper,
+		app.distributionKeeper,
+		app.accountKeeper,
+		app.depositKeeper)
 
 	app.Router().
 		AddRoute(bank.RouterKey, bank.NewHandler(app.bankKeeper)).
@@ -162,7 +184,7 @@ func NewHub(logger log.Logger, db tmDB.DB, traceStore io.Writer, loadLatest bool
 		AddRoute(distribution.RouterKey, distribution.NewHandler(app.distributionKeeper)).
 		AddRoute(gov.RouterKey, gov.NewHandler(app.govKeeper)).
 		AddRoute(crisis.RouterKey, crisis.NewHandler(app.crisisKeeper)).
-		AddRoute(vpn.RouterKey, vpn.NewHandler(app.vpnKeeper, app.accountKeeper, app.bankKeeper))
+		AddRoute(vpn.RouterKey, vpn.NewHandler(app.vpnKeeper))
 
 	app.QueryRouter().
 		AddRoute(auth.QuerierRoute, auth.NewQuerier(app.accountKeeper)).
@@ -177,7 +199,7 @@ func NewHub(logger log.Logger, db tmDB.DB, traceStore io.Writer, loadLatest bool
 		app.keyAccount, app.keyFeeCollection,
 		app.keyStaking, app.keySlashing,
 		app.keyDistribution, app.keyGov, app.keyMint,
-		app.keyVPNNode, app.keyVPNSession,
+		app.keyDeposit, app.keyVPNNode, app.keyVPNSession,
 		app.tkeyParams, app.tkeyStaking, app.tkeyDistribution)
 	app.SetInitChainer(app.initChainer)
 	app.SetBeginBlocker(app.BeginBlocker)
@@ -223,7 +245,8 @@ func (app *Hub) EndBlocker(ctx csdkTypes.Context, req abciTypes.RequestEndBlock)
 	tags := gov.EndBlocker(ctx, app.govKeeper)
 	validatorUpdates, endBlockerTags := staking.EndBlocker(ctx, app.stakingKeeper)
 	tags = append(tags, endBlockerTags...)
-	vpn.EndBlock(ctx, app.vpnKeeper, app.bankKeeper)
+	vpnTags, _ := vpn.EndBlock(ctx, app.vpnKeeper)
+	tags = tags.AppendTags(vpnTags)
 
 	if app.invCheckPeriod != 0 && ctx.BlockHeight()%int64(app.invCheckPeriod) == 0 {
 		app.assertRuntimeInvariants()
@@ -244,7 +267,7 @@ func (app *Hub) initFromGenesisState(ctx csdkTypes.Context, genesisState Genesis
 		app.accountKeeper.SetAccount(ctx, acc)
 	}
 
-	distribution.InitGenesis(ctx, app.distributionKeeper, genesisState.DistrData)
+	distribution.InitGenesis(ctx, app.distributionKeeper, genesisState.DistributionData)
 
 	validators, err := staking.InitGenesis(ctx, app.stakingKeeper, genesisState.StakingData)
 	if err != nil {
@@ -258,7 +281,10 @@ func (app *Hub) initFromGenesisState(ctx csdkTypes.Context, genesisState Genesis
 	mint.InitGenesis(ctx, app.mintKeeper, genesisState.MintData)
 	crisis.InitGenesis(ctx, app.crisisKeeper, genesisState.CrisisData)
 
-	if err = HubValidateGenesisState(genesisState); err != nil {
+	deposit.InitGenesis(ctx, app.depositKeeper, genesisState.DepositData)
+	vpn.InitGenesis(ctx, app.vpnKeeper, genesisState.VPNData)
+
+	if err = ValidateGenesisState(genesisState); err != nil {
 		panic(err)
 	}
 

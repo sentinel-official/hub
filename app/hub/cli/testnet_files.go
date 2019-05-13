@@ -24,7 +24,7 @@ import (
 	"github.com/tendermint/tendermint/types"
 	tmTime "github.com/tendermint/tendermint/types/time"
 
-	app "github.com/ironman0x7b2/sentinel-sdk/apps/hub"
+	app "github.com/ironman0x7b2/sentinel-sdk/app/hub"
 )
 
 var (
@@ -79,8 +79,8 @@ Example:
 		client.FlagChainID, "", "genesis file chain-id, if left blank will be randomly created",
 	)
 	cmd.Flags().String(
-		server.FlagMinGasPrices, fmt.Sprintf("0.000006%s", "usent"),
-		"Minimum gas prices to accept for transactions; All fees in a tx must meet this minimum (e.g. 0.001usent)",
+		server.FlagMinGasPrices, fmt.Sprintf("0.000006%s", "stake"),
+		"Minimum gas prices to accept for transactions; All fees in a tx must meet this minimum (e.g. 0.001stake)",
 	)
 
 	return cmd
@@ -187,7 +187,7 @@ func initTestnet(config *tmConfig.Config, cdc *codec.Codec) error {
 			Address: addr,
 			Coins: csdkTypes.Coins{
 				csdkTypes.NewCoin(fmt.Sprintf("%stoken", nodeDirName), accTokens),
-				csdkTypes.NewCoin("usent", accStakingTokens),
+				csdkTypes.NewCoin("stake", accStakingTokens),
 			},
 		})
 
@@ -195,7 +195,7 @@ func initTestnet(config *tmConfig.Config, cdc *codec.Codec) error {
 		msg := staking.NewMsgCreateValidator(
 			csdkTypes.ValAddress(addr),
 			valPubKeys[i],
-			csdkTypes.NewCoin("usent", valTokens),
+			csdkTypes.NewCoin("stake", valTokens),
 			staking.NewDescription(nodeDirName, "", "", ""),
 			staking.NewCommissionMsg(csdkTypes.ZeroDec(), csdkTypes.ZeroDec(), csdkTypes.ZeroDec()),
 			csdkTypes.OneInt(),
