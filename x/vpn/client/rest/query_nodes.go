@@ -33,8 +33,8 @@ func getNodesHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) http.Handl
 	return func(w http.ResponseWriter, r *http.Request) {
 		var res []byte
 
-		owner := r.URL.Query().Get("owner")
-		if len(owner) == 0 {
+		address := r.URL.Query().Get("address")
+		if len(address) == 0 {
 			kvs, err := cliCtx.QuerySubspace(vpn.NodeKeyPrefix, vpn.StoreKeyNode)
 			if err != nil {
 				rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
@@ -63,13 +63,13 @@ func getNodesHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) http.Handl
 				return
 			}
 		} else {
-			owner, err := csdkTypes.AccAddressFromBech32(owner)
+			address, err := csdkTypes.AccAddressFromBech32(address)
 			if err != nil {
 				rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 				return
 			}
 
-			res, err = common.QueryNodesOfOwner(cliCtx, cdc, owner)
+			res, err = common.QueryNodesOfAddress(cliCtx, cdc, address)
 			if err != nil {
 				rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 				return

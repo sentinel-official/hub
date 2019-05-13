@@ -26,7 +26,6 @@ func RegisterNodeTxCmd(cdc *codec.Codec) *cobra.Command {
 			}
 
 			moniker := viper.GetString(flagMoniker)
-			depositAmount := viper.GetString(flagDepositAmount)
 			pricesPerGB := viper.GetString(flagPricesPerGB)
 			internetSpeed := sdkTypes.Bandwidth{
 				Upload:   csdkTypes.NewInt(viper.GetInt64(flagUploadSpeed)),
@@ -36,11 +35,6 @@ func RegisterNodeTxCmd(cdc *codec.Codec) *cobra.Command {
 			type_ := viper.GetString(flagType)
 			version := viper.GetString(flagVersion)
 
-			parsedDepositAmount, err := csdkTypes.ParseCoin(depositAmount)
-			if err != nil {
-				return err
-			}
-
 			parsedPricesPerGB, err := csdkTypes.ParseCoins(pricesPerGB)
 			if err != nil {
 				return err
@@ -49,14 +43,13 @@ func RegisterNodeTxCmd(cdc *codec.Codec) *cobra.Command {
 			fromAddress := cliCtx.GetFromAddress()
 
 			msg := vpn.NewMsgRegisterNode(fromAddress,
-				moniker, parsedDepositAmount, parsedPricesPerGB, internetSpeed,
+				moniker, parsedPricesPerGB, internetSpeed,
 				encryptionMethod, type_, version)
 			return utils.GenerateOrBroadcastMsgs(cliCtx, txBldr, []csdkTypes.Msg{msg}, false)
 		},
 	}
 
 	cmd.Flags().String(flagMoniker, "", "Moniker")
-	cmd.Flags().String(flagDepositAmount, "", "Deposit amount")
 	cmd.Flags().String(flagPricesPerGB, "", "Prices per GB")
 	cmd.Flags().Int64(flagUploadSpeed, 0, "Internet upload speed in bytes/sec")
 	cmd.Flags().Int64(flagDownloadSpeed, 0, "Internet download speed in bytes/sec")
@@ -65,7 +58,6 @@ func RegisterNodeTxCmd(cdc *codec.Codec) *cobra.Command {
 	cmd.Flags().String(flagVersion, "", "VPN node version")
 
 	_ = cmd.MarkFlagRequired(flagMoniker)
-	_ = cmd.MarkFlagRequired(flagDepositAmount)
 	_ = cmd.MarkFlagRequired(flagUploadSpeed)
 	_ = cmd.MarkFlagRequired(flagDownloadSpeed)
 	_ = cmd.MarkFlagRequired(flagEncryptionMethod)

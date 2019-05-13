@@ -48,10 +48,10 @@ func QueryNodesCmd(cdc *codec.Codec) *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cliCtx := context.NewCLIContext().WithCodec(cdc).WithAccountDecoder(cdc)
 
-			owner := viper.GetString(flagOwnerAddress)
+			address := viper.GetString(flagAddress)
 
 			var nodes []vpn.Node
-			if len(owner) == 0 {
+			if len(address) == 0 {
 				res, err := cliCtx.QuerySubspace(vpn.NodeKeyPrefix, vpn.StoreKeyNode)
 				if err != nil {
 					return err
@@ -69,12 +69,12 @@ func QueryNodesCmd(cdc *codec.Codec) *cobra.Command {
 					nodes = append(nodes, node)
 				}
 			} else {
-				owner, err := csdkTypes.AccAddressFromBech32(owner)
+				address, err := csdkTypes.AccAddressFromBech32(address)
 				if err != nil {
 					return err
 				}
 
-				res, err := common.QueryNodesOfOwner(cliCtx, cdc, owner)
+				res, err := common.QueryNodesOfAddress(cliCtx, cdc, address)
 				if err != nil {
 					return err
 				}
@@ -98,7 +98,7 @@ func QueryNodesCmd(cdc *codec.Codec) *cobra.Command {
 		},
 	}
 
-	cmd.Flags().String(flagOwnerAddress, "", "VPN node owner address")
+	cmd.Flags().String(flagAddress, "", "Account address")
 
 	return cmd
 }

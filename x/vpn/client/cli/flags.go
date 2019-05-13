@@ -12,7 +12,7 @@ const (
 	flagType             = "type"
 	flagVersion          = "version"
 	flagNodeID           = "node-id"
-	flagOwnerAddress     = "owner-address"
+	flagAddress          = "address"
 	flagSessionID        = "session-id"
 	flagNodeOwnerSign    = "node-owner-sign"
 	flagClientSign       = "client-sign"

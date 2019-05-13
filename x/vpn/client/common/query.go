@@ -34,14 +34,14 @@ func QueryNode(cliCtx context.CLIContext, cdc *codec.Codec, id sdkTypes.ID) (*vp
 	return &details, nil
 }
 
-func QueryNodesOfOwner(cliCtx context.CLIContext, cdc *codec.Codec, owner csdkTypes.AccAddress) ([]byte, error) {
-	params := vpn.NewQueryNodesOfOwnerParams(owner)
+func QueryNodesOfAddress(cliCtx context.CLIContext, cdc *codec.Codec, address csdkTypes.AccAddress) ([]byte, error) {
+	params := vpn.NewQueryNodesOfAddressParams(address)
 	paramBytes, err := cdc.MarshalJSON(params)
 	if err != nil {
 		return nil, err
 	}
 
-	return cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s", vpn.QuerierRoute, vpn.QueryNodesOfOwner), paramBytes)
+	return cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s", vpn.QuerierRoute, vpn.QueryNodesOfAddress), paramBytes)
 }
 
 func QuerySession(cliCtx context.CLIContext, cdc *codec.Codec, id string) (*vpn.Session, error) {
