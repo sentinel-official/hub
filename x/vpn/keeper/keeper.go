@@ -3,18 +3,30 @@ package keeper
 import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/x/auth"
+	"github.com/cosmos/cosmos-sdk/x/params"
+
+	"github.com/ironman0x7b2/sentinel-sdk/x/deposit"
 )
 
 type Keeper struct {
-	NodeStoreKey    csdkTypes.StoreKey
-	SessionStoreKey csdkTypes.StoreKey
+	nodeStoreKey    csdkTypes.StoreKey
+	sessionStoreKey csdkTypes.StoreKey
 	cdc             *codec.Codec
+	paramStore      params.Subspace
+	accountKeeper   auth.AccountKeeper
+	depositKeeper   deposit.Keeper
 }
 
-func NewKeeper(cdc *codec.Codec, nodeKey, sessionKey csdkTypes.StoreKey) Keeper {
+func NewKeeper(cdc *codec.Codec, nodeKey, sessionKey csdkTypes.StoreKey, paramStore params.Subspace,
+	accountKeeper auth.AccountKeeper, depositKeeper deposit.Keeper) Keeper {
+
 	return Keeper{
-		NodeStoreKey:    nodeKey,
-		SessionStoreKey: sessionKey,
+		nodeStoreKey:    nodeKey,
+		sessionStoreKey: sessionKey,
 		cdc:             cdc,
+		paramStore:      paramStore.WithKeyTable(ParamKeyTable()),
+		accountKeeper:   accountKeeper,
+		depositKeeper:   depositKeeper,
 	}
 }

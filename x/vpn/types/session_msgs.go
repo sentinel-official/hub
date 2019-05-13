@@ -11,8 +11,8 @@ import (
 type MsgInitSession struct {
 	From csdkTypes.AccAddress `json:"from"`
 
-	NodeID        sdkTypes.ID    `json:"node_id"`
-	DepositAmount csdkTypes.Coin `json:"deposit_amount"`
+	NodeID  sdkTypes.ID    `json:"node_id"`
+	Deposit csdkTypes.Coin `json:"deposit"`
 }
 
 func (msg MsgInitSession) Type() string {
@@ -27,8 +27,8 @@ func (msg MsgInitSession) ValidateBasic() csdkTypes.Error {
 	if msg.NodeID.Len() == 0 || !msg.NodeID.Valid() {
 		return ErrorInvalidField("node_id")
 	}
-	if len(msg.DepositAmount.Denom) == 0 || !msg.DepositAmount.IsPositive() {
-		return ErrorInvalidField("deposit_amount")
+	if len(msg.Deposit.Denom) == 0 || !msg.Deposit.IsPositive() {
+		return ErrorInvalidField("deposit")
 	}
 
 	return nil
@@ -52,13 +52,13 @@ func (msg MsgInitSession) Route() string {
 }
 
 func NewMsgInitSession(from csdkTypes.AccAddress,
-	nodeID sdkTypes.ID, depositAmount csdkTypes.Coin) *MsgInitSession {
+	nodeID sdkTypes.ID, deposit csdkTypes.Coin) *MsgInitSession {
 
 	return &MsgInitSession{
 		From: from,
 
-		NodeID:        nodeID,
-		DepositAmount: depositAmount,
+		NodeID:  nodeID,
+		Deposit: deposit,
 	}
 }
 

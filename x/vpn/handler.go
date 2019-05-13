@@ -4,167 +4,138 @@ import (
 	"reflect"
 
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/x/auth"
-	"github.com/cosmos/cosmos-sdk/x/bank"
 
 	"github.com/ironman0x7b2/sentinel-sdk/x/vpn/keeper"
 	"github.com/ironman0x7b2/sentinel-sdk/x/vpn/types"
 )
 
-func NewHandler(vk keeper.Keeper, ak auth.AccountKeeper, bk bank.Keeper) csdkTypes.Handler {
+func NewHandler(k keeper.Keeper) csdkTypes.Handler {
 	return func(ctx csdkTypes.Context, msg csdkTypes.Msg) csdkTypes.Result {
 		switch msg := msg.(type) {
 		case types.MsgRegisterNode:
-			return handleRegisterNode(ctx, vk, ak, bk, msg)
+			return handleRegisterNode(ctx, k, msg)
 		case types.MsgUpdateNodeDetails:
-			return handleUpdateNodeDetails(ctx, vk, msg)
+			return handleUpdateNodeDetails(ctx, k, msg)
 		case types.MsgUpdateNodeStatus:
-			return handleUpdateNodeStatus(ctx, vk, msg)
+			return handleUpdateNodeStatus(ctx, k, msg)
 		case types.MsgDeregisterNode:
-			return handleDeregisterNode(ctx, vk, bk, msg)
+			return handleDeregisterNode(ctx, k, msg)
 		case types.MsgInitSession:
-			return handleInitSession(ctx, vk, ak, bk, msg)
+			return handleInitSession(ctx, k, msg)
 		case types.MsgUpdateSessionBandwidthInfo:
-			return handleUpdateSessionBandwidthInfo(ctx, vk, msg)
+			return handleUpdateSessionBandwidthInfo(ctx, k, msg)
 		default:
 			return types.ErrorUnknownMsgType(reflect.TypeOf(msg).Name()).Result()
 		}
 	}
 }
 
-func endBlockNodes(ctx csdkTypes.Context, vk keeper.Keeper, height int64) {
-	inactiveHeight := height - 50
-	nodeIDs, err := vk.GetActiveNodeIDsAtHeight(ctx, inactiveHeight)
-	if err != nil {
-		panic(err)
-	}
+func endBlockNodes(ctx csdkTypes.Context, k keeper.Keeper, height int64) csdkTypes.Tags {
+	tags := csdkTypes.EmptyTags()
 
+	inactiveHeight := height - k.NodeInactiveInterval(ctx)
+	nodeIDs := k.GetActiveNodeIDsAtHeight(ctx, inactiveHeight)
 	for _, nodeID := range nodeIDs {
-		node, err := vk.GetNode(ctx, nodeID)
-		if err != nil {
-			panic(err)
-		}
-
+		node, _ := k.GetNode(ctx, nodeID)
 		node.Status = types.StatusInactive
 		node.StatusModifiedAtHeight = height
-		if err := vk.SetNode(ctx, node); err != nil {
-			panic(err)
-		}
+
+		k.SetNode(ctx, node)
+		tags = tags.AppendTag("node_id", node.ID.String())
 	}
 
-	if err := vk.SetActiveNodeIDsAtHeight(ctx, inactiveHeight, nil); err != nil {
-		panic(err)
-	}
+	k.SetActiveNodeIDsAtHeight(ctx, inactiveHeight, nil)
+	return tags
 }
 
-func endBlockSessions(ctx csdkTypes.Context, vk keeper.Keeper, bk bank.Keeper, height int64) {
-	inactiveHeight := height - 25
-	sessionIDs, err := vk.GetActiveSessionIDsAtHeight(ctx, inactiveHeight)
-	if err != nil {
-		panic(err)
-	}
+func endBlockSessions(ctx csdkTypes.Context, k keeper.Keeper, height int64) (csdkTypes.Tags, csdkTypes.Error) {
+	allTags := csdkTypes.EmptyTags()
 
+	inactiveHeight := height - k.SessionEndInterval(ctx)
+	sessionIDs := k.GetActiveSessionIDsAtHeight(ctx, inactiveHeight)
 	for _, sessionID := range sessionIDs {
-		session, err := vk.GetSession(ctx, sessionID)
-		if err != nil {
-			panic(err)
-		}
-
+		session, _ := k.GetSession(ctx, sessionID)
 		session.Status = types.StatusEnd
 		session.StatusModifiedAtHeight = height
-		if err := vk.SetSession(ctx, session); err != nil {
-			panic(err)
+
+		k.SetSession(ctx, session)
+		allTags = allTags.AppendTag("session_id", session.ID.String())
+
+		pay := session.Amount()
+		remaining := session.Deposit.Sub(pay)
+
+		if !pay.IsZero() {
+			tags, err := k.AddAndSubtractDeposit(ctx, session.NodeOwner, pay)
+			if err != nil {
+				return nil, err
+			}
+
+			allTags = allTags.AppendTags(tags)
 		}
 
-		payAmount := session.Amount()
-		remainingAmount := session.DepositAmount.Sub(payAmount)
-
-		if !payAmount.IsZero() {
-			_, _, err := bk.AddCoins(ctx, session.NodeOwner, csdkTypes.Coins{payAmount})
+		if !remaining.IsZero() {
+			tags, err := k.AddAndSubtractDeposit(ctx, session.Client, remaining)
 			if err != nil {
-				panic(err)
+				return nil, err
 			}
-		}
 
-		if !remainingAmount.IsZero() {
-			_, _, err := bk.AddCoins(ctx, session.Client, csdkTypes.Coins{remainingAmount})
-			if err != nil {
-				panic(err)
-			}
+			allTags = allTags.AppendTags(tags)
 		}
 	}
 
-	if err := vk.SetActiveSessionIDsAtHeight(ctx, inactiveHeight, nil); err != nil {
-		panic(err)
-	}
+	k.SetActiveSessionIDsAtHeight(ctx, inactiveHeight, nil)
+	return allTags, nil
 }
 
-func EndBlock(ctx csdkTypes.Context, vk keeper.Keeper, bk bank.Keeper) {
-	height := ctx.BlockHeight()
-	endBlockNodes(ctx, vk, height)
-	endBlockSessions(ctx, vk, bk, height)
-}
-
-func handleRegisterNode(ctx csdkTypes.Context, vk keeper.Keeper, ak auth.AccountKeeper, bk bank.Keeper,
-	msg types.MsgRegisterNode) csdkTypes.Result {
-
+func EndBlock(ctx csdkTypes.Context, k keeper.Keeper) (csdkTypes.Tags, csdkTypes.Error) {
 	allTags := csdkTypes.EmptyTags()
+	height := ctx.BlockHeight()
 
-	depositAmount := csdkTypes.Coins{msg.DepositAmount}
-	_, tags, err := bk.SubtractCoins(ctx, msg.From, depositAmount)
-	if err != nil {
-		return err.Result()
-	}
+	tags := endBlockNodes(ctx, k, height)
 	allTags = allTags.AppendTags(tags)
 
-	ownerPubKey, err := ak.GetPubKey(ctx, msg.From)
+	tags, err := endBlockSessions(ctx, k, height)
 	if err != nil {
-		return err.Result()
+		return nil, err
 	}
 
-	height := ctx.BlockHeight()
+	allTags = allTags.AppendTags(tags)
+	return allTags, nil
+}
+
+func handleRegisterNode(ctx csdkTypes.Context, k keeper.Keeper, msg types.MsgRegisterNode) csdkTypes.Result {
 	node := types.Node{
-		Owner:                  msg.From,
-		OwnerPubKey:            ownerPubKey,
-		DepositAmount:          msg.DepositAmount,
-		Moniker:                msg.Moniker,
-		PricesPerGB:            msg.PricesPerGB,
-		InternetSpeed:          msg.InternetSpeed,
-		EncryptionMethod:       msg.EncryptionMethod,
-		Type:                   msg.Type_,
-		Version:                msg.Version,
-		ModifiedAtHeight:       height,
-		Status:                 types.StatusRegistered,
-		StatusModifiedAtHeight: height,
+		Owner:            msg.From,
+		Moniker:          msg.Moniker,
+		PricesPerGB:      msg.PricesPerGB,
+		InternetSpeed:    msg.InternetSpeed,
+		EncryptionMethod: msg.EncryptionMethod,
+		Type:             msg.Type_,
+		Version:          msg.Version,
+
+		Status:                 types.StatusRegister,
+		StatusModifiedAtHeight: ctx.BlockHeight(),
 	}
 
-	tags, err = vk.AddNode(ctx, &node)
+	tags, err := k.AddNode(ctx, node)
 	if err != nil {
 		return err.Result()
 	}
-	allTags = allTags.AppendTags(tags)
 
-	return csdkTypes.Result{Tags: allTags}
+	return csdkTypes.Result{Tags: tags}
 }
 
-func handleUpdateNodeDetails(ctx csdkTypes.Context, vk keeper.Keeper,
-	msg types.MsgUpdateNodeDetails) csdkTypes.Result {
+func handleUpdateNodeDetails(ctx csdkTypes.Context, k keeper.Keeper, msg types.MsgUpdateNodeDetails) csdkTypes.Result {
+	tags := csdkTypes.EmptyTags()
 
-	allTags := csdkTypes.EmptyTags()
-
-	node, err := vk.GetNode(ctx, msg.ID)
-	if err != nil {
-		return err.Result()
-	}
-	if node == nil {
-		return types.ErrorNodeNotExists().Result()
+	node, found := k.GetNode(ctx, msg.ID)
+	if !found {
+		return types.ErrorNodeDoesNotExist().Result()
 	}
 	if !msg.From.Equals(node.Owner) {
 		return types.ErrorUnauthorized().Result()
 	}
-	if node.Status != types.StatusRegistered &&
-		node.Status != types.StatusActive &&
-		node.Status != types.StatusInactive {
+	if node.Status == types.StatusDeregister {
 		return types.ErrorInvalidNodeStatus().Result()
 	}
 
@@ -177,91 +148,66 @@ func handleUpdateNodeDetails(ctx csdkTypes.Context, vk keeper.Keeper,
 		Version:          msg.Version,
 	}
 	node.UpdateDetails(_node)
-	node.ModifiedAtHeight = ctx.BlockHeight()
 
-	if err := vk.SetNode(ctx, node); err != nil {
-		return err.Result()
-	}
-	allTags = allTags.AppendTag("node_id", msg.ID.String())
+	k.SetNode(ctx, node)
+	tags = tags.AppendTag("node_id", msg.ID.String())
 
-	return csdkTypes.Result{Tags: allTags}
+	return csdkTypes.Result{Tags: tags}
 }
 
-func handleUpdateNodeStatus(ctx csdkTypes.Context, vk keeper.Keeper,
-	msg types.MsgUpdateNodeStatus) csdkTypes.Result {
+func handleUpdateNodeStatus(ctx csdkTypes.Context, k keeper.Keeper, msg types.MsgUpdateNodeStatus) csdkTypes.Result {
+	tags := csdkTypes.EmptyTags()
 
-	allTags := csdkTypes.EmptyTags()
-
-	node, err := vk.GetNode(ctx, msg.ID)
-	if err != nil {
-		return err.Result()
-	}
-	if node == nil {
-		return types.ErrorNodeNotExists().Result()
+	node, found := k.GetNode(ctx, msg.ID)
+	if !found {
+		return types.ErrorNodeDoesNotExist().Result()
 	}
 	if !msg.From.Equals(node.Owner) {
 		return types.ErrorUnauthorized().Result()
 	}
-	if node.Status != types.StatusRegistered &&
-		node.Status != types.StatusActive &&
-		node.Status != types.StatusInactive {
+	if node.Status == types.StatusDeregister {
 		return types.ErrorInvalidNodeStatus().Result()
 	}
 
-	if err := vk.RemoveActiveNodeIDAtHeight(ctx, node.StatusModifiedAtHeight, node.ID); err != nil {
-		return err.Result()
-	}
+	k.RemoveActiveNodeIDAtHeight(ctx, node.StatusModifiedAtHeight, node.ID)
 
 	height := ctx.BlockHeight()
 	if msg.Status == types.StatusActive {
-		if err := vk.AddActiveNodeIDAtHeight(ctx, height, node.ID); err != nil {
-			return err.Result()
-		}
+		k.AddActiveNodeIDAtHeight(ctx, height, node.ID)
 	}
 
 	node.Status = msg.Status
 	node.StatusModifiedAtHeight = height
-	if err := vk.SetNode(ctx, node); err != nil {
-		return err.Result()
-	}
-	allTags = allTags.AppendTag("node_id", msg.ID.String())
 
-	return csdkTypes.Result{Tags: allTags}
+	k.SetNode(ctx, node)
+	tags = tags.AppendTag("node_id", msg.ID.String())
+
+	return csdkTypes.Result{Tags: tags}
 }
 
-func handleDeregisterNode(ctx csdkTypes.Context, vk keeper.Keeper, bk bank.Keeper,
-	msg types.MsgDeregisterNode) csdkTypes.Result {
-
+func handleDeregisterNode(ctx csdkTypes.Context, k keeper.Keeper, msg types.MsgDeregisterNode) csdkTypes.Result {
 	allTags := csdkTypes.EmptyTags()
 
-	node, err := vk.GetNode(ctx, msg.ID)
-	if err != nil {
-		return err.Result()
-	}
-	if node == nil {
-		return types.ErrorNodeNotExists().Result()
+	node, found := k.GetNode(ctx, msg.ID)
+	if !found {
+		return types.ErrorNodeDoesNotExist().Result()
 	}
 	if !msg.From.Equals(node.Owner) {
 		return types.ErrorUnauthorized().Result()
 	}
-	if node.Status != types.StatusRegistered &&
-		node.Status != types.StatusInactive {
+	if node.Status == types.StatusActive ||
+		node.Status == types.StatusDeregister {
+
 		return types.ErrorInvalidNodeStatus().Result()
 	}
 
-	if err := vk.RemoveActiveNodeIDAtHeight(ctx, node.StatusModifiedAtHeight, node.ID); err != nil {
-		return err.Result()
-	}
-
-	node.Status = types.StatusDeregistered
+	node.Status = types.StatusDeregister
 	node.StatusModifiedAtHeight = ctx.BlockHeight()
-	if err := vk.SetNode(ctx, node); err != nil {
-		return err.Result()
-	}
+
+	k.SetNode(ctx, node)
 	allTags = allTags.AppendTag("node_id", msg.ID.String())
 
-	releaseAmount := csdkTypes.Coins{node.DepositAmount}
-	_, tags, err := bk.AddCoins(ctx, msg.From, releaseAmount)
+	tags, err := k.AddAndSubtractDeposit(ctx, node.Owner, node.Deposit)
 	if err != nil {
 		return err.Result()
 	}
@@ -270,48 +216,29 @@ func handleDeregisterNode(ctx csdkTypes.Context, vk keeper.Keeper, bk bank.Keepe
 	return csdkTypes.Result{Tags: allTags}
 }
 
-func handleInitSession(ctx csdkTypes.Context, vk keeper.Keeper, ak auth.AccountKeeper, bk bank.Keeper,
-	msg types.MsgInitSession) csdkTypes.Result {
-
-	allTags := csdkTypes.EmptyTags()
-
-	node, err := vk.GetNode(ctx, msg.NodeID)
-	if err != nil {
-		return err.Result()
-	}
-	if node == nil {
-		return types.ErrorNodeNotExists().Result()
+func handleInitSession(ctx csdkTypes.Context, k keeper.Keeper, msg types.MsgInitSession) csdkTypes.Result {
+	node, found := k.GetNode(ctx, msg.NodeID)
+	if !found {
+		return types.ErrorNodeDoesNotExist().Result()
 	}
 	if node.Status != types.StatusActive {
 		return types.ErrorInvalidNodeStatus().Result()
 	}
 
-	pricePerGB := node.FindPricePerGB(msg.DepositAmount.Denom)
-	toProvide, err := node.AmountToBandwidth(msg.DepositAmount)
-	if err != nil {
-		return err.Result()
-	}
+	pricePerGB := node.FindPricePerGB(msg.Deposit.Denom)
 
-	lockAmount := csdkTypes.Coins{msg.DepositAmount}
-	_, tags, err := bk.SubtractCoins(ctx, msg.From, lockAmount)
-	if err != nil {
-		return err.Result()
-	}
-	allTags = allTags.AppendTags(tags)
-
-	clientPubKey, err := ak.GetPubKey(ctx, msg.From)
+	toProvide, err := node.AmountToBandwidth(msg.Deposit)
 	if err != nil {
 		return err.Result()
 	}
 
 	height := ctx.BlockHeight()
 	session := types.Session{
-		NodeID:          msg.NodeID,
+		NodeID:          node.ID,
 		NodeOwner:       node.Owner,
 		NodeOwnerPubKey: node.OwnerPubKey,
 		Client:          msg.From,
-		ClientPubKey:    clientPubKey,
-		DepositAmount:   msg.DepositAmount,
+		Deposit:         msg.Deposit,
 		PricePerGB:      pricePerGB,
 		BandwidthInfo: types.SessionBandwidthInfo{
 			ToProvide:        toProvide,
@@ -321,56 +248,41 @@ func handleInitSession(ctx csdkTypes.Context, vk keeper.Keeper, ak auth.AccountK
 		StatusModifiedAtHeight: height,
 	}
 
-	tags, err = vk.AddSession(ctx, &session)
+	tags, err := k.AddSession(ctx, session)
 	if err != nil {
 		return err.Result()
 	}
-	allTags = allTags.AppendTags(tags)
 
-	return csdkTypes.Result{Tags: allTags}
+	return csdkTypes.Result{Tags: tags}
 }
 
-func handleUpdateSessionBandwidthInfo(ctx csdkTypes.Context, vk keeper.Keeper,
+func handleUpdateSessionBandwidthInfo(ctx csdkTypes.Context, k keeper.Keeper,
 	msg types.MsgUpdateSessionBandwidthInfo) csdkTypes.Result {
 
-	allTags := csdkTypes.EmptyTags()
+	tags := csdkTypes.EmptyTags()
 
-	session, err := vk.GetSession(ctx, msg.ID)
-	if err != nil {
-		return err.Result()
+	session, found := k.GetSession(ctx, msg.ID)
+	if !found {
+		return types.ErrorSessionDoesNotExist().Result()
 	}
-	if session == nil {
-		return types.ErrorSessionNotExists().Result()
-	}
-	if session.Status != types.StatusInit &&
-		session.Status != types.StatusActive &&
-		session.Status != types.StatusInactive {
+	if session.Status == types.StatusEnd {
 		return types.ErrorInvalidSessionStatus().Result()
 	}
 
-	if err := vk.RemoveActiveSessionIDsAtHeight(ctx, session.StatusModifiedAtHeight, session.ID); err != nil {
-		return err.Result()
-	}
+	k.RemoveActiveSessionIDAtHeight(ctx, session.StatusModifiedAtHeight, session.ID)
 
 	height := ctx.BlockHeight()
-	if err := vk.AddActiveSessionIDsAtHeight(ctx, height, session.ID); err != nil {
-		return err.Result()
-	}
+	k.AddActiveSessionIDAtHeight(ctx, height, session.ID)
 
-	if err := session.UpdateSessionBandwidthInfo(msg.Consumed, msg.NodeOwnerSign, msg.ClientSign, height); err != nil {
+	if err := session.UpdateSessionBandwidthInfo(msg.Consumed,
+		msg.NodeOwnerSign, msg.ClientSign, height); err != nil {
+
 		return types.ErrorBandwidthUpdate(err.Error()).Result()
 	}
-	if session.Status == StatusInit {
-		session.StartedAtHeight = height
-	}
-	if session.Status != StatusActive {
-		session.Status = StatusActive
-		session.StatusModifiedAtHeight = height
-	}
 
-	if err := vk.SetSession(ctx, session); err != nil {
-		return err.Result()
-	}
+	session.Status = StatusActive
+	session.StatusModifiedAtHeight = height
 
-	return csdkTypes.Result{Tags: allTags}
+	k.SetSession(ctx, session)
+	return csdkTypes.Result{Tags: tags}
 }

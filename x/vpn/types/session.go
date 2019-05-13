@@ -9,28 +9,26 @@ import (
 )
 
 type SessionBandwidthInfo struct {
-	ToProvide        sdkTypes.Bandwidth
-	Consumed         sdkTypes.Bandwidth
-	NodeOwnerSign    []byte
-	ClientSign       []byte
-	ModifiedAtHeight int64
+	ToProvide        sdkTypes.Bandwidth `json:"to_provide"`
+	Consumed         sdkTypes.Bandwidth `json:"consumed"`
+	NodeOwnerSign    []byte             `json:"node_owner_sign"`
+	ClientSign       []byte             `json:"client_sign"`
+	ModifiedAtHeight int64              `json:"modified_at_height"`
 }
 
 type Session struct {
-	ID              sdkTypes.ID
-	NodeID          sdkTypes.ID
-	NodeOwner       csdkTypes.AccAddress
-	NodeOwnerPubKey crypto.PubKey
-	Client          csdkTypes.AccAddress
-	ClientPubKey    crypto.PubKey
-	DepositAmount   csdkTypes.Coin
-	PricePerGB      csdkTypes.Coin
+	ID              sdkTypes.ID          `json:"id"`
+	NodeID          sdkTypes.ID          `json:"node_id"`
+	NodeOwner       csdkTypes.AccAddress `json:"node_owner"`
+	NodeOwnerPubKey crypto.PubKey        `json:"node_owner_pub_key"`
+	Client          csdkTypes.AccAddress `json:"client"`
+	ClientPubKey    crypto.PubKey        `json:"client_pub_key"`
+	Deposit         csdkTypes.Coin       `json:"deposit"`
+	PricePerGB      csdkTypes.Coin       `json:"price_per_gb"`
 
-	BandwidthInfo          SessionBandwidthInfo
-	StartedAtHeight        int64
-	EndedAtHeight          int64
-	Status                 string
-	StatusModifiedAtHeight int64
+	BandwidthInfo          SessionBandwidthInfo `json:"bandwidth_info"`
+	Status                 string               `json:"status"`
+	StatusModifiedAtHeight int64                `json:"status_modified_at_height"`
 }
 
 func (s Session) Amount() csdkTypes.Coin {
@@ -38,8 +36,8 @@ func (s Session) Amount() csdkTypes.Coin {
 	amountInt := consumedBandwidth.Quo(sdkTypes.GB.Add(sdkTypes.GB)).Mul(s.PricePerGB.Amount)
 
 	amount := csdkTypes.NewCoin(s.PricePerGB.Denom, amountInt)
-	if s.DepositAmount.IsLT(amount) || s.DepositAmount.IsEqual(amount) {
-		return s.DepositAmount
+	if s.Deposit.IsLT(amount) || s.Deposit.IsEqual(amount) {
+		return s.Deposit
 	}
 
 	return amount

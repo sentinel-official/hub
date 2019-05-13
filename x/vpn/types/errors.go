@@ -12,24 +12,24 @@ const (
 	errCodeUnknownMsgType       = 101
 	errCodeUnknownQueryType     = 102
 	errCodeInvalidField         = 103
-	errCodeNodeNotExists        = 104
+	errCodeNodeDoesNotExist     = 104
 	errCodeUnauthorized         = 105
 	errCodeInvalidLockDenom     = 106
 	errCodeInvalidNodeStatus    = 107
 	errCodeInvalidPriceDenom    = 108
-	errCodeSessionNotExists     = 109
+	errCodeSessionDoesNotExist  = 109
 	errCodeBandwidthUpdate      = 110
 	errCodeInvalidSessionStatus = 111
 
 	errMsgUnknownMsgType        = "Unknown message type: "
 	errMsgUnknownQueryType      = "Invalid query type: "
 	errMsgInvalidField          = "Invalid field: "
-	errMsgNodeNotExists         = "Node not exists"
-	errMsgUnauthorized          = "Transaction is unauthorized"
+	errMsgNodeDoesNotExist      = "Node does not exist"
+	errMsgUnauthorized          = "Unauthorized"
 	errMsgInvalidLockDenom      = "Invalid lock denom"
 	errMsgInvalidNodeStatus     = "Invalid node status"
 	errMsgInvalidPriceDenom     = "Invalid price denom"
-	errMsgSessionNotExists      = "Session not exists"
+	errMsgSessionDoesNotExist   = "Session does not exist"
 	errMsgInvalidBandwidth      = "Invalid bandwidth"
 	errMsgInvalidBandwidthSigns = "Invalid client sign or node owner sign"
 	errMsgInvalidSessionStatus  = "Invalid session status"
@@ -55,8 +55,8 @@ func ErrorInvalidField(field string) csdkTypes.Error {
 	return csdkTypes.NewError(Codespace, errCodeInvalidField, errMsgInvalidField+field)
 }
 
-func ErrorNodeNotExists() csdkTypes.Error {
-	return csdkTypes.NewError(Codespace, errCodeNodeNotExists, errMsgNodeNotExists)
+func ErrorNodeDoesNotExist() csdkTypes.Error {
+	return csdkTypes.NewError(Codespace, errCodeNodeDoesNotExist, errMsgNodeDoesNotExist)
 }
 
 func ErrorUnauthorized() csdkTypes.Error {
@@ -75,8 +75,8 @@ func ErrorInvalidPriceDenom() csdkTypes.Error {
 	return csdkTypes.NewError(Codespace, errCodeInvalidPriceDenom, errMsgInvalidPriceDenom)
 }
 
-func ErrorSessionNotExists() csdkTypes.Error {
-	return csdkTypes.NewError(Codespace, errCodeSessionNotExists, errMsgSessionNotExists)
+func ErrorSessionDoesNotExist() csdkTypes.Error {
+	return csdkTypes.NewError(Codespace, errCodeSessionDoesNotExist, errMsgSessionDoesNotExist)
 }
 
 func ErrorBandwidthUpdate(msg string) csdkTypes.Error {

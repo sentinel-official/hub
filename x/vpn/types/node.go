@@ -10,21 +10,20 @@ import (
 )
 
 type Node struct {
-	ID            sdkTypes.ID
-	Owner         csdkTypes.AccAddress
-	OwnerPubKey   crypto.PubKey
-	DepositAmount csdkTypes.Coin
+	ID          sdkTypes.ID          `json:"id"`
+	Owner       csdkTypes.AccAddress `json:"owner"`
+	OwnerPubKey crypto.PubKey        `json:"owner_pub_key"`
+	Deposit     csdkTypes.Coin       `json:"deposit"`
 
-	Moniker          string
-	PricesPerGB      csdkTypes.Coins
-	InternetSpeed    sdkTypes.Bandwidth
-	EncryptionMethod string
-	Type             string
-	Version          string
+	Moniker          string             `json:"moniker"`
+	PricesPerGB      csdkTypes.Coins    `json:"prices_per_gb"`
+	InternetSpeed    sdkTypes.Bandwidth `json:"internet_speed"`
+	EncryptionMethod string             `json:"encryption_method"`
+	Type             string             `json:"type"`
+	Version          string             `json:"version"`
 
-	ModifiedAtHeight       int64
-	Status                 string
-	StatusModifiedAtHeight int64
+	Status                 string `json:"status"`
+	StatusModifiedAtHeight int64  `json:"status_modified_at_height"`
 }
 
 func (n *Node) UpdateDetails(_node Node) {

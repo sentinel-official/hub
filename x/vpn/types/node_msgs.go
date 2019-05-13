@@ -12,7 +12,6 @@ type MsgRegisterNode struct {
 	From csdkTypes.AccAddress `json:"from"`
 
 	Moniker          string             `json:"moniker"`
-	DepositAmount    csdkTypes.Coin     `json:"deposit_amount"`
 	PricesPerGB      csdkTypes.Coins    `json:"prices_per_gb"`
 	InternetSpeed    sdkTypes.Bandwidth `json:"internet_speed"`
 	EncryptionMethod string             `json:"encryption_method"`
@@ -31,9 +30,6 @@ func (msg MsgRegisterNode) ValidateBasic() csdkTypes.Error {
 
 	if len(msg.Moniker) > 128 {
 		return ErrorInvalidField("moniker")
-	}
-	if msg.DepositAmount.Denom != "sent" || !msg.DepositAmount.IsPositive() {
-		return ErrorInvalidField("deposit_amount")
 	}
 	if msg.PricesPerGB == nil || msg.PricesPerGB.Len() == 0 ||
 		!msg.PricesPerGB.IsValid() || !msg.PricesPerGB.IsAllPositive() {
@@ -73,14 +69,13 @@ func (msg MsgRegisterNode) Route() string {
 }
 
 func NewMsgRegisterNode(from csdkTypes.AccAddress,
-	moniker string, depositAmount csdkTypes.Coin, pricesPerGB csdkTypes.Coins,
-	internetSpeed sdkTypes.Bandwidth, encryptionMethod, type_, version string) *MsgRegisterNode {
+	moniker string, pricesPerGB csdkTypes.Coins, internetSpeed sdkTypes.Bandwidth,
+	encryptionMethod, type_, version string) *MsgRegisterNode {
 
 	return &MsgRegisterNode{
 		From: from,
 
 		Moniker:          moniker,
-		DepositAmount:    depositAmount,
 		PricesPerGB:      pricesPerGB,
 		InternetSpeed:    internetSpeed,
 		EncryptionMethod: encryptionMethod,
