@@ -31,12 +31,12 @@ func (id ID) HashTruncated() string {
 }
 
 func (id ID) Valid() bool {
-	splits := strings.Split(id.String(), "/")
+	splits := strings.Split(id.String(), "_")
 	return len(splits) == 2
 }
 
-func IDFromOwnerAndCount(address csdkTypes.Address, count uint64) ID {
-	id := fmt.Sprintf("%s/%d", address.String(), count)
+func IDFromAddressAndCount(address csdkTypes.Address, count uint64) ID {
+	id := fmt.Sprintf("%s_%d", address.String(), count)
 	return NewID(id)
 }
 
@@ -54,6 +54,11 @@ func (ids IDs) Swap(i, j int)       { ids[i], ids[j] = ids[j], ids[i] }
 func (ids IDs) Sort() IDs {
 	sort.Sort(ids)
 	return ids
+}
+
+func (ids IDs) Delete(index int) IDs {
+	ids[index] = ids[ids.Len()-1]
+	return ids[:ids.Len()-1]
 }
 
 func (ids IDs) Search(id ID) int {
