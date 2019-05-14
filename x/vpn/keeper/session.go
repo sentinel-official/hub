@@ -103,6 +103,13 @@ func (k Keeper) GetAllSessions(ctx csdkTypes.Context) (sessions []types.Session)
 func (k Keeper) AddSession(ctx csdkTypes.Context, session types.Session) (allTags csdkTypes.Tags, err csdkTypes.Error) {
 	allTags = csdkTypes.EmptyTags()
 
+	tags, err := k.SubtractAndAddDeposit(ctx, session.Client, session.Deposit)
+	if err != nil {
+		return nil, err
+	}
+
+	allTags = allTags.AppendTags(tags)
+
 	session.ClientPubKey, err = k.accountKeeper.GetPubKey(ctx, session.Client)
 	if err != nil {
 		return nil, err

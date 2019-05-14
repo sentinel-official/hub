@@ -85,6 +85,7 @@ func (k Keeper) AddAndSubtractDeposit(ctx csdkTypes.Context, address csdkTypes.A
 		return nil, types.ErrorInsufficientDepositFunds(coins, deposit.Coins)
 	}
 
+	k.SetDeposit(ctx, deposit)
 	return tags, nil
 }
 
