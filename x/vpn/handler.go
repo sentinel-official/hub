@@ -65,7 +65,7 @@ func endBlockSessions(ctx csdkTypes.Context, k keeper.Keeper, height int64) (csd
 		remaining := session.Deposit.Sub(pay)
 
 		if !pay.IsZero() {
-			tags, err := k.AddAndSubtractDeposit(ctx, session.NodeOwner, pay)
+			tags, err := k.SendDepositTo(ctx, session.Client, session.NodeOwner, pay)
 			if err != nil {
 				return nil, err
 			}
@@ -74,7 +74,7 @@ func endBlockSessions(ctx csdkTypes.Context, k keeper.Keeper, height int64) (csd
 		}
 
 		if !remaining.IsZero() {
-			tags, err := k.AddAndSubtractDeposit(ctx, session.Client, remaining)
+			tags, err := k.SendDepositTo(ctx, session.Client, session.Client, remaining)
 			if err != nil {
 				return nil, err
 			}
@@ -208,7 +208,7 @@ func handleDeregisterNode(ctx csdkTypes.Context, k keeper.Keeper, msg types.MsgD
 	allTags = allTags.AppendTag("node_id", msg.ID.String())
 
 	if node.Deposit.IsPositive() {
-		tags, err := k.AddAndSubtractDeposit(ctx, node.Owner, node.Deposit)
+		tags, err := k.SubtractDeposit(ctx, node.Owner, node.Deposit)
 		if err != nil {
 			return err.Result()
 		}

@@ -107,7 +107,7 @@ func (k Keeper) AddNode(ctx csdkTypes.Context, node types.Node) (allTags csdkTyp
 	if count >= k.FreeNodesCount(ctx) {
 		node.Deposit = k.Deposit(ctx)
 
-		tags, err := k.SubtractAndAddDeposit(ctx, node.Owner, node.Deposit)
+		tags, err := k.AddDeposit(ctx, node.Owner, node.Deposit)
 		if err != nil {
 			return nil, err
 		}

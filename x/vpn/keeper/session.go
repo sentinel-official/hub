@@ -103,7 +103,7 @@ func (k Keeper) GetAllSessions(ctx csdkTypes.Context) (sessions []types.Session)
 func (k Keeper) AddSession(ctx csdkTypes.Context, session types.Session) (allTags csdkTypes.Tags, err csdkTypes.Error) {
 	allTags = csdkTypes.EmptyTags()
 
-	tags, err := k.SubtractAndAddDeposit(ctx, session.Client, session.Deposit)
+	tags, err := k.AddDeposit(ctx, session.Client, session.Deposit)
 	if err != nil {
 		return nil, err
 	}
