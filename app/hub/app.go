@@ -245,7 +245,8 @@ func (app *Hub) EndBlocker(ctx csdkTypes.Context, req abciTypes.RequestEndBlock)
 	tags := gov.EndBlocker(ctx, app.govKeeper)
 	validatorUpdates, endBlockerTags := staking.EndBlocker(ctx, app.stakingKeeper)
 	tags = append(tags, endBlockerTags...)
-	vpnTags, _ := vpn.EndBlock(ctx, app.vpnKeeper)
+
+	vpnTags := vpn.EndBlock(ctx, app.vpnKeeper)
 	tags = tags.AppendTags(vpnTags)
 
 	if app.invCheckPeriod != 0 && ctx.BlockHeight()%int64(app.invCheckPeriod) == 0 {

@@ -48,7 +48,7 @@ func endBlockNodes(ctx csdkTypes.Context, k keeper.Keeper, height int64) csdkTyp
 	return tags
 }
 
-func endBlockSessions(ctx csdkTypes.Context, k keeper.Keeper, height int64) (csdkTypes.Tags, csdkTypes.Error) {
+func endBlockSessions(ctx csdkTypes.Context, k keeper.Keeper, height int64) csdkTypes.Tags {
 	allTags := csdkTypes.EmptyTags()
 
 	inactiveHeight := height - k.SessionEndInterval(ctx)
@@ -65,18 +65,18 @@ func endBlockSessions(ctx csdkTypes.Context, k keeper.Keeper, height int64) (csd
 		remaining := session.Deposit.Sub(pay)
 
 		if !pay.IsZero() {
-			tags, err := k.SendDepositTo(ctx, session.Client, session.NodeOwner, pay)
+			tags, err := k.SendDeposit(ctx, session.Client, session.NodeOwner, pay)
 			if err != nil {
-				return nil, err
+				panic(err)
 			}
 
 			allTags = allTags.AppendTags(tags)
 		}
 
 		if !remaining.IsZero() {
-			tags, err := k.SendDepositTo(ctx, session.Client, session.Client, remaining)
+			tags, err := k.SubtractDeposit(ctx, session.Client, remaining)
 			if err != nil {
-				return nil, err
+				panic(err)
 			}
 
 			allTags = allTags.AppendTags(tags)
@@ -84,23 +84,20 @@ func endBlockSessions(ctx csdkTypes.Context, k keeper.Keeper, height int64) (csd
 	}
 
 	k.SetActiveSessionIDsAtHeight(ctx, inactiveHeight, nil)
-	return allTags, nil
+	return allTags
 }
 
-func EndBlock(ctx csdkTypes.Context, k keeper.Keeper) (csdkTypes.Tags, csdkTypes.Error) {
+func EndBlock(ctx csdkTypes.Context, k keeper.Keeper) csdkTypes.Tags {
 	allTags := csdkTypes.EmptyTags()
 	height := ctx.BlockHeight()
 
 	tags := endBlockNodes(ctx, k, height)
 	allTags = allTags.AppendTags(tags)
 
-	tags, err := endBlockSessions(ctx, k, height)
-	if err != nil {
-		return nil, err
-	}
-
+	tags = endBlockSessions(ctx, k, height)
 	allTags = allTags.AppendTags(tags)
-	return allTags, nil
+
+	return allTags
 }
 
 func handleRegisterNode(ctx csdkTypes.Context, k keeper.Keeper, msg types.MsgRegisterNode) csdkTypes.Result {
@@ -150,7 +147,7 @@ func handleUpdateNodeDetails(ctx csdkTypes.Context, k keeper.Keeper, msg types.M
 	node.UpdateDetails(_node)
 
 	k.SetNode(ctx, node)
-	tags = tags.AppendTag("node_id", msg.ID.String())
+	tags = tags.AppendTag(types.TagNodeID, msg.ID.String())
 
 	return csdkTypes.Result{Tags: tags}
 }
@@ -180,7 +177,7 @@ func handleUpdateNodeStatus(ctx csdkTypes.Context, k keeper.Keeper, msg types.Ms
 	node.StatusModifiedAtHeight = height
 
 	k.SetNode(ctx, node)
-	tags = tags.AppendTag("node_id", msg.ID.String())
+	tags = tags.AppendTag(types.TagNodeID, msg.ID.String())
 
 	return csdkTypes.Result{Tags: tags}
 }
@@ -205,7 +202,7 @@ func handleDeregisterNode(ctx csdkTypes.Context, k keeper.Keeper, msg types.MsgD
 	node.StatusModifiedAtHeight = ctx.BlockHeight()
 
 	k.SetNode(ctx, node)
-	allTags = allTags.AppendTag("node_id", msg.ID.String())
+	allTags = allTags.AppendTag(types.TagNodeID, msg.ID.String())
 
 	if node.Deposit.IsPositive() {
 		tags, err := k.SubtractDeposit(ctx, node.Owner, node.Deposit)

@@ -89,7 +89,7 @@ func (k Keeper) Subtract(ctx csdkTypes.Context, address csdkTypes.AccAddress,
 	return tags, nil
 }
 
-func (k Keeper) SendTo(ctx csdkTypes.Context, from, toAddress csdkTypes.AccAddress,
+func (k Keeper) Send(ctx csdkTypes.Context, from, toAddress csdkTypes.AccAddress,
 	coins csdkTypes.Coins) (tags csdkTypes.Tags, err csdkTypes.Error) {
 
 	_, tags, err = k.bankKeeper.AddCoins(ctx, toAddress, coins)
@@ -111,7 +111,7 @@ func (k Keeper) SendTo(ctx csdkTypes.Context, from, toAddress csdkTypes.AccAddre
 	return tags, nil
 }
 
-func (k Keeper) SendFrom(ctx csdkTypes.Context, fromAddress, to csdkTypes.AccAddress,
+func (k Keeper) Receive(ctx csdkTypes.Context, fromAddress, to csdkTypes.AccAddress,
 	coins csdkTypes.Coins) (tags csdkTypes.Tags, err csdkTypes.Error) {
 
 	_, tags, err = k.bankKeeper.SubtractCoins(ctx, fromAddress, coins)
@@ -145,6 +145,7 @@ func (k Keeper) IterateDeposits(ctx csdkTypes.Context, fn func(index int64, depo
 	for i := int64(0); iterator.Valid(); iterator.Next() {
 		var deposit types.Deposit
 		k.cdc.MustUnmarshalBinaryLengthPrefixed(iterator.Value(), &deposit)
+
 		if stop := fn(i, deposit); stop {
 			break
 		}
