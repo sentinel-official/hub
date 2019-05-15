@@ -70,6 +70,10 @@
   source = "https://github.com/tendermint/crypto"
   revision = "3764759f34a542a3aef74d6b02e35be7ab893bba"
 
+[[override]]
+  name = "google.golang.org/genproto"
+  revision = "b515fa19cec88c32f305a962f34ae60068947aea"
+
 
 [prune]
   go-tests = true

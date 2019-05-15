@@ -298,12 +298,12 @@
   revision = "b84e30acd515aadc4b783ad4ff83aff3299bdfe0"
 
 [[projects]]
-  digest = "1:c568d7727aa262c32bdf8a3f7db83614f7af0ed661474b24588de635c20024c7"
+  digest = "1:5a0ef768465592efca0412f7e838cdc0826712f8447e70e6ccc52eb441e9ab13"
   name = "github.com/magiconair/properties"
   packages = ["."]
   pruneopts = "UT"
-  revision = "c2353362d570a7bfa228149c62842019201cfb71"
-  version = "v1.8.0"
+  revision = "de8848e004dd33dc07a2947b3d76f618a7fc7ef1"
+  version = "v1.8.1"
 
 [[projects]]
   digest = "1:e150b5fafbd7607e2d638e4e5cf43aa4100124e5593385147b0a74e2733d8b0d"
@@ -634,7 +634,7 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:738050588b3b31a8975a622403f3dc284cb4c581458d54e86c0bd77d46d09b86"
+  digest = "1:ddd2c4b580cb75cf12861081aed3a68c87fa9ba9e1dc4406ececb759ad84d651"
   name = "golang.org/x/net"
   packages = [
     "context",
@@ -647,7 +647,7 @@
     "trace",
   ]
   pruneopts = "UT"
-  revision = "f4e77d36d62c17c2336347bb2670ddbd02d092b7"
+  revision = "3ec19112720433827bbce8be9342797f5a6aaaf9"
 
 [[projects]]
   branch = "master"
@@ -658,7 +658,7 @@
     "unix",
   ]
   pruneopts = "UT"
-  revision = "2d0786266e9cd132da844109aa05016f11f3df28"
+  revision = "06a5c494443846f634903706cba8f993687d3ff5"
 
 [[projects]]
   digest = "1:8d8faad6b12a3a4c819a3f9618cb6ee1fa1cfc33253abeeea8b55336721e3405"
@@ -686,7 +686,6 @@
   version = "v0.3.2"
 
 [[projects]]
-  branch = "master"
   digest = "1:fc5df4cb84cdf639ef702c176a50a9ee08ea3e68ebd67519c0f4f963c7d82978"
   name = "google.golang.org/genproto"
   packages = ["googleapis/rpc/status"]
