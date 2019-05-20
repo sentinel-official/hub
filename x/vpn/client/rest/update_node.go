@@ -51,11 +51,11 @@ func updateNodeHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) http.Han
 		}
 
 		vars := mux.Vars(r)
-		id := sdkTypes.NewID(vars["nodeID"])
+		id := sdkTypes.NewIDFromString(vars["nodeID"])
 
-		msg := vpn.NewMsgUpdateNodeDetails(fromAddress, id,
-			req.Moniker, pricesPerGB, req.InternetSpeed,
-			req.EncryptionMethod, req.Type, req.Version)
+		msg := vpn.NewMsgUpdateNodeInfo(fromAddress, id,
+			req.Moniker, req.Type, req.Version, pricesPerGB, req.InternetSpeed,
+			req.EncryptionMethod)
 		if err := msg.ValidateBasic(); err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
@@ -90,7 +90,7 @@ func updateNodeStatusHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) ht
 		}
 
 		vars := mux.Vars(r)
-		id := sdkTypes.NewID(vars["nodeID"])
+		id := sdkTypes.NewIDFromString(vars["nodeID"])
 		status := strings.ToUpper(req.Status)
 
 		msg := vpn.NewMsgUpdateNodeStatus(fromAddress, id, status)

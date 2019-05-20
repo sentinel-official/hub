@@ -31,7 +31,7 @@ func (mc ModuleClient) GetQueryCmd() *cobra.Command {
 	vpnQueryCmd.AddCommand(client.GetCommands(
 		vpnCli.QueryNodeCmd(mc.cdc),
 		vpnCli.QueryNodesCmd(mc.cdc),
-		vpnCli.QuerySessionCmd(mc.cdc),
+		vpnCli.QuerySubscriptionCmd(mc.cdc),
 	)...)
 
 	return vpnQueryCmd
@@ -44,6 +44,7 @@ func (mc ModuleClient) GetTxCmd() *cobra.Command {
 	}
 
 	vpnTxCmd.AddCommand(nodeTxCmd(mc.cdc),
+		subscriptionTxCmd(mc.cdc),
 		sessionTxCmd(mc.cdc))
 
 	return vpnTxCmd
@@ -65,6 +66,20 @@ func nodeTxCmd(cdc *codec.Codec) *cobra.Command {
 	return nodeTxCmd
 }
 
+func subscriptionTxCmd(cdc *codec.Codec) *cobra.Command {
+	subscriptionTxCmd := &cobra.Command{
+		Use:   "subscribe",
+		Short: "Client subscription subcommands",
+	}
+
+	subscriptionTxCmd.AddCommand(client.PostCommands(
+		vpnCli.StartSubscriptionTxCmd(cdc),
+		vpnCli.EndSubscriptionTxCmd(cdc),
+	)...)
+
+	return subscriptionTxCmd
+}
+
 func sessionTxCmd(cdc *codec.Codec) *cobra.Command {
 	sessionTxCmd := &cobra.Command{
 		Use:   "session",
@@ -72,9 +87,8 @@ func sessionTxCmd(cdc *codec.Codec) *cobra.Command {
 	}
 
 	sessionTxCmd.AddCommand(client.PostCommands(
-		vpnCli.InitSessionTxCmd(cdc),
 		vpnCli.SignSessionBandwidthTxCmd(cdc),
-		vpnCli.UpdateSessionBandwidthInfoTxCmd(cdc),
+		vpnCli.UpdateSessionInfoTxCmd(cdc),
 	)...)
 
 	return sessionTxCmd

@@ -13,10 +13,10 @@ import (
 	"github.com/ironman0x7b2/sentinel-sdk/x/vpn"
 )
 
-func InitSessionTxCmd(cdc *codec.Codec) *cobra.Command {
+func StartSubscriptionTxCmd(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "init",
-		Short: "Initialize session",
+		Use:   "start",
+		Short: "Start subscription",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			txBldr := authTxBuilder.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
 			cliCtx := context.NewCLIContext().WithCodec(cdc).WithAccountDecoder(cdc)
@@ -25,7 +25,7 @@ func InitSessionTxCmd(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			nodeID := sdkTypes.NewID(viper.GetString(flagNodeID))
+			nodeID := sdkTypes.NewIDFromString(viper.GetString(flagNodeID))
 			depositAmount := viper.GetString(flagDepositAmount)
 
 			parsedDepositAmount, err := csdkTypes.ParseCoin(depositAmount)
@@ -35,7 +35,7 @@ func InitSessionTxCmd(cdc *codec.Codec) *cobra.Command {
 
 			fromAddress := cliCtx.GetFromAddress()
 
-			msg := vpn.NewMsgInitSession(fromAddress, nodeID, parsedDepositAmount)
+			msg := vpn.NewMsgStartSubscription(fromAddress, nodeID, parsedDepositAmount)
 			return utils.GenerateOrBroadcastMsgs(cliCtx, txBldr, []csdkTypes.Msg{msg}, false)
 		},
 	}

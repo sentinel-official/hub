@@ -32,7 +32,7 @@ func signSessionBandwidthHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec
 		}
 
 		vars := mux.Vars(r)
-		signBytes, err := common.GetSessionBandwidthSignBytes(cliCtx, cdc, vars["sessionID"], req.Bandwidth)
+		signBytes, err := common.GetSubscriptionBandwidthSignBytes(cliCtx, cdc, vars["sessionID"], req.Bandwidth)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
@@ -70,7 +70,7 @@ type msgUpdateSessionBandwidthInfo struct {
 	ClientSign    string             `json:"client_sign"`
 }
 
-func updateSessionBandwidthInfoHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) http.HandlerFunc {
+func updateSessionInfoHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var req msgUpdateSessionBandwidthInfo
 
@@ -102,10 +102,10 @@ func updateSessionBandwidthInfoHandlerFunc(cliCtx context.CLIContext, cdc *codec
 		}
 
 		vars := mux.Vars(r)
-		sessionID := sdkTypes.NewID(vars["sessionID"])
+		subscriptionID := sdkTypes.NewIDFromString(vars["subscriptionID"])
 
-		msg := vpn.NewMsgUpdateSessionBandwidthInfo(fromAddress,
-			sessionID, req.Consumed, nodeOwnerSign, clientSign)
+		msg := vpn.NewMsgUpdateSessionInfo(fromAddress,
+			subscriptionID, req.Consumed, nodeOwnerSign, clientSign)
 		if err := msg.ValidateBasic(); err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return

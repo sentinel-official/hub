@@ -21,12 +21,16 @@ func registerTxRoutes(cliCtx context.CLIContext, r *mux.Router, cdc *codec.Codec
 	r.HandleFunc("/nodes/{nodeID:[^/]+/[^/]+}/status", updateNodeStatusHandlerFunc(cliCtx, cdc)).
 		Methods("PUT")
 
-	r.HandleFunc("/sessions", initSessionHandlerFunc(cliCtx, cdc)).
+	r.HandleFunc("/subscribe", startSubscriptionHandlerFunc(cliCtx, cdc)).
 		Methods("POST")
+	r.HandleFunc("/subscribe/{subscriptionID:[^/]+/[^/]+}", endSubscriptionHandlerFunc(cliCtx, cdc)).
+		Methods("PUT")
+
 	r.HandleFunc("/sessions/{sessionID:[^/]+/[^/]+}/bandwidth/sign", signSessionBandwidthHandlerFunc(cliCtx, cdc)).
 		Methods("POST")
-	r.HandleFunc("/sessions/{sessionID:[^/]+/[^/]+}/bandwidth", updateSessionBandwidthInfoHandlerFunc(cliCtx, cdc)).
-		Methods("PUT")
+	r.HandleFunc("/sessions/{sessionID:[^/]+/[^/]+}/bandwidth", updateSessionInfoHandlerFunc(cliCtx, cdc)).
+		Methods("POST")
+
 }
 
 func registerQueryRoutes(cliCtx context.CLIContext, r *mux.Router, cdc *codec.Codec) {
@@ -35,6 +39,6 @@ func registerQueryRoutes(cliCtx context.CLIContext, r *mux.Router, cdc *codec.Co
 	r.HandleFunc("/nodes/{nodeID:[^/]+/[^/]+}", getNodeHandlerFunc(cliCtx, cdc)).
 		Methods("GET")
 
-	r.HandleFunc("/sessions/{sessionID:[^/]+/[^/]+}", getSessionHandlerFunc(cliCtx, cdc)).
+	r.HandleFunc("/subscribe/{subscriptionID:[^/]+/[^/]+}", getSubscribeHandlerFunc(cliCtx, cdc)).
 		Methods("GET")
 }

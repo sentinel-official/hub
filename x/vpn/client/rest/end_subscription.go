@@ -13,15 +13,14 @@ import (
 	"github.com/ironman0x7b2/sentinel-sdk/x/vpn"
 )
 
-type msgInitSession struct {
-	BaseReq       rest.BaseReq `json:"base_req"`
-	NodeID        string       `json:"node_id"`
-	DepositAmount string       `json:"deposit_amount"`
+type msgEndSubscription struct {
+	BaseReq        rest.BaseReq `json:"base_req"`
+	SubscriptionID string       `json:"node_id"`
 }
 
-func initSessionHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) http.HandlerFunc {
+func endSubscriptionHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var req msgInitSession
+		var req msgEndSubscription
 
 		if !rest.ReadRESTReq(w, r, cdc, &req) {
 			return
@@ -38,15 +37,9 @@ func initSessionHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) http.Ha
 			return
 		}
 
-		nodeID := sdkTypes.NewID(req.NodeID)
+		subscriptionID := sdkTypes.NewIDFromString(req.SubscriptionID)
 
-		depositAmount, err := csdkTypes.ParseCoin(req.DepositAmount)
-		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
-			return
-		}
-
-		msg := vpn.NewMsgInitSession(fromAddress, nodeID, depositAmount)
+		msg := vpn.NewMsgEndSubscription(fromAddress, subscriptionID)
 		if err := msg.ValidateBasic(); err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return

@@ -13,19 +13,15 @@ import (
 	"github.com/ironman0x7b2/sentinel-sdk/x/vpn"
 )
 
-type msgRegisterNode struct {
-	BaseReq       rest.BaseReq       `json:"base_req"`
-	Type          string             `json:"type"`
-	Version       string             `json:"version"`
-	Moniker       string             `json:"moniker"`
-	PricesPerGB   string             `json:"prices_per_gb"`
-	InternetSpeed sdkTypes.Bandwidth `json:"internet_speed"`
-	Encryption    string             `json:"encryption"`
+type msgStartSubscription struct {
+	BaseReq       rest.BaseReq `json:"base_req"`
+	NodeID        string       `json:"node_id"`
+	DepositAmount string       `json:"deposit_amount"`
 }
 
-func registerNodeHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) http.HandlerFunc {
+func startSubscriptionHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var req msgRegisterNode
+		var req msgStartSubscription
 
 		if !rest.ReadRESTReq(w, r, cdc, &req) {
 			return
@@ -42,15 +38,15 @@ func registerNodeHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) http.H
 			return
 		}
 
-		pricesPerGB, err := csdkTypes.ParseCoins(req.PricesPerGB)
+		nodeID := sdkTypes.NewIDFromString(req.NodeID)
+
+		depositAmount, err := csdkTypes.ParseCoin(req.DepositAmount)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
 		}
 
-		msg := vpn.NewMsgRegisterNode(fromAddress, req.Type, req.Version,
-			req.Moniker, pricesPerGB, req.InternetSpeed,
-			req.Encryption)
+		msg := vpn.NewMsgStartSubscription(fromAddress, nodeID, depositAmount)
 		if err := msg.ValidateBasic(); err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return

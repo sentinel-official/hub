@@ -27,14 +27,14 @@ func UpdateNodeDetailsTxCmd(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			nodeID := sdkTypes.NewID(viper.GetString(flagNodeID))
+			nodeID := sdkTypes.NewIDFromString(viper.GetString(flagNodeID))
 			moniker := viper.GetString(flagMoniker)
 			pricesPerGB := viper.GetString(flagPricesPerGB)
 			internetSpeed := sdkTypes.Bandwidth{
 				Upload:   csdkTypes.NewInt(viper.GetInt64(flagUploadSpeed)),
 				Download: csdkTypes.NewInt(viper.GetInt64(flagDownloadSpeed)),
 			}
-			encryptionMethod := viper.GetString(flagEncryptionMethod)
+			encryptionMethod := viper.GetString(flagEncryption)
 			type_ := viper.GetString(flagType)
 			version := viper.GetString(flagVersion)
 
@@ -45,21 +45,21 @@ func UpdateNodeDetailsTxCmd(cdc *codec.Codec) *cobra.Command {
 
 			fromAddress := cliCtx.GetFromAddress()
 
-			msg := vpn.NewMsgUpdateNodeDetails(fromAddress, nodeID,
-				moniker, parsedPricesPerGB, internetSpeed,
-				encryptionMethod, type_, version)
+			msg := vpn.NewMsgUpdateNodeInfo(fromAddress, nodeID,
+				moniker, type_, version, parsedPricesPerGB, internetSpeed,
+				encryptionMethod)
 			return utils.GenerateOrBroadcastMsgs(cliCtx, txBldr, []csdkTypes.Msg{msg}, false)
 		},
 	}
 
 	cmd.Flags().String(flagNodeID, "", "Node ID")
 	cmd.Flags().String(flagMoniker, "", "Moniker")
+	cmd.Flags().String(flagType, "", "VPN node type")
+	cmd.Flags().String(flagVersion, "", "VPN node version")
 	cmd.Flags().String(flagPricesPerGB, "", "Prices per GB")
 	cmd.Flags().Int64(flagUploadSpeed, 0, "Internet upload speed in bytes/sec")
 	cmd.Flags().Int64(flagDownloadSpeed, 0, "Internet download speed in bytes/sec")
-	cmd.Flags().String(flagEncryptionMethod, "", "VPN encryption method")
-	cmd.Flags().String(flagType, "", "VPN node type")
-	cmd.Flags().String(flagVersion, "", "VPN node version")
+	cmd.Flags().String(flagEncryption, "", "VPN encryption method")
 
 	_ = cmd.MarkFlagRequired(flagNodeID)
 
@@ -79,7 +79,7 @@ func UpdateNodeStatusTxCmd(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			nodeID := sdkTypes.NewID(viper.GetString(flagNodeID))
+			nodeID := sdkTypes.NewIDFromString(viper.GetString(flagNodeID))
 			status := strings.ToUpper(args[0])
 
 			fromAddress := cliCtx.GetFromAddress()

@@ -13,10 +13,10 @@ import (
 	"github.com/ironman0x7b2/sentinel-sdk/x/vpn"
 )
 
-func DeregisterNodeTxCmd(cdc *codec.Codec) *cobra.Command {
+func EndSubscriptionTxCmd(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "deregister",
-		Short: "Deregister node",
+		Use:   "end",
+		Short: "End subscription",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			txBldr := authTxBuilder.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
 			cliCtx := context.NewCLIContext().WithCodec(cdc).WithAccountDecoder(cdc)
@@ -25,17 +25,18 @@ func DeregisterNodeTxCmd(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			nodeID := sdkTypes.NewIDFromString(viper.GetString(flagNodeID))
+			subscriptionID := sdkTypes.NewIDFromString(viper.GetString(flagSubscriptionID))
+
 			fromAddress := cliCtx.GetFromAddress()
 
-			msg := vpn.NewMsgDeregisterNode(fromAddress, nodeID)
+			msg := vpn.NewMsgEndSubscription(fromAddress, subscriptionID)
 			return utils.GenerateOrBroadcastMsgs(cliCtx, txBldr, []csdkTypes.Msg{msg}, false)
 		},
 	}
 
-	cmd.Flags().String(flagNodeID, "", "Node ID")
+	cmd.Flags().String(flagSubscriptionID, "", "Subscription ID")
 
-	_ = cmd.MarkFlagRequired(flagNodeID)
+	_ = cmd.MarkFlagRequired(flagSubscriptionID)
 
 	return cmd
 }

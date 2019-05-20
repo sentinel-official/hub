@@ -44,9 +44,9 @@ func QueryNodesOfAddress(cliCtx context.CLIContext, cdc *codec.Codec, address cs
 	return cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s", vpn.QuerierRoute, vpn.QueryNodesOfAddress), paramBytes)
 }
 
-func QuerySession(cliCtx context.CLIContext, cdc *codec.Codec, id string) (*vpn.Session, error) {
-	sessionKey := vpn.SessionKey(sdkTypes.NewID(id))
-	res, err := cliCtx.QueryStore(sessionKey, vpn.StoreKeySession)
+func QuerySubscription(cliCtx context.CLIContext, cdc *codec.Codec, id string) (*vpn.Subscription, error) {
+	subscriptionKey := vpn.SubscriptionKey(sdkTypes.NewIDFromString(id))
+	res, err := cliCtx.QueryStore(subscriptionKey, vpn.StoreKeySubscription)
 	if err != nil {
 		return nil, err
 	}
@@ -54,7 +54,7 @@ func QuerySession(cliCtx context.CLIContext, cdc *codec.Codec, id string) (*vpn.
 		return nil, fmt.Errorf("no session found")
 	}
 
-	var details vpn.Session
+	var details vpn.Subscription
 	if err := cdc.UnmarshalBinaryLengthPrefixed(res, &details); err != nil {
 		return nil, err
 	}

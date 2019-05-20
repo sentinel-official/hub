@@ -11,13 +11,13 @@ import (
 	"github.com/ironman0x7b2/sentinel-sdk/x/vpn/client/common"
 )
 
-func getSessionHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) http.HandlerFunc {
+func getSubscribeHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 
-		sessionID := vars["sessionID"]
+		sessionID := vars["subscriptionID"]
 
-		res, err := common.QuerySession(cliCtx, cdc, sessionID)
+		res, err := common.QuerySubscription(cliCtx, cdc, sessionID)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
