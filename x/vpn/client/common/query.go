@@ -61,3 +61,21 @@ func QuerySubscription(cliCtx context.CLIContext, cdc *codec.Codec, id string) (
 
 	return &details, nil
 }
+
+func QuerySession(cliCtx context.CLIContext, cdc *codec.Codec, id string) (*vpn.Session, error) {
+	sessionKey := vpn.SessionKey(sdkTypes.IDFromString(id))
+	res, err := cliCtx.QueryStore(sessionKey, vpn.StoreKeySession)
+	if err != nil {
+		return nil, err
+	}
+	if len(res) == 0 {
+		return nil, fmt.Errorf("no session found")
+	}
+
+	var session vpn.Session
+	if err := cdc.UnmarshalBinaryLengthPrefixed(res, &session); err != nil {
+		return nil, err
+	}
+
+	return &session, nil
+}

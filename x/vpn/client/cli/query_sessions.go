@@ -11,25 +11,25 @@ import (
 	"github.com/ironman0x7b2/sentinel-sdk/x/vpn/client/common"
 )
 
-func QuerySubscriptionCmd(cdc *codec.Codec) *cobra.Command {
+func QuerySessionCmd(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "subscription",
-		Short: "Get subscription",
+		Use:   "session",
+		Short: "Get session",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cliCtx := context.NewCLIContext().WithCodec(cdc).WithAccountDecoder(cdc)
 
-			res, err := common.QuerySubscription(cliCtx, cdc, args[0])
+			res, err := common.QuerySession(cliCtx, cdc, args[0])
 			if err != nil {
 				return err
 			}
 
-			subscriptionData, err := cdc.MarshalJSONIndent(res, "", "  ")
+			sessionData, err := cdc.MarshalJSONIndent(res, "", "  ")
 			if err != nil {
 				return err
 			}
 
-			fmt.Println(string(subscriptionData))
+			fmt.Println(string(sessionData))
 
 			return nil
 		},
@@ -38,37 +38,37 @@ func QuerySubscriptionCmd(cdc *codec.Codec) *cobra.Command {
 	return cmd
 }
 
-func QuerySubscriptionsCmd(cdc *codec.Codec) *cobra.Command {
+func QuerySessionsCmd(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "subscriptions",
-		Short: "Get subscriptions",
+		Use:   "sessions",
+		Short: "Get sessions",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cliCtx := context.NewCLIContext().WithCodec(cdc).WithAccountDecoder(cdc)
 
-			var subscriptions []vpn.Subscription
-			res, err := cliCtx.QuerySubspace(vpn.SubscriptionKeyPrefix, vpn.StoreKeySubscription)
+			var sessions []vpn.Session
+			res, err := cliCtx.QuerySubspace(vpn.SessionKeyPrefix, vpn.StoreKeySession)
 			if err != nil {
 				return err
 			}
 			if len(res) == 0 {
-				return fmt.Errorf("no subscriptions found")
+				return fmt.Errorf("no sessions found")
 			}
 
 			for _, kv := range res {
-				var subscription vpn.Subscription
-				if err := cdc.UnmarshalBinaryLengthPrefixed(kv.Value, &subscription); err != nil {
+				var session vpn.Session
+				if err := cdc.UnmarshalBinaryLengthPrefixed(kv.Value, &session); err != nil {
 					return err
 				}
 
-				subscriptions = append(subscriptions, subscription)
+				sessions = append(sessions, session)
 			}
 
-			subscriptionsData, err := cdc.MarshalJSONIndent(subscriptions, "", "  ")
+			sessionsData, err := cdc.MarshalJSONIndent(sessions, "", "  ")
 			if err != nil {
 				return err
 			}
 
-			fmt.Println(string(subscriptionsData))
+			fmt.Println(string(sessionsData))
 
 			return nil
 		},

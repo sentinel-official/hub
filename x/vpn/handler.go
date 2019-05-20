@@ -95,7 +95,7 @@ func endBlockSessions(ctx csdkTypes.Context, k keeper.Keeper, height int64) csdk
 		k.SetSubscription(ctx, subscription)
 	}
 
-	k.SetActiveSessionIDs(ctx, height, nil)
+	k.SetActiveSessionIDs(ctx, _height, nil)
 	return allTags
 }
 
@@ -241,15 +241,16 @@ func handleStartSubscription(ctx csdkTypes.Context, k keeper.Keeper, msg types.M
 	}
 
 	subscription := types.Subscription{
-		ID:               types.SubscriptionID(node.ID, node.SubscriptionsCount),
-		NodeID:           node.ID,
-		Client:           msg.From,
-		PricePerGB:       pricePerGB,
-		TotalDeposit:     msg.Deposit,
-		TotalBandwidth:   bandwidth,
-		ConsumedDeposit:  csdkTypes.NewInt64Coin(msg.Deposit.Denom, 0),
-		Status:           types.StatusStarted,
-		StatusModifiedAt: ctx.BlockHeight(),
+		ID:                types.SubscriptionID(node.ID, node.SubscriptionsCount),
+		NodeID:            node.ID,
+		Client:            msg.From,
+		PricePerGB:        pricePerGB,
+		TotalDeposit:      msg.Deposit,
+		TotalBandwidth:    bandwidth,
+		ConsumedDeposit:   csdkTypes.NewInt64Coin(msg.Deposit.Denom, 0),
+		ConsumedBandwidth: sdkTypes.NewBandwidthFromInt64(0, 0),
+		Status:            types.StatusStarted,
+		StatusModifiedAt:  ctx.BlockHeight(),
 	}
 
 	tags, err := k.AddSubscription(ctx, subscription)
@@ -317,6 +318,7 @@ func handleUpdateSessionInfo(ctx csdkTypes.Context, k keeper.Keeper, msg types.M
 		session = types.Session{
 			ID:             id,
 			SubscriptionID: subscription.ID,
+			Bandwidth:      sdkTypes.NewBandwidthFromInt64(0, 0),
 		}
 	}
 
