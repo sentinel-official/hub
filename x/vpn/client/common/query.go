@@ -45,7 +45,7 @@ func QueryNodesOfAddress(cliCtx context.CLIContext, cdc *codec.Codec, address cs
 }
 
 func QuerySubscription(cliCtx context.CLIContext, cdc *codec.Codec, id string) (*vpn.Subscription, error) {
-	subscriptionKey := vpn.SubscriptionKey(sdkTypes.NewIDFromString(id))
+	subscriptionKey := vpn.SubscriptionKey(sdkTypes.IDFromString(id))
 	res, err := cliCtx.QueryStore(subscriptionKey, vpn.StoreKeySubscription)
 	if err != nil {
 		return nil, err

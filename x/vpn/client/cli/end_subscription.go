@@ -25,7 +25,7 @@ func EndSubscriptionTxCmd(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			subscriptionID := sdkTypes.NewIDFromString(viper.GetString(flagSubscriptionID))
+			subscriptionID := sdkTypes.IDFromString(viper.GetString(flagSubscriptionID))
 
 			fromAddress := cliCtx.GetFromAddress()
 

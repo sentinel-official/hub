@@ -38,7 +38,7 @@ func startSubscriptionHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) h
 			return
 		}
 
-		nodeID := sdkTypes.NewIDFromString(req.NodeID)
+		nodeID := sdkTypes.IDFromString(req.NodeID)
 
 		depositAmount, err := csdkTypes.ParseCoin(req.DepositAmount)
 		if err != nil {

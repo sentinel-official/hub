@@ -37,7 +37,7 @@ func endSubscriptionHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) htt
 			return
 		}
 
-		subscriptionID := sdkTypes.NewIDFromString(req.SubscriptionID)
+		subscriptionID := sdkTypes.IDFromString(req.SubscriptionID)
 
 		msg := vpn.NewMsgEndSubscription(fromAddress, subscriptionID)
 		if err := msg.ValidateBasic(); err != nil {

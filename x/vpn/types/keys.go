@@ -1,6 +1,8 @@
 package types
 
 import (
+	"fmt"
+
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
 
 	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
@@ -34,7 +36,7 @@ func NodesCountKey(address csdkTypes.AccAddress) []byte {
 }
 
 func NodeID(address csdkTypes.Address, count uint64) []byte {
-	return append(address.Bytes(), csdkTypes.Uint64ToBigEndian(count)...)
+	return append(address.Bytes(), []byte(fmt.Sprintf("$%d", count))...)
 }
 
 func NodeKey(id sdkTypes.ID) []byte {
@@ -42,7 +44,7 @@ func NodeKey(id sdkTypes.ID) []byte {
 }
 
 func SubscriptionID(nodeID sdkTypes.ID, count uint64) []byte {
-	return append(nodeID.Bytes(), csdkTypes.Uint64ToBigEndian(count)...)
+	return append(nodeID.Bytes(), []byte(fmt.Sprintf("$%d", count))...)
 }
 
 func SubscriptionKey(id sdkTypes.ID) []byte {
@@ -50,7 +52,7 @@ func SubscriptionKey(id sdkTypes.ID) []byte {
 }
 
 func SessionID(subscriptionID sdkTypes.ID, count uint64) []byte {
-	return append(subscriptionID.Bytes(), csdkTypes.Uint64ToBigEndian(count)...)
+	return append(subscriptionID.Bytes(), []byte(fmt.Sprintf("$%d", count))...)
 }
 
 func SessionKey(id sdkTypes.ID) []byte {

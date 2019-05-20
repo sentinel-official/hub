@@ -102,7 +102,7 @@ func updateSessionInfoHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) h
 		}
 
 		vars := mux.Vars(r)
-		subscriptionID := sdkTypes.NewIDFromString(vars["subscriptionID"])
+		subscriptionID := sdkTypes.IDFromString(vars["subscriptionID"])
 
 		msg := vpn.NewMsgUpdateSessionInfo(fromAddress,
 			subscriptionID, req.Consumed, nodeOwnerSign, clientSign)

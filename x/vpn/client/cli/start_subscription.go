@@ -25,7 +25,7 @@ func StartSubscriptionTxCmd(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			nodeID := sdkTypes.NewIDFromString(viper.GetString(flagNodeID))
+			nodeID := sdkTypes.IDFromString(viper.GetString(flagNodeID))
 			depositAmount := viper.GetString(flagDepositAmount)
 
 			parsedDepositAmount, err := csdkTypes.ParseCoin(depositAmount)

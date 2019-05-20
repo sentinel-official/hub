@@ -2,6 +2,7 @@ package types
 
 import (
 	"encoding/hex"
+	"encoding/json"
 	"sort"
 
 	"github.com/tendermint/tendermint/crypto/tmhash"
@@ -9,23 +10,34 @@ import (
 
 type ID []byte
 
-func NewIDFromString(b string) ID {
-	return ID([]byte(b))
+func IDFromString(str string) ID {
+	bz, err := hex.DecodeString(str)
+	if err != nil {
+		panic(err)
+	}
+
+	return ID(bz)
 }
 
-func (id ID) Bytes() []byte  { return id }
-func (id ID) String() string { return string(id) }
-func (id ID) Len() int       { return len(id) }
+func (id ID) String() string               { return hex.EncodeToString(id) }
+func (id ID) Bytes() []byte                { return id }
+func (id ID) Len() int                     { return len(id) }
+func (id ID) MarshalJSON() ([]byte, error) { return json.Marshal(id.String()) }
 
-func (id ID) Hash() string {
-	hash := tmhash.Sum(id.Bytes())
-	return hex.EncodeToString(hash)
+func (id *ID) UnmarshalJSON(data []byte) error {
+	var str string
+
+	err := json.Unmarshal(data, &str)
+	if err != nil {
+		return err
+	}
+
+	*id = IDFromString(str)
+	return nil
 }
 
-func (id ID) HashTruncated() string {
-	hash := tmhash.SumTruncated(id.Bytes())
-	return hex.EncodeToString(hash)
-}
+func (id ID) Hash() []byte          { return tmhash.Sum(id.Bytes()) }
+func (id ID) HashTruncated() []byte { return tmhash.SumTruncated(id.Bytes()) }
 
 type IDs []ID
 

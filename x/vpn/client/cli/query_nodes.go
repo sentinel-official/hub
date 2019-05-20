@@ -22,7 +22,7 @@ func QueryNodeCmd(cdc *codec.Codec) *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cliCtx := context.NewCLIContext().WithCodec(cdc).WithAccountDecoder(cdc)
 
-			res, err := common.QueryNode(cliCtx, cdc, sdkTypes.NewIDFromString(args[0]))
+			res, err := common.QueryNode(cliCtx, cdc, sdkTypes.IDFromString(args[0]))
 			if err != nil {
 				return err
 			}

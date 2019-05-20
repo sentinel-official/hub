@@ -38,7 +38,7 @@ func deregisterNodeHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) http
 		}
 
 		vars := mux.Vars(r)
-		id := sdkTypes.NewIDFromString(vars["nodeID"])
+		id := sdkTypes.IDFromString(vars["nodeID"])
 
 		msg := vpn.NewMsgDeregisterNode(fromAddress, id)
 		if err := msg.ValidateBasic(); err != nil {

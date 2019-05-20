@@ -25,7 +25,7 @@ func DeregisterNodeTxCmd(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			nodeID := sdkTypes.NewIDFromString(viper.GetString(flagNodeID))
+			nodeID := sdkTypes.IDFromString(viper.GetString(flagNodeID))
 			fromAddress := cliCtx.GetFromAddress()
 
 			msg := vpn.NewMsgDeregisterNode(fromAddress, nodeID)

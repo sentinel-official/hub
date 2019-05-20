@@ -27,7 +27,7 @@ func UpdateNodeDetailsTxCmd(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			nodeID := sdkTypes.NewIDFromString(viper.GetString(flagNodeID))
+			nodeID := sdkTypes.IDFromString(viper.GetString(flagNodeID))
 			moniker := viper.GetString(flagMoniker)
 			pricesPerGB := viper.GetString(flagPricesPerGB)
 			internetSpeed := sdkTypes.Bandwidth{
@@ -79,7 +79,7 @@ func UpdateNodeStatusTxCmd(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			nodeID := sdkTypes.NewIDFromString(viper.GetString(flagNodeID))
+			nodeID := sdkTypes.IDFromString(viper.GetString(flagNodeID))
 			status := strings.ToUpper(args[0])
 
 			fromAddress := cliCtx.GetFromAddress()

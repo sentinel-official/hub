@@ -85,7 +85,7 @@ func UpdateSessionInfoTxCmd(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			subscriptionID := sdkTypes.NewIDFromString(viper.GetString(flagSubscriptionID))
+			subscriptionID := sdkTypes.IDFromString(viper.GetString(flagSubscriptionID))
 			consumed := sdkTypes.Bandwidth{
 				Upload:   csdkTypes.NewInt(viper.GetInt64(flagUpload)),
 				Download: csdkTypes.NewInt(viper.GetInt64(flagDownload)),

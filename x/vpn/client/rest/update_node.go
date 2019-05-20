@@ -51,7 +51,7 @@ func updateNodeHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) http.Han
 		}
 
 		vars := mux.Vars(r)
-		id := sdkTypes.NewIDFromString(vars["nodeID"])
+		id := sdkTypes.IDFromString(vars["nodeID"])
 
 		msg := vpn.NewMsgUpdateNodeInfo(fromAddress, id,
 			req.Moniker, req.Type, req.Version, pricesPerGB, req.InternetSpeed,
@@ -90,7 +90,7 @@ func updateNodeStatusHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) ht
 		}
 
 		vars := mux.Vars(r)
-		id := sdkTypes.NewIDFromString(vars["nodeID"])
+		id := sdkTypes.IDFromString(vars["nodeID"])
 		status := strings.ToUpper(req.Status)
 
 		msg := vpn.NewMsgUpdateNodeStatus(fromAddress, id, status)
