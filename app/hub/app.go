@@ -162,8 +162,8 @@ func NewHub(logger log.Logger, db tmDB.DB, traceStore io.Writer, loadLatest bool
 		app.bankKeeper)
 	app.vpnKeeper = vpn.NewKeeper(app.cdc,
 		app.keyVPNNode,
-		app.keyVPNSession,
 		app.keyVPNSubscription,
+		app.keyVPNSession,
 		app.paramsKeeper.Subspace(vpn.DefaultParamspace),
 		app.accountKeeper,
 		app.depositKeeper)
@@ -202,7 +202,7 @@ func NewHub(logger log.Logger, db tmDB.DB, traceStore io.Writer, loadLatest bool
 		app.keyAccount, app.keyFeeCollection,
 		app.keyStaking, app.keySlashing,
 		app.keyDistribution, app.keyGov, app.keyMint,
-		app.keyDeposit, app.keyVPNNode, app.keyVPNSession,
+		app.keyDeposit, app.keyVPNNode, app.keyVPNSession, app.keyVPNSubscription,
 		app.tkeyParams, app.tkeyStaking, app.tkeyDistribution)
 	app.SetInitChainer(app.initChainer)
 	app.SetBeginBlocker(app.BeginBlocker)
