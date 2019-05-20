@@ -57,5 +57,7 @@ func (k Keeper) AddSubscription(ctx csdkTypes.Context, subscription types.Subscr
 	}
 
 	allTags = allTags.AppendTags(tags)
+
+	k.SetSubscription(ctx, subscription)
 	return allTags, nil
 }

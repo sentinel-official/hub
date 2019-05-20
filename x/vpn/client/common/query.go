@@ -51,7 +51,7 @@ func QuerySubscription(cliCtx context.CLIContext, cdc *codec.Codec, id string) (
 		return nil, err
 	}
 	if len(res) == 0 {
-		return nil, fmt.Errorf("no session found")
+		return nil, fmt.Errorf("no subscription found")
 	}
 
 	var details vpn.Subscription

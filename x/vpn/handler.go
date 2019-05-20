@@ -247,6 +247,7 @@ func handleStartSubscription(ctx csdkTypes.Context, k keeper.Keeper, msg types.M
 		PricePerGB:       pricePerGB,
 		TotalDeposit:     msg.Deposit,
 		TotalBandwidth:   bandwidth,
+		ConsumedDeposit:  csdkTypes.NewInt64Coin(msg.Deposit.Denom, 0),
 		Status:           types.StatusStarted,
 		StatusModifiedAt: ctx.BlockHeight(),
 	}

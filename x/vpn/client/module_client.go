@@ -32,6 +32,7 @@ func (mc ModuleClient) GetQueryCmd() *cobra.Command {
 		vpnCli.QueryNodeCmd(mc.cdc),
 		vpnCli.QueryNodesCmd(mc.cdc),
 		vpnCli.QuerySubscriptionCmd(mc.cdc),
+		vpnCli.QuerySubscriptionsCmd(mc.cdc),
 	)...)
 
 	return vpnQueryCmd
@@ -68,7 +69,7 @@ func nodeTxCmd(cdc *codec.Codec) *cobra.Command {
 
 func subscriptionTxCmd(cdc *codec.Codec) *cobra.Command {
 	subscriptionTxCmd := &cobra.Command{
-		Use:   "subscribe",
+		Use:   "subscription",
 		Short: "Client subscription subcommands",
 	}
 
