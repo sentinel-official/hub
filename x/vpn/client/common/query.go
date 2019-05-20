@@ -11,27 +11,27 @@ import (
 	"github.com/ironman0x7b2/sentinel-sdk/x/vpn"
 )
 
-func QueryNode(cliCtx context.CLIContext, cdc *codec.Codec, id sdkTypes.ID) (*vpn.Node, error) {
+func QueryNode(cliCtx context.CLIContext, cdc *codec.Codec, id sdkTypes.ID) (vpn.Node, error) {
 	params := vpn.NewQueryNodeParams(id)
 	paramBytes, err := cdc.MarshalJSON(params)
 	if err != nil {
-		return nil, err
+		return vpn.Node{}, err
 	}
 
 	res, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s", vpn.QuerierRoute, vpn.QueryNode), paramBytes)
 	if err != nil {
-		return nil, err
+		return vpn.Node{}, err
 	}
 	if res == nil {
-		return nil, fmt.Errorf("no node found")
+		return vpn.Node{}, fmt.Errorf("no node found")
 	}
 
-	var details vpn.Node
-	if err := cdc.UnmarshalJSON(res, &details); err != nil {
-		return nil, err
+	var node vpn.Node
+	if err := cdc.UnmarshalJSON(res, &node); err != nil {
+		return vpn.Node{}, err
 	}
 
-	return &details, nil
+	return node, nil
 }
 
 func QueryNodesOfAddress(cliCtx context.CLIContext, cdc *codec.Codec, address csdkTypes.AccAddress) ([]byte, error) {
@@ -44,38 +44,38 @@ func QueryNodesOfAddress(cliCtx context.CLIContext, cdc *codec.Codec, address cs
 	return cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s", vpn.QuerierRoute, vpn.QueryNodesOfAddress), paramBytes)
 }
 
-func QuerySubscription(cliCtx context.CLIContext, cdc *codec.Codec, id string) (*vpn.Subscription, error) {
+func QuerySubscription(cliCtx context.CLIContext, cdc *codec.Codec, id string) (vpn.Subscription, error) {
 	subscriptionKey := vpn.SubscriptionKey(sdkTypes.IDFromString(id))
 	res, err := cliCtx.QueryStore(subscriptionKey, vpn.StoreKeySubscription)
 	if err != nil {
-		return nil, err
+		return vpn.Subscription{}, err
 	}
 	if len(res) == 0 {
-		return nil, fmt.Errorf("no subscription found")
+		return vpn.Subscription{}, fmt.Errorf("no subscription found")
 	}
 
-	var details vpn.Subscription
-	if err := cdc.UnmarshalBinaryLengthPrefixed(res, &details); err != nil {
-		return nil, err
+	var subscription vpn.Subscription
+	if err := cdc.UnmarshalBinaryLengthPrefixed(res, &subscription); err != nil {
+		return vpn.Subscription{}, err
 	}
 
-	return &details, nil
+	return subscription, nil
 }
 
-func QuerySession(cliCtx context.CLIContext, cdc *codec.Codec, id string) (*vpn.Session, error) {
+func QuerySession(cliCtx context.CLIContext, cdc *codec.Codec, id string) (vpn.Session, error) {
 	sessionKey := vpn.SessionKey(sdkTypes.IDFromString(id))
 	res, err := cliCtx.QueryStore(sessionKey, vpn.StoreKeySession)
 	if err != nil {
-		return nil, err
+		return vpn.Session{}, err
 	}
 	if len(res) == 0 {
-		return nil, fmt.Errorf("no session found")
+		return vpn.Session{}, fmt.Errorf("no session found")
 	}
 
 	var session vpn.Session
 	if err := cdc.UnmarshalBinaryLengthPrefixed(res, &session); err != nil {
-		return nil, err
+		return vpn.Session{}, err
 	}
 
-	return &session, nil
+	return session, nil
 }

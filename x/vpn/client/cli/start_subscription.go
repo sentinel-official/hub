@@ -26,25 +26,25 @@ func StartSubscriptionTxCmd(cdc *codec.Codec) *cobra.Command {
 			}
 
 			nodeID := sdkTypes.IDFromString(viper.GetString(flagNodeID))
-			depositAmount := viper.GetString(flagDepositAmount)
+			deposit := viper.GetString(flagDeposit)
 
-			parsedDepositAmount, err := csdkTypes.ParseCoin(depositAmount)
+			parsedDeposit, err := csdkTypes.ParseCoin(deposit)
 			if err != nil {
 				return err
 			}
 
 			fromAddress := cliCtx.GetFromAddress()
 
-			msg := vpn.NewMsgStartSubscription(fromAddress, nodeID, parsedDepositAmount)
+			msg := vpn.NewMsgStartSubscription(fromAddress, nodeID, parsedDeposit)
 			return utils.GenerateOrBroadcastMsgs(cliCtx, txBldr, []csdkTypes.Msg{msg}, false)
 		},
 	}
 
 	cmd.Flags().String(flagNodeID, "", "Node ID")
-	cmd.Flags().String(flagDepositAmount, "", "Deposit amount")
+	cmd.Flags().String(flagDeposit, "", "Deposit")
 
 	_ = cmd.MarkFlagRequired(flagNodeID)
-	_ = cmd.MarkFlagRequired(flagDepositAmount)
+	_ = cmd.MarkFlagRequired(flagDeposit)
 
 	return cmd
 }

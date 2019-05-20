@@ -2,6 +2,7 @@ package rest
 
 import (
 	"encoding/base64"
+	"encoding/hex"
 	"net/http"
 
 	"github.com/cosmos/cosmos-sdk/client/context"
@@ -32,7 +33,7 @@ func signSessionBandwidthHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec
 		}
 
 		vars := mux.Vars(r)
-		signBytes, err := common.GetSubscriptionBandwidthSignBytes(cliCtx, cdc, vars["sessionID"], req.Bandwidth)
+		signBytes, err := common.GetBandwidthSignDataBytes(cliCtx, cdc, vars["sessionID"], req.Bandwidth)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
@@ -89,13 +90,13 @@ func updateSessionInfoHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) h
 			return
 		}
 
-		nodeOwnerSign, err := base64.StdEncoding.DecodeString(req.NodeOwnerSign)
+		nodeOwnerSign, err := hex.DecodeString(req.NodeOwnerSign)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
 		}
 
-		clientSign, err := base64.StdEncoding.DecodeString(req.ClientSign)
+		clientSign, err := hex.DecodeString(req.ClientSign)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return

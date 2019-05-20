@@ -2,6 +2,7 @@ package types
 
 import (
 	"encoding/json"
+	"fmt"
 
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
 )
@@ -18,6 +19,10 @@ func NewBandwidth(upload, download csdkTypes.Int) Bandwidth {
 		Upload:   upload,
 		Download: download,
 	}
+}
+
+func (b Bandwidth) String() string {
+	return fmt.Sprintf("%d upload, %d download", b.Upload.Int64(), b.Download.Int64())
 }
 
 func (b Bandwidth) Add(bandwidth Bandwidth) Bandwidth {
@@ -65,15 +70,15 @@ func NewBandwidthFromInt64(upload, download int64) Bandwidth {
 	return NewBandwidth(csdkTypes.NewInt(upload), csdkTypes.NewInt(download))
 }
 
-type BandwidthSign struct {
+type BandwidthSignData struct {
 	ID        ID
 	Bandwidth Bandwidth
 	NodeOwner csdkTypes.AccAddress
 	Client    csdkTypes.AccAddress
 }
 
-func NewBandwidthSign(id ID, bandwidth Bandwidth, nodeOwner, client csdkTypes.AccAddress) *BandwidthSign {
-	return &BandwidthSign{
+func NewBandwidthSignData(id ID, bandwidth Bandwidth, nodeOwner, client csdkTypes.AccAddress) *BandwidthSignData {
+	return &BandwidthSignData{
 		ID:        id,
 		Bandwidth: bandwidth,
 		NodeOwner: nodeOwner,
@@ -81,11 +86,11 @@ func NewBandwidthSign(id ID, bandwidth Bandwidth, nodeOwner, client csdkTypes.Ac
 	}
 }
 
-func (b BandwidthSign) Bytes() []byte {
-	bytes, err := json.Marshal(b)
+func (b BandwidthSignData) Bytes() []byte {
+	bz, err := json.Marshal(b)
 	if err != nil {
 		panic(err)
 	}
 
-	return bytes
+	return bz
 }

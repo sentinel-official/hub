@@ -22,17 +22,12 @@ func QueryNodeCmd(cdc *codec.Codec) *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cliCtx := context.NewCLIContext().WithCodec(cdc).WithAccountDecoder(cdc)
 
-			res, err := common.QueryNode(cliCtx, cdc, sdkTypes.IDFromString(args[0]))
+			node, err := common.QueryNode(cliCtx, cdc, sdkTypes.IDFromString(args[0]))
 			if err != nil {
 				return err
 			}
 
-			nodeData, err := cdc.MarshalJSONIndent(res, "", "  ")
-			if err != nil {
-				return err
-			}
-
-			fmt.Println(string(nodeData))
+			fmt.Println(node)
 
 			return nil
 		},
@@ -87,12 +82,9 @@ func QueryNodesCmd(cdc *codec.Codec) *cobra.Command {
 				}
 			}
 
-			nodesData, err := cdc.MarshalJSONIndent(nodes, "", "  ")
-			if err != nil {
-				return err
+			for _, node := range nodes {
+				fmt.Println(node)
 			}
-
-			fmt.Println(string(nodesData))
 
 			return nil
 		},

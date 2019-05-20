@@ -14,9 +14,9 @@ import (
 )
 
 type msgStartSubscription struct {
-	BaseReq       rest.BaseReq `json:"base_req"`
-	NodeID        string       `json:"node_id"`
-	DepositAmount string       `json:"deposit_amount"`
+	BaseReq rest.BaseReq `json:"base_req"`
+	NodeID  string       `json:"node_id"`
+	Deposit string       `json:"deposit"`
 }
 
 func startSubscriptionHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) http.HandlerFunc {
@@ -40,13 +40,13 @@ func startSubscriptionHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) h
 
 		nodeID := sdkTypes.IDFromString(req.NodeID)
 
-		depositAmount, err := csdkTypes.ParseCoin(req.DepositAmount)
+		deposit, err := csdkTypes.ParseCoin(req.Deposit)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
 		}
 
-		msg := vpn.NewMsgStartSubscription(fromAddress, nodeID, depositAmount)
+		msg := vpn.NewMsgStartSubscription(fromAddress, nodeID, deposit)
 		if err := msg.ValidateBasic(); err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return

@@ -19,17 +19,12 @@ func QuerySessionCmd(cdc *codec.Codec) *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cliCtx := context.NewCLIContext().WithCodec(cdc).WithAccountDecoder(cdc)
 
-			res, err := common.QuerySession(cliCtx, cdc, args[0])
+			session, err := common.QuerySession(cliCtx, cdc, args[0])
 			if err != nil {
 				return err
 			}
 
-			sessionData, err := cdc.MarshalJSONIndent(res, "", "  ")
-			if err != nil {
-				return err
-			}
-
-			fmt.Println(string(sessionData))
+			fmt.Println(session)
 
 			return nil
 		},
@@ -63,12 +58,9 @@ func QuerySessionsCmd(cdc *codec.Codec) *cobra.Command {
 				sessions = append(sessions, session)
 			}
 
-			sessionsData, err := cdc.MarshalJSONIndent(sessions, "", "  ")
-			if err != nil {
-				return err
+			for _, session := range sessions {
+				fmt.Println(session)
 			}
-
-			fmt.Println(string(sessionsData))
 
 			return nil
 		},

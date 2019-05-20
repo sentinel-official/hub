@@ -34,7 +34,7 @@ func SignSessionBandwidthTxCmd(cdc *codec.Codec) *cobra.Command {
 				Upload:   csdkTypes.NewInt(viper.GetInt64(flagUpload)),
 				Download: csdkTypes.NewInt(viper.GetInt64(flagDownload)),
 			}
-			signBytes, err := common.GetSubscriptionBandwidthSignBytes(cliCtx, cdc, subscriptionID, bandwidth)
+			signBytes, err := common.GetBandwidthSignDataBytes(cliCtx, cdc, subscriptionID, bandwidth)
 			if err != nil {
 				return err
 			}
@@ -76,7 +76,7 @@ func SignSessionBandwidthTxCmd(cdc *codec.Codec) *cobra.Command {
 func UpdateSessionInfoTxCmd(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "update-session-info",
-		Short: "Update session bandwidth details",
+		Short: "Update session info",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			txBldr := authTxBuilder.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
 			cliCtx := context.NewCLIContext().WithAccountDecoder(cdc).WithCodec(cdc)

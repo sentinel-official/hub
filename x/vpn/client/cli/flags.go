@@ -2,7 +2,7 @@ package cli
 
 const (
 	flagMoniker        = "moniker"
-	flagDepositAmount  = "deposit-amount"
+	flagDeposit        = "deposit"
 	flagUpload         = "upload"
 	flagUploadSpeed    = "upload-speed"
 	flagDownload       = "download"

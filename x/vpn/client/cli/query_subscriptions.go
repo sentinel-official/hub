@@ -19,17 +19,12 @@ func QuerySubscriptionCmd(cdc *codec.Codec) *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cliCtx := context.NewCLIContext().WithCodec(cdc).WithAccountDecoder(cdc)
 
-			res, err := common.QuerySubscription(cliCtx, cdc, args[0])
+			subscription, err := common.QuerySubscription(cliCtx, cdc, args[0])
 			if err != nil {
 				return err
 			}
 
-			subscriptionData, err := cdc.MarshalJSONIndent(res, "", "  ")
-			if err != nil {
-				return err
-			}
-
-			fmt.Println(string(subscriptionData))
+			fmt.Println(subscription)
 
 			return nil
 		},
@@ -63,12 +58,9 @@ func QuerySubscriptionsCmd(cdc *codec.Codec) *cobra.Command {
 				subscriptions = append(subscriptions, subscription)
 			}
 
-			subscriptionsData, err := cdc.MarshalJSONIndent(subscriptions, "", "  ")
-			if err != nil {
-				return err
+			for _, subscription := range subscriptions {
+				fmt.Println(subscription)
 			}
-
-			fmt.Println(string(subscriptionsData))
 
 			return nil
 		},

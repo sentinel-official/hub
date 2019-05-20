@@ -16,13 +16,13 @@ import (
 )
 
 type msgUpdateNode struct {
-	BaseReq          rest.BaseReq       `json:"base_req"`
-	Moniker          string             `json:"moniker"`
-	PricesPerGB      string             `json:"prices_per_gb"`
-	InternetSpeed    sdkTypes.Bandwidth `json:"internet_speed"`
-	EncryptionMethod string             `json:"encryption_method"`
-	Type             string             `json:"type"`
-	Version          string             `json:"version"`
+	BaseReq       rest.BaseReq       `json:"base_req"`
+	Moniker       string             `json:"moniker"`
+	PricesPerGB   string             `json:"prices_per_gb"`
+	InternetSpeed sdkTypes.Bandwidth `json:"internet_speed"`
+	Encryption    string             `json:"encryption"`
+	Type          string             `json:"type"`
+	Version       string             `json:"version"`
 }
 
 func updateNodeHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) http.HandlerFunc {
@@ -54,8 +54,7 @@ func updateNodeHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) http.Han
 		id := sdkTypes.IDFromString(vars["nodeID"])
 
 		msg := vpn.NewMsgUpdateNodeInfo(fromAddress, id,
-			req.Moniker, req.Type, req.Version, pricesPerGB, req.InternetSpeed,
-			req.EncryptionMethod)
+			req.Type, req.Version, req.Moniker, pricesPerGB, req.InternetSpeed, req.Encryption)
 		if err := msg.ValidateBasic(); err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
