@@ -115,6 +115,7 @@ func EndBlock(ctx csdkTypes.Context, k keeper.Keeper) csdkTypes.Tags {
 func handleRegisterNode(ctx csdkTypes.Context, k keeper.Keeper, msg types.MsgRegisterNode) csdkTypes.Result {
 	node := types.Node{
 		Owner:            msg.From,
+		Deposit:          csdkTypes.NewInt64Coin(k.Deposit(ctx).Denom, 0),
 		Type:             msg.Type_,
 		Version:          msg.Version,
 		Moniker:          msg.Moniker,
