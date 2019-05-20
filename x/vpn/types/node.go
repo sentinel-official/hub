@@ -1,6 +1,7 @@
 package types
 
 import (
+	"fmt"
 	"sort"
 
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
@@ -27,6 +28,30 @@ type Node struct {
 	StatusModifiedAt   int64  `json:"status_modified_at"`
 }
 
+func (n Node) String() string {
+	ownerPubKey, err := csdkTypes.Bech32ifyAccPub(n.OwnerPubKey)
+	if err != nil {
+		panic(err)
+	}
+
+	return fmt.Sprintf(`Node
+  ID:                  %s
+  Owner Address:       %s
+  Owner Public Key:    %s
+  Deposit:             %s
+  Type:                %s
+  Version:             %s
+  Moniker:             %s
+  Price Per GB:        %s
+  Internet speed:      %s
+  Encryption:          %s
+  Subscriptions Count: %d
+  Status:              %s
+  Status Modified At:  %d`, n.ID, n.Owner, ownerPubKey, n.Deposit, n.Type, n.Version,
+		n.Moniker, n.PricesPerGB, n.InternetSpeed, n.Encryption,
+		n.SubscriptionsCount, n.Status, n.StatusModifiedAt)
+}
+
 func (n Node) UpdateInfo(_node Node) Node {
 	if len(_node.Type) != 0 {
 		n.Type = _node.Type
@@ -37,8 +62,8 @@ func (n Node) UpdateInfo(_node Node) Node {
 	if len(_node.Moniker) != 0 {
 		n.Moniker = _node.Moniker
 	}
-	if _node.PricesPerGB != nil && _node.PricesPerGB.Len() > 0 &&
-		_node.PricesPerGB.IsValid() && _node.PricesPerGB.IsAllPositive() {
+	if _node.PricesPerGB != nil &&
+		_node.PricesPerGB.Len() > 0 && _node.PricesPerGB.IsValid() {
 
 		n.PricesPerGB = _node.PricesPerGB
 	}

@@ -1,6 +1,8 @@
 package types
 
 import (
+	"fmt"
+
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
 	"github.com/tendermint/tendermint/crypto"
 
@@ -20,4 +22,27 @@ type Subscription struct {
 	SessionsCount     uint64               `json:"sessions_count"`
 	Status            string               `json:"status"`
 	StatusModifiedAt  int64                `json:"status_modified_at"`
+}
+
+func (s Subscription) String() string {
+	clientPubKey, err := csdkTypes.Bech32ifyAccPub(s.ClientPubKey)
+	if err != nil {
+		panic(err)
+	}
+
+	return fmt.Sprintf(`Subscription
+  ID:                 %s
+  NodeID:             %s
+  Client Address:     %s
+  Client Public Key:  %s
+  Price Per GB:       %s
+  Total Deposit:      %s
+  Total Bandwidth:    %s
+  Consumed Deposit:   %s
+  Consumed Bandwidth: %s
+  Sessions Count:     %d
+  Status:             %s
+  Status Modified At: %d`, s.ID, s.NodeID, s.Client, clientPubKey,
+		s.PricePerGB, s.TotalDeposit, s.TotalBandwidth, s.ConsumedDeposit, s.ConsumedBandwidth,
+		s.SessionsCount, s.Status, s.StatusModifiedAt)
 }
