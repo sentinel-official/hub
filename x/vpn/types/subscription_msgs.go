@@ -35,12 +35,12 @@ func (msg MsgStartSubscription) ValidateBasic() csdkTypes.Error {
 }
 
 func (msg MsgStartSubscription) GetSignBytes() []byte {
-	msgBytes, err := json.Marshal(msg)
+	bz, err := json.Marshal(msg)
 	if err != nil {
 		panic(err)
 	}
 
-	return msgBytes
+	return bz
 }
 
 func (msg MsgStartSubscription) GetSigners() []csdkTypes.AccAddress {
@@ -84,12 +84,12 @@ func (msg MsgEndSubscription) ValidateBasic() csdkTypes.Error {
 }
 
 func (msg MsgEndSubscription) GetSignBytes() []byte {
-	msgBytes, err := json.Marshal(msg)
+	bz, err := json.Marshal(msg)
 	if err != nil {
 		panic(err)
 	}
 
-	return msgBytes
+	return bz
 }
 
 func (msg MsgEndSubscription) GetSigners() []csdkTypes.AccAddress {

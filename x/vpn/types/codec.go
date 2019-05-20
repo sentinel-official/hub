@@ -15,9 +15,3 @@ func RegisterCodec(cdc *codec.Codec) {
 
 	cdc.RegisterConcrete(MsgUpdateSessionInfo{}, "x/vpn/MsgUpdateSessionInfo", nil)
 }
-
-var cdc = codec.New()
-
-func init() {
-	RegisterCodec(cdc)
-}

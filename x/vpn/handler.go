@@ -329,16 +329,16 @@ func handleUpdateSessionInfo(ctx csdkTypes.Context, k keeper.Keeper, msg types.M
 	}
 
 	node, _ := k.GetNode(ctx, subscription.NodeID)
-	data := sdkTypes.NewBandwidthSign(session.ID, msg.Bandwidth, node.Owner, subscription.Client).Bytes()
+	data := sdkTypes.NewBandwidthSignData(session.ID, msg.Bandwidth, node.Owner, subscription.Client).Bytes()
 
-	if node.OwnerPubKey.VerifyBytes(data, msg.NodeSign) == false ||
+	if node.OwnerPubKey.VerifyBytes(data, msg.NodeOwnerSign) == false ||
 		subscription.ClientPubKey.VerifyBytes(data, msg.ClientSign) == false {
 
 		return types.ErrorInvalidBandwidthSign().Result()
 	}
 
 	session.Bandwidth = msg.Bandwidth
-	session.NodeSign = msg.NodeSign
+	session.NodeOwnerSign = msg.NodeOwnerSign
 	session.ClientSign = msg.ClientSign
 	session.Status = types.StatusActive
 	session.StatusModifiedAt = ctx.BlockHeight()

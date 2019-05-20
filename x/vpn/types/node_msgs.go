@@ -53,12 +53,12 @@ func (msg MsgRegisterNode) ValidateBasic() csdkTypes.Error {
 }
 
 func (msg MsgRegisterNode) GetSignBytes() []byte {
-	msgBytes, err := json.Marshal(msg)
+	bz, err := json.Marshal(msg)
 	if err != nil {
 		panic(err)
 	}
 
-	return msgBytes
+	return bz
 }
 
 func (msg MsgRegisterNode) GetSigners() []csdkTypes.AccAddress {
@@ -71,9 +71,9 @@ func (msg MsgRegisterNode) Route() string {
 
 func NewMsgRegisterNode(from csdkTypes.AccAddress,
 	type_, version, moniker string, pricesPerGB csdkTypes.Coins,
-	internetSpeed sdkTypes.Bandwidth, encryption string) *MsgRegisterNode {
+	internetSpeed sdkTypes.Bandwidth, encryption string) MsgRegisterNode {
 
-	return &MsgRegisterNode{
+	return MsgRegisterNode{
 		From:          from,
 		Type_:         type_,
 		Version:       version,
@@ -124,12 +124,12 @@ func (msg MsgUpdateNodeInfo) ValidateBasic() csdkTypes.Error {
 }
 
 func (msg MsgUpdateNodeInfo) GetSignBytes() []byte {
-	msgBytes, err := json.Marshal(msg)
+	bz, err := json.Marshal(msg)
 	if err != nil {
 		panic(err)
 	}
 
-	return msgBytes
+	return bz
 }
 
 func (msg MsgUpdateNodeInfo) GetSigners() []csdkTypes.AccAddress {
@@ -141,10 +141,10 @@ func (msg MsgUpdateNodeInfo) Route() string {
 }
 
 func NewMsgUpdateNodeInfo(from csdkTypes.AccAddress, id sdkTypes.ID,
-	moniker, type_, version string, pricesPerGB csdkTypes.Coins,
-	internetSpeed sdkTypes.Bandwidth, encryption string) *MsgUpdateNodeInfo {
+	type_, version, moniker string, pricesPerGB csdkTypes.Coins,
+	internetSpeed sdkTypes.Bandwidth, encryption string) MsgUpdateNodeInfo {
 
-	return &MsgUpdateNodeInfo{
+	return MsgUpdateNodeInfo{
 		From:          from,
 		ID:            id,
 		Type_:         type_,
@@ -183,12 +183,12 @@ func (msg MsgUpdateNodeStatus) ValidateBasic() csdkTypes.Error {
 }
 
 func (msg MsgUpdateNodeStatus) GetSignBytes() []byte {
-	msgBytes, err := json.Marshal(msg)
+	bz, err := json.Marshal(msg)
 	if err != nil {
 		panic(err)
 	}
 
-	return msgBytes
+	return bz
 }
 
 func (msg MsgUpdateNodeStatus) GetSigners() []csdkTypes.AccAddress {
@@ -200,9 +200,9 @@ func (msg MsgUpdateNodeStatus) Route() string {
 }
 
 func NewMsgUpdateNodeStatus(from csdkTypes.AccAddress, id sdkTypes.ID,
-	status string) *MsgUpdateNodeStatus {
+	status string) MsgUpdateNodeStatus {
 
-	return &MsgUpdateNodeStatus{
+	return MsgUpdateNodeStatus{
 		From:   from,
 		ID:     id,
 		Status: status,
@@ -232,12 +232,12 @@ func (msg MsgDeregisterNode) ValidateBasic() csdkTypes.Error {
 }
 
 func (msg MsgDeregisterNode) GetSignBytes() []byte {
-	msgBytes, err := json.Marshal(msg)
+	bz, err := json.Marshal(msg)
 	if err != nil {
 		panic(err)
 	}
 
-	return msgBytes
+	return bz
 }
 
 func (msg MsgDeregisterNode) GetSigners() []csdkTypes.AccAddress {
@@ -248,8 +248,8 @@ func (msg MsgDeregisterNode) Route() string {
 	return RouterKey
 }
 
-func NewMsgDeregisterNode(from csdkTypes.AccAddress, id sdkTypes.ID) *MsgDeregisterNode {
-	return &MsgDeregisterNode{
+func NewMsgDeregisterNode(from csdkTypes.AccAddress, id sdkTypes.ID) MsgDeregisterNode {
+	return MsgDeregisterNode{
 		From: from,
 		ID:   id,
 	}
