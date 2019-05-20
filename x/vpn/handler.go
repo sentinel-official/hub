@@ -235,7 +235,7 @@ func handleStartSubscription(ctx csdkTypes.Context, k keeper.Keeper, msg types.M
 	}
 
 	pricePerGB := node.FindPricePerGB(msg.Deposit.Denom)
-	bandwidth, err := node.AmountToBandwidth(msg.Deposit)
+	bandwidth, err := node.DepositToBandwidth(msg.Deposit)
 	if err != nil {
 		return err.Result()
 	}

@@ -9,8 +9,8 @@ import (
 
 type ID []byte
 
-func NewID(b string) ID {
-	return ID(b)
+func NewIDFromString(b string) ID {
+	return ID([]byte(b))
 }
 
 func (id ID) Bytes() []byte  { return id }
