@@ -55,9 +55,10 @@ type Hub struct {
 	keyGov           *csdkTypes.KVStoreKey
 	keyMint          *csdkTypes.KVStoreKey
 
-	keyDeposit    *csdkTypes.KVStoreKey
-	keyVPNNode    *csdkTypes.KVStoreKey
-	keyVPNSession *csdkTypes.KVStoreKey
+	keyDeposit         *csdkTypes.KVStoreKey
+	keyVPNNode         *csdkTypes.KVStoreKey
+	keyVPNSession      *csdkTypes.KVStoreKey
+	keyVPNSubscription *csdkTypes.KVStoreKey
 
 	tkeyParams       *csdkTypes.TransientStoreKey
 	tkeyStaking      *csdkTypes.TransientStoreKey
@@ -87,24 +88,25 @@ func NewHub(logger log.Logger, db tmDB.DB, traceStore io.Writer, loadLatest bool
 	bApp.SetCommitMultiStoreTracer(traceStore)
 
 	var app = &Hub{
-		BaseApp:          bApp,
-		cdc:              cdc,
-		invCheckPeriod:   invCheckPeriod,
-		keyParams:        csdkTypes.NewKVStoreKey(params.StoreKey),
-		keyMain:          csdkTypes.NewKVStoreKey(baseapp.MainStoreKey),
-		keyAccount:       csdkTypes.NewKVStoreKey(auth.StoreKey),
-		keyFeeCollection: csdkTypes.NewKVStoreKey(auth.FeeStoreKey),
-		keyStaking:       csdkTypes.NewKVStoreKey(staking.StoreKey),
-		keySlashing:      csdkTypes.NewKVStoreKey(slashing.StoreKey),
-		keyDistribution:  csdkTypes.NewKVStoreKey(distribution.StoreKey),
-		keyGov:           csdkTypes.NewKVStoreKey(gov.StoreKey),
-		keyMint:          csdkTypes.NewKVStoreKey(mint.StoreKey),
-		keyDeposit:       csdkTypes.NewKVStoreKey(deposit.StoreKey),
-		keyVPNNode:       csdkTypes.NewKVStoreKey(vpn.StoreKeyNode),
-		keyVPNSession:    csdkTypes.NewKVStoreKey(vpn.StoreKeySession),
-		tkeyParams:       csdkTypes.NewTransientStoreKey(params.TStoreKey),
-		tkeyStaking:      csdkTypes.NewTransientStoreKey(staking.TStoreKey),
-		tkeyDistribution: csdkTypes.NewTransientStoreKey(distribution.TStoreKey),
+		BaseApp:            bApp,
+		cdc:                cdc,
+		invCheckPeriod:     invCheckPeriod,
+		keyParams:          csdkTypes.NewKVStoreKey(params.StoreKey),
+		keyMain:            csdkTypes.NewKVStoreKey(baseapp.MainStoreKey),
+		keyAccount:         csdkTypes.NewKVStoreKey(auth.StoreKey),
+		keyFeeCollection:   csdkTypes.NewKVStoreKey(auth.FeeStoreKey),
+		keyStaking:         csdkTypes.NewKVStoreKey(staking.StoreKey),
+		keySlashing:        csdkTypes.NewKVStoreKey(slashing.StoreKey),
+		keyDistribution:    csdkTypes.NewKVStoreKey(distribution.StoreKey),
+		keyGov:             csdkTypes.NewKVStoreKey(gov.StoreKey),
+		keyMint:            csdkTypes.NewKVStoreKey(mint.StoreKey),
+		keyDeposit:         csdkTypes.NewKVStoreKey(deposit.StoreKey),
+		keyVPNNode:         csdkTypes.NewKVStoreKey(vpn.StoreKeyNode),
+		keyVPNSession:      csdkTypes.NewKVStoreKey(vpn.StoreKeySession),
+		keyVPNSubscription: csdkTypes.NewKVStoreKey(vpn.StoreKeySubscription),
+		tkeyParams:         csdkTypes.NewTransientStoreKey(params.TStoreKey),
+		tkeyStaking:        csdkTypes.NewTransientStoreKey(staking.TStoreKey),
+		tkeyDistribution:   csdkTypes.NewTransientStoreKey(distribution.TStoreKey),
 	}
 
 	app.paramsKeeper = params.NewKeeper(app.cdc,
@@ -161,6 +163,7 @@ func NewHub(logger log.Logger, db tmDB.DB, traceStore io.Writer, loadLatest bool
 	app.vpnKeeper = vpn.NewKeeper(app.cdc,
 		app.keyVPNNode,
 		app.keyVPNSession,
+		app.keyVPNSubscription,
 		app.paramsKeeper.Subspace(vpn.DefaultParamspace),
 		app.accountKeeper,
 		app.depositKeeper)

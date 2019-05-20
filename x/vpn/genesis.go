@@ -14,30 +14,32 @@ func InitGenesis(ctx csdkTypes.Context, k Keeper, data types.GenesisState) {
 
 		count := k.GetNodesCount(ctx, node.Owner)
 		k.SetNodesCount(ctx, node.Owner, count+1)
+	}
 
-		if node.Status == types.StatusActive {
-			k.AddActiveNodeIDAtHeight(ctx, ctx.BlockHeight(), node.ID)
-		}
+	for _, subscription := range data.Subscriptions {
+		k.SetSubscription(ctx, subscription)
+
+		node, _ := k.GetNode(ctx, subscription.NodeID)
+		node.SubscriptionsCount += 1
+		k.SetNode(ctx, node)
 	}
 
 	for _, session := range data.Sessions {
 		k.SetSession(ctx, session)
 
-		count := k.GetSessionsCount(ctx, session.Client)
-		k.SetSessionsCount(ctx, session.Client, count+1)
-
-		if session.Status == types.StatusActive {
-			k.AddActiveSessionIDAtHeight(ctx, ctx.BlockHeight(), session.ID)
-		}
+		subscription, _ := k.GetSubscription(ctx, session.SubscriptionID)
+		subscription.SessionsCount += 1
+		k.SetSubscription(ctx, subscription)
 	}
 }
 
 func ExportGenesis(ctx csdkTypes.Context, k Keeper) types.GenesisState {
 	params := k.GetParams(ctx)
-	nodes := k.GetNodes(ctx)
+	nodes := k.GetAllNodes(ctx)
+	subscriptions := k.GetAllSubscriptions(ctx)
 	sessions := k.GetAllSessions(ctx)
 
-	return types.NewGenesisState(nodes, sessions, params)
+	return types.NewGenesisState(nodes, subscriptions, sessions, params)
 }
 
 func ValidateGenesis(data types.GenesisState) error {

@@ -12,7 +12,7 @@ import (
 
 const (
 	QueryNode           = "node"
-	QueryNodesOfAddress = "nodes_of_address"
+	QueryNodesOfAddress = "nodesOfAddress"
 )
 
 func NewQuerier(vk keeper.Keeper, cdc *codec.Codec) csdkTypes.Querier {

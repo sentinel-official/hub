@@ -7,50 +7,6 @@ import (
 	"github.com/ironman0x7b2/sentinel-sdk/x/vpn/types"
 )
 
-func (k Keeper) SetNode(ctx csdkTypes.Context, node types.Node) {
-	key := types.NodeKey(node.ID)
-	value := k.cdc.MustMarshalBinaryLengthPrefixed(node)
-
-	store := ctx.KVStore(k.nodeStoreKey)
-	store.Set(key, value)
-}
-
-func (k Keeper) GetNode(ctx csdkTypes.Context, id sdkTypes.ID) (node types.Node, found bool) {
-	store := ctx.KVStore(k.nodeStoreKey)
-
-	key := types.NodeKey(id)
-	value := store.Get(key)
-	if value == nil {
-		return node, false
-	}
-
-	k.cdc.MustUnmarshalBinaryLengthPrefixed(value, &node)
-	return node, true
-}
-
-func (k Keeper) SetActiveNodeIDsAtHeight(ctx csdkTypes.Context, height int64, ids sdkTypes.IDs) {
-	ids = ids.Sort()
-
-	key := types.ActiveNodeIDsAtHeightKey(height)
-	value := k.cdc.MustMarshalBinaryLengthPrefixed(ids)
-
-	store := ctx.KVStore(k.nodeStoreKey)
-	store.Set(key, value)
-}
-
-func (k Keeper) GetActiveNodeIDsAtHeight(ctx csdkTypes.Context, height int64) (ids sdkTypes.IDs) {
-	store := ctx.KVStore(k.nodeStoreKey)
-
-	key := types.ActiveNodeIDsAtHeightKey(height)
-	value := store.Get(key)
-	if value == nil {
-		return ids
-	}
-
-	k.cdc.MustUnmarshalBinaryLengthPrefixed(value, &ids)
-	return ids
-}
-
 func (k Keeper) SetNodesCount(ctx csdkTypes.Context, address csdkTypes.AccAddress, count uint64) {
 	key := types.NodesCountKey(address)
 	value := k.cdc.MustMarshalBinaryLengthPrefixed(count)
@@ -72,12 +28,56 @@ func (k Keeper) GetNodesCount(ctx csdkTypes.Context, address csdkTypes.AccAddres
 	return count
 }
 
+func (k Keeper) SetNode(ctx csdkTypes.Context, node types.Node) {
+	key := types.NodeKey(node.ID)
+	value := k.cdc.MustMarshalBinaryLengthPrefixed(node)
+
+	store := ctx.KVStore(k.nodeStoreKey)
+	store.Set(key, value)
+}
+
+func (k Keeper) GetNode(ctx csdkTypes.Context, id sdkTypes.ID) (node types.Node, found bool) {
+	store := ctx.KVStore(k.nodeStoreKey)
+
+	key := types.NodeKey(id)
+	value := store.Get(key)
+	if value == nil {
+		return node, false
+	}
+
+	k.cdc.MustUnmarshalBinaryLengthPrefixed(value, &node)
+	return node, true
+}
+
+func (k Keeper) SetActiveNodeIDs(ctx csdkTypes.Context, height int64, ids sdkTypes.IDs) {
+	ids = ids.Sort()
+
+	key := types.ActiveNodeIDsKey(height)
+	value := k.cdc.MustMarshalBinaryLengthPrefixed(ids)
+
+	store := ctx.KVStore(k.nodeStoreKey)
+	store.Set(key, value)
+}
+
+func (k Keeper) GetActiveNodeIDs(ctx csdkTypes.Context, height int64) (ids sdkTypes.IDs) {
+	store := ctx.KVStore(k.nodeStoreKey)
+
+	key := types.ActiveNodeIDsKey(height)
+	value := store.Get(key)
+	if value == nil {
+		return ids
+	}
+
+	k.cdc.MustUnmarshalBinaryLengthPrefixed(value, &ids)
+	return ids
+}
+
 func (k Keeper) GetNodesOfAddress(ctx csdkTypes.Context, address csdkTypes.AccAddress) (nodes []types.Node) {
 	count := k.GetNodesCount(ctx, address)
 
 	nodes = make([]types.Node, 0, count)
 	for index := uint64(0); index < count; index++ {
-		id := sdkTypes.IDFromAddressAndCount(address, index)
+		id := types.NodeID(address, index)
 		node, _ := k.GetNode(ctx, id)
 		nodes = append(nodes, node)
 	}
@@ -85,7 +85,7 @@ func (k Keeper) GetNodesOfAddress(ctx csdkTypes.Context, address csdkTypes.AccAd
 	return nodes
 }
 
-func (k Keeper) GetNodes(ctx csdkTypes.Context) (nodes []types.Node) {
+func (k Keeper) GetAllNodes(ctx csdkTypes.Context) (nodes []types.Node) {
 	store := ctx.KVStore(k.nodeStoreKey)
 
 	iter := csdkTypes.KVStorePrefixIterator(store, types.NodeKeyPrefix)
@@ -104,6 +104,13 @@ func (k Keeper) AddNode(ctx csdkTypes.Context, node types.Node) (allTags csdkTyp
 	allTags = csdkTypes.EmptyTags()
 
 	count := k.GetNodesCount(ctx, node.Owner)
+	node.ID = types.NodeID(node.Owner, count)
+
+	node.OwnerPubKey, err = k.accountKeeper.GetPubKey(ctx, node.Owner)
+	if err != nil {
+		return nil, err
+	}
+
 	if count >= k.FreeNodesCount(ctx) {
 		node.Deposit = k.Deposit(ctx)
 
@@ -115,13 +122,6 @@ func (k Keeper) AddNode(ctx csdkTypes.Context, node types.Node) (allTags csdkTyp
 		allTags = allTags.AppendTags(tags)
 	}
 
-	node.OwnerPubKey, err = k.accountKeeper.GetPubKey(ctx, node.Owner)
-	if err != nil {
-		return nil, err
-	}
-
-	node.ID = sdkTypes.IDFromAddressAndCount(node.Owner, count)
-
 	k.SetNode(ctx, node)
 	allTags = allTags.AppendTag(types.TagNodeID, node.ID.String())
 
@@ -129,18 +129,18 @@ func (k Keeper) AddNode(ctx csdkTypes.Context, node types.Node) (allTags csdkTyp
 	return allTags, nil
 }
 
-func (k Keeper) AddActiveNodeIDAtHeight(ctx csdkTypes.Context, height int64, id sdkTypes.ID) {
-	ids := k.GetActiveNodeIDsAtHeight(ctx, height)
+func (k Keeper) AddActiveNodeID(ctx csdkTypes.Context, height int64, id sdkTypes.ID) {
+	ids := k.GetActiveNodeIDs(ctx, height)
 	if ids.Search(id) != ids.Len() {
 		return
 	}
 
 	ids = ids.Append(id)
-	k.SetActiveNodeIDsAtHeight(ctx, height, ids)
+	k.SetActiveNodeIDs(ctx, height, ids)
 }
 
-func (k Keeper) RemoveActiveNodeIDAtHeight(ctx csdkTypes.Context, height int64, id sdkTypes.ID) {
-	ids := k.GetActiveNodeIDsAtHeight(ctx, height)
+func (k Keeper) RemoveActiveNodeID(ctx csdkTypes.Context, height int64, id sdkTypes.ID) {
+	ids := k.GetActiveNodeIDs(ctx, height)
 
 	index := ids.Search(id)
 	if index == ids.Len() {
@@ -148,5 +148,5 @@ func (k Keeper) RemoveActiveNodeIDAtHeight(ctx csdkTypes.Context, height int64, 
 	}
 
 	ids = ids.Delete(index)
-	k.SetActiveNodeIDsAtHeight(ctx, height, ids)
+	k.SetActiveNodeIDs(ctx, height, ids)
 }

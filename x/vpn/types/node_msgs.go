@@ -8,44 +8,45 @@ import (
 	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
 )
 
-type MsgRegisterNode struct {
-	From csdkTypes.AccAddress `json:"from"`
+var _ csdkTypes.Msg = (*MsgRegisterNode)(nil)
 
-	Moniker          string             `json:"moniker"`
-	PricesPerGB      csdkTypes.Coins    `json:"prices_per_gb"`
-	InternetSpeed    sdkTypes.Bandwidth `json:"internet_speed"`
-	EncryptionMethod string             `json:"encryption_method"`
-	Type_            string             `json:"type_"`
-	Version          string             `json:"version"`
+type MsgRegisterNode struct {
+	From          csdkTypes.AccAddress `json:"from"`
+	Type_         string               `json:"type_"`
+	Version       string               `json:"version"`
+	Moniker       string               `json:"moniker"`
+	PricesPerGB   csdkTypes.Coins      `json:"prices_per_gb"`
+	InternetSpeed sdkTypes.Bandwidth   `json:"internet_speed"`
+	Encryption    string               `json:"encryption"`
 }
 
 func (msg MsgRegisterNode) Type() string {
-	return "msg_register_node"
+	return "MsgRegisterNode"
 }
 
 func (msg MsgRegisterNode) ValidateBasic() csdkTypes.Error {
 	if msg.From == nil || msg.From.Empty() {
 		return ErrorInvalidField("from")
 	}
-
-	if len(msg.Moniker) > 128 {
-		return ErrorInvalidField("moniker")
-	}
-	if msg.PricesPerGB == nil || msg.PricesPerGB.Len() == 0 ||
-		!msg.PricesPerGB.IsValid() || !msg.PricesPerGB.IsAllPositive() {
-		return ErrorInvalidField("prices_per_gb")
-	}
-	if !msg.InternetSpeed.IsPositive() {
-		return ErrorInvalidField("internet_speed")
-	}
-	if len(msg.EncryptionMethod) == 0 {
-		return ErrorInvalidField("encryption_method")
-	}
 	if len(msg.Type_) == 0 {
 		return ErrorInvalidField("type_")
 	}
 	if len(msg.Version) == 0 {
 		return ErrorInvalidField("version")
+	}
+	if len(msg.Moniker) > 128 {
+		return ErrorInvalidField("moniker")
+	}
+	if msg.PricesPerGB == nil ||
+		msg.PricesPerGB.Len() == 0 || !msg.PricesPerGB.IsValid() {
+
+		return ErrorInvalidField("prices_per_gb")
+	}
+	if !msg.InternetSpeed.IsPositive() {
+		return ErrorInvalidField("internet_speed")
+	}
+	if len(msg.Encryption) == 0 {
+		return ErrorInvalidField("encryption")
 	}
 
 	return nil
@@ -69,50 +70,50 @@ func (msg MsgRegisterNode) Route() string {
 }
 
 func NewMsgRegisterNode(from csdkTypes.AccAddress,
-	moniker string, pricesPerGB csdkTypes.Coins, internetSpeed sdkTypes.Bandwidth,
-	encryptionMethod, type_, version string) *MsgRegisterNode {
+	type_, version, moniker string, pricesPerGB csdkTypes.Coins,
+	internetSpeed sdkTypes.Bandwidth, encryption string) *MsgRegisterNode {
 
 	return &MsgRegisterNode{
-		From: from,
-
-		Moniker:          moniker,
-		PricesPerGB:      pricesPerGB,
-		InternetSpeed:    internetSpeed,
-		EncryptionMethod: encryptionMethod,
-		Type_:            type_,
-		Version:          version,
+		From:          from,
+		Type_:         type_,
+		Version:       version,
+		Moniker:       moniker,
+		PricesPerGB:   pricesPerGB,
+		InternetSpeed: internetSpeed,
+		Encryption:    encryption,
 	}
 }
 
-type MsgUpdateNodeDetails struct {
-	From csdkTypes.AccAddress `json:"from"`
-	ID   sdkTypes.ID          `json:"id"`
+var _ csdkTypes.Msg = (*MsgUpdateNodeInfo)(nil)
 
-	Moniker          string             `json:"moniker"`
-	PricesPerGB      csdkTypes.Coins    `json:"prices_per_gb"`
-	InternetSpeed    sdkTypes.Bandwidth `json:"internet_speed"`
-	EncryptionMethod string             `json:"encryption_method"`
-	Type_            string             `json:"type_"`
-	Version          string             `json:"version"`
+type MsgUpdateNodeInfo struct {
+	From          csdkTypes.AccAddress `json:"from"`
+	ID            sdkTypes.ID          `json:"id"`
+	Type_         string               `json:"type_"`
+	Version       string               `json:"version"`
+	Moniker       string               `json:"moniker"`
+	PricesPerGB   csdkTypes.Coins      `json:"prices_per_gb"`
+	InternetSpeed sdkTypes.Bandwidth   `json:"internet_speed"`
+	Encryption    string               `json:"encryption"`
 }
 
-func (msg MsgUpdateNodeDetails) Type() string {
-	return "msg_update_node_details"
+func (msg MsgUpdateNodeInfo) Type() string {
+	return "MsgUpdateNodeInfo"
 }
 
-func (msg MsgUpdateNodeDetails) ValidateBasic() csdkTypes.Error {
+func (msg MsgUpdateNodeInfo) ValidateBasic() csdkTypes.Error {
 	if msg.From == nil || msg.From.Empty() {
 		return ErrorInvalidField("from")
 	}
-	if msg.ID.Len() == 0 || !msg.ID.Valid() {
+	if msg.ID == nil || msg.ID.Len() == 0 {
 		return ErrorInvalidField("id")
 	}
-
 	if len(msg.Moniker) > 128 {
 		return ErrorInvalidField("moniker")
 	}
-	if msg.PricesPerGB != nil && (msg.PricesPerGB.Len() == 0 ||
-		!msg.PricesPerGB.IsValid() || !msg.PricesPerGB.IsAllPositive()) {
+	if msg.PricesPerGB != nil &&
+		(msg.PricesPerGB.Len() == 0 || !msg.PricesPerGB.IsValid()) {
+
 		return ErrorInvalidField("prices_per_gb")
 	}
 	if msg.InternetSpeed.IsNegative() {
@@ -122,7 +123,7 @@ func (msg MsgUpdateNodeDetails) ValidateBasic() csdkTypes.Error {
 	return nil
 }
 
-func (msg MsgUpdateNodeDetails) GetSignBytes() []byte {
+func (msg MsgUpdateNodeInfo) GetSignBytes() []byte {
 	msgBytes, err := json.Marshal(msg)
 	if err != nil {
 		panic(err)
@@ -131,50 +132,49 @@ func (msg MsgUpdateNodeDetails) GetSignBytes() []byte {
 	return msgBytes
 }
 
-func (msg MsgUpdateNodeDetails) GetSigners() []csdkTypes.AccAddress {
+func (msg MsgUpdateNodeInfo) GetSigners() []csdkTypes.AccAddress {
 	return []csdkTypes.AccAddress{msg.From}
 }
 
-func (msg MsgUpdateNodeDetails) Route() string {
+func (msg MsgUpdateNodeInfo) Route() string {
 	return RouterKey
 }
 
-func NewMsgUpdateNodeDetails(from csdkTypes.AccAddress, id sdkTypes.ID,
-	moniker string, pricesPerGB csdkTypes.Coins, internetSpeed sdkTypes.Bandwidth,
-	encryptionMethod, type_, version string) *MsgUpdateNodeDetails {
+func NewMsgUpdateNodeInfo(from csdkTypes.AccAddress, id sdkTypes.ID,
+	moniker, type_, version string, pricesPerGB csdkTypes.Coins,
+	internetSpeed sdkTypes.Bandwidth, encryption string) *MsgUpdateNodeInfo {
 
-	return &MsgUpdateNodeDetails{
-		From: from,
-		ID:   id,
-
-		Moniker:          moniker,
-		PricesPerGB:      pricesPerGB,
-		InternetSpeed:    internetSpeed,
-		EncryptionMethod: encryptionMethod,
-		Type_:            type_,
-		Version:          version,
+	return &MsgUpdateNodeInfo{
+		From:          from,
+		ID:            id,
+		Type_:         type_,
+		Version:       version,
+		Moniker:       moniker,
+		PricesPerGB:   pricesPerGB,
+		InternetSpeed: internetSpeed,
+		Encryption:    encryption,
 	}
 }
 
-type MsgUpdateNodeStatus struct {
-	From csdkTypes.AccAddress `json:"from"`
-	ID   sdkTypes.ID          `json:"id"`
+var _ csdkTypes.Msg = (*MsgUpdateNodeStatus)(nil)
 
-	Status string `json:"status"`
+type MsgUpdateNodeStatus struct {
+	From   csdkTypes.AccAddress `json:"from"`
+	ID     sdkTypes.ID          `json:"id"`
+	Status string               `json:"status"`
 }
 
 func (msg MsgUpdateNodeStatus) Type() string {
-	return "msg_update_node_status"
+	return "MsgUpdateNodeStatus"
 }
 
 func (msg MsgUpdateNodeStatus) ValidateBasic() csdkTypes.Error {
 	if msg.From == nil || msg.From.Empty() {
 		return ErrorInvalidField("from")
 	}
-	if msg.ID.Len() == 0 || !msg.ID.Valid() {
+	if msg.ID == nil || msg.ID.Len() == 0 {
 		return ErrorInvalidField("id")
 	}
-
 	if msg.Status != StatusActive && msg.Status != StatusInactive {
 		return ErrorInvalidField("status")
 	}
@@ -203,12 +203,13 @@ func NewMsgUpdateNodeStatus(from csdkTypes.AccAddress, id sdkTypes.ID,
 	status string) *MsgUpdateNodeStatus {
 
 	return &MsgUpdateNodeStatus{
-		From: from,
-		ID:   id,
-
+		From:   from,
+		ID:     id,
 		Status: status,
 	}
 }
+
+var _ csdkTypes.Msg = (*MsgDeregisterNode)(nil)
 
 type MsgDeregisterNode struct {
 	From csdkTypes.AccAddress `json:"from"`
@@ -216,14 +217,14 @@ type MsgDeregisterNode struct {
 }
 
 func (msg MsgDeregisterNode) Type() string {
-	return "msg_deregister_node"
+	return "MsgDeregisterNode"
 }
 
 func (msg MsgDeregisterNode) ValidateBasic() csdkTypes.Error {
 	if msg.From == nil || msg.From.Empty() {
 		return ErrorInvalidField("from")
 	}
-	if msg.ID.Len() == 0 || !msg.ID.Valid() {
+	if msg.ID == nil || msg.ID.Len() == 0 {
 		return ErrorInvalidField("id")
 	}
 

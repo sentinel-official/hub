@@ -1,16 +1,18 @@
 package types
 
 type GenesisState struct {
-	Nodes    []Node    `json:"nodes"`
-	Sessions []Session `json:"sessions"`
-	Params   Params    `json:"params"`
+	Nodes         []Node         `json:"nodes"`
+	Subscriptions []Subscription `json:"subscriptions"`
+	Sessions      []Session      `json:"sessions"`
+	Params        Params         `json:"params"`
 }
 
-func NewGenesisState(nodes []Node, sessions []Session, params Params) GenesisState {
+func NewGenesisState(nodes []Node, subscriptions []Subscription, sessions []Session, params Params) GenesisState {
 	return GenesisState{
-		Nodes:    nodes,
-		Sessions: sessions,
-		Params:   params,
+		Nodes:         nodes,
+		Subscriptions: subscriptions,
+		Sessions:      sessions,
+		Params:        params,
 	}
 }
 

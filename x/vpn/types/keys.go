@@ -1,57 +1,66 @@
 package types
 
 import (
-	"fmt"
-
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
 
 	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
 )
 
 const (
-	ModuleName       = "vpn"
-	StoreKeySession  = "vpn_session"
-	StoreKeyNode     = "vpn_node"
-	QuerierRoute     = ModuleName
-	RouterKey        = ModuleName
-	StatusRegister   = "REGISTER"
-	StatusActive     = "ACTIVE"
-	StatusInactive   = "INACTIVE"
-	StatusDeregister = "DEREGISTER"
-	StatusInit       = "INIT"
-	StatusEnd        = "END"
+	ModuleName           = "vpn"
+	StoreKeySession      = "vpnSession"
+	StoreKeyNode         = "vpnNode"
+	StoreKeySubscription = "vpnSubscription"
+	QuerierRoute         = ModuleName
+	RouterKey            = ModuleName
+
+	StatusRegistered   = "REGISTERED"
+	StatusActive       = "ACTIVE"
+	StatusInactive     = "INACTIVE"
+	StatusDeRegistered = "DE-REGISTERED"
+	StatusStarted      = "STARTED"
+	StatusEnded        = "ENDED"
 )
 
 var (
-	NodeKeyPrefix               = []byte{0x01}
-	NodesCountKeyPrefix         = []byte{0x02}
-	ActiveNodeIDsAtHeightPrefix = []byte{0x03}
-
-	SessionKeyPrefix               = []byte{0x01}
-	SessionsCountKeyPrefix         = []byte{0x02}
-	ActiveSessionIDsAtHeightPrefix = []byte{0x03}
+	NodesCountKeyPrefix   = []byte{0x00}
+	NodeKeyPrefix         = []byte{0x01}
+	SubscriptionKeyPrefix = []byte{0x01}
+	SessionKeyPrefix      = []byte{0x01}
 )
-
-func NodeKey(id sdkTypes.ID) []byte {
-	return append(NodeKeyPrefix, id.Bytes()...)
-}
 
 func NodesCountKey(address csdkTypes.AccAddress) []byte {
 	return append(NodesCountKeyPrefix, address.Bytes()...)
 }
 
-func ActiveNodeIDsAtHeightKey(height int64) []byte {
-	return append(ActiveNodeIDsAtHeightPrefix, []byte(fmt.Sprintf("%d", height))...)
+func NodeID(address csdkTypes.Address, count uint64) []byte {
+	return append(address.Bytes(), csdkTypes.Uint64ToBigEndian(count)...)
+}
+
+func NodeKey(id sdkTypes.ID) []byte {
+	return append(NodeKeyPrefix, id.Bytes()...)
+}
+
+func SubscriptionID(nodeID sdkTypes.ID, count uint64) []byte {
+	return append(nodeID.Bytes(), csdkTypes.Uint64ToBigEndian(count)...)
+}
+
+func SubscriptionKey(id sdkTypes.ID) []byte {
+	return append(SubscriptionKeyPrefix, id.Bytes()...)
+}
+
+func SessionID(subscriptionID sdkTypes.ID, count uint64) []byte {
+	return append(subscriptionID.Bytes(), csdkTypes.Uint64ToBigEndian(count)...)
 }
 
 func SessionKey(id sdkTypes.ID) []byte {
 	return append(SessionKeyPrefix, id.Bytes()...)
 }
 
-func SessionsCountKey(address csdkTypes.AccAddress) []byte {
-	return append(SessionsCountKeyPrefix, address.Bytes()...)
+func ActiveNodeIDsKey(height int64) []byte {
+	return csdkTypes.Uint64ToBigEndian(uint64(height))
 }
 
-func ActiveSessionIDsAtHeightKey(height int64) []byte {
-	return append(ActiveSessionIDsAtHeightPrefix, []byte(fmt.Sprintf("%d", height))...)
+func ActiveSessionIDsKey(height int64) []byte {
+	return csdkTypes.Uint64ToBigEndian(uint64(height))
 }

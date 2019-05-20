@@ -10,23 +10,25 @@ import (
 )
 
 type Keeper struct {
-	nodeStoreKey    csdkTypes.StoreKey
-	sessionStoreKey csdkTypes.StoreKey
-	cdc             *codec.Codec
-	paramStore      params.Subspace
-	accountKeeper   auth.AccountKeeper
-	depositKeeper   deposit.Keeper
+	nodeStoreKey         csdkTypes.StoreKey
+	subscriptionStoreKey csdkTypes.StoreKey
+	sessionStoreKey      csdkTypes.StoreKey
+	cdc                  *codec.Codec
+	paramStore           params.Subspace
+	accountKeeper        auth.AccountKeeper
+	depositKeeper        deposit.Keeper
 }
 
-func NewKeeper(cdc *codec.Codec, nodeKey, sessionKey csdkTypes.StoreKey, paramStore params.Subspace,
-	accountKeeper auth.AccountKeeper, depositKeeper deposit.Keeper) Keeper {
+func NewKeeper(cdc *codec.Codec, nodeKey, subscriptionStoreKey, sessionKey csdkTypes.StoreKey,
+	paramStore params.Subspace, accountKeeper auth.AccountKeeper, depositKeeper deposit.Keeper) Keeper {
 
 	return Keeper{
-		nodeStoreKey:    nodeKey,
-		sessionStoreKey: sessionKey,
-		cdc:             cdc,
-		paramStore:      paramStore.WithKeyTable(ParamKeyTable()),
-		accountKeeper:   accountKeeper,
-		depositKeeper:   depositKeeper,
+		nodeStoreKey:         nodeKey,
+		subscriptionStoreKey: subscriptionStoreKey,
+		sessionStoreKey:      sessionKey,
+		cdc:                  cdc,
+		paramStore:           paramStore.WithKeyTable(ParamKeyTable()),
+		accountKeeper:        accountKeeper,
+		depositKeeper:        depositKeeper,
 	}
 }

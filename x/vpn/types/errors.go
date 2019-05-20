@@ -9,30 +9,35 @@ import (
 const (
 	Codespace = csdkTypes.CodespaceType("vpn")
 
-	errCodeUnknownMsgType       = 101
-	errCodeUnknownQueryType     = 102
-	errCodeInvalidField         = 103
-	errCodeNodeDoesNotExist     = 104
-	errCodeUnauthorized         = 105
-	errCodeInvalidLockDenom     = 106
-	errCodeInvalidNodeStatus    = 107
-	errCodeInvalidPriceDenom    = 108
-	errCodeSessionDoesNotExist  = 109
-	errCodeBandwidthUpdate      = 110
-	errCodeInvalidSessionStatus = 111
+	errCodeUnknownMsgType            = 101
+	errCodeUnknownQueryType          = 102
+	errCodeInvalidField              = 103
+	errCodeUnauthorized              = 105
+	errCodeNodeDoesNotExist          = 104
+	errCodeInvalidNodeStatus         = 107
+	errCodeInvalidDeposit            = 108
+	errCodeSubscriptionDoesNotExist  = 109
+	errCodeSubscriptionAlreadyExists = 110
+	errCodeInvalidSubscriptionStatus = 110
+	errCodeInvalidBandwidth          = 110
+	errCodeInvalidBandwidthSign      = 110
+	errCodeSessionAlreadyExists      = 110
+	errCodeInvalidSessionStatus      = 110
 
-	errMsgUnknownMsgType        = "Unknown message type: "
-	errMsgUnknownQueryType      = "Invalid query type: "
-	errMsgInvalidField          = "Invalid field: "
-	errMsgNodeDoesNotExist      = "Node does not exist"
-	errMsgUnauthorized          = "Unauthorized"
-	errMsgInvalidLockDenom      = "Invalid lock denom"
-	errMsgInvalidNodeStatus     = "Invalid node status"
-	errMsgInvalidPriceDenom     = "Invalid price denom"
-	errMsgSessionDoesNotExist   = "Session does not exist"
-	errMsgInvalidBandwidth      = "Invalid bandwidth"
-	errMsgInvalidBandwidthSigns = "Invalid client sign or node owner sign"
-	errMsgInvalidSessionStatus  = "Invalid session status"
+	errMsgUnknownMsgType            = "Unknown message type: "
+	errMsgUnknownQueryType          = "Invalid query type: "
+	errMsgInvalidField              = "Invalid field: "
+	errMsgUnauthorized              = "Unauthorized"
+	errMsgNodeDoesNotExist          = "Node does not exist"
+	errMsgInvalidNodeStatus         = "Invalid node status"
+	errMsgInvalidDeposit            = "Invalid deposit"
+	errMsgSubscriptionDoesNotExist  = "Subscription does not exist"
+	errMsgSubscriptionAlreadyExists = "Subscription already exists"
+	errMsgInvalidSubscriptionStatus = "Invalid subscription status"
+	errMsgInvalidBandwidth          = "Invalid bandwidth"
+	errMsgInvalidBandwidthSign      = "Invalid bandwidth sign"
+	errMsgSessionAlreadyExists      = "Session is active"
+	errMsgInvalidSessionStatus      = "Invalid session status"
 )
 
 func ErrorMarshal() csdkTypes.Error {
@@ -55,32 +60,44 @@ func ErrorInvalidField(field string) csdkTypes.Error {
 	return csdkTypes.NewError(Codespace, errCodeInvalidField, errMsgInvalidField+field)
 }
 
-func ErrorNodeDoesNotExist() csdkTypes.Error {
-	return csdkTypes.NewError(Codespace, errCodeNodeDoesNotExist, errMsgNodeDoesNotExist)
-}
-
 func ErrorUnauthorized() csdkTypes.Error {
 	return csdkTypes.NewError(Codespace, errCodeUnauthorized, errMsgUnauthorized)
 }
 
-func ErrorInvalidLockDenom() csdkTypes.Error {
-	return csdkTypes.NewError(Codespace, errCodeInvalidLockDenom, errMsgInvalidLockDenom)
+func ErrorNodeDoesNotExist() csdkTypes.Error {
+	return csdkTypes.NewError(Codespace, errCodeNodeDoesNotExist, errMsgNodeDoesNotExist)
 }
 
 func ErrorInvalidNodeStatus() csdkTypes.Error {
 	return csdkTypes.NewError(Codespace, errCodeInvalidNodeStatus, errMsgInvalidNodeStatus)
 }
 
-func ErrorInvalidPriceDenom() csdkTypes.Error {
-	return csdkTypes.NewError(Codespace, errCodeInvalidPriceDenom, errMsgInvalidPriceDenom)
+func ErrorInvalidDeposit() csdkTypes.Error {
+	return csdkTypes.NewError(Codespace, errCodeInvalidDeposit, errMsgInvalidDeposit)
 }
 
-func ErrorSessionDoesNotExist() csdkTypes.Error {
-	return csdkTypes.NewError(Codespace, errCodeSessionDoesNotExist, errMsgSessionDoesNotExist)
+func ErrorSubscriptionDoesNotExist() csdkTypes.Error {
+	return csdkTypes.NewError(Codespace, errCodeSubscriptionDoesNotExist, errMsgSubscriptionDoesNotExist)
 }
 
-func ErrorBandwidthUpdate(msg string) csdkTypes.Error {
-	return csdkTypes.NewError(Codespace, errCodeBandwidthUpdate, msg)
+func ErrorSubscriptionAlreadyExists() csdkTypes.Error {
+	return csdkTypes.NewError(Codespace, errCodeSubscriptionAlreadyExists, errMsgSubscriptionAlreadyExists)
+}
+
+func ErrorInvalidSubscriptionStatus() csdkTypes.Error {
+	return csdkTypes.NewError(Codespace, errCodeInvalidSubscriptionStatus, errMsgInvalidSubscriptionStatus)
+}
+
+func ErrorInvalidBandwidth() csdkTypes.Error {
+	return csdkTypes.NewError(Codespace, errCodeInvalidBandwidth, errMsgInvalidBandwidth)
+}
+
+func ErrorInvalidBandwidthSign() csdkTypes.Error {
+	return csdkTypes.NewError(Codespace, errCodeInvalidBandwidthSign, errMsgInvalidBandwidthSign)
+}
+
+func ErrorSessionAlreadyExists() csdkTypes.Error {
+	return csdkTypes.NewError(Codespace, errCodeSessionAlreadyExists, errMsgSessionAlreadyExists)
 }
 
 func ErrorInvalidSessionStatus() csdkTypes.Error {

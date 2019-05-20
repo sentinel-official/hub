@@ -5,13 +5,15 @@ import (
 )
 
 func RegisterCodec(cdc *codec.Codec) {
-	cdc.RegisterConcrete(MsgRegisterNode{}, "x/vpn/msg_register_node", nil)
-	cdc.RegisterConcrete(MsgUpdateNodeDetails{}, "x/vpn/msg_update_node_details", nil)
-	cdc.RegisterConcrete(MsgUpdateNodeStatus{}, "x/vpn/msg_update_node_status", nil)
-	cdc.RegisterConcrete(MsgDeregisterNode{}, "x/vpn/msg_deregister_node", nil)
+	cdc.RegisterConcrete(MsgRegisterNode{}, "x/vpn/MsgRegisterNode", nil)
+	cdc.RegisterConcrete(MsgUpdateNodeInfo{}, "x/vpn/MsgUpdateNodeInfo", nil)
+	cdc.RegisterConcrete(MsgUpdateNodeStatus{}, "x/vpn/MsgUpdateNodeStatus", nil)
+	cdc.RegisterConcrete(MsgDeregisterNode{}, "x/vpn/MsgDeregisterNode", nil)
 
-	cdc.RegisterConcrete(MsgInitSession{}, "x/vpn/msg_init_session", nil)
-	cdc.RegisterConcrete(MsgUpdateSessionBandwidthInfo{}, "x/vpn/msg_update_session_bandwidth_info", nil)
+	cdc.RegisterConcrete(MsgStartSubscription{}, "x/vpn/MsgStartSubscription", nil)
+	cdc.RegisterConcrete(MsgEndSubscription{}, "x/vpn/MsgEndSubscription", nil)
+
+	cdc.RegisterConcrete(MsgUpdateSessionInfo{}, "x/vpn/MsgUpdateSessionInfo", nil)
 }
 
 var cdc = codec.New()

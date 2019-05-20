@@ -10,23 +10,28 @@ import (
 )
 
 type Node struct {
-	ID          sdkTypes.ID          `json:"id"`
-	Owner       csdkTypes.AccAddress `json:"owner"`
-	OwnerPubKey crypto.PubKey        `json:"owner_pub_key"`
-	Deposit     csdkTypes.Coin       `json:"deposit"`
-
-	Moniker          string             `json:"moniker"`
-	PricesPerGB      csdkTypes.Coins    `json:"prices_per_gb"`
-	InternetSpeed    sdkTypes.Bandwidth `json:"internet_speed"`
-	EncryptionMethod string             `json:"encryption_method"`
-	Type             string             `json:"type"`
-	Version          string             `json:"version"`
-
-	Status                 string `json:"status"`
-	StatusModifiedAtHeight int64  `json:"status_modified_at_height"`
+	ID                 sdkTypes.ID          `json:"id"`
+	Owner              csdkTypes.AccAddress `json:"owner"`
+	OwnerPubKey        crypto.PubKey        `json:"owner_pub_key"`
+	Deposit            csdkTypes.Coin       `json:"deposit"`
+	Type               string               `json:"type"`
+	Version            string               `json:"version"`
+	Moniker            string               `json:"moniker"`
+	PricesPerGB        csdkTypes.Coins      `json:"prices_per_gb"`
+	InternetSpeed      sdkTypes.Bandwidth   `json:"internet_speed"`
+	Encryption         string               `json:"encryption"`
+	SubscriptionsCount uint64               `json:"subscriptions_count"`
+	Status             string               `json:"status"`
+	StatusModifiedAt   int64                `json:"status_modified_at"`
 }
 
-func (n *Node) UpdateDetails(_node Node) {
+func (n Node) UpdateInfo(_node Node) Node {
+	if len(_node.Type) != 0 {
+		n.Type = _node.Type
+	}
+	if len(_node.Version) != 0 {
+		n.Version = _node.Version
+	}
 	if len(_node.Moniker) != 0 {
 		n.Moniker = _node.Moniker
 	}
@@ -37,15 +42,11 @@ func (n *Node) UpdateDetails(_node Node) {
 	if !_node.InternetSpeed.IsNil() && _node.InternetSpeed.IsPositive() {
 		n.InternetSpeed = _node.InternetSpeed
 	}
-	if len(_node.EncryptionMethod) != 0 {
-		n.EncryptionMethod = _node.EncryptionMethod
+	if len(_node.Encryption) != 0 {
+		n.Encryption = _node.Encryption
 	}
-	if len(_node.Type) != 0 {
-		n.Type = _node.Type
-	}
-	if len(_node.Version) != 0 {
-		n.Version = _node.Version
-	}
+
+	return n
 }
 
 func (n Node) FindPricePerGB(denom string) csdkTypes.Coin {
@@ -64,7 +65,7 @@ func (n Node) FindPricePerGB(denom string) csdkTypes.Coin {
 func (n Node) AmountToBandwidth(amount csdkTypes.Coin) (sdkTypes.Bandwidth, csdkTypes.Error) {
 	pricePerGB := n.FindPricePerGB(amount.Denom)
 	if len(pricePerGB.Denom) == 0 || pricePerGB.Amount.IsZero() {
-		return sdkTypes.Bandwidth{}, ErrorInvalidPriceDenom()
+		return sdkTypes.Bandwidth{}, ErrorInvalidDeposit()
 	}
 
 	upload := amount.Amount.Mul(sdkTypes.GB).Quo(pricePerGB.Amount)
