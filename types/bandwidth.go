@@ -55,36 +55,41 @@ func (b Bandwidth) Add(bandwidth Bandwidth) Bandwidth {
 	return b
 }
 
-func (b Bandwidth) LT(bandwidth Bandwidth) bool {
+func (b Bandwidth) AllLT(bandwidth Bandwidth) bool {
 	return b.Upload.LT(bandwidth.Upload) &&
 		b.Download.LT(bandwidth.Download)
 }
 
-func (b Bandwidth) Equal(bandwidth Bandwidth) bool {
+func (b Bandwidth) AnyLT(bandwidth Bandwidth) bool {
+	return b.Upload.LT(bandwidth.Upload) ||
+		b.Download.LT(bandwidth.Download)
+}
+
+func (b Bandwidth) AllEqual(bandwidth Bandwidth) bool {
 	return b.Upload.Equal(bandwidth.Upload) &&
 		b.Download.Equal(bandwidth.Download)
 }
 
-func (b Bandwidth) LTE(bandwidth Bandwidth) bool {
-	return b.LT(bandwidth) || b.Equal(bandwidth)
+func (b Bandwidth) AllLTE(bandwidth Bandwidth) bool {
+	return b.AllLT(bandwidth) || b.AllEqual(bandwidth)
 }
 
-func (b Bandwidth) IsZero() bool {
+func (b Bandwidth) AnyZero() bool {
 	return b.Upload.IsZero() ||
 		b.Download.IsZero()
 }
 
-func (b Bandwidth) IsPositive() bool {
+func (b Bandwidth) AllPositive() bool {
 	return b.Upload.IsPositive() &&
 		b.Download.IsPositive()
 }
 
-func (b Bandwidth) IsNegative() bool {
+func (b Bandwidth) AnyNegative() bool {
 	return b.Upload.IsNegative() ||
 		b.Download.IsNegative()
 }
 
-func (b Bandwidth) IsNil() bool {
+func (b Bandwidth) AnyNil() bool {
 	return b.Upload == csdkTypes.Int{} ||
 		b.Download == csdkTypes.Int{}
 }

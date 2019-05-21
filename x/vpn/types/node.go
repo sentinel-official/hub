@@ -67,7 +67,7 @@ func (n Node) UpdateInfo(_node Node) Node {
 
 		n.PricesPerGB = _node.PricesPerGB
 	}
-	if !_node.InternetSpeed.IsNil() && _node.InternetSpeed.IsPositive() {
+	if !_node.InternetSpeed.AnyNil() && _node.InternetSpeed.AllPositive() {
 		n.InternetSpeed = _node.InternetSpeed
 	}
 	if len(_node.Encryption) != 0 {
@@ -125,7 +125,7 @@ func (n Node) IsValid() error {
 	if n.PricesPerGB == nil || !n.PricesPerGB.IsValid() {
 		return fmt.Errorf("invalid price per gb")
 	}
-	if n.InternetSpeed.IsNil() || !n.InternetSpeed.IsPositive() {
+	if n.InternetSpeed.AnyNil() || !n.InternetSpeed.AllPositive() {
 		return fmt.Errorf("invalid internet speed")
 	}
 	if len(n.Encryption) == 0 {
@@ -134,9 +134,6 @@ func (n Node) IsValid() error {
 	if n.Status != StatusRegistered && n.Status != StatusActive &&
 		n.Status != StatusInactive && n.Status != StatusDeRegistered {
 		return fmt.Errorf("invalid status")
-	}
-	if !csdkTypes.AccAddress(n.ID.Bytes()[:20]).Equals(n.Owner) {
-		return fmt.Errorf("id is not related to owner")
 	}
 
 	return nil

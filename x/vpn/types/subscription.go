@@ -48,3 +48,41 @@ func (s Subscription) String() string {
 		s.PricePerGB, s.TotalDeposit, s.TotalBandwidth, s.ConsumedDeposit, s.ConsumedBandwidth,
 		s.CalculatedBandwidth, s.SessionsCount, s.Status, s.StatusModifiedAt)
 }
+
+func (s Subscription) IsValid() error {
+	if s.ID == nil || s.ID.Len() < 24 {
+		return fmt.Errorf("invalid id")
+	}
+	if s.NodeID == nil || s.NodeID.Len() < 22 {
+		return fmt.Errorf("ivalid node id")
+	}
+	if s.Client == nil || s.Client.Empty() {
+		return fmt.Errorf("invalid client")
+	}
+	if s.ClientPubKey == nil {
+		return fmt.Errorf("invalid client public key")
+	}
+	if len(s.PricePerGB.Denom) == 0 || s.PricePerGB.IsZero() {
+		return fmt.Errorf("invalid price per gb")
+	}
+	if len(s.TotalDeposit.Denom) == 0 || s.TotalDeposit.IsZero() {
+		return fmt.Errorf("invalid total deposit")
+	}
+	if s.TotalBandwidth.AnyNil() || !s.TotalBandwidth.AllPositive() {
+		return fmt.Errorf("invalid total bandwidth")
+	}
+	if len(s.ConsumedDeposit.Denom) == 0 || s.TotalDeposit.IsLT(s.ConsumedDeposit) {
+		return fmt.Errorf("invalid consumed deposit")
+	}
+	if s.ConsumedBandwidth.AnyNil() || !s.TotalBandwidth.AnyLT(s.ConsumedBandwidth) {
+		return fmt.Errorf("invalid total consumed bandwidth")
+	}
+	if s.CalculatedBandwidth.AnyNil() || !s.TotalBandwidth.AnyLT(s.CalculatedBandwidth) {
+		return fmt.Errorf("invalid total calculated bandwidth")
+	}
+	if s.Status != StatusActive && s.Status != StatusInactive {
+		return fmt.Errorf("invalid status")
+	}
+
+	return nil
+}

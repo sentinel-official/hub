@@ -29,7 +29,7 @@ func (msg MsgUpdateSessionInfo) ValidateBasic() csdkTypes.Error {
 	if msg.SubscriptionID == nil || msg.SubscriptionID.Len() == 0 {
 		return ErrorInvalidField("subscription_id")
 	}
-	if !msg.Bandwidth.IsPositive() {
+	if !msg.Bandwidth.AllPositive() {
 		return ErrorInvalidField("bandwidth")
 	}
 	if len(msg.NodeOwnerSign) == 0 {

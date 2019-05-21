@@ -42,7 +42,7 @@ func (msg MsgRegisterNode) ValidateBasic() csdkTypes.Error {
 
 		return ErrorInvalidField("prices_per_gb")
 	}
-	if !msg.InternetSpeed.IsPositive() {
+	if !msg.InternetSpeed.AllPositive() {
 		return ErrorInvalidField("internet_speed")
 	}
 	if len(msg.Encryption) == 0 {
@@ -116,7 +116,7 @@ func (msg MsgUpdateNodeInfo) ValidateBasic() csdkTypes.Error {
 
 		return ErrorInvalidField("prices_per_gb")
 	}
-	if msg.InternetSpeed.IsNegative() {
+	if msg.InternetSpeed.AnyNegative() {
 		return ErrorInvalidField("internet_speed")
 	}
 

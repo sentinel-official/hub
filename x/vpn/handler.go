@@ -76,7 +76,7 @@ func endBlockSessions(ctx csdkTypes.Context, k keeper.Keeper, height int64) csdk
 			panic(fmt.Errorf("subscription total deposit is less than "+
 				"consumed deposit: %s < %s", subscription.TotalDeposit, consumedDeposit))
 		}
-		if subscription.TotalBandwidth.LT(calculatedBandwidth) {
+		if subscription.TotalBandwidth.AllLT(calculatedBandwidth) {
 			panic(fmt.Errorf("subscription total bandwidth is less than "+
 				"calculated bandwidth: %s < %s", subscription.TotalBandwidth, calculatedBandwidth))
 		}
@@ -334,8 +334,8 @@ func handleUpdateSessionInfo(ctx csdkTypes.Context, k keeper.Keeper, msg types.M
 		}
 	}
 
-	if msg.Bandwidth.LT(session.Bandwidth) ||
-		subscription.TotalBandwidth.LT(subscription.CalculatedBandwidth.Add(msg.Bandwidth)) {
+	if msg.Bandwidth.AllLT(session.Bandwidth) ||
+		subscription.TotalBandwidth.AllLT(subscription.CalculatedBandwidth.Add(msg.Bandwidth)) {
 
 		return types.ErrorInvalidBandwidth().Result()
 	}

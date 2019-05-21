@@ -33,3 +33,23 @@ func (s Session) String() string {
   Status Modified At:   %d`, s.ID, s.SubscriptionID, s.Bandwidth, s.CalculatedBandwidth,
 		nodeOwnerSign, clientSign, s.Status, s.StatusModifiedAt)
 }
+
+func (s Session) IsValid() error {
+	if s.ID == nil || s.ID.Len() < 26 {
+		return fmt.Errorf("invalid id")
+	}
+	if s.SubscriptionID == nil || s.SubscriptionID.Len() < 24 {
+		return fmt.Errorf("invalid subscription id")
+	}
+	if s.Bandwidth.AnyNil() {
+		return fmt.Errorf("invalid bandwidth")
+	}
+	if s.CalculatedBandwidth.AnyNil() {
+		return fmt.Errorf("invalid calculated bandwidth")
+	}
+	if s.Status != StatusActive && s.Status != StatusInactive {
+		return fmt.Errorf("invalid status")
+	}
+
+	return nil
+}
