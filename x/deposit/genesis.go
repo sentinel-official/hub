@@ -23,8 +23,8 @@ func ExportGenesis(ctx csdkTypes.Context, k Keeper) types.GenesisState {
 func ValidateGenesis(data types.GenesisState) error {
 	addressMap := make(map[string]bool, len(data))
 	for _, deposit := range data {
-		if deposit.Address == nil {
-			return fmt.Errorf("address value is nil for deposit %s", deposit)
+		if err := deposit.IsValid(); err != nil {
+			return fmt.Errorf("%s for the deposit %s", err.Error(), deposit)
 		}
 
 		addressStr := deposit.Address.String()
@@ -33,13 +33,6 @@ func ValidateGenesis(data types.GenesisState) error {
 		}
 
 		addressMap[addressStr] = true
-		if deposit.Coins == nil {
-			return fmt.Errorf("coins value is nil for deposit %s", deposit)
-		}
-
-		if !deposit.Coins.IsValid() {
-			return fmt.Errorf("invalid coins for deposit %s", deposit)
-		}
 	}
 
 	return nil

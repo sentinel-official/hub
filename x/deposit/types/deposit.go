@@ -16,3 +16,14 @@ func (d Deposit) String() string {
   Account Address: %s
   Coins:           %s`, d.Address, d.Coins)
 }
+
+func (d Deposit) IsValid() error {
+	if d.Address == nil || d.Address.Empty() {
+		return fmt.Errorf("invalid address")
+	}
+	if !d.Coins.IsValid() {
+		return fmt.Errorf("invalid coins")
+	}
+
+	return nil
+}
