@@ -17,8 +17,6 @@ const (
 	StatusActive         = types.StatusActive
 	StatusInactive       = types.StatusInactive
 	StatusDeRegistered   = types.StatusDeRegistered
-	StatusStarted        = types.StatusStarted
-	StatusEnded          = types.StatusEnded
 	TagNodeID            = types.TagNodeID
 	TagSessionID         = types.TagSessionID
 	DefaultParamspace    = keeper.DefaultParamspace

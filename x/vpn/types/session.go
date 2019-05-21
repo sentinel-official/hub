@@ -8,13 +8,14 @@ import (
 )
 
 type Session struct {
-	ID               sdkTypes.ID        `json:"id"`
-	SubscriptionID   sdkTypes.ID        `json:"subscription_id"`
-	Bandwidth        sdkTypes.Bandwidth `json:"bandwidth"`
-	NodeOwnerSign    []byte             `json:"node_owner_sign"`
-	ClientSign       []byte             `json:"client_sign"`
-	Status           string             `json:"status"`
-	StatusModifiedAt int64              `json:"status_modified_at"`
+	ID                  sdkTypes.ID        `json:"id"`
+	SubscriptionID      sdkTypes.ID        `json:"subscription_id"`
+	Bandwidth           sdkTypes.Bandwidth `json:"bandwidth"`
+	CalculatedBandwidth sdkTypes.Bandwidth `json:"calculated_bandwidth"`
+	NodeOwnerSign       []byte             `json:"node_owner_sign"`
+	ClientSign          []byte             `json:"client_sign"`
+	Status              string             `json:"status"`
+	StatusModifiedAt    int64              `json:"status_modified_at"`
 }
 
 func (s Session) String() string {
@@ -25,9 +26,10 @@ func (s Session) String() string {
   ID:                   %s
   Subscription ID:      %s
   Bandwidth:            %s
+  Calculated Bandwidth: %s
   Node Owner Signature: %s
   Client Signature:     %s
   Status:               %s
-  Status Modified At:   %d`, s.ID, s.SubscriptionID, s.Bandwidth,
+  Status Modified At:   %d`, s.ID, s.SubscriptionID, s.Bandwidth, s.CalculatedBandwidth,
 		nodeOwnerSign, clientSign, s.Status, s.StatusModifiedAt)
 }

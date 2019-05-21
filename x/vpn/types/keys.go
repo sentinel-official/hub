@@ -20,8 +20,6 @@ const (
 	StatusActive       = "ACTIVE"
 	StatusInactive     = "INACTIVE"
 	StatusDeRegistered = "DE-REGISTERED"
-	StatusStarted      = "STARTED"
-	StatusEnded        = "ENDED"
 )
 
 var (

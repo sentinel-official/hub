@@ -1,6 +1,7 @@
 package vpn
 
 import (
+	"fmt"
 	"reflect"
 
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
@@ -63,15 +64,20 @@ func endBlockSessions(ctx csdkTypes.Context, k keeper.Keeper, height int64) csdk
 		session, _ := k.GetSession(ctx, id)
 		subscription, _ := k.GetSubscription(ctx, session.SubscriptionID)
 
-		amount := session.Bandwidth.Upload.Add(session.Bandwidth.Download).
-			Mul(subscription.PricePerGB.Amount).Quo(sdkTypes.GB.Add(sdkTypes.GB))
+		amount := session.CalculatedBandwidth.Sum().Mul(subscription.PricePerGB.Amount).Quo(sdkTypes.GB.Add(sdkTypes.GB))
 		pay := csdkTypes.NewCoin(subscription.PricePerGB.Denom, amount)
 
-		if subscription.TotalDeposit.IsLT(subscription.ConsumedDeposit.Add(pay)) {
-			panic("Subscription total deposit it less than consumed deposit")
+		consumedDeposit := subscription.ConsumedDeposit.Add(pay)
+		consumedBandwidth := subscription.ConsumedBandwidth.Add(session.Bandwidth)
+		calculatedBandwidth := subscription.CalculatedBandwidth.Add(session.CalculatedBandwidth)
+
+		if subscription.TotalDeposit.IsLT(consumedDeposit) {
+			panic(fmt.Errorf("subscription total deposit is less than "+
+				"consumed deposit: %s < %s", subscription.TotalDeposit, consumedDeposit))
 		}
-		if subscription.TotalBandwidth.LT(subscription.ConsumedBandwidth.Add(session.Bandwidth)) {
-			panic("Subscription total bandwidth is less than consumed bandwidth")
+		if subscription.TotalBandwidth.LT(calculatedBandwidth) {
+			panic(fmt.Errorf("subscription total bandwidth is less than "+
+				"calculated bandwidth: %s < %s", subscription.TotalBandwidth, calculatedBandwidth))
 		}
 
 		if !pay.IsZero() {
@@ -87,11 +93,19 @@ func endBlockSessions(ctx csdkTypes.Context, k keeper.Keeper, height int64) csdk
 
 		session.Status = types.StatusInactive
 		session.StatusModifiedAt = height
-		subscription.ConsumedDeposit = subscription.ConsumedDeposit.Add(pay)
-		subscription.ConsumedBandwidth = subscription.ConsumedBandwidth.Add(session.Bandwidth)
-		subscription.SessionsCount += 1
 
 		k.SetSession(ctx, session)
+
+		subscription.ConsumedDeposit = consumedDeposit
+		subscription.ConsumedBandwidth = consumedBandwidth
+		subscription.CalculatedBandwidth = calculatedBandwidth
+		subscription.SessionsCount += 1
+
+		if subscription.ConsumedDeposit.IsEqual(subscription.TotalDeposit) {
+			subscription.Status = types.StatusInactive
+			subscription.StatusModifiedAt = height
+		}
+
 		k.SetSubscription(ctx, subscription)
 	}
 
@@ -159,8 +173,6 @@ func handleUpdateNodeInfo(ctx csdkTypes.Context, k keeper.Keeper, msg types.MsgU
 	node = node.UpdateInfo(_node)
 
 	k.SetNode(ctx, node)
-	allTags = allTags.AppendTag(types.TagNodeID, msg.ID.String())
-
 	return csdkTypes.Result{Tags: allTags}
 }
 
@@ -187,8 +199,6 @@ func handleUpdateNodeStatus(ctx csdkTypes.Context, k keeper.Keeper, msg types.Ms
 	node.StatusModifiedAt = ctx.BlockHeight()
 
 	k.SetNode(ctx, node)
-	allTags = allTags.AppendTag(types.TagNodeID, msg.ID.String())
-
 	return csdkTypes.Result{Tags: allTags}
 }
 
@@ -208,9 +218,7 @@ func handleDeregisterNode(ctx csdkTypes.Context, k keeper.Keeper, msg types.MsgD
 
 	node.Status = types.StatusDeRegistered
 	node.StatusModifiedAt = ctx.BlockHeight()
-
 	k.SetNode(ctx, node)
-	allTags = allTags.AppendTag(types.TagNodeID, msg.ID.String())
 
 	if node.Deposit.IsPositive() {
 		tags, err := k.SubtractDeposit(ctx, node.Owner, node.Deposit)
@@ -242,16 +250,17 @@ func handleStartSubscription(ctx csdkTypes.Context, k keeper.Keeper, msg types.M
 	}
 
 	subscription := types.Subscription{
-		ID:                types.SubscriptionID(node.ID, node.SubscriptionsCount),
-		NodeID:            node.ID,
-		Client:            msg.From,
-		PricePerGB:        pricePerGB,
-		TotalDeposit:      msg.Deposit,
-		TotalBandwidth:    bandwidth,
-		ConsumedDeposit:   csdkTypes.NewInt64Coin(msg.Deposit.Denom, 0),
-		ConsumedBandwidth: sdkTypes.NewBandwidthFromInt64(0, 0),
-		Status:            types.StatusStarted,
-		StatusModifiedAt:  ctx.BlockHeight(),
+		ID:                  types.SubscriptionID(node.ID, node.SubscriptionsCount),
+		NodeID:              node.ID,
+		Client:              msg.From,
+		PricePerGB:          pricePerGB,
+		TotalDeposit:        msg.Deposit,
+		TotalBandwidth:      bandwidth,
+		ConsumedDeposit:     csdkTypes.NewInt64Coin(msg.Deposit.Denom, 0),
+		ConsumedBandwidth:   sdkTypes.NewBandwidthFromInt64(0, 0),
+		CalculatedBandwidth: sdkTypes.NewBandwidthFromInt64(0, 0),
+		Status:              types.StatusActive,
+		StatusModifiedAt:    ctx.BlockHeight(),
 	}
 
 	tags, err := k.AddSubscription(ctx, subscription)
@@ -277,7 +286,7 @@ func handleEndSubscription(ctx csdkTypes.Context, k keeper.Keeper, msg types.Msg
 	if !msg.From.Equals(subscription.Client) {
 		return types.ErrorUnauthorized().Result()
 	}
-	if subscription.Status != types.StatusStarted {
+	if subscription.Status != types.StatusActive {
 		return types.ErrorInvalidSubscriptionStatus().Result()
 	}
 
@@ -295,7 +304,7 @@ func handleEndSubscription(ctx csdkTypes.Context, k keeper.Keeper, msg types.Msg
 
 	allTags = allTags.AppendTags(tags)
 
-	subscription.Status = types.StatusEnded
+	subscription.Status = types.StatusInactive
 	subscription.StatusModifiedAt = ctx.BlockHeight()
 
 	k.SetSubscription(ctx, subscription)
@@ -309,7 +318,7 @@ func handleUpdateSessionInfo(ctx csdkTypes.Context, k keeper.Keeper, msg types.M
 	if !found {
 		return types.ErrorSubscriptionDoesNotExist().Result()
 	}
-	if subscription.Status == types.StatusEnded {
+	if subscription.Status == types.StatusInactive {
 		return types.ErrorInvalidSubscriptionStatus().Result()
 	}
 
@@ -317,14 +326,15 @@ func handleUpdateSessionInfo(ctx csdkTypes.Context, k keeper.Keeper, msg types.M
 	session, found := k.GetSession(ctx, id)
 	if !found {
 		session = types.Session{
-			ID:             id,
-			SubscriptionID: subscription.ID,
-			Bandwidth:      sdkTypes.NewBandwidthFromInt64(0, 0),
+			ID:                  id,
+			SubscriptionID:      subscription.ID,
+			Bandwidth:           sdkTypes.NewBandwidthFromInt64(0, 0),
+			CalculatedBandwidth: sdkTypes.NewBandwidthFromInt64(0, 0),
 		}
 	}
 
 	if msg.Bandwidth.LT(session.Bandwidth) ||
-		subscription.TotalBandwidth.LT(subscription.ConsumedBandwidth.Add(msg.Bandwidth)) {
+		subscription.TotalBandwidth.LT(subscription.CalculatedBandwidth.Add(msg.Bandwidth)) {
 
 		return types.ErrorInvalidBandwidth().Result()
 	}
@@ -339,6 +349,7 @@ func handleUpdateSessionInfo(ctx csdkTypes.Context, k keeper.Keeper, msg types.M
 	}
 
 	session.Bandwidth = msg.Bandwidth
+	session.CalculatedBandwidth = msg.Bandwidth.CeilTo(sdkTypes.GB.Quo(subscription.PricePerGB.Amount))
 	session.NodeOwnerSign = msg.NodeOwnerSign
 	session.ClientSign = msg.ClientSign
 	session.Status = types.StatusActive
