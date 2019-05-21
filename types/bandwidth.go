@@ -34,6 +34,13 @@ func (b Bandwidth) CeilTo(precision csdkTypes.Int) Bandwidth {
 			big.NewInt(0).Rem(b.Download.BigInt(), precision.BigInt()))),
 	}
 
+	if _b.Upload.Equal(precision) {
+		_b.Upload = csdkTypes.NewInt(0)
+	}
+	if _b.Download.Equal(precision) {
+		_b.Download = csdkTypes.NewInt(0)
+	}
+
 	return b.Add(_b)
 }
 
