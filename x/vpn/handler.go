@@ -348,6 +348,9 @@ func handleUpdateSessionInfo(ctx csdkTypes.Context, k keeper.Keeper, msg types.M
 		return types.ErrorInvalidBandwidthSign().Result()
 	}
 
+	k.RemoveActiveSessionID(ctx, session.StatusModifiedAt, session.ID)
+	k.AddActiveSessionID(ctx, ctx.BlockHeight(), session.ID)
+
 	session.Bandwidth = msg.Bandwidth
 	session.CalculatedBandwidth = msg.Bandwidth.CeilTo(sdkTypes.GB.Quo(subscription.PricePerGB.Amount))
 	session.NodeOwnerSign = msg.NodeOwnerSign
@@ -356,8 +359,5 @@ func handleUpdateSessionInfo(ctx csdkTypes.Context, k keeper.Keeper, msg types.M
 	session.StatusModifiedAt = ctx.BlockHeight()
 
 	k.SetSession(ctx, session)
-	k.RemoveActiveSessionID(ctx, session.StatusModifiedAt, session.ID)
-	k.AddActiveSessionID(ctx, ctx.BlockHeight(), session.ID)
-
 	return csdkTypes.Result{Tags: allTags}
 }
