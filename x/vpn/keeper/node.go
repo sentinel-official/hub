@@ -100,6 +100,7 @@ func (k Keeper) GetAllNodes(ctx csdkTypes.Context) (nodes []types.Node) {
 	return nodes
 }
 
+// nolint: dupl
 func (k Keeper) IterateNodes(ctx csdkTypes.Context, fn func(index int64, node types.Node) (stop bool)) {
 	store := ctx.KVStore(k.nodeStoreKey)
 

@@ -36,6 +36,7 @@ func QueryNodeCmd(cdc *codec.Codec) *cobra.Command {
 	return cmd
 }
 
+// nolint: gocyclo
 func QueryNodesCmd(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "nodes",

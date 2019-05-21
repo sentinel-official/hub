@@ -22,6 +22,7 @@ const (
 	StatusDeRegistered = "DE-REGISTERED"
 )
 
+// nolint: gochecknoglobals
 var (
 	NodesCountKeyPrefix   = []byte{0x00}
 	NodeKeyPrefix         = []byte{0x01}

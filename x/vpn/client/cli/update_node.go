@@ -35,7 +35,7 @@ func UpdateNodeDetailsTxCmd(cdc *codec.Codec) *cobra.Command {
 				Download: csdkTypes.NewInt(viper.GetInt64(flagDownloadSpeed)),
 			}
 			encryption := viper.GetString(flagEncryption)
-			type_ := viper.GetString(flagType)
+			_type := viper.GetString(flagType)
 			version := viper.GetString(flagVersion)
 
 			parsedPricesPerGB, err := csdkTypes.ParseCoins(pricesPerGB)
@@ -46,7 +46,7 @@ func UpdateNodeDetailsTxCmd(cdc *codec.Codec) *cobra.Command {
 			fromAddress := cliCtx.GetFromAddress()
 
 			msg := vpn.NewMsgUpdateNodeInfo(fromAddress, nodeID,
-				type_, version, moniker, parsedPricesPerGB, internetSpeed, encryption)
+				_type, version, moniker, parsedPricesPerGB, internetSpeed, encryption)
 			return utils.GenerateOrBroadcastMsgs(cliCtx, txBldr, []csdkTypes.Msg{msg}, false)
 		},
 	}

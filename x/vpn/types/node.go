@@ -100,6 +100,7 @@ func (n Node) DepositToBandwidth(deposit csdkTypes.Coin) (bandwidth sdkTypes.Ban
 	return sdkTypes.NewBandwidth(gb, gb), nil
 }
 
+// nolint: gocyclo
 func (n Node) IsValid() error {
 	if n.ID == nil || n.ID.Len() < 22 {
 		return fmt.Errorf("invalid id")

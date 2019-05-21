@@ -100,7 +100,7 @@ func endBlockSessions(ctx csdkTypes.Context, k keeper.Keeper, height int64) csdk
 		subscription.ConsumedDeposit = consumedDeposit
 		subscription.ConsumedBandwidth = consumedBandwidth
 		subscription.CalculatedBandwidth = calculatedBandwidth
-		subscription.SessionsCount += 1
+		subscription.SessionsCount++
 
 		if subscription.ConsumedDeposit.IsEqual(subscription.TotalDeposit) {
 			subscription.Status = types.StatusInactive
@@ -271,7 +271,7 @@ func handleStartSubscription(ctx csdkTypes.Context, k keeper.Keeper, msg types.M
 
 	allTags = allTags.AppendTags(tags)
 
-	node.SubscriptionsCount += 1
+	node.SubscriptionsCount++
 	k.SetNode(ctx, node)
 
 	return csdkTypes.Result{Tags: allTags}
@@ -332,6 +332,8 @@ func handleUpdateSessionInfo(ctx csdkTypes.Context, k keeper.Keeper, msg types.M
 			Bandwidth:           sdkTypes.NewBandwidthFromInt64(0, 0),
 			CalculatedBandwidth: sdkTypes.NewBandwidthFromInt64(0, 0),
 		}
+
+		allTags = allTags.AppendTag(types.TagSessionID, session.ID.String())
 	}
 
 	if msg.Bandwidth.AllLT(session.Bandwidth) ||
@@ -343,8 +345,8 @@ func handleUpdateSessionInfo(ctx csdkTypes.Context, k keeper.Keeper, msg types.M
 	node, _ := k.GetNode(ctx, subscription.NodeID)
 	data := sdkTypes.NewBandwidthSignData(session.ID, msg.Bandwidth, node.Owner, subscription.Client).Bytes()
 
-	if node.OwnerPubKey.VerifyBytes(data, msg.NodeOwnerSign) == false ||
-		subscription.ClientPubKey.VerifyBytes(data, msg.ClientSign) == false {
+	if !node.OwnerPubKey.VerifyBytes(data, msg.NodeOwnerSign) ||
+		!subscription.ClientPubKey.VerifyBytes(data, msg.ClientSign) {
 
 		return types.ErrorInvalidBandwidthSign().Result()
 	}

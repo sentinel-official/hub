@@ -12,7 +12,7 @@ var _ csdkTypes.Msg = (*MsgRegisterNode)(nil)
 
 type MsgRegisterNode struct {
 	From          csdkTypes.AccAddress `json:"from"`
-	Type_         string               `json:"type_"`
+	Type_         string               `json:"type"` // nolint:golint
 	Version       string               `json:"version"`
 	Moniker       string               `json:"moniker"`
 	PricesPerGB   csdkTypes.Coins      `json:"prices_per_gb"`
@@ -24,12 +24,13 @@ func (msg MsgRegisterNode) Type() string {
 	return "MsgRegisterNode"
 }
 
+// nolint: gocyclo
 func (msg MsgRegisterNode) ValidateBasic() csdkTypes.Error {
 	if msg.From == nil || msg.From.Empty() {
 		return ErrorInvalidField("from")
 	}
 	if len(msg.Type_) == 0 {
-		return ErrorInvalidField("type_")
+		return ErrorInvalidField("type")
 	}
 	if len(msg.Version) == 0 {
 		return ErrorInvalidField("version")
@@ -70,12 +71,12 @@ func (msg MsgRegisterNode) Route() string {
 }
 
 func NewMsgRegisterNode(from csdkTypes.AccAddress,
-	type_, version, moniker string, pricesPerGB csdkTypes.Coins,
+	_type, version, moniker string, pricesPerGB csdkTypes.Coins,
 	internetSpeed sdkTypes.Bandwidth, encryption string) MsgRegisterNode {
 
 	return MsgRegisterNode{
 		From:          from,
-		Type_:         type_,
+		Type_:         _type,
 		Version:       version,
 		Moniker:       moniker,
 		PricesPerGB:   pricesPerGB,
@@ -89,7 +90,7 @@ var _ csdkTypes.Msg = (*MsgUpdateNodeInfo)(nil)
 type MsgUpdateNodeInfo struct {
 	From          csdkTypes.AccAddress `json:"from"`
 	ID            sdkTypes.ID          `json:"id"`
-	Type_         string               `json:"type_"`
+	Type_         string               `json:"type"` // nolint:golint
 	Version       string               `json:"version"`
 	Moniker       string               `json:"moniker"`
 	PricesPerGB   csdkTypes.Coins      `json:"prices_per_gb"`
@@ -141,13 +142,13 @@ func (msg MsgUpdateNodeInfo) Route() string {
 }
 
 func NewMsgUpdateNodeInfo(from csdkTypes.AccAddress, id sdkTypes.ID,
-	type_, version, moniker string, pricesPerGB csdkTypes.Coins,
+	_type, version, moniker string, pricesPerGB csdkTypes.Coins,
 	internetSpeed sdkTypes.Bandwidth, encryption string) MsgUpdateNodeInfo {
 
 	return MsgUpdateNodeInfo{
 		From:          from,
 		ID:            id,
-		Type_:         type_,
+		Type_:         _type,
 		Version:       version,
 		Moniker:       moniker,
 		PricesPerGB:   pricesPerGB,

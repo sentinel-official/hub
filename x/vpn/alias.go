@@ -25,23 +25,24 @@ const (
 )
 
 type (
-	GenesisState = types.GenesisState
-	Node = types.Node
-	MsgRegisterNode = types.MsgRegisterNode
-	MsgUpdateNodeInfo = types.MsgUpdateNodeInfo
-	MsgUpdateNodeStatus = types.MsgUpdateNodeStatus
-	MsgDeregisterNode = types.MsgDeregisterNode
-	Params = types.Params
-	Session = types.Session
-	MsgUpdateSessionInfo = types.MsgUpdateSessionInfo
-	Subscription = types.Subscription
-	MsgStartSubscription = types.MsgStartSubscription
-	MsgEndSubscription = types.MsgEndSubscription
-	Keeper = keeper.Keeper
-	QueryNodeParams = querier.QueryNodeParams
+	GenesisState             = types.GenesisState
+	Node                     = types.Node
+	MsgRegisterNode          = types.MsgRegisterNode
+	MsgUpdateNodeInfo        = types.MsgUpdateNodeInfo
+	MsgUpdateNodeStatus      = types.MsgUpdateNodeStatus
+	MsgDeregisterNode        = types.MsgDeregisterNode
+	Params                   = types.Params
+	Session                  = types.Session
+	MsgUpdateSessionInfo     = types.MsgUpdateSessionInfo
+	Subscription             = types.Subscription
+	MsgStartSubscription     = types.MsgStartSubscription
+	MsgEndSubscription       = types.MsgEndSubscription
+	Keeper                   = keeper.Keeper
+	QueryNodeParams          = querier.QueryNodeParams
 	QueryNodesOfAddressPrams = querier.QueryNodesOfAddressPrams
 )
 
+// nolint: gochecknoglobals
 var (
 	RegisterCodec                  = types.RegisterCodec
 	NewGenesisState                = types.NewGenesisState

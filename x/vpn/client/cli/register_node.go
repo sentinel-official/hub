@@ -25,7 +25,7 @@ func RegisterNodeTxCmd(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			type_ := viper.GetString(flagType)
+			_type := viper.GetString(flagType)
 			version := viper.GetString(flagVersion)
 			moniker := viper.GetString(flagMoniker)
 			pricesPerGB := viper.GetString(flagPricesPerGB)
@@ -42,7 +42,7 @@ func RegisterNodeTxCmd(cdc *codec.Codec) *cobra.Command {
 
 			fromAddress := cliCtx.GetFromAddress()
 
-			msg := vpn.NewMsgRegisterNode(fromAddress, type_, version,
+			msg := vpn.NewMsgRegisterNode(fromAddress, _type, version,
 				moniker, parsedPricesPerGB, internetSpeed, encryptionMethod)
 
 			return utils.GenerateOrBroadcastMsgs(cliCtx, txBldr, []csdkTypes.Msg{msg}, false)

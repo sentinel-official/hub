@@ -136,6 +136,7 @@ func (k Keeper) Receive(ctx csdkTypes.Context, fromAddress, to csdkTypes.AccAddr
 	return tags, nil
 }
 
+// nolint: dupl
 func (k Keeper) IterateDeposits(ctx csdkTypes.Context, fn func(index int64, deposit types.Deposit) (stop bool)) {
 	store := ctx.KVStore(k.storeKey)
 

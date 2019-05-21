@@ -44,6 +44,7 @@ func QueryNodesOfAddress(cliCtx context.CLIContext, cdc *codec.Codec, address cs
 	return cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s", vpn.QuerierRoute, vpn.QueryNodesOfAddress), paramBytes)
 }
 
+// nolint: dupl
 func QuerySubscription(cliCtx context.CLIContext, cdc *codec.Codec, id string) (vpn.Subscription, error) {
 	subscriptionKey := vpn.SubscriptionKey(sdkTypes.IDFromString(id))
 	res, err := cliCtx.QueryStore(subscriptionKey, vpn.StoreKeySubscription)
@@ -62,6 +63,7 @@ func QuerySubscription(cliCtx context.CLIContext, cdc *codec.Codec, id string) (
 	return subscription, nil
 }
 
+// nolint: dupl
 func QuerySession(cliCtx context.CLIContext, cdc *codec.Codec, id string) (vpn.Session, error) {
 	sessionKey := vpn.SessionKey(sdkTypes.IDFromString(id))
 	res, err := cliCtx.QueryStore(sessionKey, vpn.StoreKeySession)

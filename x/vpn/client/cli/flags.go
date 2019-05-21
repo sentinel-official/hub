@@ -13,7 +13,6 @@ const (
 	flagVersion        = "version"
 	flagNodeID         = "node-id"
 	flagAddress        = "address"
-	flagSessionID      = "session-id"
 	flagNodeOwnerSign  = "node-owner-sign"
 	flagClientSign     = "client-sign"
 	flagSubscriptionID = "subscription-id"

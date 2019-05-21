@@ -8,6 +8,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/params/subspace"
 )
 
+// nolint: gochecknoglobals
 var (
 	DefaultFreeNodesCount          uint64 = 5
 	DefaultDeposit                        = csdkTypes.NewInt64Coin("stake", 100)
@@ -15,6 +16,7 @@ var (
 	DefaultSessionInactiveInterval int64  = 25
 )
 
+// nolint: gochecknoglobals
 var (
 	KeyFreeNodesCount          = []byte("FreeNodesCount")
 	KeyDeposit                 = []byte("Deposit")
@@ -51,6 +53,7 @@ func (p Params) String() string {
 		p.NodeInactiveInterval, p.SessionInactiveInterval)
 }
 
+// nolint
 func (p *Params) ParamSetPairs() subspace.ParamSetPairs {
 	return params.ParamSetPairs{
 		{KeyFreeNodesCount, &p.FreeNodesCount},

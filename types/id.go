@@ -60,6 +60,7 @@ func (ids IDs) Delete(index int) IDs {
 	return ids[:ids.Len()-1]
 }
 
+// nolint: interfacer
 func (ids IDs) Search(id ID) int {
 	index := sort.Search(len(ids), func(i int) bool {
 		return ids[i].String() >= id.String()

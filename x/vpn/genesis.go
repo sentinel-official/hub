@@ -36,6 +36,7 @@ func ExportGenesis(ctx csdkTypes.Context, k Keeper) types.GenesisState {
 	return types.NewGenesisState(nodes, subscriptions, sessions, params)
 }
 
+// nolint: gocyclo
 func ValidateGenesis(data types.GenesisState) error {
 	if len(data.Params.Deposit.Denom) == 0 || data.Params.Deposit.IsZero() {
 		return fmt.Errorf("invalid deposit for the %s", data.Params)

@@ -1,3 +1,4 @@
+// nolint: gochecknoglobals
 package types
 
 import (

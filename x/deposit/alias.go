@@ -6,11 +6,12 @@ import (
 )
 
 type (
-	Deposit = types.Deposit
+	Deposit      = types.Deposit
 	GenesisState = types.GenesisState
-	Keeper = keeper.Keeper
+	Keeper       = keeper.Keeper
 )
 
+// nolint: gochecknoglobals
 var (
 	DepositKey          = types.DepositKey
 	NewGenesisState     = types.NewGenesisState

@@ -1,3 +1,4 @@
+// nolint: dupl
 package cli
 
 import (
@@ -26,7 +27,6 @@ func EndSubscriptionTxCmd(cdc *codec.Codec) *cobra.Command {
 			}
 
 			subscriptionID := sdkTypes.IDFromString(viper.GetString(flagSubscriptionID))
-
 			fromAddress := cliCtx.GetFromAddress()
 
 			msg := vpn.NewMsgEndSubscription(fromAddress, subscriptionID)

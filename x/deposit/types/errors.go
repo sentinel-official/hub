@@ -14,5 +14,5 @@ const (
 
 func ErrorInsufficientDepositFunds(x, y csdkTypes.Coins) csdkTypes.Error {
 	return csdkTypes.NewError(Codespace, errCodeInsufficientDepositFunds,
-		fmt.Sprintf(errMsgInsufficientDepositFunds, x.String(), y.String()))
+		fmt.Sprintf(errMsgInsufficientDepositFunds, x, y))
 }

@@ -42,7 +42,7 @@ func getNodesHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) http.Handl
 			}
 
 			if len(kvs) == 0 {
-				err := errors.New("no nodes found")
+				err = errors.New("no nodes found")
 				rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 				return
 			}
@@ -50,7 +50,7 @@ func getNodesHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) http.Handl
 			var nodes []vpn.Node
 			for _, kv := range kvs {
 				var node vpn.Node
-				if err := cdc.UnmarshalBinaryLengthPrefixed(kv.Value, &node); err != nil {
+				if err = cdc.UnmarshalBinaryLengthPrefixed(kv.Value, &node); err != nil {
 					rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 					return
 				}

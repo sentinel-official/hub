@@ -49,6 +49,7 @@ func (s Subscription) String() string {
 		s.CalculatedBandwidth, s.SessionsCount, s.Status, s.StatusModifiedAt)
 }
 
+// nolint: gocyclo
 func (s Subscription) IsValid() error {
 	if s.ID == nil || s.ID.Len() < 24 {
 		return fmt.Errorf("invalid id")

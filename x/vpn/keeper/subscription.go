@@ -43,7 +43,10 @@ func (k Keeper) GetAllSubscriptions(ctx csdkTypes.Context) (subscriptions []type
 	return subscriptions
 }
 
-func (k Keeper) IterateSubscriptions(ctx csdkTypes.Context, fn func(index int64, subscription types.Subscription) (stop bool)) {
+// nolint
+func (k Keeper) IterateSubscriptions(ctx csdkTypes.Context,
+	fn func(index int64, subscription types.Subscription) (stop bool)) {
+
 	store := ctx.KVStore(k.subscriptionStoreKey)
 
 	iterator := csdkTypes.KVStorePrefixIterator(store, types.SubscriptionKeyPrefix)
@@ -60,7 +63,9 @@ func (k Keeper) IterateSubscriptions(ctx csdkTypes.Context, fn func(index int64,
 	}
 }
 
-func (k Keeper) AddSubscription(ctx csdkTypes.Context, subscription types.Subscription) (allTags csdkTypes.Tags, err csdkTypes.Error) {
+func (k Keeper) AddSubscription(ctx csdkTypes.Context,
+	subscription types.Subscription) (allTags csdkTypes.Tags, err csdkTypes.Error) {
+
 	allTags = csdkTypes.EmptyTags()
 
 	subscription.ClientPubKey, err = k.accountKeeper.GetPubKey(ctx, subscription.Client)
