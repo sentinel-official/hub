@@ -24,12 +24,12 @@ func ValidateGenesis(data types.GenesisState) error {
 	addressMap := make(map[string]bool, len(data))
 	for _, deposit := range data {
 		if err := deposit.IsValid(); err != nil {
-			return fmt.Errorf("%s for the deposit %s", err.Error(), deposit)
+			return fmt.Errorf("%s for the %s", err.Error(), deposit)
 		}
 
 		addressStr := deposit.Address.String()
 		if addressMap[addressStr] {
-			return fmt.Errorf("duplicate address for deposit %s", deposit)
+			return fmt.Errorf("duplicate address for the %s", deposit)
 		}
 
 		addressMap[addressStr] = true

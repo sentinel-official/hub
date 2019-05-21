@@ -74,10 +74,10 @@ func (s Subscription) IsValid() error {
 	if len(s.ConsumedDeposit.Denom) == 0 || s.TotalDeposit.IsLT(s.ConsumedDeposit) {
 		return fmt.Errorf("invalid consumed deposit")
 	}
-	if s.ConsumedBandwidth.AnyNil() || !s.TotalBandwidth.AnyLT(s.ConsumedBandwidth) {
+	if s.ConsumedBandwidth.AnyNil() || s.TotalBandwidth.AnyLT(s.ConsumedBandwidth) {
 		return fmt.Errorf("invalid total consumed bandwidth")
 	}
-	if s.CalculatedBandwidth.AnyNil() || !s.TotalBandwidth.AnyLT(s.CalculatedBandwidth) {
+	if s.CalculatedBandwidth.AnyNil() || s.TotalBandwidth.AnyLT(s.CalculatedBandwidth) {
 		return fmt.Errorf("invalid total calculated bandwidth")
 	}
 	if s.Status != StatusActive && s.Status != StatusInactive {
