@@ -43,6 +43,23 @@ func (k Keeper) GetAllSubscriptions(ctx csdkTypes.Context) (subscriptions []type
 	return subscriptions
 }
 
+func (k Keeper) IterateSubscriptions(ctx csdkTypes.Context, fn func(index int64, subscription types.Subscription) (stop bool)) {
+	store := ctx.KVStore(k.subscriptionStoreKey)
+
+	iterator := csdkTypes.KVStorePrefixIterator(store, types.SubscriptionKeyPrefix)
+	defer iterator.Close()
+
+	for i := int64(0); iterator.Valid(); iterator.Next() {
+		var subscription types.Subscription
+		k.cdc.MustUnmarshalBinaryLengthPrefixed(iterator.Value(), &subscription)
+
+		if stop := fn(i, subscription); stop {
+			break
+		}
+		i++
+	}
+}
+
 func (k Keeper) AddSubscription(ctx csdkTypes.Context, subscription types.Subscription) (allTags csdkTypes.Tags, err csdkTypes.Error) {
 	allTags = csdkTypes.EmptyTags()
 

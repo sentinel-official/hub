@@ -100,6 +100,23 @@ func (k Keeper) GetAllNodes(ctx csdkTypes.Context) (nodes []types.Node) {
 	return nodes
 }
 
+func (k Keeper) IterateNodes(ctx csdkTypes.Context, fn func(index int64, node types.Node) (stop bool)) {
+	store := ctx.KVStore(k.nodeStoreKey)
+
+	iterator := csdkTypes.KVStorePrefixIterator(store, types.NodeKeyPrefix)
+	defer iterator.Close()
+
+	for i := int64(0); iterator.Valid(); iterator.Next() {
+		var node types.Node
+		k.cdc.MustUnmarshalBinaryLengthPrefixed(iterator.Value(), &node)
+
+		if stop := fn(i, node); stop {
+			break
+		}
+		i++
+	}
+}
+
 func (k Keeper) AddNode(ctx csdkTypes.Context, node types.Node) (allTags csdkTypes.Tags, err csdkTypes.Error) {
 	allTags = csdkTypes.EmptyTags()
 

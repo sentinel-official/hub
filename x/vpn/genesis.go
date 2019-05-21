@@ -1,6 +1,8 @@
 package vpn
 
 import (
+	"fmt"
+
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/ironman0x7b2/sentinel-sdk/x/vpn/types"
@@ -18,18 +20,10 @@ func InitGenesis(ctx csdkTypes.Context, k Keeper, data types.GenesisState) {
 
 	for _, subscription := range data.Subscriptions {
 		k.SetSubscription(ctx, subscription)
-
-		node, _ := k.GetNode(ctx, subscription.NodeID)
-		node.SubscriptionsCount += 1
-		k.SetNode(ctx, node)
 	}
 
 	for _, session := range data.Sessions {
 		k.SetSession(ctx, session)
-
-		subscription, _ := k.GetSubscription(ctx, session.SubscriptionID)
-		subscription.SessionsCount += 1
-		k.SetSubscription(ctx, subscription)
 	}
 }
 
@@ -43,5 +37,26 @@ func ExportGenesis(ctx csdkTypes.Context, k Keeper) types.GenesisState {
 }
 
 func ValidateGenesis(data types.GenesisState) error {
+	if len(data.Params.Deposit.Denom) == 0 || data.Params.Deposit.IsZero() {
+		return fmt.Errorf("invalid deposit in the params %s", data.Params)
+	}
+
+	nodeIDsMap := make(map[string]bool, len(data.Nodes))
+	for _, node := range data.Nodes {
+		if err := node.IsValid(); err != nil {
+			return fmt.Errorf("%s for the node %s", err.Error(), node)
+		}
+
+		if node.Deposit.Denom != data.Params.Deposit.Denom {
+			return fmt.Errorf("invalid deposit for the node %s", node)
+		}
+
+		if nodeIDsMap[node.ID.String()] {
+			return fmt.Errorf("duplicate node id for the node %s", node)
+		}
+
+		nodeIDsMap[node.ID.String()] = true
+	}
+
 	return nil
 }

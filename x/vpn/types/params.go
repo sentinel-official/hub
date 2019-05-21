@@ -1,6 +1,8 @@
 package types
 
 import (
+	"fmt"
+
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/params"
 	"github.com/cosmos/cosmos-sdk/x/params/subspace"
@@ -38,6 +40,15 @@ func NewParams(freeNodesCount uint64, deposit csdkTypes.Coin,
 		NodeInactiveInterval:    nodeInactiveInterval,
 		SessionInactiveInterval: sessionInactiveInterval,
 	}
+}
+
+func (p Params) String() string {
+	return fmt.Sprintf(`Params
+  Free Nodes Count:          %d
+  Deposit:                   %s
+  Node Inactive Interval:    %d
+  Session Inactive Interval: %d`, p.FreeNodesCount, p.Deposit,
+		p.NodeInactiveInterval, p.SessionInactiveInterval)
 }
 
 func (p *Params) ParamSetPairs() subspace.ParamSetPairs {

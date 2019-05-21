@@ -99,3 +99,45 @@ func (n Node) DepositToBandwidth(deposit csdkTypes.Coin) (bandwidth sdkTypes.Ban
 	gb := deposit.Amount.Mul(sdkTypes.GB).Quo(pricePerGB.Amount)
 	return sdkTypes.NewBandwidth(gb, gb), nil
 }
+
+func (n Node) IsValid() error {
+	if n.ID == nil || n.ID.Len() < 22 {
+		return fmt.Errorf("invalid id")
+	}
+	if n.Owner == nil || n.Owner.Empty() {
+		return fmt.Errorf("invalid owner")
+	}
+	if n.OwnerPubKey == nil {
+		return fmt.Errorf("invalid owner public key")
+	}
+	if len(n.Deposit.Denom) == 0 {
+		return fmt.Errorf("invalid deposit")
+	}
+	if len(n.Type) == 0 {
+		return fmt.Errorf("invalid type")
+	}
+	if len(n.Version) == 0 {
+		return fmt.Errorf("invalid version")
+	}
+	if len(n.Moniker) > 128 {
+		return fmt.Errorf("invalid moniker")
+	}
+	if n.PricesPerGB == nil || !n.PricesPerGB.IsValid() {
+		return fmt.Errorf("invalid price per gb")
+	}
+	if n.InternetSpeed.IsNil() || !n.InternetSpeed.IsPositive() {
+		return fmt.Errorf("invalid internet speed")
+	}
+	if len(n.Encryption) == 0 {
+		return fmt.Errorf("invalid encryption")
+	}
+	if n.Status != StatusRegistered && n.Status != StatusActive &&
+		n.Status != StatusInactive && n.Status != StatusDeRegistered {
+		return fmt.Errorf("invalid status")
+	}
+	if !csdkTypes.AccAddress(n.ID.Bytes()[:20]).Equals(n.Owner) {
+		return fmt.Errorf("id is not related to owner")
+	}
+
+	return nil
+}

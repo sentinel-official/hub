@@ -64,7 +64,8 @@ func endBlockSessions(ctx csdkTypes.Context, k keeper.Keeper, height int64) csdk
 		session, _ := k.GetSession(ctx, id)
 		subscription, _ := k.GetSubscription(ctx, session.SubscriptionID)
 
-		amount := session.CalculatedBandwidth.Sum().Mul(subscription.PricePerGB.Amount).Quo(sdkTypes.GB.Add(sdkTypes.GB))
+		amount := session.CalculatedBandwidth.Sum().
+			Mul(subscription.PricePerGB.Amount).Quo(sdkTypes.GB.Add(sdkTypes.GB))
 		pay := csdkTypes.NewCoin(subscription.PricePerGB.Denom, amount)
 
 		consumedDeposit := subscription.ConsumedDeposit.Add(pay)
