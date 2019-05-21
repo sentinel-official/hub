@@ -3,6 +3,7 @@ package types
 import (
 	"encoding/json"
 	"fmt"
+	"math/big"
 
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
 )
@@ -23,6 +24,21 @@ func NewBandwidth(upload, download csdkTypes.Int) Bandwidth {
 
 func (b Bandwidth) String() string {
 	return fmt.Sprintf("%d upload, %d download", b.Upload.Int64(), b.Download.Int64())
+}
+
+func (b Bandwidth) CeilTo(precision csdkTypes.Int) Bandwidth {
+	_b := Bandwidth{
+		Upload: precision.Sub(csdkTypes.NewIntFromBigInt(
+			big.NewInt(0).Rem(b.Upload.BigInt(), precision.BigInt()))),
+		Download: precision.Sub(csdkTypes.NewIntFromBigInt(
+			big.NewInt(0).Rem(b.Download.BigInt(), precision.BigInt()))),
+	}
+
+	return b.Add(_b)
+}
+
+func (b Bandwidth) Sum() csdkTypes.Int {
+	return b.Upload.Add(b.Download)
 }
 
 func (b Bandwidth) Add(bandwidth Bandwidth) Bandwidth {
