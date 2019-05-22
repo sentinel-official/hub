@@ -39,7 +39,7 @@ func signSessionBandwidthHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec
 			return
 		}
 
-		signBytes, err := common.GetBandwidthSignDataBytes(cliCtx, cdc, uint64(id), req.Bandwidth)
+		signBytes, err := common.GetBandwidthSignDataBytes(cliCtx, cdc, sdkTypes.NewIDFromUInt64(uint64(id)), req.Bandwidth)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
@@ -115,7 +115,7 @@ func updateSessionInfoHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) h
 		}
 
 		msg := vpn.NewMsgUpdateSessionInfo(fromAddress,
-			uint64(id), req.Consumed, nodeOwnerSign, clientSign)
+			sdkTypes.NewIDFromUInt64(uint64(id)), req.Consumed, nodeOwnerSign, clientSign)
 		if err := msg.ValidateBasic(); err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return

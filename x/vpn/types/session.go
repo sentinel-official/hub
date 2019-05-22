@@ -8,8 +8,8 @@ import (
 )
 
 type Session struct {
-	ID                  uint64             `json:"id"`
-	SubscriptionID      uint64             `json:"subscription_id"`
+	ID                  sdkTypes.ID        `json:"id"`
+	SubscriptionID      sdkTypes.ID        `json:"subscription_id"`
 	Bandwidth           sdkTypes.Bandwidth `json:"bandwidth"`
 	CalculatedBandwidth sdkTypes.Bandwidth `json:"calculated_bandwidth"`
 	NodeOwnerSign       []byte             `json:"node_owner_sign"`

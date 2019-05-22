@@ -1,57 +1,25 @@
 package types
 
 import (
-	"encoding/hex"
-	"encoding/json"
 	"sort"
-
-	"github.com/tendermint/tendermint/crypto/tmhash"
 )
 
-type ID []byte
+type ID uint64
 
-func IDFromString(str string) ID {
-	bz, err := hex.DecodeString(str)
-	if err != nil {
-		panic(err)
-	}
+func NewIDFromUInt64(i uint64) ID { return ID(i) }
 
-	return ID(bz)
-}
-
-func (id ID) String() string               { return hex.EncodeToString(id) }
-func (id ID) Bytes() []byte                { return id }
-func (id ID) Len() int                     { return len(id) }
-func (id ID) MarshalJSON() ([]byte, error) { return json.Marshal(id.String()) }
-
-func (id *ID) UnmarshalJSON(data []byte) error {
-	var str string
-
-	err := json.Unmarshal(data, &str)
-	if err != nil {
-		return err
-	}
-
-	*id = IDFromString(str)
-	return nil
-}
-
-func (id ID) Hash() []byte          { return tmhash.Sum(id.Bytes()) }
-func (id ID) HashTruncated() []byte { return tmhash.SumTruncated(id.Bytes()) }
+func (id ID) UInt64() uint64 { return uint64(id) }
 
 type IDs []ID
 
-func NewIDs() IDs {
-	return IDs{}
-}
-
 func (ids IDs) Append(id ...ID) IDs { return append(ids, id...) }
 func (ids IDs) Len() int            { return len(ids) }
-func (ids IDs) Less(i, j int) bool  { return ids[i].String() < ids[j].String() }
-func (ids IDs) Swap(i, j int)       { ids[i], ids[j] = ids[j], ids[i] }
 
 func (ids IDs) Sort() IDs {
-	sort.Sort(ids)
+	sort.Slice(ids, func(i, j int) bool {
+		return ids[i] < ids[j]
+	})
+
 	return ids
 }
 
@@ -60,14 +28,13 @@ func (ids IDs) Delete(index int) IDs {
 	return ids[:ids.Len()-1]
 }
 
-// nolint: interfacer
 func (ids IDs) Search(id ID) int {
 	index := sort.Search(len(ids), func(i int) bool {
-		return ids[i].String() >= id.String()
+		return ids[i] >= id
 	})
 
 	if (index == ids.Len()) ||
-		(index < ids.Len() && ids[index].String() != id.String()) {
+		(index < ids.Len() && ids[index] != id) {
 		return ids.Len()
 	}
 

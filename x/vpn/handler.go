@@ -128,7 +128,7 @@ func EndBlock(ctx csdkTypes.Context, k keeper.Keeper) csdkTypes.Tags {
 
 func handleRegisterNode(ctx csdkTypes.Context, k keeper.Keeper, msg types.MsgRegisterNode) csdkTypes.Result {
 	node := types.Node{
-		ID:                 k.GetNodesCount(ctx),
+		ID:                 sdkTypes.NewIDFromUInt64(k.GetNodesCount(ctx)),
 		Owner:              msg.From,
 		Deposit:            csdkTypes.NewInt64Coin(k.Deposit(ctx).Denom, 0),
 		Type:               msg.Type_,
@@ -252,7 +252,7 @@ func handleStartSubscription(ctx csdkTypes.Context, k keeper.Keeper, msg types.M
 	}
 
 	subscription := types.Subscription{
-		ID:                  k.GetSubscriptionsCount(ctx),
+		ID:                  sdkTypes.NewIDFromUInt64(k.GetSubscriptionsCount(ctx)),
 		NodeID:              node.ID,
 		Client:              msg.From,
 		PricePerGB:          pricePerGB,
@@ -325,13 +325,13 @@ func handleUpdateSessionInfo(ctx csdkTypes.Context, k keeper.Keeper, msg types.M
 	id, found := k.GetSessionIDBySubscriptionID(ctx, subscription.ID, subscription.SessionsCount)
 	if !found {
 		session = types.Session{
-			ID:                  k.GetSessionsCount(ctx),
+			ID:                  sdkTypes.NewIDFromUInt64(k.GetSessionsCount(ctx)),
 			SubscriptionID:      subscription.ID,
 			Bandwidth:           sdkTypes.NewBandwidthFromInt64(0, 0),
 			CalculatedBandwidth: sdkTypes.NewBandwidthFromInt64(0, 0),
 		}
 
-		k.SetSessionsCount(ctx, session.ID+1)
+		k.SetSessionsCount(ctx, session.ID.UInt64()+1)
 		k.SetSessionIDBySubscriptionID(ctx, subscription.ID, subscription.SessionsCount, session.ID)
 	} else {
 		session, _ = k.GetSession(ctx, id)

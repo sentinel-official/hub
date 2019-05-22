@@ -29,7 +29,7 @@ func SignSessionBandwidthTxCmd(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			subscriptionID := uint64(viper.GetInt64(flagSubscriptionID))
+			subscriptionID := sdkTypes.NewIDFromUInt64(uint64(viper.GetInt64(flagSubscriptionID)))
 			bandwidth := sdkTypes.Bandwidth{
 				Upload:   csdkTypes.NewInt(viper.GetInt64(flagUpload)),
 				Download: csdkTypes.NewInt(viper.GetInt64(flagDownload)),
@@ -85,7 +85,7 @@ func UpdateSessionInfoTxCmd(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			subscriptionID := uint64(viper.GetInt64(flagSubscriptionID))
+			subscriptionID := sdkTypes.NewIDFromUInt64(uint64(viper.GetInt64(flagSubscriptionID)))
 			consumed := sdkTypes.Bandwidth{
 				Upload:   csdkTypes.NewInt(viper.GetInt64(flagUpload)),
 				Download: csdkTypes.NewInt(viper.GetInt64(flagDownload)),

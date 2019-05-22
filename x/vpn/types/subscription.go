@@ -10,8 +10,8 @@ import (
 )
 
 type Subscription struct {
-	ID                  uint64               `json:"id"`
-	NodeID              uint64               `json:"node_id"`
+	ID                  sdkTypes.ID          `json:"id"`
+	NodeID              sdkTypes.ID          `json:"node_id"`
 	Client              csdkTypes.AccAddress `json:"client"`
 	ClientPubKey        crypto.PubKey        `json:"client_pub_key"`
 	PricePerGB          csdkTypes.Coin       `json:"price_per_gb"`

@@ -2,6 +2,8 @@ package types
 
 import (
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
+
+	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
 )
 
 const (
@@ -36,8 +38,8 @@ var (
 	SessionIDBySubscriptionIDKeyPrefix = []byte{0x03}
 )
 
-func NodeKey(i uint64) []byte {
-	return append(NodeKeyPrefix, csdkTypes.Uint64ToBigEndian(i)...)
+func NodeKey(id sdkTypes.ID) []byte {
+	return append(NodeKeyPrefix, csdkTypes.Uint64ToBigEndian(id.UInt64())...)
 }
 
 func NodesCountOfAddressKey(address csdkTypes.AccAddress) []byte {
@@ -49,13 +51,13 @@ func NodeIDByAddressKey(address csdkTypes.AccAddress, i uint64) []byte {
 		append(address.Bytes(), csdkTypes.Uint64ToBigEndian(i)...)...)
 }
 
-func SubscriptionKey(i uint64) []byte {
-	return append(SubscriptionKeyPrefix, csdkTypes.Uint64ToBigEndian(i)...)
+func SubscriptionKey(id sdkTypes.ID) []byte {
+	return append(SubscriptionKeyPrefix, csdkTypes.Uint64ToBigEndian(id.UInt64())...)
 }
 
-func SubscriptionIDByNodeIDKey(i, j uint64) []byte {
+func SubscriptionIDByNodeIDKey(id sdkTypes.ID, i uint64) []byte {
 	return append(SubscriptionIDByNodeIDKeyPrefix,
-		append(csdkTypes.Uint64ToBigEndian(i), csdkTypes.Uint64ToBigEndian(j)...)...)
+		append(csdkTypes.Uint64ToBigEndian(id.UInt64()), csdkTypes.Uint64ToBigEndian(i)...)...)
 }
 
 func SubscriptionsCountOfAddressKey(address csdkTypes.AccAddress) []byte {
@@ -67,13 +69,13 @@ func SubscriptionIDByAddressKey(address csdkTypes.AccAddress, i uint64) []byte {
 		append(address.Bytes(), csdkTypes.Uint64ToBigEndian(i)...)...)
 }
 
-func SessionKey(i uint64) []byte {
-	return append(SessionKeyPrefix, csdkTypes.Uint64ToBigEndian(i)...)
+func SessionKey(id sdkTypes.ID) []byte {
+	return append(SessionKeyPrefix, csdkTypes.Uint64ToBigEndian(id.UInt64())...)
 }
 
-func SessionIDBySubscriptionIDKey(i, j uint64) []byte {
+func SessionIDBySubscriptionIDKey(id sdkTypes.ID, i uint64) []byte {
 	return append(SessionIDBySubscriptionIDKeyPrefix,
-		append(csdkTypes.Uint64ToBigEndian(i), csdkTypes.Uint64ToBigEndian(j)...)...)
+		append(csdkTypes.Uint64ToBigEndian(id.UInt64()), csdkTypes.Uint64ToBigEndian(i)...)...)
 }
 
 func ActiveNodeIDsKey(height int64) []byte {

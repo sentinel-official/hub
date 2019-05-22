@@ -11,7 +11,7 @@ import (
 )
 
 type Node struct {
-	ID          uint64               `json:"id"`
+	ID          sdkTypes.ID          `json:"id"`
 	Owner       csdkTypes.AccAddress `json:"owner"`
 	OwnerPubKey crypto.PubKey        `json:"owner_pub_key"`
 	Deposit     csdkTypes.Coin       `json:"deposit"`

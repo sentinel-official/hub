@@ -4,13 +4,15 @@ import (
 	"encoding/json"
 
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
+
+	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
 )
 
 var _ csdkTypes.Msg = (*MsgStartSubscription)(nil)
 
 type MsgStartSubscription struct {
 	From    csdkTypes.AccAddress `json:"from"`
-	NodeID  uint64               `json:"node_id"`
+	NodeID  sdkTypes.ID          `json:"node_id"`
 	Deposit csdkTypes.Coin       `json:"deposit"`
 }
 
@@ -47,7 +49,7 @@ func (msg MsgStartSubscription) Route() string {
 }
 
 func NewMsgStartSubscription(from csdkTypes.AccAddress,
-	nodeID uint64, deposit csdkTypes.Coin) *MsgStartSubscription {
+	nodeID sdkTypes.ID, deposit csdkTypes.Coin) *MsgStartSubscription {
 
 	return &MsgStartSubscription{
 		From:    from,
@@ -60,7 +62,7 @@ var _ csdkTypes.Msg = (*MsgEndSubscription)(nil)
 
 type MsgEndSubscription struct {
 	From csdkTypes.AccAddress `json:"from"`
-	ID   uint64               `json:"id"`
+	ID   sdkTypes.ID          `json:"id"`
 }
 
 func (msg MsgEndSubscription) Type() string {
@@ -92,7 +94,7 @@ func (msg MsgEndSubscription) Route() string {
 	return RouterKey
 }
 
-func NewMsgEndSubscription(from csdkTypes.AccAddress, id uint64) *MsgEndSubscription {
+func NewMsgEndSubscription(from csdkTypes.AccAddress, id sdkTypes.ID) *MsgEndSubscription {
 	return &MsgEndSubscription{
 		From: from,
 		ID:   id,

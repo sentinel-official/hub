@@ -65,11 +65,11 @@ func ValidateGenesis(data types.GenesisState) error {
 			return fmt.Errorf("%s for the %s", err.Error(), session)
 		}
 
-		if sessionsMap[session.ID] {
+		if sessionsMap[session.ID.UInt64()] {
 			return fmt.Errorf("duplicate id for the %s", session)
 		}
 
-		sessionsMap[session.ID] = true
+		sessionsMap[session.ID.UInt64()] = true
 	}
 
 	subscriptionsMap := make(map[uint64]bool, len(data.Subscriptions))
@@ -78,11 +78,11 @@ func ValidateGenesis(data types.GenesisState) error {
 			return fmt.Errorf("%s for the %s", err.Error(), subscription)
 		}
 
-		if subscriptionsMap[subscription.ID] {
+		if subscriptionsMap[subscription.ID.UInt64()] {
 			return fmt.Errorf("duplicate id for the %s", subscription)
 		}
 
-		subscriptionsMap[subscription.ID] = true
+		subscriptionsMap[subscription.ID.UInt64()] = true
 	}
 
 	nodeIDsMap := make(map[uint64]bool, len(data.Nodes))
@@ -95,11 +95,11 @@ func ValidateGenesis(data types.GenesisState) error {
 			return fmt.Errorf("invalid deposit for the %s", node)
 		}
 
-		if nodeIDsMap[node.ID] {
+		if nodeIDsMap[node.ID.UInt64()] {
 			return fmt.Errorf("duplicate id for the %s", node)
 		}
 
-		nodeIDsMap[node.ID] = true
+		nodeIDsMap[node.ID.UInt64()] = true
 	}
 
 	return nil

@@ -9,6 +9,7 @@ import (
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/rest"
 
+	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
 	"github.com/ironman0x7b2/sentinel-sdk/x/vpn"
 )
 
@@ -43,7 +44,7 @@ func startSubscriptionHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) h
 			return
 		}
 
-		msg := vpn.NewMsgStartSubscription(fromAddress, req.NodeID, deposit)
+		msg := vpn.NewMsgStartSubscription(fromAddress, sdkTypes.NewIDFromUInt64(req.NodeID), deposit)
 		if err := msg.ValidateBasic(); err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return

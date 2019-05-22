@@ -7,10 +7,11 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
 
+	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
 	"github.com/ironman0x7b2/sentinel-sdk/x/vpn"
 )
 
-func QueryNode(cliCtx context.CLIContext, cdc *codec.Codec, id uint64) (vpn.Node, error) {
+func QueryNode(cliCtx context.CLIContext, cdc *codec.Codec, id sdkTypes.ID) (vpn.Node, error) {
 	params := vpn.NewQueryNodeParams(id)
 	paramBytes, err := cdc.MarshalJSON(params)
 	if err != nil {
@@ -44,7 +45,7 @@ func QueryNodesOfAddress(cliCtx context.CLIContext, cdc *codec.Codec, address cs
 }
 
 // nolint: dupl
-func QuerySubscription(cliCtx context.CLIContext, cdc *codec.Codec, id uint64) (vpn.Subscription, error) {
+func QuerySubscription(cliCtx context.CLIContext, cdc *codec.Codec, id sdkTypes.ID) (vpn.Subscription, error) {
 	subscriptionKey := vpn.SubscriptionKey(id)
 	res, err := cliCtx.QueryStore(subscriptionKey, vpn.StoreKeySubscription)
 	if err != nil {
@@ -63,7 +64,7 @@ func QuerySubscription(cliCtx context.CLIContext, cdc *codec.Codec, id uint64) (
 }
 
 // nolint: dupl
-func QuerySession(cliCtx context.CLIContext, cdc *codec.Codec, id uint64) (vpn.Session, error) {
+func QuerySession(cliCtx context.CLIContext, cdc *codec.Codec, id sdkTypes.ID) (vpn.Session, error) {
 	sessionKey := vpn.SessionKey(id)
 	res, err := cliCtx.QueryStore(sessionKey, vpn.StoreKeySession)
 	if err != nil {

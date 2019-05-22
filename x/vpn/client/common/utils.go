@@ -8,7 +8,7 @@ import (
 )
 
 func GetBandwidthSignDataBytes(cliCtx context.CLIContext, cdc *codec.Codec,
-	subscriptionID uint64, bandwidth sdkTypes.Bandwidth) ([]byte, error) {
+	subscriptionID sdkTypes.ID, bandwidth sdkTypes.Bandwidth) ([]byte, error) {
 
 	subscription, err := QuerySubscription(cliCtx, cdc, subscriptionID)
 	if err != nil {

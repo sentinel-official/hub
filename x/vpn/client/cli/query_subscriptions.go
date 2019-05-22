@@ -9,6 +9,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/spf13/cobra"
 
+	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
 	"github.com/ironman0x7b2/sentinel-sdk/x/vpn"
 	"github.com/ironman0x7b2/sentinel-sdk/x/vpn/client/common"
 )
@@ -26,7 +27,7 @@ func QuerySubscriptionCmd(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			subscription, err := common.QuerySubscription(cliCtx, cdc, uint64(id))
+			subscription, err := common.QuerySubscription(cliCtx, cdc, sdkTypes.NewIDFromUInt64(uint64(id)))
 			if err != nil {
 				return err
 			}
