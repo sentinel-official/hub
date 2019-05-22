@@ -5,16 +5,14 @@ import (
 	"sort"
 
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
-	"github.com/tendermint/tendermint/crypto"
 
 	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
 )
 
 type Node struct {
-	ID          sdkTypes.ID          `json:"id"`
-	Owner       csdkTypes.AccAddress `json:"owner"`
-	OwnerPubKey crypto.PubKey        `json:"owner_pub_key"`
-	Deposit     csdkTypes.Coin       `json:"deposit"`
+	ID      sdkTypes.ID          `json:"id"`
+	Owner   csdkTypes.AccAddress `json:"owner"`
+	Deposit csdkTypes.Coin       `json:"deposit"`
 
 	Type          string             `json:"type"`
 	Version       string             `json:"version"`
@@ -23,21 +21,14 @@ type Node struct {
 	InternetSpeed sdkTypes.Bandwidth `json:"internet_speed"`
 	Encryption    string             `json:"encryption"`
 
-	SubscriptionsCount uint64 `json:"subscriptions_count"`
-	Status             string `json:"status"`
-	StatusModifiedAt   int64  `json:"status_modified_at"`
+	Status           string `json:"status"`
+	StatusModifiedAt int64  `json:"status_modified_at"`
 }
 
 func (n Node) String() string {
-	ownerPubKey, err := csdkTypes.Bech32ifyAccPub(n.OwnerPubKey)
-	if err != nil {
-		panic(err)
-	}
-
 	return fmt.Sprintf(`Node
   ID:                  %d
   Owner Address:       %s
-  Owner Public Key:    %s
   Deposit:             %s
   Type:                %s
   Version:             %s
@@ -45,11 +36,10 @@ func (n Node) String() string {
   Price Per GB:        %s
   Internet speed:      %s
   Encryption:          %s
-  Subscriptions Count: %d
   Status:              %s
-  Status Modified At:  %d`, n.ID, n.Owner, ownerPubKey, n.Deposit, n.Type, n.Version,
+  Status Modified At:  %d`, n.ID, n.Owner, n.Deposit, n.Type, n.Version,
 		n.Moniker, n.PricesPerGB, n.InternetSpeed, n.Encryption,
-		n.SubscriptionsCount, n.Status, n.StatusModifiedAt)
+		n.Status, n.StatusModifiedAt)
 }
 
 func (n Node) UpdateInfo(_node Node) Node {
@@ -104,9 +94,6 @@ func (n Node) DepositToBandwidth(deposit csdkTypes.Coin) (bandwidth sdkTypes.Ban
 func (n Node) IsValid() error {
 	if n.Owner == nil || n.Owner.Empty() {
 		return fmt.Errorf("invalid owner")
-	}
-	if n.OwnerPubKey == nil {
-		return fmt.Errorf("invalid owner public key")
 	}
 	if len(n.Deposit.Denom) == 0 {
 		return fmt.Errorf("invalid deposit")
