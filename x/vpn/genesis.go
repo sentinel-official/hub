@@ -12,35 +12,37 @@ func InitGenesis(ctx csdkTypes.Context, k Keeper, data types.GenesisState) {
 	k.SetParams(ctx, data.Params)
 
 	for _, node := range data.Nodes {
-		node.SubscriptionsCount = 0
 		k.SetNode(ctx, node)
 
-		k.SetNodeIDByAddress(ctx, node.Owner, k.GetNodesCountOfAddress(ctx, node.Owner), node.ID)
+		nca := k.GetNodesCountOfAddress(ctx, node.Owner)
+		k.SetNodeIDByAddress(ctx, node.Owner, nca, node.ID)
+
 		k.SetNodesCount(ctx, k.GetNodesCount(ctx)+1)
-		k.SetNodesCountOfAddress(ctx, node.Owner, k.GetNodesCountOfAddress(ctx, node.Owner)+1)
+		k.SetNodesCountOfAddress(ctx, node.Owner, nca+1)
 	}
 
 	for _, subscription := range data.Subscriptions {
-		subscription.SessionsCount = 0
 		k.SetSubscription(ctx, subscription)
 
-		node, _ := k.GetNode(ctx, subscription.ID)
-		k.SetSubscriptionIDByNodeID(ctx, node.ID, node.SubscriptionsCount, subscription.ID)
-		k.SetSubscriptionIDByAddress(ctx, subscription.Client, k.GetSubscriptionsCountOfAddress(ctx, subscription.Client), subscription.ID)
+		scn := k.GetSubscriptionsCountOfNode(ctx, subscription.NodeID)
+		k.SetSubscriptionIDByNodeID(ctx, subscription.NodeID, scn, subscription.ID)
+
+		sca := k.GetSubscriptionsCountOfAddress(ctx, subscription.Client)
+		k.SetSubscriptionIDByAddress(ctx, subscription.Client, sca, subscription.ID)
+
 		k.SetSubscriptionsCount(ctx, k.GetSubscriptionsCount(ctx)+1)
-		node.SubscriptionsCount++
-		k.SetNode(ctx, node)
-		k.SetSubscriptionsCountOfAddress(ctx, subscription.Client, k.GetSubscriptionsCountOfAddress(ctx, subscription.Client)+1)
+		k.SetSubscriptionsCountOfNode(ctx, subscription.NodeID, scn+1)
+		k.SetSubscriptionsCountOfAddress(ctx, subscription.Client, sca+1)
 	}
 
 	for _, session := range data.Sessions {
 		k.SetSession(ctx, session)
 
-		subscription, _ := k.GetSubscription(ctx, session.SubscriptionID)
-		k.SetSessionIDBySubscriptionID(ctx, subscription.ID, subscription.SessionsCount, session.ID)
+		scs := k.GetSessionsCountOfSubscription(ctx, session.SubscriptionID)
+		k.SetSessionIDBySubscriptionID(ctx, session.SubscriptionID, scs, session.ID)
+
 		k.SetSessionsCount(ctx, k.GetSessionsCount(ctx)+1)
-		subscription.SessionsCount++
-		k.SetSubscription(ctx, subscription)
+		k.SetSessionsCountOfSubscription(ctx, session.SubscriptionID, scs+1)
 	}
 }
 
@@ -65,11 +67,11 @@ func ValidateGenesis(data types.GenesisState) error {
 			return fmt.Errorf("%s for the %s", err.Error(), session)
 		}
 
-		if sessionsMap[session.ID.UInt64()] {
+		if sessionsMap[session.ID.Uint64()] {
 			return fmt.Errorf("duplicate id for the %s", session)
 		}
 
-		sessionsMap[session.ID.UInt64()] = true
+		sessionsMap[session.ID.Uint64()] = true
 	}
 
 	subscriptionsMap := make(map[uint64]bool, len(data.Subscriptions))
@@ -78,11 +80,11 @@ func ValidateGenesis(data types.GenesisState) error {
 			return fmt.Errorf("%s for the %s", err.Error(), subscription)
 		}
 
-		if subscriptionsMap[subscription.ID.UInt64()] {
+		if subscriptionsMap[subscription.ID.Uint64()] {
 			return fmt.Errorf("duplicate id for the %s", subscription)
 		}
 
-		subscriptionsMap[subscription.ID.UInt64()] = true
+		subscriptionsMap[subscription.ID.Uint64()] = true
 	}
 
 	nodeIDsMap := make(map[uint64]bool, len(data.Nodes))
@@ -95,11 +97,11 @@ func ValidateGenesis(data types.GenesisState) error {
 			return fmt.Errorf("invalid deposit for the %s", node)
 		}
 
-		if nodeIDsMap[node.ID.UInt64()] {
+		if nodeIDsMap[node.ID.Uint64()] {
 			return fmt.Errorf("duplicate id for the %s", node)
 		}
 
-		nodeIDsMap[node.ID.UInt64()] = true
+		nodeIDsMap[node.ID.Uint64()] = true
 	}
 
 	return nil

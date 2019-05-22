@@ -29,17 +29,19 @@ var (
 
 	SubscriptionsCountKey                = []byte{0x00}
 	SubscriptionKeyPrefix                = []byte{0x01}
+	SubscriptionsCountOfNodeKeyPrefix    = []byte{0x02}
 	SubscriptionIDByNodeIDKeyPrefix      = []byte{0x03}
 	SubscriptionsCountOfAddressKeyPrefix = []byte{0x04}
 	SubscriptionIDByAddressKeyPrefix     = []byte{0x05}
 
-	SessionsCountKey                   = []byte{0x00}
-	SessionKeyPrefix                   = []byte{0x01}
-	SessionIDBySubscriptionIDKeyPrefix = []byte{0x03}
+	SessionsCountKey                     = []byte{0x00}
+	SessionKeyPrefix                     = []byte{0x01}
+	SessionsCountOfSubscriptionKeyPrefix = []byte{0x02}
+	SessionIDBySubscriptionIDKeyPrefix   = []byte{0x03}
 )
 
 func NodeKey(id sdkTypes.ID) []byte {
-	return append(NodeKeyPrefix, csdkTypes.Uint64ToBigEndian(id.UInt64())...)
+	return append(NodeKeyPrefix, csdkTypes.Uint64ToBigEndian(id.Uint64())...)
 }
 
 func NodesCountOfAddressKey(address csdkTypes.AccAddress) []byte {
@@ -52,12 +54,16 @@ func NodeIDByAddressKey(address csdkTypes.AccAddress, i uint64) []byte {
 }
 
 func SubscriptionKey(id sdkTypes.ID) []byte {
-	return append(SubscriptionKeyPrefix, csdkTypes.Uint64ToBigEndian(id.UInt64())...)
+	return append(SubscriptionKeyPrefix, csdkTypes.Uint64ToBigEndian(id.Uint64())...)
+}
+
+func SubscriptionsCountOfNodeKey(id sdkTypes.ID) []byte {
+	return append(SubscriptionsCountOfNodeKeyPrefix, csdkTypes.Uint64ToBigEndian(id.Uint64())...)
 }
 
 func SubscriptionIDByNodeIDKey(id sdkTypes.ID, i uint64) []byte {
 	return append(SubscriptionIDByNodeIDKeyPrefix,
-		append(csdkTypes.Uint64ToBigEndian(id.UInt64()), csdkTypes.Uint64ToBigEndian(i)...)...)
+		append(csdkTypes.Uint64ToBigEndian(id.Uint64()), csdkTypes.Uint64ToBigEndian(i)...)...)
 }
 
 func SubscriptionsCountOfAddressKey(address csdkTypes.AccAddress) []byte {
@@ -70,12 +76,16 @@ func SubscriptionIDByAddressKey(address csdkTypes.AccAddress, i uint64) []byte {
 }
 
 func SessionKey(id sdkTypes.ID) []byte {
-	return append(SessionKeyPrefix, csdkTypes.Uint64ToBigEndian(id.UInt64())...)
+	return append(SessionKeyPrefix, csdkTypes.Uint64ToBigEndian(id.Uint64())...)
+}
+
+func SessionsCountOfSubscriptionKey(id sdkTypes.ID) []byte {
+	return append(SessionsCountOfSubscriptionKeyPrefix, csdkTypes.Uint64ToBigEndian(id.Uint64())...)
 }
 
 func SessionIDBySubscriptionIDKey(id sdkTypes.ID, i uint64) []byte {
 	return append(SessionIDBySubscriptionIDKeyPrefix,
-		append(csdkTypes.Uint64ToBigEndian(id.UInt64()), csdkTypes.Uint64ToBigEndian(i)...)...)
+		append(csdkTypes.Uint64ToBigEndian(id.Uint64()), csdkTypes.Uint64ToBigEndian(i)...)...)
 }
 
 func ActiveNodeIDsKey(height int64) []byte {

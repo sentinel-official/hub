@@ -2,6 +2,7 @@ package keeper
 
 import (
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
+	"github.com/tendermint/tendermint/crypto"
 
 	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
 	"github.com/ironman0x7b2/sentinel-sdk/x/vpn/types"
@@ -45,6 +46,27 @@ func (k Keeper) GetSubscription(ctx csdkTypes.Context, id sdkTypes.ID) (subscrip
 
 	k.cdc.MustUnmarshalBinaryLengthPrefixed(value, &subscription)
 	return subscription, true
+}
+
+func (k Keeper) SetSubscriptionsCountOfNode(ctx csdkTypes.Context, id sdkTypes.ID, count uint64) {
+	key := types.SubscriptionsCountOfNodeKey(id)
+	value := k.cdc.MustMarshalBinaryLengthPrefixed(count)
+
+	store := ctx.KVStore(k.subscriptionStoreKey)
+	store.Set(key, value)
+}
+
+func (k Keeper) GetSubscriptionsCountOfNode(ctx csdkTypes.Context, id sdkTypes.ID) (count uint64) {
+	store := ctx.KVStore(k.subscriptionStoreKey)
+
+	key := types.SubscriptionsCountOfNodeKey(id)
+	value := store.Get(key)
+	if value == nil {
+		return 0
+	}
+
+	k.cdc.MustUnmarshalBinaryLengthPrefixed(value, &count)
+	return count
 }
 
 func (k Keeper) SetSubscriptionIDByNodeID(ctx csdkTypes.Context, i sdkTypes.ID, j uint64, id sdkTypes.ID) {
@@ -110,6 +132,34 @@ func (k Keeper) GetSubscriptionIDByAddress(ctx csdkTypes.Context, address csdkTy
 	return id, true
 }
 
+func (k Keeper) GetSubscriptionsOfNode(ctx csdkTypes.Context, id sdkTypes.ID) (subscriptions []types.Subscription) {
+	count := k.GetSubscriptionsCountOfNode(ctx, id)
+
+	subscriptions = make([]types.Subscription, 0, count)
+	for i := uint64(0); i < count; i++ {
+		_id, _ := k.GetSubscriptionIDByNodeID(ctx, id, i)
+
+		subscription, _ := k.GetSubscription(ctx, _id)
+		subscriptions = append(subscriptions, subscription)
+	}
+
+	return subscriptions
+}
+
+func (k Keeper) GetSubscriptionsOfAddress(ctx csdkTypes.Context, address csdkTypes.AccAddress) (subscriptions []types.Subscription) {
+	count := k.GetSubscriptionsCountOfAddress(ctx, address)
+
+	subscriptions = make([]types.Subscription, 0, count)
+	for i := uint64(0); i < count; i++ {
+		id, _ := k.GetSubscriptionIDByAddress(ctx, address, i)
+
+		subscription, _ := k.GetSubscription(ctx, id)
+		subscriptions = append(subscriptions, subscription)
+	}
+
+	return subscriptions
+}
+
 func (k Keeper) GetAllSubscriptions(ctx csdkTypes.Context) (subscriptions []types.Subscription) {
 	store := ctx.KVStore(k.subscriptionStoreKey)
 
@@ -145,33 +195,11 @@ func (k Keeper) IterateSubscriptions(ctx csdkTypes.Context,
 	}
 }
 
-func (k Keeper) AddSubscription(ctx csdkTypes.Context, node types.Node,
-	subscription types.Subscription) (allTags csdkTypes.Tags, err csdkTypes.Error) {
-
-	allTags = csdkTypes.EmptyTags()
-
-	subscription.ClientPubKey, err = k.accountKeeper.GetPubKey(ctx, subscription.Client)
-	if err != nil {
-		return nil, err
+func (k Keeper) GetSubscriptionClientPubKey(ctx csdkTypes.Context, id sdkTypes.ID) (crypto.PubKey, csdkTypes.Error) {
+	subscription, found := k.GetSubscription(ctx, id)
+	if !found {
+		return nil, types.ErrorSubscriptionDoesNotExist()
 	}
 
-	tags, err := k.AddDeposit(ctx, subscription.Client, subscription.TotalDeposit)
-	if err != nil {
-		return nil, err
-	}
-
-	allTags = allTags.AppendTags(tags)
-
-	k.SetSubscription(ctx, subscription)
-	k.SetSubscriptionIDByNodeID(ctx, node.ID, node.SubscriptionsCount, subscription.ID)
-
-	count := k.GetSubscriptionsCountOfAddress(ctx, subscription.Client)
-	k.SetSubscriptionIDByAddress(ctx, subscription.Client, count, subscription.ID)
-
-	node.SubscriptionsCount++
-	k.SetNode(ctx, node)
-	k.SetSubscriptionsCountOfAddress(ctx, subscription.Client, count+1)
-	k.SetSubscriptionsCount(ctx, subscription.ID.UInt64()+1)
-
-	return allTags, nil
+	return k.accountKeeper.GetPubKey(ctx, subscription.Client)
 }

@@ -47,6 +47,27 @@ func (k Keeper) GetSession(ctx csdkTypes.Context, id sdkTypes.ID) (session types
 	return session, true
 }
 
+func (k Keeper) SetSessionsCountOfSubscription(ctx csdkTypes.Context, id sdkTypes.ID, count uint64) {
+	key := types.SessionsCountOfSubscriptionKey(id)
+	value := k.cdc.MustMarshalBinaryLengthPrefixed(count)
+
+	store := ctx.KVStore(k.sessionStoreKey)
+	store.Set(key, value)
+}
+
+func (k Keeper) GetSessionsCountOfSubscription(ctx csdkTypes.Context, id sdkTypes.ID) (count uint64) {
+	store := ctx.KVStore(k.sessionStoreKey)
+
+	key := types.SessionsCountOfSubscriptionKey(id)
+	value := store.Get(key)
+	if value == nil {
+		return 0
+	}
+
+	k.cdc.MustUnmarshalBinaryLengthPrefixed(value, &count)
+	return count
+}
+
 func (k Keeper) SetSessionIDBySubscriptionID(ctx csdkTypes.Context, i sdkTypes.ID, j uint64, id sdkTypes.ID) {
 	key := types.SessionIDBySubscriptionIDKey(i, j)
 	value := k.cdc.MustMarshalBinaryLengthPrefixed(id)
@@ -91,6 +112,27 @@ func (k Keeper) GetActiveSessionIDs(ctx csdkTypes.Context, height int64) (ids sd
 	return ids
 }
 
+func (k Keeper) DeleteActiveSessionIDs(ctx csdkTypes.Context, height int64) {
+	store := ctx.KVStore(k.sessionStoreKey)
+
+	key := types.ActiveSessionIDsKey(height)
+	store.Delete(key)
+}
+
+func (k Keeper) GetSessionsOfSubscription(ctx csdkTypes.Context, id sdkTypes.ID) (sessions []types.Session) {
+	count := k.GetSessionsCountOfSubscription(ctx, id)
+
+	sessions = make([]types.Session, 0, count)
+	for i := uint64(0); i < count; i++ {
+		_id, _ := k.GetSessionIDBySubscriptionID(ctx, id, i)
+
+		session, _ := k.GetSession(ctx, _id)
+		sessions = append(sessions, session)
+	}
+
+	return sessions
+}
+
 func (k Keeper) GetAllSessions(ctx csdkTypes.Context) (sessions []types.Session) {
 	store := ctx.KVStore(k.sessionStoreKey)
 
@@ -106,7 +148,7 @@ func (k Keeper) GetAllSessions(ctx csdkTypes.Context) (sessions []types.Session)
 	return sessions
 }
 
-func (k Keeper) AddActiveSessionID(ctx csdkTypes.Context, height int64, id sdkTypes.ID) {
+func (k Keeper) AddSessionIDToActiveList(ctx csdkTypes.Context, height int64, id sdkTypes.ID) {
 	ids := k.GetActiveSessionIDs(ctx, height)
 
 	index := ids.Search(id)
@@ -118,7 +160,7 @@ func (k Keeper) AddActiveSessionID(ctx csdkTypes.Context, height int64, id sdkTy
 	k.SetActiveSessionIDs(ctx, height, ids)
 }
 
-func (k Keeper) RemoveActiveSessionID(ctx csdkTypes.Context, height int64, id sdkTypes.ID) {
+func (k Keeper) RemoveSessionIDFromActiveList(ctx csdkTypes.Context, height int64, id sdkTypes.ID) {
 	ids := k.GetActiveSessionIDs(ctx, height)
 
 	index := ids.Search(id)

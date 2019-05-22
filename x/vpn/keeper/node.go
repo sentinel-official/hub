@@ -2,6 +2,7 @@ package keeper
 
 import (
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
+	"github.com/tendermint/tendermint/crypto"
 
 	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
 	"github.com/ironman0x7b2/sentinel-sdk/x/vpn/types"
@@ -112,6 +113,13 @@ func (k Keeper) GetActiveNodeIDs(ctx csdkTypes.Context, height int64) (ids sdkTy
 	return ids
 }
 
+func (k Keeper) DeleteActiveNodeIDs(ctx csdkTypes.Context, height int64) {
+	store := ctx.KVStore(k.nodeStoreKey)
+
+	key := types.ActiveNodeIDsKey(height)
+	store.Delete(key)
+}
+
 func (k Keeper) GetNodesOfAddress(ctx csdkTypes.Context, address csdkTypes.AccAddress) (nodes []types.Node) {
 	count := k.GetNodesCountOfAddress(ctx, address)
 
@@ -159,36 +167,7 @@ func (k Keeper) IterateNodes(ctx csdkTypes.Context, fn func(index int64, node ty
 	}
 }
 
-func (k Keeper) AddNode(ctx csdkTypes.Context, node types.Node) (allTags csdkTypes.Tags, err csdkTypes.Error) {
-	allTags = csdkTypes.EmptyTags()
-
-	node.OwnerPubKey, err = k.accountKeeper.GetPubKey(ctx, node.Owner)
-	if err != nil {
-		return nil, err
-	}
-
-	count := k.GetNodesCountOfAddress(ctx, node.Owner)
-	if count >= k.FreeNodesCount(ctx) {
-		node.Deposit = k.Deposit(ctx)
-
-		tags, err := k.AddDeposit(ctx, node.Owner, node.Deposit)
-		if err != nil {
-			return nil, err
-		}
-
-		allTags = allTags.AppendTags(tags)
-	}
-
-	k.SetNode(ctx, node)
-	k.SetNodeIDByAddress(ctx, node.Owner, count, node.ID)
-
-	k.SetNodesCount(ctx, node.ID.UInt64()+1)
-	k.SetNodesCountOfAddress(ctx, node.Owner, count+1)
-
-	return allTags, nil
-}
-
-func (k Keeper) AddActiveNodeID(ctx csdkTypes.Context, height int64, id sdkTypes.ID) {
+func (k Keeper) AddNodeIDToActiveList(ctx csdkTypes.Context, height int64, id sdkTypes.ID) {
 	ids := k.GetActiveNodeIDs(ctx, height)
 
 	index := ids.Search(id)
@@ -200,7 +179,7 @@ func (k Keeper) AddActiveNodeID(ctx csdkTypes.Context, height int64, id sdkTypes
 	k.SetActiveNodeIDs(ctx, height, ids)
 }
 
-func (k Keeper) RemoveActiveNodeID(ctx csdkTypes.Context, height int64, id sdkTypes.ID) {
+func (k Keeper) RemoveNodeIDFromActiveList(ctx csdkTypes.Context, height int64, id sdkTypes.ID) {
 	ids := k.GetActiveNodeIDs(ctx, height)
 
 	index := ids.Search(id)
@@ -210,4 +189,13 @@ func (k Keeper) RemoveActiveNodeID(ctx csdkTypes.Context, height int64, id sdkTy
 
 	ids = ids.Delete(index)
 	k.SetActiveNodeIDs(ctx, height, ids)
+}
+
+func (k Keeper) GetNodeOwnerPubKey(ctx csdkTypes.Context, id sdkTypes.ID) (crypto.PubKey, csdkTypes.Error) {
+	node, found := k.GetNode(ctx, id)
+	if !found {
+		return nil, types.ErrorNodeDoesNotExist()
+	}
+
+	return k.accountKeeper.GetPubKey(ctx, node.Owner)
 }

@@ -1,6 +1,7 @@
 package types
 
 import (
+	"fmt"
 	"sort"
 )
 
@@ -8,7 +9,8 @@ type ID uint64
 
 func NewIDFromUInt64(i uint64) ID { return ID(i) }
 
-func (id ID) UInt64() uint64 { return uint64(id) }
+func (id ID) Uint64() uint64 { return uint64(id) }
+func (id ID) String() string { return fmt.Sprintf("%X", id.Uint64()) }
 
 type IDs []ID
 
