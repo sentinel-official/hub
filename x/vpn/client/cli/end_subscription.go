@@ -8,7 +8,6 @@ import (
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
 	authTxBuilder "github.com/cosmos/cosmos-sdk/x/auth/client/txbuilder"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 
 	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
 	"github.com/ironman0x7b2/sentinel-sdk/x/vpn"
@@ -18,6 +17,7 @@ func EndSubscriptionTxCmd(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "end",
 		Short: "End subscription",
+		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			txBldr := authTxBuilder.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
 			cliCtx := context.NewCLIContext().WithCodec(cdc).WithAccountDecoder(cdc)
@@ -26,17 +26,13 @@ func EndSubscriptionTxCmd(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			subscriptionID := sdkTypes.NewIDFromUInt64(uint64(viper.GetInt64(flagSubscriptionID)))
+			id := sdkTypes.NewIDFromString(args[0])
 			fromAddress := cliCtx.GetFromAddress()
 
-			msg := vpn.NewMsgEndSubscription(fromAddress, subscriptionID)
+			msg := vpn.NewMsgEndSubscription(fromAddress, id)
 			return utils.GenerateOrBroadcastMsgs(cliCtx, txBldr, []csdkTypes.Msg{msg}, false)
 		},
 	}
-
-	cmd.Flags().Uint64(flagSubscriptionID, 0, "Subscription ID")
-
-	_ = cmd.MarkFlagRequired(flagSubscriptionID)
 
 	return cmd
 }

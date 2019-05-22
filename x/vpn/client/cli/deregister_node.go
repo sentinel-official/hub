@@ -8,7 +8,6 @@ import (
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
 	authTxBuilder "github.com/cosmos/cosmos-sdk/x/auth/client/txbuilder"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 
 	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
 	"github.com/ironman0x7b2/sentinel-sdk/x/vpn"
@@ -18,6 +17,7 @@ func DeregisterNodeTxCmd(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "deregister",
 		Short: "Deregister node",
+		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			txBldr := authTxBuilder.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
 			cliCtx := context.NewCLIContext().WithCodec(cdc).WithAccountDecoder(cdc)
@@ -26,17 +26,13 @@ func DeregisterNodeTxCmd(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			nodeID := sdkTypes.NewIDFromUInt64(uint64(viper.GetInt64(flagNodeID)))
+			id := sdkTypes.NewIDFromString(args[0])
 			fromAddress := cliCtx.GetFromAddress()
 
-			msg := vpn.NewMsgDeregisterNode(fromAddress, nodeID)
+			msg := vpn.NewMsgDeregisterNode(fromAddress, id)
 			return utils.GenerateOrBroadcastMsgs(cliCtx, txBldr, []csdkTypes.Msg{msg}, false)
 		},
 	}
-
-	cmd.Flags().Uint64(flagNodeID, 0, "Node ID")
-
-	_ = cmd.MarkFlagRequired(flagNodeID)
 
 	return cmd
 }

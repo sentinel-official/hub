@@ -3,11 +3,21 @@ package types
 import (
 	"fmt"
 	"sort"
+	"strconv"
 )
 
 type ID uint64
 
 func NewIDFromUInt64(i uint64) ID { return ID(i) }
+
+func NewIDFromString(s string) ID {
+	i, err := strconv.Atoi(s)
+	if err != nil {
+		panic(err)
+	}
+
+	return NewIDFromUInt64(uint64(i))
+}
 
 func (id ID) Uint64() uint64 { return uint64(id) }
 func (id ID) String() string { return fmt.Sprintf("%X", id.Uint64()) }

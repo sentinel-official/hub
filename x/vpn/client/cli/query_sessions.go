@@ -3,11 +3,11 @@ package cli
 
 import (
 	"fmt"
-	"strconv"
 
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 
 	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
 	"github.com/ironman0x7b2/sentinel-sdk/x/vpn"
@@ -22,13 +22,18 @@ func QuerySessionCmd(cdc *codec.Codec) *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cliCtx := context.NewCLIContext().WithCodec(cdc).WithAccountDecoder(cdc)
 
-			id, err := strconv.Atoi(args[0])
+			id := sdkTypes.NewIDFromString(args[0])
+
+			res, err := common.QuerySession(cliCtx, cdc, id)
 			if err != nil {
 				return err
 			}
+			if res == nil {
+				return fmt.Errorf("session not found")
+			}
 
-			session, err := common.QuerySession(cliCtx, cdc, sdkTypes.NewIDFromUInt64(uint64(id)))
-			if err != nil {
+			var session vpn.Session
+			if err := cdc.UnmarshalJSON(res, &session); err != nil {
 				return err
 			}
 
@@ -48,22 +53,28 @@ func QuerySessionsCmd(cdc *codec.Codec) *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cliCtx := context.NewCLIContext().WithCodec(cdc).WithAccountDecoder(cdc)
 
-			var sessions []vpn.Session
-			res, err := cliCtx.QuerySubspace(vpn.SessionKeyPrefix, vpn.StoreKeySession)
+			subscriptionID := viper.GetString(flagSubscriptionID)
+
+			var res []byte
+			var err error
+
+			if len(subscriptionID) != 0 {
+				id := sdkTypes.NewIDFromString(subscriptionID)
+				res, err = common.QuerySessionsOfSubscription(cliCtx, cdc, id)
+			} else {
+				res, err = common.QueryAllSessions(cliCtx)
+			}
+
 			if err != nil {
 				return err
 			}
-			if len(res) == 0 {
+			if string(res) == "[]" {
 				return fmt.Errorf("no sessions found")
 			}
 
-			for _, kv := range res {
-				var session vpn.Session
-				if err := cdc.UnmarshalBinaryLengthPrefixed(kv.Value, &session); err != nil {
-					return err
-				}
-
-				sessions = append(sessions, session)
+			var sessions []vpn.Session
+			if err := cdc.UnmarshalJSON(res, &sessions); err != nil {
+				return err
 			}
 
 			for _, session := range sessions {
@@ -73,6 +84,8 @@ func QuerySessionsCmd(cdc *codec.Codec) *cobra.Command {
 			return nil
 		},
 	}
+
+	cmd.Flags().String(flagSubscriptionID, "", "Subscription ID")
 
 	return cmd
 }

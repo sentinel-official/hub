@@ -2,7 +2,6 @@ package cli
 
 import (
 	"fmt"
-	"strconv"
 
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -23,13 +22,18 @@ func QueryNodeCmd(cdc *codec.Codec) *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cliCtx := context.NewCLIContext().WithCodec(cdc).WithAccountDecoder(cdc)
 
-			id, err := strconv.Atoi(args[0])
+			id := sdkTypes.NewIDFromString(args[0])
+
+			res, err := common.QueryNode(cliCtx, cdc, id)
 			if err != nil {
 				return err
 			}
+			if res == nil {
+				return fmt.Errorf("node not found")
+			}
 
-			node, err := common.QueryNode(cliCtx, cdc, sdkTypes.NewIDFromUInt64(uint64(id)))
-			if err != nil {
+			var node vpn.Node
+			if err := cdc.UnmarshalJSON(res, &node); err != nil {
 				return err
 			}
 
@@ -52,41 +56,30 @@ func QueryNodesCmd(cdc *codec.Codec) *cobra.Command {
 
 			address := viper.GetString(flagAddress)
 
-			var nodes []vpn.Node
-			if len(address) == 0 {
-				res, err := cliCtx.QuerySubspace(vpn.NodeKeyPrefix, vpn.StoreKeyNode)
-				if err != nil {
-					return err
-				}
-				if len(res) == 0 {
-					return fmt.Errorf("no nodes found")
-				}
+			var res []byte
+			var err error
 
-				for _, kv := range res {
-					var node vpn.Node
-					if err := cdc.UnmarshalBinaryLengthPrefixed(kv.Value, &node); err != nil {
-						return err
-					}
-
-					nodes = append(nodes, node)
-				}
-			} else {
+			if len(address) != 0 {
 				address, err := csdkTypes.AccAddressFromBech32(address)
 				if err != nil {
 					return err
 				}
 
-				res, err := common.QueryNodesOfAddress(cliCtx, cdc, address)
-				if err != nil {
-					return err
-				}
-				if string(res) == "null" {
-					return fmt.Errorf("no nodes found")
-				}
+				res, err = common.QueryNodesOfAddress(cliCtx, cdc, address)
+			} else {
+				res, err = common.QueryAllNodes(cliCtx)
+			}
 
-				if err := cdc.UnmarshalJSON(res, &nodes); err != nil {
-					return err
-				}
+			if err != nil {
+				return err
+			}
+			if string(res) == "[]" {
+				return fmt.Errorf("no nodes found")
+			}
+
+			var nodes []vpn.Node
+			if err := cdc.UnmarshalJSON(res, &nodes); err != nil {
+				return err
 			}
 
 			for _, node := range nodes {

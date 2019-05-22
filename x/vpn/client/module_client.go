@@ -61,7 +61,7 @@ func nodeTxCmd(cdc *codec.Codec) *cobra.Command {
 
 	nodeTxCmd.AddCommand(client.PostCommands(
 		vpnCli.RegisterNodeTxCmd(cdc),
-		vpnCli.UpdateNodeDetailsTxCmd(cdc),
+		vpnCli.UpdateNodeInfoTxCmd(cdc),
 		vpnCli.UpdateNodeStatusTxCmd(cdc),
 		vpnCli.DeregisterNodeTxCmd(cdc),
 	)...)

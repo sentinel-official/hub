@@ -25,7 +25,7 @@ func StartSubscriptionTxCmd(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			nodeID := sdkTypes.NewIDFromUInt64(uint64(viper.GetInt64(flagNodeID)))
+			nodeID := sdkTypes.NewIDFromString(viper.GetString(flagNodeID))
 			deposit := viper.GetString(flagDeposit)
 
 			parsedDeposit, err := csdkTypes.ParseCoin(deposit)
@@ -40,7 +40,7 @@ func StartSubscriptionTxCmd(cdc *codec.Codec) *cobra.Command {
 		},
 	}
 
-	cmd.Flags().Uint64(flagNodeID, 0, "Node ID")
+	cmd.Flags().String(flagNodeID, "", "Node ID")
 	cmd.Flags().String(flagDeposit, "", "Deposit")
 
 	_ = cmd.MarkFlagRequired(flagNodeID)

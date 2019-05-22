@@ -21,7 +21,7 @@ import (
 func SignSessionBandwidthTxCmd(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "sign-bandwidth",
-		Short: "Sign subscription bandwidth details",
+		Short: "Sign session bandwidth",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cliCtx := context.NewCLIContext().WithCodec(cdc).WithAccountDecoder(cdc)
 
@@ -29,11 +29,12 @@ func SignSessionBandwidthTxCmd(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			subscriptionID := sdkTypes.NewIDFromUInt64(uint64(viper.GetInt64(flagSubscriptionID)))
+			subscriptionID := sdkTypes.NewIDFromString(viper.GetString(flagSubscriptionID))
 			bandwidth := sdkTypes.Bandwidth{
 				Upload:   csdkTypes.NewInt(viper.GetInt64(flagUpload)),
 				Download: csdkTypes.NewInt(viper.GetInt64(flagDownload)),
 			}
+
 			signBytes, err := common.GetBandwidthSignDataBytes(cliCtx, cdc, subscriptionID, bandwidth)
 			if err != nil {
 				return err
@@ -62,7 +63,7 @@ func SignSessionBandwidthTxCmd(cdc *codec.Codec) *cobra.Command {
 		},
 	}
 
-	cmd.Flags().Uint64(flagSubscriptionID, 0, "Subscription ID")
+	cmd.Flags().String(flagSubscriptionID, "", "Subscription ID")
 	cmd.Flags().Int64(flagUpload, 0, "Upload in in bytes")
 	cmd.Flags().Int64(flagDownload, 0, "Download in bytes")
 
@@ -85,7 +86,7 @@ func UpdateSessionInfoTxCmd(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			subscriptionID := sdkTypes.NewIDFromUInt64(uint64(viper.GetInt64(flagSubscriptionID)))
+			subscriptionID := sdkTypes.NewIDFromString(viper.GetString(flagSubscriptionID))
 			consumed := sdkTypes.Bandwidth{
 				Upload:   csdkTypes.NewInt(viper.GetInt64(flagUpload)),
 				Download: csdkTypes.NewInt(viper.GetInt64(flagDownload)),
@@ -111,7 +112,7 @@ func UpdateSessionInfoTxCmd(cdc *codec.Codec) *cobra.Command {
 		},
 	}
 
-	cmd.Flags().Uint64(flagSubscriptionID, 0, "Subscription ID")
+	cmd.Flags().String(flagSubscriptionID, "", "Subscription ID")
 	cmd.Flags().Int64(flagUpload, 0, "Upload in in bytes")
 	cmd.Flags().Int64(flagDownload, 0, "Download in bytes")
 	cmd.Flags().String(flagNodeOwnerSign, "", "Bandwidth signature of the node owner")

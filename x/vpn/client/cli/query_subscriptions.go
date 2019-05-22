@@ -3,11 +3,12 @@ package cli
 
 import (
 	"fmt"
-	"strconv"
 
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/codec"
+	csdkTypes "github.com/cosmos/cosmos-sdk/types"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 
 	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
 	"github.com/ironman0x7b2/sentinel-sdk/x/vpn"
@@ -22,13 +23,18 @@ func QuerySubscriptionCmd(cdc *codec.Codec) *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cliCtx := context.NewCLIContext().WithCodec(cdc).WithAccountDecoder(cdc)
 
-			id, err := strconv.Atoi(args[0])
+			id := sdkTypes.NewIDFromString(args[0])
+
+			res, err := common.QuerySubscription(cliCtx, cdc, id)
 			if err != nil {
 				return err
 			}
+			if res == nil {
+				return fmt.Errorf("subscription not found")
+			}
 
-			subscription, err := common.QuerySubscription(cliCtx, cdc, sdkTypes.NewIDFromUInt64(uint64(id)))
-			if err != nil {
+			var subscription vpn.Subscription
+			if err := cdc.UnmarshalJSON(res, &subscription); err != nil {
 				return err
 			}
 
@@ -48,22 +54,36 @@ func QuerySubscriptionsCmd(cdc *codec.Codec) *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cliCtx := context.NewCLIContext().WithCodec(cdc).WithAccountDecoder(cdc)
 
-			var subscriptions []vpn.Subscription
-			res, err := cliCtx.QuerySubspace(vpn.SubscriptionKeyPrefix, vpn.StoreKeySubscription)
-			if err != nil {
-				return err
-			}
-			if len(res) == 0 {
-				return fmt.Errorf("no subscriptions found")
-			}
+			nodeID := viper.GetString(flagNodeID)
+			address := viper.GetString(flagAddress)
 
-			for _, kv := range res {
-				var subscription vpn.Subscription
-				if err := cdc.UnmarshalBinaryLengthPrefixed(kv.Value, &subscription); err != nil {
+			var res []byte
+			var err error
+
+			if len(nodeID) != 0 {
+				id := sdkTypes.NewIDFromString(nodeID)
+				res, err = common.QuerySubscriptionsOfNode(cliCtx, cdc, id)
+			} else if len(address) != 0 {
+				address, err := csdkTypes.AccAddressFromBech32(address)
+				if err != nil {
 					return err
 				}
 
-				subscriptions = append(subscriptions, subscription)
+				res, err = common.QuerySubscriptionsOAddress(cliCtx, cdc, address)
+			} else {
+				res, err = common.QueryAllSubscriptions(cliCtx)
+			}
+
+			if err != nil {
+				return err
+			}
+			if string(res) == "[]" {
+				return fmt.Errorf("no subscriptions found")
+			}
+
+			var subscriptions []vpn.Subscription
+			if err := cdc.UnmarshalJSON(res, &subscriptions); err != nil {
+				return err
 			}
 
 			for _, subscription := range subscriptions {
@@ -73,6 +93,9 @@ func QuerySubscriptionsCmd(cdc *codec.Codec) *cobra.Command {
 			return nil
 		},
 	}
+
+	cmd.Flags().String(flagNodeID, "", "Node ID")
+	cmd.Flags().String(flagAddress, "", "Account address")
 
 	return cmd
 }
