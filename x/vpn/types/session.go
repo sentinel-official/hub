@@ -8,8 +8,8 @@ import (
 )
 
 type Session struct {
-	ID                  sdkTypes.ID        `json:"id"`
-	SubscriptionID      sdkTypes.ID        `json:"subscription_id"`
+	ID                  uint64             `json:"id"`
+	SubscriptionID      uint64             `json:"subscription_id"`
 	Bandwidth           sdkTypes.Bandwidth `json:"bandwidth"`
 	CalculatedBandwidth sdkTypes.Bandwidth `json:"calculated_bandwidth"`
 	NodeOwnerSign       []byte             `json:"node_owner_sign"`
@@ -23,8 +23,8 @@ func (s Session) String() string {
 	clientSign := hex.EncodeToString(s.ClientSign)
 
 	return fmt.Sprintf(`Session
-  ID:                   %s
-  Subscription ID:      %s
+  ID:                   %d
+  Subscription ID:      %d
   Bandwidth:            %s
   Calculated Bandwidth: %s
   Node Owner Signature: %s
@@ -35,12 +35,6 @@ func (s Session) String() string {
 }
 
 func (s Session) IsValid() error {
-	if s.ID == nil || s.ID.Len() < 26 {
-		return fmt.Errorf("invalid id")
-	}
-	if s.SubscriptionID == nil || s.SubscriptionID.Len() < 24 {
-		return fmt.Errorf("invalid subscription id")
-	}
 	if s.Bandwidth.AnyNil() {
 		return fmt.Errorf("invalid bandwidth")
 	}

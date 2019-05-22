@@ -4,15 +4,13 @@ import (
 	"encoding/json"
 
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
-
-	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
 )
 
 var _ csdkTypes.Msg = (*MsgStartSubscription)(nil)
 
 type MsgStartSubscription struct {
 	From    csdkTypes.AccAddress `json:"from"`
-	NodeID  sdkTypes.ID          `json:"node_id"`
+	NodeID  uint64               `json:"node_id"`
 	Deposit csdkTypes.Coin       `json:"deposit"`
 }
 
@@ -23,9 +21,6 @@ func (msg MsgStartSubscription) Type() string {
 func (msg MsgStartSubscription) ValidateBasic() csdkTypes.Error {
 	if msg.From == nil || msg.From.Empty() {
 		return ErrorInvalidField("from")
-	}
-	if msg.NodeID == nil || msg.NodeID.Len() == 0 {
-		return ErrorInvalidField("node_id")
 	}
 	if len(msg.Deposit.Denom) == 0 || !msg.Deposit.IsPositive() {
 		return ErrorInvalidField("deposit")
@@ -52,7 +47,7 @@ func (msg MsgStartSubscription) Route() string {
 }
 
 func NewMsgStartSubscription(from csdkTypes.AccAddress,
-	nodeID sdkTypes.ID, deposit csdkTypes.Coin) *MsgStartSubscription {
+	nodeID uint64, deposit csdkTypes.Coin) *MsgStartSubscription {
 
 	return &MsgStartSubscription{
 		From:    from,
@@ -65,7 +60,7 @@ var _ csdkTypes.Msg = (*MsgEndSubscription)(nil)
 
 type MsgEndSubscription struct {
 	From csdkTypes.AccAddress `json:"from"`
-	ID   sdkTypes.ID          `json:"id"`
+	ID   uint64               `json:"id"`
 }
 
 func (msg MsgEndSubscription) Type() string {
@@ -75,9 +70,6 @@ func (msg MsgEndSubscription) Type() string {
 func (msg MsgEndSubscription) ValidateBasic() csdkTypes.Error {
 	if msg.From == nil || msg.From.Empty() {
 		return ErrorInvalidField("from")
-	}
-	if msg.ID == nil || msg.ID.Len() == 0 {
-		return ErrorInvalidField("id")
 	}
 
 	return nil
@@ -100,7 +92,7 @@ func (msg MsgEndSubscription) Route() string {
 	return RouterKey
 }
 
-func NewMsgEndSubscription(from csdkTypes.AccAddress, id sdkTypes.ID) *MsgEndSubscription {
+func NewMsgEndSubscription(from csdkTypes.AccAddress, id uint64) *MsgEndSubscription {
 	return &MsgEndSubscription{
 		From: from,
 		ID:   id,

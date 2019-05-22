@@ -14,21 +14,21 @@ func RegisterRoutes(cliCtx context.CLIContext, r *mux.Router, cdc *codec.Codec) 
 func registerTxRoutes(cliCtx context.CLIContext, r *mux.Router, cdc *codec.Codec) {
 	r.HandleFunc("/nodes", registerNodeHandlerFunc(cliCtx, cdc)).
 		Methods("POST")
-	r.HandleFunc("/nodes/{nodeID:[^/]+/[^/]+}/deregister", deregisterNodeHandlerFunc(cliCtx, cdc)).
+	r.HandleFunc("/nodes/{nodeID}/deregister", deregisterNodeHandlerFunc(cliCtx, cdc)).
 		Methods("POST")
-	r.HandleFunc("/nodes/{nodeID:[^/]+/[^/]+}/details", updateNodeHandlerFunc(cliCtx, cdc)).
+	r.HandleFunc("/nodes/{nodeID}/details", updateNodeHandlerFunc(cliCtx, cdc)).
 		Methods("PUT")
-	r.HandleFunc("/nodes/{nodeID:[^/]+/[^/]+}/status", updateNodeStatusHandlerFunc(cliCtx, cdc)).
+	r.HandleFunc("/nodes/{nodeID}/status", updateNodeStatusHandlerFunc(cliCtx, cdc)).
 		Methods("PUT")
 
 	r.HandleFunc("/subscribe", startSubscriptionHandlerFunc(cliCtx, cdc)).
 		Methods("POST")
-	r.HandleFunc("/subscribe/{subscriptionID:[^/]+/[^/]+}", endSubscriptionHandlerFunc(cliCtx, cdc)).
+	r.HandleFunc("/subscribe/{subscriptionID}", endSubscriptionHandlerFunc(cliCtx, cdc)).
 		Methods("PUT")
 
-	r.HandleFunc("/sessions/{sessionID:[^/]+/[^/]+}/bandwidth/sign", signSessionBandwidthHandlerFunc(cliCtx, cdc)).
+	r.HandleFunc("/sessions/{sessionID}/bandwidth/sign", signSessionBandwidthHandlerFunc(cliCtx, cdc)).
 		Methods("POST")
-	r.HandleFunc("/sessions/{sessionID:[^/]+/[^/]+}/bandwidth", updateSessionInfoHandlerFunc(cliCtx, cdc)).
+	r.HandleFunc("/sessions/{sessionID}/bandwidth", updateSessionInfoHandlerFunc(cliCtx, cdc)).
 		Methods("POST")
 
 }
@@ -36,9 +36,9 @@ func registerTxRoutes(cliCtx context.CLIContext, r *mux.Router, cdc *codec.Codec
 func registerQueryRoutes(cliCtx context.CLIContext, r *mux.Router, cdc *codec.Codec) {
 	r.HandleFunc("/nodes", getNodesHandlerFunc(cliCtx, cdc)).
 		Methods("GET")
-	r.HandleFunc("/nodes/{nodeID:[^/]+/[^/]+}", getNodeHandlerFunc(cliCtx, cdc)).
+	r.HandleFunc("/nodes/{nodeID}", getNodeHandlerFunc(cliCtx, cdc)).
 		Methods("GET")
 
-	r.HandleFunc("/subscribe/{subscriptionID:[^/]+/[^/]+}", getSubscribeHandlerFunc(cliCtx, cdc)).
+	r.HandleFunc("/subscribe/{subscriptionID}", getSubscribeHandlerFunc(cliCtx, cdc)).
 		Methods("GET")
 }

@@ -3,6 +3,7 @@ package cli
 
 import (
 	"fmt"
+	"strconv"
 
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -20,7 +21,12 @@ func QuerySessionCmd(cdc *codec.Codec) *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cliCtx := context.NewCLIContext().WithCodec(cdc).WithAccountDecoder(cdc)
 
-			session, err := common.QuerySession(cliCtx, cdc, args[0])
+			id, err := strconv.Atoi(args[0])
+			if err != nil {
+				return err
+			}
+
+			session, err := common.QuerySession(cliCtx, cdc, uint64(id))
 			if err != nil {
 				return err
 			}

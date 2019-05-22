@@ -80,11 +80,11 @@ func (gs GenesisState) Sanitize() {
 	}
 
 	sort.Slice(gs.VPNData.Nodes, func(i, j int) bool {
-		return gs.VPNData.Nodes[i].ID.String() < gs.VPNData.Nodes[j].ID.String()
+		return gs.VPNData.Nodes[i].ID < gs.VPNData.Nodes[j].ID
 	})
 
 	sort.Slice(gs.VPNData.Sessions, func(i, j int) bool {
-		return gs.VPNData.Sessions[i].ID.String() < gs.VPNData.Sessions[j].ID.String()
+		return gs.VPNData.Sessions[i].ID < gs.VPNData.Sessions[j].ID
 	})
 }
 

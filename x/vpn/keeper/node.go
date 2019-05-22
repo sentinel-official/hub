@@ -1,25 +1,24 @@
 package keeper
 
 import (
+	"sort"
+
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
 
-	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
 	"github.com/ironman0x7b2/sentinel-sdk/x/vpn/types"
 )
 
-func (k Keeper) SetNodesCount(ctx csdkTypes.Context, address csdkTypes.AccAddress, count uint64) {
-	key := types.NodesCountKey(address)
+func (k Keeper) SetNodesCount(ctx csdkTypes.Context, count uint64) {
 	value := k.cdc.MustMarshalBinaryLengthPrefixed(count)
 
 	store := ctx.KVStore(k.nodeStoreKey)
-	store.Set(key, value)
+	store.Set(types.NodesCountKey, value)
 }
 
-func (k Keeper) GetNodesCount(ctx csdkTypes.Context, address csdkTypes.AccAddress) (count uint64) {
+func (k Keeper) GetNodesCount(ctx csdkTypes.Context) (count uint64) {
 	store := ctx.KVStore(k.nodeStoreKey)
 
-	key := types.NodesCountKey(address)
-	value := store.Get(key)
+	value := store.Get(types.NodesCountKey)
 	if value == nil {
 		return 0
 	}
@@ -36,7 +35,7 @@ func (k Keeper) SetNode(ctx csdkTypes.Context, node types.Node) {
 	store.Set(key, value)
 }
 
-func (k Keeper) GetNode(ctx csdkTypes.Context, id sdkTypes.ID) (node types.Node, found bool) {
+func (k Keeper) GetNode(ctx csdkTypes.Context, id uint64) (node types.Node, found bool) {
 	store := ctx.KVStore(k.nodeStoreKey)
 
 	key := types.NodeKey(id)
@@ -49,8 +48,50 @@ func (k Keeper) GetNode(ctx csdkTypes.Context, id sdkTypes.ID) (node types.Node,
 	return node, true
 }
 
-func (k Keeper) SetActiveNodeIDs(ctx csdkTypes.Context, height int64, ids sdkTypes.IDs) {
-	ids = ids.Sort()
+func (k Keeper) SetNodesCountOfAddress(ctx csdkTypes.Context, address csdkTypes.AccAddress, count uint64) {
+	key := types.NodesCountOfAddressKey(address)
+	value := k.cdc.MustMarshalBinaryLengthPrefixed(count)
+
+	store := ctx.KVStore(k.nodeStoreKey)
+	store.Set(key, value)
+}
+
+func (k Keeper) GetNodesCountOfAddress(ctx csdkTypes.Context, address csdkTypes.AccAddress) (count uint64) {
+	store := ctx.KVStore(k.nodeStoreKey)
+
+	key := types.NodesCountOfAddressKey(address)
+	value := store.Get(key)
+	if value == nil {
+		return 0
+	}
+
+	k.cdc.MustUnmarshalBinaryLengthPrefixed(value, &count)
+	return count
+}
+
+func (k Keeper) SetNodeIDByAddress(ctx csdkTypes.Context, address csdkTypes.AccAddress, i, id uint64) {
+	key := types.NodeIDByAddressKey(address, i)
+	value := k.cdc.MustMarshalBinaryLengthPrefixed(id)
+
+	store := ctx.KVStore(k.nodeStoreKey)
+	store.Set(key, value)
+}
+
+func (k Keeper) GetNodeIDByAddress(ctx csdkTypes.Context, address csdkTypes.AccAddress, i uint64) (id uint64, found bool) {
+	store := ctx.KVStore(k.nodeStoreKey)
+
+	key := types.NodeIDByAddressKey(address, i)
+	value := store.Get(key)
+	if value == nil {
+		return 0, false
+	}
+
+	k.cdc.MustUnmarshalBinaryLengthPrefixed(value, &id)
+	return id, true
+}
+
+func (k Keeper) SetActiveNodeIDs(ctx csdkTypes.Context, height int64, ids []uint64) {
+	sort.Slice(ids, func(i, j int) bool { return ids[i] < ids[j] })
 
 	key := types.ActiveNodeIDsKey(height)
 	value := k.cdc.MustMarshalBinaryLengthPrefixed(ids)
@@ -59,7 +100,7 @@ func (k Keeper) SetActiveNodeIDs(ctx csdkTypes.Context, height int64, ids sdkTyp
 	store.Set(key, value)
 }
 
-func (k Keeper) GetActiveNodeIDs(ctx csdkTypes.Context, height int64) (ids sdkTypes.IDs) {
+func (k Keeper) GetActiveNodeIDs(ctx csdkTypes.Context, height int64) (ids []uint64) {
 	store := ctx.KVStore(k.nodeStoreKey)
 
 	key := types.ActiveNodeIDsKey(height)
@@ -73,11 +114,12 @@ func (k Keeper) GetActiveNodeIDs(ctx csdkTypes.Context, height int64) (ids sdkTy
 }
 
 func (k Keeper) GetNodesOfAddress(ctx csdkTypes.Context, address csdkTypes.AccAddress) (nodes []types.Node) {
-	count := k.GetNodesCount(ctx, address)
+	count := k.GetNodesCountOfAddress(ctx, address)
 
 	nodes = make([]types.Node, 0, count)
-	for index := uint64(0); index < count; index++ {
-		id := types.NodeID(address, index)
+	for i := uint64(0); i < count; i++ {
+		id, _ := k.GetNodeIDByAddress(ctx, address, i)
+
 		node, _ := k.GetNode(ctx, id)
 		nodes = append(nodes, node)
 	}
@@ -121,14 +163,12 @@ func (k Keeper) IterateNodes(ctx csdkTypes.Context, fn func(index int64, node ty
 func (k Keeper) AddNode(ctx csdkTypes.Context, node types.Node) (allTags csdkTypes.Tags, err csdkTypes.Error) {
 	allTags = csdkTypes.EmptyTags()
 
-	count := k.GetNodesCount(ctx, node.Owner)
-	node.ID = types.NodeID(node.Owner, count)
-
 	node.OwnerPubKey, err = k.accountKeeper.GetPubKey(ctx, node.Owner)
 	if err != nil {
 		return nil, err
 	}
 
+	count := k.GetNodesCountOfAddress(ctx, node.Owner)
 	if count >= k.FreeNodesCount(ctx) {
 		node.Deposit = k.Deposit(ctx)
 
@@ -141,30 +181,54 @@ func (k Keeper) AddNode(ctx csdkTypes.Context, node types.Node) (allTags csdkTyp
 	}
 
 	k.SetNode(ctx, node)
-	allTags = allTags.AppendTag(types.TagNodeID, node.ID.String())
+	k.SetNodeIDByAddress(ctx, node.Owner, count, node.ID)
 
-	k.SetNodesCount(ctx, node.Owner, count+1)
+	k.SetNodesCount(ctx, node.ID+1)
+	k.SetNodesCountOfAddress(ctx, node.Owner, count+1)
+
 	return allTags, nil
 }
 
-func (k Keeper) AddActiveNodeID(ctx csdkTypes.Context, height int64, id sdkTypes.ID) {
+func (k Keeper) AddActiveNodeID(ctx csdkTypes.Context, height int64, id uint64) {
 	ids := k.GetActiveNodeIDs(ctx, height)
-	if ids.Search(id) != ids.Len() {
+
+	index := sort.Search(len(ids), func(i int) bool {
+		return ids[i] >= id
+	})
+
+	if (index == len(ids)) ||
+		(index < len(ids) && ids[index] != id) {
+
+		index = len(ids)
+	}
+
+	if index != len(ids) {
 		return
 	}
 
-	ids = ids.Append(id)
+	ids = append(ids, id)
 	k.SetActiveNodeIDs(ctx, height, ids)
 }
 
-func (k Keeper) RemoveActiveNodeID(ctx csdkTypes.Context, height int64, id sdkTypes.ID) {
+func (k Keeper) RemoveActiveNodeID(ctx csdkTypes.Context, height int64, id uint64) {
 	ids := k.GetActiveNodeIDs(ctx, height)
 
-	index := ids.Search(id)
-	if index == ids.Len() {
+	index := sort.Search(len(ids), func(i int) bool {
+		return ids[i] >= id
+	})
+
+	if (index == len(ids)) ||
+		(index < len(ids) && ids[index] != id) {
+
+		index = len(ids)
+	}
+
+	if index == len(ids) {
 		return
 	}
 
-	ids = ids.Delete(index)
+	ids[index] = ids[len(ids)-1]
+	ids = ids[:len(ids)-1]
+
 	k.SetActiveNodeIDs(ctx, height, ids)
 }

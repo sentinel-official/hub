@@ -2,6 +2,7 @@ package rest
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -15,9 +16,12 @@ func getSubscribeHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) http.H
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 
-		sessionID := vars["subscriptionID"]
+		id, err := strconv.Atoi(vars["subscriptionID"])
+		if err != nil {
+			return
+		}
 
-		res, err := common.QuerySubscription(cliCtx, cdc, sessionID)
+		res, err := common.QuerySubscription(cliCtx, cdc, uint64(id))
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return

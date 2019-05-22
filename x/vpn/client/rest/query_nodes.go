@@ -3,6 +3,7 @@ package rest
 import (
 	"errors"
 	"net/http"
+	"strconv"
 
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -10,7 +11,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/rest"
 	"github.com/gorilla/mux"
 
-	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
 	"github.com/ironman0x7b2/sentinel-sdk/x/vpn"
 	"github.com/ironman0x7b2/sentinel-sdk/x/vpn/client/common"
 )
@@ -19,7 +19,12 @@ func getNodeHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) http.Handle
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 
-		res, err := common.QueryNode(cliCtx, cdc, sdkTypes.IDFromString(vars["nodeID"]))
+		id, err := strconv.Atoi(vars["nodeID"])
+		if err != nil {
+			return
+		}
+
+		res, err := common.QueryNode(cliCtx, cdc, uint64(id))
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return

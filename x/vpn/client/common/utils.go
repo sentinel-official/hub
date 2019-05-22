@@ -5,11 +5,10 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 
 	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
-	"github.com/ironman0x7b2/sentinel-sdk/x/vpn"
 )
 
 func GetBandwidthSignDataBytes(cliCtx context.CLIContext, cdc *codec.Codec,
-	subscriptionID string, bandwidth sdkTypes.Bandwidth) ([]byte, error) {
+	subscriptionID uint64, bandwidth sdkTypes.Bandwidth) ([]byte, error) {
 
 	subscription, err := QuerySubscription(cliCtx, cdc, subscriptionID)
 	if err != nil {
@@ -21,6 +20,6 @@ func GetBandwidthSignDataBytes(cliCtx context.CLIContext, cdc *codec.Codec,
 		return nil, err
 	}
 
-	sessionID := vpn.SessionID(subscription.ID, subscription.SessionsCount)
-	return sdkTypes.NewBandwidthSignData(sessionID, bandwidth, node.Owner, subscription.Client).Bytes(), nil
+	return sdkTypes.NewBandwidthSignData(subscription.ID, subscription.SessionsCount, bandwidth,
+		node.Owner, subscription.Client).Bytes(), nil
 }

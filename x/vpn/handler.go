@@ -47,7 +47,6 @@ func endBlockNodes(ctx csdkTypes.Context, k keeper.Keeper, height int64) csdkTyp
 		node.StatusModifiedAt = height
 
 		k.SetNode(ctx, node)
-		allTags = allTags.AppendTag(types.TagNodeID, node.ID.String())
 	}
 
 	k.SetActiveNodeIDs(ctx, _height, nil)
@@ -129,16 +128,18 @@ func EndBlock(ctx csdkTypes.Context, k keeper.Keeper) csdkTypes.Tags {
 
 func handleRegisterNode(ctx csdkTypes.Context, k keeper.Keeper, msg types.MsgRegisterNode) csdkTypes.Result {
 	node := types.Node{
-		Owner:            msg.From,
-		Deposit:          csdkTypes.NewInt64Coin(k.Deposit(ctx).Denom, 0),
-		Type:             msg.Type_,
-		Version:          msg.Version,
-		Moniker:          msg.Moniker,
-		PricesPerGB:      msg.PricesPerGB,
-		InternetSpeed:    msg.InternetSpeed,
-		Encryption:       msg.Encryption,
-		Status:           types.StatusRegistered,
-		StatusModifiedAt: ctx.BlockHeight(),
+		ID:                 k.GetNodesCount(ctx),
+		Owner:              msg.From,
+		Deposit:            csdkTypes.NewInt64Coin(k.Deposit(ctx).Denom, 0),
+		Type:               msg.Type_,
+		Version:            msg.Version,
+		Moniker:            msg.Moniker,
+		PricesPerGB:        msg.PricesPerGB,
+		InternetSpeed:      msg.InternetSpeed,
+		Encryption:         msg.Encryption,
+		SubscriptionsCount: 0,
+		Status:             types.StatusRegistered,
+		StatusModifiedAt:   ctx.BlockHeight(),
 	}
 
 	allTags, err := k.AddNode(ctx, node)
@@ -251,7 +252,7 @@ func handleStartSubscription(ctx csdkTypes.Context, k keeper.Keeper, msg types.M
 	}
 
 	subscription := types.Subscription{
-		ID:                  types.SubscriptionID(node.ID, node.SubscriptionsCount),
+		ID:                  k.GetSubscriptionsCount(ctx),
 		NodeID:              node.ID,
 		Client:              msg.From,
 		PricePerGB:          pricePerGB,
@@ -260,20 +261,17 @@ func handleStartSubscription(ctx csdkTypes.Context, k keeper.Keeper, msg types.M
 		ConsumedDeposit:     csdkTypes.NewInt64Coin(msg.Deposit.Denom, 0),
 		ConsumedBandwidth:   sdkTypes.NewBandwidthFromInt64(0, 0),
 		CalculatedBandwidth: sdkTypes.NewBandwidthFromInt64(0, 0),
+		SessionsCount:       0,
 		Status:              types.StatusActive,
 		StatusModifiedAt:    ctx.BlockHeight(),
 	}
 
-	tags, err := k.AddSubscription(ctx, subscription)
+	tags, err := k.AddSubscription(ctx, node, subscription)
 	if err != nil {
 		return err.Result()
 	}
 
 	allTags = allTags.AppendTags(tags)
-
-	node.SubscriptionsCount++
-	k.SetNode(ctx, node)
-
 	return csdkTypes.Result{Tags: allTags}
 }
 
@@ -291,8 +289,7 @@ func handleEndSubscription(ctx csdkTypes.Context, k keeper.Keeper, msg types.Msg
 		return types.ErrorInvalidSubscriptionStatus().Result()
 	}
 
-	id := types.SessionID(subscription.ID, subscription.SessionsCount)
-	_, found = k.GetSession(ctx, id)
+	_, found = k.GetSessionIDBySubscriptionID(ctx, subscription.ID, subscription.SessionsCount)
 	if found {
 		return types.ErrorSessionAlreadyExists().Result()
 	}
@@ -323,17 +320,21 @@ func handleUpdateSessionInfo(ctx csdkTypes.Context, k keeper.Keeper, msg types.M
 		return types.ErrorInvalidSubscriptionStatus().Result()
 	}
 
-	id := types.SessionID(subscription.ID, subscription.SessionsCount)
-	session, found := k.GetSession(ctx, id)
+	var session types.Session
+
+	id, found := k.GetSessionIDBySubscriptionID(ctx, subscription.ID, subscription.SessionsCount)
 	if !found {
 		session = types.Session{
-			ID:                  id,
+			ID:                  k.GetSessionsCount(ctx),
 			SubscriptionID:      subscription.ID,
 			Bandwidth:           sdkTypes.NewBandwidthFromInt64(0, 0),
 			CalculatedBandwidth: sdkTypes.NewBandwidthFromInt64(0, 0),
 		}
 
-		allTags = allTags.AppendTag(types.TagSessionID, session.ID.String())
+		k.SetSessionsCount(ctx, session.ID+1)
+		k.SetSessionIDBySubscriptionID(ctx, subscription.ID, subscription.SessionsCount, session.ID)
+	} else {
+		session, _ = k.GetSession(ctx, id)
 	}
 
 	if msg.Bandwidth.AllLT(session.Bandwidth) ||
@@ -343,7 +344,8 @@ func handleUpdateSessionInfo(ctx csdkTypes.Context, k keeper.Keeper, msg types.M
 	}
 
 	node, _ := k.GetNode(ctx, subscription.NodeID)
-	data := sdkTypes.NewBandwidthSignData(session.ID, msg.Bandwidth, node.Owner, subscription.Client).Bytes()
+	data := sdkTypes.NewBandwidthSignData(subscription.ID, subscription.SessionsCount, msg.Bandwidth,
+		node.Owner, subscription.Client).Bytes()
 
 	if !node.OwnerPubKey.VerifyBytes(data, msg.NodeOwnerSign) ||
 		!subscription.ClientPubKey.VerifyBytes(data, msg.ClientSign) {

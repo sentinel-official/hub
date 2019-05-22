@@ -29,7 +29,7 @@ func SignSessionBandwidthTxCmd(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			subscriptionID := viper.GetString(flagSubscriptionID)
+			subscriptionID := uint64(viper.GetInt64(flagSubscriptionID))
 			bandwidth := sdkTypes.Bandwidth{
 				Upload:   csdkTypes.NewInt(viper.GetInt64(flagUpload)),
 				Download: csdkTypes.NewInt(viper.GetInt64(flagDownload)),
@@ -62,7 +62,7 @@ func SignSessionBandwidthTxCmd(cdc *codec.Codec) *cobra.Command {
 		},
 	}
 
-	cmd.Flags().String(flagSubscriptionID, "", "Subscription ID")
+	cmd.Flags().Uint64(flagSubscriptionID, 0, "Subscription ID")
 	cmd.Flags().Int64(flagUpload, 0, "Upload in in bytes")
 	cmd.Flags().Int64(flagDownload, 0, "Download in bytes")
 
@@ -85,7 +85,7 @@ func UpdateSessionInfoTxCmd(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			subscriptionID := sdkTypes.IDFromString(viper.GetString(flagSubscriptionID))
+			subscriptionID := uint64(viper.GetInt64(flagSubscriptionID))
 			consumed := sdkTypes.Bandwidth{
 				Upload:   csdkTypes.NewInt(viper.GetInt64(flagUpload)),
 				Download: csdkTypes.NewInt(viper.GetInt64(flagDownload)),
@@ -111,7 +111,7 @@ func UpdateSessionInfoTxCmd(cdc *codec.Codec) *cobra.Command {
 		},
 	}
 
-	cmd.Flags().String(flagSubscriptionID, "", "Subscription ID")
+	cmd.Flags().Uint64(flagSubscriptionID, 0, "Subscription ID")
 	cmd.Flags().Int64(flagUpload, 0, "Upload in in bytes")
 	cmd.Flags().Int64(flagDownload, 0, "Download in bytes")
 	cmd.Flags().String(flagNodeOwnerSign, "", "Bandwidth signature of the node owner")

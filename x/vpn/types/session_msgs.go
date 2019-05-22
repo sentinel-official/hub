@@ -12,7 +12,7 @@ var _ csdkTypes.Msg = (*MsgUpdateSessionInfo)(nil)
 
 type MsgUpdateSessionInfo struct {
 	From           csdkTypes.AccAddress `json:"from"`
-	SubscriptionID sdkTypes.ID          `json:"subscription_id"`
+	SubscriptionID uint64               `json:"subscription_id"`
 	Bandwidth      sdkTypes.Bandwidth   `json:"bandwidth"`
 	NodeOwnerSign  []byte               `json:"node_owner_sign"`
 	ClientSign     []byte               `json:"client_sign"`
@@ -25,9 +25,6 @@ func (msg MsgUpdateSessionInfo) Type() string {
 func (msg MsgUpdateSessionInfo) ValidateBasic() csdkTypes.Error {
 	if msg.From == nil || msg.From.Empty() {
 		return ErrorInvalidField("from")
-	}
-	if msg.SubscriptionID == nil || msg.SubscriptionID.Len() == 0 {
-		return ErrorInvalidField("subscription_id")
 	}
 	if !msg.Bandwidth.AllPositive() {
 		return ErrorInvalidField("bandwidth")
@@ -60,7 +57,7 @@ func (msg MsgUpdateSessionInfo) Route() string {
 }
 
 func NewMsgUpdateSessionInfo(from csdkTypes.AccAddress,
-	subscriptionID sdkTypes.ID, bandwidth sdkTypes.Bandwidth,
+	subscriptionID uint64, bandwidth sdkTypes.Bandwidth,
 	nodeOwnerSign, clientSign []byte) *MsgUpdateSessionInfo {
 
 	return &MsgUpdateSessionInfo{

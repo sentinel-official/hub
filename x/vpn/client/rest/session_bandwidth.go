@@ -4,6 +4,7 @@ import (
 	"encoding/base64"
 	"encoding/hex"
 	"net/http"
+	"strconv"
 
 	"github.com/cosmos/cosmos-sdk/client/context"
 	clientKeys "github.com/cosmos/cosmos-sdk/client/keys"
@@ -33,7 +34,12 @@ func signSessionBandwidthHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec
 		}
 
 		vars := mux.Vars(r)
-		signBytes, err := common.GetBandwidthSignDataBytes(cliCtx, cdc, vars["sessionID"], req.Bandwidth)
+		id, err := strconv.Atoi(vars["sessionID"])
+		if err != nil {
+			return
+		}
+
+		signBytes, err := common.GetBandwidthSignDataBytes(cliCtx, cdc, uint64(id), req.Bandwidth)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
@@ -103,10 +109,13 @@ func updateSessionInfoHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) h
 		}
 
 		vars := mux.Vars(r)
-		subscriptionID := sdkTypes.IDFromString(vars["subscriptionID"])
+		id, err := strconv.Atoi(vars["subscriptionID"])
+		if err != nil {
+			return
+		}
 
 		msg := vpn.NewMsgUpdateSessionInfo(fromAddress,
-			subscriptionID, req.Consumed, nodeOwnerSign, clientSign)
+			uint64(id), req.Consumed, nodeOwnerSign, clientSign)
 		if err := msg.ValidateBasic(); err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return

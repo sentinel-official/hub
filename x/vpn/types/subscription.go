@@ -10,8 +10,8 @@ import (
 )
 
 type Subscription struct {
-	ID                  sdkTypes.ID          `json:"id"`
-	NodeID              sdkTypes.ID          `json:"node_id"`
+	ID                  uint64               `json:"id"`
+	NodeID              uint64               `json:"node_id"`
 	Client              csdkTypes.AccAddress `json:"client"`
 	ClientPubKey        crypto.PubKey        `json:"client_pub_key"`
 	PricePerGB          csdkTypes.Coin       `json:"price_per_gb"`
@@ -32,8 +32,8 @@ func (s Subscription) String() string {
 	}
 
 	return fmt.Sprintf(`Subscription
-  ID:                   %s
-  NodeID:               %s
+  ID:                   %d
+  NodeID:               %d
   Client Address:       %s
   Client Public Key:    %s
   Price Per GB:         %s
@@ -51,12 +51,6 @@ func (s Subscription) String() string {
 
 // nolint: gocyclo
 func (s Subscription) IsValid() error {
-	if s.ID == nil || s.ID.Len() < 24 {
-		return fmt.Errorf("invalid id")
-	}
-	if s.NodeID == nil || s.NodeID.Len() < 22 {
-		return fmt.Errorf("ivalid node id")
-	}
 	if s.Client == nil || s.Client.Empty() {
 		return fmt.Errorf("invalid client")
 	}

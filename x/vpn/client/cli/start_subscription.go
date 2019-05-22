@@ -9,7 +9,6 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
-	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
 	"github.com/ironman0x7b2/sentinel-sdk/x/vpn"
 )
 
@@ -25,7 +24,7 @@ func StartSubscriptionTxCmd(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			nodeID := sdkTypes.IDFromString(viper.GetString(flagNodeID))
+			nodeID := uint64(viper.GetInt64(flagNodeID))
 			deposit := viper.GetString(flagDeposit)
 
 			parsedDeposit, err := csdkTypes.ParseCoin(deposit)
@@ -40,7 +39,7 @@ func StartSubscriptionTxCmd(cdc *codec.Codec) *cobra.Command {
 		},
 	}
 
-	cmd.Flags().String(flagNodeID, "", "Node ID")
+	cmd.Flags().Uint64(flagNodeID, 0, "Node ID")
 	cmd.Flags().String(flagDeposit, "", "Deposit")
 
 	_ = cmd.MarkFlagRequired(flagNodeID)

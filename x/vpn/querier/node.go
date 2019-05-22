@@ -5,7 +5,6 @@ import (
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
 	abciTypes "github.com/tendermint/tendermint/abci/types"
 
-	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
 	"github.com/ironman0x7b2/sentinel-sdk/x/vpn/keeper"
 	"github.com/ironman0x7b2/sentinel-sdk/x/vpn/types"
 )
@@ -29,10 +28,10 @@ func NewQuerier(vk keeper.Keeper, cdc *codec.Codec) csdkTypes.Querier {
 }
 
 type QueryNodeParams struct {
-	ID sdkTypes.ID
+	ID uint64
 }
 
-func NewQueryNodeParams(id sdkTypes.ID) QueryNodeParams {
+func NewQueryNodeParams(id uint64) QueryNodeParams {
 	return QueryNodeParams{
 		ID: id,
 	}

@@ -102,18 +102,22 @@ func NewBandwidthFromInt64(upload, download int64) Bandwidth {
 }
 
 type BandwidthSignData struct {
-	ID        ID
-	Bandwidth Bandwidth
-	NodeOwner csdkTypes.AccAddress
-	Client    csdkTypes.AccAddress
+	SubscriptionID uint64
+	SessionIndex   uint64
+	Bandwidth      Bandwidth
+	NodeOwner      csdkTypes.AccAddress
+	Client         csdkTypes.AccAddress
 }
 
-func NewBandwidthSignData(id ID, bandwidth Bandwidth, nodeOwner, client csdkTypes.AccAddress) *BandwidthSignData {
-	return &BandwidthSignData{
-		ID:        id,
-		Bandwidth: bandwidth,
-		NodeOwner: nodeOwner,
-		Client:    client,
+func NewBandwidthSignData(subscriptionID, sessionIndex uint64, bandwidth Bandwidth,
+	nodeOwner, client csdkTypes.AccAddress) BandwidthSignData {
+
+	return BandwidthSignData{
+		SubscriptionID: subscriptionID,
+		SessionIndex:   sessionIndex,
+		Bandwidth:      bandwidth,
+		NodeOwner:      nodeOwner,
+		Client:         client,
 	}
 }
 

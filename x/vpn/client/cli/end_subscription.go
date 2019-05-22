@@ -10,7 +10,6 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
-	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
 	"github.com/ironman0x7b2/sentinel-sdk/x/vpn"
 )
 
@@ -26,7 +25,7 @@ func EndSubscriptionTxCmd(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			subscriptionID := sdkTypes.IDFromString(viper.GetString(flagSubscriptionID))
+			subscriptionID := uint64(viper.GetInt64(flagSubscriptionID))
 			fromAddress := cliCtx.GetFromAddress()
 
 			msg := vpn.NewMsgEndSubscription(fromAddress, subscriptionID)
@@ -34,7 +33,7 @@ func EndSubscriptionTxCmd(cdc *codec.Codec) *cobra.Command {
 		},
 	}
 
-	cmd.Flags().String(flagSubscriptionID, "", "Subscription ID")
+	cmd.Flags().Uint64(flagSubscriptionID, 0, "Subscription ID")
 
 	_ = cmd.MarkFlagRequired(flagSubscriptionID)
 

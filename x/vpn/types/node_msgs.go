@@ -89,7 +89,7 @@ var _ csdkTypes.Msg = (*MsgUpdateNodeInfo)(nil)
 
 type MsgUpdateNodeInfo struct {
 	From          csdkTypes.AccAddress `json:"from"`
-	ID            sdkTypes.ID          `json:"id"`
+	ID            uint64               `json:"id"`
 	Type_         string               `json:"type"` // nolint:golint
 	Version       string               `json:"version"`
 	Moniker       string               `json:"moniker"`
@@ -105,9 +105,6 @@ func (msg MsgUpdateNodeInfo) Type() string {
 func (msg MsgUpdateNodeInfo) ValidateBasic() csdkTypes.Error {
 	if msg.From == nil || msg.From.Empty() {
 		return ErrorInvalidField("from")
-	}
-	if msg.ID == nil || msg.ID.Len() == 0 {
-		return ErrorInvalidField("id")
 	}
 	if len(msg.Moniker) > 128 {
 		return ErrorInvalidField("moniker")
@@ -141,7 +138,7 @@ func (msg MsgUpdateNodeInfo) Route() string {
 	return RouterKey
 }
 
-func NewMsgUpdateNodeInfo(from csdkTypes.AccAddress, id sdkTypes.ID,
+func NewMsgUpdateNodeInfo(from csdkTypes.AccAddress, id uint64,
 	_type, version, moniker string, pricesPerGB csdkTypes.Coins,
 	internetSpeed sdkTypes.Bandwidth, encryption string) MsgUpdateNodeInfo {
 
@@ -161,7 +158,7 @@ var _ csdkTypes.Msg = (*MsgUpdateNodeStatus)(nil)
 
 type MsgUpdateNodeStatus struct {
 	From   csdkTypes.AccAddress `json:"from"`
-	ID     sdkTypes.ID          `json:"id"`
+	ID     uint64               `json:"id"`
 	Status string               `json:"status"`
 }
 
@@ -172,9 +169,6 @@ func (msg MsgUpdateNodeStatus) Type() string {
 func (msg MsgUpdateNodeStatus) ValidateBasic() csdkTypes.Error {
 	if msg.From == nil || msg.From.Empty() {
 		return ErrorInvalidField("from")
-	}
-	if msg.ID == nil || msg.ID.Len() == 0 {
-		return ErrorInvalidField("id")
 	}
 	if msg.Status != StatusActive && msg.Status != StatusInactive {
 		return ErrorInvalidField("status")
@@ -200,7 +194,7 @@ func (msg MsgUpdateNodeStatus) Route() string {
 	return RouterKey
 }
 
-func NewMsgUpdateNodeStatus(from csdkTypes.AccAddress, id sdkTypes.ID,
+func NewMsgUpdateNodeStatus(from csdkTypes.AccAddress, id uint64,
 	status string) MsgUpdateNodeStatus {
 
 	return MsgUpdateNodeStatus{
@@ -214,7 +208,7 @@ var _ csdkTypes.Msg = (*MsgDeregisterNode)(nil)
 
 type MsgDeregisterNode struct {
 	From csdkTypes.AccAddress `json:"from"`
-	ID   sdkTypes.ID          `json:"id"`
+	ID   uint64               `json:"id"`
 }
 
 func (msg MsgDeregisterNode) Type() string {
@@ -224,9 +218,6 @@ func (msg MsgDeregisterNode) Type() string {
 func (msg MsgDeregisterNode) ValidateBasic() csdkTypes.Error {
 	if msg.From == nil || msg.From.Empty() {
 		return ErrorInvalidField("from")
-	}
-	if msg.ID == nil || msg.ID.Len() == 0 {
-		return ErrorInvalidField("id")
 	}
 
 	return nil
@@ -249,7 +240,7 @@ func (msg MsgDeregisterNode) Route() string {
 	return RouterKey
 }
 
-func NewMsgDeregisterNode(from csdkTypes.AccAddress, id sdkTypes.ID) MsgDeregisterNode {
+func NewMsgDeregisterNode(from csdkTypes.AccAddress, id uint64) MsgDeregisterNode {
 	return MsgDeregisterNode{
 		From: from,
 		ID:   id,

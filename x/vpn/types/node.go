@@ -11,7 +11,7 @@ import (
 )
 
 type Node struct {
-	ID          sdkTypes.ID          `json:"id"`
+	ID          uint64               `json:"id"`
 	Owner       csdkTypes.AccAddress `json:"owner"`
 	OwnerPubKey crypto.PubKey        `json:"owner_pub_key"`
 	Deposit     csdkTypes.Coin       `json:"deposit"`
@@ -35,7 +35,7 @@ func (n Node) String() string {
 	}
 
 	return fmt.Sprintf(`Node
-  ID:                  %s
+  ID:                  %d
   Owner Address:       %s
   Owner Public Key:    %s
   Deposit:             %s
@@ -102,9 +102,6 @@ func (n Node) DepositToBandwidth(deposit csdkTypes.Coin) (bandwidth sdkTypes.Ban
 
 // nolint: gocyclo
 func (n Node) IsValid() error {
-	if n.ID == nil || n.ID.Len() < 22 {
-		return fmt.Errorf("invalid id")
-	}
 	if n.Owner == nil || n.Owner.Empty() {
 		return fmt.Errorf("invalid owner")
 	}

@@ -27,7 +27,7 @@ func UpdateNodeDetailsTxCmd(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			nodeID := sdkTypes.IDFromString(viper.GetString(flagNodeID))
+			nodeID := uint64(viper.GetInt64(flagNodeID))
 			moniker := viper.GetString(flagMoniker)
 			pricesPerGB := viper.GetString(flagPricesPerGB)
 			internetSpeed := sdkTypes.Bandwidth{
@@ -51,7 +51,7 @@ func UpdateNodeDetailsTxCmd(cdc *codec.Codec) *cobra.Command {
 		},
 	}
 
-	cmd.Flags().String(flagNodeID, "", "Node ID")
+	cmd.Flags().Uint64(flagNodeID, 0, "Node ID")
 	cmd.Flags().String(flagMoniker, "", "Moniker")
 	cmd.Flags().String(flagType, "", "VPN node type")
 	cmd.Flags().String(flagVersion, "", "VPN node version")
@@ -78,7 +78,7 @@ func UpdateNodeStatusTxCmd(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			nodeID := sdkTypes.IDFromString(viper.GetString(flagNodeID))
+			nodeID := uint64(viper.GetInt64(flagNodeID))
 			status := strings.ToUpper(args[0])
 
 			fromAddress := cliCtx.GetFromAddress()
@@ -88,7 +88,7 @@ func UpdateNodeStatusTxCmd(cdc *codec.Codec) *cobra.Command {
 		},
 	}
 
-	cmd.Flags().String(flagNodeID, "", "Node ID")
+	cmd.Flags().Uint64(flagNodeID, 0, "Node ID")
 
 	_ = cmd.MarkFlagRequired(flagNodeID)
 

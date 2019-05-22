@@ -1,11 +1,7 @@
 package types
 
 import (
-	"fmt"
-
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
-
-	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
 )
 
 const (
@@ -24,38 +20,60 @@ const (
 
 // nolint: gochecknoglobals
 var (
-	NodesCountKeyPrefix   = []byte{0x00}
-	NodeKeyPrefix         = []byte{0x01}
-	SubscriptionKeyPrefix = []byte{0x01}
-	SessionKeyPrefix      = []byte{0x01}
+	NodesCountKey                = []byte{0x00}
+	NodeKeyPrefix                = []byte{0x01}
+	NodesCountOfAddressKeyPrefix = []byte{0x02}
+	NodeIDByAddressKeyPrefix     = []byte{0x03}
+
+	SubscriptionsCountKey                = []byte{0x00}
+	SubscriptionKeyPrefix                = []byte{0x01}
+	SubscriptionIDByNodeIDKeyPrefix      = []byte{0x03}
+	SubscriptionsCountOfAddressKeyPrefix = []byte{0x04}
+	SubscriptionIDByAddressKeyPrefix     = []byte{0x05}
+
+	SessionsCountKey                   = []byte{0x00}
+	SessionKeyPrefix                   = []byte{0x01}
+	SessionIDBySubscriptionIDKeyPrefix = []byte{0x03}
 )
 
-func NodesCountKey(address csdkTypes.AccAddress) []byte {
-	return append(NodesCountKeyPrefix, address.Bytes()...)
+func NodeKey(i uint64) []byte {
+	return append(NodeKeyPrefix, csdkTypes.Uint64ToBigEndian(i)...)
 }
 
-func NodeID(address csdkTypes.Address, count uint64) []byte {
-	return append(address.Bytes(), []byte(fmt.Sprintf("$%d", count))...)
+func NodesCountOfAddressKey(address csdkTypes.AccAddress) []byte {
+	return append(NodesCountOfAddressKeyPrefix, address.Bytes()...)
 }
 
-func NodeKey(id sdkTypes.ID) []byte {
-	return append(NodeKeyPrefix, id.Bytes()...)
+func NodeIDByAddressKey(address csdkTypes.AccAddress, i uint64) []byte {
+	return append(NodeIDByAddressKeyPrefix,
+		append(address.Bytes(), csdkTypes.Uint64ToBigEndian(i)...)...)
 }
 
-func SubscriptionID(nodeID sdkTypes.ID, count uint64) []byte {
-	return append(nodeID.Bytes(), []byte(fmt.Sprintf("$%d", count))...)
+func SubscriptionKey(i uint64) []byte {
+	return append(SubscriptionKeyPrefix, csdkTypes.Uint64ToBigEndian(i)...)
 }
 
-func SubscriptionKey(id sdkTypes.ID) []byte {
-	return append(SubscriptionKeyPrefix, id.Bytes()...)
+func SubscriptionIDByNodeIDKey(i, j uint64) []byte {
+	return append(SubscriptionIDByNodeIDKeyPrefix,
+		append(csdkTypes.Uint64ToBigEndian(i), csdkTypes.Uint64ToBigEndian(j)...)...)
 }
 
-func SessionID(subscriptionID sdkTypes.ID, count uint64) []byte {
-	return append(subscriptionID.Bytes(), []byte(fmt.Sprintf("$%d", count))...)
+func SubscriptionsCountOfAddressKey(address csdkTypes.AccAddress) []byte {
+	return append(SubscriptionsCountOfAddressKeyPrefix, address.Bytes()...)
 }
 
-func SessionKey(id sdkTypes.ID) []byte {
-	return append(SessionKeyPrefix, id.Bytes()...)
+func SubscriptionIDByAddressKey(address csdkTypes.AccAddress, i uint64) []byte {
+	return append(SubscriptionIDByAddressKeyPrefix,
+		append(address.Bytes(), csdkTypes.Uint64ToBigEndian(i)...)...)
+}
+
+func SessionKey(i uint64) []byte {
+	return append(SessionKeyPrefix, csdkTypes.Uint64ToBigEndian(i)...)
+}
+
+func SessionIDBySubscriptionIDKey(i, j uint64) []byte {
+	return append(SessionIDBySubscriptionIDKeyPrefix,
+		append(csdkTypes.Uint64ToBigEndian(i), csdkTypes.Uint64ToBigEndian(j)...)...)
 }
 
 func ActiveNodeIDsKey(height int64) []byte {

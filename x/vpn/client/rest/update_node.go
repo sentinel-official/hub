@@ -2,6 +2,7 @@ package rest
 
 import (
 	"net/http"
+	"strconv"
 	"strings"
 
 	"github.com/cosmos/cosmos-sdk/client/context"
@@ -51,9 +52,12 @@ func updateNodeHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) http.Han
 		}
 
 		vars := mux.Vars(r)
-		id := sdkTypes.IDFromString(vars["nodeID"])
+		id, err := strconv.Atoi(vars["nodeID"])
+		if err != nil {
+			return
+		}
 
-		msg := vpn.NewMsgUpdateNodeInfo(fromAddress, id,
+		msg := vpn.NewMsgUpdateNodeInfo(fromAddress, uint64(id),
 			req.Type, req.Version, req.Moniker, pricesPerGB, req.InternetSpeed, req.Encryption)
 		if err := msg.ValidateBasic(); err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
@@ -89,10 +93,13 @@ func updateNodeStatusHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) ht
 		}
 
 		vars := mux.Vars(r)
-		id := sdkTypes.IDFromString(vars["nodeID"])
+		id, err := strconv.Atoi(vars["nodeID"])
+		if err != nil {
+			return
+		}
 		status := strings.ToUpper(req.Status)
 
-		msg := vpn.NewMsgUpdateNodeStatus(fromAddress, id, status)
+		msg := vpn.NewMsgUpdateNodeStatus(fromAddress, uint64(id), status)
 		if err := msg.ValidateBasic(); err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
