@@ -7,39 +7,52 @@ import (
 )
 
 const (
-	Codespace            = types.Codespace
-	StoreKeyNode         = types.StoreKeyNode
-	StoreKeySession      = types.StoreKeySession
-	StoreKeySubscription = types.StoreKeySubscription
-	QuerierRoute         = types.QuerierRoute
-	RouterKey            = types.RouterKey
-	StatusRegistered     = types.StatusRegistered
-	StatusActive         = types.StatusActive
-	StatusInactive       = types.StatusInactive
-	StatusDeRegistered   = types.StatusDeRegistered
-	TagNodeID            = types.TagNodeID
-	TagSessionID         = types.TagSessionID
-	DefaultParamspace    = keeper.DefaultParamspace
-	QueryNode            = querier.QueryNode
-	QueryNodesOfAddress  = querier.QueryNodesOfAddress
+	Codespace                   = types.Codespace
+	StoreKeyNode                = types.StoreKeyNode
+	StoreKeySession             = types.StoreKeySession
+	StoreKeySubscription        = types.StoreKeySubscription
+	QuerierRoute                = types.QuerierRoute
+	RouterKey                   = types.RouterKey
+	StatusRegistered            = types.StatusRegistered
+	StatusActive                = types.StatusActive
+	StatusInactive              = types.StatusInactive
+	StatusDeRegistered          = types.StatusDeRegistered
+	TagNodeID                   = types.TagNodeID
+	TagSessionID                = types.TagSessionID
+	DefaultParamspace           = keeper.DefaultParamspace
+	QueryNode                   = querier.QueryNode
+	QueryNodesOfAddress         = querier.QueryNodesOfAddress
+	QueryAllNodes               = querier.QueryAllNodes
+	QuerySubscription           = querier.QuerySubscription
+	QuerySubscriptionsOfNode    = querier.QuerySubscriptionsOfNode
+	QuerySubscriptionsOfAddress = querier.QuerySubscriptionsOfAddress
+	QueryAllSubscriptions       = querier.QueryAllSubscriptions
+	QuerySession                = querier.QuerySession
+	QuerySessionsOfSubscription = querier.QuerySessionsOfSubscription
+	QueryAllSessions            = querier.QueryAllSessions
 )
 
 type (
-	GenesisState             = types.GenesisState
-	Node                     = types.Node
-	MsgRegisterNode          = types.MsgRegisterNode
-	MsgUpdateNodeInfo        = types.MsgUpdateNodeInfo
-	MsgUpdateNodeStatus      = types.MsgUpdateNodeStatus
-	MsgDeregisterNode        = types.MsgDeregisterNode
-	Params                   = types.Params
-	Session                  = types.Session
-	MsgUpdateSessionInfo     = types.MsgUpdateSessionInfo
-	Subscription             = types.Subscription
-	MsgStartSubscription     = types.MsgStartSubscription
-	MsgEndSubscription       = types.MsgEndSubscription
-	Keeper                   = keeper.Keeper
-	QueryNodeParams          = querier.QueryNodeParams
-	QueryNodesOfAddressPrams = querier.QueryNodesOfAddressPrams
+	GenesisState                      = types.GenesisState
+	Node                              = types.Node
+	MsgRegisterNode                   = types.MsgRegisterNode
+	MsgUpdateNodeInfo                 = types.MsgUpdateNodeInfo
+	MsgUpdateNodeStatus               = types.MsgUpdateNodeStatus
+	MsgDeregisterNode                 = types.MsgDeregisterNode
+	Params                            = types.Params
+	Session                           = types.Session
+	MsgUpdateSessionInfo              = types.MsgUpdateSessionInfo
+	Subscription                      = types.Subscription
+	MsgStartSubscription              = types.MsgStartSubscription
+	MsgEndSubscription                = types.MsgEndSubscription
+	Keeper                            = keeper.Keeper
+	QueryNodeParams                   = querier.QueryNodeParams
+	QueryNodesOfAddressPrams          = querier.QueryNodesOfAddressPrams
+	QuerySubscriptionParams           = querier.QuerySubscriptionParams
+	QuerySubscriptionsOfNodePrams     = querier.QuerySubscriptionsOfNodePrams
+	QuerySubscriptionsOfAddressParams = querier.QuerySubscriptionsOfAddressParams
+	QuerySessionParams                = querier.QuerySessionParams
+	QuerySessionsOfSubscriptionPrams  = querier.QuerySessionsOfSubscriptionPrams
 )
 
 // nolint: gochecknoglobals
@@ -53,20 +66,24 @@ var (
 	NodeIDByAddressKeyPrefix             = types.NodeIDByAddressKeyPrefix
 	SubscriptionsCountKey                = types.SubscriptionsCountKey
 	SubscriptionKeyPrefix                = types.SubscriptionKeyPrefix
+	SubscriptionsCountOfNodeKeyPrefix    = types.SubscriptionsCountOfNodeKeyPrefix
 	SubscriptionIDByNodeIDKeyPrefix      = types.SubscriptionIDByNodeIDKeyPrefix
 	SubscriptionsCountOfAddressKeyPrefix = types.SubscriptionsCountOfAddressKeyPrefix
 	SubscriptionIDByAddressKeyPrefix     = types.SubscriptionIDByAddressKeyPrefix
 	SessionsCountKey                     = types.SessionsCountKey
+	SessionsCountOfSubscriptionKeyPrefix = types.SessionsCountOfSubscriptionKeyPrefix
 	SessionKeyPrefix                     = types.SessionKeyPrefix
 	SessionIDBySubscriptionIDKeyPrefix   = types.SessionIDBySubscriptionIDKeyPrefix
 	NodeKey                              = types.NodeKey
 	NodesCountOfAddressKey               = types.NodesCountOfAddressKey
 	NodeIDByAddressKey                   = types.NodeIDByAddressKey
 	SubscriptionKey                      = types.SubscriptionKey
+	SubscriptionsCountOfNodeKey          = types.SubscriptionsCountOfNodeKey
 	SubscriptionIDByNodeIDKey            = types.SubscriptionIDByNodeIDKey
 	SubscriptionsCountOfAddressKey       = types.SubscriptionsCountOfAddressKey
 	SubscriptionIDByAddressKey           = types.SubscriptionIDByAddressKey
 	SessionKey                           = types.SessionKey
+	SessionsCountOfSubscriptionKey       = types.SessionsCountOfSubscriptionKey
 	SessionIDBySubscriptionIDKey         = types.SessionIDBySubscriptionIDKey
 	ActiveNodeIDsKey                     = types.ActiveNodeIDsKey
 	ActiveSessionIDsKey                  = types.ActiveSessionIDsKey
@@ -92,4 +109,9 @@ var (
 	NewQuerier                           = querier.NewQuerier
 	NewQueryNodeParams                   = querier.NewQueryNodeParams
 	NewQueryNodesOfAddressParams         = querier.NewQueryNodesOfAddressParams
+	NewQuerySubscriptionParams           = querier.NewQuerySubscriptionParams
+	NewQuerySubscriptionsOfNodePrams     = querier.NewQuerySubscriptionsOfNodePrams
+	NewQuerySubscriptionsOfAddressParams = querier.NewQuerySubscriptionsOfAddressParams
+	NewQuerySessionParams                = querier.NewQuerySessionParams
+	NewQuerySessionsOfSubscriptionPrams  = querier.NewQuerySessionsOfSubscriptionPrams
 )
