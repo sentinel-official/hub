@@ -17,7 +17,7 @@ func GetBandwidthSignDataBytes(cliCtx context.CLIContext, cdc *codec.Codec, subs
 	}
 
 	var subscription vpn.Subscription
-	if err := cdc.UnmarshalJSON(res, &subscription); err != nil {
+	if err = cdc.UnmarshalJSON(res, &subscription); err != nil {
 		return nil, err
 	}
 
@@ -27,7 +27,7 @@ func GetBandwidthSignDataBytes(cliCtx context.CLIContext, cdc *codec.Codec, subs
 	}
 
 	var node vpn.Node
-	if err := cdc.UnmarshalJSON(res, &node); err != nil {
+	if err = cdc.UnmarshalJSON(res, &node); err != nil {
 		return nil, err
 	}
 

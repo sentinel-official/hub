@@ -27,6 +27,7 @@ func NewQuerySubscriptionParams(id sdkTypes.ID) QuerySubscriptionParams {
 	}
 }
 
+// nolint:dupl
 func querySubscription(ctx csdkTypes.Context, cdc *codec.Codec, req abciTypes.RequestQuery,
 	k keeper.Keeper) ([]byte, csdkTypes.Error) {
 

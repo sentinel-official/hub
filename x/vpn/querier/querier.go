@@ -9,6 +9,7 @@ import (
 	"github.com/ironman0x7b2/sentinel-sdk/x/vpn/types"
 )
 
+// nolint:gocyclo
 func NewQuerier(k keeper.Keeper, cdc *codec.Codec) csdkTypes.Querier {
 	return func(ctx csdkTypes.Context, path []string, req abciTypes.RequestQuery) (res []byte, err csdkTypes.Error) {
 		switch path[0] {

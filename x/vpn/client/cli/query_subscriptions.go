@@ -64,12 +64,14 @@ func QuerySubscriptionsCmd(cdc *codec.Codec) *cobra.Command {
 				id := sdkTypes.NewIDFromString(nodeID)
 				res, err = common.QuerySubscriptionsOfNode(cliCtx, cdc, id)
 			} else if len(address) != 0 {
-				address, err := csdkTypes.AccAddressFromBech32(address)
+				var _address csdkTypes.AccAddress
+
+				_address, err = csdkTypes.AccAddressFromBech32(address)
 				if err != nil {
 					return err
 				}
 
-				res, err = common.QuerySubscriptionsOAddress(cliCtx, cdc, address)
+				res, err = common.QuerySubscriptionsOAddress(cliCtx, cdc, _address)
 			} else {
 				res, err = common.QueryAllSubscriptions(cliCtx)
 			}

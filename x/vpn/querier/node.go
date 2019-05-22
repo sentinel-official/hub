@@ -1,3 +1,4 @@
+// nolint:dupl
 package querier
 
 import (
@@ -26,6 +27,7 @@ func NewQueryNodeParams(id sdkTypes.ID) QueryNodeParams {
 	}
 }
 
+// nolint:dupl
 func queryNode(ctx csdkTypes.Context, cdc *codec.Codec, req abciTypes.RequestQuery,
 	k keeper.Keeper) ([]byte, csdkTypes.Error) {
 

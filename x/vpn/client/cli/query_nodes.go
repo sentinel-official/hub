@@ -14,6 +14,7 @@ import (
 	"github.com/ironman0x7b2/sentinel-sdk/x/vpn/client/common"
 )
 
+// nolint:dupl
 func QueryNodeCmd(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "node",
@@ -60,12 +61,17 @@ func QueryNodesCmd(cdc *codec.Codec) *cobra.Command {
 			var err error
 
 			if len(address) != 0 {
-				address, err := csdkTypes.AccAddressFromBech32(address)
+				var _address csdkTypes.AccAddress
+
+				_address, err = csdkTypes.AccAddressFromBech32(address)
 				if err != nil {
 					return err
 				}
 
-				res, err = common.QueryNodesOfAddress(cliCtx, cdc, address)
+				res, err = common.QueryNodesOfAddress(cliCtx, cdc, _address)
+				if err != nil {
+					return err
+				}
 			} else {
 				res, err = common.QueryAllNodes(cliCtx)
 			}
