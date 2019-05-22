@@ -13,20 +13,8 @@ import (
 const (
 	QueryNode           = "node"
 	QueryNodesOfAddress = "nodesOfAddress"
+	QueryAllNodes       = "allNodes"
 )
-
-func NewQuerier(vk keeper.Keeper, cdc *codec.Codec) csdkTypes.Querier {
-	return func(ctx csdkTypes.Context, path []string, req abciTypes.RequestQuery) (res []byte, err csdkTypes.Error) {
-		switch path[0] {
-		case QueryNode:
-			return queryNode(ctx, cdc, req, vk)
-		case QueryNodesOfAddress:
-			return queryNodesOfAddress(ctx, cdc, req, vk)
-		default:
-			return nil, types.ErrorInvalidQueryType(path[0])
-		}
-	}
-}
 
 type QueryNodeParams struct {
 	ID sdkTypes.ID
@@ -39,14 +27,14 @@ func NewQueryNodeParams(id sdkTypes.ID) QueryNodeParams {
 }
 
 func queryNode(ctx csdkTypes.Context, cdc *codec.Codec, req abciTypes.RequestQuery,
-	vk keeper.Keeper) ([]byte, csdkTypes.Error) {
+	k keeper.Keeper) ([]byte, csdkTypes.Error) {
 
 	var params QueryNodeParams
 	if err := cdc.UnmarshalJSON(req.Data, &params); err != nil {
 		return nil, types.ErrorUnmarshal()
 	}
 
-	node, found := vk.GetNode(ctx, params.ID)
+	node, found := k.GetNode(ctx, params.ID)
 	if !found {
 		return nil, nil
 	}
@@ -70,14 +58,25 @@ func NewQueryNodesOfAddressParams(address csdkTypes.AccAddress) QueryNodesOfAddr
 }
 
 func queryNodesOfAddress(ctx csdkTypes.Context, cdc *codec.Codec, req abciTypes.RequestQuery,
-	vk keeper.Keeper) ([]byte, csdkTypes.Error) {
+	k keeper.Keeper) ([]byte, csdkTypes.Error) {
 
 	var params QueryNodesOfAddressPrams
 	if err := cdc.UnmarshalJSON(req.Data, &params); err != nil {
 		return nil, types.ErrorUnmarshal()
 	}
 
-	nodes := vk.GetNodesOfAddress(ctx, params.Address)
+	nodes := k.GetNodesOfAddress(ctx, params.Address)
+
+	res, resErr := cdc.MarshalJSON(nodes)
+	if resErr != nil {
+		return nil, types.ErrorMarshal()
+	}
+
+	return res, nil
+}
+
+func queryAllNodes(ctx csdkTypes.Context, cdc *codec.Codec, k keeper.Keeper) ([]byte, csdkTypes.Error) {
+	nodes := k.GetAllNodes(ctx)
 
 	res, resErr := cdc.MarshalJSON(nodes)
 	if resErr != nil {
