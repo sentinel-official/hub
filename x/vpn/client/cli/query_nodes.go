@@ -73,7 +73,7 @@ func QueryNodesCmd(cdc *codec.Codec) *cobra.Command {
 			if err != nil {
 				return err
 			}
-			if string(res) == "[]" {
+			if string(res) == "[]" || string(res) == "null" {
 				return fmt.Errorf("no nodes found")
 			}
 
