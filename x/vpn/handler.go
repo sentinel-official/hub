@@ -102,7 +102,7 @@ func endBlockSessions(ctx csdkTypes.Context, k keeper.Keeper, height int64) csdk
 		k.SetSubscription(ctx, subscription)
 
 		scs := k.GetSessionsCountOfSubscription(ctx, subscription.ID)
-		k.SetSessionsCountOfSubscription(ctx, subscription.ID, scs)
+		k.SetSessionsCountOfSubscription(ctx, subscription.ID, scs+1)
 	}
 
 	k.DeleteActiveSessionIDs(ctx, _height)

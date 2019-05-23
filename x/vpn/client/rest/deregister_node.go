@@ -2,7 +2,6 @@ package rest
 
 import (
 	"net/http"
-	"strconv"
 
 	"github.com/cosmos/cosmos-sdk/client/context"
 	clientRest "github.com/cosmos/cosmos-sdk/client/rest"
@@ -39,12 +38,8 @@ func deregisterNodeHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) http
 		}
 
 		vars := mux.Vars(r)
-		id, err := strconv.Atoi(vars["nodeID"])
-		if err != nil {
-			return
-		}
-
-		msg := vpn.NewMsgDeregisterNode(fromAddress, sdkTypes.NewIDFromUInt64(uint64(id)))
+		id := sdkTypes.NewIDFromString(vars["nodeID"])
+		msg := vpn.NewMsgDeregisterNode(fromAddress, id)
 		if err := msg.ValidateBasic(); err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return

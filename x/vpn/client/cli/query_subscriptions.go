@@ -71,7 +71,7 @@ func QuerySubscriptionsCmd(cdc *codec.Codec) *cobra.Command {
 					return err
 				}
 
-				res, err = common.QuerySubscriptionsOAddress(cliCtx, cdc, _address)
+				res, err = common.QuerySubscriptionsOfAddress(cliCtx, cdc, _address)
 			} else {
 				res, err = common.QueryAllSubscriptions(cliCtx)
 			}

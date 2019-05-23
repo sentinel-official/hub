@@ -59,7 +59,7 @@ func QuerySubscriptionsOfNode(cliCtx context.CLIContext, cdc *codec.Codec, id sd
 	return cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s", vpn.QuerierRoute, vpn.QuerySubscriptionsOfNode), paramBytes)
 }
 
-func QuerySubscriptionsOAddress(cliCtx context.CLIContext, cdc *codec.Codec, address csdkTypes.AccAddress) ([]byte, error) {
+func QuerySubscriptionsOfAddress(cliCtx context.CLIContext, cdc *codec.Codec, address csdkTypes.AccAddress) ([]byte, error) {
 	params := vpn.NewQuerySubscriptionsOfAddressParams(address)
 
 	paramBytes, err := cdc.MarshalJSON(params)

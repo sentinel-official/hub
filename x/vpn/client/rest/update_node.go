@@ -2,7 +2,6 @@ package rest
 
 import (
 	"net/http"
-	"strconv"
 	"strings"
 
 	"github.com/cosmos/cosmos-sdk/client/context"
@@ -26,7 +25,7 @@ type msgUpdateNode struct {
 	Version       string             `json:"version"`
 }
 
-func updateNodeHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) http.HandlerFunc {
+func updateNodeInfoHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var req msgUpdateNode
 
@@ -52,13 +51,9 @@ func updateNodeHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) http.Han
 		}
 
 		vars := mux.Vars(r)
-		id, err := strconv.Atoi(vars["nodeID"])
-		if err != nil {
-			return
-		}
-
-		msg := vpn.NewMsgUpdateNodeInfo(fromAddress, sdkTypes.NewIDFromUInt64(uint64(id)),
-			req.Type, req.Version, req.Moniker, pricesPerGB, req.InternetSpeed, req.Encryption)
+		id := sdkTypes.NewIDFromString(vars["nodeID"])
+		msg := vpn.NewMsgUpdateNodeInfo(fromAddress, id, req.Type, req.Version,
+			req.Moniker, pricesPerGB, req.InternetSpeed, req.Encryption)
 		if err := msg.ValidateBasic(); err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
@@ -93,13 +88,10 @@ func updateNodeStatusHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) ht
 		}
 
 		vars := mux.Vars(r)
-		id, err := strconv.Atoi(vars["nodeID"])
-		if err != nil {
-			return
-		}
+		id := sdkTypes.NewIDFromString(vars["nodeID"])
 		status := strings.ToUpper(req.Status)
 
-		msg := vpn.NewMsgUpdateNodeStatus(fromAddress, sdkTypes.NewIDFromUInt64(uint64(id)), status)
+		msg := vpn.NewMsgUpdateNodeStatus(fromAddress, id, status)
 		if err := msg.ValidateBasic(); err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
