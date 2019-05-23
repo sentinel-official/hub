@@ -349,6 +349,11 @@ func handleUpdateSessionInfo(ctx csdkTypes.Context, k keeper.Keeper, msg types.M
 		return types.ErrorInvalidSubscriptionStatus().Result()
 	}
 
+	node, _ := k.GetNode(ctx, subscription.NodeID)
+	if !msg.From.Equals(node.Owner) || !msg.Client.Equals(subscription.Client) {
+		return types.ErrorUnauthorized().Result()
+	}
+
 	scs := k.GetSessionsCountOfSubscription(ctx, subscription.ID)
 
 	var session types.Session
