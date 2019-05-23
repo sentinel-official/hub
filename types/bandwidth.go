@@ -57,6 +57,13 @@ func (b Bandwidth) Add(bandwidth Bandwidth) Bandwidth {
 	return b
 }
 
+func (b Bandwidth) Sub(bandwidth Bandwidth) Bandwidth {
+	b.Upload = b.Upload.Sub(bandwidth.Upload)
+	b.Download = b.Download.Sub(bandwidth.Download)
+
+	return b
+}
+
 func (b Bandwidth) AllLT(bandwidth Bandwidth) bool {
 	return b.Upload.LT(bandwidth.Upload) &&
 		b.Download.LT(bandwidth.Download)
