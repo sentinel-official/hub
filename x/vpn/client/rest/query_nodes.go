@@ -14,6 +14,7 @@ import (
 	"github.com/ironman0x7b2/sentinel-sdk/x/vpn/client/common"
 )
 
+// nolint:dupl
 func getAllNodesHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		res, err := common.QueryAllNodes(cliCtx)

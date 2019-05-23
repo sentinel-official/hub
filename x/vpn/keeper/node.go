@@ -2,7 +2,6 @@ package keeper
 
 import (
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
-	"github.com/tendermint/tendermint/crypto"
 
 	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
 	"github.com/ironman0x7b2/sentinel-sdk/x/vpn/types"
@@ -189,13 +188,4 @@ func (k Keeper) RemoveNodeIDFromActiveList(ctx csdkTypes.Context, height int64, 
 
 	ids = ids.Delete(index)
 	k.SetActiveNodeIDs(ctx, height, ids)
-}
-
-func (k Keeper) GetNodeOwnerPubKey(ctx csdkTypes.Context, id sdkTypes.ID) (crypto.PubKey, csdkTypes.Error) {
-	node, found := k.GetNode(ctx, id)
-	if !found {
-		return nil, types.ErrorNodeDoesNotExist()
-	}
-
-	return k.accountKeeper.GetPubKey(ctx, node.Owner)
 }

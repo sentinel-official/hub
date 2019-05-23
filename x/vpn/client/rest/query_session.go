@@ -13,6 +13,7 @@ import (
 	"github.com/ironman0x7b2/sentinel-sdk/x/vpn/client/common"
 )
 
+// nolint:dupl
 func getAllSessionsHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		res, err := common.QueryAllSessions(cliCtx)
@@ -36,6 +37,7 @@ func getAllSessionsHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) http
 	}
 }
 
+// nolint:dupl
 func getSessionHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
@@ -56,6 +58,7 @@ func getSessionHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) http.Han
 	}
 }
 
+// nolint:dupl
 func getSessionsOfSubscriptionHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)

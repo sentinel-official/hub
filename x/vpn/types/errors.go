@@ -12,17 +12,17 @@ const (
 	errCodeUnknownMsgType            = 101
 	errCodeUnknownQueryType          = 102
 	errCodeInvalidField              = 103
-	errCodeUnauthorized              = 105
-	errCodeNodeDoesNotExist          = 104
-	errCodeInvalidNodeStatus         = 107
-	errCodeInvalidDeposit            = 108
-	errCodeSubscriptionDoesNotExist  = 109
-	errCodeSubscriptionAlreadyExists = 110
+	errCodeUnauthorized              = 104
+	errCodeNodeDoesNotExist          = 105
+	errCodeInvalidNodeStatus         = 106
+	errCodeInvalidDeposit            = 107
+	errCodeSubscriptionDoesNotExist  = 108
+	errCodeSubscriptionAlreadyExists = 109
 	errCodeInvalidSubscriptionStatus = 110
-	errCodeInvalidBandwidth          = 110
-	errCodeInvalidBandwidthSign      = 110
-	errCodeSessionAlreadyExists      = 110
-	errCodeInvalidSessionStatus      = 110
+	errCodeInvalidBandwidth          = 111
+	errCodeInvalidBandwidthSign      = 112
+	errCodeSessionAlreadyExists      = 113
+	errCodeInvalidSessionStatus      = 114
 
 	errMsgUnknownMsgType            = "Unknown message type: "
 	errMsgUnknownQueryType          = "Invalid query type: "

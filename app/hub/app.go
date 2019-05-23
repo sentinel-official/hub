@@ -165,7 +165,6 @@ func NewHub(logger log.Logger, db tmDB.DB, traceStore io.Writer, loadLatest bool
 		app.keyVPNSubscription,
 		app.keyVPNSession,
 		app.paramsKeeper.Subspace(vpn.DefaultParamspace),
-		app.accountKeeper,
 		app.depositKeeper)
 
 	bank.RegisterInvariants(&app.crisisKeeper,

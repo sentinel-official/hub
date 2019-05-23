@@ -1,7 +1,6 @@
 package types
 
 import (
-	"encoding/json"
 	"fmt"
 	"math/big"
 
@@ -99,33 +98,4 @@ func (b Bandwidth) AnyNil() bool {
 
 func NewBandwidthFromInt64(upload, download int64) Bandwidth {
 	return NewBandwidth(csdkTypes.NewInt(upload), csdkTypes.NewInt(download))
-}
-
-type BandwidthSignData struct {
-	SubscriptionID ID
-	SessionIndex   uint64
-	Bandwidth      Bandwidth
-	NodeOwner      csdkTypes.AccAddress
-	Client         csdkTypes.AccAddress
-}
-
-func NewBandwidthSignData(subscriptionID ID, sessionIndex uint64, bandwidth Bandwidth,
-	nodeOwner, client csdkTypes.AccAddress) BandwidthSignData {
-
-	return BandwidthSignData{
-		SubscriptionID: subscriptionID,
-		SessionIndex:   sessionIndex,
-		Bandwidth:      bandwidth,
-		NodeOwner:      nodeOwner,
-		Client:         client,
-	}
-}
-
-func (b BandwidthSignData) Bytes() []byte {
-	bz, err := json.Marshal(b)
-	if err != nil {
-		panic(err)
-	}
-
-	return bz
 }

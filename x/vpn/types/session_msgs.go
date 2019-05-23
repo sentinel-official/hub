@@ -12,10 +12,9 @@ var _ csdkTypes.Msg = (*MsgUpdateSessionInfo)(nil)
 
 type MsgUpdateSessionInfo struct {
 	From           csdkTypes.AccAddress `json:"from"`
+	Client         csdkTypes.AccAddress `json:"client"`
 	SubscriptionID sdkTypes.ID          `json:"subscription_id"`
 	Bandwidth      sdkTypes.Bandwidth   `json:"bandwidth"`
-	NodeOwnerSign  []byte               `json:"node_owner_sign"`
-	ClientSign     []byte               `json:"client_sign"`
 }
 
 func (msg MsgUpdateSessionInfo) Type() string {
@@ -26,14 +25,11 @@ func (msg MsgUpdateSessionInfo) ValidateBasic() csdkTypes.Error {
 	if msg.From == nil || msg.From.Empty() {
 		return ErrorInvalidField("from")
 	}
+	if msg.Client == nil || msg.Client.Empty() {
+		return ErrorInvalidField("client")
+	}
 	if !msg.Bandwidth.AllPositive() {
 		return ErrorInvalidField("bandwidth")
-	}
-	if len(msg.NodeOwnerSign) == 0 {
-		return ErrorInvalidField("node_owner_sign")
-	}
-	if len(msg.ClientSign) == 0 {
-		return ErrorInvalidField("client_sign")
 	}
 
 	return nil
@@ -49,22 +45,20 @@ func (msg MsgUpdateSessionInfo) GetSignBytes() []byte {
 }
 
 func (msg MsgUpdateSessionInfo) GetSigners() []csdkTypes.AccAddress {
-	return []csdkTypes.AccAddress{msg.From}
+	return []csdkTypes.AccAddress{msg.From, msg.Client}
 }
 
 func (msg MsgUpdateSessionInfo) Route() string {
 	return RouterKey
 }
 
-func NewMsgUpdateSessionInfo(from csdkTypes.AccAddress,
-	subscriptionID sdkTypes.ID, bandwidth sdkTypes.Bandwidth,
-	nodeOwnerSign, clientSign []byte) *MsgUpdateSessionInfo {
+func NewMsgUpdateSessionInfo(from, client csdkTypes.AccAddress,
+	subscriptionID sdkTypes.ID, bandwidth sdkTypes.Bandwidth) *MsgUpdateSessionInfo {
 
 	return &MsgUpdateSessionInfo{
 		From:           from,
+		Client:         client,
 		SubscriptionID: subscriptionID,
 		Bandwidth:      bandwidth,
-		NodeOwnerSign:  nodeOwnerSign,
-		ClientSign:     clientSign,
 	}
 }

@@ -2,7 +2,6 @@ package keeper
 
 import (
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
-	"github.com/tendermint/tendermint/crypto"
 
 	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
 	"github.com/ironman0x7b2/sentinel-sdk/x/vpn/types"
@@ -193,13 +192,4 @@ func (k Keeper) IterateSubscriptions(ctx csdkTypes.Context,
 		}
 		i++
 	}
-}
-
-func (k Keeper) GetSubscriptionClientPubKey(ctx csdkTypes.Context, id sdkTypes.ID) (crypto.PubKey, csdkTypes.Error) {
-	subscription, found := k.GetSubscription(ctx, id)
-	if !found {
-		return nil, types.ErrorSubscriptionDoesNotExist()
-	}
-
-	return k.accountKeeper.GetPubKey(ctx, subscription.Client)
 }
