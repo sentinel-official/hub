@@ -24,7 +24,7 @@ func (msg MsgStartSubscription) ValidateBasic() csdkTypes.Error {
 	if msg.From == nil || msg.From.Empty() {
 		return ErrorInvalidField("from")
 	}
-	if len(msg.Deposit.Denom) == 0 || !msg.Deposit.IsPositive() {
+	if msg.Deposit.Denom == "" || !msg.Deposit.IsPositive() {
 		return ErrorInvalidField("deposit")
 	}
 

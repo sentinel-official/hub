@@ -29,10 +29,10 @@ func (msg MsgRegisterNode) ValidateBasic() csdkTypes.Error {
 	if msg.From == nil || msg.From.Empty() {
 		return ErrorInvalidField("from")
 	}
-	if len(msg.Type_) == 0 {
+	if msg.Type_ == "" {
 		return ErrorInvalidField("type")
 	}
-	if len(msg.Version) == 0 {
+	if msg.Version == "" {
 		return ErrorInvalidField("version")
 	}
 	if len(msg.Moniker) > 128 {
@@ -46,7 +46,7 @@ func (msg MsgRegisterNode) ValidateBasic() csdkTypes.Error {
 	if !msg.InternetSpeed.AllPositive() {
 		return ErrorInvalidField("internet_speed")
 	}
-	if len(msg.Encryption) == 0 {
+	if msg.Encryption == "" {
 		return ErrorInvalidField("encryption")
 	}
 

@@ -43,13 +43,13 @@ func (n Node) String() string {
 }
 
 func (n Node) UpdateInfo(_node Node) Node {
-	if len(_node.Type) != 0 {
+	if _node.Type != "" {
 		n.Type = _node.Type
 	}
-	if len(_node.Version) != 0 {
+	if _node.Version != "" {
 		n.Version = _node.Version
 	}
-	if len(_node.Moniker) != 0 {
+	if _node.Moniker != "" {
 		n.Moniker = _node.Moniker
 	}
 	if _node.PricesPerGB != nil &&
@@ -60,7 +60,7 @@ func (n Node) UpdateInfo(_node Node) Node {
 	if !_node.InternetSpeed.AnyNil() && _node.InternetSpeed.AllPositive() {
 		n.InternetSpeed = _node.InternetSpeed
 	}
-	if len(_node.Encryption) != 0 {
+	if _node.Encryption != "" {
 		n.Encryption = _node.Encryption
 	}
 
@@ -82,7 +82,7 @@ func (n Node) FindPricePerGB(denom string) (coin csdkTypes.Coin) {
 
 func (n Node) DepositToBandwidth(deposit csdkTypes.Coin) (bandwidth sdkTypes.Bandwidth, err csdkTypes.Error) {
 	pricePerGB := n.FindPricePerGB(deposit.Denom)
-	if len(pricePerGB.Denom) == 0 || pricePerGB.Amount.IsZero() {
+	if pricePerGB.Denom == "" || pricePerGB.Amount.IsZero() {
 		return bandwidth, ErrorInvalidDeposit()
 	}
 
@@ -95,13 +95,13 @@ func (n Node) IsValid() error {
 	if n.Owner == nil || n.Owner.Empty() {
 		return fmt.Errorf("invalid owner")
 	}
-	if len(n.Deposit.Denom) == 0 {
+	if n.Deposit.Denom == "" {
 		return fmt.Errorf("invalid deposit")
 	}
-	if len(n.Type) == 0 {
+	if n.Type == "" {
 		return fmt.Errorf("invalid type")
 	}
-	if len(n.Version) == 0 {
+	if n.Version == "" {
 		return fmt.Errorf("invalid version")
 	}
 	if len(n.Moniker) > 128 {
@@ -113,7 +113,7 @@ func (n Node) IsValid() error {
 	if n.InternetSpeed.AnyNil() || !n.InternetSpeed.AllPositive() {
 		return fmt.Errorf("invalid internet speed")
 	}
-	if len(n.Encryption) == 0 {
+	if n.Encryption == "" {
 		return fmt.Errorf("invalid encryption")
 	}
 	if n.Status != StatusRegistered && n.Status != StatusActive &&

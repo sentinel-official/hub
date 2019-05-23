@@ -42,7 +42,7 @@ func (s Subscription) IsValid() error {
 	if s.Client == nil || s.Client.Empty() {
 		return fmt.Errorf("invalid client")
 	}
-	if len(s.PricePerGB.Denom) == 0 || s.PricePerGB.IsZero() {
+	if s.PricePerGB.Denom == "" || s.PricePerGB.IsZero() {
 		return fmt.Errorf("invalid price per gb")
 	}
 	if s.TotalDeposit.Denom != s.PricePerGB.Denom || s.TotalDeposit.IsZero() {

@@ -60,7 +60,7 @@ func QueryNodesCmd(cdc *codec.Codec) *cobra.Command {
 			var res []byte
 			var err error
 
-			if len(address) != 0 {
+			if address != "" {
 				var _address csdkTypes.AccAddress
 
 				_address, err = csdkTypes.AccAddressFromBech32(address)

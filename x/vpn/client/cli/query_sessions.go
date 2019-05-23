@@ -58,7 +58,7 @@ func QuerySessionsCmd(cdc *codec.Codec) *cobra.Command {
 			var res []byte
 			var err error
 
-			if len(subscriptionID) != 0 {
+			if subscriptionID != "" {
 				id := sdkTypes.NewIDFromString(subscriptionID)
 				res, err = common.QuerySessionsOfSubscription(cliCtx, cdc, id)
 			} else {
