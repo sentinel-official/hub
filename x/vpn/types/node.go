@@ -86,8 +86,8 @@ func (n Node) DepositToBandwidth(deposit csdkTypes.Coin) (bandwidth sdkTypes.Ban
 		return bandwidth, ErrorInvalidDeposit()
 	}
 
-	gb := deposit.Amount.Mul(sdkTypes.GB).Quo(pricePerGB.Amount)
-	return sdkTypes.NewBandwidth(gb, gb), nil
+	x := deposit.Amount.Mul(sdkTypes.MB500).Quo(pricePerGB.Amount)
+	return sdkTypes.NewBandwidth(x, x), nil
 }
 
 // nolint: gocyclo

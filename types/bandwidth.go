@@ -9,7 +9,10 @@ import (
 
 // nolint:gochecknoglobals
 var (
-	GB = csdkTypes.NewInt(1000000000)
+	KB    = csdkTypes.NewInt(1000)
+	MB    = KB.MulRaw(1000)
+	MB500 = MB.MulRaw(500)
+	GB    = MB.MulRaw(1000)
 )
 
 type Bandwidth struct {
