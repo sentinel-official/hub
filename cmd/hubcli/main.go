@@ -42,7 +42,6 @@ import (
 	"github.com/ironman0x7b2/sentinel-sdk/version"
 	depositClient "github.com/ironman0x7b2/sentinel-sdk/x/deposit/client"
 	depositRest "github.com/ironman0x7b2/sentinel-sdk/x/deposit/client/rest"
-	"github.com/ironman0x7b2/sentinel-sdk/x/vpn"
 	vpnClient "github.com/ironman0x7b2/sentinel-sdk/x/vpn/client"
 	vpnRest "github.com/ironman0x7b2/sentinel-sdk/x/vpn/client/rest"
 )
@@ -64,7 +63,7 @@ func main() {
 		mintClient.NewModuleClient(mint.StoreKey, cdc),
 		crisisClient.NewModuleClient(slashing.StoreKey, cdc),
 		depositClient.NewModuleClient(cdc),
-		vpnClient.NewModuleClient(vpn.StoreKeyNode, vpn.StoreKeySession, cdc),
+		vpnClient.NewModuleClient(cdc),
 	}
 
 	cobra.EnableCommandSorting = false

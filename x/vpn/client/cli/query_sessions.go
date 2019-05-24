@@ -17,7 +17,7 @@ import (
 func QuerySessionCmd(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "session",
-		Short: "Get session",
+		Short: "Query session",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cliCtx := context.NewCLIContext().WithCodec(cdc).WithAccountDecoder(cdc)
@@ -29,7 +29,7 @@ func QuerySessionCmd(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 			if res == nil {
-				return fmt.Errorf("session not found")
+				return fmt.Errorf("no session found")
 			}
 
 			var session vpn.Session
@@ -49,7 +49,7 @@ func QuerySessionCmd(cdc *codec.Codec) *cobra.Command {
 func QuerySessionsCmd(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "sessions",
-		Short: "Get sessions",
+		Short: "Query sessions",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cliCtx := context.NewCLIContext().WithCodec(cdc).WithAccountDecoder(cdc)
 

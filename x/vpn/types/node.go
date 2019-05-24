@@ -34,7 +34,7 @@ func (n Node) String() string {
   Version:             %s
   Moniker:             %s
   Price Per GB:        %s
-  Internet speed:      %s
+  Internet Speed:      %s
   Encryption:          %s
   Status:              %s
   Status Modified At:  %d`, n.ID, n.Owner, n.Deposit, n.Type, n.Version,

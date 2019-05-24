@@ -18,7 +18,7 @@ import (
 func QueryNodeCmd(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "node",
-		Short: "Get node",
+		Short: "Query node",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cliCtx := context.NewCLIContext().WithCodec(cdc).WithAccountDecoder(cdc)
@@ -30,7 +30,7 @@ func QueryNodeCmd(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 			if res == nil {
-				return fmt.Errorf("node not found")
+				return fmt.Errorf("no node found")
 			}
 
 			var node vpn.Node
@@ -51,7 +51,7 @@ func QueryNodeCmd(cdc *codec.Codec) *cobra.Command {
 func QueryNodesCmd(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "nodes",
-		Short: "Get nodes",
+		Short: "Query nodes",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cliCtx := context.NewCLIContext().WithCodec(cdc).WithAccountDecoder(cdc)
 

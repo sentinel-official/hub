@@ -9,17 +9,11 @@ import (
 )
 
 type ModuleClient struct {
-	nodeStoreKey    string
-	sessionStoreKey string
-	cdc             *codec.Codec
+	cdc *codec.Codec
 }
 
-func NewModuleClient(nodeStoreKey, sessionStoreKey string, cdc *codec.Codec) ModuleClient {
-	return ModuleClient{
-		nodeStoreKey,
-		sessionStoreKey,
-		cdc,
-	}
+func NewModuleClient(cdc *codec.Codec) ModuleClient {
+	return ModuleClient{cdc}
 }
 
 func (mc ModuleClient) GetQueryCmd() *cobra.Command {

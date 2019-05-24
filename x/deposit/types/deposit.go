@@ -13,8 +13,8 @@ type Deposit struct {
 
 func (d Deposit) String() string {
 	return fmt.Sprintf(`Deposit
-  Account Address: %s
-  Coins:           %s`, d.Address, d.Coins)
+  Address: %s
+  Coins:   %s`, d.Address, d.Coins)
 }
 
 func (d Deposit) IsValid() error {

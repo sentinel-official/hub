@@ -12,9 +12,7 @@ type ModuleClient struct {
 }
 
 func NewModuleClient(cdc *codec.Codec) ModuleClient {
-	return ModuleClient{
-		cdc,
-	}
+	return ModuleClient{cdc}
 }
 
 func (mc ModuleClient) GetQueryCmd() *cobra.Command {

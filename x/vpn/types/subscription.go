@@ -31,7 +31,7 @@ func (s Subscription) TotalBandwidth() sdkTypes.Bandwidth {
 func (s Subscription) String() string {
 	return fmt.Sprintf(`Subscription
   ID:                  %s
-  NodeID:              %s
+  Node ID:             %s
   Client Address:      %s
   Price Per GB:        %s
   Total Deposit:       %s

@@ -29,20 +29,21 @@ func getDepositsOfAddressHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec
 			return
 		}
 		if string(res) == "[]" || string(res) == "null" {
-			rest.WriteErrorResponse(w, http.StatusBadRequest, "no deposits found")
+			rest.WriteErrorResponse(w, http.StatusBadRequest, "no deposit found")
 			return
 		}
 
-		var deposit deposit.Deposit
-		if err := cdc.UnmarshalJSON(res, &deposit); err != nil {
+		var _deposit deposit.Deposit
+		if err := cdc.UnmarshalJSON(res, &_deposit); err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
 		}
 
-		rest.PostProcessResponse(w, cdc, deposit, cliCtx.Indent)
+		rest.PostProcessResponse(w, cdc, _deposit, cliCtx.Indent)
 	}
 }
 
+// nolint:dupl
 func getAllDeposits(cliCtx context.CLIContext, cdc *codec.Codec) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		res, err := common.QueryAllDeposits(cliCtx)
@@ -52,16 +53,16 @@ func getAllDeposits(cliCtx context.CLIContext, cdc *codec.Codec) http.HandlerFun
 		}
 
 		if string(res) == "[]" || string(res) == "null" {
-			rest.WriteErrorResponse(w, http.StatusBadRequest, "no deposts found")
+			rest.WriteErrorResponse(w, http.StatusBadRequest, "no deposits found")
 			return
 		}
 
-		var deposts []deposit.Deposit
-		if err := cdc.UnmarshalJSON(res, &deposts); err != nil {
+		var deposits []deposit.Deposit
+		if err := cdc.UnmarshalJSON(res, &deposits); err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
 		}
 
-		rest.PostProcessResponse(w, cdc, deposts, cliCtx.Indent)
+		rest.PostProcessResponse(w, cdc, deposits, cliCtx.Indent)
 	}
 }

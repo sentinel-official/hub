@@ -18,7 +18,7 @@ import (
 func QuerySubscriptionCmd(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "subscription",
-		Short: "Get subscription",
+		Short: "Query subscription",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cliCtx := context.NewCLIContext().WithCodec(cdc).WithAccountDecoder(cdc)
@@ -30,7 +30,7 @@ func QuerySubscriptionCmd(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 			if res == nil {
-				return fmt.Errorf("subscription not found")
+				return fmt.Errorf("no subscription found")
 			}
 
 			var subscription vpn.Subscription
@@ -50,7 +50,7 @@ func QuerySubscriptionCmd(cdc *codec.Codec) *cobra.Command {
 func QuerySubscriptionsCmd(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "subscriptions",
-		Short: "Get subscriptions",
+		Short: "Query subscriptions",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cliCtx := context.NewCLIContext().WithCodec(cdc).WithAccountDecoder(cdc)
 

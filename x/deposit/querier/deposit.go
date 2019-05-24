@@ -36,6 +36,7 @@ func queryAllDeposits(ctx csdkTypes.Context, cdc *codec.Codec, k keeper.Keeper) 
 	return res, nil
 }
 
+// nolint:dupl
 func queryDepositsOfAddress(ctx csdkTypes.Context, cdc *codec.Codec, req abciTypes.RequestQuery,
 	k keeper.Keeper) ([]byte, csdkTypes.Error) {
 

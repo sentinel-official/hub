@@ -3,6 +3,7 @@ package cli
 import (
 	"fmt"
 
+	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/codec"
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
@@ -16,7 +17,7 @@ import (
 func QueryDepositsCmd(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "deposits",
-		Short: "Get deposits",
+		Short: "Query deposits",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cliCtx := context.NewCLIContext().WithCodec(cdc).WithAccountDecoder(cdc)
 
@@ -37,19 +38,21 @@ func QueryDepositsCmd(cdc *codec.Codec) *cobra.Command {
 				if err != nil {
 					return err
 				}
+				if res == nil {
+					return fmt.Errorf("no deposit found")
+				}
 
 				var _deposit deposit.Deposit
-				if err := cdc.UnmarshalJSON(res, &_deposit); err != nil {
+				if err = cdc.UnmarshalJSON(res, &_deposit); err != nil {
 					return err
 				}
 
 				fmt.Println(_deposit)
 
 				return nil
-			} else {
-				res, err = common.QueryAllDeposits(cliCtx)
 			}
 
+			res, err = common.QueryAllDeposits(cliCtx)
 			if err != nil {
 				return err
 			}
@@ -72,5 +75,5 @@ func QueryDepositsCmd(cdc *codec.Codec) *cobra.Command {
 
 	cmd.Flags().String(flagAddress, "", "Account address")
 
-	return cmd
+	return client.GetCommands(cmd)[0]
 }
