@@ -262,7 +262,6 @@ func handleStartSubscription(ctx csdkTypes.Context, k keeper.Keeper, msg types.M
 		Client:             msg.From,
 		PricePerGB:         pricePerGB,
 		TotalDeposit:       msg.Deposit,
-		TotalBandwidth:     bandwidth,
 		RemainingDeposit:   msg.Deposit,
 		RemainingBandwidth: bandwidth,
 		Status:             types.StatusActive,

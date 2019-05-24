@@ -27,7 +27,7 @@ type Node struct {
 
 func (n Node) String() string {
 	return fmt.Sprintf(`Node
-  ID:                  %d
+  ID:                  %s
   Owner Address:       %s
   Deposit:             %s
   Type:                %s

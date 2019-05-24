@@ -16,8 +16,8 @@ type Session struct {
 
 func (s Session) String() string {
 	return fmt.Sprintf(`Session
-  ID:                   %d
-  Subscription ID:      %d
+  ID:                   %s
+  Subscription ID:      %s
   Bandwidth:            %s
   Status:               %s
   Status Modified At:   %d`, s.ID, s.SubscriptionID, s.Bandwidth, s.Status, s.StatusModifiedAt)

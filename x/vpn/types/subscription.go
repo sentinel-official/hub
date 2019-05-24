@@ -14,17 +14,24 @@ type Subscription struct {
 	Client             csdkTypes.AccAddress `json:"client"`
 	PricePerGB         csdkTypes.Coin       `json:"price_per_gb"`
 	TotalDeposit       csdkTypes.Coin       `json:"total_deposit"`
-	TotalBandwidth     sdkTypes.Bandwidth   `json:"total_bandwidth"`
 	RemainingDeposit   csdkTypes.Coin       `json:"remaining_deposit"`
 	RemainingBandwidth sdkTypes.Bandwidth   `json:"remaining_bandwidth"`
 	Status             string               `json:"status"`
 	StatusModifiedAt   int64                `json:"status_modified_at"`
 }
 
+func (s Subscription) TotalBandwidth() sdkTypes.Bandwidth {
+	x := s.TotalDeposit.Amount.
+		Mul(sdkTypes.MB500).
+		Quo(s.PricePerGB.Amount)
+
+	return sdkTypes.NewBandwidth(x, x)
+}
+
 func (s Subscription) String() string {
 	return fmt.Sprintf(`Subscription
-  ID:                  %d
-  NodeID:              %d
+  ID:                  %s
+  NodeID:              %s
   Client Address:      %s
   Price Per GB:        %s
   Total Deposit:       %s
@@ -33,7 +40,7 @@ func (s Subscription) String() string {
   Remaining Bandwidth: %s
   Status:              %s
   Status Modified At:  %d`, s.ID, s.NodeID, s.Client,
-		s.PricePerGB, s.TotalDeposit, s.TotalBandwidth,
+		s.PricePerGB, s.TotalDeposit, s.TotalBandwidth(),
 		s.RemainingDeposit, s.RemainingBandwidth, s.Status, s.StatusModifiedAt)
 }
 
@@ -48,13 +55,10 @@ func (s Subscription) IsValid() error {
 	if s.TotalDeposit.Denom != s.PricePerGB.Denom || s.TotalDeposit.IsZero() {
 		return fmt.Errorf("invalid total deposit")
 	}
-	if s.TotalBandwidth.AnyNil() || !s.TotalBandwidth.AllPositive() {
-		return fmt.Errorf("invalid total bandwidth")
-	}
 	if s.RemainingDeposit.Denom != s.TotalDeposit.Denom || s.TotalDeposit.IsLT(s.RemainingDeposit) {
 		return fmt.Errorf("invalid remaining deposit")
 	}
-	if s.RemainingBandwidth.AnyNil() || s.TotalBandwidth.AnyLT(s.RemainingBandwidth) {
+	if s.RemainingBandwidth.AnyNil() || s.TotalBandwidth().AnyLT(s.RemainingBandwidth) {
 		return fmt.Errorf("invalid total remaining bandwidth")
 	}
 	if s.Status != StatusActive && s.Status != StatusInactive {
