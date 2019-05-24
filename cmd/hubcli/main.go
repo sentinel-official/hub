@@ -40,6 +40,8 @@ import (
 
 	app "github.com/ironman0x7b2/sentinel-sdk/app/hub"
 	"github.com/ironman0x7b2/sentinel-sdk/version"
+	depositClient "github.com/ironman0x7b2/sentinel-sdk/x/deposit/client"
+	depositRest "github.com/ironman0x7b2/sentinel-sdk/x/deposit/client/rest"
 	"github.com/ironman0x7b2/sentinel-sdk/x/vpn"
 	vpnClient "github.com/ironman0x7b2/sentinel-sdk/x/vpn/client"
 	vpnRest "github.com/ironman0x7b2/sentinel-sdk/x/vpn/client/rest"
@@ -61,6 +63,7 @@ func main() {
 		slashingClient.NewModuleClient(slashing.StoreKey, cdc),
 		mintClient.NewModuleClient(mint.StoreKey, cdc),
 		crisisClient.NewModuleClient(slashing.StoreKey, cdc),
+		depositClient.NewModuleClient(cdc),
 		vpnClient.NewModuleClient(vpn.StoreKeyNode, vpn.StoreKeySession, cdc),
 	}
 
@@ -155,6 +158,7 @@ func registerRoutes(rs *lcd.RestServer) {
 	distRest.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, distribution.StoreKey)
 	govRest.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc)
 	mintRest.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc)
+	depositRest.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc)
 	vpnRest.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc)
 }
 

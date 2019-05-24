@@ -57,14 +57,13 @@ func getNodesOfAddressHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) h
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 
-		address := vars["address"]
-		_address, err := csdkTypes.AccAddressFromBech32(address)
+		address, err := csdkTypes.AccAddressFromBech32(vars["address"])
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
 		}
 
-		res, err := common.QueryNodesOfAddress(cliCtx, cdc, _address)
+		res, err := common.QueryNodesOfAddress(cliCtx, cdc, address)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return

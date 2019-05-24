@@ -14,6 +14,7 @@ func DepositKey(address csdkTypes.AccAddress) []byte {
 }
 
 const (
-	ModuleName = "deposit"
-	StoreKey   = ModuleName
+	ModuleName   = "deposit"
+	StoreKey     = ModuleName
+	QuerierRoute = ModuleName
 )

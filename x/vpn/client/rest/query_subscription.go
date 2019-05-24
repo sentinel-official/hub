@@ -91,14 +91,13 @@ func getSubscriptionsOfAddressHandlerFunc(cliCtx context.CLIContext, cdc *codec.
 		vars := mux.Vars(r)
 		var err error
 
-		address := vars["address"]
-		_address, err := csdkTypes.AccAddressFromBech32(address)
+		address, err := csdkTypes.AccAddressFromBech32(vars["address"])
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
 		}
 
-		res, err := common.QuerySubscriptionsOfAddress(cliCtx, cdc, _address)
+		res, err := common.QuerySubscriptionsOfAddress(cliCtx, cdc, address)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return

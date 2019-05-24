@@ -195,6 +195,7 @@ func NewHub(logger log.Logger, db tmDB.DB, traceStore io.Writer, loadLatest bool
 		AddRoute(distribution.QuerierRoute, distribution.NewQuerier(app.distributionKeeper)).
 		AddRoute(gov.QuerierRoute, gov.NewQuerier(app.govKeeper)).
 		AddRoute(mint.QuerierRoute, mint.NewQuerier(app.mintKeeper)).
+		AddRoute(deposit.QuerierRoute, deposit.NewQuerier(app.depositKeeper, app.cdc)).
 		AddRoute(vpn.QuerierRoute, vpn.NewQuerier(app.vpnKeeper, app.cdc))
 
 	app.MountStores(app.keyMain, app.keyParams,
