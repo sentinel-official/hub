@@ -44,7 +44,12 @@ func SignSessionBandwidthTxCmd(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			sigBytes, pubKey, err := cliCtx.Keybase.Sign(cliCtx.FromName, passphrase, msg.GetSignBytes())
+			kb, err := keys.NewKeyBaseFromHomeFlag()
+			if err != nil {
+				return err
+			}
+
+			sigBytes, pubKey, err := kb.Sign(cliCtx.FromName, passphrase, msg.GetSignBytes())
 			if err != nil {
 				return err
 			}
