@@ -1,6 +1,7 @@
 package vpn
 
 import (
+	"bytes"
 	"reflect"
 
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
@@ -328,9 +329,12 @@ func handleUpdateSessionInfo(ctx csdkTypes.Context, k keeper.Keeper, msg types.M
 	if subscription.Status == types.StatusInactive {
 		return types.ErrorInvalidSubscriptionStatus().Result()
 	}
+	if !bytes.Equal(msg.ClientSignature.PubKey.Address(), subscription.Client.Bytes()) {
+		return types.ErrorUnauthorized().Result()
+	}
 
 	node, _ := k.GetNode(ctx, subscription.NodeID)
-	if !msg.From.Equals(node.Owner) || !msg.Client.Equals(subscription.Client) {
+	if !bytes.Equal(msg.NodeOwnerSignature.PubKey.Address(), node.Owner.Bytes()) {
 		return types.ErrorUnauthorized().Result()
 	}
 

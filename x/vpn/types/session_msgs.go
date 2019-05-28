@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/x/auth"
 
 	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
 )
@@ -11,10 +12,11 @@ import (
 var _ csdkTypes.Msg = (*MsgUpdateSessionInfo)(nil)
 
 type MsgUpdateSessionInfo struct {
-	From           csdkTypes.AccAddress `json:"from"`
-	Client         csdkTypes.AccAddress `json:"client"`
-	SubscriptionID sdkTypes.ID          `json:"subscription_id"`
-	Bandwidth      sdkTypes.Bandwidth   `json:"bandwidth"`
+	From               csdkTypes.AccAddress `json:"from"`
+	SubscriptionID     sdkTypes.ID          `json:"subscription_id"`
+	Bandwidth          sdkTypes.Bandwidth   `json:"bandwidth"`
+	NodeOwnerSignature auth.StdSignature    `json:"node_owner_signature"`
+	ClientSignature    auth.StdSignature    `json:"client_signature"`
 }
 
 func (msg MsgUpdateSessionInfo) Type() string {
@@ -25,11 +27,21 @@ func (msg MsgUpdateSessionInfo) ValidateBasic() csdkTypes.Error {
 	if msg.From == nil || msg.From.Empty() {
 		return ErrorInvalidField("from")
 	}
-	if msg.Client == nil || msg.Client.Empty() {
-		return ErrorInvalidField("client")
-	}
 	if !msg.Bandwidth.AllPositive() {
 		return ErrorInvalidField("bandwidth")
+	}
+
+	_msg := MsgUpdateSessionInfo{
+		SubscriptionID: msg.SubscriptionID,
+		Bandwidth:      msg.Bandwidth,
+	}
+	if msg.NodeOwnerSignature.Signature == nil || msg.NodeOwnerSignature.PubKey == nil ||
+		!msg.NodeOwnerSignature.VerifyBytes(_msg.GetSignBytes(), msg.NodeOwnerSignature.Signature) {
+		return ErrorInvalidField("node_owner_signature")
+	}
+	if msg.ClientSignature.Signature == nil || msg.ClientSignature.PubKey == nil ||
+		!msg.ClientSignature.VerifyBytes(_msg.GetSignBytes(), msg.ClientSignature.Signature) {
+		return ErrorInvalidField("client_signature")
 	}
 
 	return nil
@@ -45,20 +57,22 @@ func (msg MsgUpdateSessionInfo) GetSignBytes() []byte {
 }
 
 func (msg MsgUpdateSessionInfo) GetSigners() []csdkTypes.AccAddress {
-	return []csdkTypes.AccAddress{msg.From, msg.Client}
+	return []csdkTypes.AccAddress{msg.From}
 }
 
 func (msg MsgUpdateSessionInfo) Route() string {
 	return RouterKey
 }
 
-func NewMsgUpdateSessionInfo(from, client csdkTypes.AccAddress,
-	subscriptionID sdkTypes.ID, bandwidth sdkTypes.Bandwidth) *MsgUpdateSessionInfo {
+func NewMsgUpdateSessionInfo(from csdkTypes.AccAddress,
+	subscriptionID sdkTypes.ID, bandwidth sdkTypes.Bandwidth,
+	nodeOwnerSignature, clientSignature auth.StdSignature) *MsgUpdateSessionInfo {
 
 	return &MsgUpdateSessionInfo{
-		From:           from,
-		Client:         client,
-		SubscriptionID: subscriptionID,
-		Bandwidth:      bandwidth,
+		From:               from,
+		SubscriptionID:     subscriptionID,
+		Bandwidth:          bandwidth,
+		NodeOwnerSignature: nodeOwnerSignature,
+		ClientSignature:    clientSignature,
 	}
 }

@@ -61,7 +61,7 @@ func QueryDepositsCmd(cdc *codec.Codec) *cobra.Command {
 			}
 
 			var deposits []deposit.Deposit
-			if err := cdc.UnmarshalJSON(res, &deposits); err != nil {
+			if err = cdc.UnmarshalJSON(res, &deposits); err != nil {
 				return err
 			}
 
