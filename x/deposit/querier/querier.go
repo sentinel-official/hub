@@ -12,10 +12,10 @@ import (
 func NewQuerier(k keeper.Keeper, cdc *codec.Codec) csdkTypes.Querier {
 	return func(ctx csdkTypes.Context, path []string, req abciTypes.RequestQuery) (res []byte, err csdkTypes.Error) {
 		switch path[0] {
+		case QueryDepositOfAddress:
+			return queryDepositOfAddress(ctx, cdc, req, k)
 		case QueryAllDeposits:
 			return queryAllDeposits(ctx, cdc, k)
-		case QueryDepositsOfAddress:
-			return queryDepositsOfAddress(ctx, cdc, req, k)
 		default:
 			return nil, types.ErrorInvalidQueryType(path[0])
 		}

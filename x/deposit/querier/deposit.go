@@ -11,18 +11,40 @@ import (
 )
 
 const (
-	QueryDepositsOfAddress = "depositsOfAddress"
-	QueryAllDeposits       = "allDeposits"
+	QueryDepositOfAddress = "depositOfAddress"
+	QueryAllDeposits      = "allDeposits"
 )
 
-type QueryDepositsOfAddressPrams struct {
+type QueryDepositOfAddressPrams struct {
 	Address csdkTypes.AccAddress
 }
 
-func NewQueryDepositsOfAddressParams(address csdkTypes.AccAddress) QueryDepositsOfAddressPrams {
-	return QueryDepositsOfAddressPrams{
+func NewQueryDepositOfAddressParams(address csdkTypes.AccAddress) QueryDepositOfAddressPrams {
+	return QueryDepositOfAddressPrams{
 		Address: address,
 	}
+}
+
+// nolint:dupl
+func queryDepositOfAddress(ctx csdkTypes.Context, cdc *codec.Codec, req abciTypes.RequestQuery,
+	k keeper.Keeper) ([]byte, csdkTypes.Error) {
+
+	var params QueryDepositOfAddressPrams
+	if err := cdc.UnmarshalJSON(req.Data, &params); err != nil {
+		return nil, types.ErrorUnmarshal()
+	}
+
+	deposit, found := k.GetDeposit(ctx, params.Address)
+	if !found {
+		return nil, nil
+	}
+
+	res, resErr := cdc.MarshalJSON(deposit)
+	if resErr != nil {
+		return nil, types.ErrorMarshal()
+	}
+
+	return res, nil
 }
 
 func queryAllDeposits(ctx csdkTypes.Context, cdc *codec.Codec, k keeper.Keeper) ([]byte, csdkTypes.Error) {
@@ -33,26 +55,5 @@ func queryAllDeposits(ctx csdkTypes.Context, cdc *codec.Codec, k keeper.Keeper) 
 		return nil, types.ErrorMarshal()
 	}
 
-	return res, nil
-}
-
-// nolint:dupl
-func queryDepositsOfAddress(ctx csdkTypes.Context, cdc *codec.Codec, req abciTypes.RequestQuery,
-	k keeper.Keeper) ([]byte, csdkTypes.Error) {
-
-	var params QueryDepositsOfAddressPrams
-	if err := cdc.UnmarshalJSON(req.Data, &params); err != nil {
-		return nil, types.ErrorUnmarshal()
-	}
-
-	deposits, found := k.GetDeposit(ctx, params.Address)
-	if !found {
-		return nil, nil
-	}
-
-	res, resErr := cdc.MarshalJSON(deposits)
-	if resErr != nil {
-		return nil, types.ErrorMarshal()
-	}
 	return res, nil
 }

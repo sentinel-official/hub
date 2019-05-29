@@ -6,24 +6,28 @@ import (
 	"github.com/ironman0x7b2/sentinel-sdk/x/deposit/types"
 )
 
+const (
+	Codespace             = types.Codespace
+	StoreKey              = types.StoreKey
+	QuerierRoute          = types.QuerierRoute
+	QueryDepositOfAddress = querier.QueryDepositOfAddress
+	QueryAllDeposits      = querier.QueryAllDeposits
+)
+
 type (
-	Deposit      = types.Deposit
-	GenesisState = types.GenesisState
-	Keeper       = keeper.Keeper
+	Deposit                    = types.Deposit
+	GenesisState               = types.GenesisState
+	Keeper                     = keeper.Keeper
+	QueryDepositOfAddressPrams = querier.QueryDepositOfAddressPrams
 )
 
 // nolint: gochecknoglobals
 var (
-	DepositKey          = types.DepositKey
-	NewGenesisState     = types.NewGenesisState
-	DefaultGenesisState = types.DefaultGenesisState
-	NewKeeper           = keeper.NewKeeper
-	NewQuerier          = querier.NewQuerier
-)
-
-const (
-	StoreKey               = types.StoreKey
-	QuerierRoute           = types.QuerierRoute
-	QueryDepositsOfAddress = querier.QueryDepositsOfAddress
-	QueryAllDeposits       = querier.QueryAllDeposits
+	NewGenesisState                = types.NewGenesisState
+	DefaultGenesisState            = types.DefaultGenesisState
+	DepositKeyPrefix               = types.DepositKeyPrefix
+	DepositKey                     = types.DepositKey
+	NewKeeper                      = keeper.NewKeeper
+	NewQueryDepositOfAddressParams = querier.NewQueryDepositOfAddressParams
+	NewQuerier                     = querier.NewQuerier
 )

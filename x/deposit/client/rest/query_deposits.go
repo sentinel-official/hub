@@ -9,10 +9,10 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/rest"
 	"github.com/gorilla/mux"
 
-	"github.com/ironman0x7b2/sentinel-sdk/x/deposit"
 	"github.com/ironman0x7b2/sentinel-sdk/x/deposit/client/common"
 )
 
+// nolint:dupl
 func getDepositsOfAddressHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
@@ -23,43 +23,22 @@ func getDepositsOfAddressHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec
 			return
 		}
 
-		res, err := common.QueryDepositsOfAddress(cliCtx, cdc, address)
+		deposit, err := common.QueryDepositOfAddress(cliCtx, cdc, address)
 		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
-			return
-		}
-		if string(res) == "[]" || string(res) == "null" {
-			rest.WriteErrorResponse(w, http.StatusBadRequest, "no deposit found")
+			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
 		}
 
-		var _deposit deposit.Deposit
-		if err := cdc.UnmarshalJSON(res, &_deposit); err != nil {
-			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
-			return
-		}
-
-		rest.PostProcessResponse(w, cdc, _deposit, cliCtx.Indent)
+		rest.PostProcessResponse(w, cdc, deposit, cliCtx.Indent)
 	}
 }
 
 // nolint:dupl
 func getAllDeposits(cliCtx context.CLIContext, cdc *codec.Codec) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		res, err := common.QueryAllDeposits(cliCtx)
+		deposits, err := common.QueryAllDeposits(cliCtx, cdc)
 		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
-			return
-		}
-
-		if string(res) == "[]" || string(res) == "null" {
-			rest.WriteErrorResponse(w, http.StatusBadRequest, "no deposits found")
-			return
-		}
-
-		var deposits []deposit.Deposit
-		if err := cdc.UnmarshalJSON(res, &deposits); err != nil {
-			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
 		}
 
