@@ -25,16 +25,8 @@ func QueryNodeCmd(cdc *codec.Codec) *cobra.Command {
 
 			id := sdkTypes.NewIDFromString(args[0])
 
-			res, err := common.QueryNode(cliCtx, cdc, id)
+			node, err := common.QueryNode(cliCtx, cdc, id)
 			if err != nil {
-				return err
-			}
-			if res == nil {
-				return fmt.Errorf("no node found")
-			}
-
-			var node vpn.Node
-			if err := cdc.UnmarshalJSON(res, &node); err != nil {
 				return err
 			}
 
@@ -47,7 +39,6 @@ func QueryNodeCmd(cdc *codec.Codec) *cobra.Command {
 	return cmd
 }
 
-// nolint: gocyclo
 func QueryNodesCmd(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "nodes",
@@ -57,7 +48,7 @@ func QueryNodesCmd(cdc *codec.Codec) *cobra.Command {
 
 			address := viper.GetString(flagAddress)
 
-			var res []byte
+			var nodes []vpn.Node
 			var err error
 
 			if address != "" {
@@ -68,23 +59,12 @@ func QueryNodesCmd(cdc *codec.Codec) *cobra.Command {
 					return err
 				}
 
-				res, err = common.QueryNodesOfAddress(cliCtx, cdc, _address)
-				if err != nil {
-					return err
-				}
+				nodes, err = common.QueryNodesOfAddress(cliCtx, cdc, _address)
 			} else {
-				res, err = common.QueryAllNodes(cliCtx)
+				nodes, err = common.QueryAllNodes(cliCtx, cdc)
 			}
 
 			if err != nil {
-				return err
-			}
-			if string(res) == "[]" || string(res) == "null" {
-				return fmt.Errorf("no nodes found")
-			}
-
-			var nodes []vpn.Node
-			if err := cdc.UnmarshalJSON(res, &nodes); err != nil {
 				return err
 			}
 

@@ -49,8 +49,7 @@ func registerNodeHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) http.H
 		}
 
 		msg := vpn.NewMsgRegisterNode(fromAddress, req.Type, req.Version,
-			req.Moniker, pricesPerGB, req.InternetSpeed,
-			req.Encryption)
+			req.Moniker, pricesPerGB, req.InternetSpeed, req.Encryption)
 		if err := msg.ValidateBasic(); err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return

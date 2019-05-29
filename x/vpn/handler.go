@@ -338,9 +338,16 @@ func handleUpdateSessionInfo(ctx csdkTypes.Context, k keeper.Keeper, msg types.M
 		return types.ErrorUnauthorized().Result()
 	}
 
-	var session types.Session
-
 	scs := k.GetSessionsCountOfSubscription(ctx, subscription.ID)
+	data := types.NewBandwidthSignatureData(subscription.ID, scs, msg.Bandwidth).Bytes()
+	if !msg.NodeOwnerSignature.VerifyBytes(data, msg.NodeOwnerSignature.Signature) {
+		return types.ErrorInvalidBandwidthSignature().Result()
+	}
+	if !msg.ClientSignature.VerifyBytes(data, msg.ClientSignature.Signature) {
+		return types.ErrorInvalidBandwidthSignature().Result()
+	}
+
+	var session types.Session
 	id, found := k.GetSessionIDBySubscriptionID(ctx, subscription.ID, scs)
 	if !found {
 		sc := k.GetSessionsCount(ctx)

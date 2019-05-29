@@ -1,6 +1,7 @@
 package types
 
 import (
+	"encoding/json"
 	"fmt"
 
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
@@ -66,4 +67,27 @@ func (s Subscription) IsValid() error {
 	}
 
 	return nil
+}
+
+type BandwidthSignatureData struct {
+	ID        sdkTypes.ID        `json:"id"`
+	Index     uint64             `json:"index"`
+	Bandwidth sdkTypes.Bandwidth `json:"bandwidth"`
+}
+
+func NewBandwidthSignatureData(id sdkTypes.ID, index uint64, bandwidth sdkTypes.Bandwidth) BandwidthSignatureData {
+	return BandwidthSignatureData{
+		ID:        id,
+		Index:     index,
+		Bandwidth: bandwidth,
+	}
+}
+
+func (b BandwidthSignatureData) Bytes() []byte {
+	bz, err := json.Marshal(b)
+	if err != nil {
+		panic(err)
+	}
+
+	return bz
 }

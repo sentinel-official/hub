@@ -24,16 +24,8 @@ func QuerySessionCmd(cdc *codec.Codec) *cobra.Command {
 
 			id := sdkTypes.NewIDFromString(args[0])
 
-			res, err := common.QuerySession(cliCtx, cdc, id)
+			session, err := common.QuerySession(cliCtx, cdc, id)
 			if err != nil {
-				return err
-			}
-			if res == nil {
-				return fmt.Errorf("no session found")
-			}
-
-			var session vpn.Session
-			if err := cdc.UnmarshalJSON(res, &session); err != nil {
 				return err
 			}
 
@@ -55,25 +47,17 @@ func QuerySessionsCmd(cdc *codec.Codec) *cobra.Command {
 
 			subscriptionID := viper.GetString(flagSubscriptionID)
 
-			var res []byte
+			var sessions []vpn.Session
 			var err error
 
 			if subscriptionID != "" {
 				id := sdkTypes.NewIDFromString(subscriptionID)
-				res, err = common.QuerySessionsOfSubscription(cliCtx, cdc, id)
+				sessions, err = common.QuerySessionsOfSubscription(cliCtx, cdc, id)
 			} else {
-				res, err = common.QueryAllSessions(cliCtx)
+				sessions, err = common.QueryAllSessions(cliCtx, cdc)
 			}
 
 			if err != nil {
-				return err
-			}
-			if string(res) == "[]" || string(res) == "null" {
-				return fmt.Errorf("no sessions found")
-			}
-
-			var sessions []vpn.Session
-			if err := cdc.UnmarshalJSON(res, &sessions); err != nil {
 				return err
 			}
 

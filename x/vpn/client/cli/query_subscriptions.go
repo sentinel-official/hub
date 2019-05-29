@@ -25,16 +25,8 @@ func QuerySubscriptionCmd(cdc *codec.Codec) *cobra.Command {
 
 			id := sdkTypes.NewIDFromString(args[0])
 
-			res, err := common.QuerySubscription(cliCtx, cdc, id)
+			subscription, err := common.QuerySubscription(cliCtx, cdc, id)
 			if err != nil {
-				return err
-			}
-			if res == nil {
-				return fmt.Errorf("no subscription found")
-			}
-
-			var subscription vpn.Subscription
-			if err := cdc.UnmarshalJSON(res, &subscription); err != nil {
 				return err
 			}
 
@@ -57,12 +49,12 @@ func QuerySubscriptionsCmd(cdc *codec.Codec) *cobra.Command {
 			nodeID := viper.GetString(flagNodeID)
 			address := viper.GetString(flagAddress)
 
-			var res []byte
+			var subscriptions []vpn.Subscription
 			var err error
 
 			if nodeID != "" {
 				id := sdkTypes.NewIDFromString(nodeID)
-				res, err = common.QuerySubscriptionsOfNode(cliCtx, cdc, id)
+				subscriptions, err = common.QuerySubscriptionsOfNode(cliCtx, cdc, id)
 			} else if address != "" {
 				var _address csdkTypes.AccAddress
 
@@ -71,20 +63,12 @@ func QuerySubscriptionsCmd(cdc *codec.Codec) *cobra.Command {
 					return err
 				}
 
-				res, err = common.QuerySubscriptionsOfAddress(cliCtx, cdc, _address)
+				subscriptions, err = common.QuerySubscriptionsOfAddress(cliCtx, cdc, _address)
 			} else {
-				res, err = common.QueryAllSubscriptions(cliCtx)
+				subscriptions, err = common.QueryAllSubscriptions(cliCtx, cdc)
 			}
 
 			if err != nil {
-				return err
-			}
-			if string(res) == "[]" || string(res) == "null" {
-				return fmt.Errorf("no subscriptions found")
-			}
-
-			var subscriptions []vpn.Subscription
-			if err := cdc.UnmarshalJSON(res, &subscriptions); err != nil {
 				return err
 			}
 

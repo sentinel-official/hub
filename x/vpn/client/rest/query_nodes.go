@@ -10,49 +10,25 @@ import (
 	"github.com/gorilla/mux"
 
 	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
-	"github.com/ironman0x7b2/sentinel-sdk/x/vpn"
 	"github.com/ironman0x7b2/sentinel-sdk/x/vpn/client/common"
 )
-
-// nolint:dupl
-func getAllNodesHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		res, err := common.QueryAllNodes(cliCtx)
-		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
-			return
-		}
-
-		if string(res) == "[]" || string(res) == "null" {
-			rest.WriteErrorResponse(w, http.StatusBadRequest, "no nodes found")
-			return
-		}
-
-		var nodes []vpn.Node
-		if err := cdc.UnmarshalJSON(res, &nodes); err != nil {
-			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
-			return
-		}
-
-		rest.PostProcessResponse(w, cdc, nodes, cliCtx.Indent)
-	}
-}
 
 func getNodeHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 
 		id := sdkTypes.NewIDFromString(vars["nodeID"])
-		res, err := common.QueryNode(cliCtx, cdc, id)
+		node, err := common.QueryNode(cliCtx, cdc, id)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
 		}
 
-		rest.PostProcessResponse(w, cdc, res, cliCtx.Indent)
+		rest.PostProcessResponse(w, cdc, node, cliCtx.Indent)
 	}
 }
 
+// nolint:dupl
 func getNodesOfAddressHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
@@ -63,19 +39,21 @@ func getNodesOfAddressHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) h
 			return
 		}
 
-		res, err := common.QueryNodesOfAddress(cliCtx, cdc, address)
+		nodes, err := common.QueryNodesOfAddress(cliCtx, cdc, address)
 		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
-			return
-		}
-		if string(res) == "[]" || string(res) == "null" {
-			rest.WriteErrorResponse(w, http.StatusBadRequest, "no nodes found")
+			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
 		}
 
-		var nodes []vpn.Node
-		if err := cdc.UnmarshalJSON(res, &nodes); err != nil {
-			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+		rest.PostProcessResponse(w, cdc, nodes, cliCtx.Indent)
+	}
+}
+
+func getAllNodesHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		nodes, err := common.QueryAllNodes(cliCtx, cdc)
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
 		}
 

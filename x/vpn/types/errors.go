@@ -20,7 +20,7 @@ const (
 	errCodeSubscriptionAlreadyExists = 109
 	errCodeInvalidSubscriptionStatus = 110
 	errCodeInvalidBandwidth          = 111
-	errCodeInvalidBandwidthSign      = 112
+	errCodeInvalidBandwidthSignature = 112
 	errCodeSessionAlreadyExists      = 113
 	errCodeInvalidSessionStatus      = 114
 
@@ -35,7 +35,7 @@ const (
 	errMsgSubscriptionAlreadyExists = "Subscription already exists"
 	errMsgInvalidSubscriptionStatus = "Invalid subscription status"
 	errMsgInvalidBandwidth          = "Invalid bandwidth"
-	errMsgInvalidBandwidthSign      = "Invalid bandwidth sign"
+	errMsgInvalidBandwidthSignature = "Invalid bandwidth signature"
 	errMsgSessionAlreadyExists      = "Session is active"
 	errMsgInvalidSessionStatus      = "Invalid session status"
 )
@@ -92,8 +92,8 @@ func ErrorInvalidBandwidth() csdkTypes.Error {
 	return csdkTypes.NewError(Codespace, errCodeInvalidBandwidth, errMsgInvalidBandwidth)
 }
 
-func ErrorInvalidBandwidthSign() csdkTypes.Error {
-	return csdkTypes.NewError(Codespace, errCodeInvalidBandwidthSign, errMsgInvalidBandwidthSign)
+func ErrorInvalidBandwidthSignature() csdkTypes.Error {
+	return csdkTypes.NewError(Codespace, errCodeInvalidBandwidthSignature, errMsgInvalidBandwidthSignature)
 }
 
 func ErrorSessionAlreadyExists() csdkTypes.Error {

@@ -10,79 +10,36 @@ import (
 	"github.com/gorilla/mux"
 
 	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
-	"github.com/ironman0x7b2/sentinel-sdk/x/vpn"
 	"github.com/ironman0x7b2/sentinel-sdk/x/vpn/client/common"
 )
 
-// nolint:dupl
-func getAllSubscriptionsHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		res, err := common.QueryAllSubscriptions(cliCtx)
-		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
-			return
-		}
-
-		if string(res) == "[]" || string(res) == "null" {
-			rest.WriteErrorResponse(w, http.StatusBadRequest, "no subscriptions found")
-			return
-		}
-
-		var subscriptions []vpn.Subscription
-		if err := cdc.UnmarshalJSON(res, &subscriptions); err != nil {
-			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
-			return
-		}
-
-		rest.PostProcessResponse(w, cdc, res, cliCtx.Indent)
-	}
-}
-
-// nolint:dupl
 func getSubscriptionHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 
 		id := sdkTypes.NewIDFromString(vars["subscriptionID"])
-		res, err := common.QuerySubscription(cliCtx, cdc, id)
+		subscription, err := common.QuerySubscription(cliCtx, cdc, id)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
 		}
 
-		if string(res) == "null" {
-			rest.WriteErrorResponse(w, http.StatusBadRequest, "no subscriptions found")
-			return
-		}
-
-		rest.PostProcessResponse(w, cdc, res, cliCtx.Indent)
+		rest.PostProcessResponse(w, cdc, subscription, cliCtx.Indent)
 	}
 }
 
-// nolint:dupl
 func getSubscriptionsOfNodeHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 
 		id := sdkTypes.NewIDFromString(vars["nodeID"])
-		res, err := common.QuerySubscriptionsOfNode(cliCtx, cdc, id)
+		subscriptions, err := common.QuerySubscriptionsOfNode(cliCtx, cdc, id)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
 		}
 
-		if string(res) == "[]" || string(res) == "null" {
-			rest.WriteErrorResponse(w, http.StatusBadRequest, "no subscriptions found")
-			return
-		}
-
-		var subscriptions []vpn.Subscription
-		if err := cdc.UnmarshalJSON(res, &subscriptions); err != nil {
-			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
-			return
-		}
-
-		rest.PostProcessResponse(w, cdc, res, cliCtx.Indent)
+		rest.PostProcessResponse(w, cdc, subscriptions, cliCtx.Indent)
 	}
 }
 
@@ -97,23 +54,24 @@ func getSubscriptionsOfAddressHandlerFunc(cliCtx context.CLIContext, cdc *codec.
 			return
 		}
 
-		res, err := common.QuerySubscriptionsOfAddress(cliCtx, cdc, address)
+		subscriptions, err := common.QuerySubscriptionsOfAddress(cliCtx, cdc, address)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
 		}
 
-		if string(res) == "[]" || string(res) == "null" {
-			rest.WriteErrorResponse(w, http.StatusBadRequest, "no subscriptions found")
+		rest.PostProcessResponse(w, cdc, subscriptions, cliCtx.Indent)
+	}
+}
+
+func getAllSubscriptionsHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		subscriptions, err := common.QueryAllSubscriptions(cliCtx, cdc)
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
 		}
 
-		var subscriptions []vpn.Subscription
-		if err := cdc.UnmarshalJSON(res, &subscriptions); err != nil {
-			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
-			return
-		}
-
-		rest.PostProcessResponse(w, cdc, res, cliCtx.Indent)
+		rest.PostProcessResponse(w, cdc, subscriptions, cliCtx.Indent)
 	}
 }

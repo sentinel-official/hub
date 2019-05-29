@@ -30,17 +30,10 @@ func (msg MsgUpdateSessionInfo) ValidateBasic() csdkTypes.Error {
 	if !msg.Bandwidth.AllPositive() {
 		return ErrorInvalidField("bandwidth")
 	}
-
-	_msg := MsgUpdateSessionInfo{
-		SubscriptionID: msg.SubscriptionID,
-		Bandwidth:      msg.Bandwidth,
-	}
-	if msg.NodeOwnerSignature.Signature == nil || msg.NodeOwnerSignature.PubKey == nil ||
-		!msg.NodeOwnerSignature.VerifyBytes(_msg.GetSignBytes(), msg.NodeOwnerSignature.Signature) {
+	if msg.NodeOwnerSignature.Signature == nil || msg.NodeOwnerSignature.PubKey == nil {
 		return ErrorInvalidField("node_owner_signature")
 	}
-	if msg.ClientSignature.Signature == nil || msg.ClientSignature.PubKey == nil ||
-		!msg.ClientSignature.VerifyBytes(_msg.GetSignBytes(), msg.ClientSignature.Signature) {
+	if msg.ClientSignature.Signature == nil || msg.ClientSignature.PubKey == nil {
 		return ErrorInvalidField("client_signature")
 	}
 

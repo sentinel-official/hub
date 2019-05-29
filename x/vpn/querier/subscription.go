@@ -11,10 +11,11 @@ import (
 )
 
 const (
-	QuerySubscription           = "subscription"
-	QuerySubscriptionsOfNode    = "subscriptionsOfNode"
-	QuerySubscriptionsOfAddress = "subscriptionsOfAddress"
-	QueryAllSubscriptions       = "allSubscriptions"
+	QuerySubscription                = "subscription"
+	QuerySubscriptionsOfNode         = "subscriptionsOfNode"
+	QuerySubscriptionsOfAddress      = "subscriptionsOfAddress"
+	QueryAllSubscriptions            = "allSubscriptions"
+	QuerySessionsCountOfSubscription = "sessionsCountOfSubscription"
 )
 
 type QuerySubscriptionParams struct {
@@ -109,6 +110,34 @@ func queryAllSubscriptions(ctx csdkTypes.Context, cdc *codec.Codec, k keeper.Kee
 	subscriptions := k.GetAllSubscriptions(ctx)
 
 	res, resErr := cdc.MarshalJSON(subscriptions)
+	if resErr != nil {
+		return nil, types.ErrorMarshal()
+	}
+
+	return res, nil
+}
+
+type QuerySessionsCountOfSubscriptionParams struct {
+	ID sdkTypes.ID
+}
+
+func NewQuerySessionsCountOfSubscriptionParams(id sdkTypes.ID) QuerySessionsCountOfSubscriptionParams {
+	return QuerySessionsCountOfSubscriptionParams{
+		ID: id,
+	}
+}
+
+func querySessionsCountOfSubscription(ctx csdkTypes.Context, cdc *codec.Codec, req abciTypes.RequestQuery,
+	k keeper.Keeper) ([]byte, csdkTypes.Error) {
+
+	var params QuerySessionsCountOfSubscriptionParams
+	if err := cdc.UnmarshalJSON(req.Data, &params); err != nil {
+		return nil, types.ErrorUnmarshal()
+	}
+
+	count := k.GetSessionsCountOfSubscription(ctx, params.ID)
+
+	res, resErr := cdc.MarshalJSON(count)
 	if resErr != nil {
 		return nil, types.ErrorMarshal()
 	}

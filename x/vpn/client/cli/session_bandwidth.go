@@ -15,6 +15,7 @@ import (
 
 	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
 	"github.com/ironman0x7b2/sentinel-sdk/x/vpn"
+	"github.com/ironman0x7b2/sentinel-sdk/x/vpn/client/common"
 )
 
 func SignSessionBandwidthTxCmd(cdc *codec.Codec) *cobra.Command {
@@ -34,10 +35,12 @@ func SignSessionBandwidthTxCmd(cdc *codec.Codec) *cobra.Command {
 				Download: csdkTypes.NewInt(viper.GetInt64(flagDownload)),
 			}
 
-			msg := vpn.MsgUpdateSessionInfo{
-				SubscriptionID: id,
-				Bandwidth:      bandwidth,
+			scs, err := common.QuerySessionsCountOfSubscription(cliCtx, cdc, id)
+			if err != nil {
+				return err
 			}
+
+			data := vpn.NewBandwidthSignatureData(id, scs, bandwidth).Bytes()
 
 			passphrase, err := keys.GetPassphrase(cliCtx.FromName)
 			if err != nil {
@@ -49,7 +52,7 @@ func SignSessionBandwidthTxCmd(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			sigBytes, pubKey, err := kb.Sign(cliCtx.FromName, passphrase, msg.GetSignBytes())
+			sigBytes, pubKey, err := kb.Sign(cliCtx.FromName, passphrase, data)
 			if err != nil {
 				return err
 			}
