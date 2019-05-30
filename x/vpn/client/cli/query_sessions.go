@@ -9,7 +9,6 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
-	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
 	"github.com/ironman0x7b2/sentinel-sdk/x/vpn"
 	"github.com/ironman0x7b2/sentinel-sdk/x/vpn/client/common"
 )
@@ -22,9 +21,7 @@ func QuerySessionCmd(cdc *codec.Codec) *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cliCtx := context.NewCLIContext().WithCodec(cdc).WithAccountDecoder(cdc)
 
-			id := sdkTypes.NewIDFromString(args[0])
-
-			session, err := common.QuerySession(cliCtx, cdc, id)
+			session, err := common.QuerySession(cliCtx, cdc, args[0])
 			if err != nil {
 				return err
 			}
@@ -45,13 +42,12 @@ func QuerySessionsCmd(cdc *codec.Codec) *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cliCtx := context.NewCLIContext().WithCodec(cdc).WithAccountDecoder(cdc)
 
-			subscriptionID := viper.GetString(flagSubscriptionID)
+			id := viper.GetString(flagSubscriptionID)
 
 			var sessions []vpn.Session
 			var err error
 
-			if subscriptionID != "" {
-				id := sdkTypes.NewIDFromString(subscriptionID)
+			if id != "" {
 				sessions, err = common.QuerySessionsOfSubscription(cliCtx, cdc, id)
 			} else {
 				sessions, err = common.QueryAllSessions(cliCtx, cdc)

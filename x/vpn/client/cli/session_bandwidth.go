@@ -29,17 +29,18 @@ func SignSessionBandwidthTxCmd(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			id := sdkTypes.NewIDFromString(viper.GetString(flagSubscriptionID))
+			_id := viper.GetString(flagSubscriptionID)
 			bandwidth := sdkTypes.Bandwidth{
 				Upload:   csdkTypes.NewInt(viper.GetInt64(flagUpload)),
 				Download: csdkTypes.NewInt(viper.GetInt64(flagDownload)),
 			}
 
-			scs, err := common.QuerySessionsCountOfSubscription(cliCtx, cdc, id)
+			scs, err := common.QuerySessionsCountOfSubscription(cliCtx, cdc, _id)
 			if err != nil {
 				return err
 			}
 
+			id := sdkTypes.NewIDFromString(_id)
 			data := vpn.NewBandwidthSignatureData(id, scs, bandwidth).Bytes()
 
 			passphrase, err := keys.GetPassphrase(cliCtx.FromName)

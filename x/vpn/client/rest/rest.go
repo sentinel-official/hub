@@ -14,20 +14,20 @@ func RegisterRoutes(cliCtx context.CLIContext, r *mux.Router, cdc *codec.Codec) 
 func registerTxRoutes(cliCtx context.CLIContext, r *mux.Router, cdc *codec.Codec) {
 	r.HandleFunc("/nodes", registerNodeHandlerFunc(cliCtx, cdc)).
 		Methods("POST")
-	r.HandleFunc("/nodes/{nodeID}", deregisterNodeHandlerFunc(cliCtx, cdc)).
+	r.HandleFunc("/nodes/{id}", deregisterNodeHandlerFunc(cliCtx, cdc)).
 		Methods("DELETE")
-	r.HandleFunc("/nodes/{nodeID}/info", updateNodeInfoHandlerFunc(cliCtx, cdc)).
+	r.HandleFunc("/nodes/{id}/info", updateNodeInfoHandlerFunc(cliCtx, cdc)).
 		Methods("PUT")
-	r.HandleFunc("/nodes/{nodeID}/status", updateNodeStatusHandlerFunc(cliCtx, cdc)).
+	r.HandleFunc("/nodes/{id}/status", updateNodeStatusHandlerFunc(cliCtx, cdc)).
 		Methods("PUT")
-	r.HandleFunc("/nodes/{nodeID}/subscriptions", startSubscriptionHandlerFunc(cliCtx, cdc)).
+	r.HandleFunc("/nodes/{id}/subscriptions", startSubscriptionHandlerFunc(cliCtx, cdc)).
 		Methods("POST")
 
-	r.HandleFunc("/subscriptions/{subscriptionID}", endSubscriptionHandlerFunc(cliCtx, cdc)).
+	r.HandleFunc("/subscriptions/{id}", endSubscriptionHandlerFunc(cliCtx, cdc)).
 		Methods("DELETE")
-	r.HandleFunc("/subscriptions/{subscriptionID}/sessions/bandwidth/sign", signSessionBandwidthHandlerFunc(cliCtx, cdc)).
+	r.HandleFunc("/subscriptions/{id}/sessions/bandwidth/sign", signSessionBandwidthHandlerFunc(cliCtx, cdc)).
 		Methods("POST")
-	r.HandleFunc("/subscriptions/{subscriptionID}/sessions", updateSessionInfoHandlerFunc(cliCtx, cdc)).
+	r.HandleFunc("/subscriptions/{id}/sessions", updateSessionInfoHandlerFunc(cliCtx, cdc)).
 		Methods("PUT")
 
 }
@@ -35,21 +35,21 @@ func registerTxRoutes(cliCtx context.CLIContext, r *mux.Router, cdc *codec.Codec
 func registerQueryRoutes(cliCtx context.CLIContext, r *mux.Router, cdc *codec.Codec) {
 	r.HandleFunc("/nodes", getAllNodesHandlerFunc(cliCtx, cdc)).
 		Methods("GET")
-	r.HandleFunc("/nodes/{nodeID}", getNodeHandlerFunc(cliCtx, cdc)).
+	r.HandleFunc("/nodes/{id}", getNodeHandlerFunc(cliCtx, cdc)).
 		Methods("GET")
-	r.HandleFunc("/nodes/{nodeID}/subscriptions", getSubscriptionsOfNodeHandlerFunc(cliCtx, cdc)).
+	r.HandleFunc("/nodes/{id}/subscriptions", getSubscriptionsOfNodeHandlerFunc(cliCtx, cdc)).
 		Methods("GET")
 
 	r.HandleFunc("/subscriptions", getAllSubscriptionsHandlerFunc(cliCtx, cdc)).
 		Methods("GET")
-	r.HandleFunc("/subscriptions/{subscriptionID}", getSubscriptionHandlerFunc(cliCtx, cdc)).
+	r.HandleFunc("/subscriptions/{id}", getSubscriptionHandlerFunc(cliCtx, cdc)).
 		Methods("GET")
-	r.HandleFunc("/subscriptions/{subscriptionID}/sessions", getSessionsOfSubscriptionHandlerFunc(cliCtx, cdc)).
+	r.HandleFunc("/subscriptions/{id}/sessions", getSessionsOfSubscriptionHandlerFunc(cliCtx, cdc)).
 		Methods("GET")
 
 	r.HandleFunc("/sessions", getAllSessionsHandlerFunc(cliCtx, cdc)).
 		Methods("GET")
-	r.HandleFunc("/sessions/{sessionID}", getSessionHandlerFunc(cliCtx, cdc)).
+	r.HandleFunc("/sessions/{id}", getSessionHandlerFunc(cliCtx, cdc)).
 		Methods("GET")
 
 	r.HandleFunc("/accounts/{address}/subscriptions", getSubscriptionsOfAddressHandlerFunc(cliCtx, cdc)).

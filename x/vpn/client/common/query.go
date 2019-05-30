@@ -1,3 +1,4 @@
+// nolint:dupl
 package common
 
 import (
@@ -11,32 +12,37 @@ import (
 	"github.com/ironman0x7b2/sentinel-sdk/x/vpn"
 )
 
-// nolint:dupl
-func QueryNode(cliCtx context.CLIContext, cdc *codec.Codec, id sdkTypes.ID) (node vpn.Node, err error) {
+func QueryNode(cliCtx context.CLIContext, cdc *codec.Codec, _id string) (*vpn.Node, error) {
+	id := sdkTypes.NewIDFromString(_id)
 	params := vpn.NewQueryNodeParams(id)
 
 	paramBytes, err := cdc.MarshalJSON(params)
 	if err != nil {
-		return node, err
+		return nil, err
 	}
 
 	res, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s", vpn.QuerierRoute, vpn.QueryNode), paramBytes)
 	if err != nil {
-		return node, err
+		return nil, err
 	}
 	if res == nil {
-		return node, fmt.Errorf("no node found")
+		return nil, fmt.Errorf("no node found")
 	}
 
+	var node vpn.Node
 	if err = cdc.UnmarshalJSON(res, &node); err != nil {
-		return node, err
+		return nil, err
 	}
 
-	return node, nil
+	return &node, nil
 }
 
-// nolint:dupl
-func QueryNodesOfAddress(cliCtx context.CLIContext, cdc *codec.Codec, address csdkTypes.AccAddress) ([]vpn.Node, error) {
+func QueryNodesOfAddress(cliCtx context.CLIContext, cdc *codec.Codec, _address string) ([]vpn.Node, error) {
+	address, err := csdkTypes.AccAddressFromBech32(_address)
+	if err != nil {
+		return nil, err
+	}
+
 	params := vpn.NewQueryNodesOfAddressParams(address)
 
 	paramBytes, err := cdc.MarshalJSON(params)
@@ -77,32 +83,33 @@ func QueryAllNodes(cliCtx context.CLIContext, cdc *codec.Codec) ([]vpn.Node, err
 	return nodes, nil
 }
 
-// nolint:dupl
-func QuerySubscription(cliCtx context.CLIContext, cdc *codec.Codec, id sdkTypes.ID) (subscription vpn.Subscription, err error) {
+func QuerySubscription(cliCtx context.CLIContext, cdc *codec.Codec, _id string) (*vpn.Subscription, error) {
+	id := sdkTypes.NewIDFromString(_id)
 	params := vpn.NewQuerySubscriptionParams(id)
 
 	paramBytes, err := cdc.MarshalJSON(params)
 	if err != nil {
-		return subscription, err
+		return nil, err
 	}
 
 	res, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s", vpn.QuerierRoute, vpn.QuerySubscription), paramBytes)
 	if err != nil {
-		return subscription, err
+		return nil, err
 	}
 	if res == nil {
-		return subscription, fmt.Errorf("no subscription found")
+		return nil, fmt.Errorf("no subscription found")
 	}
 
+	var subscription vpn.Subscription
 	if err = cdc.UnmarshalJSON(res, &subscription); err != nil {
-		return subscription, err
+		return nil, err
 	}
 
-	return subscription, nil
+	return &subscription, nil
 }
 
-// nolint:dupl
-func QuerySubscriptionsOfNode(cliCtx context.CLIContext, cdc *codec.Codec, id sdkTypes.ID) ([]vpn.Subscription, error) {
+func QuerySubscriptionsOfNode(cliCtx context.CLIContext, cdc *codec.Codec, _id string) ([]vpn.Subscription, error) {
+	id := sdkTypes.NewIDFromString(_id)
 	params := vpn.NewQuerySubscriptionsOfNodePrams(id)
 
 	paramBytes, err := cdc.MarshalJSON(params)
@@ -126,8 +133,12 @@ func QuerySubscriptionsOfNode(cliCtx context.CLIContext, cdc *codec.Codec, id sd
 	return subscriptions, nil
 }
 
-// nolint:dupl
-func QuerySubscriptionsOfAddress(cliCtx context.CLIContext, cdc *codec.Codec, address csdkTypes.AccAddress) ([]vpn.Subscription, error) {
+func QuerySubscriptionsOfAddress(cliCtx context.CLIContext, cdc *codec.Codec, _address string) ([]vpn.Subscription, error) {
+	address, err := csdkTypes.AccAddressFromBech32(_address)
+	if err != nil {
+		return nil, err
+	}
+
 	params := vpn.NewQuerySubscriptionsOfAddressParams(address)
 
 	paramBytes, err := cdc.MarshalJSON(params)
@@ -168,55 +179,58 @@ func QueryAllSubscriptions(cliCtx context.CLIContext, cdc *codec.Codec) ([]vpn.S
 	return subscriptions, nil
 }
 
-func QuerySessionsCountOfSubscription(cliCtx context.CLIContext, cdc *codec.Codec, id sdkTypes.ID) (count uint64, err error) {
+func QuerySessionsCountOfSubscription(cliCtx context.CLIContext, cdc *codec.Codec, _id string) (uint64, error) {
+	id := sdkTypes.NewIDFromString(_id)
 	params := vpn.NewQuerySessionsCountOfSubscriptionParams(id)
 
 	paramBytes, err := cdc.MarshalJSON(params)
 	if err != nil {
-		return count, err
+		return 0, err
 	}
 
 	res, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s", vpn.QuerierRoute, vpn.QuerySessionsCountOfSubscription), paramBytes)
 	if err != nil {
-		return count, err
+		return 0, err
 	}
 	if res == nil {
-		return count, fmt.Errorf("no sessions count found")
+		return 0, fmt.Errorf("no sessions count found")
 	}
 
+	var count uint64
 	if err = cdc.UnmarshalJSON(res, &count); err != nil {
-		return count, err
+		return 0, err
 	}
 
 	return count, nil
 }
 
-// nolint:dupl
-func QuerySession(cliCtx context.CLIContext, cdc *codec.Codec, id sdkTypes.ID) (session vpn.Session, err error) {
+func QuerySession(cliCtx context.CLIContext, cdc *codec.Codec, _id string) (*vpn.Session, error) {
+	id := sdkTypes.NewIDFromString(_id)
 	params := vpn.NewQuerySessionParams(id)
 
 	paramBytes, err := cdc.MarshalJSON(params)
 	if err != nil {
-		return session, err
+		return nil, err
 	}
 
 	res, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s", vpn.QuerierRoute, vpn.QuerySession), paramBytes)
 	if err != nil {
-		return session, err
+		return nil, err
 	}
 	if res == nil {
-		return session, fmt.Errorf("no session found")
+		return nil, fmt.Errorf("no session found")
 	}
 
+	var session vpn.Session
 	if err = cdc.UnmarshalJSON(res, &session); err != nil {
-		return session, err
+		return nil, err
 	}
 
-	return session, nil
+	return &session, nil
 }
 
-// nolint:dupl
-func QuerySessionsOfSubscription(cliCtx context.CLIContext, cdc *codec.Codec, id sdkTypes.ID) ([]vpn.Session, error) {
+func QuerySessionsOfSubscription(cliCtx context.CLIContext, cdc *codec.Codec, _id string) ([]vpn.Session, error) {
+	id := sdkTypes.NewIDFromString(_id)
 	params := vpn.NewQuerySessionsOfSubscriptionPrams(id)
 
 	paramBytes, err := cdc.MarshalJSON(params)

@@ -1,3 +1,4 @@
+// nolint:dupl
 package cli
 
 import (
@@ -6,7 +7,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/codec"
-	csdkTypes "github.com/cosmos/cosmos-sdk/types"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
@@ -23,12 +23,7 @@ func QueryDepositsCmd(cdc *codec.Codec) *cobra.Command {
 			address := viper.GetString(flagAddress)
 
 			if address != "" {
-				_address, err := csdkTypes.AccAddressFromBech32(address)
-				if err != nil {
-					return err
-				}
-
-				deposit, err := common.QueryDepositOfAddress(cliCtx, cdc, _address)
+				deposit, err := common.QueryDepositOfAddress(cliCtx, cdc, address)
 				if err != nil {
 					return err
 				}

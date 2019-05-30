@@ -1,3 +1,4 @@
+// nolint:dupl
 package cli
 
 import (
@@ -5,16 +6,13 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/codec"
-	csdkTypes "github.com/cosmos/cosmos-sdk/types"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
-	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
 	"github.com/ironman0x7b2/sentinel-sdk/x/vpn"
 	"github.com/ironman0x7b2/sentinel-sdk/x/vpn/client/common"
 )
 
-// nolint:dupl
 func QueryNodeCmd(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "node",
@@ -23,9 +21,7 @@ func QueryNodeCmd(cdc *codec.Codec) *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cliCtx := context.NewCLIContext().WithCodec(cdc).WithAccountDecoder(cdc)
 
-			id := sdkTypes.NewIDFromString(args[0])
-
-			node, err := common.QueryNode(cliCtx, cdc, id)
+			node, err := common.QueryNode(cliCtx, cdc, args[0])
 			if err != nil {
 				return err
 			}
@@ -52,14 +48,7 @@ func QueryNodesCmd(cdc *codec.Codec) *cobra.Command {
 			var err error
 
 			if address != "" {
-				var _address csdkTypes.AccAddress
-
-				_address, err = csdkTypes.AccAddressFromBech32(address)
-				if err != nil {
-					return err
-				}
-
-				nodes, err = common.QueryNodesOfAddress(cliCtx, cdc, _address)
+				nodes, err = common.QueryNodesOfAddress(cliCtx, cdc, address)
 			} else {
 				nodes, err = common.QueryAllNodes(cliCtx, cdc)
 			}

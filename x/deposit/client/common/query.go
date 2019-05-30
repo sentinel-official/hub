@@ -1,3 +1,4 @@
+// nolint:dupl
 package common
 
 import (
@@ -10,28 +11,33 @@ import (
 	"github.com/ironman0x7b2/sentinel-sdk/x/deposit"
 )
 
-// nolint:dupl
-func QueryDepositOfAddress(cliCtx context.CLIContext, cdc *codec.Codec, address csdkTypes.AccAddress) (_deposit deposit.Deposit, err error) {
+func QueryDepositOfAddress(cliCtx context.CLIContext, cdc *codec.Codec, _address string) (*deposit.Deposit, error) {
+	address, err := csdkTypes.AccAddressFromBech32(_address)
+	if err != nil {
+		return nil, err
+	}
+
 	params := deposit.NewQueryDepositOfAddressParams(address)
 
 	paramBytes, err := cdc.MarshalJSON(params)
 	if err != nil {
-		return _deposit, err
+		return nil, err
 	}
 
 	res, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s", deposit.QuerierRoute, deposit.QueryDepositOfAddress), paramBytes)
 	if err != nil {
-		return _deposit, err
+		return nil, err
 	}
 	if res == nil {
-		return _deposit, fmt.Errorf("no deposit found")
+		return nil, fmt.Errorf("no deposit found")
 	}
 
+	var _deposit deposit.Deposit
 	if err = cdc.UnmarshalJSON(res, &_deposit); err != nil {
-		return _deposit, err
+		return nil, err
 	}
 
-	return _deposit, nil
+	return &_deposit, nil
 }
 
 func QueryAllDeposits(cliCtx context.CLIContext, cdc *codec.Codec) ([]deposit.Deposit, error) {
