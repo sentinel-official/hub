@@ -29,6 +29,7 @@ const (
 	QueryAllSubscriptions            = querier.QueryAllSubscriptions
 	QuerySessionsCountOfSubscription = querier.QuerySessionsCountOfSubscription
 	QuerySession                     = querier.QuerySession
+	QuerySessionOfSubscription       = querier.QuerySessionOfSubscription
 	QuerySessionsOfSubscription      = querier.QuerySessionsOfSubscription
 	QueryAllSessions                 = querier.QueryAllSessions
 )
@@ -55,6 +56,7 @@ type (
 	QuerySubscriptionsOfAddressParams      = querier.QuerySubscriptionsOfAddressParams
 	QuerySessionsCountOfSubscriptionParams = querier.QuerySessionsCountOfSubscriptionParams
 	QuerySessionParams                     = querier.QuerySessionParams
+	QuerySessionOfSubscriptionPrams        = querier.QuerySessionOfSubscriptionPrams
 	QuerySessionsOfSubscriptionPrams       = querier.QuerySessionsOfSubscriptionPrams
 )
 
@@ -118,5 +120,6 @@ var (
 	NewQuerySubscriptionsOfAddressParams      = querier.NewQuerySubscriptionsOfAddressParams
 	NewQuerySessionsCountOfSubscriptionParams = querier.NewQuerySessionsCountOfSubscriptionParams
 	NewQuerySessionParams                     = querier.NewQuerySessionParams
+	NewQuerySessionOfSubscriptionPrams        = querier.NewQuerySessionOfSubscriptionPrams
 	NewQuerySessionsOfSubscriptionPrams       = querier.NewQuerySessionsOfSubscriptionPrams
 )

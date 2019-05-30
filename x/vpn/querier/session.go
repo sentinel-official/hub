@@ -13,6 +13,7 @@ import (
 
 const (
 	QuerySession                = "session"
+	QuerySessionOfSubscription  = "sessionOfSubscription"
 	QuerySessionsOfSubscription = "sessionsOfSubscription"
 	QueryAllSessions            = "allSessions"
 )
@@ -37,6 +38,44 @@ func querySession(ctx csdkTypes.Context, cdc *codec.Codec, req abciTypes.Request
 	}
 
 	session, found := k.GetSession(ctx, params.ID)
+	if !found {
+		return nil, nil
+	}
+
+	res, resErr := cdc.MarshalJSON(session)
+	if resErr != nil {
+		return nil, types.ErrorMarshal()
+	}
+
+	return res, nil
+}
+
+type QuerySessionOfSubscriptionPrams struct {
+	ID    sdkTypes.ID
+	Index uint64
+}
+
+func NewQuerySessionOfSubscriptionPrams(id sdkTypes.ID, index uint64) QuerySessionOfSubscriptionPrams {
+	return QuerySessionOfSubscriptionPrams{
+		ID:    id,
+		Index: index,
+	}
+}
+
+func querySessionOfSubscription(ctx csdkTypes.Context, cdc *codec.Codec, req abciTypes.RequestQuery,
+	k keeper.Keeper) ([]byte, csdkTypes.Error) {
+
+	var params QuerySessionOfSubscriptionPrams
+	if err := cdc.UnmarshalJSON(req.Data, &params); err != nil {
+		return nil, types.ErrorUnmarshal()
+	}
+
+	id, found := k.GetSessionIDBySubscriptionID(ctx, params.ID, params.Index)
+	if !found {
+		return nil, nil
+	}
+
+	session, found := k.GetSession(ctx, id)
 	if !found {
 		return nil, nil
 	}

@@ -229,6 +229,31 @@ func QuerySession(cliCtx context.CLIContext, cdc *codec.Codec, _id string) (*vpn
 	return &session, nil
 }
 
+func QuerySessionOfSubscription(cliCtx context.CLIContext, cdc *codec.Codec, _id string, index uint64) (*vpn.Session, error) {
+	id := sdkTypes.NewIDFromString(_id)
+	params := vpn.NewQuerySessionOfSubscriptionPrams(id, index)
+
+	paramBytes, err := cdc.MarshalJSON(params)
+	if err != nil {
+		return nil, err
+	}
+
+	res, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s", vpn.QuerierRoute, vpn.QuerySessionOfSubscription), paramBytes)
+	if err != nil {
+		return nil, err
+	}
+	if res == nil {
+		return nil, fmt.Errorf("no session found")
+	}
+
+	var session vpn.Session
+	if err = cdc.UnmarshalJSON(res, &session); err != nil {
+		return nil, err
+	}
+
+	return &session, nil
+}
+
 func QuerySessionsOfSubscription(cliCtx context.CLIContext, cdc *codec.Codec, _id string) ([]vpn.Session, error) {
 	id := sdkTypes.NewIDFromString(_id)
 	params := vpn.NewQuerySessionsOfSubscriptionPrams(id)

@@ -31,6 +31,8 @@ func NewQuerier(k keeper.Keeper, cdc *codec.Codec) csdkTypes.Querier {
 			return querySessionsCountOfSubscription(ctx, cdc, req, k)
 		case QuerySession:
 			return querySession(ctx, cdc, req, k)
+		case QuerySessionOfSubscription:
+			return querySessionOfSubscription(ctx, cdc, req, k)
 		case QuerySessionsOfSubscription:
 			return querySessionsOfSubscription(ctx, cdc, req, k)
 		case QueryAllSessions:

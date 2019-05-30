@@ -19,8 +19,9 @@ func NewIDFromString(s string) ID {
 	return NewIDFromUInt64(i)
 }
 
-func (id ID) Uint64() uint64 { return uint64(id) }
-func (id ID) String() string { return fmt.Sprintf("%X", id.Uint64()) }
+func (id ID) Uint64() uint64      { return uint64(id) }
+func (id ID) String() string      { return fmt.Sprintf("%X", id.Uint64()) }
+func (id ID) IsEqual(_id ID) bool { return id.Uint64() == _id.Uint64() }
 
 type IDs []ID
 
