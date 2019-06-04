@@ -1,37 +1,46 @@
-PACKAGES = $(shell go list ./... | grep -v '/vendor/')
-VERSION = $(shell git rev-parse --short HEAD)
+PACKAGES := $(shell go list ./...)
+VERSION := $(shell git rev-parse --short HEAD)
 COMMIT := $(shell git log -1 --format='%H')
-CAT := $(if $(filter $(OS),Windows_NT),type,cat)
-BUILD_TAGS = netgo
-BUILD_FLAGS = -tags "${BUILD_TAGS}" -ldflags \
-	"-X github.com/ironman0x7b2/sentinel-sdk/version.Version=${VERSION} \
+GOSUM := $(shell which gosum)
+
+export GO111MODULE=on
+
+BUILD_TAGS := netgo
+BUILD_TAGS := $(strip ${BUILD_TAGS})
+
+LD_FLAGS := -s -w \
+	-X github.com/ironman0x7b2/sentinel-sdk/version.Version=${VERSION} \
 	-X github.com/ironman0x7b2/sentinel-sdk/version.Commit=${COMMIT} \
-	-X github.com/ironman0x7b2/sentinel-sdk/version.VendorDirHash=$(shell $(CAT) .vendor_version) \
-	-X github.com/ironman0x7b2/sentinel-sdk/version.BuildTags=${BUILD_TAGS} \
-	-s -w"
+	-X github.com/ironman0x7b2/sentinel-sdk/version.BuildTags=${BUILD_TAGS}
+ifneq ($(GOSUM),)
+	LD_FLAGS += -X github.com/ironman0x7b2/sentinel-sdk/version.VendorDirHash=$(shell ${GOSUM} go.sum)
+endif
 
-all: get_tools get_vendor_deps install test
+BUILD_FLAGS := -tags "${BUILD_TAGS}" -ldflags "${LD_FLAGS}"
 
-build:
-	go build $(BUILD_FLAGS) -o bin/hubd cmd/hubd/main.go
-	go build $(BUILD_FLAGS) -o bin/hubcli cmd/hubcli/main.go
+all: dep_verify install test
 
-install:
-	go install $(BUILD_FLAGS) ./cmd/hubd
-	go install $(BUILD_FLAGS) ./cmd/hubcli
+build: dep_verify
+	ifeq ($(OS),Windows_NT)
+		go build -mod=readonly ${BUILD_FLAGS} -o bin/hubd.exe cmd/hubd/main.go
+		go build -mod=readonly ${BUILD_FLAGS} -o bin/hubcli.exe cmd/hubcli/main.go
+	else
+		go build -mod=readonly ${BUILD_FLAGS} -o bin/hubd cmd/hubd/main.go
+		go build -mod=readonly ${BUILD_FLAGS} -o bin/hubcli cmd/hubcli/main.go
+	endif
 
-get_tools:
-	go get github.com/golang/dep/cmd/dep
-
-get_vendor_deps:
-	@rm -rf vendor/ .vendor-new/
-	@dep ensure -v
-	tar -c vendor/ | sha1sum | cut -d' ' -f1 > ".vendor_version"
+install: dep_verify
+	go install -mod=readonly ${BUILD_FLAGS} ./cmd/hubd
+	go install -mod=readonly ${BUILD_FLAGS} ./cmd/hubcli
 
 test:
-	@go test -cover $(PACKAGES)
+	@go test -mod=readonly -cover ${PACKAGES}
 
 benchmark:
-	@go test -bench=. $(PACKAGES)
+	@go test -mod=readonly -bench=. ${PACKAGES}
 
-.PHONY: all build get_tools get_vendor_deps test benchmark
+dep_verify:
+	@echo "--> Ensure dependencies have not been modified"
+	@go mod verify
+
+.PHONY: all build install test benchmark, go.sum

@@ -1,3 +1,4 @@
+// nolint
 package keeper
 
 import (
@@ -45,8 +46,8 @@ var (
 )
 
 var (
-	TestDepositPos   = types.Deposit{Address: TestAddress1, Coins: TestCoinsPos,}
-	TestDepositZero  = types.Deposit{Address: TestAddress1, Coins: TestCoinsZero,}
+	TestDepositPos   = types.Deposit{Address: TestAddress1, Coins: TestCoinsPos}
+	TestDepositZero  = types.Deposit{Address: TestAddress1, Coins: TestCoinsZero}
 	TestDepositEmpty = types.Deposit{}
 
 	TestDepositsPos   = []types.Deposit{TestDepositPos}
