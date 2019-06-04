@@ -163,11 +163,11 @@ func TestKeeper_GetSubscriptionsOfNode(t *testing.T) {
 	require.Equal(t, TestSubscriptionsEmpty, subscriptions)
 
 	keeper.SetSubscription(ctx, TestSubscriptionValid)
-	keeper.SetSubscriptionIDByAddress(ctx, TestAddress1, 0, TestIDPos)
-	keeper.SetSubscriptionIDByNodeID(ctx, TestIDPos, 0, TestIDPos)
-	keeper.SetSubscriptionsCountOfNode(ctx, TestIDPos, 1)
+	keeper.SetSubscriptionIDByAddress(ctx, TestAddress1, 0, TestSubscriptionValid.ID)
+	keeper.SetSubscriptionIDByNodeID(ctx, TestSubscriptionValid.ID, 0, TestIDZero)
+	keeper.SetSubscriptionsCountOfNode(ctx, TestIDZero, 1)
 
-	subscriptions = keeper.GetSubscriptionsOfNode(ctx, TestIDPos)
+	subscriptions = keeper.GetSubscriptionsOfNode(ctx, TestIDZero)
 	require.Equal(t, TestSubscriptionsValid, subscriptions)
 
 }
@@ -179,7 +179,7 @@ func TestKeeper_GetSubscriptionsOfAddress(t *testing.T) {
 	require.Equal(t, TestSubscriptionsEmpty, subscriptions)
 
 	keeper.SetSubscription(ctx, TestSubscriptionValid)
-	keeper.SetSubscriptionIDByAddress(ctx, TestAddress1, 0, TestIDPos)
+	keeper.SetSubscriptionIDByAddress(ctx, TestAddress1, 0, TestSubscriptionValid.ID)
 	keeper.SetSubscriptionsCountOfAddress(ctx, TestAddress1, 1)
 
 	subscriptions = keeper.GetSubscriptionsOfAddress(ctx, TestAddress1)

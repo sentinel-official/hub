@@ -149,9 +149,9 @@ func TestKeeper_GetSessionsOfSubscription(t *testing.T) {
 	require.Equal(t, TestSessionsEmpty, sessions)
 
 	keeper.SetSession(ctx, TestSessionValid)
-	keeper.SetSessionIDBySubscriptionID(ctx, TestIDPos, 0, TestIDPos)
-	keeper.SetSessionsCountOfSubscription(ctx, TestIDPos, 1)
-	sessions = keeper.GetSessionsOfSubscription(ctx, TestIDPos)
+	keeper.SetSessionIDBySubscriptionID(ctx, TestIDZero, 0, TestSessionValid.ID)
+	keeper.SetSessionsCountOfSubscription(ctx, TestSessionValid.ID, 1)
+	sessions = keeper.GetSessionsOfSubscription(ctx, TestSessionValid.ID)
 	require.Equal(t, TestSessionsValid, sessions)
 }
 

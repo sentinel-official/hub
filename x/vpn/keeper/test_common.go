@@ -22,9 +22,10 @@ import (
 var (
 	TestMonikerLenZero     = ""
 	TestMonikerValid       = "MONIKER"
+	TestNewMonikerValid    = "NEW_MONIKER"
 	TestMonikerLengthGT128 = "MONIKERMONIKERMONIKERMONIKERMONIKERMONIKERMONIKERMONIKERMONIKERMONIKERMONIKERMONIKERMONIKERMONIKERMONIKERMONIKERMONIKERMONIKERMONIKERMONIKER"
-	TestCoinPos            = csdkTypes.NewInt64Coin("stake", 10)
-	TestCoinNeg            = csdkTypes.Coin{"stake", csdkTypes.NewInt(-10)}
+	TestCoinPos            = csdkTypes.NewInt64Coin("stake", 100)
+	TestCoinNeg            = csdkTypes.Coin{"stake", csdkTypes.NewInt(-100)}
 	TestCoinZero           = csdkTypes.NewInt64Coin("stake", 0)
 	TestCoinEmpty          = csdkTypes.NewInt64Coin("empty", 0)
 	TestCoinNil            = csdkTypes.Coin{}
@@ -33,6 +34,7 @@ var (
 	TestCoinsZero          = csdkTypes.Coins{TestCoinZero, csdkTypes.NewInt64Coin("stake", 0)}
 	TestCoinsInvalid       = csdkTypes.Coins{csdkTypes.NewInt64Coin("stake", 100), TestCoinZero}
 	TestCoinsEmpty         = csdkTypes.Coins{}
+	TestCoinsNil           = csdkTypes.Coins(nil)
 	TestPrivKey1           = ed25519.GenPrivKey()
 	TestPrivKey2           = ed25519.GenPrivKey()
 	TestPubkey1            = TestPrivKey1.PubKey()
@@ -56,15 +58,19 @@ var (
 	TestNodeType           = "node_type"
 	TestVersion            = "version"
 	TestStatusInvalid      = "invalid"
-	TestIDPos              = sdkTypes.NewIDFromUInt64(1)
-	TestIDZero             = sdkTypes.NewIDFromUInt64(0)
-	TestIDsEmpty           = sdkTypes.IDs(nil)
-	TestIDsValid           = sdkTypes.IDs{TestIDPos}
+	TestNewNodeType        = "NEW_TYPE"
+	TestNewVersion         = "NEW_VERSION"
+	TestNewEncryption      = "NEW_ENCRYPTION"
+
+	TestIDPos    = sdkTypes.NewIDFromUInt64(1)
+	TestIDZero   = sdkTypes.NewIDFromUInt64(0)
+	TestIDsEmpty = sdkTypes.IDs(nil)
+	TestIDsValid = sdkTypes.IDs{TestIDPos}
 )
 
 var (
 	TestNodeValid = types.Node{
-		ID:               TestIDPos,
+		ID:               TestIDZero,
 		Owner:            TestAddress1,
 		Deposit:          TestCoinPos,
 		Type:             TestNodeType,
@@ -82,9 +88,9 @@ var (
 	TestNodesNil          = []types.Node(nil)
 	TestNodeTagsValid     = csdkTypes.EmptyTags().AppendTag("node_id", TestIDPos.String())
 	TestSubscriptionValid = types.Subscription{
-		ID:                 TestIDPos,
-		NodeID:             TestIDPos,
-		Client:             TestAddress1,
+		ID:                 TestIDZero,
+		NodeID:             TestIDZero,
+		Client:             TestAddress2,
 		PricePerGB:         TestCoinPos,
 		TotalDeposit:       TestCoinPos,
 		RemainingDeposit:   TestCoinPos,
@@ -97,8 +103,8 @@ var (
 	TestSubscriptionsEmpty = []types.Subscription{}
 	TestSubscriptionsNil   = []types.Subscription(nil)
 	TestSessionValid       = types.Session{
-		ID:               TestIDPos,
-		SubscriptionID:   TestIDPos,
+		ID:               TestIDZero,
+		SubscriptionID:   TestIDZero,
 		Bandwidth:        TestBandwidthPos1,
 		Status:           TestStatusInvalid,
 		StatusModifiedAt: 1,
@@ -107,6 +113,35 @@ var (
 	TestSessionsValid = []types.Session{TestSessionValid}
 	TestSessionsEmpty = []types.Session{}
 	TestSessionsNil   = []types.Session(nil)
+)
+
+var (
+	TestBandWidthSignDataPos1 = types.NewBandwidthSignatureData(TestIDZero, 1, TestBandwidthPos1)
+	TestBandWidthSignDataPos2 = types.NewBandwidthSignatureData(TestIDPos, 2, TestBandwidthPos2)
+	TestBandWidthSignDataNeg  = types.NewBandwidthSignatureData(TestIDPos, 0, TestBandwidthNeg)
+	TestBandWidthSignDataZero = types.NewBandwidthSignatureData(TestIDPos, 0, TestBandwidthZero)
+
+	TestNodeOwnerSignBandWidthPos1, _ = TestPrivKey1.Sign(TestBandWidthSignDataPos1.Bytes())
+	TestNodeOwnerSignBandWidthPos2, _ = TestPrivKey1.Sign(TestBandWidthSignDataPos2.Bytes())
+	TestNodeOwnerSignBandWidthNeg, _  = TestPrivKey1.Sign(TestBandWidthSignDataNeg.Bytes())
+	TestNodeOwnerSignBandWidthZero, _ = TestPrivKey1.Sign(TestBandWidthSignDataZero.Bytes())
+
+	TestClientSignBandWidthPos1, _ = TestPrivKey2.Sign(TestBandWidthSignDataPos1.Bytes())
+	TestClientSignBandWidthPos2, _ = TestPrivKey2.Sign(TestBandWidthSignDataPos2.Bytes())
+	TestClientSignBandWidthNeg, _  = TestPrivKey2.Sign(TestBandWidthSignDataNeg.Bytes())
+	TestClientSignBandWidthZero, _ = TestPrivKey2.Sign(TestBandWidthSignDataZero.Bytes())
+
+	TestNodeOwnerstdSignaturePos1 = auth.StdSignature{PubKey: TestPubkey1, Signature: TestNodeOwnerSignBandWidthPos1,}
+	TestNodeOwnerstdSignaturePos2 = auth.StdSignature{PubKey: TestPubkey1, Signature: TestNodeOwnerSignBandWidthPos2,}
+	TestNodeOwnerstdSignatureNeg  = auth.StdSignature{PubKey: TestPubkey1, Signature: TestNodeOwnerSignBandWidthNeg,}
+	TestNodeOwnerstdSignatureZero = auth.StdSignature{PubKey: TestPubkey1, Signature: TestNodeOwnerSignBandWidthZero,}
+
+	TestClientstdSignaturePos1 = auth.StdSignature{PubKey: TestPubkey2, Signature: TestClientSignBandWidthPos1,}
+	TestClientstdSignaturePos2 = auth.StdSignature{PubKey: TestPubkey2, Signature: TestClientSignBandWidthPos2,}
+	TestClientstdSignatureNeg  = auth.StdSignature{PubKey: TestPubkey2, Signature: TestClientSignBandWidthNeg,}
+	TestClientstdSignatureZero = auth.StdSignature{PubKey: TestPubkey2, Signature: TestClientSignBandWidthZero,}
+
+	TeststdSignatureEmpty = auth.StdSignature{}
 )
 
 func TestCreateInput() (csdkTypes.Context, *codec.Codec, deposit.Keeper, Keeper, auth.AccountKeeper, bank.BaseKeeper) {

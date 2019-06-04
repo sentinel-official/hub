@@ -149,7 +149,7 @@ func TestKeeper_GetNodesOfAddress(t *testing.T) {
 	require.Equal(t, TestNodesEmpty, nodes)
 
 	keeper.SetNode(ctx, TestNodeValid)
-	keeper.SetNodeIDByAddress(ctx, TestAddress1, 0, TestIDPos)
+	keeper.SetNodeIDByAddress(ctx, TestAddress1, 0, TestIDZero)
 	keeper.SetNodesCountOfAddress(ctx, TestAddress1, 1)
 
 	nodes = keeper.GetNodesOfAddress(ctx, TestAddress1)

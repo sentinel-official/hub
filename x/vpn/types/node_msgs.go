@@ -72,9 +72,9 @@ func (msg MsgRegisterNode) Route() string {
 
 func NewMsgRegisterNode(from csdkTypes.AccAddress,
 	_type, version, moniker string, pricesPerGB csdkTypes.Coins,
-	internetSpeed sdkTypes.Bandwidth, encryption string) MsgRegisterNode {
+	internetSpeed sdkTypes.Bandwidth, encryption string) *MsgRegisterNode {
 
-	return MsgRegisterNode{
+	return &MsgRegisterNode{
 		From:          from,
 		Type_:         _type,
 		Version:       version,
@@ -140,9 +140,9 @@ func (msg MsgUpdateNodeInfo) Route() string {
 
 func NewMsgUpdateNodeInfo(from csdkTypes.AccAddress, id sdkTypes.ID,
 	_type, version, moniker string, pricesPerGB csdkTypes.Coins,
-	internetSpeed sdkTypes.Bandwidth, encryption string) MsgUpdateNodeInfo {
+	internetSpeed sdkTypes.Bandwidth, encryption string) *MsgUpdateNodeInfo {
 
-	return MsgUpdateNodeInfo{
+	return &MsgUpdateNodeInfo{
 		From:          from,
 		ID:            id,
 		Type_:         _type,
@@ -194,10 +194,9 @@ func (msg MsgUpdateNodeStatus) Route() string {
 	return RouterKey
 }
 
-func NewMsgUpdateNodeStatus(from csdkTypes.AccAddress, id sdkTypes.ID,
-	status string) MsgUpdateNodeStatus {
+func NewMsgUpdateNodeStatus(from csdkTypes.AccAddress, id sdkTypes.ID, status string) *MsgUpdateNodeStatus {
 
-	return MsgUpdateNodeStatus{
+	return &MsgUpdateNodeStatus{
 		From:   from,
 		ID:     id,
 		Status: status,
@@ -240,8 +239,8 @@ func (msg MsgDeregisterNode) Route() string {
 	return RouterKey
 }
 
-func NewMsgDeregisterNode(from csdkTypes.AccAddress, id sdkTypes.ID) MsgDeregisterNode {
-	return MsgDeregisterNode{
+func NewMsgDeregisterNode(from csdkTypes.AccAddress, id sdkTypes.ID) *MsgDeregisterNode {
+	return &MsgDeregisterNode{
 		From: from,
 		ID:   id,
 	}
