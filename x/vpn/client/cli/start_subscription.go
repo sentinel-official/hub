@@ -4,12 +4,12 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/client/utils"
 	"github.com/cosmos/cosmos-sdk/codec"
-	csdkTypes "github.com/cosmos/cosmos-sdk/types"
+	csdk "github.com/cosmos/cosmos-sdk/types"
 	authTxBuilder "github.com/cosmos/cosmos-sdk/x/auth/client/txbuilder"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
-	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
+	sdk "github.com/ironman0x7b2/sentinel-sdk/types"
 	"github.com/ironman0x7b2/sentinel-sdk/x/vpn"
 )
 
@@ -25,10 +25,10 @@ func StartSubscriptionTxCmd(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			nodeID := sdkTypes.NewIDFromString(viper.GetString(flagNodeID))
+			nodeID := sdk.NewIDFromString(viper.GetString(flagNodeID))
 			deposit := viper.GetString(flagDeposit)
 
-			parsedDeposit, err := csdkTypes.ParseCoin(deposit)
+			parsedDeposit, err := csdk.ParseCoin(deposit)
 			if err != nil {
 				return err
 			}
@@ -36,7 +36,7 @@ func StartSubscriptionTxCmd(cdc *codec.Codec) *cobra.Command {
 			fromAddress := cliCtx.GetFromAddress()
 
 			msg := vpn.NewMsgStartSubscription(fromAddress, nodeID, parsedDeposit)
-			return utils.GenerateOrBroadcastMsgs(cliCtx, txBldr, []csdkTypes.Msg{msg}, false)
+			return utils.GenerateOrBroadcastMsgs(cliCtx, txBldr, []csdk.Msg{msg}, false)
 		},
 	}
 

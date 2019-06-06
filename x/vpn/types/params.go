@@ -3,7 +3,7 @@ package types
 import (
 	"fmt"
 
-	csdkTypes "github.com/cosmos/cosmos-sdk/types"
+	csdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/params"
 	"github.com/cosmos/cosmos-sdk/x/params/subspace"
 )
@@ -11,7 +11,7 @@ import (
 // nolint: gochecknoglobals
 var (
 	DefaultFreeNodesCount          uint64 = 5
-	DefaultDeposit                        = csdkTypes.NewInt64Coin("stake", 100)
+	DefaultDeposit                        = csdk.NewInt64Coin("stake", 100)
 	DefaultNodeInactiveInterval    int64  = 50
 	DefaultSessionInactiveInterval int64  = 25
 )
@@ -27,13 +27,13 @@ var (
 var _ params.ParamSet = (*Params)(nil)
 
 type Params struct {
-	FreeNodesCount          uint64         `json:"free_nodes_count"`
-	Deposit                 csdkTypes.Coin `json:"deposit"`
-	NodeInactiveInterval    int64          `json:"node_inactive_interval"`
-	SessionInactiveInterval int64          `json:"session_inactive_interval"`
+	FreeNodesCount          uint64    `json:"free_nodes_count"`
+	Deposit                 csdk.Coin `json:"deposit"`
+	NodeInactiveInterval    int64     `json:"node_inactive_interval"`
+	SessionInactiveInterval int64     `json:"session_inactive_interval"`
 }
 
-func NewParams(freeNodesCount uint64, deposit csdkTypes.Coin,
+func NewParams(freeNodesCount uint64, deposit csdk.Coin,
 	nodeInactiveInterval, sessionInactiveInterval int64) Params {
 
 	return Params{

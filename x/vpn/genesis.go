@@ -3,12 +3,12 @@ package vpn
 import (
 	"fmt"
 
-	csdkTypes "github.com/cosmos/cosmos-sdk/types"
+	csdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/ironman0x7b2/sentinel-sdk/x/vpn/types"
 )
 
-func InitGenesis(ctx csdkTypes.Context, k Keeper, data types.GenesisState) {
+func InitGenesis(ctx csdk.Context, k Keeper, data types.GenesisState) {
 	k.SetParams(ctx, data.Params)
 
 	for _, node := range data.Nodes {
@@ -46,7 +46,7 @@ func InitGenesis(ctx csdkTypes.Context, k Keeper, data types.GenesisState) {
 	}
 }
 
-func ExportGenesis(ctx csdkTypes.Context, k Keeper) types.GenesisState {
+func ExportGenesis(ctx csdk.Context, k Keeper) types.GenesisState {
 	params := k.GetParams(ctx)
 	nodes := k.GetAllNodes(ctx)
 	subscriptions := k.GetAllSubscriptions(ctx)

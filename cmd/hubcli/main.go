@@ -10,7 +10,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/lcd"
 	"github.com/cosmos/cosmos-sdk/client/rpc"
 	"github.com/cosmos/cosmos-sdk/client/tx"
-	csdkTypes "github.com/cosmos/cosmos-sdk/types"
+	csdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	authCli "github.com/cosmos/cosmos-sdk/x/auth/client/cli"
 	authRest "github.com/cosmos/cosmos-sdk/x/auth/client/rest"
@@ -49,13 +49,13 @@ import (
 func main() {
 	cdc := app.MakeCodec()
 
-	config := csdkTypes.GetConfig()
-	config.SetBech32PrefixForAccount(csdkTypes.Bech32PrefixAccAddr, csdkTypes.Bech32PrefixAccPub)
-	config.SetBech32PrefixForValidator(csdkTypes.Bech32PrefixValAddr, csdkTypes.Bech32PrefixValPub)
-	config.SetBech32PrefixForConsensusNode(csdkTypes.Bech32PrefixConsAddr, csdkTypes.Bech32PrefixConsPub)
+	config := csdk.GetConfig()
+	config.SetBech32PrefixForAccount(csdk.Bech32PrefixAccAddr, csdk.Bech32PrefixAccPub)
+	config.SetBech32PrefixForValidator(csdk.Bech32PrefixValAddr, csdk.Bech32PrefixValPub)
+	config.SetBech32PrefixForConsensusNode(csdk.Bech32PrefixConsAddr, csdk.Bech32PrefixConsPub)
 	config.Seal()
 
-	mc := []csdkTypes.ModuleClients{
+	mc := []csdk.ModuleClients{
 		govClient.NewModuleClient(gov.StoreKey, cdc),
 		distClient.NewModuleClient(distribution.StoreKey, cdc),
 		stakingClient.NewModuleClient(staking.StoreKey, cdc),
@@ -97,7 +97,7 @@ func main() {
 	}
 }
 
-func queryCmd(cdc *_amino.Codec, mc []csdkTypes.ModuleClients) *cobra.Command {
+func queryCmd(cdc *_amino.Codec, mc []csdk.ModuleClients) *cobra.Command {
 	queryCmd := &cobra.Command{
 		Use:     "query",
 		Aliases: []string{"q"},
@@ -123,7 +123,7 @@ func queryCmd(cdc *_amino.Codec, mc []csdkTypes.ModuleClients) *cobra.Command {
 	return queryCmd
 }
 
-func txCmd(cdc *_amino.Codec, mc []csdkTypes.ModuleClients) *cobra.Command {
+func txCmd(cdc *_amino.Codec, mc []csdk.ModuleClients) *cobra.Command {
 	txCmd := &cobra.Command{
 		Use:   "tx",
 		Short: "Transactions subcommands",

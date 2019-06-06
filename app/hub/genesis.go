@@ -12,7 +12,7 @@ import (
 	"time"
 
 	"github.com/cosmos/cosmos-sdk/codec"
-	csdkTypes "github.com/cosmos/cosmos-sdk/types"
+	csdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/cosmos/cosmos-sdk/x/bank"
 	"github.com/cosmos/cosmos-sdk/x/crisis"
@@ -21,7 +21,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/mint"
 	"github.com/cosmos/cosmos-sdk/x/slashing"
 	"github.com/cosmos/cosmos-sdk/x/staking"
-	tmTypes "github.com/tendermint/tendermint/types"
+	tm "github.com/tendermint/tendermint/types"
 
 	"github.com/ironman0x7b2/sentinel-sdk/x/deposit"
 	"github.com/ironman0x7b2/sentinel-sdk/x/vpn"
@@ -89,15 +89,15 @@ func (gs GenesisState) Sanitize() {
 }
 
 type GenesisAccount struct {
-	Address          csdkTypes.AccAddress `json:"address"`
-	Coins            csdkTypes.Coins      `json:"coins"`
-	Sequence         uint64               `json:"sequence_number"`
-	AccountNumber    uint64               `json:"account_number"`
-	OriginalVesting  csdkTypes.Coins      `json:"original_vesting"`
-	DelegatedFree    csdkTypes.Coins      `json:"delegated_free"`
-	DelegatedVesting csdkTypes.Coins      `json:"delegated_vesting"`
-	StartTime        int64                `json:"start_time"`
-	EndTime          int64                `json:"end_time"`
+	Address          csdk.AccAddress `json:"address"`
+	Coins            csdk.Coins      `json:"coins"`
+	Sequence         uint64          `json:"sequence_number"`
+	AccountNumber    uint64          `json:"account_number"`
+	OriginalVesting  csdk.Coins      `json:"original_vesting"`
+	DelegatedFree    csdk.Coins      `json:"delegated_free"`
+	DelegatedVesting csdk.Coins      `json:"delegated_vesting"`
+	StartTime        int64           `json:"start_time"`
+	EndTime          int64           `json:"end_time"`
 }
 
 func NewGenesisAccount(acc *auth.BaseAccount) GenesisAccount {
@@ -163,7 +163,7 @@ func (ga *GenesisAccount) ToAccount() auth.Account {
 	return baseAccount
 }
 
-func GenGenesisState(cdc *codec.Codec, genesisDoc tmTypes.GenesisDoc,
+func GenGenesisState(cdc *codec.Codec, genesisDoc tm.GenesisDoc,
 	appGenTxs []json.RawMessage) (genesisState GenesisState, err error) {
 
 	if err = cdc.UnmarshalJSON(genesisDoc.AppState, &genesisState); err != nil {
@@ -294,7 +294,7 @@ func validateGenesisStateAccounts(accounts []GenesisAccount) error {
 	return nil
 }
 
-func GenGenesisStateJSON(cdc *codec.Codec, genDoc tmTypes.GenesisDoc,
+func GenGenesisStateJSON(cdc *codec.Codec, genDoc tm.GenesisDoc,
 	appGenTxs []json.RawMessage) (appState json.RawMessage, err error) {
 
 	genesisState, err := GenGenesisState(cdc, genDoc, appGenTxs)
@@ -306,7 +306,7 @@ func GenGenesisStateJSON(cdc *codec.Codec, genDoc tmTypes.GenesisDoc,
 }
 
 func CollectStdTxs(cdc *codec.Codec, moniker string, genTxsDir string,
-	genDoc tmTypes.GenesisDoc) (appGenTxs []auth.StdTx, persistentPeers string, err error) {
+	genDoc tm.GenesisDoc) (appGenTxs []auth.StdTx, persistentPeers string, err error) {
 
 	var fos []os.FileInfo
 	fos, err = ioutil.ReadDir(genTxsDir)
@@ -358,7 +358,7 @@ func CollectStdTxs(cdc *codec.Codec, moniker string, genTxsDir string,
 
 		msg := msgs[0].(staking.MsgCreateValidator)
 		delAddr := msg.DelegatorAddress.String()
-		valAddr := csdkTypes.AccAddress(msg.ValidatorAddress).String()
+		valAddr := csdk.AccAddress(msg.ValidatorAddress).String()
 
 		delAcc, delOk := addrMap[delAddr]
 		_, valOk := addrMap[valAddr]

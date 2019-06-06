@@ -4,29 +4,29 @@ import (
 	"encoding/json"
 	"fmt"
 
-	csdkTypes "github.com/cosmos/cosmos-sdk/types"
+	csdk "github.com/cosmos/cosmos-sdk/types"
 
-	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
+	sdk "github.com/ironman0x7b2/sentinel-sdk/types"
 )
 
 type Subscription struct {
-	ID                 sdkTypes.ID          `json:"id"`
-	NodeID             sdkTypes.ID          `json:"node_id"`
-	Client             csdkTypes.AccAddress `json:"client"`
-	PricePerGB         csdkTypes.Coin       `json:"price_per_gb"`
-	TotalDeposit       csdkTypes.Coin       `json:"total_deposit"`
-	RemainingDeposit   csdkTypes.Coin       `json:"remaining_deposit"`
-	RemainingBandwidth sdkTypes.Bandwidth   `json:"remaining_bandwidth"`
-	Status             string               `json:"status"`
-	StatusModifiedAt   int64                `json:"status_modified_at"`
+	ID                 sdk.ID          `json:"id"`
+	NodeID             sdk.ID          `json:"node_id"`
+	Client             csdk.AccAddress `json:"client"`
+	PricePerGB         csdk.Coin       `json:"price_per_gb"`
+	TotalDeposit       csdk.Coin       `json:"total_deposit"`
+	RemainingDeposit   csdk.Coin       `json:"remaining_deposit"`
+	RemainingBandwidth sdk.Bandwidth   `json:"remaining_bandwidth"`
+	Status             string          `json:"status"`
+	StatusModifiedAt   int64           `json:"status_modified_at"`
 }
 
-func (s Subscription) TotalBandwidth() sdkTypes.Bandwidth {
+func (s Subscription) TotalBandwidth() sdk.Bandwidth {
 	x := s.TotalDeposit.Amount.
-		Mul(sdkTypes.MB500).
+		Mul(sdk.MB500).
 		Quo(s.PricePerGB.Amount)
 
-	return sdkTypes.NewBandwidth(x, x)
+	return sdk.NewBandwidth(x, x)
 }
 
 func (s Subscription) String() string {
@@ -70,12 +70,12 @@ func (s Subscription) IsValid() error {
 }
 
 type BandwidthSignatureData struct {
-	ID        sdkTypes.ID        `json:"id"`
-	Index     uint64             `json:"index"`
-	Bandwidth sdkTypes.Bandwidth `json:"bandwidth"`
+	ID        sdk.ID        `json:"id"`
+	Index     uint64        `json:"index"`
+	Bandwidth sdk.Bandwidth `json:"bandwidth"`
 }
 
-func NewBandwidthSignatureData(id sdkTypes.ID, index uint64, bandwidth sdkTypes.Bandwidth) BandwidthSignatureData {
+func NewBandwidthSignatureData(id sdk.ID, index uint64, bandwidth sdk.Bandwidth) BandwidthSignatureData {
 	return BandwidthSignatureData{
 		ID:        id,
 		Index:     index,

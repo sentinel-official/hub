@@ -6,64 +6,63 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/store"
-	csdkTypes "github.com/cosmos/cosmos-sdk/types"
+	csdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/cosmos/cosmos-sdk/x/bank"
 	"github.com/cosmos/cosmos-sdk/x/params"
 	"github.com/stretchr/testify/require"
-	abciTypes "github.com/tendermint/tendermint/abci/types"
+	abci "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/crypto/ed25519"
 	tmDB "github.com/tendermint/tendermint/libs/db"
 	"github.com/tendermint/tendermint/libs/log"
 
 	"github.com/ironman0x7b2/sentinel-sdk/x/deposit/types"
-	vpnTypes "github.com/ironman0x7b2/sentinel-sdk/x/vpn/types"
 )
 
 var (
-	testCoinPos      = csdkTypes.NewInt64Coin("stake", 10)
-	testCoinNeg      = csdkTypes.Coin{Denom: "stake", Amount: csdkTypes.NewInt(-10)}
-	testCoinZero     = csdkTypes.NewInt64Coin("stake", 0)
-	testCoinsPos     = csdkTypes.Coins{testCoinPos}
-	testCoinsNeg     = csdkTypes.Coins{testCoinNeg, csdkTypes.Coin{Denom: "stake", Amount: csdkTypes.NewInt(-100)}}
-	testCoinsZero    = csdkTypes.Coins{testCoinZero, csdkTypes.NewInt64Coin("stake", 0)}
-	testCoinsEmpty   = csdkTypes.Coins{}
-	testCoinsNil     = csdkTypes.Coins(nil)
+	testCoinPos      = csdk.NewInt64Coin("stake", 10)
+	testCoinNeg      = csdk.Coin{Denom: "stake", Amount: csdk.NewInt(-10)}
+	testCoinZero     = csdk.NewInt64Coin("stake", 0)
+	testCoinsPos     = csdk.Coins{testCoinPos}
+	testCoinsNeg     = csdk.Coins{testCoinNeg, csdk.Coin{Denom: "stake", Amount: csdk.NewInt(-100)}}
+	testCoinsZero    = csdk.Coins{testCoinZero, csdk.NewInt64Coin("stake", 0)}
+	testCoinsEmpty   = csdk.Coins{}
+	testCoinsNil     = csdk.Coins(nil)
 	testPrivKey1     = ed25519.GenPrivKey()
 	testPrivKey2     = ed25519.GenPrivKey()
 	testPubKey1      = testPrivKey1.PubKey()
 	testPubKey2      = testPrivKey2.PubKey()
-	testAddress1     = csdkTypes.AccAddress(testPubKey1.Address())
-	testAddress2     = csdkTypes.AccAddress(testPubKey2.Address())
-	testAddressEmpty = csdkTypes.AccAddress([]byte(""))
+	testAddress1     = csdk.AccAddress(testPubKey1.Address())
+	testAddress2     = csdk.AccAddress(testPubKey2.Address())
+	testAddressEmpty = csdk.AccAddress([]byte(""))
 	testDepositPos   = types.Deposit{Address: testAddress1, Coins: testCoinsPos}
 	testDepositZero  = types.Deposit{Address: testAddress1, Coins: testCoinsZero}
 	testDepositEmpty = types.Deposit{}
-	testDepositNil   = types.Deposit{Coins: csdkTypes.Coins(nil)}
+	testDepositNil   = types.Deposit{Coins: csdk.Coins(nil)}
 	testDepositsPos  = []types.Deposit{testDepositPos}
 	testDepositsZero = []types.Deposit{testDepositZero}
 	testDepositsNil  = []types.Deposit(nil)
 )
 
-func testCreateInput() (csdkTypes.Context, Keeper, bank.BaseKeeper) {
-	keyDeposits := csdkTypes.NewKVStoreKey("deposits")
-	keyAccount := csdkTypes.NewKVStoreKey("acc")
-	keyParams := csdkTypes.NewKVStoreKey("params")
-	tkeyParams := csdkTypes.NewTransientStoreKey("tparams")
+func testCreateInput() (csdk.Context, Keeper, bank.BaseKeeper) {
+	keyDeposits := csdk.NewKVStoreKey("deposits")
+	keyAccount := csdk.NewKVStoreKey("acc")
+	keyParams := csdk.NewKVStoreKey("params")
+	tkeyParams := csdk.NewTransientStoreKey("tparams")
 
 	db := tmDB.NewMemDB()
 	ms := store.NewCommitMultiStore(db)
-	ms.MountStoreWithDB(keyDeposits, csdkTypes.StoreTypeIAVL, db)
-	ms.MountStoreWithDB(keyAccount, csdkTypes.StoreTypeIAVL, db)
-	ms.MountStoreWithDB(keyParams, csdkTypes.StoreTypeIAVL, db)
-	ms.MountStoreWithDB(tkeyParams, csdkTypes.StoreTypeTransient, db)
+	ms.MountStoreWithDB(keyDeposits, csdk.StoreTypeIAVL, db)
+	ms.MountStoreWithDB(keyAccount, csdk.StoreTypeIAVL, db)
+	ms.MountStoreWithDB(keyParams, csdk.StoreTypeIAVL, db)
+	ms.MountStoreWithDB(tkeyParams, csdk.StoreTypeTransient, db)
 	err := ms.LoadLatestVersion()
 	if err != nil {
 		panic(err)
 	}
 
 	cdc := testMakeCodec()
-	ctx := csdkTypes.NewContext(ms, abciTypes.Header{ChainID: "chain-id"}, false, log.NewNopLogger())
+	ctx := csdk.NewContext(ms, abci.Header{ChainID: "chain-id"}, false, log.NewNopLogger())
 
 	paramsKeeper := params.NewKeeper(cdc, keyParams, tkeyParams)
 	accountKeeper := auth.NewAccountKeeper(cdc, keyAccount, paramsKeeper.Subspace(auth.DefaultParamspace), auth.ProtoBaseAccount)
@@ -75,7 +74,6 @@ func testCreateInput() (csdkTypes.Context, Keeper, bank.BaseKeeper) {
 
 func testMakeCodec() *codec.Codec {
 	var cdc = codec.New()
-	vpnTypes.RegisterCodec(cdc)
 	auth.RegisterBaseAccount(cdc)
 	return cdc
 }

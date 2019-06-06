@@ -4,23 +4,23 @@ import (
 	"fmt"
 	"math/big"
 
-	csdkTypes "github.com/cosmos/cosmos-sdk/types"
+	csdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 // nolint:gochecknoglobals
 var (
-	KB    = csdkTypes.NewInt(1000)
+	KB    = csdk.NewInt(1000)
 	MB    = KB.MulRaw(1000)
 	MB500 = MB.MulRaw(500)
 	GB    = MB.MulRaw(1000)
 )
 
 type Bandwidth struct {
-	Upload   csdkTypes.Int `json:"upload"`
-	Download csdkTypes.Int `json:"download"`
+	Upload   csdk.Int `json:"upload"`
+	Download csdk.Int `json:"download"`
 }
 
-func NewBandwidth(upload, download csdkTypes.Int) Bandwidth {
+func NewBandwidth(upload, download csdk.Int) Bandwidth {
 	return Bandwidth{
 		Upload:   upload,
 		Download: download,
@@ -31,25 +31,25 @@ func (b Bandwidth) String() string {
 	return fmt.Sprintf("%d upload, %d download", b.Upload.Int64(), b.Download.Int64())
 }
 
-func (b Bandwidth) CeilTo(precision csdkTypes.Int) Bandwidth {
+func (b Bandwidth) CeilTo(precision csdk.Int) Bandwidth {
 	_b := Bandwidth{
-		Upload: precision.Sub(csdkTypes.NewIntFromBigInt(
+		Upload: precision.Sub(csdk.NewIntFromBigInt(
 			big.NewInt(0).Rem(b.Upload.BigInt(), precision.BigInt()))),
-		Download: precision.Sub(csdkTypes.NewIntFromBigInt(
+		Download: precision.Sub(csdk.NewIntFromBigInt(
 			big.NewInt(0).Rem(b.Download.BigInt(), precision.BigInt()))),
 	}
 
 	if _b.Upload.Equal(precision) {
-		_b.Upload = csdkTypes.NewInt(0)
+		_b.Upload = csdk.NewInt(0)
 	}
 	if _b.Download.Equal(precision) {
-		_b.Download = csdkTypes.NewInt(0)
+		_b.Download = csdk.NewInt(0)
 	}
 
 	return b.Add(_b)
 }
 
-func (b Bandwidth) Sum() csdkTypes.Int {
+func (b Bandwidth) Sum() csdk.Int {
 	return b.Upload.Add(b.Download)
 }
 
@@ -102,10 +102,10 @@ func (b Bandwidth) AnyNegative() bool {
 }
 
 func (b Bandwidth) AnyNil() bool {
-	return b.Upload == csdkTypes.Int{} ||
-		b.Download == csdkTypes.Int{}
+	return b.Upload == csdk.Int{} ||
+		b.Download == csdk.Int{}
 }
 
 func NewBandwidthFromInt64(upload, download int64) Bandwidth {
-	return NewBandwidth(csdkTypes.NewInt(upload), csdkTypes.NewInt(download))
+	return NewBandwidth(csdk.NewInt(upload), csdk.NewInt(download))
 }

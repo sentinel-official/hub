@@ -6,7 +6,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/keys"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/server"
-	csdkTypes "github.com/cosmos/cosmos-sdk/types"
+	csdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -25,7 +25,7 @@ func AddGenesisAccountCmd(ctx *server.Context, cdc *codec.Codec) *cobra.Command 
 			config := ctx.Config
 			config.SetRoot(viper.GetString(cli.HomeFlag))
 
-			addr, err := csdkTypes.AccAddressFromBech32(args[0])
+			addr, err := csdk.AccAddressFromBech32(args[0])
 			if err != nil {
 				kb, err := keys.NewKeyBaseFromDir(viper.GetString(flagClientHome))
 				if err != nil {
@@ -40,14 +40,14 @@ func AddGenesisAccountCmd(ctx *server.Context, cdc *codec.Codec) *cobra.Command 
 				addr = info.GetAddress()
 			}
 
-			coins, err := csdkTypes.ParseCoins(args[1])
+			coins, err := csdk.ParseCoins(args[1])
 			if err != nil {
 				return err
 			}
 
 			vestingStart := viper.GetInt64(flagVestingStart)
 			vestingEnd := viper.GetInt64(flagVestingEnd)
-			vestingAmt, err := csdkTypes.ParseCoins(viper.GetString(flagVestingAmt))
+			vestingAmt, err := csdk.ParseCoins(viper.GetString(flagVestingAmt))
 			if err != nil {
 				return err
 			}
@@ -90,8 +90,8 @@ func AddGenesisAccountCmd(ctx *server.Context, cdc *codec.Codec) *cobra.Command 
 	return cmd
 }
 
-func addGenesisAccount(cdc *codec.Codec, appState app.GenesisState, addr csdkTypes.AccAddress,
-	coins, vestingAmt csdkTypes.Coins, vestingStart, vestingEnd int64) (app.GenesisState, error) {
+func addGenesisAccount(cdc *codec.Codec, appState app.GenesisState, addr csdk.AccAddress,
+	coins, vestingAmt csdk.Coins, vestingStart, vestingEnd int64) (app.GenesisState, error) {
 
 	for _, stateAcc := range appState.Accounts {
 		if stateAcc.Address.Equals(addr) {

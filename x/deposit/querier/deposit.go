@@ -3,8 +3,8 @@ package querier
 import (
 	"github.com/cosmos/cosmos-sdk/codec"
 
-	csdkTypes "github.com/cosmos/cosmos-sdk/types"
-	abciTypes "github.com/tendermint/tendermint/abci/types"
+	csdk "github.com/cosmos/cosmos-sdk/types"
+	abci "github.com/tendermint/tendermint/abci/types"
 
 	"github.com/ironman0x7b2/sentinel-sdk/x/deposit/keeper"
 	"github.com/ironman0x7b2/sentinel-sdk/x/vpn/types"
@@ -16,18 +16,18 @@ const (
 )
 
 type QueryDepositOfAddressPrams struct {
-	Address csdkTypes.AccAddress
+	Address csdk.AccAddress
 }
 
-func NewQueryDepositOfAddressParams(address csdkTypes.AccAddress) QueryDepositOfAddressPrams {
+func NewQueryDepositOfAddressParams(address csdk.AccAddress) QueryDepositOfAddressPrams {
 	return QueryDepositOfAddressPrams{
 		Address: address,
 	}
 }
 
 // nolint:dupl
-func queryDepositOfAddress(ctx csdkTypes.Context, cdc *codec.Codec, req abciTypes.RequestQuery,
-	k keeper.Keeper) ([]byte, csdkTypes.Error) {
+func queryDepositOfAddress(ctx csdk.Context, cdc *codec.Codec, req abci.RequestQuery,
+	k keeper.Keeper) ([]byte, csdk.Error) {
 
 	var params QueryDepositOfAddressPrams
 	if err := cdc.UnmarshalJSON(req.Data, &params); err != nil {
@@ -47,7 +47,7 @@ func queryDepositOfAddress(ctx csdkTypes.Context, cdc *codec.Codec, req abciType
 	return res, nil
 }
 
-func queryAllDeposits(ctx csdkTypes.Context, cdc *codec.Codec, k keeper.Keeper) ([]byte, csdkTypes.Error) {
+func queryAllDeposits(ctx csdk.Context, cdc *codec.Codec, k keeper.Keeper) ([]byte, csdk.Error) {
 	deposits := k.GetAllDeposits(ctx)
 
 	res, resErr := cdc.MarshalJSON(deposits)

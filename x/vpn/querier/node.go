@@ -3,10 +3,10 @@ package querier
 
 import (
 	"github.com/cosmos/cosmos-sdk/codec"
-	csdkTypes "github.com/cosmos/cosmos-sdk/types"
-	abciTypes "github.com/tendermint/tendermint/abci/types"
+	csdk "github.com/cosmos/cosmos-sdk/types"
+	abci "github.com/tendermint/tendermint/abci/types"
 
-	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
+	sdk "github.com/ironman0x7b2/sentinel-sdk/types"
 	"github.com/ironman0x7b2/sentinel-sdk/x/vpn/keeper"
 	"github.com/ironman0x7b2/sentinel-sdk/x/vpn/types"
 )
@@ -18,18 +18,18 @@ const (
 )
 
 type QueryNodeParams struct {
-	ID sdkTypes.ID
+	ID sdk.ID
 }
 
-func NewQueryNodeParams(id sdkTypes.ID) QueryNodeParams {
+func NewQueryNodeParams(id sdk.ID) QueryNodeParams {
 	return QueryNodeParams{
 		ID: id,
 	}
 }
 
 // nolint:dupl
-func queryNode(ctx csdkTypes.Context, cdc *codec.Codec, req abciTypes.RequestQuery,
-	k keeper.Keeper) ([]byte, csdkTypes.Error) {
+func queryNode(ctx csdk.Context, cdc *codec.Codec, req abci.RequestQuery,
+	k keeper.Keeper) ([]byte, csdk.Error) {
 
 	var params QueryNodeParams
 	if err := cdc.UnmarshalJSON(req.Data, &params); err != nil {
@@ -50,17 +50,17 @@ func queryNode(ctx csdkTypes.Context, cdc *codec.Codec, req abciTypes.RequestQue
 }
 
 type QueryNodesOfAddressPrams struct {
-	Address csdkTypes.AccAddress
+	Address csdk.AccAddress
 }
 
-func NewQueryNodesOfAddressParams(address csdkTypes.AccAddress) QueryNodesOfAddressPrams {
+func NewQueryNodesOfAddressParams(address csdk.AccAddress) QueryNodesOfAddressPrams {
 	return QueryNodesOfAddressPrams{
 		Address: address,
 	}
 }
 
-func queryNodesOfAddress(ctx csdkTypes.Context, cdc *codec.Codec, req abciTypes.RequestQuery,
-	k keeper.Keeper) ([]byte, csdkTypes.Error) {
+func queryNodesOfAddress(ctx csdk.Context, cdc *codec.Codec, req abci.RequestQuery,
+	k keeper.Keeper) ([]byte, csdk.Error) {
 
 	var params QueryNodesOfAddressPrams
 	if err := cdc.UnmarshalJSON(req.Data, &params); err != nil {
@@ -77,7 +77,7 @@ func queryNodesOfAddress(ctx csdkTypes.Context, cdc *codec.Codec, req abciTypes.
 	return res, nil
 }
 
-func queryAllNodes(ctx csdkTypes.Context, cdc *codec.Codec, k keeper.Keeper) ([]byte, csdkTypes.Error) {
+func queryAllNodes(ctx csdk.Context, cdc *codec.Codec, k keeper.Keeper) ([]byte, csdk.Error) {
 	nodes := k.GetAllNodes(ctx)
 
 	res, resErr := cdc.MarshalJSON(nodes)

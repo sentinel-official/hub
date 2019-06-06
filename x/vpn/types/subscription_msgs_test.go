@@ -5,7 +5,7 @@ import (
 	"reflect"
 	"testing"
 
-	csdkTypes "github.com/cosmos/cosmos-sdk/types"
+	csdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
 )
 
@@ -13,7 +13,7 @@ func TestMsgStartSubscription_ValidateBasic(t *testing.T) {
 	tests := []struct {
 		name string
 		msg  *MsgStartSubscription
-		want csdkTypes.Error
+		want csdk.Error
 	}{
 		{
 			"from is nil",
@@ -59,7 +59,7 @@ func TestMsgStartSubscription_GetSignBytes(t *testing.T) {
 
 func TestMsgStartSubscription_GetSigners(t *testing.T) {
 	msg := NewMsgStartSubscription(TestAddress1, TestIDPos, TestCoinPos)
-	require.Equal(t, []csdkTypes.AccAddress{TestAddress1}, msg.GetSigners())
+	require.Equal(t, []csdk.AccAddress{TestAddress1}, msg.GetSigners())
 }
 
 func TestMsgStartSubscription_Type(t *testing.T) {
@@ -76,7 +76,7 @@ func TestMsgEndSubscription_ValidateBasic(t *testing.T) {
 	tests := []struct {
 		name string
 		msg  *MsgEndSubscription
-		want csdkTypes.Error
+		want csdk.Error
 	}{
 		{
 			"from is nil",
@@ -114,7 +114,7 @@ func TestMsgEndSubscription_GetSignBytes(t *testing.T) {
 
 func TestMsgEndSubscription_GetSigners(t *testing.T) {
 	msg := NewMsgEndSubscription(TestAddress1, TestIDPos)
-	require.Equal(t, []csdkTypes.AccAddress{TestAddress1}, msg.GetSigners())
+	require.Equal(t, []csdk.AccAddress{TestAddress1}, msg.GetSigners())
 }
 
 func TestMsgEndSubscription_Type(t *testing.T) {

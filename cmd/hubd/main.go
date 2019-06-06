@@ -8,14 +8,14 @@ import (
 	"github.com/cosmos/cosmos-sdk/client"
 	csdkServer "github.com/cosmos/cosmos-sdk/server"
 	"github.com/cosmos/cosmos-sdk/store"
-	csdkTypes "github.com/cosmos/cosmos-sdk/types"
+	csdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	abciTypes "github.com/tendermint/tendermint/abci/types"
+	abci "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/libs/cli"
 	tmDB "github.com/tendermint/tendermint/libs/db"
 	"github.com/tendermint/tendermint/libs/log"
-	tmTypes "github.com/tendermint/tendermint/types"
+	tm "github.com/tendermint/tendermint/types"
 
 	app "github.com/ironman0x7b2/sentinel-sdk/app/hub"
 	hubCli "github.com/ironman0x7b2/sentinel-sdk/app/hub/cli"
@@ -29,10 +29,10 @@ var invCheckPeriod uint
 func main() {
 	cdc := app.MakeCodec()
 
-	config := csdkTypes.GetConfig()
-	config.SetBech32PrefixForAccount(csdkTypes.Bech32PrefixAccAddr, csdkTypes.Bech32PrefixAccPub)
-	config.SetBech32PrefixForValidator(csdkTypes.Bech32PrefixValAddr, csdkTypes.Bech32PrefixValPub)
-	config.SetBech32PrefixForConsensusNode(csdkTypes.Bech32PrefixConsAddr, csdkTypes.Bech32PrefixConsPub)
+	config := csdk.GetConfig()
+	config.SetBech32PrefixForAccount(csdk.Bech32PrefixAccAddr, csdk.Bech32PrefixAccPub)
+	config.SetBech32PrefixForValidator(csdk.Bech32PrefixValAddr, csdk.Bech32PrefixValPub)
+	config.SetBech32PrefixForConsensusNode(csdk.Bech32PrefixConsAddr, csdk.Bech32PrefixConsPub)
 	config.Seal()
 
 	ctx := csdkServer.NewDefaultContext()
@@ -61,7 +61,7 @@ func main() {
 	}
 }
 
-func newApp(logger log.Logger, db tmDB.DB, traceStore io.Writer) abciTypes.Application {
+func newApp(logger log.Logger, db tmDB.DB, traceStore io.Writer) abci.Application {
 	return app.NewHub(
 		logger, db, traceStore, true, invCheckPeriod,
 		baseapp.SetPruning(store.NewPruningOptionsFromString(viper.GetString("pruning"))),
@@ -70,7 +70,7 @@ func newApp(logger log.Logger, db tmDB.DB, traceStore io.Writer) abciTypes.Appli
 }
 
 func exportAppStateAndTMValidators(logger log.Logger, db tmDB.DB, traceStore io.Writer, height int64,
-	forZeroHeight bool, jailWhiteList []string) (json.RawMessage, []tmTypes.GenesisValidator, error) {
+	forZeroHeight bool, jailWhiteList []string) (json.RawMessage, []tm.GenesisValidator, error) {
 
 	if height != -1 {
 		hub := app.NewHub(logger, db, traceStore, false, uint(1))

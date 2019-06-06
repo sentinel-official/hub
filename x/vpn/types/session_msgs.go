@@ -3,27 +3,27 @@ package types
 import (
 	"encoding/json"
 
-	csdkTypes "github.com/cosmos/cosmos-sdk/types"
+	csdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 
-	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
+	sdk "github.com/ironman0x7b2/sentinel-sdk/types"
 )
 
-var _ csdkTypes.Msg = (*MsgUpdateSessionInfo)(nil)
+var _ csdk.Msg = (*MsgUpdateSessionInfo)(nil)
 
 type MsgUpdateSessionInfo struct {
-	From               csdkTypes.AccAddress `json:"from"`
-	SubscriptionID     sdkTypes.ID          `json:"subscription_id"`
-	Bandwidth          sdkTypes.Bandwidth   `json:"bandwidth"`
-	NodeOwnerSignature auth.StdSignature    `json:"node_owner_signature"`
-	ClientSignature    auth.StdSignature    `json:"client_signature"`
+	From               csdk.AccAddress   `json:"from"`
+	SubscriptionID     sdk.ID            `json:"subscription_id"`
+	Bandwidth          sdk.Bandwidth     `json:"bandwidth"`
+	NodeOwnerSignature auth.StdSignature `json:"node_owner_signature"`
+	ClientSignature    auth.StdSignature `json:"client_signature"`
 }
 
 func (msg MsgUpdateSessionInfo) Type() string {
 	return "MsgUpdateSessionInfo"
 }
 
-func (msg MsgUpdateSessionInfo) ValidateBasic() csdkTypes.Error {
+func (msg MsgUpdateSessionInfo) ValidateBasic() csdk.Error {
 	if msg.From == nil || msg.From.Empty() {
 		return ErrorInvalidField("from")
 	}
@@ -49,16 +49,16 @@ func (msg MsgUpdateSessionInfo) GetSignBytes() []byte {
 	return bz
 }
 
-func (msg MsgUpdateSessionInfo) GetSigners() []csdkTypes.AccAddress {
-	return []csdkTypes.AccAddress{msg.From}
+func (msg MsgUpdateSessionInfo) GetSigners() []csdk.AccAddress {
+	return []csdk.AccAddress{msg.From}
 }
 
 func (msg MsgUpdateSessionInfo) Route() string {
 	return RouterKey
 }
 
-func NewMsgUpdateSessionInfo(from csdkTypes.AccAddress,
-	subscriptionID sdkTypes.ID, bandwidth sdkTypes.Bandwidth,
+func NewMsgUpdateSessionInfo(from csdk.AccAddress,
+	subscriptionID sdk.ID, bandwidth sdk.Bandwidth,
 	nodeOwnerSignature, clientSignature auth.StdSignature) *MsgUpdateSessionInfo {
 
 	return &MsgUpdateSessionInfo{

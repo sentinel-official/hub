@@ -2,10 +2,10 @@ package querier
 
 import (
 	"github.com/cosmos/cosmos-sdk/codec"
-	csdkTypes "github.com/cosmos/cosmos-sdk/types"
-	abciTypes "github.com/tendermint/tendermint/abci/types"
+	csdk "github.com/cosmos/cosmos-sdk/types"
+	abci "github.com/tendermint/tendermint/abci/types"
 
-	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
+	sdk "github.com/ironman0x7b2/sentinel-sdk/types"
 	"github.com/ironman0x7b2/sentinel-sdk/x/vpn/keeper"
 	"github.com/ironman0x7b2/sentinel-sdk/x/vpn/types"
 )
@@ -19,18 +19,18 @@ const (
 )
 
 type QuerySubscriptionParams struct {
-	ID sdkTypes.ID
+	ID sdk.ID
 }
 
-func NewQuerySubscriptionParams(id sdkTypes.ID) QuerySubscriptionParams {
+func NewQuerySubscriptionParams(id sdk.ID) QuerySubscriptionParams {
 	return QuerySubscriptionParams{
 		ID: id,
 	}
 }
 
 // nolint:dupl
-func querySubscription(ctx csdkTypes.Context, cdc *codec.Codec, req abciTypes.RequestQuery,
-	k keeper.Keeper) ([]byte, csdkTypes.Error) {
+func querySubscription(ctx csdk.Context, cdc *codec.Codec, req abci.RequestQuery,
+	k keeper.Keeper) ([]byte, csdk.Error) {
 
 	var params QuerySubscriptionParams
 	if err := cdc.UnmarshalJSON(req.Data, &params); err != nil {
@@ -51,17 +51,17 @@ func querySubscription(ctx csdkTypes.Context, cdc *codec.Codec, req abciTypes.Re
 }
 
 type QuerySubscriptionsOfNodePrams struct {
-	ID sdkTypes.ID
+	ID sdk.ID
 }
 
-func NewQuerySubscriptionsOfNodePrams(id sdkTypes.ID) QuerySubscriptionsOfNodePrams {
+func NewQuerySubscriptionsOfNodePrams(id sdk.ID) QuerySubscriptionsOfNodePrams {
 	return QuerySubscriptionsOfNodePrams{
 		ID: id,
 	}
 }
 
-func querySubscriptionsOfNode(ctx csdkTypes.Context, cdc *codec.Codec, req abciTypes.RequestQuery,
-	k keeper.Keeper) ([]byte, csdkTypes.Error) {
+func querySubscriptionsOfNode(ctx csdk.Context, cdc *codec.Codec, req abci.RequestQuery,
+	k keeper.Keeper) ([]byte, csdk.Error) {
 
 	var params QuerySubscriptionsOfNodePrams
 	if err := cdc.UnmarshalJSON(req.Data, &params); err != nil {
@@ -79,17 +79,17 @@ func querySubscriptionsOfNode(ctx csdkTypes.Context, cdc *codec.Codec, req abciT
 }
 
 type QuerySubscriptionsOfAddressParams struct {
-	Address csdkTypes.AccAddress
+	Address csdk.AccAddress
 }
 
-func NewQuerySubscriptionsOfAddressParams(address csdkTypes.AccAddress) QuerySubscriptionsOfAddressParams {
+func NewQuerySubscriptionsOfAddressParams(address csdk.AccAddress) QuerySubscriptionsOfAddressParams {
 	return QuerySubscriptionsOfAddressParams{
 		Address: address,
 	}
 }
 
-func querySubscriptionsOfAddress(ctx csdkTypes.Context, cdc *codec.Codec, req abciTypes.RequestQuery,
-	k keeper.Keeper) ([]byte, csdkTypes.Error) {
+func querySubscriptionsOfAddress(ctx csdk.Context, cdc *codec.Codec, req abci.RequestQuery,
+	k keeper.Keeper) ([]byte, csdk.Error) {
 
 	var params QuerySubscriptionsOfAddressParams
 	if err := cdc.UnmarshalJSON(req.Data, &params); err != nil {
@@ -106,7 +106,7 @@ func querySubscriptionsOfAddress(ctx csdkTypes.Context, cdc *codec.Codec, req ab
 	return res, nil
 }
 
-func queryAllSubscriptions(ctx csdkTypes.Context, cdc *codec.Codec, k keeper.Keeper) ([]byte, csdkTypes.Error) {
+func queryAllSubscriptions(ctx csdk.Context, cdc *codec.Codec, k keeper.Keeper) ([]byte, csdk.Error) {
 	subscriptions := k.GetAllSubscriptions(ctx)
 
 	res, resErr := cdc.MarshalJSON(subscriptions)
@@ -118,17 +118,17 @@ func queryAllSubscriptions(ctx csdkTypes.Context, cdc *codec.Codec, k keeper.Kee
 }
 
 type QuerySessionsCountOfSubscriptionParams struct {
-	ID sdkTypes.ID
+	ID sdk.ID
 }
 
-func NewQuerySessionsCountOfSubscriptionParams(id sdkTypes.ID) QuerySessionsCountOfSubscriptionParams {
+func NewQuerySessionsCountOfSubscriptionParams(id sdk.ID) QuerySessionsCountOfSubscriptionParams {
 	return QuerySessionsCountOfSubscriptionParams{
 		ID: id,
 	}
 }
 
-func querySessionsCountOfSubscription(ctx csdkTypes.Context, cdc *codec.Codec, req abciTypes.RequestQuery,
-	k keeper.Keeper) ([]byte, csdkTypes.Error) {
+func querySessionsCountOfSubscription(ctx csdk.Context, cdc *codec.Codec, req abci.RequestQuery,
+	k keeper.Keeper) ([]byte, csdk.Error) {
 
 	var params QuerySessionsCountOfSubscriptionParams
 	if err := cdc.UnmarshalJSON(req.Data, &params); err != nil {

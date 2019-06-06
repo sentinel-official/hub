@@ -4,16 +4,16 @@ import (
 	"fmt"
 	"time"
 
-	csdkTypes "github.com/cosmos/cosmos-sdk/types"
-	abciTypes "github.com/tendermint/tendermint/abci/types"
+	csdk "github.com/cosmos/cosmos-sdk/types"
+	abci "github.com/tendermint/tendermint/abci/types"
 )
 
 func (app *Hub) assertRuntimeInvariants() {
-	ctx := app.NewContext(false, abciTypes.Header{Height: app.LastBlockHeight() + 1})
+	ctx := app.NewContext(false, abci.Header{Height: app.LastBlockHeight() + 1})
 	app.assertRuntimeInvariantsOnContext(ctx)
 }
 
-func (app *Hub) assertRuntimeInvariantsOnContext(ctx csdkTypes.Context) {
+func (app *Hub) assertRuntimeInvariantsOnContext(ctx csdk.Context) {
 	start := time.Now()
 	invarRoutes := app.crisisKeeper.Routes()
 	for _, ir := range invarRoutes {

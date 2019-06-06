@@ -2,11 +2,11 @@
 package types
 
 import (
-	csdkTypes "github.com/cosmos/cosmos-sdk/types"
+	csdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/tendermint/tendermint/crypto/ed25519"
 
-	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
+	sdk "github.com/ironman0x7b2/sentinel-sdk/types"
 )
 
 var (
@@ -14,35 +14,35 @@ var (
 	TestMonikerValid       = "MONIKER"
 	TestNewMonikerValid    = "NEW_MONIKER"
 	TestMonikerLengthGT128 = "MONIKERMONIKERMONIKERMONIKERMONIKERMONIKERMONIKERMONIKERMONIKERMONIKERMONIKERMONIKERMONIKERMONIKERMONIKERMONIKERMONIKERMONIKERMONIKERMONIKER"
-	TestCoinPos            = csdkTypes.NewInt64Coin("stake", 100)
-	TestCoinNeg            = csdkTypes.Coin{Denom: "stake", Amount: csdkTypes.NewInt(-100)}
-	TestCoinZero           = csdkTypes.NewInt64Coin("stake", 0)
-	TestCoinEmpty          = csdkTypes.Coin{}
-	TestCoinsPos           = csdkTypes.Coins{TestCoinPos}
-	TestCoinsNeg           = csdkTypes.Coins{TestCoinNeg, csdkTypes.Coin{Denom: "stake", Amount: csdkTypes.NewInt(-100)}}
-	TestCoinsZero          = csdkTypes.Coins{TestCoinZero, csdkTypes.NewInt64Coin("stake", 0)}
-	TestCoinsInvalid       = csdkTypes.Coins{csdkTypes.NewInt64Coin("stake", 100), TestCoinZero}
-	TestCoinsEmpty         = csdkTypes.Coins{}
-	TestCoinsNil           = csdkTypes.Coins(nil)
+	TestCoinPos            = csdk.NewInt64Coin("stake", 100)
+	TestCoinNeg            = csdk.Coin{Denom: "stake", Amount: csdk.NewInt(-100)}
+	TestCoinZero           = csdk.NewInt64Coin("stake", 0)
+	TestCoinEmpty          = csdk.Coin{}
+	TestCoinsPos           = csdk.Coins{TestCoinPos}
+	TestCoinsNeg           = csdk.Coins{TestCoinNeg, csdk.Coin{Denom: "stake", Amount: csdk.NewInt(-100)}}
+	TestCoinsZero          = csdk.Coins{TestCoinZero, csdk.NewInt64Coin("stake", 0)}
+	TestCoinsInvalid       = csdk.Coins{csdk.NewInt64Coin("stake", 100), TestCoinZero}
+	TestCoinsEmpty         = csdk.Coins{}
+	TestCoinsNil           = csdk.Coins(nil)
 	TestPrivKey1           = ed25519.GenPrivKey()
 	TestPrivKey2           = ed25519.GenPrivKey()
 	TestPubkey1            = TestPrivKey1.PubKey()
 	TestPubkey2            = TestPrivKey2.PubKey()
-	TestAddress1           = csdkTypes.AccAddress(TestPubkey1.Address())
-	TestAddress2           = csdkTypes.AccAddress(TestPubkey2.Address())
-	TestAddressEmpty       = csdkTypes.AccAddress([]byte(""))
-	TestUploadNeg          = csdkTypes.NewInt(-1000000)
-	TestUploadZero         = csdkTypes.NewInt(0)
-	TestUploadPos1         = csdkTypes.NewInt(1000000)
-	TestUploadPos2         = TestUploadPos1.Mul(csdkTypes.NewInt(2))
-	TestDownloadNeg        = csdkTypes.NewInt(-1000000000)
-	TestDownloadZero       = csdkTypes.NewInt(0)
-	TestDownloadPos1       = csdkTypes.NewInt(1000000000)
-	TestDownloadPos2       = TestDownloadPos1.Mul(csdkTypes.NewInt(2))
-	TestBandwidthNeg       = sdkTypes.NewBandwidth(TestUploadNeg, TestDownloadNeg)
-	TestBandwidthZero      = sdkTypes.NewBandwidth(TestUploadZero, TestDownloadZero)
-	TestBandwidthPos1      = sdkTypes.NewBandwidth(TestUploadPos1, TestDownloadPos1)
-	TestBandwidthPos2      = sdkTypes.NewBandwidth(TestUploadPos2, TestDownloadPos2)
+	TestAddress1           = csdk.AccAddress(TestPubkey1.Address())
+	TestAddress2           = csdk.AccAddress(TestPubkey2.Address())
+	TestAddressEmpty       = csdk.AccAddress([]byte(""))
+	TestUploadNeg          = csdk.NewInt(-1000000)
+	TestUploadZero         = csdk.NewInt(0)
+	TestUploadPos1         = csdk.NewInt(1000000)
+	TestUploadPos2         = TestUploadPos1.Mul(csdk.NewInt(2))
+	TestDownloadNeg        = csdk.NewInt(-1000000000)
+	TestDownloadZero       = csdk.NewInt(0)
+	TestDownloadPos1       = csdk.NewInt(1000000000)
+	TestDownloadPos2       = TestDownloadPos1.Mul(csdk.NewInt(2))
+	TestBandwidthNeg       = sdk.NewBandwidth(TestUploadNeg, TestDownloadNeg)
+	TestBandwidthZero      = sdk.NewBandwidth(TestUploadZero, TestDownloadZero)
+	TestBandwidthPos1      = sdk.NewBandwidth(TestUploadPos1, TestDownloadPos1)
+	TestBandwidthPos2      = sdk.NewBandwidth(TestUploadPos2, TestDownloadPos2)
 	TestEncryption         = "ENCRYPTION"
 	TestNodeType           = "NODE_TYPE"
 	TestVersion            = "VERSION"
@@ -52,11 +52,11 @@ var (
 	TestNewNodeType        = "NEW_NODE_TYPE"
 	TestNewVersion         = "NEW_VERSION"
 	TestNewEncryption      = "NEW_ENCRYPTION"
-	TestIDPos              = sdkTypes.NewIDFromUInt64(1)
-	TestIDZero             = sdkTypes.NewIDFromUInt64(0)
-	TestIDsNil             = sdkTypes.IDs(nil)
-	TestIDsEmpty           = sdkTypes.IDs{}
-	TestIDsValid           = sdkTypes.IDs{TestIDZero}
+	TestIDPos              = sdk.NewIDFromUInt64(1)
+	TestIDZero             = sdk.NewIDFromUInt64(0)
+	TestIDsNil             = sdk.IDs(nil)
+	TestIDsEmpty           = sdk.IDs{}
+	TestIDsValid           = sdk.IDs{TestIDZero}
 	TestNodeValid          = Node{
 		ID:               TestIDZero,
 		Owner:            TestAddress1,

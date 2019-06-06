@@ -15,7 +15,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	cryptoKeys "github.com/cosmos/cosmos-sdk/crypto/keys"
 	"github.com/cosmos/cosmos-sdk/server"
-	csdkTypes "github.com/cosmos/cosmos-sdk/types"
+	csdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	authTxBuiler "github.com/cosmos/cosmos-sdk/x/auth/client/txbuilder"
 	"github.com/cosmos/cosmos-sdk/x/staking/client/cli"
@@ -30,7 +30,7 @@ import (
 )
 
 var (
-	defaultTokens                  = csdkTypes.TokensFromTendermintPower(100)
+	defaultTokens                  = csdk.TokensFromTendermintPower(100)
 	defaultAmount                  = defaultTokens.String() + "stake"
 	defaultCommissionRate          = "0.1"
 	defaultCommissionMaxRate       = "0.2"
@@ -98,7 +98,7 @@ following delegation and commission default parameters:
 			}
 
 			if valPubKeyString := viper.GetString(cli.FlagPubKey); valPubKeyString != "" {
-				valPubKey, err = csdkTypes.GetConsPubKeyBech32(valPubKeyString)
+				valPubKey, err = csdk.GetConsPubKeyBech32(valPubKeyString)
 				if err != nil {
 					return err
 				}
@@ -111,7 +111,7 @@ following delegation and commission default parameters:
 			prepareFlagsForTxCreateValidator(config, nodeID, ip, genDoc.ChainID, valPubKey, website, details, identity)
 
 			amount := viper.GetString(cli.FlagAmount)
-			coins, err := csdkTypes.ParseCoins(amount)
+			coins, err := csdk.ParseCoins(amount)
 			if err != nil {
 				return err
 			}
@@ -138,12 +138,12 @@ following delegation and commission default parameters:
 
 			if info.GetType() == cryptoKeys.TypeOffline || info.GetType() == cryptoKeys.TypeMulti {
 				fmt.Println("Offline key passed in. Use `hubcli tx sign` command to sign:")
-				return utils.PrintUnsignedStdTx(txBldr, cliCtx, []csdkTypes.Msg{msg}, true)
+				return utils.PrintUnsignedStdTx(txBldr, cliCtx, []csdk.Msg{msg}, true)
 			}
 
 			w := bytes.NewBuffer([]byte{})
 			cliCtx = cliCtx.WithOutput(w)
-			if err = utils.PrintUnsignedStdTx(txBldr, cliCtx, []csdkTypes.Msg{msg}, true); err != nil {
+			if err = utils.PrintUnsignedStdTx(txBldr, cliCtx, []csdk.Msg{msg}, true); err != nil {
 				return err
 			}
 
@@ -196,7 +196,7 @@ following delegation and commission default parameters:
 	return cmd
 }
 
-func accountInGenesis(genesisState app.GenesisState, key csdkTypes.AccAddress, coins csdkTypes.Coins) error {
+func accountInGenesis(genesisState app.GenesisState, key csdk.AccAddress, coins csdk.Coins) error {
 	accountIsInGenesis := false
 	bondDenom := genesisState.StakingData.Params.BondDenom
 
@@ -228,7 +228,7 @@ func prepareFlagsForTxCreateValidator(config *tmConfig.Config, nodeID, ip, chain
 	viper.Set(client.FlagFrom, viper.GetString(client.FlagName))
 	viper.Set(cli.FlagNodeID, nodeID)
 	viper.Set(cli.FlagIP, ip)
-	viper.Set(cli.FlagPubKey, csdkTypes.MustBech32ifyConsPub(valPubKey))
+	viper.Set(cli.FlagPubKey, csdk.MustBech32ifyConsPub(valPubKey))
 	viper.Set(cli.FlagMoniker, config.Moniker)
 	viper.Set(cli.FlagWebsite, website)
 	viper.Set(cli.FlagDetails, details)

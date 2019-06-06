@@ -6,21 +6,21 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/context"
 	clientRest "github.com/cosmos/cosmos-sdk/client/rest"
 	"github.com/cosmos/cosmos-sdk/codec"
-	csdkTypes "github.com/cosmos/cosmos-sdk/types"
+	csdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/rest"
 
-	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
+	sdk "github.com/ironman0x7b2/sentinel-sdk/types"
 	"github.com/ironman0x7b2/sentinel-sdk/x/vpn"
 )
 
 type msgRegisterNode struct {
-	BaseReq       rest.BaseReq       `json:"base_req"`
-	Type          string             `json:"type"`
-	Version       string             `json:"version"`
-	Moniker       string             `json:"moniker"`
-	PricesPerGB   string             `json:"prices_per_gb"`
-	InternetSpeed sdkTypes.Bandwidth `json:"internet_speed"`
-	Encryption    string             `json:"encryption"`
+	BaseReq       rest.BaseReq  `json:"base_req"`
+	Type          string        `json:"type"`
+	Version       string        `json:"version"`
+	Moniker       string        `json:"moniker"`
+	PricesPerGB   string        `json:"prices_per_gb"`
+	InternetSpeed sdk.Bandwidth `json:"internet_speed"`
+	Encryption    string        `json:"encryption"`
 }
 
 func registerNodeHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) http.HandlerFunc {
@@ -36,13 +36,13 @@ func registerNodeHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) http.H
 			return
 		}
 
-		fromAddress, err := csdkTypes.AccAddressFromBech32(req.BaseReq.From)
+		fromAddress, err := csdk.AccAddressFromBech32(req.BaseReq.From)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
 		}
 
-		pricesPerGB, err := csdkTypes.ParseCoins(req.PricesPerGB)
+		pricesPerGB, err := csdk.ParseCoins(req.PricesPerGB)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
@@ -55,6 +55,6 @@ func registerNodeHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) http.H
 			return
 		}
 
-		clientRest.WriteGenerateStdTxResponse(w, cdc, cliCtx, req.BaseReq, []csdkTypes.Msg{msg})
+		clientRest.WriteGenerateStdTxResponse(w, cdc, cliCtx, req.BaseReq, []csdk.Msg{msg})
 	}
 }

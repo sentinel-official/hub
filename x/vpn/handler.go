@@ -4,15 +4,15 @@ import (
 	"bytes"
 	"reflect"
 
-	csdkTypes "github.com/cosmos/cosmos-sdk/types"
+	csdk "github.com/cosmos/cosmos-sdk/types"
 
-	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
+	sdk "github.com/ironman0x7b2/sentinel-sdk/types"
 	"github.com/ironman0x7b2/sentinel-sdk/x/vpn/keeper"
 	"github.com/ironman0x7b2/sentinel-sdk/x/vpn/types"
 )
 
-func NewHandler(k keeper.Keeper) csdkTypes.Handler {
-	return func(ctx csdkTypes.Context, msg csdkTypes.Msg) csdkTypes.Result {
+func NewHandler(k keeper.Keeper) csdk.Handler {
+	return func(ctx csdk.Context, msg csdk.Msg) csdk.Result {
 		switch msg := msg.(type) {
 		case types.MsgRegisterNode:
 			return handleRegisterNode(ctx, k, msg)
@@ -34,8 +34,8 @@ func NewHandler(k keeper.Keeper) csdkTypes.Handler {
 	}
 }
 
-func endBlockNodes(ctx csdkTypes.Context, k keeper.Keeper, height int64) csdkTypes.Tags {
-	allTags := csdkTypes.EmptyTags()
+func endBlockNodes(ctx csdk.Context, k keeper.Keeper, height int64) csdk.Tags {
+	allTags := csdk.EmptyTags()
 
 	_height := height - k.NodeInactiveInterval(ctx)
 	ids := k.GetActiveNodeIDs(ctx, _height)
@@ -53,8 +53,8 @@ func endBlockNodes(ctx csdkTypes.Context, k keeper.Keeper, height int64) csdkTyp
 	return allTags
 }
 
-func endBlockSessions(ctx csdkTypes.Context, k keeper.Keeper, height int64) csdkTypes.Tags {
-	allTags := csdkTypes.EmptyTags()
+func endBlockSessions(ctx csdk.Context, k keeper.Keeper, height int64) csdk.Tags {
+	allTags := csdk.EmptyTags()
 
 	_height := height - k.SessionInactiveInterval(ctx)
 	ids := k.GetActiveSessionIDs(ctx, _height)
@@ -63,9 +63,9 @@ func endBlockSessions(ctx csdkTypes.Context, k keeper.Keeper, height int64) csdk
 		session, _ := k.GetSession(ctx, id)
 		subscription, _ := k.GetSubscription(ctx, session.SubscriptionID)
 
-		bandwidth := session.Bandwidth.CeilTo(sdkTypes.GB.Quo(subscription.PricePerGB.Amount))
-		amount := bandwidth.Sum().Mul(subscription.PricePerGB.Amount).Quo(sdkTypes.GB)
-		pay := csdkTypes.NewCoin(subscription.PricePerGB.Denom, amount)
+		bandwidth := session.Bandwidth.CeilTo(sdk.GB.Quo(subscription.PricePerGB.Amount))
+		amount := bandwidth.Sum().Mul(subscription.PricePerGB.Amount).Quo(sdk.GB)
+		pay := csdk.NewCoin(subscription.PricePerGB.Denom, amount)
 
 		if !pay.IsZero() {
 			node, _ := k.GetNode(ctx, subscription.NodeID)
@@ -94,8 +94,8 @@ func endBlockSessions(ctx csdkTypes.Context, k keeper.Keeper, height int64) csdk
 	return allTags
 }
 
-func EndBlock(ctx csdkTypes.Context, k keeper.Keeper) csdkTypes.Tags {
-	allTags := csdkTypes.EmptyTags()
+func EndBlock(ctx csdk.Context, k keeper.Keeper) csdk.Tags {
+	allTags := csdk.EmptyTags()
 	height := ctx.BlockHeight()
 
 	tags := endBlockNodes(ctx, k, height)
@@ -107,14 +107,14 @@ func EndBlock(ctx csdkTypes.Context, k keeper.Keeper) csdkTypes.Tags {
 	return allTags
 }
 
-func handleRegisterNode(ctx csdkTypes.Context, k keeper.Keeper, msg types.MsgRegisterNode) csdkTypes.Result {
-	allTags := csdkTypes.EmptyTags()
+func handleRegisterNode(ctx csdk.Context, k keeper.Keeper, msg types.MsgRegisterNode) csdk.Result {
+	allTags := csdk.EmptyTags()
 
 	nc := k.GetNodesCount(ctx)
 	node := types.Node{
-		ID:               sdkTypes.NewIDFromUInt64(nc),
+		ID:               sdk.NewIDFromUInt64(nc),
 		Owner:            msg.From,
-		Deposit:          csdkTypes.NewInt64Coin(k.Deposit(ctx).Denom, 0),
+		Deposit:          csdk.NewInt64Coin(k.Deposit(ctx).Denom, 0),
 		Type:             msg.Type_,
 		Version:          msg.Version,
 		Moniker:          msg.Moniker,
@@ -144,11 +144,11 @@ func handleRegisterNode(ctx csdkTypes.Context, k keeper.Keeper, msg types.MsgReg
 	k.SetNodesCountOfAddress(ctx, node.Owner, nca+1)
 
 	allTags = allTags.AppendTag(types.TagNodeID, node.ID.String())
-	return csdkTypes.Result{Tags: allTags}
+	return csdk.Result{Tags: allTags}
 }
 
-func handleUpdateNodeInfo(ctx csdkTypes.Context, k keeper.Keeper, msg types.MsgUpdateNodeInfo) csdkTypes.Result {
-	allTags := csdkTypes.EmptyTags()
+func handleUpdateNodeInfo(ctx csdk.Context, k keeper.Keeper, msg types.MsgUpdateNodeInfo) csdk.Result {
+	allTags := csdk.EmptyTags()
 
 	node, found := k.GetNode(ctx, msg.ID)
 	if !found {
@@ -172,11 +172,11 @@ func handleUpdateNodeInfo(ctx csdkTypes.Context, k keeper.Keeper, msg types.MsgU
 	node = node.UpdateInfo(_node)
 
 	k.SetNode(ctx, node)
-	return csdkTypes.Result{Tags: allTags}
+	return csdk.Result{Tags: allTags}
 }
 
-func handleUpdateNodeStatus(ctx csdkTypes.Context, k keeper.Keeper, msg types.MsgUpdateNodeStatus) csdkTypes.Result {
-	allTags := csdkTypes.EmptyTags()
+func handleUpdateNodeStatus(ctx csdk.Context, k keeper.Keeper, msg types.MsgUpdateNodeStatus) csdk.Result {
+	allTags := csdk.EmptyTags()
 
 	node, found := k.GetNode(ctx, msg.ID)
 	if !found {
@@ -198,11 +198,11 @@ func handleUpdateNodeStatus(ctx csdkTypes.Context, k keeper.Keeper, msg types.Ms
 	node.StatusModifiedAt = ctx.BlockHeight()
 
 	k.SetNode(ctx, node)
-	return csdkTypes.Result{Tags: allTags}
+	return csdk.Result{Tags: allTags}
 }
 
-func handleDeregisterNode(ctx csdkTypes.Context, k keeper.Keeper, msg types.MsgDeregisterNode) csdkTypes.Result {
-	allTags := csdkTypes.EmptyTags()
+func handleDeregisterNode(ctx csdk.Context, k keeper.Keeper, msg types.MsgDeregisterNode) csdk.Result {
+	allTags := csdk.EmptyTags()
 
 	node, found := k.GetNode(ctx, msg.ID)
 	if !found {
@@ -228,11 +228,11 @@ func handleDeregisterNode(ctx csdkTypes.Context, k keeper.Keeper, msg types.MsgD
 		allTags = allTags.AppendTags(tags)
 	}
 
-	return csdkTypes.Result{Tags: allTags}
+	return csdk.Result{Tags: allTags}
 }
 
-func handleStartSubscription(ctx csdkTypes.Context, k keeper.Keeper, msg types.MsgStartSubscription) csdkTypes.Result {
-	allTags := csdkTypes.EmptyTags()
+func handleStartSubscription(ctx csdk.Context, k keeper.Keeper, msg types.MsgStartSubscription) csdk.Result {
+	allTags := csdk.EmptyTags()
 
 	node, found := k.GetNode(ctx, msg.NodeID)
 	if !found {
@@ -258,7 +258,7 @@ func handleStartSubscription(ctx csdkTypes.Context, k keeper.Keeper, msg types.M
 
 	sc := k.GetSubscriptionsCount(ctx)
 	subscription := types.Subscription{
-		ID:                 sdkTypes.NewIDFromUInt64(sc),
+		ID:                 sdk.NewIDFromUInt64(sc),
 		NodeID:             node.ID,
 		Client:             msg.From,
 		PricePerGB:         pricePerGB,
@@ -281,11 +281,11 @@ func handleStartSubscription(ctx csdkTypes.Context, k keeper.Keeper, msg types.M
 	k.SetSubscriptionsCountOfAddress(ctx, subscription.Client, sca+1)
 
 	allTags = allTags.AppendTag(types.TagSubscriptionID, subscription.ID.String())
-	return csdkTypes.Result{Tags: allTags}
+	return csdk.Result{Tags: allTags}
 }
 
-func handleEndSubscription(ctx csdkTypes.Context, k keeper.Keeper, msg types.MsgEndSubscription) csdkTypes.Result {
-	allTags := csdkTypes.EmptyTags()
+func handleEndSubscription(ctx csdk.Context, k keeper.Keeper, msg types.MsgEndSubscription) csdk.Result {
+	allTags := csdk.EmptyTags()
 
 	subscription, found := k.GetSubscription(ctx, msg.ID)
 	if !found {
@@ -316,11 +316,11 @@ func handleEndSubscription(ctx csdkTypes.Context, k keeper.Keeper, msg types.Msg
 	subscription.StatusModifiedAt = ctx.BlockHeight()
 	k.SetSubscription(ctx, subscription)
 
-	return csdkTypes.Result{Tags: allTags}
+	return csdk.Result{Tags: allTags}
 }
 
-func handleUpdateSessionInfo(ctx csdkTypes.Context, k keeper.Keeper, msg types.MsgUpdateSessionInfo) csdkTypes.Result {
-	allTags := csdkTypes.EmptyTags()
+func handleUpdateSessionInfo(ctx csdk.Context, k keeper.Keeper, msg types.MsgUpdateSessionInfo) csdk.Result {
+	allTags := csdk.EmptyTags()
 
 	subscription, found := k.GetSubscription(ctx, msg.SubscriptionID)
 	if !found {
@@ -352,9 +352,9 @@ func handleUpdateSessionInfo(ctx csdkTypes.Context, k keeper.Keeper, msg types.M
 	if !found {
 		sc := k.GetSessionsCount(ctx)
 		session = types.Session{
-			ID:             sdkTypes.NewIDFromUInt64(sc),
+			ID:             sdk.NewIDFromUInt64(sc),
 			SubscriptionID: subscription.ID,
-			Bandwidth:      sdkTypes.NewBandwidthFromInt64(0, 0),
+			Bandwidth:      sdk.NewBandwidthFromInt64(0, 0),
 		}
 
 		k.SetSessionsCount(ctx, sc+1)
@@ -375,5 +375,5 @@ func handleUpdateSessionInfo(ctx csdkTypes.Context, k keeper.Keeper, msg types.M
 	session.StatusModifiedAt = ctx.BlockHeight()
 
 	k.SetSession(ctx, session)
-	return csdkTypes.Result{Tags: allTags}
+	return csdk.Result{Tags: allTags}
 }

@@ -6,13 +6,13 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/codec"
-	csdkTypes "github.com/cosmos/cosmos-sdk/types"
+	csdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/ironman0x7b2/sentinel-sdk/x/deposit"
 )
 
 func QueryDepositOfAddress(cliCtx context.CLIContext, cdc *codec.Codec, _address string) (*deposit.Deposit, error) {
-	address, err := csdkTypes.AccAddressFromBech32(_address)
+	address, err := csdk.AccAddressFromBech32(_address)
 	if err != nil {
 		return nil, err
 	}

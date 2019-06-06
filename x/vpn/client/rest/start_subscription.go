@@ -6,11 +6,11 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/context"
 	clientRest "github.com/cosmos/cosmos-sdk/client/rest"
 	"github.com/cosmos/cosmos-sdk/codec"
-	csdkTypes "github.com/cosmos/cosmos-sdk/types"
+	csdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/rest"
 	"github.com/gorilla/mux"
 
-	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
+	sdk "github.com/ironman0x7b2/sentinel-sdk/types"
 	"github.com/ironman0x7b2/sentinel-sdk/x/vpn"
 )
 
@@ -32,26 +32,26 @@ func startSubscriptionHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) h
 			return
 		}
 
-		fromAddress, err := csdkTypes.AccAddressFromBech32(req.BaseReq.From)
+		fromAddress, err := csdk.AccAddressFromBech32(req.BaseReq.From)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
 		}
 
-		deposit, err := csdkTypes.ParseCoin(req.Deposit)
+		deposit, err := csdk.ParseCoin(req.Deposit)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
 		}
 
 		vars := mux.Vars(r)
-		id := sdkTypes.NewIDFromString(vars["nodeID"])
+		id := sdk.NewIDFromString(vars["nodeID"])
 		msg := vpn.NewMsgStartSubscription(fromAddress, id, deposit)
 		if err := msg.ValidateBasic(); err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
 		}
 
-		clientRest.WriteGenerateStdTxResponse(w, cdc, cliCtx, req.BaseReq, []csdkTypes.Msg{msg})
+		clientRest.WriteGenerateStdTxResponse(w, cdc, cliCtx, req.BaseReq, []csdk.Msg{msg})
 	}
 }

@@ -5,7 +5,7 @@ import (
 	"reflect"
 	"testing"
 
-	csdkTypes "github.com/cosmos/cosmos-sdk/types"
+	csdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
 )
 
@@ -13,7 +13,7 @@ func TestMsgUpdateSessionInfo_ValidateBasic(t *testing.T) {
 	tests := []struct {
 		name string
 		msg  *MsgUpdateSessionInfo
-		want csdkTypes.Error
+		want csdk.Error
 	}{
 		{
 			"from is nil",
@@ -71,7 +71,7 @@ func TestMsgUpdateSessionInfo_GetSignBytes(t *testing.T) {
 
 func TestMsgUpdateSessionInfo_GetSigners(t *testing.T) {
 	msg := NewMsgUpdateSessionInfo(TestAddress1, TestIDPos, TestBandwidthPos1, TestNodeOwnerStdSignaturePos1, TestClientStdSignaturePos1)
-	require.Equal(t, []csdkTypes.AccAddress{TestAddress1}, msg.GetSigners())
+	require.Equal(t, []csdk.AccAddress{TestAddress1}, msg.GetSigners())
 }
 
 func TestMsgUpdateSessionInfo_Type(t *testing.T) {

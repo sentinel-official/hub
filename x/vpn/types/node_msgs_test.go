@@ -5,7 +5,7 @@ import (
 	"reflect"
 	"testing"
 
-	csdkTypes "github.com/cosmos/cosmos-sdk/types"
+	csdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
 )
 
@@ -13,7 +13,7 @@ func TestMsgRegisterNode_ValidateBasic(t *testing.T) {
 	tests := []struct {
 		name string
 		msg  *MsgRegisterNode
-		want csdkTypes.Error
+		want csdk.Error
 	}{
 		{
 			"from is nil",
@@ -109,7 +109,7 @@ func TestMsgRegisterNode_GetSignBytes(t *testing.T) {
 
 func TestMsgRegisterNode_GetSigners(t *testing.T) {
 	msg := NewMsgRegisterNode(TestAddress1, TestNodeType, TestVersion, TestMonikerValid, TestCoinsPos, TestBandwidthPos1, TestEncryption)
-	require.Equal(t, []csdkTypes.AccAddress{TestAddress1}, msg.GetSigners())
+	require.Equal(t, []csdk.AccAddress{TestAddress1}, msg.GetSigners())
 }
 
 func TestMsgRegisterNode_Type(t *testing.T) {
@@ -126,7 +126,7 @@ func TestMsgUpdateNodeInfo_ValidateBasic(t *testing.T) {
 	tests := []struct {
 		name string
 		msg  *MsgUpdateNodeInfo
-		want csdkTypes.Error
+		want csdk.Error
 	}{
 		{
 			"from is nil",
@@ -208,7 +208,7 @@ func TestMsgUpdateNode_GetSignBytes(t *testing.T) {
 
 func TestMsgUpdateNode_GetSigners(t *testing.T) {
 	msg := NewMsgUpdateNodeInfo(TestAddress1, TestIDPos, TestNodeType, TestVersion, TestMonikerValid, TestCoinsPos, TestBandwidthPos1, TestEncryption)
-	require.Equal(t, []csdkTypes.AccAddress{TestAddress1}, msg.GetSigners())
+	require.Equal(t, []csdk.AccAddress{TestAddress1}, msg.GetSigners())
 }
 
 func TestMsgUpdateNode_Type(t *testing.T) {
@@ -225,7 +225,7 @@ func TestMsgUpdateNodeStatus_ValidateBasic(t *testing.T) {
 	tests := []struct {
 		name string
 		msg  *MsgUpdateNodeStatus
-		want csdkTypes.Error
+		want csdk.Error
 	}{
 		{
 			"from is nil",
@@ -275,7 +275,7 @@ func TestMsgUpdateNodeStatus_GetSignBytes(t *testing.T) {
 
 func TestMsgUpdateNodeStatus_GetSigners(t *testing.T) {
 	msg := NewMsgUpdateNodeStatus(TestAddress1, TestIDPos, StatusActive)
-	require.Equal(t, []csdkTypes.AccAddress{TestAddress1}, msg.GetSigners())
+	require.Equal(t, []csdk.AccAddress{TestAddress1}, msg.GetSigners())
 }
 
 func TestMsgUpdateNodeStatus_Type(t *testing.T) {
@@ -292,7 +292,7 @@ func TestMsgDeregisterNode_ValidateBasic(t *testing.T) {
 	tests := []struct {
 		name string
 		msg  *MsgDeregisterNode
-		want csdkTypes.Error
+		want csdk.Error
 	}{
 		{
 			"from is nil",
@@ -330,7 +330,7 @@ func TestMsgDeregisterNode_GetSignBytes(t *testing.T) {
 
 func TestMsgDeregisterNode_GetSigners(t *testing.T) {
 	msg := NewMsgDeregisterNode(TestAddress1, TestIDPos)
-	require.Equal(t, []csdkTypes.AccAddress{TestAddress1}, msg.GetSigners())
+	require.Equal(t, []csdk.AccAddress{TestAddress1}, msg.GetSigners())
 }
 
 func TestMsgDeregisterNode_Type(t *testing.T) {

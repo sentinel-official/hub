@@ -3,12 +3,12 @@ package types
 import (
 	"fmt"
 
-	csdkTypes "github.com/cosmos/cosmos-sdk/types"
+	csdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 type Deposit struct {
-	Address csdkTypes.AccAddress `json:"address"`
-	Coins   csdkTypes.Coins      `json:"coins"`
+	Address csdk.AccAddress `json:"address"`
+	Coins   csdk.Coins      `json:"coins"`
 }
 
 func (d Deposit) String() string {

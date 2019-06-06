@@ -1,12 +1,12 @@
 package keeper
 
 import (
-	csdkTypes "github.com/cosmos/cosmos-sdk/types"
+	csdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/ironman0x7b2/sentinel-sdk/x/deposit/types"
 )
 
-func (k Keeper) SetDeposit(ctx csdkTypes.Context, deposit types.Deposit) {
+func (k Keeper) SetDeposit(ctx csdk.Context, deposit types.Deposit) {
 	key := types.DepositKey(deposit.Address)
 	value := k.cdc.MustMarshalBinaryLengthPrefixed(deposit)
 
@@ -14,7 +14,7 @@ func (k Keeper) SetDeposit(ctx csdkTypes.Context, deposit types.Deposit) {
 	store.Set(key, value)
 }
 
-func (k Keeper) GetDeposit(ctx csdkTypes.Context, address csdkTypes.AccAddress) (deposit types.Deposit, found bool) {
+func (k Keeper) GetDeposit(ctx csdk.Context, address csdk.AccAddress) (deposit types.Deposit, found bool) {
 	store := ctx.KVStore(k.storeKey)
 
 	key := types.DepositKey(address)
@@ -27,10 +27,10 @@ func (k Keeper) GetDeposit(ctx csdkTypes.Context, address csdkTypes.AccAddress) 
 	return deposit, true
 }
 
-func (k Keeper) GetAllDeposits(ctx csdkTypes.Context) (deposits []types.Deposit) {
+func (k Keeper) GetAllDeposits(ctx csdk.Context) (deposits []types.Deposit) {
 	store := ctx.KVStore(k.storeKey)
 
-	iter := csdkTypes.KVStorePrefixIterator(store, types.DepositKeyPrefix)
+	iter := csdk.KVStorePrefixIterator(store, types.DepositKeyPrefix)
 	defer iter.Close()
 
 	for ; iter.Valid(); iter.Next() {
@@ -42,8 +42,8 @@ func (k Keeper) GetAllDeposits(ctx csdkTypes.Context) (deposits []types.Deposit)
 	return deposits
 }
 
-func (k Keeper) Add(ctx csdkTypes.Context, address csdkTypes.AccAddress,
-	coins csdkTypes.Coins) (tags csdkTypes.Tags, err csdkTypes.Error) {
+func (k Keeper) Add(ctx csdk.Context, address csdk.AccAddress,
+	coins csdk.Coins) (tags csdk.Tags, err csdk.Error) {
 
 	_, tags, err = k.bankKeeper.SubtractCoins(ctx, address, coins)
 	if err != nil {
@@ -54,7 +54,7 @@ func (k Keeper) Add(ctx csdkTypes.Context, address csdkTypes.AccAddress,
 	if !found {
 		deposit = types.Deposit{
 			Address: address,
-			Coins:   csdkTypes.Coins{},
+			Coins:   csdk.Coins{},
 		}
 	}
 
@@ -67,8 +67,8 @@ func (k Keeper) Add(ctx csdkTypes.Context, address csdkTypes.AccAddress,
 	return tags, nil
 }
 
-func (k Keeper) Subtract(ctx csdkTypes.Context, address csdkTypes.AccAddress,
-	coins csdkTypes.Coins) (tags csdkTypes.Tags, err csdkTypes.Error) {
+func (k Keeper) Subtract(ctx csdk.Context, address csdk.AccAddress,
+	coins csdk.Coins) (tags csdk.Tags, err csdk.Error) {
 
 	deposit, found := k.GetDeposit(ctx, address)
 	if !found {
@@ -89,8 +89,8 @@ func (k Keeper) Subtract(ctx csdkTypes.Context, address csdkTypes.AccAddress,
 	return tags, nil
 }
 
-func (k Keeper) Send(ctx csdkTypes.Context, from, toAddress csdkTypes.AccAddress,
-	coins csdkTypes.Coins) (tags csdkTypes.Tags, err csdkTypes.Error) {
+func (k Keeper) Send(ctx csdk.Context, from, toAddress csdk.AccAddress,
+	coins csdk.Coins) (tags csdk.Tags, err csdk.Error) {
 
 	deposit, found := k.GetDeposit(ctx, from)
 	if !found {
@@ -111,8 +111,8 @@ func (k Keeper) Send(ctx csdkTypes.Context, from, toAddress csdkTypes.AccAddress
 	return tags, nil
 }
 
-func (k Keeper) Receive(ctx csdkTypes.Context, fromAddress, to csdkTypes.AccAddress,
-	coins csdkTypes.Coins) (tags csdkTypes.Tags, err csdkTypes.Error) {
+func (k Keeper) Receive(ctx csdk.Context, fromAddress, to csdk.AccAddress,
+	coins csdk.Coins) (tags csdk.Tags, err csdk.Error) {
 
 	_, tags, err = k.bankKeeper.SubtractCoins(ctx, fromAddress, coins)
 	if err != nil {
@@ -123,7 +123,7 @@ func (k Keeper) Receive(ctx csdkTypes.Context, fromAddress, to csdkTypes.AccAddr
 	if !found {
 		deposit = types.Deposit{
 			Address: to,
-			Coins:   csdkTypes.Coins{},
+			Coins:   csdk.Coins{},
 		}
 	}
 
@@ -137,10 +137,10 @@ func (k Keeper) Receive(ctx csdkTypes.Context, fromAddress, to csdkTypes.AccAddr
 }
 
 // nolint: dupl
-func (k Keeper) IterateDeposits(ctx csdkTypes.Context, fn func(index int64, deposit types.Deposit) (stop bool)) {
+func (k Keeper) IterateDeposits(ctx csdk.Context, fn func(index int64, deposit types.Deposit) (stop bool)) {
 	store := ctx.KVStore(k.storeKey)
 
-	iterator := csdkTypes.KVStorePrefixIterator(store, types.DepositKeyPrefix)
+	iterator := csdk.KVStorePrefixIterator(store, types.DepositKeyPrefix)
 	defer iterator.Close()
 
 	for i := int64(0); iterator.Valid(); iterator.Next() {

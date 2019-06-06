@@ -3,10 +3,10 @@ package querier
 
 import (
 	"github.com/cosmos/cosmos-sdk/codec"
-	csdkTypes "github.com/cosmos/cosmos-sdk/types"
-	abciTypes "github.com/tendermint/tendermint/abci/types"
+	csdk "github.com/cosmos/cosmos-sdk/types"
+	abci "github.com/tendermint/tendermint/abci/types"
 
-	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
+	sdk "github.com/ironman0x7b2/sentinel-sdk/types"
 	"github.com/ironman0x7b2/sentinel-sdk/x/vpn/keeper"
 	"github.com/ironman0x7b2/sentinel-sdk/x/vpn/types"
 )
@@ -19,18 +19,18 @@ const (
 )
 
 type QuerySessionParams struct {
-	ID sdkTypes.ID
+	ID sdk.ID
 }
 
-func NewQuerySessionParams(id sdkTypes.ID) QuerySessionParams {
+func NewQuerySessionParams(id sdk.ID) QuerySessionParams {
 	return QuerySessionParams{
 		ID: id,
 	}
 }
 
 // nolint:dupl
-func querySession(ctx csdkTypes.Context, cdc *codec.Codec, req abciTypes.RequestQuery,
-	k keeper.Keeper) ([]byte, csdkTypes.Error) {
+func querySession(ctx csdk.Context, cdc *codec.Codec, req abci.RequestQuery,
+	k keeper.Keeper) ([]byte, csdk.Error) {
 
 	var params QuerySessionParams
 	if err := cdc.UnmarshalJSON(req.Data, &params); err != nil {
@@ -51,19 +51,19 @@ func querySession(ctx csdkTypes.Context, cdc *codec.Codec, req abciTypes.Request
 }
 
 type QuerySessionOfSubscriptionPrams struct {
-	ID    sdkTypes.ID
+	ID    sdk.ID
 	Index uint64
 }
 
-func NewQuerySessionOfSubscriptionPrams(id sdkTypes.ID, index uint64) QuerySessionOfSubscriptionPrams {
+func NewQuerySessionOfSubscriptionPrams(id sdk.ID, index uint64) QuerySessionOfSubscriptionPrams {
 	return QuerySessionOfSubscriptionPrams{
 		ID:    id,
 		Index: index,
 	}
 }
 
-func querySessionOfSubscription(ctx csdkTypes.Context, cdc *codec.Codec, req abciTypes.RequestQuery,
-	k keeper.Keeper) ([]byte, csdkTypes.Error) {
+func querySessionOfSubscription(ctx csdk.Context, cdc *codec.Codec, req abci.RequestQuery,
+	k keeper.Keeper) ([]byte, csdk.Error) {
 
 	var params QuerySessionOfSubscriptionPrams
 	if err := cdc.UnmarshalJSON(req.Data, &params); err != nil {
@@ -89,17 +89,17 @@ func querySessionOfSubscription(ctx csdkTypes.Context, cdc *codec.Codec, req abc
 }
 
 type QuerySessionsOfSubscriptionPrams struct {
-	ID sdkTypes.ID
+	ID sdk.ID
 }
 
-func NewQuerySessionsOfSubscriptionPrams(id sdkTypes.ID) QuerySessionsOfSubscriptionPrams {
+func NewQuerySessionsOfSubscriptionPrams(id sdk.ID) QuerySessionsOfSubscriptionPrams {
 	return QuerySessionsOfSubscriptionPrams{
 		ID: id,
 	}
 }
 
-func querySessionsOfSubscription(ctx csdkTypes.Context, cdc *codec.Codec, req abciTypes.RequestQuery,
-	k keeper.Keeper) ([]byte, csdkTypes.Error) {
+func querySessionsOfSubscription(ctx csdk.Context, cdc *codec.Codec, req abci.RequestQuery,
+	k keeper.Keeper) ([]byte, csdk.Error) {
 
 	var params QuerySessionsOfSubscriptionPrams
 	if err := cdc.UnmarshalJSON(req.Data, &params); err != nil {
@@ -116,7 +116,7 @@ func querySessionsOfSubscription(ctx csdkTypes.Context, cdc *codec.Codec, req ab
 	return res, nil
 }
 
-func queryAllSessions(ctx csdkTypes.Context, cdc *codec.Codec, k keeper.Keeper) ([]byte, csdkTypes.Error) {
+func queryAllSessions(ctx csdk.Context, cdc *codec.Codec, k keeper.Keeper) ([]byte, csdk.Error) {
 	sessions := k.GetAllSessions(ctx)
 
 	res, resErr := cdc.MarshalJSON(sessions)

@@ -1,20 +1,20 @@
 package keeper
 
 import (
-	csdkTypes "github.com/cosmos/cosmos-sdk/types"
+	csdk "github.com/cosmos/cosmos-sdk/types"
 
-	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
+	sdk "github.com/ironman0x7b2/sentinel-sdk/types"
 	"github.com/ironman0x7b2/sentinel-sdk/x/vpn/types"
 )
 
-func (k Keeper) SetSessionsCount(ctx csdkTypes.Context, count uint64) {
+func (k Keeper) SetSessionsCount(ctx csdk.Context, count uint64) {
 	value := k.cdc.MustMarshalBinaryLengthPrefixed(count)
 
 	store := ctx.KVStore(k.sessionStoreKey)
 	store.Set(types.SessionsCountKey, value)
 }
 
-func (k Keeper) GetSessionsCount(ctx csdkTypes.Context) (count uint64) {
+func (k Keeper) GetSessionsCount(ctx csdk.Context) (count uint64) {
 	store := ctx.KVStore(k.sessionStoreKey)
 
 	value := store.Get(types.SessionsCountKey)
@@ -26,7 +26,7 @@ func (k Keeper) GetSessionsCount(ctx csdkTypes.Context) (count uint64) {
 	return count
 }
 
-func (k Keeper) SetSession(ctx csdkTypes.Context, session types.Session) {
+func (k Keeper) SetSession(ctx csdk.Context, session types.Session) {
 	key := types.SessionKey(session.ID)
 	value := k.cdc.MustMarshalBinaryLengthPrefixed(session)
 
@@ -34,7 +34,7 @@ func (k Keeper) SetSession(ctx csdkTypes.Context, session types.Session) {
 	store.Set(key, value)
 }
 
-func (k Keeper) GetSession(ctx csdkTypes.Context, id sdkTypes.ID) (session types.Session, found bool) {
+func (k Keeper) GetSession(ctx csdk.Context, id sdk.ID) (session types.Session, found bool) {
 	store := ctx.KVStore(k.sessionStoreKey)
 
 	key := types.SessionKey(id)
@@ -47,7 +47,7 @@ func (k Keeper) GetSession(ctx csdkTypes.Context, id sdkTypes.ID) (session types
 	return session, true
 }
 
-func (k Keeper) SetSessionsCountOfSubscription(ctx csdkTypes.Context, id sdkTypes.ID, count uint64) {
+func (k Keeper) SetSessionsCountOfSubscription(ctx csdk.Context, id sdk.ID, count uint64) {
 	key := types.SessionsCountOfSubscriptionKey(id)
 	value := k.cdc.MustMarshalBinaryLengthPrefixed(count)
 
@@ -55,7 +55,7 @@ func (k Keeper) SetSessionsCountOfSubscription(ctx csdkTypes.Context, id sdkType
 	store.Set(key, value)
 }
 
-func (k Keeper) GetSessionsCountOfSubscription(ctx csdkTypes.Context, id sdkTypes.ID) (count uint64) {
+func (k Keeper) GetSessionsCountOfSubscription(ctx csdk.Context, id sdk.ID) (count uint64) {
 	store := ctx.KVStore(k.sessionStoreKey)
 
 	key := types.SessionsCountOfSubscriptionKey(id)
@@ -68,7 +68,7 @@ func (k Keeper) GetSessionsCountOfSubscription(ctx csdkTypes.Context, id sdkType
 	return count
 }
 
-func (k Keeper) SetSessionIDBySubscriptionID(ctx csdkTypes.Context, i sdkTypes.ID, j uint64, id sdkTypes.ID) {
+func (k Keeper) SetSessionIDBySubscriptionID(ctx csdk.Context, i sdk.ID, j uint64, id sdk.ID) {
 	key := types.SessionIDBySubscriptionIDKey(i, j)
 	value := k.cdc.MustMarshalBinaryLengthPrefixed(id)
 
@@ -76,7 +76,7 @@ func (k Keeper) SetSessionIDBySubscriptionID(ctx csdkTypes.Context, i sdkTypes.I
 	store.Set(key, value)
 }
 
-func (k Keeper) GetSessionIDBySubscriptionID(ctx csdkTypes.Context, i sdkTypes.ID, j uint64) (id sdkTypes.ID, found bool) {
+func (k Keeper) GetSessionIDBySubscriptionID(ctx csdk.Context, i sdk.ID, j uint64) (id sdk.ID, found bool) {
 	store := ctx.KVStore(k.sessionStoreKey)
 
 	key := types.SessionIDBySubscriptionIDKey(i, j)
@@ -89,7 +89,7 @@ func (k Keeper) GetSessionIDBySubscriptionID(ctx csdkTypes.Context, i sdkTypes.I
 	return id, true
 }
 
-func (k Keeper) SetActiveSessionIDs(ctx csdkTypes.Context, height int64, ids sdkTypes.IDs) {
+func (k Keeper) SetActiveSessionIDs(ctx csdk.Context, height int64, ids sdk.IDs) {
 	ids = ids.Sort()
 
 	key := types.ActiveSessionIDsKey(height)
@@ -99,7 +99,7 @@ func (k Keeper) SetActiveSessionIDs(ctx csdkTypes.Context, height int64, ids sdk
 	store.Set(key, value)
 }
 
-func (k Keeper) GetActiveSessionIDs(ctx csdkTypes.Context, height int64) (ids sdkTypes.IDs) {
+func (k Keeper) GetActiveSessionIDs(ctx csdk.Context, height int64) (ids sdk.IDs) {
 	store := ctx.KVStore(k.sessionStoreKey)
 
 	key := types.ActiveSessionIDsKey(height)
@@ -112,14 +112,14 @@ func (k Keeper) GetActiveSessionIDs(ctx csdkTypes.Context, height int64) (ids sd
 	return ids
 }
 
-func (k Keeper) DeleteActiveSessionIDs(ctx csdkTypes.Context, height int64) {
+func (k Keeper) DeleteActiveSessionIDs(ctx csdk.Context, height int64) {
 	store := ctx.KVStore(k.sessionStoreKey)
 
 	key := types.ActiveSessionIDsKey(height)
 	store.Delete(key)
 }
 
-func (k Keeper) GetSessionsOfSubscription(ctx csdkTypes.Context, id sdkTypes.ID) (sessions []types.Session) {
+func (k Keeper) GetSessionsOfSubscription(ctx csdk.Context, id sdk.ID) (sessions []types.Session) {
 	count := k.GetSessionsCountOfSubscription(ctx, id)
 
 	sessions = make([]types.Session, 0, count)
@@ -133,10 +133,10 @@ func (k Keeper) GetSessionsOfSubscription(ctx csdkTypes.Context, id sdkTypes.ID)
 	return sessions
 }
 
-func (k Keeper) GetAllSessions(ctx csdkTypes.Context) (sessions []types.Session) {
+func (k Keeper) GetAllSessions(ctx csdk.Context) (sessions []types.Session) {
 	store := ctx.KVStore(k.sessionStoreKey)
 
-	iter := csdkTypes.KVStorePrefixIterator(store, types.SessionKeyPrefix)
+	iter := csdk.KVStorePrefixIterator(store, types.SessionKeyPrefix)
 	defer iter.Close()
 
 	for ; iter.Valid(); iter.Next() {
@@ -148,7 +148,7 @@ func (k Keeper) GetAllSessions(ctx csdkTypes.Context) (sessions []types.Session)
 	return sessions
 }
 
-func (k Keeper) AddSessionIDToActiveList(ctx csdkTypes.Context, height int64, id sdkTypes.ID) {
+func (k Keeper) AddSessionIDToActiveList(ctx csdk.Context, height int64, id sdk.ID) {
 	ids := k.GetActiveSessionIDs(ctx, height)
 
 	index := ids.Search(id)
@@ -160,7 +160,7 @@ func (k Keeper) AddSessionIDToActiveList(ctx csdkTypes.Context, height int64, id
 	k.SetActiveSessionIDs(ctx, height, ids)
 }
 
-func (k Keeper) RemoveSessionIDFromActiveList(ctx csdkTypes.Context, height int64, id sdkTypes.ID) {
+func (k Keeper) RemoveSessionIDFromActiveList(ctx csdk.Context, height int64, id sdk.ID) {
 	ids := k.GetActiveSessionIDs(ctx, height)
 
 	index := ids.Search(id)

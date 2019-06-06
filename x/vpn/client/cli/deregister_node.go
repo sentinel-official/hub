@@ -5,11 +5,11 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/client/utils"
 	"github.com/cosmos/cosmos-sdk/codec"
-	csdkTypes "github.com/cosmos/cosmos-sdk/types"
+	csdk "github.com/cosmos/cosmos-sdk/types"
 	authTxBuilder "github.com/cosmos/cosmos-sdk/x/auth/client/txbuilder"
 	"github.com/spf13/cobra"
 
-	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
+	sdk "github.com/ironman0x7b2/sentinel-sdk/types"
 	"github.com/ironman0x7b2/sentinel-sdk/x/vpn"
 )
 
@@ -26,11 +26,11 @@ func DeregisterNodeTxCmd(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			id := sdkTypes.NewIDFromString(args[0])
+			id := sdk.NewIDFromString(args[0])
 			fromAddress := cliCtx.GetFromAddress()
 
 			msg := vpn.NewMsgDeregisterNode(fromAddress, id)
-			return utils.GenerateOrBroadcastMsgs(cliCtx, txBldr, []csdkTypes.Msg{msg}, false)
+			return utils.GenerateOrBroadcastMsgs(cliCtx, txBldr, []csdk.Msg{msg}, false)
 		},
 	}
 

@@ -4,11 +4,11 @@ package keeper
 import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/store"
-	csdkTypes "github.com/cosmos/cosmos-sdk/types"
+	csdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/cosmos/cosmos-sdk/x/bank"
 	"github.com/cosmos/cosmos-sdk/x/params"
-	abciTypes "github.com/tendermint/tendermint/abci/types"
+	abci "github.com/tendermint/tendermint/abci/types"
 	tmDB "github.com/tendermint/tendermint/libs/db"
 	"github.com/tendermint/tendermint/libs/log"
 
@@ -16,31 +16,31 @@ import (
 	"github.com/ironman0x7b2/sentinel-sdk/x/vpn/types"
 )
 
-func TestCreateInput() (csdkTypes.Context, deposit.Keeper, Keeper, bank.BaseKeeper) {
-	keyDeposits := csdkTypes.NewKVStoreKey("deposits")
-	keyNode := csdkTypes.NewKVStoreKey("node")
-	keySession := csdkTypes.NewKVStoreKey("session")
-	keySubscription := csdkTypes.NewKVStoreKey("subscription")
-	keyAccount := csdkTypes.NewKVStoreKey("acc")
-	keyParams := csdkTypes.NewKVStoreKey("params")
-	tkeyParams := csdkTypes.NewTransientStoreKey("tparams")
+func TestCreateInput() (csdk.Context, deposit.Keeper, Keeper, bank.BaseKeeper) {
+	keyDeposits := csdk.NewKVStoreKey("deposits")
+	keyNode := csdk.NewKVStoreKey("node")
+	keySession := csdk.NewKVStoreKey("session")
+	keySubscription := csdk.NewKVStoreKey("subscription")
+	keyAccount := csdk.NewKVStoreKey("acc")
+	keyParams := csdk.NewKVStoreKey("params")
+	tkeyParams := csdk.NewTransientStoreKey("tparams")
 
 	db := tmDB.NewMemDB()
 	ms := store.NewCommitMultiStore(db)
-	ms.MountStoreWithDB(keyDeposits, csdkTypes.StoreTypeIAVL, db)
-	ms.MountStoreWithDB(keyNode, csdkTypes.StoreTypeIAVL, db)
-	ms.MountStoreWithDB(keySubscription, csdkTypes.StoreTypeIAVL, db)
-	ms.MountStoreWithDB(keySession, csdkTypes.StoreTypeIAVL, db)
-	ms.MountStoreWithDB(keyAccount, csdkTypes.StoreTypeIAVL, db)
-	ms.MountStoreWithDB(keyParams, csdkTypes.StoreTypeIAVL, db)
-	ms.MountStoreWithDB(tkeyParams, csdkTypes.StoreTypeTransient, db)
+	ms.MountStoreWithDB(keyDeposits, csdk.StoreTypeIAVL, db)
+	ms.MountStoreWithDB(keyNode, csdk.StoreTypeIAVL, db)
+	ms.MountStoreWithDB(keySubscription, csdk.StoreTypeIAVL, db)
+	ms.MountStoreWithDB(keySession, csdk.StoreTypeIAVL, db)
+	ms.MountStoreWithDB(keyAccount, csdk.StoreTypeIAVL, db)
+	ms.MountStoreWithDB(keyParams, csdk.StoreTypeIAVL, db)
+	ms.MountStoreWithDB(tkeyParams, csdk.StoreTypeTransient, db)
 	err := ms.LoadLatestVersion()
 	if err != nil {
 		panic(err)
 	}
 
 	cdc := TestMakeCodec()
-	ctx := csdkTypes.NewContext(ms, abciTypes.Header{ChainID: "chain-id"}, false, log.NewNopLogger())
+	ctx := csdk.NewContext(ms, abci.Header{ChainID: "chain-id"}, false, log.NewNopLogger())
 
 	paramsKeeper := params.NewKeeper(cdc, keyParams, tkeyParams)
 	accountKeeper := auth.NewAccountKeeper(cdc, keyAccount, paramsKeeper.Subspace(auth.DefaultParamspace), auth.ProtoBaseAccount)

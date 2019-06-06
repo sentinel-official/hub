@@ -3,15 +3,15 @@ package types
 import (
 	"fmt"
 
-	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
+	sdk "github.com/ironman0x7b2/sentinel-sdk/types"
 )
 
 type Session struct {
-	ID               sdkTypes.ID        `json:"id"`
-	SubscriptionID   sdkTypes.ID        `json:"subscription_id"`
-	Bandwidth        sdkTypes.Bandwidth `json:"bandwidth"`
-	Status           string             `json:"status"`
-	StatusModifiedAt int64              `json:"status_modified_at"`
+	ID               sdk.ID        `json:"id"`
+	SubscriptionID   sdk.ID        `json:"subscription_id"`
+	Bandwidth        sdk.Bandwidth `json:"bandwidth"`
+	Status           string        `json:"status"`
+	StatusModifiedAt int64         `json:"status_modified_at"`
 }
 
 func (s Session) String() string {

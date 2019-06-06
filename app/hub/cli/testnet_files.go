@@ -12,7 +12,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/server"
 	serverConfig "github.com/cosmos/cosmos-sdk/server/config"
-	csdkTypes "github.com/cosmos/cosmos-sdk/types"
+	csdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	authTxBuilder "github.com/cosmos/cosmos-sdk/x/auth/client/txbuilder"
 	"github.com/cosmos/cosmos-sdk/x/staking"
@@ -181,30 +181,30 @@ func initTestnet(config *tmConfig.Config, cdc *codec.Codec) error {
 			return err
 		}
 
-		accTokens := csdkTypes.TokensFromTendermintPower(1000)
-		accStakingTokens := csdkTypes.TokensFromTendermintPower(500)
+		accTokens := csdk.TokensFromTendermintPower(1000)
+		accStakingTokens := csdk.TokensFromTendermintPower(500)
 		accs = append(accs, app.GenesisAccount{
 			Address: addr,
-			Coins: csdkTypes.Coins{
-				csdkTypes.NewCoin(fmt.Sprintf("%stoken", nodeDirName), accTokens),
-				csdkTypes.NewCoin("stake", accStakingTokens),
+			Coins: csdk.Coins{
+				csdk.NewCoin(fmt.Sprintf("%stoken", nodeDirName), accTokens),
+				csdk.NewCoin("stake", accStakingTokens),
 			},
 		})
 
-		valTokens := csdkTypes.TokensFromTendermintPower(100)
+		valTokens := csdk.TokensFromTendermintPower(100)
 		msg := staking.NewMsgCreateValidator(
-			csdkTypes.ValAddress(addr),
+			csdk.ValAddress(addr),
 			valPubKeys[i],
-			csdkTypes.NewCoin("stake", valTokens),
+			csdk.NewCoin("stake", valTokens),
 			staking.NewDescription(nodeDirName, "", "", ""),
-			staking.NewCommissionMsg(csdkTypes.ZeroDec(), csdkTypes.ZeroDec(), csdkTypes.ZeroDec()),
-			csdkTypes.OneInt(),
+			staking.NewCommissionMsg(csdk.ZeroDec(), csdk.ZeroDec(), csdk.ZeroDec()),
+			csdk.OneInt(),
 		)
 		kb, err := keys.NewKeyBaseFromDir(clientDir)
 		if err != nil {
 			return err
 		}
-		tx := auth.NewStdTx([]csdkTypes.Msg{msg}, auth.StdFee{}, []auth.StdSignature{}, memo)
+		tx := auth.NewStdTx([]csdk.Msg{msg}, auth.StdFee{}, []auth.StdSignature{}, memo)
 		txBldr := authTxBuilder.NewTxBuilderFromCLI().WithChainID(chainID).WithMemo(memo).WithKeybase(kb)
 
 		signedTx, err := txBldr.SignStdTx(nodeDirName, app.DefaultKeyPass, tx, false)

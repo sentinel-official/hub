@@ -3,7 +3,7 @@ package keeper
 import (
 	"fmt"
 
-	csdkTypes "github.com/cosmos/cosmos-sdk/types"
+	csdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/cosmos/cosmos-sdk/x/staking/keeper"
 	"github.com/cosmos/cosmos-sdk/x/staking/types"
@@ -25,13 +25,13 @@ func RegisterInvariants(c types.CrisisKeeper, k keeper.Keeper, f types.FeeCollec
 }
 
 func SupplyInvariants(k keeper.Keeper, f types.FeeCollectionKeeper,
-	d types.DistributionKeeper, am auth.AccountKeeper, dk deposit.Keeper) csdkTypes.Invariant {
+	d types.DistributionKeeper, am auth.AccountKeeper, dk deposit.Keeper) csdk.Invariant {
 
-	return func(ctx csdkTypes.Context) error {
+	return func(ctx csdk.Context) error {
 		pool := k.GetPool(ctx)
 
-		loose := csdkTypes.ZeroDec()
-		bonded := csdkTypes.ZeroDec()
+		loose := csdk.ZeroDec()
+		bonded := csdk.ZeroDec()
 		am.IterateAccounts(ctx, func(acc auth.Account) bool {
 			loose = loose.Add(acc.GetCoins().AmountOf(k.BondDenom(ctx)).ToDec())
 			return false
@@ -42,11 +42,11 @@ func SupplyInvariants(k keeper.Keeper, f types.FeeCollectionKeeper,
 			}
 			return false
 		})
-		k.IterateValidators(ctx, func(_ int64, validator csdkTypes.Validator) bool {
+		k.IterateValidators(ctx, func(_ int64, validator csdk.Validator) bool {
 			switch validator.GetStatus() {
-			case csdkTypes.Bonded:
+			case csdk.Bonded:
 				bonded = bonded.Add(validator.GetBondedTokens().ToDec())
-			case csdkTypes.Unbonding, csdkTypes.Unbonded:
+			case csdk.Unbonding, csdk.Unbonded:
 				loose = loose.Add(validator.GetTokens().ToDec())
 			}
 			loose = loose.Add(d.GetValidatorOutstandingRewardsCoins(ctx, validator.GetOperator()).AmountOf(k.BondDenom(ctx)))

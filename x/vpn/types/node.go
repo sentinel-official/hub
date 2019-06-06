@@ -4,22 +4,22 @@ import (
 	"fmt"
 	"sort"
 
-	csdkTypes "github.com/cosmos/cosmos-sdk/types"
+	csdk "github.com/cosmos/cosmos-sdk/types"
 
-	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
+	sdk "github.com/ironman0x7b2/sentinel-sdk/types"
 )
 
 type Node struct {
-	ID      sdkTypes.ID          `json:"id"`
-	Owner   csdkTypes.AccAddress `json:"owner"`
-	Deposit csdkTypes.Coin       `json:"deposit"`
+	ID      sdk.ID          `json:"id"`
+	Owner   csdk.AccAddress `json:"owner"`
+	Deposit csdk.Coin       `json:"deposit"`
 
-	Type          string             `json:"type"`
-	Version       string             `json:"version"`
-	Moniker       string             `json:"moniker"`
-	PricesPerGB   csdkTypes.Coins    `json:"prices_per_gb"`
-	InternetSpeed sdkTypes.Bandwidth `json:"internet_speed"`
-	Encryption    string             `json:"encryption"`
+	Type          string        `json:"type"`
+	Version       string        `json:"version"`
+	Moniker       string        `json:"moniker"`
+	PricesPerGB   csdk.Coins    `json:"prices_per_gb"`
+	InternetSpeed sdk.Bandwidth `json:"internet_speed"`
+	Encryption    string        `json:"encryption"`
 
 	Status           string `json:"status"`
 	StatusModifiedAt int64  `json:"status_modified_at"`
@@ -67,7 +67,7 @@ func (n Node) UpdateInfo(_node Node) Node {
 	return n
 }
 
-func (n Node) FindPricePerGB(denom string) (coin csdkTypes.Coin) {
+func (n Node) FindPricePerGB(denom string) (coin csdk.Coin) {
 	index := sort.Search(n.PricesPerGB.Len(), func(i int) bool {
 		return n.PricesPerGB[i].Denom >= denom
 	})
@@ -80,14 +80,14 @@ func (n Node) FindPricePerGB(denom string) (coin csdkTypes.Coin) {
 	return n.PricesPerGB[index]
 }
 
-func (n Node) DepositToBandwidth(deposit csdkTypes.Coin) (bandwidth sdkTypes.Bandwidth, err csdkTypes.Error) {
+func (n Node) DepositToBandwidth(deposit csdk.Coin) (bandwidth sdk.Bandwidth, err csdk.Error) {
 	pricePerGB := n.FindPricePerGB(deposit.Denom)
 	if pricePerGB.Denom == "" || pricePerGB.Amount.IsZero() {
 		return bandwidth, ErrorInvalidDeposit()
 	}
 
-	x := deposit.Amount.Mul(sdkTypes.MB500).Quo(pricePerGB.Amount)
-	return sdkTypes.NewBandwidth(x, x), nil
+	x := deposit.Amount.Mul(sdk.MB500).Quo(pricePerGB.Amount)
+	return sdk.NewBandwidth(x, x), nil
 }
 
 // nolint: gocyclo

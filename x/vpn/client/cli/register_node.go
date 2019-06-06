@@ -4,12 +4,12 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/client/utils"
 	"github.com/cosmos/cosmos-sdk/codec"
-	csdkTypes "github.com/cosmos/cosmos-sdk/types"
+	csdk "github.com/cosmos/cosmos-sdk/types"
 	authTxBuilder "github.com/cosmos/cosmos-sdk/x/auth/client/txbuilder"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
-	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
+	sdk "github.com/ironman0x7b2/sentinel-sdk/types"
 	"github.com/ironman0x7b2/sentinel-sdk/x/vpn"
 )
 
@@ -29,13 +29,13 @@ func RegisterNodeTxCmd(cdc *codec.Codec) *cobra.Command {
 			version := viper.GetString(flagVersion)
 			moniker := viper.GetString(flagMoniker)
 			pricesPerGB := viper.GetString(flagPricesPerGB)
-			internetSpeed := sdkTypes.Bandwidth{
-				Upload:   csdkTypes.NewInt(viper.GetInt64(flagUploadSpeed)),
-				Download: csdkTypes.NewInt(viper.GetInt64(flagDownloadSpeed)),
+			internetSpeed := sdk.Bandwidth{
+				Upload:   csdk.NewInt(viper.GetInt64(flagUploadSpeed)),
+				Download: csdk.NewInt(viper.GetInt64(flagDownloadSpeed)),
 			}
 			encryption := viper.GetString(flagEncryption)
 
-			parsedPricesPerGB, err := csdkTypes.ParseCoins(pricesPerGB)
+			parsedPricesPerGB, err := csdk.ParseCoins(pricesPerGB)
 			if err != nil {
 				return err
 			}
@@ -43,7 +43,7 @@ func RegisterNodeTxCmd(cdc *codec.Codec) *cobra.Command {
 			msg := vpn.NewMsgRegisterNode(cliCtx.FromAddress, _type, version,
 				moniker, parsedPricesPerGB, internetSpeed, encryption)
 
-			return utils.GenerateOrBroadcastMsgs(cliCtx, txBldr, []csdkTypes.Msg{msg}, false)
+			return utils.GenerateOrBroadcastMsgs(cliCtx, txBldr, []csdk.Msg{msg}, false)
 		},
 	}
 

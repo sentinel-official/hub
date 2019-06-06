@@ -5,7 +5,7 @@ import (
 	"log"
 
 	"github.com/cosmos/cosmos-sdk/codec"
-	csdkTypes "github.com/cosmos/cosmos-sdk/types"
+	csdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/cosmos/cosmos-sdk/x/bank"
 	"github.com/cosmos/cosmos-sdk/x/crisis"
@@ -14,17 +14,17 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/mint"
 	"github.com/cosmos/cosmos-sdk/x/slashing"
 	"github.com/cosmos/cosmos-sdk/x/staking"
-	abciTypes "github.com/tendermint/tendermint/abci/types"
-	tmTypes "github.com/tendermint/tendermint/types"
+	abci "github.com/tendermint/tendermint/abci/types"
+	tm "github.com/tendermint/tendermint/types"
 
 	"github.com/ironman0x7b2/sentinel-sdk/x/deposit"
 	"github.com/ironman0x7b2/sentinel-sdk/x/vpn"
 )
 
 func (app *Hub) ExportAppStateAndValidators(forZeroHeight bool, jailWhiteList []string) (
-	appState json.RawMessage, validators []tmTypes.GenesisValidator, err error) {
+	appState json.RawMessage, validators []tm.GenesisValidator, err error) {
 
-	ctx := app.NewContext(true, abciTypes.Header{Height: app.LastBlockHeight()})
+	ctx := app.NewContext(true, abci.Header{Height: app.LastBlockHeight()})
 
 	if forZeroHeight {
 		app.prepForZeroHeightGenesis(ctx, jailWhiteList)
@@ -59,7 +59,7 @@ func (app *Hub) ExportAppStateAndValidators(forZeroHeight bool, jailWhiteList []
 	return appState, validators, nil
 }
 
-func (app *Hub) prepForZeroHeightGenesis(ctx csdkTypes.Context, jailWhiteList []string) {
+func (app *Hub) prepForZeroHeightGenesis(ctx csdk.Context, jailWhiteList []string) {
 	applyWhiteList := false
 
 	if len(jailWhiteList) > 0 {
@@ -69,7 +69,7 @@ func (app *Hub) prepForZeroHeightGenesis(ctx csdkTypes.Context, jailWhiteList []
 	whiteListMap := make(map[string]bool)
 
 	for _, addr := range jailWhiteList {
-		_, err := csdkTypes.ValAddressFromBech32(addr)
+		_, err := csdk.ValAddressFromBech32(addr)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -78,7 +78,7 @@ func (app *Hub) prepForZeroHeightGenesis(ctx csdkTypes.Context, jailWhiteList []
 
 	app.assertRuntimeInvariantsOnContext(ctx)
 
-	app.stakingKeeper.IterateValidators(ctx, func(_ int64, val csdkTypes.Validator) (stop bool) {
+	app.stakingKeeper.IterateValidators(ctx, func(_ int64, val csdk.Validator) (stop bool) {
 		_, _ = app.distributionKeeper.WithdrawValidatorCommission(ctx, val.GetOperator())
 		return false
 	})
@@ -95,7 +95,7 @@ func (app *Hub) prepForZeroHeightGenesis(ctx csdkTypes.Context, jailWhiteList []
 	height := ctx.BlockHeight()
 	ctx = ctx.WithBlockHeight(0)
 
-	app.stakingKeeper.IterateValidators(ctx, func(_ int64, val csdkTypes.Validator) (stop bool) {
+	app.stakingKeeper.IterateValidators(ctx, func(_ int64, val csdk.Validator) (stop bool) {
 		scraps := app.distributionKeeper.GetValidatorOutstandingRewards(ctx, val.GetOperator())
 		feePool := app.distributionKeeper.GetFeePool(ctx)
 		feePool.CommunityPool = feePool.CommunityPool.Add(scraps)
@@ -129,12 +129,12 @@ func (app *Hub) prepForZeroHeightGenesis(ctx csdkTypes.Context, jailWhiteList []
 	})
 
 	store := ctx.KVStore(app.keyStaking)
-	iter := csdkTypes.KVStoreReversePrefixIterator(store, staking.ValidatorsKey)
+	iter := csdk.KVStoreReversePrefixIterator(store, staking.ValidatorsKey)
 	counter := int16(0)
 
-	var consAddresses []csdkTypes.ConsAddress
+	var consAddresses []csdk.ConsAddress
 	for ; iter.Valid(); iter.Next() {
-		addr := csdkTypes.ValAddress(iter.Key()[1:])
+		addr := csdk.ValAddress(iter.Key()[1:])
 		validator, found := app.stakingKeeper.GetValidator(ctx, addr)
 		if !found {
 			panic("expected validator, not found")
@@ -156,7 +156,7 @@ func (app *Hub) prepForZeroHeightGenesis(ctx csdkTypes.Context, jailWhiteList []
 
 	app.slashingKeeper.IterateValidatorSigningInfos(
 		ctx,
-		func(addr csdkTypes.ConsAddress, info slashing.ValidatorSigningInfo) (stop bool) {
+		func(addr csdk.ConsAddress, info slashing.ValidatorSigningInfo) (stop bool) {
 			info.StartHeight = 0
 			app.slashingKeeper.SetValidatorSigningInfo(ctx, addr, info)
 			return false
