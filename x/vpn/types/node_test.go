@@ -94,13 +94,13 @@ func TestNode_UpdateInfo(t *testing.T) {
 
 func TestNode_FindPricePerGB(t *testing.T) {
 	var node Node
-	require.Equal(t, node.FindPricePerGB("stake"), TestCoinNil)
+	require.Equal(t, node.FindPricePerGB("stake"), TestCoinEmpty)
 
 	node = Node{PricesPerGB: nil}
-	require.Equal(t, node.FindPricePerGB("stake"), TestCoinNil)
+	require.Equal(t, node.FindPricePerGB("stake"), TestCoinEmpty)
 
 	node = Node{PricesPerGB: TestCoinsEmpty}
-	require.Equal(t, node.FindPricePerGB("stake"), TestCoinNil)
+	require.Equal(t, node.FindPricePerGB("stake"), TestCoinEmpty)
 
 	node = Node{PricesPerGB: TestCoinsPos}
 	require.Equal(t, node.FindPricePerGB("stake"), TestCoinPos)
@@ -111,17 +111,18 @@ func TestNode_DepositToBandwidth(t *testing.T) {
 		PricesPerGB: TestCoinsPos,
 		Deposit:     TestCoinPos}
 
-	_, err := node.DepositToBandwidth(TestCoinNil)
+	_, err := node.DepositToBandwidth(TestCoinEmpty)
 	require.NotNil(t, err)
 
 	bandwidth, err := node.DepositToBandwidth(TestCoinZero)
 	require.Nil(t, err)
+	reflect.DeepEqual(TestBandwidthZero, bandwidth)
 
 	bandwidth, err = node.DepositToBandwidth(TestCoinNeg)
 	require.Nil(t, err)
+	reflect.DeepEqual(TestBandwidthNeg, bandwidth)
 
 	bandwidth, err = node.DepositToBandwidth(TestCoinPos)
 	require.Nil(t, err)
-	value := node.Deposit.Amount.Mul(types.MB500).Quo(TestCoinPos.Amount)
-	require.Equal(t, types.Bandwidth{value, value}, bandwidth)
+	reflect.DeepEqual(TestBandwidthPos1, bandwidth)
 }

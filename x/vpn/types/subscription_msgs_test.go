@@ -86,8 +86,7 @@ func TestMsgEndSubscription_ValidateBasic(t *testing.T) {
 			"from is empty",
 			NewMsgEndSubscription(TestAddressEmpty, TestIDPos),
 			ErrorInvalidField("from"),
-		},
-		{
+		}, {
 			"valid",
 			NewMsgEndSubscription(TestAddress1, TestIDPos),
 			nil,

@@ -17,59 +17,73 @@ func TestMsgRegisterNode_ValidateBasic(t *testing.T) {
 	}{
 		{
 			"from is nil",
-			NewMsgRegisterNode(nil, TestNodeType, TestVersion, TestMonikerValid, TestCoinsPos, TestBandwidthPos1, TestEncryption),
+			NewMsgRegisterNode(nil, TestNodeType, TestVersion, TestMonikerValid, TestCoinsPos,
+				TestBandwidthPos1, TestEncryption),
 			ErrorInvalidField("from"),
 		}, {
 			"from is empty",
-			NewMsgRegisterNode(TestAddressEmpty, TestNodeType, TestVersion, TestMonikerValid, TestCoinsPos, TestBandwidthPos1, TestEncryption),
+			NewMsgRegisterNode(TestAddressEmpty, TestNodeType, TestVersion, TestMonikerValid, TestCoinsPos,
+				TestBandwidthPos1, TestEncryption),
 			ErrorInvalidField("from"),
 		}, {
 			"node_type is empty",
-			NewMsgRegisterNode(TestAddress1, "", TestVersion, TestMonikerValid, TestCoinsPos, TestBandwidthPos1, TestEncryption),
+			NewMsgRegisterNode(TestAddress1, "", TestVersion, TestMonikerValid, TestCoinsPos,
+				TestBandwidthPos1, TestEncryption),
 			ErrorInvalidField("type"),
 		}, {
 			"version is empty",
-			NewMsgRegisterNode(TestAddress1, TestNodeType, "", TestMonikerValid, TestCoinsPos, TestBandwidthPos1, TestEncryption),
+			NewMsgRegisterNode(TestAddress1, TestNodeType, "", TestMonikerValid, TestCoinsPos,
+				TestBandwidthPos1, TestEncryption),
 			ErrorInvalidField("version"),
 		}, {
 			"node_moniker length is greater than 128",
-			NewMsgRegisterNode(TestAddress1, TestNodeType, TestVersion, TestMonikerLengthGT128, TestCoinsPos, TestBandwidthPos1, TestEncryption),
+			NewMsgRegisterNode(TestAddress1, TestNodeType, TestVersion, TestMonikerLengthGT128, TestCoinsPos,
+				TestBandwidthPos1, TestEncryption),
 			ErrorInvalidField("moniker"),
 		}, {
 			"prices_per_gb is nil",
-			NewMsgRegisterNode(TestAddress1, TestNodeType, TestVersion, TestMonikerValid, nil, TestBandwidthPos1, TestEncryption),
+			NewMsgRegisterNode(TestAddress1, TestNodeType, TestVersion, TestMonikerValid, nil,
+				TestBandwidthPos1, TestEncryption),
 			ErrorInvalidField("prices_per_gb"),
 		}, {
 			"prices_per_gb is empty",
-			NewMsgRegisterNode(TestAddress1, TestNodeType, TestVersion, TestMonikerValid, TestCoinsEmpty, TestBandwidthPos1, TestEncryption),
+			NewMsgRegisterNode(TestAddress1, TestNodeType, TestVersion, TestMonikerValid, TestCoinsEmpty,
+				TestBandwidthPos1, TestEncryption),
 			ErrorInvalidField("prices_per_gb"),
 		}, {
 			"prices_per_gb is invalid",
-			NewMsgRegisterNode(TestAddress1, TestNodeType, TestVersion, TestMonikerValid, TestCoinsInvalid, TestBandwidthPos1, TestEncryption),
+			NewMsgRegisterNode(TestAddress1, TestNodeType, TestVersion, TestMonikerValid, TestCoinsInvalid,
+				TestBandwidthPos1, TestEncryption),
 			ErrorInvalidField("prices_per_gb"),
 		}, {
 			"prices_per_gb is negative",
-			NewMsgRegisterNode(TestAddress1, TestNodeType, TestVersion, TestMonikerValid, TestCoinsNeg, TestBandwidthPos1, TestEncryption),
+			NewMsgRegisterNode(TestAddress1, TestNodeType, TestVersion, TestMonikerValid, TestCoinsNeg,
+				TestBandwidthPos1, TestEncryption),
 			ErrorInvalidField("prices_per_gb"),
 		}, {
 			"prices_per_gb is zero",
-			NewMsgRegisterNode(TestAddress1, TestNodeType, TestVersion, TestMonikerValid, TestCoinsZero, TestBandwidthPos1, TestEncryption),
+			NewMsgRegisterNode(TestAddress1, TestNodeType, TestVersion, TestMonikerValid, TestCoinsZero,
+				TestBandwidthPos1, TestEncryption),
 			ErrorInvalidField("prices_per_gb"),
 		}, {
 			"internet_speed is negative",
-			NewMsgRegisterNode(TestAddress1, TestNodeType, TestVersion, TestMonikerValid, TestCoinsPos, TestBandwidthNeg, TestEncryption),
+			NewMsgRegisterNode(TestAddress1, TestNodeType, TestVersion, TestMonikerValid, TestCoinsPos,
+				TestBandwidthNeg, TestEncryption),
 			ErrorInvalidField("internet_speed"),
 		}, {
 			"internet_speed is zero",
-			NewMsgRegisterNode(TestAddress1, TestNodeType, TestVersion, TestMonikerValid, TestCoinsPos, TestBandwidthZero, TestEncryption),
+			NewMsgRegisterNode(TestAddress1, TestNodeType, TestVersion, TestMonikerValid, TestCoinsPos,
+				TestBandwidthZero, TestEncryption),
 			ErrorInvalidField("internet_speed"),
 		}, {
 			"encryption is empty",
-			NewMsgRegisterNode(TestAddress1, TestNodeType, TestVersion, TestMonikerValid, TestCoinsPos, TestBandwidthPos1, ""),
+			NewMsgRegisterNode(TestAddress1, TestNodeType, TestVersion, TestMonikerValid, TestCoinsPos,
+				TestBandwidthPos1, ""),
 			ErrorInvalidField("encryption"),
 		}, {
-			"",
-			NewMsgRegisterNode(TestAddress1, TestNodeType, TestVersion, TestMonikerValid, TestCoinsPos, TestBandwidthPos1, TestEncryption),
+			"valid",
+			NewMsgRegisterNode(TestAddress1, TestNodeType, TestVersion, TestMonikerValid, TestCoinsPos,
+				TestBandwidthPos1, TestEncryption),
 			nil,
 		},
 	}
@@ -215,11 +229,11 @@ func TestMsgUpdateNodeStatus_ValidateBasic(t *testing.T) {
 	}{
 		{
 			"from is nil",
-			NewMsgUpdateNodeStatus(nil, TestIDPos, StatusActive),
+			NewMsgUpdateNodeStatus(nil, TestIDPos, TestStatusActive),
 			ErrorInvalidField("from"),
 		}, {
 			"from is empty",
-			NewMsgUpdateNodeStatus(TestAddressEmpty, TestIDPos, StatusActive),
+			NewMsgUpdateNodeStatus(TestAddressEmpty, TestIDPos, TestStatusActive),
 			ErrorInvalidField("from"),
 		}, {
 			"status is empty",
@@ -227,11 +241,11 @@ func TestMsgUpdateNodeStatus_ValidateBasic(t *testing.T) {
 			ErrorInvalidField("status"),
 		}, {
 			"status is invalid",
-			NewMsgUpdateNodeStatus(TestAddress1, TestIDPos, TestStatusInvalid),
+			NewMsgUpdateNodeStatus(TestAddress1, TestIDPos, TestStatusInValid),
 			ErrorInvalidField("status"),
 		}, {
 			"status is active",
-			NewMsgUpdateNodeStatus(TestAddress1, TestIDPos, StatusActive),
+			NewMsgUpdateNodeStatus(TestAddress1, TestIDPos, TestStatusActive),
 			nil,
 		}, {
 			"status is inactive",
