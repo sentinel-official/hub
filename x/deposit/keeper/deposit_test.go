@@ -1,6 +1,9 @@
 package keeper
 
 import (
+	"reflect"
+	"testing"
+
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/store"
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
@@ -8,13 +11,9 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/bank"
 	"github.com/cosmos/cosmos-sdk/x/params"
 	"github.com/stretchr/testify/require"
-	"github.com/tendermint/tendermint/crypto/ed25519"
-	"reflect"
-	"testing"
-
 	abciTypes "github.com/tendermint/tendermint/abci/types"
+	"github.com/tendermint/tendermint/crypto/ed25519"
 	tmDB "github.com/tendermint/tendermint/libs/db"
-
 	"github.com/tendermint/tendermint/libs/log"
 
 	"github.com/ironman0x7b2/sentinel-sdk/x/deposit/types"
@@ -22,46 +21,35 @@ import (
 )
 
 var (
-	testCoinPos   = csdkTypes.NewInt64Coin("stake", 10)
-	testCoinNeg   = csdkTypes.Coin{"stake", csdkTypes.NewInt(-10)}
-	testCoinZero  = csdkTypes.NewInt64Coin("stake", 0)
-
-	testCoinsPos   = csdkTypes.Coins{testCoinPos}
-	testCoinsNeg   = csdkTypes.Coins{testCoinNeg, csdkTypes.Coin{"stake", csdkTypes.NewInt(-100)}}
-	testCoinsZero  = csdkTypes.Coins{testCoinZero, csdkTypes.NewInt64Coin("stake", 0)}
-	testCoinsEmpty = csdkTypes.Coins{}
-	testCoinsNil   = csdkTypes.Coins(nil)
-
-	testPrivKey1 = ed25519.GenPrivKey()
-	testPrivKey2 = ed25519.GenPrivKey()
-
-	testPubKey1 = testPrivKey1.PubKey()
-	testPubKey2 = testPrivKey2.PubKey()
-
-	testAddress1 = csdkTypes.AccAddress(testPubKey1.Address())
-	testAddress2 = csdkTypes.AccAddress(testPubKey2.Address())
-
+	testCoinPos      = csdkTypes.NewInt64Coin("stake", 10)
+	testCoinNeg      = csdkTypes.Coin{Denom: "stake", Amount: csdkTypes.NewInt(-10)}
+	testCoinZero     = csdkTypes.NewInt64Coin("stake", 0)
+	testCoinsPos     = csdkTypes.Coins{testCoinPos}
+	testCoinsNeg     = csdkTypes.Coins{testCoinNeg, csdkTypes.Coin{Denom: "stake", Amount: csdkTypes.NewInt(-100)}}
+	testCoinsZero    = csdkTypes.Coins{testCoinZero, csdkTypes.NewInt64Coin("stake", 0)}
+	testCoinsEmpty   = csdkTypes.Coins{}
+	testCoinsNil     = csdkTypes.Coins(nil)
+	testPrivKey1     = ed25519.GenPrivKey()
+	testPrivKey2     = ed25519.GenPrivKey()
+	testPubKey1      = testPrivKey1.PubKey()
+	testPubKey2      = testPrivKey2.PubKey()
+	testAddress1     = csdkTypes.AccAddress(testPubKey1.Address())
+	testAddress2     = csdkTypes.AccAddress(testPubKey2.Address())
 	testAddressEmpty = csdkTypes.AccAddress([]byte(""))
-)
-var (
 	testDepositPos   = types.Deposit{Address: testAddress1, Coins: testCoinsPos}
 	testDepositZero  = types.Deposit{Address: testAddress1, Coins: testCoinsZero}
 	testDepositEmpty = types.Deposit{}
 	testDepositNil   = types.Deposit{Coins: csdkTypes.Coins(nil)}
-
 	testDepositsPos  = []types.Deposit{testDepositPos}
 	testDepositsZero = []types.Deposit{testDepositZero}
 	testDepositsNil  = []types.Deposit(nil)
 )
 
-func testCreateInput() (csdkTypes.Context, *codec.Codec, Keeper, auth.AccountKeeper, bank.BaseKeeper) {
-
+func testCreateInput() (csdkTypes.Context, Keeper, bank.BaseKeeper) {
 	keyDeposits := csdkTypes.NewKVStoreKey("deposits")
 	keyAccount := csdkTypes.NewKVStoreKey("acc")
 	keyParams := csdkTypes.NewKVStoreKey("params")
 	tkeyParams := csdkTypes.NewTransientStoreKey("tparams")
-
-	paramsKeeper := params.NewKeeper(testMakeCodec(), keyParams, tkeyParams)
 
 	db := tmDB.NewMemDB()
 	ms := store.NewCommitMultiStore(db)
@@ -77,13 +65,12 @@ func testCreateInput() (csdkTypes.Context, *codec.Codec, Keeper, auth.AccountKee
 	cdc := testMakeCodec()
 	ctx := csdkTypes.NewContext(ms, abciTypes.Header{ChainID: "chain-id"}, false, log.NewNopLogger())
 
-	paramsKeeper = params.NewKeeper(cdc, keyParams, tkeyParams)
+	paramsKeeper := params.NewKeeper(cdc, keyParams, tkeyParams)
 	accountKeeper := auth.NewAccountKeeper(cdc, keyAccount, paramsKeeper.Subspace(auth.DefaultParamspace), auth.ProtoBaseAccount)
 	bankKeeper := bank.NewBaseKeeper(accountKeeper, paramsKeeper.Subspace(bank.DefaultParamspace), bank.DefaultCodespace)
-
 	depositKeeper := NewKeeper(cdc, keyDeposits, bankKeeper)
 
-	return ctx, cdc, depositKeeper, accountKeeper, bankKeeper
+	return ctx, depositKeeper, bankKeeper
 }
 
 func testMakeCodec() *codec.Codec {
@@ -94,13 +81,13 @@ func testMakeCodec() *codec.Codec {
 }
 
 func TestKeeper_SetDeposit(t *testing.T) {
-	ctx, _, depositKeeper, _, _ := testCreateInput()
+	ctx, depositKeeper, _ := testCreateInput()
 
 	_, found := depositKeeper.GetDeposit(ctx, testAddress1)
 	require.Equal(t, false, found)
 
 	depositKeeper.SetDeposit(ctx, testDepositEmpty)
-	deposit, found := depositKeeper.GetDeposit(ctx, testDepositEmpty.Address) //TODO shoild not set with empty address,coins
+	deposit, found := depositKeeper.GetDeposit(ctx, testDepositEmpty.Address)
 	require.Equal(t, true, found)
 	require.Equal(t, testDepositNil, deposit)
 
@@ -116,13 +103,13 @@ func TestKeeper_SetDeposit(t *testing.T) {
 }
 
 func TestKeeper_GetDeposit(t *testing.T) {
-	ctx, _, depositKeeper, _, _ := testCreateInput()
+	ctx, depositKeeper, _ := testCreateInput()
 
 	_, found := depositKeeper.GetDeposit(ctx, testAddress1)
 	require.Equal(t, false, found)
 
 	depositKeeper.SetDeposit(ctx, testDepositEmpty)
-	deposit, found := depositKeeper.GetDeposit(ctx, testAddressEmpty) //TODO shoild not set with empty address,coins
+	deposit, found := depositKeeper.GetDeposit(ctx, testAddressEmpty)
 	require.Equal(t, true, found)
 	require.Equal(t, testDepositNil, deposit)
 
@@ -138,7 +125,7 @@ func TestKeeper_GetDeposit(t *testing.T) {
 }
 
 func TestKeeper_GetAllDeposits(t *testing.T) {
-	ctx, _, depositKeeper, _, _ := testCreateInput()
+	ctx, depositKeeper, _ := testCreateInput()
 
 	deposits := depositKeeper.GetAllDeposits(ctx)
 	require.Equal(t, testDepositsNil, deposits)
@@ -153,7 +140,7 @@ func TestKeeper_GetAllDeposits(t *testing.T) {
 }
 
 func TestKeeper_Add(t *testing.T) {
-	ctx, _, depositKeeper, _, bankKeeper := testCreateInput()
+	ctx, depositKeeper, bankKeeper := testCreateInput()
 
 	coins, _, err := bankKeeper.AddCoins(ctx, testAddress1, testCoinsNeg)
 	require.NotNil(t, err)
@@ -176,7 +163,7 @@ func TestKeeper_Add(t *testing.T) {
 }
 
 func TestKeeper_Subtract(t *testing.T) {
-	ctx, _, depositKeeper, _, _ := testCreateInput()
+	ctx, depositKeeper, _ := testCreateInput()
 
 	_, err := depositKeeper.Subtract(ctx, testAddress1, testCoinsPos)
 	require.NotNil(t, err)
@@ -198,7 +185,7 @@ func TestKeeper_Subtract(t *testing.T) {
 }
 
 func TestKeeper_Send(t *testing.T) {
-	ctx, _, depositKeeper, _, bankKeeper := testCreateInput()
+	ctx, depositKeeper, bankKeeper := testCreateInput()
 
 	_, err := depositKeeper.Send(ctx, testAddress1, testAddress2, testCoinsPos)
 	require.NotNil(t, err)
@@ -238,7 +225,7 @@ func TestKeeper_Send(t *testing.T) {
 }
 
 func TestKeeper_Receive(t *testing.T) {
-	ctx, _, depositKeeper, _, bankKeeper := testCreateInput()
+	ctx, depositKeeper, bankKeeper := testCreateInput()
 
 	_, err := depositKeeper.Receive(ctx, testAddress1, testAddress2, testCoinsPos)
 	require.NotNil(t, err)

@@ -8,15 +8,15 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/cosmos/cosmos-sdk/x/bank"
 	"github.com/cosmos/cosmos-sdk/x/params"
-	"github.com/ironman0x7b2/sentinel-sdk/x/deposit"
-	"github.com/ironman0x7b2/sentinel-sdk/x/vpn/types"
-
 	abciTypes "github.com/tendermint/tendermint/abci/types"
 	tmDB "github.com/tendermint/tendermint/libs/db"
 	"github.com/tendermint/tendermint/libs/log"
+
+	"github.com/ironman0x7b2/sentinel-sdk/x/deposit"
+	"github.com/ironman0x7b2/sentinel-sdk/x/vpn/types"
 )
 
-func TestCreateInput() (csdkTypes.Context, *codec.Codec, deposit.Keeper, Keeper, auth.AccountKeeper, bank.BaseKeeper) {
+func TestCreateInput() (csdkTypes.Context, deposit.Keeper, Keeper, bank.BaseKeeper) {
 	keyDeposits := csdkTypes.NewKVStoreKey("deposits")
 	keyNode := csdkTypes.NewKVStoreKey("node")
 	keySession := csdkTypes.NewKVStoreKey("session")
@@ -24,8 +24,6 @@ func TestCreateInput() (csdkTypes.Context, *codec.Codec, deposit.Keeper, Keeper,
 	keyAccount := csdkTypes.NewKVStoreKey("acc")
 	keyParams := csdkTypes.NewKVStoreKey("params")
 	tkeyParams := csdkTypes.NewTransientStoreKey("tparams")
-
-	paramsKeeper := params.NewKeeper(TestMakeCodec(), keyParams, tkeyParams)
 
 	db := tmDB.NewMemDB()
 	ms := store.NewCommitMultiStore(db)
@@ -44,24 +42,15 @@ func TestCreateInput() (csdkTypes.Context, *codec.Codec, deposit.Keeper, Keeper,
 	cdc := TestMakeCodec()
 	ctx := csdkTypes.NewContext(ms, abciTypes.Header{ChainID: "chain-id"}, false, log.NewNopLogger())
 
-	paramsKeeper = params.NewKeeper(cdc, keyParams, tkeyParams)
+	paramsKeeper := params.NewKeeper(cdc, keyParams, tkeyParams)
 	accountKeeper := auth.NewAccountKeeper(cdc, keyAccount, paramsKeeper.Subspace(auth.DefaultParamspace), auth.ProtoBaseAccount)
 	bankKeeper := bank.NewBaseKeeper(accountKeeper, paramsKeeper.Subspace(bank.DefaultParamspace), bank.DefaultCodespace)
-
 	depositKeeper := deposit.NewKeeper(cdc, keyDeposits, bankKeeper)
-
 	vpnKeeper := NewKeeper(cdc, keyNode, keySubscription, keySession, paramsKeeper.Subspace(DefaultParamspace), depositKeeper)
 
-	params := types.Params{
-		FreeNodesCount:          types.DefaultFreeNodesCount,
-		Deposit:                 types.DefaultDeposit,
-		NodeInactiveInterval:    types.DefaultNodeInactiveInterval,
-		SessionInactiveInterval: types.DefaultSessionInactiveInterval,
-	}
+	vpnKeeper.SetParams(ctx, types.DefaultParams())
 
-	vpnKeeper.SetParams(ctx, params)
-
-	return ctx, cdc, depositKeeper, vpnKeeper, accountKeeper, bankKeeper
+	return ctx, depositKeeper, vpnKeeper, bankKeeper
 }
 
 func TestMakeCodec() *codec.Codec {

@@ -1,16 +1,16 @@
 package vpn
 
 import (
-	"github.com/ironman0x7b2/sentinel-sdk/x/vpn/keeper"
 	"testing"
 
 	"github.com/stretchr/testify/require"
 
+	"github.com/ironman0x7b2/sentinel-sdk/x/vpn/keeper"
 	"github.com/ironman0x7b2/sentinel-sdk/x/vpn/types"
 )
 
 func Test_handleRegisterNode(t *testing.T) {
-	ctx, _, _, vpnKeeper, _, bankKeeper := keeper.TestCreateInput()
+	ctx, _, vpnKeeper, bankKeeper := keeper.TestCreateInput()
 
 	coins, _, err := bankKeeper.AddCoins(ctx, types.TestAddress1, types.TestCoinsPos.Add(types.TestCoinsPos))
 	require.Nil(t, err)
@@ -56,7 +56,7 @@ func Test_handleRegisterNode(t *testing.T) {
 }
 
 func Test_handleUpdateNodeInfo(t *testing.T) {
-	ctx, _, _, vpnKeeper, _, _ := keeper.TestCreateInput()
+	ctx, _, vpnKeeper, _ := keeper.TestCreateInput()
 
 	handler := NewHandler(vpnKeeper)
 	node := types.TestNodeValid
@@ -85,7 +85,7 @@ func Test_handleUpdateNodeInfo(t *testing.T) {
 }
 
 func Test_handleUpdateNodeStatus(t *testing.T) {
-	ctx, _, _, vpnKeeper, _, _ := keeper.TestCreateInput()
+	ctx, _, vpnKeeper, _ := keeper.TestCreateInput()
 
 	handler := NewHandler(vpnKeeper)
 	node := types.TestNodeValid
@@ -118,7 +118,7 @@ func Test_handleUpdateNodeStatus(t *testing.T) {
 }
 
 func Test_handleDeregisterNode(t *testing.T) {
-	ctx, _, _, vpnKeeper, _, _ := keeper.TestCreateInput()
+	ctx, _, vpnKeeper, _ := keeper.TestCreateInput()
 
 	handler := NewHandler(vpnKeeper)
 	node := types.TestNodeValid
@@ -158,7 +158,7 @@ func Test_handleDeregisterNode(t *testing.T) {
 }
 
 func Test_handleStartSubscription(t *testing.T) {
-	ctx, _, depositKeeper, vpnKeeper, _, bankKeeper := keeper.TestCreateInput()
+	ctx, depositKeeper, vpnKeeper, bankKeeper := keeper.TestCreateInput()
 
 	coins, _, err := bankKeeper.AddCoins(ctx, types.TestAddress2, types.TestCoinsPos.Add(types.TestCoinsPos))
 	require.Nil(t, err)
@@ -198,7 +198,7 @@ func Test_handleStartSubscription(t *testing.T) {
 }
 
 func Test_handleEndSubscription(t *testing.T) {
-	ctx, _, depositKeeper, vpnKeeper, _, bankKeeper := keeper.TestCreateInput()
+	ctx, depositKeeper, vpnKeeper, bankKeeper := keeper.TestCreateInput()
 
 	coins, _, err := bankKeeper.AddCoins(ctx, types.TestAddress2, types.TestCoinsPos)
 	require.Nil(t, err)
@@ -239,7 +239,7 @@ func Test_handleEndSubscription(t *testing.T) {
 }
 
 func Test_handleUpdateSessionInfo(t *testing.T) {
-	ctx, _, _, vpnKeeper, _, _ := keeper.TestCreateInput()
+	ctx, _, vpnKeeper, _ := keeper.TestCreateInput()
 
 	node := types.TestNodeValid
 	subscription := types.TestSubscriptionValid

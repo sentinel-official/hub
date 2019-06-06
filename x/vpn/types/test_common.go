@@ -4,8 +4,9 @@ package types
 import (
 	csdkTypes "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
-	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
 	"github.com/tendermint/tendermint/crypto/ed25519"
+
+	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
 )
 
 var (
@@ -14,11 +15,11 @@ var (
 	TestNewMonikerValid    = "NEW_MONIKER"
 	TestMonikerLengthGT128 = "MONIKERMONIKERMONIKERMONIKERMONIKERMONIKERMONIKERMONIKERMONIKERMONIKERMONIKERMONIKERMONIKERMONIKERMONIKERMONIKERMONIKERMONIKERMONIKERMONIKER"
 	TestCoinPos            = csdkTypes.NewInt64Coin("stake", 100)
-	TestCoinNeg            = csdkTypes.Coin{"stake", csdkTypes.NewInt(-100)}
+	TestCoinNeg            = csdkTypes.Coin{Denom: "stake", Amount: csdkTypes.NewInt(-100)}
 	TestCoinZero           = csdkTypes.NewInt64Coin("stake", 0)
 	TestCoinEmpty          = csdkTypes.Coin{}
 	TestCoinsPos           = csdkTypes.Coins{TestCoinPos}
-	TestCoinsNeg           = csdkTypes.Coins{TestCoinNeg, csdkTypes.Coin{"stake", csdkTypes.NewInt(-100)}}
+	TestCoinsNeg           = csdkTypes.Coins{TestCoinNeg, csdkTypes.Coin{Denom: "stake", Amount: csdkTypes.NewInt(-100)}}
 	TestCoinsZero          = csdkTypes.Coins{TestCoinZero, csdkTypes.NewInt64Coin("stake", 0)}
 	TestCoinsInvalid       = csdkTypes.Coins{csdkTypes.NewInt64Coin("stake", 100), TestCoinZero}
 	TestCoinsEmpty         = csdkTypes.Coins{}
@@ -51,16 +52,12 @@ var (
 	TestNewNodeType        = "NEW_NODE_TYPE"
 	TestNewVersion         = "NEW_VERSION"
 	TestNewEncryption      = "NEW_ENCRYPTION"
-
-	TestIDPos    = sdkTypes.NewIDFromUInt64(1)
-	TestIDZero   = sdkTypes.NewIDFromUInt64(0)
-	TestIDsNil   = sdkTypes.IDs(nil)
-	TestIDsEmpty = sdkTypes.IDs{}
-	TestIDsValid = sdkTypes.IDs{TestIDZero}
-)
-
-var (
-	TestNodeValid = Node{
+	TestIDPos              = sdkTypes.NewIDFromUInt64(1)
+	TestIDZero             = sdkTypes.NewIDFromUInt64(0)
+	TestIDsNil             = sdkTypes.IDs(nil)
+	TestIDsEmpty           = sdkTypes.IDs{}
+	TestIDsValid           = sdkTypes.IDs{TestIDZero}
+	TestNodeValid          = Node{
 		ID:               TestIDZero,
 		Owner:            TestAddress1,
 		Deposit:          TestCoinPos,
@@ -99,37 +96,29 @@ var (
 		Status:           TestStatusInActive,
 		StatusModifiedAt: 1,
 	}
-	TestSessionEmpty  = Session{}
-	TestSessionsValid = []Session{TestSessionValid}
-	TestSessionsEmpty = []Session{}
-	TestSessionsNil   = []Session(nil)
-)
-
-var (
-	TestBandWidthSignDataPos1 = NewBandwidthSignatureData(TestIDZero, 1, TestBandwidthPos1)
-	TestBandWidthSignDataPos2 = NewBandwidthSignatureData(TestIDPos, 2, TestBandwidthPos2)
-	TestBandWidthSignDataNeg  = NewBandwidthSignatureData(TestIDPos, 0, TestBandwidthNeg)
-	TestBandWidthSignDataZero = NewBandwidthSignatureData(TestIDPos, 0, TestBandwidthZero)
-
+	TestSessionEmpty                  = Session{}
+	TestSessionsValid                 = []Session{TestSessionValid}
+	TestSessionsEmpty                 = []Session{}
+	TestSessionsNil                   = []Session(nil)
+	TestBandWidthSignDataPos1         = NewBandwidthSignatureData(TestIDZero, 1, TestBandwidthPos1)
+	TestBandWidthSignDataPos2         = NewBandwidthSignatureData(TestIDPos, 2, TestBandwidthPos2)
+	TestBandWidthSignDataNeg          = NewBandwidthSignatureData(TestIDPos, 0, TestBandwidthNeg)
+	TestBandWidthSignDataZero         = NewBandwidthSignatureData(TestIDPos, 0, TestBandwidthZero)
 	TestNodeOwnerSignBandWidthPos1, _ = TestPrivKey1.Sign(TestBandWidthSignDataPos1.Bytes())
 	TestNodeOwnerSignBandWidthPos2, _ = TestPrivKey1.Sign(TestBandWidthSignDataPos2.Bytes())
 	TestNodeOwnerSignBandWidthNeg, _  = TestPrivKey1.Sign(TestBandWidthSignDataNeg.Bytes())
 	TestNodeOwnerSignBandWidthZero, _ = TestPrivKey1.Sign(TestBandWidthSignDataZero.Bytes())
-
-	TestClientSignBandWidthPos1, _ = TestPrivKey2.Sign(TestBandWidthSignDataPos1.Bytes())
-	TestClientSignBandWidthPos2, _ = TestPrivKey2.Sign(TestBandWidthSignDataPos2.Bytes())
-	TestClientSignBandWidthNeg, _  = TestPrivKey2.Sign(TestBandWidthSignDataNeg.Bytes())
-	TestClientSignBandWidthZero, _ = TestPrivKey2.Sign(TestBandWidthSignDataZero.Bytes())
-
-	TestNodeOwnerStdSignaturePos1 = auth.StdSignature{PubKey: TestPubkey1, Signature: TestNodeOwnerSignBandWidthPos1}
-	TestNodeOwnerStdSignaturePos2 = auth.StdSignature{PubKey: TestPubkey1, Signature: TestNodeOwnerSignBandWidthPos2}
-	TestNodeOwnerStdSignatureNeg  = auth.StdSignature{PubKey: TestPubkey1, Signature: TestNodeOwnerSignBandWidthNeg}
-	TestNodeOwnerStdSignatureZero = auth.StdSignature{PubKey: TestPubkey1, Signature: TestNodeOwnerSignBandWidthZero}
-
-	TestClientStdSignaturePos1 = auth.StdSignature{PubKey: TestPubkey2, Signature: TestClientSignBandWidthPos1}
-	TestClientStdSignaturePos2 = auth.StdSignature{PubKey: TestPubkey2, Signature: TestClientSignBandWidthPos2}
-	TestClientStdSignatureNeg  = auth.StdSignature{PubKey: TestPubkey2, Signature: TestClientSignBandWidthNeg}
-	TestClientStdSignatureZero = auth.StdSignature{PubKey: TestPubkey2, Signature: TestClientSignBandWidthZero}
-
-	TestStdSignatureEmpty = auth.StdSignature{}
+	TestClientSignBandWidthPos1, _    = TestPrivKey2.Sign(TestBandWidthSignDataPos1.Bytes())
+	TestClientSignBandWidthPos2, _    = TestPrivKey2.Sign(TestBandWidthSignDataPos2.Bytes())
+	TestClientSignBandWidthNeg, _     = TestPrivKey2.Sign(TestBandWidthSignDataNeg.Bytes())
+	TestClientSignBandWidthZero, _    = TestPrivKey2.Sign(TestBandWidthSignDataZero.Bytes())
+	TestNodeOwnerStdSignaturePos1     = auth.StdSignature{PubKey: TestPubkey1, Signature: TestNodeOwnerSignBandWidthPos1}
+	TestNodeOwnerStdSignaturePos2     = auth.StdSignature{PubKey: TestPubkey1, Signature: TestNodeOwnerSignBandWidthPos2}
+	TestNodeOwnerStdSignatureNeg      = auth.StdSignature{PubKey: TestPubkey1, Signature: TestNodeOwnerSignBandWidthNeg}
+	TestNodeOwnerStdSignatureZero     = auth.StdSignature{PubKey: TestPubkey1, Signature: TestNodeOwnerSignBandWidthZero}
+	TestClientStdSignaturePos1        = auth.StdSignature{PubKey: TestPubkey2, Signature: TestClientSignBandWidthPos1}
+	TestClientStdSignaturePos2        = auth.StdSignature{PubKey: TestPubkey2, Signature: TestClientSignBandWidthPos2}
+	TestClientStdSignatureNeg         = auth.StdSignature{PubKey: TestPubkey2, Signature: TestClientSignBandWidthNeg}
+	TestClientStdSignatureZero        = auth.StdSignature{PubKey: TestPubkey2, Signature: TestClientSignBandWidthZero}
+	TestStdSignatureEmpty             = auth.StdSignature{}
 )

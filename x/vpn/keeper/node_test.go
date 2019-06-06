@@ -1,14 +1,15 @@
 package keeper
 
 import (
-	"github.com/ironman0x7b2/sentinel-sdk/x/vpn/types"
 	"testing"
 
 	"github.com/stretchr/testify/require"
+
+	"github.com/ironman0x7b2/sentinel-sdk/x/vpn/types"
 )
 
 func TestKeeper_SetNodesCount(t *testing.T) {
-	ctx, _, _, keeper, _, _ := TestCreateInput()
+	ctx, _, keeper, _ := TestCreateInput()
 
 	count := keeper.GetNodesCount(ctx)
 	require.Equal(t, uint64(0), count)
@@ -27,7 +28,7 @@ func TestKeeper_SetNodesCount(t *testing.T) {
 }
 
 func TestKeeper_GetNodesCount(t *testing.T) {
-	ctx, _, _, keeper, _, _ := TestCreateInput()
+	ctx, _, keeper, _ := TestCreateInput()
 
 	count := keeper.GetNodesCount(ctx)
 	require.Equal(t, uint64(0), count)
@@ -46,13 +47,13 @@ func TestKeeper_GetNodesCount(t *testing.T) {
 }
 
 func TestKeeper_SetNode(t *testing.T) {
-	ctx, _, _, keeper, _, _ := TestCreateInput()
+	ctx, _, keeper, _ := TestCreateInput()
 
 	result, found := keeper.GetNode(ctx, types.TestNodeValid.ID)
 	require.Equal(t, false, found)
 
 	keeper.SetNode(ctx, types.TestNodeEmpty)
-	result, found = keeper.GetNode(ctx, types.TestNodeEmpty.ID) //TODO empty node should not be set
+	result, found = keeper.GetNode(ctx, types.TestNodeEmpty.ID)
 	require.Equal(t, true, found)
 
 	keeper.SetNode(ctx, types.TestNodeValid)
@@ -62,13 +63,13 @@ func TestKeeper_SetNode(t *testing.T) {
 }
 
 func TestKeeper_GetNode(t *testing.T) {
-	ctx, _, _, keeper, _, _ := TestCreateInput()
+	ctx, _, keeper, _ := TestCreateInput()
 
 	result, found := keeper.GetNode(ctx, types.TestNodeValid.ID)
 	require.Equal(t, false, found)
 
 	keeper.SetNode(ctx, types.TestNodeEmpty)
-	result, found = keeper.GetNode(ctx, types.TestNodeEmpty.ID) //TODO empty node should not be set
+	result, found = keeper.GetNode(ctx, types.TestNodeEmpty.ID)
 	require.Equal(t, true, found)
 
 	keeper.SetNode(ctx, types.TestNodeValid)
@@ -78,12 +79,12 @@ func TestKeeper_GetNode(t *testing.T) {
 }
 
 func TestKeeper_SetNodesCountOfAddress(t *testing.T) {
-	ctx, _, _, keeper, _, _ := TestCreateInput()
+	ctx, _, keeper, _ := TestCreateInput()
 
 	count := keeper.GetNodesCountOfAddress(ctx, types.TestAddress1)
 	require.Equal(t, uint64(0), count)
 
-	keeper.SetNodesCountOfAddress(ctx, types.TestAddressEmpty, 1) //TODO empty address should not be set
+	keeper.SetNodesCountOfAddress(ctx, types.TestAddressEmpty, 1)
 	count = keeper.GetNodesCountOfAddress(ctx, types.TestAddressEmpty)
 	require.Equal(t, uint64(1), count)
 
@@ -111,12 +112,12 @@ func TestKeeper_SetNodesCountOfAddress(t *testing.T) {
 }
 
 func TestKeeper_GetNodesCountOfAddress(t *testing.T) {
-	ctx, _, _, keeper, _, _ := TestCreateInput()
+	ctx, _, keeper, _ := TestCreateInput()
 
 	count := keeper.GetNodesCountOfAddress(ctx, types.TestAddress1)
 	require.Equal(t, uint64(0), count)
 
-	keeper.SetNodesCountOfAddress(ctx, types.TestAddressEmpty, 1) //TODO empty address should not be set
+	keeper.SetNodesCountOfAddress(ctx, types.TestAddressEmpty, 1)
 	count = keeper.GetNodesCountOfAddress(ctx, types.TestAddressEmpty)
 	require.Equal(t, uint64(1), count)
 
@@ -144,12 +145,12 @@ func TestKeeper_GetNodesCountOfAddress(t *testing.T) {
 }
 
 func TestKeeper_SetNodeIDByAddress(t *testing.T) {
-	ctx, _, _, keeper, _, _ := TestCreateInput()
+	ctx, _, keeper, _ := TestCreateInput()
 
 	id, found := keeper.GetNodeIDByAddress(ctx, types.TestAddress1, 0)
 	require.Equal(t, false, found)
 
-	keeper.SetNodeIDByAddress(ctx, types.TestAddressEmpty, 0, types.TestIDZero) //TODO  should not be set by empty address
+	keeper.SetNodeIDByAddress(ctx, types.TestAddressEmpty, 0, types.TestIDZero)
 	id, found = keeper.GetNodeIDByAddress(ctx, types.TestAddressEmpty, 0)
 	require.Equal(t, true, found)
 	require.Equal(t, types.TestIDZero, id)
@@ -176,12 +177,12 @@ func TestKeeper_SetNodeIDByAddress(t *testing.T) {
 }
 
 func TestKeeper_GetNodeIDByAddress(t *testing.T) {
-	ctx, _, _, keeper, _, _ := TestCreateInput()
+	ctx, _, keeper, _ := TestCreateInput()
 
 	id, found := keeper.GetNodeIDByAddress(ctx, types.TestAddress1, 0)
 	require.Equal(t, false, found)
 
-	keeper.SetNodeIDByAddress(ctx, types.TestAddressEmpty, 0, types.TestIDZero) //TODO  should not be set by empty address
+	keeper.SetNodeIDByAddress(ctx, types.TestAddressEmpty, 0, types.TestIDZero)
 	id, found = keeper.GetNodeIDByAddress(ctx, types.TestAddressEmpty, 0)
 	require.Equal(t, true, found)
 	require.Equal(t, types.TestIDZero, id)
@@ -208,7 +209,7 @@ func TestKeeper_GetNodeIDByAddress(t *testing.T) {
 }
 
 func TestKeeper_SetActiveNodeIDs(t *testing.T) {
-	ctx, _, _, keeper, _, _ := TestCreateInput()
+	ctx, _, keeper, _ := TestCreateInput()
 
 	ids := keeper.GetActiveNodeIDs(ctx, 1)
 	require.Equal(t, types.TestIDsNil, ids)
@@ -235,7 +236,7 @@ func TestKeeper_SetActiveNodeIDs(t *testing.T) {
 }
 
 func TestKeeper_GetActiveNodeIDs(t *testing.T) {
-	ctx, _, _, keeper, _, _ := TestCreateInput()
+	ctx, _, keeper, _ := TestCreateInput()
 	ids := keeper.GetActiveNodeIDs(ctx, 1)
 	require.Equal(t, types.TestIDsNil, ids)
 
@@ -261,7 +262,7 @@ func TestKeeper_GetActiveNodeIDs(t *testing.T) {
 }
 
 func TestKeeper_DeleteActiveNodeIDs(t *testing.T) {
-	ctx, _, _, keeper, _, _ := TestCreateInput()
+	ctx, _, keeper, _ := TestCreateInput()
 
 	keeper.DeleteActiveNodeIDs(ctx, 1)
 	ids := keeper.GetActiveNodeIDs(ctx, 1)
@@ -294,7 +295,7 @@ func TestKeeper_DeleteActiveNodeIDs(t *testing.T) {
 }
 
 func TestKeeper_GetNodesOfAddress(t *testing.T) {
-	ctx, _, _, keeper, _, _ := TestCreateInput()
+	ctx, _, keeper, _ := TestCreateInput()
 
 	nodes := keeper.GetNodesOfAddress(ctx, types.TestAddress1)
 	require.Equal(t, types.TestNodesEmpty, nodes)
@@ -324,12 +325,12 @@ func TestKeeper_GetNodesOfAddress(t *testing.T) {
 }
 
 func TestKeeper_GetAllNodes(t *testing.T) {
-	ctx, _, _, keeper, _, _ := TestCreateInput()
+	ctx, _, keeper, _ := TestCreateInput()
 
 	nodes := keeper.GetAllNodes(ctx)
 	require.Equal(t, types.TestNodesNil, nodes)
 
-	keeper.SetNode(ctx, types.TestNodeEmpty) //TODO empty node should not be set
+	keeper.SetNode(ctx, types.TestNodeEmpty)
 	nodes = keeper.GetAllNodes(ctx)
 
 	keeper.SetNode(ctx, types.TestNodeValid)
@@ -348,7 +349,7 @@ func TestKeeper_GetAllNodes(t *testing.T) {
 }
 
 func TestKeeper_AddNodeIDToActiveList(t *testing.T) {
-	ctx, _, _, keeper, _, _ := TestCreateInput()
+	ctx, _, keeper, _ := TestCreateInput()
 
 	ids := keeper.GetActiveNodeIDs(ctx, 1)
 	require.Equal(t, types.TestIDsNil, ids)
@@ -364,7 +365,7 @@ func TestKeeper_AddNodeIDToActiveList(t *testing.T) {
 }
 
 func TestKeeper_RemoveNodeIDFromActiveList(t *testing.T) {
-	ctx, _, _, keeper, _, _ := TestCreateInput()
+	ctx, _, keeper, _ := TestCreateInput()
 
 	ids := keeper.GetActiveNodeIDs(ctx, 1)
 	require.Equal(t, types.TestIDsNil, ids)

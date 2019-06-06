@@ -109,7 +109,8 @@ func TestNode_FindPricePerGB(t *testing.T) {
 func TestNode_DepositToBandwidth(t *testing.T) {
 	node := Node{
 		PricesPerGB: TestCoinsPos,
-		Deposit:     TestCoinPos}
+		Deposit:     TestCoinPos,
+	}
 
 	_, err := node.DepositToBandwidth(TestCoinEmpty)
 	require.NotNil(t, err)

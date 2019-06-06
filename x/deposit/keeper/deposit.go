@@ -70,11 +70,6 @@ func (k Keeper) Add(ctx csdkTypes.Context, address csdkTypes.AccAddress,
 func (k Keeper) Subtract(ctx csdkTypes.Context, address csdkTypes.AccAddress,
 	coins csdkTypes.Coins) (tags csdkTypes.Tags, err csdkTypes.Error) {
 
-	_, tags, err = k.bankKeeper.AddCoins(ctx, address, coins)
-	if err != nil {
-		return nil, err
-	}
-
 	deposit, found := k.GetDeposit(ctx, address)
 	if !found {
 		return nil, types.ErrorInsufficientDepositFunds(coins, deposit.Coins)
@@ -85,17 +80,17 @@ func (k Keeper) Subtract(ctx csdkTypes.Context, address csdkTypes.AccAddress,
 		return nil, types.ErrorInsufficientDepositFunds(coins, deposit.Coins)
 	}
 
+	_, tags, err = k.bankKeeper.AddCoins(ctx, address, coins)
+	if err != nil {
+		return nil, err
+	}
+
 	k.SetDeposit(ctx, deposit)
 	return tags, nil
 }
 
 func (k Keeper) Send(ctx csdkTypes.Context, from, toAddress csdkTypes.AccAddress,
 	coins csdkTypes.Coins) (tags csdkTypes.Tags, err csdkTypes.Error) {
-
-	_, tags, err = k.bankKeeper.AddCoins(ctx, toAddress, coins)
-	if err != nil {
-		return nil, err
-	}
 
 	deposit, found := k.GetDeposit(ctx, from)
 	if !found {
@@ -105,6 +100,11 @@ func (k Keeper) Send(ctx csdkTypes.Context, from, toAddress csdkTypes.AccAddress
 	deposit.Coins, _ = deposit.Coins.SafeSub(coins)
 	if deposit.Coins.IsAnyNegative() {
 		return nil, types.ErrorInsufficientDepositFunds(coins, deposit.Coins)
+	}
+
+	_, tags, err = k.bankKeeper.AddCoins(ctx, toAddress, coins)
+	if err != nil {
+		return nil, err
 	}
 
 	k.SetDeposit(ctx, deposit)

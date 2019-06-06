@@ -1,14 +1,15 @@
 package keeper
 
 import (
-	"github.com/ironman0x7b2/sentinel-sdk/x/vpn/types"
 	"testing"
 
 	"github.com/stretchr/testify/require"
+
+	"github.com/ironman0x7b2/sentinel-sdk/x/vpn/types"
 )
 
 func TestKeeper_AddDeposit(t *testing.T) {
-	ctx, _, _, keeper, _, bankKeeper := TestCreateInput()
+	ctx, _, keeper, bankKeeper := TestCreateInput()
 
 	bankKeeper.AddCoins(ctx, types.TestAddress1, types.TestCoinsPos)
 
@@ -30,7 +31,7 @@ func TestKeeper_AddDeposit(t *testing.T) {
 }
 
 func TestKeeper_SubtractDeposit(t *testing.T) {
-	ctx, _, _, keeper, _, bankKeeper := TestCreateInput()
+	ctx, _, keeper, bankKeeper := TestCreateInput()
 
 	_, err := keeper.SubtractDeposit(ctx, types.TestAddress1, types.TestCoinPos)
 	require.NotNil(t, err)
@@ -45,7 +46,7 @@ func TestKeeper_SubtractDeposit(t *testing.T) {
 }
 
 func TestKeeper_SendDeposit(t *testing.T) {
-	ctx, _, _, keeper, _, bankKeeper := TestCreateInput()
+	ctx, _, keeper, bankKeeper := TestCreateInput()
 
 	bankKeeper.AddCoins(ctx, types.TestAddress1, types.TestCoinsPos.Add(types.TestCoinsPos))
 	_, err := keeper.AddDeposit(ctx, types.TestAddress1, types.TestCoinPos)

@@ -1,14 +1,15 @@
 package keeper
 
 import (
-	"github.com/ironman0x7b2/sentinel-sdk/x/vpn/types"
 	"testing"
 
 	"github.com/stretchr/testify/require"
+
+	"github.com/ironman0x7b2/sentinel-sdk/x/vpn/types"
 )
 
 func TestKeeper_SetSessionsCount(t *testing.T) {
-	ctx, _, _, keeper, _, _ := TestCreateInput()
+	ctx, _, keeper, _ := TestCreateInput()
 
 	count := keeper.GetSessionsCount(ctx)
 	require.Equal(t, uint64(0), count)
@@ -27,7 +28,7 @@ func TestKeeper_SetSessionsCount(t *testing.T) {
 }
 
 func TestKeeper_GetSessionsCount(t *testing.T) {
-	ctx, _, _, keeper, _, _ := TestCreateInput()
+	ctx, _, keeper, _ := TestCreateInput()
 
 	count := keeper.GetSessionsCount(ctx)
 	require.Equal(t, uint64(0), count)
@@ -46,13 +47,13 @@ func TestKeeper_GetSessionsCount(t *testing.T) {
 }
 
 func TestKeeper_SetSession(t *testing.T) {
-	ctx, _, _, keeper, _, _ := TestCreateInput()
+	ctx, _, keeper, _ := TestCreateInput()
 
 	_, found := keeper.GetSession(ctx, types.TestIDZero)
 	require.Equal(t, false, found)
 
 	keeper.SetSession(ctx, types.TestSessionEmpty)
-	result, found := keeper.GetSession(ctx, types.TestSessionEmpty.ID) //TODO empty session should not be set
+	result, found := keeper.GetSession(ctx, types.TestSessionEmpty.ID)
 	require.Equal(t, true, found)
 
 	keeper.SetSession(ctx, types.TestSessionValid)
@@ -62,13 +63,13 @@ func TestKeeper_SetSession(t *testing.T) {
 }
 
 func TestKeeper_GetSession(t *testing.T) {
-	ctx, _, _, keeper, _, _ := TestCreateInput()
+	ctx, _, keeper, _ := TestCreateInput()
 
 	_, found := keeper.GetSession(ctx, types.TestIDZero)
 	require.Equal(t, false, found)
 
 	keeper.SetSession(ctx, types.TestSessionEmpty)
-	result, found := keeper.GetSession(ctx, types.TestSessionEmpty.ID) //TODO empty session should not be set
+	result, found := keeper.GetSession(ctx, types.TestSessionEmpty.ID)
 	require.Equal(t, true, found)
 
 	keeper.SetSession(ctx, types.TestSessionValid)
@@ -78,7 +79,7 @@ func TestKeeper_GetSession(t *testing.T) {
 }
 
 func TestKeeper_SetSessionsCountOfSubscription(t *testing.T) {
-	ctx, _, _, keeper, _, _ := TestCreateInput()
+	ctx, _, keeper, _ := TestCreateInput()
 
 	count := keeper.GetSessionsCountOfSubscription(ctx, types.TestIDZero)
 	require.Equal(t, uint64(0), count)
@@ -97,7 +98,7 @@ func TestKeeper_SetSessionsCountOfSubscription(t *testing.T) {
 }
 
 func TestKeeper_GetSessionsCountOfSubscription(t *testing.T) {
-	ctx, _, _, keeper, _, _ := TestCreateInput()
+	ctx, _, keeper, _ := TestCreateInput()
 
 	count := keeper.GetSessionsCountOfSubscription(ctx, types.TestIDZero)
 	require.Equal(t, uint64(0), count)
@@ -116,7 +117,7 @@ func TestKeeper_GetSessionsCountOfSubscription(t *testing.T) {
 }
 
 func TestKeeper_SetSessionIDBySubscriptionID(t *testing.T) {
-	ctx, _, _, keeper, _, _ := TestCreateInput()
+	ctx, _, keeper, _ := TestCreateInput()
 
 	_, found := keeper.GetSessionIDBySubscriptionID(ctx, types.TestIDPos, 1)
 	require.Equal(t, false, found)
@@ -144,7 +145,7 @@ func TestKeeper_SetSessionIDBySubscriptionID(t *testing.T) {
 }
 
 func TestKeeper_GetSessionIDBySubscriptionID(t *testing.T) {
-	ctx, _, _, keeper, _, _ := TestCreateInput()
+	ctx, _, keeper, _ := TestCreateInput()
 
 	_, found := keeper.GetSessionIDBySubscriptionID(ctx, types.TestIDPos, 1)
 	require.Equal(t, false, found)
@@ -171,7 +172,7 @@ func TestKeeper_GetSessionIDBySubscriptionID(t *testing.T) {
 }
 
 func TestKeeper_SetActiveSessionIDs(t *testing.T) {
-	ctx, _, _, keeper, _, _ := TestCreateInput()
+	ctx, _, keeper, _ := TestCreateInput()
 
 	ids := keeper.GetActiveSessionIDs(ctx, 1)
 	require.Equal(t, types.TestIDsNil, ids)
@@ -186,7 +187,7 @@ func TestKeeper_SetActiveSessionIDs(t *testing.T) {
 }
 
 func TestKeeper_GetActiveSessionIDs(t *testing.T) {
-	ctx, _, _, keeper, _, _ := TestCreateInput()
+	ctx, _, keeper, _ := TestCreateInput()
 
 	ids := keeper.GetActiveSessionIDs(ctx, 1)
 	require.Equal(t, types.TestIDsNil, ids)
@@ -201,7 +202,7 @@ func TestKeeper_GetActiveSessionIDs(t *testing.T) {
 }
 
 func TestKeeper_DeleteActiveSessionIDs(t *testing.T) {
-	ctx, _, _, keeper, _, _ := TestCreateInput()
+	ctx, _, keeper, _ := TestCreateInput()
 
 	keeper.DeleteActiveSessionIDs(ctx, 1)
 	ids := keeper.GetActiveSessionIDs(ctx, 1)
@@ -234,7 +235,7 @@ func TestKeeper_DeleteActiveSessionIDs(t *testing.T) {
 }
 
 func TestKeeper_GetSessionsOfSubscription(t *testing.T) {
-	ctx, _, _, keeper, _, _ := TestCreateInput()
+	ctx, _, keeper, _ := TestCreateInput()
 
 	sessions := keeper.GetSessionsOfSubscription(ctx, types.TestIDZero)
 	require.Equal(t, types.TestSessionsEmpty, sessions)
@@ -255,7 +256,7 @@ func TestKeeper_GetSessionsOfSubscription(t *testing.T) {
 }
 
 func TestKeeper_GetAllSessions(t *testing.T) {
-	ctx, _, _, keeper, _, _ := TestCreateInput()
+	ctx, _, keeper, _ := TestCreateInput()
 
 	sessions := keeper.GetAllSessions(ctx)
 	require.Equal(t, types.TestSessionsNil, sessions)
@@ -277,7 +278,7 @@ func TestKeeper_GetAllSessions(t *testing.T) {
 }
 
 func TestKeeper_AddSessionIDToActiveList(t *testing.T) {
-	ctx, _, _, keeper, _, _ := TestCreateInput()
+	ctx, _, keeper, _ := TestCreateInput()
 
 	ids := keeper.GetActiveSessionIDs(ctx, 1)
 	require.Equal(t, types.TestIDsNil, ids)
@@ -296,7 +297,7 @@ func TestKeeper_AddSessionIDToActiveList(t *testing.T) {
 }
 
 func TestKeeper_RemoveSessionIDFromActiveList(t *testing.T) {
-	ctx, _, _, keeper, _, _ := TestCreateInput()
+	ctx, _, keeper, _ := TestCreateInput()
 
 	ids := keeper.GetActiveSessionIDs(ctx, 1)
 	require.Equal(t, types.TestIDsNil, ids)
