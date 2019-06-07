@@ -6,7 +6,7 @@ import (
 	abci "github.com/tendermint/tendermint/abci/types"
 
 	"github.com/ironman0x7b2/sentinel-sdk/x/deposit/keeper"
-	"github.com/ironman0x7b2/sentinel-sdk/x/vpn/types"
+	"github.com/ironman0x7b2/sentinel-sdk/x/deposit/types"
 )
 
 func NewQuerier(k keeper.Keeper, cdc *codec.Codec) csdk.Querier {
