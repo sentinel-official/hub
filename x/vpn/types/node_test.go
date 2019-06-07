@@ -6,7 +6,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/ironman0x7b2/sentinel-sdk/types"
+	sdk "github.com/ironman0x7b2/sentinel-sdk/types"
 )
 
 func TestNode_UpdateInfo(t *testing.T) {
@@ -49,7 +49,7 @@ func TestNode_UpdateInfo(t *testing.T) {
 			Node{PricesPerGB: TestCoinsPos},
 		}, {
 			"net_speed is empty",
-			Node{InternetSpeed: types.Bandwidth{}},
+			Node{InternetSpeed: sdk.Bandwidth{}},
 			Node{},
 		}, {
 			"net_speed is negative",

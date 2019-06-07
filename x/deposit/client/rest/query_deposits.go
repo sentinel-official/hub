@@ -12,7 +12,7 @@ import (
 	"github.com/ironman0x7b2/sentinel-sdk/x/deposit/client/common"
 )
 
-func getDepositsOfAddressHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) http.HandlerFunc {
+func getDepositOfAddressHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 

@@ -21,7 +21,8 @@ func QueryNode(cliCtx context.CLIContext, cdc *codec.Codec, _id string) (*vpn.No
 		return nil, err
 	}
 
-	res, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s", vpn.QuerierRoute, vpn.QueryNode), paramBytes)
+	res, err := cliCtx.QueryWithData(
+		fmt.Sprintf("custom/%s/%s", vpn.QuerierRoute, vpn.QueryNode), paramBytes)
 	if err != nil {
 		return nil, err
 	}
@@ -50,7 +51,8 @@ func QueryNodesOfAddress(cliCtx context.CLIContext, cdc *codec.Codec, _address s
 		return nil, err
 	}
 
-	res, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s", vpn.QuerierRoute, vpn.QueryNodesOfAddress), paramBytes)
+	res, err := cliCtx.QueryWithData(
+		fmt.Sprintf("custom/%s/%s", vpn.QuerierRoute, vpn.QueryNodesOfAddress), paramBytes)
 	if err != nil {
 		return nil, err
 	}
@@ -67,7 +69,8 @@ func QueryNodesOfAddress(cliCtx context.CLIContext, cdc *codec.Codec, _address s
 }
 
 func QueryAllNodes(cliCtx context.CLIContext, cdc *codec.Codec) ([]vpn.Node, error) {
-	res, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s", vpn.QuerierRoute, vpn.QueryAllNodes), nil)
+	res, err := cliCtx.QueryWithData(
+		fmt.Sprintf("custom/%s/%s", vpn.QuerierRoute, vpn.QueryAllNodes), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -92,7 +95,8 @@ func QuerySubscription(cliCtx context.CLIContext, cdc *codec.Codec, _id string) 
 		return nil, err
 	}
 
-	res, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s", vpn.QuerierRoute, vpn.QuerySubscription), paramBytes)
+	res, err := cliCtx.QueryWithData(
+		fmt.Sprintf("custom/%s/%s", vpn.QuerierRoute, vpn.QuerySubscription), paramBytes)
 	if err != nil {
 		return nil, err
 	}
@@ -117,7 +121,8 @@ func QuerySubscriptionsOfNode(cliCtx context.CLIContext, cdc *codec.Codec, _id s
 		return nil, err
 	}
 
-	res, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s", vpn.QuerierRoute, vpn.QuerySubscriptionsOfNode), paramBytes)
+	res, err := cliCtx.QueryWithData(
+		fmt.Sprintf("custom/%s/%s", vpn.QuerierRoute, vpn.QuerySubscriptionsOfNode), paramBytes)
 	if err != nil {
 		return nil, err
 	}
@@ -133,7 +138,9 @@ func QuerySubscriptionsOfNode(cliCtx context.CLIContext, cdc *codec.Codec, _id s
 	return subscriptions, nil
 }
 
-func QuerySubscriptionsOfAddress(cliCtx context.CLIContext, cdc *codec.Codec, _address string) ([]vpn.Subscription, error) {
+func QuerySubscriptionsOfAddress(cliCtx context.CLIContext, cdc *codec.Codec,
+	_address string) ([]vpn.Subscription, error) {
+
 	address, err := csdk.AccAddressFromBech32(_address)
 	if err != nil {
 		return nil, err
@@ -146,7 +153,8 @@ func QuerySubscriptionsOfAddress(cliCtx context.CLIContext, cdc *codec.Codec, _a
 		return nil, err
 	}
 
-	res, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s", vpn.QuerierRoute, vpn.QuerySubscriptionsOfAddress), paramBytes)
+	res, err := cliCtx.QueryWithData(
+		fmt.Sprintf("custom/%s/%s", vpn.QuerierRoute, vpn.QuerySubscriptionsOfAddress), paramBytes)
 	if err != nil {
 		return nil, err
 	}
@@ -163,7 +171,8 @@ func QuerySubscriptionsOfAddress(cliCtx context.CLIContext, cdc *codec.Codec, _a
 }
 
 func QueryAllSubscriptions(cliCtx context.CLIContext, cdc *codec.Codec) ([]vpn.Subscription, error) {
-	res, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s", vpn.QuerierRoute, vpn.QueryAllSubscriptions), nil)
+	res, err := cliCtx.QueryWithData(
+		fmt.Sprintf("custom/%s/%s", vpn.QuerierRoute, vpn.QueryAllSubscriptions), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -188,7 +197,8 @@ func QuerySessionsCountOfSubscription(cliCtx context.CLIContext, cdc *codec.Code
 		return 0, err
 	}
 
-	res, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s", vpn.QuerierRoute, vpn.QuerySessionsCountOfSubscription), paramBytes)
+	res, err := cliCtx.QueryWithData(
+		fmt.Sprintf("custom/%s/%s", vpn.QuerierRoute, vpn.QuerySessionsCountOfSubscription), paramBytes)
 	if err != nil {
 		return 0, err
 	}
@@ -213,7 +223,8 @@ func QuerySession(cliCtx context.CLIContext, cdc *codec.Codec, _id string) (*vpn
 		return nil, err
 	}
 
-	res, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s", vpn.QuerierRoute, vpn.QuerySession), paramBytes)
+	res, err := cliCtx.QueryWithData(
+		fmt.Sprintf("custom/%s/%s", vpn.QuerierRoute, vpn.QuerySession), paramBytes)
 	if err != nil {
 		return nil, err
 	}
@@ -229,7 +240,9 @@ func QuerySession(cliCtx context.CLIContext, cdc *codec.Codec, _id string) (*vpn
 	return &session, nil
 }
 
-func QuerySessionOfSubscription(cliCtx context.CLIContext, cdc *codec.Codec, _id string, index uint64) (*vpn.Session, error) {
+func QuerySessionOfSubscription(cliCtx context.CLIContext, cdc *codec.Codec,
+	_id string, index uint64) (*vpn.Session, error) {
+
 	id := sdk.NewIDFromString(_id)
 	params := vpn.NewQuerySessionOfSubscriptionPrams(id, index)
 
@@ -238,7 +251,8 @@ func QuerySessionOfSubscription(cliCtx context.CLIContext, cdc *codec.Codec, _id
 		return nil, err
 	}
 
-	res, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s", vpn.QuerierRoute, vpn.QuerySessionOfSubscription), paramBytes)
+	res, err := cliCtx.QueryWithData(
+		fmt.Sprintf("custom/%s/%s", vpn.QuerierRoute, vpn.QuerySessionOfSubscription), paramBytes)
 	if err != nil {
 		return nil, err
 	}
@@ -263,7 +277,8 @@ func QuerySessionsOfSubscription(cliCtx context.CLIContext, cdc *codec.Codec, _i
 		return nil, err
 	}
 
-	res, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s", vpn.QuerierRoute, vpn.QuerySessionsOfSubscription), paramBytes)
+	res, err := cliCtx.QueryWithData(
+		fmt.Sprintf("custom/%s/%s", vpn.QuerierRoute, vpn.QuerySessionsOfSubscription), paramBytes)
 	if err != nil {
 		return nil, err
 	}
@@ -280,7 +295,8 @@ func QuerySessionsOfSubscription(cliCtx context.CLIContext, cdc *codec.Codec, _i
 }
 
 func QueryAllSessions(cliCtx context.CLIContext, cdc *codec.Codec) ([]vpn.Session, error) {
-	res, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s", vpn.QuerierRoute, vpn.QueryAllSessions), nil)
+	res, err := cliCtx.QueryWithData(
+		fmt.Sprintf("custom/%s/%s", vpn.QuerierRoute, vpn.QueryAllSessions), nil)
 	if err != nil {
 		return nil, err
 	}

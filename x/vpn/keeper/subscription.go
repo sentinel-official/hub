@@ -118,7 +118,9 @@ func (k Keeper) SetSubscriptionIDByAddress(ctx csdk.Context, address csdk.AccAdd
 	store.Set(key, value)
 }
 
-func (k Keeper) GetSubscriptionIDByAddress(ctx csdk.Context, address csdk.AccAddress, i uint64) (id sdk.ID, found bool) {
+func (k Keeper) GetSubscriptionIDByAddress(ctx csdk.Context,
+	address csdk.AccAddress, i uint64) (id sdk.ID, found bool) {
+
 	store := ctx.KVStore(k.subscriptionStoreKey)
 
 	key := types.SubscriptionIDByAddressKey(address, i)
@@ -145,7 +147,9 @@ func (k Keeper) GetSubscriptionsOfNode(ctx csdk.Context, id sdk.ID) (subscriptio
 	return subscriptions
 }
 
-func (k Keeper) GetSubscriptionsOfAddress(ctx csdk.Context, address csdk.AccAddress) (subscriptions []types.Subscription) {
+func (k Keeper) GetSubscriptionsOfAddress(ctx csdk.Context,
+	address csdk.AccAddress) (subscriptions []types.Subscription) {
+
 	count := k.GetSubscriptionsCountOfAddress(ctx, address)
 
 	subscriptions = make([]types.Subscription, 0, count)

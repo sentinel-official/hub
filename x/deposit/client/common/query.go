@@ -24,7 +24,8 @@ func QueryDepositOfAddress(cliCtx context.CLIContext, cdc *codec.Codec, _address
 		return nil, err
 	}
 
-	res, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s", deposit.QuerierRoute, deposit.QueryDepositOfAddress), paramBytes)
+	res, err := cliCtx.QueryWithData(
+		fmt.Sprintf("custom/%s/%s", deposit.QuerierRoute, deposit.QueryDepositOfAddress), paramBytes)
 	if err != nil {
 		return nil, err
 	}
@@ -41,7 +42,8 @@ func QueryDepositOfAddress(cliCtx context.CLIContext, cdc *codec.Codec, _address
 }
 
 func QueryAllDeposits(cliCtx context.CLIContext, cdc *codec.Codec) ([]deposit.Deposit, error) {
-	res, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s", deposit.QuerierRoute, deposit.QueryAllDeposits), nil)
+	res, err := cliCtx.QueryWithData(
+		fmt.Sprintf("custom/%s/%s", deposit.QuerierRoute, deposit.QueryAllDeposits), nil)
 	if err != nil {
 		return nil, err
 	}

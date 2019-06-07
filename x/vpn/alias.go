@@ -19,6 +19,7 @@ const (
 	StatusDeRegistered               = types.StatusDeRegistered
 	TagNodeID                        = types.TagNodeID
 	TagSessionID                     = types.TagSessionID
+	TagSubscriptionID                = types.TagSubscriptionID
 	DefaultParamspace                = keeper.DefaultParamspace
 	QueryNode                        = querier.QueryNode
 	QueryNodesOfAddress              = querier.QueryNodesOfAddress
