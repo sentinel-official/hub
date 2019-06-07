@@ -87,7 +87,7 @@ func main() {
 		client.LineBreak,
 		keys.Commands(),
 		client.LineBreak,
-		version.VersionCmd,
+		version.Cmd,
 		client.NewCompletionCmd(rootCmd, true),
 	)
 
@@ -161,12 +161,13 @@ func registerRoutes(rs *lcd.RestServer) {
 	vpnRest.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc)
 }
 
+// nolint:deadcode,unused
 func registerSwaggerUI(rs *lcd.RestServer) {
-	statikFS, err := fs.New()
+	staticFS, err := fs.New()
 	if err != nil {
 		panic(err)
 	}
-	staticServer := http.FileServer(statikFS)
+	staticServer := http.FileServer(staticFS)
 	rs.Mux.PathPrefix("/swagger-ui/").Handler(http.StripPrefix("/swagger-ui/", staticServer))
 }
 
@@ -190,5 +191,6 @@ func initConfig(cmd *cobra.Command) error {
 	if err := viper.BindPFlag(cli.EncodingFlag, cmd.PersistentFlags().Lookup(cli.EncodingFlag)); err != nil {
 		return err
 	}
+
 	return viper.BindPFlag(cli.OutputFlag, cmd.PersistentFlags().Lookup(cli.OutputFlag))
 }

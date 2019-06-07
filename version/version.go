@@ -5,35 +5,36 @@ import (
 	"runtime"
 )
 
+// nolint:gochecknoglobals
 var (
-	Commit        = ""
-	Version       = ""
-	VendorDirHash = ""
-	BuildTags     = ""
+	Version    = ""
+	Commit     = ""
+	VendorHash = ""
+	BuildTags  = ""
 )
 
-type versionInfo struct {
-	SentinelSDK   string `json:"sentinel_sdk"`
-	GitCommit     string `json:"commit"`
-	VendorDirHash string `json:"vendor_hash"`
-	BuildTags     string `json:"build_tags"`
-	GoVersion     string `json:"go"`
+type Info struct {
+	Version    string `json:"version"`
+	Commit     string `json:"commit"`
+	VendorHash string `json:"vendor_hash"`
+	BuildTags  string `json:"build_tags"`
+	Go         string `json:"go"`
 }
 
-func (v versionInfo) String() string {
-	return fmt.Sprintf(`sentinel-sdk: %s
+func (i Info) String() string {
+	return fmt.Sprintf(`%s
 git commit: %s
 vendor hash: %s
 build tags: %s
-%s`, v.SentinelSDK, v.GitCommit, v.VendorDirHash, v.BuildTags, v.GoVersion)
+%s`, i.Version, i.Commit, i.VendorHash, i.BuildTags, i.Go)
 }
 
-func newVersionInfo() versionInfo {
-	return versionInfo{
-		SentinelSDK:   Version,
-		GitCommit:     Commit,
-		VendorDirHash: VendorDirHash,
-		BuildTags:     BuildTags,
-		GoVersion:     fmt.Sprintf("go version %s %s/%s\n", runtime.Version(), runtime.GOOS, runtime.GOARCH),
+func newInfo() Info {
+	return Info{
+		Version:    Version,
+		Commit:     Commit,
+		VendorHash: VendorHash,
+		BuildTags:  BuildTags,
+		Go:         fmt.Sprintf("go version %s %s/%s\n", runtime.Version(), runtime.GOOS, runtime.GOARCH),
 	}
 }

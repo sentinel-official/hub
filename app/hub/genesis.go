@@ -27,67 +27,6 @@ import (
 	"github.com/ironman0x7b2/sentinel-sdk/x/vpn"
 )
 
-type GenesisState struct {
-	Accounts         []GenesisAccount          `json:"accounts"`
-	AuthData         auth.GenesisState         `json:"auth_data"`
-	BankData         bank.GenesisState         `json:"bank_data"`
-	StakingData      staking.GenesisState      `json:"staking_data"`
-	MintData         mint.GenesisState         `json:"mint_data"`
-	DistributionData distribution.GenesisState `json:"distribution_data"`
-	GovData          gov.GenesisState          `json:"gov_data"`
-	CrisisData       crisis.GenesisState       `json:"crisis_data"`
-	SlashingData     slashing.GenesisState     `json:"slashing_data"`
-	DepositData      deposit.GenesisState      `json:"deposit_data"`
-	VPNData          vpn.GenesisState          `json:"vpn_data"`
-	GenTxs           []json.RawMessage         `json:"gen_txs"`
-}
-
-func NewGenesisState(accounts []GenesisAccount, authData auth.GenesisState, bankData bank.GenesisState,
-	stakingData staking.GenesisState, mintData mint.GenesisState, distributionData distribution.GenesisState,
-	govData gov.GenesisState, crisisData crisis.GenesisState, slashingData slashing.GenesisState,
-	depositData deposit.GenesisState, vpnData vpn.GenesisState) GenesisState {
-
-	return GenesisState{
-		Accounts:         accounts,
-		AuthData:         authData,
-		BankData:         bankData,
-		StakingData:      stakingData,
-		MintData:         mintData,
-		DistributionData: distributionData,
-		GovData:          govData,
-		CrisisData:       crisisData,
-		SlashingData:     slashingData,
-		DepositData:      depositData,
-		VPNData:          vpnData,
-	}
-}
-
-func (gs GenesisState) Sanitize() {
-	sort.Slice(gs.Accounts, func(i, j int) bool {
-		return gs.Accounts[i].AccountNumber < gs.Accounts[j].AccountNumber
-	})
-
-	for _, acc := range gs.Accounts {
-		acc.Coins = acc.Coins.Sort()
-	}
-
-	sort.Slice(gs.DepositData, func(i, j int) bool {
-		return gs.DepositData[i].Address.String() < gs.DepositData[j].Address.String()
-	})
-
-	for _, dep := range gs.DepositData {
-		dep.Coins = dep.Coins.Sort()
-	}
-
-	sort.Slice(gs.VPNData.Nodes, func(i, j int) bool {
-		return gs.VPNData.Nodes[i].ID < gs.VPNData.Nodes[j].ID
-	})
-
-	sort.Slice(gs.VPNData.Sessions, func(i, j int) bool {
-		return gs.VPNData.Sessions[i].ID < gs.VPNData.Sessions[j].ID
-	})
-}
-
 type GenesisAccount struct {
 	Address          csdk.AccAddress `json:"address"`
 	Coins            csdk.Coins      `json:"coins"`
@@ -100,7 +39,7 @@ type GenesisAccount struct {
 	EndTime          int64           `json:"end_time"`
 }
 
-func NewGenesisAccount(acc *auth.BaseAccount) GenesisAccount {
+func NewGenesisAccountFromBaseAccount(acc *auth.BaseAccount) GenesisAccount {
 	return GenesisAccount{
 		Address:       acc.Address,
 		Coins:         acc.Coins,
@@ -109,7 +48,7 @@ func NewGenesisAccount(acc *auth.BaseAccount) GenesisAccount {
 	}
 }
 
-func NewGenesisAccountI(acc auth.Account) GenesisAccount {
+func NewGenesisAccount(acc auth.Account) GenesisAccount {
 	genesisAccount := GenesisAccount{
 		Address:       acc.GetAddress(),
 		Coins:         acc.GetCoins(),
@@ -138,7 +77,7 @@ func (ga *GenesisAccount) ToAccount() auth.Account {
 	}
 
 	if !ga.OriginalVesting.IsZero() {
-		baseVestingAcc := &auth.BaseVestingAccount{
+		baseVestingAccount := &auth.BaseVestingAccount{
 			BaseAccount:      baseAccount,
 			OriginalVesting:  ga.OriginalVesting,
 			DelegatedFree:    ga.DelegatedFree,
@@ -148,12 +87,12 @@ func (ga *GenesisAccount) ToAccount() auth.Account {
 
 		if ga.StartTime != 0 && ga.EndTime != 0 {
 			return &auth.ContinuousVestingAccount{
-				BaseVestingAccount: baseVestingAcc,
+				BaseVestingAccount: baseVestingAccount,
 				StartTime:          ga.StartTime,
 			}
 		} else if ga.EndTime != 0 {
 			return &auth.DelayedVestingAccount{
-				BaseVestingAccount: baseVestingAcc,
+				BaseVestingAccount: baseVestingAccount,
 			}
 		} else {
 			panic(fmt.Sprintf("invalid genesis vesting account: %+v", ga))
@@ -163,105 +102,57 @@ func (ga *GenesisAccount) ToAccount() auth.Account {
 	return baseAccount
 }
 
-func GenGenesisState(cdc *codec.Codec, genesisDoc tm.GenesisDoc,
-	appGenTxs []json.RawMessage) (genesisState GenesisState, err error) {
-
-	if err = cdc.UnmarshalJSON(genesisDoc.AppState, &genesisState); err != nil {
-		return genesisState, err
-	}
-
-	if len(appGenTxs) == 0 {
-		return genesisState, errors.New("there must be at least one genesis tx")
-	}
-
-	stakingData := genesisState.StakingData
-	for i, genTx := range appGenTxs {
-		var tx auth.StdTx
-		if err := cdc.UnmarshalJSON(genTx, &tx); err != nil {
-			return genesisState, err
-		}
-
-		msgs := tx.GetMsgs()
-		if len(msgs) != 1 {
-			return genesisState, errors.New(
-				"must provide genesis StdTx with exactly 1 CreateValidator message")
-		}
-
-		if _, ok := msgs[0].(staking.MsgCreateValidator); !ok {
-			return genesisState, fmt.Errorf(
-				"genesis transaction %v does not contain a MsgCreateValidator", i)
-		}
-	}
-
-	for _, acc := range genesisState.Accounts {
-		for _, coin := range acc.Coins {
-			if coin.Denom == genesisState.StakingData.Params.BondDenom {
-				stakingData.Pool.NotBondedTokens = stakingData.Pool.NotBondedTokens.Add(coin.Amount)
-			}
-		}
-	}
-
-	genesisState.StakingData = stakingData
-	genesisState.GenTxs = appGenTxs
-
-	return genesisState, nil
+type GenesisState struct {
+	Accounts     []GenesisAccount          `json:"accounts"`
+	Auth         auth.GenesisState         `json:"auth"`
+	Bank         bank.GenesisState         `json:"bank"`
+	Staking      staking.GenesisState      `json:"staking"`
+	Mint         mint.GenesisState         `json:"mint"`
+	Distribution distribution.GenesisState `json:"distribution"`
+	Gov          gov.GenesisState          `json:"gov"`
+	Crisis       crisis.GenesisState       `json:"crisis"`
+	Slashing     slashing.GenesisState     `json:"slashing"`
+	Deposit      deposit.GenesisState      `json:"deposit"`
+	VPN          vpn.GenesisState          `json:"vpn"`
+	GenTxs       []json.RawMessage         `json:"gen_txs"`
 }
 
-func NewDefaultGenesisState() GenesisState {
-	state := GenesisState{
-		Accounts:         nil,
-		AuthData:         auth.DefaultGenesisState(),
-		BankData:         bank.DefaultGenesisState(),
-		StakingData:      staking.DefaultGenesisState(),
-		MintData:         mint.DefaultGenesisState(),
-		DistributionData: distribution.DefaultGenesisState(),
-		GovData:          gov.DefaultGenesisState(),
-		CrisisData:       crisis.DefaultGenesisState(),
-		SlashingData:     slashing.DefaultGenesisState(),
-		DepositData:      deposit.DefaultGenesisState(),
-		VPNData:          vpn.DefaultGenesisState(),
-		GenTxs:           nil,
-	}
+func NewGenesisState(accounts []GenesisAccount, _auth auth.GenesisState, _bank bank.GenesisState,
+	_staking staking.GenesisState, _mint mint.GenesisState, _distribution distribution.GenesisState,
+	_gov gov.GenesisState, _crisis crisis.GenesisState, _slashing slashing.GenesisState,
+	_deposit deposit.GenesisState, _vpn vpn.GenesisState) GenesisState {
 
-	return state
+	return GenesisState{
+		Accounts:     accounts,
+		Auth:         _auth,
+		Bank:         _bank,
+		Staking:      _staking,
+		Mint:         _mint,
+		Distribution: _distribution,
+		Gov:          _gov,
+		Crisis:       _crisis,
+		Slashing:     _slashing,
+		Deposit:      _deposit,
+		VPN:          _vpn,
+	}
 }
 
-func ValidateGenesisState(genesisState GenesisState) error {
-	if err := validateGenesisStateAccounts(genesisState.Accounts); err != nil {
-		return err
-	}
-	if len(genesisState.GenTxs) > 0 {
-		return nil
-	}
-	if err := auth.ValidateGenesis(genesisState.AuthData); err != nil {
-		return err
-	}
-	if err := bank.ValidateGenesis(genesisState.BankData); err != nil {
-		return err
-	}
-	if err := staking.ValidateGenesis(genesisState.StakingData); err != nil {
-		return err
-	}
-	if err := slashing.ValidateGenesis(genesisState.SlashingData); err != nil {
-		return err
-	}
-	if err := distribution.ValidateGenesis(genesisState.DistributionData); err != nil {
-		return err
-	}
-	if err := gov.ValidateGenesis(genesisState.GovData); err != nil {
-		return err
-	}
-	if err := mint.ValidateGenesis(genesisState.MintData); err != nil {
-		return err
-	}
-	if err := crisis.ValidateGenesis(genesisState.CrisisData); err != nil {
-		return err
-	}
-	if err := deposit.ValidateGenesis(genesisState.DepositData); err != nil {
-		return err
+func (gs GenesisState) Sanitize() {
+	sort.Slice(gs.Accounts, func(i, j int) bool {
+		return gs.Accounts[i].AccountNumber < gs.Accounts[j].AccountNumber
+	})
+
+	for _, acc := range gs.Accounts {
+		acc.Coins = acc.Coins.Sort()
 	}
 
-	return vpn.ValidateGenesis(genesisState.VPNData)
+	sort.Slice(gs.Deposit, func(i, j int) bool {
+		return gs.Deposit[i].Address.String() < gs.Deposit[j].Address.String()
+	})
+
+	for _, dep := range gs.Deposit {
+		dep.Coins = dep.Coins.Sort()
+	}
 }
 
 func validateGenesisStateAccounts(accounts []GenesisAccount) error {
@@ -294,17 +185,104 @@ func validateGenesisStateAccounts(accounts []GenesisAccount) error {
 	return nil
 }
 
-func GenGenesisStateJSON(cdc *codec.Codec, genDoc tm.GenesisDoc,
-	appGenTxs []json.RawMessage) (appState json.RawMessage, err error) {
+func NewGenesisStateFromGenesisDoc(cdc *codec.Codec, genesisDoc tm.GenesisDoc,
+	genTxs []json.RawMessage) (state GenesisState, err error) {
 
-	genesisState, err := GenGenesisState(cdc, genDoc, appGenTxs)
-	if err != nil {
-		return nil, err
+	if err = cdc.UnmarshalJSON(genesisDoc.AppState, &state); err != nil {
+		return state, err
 	}
 
-	return codec.MarshalJSONIndent(cdc, genesisState)
+	if len(genTxs) == 0 {
+		return state, errors.New("there must be at least one genesis tx")
+	}
+
+	_staking := state.Staking
+	for i, genTx := range genTxs {
+		var tx auth.StdTx
+		if err := cdc.UnmarshalJSON(genTx, &tx); err != nil {
+			return state, err
+		}
+
+		msgs := tx.GetMsgs()
+		if len(msgs) != 1 {
+			return state, errors.New(
+				"must provide genesis StdTx with exactly 1 CreateValidator message")
+		}
+
+		if _, ok := msgs[0].(staking.MsgCreateValidator); !ok {
+			return state, fmt.Errorf(
+				"genesis transaction %v does not contain a MsgCreateValidator", i)
+		}
+	}
+
+	for _, acc := range state.Accounts {
+		for _, coin := range acc.Coins {
+			if coin.Denom == state.Staking.Params.BondDenom {
+				_staking.Pool.NotBondedTokens = _staking.Pool.NotBondedTokens.Add(coin.Amount)
+			}
+		}
+	}
+
+	state.Staking = _staking
+	state.GenTxs = genTxs
+
+	return state, nil
 }
 
+func NewDefaultGenesisState() GenesisState {
+	return GenesisState{
+		Accounts:     nil,
+		Auth:         auth.DefaultGenesisState(),
+		Bank:         bank.DefaultGenesisState(),
+		Staking:      staking.DefaultGenesisState(),
+		Mint:         mint.DefaultGenesisState(),
+		Distribution: distribution.DefaultGenesisState(),
+		Gov:          gov.DefaultGenesisState(),
+		Crisis:       crisis.DefaultGenesisState(),
+		Slashing:     slashing.DefaultGenesisState(),
+		Deposit:      deposit.DefaultGenesisState(),
+		VPN:          vpn.DefaultGenesisState(),
+		GenTxs:       nil,
+	}
+}
+
+// nolint:gocyclo
+func ValidateGenesisState(state GenesisState) error {
+	if err := validateGenesisStateAccounts(state.Accounts); err != nil {
+		return err
+	}
+	if err := auth.ValidateGenesis(state.Auth); err != nil {
+		return err
+	}
+	if err := bank.ValidateGenesis(state.Bank); err != nil {
+		return err
+	}
+	if err := staking.ValidateGenesis(state.Staking); err != nil {
+		return err
+	}
+	if err := mint.ValidateGenesis(state.Mint); err != nil {
+		return err
+	}
+	if err := distribution.ValidateGenesis(state.Distribution); err != nil {
+		return err
+	}
+	if err := gov.ValidateGenesis(state.Gov); err != nil {
+		return err
+	}
+	if err := crisis.ValidateGenesis(state.Crisis); err != nil {
+		return err
+	}
+	if err := slashing.ValidateGenesis(state.Slashing); err != nil {
+		return err
+	}
+	if err := deposit.ValidateGenesis(state.Deposit); err != nil {
+		return err
+	}
+
+	return vpn.ValidateGenesis(state.VPN)
+}
+
+// nolint:gocyclo
 func CollectStdTxs(cdc *codec.Codec, moniker string, genTxsDir string,
 	genDoc tm.GenesisDoc) (appGenTxs []auth.StdTx, persistentPeers string, err error) {
 
@@ -314,14 +292,14 @@ func CollectStdTxs(cdc *codec.Codec, moniker string, genTxsDir string,
 		return appGenTxs, persistentPeers, err
 	}
 
-	var appState GenesisState
-	if err := cdc.UnmarshalJSON(genDoc.AppState, &appState); err != nil {
+	var state GenesisState
+	if err = cdc.UnmarshalJSON(genDoc.AppState, &state); err != nil {
 		return appGenTxs, persistentPeers, err
 	}
 
-	addrMap := make(map[string]GenesisAccount, len(appState.Accounts))
-	for i := 0; i < len(appState.Accounts); i++ {
-		acc := appState.Accounts[i]
+	addrMap := make(map[string]GenesisAccount, len(state.Accounts))
+	for i := 0; i < len(state.Accounts); i++ {
+		acc := state.Accounts[i]
 		addrMap[acc.Address.String()] = acc
 	}
 
@@ -337,10 +315,12 @@ func CollectStdTxs(cdc *codec.Codec, moniker string, genTxsDir string,
 		if jsonRawTx, err = ioutil.ReadFile(filename); err != nil {
 			return appGenTxs, persistentPeers, err
 		}
+
 		var genStdTx auth.StdTx
 		if err = cdc.UnmarshalJSON(jsonRawTx, &genStdTx); err != nil {
 			return appGenTxs, persistentPeers, err
 		}
+
 		appGenTxs = append(appGenTxs, genStdTx)
 
 		nodeAddrIP := genStdTx.GetMemo()
@@ -351,12 +331,15 @@ func CollectStdTxs(cdc *codec.Codec, moniker string, genTxsDir string,
 
 		msgs := genStdTx.GetMsgs()
 		if len(msgs) != 1 {
-
 			return appGenTxs, persistentPeers, errors.New(
 				"each genesis transaction must provide a single genesis message")
 		}
 
-		msg := msgs[0].(staking.MsgCreateValidator)
+		msg, ok := msgs[0].(staking.MsgCreateValidator)
+		if !ok {
+			return
+		}
+
 		delAddr := msg.DelegatorAddress.String()
 		valAddr := csdk.AccAddress(msg.ValidatorAddress).String()
 

@@ -27,6 +27,9 @@ import (
 	app "github.com/ironman0x7b2/sentinel-sdk/app/hub"
 )
 
+const nodeDirPerm = 0755
+
+// nolint:gochecknoglobals
 var (
 	flagNodeDirPrefix     = "node-dir-prefix"
 	flagNumValidators     = "v"
@@ -36,9 +39,7 @@ var (
 	flagStartingIPAddress = "starting-ip-address"
 )
 
-const nodeDirPerm = 0755
-
-func TestnetFilesCmd(ctx *server.Context, cdc *codec.Codec) *cobra.Command {
+func TestNetFilesCmd(ctx *server.Context, cdc *codec.Codec) *cobra.Command {
 
 	cmd := &cobra.Command{
 		Use:   "testnet",
@@ -53,7 +54,7 @@ Example:
 	`,
 		RunE: func(_ *cobra.Command, _ []string) error {
 			config := ctx.Config
-			return initTestnet(config, cdc)
+			return initTestNet(config, cdc)
 		},
 	}
 
@@ -73,7 +74,7 @@ Example:
 		"Home directory of the node's cli configuration",
 	)
 	cmd.Flags().String(flagStartingIPAddress, "192.168.0.1",
-		"Starting IP address (192.168.0.1 results in persistent peers list ID0@192.168.0.1:46656, ID1@192.168.0.2:46656, ...)")
+		"Starting IP address (192.168.0.1 results in persistent peers list ID0@192.168.0.1:46656, ID1@192.168.0.2:46656, ...)") // nolint:lll
 
 	cmd.Flags().String(
 		client.FlagChainID, "", "genesis file chain-id, if left blank will be randomly created",
@@ -86,7 +87,8 @@ Example:
 	return cmd
 }
 
-func initTestnet(config *tmConfig.Config, cdc *codec.Codec) error {
+// nolint:gocyclo
+func initTestNet(config *tmConfig.Config, cdc *codec.Codec) error {
 	var chainID string
 
 	outDir := viper.GetString(flagOutputDir)
@@ -104,10 +106,8 @@ func initTestnet(config *tmConfig.Config, cdc *codec.Codec) error {
 	hubConfig := serverConfig.DefaultConfig()
 	hubConfig.MinGasPrices = viper.GetString(server.FlagMinGasPrices)
 
-	var (
-		accs     []app.GenesisAccount
-		genFiles []string
-	)
+	accounts := make([]app.GenesisAccount, 0, numValidators)
+	genFiles := make([]string, 0, numValidators)
 
 	for i := 0; i < numValidators; i++ {
 		nodeDirName := fmt.Sprintf("%s%d", viper.GetString(flagNodeDirPrefix), i)
@@ -115,7 +115,7 @@ func initTestnet(config *tmConfig.Config, cdc *codec.Codec) error {
 		nodeCliHomeName := viper.GetString(flagNodeCliHome)
 		nodeDir := filepath.Join(outDir, nodeDirName, nodeDaemonHomeName)
 		clientDir := filepath.Join(outDir, nodeDirName, nodeCliHomeName)
-		gentxsDir := filepath.Join(outDir, "gentxs")
+		genTxsDir := filepath.Join(outDir, "gentxs")
 
 		config.SetRoot(nodeDir)
 
@@ -183,7 +183,7 @@ func initTestnet(config *tmConfig.Config, cdc *codec.Codec) error {
 
 		accTokens := csdk.TokensFromTendermintPower(1000)
 		accStakingTokens := csdk.TokensFromTendermintPower(500)
-		accs = append(accs, app.GenesisAccount{
+		accounts = append(accounts, app.GenesisAccount{
 			Address: addr,
 			Coins: csdk.Coins{
 				csdk.NewCoin(fmt.Sprintf("%stoken", nodeDirName), accTokens),
@@ -200,14 +200,16 @@ func initTestnet(config *tmConfig.Config, cdc *codec.Codec) error {
 			staking.NewCommissionMsg(csdk.ZeroDec(), csdk.ZeroDec(), csdk.ZeroDec()),
 			csdk.OneInt(),
 		)
+
 		kb, err := keys.NewKeyBaseFromDir(clientDir)
 		if err != nil {
 			return err
 		}
-		tx := auth.NewStdTx([]csdk.Msg{msg}, auth.StdFee{}, []auth.StdSignature{}, memo)
-		txBldr := authTxBuilder.NewTxBuilderFromCLI().WithChainID(chainID).WithMemo(memo).WithKeybase(kb)
 
-		signedTx, err := txBldr.SignStdTx(nodeDirName, app.DefaultKeyPass, tx, false)
+		tx := auth.NewStdTx([]csdk.Msg{msg}, auth.StdFee{}, []auth.StdSignature{}, memo)
+		txBuilder := authTxBuilder.NewTxBuilderFromCLI().WithChainID(chainID).WithMemo(memo).WithKeybase(kb)
+
+		signedTx, err := txBuilder.SignStdTx(nodeDirName, app.DefaultKeyPass, tx, false)
 		if err != nil {
 			_ = os.RemoveAll(outDir)
 			return err
@@ -219,7 +221,7 @@ func initTestnet(config *tmConfig.Config, cdc *codec.Codec) error {
 			return err
 		}
 
-		err = writeFile(fmt.Sprintf("%v.json", nodeDirName), gentxsDir, txBytes)
+		err = writeFile(fmt.Sprintf("%v.json", nodeDirName), genTxsDir, txBytes)
 		if err != nil {
 			_ = os.RemoveAll(outDir)
 			return err
@@ -229,7 +231,7 @@ func initTestnet(config *tmConfig.Config, cdc *codec.Codec) error {
 		serverConfig.WriteConfigFile(hubConfigFilePath, hubConfig)
 	}
 
-	if err := initGenFiles(cdc, chainID, accs, genFiles, numValidators); err != nil {
+	if err := initGenFiles(cdc, chainID, accounts, genFiles, numValidators); err != nil {
 		return err
 	}
 
@@ -281,14 +283,14 @@ func collectGenFiles(cdc *codec.Codec, config *tmConfig.Config, chainID string,
 	for i := 0; i < numValidators; i++ {
 		nodeDirName := fmt.Sprintf("%s%d", nodeDirPrefix, i)
 		nodeDir := filepath.Join(outDir, nodeDirName, nodeDaemonHomeName)
-		gentxsDir := filepath.Join(outDir, "gentxs")
+		genTxsDir := filepath.Join(outDir, "gentxs")
 		moniker := monikers[i]
 		config.Moniker = nodeDirName
 
 		config.SetRoot(nodeDir)
 
 		nodeID, valPubKey := nodeIDs[i], valPubKeys[i]
-		initCfg := newInitConfig(chainID, gentxsDir, moniker, nodeID, valPubKey)
+		initCfg := newInitConfig(chainID, genTxsDir, moniker, nodeID, valPubKey)
 
 		genDoc, err := loadGenesisDoc(cdc, config.GenesisFile())
 		if err != nil {

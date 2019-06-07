@@ -14,7 +14,7 @@ LD_FLAGS := -s -w \
 	-X github.com/ironman0x7b2/sentinel-sdk/version.BuildTags=${BUILD_TAGS}
 ifneq (${GOSUM},)
 	ifneq (${wildcard go.sum},)
-		LD_FLAGS += -X github.com/ironman0x7b2/sentinel-sdk/version.VendorDirHash=$(shell ${GOSUM} go.sum)
+		LD_FLAGS += -X github.com/ironman0x7b2/sentinel-sdk/version.VendorHash=$(shell ${GOSUM} go.sum)
 	endif
 endif
 

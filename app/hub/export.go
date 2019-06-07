@@ -31,14 +31,13 @@ func (app *Hub) ExportAppStateAndValidators(forZeroHeight bool, jailWhiteList []
 	}
 
 	var accounts []GenesisAccount
-	appendAccount := func(acc auth.Account) (stop bool) {
-		account := NewGenesisAccountI(acc)
+	app.accountKeeper.IterateAccounts(ctx, func(acc auth.Account) (stop bool) {
+		account := NewGenesisAccount(acc)
 		accounts = append(accounts, account)
 		return false
-	}
-	app.accountKeeper.IterateAccounts(ctx, appendAccount)
+	})
 
-	genState := NewGenesisState(
+	state := NewGenesisState(
 		accounts,
 		auth.ExportGenesis(ctx, app.accountKeeper, app.feeCollectionKeeper),
 		bank.ExportGenesis(ctx, app.bankKeeper),
@@ -51,28 +50,30 @@ func (app *Hub) ExportAppStateAndValidators(forZeroHeight bool, jailWhiteList []
 		deposit.ExportGenesis(ctx, app.depositKeeper),
 		vpn.ExportGenesis(ctx, app.vpnKeeper),
 	)
-	appState, err = codec.MarshalJSONIndent(app.cdc, genState)
+
+	appState, err = codec.MarshalJSONIndent(app.cdc, state)
 	if err != nil {
 		return nil, nil, err
 	}
+
 	validators = staking.WriteValidators(ctx, app.stakingKeeper)
 	return appState, validators, nil
 }
 
+// nolint:gocyclo
 func (app *Hub) prepForZeroHeightGenesis(ctx csdk.Context, jailWhiteList []string) {
 	applyWhiteList := false
-
 	if len(jailWhiteList) > 0 {
 		applyWhiteList = true
 	}
 
 	whiteListMap := make(map[string]bool)
-
 	for _, addr := range jailWhiteList {
 		_, err := csdk.ValAddressFromBech32(addr)
 		if err != nil {
 			log.Fatal(err)
 		}
+
 		whiteListMap[addr] = true
 	}
 
@@ -85,8 +86,8 @@ func (app *Hub) prepForZeroHeightGenesis(ctx csdk.Context, jailWhiteList []strin
 
 	delegations := app.stakingKeeper.GetAllDelegations(ctx)
 	for _, delegation := range delegations {
-		_, _ = app.distributionKeeper.WithdrawDelegationRewards(ctx, delegation.DelegatorAddress,
-			delegation.ValidatorAddress)
+		_, _ = app.distributionKeeper.WithdrawDelegationRewards(ctx,
+			delegation.DelegatorAddress, delegation.ValidatorAddress)
 	}
 
 	app.distributionKeeper.DeleteAllValidatorSlashEvents(ctx)
@@ -130,9 +131,8 @@ func (app *Hub) prepForZeroHeightGenesis(ctx csdk.Context, jailWhiteList []strin
 
 	store := ctx.KVStore(app.keyStaking)
 	iter := csdk.KVStoreReversePrefixIterator(store, staking.ValidatorsKey)
-	counter := int16(0)
+	defer iter.Close()
 
-	var consAddresses []csdk.ConsAddress
 	for ; iter.Valid(); iter.Next() {
 		addr := csdk.ValAddress(iter.Key()[1:])
 		validator, found := app.stakingKeeper.GetValidator(ctx, addr)
@@ -141,16 +141,12 @@ func (app *Hub) prepForZeroHeightGenesis(ctx csdk.Context, jailWhiteList []strin
 		}
 
 		validator.UnbondingHeight = 0
-		consAddresses = append(consAddresses, validator.ConsAddress())
 		if applyWhiteList && !whiteListMap[addr.String()] {
 			validator.Jailed = true
 		}
 
 		app.stakingKeeper.SetValidator(ctx, validator)
-		counter++
 	}
-
-	iter.Close()
 
 	_ = app.stakingKeeper.ApplyAndReturnValidatorSetUpdates(ctx)
 

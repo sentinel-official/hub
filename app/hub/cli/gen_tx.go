@@ -29,6 +29,7 @@ import (
 	app "github.com/ironman0x7b2/sentinel-sdk/app/hub"
 )
 
+// nolint:gochecknoglobals
 var (
 	defaultTokens                  = csdk.TokensFromTendermintPower(100)
 	defaultAmount                  = defaultTokens.String() + "stake"
@@ -38,6 +39,7 @@ var (
 	defaultMinSelfDelegation       = "1"
 )
 
+// nolint:gocyclo
 func GenTxCmd(ctx *server.Context, cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "gentx",
@@ -53,10 +55,12 @@ following delegation and commission default parameters:
 	commission max rate:         %s
 	commission max change rate:  %s
 	minimum self delegation:     %s
-`, defaultAmount, defaultCommissionRate, defaultCommissionMaxRate, defaultCommissionMaxChangeRate, defaultMinSelfDelegation),
+`, defaultAmount, defaultCommissionRate, defaultCommissionMaxRate,
+			defaultCommissionMaxChangeRate, defaultMinSelfDelegation),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			config := ctx.Config
 			config.SetRoot(viper.GetString(tmCli.HomeFlag))
+
 			nodeID, valPubKey, err := InitializeNodeValidatorFiles(ctx.Config)
 			if err != nil {
 				return err
@@ -77,12 +81,12 @@ following delegation and commission default parameters:
 				return err
 			}
 
-			genesisState := app.GenesisState{}
-			if err = cdc.UnmarshalJSON(genDoc.AppState, &genesisState); err != nil {
+			state := app.GenesisState{}
+			if err = cdc.UnmarshalJSON(genDoc.AppState, &state); err != nil {
 				return err
 			}
 
-			if err = app.ValidateGenesisState(genesisState); err != nil {
+			if err = app.ValidateGenesisState(state); err != nil {
 				return err
 			}
 
@@ -116,34 +120,34 @@ following delegation and commission default parameters:
 				return err
 			}
 
-			err = accountInGenesis(genesisState, key.GetAddress(), coins)
+			err = accountInGenesis(state, key.GetAddress(), coins)
 			if err != nil {
 				return err
 			}
 
-			txBldr := authTxBuiler.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
+			txBuilder := authTxBuiler.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
 			cliCtx := context.NewCLIContext().WithCodec(cdc)
 
 			viper.Set(client.FlagGenerateOnly, true)
 
-			txBldr, msg, err := cli.BuildCreateValidatorMsg(cliCtx, txBldr)
+			txBuilder, msg, err := cli.BuildCreateValidatorMsg(cliCtx, txBuilder)
 			if err != nil {
 				return err
 			}
 
-			info, err := txBldr.Keybase().Get(name)
+			info, err := txBuilder.Keybase().Get(name)
 			if err != nil {
 				return err
 			}
 
 			if info.GetType() == cryptoKeys.TypeOffline || info.GetType() == cryptoKeys.TypeMulti {
 				fmt.Println("Offline key passed in. Use `hubcli tx sign` command to sign:")
-				return utils.PrintUnsignedStdTx(txBldr, cliCtx, []csdk.Msg{msg}, true)
+				return utils.PrintUnsignedStdTx(txBuilder, cliCtx, []csdk.Msg{msg}, true)
 			}
 
 			w := bytes.NewBuffer([]byte{})
 			cliCtx = cliCtx.WithOutput(w)
-			if err = utils.PrintUnsignedStdTx(txBldr, cliCtx, []csdk.Msg{msg}, true); err != nil {
+			if err = utils.PrintUnsignedStdTx(txBuilder, cliCtx, []csdk.Msg{msg}, true); err != nil {
 				return err
 			}
 
@@ -152,7 +156,7 @@ following delegation and commission default parameters:
 				return err
 			}
 
-			signedTx, err := utils.SignStdTx(txBldr, cliCtx, name, stdTx, false, true)
+			signedTx, err := utils.SignStdTx(txBuilder, cliCtx, name, stdTx, false, true)
 			if err != nil {
 				return err
 			}
@@ -196,19 +200,19 @@ following delegation and commission default parameters:
 	return cmd
 }
 
-func accountInGenesis(genesisState app.GenesisState, key csdk.AccAddress, coins csdk.Coins) error {
+func accountInGenesis(state app.GenesisState, key csdk.AccAddress, coins csdk.Coins) error {
 	accountIsInGenesis := false
-	bondDenom := genesisState.StakingData.Params.BondDenom
+	bondDenom := state.Staking.Params.BondDenom
 
-	for _, acc := range genesisState.Accounts {
+	for _, acc := range state.Accounts {
 		if acc.Address.Equals(key) {
-
 			if coins.AmountOf(bondDenom).GT(acc.Coins.AmountOf(bondDenom)) {
 				return fmt.Errorf(
 					"account %v is in genesis, but it only has %v%v available to stake, not %v%v",
 					key.String(), acc.Coins.AmountOf(bondDenom), bondDenom, coins.AmountOf(bondDenom), bondDenom,
 				)
 			}
+
 			accountIsInGenesis = true
 			break
 		}
@@ -259,15 +263,18 @@ func makeOutputFilepath(rootDir, nodeID string) (string, error) {
 	if err := common.EnsureDir(writePath, 0700); err != nil {
 		return "", err
 	}
+
 	return filepath.Join(writePath, fmt.Sprintf("gentx-%v.json", nodeID)), nil
 }
 
 func readUnsignedGenTxFile(cdc *codec.Codec, r io.Reader) (auth.StdTx, error) {
 	var stdTx auth.StdTx
+
 	bz, err := ioutil.ReadAll(r)
 	if err != nil {
 		return stdTx, err
 	}
+
 	err = cdc.UnmarshalJSON(bz, &stdTx)
 	return stdTx, err
 }
@@ -277,13 +284,18 @@ func writeSignedGenTx(cdc *codec.Codec, outputDocument string, tx auth.StdTx) er
 	if err != nil {
 		return err
 	}
+
 	defer func() {
-		_ = outputFile.Close()
+		if err = outputFile.Close(); err != nil {
+			panic(err)
+		}
 	}()
+
 	json, err := cdc.MarshalJSON(tx)
 	if err != nil {
 		return err
 	}
+
 	_, err = fmt.Fprintf(outputFile, "%s\n", json)
 	return err
 }

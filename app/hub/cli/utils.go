@@ -20,11 +20,11 @@ import (
 	app "github.com/ironman0x7b2/sentinel-sdk/app/hub"
 )
 
-func ExportGenesisFile(genFile, chainID string, validators []types.GenesisValidator, appState json.RawMessage) error {
+func ExportGenesisFile(genFile, chainID string, validators []types.GenesisValidator, state json.RawMessage) error {
 	genDoc := types.GenesisDoc{
 		ChainID:    chainID,
 		Validators: validators,
-		AppState:   appState,
+		AppState:   state,
 	}
 
 	if err := genDoc.ValidateAndComplete(); err != nil {
@@ -35,13 +35,13 @@ func ExportGenesisFile(genFile, chainID string, validators []types.GenesisValida
 }
 
 func ExportGenesisFileWithTime(genFile, chainID string, validators []types.GenesisValidator,
-	appState json.RawMessage, genTime time.Time) error {
+	state json.RawMessage, genTime time.Time) error {
 
 	genDoc := types.GenesisDoc{
 		GenesisTime: genTime,
 		ChainID:     chainID,
 		Validators:  validators,
-		AppState:    appState,
+		AppState:    state,
 	}
 
 	if err := genDoc.ValidateAndComplete(); err != nil {
@@ -71,7 +71,6 @@ func InitializeNodeValidatorFiles(config *tmConfig.Config) (nodeID string, valPu
 	}
 
 	valPubKey = privval.LoadOrGenFilePV(pvKeyFile, pvStateFile).GetPubKey()
-
 	return nodeID, valPubKey, nil
 }
 
@@ -81,14 +80,14 @@ func loadGenesisDoc(cdc *_amino.Codec, genFile string) (genDoc types.GenesisDoc,
 		return genDoc, err
 	}
 
-	if err := cdc.UnmarshalJSON(genContents, &genDoc); err != nil {
+	if err = cdc.UnmarshalJSON(genContents, &genDoc); err != nil {
 		return genDoc, err
 	}
 
 	return genDoc, err
 }
 
-func initializeEmptyGenesis(cdc *codec.Codec, genFile, chainID string, overwrite bool) (appState json.RawMessage, err error) {
+func initializeEmptyGenesis(cdc *codec.Codec, genFile string, overwrite bool) (state json.RawMessage, err error) {
 	if !overwrite && common.FileExists(genFile) {
 		return nil, fmt.Errorf("genesis.json file already exists: %v", genFile)
 	}

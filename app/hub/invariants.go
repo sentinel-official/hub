@@ -23,8 +23,7 @@ func (app *Hub) assertRuntimeInvariantsOnContext(ctx csdk.Context) {
 				"\t\t hubcli tx crisis invariant-broken %v %v", err, ir.ModuleName, ir.Route))
 		}
 	}
-	end := time.Now()
-	diff := end.Sub(start)
+
 	app.BaseApp.Logger().With("module", "invariants").Info(
-		"Asserted all invariants", "duration", diff, "height", app.LastBlockHeight())
+		"Asserted all invariants", "duration", time.Since(start), "height", app.LastBlockHeight())
 }

@@ -16,6 +16,7 @@ import (
 	app "github.com/ironman0x7b2/sentinel-sdk/app/hub"
 )
 
+// nolint:gocyclo
 func AddGenesisAccountCmd(ctx *server.Context, cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "add-genesis-account [address_or_key_name] [coin][,[coin]]",
@@ -27,14 +28,14 @@ func AddGenesisAccountCmd(ctx *server.Context, cdc *codec.Codec) *cobra.Command 
 
 			addr, err := csdk.AccAddressFromBech32(args[0])
 			if err != nil {
-				kb, err := keys.NewKeyBaseFromDir(viper.GetString(flagClientHome))
-				if err != nil {
-					return err
+				kb, _err := keys.NewKeyBaseFromDir(viper.GetString(flagClientHome))
+				if _err != nil {
+					return _err
 				}
 
-				info, err := kb.Get(args[0])
-				if err != nil {
-					return err
+				info, _err := kb.Get(args[0])
+				if _err != nil {
+					return _err
 				}
 
 				addr = info.GetAddress()
@@ -62,22 +63,22 @@ func AddGenesisAccountCmd(ctx *server.Context, cdc *codec.Codec) *cobra.Command 
 				return err
 			}
 
-			var appState app.GenesisState
-			if err = cdc.UnmarshalJSON(genDoc.AppState, &appState); err != nil {
+			var state app.GenesisState
+			if err = cdc.UnmarshalJSON(genDoc.AppState, &state); err != nil {
 				return err
 			}
 
-			appState, err = addGenesisAccount(cdc, appState, addr, coins, vestingAmt, vestingStart, vestingEnd)
+			state, err = addGenesisAccount(state, addr, coins, vestingAmt, vestingStart, vestingEnd)
 			if err != nil {
 				return err
 			}
 
-			appStateJSON, err := cdc.MarshalJSON(appState)
+			appState, err := cdc.MarshalJSON(state)
 			if err != nil {
 				return err
 			}
 
-			return ExportGenesisFile(genFile, genDoc.ChainID, nil, appStateJSON)
+			return ExportGenesisFile(genFile, genDoc.ChainID, nil, appState)
 		},
 	}
 
@@ -90,49 +91,48 @@ func AddGenesisAccountCmd(ctx *server.Context, cdc *codec.Codec) *cobra.Command 
 	return cmd
 }
 
-func addGenesisAccount(cdc *codec.Codec, appState app.GenesisState, addr csdk.AccAddress,
+func addGenesisAccount(state app.GenesisState, addr csdk.AccAddress,
 	coins, vestingAmt csdk.Coins, vestingStart, vestingEnd int64) (app.GenesisState, error) {
 
-	for _, stateAcc := range appState.Accounts {
-		if stateAcc.Address.Equals(addr) {
-			return appState, fmt.Errorf("the application state already contains account %v", addr)
+	for _, account := range state.Accounts {
+		if account.Address.Equals(addr) {
+			return state, fmt.Errorf("the application state already contains account %v", addr)
 		}
 	}
 
-	acc := auth.NewBaseAccountWithAddress(addr)
-	acc.Coins = coins
+	baseAccount := auth.NewBaseAccountWithAddress(addr)
+	baseAccount.Coins = coins
 
 	if !vestingAmt.IsZero() {
-		var vacc auth.VestingAccount
-
-		bvacc := &auth.BaseVestingAccount{
-			BaseAccount:     &acc,
+		var vestingAccount auth.VestingAccount
+		baseVestingAccount := &auth.BaseVestingAccount{
+			BaseAccount:     &baseAccount,
 			OriginalVesting: vestingAmt,
 			EndTime:         vestingEnd,
 		}
 
-		if bvacc.OriginalVesting.IsAllGT(acc.Coins) {
-			return appState, fmt.Errorf("vesting amount cannot be greater than total amount")
+		if baseVestingAccount.OriginalVesting.IsAllGT(baseAccount.Coins) {
+			return state, fmt.Errorf("vesting amount cannot be greater than total amount")
 		}
 		if vestingStart >= vestingEnd {
-			return appState, fmt.Errorf("vesting start time must before end time")
+			return state, fmt.Errorf("vesting start time must before end time")
 		}
 
 		if vestingStart != 0 {
-			vacc = &auth.ContinuousVestingAccount{
-				BaseVestingAccount: bvacc,
+			vestingAccount = &auth.ContinuousVestingAccount{
+				BaseVestingAccount: baseVestingAccount,
 				StartTime:          vestingStart,
 			}
 		} else {
-			vacc = &auth.DelayedVestingAccount{
-				BaseVestingAccount: bvacc,
+			vestingAccount = &auth.DelayedVestingAccount{
+				BaseVestingAccount: baseVestingAccount,
 			}
 		}
 
-		appState.Accounts = append(appState.Accounts, app.NewGenesisAccountI(vacc))
+		state.Accounts = append(state.Accounts, app.NewGenesisAccount(vestingAccount))
 	} else {
-		appState.Accounts = append(appState.Accounts, app.NewGenesisAccount(&acc))
+		state.Accounts = append(state.Accounts, app.NewGenesisAccountFromBaseAccount(&baseAccount))
 	}
 
-	return appState, nil
+	return state, nil
 }

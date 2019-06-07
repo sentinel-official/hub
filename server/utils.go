@@ -33,6 +33,6 @@ func AddCommands(ctx *server.Context, cdc *codec.Codec, rootCmd *cobra.Command,
 		tendermintCmd,
 		server.ExportCmd(ctx, cdc, appExport),
 		client.LineBreak,
-		version.VersionCmd,
+		version.Cmd,
 	)
 }

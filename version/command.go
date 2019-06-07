@@ -13,24 +13,25 @@ const (
 	flagLong = "long"
 )
 
+// nolint:gochecknoglobals
 var (
-	VersionCmd = &cobra.Command{
+	Cmd = &cobra.Command{
 		Use:   "version",
 		Short: "Print the app version",
 		RunE: func(_ *cobra.Command, _ []string) error {
-			verInfo := newVersionInfo()
+			info := newInfo()
 
 			if !viper.GetBool(flagLong) {
-				fmt.Println(verInfo.SentinelSDK)
+				fmt.Println(info.Version)
 				return nil
 			}
 
 			if viper.GetString(cli.OutputFlag) != "json" {
-				fmt.Print(verInfo)
+				fmt.Print(info)
 				return nil
 			}
 
-			bz, err := json.Marshal(verInfo)
+			bz, err := json.Marshal(info)
 			if err != nil {
 				return err
 			}
@@ -41,6 +42,7 @@ var (
 	}
 )
 
+// nolint:gochecknoinits
 func init() {
-	VersionCmd.Flags().Bool(flagLong, false, "Print long version information")
+	Cmd.Flags().Bool(flagLong, false, "Print long version information")
 }

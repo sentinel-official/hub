@@ -33,6 +33,7 @@ const (
 	DefaultKeyPass = "1234567890"
 )
 
+// nolint:gochecknoglobals
 var (
 	DefaultCLIHome  = os.ExpandEnv("$HOME/.hubcli")
 	DefaultNodeHome = os.ExpandEnv("$HOME/.hubd")
@@ -151,7 +152,8 @@ func NewHub(logger log.Logger, db tmDB.DB, traceStore io.Writer, loadLatest bool
 		app.paramsKeeper.Subspace(mint.DefaultParamspace),
 		&stakingKeeper,
 		app.feeCollectionKeeper)
-	app.stakingKeeper = *stakingKeeper.SetHooks(NewStakingHooks(app.distributionKeeper.Hooks(), app.slashingKeeper.Hooks()))
+	app.stakingKeeper = *stakingKeeper.SetHooks(NewStakingHooks(app.distributionKeeper.Hooks(),
+		app.slashingKeeper.Hooks()))
 	app.crisisKeeper = crisis.NewKeeper(app.paramsKeeper.Subspace(crisis.DefaultParamspace),
 		app.distributionKeeper,
 		app.bankKeeper,
@@ -271,22 +273,22 @@ func (app *Hub) initFromGenesisState(ctx csdk.Context, genesisState GenesisState
 		app.accountKeeper.SetAccount(ctx, acc)
 	}
 
-	distribution.InitGenesis(ctx, app.distributionKeeper, genesisState.DistributionData)
+	distribution.InitGenesis(ctx, app.distributionKeeper, genesisState.Distribution)
 
-	validators, err := staking.InitGenesis(ctx, app.stakingKeeper, genesisState.StakingData)
+	validators, err := staking.InitGenesis(ctx, app.stakingKeeper, genesisState.Staking)
 	if err != nil {
 		panic(err)
 	}
 
-	auth.InitGenesis(ctx, app.accountKeeper, app.feeCollectionKeeper, genesisState.AuthData)
-	bank.InitGenesis(ctx, app.bankKeeper, genesisState.BankData)
-	slashing.InitGenesis(ctx, app.slashingKeeper, genesisState.SlashingData, genesisState.StakingData.Validators.ToSDKValidators())
-	gov.InitGenesis(ctx, app.govKeeper, genesisState.GovData)
-	mint.InitGenesis(ctx, app.mintKeeper, genesisState.MintData)
-	crisis.InitGenesis(ctx, app.crisisKeeper, genesisState.CrisisData)
+	auth.InitGenesis(ctx, app.accountKeeper, app.feeCollectionKeeper, genesisState.Auth)
+	bank.InitGenesis(ctx, app.bankKeeper, genesisState.Bank)
+	slashing.InitGenesis(ctx, app.slashingKeeper, genesisState.Slashing, genesisState.Staking.Validators.ToSDKValidators())
+	gov.InitGenesis(ctx, app.govKeeper, genesisState.Gov)
+	mint.InitGenesis(ctx, app.mintKeeper, genesisState.Mint)
+	crisis.InitGenesis(ctx, app.crisisKeeper, genesisState.Crisis)
 
-	deposit.InitGenesis(ctx, app.depositKeeper, genesisState.DepositData)
-	vpn.InitGenesis(ctx, app.vpnKeeper, genesisState.VPNData)
+	deposit.InitGenesis(ctx, app.depositKeeper, genesisState.Deposit)
+	vpn.InitGenesis(ctx, app.vpnKeeper, genesisState.VPN)
 
 	if err = ValidateGenesisState(genesisState); err != nil {
 		panic(err)
@@ -375,6 +377,7 @@ func (h StakingHooks) AfterValidatorBonded(ctx csdk.Context, consAddr csdk.ConsA
 	h.sh.AfterValidatorBonded(ctx, consAddr, valAddr)
 }
 
+// nolint: lll
 func (h StakingHooks) AfterValidatorBeginUnbonding(ctx csdk.Context, consAddr csdk.ConsAddress, valAddr csdk.ValAddress) {
 	h.dh.AfterValidatorBeginUnbonding(ctx, consAddr, valAddr)
 	h.sh.AfterValidatorBeginUnbonding(ctx, consAddr, valAddr)
@@ -385,6 +388,7 @@ func (h StakingHooks) BeforeDelegationCreated(ctx csdk.Context, delAddr csdk.Acc
 	h.sh.BeforeDelegationCreated(ctx, delAddr, valAddr)
 }
 
+// nolint: lll
 func (h StakingHooks) BeforeDelegationSharesModified(ctx csdk.Context, delAddr csdk.AccAddress, valAddr csdk.ValAddress) {
 	h.dh.BeforeDelegationSharesModified(ctx, delAddr, valAddr)
 	h.sh.BeforeDelegationSharesModified(ctx, delAddr, valAddr)

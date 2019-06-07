@@ -30,6 +30,16 @@ type initConfig struct {
 	ValPubKey crypto.PubKey
 }
 
+func newInitConfig(chainID, genTxsDir, name, nodeID string, valPubKey crypto.PubKey) initConfig {
+	return initConfig{
+		ChainID:   chainID,
+		GenTxsDir: genTxsDir,
+		Name:      name,
+		NodeID:    nodeID,
+		ValPubKey: valPubKey,
+	}
+}
+
 func CollectGenTxsCmd(ctx *server.Context, cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "collect-gentxs",
@@ -37,6 +47,7 @@ func CollectGenTxsCmd(ctx *server.Context, cdc *codec.Codec) *cobra.Command {
 		RunE: func(_ *cobra.Command, _ []string) error {
 			config := ctx.Config
 			config.SetRoot(viper.GetString(cli.HomeFlag))
+
 			name := viper.GetString(client.FlagName)
 			nodeID, valPubKey, err := InitializeNodeValidatorFiles(config)
 			if err != nil {
@@ -85,11 +96,9 @@ func genAppStateFromConfig(cdc *codec.Codec, config *tmConfig.Config, initCfg in
 		jsonRawTx       json.RawMessage
 	)
 
-	appGenTxs, persistentPeers, err = app.CollectStdTxs(
-		cdc, config.Moniker, initCfg.GenTxsDir, genDoc,
-	)
+	appGenTxs, persistentPeers, err = app.CollectStdTxs(cdc, config.Moniker, initCfg.GenTxsDir, genDoc)
 	if err != nil {
-		return
+		return nil, err
 	}
 
 	genTxs = make([]json.RawMessage, len(appGenTxs))
@@ -105,35 +114,16 @@ func genAppStateFromConfig(cdc *codec.Codec, config *tmConfig.Config, initCfg in
 
 	tmConfig.WriteConfigFile(filepath.Join(config.RootDir, "config", "config.toml"), config)
 
-	appState, err = app.GenGenesisStateJSON(cdc, genDoc, genTxs)
+	state, err := app.NewGenesisStateFromGenesisDoc(cdc, genDoc, genTxs)
 	if err != nil {
-		return
+		return nil, err
+	}
+
+	appState, err = cdc.MarshalJSONIndent(state, "", "  ")
+	if err != nil {
+		return nil, err
 	}
 
 	err = ExportGenesisFile(genFile, initCfg.ChainID, nil, appState)
-	return
-}
-
-func newInitConfig(chainID, genTxsDir, name, nodeID string,
-	valPubKey crypto.PubKey) initConfig {
-
-	return initConfig{
-		ChainID:   chainID,
-		GenTxsDir: genTxsDir,
-		Name:      name,
-		NodeID:    nodeID,
-		ValPubKey: valPubKey,
-	}
-}
-
-func newPrintInfo(moniker, chainID, nodeID, genTxsDir string,
-	appMessage json.RawMessage) printInfo {
-
-	return printInfo{
-		Moniker:    moniker,
-		ChainID:    chainID,
-		NodeID:     nodeID,
-		GenTxsDir:  genTxsDir,
-		AppMessage: appMessage,
-	}
+	return appState, err
 }

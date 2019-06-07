@@ -6,7 +6,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
-	csdkServer "github.com/cosmos/cosmos-sdk/server"
+	"github.com/cosmos/cosmos-sdk/server"
 	"github.com/cosmos/cosmos-sdk/store"
 	csdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/spf13/cobra"
@@ -19,12 +19,17 @@ import (
 
 	app "github.com/ironman0x7b2/sentinel-sdk/app/hub"
 	hubCli "github.com/ironman0x7b2/sentinel-sdk/app/hub/cli"
-	sdkServer "github.com/ironman0x7b2/sentinel-sdk/server"
+	_server "github.com/ironman0x7b2/sentinel-sdk/server"
 )
 
-const flagInvCheckPeriod = "inv-check-period"
+const (
+	flagInvCheckPeriod = "inv-check-period"
+)
 
-var invCheckPeriod uint
+// nolint:gochecknoglobals
+var (
+	invCheckPeriod uint
+)
 
 func main() {
 	cdc := app.MakeCodec()
@@ -35,27 +40,26 @@ func main() {
 	config.SetBech32PrefixForConsensusNode(csdk.Bech32PrefixConsAddr, csdk.Bech32PrefixConsPub)
 	config.Seal()
 
-	ctx := csdkServer.NewDefaultContext()
+	ctx := server.NewDefaultContext()
 	cobra.EnableCommandSorting = false
 	rootCmd := &cobra.Command{
 		Use:               "hubd",
 		Short:             "Hub Daemon (server)",
-		PersistentPreRunE: csdkServer.PersistentPreRunEFn(ctx),
+		PersistentPreRunE: server.PersistentPreRunEFn(ctx),
 	}
 
 	rootCmd.AddCommand(hubCli.InitCmd(ctx, cdc))
 	rootCmd.AddCommand(hubCli.CollectGenTxsCmd(ctx, cdc))
-	rootCmd.AddCommand(hubCli.TestnetFilesCmd(ctx, cdc))
+	rootCmd.AddCommand(hubCli.TestNetFilesCmd(ctx, cdc))
 	rootCmd.AddCommand(hubCli.GenTxCmd(ctx, cdc))
 	rootCmd.AddCommand(hubCli.AddGenesisAccountCmd(ctx, cdc))
 	rootCmd.AddCommand(client.NewCompletionCmd(rootCmd, true))
-
-	sdkServer.AddCommands(ctx, cdc, rootCmd, newApp, exportAppStateAndTMValidators)
-
-	executor := cli.PrepareBaseCmd(rootCmd, "HUB", app.DefaultNodeHome)
 	rootCmd.PersistentFlags().UintVar(&invCheckPeriod, flagInvCheckPeriod,
 		0, "Assert registered invariants every N blocks")
 
+	_server.AddCommands(ctx, cdc, rootCmd, newApp, exportAppStateAndTMValidators)
+
+	executor := cli.PrepareBaseCmd(rootCmd, "HUB", app.DefaultNodeHome)
 	if err := executor.Execute(); err != nil {
 		panic(err)
 	}
@@ -65,7 +69,7 @@ func newApp(logger log.Logger, db tmDB.DB, traceStore io.Writer) abci.Applicatio
 	return app.NewHub(
 		logger, db, traceStore, true, invCheckPeriod,
 		baseapp.SetPruning(store.NewPruningOptionsFromString(viper.GetString("pruning"))),
-		baseapp.SetMinGasPrices(viper.GetString(csdkServer.FlagMinGasPrices)),
+		baseapp.SetMinGasPrices(viper.GetString(server.FlagMinGasPrices)),
 	)
 }
 
@@ -74,12 +78,13 @@ func exportAppStateAndTMValidators(logger log.Logger, db tmDB.DB, traceStore io.
 
 	if height != -1 {
 		hub := app.NewHub(logger, db, traceStore, false, uint(1))
-		err := hub.LoadHeight(height)
-		if err != nil {
+		if err := hub.LoadHeight(height); err != nil {
 			return nil, nil, err
 		}
+
 		return hub.ExportAppStateAndValidators(forZeroHeight, jailWhiteList)
 	}
+
 	hub := app.NewHub(logger, db, traceStore, true, uint(1))
 	return hub.ExportAppStateAndValidators(forZeroHeight, jailWhiteList)
 }
