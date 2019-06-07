@@ -32,10 +32,6 @@ func TestNode_UpdateInfo(t *testing.T) {
 			Node{PricesPerGB: TestCoinsEmpty},
 			Node{},
 		}, {
-			"prices_per_gb is invalid",
-			Node{PricesPerGB: TestCoinsInvalid},
-			Node{},
-		}, {
 			"prices_per_gb is negative",
 			Node{PricesPerGB: TestCoinsNeg},
 			Node{},

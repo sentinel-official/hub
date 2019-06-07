@@ -179,6 +179,7 @@ func TestKeeper_DeleteActiveSessionIDs(t *testing.T) {
 	keeper.DeleteActiveSessionIDs(ctx, 2)
 	ids = keeper.GetActiveSessionIDs(ctx, 1)
 	require.Equal(t, types.TestIDsValid.Append(types.TestIDPos), ids)
+
 	keeper.DeleteActiveSessionIDs(ctx, 1)
 	ids = keeper.GetActiveSessionIDs(ctx, 1)
 	require.Equal(t, types.TestIDsNil, ids)
@@ -259,6 +260,7 @@ func TestKeeper_RemoveSessionIDFromActiveList(t *testing.T) {
 	keeper.RemoveSessionIDFromActiveList(ctx, 1, types.TestIDPos)
 	ids = keeper.GetActiveSessionIDs(ctx, 1)
 	require.Equal(t, types.TestIDsValid, ids)
+
 	keeper.RemoveSessionIDFromActiveList(ctx, 1, types.TestIDZero)
 	ids = keeper.GetActiveSessionIDs(ctx, 1)
 	require.Equal(t, types.TestIDsNil, ids)
@@ -268,6 +270,7 @@ func TestKeeper_RemoveSessionIDFromActiveList(t *testing.T) {
 	keeper.RemoveSessionIDFromActiveList(ctx, 3, types.TestIDPos)
 	ids = keeper.GetActiveSessionIDs(ctx, 3)
 	require.Equal(t, types.TestIDsValid, ids)
+
 	keeper.RemoveSessionIDFromActiveList(ctx, 3, types.TestIDZero)
 	ids = keeper.GetActiveSessionIDs(ctx, 3)
 	require.Equal(t, types.TestIDsNil, ids)

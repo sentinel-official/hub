@@ -51,11 +51,6 @@ func TestMsgRegisterNode_ValidateBasic(t *testing.T) {
 				TestBandwidthPos1, TestEncryption),
 			ErrorInvalidField("prices_per_gb"),
 		}, {
-			"prices_per_gb is invalid",
-			NewMsgRegisterNode(TestAddress1, TestNodeType, TestVersion, TestMonikerValid, TestCoinsInvalid,
-				TestBandwidthPos1, TestEncryption),
-			ErrorInvalidField("prices_per_gb"),
-		}, {
 			"prices_per_gb is negative",
 			NewMsgRegisterNode(TestAddress1, TestNodeType, TestVersion, TestMonikerValid, TestCoinsNeg,
 				TestBandwidthPos1, TestEncryption),
@@ -147,10 +142,6 @@ func TestMsgUpdateNodeInfo_ValidateBasic(t *testing.T) {
 		}, {
 			"prices_per_gb is empty",
 			NewMsgUpdateNodeInfo(TestAddress1, TestIDPos, TestNodeType, TestVersion, TestMonikerValid, TestCoinsEmpty, TestBandwidthPos1, TestEncryption),
-			ErrorInvalidField("prices_per_gb"),
-		}, {
-			"prices_per_gb is invalid",
-			NewMsgUpdateNodeInfo(TestAddress1, TestIDPos, TestNodeType, TestVersion, TestMonikerValid, TestCoinsInvalid, TestBandwidthPos1, TestEncryption),
 			ErrorInvalidField("prices_per_gb"),
 		}, {
 			"prices_per_gb is negative",

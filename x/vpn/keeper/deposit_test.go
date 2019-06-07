@@ -24,7 +24,9 @@ func TestKeeper_AddDeposit(t *testing.T) {
 	_, err = keeper.AddDeposit(ctx, types.TestAddress1, types.TestCoinPos)
 	require.NotNil(t, err)
 
-	bankKeeper.AddCoins(ctx, types.TestAddress1, types.TestCoinsPos)
+	coins, _, err := bankKeeper.AddCoins(ctx, types.TestAddress1, types.TestCoinsPos)
+	require.Nil(t, err)
+	require.Equal(t, types.TestCoinsPos, coins)
 
 	_, err = keeper.AddDeposit(ctx, types.TestAddress1, types.TestCoinEmpty)
 	require.NotNil(t, err)
@@ -81,7 +83,9 @@ func TestKeeper_SubtractDeposit(t *testing.T) {
 	_, err = keeper.SubtractDeposit(ctx, types.TestAddress1, types.TestCoinPos)
 	require.NotNil(t, err)
 
-	bankKeeper.AddCoins(ctx, types.TestAddress1, types.TestCoinsPos)
+	coins, _, err = bankKeeper.AddCoins(ctx, types.TestAddress1, types.TestCoinsPos)
+	require.Nil(t, err)
+	require.Equal(t, types.TestCoinsPos, coins)
 	_, err = keeper.AddDeposit(ctx, types.TestAddress1, types.TestCoinPos)
 	require.Nil(t, err)
 
@@ -131,6 +135,7 @@ func TestKeeper_SendDeposit(t *testing.T) {
 
 	coins := bankKeeper.GetCoins(ctx, types.TestAddress1)
 	require.Equal(t, types.TestCoinsEmpty, coins)
+
 	coins = bankKeeper.GetCoins(ctx, types.TestAddress2)
 	require.Equal(t, types.TestCoinsEmpty, coins)
 	deposit, found := keeper.depositKeeper.GetDeposit(ctx, types.TestAddress1)
@@ -146,7 +151,9 @@ func TestKeeper_SendDeposit(t *testing.T) {
 	_, err = keeper.SendDeposit(ctx, types.TestAddress1, types.TestAddress2, types.TestCoinPos)
 	require.NotNil(t, err)
 
-	bankKeeper.AddCoins(ctx, types.TestAddress1, types.TestCoinsPos)
+	coins, _, err = bankKeeper.AddCoins(ctx, types.TestAddress1, types.TestCoinsPos)
+	require.Nil(t, err)
+	require.Equal(t, types.TestCoinsPos, coins)
 	_, err = keeper.AddDeposit(ctx, types.TestAddress1, types.TestCoinPos)
 	require.Nil(t, err)
 

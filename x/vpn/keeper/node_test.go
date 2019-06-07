@@ -197,6 +197,7 @@ func TestKeeper_DeleteActiveNodeIDs(t *testing.T) {
 	keeper.DeleteActiveNodeIDs(ctx, 3)
 	ids = keeper.GetActiveNodeIDs(ctx, 2)
 	require.Equal(t, types.TestIDsValid.Append(types.TestIDPos), ids)
+
 	keeper.DeleteActiveNodeIDs(ctx, 2)
 	ids = keeper.GetActiveNodeIDs(ctx, 2)
 	require.Equal(t, types.TestIDsNil, ids)
@@ -283,6 +284,7 @@ func TestKeeper_RemoveNodeIDFromActiveList(t *testing.T) {
 	keeper.RemoveNodeIDFromActiveList(ctx, 1, types.TestIDPos)
 	ids = keeper.GetActiveNodeIDs(ctx, 1)
 	require.Equal(t, types.TestIDsValid, ids)
+
 	keeper.RemoveNodeIDFromActiveList(ctx, 1, types.TestIDZero)
 	ids = keeper.GetActiveNodeIDs(ctx, 1)
 	require.Equal(t, types.TestIDsNil, ids)
@@ -292,6 +294,7 @@ func TestKeeper_RemoveNodeIDFromActiveList(t *testing.T) {
 	keeper.RemoveNodeIDFromActiveList(ctx, 2, types.TestIDPos)
 	ids = keeper.GetActiveNodeIDs(ctx, 2)
 	require.Equal(t, types.TestIDsValid, ids)
+
 	keeper.RemoveNodeIDFromActiveList(ctx, 2, types.TestIDZero)
 	ids = keeper.GetActiveNodeIDs(ctx, 2)
 	require.Equal(t, types.TestIDsNil, ids)
