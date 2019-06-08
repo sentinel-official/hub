@@ -47,14 +47,14 @@ var (
 	TestMonikerLengthGT128 = "MONIKERMONIKERMONIKERMONIKERMONIKERMONIKERMONIKERMONIKERMONIKERMONIKERMONIKERMONIKER" +
 		"MONIKERMONIKERMONIKERMONIKERMONIKERMONIKERMONIKERMONIKER"
 
-	TestUploadNeg  = csdk.NewInt(-1000000)
+	TestUploadNeg  = csdk.NewInt(-500000000)
 	TestUploadZero = csdk.NewInt(0)
-	TestUploadPos1 = csdk.NewInt(1000000)
+	TestUploadPos1 = csdk.NewInt(500000000)
 	TestUploadPos2 = TestUploadPos1.Mul(csdk.NewInt(2))
 
-	TestDownloadNeg  = csdk.NewInt(-1000000000)
+	TestDownloadNeg  = csdk.NewInt(-500000000)
 	TestDownloadZero = csdk.NewInt(0)
-	TestDownloadPos1 = csdk.NewInt(1000000000)
+	TestDownloadPos1 = csdk.NewInt(500000000)
 	TestDownloadPos2 = TestDownloadPos1.Mul(csdk.NewInt(2))
 
 	TestBandwidthNeg  = sdk.NewBandwidth(TestUploadNeg, TestDownloadNeg)
@@ -97,8 +97,8 @@ var (
 		TotalDeposit:       TestCoinPos,
 		RemainingDeposit:   TestCoinPos,
 		RemainingBandwidth: TestBandwidthPos1,
-		Status:             TestStatusInActive,
-		StatusModifiedAt:   1,
+		Status:             TestStatusActive,
+		StatusModifiedAt:   0,
 	}
 
 	TestSubscriptionsEmpty = []Subscription{}
@@ -110,8 +110,8 @@ var (
 		ID:               TestIDZero,
 		SubscriptionID:   TestIDZero,
 		Bandwidth:        TestBandwidthPos1,
-		Status:           TestStatusInActive,
-		StatusModifiedAt: 1,
+		Status:           TestStatusActive,
+		StatusModifiedAt: 0,
 	}
 
 	TestSessionsEmpty = []Session{}
