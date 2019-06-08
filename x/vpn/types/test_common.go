@@ -4,8 +4,9 @@ package types
 import (
 	csdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
-	sdk "github.com/ironman0x7b2/sentinel-sdk/types"
 	"github.com/tendermint/tendermint/crypto/ed25519"
+
+	sdk "github.com/ironman0x7b2/sentinel-sdk/types"
 )
 
 var (

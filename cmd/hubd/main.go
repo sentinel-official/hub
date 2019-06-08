@@ -20,6 +20,7 @@ import (
 	app "github.com/ironman0x7b2/sentinel-sdk/app/hub"
 	hubCli "github.com/ironman0x7b2/sentinel-sdk/app/hub/cli"
 	_server "github.com/ironman0x7b2/sentinel-sdk/server"
+	sdk "github.com/ironman0x7b2/sentinel-sdk/types"
 )
 
 const (
@@ -35,9 +36,9 @@ func main() {
 	cdc := app.MakeCodec()
 
 	config := csdk.GetConfig()
-	config.SetBech32PrefixForAccount(csdk.Bech32PrefixAccAddr, csdk.Bech32PrefixAccPub)
-	config.SetBech32PrefixForValidator(csdk.Bech32PrefixValAddr, csdk.Bech32PrefixValPub)
-	config.SetBech32PrefixForConsensusNode(csdk.Bech32PrefixConsAddr, csdk.Bech32PrefixConsPub)
+	config.SetBech32PrefixForAccount(sdk.Bech32PrefixAccAddr, sdk.Bech32PrefixAccPub)
+	config.SetBech32PrefixForValidator(sdk.Bech32PrefixValAddr, sdk.Bech32PrefixValPub)
+	config.SetBech32PrefixForConsensusNode(sdk.Bech32PrefixConsAddr, sdk.Bech32PrefixConsPub)
 	config.Seal()
 
 	ctx := server.NewDefaultContext()

@@ -1,8 +1,9 @@
 package vpn
 
 import (
-	sdk "github.com/ironman0x7b2/sentinel-sdk/types"
 	"testing"
+
+	sdk "github.com/ironman0x7b2/sentinel-sdk/types"
 
 	"github.com/stretchr/testify/require"
 
