@@ -215,10 +215,6 @@ func handleDeregisterNode(ctx csdk.Context, k keeper.Keeper, msg types.MsgDeregi
 		return types.ErrorInvalidNodeStatus().Result()
 	}
 
-	node.Status = types.StatusDeRegistered
-	node.StatusModifiedAt = ctx.BlockHeight()
-	k.SetNode(ctx, node)
-
 	if node.Deposit.IsPositive() {
 		tags, err := k.SubtractDeposit(ctx, node.Owner, node.Deposit)
 		if err != nil {
@@ -228,6 +224,10 @@ func handleDeregisterNode(ctx csdk.Context, k keeper.Keeper, msg types.MsgDeregi
 		allTags = allTags.AppendTags(tags)
 	}
 
+	node.Status = types.StatusDeRegistered
+	node.StatusModifiedAt = ctx.BlockHeight()
+
+	k.SetNode(ctx, node)
 	return csdk.Result{Tags: allTags}
 }
 
