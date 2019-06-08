@@ -375,7 +375,7 @@ func Test_handleDeregisterNode(t *testing.T) {
 	require.Nil(t, err)
 
 	node.Status = StatusInactive
-	node.Deposit = types.TestCoinPos
+	node.Deposit = types.TestCoinPos.Add(types.TestCoinPos).Add(types.TestCoinPos)
 	vpnKeeper.SetNode(ctx, node)
 	msg = NewMsgDeregisterNode(types.TestAddress2, node.ID)
 	res = handler(ctx, *msg)
@@ -386,6 +386,36 @@ func Test_handleDeregisterNode(t *testing.T) {
 	require.Equal(t, StatusInactive, node.Status)
 
 	deposit, found := depositKeeper.GetDeposit(ctx, node.Owner)
+	require.Equal(t, true, found)
+	require.Equal(t, types.TestCoinsPos.Add(types.TestCoinsPos), deposit.Coins)
+
+	msg = NewMsgDeregisterNode(node.Owner, node.ID)
+	res = handler(ctx, *msg)
+	require.False(t, res.IsOK())
+
+	deposit, found = depositKeeper.GetDeposit(ctx, types.TestAddress1)
+	require.Equal(t, true, found)
+	require.Equal(t, types.TestCoinsPos.Add(types.TestCoinsPos), deposit.Coins)
+
+	coins = bankKeeper.GetCoins(ctx, node.Owner)
+	require.Equal(t, types.TestCoinsNil, coins)
+
+	node, found = vpnKeeper.GetNode(ctx, node.ID)
+	require.Equal(t, true, found)
+	require.Equal(t, StatusInactive, node.Status)
+
+	node.Status = StatusInactive
+	node.Deposit = types.TestCoinPos
+	vpnKeeper.SetNode(ctx, node)
+	msg = NewMsgDeregisterNode(types.TestAddress2, node.ID)
+	res = handler(ctx, *msg)
+	require.False(t, res.IsOK())
+
+	node, found = vpnKeeper.GetNode(ctx, node.ID)
+	require.Equal(t, true, found)
+	require.Equal(t, StatusInactive, node.Status)
+
+	deposit, found = depositKeeper.GetDeposit(ctx, node.Owner)
 	require.Equal(t, true, found)
 	require.Equal(t, types.TestCoinsPos.Add(types.TestCoinsPos), deposit.Coins)
 
@@ -408,16 +438,28 @@ func Test_handleDeregisterNode(t *testing.T) {
 func Test_handleStartSubscription(t *testing.T) {
 	ctx, depositKeeper, vpnKeeper, bankKeeper := keeper.TestCreateInput()
 
+	node, found := vpnKeeper.GetNode(ctx, types.TestIDZero)
+	require.Equal(t, false, found)
+	require.Equal(t, types.TestNodeEmpty, node)
+
 	subscription, found := vpnKeeper.GetSubscription(ctx, types.TestIDZero)
 	require.Equal(t, false, found)
 	require.Equal(t, types.TestSubscriptionEmpty, subscription)
 
 	handler := NewHandler(vpnKeeper)
-	node := types.TestNodeValid
+	msg := NewMsgStartSubscription(types.TestAddress2, types.TestIDPos, types.TestCoinPos)
+	res := handler(ctx, *msg)
+	require.False(t, res.IsOK())
+
+	node = types.TestNodeValid
 	node.Status = StatusInactive
 	vpnKeeper.SetNode(ctx, node)
-	msg := NewMsgStartSubscription(types.TestAddress2, node.ID, types.TestCoinPos)
-	res := handler(ctx, *msg)
+	msg = NewMsgStartSubscription(types.TestAddress2, node.ID, types.TestCoinPos)
+	res = handler(ctx, *msg)
+	require.False(t, res.IsOK())
+
+	msg = NewMsgStartSubscription(types.TestAddress2, node.ID, types.TestCoinPos)
+	res = handler(ctx, *msg)
 	require.False(t, res.IsOK())
 
 	deposit, found := depositKeeper.GetDeposit(ctx, types.TestAddress2)
@@ -459,6 +501,18 @@ func Test_handleStartSubscription(t *testing.T) {
 	node.Status = StatusActive
 	vpnKeeper.SetNode(ctx, node)
 	msg = NewMsgStartSubscription(types.TestAddress2, node.ID, types.TestCoinPos)
+	res = handler(ctx, *msg)
+	require.False(t, res.IsOK())
+
+	deposit, found = depositKeeper.GetDeposit(ctx, types.TestAddress2)
+	require.Equal(t, false, found)
+	require.Equal(t, types.TestCoinsNil, deposit.Coins)
+
+	subscription, found = vpnKeeper.GetSubscription(ctx, types.TestIDZero)
+	require.Equal(t, false, found)
+	require.Equal(t, types.TestSubscriptionEmpty, subscription)
+
+	msg = NewMsgStartSubscription(types.TestAddress2, node.ID, types.TestCoinInvalid)
 	res = handler(ctx, *msg)
 	require.False(t, res.IsOK())
 
@@ -518,6 +572,21 @@ func Test_handleStartSubscription(t *testing.T) {
 
 	node.Status = StatusActive
 	vpnKeeper.SetNode(ctx, node)
+	coins, _, err = bankKeeper.AddCoins(ctx, types.TestAddress2, types.TestCoinsInvalid)
+	require.Nil(t, err)
+
+	msg = NewMsgStartSubscription(types.TestAddress2, node.ID, types.TestCoinInvalid)
+	res = handler(ctx, *msg)
+	require.False(t, res.IsOK())
+
+	deposit, found = depositKeeper.GetDeposit(ctx, types.TestAddress2)
+	require.Equal(t, true, found)
+	require.Equal(t, types.TestCoinsInvalid, deposit.Coins)
+
+	subscription, found = vpnKeeper.GetSubscription(ctx, types.TestIDZero)
+	require.Equal(t, false, found)
+	require.Equal(t, types.TestSubscriptionEmpty, subscription)
+
 	msg = NewMsgStartSubscription(types.TestAddress2, node.ID, types.TestCoinPos)
 	res = handler(ctx, *msg)
 	require.True(t, res.IsOK())
@@ -527,7 +596,7 @@ func Test_handleStartSubscription(t *testing.T) {
 
 	deposit, found = depositKeeper.GetDeposit(ctx, types.TestAddress2)
 	require.Equal(t, true, found)
-	require.Equal(t, types.TestCoinsPos, deposit.Coins)
+	require.Equal(t, types.TestCoinsInvalid.AmountOf(types.TestCoinInvalid.Denom), deposit.Coins.AmountOf(types.TestCoinInvalid.Denom))
 
 	subscription, found = vpnKeeper.GetSubscription(ctx, types.TestIDZero)
 	require.Equal(t, true, found)
@@ -570,7 +639,7 @@ func Test_handleStartSubscription(t *testing.T) {
 
 	deposit, found = depositKeeper.GetDeposit(ctx, types.TestAddress2)
 	require.Equal(t, true, found)
-	require.Equal(t, types.TestCoinsPos.Add(types.TestCoinsPos), deposit.Coins)
+	require.Equal(t, types.TestCoinsPos.Add(types.TestCoinsPos).Add(types.TestCoinsInvalid), deposit.Coins)
 
 	count = vpnKeeper.GetSubscriptionsCountOfAddress(ctx, types.TestAddress2)
 	require.Equal(t, uint64(2), count)
@@ -606,12 +675,16 @@ func Test_handleEndSubscription(t *testing.T) {
 	require.Equal(t, types.TestSubscriptionEmpty, subscription)
 
 	handler := NewHandler(vpnKeeper)
+	msg := NewMsgEndSubscription(types.TestAddress1, subscription.ID)
+	res := handler(ctx, *msg)
+	require.False(t, res.IsOK())
+
 	subscription = types.TestSubscriptionValid
 	subscription.Status = StatusInactive
 	vpnKeeper.SetSubscription(ctx, subscription)
 
-	msg := NewMsgEndSubscription(types.TestAddress1, subscription.ID)
-	res := handler(ctx, *msg)
+	msg = NewMsgEndSubscription(types.TestAddress1, subscription.ID)
+	res = handler(ctx, *msg)
 	require.False(t, res.IsOK())
 
 	subscription, found = vpnKeeper.GetSubscription(ctx, subscription.ID)
@@ -713,6 +786,15 @@ func Test_handleEndSubscription(t *testing.T) {
 	msg = NewMsgEndSubscription(types.TestAddress2, subscription.ID)
 	res = handler(ctx, *msg)
 	require.True(t, res.IsOK())
+
+	vpnKeeper.SetSubscription(ctx, types.TestSubscriptionValid)
+	vpnKeeper.SetSession(ctx, types.TestSessionValid)
+	vpnKeeper.SetSessionsCountOfSubscription(ctx, subscription.ID, 1)
+	vpnKeeper.SetSessionIDBySubscriptionID(ctx, subscription.ID, 1, types.TestIDZero)
+
+	msg = NewMsgEndSubscription(types.TestAddress2, subscription.ID)
+	res = handler(ctx, *msg)
+	require.False(t, res.IsOK())
 }
 
 func Test_handleUpdateSessionInfo(t *testing.T) {
@@ -722,18 +804,20 @@ func Test_handleUpdateSessionInfo(t *testing.T) {
 	require.Equal(t, false, found)
 	require.Equal(t, types.TestSessionEmpty, session)
 
-	node := types.TestNodeValid
-	subscription := types.TestSubscriptionValid
-	subscription.Status = StatusInactive
-	vpnKeeper.SetNode(ctx, node)
-	vpnKeeper.SetSubscription(ctx, subscription)
-	vpnKeeper.SetSessionsCountOfSubscription(ctx, subscription.ID, 0)
-	node, _ = vpnKeeper.GetNode(ctx, node.ID)
-
 	handler := NewHandler(vpnKeeper)
-	msg := NewMsgUpdateSessionInfo(types.TestAddress2, subscription.ID, types.TestBandwidthPos1,
+	msg := NewMsgUpdateSessionInfo(types.TestAddress2, types.TestIDPos, types.TestBandwidthPos1,
 		types.TestNodeOwnerStdSignaturePos1, types.TestClientStdSignaturePos1)
 	res := handler(ctx, *msg)
+	require.False(t, res.IsOK())
+
+	subscription := types.TestSubscriptionValid
+	subscription.Status = StatusInactive
+	vpnKeeper.SetSubscription(ctx, subscription)
+	vpnKeeper.SetSessionsCountOfSubscription(ctx, subscription.ID, 0)
+
+	msg = NewMsgUpdateSessionInfo(types.TestAddress2, subscription.ID, types.TestBandwidthPos1,
+		types.TestNodeOwnerStdSignaturePos1, types.TestClientStdSignaturePos1)
+	res = handler(ctx, *msg)
 	require.False(t, res.IsOK())
 
 	session, found = vpnKeeper.GetSession(ctx, types.TestIDZero)
@@ -746,14 +830,32 @@ func Test_handleUpdateSessionInfo(t *testing.T) {
 	count = vpnKeeper.GetSessionsCountOfSubscription(ctx, subscription.ID)
 	require.Equal(t, uint64(0), count)
 
-	msg = NewMsgUpdateSessionInfo(node.Owner, subscription.ID, types.TestBandwidthPos1,
+	msg = NewMsgUpdateSessionInfo(subscription.Client, subscription.ID, types.TestBandwidthPos1,
 		types.TestNodeOwnerStdSignaturePos1, types.TestClientStdSignaturePos1)
 	res = handler(ctx, *msg)
 	require.False(t, res.IsOK())
 
+	node := types.TestNodeValid
+	vpnKeeper.SetNode(ctx, node)
 	subscription.Status = StatusActive
 	vpnKeeper.SetSubscription(ctx, subscription)
+	vpnKeeper.SetSessionsCountOfSubscription(ctx, subscription.ID, 0)
+	msg = NewMsgUpdateSessionInfo(types.TestAddress2, subscription.ID, types.TestBandwidthPos1,
+		types.TestClientStdSignaturePos1, types.TestNodeOwnerStdSignaturePos1)
+	res = handler(ctx, *msg)
+	require.False(t, res.IsOK())
+
+	msg = NewMsgUpdateSessionInfo(types.TestAddress2, subscription.ID, types.TestBandwidthPos1,
+		types.TestClientStdSignaturePos1, types.TestClientStdSignaturePos1)
+	res = handler(ctx, *msg)
+	require.False(t, res.IsOK())
+
 	vpnKeeper.SetSessionsCountOfSubscription(ctx, subscription.ID, 1)
+	msg = NewMsgUpdateSessionInfo(types.TestAddress2, subscription.ID, types.TestBandwidthPos2,
+		types.TestNodeOwnerStdSignaturePos2, types.TestClientStdSignaturePos2)
+	res = handler(ctx, *msg)
+	require.False(t, res.IsOK())
+
 	msg = NewMsgUpdateSessionInfo(types.TestAddress2, subscription.ID, types.TestBandwidthPos1,
 		types.TestNodeOwnerStdSignaturePos1, types.TestClientStdSignaturePos1)
 	res = handler(ctx, *msg)
@@ -769,7 +871,7 @@ func Test_handleUpdateSessionInfo(t *testing.T) {
 	count = vpnKeeper.GetSessionsCountOfSubscription(ctx, subscription.ID)
 	require.Equal(t, uint64(1), count)
 
-	msg = NewMsgUpdateSessionInfo(node.Owner, subscription.ID, types.TestBandwidthPos1,
+	msg = NewMsgUpdateSessionInfo(subscription.Client, subscription.ID, types.TestBandwidthPos1,
 		types.TestNodeOwnerStdSignaturePos2, types.TestClientStdSignaturePos1)
 	res = handler(ctx, *msg)
 	require.False(t, res.IsOK())
@@ -784,7 +886,7 @@ func Test_handleUpdateSessionInfo(t *testing.T) {
 	count = vpnKeeper.GetSessionsCountOfSubscription(ctx, subscription.ID)
 	require.Equal(t, uint64(1), count)
 
-	msg = NewMsgUpdateSessionInfo(node.Owner, subscription.ID, types.TestBandwidthPos1,
+	msg = NewMsgUpdateSessionInfo(subscription.Client, subscription.ID, types.TestBandwidthPos1,
 		types.TestNodeOwnerStdSignaturePos1, types.TestClientStdSignaturePos2)
 	res = handler(ctx, *msg)
 	require.False(t, res.IsOK())
@@ -799,7 +901,7 @@ func Test_handleUpdateSessionInfo(t *testing.T) {
 	count = vpnKeeper.GetSessionsCountOfSubscription(ctx, subscription.ID)
 	require.Equal(t, uint64(1), count)
 
-	msg = NewMsgUpdateSessionInfo(node.Owner, subscription.ID, types.TestBandwidthPos2,
+	msg = NewMsgUpdateSessionInfo(subscription.Client, subscription.ID, types.TestBandwidthPos2,
 		types.TestNodeOwnerStdSignaturePos1, types.TestClientStdSignaturePos1)
 	res = handler(ctx, *msg)
 	require.False(t, res.IsOK())
@@ -814,7 +916,7 @@ func Test_handleUpdateSessionInfo(t *testing.T) {
 	count = vpnKeeper.GetSessionsCountOfSubscription(ctx, subscription.ID)
 	require.Equal(t, uint64(1), count)
 
-	msg = NewMsgUpdateSessionInfo(node.Owner, subscription.ID, types.TestBandwidthNeg,
+	msg = NewMsgUpdateSessionInfo(subscription.Client, subscription.ID, types.TestBandwidthNeg,
 		types.TestNodeOwnerStdSignatureNeg, types.TestClientStdSignatureNeg)
 	res = handler(ctx, *msg)
 	require.False(t, res.IsOK())

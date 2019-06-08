@@ -17,16 +17,18 @@ var (
 	TestAddress2     = csdk.AccAddress(TestPubkey2.Address())
 	TestAddressEmpty = csdk.AccAddress([]byte(""))
 
-	TestCoinEmpty = csdk.Coin{}
-	TestCoinNeg   = csdk.Coin{Denom: "stake", Amount: csdk.NewInt(-100)}
-	TestCoinZero  = csdk.NewInt64Coin("stake", 0)
-	TestCoinPos   = csdk.NewInt64Coin("stake", 100)
+	TestCoinEmpty   = csdk.Coin{}
+	TestCoinNeg     = csdk.Coin{Denom: "stake", Amount: csdk.NewInt(-100)}
+	TestCoinZero    = csdk.NewInt64Coin("stake", 0)
+	TestCoinPos     = csdk.NewInt64Coin("stake", 100)
+	TestCoinInvalid = csdk.NewInt64Coin("invalid", 100)
 
-	TestCoinsEmpty = csdk.Coins{}
-	TestCoinsNil   = csdk.Coins(nil)
-	TestCoinsNeg   = csdk.Coins{TestCoinNeg}
-	TestCoinsZero  = csdk.Coins{TestCoinZero}
-	TestCoinsPos   = csdk.Coins{TestCoinPos}
+	TestCoinsEmpty   = csdk.Coins{}
+	TestCoinsNil     = csdk.Coins(nil)
+	TestCoinsNeg     = csdk.Coins{TestCoinNeg}
+	TestCoinsZero    = csdk.Coins{TestCoinZero}
+	TestCoinsPos     = csdk.Coins{TestCoinPos}
+	TestCoinsInvalid = csdk.Coins{TestCoinInvalid}
 
 	TestIDZero = sdk.NewIDFromUInt64(0)
 	TestIDPos  = sdk.NewIDFromUInt64(1)
@@ -121,7 +123,7 @@ var (
 	TestBandWidthSignDataNeg  = NewBandwidthSignatureData(TestIDPos, 0, TestBandwidthNeg)
 	TestBandWidthSignDataZero = NewBandwidthSignatureData(TestIDPos, 0, TestBandwidthZero)
 	TestBandWidthSignDataPos1 = NewBandwidthSignatureData(TestIDZero, 1, TestBandwidthPos1)
-	TestBandWidthSignDataPos2 = NewBandwidthSignatureData(TestIDPos, 2, TestBandwidthPos2)
+	TestBandWidthSignDataPos2 = NewBandwidthSignatureData(TestIDZero, 1, TestBandwidthPos2)
 
 	TestNodeOwnerSignBandWidthNeg, _  = TestPrivKey1.Sign(TestBandWidthSignDataNeg.Bytes())
 	TestNodeOwnerSignBandWidthZero, _ = TestPrivKey1.Sign(TestBandWidthSignDataZero.Bytes())
