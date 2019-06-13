@@ -100,6 +100,7 @@ func Test_queryDepositOfAddress(t *testing.T) {
 
 	res, _err := queryDepositOfAddress(ctx, cdc, req, depositKeeper)
 	require.NotNil(t, _err)
+	require.Equal(t,[]byte(nil),res)
 	require.Len(t, res, 0)
 
 	req.Data, err = cdc.MarshalJSON(NewQueryDepositOfAddressParams(testAddressEmpty))
@@ -107,6 +108,7 @@ func Test_queryDepositOfAddress(t *testing.T) {
 
 	res, _err = queryDepositOfAddress(ctx, cdc, req, depositKeeper)
 	require.Nil(t, _err)
+	require.Equal(t,[]byte(nil),res)
 	require.Len(t, res, 0)
 
 	err = cdc.UnmarshalJSON(res, &deposit)
@@ -120,6 +122,7 @@ func Test_queryDepositOfAddress(t *testing.T) {
 
 	res, _err = queryDepositOfAddress(ctx, cdc, req, depositKeeper)
 	require.Nil(t, _err)
+	require.Equal(t,[]byte(nil),res)
 	require.Len(t, res, 0)
 
 	err = cdc.UnmarshalJSON(res, &deposit)
@@ -131,6 +134,7 @@ func Test_queryDepositOfAddress(t *testing.T) {
 
 	res, _err = queryDepositOfAddress(ctx, cdc, req, depositKeeper)
 	require.Nil(t, _err)
+	require.NotEqual(t,[]byte(nil),res)
 
 	err = cdc.UnmarshalJSON(res, &deposit)
 	require.Nil(t, err)
@@ -141,6 +145,7 @@ func Test_queryDepositOfAddress(t *testing.T) {
 
 	res, _err = queryDepositOfAddress(ctx, cdc, req, depositKeeper)
 	require.Nil(t, _err)
+	require.Equal(t,[]byte(nil),res)
 
 	err = cdc.UnmarshalJSON(res, &deposit)
 	require.NotNil(t, err)
@@ -154,6 +159,7 @@ func Test_queryAllDeposits(t *testing.T) {
 
 	res, _err := queryAllDeposits(ctx, cdc, depositKeeper)
 	require.Nil(t, _err)
+	require.Equal(t,[]byte("null"),res)
 
 	err = cdc.UnmarshalJSON(res, &deposits)
 	require.Nil(t, err)
@@ -163,6 +169,7 @@ func Test_queryAllDeposits(t *testing.T) {
 
 	res, _err = queryAllDeposits(ctx, cdc, depositKeeper)
 	require.Nil(t, _err)
+	require.NotEqual(t,[]byte(nil),res)
 
 	err = cdc.UnmarshalJSON(res, &deposits)
 	require.Nil(t, err)
@@ -175,6 +182,7 @@ func Test_queryAllDeposits(t *testing.T) {
 
 	res, _err = queryAllDeposits(ctx, cdc, depositKeeper)
 	require.Nil(t, _err)
+	require.NotEqual(t,[]byte(nil),res)
 
 	err = cdc.UnmarshalJSON(res, &deposits)
 	require.Nil(t, err)

@@ -20,7 +20,7 @@ func TestNewQuerySubscriptionParams(t *testing.T) {
 }
 
 func Test_querySubscription(t *testing.T) {
-	ctx, _, vpnkeeper, _ := keeper.TestCreateInput()
+	ctx, _, vpnKeeper, _ := keeper.TestCreateInput()
 	cdc := keeper.TestMakeCodec()
 	var err error
 	var subscription sdk.Subscription
@@ -30,16 +30,18 @@ func Test_querySubscription(t *testing.T) {
 		Data: []byte{},
 	}
 
-	res, _err := querySubscription(ctx, cdc, req, vpnkeeper)
+	res, _err := querySubscription(ctx, cdc, req, vpnKeeper)
 	require.NotNil(t, _err)
+	require.Equal(t,[]byte(nil),res)
 	require.Len(t, res, 0)
 
-	vpnkeeper.SetSubscription(ctx, sdk.TestSubscriptionValid)
+	vpnKeeper.SetSubscription(ctx, sdk.TestSubscriptionValid)
 	req.Data, err = cdc.MarshalJSON(NewQuerySubscriptionParams(sdk.TestIDZero))
 	require.Nil(t, err)
 
-	res, _err = querySubscription(ctx, cdc, req, vpnkeeper)
+	res, _err = querySubscription(ctx, cdc, req, vpnKeeper)
 	require.Nil(t, _err)
+	require.NotEqual(t,[]byte(nil),res)
 	require.NotNil(t, res)
 
 	err = cdc.UnmarshalJSON(res, &subscription)
@@ -49,8 +51,9 @@ func Test_querySubscription(t *testing.T) {
 	req.Data, err = cdc.MarshalJSON(NewQuerySubscriptionParams(sdk.TestIDPos))
 	require.Nil(t, err)
 
-	res, _err = querySubscription(ctx, cdc, req, vpnkeeper)
+	res, _err = querySubscription(ctx, cdc, req, vpnKeeper)
 	require.Nil(t, res)
+	require.Equal(t,[]byte(nil),res)
 	require.Len(t, res, 0)
 }
 
@@ -63,7 +66,7 @@ func TestNewQuerySubscriptionsOfNodePrams(t *testing.T) {
 }
 
 func Test_querySubscriptionsOfNode(t *testing.T) {
-	ctx, _, vpnkeeper, _ := keeper.TestCreateInput()
+	ctx, _, vpnKeeper, _ := keeper.TestCreateInput()
 	cdc := keeper.TestMakeCodec()
 	var err error
 	var subscriptions []sdk.Subscription
@@ -73,19 +76,21 @@ func Test_querySubscriptionsOfNode(t *testing.T) {
 		Data: []byte{},
 	}
 
-	res, _err := querySubscriptionsOfNode(ctx, cdc, req, vpnkeeper)
+	res, _err := querySubscriptionsOfNode(ctx, cdc, req, vpnKeeper)
 	require.NotNil(t, _err)
+	require.Equal(t,[]byte(nil),res)
 	require.Len(t, res, 0)
 
-	vpnkeeper.SetSubscription(ctx, sdk.TestSubscriptionValid)
-	vpnkeeper.SetSubscriptionsCountOfNode(ctx, sdk.TestNodeValid.ID, 1)
-	vpnkeeper.SetSubscriptionIDByNodeID(ctx, sdk.TestNodeValid.ID, 0, sdk.TestSubscriptionValid.ID)
+	vpnKeeper.SetSubscription(ctx, sdk.TestSubscriptionValid)
+	vpnKeeper.SetSubscriptionsCountOfNode(ctx, sdk.TestNodeValid.ID, 1)
+	vpnKeeper.SetSubscriptionIDByNodeID(ctx, sdk.TestNodeValid.ID, 0, sdk.TestSubscriptionValid.ID)
 
 	req.Data, err = cdc.MarshalJSON(NewQuerySubscriptionsOfNodePrams(sdk.TestIDZero))
 	require.Nil(t, err)
 
-	res, _err = querySubscriptionsOfNode(ctx, cdc, req, vpnkeeper)
+	res, _err = querySubscriptionsOfNode(ctx, cdc, req, vpnKeeper)
 	require.Nil(t, _err)
+	require.NotEqual(t,[]byte(nil),res)
 
 	err = cdc.UnmarshalJSON(res, &subscriptions)
 	require.Nil(t, err)
@@ -94,8 +99,9 @@ func Test_querySubscriptionsOfNode(t *testing.T) {
 	req.Data, err = cdc.MarshalJSON(NewQuerySubscriptionsOfNodePrams(sdk.TestIDPos))
 	require.Nil(t, err)
 
-	res, _err = querySubscriptionsOfNode(ctx, cdc, req, vpnkeeper)
+	res, _err = querySubscriptionsOfNode(ctx, cdc, req, vpnKeeper)
 	require.Nil(t, _err)
+	require.NotEqual(t,[]byte(nil),res)
 
 	err = cdc.UnmarshalJSON(res, &subscriptions)
 	require.Nil(t, err)
@@ -114,7 +120,7 @@ func TestNewQuerySubscriptionsOfAddressParams(t *testing.T) {
 }
 
 func Test_querySubscriptionsOfAddress(t *testing.T) {
-	ctx, _, vpnkeeper, _ := keeper.TestCreateInput()
+	ctx, _, vpnKeeper, _ := keeper.TestCreateInput()
 	cdc := keeper.TestMakeCodec()
 	var err error
 	var subscriptions []sdk.Subscription
@@ -124,19 +130,21 @@ func Test_querySubscriptionsOfAddress(t *testing.T) {
 		Data: []byte{},
 	}
 
-	res, _err := querySubscriptionsOfAddress(ctx, cdc, req, vpnkeeper)
+	res, _err := querySubscriptionsOfAddress(ctx, cdc, req, vpnKeeper)
 	require.NotNil(t, _err)
+	require.Equal(t,[]byte(nil),res)
 	require.Len(t, res, 0)
 
-	vpnkeeper.SetSubscription(ctx, sdk.TestSubscriptionValid)
-	vpnkeeper.SetSubscriptionsCountOfAddress(ctx, sdk.TestAddress1, 1)
-	vpnkeeper.SetSubscriptionIDByAddress(ctx, sdk.TestAddress1, 0, sdk.TestSubscriptionValid.ID)
+	vpnKeeper.SetSubscription(ctx, sdk.TestSubscriptionValid)
+	vpnKeeper.SetSubscriptionsCountOfAddress(ctx, sdk.TestAddress1, 1)
+	vpnKeeper.SetSubscriptionIDByAddress(ctx, sdk.TestAddress1, 0, sdk.TestSubscriptionValid.ID)
 
 	req.Data, err = cdc.MarshalJSON(NewQuerySubscriptionsOfAddressParams(sdk.TestAddressEmpty))
 	require.Nil(t, err)
 
-	res, _err = querySubscriptionsOfAddress(ctx, cdc, req, vpnkeeper)
+	res, _err = querySubscriptionsOfAddress(ctx, cdc, req, vpnKeeper)
 	require.Nil(t, _err)
+	require.NotEqual(t,[]byte(nil),res)
 
 	err = cdc.UnmarshalJSON(res, &subscriptions)
 	require.Nil(t, err)
@@ -145,8 +153,9 @@ func Test_querySubscriptionsOfAddress(t *testing.T) {
 	req.Data, err = cdc.MarshalJSON(NewQuerySubscriptionsOfAddressParams(sdk.TestAddress1))
 	require.Nil(t, err)
 
-	res, _err = querySubscriptionsOfAddress(ctx, cdc, req, vpnkeeper)
+	res, _err = querySubscriptionsOfAddress(ctx, cdc, req, vpnKeeper)
 	require.Nil(t, _err)
+	require.NotEqual(t,[]byte(nil),res)
 
 	err = cdc.UnmarshalJSON(res, &subscriptions)
 	require.Nil(t, err)
@@ -155,8 +164,9 @@ func Test_querySubscriptionsOfAddress(t *testing.T) {
 	req.Data, err = cdc.MarshalJSON(NewQuerySubscriptionsOfAddressParams(sdk.TestAddress2))
 	require.Nil(t, err)
 
-	res, _err = querySubscriptionsOfAddress(ctx, cdc, req, vpnkeeper)
+	res, _err = querySubscriptionsOfAddress(ctx, cdc, req, vpnKeeper)
 	require.Nil(t, _err)
+	require.NotEqual(t,[]byte(nil),res)
 
 	err = cdc.UnmarshalJSON(res, &subscriptions)
 	require.Nil(t, err)
@@ -164,32 +174,35 @@ func Test_querySubscriptionsOfAddress(t *testing.T) {
 }
 
 func Test_queryAllSubscriptions(t *testing.T) {
-	ctx, _, vpnkeeper, _ := keeper.TestCreateInput()
+	ctx, _, vpnKeeper, _ := keeper.TestCreateInput()
 	cdc := keeper.TestMakeCodec()
 	var err error
 	var subscriptions []sdk.Subscription
 
-	res, _err := queryAllSubscriptions(ctx, cdc, vpnkeeper)
+	res, _err := queryAllSubscriptions(ctx, cdc, vpnKeeper)
 	require.Nil(t, _err)
+	require.Equal(t,[]byte("null"),res)
 
 	err = cdc.UnmarshalJSON(res, &subscriptions)
 	require.Nil(t, err)
 	require.NotEqual(t, sdk.TestSubscriptionsValid, subscriptions)
 
-	vpnkeeper.SetSubscription(ctx, sdk.TestSubscriptionEmpty)
-	res, _err = queryAllSubscriptions(ctx, cdc, vpnkeeper)
+	vpnKeeper.SetSubscription(ctx, sdk.TestSubscriptionEmpty)
+	res, _err = queryAllSubscriptions(ctx, cdc, vpnKeeper)
 	require.Nil(t, _err)
+	require.NotEqual(t,[]byte(nil),res)
 	require.NotNil(t, res)
 
 	err = cdc.UnmarshalJSON(res, &subscriptions)
 	require.Nil(t, err)
 	require.NotEqual(t, sdk.TestSubscriptionsValid, subscriptions)
 
-	vpnkeeper.SetSubscription(ctx, sdk.TestSubscriptionValid)
+	vpnKeeper.SetSubscription(ctx, sdk.TestSubscriptionValid)
 	require.Nil(t, err)
 
-	res, _err = queryAllSubscriptions(ctx, cdc, vpnkeeper)
+	res, _err = queryAllSubscriptions(ctx, cdc, vpnKeeper)
 	require.Nil(t, _err)
+	require.NotEqual(t,[]byte(nil),res)
 	require.NotNil(t, res)
 
 	err = cdc.UnmarshalJSON(res, &subscriptions)
@@ -198,11 +211,12 @@ func Test_queryAllSubscriptions(t *testing.T) {
 
 	subscription := sdk.TestSubscriptionValid
 	subscription.ID = sdk.TestIDPos
-	vpnkeeper.SetSubscription(ctx, subscription)
+	vpnKeeper.SetSubscription(ctx, subscription)
 	require.Nil(t, err)
 
-	res, _err = queryAllSubscriptions(ctx, cdc, vpnkeeper)
+	res, _err = queryAllSubscriptions(ctx, cdc, vpnKeeper)
 	require.Nil(t, _err)
+	require.NotEqual(t,[]byte(nil),res)
 	require.NotNil(t, res)
 
 	err = cdc.UnmarshalJSON(res, &subscriptions)
@@ -219,7 +233,7 @@ func TestNewQuerySessionsCountOfSubscriptionParams(t *testing.T) {
 }
 
 func Test_querySessionsCountOfSubscription(t *testing.T) {
-	ctx, _, vpnkeeper, _ := keeper.TestCreateInput()
+	ctx, _, vpnKeeper, _ := keeper.TestCreateInput()
 	cdc := keeper.TestMakeCodec()
 	var err error
 	var count uint64
@@ -229,50 +243,55 @@ func Test_querySessionsCountOfSubscription(t *testing.T) {
 		Data: []byte{},
 	}
 
-	res, _err := querySessionsCountOfSubscription(ctx, cdc, req, vpnkeeper)
+	res, _err := querySessionsCountOfSubscription(ctx, cdc, req, vpnKeeper)
 	require.NotNil(t, _err)
+	require.Equal(t,[]byte(nil),res)
 	require.Len(t, res, 0)
 
-	vpnkeeper.SetSessionsCountOfSubscription(ctx, sdk.TestIDZero, 1)
+	vpnKeeper.SetSessionsCountOfSubscription(ctx, sdk.TestIDZero, 1)
 	req.Data, err = cdc.MarshalJSON(NewQuerySessionsCountOfSubscriptionParams(sdk.TestIDZero))
 	require.Nil(t, err)
 
-	res, _err = querySessionsCountOfSubscription(ctx, cdc, req, vpnkeeper)
+	res, _err = querySessionsCountOfSubscription(ctx, cdc, req, vpnKeeper)
 	require.Nil(t, _err)
+	require.NotEqual(t,[]byte(nil),res)
 
 	err = cdc.UnmarshalJSON(res, &count)
 	require.Nil(t, err)
 
 	require.Equal(t, uint64(1), count)
 
-	vpnkeeper.SetSessionsCountOfSubscription(ctx, sdk.TestIDZero, 2)
+	vpnKeeper.SetSessionsCountOfSubscription(ctx, sdk.TestIDZero, 2)
 	req.Data, err = cdc.MarshalJSON(NewQuerySessionsCountOfSubscriptionParams(sdk.TestIDZero))
 	require.Nil(t, err)
 
-	res, _err = querySessionsCountOfSubscription(ctx, cdc, req, vpnkeeper)
+	res, _err = querySessionsCountOfSubscription(ctx, cdc, req, vpnKeeper)
 	require.Nil(t, _err)
+	require.NotEqual(t,[]byte(nil),res)
 
 	err = cdc.UnmarshalJSON(res, &count)
 	require.Nil(t, err)
 	require.Equal(t, uint64(2), count)
 
-	vpnkeeper.SetSessionsCountOfSubscription(ctx, sdk.TestIDPos, 1)
+	vpnKeeper.SetSessionsCountOfSubscription(ctx, sdk.TestIDPos, 1)
 	req.Data, err = cdc.MarshalJSON(NewQuerySessionsCountOfSubscriptionParams(sdk.TestIDPos))
 	require.Nil(t, err)
 
-	res, _err = querySessionsCountOfSubscription(ctx, cdc, req, vpnkeeper)
+	res, _err = querySessionsCountOfSubscription(ctx, cdc, req, vpnKeeper)
 	require.Nil(t, _err)
+	require.NotEqual(t,[]byte(nil),res)
 
 	err = cdc.UnmarshalJSON(res, &count)
 	require.Nil(t, err)
 	require.Equal(t, uint64(1), count)
 
-	vpnkeeper.SetSessionsCountOfSubscription(ctx, sdk.TestIDPos, 2)
+	vpnKeeper.SetSessionsCountOfSubscription(ctx, sdk.TestIDPos, 2)
 	req.Data, err = cdc.MarshalJSON(NewQuerySessionsCountOfSubscriptionParams(sdk.TestIDPos))
 	require.Nil(t, err)
 
-	res, _err = querySessionsCountOfSubscription(ctx, cdc, req, vpnkeeper)
+	res, _err = querySessionsCountOfSubscription(ctx, cdc, req, vpnKeeper)
 	require.Nil(t, _err)
+	require.NotEqual(t,[]byte(nil),res)
 
 	err = cdc.UnmarshalJSON(res, &count)
 	require.Nil(t, err)

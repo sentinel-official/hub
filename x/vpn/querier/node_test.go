@@ -20,7 +20,7 @@ func TestNewQueryNodeParams(t *testing.T) {
 }
 
 func Test_queryNode(t *testing.T) {
-	ctx, _, vpnkeeper, _ := keeper.TestCreateInput()
+	ctx, _, vpnKeeper, _ := keeper.TestCreateInput()
 	cdc := keeper.TestMakeCodec()
 	var err error
 	var node sdk.Node
@@ -30,16 +30,18 @@ func Test_queryNode(t *testing.T) {
 		Data: []byte{},
 	}
 
-	res, _err := queryNode(ctx, cdc, req, vpnkeeper)
+	res, _err := queryNode(ctx, cdc, req, vpnKeeper)
 	require.NotNil(t, _err)
+	require.Equal(t,[]byte(nil),res)
 	require.Len(t, res, 0)
 
-	vpnkeeper.SetNode(ctx, sdk.TestNodeValid)
+	vpnKeeper.SetNode(ctx, sdk.TestNodeValid)
 	req.Data, err = cdc.MarshalJSON(NewQueryNodeParams(sdk.TestIDZero))
 	require.Nil(t, err)
 
-	res, _err = queryNode(ctx, cdc, req, vpnkeeper)
+	res, _err = queryNode(ctx, cdc, req, vpnKeeper)
 	require.Nil(t, _err)
+	require.NotEqual(t,[]byte(nil),res)
 	require.NotNil(t, res)
 
 	err = cdc.UnmarshalJSON(res, &node)
@@ -49,8 +51,9 @@ func Test_queryNode(t *testing.T) {
 	req.Data, err = cdc.MarshalJSON(NewQueryNodeParams(sdk.TestIDPos))
 	require.Nil(t, err)
 
-	res, _err = queryNode(ctx, cdc, req, vpnkeeper)
+	res, _err = queryNode(ctx, cdc, req, vpnKeeper)
 	require.Nil(t, res)
+	require.Equal(t,[]byte(nil),res)
 	require.Len(t, res, 0)
 }
 
@@ -66,7 +69,7 @@ func TestNewQueryNodesOfAddressParams(t *testing.T) {
 }
 
 func Test_queryNodesOfAddress(t *testing.T) {
-	ctx, _, vpnkeeper, _ := keeper.TestCreateInput()
+	ctx, _, vpnKeeper, _ := keeper.TestCreateInput()
 	cdc := keeper.TestMakeCodec()
 	var err error
 	var nodes []sdk.Node
@@ -76,31 +79,34 @@ func Test_queryNodesOfAddress(t *testing.T) {
 		Data: []byte{},
 	}
 
-	res, _err := queryNodesOfAddress(ctx, cdc, req, vpnkeeper)
+	res, _err := queryNodesOfAddress(ctx, cdc, req, vpnKeeper)
 	require.NotNil(t, _err)
+	require.Equal(t,[]byte(nil),res)
 	require.Len(t, res, 0)
 
-	vpnkeeper.SetNode(ctx, sdk.TestNodeValid)
-	vpnkeeper.SetNodesCountOfAddress(ctx, sdk.TestAddress1, 1)
-	vpnkeeper.SetNodeIDByAddress(ctx, sdk.TestAddress1, 0, sdk.TestIDZero)
+	vpnKeeper.SetNode(ctx, sdk.TestNodeValid)
+	vpnKeeper.SetNodesCountOfAddress(ctx, sdk.TestAddress1, 1)
+	vpnKeeper.SetNodeIDByAddress(ctx, sdk.TestAddress1, 0, sdk.TestIDZero)
 
 	req.Data, err = cdc.MarshalJSON(NewQueryNodesOfAddressParams(sdk.TestAddressEmpty))
 	require.Nil(t, err)
 
-	res, _err = queryNodesOfAddress(ctx, cdc, req, vpnkeeper)
+	res, _err = queryNodesOfAddress(ctx, cdc, req, vpnKeeper)
 	require.Nil(t, _err)
+	require.NotEqual(t,[]byte(nil),res)
 	require.NotNil(t, res)
 
 	err = cdc.UnmarshalJSON(res, &nodes)
 	require.Nil(t, err)
 	require.NotEqual(t, sdk.TestNodesValid, nodes)
 
-	vpnkeeper.SetNode(ctx, sdk.TestNodeValid)
+	vpnKeeper.SetNode(ctx, sdk.TestNodeValid)
 	req.Data, err = cdc.MarshalJSON(NewQueryNodesOfAddressParams(sdk.TestAddress1))
 	require.Nil(t, err)
 
-	res, _err = queryNodesOfAddress(ctx, cdc, req, vpnkeeper)
+	res, _err = queryNodesOfAddress(ctx, cdc, req, vpnKeeper)
 	require.Nil(t, _err)
+	require.NotEqual(t,[]byte(nil),res)
 	require.NotNil(t, res)
 
 	err = cdc.UnmarshalJSON(res, &nodes)
@@ -110,8 +116,9 @@ func Test_queryNodesOfAddress(t *testing.T) {
 	req.Data, err = cdc.MarshalJSON(NewQueryNodesOfAddressParams(sdk.TestAddress2))
 	require.Nil(t, err)
 
-	res, _err = queryNodesOfAddress(ctx, cdc, req, vpnkeeper)
+	res, _err = queryNodesOfAddress(ctx, cdc, req, vpnKeeper)
 	require.NotNil(t, res)
+	require.NotEqual(t,[]byte(nil),res)
 
 	err = cdc.UnmarshalJSON(res, &nodes)
 	require.Nil(t, err)
@@ -119,32 +126,35 @@ func Test_queryNodesOfAddress(t *testing.T) {
 }
 
 func Test_queryAllNodes(t *testing.T) {
-	ctx, _, vpnkeeper, _ := keeper.TestCreateInput()
+	ctx, _, vpnKeeper, _ := keeper.TestCreateInput()
 	cdc := keeper.TestMakeCodec()
 	var err error
 	var nodes []sdk.Node
 
-	res, _err := queryAllNodes(ctx, cdc, vpnkeeper)
+	res, _err := queryAllNodes(ctx, cdc, vpnKeeper)
 	require.Nil(t, _err)
+	require.Equal(t,[]byte("null"),res)
 
 	err = cdc.UnmarshalJSON(res, &nodes)
 	require.Nil(t, err)
 	require.NotEqual(t, sdk.TestNodesValid, nodes)
 
-	vpnkeeper.SetNode(ctx, sdk.TestNodeEmpty)
-	res, _err = queryAllNodes(ctx, cdc, vpnkeeper)
+	vpnKeeper.SetNode(ctx, sdk.TestNodeEmpty)
+	res, _err = queryAllNodes(ctx, cdc, vpnKeeper)
 	require.Nil(t, _err)
+	require.NotEqual(t,[]byte(nil),res)
 	require.NotNil(t, res)
 
 	err = cdc.UnmarshalJSON(res, &nodes)
 	require.Nil(t, err)
 	require.NotEqual(t, sdk.TestNodesValid, nodes)
 
-	vpnkeeper.SetNode(ctx, sdk.TestNodeValid)
+	vpnKeeper.SetNode(ctx, sdk.TestNodeValid)
 	require.Nil(t, err)
 
-	res, _err = queryAllNodes(ctx, cdc, vpnkeeper)
+	res, _err = queryAllNodes(ctx, cdc, vpnKeeper)
 	require.Nil(t, _err)
+	require.NotEqual(t,[]byte(nil),res)
 	require.NotNil(t, res)
 
 	err = cdc.UnmarshalJSON(res, &nodes)
@@ -153,11 +163,12 @@ func Test_queryAllNodes(t *testing.T) {
 
 	node := sdk.TestNodeValid
 	node.ID = sdk.TestIDPos
-	vpnkeeper.SetNode(ctx, node)
+	vpnKeeper.SetNode(ctx, node)
 	require.Nil(t, err)
 
-	res, _err = queryAllNodes(ctx, cdc, vpnkeeper)
+	res, _err = queryAllNodes(ctx, cdc, vpnKeeper)
 	require.Nil(t, _err)
+	require.NotEqual(t,[]byte(nil),res)
 	require.NotNil(t, res)
 
 	err = cdc.UnmarshalJSON(res, &nodes)
