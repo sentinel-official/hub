@@ -13,9 +13,9 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/gorilla/mux"
 
-	hub "github.com/sentinel-official/sentinel-hub/types"
-	"github.com/sentinel-official/sentinel-hub/x/vpn"
-	"github.com/sentinel-official/sentinel-hub/x/vpn/client/common"
+	hub "github.com/sentinel-official/hub/types"
+	"github.com/sentinel-official/hub/x/vpn"
+	"github.com/sentinel-official/hub/x/vpn/client/common"
 )
 
 type msgSignSessionBandwidth struct {

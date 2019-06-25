@@ -5,7 +5,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/sentinel-official/sentinel-hub/x/vpn/types"
+	"github.com/sentinel-official/hub/x/vpn/types"
 )
 
 func InitGenesis(ctx sdk.Context, k Keeper, data types.GenesisState) {

@@ -9,8 +9,8 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
-	"github.com/sentinel-official/sentinel-hub/x/vpn"
-	"github.com/sentinel-official/sentinel-hub/x/vpn/client/common"
+	"github.com/sentinel-official/hub/x/vpn"
+	"github.com/sentinel-official/hub/x/vpn/client/common"
 )
 
 func QuerySessionCmd(cdc *codec.Codec) *cobra.Command {

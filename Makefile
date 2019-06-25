@@ -9,12 +9,12 @@ BUILD_TAGS := netgo
 BUILD_TAGS := $(strip ${BUILD_TAGS})
 
 LD_FLAGS := -s -w \
-	-X github.com/sentinel-official/sentinel-hub/version.Version=${VERSION} \
-	-X github.com/sentinel-official/sentinel-hub/version.Commit=${COMMIT} \
-	-X github.com/sentinel-official/sentinel-hub/version.BuildTags=${BUILD_TAGS}
+	-X github.com/sentinel-official/hub/version.Version=${VERSION} \
+	-X github.com/sentinel-official/hub/version.Commit=${COMMIT} \
+	-X github.com/sentinel-official/hub/version.BuildTags=${BUILD_TAGS}
 ifneq (${GOSUM},)
 	ifneq (${wildcard go.sum},)
-		LD_FLAGS += -X github.com/sentinel-official/sentinel-hub/version.VendorHash=$(shell ${GOSUM} go.sum)
+		LD_FLAGS += -X github.com/sentinel-official/hub/version.VendorHash=$(shell ${GOSUM} go.sum)
 	endif
 endif
 

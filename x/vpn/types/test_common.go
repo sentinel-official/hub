@@ -6,7 +6,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/tendermint/tendermint/crypto/ed25519"
 
-	hub "github.com/sentinel-official/sentinel-hub/types"
+	hub "github.com/sentinel-official/hub/types"
 )
 
 var (

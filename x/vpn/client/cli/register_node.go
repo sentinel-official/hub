@@ -9,8 +9,8 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
-	hub "github.com/sentinel-official/sentinel-hub/types"
-	"github.com/sentinel-official/sentinel-hub/x/vpn"
+	hub "github.com/sentinel-official/hub/types"
+	"github.com/sentinel-official/hub/x/vpn"
 )
 
 func RegisterNodeTxCmd(cdc *codec.Codec) *cobra.Command {

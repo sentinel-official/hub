@@ -17,7 +17,7 @@ import (
 	"github.com/tendermint/tendermint/privval"
 	"github.com/tendermint/tendermint/types"
 
-	"github.com/sentinel-official/sentinel-hub/app"
+	"github.com/sentinel-official/hub/app"
 )
 
 func ExportGenesisFile(genFile, chainID string, validators []types.GenesisValidator, state json.RawMessage) error {

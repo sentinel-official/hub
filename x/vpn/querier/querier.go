@@ -5,8 +5,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	abci "github.com/tendermint/tendermint/abci/types"
 
-	"github.com/sentinel-official/sentinel-hub/x/vpn/keeper"
-	"github.com/sentinel-official/sentinel-hub/x/vpn/types"
+	"github.com/sentinel-official/hub/x/vpn/keeper"
+	"github.com/sentinel-official/hub/x/vpn/types"
 )
 
 // nolint:gocyclo

@@ -16,8 +16,8 @@ import (
 	tmDB "github.com/tendermint/tendermint/libs/db"
 	"github.com/tendermint/tendermint/libs/log"
 
-	"github.com/sentinel-official/sentinel-hub/x/deposit/keeper"
-	"github.com/sentinel-official/sentinel-hub/x/deposit/types"
+	"github.com/sentinel-official/hub/x/deposit/keeper"
+	"github.com/sentinel-official/hub/x/deposit/types"
 )
 
 var (

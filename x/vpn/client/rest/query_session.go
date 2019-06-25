@@ -9,7 +9,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/rest"
 	"github.com/gorilla/mux"
 
-	"github.com/sentinel-official/sentinel-hub/x/vpn/client/common"
+	"github.com/sentinel-official/hub/x/vpn/client/common"
 )
 
 func getSessionHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) http.HandlerFunc {

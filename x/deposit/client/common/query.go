@@ -8,7 +8,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/sentinel-official/sentinel-hub/x/deposit"
+	"github.com/sentinel-official/hub/x/deposit"
 )
 
 func QueryDepositOfAddress(cliCtx context.CLIContext, cdc *codec.Codec, _address string) (*deposit.Deposit, error) {

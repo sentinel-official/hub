@@ -5,7 +5,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	hub "github.com/sentinel-official/sentinel-hub/types"
+	hub "github.com/sentinel-official/hub/types"
 )
 
 var _ sdk.Msg = (*MsgStartSubscription)(nil)

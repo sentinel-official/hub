@@ -1,7 +1,7 @@
 package staking
 
 import (
-	"github.com/sentinel-official/sentinel-hub/x/staking/keeper"
+	"github.com/sentinel-official/hub/x/staking/keeper"
 )
 
 // nolint: gochecknoglobals

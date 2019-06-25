@@ -24,7 +24,7 @@ import (
 	"github.com/tendermint/tendermint/types"
 	tmTime "github.com/tendermint/tendermint/types/time"
 
-	"github.com/sentinel-official/sentinel-hub/app"
+	"github.com/sentinel-official/hub/app"
 )
 
 const nodeDirPerm = 0755

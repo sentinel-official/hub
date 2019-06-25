@@ -17,8 +17,8 @@ import (
 	abci "github.com/tendermint/tendermint/abci/types"
 	tm "github.com/tendermint/tendermint/types"
 
-	"github.com/sentinel-official/sentinel-hub/x/deposit"
-	"github.com/sentinel-official/sentinel-hub/x/vpn"
+	"github.com/sentinel-official/hub/x/deposit"
+	"github.com/sentinel-official/hub/x/vpn"
 )
 
 func (app *HubApp) ExportAppStateAndValidators(forZeroHeight bool, jailWhiteList []string) (

@@ -1,7 +1,7 @@
 package querier
 
 import (
-	"github.com/sentinel-official/sentinel-hub/x/vpn/types"
+	"github.com/sentinel-official/hub/x/vpn/types"
 )
 
 // nolint:gochecknoglobals

@@ -26,7 +26,7 @@ import (
 	tmCli "github.com/tendermint/tendermint/libs/cli"
 	"github.com/tendermint/tendermint/libs/common"
 
-	"github.com/sentinel-official/sentinel-hub/app"
+	"github.com/sentinel-official/hub/app"
 )
 
 // nolint:gochecknoglobals

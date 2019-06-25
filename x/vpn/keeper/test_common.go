@@ -12,8 +12,8 @@ import (
 	tmDB "github.com/tendermint/tendermint/libs/db"
 	"github.com/tendermint/tendermint/libs/log"
 
-	"github.com/sentinel-official/sentinel-hub/x/deposit"
-	"github.com/sentinel-official/sentinel-hub/x/vpn/types"
+	"github.com/sentinel-official/hub/x/deposit"
+	"github.com/sentinel-official/hub/x/vpn/types"
 )
 
 func TestCreateInput() (sdk.Context, deposit.Keeper, Keeper, bank.BaseKeeper) {

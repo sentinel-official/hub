@@ -8,7 +8,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/staking/keeper"
 	"github.com/cosmos/cosmos-sdk/x/staking/types"
 
-	"github.com/sentinel-official/sentinel-hub/x/deposit"
+	"github.com/sentinel-official/hub/x/deposit"
 )
 
 func RegisterInvariants(c types.CrisisKeeper, k keeper.Keeper, f types.FeeCollectionKeeper,

@@ -23,9 +23,9 @@ import (
 	tmDB "github.com/tendermint/tendermint/libs/db"
 	"github.com/tendermint/tendermint/libs/log"
 
-	"github.com/sentinel-official/sentinel-hub/x/deposit"
-	_staking "github.com/sentinel-official/sentinel-hub/x/staking"
-	"github.com/sentinel-official/sentinel-hub/x/vpn"
+	"github.com/sentinel-official/hub/x/deposit"
+	_staking "github.com/sentinel-official/hub/x/staking"
+	"github.com/sentinel-official/hub/x/vpn"
 )
 
 const (

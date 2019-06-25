@@ -10,8 +10,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/rest"
 	"github.com/gorilla/mux"
 
-	hub "github.com/sentinel-official/sentinel-hub/types"
-	"github.com/sentinel-official/sentinel-hub/x/vpn"
+	hub "github.com/sentinel-official/hub/types"
+	"github.com/sentinel-official/hub/x/vpn"
 )
 
 type msgStartSubscription struct {

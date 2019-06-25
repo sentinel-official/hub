@@ -4,7 +4,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/params"
 
-	"github.com/sentinel-official/sentinel-hub/x/vpn/types"
+	"github.com/sentinel-official/hub/x/vpn/types"
 )
 
 const (

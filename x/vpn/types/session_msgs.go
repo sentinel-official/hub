@@ -6,7 +6,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 
-	hub "github.com/sentinel-official/sentinel-hub/types"
+	hub "github.com/sentinel-official/hub/types"
 )
 
 var _ sdk.Msg = (*MsgUpdateSessionInfo)(nil)

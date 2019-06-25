@@ -3,7 +3,7 @@ package keeper
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/sentinel-official/sentinel-hub/x/deposit/types"
+	"github.com/sentinel-official/hub/x/deposit/types"
 )
 
 func (k Keeper) SetDeposit(ctx sdk.Context, deposit types.Deposit) {

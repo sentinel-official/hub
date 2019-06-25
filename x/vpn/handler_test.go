@@ -3,12 +3,12 @@ package vpn
 import (
 	"testing"
 
-	hub "github.com/sentinel-official/sentinel-hub/types"
+	hub "github.com/sentinel-official/hub/types"
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/sentinel-official/sentinel-hub/x/vpn/keeper"
-	"github.com/sentinel-official/sentinel-hub/x/vpn/types"
+	"github.com/sentinel-official/hub/x/vpn/keeper"
+	"github.com/sentinel-official/hub/x/vpn/types"
 )
 
 func Test_handleRegisterNode(t *testing.T) {

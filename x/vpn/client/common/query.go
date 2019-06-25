@@ -8,8 +8,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	hub "github.com/sentinel-official/sentinel-hub/types"
-	"github.com/sentinel-official/sentinel-hub/x/vpn"
+	hub "github.com/sentinel-official/hub/types"
+	"github.com/sentinel-official/hub/x/vpn"
 )
 
 func QueryNode(cliCtx context.CLIContext, cdc *codec.Codec, _id string) (*vpn.Node, error) {

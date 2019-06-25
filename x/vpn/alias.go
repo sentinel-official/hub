@@ -1,9 +1,9 @@
 package vpn
 
 import (
-	"github.com/sentinel-official/sentinel-hub/x/vpn/keeper"
-	"github.com/sentinel-official/sentinel-hub/x/vpn/querier"
-	"github.com/sentinel-official/sentinel-hub/x/vpn/types"
+	"github.com/sentinel-official/hub/x/vpn/keeper"
+	"github.com/sentinel-official/hub/x/vpn/querier"
+	"github.com/sentinel-official/hub/x/vpn/types"
 )
 
 const (

@@ -5,7 +5,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/params"
 
-	"github.com/sentinel-official/sentinel-hub/x/deposit"
+	"github.com/sentinel-official/hub/x/deposit"
 )
 
 type Keeper struct {

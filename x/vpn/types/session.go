@@ -3,7 +3,7 @@ package types
 import (
 	"fmt"
 
-	hub "github.com/sentinel-official/sentinel-hub/types"
+	hub "github.com/sentinel-official/hub/types"
 )
 
 type Session struct {

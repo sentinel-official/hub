@@ -6,7 +6,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	hub "github.com/sentinel-official/sentinel-hub/types"
+	hub "github.com/sentinel-official/hub/types"
 )
 
 func TestNode_UpdateInfo(t *testing.T) {
