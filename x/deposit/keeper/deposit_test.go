@@ -5,7 +5,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/store"
-	csdk "github.com/cosmos/cosmos-sdk/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/cosmos/cosmos-sdk/x/bank"
 	"github.com/cosmos/cosmos-sdk/x/params"
@@ -15,7 +15,7 @@ import (
 	tmDB "github.com/tendermint/tendermint/libs/db"
 	"github.com/tendermint/tendermint/libs/log"
 
-	"github.com/ironman0x7b2/sentinel-sdk/x/deposit/types"
+	"github.com/sentinel-official/sentinel-hub/x/deposit/types"
 )
 
 var (
@@ -23,23 +23,23 @@ var (
 	testPrivKey2     = ed25519.GenPrivKey()
 	testPubKey1      = testPrivKey1.PubKey()
 	testPubKey2      = testPrivKey2.PubKey()
-	testAddressEmpty = csdk.AccAddress([]byte(""))
-	testAddress1     = csdk.AccAddress(testPubKey1.Address())
-	testAddress2     = csdk.AccAddress(testPubKey2.Address())
+	testAddressEmpty = sdk.AccAddress([]byte(""))
+	testAddress1     = sdk.AccAddress(testPubKey1.Address())
+	testAddress2     = sdk.AccAddress(testPubKey2.Address())
 
-	testCoinEmpty = csdk.Coin{}
-	testCoinNeg   = csdk.Coin{Denom: "stake", Amount: csdk.NewInt(-10)}
-	testCoinZero  = csdk.NewInt64Coin("stake", 0)
-	testCoinPos   = csdk.NewInt64Coin("stake", 10)
+	testCoinEmpty = sdk.Coin{}
+	testCoinNeg   = sdk.Coin{Denom: "stake", Amount: sdk.NewInt(-10)}
+	testCoinZero  = sdk.NewInt64Coin("stake", 0)
+	testCoinPos   = sdk.NewInt64Coin("stake", 10)
 
-	testCoinsEmpty = csdk.Coins{}
-	testCoinsNil   = csdk.Coins(nil)
-	testCoinsNeg   = csdk.Coins{testCoinNeg}
-	testCoinsZero  = csdk.Coins{testCoinZero}
-	testCoinsPos   = csdk.Coins{testCoinPos}
+	testCoinsEmpty = sdk.Coins{}
+	testCoinsNil   = sdk.Coins(nil)
+	testCoinsNeg   = sdk.Coins{testCoinNeg}
+	testCoinsZero  = sdk.Coins{testCoinZero}
+	testCoinsPos   = sdk.Coins{testCoinPos}
 
 	testDepositEmpty = types.Deposit{}
-	testDepositNil   = types.Deposit{Coins: csdk.Coins(nil)}
+	testDepositNil   = types.Deposit{Coins: sdk.Coins(nil)}
 	testDepositNeg   = types.Deposit{Address: testAddress1, Coins: testCoinsNeg}
 	testDepositZero  = types.Deposit{Address: testAddress1, Coins: testCoinsZero}
 	testDepositPos   = types.Deposit{Address: testAddress1, Coins: testCoinsPos}
@@ -51,25 +51,25 @@ var (
 	testDepositsPos   = []types.Deposit{testDepositPos}
 )
 
-func testCreateInput() (csdk.Context, Keeper, bank.BaseKeeper) {
-	keyParams := csdk.NewKVStoreKey("params")
-	keyAccount := csdk.NewKVStoreKey("acc")
-	keyDeposits := csdk.NewKVStoreKey("deposits")
-	tkeyParams := csdk.NewTransientStoreKey("tparams")
+func testCreateInput() (sdk.Context, Keeper, bank.BaseKeeper) {
+	keyParams := sdk.NewKVStoreKey("params")
+	keyAccount := sdk.NewKVStoreKey("acc")
+	keyDeposits := sdk.NewKVStoreKey("deposits")
+	tkeyParams := sdk.NewTransientStoreKey("tparams")
 
 	db := tmDB.NewMemDB()
 	ms := store.NewCommitMultiStore(db)
-	ms.MountStoreWithDB(keyParams, csdk.StoreTypeIAVL, db)
-	ms.MountStoreWithDB(keyAccount, csdk.StoreTypeIAVL, db)
-	ms.MountStoreWithDB(keyDeposits, csdk.StoreTypeIAVL, db)
-	ms.MountStoreWithDB(tkeyParams, csdk.StoreTypeTransient, db)
+	ms.MountStoreWithDB(keyParams, sdk.StoreTypeIAVL, db)
+	ms.MountStoreWithDB(keyAccount, sdk.StoreTypeIAVL, db)
+	ms.MountStoreWithDB(keyDeposits, sdk.StoreTypeIAVL, db)
+	ms.MountStoreWithDB(tkeyParams, sdk.StoreTypeTransient, db)
 	err := ms.LoadLatestVersion()
 	if err != nil {
 		panic(err)
 	}
 
 	cdc := testMakeCodec()
-	ctx := csdk.NewContext(ms, abci.Header{ChainID: "chain-id"}, false, log.NewNopLogger())
+	ctx := sdk.NewContext(ms, abci.Header{ChainID: "chain-id"}, false, log.NewNopLogger())
 
 	paramsKeeper := params.NewKeeper(cdc, keyParams, tkeyParams)
 	accountKeeper := auth.NewAccountKeeper(cdc, keyAccount, paramsKeeper.Subspace(auth.DefaultParamspace), auth.ProtoBaseAccount)

@@ -3,12 +3,12 @@ package vpn
 import (
 	"testing"
 
-	sdk "github.com/ironman0x7b2/sentinel-sdk/types"
+	hub "github.com/sentinel-official/sentinel-hub/types"
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/ironman0x7b2/sentinel-sdk/x/vpn/keeper"
-	"github.com/ironman0x7b2/sentinel-sdk/x/vpn/types"
+	"github.com/sentinel-official/sentinel-hub/x/vpn/keeper"
+	"github.com/sentinel-official/sentinel-hub/x/vpn/types"
 )
 
 func Test_handleRegisterNode(t *testing.T) {
@@ -88,7 +88,7 @@ func Test_handleRegisterNode(t *testing.T) {
 	count = vpnKeeper.GetNodesCount(ctx)
 	require.Equal(t, uint64(6), count)
 
-	id := sdk.NewIDFromUInt64(count - 1)
+	id := hub.NewIDFromUInt64(count - 1)
 	node, found = vpnKeeper.GetNode(ctx, id)
 	require.Equal(t, true, found)
 	require.Equal(t, id, node.ID)
@@ -121,7 +121,7 @@ func Test_handleRegisterNode(t *testing.T) {
 	count = vpnKeeper.GetNodesCount(ctx)
 	require.Equal(t, uint64(7), count)
 
-	id = sdk.NewIDFromUInt64(count - 1)
+	id = hub.NewIDFromUInt64(count - 1)
 	node, found = vpnKeeper.GetNode(ctx, id)
 	require.Equal(t, true, found)
 	require.Equal(t, id, node.ID)
@@ -645,7 +645,7 @@ func Test_handleStartSubscription(t *testing.T) {
 	count = vpnKeeper.GetSubscriptionsCountOfAddress(ctx, types.TestAddress2)
 	require.Equal(t, uint64(2), count)
 
-	subscriptionID := sdk.NewIDFromUInt64(count - 1)
+	subscriptionID := hub.NewIDFromUInt64(count - 1)
 	subscription, found = vpnKeeper.GetSubscription(ctx, subscriptionID)
 	require.Equal(t, true, found)
 	require.Equal(t, types.TestAddress2, subscription.Client)

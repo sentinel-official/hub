@@ -4,29 +4,29 @@ import (
 	"encoding/json"
 	"fmt"
 
-	csdk "github.com/cosmos/cosmos-sdk/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	sdk "github.com/ironman0x7b2/sentinel-sdk/types"
+	hub "github.com/sentinel-official/sentinel-hub/types"
 )
 
 type Subscription struct {
-	ID                 sdk.ID          `json:"id"`
-	NodeID             sdk.ID          `json:"node_id"`
-	Client             csdk.AccAddress `json:"client"`
-	PricePerGB         csdk.Coin       `json:"price_per_gb"`
-	TotalDeposit       csdk.Coin       `json:"total_deposit"`
-	RemainingDeposit   csdk.Coin       `json:"remaining_deposit"`
-	RemainingBandwidth sdk.Bandwidth   `json:"remaining_bandwidth"`
-	Status             string          `json:"status"`
-	StatusModifiedAt   int64           `json:"status_modified_at"`
+	ID                 hub.ID         `json:"id"`
+	NodeID             hub.ID         `json:"node_id"`
+	Client             sdk.AccAddress `json:"client"`
+	PricePerGB         sdk.Coin       `json:"price_per_gb"`
+	TotalDeposit       sdk.Coin       `json:"total_deposit"`
+	RemainingDeposit   sdk.Coin       `json:"remaining_deposit"`
+	RemainingBandwidth hub.Bandwidth  `json:"remaining_bandwidth"`
+	Status             string         `json:"status"`
+	StatusModifiedAt   int64          `json:"status_modified_at"`
 }
 
-func (s Subscription) TotalBandwidth() sdk.Bandwidth {
+func (s Subscription) TotalBandwidth() hub.Bandwidth {
 	x := s.TotalDeposit.Amount.
-		Mul(sdk.MB500).
+		Mul(hub.MB500).
 		Quo(s.PricePerGB.Amount)
 
-	return sdk.NewBandwidth(x, x)
+	return hub.NewBandwidth(x, x)
 }
 
 func (s Subscription) String() string {
@@ -70,12 +70,12 @@ func (s Subscription) IsValid() error {
 }
 
 type BandwidthSignatureData struct {
-	ID        sdk.ID        `json:"id"`
+	ID        hub.ID        `json:"id"`
 	Index     uint64        `json:"index"`
-	Bandwidth sdk.Bandwidth `json:"bandwidth"`
+	Bandwidth hub.Bandwidth `json:"bandwidth"`
 }
 
-func NewBandwidthSignatureData(id sdk.ID, index uint64, bandwidth sdk.Bandwidth) BandwidthSignatureData {
+func NewBandwidthSignatureData(id hub.ID, index uint64, bandwidth hub.Bandwidth) BandwidthSignatureData {
 	return BandwidthSignatureData{
 		ID:        id,
 		Index:     index,

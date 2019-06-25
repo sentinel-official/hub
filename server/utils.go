@@ -6,7 +6,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/server"
 	"github.com/spf13/cobra"
 
-	"github.com/ironman0x7b2/sentinel-sdk/version"
+	"github.com/sentinel-official/sentinel-hub/version"
 )
 
 func AddCommands(ctx *server.Context, cdc *codec.Codec, rootCmd *cobra.Command,

@@ -1,9 +1,10 @@
 package querier
 
 import (
-	"github.com/ironman0x7b2/sentinel-sdk/x/vpn/types"
+	"github.com/sentinel-official/sentinel-hub/x/vpn/types"
 )
 
+// nolint:gochecknoglobals
 var (
 	TestNodeParamsZero = QueryNodeParams{ID: types.TestIDZero}
 	TestNodeParamsPos  = QueryNodeParams{ID: types.TestIDPos}

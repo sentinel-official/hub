@@ -4,15 +4,15 @@ import (
 	"bytes"
 	"reflect"
 
-	csdk "github.com/cosmos/cosmos-sdk/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	sdk "github.com/ironman0x7b2/sentinel-sdk/types"
-	"github.com/ironman0x7b2/sentinel-sdk/x/vpn/keeper"
-	"github.com/ironman0x7b2/sentinel-sdk/x/vpn/types"
+	hub "github.com/sentinel-official/sentinel-hub/types"
+	"github.com/sentinel-official/sentinel-hub/x/vpn/keeper"
+	"github.com/sentinel-official/sentinel-hub/x/vpn/types"
 )
 
-func NewHandler(k keeper.Keeper) csdk.Handler {
-	return func(ctx csdk.Context, msg csdk.Msg) csdk.Result {
+func NewHandler(k keeper.Keeper) sdk.Handler {
+	return func(ctx sdk.Context, msg sdk.Msg) sdk.Result {
 		switch msg := msg.(type) {
 		case types.MsgRegisterNode:
 			return handleRegisterNode(ctx, k, msg)
@@ -34,8 +34,8 @@ func NewHandler(k keeper.Keeper) csdk.Handler {
 	}
 }
 
-func endBlockNodes(ctx csdk.Context, k keeper.Keeper, height int64) csdk.Tags {
-	allTags := csdk.EmptyTags()
+func endBlockNodes(ctx sdk.Context, k keeper.Keeper, height int64) sdk.Tags {
+	allTags := sdk.EmptyTags()
 
 	_height := height - k.NodeInactiveInterval(ctx)
 	ids := k.GetActiveNodeIDs(ctx, _height)
@@ -53,8 +53,8 @@ func endBlockNodes(ctx csdk.Context, k keeper.Keeper, height int64) csdk.Tags {
 	return allTags
 }
 
-func endBlockSessions(ctx csdk.Context, k keeper.Keeper, height int64) csdk.Tags {
-	allTags := csdk.EmptyTags()
+func endBlockSessions(ctx sdk.Context, k keeper.Keeper, height int64) sdk.Tags {
+	allTags := sdk.EmptyTags()
 
 	_height := height - k.SessionInactiveInterval(ctx)
 	ids := k.GetActiveSessionIDs(ctx, _height)
@@ -63,9 +63,9 @@ func endBlockSessions(ctx csdk.Context, k keeper.Keeper, height int64) csdk.Tags
 		session, _ := k.GetSession(ctx, id)
 		subscription, _ := k.GetSubscription(ctx, session.SubscriptionID)
 
-		bandwidth := session.Bandwidth.CeilTo(sdk.GB.Quo(subscription.PricePerGB.Amount))
-		amount := bandwidth.Sum().Mul(subscription.PricePerGB.Amount).Quo(sdk.GB)
-		pay := csdk.NewCoin(subscription.PricePerGB.Denom, amount)
+		bandwidth := session.Bandwidth.CeilTo(hub.GB.Quo(subscription.PricePerGB.Amount))
+		amount := bandwidth.Sum().Mul(subscription.PricePerGB.Amount).Quo(hub.GB)
+		pay := sdk.NewCoin(subscription.PricePerGB.Denom, amount)
 
 		if !pay.IsZero() {
 			node, _ := k.GetNode(ctx, subscription.NodeID)
@@ -94,8 +94,8 @@ func endBlockSessions(ctx csdk.Context, k keeper.Keeper, height int64) csdk.Tags
 	return allTags
 }
 
-func EndBlock(ctx csdk.Context, k keeper.Keeper) csdk.Tags {
-	allTags := csdk.EmptyTags()
+func EndBlock(ctx sdk.Context, k keeper.Keeper) sdk.Tags {
+	allTags := sdk.EmptyTags()
 	height := ctx.BlockHeight()
 
 	tags := endBlockNodes(ctx, k, height)
@@ -107,14 +107,14 @@ func EndBlock(ctx csdk.Context, k keeper.Keeper) csdk.Tags {
 	return allTags
 }
 
-func handleRegisterNode(ctx csdk.Context, k keeper.Keeper, msg types.MsgRegisterNode) csdk.Result {
-	allTags := csdk.EmptyTags()
+func handleRegisterNode(ctx sdk.Context, k keeper.Keeper, msg types.MsgRegisterNode) sdk.Result {
+	allTags := sdk.EmptyTags()
 
 	nc := k.GetNodesCount(ctx)
 	node := types.Node{
-		ID:               sdk.NewIDFromUInt64(nc),
+		ID:               hub.NewIDFromUInt64(nc),
 		Owner:            msg.From,
-		Deposit:          csdk.NewInt64Coin(k.Deposit(ctx).Denom, 0),
+		Deposit:          sdk.NewInt64Coin(k.Deposit(ctx).Denom, 0),
 		Type:             msg.Type_,
 		Version:          msg.Version,
 		Moniker:          msg.Moniker,
@@ -144,11 +144,11 @@ func handleRegisterNode(ctx csdk.Context, k keeper.Keeper, msg types.MsgRegister
 	k.SetNodesCountOfAddress(ctx, node.Owner, nca+1)
 
 	allTags = allTags.AppendTag(types.TagNodeID, node.ID.String())
-	return csdk.Result{Tags: allTags}
+	return sdk.Result{Tags: allTags}
 }
 
-func handleUpdateNodeInfo(ctx csdk.Context, k keeper.Keeper, msg types.MsgUpdateNodeInfo) csdk.Result {
-	allTags := csdk.EmptyTags()
+func handleUpdateNodeInfo(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpdateNodeInfo) sdk.Result {
+	allTags := sdk.EmptyTags()
 
 	node, found := k.GetNode(ctx, msg.ID)
 	if !found {
@@ -172,11 +172,11 @@ func handleUpdateNodeInfo(ctx csdk.Context, k keeper.Keeper, msg types.MsgUpdate
 	node = node.UpdateInfo(_node)
 
 	k.SetNode(ctx, node)
-	return csdk.Result{Tags: allTags}
+	return sdk.Result{Tags: allTags}
 }
 
-func handleUpdateNodeStatus(ctx csdk.Context, k keeper.Keeper, msg types.MsgUpdateNodeStatus) csdk.Result {
-	allTags := csdk.EmptyTags()
+func handleUpdateNodeStatus(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpdateNodeStatus) sdk.Result {
+	allTags := sdk.EmptyTags()
 
 	node, found := k.GetNode(ctx, msg.ID)
 	if !found {
@@ -198,11 +198,11 @@ func handleUpdateNodeStatus(ctx csdk.Context, k keeper.Keeper, msg types.MsgUpda
 	node.StatusModifiedAt = ctx.BlockHeight()
 
 	k.SetNode(ctx, node)
-	return csdk.Result{Tags: allTags}
+	return sdk.Result{Tags: allTags}
 }
 
-func handleDeregisterNode(ctx csdk.Context, k keeper.Keeper, msg types.MsgDeregisterNode) csdk.Result {
-	allTags := csdk.EmptyTags()
+func handleDeregisterNode(ctx sdk.Context, k keeper.Keeper, msg types.MsgDeregisterNode) sdk.Result {
+	allTags := sdk.EmptyTags()
 
 	node, found := k.GetNode(ctx, msg.ID)
 	if !found {
@@ -228,11 +228,11 @@ func handleDeregisterNode(ctx csdk.Context, k keeper.Keeper, msg types.MsgDeregi
 	node.StatusModifiedAt = ctx.BlockHeight()
 
 	k.SetNode(ctx, node)
-	return csdk.Result{Tags: allTags}
+	return sdk.Result{Tags: allTags}
 }
 
-func handleStartSubscription(ctx csdk.Context, k keeper.Keeper, msg types.MsgStartSubscription) csdk.Result {
-	allTags := csdk.EmptyTags()
+func handleStartSubscription(ctx sdk.Context, k keeper.Keeper, msg types.MsgStartSubscription) sdk.Result {
+	allTags := sdk.EmptyTags()
 
 	node, found := k.GetNode(ctx, msg.NodeID)
 	if !found {
@@ -258,7 +258,7 @@ func handleStartSubscription(ctx csdk.Context, k keeper.Keeper, msg types.MsgSta
 
 	sc := k.GetSubscriptionsCount(ctx)
 	subscription := types.Subscription{
-		ID:                 sdk.NewIDFromUInt64(sc),
+		ID:                 hub.NewIDFromUInt64(sc),
 		NodeID:             node.ID,
 		Client:             msg.From,
 		PricePerGB:         pricePerGB,
@@ -281,11 +281,11 @@ func handleStartSubscription(ctx csdk.Context, k keeper.Keeper, msg types.MsgSta
 	k.SetSubscriptionsCountOfAddress(ctx, subscription.Client, sca+1)
 
 	allTags = allTags.AppendTag(types.TagSubscriptionID, subscription.ID.String())
-	return csdk.Result{Tags: allTags}
+	return sdk.Result{Tags: allTags}
 }
 
-func handleEndSubscription(ctx csdk.Context, k keeper.Keeper, msg types.MsgEndSubscription) csdk.Result {
-	allTags := csdk.EmptyTags()
+func handleEndSubscription(ctx sdk.Context, k keeper.Keeper, msg types.MsgEndSubscription) sdk.Result {
+	allTags := sdk.EmptyTags()
 
 	subscription, found := k.GetSubscription(ctx, msg.ID)
 	if !found {
@@ -316,11 +316,11 @@ func handleEndSubscription(ctx csdk.Context, k keeper.Keeper, msg types.MsgEndSu
 	subscription.StatusModifiedAt = ctx.BlockHeight()
 	k.SetSubscription(ctx, subscription)
 
-	return csdk.Result{Tags: allTags}
+	return sdk.Result{Tags: allTags}
 }
 
-func handleUpdateSessionInfo(ctx csdk.Context, k keeper.Keeper, msg types.MsgUpdateSessionInfo) csdk.Result {
-	allTags := csdk.EmptyTags()
+func handleUpdateSessionInfo(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpdateSessionInfo) sdk.Result {
+	allTags := sdk.EmptyTags()
 
 	subscription, found := k.GetSubscription(ctx, msg.SubscriptionID)
 	if !found {
@@ -352,9 +352,9 @@ func handleUpdateSessionInfo(ctx csdk.Context, k keeper.Keeper, msg types.MsgUpd
 	if !found {
 		sc := k.GetSessionsCount(ctx)
 		session = types.Session{
-			ID:             sdk.NewIDFromUInt64(sc),
+			ID:             hub.NewIDFromUInt64(sc),
 			SubscriptionID: subscription.ID,
-			Bandwidth:      sdk.NewBandwidthFromInt64(0, 0),
+			Bandwidth:      hub.NewBandwidthFromInt64(0, 0),
 		}
 
 		k.SetSessionsCount(ctx, sc+1)
@@ -375,5 +375,5 @@ func handleUpdateSessionInfo(ctx csdk.Context, k keeper.Keeper, msg types.MsgUpd
 	session.StatusModifiedAt = ctx.BlockHeight()
 
 	k.SetSession(ctx, session)
-	return csdk.Result{Tags: allTags}
+	return sdk.Result{Tags: allTags}
 }

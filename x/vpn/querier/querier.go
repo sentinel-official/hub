@@ -2,16 +2,16 @@ package querier
 
 import (
 	"github.com/cosmos/cosmos-sdk/codec"
-	csdk "github.com/cosmos/cosmos-sdk/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	abci "github.com/tendermint/tendermint/abci/types"
 
-	"github.com/ironman0x7b2/sentinel-sdk/x/vpn/keeper"
-	"github.com/ironman0x7b2/sentinel-sdk/x/vpn/types"
+	"github.com/sentinel-official/sentinel-hub/x/vpn/keeper"
+	"github.com/sentinel-official/sentinel-hub/x/vpn/types"
 )
 
 // nolint:gocyclo
-func NewQuerier(k keeper.Keeper, cdc *codec.Codec) csdk.Querier {
-	return func(ctx csdk.Context, path []string, req abci.RequestQuery) (res []byte, err csdk.Error) {
+func NewQuerier(k keeper.Keeper, cdc *codec.Codec) sdk.Querier {
+	return func(ctx sdk.Context, path []string, req abci.RequestQuery) (res []byte, err sdk.Error) {
 		switch path[0] {
 		case QueryNode:
 			return queryNode(ctx, cdc, req, k)

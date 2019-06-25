@@ -1,9 +1,9 @@
 package vpn
 
 import (
-	"github.com/ironman0x7b2/sentinel-sdk/x/vpn/keeper"
-	"github.com/ironman0x7b2/sentinel-sdk/x/vpn/querier"
-	"github.com/ironman0x7b2/sentinel-sdk/x/vpn/types"
+	"github.com/sentinel-official/sentinel-hub/x/vpn/keeper"
+	"github.com/sentinel-official/sentinel-hub/x/vpn/querier"
+	"github.com/sentinel-official/sentinel-hub/x/vpn/types"
 )
 
 const (

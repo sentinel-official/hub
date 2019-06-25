@@ -6,11 +6,11 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/context"
 	clientRest "github.com/cosmos/cosmos-sdk/client/rest"
 	"github.com/cosmos/cosmos-sdk/codec"
-	csdk "github.com/cosmos/cosmos-sdk/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/rest"
 
-	sdk "github.com/ironman0x7b2/sentinel-sdk/types"
-	"github.com/ironman0x7b2/sentinel-sdk/x/vpn"
+	hub "github.com/sentinel-official/sentinel-hub/types"
+	"github.com/sentinel-official/sentinel-hub/x/vpn"
 )
 
 type msgRegisterNode struct {
@@ -19,7 +19,7 @@ type msgRegisterNode struct {
 	Version       string        `json:"version"`
 	Moniker       string        `json:"moniker"`
 	PricesPerGB   string        `json:"prices_per_gb"`
-	InternetSpeed sdk.Bandwidth `json:"internet_speed"`
+	InternetSpeed hub.Bandwidth `json:"internet_speed"`
 	Encryption    string        `json:"encryption"`
 }
 
@@ -36,13 +36,13 @@ func registerNodeHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) http.H
 			return
 		}
 
-		fromAddress, err := csdk.AccAddressFromBech32(req.BaseReq.From)
+		fromAddress, err := sdk.AccAddressFromBech32(req.BaseReq.From)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
 		}
 
-		pricesPerGB, err := csdk.ParseCoins(req.PricesPerGB)
+		pricesPerGB, err := sdk.ParseCoins(req.PricesPerGB)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
@@ -55,6 +55,6 @@ func registerNodeHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) http.H
 			return
 		}
 
-		clientRest.WriteGenerateStdTxResponse(w, cdc, cliCtx, req.BaseReq, []csdk.Msg{msg})
+		clientRest.WriteGenerateStdTxResponse(w, cdc, cliCtx, req.BaseReq, []sdk.Msg{msg})
 	}
 }

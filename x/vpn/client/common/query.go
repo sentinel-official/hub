@@ -6,14 +6,14 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/codec"
-	csdk "github.com/cosmos/cosmos-sdk/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	sdk "github.com/ironman0x7b2/sentinel-sdk/types"
-	"github.com/ironman0x7b2/sentinel-sdk/x/vpn"
+	hub "github.com/sentinel-official/sentinel-hub/types"
+	"github.com/sentinel-official/sentinel-hub/x/vpn"
 )
 
 func QueryNode(cliCtx context.CLIContext, cdc *codec.Codec, _id string) (*vpn.Node, error) {
-	id := sdk.NewIDFromString(_id)
+	id := hub.NewIDFromString(_id)
 	params := vpn.NewQueryNodeParams(id)
 
 	paramBytes, err := cdc.MarshalJSON(params)
@@ -39,7 +39,7 @@ func QueryNode(cliCtx context.CLIContext, cdc *codec.Codec, _id string) (*vpn.No
 }
 
 func QueryNodesOfAddress(cliCtx context.CLIContext, cdc *codec.Codec, _address string) ([]vpn.Node, error) {
-	address, err := csdk.AccAddressFromBech32(_address)
+	address, err := sdk.AccAddressFromBech32(_address)
 	if err != nil {
 		return nil, err
 	}
@@ -87,7 +87,7 @@ func QueryAllNodes(cliCtx context.CLIContext, cdc *codec.Codec) ([]vpn.Node, err
 }
 
 func QuerySubscription(cliCtx context.CLIContext, cdc *codec.Codec, _id string) (*vpn.Subscription, error) {
-	id := sdk.NewIDFromString(_id)
+	id := hub.NewIDFromString(_id)
 	params := vpn.NewQuerySubscriptionParams(id)
 
 	paramBytes, err := cdc.MarshalJSON(params)
@@ -113,7 +113,7 @@ func QuerySubscription(cliCtx context.CLIContext, cdc *codec.Codec, _id string) 
 }
 
 func QuerySubscriptionsOfNode(cliCtx context.CLIContext, cdc *codec.Codec, _id string) ([]vpn.Subscription, error) {
-	id := sdk.NewIDFromString(_id)
+	id := hub.NewIDFromString(_id)
 	params := vpn.NewQuerySubscriptionsOfNodePrams(id)
 
 	paramBytes, err := cdc.MarshalJSON(params)
@@ -141,7 +141,7 @@ func QuerySubscriptionsOfNode(cliCtx context.CLIContext, cdc *codec.Codec, _id s
 func QuerySubscriptionsOfAddress(cliCtx context.CLIContext, cdc *codec.Codec,
 	_address string) ([]vpn.Subscription, error) {
 
-	address, err := csdk.AccAddressFromBech32(_address)
+	address, err := sdk.AccAddressFromBech32(_address)
 	if err != nil {
 		return nil, err
 	}
@@ -189,7 +189,7 @@ func QueryAllSubscriptions(cliCtx context.CLIContext, cdc *codec.Codec) ([]vpn.S
 }
 
 func QuerySessionsCountOfSubscription(cliCtx context.CLIContext, cdc *codec.Codec, _id string) (uint64, error) {
-	id := sdk.NewIDFromString(_id)
+	id := hub.NewIDFromString(_id)
 	params := vpn.NewQuerySessionsCountOfSubscriptionParams(id)
 
 	paramBytes, err := cdc.MarshalJSON(params)
@@ -215,7 +215,7 @@ func QuerySessionsCountOfSubscription(cliCtx context.CLIContext, cdc *codec.Code
 }
 
 func QuerySession(cliCtx context.CLIContext, cdc *codec.Codec, _id string) (*vpn.Session, error) {
-	id := sdk.NewIDFromString(_id)
+	id := hub.NewIDFromString(_id)
 	params := vpn.NewQuerySessionParams(id)
 
 	paramBytes, err := cdc.MarshalJSON(params)
@@ -243,7 +243,7 @@ func QuerySession(cliCtx context.CLIContext, cdc *codec.Codec, _id string) (*vpn
 func QuerySessionOfSubscription(cliCtx context.CLIContext, cdc *codec.Codec,
 	_id string, index uint64) (*vpn.Session, error) {
 
-	id := sdk.NewIDFromString(_id)
+	id := hub.NewIDFromString(_id)
 	params := vpn.NewQuerySessionOfSubscriptionPrams(id, index)
 
 	paramBytes, err := cdc.MarshalJSON(params)
@@ -269,7 +269,7 @@ func QuerySessionOfSubscription(cliCtx context.CLIContext, cdc *codec.Codec,
 }
 
 func QuerySessionsOfSubscription(cliCtx context.CLIContext, cdc *codec.Codec, _id string) ([]vpn.Session, error) {
-	id := sdk.NewIDFromString(_id)
+	id := hub.NewIDFromString(_id)
 	params := vpn.NewQuerySessionsOfSubscriptionPrams(id)
 
 	paramBytes, err := cdc.MarshalJSON(params)

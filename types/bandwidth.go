@@ -4,23 +4,23 @@ import (
 	"fmt"
 	"math/big"
 
-	csdk "github.com/cosmos/cosmos-sdk/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 // nolint:gochecknoglobals
 var (
-	KB    = csdk.NewInt(1000)
+	KB    = sdk.NewInt(1000)
 	MB    = KB.MulRaw(1000)
 	MB500 = MB.MulRaw(500)
 	GB    = MB.MulRaw(1000)
 )
 
 type Bandwidth struct {
-	Upload   csdk.Int `json:"upload"`
-	Download csdk.Int `json:"download"`
+	Upload   sdk.Int `json:"upload"`
+	Download sdk.Int `json:"download"`
 }
 
-func NewBandwidth(upload, download csdk.Int) Bandwidth {
+func NewBandwidth(upload, download sdk.Int) Bandwidth {
 	return Bandwidth{
 		Upload:   upload,
 		Download: download,
@@ -31,25 +31,25 @@ func (b Bandwidth) String() string {
 	return fmt.Sprintf("%d upload, %d download", b.Upload.Int64(), b.Download.Int64())
 }
 
-func (b Bandwidth) CeilTo(precision csdk.Int) Bandwidth {
+func (b Bandwidth) CeilTo(precision sdk.Int) Bandwidth {
 	_b := Bandwidth{
-		Upload: precision.Sub(csdk.NewIntFromBigInt(
+		Upload: precision.Sub(sdk.NewIntFromBigInt(
 			big.NewInt(0).Rem(b.Upload.BigInt(), precision.BigInt()))),
-		Download: precision.Sub(csdk.NewIntFromBigInt(
+		Download: precision.Sub(sdk.NewIntFromBigInt(
 			big.NewInt(0).Rem(b.Download.BigInt(), precision.BigInt()))),
 	}
 
 	if _b.Upload.Equal(precision) {
-		_b.Upload = csdk.NewInt(0)
+		_b.Upload = sdk.NewInt(0)
 	}
 	if _b.Download.Equal(precision) {
-		_b.Download = csdk.NewInt(0)
+		_b.Download = sdk.NewInt(0)
 	}
 
 	return b.Add(_b)
 }
 
-func (b Bandwidth) Sum() csdk.Int {
+func (b Bandwidth) Sum() sdk.Int {
 	return b.Upload.Add(b.Download)
 }
 
@@ -102,10 +102,10 @@ func (b Bandwidth) AnyNegative() bool {
 }
 
 func (b Bandwidth) AnyNil() bool {
-	return b.Upload == csdk.Int{} ||
-		b.Download == csdk.Int{}
+	return b.Upload == sdk.Int{} ||
+		b.Download == sdk.Int{}
 }
 
 func NewBandwidthFromInt64(upload, download int64) Bandwidth {
-	return NewBandwidth(csdk.NewInt(upload), csdk.NewInt(download))
+	return NewBandwidth(sdk.NewInt(upload), sdk.NewInt(download))
 }

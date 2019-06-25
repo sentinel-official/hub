@@ -4,7 +4,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/spf13/cobra"
 
-	"github.com/ironman0x7b2/sentinel-sdk/x/deposit/client/cli"
+	"github.com/sentinel-official/sentinel-hub/x/deposit/client/cli"
 )
 
 type ModuleClient struct {

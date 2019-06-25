@@ -5,7 +5,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/ironman0x7b2/sentinel-sdk/x/vpn/types"
+	"github.com/sentinel-official/sentinel-hub/x/vpn/types"
 )
 
 func TestKeeper_SetNodesCount(t *testing.T) {

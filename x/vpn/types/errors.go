@@ -1,13 +1,13 @@
 package types
 
 import (
-	csdk "github.com/cosmos/cosmos-sdk/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	sdk "github.com/ironman0x7b2/sentinel-sdk/types"
+	hub "github.com/sentinel-official/sentinel-hub/types"
 )
 
 const (
-	Codespace = csdk.CodespaceType("vpn")
+	Codespace = sdk.CodespaceType("vpn")
 
 	errCodeUnknownMsgType            = 101
 	errCodeUnknownQueryType          = 102
@@ -40,66 +40,66 @@ const (
 	errMsgInvalidSessionStatus      = "Invalid session status"
 )
 
-func ErrorMarshal() csdk.Error {
-	return csdk.NewError(Codespace, sdk.ErrCodeMarshal, sdk.ErrMsgMarshal)
+func ErrorMarshal() sdk.Error {
+	return sdk.NewError(Codespace, hub.ErrCodeMarshal, hub.ErrMsgMarshal)
 }
 
-func ErrorUnmarshal() csdk.Error {
-	return csdk.NewError(Codespace, sdk.ErrCodeUnmarshal, sdk.ErrMsgUnmarshal)
+func ErrorUnmarshal() sdk.Error {
+	return sdk.NewError(Codespace, hub.ErrCodeUnmarshal, hub.ErrMsgUnmarshal)
 }
 
-func ErrorUnknownMsgType(msgType string) csdk.Error {
-	return csdk.NewError(Codespace, errCodeUnknownMsgType, errMsgUnknownMsgType+msgType)
+func ErrorUnknownMsgType(msgType string) sdk.Error {
+	return sdk.NewError(Codespace, errCodeUnknownMsgType, errMsgUnknownMsgType+msgType)
 }
 
-func ErrorInvalidQueryType(queryType string) csdk.Error {
-	return csdk.NewError(Codespace, errCodeUnknownQueryType, errMsgUnknownQueryType+queryType)
+func ErrorInvalidQueryType(queryType string) sdk.Error {
+	return sdk.NewError(Codespace, errCodeUnknownQueryType, errMsgUnknownQueryType+queryType)
 }
 
-func ErrorInvalidField(field string) csdk.Error {
-	return csdk.NewError(Codespace, errCodeInvalidField, errMsgInvalidField+field)
+func ErrorInvalidField(field string) sdk.Error {
+	return sdk.NewError(Codespace, errCodeInvalidField, errMsgInvalidField+field)
 }
 
-func ErrorUnauthorized() csdk.Error {
-	return csdk.NewError(Codespace, errCodeUnauthorized, errMsgUnauthorized)
+func ErrorUnauthorized() sdk.Error {
+	return sdk.NewError(Codespace, errCodeUnauthorized, errMsgUnauthorized)
 }
 
-func ErrorNodeDoesNotExist() csdk.Error {
-	return csdk.NewError(Codespace, errCodeNodeDoesNotExist, errMsgNodeDoesNotExist)
+func ErrorNodeDoesNotExist() sdk.Error {
+	return sdk.NewError(Codespace, errCodeNodeDoesNotExist, errMsgNodeDoesNotExist)
 }
 
-func ErrorInvalidNodeStatus() csdk.Error {
-	return csdk.NewError(Codespace, errCodeInvalidNodeStatus, errMsgInvalidNodeStatus)
+func ErrorInvalidNodeStatus() sdk.Error {
+	return sdk.NewError(Codespace, errCodeInvalidNodeStatus, errMsgInvalidNodeStatus)
 }
 
-func ErrorInvalidDeposit() csdk.Error {
-	return csdk.NewError(Codespace, errCodeInvalidDeposit, errMsgInvalidDeposit)
+func ErrorInvalidDeposit() sdk.Error {
+	return sdk.NewError(Codespace, errCodeInvalidDeposit, errMsgInvalidDeposit)
 }
 
-func ErrorSubscriptionDoesNotExist() csdk.Error {
-	return csdk.NewError(Codespace, errCodeSubscriptionDoesNotExist, errMsgSubscriptionDoesNotExist)
+func ErrorSubscriptionDoesNotExist() sdk.Error {
+	return sdk.NewError(Codespace, errCodeSubscriptionDoesNotExist, errMsgSubscriptionDoesNotExist)
 }
 
-func ErrorSubscriptionAlreadyExists() csdk.Error {
-	return csdk.NewError(Codespace, errCodeSubscriptionAlreadyExists, errMsgSubscriptionAlreadyExists)
+func ErrorSubscriptionAlreadyExists() sdk.Error {
+	return sdk.NewError(Codespace, errCodeSubscriptionAlreadyExists, errMsgSubscriptionAlreadyExists)
 }
 
-func ErrorInvalidSubscriptionStatus() csdk.Error {
-	return csdk.NewError(Codespace, errCodeInvalidSubscriptionStatus, errMsgInvalidSubscriptionStatus)
+func ErrorInvalidSubscriptionStatus() sdk.Error {
+	return sdk.NewError(Codespace, errCodeInvalidSubscriptionStatus, errMsgInvalidSubscriptionStatus)
 }
 
-func ErrorInvalidBandwidth() csdk.Error {
-	return csdk.NewError(Codespace, errCodeInvalidBandwidth, errMsgInvalidBandwidth)
+func ErrorInvalidBandwidth() sdk.Error {
+	return sdk.NewError(Codespace, errCodeInvalidBandwidth, errMsgInvalidBandwidth)
 }
 
-func ErrorInvalidBandwidthSignature() csdk.Error {
-	return csdk.NewError(Codespace, errCodeInvalidBandwidthSignature, errMsgInvalidBandwidthSignature)
+func ErrorInvalidBandwidthSignature() sdk.Error {
+	return sdk.NewError(Codespace, errCodeInvalidBandwidthSignature, errMsgInvalidBandwidthSignature)
 }
 
-func ErrorSessionAlreadyExists() csdk.Error {
-	return csdk.NewError(Codespace, errCodeSessionAlreadyExists, errMsgSessionAlreadyExists)
+func ErrorSessionAlreadyExists() sdk.Error {
+	return sdk.NewError(Codespace, errCodeSessionAlreadyExists, errMsgSessionAlreadyExists)
 }
 
-func ErrorInvalidSessionStatus() csdk.Error {
-	return csdk.NewError(Codespace, errCodeInvalidSessionStatus, errMsgInvalidSessionStatus)
+func ErrorInvalidSessionStatus() sdk.Error {
+	return sdk.NewError(Codespace, errCodeInvalidSessionStatus, errMsgInvalidSessionStatus)
 }

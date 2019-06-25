@@ -10,7 +10,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/lcd"
 	"github.com/cosmos/cosmos-sdk/client/rpc"
 	"github.com/cosmos/cosmos-sdk/client/tx"
-	csdk "github.com/cosmos/cosmos-sdk/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	authCli "github.com/cosmos/cosmos-sdk/x/auth/client/cli"
 	authRest "github.com/cosmos/cosmos-sdk/x/auth/client/rest"
@@ -38,25 +38,25 @@ import (
 	_amino "github.com/tendermint/go-amino"
 	"github.com/tendermint/tendermint/libs/cli"
 
-	app "github.com/ironman0x7b2/sentinel-sdk/app/hub"
-	sdk "github.com/ironman0x7b2/sentinel-sdk/types"
-	"github.com/ironman0x7b2/sentinel-sdk/version"
-	depositClient "github.com/ironman0x7b2/sentinel-sdk/x/deposit/client"
-	depositRest "github.com/ironman0x7b2/sentinel-sdk/x/deposit/client/rest"
-	vpnClient "github.com/ironman0x7b2/sentinel-sdk/x/vpn/client"
-	vpnRest "github.com/ironman0x7b2/sentinel-sdk/x/vpn/client/rest"
+	"github.com/sentinel-official/sentinel-hub/app"
+	hub "github.com/sentinel-official/sentinel-hub/types"
+	"github.com/sentinel-official/sentinel-hub/version"
+	depositClient "github.com/sentinel-official/sentinel-hub/x/deposit/client"
+	depositRest "github.com/sentinel-official/sentinel-hub/x/deposit/client/rest"
+	vpnClient "github.com/sentinel-official/sentinel-hub/x/vpn/client"
+	vpnRest "github.com/sentinel-official/sentinel-hub/x/vpn/client/rest"
 )
 
 func main() {
 	cdc := app.MakeCodec()
 
-	config := csdk.GetConfig()
-	config.SetBech32PrefixForAccount(sdk.Bech32PrefixAccAddr, sdk.Bech32PrefixAccPub)
-	config.SetBech32PrefixForValidator(sdk.Bech32PrefixValAddr, sdk.Bech32PrefixValPub)
-	config.SetBech32PrefixForConsensusNode(sdk.Bech32PrefixConsAddr, sdk.Bech32PrefixConsPub)
+	config := sdk.GetConfig()
+	config.SetBech32PrefixForAccount(hub.Bech32PrefixAccAddr, hub.Bech32PrefixAccPub)
+	config.SetBech32PrefixForValidator(hub.Bech32PrefixValAddr, hub.Bech32PrefixValPub)
+	config.SetBech32PrefixForConsensusNode(hub.Bech32PrefixConsAddr, hub.Bech32PrefixConsPub)
 	config.Seal()
 
-	mc := []csdk.ModuleClients{
+	mc := []sdk.ModuleClients{
 		govClient.NewModuleClient(gov.StoreKey, cdc),
 		distClient.NewModuleClient(distribution.StoreKey, cdc),
 		stakingClient.NewModuleClient(staking.StoreKey, cdc),
@@ -69,8 +69,8 @@ func main() {
 
 	cobra.EnableCommandSorting = false
 	rootCmd := &cobra.Command{
-		Use:   "hubcli",
-		Short: "Hub light-client",
+		Use:   "sentinel-hubcli",
+		Short: "Sentinel Hub light-client",
 	}
 
 	rootCmd.PersistentFlags().String(client.FlagChainID, "", "Chain ID of tendermint node")
@@ -98,7 +98,7 @@ func main() {
 	}
 }
 
-func queryCmd(cdc *_amino.Codec, mc []csdk.ModuleClients) *cobra.Command {
+func queryCmd(cdc *_amino.Codec, mc []sdk.ModuleClients) *cobra.Command {
 	queryCmd := &cobra.Command{
 		Use:     "query",
 		Aliases: []string{"q"},
@@ -124,7 +124,7 @@ func queryCmd(cdc *_amino.Codec, mc []csdk.ModuleClients) *cobra.Command {
 	return queryCmd
 }
 
-func txCmd(cdc *_amino.Codec, mc []csdk.ModuleClients) *cobra.Command {
+func txCmd(cdc *_amino.Codec, mc []sdk.ModuleClients) *cobra.Command {
 	txCmd := &cobra.Command{
 		Use:   "tx",
 		Short: "Transactions subcommands",

@@ -15,7 +15,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	cryptoKeys "github.com/cosmos/cosmos-sdk/crypto/keys"
 	"github.com/cosmos/cosmos-sdk/server"
-	csdk "github.com/cosmos/cosmos-sdk/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	authTxBuiler "github.com/cosmos/cosmos-sdk/x/auth/client/txbuilder"
 	"github.com/cosmos/cosmos-sdk/x/staking/client/cli"
@@ -26,12 +26,12 @@ import (
 	tmCli "github.com/tendermint/tendermint/libs/cli"
 	"github.com/tendermint/tendermint/libs/common"
 
-	app "github.com/ironman0x7b2/sentinel-sdk/app/hub"
+	"github.com/sentinel-official/sentinel-hub/app"
 )
 
 // nolint:gochecknoglobals
 var (
-	defaultTokens                  = csdk.TokensFromTendermintPower(100)
+	defaultTokens                  = sdk.TokensFromTendermintPower(100)
 	defaultAmount                  = defaultTokens.String() + "stake"
 	defaultCommissionRate          = "0.1"
 	defaultCommissionMaxRate       = "0.2"
@@ -45,7 +45,7 @@ func GenTxCmd(ctx *server.Context, cdc *codec.Codec) *cobra.Command {
 		Use:   "gentx",
 		Short: "Generate a genesis tx carrying a self delegation",
 		Args:  cobra.NoArgs,
-		Long: fmt.Sprintf(`This command is an alias of the 'hubd tx create-validator' command'.
+		Long: fmt.Sprintf(`This command is an alias of the 'sentinel-hubd tx create-validator' command'.
 
 It creates a genesis piece carrying a self delegation with the
 following delegation and commission default parameters:
@@ -102,7 +102,7 @@ following delegation and commission default parameters:
 			}
 
 			if valPubKeyString := viper.GetString(cli.FlagPubKey); valPubKeyString != "" {
-				valPubKey, err = csdk.GetConsPubKeyBech32(valPubKeyString)
+				valPubKey, err = sdk.GetConsPubKeyBech32(valPubKeyString)
 				if err != nil {
 					return err
 				}
@@ -115,7 +115,7 @@ following delegation and commission default parameters:
 			prepareFlagsForTxCreateValidator(config, nodeID, ip, genDoc.ChainID, valPubKey, website, details, identity)
 
 			amount := viper.GetString(cli.FlagAmount)
-			coins, err := csdk.ParseCoins(amount)
+			coins, err := sdk.ParseCoins(amount)
 			if err != nil {
 				return err
 			}
@@ -141,13 +141,13 @@ following delegation and commission default parameters:
 			}
 
 			if info.GetType() == cryptoKeys.TypeOffline || info.GetType() == cryptoKeys.TypeMulti {
-				fmt.Println("Offline key passed in. Use `hubcli tx sign` command to sign:")
-				return utils.PrintUnsignedStdTx(txBuilder, cliCtx, []csdk.Msg{msg}, true)
+				fmt.Println("Offline key passed in. Use `sentinel-hubcli tx sign` command to sign:")
+				return utils.PrintUnsignedStdTx(txBuilder, cliCtx, []sdk.Msg{msg}, true)
 			}
 
 			w := bytes.NewBuffer([]byte{})
 			cliCtx = cliCtx.WithOutput(w)
-			if err = utils.PrintUnsignedStdTx(txBuilder, cliCtx, []csdk.Msg{msg}, true); err != nil {
+			if err = utils.PrintUnsignedStdTx(txBuilder, cliCtx, []sdk.Msg{msg}, true); err != nil {
 				return err
 			}
 
@@ -200,7 +200,7 @@ following delegation and commission default parameters:
 	return cmd
 }
 
-func accountInGenesis(state app.GenesisState, key csdk.AccAddress, coins csdk.Coins) error {
+func accountInGenesis(state app.GenesisState, key sdk.AccAddress, coins sdk.Coins) error {
 	accountIsInGenesis := false
 	bondDenom := state.Staking.Params.BondDenom
 
@@ -232,7 +232,7 @@ func prepareFlagsForTxCreateValidator(config *tmConfig.Config, nodeID, ip, chain
 	viper.Set(client.FlagFrom, viper.GetString(client.FlagName))
 	viper.Set(cli.FlagNodeID, nodeID)
 	viper.Set(cli.FlagIP, ip)
-	viper.Set(cli.FlagPubKey, csdk.MustBech32ifyConsPub(valPubKey))
+	viper.Set(cli.FlagPubKey, sdk.MustBech32ifyConsPub(valPubKey))
 	viper.Set(cli.FlagMoniker, config.Moniker)
 	viper.Set(cli.FlagWebsite, website)
 	viper.Set(cli.FlagDetails, details)

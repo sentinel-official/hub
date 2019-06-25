@@ -10,7 +10,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
-	"github.com/ironman0x7b2/sentinel-sdk/x/deposit/client/common"
+	"github.com/sentinel-official/sentinel-hub/x/deposit/client/common"
 )
 
 func QueryDepositsCmd(cdc *codec.Codec) *cobra.Command {

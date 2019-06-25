@@ -3,21 +3,21 @@ package types
 import (
 	"encoding/json"
 
-	csdk "github.com/cosmos/cosmos-sdk/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	sdk "github.com/ironman0x7b2/sentinel-sdk/types"
+	hub "github.com/sentinel-official/sentinel-hub/types"
 )
 
-var _ csdk.Msg = (*MsgRegisterNode)(nil)
+var _ sdk.Msg = (*MsgRegisterNode)(nil)
 
 type MsgRegisterNode struct {
-	From          csdk.AccAddress `json:"from"`
-	Type_         string          `json:"type"` // nolint:golint
-	Version       string          `json:"version"`
-	Moniker       string          `json:"moniker"`
-	PricesPerGB   csdk.Coins      `json:"prices_per_gb"`
-	InternetSpeed sdk.Bandwidth   `json:"internet_speed"`
-	Encryption    string          `json:"encryption"`
+	From          sdk.AccAddress `json:"from"`
+	Type_         string         `json:"type"` // nolint:golint
+	Version       string         `json:"version"`
+	Moniker       string         `json:"moniker"`
+	PricesPerGB   sdk.Coins      `json:"prices_per_gb"`
+	InternetSpeed hub.Bandwidth  `json:"internet_speed"`
+	Encryption    string         `json:"encryption"`
 }
 
 func (msg MsgRegisterNode) Type() string {
@@ -25,7 +25,7 @@ func (msg MsgRegisterNode) Type() string {
 }
 
 // nolint: gocyclo
-func (msg MsgRegisterNode) ValidateBasic() csdk.Error {
+func (msg MsgRegisterNode) ValidateBasic() sdk.Error {
 	if msg.From == nil || msg.From.Empty() {
 		return ErrorInvalidField("from")
 	}
@@ -62,17 +62,17 @@ func (msg MsgRegisterNode) GetSignBytes() []byte {
 	return bz
 }
 
-func (msg MsgRegisterNode) GetSigners() []csdk.AccAddress {
-	return []csdk.AccAddress{msg.From}
+func (msg MsgRegisterNode) GetSigners() []sdk.AccAddress {
+	return []sdk.AccAddress{msg.From}
 }
 
 func (msg MsgRegisterNode) Route() string {
 	return RouterKey
 }
 
-func NewMsgRegisterNode(from csdk.AccAddress,
-	_type, version, moniker string, pricesPerGB csdk.Coins,
-	internetSpeed sdk.Bandwidth, encryption string) *MsgRegisterNode {
+func NewMsgRegisterNode(from sdk.AccAddress,
+	_type, version, moniker string, pricesPerGB sdk.Coins,
+	internetSpeed hub.Bandwidth, encryption string) *MsgRegisterNode {
 
 	return &MsgRegisterNode{
 		From:          from,
@@ -85,24 +85,24 @@ func NewMsgRegisterNode(from csdk.AccAddress,
 	}
 }
 
-var _ csdk.Msg = (*MsgUpdateNodeInfo)(nil)
+var _ sdk.Msg = (*MsgUpdateNodeInfo)(nil)
 
 type MsgUpdateNodeInfo struct {
-	From          csdk.AccAddress `json:"from"`
-	ID            sdk.ID          `json:"id"`
-	Type_         string          `json:"type"` // nolint:golint
-	Version       string          `json:"version"`
-	Moniker       string          `json:"moniker"`
-	PricesPerGB   csdk.Coins      `json:"prices_per_gb"`
-	InternetSpeed sdk.Bandwidth   `json:"internet_speed"`
-	Encryption    string          `json:"encryption"`
+	From          sdk.AccAddress `json:"from"`
+	ID            hub.ID         `json:"id"`
+	Type_         string         `json:"type"` // nolint:golint
+	Version       string         `json:"version"`
+	Moniker       string         `json:"moniker"`
+	PricesPerGB   sdk.Coins      `json:"prices_per_gb"`
+	InternetSpeed hub.Bandwidth  `json:"internet_speed"`
+	Encryption    string         `json:"encryption"`
 }
 
 func (msg MsgUpdateNodeInfo) Type() string {
 	return "MsgUpdateNodeInfo"
 }
 
-func (msg MsgUpdateNodeInfo) ValidateBasic() csdk.Error {
+func (msg MsgUpdateNodeInfo) ValidateBasic() sdk.Error {
 	if msg.From == nil || msg.From.Empty() {
 		return ErrorInvalidField("from")
 	}
@@ -130,17 +130,17 @@ func (msg MsgUpdateNodeInfo) GetSignBytes() []byte {
 	return bz
 }
 
-func (msg MsgUpdateNodeInfo) GetSigners() []csdk.AccAddress {
-	return []csdk.AccAddress{msg.From}
+func (msg MsgUpdateNodeInfo) GetSigners() []sdk.AccAddress {
+	return []sdk.AccAddress{msg.From}
 }
 
 func (msg MsgUpdateNodeInfo) Route() string {
 	return RouterKey
 }
 
-func NewMsgUpdateNodeInfo(from csdk.AccAddress, id sdk.ID,
-	_type, version, moniker string, pricesPerGB csdk.Coins,
-	internetSpeed sdk.Bandwidth, encryption string) *MsgUpdateNodeInfo {
+func NewMsgUpdateNodeInfo(from sdk.AccAddress, id hub.ID,
+	_type, version, moniker string, pricesPerGB sdk.Coins,
+	internetSpeed hub.Bandwidth, encryption string) *MsgUpdateNodeInfo {
 
 	return &MsgUpdateNodeInfo{
 		From:          from,
@@ -154,19 +154,19 @@ func NewMsgUpdateNodeInfo(from csdk.AccAddress, id sdk.ID,
 	}
 }
 
-var _ csdk.Msg = (*MsgUpdateNodeStatus)(nil)
+var _ sdk.Msg = (*MsgUpdateNodeStatus)(nil)
 
 type MsgUpdateNodeStatus struct {
-	From   csdk.AccAddress `json:"from"`
-	ID     sdk.ID          `json:"id"`
-	Status string          `json:"status"`
+	From   sdk.AccAddress `json:"from"`
+	ID     hub.ID         `json:"id"`
+	Status string         `json:"status"`
 }
 
 func (msg MsgUpdateNodeStatus) Type() string {
 	return "MsgUpdateNodeStatus"
 }
 
-func (msg MsgUpdateNodeStatus) ValidateBasic() csdk.Error {
+func (msg MsgUpdateNodeStatus) ValidateBasic() sdk.Error {
 	if msg.From == nil || msg.From.Empty() {
 		return ErrorInvalidField("from")
 	}
@@ -186,15 +186,15 @@ func (msg MsgUpdateNodeStatus) GetSignBytes() []byte {
 	return bz
 }
 
-func (msg MsgUpdateNodeStatus) GetSigners() []csdk.AccAddress {
-	return []csdk.AccAddress{msg.From}
+func (msg MsgUpdateNodeStatus) GetSigners() []sdk.AccAddress {
+	return []sdk.AccAddress{msg.From}
 }
 
 func (msg MsgUpdateNodeStatus) Route() string {
 	return RouterKey
 }
 
-func NewMsgUpdateNodeStatus(from csdk.AccAddress, id sdk.ID, status string) *MsgUpdateNodeStatus {
+func NewMsgUpdateNodeStatus(from sdk.AccAddress, id hub.ID, status string) *MsgUpdateNodeStatus {
 
 	return &MsgUpdateNodeStatus{
 		From:   from,
@@ -203,18 +203,18 @@ func NewMsgUpdateNodeStatus(from csdk.AccAddress, id sdk.ID, status string) *Msg
 	}
 }
 
-var _ csdk.Msg = (*MsgDeregisterNode)(nil)
+var _ sdk.Msg = (*MsgDeregisterNode)(nil)
 
 type MsgDeregisterNode struct {
-	From csdk.AccAddress `json:"from"`
-	ID   sdk.ID          `json:"id"`
+	From sdk.AccAddress `json:"from"`
+	ID   hub.ID         `json:"id"`
 }
 
 func (msg MsgDeregisterNode) Type() string {
 	return "MsgDeregisterNode"
 }
 
-func (msg MsgDeregisterNode) ValidateBasic() csdk.Error {
+func (msg MsgDeregisterNode) ValidateBasic() sdk.Error {
 	if msg.From == nil || msg.From.Empty() {
 		return ErrorInvalidField("from")
 	}
@@ -231,15 +231,15 @@ func (msg MsgDeregisterNode) GetSignBytes() []byte {
 	return bz
 }
 
-func (msg MsgDeregisterNode) GetSigners() []csdk.AccAddress {
-	return []csdk.AccAddress{msg.From}
+func (msg MsgDeregisterNode) GetSigners() []sdk.AccAddress {
+	return []sdk.AccAddress{msg.From}
 }
 
 func (msg MsgDeregisterNode) Route() string {
 	return RouterKey
 }
 
-func NewMsgDeregisterNode(from csdk.AccAddress, id sdk.ID) *MsgDeregisterNode {
+func NewMsgDeregisterNode(from sdk.AccAddress, id hub.ID) *MsgDeregisterNode {
 	return &MsgDeregisterNode{
 		From: from,
 		ID:   id,

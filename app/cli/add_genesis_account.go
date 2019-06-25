@@ -6,14 +6,14 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/keys"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/server"
-	csdk "github.com/cosmos/cosmos-sdk/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"github.com/tendermint/tendermint/libs/cli"
 	"github.com/tendermint/tendermint/libs/common"
 
-	app "github.com/ironman0x7b2/sentinel-sdk/app/hub"
+	"github.com/sentinel-official/sentinel-hub/app"
 )
 
 // nolint:gocyclo
@@ -26,7 +26,7 @@ func AddGenesisAccountCmd(ctx *server.Context, cdc *codec.Codec) *cobra.Command 
 			config := ctx.Config
 			config.SetRoot(viper.GetString(cli.HomeFlag))
 
-			addr, err := csdk.AccAddressFromBech32(args[0])
+			addr, err := sdk.AccAddressFromBech32(args[0])
 			if err != nil {
 				kb, _err := keys.NewKeyBaseFromDir(viper.GetString(flagClientHome))
 				if _err != nil {
@@ -41,21 +41,21 @@ func AddGenesisAccountCmd(ctx *server.Context, cdc *codec.Codec) *cobra.Command 
 				addr = info.GetAddress()
 			}
 
-			coins, err := csdk.ParseCoins(args[1])
+			coins, err := sdk.ParseCoins(args[1])
 			if err != nil {
 				return err
 			}
 
 			vestingStart := viper.GetInt64(flagVestingStart)
 			vestingEnd := viper.GetInt64(flagVestingEnd)
-			vestingAmt, err := csdk.ParseCoins(viper.GetString(flagVestingAmt))
+			vestingAmt, err := sdk.ParseCoins(viper.GetString(flagVestingAmt))
 			if err != nil {
 				return err
 			}
 
 			genFile := config.GenesisFile()
 			if !common.FileExists(genFile) {
-				return fmt.Errorf("%s does not exist, run `hubd init` first", genFile)
+				return fmt.Errorf("%s does not exist, run `sentinel-hubd init` first", genFile)
 			}
 
 			genDoc, err := loadGenesisDoc(cdc, genFile)
@@ -91,8 +91,8 @@ func AddGenesisAccountCmd(ctx *server.Context, cdc *codec.Codec) *cobra.Command 
 	return cmd
 }
 
-func addGenesisAccount(state app.GenesisState, addr csdk.AccAddress,
-	coins, vestingAmt csdk.Coins, vestingStart, vestingEnd int64) (app.GenesisState, error) {
+func addGenesisAccount(state app.GenesisState, addr sdk.AccAddress,
+	coins, vestingAmt sdk.Coins, vestingStart, vestingEnd int64) (app.GenesisState, error) {
 
 	for _, account := range state.Accounts {
 		if account.Address.Equals(addr) {

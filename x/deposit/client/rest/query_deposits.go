@@ -9,7 +9,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/rest"
 	"github.com/gorilla/mux"
 
-	"github.com/ironman0x7b2/sentinel-sdk/x/deposit/client/common"
+	"github.com/sentinel-official/sentinel-hub/x/deposit/client/common"
 )
 
 func getDepositOfAddressHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) http.HandlerFunc {

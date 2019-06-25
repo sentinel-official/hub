@@ -2,22 +2,22 @@ package keeper
 
 import (
 	"github.com/cosmos/cosmos-sdk/codec"
-	csdk "github.com/cosmos/cosmos-sdk/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/params"
 
-	"github.com/ironman0x7b2/sentinel-sdk/x/deposit"
+	"github.com/sentinel-official/sentinel-hub/x/deposit"
 )
 
 type Keeper struct {
-	nodeStoreKey         csdk.StoreKey
-	subscriptionStoreKey csdk.StoreKey
-	sessionStoreKey      csdk.StoreKey
+	nodeStoreKey         sdk.StoreKey
+	subscriptionStoreKey sdk.StoreKey
+	sessionStoreKey      sdk.StoreKey
 	cdc                  *codec.Codec
 	paramStore           params.Subspace
 	depositKeeper        deposit.Keeper
 }
 
-func NewKeeper(cdc *codec.Codec, nodeKey, subscriptionStoreKey, sessionKey csdk.StoreKey,
+func NewKeeper(cdc *codec.Codec, nodeKey, subscriptionStoreKey, sessionKey sdk.StoreKey,
 	paramStore params.Subspace, depositKeeper deposit.Keeper) Keeper {
 
 	return Keeper{
