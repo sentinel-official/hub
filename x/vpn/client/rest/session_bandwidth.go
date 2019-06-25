@@ -8,20 +8,20 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/keys"
 	clientRest "github.com/cosmos/cosmos-sdk/client/rest"
 	"github.com/cosmos/cosmos-sdk/codec"
-	csdk "github.com/cosmos/cosmos-sdk/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/rest"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/gorilla/mux"
 
-	sdk "github.com/ironman0x7b2/sentinel-sdk/types"
-	"github.com/ironman0x7b2/sentinel-sdk/x/vpn"
-	"github.com/ironman0x7b2/sentinel-sdk/x/vpn/client/common"
+	hub "github.com/sentinel-official/sentinel-hub/types"
+	"github.com/sentinel-official/sentinel-hub/x/vpn"
+	"github.com/sentinel-official/sentinel-hub/x/vpn/client/common"
 )
 
 type msgSignSessionBandwidth struct {
 	From      string        `json:"from"`
 	Password  string        `json:"password"`
-	Bandwidth sdk.Bandwidth `json:"bandwidth"`
+	Bandwidth hub.Bandwidth `json:"bandwidth"`
 }
 
 func signSessionBandwidthHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) http.HandlerFunc {
@@ -39,7 +39,7 @@ func signSessionBandwidthHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec
 			return
 		}
 
-		id := sdk.NewIDFromString(vars["id"])
+		id := hub.NewIDFromString(vars["id"])
 		data := vpn.NewBandwidthSignatureData(id, scs, req.Bandwidth).Bytes()
 
 		kb, err := keys.NewKeyBaseFromHomeFlag()
@@ -72,7 +72,7 @@ func signSessionBandwidthHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec
 
 type msgUpdateSessionBandwidthInfo struct {
 	BaseReq       rest.BaseReq      `json:"base_req"`
-	Bandwidth     sdk.Bandwidth     `json:"bandwidth"`
+	Bandwidth     hub.Bandwidth     `json:"bandwidth"`
 	NodeOwnerSign auth.StdSignature `json:"node_owner_sign"`
 	ClientSign    auth.StdSignature `json:"client_sign"`
 }
@@ -91,19 +91,19 @@ func updateSessionInfoHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) h
 			return
 		}
 
-		fromAddress, err := csdk.AccAddressFromBech32(req.BaseReq.From)
+		fromAddress, err := sdk.AccAddressFromBech32(req.BaseReq.From)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
 		}
 
-		id := sdk.NewIDFromString(vars["id"])
+		id := hub.NewIDFromString(vars["id"])
 		msg := vpn.NewMsgUpdateSessionInfo(fromAddress, id, req.Bandwidth, req.NodeOwnerSign, req.ClientSign)
 		if err := msg.ValidateBasic(); err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
 		}
 
-		clientRest.WriteGenerateStdTxResponse(w, cdc, cliCtx, req.BaseReq, []csdk.Msg{msg})
+		clientRest.WriteGenerateStdTxResponse(w, cdc, cliCtx, req.BaseReq, []sdk.Msg{msg})
 	}
 }

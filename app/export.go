@@ -1,11 +1,11 @@
-package hub
+package app
 
 import (
 	"encoding/json"
 	"log"
 
 	"github.com/cosmos/cosmos-sdk/codec"
-	csdk "github.com/cosmos/cosmos-sdk/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/cosmos/cosmos-sdk/x/bank"
 	"github.com/cosmos/cosmos-sdk/x/crisis"
@@ -17,11 +17,11 @@ import (
 	abci "github.com/tendermint/tendermint/abci/types"
 	tm "github.com/tendermint/tendermint/types"
 
-	"github.com/ironman0x7b2/sentinel-sdk/x/deposit"
-	"github.com/ironman0x7b2/sentinel-sdk/x/vpn"
+	"github.com/sentinel-official/sentinel-hub/x/deposit"
+	"github.com/sentinel-official/sentinel-hub/x/vpn"
 )
 
-func (app *Hub) ExportAppStateAndValidators(forZeroHeight bool, jailWhiteList []string) (
+func (app *HubApp) ExportAppStateAndValidators(forZeroHeight bool, jailWhiteList []string) (
 	appState json.RawMessage, validators []tm.GenesisValidator, err error) {
 
 	ctx := app.NewContext(true, abci.Header{Height: app.LastBlockHeight()})
@@ -61,7 +61,7 @@ func (app *Hub) ExportAppStateAndValidators(forZeroHeight bool, jailWhiteList []
 }
 
 // nolint:gocyclo
-func (app *Hub) prepForZeroHeightGenesis(ctx csdk.Context, jailWhiteList []string) {
+func (app *HubApp) prepForZeroHeightGenesis(ctx sdk.Context, jailWhiteList []string) {
 	applyWhiteList := false
 	if len(jailWhiteList) > 0 {
 		applyWhiteList = true
@@ -69,7 +69,7 @@ func (app *Hub) prepForZeroHeightGenesis(ctx csdk.Context, jailWhiteList []strin
 
 	whiteListMap := make(map[string]bool)
 	for _, addr := range jailWhiteList {
-		_, err := csdk.ValAddressFromBech32(addr)
+		_, err := sdk.ValAddressFromBech32(addr)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -79,7 +79,7 @@ func (app *Hub) prepForZeroHeightGenesis(ctx csdk.Context, jailWhiteList []strin
 
 	app.assertRuntimeInvariantsOnContext(ctx)
 
-	app.stakingKeeper.IterateValidators(ctx, func(_ int64, val csdk.Validator) (stop bool) {
+	app.stakingKeeper.IterateValidators(ctx, func(_ int64, val sdk.Validator) (stop bool) {
 		_, _ = app.distributionKeeper.WithdrawValidatorCommission(ctx, val.GetOperator())
 		return false
 	})
@@ -96,7 +96,7 @@ func (app *Hub) prepForZeroHeightGenesis(ctx csdk.Context, jailWhiteList []strin
 	height := ctx.BlockHeight()
 	ctx = ctx.WithBlockHeight(0)
 
-	app.stakingKeeper.IterateValidators(ctx, func(_ int64, val csdk.Validator) (stop bool) {
+	app.stakingKeeper.IterateValidators(ctx, func(_ int64, val sdk.Validator) (stop bool) {
 		scraps := app.distributionKeeper.GetValidatorOutstandingRewards(ctx, val.GetOperator())
 		feePool := app.distributionKeeper.GetFeePool(ctx)
 		feePool.CommunityPool = feePool.CommunityPool.Add(scraps)
@@ -130,11 +130,11 @@ func (app *Hub) prepForZeroHeightGenesis(ctx csdk.Context, jailWhiteList []strin
 	})
 
 	store := ctx.KVStore(app.keyStaking)
-	iter := csdk.KVStoreReversePrefixIterator(store, staking.ValidatorsKey)
+	iter := sdk.KVStoreReversePrefixIterator(store, staking.ValidatorsKey)
 	defer iter.Close()
 
 	for ; iter.Valid(); iter.Next() {
-		addr := csdk.ValAddress(iter.Key()[1:])
+		addr := sdk.ValAddress(iter.Key()[1:])
 		validator, found := app.stakingKeeper.GetValidator(ctx, addr)
 		if !found {
 			panic("expected validator, not found")
@@ -152,7 +152,7 @@ func (app *Hub) prepForZeroHeightGenesis(ctx csdk.Context, jailWhiteList []strin
 
 	app.slashingKeeper.IterateValidatorSigningInfos(
 		ctx,
-		func(addr csdk.ConsAddress, info slashing.ValidatorSigningInfo) (stop bool) {
+		func(addr sdk.ConsAddress, info slashing.ValidatorSigningInfo) (stop bool) {
 			info.StartHeight = 0
 			app.slashingKeeper.SetValidatorSigningInfo(ctx, addr, info)
 			return false

@@ -2,14 +2,14 @@
 package types
 
 import (
-	csdk "github.com/cosmos/cosmos-sdk/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 var (
 	DepositKeyPrefix = []byte{0x01}
 )
 
-func DepositKey(address csdk.AccAddress) []byte {
+func DepositKey(address sdk.AccAddress) []byte {
 	return append(DepositKeyPrefix, address.Bytes()...)
 }
 

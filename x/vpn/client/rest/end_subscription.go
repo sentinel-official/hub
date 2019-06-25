@@ -7,12 +7,12 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/context"
 	clientRest "github.com/cosmos/cosmos-sdk/client/rest"
 	"github.com/cosmos/cosmos-sdk/codec"
-	csdk "github.com/cosmos/cosmos-sdk/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/rest"
 	"github.com/gorilla/mux"
 
-	sdk "github.com/ironman0x7b2/sentinel-sdk/types"
-	"github.com/ironman0x7b2/sentinel-sdk/x/vpn"
+	hub "github.com/sentinel-official/sentinel-hub/types"
+	"github.com/sentinel-official/sentinel-hub/x/vpn"
 )
 
 type msgEndSubscription struct {
@@ -32,14 +32,14 @@ func endSubscriptionHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) htt
 			return
 		}
 
-		fromAddress, err := csdk.AccAddressFromBech32(req.BaseReq.From)
+		fromAddress, err := sdk.AccAddressFromBech32(req.BaseReq.From)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
 		}
 
 		vars := mux.Vars(r)
-		id := sdk.NewIDFromString(vars["subscriptionID"])
+		id := hub.NewIDFromString(vars["subscriptionID"])
 
 		msg := vpn.NewMsgEndSubscription(fromAddress, id)
 		if err := msg.ValidateBasic(); err != nil {
@@ -47,6 +47,6 @@ func endSubscriptionHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) htt
 			return
 		}
 
-		clientRest.WriteGenerateStdTxResponse(w, cdc, cliCtx, req.BaseReq, []csdk.Msg{msg})
+		clientRest.WriteGenerateStdTxResponse(w, cdc, cliCtx, req.BaseReq, []sdk.Msg{msg})
 	}
 }

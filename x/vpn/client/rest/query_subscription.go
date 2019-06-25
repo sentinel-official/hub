@@ -9,7 +9,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/rest"
 	"github.com/gorilla/mux"
 
-	"github.com/ironman0x7b2/sentinel-sdk/x/vpn/client/common"
+	"github.com/sentinel-official/sentinel-hub/x/vpn/client/common"
 )
 
 func getSubscriptionHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) http.HandlerFunc {

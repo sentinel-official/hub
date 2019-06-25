@@ -4,21 +4,21 @@ import (
 	"fmt"
 	"sort"
 
-	csdk "github.com/cosmos/cosmos-sdk/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	sdk "github.com/ironman0x7b2/sentinel-sdk/types"
+	hub "github.com/sentinel-official/sentinel-hub/types"
 )
 
 type Node struct {
-	ID      sdk.ID          `json:"id"`
-	Owner   csdk.AccAddress `json:"owner"`
-	Deposit csdk.Coin       `json:"deposit"`
+	ID      hub.ID         `json:"id"`
+	Owner   sdk.AccAddress `json:"owner"`
+	Deposit sdk.Coin       `json:"deposit"`
 
 	Type          string        `json:"type"`
 	Version       string        `json:"version"`
 	Moniker       string        `json:"moniker"`
-	PricesPerGB   csdk.Coins    `json:"prices_per_gb"`
-	InternetSpeed sdk.Bandwidth `json:"internet_speed"`
+	PricesPerGB   sdk.Coins     `json:"prices_per_gb"`
+	InternetSpeed hub.Bandwidth `json:"internet_speed"`
 	Encryption    string        `json:"encryption"`
 
 	Status           string `json:"status"`
@@ -67,7 +67,7 @@ func (n Node) UpdateInfo(_node Node) Node {
 	return n
 }
 
-func (n Node) FindPricePerGB(denom string) (coin csdk.Coin) {
+func (n Node) FindPricePerGB(denom string) (coin sdk.Coin) {
 	index := sort.Search(n.PricesPerGB.Len(), func(i int) bool {
 		return n.PricesPerGB[i].Denom >= denom
 	})
@@ -80,14 +80,14 @@ func (n Node) FindPricePerGB(denom string) (coin csdk.Coin) {
 	return n.PricesPerGB[index]
 }
 
-func (n Node) DepositToBandwidth(deposit csdk.Coin) (bandwidth sdk.Bandwidth, err csdk.Error) {
+func (n Node) DepositToBandwidth(deposit sdk.Coin) (bandwidth hub.Bandwidth, err sdk.Error) {
 	pricePerGB := n.FindPricePerGB(deposit.Denom)
 	if pricePerGB.Denom == "" || pricePerGB.Amount.IsZero() {
 		return bandwidth, ErrorInvalidDeposit()
 	}
 
-	x := deposit.Amount.Mul(sdk.MB500).Quo(pricePerGB.Amount)
-	return sdk.NewBandwidth(x, x), nil
+	x := deposit.Amount.Mul(hub.MB500).Quo(pricePerGB.Amount)
+	return hub.NewBandwidth(x, x), nil
 }
 
 // nolint: gocyclo

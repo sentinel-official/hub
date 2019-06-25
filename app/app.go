@@ -1,4 +1,4 @@
-package hub
+package app
 
 import (
 	"fmt"
@@ -8,7 +8,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
-	csdk "github.com/cosmos/cosmos-sdk/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/cosmos/cosmos-sdk/x/bank"
 	"github.com/cosmos/cosmos-sdk/x/crisis"
@@ -23,47 +23,47 @@ import (
 	tmDB "github.com/tendermint/tendermint/libs/db"
 	"github.com/tendermint/tendermint/libs/log"
 
-	"github.com/ironman0x7b2/sentinel-sdk/x/deposit"
-	_staking "github.com/ironman0x7b2/sentinel-sdk/x/staking"
-	"github.com/ironman0x7b2/sentinel-sdk/x/vpn"
+	"github.com/sentinel-official/sentinel-hub/x/deposit"
+	_staking "github.com/sentinel-official/sentinel-hub/x/staking"
+	"github.com/sentinel-official/sentinel-hub/x/vpn"
 )
 
 const (
-	appName        = "Sentinel Hub"
+	appName        = "Sentinel HubApp"
 	DefaultKeyPass = "1234567890"
 )
 
 // nolint:gochecknoglobals
 var (
-	DefaultCLIHome  = os.ExpandEnv("$HOME/.hubcli")
-	DefaultNodeHome = os.ExpandEnv("$HOME/.hubd")
+	DefaultCLIHome  = os.ExpandEnv("$HOME/.sentinel-hubcli")
+	DefaultNodeHome = os.ExpandEnv("$HOME/.sentinel-hubd")
 )
 
-type Hub struct {
+type HubApp struct {
 	*baseapp.BaseApp
 	cdc *codec.Codec
 
 	invCheckPeriod uint
 
-	keyMain *csdk.KVStoreKey
+	keyMain *sdk.KVStoreKey
 
-	keyParams        *csdk.KVStoreKey
-	keyAccount       *csdk.KVStoreKey
-	keyFeeCollection *csdk.KVStoreKey
-	keyStaking       *csdk.KVStoreKey
-	keySlashing      *csdk.KVStoreKey
-	keyDistribution  *csdk.KVStoreKey
-	keyGov           *csdk.KVStoreKey
-	keyMint          *csdk.KVStoreKey
+	keyParams        *sdk.KVStoreKey
+	keyAccount       *sdk.KVStoreKey
+	keyFeeCollection *sdk.KVStoreKey
+	keyStaking       *sdk.KVStoreKey
+	keySlashing      *sdk.KVStoreKey
+	keyDistribution  *sdk.KVStoreKey
+	keyGov           *sdk.KVStoreKey
+	keyMint          *sdk.KVStoreKey
 
-	keyDeposit         *csdk.KVStoreKey
-	keyVPNNode         *csdk.KVStoreKey
-	keyVPNSession      *csdk.KVStoreKey
-	keyVPNSubscription *csdk.KVStoreKey
+	keyDeposit         *sdk.KVStoreKey
+	keyVPNNode         *sdk.KVStoreKey
+	keyVPNSession      *sdk.KVStoreKey
+	keyVPNSubscription *sdk.KVStoreKey
 
-	tkeyParams       *csdk.TransientStoreKey
-	tkeyStaking      *csdk.TransientStoreKey
-	tkeyDistribution *csdk.TransientStoreKey
+	tkeyParams       *sdk.TransientStoreKey
+	tkeyStaking      *sdk.TransientStoreKey
+	tkeyDistribution *sdk.TransientStoreKey
 
 	paramsKeeper        params.Keeper
 	accountKeeper       auth.AccountKeeper
@@ -80,34 +80,34 @@ type Hub struct {
 	vpnKeeper     vpn.Keeper
 }
 
-func NewHub(logger log.Logger, db tmDB.DB, traceStore io.Writer, loadLatest bool, invCheckPeriod uint,
-	baseAppOptions ...func(*baseapp.BaseApp)) *Hub {
+func NewHubApp(logger log.Logger, db tmDB.DB, traceStore io.Writer, loadLatest bool, invCheckPeriod uint,
+	baseAppOptions ...func(*baseapp.BaseApp)) *HubApp {
 
 	cdc := MakeCodec()
 
 	bApp := baseapp.NewBaseApp(appName, logger, db, auth.DefaultTxDecoder(cdc), baseAppOptions...)
 	bApp.SetCommitMultiStoreTracer(traceStore)
 
-	var app = &Hub{
+	var app = &HubApp{
 		BaseApp:            bApp,
 		cdc:                cdc,
 		invCheckPeriod:     invCheckPeriod,
-		keyParams:          csdk.NewKVStoreKey(params.StoreKey),
-		keyMain:            csdk.NewKVStoreKey(baseapp.MainStoreKey),
-		keyAccount:         csdk.NewKVStoreKey(auth.StoreKey),
-		keyFeeCollection:   csdk.NewKVStoreKey(auth.FeeStoreKey),
-		keyStaking:         csdk.NewKVStoreKey(staking.StoreKey),
-		keySlashing:        csdk.NewKVStoreKey(slashing.StoreKey),
-		keyDistribution:    csdk.NewKVStoreKey(distribution.StoreKey),
-		keyGov:             csdk.NewKVStoreKey(gov.StoreKey),
-		keyMint:            csdk.NewKVStoreKey(mint.StoreKey),
-		keyDeposit:         csdk.NewKVStoreKey(deposit.StoreKey),
-		keyVPNNode:         csdk.NewKVStoreKey(vpn.StoreKeyNode),
-		keyVPNSession:      csdk.NewKVStoreKey(vpn.StoreKeySession),
-		keyVPNSubscription: csdk.NewKVStoreKey(vpn.StoreKeySubscription),
-		tkeyParams:         csdk.NewTransientStoreKey(params.TStoreKey),
-		tkeyStaking:        csdk.NewTransientStoreKey(staking.TStoreKey),
-		tkeyDistribution:   csdk.NewTransientStoreKey(distribution.TStoreKey),
+		keyParams:          sdk.NewKVStoreKey(params.StoreKey),
+		keyMain:            sdk.NewKVStoreKey(baseapp.MainStoreKey),
+		keyAccount:         sdk.NewKVStoreKey(auth.StoreKey),
+		keyFeeCollection:   sdk.NewKVStoreKey(auth.FeeStoreKey),
+		keyStaking:         sdk.NewKVStoreKey(staking.StoreKey),
+		keySlashing:        sdk.NewKVStoreKey(slashing.StoreKey),
+		keyDistribution:    sdk.NewKVStoreKey(distribution.StoreKey),
+		keyGov:             sdk.NewKVStoreKey(gov.StoreKey),
+		keyMint:            sdk.NewKVStoreKey(mint.StoreKey),
+		keyDeposit:         sdk.NewKVStoreKey(deposit.StoreKey),
+		keyVPNNode:         sdk.NewKVStoreKey(vpn.StoreKeyNode),
+		keyVPNSession:      sdk.NewKVStoreKey(vpn.StoreKeySession),
+		keyVPNSubscription: sdk.NewKVStoreKey(vpn.StoreKeySubscription),
+		tkeyParams:         sdk.NewTransientStoreKey(params.TStoreKey),
+		tkeyStaking:        sdk.NewTransientStoreKey(staking.TStoreKey),
+		tkeyDistribution:   sdk.NewTransientStoreKey(distribution.TStoreKey),
 	}
 
 	app.paramsKeeper = params.NewKeeper(app.cdc,
@@ -223,7 +223,7 @@ func NewHub(logger log.Logger, db tmDB.DB, traceStore io.Writer, loadLatest bool
 func MakeCodec() *codec.Codec {
 	var cdc = codec.New()
 	codec.RegisterCrypto(cdc)
-	csdk.RegisterCodec(cdc)
+	sdk.RegisterCodec(cdc)
 	auth.RegisterCodec(cdc)
 	bank.RegisterCodec(cdc)
 	staking.RegisterCodec(cdc)
@@ -236,7 +236,7 @@ func MakeCodec() *codec.Codec {
 	return cdc
 }
 
-func (app *Hub) BeginBlocker(ctx csdk.Context, req abci.RequestBeginBlock) abci.ResponseBeginBlock {
+func (app *HubApp) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) abci.ResponseBeginBlock {
 	mint.BeginBlocker(ctx, app.mintKeeper)
 	distribution.BeginBlocker(ctx, req, app.distributionKeeper)
 	tags := slashing.BeginBlocker(ctx, req, app.slashingKeeper)
@@ -246,7 +246,7 @@ func (app *Hub) BeginBlocker(ctx csdk.Context, req abci.RequestBeginBlock) abci.
 	}
 }
 
-func (app *Hub) EndBlocker(ctx csdk.Context, req abci.RequestEndBlock) abci.ResponseEndBlock {
+func (app *HubApp) EndBlocker(ctx sdk.Context, req abci.RequestEndBlock) abci.ResponseEndBlock {
 	tags := gov.EndBlocker(ctx, app.govKeeper)
 	validatorUpdates, endBlockerTags := staking.EndBlocker(ctx, app.stakingKeeper)
 	tags = append(tags, endBlockerTags...)
@@ -264,7 +264,7 @@ func (app *Hub) EndBlocker(ctx csdk.Context, req abci.RequestEndBlock) abci.Resp
 	}
 }
 
-func (app *Hub) initFromGenesisState(ctx csdk.Context, genesisState GenesisState) []abci.ValidatorUpdate {
+func (app *HubApp) initFromGenesisState(ctx sdk.Context, genesisState GenesisState) []abci.ValidatorUpdate {
 	genesisState.Sanitize()
 
 	for _, gacc := range genesisState.Accounts {
@@ -313,7 +313,7 @@ func (app *Hub) initFromGenesisState(ctx csdk.Context, genesisState GenesisState
 	return validators
 }
 
-func (app *Hub) initChainer(ctx csdk.Context, req abci.RequestInitChain) abci.ResponseInitChain {
+func (app *HubApp) initChainer(ctx sdk.Context, req abci.RequestInitChain) abci.ResponseInitChain {
 	stateJSON := req.AppStateBytes
 
 	var genesisState GenesisState
@@ -344,7 +344,7 @@ func (app *Hub) initChainer(ctx csdk.Context, req abci.RequestInitChain) abci.Re
 	}
 }
 
-func (app *Hub) LoadHeight(height int64) error {
+func (app *HubApp) LoadHeight(height int64) error {
 	return app.LoadVersion(height, app.keyMain)
 }
 
@@ -357,54 +357,54 @@ func NewStakingHooks(dh distribution.Hooks, sh slashing.Hooks) StakingHooks {
 	return StakingHooks{dh, sh}
 }
 
-func (h StakingHooks) AfterValidatorCreated(ctx csdk.Context, valAddr csdk.ValAddress) {
+func (h StakingHooks) AfterValidatorCreated(ctx sdk.Context, valAddr sdk.ValAddress) {
 	h.dh.AfterValidatorCreated(ctx, valAddr)
 	h.sh.AfterValidatorCreated(ctx, valAddr)
 }
 
-func (h StakingHooks) BeforeValidatorModified(ctx csdk.Context, valAddr csdk.ValAddress) {
+func (h StakingHooks) BeforeValidatorModified(ctx sdk.Context, valAddr sdk.ValAddress) {
 	h.dh.BeforeValidatorModified(ctx, valAddr)
 	h.sh.BeforeValidatorModified(ctx, valAddr)
 }
 
-func (h StakingHooks) AfterValidatorRemoved(ctx csdk.Context, consAddr csdk.ConsAddress, valAddr csdk.ValAddress) {
+func (h StakingHooks) AfterValidatorRemoved(ctx sdk.Context, consAddr sdk.ConsAddress, valAddr sdk.ValAddress) {
 	h.dh.AfterValidatorRemoved(ctx, consAddr, valAddr)
 	h.sh.AfterValidatorRemoved(ctx, consAddr, valAddr)
 }
 
-func (h StakingHooks) AfterValidatorBonded(ctx csdk.Context, consAddr csdk.ConsAddress, valAddr csdk.ValAddress) {
+func (h StakingHooks) AfterValidatorBonded(ctx sdk.Context, consAddr sdk.ConsAddress, valAddr sdk.ValAddress) {
 	h.dh.AfterValidatorBonded(ctx, consAddr, valAddr)
 	h.sh.AfterValidatorBonded(ctx, consAddr, valAddr)
 }
 
 // nolint: lll
-func (h StakingHooks) AfterValidatorBeginUnbonding(ctx csdk.Context, consAddr csdk.ConsAddress, valAddr csdk.ValAddress) {
+func (h StakingHooks) AfterValidatorBeginUnbonding(ctx sdk.Context, consAddr sdk.ConsAddress, valAddr sdk.ValAddress) {
 	h.dh.AfterValidatorBeginUnbonding(ctx, consAddr, valAddr)
 	h.sh.AfterValidatorBeginUnbonding(ctx, consAddr, valAddr)
 }
 
-func (h StakingHooks) BeforeDelegationCreated(ctx csdk.Context, delAddr csdk.AccAddress, valAddr csdk.ValAddress) {
+func (h StakingHooks) BeforeDelegationCreated(ctx sdk.Context, delAddr sdk.AccAddress, valAddr sdk.ValAddress) {
 	h.dh.BeforeDelegationCreated(ctx, delAddr, valAddr)
 	h.sh.BeforeDelegationCreated(ctx, delAddr, valAddr)
 }
 
 // nolint: lll
-func (h StakingHooks) BeforeDelegationSharesModified(ctx csdk.Context, delAddr csdk.AccAddress, valAddr csdk.ValAddress) {
+func (h StakingHooks) BeforeDelegationSharesModified(ctx sdk.Context, delAddr sdk.AccAddress, valAddr sdk.ValAddress) {
 	h.dh.BeforeDelegationSharesModified(ctx, delAddr, valAddr)
 	h.sh.BeforeDelegationSharesModified(ctx, delAddr, valAddr)
 }
 
-func (h StakingHooks) BeforeDelegationRemoved(ctx csdk.Context, delAddr csdk.AccAddress, valAddr csdk.ValAddress) {
+func (h StakingHooks) BeforeDelegationRemoved(ctx sdk.Context, delAddr sdk.AccAddress, valAddr sdk.ValAddress) {
 	h.dh.BeforeDelegationRemoved(ctx, delAddr, valAddr)
 	h.sh.BeforeDelegationRemoved(ctx, delAddr, valAddr)
 }
 
-func (h StakingHooks) AfterDelegationModified(ctx csdk.Context, delAddr csdk.AccAddress, valAddr csdk.ValAddress) {
+func (h StakingHooks) AfterDelegationModified(ctx sdk.Context, delAddr sdk.AccAddress, valAddr sdk.ValAddress) {
 	h.dh.AfterDelegationModified(ctx, delAddr, valAddr)
 	h.sh.AfterDelegationModified(ctx, delAddr, valAddr)
 }
 
-func (h StakingHooks) BeforeValidatorSlashed(ctx csdk.Context, valAddr csdk.ValAddress, fraction csdk.Dec) {
+func (h StakingHooks) BeforeValidatorSlashed(ctx sdk.Context, valAddr sdk.ValAddress, fraction sdk.Dec) {
 	h.dh.BeforeValidatorSlashed(ctx, valAddr, fraction)
 	h.sh.BeforeValidatorSlashed(ctx, valAddr, fraction)
 }

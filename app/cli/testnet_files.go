@@ -12,7 +12,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/server"
 	serverConfig "github.com/cosmos/cosmos-sdk/server/config"
-	csdk "github.com/cosmos/cosmos-sdk/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	authTxBuilder "github.com/cosmos/cosmos-sdk/x/auth/client/txbuilder"
 	"github.com/cosmos/cosmos-sdk/x/staking"
@@ -24,7 +24,7 @@ import (
 	"github.com/tendermint/tendermint/types"
 	tmTime "github.com/tendermint/tendermint/types/time"
 
-	app "github.com/ironman0x7b2/sentinel-sdk/app/hub"
+	"github.com/sentinel-official/sentinel-hub/app"
 )
 
 const nodeDirPerm = 0755
@@ -43,14 +43,14 @@ func TestNetFilesCmd(ctx *server.Context, cdc *codec.Codec) *cobra.Command {
 
 	cmd := &cobra.Command{
 		Use:   "testnet",
-		Short: "Initialize files for a hubd testnet",
+		Short: "Initialize files for a sentinel-hubd testnet",
 		Long: `testnet will create "v" number of directories and populate each with
 necessary files (private validator, genesis, config, etc.).
 
 Note, strict routability for addresses is turned off in the config file.
 
 Example:
-	hubd testnet --v 4 --output-dir ./output --starting-ip-address 192.168.10.2
+	sentinel-hubd testnet --v 4 --output-dir ./output --starting-ip-address 192.168.10.2
 	`,
 		RunE: func(_ *cobra.Command, _ []string) error {
 			config := ctx.Config
@@ -67,10 +67,10 @@ Example:
 	cmd.Flags().String(flagNodeDirPrefix, "node",
 		"Prefix the directory name for each node with (node results in node0, node1, ...)",
 	)
-	cmd.Flags().String(flagNodeDaemonHome, "hubd",
+	cmd.Flags().String(flagNodeDaemonHome, "sentinel-hubd",
 		"Home directory of the node's daemon configuration",
 	)
-	cmd.Flags().String(flagNodeCliHome, "hubcli",
+	cmd.Flags().String(flagNodeCliHome, "sentinel-hubcli",
 		"Home directory of the node's cli configuration",
 	)
 	cmd.Flags().String(flagStartingIPAddress, "192.168.0.1",
@@ -181,24 +181,24 @@ func initTestNet(config *tmConfig.Config, cdc *codec.Codec) error {
 			return err
 		}
 
-		accTokens := csdk.TokensFromTendermintPower(1000)
-		accStakingTokens := csdk.TokensFromTendermintPower(500)
+		accTokens := sdk.TokensFromTendermintPower(1000)
+		accStakingTokens := sdk.TokensFromTendermintPower(500)
 		accounts = append(accounts, app.GenesisAccount{
 			Address: addr,
-			Coins: csdk.Coins{
-				csdk.NewCoin(fmt.Sprintf("%stoken", nodeDirName), accTokens),
-				csdk.NewCoin("stake", accStakingTokens),
+			Coins: sdk.Coins{
+				sdk.NewCoin(fmt.Sprintf("%stoken", nodeDirName), accTokens),
+				sdk.NewCoin("stake", accStakingTokens),
 			},
 		})
 
-		valTokens := csdk.TokensFromTendermintPower(100)
+		valTokens := sdk.TokensFromTendermintPower(100)
 		msg := staking.NewMsgCreateValidator(
-			csdk.ValAddress(addr),
+			sdk.ValAddress(addr),
 			valPubKeys[i],
-			csdk.NewCoin("stake", valTokens),
+			sdk.NewCoin("stake", valTokens),
 			staking.NewDescription(nodeDirName, "", "", ""),
-			staking.NewCommissionMsg(csdk.ZeroDec(), csdk.ZeroDec(), csdk.ZeroDec()),
-			csdk.OneInt(),
+			staking.NewCommissionMsg(sdk.ZeroDec(), sdk.ZeroDec(), sdk.ZeroDec()),
+			sdk.OneInt(),
 		)
 
 		kb, err := keys.NewKeyBaseFromDir(clientDir)
@@ -206,7 +206,7 @@ func initTestNet(config *tmConfig.Config, cdc *codec.Codec) error {
 			return err
 		}
 
-		tx := auth.NewStdTx([]csdk.Msg{msg}, auth.StdFee{}, []auth.StdSignature{}, memo)
+		tx := auth.NewStdTx([]sdk.Msg{msg}, auth.StdFee{}, []auth.StdSignature{}, memo)
 		txBuilder := authTxBuilder.NewTxBuilderFromCLI().WithChainID(chainID).WithMemo(memo).WithKeybase(kb)
 
 		signedTx, err := txBuilder.SignStdTx(nodeDirName, app.DefaultKeyPass, tx, false)
@@ -227,7 +227,7 @@ func initTestNet(config *tmConfig.Config, cdc *codec.Codec) error {
 			return err
 		}
 
-		hubConfigFilePath := filepath.Join(nodeDir, "config/hubd.toml")
+		hubConfigFilePath := filepath.Join(nodeDir, "config/sentinel-hubd.toml")
 		serverConfig.WriteConfigFile(hubConfigFilePath, hubConfig)
 	}
 

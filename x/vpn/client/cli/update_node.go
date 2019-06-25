@@ -6,13 +6,13 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/client/utils"
 	"github.com/cosmos/cosmos-sdk/codec"
-	csdk "github.com/cosmos/cosmos-sdk/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	authTxBuilder "github.com/cosmos/cosmos-sdk/x/auth/client/txbuilder"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
-	sdk "github.com/ironman0x7b2/sentinel-sdk/types"
-	"github.com/ironman0x7b2/sentinel-sdk/x/vpn"
+	hub "github.com/sentinel-official/sentinel-hub/types"
+	"github.com/sentinel-official/sentinel-hub/x/vpn"
 )
 
 func UpdateNodeInfoTxCmd(cdc *codec.Codec) *cobra.Command {
@@ -27,18 +27,18 @@ func UpdateNodeInfoTxCmd(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			nodeID := sdk.NewIDFromString(viper.GetString(flagNodeID))
+			nodeID := hub.NewIDFromString(viper.GetString(flagNodeID))
 			_type := viper.GetString(flagType)
 			version := viper.GetString(flagVersion)
 			moniker := viper.GetString(flagMoniker)
 			pricesPerGB := viper.GetString(flagPricesPerGB)
-			internetSpeed := sdk.Bandwidth{
-				Upload:   csdk.NewInt(viper.GetInt64(flagUploadSpeed)),
-				Download: csdk.NewInt(viper.GetInt64(flagDownloadSpeed)),
+			internetSpeed := hub.Bandwidth{
+				Upload:   sdk.NewInt(viper.GetInt64(flagUploadSpeed)),
+				Download: sdk.NewInt(viper.GetInt64(flagDownloadSpeed)),
 			}
 			encryption := viper.GetString(flagEncryption)
 
-			parsedPricesPerGB, err := csdk.ParseCoins(pricesPerGB)
+			parsedPricesPerGB, err := sdk.ParseCoins(pricesPerGB)
 			if err != nil {
 				return err
 			}
@@ -47,7 +47,7 @@ func UpdateNodeInfoTxCmd(cdc *codec.Codec) *cobra.Command {
 
 			msg := vpn.NewMsgUpdateNodeInfo(fromAddress, nodeID,
 				_type, version, moniker, parsedPricesPerGB, internetSpeed, encryption)
-			return utils.GenerateOrBroadcastMsgs(cliCtx, txBldr, []csdk.Msg{msg}, false)
+			return utils.GenerateOrBroadcastMsgs(cliCtx, txBldr, []sdk.Msg{msg}, false)
 		},
 	}
 
@@ -78,13 +78,13 @@ func UpdateNodeStatusTxCmd(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			nodeID := sdk.NewIDFromString(viper.GetString(flagNodeID))
+			nodeID := hub.NewIDFromString(viper.GetString(flagNodeID))
 			status := strings.ToUpper(args[0])
 
 			fromAddress := cliCtx.GetFromAddress()
 
 			msg := vpn.NewMsgUpdateNodeStatus(fromAddress, nodeID, status)
-			return utils.GenerateOrBroadcastMsgs(cliCtx, txBldr, []csdk.Msg{msg}, false)
+			return utils.GenerateOrBroadcastMsgs(cliCtx, txBldr, []sdk.Msg{msg}, false)
 		},
 	}
 

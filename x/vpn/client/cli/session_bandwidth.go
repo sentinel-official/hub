@@ -7,15 +7,15 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/keys"
 	"github.com/cosmos/cosmos-sdk/client/utils"
 	"github.com/cosmos/cosmos-sdk/codec"
-	csdk "github.com/cosmos/cosmos-sdk/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	authTxBuilder "github.com/cosmos/cosmos-sdk/x/auth/client/txbuilder"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
-	sdk "github.com/ironman0x7b2/sentinel-sdk/types"
-	"github.com/ironman0x7b2/sentinel-sdk/x/vpn"
-	"github.com/ironman0x7b2/sentinel-sdk/x/vpn/client/common"
+	hub "github.com/sentinel-official/sentinel-hub/types"
+	"github.com/sentinel-official/sentinel-hub/x/vpn"
+	"github.com/sentinel-official/sentinel-hub/x/vpn/client/common"
 )
 
 func SignSessionBandwidthTxCmd(cdc *codec.Codec) *cobra.Command {
@@ -30,9 +30,9 @@ func SignSessionBandwidthTxCmd(cdc *codec.Codec) *cobra.Command {
 			}
 
 			_id := viper.GetString(flagSubscriptionID)
-			bandwidth := sdk.Bandwidth{
-				Upload:   csdk.NewInt(viper.GetInt64(flagUpload)),
-				Download: csdk.NewInt(viper.GetInt64(flagDownload)),
+			bandwidth := hub.Bandwidth{
+				Upload:   sdk.NewInt(viper.GetInt64(flagUpload)),
+				Download: sdk.NewInt(viper.GetInt64(flagDownload)),
 			}
 
 			scs, err := common.QuerySessionsCountOfSubscription(cliCtx, cdc, _id)
@@ -40,7 +40,7 @@ func SignSessionBandwidthTxCmd(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			id := sdk.NewIDFromString(_id)
+			id := hub.NewIDFromString(_id)
 			data := vpn.NewBandwidthSignatureData(id, scs, bandwidth).Bytes()
 
 			passphrase, err := keys.GetPassphrase(cliCtx.FromName)
@@ -97,10 +97,10 @@ func UpdateSessionInfoTxCmd(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			id := sdk.NewIDFromString(viper.GetString(flagSubscriptionID))
-			bandwidth := sdk.Bandwidth{
-				Upload:   csdk.NewInt(viper.GetInt64(flagUpload)),
-				Download: csdk.NewInt(viper.GetInt64(flagDownload)),
+			id := hub.NewIDFromString(viper.GetString(flagSubscriptionID))
+			bandwidth := hub.Bandwidth{
+				Upload:   sdk.NewInt(viper.GetInt64(flagUpload)),
+				Download: sdk.NewInt(viper.GetInt64(flagDownload)),
 			}
 			nodeOwnerSignatureStr := viper.GetString(flagNodeOwnerSign)
 			clientSignatureStr := viper.GetString(flagClientSign)
@@ -117,7 +117,7 @@ func UpdateSessionInfoTxCmd(cdc *codec.Codec) *cobra.Command {
 
 			msg := vpn.NewMsgUpdateSessionInfo(cliCtx.FromAddress, id, bandwidth, nodeOwnerSignature, clientSignature)
 
-			return utils.GenerateOrBroadcastMsgs(cliCtx, txBldr, []csdk.Msg{msg}, false)
+			return utils.GenerateOrBroadcastMsgs(cliCtx, txBldr, []sdk.Msg{msg}, false)
 		},
 	}
 

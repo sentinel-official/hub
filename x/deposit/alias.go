@@ -1,9 +1,9 @@
 package deposit
 
 import (
-	"github.com/ironman0x7b2/sentinel-sdk/x/deposit/keeper"
-	"github.com/ironman0x7b2/sentinel-sdk/x/deposit/querier"
-	"github.com/ironman0x7b2/sentinel-sdk/x/deposit/types"
+	"github.com/sentinel-official/sentinel-hub/x/deposit/keeper"
+	"github.com/sentinel-official/sentinel-hub/x/deposit/querier"
+	"github.com/sentinel-official/sentinel-hub/x/deposit/types"
 )
 
 const (

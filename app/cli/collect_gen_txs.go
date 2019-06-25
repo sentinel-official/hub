@@ -15,7 +15,7 @@ import (
 	"github.com/tendermint/tendermint/libs/cli"
 	"github.com/tendermint/tendermint/types"
 
-	app "github.com/ironman0x7b2/sentinel-sdk/app/hub"
+	"github.com/sentinel-official/sentinel-hub/app"
 )
 
 const (

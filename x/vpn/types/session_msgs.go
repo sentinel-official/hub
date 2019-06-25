@@ -3,18 +3,18 @@ package types
 import (
 	"encoding/json"
 
-	csdk "github.com/cosmos/cosmos-sdk/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 
-	sdk "github.com/ironman0x7b2/sentinel-sdk/types"
+	hub "github.com/sentinel-official/sentinel-hub/types"
 )
 
-var _ csdk.Msg = (*MsgUpdateSessionInfo)(nil)
+var _ sdk.Msg = (*MsgUpdateSessionInfo)(nil)
 
 type MsgUpdateSessionInfo struct {
-	From               csdk.AccAddress   `json:"from"`
-	SubscriptionID     sdk.ID            `json:"subscription_id"`
-	Bandwidth          sdk.Bandwidth     `json:"bandwidth"`
+	From               sdk.AccAddress    `json:"from"`
+	SubscriptionID     hub.ID            `json:"subscription_id"`
+	Bandwidth          hub.Bandwidth     `json:"bandwidth"`
 	NodeOwnerSignature auth.StdSignature `json:"node_owner_signature"`
 	ClientSignature    auth.StdSignature `json:"client_signature"`
 }
@@ -23,7 +23,7 @@ func (msg MsgUpdateSessionInfo) Type() string {
 	return "MsgUpdateSessionInfo"
 }
 
-func (msg MsgUpdateSessionInfo) ValidateBasic() csdk.Error {
+func (msg MsgUpdateSessionInfo) ValidateBasic() sdk.Error {
 	if msg.From == nil || msg.From.Empty() {
 		return ErrorInvalidField("from")
 	}
@@ -49,16 +49,16 @@ func (msg MsgUpdateSessionInfo) GetSignBytes() []byte {
 	return bz
 }
 
-func (msg MsgUpdateSessionInfo) GetSigners() []csdk.AccAddress {
-	return []csdk.AccAddress{msg.From}
+func (msg MsgUpdateSessionInfo) GetSigners() []sdk.AccAddress {
+	return []sdk.AccAddress{msg.From}
 }
 
 func (msg MsgUpdateSessionInfo) Route() string {
 	return RouterKey
 }
 
-func NewMsgUpdateSessionInfo(from csdk.AccAddress,
-	subscriptionID sdk.ID, bandwidth sdk.Bandwidth,
+func NewMsgUpdateSessionInfo(from sdk.AccAddress,
+	subscriptionID hub.ID, bandwidth hub.Bandwidth,
 	nodeOwnerSignature, clientSignature auth.StdSignature) *MsgUpdateSessionInfo {
 
 	return &MsgUpdateSessionInfo{

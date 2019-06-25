@@ -3,13 +3,13 @@ package types
 import (
 	"fmt"
 
-	sdk "github.com/ironman0x7b2/sentinel-sdk/types"
+	hub "github.com/sentinel-official/sentinel-hub/types"
 )
 
 type Session struct {
-	ID               sdk.ID        `json:"id"`
-	SubscriptionID   sdk.ID        `json:"subscription_id"`
-	Bandwidth        sdk.Bandwidth `json:"bandwidth"`
+	ID               hub.ID        `json:"id"`
+	SubscriptionID   hub.ID        `json:"subscription_id"`
+	Bandwidth        hub.Bandwidth `json:"bandwidth"`
 	Status           string        `json:"status"`
 	StatusModifiedAt int64         `json:"status_modified_at"`
 }

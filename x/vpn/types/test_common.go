@@ -2,11 +2,11 @@
 package types
 
 import (
-	csdk "github.com/cosmos/cosmos-sdk/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/tendermint/tendermint/crypto/ed25519"
 
-	sdk "github.com/ironman0x7b2/sentinel-sdk/types"
+	hub "github.com/sentinel-official/sentinel-hub/types"
 )
 
 var (
@@ -14,29 +14,29 @@ var (
 	TestPrivKey2     = ed25519.GenPrivKey()
 	TestPubkey1      = TestPrivKey1.PubKey()
 	TestPubkey2      = TestPrivKey2.PubKey()
-	TestAddress1     = csdk.AccAddress(TestPubkey1.Address())
-	TestAddress2     = csdk.AccAddress(TestPubkey2.Address())
-	TestAddressEmpty = csdk.AccAddress([]byte(""))
+	TestAddress1     = sdk.AccAddress(TestPubkey1.Address())
+	TestAddress2     = sdk.AccAddress(TestPubkey2.Address())
+	TestAddressEmpty = sdk.AccAddress([]byte(""))
 
-	TestCoinEmpty   = csdk.Coin{}
-	TestCoinNeg     = csdk.Coin{Denom: "stake", Amount: csdk.NewInt(-100)}
-	TestCoinZero    = csdk.NewInt64Coin("stake", 0)
-	TestCoinPos     = csdk.NewInt64Coin("stake", 100)
-	TestCoinInvalid = csdk.NewInt64Coin("invalid", 100)
+	TestCoinEmpty   = sdk.Coin{}
+	TestCoinNeg     = sdk.Coin{Denom: "stake", Amount: sdk.NewInt(-100)}
+	TestCoinZero    = sdk.NewInt64Coin("stake", 0)
+	TestCoinPos     = sdk.NewInt64Coin("stake", 100)
+	TestCoinInvalid = sdk.NewInt64Coin("invalid", 100)
 
-	TestCoinsEmpty   = csdk.Coins{}
-	TestCoinsNil     = csdk.Coins(nil)
-	TestCoinsNeg     = csdk.Coins{TestCoinNeg}
-	TestCoinsZero    = csdk.Coins{TestCoinZero}
-	TestCoinsPos     = csdk.Coins{TestCoinPos}
-	TestCoinsInvalid = csdk.Coins{TestCoinInvalid}
+	TestCoinsEmpty   = sdk.Coins{}
+	TestCoinsNil     = sdk.Coins(nil)
+	TestCoinsNeg     = sdk.Coins{TestCoinNeg}
+	TestCoinsZero    = sdk.Coins{TestCoinZero}
+	TestCoinsPos     = sdk.Coins{TestCoinPos}
+	TestCoinsInvalid = sdk.Coins{TestCoinInvalid}
 
-	TestIDZero = sdk.NewIDFromUInt64(0)
-	TestIDPos  = sdk.NewIDFromUInt64(1)
+	TestIDZero = hub.NewIDFromUInt64(0)
+	TestIDPos  = hub.NewIDFromUInt64(1)
 
-	TestIDsEmpty = sdk.IDs{}
-	TestIDsNil   = sdk.IDs(nil)
-	TestIDsValid = sdk.IDs{TestIDZero}
+	TestIDsEmpty = hub.IDs{}
+	TestIDsNil   = hub.IDs(nil)
+	TestIDsValid = hub.IDs{TestIDZero}
 
 	TestNodeType    = "NODE_TYPE"
 	TestNewNodeType = "NEW_NODE_TYPE"
@@ -50,20 +50,20 @@ var (
 	TestMonikerLengthGT128 = "MONIKERMONIKERMONIKERMONIKERMONIKERMONIKERMONIKERMONIKERMONIKERMONIKERMONIKERMONIKER" +
 		"MONIKERMONIKERMONIKERMONIKERMONIKERMONIKERMONIKERMONIKER"
 
-	TestUploadNeg  = csdk.NewInt(-500000000)
-	TestUploadZero = csdk.NewInt(0)
-	TestUploadPos1 = csdk.NewInt(500000000)
-	TestUploadPos2 = TestUploadPos1.Mul(csdk.NewInt(2))
+	TestUploadNeg  = sdk.NewInt(-500000000)
+	TestUploadZero = sdk.NewInt(0)
+	TestUploadPos1 = sdk.NewInt(500000000)
+	TestUploadPos2 = TestUploadPos1.Mul(sdk.NewInt(2))
 
-	TestDownloadNeg  = csdk.NewInt(-500000000)
-	TestDownloadZero = csdk.NewInt(0)
-	TestDownloadPos1 = csdk.NewInt(500000000)
-	TestDownloadPos2 = TestDownloadPos1.Mul(csdk.NewInt(2))
+	TestDownloadNeg  = sdk.NewInt(-500000000)
+	TestDownloadZero = sdk.NewInt(0)
+	TestDownloadPos1 = sdk.NewInt(500000000)
+	TestDownloadPos2 = TestDownloadPos1.Mul(sdk.NewInt(2))
 
-	TestBandwidthNeg  = sdk.NewBandwidth(TestUploadNeg, TestDownloadNeg)
-	TestBandwidthZero = sdk.NewBandwidth(TestUploadZero, TestDownloadZero)
-	TestBandwidthPos1 = sdk.NewBandwidth(TestUploadPos1, TestDownloadPos1)
-	TestBandwidthPos2 = sdk.NewBandwidth(TestUploadPos2, TestDownloadPos2)
+	TestBandwidthNeg  = hub.NewBandwidth(TestUploadNeg, TestDownloadNeg)
+	TestBandwidthZero = hub.NewBandwidth(TestUploadZero, TestDownloadZero)
+	TestBandwidthPos1 = hub.NewBandwidth(TestUploadPos1, TestDownloadPos1)
+	TestBandwidthPos2 = hub.NewBandwidth(TestUploadPos2, TestDownloadPos2)
 
 	TestEncryption    = "ENCRYPTION"
 	TestNewEncryption = "NEW_ENCRYPTION"

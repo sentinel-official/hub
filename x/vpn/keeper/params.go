@@ -1,10 +1,10 @@
 package keeper
 
 import (
-	csdk "github.com/cosmos/cosmos-sdk/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/params"
 
-	"github.com/ironman0x7b2/sentinel-sdk/x/vpn/types"
+	"github.com/sentinel-official/sentinel-hub/x/vpn/types"
 )
 
 const (
@@ -15,27 +15,27 @@ func ParamKeyTable() params.KeyTable {
 	return params.NewKeyTable().RegisterParamSet(&types.Params{})
 }
 
-func (k Keeper) FreeNodesCount(ctx csdk.Context) (res uint64) {
+func (k Keeper) FreeNodesCount(ctx sdk.Context) (res uint64) {
 	k.paramStore.Get(ctx, types.KeyFreeNodesCount, &res)
 	return
 }
 
-func (k Keeper) Deposit(ctx csdk.Context) (res csdk.Coin) {
+func (k Keeper) Deposit(ctx sdk.Context) (res sdk.Coin) {
 	k.paramStore.Get(ctx, types.KeyDeposit, &res)
 	return
 }
 
-func (k Keeper) NodeInactiveInterval(ctx csdk.Context) (res int64) {
+func (k Keeper) NodeInactiveInterval(ctx sdk.Context) (res int64) {
 	k.paramStore.Get(ctx, types.KeyNodeInactiveInterval, &res)
 	return
 }
 
-func (k Keeper) SessionInactiveInterval(ctx csdk.Context) (res int64) {
+func (k Keeper) SessionInactiveInterval(ctx sdk.Context) (res int64) {
 	k.paramStore.Get(ctx, types.KeySessionInactiveInterval, &res)
 	return
 }
 
-func (k Keeper) GetParams(ctx csdk.Context) types.Params {
+func (k Keeper) GetParams(ctx sdk.Context) types.Params {
 	return types.NewParams(
 		k.FreeNodesCount(ctx),
 		k.Deposit(ctx),
@@ -44,6 +44,6 @@ func (k Keeper) GetParams(ctx csdk.Context) types.Params {
 	)
 }
 
-func (k Keeper) SetParams(ctx csdk.Context, params types.Params) {
+func (k Keeper) SetParams(ctx sdk.Context, params types.Params) {
 	k.paramStore.SetParamSet(ctx, &params)
 }

@@ -5,7 +5,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/spf13/cobra"
 
-	vpnCli "github.com/ironman0x7b2/sentinel-sdk/x/vpn/client/cli"
+	vpnCli "github.com/sentinel-official/sentinel-hub/x/vpn/client/cli"
 )
 
 type ModuleClient struct {

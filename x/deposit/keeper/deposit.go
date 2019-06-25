@@ -1,12 +1,12 @@
 package keeper
 
 import (
-	csdk "github.com/cosmos/cosmos-sdk/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/ironman0x7b2/sentinel-sdk/x/deposit/types"
+	"github.com/sentinel-official/sentinel-hub/x/deposit/types"
 )
 
-func (k Keeper) SetDeposit(ctx csdk.Context, deposit types.Deposit) {
+func (k Keeper) SetDeposit(ctx sdk.Context, deposit types.Deposit) {
 	key := types.DepositKey(deposit.Address)
 	value := k.cdc.MustMarshalBinaryLengthPrefixed(deposit)
 
@@ -14,7 +14,7 @@ func (k Keeper) SetDeposit(ctx csdk.Context, deposit types.Deposit) {
 	store.Set(key, value)
 }
 
-func (k Keeper) GetDeposit(ctx csdk.Context, address csdk.AccAddress) (deposit types.Deposit, found bool) {
+func (k Keeper) GetDeposit(ctx sdk.Context, address sdk.AccAddress) (deposit types.Deposit, found bool) {
 	store := ctx.KVStore(k.storeKey)
 
 	key := types.DepositKey(address)
@@ -27,10 +27,10 @@ func (k Keeper) GetDeposit(ctx csdk.Context, address csdk.AccAddress) (deposit t
 	return deposit, true
 }
 
-func (k Keeper) GetAllDeposits(ctx csdk.Context) (deposits []types.Deposit) {
+func (k Keeper) GetAllDeposits(ctx sdk.Context) (deposits []types.Deposit) {
 	store := ctx.KVStore(k.storeKey)
 
-	iter := csdk.KVStorePrefixIterator(store, types.DepositKeyPrefix)
+	iter := sdk.KVStorePrefixIterator(store, types.DepositKeyPrefix)
 	defer iter.Close()
 
 	for ; iter.Valid(); iter.Next() {
@@ -42,8 +42,8 @@ func (k Keeper) GetAllDeposits(ctx csdk.Context) (deposits []types.Deposit) {
 	return deposits
 }
 
-func (k Keeper) Add(ctx csdk.Context, address csdk.AccAddress,
-	coins csdk.Coins) (tags csdk.Tags, err csdk.Error) {
+func (k Keeper) Add(ctx sdk.Context, address sdk.AccAddress,
+	coins sdk.Coins) (tags sdk.Tags, err sdk.Error) {
 
 	_, tags, err = k.bankKeeper.SubtractCoins(ctx, address, coins)
 	if err != nil {
@@ -54,7 +54,7 @@ func (k Keeper) Add(ctx csdk.Context, address csdk.AccAddress,
 	if !found {
 		deposit = types.Deposit{
 			Address: address,
-			Coins:   csdk.Coins{},
+			Coins:   sdk.Coins{},
 		}
 	}
 
@@ -67,8 +67,8 @@ func (k Keeper) Add(ctx csdk.Context, address csdk.AccAddress,
 	return tags, nil
 }
 
-func (k Keeper) Subtract(ctx csdk.Context, address csdk.AccAddress,
-	coins csdk.Coins) (tags csdk.Tags, err csdk.Error) {
+func (k Keeper) Subtract(ctx sdk.Context, address sdk.AccAddress,
+	coins sdk.Coins) (tags sdk.Tags, err sdk.Error) {
 
 	deposit, found := k.GetDeposit(ctx, address)
 	if !found {
@@ -89,8 +89,8 @@ func (k Keeper) Subtract(ctx csdk.Context, address csdk.AccAddress,
 	return tags, nil
 }
 
-func (k Keeper) Send(ctx csdk.Context, from, toAddress csdk.AccAddress,
-	coins csdk.Coins) (tags csdk.Tags, err csdk.Error) {
+func (k Keeper) Send(ctx sdk.Context, from, toAddress sdk.AccAddress,
+	coins sdk.Coins) (tags sdk.Tags, err sdk.Error) {
 
 	deposit, found := k.GetDeposit(ctx, from)
 	if !found {
@@ -111,8 +111,8 @@ func (k Keeper) Send(ctx csdk.Context, from, toAddress csdk.AccAddress,
 	return tags, nil
 }
 
-func (k Keeper) Receive(ctx csdk.Context, fromAddress, to csdk.AccAddress,
-	coins csdk.Coins) (tags csdk.Tags, err csdk.Error) {
+func (k Keeper) Receive(ctx sdk.Context, fromAddress, to sdk.AccAddress,
+	coins sdk.Coins) (tags sdk.Tags, err sdk.Error) {
 
 	_, tags, err = k.bankKeeper.SubtractCoins(ctx, fromAddress, coins)
 	if err != nil {
@@ -123,7 +123,7 @@ func (k Keeper) Receive(ctx csdk.Context, fromAddress, to csdk.AccAddress,
 	if !found {
 		deposit = types.Deposit{
 			Address: to,
-			Coins:   csdk.Coins{},
+			Coins:   sdk.Coins{},
 		}
 	}
 
@@ -137,10 +137,10 @@ func (k Keeper) Receive(ctx csdk.Context, fromAddress, to csdk.AccAddress,
 }
 
 // nolint: dupl
-func (k Keeper) IterateDeposits(ctx csdk.Context, fn func(index int64, deposit types.Deposit) (stop bool)) {
+func (k Keeper) IterateDeposits(ctx sdk.Context, fn func(index int64, deposit types.Deposit) (stop bool)) {
 	store := ctx.KVStore(k.storeKey)
 
-	iterator := csdk.KVStorePrefixIterator(store, types.DepositKeyPrefix)
+	iterator := sdk.KVStorePrefixIterator(store, types.DepositKeyPrefix)
 	defer iterator.Close()
 
 	for i := int64(0); iterator.Valid(); iterator.Next() {

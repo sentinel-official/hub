@@ -1,4 +1,4 @@
-package hub
+package app
 
 import (
 	"encoding/json"
@@ -12,7 +12,7 @@ import (
 	"time"
 
 	"github.com/cosmos/cosmos-sdk/codec"
-	csdk "github.com/cosmos/cosmos-sdk/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/cosmos/cosmos-sdk/x/bank"
 	"github.com/cosmos/cosmos-sdk/x/crisis"
@@ -23,20 +23,20 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/staking"
 	tm "github.com/tendermint/tendermint/types"
 
-	"github.com/ironman0x7b2/sentinel-sdk/x/deposit"
-	"github.com/ironman0x7b2/sentinel-sdk/x/vpn"
+	"github.com/sentinel-official/sentinel-hub/x/deposit"
+	"github.com/sentinel-official/sentinel-hub/x/vpn"
 )
 
 type GenesisAccount struct {
-	Address          csdk.AccAddress `json:"address"`
-	Coins            csdk.Coins      `json:"coins"`
-	Sequence         uint64          `json:"sequence_number"`
-	AccountNumber    uint64          `json:"account_number"`
-	OriginalVesting  csdk.Coins      `json:"original_vesting"`
-	DelegatedFree    csdk.Coins      `json:"delegated_free"`
-	DelegatedVesting csdk.Coins      `json:"delegated_vesting"`
-	StartTime        int64           `json:"start_time"`
-	EndTime          int64           `json:"end_time"`
+	Address          sdk.AccAddress `json:"address"`
+	Coins            sdk.Coins      `json:"coins"`
+	Sequence         uint64         `json:"sequence_number"`
+	AccountNumber    uint64         `json:"account_number"`
+	OriginalVesting  sdk.Coins      `json:"original_vesting"`
+	DelegatedFree    sdk.Coins      `json:"delegated_free"`
+	DelegatedVesting sdk.Coins      `json:"delegated_vesting"`
+	StartTime        int64          `json:"start_time"`
+	EndTime          int64          `json:"end_time"`
 }
 
 func NewGenesisAccountFromBaseAccount(acc *auth.BaseAccount) GenesisAccount {
@@ -341,7 +341,7 @@ func CollectStdTxs(cdc *codec.Codec, moniker string, genTxsDir string,
 		}
 
 		delAddr := msg.DelegatorAddress.String()
-		valAddr := csdk.AccAddress(msg.ValidatorAddress).String()
+		valAddr := sdk.AccAddress(msg.ValidatorAddress).String()
 
 		delAcc, delOk := addrMap[delAddr]
 		_, valOk := addrMap[valAddr]

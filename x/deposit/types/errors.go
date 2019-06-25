@@ -3,13 +3,13 @@ package types
 import (
 	"fmt"
 
-	csdk "github.com/cosmos/cosmos-sdk/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	sdk "github.com/ironman0x7b2/sentinel-sdk/types"
+	hub "github.com/sentinel-official/sentinel-hub/types"
 )
 
 const (
-	Codespace = csdk.CodespaceType("deposit")
+	Codespace = sdk.CodespaceType("deposit")
 
 	errCodeUnknownQueryType         = 101
 	errCodeInsufficientDepositFunds = 102
@@ -18,18 +18,18 @@ const (
 	errMsgInsufficientDepositFunds = "insufficient deposit funds: %s < %s"
 )
 
-func ErrorMarshal() csdk.Error {
-	return csdk.NewError(Codespace, sdk.ErrCodeMarshal, sdk.ErrMsgMarshal)
+func ErrorMarshal() sdk.Error {
+	return sdk.NewError(Codespace, hub.ErrCodeMarshal, hub.ErrMsgMarshal)
 }
 
-func ErrorUnmarshal() csdk.Error {
-	return csdk.NewError(Codespace, sdk.ErrCodeUnmarshal, sdk.ErrMsgUnmarshal)
+func ErrorUnmarshal() sdk.Error {
+	return sdk.NewError(Codespace, hub.ErrCodeUnmarshal, hub.ErrMsgUnmarshal)
 }
 
-func ErrorInvalidQueryType(queryType string) csdk.Error {
-	return csdk.NewError(Codespace, errCodeUnknownQueryType, errMsgUnknownQueryType+queryType)
+func ErrorInvalidQueryType(queryType string) sdk.Error {
+	return sdk.NewError(Codespace, errCodeUnknownQueryType, errMsgUnknownQueryType+queryType)
 }
 
-func ErrorInsufficientDepositFunds(x, y csdk.Coins) csdk.Error {
-	return csdk.NewError(Codespace, errCodeInsufficientDepositFunds, fmt.Sprintf(errMsgInsufficientDepositFunds, x, y))
+func ErrorInsufficientDepositFunds(x, y sdk.Coins) sdk.Error {
+	return sdk.NewError(Codespace, errCodeInsufficientDepositFunds, fmt.Sprintf(errMsgInsufficientDepositFunds, x, y))
 }

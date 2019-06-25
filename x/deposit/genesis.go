@@ -3,18 +3,18 @@ package deposit
 import (
 	"fmt"
 
-	csdk "github.com/cosmos/cosmos-sdk/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/ironman0x7b2/sentinel-sdk/x/deposit/types"
+	"github.com/sentinel-official/sentinel-hub/x/deposit/types"
 )
 
-func InitGenesis(ctx csdk.Context, k Keeper, data types.GenesisState) {
+func InitGenesis(ctx sdk.Context, k Keeper, data types.GenesisState) {
 	for _, deposit := range data {
 		k.SetDeposit(ctx, deposit)
 	}
 }
 
-func ExportGenesis(ctx csdk.Context, k Keeper) types.GenesisState {
+func ExportGenesis(ctx sdk.Context, k Keeper) types.GenesisState {
 	deposits := k.GetAllDeposits(ctx)
 
 	return types.NewGenesisState(deposits)
