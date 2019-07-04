@@ -28,10 +28,12 @@ import (
 	slashingSim "github.com/cosmos/cosmos-sdk/x/slashing/simulation"
 	"github.com/cosmos/cosmos-sdk/x/staking"
 	stakingSim "github.com/cosmos/cosmos-sdk/x/staking/simulation"
+	
 	tmDB "github.com/tendermint/tendermint/libs/db"
 	"github.com/tendermint/tendermint/libs/log"
 
 	"github.com/sentinel-official/hub/x/deposit"
+	"github.com/sentinel-official/hub/x/staking/keeper"
 	"github.com/sentinel-official/hub/x/vpn"
 	vpnSim "github.com/sentinel-official/hub/x/vpn/simulation"
 )
@@ -191,11 +193,25 @@ func appStateRandomizedFn(r *rand.Rand, accs []simulation.Account, genesisTimest
 	stakingGenesis.Validators = validators
 	stakingGenesis.Delegations = delegations
 
-	distrGenesis := distribution.GenesisState{
+	distributionGenesis := distribution.GenesisState{
 		FeePool:             distribution.InitialFeePool(),
 		CommunityTax:        sdk.NewDecWithPrec(1, 2).Add(sdk.NewDecWithPrec(int64(r.Intn(30)), 2)),
 		BaseProposerReward:  sdk.NewDecWithPrec(1, 2).Add(sdk.NewDecWithPrec(int64(r.Intn(30)), 2)),
 		BonusProposerReward: sdk.NewDecWithPrec(1, 2).Add(sdk.NewDecWithPrec(int64(r.Intn(30)), 2)),
+	}
+
+	depositGenesis := deposit.GenesisState(vpnSim.GetRandomDeposits(r, accs))
+
+	vpnGenesis := vpn.GenesisState{
+		Nodes:         vpnSim.GetRandomNodes(r, accs),
+		Subscriptions: vpnSim.GetRandomSubscriptions(r, accs),
+		Sessions:      vpnSim.GetRandomSessions(r, accs),
+		Params: vpn.Params{
+			FreeNodesCount:          uint64(r.Intn(50)),
+			Deposit:                 sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(int64(r.Intn(1000)))),
+			NodeInactiveInterval:    int64(r.Intn(10)),
+			SessionInactiveInterval: int64(r.Intn(10)),
+		},
 	}
 
 	genesis := GenesisState{
@@ -204,12 +220,12 @@ func appStateRandomizedFn(r *rand.Rand, accs []simulation.Account, genesisTimest
 		Bank:         bankGenesis,
 		Staking:      stakingGenesis,
 		Mint:         mintGenesis,
-		Distribution: distrGenesis,
+		Distribution: distributionGenesis,
 		Slashing:     slashingGenesis,
 		Gov:          govGenesis,
 
-		VPN:     vpn.DefaultGenesisState(),
-		Deposit: deposit.DefaultGenesisState(),
+		Deposit: depositGenesis,
+		VPN:     vpnGenesis,
 	}
 
 	appState, err := MakeCodec().MarshalJSON(genesis)
@@ -257,6 +273,10 @@ func invariants(app *HubApp) []sdk.Invariant {
 	return []sdk.Invariant{
 		simulation.PeriodicInvariant(bank.NonnegativeBalanceInvariant(app.accountKeeper), period, 0),
 		simulation.PeriodicInvariant(distribution.AllInvariants(app.distributionKeeper, app.stakingKeeper), period, 0),
+		simulation.PeriodicInvariant(keeper.SupplyInvariants(app.stakingKeeper, app.feeCollectionKeeper,
+			app.distributionKeeper, app.accountKeeper, app.depositKeeper), period, 0),
+		simulation.PeriodicInvariant(staking.NonNegativePowerInvariant(app.stakingKeeper), period, 0),
+		simulation.PeriodicInvariant(staking.DelegatorSharesInvariant(app.stakingKeeper), period, 0),
 	}
 }
 
