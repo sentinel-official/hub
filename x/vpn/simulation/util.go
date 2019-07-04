@@ -3,10 +3,9 @@ package simulation
 import (
 	"math/rand"
 
-	csim "github.com/cosmos/cosmos-sdk/x/simulation"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
+	"github.com/cosmos/cosmos-sdk/x/simulation"
 
 	hub "github.com/sentinel-official/hub/types"
 	"github.com/sentinel-official/hub/x/vpn/types"
@@ -20,7 +19,7 @@ var (
 func getRandomID(r *rand.Rand) hub.ID {
 	id := r.Intn(1000)
 	_id := hub.NewIDFromUInt64(uint64(id))
-	
+
 	return _id
 }
 
@@ -49,9 +48,9 @@ func getRandomBandwidth(r *rand.Rand) hub.Bandwidth {
 	return hub.NewBandwidthFromInt64(int64(upload), int64(download))
 }
 
-func getRandomSignData(r *rand.Rand, accs []csim.Account) auth.StdSignature {
+func getRandomSignData(r *rand.Rand, accs []simulation.Account) auth.StdSignature {
 	randSignBandwidthData := types.NewBandwidthSignatureData(getRandomID(r), getRandomIndex(r), getRandomBandwidth(r))
-	randAccount := csim.RandomAcc(r, accs)
+	randAccount := simulation.RandomAcc(r, accs)
 	signData, _ := randAccount.PrivKey.Sign(randSignBandwidthData.Bytes())
 
 	return auth.StdSignature{
@@ -64,12 +63,12 @@ func getRandomDenom(r *rand.Rand) string { return denom[r.Intn(len(denom))] }
 
 func getRandomIndex(r *rand.Rand) uint64 { return uint64(r.Intn(1000)) }
 
-func getRandomEncryption(r *rand.Rand) string { return csim.RandStringOfLength(r, 10) }
+func getRandomEncryption(r *rand.Rand) string { return simulation.RandStringOfLength(r, 10) }
 
-func getRandomType(r *rand.Rand) string { return csim.RandStringOfLength(r, 10) }
+func getRandomType(r *rand.Rand) string { return simulation.RandStringOfLength(r, 10) }
 
-func getRandomVersion(r *rand.Rand) string { return csim.RandStringOfLength(r, 10) }
+func getRandomVersion(r *rand.Rand) string { return simulation.RandStringOfLength(r, 10) }
 
-func getRandomMoniker(r *rand.Rand) string { return csim.RandStringOfLength(r, 10) }
+func getRandomMoniker(r *rand.Rand) string { return simulation.RandStringOfLength(r, 10) }
 
 func getRandomStatus(r *rand.Rand) string { return status[r.Intn(len(status))] }

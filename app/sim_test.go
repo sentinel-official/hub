@@ -15,25 +15,25 @@ import (
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
-	authsim "github.com/cosmos/cosmos-sdk/x/auth/simulation"
+	authSim "github.com/cosmos/cosmos-sdk/x/auth/simulation"
 	"github.com/cosmos/cosmos-sdk/x/bank"
-	banksim "github.com/cosmos/cosmos-sdk/x/bank/simulation"
-	distr "github.com/cosmos/cosmos-sdk/x/distribution"
-	distrsim "github.com/cosmos/cosmos-sdk/x/distribution/simulation"
+	bankSim "github.com/cosmos/cosmos-sdk/x/bank/simulation"
+	"github.com/cosmos/cosmos-sdk/x/distribution"
+	distributionSim "github.com/cosmos/cosmos-sdk/x/distribution/simulation"
 	"github.com/cosmos/cosmos-sdk/x/gov"
-	govsim "github.com/cosmos/cosmos-sdk/x/gov/simulation"
+	govSim "github.com/cosmos/cosmos-sdk/x/gov/simulation"
 	"github.com/cosmos/cosmos-sdk/x/mint"
-	csim "github.com/cosmos/cosmos-sdk/x/simulation"
+	"github.com/cosmos/cosmos-sdk/x/simulation"
 	"github.com/cosmos/cosmos-sdk/x/slashing"
-	slashingsim "github.com/cosmos/cosmos-sdk/x/slashing/simulation"
+	slashingSim "github.com/cosmos/cosmos-sdk/x/slashing/simulation"
 	"github.com/cosmos/cosmos-sdk/x/staking"
-	stakingsim "github.com/cosmos/cosmos-sdk/x/staking/simulation"
-	dbm "github.com/tendermint/tendermint/libs/db"
+	stakingSim "github.com/cosmos/cosmos-sdk/x/staking/simulation"
+	tmDB "github.com/tendermint/tendermint/libs/db"
 	"github.com/tendermint/tendermint/libs/log"
 
 	"github.com/sentinel-official/hub/x/deposit"
 	"github.com/sentinel-official/hub/x/vpn"
-	"github.com/sentinel-official/hub/x/vpn/simulation"
+	vpnSim "github.com/sentinel-official/hub/x/vpn/simulation"
 )
 
 var (
@@ -53,18 +53,17 @@ func init() {
 }
 
 func getSimulateFromSeedInput(tb testing.TB, app *HubApp) (
-	testing.TB, *baseapp.BaseApp, csim.AppStateFn, int64,
-	csim.WeightedOperations, sdk.Invariants, int, int, bool, bool) {
+	testing.TB, *baseapp.BaseApp, simulation.AppStateFn, int64,
+	simulation.WeightedOperations, sdk.Invariants, int, int, bool, bool) {
 
 	return tb, app.BaseApp, appStateFn, seed,
 		testAndRunTxs(app), invariants(app), numBlocks, blockSize, commit, false
 }
 
-func appStateRandomizedFn(r *rand.Rand, accs []csim.Account, genesisTimestamp time.Time) (
-	json.RawMessage, []csim.Account, string) {
+func appStateRandomizedFn(r *rand.Rand, accs []simulation.Account, genesisTimestamp time.Time) (
+	json.RawMessage, []simulation.Account, string) {
 
 	var genesisAccounts []GenesisAccount
-
 	amount := int64(r.Intn(1000000000000))
 	numInitiallyBonded := int64(r.Intn(250))
 	numAccs := int64(len(accs))
@@ -90,9 +89,9 @@ func appStateRandomizedFn(r *rand.Rand, accs []csim.Account, genesisTimestamp ti
 			startTime := genesisTimestamp.Unix()
 
 			if r.Intn(100) < 50 {
-				endTime = int64(csim.RandIntBetween(r, int(startTime), int(startTime+(60*60*24*30))))
+				endTime = int64(simulation.RandIntBetween(r, int(startTime), int(startTime+(60*60*24*30))))
 			} else {
-				endTime = int64(csim.RandIntBetween(r, int(startTime), int(startTime+(60*60*12))))
+				endTime = int64(simulation.RandIntBetween(r, int(startTime), int(startTime+(60*60*12))))
 			}
 
 			if startTime == endTime {
@@ -104,7 +103,6 @@ func appStateRandomizedFn(r *rand.Rand, accs []csim.Account, genesisTimestamp ti
 			} else {
 				vacc = auth.NewDelayedVestingAccount(&bacc, endTime)
 			}
-
 			gacc = NewGenesisAccount(vacc)
 		} else {
 			gacc = NewGenesisAccount(&bacc)
@@ -115,11 +113,11 @@ func appStateRandomizedFn(r *rand.Rand, accs []csim.Account, genesisTimestamp ti
 
 	authGenesis := auth.GenesisState{
 		Params: auth.Params{
-			MaxMemoCharacters:      uint64(csim.RandIntBetween(r, 100, 200)),
+			MaxMemoCharacters:      uint64(simulation.RandIntBetween(r, 100, 200)),
 			TxSigLimit:             uint64(r.Intn(7) + 1),
-			TxSizeCostPerByte:      uint64(csim.RandIntBetween(r, 5, 15)),
-			SigVerifyCostED25519:   uint64(csim.RandIntBetween(r, 500, 1000)),
-			SigVerifyCostSecp256k1: uint64(csim.RandIntBetween(r, 500, 1000)),
+			TxSizeCostPerByte:      uint64(simulation.RandIntBetween(r, 5, 15)),
+			SigVerifyCostED25519:   uint64(simulation.RandIntBetween(r, 500, 1000)),
+			SigVerifyCostSecp256k1: uint64(simulation.RandIntBetween(r, 500, 1000)),
 		},
 	}
 
@@ -145,7 +143,7 @@ func appStateRandomizedFn(r *rand.Rand, accs []csim.Account, genesisTimestamp ti
 	stakingGenesis := staking.GenesisState{
 		Pool: staking.InitialPool(),
 		Params: staking.Params{
-			UnbondingTime: time.Duration(csim.RandIntBetween(r, 60, 60*60*24*3*2)) * time.Second,
+			UnbondingTime: time.Duration(simulation.RandIntBetween(r, 60, 60*60*24*3*2)) * time.Second,
 			MaxValidators: uint16(r.Intn(250) + 1),
 			BondDenom:     sdk.DefaultBondDenom,
 		},
@@ -154,9 +152,9 @@ func appStateRandomizedFn(r *rand.Rand, accs []csim.Account, genesisTimestamp ti
 	slashingGenesis := slashing.GenesisState{
 		Params: slashing.Params{
 			MaxEvidenceAge:          stakingGenesis.Params.UnbondingTime,
-			SignedBlocksWindow:      int64(csim.RandIntBetween(r, 10, 1000)),
+			SignedBlocksWindow:      int64(simulation.RandIntBetween(r, 10, 1000)),
 			MinSignedPerWindow:      sdk.NewDecWithPrec(int64(r.Intn(10)), 1),
-			DowntimeJailDuration:    time.Duration(csim.RandIntBetween(r, 60, 60*60*24)) * time.Second,
+			DowntimeJailDuration:    time.Duration(simulation.RandIntBetween(r, 60, 60*60*24)) * time.Second,
 			SlashFractionDoubleSign: sdk.NewDec(1).Quo(sdk.NewDec(int64(r.Intn(50) + 1))),
 			SlashFractionDowntime:   sdk.NewDec(1).Quo(sdk.NewDec(int64(r.Intn(200) + 1))),
 		},
@@ -176,7 +174,6 @@ func appStateRandomizedFn(r *rand.Rand, accs []csim.Account, genesisTimestamp ti
 
 	var validators []staking.Validator
 	var delegations []staking.Delegation
-
 	valAddrs := make([]sdk.ValAddress, numInitiallyBonded)
 	for i := 0; i < int(numInitiallyBonded); i++ {
 		valAddr := sdk.ValAddress(accs[i].Address)
@@ -194,8 +191,8 @@ func appStateRandomizedFn(r *rand.Rand, accs []csim.Account, genesisTimestamp ti
 	stakingGenesis.Validators = validators
 	stakingGenesis.Delegations = delegations
 
-	distrGenesis := distr.GenesisState{
-		FeePool:             distr.InitialFeePool(),
+	distrGenesis := distribution.GenesisState{
+		FeePool:             distribution.InitialFeePool(),
 		CommunityTax:        sdk.NewDecWithPrec(1, 2).Add(sdk.NewDecWithPrec(int64(r.Intn(30)), 2)),
 		BaseProposerReward:  sdk.NewDecWithPrec(1, 2).Add(sdk.NewDecWithPrec(int64(r.Intn(30)), 2)),
 		BonusProposerReward: sdk.NewDecWithPrec(1, 2).Add(sdk.NewDecWithPrec(int64(r.Intn(30)), 2)),
@@ -223,43 +220,43 @@ func appStateRandomizedFn(r *rand.Rand, accs []csim.Account, genesisTimestamp ti
 	return appState, accs, "hub"
 }
 
-func appStateFn(r *rand.Rand, accs []csim.Account, genesisTimestamp time.Time) (json.RawMessage, []csim.Account, string) {
+func appStateFn(r *rand.Rand, accs []simulation.Account, genesisTimestamp time.Time) (json.RawMessage, []simulation.Account, string) {
 
 	return appStateRandomizedFn(r, accs, genesisTimestamp)
 }
 
-func testAndRunTxs(app *HubApp) []csim.WeightedOperation {
+func testAndRunTxs(app *HubApp) []simulation.WeightedOperation {
 
-	return []csim.WeightedOperation{
-		{5, authsim.SimulateDeductFee(app.accountKeeper, app.feeCollectionKeeper)},
-		{100, banksim.SimulateMsgSend(app.accountKeeper, app.bankKeeper)},
-		{10, banksim.SimulateSingleInputMsgMultiSend(app.accountKeeper, app.bankKeeper)},
-		{50, distrsim.SimulateMsgSetWithdrawAddress(app.accountKeeper, app.distributionKeeper)},
-		{50, distrsim.SimulateMsgWithdrawDelegatorReward(app.accountKeeper, app.distributionKeeper)},
-		{50, distrsim.SimulateMsgWithdrawValidatorCommission(app.accountKeeper, app.distributionKeeper)},
-		{5, govsim.SimulateSubmittingVotingAndSlashingForProposal(app.govKeeper)},
-		{100, govsim.SimulateMsgDeposit(app.govKeeper)},
-		{100, stakingsim.SimulateMsgCreateValidator(app.accountKeeper, app.stakingKeeper)},
-		{5, stakingsim.SimulateMsgEditValidator(app.stakingKeeper)},
-		{100, stakingsim.SimulateMsgDelegate(app.accountKeeper, app.stakingKeeper)},
-		{100, stakingsim.SimulateMsgUndelegate(app.accountKeeper, app.stakingKeeper)},
-		{100, stakingsim.SimulateMsgBeginRedelegate(app.accountKeeper, app.stakingKeeper)},
-		{100, slashingsim.SimulateMsgUnjail(app.slashingKeeper)},
+	return []simulation.WeightedOperation{
+		{5, authSim.SimulateDeductFee(app.accountKeeper, app.feeCollectionKeeper)},
+		{100, bankSim.SimulateMsgSend(app.accountKeeper, app.bankKeeper)},
+		{10, bankSim.SimulateSingleInputMsgMultiSend(app.accountKeeper, app.bankKeeper)},
+		{50, distributionSim.SimulateMsgSetWithdrawAddress(app.accountKeeper, app.distributionKeeper)},
+		{50, distributionSim.SimulateMsgWithdrawDelegatorReward(app.accountKeeper, app.distributionKeeper)},
+		{50, distributionSim.SimulateMsgWithdrawValidatorCommission(app.accountKeeper, app.distributionKeeper)},
+		{5, govSim.SimulateSubmittingVotingAndSlashingForProposal(app.govKeeper)},
+		{100, govSim.SimulateMsgDeposit(app.govKeeper)},
+		{100, stakingSim.SimulateMsgCreateValidator(app.accountKeeper, app.stakingKeeper)},
+		{5, stakingSim.SimulateMsgEditValidator(app.stakingKeeper)},
+		{100, stakingSim.SimulateMsgDelegate(app.accountKeeper, app.stakingKeeper)},
+		{100, stakingSim.SimulateMsgUndelegate(app.accountKeeper, app.stakingKeeper)},
+		{100, stakingSim.SimulateMsgBeginRedelegate(app.accountKeeper, app.stakingKeeper)},
+		{100, slashingSim.SimulateMsgUnjail(app.slashingKeeper)},
 
-		{100, simulation.SimulateMsgUpdateNodeStatus(app.vpnKeeper)},
-		{100, simulation.SimulateMsgUpdateNodeInfo(app.vpnKeeper)},
-		{100, simulation.SimulateMsgRegisterNode(app.vpnKeeper, app.accountKeeper)},
-		{100, simulation.SimulateMsgStartSubscription(app.vpnKeeper, app.accountKeeper)},
-		{100, simulation.SimulateMsgEndSubscription(app.vpnKeeper)},
-		{100, simulation.SimulateMsgUpdateSessionInfo(app.vpnKeeper)},
+		{100, vpnSim.SimulateMsgUpdateNodeStatus(app.vpnKeeper)},
+		{100, vpnSim.SimulateMsgUpdateNodeInfo(app.vpnKeeper)},
+		{100, vpnSim.SimulateMsgRegisterNode(app.vpnKeeper, app.accountKeeper)},
+		{100, vpnSim.SimulateMsgStartSubscription(app.vpnKeeper, app.accountKeeper)},
+		{100, vpnSim.SimulateMsgEndSubscription(app.vpnKeeper)},
+		{100, vpnSim.SimulateMsgUpdateSessionInfo(app.vpnKeeper)},
 	}
 }
 
 func invariants(app *HubApp) []sdk.Invariant {
 
 	return []sdk.Invariant{
-		csim.PeriodicInvariant(bank.NonnegativeBalanceInvariant(app.accountKeeper), period, 0),
-		csim.PeriodicInvariant(distr.AllInvariants(app.distributionKeeper, app.stakingKeeper), period, 0),
+		simulation.PeriodicInvariant(bank.NonnegativeBalanceInvariant(app.accountKeeper), period, 0),
+		simulation.PeriodicInvariant(distribution.AllInvariants(app.distributionKeeper, app.stakingKeeper), period, 0),
 	}
 }
 
@@ -270,8 +267,8 @@ func fauxMerkleModeOpt(bapp *baseapp.BaseApp) {
 func TestFullHubSimulation(t *testing.T) {
 
 	var logger = log.NewNopLogger()
-	var db dbm.DB
-	dir, _ := ioutil.TempDir("", "sentinel-hub-csim.db")
+	var db tmDB.DB
+	dir, _ := ioutil.TempDir("", "sentinel-hub-simulation.db")
 	db, _ = sdk.NewLevelDB("Sentinel-Hub", dir)
 
 	defer func() {
@@ -282,6 +279,6 @@ func TestFullHubSimulation(t *testing.T) {
 	app := NewHubApp(logger, db, nil, true, 0, fauxMerkleModeOpt)
 	require.Equal(t, appName, app.Name())
 
-	_, err := csim.SimulateFromSeed(getSimulateFromSeedInput(t, app))
+	_, err := simulation.SimulateFromSeed(getSimulateFromSeedInput(t, app))
 	require.Nil(t, err)
 }
