@@ -32,7 +32,7 @@ func getRandomCoin(r *rand.Rand) sdk.Coin {
 }
 
 func getRandomValidCoin(r *rand.Rand) sdk.Coin {
-	amount := r.Intn(1000)+5
+	amount := r.Intn(1000) + 5
 	coin := sdk.NewCoin("stake", sdk.NewInt(int64(amount)))
 
 	return coin
@@ -129,7 +129,7 @@ func getRandomSubscription(r *rand.Rand, accs []simulation.Account) types.Subscr
 		Client:             simulation.RandomAcc(r, accs).Address,
 		PricePerGB:         getRandomValidCoin(r),
 		TotalDeposit:       getRandomValidCoin(r),
-		RemainingDeposit:   sdk.Coin{"stake",sdk.NewInt(1)},
+		RemainingDeposit:   sdk.Coin{"stake", sdk.NewInt(1)},
 		RemainingBandwidth: hub.Bandwidth{},
 		Status:             getRandomStatus(r),
 		StatusModifiedAt:   int64(r.Intn(100)),

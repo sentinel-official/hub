@@ -28,7 +28,7 @@ import (
 	slashingSim "github.com/cosmos/cosmos-sdk/x/slashing/simulation"
 	"github.com/cosmos/cosmos-sdk/x/staking"
 	stakingSim "github.com/cosmos/cosmos-sdk/x/staking/simulation"
-	
+	abci "github.com/tendermint/tendermint/abci/types"
 	tmDB "github.com/tendermint/tendermint/libs/db"
 	"github.com/tendermint/tendermint/libs/log"
 
@@ -301,4 +301,87 @@ func TestFullHubSimulation(t *testing.T) {
 
 	_, err := simulation.SimulateFromSeed(getSimulateFromSeedInput(t, app))
 	require.Nil(t, err)
+}
+
+func TestHubImportExport(t *testing.T) {
+
+	var logger = log.NewNopLogger()
+	var db1 tmDB.DB
+	dir1, _ := ioutil.TempDir("", "sentinel-hub-simulation-import-export.db1")
+	db1, _ = sdk.NewLevelDB("Sentinel-Hub-1", dir1)
+
+	defer func() {
+		db1.Close()
+		_ = os.RemoveAll(dir1)
+	}()
+
+	app1 := NewHubApp(logger, db1, nil, true, 0, fauxMerkleModeOpt)
+	require.Equal(t, appName, app1.Name())
+
+	_, err := simulation.SimulateFromSeed(getSimulateFromSeedInput(t, app1))
+	require.Nil(t, err)
+
+	fmt.Printf("Exporting genesis...\n")
+	appState, _, err := app1.ExportAppStateAndValidators(false, []string{})
+	require.NoError(t, err)
+
+	fmt.Printf("Importing genesis...\n")
+	dir2, _ := ioutil.TempDir("", "sentinel-hub-simulation-import-export.db2")
+	db2, _ := sdk.NewLevelDB("Sentine-Hub-2", dir1)
+
+	defer func() {
+		db2.Close()
+		_ = os.RemoveAll(dir2)
+	}()
+
+	app2 := NewHubApp(log.NewNopLogger(), db2, nil, true, 0, fauxMerkleModeOpt)
+	require.Equal(t, appName, app2.Name())
+
+	var genesisState GenesisState
+	err = app1.cdc.UnmarshalJSON(appState, &genesisState)
+	if err != nil {
+		panic(err)
+	}
+
+	ctx2 := app2.NewContext(true, abci.Header{})
+	app2.initFromGenesisState(ctx2, genesisState)
+
+	fmt.Printf("Comparing stores...\n")
+	ctx1 := app1.NewContext(true, abci.Header{})
+	type StoreKeysPrefixes struct {
+		key1     sdk.StoreKey
+		key2     sdk.StoreKey
+		Prefixes [][]byte
+	}
+
+	storeKeysPrefixes := []StoreKeysPrefixes{
+		{app1.keyMain, app2.keyMain, [][]byte{}},
+		{app1.keyAccount, app2.keyAccount, [][]byte{}},
+		{app1.keyStaking, app2.keyStaking, [][]byte{staking.UnbondingQueueKey,
+			staking.RedelegationQueueKey, staking.ValidatorQueueKey}},
+		{app1.keySlashing, app2.keySlashing, [][]byte{}},
+		{app1.keyMint, app2.keyMint, [][]byte{}},
+		{app1.keyDistribution, app2.keyDistribution, [][]byte{}},
+		{app1.keyFeeCollection, app2.keyFeeCollection, [][]byte{}},
+		{app1.keyParams, app2.keyParams, [][]byte{}},
+		{app1.keyGov, app2.keyGov, [][]byte{}},
+
+		{app1.keyDeposit, app2.keyDeposit, [][]byte{}},
+		{app1.keyVPNNode, app2.keyVPNNode, [][]byte{}},
+		{app1.keyVPNSession, app2.keyVPNSession, [][]byte{}},
+	}
+
+	for _, storeKeysPrefix := range storeKeysPrefixes {
+		storeKey1 := storeKeysPrefix.key1
+		storeKey2 := storeKeysPrefix.key2
+		prefixes := storeKeysPrefix.Prefixes
+		store1 := ctx1.KVStore(storeKey1)
+		store2 := ctx2.KVStore(storeKey2)
+		kv1, kv2, count, equal := sdk.DiffKVStores(store1, store2, prefixes)
+		fmt.Printf("Compared %d key/value pairs between %s and %s\n", count, storeKey1, storeKey2)
+		require.True(t, equal,
+			"unequal stores: %s / %s:\nstore key1 %X => %X\nstore key2 %X => %X",
+			storeKey1, storeKey2, kv1.Key, kv1.Value, kv2.Key, kv2.Value,
+		)
+	}
 }

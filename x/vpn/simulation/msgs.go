@@ -18,8 +18,11 @@ func SimulateMsgRegisterNode(vpnKeeper vpn.Keeper, accountKeeper auth.AccountKee
 
 		comment, msg, ok := createMsgRegisterNode(r, ctx, accs, accountKeeper)
 		opMsg = simulation.NewOperationMsg(msg, ok, comment)
-
 		if !ok {
+			return opMsg, nil, nil
+		}
+
+		if msg.ValidateBasic() != nil {
 			return opMsg, nil, nil
 		}
 
@@ -58,6 +61,10 @@ func SimulateMsgUpdateNodeInfo(vpnKeeper vpn.Keeper) simulation.Operation {
 			return opMsg, nil, nil
 		}
 
+		if msg.ValidateBasic() != nil {
+			return opMsg, nil, nil
+		}
+
 		if handler != nil {
 			res := handler(ctx, *msg)
 			if !res.IsOK() {
@@ -87,6 +94,10 @@ func SimulateMsgUpdateNodeStatus(vpnKeeper vpn.Keeper) simulation.Operation {
 			return opMsg, nil, nil
 		}
 
+		if msg.ValidateBasic() != nil {
+			return opMsg, nil, nil
+		}
+
 		if handler != nil {
 			res := handler(ctx, *msg)
 			if !res.IsOK() {
@@ -109,9 +120,13 @@ func SimulateMsgStartSubscription(vpnKeeper vpn.Keeper, accountKeeper auth.Accou
 	handler := vpn.NewHandler(vpnKeeper)
 	return func(r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simulation.Account) (
 		opMsg simulation.OperationMsg, fOps []simulation.FutureOperation, err error) {
-		_, comment, msg, ok := createMsgStartSubscription(r, ctx, accs, accountKeeper)
+		comment, msg, ok := createMsgStartSubscription(r, ctx, accs, accountKeeper)
 		opMsg = simulation.NewOperationMsg(msg, ok, comment)
 		if !ok {
+			return opMsg, nil, nil
+		}
+
+		if msg.ValidateBasic() != nil {
 			return opMsg, nil, nil
 		}
 
@@ -127,18 +142,17 @@ func SimulateMsgStartSubscription(vpnKeeper vpn.Keeper, accountKeeper auth.Accou
 }
 
 func createMsgStartSubscription(r *rand.Rand, ctx sdk.Context, accs []simulation.Account,
-	accountKeeper auth.AccountKeeper) (randAcc simulation.Account, comment string,
-	msg *vpn.MsgStartSubscription, ok bool) {
-	randAcc = simulation.RandomAcc(r, accs)
+	accountKeeper auth.AccountKeeper) (comment string, msg *vpn.MsgStartSubscription, ok bool) {
+	randAcc := simulation.RandomAcc(r, accs)
 
 	coins := accountKeeper.GetAccount(ctx, randAcc.Address).SpendableCoins(ctx.BlockHeader().Time)
 	if len(coins) == 0 {
-		return randAcc, "skipping start_subscription, no coins in account", &vpn.MsgStartSubscription{}, false
+		return "skipping start_subscription, no coins in account", &vpn.MsgStartSubscription{}, false
 	}
 
 	msg = vpn.NewMsgStartSubscription(randAcc.Address, getRandomID(r), getRandomCoin(r))
 
-	return randAcc, "", msg, true
+	return "", msg, true
 }
 
 func SimulateMsgEndSubscription(vpnKeeper vpn.Keeper) simulation.Operation {
@@ -148,6 +162,10 @@ func SimulateMsgEndSubscription(vpnKeeper vpn.Keeper) simulation.Operation {
 		msg, ok := createMsgEndSubscription(r, accs)
 		opMsg = simulation.NewOperationMsg(msg, ok, "")
 		if !ok {
+			return opMsg, nil, nil
+		}
+
+		if msg.ValidateBasic() != nil {
 			return opMsg, nil, nil
 		}
 
@@ -176,6 +194,10 @@ func SimulateMsgUpdateSessionInfo(vpnKeeper vpn.Keeper) simulation.Operation {
 		msg, ok := createMsgUpdateSessionInfo(r, accs)
 		opMsg = simulation.NewOperationMsg(msg, ok, "")
 		if !ok {
+			return opMsg, nil, nil
+		}
+
+		if msg.ValidateBasic() != nil {
 			return opMsg, nil, nil
 		}
 
