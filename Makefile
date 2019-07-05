@@ -24,11 +24,15 @@ all: install test
 
 test_sim_hub_fast:
 	@echo "Running hub simulation. This may take several minutes..."
-	@go test -mod=readonly ./app -run TestFullHubSimulation  -num_blocks=100 -block_size=100 -commit=true -seed=99  -v -timeout 24h
+	@go test -mod=readonly ./app -run TestHubSimulation  -num_blocks=100 -block_size=100 -commit=true -seed=99  -v -timeout 24h
 
 test_sim_hub_import_export:
 	@echo "Running hub simulation. This may take several minutes..."
-	@go test -mod=readonly ./app -run TestHubImportExport  -num_blocks=100 -block_size=100 -commit=true -seed=99  -v -timeout 24h
+	@go test -mod=readonly ./app -run TestHubSimulationImportExport  -num_blocks=100 -block_size=100 -commit=true -seed=99  -v -timeout 24h
+
+test_sim_hub_after_import:
+	@echo "Running hub simulation. This may take several minutes..."
+	@go test -mod=readonly ./app -run TestHubSimulationAfterImport  -num_blocks=100 -block_size=100 -commit=true -seed=99  -v -timeout 24h
 
 build: dep_verify
 ifeq (${OS},Windows_NT)

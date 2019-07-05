@@ -284,8 +284,7 @@ func fauxMerkleModeOpt(bapp *baseapp.BaseApp) {
 	bapp.SetFauxMerkleMode()
 }
 
-func TestFullHubSimulation(t *testing.T) {
-
+func TestHubSimulation(t *testing.T) {
 	var logger = log.NewNopLogger()
 	var db tmDB.DB
 	dir, _ := ioutil.TempDir("", "sentinel-hub-simulation.db")
@@ -303,8 +302,7 @@ func TestFullHubSimulation(t *testing.T) {
 	require.Nil(t, err)
 }
 
-func TestHubImportExport(t *testing.T) {
-
+func TestHubSimulationImportExport(t *testing.T) {
 	var logger = log.NewNopLogger()
 	var db1 tmDB.DB
 	dir1, _ := ioutil.TempDir("", "sentinel-hub-simulation-import-export.db1")
@@ -378,10 +376,54 @@ func TestHubImportExport(t *testing.T) {
 		store1 := ctx1.KVStore(storeKey1)
 		store2 := ctx2.KVStore(storeKey2)
 		kv1, kv2, count, equal := sdk.DiffKVStores(store1, store2, prefixes)
+		fmt.Println(kv1.Value, kv2.Value, count, equal)
 		fmt.Printf("Compared %d key/value pairs between %s and %s\n", count, storeKey1, storeKey2)
 		require.True(t, equal,
 			"unequal stores: %s / %s:\nstore key1 %X => %X\nstore key2 %X => %X",
 			storeKey1, storeKey2, kv1.Key, kv1.Value, kv2.Key, kv2.Value,
 		)
 	}
+}
+
+func TestHubSimulationAfterImport(t *testing.T) {
+	var logger = log.NewNopLogger()
+	var db1 tmDB.DB
+	dir1, _ := ioutil.TempDir("", "sentinel-hub-simulation-after-import.db1")
+	db1, _ = sdk.NewLevelDB("Sentinel-Hub-1", dir1)
+
+	defer func() {
+		db1.Close()
+		_ = os.RemoveAll(dir1)
+	}()
+
+	app1 := NewHubApp(logger, db1, nil, true, 0, fauxMerkleModeOpt)
+	require.Equal(t, appName, app1.Name())
+
+	_, err := simulation.SimulateFromSeed(getSimulateFromSeedInput(t, app1))
+	require.Nil(t, err)
+
+	fmt.Printf("Exporting genesis...\n")
+	appState, _, err := app1.ExportAppStateAndValidators(true, []string{})
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Printf("Importing genesis...\n")
+	dir2, _ := ioutil.TempDir("", "sentinel-hub-simulation-after-import.db2")
+	db2, _ := sdk.NewLevelDB("Sentinel-Hub-2", dir1)
+
+	defer func() {
+		db2.Close()
+		_ = os.RemoveAll(dir2)
+	}()
+
+	app2 := NewHubApp(log.NewNopLogger(), db2, nil, true, 0, fauxMerkleModeOpt)
+	require.Equal(t, appName, app2.Name())
+
+	app2.InitChain(abci.RequestInitChain{
+		AppStateBytes: appState,
+	})
+
+	_, err = simulation.SimulateFromSeed(getSimulateFromSeedInput(t, app2))
+	require.Nil(t, err)
 }
