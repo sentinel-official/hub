@@ -36,6 +36,7 @@ import (
 	"github.com/sentinel-official/hub/x/staking/keeper"
 	"github.com/sentinel-official/hub/x/vpn"
 	vpnSim "github.com/sentinel-official/hub/x/vpn/simulation"
+	vpnTypes "github.com/sentinel-official/hub/x/vpn/types"
 )
 
 var (
@@ -365,8 +366,13 @@ func TestHubSimulationImportExport(t *testing.T) {
 		{app1.keyGov, app2.keyGov, [][]byte{}},
 
 		{app1.keyDeposit, app2.keyDeposit, [][]byte{}},
-		{app1.keyVPNNode, app2.keyVPNNode, [][]byte{}},
-		{app1.keyVPNSession, app2.keyVPNSession, [][]byte{}},
+		{app1.keyVPNNode, app2.keyVPNNode, [][]byte{vpnTypes.NodeKeyPrefix,
+			vpnTypes.NodeIDByAddressKeyPrefix, vpnTypes.NodesCountOfAddressKeyPrefix}},
+		{app1.keyVPNSubscription, app2.keyVPNSubscription, [][]byte{vpnTypes.SubscriptionKeyPrefix,
+			vpnTypes.SubscriptionIDByAddressKeyPrefix, vpnTypes.SubscriptionsCountOfAddressKeyPrefix,
+			vpnTypes.SubscriptionsCountOfNodeKeyPrefix, vpnTypes.SubscriptionIDByNodeIDKeyPrefix}},
+		{app1.keyVPNSession, app2.keyVPNSession, [][]byte{vpnTypes.SessionKeyPrefix,
+			vpnTypes.SessionsCountOfSubscriptionKeyPrefix, vpnTypes.SessionIDBySubscriptionIDKeyPrefix}},
 	}
 
 	for _, storeKeysPrefix := range storeKeysPrefixes {
