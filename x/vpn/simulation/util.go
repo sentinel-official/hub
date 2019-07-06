@@ -49,7 +49,6 @@ func getRandomCoins(r *rand.Rand) sdk.Coins {
 }
 
 func getRandomValidCoins(r *rand.Rand) sdk.Coins {
-
 	return sdk.Coins{getRandomValidCoin(r)}
 }
 
@@ -79,7 +78,6 @@ func getRandomSignData(r *rand.Rand, accs []simulation.Account) auth.StdSignatur
 }
 
 func getRandomDeposit(r *rand.Rand, accs []simulation.Account) deposit.Deposit {
-
 	return deposit.Deposit{
 		Address: simulation.RandomAcc(r, accs).Address,
 		Coins:   getRandomValidCoins(r),
@@ -96,7 +94,6 @@ func GetRandomDeposits(r *rand.Rand, acc []simulation.Account) []deposit.Deposit
 }
 
 func getRandomNode(r *rand.Rand, accs []simulation.Account) types.Node {
-
 	return types.Node{
 		ID:               getRandomID(r),
 		Owner:            simulation.RandomAcc(r, accs).Address,
@@ -122,14 +119,13 @@ func GetRandomNodes(r *rand.Rand, accs []simulation.Account) []types.Node {
 }
 
 func getRandomSubscription(r *rand.Rand, accs []simulation.Account) types.Subscription {
-
 	return types.Subscription{
 		ID:                 getRandomID(r),
 		NodeID:             getRandomID(r),
 		Client:             simulation.RandomAcc(r, accs).Address,
 		PricePerGB:         getRandomValidCoin(r),
 		TotalDeposit:       getRandomValidCoin(r),
-		RemainingDeposit:   sdk.Coin{"stake", sdk.NewInt(1)},
+		RemainingDeposit:   sdk.Coin{Denom: "stake", Amount: sdk.NewInt(1)},
 		RemainingBandwidth: hub.Bandwidth{},
 		Status:             getRandomStatus(r),
 		StatusModifiedAt:   int64(r.Intn(100)),
@@ -145,8 +141,7 @@ func GetRandomSubscriptions(r *rand.Rand, accs []simulation.Account) []types.Sub
 	return subscriptions
 }
 
-func getRandomSession(r *rand.Rand, accs []simulation.Account) types.Session {
-
+func getRandomSession(r *rand.Rand) types.Session {
 	return types.Session{
 		ID:               getRandomID(r),
 		SubscriptionID:   getRandomID(r),
@@ -156,10 +151,10 @@ func getRandomSession(r *rand.Rand, accs []simulation.Account) types.Session {
 	}
 }
 
-func GetRandomSessions(r *rand.Rand, accs []simulation.Account) []types.Session {
+func GetRandomSessions(r *rand.Rand) []types.Session {
 	var session []types.Session
 	for i := 0; i < r.Intn(100); i++ {
-		session = append(session, getRandomSession(r, accs))
+		session = append(session, getRandomSession(r))
 	}
 
 	return session
