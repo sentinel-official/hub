@@ -7,4 +7,5 @@ import (
 // nolint: gochecknoglobals
 var (
 	RegisterInvariants = keeper.RegisterInvariants
+	SupplyInvariants   = keeper.SupplyInvariants
 )
