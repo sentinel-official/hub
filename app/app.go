@@ -29,7 +29,7 @@ import (
 )
 
 const (
-	appName        = "Sentinel HubApp"
+	appName        = "Sentinel Hub App"
 	DefaultKeyPass = "1234567890"
 )
 

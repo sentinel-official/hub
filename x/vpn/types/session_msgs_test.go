@@ -76,7 +76,7 @@ func TestMsgUpdateSessionInfo_GetSigners(t *testing.T) {
 
 func TestMsgUpdateSessionInfo_Type(t *testing.T) {
 	msg := NewMsgUpdateSessionInfo(TestAddress1, TestIDPos, TestBandwidthPos1, TestNodeOwnerStdSignaturePos1, TestClientStdSignaturePos1)
-	require.Equal(t, "MsgUpdateSessionInfo", msg.Type())
+	require.Equal(t, "update_session_info", msg.Type())
 }
 
 func TestMsgUpdateSessionInfo_Route(t *testing.T) {

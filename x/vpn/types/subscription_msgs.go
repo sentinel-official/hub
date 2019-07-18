@@ -17,7 +17,7 @@ type MsgStartSubscription struct {
 }
 
 func (msg MsgStartSubscription) Type() string {
-	return "MsgStartSubscription"
+	return "start_subscription"
 }
 
 func (msg MsgStartSubscription) ValidateBasic() sdk.Error {
@@ -66,7 +66,7 @@ type MsgEndSubscription struct {
 }
 
 func (msg MsgEndSubscription) Type() string {
-	return "MsgEndSubscription"
+	return "end_subscription"
 }
 
 func (msg MsgEndSubscription) ValidateBasic() sdk.Error {

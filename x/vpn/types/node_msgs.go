@@ -21,7 +21,7 @@ type MsgRegisterNode struct {
 }
 
 func (msg MsgRegisterNode) Type() string {
-	return "MsgRegisterNode"
+	return "register_node"
 }
 
 // nolint: gocyclo
@@ -99,7 +99,7 @@ type MsgUpdateNodeInfo struct {
 }
 
 func (msg MsgUpdateNodeInfo) Type() string {
-	return "MsgUpdateNodeInfo"
+	return "update_node_info"
 }
 
 func (msg MsgUpdateNodeInfo) ValidateBasic() sdk.Error {
@@ -163,7 +163,7 @@ type MsgUpdateNodeStatus struct {
 }
 
 func (msg MsgUpdateNodeStatus) Type() string {
-	return "MsgUpdateNodeStatus"
+	return "update_node_status"
 }
 
 func (msg MsgUpdateNodeStatus) ValidateBasic() sdk.Error {
@@ -211,7 +211,7 @@ type MsgDeregisterNode struct {
 }
 
 func (msg MsgDeregisterNode) Type() string {
-	return "MsgDeregisterNode"
+	return "deregister_node"
 }
 
 func (msg MsgDeregisterNode) ValidateBasic() sdk.Error {

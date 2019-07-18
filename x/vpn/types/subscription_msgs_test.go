@@ -64,7 +64,7 @@ func TestMsgStartSubscription_GetSigners(t *testing.T) {
 
 func TestMsgStartSubscription_Type(t *testing.T) {
 	msg := NewMsgStartSubscription(TestAddress1, TestIDPos, TestCoinPos)
-	require.Equal(t, "MsgStartSubscription", msg.Type())
+	require.Equal(t, "start_subscription", msg.Type())
 }
 
 func TestMsgStartSubscription_Route(t *testing.T) {
@@ -119,7 +119,7 @@ func TestMsgEndSubscription_GetSigners(t *testing.T) {
 
 func TestMsgEndSubscription_Type(t *testing.T) {
 	msg := NewMsgEndSubscription(TestAddress1, TestIDPos)
-	require.Equal(t, "MsgEndSubscription", msg.Type())
+	require.Equal(t, "end_subscription", msg.Type())
 }
 
 func TestMsgEndSubscription_Route(t *testing.T) {

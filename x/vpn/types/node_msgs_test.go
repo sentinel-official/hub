@@ -109,7 +109,7 @@ func TestMsgRegisterNode_GetSigners(t *testing.T) {
 
 func TestMsgRegisterNode_Type(t *testing.T) {
 	msg := NewMsgRegisterNode(TestAddress1, TestNodeType, TestVersion, TestMonikerValid, TestCoinsPos, TestBandwidthPos1, TestEncryption)
-	require.Equal(t, "MsgRegisterNode", msg.Type())
+	require.Equal(t, "register_node", msg.Type())
 }
 
 func TestMsgRegisterNode_Route(t *testing.T) {
@@ -204,7 +204,7 @@ func TestMsgUpdateNode_GetSigners(t *testing.T) {
 
 func TestMsgUpdateNode_Type(t *testing.T) {
 	msg := NewMsgUpdateNodeInfo(TestAddress1, TestIDPos, TestNodeType, TestVersion, TestMonikerValid, TestCoinsPos, TestBandwidthPos1, TestEncryption)
-	require.Equal(t, "MsgUpdateNodeInfo", msg.Type())
+	require.Equal(t, "update_node_info", msg.Type())
 }
 
 func TestMsgUpdateNode_Route(t *testing.T) {
@@ -271,7 +271,7 @@ func TestMsgUpdateNodeStatus_GetSigners(t *testing.T) {
 
 func TestMsgUpdateNodeStatus_Type(t *testing.T) {
 	msg := NewMsgUpdateNodeStatus(TestAddress1, TestIDPos, StatusActive)
-	require.Equal(t, "MsgUpdateNodeStatus", msg.Type())
+	require.Equal(t, "update_node_status", msg.Type())
 }
 
 func TestMsgUpdateNodeStatus_Route(t *testing.T) {
@@ -326,7 +326,7 @@ func TestMsgDeregisterNode_GetSigners(t *testing.T) {
 
 func TestMsgDeregisterNode_Type(t *testing.T) {
 	msg := NewMsgDeregisterNode(TestAddress1, TestIDPos)
-	require.Equal(t, "MsgDeregisterNode", msg.Type())
+	require.Equal(t, "deregister_node", msg.Type())
 }
 
 func TestMsgDeregisterNode_Route(t *testing.T) {

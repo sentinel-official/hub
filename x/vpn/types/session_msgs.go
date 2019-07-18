@@ -20,7 +20,7 @@ type MsgUpdateSessionInfo struct {
 }
 
 func (msg MsgUpdateSessionInfo) Type() string {
-	return "MsgUpdateSessionInfo"
+	return "update_session_info"
 }
 
 func (msg MsgUpdateSessionInfo) ValidateBasic() sdk.Error {
