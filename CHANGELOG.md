@@ -12,7 +12,7 @@ FEATURES:
 
     - VPN providers can register themselves by providing the basic details
 
-    - Consumers can subscribe to any node by depositing the any number coins and use the sessions
+    - Consumers can subscribe to any node by depositing any number of coins and use the sessions
     
     - Proof based bandwidth exchange between Providers and Consumers 
 
