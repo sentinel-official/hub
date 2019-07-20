@@ -1,191 +1,379 @@
 package vpn
 
 import (
+	"bytes"
 	"reflect"
-	"strconv"
 
-	csdkTypes "github.com/cosmos/cosmos-sdk/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	sdkTypes "github.com/ironman0x7b2/sentinel-sdk/types"
-	"github.com/ironman0x7b2/sentinel-sdk/x/hub"
-	"github.com/ironman0x7b2/sentinel-sdk/x/ibc"
+	hub "github.com/sentinel-official/hub/types"
+	"github.com/sentinel-official/hub/x/vpn/keeper"
+	"github.com/sentinel-official/hub/x/vpn/types"
 )
 
-func NewHandler(k Keeper, ik ibc.Keeper) csdkTypes.Handler {
-	return func(ctx csdkTypes.Context, msg csdkTypes.Msg) csdkTypes.Result {
+func NewHandler(k keeper.Keeper) sdk.Handler {
+	return func(ctx sdk.Context, msg sdk.Msg) sdk.Result {
 		switch msg := msg.(type) {
-		case MsgRegisterNode:
-			return handleRegisterNode(ctx, k, ik, msg)
-		case MsgPayVPNService:
-			return handleSessionPayment(ctx, k, ik, msg)
-		case MsgDeregisterNode:
-			return handleDeregisterNode(ctx, k, ik, msg)
+		case types.MsgRegisterNode:
+			return handleRegisterNode(ctx, k, msg)
+		case types.MsgUpdateNodeInfo:
+			return handleUpdateNodeInfo(ctx, k, msg)
+		case types.MsgUpdateNodeStatus:
+			return handleUpdateNodeStatus(ctx, k, msg)
+		case types.MsgDeregisterNode:
+			return handleDeregisterNode(ctx, k, msg)
+		case types.MsgStartSubscription:
+			return handleStartSubscription(ctx, k, msg)
+		case types.MsgEndSubscription:
+			return handleEndSubscription(ctx, k, msg)
+		case types.MsgUpdateSessionInfo:
+			return handleUpdateSessionInfo(ctx, k, msg)
 		default:
-			errMsg := "Unrecognized msg type: " + reflect.TypeOf(msg).Name()
-			return csdkTypes.ErrUnknownRequest(errMsg).Result()
+			return types.ErrorUnknownMsgType(reflect.TypeOf(msg).Name()).Result()
 		}
 	}
 }
 
-func handleRegisterNode(ctx csdkTypes.Context, k Keeper, ik ibc.Keeper, msg MsgRegisterNode) csdkTypes.Result {
-	vpnsCount, err := k.GetVPNsCount(ctx, msg.From)
+func endBlockNodes(ctx sdk.Context, k keeper.Keeper, height int64) sdk.Tags {
+	allTags := sdk.EmptyTags()
 
-	if err != nil {
-		return err.Result()
+	_height := height - k.NodeInactiveInterval(ctx)
+	ids := k.GetActiveNodeIDs(ctx, _height)
+
+	for _, id := range ids {
+		node, _ := k.GetNode(ctx, id)
+
+		node.Status = types.StatusInactive
+		node.StatusModifiedAt = height
+
+		k.SetNode(ctx, node)
 	}
 
-	vpnID := msg.From.String() + "/" + strconv.Itoa(int(vpnsCount))
+	k.DeleteActiveNodeIDs(ctx, _height)
+	return allTags
+}
 
-	if lockerID := k.VPNStoreKey.Name() + "/" + vpnID; msg.LockerID != lockerID {
-		return errorLockerIDMismatch().Result()
+func endBlockSessions(ctx sdk.Context, k keeper.Keeper, height int64) sdk.Tags {
+	allTags := sdk.EmptyTags()
+
+	_height := height - k.SessionInactiveInterval(ctx)
+	ids := k.GetActiveSessionIDs(ctx, _height)
+
+	for _, id := range ids {
+		session, _ := k.GetSession(ctx, id)
+		subscription, _ := k.GetSubscription(ctx, session.SubscriptionID)
+
+		bandwidth := session.Bandwidth.CeilTo(hub.GB.Quo(subscription.PricePerGB.Amount))
+		amount := bandwidth.Sum().Mul(subscription.PricePerGB.Amount).Quo(hub.GB)
+		pay := sdk.NewCoin(subscription.PricePerGB.Denom, amount)
+
+		if !pay.IsZero() {
+			node, _ := k.GetNode(ctx, subscription.NodeID)
+
+			tags, err := k.SendDeposit(ctx, subscription.Client, node.Owner, pay)
+			if err != nil {
+				panic(err)
+			}
+
+			allTags = allTags.AppendTags(tags)
+		}
+
+		session.Status = types.StatusInactive
+		session.StatusModifiedAt = height
+		k.SetSession(ctx, session)
+
+		subscription.RemainingDeposit = subscription.RemainingDeposit.Sub(pay)
+		subscription.RemainingBandwidth = subscription.RemainingBandwidth.Sub(bandwidth)
+		k.SetSubscription(ctx, subscription)
+
+		scs := k.GetSessionsCountOfSubscription(ctx, subscription.ID)
+		k.SetSessionsCountOfSubscription(ctx, subscription.ID, scs+1)
 	}
 
-	if vpnDetails, err := k.GetVPNDetails(ctx, vpnID); true {
+	k.DeleteActiveSessionIDs(ctx, _height)
+	return allTags
+}
+
+func EndBlock(ctx sdk.Context, k keeper.Keeper) sdk.Tags {
+	allTags := sdk.EmptyTags()
+	height := ctx.BlockHeight()
+
+	tags := endBlockNodes(ctx, k, height)
+	allTags = allTags.AppendTags(tags)
+
+	tags = endBlockSessions(ctx, k, height)
+	allTags = allTags.AppendTags(tags)
+
+	return allTags
+}
+
+func handleRegisterNode(ctx sdk.Context, k keeper.Keeper, msg types.MsgRegisterNode) sdk.Result {
+	allTags := sdk.EmptyTags()
+
+	nc := k.GetNodesCount(ctx)
+	node := types.Node{
+		ID:               hub.NewIDFromUInt64(nc),
+		Owner:            msg.From,
+		Deposit:          sdk.NewInt64Coin(k.Deposit(ctx).Denom, 0),
+		Type:             msg.Type_,
+		Version:          msg.Version,
+		Moniker:          msg.Moniker,
+		PricesPerGB:      msg.PricesPerGB,
+		InternetSpeed:    msg.InternetSpeed,
+		Encryption:       msg.Encryption,
+		Status:           types.StatusRegistered,
+		StatusModifiedAt: ctx.BlockHeight(),
+	}
+
+	nca := k.GetNodesCountOfAddress(ctx, node.Owner)
+	if nca >= k.FreeNodesCount(ctx) {
+		node.Deposit = k.Deposit(ctx)
+
+		tags, err := k.AddDeposit(ctx, node.Owner, node.Deposit)
 		if err != nil {
 			return err.Result()
 		}
 
-		if vpnDetails != nil {
-			return errorVPNAlreadyExists().Result()
-		}
+		allTags = allTags.AppendTags(tags)
 	}
 
-	vpnDetails := sdkTypes.VPNDetails{
-		Address:    msg.From,
-		APIPort:    msg.APIPort,
-		Location:   msg.Location,
-		NetSpeed:   msg.NetSpeed,
-		EncMethod:  msg.EncMethod,
-		PricePerGB: msg.PricePerGB,
-		Version:    msg.Version,
-		Status:     sdkTypes.StatusRegister,
-		LockerID:   msg.LockerID,
-	}
+	k.SetNode(ctx, node)
+	k.SetNodeIDByAddress(ctx, node.Owner, nca, node.ID)
 
-	if err := k.AddVPN(ctx, vpnID, &vpnDetails); err != nil {
-		return err.Result()
-	}
+	k.SetNodesCount(ctx, nc+1)
+	k.SetNodesCountOfAddress(ctx, node.Owner, nca+1)
 
-	ibcPacket := sdkTypes.IBCPacket{
-		SrcChainID:  "sentinel-vpn",
-		DestChainID: "sentinel-hub",
-		Message: hub.MsgLockCoins{
-			LockerID:  msg.LockerID,
-			Coins:     msg.Coins,
-			PubKey:    msg.PubKey,
-			Signature: msg.Signature,
-		},
-	}
-
-	if err := ik.PostIBCPacket(ctx, ibcPacket); err != nil {
-		return err.Result()
-	}
-
-	return csdkTypes.Result{}
+	allTags = allTags.AppendTag(types.TagNodeID, node.ID.String())
+	return sdk.Result{Tags: allTags}
 }
 
-func handleSessionPayment(ctx csdkTypes.Context, k Keeper, ik ibc.Keeper, msg MsgPayVPNService) csdkTypes.Result {
-	sessionsCount, err := k.GetSessionsCount(ctx, msg.From)
+func handleUpdateNodeInfo(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpdateNodeInfo) sdk.Result {
+	allTags := sdk.EmptyTags()
 
-	if err != nil {
-		return err.Result()
+	node, found := k.GetNode(ctx, msg.ID)
+	if !found {
+		return types.ErrorNodeDoesNotExist().Result()
 	}
-	sessionID := msg.From.String() + "/" + strconv.Itoa(int(sessionsCount))
-
-	if lockerID := k.SessionStoreKey.Name() + "/" + sessionID; msg.LockerID != lockerID {
-		return errorLockerIDMismatch().Result()
+	if !msg.From.Equals(node.Owner) {
+		return types.ErrorUnauthorized().Result()
+	}
+	if node.Status == types.StatusDeRegistered {
+		return types.ErrorInvalidNodeStatus().Result()
 	}
 
-	if sessionDetails, err := k.GetSessionDetails(ctx, sessionID); true {
+	_node := types.Node{
+		Type:          msg.Type_,
+		Version:       msg.Version,
+		Moniker:       msg.Moniker,
+		PricesPerGB:   msg.PricesPerGB,
+		InternetSpeed: msg.InternetSpeed,
+		Encryption:    msg.Encryption,
+	}
+	node = node.UpdateInfo(_node)
+
+	k.SetNode(ctx, node)
+	return sdk.Result{Tags: allTags}
+}
+
+func handleUpdateNodeStatus(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpdateNodeStatus) sdk.Result {
+	allTags := sdk.EmptyTags()
+
+	node, found := k.GetNode(ctx, msg.ID)
+	if !found {
+		return types.ErrorNodeDoesNotExist().Result()
+	}
+	if !msg.From.Equals(node.Owner) {
+		return types.ErrorUnauthorized().Result()
+	}
+	if node.Status == types.StatusDeRegistered {
+		return types.ErrorInvalidNodeStatus().Result()
+	}
+
+	k.RemoveNodeIDFromActiveList(ctx, node.StatusModifiedAt, node.ID)
+	if msg.Status == types.StatusActive {
+		k.AddNodeIDToActiveList(ctx, ctx.BlockHeight(), node.ID)
+	}
+
+	node.Status = msg.Status
+	node.StatusModifiedAt = ctx.BlockHeight()
+
+	k.SetNode(ctx, node)
+	return sdk.Result{Tags: allTags}
+}
+
+func handleDeregisterNode(ctx sdk.Context, k keeper.Keeper, msg types.MsgDeregisterNode) sdk.Result {
+	allTags := sdk.EmptyTags()
+
+	node, found := k.GetNode(ctx, msg.ID)
+	if !found {
+		return types.ErrorNodeDoesNotExist().Result()
+	}
+	if !msg.From.Equals(node.Owner) {
+		return types.ErrorUnauthorized().Result()
+	}
+	if node.Status == types.StatusActive || node.Status == types.StatusDeRegistered {
+		return types.ErrorInvalidNodeStatus().Result()
+	}
+
+	if node.Deposit.IsPositive() {
+		tags, err := k.SubtractDeposit(ctx, node.Owner, node.Deposit)
 		if err != nil {
 			return err.Result()
 		}
 
-		if sessionDetails != nil {
-			return errorSessionAlreadyExists().Result()
-		}
+		allTags = allTags.AppendTags(tags)
 	}
 
-	vpnDetails, err := k.GetVPNDetails(ctx, msg.VPNID)
+	node.Status = types.StatusDeRegistered
+	node.StatusModifiedAt = ctx.BlockHeight()
 
-	if err != nil {
-		return err.Result()
-	}
-
-	if vpnDetails == nil {
-		return errorVPNNotExists().Result()
-	}
-
-	sessionDetails := sdkTypes.SessionDetails{
-		VPNID:         msg.VPNID,
-		ClientAddress: msg.From,
-		GBToProvide:   0,
-		PricePerGB:    vpnDetails.PricePerGB,
-		Status:        sdkTypes.StatusStart,
-	}
-
-	if err := k.AddSession(ctx, sessionID, &sessionDetails); err != nil {
-		return err.Result()
-	}
-
-	ibcPacket := sdkTypes.IBCPacket{
-		SrcChainID:  "sentinel-vpn",
-		DestChainID: "sentinel-hub",
-		Message: hub.MsgLockCoins{
-			LockerID:  msg.LockerID,
-			Coins:     msg.Coins,
-			PubKey:    msg.PubKey,
-			Signature: msg.Signature,
-		},
-	}
-
-	if err := ik.PostIBCPacket(ctx, ibcPacket); err != nil {
-		return err.Result()
-	}
-
-	return csdkTypes.Result{}
+	k.SetNode(ctx, node)
+	return sdk.Result{Tags: allTags}
 }
 
-func handleDeregisterNode(ctx csdkTypes.Context, k Keeper, ik ibc.Keeper, msg MsgDeregisterNode) csdkTypes.Result {
-	vpnDetails, err := k.GetVPNDetails(ctx, msg.VPNID)
+func handleStartSubscription(ctx sdk.Context, k keeper.Keeper, msg types.MsgStartSubscription) sdk.Result {
+	allTags := sdk.EmptyTags()
 
+	node, found := k.GetNode(ctx, msg.NodeID)
+	if !found {
+		return types.ErrorNodeDoesNotExist().Result()
+	}
+	if node.Status != types.StatusActive {
+		return types.ErrorInvalidNodeStatus().Result()
+	}
+
+	tags, err := k.AddDeposit(ctx, msg.From, msg.Deposit)
 	if err != nil {
 		return err.Result()
 	}
 
-	if vpnDetails == nil {
-		return errorVPNNotExists().Result()
-	}
+	allTags = allTags.AppendTags(tags)
 
-	if !msg.From.Equals(vpnDetails.Address) {
-		return errorInvalidNodeOwnerAddress().Result()
-	}
-
-	if msg.LockerID != vpnDetails.LockerID {
-		return errorLockerIDMismatch().Result()
-	}
-
-	if err := k.SetVPNStatus(ctx, msg.VPNID, sdkTypes.StatusInactive); err != nil {
+	bandwidth, err := node.DepositToBandwidth(msg.Deposit)
+	if err != nil {
 		return err.Result()
 	}
 
-	if err := k.RemoveActiveNodeID(ctx, msg.VPNID); err != nil {
+	pricePerGB := node.FindPricePerGB(msg.Deposit.Denom)
+
+	sc := k.GetSubscriptionsCount(ctx)
+	subscription := types.Subscription{
+		ID:                 hub.NewIDFromUInt64(sc),
+		NodeID:             node.ID,
+		Client:             msg.From,
+		PricePerGB:         pricePerGB,
+		TotalDeposit:       msg.Deposit,
+		RemainingDeposit:   msg.Deposit,
+		RemainingBandwidth: bandwidth,
+		Status:             types.StatusActive,
+		StatusModifiedAt:   ctx.BlockHeight(),
+	}
+
+	k.SetSubscription(ctx, subscription)
+	k.SetSubscriptionsCount(ctx, sc+1)
+
+	nsc := k.GetSubscriptionsCountOfNode(ctx, node.ID)
+	k.SetSubscriptionIDByNodeID(ctx, node.ID, nsc, subscription.ID)
+	k.SetSubscriptionsCountOfNode(ctx, node.ID, nsc+1)
+
+	sca := k.GetSubscriptionsCountOfAddress(ctx, subscription.Client)
+	k.SetSubscriptionIDByAddress(ctx, subscription.Client, sca, subscription.ID)
+	k.SetSubscriptionsCountOfAddress(ctx, subscription.Client, sca+1)
+
+	allTags = allTags.AppendTag(types.TagSubscriptionID, subscription.ID.String())
+	return sdk.Result{Tags: allTags}
+}
+
+func handleEndSubscription(ctx sdk.Context, k keeper.Keeper, msg types.MsgEndSubscription) sdk.Result {
+	allTags := sdk.EmptyTags()
+
+	subscription, found := k.GetSubscription(ctx, msg.ID)
+	if !found {
+		return types.ErrorSubscriptionDoesNotExist().Result()
+	}
+	if !msg.From.Equals(subscription.Client) {
+		return types.ErrorUnauthorized().Result()
+	}
+	if subscription.Status != types.StatusActive {
+		return types.ErrorInvalidSubscriptionStatus().Result()
+	}
+
+	scs := k.GetSessionsCountOfSubscription(ctx, subscription.ID)
+
+	_, found = k.GetSessionIDBySubscriptionID(ctx, subscription.ID, scs)
+	if found {
+		return types.ErrorSessionAlreadyExists().Result()
+	}
+
+	tags, err := k.SubtractDeposit(ctx, subscription.Client, subscription.RemainingDeposit)
+	if err != nil {
 		return err.Result()
 	}
 
-	ibcPacket := sdkTypes.IBCPacket{
-		SrcChainID:  "sentinel-vpn",
-		DestChainID: "sentinel-hub",
-		Message: hub.MsgReleaseCoins{
-			LockerID:  msg.LockerID,
-			PubKey:    msg.PubKey,
-			Signature: msg.Signature,
-		},
+	allTags = allTags.AppendTags(tags)
+
+	subscription.Status = types.StatusInactive
+	subscription.StatusModifiedAt = ctx.BlockHeight()
+	k.SetSubscription(ctx, subscription)
+
+	return sdk.Result{Tags: allTags}
+}
+
+func handleUpdateSessionInfo(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpdateSessionInfo) sdk.Result {
+	allTags := sdk.EmptyTags()
+
+	subscription, found := k.GetSubscription(ctx, msg.SubscriptionID)
+	if !found {
+		return types.ErrorSubscriptionDoesNotExist().Result()
+	}
+	if subscription.Status == types.StatusInactive {
+		return types.ErrorInvalidSubscriptionStatus().Result()
+	}
+	if !bytes.Equal(msg.ClientSignature.PubKey.Address(), subscription.Client.Bytes()) {
+		return types.ErrorUnauthorized().Result()
 	}
 
-	if err := ik.PostIBCPacket(ctx, ibcPacket); err != nil {
-		return err.Result()
+	node, _ := k.GetNode(ctx, subscription.NodeID)
+	if !bytes.Equal(msg.NodeOwnerSignature.PubKey.Address(), node.Owner.Bytes()) {
+		return types.ErrorUnauthorized().Result()
 	}
 
-	return csdkTypes.Result{}
+	scs := k.GetSessionsCountOfSubscription(ctx, subscription.ID)
+	data := types.NewBandwidthSignatureData(subscription.ID, scs, msg.Bandwidth).Bytes()
+	if !msg.NodeOwnerSignature.VerifyBytes(data, msg.NodeOwnerSignature.Signature) {
+		return types.ErrorInvalidBandwidthSignature().Result()
+	}
+	if !msg.ClientSignature.VerifyBytes(data, msg.ClientSignature.Signature) {
+		return types.ErrorInvalidBandwidthSignature().Result()
+	}
+
+	var session types.Session
+	id, found := k.GetSessionIDBySubscriptionID(ctx, subscription.ID, scs)
+	if !found {
+		sc := k.GetSessionsCount(ctx)
+		session = types.Session{
+			ID:             hub.NewIDFromUInt64(sc),
+			SubscriptionID: subscription.ID,
+			Bandwidth:      hub.NewBandwidthFromInt64(0, 0),
+		}
+
+		k.SetSessionsCount(ctx, sc+1)
+		k.SetSessionIDBySubscriptionID(ctx, subscription.ID, scs, session.ID)
+	} else {
+		session, _ = k.GetSession(ctx, id)
+	}
+
+	if subscription.RemainingBandwidth.AnyLT(msg.Bandwidth) {
+		return types.ErrorInvalidBandwidth().Result()
+	}
+
+	k.RemoveSessionIDFromActiveList(ctx, session.StatusModifiedAt, session.ID)
+	k.AddSessionIDToActiveList(ctx, ctx.BlockHeight(), session.ID)
+
+	session.Bandwidth = msg.Bandwidth
+	session.Status = types.StatusActive
+	session.StatusModifiedAt = ctx.BlockHeight()
+
+	k.SetSession(ctx, session)
+	return sdk.Result{Tags: allTags}
 }

@@ -1,26 +1,52 @@
-PACKAGES = $(shell go list ./... | grep -v '/vendor/')
-VERSION = $(shell git rev-parse --short HEAD)
-BUILD_FLAGS = -ldflags "-X github.com/ironman0x7b2/sentinel-sdk/vendor/github.com/cosmos/cosmos-sdk/version.Version=${VERSION} -s -w"
+PACKAGES := $(shell go list ./... | grep -v '/simulation')
+VERSION := $(shell git rev-parse --short HEAD)
+COMMIT := $(shell git log -1 --format='%H')
+GOSUM := $(shell which gosum)
 
-all: get_tools get_vendor_deps build test
+export GO111MODULE=on
 
-build:
-	go build $(BUILD_FLAGS) -o bin/sentinel-hub-cli cmd/sentinel-hub-cli/main.go
-	go build $(BUILD_FLAGS) -o bin/sentinel-hubd cmd/sentinel-hubd/main.go
-	go build $(BUILD_FLAGS) -o bin/sentinel-vpn-cli cmd/sentinel-vpn-cli/main.go
-	go build $(BUILD_FLAGS) -o bin/sentinel-vpnd cmd/sentinel-vpnd/main.go
+BUILD_TAGS := netgo
+BUILD_TAGS := $(strip ${BUILD_TAGS})
 
-get_tools:
-	go get github.com/golang/dep/cmd/dep
+LD_FLAGS := -s -w \
+	-X github.com/sentinel-official/hub/version.Version=${VERSION} \
+	-X github.com/sentinel-official/hub/version.Commit=${COMMIT} \
+	-X github.com/sentinel-official/hub/version.BuildTags=${BUILD_TAGS}
+ifneq (${GOSUM},)
+	ifneq (${wildcard go.sum},)
+		LD_FLAGS += -X github.com/sentinel-official/hub/version.VendorHash=$(shell ${GOSUM} go.sum)
+	endif
+endif
 
-get_vendor_deps:
-	@rm -rf vendor/
-	@dep ensure -v
+BUILD_FLAGS := -tags "${BUILD_TAGS}" -ldflags "${LD_FLAGS}"
+
+all: install test
+
+build: dep_verify
+ifeq (${OS},Windows_NT)
+	go build -mod=readonly ${BUILD_FLAGS} -o bin/sentinel-hubd.exe cmd/sentinel-hubd/main.go
+	go build -mod=readonly ${BUILD_FLAGS} -o bin/sentinel-hubcli.exe cmd/sentinel-hubcli/main.go
+else
+	go build -mod=readonly ${BUILD_FLAGS} -o bin/sentinel-hubd cmd/sentinel-hubd/main.go
+	go build -mod=readonly ${BUILD_FLAGS} -o bin/sentinel-hubcli cmd/sentinel-hubcli/main.go
+endif
+
+install: dep_verify
+	go install -mod=readonly ${BUILD_FLAGS} ./cmd/sentinel-hubd
+	go install -mod=readonly ${BUILD_FLAGS} ./cmd/sentinel-hubcli
 
 test:
-	@go test -cover $(PACKAGES)
+	@go test -mod=readonly -cover ${PACKAGES}
+
+test_sim_hub_fast:
+	@echo "Running hub simulation. This may take several minutes..."
+	@go test -v -mod=readonly -timeout 24h ./app -run TestFullHubSimulation -enable=true -num_blocks=100 -block_size=200 -commit=true -seed=99 -period=5
 
 benchmark:
-	@go test -bench=. $(PACKAGES)
+	@go test -mod=readonly -bench=. ${PACKAGES}
 
-.PHONY: all build test benchmark
+dep_verify:
+	@echo "--> Ensure dependencies have not been modified"
+	@go mod verify
+
+.PHONY: all build install test benchmark, dep_verify

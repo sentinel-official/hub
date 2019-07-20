@@ -2,122 +2,90 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"io"
-	"os"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
-	gaiaInit "github.com/cosmos/cosmos-sdk/cmd/gaia/init"
-	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/server"
+	"github.com/cosmos/cosmos-sdk/store"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	abciTypes "github.com/tendermint/tendermint/abci/types"
+	abci "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/libs/cli"
-	"github.com/tendermint/tendermint/libs/common"
 	tmDB "github.com/tendermint/tendermint/libs/db"
 	"github.com/tendermint/tendermint/libs/log"
-	"github.com/tendermint/tendermint/p2p"
-	tmTypes "github.com/tendermint/tendermint/types"
+	tm "github.com/tendermint/tendermint/types"
 
-	app "github.com/ironman0x7b2/sentinel-sdk/apps/sentinel-hub"
+	"github.com/sentinel-official/hub/app"
+	hubCli "github.com/sentinel-official/hub/app/cli"
+	_server "github.com/sentinel-official/hub/server"
+	hub "github.com/sentinel-official/hub/types"
 )
 
-const flagClientHome = "home-client"
+const (
+	flagInvCheckPeriod = "inv-check-period"
+)
+
+// nolint:gochecknoglobals
+var (
+	invCheckPeriod uint
+)
 
 func main() {
 	cdc := app.MakeCodec()
-	ctx := server.NewDefaultContext()
 
+	config := sdk.GetConfig()
+	config.SetBech32PrefixForAccount(hub.Bech32PrefixAccAddr, hub.Bech32PrefixAccPub)
+	config.SetBech32PrefixForValidator(hub.Bech32PrefixValAddr, hub.Bech32PrefixValPub)
+	config.SetBech32PrefixForConsensusNode(hub.Bech32PrefixConsAddr, hub.Bech32PrefixConsPub)
+	config.Seal()
+
+	ctx := server.NewDefaultContext()
+	cobra.EnableCommandSorting = false
 	rootCmd := &cobra.Command{
 		Use:               "sentinel-hubd",
 		Short:             "Sentinel Hub Daemon (server)",
 		PersistentPreRunE: server.PersistentPreRunEFn(ctx),
 	}
 
-	rootCmd.AddCommand(InitCmd(ctx, cdc))
-	rootCmd.AddCommand(gaiaInit.TestnetFilesCmd(ctx, cdc))
+	rootCmd.AddCommand(hubCli.InitCmd(ctx, cdc))
+	rootCmd.AddCommand(hubCli.CollectGenTxsCmd(ctx, cdc))
+	rootCmd.AddCommand(hubCli.TestNetFilesCmd(ctx, cdc))
+	rootCmd.AddCommand(hubCli.GenTxCmd(ctx, cdc))
+	rootCmd.AddCommand(hubCli.AddGenesisAccountCmd(ctx, cdc))
+	rootCmd.AddCommand(client.NewCompletionCmd(rootCmd, true))
+	rootCmd.PersistentFlags().UintVar(&invCheckPeriod, flagInvCheckPeriod,
+		0, "Assert registered invariants every N blocks")
 
-	server.AddCommands(ctx, cdc, rootCmd, newApp, exportAppStateAndTMValidators)
+	_server.AddCommands(ctx, cdc, rootCmd, newApp, exportAppStateAndTMValidators)
 
-	rootDir := app.DefaultNodeHome
-	executor := cli.PrepareBaseCmd(rootCmd, "SH", rootDir)
-
-	err := executor.Execute()
-	if err != nil {
+	executor := cli.PrepareBaseCmd(rootCmd, "SENT_HUB", app.DefaultNodeHome)
+	if err := executor.Execute(); err != nil {
 		panic(err)
 	}
 }
 
-func InitCmd(ctx *server.Context, cdc *codec.Codec) *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "init",
-		Short: "Initialize genesis config, priv-validator file, and p2p-node file",
-		Args:  cobra.NoArgs,
-		RunE: func(_ *cobra.Command, _ []string) error {
+func newApp(logger log.Logger, db tmDB.DB, traceStore io.Writer) abci.Application {
+	return app.NewHubApp(
+		logger, db, traceStore, true, invCheckPeriod,
+		baseapp.SetPruning(store.NewPruningOptionsFromString(viper.GetString("pruning"))),
+		baseapp.SetMinGasPrices(viper.GetString(server.FlagMinGasPrices)),
+	)
+}
 
-			config := ctx.Config
-			config.SetRoot(viper.GetString(cli.HomeFlag))
-			chainID := viper.GetString(client.FlagChainID)
-			if chainID == "" {
-				chainID = fmt.Sprintf("test-chain-%v", common.RandStr(6))
-			}
+func exportAppStateAndTMValidators(logger log.Logger, db tmDB.DB, traceStore io.Writer, height int64,
+	forZeroHeight bool, jailWhiteList []string) (json.RawMessage, []tm.GenesisValidator, error) {
 
-			nodeKey, err := p2p.LoadOrGenNodeKey(config.NodeKeyFile())
-			if err != nil {
-				return err
-			}
-			nodeID := string(nodeKey.ID())
+	if height != -1 {
+		hub := app.NewHubApp(logger, db, traceStore, false, uint(1))
+		if err := hub.LoadHeight(height); err != nil {
+			return nil, nil, err
+		}
 
-			pk := gaiaInit.ReadOrCreatePrivValidator(config.PrivValidatorFile())
-			genTx, appMessage, validator, err := server.SimpleAppGenTx(cdc, pk)
-			if err != nil {
-				return err
-			}
-
-			appState, err := server.SimpleAppGenState(cdc, tmTypes.GenesisDoc{}, []json.RawMessage{genTx})
-			if err != nil {
-				return err
-			}
-			appStateJSON, err := cdc.MarshalJSON(appState)
-			if err != nil {
-				return err
-			}
-
-			toPrint := struct {
-				ChainID    string          `json:"chain_id"`
-				NodeID     string          `json:"node_id"`
-				AppMessage json.RawMessage `json:"app_message"`
-			}{
-				chainID,
-				nodeID,
-				appMessage,
-			}
-			out, err := codec.MarshalJSONIndent(cdc, toPrint)
-			if err != nil {
-				return err
-			}
-			_, _ = fmt.Fprintf(os.Stderr, "%s\n", string(out))
-			return gaiaInit.ExportGenesisFile(config.GenesisFile(), chainID, []tmTypes.GenesisValidator{validator}, appStateJSON)
-		},
+		return hub.ExportAppStateAndValidators(forZeroHeight, jailWhiteList)
 	}
 
-	cmd.Flags().String(cli.HomeFlag, app.DefaultNodeHome, "node's home directory")
-	cmd.Flags().String(flagClientHome, app.DefaultCLIHome, "client's home directory")
-	cmd.Flags().String(client.FlagChainID, "", "genesis file chain-id, if left blank will be randomly created")
-	cmd.Flags().String(client.FlagName, "", "validator's moniker")
-	_ = cmd.MarkFlagRequired(client.FlagName)
-	return cmd
-}
-
-func newApp(logger log.Logger, db tmDB.DB, storeTracer io.Writer) abciTypes.Application {
-	return app.NewSentinelHub(logger, db, baseapp.SetPruning(viper.GetString("pruning")))
-}
-
-func exportAppStateAndTMValidators(logger log.Logger, db tmDB.DB, storeTracer io.Writer, _ int64, _ bool) (
-	json.RawMessage, []tmTypes.GenesisValidator, error) {
-	bapp := app.NewSentinelHub(logger, db)
-
-	return bapp.ExportAppStateAndValidators()
+	hub := app.NewHubApp(logger, db, traceStore, true, uint(1))
+	return hub.ExportAppStateAndValidators(forZeroHeight, jailWhiteList)
 }
