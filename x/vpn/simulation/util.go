@@ -11,6 +11,7 @@ import (
 	"github.com/sentinel-official/hub/x/vpn/types"
 )
 
+// nolint: gochecknoglobals
 var (
 	denoms   = []string{"stake", "xxx", "yyy", "zzz"}
 	statuses = []string{types.StatusActive, types.StatusInactive}
