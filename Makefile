@@ -1,5 +1,5 @@
 PACKAGES := $(shell go list ./... | grep -v '/simulation')
-VERSION := $(shell git rev-parse --short HEAD)
+VERSION := $(shell echo $(shell git describe --tags) | sed 's/^v//')
 COMMIT := $(shell git log -1 --format='%H')
 GOSUM := $(shell which gosum)
 
