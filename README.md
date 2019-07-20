@@ -1,18 +1,19 @@
 # Sentinel Hub
 
-[![](https://img.shields.io/github/release-pre/sentinel-official/hub.svg?style=flat)](https://github.com/sentinel-official/hub/releases/latest)
-[![Go Report Card](https://goreportcard.com/badge/github.com/sentinel-official/hub)](https://goreportcard.com/report/github.com/sentinel-official/hub)
-[![](https://tokei.rs/b1/github/sentinel-official/hub)](https://github.com/sentinel-official/hub)
+[![Version](https://img.shields.io/github/tag/sentinel-official/hub.svg)](https://github.com/sentinel-official/hub/releases/latest)
+[![GoReportCard](https://goreportcard.com/badge/github.com/sentinel-official/hub)](https://goreportcard.com/report/github.com/sentinel-official/hub)
+[![LoC](https://tokei.rs/b1/github/sentinel-official/hub)](https://github.com/sentinel-official/hub)
 
-```
-rm -rf $HOME/.sentinel-hubd $HOME/.sentinel-hubcli && \
-sentinel-hubd init --chain-id hub testing && \
-sentinel-hubcli keys add genesis && \
-sentinel-hubd add-genesis-account $(sentinel-hubcli keys show genesis -a) 2000000000stake && \
-sentinel-hubd gentx --name genesis && \
-sentinel-hubd collect-gentxs
-```
+## Installation
 
-```
-sentinel-hubd start --inv-check-period 1
-```
+Requires [Go 1.12+](https://golang.org/dl/)
+
+### Linux
+
+`$ go get -u github.com/sentinel-official/hub`
+
+`$ cd ${GOPATH}/src/github.com/sentinel-official/hub`
+
+`$ make install`
+
+**Note:** To install specific version or commit use `git checkout` command
