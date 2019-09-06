@@ -2,15 +2,15 @@ package cli
 
 import (
 	"github.com/cosmos/cosmos-sdk/client/context"
-	"github.com/cosmos/cosmos-sdk/client/utils"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	authTxBuilder "github.com/cosmos/cosmos-sdk/x/auth/client/txbuilder"
+	"github.com/cosmos/cosmos-sdk/x/auth"
+	"github.com/cosmos/cosmos-sdk/x/auth/client/utils"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
 	hub "github.com/sentinel-official/hub/types"
-	"github.com/sentinel-official/hub/x/vpn"
+	"github.com/sentinel-official/hub/x/vpn/types"
 )
 
 func StartSubscriptionTxCmd(cdc *codec.Codec) *cobra.Command {
@@ -18,12 +18,8 @@ func StartSubscriptionTxCmd(cdc *codec.Codec) *cobra.Command {
 		Use:   "start",
 		Short: "Start subscription",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			txBldr := authTxBuilder.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
-			cliCtx := context.NewCLIContext().WithCodec(cdc).WithAccountDecoder(cdc)
-
-			if err := cliCtx.EnsureAccountExists(); err != nil {
-				return err
-			}
+			txb := auth.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
+			ctx := context.NewCLIContext().WithCodec(cdc)
 
 			nodeID := hub.NewIDFromString(viper.GetString(flagNodeID))
 			deposit := viper.GetString(flagDeposit)
@@ -33,10 +29,10 @@ func StartSubscriptionTxCmd(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			fromAddress := cliCtx.GetFromAddress()
+			fromAddress := ctx.GetFromAddress()
 
-			msg := vpn.NewMsgStartSubscription(fromAddress, nodeID, parsedDeposit)
-			return utils.GenerateOrBroadcastMsgs(cliCtx, txBldr, []sdk.Msg{msg}, false)
+			msg := types.NewMsgStartSubscription(fromAddress, nodeID, parsedDeposit)
+			return utils.GenerateOrBroadcastMsgs(ctx, txb, []sdk.Msg{msg})
 		},
 	}
 

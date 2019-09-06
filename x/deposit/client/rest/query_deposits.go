@@ -1,39 +1,37 @@
-// nolint:dupl
 package rest
 
 import (
 	"net/http"
 
 	"github.com/cosmos/cosmos-sdk/client/context"
-	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/types/rest"
 	"github.com/gorilla/mux"
 
 	"github.com/sentinel-official/hub/x/deposit/client/common"
 )
 
-func getDepositOfAddressHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) http.HandlerFunc {
+func getDepositOfAddressHandlerFunc(ctx context.CLIContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 
-		deposit, err := common.QueryDepositOfAddress(cliCtx, cdc, vars["address"])
+		deposit, err := common.QueryDepositOfAddress(ctx, vars["address"])
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
 		}
 
-		rest.PostProcessResponse(w, cdc, deposit, cliCtx.Indent)
+		rest.PostProcessResponse(w, ctx, deposit)
 	}
 }
 
-func getAllDeposits(cliCtx context.CLIContext, cdc *codec.Codec) http.HandlerFunc {
+func getAllDeposits(ctx context.CLIContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		deposits, err := common.QueryAllDeposits(cliCtx, cdc)
+		deposits, err := common.QueryAllDeposits(ctx)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
 		}
 
-		rest.PostProcessResponse(w, cdc, deposits, cliCtx.Indent)
+		rest.PostProcessResponse(w, ctx, deposits)
 	}
 }

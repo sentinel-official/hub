@@ -8,26 +8,33 @@ import (
 
 const (
 	Codespace             = types.Codespace
+	ModuleName            = types.ModuleName
 	StoreKey              = types.StoreKey
+	RouterKey             = types.RouterKey
 	QuerierRoute          = types.QuerierRoute
-	QueryDepositOfAddress = querier.QueryDepositOfAddress
-	QueryAllDeposits      = querier.QueryAllDeposits
+	QueryDepositOfAddress = types.QueryDepositOfAddress
+	QueryAllDeposits      = types.QueryAllDeposits
+)
+
+var (
+	ErrorMarshal                   = types.ErrorMarshal
+	ErrorUnmarshal                 = types.ErrorUnmarshal
+	ErrorInvalidQueryType          = types.ErrorInvalidQueryType
+	ErrorInsufficientDepositFunds  = types.ErrorInsufficientDepositFunds
+	NewGenesisState                = types.NewGenesisState
+	DefaultGenesisState            = types.DefaultGenesisState
+	DepositKey                     = types.DepositKey
+	NewQueryDepositOfAddressParams = types.NewQueryDepositOfAddressParams
+	NewKeeper                      = keeper.NewKeeper
+	NewQuerier                     = querier.NewQuerier
+
+	ModuleCdc        = types.ModuleCdc
+	DepositKeyPrefix = types.DepositKeyPrefix
 )
 
 type (
 	Deposit                    = types.Deposit
 	GenesisState               = types.GenesisState
+	QueryDepositOfAddressPrams = types.QueryDepositOfAddressPrams
 	Keeper                     = keeper.Keeper
-	QueryDepositOfAddressPrams = querier.QueryDepositOfAddressPrams
-)
-
-// nolint: gochecknoglobals
-var (
-	NewGenesisState                = types.NewGenesisState
-	DefaultGenesisState            = types.DefaultGenesisState
-	DepositKeyPrefix               = types.DepositKeyPrefix
-	DepositKey                     = types.DepositKey
-	NewKeeper                      = keeper.NewKeeper
-	NewQueryDepositOfAddressParams = querier.NewQueryDepositOfAddressParams
-	NewQuerier                     = querier.NewQuerier
 )

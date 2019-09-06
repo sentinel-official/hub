@@ -1,4 +1,3 @@
-// nolint
 package rest
 
 import (
@@ -6,16 +5,15 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/client/keys"
-	clientRest "github.com/cosmos/cosmos-sdk/client/rest"
-	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/rest"
 	"github.com/cosmos/cosmos-sdk/x/auth"
+	"github.com/cosmos/cosmos-sdk/x/auth/client/utils"
 	"github.com/gorilla/mux"
 
 	hub "github.com/sentinel-official/hub/types"
-	"github.com/sentinel-official/hub/x/vpn"
 	"github.com/sentinel-official/hub/x/vpn/client/common"
+	"github.com/sentinel-official/hub/x/vpn/types"
 )
 
 type msgSignSessionBandwidth struct {
@@ -24,23 +22,23 @@ type msgSignSessionBandwidth struct {
 	Bandwidth hub.Bandwidth `json:"bandwidth"`
 }
 
-func signSessionBandwidthHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) http.HandlerFunc {
+func signSessionBandwidthHandlerFunc(ctx context.CLIContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var req msgSignSessionBandwidth
 		vars := mux.Vars(r)
 
-		if !rest.ReadRESTReq(w, r, cdc, &req) {
+		if !rest.ReadRESTReq(w, r, ctx.Codec, &req) {
 			return
 		}
 
-		scs, err := common.QuerySessionsCountOfSubscription(cliCtx, cdc, vars["id"])
+		scs, err := common.QuerySessionsCountOfSubscription(ctx, vars["id"])
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
 		}
 
 		id := hub.NewIDFromString(vars["id"])
-		data := vpn.NewBandwidthSignatureData(id, scs, req.Bandwidth).Bytes()
+		data := types.NewBandwidthSignatureData(id, scs, req.Bandwidth).Bytes()
 
 		kb, err := keys.NewKeyBaseFromHomeFlag()
 		if err != nil {
@@ -59,13 +57,13 @@ func signSessionBandwidthHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec
 			Signature: sigBytes,
 		}
 
-		bz, err := cdc.MarshalJSON(stdSignature)
+		bz, err := ctx.Codec.MarshalJSON(stdSignature)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
 		}
 
-		w.Write(bz)
+		_, _ = w.Write(bz)
 		return
 	}
 }
@@ -77,12 +75,12 @@ type msgUpdateSessionBandwidthInfo struct {
 	ClientSign    auth.StdSignature `json:"client_sign"`
 }
 
-func updateSessionInfoHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) http.HandlerFunc {
+func updateSessionInfoHandlerFunc(ctx context.CLIContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var req msgUpdateSessionBandwidthInfo
 		vars := mux.Vars(r)
 
-		if !rest.ReadRESTReq(w, r, cdc, &req) {
+		if !rest.ReadRESTReq(w, r, ctx.Codec, &req) {
 			return
 		}
 
@@ -98,12 +96,12 @@ func updateSessionInfoHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) h
 		}
 
 		id := hub.NewIDFromString(vars["id"])
-		msg := vpn.NewMsgUpdateSessionInfo(fromAddress, id, req.Bandwidth, req.NodeOwnerSign, req.ClientSign)
+		msg := types.NewMsgUpdateSessionInfo(fromAddress, id, req.Bandwidth, req.NodeOwnerSign, req.ClientSign)
 		if err := msg.ValidateBasic(); err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
 		}
 
-		clientRest.WriteGenerateStdTxResponse(w, cdc, cliCtx, req.BaseReq, []sdk.Msg{msg})
+		utils.WriteGenerateStdTxResponse(w, ctx, req.BaseReq, []sdk.Msg{msg})
 	}
 }
