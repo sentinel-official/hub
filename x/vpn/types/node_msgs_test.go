@@ -20,68 +20,55 @@ func TestMsgRegisterNode_ValidateBasic(t *testing.T) {
 	}{
 		{
 			"from is nil",
-			NewMsgRegisterNode(nil, "node_type", "version", "moniker", sdk.Coins{sdk.NewInt64Coin("stake", 100)},
-				hub.NewBandwidth(sdk.NewInt(500000000), sdk.NewInt(500000000)), "encryption"),
+			NewMsgRegisterNode(nil, "node_type", "version", "moniker", sdk.Coins{sdk.NewInt64Coin("stake", 100)}, TestBandwidthPos1, "encryption"),
 			ErrorInvalidField("from"),
 		}, {
 			"from is empty",
-			NewMsgRegisterNode([]byte(""), "node_type", "version", "moniker", sdk.Coins{sdk.NewInt64Coin("stake", 100)},
-				hub.NewBandwidth(sdk.NewInt(500000000), sdk.NewInt(500000000)), "encryption"),
+			NewMsgRegisterNode([]byte(""), "node_type", "version", "moniker", sdk.Coins{sdk.NewInt64Coin("stake", 100)}, TestBandwidthPos1, "encryption"),
 			ErrorInvalidField("from"),
 		}, {
 			"node_type is empty",
-			NewMsgRegisterNode(TestAddress1, "", "version", "moniker", sdk.Coins{sdk.NewInt64Coin("stake", 100)},
-				hub.NewBandwidth(sdk.NewInt(500000000), sdk.NewInt(500000000)), "encryption"),
+			NewMsgRegisterNode(TestAddress1, "", "version", "moniker", sdk.Coins{sdk.NewInt64Coin("stake", 100)}, TestBandwidthPos1, "encryption"),
 			ErrorInvalidField("type"),
 		}, {
 			"version is empty",
-			NewMsgRegisterNode(TestAddress1, "node_type", "", "moniker", sdk.Coins{sdk.NewInt64Coin("stake", 100)},
-				hub.NewBandwidth(sdk.NewInt(500000000), sdk.NewInt(500000000)), "encryption"),
+			NewMsgRegisterNode(TestAddress1, "node_type", "", "moniker", sdk.Coins{sdk.NewInt64Coin("stake", 100)}, TestBandwidthPos1, "encryption"),
 			ErrorInvalidField("version"),
 		}, {
 			"node_moniker length is greater than 128",
-			NewMsgRegisterNode(TestAddress1, "node_type", "version", strings.Repeat("X", 130), sdk.Coins{sdk.NewInt64Coin("stake", 100)},
-				hub.NewBandwidth(sdk.NewInt(500000000), sdk.NewInt(500000000)), "encryption"),
+			NewMsgRegisterNode(TestAddress1, "node_type", "version", strings.Repeat("X", 130), sdk.Coins{sdk.NewInt64Coin("stake", 100)}, TestBandwidthPos1, "encryption"),
 			ErrorInvalidField("moniker"),
 		}, {
 			"prices_per_gb is nil",
-			NewMsgRegisterNode(TestAddress1, "node_type", "version", "moniker", nil,
-				hub.NewBandwidth(sdk.NewInt(500000000), sdk.NewInt(500000000)), "encryption"),
+			NewMsgRegisterNode(TestAddress1, "node_type", "version", "moniker", nil, TestBandwidthPos1, "encryption"),
 			ErrorInvalidField("prices_per_gb"),
 		}, {
 			"prices_per_gb is empty",
-			NewMsgRegisterNode(TestAddress1, "node_type", "version", "moniker", sdk.Coins{},
-				hub.NewBandwidth(sdk.NewInt(500000000), sdk.NewInt(500000000)), "encryption"),
+			NewMsgRegisterNode(TestAddress1, "node_type", "version", "moniker", sdk.Coins{}, TestBandwidthPos1, "encryption"),
 			ErrorInvalidField("prices_per_gb"),
 		}, {
 			"prices_per_gb is negative",
-			NewMsgRegisterNode(TestAddress1, "node_type", "version", "moniker", sdk.Coins{sdk.Coin{"stake", sdk.NewInt(-100)}},
-				hub.NewBandwidth(sdk.NewInt(500000000), sdk.NewInt(500000000)), "encryption"),
+			NewMsgRegisterNode(TestAddress1, "node_type", "version", "moniker", sdk.Coins{sdk.Coin{"stake", sdk.NewInt(-100)}}, TestBandwidthPos1, "encryption"),
 			ErrorInvalidField("prices_per_gb"),
 		}, {
 			"prices_per_gb is zero",
-			NewMsgRegisterNode(TestAddress1, "node_type", "version", "moniker", sdk.Coins{sdk.NewInt64Coin("stake", 0)},
-				hub.NewBandwidth(sdk.NewInt(500000000), sdk.NewInt(500000000)), "encryption"),
+			NewMsgRegisterNode(TestAddress1, "node_type", "version", "moniker", sdk.Coins{sdk.NewInt64Coin("stake", 0)}, TestBandwidthPos1, "encryption"),
 			ErrorInvalidField("prices_per_gb"),
 		}, {
 			"internet_speed is negative",
-			NewMsgRegisterNode(TestAddress1, "node_type", "version", "moniker", sdk.Coins{sdk.NewInt64Coin("stake", 100)},
-				hub.NewBandwidth(sdk.NewInt(-500000000), sdk.NewInt(-500000000)), "encryption"),
+			NewMsgRegisterNode(TestAddress1, "node_type", "version", "moniker", sdk.Coins{sdk.NewInt64Coin("stake", 100)}, TestBandwidthNeg, "encryption"),
 			ErrorInvalidField("internet_speed"),
 		}, {
 			"internet_speed is zero",
-			NewMsgRegisterNode(TestAddress1, "node_type", "version", "moniker", sdk.Coins{sdk.NewInt64Coin("stake", 100)},
-				hub.NewBandwidth(sdk.NewInt(0), sdk.NewInt(0)), "encryption"),
+			NewMsgRegisterNode(TestAddress1, "node_type", "version", "moniker", sdk.Coins{sdk.NewInt64Coin("stake", 100)}, TestBandwidthZero, "encryption"),
 			ErrorInvalidField("internet_speed"),
 		}, {
 			"encryption is empty",
-			NewMsgRegisterNode(TestAddress1, "node_type", "version", "moniker", sdk.Coins{sdk.NewInt64Coin("stake", 100)},
-				hub.NewBandwidth(sdk.NewInt(500000000), sdk.NewInt(500000000)), ""),
+			NewMsgRegisterNode(TestAddress1, "node_type", "version", "moniker", sdk.Coins{sdk.NewInt64Coin("stake", 100)}, TestBandwidthPos1, ""),
 			ErrorInvalidField("encryption"),
 		}, {
 			"valid",
-			NewMsgRegisterNode(TestAddress1, "node_type", "version", "moniker", sdk.Coins{sdk.NewInt64Coin("stake", 100)},
-				hub.NewBandwidth(sdk.NewInt(500000000), sdk.NewInt(500000000)), "encryption"),
+			NewMsgRegisterNode(TestAddress1, "node_type", "version", "moniker", sdk.Coins{sdk.NewInt64Coin("stake", 100)}, TestBandwidthPos1, "encryption"),
 			nil,
 		},
 	}
@@ -96,7 +83,7 @@ func TestMsgRegisterNode_ValidateBasic(t *testing.T) {
 }
 
 func TestMsgRegisterNode_GetSignBytes(t *testing.T) {
-	msg := NewMsgRegisterNode(TestAddress1, "node_type", "version", "moniker", sdk.Coins{sdk.NewInt64Coin("stake", 100)}, hub.NewBandwidth(sdk.NewInt(500000000), sdk.NewInt(500000000)), "encryption")
+	msg := NewMsgRegisterNode(TestAddress1, "node_type", "version", "moniker", sdk.Coins{sdk.NewInt64Coin("stake", 100)}, TestBandwidthPos1, "encryption")
 	msgBytes, err := json.Marshal(msg)
 	if err != nil {
 		panic(err)
@@ -106,17 +93,17 @@ func TestMsgRegisterNode_GetSignBytes(t *testing.T) {
 }
 
 func TestMsgRegisterNode_GetSigners(t *testing.T) {
-	msg := NewMsgRegisterNode(TestAddress1, "node_type", "version", "moniker", sdk.Coins{sdk.NewInt64Coin("stake", 100)}, hub.NewBandwidth(sdk.NewInt(500000000), sdk.NewInt(500000000)), "encryption")
+	msg := NewMsgRegisterNode(TestAddress1, "node_type", "version", "moniker", sdk.Coins{sdk.NewInt64Coin("stake", 100)}, TestBandwidthPos1, "encryption")
 	require.Equal(t, []sdk.AccAddress{TestAddress1}, msg.GetSigners())
 }
 
 func TestMsgRegisterNode_Type(t *testing.T) {
-	msg := NewMsgRegisterNode(TestAddress1, "node_type", "version", "moniker", sdk.Coins{sdk.NewInt64Coin("stake", 100)}, hub.NewBandwidth(sdk.NewInt(500000000), sdk.NewInt(500000000)), "encryption")
+	msg := NewMsgRegisterNode(TestAddress1, "node_type", "version", "moniker", sdk.Coins{sdk.NewInt64Coin("stake", 100)}, TestBandwidthPos1, "encryption")
 	require.Equal(t, "register_node", msg.Type())
 }
 
 func TestMsgRegisterNode_Route(t *testing.T) {
-	msg := NewMsgRegisterNode(TestAddress1, "node_type", "version", "moniker", sdk.Coins{sdk.NewInt64Coin("stake", 100)}, hub.NewBandwidth(sdk.NewInt(500000000), sdk.NewInt(500000000)), "encryption")
+	msg := NewMsgRegisterNode(TestAddress1, "node_type", "version", "moniker", sdk.Coins{sdk.NewInt64Coin("stake", 100)}, TestBandwidthPos1, "encryption")
 	require.Equal(t, RouterKey, msg.Route())
 }
 
@@ -128,55 +115,55 @@ func TestMsgUpdateNodeInfo_ValidateBasic(t *testing.T) {
 	}{
 		{
 			"from is nil",
-			NewMsgUpdateNodeInfo(nil, hub.NewIDFromUInt64(1), "node_type", "version", "moniker", sdk.Coins{sdk.NewInt64Coin("stake", 100)}, hub.NewBandwidth(sdk.NewInt(500000000), sdk.NewInt(500000000)), "encryption"),
+			NewMsgUpdateNodeInfo(nil, hub.NewIDFromUInt64(1), "node_type", "version", "moniker", sdk.Coins{sdk.NewInt64Coin("stake", 100)}, TestBandwidthPos1, "encryption"),
 			ErrorInvalidField("from"),
 		}, {
 			"from is empty",
-			NewMsgUpdateNodeInfo([]byte(""), hub.NewIDFromUInt64(1), "node_type", "version", "moniker", sdk.Coins{sdk.NewInt64Coin("stake", 100)}, hub.NewBandwidth(sdk.NewInt(500000000), sdk.NewInt(500000000)), "encryption"),
+			NewMsgUpdateNodeInfo([]byte(""), hub.NewIDFromUInt64(1), "node_type", "version", "moniker", sdk.Coins{sdk.NewInt64Coin("stake", 100)}, TestBandwidthPos1, "encryption"),
 			ErrorInvalidField("from"),
 		}, {
 			"node_moniker length is greater than 128",
-			NewMsgUpdateNodeInfo(TestAddress1, hub.NewIDFromUInt64(1), "node_type", "version", strings.Repeat("X", 130), sdk.Coins{sdk.NewInt64Coin("stake", 100)}, hub.NewBandwidth(sdk.NewInt(500000000), sdk.NewInt(500000000)), "encryption"),
+			NewMsgUpdateNodeInfo(TestAddress1, hub.NewIDFromUInt64(1), "node_type", "version", strings.Repeat("X", 130), sdk.Coins{sdk.NewInt64Coin("stake", 100)}, TestBandwidthPos1, "encryption"),
 			ErrorInvalidField("moniker"),
 		}, {
 			"prices_per_gb is nil",
-			NewMsgUpdateNodeInfo(TestAddress1, hub.NewIDFromUInt64(1), "node_type", "version", "moniker", nil, hub.NewBandwidth(sdk.NewInt(500000000), sdk.NewInt(500000000)), "encryption"),
+			NewMsgUpdateNodeInfo(TestAddress1, hub.NewIDFromUInt64(1), "node_type", "version", "moniker", nil, TestBandwidthPos1, "encryption"),
 			nil,
 		}, {
 			"prices_per_gb is empty",
-			NewMsgUpdateNodeInfo(TestAddress1, hub.NewIDFromUInt64(1), "node_type", "version", "moniker", sdk.Coins{}, hub.NewBandwidth(sdk.NewInt(500000000), sdk.NewInt(500000000)), "encryption"),
+			NewMsgUpdateNodeInfo(TestAddress1, hub.NewIDFromUInt64(1), "node_type", "version", "moniker", sdk.Coins{}, TestBandwidthPos1, "encryption"),
 			ErrorInvalidField("prices_per_gb"),
 		}, {
 			"prices_per_gb is negative",
-			NewMsgUpdateNodeInfo(TestAddress1, hub.NewIDFromUInt64(1), "node_type", "version", "moniker", sdk.Coins{sdk.Coin{"stake", sdk.NewInt(-100)}}, hub.NewBandwidth(sdk.NewInt(500000000), sdk.NewInt(500000000)), "encryption"),
+			NewMsgUpdateNodeInfo(TestAddress1, hub.NewIDFromUInt64(1), "node_type", "version", "moniker", sdk.Coins{sdk.Coin{"stake", sdk.NewInt(-100)}}, TestBandwidthPos1, "encryption"),
 			ErrorInvalidField("prices_per_gb"),
 		}, {
 			"prices_per_gb is zero",
-			NewMsgUpdateNodeInfo(TestAddress1, hub.NewIDFromUInt64(1), "node_type", "version", "moniker", sdk.Coins{sdk.NewInt64Coin("stake", 0)}, hub.NewBandwidth(sdk.NewInt(500000000), sdk.NewInt(500000000)), "encryption"),
+			NewMsgUpdateNodeInfo(TestAddress1, hub.NewIDFromUInt64(1), "node_type", "version", "moniker", sdk.Coins{sdk.NewInt64Coin("stake", 0)}, TestBandwidthPos1, "encryption"),
 			ErrorInvalidField("prices_per_gb"),
 		}, {
 			"internet_speed is zero",
-			NewMsgUpdateNodeInfo(TestAddress1, hub.NewIDFromUInt64(1), "node_type", "version", "moniker", sdk.Coins{sdk.NewInt64Coin("stake", 100)}, hub.NewBandwidth(sdk.NewInt(0), sdk.NewInt(0)), "encryption"),
+			NewMsgUpdateNodeInfo(TestAddress1, hub.NewIDFromUInt64(1), "node_type", "version", "moniker", sdk.Coins{sdk.NewInt64Coin("stake", 100)}, TestBandwidthZero, "encryption"),
 			nil,
 		}, {
 			"internet_speed is negative",
-			NewMsgUpdateNodeInfo(TestAddress1, hub.NewIDFromUInt64(1), "node_type", "version", "moniker", sdk.Coins{sdk.NewInt64Coin("stake", 100)}, hub.NewBandwidth(sdk.NewInt(-500000000), sdk.NewInt(-500000000)), "encryption"),
+			NewMsgUpdateNodeInfo(TestAddress1, hub.NewIDFromUInt64(1), "node_type", "version", "moniker", sdk.Coins{sdk.NewInt64Coin("stake", 100)}, TestBandwidthNeg, "encryption"),
 			ErrorInvalidField("internet_speed"),
 		}, {
 			"encryption is empty",
-			NewMsgUpdateNodeInfo(TestAddress1, hub.NewIDFromUInt64(1), "node_type", "version", "moniker", sdk.Coins{sdk.NewInt64Coin("stake", 100)}, hub.NewBandwidth(sdk.NewInt(500000000), sdk.NewInt(500000000)), ""),
+			NewMsgUpdateNodeInfo(TestAddress1, hub.NewIDFromUInt64(1), "node_type", "version", "moniker", sdk.Coins{sdk.NewInt64Coin("stake", 100)}, TestBandwidthPos1, ""),
 			nil,
 		}, {
 			"type is empty",
-			NewMsgUpdateNodeInfo(TestAddress1, hub.NewIDFromUInt64(1), "", "version", "moniker", sdk.Coins{sdk.NewInt64Coin("stake", 100)}, hub.NewBandwidth(sdk.NewInt(500000000), sdk.NewInt(500000000)), "encryption"),
+			NewMsgUpdateNodeInfo(TestAddress1, hub.NewIDFromUInt64(1), "", "version", "moniker", sdk.Coins{sdk.NewInt64Coin("stake", 100)}, TestBandwidthPos1, "encryption"),
 			nil,
 		}, {
 			"version is empty",
-			NewMsgUpdateNodeInfo(TestAddress1, hub.NewIDFromUInt64(1), "node_type", "", "moniker", sdk.Coins{sdk.NewInt64Coin("stake", 100)}, hub.NewBandwidth(sdk.NewInt(500000000), sdk.NewInt(500000000)), "encryption"),
+			NewMsgUpdateNodeInfo(TestAddress1, hub.NewIDFromUInt64(1), "node_type", "", "moniker", sdk.Coins{sdk.NewInt64Coin("stake", 100)}, TestBandwidthPos1, "encryption"),
 			nil,
 		}, {
 			"valid",
-			NewMsgUpdateNodeInfo(TestAddress1, hub.NewIDFromUInt64(1), "node_type", "version", "moniker", sdk.Coins{sdk.NewInt64Coin("stake", 100)}, hub.NewBandwidth(sdk.NewInt(500000000), sdk.NewInt(500000000)), "encryption"),
+			NewMsgUpdateNodeInfo(TestAddress1, hub.NewIDFromUInt64(1), "node_type", "version", "moniker", sdk.Coins{sdk.NewInt64Coin("stake", 100)}, TestBandwidthPos1, "encryption"),
 			nil,
 		},
 	}
@@ -191,7 +178,7 @@ func TestMsgUpdateNodeInfo_ValidateBasic(t *testing.T) {
 }
 
 func TestMsgUpdateNode_GetSignBytes(t *testing.T) {
-	msg := NewMsgUpdateNodeInfo(TestAddress1, hub.NewIDFromUInt64(1), "node_type", "version", "moniker", sdk.Coins{sdk.NewInt64Coin("stake", 100)}, hub.NewBandwidth(sdk.NewInt(500000000), sdk.NewInt(500000000)), "encryption")
+	msg := NewMsgUpdateNodeInfo(TestAddress1, hub.NewIDFromUInt64(1), "node_type", "version", "moniker", sdk.Coins{sdk.NewInt64Coin("stake", 100)}, TestBandwidthPos1, "encryption")
 	msgBytes, err := json.Marshal(msg)
 	if err != nil {
 		panic(err)
@@ -201,17 +188,17 @@ func TestMsgUpdateNode_GetSignBytes(t *testing.T) {
 }
 
 func TestMsgUpdateNode_GetSigners(t *testing.T) {
-	msg := NewMsgUpdateNodeInfo(TestAddress1, hub.NewIDFromUInt64(1), "node_type", "version", "moniker", sdk.Coins{sdk.NewInt64Coin("stake", 100)}, hub.NewBandwidth(sdk.NewInt(500000000), sdk.NewInt(500000000)), "encryption")
+	msg := NewMsgUpdateNodeInfo(TestAddress1, hub.NewIDFromUInt64(1), "node_type", "version", "moniker", sdk.Coins{sdk.NewInt64Coin("stake", 100)}, TestBandwidthPos1, "encryption")
 	require.Equal(t, []sdk.AccAddress{TestAddress1}, msg.GetSigners())
 }
 
 func TestMsgUpdateNode_Type(t *testing.T) {
-	msg := NewMsgUpdateNodeInfo(TestAddress1, hub.NewIDFromUInt64(1), "node_type", "version", "moniker", sdk.Coins{sdk.NewInt64Coin("stake", 100)}, hub.NewBandwidth(sdk.NewInt(500000000), sdk.NewInt(500000000)), "encryption")
+	msg := NewMsgUpdateNodeInfo(TestAddress1, hub.NewIDFromUInt64(1), "node_type", "version", "moniker", sdk.Coins{sdk.NewInt64Coin("stake", 100)}, TestBandwidthPos1, "encryption")
 	require.Equal(t, "update_node_info", msg.Type())
 }
 
 func TestMsgUpdateNode_Route(t *testing.T) {
-	msg := NewMsgUpdateNodeInfo(TestAddress1, hub.NewIDFromUInt64(1), "node_type", "version", "moniker", sdk.Coins{sdk.NewInt64Coin("stake", 100)}, hub.NewBandwidth(sdk.NewInt(500000000), sdk.NewInt(500000000)), "encryption")
+	msg := NewMsgUpdateNodeInfo(TestAddress1, hub.NewIDFromUInt64(1), "node_type", "version", "moniker", sdk.Coins{sdk.NewInt64Coin("stake", 100)}, TestBandwidthPos1, "encryption")
 	require.Equal(t, RouterKey, msg.Route())
 }
 

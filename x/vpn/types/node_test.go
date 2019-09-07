@@ -50,16 +50,16 @@ func TestNode_UpdateInfo(t *testing.T) {
 			Node{},
 		}, {
 			"net_speed is negative",
-			Node{InternetSpeed: hub.NewBandwidth(sdk.NewInt(-500000000), sdk.NewInt(-500000000))},
+			Node{InternetSpeed: TestBandwidthNeg},
 			Node{},
 		}, {
 			"net_speed is zero",
-			Node{InternetSpeed: hub.NewBandwidth(sdk.NewInt(0), sdk.NewInt(0))},
+			Node{InternetSpeed: TestBandwidthZero},
 			Node{},
 		}, {
 			"net_speed is positive",
-			Node{InternetSpeed: hub.NewBandwidth(sdk.NewInt(500000000), sdk.NewInt(500000000))},
-			Node{InternetSpeed: hub.NewBandwidth(sdk.NewInt(500000000), sdk.NewInt(500000000))},
+			Node{InternetSpeed: TestBandwidthPos1},
+			Node{InternetSpeed: TestBandwidthPos1},
 		}, {
 			"encryption is empty",
 			Node{Encryption: ""},
@@ -114,13 +114,13 @@ func TestNode_DepositToBandwidth(t *testing.T) {
 
 	bandwidth, err := node.DepositToBandwidth(sdk.NewInt64Coin("stake", 0))
 	require.Nil(t, err)
-	reflect.DeepEqual(hub.NewBandwidth(sdk.NewInt(0), sdk.NewInt(0)), bandwidth)
+	reflect.DeepEqual(TestBandwidthZero, bandwidth)
 
 	bandwidth, err = node.DepositToBandwidth(sdk.Coin{Denom: "stake", Amount: sdk.NewInt(-100)})
 	require.Nil(t, err)
-	reflect.DeepEqual(hub.NewBandwidth(sdk.NewInt(-500000000), sdk.NewInt(-500000000)), bandwidth)
+	reflect.DeepEqual(TestBandwidthNeg, bandwidth)
 
 	bandwidth, err = node.DepositToBandwidth(sdk.NewInt64Coin("stake", 100))
 	require.Nil(t, err)
-	reflect.DeepEqual(hub.NewBandwidth(sdk.NewInt(500000000), sdk.NewInt(500000000)), bandwidth)
+	reflect.DeepEqual(TestBandwidthPos1, bandwidth)
 }

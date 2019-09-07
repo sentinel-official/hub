@@ -59,6 +59,7 @@ func CreateTestInput(t *testing.T, isCheckTx bool) (sdk.Context, Keeper, deposit
 	vk := NewKeeper(cdc, keyNode, keySubscription, keySession, pk.Subspace(DefaultParamspace), dk)
 
 	sk.SetModuleAccount(ctx, depositAccount)
+	vk.SetParams(ctx, types.DefaultParams())
 
 	return ctx, vk, dk, bk
 }
