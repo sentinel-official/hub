@@ -51,7 +51,6 @@ func SimulateMsgUpdateNodeInfo(keeper vpn.Keeper) simulation.Operation {
 	}
 }
 
-// nolint: dupl
 func SimulateMsgUpdateNodeStatus(keeper vpn.Keeper) simulation.Operation {
 	handler := vpn.NewHandler(keeper)
 
@@ -70,7 +69,6 @@ func SimulateMsgUpdateNodeStatus(keeper vpn.Keeper) simulation.Operation {
 	}
 }
 
-// nolint: dupl
 func SimulateMsgStartSubscription(keeper vpn.Keeper) simulation.Operation {
 	handler := vpn.NewHandler(keeper)
 

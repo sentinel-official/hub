@@ -90,7 +90,6 @@ func (n Node) DepositToBandwidth(deposit sdk.Coin) (bandwidth hub.Bandwidth, err
 	return hub.NewBandwidth(x, x), nil
 }
 
-// nolint: gocyclo
 func (n Node) IsValid() error {
 	if n.Owner == nil || n.Owner.Empty() {
 		return fmt.Errorf("invalid owner")

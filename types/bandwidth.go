@@ -7,7 +7,6 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-// nolint:gochecknoglobals
 var (
 	KB    = sdk.NewInt(1000)
 	MB    = KB.MulRaw(1000)
