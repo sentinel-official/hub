@@ -1,4 +1,4 @@
-package keeper_test
+package keeper
 
 import (
 	"testing"
@@ -42,10 +42,10 @@ func TestKeeper_SetNode(t *testing.T) {
 	_, found = k.GetNode(ctx, types.Node{}.ID)
 	require.Equal(t, true, found)
 
-	k.SetNode(ctx, nodeValid)
-	node, found := k.GetNode(ctx, nodeValid.ID)
+	k.SetNode(ctx, types.TestNode)
+	node, found := k.GetNode(ctx, types.TestNode.ID)
 	require.Equal(t, true, found)
-	require.Equal(t, nodeValid, node)
+	require.Equal(t, types.TestNode, node)
 }
 
 func TestKeeper_GetNode(t *testing.T) {
@@ -55,33 +55,33 @@ func TestKeeper_GetNode(t *testing.T) {
 func TestKeeper_SetNodesCountOfAddress(t *testing.T) {
 	ctx, k, _, _ := CreateTestInput(t, false)
 
-	count := k.GetNodesCountOfAddress(ctx, address1)
+	count := k.GetNodesCountOfAddress(ctx, types.TestAddress1)
 	require.Equal(t, uint64(0), count)
 
 	k.SetNodesCountOfAddress(ctx, []byte(""), 1)
 	count = k.GetNodesCountOfAddress(ctx, []byte(""))
 	require.Equal(t, uint64(1), count)
 
-	k.SetNodesCountOfAddress(ctx, address1, 1)
-	count = k.GetNodesCountOfAddress(ctx, address1)
+	k.SetNodesCountOfAddress(ctx, types.TestAddress1, 1)
+	count = k.GetNodesCountOfAddress(ctx, types.TestAddress1)
 	require.Equal(t, uint64(1), count)
 
-	k.SetNodesCountOfAddress(ctx, address2, 2)
-	count = k.GetNodesCountOfAddress(ctx, address2)
+	k.SetNodesCountOfAddress(ctx, types.TestAddress2, 2)
+	count = k.GetNodesCountOfAddress(ctx, types.TestAddress2)
 	require.Equal(t, uint64(2), count)
 
-	count = k.GetNodesCountOfAddress(ctx, address1)
+	count = k.GetNodesCountOfAddress(ctx, types.TestAddress1)
 	require.Equal(t, uint64(1), count)
 
-	k.SetNodesCountOfAddress(ctx, address1, 0)
-	count = k.GetNodesCountOfAddress(ctx, address1)
+	k.SetNodesCountOfAddress(ctx, types.TestAddress1, 0)
+	count = k.GetNodesCountOfAddress(ctx, types.TestAddress1)
 	require.Equal(t, uint64(0), count)
 
-	count = k.GetNodesCountOfAddress(ctx, address2)
+	count = k.GetNodesCountOfAddress(ctx, types.TestAddress2)
 	require.Equal(t, uint64(2), count)
 
-	k.SetNodesCountOfAddress(ctx, address2, 0)
-	count = k.GetNodesCountOfAddress(ctx, address2)
+	k.SetNodesCountOfAddress(ctx, types.TestAddress2, 0)
+	count = k.GetNodesCountOfAddress(ctx, types.TestAddress2)
 	require.Equal(t, uint64(0), count)
 }
 
@@ -92,7 +92,7 @@ func TestKeeper_GetNodesCountOfAddress(t *testing.T) {
 func TestKeeper_SetNodeIDByAddress(t *testing.T) {
 	ctx, k, _, _ := CreateTestInput(t, false)
 
-	id, found := k.GetNodeIDByAddress(ctx, address1, 0)
+	id, found := k.GetNodeIDByAddress(ctx, types.TestAddress1, 0)
 	require.Equal(t, false, found)
 	require.Equal(t, hub.NewIDFromUInt64(0), id)
 
@@ -101,23 +101,23 @@ func TestKeeper_SetNodeIDByAddress(t *testing.T) {
 	require.Equal(t, true, found)
 	require.Equal(t, hub.NewIDFromUInt64(0), id)
 
-	k.SetNodeIDByAddress(ctx, address1, 0, hub.NewIDFromUInt64(0))
-	id, found = k.GetNodeIDByAddress(ctx, address1, 0)
+	k.SetNodeIDByAddress(ctx, types.TestAddress1, 0, hub.NewIDFromUInt64(0))
+	id, found = k.GetNodeIDByAddress(ctx, types.TestAddress1, 0)
 	require.Equal(t, true, found)
 	require.Equal(t, hub.NewIDFromUInt64(0), id)
 
-	k.SetNodeIDByAddress(ctx, address2, 0, hub.NewIDFromUInt64(0))
-	id, found = k.GetNodeIDByAddress(ctx, address2, 0)
+	k.SetNodeIDByAddress(ctx, types.TestAddress2, 0, hub.NewIDFromUInt64(0))
+	id, found = k.GetNodeIDByAddress(ctx, types.TestAddress2, 0)
 	require.Equal(t, true, found)
 	require.Equal(t, hub.NewIDFromUInt64(0), id)
 
-	k.SetNodeIDByAddress(ctx, address1, 1, hub.NewIDFromUInt64(1))
-	id, found = k.GetNodeIDByAddress(ctx, address1, 1)
+	k.SetNodeIDByAddress(ctx, types.TestAddress1, 1, hub.NewIDFromUInt64(1))
+	id, found = k.GetNodeIDByAddress(ctx, types.TestAddress1, 1)
 	require.Equal(t, true, found)
 	require.Equal(t, hub.NewIDFromUInt64(1), id)
 
-	k.SetNodeIDByAddress(ctx, address2, 1, hub.NewIDFromUInt64(1))
-	id, found = k.GetNodeIDByAddress(ctx, address2, 1)
+	k.SetNodeIDByAddress(ctx, types.TestAddress2, 1, hub.NewIDFromUInt64(1))
+	id, found = k.GetNodeIDByAddress(ctx, types.TestAddress2, 1)
 	require.Equal(t, true, found)
 	require.Equal(t, hub.NewIDFromUInt64(1), id)
 }
@@ -207,35 +207,35 @@ func TestKeeper_DeleteActiveNodeIDs(t *testing.T) {
 func TestKeeper_GetNodesOfAddress(t *testing.T) {
 	ctx, k, _, _ := CreateTestInput(t, false)
 
-	nodes := k.GetNodesOfAddress(ctx, address1)
+	nodes := k.GetNodesOfAddress(ctx, types.TestAddress1)
 	require.Equal(t, []types.Node{}, nodes)
 
-	k.SetNode(ctx, nodeValid)
-	k.SetNodeIDByAddress(ctx, address1, 0, hub.NewIDFromUInt64(0))
-	k.SetNodesCountOfAddress(ctx, address1, 1)
+	k.SetNode(ctx, types.TestNode)
+	k.SetNodeIDByAddress(ctx, types.TestAddress1, 0, hub.NewIDFromUInt64(0))
+	k.SetNodesCountOfAddress(ctx, types.TestAddress1, 1)
 
 	nodes = k.GetNodesOfAddress(ctx, []byte(""))
 	require.Equal(t, []types.Node{}, nodes)
-	nodes = k.GetNodesOfAddress(ctx, address2)
+	nodes = k.GetNodesOfAddress(ctx, types.TestAddress2)
 	require.Equal(t, []types.Node{}, nodes)
-	nodes = k.GetNodesOfAddress(ctx, address1)
-	require.Equal(t, []types.Node{nodeValid}, nodes)
+	nodes = k.GetNodesOfAddress(ctx, types.TestAddress1)
+	require.Equal(t, []types.Node{types.TestNode}, nodes)
 
-	k.SetNode(ctx, nodeValid)
-	k.SetNodeIDByAddress(ctx, address2, 0, hub.NewIDFromUInt64(0))
-	k.SetNodesCountOfAddress(ctx, address2, 1)
+	k.SetNode(ctx, types.TestNode)
+	k.SetNodeIDByAddress(ctx, types.TestAddress2, 0, hub.NewIDFromUInt64(0))
+	k.SetNodesCountOfAddress(ctx, types.TestAddress2, 1)
 
-	nodes = k.GetNodesOfAddress(ctx, address2)
-	require.Equal(t, []types.Node{nodeValid}, nodes)
+	nodes = k.GetNodesOfAddress(ctx, types.TestAddress2)
+	require.Equal(t, []types.Node{types.TestNode}, nodes)
 
-	node := nodeValid
+	node := types.TestNode
 	node.ID = hub.NewIDFromUInt64(1)
 	k.SetNode(ctx, node)
-	k.SetNodeIDByAddress(ctx, address2, 1, hub.NewIDFromUInt64(1))
-	k.SetNodesCountOfAddress(ctx, address2, 2)
+	k.SetNodeIDByAddress(ctx, types.TestAddress2, 1, hub.NewIDFromUInt64(1))
+	k.SetNodesCountOfAddress(ctx, types.TestAddress2, 2)
 
-	nodes = k.GetNodesOfAddress(ctx, address2)
-	require.Equal(t, append([]types.Node{nodeValid}, node), nodes)
+	nodes = k.GetNodesOfAddress(ctx, types.TestAddress2)
+	require.Equal(t, append([]types.Node{types.TestNode}, node), nodes)
 }
 
 func TestKeeper_GetAllNodes(t *testing.T) {
@@ -244,19 +244,19 @@ func TestKeeper_GetAllNodes(t *testing.T) {
 	nodes := k.GetAllNodes(ctx)
 	require.Equal(t, []types.Node(nil), nodes)
 
-	k.SetNode(ctx, nodeValid)
+	k.SetNode(ctx, types.TestNode)
 	nodes = k.GetAllNodes(ctx)
-	require.Equal(t, []types.Node{nodeValid}, nodes)
+	require.Equal(t, []types.Node{types.TestNode}, nodes)
 
-	node := nodeValid
+	node := types.TestNode
 	node.ID = hub.NewIDFromUInt64(1)
 	k.SetNode(ctx, node)
 	nodes = k.GetAllNodes(ctx)
-	require.Equal(t, append([]types.Node{nodeValid}, node), nodes)
+	require.Equal(t, append([]types.Node{types.TestNode}, node), nodes)
 
-	k.SetNode(ctx, nodeValid)
+	k.SetNode(ctx, types.TestNode)
 	nodes = k.GetAllNodes(ctx)
-	require.Equal(t, append([]types.Node{nodeValid}, node), nodes)
+	require.Equal(t, append([]types.Node{types.TestNode}, node), nodes)
 }
 
 func TestKeeper_AddNodeIDToActiveList(t *testing.T) {

@@ -1,4 +1,4 @@
-package types_test
+package types
 
 import (
 	"encoding/json"
@@ -10,46 +10,45 @@ import (
 	"github.com/stretchr/testify/require"
 
 	hub "github.com/sentinel-official/hub/types"
-	"github.com/sentinel-official/hub/x/vpn/types"
 )
 
 func TestMsgUpdateSessionInfo_ValidateBasic(t *testing.T) {
 	tests := []struct {
 		name string
-		msg  *types.MsgUpdateSessionInfo
+		msg  *MsgUpdateSessionInfo
 		want sdk.Error
 	}{
 		{
 			"from is nil",
-			types.NewMsgUpdateSessionInfo(nil, hub.NewIDFromUInt64(1), hub.NewBandwidth(sdk.NewInt(500000000), sdk.NewInt(500000000)), nodeOwnerStdSignaturePos1, clientStdSignaturePos1),
-			types.ErrorInvalidField("from"),
+			NewMsgUpdateSessionInfo(nil, hub.NewIDFromUInt64(1), hub.NewBandwidth(sdk.NewInt(500000000), sdk.NewInt(500000000)), nodeOwnerStdSignaturePos1, clientStdSignaturePos1),
+			ErrorInvalidField("from"),
 		}, {
 			"from is empty",
-			types.NewMsgUpdateSessionInfo([]byte(""), hub.NewIDFromUInt64(1), hub.NewBandwidth(sdk.NewInt(500000000), sdk.NewInt(500000000)), nodeOwnerStdSignaturePos1, clientStdSignaturePos1),
-			types.ErrorInvalidField("from"),
+			NewMsgUpdateSessionInfo([]byte(""), hub.NewIDFromUInt64(1), hub.NewBandwidth(sdk.NewInt(500000000), sdk.NewInt(500000000)), nodeOwnerStdSignaturePos1, clientStdSignaturePos1),
+			ErrorInvalidField("from"),
 		}, {
 			"bandwidth is zero",
-			types.NewMsgUpdateSessionInfo(address1, hub.NewIDFromUInt64(1), hub.NewBandwidth(sdk.NewInt(0), sdk.NewInt(0)), nodeOwnerStdSignaturePos1, clientStdSignaturePos1),
-			types.ErrorInvalidField("bandwidth"),
+			NewMsgUpdateSessionInfo(TestAddress1, hub.NewIDFromUInt64(1), hub.NewBandwidth(sdk.NewInt(0), sdk.NewInt(0)), nodeOwnerStdSignaturePos1, clientStdSignaturePos1),
+			ErrorInvalidField("bandwidth"),
 		}, {
 			"bandwidth is neg",
-			types.NewMsgUpdateSessionInfo(address1, hub.NewIDFromUInt64(1), hub.NewBandwidth(sdk.NewInt(-500000000), sdk.NewInt(-500000000)), nodeOwnerStdSignaturePos1, clientStdSignaturePos1),
-			types.ErrorInvalidField("bandwidth"),
+			NewMsgUpdateSessionInfo(TestAddress1, hub.NewIDFromUInt64(1), hub.NewBandwidth(sdk.NewInt(-500000000), sdk.NewInt(-500000000)), nodeOwnerStdSignaturePos1, clientStdSignaturePos1),
+			ErrorInvalidField("bandwidth"),
 		}, {
 			"bandwidth is zero",
-			types.NewMsgUpdateSessionInfo(address1, hub.NewIDFromUInt64(1), hub.NewBandwidth(sdk.NewInt(0), sdk.NewInt(0)), nodeOwnerStdSignaturePos1, clientStdSignaturePos1),
-			types.ErrorInvalidField("bandwidth"),
+			NewMsgUpdateSessionInfo(TestAddress1, hub.NewIDFromUInt64(1), hub.NewBandwidth(sdk.NewInt(0), sdk.NewInt(0)), nodeOwnerStdSignaturePos1, clientStdSignaturePos1),
+			ErrorInvalidField("bandwidth"),
 		}, {
 			"node owner sign is empty  ",
-			types.NewMsgUpdateSessionInfo(address1, hub.NewIDFromUInt64(1), hub.NewBandwidth(sdk.NewInt(500000000), sdk.NewInt(500000000)), auth.StdSignature{}, clientStdSignaturePos1),
-			types.ErrorInvalidField("node_owner_signature"),
+			NewMsgUpdateSessionInfo(TestAddress1, hub.NewIDFromUInt64(1), hub.NewBandwidth(sdk.NewInt(500000000), sdk.NewInt(500000000)), auth.StdSignature{}, clientStdSignaturePos1),
+			ErrorInvalidField("node_owner_signature"),
 		}, {
 			"client sign is empty  ",
-			types.NewMsgUpdateSessionInfo(address1, hub.NewIDFromUInt64(1), hub.NewBandwidth(sdk.NewInt(500000000), sdk.NewInt(500000000)), nodeOwnerStdSignaturePos1, auth.StdSignature{}),
-			types.ErrorInvalidField("client_signature"),
+			NewMsgUpdateSessionInfo(TestAddress1, hub.NewIDFromUInt64(1), hub.NewBandwidth(sdk.NewInt(500000000), sdk.NewInt(500000000)), nodeOwnerStdSignaturePos1, auth.StdSignature{}),
+			ErrorInvalidField("client_signature"),
 		}, {
 			"valid ",
-			types.NewMsgUpdateSessionInfo(address1, hub.NewIDFromUInt64(1), hub.NewBandwidth(sdk.NewInt(500000000), sdk.NewInt(500000000)), nodeOwnerStdSignaturePos1, clientStdSignaturePos1),
+			NewMsgUpdateSessionInfo(TestAddress1, hub.NewIDFromUInt64(1), hub.NewBandwidth(sdk.NewInt(500000000), sdk.NewInt(500000000)), nodeOwnerStdSignaturePos1, clientStdSignaturePos1),
 			nil,
 		},
 	}
@@ -64,7 +63,7 @@ func TestMsgUpdateSessionInfo_ValidateBasic(t *testing.T) {
 }
 
 func TestMsgUpdateSessionInfo_GetSignBytes(t *testing.T) {
-	msg := types.NewMsgUpdateSessionInfo(address1, hub.NewIDFromUInt64(1), hub.NewBandwidth(sdk.NewInt(500000000), sdk.NewInt(500000000)), nodeOwnerStdSignaturePos1, clientStdSignaturePos1)
+	msg := NewMsgUpdateSessionInfo(TestAddress1, hub.NewIDFromUInt64(1), hub.NewBandwidth(sdk.NewInt(500000000), sdk.NewInt(500000000)), nodeOwnerStdSignaturePos1, clientStdSignaturePos1)
 	msgBytes, err := json.Marshal(msg)
 	if err != nil {
 		panic(err)
@@ -74,16 +73,16 @@ func TestMsgUpdateSessionInfo_GetSignBytes(t *testing.T) {
 }
 
 func TestMsgUpdateSessionInfo_GetSigners(t *testing.T) {
-	msg := types.NewMsgUpdateSessionInfo(address1, hub.NewIDFromUInt64(1), hub.NewBandwidth(sdk.NewInt(500000000), sdk.NewInt(500000000)), nodeOwnerStdSignaturePos1, clientStdSignaturePos1)
-	require.Equal(t, []sdk.AccAddress{address1}, msg.GetSigners())
+	msg := NewMsgUpdateSessionInfo(TestAddress1, hub.NewIDFromUInt64(1), hub.NewBandwidth(sdk.NewInt(500000000), sdk.NewInt(500000000)), nodeOwnerStdSignaturePos1, clientStdSignaturePos1)
+	require.Equal(t, []sdk.AccAddress{TestAddress1}, msg.GetSigners())
 }
 
 func TestMsgUpdateSessionInfo_Type(t *testing.T) {
-	msg := types.NewMsgUpdateSessionInfo(address1, hub.NewIDFromUInt64(1), hub.NewBandwidth(sdk.NewInt(500000000), sdk.NewInt(500000000)), nodeOwnerStdSignaturePos1, clientStdSignaturePos1)
+	msg := NewMsgUpdateSessionInfo(TestAddress1, hub.NewIDFromUInt64(1), hub.NewBandwidth(sdk.NewInt(500000000), sdk.NewInt(500000000)), nodeOwnerStdSignaturePos1, clientStdSignaturePos1)
 	require.Equal(t, "update_session_info", msg.Type())
 }
 
 func TestMsgUpdateSessionInfo_Route(t *testing.T) {
-	msg := types.NewMsgUpdateSessionInfo(address1, hub.NewIDFromUInt64(1), hub.NewBandwidth(sdk.NewInt(500000000), sdk.NewInt(500000000)), nodeOwnerStdSignaturePos1, clientStdSignaturePos1)
-	require.Equal(t, types.RouterKey, msg.Route())
+	msg := NewMsgUpdateSessionInfo(TestAddress1, hub.NewIDFromUInt64(1), hub.NewBandwidth(sdk.NewInt(500000000), sdk.NewInt(500000000)), nodeOwnerStdSignaturePos1, clientStdSignaturePos1)
+	require.Equal(t, RouterKey, msg.Route())
 }

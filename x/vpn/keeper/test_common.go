@@ -1,4 +1,4 @@
-package keeper_test
+package keeper
 
 import (
 	"testing"
@@ -12,58 +12,14 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/supply"
 	"github.com/stretchr/testify/require"
 	abci "github.com/tendermint/tendermint/abci/types"
-	"github.com/tendermint/tendermint/crypto/ed25519"
 	"github.com/tendermint/tendermint/libs/log"
 	db "github.com/tendermint/tm-db"
 
-	hub "github.com/sentinel-official/hub/types"
 	"github.com/sentinel-official/hub/x/deposit"
-	"github.com/sentinel-official/hub/x/vpn/keeper"
 	"github.com/sentinel-official/hub/x/vpn/types"
 )
 
-var (
-	privKey1 = ed25519.GenPrivKey()
-	privKey2 = ed25519.GenPrivKey()
-	pubkey1  = privKey1.PubKey()
-	pubkey2  = privKey2.PubKey()
-	address1 = sdk.AccAddress(pubkey1.Address())
-	address2 = sdk.AccAddress(pubkey2.Address())
-
-	nodeValid = types.Node{
-		ID:               hub.NewIDFromUInt64(0),
-		Owner:            address1,
-		Deposit:          sdk.NewInt64Coin("stake", 100),
-		Type:             "node_type",
-		Version:          "version",
-		Moniker:          "moniker",
-		PricesPerGB:      sdk.Coins{sdk.NewInt64Coin("stake", 100)},
-		InternetSpeed:    hub.NewBandwidth(sdk.NewInt(500000000), sdk.NewInt(500000000)),
-		Encryption:       "encryption",
-		Status:           types.StatusInactive,
-		StatusModifiedAt: 1,
-	}
-	subscriptionValid = types.Subscription{
-		ID:                 hub.NewIDFromUInt64(0),
-		NodeID:             hub.NewIDFromUInt64(0),
-		Client:             address2,
-		PricePerGB:         sdk.NewInt64Coin("stake", 100),
-		TotalDeposit:       sdk.NewInt64Coin("stake", 100),
-		RemainingDeposit:   sdk.NewInt64Coin("stake", 100),
-		RemainingBandwidth: hub.NewBandwidth(sdk.NewInt(500000000), sdk.NewInt(500000000)),
-		Status:             types.StatusActive,
-		StatusModifiedAt:   0,
-	}
-	sessionValid = types.Session{
-		ID:               hub.NewIDFromUInt64(0),
-		SubscriptionID:   hub.NewIDFromUInt64(0),
-		Bandwidth:        hub.NewBandwidth(sdk.NewInt(500000000), sdk.NewInt(500000000)),
-		Status:           types.StatusActive,
-		StatusModifiedAt: 0,
-	}
-)
-
-func CreateTestInput(t *testing.T, isCheckTx bool) (sdk.Context, keeper.Keeper, deposit.Keeper, bank.Keeper) {
+func CreateTestInput(t *testing.T, isCheckTx bool) (sdk.Context, Keeper, deposit.Keeper, bank.Keeper) {
 	keyParams := sdk.NewKVStoreKey(params.StoreKey)
 	keyAccount := sdk.NewKVStoreKey(auth.StoreKey)
 	keySupply := sdk.NewKVStoreKey(supply.StoreKey)
@@ -100,7 +56,7 @@ func CreateTestInput(t *testing.T, isCheckTx bool) (sdk.Context, keeper.Keeper, 
 	bk := bank.NewBaseKeeper(ak, pk.Subspace(bank.DefaultParamspace), bank.DefaultCodespace, blacklist)
 	sk := supply.NewKeeper(cdc, keySupply, ak, bk, accountPermissions)
 	dk := deposit.NewKeeper(cdc, keyDeposit, sk)
-	vk := keeper.NewKeeper(cdc, keyNode, keySubscription, keySession, pk.Subspace(keeper.DefaultParamspace), dk)
+	vk := NewKeeper(cdc, keyNode, keySubscription, keySession, pk.Subspace(DefaultParamspace), dk)
 
 	sk.SetModuleAccount(ctx, depositAccount)
 

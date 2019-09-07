@@ -1,4 +1,4 @@
-package types_test
+package types
 
 import (
 	"encoding/json"
@@ -9,34 +9,33 @@ import (
 	"github.com/stretchr/testify/require"
 
 	hub "github.com/sentinel-official/hub/types"
-	"github.com/sentinel-official/hub/x/vpn/types"
 )
 
 func TestMsgStartSubscription_ValidateBasic(t *testing.T) {
 	tests := []struct {
 		name string
-		msg  *types.MsgStartSubscription
+		msg  *MsgStartSubscription
 		want sdk.Error
 	}{
 		{
 			"from is nil",
-			types.NewMsgStartSubscription(nil, hub.NewIDFromUInt64(1), sdk.NewInt64Coin("stake", 100)),
-			types.ErrorInvalidField("from"),
+			NewMsgStartSubscription(nil, hub.NewIDFromUInt64(1), sdk.NewInt64Coin("stake", 100)),
+			ErrorInvalidField("from"),
 		}, {
 			"from is empty",
-			types.NewMsgStartSubscription([]byte(""), hub.NewIDFromUInt64(1), sdk.NewInt64Coin("stake", 100)),
-			types.ErrorInvalidField("from"),
+			NewMsgStartSubscription([]byte(""), hub.NewIDFromUInt64(1), sdk.NewInt64Coin("stake", 100)),
+			ErrorInvalidField("from"),
 		}, {
 			"deposit is empty",
-			types.NewMsgStartSubscription(address1, hub.NewIDFromUInt64(1), sdk.Coin{}),
-			types.ErrorInvalidField("deposit"),
+			NewMsgStartSubscription(TestAddress1, hub.NewIDFromUInt64(1), sdk.Coin{}),
+			ErrorInvalidField("deposit"),
 		}, {
 			"deposit is zero",
-			types.NewMsgStartSubscription(address1, hub.NewIDFromUInt64(1), sdk.NewInt64Coin("stake", 0)),
-			types.ErrorInvalidField("deposit"),
+			NewMsgStartSubscription(TestAddress1, hub.NewIDFromUInt64(1), sdk.NewInt64Coin("stake", 0)),
+			ErrorInvalidField("deposit"),
 		}, {
 			"valid",
-			types.NewMsgStartSubscription(address1, hub.NewIDFromUInt64(1), sdk.NewInt64Coin("stake", 100)),
+			NewMsgStartSubscription(TestAddress1, hub.NewIDFromUInt64(1), sdk.NewInt64Coin("stake", 100)),
 			nil,
 		},
 	}
@@ -51,7 +50,7 @@ func TestMsgStartSubscription_ValidateBasic(t *testing.T) {
 }
 
 func TestMsgStartSubscription_GetSignBytes(t *testing.T) {
-	msg := types.NewMsgStartSubscription(address1, hub.NewIDFromUInt64(1), sdk.NewInt64Coin("stake", 100))
+	msg := NewMsgStartSubscription(TestAddress1, hub.NewIDFromUInt64(1), sdk.NewInt64Coin("stake", 100))
 	msgBytes, err := json.Marshal(msg)
 	if err != nil {
 		panic(err)
@@ -61,37 +60,37 @@ func TestMsgStartSubscription_GetSignBytes(t *testing.T) {
 }
 
 func TestMsgStartSubscription_GetSigners(t *testing.T) {
-	msg := types.NewMsgStartSubscription(address1, hub.NewIDFromUInt64(1), sdk.NewInt64Coin("stake", 100))
-	require.Equal(t, []sdk.AccAddress{address1}, msg.GetSigners())
+	msg := NewMsgStartSubscription(TestAddress1, hub.NewIDFromUInt64(1), sdk.NewInt64Coin("stake", 100))
+	require.Equal(t, []sdk.AccAddress{TestAddress1}, msg.GetSigners())
 }
 
 func TestMsgStartSubscription_Type(t *testing.T) {
-	msg := types.NewMsgStartSubscription(address1, hub.NewIDFromUInt64(1), sdk.NewInt64Coin("stake", 100))
+	msg := NewMsgStartSubscription(TestAddress1, hub.NewIDFromUInt64(1), sdk.NewInt64Coin("stake", 100))
 	require.Equal(t, "start_subscription", msg.Type())
 }
 
 func TestMsgStartSubscription_Route(t *testing.T) {
-	msg := types.NewMsgStartSubscription(address1, hub.NewIDFromUInt64(1), sdk.NewInt64Coin("stake", 100))
-	require.Equal(t, types.RouterKey, msg.Route())
+	msg := NewMsgStartSubscription(TestAddress1, hub.NewIDFromUInt64(1), sdk.NewInt64Coin("stake", 100))
+	require.Equal(t, RouterKey, msg.Route())
 }
 
 func TestMsgEndSubscription_ValidateBasic(t *testing.T) {
 	tests := []struct {
 		name string
-		msg  *types.MsgEndSubscription
+		msg  *MsgEndSubscription
 		want sdk.Error
 	}{
 		{
 			"from is nil",
-			types.NewMsgEndSubscription(nil, hub.NewIDFromUInt64(1)),
-			types.ErrorInvalidField("from"),
+			NewMsgEndSubscription(nil, hub.NewIDFromUInt64(1)),
+			ErrorInvalidField("from"),
 		}, {
 			"from is empty",
-			types.NewMsgEndSubscription([]byte(""), hub.NewIDFromUInt64(1)),
-			types.ErrorInvalidField("from"),
+			NewMsgEndSubscription([]byte(""), hub.NewIDFromUInt64(1)),
+			ErrorInvalidField("from"),
 		}, {
 			"valid",
-			types.NewMsgEndSubscription(address1, hub.NewIDFromUInt64(1)),
+			NewMsgEndSubscription(TestAddress1, hub.NewIDFromUInt64(1)),
 			nil,
 		},
 	}
@@ -106,7 +105,7 @@ func TestMsgEndSubscription_ValidateBasic(t *testing.T) {
 }
 
 func TestMsgEndSubscription_GetSignBytes(t *testing.T) {
-	msg := types.NewMsgEndSubscription(address1, hub.NewIDFromUInt64(1))
+	msg := NewMsgEndSubscription(TestAddress1, hub.NewIDFromUInt64(1))
 	msgBytes, err := json.Marshal(msg)
 	if err != nil {
 		panic(err)
@@ -116,16 +115,16 @@ func TestMsgEndSubscription_GetSignBytes(t *testing.T) {
 }
 
 func TestMsgEndSubscription_GetSigners(t *testing.T) {
-	msg := types.NewMsgEndSubscription(address1, hub.NewIDFromUInt64(1))
-	require.Equal(t, []sdk.AccAddress{address1}, msg.GetSigners())
+	msg := NewMsgEndSubscription(TestAddress1, hub.NewIDFromUInt64(1))
+	require.Equal(t, []sdk.AccAddress{TestAddress1}, msg.GetSigners())
 }
 
 func TestMsgEndSubscription_Type(t *testing.T) {
-	msg := types.NewMsgEndSubscription(address1, hub.NewIDFromUInt64(1))
+	msg := NewMsgEndSubscription(TestAddress1, hub.NewIDFromUInt64(1))
 	require.Equal(t, "end_subscription", msg.Type())
 }
 
 func TestMsgEndSubscription_Route(t *testing.T) {
-	msg := types.NewMsgEndSubscription(address1, hub.NewIDFromUInt64(1))
-	require.Equal(t, types.RouterKey, msg.Route())
+	msg := NewMsgEndSubscription(TestAddress1, hub.NewIDFromUInt64(1))
+	require.Equal(t, RouterKey, msg.Route())
 }

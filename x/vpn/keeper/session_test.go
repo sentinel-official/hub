@@ -1,4 +1,4 @@
-package keeper_test
+package keeper
 
 import (
 	"testing"
@@ -42,10 +42,10 @@ func TestKeeper_SetSession(t *testing.T) {
 	result, found := k.GetSession(ctx, types.Session{}.ID)
 	require.Equal(t, true, found)
 
-	k.SetSession(ctx, sessionValid)
-	result, found = k.GetSession(ctx, sessionValid.ID)
+	k.SetSession(ctx, types.TestSession)
+	result, found = k.GetSession(ctx, types.TestSession.ID)
 	require.Equal(t, true, found)
-	require.Equal(t, sessionValid, result)
+	require.Equal(t, types.TestSession, result)
 }
 
 func TestKeeper_GetSession(t *testing.T) {
@@ -192,22 +192,22 @@ func TestKeeper_GetSessionsOfSubscription(t *testing.T) {
 	sessions := k.GetSessionsOfSubscription(ctx, hub.NewIDFromUInt64(0))
 	require.Equal(t, []types.Session{}, sessions)
 
-	k.SetSession(ctx, sessionValid)
+	k.SetSession(ctx, types.TestSession)
 	k.SetSessionIDBySubscriptionID(ctx, hub.NewIDFromUInt64(0), 0, hub.NewIDFromUInt64(0))
 	k.SetSessionsCountOfSubscription(ctx, hub.NewIDFromUInt64(0), 1)
 
 	sessions = k.GetSessionsOfSubscription(ctx, hub.NewIDFromUInt64(1))
 	require.Equal(t, []types.Session{}, sessions)
 	sessions = k.GetSessionsOfSubscription(ctx, hub.NewIDFromUInt64(0))
-	require.Equal(t, []types.Session{sessionValid}, sessions)
+	require.Equal(t, []types.Session{types.TestSession}, sessions)
 
-	session := sessionValid
+	session := types.TestSession
 	session.ID = hub.NewIDFromUInt64(1)
 	k.SetSession(ctx, session)
 	k.SetSessionIDBySubscriptionID(ctx, hub.NewIDFromUInt64(0), 1, hub.NewIDFromUInt64(1))
 	k.SetSessionsCountOfSubscription(ctx, hub.NewIDFromUInt64(0), 2)
 	sessions = k.GetSessionsOfSubscription(ctx, hub.NewIDFromUInt64(0))
-	require.Equal(t, append([]types.Session{sessionValid}, session), sessions)
+	require.Equal(t, append([]types.Session{types.TestSession}, session), sessions)
 }
 
 func TestKeeper_GetAllSessions(t *testing.T) {
@@ -216,19 +216,19 @@ func TestKeeper_GetAllSessions(t *testing.T) {
 	sessions := k.GetAllSessions(ctx)
 	require.Equal(t, []types.Session(nil), sessions)
 
-	k.SetSession(ctx, sessionValid)
+	k.SetSession(ctx, types.TestSession)
 	sessions = k.GetAllSessions(ctx)
-	require.Equal(t, []types.Session{sessionValid}, sessions)
+	require.Equal(t, []types.Session{types.TestSession}, sessions)
 
-	session := sessionValid
+	session := types.TestSession
 	session.ID = hub.NewIDFromUInt64(1)
 	k.SetSession(ctx, session)
 	sessions = k.GetAllSessions(ctx)
-	require.Equal(t, append([]types.Session{sessionValid}, session), sessions)
+	require.Equal(t, append([]types.Session{types.TestSession}, session), sessions)
 
-	k.SetSession(ctx, sessionValid)
+	k.SetSession(ctx, types.TestSession)
 	sessions = k.GetAllSessions(ctx)
-	require.Equal(t, append([]types.Session{sessionValid}, session), sessions)
+	require.Equal(t, append([]types.Session{types.TestSession}, session), sessions)
 }
 
 func TestKeeper_AddSessionIDToActiveList(t *testing.T) {

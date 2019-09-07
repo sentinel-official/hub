@@ -1,4 +1,4 @@
-package types_test
+package types
 
 import (
 	"reflect"
@@ -8,81 +8,80 @@ import (
 	"github.com/stretchr/testify/require"
 
 	hub "github.com/sentinel-official/hub/types"
-	"github.com/sentinel-official/hub/x/vpn/types"
 )
 
 func TestNode_UpdateInfo(t *testing.T) {
 	tests := []struct {
 		name string
-		info types.Node
-		want types.Node
+		info Node
+		want Node
 	}{
 		{
 			"node_moniker is empty",
-			types.Node{Moniker: ""},
-			types.Node{},
+			Node{Moniker: ""},
+			Node{},
 		}, {
 			"node_moniker length Valid",
-			types.Node{Moniker: "moniker"},
-			types.Node{Moniker: "moniker"},
+			Node{Moniker: "moniker"},
+			Node{Moniker: "moniker"},
 		}, {
 			"prices_per_gb is nil",
-			types.Node{PricesPerGB: nil},
-			types.Node{},
+			Node{PricesPerGB: nil},
+			Node{},
 		}, {
 			"prices_per_gb is empty",
-			types.Node{PricesPerGB: sdk.Coins{}},
-			types.Node{},
+			Node{PricesPerGB: sdk.Coins{}},
+			Node{},
 		}, {
 			"prices_per_gb is negative",
-			types.Node{PricesPerGB: sdk.Coins{sdk.Coin{"stake", sdk.NewInt(-100)}}},
-			types.Node{},
+			Node{PricesPerGB: sdk.Coins{sdk.Coin{"stake", sdk.NewInt(-100)}}},
+			Node{},
 		}, {
 			"prices_per_gb is zero",
-			types.Node{PricesPerGB: sdk.Coins{sdk.NewInt64Coin("stake", 0)}},
-			types.Node{},
+			Node{PricesPerGB: sdk.Coins{sdk.NewInt64Coin("stake", 0)}},
+			Node{},
 		}, {
 			"prices_per_gb is positive",
-			types.Node{PricesPerGB: sdk.Coins{sdk.NewInt64Coin("stake", 100)}},
-			types.Node{PricesPerGB: sdk.Coins{sdk.NewInt64Coin("stake", 100)}},
+			Node{PricesPerGB: sdk.Coins{sdk.NewInt64Coin("stake", 100)}},
+			Node{PricesPerGB: sdk.Coins{sdk.NewInt64Coin("stake", 100)}},
 		}, {
 			"net_speed is empty",
-			types.Node{InternetSpeed: hub.Bandwidth{}},
-			types.Node{},
+			Node{InternetSpeed: hub.Bandwidth{}},
+			Node{},
 		}, {
 			"net_speed is negative",
-			types.Node{InternetSpeed: hub.NewBandwidth(sdk.NewInt(-500000000), sdk.NewInt(-500000000))},
-			types.Node{},
+			Node{InternetSpeed: hub.NewBandwidth(sdk.NewInt(-500000000), sdk.NewInt(-500000000))},
+			Node{},
 		}, {
 			"net_speed is zero",
-			types.Node{InternetSpeed: hub.NewBandwidth(sdk.NewInt(0), sdk.NewInt(0))},
-			types.Node{},
+			Node{InternetSpeed: hub.NewBandwidth(sdk.NewInt(0), sdk.NewInt(0))},
+			Node{},
 		}, {
 			"net_speed is positive",
-			types.Node{InternetSpeed: hub.NewBandwidth(sdk.NewInt(500000000), sdk.NewInt(500000000))},
-			types.Node{InternetSpeed: hub.NewBandwidth(sdk.NewInt(500000000), sdk.NewInt(500000000))},
+			Node{InternetSpeed: hub.NewBandwidth(sdk.NewInt(500000000), sdk.NewInt(500000000))},
+			Node{InternetSpeed: hub.NewBandwidth(sdk.NewInt(500000000), sdk.NewInt(500000000))},
 		}, {
 			"encryption is empty",
-			types.Node{Encryption: ""},
-			types.Node{},
+			Node{Encryption: ""},
+			Node{},
 		}, {
 			"encryption is valid",
-			types.Node{Encryption: "encryption"},
-			types.Node{Encryption: "encryption"},
+			Node{Encryption: "encryption"},
+			Node{Encryption: "encryption"},
 		}, {
 			"node_type is empty",
-			types.Node{Type: ""},
-			types.Node{},
+			Node{Type: ""},
+			Node{},
 		}, {
 			"node_type is valid",
-			types.Node{Type: "node_type"},
-			types.Node{Type: "node_type"},
+			Node{Type: "node_type"},
+			Node{Type: "node_type"},
 		},
 	}
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			node := types.Node{}.UpdateInfo(tc.info)
+			node := Node{}.UpdateInfo(tc.info)
 			if !reflect.DeepEqual(node, tc.want) {
 				t.Errorf("\ngot = %vwant = %v", node, tc.want)
 			}
@@ -91,21 +90,21 @@ func TestNode_UpdateInfo(t *testing.T) {
 }
 
 func TestNode_FindPricePerGB(t *testing.T) {
-	var node types.Node
+	var node Node
 	require.Equal(t, node.FindPricePerGB("stake"), sdk.Coin{})
 
-	node = types.Node{PricesPerGB: nil}
+	node = Node{PricesPerGB: nil}
 	require.Equal(t, node.FindPricePerGB("stake"), sdk.Coin{})
 
-	node = types.Node{PricesPerGB: sdk.Coins{}}
+	node = Node{PricesPerGB: sdk.Coins{}}
 	require.Equal(t, node.FindPricePerGB("stake"), sdk.Coin{})
 
-	node = types.Node{PricesPerGB: sdk.Coins{sdk.NewInt64Coin("stake", 100)}}
+	node = Node{PricesPerGB: sdk.Coins{sdk.NewInt64Coin("stake", 100)}}
 	require.Equal(t, node.FindPricePerGB("stake"), sdk.NewInt64Coin("stake", 100))
 }
 
 func TestNode_DepositToBandwidth(t *testing.T) {
-	node := types.Node{
+	node := Node{
 		PricesPerGB: sdk.Coins{sdk.NewInt64Coin("stake", 100)},
 		Deposit:     sdk.NewInt64Coin("stake", 100),
 	}
