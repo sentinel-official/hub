@@ -53,10 +53,10 @@ func (p Params) String() string {
 
 func (p *Params) ParamSetPairs() subspace.ParamSetPairs {
 	return params.ParamSetPairs{
-		{KeyFreeNodesCount, &p.FreeNodesCount},
-		{KeyDeposit, &p.Deposit},
-		{KeyNodeInactiveInterval, &p.NodeInactiveInterval},
-		{KeySessionInactiveInterval, &p.SessionInactiveInterval},
+		{Key: KeyFreeNodesCount, Value: &p.FreeNodesCount},
+		{Key: KeyDeposit, Value: &p.Deposit},
+		{Key: KeyNodeInactiveInterval, Value: &p.NodeInactiveInterval},
+		{Key: KeySessionInactiveInterval, Value: &p.SessionInactiveInterval},
 	}
 }
 

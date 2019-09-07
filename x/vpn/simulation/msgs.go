@@ -23,7 +23,8 @@ func SimulateMsgRegisterNode(keeper vpn.Keeper) simulation.Operation {
 			getRandomCoins(r), getRandomBandwidth(r), getRandomEncryption(r))
 
 		if msg.ValidateBasic() != nil {
-			return simulation.NoOpMsg(vpn.ModuleName), nil, fmt.Errorf("expected msg to pass ValidateBasic: %s", msg.GetSignBytes())
+			return simulation.NoOpMsg(vpn.ModuleName), nil,
+				fmt.Errorf("expected msg to pass ValidateBasic: %s", msg.GetSignBytes())
 		}
 
 		ok := handler(ctx, *msg).IsOK()
@@ -43,7 +44,8 @@ func SimulateMsgUpdateNodeInfo(keeper vpn.Keeper) simulation.Operation {
 			getRandomCoins(r), getRandomBandwidth(r), getRandomEncryption(r))
 
 		if msg.ValidateBasic() != nil {
-			return simulation.NoOpMsg(vpn.ModuleName), nil, fmt.Errorf("expected msg to pass ValidateBasic: %s", msg.GetSignBytes())
+			return simulation.NoOpMsg(vpn.ModuleName), nil,
+				fmt.Errorf("expected msg to pass ValidateBasic: %s", msg.GetSignBytes())
 		}
 
 		ok := handler(ctx, *msg).IsOK()
@@ -61,7 +63,8 @@ func SimulateMsgUpdateNodeStatus(keeper vpn.Keeper) simulation.Operation {
 		msg := vpn.NewMsgUpdateNodeStatus(randomAcc.Address, getRandomID(r), getRandomStatus(r))
 
 		if msg.ValidateBasic() != nil {
-			return simulation.NoOpMsg(vpn.ModuleName), nil, fmt.Errorf("expected msg to pass ValidateBasic: %s", msg.GetSignBytes())
+			return simulation.NoOpMsg(vpn.ModuleName), nil,
+				fmt.Errorf("expected msg to pass ValidateBasic: %s", msg.GetSignBytes())
 		}
 
 		ok := handler(ctx, *msg).IsOK()
@@ -79,7 +82,8 @@ func SimulateMsgStartSubscription(keeper vpn.Keeper) simulation.Operation {
 		msg := vpn.NewMsgStartSubscription(randomAcc.Address, getRandomID(r), getRandomCoin(r))
 
 		if msg.ValidateBasic() != nil {
-			return simulation.NoOpMsg(vpn.ModuleName), nil, fmt.Errorf("expected msg to pass ValidateBasic: %s", msg.GetSignBytes())
+			return simulation.NoOpMsg(vpn.ModuleName), nil,
+				fmt.Errorf("expected msg to pass ValidateBasic: %s", msg.GetSignBytes())
 		}
 
 		ok := handler(ctx, *msg).IsOK()
@@ -97,7 +101,8 @@ func SimulateMsgEndSubscription(keeper vpn.Keeper) simulation.Operation {
 		msg := vpn.NewMsgEndSubscription(randomAcc.Address, getRandomID(r))
 
 		if msg.ValidateBasic() != nil {
-			return simulation.NoOpMsg(vpn.ModuleName), nil, fmt.Errorf("expected msg to pass ValidateBasic: %s", msg.GetSignBytes())
+			return simulation.NoOpMsg(vpn.ModuleName), nil,
+				fmt.Errorf("expected msg to pass ValidateBasic: %s", msg.GetSignBytes())
 		}
 
 		ok := handler(ctx, *msg).IsOK()
@@ -116,7 +121,8 @@ func SimulateMsgUpdateSessionInfo(vpnKeeper vpn.Keeper) simulation.Operation {
 			getRandomBandwidth(r), getRandomBandwidthSignature(r, accounts), getRandomBandwidthSignature(r, accounts))
 
 		if msg.ValidateBasic() != nil {
-			return simulation.NoOpMsg(vpn.ModuleName), nil, fmt.Errorf("expected msg to pass ValidateBasic: %s", msg.GetSignBytes())
+			return simulation.NoOpMsg(vpn.ModuleName), nil,
+				fmt.Errorf("expected msg to pass ValidateBasic: %s", msg.GetSignBytes())
 		}
 
 		ok := handler(ctx, *msg).IsOK()

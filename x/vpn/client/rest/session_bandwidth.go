@@ -64,7 +64,6 @@ func signSessionBandwidthHandlerFunc(ctx context.CLIContext) http.HandlerFunc {
 		}
 
 		_, _ = w.Write(bz)
-		return
 	}
 }
 

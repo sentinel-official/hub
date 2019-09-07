@@ -97,7 +97,7 @@ func handleRegisterNode(ctx sdk.Context, k keeper.Keeper, msg types.MsgRegisterN
 		ID:               hub.NewIDFromUInt64(nc),
 		Owner:            msg.From,
 		Deposit:          sdk.NewInt64Coin(k.Deposit(ctx).Denom, 0),
-		Type:             msg.Type_,
+		Type:             msg.T,
 		Version:          msg.Version,
 		Moniker:          msg.Moniker,
 		PricesPerGB:      msg.PricesPerGB,
@@ -138,7 +138,7 @@ func handleUpdateNodeInfo(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpdateN
 	}
 
 	_node := types.Node{
-		Type:          msg.Type_,
+		Type:          msg.T,
 		Version:       msg.Version,
 		Moniker:       msg.Moniker,
 		PricesPerGB:   msg.PricesPerGB,
