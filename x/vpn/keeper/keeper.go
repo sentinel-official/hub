@@ -9,23 +9,23 @@ import (
 )
 
 type Keeper struct {
-	nodeStoreKey         sdk.StoreKey
-	subscriptionStoreKey sdk.StoreKey
-	sessionStoreKey      sdk.StoreKey
-	cdc                  *codec.Codec
-	paramStore           params.Subspace
-	depositKeeper        deposit.Keeper
+	nodeKey         sdk.StoreKey
+	subscriptionKey sdk.StoreKey
+	sessionKey      sdk.StoreKey
+	cdc             *codec.Codec
+	paramStore      params.Subspace
+	deposit         deposit.Keeper
 }
 
-func NewKeeper(cdc *codec.Codec, nodeKey, subscriptionStoreKey, sessionKey sdk.StoreKey,
-	paramStore params.Subspace, depositKeeper deposit.Keeper) Keeper {
+func NewKeeper(cdc *codec.Codec, nodeKey, subscriptionKey, sessionKey sdk.StoreKey,
+	paramStore params.Subspace, dk deposit.Keeper) Keeper {
 
 	return Keeper{
-		nodeStoreKey:         nodeKey,
-		subscriptionStoreKey: subscriptionStoreKey,
-		sessionStoreKey:      sessionKey,
-		cdc:                  cdc,
-		paramStore:           paramStore.WithKeyTable(ParamKeyTable()),
-		depositKeeper:        depositKeeper,
+		nodeKey:         nodeKey,
+		subscriptionKey: subscriptionKey,
+		sessionKey:      sessionKey,
+		cdc:             cdc,
+		paramStore:      paramStore.WithKeyTable(ParamKeyTable()),
+		deposit:         dk,
 	}
 }

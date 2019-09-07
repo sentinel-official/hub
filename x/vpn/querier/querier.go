@@ -1,7 +1,6 @@
 package querier
 
 import (
-	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	abci "github.com/tendermint/tendermint/abci/types"
 
@@ -9,34 +8,33 @@ import (
 	"github.com/sentinel-official/hub/x/vpn/types"
 )
 
-// nolint:gocyclo
-func NewQuerier(k keeper.Keeper, cdc *codec.Codec) sdk.Querier {
-	return func(ctx sdk.Context, path []string, req abci.RequestQuery) (res []byte, err sdk.Error) {
+func NewQuerier(k keeper.Keeper) sdk.Querier {
+	return func(ctx sdk.Context, path []string, req abci.RequestQuery) ([]byte, sdk.Error) {
 		switch path[0] {
-		case QueryNode:
-			return queryNode(ctx, cdc, req, k)
-		case QueryNodesOfAddress:
-			return queryNodesOfAddress(ctx, cdc, req, k)
-		case QueryAllNodes:
-			return queryAllNodes(ctx, cdc, k)
-		case QuerySubscription:
-			return querySubscription(ctx, cdc, req, k)
-		case QuerySubscriptionsOfNode:
-			return querySubscriptionsOfNode(ctx, cdc, req, k)
-		case QuerySubscriptionsOfAddress:
-			return querySubscriptionsOfAddress(ctx, cdc, req, k)
-		case QueryAllSubscriptions:
-			return queryAllSubscriptions(ctx, cdc, k)
-		case QuerySessionsCountOfSubscription:
-			return querySessionsCountOfSubscription(ctx, cdc, req, k)
-		case QuerySession:
-			return querySession(ctx, cdc, req, k)
-		case QuerySessionOfSubscription:
-			return querySessionOfSubscription(ctx, cdc, req, k)
-		case QuerySessionsOfSubscription:
-			return querySessionsOfSubscription(ctx, cdc, req, k)
-		case QueryAllSessions:
-			return queryAllSessions(ctx, cdc, k)
+		case types.QueryNode:
+			return queryNode(ctx, req, k)
+		case types.QueryNodesOfAddress:
+			return queryNodesOfAddress(ctx, req, k)
+		case types.QueryAllNodes:
+			return queryAllNodes(ctx, k)
+		case types.QuerySubscription:
+			return querySubscription(ctx, req, k)
+		case types.QuerySubscriptionsOfNode:
+			return querySubscriptionsOfNode(ctx, req, k)
+		case types.QuerySubscriptionsOfAddress:
+			return querySubscriptionsOfAddress(ctx, req, k)
+		case types.QueryAllSubscriptions:
+			return queryAllSubscriptions(ctx, k)
+		case types.QuerySessionsCountOfSubscription:
+			return querySessionsCountOfSubscription(ctx, req, k)
+		case types.QuerySession:
+			return querySession(ctx, req, k)
+		case types.QuerySessionOfSubscription:
+			return querySessionOfSubscription(ctx, req, k)
+		case types.QuerySessionsOfSubscription:
+			return querySessionsOfSubscription(ctx, req, k)
+		case types.QueryAllSessions:
+			return queryAllSessions(ctx, k)
 		default:
 			return nil, types.ErrorInvalidQueryType(path[0])
 		}

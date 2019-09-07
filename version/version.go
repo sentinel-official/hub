@@ -5,36 +5,42 @@ import (
 	"runtime"
 )
 
-// nolint:gochecknoglobals
 var (
+	Name       = ""
+	ServerName = ""
+	ClientName = ""
 	Version    = ""
 	Commit     = ""
-	VendorHash = ""
 	BuildTags  = ""
 )
 
 type Info struct {
-	Version    string `json:"version"`
-	Commit     string `json:"commit"`
-	VendorHash string `json:"vendor_hash"`
-	BuildTags  string `json:"build_tags"`
-	Go         string `json:"go"`
+	Name       string `json:"name" yaml:"name"`
+	ServerName string `json:"server_name" yaml:"server_name"`
+	ClientName string `json:"client_name" yaml:"client_name"`
+	Version    string `json:"version" yaml:"version"`
+	GitCommit  string `json:"commit" yaml:"commit"`
+	BuildTags  string `json:"build_tags" yaml:"build_tags"`
+	GoVersion  string `json:"go" yaml:"go"`
 }
 
-func (i Info) String() string {
-	return fmt.Sprintf(`%s
-git commit: %s
-vendor hash: %s
-build tags: %s
-%s`, i.Version, i.Commit, i.VendorHash, i.BuildTags, i.Go)
-}
-
-func newInfo() Info {
+func NewInfo() Info {
 	return Info{
+		Name:       Name,
+		ServerName: ServerName,
+		ClientName: ClientName,
 		Version:    Version,
-		Commit:     Commit,
-		VendorHash: VendorHash,
+		GitCommit:  Commit,
 		BuildTags:  BuildTags,
-		Go:         fmt.Sprintf("go version %s %s/%s\n", runtime.Version(), runtime.GOOS, runtime.GOARCH),
+		GoVersion:  fmt.Sprintf("go version %s %s/%s", runtime.Version(), runtime.GOOS, runtime.GOARCH),
 	}
+}
+
+func (vi Info) String() string {
+	return fmt.Sprintf(`%s: %s
+git commit: %s
+build tags: %s
+%s`,
+		vi.Name, vi.Version, vi.GitCommit, vi.BuildTags, vi.GoVersion,
+	)
 }

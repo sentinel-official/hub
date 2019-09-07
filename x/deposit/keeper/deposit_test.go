@@ -3,119 +3,45 @@ package keeper
 import (
 	"testing"
 
-	"github.com/cosmos/cosmos-sdk/codec"
-	"github.com/cosmos/cosmos-sdk/store"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/x/auth"
-	"github.com/cosmos/cosmos-sdk/x/bank"
-	"github.com/cosmos/cosmos-sdk/x/params"
 	"github.com/stretchr/testify/require"
-	abci "github.com/tendermint/tendermint/abci/types"
-	"github.com/tendermint/tendermint/crypto/ed25519"
-	tmDB "github.com/tendermint/tendermint/libs/db"
-	"github.com/tendermint/tendermint/libs/log"
 
 	"github.com/sentinel-official/hub/x/deposit/types"
 )
 
-var (
-	testPrivKey1     = ed25519.GenPrivKey()
-	testPrivKey2     = ed25519.GenPrivKey()
-	testPubKey1      = testPrivKey1.PubKey()
-	testPubKey2      = testPrivKey2.PubKey()
-	testAddressEmpty = sdk.AccAddress([]byte(""))
-	testAddress1     = sdk.AccAddress(testPubKey1.Address())
-	testAddress2     = sdk.AccAddress(testPubKey2.Address())
-
-	testCoinEmpty = sdk.Coin{}
-	testCoinNeg   = sdk.Coin{Denom: "stake", Amount: sdk.NewInt(-10)}
-	testCoinZero  = sdk.NewInt64Coin("stake", 0)
-	testCoinPos   = sdk.NewInt64Coin("stake", 10)
-
-	testCoinsEmpty = sdk.Coins{}
-	testCoinsNil   = sdk.Coins(nil)
-	testCoinsNeg   = sdk.Coins{testCoinNeg}
-	testCoinsZero  = sdk.Coins{testCoinZero}
-	testCoinsPos   = sdk.Coins{testCoinPos}
-
-	testDepositEmpty = types.Deposit{}
-	testDepositNil   = types.Deposit{Coins: sdk.Coins(nil)}
-	testDepositNeg   = types.Deposit{Address: testAddress1, Coins: testCoinsNeg}
-	testDepositZero  = types.Deposit{Address: testAddress1, Coins: testCoinsZero}
-	testDepositPos   = types.Deposit{Address: testAddress1, Coins: testCoinsPos}
-
-	testDepositsEmpty []types.Deposit
-	testDepositsNil   = []types.Deposit(nil)
-	testDepositsNeg   = []types.Deposit{testDepositNeg}
-	testDepositsZero  = []types.Deposit{testDepositZero}
-	testDepositsPos   = []types.Deposit{testDepositPos}
-)
-
-func testCreateInput() (sdk.Context, Keeper, bank.BaseKeeper) {
-	keyParams := sdk.NewKVStoreKey("params")
-	keyAccount := sdk.NewKVStoreKey("acc")
-	keyDeposits := sdk.NewKVStoreKey("deposits")
-	tkeyParams := sdk.NewTransientStoreKey("tparams")
-
-	db := tmDB.NewMemDB()
-	ms := store.NewCommitMultiStore(db)
-	ms.MountStoreWithDB(keyParams, sdk.StoreTypeIAVL, db)
-	ms.MountStoreWithDB(keyAccount, sdk.StoreTypeIAVL, db)
-	ms.MountStoreWithDB(keyDeposits, sdk.StoreTypeIAVL, db)
-	ms.MountStoreWithDB(tkeyParams, sdk.StoreTypeTransient, db)
-	err := ms.LoadLatestVersion()
-	if err != nil {
-		panic(err)
-	}
-
-	cdc := testMakeCodec()
-	ctx := sdk.NewContext(ms, abci.Header{ChainID: "chain-id"}, false, log.NewNopLogger())
-
-	paramsKeeper := params.NewKeeper(cdc, keyParams, tkeyParams)
-	accountKeeper := auth.NewAccountKeeper(cdc, keyAccount, paramsKeeper.Subspace(auth.DefaultParamspace), auth.ProtoBaseAccount)
-	bankKeeper := bank.NewBaseKeeper(accountKeeper, paramsKeeper.Subspace(bank.DefaultParamspace), bank.DefaultCodespace)
-	depositKeeper := NewKeeper(cdc, keyDeposits, bankKeeper)
-
-	return ctx, depositKeeper, bankKeeper
-}
-
-func testMakeCodec() *codec.Codec {
-	var cdc = codec.New()
-	auth.RegisterBaseAccount(cdc)
-	return cdc
-}
-
 func TestKeeper_SetDeposit(t *testing.T) {
-	ctx, depositKeeper, _ := testCreateInput()
+	ctx, dk, _ := CreateTestInput(t, false)
 
-	deposit, found := depositKeeper.GetDeposit(ctx, testAddress1)
+	deposit, found := dk.GetDeposit(ctx, types.Deposit{}.Address)
 	require.Equal(t, false, found)
-	require.Equal(t, testDepositEmpty, deposit)
-
-	depositKeeper.SetDeposit(ctx, testDepositEmpty)
-	deposit, found = depositKeeper.GetDeposit(ctx, testDepositEmpty.Address)
+	require.Equal(t, types.Deposit{}, deposit)
+	dk.SetDeposit(ctx, types.Deposit{})
+	deposit, found = dk.GetDeposit(ctx, types.Deposit{}.Address)
 	require.Equal(t, true, found)
-	require.Equal(t, testDepositEmpty, deposit)
+	require.Equal(t, types.Deposit{}, deposit)
 
-	depositKeeper.SetDeposit(ctx, testDepositNil)
-	deposit, found = depositKeeper.GetDeposit(ctx, testDepositNil.Address)
+	dk.SetDeposit(ctx, types.Deposit{Coins: sdk.Coins(nil)})
+	deposit, found = dk.GetDeposit(ctx, types.Deposit{Coins: sdk.Coins(nil)}.Address)
 	require.Equal(t, true, found)
-	require.Equal(t, testDepositNil, deposit)
+	require.Equal(t, types.Deposit{Coins: sdk.Coins(nil)}, deposit)
 
-	depositKeeper.SetDeposit(ctx, testDepositNeg)
-	deposit, found = depositKeeper.GetDeposit(ctx, testAddress1)
+	deposit, found = dk.GetDeposit(ctx, types.TestAddress1)
+	require.Equal(t, false, found)
+	require.Equal(t, types.Deposit{}, deposit)
+	dk.SetDeposit(ctx, types.Deposit{types.TestAddress1, sdk.Coins{sdk.Coin{"stake", sdk.NewInt(-10)}}})
+	deposit, found = dk.GetDeposit(ctx, types.TestAddress1)
 	require.Equal(t, true, found)
-	require.Equal(t, testDepositNeg, deposit)
+	require.Equal(t, types.Deposit{types.TestAddress1, sdk.Coins{sdk.Coin{"stake", sdk.NewInt(-10)}}}, deposit)
 
-	depositKeeper.SetDeposit(ctx, testDepositZero)
-	deposit, found = depositKeeper.GetDeposit(ctx, testAddress1)
+	dk.SetDeposit(ctx, types.Deposit{types.TestAddress1, sdk.Coins{sdk.NewInt64Coin("stake", 0)}})
+	deposit, found = dk.GetDeposit(ctx, types.TestAddress1)
 	require.Equal(t, true, found)
-	require.Equal(t, testDepositZero, deposit)
+	require.Equal(t, types.Deposit{types.TestAddress1, sdk.Coins{sdk.NewInt64Coin("stake", 0)}}, deposit)
 
-	depositKeeper.SetDeposit(ctx, testDepositPos)
-	deposit, found = depositKeeper.GetDeposit(ctx, testDepositPos.Address)
+	dk.SetDeposit(ctx, types.Deposit{types.TestAddress1, sdk.Coins{sdk.NewInt64Coin("stake", 10)}})
+	deposit, found = dk.GetDeposit(ctx, types.Deposit{types.TestAddress1, sdk.Coins{sdk.NewInt64Coin("stake", 10)}}.Address)
 	require.Equal(t, true, found)
-	require.Equal(t, testDepositPos, deposit)
+	require.Equal(t, types.Deposit{types.TestAddress1, sdk.Coins{sdk.NewInt64Coin("stake", 10)}}, deposit)
 }
 
 func TestKeeper_GetDeposit(t *testing.T) {
@@ -123,356 +49,303 @@ func TestKeeper_GetDeposit(t *testing.T) {
 }
 
 func TestKeeper_GetAllDeposits(t *testing.T) {
-	ctx, depositKeeper, _ := testCreateInput()
+	ctx, dk, _ := CreateTestInput(t, false)
 
-	deposits := depositKeeper.GetAllDeposits(ctx)
+	deposits := dk.GetAllDeposits(ctx)
 	require.Len(t, deposits, 0)
-	require.Equal(t, testDepositsEmpty, deposits)
+	require.Equal(t, []types.Deposit(nil), deposits)
 
-	depositKeeper.SetDeposit(ctx, testDepositPos)
-	deposits = depositKeeper.GetAllDeposits(ctx)
+	dk.SetDeposit(ctx, types.Deposit{types.TestAddress1, sdk.Coins{sdk.NewInt64Coin("stake", 10)}})
+	deposits = dk.GetAllDeposits(ctx)
 	require.Len(t, deposits, 1)
-	require.Equal(t, testDepositsPos, deposits)
+	require.Equal(t, []types.Deposit{{types.TestAddress1, sdk.Coins{sdk.NewInt64Coin("stake", 10)}}}, deposits)
 
-	testDepositPos2 := types.Deposit{Address: testAddress2, Coins: testCoinsPos}
-	depositKeeper.SetDeposit(ctx, testDepositPos2)
-	deposits = depositKeeper.GetAllDeposits(ctx)
+	depositPos2 := types.Deposit{Address: types.TestAddress2, Coins: sdk.Coins{sdk.NewInt64Coin("stake", 10)}}
+	dk.SetDeposit(ctx, depositPos2)
+	deposits = dk.GetAllDeposits(ctx)
 	require.Len(t, deposits, 2)
 }
 
 func TestKeeper_Add(t *testing.T) {
-	ctx, depositKeeper, bankKeeper := testCreateInput()
+	ctx, dk, bk := CreateTestInput(t, false)
 
-	testDepositNil.Address = testAddress1
-
-	_, err := depositKeeper.Add(ctx, testAddress1, testCoinsEmpty)
+	err := dk.Add(ctx, types.TestAddress1, sdk.Coins{})
 	require.Nil(t, err)
-	deposit, found := depositKeeper.GetDeposit(ctx, testAddress1)
+	deposit, found := dk.GetDeposit(ctx, types.TestAddress1)
 	require.Equal(t, true, found)
-	require.Equal(t, testDepositNil, deposit)
+	require.Equal(t, types.Deposit{types.TestAddress1, sdk.Coins(nil)}, deposit)
 
-	_, err = depositKeeper.Add(ctx, testAddress1, testCoinsNil)
+	err = dk.Add(ctx, types.TestAddress1, sdk.Coins(nil))
 	require.Nil(t, err)
-	deposit, found = depositKeeper.GetDeposit(ctx, testAddress1)
+	deposit, found = dk.GetDeposit(ctx, types.TestAddress1)
 	require.Equal(t, true, found)
-	require.Equal(t, testDepositNil, deposit)
+	require.Equal(t, types.Deposit{types.TestAddress1, sdk.Coins(nil)}, deposit)
 
-	_, err = depositKeeper.Add(ctx, testAddress1, testCoinsNeg)
+	err = dk.Add(ctx, types.TestAddress1, sdk.Coins{sdk.Coin{"stake", sdk.NewInt(-10)}})
 	require.NotNil(t, err)
-	deposit, found = depositKeeper.GetDeposit(ctx, testAddress1)
+	deposit, found = dk.GetDeposit(ctx, types.TestAddress1)
 	require.Equal(t, true, found)
-	require.Equal(t, testDepositNil, deposit)
+	require.Equal(t, types.Deposit{types.TestAddress1, sdk.Coins(nil)}, deposit)
 
-	_, err = depositKeeper.Add(ctx, testAddress1, testCoinsZero)
+	err = dk.Add(ctx, types.TestAddress1, sdk.Coins{sdk.NewInt64Coin("stake", 0)})
 	require.NotNil(t, err)
-	deposit, found = depositKeeper.GetDeposit(ctx, testAddress1)
+	deposit, found = dk.GetDeposit(ctx, types.TestAddress1)
 	require.Equal(t, true, found)
-	require.Equal(t, testDepositNil, deposit)
+	require.Equal(t, types.Deposit{types.TestAddress1, sdk.Coins(nil)}, deposit)
 
-	_, err = depositKeeper.Add(ctx, testAddress1, testCoinsPos)
+	err = dk.Add(ctx, types.TestAddress1, sdk.Coins{sdk.NewInt64Coin("stake", 10)})
 	require.NotNil(t, err)
-	deposit, found = depositKeeper.GetDeposit(ctx, testAddress1)
+	deposit, found = dk.GetDeposit(ctx, types.TestAddress1)
 	require.Equal(t, true, found)
-	require.Equal(t, testDepositNil, deposit)
+	require.Equal(t, types.Deposit{types.TestAddress1, sdk.Coins(nil)}, deposit)
 
-	coins, _, err := bankKeeper.AddCoins(ctx, testAddress1, testCoinsPos)
+	coins, err := bk.AddCoins(ctx, types.TestAddress1, sdk.Coins{sdk.NewInt64Coin("stake", 10)})
 	require.Nil(t, err)
-	require.Equal(t, testCoinsPos, coins)
-	require.Equal(t, testCoinsPos, bankKeeper.GetCoins(ctx, testAddress1))
+	require.Equal(t, sdk.Coins{sdk.NewInt64Coin("stake", 10)}, coins)
+	require.Equal(t, sdk.Coins{sdk.NewInt64Coin("stake", 10)}, bk.GetCoins(ctx, types.TestAddress1))
 
-	_, err = depositKeeper.Add(ctx, testAddress1, testCoinsPos)
+	err = dk.Add(ctx, types.TestAddress1, sdk.Coins{sdk.NewInt64Coin("stake", 10)})
 	require.Nil(t, err)
-	deposit, found = depositKeeper.GetDeposit(ctx, testAddress1)
+	deposit, found = dk.GetDeposit(ctx, types.TestAddress1)
 	require.Equal(t, true, found)
-	require.Equal(t, testDepositPos, deposit)
-	require.Equal(t, testCoinsNil, bankKeeper.GetCoins(ctx, testAddress1))
+	require.Equal(t, types.Deposit{types.TestAddress1, sdk.Coins{sdk.NewInt64Coin("stake", 10)}}, deposit)
+	require.Equal(t, sdk.Coins(nil), bk.GetCoins(ctx, types.TestAddress1))
 
-	_, err = depositKeeper.Add(ctx, testAddress1, testCoinsPos)
+	err = dk.Add(ctx, types.TestAddress1, sdk.Coins{sdk.NewInt64Coin("stake", 10)})
 	require.NotNil(t, err)
-	deposit, found = depositKeeper.GetDeposit(ctx, testAddress1)
+	deposit, found = dk.GetDeposit(ctx, types.TestAddress1)
 	require.Equal(t, true, found)
-	require.Equal(t, testDepositPos, deposit)
-	require.Equal(t, testCoinsNil, bankKeeper.GetCoins(ctx, testAddress1))
+	require.Equal(t, types.Deposit{types.TestAddress1, sdk.Coins{sdk.NewInt64Coin("stake", 10)}}, deposit)
+	require.Equal(t, sdk.Coins(nil), bk.GetCoins(ctx, types.TestAddress1))
 
-	testCoinsPos2 := testCoinsPos.Add(testCoinsPos)
-	testDepositPos2 := types.Deposit{Address: testAddress1, Coins: testCoinsPos2}
+	coinsPos2 := sdk.Coins{sdk.NewInt64Coin("stake", 10)}.Add(sdk.Coins{sdk.NewInt64Coin("stake", 10)})
+	depositPos2 := types.Deposit{Address: types.TestAddress1, Coins: coinsPos2}
 
-	coins, _, err = bankKeeper.AddCoins(ctx, testAddress1, testCoinsPos2)
+	coins, err = bk.AddCoins(ctx, types.TestAddress1, coinsPos2)
 	require.Nil(t, err)
-	require.Equal(t, testCoinsPos2, coins)
+	require.Equal(t, coinsPos2, bk.GetCoins(ctx, types.TestAddress1))
 
-	_, err = depositKeeper.Add(ctx, testAddress1, testCoinsPos)
+	err = dk.Add(ctx, types.TestAddress1, sdk.Coins{sdk.NewInt64Coin("stake", 10)})
 	require.Nil(t, err)
-	deposit, found = depositKeeper.GetDeposit(ctx, testAddress1)
+	deposit, found = dk.GetDeposit(ctx, types.TestAddress1)
 	require.Equal(t, true, found)
-	require.Equal(t, testDepositPos2, deposit)
-	require.Equal(t, testCoinsPos, bankKeeper.GetCoins(ctx, testAddress1))
+	require.Equal(t, depositPos2, deposit)
+	require.Equal(t, sdk.Coins{sdk.NewInt64Coin("stake", 10)}, bk.GetCoins(ctx, types.TestAddress1))
 
-	testCoinsPos3 := testCoinsPos2.Add(testCoinsPos)
-	testDepositPos3 := types.Deposit{Address: testAddress1, Coins: testCoinsPos3}
+	coinsPos3 := coinsPos2.Add(sdk.Coins{sdk.NewInt64Coin("stake", 10)})
+	depositPos3 := types.Deposit{Address: types.TestAddress1, Coins: coinsPos3}
 
-	_, err = depositKeeper.Add(ctx, testAddress1, testCoinsPos)
+	err = dk.Add(ctx, types.TestAddress1, sdk.Coins{sdk.NewInt64Coin("stake", 10)})
 	require.Nil(t, err)
-	deposit, found = depositKeeper.GetDeposit(ctx, testAddress1)
+	deposit, found = dk.GetDeposit(ctx, types.TestAddress1)
 	require.Equal(t, true, found)
-
-	require.Equal(t, testDepositPos3, deposit)
-	require.Equal(t, testCoinsNil, bankKeeper.GetCoins(ctx, testAddress1))
+	require.Equal(t, depositPos3, deposit)
+	require.Equal(t, sdk.Coins(nil), bk.GetCoins(ctx, types.TestAddress1))
 }
 
 func TestKeeper_Subtract(t *testing.T) {
-	ctx, depositKeeper, bankKeeper := testCreateInput()
-	coins := bankKeeper.GetCoins(ctx, testAddress1)
-	require.Equal(t, testCoinsEmpty, coins)
+	ctx, dk, bk := CreateTestInput(t, false)
 
-	deposit, found := depositKeeper.GetDeposit(ctx, testAddress1)
+	deposit, found := dk.GetDeposit(ctx, types.TestAddress1)
 	require.Equal(t, false, found)
-	require.Equal(t, testDepositEmpty, deposit)
+	require.Equal(t, types.Deposit{}, deposit)
 
-	_, err := depositKeeper.Subtract(ctx, testAddress1, testCoinsEmpty)
+	err := dk.Subtract(ctx, types.TestAddress1, sdk.Coins{})
 	require.NotNil(t, err)
-	_, err = depositKeeper.Subtract(ctx, testAddress1, testCoinsNil)
+	err = dk.Subtract(ctx, types.TestAddress1, sdk.Coins(nil))
 	require.NotNil(t, err)
-	_, err = depositKeeper.Subtract(ctx, testAddress1, testCoinsNeg)
+	err = dk.Subtract(ctx, types.TestAddress1, sdk.Coins{sdk.Coin{"stake", sdk.NewInt(-10)}})
 	require.NotNil(t, err)
-	_, err = depositKeeper.Subtract(ctx, testAddress1, testCoinsZero)
+	err = dk.Subtract(ctx, types.TestAddress1, sdk.Coins{sdk.NewInt64Coin("stake", 0)})
 	require.NotNil(t, err)
-	_, err = depositKeeper.Subtract(ctx, testAddress1, testCoinsPos)
+	err = dk.Subtract(ctx, types.TestAddress1, sdk.Coins{sdk.NewInt64Coin("stake", 10)})
 	require.NotNil(t, err)
 
-	deposit, found = depositKeeper.GetDeposit(ctx, testAddress1)
+	deposit, found = dk.GetDeposit(ctx, types.TestAddress1)
 	require.Equal(t, false, found)
-	require.Equal(t, testDepositEmpty, deposit)
-
-	depositKeeper.SetDeposit(ctx, testDepositPos)
-	deposit, found = depositKeeper.GetDeposit(ctx, testAddress1)
+	require.Equal(t, types.Deposit{}, deposit)
+	dk.SetDeposit(ctx, types.Deposit{types.TestAddress1, sdk.Coins{sdk.NewInt64Coin("stake", 10)}})
+	deposit, found = dk.GetDeposit(ctx, types.TestAddress1)
 	require.Equal(t, true, found)
-	require.Equal(t, testDepositPos, deposit)
+	require.Equal(t, types.Deposit{types.TestAddress1, sdk.Coins{sdk.NewInt64Coin("stake", 10)}}, deposit)
 
-	_, err = depositKeeper.Subtract(ctx, testAddress1, testCoinsEmpty)
+	err = dk.Subtract(ctx, types.TestAddress1, sdk.Coins{})
 	require.Nil(t, err)
-	deposit, found = depositKeeper.GetDeposit(ctx, testAddress1)
+	deposit, found = dk.GetDeposit(ctx, types.TestAddress1)
 	require.Equal(t, true, found)
-	require.Equal(t, testDepositPos, deposit)
+	require.Equal(t, types.Deposit{types.TestAddress1, sdk.Coins{sdk.NewInt64Coin("stake", 10)}}, deposit)
 
-	_, err = depositKeeper.Subtract(ctx, testAddress1, testCoinsNil)
+	err = dk.Subtract(ctx, types.TestAddress1, sdk.Coins(nil))
 	require.Nil(t, err)
-	deposit, found = depositKeeper.GetDeposit(ctx, testAddress1)
+	deposit, found = dk.GetDeposit(ctx, types.TestAddress1)
 	require.Equal(t, true, found)
-	require.Equal(t, testDepositPos, deposit)
+	require.Equal(t, types.Deposit{types.TestAddress1, sdk.Coins{sdk.NewInt64Coin("stake", 10)}}, deposit)
 
-	_, err = depositKeeper.Subtract(ctx, testAddress1, testCoinsNeg)
+	err = dk.Subtract(ctx, types.TestAddress1, sdk.Coins{sdk.Coin{"stake", sdk.NewInt(-10)}})
 	require.NotNil(t, err)
-	deposit, found = depositKeeper.GetDeposit(ctx, testAddress1)
+	deposit, found = dk.GetDeposit(ctx, types.TestAddress1)
 	require.Equal(t, true, found)
-	require.Equal(t, testDepositPos, deposit)
+	require.Equal(t, types.Deposit{types.TestAddress1, sdk.Coins{sdk.NewInt64Coin("stake", 10)}}, deposit)
 
-	_, err = depositKeeper.Subtract(ctx, testAddress1, testCoinsZero)
+	err = dk.Subtract(ctx, types.TestAddress1, sdk.Coins{sdk.NewInt64Coin("stake", 0)})
 	require.NotNil(t, err)
-	deposit, found = depositKeeper.GetDeposit(ctx, testAddress1)
+	deposit, found = dk.GetDeposit(ctx, types.TestAddress1)
 	require.Equal(t, true, found)
-	require.Equal(t, testDepositPos, deposit)
+	require.Equal(t, types.Deposit{types.TestAddress1, sdk.Coins{sdk.NewInt64Coin("stake", 10)}}, deposit)
 
-	_, err = depositKeeper.Subtract(ctx, testAddress1, testCoinsPos)
-	require.Nil(t, err)
-	deposit, found = depositKeeper.GetDeposit(ctx, testAddress1)
-	require.Equal(t, true, found)
-	require.Equal(t, testCoinsNil, deposit.Coins)
-	coins = bankKeeper.GetCoins(ctx, testAddress1)
-	require.Equal(t, testCoinsPos, coins)
-
-	_, err = depositKeeper.Subtract(ctx, testAddress1, testCoinsPos)
+	err = dk.Subtract(ctx, types.TestAddress1, sdk.Coins{sdk.NewInt64Coin("stake", 10)})
 	require.NotNil(t, err)
-	deposit, found = depositKeeper.GetDeposit(ctx, testAddress1)
+	deposit, found = dk.GetDeposit(ctx, types.TestAddress1)
 	require.Equal(t, true, found)
-	require.Equal(t, testCoinsNil, deposit.Coins)
-	coins = bankKeeper.GetCoins(ctx, testAddress1)
-	require.Equal(t, testCoinsPos, coins)
-
-	deposit2 := testDepositPos
-	deposit2.Coins = testCoinsPos.Add(testCoinsPos)
-	depositKeeper.SetDeposit(ctx, deposit2)
-	deposit, found = depositKeeper.GetDeposit(ctx, testAddress1)
-	require.Equal(t, true, found)
-	require.Equal(t, testCoinsPos.Add(testCoinsPos), deposit.Coins)
-
-	_, err = depositKeeper.Subtract(ctx, testAddress1, testCoinsPos)
-	require.Nil(t, err)
-	deposit, found = depositKeeper.GetDeposit(ctx, testAddress1)
-	require.Equal(t, true, found)
-	require.Equal(t, testCoinsPos, deposit.Coins)
-	coins = bankKeeper.GetCoins(ctx, testAddress1)
-	require.Equal(t, testCoinsPos.Add(testCoinsPos), coins)
+	require.Equal(t, sdk.Coins{sdk.NewInt64Coin("stake", 10)}, deposit.Coins)
+	coins := bk.GetCoins(ctx, types.TestAddress1)
+	require.Equal(t, sdk.Coins(nil), coins)
 }
 
-func TestKeeper_Send(t *testing.T) {
-	ctx, depositKeeper, bankKeeper := testCreateInput()
+func TestKeeper_SendFromDepositToAccount(t *testing.T) {
+	ctx, dk, bk := CreateTestInput(t, false)
 
-	coins := bankKeeper.GetCoins(ctx, testAddress2)
-	require.Equal(t, testCoinsEmpty, coins)
-
-	deposit, found := depositKeeper.GetDeposit(ctx, testAddress1)
+	deposit, found := dk.GetDeposit(ctx, types.TestAddress1)
 	require.Equal(t, false, found)
-	require.Equal(t, testDepositEmpty, deposit)
+	require.Equal(t, types.Deposit{}, deposit)
 
-	_, err := depositKeeper.Send(ctx, testAddress1, testAddress2, testCoinsEmpty)
+	err := dk.SendFromDepositToAccount(ctx, types.TestAddress1, types.TestAddress2, sdk.Coins{})
 	require.NotNil(t, err)
-	_, err = depositKeeper.Send(ctx, testAddress1, testAddress2, testCoinsNil)
+	err = dk.SendFromDepositToAccount(ctx, types.TestAddress1, types.TestAddress2, sdk.Coins(nil))
 	require.NotNil(t, err)
-	_, err = depositKeeper.Send(ctx, testAddress1, testAddress2, testCoinsNeg)
+	err = dk.SendFromDepositToAccount(ctx, types.TestAddress1, types.TestAddress2, sdk.Coins{sdk.Coin{"stake", sdk.NewInt(-10)}})
 	require.NotNil(t, err)
-	_, err = depositKeeper.Send(ctx, testAddress1, testAddress2, testCoinsZero)
+	err = dk.SendFromDepositToAccount(ctx, types.TestAddress1, types.TestAddress2, sdk.Coins{sdk.NewInt64Coin("stake", 0)})
 	require.NotNil(t, err)
-	_, err = depositKeeper.Send(ctx, testAddress1, testAddress2, testCoinsPos)
+	err = dk.SendFromDepositToAccount(ctx, types.TestAddress1, types.TestAddress2, sdk.Coins{sdk.NewInt64Coin("stake", 10)})
 	require.NotNil(t, err)
 
-	depositKeeper.SetDeposit(ctx, testDepositPos)
-	_, err = depositKeeper.Send(ctx, testAddress1, testAddress2, testCoinsEmpty)
+	dk.SetDeposit(ctx, types.Deposit{types.TestAddress1, sdk.Coins{sdk.NewInt64Coin("stake", 10)}})
+	err = dk.SendFromDepositToAccount(ctx, types.TestAddress1, types.TestAddress2, sdk.Coins{})
 	require.Nil(t, err)
-	coins = bankKeeper.GetCoins(ctx, testAddress2)
-	require.Equal(t, testCoinsNil, coins)
-	deposit, found = depositKeeper.GetDeposit(ctx, testAddress1)
+	coins := bk.GetCoins(ctx, types.TestAddress2)
+	require.Equal(t, sdk.Coins(nil), coins)
+	deposit, found = dk.GetDeposit(ctx, types.TestAddress1)
 	require.Equal(t, true, found)
-	require.Equal(t, testDepositPos, deposit)
+	require.Equal(t, types.Deposit{types.TestAddress1, sdk.Coins{sdk.NewInt64Coin("stake", 10)}}, deposit)
 
-	_, err = depositKeeper.Send(ctx, testAddress1, testAddress2, testCoinsNil)
+	err = dk.SendFromDepositToAccount(ctx, types.TestAddress1, types.TestAddress2, sdk.Coins(nil))
 	require.Nil(t, err)
-	coins = bankKeeper.GetCoins(ctx, testAddress2)
-	require.Equal(t, testCoinsNil, coins)
-	deposit, found = depositKeeper.GetDeposit(ctx, testAddress1)
+	coins = bk.GetCoins(ctx, types.TestAddress2)
+	require.Equal(t, sdk.Coins(nil), coins)
+	deposit, found = dk.GetDeposit(ctx, types.TestAddress1)
 	require.Equal(t, true, found)
-	require.Equal(t, testDepositPos, deposit)
+	require.Equal(t, types.Deposit{types.TestAddress1, sdk.Coins{sdk.NewInt64Coin("stake", 10)}}, deposit)
 
-	_, err = depositKeeper.Send(ctx, testAddress1, testAddress2, testCoinsNeg)
+	err = dk.SendFromDepositToAccount(ctx, types.TestAddress1, types.TestAddress2, sdk.Coins{sdk.Coin{"stake", sdk.NewInt(-10)}})
 	require.NotNil(t, err)
-	coins = bankKeeper.GetCoins(ctx, testAddress2)
-	require.Equal(t, testCoinsNil, coins)
-	deposit, found = depositKeeper.GetDeposit(ctx, testAddress1)
+	coins = bk.GetCoins(ctx, types.TestAddress2)
+	require.Equal(t, sdk.Coins(nil), coins)
+	deposit, found = dk.GetDeposit(ctx, types.TestAddress1)
 	require.Equal(t, true, found)
-	require.Equal(t, testDepositPos, deposit)
+	require.Equal(t, types.Deposit{types.TestAddress1, sdk.Coins{sdk.NewInt64Coin("stake", 10)}}, deposit)
 
-	_, err = depositKeeper.Send(ctx, testAddress1, testAddress2, testCoinsZero)
+	err = dk.SendFromDepositToAccount(ctx, types.TestAddress1, types.TestAddress2, sdk.Coins{sdk.NewInt64Coin("stake", 0)})
 	require.NotNil(t, err)
-	coins = bankKeeper.GetCoins(ctx, testAddress2)
-	require.Equal(t, testCoinsNil, coins)
-	deposit, found = depositKeeper.GetDeposit(ctx, testAddress1)
+	coins = bk.GetCoins(ctx, types.TestAddress2)
+	require.Equal(t, sdk.Coins(nil), coins)
+	deposit, found = dk.GetDeposit(ctx, types.TestAddress1)
 	require.Equal(t, true, found)
-	require.Equal(t, testDepositPos, deposit)
+	require.Equal(t, types.Deposit{types.TestAddress1, sdk.Coins{sdk.NewInt64Coin("stake", 10)}}, deposit)
 
-	_, err = depositKeeper.Send(ctx, testAddress1, testAddress2, testCoinsPos)
-	require.Nil(t, err)
-	coins = bankKeeper.GetCoins(ctx, testAddress2)
-	require.Equal(t, testCoinsPos, coins)
-	coins = bankKeeper.GetCoins(ctx, testAddress1)
-	require.Equal(t, testCoinsEmpty, coins)
-	deposit, found = depositKeeper.GetDeposit(ctx, testAddress1)
-	require.Equal(t, true, found)
-	require.Equal(t, testCoinsNil, deposit.Coins)
-
-	_, err = depositKeeper.Send(ctx, testAddress1, testAddress2, testCoinsPos)
+	err = dk.SendFromDepositToAccount(ctx, types.TestAddress1, types.TestAddress2, sdk.Coins{sdk.NewInt64Coin("stake", 10)})
 	require.NotNil(t, err)
-	coins = bankKeeper.GetCoins(ctx, testAddress2)
-	require.Equal(t, testCoinsPos, coins)
-	coins = bankKeeper.GetCoins(ctx, testAddress1)
-	require.Equal(t, testCoinsEmpty, coins)
-	deposit, found = depositKeeper.GetDeposit(ctx, testAddress1)
+	coins = bk.GetCoins(ctx, types.TestAddress2)
+	require.Equal(t, sdk.Coins(nil), coins)
+	coins = bk.GetCoins(ctx, types.TestAddress1)
+	require.Equal(t, sdk.Coins{}, coins)
+	deposit, found = dk.GetDeposit(ctx, types.TestAddress1)
 	require.Equal(t, true, found)
-	require.Equal(t, testCoinsNil, deposit.Coins)
-
-	deposit = testDepositPos
-	deposit.Coins = testCoinsPos.Add(testCoinsPos)
-	depositKeeper.SetDeposit(ctx, deposit)
-	_, err = depositKeeper.Send(ctx, testAddress1, testAddress2, testCoinsPos)
-	require.Nil(t, err)
-	coins = bankKeeper.GetCoins(ctx, testAddress2)
-	require.Equal(t, testCoinsPos.Add(testCoinsPos), coins)
-	deposit, found = depositKeeper.GetDeposit(ctx, testAddress1)
-	require.Equal(t, true, found)
-	require.Equal(t, testDepositPos, deposit)
+	require.Equal(t, sdk.Coins{sdk.NewInt64Coin("stake", 10)}, deposit.Coins)
 }
 
-func TestKeeper_Receive(t *testing.T) {
-	ctx, depositKeeper, bankKeeper := testCreateInput()
+func TestKeeper_ReceiveFromAccountToDeposit(t *testing.T) {
+	ctx, dk, bk := CreateTestInput(t, false)
 
-	deposit, found := depositKeeper.GetDeposit(ctx, testAddress2)
+	deposit, found := dk.GetDeposit(ctx, types.TestAddress2)
 	require.Equal(t, false, found)
-	coins := bankKeeper.GetCoins(ctx, testAddress1)
-	require.Equal(t, testCoinsEmpty, coins)
+	coins := bk.GetCoins(ctx, types.TestAddress1)
+	require.Equal(t, sdk.Coins{}, coins)
 
-	_, err := depositKeeper.Receive(ctx, testAddress1, testAddress2, testCoinsEmpty)
+	err := dk.ReceiveFromAccountToDeposit(ctx, types.TestAddress1, types.TestAddress2, sdk.Coins{})
 	require.Nil(t, err)
-	_, err = depositKeeper.Receive(ctx, testAddress1, testAddress2, testCoinsNil)
+	err = dk.ReceiveFromAccountToDeposit(ctx, types.TestAddress1, types.TestAddress2, sdk.Coins(nil))
 	require.Nil(t, err)
-	_, err = depositKeeper.Receive(ctx, testAddress1, testAddress2, testCoinsNeg)
+	err = dk.ReceiveFromAccountToDeposit(ctx, types.TestAddress1, types.TestAddress2, sdk.Coins{sdk.Coin{"stake", sdk.NewInt(-10)}})
 	require.NotNil(t, err)
-	_, err = depositKeeper.Receive(ctx, testAddress1, testAddress2, testCoinsZero)
+	err = dk.ReceiveFromAccountToDeposit(ctx, types.TestAddress1, types.TestAddress2, sdk.Coins{sdk.NewInt64Coin("stake", 0)})
 	require.NotNil(t, err)
-	_, err = depositKeeper.Receive(ctx, testAddress1, testAddress2, testCoinsPos)
+	err = dk.ReceiveFromAccountToDeposit(ctx, types.TestAddress1, types.TestAddress2, sdk.Coins{sdk.NewInt64Coin("stake", 10)})
 	require.NotNil(t, err)
 
-	deposit, found = depositKeeper.GetDeposit(ctx, testAddress2)
+	deposit, found = dk.GetDeposit(ctx, types.TestAddress2)
 	require.Equal(t, true, found)
-	require.Equal(t, testCoinsNil, deposit.Coins)
-	coins, _, err = bankKeeper.AddCoins(ctx, testAddress1, testCoinsPos)
+	require.Equal(t, sdk.Coins(nil), deposit.Coins)
+	coins, err = bk.AddCoins(ctx, types.TestAddress1, sdk.Coins{sdk.NewInt64Coin("stake", 10)})
 	require.Nil(t, err)
-	require.Equal(t, testCoinsPos, coins)
+	require.Equal(t, sdk.Coins{sdk.NewInt64Coin("stake", 10)}, coins)
 
-	_, err = depositKeeper.Receive(ctx, testAddress1, testAddress2, testCoinsEmpty)
+	err = dk.ReceiveFromAccountToDeposit(ctx, types.TestAddress1, types.TestAddress2, sdk.Coins{})
 	require.Nil(t, err)
-	deposit, found = depositKeeper.GetDeposit(ctx, testAddress2)
+	deposit, found = dk.GetDeposit(ctx, types.TestAddress2)
 	require.Equal(t, true, found)
-	require.Equal(t, testCoinsNil, deposit.Coins)
-	coins = bankKeeper.GetCoins(ctx, testAddress1)
-	require.Equal(t, testCoinsPos, coins)
+	require.Equal(t, sdk.Coins(nil), deposit.Coins)
+	coins = bk.GetCoins(ctx, types.TestAddress1)
+	require.Equal(t, sdk.Coins{sdk.NewInt64Coin("stake", 10)}, coins)
 
-	_, err = depositKeeper.Receive(ctx, testAddress1, testAddress2, testCoinsNil)
+	err = dk.ReceiveFromAccountToDeposit(ctx, types.TestAddress1, types.TestAddress2, sdk.Coins(nil))
 	require.Nil(t, err)
-	deposit, found = depositKeeper.GetDeposit(ctx, testAddress2)
+	deposit, found = dk.GetDeposit(ctx, types.TestAddress2)
 	require.Equal(t, true, found)
-	require.Equal(t, testCoinsNil, deposit.Coins)
-	coins = bankKeeper.GetCoins(ctx, testAddress1)
-	require.Equal(t, testCoinsPos, coins)
+	require.Equal(t, sdk.Coins(nil), deposit.Coins)
+	coins = bk.GetCoins(ctx, types.TestAddress1)
+	require.Equal(t, sdk.Coins{sdk.NewInt64Coin("stake", 10)}, coins)
 
-	_, err = depositKeeper.Receive(ctx, testAddress1, testAddress2, testCoinsNeg)
+	err = dk.ReceiveFromAccountToDeposit(ctx, types.TestAddress1, types.TestAddress2, sdk.Coins{sdk.Coin{"stake", sdk.NewInt(-10)}})
 	require.NotNil(t, err)
-	deposit, found = depositKeeper.GetDeposit(ctx, testAddress2)
+	deposit, found = dk.GetDeposit(ctx, types.TestAddress2)
 	require.Equal(t, true, found)
-	require.Equal(t, testCoinsNil, deposit.Coins)
-	coins = bankKeeper.GetCoins(ctx, testAddress1)
-	require.Equal(t, testCoinsPos, coins)
+	require.Equal(t, sdk.Coins(nil), deposit.Coins)
+	coins = bk.GetCoins(ctx, types.TestAddress1)
+	require.Equal(t, sdk.Coins{sdk.NewInt64Coin("stake", 10)}, coins)
 
-	_, err = depositKeeper.Receive(ctx, testAddress1, testAddress2, testCoinsZero)
+	err = dk.ReceiveFromAccountToDeposit(ctx, types.TestAddress1, types.TestAddress2, sdk.Coins{sdk.NewInt64Coin("stake", 0)})
 	require.NotNil(t, err)
-	deposit, found = depositKeeper.GetDeposit(ctx, testAddress2)
+	deposit, found = dk.GetDeposit(ctx, types.TestAddress2)
 	require.Equal(t, true, found)
-	require.Equal(t, testCoinsNil, deposit.Coins)
-	coins = bankKeeper.GetCoins(ctx, testAddress1)
-	require.Equal(t, testCoinsPos, coins)
+	require.Equal(t, sdk.Coins(nil), deposit.Coins)
+	coins = bk.GetCoins(ctx, types.TestAddress1)
+	require.Equal(t, sdk.Coins{sdk.NewInt64Coin("stake", 10)}, coins)
 
-	_, err = depositKeeper.Receive(ctx, testAddress1, testAddress2, testCoinsPos)
+	err = dk.ReceiveFromAccountToDeposit(ctx, types.TestAddress1, types.TestAddress2, sdk.Coins{sdk.NewInt64Coin("stake", 10)})
 	require.Nil(t, err)
-	deposit, found = depositKeeper.GetDeposit(ctx, testAddress2)
+	deposit, found = dk.GetDeposit(ctx, types.TestAddress2)
 	require.Equal(t, true, found)
-	require.Equal(t, testCoinsPos, deposit.Coins)
-	coins = bankKeeper.GetCoins(ctx, testAddress1)
-	require.Equal(t, testCoinsNil, coins)
+	require.Equal(t, sdk.Coins{sdk.NewInt64Coin("stake", 10)}, deposit.Coins)
+	coins = bk.GetCoins(ctx, types.TestAddress1)
+	require.Equal(t, sdk.Coins(nil), coins)
 
-	_, err = depositKeeper.Receive(ctx, testAddress1, testAddress2, testCoinsPos)
+	err = dk.ReceiveFromAccountToDeposit(ctx, types.TestAddress1, types.TestAddress2, sdk.Coins{sdk.NewInt64Coin("stake", 10)})
 	require.NotNil(t, err)
-	deposit, found = depositKeeper.GetDeposit(ctx, testAddress2)
+	deposit, found = dk.GetDeposit(ctx, types.TestAddress2)
 	require.Equal(t, true, found)
-	require.Equal(t, testCoinsPos, deposit.Coins)
-	coins = bankKeeper.GetCoins(ctx, testAddress1)
-	require.Equal(t, testCoinsNil, coins)
+	require.Equal(t, sdk.Coins{sdk.NewInt64Coin("stake", 10)}, deposit.Coins)
+	coins = bk.GetCoins(ctx, types.TestAddress1)
+	require.Equal(t, sdk.Coins(nil), coins)
 
-	coins, _, err = bankKeeper.AddCoins(ctx, testAddress1, testCoinsPos.Add(testCoinsPos))
+	coins, err = bk.AddCoins(ctx, types.TestAddress1, sdk.Coins{sdk.NewInt64Coin("stake", 10)}.Add(sdk.Coins{sdk.NewInt64Coin("stake", 10)}))
 	require.Nil(t, err)
-	require.Equal(t, testCoinsPos.Add(testCoinsPos), coins)
-	_, err = depositKeeper.Receive(ctx, testAddress1, testAddress2, testCoinsPos)
+	require.Equal(t, sdk.Coins{sdk.NewInt64Coin("stake", 10)}.Add(sdk.Coins{sdk.NewInt64Coin("stake", 10)}), coins)
+	err = dk.ReceiveFromAccountToDeposit(ctx, types.TestAddress1, types.TestAddress2, sdk.Coins{sdk.NewInt64Coin("stake", 10)})
 	require.Nil(t, err)
-	deposit, found = depositKeeper.GetDeposit(ctx, testAddress2)
+	deposit, found = dk.GetDeposit(ctx, types.TestAddress2)
 	require.Equal(t, true, found)
-	require.Equal(t, testCoinsPos.Add(testCoinsPos), deposit.Coins)
-	coins = bankKeeper.GetCoins(ctx, testAddress1)
-	require.Equal(t, testCoinsPos, coins)
+	require.Equal(t, sdk.Coins{sdk.NewInt64Coin("stake", 10)}.Add(sdk.Coins{sdk.NewInt64Coin("stake", 10)}), deposit.Coins)
+	coins = bk.GetCoins(ctx, types.TestAddress1)
+	require.Equal(t, sdk.Coins{sdk.NewInt64Coin("stake", 10)}, coins)
 }

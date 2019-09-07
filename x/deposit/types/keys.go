@@ -1,8 +1,14 @@
-// nolint: gochecknoglobals
 package types
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
+)
+
+const (
+	ModuleName   = "deposit"
+	StoreKey     = ModuleName
+	RouterKey    = ModuleName
+	QuerierRoute = ModuleName
 )
 
 var (
@@ -12,9 +18,3 @@ var (
 func DepositKey(address sdk.AccAddress) []byte {
 	return append(DepositKeyPrefix, address.Bytes()...)
 }
-
-const (
-	ModuleName   = "deposit"
-	StoreKey     = ModuleName
-	QuerierRoute = ModuleName
-)

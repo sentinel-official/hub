@@ -34,9 +34,7 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 	}
 }
 
-func endBlockNodes(ctx sdk.Context, k keeper.Keeper, height int64) sdk.Tags {
-	allTags := sdk.EmptyTags()
-
+func endBlockNodes(ctx sdk.Context, k keeper.Keeper, height int64) {
 	_height := height - k.NodeInactiveInterval(ctx)
 	ids := k.GetActiveNodeIDs(ctx, _height)
 
@@ -50,12 +48,9 @@ func endBlockNodes(ctx sdk.Context, k keeper.Keeper, height int64) sdk.Tags {
 	}
 
 	k.DeleteActiveNodeIDs(ctx, _height)
-	return allTags
 }
 
-func endBlockSessions(ctx sdk.Context, k keeper.Keeper, height int64) sdk.Tags {
-	allTags := sdk.EmptyTags()
-
+func endBlockSessions(ctx sdk.Context, k keeper.Keeper, height int64) {
 	_height := height - k.SessionInactiveInterval(ctx)
 	ids := k.GetActiveSessionIDs(ctx, _height)
 
@@ -70,12 +65,9 @@ func endBlockSessions(ctx sdk.Context, k keeper.Keeper, height int64) sdk.Tags {
 		if !pay.IsZero() {
 			node, _ := k.GetNode(ctx, subscription.NodeID)
 
-			tags, err := k.SendDeposit(ctx, subscription.Client, node.Owner, pay)
-			if err != nil {
+			if err := k.SendDeposit(ctx, subscription.Client, node.Owner, pay); err != nil {
 				panic(err)
 			}
-
-			allTags = allTags.AppendTags(tags)
 		}
 
 		session.Status = types.StatusInactive
@@ -91,31 +83,21 @@ func endBlockSessions(ctx sdk.Context, k keeper.Keeper, height int64) sdk.Tags {
 	}
 
 	k.DeleteActiveSessionIDs(ctx, _height)
-	return allTags
 }
 
-func EndBlock(ctx sdk.Context, k keeper.Keeper) sdk.Tags {
-	allTags := sdk.EmptyTags()
+func EndBlock(ctx sdk.Context, k keeper.Keeper) {
 	height := ctx.BlockHeight()
-
-	tags := endBlockNodes(ctx, k, height)
-	allTags = allTags.AppendTags(tags)
-
-	tags = endBlockSessions(ctx, k, height)
-	allTags = allTags.AppendTags(tags)
-
-	return allTags
+	endBlockNodes(ctx, k, height)
+	endBlockSessions(ctx, k, height)
 }
 
 func handleRegisterNode(ctx sdk.Context, k keeper.Keeper, msg types.MsgRegisterNode) sdk.Result {
-	allTags := sdk.EmptyTags()
-
 	nc := k.GetNodesCount(ctx)
 	node := types.Node{
 		ID:               hub.NewIDFromUInt64(nc),
 		Owner:            msg.From,
 		Deposit:          sdk.NewInt64Coin(k.Deposit(ctx).Denom, 0),
-		Type:             msg.Type_,
+		Type:             msg.T,
 		Version:          msg.Version,
 		Moniker:          msg.Moniker,
 		PricesPerGB:      msg.PricesPerGB,
@@ -129,12 +111,9 @@ func handleRegisterNode(ctx sdk.Context, k keeper.Keeper, msg types.MsgRegisterN
 	if nca >= k.FreeNodesCount(ctx) {
 		node.Deposit = k.Deposit(ctx)
 
-		tags, err := k.AddDeposit(ctx, node.Owner, node.Deposit)
-		if err != nil {
+		if err := k.AddDeposit(ctx, node.Owner, node.Deposit); err != nil {
 			return err.Result()
 		}
-
-		allTags = allTags.AppendTags(tags)
 	}
 
 	k.SetNode(ctx, node)
@@ -143,13 +122,10 @@ func handleRegisterNode(ctx sdk.Context, k keeper.Keeper, msg types.MsgRegisterN
 	k.SetNodesCount(ctx, nc+1)
 	k.SetNodesCountOfAddress(ctx, node.Owner, nca+1)
 
-	allTags = allTags.AppendTag(types.TagNodeID, node.ID.String())
-	return sdk.Result{Tags: allTags}
+	return sdk.Result{}
 }
 
 func handleUpdateNodeInfo(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpdateNodeInfo) sdk.Result {
-	allTags := sdk.EmptyTags()
-
 	node, found := k.GetNode(ctx, msg.ID)
 	if !found {
 		return types.ErrorNodeDoesNotExist().Result()
@@ -162,7 +138,7 @@ func handleUpdateNodeInfo(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpdateN
 	}
 
 	_node := types.Node{
-		Type:          msg.Type_,
+		Type:          msg.T,
 		Version:       msg.Version,
 		Moniker:       msg.Moniker,
 		PricesPerGB:   msg.PricesPerGB,
@@ -172,12 +148,10 @@ func handleUpdateNodeInfo(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpdateN
 	node = node.UpdateInfo(_node)
 
 	k.SetNode(ctx, node)
-	return sdk.Result{Tags: allTags}
+	return sdk.Result{}
 }
 
 func handleUpdateNodeStatus(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpdateNodeStatus) sdk.Result {
-	allTags := sdk.EmptyTags()
-
 	node, found := k.GetNode(ctx, msg.ID)
 	if !found {
 		return types.ErrorNodeDoesNotExist().Result()
@@ -198,12 +172,10 @@ func handleUpdateNodeStatus(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpdat
 	node.StatusModifiedAt = ctx.BlockHeight()
 
 	k.SetNode(ctx, node)
-	return sdk.Result{Tags: allTags}
+	return sdk.Result{}
 }
 
 func handleDeregisterNode(ctx sdk.Context, k keeper.Keeper, msg types.MsgDeregisterNode) sdk.Result {
-	allTags := sdk.EmptyTags()
-
 	node, found := k.GetNode(ctx, msg.ID)
 	if !found {
 		return types.ErrorNodeDoesNotExist().Result()
@@ -216,24 +188,19 @@ func handleDeregisterNode(ctx sdk.Context, k keeper.Keeper, msg types.MsgDeregis
 	}
 
 	if node.Deposit.IsPositive() {
-		tags, err := k.SubtractDeposit(ctx, node.Owner, node.Deposit)
-		if err != nil {
+		if err := k.SubtractDeposit(ctx, node.Owner, node.Deposit); err != nil {
 			return err.Result()
 		}
-
-		allTags = allTags.AppendTags(tags)
 	}
 
 	node.Status = types.StatusDeRegistered
 	node.StatusModifiedAt = ctx.BlockHeight()
 
 	k.SetNode(ctx, node)
-	return sdk.Result{Tags: allTags}
+	return sdk.Result{}
 }
 
 func handleStartSubscription(ctx sdk.Context, k keeper.Keeper, msg types.MsgStartSubscription) sdk.Result {
-	allTags := sdk.EmptyTags()
-
 	node, found := k.GetNode(ctx, msg.NodeID)
 	if !found {
 		return types.ErrorNodeDoesNotExist().Result()
@@ -242,12 +209,9 @@ func handleStartSubscription(ctx sdk.Context, k keeper.Keeper, msg types.MsgStar
 		return types.ErrorInvalidNodeStatus().Result()
 	}
 
-	tags, err := k.AddDeposit(ctx, msg.From, msg.Deposit)
-	if err != nil {
+	if err := k.AddDeposit(ctx, msg.From, msg.Deposit); err != nil {
 		return err.Result()
 	}
-
-	allTags = allTags.AppendTags(tags)
 
 	bandwidth, err := node.DepositToBandwidth(msg.Deposit)
 	if err != nil {
@@ -280,13 +244,10 @@ func handleStartSubscription(ctx sdk.Context, k keeper.Keeper, msg types.MsgStar
 	k.SetSubscriptionIDByAddress(ctx, subscription.Client, sca, subscription.ID)
 	k.SetSubscriptionsCountOfAddress(ctx, subscription.Client, sca+1)
 
-	allTags = allTags.AppendTag(types.TagSubscriptionID, subscription.ID.String())
-	return sdk.Result{Tags: allTags}
+	return sdk.Result{}
 }
 
 func handleEndSubscription(ctx sdk.Context, k keeper.Keeper, msg types.MsgEndSubscription) sdk.Result {
-	allTags := sdk.EmptyTags()
-
 	subscription, found := k.GetSubscription(ctx, msg.ID)
 	if !found {
 		return types.ErrorSubscriptionDoesNotExist().Result()
@@ -305,23 +266,18 @@ func handleEndSubscription(ctx sdk.Context, k keeper.Keeper, msg types.MsgEndSub
 		return types.ErrorSessionAlreadyExists().Result()
 	}
 
-	tags, err := k.SubtractDeposit(ctx, subscription.Client, subscription.RemainingDeposit)
-	if err != nil {
+	if err := k.SubtractDeposit(ctx, subscription.Client, subscription.RemainingDeposit); err != nil {
 		return err.Result()
 	}
-
-	allTags = allTags.AppendTags(tags)
 
 	subscription.Status = types.StatusInactive
 	subscription.StatusModifiedAt = ctx.BlockHeight()
 	k.SetSubscription(ctx, subscription)
 
-	return sdk.Result{Tags: allTags}
+	return sdk.Result{}
 }
 
 func handleUpdateSessionInfo(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpdateSessionInfo) sdk.Result {
-	allTags := sdk.EmptyTags()
-
 	subscription, found := k.GetSubscription(ctx, msg.SubscriptionID)
 	if !found {
 		return types.ErrorSubscriptionDoesNotExist().Result()
@@ -375,5 +331,5 @@ func handleUpdateSessionInfo(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpda
 	session.StatusModifiedAt = ctx.BlockHeight()
 
 	k.SetSession(ctx, session)
-	return sdk.Result{Tags: allTags}
+	return sdk.Result{}
 }

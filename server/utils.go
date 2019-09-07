@@ -9,29 +9,29 @@ import (
 	"github.com/sentinel-official/hub/version"
 )
 
-func AddCommands(ctx *server.Context, cdc *codec.Codec, rootCmd *cobra.Command,
-	appCreator server.AppCreator, appExport server.AppExporter) {
+func AddCommands(ctx *server.Context, cdc *codec.Codec, root *cobra.Command,
+	creator server.AppCreator, export server.AppExporter) {
 
-	rootCmd.PersistentFlags().String("log_level", ctx.Config.LogLevel, "Log level")
+	root.PersistentFlags().String("log_level", ctx.Config.LogLevel, "Log level")
 
-	tendermintCmd := &cobra.Command{
+	cmd := &cobra.Command{
 		Use:   "tendermint",
 		Short: "Tendermint subcommands",
 	}
 
-	tendermintCmd.AddCommand(
+	cmd.AddCommand(
 		server.ShowNodeIDCmd(ctx),
 		server.ShowValidatorCmd(ctx),
 		server.ShowAddressCmd(ctx),
 		server.VersionCmd(ctx),
 	)
 
-	rootCmd.AddCommand(
-		server.StartCmd(ctx, appCreator),
+	root.AddCommand(
+		server.StartCmd(ctx, creator),
 		server.UnsafeResetAllCmd(ctx),
 		client.LineBreak,
-		tendermintCmd,
-		server.ExportCmd(ctx, cdc, appExport),
+		cmd,
+		server.ExportCmd(ctx, cdc, export),
 		client.LineBreak,
 		version.Cmd,
 	)

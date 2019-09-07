@@ -7,12 +7,13 @@ import (
 )
 
 const (
-	ModuleName           = "vpn"
-	StoreKeySession      = "vpnSession"
-	StoreKeyNode         = "vpnNode"
-	StoreKeySubscription = "vpnSubscription"
-	QuerierRoute         = ModuleName
-	RouterKey            = ModuleName
+	ModuleName   = "vpn"
+	QuerierRoute = ModuleName
+	RouterKey    = ModuleName
+
+	StoreKeySession      = "vpn_session"
+	StoreKeyNode         = "vpn_node"
+	StoreKeySubscription = "vpn_subscription"
 
 	StatusRegistered   = "REGISTERED"
 	StatusActive       = "ACTIVE"
@@ -20,7 +21,6 @@ const (
 	StatusDeRegistered = "DE-REGISTERED"
 )
 
-// nolint: gochecknoglobals
 var (
 	NodesCountKey                = []byte{0x00}
 	NodeKeyPrefix                = []byte{0x01}

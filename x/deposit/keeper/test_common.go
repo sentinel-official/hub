@@ -15,18 +15,14 @@ import (
 	"github.com/tendermint/tendermint/libs/log"
 	db "github.com/tendermint/tm-db"
 
-	"github.com/sentinel-official/hub/x/deposit"
-	"github.com/sentinel-official/hub/x/vpn/types"
+	"github.com/sentinel-official/hub/x/deposit/types"
 )
 
-func CreateTestInput(t *testing.T, isCheckTx bool) (sdk.Context, Keeper, deposit.Keeper, bank.Keeper) {
+func CreateTestInput(t *testing.T, isCheckTx bool) (sdk.Context, Keeper, bank.Keeper) {
 	keyParams := sdk.NewKVStoreKey(params.StoreKey)
 	keyAccount := sdk.NewKVStoreKey(auth.StoreKey)
 	keySupply := sdk.NewKVStoreKey(supply.StoreKey)
-	keyDeposit := sdk.NewKVStoreKey(deposit.StoreKey)
-	keyNode := sdk.NewKVStoreKey(types.StoreKeyNode)
-	keySubscription := sdk.NewKVStoreKey(types.StoreKeySubscription)
-	keySession := sdk.NewKVStoreKey(types.StoreKeySession)
+	keyDeposits := sdk.NewKVStoreKey(types.StoreKey)
 	tkeyParams := sdk.NewTransientStoreKey(params.TStoreKey)
 
 	mdb := db.NewMemDB()
@@ -34,10 +30,7 @@ func CreateTestInput(t *testing.T, isCheckTx bool) (sdk.Context, Keeper, deposit
 	ms.MountStoreWithDB(keyParams, sdk.StoreTypeIAVL, mdb)
 	ms.MountStoreWithDB(keyAccount, sdk.StoreTypeIAVL, mdb)
 	ms.MountStoreWithDB(keySupply, sdk.StoreTypeIAVL, mdb)
-	ms.MountStoreWithDB(keyDeposit, sdk.StoreTypeIAVL, mdb)
-	ms.MountStoreWithDB(keyNode, sdk.StoreTypeIAVL, mdb)
-	ms.MountStoreWithDB(keySubscription, sdk.StoreTypeIAVL, mdb)
-	ms.MountStoreWithDB(keySession, sdk.StoreTypeIAVL, mdb)
+	ms.MountStoreWithDB(keyDeposits, sdk.StoreTypeIAVL, mdb)
 	ms.MountStoreWithDB(tkeyParams, sdk.StoreTypeTransient, mdb)
 	require.Nil(t, ms.LoadLatestVersion())
 
@@ -45,7 +38,7 @@ func CreateTestInput(t *testing.T, isCheckTx bool) (sdk.Context, Keeper, deposit
 	blacklist := make(map[string]bool)
 	blacklist[depositAccount.String()] = true
 	accountPermissions := map[string][]string{
-		deposit.ModuleName: nil,
+		types.ModuleName: nil,
 	}
 
 	cdc := MakeTestCodec()
@@ -55,13 +48,11 @@ func CreateTestInput(t *testing.T, isCheckTx bool) (sdk.Context, Keeper, deposit
 	ak := auth.NewAccountKeeper(cdc, keyAccount, pk.Subspace(auth.DefaultParamspace), auth.ProtoBaseAccount)
 	bk := bank.NewBaseKeeper(ak, pk.Subspace(bank.DefaultParamspace), bank.DefaultCodespace, blacklist)
 	sk := supply.NewKeeper(cdc, keySupply, ak, bk, accountPermissions)
-	dk := deposit.NewKeeper(cdc, keyDeposit, sk)
-	vk := NewKeeper(cdc, keyNode, keySubscription, keySession, pk.Subspace(DefaultParamspace), dk)
+	dk := NewKeeper(cdc, keyDeposits, sk)
 
 	sk.SetModuleAccount(ctx, depositAccount)
-	vk.SetParams(ctx, types.DefaultParams())
 
-	return ctx, vk, dk, bk
+	return ctx, dk, bk
 }
 
 func MakeTestCodec() *codec.Codec {
@@ -69,6 +60,5 @@ func MakeTestCodec() *codec.Codec {
 	codec.RegisterCrypto(cdc)
 	auth.RegisterCodec(cdc)
 	supply.RegisterCodec(cdc)
-	types.RegisterCodec(cdc)
 	return cdc
 }

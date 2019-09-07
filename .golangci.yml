@@ -54,4 +54,8 @@ linters-settings:
 linters:
   enable-all: true
   disable:
-    gocritic
+    - dupl
+    - gochecknoglobals
+    - gochecknoinits
+    - gocritic
+    - gocyclo

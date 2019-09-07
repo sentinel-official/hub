@@ -45,7 +45,6 @@ func (s Subscription) String() string {
 		s.RemainingDeposit, s.RemainingBandwidth, s.Status, s.StatusModifiedAt)
 }
 
-// nolint: gocyclo
 func (s Subscription) IsValid() error {
 	if s.Client == nil || s.Client.Empty() {
 		return fmt.Errorf("invalid client")

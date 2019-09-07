@@ -12,7 +12,7 @@ var _ sdk.Msg = (*MsgRegisterNode)(nil)
 
 type MsgRegisterNode struct {
 	From          sdk.AccAddress `json:"from"`
-	Type_         string         `json:"type"` // nolint:golint
+	T             string         `json:"type"`
 	Version       string         `json:"version"`
 	Moniker       string         `json:"moniker"`
 	PricesPerGB   sdk.Coins      `json:"prices_per_gb"`
@@ -24,12 +24,11 @@ func (msg MsgRegisterNode) Type() string {
 	return "register_node"
 }
 
-// nolint: gocyclo
 func (msg MsgRegisterNode) ValidateBasic() sdk.Error {
 	if msg.From == nil || msg.From.Empty() {
 		return ErrorInvalidField("from")
 	}
-	if msg.Type_ == "" {
+	if msg.T == "" {
 		return ErrorInvalidField("type")
 	}
 	if msg.Version == "" {
@@ -71,12 +70,12 @@ func (msg MsgRegisterNode) Route() string {
 }
 
 func NewMsgRegisterNode(from sdk.AccAddress,
-	_type, version, moniker string, pricesPerGB sdk.Coins,
+	t, version, moniker string, pricesPerGB sdk.Coins,
 	internetSpeed hub.Bandwidth, encryption string) *MsgRegisterNode {
 
 	return &MsgRegisterNode{
 		From:          from,
-		Type_:         _type,
+		T:             t,
 		Version:       version,
 		Moniker:       moniker,
 		PricesPerGB:   pricesPerGB,
@@ -90,7 +89,7 @@ var _ sdk.Msg = (*MsgUpdateNodeInfo)(nil)
 type MsgUpdateNodeInfo struct {
 	From          sdk.AccAddress `json:"from"`
 	ID            hub.ID         `json:"id"`
-	Type_         string         `json:"type"` // nolint:golint
+	T             string         `json:"type"`
 	Version       string         `json:"version"`
 	Moniker       string         `json:"moniker"`
 	PricesPerGB   sdk.Coins      `json:"prices_per_gb"`
@@ -139,13 +138,13 @@ func (msg MsgUpdateNodeInfo) Route() string {
 }
 
 func NewMsgUpdateNodeInfo(from sdk.AccAddress, id hub.ID,
-	_type, version, moniker string, pricesPerGB sdk.Coins,
+	t, version, moniker string, pricesPerGB sdk.Coins,
 	internetSpeed hub.Bandwidth, encryption string) *MsgUpdateNodeInfo {
 
 	return &MsgUpdateNodeInfo{
 		From:          from,
 		ID:            id,
-		Type_:         _type,
+		T:             t,
 		Version:       version,
 		Moniker:       moniker,
 		PricesPerGB:   pricesPerGB,

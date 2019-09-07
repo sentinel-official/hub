@@ -5,17 +5,16 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/client/keys"
-	"github.com/cosmos/cosmos-sdk/client/utils"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
-	authTxBuilder "github.com/cosmos/cosmos-sdk/x/auth/client/txbuilder"
+	"github.com/cosmos/cosmos-sdk/x/auth/client/utils"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
 	hub "github.com/sentinel-official/hub/types"
-	"github.com/sentinel-official/hub/x/vpn"
 	"github.com/sentinel-official/hub/x/vpn/client/common"
+	"github.com/sentinel-official/hub/x/vpn/types"
 )
 
 func SignSessionBandwidthTxCmd(cdc *codec.Codec) *cobra.Command {
@@ -23,11 +22,7 @@ func SignSessionBandwidthTxCmd(cdc *codec.Codec) *cobra.Command {
 		Use:   "sign-bandwidth",
 		Short: "Sign session bandwidth",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			cliCtx := context.NewCLIContext().WithCodec(cdc).WithAccountDecoder(cdc)
-
-			if err := cliCtx.EnsureAccountExists(); err != nil {
-				return err
-			}
+			ctx := context.NewCLIContext().WithCodec(cdc)
 
 			_id := viper.GetString(flagSubscriptionID)
 			bandwidth := hub.Bandwidth{
@@ -35,15 +30,15 @@ func SignSessionBandwidthTxCmd(cdc *codec.Codec) *cobra.Command {
 				Download: sdk.NewInt(viper.GetInt64(flagDownload)),
 			}
 
-			scs, err := common.QuerySessionsCountOfSubscription(cliCtx, cdc, _id)
+			scs, err := common.QuerySessionsCountOfSubscription(ctx, _id)
 			if err != nil {
 				return err
 			}
 
 			id := hub.NewIDFromString(_id)
-			data := vpn.NewBandwidthSignatureData(id, scs, bandwidth).Bytes()
+			data := types.NewBandwidthSignatureData(id, scs, bandwidth).Bytes()
 
-			passphrase, err := keys.GetPassphrase(cliCtx.FromName)
+			passphrase, err := keys.GetPassphrase(ctx.FromName)
 			if err != nil {
 				return err
 			}
@@ -53,7 +48,7 @@ func SignSessionBandwidthTxCmd(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			sigBytes, pubKey, err := kb.Sign(cliCtx.FromName, passphrase, data)
+			sigBytes, pubKey, err := kb.Sign(ctx.FromName, passphrase, data)
 			if err != nil {
 				return err
 			}
@@ -63,13 +58,12 @@ func SignSessionBandwidthTxCmd(cdc *codec.Codec) *cobra.Command {
 				Signature: sigBytes,
 			}
 
-			bz, err := cdc.MarshalJSON(stdSignature)
+			bytes, err := cdc.MarshalJSON(stdSignature)
 			if err != nil {
 				return err
 			}
 
-			fmt.Println(string(bz))
-
+			fmt.Println(string(bytes))
 			return nil
 		},
 	}
@@ -90,12 +84,8 @@ func UpdateSessionInfoTxCmd(cdc *codec.Codec) *cobra.Command {
 		Use:   "update-session-info",
 		Short: "Update session info",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			txBldr := authTxBuilder.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
-			cliCtx := context.NewCLIContext().WithCodec(cdc).WithAccountDecoder(cdc)
-
-			if err := cliCtx.EnsureAccountExists(); err != nil {
-				return err
-			}
+			txb := auth.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
+			ctx := context.NewCLIContext().WithCodec(cdc)
 
 			id := hub.NewIDFromString(viper.GetString(flagSubscriptionID))
 			bandwidth := hub.Bandwidth{
@@ -115,9 +105,9 @@ func UpdateSessionInfoTxCmd(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			msg := vpn.NewMsgUpdateSessionInfo(cliCtx.FromAddress, id, bandwidth, nodeOwnerSignature, clientSignature)
+			msg := types.NewMsgUpdateSessionInfo(ctx.FromAddress, id, bandwidth, nodeOwnerSignature, clientSignature)
 
-			return utils.GenerateOrBroadcastMsgs(cliCtx, txBldr, []sdk.Msg{msg}, false)
+			return utils.GenerateOrBroadcastMsgs(ctx, txb, []sdk.Msg{msg})
 		},
 	}
 

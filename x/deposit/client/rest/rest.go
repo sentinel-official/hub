@@ -2,17 +2,16 @@ package rest
 
 import (
 	"github.com/cosmos/cosmos-sdk/client/context"
-	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/gorilla/mux"
 )
 
-func RegisterRoutes(cliCtx context.CLIContext, r *mux.Router, cdc *codec.Codec) {
-	registerQueryRoutes(cliCtx, r, cdc)
+func RegisterRoutes(ctx context.CLIContext, r *mux.Router) {
+	registerQueryRoutes(ctx, r)
 }
 
-func registerQueryRoutes(cliCtx context.CLIContext, r *mux.Router, cdc *codec.Codec) {
-	r.HandleFunc("/deposits", getAllDeposits(cliCtx, cdc)).
+func registerQueryRoutes(ctx context.CLIContext, r *mux.Router) {
+	r.HandleFunc("/deposits", getAllDeposits(ctx)).
 		Methods("GET")
-	r.HandleFunc("/deposits/{address}", getDepositOfAddressHandlerFunc(cliCtx, cdc)).
+	r.HandleFunc("/deposits/{address}", getDepositOfAddressHandlerFunc(ctx)).
 		Methods("GET")
 }
