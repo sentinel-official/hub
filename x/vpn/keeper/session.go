@@ -76,7 +76,8 @@ func (k Keeper) SetSessionIDBySubscriptionID(ctx sdk.Context, i hub.Subscription
 	store.Set(key, value)
 }
 
-func (k Keeper) GetSessionIDBySubscriptionID(ctx sdk.Context, i hub.SubscriptionID, j uint64) (id hub.SessionID, found bool) {
+func (k Keeper) GetSessionIDBySubscriptionID(ctx sdk.Context,
+	i hub.SubscriptionID, j uint64) (id hub.SessionID, found bool) {
 	store := ctx.KVStore(k.sessionKey)
 
 	key := types.SessionIDBySubscriptionIDKey(i, j)

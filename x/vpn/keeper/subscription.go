@@ -120,7 +120,6 @@ func (k Keeper) SetSubscriptionIDByAddress(ctx sdk.Context, address sdk.AccAddre
 
 func (k Keeper) GetSubscriptionIDByAddress(ctx sdk.Context,
 	address sdk.AccAddress, i uint64) (id hub.SubscriptionID, found bool) {
-
 	store := ctx.KVStore(k.subscriptionKey)
 
 	key := types.SubscriptionIDByAddressKey(address, i)

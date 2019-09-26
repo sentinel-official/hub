@@ -48,9 +48,7 @@ func (msg MsgStartSubscription) Route() string {
 	return RouterKey
 }
 
-func NewMsgStartSubscription(from sdk.AccAddress,
-	nodeID hub.NodeID, deposit sdk.Coin) *MsgStartSubscription {
-
+func NewMsgStartSubscription(from sdk.AccAddress, nodeID hub.NodeID, deposit sdk.Coin) *MsgStartSubscription {
 	return &MsgStartSubscription{
 		From:    from,
 		NodeID:  nodeID,

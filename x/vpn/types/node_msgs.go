@@ -194,7 +194,6 @@ func (msg MsgUpdateNodeStatus) Route() string {
 }
 
 func NewMsgUpdateNodeStatus(from sdk.AccAddress, id hub.NodeID, status string) *MsgUpdateNodeStatus {
-
 	return &MsgUpdateNodeStatus{
 		From:   from,
 		ID:     id,
