@@ -50,7 +50,11 @@ func updateNodeInfoHandlerFunc(ctx context.CLIContext) http.HandlerFunc {
 		}
 
 		vars := mux.Vars(r)
-		id := hub.NewIDFromString(vars["nodeID"])
+		id, err := hub.NewNodeIDFromString(vars["nodeID"])
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+			return
+		}
 		msg := types.NewMsgUpdateNodeInfo(fromAddress, id, req.Type, req.Version,
 			req.Moniker, pricesPerGB, req.InternetSpeed, req.Encryption)
 		if err := msg.ValidateBasic(); err != nil {
@@ -87,7 +91,11 @@ func updateNodeStatusHandlerFunc(ctx context.CLIContext) http.HandlerFunc {
 		}
 
 		vars := mux.Vars(r)
-		id := hub.NewIDFromString(vars["nodeID"])
+		id, err := hub.NewNodeIDFromString(vars["nodeID"])
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+			return
+		}
 		status := strings.ToUpper(req.Status)
 
 		msg := types.NewMsgUpdateNodeStatus(fromAddress, id, status)

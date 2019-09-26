@@ -12,7 +12,7 @@ var _ sdk.Msg = (*MsgStartSubscription)(nil)
 
 type MsgStartSubscription struct {
 	From    sdk.AccAddress `json:"from"`
-	NodeID  hub.ID         `json:"node_id"`
+	NodeID  hub.NodeID     `json:"node_id"`
 	Deposit sdk.Coin       `json:"deposit"`
 }
 
@@ -49,7 +49,7 @@ func (msg MsgStartSubscription) Route() string {
 }
 
 func NewMsgStartSubscription(from sdk.AccAddress,
-	nodeID hub.ID, deposit sdk.Coin) *MsgStartSubscription {
+	nodeID hub.NodeID, deposit sdk.Coin) *MsgStartSubscription {
 
 	return &MsgStartSubscription{
 		From:    from,
@@ -61,8 +61,8 @@ func NewMsgStartSubscription(from sdk.AccAddress,
 var _ sdk.Msg = (*MsgEndSubscription)(nil)
 
 type MsgEndSubscription struct {
-	From sdk.AccAddress `json:"from"`
-	ID   hub.ID         `json:"id"`
+	From sdk.AccAddress     `json:"from"`
+	ID   hub.SubscriptionID `json:"id"`
 }
 
 func (msg MsgEndSubscription) Type() string {
@@ -94,7 +94,7 @@ func (msg MsgEndSubscription) Route() string {
 	return RouterKey
 }
 
-func NewMsgEndSubscription(from sdk.AccAddress, id hub.ID) *MsgEndSubscription {
+func NewMsgEndSubscription(from sdk.AccAddress, id hub.SubscriptionID) *MsgEndSubscription {
 	return &MsgEndSubscription{
 		From: from,
 		ID:   id,

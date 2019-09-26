@@ -10,7 +10,7 @@ import (
 )
 
 type Node struct {
-	ID      hub.ID         `json:"id"`
+	ID      hub.NodeID     `json:"id"`
 	Owner   sdk.AccAddress `json:"owner"`
 	Deposit sdk.Coin       `json:"deposit"`
 

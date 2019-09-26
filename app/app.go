@@ -27,6 +27,7 @@ import (
 	"github.com/tendermint/tendermint/libs/log"
 	db "github.com/tendermint/tm-db"
 
+	"github.com/sentinel-official/hub/types"
 	"github.com/sentinel-official/hub/version"
 	"github.com/sentinel-official/hub/x/deposit"
 	"github.com/sentinel-official/hub/x/vpn"
@@ -72,6 +73,7 @@ func MakeCodec() *codec.Codec {
 	var cdc = codec.New()
 
 	sdk.RegisterCodec(cdc)
+	types.RegisterCodec(cdc)
 	codec.RegisterCrypto(cdc)
 	codec.RegisterEvidences(cdc)
 	ModuleBasics.RegisterCodec(cdc)

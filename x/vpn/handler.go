@@ -39,7 +39,7 @@ func endBlockNodes(ctx sdk.Context, k keeper.Keeper, height int64) {
 	ids := k.GetActiveNodeIDs(ctx, _height)
 
 	for _, id := range ids {
-		node, _ := k.GetNode(ctx, id)
+		node, _ := k.GetNode(ctx, id.(hub.NodeID))
 
 		node.Status = types.StatusInactive
 		node.StatusModifiedAt = height
@@ -55,7 +55,7 @@ func endBlockSessions(ctx sdk.Context, k keeper.Keeper, height int64) {
 	ids := k.GetActiveSessionIDs(ctx, _height)
 
 	for _, id := range ids {
-		session, _ := k.GetSession(ctx, id)
+		session, _ := k.GetSession(ctx, id.(hub.SessionID))
 		subscription, _ := k.GetSubscription(ctx, session.SubscriptionID)
 
 		bandwidth := session.Bandwidth.CeilTo(hub.GB.Quo(subscription.PricePerGB.Amount))
@@ -94,7 +94,7 @@ func EndBlock(ctx sdk.Context, k keeper.Keeper) {
 func handleRegisterNode(ctx sdk.Context, k keeper.Keeper, msg types.MsgRegisterNode) sdk.Result {
 	nc := k.GetNodesCount(ctx)
 	node := types.Node{
-		ID:               hub.NewIDFromUInt64(nc),
+		ID:               hub.NewNodeID(nc),
 		Owner:            msg.From,
 		Deposit:          sdk.NewInt64Coin(k.Deposit(ctx).Denom, 0),
 		Type:             msg.T,
@@ -222,7 +222,7 @@ func handleStartSubscription(ctx sdk.Context, k keeper.Keeper, msg types.MsgStar
 
 	sc := k.GetSubscriptionsCount(ctx)
 	subscription := types.Subscription{
-		ID:                 hub.NewIDFromUInt64(sc),
+		ID:                 hub.NewSubscriptionID(sc),
 		NodeID:             node.ID,
 		Client:             msg.From,
 		PricePerGB:         pricePerGB,
@@ -308,7 +308,7 @@ func handleUpdateSessionInfo(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpda
 	if !found {
 		sc := k.GetSessionsCount(ctx)
 		session = types.Session{
-			ID:             hub.NewIDFromUInt64(sc),
+			ID:             hub.NewSessionID(sc),
 			SubscriptionID: subscription.ID,
 			Bandwidth:      hub.NewBandwidthFromInt64(0, 0),
 		}

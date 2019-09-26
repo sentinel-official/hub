@@ -12,11 +12,11 @@ import (
 var _ sdk.Msg = (*MsgUpdateSessionInfo)(nil)
 
 type MsgUpdateSessionInfo struct {
-	From               sdk.AccAddress    `json:"from"`
-	SubscriptionID     hub.ID            `json:"subscription_id"`
-	Bandwidth          hub.Bandwidth     `json:"bandwidth"`
-	NodeOwnerSignature auth.StdSignature `json:"node_owner_signature"`
-	ClientSignature    auth.StdSignature `json:"client_signature"`
+	From               sdk.AccAddress     `json:"from"`
+	SubscriptionID     hub.SubscriptionID `json:"subscription_id"`
+	Bandwidth          hub.Bandwidth      `json:"bandwidth"`
+	NodeOwnerSignature auth.StdSignature  `json:"node_owner_signature"`
+	ClientSignature    auth.StdSignature  `json:"client_signature"`
 }
 
 func (msg MsgUpdateSessionInfo) Type() string {
@@ -58,7 +58,7 @@ func (msg MsgUpdateSessionInfo) Route() string {
 }
 
 func NewMsgUpdateSessionInfo(from sdk.AccAddress,
-	subscriptionID hub.ID, bandwidth hub.Bandwidth,
+	subscriptionID hub.SubscriptionID, bandwidth hub.Bandwidth,
 	nodeOwnerSignature, clientSignature auth.StdSignature) *MsgUpdateSessionInfo {
 
 	return &MsgUpdateSessionInfo{
