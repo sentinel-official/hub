@@ -65,6 +65,7 @@ func (k Keeper) GetSessionsCountOfSubscription(ctx sdk.Context, id hub.Subscript
 	}
 
 	k.cdc.MustUnmarshalBinaryLengthPrefixed(value, &count)
+
 	return count
 }
 

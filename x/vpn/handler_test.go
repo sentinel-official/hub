@@ -819,7 +819,6 @@ func Test_handleUpdateSessionInfo(t *testing.T) {
 	k.SetNode(ctx, node)
 	subscription.Status = StatusActive
 	k.SetSubscription(ctx, subscription)
-	k.SetSession(ctx, types.TestSession)
 	k.SetSessionsCountOfSubscription(ctx, subscription.ID, 0)
 	msg = NewMsgUpdateSessionInfo(types.TestAddress2, subscription.ID, types.TestBandwidthPos1, types.TestClientStdSignaturePos1, types.TestNodeOwnerStdSignaturePos1)
 	res = handler(ctx, *msg)
@@ -838,7 +837,8 @@ func Test_handleUpdateSessionInfo(t *testing.T) {
 	res = handler(ctx, *msg)
 	require.True(t, res.IsOK())
 
-	session, found = k.GetSession(ctx, hub.NewSessionID(0))
+	id, _ := k.GetSessionIDBySubscriptionID(ctx, subscription.ID, k.GetSessionsCountOfSubscription(ctx, subscription.ID))
+	session, found = k.GetSession(ctx, id)
 	require.Equal(t, true, found)
 	require.Equal(t, types.TestSession, session)
 
@@ -847,7 +847,6 @@ func Test_handleUpdateSessionInfo(t *testing.T) {
 
 	count = k.GetSessionsCountOfSubscription(ctx, subscription.ID)
 	require.Equal(t, uint64(1), count)
-
 	msg = NewMsgUpdateSessionInfo(subscription.Client, subscription.ID, types.TestBandwidthPos1, types.TestNodeOwnerStdSignaturePos2, types.TestClientStdSignaturePos1)
 	res = handler(ctx, *msg)
 	require.False(t, res.IsOK())

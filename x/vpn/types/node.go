@@ -43,24 +43,23 @@ func (n Node) String() string {
 }
 
 func (n Node) UpdateInfo(_node Node) Node {
-	if _node.Type != "" {
+	if _node.Type != "" || len(_node.Type) > 4 || len(_node.Type) < 16 {
 		n.Type = _node.Type
 	}
-	if _node.Version != "" {
+	if _node.Version != "" || len(_node.Version) > 4 || len(_node.Version) < 16 {
 		n.Version = _node.Version
 	}
-	if _node.Moniker != "" {
+	if _node.Moniker != "" || len(_node.Moniker) > 4 || len(_node.Moniker) < 16 {
 		n.Moniker = _node.Moniker
 	}
 	if _node.PricesPerGB != nil &&
 		_node.PricesPerGB.Len() > 0 && _node.PricesPerGB.IsValid() {
-
 		n.PricesPerGB = _node.PricesPerGB
 	}
 	if !_node.InternetSpeed.AnyNil() && _node.InternetSpeed.AllPositive() {
 		n.InternetSpeed = _node.InternetSpeed
 	}
-	if _node.Encryption != "" {
+	if _node.Encryption != "" || len(_node.Encryption) > 4 || len(_node.Encryption) < 16 {
 		n.Encryption = _node.Encryption
 	}
 
@@ -97,13 +96,14 @@ func (n Node) IsValid() error {
 	if n.Deposit.Denom == "" {
 		return fmt.Errorf("invalid deposit")
 	}
-	if n.Type == "" {
+	if n.Type == "" || len(n.Type) < 4 || len(n.Type) > 16 {
 		return fmt.Errorf("invalid type")
 	}
-	if n.Version == "" {
+
+	if n.Version == "" || len(n.Version) < 4 || len(n.Version) > 16 {
 		return fmt.Errorf("invalid version")
 	}
-	if len(n.Moniker) > 128 {
+	if n.Moniker == "" || len(n.Moniker) < 4 || len(n.Moniker) > 16 {
 		return fmt.Errorf("invalid moniker")
 	}
 	if n.PricesPerGB == nil || !n.PricesPerGB.IsValid() {
@@ -112,9 +112,11 @@ func (n Node) IsValid() error {
 	if n.InternetSpeed.AnyNil() || !n.InternetSpeed.AllPositive() {
 		return fmt.Errorf("invalid internet speed")
 	}
-	if n.Encryption == "" {
+
+	if n.Encryption == "" || len(n.Encryption) < 4 || len(n.Encryption) > 16 {
 		return fmt.Errorf("invalid encryption")
 	}
+
 	if n.Status != StatusRegistered && n.Status != StatusActive &&
 		n.Status != StatusInactive && n.Status != StatusDeRegistered {
 		return fmt.Errorf("invalid status")

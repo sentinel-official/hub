@@ -60,7 +60,6 @@ func (msg MsgUpdateSessionInfo) Route() string {
 func NewMsgUpdateSessionInfo(from sdk.AccAddress,
 	subscriptionID hub.SubscriptionID, bandwidth hub.Bandwidth,
 	nodeOwnerSignature, clientSignature auth.StdSignature) *MsgUpdateSessionInfo {
-
 	return &MsgUpdateSessionInfo{
 		From:               from,
 		SubscriptionID:     subscriptionID,

@@ -33,7 +33,6 @@ type Params struct {
 
 func NewParams(freeNodesCount uint64, deposit sdk.Coin,
 	nodeInactiveInterval, sessionInactiveInterval int64) Params {
-
 	return Params{
 		FreeNodesCount:          freeNodesCount,
 		Deposit:                 deposit,

@@ -2,6 +2,7 @@ PACKAGES := $(shell go list ./... | grep -v '/simulation')
 VERSION := $(shell echo $(shell git describe --tags) | sed 's/^v//')
 COMMIT := $(shell git log -1 --format='%H')
 GOSUM := $(shell which gosum)
+SIMAPP = ./simapp
 
 export GO111MODULE=on
 
@@ -38,9 +39,18 @@ install: dep_verify
 test:
 	@go test -mod=readonly -cover ${PACKAGES}
 
+SIM_NUM_BLOCKS ?= 500
+SIM_BLOCK_SIZE ?= 100
+SIM_COMMIT ?= true
+
 test_sim_hub_fast:
 	@echo "Running hub simulation. This may take several minutes..."
-	@go test -v -mod=readonly -timeout 24h ./app -run TestFullHubSimulation -enable=true -num_blocks=100 -block_size=200 -commit=true -seed=99 -period=5
+	@go test -v -mod=readonly -timeout 24h ./simapp -run TestFullHubSimulation -Enabled=true -NumBlocks=$(SIM_NUM_BLOCKS) -BlockSize=$(SIM_BLOCK_SIZE) -Commit=$(SIM_COMMIT) -Seed=10 -Period=5
+
+test_sim_benchmark:
+	@echo "Running hub benchmark for numBlocks=$(SIM_NUM_BLOCKS), blockSize=$(SIM_BLOCK_SIZE). This may take awhile!"
+	@go test -mod=readonly -benchmem -run=^$$ $(SIMAPP) -bench ^BenchmarkFullAppSimulation$$  \
+		-Enabled=true -NumBlocks=$(SIM_NUM_BLOCKS) -BlockSize=$(SIM_BLOCK_SIZE) -Commit=$(SIM_COMMIT) -timeout 24h
 
 benchmark:
 	@go test -mod=readonly -bench=. ${PACKAGES}
@@ -49,4 +59,4 @@ dep_verify:
 	@echo "--> Ensure dependencies have not been modified"
 	@go mod verify
 
-.PHONY: all build install test benchmark, dep_verify
+.PHONY: all build install test benchmark, dep_verify,test_sim_hub_fast,test_sim_benchmark

@@ -4,7 +4,6 @@ import (
 	"math/rand"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 
 	hub "github.com/sentinel-official/hub/types"
@@ -26,10 +25,20 @@ func getRandomStatus(r *rand.Rand) string {
 	return statuses[index]
 }
 
-func getRandomID(r *rand.Rand) hub.ID {
+func getRandomNodeID(r *rand.Rand) hub.NodeID {
 	i := uint64(r.Int63n(10))
 
 	return hub.NewNodeID(i)
+}
+func getRandomSessionID(r *rand.Rand) hub.SessionID {
+	i := uint64(r.Int63n(10))
+
+	return hub.NewSessionID(i)
+}
+func getRandomSubscriptionID(r *rand.Rand) hub.SubscriptionID {
+	i := uint64(r.Int63n(10))
+
+	return hub.NewSubscriptionID(i)
 }
 
 func getRandomEncryption(r *rand.Rand) string {
@@ -76,13 +85,46 @@ func getRandomBandwidth(r *rand.Rand) hub.Bandwidth {
 	return hub.NewBandwidthFromInt64(upload, download)
 }
 
-func getRandomBandwidthSignature(r *rand.Rand, accounts []simulation.Account) auth.StdSignature {
-	account := simulation.RandomAcc(r, accounts)
-	bandwidthSignData := types.NewBandwidthSignatureData(getRandomID(r), uint64(r.Int63n(10)), getRandomBandwidth(r))
-	signData, _ := account.PrivKey.Sign(bandwidthSignData.Bytes())
-
-	return auth.StdSignature{
-		PubKey:    account.PubKey,
-		Signature: signData,
+func GenerateRandomNode(r *rand.Rand) types.Node {
+	node := types.Node{
+		ID:               getRandomNodeID(r),
+		Owner:            nil,
+		Deposit:          getRandomCoin(r),
+		Type:             getRandomType(r),
+		Version:          getRandomVersion(r),
+		Moniker:          getRandomMoniker(r),
+		PricesPerGB:      getRandomCoins(r),
+		InternetSpeed:    getRandomBandwidth(r),
+		Encryption:       getRandomEncryption(r),
+		Status:           getRandomStatus(r),
+		StatusModifiedAt: 0,
 	}
+	return node
+}
+
+func GenerateRandomSubscription(r *rand.Rand, node types.Node) types.Subscription {
+	subscription := types.Subscription{
+		ID:                 getRandomSubscriptionID(r),
+		NodeID:             node.ID,
+		Client:             nil,
+		PricePerGB:         getRandomCoin(r),
+		TotalDeposit:       getRandomCoin(r),
+		RemainingDeposit:   getRandomCoin(r),
+		RemainingBandwidth: getRandomBandwidth(r),
+		Status:             getRandomStatus(r),
+		StatusModifiedAt:   0,
+	}
+
+	return subscription
+}
+
+func GenerateRandomSession(r *rand.Rand, id hub.SubscriptionID) types.Session {
+	session := types.Session{
+		ID:               getRandomSessionID(r),
+		SubscriptionID:   id,
+		Bandwidth:        getRandomBandwidth(r),
+		Status:           getRandomStatus(r),
+		StatusModifiedAt: 0,
+	}
+	return session
 }

@@ -1,37 +1,38 @@
-package app
+package simapp
 
 import (
 	"encoding/json"
 	"log"
 
+	abci "github.com/tendermint/tendermint/abci/types"
+	tmtypes "github.com/tendermint/tendermint/types"
+
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/slashing"
 	"github.com/cosmos/cosmos-sdk/x/staking"
-	abci "github.com/tendermint/tendermint/abci/types"
-	tm "github.com/tendermint/tendermint/types"
 )
 
-func (app *HubApp) ExportAppStateAndValidators(forZeroHeight bool,
-	jailWhiteList []string) (json.RawMessage, []tm.GenesisValidator, error) {
+func (app *SimApp) ExportAppStateAndValidators(
+	forZeroHeight bool, jailWhiteList []string,
+) (appState json.RawMessage, validators []tmtypes.GenesisValidator, err error) {
 	ctx := app.NewContext(true, abci.Header{Height: app.LastBlockHeight()})
 
 	if forZeroHeight {
 		app.prepForZeroHeightGenesis(ctx, jailWhiteList)
 	}
 
-	state := app.mm.ExportGenesis(ctx)
-	appState, err := codec.MarshalJSONIndent(app.cdc, state)
+	genState := app.mm.ExportGenesis(ctx)
+	appState, err = codec.MarshalJSONIndent(app.cdc, genState)
 	if err != nil {
 		return nil, nil, err
 	}
 
-	validators := staking.WriteValidators(ctx, app.stakingKeeper)
+	validators = staking.WriteValidators(ctx, app.stakingKeeper)
 	return appState, validators, nil
 }
 
-func (app *HubApp) prepForZeroHeightGenesis(ctx sdk.Context,
-	jailWhiteList []string) {
+func (app *SimApp) prepForZeroHeightGenesis(ctx sdk.Context, jailWhiteList []string) {
 	applyWhiteList := false
 	if len(jailWhiteList) > 0 {
 		applyWhiteList = true
