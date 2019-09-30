@@ -32,7 +32,9 @@ func (app *SimApp) ExportAppStateAndValidators(
 	return appState, validators, nil
 }
 
-func (app *SimApp) prepForZeroHeightGenesis(ctx sdk.Context, jailWhiteList []string) {
+// nolint:funlen
+func (app *SimApp) prepForZeroHeightGenesis(
+	ctx sdk.Context, jailWhiteList []string) {
 	applyWhiteList := false
 	if len(jailWhiteList) > 0 {
 		applyWhiteList = true

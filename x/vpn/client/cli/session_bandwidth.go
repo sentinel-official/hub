@@ -17,13 +17,13 @@ import (
 	"github.com/sentinel-official/hub/x/vpn/types"
 )
 
+// nolint:funlen
 func SignSessionBandwidthTxCmd(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "sign-bandwidth",
 		Short: "Sign session bandwidth",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := context.NewCLIContext().WithCodec(cdc)
-
 			_id := viper.GetString(flagSubscriptionID)
 			bandwidth := hub.Bandwidth{
 				Upload:   sdk.NewInt(viper.GetInt64(flagUpload)),
@@ -40,7 +40,7 @@ func SignSessionBandwidthTxCmd(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			data := types.NewBandwidthSignatureData(id, scs, bandwidth).Bytes()
+			data := hub.NewBandwidthSignatureData(id, scs, bandwidth).Bytes()
 
 			passphrase, err := keys.GetPassphrase(ctx.FromName)
 			if err != nil {
