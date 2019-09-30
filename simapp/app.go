@@ -106,6 +106,7 @@ type SimApp struct {
 	mm *module.Manager
 }
 
+// nolint:funlen
 func NewSimApp(logger log.Logger, db db.DB, traceStore io.Writer,
 	loadLatest bool, invCheckPeriod uint, baseAppOptions ...func(*baseapp.BaseApp)) *SimApp {
 	cdc := MakeCodec()

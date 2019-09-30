@@ -106,6 +106,7 @@ type HubApp struct {
 	mm *module.Manager
 }
 
+// nolint:funlen
 func NewHubApp(logger log.Logger, db db.DB, traceStore io.Writer, loadLatest bool, invCheckPeriod uint,
 	baseAppOptions ...func(*baseapp.BaseApp)) *HubApp {
 	cdc := MakeCodec()

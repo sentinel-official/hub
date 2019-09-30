@@ -30,6 +30,7 @@ func (app *HubApp) ExportAppStateAndValidators(forZeroHeight bool,
 	return appState, validators, nil
 }
 
+// nolint:funlen
 func (app *HubApp) prepForZeroHeightGenesis(ctx sdk.Context,
 	jailWhiteList []string) {
 	applyWhiteList := false

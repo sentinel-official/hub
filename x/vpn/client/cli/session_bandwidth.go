@@ -17,6 +17,7 @@ import (
 	"github.com/sentinel-official/hub/x/vpn/types"
 )
 
+// nolint:funlen
 func SignSessionBandwidthTxCmd(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "sign-bandwidth",
