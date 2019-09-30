@@ -146,7 +146,6 @@ func QuerySubscriptionsOfNode(ctx context.CLIContext, s string) ([]types.Subscri
 }
 
 func QuerySubscriptionsOfAddress(ctx context.CLIContext, s string) ([]types.Subscription, error) {
-
 	address, err := sdk.AccAddressFromBech32(s)
 	if err != nil {
 		return nil, err

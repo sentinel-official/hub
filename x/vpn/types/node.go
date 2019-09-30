@@ -54,7 +54,6 @@ func (n Node) UpdateInfo(_node Node) Node {
 	}
 	if _node.PricesPerGB != nil &&
 		_node.PricesPerGB.Len() > 0 && _node.PricesPerGB.IsValid() {
-
 		n.PricesPerGB = _node.PricesPerGB
 	}
 	if !_node.InternetSpeed.AnyNil() && _node.InternetSpeed.AllPositive() {

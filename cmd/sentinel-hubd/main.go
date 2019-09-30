@@ -80,7 +80,6 @@ func newApp(logger log.Logger, db db.DB, traceStore io.Writer) abci.Application 
 
 func exportAppStateAndTMValidators(logger log.Logger, db db.DB, traceStore io.Writer, height int64, forZeroHeight bool,
 	jailWhiteList []string) (json.RawMessage, []tm.GenesisValidator, error) {
-
 	if height != -1 {
 		hubApp := app.NewHubApp(logger, db, traceStore, false, uint(1))
 		err := hubApp.LoadHeight(height)

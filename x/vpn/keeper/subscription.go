@@ -148,7 +148,6 @@ func (k Keeper) GetSubscriptionsOfNode(ctx sdk.Context, id hub.NodeID) (subscrip
 
 func (k Keeper) GetSubscriptionsOfAddress(ctx sdk.Context,
 	address sdk.AccAddress) (subscriptions []types.Subscription) {
-
 	count := k.GetSubscriptionsCountOfAddress(ctx, address)
 
 	subscriptions = make([]types.Subscription, 0, count)
@@ -179,7 +178,6 @@ func (k Keeper) GetAllSubscriptions(ctx sdk.Context) (subscriptions []types.Subs
 
 func (k Keeper) IterateSubscriptions(ctx sdk.Context,
 	fn func(index int64, subscription types.Subscription) (stop bool)) {
-
 	store := ctx.KVStore(k.subscriptionKey)
 
 	iterator := sdk.KVStorePrefixIterator(store, types.SubscriptionKeyPrefix)

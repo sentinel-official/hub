@@ -39,7 +39,6 @@ func (msg MsgRegisterNode) ValidateBasic() sdk.Error {
 	}
 	if msg.PricesPerGB == nil ||
 		msg.PricesPerGB.Len() == 0 || !msg.PricesPerGB.IsValid() {
-
 		return ErrorInvalidField("prices_per_gb")
 	}
 	if !msg.InternetSpeed.AllPositive() {
@@ -72,7 +71,6 @@ func (msg MsgRegisterNode) Route() string {
 func NewMsgRegisterNode(from sdk.AccAddress,
 	t, version, moniker string, pricesPerGB sdk.Coins,
 	internetSpeed hub.Bandwidth, encryption string) *MsgRegisterNode {
-
 	return &MsgRegisterNode{
 		From:          from,
 		T:             t,
@@ -110,7 +108,6 @@ func (msg MsgUpdateNodeInfo) ValidateBasic() sdk.Error {
 	}
 	if msg.PricesPerGB != nil &&
 		(msg.PricesPerGB.Len() == 0 || !msg.PricesPerGB.IsValid()) {
-
 		return ErrorInvalidField("prices_per_gb")
 	}
 	if msg.InternetSpeed.AnyNegative() {
@@ -140,7 +137,6 @@ func (msg MsgUpdateNodeInfo) Route() string {
 func NewMsgUpdateNodeInfo(from sdk.AccAddress, id hub.NodeID,
 	t, version, moniker string, pricesPerGB sdk.Coins,
 	internetSpeed hub.Bandwidth, encryption string) *MsgUpdateNodeInfo {
-
 	return &MsgUpdateNodeInfo{
 		From:          from,
 		ID:            id,
