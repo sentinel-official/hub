@@ -295,12 +295,16 @@ func handleUpdateSessionInfo(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpda
 	}
 
 	scs := k.GetSessionsCountOfSubscription(ctx, subscription.ID)
-	data := hub.NewBandwidthSignatureData(subscription.ID, scs, msg.Bandwidth).Bytes()
+	data := NewBandwidthSignatureData(subscription.ID, scs, msg.Bandwidth).Bytes()
 	if !msg.NodeOwnerSignature.VerifyBytes(data, msg.NodeOwnerSignature.Signature) {
 		return types.ErrorInvalidBandwidthSignature().Result()
 	}
 	if !msg.ClientSignature.VerifyBytes(data, msg.ClientSignature.Signature) {
 		return types.ErrorInvalidBandwidthSignature().Result()
+	}
+
+	if subscription.RemainingBandwidth.AnyLT(msg.Bandwidth) {
+		return types.ErrorInvalidBandwidth().Result()
 	}
 
 	var session types.Session
@@ -314,15 +318,10 @@ func handleUpdateSessionInfo(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpda
 			Bandwidth:      hub.NewBandwidthFromInt64(0, 0),
 		}
 
-		k.SetSession(ctx, session) // TODO verify
 		k.SetSessionsCount(ctx, sc+1)
 		k.SetSessionIDBySubscriptionID(ctx, subscription.ID, scs, session.ID)
 	} else {
 		session, _ = k.GetSession(ctx, id)
-	}
-
-	if subscription.RemainingBandwidth.AnyLT(msg.Bandwidth) {
-		return types.ErrorInvalidBandwidth().Result()
 	}
 
 	k.RemoveSessionIDFromActiveList(ctx, session.StatusModifiedAt, session.ID)
@@ -333,5 +332,6 @@ func handleUpdateSessionInfo(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpda
 	session.StatusModifiedAt = ctx.BlockHeight()
 
 	k.SetSession(ctx, session)
+
 	return sdk.Result{}
 }

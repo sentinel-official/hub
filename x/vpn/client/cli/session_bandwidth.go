@@ -40,7 +40,7 @@ func SignSessionBandwidthTxCmd(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			data := hub.NewBandwidthSignatureData(id, scs, bandwidth).Bytes()
+			data := types.NewBandwidthSignatureData(id, scs, bandwidth).Bytes()
 
 			passphrase, err := keys.GetPassphrase(ctx.FromName)
 			if err != nil {

@@ -42,7 +42,7 @@ func signSessionBandwidthHandlerFunc(ctx context.CLIContext) http.HandlerFunc {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
 		}
-		data := hub.NewBandwidthSignatureData(id, scs, req.Bandwidth).Bytes()
+		data := types.NewBandwidthSignatureData(id, scs, req.Bandwidth).Bytes()
 
 		kb, err := keys.NewKeyBaseFromHomeFlag()
 		if err != nil {

@@ -91,6 +91,7 @@ var (
 	NewMsgUpdateSessionInfo                   = types.NewMsgUpdateSessionInfo
 	NewMsgStartSubscription                   = types.NewMsgStartSubscription
 	NewMsgEndSubscription                     = types.NewMsgEndSubscription
+	NewBandwidthSignatureData                 = types.NewBandwidthSignatureData
 	NewKeeper                                 = keeper.NewKeeper
 	ParamKeyTable                             = keeper.ParamKeyTable
 	NewQuerier                                = querier.NewQuerier

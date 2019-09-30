@@ -1,7 +1,6 @@
 package types
 
 import (
-	"encoding/json"
 	"fmt"
 	"math/big"
 
@@ -108,27 +107,4 @@ func (b Bandwidth) AnyNil() bool {
 
 func NewBandwidthFromInt64(upload, download int64) Bandwidth {
 	return NewBandwidth(sdk.NewInt(upload), sdk.NewInt(download))
-}
-
-type BandwidthSignatureData struct {
-	ID        SubscriptionID `json:"id"`
-	Index     uint64             `json:"index"`
-	Bandwidth Bandwidth      `json:"bandwidth"`
-}
-
-func NewBandwidthSignatureData(id SubscriptionID, index uint64, bandwidth Bandwidth) BandwidthSignatureData {
-	return BandwidthSignatureData{
-		ID:        id,
-		Index:     index,
-		Bandwidth: bandwidth,
-	}
-}
-
-func (b BandwidthSignatureData) Bytes() []byte {
-	bz, err := json.Marshal(b)
-	if err != nil {
-		panic(err)
-	}
-
-	return bz
 }

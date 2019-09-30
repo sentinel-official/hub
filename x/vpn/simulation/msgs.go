@@ -10,7 +10,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 
 	"github.com/sentinel-official/hub/x/vpn"
-	hub "github.com/sentinel-official/hub/types"
 )
 
 func SimulateMsgRegisterNode(keeper vpn.Keeper) simulation.Operation {
@@ -173,7 +172,7 @@ func SimulateMsgUpdateSessionInfo(keeper vpn.Keeper) simulation.Operation {
 
 		bandwidth := getRandomBandwidth(r)
 
-		bandWidthSignData := hub.NewBandwidthSignatureData(subscription.ID, scs, bandwidth)
+		bandWidthSignData := vpn.NewBandwidthSignatureData(subscription.ID, scs, bandwidth)
 		clientAccountSignedData, _ := clientAccount.PrivKey.Sign(bandWidthSignData.Bytes())
 		nodeOwnerAccountSignedData, _ := nodeOwnerAccount.PrivKey.Sign(bandWidthSignData.Bytes())
 
