@@ -103,7 +103,7 @@ func NewSessionIDFromString(s string) (SessionID, error) {
 
 	i, err := strconv.ParseUint(s[4:], 16, 64)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	return NewSessionID(i), nil
