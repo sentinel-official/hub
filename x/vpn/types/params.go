@@ -70,15 +70,15 @@ func DefaultParams() Params {
 
 func (p Params) Validate() error {
 	if !p.Deposit.IsValid() {
-		return fmt.Errorf("Deposit is invalid: %s ", p.Deposit.String())
+		return fmt.Errorf("deposit is invalid: %s ", p.Deposit.String())
 	}
 
 	if p.NodeInactiveInterval < 0 {
-		return fmt.Errorf("NodeInactiveInterval: %d should be postive interger", p.NodeInactiveInterval)
+		return fmt.Errorf("NodeInactiveInterval: %d should be positive interger", p.NodeInactiveInterval)
 	}
 
 	if p.SessionInactiveInterval < 0 {
-		return fmt.Errorf("SessionInactiveInterval: %d should be postive interget", p.SessionInactiveInterval)
+		return fmt.Errorf("SessionInactiveInterval: %d should be positive interger", p.SessionInactiveInterval)
 	}
 
 	return nil
