@@ -24,10 +24,10 @@ const (
 )
 
 type QueryNodeParams struct {
-	ID hub.NodeID
+	ID hub.ID
 }
 
-func NewQueryNodeParams(id hub.NodeID) QueryNodeParams {
+func NewQueryNodeParams(id hub.ID) QueryNodeParams {
 	return QueryNodeParams{
 		ID: id,
 	}
@@ -44,20 +44,20 @@ func NewQueryNodesOfAddressParams(address sdk.AccAddress) QueryNodesOfAddressPra
 }
 
 type QuerySubscriptionParams struct {
-	ID hub.SubscriptionID
+	ID hub.ID
 }
 
-func NewQuerySubscriptionParams(id hub.SubscriptionID) QuerySubscriptionParams {
+func NewQuerySubscriptionParams(id hub.ID) QuerySubscriptionParams {
 	return QuerySubscriptionParams{
 		ID: id,
 	}
 }
 
 type QuerySubscriptionsOfNodePrams struct {
-	ID hub.NodeID
+	ID hub.ID
 }
 
-func NewQuerySubscriptionsOfNodePrams(id hub.NodeID) QuerySubscriptionsOfNodePrams {
+func NewQuerySubscriptionsOfNodePrams(id hub.ID) QuerySubscriptionsOfNodePrams {
 	return QuerySubscriptionsOfNodePrams{
 		ID: id,
 	}
@@ -74,31 +74,31 @@ func NewQuerySubscriptionsOfAddressParams(address sdk.AccAddress) QuerySubscript
 }
 
 type QuerySessionsCountOfSubscriptionParams struct {
-	ID hub.SubscriptionID
+	ID hub.ID
 }
 
-func NewQuerySessionsCountOfSubscriptionParams(id hub.SubscriptionID) QuerySessionsCountOfSubscriptionParams {
+func NewQuerySessionsCountOfSubscriptionParams(id hub.ID) QuerySessionsCountOfSubscriptionParams {
 	return QuerySessionsCountOfSubscriptionParams{
 		ID: id,
 	}
 }
 
 type QuerySessionParams struct {
-	ID hub.SessionID
+	ID hub.ID
 }
 
-func NewQuerySessionParams(id hub.SessionID) QuerySessionParams {
+func NewQuerySessionParams(id hub.ID) QuerySessionParams {
 	return QuerySessionParams{
 		ID: id,
 	}
 }
 
 type QuerySessionOfSubscriptionPrams struct {
-	ID    hub.SubscriptionID
+	ID    hub.ID
 	Index uint64
 }
 
-func NewQuerySessionOfSubscriptionPrams(id hub.SubscriptionID, index uint64) QuerySessionOfSubscriptionPrams {
+func NewQuerySessionOfSubscriptionPrams(id hub.ID, index uint64) QuerySessionOfSubscriptionPrams {
 	return QuerySessionOfSubscriptionPrams{
 		ID:    id,
 		Index: index,
@@ -106,10 +106,10 @@ func NewQuerySessionOfSubscriptionPrams(id hub.SubscriptionID, index uint64) Que
 }
 
 type QuerySessionsOfSubscriptionPrams struct {
-	ID hub.SubscriptionID
+	ID hub.ID
 }
 
-func NewQuerySessionsOfSubscriptionPrams(id hub.SubscriptionID) QuerySessionsOfSubscriptionPrams {
+func NewQuerySessionsOfSubscriptionPrams(id hub.ID) QuerySessionsOfSubscriptionPrams {
 	return QuerySessionsOfSubscriptionPrams{
 		ID: id,
 	}

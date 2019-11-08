@@ -20,35 +20,35 @@ func TestMsgUpdateSessionInfo_ValidateBasic(t *testing.T) {
 	}{
 		{
 			"from is nil",
-			NewMsgUpdateSessionInfo(nil, hub.NewSubscriptionID(1), TestBandwidthPos1, TestNodeOwnerStdSignaturePos1, TestClientStdSignaturePos1),
+			NewMsgUpdateSessionInfo(nil, hub.NewIDFromUInt64(1), TestBandwidthPos1, TestNodeOwnerStdSignaturePos1, TestClientStdSignaturePos1),
 			ErrorInvalidField("from"),
 		}, {
 			"from is empty",
-			NewMsgUpdateSessionInfo([]byte(""), hub.NewSubscriptionID(1), TestBandwidthPos1, TestNodeOwnerStdSignaturePos1, TestClientStdSignaturePos1),
+			NewMsgUpdateSessionInfo([]byte(""), hub.NewIDFromUInt64(1), TestBandwidthPos1, TestNodeOwnerStdSignaturePos1, TestClientStdSignaturePos1),
 			ErrorInvalidField("from"),
 		}, {
 			"bandwidth is zero",
-			NewMsgUpdateSessionInfo(TestAddress1, hub.NewSubscriptionID(1), TestBandwidthZero, TestNodeOwnerStdSignaturePos1, TestClientStdSignaturePos1),
+			NewMsgUpdateSessionInfo(TestAddress1, hub.NewIDFromUInt64(1), TestBandwidthZero, TestNodeOwnerStdSignaturePos1, TestClientStdSignaturePos1),
 			ErrorInvalidField("bandwidth"),
 		}, {
 			"bandwidth is neg",
-			NewMsgUpdateSessionInfo(TestAddress1, hub.NewSubscriptionID(1), TestBandwidthNeg, TestNodeOwnerStdSignaturePos1, TestClientStdSignaturePos1),
+			NewMsgUpdateSessionInfo(TestAddress1, hub.NewIDFromUInt64(1), TestBandwidthNeg, TestNodeOwnerStdSignaturePos1, TestClientStdSignaturePos1),
 			ErrorInvalidField("bandwidth"),
 		}, {
 			"bandwidth is zero",
-			NewMsgUpdateSessionInfo(TestAddress1, hub.NewSubscriptionID(1), TestBandwidthZero, TestNodeOwnerStdSignaturePos1, TestClientStdSignaturePos1),
+			NewMsgUpdateSessionInfo(TestAddress1, hub.NewIDFromUInt64(1), TestBandwidthZero, TestNodeOwnerStdSignaturePos1, TestClientStdSignaturePos1),
 			ErrorInvalidField("bandwidth"),
 		}, {
 			"node owner sign is empty  ",
-			NewMsgUpdateSessionInfo(TestAddress1, hub.NewSubscriptionID(1), TestBandwidthPos1, auth.StdSignature{}, TestClientStdSignaturePos1),
+			NewMsgUpdateSessionInfo(TestAddress1, hub.NewIDFromUInt64(1), TestBandwidthPos1, auth.StdSignature{}, TestClientStdSignaturePos1),
 			ErrorInvalidField("node_owner_signature"),
 		}, {
 			"client sign is empty  ",
-			NewMsgUpdateSessionInfo(TestAddress1, hub.NewSubscriptionID(1), TestBandwidthPos1, TestNodeOwnerStdSignaturePos1, auth.StdSignature{}),
+			NewMsgUpdateSessionInfo(TestAddress1, hub.NewIDFromUInt64(1), TestBandwidthPos1, TestNodeOwnerStdSignaturePos1, auth.StdSignature{}),
 			ErrorInvalidField("client_signature"),
 		}, {
 			"valid ",
-			NewMsgUpdateSessionInfo(TestAddress1, hub.NewSubscriptionID(1), TestBandwidthPos1, TestNodeOwnerStdSignaturePos1, TestClientStdSignaturePos1),
+			NewMsgUpdateSessionInfo(TestAddress1, hub.NewIDFromUInt64(1), TestBandwidthPos1, TestNodeOwnerStdSignaturePos1, TestClientStdSignaturePos1),
 			nil,
 		},
 	}
@@ -63,7 +63,7 @@ func TestMsgUpdateSessionInfo_ValidateBasic(t *testing.T) {
 }
 
 func TestMsgUpdateSessionInfo_GetSignBytes(t *testing.T) {
-	msg := NewMsgUpdateSessionInfo(TestAddress1, hub.NewSubscriptionID(1), TestBandwidthPos1, TestNodeOwnerStdSignaturePos1, TestClientStdSignaturePos1)
+	msg := NewMsgUpdateSessionInfo(TestAddress1, hub.NewIDFromUInt64(1), TestBandwidthPos1, TestNodeOwnerStdSignaturePos1, TestClientStdSignaturePos1)
 	msgBytes, err := json.Marshal(msg)
 	if err != nil {
 		panic(err)
@@ -73,16 +73,16 @@ func TestMsgUpdateSessionInfo_GetSignBytes(t *testing.T) {
 }
 
 func TestMsgUpdateSessionInfo_GetSigners(t *testing.T) {
-	msg := NewMsgUpdateSessionInfo(TestAddress1, hub.NewSubscriptionID(1), TestBandwidthPos1, TestNodeOwnerStdSignaturePos1, TestClientStdSignaturePos1)
+	msg := NewMsgUpdateSessionInfo(TestAddress1, hub.NewIDFromUInt64(1), TestBandwidthPos1, TestNodeOwnerStdSignaturePos1, TestClientStdSignaturePos1)
 	require.Equal(t, []sdk.AccAddress{TestAddress1}, msg.GetSigners())
 }
 
 func TestMsgUpdateSessionInfo_Type(t *testing.T) {
-	msg := NewMsgUpdateSessionInfo(TestAddress1, hub.NewSubscriptionID(1), TestBandwidthPos1, TestNodeOwnerStdSignaturePos1, TestClientStdSignaturePos1)
+	msg := NewMsgUpdateSessionInfo(TestAddress1, hub.NewIDFromUInt64(1), TestBandwidthPos1, TestNodeOwnerStdSignaturePos1, TestClientStdSignaturePos1)
 	require.Equal(t, "update_session_info", msg.Type())
 }
 
 func TestMsgUpdateSessionInfo_Route(t *testing.T) {
-	msg := NewMsgUpdateSessionInfo(TestAddress1, hub.NewSubscriptionID(1), TestBandwidthPos1, TestNodeOwnerStdSignaturePos1, TestClientStdSignaturePos1)
+	msg := NewMsgUpdateSessionInfo(TestAddress1, hub.NewIDFromUInt64(1), TestBandwidthPos1, TestNodeOwnerStdSignaturePos1, TestClientStdSignaturePos1)
 	require.Equal(t, RouterKey, msg.Route())
 }

@@ -44,11 +44,7 @@ func startSubscriptionHandlerFunc(ctx context.CLIContext) http.HandlerFunc {
 		}
 
 		vars := mux.Vars(r)
-		id, err := hub.NewNodeIDFromString(vars["nodeID"])
-		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
-			return
-		}
+		id := hub.NewIDFromString(vars["nodeID"])
 		msg := types.NewMsgStartSubscription(fromAddress, id, deposit)
 		if err := msg.ValidateBasic(); err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())

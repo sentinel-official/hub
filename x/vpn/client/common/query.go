@@ -11,10 +11,7 @@ import (
 )
 
 func QueryNode(ctx context.CLIContext, s string) (*types.Node, error) {
-	id, err := hub.NewNodeIDFromString(s)
-	if err != nil {
-		return nil, err
-	}
+	id := hub.NewIDFromString(s)
 	params := types.NewQueryNodeParams(id)
 
 	bytes, err := ctx.Codec.MarshalJSON(params)
@@ -88,10 +85,7 @@ func QueryAllNodes(ctx context.CLIContext) ([]types.Node, error) {
 }
 
 func QuerySubscription(ctx context.CLIContext, s string) (*types.Subscription, error) {
-	id, err := hub.NewSubscriptionIDFromString(s)
-	if err != nil {
-		return nil, err
-	}
+	id := hub.NewIDFromString(s)
 	params := types.NewQuerySubscriptionParams(id)
 
 	bytes, err := ctx.Codec.MarshalJSON(params)
@@ -117,10 +111,7 @@ func QuerySubscription(ctx context.CLIContext, s string) (*types.Subscription, e
 }
 
 func QuerySubscriptionsOfNode(ctx context.CLIContext, s string) ([]types.Subscription, error) {
-	id, err := hub.NewNodeIDFromString(s)
-	if err != nil {
-		return nil, err
-	}
+	id := hub.NewIDFromString(s)
 	params := types.NewQuerySubscriptionsOfNodePrams(id)
 
 	bytes, err := ctx.Codec.MarshalJSON(params)
@@ -146,6 +137,7 @@ func QuerySubscriptionsOfNode(ctx context.CLIContext, s string) ([]types.Subscri
 }
 
 func QuerySubscriptionsOfAddress(ctx context.CLIContext, s string) ([]types.Subscription, error) {
+
 	address, err := sdk.AccAddressFromBech32(s)
 	if err != nil {
 		return nil, err
@@ -194,10 +186,7 @@ func QueryAllSubscriptions(ctx context.CLIContext) ([]types.Subscription, error)
 }
 
 func QuerySessionsCountOfSubscription(ctx context.CLIContext, s string) (uint64, error) {
-	id, err := hub.NewSubscriptionIDFromString(s)
-	if err != nil {
-		return 0, err
-	}
+	id := hub.NewIDFromString(s)
 	params := types.NewQuerySessionsCountOfSubscriptionParams(id)
 
 	bytes, err := ctx.Codec.MarshalJSON(params)
@@ -223,11 +212,7 @@ func QuerySessionsCountOfSubscription(ctx context.CLIContext, s string) (uint64,
 }
 
 func QuerySession(ctx context.CLIContext, s string) (*types.Session, error) {
-	id, err := hub.NewSessionIDFromString(s)
-	if err != nil {
-		return nil, err
-	}
-
+	id := hub.NewIDFromString(s)
 	params := types.NewQuerySessionParams(id)
 
 	bytes, err := ctx.Codec.MarshalJSON(params)
@@ -253,10 +238,7 @@ func QuerySession(ctx context.CLIContext, s string) (*types.Session, error) {
 }
 
 func QuerySessionOfSubscription(ctx context.CLIContext, s string, index uint64) (*types.Session, error) {
-	id, err := hub.NewSubscriptionIDFromString(s)
-	if err != nil {
-		return nil, err
-	}
+	id := hub.NewIDFromString(s)
 	params := types.NewQuerySessionOfSubscriptionPrams(id, index)
 
 	bytes, err := ctx.Codec.MarshalJSON(params)
@@ -282,10 +264,7 @@ func QuerySessionOfSubscription(ctx context.CLIContext, s string, index uint64) 
 }
 
 func QuerySessionsOfSubscription(ctx context.CLIContext, s string) ([]types.Session, error) {
-	id, err := hub.NewSubscriptionIDFromString(s)
-	if err != nil {
-		return nil, err
-	}
+	id := hub.NewIDFromString(s)
 	params := types.NewQuerySessionsOfSubscriptionPrams(id)
 
 	bytes, err := ctx.Codec.MarshalJSON(params)

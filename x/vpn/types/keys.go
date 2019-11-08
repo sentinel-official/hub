@@ -40,8 +40,8 @@ var (
 	SessionIDBySubscriptionIDKeyPrefix   = []byte{0x03}
 )
 
-func NodeKey(id hub.NodeID) []byte {
-	return append(NodeKeyPrefix, id.Bytes()...)
+func NodeKey(id hub.ID) []byte {
+	return append(NodeKeyPrefix, sdk.Uint64ToBigEndian(id.Uint64())...)
 }
 
 func NodesCountOfAddressKey(address sdk.AccAddress) []byte {
@@ -53,17 +53,17 @@ func NodeIDByAddressKey(address sdk.AccAddress, i uint64) []byte {
 		append(address.Bytes(), sdk.Uint64ToBigEndian(i)...)...)
 }
 
-func SubscriptionKey(id hub.SubscriptionID) []byte {
-	return append(SubscriptionKeyPrefix, id.Bytes()...)
+func SubscriptionKey(id hub.ID) []byte {
+	return append(SubscriptionKeyPrefix, sdk.Uint64ToBigEndian(id.Uint64())...)
 }
 
-func SubscriptionsCountOfNodeKey(id hub.NodeID) []byte {
-	return append(SubscriptionsCountOfNodeKeyPrefix, id.Bytes()...)
+func SubscriptionsCountOfNodeKey(id hub.ID) []byte {
+	return append(SubscriptionsCountOfNodeKeyPrefix, sdk.Uint64ToBigEndian(id.Uint64())...)
 }
 
-func SubscriptionIDByNodeIDKey(id hub.NodeID, i uint64) []byte {
+func SubscriptionIDByNodeIDKey(id hub.ID, i uint64) []byte {
 	return append(SubscriptionIDByNodeIDKeyPrefix,
-		append(id.Bytes(), sdk.Uint64ToBigEndian(i)...)...)
+		append(sdk.Uint64ToBigEndian(id.Uint64()), sdk.Uint64ToBigEndian(i)...)...)
 }
 
 func SubscriptionsCountOfAddressKey(address sdk.AccAddress) []byte {
@@ -75,17 +75,17 @@ func SubscriptionIDByAddressKey(address sdk.AccAddress, i uint64) []byte {
 		append(address.Bytes(), sdk.Uint64ToBigEndian(i)...)...)
 }
 
-func SessionKey(id hub.SessionID) []byte {
-	return append(SessionKeyPrefix, id.Bytes()...)
+func SessionKey(id hub.ID) []byte {
+	return append(SessionKeyPrefix, sdk.Uint64ToBigEndian(id.Uint64())...)
 }
 
-func SessionsCountOfSubscriptionKey(id hub.SubscriptionID) []byte {
-	return append(SessionsCountOfSubscriptionKeyPrefix, id.Bytes()...)
+func SessionsCountOfSubscriptionKey(id hub.ID) []byte {
+	return append(SessionsCountOfSubscriptionKeyPrefix, sdk.Uint64ToBigEndian(id.Uint64())...)
 }
 
-func SessionIDBySubscriptionIDKey(id hub.SubscriptionID, i uint64) []byte {
+func SessionIDBySubscriptionIDKey(id hub.ID, i uint64) []byte {
 	return append(SessionIDBySubscriptionIDKeyPrefix,
-		append(id.Bytes(), sdk.Uint64ToBigEndian(i)...)...)
+		append(sdk.Uint64ToBigEndian(id.Uint64()), sdk.Uint64ToBigEndian(i)...)...)
 }
 
 func ActiveNodeIDsKey(height int64) []byte {

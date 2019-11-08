@@ -15,7 +15,6 @@ import (
 	"github.com/tendermint/tendermint/libs/log"
 	db "github.com/tendermint/tm-db"
 
-	hub "github.com/sentinel-official/hub/types"
 	"github.com/sentinel-official/hub/x/deposit"
 	"github.com/sentinel-official/hub/x/vpn/types"
 )
@@ -71,6 +70,5 @@ func MakeTestCodec() *codec.Codec {
 	auth.RegisterCodec(cdc)
 	supply.RegisterCodec(cdc)
 	types.RegisterCodec(cdc)
-	hub.RegisterCodec(cdc)
 	return cdc
 }

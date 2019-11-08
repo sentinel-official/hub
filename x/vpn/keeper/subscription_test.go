@@ -35,11 +35,15 @@ func TestKeeper_GetSubscriptionsCount(t *testing.T) {
 func TestKeeper_SetSubscription(t *testing.T) {
 	ctx, k, _, _ := CreateTestInput(t, false)
 
-	_, found := k.GetSubscription(ctx, hub.NewSubscriptionID(0))
+	_, found := k.GetSubscription(ctx, hub.NewIDFromUInt64(0))
 	require.Equal(t, false, found)
 
+	k.SetSubscription(ctx, types.Subscription{})
+	result, found := k.GetSubscription(ctx, types.Subscription{}.ID)
+	require.Equal(t, true, found)
+
 	k.SetSubscription(ctx, types.TestSubscription)
-	result, found := k.GetSubscription(ctx, types.TestSubscription.ID)
+	result, found = k.GetSubscription(ctx, types.TestNode.ID)
 	require.Equal(t, true, found)
 	require.Equal(t, types.TestSubscription, result)
 }
@@ -51,19 +55,19 @@ func TestKeeper_GetSubscription(t *testing.T) {
 func TestKeeper_SetSubscriptionsCountOfNode(t *testing.T) {
 	ctx, k, _, _ := CreateTestInput(t, false)
 
-	count := k.GetSubscriptionsCountOfNode(ctx, hub.NewNodeID(0))
+	count := k.GetSubscriptionsCountOfNode(ctx, hub.NewIDFromUInt64(0))
 	require.Equal(t, uint64(0), count)
 
-	k.SetSubscriptionsCountOfNode(ctx, hub.NewNodeID(0), 1)
-	count = k.GetSubscriptionsCountOfNode(ctx, hub.NewNodeID(0))
+	k.SetSubscriptionsCountOfNode(ctx, hub.NewIDFromUInt64(0), 1)
+	count = k.GetSubscriptionsCountOfNode(ctx, hub.NewIDFromUInt64(0))
 	require.Equal(t, uint64(1), count)
 
-	k.SetSubscriptionsCountOfNode(ctx, hub.NewNodeID(0), 2)
-	count = k.GetSubscriptionsCountOfNode(ctx, hub.NewNodeID(0))
+	k.SetSubscriptionsCountOfNode(ctx, hub.NewIDFromUInt64(0), 2)
+	count = k.GetSubscriptionsCountOfNode(ctx, hub.NewIDFromUInt64(0))
 	require.Equal(t, uint64(2), count)
 
-	k.SetSubscriptionsCountOfNode(ctx, hub.NewNodeID(0), 1)
-	count = k.GetSubscriptionsCountOfNode(ctx, hub.NewNodeID(0))
+	k.SetSubscriptionsCountOfNode(ctx, hub.NewIDFromUInt64(0), 1)
+	count = k.GetSubscriptionsCountOfNode(ctx, hub.NewIDFromUInt64(0))
 	require.Equal(t, uint64(1), count)
 }
 
@@ -74,28 +78,28 @@ func TestKeeper_GetSubscriptionsCountOfNode(t *testing.T) {
 func TestKeeper_SetSubscriptionIDByNodeID(t *testing.T) {
 	ctx, k, _, _ := CreateTestInput(t, false)
 
-	_, found := k.GetSubscriptionIDByNodeID(ctx, hub.NewNodeID(0), 1)
+	_, found := k.GetSubscriptionIDByNodeID(ctx, hub.NewIDFromUInt64(0), 1)
 	require.Equal(t, false, found)
 
-	k.SetSubscriptionIDByNodeID(ctx, hub.NewNodeID(0), 1, hub.NewSubscriptionID(0))
-	id, found := k.GetSubscriptionIDByNodeID(ctx, hub.NewNodeID(0), 1)
+	k.SetSubscriptionIDByNodeID(ctx, hub.NewIDFromUInt64(0), 1, hub.NewIDFromUInt64(0))
+	id, found := k.GetSubscriptionIDByNodeID(ctx, hub.NewIDFromUInt64(0), 1)
 	require.Equal(t, true, found)
-	require.Equal(t, hub.NewSubscriptionID(0), id)
+	require.Equal(t, hub.NewIDFromUInt64(0), id)
 
-	k.SetSubscriptionIDByNodeID(ctx, hub.NewNodeID(0), 2, hub.NewSubscriptionID(1))
-	id, found = k.GetSubscriptionIDByNodeID(ctx, hub.NewNodeID(0), 2)
+	k.SetSubscriptionIDByNodeID(ctx, hub.NewIDFromUInt64(0), 2, hub.NewIDFromUInt64(1))
+	id, found = k.GetSubscriptionIDByNodeID(ctx, hub.NewIDFromUInt64(0), 2)
 	require.Equal(t, true, found)
-	require.Equal(t, hub.NewSubscriptionID(1), id)
+	require.Equal(t, hub.NewIDFromUInt64(1), id)
 
-	k.SetSubscriptionIDByNodeID(ctx, hub.NewNodeID(1), 1, hub.NewSubscriptionID(0))
-	id, found = k.GetSubscriptionIDByNodeID(ctx, hub.NewNodeID(1), 1)
+	k.SetSubscriptionIDByNodeID(ctx, hub.NewIDFromUInt64(1), 1, hub.NewIDFromUInt64(0))
+	id, found = k.GetSubscriptionIDByNodeID(ctx, hub.NewIDFromUInt64(1), 1)
 	require.Equal(t, true, found)
-	require.Equal(t, hub.NewSubscriptionID(0), id)
+	require.Equal(t, hub.NewIDFromUInt64(0), id)
 
-	k.SetSubscriptionIDByNodeID(ctx, hub.NewNodeID(1), 2, hub.NewSubscriptionID(1))
-	id, found = k.GetSubscriptionIDByNodeID(ctx, hub.NewNodeID(1), 2)
+	k.SetSubscriptionIDByNodeID(ctx, hub.NewIDFromUInt64(1), 2, hub.NewIDFromUInt64(1))
+	id, found = k.GetSubscriptionIDByNodeID(ctx, hub.NewIDFromUInt64(1), 2)
 	require.Equal(t, true, found)
-	require.Equal(t, hub.NewSubscriptionID(1), id)
+	require.Equal(t, hub.NewIDFromUInt64(1), id)
 }
 
 func TestKeeper_GetSubscriptionIDByNodeID(t *testing.T) {
@@ -139,35 +143,35 @@ func TestKeeper_SetSubscriptionIDByAddress(t *testing.T) {
 	_, found := k.GetSubscriptionIDByAddress(ctx, types.TestAddress1, 1)
 	require.Equal(t, false, found)
 
-	k.SetSubscriptionIDByAddress(ctx, []byte(""), 1, hub.NewSubscriptionID(0))
+	k.SetSubscriptionIDByAddress(ctx, []byte(""), 1, hub.NewIDFromUInt64(0))
 	id, found := k.GetSubscriptionIDByAddress(ctx, []byte(""), 1)
 	require.Equal(t, true, found)
-	require.Equal(t, hub.NewSubscriptionID(0), id)
+	require.Equal(t, hub.NewIDFromUInt64(0), id)
 
-	k.SetSubscriptionIDByAddress(ctx, []byte(""), 2, hub.NewSubscriptionID(1))
+	k.SetSubscriptionIDByAddress(ctx, []byte(""), 2, hub.NewIDFromUInt64(1))
 	id, found = k.GetSubscriptionIDByAddress(ctx, []byte(""), 2)
 	require.Equal(t, true, found)
-	require.Equal(t, hub.NewSubscriptionID(1), id)
+	require.Equal(t, hub.NewIDFromUInt64(1), id)
 
-	k.SetSubscriptionIDByAddress(ctx, types.TestAddress1, 1, hub.NewSubscriptionID(0))
+	k.SetSubscriptionIDByAddress(ctx, types.TestAddress1, 1, hub.NewIDFromUInt64(0))
 	id, found = k.GetSubscriptionIDByAddress(ctx, types.TestAddress1, 1)
 	require.Equal(t, true, found)
-	require.Equal(t, hub.NewSubscriptionID(0), id)
+	require.Equal(t, hub.NewIDFromUInt64(0), id)
 
-	k.SetSubscriptionIDByAddress(ctx, types.TestAddress1, 2, hub.NewSubscriptionID(1))
+	k.SetSubscriptionIDByAddress(ctx, types.TestAddress1, 2, hub.NewIDFromUInt64(1))
 	id, found = k.GetSubscriptionIDByAddress(ctx, types.TestAddress1, 2)
 	require.Equal(t, true, found)
-	require.Equal(t, hub.NewSubscriptionID(1), id)
+	require.Equal(t, hub.NewIDFromUInt64(1), id)
 
-	k.SetSubscriptionIDByAddress(ctx, types.TestAddress2, 1, hub.NewSubscriptionID(0))
+	k.SetSubscriptionIDByAddress(ctx, types.TestAddress2, 1, hub.NewIDFromUInt64(0))
 	id, found = k.GetSubscriptionIDByAddress(ctx, types.TestAddress2, 1)
 	require.Equal(t, true, found)
-	require.Equal(t, hub.NewSubscriptionID(0), id)
+	require.Equal(t, hub.NewIDFromUInt64(0), id)
 
-	k.SetSubscriptionIDByAddress(ctx, types.TestAddress2, 1, hub.NewSubscriptionID(1))
+	k.SetSubscriptionIDByAddress(ctx, types.TestAddress2, 1, hub.NewIDFromUInt64(1))
 	id, found = k.GetSubscriptionIDByAddress(ctx, types.TestAddress1, 2)
 	require.Equal(t, true, found)
-	require.Equal(t, hub.NewSubscriptionID(1), id)
+	require.Equal(t, hub.NewIDFromUInt64(1), id)
 }
 
 func TestKeeper_GetSubscriptionIDByAddress(t *testing.T) {
@@ -177,19 +181,19 @@ func TestKeeper_GetSubscriptionIDByAddress(t *testing.T) {
 func TestKeeper_GetSubscriptionsOfNode(t *testing.T) {
 	ctx, k, _, _ := CreateTestInput(t, false)
 
-	subscriptions := k.GetSubscriptionsOfNode(ctx, hub.NewNodeID(0))
+	subscriptions := k.GetSubscriptionsOfNode(ctx, hub.NewIDFromUInt64(0))
 	require.Equal(t, []types.Subscription{}, subscriptions)
 
 	k.SetSubscription(ctx, types.TestSubscription)
-	k.SetSubscriptionsCountOfNode(ctx, hub.NewNodeID(0), 1)
+	k.SetSubscriptionsCountOfNode(ctx, hub.NewIDFromUInt64(0), 1)
 
-	subscriptions = k.GetSubscriptionsOfNode(ctx, hub.NewNodeID(0))
+	subscriptions = k.GetSubscriptionsOfNode(ctx, hub.NewIDFromUInt64(0))
 	require.Equal(t, []types.Subscription{types.TestSubscription}, subscriptions)
 
 	k.SetSubscription(ctx, types.TestSubscription)
-	k.SetSubscriptionsCountOfNode(ctx, hub.NewNodeID(0), 2)
+	k.SetSubscriptionsCountOfNode(ctx, hub.NewIDFromUInt64(0), 2)
 
-	subscriptions = k.GetSubscriptionsOfNode(ctx, hub.NewNodeID(0))
+	subscriptions = k.GetSubscriptionsOfNode(ctx, hub.NewIDFromUInt64(0))
 	require.Equal(t, append([]types.Subscription{types.TestSubscription}, types.TestSubscription), subscriptions)
 
 }
@@ -197,19 +201,19 @@ func TestKeeper_GetSubscriptionsOfNode(t *testing.T) {
 func TestKeeper_GetSubscriptionsOfAddress(t *testing.T) {
 	ctx, k, _, _ := CreateTestInput(t, false)
 
-	subscriptions := k.GetSubscriptionsOfNode(ctx, hub.NewNodeID(0))
+	subscriptions := k.GetSubscriptionsOfNode(ctx, hub.NewIDFromUInt64(0))
 	require.Equal(t, []types.Subscription{}, subscriptions)
 
 	k.SetSubscription(ctx, types.TestSubscription)
-	k.SetSubscriptionsCountOfNode(ctx, hub.NewNodeID(0), 1)
+	k.SetSubscriptionsCountOfNode(ctx, hub.NewIDFromUInt64(0), 1)
 
-	subscriptions = k.GetSubscriptionsOfNode(ctx, hub.NewNodeID(0))
+	subscriptions = k.GetSubscriptionsOfNode(ctx, hub.NewIDFromUInt64(0))
 	require.Equal(t, []types.Subscription{types.TestSubscription}, subscriptions)
 
 	k.SetSubscription(ctx, types.TestSubscription)
-	k.SetSubscriptionsCountOfNode(ctx, hub.NewNodeID(0), 2)
+	k.SetSubscriptionsCountOfNode(ctx, hub.NewIDFromUInt64(0), 2)
 
-	subscriptions = k.GetSubscriptionsOfNode(ctx, hub.NewNodeID(0))
+	subscriptions = k.GetSubscriptionsOfNode(ctx, hub.NewIDFromUInt64(0))
 	require.Equal(t, append([]types.Subscription{types.TestSubscription}, types.TestSubscription), subscriptions)
 }
 
@@ -224,7 +228,7 @@ func TestKeeper_GetAllSubscriptions(t *testing.T) {
 	require.Equal(t, []types.Subscription{types.TestSubscription}, subscriptions)
 
 	subscription := types.TestSubscription
-	subscription.ID = hub.NewSubscriptionID(1)
+	subscription.ID = hub.NewIDFromUInt64(1)
 	k.SetSubscription(ctx, subscription)
 	subscriptions = k.GetAllSubscriptions(ctx)
 	require.Equal(t, append([]types.Subscription{types.TestSubscription}, subscription), subscriptions)
