@@ -107,8 +107,9 @@ type SimApp struct {
 }
 
 // nolint:funlen
-func NewSimApp(logger log.Logger, db db.DB, traceStore io.Writer,
-	loadLatest bool, invCheckPeriod uint, baseAppOptions ...func(*baseapp.BaseApp)) *SimApp {
+func NewSimApp(logger log.Logger, db db.DB,
+	traceStore io.Writer, loadLatest bool, invCheckPeriod uint,
+	baseAppOptions ...func(*baseapp.BaseApp)) *SimApp {
 	cdc := MakeCodec()
 
 	bApp := baseapp.NewBaseApp(appName, logger, db, auth.DefaultTxDecoder(cdc), baseAppOptions...)

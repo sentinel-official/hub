@@ -295,7 +295,7 @@ func handleUpdateSessionInfo(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpda
 	}
 
 	scs := k.GetSessionsCountOfSubscription(ctx, subscription.ID)
-	data := NewBandwidthSignatureData(subscription.ID, scs, msg.Bandwidth).Bytes()
+	data := hub.NewBandwidthSignatureData(subscription.ID, scs, msg.Bandwidth).Bytes()
 	if !msg.NodeOwnerSignature.VerifyBytes(data, msg.NodeOwnerSignature.Signature) {
 		return types.ErrorInvalidBandwidthSignature().Result()
 	}

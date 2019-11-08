@@ -96,14 +96,14 @@ func (n Node) IsValid() error {
 	if n.Deposit.Denom == "" {
 		return fmt.Errorf("invalid deposit")
 	}
-	if n.Type == "" {
+	if n.Type == "" || len(n.Type) < 4 || len(n.Type) > 16 {
 		return fmt.Errorf("invalid type")
 	}
 
-	if n.Version == "" {
+	if n.Version == "" || len(n.Version) < 4 || len(n.Version) > 16 {
 		return fmt.Errorf("invalid version")
 	}
-	if n.Moniker == "" {
+	if n.Moniker == "" || len(n.Moniker) < 4 || len(n.Moniker) > 32 {
 		return fmt.Errorf("invalid moniker")
 	}
 	if n.PricesPerGB == nil || !n.PricesPerGB.IsValid() {
@@ -113,7 +113,7 @@ func (n Node) IsValid() error {
 		return fmt.Errorf("invalid internet speed")
 	}
 
-	if n.Encryption == "" {
+	if n.Encryption == "" || len(n.Encryption) < 4 || len(n.Encryption) > 16 {
 		return fmt.Errorf("invalid encryption")
 	}
 

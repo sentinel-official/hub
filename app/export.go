@@ -31,8 +31,8 @@ func (app *HubApp) ExportAppStateAndValidators(forZeroHeight bool,
 }
 
 // nolint:funlen
-func (app *HubApp) prepForZeroHeightGenesis(ctx sdk.Context,
-	jailWhiteList []string) {
+func (app *HubApp) prepForZeroHeightGenesis(
+	ctx sdk.Context, jailWhiteList []string) {
 	applyWhiteList := false
 	if len(jailWhiteList) > 0 {
 		applyWhiteList = true
