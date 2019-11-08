@@ -37,8 +37,12 @@ func signSessionBandwidthHandlerFunc(ctx context.CLIContext) http.HandlerFunc {
 			return
 		}
 
-		id := hub.NewIDFromString(vars["id"])
-		data := types.NewBandwidthSignatureData(id, scs, req.Bandwidth).Bytes()
+		id, err := hub.NewSubscriptionIDFromString(vars["id"])
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+			return
+		}
+		data := hub.NewBandwidthSignatureData(id, scs, req.Bandwidth).Bytes()
 
 		kb, err := keys.NewKeyBaseFromHomeFlag()
 		if err != nil {
@@ -94,7 +98,12 @@ func updateSessionInfoHandlerFunc(ctx context.CLIContext) http.HandlerFunc {
 			return
 		}
 
-		id := hub.NewIDFromString(vars["id"])
+		id, err := hub.NewSubscriptionIDFromString(vars["id"])
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+			return
+		}
+
 		msg := types.NewMsgUpdateSessionInfo(fromAddress, id, req.Bandwidth, req.NodeOwnerSign, req.ClientSign)
 		if err := msg.ValidateBasic(); err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())

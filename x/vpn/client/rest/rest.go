@@ -28,7 +28,6 @@ func registerTxRoutes(ctx context.CLIContext, r *mux.Router) {
 		Methods("POST")
 	r.HandleFunc("/subscriptions/{id}/sessions", updateSessionInfoHandlerFunc(ctx)).
 		Methods("PUT")
-
 }
 
 func registerQueryRoutes(ctx context.CLIContext, r *mux.Router) {
@@ -55,5 +54,4 @@ func registerQueryRoutes(ctx context.CLIContext, r *mux.Router) {
 		Methods("GET")
 	r.HandleFunc("/accounts/{address}/nodes", getNodesOfAddressHandlerFunc(ctx)).
 		Methods("GET")
-
 }

@@ -17,13 +17,13 @@ import (
 	"github.com/sentinel-official/hub/x/vpn/types"
 )
 
+// nolint:funlen
 func SignSessionBandwidthTxCmd(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "sign-bandwidth",
 		Short: "Sign session bandwidth",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := context.NewCLIContext().WithCodec(cdc)
-
 			_id := viper.GetString(flagSubscriptionID)
 			bandwidth := hub.Bandwidth{
 				Upload:   sdk.NewInt(viper.GetInt64(flagUpload)),
@@ -35,8 +35,12 @@ func SignSessionBandwidthTxCmd(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			id := hub.NewIDFromString(_id)
-			data := types.NewBandwidthSignatureData(id, scs, bandwidth).Bytes()
+			id, err := hub.NewSubscriptionIDFromString(_id)
+			if err != nil {
+				return err
+			}
+
+			data := hub.NewBandwidthSignatureData(id, scs, bandwidth).Bytes()
 
 			passphrase, err := keys.GetPassphrase(ctx.FromName)
 			if err != nil {
@@ -87,7 +91,10 @@ func UpdateSessionInfoTxCmd(cdc *codec.Codec) *cobra.Command {
 			txb := auth.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
 			ctx := context.NewCLIContext().WithCodec(cdc)
 
-			id := hub.NewIDFromString(viper.GetString(flagSubscriptionID))
+			id, err := hub.NewSubscriptionIDFromString(viper.GetString(flagSubscriptionID))
+			if err != nil {
+				return err
+			}
 			bandwidth := hub.Bandwidth{
 				Upload:   sdk.NewInt(viper.GetInt64(flagUpload)),
 				Download: sdk.NewInt(viper.GetInt64(flagDownload)),

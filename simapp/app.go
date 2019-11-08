@@ -1,4 +1,4 @@
-package app
+package simapp
 
 import (
 	"encoding/json"
@@ -34,12 +34,12 @@ import (
 )
 
 const (
-	appName = "Sentinel Hub App"
+	appName = "SimApp"
 )
 
 var (
-	DefaultCLIHome  = os.ExpandEnv("$HOME/.sentinel-hubcli")
-	DefaultNodeHome = os.ExpandEnv("$HOME/.sentinel-hubd")
+	DefaultCLIHome  = os.ExpandEnv("$HOME/.simapp")
+	DefaultNodeHome = os.ExpandEnv("$HOME/.simapp")
 
 	ModuleBasics = module.NewBasicManager(
 		genaccounts.AppModuleBasic{},
@@ -81,7 +81,7 @@ func MakeCodec() *codec.Codec {
 	return cdc
 }
 
-type HubApp struct {
+type SimApp struct {
 	*baseapp.BaseApp
 	cdc *codec.Codec
 
@@ -107,8 +107,9 @@ type HubApp struct {
 }
 
 // nolint:funlen
-func NewHubApp(logger log.Logger, db db.DB, traceStore io.Writer, loadLatest bool,
-	invCheckPeriod uint, baseAppOptions ...func(*baseapp.BaseApp)) *HubApp {
+func NewSimApp(logger log.Logger, db db.DB,
+	traceStore io.Writer, loadLatest bool, invCheckPeriod uint,
+	baseAppOptions ...func(*baseapp.BaseApp)) *SimApp {
 	cdc := MakeCodec()
 
 	bApp := baseapp.NewBaseApp(appName, logger, db, auth.DefaultTxDecoder(cdc), baseAppOptions...)
@@ -124,7 +125,7 @@ func NewHubApp(logger log.Logger, db db.DB, traceStore io.Writer, loadLatest boo
 
 	transientKeys := sdk.NewTransientStoreKeys(staking.TStoreKey, params.TStoreKey)
 
-	var app = &HubApp{
+	var app = &SimApp{
 		BaseApp:        bApp,
 		cdc:            cdc,
 		invCheckPeriod: invCheckPeriod,
@@ -260,26 +261,26 @@ func NewHubApp(logger log.Logger, db db.DB, traceStore io.Writer, loadLatest boo
 	return app
 }
 
-func (app *HubApp) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) abci.ResponseBeginBlock {
+func (app *SimApp) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) abci.ResponseBeginBlock {
 	return app.mm.BeginBlock(ctx, req)
 }
 
-func (app *HubApp) EndBlocker(ctx sdk.Context, req abci.RequestEndBlock) abci.ResponseEndBlock {
+func (app *SimApp) EndBlocker(ctx sdk.Context, req abci.RequestEndBlock) abci.ResponseEndBlock {
 	return app.mm.EndBlock(ctx, req)
 }
 
-func (app *HubApp) InitChainer(ctx sdk.Context, req abci.RequestInitChain) abci.ResponseInitChain {
+func (app *SimApp) InitChainer(ctx sdk.Context, req abci.RequestInitChain) abci.ResponseInitChain {
 	var state map[string]json.RawMessage
 	app.cdc.MustUnmarshalJSON(req.AppStateBytes, &state)
 
 	return app.mm.InitGenesis(ctx, state)
 }
 
-func (app *HubApp) LoadHeight(height int64) error {
+func (app *SimApp) LoadHeight(height int64) error {
 	return app.LoadVersion(height, app.keys[baseapp.MainStoreKey])
 }
 
-func (app *HubApp) ModuleAccountAddrs() map[string]bool {
+func (app *SimApp) ModuleAccountAddrs() map[string]bool {
 	moduleAccounts := make(map[string]bool)
 	for acc := range moduleAccountPermissions {
 		moduleAccounts[supply.NewModuleAddress(acc).String()] = true

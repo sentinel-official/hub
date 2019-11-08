@@ -33,7 +33,6 @@ type Params struct {
 
 func NewParams(freeNodesCount uint64, deposit sdk.Coin,
 	nodeInactiveInterval, sessionInactiveInterval int64) Params {
-
 	return Params{
 		FreeNodesCount:          freeNodesCount,
 		Deposit:                 deposit,
@@ -67,4 +66,20 @@ func DefaultParams() Params {
 		NodeInactiveInterval:    DefaultNodeInactiveInterval,
 		SessionInactiveInterval: DefaultSessionInactiveInterval,
 	}
+}
+
+func (p Params) Validate() error {
+	if !p.Deposit.IsValid() {
+		return fmt.Errorf("deposit is invalid: %s ", p.Deposit.String())
+	}
+
+	if p.NodeInactiveInterval < 0 {
+		return fmt.Errorf("NodeInactiveInterval: %d should be positive interger", p.NodeInactiveInterval)
+	}
+
+	if p.SessionInactiveInterval < 0 {
+		return fmt.Errorf("SessionInactiveInterval: %d should be positive interger", p.SessionInactiveInterval)
+	}
+
+	return nil
 }

@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	"math/rand"
 	"testing"
 
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -15,6 +16,7 @@ import (
 	"github.com/tendermint/tendermint/libs/log"
 	db "github.com/tendermint/tm-db"
 
+	hub "github.com/sentinel-official/hub/types"
 	"github.com/sentinel-official/hub/x/deposit"
 	"github.com/sentinel-official/hub/x/vpn/types"
 )
@@ -70,5 +72,27 @@ func MakeTestCodec() *codec.Codec {
 	auth.RegisterCodec(cdc)
 	supply.RegisterCodec(cdc)
 	types.RegisterCodec(cdc)
+	hub.RegisterCodec(cdc)
 	return cdc
+}
+
+func RandomNode(r *rand.Rand, ctx sdk.Context, keeper Keeper) types.Node {
+	nodes := keeper.GetAllNodes(ctx)
+	i := r.Intn(len(nodes))
+
+	return nodes[i]
+}
+
+func RandomSubscription(r *rand.Rand, ctx sdk.Context, keeper Keeper) types.Subscription {
+	subscriptions := keeper.GetAllSubscriptions(ctx)
+	i := r.Intn(len(subscriptions))
+
+	return subscriptions[i]
+}
+
+func RandomSession(r *rand.Rand, ctx sdk.Context, keeper Keeper) types.Session {
+	sessions := keeper.GetAllSessions(ctx)
+	i := r.Intn(len(sessions))
+
+	return sessions[i]
 }

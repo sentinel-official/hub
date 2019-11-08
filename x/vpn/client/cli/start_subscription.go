@@ -21,7 +21,11 @@ func StartSubscriptionTxCmd(cdc *codec.Codec) *cobra.Command {
 			txb := auth.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
 			ctx := context.NewCLIContext().WithCodec(cdc)
 
-			nodeID := hub.NewIDFromString(viper.GetString(flagNodeID))
+			nodeID, err := hub.NewNodeIDFromString(viper.GetString(flagNodeID))
+			if err != nil {
+				return err
+			}
+
 			deposit := viper.GetString(flagDeposit)
 
 			parsedDeposit, err := sdk.ParseCoin(deposit)

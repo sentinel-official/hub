@@ -115,55 +115,55 @@ func TestMsgUpdateNodeInfo_ValidateBasic(t *testing.T) {
 	}{
 		{
 			"from is nil",
-			NewMsgUpdateNodeInfo(nil, hub.NewIDFromUInt64(1), "node_type", "version", "moniker", sdk.Coins{sdk.NewInt64Coin("stake", 100)}, TestBandwidthPos1, "encryption"),
+			NewMsgUpdateNodeInfo(nil, hub.NewNodeID(1), "node_type", "version", "moniker", sdk.Coins{sdk.NewInt64Coin("stake", 100)}, TestBandwidthPos1, "encryption"),
 			ErrorInvalidField("from"),
 		}, {
 			"from is empty",
-			NewMsgUpdateNodeInfo([]byte(""), hub.NewIDFromUInt64(1), "node_type", "version", "moniker", sdk.Coins{sdk.NewInt64Coin("stake", 100)}, TestBandwidthPos1, "encryption"),
+			NewMsgUpdateNodeInfo([]byte(""), hub.NewNodeID(1), "node_type", "version", "moniker", sdk.Coins{sdk.NewInt64Coin("stake", 100)}, TestBandwidthPos1, "encryption"),
 			ErrorInvalidField("from"),
 		}, {
 			"node_moniker length is greater than 128",
-			NewMsgUpdateNodeInfo(TestAddress1, hub.NewIDFromUInt64(1), "node_type", "version", strings.Repeat("X", 130), sdk.Coins{sdk.NewInt64Coin("stake", 100)}, TestBandwidthPos1, "encryption"),
+			NewMsgUpdateNodeInfo(TestAddress1, hub.NewNodeID(1), "node_type", "version", strings.Repeat("X", 130), sdk.Coins{sdk.NewInt64Coin("stake", 100)}, TestBandwidthPos1, "encryption"),
 			ErrorInvalidField("moniker"),
 		}, {
 			"prices_per_gb is nil",
-			NewMsgUpdateNodeInfo(TestAddress1, hub.NewIDFromUInt64(1), "node_type", "version", "moniker", nil, TestBandwidthPos1, "encryption"),
+			NewMsgUpdateNodeInfo(TestAddress1, hub.NewNodeID(1), "node_type", "version", "moniker", nil, TestBandwidthPos1, "encryption"),
 			nil,
 		}, {
 			"prices_per_gb is empty",
-			NewMsgUpdateNodeInfo(TestAddress1, hub.NewIDFromUInt64(1), "node_type", "version", "moniker", sdk.Coins{}, TestBandwidthPos1, "encryption"),
+			NewMsgUpdateNodeInfo(TestAddress1, hub.NewNodeID(1), "node_type", "version", "moniker", sdk.Coins{}, TestBandwidthPos1, "encryption"),
 			ErrorInvalidField("prices_per_gb"),
 		}, {
 			"prices_per_gb is negative",
-			NewMsgUpdateNodeInfo(TestAddress1, hub.NewIDFromUInt64(1), "node_type", "version", "moniker", sdk.Coins{sdk.Coin{"stake", sdk.NewInt(-100)}}, TestBandwidthPos1, "encryption"),
+			NewMsgUpdateNodeInfo(TestAddress1, hub.NewNodeID(1), "node_type", "version", "moniker", sdk.Coins{sdk.Coin{"stake", sdk.NewInt(-100)}}, TestBandwidthPos1, "encryption"),
 			ErrorInvalidField("prices_per_gb"),
 		}, {
 			"prices_per_gb is zero",
-			NewMsgUpdateNodeInfo(TestAddress1, hub.NewIDFromUInt64(1), "node_type", "version", "moniker", sdk.Coins{sdk.NewInt64Coin("stake", 0)}, TestBandwidthPos1, "encryption"),
+			NewMsgUpdateNodeInfo(TestAddress1, hub.NewNodeID(1), "node_type", "version", "moniker", sdk.Coins{sdk.NewInt64Coin("stake", 0)}, TestBandwidthPos1, "encryption"),
 			ErrorInvalidField("prices_per_gb"),
 		}, {
 			"internet_speed is zero",
-			NewMsgUpdateNodeInfo(TestAddress1, hub.NewIDFromUInt64(1), "node_type", "version", "moniker", sdk.Coins{sdk.NewInt64Coin("stake", 100)}, TestBandwidthZero, "encryption"),
+			NewMsgUpdateNodeInfo(TestAddress1, hub.NewNodeID(1), "node_type", "version", "moniker", sdk.Coins{sdk.NewInt64Coin("stake", 100)}, TestBandwidthZero, "encryption"),
 			nil,
 		}, {
 			"internet_speed is negative",
-			NewMsgUpdateNodeInfo(TestAddress1, hub.NewIDFromUInt64(1), "node_type", "version", "moniker", sdk.Coins{sdk.NewInt64Coin("stake", 100)}, TestBandwidthNeg, "encryption"),
+			NewMsgUpdateNodeInfo(TestAddress1, hub.NewNodeID(1), "node_type", "version", "moniker", sdk.Coins{sdk.NewInt64Coin("stake", 100)}, TestBandwidthNeg, "encryption"),
 			ErrorInvalidField("internet_speed"),
 		}, {
 			"encryption is empty",
-			NewMsgUpdateNodeInfo(TestAddress1, hub.NewIDFromUInt64(1), "node_type", "version", "moniker", sdk.Coins{sdk.NewInt64Coin("stake", 100)}, TestBandwidthPos1, ""),
+			NewMsgUpdateNodeInfo(TestAddress1, hub.NewNodeID(1), "node_type", "version", "moniker", sdk.Coins{sdk.NewInt64Coin("stake", 100)}, TestBandwidthPos1, ""),
 			nil,
 		}, {
 			"type is empty",
-			NewMsgUpdateNodeInfo(TestAddress1, hub.NewIDFromUInt64(1), "", "version", "moniker", sdk.Coins{sdk.NewInt64Coin("stake", 100)}, TestBandwidthPos1, "encryption"),
+			NewMsgUpdateNodeInfo(TestAddress1, hub.NewNodeID(1), "", "version", "moniker", sdk.Coins{sdk.NewInt64Coin("stake", 100)}, TestBandwidthPos1, "encryption"),
 			nil,
 		}, {
 			"version is empty",
-			NewMsgUpdateNodeInfo(TestAddress1, hub.NewIDFromUInt64(1), "node_type", "", "moniker", sdk.Coins{sdk.NewInt64Coin("stake", 100)}, TestBandwidthPos1, "encryption"),
+			NewMsgUpdateNodeInfo(TestAddress1, hub.NewNodeID(1), "node_type", "", "moniker", sdk.Coins{sdk.NewInt64Coin("stake", 100)}, TestBandwidthPos1, "encryption"),
 			nil,
 		}, {
 			"valid",
-			NewMsgUpdateNodeInfo(TestAddress1, hub.NewIDFromUInt64(1), "node_type", "version", "moniker", sdk.Coins{sdk.NewInt64Coin("stake", 100)}, TestBandwidthPos1, "encryption"),
+			NewMsgUpdateNodeInfo(TestAddress1, hub.NewNodeID(1), "node_type", "version", "moniker", sdk.Coins{sdk.NewInt64Coin("stake", 100)}, TestBandwidthPos1, "encryption"),
 			nil,
 		},
 	}
@@ -178,7 +178,7 @@ func TestMsgUpdateNodeInfo_ValidateBasic(t *testing.T) {
 }
 
 func TestMsgUpdateNode_GetSignBytes(t *testing.T) {
-	msg := NewMsgUpdateNodeInfo(TestAddress1, hub.NewIDFromUInt64(1), "node_type", "version", "moniker", sdk.Coins{sdk.NewInt64Coin("stake", 100)}, TestBandwidthPos1, "encryption")
+	msg := NewMsgUpdateNodeInfo(TestAddress1, hub.NewNodeID(1), "node_type", "version", "moniker", sdk.Coins{sdk.NewInt64Coin("stake", 100)}, TestBandwidthPos1, "encryption")
 	msgBytes, err := json.Marshal(msg)
 	if err != nil {
 		panic(err)
@@ -188,17 +188,17 @@ func TestMsgUpdateNode_GetSignBytes(t *testing.T) {
 }
 
 func TestMsgUpdateNode_GetSigners(t *testing.T) {
-	msg := NewMsgUpdateNodeInfo(TestAddress1, hub.NewIDFromUInt64(1), "node_type", "version", "moniker", sdk.Coins{sdk.NewInt64Coin("stake", 100)}, TestBandwidthPos1, "encryption")
+	msg := NewMsgUpdateNodeInfo(TestAddress1, hub.NewNodeID(1), "node_type", "version", "moniker", sdk.Coins{sdk.NewInt64Coin("stake", 100)}, TestBandwidthPos1, "encryption")
 	require.Equal(t, []sdk.AccAddress{TestAddress1}, msg.GetSigners())
 }
 
 func TestMsgUpdateNode_Type(t *testing.T) {
-	msg := NewMsgUpdateNodeInfo(TestAddress1, hub.NewIDFromUInt64(1), "node_type", "version", "moniker", sdk.Coins{sdk.NewInt64Coin("stake", 100)}, TestBandwidthPos1, "encryption")
+	msg := NewMsgUpdateNodeInfo(TestAddress1, hub.NewNodeID(1), "node_type", "version", "moniker", sdk.Coins{sdk.NewInt64Coin("stake", 100)}, TestBandwidthPos1, "encryption")
 	require.Equal(t, "update_node_info", msg.Type())
 }
 
 func TestMsgUpdateNode_Route(t *testing.T) {
-	msg := NewMsgUpdateNodeInfo(TestAddress1, hub.NewIDFromUInt64(1), "node_type", "version", "moniker", sdk.Coins{sdk.NewInt64Coin("stake", 100)}, TestBandwidthPos1, "encryption")
+	msg := NewMsgUpdateNodeInfo(TestAddress1, hub.NewNodeID(1), "node_type", "version", "moniker", sdk.Coins{sdk.NewInt64Coin("stake", 100)}, TestBandwidthPos1, "encryption")
 	require.Equal(t, RouterKey, msg.Route())
 }
 
@@ -210,27 +210,27 @@ func TestMsgUpdateNodeStatus_ValidateBasic(t *testing.T) {
 	}{
 		{
 			"from is nil",
-			NewMsgUpdateNodeStatus(nil, hub.NewIDFromUInt64(1), StatusActive),
+			NewMsgUpdateNodeStatus(nil, hub.NewNodeID(1), StatusActive),
 			ErrorInvalidField("from"),
 		}, {
 			"from is empty",
-			NewMsgUpdateNodeStatus([]byte(""), hub.NewIDFromUInt64(1), StatusActive),
+			NewMsgUpdateNodeStatus([]byte(""), hub.NewNodeID(1), StatusActive),
 			ErrorInvalidField("from"),
 		}, {
 			"status is empty",
-			NewMsgUpdateNodeStatus(TestAddress1, hub.NewIDFromUInt64(1), ""),
+			NewMsgUpdateNodeStatus(TestAddress1, hub.NewNodeID(1), ""),
 			ErrorInvalidField("status"),
 		}, {
 			"status is invalid",
-			NewMsgUpdateNodeStatus(TestAddress1, hub.NewIDFromUInt64(1), "status"),
+			NewMsgUpdateNodeStatus(TestAddress1, hub.NewNodeID(1), "status"),
 			ErrorInvalidField("status"),
 		}, {
 			"status is active",
-			NewMsgUpdateNodeStatus(TestAddress1, hub.NewIDFromUInt64(1), StatusActive),
+			NewMsgUpdateNodeStatus(TestAddress1, hub.NewNodeID(1), StatusActive),
 			nil,
 		}, {
 			"status is inactive",
-			NewMsgUpdateNodeStatus(TestAddress1, hub.NewIDFromUInt64(1), StatusInactive),
+			NewMsgUpdateNodeStatus(TestAddress1, hub.NewNodeID(1), StatusInactive),
 			nil,
 		},
 	}
@@ -245,7 +245,7 @@ func TestMsgUpdateNodeStatus_ValidateBasic(t *testing.T) {
 }
 
 func TestMsgUpdateNodeStatus_GetSignBytes(t *testing.T) {
-	msg := NewMsgUpdateNodeStatus(TestAddress1, hub.NewIDFromUInt64(1), StatusActive)
+	msg := NewMsgUpdateNodeStatus(TestAddress1, hub.NewNodeID(1), StatusActive)
 	msgBytes, err := json.Marshal(msg)
 	if err != nil {
 		panic(err)
@@ -255,17 +255,17 @@ func TestMsgUpdateNodeStatus_GetSignBytes(t *testing.T) {
 }
 
 func TestMsgUpdateNodeStatus_GetSigners(t *testing.T) {
-	msg := NewMsgUpdateNodeStatus(TestAddress1, hub.NewIDFromUInt64(1), StatusActive)
+	msg := NewMsgUpdateNodeStatus(TestAddress1, hub.NewNodeID(1), StatusActive)
 	require.Equal(t, []sdk.AccAddress{TestAddress1}, msg.GetSigners())
 }
 
 func TestMsgUpdateNodeStatus_Type(t *testing.T) {
-	msg := NewMsgUpdateNodeStatus(TestAddress1, hub.NewIDFromUInt64(1), StatusActive)
+	msg := NewMsgUpdateNodeStatus(TestAddress1, hub.NewNodeID(1), StatusActive)
 	require.Equal(t, "update_node_status", msg.Type())
 }
 
 func TestMsgUpdateNodeStatus_Route(t *testing.T) {
-	msg := NewMsgUpdateNodeStatus(TestAddress1, hub.NewIDFromUInt64(1), StatusActive)
+	msg := NewMsgUpdateNodeStatus(TestAddress1, hub.NewNodeID(1), StatusActive)
 	require.Equal(t, RouterKey, msg.Route())
 }
 
@@ -277,15 +277,15 @@ func TestMsgDeregisterNode_ValidateBasic(t *testing.T) {
 	}{
 		{
 			"from is nil",
-			NewMsgDeregisterNode(nil, hub.NewIDFromUInt64(1)),
+			NewMsgDeregisterNode(nil, hub.NewNodeID(1)),
 			ErrorInvalidField("from"),
 		}, {
 			"from is empty",
-			NewMsgDeregisterNode([]byte(""), hub.NewIDFromUInt64(1)),
+			NewMsgDeregisterNode([]byte(""), hub.NewNodeID(1)),
 			ErrorInvalidField("from"),
 		}, {
 			"valid",
-			NewMsgDeregisterNode(TestAddress1, hub.NewIDFromUInt64(1)),
+			NewMsgDeregisterNode(TestAddress1, hub.NewNodeID(1)),
 			nil,
 		},
 	}
@@ -300,7 +300,7 @@ func TestMsgDeregisterNode_ValidateBasic(t *testing.T) {
 }
 
 func TestMsgDeregisterNode_GetSignBytes(t *testing.T) {
-	msg := NewMsgDeregisterNode(TestAddress1, hub.NewIDFromUInt64(1))
+	msg := NewMsgDeregisterNode(TestAddress1, hub.NewNodeID(1))
 	msgBytes, err := json.Marshal(msg)
 	if err != nil {
 		panic(err)
@@ -310,16 +310,16 @@ func TestMsgDeregisterNode_GetSignBytes(t *testing.T) {
 }
 
 func TestMsgDeregisterNode_GetSigners(t *testing.T) {
-	msg := NewMsgDeregisterNode(TestAddress1, hub.NewIDFromUInt64(1))
+	msg := NewMsgDeregisterNode(TestAddress1, hub.NewNodeID(1))
 	require.Equal(t, []sdk.AccAddress{TestAddress1}, msg.GetSigners())
 }
 
 func TestMsgDeregisterNode_Type(t *testing.T) {
-	msg := NewMsgDeregisterNode(TestAddress1, hub.NewIDFromUInt64(1))
+	msg := NewMsgDeregisterNode(TestAddress1, hub.NewNodeID(1))
 	require.Equal(t, "deregister_node", msg.Type())
 }
 
 func TestMsgDeregisterNode_Route(t *testing.T) {
-	msg := NewMsgDeregisterNode(TestAddress1, hub.NewIDFromUInt64(1))
+	msg := NewMsgDeregisterNode(TestAddress1, hub.NewNodeID(1))
 	require.Equal(t, RouterKey, msg.Route())
 }

@@ -27,9 +27,9 @@ func Test_handleRegisterNode(t *testing.T) {
 	res := handler(ctx, *msg)
 	require.True(t, res.IsOK())
 
-	node, found := k.GetNode(ctx, hub.NewIDFromUInt64(0))
+	node, found := k.GetNode(ctx, hub.NewNodeID(0))
 	require.Equal(t, true, found)
-	require.Equal(t, hub.NewIDFromUInt64(0), node.ID)
+	require.Equal(t, hub.NewNodeID(0), node.ID)
 	require.Equal(t, "moniker", node.Moniker)
 
 	count = k.GetNodesCount(ctx)
@@ -85,7 +85,7 @@ func Test_handleRegisterNode(t *testing.T) {
 	count = k.GetNodesCount(ctx)
 	require.Equal(t, uint64(6), count)
 
-	id := hub.NewIDFromUInt64(count - 1)
+	id := hub.NewNodeID(count - 1)
 	node, found = k.GetNode(ctx, id)
 	require.Equal(t, true, found)
 	require.Equal(t, id, node.ID)
@@ -117,7 +117,7 @@ func Test_handleRegisterNode(t *testing.T) {
 	count = k.GetNodesCount(ctx)
 	require.Equal(t, uint64(7), count)
 
-	id = hub.NewIDFromUInt64(count - 1)
+	id = hub.NewNodeID(count - 1)
 	node, found = k.GetNode(ctx, id)
 	require.Equal(t, true, found)
 	require.Equal(t, id, node.ID)
@@ -126,20 +126,17 @@ func Test_handleRegisterNode(t *testing.T) {
 func Test_handleUpdateNodeInfo(t *testing.T) {
 	ctx, k, _, _ := keeper.CreateTestInput(t, false)
 
-	node, found := k.GetNode(ctx, hub.NewIDFromUInt64(0))
+	node, found := k.GetNode(ctx, hub.NewNodeID(0))
 	require.Equal(t, false, found)
 	require.Equal(t, types.Node{}, node)
 
 	handler := NewHandler(k)
-	msg := NewMsgUpdateNodeInfo(node.Owner, node.ID, "new_node_type", "new_version", "new_moniker", sdk.Coins{sdk.NewInt64Coin("stake", 100)}, types.TestBandwidthPos1, "new_encryption")
-	res := handler(ctx, *msg)
-	require.False(t, res.IsOK())
 
 	node = types.TestNode
 	node.Status = StatusDeRegistered
 	k.SetNode(ctx, node)
-	msg = NewMsgUpdateNodeInfo(node.Owner, node.ID, "new_node_type", "new_version", "new_moniker", sdk.Coins{sdk.NewInt64Coin("stake", 100)}, types.TestBandwidthPos1, "new_encryption")
-	res = handler(ctx, *msg)
+	msg := NewMsgUpdateNodeInfo(node.Owner, node.ID, "new_node_type", "new_version", "new_moniker", sdk.Coins{sdk.NewInt64Coin("stake", 100)}, types.TestBandwidthPos1, "new_encryption")
+	res := handler(ctx, *msg)
 	require.False(t, res.IsOK())
 
 	msg = NewMsgUpdateNodeInfo(types.TestAddress2, node.ID, "new_node_type", "new_version", "new_moniker", sdk.Coins{sdk.NewInt64Coin("stake", 100)}, types.TestBandwidthPos1, "new_encryption")
@@ -178,7 +175,7 @@ func Test_handleUpdateNodeInfo(t *testing.T) {
 func Test_handleUpdateNodeStatus(t *testing.T) {
 	ctx, k, _, _ := keeper.CreateTestInput(t, false)
 
-	node, found := k.GetNode(ctx, hub.NewIDFromUInt64(0))
+	node, found := k.GetNode(ctx, hub.NewNodeID(0))
 	require.Equal(t, false, found)
 	require.Equal(t, types.Node{}, node)
 
@@ -269,22 +266,19 @@ func Test_handleUpdateNodeStatus(t *testing.T) {
 func Test_handleDeregisterNode(t *testing.T) {
 	ctx, k, dk, bk := keeper.CreateTestInput(t, false)
 
-	node, found := k.GetNode(ctx, hub.NewIDFromUInt64(0))
+	node, found := k.GetNode(ctx, hub.NewNodeID(0))
 	require.Equal(t, false, found)
 	require.Equal(t, types.Node{}, node)
 
 	handler := NewHandler(k)
-	msg := NewMsgDeregisterNode(node.Owner, node.ID)
-	res := handler(ctx, *msg)
-	require.False(t, res.IsOK())
 
 	node = types.TestNode
 	node.Deposit = sdk.NewInt64Coin("stake", 0)
 
 	node.Status = StatusDeRegistered
 	k.SetNode(ctx, node)
-	msg = NewMsgDeregisterNode(types.TestAddress2, node.ID)
-	res = handler(ctx, *msg)
+	msg := NewMsgDeregisterNode(types.TestAddress2, node.ID)
+	res := handler(ctx, *msg)
 	require.False(t, res.IsOK())
 
 	node, found = k.GetNode(ctx, node.ID)
@@ -430,16 +424,16 @@ func Test_handleDeregisterNode(t *testing.T) {
 func Test_handleStartSubscription(t *testing.T) {
 	ctx, k, dk, bk := keeper.CreateTestInput(t, false)
 
-	node, found := k.GetNode(ctx, hub.NewIDFromUInt64(0))
+	node, found := k.GetNode(ctx, hub.NewNodeID(0))
 	require.Equal(t, false, found)
 	require.Equal(t, types.Node{}, node)
 
-	subscription, found := k.GetSubscription(ctx, hub.NewIDFromUInt64(0))
+	subscription, found := k.GetSubscription(ctx, hub.NewSubscriptionID(0))
 	require.Equal(t, false, found)
 	require.Equal(t, types.Subscription{}, subscription)
 
 	handler := NewHandler(k)
-	msg := NewMsgStartSubscription(types.TestAddress2, hub.NewIDFromUInt64(1), sdk.NewInt64Coin("stake", 100))
+	msg := NewMsgStartSubscription(types.TestAddress2, hub.NewNodeID(1), sdk.NewInt64Coin("stake", 100))
 	res := handler(ctx, *msg)
 	require.False(t, res.IsOK())
 
@@ -458,7 +452,7 @@ func Test_handleStartSubscription(t *testing.T) {
 	require.Equal(t, false, found)
 	require.Equal(t, sdk.Coins(nil), deposit.Coins)
 
-	subscription, found = k.GetSubscription(ctx, hub.NewIDFromUInt64(0))
+	subscription, found = k.GetSubscription(ctx, hub.NewSubscriptionID(0))
 	require.Equal(t, false, found)
 	require.Equal(t, types.Subscription{}, subscription)
 
@@ -472,7 +466,7 @@ func Test_handleStartSubscription(t *testing.T) {
 	require.Equal(t, false, found)
 	require.Equal(t, sdk.Coins(nil), deposit.Coins)
 
-	subscription, found = k.GetSubscription(ctx, hub.NewIDFromUInt64(0))
+	subscription, found = k.GetSubscription(ctx, hub.NewSubscriptionID(0))
 	require.Equal(t, false, found)
 	require.Equal(t, types.Subscription{}, subscription)
 
@@ -486,7 +480,7 @@ func Test_handleStartSubscription(t *testing.T) {
 	require.Equal(t, false, found)
 	require.Equal(t, sdk.Coins(nil), deposit.Coins)
 
-	subscription, found = k.GetSubscription(ctx, hub.NewIDFromUInt64(0))
+	subscription, found = k.GetSubscription(ctx, hub.NewSubscriptionID(0))
 	require.Equal(t, false, found)
 	require.Equal(t, types.Subscription{}, subscription)
 
@@ -500,7 +494,7 @@ func Test_handleStartSubscription(t *testing.T) {
 	require.Equal(t, false, found)
 	require.Equal(t, sdk.Coins(nil), deposit.Coins)
 
-	subscription, found = k.GetSubscription(ctx, hub.NewIDFromUInt64(0))
+	subscription, found = k.GetSubscription(ctx, hub.NewSubscriptionID(0))
 	require.Equal(t, false, found)
 	require.Equal(t, types.Subscription{}, subscription)
 
@@ -512,7 +506,7 @@ func Test_handleStartSubscription(t *testing.T) {
 	require.Equal(t, false, found)
 	require.Equal(t, sdk.Coins(nil), deposit.Coins)
 
-	subscription, found = k.GetSubscription(ctx, hub.NewIDFromUInt64(0))
+	subscription, found = k.GetSubscription(ctx, hub.NewSubscriptionID(0))
 	require.Equal(t, false, found)
 	require.Equal(t, types.Subscription{}, subscription)
 
@@ -530,7 +524,7 @@ func Test_handleStartSubscription(t *testing.T) {
 	require.Equal(t, false, found)
 	require.Equal(t, sdk.Coins(nil), deposit.Coins)
 
-	subscription, found = k.GetSubscription(ctx, hub.NewIDFromUInt64(0))
+	subscription, found = k.GetSubscription(ctx, hub.NewSubscriptionID(0))
 	require.Equal(t, false, found)
 	require.Equal(t, types.Subscription{}, subscription)
 
@@ -544,7 +538,7 @@ func Test_handleStartSubscription(t *testing.T) {
 	require.Equal(t, false, found)
 	require.Equal(t, sdk.Coins(nil), deposit.Coins)
 
-	subscription, found = k.GetSubscription(ctx, hub.NewIDFromUInt64(0))
+	subscription, found = k.GetSubscription(ctx, hub.NewSubscriptionID(0))
 	require.Equal(t, false, found)
 	require.Equal(t, types.Subscription{}, subscription)
 
@@ -558,7 +552,7 @@ func Test_handleStartSubscription(t *testing.T) {
 	require.Equal(t, false, found)
 	require.Equal(t, sdk.Coins(nil), deposit.Coins)
 
-	subscription, found = k.GetSubscription(ctx, hub.NewIDFromUInt64(0))
+	subscription, found = k.GetSubscription(ctx, hub.NewSubscriptionID(0))
 	require.Equal(t, false, found)
 	require.Equal(t, types.Subscription{}, subscription)
 
@@ -575,7 +569,7 @@ func Test_handleStartSubscription(t *testing.T) {
 	require.Equal(t, true, found)
 	require.Equal(t, sdk.Coins{sdk.NewInt64Coin("invalid", 100)}, deposit.Coins)
 
-	subscription, found = k.GetSubscription(ctx, hub.NewIDFromUInt64(0))
+	subscription, found = k.GetSubscription(ctx, hub.NewSubscriptionID(0))
 	require.Equal(t, false, found)
 	require.Equal(t, types.Subscription{}, subscription)
 
@@ -590,10 +584,10 @@ func Test_handleStartSubscription(t *testing.T) {
 	require.Equal(t, true, found)
 	require.Equal(t, sdk.Coins{sdk.NewInt64Coin("invalid", 100)}.AmountOf(sdk.NewInt64Coin("invalid", 100).Denom), deposit.Coins.AmountOf(sdk.NewInt64Coin("invalid", 100).Denom))
 
-	subscription, found = k.GetSubscription(ctx, hub.NewIDFromUInt64(0))
+	subscription, found = k.GetSubscription(ctx, hub.NewSubscriptionID(0))
 	require.Equal(t, true, found)
 	require.Equal(t, types.TestAddress2, subscription.Client)
-	require.Equal(t, hub.NewIDFromUInt64(0), subscription.NodeID)
+	require.Equal(t, hub.NewNodeID(0), subscription.NodeID)
 
 	count := k.GetSubscriptionsCount(ctx)
 	require.Equal(t, uint64(1), count)
@@ -636,11 +630,11 @@ func Test_handleStartSubscription(t *testing.T) {
 	count = k.GetSubscriptionsCountOfAddress(ctx, types.TestAddress2)
 	require.Equal(t, uint64(2), count)
 
-	subscriptionID := hub.NewIDFromUInt64(count - 1)
+	subscriptionID := hub.NewSubscriptionID(count - 1)
 	subscription, found = k.GetSubscription(ctx, subscriptionID)
 	require.Equal(t, true, found)
 	require.Equal(t, types.TestAddress2, subscription.Client)
-	require.Equal(t, hub.NewIDFromUInt64(0), subscription.NodeID)
+	require.Equal(t, hub.NewNodeID(0), subscription.NodeID)
 
 	count = k.GetSubscriptionsCount(ctx)
 	require.Equal(t, uint64(2), count)
@@ -662,21 +656,18 @@ func Test_handleStartSubscription(t *testing.T) {
 func Test_handleEndSubscription(t *testing.T) {
 	ctx, k, dk, bk := keeper.CreateTestInput(t, false)
 
-	subscription, found := k.GetSubscription(ctx, hub.NewIDFromUInt64(0))
+	subscription, found := k.GetSubscription(ctx, hub.NewSubscriptionID(0))
 	require.Equal(t, false, found)
 	require.Equal(t, types.Subscription{}, subscription)
 
 	handler := NewHandler(k)
-	msg := NewMsgEndSubscription(types.TestAddress1, subscription.ID)
-	res := handler(ctx, *msg)
-	require.False(t, res.IsOK())
 
 	subscription = types.TestSubscription
 	subscription.Status = StatusInactive
 	k.SetSubscription(ctx, subscription)
 
-	msg = NewMsgEndSubscription(types.TestAddress1, subscription.ID)
-	res = handler(ctx, *msg)
+	msg := NewMsgEndSubscription(types.TestAddress1, subscription.ID)
+	res := handler(ctx, *msg)
 	require.False(t, res.IsOK())
 
 	subscription, found = k.GetSubscription(ctx, subscription.ID)
@@ -691,7 +682,7 @@ func Test_handleEndSubscription(t *testing.T) {
 
 	subscription.Status = StatusActive
 	k.SetSubscription(ctx, subscription)
-	msg = NewMsgEndSubscription(types.TestAddress1, hub.NewIDFromUInt64(0))
+	msg = NewMsgEndSubscription(types.TestAddress1, hub.NewSubscriptionID(0))
 	res = handler(ctx, *msg)
 	require.False(t, res.IsOK())
 
@@ -730,7 +721,7 @@ func Test_handleEndSubscription(t *testing.T) {
 	subscription, found = k.GetSubscription(ctx, subscription.ID)
 	require.Equal(t, true, found)
 
-	msg = NewMsgEndSubscription(types.TestAddress2, hub.NewIDFromUInt64(0))
+	msg = NewMsgEndSubscription(types.TestAddress2, hub.NewSubscriptionID(0))
 	res = handler(ctx, *msg)
 	require.False(t, res.IsOK())
 
@@ -739,7 +730,7 @@ func Test_handleEndSubscription(t *testing.T) {
 
 	subscription.Status = StatusActive
 	k.SetSubscription(ctx, subscription)
-	msg = NewMsgEndSubscription(types.TestAddress1, hub.NewIDFromUInt64(0))
+	msg = NewMsgEndSubscription(types.TestAddress1, hub.NewSubscriptionID(0))
 	res = handler(ctx, *msg)
 	require.False(t, res.IsOK())
 
@@ -782,7 +773,7 @@ func Test_handleEndSubscription(t *testing.T) {
 	k.SetSubscription(ctx, types.TestSubscription)
 	k.SetSession(ctx, types.TestSession)
 	k.SetSessionsCountOfSubscription(ctx, subscription.ID, 1)
-	k.SetSessionIDBySubscriptionID(ctx, subscription.ID, 1, hub.NewIDFromUInt64(0))
+	k.SetSessionIDBySubscriptionID(ctx, subscription.ID, 1, hub.NewSessionID(0))
 
 	msg = NewMsgEndSubscription(types.TestAddress2, subscription.ID)
 	res = handler(ctx, *msg)
@@ -792,12 +783,12 @@ func Test_handleEndSubscription(t *testing.T) {
 func Test_handleUpdateSessionInfo(t *testing.T) {
 	ctx, k, _, _ := keeper.CreateTestInput(t, false)
 
-	session, found := k.GetSession(ctx, hub.NewIDFromUInt64(0))
+	session, found := k.GetSession(ctx, hub.NewSessionID(0))
 	require.Equal(t, false, found)
 	require.Equal(t, types.Session{}, session)
 
 	handler := NewHandler(k)
-	msg := NewMsgUpdateSessionInfo(types.TestAddress2, hub.NewIDFromUInt64(1), types.TestBandwidthPos1, types.TestNodeOwnerStdSignaturePos1, types.TestClientStdSignaturePos1)
+	msg := NewMsgUpdateSessionInfo(types.TestAddress2, hub.NewSubscriptionID(1), types.TestBandwidthPos1, types.TestNodeOwnerStdSignaturePos1, types.TestClientStdSignaturePos1)
 	res := handler(ctx, *msg)
 	require.False(t, res.IsOK())
 
@@ -810,7 +801,7 @@ func Test_handleUpdateSessionInfo(t *testing.T) {
 	res = handler(ctx, *msg)
 	require.False(t, res.IsOK())
 
-	session, found = k.GetSession(ctx, hub.NewIDFromUInt64(0))
+	session, found = k.GetSession(ctx, hub.NewSessionID(0))
 	require.Equal(t, false, found)
 	require.Equal(t, types.Session{}, session)
 
@@ -846,7 +837,8 @@ func Test_handleUpdateSessionInfo(t *testing.T) {
 	res = handler(ctx, *msg)
 	require.True(t, res.IsOK())
 
-	session, found = k.GetSession(ctx, session.ID)
+	id, _ := k.GetSessionIDBySubscriptionID(ctx, subscription.ID, k.GetSessionsCountOfSubscription(ctx, subscription.ID))
+	session, found = k.GetSession(ctx, id)
 	require.Equal(t, true, found)
 	require.Equal(t, types.TestSession, session)
 
@@ -855,7 +847,6 @@ func Test_handleUpdateSessionInfo(t *testing.T) {
 
 	count = k.GetSessionsCountOfSubscription(ctx, subscription.ID)
 	require.Equal(t, uint64(1), count)
-
 	msg = NewMsgUpdateSessionInfo(subscription.Client, subscription.ID, types.TestBandwidthPos1, types.TestNodeOwnerStdSignaturePos2, types.TestClientStdSignaturePos1)
 	res = handler(ctx, *msg)
 	require.False(t, res.IsOK())
@@ -930,7 +921,7 @@ func Test_handleUpdateSessionInfo(t *testing.T) {
 	res = handler(ctx, *msg)
 	require.True(t, res.IsOK())
 
-	session, found = k.GetSession(ctx, hub.NewIDFromUInt64(0))
+	session, found = k.GetSession(ctx, hub.NewSessionID(0))
 	require.Equal(t, true, found)
 	require.Equal(t, types.TestBandwidthPos1, session.Bandwidth)
 

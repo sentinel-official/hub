@@ -34,7 +34,7 @@ func (k Keeper) SetSession(ctx sdk.Context, session types.Session) {
 	store.Set(key, value)
 }
 
-func (k Keeper) GetSession(ctx sdk.Context, id hub.ID) (session types.Session, found bool) {
+func (k Keeper) GetSession(ctx sdk.Context, id hub.SessionID) (session types.Session, found bool) {
 	store := ctx.KVStore(k.sessionKey)
 
 	key := types.SessionKey(id)
@@ -47,7 +47,7 @@ func (k Keeper) GetSession(ctx sdk.Context, id hub.ID) (session types.Session, f
 	return session, true
 }
 
-func (k Keeper) SetSessionsCountOfSubscription(ctx sdk.Context, id hub.ID, count uint64) {
+func (k Keeper) SetSessionsCountOfSubscription(ctx sdk.Context, id hub.SubscriptionID, count uint64) {
 	key := types.SessionsCountOfSubscriptionKey(id)
 	value := k.cdc.MustMarshalBinaryLengthPrefixed(count)
 
@@ -55,7 +55,7 @@ func (k Keeper) SetSessionsCountOfSubscription(ctx sdk.Context, id hub.ID, count
 	store.Set(key, value)
 }
 
-func (k Keeper) GetSessionsCountOfSubscription(ctx sdk.Context, id hub.ID) (count uint64) {
+func (k Keeper) GetSessionsCountOfSubscription(ctx sdk.Context, id hub.SubscriptionID) (count uint64) {
 	store := ctx.KVStore(k.sessionKey)
 
 	key := types.SessionsCountOfSubscriptionKey(id)
@@ -65,10 +65,11 @@ func (k Keeper) GetSessionsCountOfSubscription(ctx sdk.Context, id hub.ID) (coun
 	}
 
 	k.cdc.MustUnmarshalBinaryLengthPrefixed(value, &count)
+
 	return count
 }
 
-func (k Keeper) SetSessionIDBySubscriptionID(ctx sdk.Context, i hub.ID, j uint64, id hub.ID) {
+func (k Keeper) SetSessionIDBySubscriptionID(ctx sdk.Context, i hub.SubscriptionID, j uint64, id hub.SessionID) {
 	key := types.SessionIDBySubscriptionIDKey(i, j)
 	value := k.cdc.MustMarshalBinaryLengthPrefixed(id)
 
@@ -76,13 +77,14 @@ func (k Keeper) SetSessionIDBySubscriptionID(ctx sdk.Context, i hub.ID, j uint64
 	store.Set(key, value)
 }
 
-func (k Keeper) GetSessionIDBySubscriptionID(ctx sdk.Context, i hub.ID, j uint64) (id hub.ID, found bool) {
+func (k Keeper) GetSessionIDBySubscriptionID(ctx sdk.Context,
+	i hub.SubscriptionID, j uint64) (id hub.SessionID, found bool) {
 	store := ctx.KVStore(k.sessionKey)
 
 	key := types.SessionIDBySubscriptionIDKey(i, j)
 	value := store.Get(key)
 	if value == nil {
-		return 0, false
+		return hub.NewSessionID(0), false
 	}
 
 	k.cdc.MustUnmarshalBinaryLengthPrefixed(value, &id)
@@ -90,7 +92,7 @@ func (k Keeper) GetSessionIDBySubscriptionID(ctx sdk.Context, i hub.ID, j uint64
 }
 
 func (k Keeper) SetActiveSessionIDs(ctx sdk.Context, height int64, ids hub.IDs) {
-	ids = ids.Sort()
+	ids.Sort()
 
 	key := types.ActiveSessionIDsKey(height)
 	value := k.cdc.MustMarshalBinaryLengthPrefixed(ids)
@@ -119,7 +121,7 @@ func (k Keeper) DeleteActiveSessionIDs(ctx sdk.Context, height int64) {
 	store.Delete(key)
 }
 
-func (k Keeper) GetSessionsOfSubscription(ctx sdk.Context, id hub.ID) (sessions []types.Session) {
+func (k Keeper) GetSessionsOfSubscription(ctx sdk.Context, id hub.SubscriptionID) (sessions []types.Session) {
 	count := k.GetSessionsCountOfSubscription(ctx, id)
 
 	sessions = make([]types.Session, 0, count)
@@ -148,7 +150,7 @@ func (k Keeper) GetAllSessions(ctx sdk.Context) (sessions []types.Session) {
 	return sessions
 }
 
-func (k Keeper) AddSessionIDToActiveList(ctx sdk.Context, height int64, id hub.ID) {
+func (k Keeper) AddSessionIDToActiveList(ctx sdk.Context, height int64, id hub.SessionID) {
 	ids := k.GetActiveSessionIDs(ctx, height)
 
 	index := ids.Search(id)
@@ -160,7 +162,7 @@ func (k Keeper) AddSessionIDToActiveList(ctx sdk.Context, height int64, id hub.I
 	k.SetActiveSessionIDs(ctx, height, ids)
 }
 
-func (k Keeper) RemoveSessionIDFromActiveList(ctx sdk.Context, height int64, id hub.ID) {
+func (k Keeper) RemoveSessionIDFromActiveList(ctx sdk.Context, height int64, id hub.SessionID) {
 	ids := k.GetActiveSessionIDs(ctx, height)
 
 	index := ids.Search(id)

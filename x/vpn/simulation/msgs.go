@@ -6,18 +6,19 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 
+	"github.com/sentinel-official/hub/types"
 	"github.com/sentinel-official/hub/x/vpn"
 )
 
 func SimulateMsgRegisterNode(keeper vpn.Keeper) simulation.Operation {
 	handler := vpn.NewHandler(keeper)
-
 	return func(r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accounts []simulation.Account) (
 		simulation.OperationMsg, []simulation.FutureOperation, error) {
-
 		randomAcc := simulation.RandomAcc(r, accounts)
+
 		msg := vpn.NewMsgRegisterNode(randomAcc.Address,
 			getRandomType(r), getRandomVersion(r), getRandomMoniker(r),
 			getRandomCoins(r), getRandomBandwidth(r), getRandomEncryption(r))
@@ -34,12 +35,14 @@ func SimulateMsgRegisterNode(keeper vpn.Keeper) simulation.Operation {
 
 func SimulateMsgUpdateNodeInfo(keeper vpn.Keeper) simulation.Operation {
 	handler := vpn.NewHandler(keeper)
-
 	return func(r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accounts []simulation.Account) (
 		simulation.OperationMsg, []simulation.FutureOperation, error) {
+		if len(keeper.GetAllNodes(ctx)) == 0 {
+			return simulation.NoOpMsg(vpn.ModuleName), nil, nil
+		}
 
-		randomAcc := simulation.RandomAcc(r, accounts)
-		msg := vpn.NewMsgUpdateNodeInfo(randomAcc.Address, getRandomID(r),
+		node := vpn.RandomNode(r, ctx, keeper)
+		msg := vpn.NewMsgUpdateNodeInfo(node.Owner, node.ID,
 			getRandomType(r), getRandomVersion(r), getRandomMoniker(r),
 			getRandomCoins(r), getRandomBandwidth(r), getRandomEncryption(r))
 
@@ -55,12 +58,36 @@ func SimulateMsgUpdateNodeInfo(keeper vpn.Keeper) simulation.Operation {
 
 func SimulateMsgUpdateNodeStatus(keeper vpn.Keeper) simulation.Operation {
 	handler := vpn.NewHandler(keeper)
+	return func(r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accounts []simulation.Account) (
+		simulation.OperationMsg, []simulation.FutureOperation, error) {
+		if len(keeper.GetAllNodes(ctx)) == 0 {
+			return simulation.NoOpMsg(vpn.ModuleName), nil, nil
+		}
+
+		node := vpn.RandomNode(r, ctx, keeper)
+		msg := vpn.NewMsgUpdateNodeStatus(node.Owner, node.ID, getRandomStatus(r))
+
+		if msg.ValidateBasic() != nil {
+			return simulation.NoOpMsg(vpn.ModuleName), nil,
+				fmt.Errorf("expected msg to pass ValidateBasic: %s", msg.GetSignBytes())
+		}
+
+		ok := handler(ctx, *msg).IsOK()
+		return simulation.NewOperationMsg(msg, ok, ""), nil, nil
+	}
+}
+
+func SimulateMsgDeregisterNode(keeper vpn.Keeper) simulation.Operation {
+	handler := vpn.NewHandler(keeper)
 
 	return func(r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accounts []simulation.Account) (
 		simulation.OperationMsg, []simulation.FutureOperation, error) {
+		if len(keeper.GetAllNodes(ctx)) == 0 {
+			return simulation.NoOpMsg(vpn.ModuleName), nil, nil
+		}
 
-		randomAcc := simulation.RandomAcc(r, accounts)
-		msg := vpn.NewMsgUpdateNodeStatus(randomAcc.Address, getRandomID(r), getRandomStatus(r))
+		node := vpn.RandomNode(r, ctx, keeper)
+		msg := vpn.NewMsgDeregisterNode(node.Owner, node.ID)
 
 		if msg.ValidateBasic() != nil {
 			return simulation.NoOpMsg(vpn.ModuleName), nil,
@@ -77,9 +104,16 @@ func SimulateMsgStartSubscription(keeper vpn.Keeper) simulation.Operation {
 
 	return func(r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accounts []simulation.Account) (
 		simulation.OperationMsg, []simulation.FutureOperation, error) {
+		if len(keeper.GetAllNodes(ctx)) == 0 {
+			return simulation.NoOpMsg(vpn.ModuleName), nil, nil
+		}
+
+		node := vpn.RandomNode(r, ctx, keeper)
+		node.Status = vpn.StatusActive
+		keeper.SetNode(ctx, node)
 
 		randomAcc := simulation.RandomAcc(r, accounts)
-		msg := vpn.NewMsgStartSubscription(randomAcc.Address, getRandomID(r), getRandomCoin(r))
+		msg := vpn.NewMsgStartSubscription(randomAcc.Address, node.ID, getRandomCoin(r))
 
 		if msg.ValidateBasic() != nil {
 			return simulation.NoOpMsg(vpn.ModuleName), nil,
@@ -96,9 +130,12 @@ func SimulateMsgEndSubscription(keeper vpn.Keeper) simulation.Operation {
 
 	return func(r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accounts []simulation.Account) (
 		simulation.OperationMsg, []simulation.FutureOperation, error) {
+		if len(keeper.GetAllSubscriptions(ctx)) == 0 {
+			return simulation.NoOpMsg(vpn.ModuleName), nil, nil
+		}
 
-		randomAcc := simulation.RandomAcc(r, accounts)
-		msg := vpn.NewMsgEndSubscription(randomAcc.Address, getRandomID(r))
+		subscription := vpn.RandomSubscription(r, ctx, keeper)
+		msg := vpn.NewMsgEndSubscription(subscription.Client, subscription.ID)
 
 		if msg.ValidateBasic() != nil {
 			return simulation.NoOpMsg(vpn.ModuleName), nil,
@@ -110,15 +147,47 @@ func SimulateMsgEndSubscription(keeper vpn.Keeper) simulation.Operation {
 	}
 }
 
-func SimulateMsgUpdateSessionInfo(vpnKeeper vpn.Keeper) simulation.Operation {
-	handler := vpn.NewHandler(vpnKeeper)
+func SimulateMsgUpdateSessionInfo(keeper vpn.Keeper) simulation.Operation {
+	handler := vpn.NewHandler(keeper)
 
 	return func(r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accounts []simulation.Account) (
 		simulation.OperationMsg, []simulation.FutureOperation, error) {
+		if len(keeper.GetAllSessions(ctx)) == 0 {
+			return simulation.NoOpMsg(vpn.ModuleName), nil, nil
+		}
 
-		randomAcc := simulation.RandomAcc(r, accounts)
-		msg := vpn.NewMsgUpdateSessionInfo(randomAcc.Address, getRandomID(r),
-			getRandomBandwidth(r), getRandomBandwidthSignature(r, accounts), getRandomBandwidthSignature(r, accounts))
+		clientAccount := simulation.RandomAcc(r, accounts)
+		nodeOwnerAccount := simulation.RandomAcc(r, accounts)
+
+		session := vpn.RandomSession(r, ctx, keeper)
+		subscription, _ := keeper.GetSubscription(ctx, session.SubscriptionID)
+
+		subscription.Status = vpn.StatusActive
+		subscription.Client = clientAccount.Address
+		keeper.SetSubscription(ctx, subscription)
+
+		scs := keeper.GetSessionsCountOfSubscription(ctx, subscription.ID)
+		node, _ := keeper.GetNode(ctx, subscription.NodeID)
+		node.Owner = nodeOwnerAccount.Address
+		keeper.SetNode(ctx, node)
+
+		bandwidth := getRandomBandwidth(r)
+
+		bandWidthSignData := types.NewBandwidthSignatureData(subscription.ID, scs, bandwidth)
+		clientAccountSignedData, _ := clientAccount.PrivKey.Sign(bandWidthSignData.Bytes())
+		nodeOwnerAccountSignedData, _ := nodeOwnerAccount.PrivKey.Sign(bandWidthSignData.Bytes())
+
+		clienStdSig := auth.StdSignature{
+			PubKey:    clientAccount.PubKey,
+			Signature: clientAccountSignedData,
+		}
+		nodeOwnerStdSig := auth.StdSignature{
+			PubKey:    nodeOwnerAccount.PubKey,
+			Signature: nodeOwnerAccountSignedData,
+		}
+
+		msg := vpn.NewMsgUpdateSessionInfo(clientAccount.Address, session.SubscriptionID,
+			bandwidth, nodeOwnerStdSig, clienStdSig)
 
 		if msg.ValidateBasic() != nil {
 			return simulation.NoOpMsg(vpn.ModuleName), nil,
@@ -127,5 +196,21 @@ func SimulateMsgUpdateSessionInfo(vpnKeeper vpn.Keeper) simulation.Operation {
 
 		ok := handler(ctx, *msg).IsOK()
 		return simulation.NewOperationMsg(msg, ok, ""), nil, nil
+	}
+}
+
+func SimulateEndBlock(keeper vpn.Keeper) simulation.Operation {
+	return func(r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accounts []simulation.Account) (
+		simulation.OperationMsg, []simulation.FutureOperation, error) {
+		if len(keeper.GetAllNodes(ctx)) == 0 {
+			return simulation.NoOpMsg(vpn.ModuleName), nil, nil
+		}
+
+		if len(keeper.GetAllSessions(ctx)) == 0 {
+			return simulation.NoOpMsg(vpn.ModuleName), nil, nil
+		}
+
+		vpn.EndBlock(ctx, keeper)
+		return simulation.NewOperationMsgBasic(vpn.ModuleName, "end_block", "", true, nil), nil, nil
 	}
 }

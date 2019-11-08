@@ -89,12 +89,14 @@ var (
 	NewQuerySessionOfSubscriptionPrams        = types.NewQuerySessionOfSubscriptionPrams
 	NewQuerySessionsOfSubscriptionPrams       = types.NewQuerySessionsOfSubscriptionPrams
 	NewMsgUpdateSessionInfo                   = types.NewMsgUpdateSessionInfo
-	NewBandwidthSignatureData                 = types.NewBandwidthSignatureData
 	NewMsgStartSubscription                   = types.NewMsgStartSubscription
 	NewMsgEndSubscription                     = types.NewMsgEndSubscription
 	NewKeeper                                 = keeper.NewKeeper
 	ParamKeyTable                             = keeper.ParamKeyTable
 	NewQuerier                                = querier.NewQuerier
+	RandomNode                                = keeper.RandomNode
+	RandomSubscription                        = keeper.RandomSubscription
+	RandomSession                             = keeper.RandomSession
 
 	// variable aliases
 	ModuleCdc                            = types.ModuleCdc
@@ -142,7 +144,6 @@ type (
 	Session                                = types.Session
 	MsgUpdateSessionInfo                   = types.MsgUpdateSessionInfo
 	Subscription                           = types.Subscription
-	BandwidthSignatureData                 = types.BandwidthSignatureData
 	MsgStartSubscription                   = types.MsgStartSubscription
 	MsgEndSubscription                     = types.MsgEndSubscription
 	Keeper                                 = keeper.Keeper
