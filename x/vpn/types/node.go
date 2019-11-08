@@ -10,7 +10,7 @@ import (
 )
 
 type Node struct {
-	ID      hub.ID         `json:"id"`
+	ID      hub.NodeID     `json:"id"`
 	Owner   sdk.AccAddress `json:"owner"`
 	Deposit sdk.Coin       `json:"deposit"`
 
@@ -54,7 +54,6 @@ func (n Node) UpdateInfo(_node Node) Node {
 	}
 	if _node.PricesPerGB != nil &&
 		_node.PricesPerGB.Len() > 0 && _node.PricesPerGB.IsValid() {
-
 		n.PricesPerGB = _node.PricesPerGB
 	}
 	if !_node.InternetSpeed.AnyNil() && _node.InternetSpeed.AllPositive() {

@@ -14,7 +14,6 @@ import (
 
 func (app *HubApp) ExportAppStateAndValidators(forZeroHeight bool,
 	jailWhiteList []string) (json.RawMessage, []tm.GenesisValidator, error) {
-
 	ctx := app.NewContext(true, abci.Header{Height: app.LastBlockHeight()})
 
 	if forZeroHeight {

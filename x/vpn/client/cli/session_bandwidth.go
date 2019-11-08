@@ -35,7 +35,11 @@ func SignSessionBandwidthTxCmd(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			id := hub.NewIDFromString(_id)
+			id, err := hub.NewSubscriptionIDFromString(_id)
+			if err != nil {
+				return err
+			}
+
 			data := types.NewBandwidthSignatureData(id, scs, bandwidth).Bytes()
 
 			passphrase, err := keys.GetPassphrase(ctx.FromName)
@@ -87,7 +91,10 @@ func UpdateSessionInfoTxCmd(cdc *codec.Codec) *cobra.Command {
 			txb := auth.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
 			ctx := context.NewCLIContext().WithCodec(cdc)
 
-			id := hub.NewIDFromString(viper.GetString(flagSubscriptionID))
+			id, err := hub.NewSubscriptionIDFromString(viper.GetString(flagSubscriptionID))
+			if err != nil {
+				return err
+			}
 			bandwidth := hub.Bandwidth{
 				Upload:   sdk.NewInt(viper.GetInt64(flagUpload)),
 				Download: sdk.NewInt(viper.GetInt64(flagDownload)),

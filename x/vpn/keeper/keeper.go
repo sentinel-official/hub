@@ -19,7 +19,6 @@ type Keeper struct {
 
 func NewKeeper(cdc *codec.Codec, nodeKey, subscriptionKey, sessionKey sdk.StoreKey,
 	paramStore params.Subspace, dk deposit.Keeper) Keeper {
-
 	return Keeper{
 		nodeKey:         nodeKey,
 		subscriptionKey: subscriptionKey,

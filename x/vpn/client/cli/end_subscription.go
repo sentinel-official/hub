@@ -21,7 +21,11 @@ func EndSubscriptionTxCmd(cdc *codec.Codec) *cobra.Command {
 			txb := auth.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
 			ctx := context.NewCLIContext().WithCodec(cdc)
 
-			id := hub.NewIDFromString(args[0])
+			id, err := hub.NewSubscriptionIDFromString(args[0])
+			if err != nil {
+				return err
+			}
+
 			fromAddress := ctx.GetFromAddress()
 
 			msg := types.NewMsgEndSubscription(fromAddress, id)

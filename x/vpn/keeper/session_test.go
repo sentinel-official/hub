@@ -35,15 +35,11 @@ func TestKeeper_GetSessionsCount(t *testing.T) {
 func TestKeeper_SetSession(t *testing.T) {
 	ctx, k, _, _ := CreateTestInput(t, false)
 
-	_, found := k.GetSession(ctx, hub.NewIDFromUInt64(0))
+	_, found := k.GetSession(ctx, hub.NewSessionID(0))
 	require.Equal(t, false, found)
 
-	k.SetSession(ctx, types.Session{})
-	result, found := k.GetSession(ctx, types.Session{}.ID)
-	require.Equal(t, true, found)
-
 	k.SetSession(ctx, types.TestSession)
-	result, found = k.GetSession(ctx, types.TestSession.ID)
+	result, found := k.GetSession(ctx, types.TestSession.ID)
 	require.Equal(t, true, found)
 	require.Equal(t, types.TestSession, result)
 }
@@ -55,19 +51,19 @@ func TestKeeper_GetSession(t *testing.T) {
 func TestKeeper_SetSessionsCountOfSubscription(t *testing.T) {
 	ctx, k, _, _ := CreateTestInput(t, false)
 
-	count := k.GetSessionsCountOfSubscription(ctx, hub.NewIDFromUInt64(0))
+	count := k.GetSessionsCountOfSubscription(ctx, hub.NewSubscriptionID(0))
 	require.Equal(t, uint64(0), count)
 
-	k.SetSessionsCountOfSubscription(ctx, hub.NewIDFromUInt64(0), 1)
-	count = k.GetSessionsCountOfSubscription(ctx, hub.NewIDFromUInt64(0))
+	k.SetSessionsCountOfSubscription(ctx, hub.NewSubscriptionID(0), 1)
+	count = k.GetSessionsCountOfSubscription(ctx, hub.NewSubscriptionID(0))
 	require.Equal(t, uint64(1), count)
 
-	k.SetSessionsCountOfSubscription(ctx, hub.NewIDFromUInt64(1), 1)
-	count = k.GetSessionsCountOfSubscription(ctx, hub.NewIDFromUInt64(1))
+	k.SetSessionsCountOfSubscription(ctx, hub.NewSubscriptionID(1), 1)
+	count = k.GetSessionsCountOfSubscription(ctx, hub.NewSubscriptionID(1))
 	require.Equal(t, uint64(1), count)
 
-	k.SetSessionsCountOfSubscription(ctx, hub.NewIDFromUInt64(0), 2)
-	count = k.GetSessionsCountOfSubscription(ctx, hub.NewIDFromUInt64(0))
+	k.SetSessionsCountOfSubscription(ctx, hub.NewSubscriptionID(0), 2)
+	count = k.GetSessionsCountOfSubscription(ctx, hub.NewSubscriptionID(0))
 	require.Equal(t, uint64(2), count)
 }
 
@@ -78,28 +74,28 @@ func TestKeeper_GetSessionsCountOfSubscription(t *testing.T) {
 func TestKeeper_SetSessionIDBySubscriptionID(t *testing.T) {
 	ctx, k, _, _ := CreateTestInput(t, false)
 
-	_, found := k.GetSessionIDBySubscriptionID(ctx, hub.NewIDFromUInt64(1), 1)
+	_, found := k.GetSessionIDBySubscriptionID(ctx, hub.NewSubscriptionID(1), 1)
 	require.Equal(t, false, found)
 
-	k.SetSessionIDBySubscriptionID(ctx, hub.NewIDFromUInt64(0), 2, hub.NewIDFromUInt64(0))
-	id, found := k.GetSessionIDBySubscriptionID(ctx, hub.NewIDFromUInt64(0), 2)
+	k.SetSessionIDBySubscriptionID(ctx, hub.NewSubscriptionID(0), 2, hub.NewSessionID(0))
+	id, found := k.GetSessionIDBySubscriptionID(ctx, hub.NewSubscriptionID(0), 2)
 	require.Equal(t, true, found)
-	require.Equal(t, hub.NewIDFromUInt64(0), id)
+	require.Equal(t, hub.NewSessionID(0), id)
 
-	k.SetSessionIDBySubscriptionID(ctx, hub.NewIDFromUInt64(0), 3, hub.NewIDFromUInt64(1))
-	id, found = k.GetSessionIDBySubscriptionID(ctx, hub.NewIDFromUInt64(0), 3)
+	k.SetSessionIDBySubscriptionID(ctx, hub.NewSubscriptionID(0), 3, hub.NewSessionID(1))
+	id, found = k.GetSessionIDBySubscriptionID(ctx, hub.NewSubscriptionID(0), 3)
 	require.Equal(t, true, found)
-	require.Equal(t, hub.NewIDFromUInt64(1), id)
+	require.Equal(t, hub.NewSessionID(1), id)
 
-	k.SetSessionIDBySubscriptionID(ctx, hub.NewIDFromUInt64(1), 4, hub.NewIDFromUInt64(0))
-	id, found = k.GetSessionIDBySubscriptionID(ctx, hub.NewIDFromUInt64(1), 4)
+	k.SetSessionIDBySubscriptionID(ctx, hub.NewSubscriptionID(1), 4, hub.NewSessionID(0))
+	id, found = k.GetSessionIDBySubscriptionID(ctx, hub.NewSubscriptionID(1), 4)
 	require.Equal(t, true, found)
-	require.Equal(t, hub.NewIDFromUInt64(0), id)
+	require.Equal(t, hub.NewSessionID(0), id)
 
-	k.SetSessionIDBySubscriptionID(ctx, hub.NewIDFromUInt64(1), 5, hub.NewIDFromUInt64(1))
-	id, found = k.GetSessionIDBySubscriptionID(ctx, hub.NewIDFromUInt64(1), 5)
+	k.SetSessionIDBySubscriptionID(ctx, hub.NewSubscriptionID(1), 5, hub.NewSessionID(1))
+	id, found = k.GetSessionIDBySubscriptionID(ctx, hub.NewSubscriptionID(1), 5)
 	require.Equal(t, true, found)
-	require.Equal(t, hub.NewIDFromUInt64(1), id)
+	require.Equal(t, hub.NewSessionID(1), id)
 
 }
 
@@ -121,13 +117,13 @@ func TestKeeper_SetActiveSessionIDs(t *testing.T) {
 	ids = k.GetActiveSessionIDs(ctx, 1)
 	require.Equal(t, hub.IDs(nil), ids)
 
-	k.SetActiveSessionIDs(ctx, 1, hub.IDs{hub.NewIDFromUInt64(0)})
+	k.SetActiveSessionIDs(ctx, 1, hub.IDs{hub.NewSessionID(0)})
 	ids = k.GetActiveSessionIDs(ctx, 1)
-	require.Equal(t, hub.IDs{hub.NewIDFromUInt64(0)}, ids)
+	require.Equal(t, hub.IDs{hub.NewSessionID(0)}, ids)
 
-	k.SetActiveSessionIDs(ctx, 1, hub.IDs{hub.NewIDFromUInt64(0)}.Append(hub.NewIDFromUInt64(0)))
+	k.SetActiveSessionIDs(ctx, 1, hub.IDs{hub.NewSessionID(0)}.Append(hub.NewSessionID(0)))
 	ids = k.GetActiveSessionIDs(ctx, 1)
-	require.Equal(t, hub.IDs{hub.NewIDFromUInt64(0)}.Append(hub.NewIDFromUInt64(0)).Sort(), ids)
+	require.Equal(t, hub.IDs{hub.NewSessionID(0)}.Append(hub.NewSessionID(0)).Sort(), ids)
 
 	k.SetActiveSessionIDs(ctx, 1, hub.IDs{})
 	ids = k.GetActiveSessionIDs(ctx, 1)
@@ -144,13 +140,13 @@ func TestKeeper_SetActiveSessionIDs(t *testing.T) {
 	ids = k.GetActiveSessionIDs(ctx, 2)
 	require.Equal(t, hub.IDs(nil), ids)
 
-	k.SetActiveSessionIDs(ctx, 2, hub.IDs{hub.NewIDFromUInt64(0)})
+	k.SetActiveSessionIDs(ctx, 2, hub.IDs{hub.NewSessionID(0)})
 	ids = k.GetActiveSessionIDs(ctx, 2)
-	require.Equal(t, hub.IDs{hub.NewIDFromUInt64(0)}, ids)
+	require.Equal(t, hub.IDs{hub.NewSessionID(0)}, ids)
 
-	k.SetActiveSessionIDs(ctx, 2, hub.IDs{hub.NewIDFromUInt64(0)}.Append(hub.NewIDFromUInt64(0)))
+	k.SetActiveSessionIDs(ctx, 2, hub.IDs{hub.NewSessionID(0)}.Append(hub.NewSessionID(0)))
 	ids = k.GetActiveSessionIDs(ctx, 2)
-	require.Equal(t, hub.IDs{hub.NewIDFromUInt64(0)}.Append(hub.NewIDFromUInt64(0)).Sort(), ids)
+	require.Equal(t, hub.IDs{hub.NewSessionID(0)}.Append(hub.NewSessionID(0)).Sort(), ids)
 
 	k.SetActiveSessionIDs(ctx, 2, hub.IDs{})
 	ids = k.GetActiveSessionIDs(ctx, 2)
@@ -171,15 +167,15 @@ func TestKeeper_DeleteActiveSessionIDs(t *testing.T) {
 	ids = k.GetActiveSessionIDs(ctx, 1)
 	require.Equal(t, hub.IDs(nil), ids)
 
-	k.SetActiveSessionIDs(ctx, 1, hub.IDs{hub.NewIDFromUInt64(0)})
+	k.SetActiveSessionIDs(ctx, 1, hub.IDs{hub.NewSessionID(0)})
 	k.DeleteActiveSessionIDs(ctx, 1)
 	ids = k.GetActiveSessionIDs(ctx, 1)
 	require.Equal(t, hub.IDs(nil), ids)
 
-	k.SetActiveSessionIDs(ctx, 1, hub.IDs{hub.NewIDFromUInt64(0)}.Append(hub.NewIDFromUInt64(1)))
+	k.SetActiveSessionIDs(ctx, 1, hub.IDs{hub.NewSessionID(0)}.Append(hub.NewSessionID(1)))
 	k.DeleteActiveSessionIDs(ctx, 2)
 	ids = k.GetActiveSessionIDs(ctx, 1)
-	require.Equal(t, hub.IDs{hub.NewIDFromUInt64(0)}.Append(hub.NewIDFromUInt64(1)), ids)
+	require.Equal(t, hub.IDs{hub.NewSessionID(0)}.Append(hub.NewSessionID(1)), ids)
 
 	k.DeleteActiveSessionIDs(ctx, 1)
 	ids = k.GetActiveSessionIDs(ctx, 1)
@@ -189,24 +185,24 @@ func TestKeeper_DeleteActiveSessionIDs(t *testing.T) {
 func TestKeeper_GetSessionsOfSubscription(t *testing.T) {
 	ctx, k, _, _ := CreateTestInput(t, false)
 
-	sessions := k.GetSessionsOfSubscription(ctx, hub.NewIDFromUInt64(0))
+	sessions := k.GetSessionsOfSubscription(ctx, hub.NewSubscriptionID(0))
 	require.Equal(t, []types.Session{}, sessions)
 
 	k.SetSession(ctx, types.TestSession)
-	k.SetSessionIDBySubscriptionID(ctx, hub.NewIDFromUInt64(0), 0, hub.NewIDFromUInt64(0))
-	k.SetSessionsCountOfSubscription(ctx, hub.NewIDFromUInt64(0), 1)
+	k.SetSessionIDBySubscriptionID(ctx, hub.NewSubscriptionID(0), 0, hub.NewSessionID(0))
+	k.SetSessionsCountOfSubscription(ctx, hub.NewSubscriptionID(0), 1)
 
-	sessions = k.GetSessionsOfSubscription(ctx, hub.NewIDFromUInt64(1))
+	sessions = k.GetSessionsOfSubscription(ctx, hub.NewSubscriptionID(1))
 	require.Equal(t, []types.Session{}, sessions)
-	sessions = k.GetSessionsOfSubscription(ctx, hub.NewIDFromUInt64(0))
+	sessions = k.GetSessionsOfSubscription(ctx, hub.NewSubscriptionID(0))
 	require.Equal(t, []types.Session{types.TestSession}, sessions)
 
 	session := types.TestSession
-	session.ID = hub.NewIDFromUInt64(1)
+	session.ID = hub.NewSessionID(1)
 	k.SetSession(ctx, session)
-	k.SetSessionIDBySubscriptionID(ctx, hub.NewIDFromUInt64(0), 1, hub.NewIDFromUInt64(1))
-	k.SetSessionsCountOfSubscription(ctx, hub.NewIDFromUInt64(0), 2)
-	sessions = k.GetSessionsOfSubscription(ctx, hub.NewIDFromUInt64(0))
+	k.SetSessionIDBySubscriptionID(ctx, hub.NewSubscriptionID(0), 1, hub.NewSessionID(1))
+	k.SetSessionsCountOfSubscription(ctx, hub.NewSubscriptionID(0), 2)
+	sessions = k.GetSessionsOfSubscription(ctx, hub.NewSubscriptionID(0))
 	require.Equal(t, append([]types.Session{types.TestSession}, session), sessions)
 }
 
@@ -221,7 +217,7 @@ func TestKeeper_GetAllSessions(t *testing.T) {
 	require.Equal(t, []types.Session{types.TestSession}, sessions)
 
 	session := types.TestSession
-	session.ID = hub.NewIDFromUInt64(1)
+	session.ID = hub.NewSessionID(1)
 	k.SetSession(ctx, session)
 	sessions = k.GetAllSessions(ctx)
 	require.Equal(t, append([]types.Session{types.TestSession}, session), sessions)
@@ -237,17 +233,17 @@ func TestKeeper_AddSessionIDToActiveList(t *testing.T) {
 	ids := k.GetActiveSessionIDs(ctx, 1)
 	require.Equal(t, hub.IDs(nil), ids)
 
-	k.AddSessionIDToActiveList(ctx, 1, hub.NewIDFromUInt64(0))
+	k.AddSessionIDToActiveList(ctx, 1, hub.NewSessionID(0))
 	ids = k.GetActiveSessionIDs(ctx, 1)
-	require.Equal(t, hub.IDs{hub.NewIDFromUInt64(0)}, ids)
+	require.Equal(t, hub.IDs{hub.NewSessionID(0)}, ids)
 
-	k.AddSessionIDToActiveList(ctx, 1, hub.NewIDFromUInt64(1))
+	k.AddSessionIDToActiveList(ctx, 1, hub.NewSessionID(1))
 	ids = k.GetActiveSessionIDs(ctx, 1)
-	require.Equal(t, hub.IDs{hub.NewIDFromUInt64(0)}.Append(hub.NewIDFromUInt64(1)), ids)
+	require.Equal(t, hub.IDs{hub.NewSessionID(0)}.Append(hub.NewSessionID(1)), ids)
 
-	k.AddSessionIDToActiveList(ctx, 2, hub.NewIDFromUInt64(0))
-	k.AddSessionIDToActiveList(ctx, 2, hub.NewIDFromUInt64(1))
-	require.Equal(t, hub.IDs{hub.NewIDFromUInt64(0)}.Append(hub.NewIDFromUInt64(1)), ids)
+	k.AddSessionIDToActiveList(ctx, 2, hub.NewSessionID(0))
+	k.AddSessionIDToActiveList(ctx, 2, hub.NewSessionID(1))
+	require.Equal(t, hub.IDs{hub.NewSessionID(0)}.Append(hub.NewSessionID(1)), ids)
 }
 
 func TestKeeper_RemoveSessionIDFromActiveList(t *testing.T) {
@@ -256,22 +252,22 @@ func TestKeeper_RemoveSessionIDFromActiveList(t *testing.T) {
 	ids := k.GetActiveSessionIDs(ctx, 1)
 	require.Equal(t, hub.IDs(nil), ids)
 
-	k.AddSessionIDToActiveList(ctx, 1, hub.NewIDFromUInt64(0))
-	k.RemoveSessionIDFromActiveList(ctx, 1, hub.NewIDFromUInt64(1))
+	k.AddSessionIDToActiveList(ctx, 1, hub.NewSessionID(0))
+	k.RemoveSessionIDFromActiveList(ctx, 1, hub.NewSessionID(1))
 	ids = k.GetActiveSessionIDs(ctx, 1)
-	require.Equal(t, hub.IDs{hub.NewIDFromUInt64(0)}, ids)
+	require.Equal(t, hub.IDs{hub.NewSessionID(0)}, ids)
 
-	k.RemoveSessionIDFromActiveList(ctx, 1, hub.NewIDFromUInt64(0))
+	k.RemoveSessionIDFromActiveList(ctx, 1, hub.NewSessionID(0))
 	ids = k.GetActiveSessionIDs(ctx, 1)
 	require.Equal(t, hub.IDs(nil), ids)
 
-	k.AddSessionIDToActiveList(ctx, 3, hub.NewIDFromUInt64(0))
-	k.AddSessionIDToActiveList(ctx, 3, hub.NewIDFromUInt64(1))
-	k.RemoveSessionIDFromActiveList(ctx, 3, hub.NewIDFromUInt64(1))
+	k.AddSessionIDToActiveList(ctx, 3, hub.NewSessionID(0))
+	k.AddSessionIDToActiveList(ctx, 3, hub.NewSessionID(1))
+	k.RemoveSessionIDFromActiveList(ctx, 3, hub.NewSessionID(1))
 	ids = k.GetActiveSessionIDs(ctx, 3)
-	require.Equal(t, hub.IDs{hub.NewIDFromUInt64(0)}, ids)
+	require.Equal(t, hub.IDs{hub.NewSessionID(0)}, ids)
 
-	k.RemoveSessionIDFromActiveList(ctx, 3, hub.NewIDFromUInt64(0))
+	k.RemoveSessionIDFromActiveList(ctx, 3, hub.NewSessionID(0))
 	ids = k.GetActiveSessionIDs(ctx, 3)
 	require.Equal(t, hub.IDs(nil), ids)
 }
