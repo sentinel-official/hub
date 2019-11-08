@@ -29,7 +29,7 @@ func Test_querySubscription(t *testing.T) {
 	require.Len(t, res, 0)
 
 	k.SetSubscription(ctx, types.TestSubscription)
-	req.Data, err = cdc.MarshalJSON(types.NewQuerySubscriptionParams(hub.NewSubscriptionID(0)))
+	req.Data, err = cdc.MarshalJSON(types.NewQuerySubscriptionParams(hub.NewIDFromUInt64(0)))
 	require.Nil(t, err)
 
 	res, _err = querySubscription(ctx, req, k)
@@ -41,7 +41,7 @@ func Test_querySubscription(t *testing.T) {
 	require.Nil(t, err)
 	require.Equal(t, types.TestSubscription, subscription)
 
-	req.Data, err = cdc.MarshalJSON(types.NewQuerySubscriptionParams(hub.NewSubscriptionID(1)))
+	req.Data, err = cdc.MarshalJSON(types.NewQuerySubscriptionParams(hub.NewIDFromUInt64(1)))
 	require.Nil(t, err)
 
 	res, _err = querySubscription(ctx, req, k)
@@ -70,7 +70,7 @@ func Test_querySubscriptionsOfNode(t *testing.T) {
 	k.SetSubscriptionsCountOfNode(ctx, types.TestNode.ID, 1)
 	k.SetSubscriptionIDByNodeID(ctx, types.TestNode.ID, 0, types.TestSubscription.ID)
 
-	req.Data, err = cdc.MarshalJSON(types.NewQuerySubscriptionsOfNodePrams(hub.NewNodeID(0)))
+	req.Data, err = cdc.MarshalJSON(types.NewQuerySubscriptionsOfNodePrams(hub.NewIDFromUInt64(0)))
 	require.Nil(t, err)
 
 	res, _err = querySubscriptionsOfNode(ctx, req, k)
@@ -81,7 +81,7 @@ func Test_querySubscriptionsOfNode(t *testing.T) {
 	require.Nil(t, err)
 	require.Equal(t, []types.Subscription{types.TestSubscription}, subscriptions)
 
-	req.Data, err = cdc.MarshalJSON(types.NewQuerySubscriptionsOfNodePrams(hub.NewNodeID(1)))
+	req.Data, err = cdc.MarshalJSON(types.NewQuerySubscriptionsOfNodePrams(hub.NewIDFromUInt64(1)))
 	require.Nil(t, err)
 
 	res, _err = querySubscriptionsOfNode(ctx, req, k)
@@ -161,6 +161,12 @@ func Test_queryAllSubscriptions(t *testing.T) {
 	require.Nil(t, err)
 	require.NotEqual(t, []types.Subscription{types.TestSubscription}, subscriptions)
 
+	k.SetSubscription(ctx, types.Subscription{})
+	res, _err = queryAllSubscriptions(ctx, k)
+	require.Nil(t, _err)
+	require.NotEqual(t, []byte(nil), res)
+	require.NotNil(t, res)
+
 	err = cdc.UnmarshalJSON(res, &subscriptions)
 	require.Nil(t, err)
 	require.NotEqual(t, []types.Subscription{types.TestSubscription}, subscriptions)
@@ -178,7 +184,7 @@ func Test_queryAllSubscriptions(t *testing.T) {
 	require.Equal(t, []types.Subscription{types.TestSubscription}, subscriptions)
 
 	subscription := types.TestSubscription
-	subscription.ID = hub.NewSubscriptionID(1)
+	subscription.ID = hub.NewIDFromUInt64(1)
 	k.SetSubscription(ctx, subscription)
 	require.Nil(t, err)
 
@@ -208,8 +214,8 @@ func Test_querySessionsCountOfSubscription(t *testing.T) {
 	require.Equal(t, []byte(nil), res)
 	require.Len(t, res, 0)
 
-	k.SetSessionsCountOfSubscription(ctx, hub.NewSubscriptionID(0), 1)
-	req.Data, err = cdc.MarshalJSON(types.NewQuerySessionsCountOfSubscriptionParams(hub.NewSubscriptionID(0)))
+	k.SetSessionsCountOfSubscription(ctx, hub.NewIDFromUInt64(0), 1)
+	req.Data, err = cdc.MarshalJSON(types.NewQuerySessionsCountOfSubscriptionParams(hub.NewIDFromUInt64(0)))
 	require.Nil(t, err)
 
 	res, _err = querySessionsCountOfSubscription(ctx, req, k)
@@ -221,8 +227,8 @@ func Test_querySessionsCountOfSubscription(t *testing.T) {
 
 	require.Equal(t, uint64(1), count)
 
-	k.SetSessionsCountOfSubscription(ctx, hub.NewSubscriptionID(0), 2)
-	req.Data, err = cdc.MarshalJSON(types.NewQuerySessionsCountOfSubscriptionParams(hub.NewSubscriptionID(0)))
+	k.SetSessionsCountOfSubscription(ctx, hub.NewIDFromUInt64(0), 2)
+	req.Data, err = cdc.MarshalJSON(types.NewQuerySessionsCountOfSubscriptionParams(hub.NewIDFromUInt64(0)))
 	require.Nil(t, err)
 
 	res, _err = querySessionsCountOfSubscription(ctx, req, k)
@@ -233,8 +239,8 @@ func Test_querySessionsCountOfSubscription(t *testing.T) {
 	require.Nil(t, err)
 	require.Equal(t, uint64(2), count)
 
-	k.SetSessionsCountOfSubscription(ctx, hub.NewSubscriptionID(1), 1)
-	req.Data, err = cdc.MarshalJSON(types.NewQuerySessionsCountOfSubscriptionParams(hub.NewSubscriptionID(1)))
+	k.SetSessionsCountOfSubscription(ctx, hub.NewIDFromUInt64(1), 1)
+	req.Data, err = cdc.MarshalJSON(types.NewQuerySessionsCountOfSubscriptionParams(hub.NewIDFromUInt64(1)))
 	require.Nil(t, err)
 
 	res, _err = querySessionsCountOfSubscription(ctx, req, k)
@@ -245,8 +251,8 @@ func Test_querySessionsCountOfSubscription(t *testing.T) {
 	require.Nil(t, err)
 	require.Equal(t, uint64(1), count)
 
-	k.SetSessionsCountOfSubscription(ctx, hub.NewSubscriptionID(1), 2)
-	req.Data, err = cdc.MarshalJSON(types.NewQuerySessionsCountOfSubscriptionParams(hub.NewSubscriptionID(1)))
+	k.SetSessionsCountOfSubscription(ctx, hub.NewIDFromUInt64(1), 2)
+	req.Data, err = cdc.MarshalJSON(types.NewQuerySessionsCountOfSubscriptionParams(hub.NewIDFromUInt64(1)))
 	require.Nil(t, err)
 
 	res, _err = querySessionsCountOfSubscription(ctx, req, k)

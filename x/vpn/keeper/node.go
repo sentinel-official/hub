@@ -28,14 +28,13 @@ func (k Keeper) GetNodesCount(ctx sdk.Context) (count uint64) {
 
 func (k Keeper) SetNode(ctx sdk.Context, node types.Node) {
 	key := types.NodeKey(node.ID)
-
 	value := k.cdc.MustMarshalBinaryLengthPrefixed(node)
 
 	store := ctx.KVStore(k.nodeKey)
 	store.Set(key, value)
 }
 
-func (k Keeper) GetNode(ctx sdk.Context, id hub.NodeID) (node types.Node, found bool) {
+func (k Keeper) GetNode(ctx sdk.Context, id hub.ID) (node types.Node, found bool) {
 	store := ctx.KVStore(k.nodeKey)
 
 	key := types.NodeKey(id)
@@ -69,7 +68,7 @@ func (k Keeper) GetNodesCountOfAddress(ctx sdk.Context, address sdk.AccAddress) 
 	return count
 }
 
-func (k Keeper) SetNodeIDByAddress(ctx sdk.Context, address sdk.AccAddress, i uint64, id hub.NodeID) {
+func (k Keeper) SetNodeIDByAddress(ctx sdk.Context, address sdk.AccAddress, i uint64, id hub.ID) {
 	key := types.NodeIDByAddressKey(address, i)
 	value := k.cdc.MustMarshalBinaryLengthPrefixed(id)
 
@@ -77,13 +76,13 @@ func (k Keeper) SetNodeIDByAddress(ctx sdk.Context, address sdk.AccAddress, i ui
 	store.Set(key, value)
 }
 
-func (k Keeper) GetNodeIDByAddress(ctx sdk.Context, address sdk.AccAddress, i uint64) (id hub.NodeID, found bool) {
+func (k Keeper) GetNodeIDByAddress(ctx sdk.Context, address sdk.AccAddress, i uint64) (id hub.ID, found bool) {
 	store := ctx.KVStore(k.nodeKey)
 
 	key := types.NodeIDByAddressKey(address, i)
 	value := store.Get(key)
 	if value == nil {
-		return hub.NewNodeID(0), false
+		return 0, false
 	}
 
 	k.cdc.MustUnmarshalBinaryLengthPrefixed(value, &id)
@@ -166,7 +165,7 @@ func (k Keeper) IterateNodes(ctx sdk.Context, fn func(index int64, node types.No
 	}
 }
 
-func (k Keeper) AddNodeIDToActiveList(ctx sdk.Context, height int64, id hub.NodeID) {
+func (k Keeper) AddNodeIDToActiveList(ctx sdk.Context, height int64, id hub.ID) {
 	ids := k.GetActiveNodeIDs(ctx, height)
 
 	index := ids.Search(id)
@@ -178,7 +177,7 @@ func (k Keeper) AddNodeIDToActiveList(ctx sdk.Context, height int64, id hub.Node
 	k.SetActiveNodeIDs(ctx, height, ids)
 }
 
-func (k Keeper) RemoveNodeIDFromActiveList(ctx sdk.Context, height int64, id hub.NodeID) {
+func (k Keeper) RemoveNodeIDFromActiveList(ctx sdk.Context, height int64, id hub.ID) {
 	ids := k.GetActiveNodeIDs(ctx, height)
 
 	index := ids.Search(id)

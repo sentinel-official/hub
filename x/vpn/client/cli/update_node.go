@@ -23,11 +23,7 @@ func UpdateNodeInfoTxCmd(cdc *codec.Codec) *cobra.Command {
 			txb := auth.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
 			ctx := context.NewCLIContext().WithCodec(cdc)
 
-			nodeID, err := hub.NewNodeIDFromString(viper.GetString(flagNodeID))
-			if err != nil {
-				return err
-			}
-
+			nodeID := hub.NewIDFromString(viper.GetString(flagNodeID))
 			_type := viper.GetString(flagType)
 			version := viper.GetString(flagVersion)
 			moniker := viper.GetString(flagMoniker)
@@ -74,11 +70,7 @@ func UpdateNodeStatusTxCmd(cdc *codec.Codec) *cobra.Command {
 			txb := auth.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
 			ctx := context.NewCLIContext().WithCodec(cdc)
 
-			nodeID, err := hub.NewNodeIDFromString(viper.GetString(flagNodeID))
-			if err != nil {
-				return err
-			}
-
+			nodeID := hub.NewIDFromString(viper.GetString(flagNodeID))
 			status := strings.ToUpper(args[0])
 
 			fromAddress := ctx.GetFromAddress()

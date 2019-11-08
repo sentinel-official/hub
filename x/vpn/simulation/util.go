@@ -28,8 +28,7 @@ func getRandomStatus(r *rand.Rand) string {
 
 func getRandomID(r *rand.Rand) hub.ID {
 	i := uint64(r.Int63n(10))
-
-	return hub.NewNodeID(i)
+	return hub.NewIDFromUInt64(i)
 }
 
 func getRandomEncryption(r *rand.Rand) string {
