@@ -42,6 +42,7 @@ func (b Bandwidth) CeilTo(precision sdk.Int) Bandwidth {
 	if _b.Upload.Equal(precision) {
 		_b.Upload = sdk.NewInt(0)
 	}
+
 	if _b.Download.Equal(precision) {
 		_b.Download = sdk.NewInt(0)
 	}

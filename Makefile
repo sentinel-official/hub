@@ -39,8 +39,8 @@ install: dep_verify
 test:
 	@go test -mod=readonly -cover ${PACKAGES}
 
-SIM_NUM_BLOCKS ?= 50
-SIM_BLOCK_SIZE ?= 10
+SIM_NUM_BLOCKS ?= 500
+SIM_BLOCK_SIZE ?= 100
 SIM_COMMIT ?= true
 
 test_sim_hub_fast:
@@ -49,7 +49,7 @@ test_sim_hub_fast:
 
 test_sim_benchmark:
 	@echo "Running hub benchmark for numBlocks=$(SIM_NUM_BLOCKS), blockSize=$(SIM_BLOCK_SIZE). This may take awhile!"
-	@go test -mod=readonly -benchmem -run=^$$ $(SIMAPP) -bench ^BenchmarkFullAppSimulation$  \
+	@go test -mod=readonly -benchmem -run=^$$  $(SIMAPP) -bench=BenchmarkFullAppSimulation  \
 		-Enabled=true -NumBlocks=$(SIM_NUM_BLOCKS) -BlockSize=$(SIM_BLOCK_SIZE) -Commit=$(SIM_COMMIT) -timeout 24h -Seed 15
 
 benchmark:

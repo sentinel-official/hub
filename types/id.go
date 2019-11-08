@@ -87,6 +87,7 @@ func (id *NodeID) UnmarshalJSON(bytes []byte) error {
 	}
 
 	*id = _id
+
 	return nil
 }
 
@@ -145,6 +146,7 @@ func (id *SessionID) UnmarshalJSON(b []byte) error {
 	}
 
 	*id = _id
+
 	return nil
 }
 
@@ -203,6 +205,7 @@ func (id *SubscriptionID) UnmarshalJSON(bytes []byte) error {
 	}
 
 	*id = _id
+
 	return nil
 }
 
