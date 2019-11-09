@@ -99,7 +99,6 @@ func appStateFn(
 	return appState, simAccs, chainID, genesisTimestamp
 }
 
-// TODO refactor out random initialization code to the modules
 func appStateRandomizedFn(
 	r *rand.Rand, accs []simulation.Account, genesisTimestamp time.Time, appParams simulation.AppParams,
 ) (json.RawMessage, []simulation.Account, string) {

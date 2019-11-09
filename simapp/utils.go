@@ -53,7 +53,7 @@ var (
 	lean               bool
 	commit             bool
 	period             int
-	onOperation        bool // TODO Remove in favor of binary search for invariant violation
+	onOperation        bool
 	allInvariants      bool
 	genesisTime        int64
 )
