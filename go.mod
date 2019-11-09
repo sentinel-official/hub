@@ -6,6 +6,7 @@ require (
 	github.com/cosmos/cosmos-sdk v0.37.4
 	github.com/gorilla/mux v1.7.3
 	github.com/mattn/go-isatty v0.0.9 // indirect
+	github.com/op/go-logging v0.0.0-20160315200505-970db520ece7 // indirect
 	github.com/pelletier/go-toml v1.4.0 // indirect
 	github.com/rakyll/statik v0.1.6 // indirect
 	github.com/rcrowley/go-metrics v0.0.0-20190826022208-cac0b30c2563 // indirect
