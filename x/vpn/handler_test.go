@@ -157,7 +157,7 @@ func Test_handleUpdateNodeInfo(t *testing.T) {
 	require.Equal(t, sdk.Coins{sdk.NewInt64Coin("stake", 100)}, node.PricesPerGB)
 	require.Equal(t, "new_encryption", node.Encryption)
 
-	node.Status = StatusActive
+	node.Status = StatusRegistered
 	k.SetNode(ctx, node)
 	msg = NewMsgUpdateNodeInfo(node.Owner, node.ID, "node_type", "version", "moniker", sdk.Coins{sdk.NewInt64Coin("stake", 100)}, types.TestBandwidthPos1, "encryption")
 	res = handler(ctx, *msg)
@@ -170,97 +170,6 @@ func Test_handleUpdateNodeInfo(t *testing.T) {
 	require.Equal(t, "moniker", node.Moniker)
 	require.Equal(t, sdk.Coins{sdk.NewInt64Coin("stake", 100)}, node.PricesPerGB)
 	require.Equal(t, "encryption", node.Encryption)
-}
-
-func Test_handleUpdateNodeStatus(t *testing.T) {
-	ctx, k, _, _ := keeper.CreateTestInput(t, false)
-
-	node, found := k.GetNode(ctx, hub.NewNodeID(0))
-	require.Equal(t, false, found)
-	require.Equal(t, types.Node{}, node)
-
-	handler := NewHandler(k)
-	node = types.TestNode
-	msg := NewMsgUpdateNodeStatus(node.Owner, node.ID, StatusInactive)
-	res := handler(ctx, *msg)
-	require.False(t, res.IsOK())
-
-	node.Status = StatusDeRegistered
-	k.SetNode(ctx, node)
-
-	msg = NewMsgUpdateNodeStatus(node.Owner, node.ID, StatusRegistered)
-	res = handler(ctx, *msg)
-	require.False(t, res.IsOK())
-
-	node, found = k.GetNode(ctx, node.ID)
-	require.Equal(t, true, found)
-	require.Equal(t, StatusDeRegistered, node.Status)
-
-	msg = NewMsgUpdateNodeStatus(node.Owner, node.ID, StatusActive)
-	res = handler(ctx, *msg)
-	require.False(t, res.IsOK())
-
-	node, found = k.GetNode(ctx, node.ID)
-	require.Equal(t, true, found)
-	require.Equal(t, StatusDeRegistered, node.Status)
-
-	msg = NewMsgUpdateNodeStatus(node.Owner, node.ID, StatusInactive)
-	res = handler(ctx, *msg)
-	require.False(t, res.IsOK())
-
-	node, found = k.GetNode(ctx, node.ID)
-	require.Equal(t, true, found)
-	require.Equal(t, StatusDeRegistered, node.Status)
-
-	node.Status = StatusRegistered
-	k.SetNode(ctx, node)
-	msg = NewMsgUpdateNodeStatus(types.TestAddress2, node.ID, StatusActive)
-	res = handler(ctx, *msg)
-	require.False(t, res.IsOK())
-
-	msg = NewMsgUpdateNodeStatus(node.Owner, node.ID, StatusActive)
-	res = handler(ctx, *msg)
-	require.True(t, res.IsOK())
-
-	node, found = k.GetNode(ctx, node.ID)
-	require.Equal(t, true, found)
-	require.Equal(t, StatusActive, node.Status)
-
-	node.Status = StatusActive
-	k.SetNode(ctx, node)
-	msg = NewMsgUpdateNodeStatus(types.TestAddress2, node.ID, StatusActive)
-	res = handler(ctx, *msg)
-	require.False(t, res.IsOK())
-
-	msg = NewMsgUpdateNodeStatus(node.Owner, node.ID, StatusActive)
-	res = handler(ctx, *msg)
-	require.True(t, res.IsOK())
-
-	node, found = k.GetNode(ctx, node.ID)
-	require.Equal(t, true, found)
-	require.Equal(t, StatusActive, node.Status)
-
-	node.Status = StatusInactive
-	k.SetNode(ctx, node)
-	msg = NewMsgUpdateNodeStatus(types.TestAddress2, node.ID, StatusActive)
-	res = handler(ctx, *msg)
-	require.False(t, res.IsOK())
-
-	msg = NewMsgUpdateNodeStatus(node.Owner, node.ID, StatusActive)
-	res = handler(ctx, *msg)
-	require.True(t, res.IsOK())
-
-	node, found = k.GetNode(ctx, node.ID)
-	require.Equal(t, true, found)
-	require.Equal(t, StatusActive, node.Status)
-
-	msg = NewMsgUpdateNodeStatus(node.Owner, node.ID, StatusInactive)
-	res = handler(ctx, *msg)
-	require.True(t, res.IsOK())
-
-	node, found = k.GetNode(ctx, node.ID)
-	require.Equal(t, true, found)
-	require.Equal(t, StatusInactive, node.Status)
 }
 
 func Test_handleDeregisterNode(t *testing.T) {
@@ -314,7 +223,7 @@ func Test_handleDeregisterNode(t *testing.T) {
 	require.Equal(t, true, found)
 	require.Equal(t, StatusDeRegistered, node.Status)
 
-	node.Status = StatusActive
+	node.Status = StatusRegistered
 	k.SetNode(ctx, node)
 	msg = NewMsgDeregisterNode(types.TestAddress2, node.ID)
 	res = handler(ctx, *msg)
@@ -322,25 +231,11 @@ func Test_handleDeregisterNode(t *testing.T) {
 
 	node, found = k.GetNode(ctx, node.ID)
 	require.Equal(t, true, found)
-	require.Equal(t, StatusActive, node.Status)
-
-	msg = NewMsgDeregisterNode(node.Owner, node.ID)
-	res = handler(ctx, *msg)
-	require.False(t, res.IsOK())
+	require.Equal(t, StatusRegistered, node.Status)
 
 	node, found = k.GetNode(ctx, node.ID)
 	require.Equal(t, true, found)
-	require.Equal(t, StatusActive, node.Status)
-
-	node.Status = StatusInactive
-	k.SetNode(ctx, node)
-	msg = NewMsgDeregisterNode(types.TestAddress2, node.ID)
-	res = handler(ctx, *msg)
-	require.False(t, res.IsOK())
-
-	node, found = k.GetNode(ctx, node.ID)
-	require.Equal(t, true, found)
-	require.Equal(t, StatusInactive, node.Status)
+	require.Equal(t, StatusRegistered, node.Status)
 
 	msg = NewMsgDeregisterNode(node.Owner, node.ID)
 	res = handler(ctx, *msg)
@@ -360,7 +255,7 @@ func Test_handleDeregisterNode(t *testing.T) {
 	err = k.AddDeposit(ctx, node.Owner, sdk.NewInt64Coin("stake", 100).Add(sdk.NewInt64Coin("stake", 100)))
 	require.Nil(t, err)
 
-	node.Status = StatusInactive
+	node.Status = StatusDeRegistered
 	node.Deposit = sdk.NewInt64Coin("stake", 100).Add(sdk.NewInt64Coin("stake", 100)).Add(sdk.NewInt64Coin("stake", 100))
 	k.SetNode(ctx, node)
 	msg = NewMsgDeregisterNode(types.TestAddress2, node.ID)
@@ -369,7 +264,7 @@ func Test_handleDeregisterNode(t *testing.T) {
 
 	node, found = k.GetNode(ctx, node.ID)
 	require.Equal(t, true, found)
-	require.Equal(t, StatusInactive, node.Status)
+	require.Equal(t, StatusDeRegistered, node.Status)
 
 	deposit, found := dk.GetDeposit(ctx, node.Owner)
 	require.Equal(t, true, found)
@@ -388,9 +283,9 @@ func Test_handleDeregisterNode(t *testing.T) {
 
 	node, found = k.GetNode(ctx, node.ID)
 	require.Equal(t, true, found)
-	require.Equal(t, StatusInactive, node.Status)
+	require.Equal(t, StatusDeRegistered, node.Status)
 
-	node.Status = StatusInactive
+	node.Status = StatusRegistered
 	node.Deposit = sdk.NewInt64Coin("stake", 100)
 	k.SetNode(ctx, node)
 	msg = NewMsgDeregisterNode(types.TestAddress2, node.ID)
@@ -399,7 +294,7 @@ func Test_handleDeregisterNode(t *testing.T) {
 
 	node, found = k.GetNode(ctx, node.ID)
 	require.Equal(t, true, found)
-	require.Equal(t, StatusInactive, node.Status)
+	require.Equal(t, StatusRegistered, node.Status)
 
 	deposit, found = dk.GetDeposit(ctx, node.Owner)
 	require.Equal(t, true, found)
@@ -438,12 +333,8 @@ func Test_handleStartSubscription(t *testing.T) {
 	require.False(t, res.IsOK())
 
 	node = types.TestNode
-	node.Status = StatusInactive
+	node.Status = StatusDeRegistered
 	k.SetNode(ctx, node)
-	msg = NewMsgStartSubscription(types.TestAddress2, node.ID, sdk.NewInt64Coin("stake", 100))
-	res = handler(ctx, *msg)
-	require.False(t, res.IsOK())
-
 	msg = NewMsgStartSubscription(types.TestAddress2, node.ID, sdk.NewInt64Coin("stake", 100))
 	res = handler(ctx, *msg)
 	require.False(t, res.IsOK())
@@ -457,34 +348,6 @@ func Test_handleStartSubscription(t *testing.T) {
 	require.Equal(t, types.Subscription{}, subscription)
 
 	node.Status = StatusRegistered
-	k.SetNode(ctx, node)
-	msg = NewMsgStartSubscription(types.TestAddress2, node.ID, sdk.NewInt64Coin("stake", 100))
-	res = handler(ctx, *msg)
-	require.False(t, res.IsOK())
-
-	deposit, found = dk.GetDeposit(ctx, types.TestAddress2)
-	require.Equal(t, false, found)
-	require.Equal(t, sdk.Coins(nil), deposit.Coins)
-
-	subscription, found = k.GetSubscription(ctx, hub.NewSubscriptionID(0))
-	require.Equal(t, false, found)
-	require.Equal(t, types.Subscription{}, subscription)
-
-	node.Status = StatusDeRegistered
-	k.SetNode(ctx, node)
-	msg = NewMsgStartSubscription(types.TestAddress2, node.ID, sdk.NewInt64Coin("stake", 100))
-	res = handler(ctx, *msg)
-	require.False(t, res.IsOK())
-
-	deposit, found = dk.GetDeposit(ctx, types.TestAddress2)
-	require.Equal(t, false, found)
-	require.Equal(t, sdk.Coins(nil), deposit.Coins)
-
-	subscription, found = k.GetSubscription(ctx, hub.NewSubscriptionID(0))
-	require.Equal(t, false, found)
-	require.Equal(t, types.Subscription{}, subscription)
-
-	node.Status = StatusActive
 	k.SetNode(ctx, node)
 	msg = NewMsgStartSubscription(types.TestAddress2, node.ID, sdk.NewInt64Coin("stake", 100))
 	res = handler(ctx, *msg)
@@ -514,65 +377,6 @@ func Test_handleStartSubscription(t *testing.T) {
 	require.Nil(t, err)
 	require.Equal(t, sdk.Coins{sdk.NewInt64Coin("stake", 100)}, coins)
 
-	node.Status = StatusInactive
-	k.SetNode(ctx, node)
-	msg = NewMsgStartSubscription(types.TestAddress2, node.ID, sdk.NewInt64Coin("stake", 100))
-	res = handler(ctx, *msg)
-	require.False(t, res.IsOK())
-
-	deposit, found = dk.GetDeposit(ctx, types.TestAddress2)
-	require.Equal(t, false, found)
-	require.Equal(t, sdk.Coins(nil), deposit.Coins)
-
-	subscription, found = k.GetSubscription(ctx, hub.NewSubscriptionID(0))
-	require.Equal(t, false, found)
-	require.Equal(t, types.Subscription{}, subscription)
-
-	node.Status = StatusRegistered
-	k.SetNode(ctx, node)
-	msg = NewMsgStartSubscription(types.TestAddress2, node.ID, sdk.NewInt64Coin("stake", 100))
-	res = handler(ctx, *msg)
-	require.False(t, res.IsOK())
-
-	deposit, found = dk.GetDeposit(ctx, types.TestAddress2)
-	require.Equal(t, false, found)
-	require.Equal(t, sdk.Coins(nil), deposit.Coins)
-
-	subscription, found = k.GetSubscription(ctx, hub.NewSubscriptionID(0))
-	require.Equal(t, false, found)
-	require.Equal(t, types.Subscription{}, subscription)
-
-	node.Status = StatusDeRegistered
-	k.SetNode(ctx, node)
-	msg = NewMsgStartSubscription(types.TestAddress2, node.ID, sdk.NewInt64Coin("stake", 100))
-	res = handler(ctx, *msg)
-	require.False(t, res.IsOK())
-
-	deposit, found = dk.GetDeposit(ctx, types.TestAddress2)
-	require.Equal(t, false, found)
-	require.Equal(t, sdk.Coins(nil), deposit.Coins)
-
-	subscription, found = k.GetSubscription(ctx, hub.NewSubscriptionID(0))
-	require.Equal(t, false, found)
-	require.Equal(t, types.Subscription{}, subscription)
-
-	node.Status = StatusActive
-	k.SetNode(ctx, node)
-	coins, err = bk.AddCoins(ctx, types.TestAddress2, sdk.Coins{sdk.NewInt64Coin("invalid", 100)})
-	require.Nil(t, err)
-
-	msg = NewMsgStartSubscription(types.TestAddress2, node.ID, sdk.NewInt64Coin("invalid", 100))
-	res = handler(ctx, *msg)
-	require.False(t, res.IsOK())
-
-	deposit, found = dk.GetDeposit(ctx, types.TestAddress2)
-	require.Equal(t, true, found)
-	require.Equal(t, sdk.Coins{sdk.NewInt64Coin("invalid", 100)}, deposit.Coins)
-
-	subscription, found = k.GetSubscription(ctx, hub.NewSubscriptionID(0))
-	require.Equal(t, false, found)
-	require.Equal(t, types.Subscription{}, subscription)
-
 	msg = NewMsgStartSubscription(types.TestAddress2, node.ID, sdk.NewInt64Coin("stake", 100))
 	res = handler(ctx, *msg)
 	require.True(t, res.IsOK())
@@ -582,7 +386,7 @@ func Test_handleStartSubscription(t *testing.T) {
 
 	deposit, found = dk.GetDeposit(ctx, types.TestAddress2)
 	require.Equal(t, true, found)
-	require.Equal(t, sdk.Coins{sdk.NewInt64Coin("invalid", 100)}.AmountOf(sdk.NewInt64Coin("invalid", 100).Denom), deposit.Coins.AmountOf(sdk.NewInt64Coin("invalid", 100).Denom))
+	require.Equal(t, sdk.NewInt(100), deposit.Coins.AmountOf("stake"))
 
 	subscription, found = k.GetSubscription(ctx, hub.NewSubscriptionID(0))
 	require.Equal(t, true, found)
@@ -614,8 +418,6 @@ func Test_handleStartSubscription(t *testing.T) {
 	require.Nil(t, err)
 	require.Equal(t, sdk.Coins{sdk.NewInt64Coin("stake", 100)}.Add(sdk.Coins{sdk.NewInt64Coin("stake", 100)}), coins)
 
-	node.Status = StatusActive
-	k.SetNode(ctx, node)
 	msg = NewMsgStartSubscription(types.TestAddress2, node.ID, sdk.NewInt64Coin("stake", 100))
 	res = handler(ctx, *msg)
 	require.True(t, res.IsOK())
@@ -625,7 +427,7 @@ func Test_handleStartSubscription(t *testing.T) {
 
 	deposit, found = dk.GetDeposit(ctx, types.TestAddress2)
 	require.Equal(t, true, found)
-	require.Equal(t, sdk.Coins{sdk.NewInt64Coin("stake", 100)}.Add(sdk.Coins{sdk.NewInt64Coin("stake", 100)}).Add(sdk.Coins{sdk.NewInt64Coin("invalid", 100)}), deposit.Coins)
+	require.Equal(t, sdk.Coins{sdk.NewInt64Coin("stake", 200)}, deposit.Coins)
 
 	count = k.GetSubscriptionsCountOfAddress(ctx, types.TestAddress2)
 	require.Equal(t, uint64(2), count)

@@ -26,7 +26,7 @@ var (
 		PricesPerGB:      sdk.Coins{sdk.NewInt64Coin("stake", 100)},
 		InternetSpeed:    TestBandwidthPos1,
 		Encryption:       "encryption",
-		Status:           StatusInactive,
+		Status:           StatusDeRegistered,
 		StatusModifiedAt: 1,
 	}
 	TestSubscription = Subscription{

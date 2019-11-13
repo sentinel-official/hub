@@ -75,7 +75,6 @@ var (
 	ActiveSessionIDsKey                       = types.ActiveSessionIDsKey
 	NewMsgRegisterNode                        = types.NewMsgRegisterNode
 	NewMsgUpdateNodeInfo                      = types.NewMsgUpdateNodeInfo
-	NewMsgUpdateNodeStatus                    = types.NewMsgUpdateNodeStatus
 	NewMsgDeregisterNode                      = types.NewMsgDeregisterNode
 	NewParams                                 = types.NewParams
 	DefaultParams                             = types.DefaultParams
@@ -129,7 +128,6 @@ type (
 	Node                                   = types.Node
 	MsgRegisterNode                        = types.MsgRegisterNode
 	MsgUpdateNodeInfo                      = types.MsgUpdateNodeInfo
-	MsgUpdateNodeStatus                    = types.MsgUpdateNodeStatus
 	MsgDeregisterNode                      = types.MsgDeregisterNode
 	Params                                 = types.Params
 	QueryNodeParams                        = types.QueryNodeParams

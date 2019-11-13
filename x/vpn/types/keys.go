@@ -16,9 +16,10 @@ const (
 	StoreKeySubscription = "vpn_subscription"
 
 	StatusRegistered   = "REGISTERED"
-	StatusActive       = "ACTIVE"
-	StatusInactive     = "INACTIVE"
 	StatusDeRegistered = "DE-REGISTERED"
+
+	StatusActive   = "ACTIVE"
+	StatusInactive = "INACTIVE"
 )
 
 var (

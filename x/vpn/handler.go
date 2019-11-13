@@ -18,8 +18,6 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 			return handleRegisterNode(ctx, k, msg)
 		case types.MsgUpdateNodeInfo:
 			return handleUpdateNodeInfo(ctx, k, msg)
-		case types.MsgUpdateNodeStatus:
-			return handleUpdateNodeStatus(ctx, k, msg)
 		case types.MsgDeregisterNode:
 			return handleDeregisterNode(ctx, k, msg)
 		case types.MsgStartSubscription:
@@ -32,22 +30,6 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 			return types.ErrorUnknownMsgType(reflect.TypeOf(msg).Name()).Result()
 		}
 	}
-}
-
-func endBlockNodes(ctx sdk.Context, k keeper.Keeper, height int64) {
-	_height := height - k.NodeInactiveInterval(ctx)
-	ids := k.GetActiveNodeIDs(ctx, _height)
-
-	for _, id := range ids {
-		node, _ := k.GetNode(ctx, id.(hub.NodeID))
-
-		node.Status = types.StatusInactive
-		node.StatusModifiedAt = height
-
-		k.SetNode(ctx, node)
-	}
-
-	k.DeleteActiveNodeIDs(ctx, _height)
 }
 
 func endBlockSessions(ctx sdk.Context, k keeper.Keeper, height int64) {
@@ -87,7 +69,6 @@ func endBlockSessions(ctx sdk.Context, k keeper.Keeper, height int64) {
 
 func EndBlock(ctx sdk.Context, k keeper.Keeper) {
 	height := ctx.BlockHeight()
-	endBlockNodes(ctx, k, height)
 	endBlockSessions(ctx, k, height)
 }
 
@@ -151,30 +132,6 @@ func handleUpdateNodeInfo(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpdateN
 	return sdk.Result{}
 }
 
-func handleUpdateNodeStatus(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpdateNodeStatus) sdk.Result {
-	node, found := k.GetNode(ctx, msg.ID)
-	if !found {
-		return types.ErrorNodeDoesNotExist().Result()
-	}
-	if !msg.From.Equals(node.Owner) {
-		return types.ErrorUnauthorized().Result()
-	}
-	if node.Status == types.StatusDeRegistered {
-		return types.ErrorInvalidNodeStatus().Result()
-	}
-
-	k.RemoveNodeIDFromActiveList(ctx, node.StatusModifiedAt, node.ID)
-	if msg.Status == types.StatusActive {
-		k.AddNodeIDToActiveList(ctx, ctx.BlockHeight(), node.ID)
-	}
-
-	node.Status = msg.Status
-	node.StatusModifiedAt = ctx.BlockHeight()
-
-	k.SetNode(ctx, node)
-	return sdk.Result{}
-}
-
 func handleDeregisterNode(ctx sdk.Context, k keeper.Keeper, msg types.MsgDeregisterNode) sdk.Result {
 	node, found := k.GetNode(ctx, msg.ID)
 	if !found {
@@ -183,7 +140,7 @@ func handleDeregisterNode(ctx sdk.Context, k keeper.Keeper, msg types.MsgDeregis
 	if !msg.From.Equals(node.Owner) {
 		return types.ErrorUnauthorized().Result()
 	}
-	if node.Status == types.StatusActive || node.Status == types.StatusDeRegistered {
+	if node.Status == types.StatusDeRegistered {
 		return types.ErrorInvalidNodeStatus().Result()
 	}
 
@@ -205,7 +162,7 @@ func handleStartSubscription(ctx sdk.Context, k keeper.Keeper, msg types.MsgStar
 	if !found {
 		return types.ErrorNodeDoesNotExist().Result()
 	}
-	if node.Status != types.StatusActive {
+	if node.Status != types.StatusRegistered {
 		return types.ErrorInvalidNodeStatus().Result()
 	}
 

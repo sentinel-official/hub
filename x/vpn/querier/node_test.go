@@ -47,7 +47,6 @@ func Test_queryNode(t *testing.T) {
 	require.Nil(t, err)
 
 	res, _err = queryNode(ctx, req, k)
-	fmt.Println(string(res))
 	require.Nil(t, res)
 	require.Equal(t, []byte(nil), res)
 	require.Len(t, res, 0)

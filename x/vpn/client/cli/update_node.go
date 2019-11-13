@@ -1,8 +1,6 @@
 package cli
 
 import (
-	"strings"
-
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -59,36 +57,6 @@ func UpdateNodeInfoTxCmd(cdc *codec.Codec) *cobra.Command {
 	cmd.Flags().Int64(flagUploadSpeed, 0, "Internet upload speed in bytes/sec")
 	cmd.Flags().Int64(flagDownloadSpeed, 0, "Internet download speed in bytes/sec")
 	cmd.Flags().String(flagEncryption, "", "VPN encryption method")
-
-	_ = cmd.MarkFlagRequired(flagNodeID)
-
-	return cmd
-}
-
-func UpdateNodeStatusTxCmd(cdc *codec.Codec) *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "update-status",
-		Short: "Update status of the node",
-		Args:  cobra.ExactArgs(1),
-		RunE: func(cmd *cobra.Command, args []string) error {
-			txb := auth.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
-			ctx := context.NewCLIContext().WithCodec(cdc)
-
-			nodeID, err := hub.NewNodeIDFromString(viper.GetString(flagNodeID))
-			if err != nil {
-				return err
-			}
-
-			status := strings.ToUpper(args[0])
-
-			fromAddress := ctx.GetFromAddress()
-
-			msg := types.NewMsgUpdateNodeStatus(fromAddress, nodeID, status)
-			return utils.GenerateOrBroadcastMsgs(ctx, txb, []sdk.Msg{msg})
-		},
-	}
-
-	cmd.Flags().String(flagNodeID, "", "Node ID")
 
 	_ = cmd.MarkFlagRequired(flagNodeID)
 

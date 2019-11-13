@@ -47,7 +47,6 @@ func nodeTxCmd(cdc *codec.Codec) *cobra.Command {
 	cmd.AddCommand(client.PostCommands(
 		RegisterNodeTxCmd(cdc),
 		UpdateNodeInfoTxCmd(cdc),
-		UpdateNodeStatusTxCmd(cdc),
 		DeregisterNodeTxCmd(cdc),
 	)...)
 
