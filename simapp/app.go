@@ -81,6 +81,12 @@ func MakeCodec() *codec.Codec {
 	return cdc
 }
 
+func SetBech32AddressPrefixes(config *sdk.Config) {
+	config.SetBech32PrefixForAccount(types.Bech32PrefixAccAddr, types.Bech32PrefixAccPub)
+	config.SetBech32PrefixForValidator(types.Bech32PrefixValAddr, types.Bech32PrefixValPub)
+	config.SetBech32PrefixForConsensusNode(types.Bech32PrefixConsAddr, types.Bech32PrefixConsPub)
+}
+
 type SimApp struct {
 	*baseapp.BaseApp
 	cdc *codec.Codec

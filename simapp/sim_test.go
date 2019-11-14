@@ -316,6 +316,10 @@ func TestFullAppSimulation(t *testing.T) {
 		t.Skip("Skipping application simulation")
 	}
 
+	config := sdk.GetConfig()
+	SetBech32AddressPrefixes(config)
+	config.Seal()
+
 	var logger log.Logger
 
 	if verbose {

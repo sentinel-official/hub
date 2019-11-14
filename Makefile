@@ -44,8 +44,10 @@ SIM_BLOCK_SIZE ?= 100
 SIM_COMMIT ?= true
 
 test_sim_hub_fast:
-	@echo "Running hub simulation. This may take several minutes..."
-	@go test -v -mod=readonly -timeout 24h ./simapp -run TestFullHubSimulation -Enabled=true -NumBlocks=$(SIM_NUM_BLOCKS) -BlockSize=$(SIM_BLOCK_SIZE) -Commit=$(SIM_COMMIT) -Seed=10 -Period=5
+	@echo "Running hub simulation for numBlocks=100, blockSize=200. This may take awhile!"
+	@go test -mod=readonly $(SIMAPP) -run TestFullAppSimulation -Genesis=${HOME}/.sentinel-hubd/config/genesis.json \
+	    -Enabled=true -NumBlocks=100 -BlockSize=200 -Commit=true -Seed=99  -v -Period=5
+
 
 test_sim_benchmark:
 	@echo "Running hub benchmark for numBlocks=$(SIM_NUM_BLOCKS), blockSize=$(SIM_BLOCK_SIZE). This may take awhile!"

@@ -117,7 +117,8 @@ func (n Node) IsValid() error {
 		return fmt.Errorf("invalid encryption")
 	}
 
-	if n.Status != StatusRegistered && n.Status != StatusDeRegistered {
+	if n.Status != StatusRegistered &&
+		n.Status != StatusDeRegistered {
 		return fmt.Errorf("invalid status")
 	}
 
