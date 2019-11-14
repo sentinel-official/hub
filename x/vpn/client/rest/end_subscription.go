@@ -37,7 +37,7 @@ func endSubscriptionHandlerFunc(ctx context.CLIContext) http.HandlerFunc {
 		}
 
 		vars := mux.Vars(r)
-		id, err := hub.NewSubscriptionIDFromString(vars["subscriptionID"])
+		id, err := hub.NewSubscriptionIDFromString(vars["id"])
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
