@@ -37,7 +37,7 @@ func deregisterNodeHandlerFunc(ctx context.CLIContext) http.HandlerFunc {
 		}
 
 		vars := mux.Vars(r)
-		id, err := hub.NewNodeIDFromString(vars["nodeID"])
+		id, err := hub.NewNodeIDFromString(vars["id"])
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return

@@ -17,8 +17,6 @@ func registerTxRoutes(ctx context.CLIContext, r *mux.Router) {
 		Methods("DELETE")
 	r.HandleFunc("/nodes/{id}/info", updateNodeInfoHandlerFunc(ctx)).
 		Methods("PUT")
-	r.HandleFunc("/nodes/{id}/status", updateNodeStatusHandlerFunc(ctx)).
-		Methods("PUT")
 	r.HandleFunc("/nodes/{id}/subscriptions", startSubscriptionHandlerFunc(ctx)).
 		Methods("POST")
 

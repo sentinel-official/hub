@@ -27,7 +27,7 @@ func (s Session) IsValid() error {
 	if s.Bandwidth.AnyNil() {
 		return fmt.Errorf("invalid bandwidth")
 	}
-	if s.Status != StatusActive && s.Status != StatusInactive {
+	if s.Status != StatusRegistered && s.Status != StatusDeRegistered {
 		return fmt.Errorf("invalid status")
 	}
 

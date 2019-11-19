@@ -56,27 +56,6 @@ func SimulateMsgUpdateNodeInfo(keeper vpn.Keeper) simulation.Operation {
 	}
 }
 
-func SimulateMsgUpdateNodeStatus(keeper vpn.Keeper) simulation.Operation {
-	handler := vpn.NewHandler(keeper)
-	return func(r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accounts []simulation.Account) (
-		simulation.OperationMsg, []simulation.FutureOperation, error) {
-		if len(keeper.GetAllNodes(ctx)) == 0 {
-			return simulation.NoOpMsg(vpn.ModuleName), nil, nil
-		}
-
-		node := vpn.RandomNode(r, ctx, keeper)
-		msg := vpn.NewMsgUpdateNodeStatus(node.Owner, node.ID, getRandomStatus(r))
-
-		if msg.ValidateBasic() != nil {
-			return simulation.NoOpMsg(vpn.ModuleName), nil,
-				fmt.Errorf("expected msg to pass ValidateBasic: %s", msg.GetSignBytes())
-		}
-
-		ok := handler(ctx, *msg).IsOK()
-		return simulation.NewOperationMsg(msg, ok, ""), nil, nil
-	}
-}
-
 func SimulateMsgDeregisterNode(keeper vpn.Keeper) simulation.Operation {
 	handler := vpn.NewHandler(keeper)
 
@@ -109,7 +88,7 @@ func SimulateMsgStartSubscription(keeper vpn.Keeper) simulation.Operation {
 		}
 
 		node := vpn.RandomNode(r, ctx, keeper)
-		node.Status = vpn.StatusActive
+		node.Status = vpn.StatusRegistered
 		keeper.SetNode(ctx, node)
 
 		randomAcc := simulation.RandomAcc(r, accounts)

@@ -20,7 +20,7 @@ import (
 	"github.com/tendermint/tendermint/libs/cli"
 
 	"github.com/sentinel-official/hub/app"
-	hub "github.com/sentinel-official/hub/types"
+	"github.com/sentinel-official/hub/simapp"
 	"github.com/sentinel-official/hub/version"
 )
 
@@ -28,9 +28,7 @@ func main() {
 	cdc := app.MakeCodec()
 
 	config := sdk.GetConfig()
-	config.SetBech32PrefixForAccount(hub.Bech32PrefixAccAddr, hub.Bech32PrefixAccPub)
-	config.SetBech32PrefixForValidator(hub.Bech32PrefixValAddr, hub.Bech32PrefixValPub)
-	config.SetBech32PrefixForConsensusNode(hub.Bech32PrefixConsAddr, hub.Bech32PrefixConsPub)
+	simapp.SetBech32AddressPrefixes(config)
 	config.Seal()
 
 	cobra.EnableCommandSorting = false

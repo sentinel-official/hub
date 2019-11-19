@@ -12,7 +12,7 @@ import (
 
 var (
 	denoms   = []string{"stake", "xxx", "yyy", "zzz"}
-	statuses = []string{types.StatusActive, types.StatusInactive}
+	statuses = []string{types.StatusRegistered, types.StatusDeRegistered}
 )
 
 func getRandomDenom(r *rand.Rand) string {

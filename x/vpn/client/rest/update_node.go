@@ -2,7 +2,6 @@ package rest
 
 import (
 	"net/http"
-	"strings"
 
 	"github.com/cosmos/cosmos-sdk/client/context"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -50,55 +49,13 @@ func updateNodeInfoHandlerFunc(ctx context.CLIContext) http.HandlerFunc {
 		}
 
 		vars := mux.Vars(r)
-		id, err := hub.NewNodeIDFromString(vars["nodeID"])
+		id, err := hub.NewNodeIDFromString(vars["id"])
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
 		}
 		msg := types.NewMsgUpdateNodeInfo(fromAddress, id, req.Type, req.Version,
 			req.Moniker, pricesPerGB, req.InternetSpeed, req.Encryption)
-		if err := msg.ValidateBasic(); err != nil {
-			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
-			return
-		}
-
-		utils.WriteGenerateStdTxResponse(w, ctx, req.BaseReq, []sdk.Msg{msg})
-	}
-}
-
-type msgUpdateNodeStatus struct {
-	BaseReq rest.BaseReq `json:"base_req"`
-	Status  string       `json:"status"`
-}
-
-func updateNodeStatusHandlerFunc(ctx context.CLIContext) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		var req msgUpdateNodeStatus
-
-		if !rest.ReadRESTReq(w, r, ctx.Codec, &req) {
-			return
-		}
-
-		req.BaseReq = req.BaseReq.Sanitize()
-		if !req.BaseReq.ValidateBasic(w) {
-			return
-		}
-
-		fromAddress, err := sdk.AccAddressFromBech32(req.BaseReq.From)
-		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
-			return
-		}
-
-		vars := mux.Vars(r)
-		id, err := hub.NewNodeIDFromString(vars["nodeID"])
-		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
-			return
-		}
-		status := strings.ToUpper(req.Status)
-
-		msg := types.NewMsgUpdateNodeStatus(fromAddress, id, status)
 		if err := msg.ValidateBasic(); err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return

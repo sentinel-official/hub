@@ -149,54 +149,6 @@ func NewMsgUpdateNodeInfo(from sdk.AccAddress, id hub.NodeID,
 	}
 }
 
-var _ sdk.Msg = (*MsgUpdateNodeStatus)(nil)
-
-type MsgUpdateNodeStatus struct {
-	From   sdk.AccAddress `json:"from"`
-	ID     hub.NodeID     `json:"id"`
-	Status string         `json:"status"`
-}
-
-func (msg MsgUpdateNodeStatus) Type() string {
-	return "update_node_status"
-}
-
-func (msg MsgUpdateNodeStatus) ValidateBasic() sdk.Error {
-	if msg.From == nil || msg.From.Empty() {
-		return ErrorInvalidField("from")
-	}
-	if msg.Status != StatusActive && msg.Status != StatusInactive {
-		return ErrorInvalidField("status")
-	}
-
-	return nil
-}
-
-func (msg MsgUpdateNodeStatus) GetSignBytes() []byte {
-	bz, err := json.Marshal(msg)
-	if err != nil {
-		panic(err)
-	}
-
-	return bz
-}
-
-func (msg MsgUpdateNodeStatus) GetSigners() []sdk.AccAddress {
-	return []sdk.AccAddress{msg.From}
-}
-
-func (msg MsgUpdateNodeStatus) Route() string {
-	return RouterKey
-}
-
-func NewMsgUpdateNodeStatus(from sdk.AccAddress, id hub.NodeID, status string) *MsgUpdateNodeStatus {
-	return &MsgUpdateNodeStatus{
-		From:   from,
-		ID:     id,
-		Status: status,
-	}
-}
-
 var _ sdk.Msg = (*MsgDeregisterNode)(nil)
 
 type MsgDeregisterNode struct {

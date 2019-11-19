@@ -189,16 +189,6 @@ func testAndRunTxs(app *SimApp) []simulation.WeightedOperation {
 		{
 			func(_ *rand.Rand) int {
 				var v int
-				ap.GetOrGenerate(cdc, OpWeightMsgUpdateNodeStatus, &v, nil,
-					func(_ *rand.Rand) {
-						v = 100
-					})
-				return v
-			}(nil),
-			vpnsim.SimulateMsgUpdateNodeStatus(app.vpnKeeper),
-		}, {
-			func(_ *rand.Rand) int {
-				var v int
 				ap.GetOrGenerate(cdc, OpWeightMsgDeregisterNode, &v, nil,
 					func(_ *rand.Rand) {
 						v = 100
@@ -325,6 +315,10 @@ func TestFullAppSimulation(t *testing.T) {
 	if !enabled {
 		t.Skip("Skipping application simulation")
 	}
+
+	config := sdk.GetConfig()
+	SetBech32AddressPrefixes(config)
+	config.Seal()
 
 	var logger log.Logger
 
