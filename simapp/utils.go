@@ -409,14 +409,6 @@ func GenVpnGenesisState(cdc *codec.Codec, r *rand.Rand, accs []simulation.Accoun
 			}(r),
 			func(r *rand.Rand) int64 {
 				var v int64
-				ap.GetOrGenerate(cdc, vpnsim.NodeInactiveInterval, &v, r,
-					func(r *rand.Rand) {
-						v = int64(simulation.RandIntBetween(r, 10, 1000))
-					})
-				return v
-			}(r),
-			func(r *rand.Rand) int64 {
-				var v int64
 				ap.GetOrGenerate(cdc, vpnsim.SessionInactiveInterval, &v, r,
 					func(r *rand.Rand) {
 						v = int64(simulation.RandIntBetween(r, 10, 1000))
