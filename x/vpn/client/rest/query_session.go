@@ -1,53 +1,51 @@
-// nolint:dupl
 package rest
 
 import (
 	"net/http"
 
 	"github.com/cosmos/cosmos-sdk/client/context"
-	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/types/rest"
 	"github.com/gorilla/mux"
 
 	"github.com/sentinel-official/hub/x/vpn/client/common"
 )
 
-func getSessionHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) http.HandlerFunc {
+func getSessionHandlerFunc(ctx context.CLIContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 
-		session, err := common.QuerySession(cliCtx, cdc, vars["id"])
+		session, err := common.QuerySession(ctx, vars["id"])
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
 		}
 
-		rest.PostProcessResponse(w, cdc, session, cliCtx.Indent)
+		rest.PostProcessResponse(w, ctx, session)
 	}
 }
 
-func getSessionsOfSubscriptionHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) http.HandlerFunc {
+func getSessionsOfSubscriptionHandlerFunc(ctx context.CLIContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 
-		sessions, err := common.QuerySessionsOfSubscription(cliCtx, cdc, vars["id"])
+		sessions, err := common.QuerySessionsOfSubscription(ctx, vars["id"])
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
 		}
 
-		rest.PostProcessResponse(w, cdc, sessions, cliCtx.Indent)
+		rest.PostProcessResponse(w, ctx, sessions)
 	}
 }
 
-func getAllSessionsHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) http.HandlerFunc {
+func getAllSessionsHandlerFunc(ctx context.CLIContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		sessions, err := common.QueryAllSessions(cliCtx, cdc)
+		sessions, err := common.QueryAllSessions(ctx)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
 		}
 
-		rest.PostProcessResponse(w, cdc, sessions, cliCtx.Indent)
+		rest.PostProcessResponse(w, ctx, sessions)
 	}
 }

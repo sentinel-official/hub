@@ -1,4 +1,3 @@
-// nolint: dupl
 package cli
 
 import (
@@ -9,8 +8,8 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
-	"github.com/sentinel-official/hub/x/vpn"
 	"github.com/sentinel-official/hub/x/vpn/client/common"
+	"github.com/sentinel-official/hub/x/vpn/types"
 )
 
 func QuerySubscriptionCmd(cdc *codec.Codec) *cobra.Command {
@@ -19,15 +18,14 @@ func QuerySubscriptionCmd(cdc *codec.Codec) *cobra.Command {
 		Short: "Query subscription",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			cliCtx := context.NewCLIContext().WithCodec(cdc).WithAccountDecoder(cdc)
+			ctx := context.NewCLIContext().WithCodec(cdc)
 
-			subscription, err := common.QuerySubscription(cliCtx, cdc, args[0])
+			subscription, err := common.QuerySubscription(ctx, args[0])
 			if err != nil {
 				return err
 			}
 
 			fmt.Println(subscription)
-
 			return nil
 		},
 	}
@@ -39,21 +37,19 @@ func QuerySubscriptionsCmd(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "subscriptions",
 		Short: "Query subscriptions",
-		RunE: func(cmd *cobra.Command, args []string) error {
-			cliCtx := context.NewCLIContext().WithCodec(cdc).WithAccountDecoder(cdc)
+		RunE: func(cmd *cobra.Command, args []string) (err error) {
+			ctx := context.NewCLIContext().WithCodec(cdc)
 
 			id := viper.GetString(flagNodeID)
 			address := viper.GetString(flagAddress)
 
-			var subscriptions []vpn.Subscription
-			var err error
-
+			var subscriptions []types.Subscription
 			if id != "" {
-				subscriptions, err = common.QuerySubscriptionsOfNode(cliCtx, cdc, id)
+				subscriptions, err = common.QuerySubscriptionsOfNode(ctx, id)
 			} else if address != "" {
-				subscriptions, err = common.QuerySubscriptionsOfAddress(cliCtx, cdc, address)
+				subscriptions, err = common.QuerySubscriptionsOfAddress(ctx, address)
 			} else {
-				subscriptions, err = common.QueryAllSubscriptions(cliCtx, cdc)
+				subscriptions, err = common.QueryAllSubscriptions(ctx)
 			}
 
 			if err != nil {

@@ -1,18 +1,16 @@
 package cli
 
 import (
-	"strings"
-
 	"github.com/cosmos/cosmos-sdk/client/context"
-	"github.com/cosmos/cosmos-sdk/client/utils"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	authTxBuilder "github.com/cosmos/cosmos-sdk/x/auth/client/txbuilder"
+	"github.com/cosmos/cosmos-sdk/x/auth"
+	"github.com/cosmos/cosmos-sdk/x/auth/client/utils"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
 	hub "github.com/sentinel-official/hub/types"
-	"github.com/sentinel-official/hub/x/vpn"
+	"github.com/sentinel-official/hub/x/vpn/types"
 )
 
 func UpdateNodeInfoTxCmd(cdc *codec.Codec) *cobra.Command {
@@ -20,14 +18,14 @@ func UpdateNodeInfoTxCmd(cdc *codec.Codec) *cobra.Command {
 		Use:   "update-info",
 		Short: "Update info of the node",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			txBldr := authTxBuilder.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
-			cliCtx := context.NewCLIContext().WithCodec(cdc).WithAccountDecoder(cdc)
+			txb := auth.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
+			ctx := context.NewCLIContext().WithCodec(cdc)
 
-			if err := cliCtx.EnsureAccountExists(); err != nil {
+			nodeID, err := hub.NewNodeIDFromString(viper.GetString(flagNodeID))
+			if err != nil {
 				return err
 			}
 
-			nodeID := hub.NewIDFromString(viper.GetString(flagNodeID))
 			_type := viper.GetString(flagType)
 			version := viper.GetString(flagVersion)
 			moniker := viper.GetString(flagMoniker)
@@ -43,11 +41,11 @@ func UpdateNodeInfoTxCmd(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			fromAddress := cliCtx.GetFromAddress()
+			fromAddress := ctx.GetFromAddress()
 
-			msg := vpn.NewMsgUpdateNodeInfo(fromAddress, nodeID,
+			msg := types.NewMsgUpdateNodeInfo(fromAddress, nodeID,
 				_type, version, moniker, parsedPricesPerGB, internetSpeed, encryption)
-			return utils.GenerateOrBroadcastMsgs(cliCtx, txBldr, []sdk.Msg{msg}, false)
+			return utils.GenerateOrBroadcastMsgs(ctx, txb, []sdk.Msg{msg})
 		},
 	}
 
@@ -59,36 +57,6 @@ func UpdateNodeInfoTxCmd(cdc *codec.Codec) *cobra.Command {
 	cmd.Flags().Int64(flagUploadSpeed, 0, "Internet upload speed in bytes/sec")
 	cmd.Flags().Int64(flagDownloadSpeed, 0, "Internet download speed in bytes/sec")
 	cmd.Flags().String(flagEncryption, "", "VPN encryption method")
-
-	_ = cmd.MarkFlagRequired(flagNodeID)
-
-	return cmd
-}
-
-func UpdateNodeStatusTxCmd(cdc *codec.Codec) *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "update-status",
-		Short: "Update status of the node",
-		Args:  cobra.ExactArgs(1),
-		RunE: func(cmd *cobra.Command, args []string) error {
-			txBldr := authTxBuilder.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
-			cliCtx := context.NewCLIContext().WithCodec(cdc).WithAccountDecoder(cdc)
-
-			if err := cliCtx.EnsureAccountExists(); err != nil {
-				return err
-			}
-
-			nodeID := hub.NewIDFromString(viper.GetString(flagNodeID))
-			status := strings.ToUpper(args[0])
-
-			fromAddress := cliCtx.GetFromAddress()
-
-			msg := vpn.NewMsgUpdateNodeStatus(fromAddress, nodeID, status)
-			return utils.GenerateOrBroadcastMsgs(cliCtx, txBldr, []sdk.Msg{msg}, false)
-		},
-	}
-
-	cmd.Flags().String(flagNodeID, "", "Node ID")
 
 	_ = cmd.MarkFlagRequired(flagNodeID)
 

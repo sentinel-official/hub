@@ -55,10 +55,9 @@ func ExportGenesis(ctx sdk.Context, k Keeper) types.GenesisState {
 	return types.NewGenesisState(nodes, subscriptions, sessions, params)
 }
 
-// nolint: gocyclo
 func ValidateGenesis(data types.GenesisState) error {
-	if data.Params.Deposit.Denom == "" || data.Params.Deposit.IsZero() {
-		return fmt.Errorf("invalid deposit for the %s", data.Params)
+	if err := data.Params.Validate(); err != nil {
+		return err
 	}
 
 	sessionsMap := make(map[uint64]bool, len(data.Sessions))

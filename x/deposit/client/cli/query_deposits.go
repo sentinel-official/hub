@@ -1,4 +1,3 @@
-// nolint:dupl
 package cli
 
 import (
@@ -18,28 +17,27 @@ func QueryDepositsCmd(cdc *codec.Codec) *cobra.Command {
 		Use:   "deposits",
 		Short: "Query deposits",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			cliCtx := context.NewCLIContext().WithCodec(cdc).WithAccountDecoder(cdc)
+			ctx := context.NewCLIContext().WithCodec(cdc)
 
 			address := viper.GetString(flagAddress)
 
 			if address != "" {
-				deposit, err := common.QueryDepositOfAddress(cliCtx, cdc, address)
+				deposit, err := common.QueryDepositOfAddress(ctx, address)
 				if err != nil {
 					return err
 				}
 
 				fmt.Println(deposit)
-
 				return nil
 			}
 
-			deposits, err := common.QueryAllDeposits(cliCtx, cdc)
+			deposits, err := common.QueryAllDeposits(ctx)
 			if err != nil {
 				return err
 			}
 
-			for _, _deposit := range deposits {
-				fmt.Println(_deposit)
+			for _, deposit := range deposits {
+				fmt.Println(deposit)
 			}
 
 			return nil

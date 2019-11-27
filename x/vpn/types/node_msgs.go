@@ -12,7 +12,7 @@ var _ sdk.Msg = (*MsgRegisterNode)(nil)
 
 type MsgRegisterNode struct {
 	From          sdk.AccAddress `json:"from"`
-	Type_         string         `json:"type"` // nolint:golint
+	T             string         `json:"type"`
 	Version       string         `json:"version"`
 	Moniker       string         `json:"moniker"`
 	PricesPerGB   sdk.Coins      `json:"prices_per_gb"`
@@ -24,12 +24,11 @@ func (msg MsgRegisterNode) Type() string {
 	return "register_node"
 }
 
-// nolint: gocyclo
 func (msg MsgRegisterNode) ValidateBasic() sdk.Error {
 	if msg.From == nil || msg.From.Empty() {
 		return ErrorInvalidField("from")
 	}
-	if msg.Type_ == "" {
+	if msg.T == "" {
 		return ErrorInvalidField("type")
 	}
 	if msg.Version == "" {
@@ -40,7 +39,6 @@ func (msg MsgRegisterNode) ValidateBasic() sdk.Error {
 	}
 	if msg.PricesPerGB == nil ||
 		msg.PricesPerGB.Len() == 0 || !msg.PricesPerGB.IsValid() {
-
 		return ErrorInvalidField("prices_per_gb")
 	}
 	if !msg.InternetSpeed.AllPositive() {
@@ -71,12 +69,11 @@ func (msg MsgRegisterNode) Route() string {
 }
 
 func NewMsgRegisterNode(from sdk.AccAddress,
-	_type, version, moniker string, pricesPerGB sdk.Coins,
+	t, version, moniker string, pricesPerGB sdk.Coins,
 	internetSpeed hub.Bandwidth, encryption string) *MsgRegisterNode {
-
 	return &MsgRegisterNode{
 		From:          from,
-		Type_:         _type,
+		T:             t,
 		Version:       version,
 		Moniker:       moniker,
 		PricesPerGB:   pricesPerGB,
@@ -89,8 +86,8 @@ var _ sdk.Msg = (*MsgUpdateNodeInfo)(nil)
 
 type MsgUpdateNodeInfo struct {
 	From          sdk.AccAddress `json:"from"`
-	ID            hub.ID         `json:"id"`
-	Type_         string         `json:"type"` // nolint:golint
+	ID            hub.NodeID     `json:"id"`
+	T             string         `json:"type"`
 	Version       string         `json:"version"`
 	Moniker       string         `json:"moniker"`
 	PricesPerGB   sdk.Coins      `json:"prices_per_gb"`
@@ -111,7 +108,6 @@ func (msg MsgUpdateNodeInfo) ValidateBasic() sdk.Error {
 	}
 	if msg.PricesPerGB != nil &&
 		(msg.PricesPerGB.Len() == 0 || !msg.PricesPerGB.IsValid()) {
-
 		return ErrorInvalidField("prices_per_gb")
 	}
 	if msg.InternetSpeed.AnyNegative() {
@@ -138,14 +134,13 @@ func (msg MsgUpdateNodeInfo) Route() string {
 	return RouterKey
 }
 
-func NewMsgUpdateNodeInfo(from sdk.AccAddress, id hub.ID,
-	_type, version, moniker string, pricesPerGB sdk.Coins,
+func NewMsgUpdateNodeInfo(from sdk.AccAddress, id hub.NodeID,
+	t, version, moniker string, pricesPerGB sdk.Coins,
 	internetSpeed hub.Bandwidth, encryption string) *MsgUpdateNodeInfo {
-
 	return &MsgUpdateNodeInfo{
 		From:          from,
 		ID:            id,
-		Type_:         _type,
+		T:             t,
 		Version:       version,
 		Moniker:       moniker,
 		PricesPerGB:   pricesPerGB,
@@ -154,60 +149,11 @@ func NewMsgUpdateNodeInfo(from sdk.AccAddress, id hub.ID,
 	}
 }
 
-var _ sdk.Msg = (*MsgUpdateNodeStatus)(nil)
-
-type MsgUpdateNodeStatus struct {
-	From   sdk.AccAddress `json:"from"`
-	ID     hub.ID         `json:"id"`
-	Status string         `json:"status"`
-}
-
-func (msg MsgUpdateNodeStatus) Type() string {
-	return "update_node_status"
-}
-
-func (msg MsgUpdateNodeStatus) ValidateBasic() sdk.Error {
-	if msg.From == nil || msg.From.Empty() {
-		return ErrorInvalidField("from")
-	}
-	if msg.Status != StatusActive && msg.Status != StatusInactive {
-		return ErrorInvalidField("status")
-	}
-
-	return nil
-}
-
-func (msg MsgUpdateNodeStatus) GetSignBytes() []byte {
-	bz, err := json.Marshal(msg)
-	if err != nil {
-		panic(err)
-	}
-
-	return bz
-}
-
-func (msg MsgUpdateNodeStatus) GetSigners() []sdk.AccAddress {
-	return []sdk.AccAddress{msg.From}
-}
-
-func (msg MsgUpdateNodeStatus) Route() string {
-	return RouterKey
-}
-
-func NewMsgUpdateNodeStatus(from sdk.AccAddress, id hub.ID, status string) *MsgUpdateNodeStatus {
-
-	return &MsgUpdateNodeStatus{
-		From:   from,
-		ID:     id,
-		Status: status,
-	}
-}
-
 var _ sdk.Msg = (*MsgDeregisterNode)(nil)
 
 type MsgDeregisterNode struct {
 	From sdk.AccAddress `json:"from"`
-	ID   hub.ID         `json:"id"`
+	ID   hub.NodeID     `json:"id"`
 }
 
 func (msg MsgDeregisterNode) Type() string {
@@ -239,7 +185,7 @@ func (msg MsgDeregisterNode) Route() string {
 	return RouterKey
 }
 
-func NewMsgDeregisterNode(from sdk.AccAddress, id hub.ID) *MsgDeregisterNode {
+func NewMsgDeregisterNode(from sdk.AccAddress, id hub.NodeID) *MsgDeregisterNode {
 	return &MsgDeregisterNode{
 		From: from,
 		ID:   id,

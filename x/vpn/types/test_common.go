@@ -10,140 +10,65 @@ import (
 )
 
 var (
-	TestPrivKey1     = ed25519.GenPrivKey()
-	TestPrivKey2     = ed25519.GenPrivKey()
-	TestPubkey1      = TestPrivKey1.PubKey()
-	TestPubkey2      = TestPrivKey2.PubKey()
-	TestAddress1     = sdk.AccAddress(TestPubkey1.Address())
-	TestAddress2     = sdk.AccAddress(TestPubkey2.Address())
-	TestAddressEmpty = sdk.AccAddress([]byte(""))
-
-	TestCoinEmpty   = sdk.Coin{}
-	TestCoinNeg     = sdk.Coin{Denom: "stake", Amount: sdk.NewInt(-100)}
-	TestCoinZero    = sdk.NewInt64Coin("stake", 0)
-	TestCoinPos     = sdk.NewInt64Coin("stake", 100)
-	TestCoinInvalid = sdk.NewInt64Coin("invalid", 100)
-
-	TestCoinsEmpty   = sdk.Coins{}
-	TestCoinsNil     = sdk.Coins(nil)
-	TestCoinsNeg     = sdk.Coins{TestCoinNeg}
-	TestCoinsZero    = sdk.Coins{TestCoinZero}
-	TestCoinsPos     = sdk.Coins{TestCoinPos}
-	TestCoinsInvalid = sdk.Coins{TestCoinInvalid}
-
-	TestIDZero = hub.NewIDFromUInt64(0)
-	TestIDPos  = hub.NewIDFromUInt64(1)
-
-	TestIDsEmpty = hub.IDs{}
-	TestIDsNil   = hub.IDs(nil)
-	TestIDsValid = hub.IDs{TestIDZero}
-
-	TestNodeType    = "NODE_TYPE"
-	TestNewNodeType = "NEW_NODE_TYPE"
-
-	TestVersion    = "VERSION"
-	TestNewVersion = "NEW_VERSION"
-
-	TestMonikerLenZero     = ""
-	TestMonikerValid       = "MONIKER"
-	TestNewMonikerValid    = "NEW_MONIKER"
-	TestMonikerLengthGT128 = "MONIKERMONIKERMONIKERMONIKERMONIKERMONIKERMONIKERMONIKERMONIKERMONIKERMONIKERMONIKER" +
-		"MONIKERMONIKERMONIKERMONIKERMONIKERMONIKERMONIKERMONIKER"
-
-	TestUploadNeg  = sdk.NewInt(-500000000)
-	TestUploadZero = sdk.NewInt(0)
-	TestUploadPos1 = sdk.NewInt(500000000)
-	TestUploadPos2 = TestUploadPos1.Mul(sdk.NewInt(2))
-
-	TestDownloadNeg  = sdk.NewInt(-500000000)
-	TestDownloadZero = sdk.NewInt(0)
-	TestDownloadPos1 = sdk.NewInt(500000000)
-	TestDownloadPos2 = TestDownloadPos1.Mul(sdk.NewInt(2))
-
-	TestBandwidthNeg  = hub.NewBandwidth(TestUploadNeg, TestDownloadNeg)
-	TestBandwidthZero = hub.NewBandwidth(TestUploadZero, TestDownloadZero)
-	TestBandwidthPos1 = hub.NewBandwidth(TestUploadPos1, TestDownloadPos1)
-	TestBandwidthPos2 = hub.NewBandwidth(TestUploadPos2, TestDownloadPos2)
-
-	TestEncryption    = "ENCRYPTION"
-	TestNewEncryption = "NEW_ENCRYPTION"
-
-	TestStatusActive   = "ACTIVE"
-	TestStatusInActive = "INACTIVE"
-	TestStatusInValid  = "STATUS"
-
-	TestNodeEmpty = Node{}
-	TestNodeValid = Node{
-		ID:               TestIDZero,
+	TestPrivKey1 = ed25519.GenPrivKey()
+	TestPrivKey2 = ed25519.GenPrivKey()
+	TestPubkey1  = TestPrivKey1.PubKey()
+	TestPubkey2  = TestPrivKey2.PubKey()
+	TestAddress1 = sdk.AccAddress(TestPubkey1.Address())
+	TestAddress2 = sdk.AccAddress(TestPubkey2.Address())
+	TestNode     = Node{
+		ID:               hub.NewNodeID(0),
 		Owner:            TestAddress1,
-		Deposit:          TestCoinPos,
-		Type:             TestNodeType,
-		Version:          TestVersion,
-		Moniker:          TestMonikerValid,
-		PricesPerGB:      TestCoinsPos,
+		Deposit:          sdk.NewInt64Coin("stake", 100),
+		Type:             "node_type",
+		Version:          "version",
+		Moniker:          "moniker",
+		PricesPerGB:      sdk.Coins{sdk.NewInt64Coin("stake", 100)},
 		InternetSpeed:    TestBandwidthPos1,
-		Encryption:       TestEncryption,
-		Status:           TestStatusInActive,
+		Encryption:       "encryption",
+		Status:           StatusDeRegistered,
 		StatusModifiedAt: 1,
 	}
-
-	TestNodesEmpty = []Node{}
-	TestNodesNil   = []Node(nil)
-	TestNodesValid = []Node{TestNodeValid}
-
-	TestSubscriptionEmpty = Subscription{}
-	TestSubscriptionValid = Subscription{
-		ID:                 TestIDZero,
-		NodeID:             TestIDZero,
+	TestSubscription = Subscription{
+		ID:                 hub.NewSubscriptionID(0),
+		NodeID:             hub.NewNodeID(0),
 		Client:             TestAddress2,
-		PricePerGB:         TestCoinPos,
-		TotalDeposit:       TestCoinPos,
-		RemainingDeposit:   TestCoinPos,
+		PricePerGB:         sdk.NewInt64Coin("stake", 100),
+		TotalDeposit:       sdk.NewInt64Coin("stake", 100),
+		RemainingDeposit:   sdk.NewInt64Coin("stake", 100),
 		RemainingBandwidth: TestBandwidthPos1,
-		Status:             TestStatusActive,
+		Status:             StatusActive,
 		StatusModifiedAt:   0,
 	}
-
-	TestSubscriptionsEmpty = []Subscription{}
-	TestSubscriptionsNil   = []Subscription(nil)
-	TestSubscriptionsValid = []Subscription{TestSubscriptionValid}
-
-	TestSessionEmpty = Session{}
-	TestSessionValid = Session{
-		ID:               TestIDZero,
-		SubscriptionID:   TestIDZero,
+	TestSession = Session{
+		ID:               hub.NewSessionID(0),
+		SubscriptionID:   hub.NewSubscriptionID(0),
 		Bandwidth:        TestBandwidthPos1,
-		Status:           TestStatusActive,
+		Status:           StatusActive,
 		StatusModifiedAt: 0,
 	}
-
-	TestSessionsEmpty = []Session{}
-	TestSessionsNil   = []Session(nil)
-	TestSessionsValid = []Session{TestSessionValid}
-
-	TestBandWidthSignDataNeg  = NewBandwidthSignatureData(TestIDPos, 0, TestBandwidthNeg)
-	TestBandWidthSignDataZero = NewBandwidthSignatureData(TestIDPos, 0, TestBandwidthZero)
-	TestBandWidthSignDataPos1 = NewBandwidthSignatureData(TestIDZero, 1, TestBandwidthPos1)
-	TestBandWidthSignDataPos2 = NewBandwidthSignatureData(TestIDZero, 1, TestBandwidthPos2)
-
+	TestBandwidthNeg                  = hub.NewBandwidth(sdk.NewInt(-500000000), sdk.NewInt(-500000000))
+	TestBandwidthZero                 = hub.NewBandwidth(sdk.NewInt(0), sdk.NewInt(0))
+	TestBandwidthPos1                 = hub.NewBandwidth(sdk.NewInt(500000000), sdk.NewInt(500000000))
+	TestBandwidthPos2                 = TestBandwidthPos1.Add(TestBandwidthPos1)
+	TestBandWidthSignDataNeg          = hub.NewBandwidthSignatureData(hub.NewSubscriptionID(0), 0, TestBandwidthNeg)
 	TestNodeOwnerSignBandWidthNeg, _  = TestPrivKey1.Sign(TestBandWidthSignDataNeg.Bytes())
+	TestNodeOwnerStdSignatureNeg      = auth.StdSignature{PubKey: TestPubkey1, Signature: TestNodeOwnerSignBandWidthNeg}
+	TestClientSignBandWidthNeg, _     = TestPrivKey2.Sign(TestBandWidthSignDataNeg.Bytes())
+	TestClientStdSignatureNeg         = auth.StdSignature{PubKey: TestPubkey2, Signature: TestClientSignBandWidthNeg}
+	TestBandWidthSignDataZero         = hub.NewBandwidthSignatureData(hub.NewSubscriptionID(0), 0, TestBandwidthZero)
 	TestNodeOwnerSignBandWidthZero, _ = TestPrivKey1.Sign(TestBandWidthSignDataZero.Bytes())
+	TestNodeOwnerStdSignatureZero     = auth.StdSignature{PubKey: TestPubkey1, Signature: TestNodeOwnerSignBandWidthZero}
+	TestClientSignBandWidthZero, _    = TestPrivKey2.Sign(TestBandWidthSignDataZero.Bytes())
+	TestClientStdSignatureZero        = auth.StdSignature{PubKey: TestPubkey2, Signature: TestClientSignBandWidthZero}
+	TestBandWidthSignDataPos1         = hub.NewBandwidthSignatureData(hub.NewSubscriptionID(0), 1, TestBandwidthPos1)
 	TestNodeOwnerSignBandWidthPos1, _ = TestPrivKey1.Sign(TestBandWidthSignDataPos1.Bytes())
+	TestNodeOwnerStdSignaturePos1     = auth.StdSignature{PubKey: TestPubkey1, Signature: TestNodeOwnerSignBandWidthPos1}
+	TestClientSignBandWidthPos1, _    = TestPrivKey2.Sign(TestBandWidthSignDataPos1.Bytes())
+	TestClientStdSignaturePos1        = auth.StdSignature{PubKey: TestPubkey2, Signature: TestClientSignBandWidthPos1}
+	TestBandWidthSignDataPos2         = hub.NewBandwidthSignatureData(hub.NewSubscriptionID(0), 1, TestBandwidthPos2)
 	TestNodeOwnerSignBandWidthPos2, _ = TestPrivKey1.Sign(TestBandWidthSignDataPos2.Bytes())
-
-	TestClientSignBandWidthNeg, _  = TestPrivKey2.Sign(TestBandWidthSignDataNeg.Bytes())
-	TestClientSignBandWidthZero, _ = TestPrivKey2.Sign(TestBandWidthSignDataZero.Bytes())
-	TestClientSignBandWidthPos1, _ = TestPrivKey2.Sign(TestBandWidthSignDataPos1.Bytes())
-	TestClientSignBandWidthPos2, _ = TestPrivKey2.Sign(TestBandWidthSignDataPos2.Bytes())
-
-	TestStdSignatureEmpty         = auth.StdSignature{}
-	TestNodeOwnerStdSignatureNeg  = auth.StdSignature{PubKey: TestPubkey1, Signature: TestNodeOwnerSignBandWidthNeg}
-	TestNodeOwnerStdSignatureZero = auth.StdSignature{PubKey: TestPubkey1, Signature: TestNodeOwnerSignBandWidthZero}
-	TestNodeOwnerStdSignaturePos1 = auth.StdSignature{PubKey: TestPubkey1, Signature: TestNodeOwnerSignBandWidthPos1}
-	TestNodeOwnerStdSignaturePos2 = auth.StdSignature{PubKey: TestPubkey1, Signature: TestNodeOwnerSignBandWidthPos2}
-
-	TestClientStdSignatureNeg  = auth.StdSignature{PubKey: TestPubkey2, Signature: TestClientSignBandWidthNeg}
-	TestClientStdSignatureZero = auth.StdSignature{PubKey: TestPubkey2, Signature: TestClientSignBandWidthZero}
-	TestClientStdSignaturePos1 = auth.StdSignature{PubKey: TestPubkey2, Signature: TestClientSignBandWidthPos1}
-	TestClientStdSignaturePos2 = auth.StdSignature{PubKey: TestPubkey2, Signature: TestClientSignBandWidthPos2}
+	TestNodeOwnerStdSignaturePos2     = auth.StdSignature{PubKey: TestPubkey1, Signature: TestNodeOwnerSignBandWidthPos2}
+	TestClientSignBandWidthPos2, _    = TestPrivKey2.Sign(TestBandWidthSignDataPos2.Bytes())
+	TestClientStdSignaturePos2        = auth.StdSignature{PubKey: TestPubkey2, Signature: TestClientSignBandWidthPos2}
 )

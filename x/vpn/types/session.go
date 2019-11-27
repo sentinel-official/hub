@@ -7,11 +7,11 @@ import (
 )
 
 type Session struct {
-	ID               hub.ID        `json:"id"`
-	SubscriptionID   hub.ID        `json:"subscription_id"`
-	Bandwidth        hub.Bandwidth `json:"bandwidth"`
-	Status           string        `json:"status"`
-	StatusModifiedAt int64         `json:"status_modified_at"`
+	ID               hub.SessionID      `json:"id"`
+	SubscriptionID   hub.SubscriptionID `json:"subscription_id"`
+	Bandwidth        hub.Bandwidth      `json:"bandwidth"`
+	Status           string             `json:"status"`
+	StatusModifiedAt int64              `json:"status_modified_at"`
 }
 
 func (s Session) String() string {
@@ -27,7 +27,7 @@ func (s Session) IsValid() error {
 	if s.Bandwidth.AnyNil() {
 		return fmt.Errorf("invalid bandwidth")
 	}
-	if s.Status != StatusActive && s.Status != StatusInactive {
+	if s.Status != StatusRegistered && s.Status != StatusDeRegistered {
 		return fmt.Errorf("invalid status")
 	}
 

@@ -10,7 +10,7 @@ import (
 )
 
 type Node struct {
-	ID      hub.ID         `json:"id"`
+	ID      hub.NodeID     `json:"id"`
 	Owner   sdk.AccAddress `json:"owner"`
 	Deposit sdk.Coin       `json:"deposit"`
 
@@ -54,7 +54,6 @@ func (n Node) UpdateInfo(_node Node) Node {
 	}
 	if _node.PricesPerGB != nil &&
 		_node.PricesPerGB.Len() > 0 && _node.PricesPerGB.IsValid() {
-
 		n.PricesPerGB = _node.PricesPerGB
 	}
 	if !_node.InternetSpeed.AnyNil() && _node.InternetSpeed.AllPositive() {
@@ -90,7 +89,6 @@ func (n Node) DepositToBandwidth(deposit sdk.Coin) (bandwidth hub.Bandwidth, err
 	return hub.NewBandwidth(x, x), nil
 }
 
-// nolint: gocyclo
 func (n Node) IsValid() error {
 	if n.Owner == nil || n.Owner.Empty() {
 		return fmt.Errorf("invalid owner")
@@ -98,13 +96,14 @@ func (n Node) IsValid() error {
 	if n.Deposit.Denom == "" {
 		return fmt.Errorf("invalid deposit")
 	}
-	if n.Type == "" {
+	if n.Type == "" || len(n.Type) < 4 || len(n.Type) > 16 {
 		return fmt.Errorf("invalid type")
 	}
-	if n.Version == "" {
+
+	if n.Version == "" || len(n.Version) < 4 || len(n.Version) > 16 {
 		return fmt.Errorf("invalid version")
 	}
-	if len(n.Moniker) > 128 {
+	if n.Moniker == "" || len(n.Moniker) < 4 || len(n.Moniker) > 32 {
 		return fmt.Errorf("invalid moniker")
 	}
 	if n.PricesPerGB == nil || !n.PricesPerGB.IsValid() {
@@ -113,11 +112,13 @@ func (n Node) IsValid() error {
 	if n.InternetSpeed.AnyNil() || !n.InternetSpeed.AllPositive() {
 		return fmt.Errorf("invalid internet speed")
 	}
-	if n.Encryption == "" {
+
+	if n.Encryption == "" || len(n.Encryption) < 4 || len(n.Encryption) > 16 {
 		return fmt.Errorf("invalid encryption")
 	}
-	if n.Status != StatusRegistered && n.Status != StatusActive &&
-		n.Status != StatusInactive && n.Status != StatusDeRegistered {
+
+	if n.Status != StatusRegistered &&
+		n.Status != StatusDeRegistered {
 		return fmt.Errorf("invalid status")
 	}
 

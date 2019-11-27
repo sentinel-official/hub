@@ -6,7 +6,7 @@
 
 ## Installation
 
-Requires [Go 1.12+](https://golang.org/dl/)
+Requires [Go 1.13+](https://golang.org/dl/)
 
 ### Linux
 
@@ -17,3 +17,7 @@ Requires [Go 1.12+](https://golang.org/dl/)
 `$ make install`
 
 **Note:** To install specific version or commit use `git checkout` command
+
+## Additional Documentation
+
+For additional documentation on the Sentinel Hub, please visit - https://docs.sentinel.co

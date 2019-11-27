@@ -1,16 +1,15 @@
-// nolint: dupl
 package cli
 
 import (
 	"github.com/cosmos/cosmos-sdk/client/context"
-	"github.com/cosmos/cosmos-sdk/client/utils"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	authTxBuilder "github.com/cosmos/cosmos-sdk/x/auth/client/txbuilder"
+	"github.com/cosmos/cosmos-sdk/x/auth"
+	"github.com/cosmos/cosmos-sdk/x/auth/client/utils"
 	"github.com/spf13/cobra"
 
 	hub "github.com/sentinel-official/hub/types"
-	"github.com/sentinel-official/hub/x/vpn"
+	"github.com/sentinel-official/hub/x/vpn/types"
 )
 
 func DeregisterNodeTxCmd(cdc *codec.Codec) *cobra.Command {
@@ -19,18 +18,18 @@ func DeregisterNodeTxCmd(cdc *codec.Codec) *cobra.Command {
 		Short: "Deregister node",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			txBldr := authTxBuilder.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
-			cliCtx := context.NewCLIContext().WithCodec(cdc).WithAccountDecoder(cdc)
+			txb := auth.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
+			ctx := context.NewCLIContext().WithCodec(cdc)
 
-			if err := cliCtx.EnsureAccountExists(); err != nil {
+			id, err := hub.NewNodeIDFromString(args[0])
+			if err != nil {
 				return err
 			}
 
-			id := hub.NewIDFromString(args[0])
-			fromAddress := cliCtx.GetFromAddress()
+			fromAddress := ctx.GetFromAddress()
 
-			msg := vpn.NewMsgDeregisterNode(fromAddress, id)
-			return utils.GenerateOrBroadcastMsgs(cliCtx, txBldr, []sdk.Msg{msg}, false)
+			msg := types.NewMsgDeregisterNode(fromAddress, id)
+			return utils.GenerateOrBroadcastMsgs(ctx, txb, []sdk.Msg{msg})
 		},
 	}
 

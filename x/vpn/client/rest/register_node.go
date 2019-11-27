@@ -4,13 +4,12 @@ import (
 	"net/http"
 
 	"github.com/cosmos/cosmos-sdk/client/context"
-	clientRest "github.com/cosmos/cosmos-sdk/client/rest"
-	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/rest"
+	"github.com/cosmos/cosmos-sdk/x/auth/client/utils"
 
 	hub "github.com/sentinel-official/hub/types"
-	"github.com/sentinel-official/hub/x/vpn"
+	"github.com/sentinel-official/hub/x/vpn/types"
 )
 
 type msgRegisterNode struct {
@@ -23,11 +22,11 @@ type msgRegisterNode struct {
 	Encryption    string        `json:"encryption"`
 }
 
-func registerNodeHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) http.HandlerFunc {
+func registerNodeHandlerFunc(ctx context.CLIContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var req msgRegisterNode
 
-		if !rest.ReadRESTReq(w, r, cdc, &req) {
+		if !rest.ReadRESTReq(w, r, ctx.Codec, &req) {
 			return
 		}
 
@@ -48,13 +47,13 @@ func registerNodeHandlerFunc(cliCtx context.CLIContext, cdc *codec.Codec) http.H
 			return
 		}
 
-		msg := vpn.NewMsgRegisterNode(fromAddress, req.Type, req.Version,
+		msg := types.NewMsgRegisterNode(fromAddress, req.Type, req.Version,
 			req.Moniker, pricesPerGB, req.InternetSpeed, req.Encryption)
 		if err := msg.ValidateBasic(); err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
 		}
 
-		clientRest.WriteGenerateStdTxResponse(w, cdc, cliCtx, req.BaseReq, []sdk.Msg{msg})
+		utils.WriteGenerateStdTxResponse(w, ctx, req.BaseReq, []sdk.Msg{msg})
 	}
 }

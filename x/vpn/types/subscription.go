@@ -1,7 +1,6 @@
 package types
 
 import (
-	"encoding/json"
 	"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -10,15 +9,15 @@ import (
 )
 
 type Subscription struct {
-	ID                 hub.ID         `json:"id"`
-	NodeID             hub.ID         `json:"node_id"`
-	Client             sdk.AccAddress `json:"client"`
-	PricePerGB         sdk.Coin       `json:"price_per_gb"`
-	TotalDeposit       sdk.Coin       `json:"total_deposit"`
-	RemainingDeposit   sdk.Coin       `json:"remaining_deposit"`
-	RemainingBandwidth hub.Bandwidth  `json:"remaining_bandwidth"`
-	Status             string         `json:"status"`
-	StatusModifiedAt   int64          `json:"status_modified_at"`
+	ID                 hub.SubscriptionID `json:"id"`
+	NodeID             hub.NodeID         `json:"node_id"`
+	Client             sdk.AccAddress     `json:"client"`
+	PricePerGB         sdk.Coin           `json:"price_per_gb"`
+	TotalDeposit       sdk.Coin           `json:"total_deposit"`
+	RemainingDeposit   sdk.Coin           `json:"remaining_deposit"`
+	RemainingBandwidth hub.Bandwidth      `json:"remaining_bandwidth"`
+	Status             string             `json:"status"`
+	StatusModifiedAt   int64              `json:"status_modified_at"`
 }
 
 func (s Subscription) TotalBandwidth() hub.Bandwidth {
@@ -45,7 +44,6 @@ func (s Subscription) String() string {
 		s.RemainingDeposit, s.RemainingBandwidth, s.Status, s.StatusModifiedAt)
 }
 
-// nolint: gocyclo
 func (s Subscription) IsValid() error {
 	if s.Client == nil || s.Client.Empty() {
 		return fmt.Errorf("invalid client")
@@ -67,27 +65,4 @@ func (s Subscription) IsValid() error {
 	}
 
 	return nil
-}
-
-type BandwidthSignatureData struct {
-	ID        hub.ID        `json:"id"`
-	Index     uint64        `json:"index"`
-	Bandwidth hub.Bandwidth `json:"bandwidth"`
-}
-
-func NewBandwidthSignatureData(id hub.ID, index uint64, bandwidth hub.Bandwidth) BandwidthSignatureData {
-	return BandwidthSignatureData{
-		ID:        id,
-		Index:     index,
-		Bandwidth: bandwidth,
-	}
-}
-
-func (b BandwidthSignatureData) Bytes() []byte {
-	bz, err := json.Marshal(b)
-	if err != nil {
-		panic(err)
-	}
-
-	return bz
 }

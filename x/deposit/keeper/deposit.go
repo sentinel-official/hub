@@ -10,12 +10,12 @@ func (k Keeper) SetDeposit(ctx sdk.Context, deposit types.Deposit) {
 	key := types.DepositKey(deposit.Address)
 	value := k.cdc.MustMarshalBinaryLengthPrefixed(deposit)
 
-	store := ctx.KVStore(k.storeKey)
+	store := ctx.KVStore(k.key)
 	store.Set(key, value)
 }
 
 func (k Keeper) GetDeposit(ctx sdk.Context, address sdk.AccAddress) (deposit types.Deposit, found bool) {
-	store := ctx.KVStore(k.storeKey)
+	store := ctx.KVStore(k.key)
 
 	key := types.DepositKey(address)
 	value := store.Get(key)
@@ -28,7 +28,7 @@ func (k Keeper) GetDeposit(ctx sdk.Context, address sdk.AccAddress) (deposit typ
 }
 
 func (k Keeper) GetAllDeposits(ctx sdk.Context) (deposits []types.Deposit) {
-	store := ctx.KVStore(k.storeKey)
+	store := ctx.KVStore(k.key)
 
 	iter := sdk.KVStorePrefixIterator(store, types.DepositKeyPrefix)
 	defer iter.Close()
@@ -42,12 +42,9 @@ func (k Keeper) GetAllDeposits(ctx sdk.Context) (deposits []types.Deposit) {
 	return deposits
 }
 
-func (k Keeper) Add(ctx sdk.Context, address sdk.AccAddress,
-	coins sdk.Coins) (tags sdk.Tags, err sdk.Error) {
-
-	_, tags, err = k.bankKeeper.SubtractCoins(ctx, address, coins)
-	if err != nil {
-		return nil, err
+func (k Keeper) Add(ctx sdk.Context, address sdk.AccAddress, coins sdk.Coins) (err sdk.Error) {
+	if err := k.supply.SendCoinsFromAccountToModule(ctx, address, types.ModuleName, coins); err != nil {
+		return err
 	}
 
 	deposit, found := k.GetDeposit(ctx, address)
@@ -60,63 +57,54 @@ func (k Keeper) Add(ctx sdk.Context, address sdk.AccAddress,
 
 	deposit.Coins = deposit.Coins.Add(coins)
 	if deposit.Coins.IsAnyNegative() {
-		return nil, types.ErrorInsufficientDepositFunds(deposit.Coins, coins)
+		return types.ErrorInsufficientDepositFunds(deposit.Coins, coins)
 	}
 
 	k.SetDeposit(ctx, deposit)
-	return tags, nil
+	return nil
 }
 
-func (k Keeper) Subtract(ctx sdk.Context, address sdk.AccAddress,
-	coins sdk.Coins) (tags sdk.Tags, err sdk.Error) {
-
+func (k Keeper) Subtract(ctx sdk.Context, address sdk.AccAddress, coins sdk.Coins) (err sdk.Error) {
 	deposit, found := k.GetDeposit(ctx, address)
 	if !found {
-		return nil, types.ErrorInsufficientDepositFunds(coins, deposit.Coins)
+		return types.ErrorInsufficientDepositFunds(coins, deposit.Coins)
 	}
 
 	deposit.Coins, _ = deposit.Coins.SafeSub(coins)
 	if deposit.Coins.IsAnyNegative() {
-		return nil, types.ErrorInsufficientDepositFunds(coins, deposit.Coins)
+		return types.ErrorInsufficientDepositFunds(coins, deposit.Coins)
 	}
 
-	_, tags, err = k.bankKeeper.AddCoins(ctx, address, coins)
-	if err != nil {
-		return nil, err
+	if err := k.supply.SendCoinsFromModuleToAccount(ctx, types.ModuleName, address, coins); err != nil {
+		return err
 	}
 
 	k.SetDeposit(ctx, deposit)
-	return tags, nil
+	return nil
 }
 
-func (k Keeper) Send(ctx sdk.Context, from, toAddress sdk.AccAddress,
-	coins sdk.Coins) (tags sdk.Tags, err sdk.Error) {
-
+func (k Keeper) SendFromDepositToAccount(ctx sdk.Context, from, to sdk.AccAddress, coins sdk.Coins) sdk.Error {
 	deposit, found := k.GetDeposit(ctx, from)
 	if !found {
-		return nil, types.ErrorInsufficientDepositFunds(coins, deposit.Coins)
+		return types.ErrorInsufficientDepositFunds(coins, deposit.Coins)
 	}
 
 	deposit.Coins, _ = deposit.Coins.SafeSub(coins)
 	if deposit.Coins.IsAnyNegative() {
-		return nil, types.ErrorInsufficientDepositFunds(coins, deposit.Coins)
+		return types.ErrorInsufficientDepositFunds(coins, deposit.Coins)
 	}
 
-	_, tags, err = k.bankKeeper.AddCoins(ctx, toAddress, coins)
-	if err != nil {
-		return nil, err
+	if err := k.supply.SendCoinsFromModuleToAccount(ctx, types.ModuleName, to, coins); err != nil {
+		return err
 	}
 
 	k.SetDeposit(ctx, deposit)
-	return tags, nil
+	return nil
 }
 
-func (k Keeper) Receive(ctx sdk.Context, fromAddress, to sdk.AccAddress,
-	coins sdk.Coins) (tags sdk.Tags, err sdk.Error) {
-
-	_, tags, err = k.bankKeeper.SubtractCoins(ctx, fromAddress, coins)
-	if err != nil {
-		return nil, err
+func (k Keeper) ReceiveFromAccountToDeposit(ctx sdk.Context, from, to sdk.AccAddress, coins sdk.Coins) sdk.Error {
+	if err := k.supply.SendCoinsFromAccountToModule(ctx, from, types.ModuleName, coins); err != nil {
+		return err
 	}
 
 	deposit, found := k.GetDeposit(ctx, to)
@@ -129,16 +117,15 @@ func (k Keeper) Receive(ctx sdk.Context, fromAddress, to sdk.AccAddress,
 
 	deposit.Coins = deposit.Coins.Add(coins)
 	if deposit.Coins.IsAnyNegative() {
-		return nil, types.ErrorInsufficientDepositFunds(deposit.Coins, coins)
+		return types.ErrorInsufficientDepositFunds(deposit.Coins, coins)
 	}
 
 	k.SetDeposit(ctx, deposit)
-	return tags, nil
+	return nil
 }
 
-// nolint: dupl
 func (k Keeper) IterateDeposits(ctx sdk.Context, fn func(index int64, deposit types.Deposit) (stop bool)) {
-	store := ctx.KVStore(k.storeKey)
+	store := ctx.KVStore(k.key)
 
 	iterator := sdk.KVStorePrefixIterator(store, types.DepositKeyPrefix)
 	defer iterator.Close()

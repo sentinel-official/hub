@@ -1,31 +1,29 @@
-// nolint:dupl
 package common
 
 import (
 	"fmt"
 
 	"github.com/cosmos/cosmos-sdk/client/context"
-	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/sentinel-official/hub/x/deposit"
+	"github.com/sentinel-official/hub/x/deposit/types"
 )
 
-func QueryDepositOfAddress(cliCtx context.CLIContext, cdc *codec.Codec, _address string) (*deposit.Deposit, error) {
-	address, err := sdk.AccAddressFromBech32(_address)
+func QueryDepositOfAddress(ctx context.CLIContext, s string) (*types.Deposit, error) {
+	address, err := sdk.AccAddressFromBech32(s)
 	if err != nil {
 		return nil, err
 	}
 
-	params := deposit.NewQueryDepositOfAddressParams(address)
+	params := types.NewQueryDepositOfAddressParams(address)
 
-	paramBytes, err := cdc.MarshalJSON(params)
+	bytes, err := ctx.Codec.MarshalJSON(params)
 	if err != nil {
 		return nil, err
 	}
 
-	res, err := cliCtx.QueryWithData(
-		fmt.Sprintf("custom/%s/%s", deposit.QuerierRoute, deposit.QueryDepositOfAddress), paramBytes)
+	path := fmt.Sprintf("custom/%s/%s", types.QuerierRoute, types.QueryDepositOfAddress)
+	res, _, err := ctx.QueryWithData(path, bytes)
 	if err != nil {
 		return nil, err
 	}
@@ -33,17 +31,17 @@ func QueryDepositOfAddress(cliCtx context.CLIContext, cdc *codec.Codec, _address
 		return nil, fmt.Errorf("no deposit found")
 	}
 
-	var _deposit deposit.Deposit
-	if err = cdc.UnmarshalJSON(res, &_deposit); err != nil {
+	var d types.Deposit
+	if err = ctx.Codec.UnmarshalJSON(res, &d); err != nil {
 		return nil, err
 	}
 
-	return &_deposit, nil
+	return &d, nil
 }
 
-func QueryAllDeposits(cliCtx context.CLIContext, cdc *codec.Codec) ([]deposit.Deposit, error) {
-	res, err := cliCtx.QueryWithData(
-		fmt.Sprintf("custom/%s/%s", deposit.QuerierRoute, deposit.QueryAllDeposits), nil)
+func QueryAllDeposits(ctx context.CLIContext) ([]types.Deposit, error) {
+	path := fmt.Sprintf("custom/%s/%s", types.QuerierRoute, types.QueryAllDeposits)
+	res, _, err := ctx.QueryWithData(path, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -51,10 +49,10 @@ func QueryAllDeposits(cliCtx context.CLIContext, cdc *codec.Codec) ([]deposit.De
 		return nil, fmt.Errorf("no deposits found")
 	}
 
-	var deposits []deposit.Deposit
-	if err = cdc.UnmarshalJSON(res, &deposits); err != nil {
+	var d []types.Deposit
+	if err = ctx.Codec.UnmarshalJSON(res, &d); err != nil {
 		return nil, err
 	}
 
-	return deposits, nil
+	return d, nil
 }

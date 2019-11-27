@@ -1,7 +1,6 @@
 package main
 
 import (
-	"net/http"
 	"os"
 	"path"
 
@@ -9,63 +8,28 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/keys"
 	"github.com/cosmos/cosmos-sdk/client/lcd"
 	"github.com/cosmos/cosmos-sdk/client/rpc"
-	"github.com/cosmos/cosmos-sdk/client/tx"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	authCli "github.com/cosmos/cosmos-sdk/x/auth/client/cli"
 	authRest "github.com/cosmos/cosmos-sdk/x/auth/client/rest"
+	"github.com/cosmos/cosmos-sdk/x/bank"
 	bankCli "github.com/cosmos/cosmos-sdk/x/bank/client/cli"
-	bankRest "github.com/cosmos/cosmos-sdk/x/bank/client/rest"
-	crisisClient "github.com/cosmos/cosmos-sdk/x/crisis/client"
-	"github.com/cosmos/cosmos-sdk/x/distribution"
-	distClient "github.com/cosmos/cosmos-sdk/x/distribution/client"
-	distRest "github.com/cosmos/cosmos-sdk/x/distribution/client/rest"
-	"github.com/cosmos/cosmos-sdk/x/gov"
-	govClient "github.com/cosmos/cosmos-sdk/x/gov/client"
-	govRest "github.com/cosmos/cosmos-sdk/x/gov/client/rest"
-	"github.com/cosmos/cosmos-sdk/x/mint"
-	mintClient "github.com/cosmos/cosmos-sdk/x/mint/client"
-	mintRest "github.com/cosmos/cosmos-sdk/x/mint/client/rest"
-	"github.com/cosmos/cosmos-sdk/x/slashing"
-	slashingClient "github.com/cosmos/cosmos-sdk/x/slashing/client"
-	slashingRest "github.com/cosmos/cosmos-sdk/x/slashing/client/rest"
-	"github.com/cosmos/cosmos-sdk/x/staking"
-	stakingClient "github.com/cosmos/cosmos-sdk/x/staking/client"
-	stakingRest "github.com/cosmos/cosmos-sdk/x/staking/client/rest"
-	"github.com/rakyll/statik/fs"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	_amino "github.com/tendermint/go-amino"
 	"github.com/tendermint/tendermint/libs/cli"
 
 	"github.com/sentinel-official/hub/app"
-	hub "github.com/sentinel-official/hub/types"
+	"github.com/sentinel-official/hub/simapp"
 	"github.com/sentinel-official/hub/version"
-	depositClient "github.com/sentinel-official/hub/x/deposit/client"
-	depositRest "github.com/sentinel-official/hub/x/deposit/client/rest"
-	vpnClient "github.com/sentinel-official/hub/x/vpn/client"
-	vpnRest "github.com/sentinel-official/hub/x/vpn/client/rest"
 )
 
 func main() {
 	cdc := app.MakeCodec()
 
 	config := sdk.GetConfig()
-	config.SetBech32PrefixForAccount(hub.Bech32PrefixAccAddr, hub.Bech32PrefixAccPub)
-	config.SetBech32PrefixForValidator(hub.Bech32PrefixValAddr, hub.Bech32PrefixValPub)
-	config.SetBech32PrefixForConsensusNode(hub.Bech32PrefixConsAddr, hub.Bech32PrefixConsPub)
+	simapp.SetBech32AddressPrefixes(config)
 	config.Seal()
-
-	mc := []sdk.ModuleClients{
-		govClient.NewModuleClient(gov.StoreKey, cdc),
-		distClient.NewModuleClient(distribution.StoreKey, cdc),
-		stakingClient.NewModuleClient(staking.StoreKey, cdc),
-		slashingClient.NewModuleClient(slashing.StoreKey, cdc),
-		mintClient.NewModuleClient(mint.StoreKey, cdc),
-		crisisClient.NewModuleClient(slashing.StoreKey, cdc),
-		depositClient.NewModuleClient(cdc),
-		vpnClient.NewModuleClient(cdc),
-	}
 
 	cobra.EnableCommandSorting = false
 	rootCmd := &cobra.Command{
@@ -81,8 +45,8 @@ func main() {
 	rootCmd.AddCommand(
 		rpc.StatusCommand(),
 		client.ConfigCmd(app.DefaultCLIHome),
-		queryCmd(cdc, mc),
-		txCmd(cdc, mc),
+		queryCmd(cdc),
+		txCmd(cdc),
 		client.LineBreak,
 		lcd.ServeCommand(cdc, registerRoutes),
 		client.LineBreak,
@@ -98,78 +62,61 @@ func main() {
 	}
 }
 
-func queryCmd(cdc *_amino.Codec, mc []sdk.ModuleClients) *cobra.Command {
-	queryCmd := &cobra.Command{
+func queryCmd(cdc *_amino.Codec) *cobra.Command {
+	cmd := &cobra.Command{
 		Use:     "query",
 		Aliases: []string{"q"},
 		Short:   "Querying subcommands",
 	}
 
-	queryCmd.AddCommand(
+	cmd.AddCommand(
+		authCli.GetAccountCmd(cdc),
+		client.LineBreak,
 		rpc.ValidatorCommand(cdc),
 		rpc.BlockCommand(),
-		tx.SearchTxCmd(cdc),
-		tx.QueryTxCmd(cdc),
+		authCli.QueryTxsByEventsCmd(cdc),
+		authCli.QueryTxCmd(cdc),
 		client.LineBreak,
-		authCli.GetAccountCmd(auth.StoreKey, cdc),
 	)
 
-	for _, m := range mc {
-		mQueryCmd := m.GetQueryCmd()
-		if mQueryCmd != nil {
-			queryCmd.AddCommand(mQueryCmd)
-		}
-	}
-
-	return queryCmd
+	app.ModuleBasics.AddQueryCommands(cmd, cdc)
+	return cmd
 }
 
-func txCmd(cdc *_amino.Codec, mc []sdk.ModuleClients) *cobra.Command {
-	txCmd := &cobra.Command{
+func txCmd(cdc *_amino.Codec) *cobra.Command {
+	cmd := &cobra.Command{
 		Use:   "tx",
 		Short: "Transactions subcommands",
 	}
 
-	txCmd.AddCommand(
+	cmd.AddCommand(
 		bankCli.SendTxCmd(cdc),
 		client.LineBreak,
 		authCli.GetSignCommand(cdc),
 		authCli.GetMultiSignCommand(cdc),
-		tx.GetBroadcastCommand(cdc),
-		tx.GetEncodeCommand(cdc),
+		client.LineBreak,
+		authCli.GetBroadcastCommand(cdc),
+		authCli.GetEncodeCommand(cdc),
 		client.LineBreak,
 	)
 
-	for _, m := range mc {
-		txCmd.AddCommand(m.GetTxCmd())
+	app.ModuleBasics.AddTxCommands(cmd, cdc)
+
+	var cmdsToRemove []*cobra.Command
+	for _, cmd := range cmd.Commands() {
+		if cmd.Use == auth.ModuleName || cmd.Use == bank.ModuleName {
+			cmdsToRemove = append(cmdsToRemove, cmd)
+		}
 	}
 
-	return txCmd
+	cmd.RemoveCommand(cmdsToRemove...)
+	return cmd
 }
 
 func registerRoutes(rs *lcd.RestServer) {
-	// registerSwaggerUI(rs)
-	rpc.RegisterRoutes(rs.CliCtx, rs.Mux)
-	tx.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc)
-	authRest.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, auth.StoreKey)
-	bankRest.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, rs.KeyBase)
-	stakingRest.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, rs.KeyBase)
-	slashingRest.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, rs.KeyBase)
-	distRest.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, distribution.StoreKey)
-	govRest.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc)
-	mintRest.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc)
-	depositRest.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc)
-	vpnRest.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc)
-}
-
-// nolint:deadcode,unused
-func registerSwaggerUI(rs *lcd.RestServer) {
-	staticFS, err := fs.New()
-	if err != nil {
-		panic(err)
-	}
-	staticServer := http.FileServer(staticFS)
-	rs.Mux.PathPrefix("/swagger-ui/").Handler(http.StripPrefix("/swagger-ui/", staticServer))
+	client.RegisterRoutes(rs.CliCtx, rs.Mux)
+	authRest.RegisterTxRoutes(rs.CliCtx, rs.Mux)
+	app.ModuleBasics.RegisterRESTRoutes(rs.CliCtx, rs.Mux)
 }
 
 func initConfig(cmd *cobra.Command) error {
