@@ -25,11 +25,6 @@ func (k Keeper) Deposit(ctx sdk.Context) (res sdk.Coin) {
 	return
 }
 
-func (k Keeper) NodeInactiveInterval(ctx sdk.Context) (res int64) {
-	k.paramStore.Get(ctx, types.KeyNodeInactiveInterval, &res)
-	return
-}
-
 func (k Keeper) SessionInactiveInterval(ctx sdk.Context) (res int64) {
 	k.paramStore.Get(ctx, types.KeySessionInactiveInterval, &res)
 	return
@@ -39,7 +34,6 @@ func (k Keeper) GetParams(ctx sdk.Context) types.Params {
 	return types.NewParams(
 		k.FreeNodesCount(ctx),
 		k.Deposit(ctx),
-		k.NodeInactiveInterval(ctx),
 		k.SessionInactiveInterval(ctx),
 	)
 }

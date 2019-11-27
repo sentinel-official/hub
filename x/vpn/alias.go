@@ -115,11 +115,9 @@ var (
 	SessionIDBySubscriptionIDKeyPrefix   = types.SessionIDBySubscriptionIDKeyPrefix
 	DefaultFreeNodesCount                = types.DefaultFreeNodesCount
 	DefaultDeposit                       = types.DefaultDeposit
-	DefaultNodeInactiveInterval          = types.DefaultNodeInactiveInterval
 	DefaultSessionInactiveInterval       = types.DefaultSessionInactiveInterval
 	KeyFreeNodesCount                    = types.KeyFreeNodesCount
 	KeyDeposit                           = types.KeyDeposit
-	KeyNodeInactiveInterval              = types.KeyNodeInactiveInterval
 	KeySessionInactiveInterval           = types.KeySessionInactiveInterval
 )
 
