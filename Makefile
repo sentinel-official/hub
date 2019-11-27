@@ -1,7 +1,6 @@
 PACKAGES := $(shell go list ./... | grep -v '/simulation')
 VERSION := $(shell echo $(shell git describe --tags) | sed 's/^v//')
 COMMIT := $(shell git log -1 --format='%H')
-GOSUM := $(shell which gosum)
 SIMAPP = ./simapp
 
 export GO111MODULE=on
@@ -16,12 +15,6 @@ LD_FLAGS := -s -w \
 	-X github.com/sentinel-official/hub/version.Version=${VERSION} \
 	-X github.com/sentinel-official/hub/version.Commit=${COMMIT} \
 	-X github.com/sentinel-official/hub/version.BuildTags=${BUILD_TAGS}
-ifneq (${GOSUM},)
-	ifneq (${wildcard go.sum},)
-		LD_FLAGS += -X github.com/sentinel-official/hub/version.VendorHash=$(shell ${GOSUM} go.sum)
-	endif
-endif
-
 BUILD_FLAGS := -tags "${BUILD_TAGS}" -ldflags "${LD_FLAGS}"
 
 all: install test
@@ -64,4 +57,4 @@ dep_verify:
 	@echo "--> Ensure dependencies have not been modified"
 	@go mod verify
 
-.PHONY: all build install test benchmark, dep_verify,test_sim_hub_fast,test_sim_benchmark
+.PHONY: all build install test benchmark dep_verify test_sim_hub_fast test_sim_benchmark

@@ -32,10 +32,11 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 	}
 }
 
-func endBlockSessions(ctx sdk.Context, k keeper.Keeper, height int64) {
+func EndBlock(ctx sdk.Context, k keeper.Keeper) {
+	height := ctx.BlockHeight()
 	_height := height - k.SessionInactiveInterval(ctx)
-	ids := k.GetActiveSessionIDs(ctx, _height)
 
+	ids := k.GetActiveSessionIDs(ctx, _height)
 	for _, id := range ids {
 		session, _ := k.GetSession(ctx, id.(hub.SessionID))
 		subscription, _ := k.GetSubscription(ctx, session.SubscriptionID)
@@ -65,11 +66,6 @@ func endBlockSessions(ctx sdk.Context, k keeper.Keeper, height int64) {
 	}
 
 	k.DeleteActiveSessionIDs(ctx, _height)
-}
-
-func EndBlock(ctx sdk.Context, k keeper.Keeper) {
-	height := ctx.BlockHeight()
-	endBlockSessions(ctx, k, height)
 }
 
 func handleRegisterNode(ctx sdk.Context, k keeper.Keeper, msg types.MsgRegisterNode) sdk.Result {
@@ -103,7 +99,7 @@ func handleRegisterNode(ctx sdk.Context, k keeper.Keeper, msg types.MsgRegisterN
 	k.SetNodesCount(ctx, nc+1)
 	k.SetNodesCountOfAddress(ctx, node.Owner, nca+1)
 
-	return sdk.Result{}
+	return sdk.Result{Events: ctx.EventManager().Events()}
 }
 
 func handleUpdateNodeInfo(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpdateNodeInfo) sdk.Result {
@@ -129,7 +125,8 @@ func handleUpdateNodeInfo(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpdateN
 	node = node.UpdateInfo(_node)
 
 	k.SetNode(ctx, node)
-	return sdk.Result{}
+
+	return sdk.Result{Events: ctx.EventManager().Events()}
 }
 
 func handleDeregisterNode(ctx sdk.Context, k keeper.Keeper, msg types.MsgDeregisterNode) sdk.Result {
@@ -154,7 +151,8 @@ func handleDeregisterNode(ctx sdk.Context, k keeper.Keeper, msg types.MsgDeregis
 	node.StatusModifiedAt = ctx.BlockHeight()
 
 	k.SetNode(ctx, node)
-	return sdk.Result{}
+
+	return sdk.Result{Events: ctx.EventManager().Events()}
 }
 
 func handleStartSubscription(ctx sdk.Context, k keeper.Keeper, msg types.MsgStartSubscription) sdk.Result {
@@ -201,7 +199,7 @@ func handleStartSubscription(ctx sdk.Context, k keeper.Keeper, msg types.MsgStar
 	k.SetSubscriptionIDByAddress(ctx, subscription.Client, sca, subscription.ID)
 	k.SetSubscriptionsCountOfAddress(ctx, subscription.Client, sca+1)
 
-	return sdk.Result{}
+	return sdk.Result{Events: ctx.EventManager().Events()}
 }
 
 func handleEndSubscription(ctx sdk.Context, k keeper.Keeper, msg types.MsgEndSubscription) sdk.Result {
@@ -229,9 +227,10 @@ func handleEndSubscription(ctx sdk.Context, k keeper.Keeper, msg types.MsgEndSub
 
 	subscription.Status = types.StatusInactive
 	subscription.StatusModifiedAt = ctx.BlockHeight()
+
 	k.SetSubscription(ctx, subscription)
 
-	return sdk.Result{}
+	return sdk.Result{Events: ctx.EventManager().Events()}
 }
 
 func handleUpdateSessionInfo(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpdateSessionInfo) sdk.Result {
@@ -290,5 +289,5 @@ func handleUpdateSessionInfo(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpda
 
 	k.SetSession(ctx, session)
 
-	return sdk.Result{}
+	return sdk.Result{Events: ctx.EventManager().Events()}
 }
