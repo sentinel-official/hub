@@ -57,6 +57,7 @@ linters:
     - dupl
     - gochecknoglobals
     - gochecknoinits
+    - gocognit
     - gocritic
     - gocyclo
     - wsl
