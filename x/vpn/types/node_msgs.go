@@ -38,7 +38,7 @@ func (msg MsgRegisterNode) ValidateBasic() sdk.Error {
 		return ErrorInvalidField("moniker")
 	}
 	if msg.PricesPerGB == nil ||
-		msg.PricesPerGB.Len() == 0 || !msg.PricesPerGB.IsValid() {
+		msg.PricesPerGB.Len() == 0 || !isValidCoins(msg.PricesPerGB) {
 		return ErrorInvalidField("prices_per_gb")
 	}
 	if !msg.InternetSpeed.AllPositive() {

@@ -41,8 +41,13 @@ func EndBlock(ctx sdk.Context, k keeper.Keeper) {
 		session, _ := k.GetSession(ctx, id.(hub.SessionID))
 		subscription, _ := k.GetSubscription(ctx, session.SubscriptionID)
 
-		bandwidth := session.Bandwidth.CeilTo(hub.GB.Quo(subscription.PricePerGB.Amount))
-		amount := bandwidth.Sum().Mul(subscription.PricePerGB.Amount).Quo(hub.GB)
+		bandwidth := session.Bandwidth.CeilTo(hub.MB100.Quo(hub.KB))
+		amount := sdk.NewInt(0)
+		if !subscription.PricePerGB.Amount.IsZero() {
+			bandwidth := session.Bandwidth.CeilTo(hub.GB.Quo(subscription.PricePerGB.Amount))
+			amount = bandwidth.Sum().Mul(subscription.PricePerGB.Amount).Quo(hub.GB)
+		}
+
 		pay := sdk.NewCoin(subscription.PricePerGB.Denom, amount)
 
 		if !pay.IsZero() {

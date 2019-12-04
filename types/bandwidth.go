@@ -11,6 +11,7 @@ import (
 var (
 	KB    = sdk.NewInt(1000)
 	MB    = KB.MulRaw(1000)
+	MB100 = MB.MulRaw(100)
 	MB500 = MB.MulRaw(500)
 	GB    = MB.MulRaw(1000)
 )
@@ -18,6 +19,13 @@ var (
 type Bandwidth struct {
 	Upload   sdk.Int `json:"upload"`
 	Download sdk.Int `json:"download"`
+}
+
+func DefaultBandwidth() Bandwidth {
+	return Bandwidth{
+		Upload:   MB100,
+		Download: MB100,
+	}
 }
 
 func NewBandwidth(upload, download sdk.Int) Bandwidth {

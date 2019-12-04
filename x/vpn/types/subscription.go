@@ -21,9 +21,13 @@ type Subscription struct {
 }
 
 func (s Subscription) TotalBandwidth() hub.Bandwidth {
-	x := s.TotalDeposit.Amount.
-		Mul(hub.MB500).
-		Quo(s.PricePerGB.Amount)
+	x := hub.MB100.Quo(sdk.NewInt(2))
+
+	if !s.PricePerGB.Amount.IsZero() {
+		x = s.TotalDeposit.Amount.
+			Mul(hub.MB500).
+			Quo(s.PricePerGB.Amount)
+	}
 
 	return hub.NewBandwidth(x, x)
 }

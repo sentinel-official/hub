@@ -31,7 +31,7 @@ func RegisterNodeTxCmd(cdc *codec.Codec) *cobra.Command {
 			}
 			encryption := viper.GetString(flagEncryption)
 
-			parsedPricesPerGB, err := sdk.ParseCoins(pricesPerGB)
+			parsedPricesPerGB, err := types.ParseCoins(pricesPerGB)
 			if err != nil {
 				return err
 			}

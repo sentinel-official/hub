@@ -81,11 +81,15 @@ func (n Node) FindPricePerGB(denom string) (coin sdk.Coin) {
 
 func (n Node) DepositToBandwidth(deposit sdk.Coin) (bandwidth hub.Bandwidth, err sdk.Error) {
 	pricePerGB := n.FindPricePerGB(deposit.Denom)
-	if pricePerGB.Denom == "" || pricePerGB.Amount.IsZero() {
+	if pricePerGB.Denom == "" || pricePerGB.Amount.IsNegative() {
 		return bandwidth, ErrorInvalidDeposit()
 	}
 
-	x := deposit.Amount.Mul(hub.MB500).Quo(pricePerGB.Amount)
+	x := hub.MB100.Quo(sdk.NewInt(2))
+	if !pricePerGB.Amount.IsZero() {
+		x = deposit.Amount.Mul(hub.MB500).Quo(pricePerGB.Amount)
+	}
+
 	return hub.NewBandwidth(x, x), nil
 }
 
