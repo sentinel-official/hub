@@ -159,6 +159,7 @@ func handleAddFreeClient(ctx sdk.Context, k keeper.Keeper, msg types.MsgAddFreeC
 	freeClient := types.NewFreeClient(msg.NodeID, msg.Client)
 
 	k.SetFreeClient(ctx, freeClient)
+	k.SetFreeClientOfNode(ctx, freeClient)
 
 	return sdk.Result{Events: ctx.EventManager().Events()}
 }

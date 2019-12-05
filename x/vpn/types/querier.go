@@ -51,7 +51,7 @@ type QueryFreeClientsOfNodeParams struct {
 	ID hub.NodeID
 }
 
-func NewQueryFreeClientsOfNodeParamsParams(id hub.NodeID) QueryFreeClientsOfNodeParams {
+func NewQueryFreeClientsOfNodeParams(id hub.NodeID) QueryFreeClientsOfNodeParams {
 	return QueryFreeClientsOfNodeParams{
 		ID: id,
 	}

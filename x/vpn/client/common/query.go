@@ -92,8 +92,8 @@ func QueryFreeNodesOfClient(ctx context.CLIContext, address string) ([]types.Fre
 	if err != nil {
 		return nil, err
 	}
-	
-	params := types.NewQueryNodesOfAddressParams(_address)
+
+	params := types.NewQueryNodesOfFreeClientPrams(_address)
 
 	bytes, err := ctx.Codec.MarshalJSON(params)
 	if err != nil {
@@ -123,7 +123,7 @@ func QueryQueryFreeClientsOfNode(ctx context.CLIContext, id string) ([]types.Fre
 		return nil, err
 	}
 
-	params := types.NewQueryNodeParams(nodeID)
+	params := types.NewQueryFreeClientsOfNodeParams(nodeID)
 
 	bytes, err := ctx.Codec.MarshalJSON(params)
 	if err != nil {

@@ -19,6 +19,7 @@ const (
 	RouterKey                        = types.RouterKey
 	StoreKeySession                  = types.StoreKeySession
 	StoreKeyNode                     = types.StoreKeyNode
+	StoreKeyFreeClient               = types.StoreKeyFreeClients
 	StoreKeySubscription             = types.StoreKeySubscription
 	StatusRegistered                 = types.StatusRegistered
 	StatusActive                     = types.StatusActive

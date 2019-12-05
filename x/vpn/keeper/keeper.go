@@ -10,6 +10,7 @@ import (
 
 type Keeper struct {
 	nodeKey         sdk.StoreKey
+	freeClientKey   sdk.StoreKey
 	subscriptionKey sdk.StoreKey
 	sessionKey      sdk.StoreKey
 	cdc             *codec.Codec
@@ -17,10 +18,11 @@ type Keeper struct {
 	deposit         deposit.Keeper
 }
 
-func NewKeeper(cdc *codec.Codec, nodeKey, subscriptionKey, sessionKey sdk.StoreKey,
+func NewKeeper(cdc *codec.Codec, nodeKey, freeClientKey, subscriptionKey, sessionKey sdk.StoreKey,
 	paramStore params.Subspace, dk deposit.Keeper) Keeper {
 	return Keeper{
 		nodeKey:         nodeKey,
+		freeClientKey:   freeClientKey,
 		subscriptionKey: subscriptionKey,
 		sessionKey:      sessionKey,
 		cdc:             cdc,

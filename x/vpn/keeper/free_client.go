@@ -8,28 +8,23 @@ import (
 )
 
 func (k Keeper) SetFreeClient(ctx sdk.Context, freeClient types.FreeClient) {
-	key := types.FreeClientKey(freeClient.NodeID, freeClient.Client)
+	key := types.FreeClientKey(freeClient.Client)
 	value := k.cdc.MustMarshalBinaryLengthPrefixed(freeClient)
 
-	store := ctx.KVStore(k.nodeKey)
+	store := ctx.KVStore(k.freeClientKey)
 	store.Set(key, value)
 }
 
-func (k Keeper) GetFreeClient(ctx sdk.Context, id hub.SessionID) (session types.Session, found bool) {
-	store := ctx.KVStore(k.sessionKey)
+func (k Keeper) SetFreeClientOfNode(ctx sdk.Context, freeClient types.FreeClient) {
+	key := types.FreeClientOfNodeKey(freeClient.NodeID)
+	value := k.cdc.MustMarshalBinaryLengthPrefixed(freeClient)
 
-	key := types.SessionKey(id)
-	value := store.Get(key)
-	if value == nil {
-		return session, false
-	}
-
-	k.cdc.MustUnmarshalBinaryLengthPrefixed(value, &session)
-	return session, true
+	store := ctx.KVStore(k.freeClientKey)
+	store.Set(key, value)
 }
 
 func (k Keeper) GetAllFreeClients(ctx sdk.Context) (freeClients []types.FreeClient) {
-	store := ctx.KVStore(k.nodeKey)
+	store := ctx.KVStore(k.freeClientKey)
 
 	iter := sdk.KVStorePrefixIterator(store, types.FreeClientKeyPrefix)
 	defer iter.Close()
@@ -44,9 +39,9 @@ func (k Keeper) GetAllFreeClients(ctx sdk.Context) (freeClients []types.FreeClie
 }
 
 func (k Keeper) GetFreeClientsOfNode(ctx sdk.Context, nodeID hub.NodeID) (freeClients []types.FreeClient) {
-	store := ctx.KVStore(k.nodeKey)
+	store := ctx.KVStore(k.freeClientKey)
 
-	key := types.FreeClientKey(nodeID, nil)
+	key := types.FreeClientOfNodeKey(nodeID)
 	iter := sdk.KVStorePrefixIterator(store, key)
 	defer iter.Close()
 
@@ -60,9 +55,9 @@ func (k Keeper) GetFreeClientsOfNode(ctx sdk.Context, nodeID hub.NodeID) (freeCl
 }
 
 func (k Keeper) GetFreeNodesOfClient(ctx sdk.Context, client sdk.AccAddress) (freeClients []types.FreeClient) {
-	store := ctx.KVStore(k.nodeKey)
+	store := ctx.KVStore(k.freeClientKey)
 
-	key := types.FreeClientKey(nil, nil)
+	key := types.FreeClientKey(client)
 	iter := sdk.KVStorePrefixIterator(store, key)
 	defer iter.Close()
 
