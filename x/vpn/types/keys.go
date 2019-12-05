@@ -39,6 +39,8 @@ var (
 	SessionKeyPrefix                     = []byte{0x01}
 	SessionsCountOfSubscriptionKeyPrefix = []byte{0x02}
 	SessionIDBySubscriptionIDKeyPrefix   = []byte{0x03}
+
+	FreeClientKeyPrefix = []byte{0x04}
 )
 
 func NodeKey(id hub.NodeID) []byte {
@@ -95,4 +97,9 @@ func ActiveNodeIDsKey(height int64) []byte {
 
 func ActiveSessionIDsKey(height int64) []byte {
 	return sdk.Uint64ToBigEndian(uint64(height))
+}
+
+func FreeClientKey(nodeID hub.NodeID, client sdk.AccAddress) []byte {
+	return append(FreeClientKeyPrefix,
+		append(nodeID.Bytes(), client.Bytes()...)...)
 }

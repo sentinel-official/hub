@@ -21,6 +21,10 @@ const (
 	QuerySessionOfSubscription  = "session_of_subscription"
 	QuerySessionsOfSubscription = "sessions_of_subscription"
 	QueryAllSessions            = "all_sessions"
+
+	QueryFreeNodesOfClient = "free_nodes_of_client"
+	QueryFreeClientsOfNode = "free_clients_of_node"
+	QueryAllFreeClients    = "free_clients"
 )
 
 type QueryNodeParams struct {
@@ -39,6 +43,26 @@ type QueryNodesOfAddressPrams struct {
 
 func NewQueryNodesOfAddressParams(address sdk.AccAddress) QueryNodesOfAddressPrams {
 	return QueryNodesOfAddressPrams{
+		Address: address,
+	}
+}
+
+type QueryFreeClientsOfNodeParams struct {
+	ID hub.NodeID
+}
+
+func NewQueryFreeClientsOfNodeParamsParams(id hub.NodeID) QueryFreeClientsOfNodeParams {
+	return QueryFreeClientsOfNodeParams{
+		ID: id,
+	}
+}
+
+type QueryNodesOfFreeClientPrams struct {
+	Address sdk.AccAddress
+}
+
+func NewQueryNodesOfFreeClientPrams(address sdk.AccAddress) QueryNodesOfFreeClientPrams {
+	return QueryNodesOfFreeClientPrams{
 		Address: address,
 	}
 }

@@ -18,6 +18,8 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 			return handleRegisterNode(ctx, k, msg)
 		case types.MsgUpdateNodeInfo:
 			return handleUpdateNodeInfo(ctx, k, msg)
+		case types.MsgAddFreeClient:
+			return handleAddFreeClient(ctx, k, msg)
 		case types.MsgDeregisterNode:
 			return handleDeregisterNode(ctx, k, msg)
 		case types.MsgStartSubscription:
@@ -42,14 +44,27 @@ func EndBlock(ctx sdk.Context, k keeper.Keeper) {
 		subscription, _ := k.GetSubscription(ctx, session.SubscriptionID)
 
 		bandwidth := session.Bandwidth.CeilTo(hub.GB.Quo(subscription.PricePerGB.Amount))
-		amount := bandwidth.Sum().Mul(subscription.PricePerGB.Amount).Quo(hub.GB)
-		pay := sdk.NewCoin(subscription.PricePerGB.Denom, amount)
 
-		if !pay.IsZero() {
-			node, _ := k.GetNode(ctx, subscription.NodeID)
+		freeClients := k.GetFreeClientsOfNode(ctx, subscription.NodeID)
 
-			if err := k.SendDeposit(ctx, subscription.Client, node.Owner, pay); err != nil {
-				panic(err)
+		isFreeClient := false
+		for _, client := range freeClients {
+			if client.Client.Equals(subscription.Client) {
+				isFreeClient = true
+			}
+		}
+
+		pay := sdk.Coin{}
+		if !isFreeClient {
+			amount := bandwidth.Sum().Mul(subscription.PricePerGB.Amount).Quo(hub.GB)
+			pay = sdk.NewCoin(subscription.PricePerGB.Denom, amount)
+
+			if !pay.IsZero() {
+				node, _ := k.GetNode(ctx, subscription.NodeID)
+
+				if err := k.SendDeposit(ctx, subscription.Client, node.Owner, pay); err != nil {
+					panic(err)
+				}
 			}
 		}
 
@@ -125,6 +140,25 @@ func handleUpdateNodeInfo(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpdateN
 	node = node.UpdateInfo(_node)
 
 	k.SetNode(ctx, node)
+
+	return sdk.Result{Events: ctx.EventManager().Events()}
+}
+
+func handleAddFreeClient(ctx sdk.Context, k keeper.Keeper, msg types.MsgAddFreeClient) sdk.Result {
+	node, found := k.GetNode(ctx, msg.NodeID)
+	if !found {
+		return types.ErrorNodeDoesNotExist().Result()
+	}
+	if !msg.From.Equals(node.Owner) {
+		return types.ErrorUnauthorized().Result()
+	}
+	if node.Status == types.StatusDeRegistered {
+		return types.ErrorInvalidNodeStatus().Result()
+	}
+
+	freeClient := types.NewFreeClient(msg.NodeID, msg.Client)
+
+	k.SetFreeClient(ctx, freeClient)
 
 	return sdk.Result{Events: ctx.EventManager().Events()}
 }

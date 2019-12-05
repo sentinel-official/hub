@@ -19,6 +19,7 @@ func GetQueryCmd(cdc *codec.Codec) *cobra.Command {
 		QuerySubscriptionsCmd(cdc),
 		QuerySessionCmd(cdc),
 		QuerySessionsCmd(cdc),
+		QueryFreeClientsCmd(cdc),
 	)...)
 
 	return cmd
@@ -47,6 +48,7 @@ func nodeTxCmd(cdc *codec.Codec) *cobra.Command {
 	cmd.AddCommand(client.PostCommands(
 		RegisterNodeTxCmd(cdc),
 		UpdateNodeInfoTxCmd(cdc),
+		AddFreeClientTxCmd(cdc),
 		DeregisterNodeTxCmd(cdc),
 	)...)
 

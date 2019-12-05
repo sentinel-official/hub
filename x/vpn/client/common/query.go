@@ -87,6 +87,84 @@ func QueryAllNodes(ctx context.CLIContext) ([]types.Node, error) {
 	return nodes, nil
 }
 
+func QueryFreeNodesOfClient(ctx context.CLIContext, address string) ([]types.FreeClient, error) {
+	_address, err := sdk.AccAddressFromBech32(address)
+	if err != nil {
+		return nil, err
+	}
+	
+	params := types.NewQueryNodesOfAddressParams(_address)
+
+	bytes, err := ctx.Codec.MarshalJSON(params)
+	if err != nil {
+		return nil, err
+	}
+
+	path := fmt.Sprintf("custom/%s/%s", types.QuerierRoute, types.QueryFreeNodesOfClient)
+	res, _, err := ctx.QueryWithData(path, bytes)
+	if err != nil {
+		return nil, err
+	}
+	if string(res) == "[]" || string(res) == "null" {
+		return nil, fmt.Errorf("no free clients found")
+	}
+
+	var freeClients []types.FreeClient
+	if err := ctx.Codec.UnmarshalJSON(res, &freeClients); err != nil {
+		return nil, err
+	}
+
+	return freeClients, nil
+}
+
+func QueryQueryFreeClientsOfNode(ctx context.CLIContext, id string) ([]types.FreeClient, error) {
+	nodeID, err := hub.NewNodeIDFromString(id)
+	if err != nil {
+		return nil, err
+	}
+
+	params := types.NewQueryNodeParams(nodeID)
+
+	bytes, err := ctx.Codec.MarshalJSON(params)
+	if err != nil {
+		return nil, err
+	}
+
+	path := fmt.Sprintf("custom/%s/%s", types.QuerierRoute, types.QueryFreeClientsOfNode)
+	res, _, err := ctx.QueryWithData(path, bytes)
+	if err != nil {
+		return nil, err
+	}
+	if string(res) == "[]" || string(res) == "null" {
+		return nil, fmt.Errorf("no free clients found")
+	}
+
+	var freeClients []types.FreeClient
+	if err := ctx.Codec.UnmarshalJSON(res, &freeClients); err != nil {
+		return nil, err
+	}
+
+	return freeClients, nil
+}
+
+func QueryAllFreeClients(ctx context.CLIContext) ([]types.FreeClient, error) {
+	path := fmt.Sprintf("custom/%s/%s", types.QuerierRoute, types.QueryAllFreeClients)
+	res, _, err := ctx.QueryWithData(path, nil)
+	if err != nil {
+		return nil, err
+	}
+	if string(res) == "[]" || string(res) == "null" {
+		return nil, fmt.Errorf("no free clients found")
+	}
+
+	var freeClients []types.FreeClient
+	if err := ctx.Codec.UnmarshalJSON(res, &freeClients); err != nil {
+		return nil, err
+	}
+
+	return freeClients, nil
+}
+
 func QuerySubscription(ctx context.CLIContext, s string) (*types.Subscription, error) {
 	id, err := hub.NewSubscriptionIDFromString(s)
 	if err != nil {

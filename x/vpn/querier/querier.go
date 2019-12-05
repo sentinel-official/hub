@@ -17,6 +17,12 @@ func NewQuerier(k keeper.Keeper) sdk.Querier {
 			return queryNodesOfAddress(ctx, req, k)
 		case types.QueryAllNodes:
 			return queryAllNodes(ctx, k)
+		case types.QueryFreeNodesOfClient:
+			return queryFreeNodesOfClient(ctx, req, k)
+		case types.QueryFreeClientsOfNode:
+			return queryFreeClientsOfNode(ctx, req, k)
+		case types.QueryAllFreeClients:
+			return queryAllFreeClients(ctx, k)
 		case types.QuerySubscription:
 			return querySubscription(ctx, req, k)
 		case types.QuerySubscriptionsOfNode:
