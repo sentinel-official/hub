@@ -47,15 +47,16 @@ func EndBlock(ctx sdk.Context, k keeper.Keeper) {
 
 		freeClients := k.GetFreeClientsOfNode(ctx, subscription.NodeID)
 
-		pay := sdk.Coin{}
+		pay := sdk.NewInt(0)
 		if !types.IsFreeClient(freeClients, subscription.Client) {
 			amount := bandwidth.Sum().Mul(subscription.PricePerGB.Amount).Quo(hub.GB)
-			pay = sdk.NewCoin(subscription.PricePerGB.Denom, amount)
+			payCoin := sdk.NewCoin(subscription.PricePerGB.Denom, amount)
 
+			pay = payCoin.Amount
 			if !pay.IsZero() {
 				node, _ := k.GetNode(ctx, subscription.NodeID)
 
-				if err := k.SendDeposit(ctx, subscription.Client, node.Owner, pay); err != nil {
+				if err := k.SendDeposit(ctx, subscription.Client, node.Owner, payCoin); err != nil {
 					panic(err)
 				}
 			}
@@ -65,7 +66,7 @@ func EndBlock(ctx sdk.Context, k keeper.Keeper) {
 		session.StatusModifiedAt = height
 		k.SetSession(ctx, session)
 
-		subscription.RemainingDeposit = subscription.RemainingDeposit.Sub(pay)
+		subscription.RemainingDeposit.Amount = subscription.RemainingDeposit.Amount.Sub(pay)
 		subscription.RemainingBandwidth = subscription.RemainingBandwidth.Sub(bandwidth)
 		k.SetSubscription(ctx, subscription)
 
