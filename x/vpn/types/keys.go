@@ -43,6 +43,8 @@ var (
 
 	FreeClientKeyPrefix       = []byte{0x00}
 	FreeClientOfNodeKeyPrefix = []byte{0x01}
+
+	ResolverKeyPrefix = []byte{0x11}
 )
 
 func NodeKey(id hub.NodeID) []byte {
@@ -107,4 +109,9 @@ func FreeClientKey(client sdk.AccAddress) []byte {
 
 func FreeClientOfNodeKey(nodeID hub.NodeID) []byte {
 	return append(FreeClientOfNodeKeyPrefix, nodeID.Bytes()...)
+}
+
+
+func ResolverKey(resolverID hub.ResolverID)[]byte{
+	return append(ResolverKeyPrefix, resolverID.Bytes()...)
 }
