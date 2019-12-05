@@ -254,8 +254,12 @@ func handleEndSubscription(ctx sdk.Context, k keeper.Keeper, msg types.MsgEndSub
 		return types.ErrorSessionAlreadyExists().Result()
 	}
 
-	if err := k.SubtractDeposit(ctx, subscription.Client, subscription.RemainingDeposit); err != nil {
-		return err.Result()
+	freeClients := k.GetFreeNodesOfClient(ctx, msg.From)
+
+	if !types.IsFreeClient(freeClients, msg.From) {
+		if err := k.SubtractDeposit(ctx, subscription.Client, subscription.RemainingDeposit); err != nil {
+			return err.Result()
+		}
 	}
 
 	subscription.Status = types.StatusInactive
