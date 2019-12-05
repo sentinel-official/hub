@@ -24,6 +24,12 @@ func (msg MsgAddFreeClient) ValidateBasic() sdk.Error {
 	if msg.From == nil || msg.From.Empty() {
 		return ErrorInvalidField("from")
 	}
+	if msg.NodeID == nil {
+		return ErrorInvalidField("node_id")
+	}
+	if msg.Client == nil {
+		return ErrorInvalidField("client")
+	}
 
 	return nil
 }
