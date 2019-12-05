@@ -9,7 +9,6 @@ import (
 	"github.com/spf13/viper"
 
 	"github.com/sentinel-official/hub/x/vpn/client/common"
-	"github.com/sentinel-official/hub/x/vpn/types"
 )
 
 func QueryFreeClientsCmd(cdc *codec.Codec) *cobra.Command {
@@ -22,24 +21,40 @@ func QueryFreeClientsCmd(cdc *codec.Codec) *cobra.Command {
 			id := viper.GetString(flagNodeID)
 			address := viper.GetString(flagAddress)
 
-			var freeClients []types.FreeClient
 			if id != "" {
-				freeClients, err = common.QueryQueryFreeClientsOfNode(ctx, id)
+				freeClients, err := common.QueryQueryFreeClientsOfNode(ctx, id)
+				if err != nil {
+					return err
+				}
+
+				for _, freeClient := range freeClients {
+					fmt.Println(freeClient)
+				}
+
+				return nil
 			} else if address != "" {
-				freeClients, err = common.QueryFreeNodesOfClient(ctx, address)
+				freeNodes, err := common.QueryFreeNodesOfClient(ctx, address)
+				if err != nil {
+					return err
+				}
+
+				for _, freeClient := range freeNodes {
+					fmt.Println(freeClient)
+				}
+
+				return nil
 			} else {
-				freeClients, err = common.QueryAllFreeClients(ctx)
-			}
+				freeClients, err := common.QueryAllFreeClients(ctx)
+				if err != nil {
+					return err
+				}
 
-			if err != nil {
-				return err
-			}
+				for _, freeClient := range freeClients {
+					fmt.Println(freeClient)
+				}
 
-			for _, freeClient := range freeClients {
-				fmt.Println(freeClient)
+				return nil
 			}
-
-			return nil
 		},
 	}
 

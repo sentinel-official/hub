@@ -41,10 +41,11 @@ var (
 	SessionsCountOfSubscriptionKeyPrefix = []byte{0x02}
 	SessionIDBySubscriptionIDKeyPrefix   = []byte{0x03}
 
-	FreeClientKeyPrefix       = []byte{0x00}
-	FreeClientOfNodeKeyPrefix = []byte{0x01}
+	ResolverKeyPrefix = []byte{0x00}
 
-	ResolverKeyPrefix = []byte{0x11}
+	FreeClientsKeyPrefix       = []byte{0x00}
+	FreeNodesOfClientKeyPrefix = []byte{0x01}
+	FreeClientOfNodeKeyPrefix  = []byte{0x03}
 )
 
 func NodeKey(id hub.NodeID) []byte {
@@ -103,15 +104,14 @@ func ActiveSessionIDsKey(height int64) []byte {
 	return sdk.Uint64ToBigEndian(uint64(height))
 }
 
-func FreeClientKey(client sdk.AccAddress) []byte {
-	return append(FreeClientKeyPrefix, client.Bytes()...)
+func FreeNodesOfClientKey(client sdk.AccAddress, nodeID hub.NodeID) []byte {
+	return append(FreeNodesOfClientKeyPrefix, append(client.Bytes(), nodeID.Bytes()...)...)
 }
 
-func FreeClientOfNodeKey(nodeID hub.NodeID) []byte {
-	return append(FreeClientOfNodeKeyPrefix, nodeID.Bytes()...)
+func FreeClientOfNodeKey(nodeID hub.NodeID, client sdk.AccAddress) []byte {
+	return append(FreeClientOfNodeKeyPrefix, append(nodeID.Bytes(), client.Bytes()...)...)
 }
 
-
-func ResolverKey(resolverID hub.ResolverID)[]byte{
+func ResolverKey(resolverID hub.ResolverID) []byte {
 	return append(ResolverKeyPrefix, resolverID.Bytes()...)
 }

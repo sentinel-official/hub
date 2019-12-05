@@ -153,6 +153,7 @@ func handleAddFreeClient(ctx sdk.Context, k keeper.Keeper, msg types.MsgAddFreeC
 	freeClient := types.NewFreeClient(msg.NodeID, msg.Client)
 
 	k.SetFreeClient(ctx, freeClient)
+	k.SetFreeNodesOfClient(ctx, freeClient)
 	k.SetFreeClientOfNode(ctx, freeClient)
 
 	return sdk.Result{Events: ctx.EventManager().Events()}
@@ -193,7 +194,7 @@ func handleStartSubscription(ctx sdk.Context, k keeper.Keeper, msg types.MsgStar
 		return types.ErrorInvalidNodeStatus().Result()
 	}
 
-	freeClients := k.GetFreeNodesOfClient(ctx, msg.From)
+	freeClients := k.GetFreeClientsOfNode(ctx, msg.NodeID)
 
 	if !types.IsFreeClient(freeClients, msg.From) {
 		if err := k.AddDeposit(ctx, msg.From, msg.Deposit); err != nil {
@@ -254,7 +255,7 @@ func handleEndSubscription(ctx sdk.Context, k keeper.Keeper, msg types.MsgEndSub
 		return types.ErrorSessionAlreadyExists().Result()
 	}
 
-	freeClients := k.GetFreeNodesOfClient(ctx, msg.From)
+	freeClients := k.GetFreeClientsOfNode(ctx, subscription.NodeID)
 
 	if !types.IsFreeClient(freeClients, msg.From) {
 		if err := k.SubtractDeposit(ctx, subscription.Client, subscription.RemainingDeposit); err != nil {

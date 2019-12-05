@@ -26,10 +26,10 @@ func NewFreeClient(nodeID hub.NodeID, client sdk.AccAddress) FreeClient {
 	}
 }
 
-func IsFreeClient(freeClients []FreeClient, _client sdk.AccAddress) bool {
+func IsFreeClient(freeClients []sdk.AccAddress, _client sdk.AccAddress) bool {
 	isFreeClient := false
 	for _, client := range freeClients {
-		if client.Client.Equals(_client) {
+		if client.Equals(_client) {
 			isFreeClient = true
 		}
 	}
