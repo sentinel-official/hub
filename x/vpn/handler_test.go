@@ -733,3 +733,63 @@ func Test_handleUpdateSessionInfo(t *testing.T) {
 	count = k.GetSessionsCountOfSubscription(ctx, subscription.ID)
 	require.Equal(t, uint64(1), count)
 }
+
+func Test_handleResolverNode(t *testing.T) {
+	ctx, k, _, _ := keeper.CreateTestInput(t, false)
+	handler := NewHandler(k)
+
+	resolver := types.TestResolver
+
+	data, found := k.GetResolver(ctx, resolver.Owner)
+	require.False(t, found)
+
+	msg := NewMsgRegisterResolver(resolver.Owner, resolver.Commission)
+	res := handler(ctx, msg)
+	require.True(t, res.IsOK())
+
+	data, found = k.GetResolver(ctx, resolver.Owner)
+	require.True(t, found)
+	require.Equal(t, data, resolver)
+
+	msg = NewMsgRegisterResolver(resolver.Owner, resolver.Commission)
+	res = handler(ctx, msg)
+	require.False(t, res.IsOK())
+	require.Equal(t, res.Log, types.ErrorResolverAlreadyExist().ABCILog())
+
+	updateResolverInfoMsg := NewMsgUpdateResolverInfo(types.TestAddress2, sdk.NewDecWithPrec(2, 1))
+	res = handler(ctx, updateResolverInfoMsg)
+	require.False(t, res.IsOK())
+
+	resolver.Status = StatusDeRegistered
+	k.SetResolver(ctx, resolver)
+	updateResolverInfoMsg = NewMsgUpdateResolverInfo(types.TestAddress1, sdk.NewDecWithPrec(2, 1))
+	res = handler(ctx, updateResolverInfoMsg)
+	require.False(t, res.IsOK())
+
+	resolver.Status = StatusRegistered
+	k.SetResolver(ctx, resolver)
+	updateResolverInfoMsg = NewMsgUpdateResolverInfo(types.TestAddress1, sdk.NewDecWithPrec(2, 1))
+	res = handler(ctx, updateResolverInfoMsg)
+	require.True(t, res.IsOK())
+
+	resolver, found = k.GetResolver(ctx, types.TestAddress1)
+	require.True(t, found)
+	require.Equal(t, sdk.NewDecWithPrec(2, 1), resolver.Commission)
+
+	deRegisterResolverMsg := NewMsgDeregisterResolver(types.TestAddress2)
+	res = handler(ctx, deRegisterResolverMsg)
+	require.False(t, res.IsOK())
+	require.Equal(t, types.ErrorResolverDoesNotExist().ABCILog(), res.Log)
+
+	resolver.Status = StatusDeRegistered
+	k.SetResolver(ctx, resolver)
+	deRegisterResolverMsg = NewMsgDeregisterResolver(types.TestAddress1)
+	res = handler(ctx, deRegisterResolverMsg)
+	require.False(t, res.IsOK())
+
+	resolver.Status = StatusRegistered
+	k.SetResolver(ctx, resolver)
+	deRegisterResolverMsg = NewMsgDeregisterResolver(types.TestAddress1)
+	res = handler(ctx, deRegisterResolverMsg)
+	require.True(t, res.IsOK())
+}

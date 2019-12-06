@@ -47,6 +47,12 @@ var (
 		Status:           StatusActive,
 		StatusModifiedAt: 0,
 	}
+	TestResolver = Resolver{
+		Owner:      TestAddress1,
+		Commission: sdk.NewDecWithPrec(12, 2),
+		Status:     StatusRegistered,
+	}
+
 	TestBandwidthNeg                  = hub.NewBandwidth(sdk.NewInt(-500000000), sdk.NewInt(-500000000))
 	TestBandwidthZero                 = hub.NewBandwidth(sdk.NewInt(0), sdk.NewInt(0))
 	TestBandwidthPos1                 = hub.NewBandwidth(sdk.NewInt(500000000), sdk.NewInt(500000000))

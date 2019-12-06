@@ -78,6 +78,9 @@ var (
 	NewMsgRegisterNode                        = types.NewMsgRegisterNode
 	NewMsgUpdateNodeInfo                      = types.NewMsgUpdateNodeInfo
 	NewMsgDeregisterNode                      = types.NewMsgDeregisterNode
+	NewMsgRegisterResolver                    = types.NewMsgRegisterResolver
+	NewMsgUpdateResolverInfo                  = types.NewMsgUpdateResolverInfo
+	NewMsgDeregisterResolver                  = types.NewMsgDeregisterResolver
 	NewParams                                 = types.NewParams
 	DefaultParams                             = types.DefaultParams
 	NewQueryNodeParams                        = types.NewQueryNodeParams

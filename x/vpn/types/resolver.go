@@ -20,7 +20,7 @@ Status : %s
 }
 
 func (resolver Resolver) UpdateInfo(_resolver Resolver) Resolver {
-	if _resolver.Commission.GT(sdk.ZeroDec()) && _resolver.Commission.LT(sdk.OneDec()) { // commission rate between 0 to 1
+	if _resolver.Commission.GTE(sdk.ZeroDec()) && _resolver.Commission.LTE(sdk.OneDec()) { // commission rate between 0 to 1
 		resolver.Commission = _resolver.Commission
 	}
 
