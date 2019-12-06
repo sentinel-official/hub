@@ -41,9 +41,8 @@ var (
 	SessionsCountOfSubscriptionKeyPrefix = []byte{0x02}
 	SessionIDBySubscriptionIDKeyPrefix   = []byte{0x03}
 
-	FreeClientsKeyPrefix       = []byte{0x00}
-	FreeNodesOfClientKeyPrefix = []byte{0x01}
-	FreeClientOfNodeKeyPrefix  = []byte{0x03}
+	FreeNodesOfClientKeyPrefix = []byte{0x00}
+	FreeClientOfNodeKeyPrefix  = []byte{0x01}
 )
 
 func NodeKey(id hub.NodeID) []byte {

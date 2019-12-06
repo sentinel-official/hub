@@ -40,14 +40,3 @@ func queryFreeClientsOfNode(ctx sdk.Context, req abci.RequestQuery, k keeper.Kee
 
 	return res, nil
 }
-
-func queryAllFreeClients(ctx sdk.Context, k keeper.Keeper) ([]byte, sdk.Error) {
-	freeClients := k.GetAllFreeClients(ctx)
-
-	res, err := types.ModuleCdc.MarshalJSON(freeClients)
-	if err != nil {
-		return nil, types.ErrorMarshal()
-	}
-
-	return res, nil
-}
