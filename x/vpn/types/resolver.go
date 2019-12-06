@@ -3,11 +3,9 @@ package types
 import (
 	"fmt"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	hub "github.com/sentinel-official/hub/types"
 )
 
 type Resolver struct {
-	ID         hub.ResolverID `json:"id"`
 	Owner      sdk.AccAddress `json:"owner"`
 	Commission sdk.Dec        `json:"commission"`
 	Status     string         `json:"status"`
@@ -15,9 +13,16 @@ type Resolver struct {
 
 func (resolver Resolver) String() string {
 	return fmt.Sprintf(`
-ID : %s
 Owner : %s
 Commission : %s
 Status : %s
-`, resolver.ID, resolver.Owner, resolver.Commission, resolver.Status)
+`, resolver.Owner, resolver.Commission, resolver.Status)
+}
+
+func (resolver Resolver) UpdateInfo(_resolver Resolver) Resolver {
+	if _resolver.Commission.GT(sdk.ZeroDec()) && _resolver.Commission.LT(sdk.OneDec()) { // commission rate between 0 to 1
+		resolver.Commission = _resolver.Commission
+	}
+
+	return resolver
 }

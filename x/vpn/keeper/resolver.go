@@ -2,20 +2,19 @@ package keeper
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	hub "github.com/sentinel-official/hub/types"
 	"github.com/sentinel-official/hub/x/vpn/types"
 )
 
 func (k Keeper) SetResolver(ctx sdk.Context, resolver types.Resolver) {
 	store := ctx.KVStore(k.resolverKey)
 
-	key := types.ResolverKey(resolver.ID)
+	key := types.ResolverKey(resolver.Owner)
 	value := k.cdc.MustMarshalBinaryLengthPrefixed(resolver)
 
 	store.Set(key, value)
 }
 
-func (k Keeper) GetResolver(ctx sdk.Context, id hub.ResolverID) (resolver types.Resolver, found bool) {
+func (k Keeper) GetResolver(ctx sdk.Context, id sdk.AccAddress) (resolver types.Resolver, found bool) {
 	store := ctx.KVStore(k.resolverKey)
 
 	key := types.ResolverKey(id)

@@ -3,7 +3,6 @@ package types
 import (
 	"encoding/json"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	hub "github.com/sentinel-official/hub/types"
 )
 
 type MsgRegisterResolver struct {
@@ -45,7 +44,6 @@ var _ sdk.Msg = (*MsgRegisterResolver)(nil)
 
 type MsgUpdateResolverInfo struct {
 	From       sdk.AccAddress
-	ID         hub.ResolverID
 	Commission sdk.Dec
 }
 
@@ -74,14 +72,11 @@ func (msg MsgUpdateResolverInfo) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{msg.From}
 }
 
-func NewMsgUpdateResolverInfo(from sdk.AccAddress, id hub.ResolverID, commission sdk.Dec) MsgUpdateResolverInfo {
+func NewMsgUpdateResolverInfo(from sdk.AccAddress, commission sdk.Dec) MsgUpdateResolverInfo {
 	return MsgUpdateResolverInfo{
 		From:       from,
-		ID:         id,
 		Commission: commission,
 	}
 }
 
 var _ sdk.Msg = (*MsgUpdateResolverInfo)(nil)
-
-

@@ -211,65 +211,6 @@ func (id *SubscriptionID) UnmarshalJSON(bytes []byte) error {
 	return nil
 }
 
-type ResolverID []byte
-
-func NewResolverID(i uint64) ResolverID {
-	return types.Uint64ToBigEndian(i)
-}
-
-func NewResolverIDFromString(s string) (ResolverID, error) {
-	if len(s) < 5 {
-		return nil, fmt.Errorf("invalid node is length")
-	}
-
-	i, err := strconv.ParseUint(s[4:], 16, 64)
-	if err != nil {
-		return nil, err
-	}
-
-	return NewResolverID(i), nil
-}
-
-func (id ResolverID) String() string {
-	return fmt.Sprintf("%s%x", ResolverIDPrefix, id.Uint64())
-}
-
-func (id ResolverID) Uint64() uint64 {
-	return binary.BigEndian.Uint64(id)
-}
-
-func (id ResolverID) Bytes() []byte {
-	return id
-}
-
-func (id ResolverID) Prefix() string {
-	return ResolverIDPrefix
-}
-
-func (id ResolverID) IsEqual(_id ID) bool {
-	return id.String() == _id.String()
-}
-
-func (id ResolverID) MarshalJSON() ([]byte, error) {
-	return json.Marshal(id.String())
-}
-
-func (id *ResolverID) UnmarshalJSON(bytes []byte) error {
-	var s string
-	if err := json.Unmarshal(bytes, &s); err != nil {
-		return err
-	}
-
-	_id, err := NewResolverIDFromString(s)
-	if err != nil {
-		return err
-	}
-
-	*id = _id
-
-	return nil
-}
-
 var _ sort.Interface = (*IDs)(nil)
 
 type IDs []ID

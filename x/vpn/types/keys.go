@@ -15,6 +15,7 @@ const (
 	StoreKeyNode         = "vpn_node"
 	StoreKeySubscription = "vpn_subscription"
 	StoreKeyFreeClients  = "vpn_free_client"
+	StoreKeyResolverNode= "resolver_node"
 
 	StatusRegistered   = "REGISTERED"
 	StatusDeRegistered = "DE-REGISTERED"
@@ -41,7 +42,8 @@ var (
 	SessionsCountOfSubscriptionKeyPrefix = []byte{0x02}
 	SessionIDBySubscriptionIDKeyPrefix   = []byte{0x03}
 
-	ResolverKeyPrefix = []byte{0x00}
+	ResolverCountKey = []byte{0x01}
+	ResolverKeyPrefix = []byte{0x02}
 
 	FreeClientsKeyPrefix       = []byte{0x00}
 	FreeNodesOfClientKeyPrefix = []byte{0x01}
