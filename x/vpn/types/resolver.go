@@ -2,6 +2,7 @@ package types
 
 import (
 	"fmt"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -25,4 +26,11 @@ func (resolver Resolver) UpdateInfo(_resolver Resolver) Resolver {
 	}
 
 	return resolver
+}
+
+func (resolver Resolver) GetCommission(pay sdk.Coin) sdk.Coin {
+	commission := resolver.Commission.MulInt(pay.Amount).Quo(sdk.NewDec(100))
+	pay.Amount = commission.RoundInt()
+
+	return pay
 }

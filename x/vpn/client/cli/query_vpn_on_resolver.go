@@ -13,16 +13,16 @@ import (
 	"github.com/sentinel-official/hub/x/vpn/client/common"
 )
 
-func QueryFreeClientsCmd(cdc *codec.Codec) *cobra.Command {
+func QueryResolversClientsCmd(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "free-clients",
-		Short: "Query free clients of node",
+		Use:   "resolvers",
+		Short: "Query resolvers of node",
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			ctx := context.NewCLIContext().WithCodec(cdc)
 
 			id := viper.GetString(flagNodeID)
 
-			freeClients, err := common.QueryFreeClientsOfNode(ctx, id)
+			freeClients, err := common.QueryResolversOfNode(ctx, id)
 			if err != nil {
 				return err
 			}
@@ -46,22 +46,22 @@ func QueryFreeClientsCmd(cdc *codec.Codec) *cobra.Command {
 	return cmd
 }
 
-func QueryFreeNodesCmd(cdc *codec.Codec) *cobra.Command {
+func QueryNodesOfResolverCmd(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "free-nodes",
-		Short: "Query free nodes of client",
+		Use:   "nodes",
+		Short: "Query nodes of resolver",
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			ctx := context.NewCLIContext().WithCodec(cdc)
 
 			address := viper.GetString(flagAddress)
 
-			freeNodes, err := common.QueryFreeNodesOfClient(ctx, address)
+			nodes, err := common.QueryNodesOfResolver(ctx, address)
 			if err != nil {
 				return err
 			}
 
-			for _, freeNode := range freeNodes {
-				fmt.Println(freeNode)
+			for _, node := range nodes {
+				fmt.Println(node)
 			}
 			return nil
 		},

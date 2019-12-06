@@ -13,45 +13,35 @@ import (
 	"github.com/sentinel-official/hub/x/vpn/types"
 )
 
-func StartSubscriptionTxCmd(cdc *codec.Codec) *cobra.Command {
+func RemoveVPNOnResolverTxCmd(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "start",
-		Short: "Start subscription",
+		Use:   "remove-vpn-on-resolver",
+		Short: "Removing vpn node on resolver node",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			txb := auth.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
 			ctx := context.NewCLIContext().WithCodec(cdc)
-
-			resolver, err := sdk.AccAddressFromBech32(viper.GetString(flagResolver))
-			if err != nil {
-				return err
-			}
 
 			nodeID, err := hub.NewNodeIDFromString(viper.GetString(flagNodeID))
 			if err != nil {
 				return err
 			}
 
-			deposit := viper.GetString(flagDeposit)
-
-			parsedDeposit, err := sdk.ParseCoin(deposit)
+			resolver, err := sdk.AccAddressFromBech32(viper.GetString(flagResolver))
 			if err != nil {
 				return err
 			}
 
-			fromAddress := ctx.GetFromAddress()
+			msg := types.NewMsgRemoveVPNOnResolver(ctx.FromAddress, nodeID, resolver)
 
-			msg := types.NewMsgStartSubscription(fromAddress, resolver, nodeID, parsedDeposit)
 			return utils.GenerateOrBroadcastMsgs(ctx, txb, []sdk.Msg{msg})
 		},
 	}
 
-	cmd.Flags().String(flagResolver, "", "Resolver")
-	cmd.Flags().String(flagNodeID, "", "Node ID")
-	cmd.Flags().String(flagDeposit, "", "Deposit")
+	cmd.Flags().String(flagNodeID, "", "VPN node id")
+	cmd.Flags().String(flagResolver, "", "Resolver node address")
 
-	_ = cmd.MarkFlagRequired(flagResolver)
 	_ = cmd.MarkFlagRequired(flagNodeID)
-	_ = cmd.MarkFlagRequired(flagDeposit)
+	_ = cmd.MarkFlagRequired(flagResolver)
 
 	return cmd
 }

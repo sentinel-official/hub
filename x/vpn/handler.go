@@ -22,6 +22,10 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 			return handleAddFreeClient(ctx, k, msg)
 		case types.MsgRemoveFreeClient:
 			return handleRemoveFreeClient(ctx, k, msg)
+		case types.MsgAddVPNOnResolver:
+			return handleAddVPNOnResolver(ctx, k, msg)
+		case types.MsgRemoveVPNOnResolver:
+			return handleRemoveVPNOnResolver(ctx, k, msg)
 		case types.MsgDeregisterNode:
 			return handleDeregisterNode(ctx, k, msg)
 		case types.MsgStartSubscription:
@@ -65,7 +69,18 @@ func EndBlock(ctx sdk.Context, k keeper.Keeper) {
 			if !pay.IsZero() {
 				node, _ := k.GetNode(ctx, subscription.NodeID)
 
-				if err := k.SendDeposit(ctx, subscription.Client, node.Owner, payCoin); err != nil {
+				_resolver, found := k.GetResolver(ctx, subscription.Resolver)
+				if !found {
+					panic("no resolver found")
+				}
+
+				commission := _resolver.GetCommission(payCoin)
+
+				if err := k.SendDeposit(ctx, subscription.Client, subscription.Resolver, commission); err != nil {
+					panic(err)
+				}
+
+				if err := k.SendDeposit(ctx, subscription.Client, node.Owner, payCoin.Sub(commission)); err != nil {
 					panic(err)
 				}
 			}
@@ -189,6 +204,51 @@ func handleRemoveFreeClient(ctx sdk.Context, k keeper.Keeper, msg types.MsgRemov
 	return sdk.Result{Events: ctx.EventManager().Events()}
 }
 
+func handleAddVPNOnResolver(ctx sdk.Context, k keeper.Keeper, msg types.MsgAddVPNOnResolver) sdk.Result {
+	node, found := k.GetNode(ctx, msg.NodeID)
+	if !found {
+		return types.ErrorNodeDoesNotExist().Result()
+	}
+	if !msg.From.Equals(node.Owner) {
+		return types.ErrorUnauthorized().Result()
+	}
+	if node.Status == types.StatusDeRegistered {
+		return types.ErrorInvalidNodeStatus().Result()
+	}
+
+	resolver, found := k.GetResolver(ctx, msg.Resolver)
+	if !found {
+		return types.ErrorResolverDoesNotExist().Result()
+	}
+
+	k.SetResolverOfNode(ctx, node.ID, resolver.Owner)
+	k.SetNodeOfResolver(ctx, resolver.Owner, node.ID)
+
+	return sdk.Result{Events: ctx.EventManager().Events()}
+}
+
+func handleRemoveVPNOnResolver(ctx sdk.Context, k keeper.Keeper, msg types.MsgRemoveVPNOnResolver) sdk.Result {
+	node, found := k.GetNode(ctx, msg.NodeID)
+	if !found {
+		return types.ErrorNodeDoesNotExist().Result()
+	}
+	if !msg.From.Equals(node.Owner) {
+		return types.ErrorUnauthorized().Result()
+	}
+	if node.Status == types.StatusDeRegistered {
+		return types.ErrorInvalidNodeStatus().Result()
+	}
+
+	resolver := k.GetResolverOfNode(ctx, msg.NodeID, msg.Resolver)
+	if resolver == nil {
+		return types.ErrorResolverDoesNotExist().Result()
+	}
+
+	k.RemoveVPNNodeOnResolver(ctx, msg.NodeID, resolver)
+
+	return sdk.Result{Events: ctx.EventManager().Events()}
+}
+
 func handleDeregisterNode(ctx sdk.Context, k keeper.Keeper, msg types.MsgDeregisterNode) sdk.Result {
 	node, found := k.GetNode(ctx, msg.ID)
 	if !found {
@@ -224,6 +284,11 @@ func handleStartSubscription(ctx sdk.Context, k keeper.Keeper, msg types.MsgStar
 		return types.ErrorInvalidNodeStatus().Result()
 	}
 
+	resolver := k.GetResolverOfNode(ctx, msg.NodeID, msg.Resolver)
+	if resolver == nil {
+		return types.ErrorResolverDoesNotExist().Result()
+	}
+
 	freeClients := k.GetFreeClientsOfNode(ctx, msg.NodeID)
 
 	if !types.IsFreeClient(freeClients, msg.From) {
@@ -242,6 +307,7 @@ func handleStartSubscription(ctx sdk.Context, k keeper.Keeper, msg types.MsgStar
 	sc := k.GetSubscriptionsCount(ctx)
 	subscription := types.Subscription{
 		ID:                 hub.NewSubscriptionID(sc),
+		Resolver:           msg.Resolver,
 		NodeID:             node.ID,
 		Client:             msg.From,
 		PricePerGB:         pricePerGB,

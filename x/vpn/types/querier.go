@@ -24,6 +24,9 @@ const (
 
 	QueryFreeNodesOfClient = "free_nodes_of_client"
 	QueryFreeClientsOfNode = "free_clients_of_node"
+
+	QueryResolversOfNode = "resolvers_of_node"
+	QueryNodesOfResolver = "nodes_of_resolver"
 )
 
 type QueryNodeParams struct {
@@ -62,6 +65,26 @@ type QueryNodesOfFreeClientPrams struct {
 
 func NewQueryNodesOfFreeClientPrams(address sdk.AccAddress) QueryNodesOfFreeClientPrams {
 	return QueryNodesOfFreeClientPrams{
+		Address: address,
+	}
+}
+
+type QueryResolversOfNodeParams struct {
+	ID hub.NodeID
+}
+
+func NewQueryResolversOfNodeParams(id hub.NodeID) QueryResolversOfNodeParams {
+	return QueryResolversOfNodeParams{
+		ID: id,
+	}
+}
+
+type QueryNodesOfResolverPrams struct {
+	Address sdk.AccAddress
+}
+
+func NewQueryNodesOfResolverPrams(address sdk.AccAddress) QueryNodesOfResolverPrams {
+	return QueryNodesOfResolverPrams{
 		Address: address,
 	}
 }
