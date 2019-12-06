@@ -208,11 +208,13 @@ func NewHubApp(logger log.Logger, db db.DB, traceStore io.Writer, loadLatest boo
 	app.depositKeeper = deposit.NewKeeper(app.cdc,
 		keys[deposit.StoreKey],
 		app.supplyKeeper)
+
 	app.vpnKeeper = vpn.NewKeeper(app.cdc,
 		keys[vpn.StoreKeyNode],
 		keys[vpn.StoreKeyFreeClient],
 		keys[vpn.StoreKeySubscription],
 		keys[vpn.StoreKeySession],
+		keys[vpn.StoreKeyResolver],
 		app.paramsKeeper.Subspace(vpn.DefaultParamspace),
 		app.depositKeeper)
 

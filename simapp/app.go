@@ -220,6 +220,7 @@ func NewSimApp(logger log.Logger, db db.DB,
 		keys[vpn.StoreKeyFreeClient],
 		keys[vpn.StoreKeySubscription],
 		keys[vpn.StoreKeySession],
+		keys[vpn.StoreKeyResolver],
 		app.paramsKeeper.Subspace(vpn.DefaultParamspace),
 		app.depositKeeper)
 

@@ -24,7 +24,6 @@ const (
 
 	QueryFreeNodesOfClient = "free_nodes_of_client"
 	QueryFreeClientsOfNode = "free_clients_of_node"
-	QueryAllFreeClients    = "free_clients"
 )
 
 type QueryNodeParams struct {
