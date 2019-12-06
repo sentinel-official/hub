@@ -21,6 +21,8 @@ func GetQueryCmd(cdc *codec.Codec) *cobra.Command {
 		QuerySessionsCmd(cdc),
 		QueryFreeClientsCmd(cdc),
 		QueryFreeNodesCmd(cdc),
+		QueryResolversClientsCmd(cdc),
+		QueryNodesOfResolverCmd(cdc),
 	)...)
 
 	return cmd
@@ -51,6 +53,8 @@ func nodeTxCmd(cdc *codec.Codec) *cobra.Command {
 		UpdateNodeInfoTxCmd(cdc),
 		AddFreeClientTxCmd(cdc),
 		RemoveFreeClientTxCmd(cdc),
+		AddVPNOnResolverTxCmd(cdc),
+		RemoveVPNOnResolverTxCmd(cdc),
 		DeregisterNodeTxCmd(cdc),
 	)...)
 

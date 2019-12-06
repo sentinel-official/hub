@@ -14,8 +14,9 @@ import (
 )
 
 type msgStartSubscription struct {
-	BaseReq rest.BaseReq `json:"base_req"`
-	Deposit string       `json:"deposit"`
+	BaseReq  rest.BaseReq `json:"base_req"`
+	Resolver string       `json:"resolver"`
+	Deposit  string       `json:"deposit"`
 }
 
 func startSubscriptionHandlerFunc(ctx context.CLIContext) http.HandlerFunc {
@@ -37,6 +38,12 @@ func startSubscriptionHandlerFunc(ctx context.CLIContext) http.HandlerFunc {
 			return
 		}
 
+		resolver, err := sdk.AccAddressFromBech32(req.Resolver)
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+			return
+		}
+
 		deposit, err := sdk.ParseCoin(req.Deposit)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
@@ -49,7 +56,7 @@ func startSubscriptionHandlerFunc(ctx context.CLIContext) http.HandlerFunc {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
 		}
-		msg := types.NewMsgStartSubscription(fromAddress, id, deposit)
+		msg := types.NewMsgStartSubscription(fromAddress, resolver, id, deposit)
 		if err := msg.ValidateBasic(); err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
