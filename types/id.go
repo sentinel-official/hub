@@ -31,7 +31,6 @@ var (
 	_ ID = NodeID{}
 	_ ID = SessionID{}
 	_ ID = SubscriptionID{}
-	_ ID = ResolverID{}
 )
 
 type NodeID []byte

@@ -6,8 +6,8 @@ import (
 )
 
 type MsgRegisterResolver struct {
-	From       sdk.AccAddress
-	Commission sdk.Dec
+	From       sdk.AccAddress `json:"from"`
+	Commission sdk.Dec        `json:"commission"`
 }
 
 func (msg MsgRegisterResolver) Route() string {
@@ -19,7 +19,14 @@ func (msg MsgRegisterResolver) Type() string {
 }
 
 func (msg MsgRegisterResolver) ValidateBasic() sdk.Error {
-	return nil //TODO
+	if msg.From == nil || msg.From.Empty() {
+		return ErrorInvalidField("from")
+	}
+	if msg.Commission.LT(sdk.ZeroDec()) || msg.Commission.GT(sdk.OneDec()) {
+		return ErrorInvalidField("commission")
+	}
+
+	return nil
 }
 
 func (msg MsgRegisterResolver) GetSignBytes() []byte {
@@ -43,8 +50,8 @@ func NewMsgRegisterResolver(from sdk.AccAddress, commission sdk.Dec) MsgRegister
 var _ sdk.Msg = (*MsgRegisterResolver)(nil)
 
 type MsgUpdateResolverInfo struct {
-	From       sdk.AccAddress
-	Commission sdk.Dec
+	From       sdk.AccAddress `json:"from"`
+	Commission sdk.Dec        `json:"commission"`
 }
 
 func (msg MsgUpdateResolverInfo) Route() string {
@@ -56,7 +63,15 @@ func (msg MsgUpdateResolverInfo) Type() string {
 }
 
 func (msg MsgUpdateResolverInfo) ValidateBasic() sdk.Error {
-	return nil //TODO
+	if msg.From == nil || msg.From.Empty() {
+		return ErrorInvalidField("from")
+	}
+
+	if msg.Commission.LT(sdk.ZeroDec()) || msg.Commission.GT(sdk.OneDec()) {
+		return ErrorInvalidField("commission")
+	}
+
+	return nil
 }
 
 func (msg MsgUpdateResolverInfo) GetSignBytes() []byte {
@@ -80,3 +95,29 @@ func NewMsgUpdateResolverInfo(from sdk.AccAddress, commission sdk.Dec) MsgUpdate
 }
 
 var _ sdk.Msg = (*MsgUpdateResolverInfo)(nil)
+
+type MsgDeregisterResolver struct {
+	From sdk.AccAddress
+}
+
+func (m MsgDeregisterResolver) Route() string {
+	panic("implement me")
+}
+
+func (m MsgDeregisterResolver) Type() string {
+	panic("implement me")
+}
+
+func (m MsgDeregisterResolver) ValidateBasic() sdk.Error {
+	panic("implement me")
+}
+
+func (m MsgDeregisterResolver) GetSignBytes() []byte {
+	panic("implement me")
+}
+
+func (m MsgDeregisterResolver) GetSigners() []sdk.AccAddress {
+	panic("implement me")
+}
+
+var _ sdk.Msg = (*MsgDeregisterResolver)(nil)
