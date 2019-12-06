@@ -23,6 +23,7 @@ const (
 	errCodeInvalidBandwidthSignature = 112
 	errCodeSessionAlreadyExists      = 113
 	errCodeInvalidSessionStatus      = 114
+	errCodeFreeClientDoesNotExist    = 115
 
 	errMsgUnknownMsgType            = "Unknown message type: "
 	errMsgUnknownQueryType          = "Invalid query type: "
@@ -38,6 +39,7 @@ const (
 	errMsgInvalidBandwidthSignature = "Invalid bandwidth signature"
 	errMsgSessionAlreadyExists      = "Session is active"
 	errMsgInvalidSessionStatus      = "Invalid session status"
+	errMsgFreeClientDoesNotExist    = "Free client does not exist"
 )
 
 func ErrorMarshal() sdk.Error {
@@ -102,4 +104,8 @@ func ErrorSessionAlreadyExists() sdk.Error {
 
 func ErrorInvalidSessionStatus() sdk.Error {
 	return sdk.NewError(Codespace, errCodeInvalidSessionStatus, errMsgInvalidSessionStatus)
+}
+
+func ErrorFreeClientDoesNotExist() sdk.Error {
+	return sdk.NewError(Codespace, errCodeFreeClientDoesNotExist, errMsgFreeClientDoesNotExist)
 }

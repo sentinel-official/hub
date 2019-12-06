@@ -20,6 +20,8 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 			return handleUpdateNodeInfo(ctx, k, msg)
 		case types.MsgAddFreeClient:
 			return handleAddFreeClient(ctx, k, msg)
+		case types.MsgRemoveFreeClient:
+			return handleRemoveFreeClient(ctx, k, msg)
 		case types.MsgDeregisterNode:
 			return handleDeregisterNode(ctx, k, msg)
 		case types.MsgStartSubscription:
@@ -152,9 +154,30 @@ func handleAddFreeClient(ctx sdk.Context, k keeper.Keeper, msg types.MsgAddFreeC
 
 	freeClient := types.NewFreeClient(msg.NodeID, msg.Client)
 
-	k.SetFreeClient(ctx, freeClient)
 	k.SetFreeNodesOfClient(ctx, freeClient)
 	k.SetFreeClientOfNode(ctx, freeClient)
+
+	return sdk.Result{Events: ctx.EventManager().Events()}
+}
+
+func handleRemoveFreeClient(ctx sdk.Context, k keeper.Keeper, msg types.MsgRemoveFreeClient) sdk.Result {
+	node, found := k.GetNode(ctx, msg.NodeID)
+	if !found {
+		return types.ErrorNodeDoesNotExist().Result()
+	}
+	if !msg.From.Equals(node.Owner) {
+		return types.ErrorUnauthorized().Result()
+	}
+	if node.Status == types.StatusDeRegistered {
+		return types.ErrorInvalidNodeStatus().Result()
+	}
+
+	client := k.GetFreeClientOfNode(ctx, msg.NodeID, msg.Client)
+	if client == nil {
+		return types.ErrorFreeClientDoesNotExist().Result()
+	}
+
+	k.RemoveFreeClient(ctx, msg.NodeID, msg.Client)
 
 	return sdk.Result{Events: ctx.EventManager().Events()}
 }
