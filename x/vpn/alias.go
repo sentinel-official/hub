@@ -18,6 +18,7 @@ const (
 	QuerierRoute                     = types.QuerierRoute
 	RouterKey                        = types.RouterKey
 	StoreKeySession                  = types.StoreKeySession
+	StoreKeyResolver = types.StoreKeyResolver
 	StoreKeyNode                     = types.StoreKeyNode
 	StoreKeyFreeClient               = types.StoreKeyFreeClients
 	StoreKeySubscription             = types.StoreKeySubscription

@@ -30,6 +30,7 @@ func CreateTestInput(t *testing.T, isCheckTx bool) (sdk.Context, Keeper, deposit
 	keyFreeClient := sdk.NewKVStoreKey(types.StoreKeyFreeClients)
 	keySubscription := sdk.NewKVStoreKey(types.StoreKeySubscription)
 	keySession := sdk.NewKVStoreKey(types.StoreKeySession)
+	keyResolver := sdk.NewKVStoreKey(types.StoreKeyResolver)
 	tkeyParams := sdk.NewTransientStoreKey(params.TStoreKey)
 
 	mdb := db.NewMemDB()
@@ -40,6 +41,7 @@ func CreateTestInput(t *testing.T, isCheckTx bool) (sdk.Context, Keeper, deposit
 	ms.MountStoreWithDB(keyDeposit, sdk.StoreTypeIAVL, mdb)
 	ms.MountStoreWithDB(keyNode, sdk.StoreTypeIAVL, mdb)
 	ms.MountStoreWithDB(keyFreeClient, sdk.StoreTypeIAVL, mdb)
+	ms.MountStoreWithDB(keyResolver, sdk.StoreTypeIAVL, mdb)
 	ms.MountStoreWithDB(keySubscription, sdk.StoreTypeIAVL, mdb)
 	ms.MountStoreWithDB(keySession, sdk.StoreTypeIAVL, mdb)
 	ms.MountStoreWithDB(tkeyParams, sdk.StoreTypeTransient, mdb)
@@ -60,7 +62,7 @@ func CreateTestInput(t *testing.T, isCheckTx bool) (sdk.Context, Keeper, deposit
 	bk := bank.NewBaseKeeper(ak, pk.Subspace(bank.DefaultParamspace), bank.DefaultCodespace, blacklist)
 	sk := supply.NewKeeper(cdc, keySupply, ak, bk, accountPermissions)
 	dk := deposit.NewKeeper(cdc, keyDeposit, sk)
-	vk := NewKeeper(cdc, keyNode, keyFreeClient, keySubscription, keySession, pk.Subspace(DefaultParamspace), dk)
+	vk := NewKeeper(cdc, keyNode, keyFreeClient, keySubscription, keySession, keyResolver, pk.Subspace(DefaultParamspace), dk)
 
 	sk.SetModuleAccount(ctx, depositAccount)
 	vk.SetParams(ctx, types.DefaultParams())

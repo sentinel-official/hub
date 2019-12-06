@@ -30,6 +30,11 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 			return handleEndSubscription(ctx, k, msg)
 		case types.MsgUpdateSessionInfo:
 			return handleUpdateSessionInfo(ctx, k, msg)
+		case types.MsgRegisterResolver:
+			return handleRegisterResolver(ctx, k, msg)
+		case types.MsgUpdateResolverInfo:
+			return handleUpdateResolverInfo(ctx, k, msg)
+
 		default:
 			return types.ErrorUnknownMsgType(reflect.TypeOf(msg).Name()).Result()
 		}
@@ -351,4 +356,41 @@ func handleUpdateSessionInfo(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpda
 	k.SetSession(ctx, session)
 
 	return sdk.Result{Events: ctx.EventManager().Events()}
+}
+
+func handleRegisterResolver(ctx sdk.Context, k keeper.Keeper, msg types.MsgRegisterResolver) sdk.Result {
+	_, found := k.GetResolver(ctx, msg.From)
+	if found {
+		return types.ErrorResolverAlreadyExist().Result()
+	}
+
+	resolver := types.Resolver{
+		Owner:      msg.From,
+		Commission: msg.Commission,
+		Status:     types.StatusRegistered,
+	}
+
+	k.SetResolver(ctx, resolver)
+
+	return sdk.Result{}
+}
+
+func handleUpdateResolverInfo(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpdateResolverInfo) sdk.Result {
+	resolver, found := k.GetResolver(ctx, msg.From)
+	if !found {
+		return types.ErrorResolverDoesNotExist().Result()
+	}
+	if resolver.Status == types.StatusDeRegistered {
+		return types.ErrorInvalidResolverStatus().Result()
+	}
+
+	_resolver := types.Resolver{
+		Owner:      msg.From,
+		Commission: msg.Commission,
+	}
+	resolver = resolver.UpdateInfo(_resolver)
+
+	k.SetResolver(ctx, resolver)
+
+	return sdk.Result{}
 }
