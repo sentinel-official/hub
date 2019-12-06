@@ -100,24 +100,37 @@ type MsgDeregisterResolver struct {
 	From sdk.AccAddress
 }
 
-func (m MsgDeregisterResolver) Route() string {
-	panic("implement me")
+func (msg MsgDeregisterResolver) Route() string {
+	return RouterKey
 }
 
-func (m MsgDeregisterResolver) Type() string {
-	panic("implement me")
+func (msg MsgDeregisterResolver) Type() string {
+	return "deregister_resolver_node"
 }
 
-func (m MsgDeregisterResolver) ValidateBasic() sdk.Error {
-	panic("implement me")
+func (msg MsgDeregisterResolver) ValidateBasic() sdk.Error {
+	if msg.From == nil || msg.From.Empty() {
+		return ErrorInvalidField("from")
+	}
+
+	return nil
 }
 
-func (m MsgDeregisterResolver) GetSignBytes() []byte {
-	panic("implement me")
+func (msg MsgDeregisterResolver) GetSignBytes() []byte {
+	bz, err := json.Marshal(msg)
+	if err != nil {
+		panic(err)
+	}
+
+	return bz
 }
 
-func (m MsgDeregisterResolver) GetSigners() []sdk.AccAddress {
-	panic("implement me")
+func (msg MsgDeregisterResolver) GetSigners() []sdk.AccAddress {
+	return []sdk.AccAddress{msg.From}
+}
+
+func NewMsgDeregisterResolver(from sdk.AccAddress) MsgDeregisterResolver {
+	return MsgDeregisterResolver{From: from}
 }
 
 var _ sdk.Msg = (*MsgDeregisterResolver)(nil)
