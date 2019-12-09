@@ -17,6 +17,14 @@ func registerTxRoutes(ctx context.CLIContext, r *mux.Router) {
 		Methods("DELETE")
 	r.HandleFunc("/nodes/{id}/info", updateNodeInfoHandlerFunc(ctx)).
 		Methods("PUT")
+	r.HandleFunc("/nodes/{id}/add-free-client", addFreeClientHandlerFunc(ctx)).
+		Methods("POST")
+	r.HandleFunc("/nodes/{id}/remove-free-client/{address}", removeFreeClientHandlerFunc(ctx)).
+		Methods("DELETE")
+	r.HandleFunc("/nodes/{id}/add-vpn-on-resolver", addVPNOnResolverHandlerFunc(ctx)).
+		Methods("POST")
+	r.HandleFunc("/nodes/{id}/remove-vpn-on-resolver/{address}", removeVPNOnResolverHandlerFunc(ctx)).
+		Methods("POST")
 	r.HandleFunc("/nodes/{id}/subscriptions", startSubscriptionHandlerFunc(ctx)).
 		Methods("POST")
 
