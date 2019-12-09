@@ -68,4 +68,8 @@ func registerQueryRoutes(ctx context.CLIContext, r *mux.Router) {
 		Methods("GET")
 	r.HandleFunc("/accounts/{address}/resolver-nodes", getNodesOfResolverHandlerFunc(ctx)).
 		Methods("GET")
+
+	r.HandleFunc("/resolvers", getResolversHandlerFunc(ctx)).
+		Methods("GET")
+
 }
