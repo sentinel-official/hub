@@ -22,18 +22,18 @@ func QueryResolversClientsCmd(cdc *codec.Codec) *cobra.Command {
 
 			id := viper.GetString(flagNodeID)
 
-			freeClients, err := common.QueryResolversOfNode(ctx, id)
+			resolvers, err := common.QueryResolversOfNode(ctx, id)
 			if err != nil {
 				return err
 			}
 
 			bech32AccAddPrefix := sdk.GetConfig().GetBech32AccountAddrPrefix()
-			for _, freeClient := range freeClients {
-				_freeClient, err := bech32.ConvertAndEncode(bech32AccAddPrefix, freeClient)
+			for _, resolver := range resolvers {
+				_resolver, err := bech32.ConvertAndEncode(bech32AccAddPrefix, resolver)
 				if err != nil {
 					return err
 				}
-				fmt.Println(_freeClient)
+				fmt.Println(_resolver)
 			}
 
 			return nil
@@ -48,7 +48,7 @@ func QueryResolversClientsCmd(cdc *codec.Codec) *cobra.Command {
 
 func QueryNodesOfResolverCmd(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "nodes",
+		Use:   "nodes-resolver",
 		Short: "Query nodes of resolver",
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			ctx := context.NewCLIContext().WithCodec(cdc)
@@ -69,5 +69,6 @@ func QueryNodesOfResolverCmd(cdc *codec.Codec) *cobra.Command {
 
 	cmd.Flags().String(flagAddress, "", "Account address")
 	_ = cmd.MarkFlagRequired(flagAddress)
+
 	return cmd
 }

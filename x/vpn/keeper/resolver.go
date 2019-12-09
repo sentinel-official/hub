@@ -1,6 +1,8 @@
 package keeper
 
 import (
+	"fmt"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	hub "github.com/sentinel-official/hub/types"
@@ -30,7 +32,7 @@ func (k Keeper) GetResolver(ctx sdk.Context, id sdk.AccAddress) (resolver types.
 	return resolver, true
 }
 
-func (k Keeper) GetAllResolvers(ctx sdk.Context) (resolvers []types.Resolver) {
+func (k Keeper) GetAllResolvers(ctx sdk.Context) (resolvers types.Resolvers) {
 	store := ctx.KVStore(k.resolverKey)
 
 	iter := sdk.KVStorePrefixIterator(store, types.ResolverKeyPrefix)
@@ -69,12 +71,16 @@ func (k Keeper) GetNodesOfResolver(ctx sdk.Context, resolver sdk.AccAddress) (no
 	store := ctx.KVStore(k.resolverKey)
 	key := types.NodeOfResolverKey(resolver, nil)
 
+	fmt.Println("kkkkkkkkkkkkkkkkkkkk", key)
+
 	iter := sdk.KVStorePrefixIterator(store, key)
 	defer iter.Close()
 
 	for ; iter.Valid(); iter.Next() {
+		fmt.Println("iiiiiiiiiiiiiiiiiiii", iter.Value())
 		var _nodeID hub.NodeID
 		k.cdc.MustUnmarshalBinaryLengthPrefixed(iter.Value(), &_nodeID)
+		fmt.Println("iiiiiiiiiiiiiiiiiiii", iter.Value())
 		nodeIDs = append(nodeIDs, _nodeID)
 	}
 
