@@ -15,7 +15,7 @@ import (
 
 func QueryResolversClientsCmd(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "resolvers",
+		Use:   "resolvers-node",
 		Short: "Query resolvers of node",
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			ctx := context.NewCLIContext().WithCodec(cdc)

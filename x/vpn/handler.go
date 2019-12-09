@@ -38,6 +38,8 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 			return handleRegisterResolver(ctx, k, msg)
 		case types.MsgUpdateResolverInfo:
 			return handleUpdateResolverInfo(ctx, k, msg)
+		case types.MsgDeregisterResolver:
+			return handleDeregisterResolver(ctx, k, msg)
 
 		default:
 			return types.ErrorUnknownMsgType(reflect.TypeOf(msg).Name()).Result()
@@ -454,8 +456,23 @@ func handleUpdateResolverInfo(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpd
 		Owner:      msg.From,
 		Commission: msg.Commission,
 	}
-	resolver = resolver.UpdateInfo(_resolver)
 
+	resolver = resolver.UpdateInfo(_resolver)
+	k.SetResolver(ctx, resolver)
+
+	return sdk.Result{}
+}
+
+func handleDeregisterResolver(ctx sdk.Context, k keeper.Keeper, msg types.MsgDeregisterResolver) sdk.Result {
+	resolver, found := k.GetResolver(ctx, msg.From)
+	if !found {
+		return types.ErrorResolverDoesNotExist().Result()
+	}
+	if resolver.Status != types.StatusRegistered {
+		return types.ErrorInvalidResolverStatus().Result()
+	}
+
+	resolver.Status = types.StatusDeRegistered
 	k.SetResolver(ctx, resolver)
 
 	return sdk.Result{}

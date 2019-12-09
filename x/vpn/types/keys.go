@@ -42,8 +42,7 @@ var (
 	SessionsCountOfSubscriptionKeyPrefix = []byte{0x02}
 	SessionIDBySubscriptionIDKeyPrefix   = []byte{0x03}
 
-	ResolverCountKey  = []byte{0x01}
-	ResolverKeyPrefix = []byte{0x02}
+	ResolverKeyPrefix = []byte{0x01}
 
 	FreeNodesOfClientKeyPrefix = []byte{0x00}
 	FreeClientOfNodeKeyPrefix  = []byte{0x01}

@@ -18,7 +18,7 @@ const (
 	QuerierRoute                     = types.QuerierRoute
 	RouterKey                        = types.RouterKey
 	StoreKeySession                  = types.StoreKeySession
-	StoreKeyResolver = types.StoreKeyResolver
+	StoreKeyResolver                 = types.StoreKeyResolver
 	StoreKeyNode                     = types.StoreKeyNode
 	StoreKeyFreeClient               = types.StoreKeyFreeClients
 	StoreKeySubscription             = types.StoreKeySubscription
@@ -78,6 +78,9 @@ var (
 	NewMsgRegisterNode                        = types.NewMsgRegisterNode
 	NewMsgUpdateNodeInfo                      = types.NewMsgUpdateNodeInfo
 	NewMsgDeregisterNode                      = types.NewMsgDeregisterNode
+	NewMsgRegisterResolver                    = types.NewMsgRegisterResolver
+	NewMsgUpdateResolverInfo                  = types.NewMsgUpdateResolverInfo
+	NewMsgDeregisterResolver                  = types.NewMsgDeregisterResolver
 	NewParams                                 = types.NewParams
 	DefaultParams                             = types.DefaultParams
 	NewQueryNodeParams                        = types.NewQueryNodeParams

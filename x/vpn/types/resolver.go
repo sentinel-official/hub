@@ -2,6 +2,7 @@ package types
 
 import (
 	"fmt"
+	"strings"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
@@ -14,14 +15,14 @@ type Resolver struct {
 
 func (resolver Resolver) String() string {
 	return fmt.Sprintf(`
-Owner : %s
-Commission : %s
-Status : %s
+  Owner : %s
+  Commission : %s
+  Status : %s
 `, resolver.Owner, resolver.Commission, resolver.Status)
 }
 
 func (resolver Resolver) UpdateInfo(_resolver Resolver) Resolver {
-	if _resolver.Commission.GT(sdk.ZeroDec()) && _resolver.Commission.LT(sdk.OneDec()) { // commission rate between 0 to 1
+	if _resolver.Commission.GTE(sdk.ZeroDec()) && _resolver.Commission.LTE(sdk.OneDec()) { // commission rate between 0 to 1
 		resolver.Commission = _resolver.Commission
 	}
 
@@ -33,4 +34,15 @@ func (resolver Resolver) GetCommission(pay sdk.Coin) sdk.Coin {
 	pay.Amount = commission.RoundInt()
 
 	return pay
+}
+
+type Resolvers []Resolver
+
+func (resolvers Resolvers) String() string {
+	var out string
+	for _, resolver := range resolvers {
+		out += resolver.String() + "\n"
+	}
+
+	return strings.TrimSpace(out)
 }
