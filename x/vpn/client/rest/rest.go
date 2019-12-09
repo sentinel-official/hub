@@ -41,6 +41,10 @@ func registerQueryRoutes(ctx context.CLIContext, r *mux.Router) {
 		Methods("GET")
 	r.HandleFunc("/nodes/{id}", getNodeHandlerFunc(ctx)).
 		Methods("GET")
+	r.HandleFunc("/nodes/{id}/free-clients", getFreeClientsOfNodeHandlerFunc(ctx)).
+		Methods("GET")
+	r.HandleFunc("/nodes/{id}/resolvers", getResolversOfNodeHandlerFunc(ctx)).
+		Methods("GET")
 	r.HandleFunc("/nodes/{id}/subscriptions", getSubscriptionsOfNodeHandlerFunc(ctx)).
 		Methods("GET")
 
@@ -59,5 +63,9 @@ func registerQueryRoutes(ctx context.CLIContext, r *mux.Router) {
 	r.HandleFunc("/accounts/{address}/subscriptions", getSubscriptionsOfAddressHandlerFunc(ctx)).
 		Methods("GET")
 	r.HandleFunc("/accounts/{address}/nodes", getNodesOfAddressHandlerFunc(ctx)).
+		Methods("GET")
+	r.HandleFunc("/accounts/{address}/free-nodes", getFreeNodesOfClientHandlerFunc(ctx)).
+		Methods("GET")
+	r.HandleFunc("/accounts/{address}/resolver-nodes", getNodesOfResolverHandlerFunc(ctx)).
 		Methods("GET")
 }
