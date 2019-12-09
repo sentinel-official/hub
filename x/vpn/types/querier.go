@@ -27,6 +27,8 @@ const (
 
 	QueryResolversOfNode = "resolvers_of_node"
 	QueryNodesOfResolver = "nodes_of_resolver"
+
+	QueryResolvers = "resolvers"
 )
 
 type QueryNodeParams struct {

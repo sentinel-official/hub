@@ -119,7 +119,8 @@ func NewHubApp(logger log.Logger, db db.DB, traceStore io.Writer, loadLatest boo
 		baseapp.MainStoreKey, auth.StoreKey, staking.StoreKey,
 		supply.StoreKey, mint.StoreKey, distribution.StoreKey, slashing.StoreKey,
 		gov.StoreKey, params.StoreKey, deposit.StoreKey,
-		vpn.StoreKeyNode, vpn.StoreKeySubscription, vpn.StoreKeySession, vpn.StoreKeyFreeClient,
+		vpn.StoreKeyNode, vpn.StoreKeySubscription, vpn.StoreKeySession,
+		vpn.StoreKeyFreeClient, vpn.StoreKeyResolver,
 	)
 
 	transientKeys := sdk.NewTransientStoreKeys(staking.TStoreKey, params.TStoreKey)
