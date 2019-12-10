@@ -328,14 +328,14 @@ func Test_handleStartSubscription(t *testing.T) {
 	require.Equal(t, types.Subscription{}, subscription)
 
 	handler := NewHandler(k)
-	msg := NewMsgStartSubscription(types.TestAddress2, hub.NewNodeID(1), sdk.NewInt64Coin("stake", 100))
+	msg := NewMsgStartSubscription(types.TestAddress2, types.TestAddress1, hub.NewNodeID(1), sdk.NewInt64Coin("stake", 100))
 	res := handler(ctx, *msg)
 	require.False(t, res.IsOK())
 
 	node = types.TestNode
 	node.Status = StatusDeRegistered
 	k.SetNode(ctx, node)
-	msg = NewMsgStartSubscription(types.TestAddress2, node.ID, sdk.NewInt64Coin("stake", 100))
+	msg = NewMsgStartSubscription(types.TestAddress2, types.TestAddress1, node.ID, sdk.NewInt64Coin("stake", 100))
 	res = handler(ctx, *msg)
 	require.False(t, res.IsOK())
 
@@ -349,7 +349,7 @@ func Test_handleStartSubscription(t *testing.T) {
 
 	node.Status = StatusRegistered
 	k.SetNode(ctx, node)
-	msg = NewMsgStartSubscription(types.TestAddress2, node.ID, sdk.NewInt64Coin("stake", 100))
+	msg = NewMsgStartSubscription(types.TestAddress2, types.TestAddress1, node.ID, sdk.NewInt64Coin("stake", 100))
 	res = handler(ctx, *msg)
 	require.False(t, res.IsOK())
 
@@ -361,7 +361,7 @@ func Test_handleStartSubscription(t *testing.T) {
 	require.Equal(t, false, found)
 	require.Equal(t, types.Subscription{}, subscription)
 
-	msg = NewMsgStartSubscription(types.TestAddress2, node.ID, sdk.NewInt64Coin("invalid", 100))
+	msg = NewMsgStartSubscription(types.TestAddress2, types.TestAddress2, node.ID, sdk.NewInt64Coin("invalid", 100))
 	res = handler(ctx, *msg)
 	require.False(t, res.IsOK())
 
@@ -377,7 +377,7 @@ func Test_handleStartSubscription(t *testing.T) {
 	require.Nil(t, err)
 	require.Equal(t, sdk.Coins{sdk.NewInt64Coin("stake", 100)}, coins)
 
-	msg = NewMsgStartSubscription(types.TestAddress2, node.ID, sdk.NewInt64Coin("stake", 100))
+	msg = NewMsgStartSubscription(types.TestAddress2, types.TestAddress1, node.ID, sdk.NewInt64Coin("stake", 100))
 	res = handler(ctx, *msg)
 	require.True(t, res.IsOK())
 
@@ -410,7 +410,7 @@ func Test_handleStartSubscription(t *testing.T) {
 	subscriptions := k.GetSubscriptionsOfNode(ctx, node.ID)
 	require.Equal(t, []types.Subscription{types.TestSubscription}, subscriptions)
 
-	msg = NewMsgStartSubscription(types.TestAddress2, node.ID, sdk.NewInt64Coin("stake", 100))
+	msg = NewMsgStartSubscription(types.TestAddress2, types.TestAddress1, node.ID, sdk.NewInt64Coin("stake", 100))
 	res = handler(ctx, *msg)
 	require.False(t, res.IsOK())
 
@@ -418,7 +418,7 @@ func Test_handleStartSubscription(t *testing.T) {
 	require.Nil(t, err)
 	require.Equal(t, sdk.Coins{sdk.NewInt64Coin("stake", 100)}.Add(sdk.Coins{sdk.NewInt64Coin("stake", 100)}), coins)
 
-	msg = NewMsgStartSubscription(types.TestAddress2, node.ID, sdk.NewInt64Coin("stake", 100))
+	msg = NewMsgStartSubscription(types.TestAddress2, types.TestAddress1, node.ID, sdk.NewInt64Coin("stake", 100))
 	res = handler(ctx, *msg)
 	require.True(t, res.IsOK())
 
@@ -732,4 +732,64 @@ func Test_handleUpdateSessionInfo(t *testing.T) {
 
 	count = k.GetSessionsCountOfSubscription(ctx, subscription.ID)
 	require.Equal(t, uint64(1), count)
+}
+
+func Test_handleResolverNode(t *testing.T) {
+	ctx, k, _, _ := keeper.CreateTestInput(t, false)
+	handler := NewHandler(k)
+
+	resolver := types.TestResolver
+
+	data, found := k.GetResolver(ctx, resolver.Owner)
+	require.False(t, found)
+
+	msg := NewMsgRegisterResolver(resolver.Owner, resolver.Commission)
+	res := handler(ctx, msg)
+	require.True(t, res.IsOK())
+
+	data, found = k.GetResolver(ctx, resolver.Owner)
+	require.True(t, found)
+	require.Equal(t, data, resolver)
+
+	msg = NewMsgRegisterResolver(resolver.Owner, resolver.Commission)
+	res = handler(ctx, msg)
+	require.False(t, res.IsOK())
+	require.Equal(t, res.Log, types.ErrorResolverAlreadyExist().ABCILog())
+
+	updateResolverInfoMsg := NewMsgUpdateResolverInfo(types.TestAddress2, sdk.NewDecWithPrec(2, 1))
+	res = handler(ctx, updateResolverInfoMsg)
+	require.False(t, res.IsOK())
+
+	resolver.Status = StatusDeRegistered
+	k.SetResolver(ctx, resolver)
+	updateResolverInfoMsg = NewMsgUpdateResolverInfo(types.TestAddress1, sdk.NewDecWithPrec(2, 1))
+	res = handler(ctx, updateResolverInfoMsg)
+	require.False(t, res.IsOK())
+
+	resolver.Status = StatusRegistered
+	k.SetResolver(ctx, resolver)
+	updateResolverInfoMsg = NewMsgUpdateResolverInfo(types.TestAddress1, sdk.NewDecWithPrec(2, 1))
+	res = handler(ctx, updateResolverInfoMsg)
+	require.True(t, res.IsOK())
+
+	resolver, found = k.GetResolver(ctx, types.TestAddress1)
+	require.True(t, found)
+	require.Equal(t, sdk.NewDecWithPrec(2, 1), resolver.Commission)
+
+	deRegisterResolverMsg := NewMsgDeregisterResolver(types.TestAddress2)
+	res = handler(ctx, deRegisterResolverMsg)
+	require.False(t, res.IsOK())
+	require.Equal(t, types.ErrorResolverDoesNotExist().ABCILog(), res.Log)
+
+	resolver.Status = StatusDeRegistered
+	k.SetResolver(ctx, resolver)
+	deRegisterResolverMsg = NewMsgDeregisterResolver(types.TestAddress1)
+	res = handler(ctx, deRegisterResolverMsg)
+	require.False(t, res.IsOK())
+
+	resolver.Status = StatusRegistered
+	k.SetResolver(ctx, resolver)
+	deRegisterResolverMsg = NewMsgDeregisterResolver(types.TestAddress1)
+	res = handler(ctx, deRegisterResolverMsg)
+	require.True(t, res.IsOK())
 }

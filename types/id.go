@@ -15,6 +15,7 @@ const (
 	NodeIDPrefix         = "node"
 	SessionIDPrefix      = "sess"
 	SubscriptionIDPrefix = "subs"
+	ResolverIDPrefix     = "reso"
 )
 
 type ID interface {

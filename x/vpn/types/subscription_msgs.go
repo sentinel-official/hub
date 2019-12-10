@@ -11,9 +11,10 @@ import (
 var _ sdk.Msg = (*MsgStartSubscription)(nil)
 
 type MsgStartSubscription struct {
-	From    sdk.AccAddress `json:"from"`
-	NodeID  hub.NodeID     `json:"node_id"`
-	Deposit sdk.Coin       `json:"deposit"`
+	From     sdk.AccAddress `json:"from"`
+	Resolver sdk.AccAddress `json:"resolver"`
+	NodeID   hub.NodeID     `json:"node_id"`
+	Deposit  sdk.Coin       `json:"deposit"`
 }
 
 func (msg MsgStartSubscription) Type() string {
@@ -23,6 +24,12 @@ func (msg MsgStartSubscription) Type() string {
 func (msg MsgStartSubscription) ValidateBasic() sdk.Error {
 	if msg.From == nil || msg.From.Empty() {
 		return ErrorInvalidField("from")
+	}
+	if msg.Resolver == nil || msg.Resolver.Empty() {
+		return ErrorInvalidField("resolver")
+	}
+	if msg.NodeID == nil {
+		return ErrorInvalidField("node_id")
 	}
 	if msg.Deposit.Denom == "" || !msg.Deposit.IsPositive() {
 		return ErrorInvalidField("deposit")
@@ -48,11 +55,12 @@ func (msg MsgStartSubscription) Route() string {
 	return RouterKey
 }
 
-func NewMsgStartSubscription(from sdk.AccAddress, nodeID hub.NodeID, deposit sdk.Coin) *MsgStartSubscription {
+func NewMsgStartSubscription(from sdk.AccAddress, resolver sdk.AccAddress, nodeID hub.NodeID, deposit sdk.Coin) *MsgStartSubscription {
 	return &MsgStartSubscription{
-		From:    from,
-		NodeID:  nodeID,
-		Deposit: deposit,
+		From:     from,
+		Resolver: resolver,
+		NodeID:   nodeID,
+		Deposit:  deposit,
 	}
 }
 

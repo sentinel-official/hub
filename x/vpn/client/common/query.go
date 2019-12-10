@@ -87,6 +87,126 @@ func QueryAllNodes(ctx context.CLIContext) ([]types.Node, error) {
 	return nodes, nil
 }
 
+func QueryFreeNodesOfClient(ctx context.CLIContext, address string) ([]hub.NodeID, error) {
+	_address, err := sdk.AccAddressFromBech32(address)
+	if err != nil {
+		return nil, err
+	}
+
+	params := types.NewQueryNodesOfFreeClientPrams(_address)
+
+	bytes, err := ctx.Codec.MarshalJSON(params)
+	if err != nil {
+		return nil, err
+	}
+
+	path := fmt.Sprintf("custom/%s/%s", types.QuerierRoute, types.QueryFreeNodesOfClient)
+	res, _, err := ctx.QueryWithData(path, bytes)
+	if err != nil {
+		return nil, err
+	}
+	if string(res) == "[]" || string(res) == "null" {
+		return nil, fmt.Errorf("no free clients found")
+	}
+
+	var freeNodes []hub.NodeID
+	if err := ctx.Codec.UnmarshalJSON(res, &freeNodes); err != nil {
+		return nil, err
+	}
+
+	return freeNodes, nil
+}
+
+func QueryFreeClientsOfNode(ctx context.CLIContext, id string) ([]sdk.AccAddress, error) {
+	nodeID, err := hub.NewNodeIDFromString(id)
+	if err != nil {
+		return nil, err
+	}
+
+	params := types.NewQueryFreeClientsOfNodeParams(nodeID)
+
+	bytes, err := ctx.Codec.MarshalJSON(params)
+	if err != nil {
+		return nil, err
+	}
+
+	path := fmt.Sprintf("custom/%s/%s", types.QuerierRoute, types.QueryFreeClientsOfNode)
+	res, _, err := ctx.QueryWithData(path, bytes)
+	if err != nil {
+		return nil, err
+	}
+	if string(res) == "[]" || string(res) == "null" {
+		return nil, fmt.Errorf("no free clients found")
+	}
+
+	var freeClients []sdk.AccAddress
+	if err := ctx.Codec.UnmarshalJSON(res, &freeClients); err != nil {
+		return nil, err
+	}
+
+	return freeClients, nil
+}
+
+func QueryNodesOfResolver(ctx context.CLIContext, address string) ([]hub.NodeID, error) {
+	_address, err := sdk.AccAddressFromBech32(address)
+	if err != nil {
+		return nil, err
+	}
+
+	params := types.NewQueryNodesOfResolverPrams(_address)
+
+	bytes, err := ctx.Codec.MarshalJSON(params)
+	if err != nil {
+		return nil, err
+	}
+
+	path := fmt.Sprintf("custom/%s/%s", types.QuerierRoute, types.QueryNodesOfResolver)
+	res, _, err := ctx.QueryWithData(path, bytes)
+	if err != nil {
+		return nil, err
+	}
+	if string(res) == "[]" || string(res) == "null" {
+		return nil, fmt.Errorf("no resolvers found")
+	}
+
+	var freeNodes []hub.NodeID
+	if err := ctx.Codec.UnmarshalJSON(res, &freeNodes); err != nil {
+		return nil, err
+	}
+
+	return freeNodes, nil
+}
+
+func QueryResolversOfNode(ctx context.CLIContext, id string) ([]sdk.AccAddress, error) {
+	nodeID, err := hub.NewNodeIDFromString(id)
+	if err != nil {
+		return nil, err
+	}
+
+	params := types.NewQueryResolversOfNodeParams(nodeID)
+
+	bytes, err := ctx.Codec.MarshalJSON(params)
+	if err != nil {
+		return nil, err
+	}
+
+	path := fmt.Sprintf("custom/%s/%s", types.QuerierRoute, types.QueryResolversOfNode)
+	res, _, err := ctx.QueryWithData(path, bytes)
+	if err != nil {
+		return nil, err
+	}
+	if string(res) == "[]" || string(res) == "null" {
+		return nil, fmt.Errorf("no nodes found")
+	}
+
+	var resolvers []sdk.AccAddress
+	if err := ctx.Codec.UnmarshalJSON(res, &resolvers); err != nil {
+		return nil, err
+	}
+
+	return resolvers, nil
+}
+
 func QuerySubscription(ctx context.CLIContext, s string) (*types.Subscription, error) {
 	id, err := hub.NewSubscriptionIDFromString(s)
 	if err != nil {

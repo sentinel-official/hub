@@ -7,21 +7,20 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/rest"
 	"github.com/cosmos/cosmos-sdk/x/auth/client/utils"
-	"github.com/gorilla/mux"
 
 	hub "github.com/sentinel-official/hub/types"
 	"github.com/sentinel-official/hub/x/vpn/types"
 )
 
-type msgStartSubscription struct {
-	BaseReq  rest.BaseReq `json:"base_req"`
-	Resolver string       `json:"resolver"`
-	Deposit  string       `json:"deposit"`
+type msgAddVPNOnResolver struct {
+	BaseReq rest.BaseReq `json:"base_req"`
+	NodeID  string       `json:"node_id"`
+	Address string       `json:"address"`
 }
 
-func startSubscriptionHandlerFunc(ctx context.CLIContext) http.HandlerFunc {
+func addVPNOnResolverHandlerFunc(ctx context.CLIContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var req msgStartSubscription
+		var req msgAddVPNOnResolver
 
 		if !rest.ReadRESTReq(w, r, ctx.Codec, &req) {
 			return
@@ -38,25 +37,19 @@ func startSubscriptionHandlerFunc(ctx context.CLIContext) http.HandlerFunc {
 			return
 		}
 
-		resolver, err := sdk.AccAddressFromBech32(req.Resolver)
+		nodeID, err := hub.NewNodeIDFromString(req.NodeID)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
 		}
 
-		deposit, err := sdk.ParseCoin(req.Deposit)
+		resolver, err := sdk.AccAddressFromBech32(req.Address)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
 		}
 
-		vars := mux.Vars(r)
-		id, err := hub.NewNodeIDFromString(vars["id"])
-		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
-			return
-		}
-		msg := types.NewMsgStartSubscription(fromAddress, resolver, id, deposit)
+		msg := types.NewMsgAddVPNOnResolver(fromAddress, nodeID, resolver)
 		if err := msg.ValidateBasic(); err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
