@@ -14,7 +14,6 @@ const (
 	StoreKeySession      = "vpn_session"
 	StoreKeyNode         = "vpn_node"
 	StoreKeySubscription = "vpn_subscription"
-	StoreKeyFreeClients  = "vpn_free_client"
 	StoreKeyResolver     = "resolver_node"
 
 	StatusRegistered   = "REGISTERED"

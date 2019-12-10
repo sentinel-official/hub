@@ -20,7 +20,6 @@ const (
 	StoreKeySession                  = types.StoreKeySession
 	StoreKeyResolver                 = types.StoreKeyResolver
 	StoreKeyNode                     = types.StoreKeyNode
-	StoreKeyFreeClient               = types.StoreKeyFreeClients
 	StoreKeySubscription             = types.StoreKeySubscription
 	StatusRegistered                 = types.StatusRegistered
 	StatusActive                     = types.StatusActive
