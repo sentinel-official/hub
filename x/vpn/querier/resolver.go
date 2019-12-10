@@ -53,7 +53,6 @@ func queryNodesOfResolver(ctx sdk.Context, req abci.RequestQuery, k keeper.Keepe
 	}
 
 	nodes := k.GetNodesOfResolver(ctx, params.Address)
-	fmt.Println("nnnnnnnnnnnnnnnnnnnnnn", nodes)
 
 	res, err := types.ModuleCdc.MarshalJSON(nodes)
 	if err != nil {

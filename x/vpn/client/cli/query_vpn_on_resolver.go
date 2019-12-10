@@ -7,22 +7,19 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 	"github.com/tendermint/tendermint/libs/bech32"
 
 	"github.com/sentinel-official/hub/x/vpn/client/common"
 )
 
-func QueryResolversClientsCmd(cdc *codec.Codec) *cobra.Command {
+func QueryResolversOfNodeCmd(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "resolvers-node",
-		Short: "Query resolvers of node",
+		Use:   "resolvers-of-node [node-id]",
+		Short: "Query resolvers of node ",
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			ctx := context.NewCLIContext().WithCodec(cdc)
 
-			id := viper.GetString(flagNodeID)
-
-			resolvers, err := common.QueryResolversOfNode(ctx, id)
+			resolvers, err := common.QueryResolversOfNode(ctx, args[0])
 			if err != nil {
 				return err
 			}
@@ -40,22 +37,17 @@ func QueryResolversClientsCmd(cdc *codec.Codec) *cobra.Command {
 		},
 	}
 
-	cmd.Flags().String(flagNodeID, "", "Node ID")
-	_ = cmd.MarkFlagRequired(flagNodeID)
-
 	return cmd
 }
 
 func QueryNodesOfResolverCmd(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "nodes-resolver",
+		Use:   "nodes-of-resolver [address]",
 		Short: "Query nodes of resolver",
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			ctx := context.NewCLIContext().WithCodec(cdc)
 
-			address := viper.GetString(flagAddress)
-
-			nodes, err := common.QueryNodesOfResolver(ctx, address)
+			nodes, err := common.QueryNodesOfResolver(ctx, args[0])
 			if err != nil {
 				return err
 			}
@@ -66,9 +58,6 @@ func QueryNodesOfResolverCmd(cdc *codec.Codec) *cobra.Command {
 			return nil
 		},
 	}
-
-	cmd.Flags().String(flagAddress, "", "Account address")
-	_ = cmd.MarkFlagRequired(flagAddress)
 
 	return cmd
 }
