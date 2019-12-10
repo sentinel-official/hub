@@ -19,23 +19,23 @@ func TestMsgStartSubscription_ValidateBasic(t *testing.T) {
 	}{
 		{
 			"from is nil",
-			NewMsgStartSubscription(nil, hub.NewNodeID(1), sdk.NewInt64Coin("stake", 100)),
+			NewMsgStartSubscription(nil, TestAddress2, hub.NewNodeID(1), sdk.NewInt64Coin("stake", 100)),
 			ErrorInvalidField("from"),
 		}, {
 			"from is empty",
-			NewMsgStartSubscription([]byte(""), hub.NewNodeID(1), sdk.NewInt64Coin("stake", 100)),
+			NewMsgStartSubscription([]byte(""), TestAddress1, hub.NewNodeID(1), sdk.NewInt64Coin("stake", 100)),
 			ErrorInvalidField("from"),
 		}, {
 			"deposit is empty",
-			NewMsgStartSubscription(TestAddress1, hub.NewNodeID(1), sdk.Coin{}),
+			NewMsgStartSubscription(TestAddress1, TestAddress2, hub.NewNodeID(1), sdk.Coin{}),
 			ErrorInvalidField("deposit"),
 		}, {
 			"deposit is zero",
-			NewMsgStartSubscription(TestAddress1, hub.NewNodeID(1), sdk.NewInt64Coin("stake", 0)),
+			NewMsgStartSubscription(TestAddress1, TestAddress1, hub.NewNodeID(1), sdk.NewInt64Coin("stake", 0)),
 			ErrorInvalidField("deposit"),
 		}, {
 			"valid",
-			NewMsgStartSubscription(TestAddress1, hub.NewNodeID(1), sdk.NewInt64Coin("stake", 100)),
+			NewMsgStartSubscription(TestAddress1, TestAddress2, hub.NewNodeID(1), sdk.NewInt64Coin("stake", 100)),
 			nil,
 		},
 	}
@@ -50,7 +50,7 @@ func TestMsgStartSubscription_ValidateBasic(t *testing.T) {
 }
 
 func TestMsgStartSubscription_GetSignBytes(t *testing.T) {
-	msg := NewMsgStartSubscription(TestAddress1, hub.NewNodeID(1), sdk.NewInt64Coin("stake", 100))
+	msg := NewMsgStartSubscription(TestAddress1, TestAddress2, hub.NewNodeID(1), sdk.NewInt64Coin("stake", 100))
 	msgBytes, err := json.Marshal(msg)
 	if err != nil {
 		panic(err)
@@ -60,17 +60,17 @@ func TestMsgStartSubscription_GetSignBytes(t *testing.T) {
 }
 
 func TestMsgStartSubscription_GetSigners(t *testing.T) {
-	msg := NewMsgStartSubscription(TestAddress1, hub.NewNodeID(1), sdk.NewInt64Coin("stake", 100))
+	msg := NewMsgStartSubscription(TestAddress1, TestAddress2, hub.NewNodeID(1), sdk.NewInt64Coin("stake", 100))
 	require.Equal(t, []sdk.AccAddress{TestAddress1}, msg.GetSigners())
 }
 
 func TestMsgStartSubscription_Type(t *testing.T) {
-	msg := NewMsgStartSubscription(TestAddress1, hub.NewNodeID(1), sdk.NewInt64Coin("stake", 100))
+	msg := NewMsgStartSubscription(TestAddress1, TestAddress2, hub.NewNodeID(1), sdk.NewInt64Coin("stake", 100))
 	require.Equal(t, "start_subscription", msg.Type())
 }
 
 func TestMsgStartSubscription_Route(t *testing.T) {
-	msg := NewMsgStartSubscription(TestAddress1, hub.NewNodeID(1), sdk.NewInt64Coin("stake", 100))
+	msg := NewMsgStartSubscription(TestAddress1, TestAddress2, hub.NewNodeID(1), sdk.NewInt64Coin("stake", 100))
 	require.Equal(t, RouterKey, msg.Route())
 }
 

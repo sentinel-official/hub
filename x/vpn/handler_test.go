@@ -328,14 +328,14 @@ func Test_handleStartSubscription(t *testing.T) {
 	require.Equal(t, types.Subscription{}, subscription)
 
 	handler := NewHandler(k)
-	msg := NewMsgStartSubscription(types.TestAddress2, hub.NewNodeID(1), sdk.NewInt64Coin("stake", 100))
+	msg := NewMsgStartSubscription(types.TestAddress2, types.TestAddress1, hub.NewNodeID(1), sdk.NewInt64Coin("stake", 100))
 	res := handler(ctx, *msg)
 	require.False(t, res.IsOK())
 
 	node = types.TestNode
 	node.Status = StatusDeRegistered
 	k.SetNode(ctx, node)
-	msg = NewMsgStartSubscription(types.TestAddress2, node.ID, sdk.NewInt64Coin("stake", 100))
+	msg = NewMsgStartSubscription(types.TestAddress2, types.TestAddress1, node.ID, sdk.NewInt64Coin("stake", 100))
 	res = handler(ctx, *msg)
 	require.False(t, res.IsOK())
 
@@ -349,7 +349,7 @@ func Test_handleStartSubscription(t *testing.T) {
 
 	node.Status = StatusRegistered
 	k.SetNode(ctx, node)
-	msg = NewMsgStartSubscription(types.TestAddress2, node.ID, sdk.NewInt64Coin("stake", 100))
+	msg = NewMsgStartSubscription(types.TestAddress2, types.TestAddress1, node.ID, sdk.NewInt64Coin("stake", 100))
 	res = handler(ctx, *msg)
 	require.False(t, res.IsOK())
 
@@ -361,7 +361,7 @@ func Test_handleStartSubscription(t *testing.T) {
 	require.Equal(t, false, found)
 	require.Equal(t, types.Subscription{}, subscription)
 
-	msg = NewMsgStartSubscription(types.TestAddress2, node.ID, sdk.NewInt64Coin("invalid", 100))
+	msg = NewMsgStartSubscription(types.TestAddress2, types.TestAddress2, node.ID, sdk.NewInt64Coin("invalid", 100))
 	res = handler(ctx, *msg)
 	require.False(t, res.IsOK())
 
@@ -377,7 +377,7 @@ func Test_handleStartSubscription(t *testing.T) {
 	require.Nil(t, err)
 	require.Equal(t, sdk.Coins{sdk.NewInt64Coin("stake", 100)}, coins)
 
-	msg = NewMsgStartSubscription(types.TestAddress2, node.ID, sdk.NewInt64Coin("stake", 100))
+	msg = NewMsgStartSubscription(types.TestAddress2, types.TestAddress1, node.ID, sdk.NewInt64Coin("stake", 100))
 	res = handler(ctx, *msg)
 	require.True(t, res.IsOK())
 
@@ -410,7 +410,7 @@ func Test_handleStartSubscription(t *testing.T) {
 	subscriptions := k.GetSubscriptionsOfNode(ctx, node.ID)
 	require.Equal(t, []types.Subscription{types.TestSubscription}, subscriptions)
 
-	msg = NewMsgStartSubscription(types.TestAddress2, node.ID, sdk.NewInt64Coin("stake", 100))
+	msg = NewMsgStartSubscription(types.TestAddress2, types.TestAddress1, node.ID, sdk.NewInt64Coin("stake", 100))
 	res = handler(ctx, *msg)
 	require.False(t, res.IsOK())
 
@@ -418,7 +418,7 @@ func Test_handleStartSubscription(t *testing.T) {
 	require.Nil(t, err)
 	require.Equal(t, sdk.Coins{sdk.NewInt64Coin("stake", 100)}.Add(sdk.Coins{sdk.NewInt64Coin("stake", 100)}), coins)
 
-	msg = NewMsgStartSubscription(types.TestAddress2, node.ID, sdk.NewInt64Coin("stake", 100))
+	msg = NewMsgStartSubscription(types.TestAddress2, types.TestAddress1, node.ID, sdk.NewInt64Coin("stake", 100))
 	res = handler(ctx, *msg)
 	require.True(t, res.IsOK())
 

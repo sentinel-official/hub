@@ -97,7 +97,7 @@ func NewMsgUpdateResolverInfo(from sdk.AccAddress, commission sdk.Dec) MsgUpdate
 var _ sdk.Msg = (*MsgUpdateResolverInfo)(nil)
 
 type MsgDeregisterResolver struct {
-	From sdk.AccAddress
+	From sdk.AccAddress `json:"from"`
 }
 
 func (msg MsgDeregisterResolver) Route() string {
