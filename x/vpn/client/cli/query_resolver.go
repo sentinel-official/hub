@@ -3,9 +3,10 @@ package cli
 import (
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/codec"
-	"github.com/sentinel-official/hub/x/vpn/client/common"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+
+	"github.com/sentinel-official/hub/x/vpn/client/common"
 )
 
 func QueryResolversCmd(cdc *codec.Codec) *cobra.Command {

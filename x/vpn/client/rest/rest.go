@@ -34,6 +34,14 @@ func registerTxRoutes(ctx context.CLIContext, r *mux.Router) {
 		Methods("POST")
 	r.HandleFunc("/subscriptions/{id}/sessions", updateSessionInfoHandlerFunc(ctx)).
 		Methods("PUT")
+
+	r.HandleFunc("/resolver", registerResolverHandleFunc(ctx)).
+		Methods("POST")
+	r.HandleFunc("/resolver/update", updateResolverHandleFunc(ctx)).
+		Methods("PUT")
+	r.HandleFunc("/resolver/de-register", deregisterResolverHandleFunc(ctx)).
+		Methods("DELETE")
+
 }
 
 func registerQueryRoutes(ctx context.CLIContext, r *mux.Router) {
