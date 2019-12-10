@@ -2,7 +2,9 @@ package common
 
 import (
 	"fmt"
+
 	"github.com/cosmos/cosmos-sdk/client/context"
+
 	"github.com/sentinel-official/hub/x/vpn/types"
 )
 
@@ -35,6 +37,6 @@ func QueryResolvers(ctx context.CLIContext, address string) (types.Resolvers, er
 		fmt.Println("inside +++++++++++++++++++")
 		return nil, err
 	}
-	
+
 	return resolvers, nil
 }
