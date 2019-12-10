@@ -220,6 +220,9 @@ func handleAddVPNOnResolver(ctx sdk.Context, k keeper.Keeper, msg types.MsgAddVP
 	if !found {
 		return types.ErrorResolverDoesNotExist().Result()
 	}
+	if resolver.Status == types.StatusDeRegistered {
+		return types.ErrorInvalidResolverStatus().Result()
+	}
 
 	k.SetResolverOfNode(ctx, node.ID, resolver.Owner)
 	k.SetNodeOfResolver(ctx, resolver.Owner, node.ID)
