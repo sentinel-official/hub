@@ -356,7 +356,7 @@ func handleEndSubscription(ctx sdk.Context, k keeper.Keeper, msg types.MsgEndSub
 
 	freeClients := k.GetFreeClientsOfNode(ctx, subscription.NodeID)
 
-	if !types.IsFreeClient(freeClients, msg.From) {
+	if !types.IsFreeClient(freeClients, msg.From) && !subscription.RemainingDeposit.IsZero() {
 		if err := k.SubtractDeposit(ctx, subscription.Client, subscription.RemainingDeposit); err != nil {
 			return err.Result()
 		}

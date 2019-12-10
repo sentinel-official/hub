@@ -32,7 +32,6 @@ func QueryResolvers(ctx context.CLIContext, address string) (types.Resolvers, er
 	}
 
 	if err := ctx.Codec.UnmarshalJSON(res, &resolvers); err != nil {
-		fmt.Println("inside +++++++++++++++++++")
 		return nil, err
 	}
 	
