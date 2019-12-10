@@ -2,9 +2,11 @@ package querier
 
 import (
 	"fmt"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/sentinel-official/hub/x/vpn/types"
 	abci "github.com/tendermint/tendermint/abci/types"
+
+	"github.com/sentinel-official/hub/x/vpn/types"
 
 	"github.com/sentinel-official/hub/x/vpn/keeper"
 )

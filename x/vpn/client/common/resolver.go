@@ -2,7 +2,9 @@ package common
 
 import (
 	"fmt"
+
 	"github.com/cosmos/cosmos-sdk/client/context"
+
 	"github.com/sentinel-official/hub/x/vpn/types"
 )
 

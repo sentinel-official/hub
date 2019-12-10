@@ -2,10 +2,11 @@ package types
 
 import (
 	"encoding/json"
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/stretchr/testify/require"
 	"reflect"
 	"testing"
+
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/stretchr/testify/require"
 )
 
 func TestMsgRegisterResolver_GetSignBytes(t *testing.T) {

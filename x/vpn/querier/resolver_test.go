@@ -2,12 +2,13 @@ package querier
 
 import (
 	"fmt"
-	"github.com/sentinel-official/hub/x/vpn/keeper"
-	"github.com/sentinel-official/hub/x/vpn/types"
+	"testing"
+
 	"github.com/stretchr/testify/require"
 	abci "github.com/tendermint/tendermint/abci/types"
 
-	"testing"
+	"github.com/sentinel-official/hub/x/vpn/keeper"
+	"github.com/sentinel-official/hub/x/vpn/types"
 )
 
 func Test_queryResolver(t *testing.T) {
