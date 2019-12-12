@@ -20,7 +20,6 @@ const (
 	StoreKeySession                  = types.StoreKeySession
 	StoreKeyResolver                 = types.StoreKeyResolver
 	StoreKeyNode                     = types.StoreKeyNode
-	StoreKeyFreeClient               = types.StoreKeyFreeClients
 	StoreKeySubscription             = types.StoreKeySubscription
 	StatusRegistered                 = types.StatusRegistered
 	StatusActive                     = types.StatusActive
@@ -29,6 +28,11 @@ const (
 	QueryNode                        = types.QueryNode
 	QueryNodesOfAddress              = types.QueryNodesOfAddress
 	QueryAllNodes                    = types.QueryAllNodes
+	QueryFreeNodesOfClient           = types.QueryFreeNodesOfClient
+	QueryFreeClientsOfNode           = types.QueryFreeClientsOfNode
+	QueryResolversOfNode             = types.QueryResolversOfNode
+	QueryNodesOfResolver             = types.QueryNodesOfResolver
+	QueryResolvers                   = types.QueryResolvers
 	QuerySubscription                = types.QuerySubscription
 	QuerySubscriptionsOfNode         = types.QuerySubscriptionsOfNode
 	QuerySubscriptionsOfAddress      = types.QuerySubscriptionsOfAddress
@@ -76,6 +80,10 @@ var (
 	ActiveNodeIDsKey                          = types.ActiveNodeIDsKey
 	ActiveSessionIDsKey                       = types.ActiveSessionIDsKey
 	NewMsgRegisterNode                        = types.NewMsgRegisterNode
+	NewMsgAddFreeClient                       = types.NewMsgAddFreeClient
+	NewMsgRemoveFreeClient                    = types.NewMsgRemoveFreeClient
+	NewMsgAddVPNOnResolver                    = types.NewMsgAddVPNOnResolver
+	NewMsgRemoveVPNOnResolver                 = types.NewMsgRemoveVPNOnResolver
 	NewMsgUpdateNodeInfo                      = types.NewMsgUpdateNodeInfo
 	NewMsgDeregisterNode                      = types.NewMsgDeregisterNode
 	NewMsgRegisterResolver                    = types.NewMsgRegisterResolver
@@ -85,6 +93,10 @@ var (
 	DefaultParams                             = types.DefaultParams
 	NewQueryNodeParams                        = types.NewQueryNodeParams
 	NewQueryNodesOfAddressParams              = types.NewQueryNodesOfAddressParams
+	NewQueryFreeClientsOfNodeParams           = types.NewQueryFreeClientsOfNodeParams
+	NewQueryNodesOfFreeClientPrams            = types.NewQueryNodesOfFreeClientPrams
+	NewQueryResolversOfNodeParams             = types.NewQueryResolversOfNodeParams
+	NewQueryNodesOfResolverPrams              = types.NewQueryNodesOfResolverPrams
 	NewQuerySubscriptionParams                = types.NewQuerySubscriptionParams
 	NewQuerySubscriptionsOfNodePrams          = types.NewQuerySubscriptionsOfNodePrams
 	NewQuerySubscriptionsOfAddressParams      = types.NewQuerySubscriptionsOfAddressParams

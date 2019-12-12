@@ -27,6 +27,7 @@ func queryFreeNodesOfClient(ctx sdk.Context, req abci.RequestQuery, k keeper.Kee
 
 func queryFreeClientsOfNode(ctx sdk.Context, req abci.RequestQuery, k keeper.Keeper) ([]byte, sdk.Error) {
 	var params types.QueryFreeClientsOfNodeParams
+
 	if err := types.ModuleCdc.UnmarshalJSON(req.Data, &params); err != nil {
 		return nil, types.ErrorUnmarshal()
 	}

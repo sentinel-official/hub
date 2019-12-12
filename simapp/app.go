@@ -217,7 +217,6 @@ func NewSimApp(logger log.Logger, db db.DB,
 		app.supplyKeeper)
 	app.vpnKeeper = vpn.NewKeeper(app.cdc,
 		keys[vpn.StoreKeyNode],
-		keys[vpn.StoreKeyFreeClient],
 		keys[vpn.StoreKeySubscription],
 		keys[vpn.StoreKeySession],
 		keys[vpn.StoreKeyResolver],

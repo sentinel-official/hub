@@ -7,7 +7,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 	"github.com/tendermint/tendermint/libs/bech32"
 
 	"github.com/sentinel-official/hub/x/vpn/client/common"
@@ -15,14 +14,12 @@ import (
 
 func QueryFreeClientsCmd(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "free-clients",
+		Use:   "free-clients [nodeID]",
 		Short: "Query free clients of node",
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			ctx := context.NewCLIContext().WithCodec(cdc)
 
-			id := viper.GetString(flagNodeID)
-
-			freeClients, err := common.QueryFreeClientsOfNode(ctx, id)
+			freeClients, err := common.QueryFreeClientsOfNode(ctx, args[0])
 			if err != nil {
 				return err
 			}
@@ -40,22 +37,17 @@ func QueryFreeClientsCmd(cdc *codec.Codec) *cobra.Command {
 		},
 	}
 
-	cmd.Flags().String(flagNodeID, "", "Node ID")
-	_ = cmd.MarkFlagRequired(flagNodeID)
-
 	return cmd
 }
 
 func QueryFreeNodesCmd(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "free-nodes",
+		Use:   "free-nodes [address]",
 		Short: "Query free nodes of client",
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			ctx := context.NewCLIContext().WithCodec(cdc)
 
-			address := viper.GetString(flagAddress)
-
-			freeNodes, err := common.QueryFreeNodesOfClient(ctx, address)
+			freeNodes, err := common.QueryFreeNodesOfClient(ctx, args[0])
 			if err != nil {
 				return err
 			}
@@ -67,7 +59,5 @@ func QueryFreeNodesCmd(cdc *codec.Codec) *cobra.Command {
 		},
 	}
 
-	cmd.Flags().String(flagAddress, "", "Account address")
-	_ = cmd.MarkFlagRequired(flagAddress)
 	return cmd
 }

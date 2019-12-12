@@ -14,7 +14,6 @@ const (
 	StoreKeySession      = "vpn_session"
 	StoreKeyNode         = "vpn_node"
 	StoreKeySubscription = "vpn_subscription"
-	StoreKeyFreeClients  = "vpn_free_client"
 	StoreKeyResolver     = "resolver_node"
 
 	StatusRegistered   = "REGISTERED"
@@ -42,10 +41,12 @@ var (
 	SessionsCountOfSubscriptionKeyPrefix = []byte{0x02}
 	SessionIDBySubscriptionIDKeyPrefix   = []byte{0x03}
 
-	ResolverKeyPrefix = []byte{0x01}
+	ResolverKeyPrefix        = []byte{0x00}
+	NodesOfResolverKeyPrefix = []byte{0x01}
+	ResolversOfNodeKeyPrefix = []byte{0x02}
 
-	FreeNodesOfClientKeyPrefix = []byte{0x00}
-	FreeClientOfNodeKeyPrefix  = []byte{0x01}
+	FreeNodesOfClientKeyPrefix = []byte{0x01}
+	FreeClientOfNodeKeyPrefix  = []byte{0x02}
 )
 
 func NodeKey(id hub.NodeID) []byte {
@@ -116,10 +117,10 @@ func ResolverKey(resolverID sdk.AccAddress) []byte {
 	return append(ResolverKeyPrefix, resolverID.Bytes()...)
 }
 
-func ResolverOfNodeKey(nodeID hub.NodeID, resolver sdk.AccAddress) []byte {
-	return append(ResolverKeyPrefix, append(nodeID.Bytes(), resolver.Bytes()...)...)
+func NodeOfResolverKey(resolver sdk.AccAddress, nodeID hub.NodeID) []byte {
+	return append(NodesOfResolverKeyPrefix, append(resolver.Bytes(), nodeID.Bytes()...)...)
 }
 
-func NodeOfResolverKey(resolver sdk.AccAddress, nodeID hub.NodeID) []byte {
-	return append(ResolverKeyPrefix, append(resolver.Bytes(), nodeID.Bytes()...)...)
+func ResolverOfNodeKey(nodeID hub.NodeID, resolver sdk.AccAddress) []byte {
+	return append(ResolversOfNodeKeyPrefix, append(nodeID.Bytes(), resolver.Bytes()...)...)
 }
