@@ -7,7 +7,7 @@ import (
 	"github.com/sentinel-official/hub/x/vpn/types"
 )
 
-func (k Keeper) SetFreeNodesOfClient(ctx sdk.Context, freeClient types.FreeClient) {
+func (k Keeper) SetFreeNodeOfClient(ctx sdk.Context, freeClient types.FreeClient) {
 	key := types.FreeNodesOfClientKey(freeClient.Client, freeClient.NodeID)
 	value := k.cdc.MustMarshalBinaryLengthPrefixed(freeClient.NodeID)
 
@@ -39,17 +39,20 @@ func (k Keeper) GetFreeClientsOfNode(ctx sdk.Context, nodeID hub.NodeID) (freeCl
 	return freeClients
 }
 
-func (k Keeper) GetFreeClientOfNode(ctx sdk.Context, nodeID hub.NodeID, client sdk.AccAddress) sdk.AccAddress {
+func (k Keeper) GetFreeClientOfNode(ctx sdk.Context, nodeID hub.NodeID, client sdk.AccAddress) (address sdk.AccAddress, found bool) {
 	store := ctx.KVStore(k.nodeKey)
 
 	key := types.FreeClientOfNodeKey(nodeID, client)
 
 	value := store.Get(key)
+	if value == nil {
+		return nil, false
+	}
 
 	var freeClient sdk.AccAddress
 	k.cdc.MustUnmarshalBinaryLengthPrefixed(value, &freeClient)
 
-	return freeClient
+	return freeClient, true
 }
 
 func (k Keeper) GetFreeNodesOfClient(ctx sdk.Context, client sdk.AccAddress) (freeNodes []hub.NodeID) {
@@ -68,17 +71,20 @@ func (k Keeper) GetFreeNodesOfClient(ctx sdk.Context, client sdk.AccAddress) (fr
 	return freeNodes
 }
 
-func (k Keeper) GetFreeNodeOfClient(ctx sdk.Context, client sdk.AccAddress, nodeID hub.NodeID) hub.NodeID {
+func (k Keeper) GetFreeNodeOfClient(ctx sdk.Context, client sdk.AccAddress, nodeID hub.NodeID) (id hub.NodeID, found bool) {
 	store := ctx.KVStore(k.nodeKey)
 
 	key := types.FreeNodesOfClientKey(client, nodeID)
 
 	value := store.Get(key)
+	if value == nil {
+		return nil, false
+	}
 
 	var freeNode hub.NodeID
 	k.cdc.MustUnmarshalBinaryLengthPrefixed(value, &freeNode)
 
-	return freeNode
+	return freeNode, true
 }
 
 func (k Keeper) RemoveFreeClient(ctx sdk.Context, nodeID hub.NodeID, client sdk.AccAddress) {

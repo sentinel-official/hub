@@ -28,6 +28,7 @@ func (k Keeper) GetResolver(ctx sdk.Context, id sdk.AccAddress) (resolver types.
 
 	k.cdc.MustUnmarshalBinaryLengthPrefixed(value, &resolver)
 	return resolver, true
+
 }
 
 func (k Keeper) GetAllResolvers(ctx sdk.Context) (resolvers types.Resolvers) {
@@ -53,19 +54,18 @@ func (k Keeper) SetResolverOfNode(ctx sdk.Context, nodeID hub.NodeID, resolver s
 	store.Set(key, value)
 }
 
-func (k Keeper) GetNodeOfResolver(ctx sdk.Context, resolver sdk.AccAddress, nodeID hub.NodeID) hub.NodeID {
+func (k Keeper) GetNodeOfResolver(ctx sdk.Context, resolver sdk.AccAddress, nodeID hub.NodeID) (id hub.NodeID, found bool) {
 	key := types.NodeOfResolverKey(resolver, nodeID)
 
 	store := ctx.KVStore(k.resolverKey)
 	value := store.Get(key)
 
-	var _nodeID hub.NodeID
-	if value != nil {
-		k.cdc.MustUnmarshalBinaryLengthPrefixed(value, &_nodeID)
-		return _nodeID
+	if value == nil {
+		return nil, false
 	}
+	k.cdc.MustUnmarshalBinaryLengthPrefixed(value, &id)
 
-	return nil
+	return id, found
 }
 
 func (k Keeper) GetNodesOfResolver(ctx sdk.Context, resolver sdk.AccAddress) (nodeIDs []hub.NodeID) {
@@ -92,19 +92,18 @@ func (k Keeper) SetNodeOfResolver(ctx sdk.Context, resolver sdk.AccAddress, node
 	store.Set(key, value)
 }
 
-func (k Keeper) GetResolverOfNode(ctx sdk.Context, nodeID hub.NodeID, resolver sdk.AccAddress) sdk.AccAddress {
+func (k Keeper) GetResolverOfNode(ctx sdk.Context, nodeID hub.NodeID, resolver sdk.AccAddress) (address sdk.AccAddress, found bool) {
 	key := types.ResolverOfNodeKey(nodeID, resolver)
 
 	store := ctx.KVStore(k.resolverKey)
 	value := store.Get(key)
 
-	var _resolver sdk.AccAddress
-	if value != nil {
-		k.cdc.MustUnmarshalBinaryLengthPrefixed(value, &_resolver)
-		return _resolver
+	if value == nil {
+		return nil, false
 	}
 
-	return nil
+	k.cdc.MustUnmarshalBinaryLengthPrefixed(value, &address)
+	return address, found
 }
 
 func (k Keeper) GetResolversOfNode(ctx sdk.Context, nodeID hub.NodeID) (resolvers []sdk.AccAddress) {

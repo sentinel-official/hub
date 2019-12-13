@@ -176,7 +176,7 @@ func handleAddFreeClient(ctx sdk.Context, k keeper.Keeper, msg types.MsgAddFreeC
 
 	freeClient := types.NewFreeClient(msg.NodeID, msg.Client)
 
-	k.SetFreeNodesOfClient(ctx, freeClient)
+	k.SetFreeNodeOfClient(ctx, freeClient)
 	k.SetFreeClientOfNode(ctx, freeClient)
 
 	return sdk.Result{Events: ctx.EventManager().Events()}
@@ -242,8 +242,8 @@ func handleRemoveVPNOnResolver(ctx sdk.Context, k keeper.Keeper, msg types.MsgRe
 		return types.ErrorInvalidNodeStatus().Result()
 	}
 
-	resolver := k.GetResolverOfNode(ctx, msg.NodeID, msg.Resolver)
-	if resolver == nil {
+	resolver, found := k.GetResolverOfNode(ctx, msg.NodeID, msg.Resolver)
+	if !found {
 		return types.ErrorResolverDoesNotExist().Result()
 	}
 
@@ -287,8 +287,8 @@ func handleStartSubscription(ctx sdk.Context, k keeper.Keeper, msg types.MsgStar
 		return types.ErrorInvalidNodeStatus().Result()
 	}
 
-	resolver := k.GetResolverOfNode(ctx, msg.NodeID, msg.Resolver)
-	if resolver == nil {
+	_, found = k.GetResolverOfNode(ctx, msg.NodeID, msg.Resolver)
+	if !found {
 		return types.ErrorResolverDoesNotExist().Result()
 	}
 

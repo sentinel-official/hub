@@ -170,6 +170,7 @@ func TestKeeper_SetActiveNodeIDs(t *testing.T) {
 	k.SetActiveNodeIDs(ctx, 2, hub.IDs{})
 	ids = k.GetActiveNodeIDs(ctx, 2)
 	require.Equal(t, hub.IDs(nil), ids)
+
 }
 
 func TestKeeper_GetActiveNodeIDs(t *testing.T) {
