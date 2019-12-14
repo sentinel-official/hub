@@ -7,6 +7,8 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
+
+	"github.com/sentinel-official/hub/x/deposit/types"
 )
 
 func TestMsgRegisterResolver_GetSignBytes(t *testing.T) {
@@ -182,6 +184,11 @@ func TestMsgDeregisterResolver_ValidateBasic(t *testing.T) {
 			"from is empty",
 			NewMsgDeregisterResolver([]byte("")),
 			ErrorInvalidField("from"),
+		},
+		{
+			"valid input",
+			NewMsgDeregisterResolver(types.TestAddress1),
+			nil,
 		},
 	}
 

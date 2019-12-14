@@ -194,8 +194,8 @@ func handleRemoveFreeClient(ctx sdk.Context, k keeper.Keeper, msg types.MsgRemov
 		return types.ErrorInvalidNodeStatus().Result()
 	}
 
-	client := k.GetFreeClientOfNode(ctx, msg.NodeID, msg.Client)
-	if client == nil {
+	_, found = k.GetFreeClientOfNode(ctx, msg.NodeID, msg.Client)
+	if !found {
 		return types.ErrorFreeClientDoesNotExist().Result()
 	}
 

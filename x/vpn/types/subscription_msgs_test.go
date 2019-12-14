@@ -26,6 +26,24 @@ func TestMsgStartSubscription_ValidateBasic(t *testing.T) {
 			NewMsgStartSubscription([]byte(""), TestAddress1, hub.NewNodeID(1), sdk.NewInt64Coin("stake", 100)),
 			ErrorInvalidField("from"),
 		}, {
+			"resolver address is nil",
+			NewMsgStartSubscription(TestAddress2, nil, hub.NewNodeID(1), sdk.NewInt64Coin("stake", 100)),
+			ErrorInvalidField("resolver"),
+		}, {
+			"resolver is empty",
+			NewMsgStartSubscription(TestAddress1, []byte(""), hub.NewNodeID(1), sdk.NewInt64Coin("stake", 100)),
+			ErrorInvalidField("resolver"),
+		}, {
+			"node id is nil",
+			NewMsgStartSubscription(TestAddress1, TestAddress2, nil, sdk.NewInt64Coin("stake", 100)),
+			ErrorInvalidField("node_id"),
+		},
+		{
+			"node id is empty",
+			NewMsgStartSubscription(TestAddress1, TestAddress2, []byte(""), sdk.NewInt64Coin("stake", 100)),
+			ErrorInvalidField("node_id"),
+		},
+		{
 			"deposit is empty",
 			NewMsgStartSubscription(TestAddress1, TestAddress2, hub.NewNodeID(1), sdk.Coin{}),
 			ErrorInvalidField("deposit"),

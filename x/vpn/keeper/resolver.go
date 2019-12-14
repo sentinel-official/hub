@@ -65,7 +65,7 @@ func (k Keeper) GetNodeOfResolver(ctx sdk.Context, resolver sdk.AccAddress, node
 	}
 	k.cdc.MustUnmarshalBinaryLengthPrefixed(value, &id)
 
-	return id, found
+	return id, true
 }
 
 func (k Keeper) GetNodesOfResolver(ctx sdk.Context, resolver sdk.AccAddress) (nodeIDs []hub.NodeID) {
@@ -103,7 +103,7 @@ func (k Keeper) GetResolverOfNode(ctx sdk.Context, nodeID hub.NodeID, resolver s
 	}
 
 	k.cdc.MustUnmarshalBinaryLengthPrefixed(value, &address)
-	return address, found
+	return address, true
 }
 
 func (k Keeper) GetResolversOfNode(ctx sdk.Context, nodeID hub.NodeID) (resolvers []sdk.AccAddress) {

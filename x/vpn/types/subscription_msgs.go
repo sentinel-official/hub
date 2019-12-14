@@ -28,7 +28,7 @@ func (msg MsgStartSubscription) ValidateBasic() sdk.Error {
 	if msg.Resolver == nil || msg.Resolver.Empty() {
 		return ErrorInvalidField("resolver")
 	}
-	if msg.NodeID == nil {
+	if msg.NodeID == nil || len(msg.NodeID) == 0 {
 		return ErrorInvalidField("node_id")
 	}
 	if msg.Deposit.Denom == "" || !msg.Deposit.IsPositive() {
