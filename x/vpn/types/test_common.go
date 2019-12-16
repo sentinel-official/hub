@@ -52,6 +52,10 @@ var (
 		Commission: sdk.NewDecWithPrec(12, 2),
 		Status:     StatusRegistered,
 	}
+	TestFreeClient = FreeClient{
+		NodeID: hub.NewNodeID(1),
+		Client: TestAddress1,
+	}
 
 	TestBandwidthNeg                  = hub.NewBandwidth(sdk.NewInt(-500000000), sdk.NewInt(-500000000))
 	TestBandwidthZero                 = hub.NewBandwidth(sdk.NewInt(0), sdk.NewInt(0))

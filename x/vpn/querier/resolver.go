@@ -1,8 +1,6 @@
 package querier
 
 import (
-	"fmt"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	abci "github.com/tendermint/tendermint/abci/types"
 
@@ -17,7 +15,6 @@ func queryResolvers(ctx sdk.Context, req abci.RequestQuery, k keeper.Keeper) ([]
 
 	if len(req.Data) != 0 {
 		if err := types.ModuleCdc.UnmarshalJSON(req.Data, &address); err != nil {
-			fmt.Println(err)
 			return nil, types.ErrorUnmarshal()
 		}
 

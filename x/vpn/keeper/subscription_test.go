@@ -197,19 +197,19 @@ func TestKeeper_GetSubscriptionsOfNode(t *testing.T) {
 func TestKeeper_GetSubscriptionsOfAddress(t *testing.T) {
 	ctx, k, _, _ := CreateTestInput(t, false)
 
-	subscriptions := k.GetSubscriptionsOfNode(ctx, hub.NewNodeID(0))
+	subscriptions := k.GetSubscriptionsOfAddress(ctx, types.TestAddress1)
 	require.Equal(t, []types.Subscription{}, subscriptions)
 
 	k.SetSubscription(ctx, types.TestSubscription)
 	k.SetSubscriptionsCountOfNode(ctx, hub.NewNodeID(0), 1)
 
-	subscriptions = k.GetSubscriptionsOfNode(ctx, hub.NewNodeID(0))
+	subscriptions = k.GetSubscriptionsOfAddress(ctx, types.TestAddress2)
 	require.Equal(t, []types.Subscription{types.TestSubscription}, subscriptions)
 
 	k.SetSubscription(ctx, types.TestSubscription)
 	k.SetSubscriptionsCountOfNode(ctx, hub.NewNodeID(0), 2)
 
-	subscriptions = k.GetSubscriptionsOfNode(ctx, hub.NewNodeID(0))
+	subscriptions = k.GetSubscriptionsOfAddress(ctx, types.TestAddress1)
 	require.Equal(t, append([]types.Subscription{types.TestSubscription}, types.TestSubscription), subscriptions)
 }
 

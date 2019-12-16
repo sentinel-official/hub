@@ -168,7 +168,7 @@ func (msg MsgAddFreeClient) ValidateBasic() sdk.Error {
 	if msg.NodeID == nil {
 		return ErrorInvalidField("node_id")
 	}
-	if msg.Client == nil {
+	if msg.Client == nil || msg.Client.Empty() {
 		return ErrorInvalidField("client")
 	}
 
@@ -219,7 +219,7 @@ func (msg MsgRemoveFreeClient) ValidateBasic() sdk.Error {
 	if msg.NodeID == nil {
 		return ErrorInvalidField("node_id")
 	}
-	if msg.Client == nil {
+	if msg.Client == nil || msg.Client.Empty() {
 		return ErrorInvalidField("client")
 	}
 
@@ -270,7 +270,7 @@ func (msg MsgAddVPNOnResolver) ValidateBasic() sdk.Error {
 	if msg.NodeID == nil {
 		return ErrorInvalidField("node_id")
 	}
-	if msg.Resolver == nil {
+	if msg.Resolver == nil || msg.Resolver.Empty() {
 		return ErrorInvalidField("resolver")
 	}
 
@@ -321,7 +321,7 @@ func (msg MsgRemoveVPNOnResolver) ValidateBasic() sdk.Error {
 	if msg.NodeID == nil {
 		return ErrorInvalidField("node_id")
 	}
-	if msg.Resolver == nil {
+	if msg.Resolver == nil || msg.Resolver.Empty() {
 		return ErrorInvalidField("resolver")
 	}
 
