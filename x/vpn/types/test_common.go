@@ -12,10 +12,13 @@ import (
 var (
 	TestPrivKey1 = ed25519.GenPrivKey()
 	TestPrivKey2 = ed25519.GenPrivKey()
+	TestPrivKey3 = ed25519.GenPrivKey()
 	TestPubkey1  = TestPrivKey1.PubKey()
 	TestPubkey2  = TestPrivKey2.PubKey()
+	TestPubkey3  = TestPrivKey3.PubKey()
 	TestAddress1 = sdk.AccAddress(TestPubkey1.Address())
 	TestAddress2 = sdk.AccAddress(TestPubkey2.Address())
+	TestAddress3 = sdk.AccAddress(TestPubkey3.Address())
 	TestNode     = Node{
 		ID:               hub.NewNodeID(0),
 		Owner:            TestAddress1,
@@ -33,6 +36,7 @@ var (
 		ID:                 hub.NewSubscriptionID(0),
 		NodeID:             hub.NewNodeID(0),
 		Client:             TestAddress2,
+		Resolver:           TestAddress3,
 		PricePerGB:         sdk.NewInt64Coin("stake", 100),
 		TotalDeposit:       sdk.NewInt64Coin("stake", 100),
 		RemainingDeposit:   sdk.NewInt64Coin("stake", 100),
@@ -48,13 +52,13 @@ var (
 		StatusModifiedAt: 0,
 	}
 	TestResolver = Resolver{
-		Owner:      TestAddress1,
+		Owner:      TestAddress3,
 		Commission: sdk.NewDecWithPrec(12, 2),
 		Status:     StatusRegistered,
 	}
 	TestFreeClient = FreeClient{
-		NodeID: hub.NewNodeID(1),
-		Client: TestAddress1,
+		NodeID: hub.NewNodeID(0),
+		Client: TestAddress2,
 	}
 
 	TestBandwidthNeg                  = hub.NewBandwidth(sdk.NewInt(-500000000), sdk.NewInt(-500000000))

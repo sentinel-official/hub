@@ -328,6 +328,10 @@ func Test_handleDeregisterNode(t *testing.T) {
 func Test_handleStartSubscription(t *testing.T) {
 	ctx, k, dk, bk := keeper.CreateTestInput(t, false)
 
+	resolver, found := k.GetResolver(ctx, types.TestAddress3)
+	require.Equal(t, false, found)
+	require.Equal(t, types.Resolver{}, resolver)
+
 	node, found := k.GetNode(ctx, hub.NewNodeID(0))
 	require.Equal(t, false, found)
 	require.Equal(t, types.Node{}, node)
@@ -337,14 +341,24 @@ func Test_handleStartSubscription(t *testing.T) {
 	require.Equal(t, types.Subscription{}, subscription)
 
 	handler := NewHandler(k)
-	msg := NewMsgStartSubscription(types.TestAddress2, types.TestAddress1, hub.NewNodeID(1), sdk.NewInt64Coin("stake", 100))
+	msg := NewMsgStartSubscription(types.TestAddress2, types.TestAddress3, hub.NewNodeID(1), sdk.NewInt64Coin("stake", 100))
 	res := handler(ctx, *msg)
 	require.False(t, res.IsOK())
 
+	resolver = types.TestResolver
+	resolver.Status = StatusDeRegistered
+	k.SetResolver(ctx, resolver)
+	msg = NewMsgStartSubscription(types.TestAddress2, types.TestAddress3, node.ID, sdk.NewInt64Coin("stake", 100))
+	res = handler(ctx, *msg)
+	require.False(t, res.IsOK())
+
+	resolver.Status = StatusRegistered
+	k.SetResolver(ctx, resolver)
 	node = types.TestNode
 	node.Status = StatusDeRegistered
 	k.SetNode(ctx, node)
-	msg = NewMsgStartSubscription(types.TestAddress2, types.TestAddress1, node.ID, sdk.NewInt64Coin("stake", 100))
+	k.SetResolverOfNode(ctx, node.ID, resolver.Owner)
+	msg = NewMsgStartSubscription(types.TestAddress2, types.TestAddress3, node.ID, sdk.NewInt64Coin("stake", 100))
 	res = handler(ctx, *msg)
 	require.False(t, res.IsOK())
 
@@ -358,7 +372,7 @@ func Test_handleStartSubscription(t *testing.T) {
 
 	node.Status = StatusRegistered
 	k.SetNode(ctx, node)
-	msg = NewMsgStartSubscription(types.TestAddress2, types.TestAddress1, node.ID, sdk.NewInt64Coin("stake", 100))
+	msg = NewMsgStartSubscription(types.TestAddress2, types.TestAddress2, node.ID, sdk.NewInt64Coin("stake", 100))
 	res = handler(ctx, *msg)
 	require.False(t, res.IsOK())
 
@@ -386,7 +400,7 @@ func Test_handleStartSubscription(t *testing.T) {
 	require.Nil(t, err)
 	require.Equal(t, sdk.Coins{sdk.NewInt64Coin("stake", 100)}, coins)
 
-	msg = NewMsgStartSubscription(types.TestAddress2, types.TestAddress1, node.ID, sdk.NewInt64Coin("stake", 100))
+	msg = NewMsgStartSubscription(types.TestAddress2, types.TestAddress3, node.ID, sdk.NewInt64Coin("stake", 100))
 	res = handler(ctx, *msg)
 	require.True(t, res.IsOK())
 
@@ -419,7 +433,7 @@ func Test_handleStartSubscription(t *testing.T) {
 	subscriptions := k.GetSubscriptionsOfNode(ctx, node.ID)
 	require.Equal(t, []types.Subscription{types.TestSubscription}, subscriptions)
 
-	msg = NewMsgStartSubscription(types.TestAddress2, types.TestAddress1, node.ID, sdk.NewInt64Coin("stake", 100))
+	msg = NewMsgStartSubscription(types.TestAddress2, types.TestAddress3, node.ID, sdk.NewInt64Coin("stake", 100))
 	res = handler(ctx, *msg)
 	require.False(t, res.IsOK())
 
@@ -427,7 +441,7 @@ func Test_handleStartSubscription(t *testing.T) {
 	require.Nil(t, err)
 	require.Equal(t, sdk.Coins{sdk.NewInt64Coin("stake", 100)}.Add(sdk.Coins{sdk.NewInt64Coin("stake", 100)}), coins)
 
-	msg = NewMsgStartSubscription(types.TestAddress2, types.TestAddress1, node.ID, sdk.NewInt64Coin("stake", 100))
+	msg = NewMsgStartSubscription(types.TestAddress2, types.TestAddress3, node.ID, sdk.NewInt64Coin("stake", 100))
 	res = handler(ctx, *msg)
 	require.True(t, res.IsOK())
 
@@ -462,6 +476,43 @@ func Test_handleStartSubscription(t *testing.T) {
 	require.Len(t, subscriptions, 2)
 	require.Equal(t, types.TestSubscription, subscriptions[0])
 	require.Equal(t, subscription, subscriptions[1])
+
+	k.SetFreeClientOfNode(ctx, types.TestFreeClient)
+	msg = NewMsgStartSubscription(types.TestAddress2, types.TestAddress3, node.ID, sdk.NewInt64Coin("stake", 100))
+	res = handler(ctx, *msg)
+	require.True(t, res.IsOK())
+
+	coins = bk.GetCoins(ctx, types.TestAddress2)
+	require.Equal(t, sdk.Coins{sdk.NewInt64Coin("stake", 100)}, coins)
+
+	deposit, found = dk.GetDeposit(ctx, types.TestAddress2)
+	require.Equal(t, true, found)
+	require.Equal(t, sdk.Coins{sdk.NewInt64Coin("stake", 200)}, deposit.Coins)
+
+	count = k.GetSubscriptionsCountOfAddress(ctx, types.TestAddress2)
+	require.Equal(t, uint64(3), count)
+
+	subscriptionID = hub.NewSubscriptionID(count - 1)
+	subscription, found = k.GetSubscription(ctx, subscriptionID)
+	require.Equal(t, true, found)
+	require.Equal(t, types.TestAddress2, subscription.Client)
+	require.Equal(t, hub.NewNodeID(0), subscription.NodeID)
+
+	count = k.GetSubscriptionsCount(ctx)
+	require.Equal(t, uint64(3), count)
+
+	id, found = k.GetSubscriptionIDByAddress(ctx, types.TestAddress2, 2)
+	require.Equal(t, true, found)
+	require.Equal(t, id, subscriptionID)
+
+	id, found = k.GetSubscriptionIDByNodeID(ctx, node.ID, 2)
+	require.Equal(t, true, found)
+	require.Equal(t, id, subscriptionID)
+
+	subscriptions = k.GetSubscriptionsOfNode(ctx, node.ID)
+	require.Len(t, subscriptions, 3)
+	require.Equal(t, types.TestSubscription, subscriptions[0])
+	require.Equal(t, subscription, subscriptions[2])
 }
 
 func Test_handleEndSubscription(t *testing.T) {
@@ -743,7 +794,7 @@ func Test_handleUpdateSessionInfo(t *testing.T) {
 	require.Equal(t, uint64(1), count)
 }
 
-func Test_handleResolverNode(t *testing.T) {
+func Test_HandleRegisterResolver(t *testing.T) {
 	ctx, k, _, _ := keeper.CreateTestInput(t, false)
 	handler := NewHandler(k)
 
@@ -779,9 +830,13 @@ func Test_handleResolverNode(t *testing.T) {
 	k.SetResolver(ctx, resolver)
 	updateResolverInfoMsg = NewMsgUpdateResolverInfo(types.TestAddress1, sdk.NewDecWithPrec(2, 1))
 	res = handler(ctx, updateResolverInfoMsg)
+	require.False(t, res.IsOK())
+
+	updateResolverInfoMsg = NewMsgUpdateResolverInfo(types.TestAddress3, sdk.NewDecWithPrec(2, 1))
+	res = handler(ctx, updateResolverInfoMsg)
 	require.True(t, res.IsOK())
 
-	resolver, found = k.GetResolver(ctx, types.TestAddress1)
+	resolver, found = k.GetResolver(ctx, types.TestAddress3)
 	require.True(t, found)
 	require.Equal(t, sdk.NewDecWithPrec(2, 1), resolver.Commission)
 
@@ -798,7 +853,12 @@ func Test_handleResolverNode(t *testing.T) {
 
 	resolver.Status = StatusRegistered
 	k.SetResolver(ctx, resolver)
-	deRegisterResolverMsg = NewMsgDeregisterResolver(types.TestAddress1)
+
+	deRegisterResolverMsg = NewMsgDeregisterResolver(types.TestAddress2)
+	res = handler(ctx, deRegisterResolverMsg)
+	require.False(t, res.IsOK())
+
+	deRegisterResolverMsg = NewMsgDeregisterResolver(types.TestAddress3)
 	res = handler(ctx, deRegisterResolverMsg)
 	require.True(t, res.IsOK())
 }

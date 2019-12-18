@@ -79,5 +79,7 @@ func registerQueryRoutes(ctx context.CLIContext, r *mux.Router) {
 
 	r.HandleFunc("/resolvers", getResolversHandlerFunc(ctx)).
 		Methods("GET")
+	r.HandleFunc("/vpn/params", getParamsHandlerFunc(ctx)).
+		Methods("GET")
 
 }

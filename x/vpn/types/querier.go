@@ -27,7 +27,7 @@ const (
 	QuerySessionOfSubscription  = "session_of_subscription"
 	QuerySessionsOfSubscription = "sessions_of_subscription"
 	QueryAllSessions            = "all_sessions"
-
+	QueryParams                 = "params"
 	QueryResolvers = "resolvers"
 )
 

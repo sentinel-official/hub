@@ -43,6 +43,8 @@ func NewQuerier(k keeper.Keeper) sdk.Querier {
 			return querySessionsOfSubscription(ctx, req, k)
 		case types.QueryAllSessions:
 			return queryAllSessions(ctx, k)
+		case types.QueryParams:
+			return queryParameters(ctx, k)
 		case types.QueryResolvers:
 			return queryResolvers(ctx, req, k)
 
