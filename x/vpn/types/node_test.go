@@ -217,13 +217,6 @@ func TestNode_IsValid(t *testing.T) {
 
 }
 
-func TestNewFreeClient(t *testing.T) {
-	require.Equal(t, NewFreeClient(nil, nil), FreeClient{})
-	require.Equal(t, NewFreeClient(hub.NewNodeID(0), nil), FreeClient{NodeID: hub.NewNodeID(0)})
-	require.Equal(t, NewFreeClient(nil, TestAddress1), FreeClient{Client: TestAddress1})
-	require.Equal(t, NewFreeClient(hub.NewNodeID(0), TestAddress1), FreeClient{NodeID: hub.NewNodeID(0), Client: TestAddress1})
-}
-
 func TestIsFreeClient(t *testing.T) {
 	require.False(t, IsFreeClient(nil, nil))
 	require.False(t, IsFreeClient([]sdk.AccAddress{TestAddress1}, nil))

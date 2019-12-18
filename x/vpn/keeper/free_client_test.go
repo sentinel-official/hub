@@ -26,30 +26,28 @@ func TestKeeper_FreeClients(t *testing.T) {
 	require.False(t, found)
 	require.Nil(t, node)
 
-	client := types.TestFreeClient
-	k.SetFreeNodeOfClient(ctx, client)
-	k.SetFreeClientOfNode(ctx, client)
+	k.SetFreeNodeOfClient(ctx, types.TestAddress2, hub.NewNodeID(0))
+	k.SetFreeClientOfNode(ctx, hub.NewNodeID(0), types.TestAddress2)
 
-	address, found = k.GetFreeClientOfNode(ctx, client.NodeID, client.Client)
+	address, found = k.GetFreeClientOfNode(ctx, hub.NewNodeID(0), types.TestAddress2)
 	require.True(t, found)
 	require.Equal(t, types.TestAddress2, address)
 
-	node, found = k.GetFreeNodeOfClient(ctx, client.Client, client.NodeID)
+	node, found = k.GetFreeNodeOfClient(ctx, types.TestAddress2, hub.NewNodeID(0))
 	require.True(t, found)
-	require.Equal(t, client.NodeID, node)
+	require.Equal(t, hub.NewNodeID(0), node)
 
-	client.Client = types.TestAddress3
-	k.SetFreeNodeOfClient(ctx, client)
-	k.SetFreeClientOfNode(ctx, client)
+	k.SetFreeNodeOfClient(ctx, types.TestAddress3, hub.NewNodeID(0))
+	k.SetFreeClientOfNode(ctx, hub.NewNodeID(0), types.TestAddress3)
 
-	address, found = k.GetFreeClientOfNode(ctx, client.NodeID, client.Client)
+	address, found = k.GetFreeClientOfNode(ctx, hub.NewNodeID(0), types.TestAddress3)
 	require.True(t, found)
 	require.Equal(t, types.TestAddress3, address)
 
-	freeclients = k.GetFreeClientsOfNode(ctx, client.NodeID)
+	freeclients = k.GetFreeClientsOfNode(ctx, hub.NewNodeID(0))
 	require.Equal(t, 2, len(freeclients))
 
-	k.RemoveFreeClient(ctx, client.NodeID, types.TestAddress2)
+	k.RemoveFreeClient(ctx,  hub.NewNodeID(0), types.TestAddress2)
 	nodes = k.GetFreeNodesOfClient(ctx, types.TestAddress2)
 	require.Equal(t, 0, len(nodes))
 

@@ -32,11 +32,11 @@ func Test_queryFreeClients(t *testing.T) {
 	require.NotNil(t, err)
 	require.Equal(t, types.ErrorUnmarshal(), err)
 
-	k.SetFreeClientOfNode(ctx, types.TestFreeClient)
-	k.SetFreeNodeOfClient(ctx, types.TestFreeClient)
+	k.SetFreeClientOfNode(ctx, hub.NewNodeID(0), types.TestAddress2)
+	k.SetFreeNodeOfClient(ctx, types.TestAddress2, hub.NewNodeID(0))
 
 	req.Path = fmt.Sprintf("custom/%s/%s", types.QuerierRoute, types.QueryFreeClientsOfNode)
-	req.Data = cdc.MustMarshalJSON(types.NewQueryFreeClientsOfNodeParams(types.TestFreeClient.NodeID))
+	req.Data = cdc.MustMarshalJSON(types.NewQueryFreeClientsOfNodeParams(hub.NewNodeID(0)))
 	res, err = queryFreeClientsOfNode(ctx, req, k)
 	require.Nil(t, err)
 
@@ -50,6 +50,6 @@ func Test_queryFreeClients(t *testing.T) {
 
 	var nodes []hub.NodeID
 	_ = cdc.UnmarshalJSON(res, &nodes)
-	require.Equal(t, types.TestFreeClient.NodeID, nodes[0])
+	require.Equal(t, hub.NewNodeID(0), nodes[0])
 
 }

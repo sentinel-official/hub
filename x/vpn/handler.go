@@ -174,10 +174,8 @@ func handleAddFreeClient(ctx sdk.Context, k keeper.Keeper, msg types.MsgAddFreeC
 		return types.ErrorInvalidNodeStatus().Result()
 	}
 
-	freeClient := types.NewFreeClient(msg.NodeID, msg.Client)
-
-	k.SetFreeNodeOfClient(ctx, freeClient)
-	k.SetFreeClientOfNode(ctx, freeClient)
+	k.SetFreeNodeOfClient(ctx, msg.Client, msg.NodeID)
+	k.SetFreeClientOfNode(ctx, msg.NodeID, msg.Client)
 
 	return sdk.Result{Events: ctx.EventManager().Events()}
 }
