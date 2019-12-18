@@ -7,17 +7,17 @@ import (
 	"github.com/sentinel-official/hub/x/vpn/types"
 )
 
-func (k Keeper) SetFreeNodeOfClient(ctx sdk.Context, freeClient types.FreeClient) {
-	key := types.FreeNodesOfClientKey(freeClient.Client, freeClient.NodeID)
-	value := k.cdc.MustMarshalBinaryLengthPrefixed(freeClient.NodeID)
+func (k Keeper) SetFreeNodeOfClient(ctx sdk.Context, client sdk.AccAddress, id hub.NodeID) {
+	key := types.FreeNodesOfClientKey(client, id)
+	value := k.cdc.MustMarshalBinaryLengthPrefixed(id)
 
 	store := ctx.KVStore(k.nodeKey)
 	store.Set(key, value)
 }
 
-func (k Keeper) SetFreeClientOfNode(ctx sdk.Context, freeClient types.FreeClient) {
-	key := types.FreeClientOfNodeKey(freeClient.NodeID, freeClient.Client)
-	value := k.cdc.MustMarshalBinaryLengthPrefixed(freeClient.Client)
+func (k Keeper) SetFreeClientOfNode(ctx sdk.Context, id hub.NodeID, client sdk.AccAddress) {
+	key := types.FreeClientOfNodeKey(id, client)
+	value := k.cdc.MustMarshalBinaryLengthPrefixed(client)
 
 	store := ctx.KVStore(k.nodeKey)
 	store.Set(key, value)

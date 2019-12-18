@@ -477,7 +477,7 @@ func Test_handleStartSubscription(t *testing.T) {
 	require.Equal(t, types.TestSubscription, subscriptions[0])
 	require.Equal(t, subscription, subscriptions[1])
 
-	k.SetFreeClientOfNode(ctx, types.TestFreeClient)
+	k.SetFreeClientOfNode(ctx, hub.NewNodeID(0), types.TestAddress2)
 	msg = NewMsgStartSubscription(types.TestAddress2, types.TestAddress3, node.ID, sdk.NewInt64Coin("stake", 100))
 	res = handler(ctx, *msg)
 	require.True(t, res.IsOK())
