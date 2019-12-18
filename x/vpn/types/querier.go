@@ -27,12 +27,8 @@ const (
 	QuerySessionOfSubscription  = "session_of_subscription"
 	QuerySessionsOfSubscription = "sessions_of_subscription"
 	QueryAllSessions            = "all_sessions"
-
-<<<<<<< HEAD
-QueryParams = "params"
-====== =
-QueryResolvers = "resolvers"
->>>>>>> 3ab44ec35944f2ab9d6aac349a4a30bc84d315da
+	QueryParams                 = "params"
+	QueryResolvers = "resolvers"
 )
 
 type QueryNodeParams struct {
