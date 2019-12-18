@@ -42,7 +42,7 @@ func Test_queryFreeClients(t *testing.T) {
 
 	var freeClient []sdk.AccAddress
 	_ = cdc.UnmarshalJSON(res, &freeClient)
-	require.Equal(t, types.TestAddress1, freeClient[0])
+	require.Equal(t, types.TestAddress2, freeClient[0])
 
 	req.Path = fmt.Sprintf("custom/%s/%s", types.QuerierRoute, types.QueryFreeNodesOfClient)
 	res, err = queryFreeNodesOfClient(ctx, req, k)

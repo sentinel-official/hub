@@ -22,7 +22,7 @@ func TestKeeper_Resolver(t *testing.T) {
 	resolver = types.TestResolver
 
 	resolver1 := resolver
-	resolver1.Owner = types.TestAddress2
+	resolver1.Owner = types.TestAddress1
 
 	k.SetResolver(ctx, resolver)
 	k.SetResolver(ctx, resolver1)
@@ -54,14 +54,17 @@ func TestKeeper_Resolver(t *testing.T) {
 	nodes = k.GetNodesOfResolver(ctx, resolver.Owner)
 	require.Equal(t, 1, len(nodes))
 
-	_, found = k.GetResolverOfNode(ctx, hub.NewNodeID(2), types.TestAddress1)
+	_, found = k.GetResolverOfNode(ctx, hub.NewNodeID(2), types.TestAddress2)
 	require.False(t, found)
 
-	k.SetResolverOfNode(ctx, hub.NewNodeID(2), types.TestAddress1)
+	k.SetResolverOfNode(ctx, hub.NewNodeID(2), types.TestAddress2)
 
-	address, found := k.GetResolverOfNode(ctx, hub.NewNodeID(2), types.TestAddress1)
-	require.False(t, found)
-	require.Equal(t, address, types.TestAddress1)
+	address, found := k.GetResolverOfNode(ctx, hub.NewNodeID(2), types.TestAddress2)
+	require.True(t, found)
+	require.Equal(t, address, types.TestAddress2)
 
 	k.RemoveVPNNodeOnResolver(ctx, hub.NewNodeID(2), resolver.Owner)
+	address, found = k.GetResolverOfNode(ctx, hub.NewNodeID(2), resolver.Owner)
+	require.False(t, found)
+	require.Nil(t, address)
 }
