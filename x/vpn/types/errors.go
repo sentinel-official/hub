@@ -23,6 +23,10 @@ const (
 	errCodeInvalidBandwidthSignature = 112
 	errCodeSessionAlreadyExists      = 113
 	errCodeInvalidSessionStatus      = 114
+	errCodeResolverAlreadyExist      = 121
+	errCodeResolverDoesNotExist      = 122
+	errCodeInvalidResolverStatus     = 123
+	errCodeFreeClientDoesNotExist    = 115
 
 	errMsgUnknownMsgType            = "Unknown message type: "
 	errMsgUnknownQueryType          = "Invalid query type: "
@@ -38,6 +42,10 @@ const (
 	errMsgInvalidBandwidthSignature = "Invalid bandwidth signature"
 	errMsgSessionAlreadyExists      = "Session is active"
 	errMsgInvalidSessionStatus      = "Invalid session status"
+	errMsgResolverAlreadyExist      = "Resolver already exist"
+	errMsgResolverDoesNotExist      = "Resolver does not exist"
+	errMsgInvalidResolverStatus     = "Invalid resolver status"
+	errMsgFreeClientDoesNotExist    = "Free client does not exist"
 )
 
 func ErrorMarshal() sdk.Error {
@@ -102,4 +110,20 @@ func ErrorSessionAlreadyExists() sdk.Error {
 
 func ErrorInvalidSessionStatus() sdk.Error {
 	return sdk.NewError(Codespace, errCodeInvalidSessionStatus, errMsgInvalidSessionStatus)
+}
+
+func ErrorResolverAlreadyExist() sdk.Error {
+	return sdk.NewError(Codespace, errCodeResolverAlreadyExist, errMsgResolverAlreadyExist)
+}
+
+func ErrorResolverDoesNotExist() sdk.Error {
+	return sdk.NewError(Codespace, errCodeResolverDoesNotExist, errMsgResolverDoesNotExist)
+}
+
+func ErrorInvalidResolverStatus() sdk.Error {
+	return sdk.NewError(Codespace, errCodeInvalidResolverStatus, errMsgInvalidResolverStatus)
+}
+
+func ErrorFreeClientDoesNotExist() sdk.Error {
+	return sdk.NewError(Codespace, errCodeFreeClientDoesNotExist, errMsgFreeClientDoesNotExist)
 }

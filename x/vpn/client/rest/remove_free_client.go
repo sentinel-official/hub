@@ -13,15 +13,14 @@ import (
 	"github.com/sentinel-official/hub/x/vpn/types"
 )
 
-type msgStartSubscription struct {
-	BaseReq  rest.BaseReq `json:"base_req"`
-	Resolver string       `json:"resolver"`
-	Deposit  string       `json:"deposit"`
+type msgRemoveFreeClient struct {
+	BaseReq rest.BaseReq `json:"base_req"`
+	NodeID  string       `json:"node_id"`
 }
 
-func startSubscriptionHandlerFunc(ctx context.CLIContext) http.HandlerFunc {
+func removeFreeClientHandlerFunc(ctx context.CLIContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var req msgStartSubscription
+		var req msgRemoveFreeClient
 
 		if !rest.ReadRESTReq(w, r, ctx.Codec, &req) {
 			return
@@ -38,25 +37,20 @@ func startSubscriptionHandlerFunc(ctx context.CLIContext) http.HandlerFunc {
 			return
 		}
 
-		resolver, err := sdk.AccAddressFromBech32(req.Resolver)
-		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
-			return
-		}
-
-		deposit, err := sdk.ParseCoin(req.Deposit)
+		nodeID, err := hub.NewNodeIDFromString(req.NodeID)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
 		}
 
 		vars := mux.Vars(r)
-		id, err := hub.NewNodeIDFromString(vars["id"])
+		client, err := sdk.AccAddressFromBech32(vars["address"])
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
 		}
-		msg := types.NewMsgStartSubscription(fromAddress, resolver, id, deposit)
+
+		msg := types.NewMsgRemoveFreeClient(fromAddress, nodeID, client)
 		if err := msg.ValidateBasic(); err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return

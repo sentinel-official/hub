@@ -19,6 +19,11 @@ func GetQueryCmd(cdc *codec.Codec) *cobra.Command {
 		QuerySubscriptionsCmd(cdc),
 		QuerySessionCmd(cdc),
 		QuerySessionsCmd(cdc),
+		QueryFreeClientsCmd(cdc),
+		QueryFreeNodesCmd(cdc),
+		QueryResolversOfNodeCmd(cdc),
+		QueryNodesOfResolverCmd(cdc),
+		QueryResolversCmd(cdc),
 	)...)
 
 	return cmd
@@ -33,7 +38,9 @@ func GetTxCmd(cdc *codec.Codec) *cobra.Command {
 	cmd.AddCommand(
 		nodeTxCmd(cdc),
 		subscriptionTxCmd(cdc),
-		sessionTxCmd(cdc))
+		sessionTxCmd(cdc),
+		resolverTxCmd(cdc),
+	)
 
 	return cmd
 }
@@ -47,6 +54,10 @@ func nodeTxCmd(cdc *codec.Codec) *cobra.Command {
 	cmd.AddCommand(client.PostCommands(
 		RegisterNodeTxCmd(cdc),
 		UpdateNodeInfoTxCmd(cdc),
+		AddFreeClientTxCmd(cdc),
+		RemoveFreeClientTxCmd(cdc),
+		AddVPNOnResolverTxCmd(cdc),
+		RemoveVPNOnResolverTxCmd(cdc),
 		DeregisterNodeTxCmd(cdc),
 	)...)
 
@@ -76,6 +87,21 @@ func sessionTxCmd(cdc *codec.Codec) *cobra.Command {
 	cmd.AddCommand(client.PostCommands(
 		SignSessionBandwidthTxCmd(cdc),
 		UpdateSessionInfoTxCmd(cdc),
+	)...)
+
+	return cmd
+}
+
+func resolverTxCmd(cdc *codec.Codec) *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "resolver",
+		Short: "Resolver node subcommands",
+	}
+
+	cmd.AddCommand(client.PostCommands(
+		RegisterResolverTxCmd(cdc),
+		UpdateResolverInfoTxCmd(cdc),
+		DeregisterResolverTxCmd(cdc),
 	)...)
 
 	return cmd

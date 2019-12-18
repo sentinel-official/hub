@@ -1,6 +1,7 @@
 package vpn
 
 import (
+	"fmt"
 	"testing"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -139,6 +140,10 @@ func Test_handleUpdateNodeInfo(t *testing.T) {
 	res := handler(ctx, *msg)
 	require.False(t, res.IsOK())
 
+	msg = NewMsgUpdateNodeInfo(node.Owner, hub.NewNodeID(3), "new_node_type", "new_version", "new_moniker", sdk.Coins{sdk.NewInt64Coin("stake", 100)}, types.TestBandwidthPos1, "new_encryption")
+	res = handler(ctx, *msg)
+	require.False(t, res.IsOK())
+
 	msg = NewMsgUpdateNodeInfo(types.TestAddress2, node.ID, "new_node_type", "new_version", "new_moniker", sdk.Coins{sdk.NewInt64Coin("stake", 100)}, types.TestBandwidthPos1, "new_encryption")
 	res = handler(ctx, *msg)
 	require.False(t, res.IsOK())
@@ -188,6 +193,10 @@ func Test_handleDeregisterNode(t *testing.T) {
 	k.SetNode(ctx, node)
 	msg := NewMsgDeregisterNode(types.TestAddress2, node.ID)
 	res := handler(ctx, *msg)
+	require.False(t, res.IsOK())
+
+	msg = NewMsgDeregisterNode(types.TestAddress2, hub.NewNodeID(3))
+	res = handler(ctx, *msg)
 	require.False(t, res.IsOK())
 
 	node, found = k.GetNode(ctx, node.ID)
@@ -328,14 +337,14 @@ func Test_handleStartSubscription(t *testing.T) {
 	require.Equal(t, types.Subscription{}, subscription)
 
 	handler := NewHandler(k)
-	msg := NewMsgStartSubscription(types.TestAddress2, hub.NewNodeID(1), sdk.NewInt64Coin("stake", 100))
+	msg := NewMsgStartSubscription(types.TestAddress2, types.TestAddress1, hub.NewNodeID(1), sdk.NewInt64Coin("stake", 100))
 	res := handler(ctx, *msg)
 	require.False(t, res.IsOK())
 
 	node = types.TestNode
 	node.Status = StatusDeRegistered
 	k.SetNode(ctx, node)
-	msg = NewMsgStartSubscription(types.TestAddress2, node.ID, sdk.NewInt64Coin("stake", 100))
+	msg = NewMsgStartSubscription(types.TestAddress2, types.TestAddress1, node.ID, sdk.NewInt64Coin("stake", 100))
 	res = handler(ctx, *msg)
 	require.False(t, res.IsOK())
 
@@ -349,7 +358,7 @@ func Test_handleStartSubscription(t *testing.T) {
 
 	node.Status = StatusRegistered
 	k.SetNode(ctx, node)
-	msg = NewMsgStartSubscription(types.TestAddress2, node.ID, sdk.NewInt64Coin("stake", 100))
+	msg = NewMsgStartSubscription(types.TestAddress2, types.TestAddress1, node.ID, sdk.NewInt64Coin("stake", 100))
 	res = handler(ctx, *msg)
 	require.False(t, res.IsOK())
 
@@ -361,7 +370,7 @@ func Test_handleStartSubscription(t *testing.T) {
 	require.Equal(t, false, found)
 	require.Equal(t, types.Subscription{}, subscription)
 
-	msg = NewMsgStartSubscription(types.TestAddress2, node.ID, sdk.NewInt64Coin("invalid", 100))
+	msg = NewMsgStartSubscription(types.TestAddress2, types.TestAddress2, node.ID, sdk.NewInt64Coin("invalid", 100))
 	res = handler(ctx, *msg)
 	require.False(t, res.IsOK())
 
@@ -377,7 +386,7 @@ func Test_handleStartSubscription(t *testing.T) {
 	require.Nil(t, err)
 	require.Equal(t, sdk.Coins{sdk.NewInt64Coin("stake", 100)}, coins)
 
-	msg = NewMsgStartSubscription(types.TestAddress2, node.ID, sdk.NewInt64Coin("stake", 100))
+	msg = NewMsgStartSubscription(types.TestAddress2, types.TestAddress1, node.ID, sdk.NewInt64Coin("stake", 100))
 	res = handler(ctx, *msg)
 	require.True(t, res.IsOK())
 
@@ -410,7 +419,7 @@ func Test_handleStartSubscription(t *testing.T) {
 	subscriptions := k.GetSubscriptionsOfNode(ctx, node.ID)
 	require.Equal(t, []types.Subscription{types.TestSubscription}, subscriptions)
 
-	msg = NewMsgStartSubscription(types.TestAddress2, node.ID, sdk.NewInt64Coin("stake", 100))
+	msg = NewMsgStartSubscription(types.TestAddress2, types.TestAddress1, node.ID, sdk.NewInt64Coin("stake", 100))
 	res = handler(ctx, *msg)
 	require.False(t, res.IsOK())
 
@@ -418,7 +427,7 @@ func Test_handleStartSubscription(t *testing.T) {
 	require.Nil(t, err)
 	require.Equal(t, sdk.Coins{sdk.NewInt64Coin("stake", 100)}.Add(sdk.Coins{sdk.NewInt64Coin("stake", 100)}), coins)
 
-	msg = NewMsgStartSubscription(types.TestAddress2, node.ID, sdk.NewInt64Coin("stake", 100))
+	msg = NewMsgStartSubscription(types.TestAddress2, types.TestAddress1, node.ID, sdk.NewInt64Coin("stake", 100))
 	res = handler(ctx, *msg)
 	require.True(t, res.IsOK())
 
@@ -732,4 +741,236 @@ func Test_handleUpdateSessionInfo(t *testing.T) {
 
 	count = k.GetSessionsCountOfSubscription(ctx, subscription.ID)
 	require.Equal(t, uint64(1), count)
+}
+
+func Test_handleResolverNode(t *testing.T) {
+	ctx, k, _, _ := keeper.CreateTestInput(t, false)
+	handler := NewHandler(k)
+
+	resolver := types.TestResolver
+
+	data, found := k.GetResolver(ctx, resolver.Owner)
+	require.False(t, found)
+
+	msg := NewMsgRegisterResolver(resolver.Owner, resolver.Commission)
+	res := handler(ctx, msg)
+	require.True(t, res.IsOK())
+
+	data, found = k.GetResolver(ctx, resolver.Owner)
+	require.True(t, found)
+	require.Equal(t, data, resolver)
+
+	msg = NewMsgRegisterResolver(resolver.Owner, resolver.Commission)
+	res = handler(ctx, msg)
+	require.False(t, res.IsOK())
+	require.Equal(t, res.Log, types.ErrorResolverAlreadyExist().ABCILog())
+
+	updateResolverInfoMsg := NewMsgUpdateResolverInfo(types.TestAddress2, sdk.NewDecWithPrec(2, 1))
+	res = handler(ctx, updateResolverInfoMsg)
+	require.False(t, res.IsOK())
+
+	resolver.Status = StatusDeRegistered
+	k.SetResolver(ctx, resolver)
+	updateResolverInfoMsg = NewMsgUpdateResolverInfo(types.TestAddress1, sdk.NewDecWithPrec(2, 1))
+	res = handler(ctx, updateResolverInfoMsg)
+	require.False(t, res.IsOK())
+
+	resolver.Status = StatusRegistered
+	k.SetResolver(ctx, resolver)
+	updateResolverInfoMsg = NewMsgUpdateResolverInfo(types.TestAddress1, sdk.NewDecWithPrec(2, 1))
+	res = handler(ctx, updateResolverInfoMsg)
+	require.True(t, res.IsOK())
+
+	resolver, found = k.GetResolver(ctx, types.TestAddress1)
+	require.True(t, found)
+	require.Equal(t, sdk.NewDecWithPrec(2, 1), resolver.Commission)
+
+	deRegisterResolverMsg := NewMsgDeregisterResolver(types.TestAddress2)
+	res = handler(ctx, deRegisterResolverMsg)
+	require.False(t, res.IsOK())
+	require.Equal(t, types.ErrorResolverDoesNotExist().ABCILog(), res.Log)
+
+	resolver.Status = StatusDeRegistered
+	k.SetResolver(ctx, resolver)
+	deRegisterResolverMsg = NewMsgDeregisterResolver(types.TestAddress1)
+	res = handler(ctx, deRegisterResolverMsg)
+	require.False(t, res.IsOK())
+
+	resolver.Status = StatusRegistered
+	k.SetResolver(ctx, resolver)
+	deRegisterResolverMsg = NewMsgDeregisterResolver(types.TestAddress1)
+	res = handler(ctx, deRegisterResolverMsg)
+	require.True(t, res.IsOK())
+}
+
+func Test_handleFreeClientsOfNode(t *testing.T) {
+	ctx, k, _, _ := keeper.CreateTestInput(t, false)
+	handler := NewHandler(k)
+	node := types.TestNode
+
+	require.Equal(t, 0, len(k.GetAllNodes(ctx)))
+	require.Equal(t, uint64(0), k.GetNodesCount(ctx))
+
+	msg := NewMsgRegisterNode(node.Owner, node.Type, node.Version, node.Moniker, node.PricesPerGB, node.InternetSpeed, node.Encryption)
+	res := handler(ctx, *msg)
+	require.True(t, res.IsOK())
+
+	node, found := k.GetNode(ctx, hub.NewNodeID(0))
+	require.Equal(t, true, found)
+	require.Equal(t, hub.NewNodeID(0), node.ID)
+	require.Equal(t, "moniker", node.Moniker)
+
+	count := k.GetNodesCount(ctx)
+	require.Equal(t, uint64(1), count)
+
+	count = k.GetNodesCountOfAddress(ctx, types.TestAddress1)
+	require.Equal(t, uint64(1), count)
+
+	addClientMsg := NewMsgAddFreeClient(types.TestAddress2, hub.NewNodeID(3), types.TestAddress1)
+	res = handler(ctx, *addClientMsg)
+	require.False(t, res.IsOK())
+	require.Equal(t, types.ErrorNodeDoesNotExist().ABCILog(), res.Log)
+
+	addClientMsg = NewMsgAddFreeClient(types.TestAddress2, node.ID, types.TestAddress1)
+	res = handler(ctx, *addClientMsg)
+	require.False(t, res.IsOK())
+	require.Equal(t, types.ErrorUnauthorized().ABCILog(), res.Log)
+
+	addClientMsg = NewMsgAddFreeClient(node.Owner, node.ID, types.TestAddress2)
+	res = handler(ctx, *addClientMsg)
+	require.True(t, res.IsOK())
+
+	clients := k.GetFreeClientsOfNode(ctx, node.ID)
+	require.Equal(t, types.TestAddress2, clients[0])
+
+	nodes := k.GetFreeNodesOfClient(ctx, types.TestAddress2)
+	require.Equal(t, node.ID, nodes[0])
+
+	node.Status = types.StatusDeRegistered
+	k.SetNode(ctx, node)
+
+	addClientMsg = NewMsgAddFreeClient(types.TestAddress1, node.ID, types.TestAddress1)
+	res = handler(ctx, *addClientMsg)
+	require.False(t, res.IsOK())
+	require.Equal(t, types.ErrorInvalidNodeStatus().ABCILog(), res.Log)
+
+	removeClientMsg := NewMsgRemoveFreeClient(types.TestAddress2, hub.NewNodeID(3), types.TestAddress1)
+	res = handler(ctx, *removeClientMsg)
+	require.False(t, res.IsOK())
+	require.Equal(t, types.ErrorNodeDoesNotExist().ABCILog(), res.Log)
+
+	removeClientMsg = NewMsgRemoveFreeClient(types.TestAddress2, node.ID, types.TestAddress1)
+	res = handler(ctx, *removeClientMsg)
+	require.False(t, res.IsOK())
+	require.Equal(t, types.ErrorUnauthorized().ABCILog(), res.Log)
+
+	removeClientMsg = NewMsgRemoveFreeClient(types.TestAddress1, node.ID, types.TestAddress1)
+	res = handler(ctx, *removeClientMsg)
+	require.False(t, res.IsOK())
+	require.Equal(t, types.ErrorInvalidNodeStatus().ABCILog(), res.Log)
+
+	node.Status = types.StatusRegistered
+	k.SetNode(ctx, node)
+
+	removeClientMsg = NewMsgRemoveFreeClient(types.TestAddress1, node.ID, types.TestAddress2)
+	res = handler(ctx, *removeClientMsg)
+	require.True(t, res.IsOK())
+
+	require.Equal(t, 0, len(k.GetFreeClientsOfNode(ctx, node.ID)))
+	require.Equal(t, 0, len(k.GetFreeNodesOfClient(ctx, types.TestAddress2)))
+
+	removeClientMsg = NewMsgRemoveFreeClient(types.TestAddress1, node.ID, types.TestAddress2)
+	res = handler(ctx, *removeClientMsg)
+	require.False(t, res.IsOK())
+	require.Equal(t, types.ErrorFreeClientDoesNotExist().ABCILog(), res.Log)
+
+}
+
+func Test_UpdateVPNOrResolver(t *testing.T) {
+	ctx, k, _, _ := keeper.CreateTestInput(t, false)
+	handler := NewHandler(k)
+
+	node := types.TestNode
+	resolver := types.TestResolver
+
+	addMsg := NewMsgAddVPNOnResolver(types.TestAddress1, hub.NewNodeID(3), resolver.Owner)
+	res := handler(ctx, *addMsg)
+	require.False(t, res.IsOK())
+	require.Equal(t, types.ErrorNodeDoesNotExist().ABCILog(), res.Log)
+
+	node.Status = types.StatusRegistered
+	k.SetNode(ctx, node)
+	k.SetResolver(ctx, resolver)
+
+	addMsg = NewMsgAddVPNOnResolver(types.TestAddress2, node.ID, resolver.Owner)
+	res = handler(ctx, *addMsg)
+	require.False(t, res.IsOK())
+	require.Equal(t, types.ErrorUnauthorized().ABCILog(), res.Log)
+
+	addMsg = NewMsgAddVPNOnResolver(types.TestAddress1, node.ID, types.TestAddress2)
+	res = handler(ctx, *addMsg)
+	require.False(t, res.IsOK())
+	require.Equal(t, types.ErrorResolverDoesNotExist().ABCILog(), res.Log)
+
+	addMsg = NewMsgAddVPNOnResolver(types.TestAddress1, node.ID, resolver.Owner)
+	res = handler(ctx, *addMsg)
+	require.True(t, res.IsOK())
+
+	require.Equal(t, 1, len(k.GetResolversOfNode(ctx, node.ID)))
+	require.Equal(t, 1, len(k.GetNodesOfResolver(ctx, resolver.Owner)))
+
+	resolver.Status = types.StatusDeRegistered
+	k.SetResolver(ctx, resolver)
+
+	addMsg = NewMsgAddVPNOnResolver(types.TestAddress1, node.ID, resolver.Owner)
+	res = handler(ctx, *addMsg)
+	require.False(t, res.IsOK())
+	require.Equal(t, types.ErrorInvalidResolverStatus().ABCILog(), res.Log)
+
+	node.Status = types.StatusDeRegistered
+	k.SetNode(ctx, node)
+
+	addMsg = NewMsgAddVPNOnResolver(types.TestAddress1, node.ID, resolver.Owner)
+	res = handler(ctx, *addMsg)
+	require.False(t, res.IsOK())
+	require.Equal(t, types.ErrorInvalidNodeStatus().ABCILog(), res.Log)
+
+	removeMsg := NewMsgRemoveVPNOnResolver(types.TestAddress1, hub.NewNodeID(3), resolver.Owner)
+	res = handler(ctx, *removeMsg)
+	require.False(t, res.IsOK())
+	require.Equal(t, types.ErrorNodeDoesNotExist().ABCILog(), res.Log)
+
+	removeMsg = NewMsgRemoveVPNOnResolver(types.TestAddress2, node.ID, resolver.Owner)
+	res = handler(ctx, *removeMsg)
+	require.False(t, res.IsOK())
+	require.Equal(t, types.ErrorUnauthorized().ABCILog(), res.Log)
+
+	removeMsg = NewMsgRemoveVPNOnResolver(types.TestAddress1, node.ID, resolver.Owner)
+	res = handler(ctx, *removeMsg)
+	require.False(t, res.IsOK())
+	require.Equal(t, types.ErrorInvalidNodeStatus().ABCILog(), res.Log)
+
+	node.Status = types.StatusRegistered
+	k.SetNode(ctx, node)
+
+	removeMsg = NewMsgRemoveVPNOnResolver(types.TestAddress1, node.ID, types.TestAddress2)
+	res = handler(ctx, *removeMsg)
+	require.False(t, res.IsOK())
+	require.Equal(t, types.ErrorResolverDoesNotExist().ABCILog(), res.Log)
+
+	resolver.Status = types.StatusRegistered
+	k.SetResolver(ctx, resolver)
+
+	k.SetResolverOfNode(ctx, node.ID, resolver.Owner)
+	k.SetNodeOfResolver(ctx, resolver.Owner, node.ID)
+
+	address, found := k.GetResolverOfNode(ctx, node.ID, resolver.Owner)
+	require.True(t, found)
+	require.Equal(t, resolver.Owner, address)
+
+	removeMsg = NewMsgRemoveVPNOnResolver(types.TestAddress1, node.ID, resolver.Owner)
+	res = handler(ctx, *removeMsg)
+	fmt.Println(res.Log)
+	require.True(t, res.IsOK())
+
 }

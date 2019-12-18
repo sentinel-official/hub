@@ -92,7 +92,7 @@ func SimulateMsgStartSubscription(keeper vpn.Keeper) simulation.Operation {
 		keeper.SetNode(ctx, node)
 
 		randomAcc := simulation.RandomAcc(r, accounts)
-		msg := vpn.NewMsgStartSubscription(randomAcc.Address, node.ID, getRandomCoin(r))
+		msg := vpn.NewMsgStartSubscription(randomAcc.Address, randomAcc.Address, node.ID, getRandomCoin(r))
 
 		if msg.ValidateBasic() != nil {
 			return simulation.NoOpMsg(vpn.ModuleName), nil,

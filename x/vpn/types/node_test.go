@@ -124,3 +124,109 @@ func TestNode_DepositToBandwidth(t *testing.T) {
 	require.Nil(t, err)
 	reflect.DeepEqual(TestBandwidthPos1, bandwidth)
 }
+
+func TestNode_IsValid(t *testing.T) {
+	var node Node
+	require.NotNil(t, node.IsValid())
+
+	node.ID = []byte("")
+	require.NotNil(t, node.IsValid())
+
+	node.ID = nil
+	require.NotNil(t, node.IsValid())
+
+	node.ID = hub.NewNodeID(0)
+	require.NotNil(t, node.IsValid())
+
+	node.Owner = []byte("")
+	require.NotNil(t, node.IsValid())
+
+	node.Owner = nil
+	require.NotNil(t, node.IsValid())
+
+	node.Owner = TestAddress1
+	require.NotNil(t, node.IsValid())
+
+	node.Deposit = sdk.NewInt64Coin("stake", 100)
+	require.NotNil(t, node.IsValid())
+
+	node.Type = ""
+	require.NotNil(t, node.IsValid())
+
+	node.Type = "typ"
+	require.NotNil(t, node.IsValid())
+
+	node.Type = "TypeTypeTypeTypeTypeTypeType"
+	require.NotNil(t, node.IsValid())
+
+	node.Type = "Type"
+	node.Version = ""
+	require.NotNil(t, node.IsValid())
+
+	node.Version = "Ver"
+	require.NotNil(t, node.IsValid())
+
+	node.Version = "VersionVersionVersionVersionVersion"
+	require.NotNil(t, node.IsValid())
+
+	node.Version = "Version"
+	node.Moniker = ""
+	require.NotNil(t, node.IsValid())
+
+	node.Moniker = "Mon"
+	require.NotNil(t, node.IsValid())
+
+	node.Moniker = "MonikerMonikerMonikerMonikerMoniker"
+	require.NotNil(t, node.IsValid())
+
+	node.Moniker = "Moniker"
+	node.PricesPerGB = nil
+	require.NotNil(t, node.IsValid())
+
+	node.PricesPerGB = sdk.NewCoins(sdk.NewCoin("stake", sdk.NewInt(0)))
+	require.NotNil(t, node.IsValid())
+
+	node.PricesPerGB = sdk.NewCoins(sdk.NewCoin("stake", sdk.NewInt(10)))
+	node.InternetSpeed = TestBandwidthNeg
+	require.NotNil(t, node.IsValid())
+
+	node.InternetSpeed = TestBandwidthZero
+	require.NotNil(t, node.IsValid())
+
+	node.InternetSpeed = TestBandwidthPos1
+	require.NotNil(t, node.IsValid())
+
+	node.Encryption = ""
+	require.NotNil(t, node.IsValid())
+
+	node.Encryption = "Enc"
+	require.NotNil(t, node.IsValid())
+
+	node.Encryption = "EncryptionEncryptionEncryptionEncryption"
+	require.NotNil(t, node.IsValid())
+
+	node.Encryption = "Encryption"
+	node.Status = ""
+	require.NotNil(t, node.IsValid())
+
+	node.Status = StatusDeRegistered
+	require.Nil(t, node.IsValid())
+
+	node.Status = StatusRegistered
+	require.Nil(t, node.IsValid())
+
+}
+
+func TestNewFreeClient(t *testing.T) {
+	require.Equal(t, NewFreeClient(nil, nil), FreeClient{})
+	require.Equal(t, NewFreeClient(hub.NewNodeID(0), nil), FreeClient{NodeID: hub.NewNodeID(0)})
+	require.Equal(t, NewFreeClient(nil, TestAddress1), FreeClient{Client: TestAddress1})
+	require.Equal(t, NewFreeClient(hub.NewNodeID(0), TestAddress1), FreeClient{NodeID: hub.NewNodeID(0), Client: TestAddress1})
+}
+
+func TestIsFreeClient(t *testing.T) {
+	require.False(t, IsFreeClient(nil, nil))
+	require.False(t, IsFreeClient([]sdk.AccAddress{TestAddress1}, nil))
+	require.False(t, IsFreeClient([]sdk.AccAddress{TestAddress1}, TestAddress2))
+	require.True(t, IsFreeClient([]sdk.AccAddress{TestAddress1}, TestAddress1))
+}

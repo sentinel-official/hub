@@ -10,6 +10,7 @@ import (
 
 type Subscription struct {
 	ID                 hub.SubscriptionID `json:"id"`
+	Resolver           sdk.AccAddress     `json:"resolver"`
 	NodeID             hub.NodeID         `json:"node_id"`
 	Client             sdk.AccAddress     `json:"client"`
 	PricePerGB         sdk.Coin           `json:"price_per_gb"`
@@ -31,6 +32,7 @@ func (s Subscription) TotalBandwidth() hub.Bandwidth {
 func (s Subscription) String() string {
 	return fmt.Sprintf(`Subscription
   ID:                  %s
+  Resolver             %s
   Node ID:             %s
   Client Address:      %s
   Price Per GB:        %s
@@ -39,12 +41,18 @@ func (s Subscription) String() string {
   Remaining Deposit:   %s
   Remaining Bandwidth: %s
   Status:              %s
-  Status Modified At:  %d`, s.ID, s.NodeID, s.Client,
+  Status Modified At:  %d`, s.ID, s.Resolver, s.NodeID, s.Client,
 		s.PricePerGB, s.TotalDeposit, s.TotalBandwidth(),
 		s.RemainingDeposit, s.RemainingBandwidth, s.Status, s.StatusModifiedAt)
 }
 
 func (s Subscription) IsValid() error {
+	if s.Resolver == nil || s.Resolver.Empty() {
+		return fmt.Errorf("invalid resolver")
+	}
+	if s.NodeID == nil {
+		return fmt.Errorf("invalid node_id")
+	}
 	if s.Client == nil || s.Client.Empty() {
 		return fmt.Errorf("invalid client")
 	}

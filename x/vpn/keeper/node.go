@@ -149,23 +149,6 @@ func (k Keeper) GetAllNodes(ctx sdk.Context) (nodes []types.Node) {
 	return nodes
 }
 
-func (k Keeper) IterateNodes(ctx sdk.Context, fn func(index int64, node types.Node) (stop bool)) {
-	store := ctx.KVStore(k.nodeKey)
-
-	iterator := sdk.KVStorePrefixIterator(store, types.NodeKeyPrefix)
-	defer iterator.Close()
-
-	for i := int64(0); iterator.Valid(); iterator.Next() {
-		var node types.Node
-		k.cdc.MustUnmarshalBinaryLengthPrefixed(iterator.Value(), &node)
-
-		if stop := fn(i, node); stop {
-			break
-		}
-		i++
-	}
-}
-
 func (k Keeper) AddNodeIDToActiveList(ctx sdk.Context, height int64, id hub.NodeID) {
 	ids := k.GetActiveNodeIDs(ctx, height)
 

@@ -17,6 +17,14 @@ func NewQuerier(k keeper.Keeper) sdk.Querier {
 			return queryNodesOfAddress(ctx, req, k)
 		case types.QueryAllNodes:
 			return queryAllNodes(ctx, k)
+		case types.QueryFreeNodesOfClient:
+			return queryFreeNodesOfClient(ctx, req, k)
+		case types.QueryFreeClientsOfNode:
+			return queryFreeClientsOfNode(ctx, req, k)
+		case types.QueryNodesOfResolver:
+			return queryNodesOfResolver(ctx, req, k)
+		case types.QueryResolversOfNode:
+			return queryResolversOfNode(ctx, req, k)
 		case types.QuerySubscription:
 			return querySubscription(ctx, req, k)
 		case types.QuerySubscriptionsOfNode:
@@ -37,6 +45,9 @@ func NewQuerier(k keeper.Keeper) sdk.Querier {
 			return queryAllSessions(ctx, k)
 		case types.QueryParams:
 			return queryParameters(ctx, k)
+		case types.QueryResolvers:
+			return queryResolvers(ctx, req, k)
+
 		default:
 			return nil, types.ErrorInvalidQueryType(path[0])
 		}
