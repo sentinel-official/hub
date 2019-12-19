@@ -136,6 +136,10 @@ var (
 	KeyFreeNodesCount                    = types.KeyFreeNodesCount
 	KeyDeposit                           = types.KeyDeposit
 	KeySessionInactiveInterval           = types.KeySessionInactiveInterval
+
+	EventTypeMsgRegisterNode = types.EventTypeMsgRegisterNode
+	AttributeKeyAddress      = types.AttributeKeyAddress
+	AttributeKeyID           = types.AttributeKeyID
 )
 
 type (
