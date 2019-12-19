@@ -13,6 +13,8 @@ import (
 
 func NewHandler(k keeper.Keeper) sdk.Handler {
 	return func(ctx sdk.Context, msg sdk.Msg) sdk.Result {
+		ctx = ctx.WithEventManager(sdk.NewEventManager())
+
 		switch msg := msg.(type) {
 		case types.MsgRegisterNode:
 			return handleRegisterNode(ctx, k, msg)
@@ -131,6 +133,14 @@ func handleRegisterNode(ctx sdk.Context, k keeper.Keeper, msg types.MsgRegisterN
 
 	k.SetNodesCount(ctx, nc+1)
 	k.SetNodesCountOfAddress(ctx, node.Owner, nca+1)
+
+	ctx.EventManager().EmitEvent(
+		sdk.NewEvent(
+			EventTypeMsgRegisterNode,
+			sdk.NewAttribute(AttributeKeyAddress, node.Owner.String()),
+			sdk.NewAttribute(AttributeKeyID, node.ID.String()),
+		),
+	)
 
 	return sdk.Result{Events: ctx.EventManager().Events()}
 }
