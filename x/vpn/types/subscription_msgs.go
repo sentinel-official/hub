@@ -2,19 +2,19 @@ package types
 
 import (
 	"encoding/json"
-
+	
 	sdk "github.com/cosmos/cosmos-sdk/types"
-
+	
 	hub "github.com/sentinel-official/hub/types"
 )
 
 var _ sdk.Msg = (*MsgStartSubscription)(nil)
 
 type MsgStartSubscription struct {
-	From     sdk.AccAddress `json:"from"`
-	Resolver sdk.AccAddress `json:"resolver"`
-	NodeID   hub.NodeID     `json:"node_id"`
-	Deposit  sdk.Coin       `json:"deposit"`
+	From       sdk.AccAddress `json:"from"`
+	ResolverID hub.ResolverID `json:"resolver_id"`
+	NodeID     hub.NodeID     `json:"node_id"`
+	Deposit    sdk.Coin       `json:"deposit"`
 }
 
 func (msg MsgStartSubscription) Type() string {
@@ -25,7 +25,7 @@ func (msg MsgStartSubscription) ValidateBasic() sdk.Error {
 	if msg.From == nil || msg.From.Empty() {
 		return ErrorInvalidField("from")
 	}
-	if msg.Resolver == nil || msg.Resolver.Empty() {
+	if msg.ResolverID == nil || len(msg.ResolverID) == 0 {
 		return ErrorInvalidField("resolver")
 	}
 	if msg.NodeID == nil || len(msg.NodeID) == 0 {
@@ -34,7 +34,7 @@ func (msg MsgStartSubscription) ValidateBasic() sdk.Error {
 	if msg.Deposit.Denom == "" || !msg.Deposit.IsPositive() {
 		return ErrorInvalidField("deposit")
 	}
-
+	
 	return nil
 }
 
@@ -43,7 +43,7 @@ func (msg MsgStartSubscription) GetSignBytes() []byte {
 	if err != nil {
 		panic(err)
 	}
-
+	
 	return bz
 }
 
@@ -55,12 +55,12 @@ func (msg MsgStartSubscription) Route() string {
 	return RouterKey
 }
 
-func NewMsgStartSubscription(from sdk.AccAddress, resolver sdk.AccAddress, nodeID hub.NodeID, deposit sdk.Coin) *MsgStartSubscription {
+func NewMsgStartSubscription(from sdk.AccAddress, resolverID hub.ResolverID, nodeID hub.NodeID, deposit sdk.Coin) *MsgStartSubscription {
 	return &MsgStartSubscription{
-		From:     from,
-		Resolver: resolver,
-		NodeID:   nodeID,
-		Deposit:  deposit,
+		From:       from,
+		ResolverID: resolverID,
+		NodeID:     nodeID,
+		Deposit:    deposit,
 	}
 }
 
@@ -79,7 +79,7 @@ func (msg MsgEndSubscription) ValidateBasic() sdk.Error {
 	if msg.From == nil || msg.From.Empty() {
 		return ErrorInvalidField("from")
 	}
-
+	
 	return nil
 }
 
@@ -88,7 +88,7 @@ func (msg MsgEndSubscription) GetSignBytes() []byte {
 	if err != nil {
 		panic(err)
 	}
-
+	
 	return bz
 }
 

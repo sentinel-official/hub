@@ -2,7 +2,7 @@ package types
 
 import (
 	"fmt"
-
+	
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -24,6 +24,6 @@ func (d Deposit) IsValid() error {
 	if !d.Coins.IsValid() {
 		return fmt.Errorf("invalid coins")
 	}
-
+	
 	return nil
 }

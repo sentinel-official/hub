@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"math/big"
-
+	
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -38,15 +38,15 @@ func (b Bandwidth) CeilTo(precision sdk.Int) Bandwidth {
 		Download: precision.Sub(sdk.NewIntFromBigInt(
 			big.NewInt(0).Rem(b.Download.BigInt(), precision.BigInt()))),
 	}
-
+	
 	if _b.Upload.Equal(precision) {
 		_b.Upload = sdk.NewInt(0)
 	}
-
+	
 	if _b.Download.Equal(precision) {
 		_b.Download = sdk.NewInt(0)
 	}
-
+	
 	return b.Add(_b)
 }
 
@@ -57,14 +57,14 @@ func (b Bandwidth) Sum() sdk.Int {
 func (b Bandwidth) Add(bandwidth Bandwidth) Bandwidth {
 	b.Upload = b.Upload.Add(bandwidth.Upload)
 	b.Download = b.Download.Add(bandwidth.Download)
-
+	
 	return b
 }
 
 func (b Bandwidth) Sub(bandwidth Bandwidth) Bandwidth {
 	b.Upload = b.Upload.Sub(bandwidth.Upload)
 	b.Download = b.Download.Sub(bandwidth.Download)
-
+	
 	return b
 }
 
@@ -130,6 +130,6 @@ func (b BandwidthSignatureData) Bytes() []byte {
 	if err != nil {
 		panic(err)
 	}
-
+	
 	return bz
 }

@@ -5,7 +5,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/tendermint/tendermint/crypto/ed25519"
-
+	
 	hub "github.com/sentinel-official/hub/types"
 )
 
@@ -36,7 +36,7 @@ var (
 		ID:                 hub.NewSubscriptionID(0),
 		NodeID:             hub.NewNodeID(0),
 		Client:             TestAddress2,
-		Resolver:           TestAddress3,
+		ResolverID:         hub.NewResolverID(0),
 		PricePerGB:         sdk.NewInt64Coin("stake", 100),
 		TotalDeposit:       sdk.NewInt64Coin("stake", 100),
 		RemainingDeposit:   sdk.NewInt64Coin("stake", 100),
@@ -52,11 +52,12 @@ var (
 		StatusModifiedAt: 0,
 	}
 	TestResolver = Resolver{
+		ID:         hub.NewResolverID(0),
 		Owner:      TestAddress3,
 		Commission: sdk.NewDecWithPrec(12, 2),
 		Status:     StatusRegistered,
 	}
-
+	
 	TestBandwidthNeg                  = hub.NewBandwidth(sdk.NewInt(-500000000), sdk.NewInt(-500000000))
 	TestBandwidthZero                 = hub.NewBandwidth(sdk.NewInt(0), sdk.NewInt(0))
 	TestBandwidthPos1                 = hub.NewBandwidth(sdk.NewInt(500000000), sdk.NewInt(500000000))

@@ -2,10 +2,10 @@ package types
 
 import (
 	"encoding/json"
-
+	
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
-
+	
 	hub "github.com/sentinel-official/hub/types"
 )
 
@@ -36,7 +36,7 @@ func (msg MsgUpdateSessionInfo) ValidateBasic() sdk.Error {
 	if msg.ClientSignature.Signature == nil || msg.ClientSignature.PubKey == nil {
 		return ErrorInvalidField("client_signature")
 	}
-
+	
 	return nil
 }
 
@@ -45,7 +45,7 @@ func (msg MsgUpdateSessionInfo) GetSignBytes() []byte {
 	if err != nil {
 		panic(err)
 	}
-
+	
 	return bz
 }
 

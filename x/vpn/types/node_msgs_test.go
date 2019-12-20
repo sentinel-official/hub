@@ -5,10 +5,10 @@ import (
 	"reflect"
 	"strings"
 	"testing"
-
+	
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
-
+	
 	hub "github.com/sentinel-official/hub/types"
 )
 
@@ -72,7 +72,7 @@ func TestMsgRegisterNode_ValidateBasic(t *testing.T) {
 			nil,
 		},
 	}
-
+	
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			if got := tc.msg.ValidateBasic(); !reflect.DeepEqual(got, tc.want) {
@@ -88,7 +88,7 @@ func TestMsgRegisterNode_GetSignBytes(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-
+	
 	require.Equal(t, msgBytes, msg.GetSignBytes())
 }
 
@@ -167,7 +167,7 @@ func TestMsgUpdateNodeInfo_ValidateBasic(t *testing.T) {
 			nil,
 		},
 	}
-
+	
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			if got := tc.msg.ValidateBasic(); !reflect.DeepEqual(got, tc.want) {
@@ -183,7 +183,7 @@ func TestMsgUpdateNode_GetSignBytes(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-
+	
 	require.Equal(t, msgBytes, msg.GetSignBytes())
 }
 
@@ -234,7 +234,7 @@ func TestMsgAddFreeClient_ValidateBasic(t *testing.T) {
 			nil,
 		},
 	}
-
+	
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			if got := tc.msg.ValidateBasic(); !reflect.DeepEqual(got, tc.want) {
@@ -250,7 +250,7 @@ func TestMsgAddFreeClient_GetSignBytes(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-
+	
 	require.Equal(t, msgBytes, msg.GetSignBytes())
 }
 
@@ -301,7 +301,7 @@ func TestMsgRemoveFreeClient_ValidateBasic(t *testing.T) {
 			nil,
 		},
 	}
-
+	
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			if got := tc.msg.ValidateBasic(); !reflect.DeepEqual(got, tc.want) {
@@ -317,7 +317,7 @@ func TestMsgRemoveFreeClient_GetSignBytes(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-
+	
 	require.Equal(t, msgBytes, msg.GetSignBytes())
 }
 
@@ -344,31 +344,27 @@ func TestMsgAddVPNOnResolver_ValidateBasic(t *testing.T) {
 	}{
 		{
 			"from is nil",
-			NewMsgAddVPNOnResolver(nil, hub.NewNodeID(1), TestAddress1),
+			NewMsgAddVPNOnResolver(nil, hub.NewNodeID(1), hub.NewResolverID(0)),
 			ErrorInvalidField("from"),
 		}, {
 			"from is empty",
-			NewMsgAddVPNOnResolver([]byte(""), hub.NewNodeID(1), TestAddress1),
+			NewMsgAddVPNOnResolver([]byte(""), hub.NewNodeID(1), hub.NewResolverID(0)),
 			ErrorInvalidField("from"),
 		}, {
 			"node_id is nil",
-			NewMsgAddVPNOnResolver(TestAddress1, nil, TestAddress1),
+			NewMsgAddVPNOnResolver(TestAddress1, nil, hub.NewResolverID(0)),
 			ErrorInvalidField("node_id"),
 		}, {
 			"resolver is nil",
 			NewMsgAddVPNOnResolver(TestAddress1, hub.NewNodeID(1), nil),
 			ErrorInvalidField("resolver"),
 		}, {
-			"resolver is empty",
-			NewMsgAddVPNOnResolver(TestAddress1, hub.NewNodeID(1), []byte("")),
-			ErrorInvalidField("resolver"),
-		}, {
 			"valid",
-			NewMsgAddVPNOnResolver(TestAddress1, hub.NewNodeID(1), TestAddress1),
+			NewMsgAddVPNOnResolver(TestAddress1, hub.NewNodeID(1), hub.NewResolverID(0)),
 			nil,
 		},
 	}
-
+	
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			if got := tc.msg.ValidateBasic(); !reflect.DeepEqual(got, tc.want) {
@@ -379,27 +375,27 @@ func TestMsgAddVPNOnResolver_ValidateBasic(t *testing.T) {
 }
 
 func TestMsgAddVPNOnResolver_GetSignBytes(t *testing.T) {
-	msg := NewMsgAddVPNOnResolver(TestAddress1, hub.NewNodeID(1), TestAddress1)
+	msg := NewMsgAddVPNOnResolver(TestAddress1, hub.NewNodeID(1), hub.NewResolverID(0))
 	msgBytes, err := json.Marshal(msg)
 	if err != nil {
 		panic(err)
 	}
-
+	
 	require.Equal(t, msgBytes, msg.GetSignBytes())
 }
 
 func TestMsgAddVPNOnResolver_GetSigners(t *testing.T) {
-	msg := NewMsgAddVPNOnResolver(TestAddress1, hub.NewNodeID(1), TestAddress1)
+	msg := NewMsgAddVPNOnResolver(TestAddress1, hub.NewNodeID(1), hub.NewResolverID(0))
 	require.Equal(t, []sdk.AccAddress{TestAddress1}, msg.GetSigners())
 }
 
 func TestMsgAddVPNOnResolver_Type(t *testing.T) {
-	msg := NewMsgAddVPNOnResolver(TestAddress1, hub.NewNodeID(1), TestAddress1)
+	msg := NewMsgAddVPNOnResolver(TestAddress1, hub.NewNodeID(1), hub.NewResolverID(0))
 	require.Equal(t, "add_vpn_on_resolver", msg.Type())
 }
 
 func TestMsgAddVPNOnResolver_Route(t *testing.T) {
-	msg := NewMsgAddVPNOnResolver(TestAddress1, hub.NewNodeID(1), TestAddress1)
+	msg := NewMsgAddVPNOnResolver(TestAddress1, hub.NewNodeID(1), hub.NewResolverID(0))
 	require.Equal(t, RouterKey, msg.Route())
 }
 
@@ -411,31 +407,27 @@ func TestMsgRemoveVPNOnResolver_ValidateBasic(t *testing.T) {
 	}{
 		{
 			"from is nil",
-			NewMsgRemoveVPNOnResolver(nil, hub.NewNodeID(1), TestAddress1),
+			NewMsgRemoveVPNOnResolver(nil, hub.NewNodeID(1), hub.NewResolverID(0)),
 			ErrorInvalidField("from"),
 		}, {
 			"from is empty",
-			NewMsgRemoveVPNOnResolver([]byte(""), hub.NewNodeID(1), TestAddress1),
+			NewMsgRemoveVPNOnResolver([]byte(""), hub.NewNodeID(1), hub.NewResolverID(0)),
 			ErrorInvalidField("from"),
 		}, {
 			"node_id is nil",
-			NewMsgRemoveVPNOnResolver(TestAddress1, nil, TestAddress1),
+			NewMsgRemoveVPNOnResolver(TestAddress1, nil, hub.NewResolverID(0)),
 			ErrorInvalidField("node_id"),
 		}, {
 			"resolver is nil",
 			NewMsgRemoveVPNOnResolver(TestAddress1, hub.NewNodeID(1), nil),
 			ErrorInvalidField("resolver"),
 		}, {
-			"resolver is empty",
-			NewMsgRemoveVPNOnResolver(TestAddress1, hub.NewNodeID(1), []byte("")),
-			ErrorInvalidField("resolver"),
-		}, {
 			"valid",
-			NewMsgRemoveVPNOnResolver(TestAddress1, hub.NewNodeID(1), TestAddress1),
+			NewMsgRemoveVPNOnResolver(TestAddress1, hub.NewNodeID(1), hub.NewResolverID(0)),
 			nil,
 		},
 	}
-
+	
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			if got := tc.msg.ValidateBasic(); !reflect.DeepEqual(got, tc.want) {
@@ -446,27 +438,27 @@ func TestMsgRemoveVPNOnResolver_ValidateBasic(t *testing.T) {
 }
 
 func TestMsgRemoveVPNOnResolver_GetSignBytes(t *testing.T) {
-	msg := NewMsgRemoveVPNOnResolver(TestAddress1, hub.NewNodeID(1), TestAddress1)
+	msg := NewMsgRemoveVPNOnResolver(TestAddress1, hub.NewNodeID(1), hub.NewResolverID(0))
 	msgBytes, err := json.Marshal(msg)
 	if err != nil {
 		panic(err)
 	}
-
+	
 	require.Equal(t, msgBytes, msg.GetSignBytes())
 }
 
 func TestMsgRemoveVPNOnResolver_GetSigners(t *testing.T) {
-	msg := NewMsgRemoveVPNOnResolver(TestAddress1, hub.NewNodeID(1), TestAddress1)
+	msg := NewMsgRemoveVPNOnResolver(TestAddress1, hub.NewNodeID(1), hub.NewResolverID(0))
 	require.Equal(t, []sdk.AccAddress{TestAddress1}, msg.GetSigners())
 }
 
 func TestMsgRemoveVPNOnResolver_Type(t *testing.T) {
-	msg := NewMsgRemoveVPNOnResolver(TestAddress1, hub.NewNodeID(1), TestAddress1)
+	msg := NewMsgRemoveVPNOnResolver(TestAddress1, hub.NewNodeID(1), hub.NewResolverID(0))
 	require.Equal(t, "remove_vpn_on_resolver", msg.Type())
 }
 
 func TestMsgRemoveVPNOnResolver_Route(t *testing.T) {
-	msg := NewMsgRemoveVPNOnResolver(TestAddress1, hub.NewNodeID(1), TestAddress1)
+	msg := NewMsgRemoveVPNOnResolver(TestAddress1, hub.NewNodeID(1), hub.NewResolverID(0))
 	require.Equal(t, RouterKey, msg.Route())
 }
 
@@ -490,7 +482,7 @@ func TestMsgDeregisterNode_ValidateBasic(t *testing.T) {
 			nil,
 		},
 	}
-
+	
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			if got := tc.msg.ValidateBasic(); !reflect.DeepEqual(got, tc.want) {
@@ -506,7 +498,7 @@ func TestMsgDeregisterNode_GetSignBytes(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-
+	
 	require.Equal(t, msgBytes, msg.GetSignBytes())
 }
 

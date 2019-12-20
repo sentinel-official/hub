@@ -2,7 +2,7 @@ package types
 
 import (
 	"fmt"
-
+	
 	hub "github.com/sentinel-official/hub/types"
 )
 
@@ -30,6 +30,6 @@ func (s Session) IsValid() error {
 	if s.Status != StatusRegistered && s.Status != StatusDeRegistered {
 		return fmt.Errorf("invalid status")
 	}
-
+	
 	return nil
 }
