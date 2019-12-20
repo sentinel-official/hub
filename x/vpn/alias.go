@@ -113,7 +113,8 @@ var (
 	RandomNode                                = keeper.RandomNode
 	RandomSubscription                        = keeper.RandomSubscription
 	RandomSession                             = keeper.RandomSession
-
+	RandomResolver                            = keeper.RandomResolver
+	
 	// variable aliases
 	ModuleCdc                            = types.ModuleCdc
 	NodesCountKey                        = types.NodesCountKey
@@ -136,10 +137,16 @@ var (
 	KeyFreeNodesCount                    = types.KeyFreeNodesCount
 	KeyDeposit                           = types.KeyDeposit
 	KeySessionInactiveInterval           = types.KeySessionInactiveInterval
-
-	EventTypeMsgRegisterNode = types.EventTypeMsgRegisterNode
-	AttributeKeyAddress      = types.AttributeKeyAddress
-	AttributeKeyID           = types.AttributeKeyID
+	
+	EventTypeMsgRegisterNode       = types.EventTypeMsgRegisterNode
+	EventTypeMsgRegisterResolver   = types.EventTypeMsgRegisterResolver
+	EventTypeMsgUpdateResolverInfo = types.EventTypeMsgUpdateResolverInfo
+	EventTypeMsgDeregisterResolver = types.EventTypeMsgDeregisterResolver
+	
+	AttributeKeyAddress    = types.AttributeKeyAddress
+	AttributeKeyID         = types.AttributeKeyID
+	AttributeKeyStatus     = types.AttributeKeyStatus
+	AttributeKeyCommission = types.AttributeKeyCommission
 )
 
 type (

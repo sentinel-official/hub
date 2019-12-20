@@ -34,7 +34,7 @@ var (
 	NewQueryDepositOfAddressParams = types.NewQueryDepositOfAddressParams
 	NewKeeper                      = keeper.NewKeeper
 	NewQuerier                     = querier.NewQuerier
-
+	
 	// variable aliases
 	ModuleCdc        = types.ModuleCdc
 	DepositKeyPrefix = types.DepositKeyPrefix

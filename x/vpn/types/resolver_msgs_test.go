@@ -4,10 +4,11 @@ import (
 	"encoding/json"
 	"reflect"
 	"testing"
-
+	
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
-
+	
+	hub "github.com/sentinel-official/hub/types"
 	"github.com/sentinel-official/hub/x/deposit/types"
 )
 
@@ -17,7 +18,7 @@ func TestMsgRegisterResolver_GetSignBytes(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-
+	
 	require.Equal(t, msgBytes, msg.GetSignBytes())
 }
 
@@ -68,7 +69,7 @@ func TestMsgRegisterResolver_ValidateBasic(t *testing.T) {
 			nil,
 		},
 	}
-
+	
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			if got := tc.msg.ValidateBasic(); !reflect.DeepEqual(got, tc.want) {
@@ -79,27 +80,27 @@ func TestMsgRegisterResolver_ValidateBasic(t *testing.T) {
 }
 
 func TestMsgUpdateResolverInfo_GetSignBytes(t *testing.T) {
-	msg := NewMsgUpdateResolverInfo(TestAddress1, sdk.OneDec())
+	msg := NewMsgUpdateResolverInfo(TestAddress1, hub.NewResolverID(0), sdk.OneDec())
 	msgBytes, err := json.Marshal(msg)
 	if err != nil {
 		panic(err)
 	}
-
+	
 	require.Equal(t, msgBytes, msg.GetSignBytes())
 }
 
 func TestMsgUpdateResolverInfo_GetSigners(t *testing.T) {
-	msg := NewMsgUpdateResolverInfo(TestAddress1, sdk.OneDec())
+	msg := NewMsgUpdateResolverInfo(TestAddress1, hub.NewResolverID(0), sdk.OneDec())
 	require.Equal(t, []sdk.AccAddress{TestAddress1}, msg.GetSigners())
 }
 
 func TestMsgUpdateResolverInfo_Route(t *testing.T) {
-	msg := NewMsgUpdateResolverInfo(TestAddress1, sdk.OneDec())
+	msg := NewMsgUpdateResolverInfo(TestAddress1, hub.NewResolverID(0), sdk.OneDec())
 	require.Equal(t, RouterKey, msg.Route())
 }
 
 func TestMsgUpdateResolverInfo_Type(t *testing.T) {
-	msg := NewMsgUpdateResolverInfo(TestAddress1, sdk.OneDec())
+	msg := NewMsgUpdateResolverInfo(TestAddress1, hub.NewResolverID(0), sdk.OneDec())
 	require.Equal(t, "update_resolver_info", msg.Type())
 }
 
@@ -111,27 +112,31 @@ func TestMsgUpdateResolverInfo_ValidateBasic(t *testing.T) {
 	}{
 		{
 			"from is nil",
-			NewMsgUpdateResolverInfo(nil, sdk.NewDecWithPrec(2, 1)),
+			NewMsgUpdateResolverInfo(nil, hub.NewResolverID(0), sdk.NewDecWithPrec(2, 1)),
 			ErrorInvalidField("from"),
 		}, {
 			"from is empty",
-			NewMsgUpdateResolverInfo([]byte(""), sdk.OneDec()),
+			NewMsgUpdateResolverInfo([]byte(""), hub.NewResolverID(0), sdk.OneDec()),
+			ErrorInvalidField("from"),
+		}, {
+			"id is nil",
+			NewMsgUpdateResolverInfo(nil, nil, sdk.NewDecWithPrec(2, 1)),
 			ErrorInvalidField("from"),
 		}, {
 			"commission is negative",
-			NewMsgUpdateResolverInfo(TestAddress1, sdk.NewDecWithPrec(-1, 0)),
+			NewMsgUpdateResolverInfo(TestAddress1, hub.NewResolverID(0), sdk.NewDecWithPrec(-1, 0)),
 			ErrorInvalidField("commission"),
 		}, {
 			"commission is grater than 1",
-			NewMsgUpdateResolverInfo(TestAddress2, sdk.NewDecWithPrec(2, 0)),
+			NewMsgUpdateResolverInfo(TestAddress2, hub.NewResolverID(0), sdk.NewDecWithPrec(2, 0)),
 			ErrorInvalidField("commission"),
 		}, {
 			"commission with zero",
-			NewMsgUpdateResolverInfo(TestAddress2, sdk.NewDecWithPrec(0, 0)),
+			NewMsgUpdateResolverInfo(TestAddress2, hub.NewResolverID(0), sdk.NewDecWithPrec(0, 0)),
 			nil,
 		}, {
 			"commission with one",
-			NewMsgUpdateResolverInfo(TestAddress2, sdk.NewDecWithPrec(1, 0)),
+			NewMsgUpdateResolverInfo(TestAddress2, hub.NewResolverID(0), sdk.NewDecWithPrec(1, 0)),
 			nil,
 		},
 	}
@@ -145,27 +150,27 @@ func TestMsgUpdateResolverInfo_ValidateBasic(t *testing.T) {
 }
 
 func TestMsgDeregisterResolver_GetSignBytes(t *testing.T) {
-	msg := NewMsgDeregisterResolver(TestAddress1)
+	msg := NewMsgDeregisterResolver(TestAddress1, hub.NewResolverID(0))
 	msgBytes, err := json.Marshal(msg)
 	if err != nil {
 		panic(err)
 	}
-
+	
 	require.Equal(t, msgBytes, msg.GetSignBytes())
 }
 
 func TestMsgDeregisterResolver_GetSigners(t *testing.T) {
-	msg := NewMsgDeregisterResolver(TestAddress1)
+	msg := NewMsgDeregisterResolver(TestAddress1, hub.NewResolverID(0))
 	require.Equal(t, []sdk.AccAddress{TestAddress1}, msg.GetSigners())
 }
 
 func TestMsgDeregisterResolver_Route(t *testing.T) {
-	msg := NewMsgDeregisterResolver(TestAddress1)
+	msg := NewMsgDeregisterResolver(TestAddress1, hub.NewResolverID(0))
 	require.Equal(t, RouterKey, msg.Route())
 }
 
 func TestMsgDeregisterResolver_Type(t *testing.T) {
-	msg := NewMsgDeregisterResolver(TestAddress1)
+	msg := NewMsgDeregisterResolver(TestAddress1, hub.NewResolverID(0))
 	require.Equal(t, "deregister_resolver_node", msg.Type())
 }
 
@@ -177,21 +182,23 @@ func TestMsgDeregisterResolver_ValidateBasic(t *testing.T) {
 	}{
 		{
 			"from is nil",
-			NewMsgDeregisterResolver(nil),
+			NewMsgDeregisterResolver(nil, hub.NewResolverID(0)),
 			ErrorInvalidField("from"),
-		},
-		{
+		}, {
 			"from is empty",
-			NewMsgDeregisterResolver([]byte("")),
+			NewMsgDeregisterResolver([]byte(""), hub.NewResolverID(0)),
 			ErrorInvalidField("from"),
-		},
-		{
+		}, {
+			"id is empty",
+			NewMsgDeregisterResolver([]byte(""), nil),
+			ErrorInvalidField("from"),
+		}, {
 			"valid input",
-			NewMsgDeregisterResolver(types.TestAddress1),
+			NewMsgDeregisterResolver(types.TestAddress1, hub.NewResolverID(0)),
 			nil,
 		},
 	}
-
+	
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			if got := tc.msg.ValidateBasic(); !reflect.DeepEqual(got, tc.want) {

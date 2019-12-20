@@ -2,7 +2,7 @@ package types
 
 import (
 	"fmt"
-
+	
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/params"
 	"github.com/cosmos/cosmos-sdk/x/params/subspace"
@@ -66,6 +66,6 @@ func (p Params) Validate() error {
 	if p.SessionInactiveInterval < 0 {
 		return fmt.Errorf("SessionInactiveInterval: %d should be positive interger", p.SessionInactiveInterval)
 	}
-
+	
 	return nil
 }

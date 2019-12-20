@@ -4,11 +4,11 @@ import (
 	"encoding/json"
 	"reflect"
 	"testing"
-
+	
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/stretchr/testify/require"
-
+	
 	hub "github.com/sentinel-official/hub/types"
 )
 
@@ -52,7 +52,7 @@ func TestMsgUpdateSessionInfo_ValidateBasic(t *testing.T) {
 			nil,
 		},
 	}
-
+	
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			if got := tc.msg.ValidateBasic(); !reflect.DeepEqual(got, tc.want) {
@@ -68,7 +68,7 @@ func TestMsgUpdateSessionInfo_GetSignBytes(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-
+	
 	require.Equal(t, msgBytes, msg.GetSignBytes())
 }
 

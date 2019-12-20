@@ -2,13 +2,13 @@ package types
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
-
+	
 	hub "github.com/sentinel-official/hub/types"
 )
 
 const (
 	Codespace = sdk.CodespaceType("vpn")
-
+	
 	errCodeUnknownMsgType            = 101
 	errCodeUnknownQueryType          = 102
 	errCodeInvalidField              = 103
@@ -27,7 +27,7 @@ const (
 	errCodeResolverDoesNotExist      = 122
 	errCodeInvalidResolverStatus     = 123
 	errCodeFreeClientDoesNotExist    = 115
-
+	
 	errMsgUnknownMsgType            = "Unknown message type: "
 	errMsgUnknownQueryType          = "Invalid query type: "
 	errMsgInvalidField              = "Invalid field: "

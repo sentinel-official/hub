@@ -2,8 +2,10 @@ package types
 
 import (
 	"encoding/json"
-
+	
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	
+	hub "github.com/sentinel-official/hub/types"
 )
 
 type MsgRegisterResolver struct {
@@ -26,7 +28,7 @@ func (msg MsgRegisterResolver) ValidateBasic() sdk.Error {
 	if msg.Commission.LT(sdk.ZeroDec()) || msg.Commission.GT(sdk.OneDec()) {
 		return ErrorInvalidField("commission")
 	}
-
+	
 	return nil
 }
 
@@ -51,6 +53,7 @@ func NewMsgRegisterResolver(from sdk.AccAddress, commission sdk.Dec) MsgRegister
 var _ sdk.Msg = (*MsgRegisterResolver)(nil)
 
 type MsgUpdateResolverInfo struct {
+	ResolverID hub.ResolverID `json:"id"`
 	From       sdk.AccAddress `json:"from"`
 	Commission sdk.Dec        `json:"commission"`
 }
@@ -67,11 +70,11 @@ func (msg MsgUpdateResolverInfo) ValidateBasic() sdk.Error {
 	if msg.From == nil || msg.From.Empty() {
 		return ErrorInvalidField("from")
 	}
-
+	
 	if msg.Commission.LT(sdk.ZeroDec()) || msg.Commission.GT(sdk.OneDec()) {
 		return ErrorInvalidField("commission")
 	}
-
+	
 	return nil
 }
 
@@ -80,7 +83,7 @@ func (msg MsgUpdateResolverInfo) GetSignBytes() []byte {
 	if err != nil {
 		panic(err)
 	}
-
+	
 	return bz
 }
 
@@ -88,9 +91,10 @@ func (msg MsgUpdateResolverInfo) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{msg.From}
 }
 
-func NewMsgUpdateResolverInfo(from sdk.AccAddress, commission sdk.Dec) MsgUpdateResolverInfo {
+func NewMsgUpdateResolverInfo(from sdk.AccAddress, id hub.ResolverID, commission sdk.Dec) MsgUpdateResolverInfo {
 	return MsgUpdateResolverInfo{
 		From:       from,
+		ResolverID: id,
 		Commission: commission,
 	}
 }
@@ -98,7 +102,8 @@ func NewMsgUpdateResolverInfo(from sdk.AccAddress, commission sdk.Dec) MsgUpdate
 var _ sdk.Msg = (*MsgUpdateResolverInfo)(nil)
 
 type MsgDeregisterResolver struct {
-	From sdk.AccAddress `json:"from"`
+	ResolverID hub.ResolverID `json:"id"`
+	From       sdk.AccAddress `json:"from"`
 }
 
 func (msg MsgDeregisterResolver) Route() string {
@@ -110,10 +115,11 @@ func (msg MsgDeregisterResolver) Type() string {
 }
 
 func (msg MsgDeregisterResolver) ValidateBasic() sdk.Error {
+	
 	if msg.From == nil || msg.From.Empty() {
 		return ErrorInvalidField("from")
 	}
-
+	
 	return nil
 }
 
@@ -122,7 +128,7 @@ func (msg MsgDeregisterResolver) GetSignBytes() []byte {
 	if err != nil {
 		panic(err)
 	}
-
+	
 	return bz
 }
 
@@ -130,8 +136,11 @@ func (msg MsgDeregisterResolver) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{msg.From}
 }
 
-func NewMsgDeregisterResolver(from sdk.AccAddress) MsgDeregisterResolver {
-	return MsgDeregisterResolver{From: from}
+func NewMsgDeregisterResolver(from sdk.AccAddress, id hub.ResolverID) MsgDeregisterResolver {
+	return MsgDeregisterResolver{
+		From:       from,
+		ResolverID: id,
+	}
 }
 
 var _ sdk.Msg = (*MsgDeregisterResolver)(nil)

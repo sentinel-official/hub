@@ -44,7 +44,7 @@ func removeVPNOnResolverHandlerFunc(ctx context.CLIContext) http.HandlerFunc {
 		}
 
 		vars := mux.Vars(r)
-		resolver, err := sdk.AccAddressFromBech32(vars["address"])
+		resolver, err := hub.NewResolverIDFromString(vars["id"])
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return

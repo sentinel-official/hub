@@ -3,9 +3,9 @@ package types
 import (
 	"fmt"
 	"sort"
-
+	
 	sdk "github.com/cosmos/cosmos-sdk/types"
-
+	
 	hub "github.com/sentinel-official/hub/types"
 )
 
@@ -13,14 +13,14 @@ type Node struct {
 	ID      hub.NodeID     `json:"id"`
 	Owner   sdk.AccAddress `json:"owner"`
 	Deposit sdk.Coin       `json:"deposit"`
-
+	
 	Type          string        `json:"type"`
 	Version       string        `json:"version"`
 	Moniker       string        `json:"moniker"`
 	PricesPerGB   sdk.Coins     `json:"prices_per_gb"`
 	InternetSpeed hub.Bandwidth `json:"internet_speed"`
 	Encryption    string        `json:"encryption"`
-
+	
 	Status           string `json:"status"`
 	StatusModifiedAt int64  `json:"status_modified_at"`
 }
@@ -62,7 +62,7 @@ func (n Node) UpdateInfo(_node Node) Node {
 	if _node.Encryption != "" {
 		n.Encryption = _node.Encryption
 	}
-
+	
 	return n
 }
 
@@ -70,12 +70,12 @@ func (n Node) FindPricePerGB(denom string) (coin sdk.Coin) {
 	index := sort.Search(n.PricesPerGB.Len(), func(i int) bool {
 		return n.PricesPerGB[i].Denom >= denom
 	})
-
+	
 	if index == n.PricesPerGB.Len() ||
 		(index < n.PricesPerGB.Len() && n.PricesPerGB[index].Denom != denom) {
 		return coin
 	}
-
+	
 	return n.PricesPerGB[index]
 }
 
@@ -84,7 +84,7 @@ func (n Node) DepositToBandwidth(deposit sdk.Coin) (bandwidth hub.Bandwidth, err
 	if pricePerGB.Denom == "" || pricePerGB.Amount.IsZero() {
 		return bandwidth, ErrorInvalidDeposit()
 	}
-
+	
 	x := deposit.Amount.Mul(hub.MB500).Quo(pricePerGB.Amount)
 	return hub.NewBandwidth(x, x), nil
 }
@@ -99,7 +99,7 @@ func (n Node) IsValid() error {
 	if n.Type == "" || len(n.Type) < 4 || len(n.Type) > 16 {
 		return fmt.Errorf("invalid type")
 	}
-
+	
 	if n.Version == "" || len(n.Version) < 4 || len(n.Version) > 16 {
 		return fmt.Errorf("invalid version")
 	}
@@ -112,16 +112,16 @@ func (n Node) IsValid() error {
 	if n.InternetSpeed.AnyNil() || !n.InternetSpeed.AllPositive() {
 		return fmt.Errorf("invalid internet speed")
 	}
-
+	
 	if n.Encryption == "" || len(n.Encryption) < 4 || len(n.Encryption) > 16 {
 		return fmt.Errorf("invalid encryption")
 	}
-
+	
 	if n.Status != StatusRegistered &&
 		n.Status != StatusDeRegistered {
 		return fmt.Errorf("invalid status")
 	}
-
+	
 	return nil
 }
 
@@ -132,6 +132,6 @@ func IsFreeClient(freeClients []sdk.AccAddress, _client sdk.AccAddress) bool {
 			isFreeClient = true
 		}
 	}
-
+	
 	return isFreeClient
 }

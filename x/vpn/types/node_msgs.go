@@ -2,9 +2,9 @@ package types
 
 import (
 	"encoding/json"
-
+	
 	sdk "github.com/cosmos/cosmos-sdk/types"
-
+	
 	hub "github.com/sentinel-official/hub/types"
 )
 
@@ -47,7 +47,7 @@ func (msg MsgRegisterNode) ValidateBasic() sdk.Error {
 	if msg.Encryption == "" {
 		return ErrorInvalidField("encryption")
 	}
-
+	
 	return nil
 }
 
@@ -56,7 +56,7 @@ func (msg MsgRegisterNode) GetSignBytes() []byte {
 	if err != nil {
 		panic(err)
 	}
-
+	
 	return bz
 }
 
@@ -113,7 +113,7 @@ func (msg MsgUpdateNodeInfo) ValidateBasic() sdk.Error {
 	if msg.InternetSpeed.AnyNegative() {
 		return ErrorInvalidField("internet_speed")
 	}
-
+	
 	return nil
 }
 
@@ -122,7 +122,7 @@ func (msg MsgUpdateNodeInfo) GetSignBytes() []byte {
 	if err != nil {
 		panic(err)
 	}
-
+	
 	return bz
 }
 
@@ -171,7 +171,7 @@ func (msg MsgAddFreeClient) ValidateBasic() sdk.Error {
 	if msg.Client == nil || msg.Client.Empty() {
 		return ErrorInvalidField("client")
 	}
-
+	
 	return nil
 }
 
@@ -180,7 +180,7 @@ func (msg MsgAddFreeClient) GetSignBytes() []byte {
 	if err != nil {
 		panic(err)
 	}
-
+	
 	return bz
 }
 
@@ -222,7 +222,7 @@ func (msg MsgRemoveFreeClient) ValidateBasic() sdk.Error {
 	if msg.Client == nil || msg.Client.Empty() {
 		return ErrorInvalidField("client")
 	}
-
+	
 	return nil
 }
 
@@ -231,7 +231,7 @@ func (msg MsgRemoveFreeClient) GetSignBytes() []byte {
 	if err != nil {
 		panic(err)
 	}
-
+	
 	return bz
 }
 
@@ -254,9 +254,9 @@ func NewMsgRemoveFreeClient(from sdk.AccAddress, nodeID hub.NodeID, client sdk.A
 var _ sdk.Msg = (*MsgAddVPNOnResolver)(nil)
 
 type MsgAddVPNOnResolver struct {
-	From     sdk.AccAddress `json:"from"`
-	NodeID   hub.NodeID     `json:"node_id"`
-	Resolver sdk.AccAddress `json:"resolver"`
+	From       sdk.AccAddress `json:"from"`
+	NodeID     hub.NodeID     `json:"node_id"`
+	ResolverID hub.ResolverID `json:"resolver_id"`
 }
 
 func (msg MsgAddVPNOnResolver) Type() string {
@@ -270,10 +270,10 @@ func (msg MsgAddVPNOnResolver) ValidateBasic() sdk.Error {
 	if msg.NodeID == nil {
 		return ErrorInvalidField("node_id")
 	}
-	if msg.Resolver == nil || msg.Resolver.Empty() {
+	if msg.ResolverID == nil {
 		return ErrorInvalidField("resolver")
 	}
-
+	
 	return nil
 }
 
@@ -282,7 +282,7 @@ func (msg MsgAddVPNOnResolver) GetSignBytes() []byte {
 	if err != nil {
 		panic(err)
 	}
-
+	
 	return bz
 }
 
@@ -294,20 +294,20 @@ func (msg MsgAddVPNOnResolver) Route() string {
 	return RouterKey
 }
 
-func NewMsgAddVPNOnResolver(from sdk.AccAddress, nodeID hub.NodeID, resolver sdk.AccAddress) *MsgAddVPNOnResolver {
+func NewMsgAddVPNOnResolver(from sdk.AccAddress, nodeID hub.NodeID, resolverID hub.ResolverID) *MsgAddVPNOnResolver {
 	return &MsgAddVPNOnResolver{
-		From:     from,
-		NodeID:   nodeID,
-		Resolver: resolver,
+		From:       from,
+		NodeID:     nodeID,
+		ResolverID: resolverID,
 	}
 }
 
 var _ sdk.Msg = (*MsgRemoveVPNOnResolver)(nil)
 
 type MsgRemoveVPNOnResolver struct {
-	From     sdk.AccAddress `json:"from"`
-	NodeID   hub.NodeID     `json:"node_id"`
-	Resolver sdk.AccAddress `json:"resolver"`
+	From       sdk.AccAddress `json:"from"`
+	NodeID     hub.NodeID     `json:"node_id"`
+	ResolverID hub.ResolverID `json:"resolver_id"`
 }
 
 func (msg MsgRemoveVPNOnResolver) Type() string {
@@ -321,10 +321,10 @@ func (msg MsgRemoveVPNOnResolver) ValidateBasic() sdk.Error {
 	if msg.NodeID == nil {
 		return ErrorInvalidField("node_id")
 	}
-	if msg.Resolver == nil || msg.Resolver.Empty() {
+	if msg.ResolverID == nil {
 		return ErrorInvalidField("resolver")
 	}
-
+	
 	return nil
 }
 
@@ -333,7 +333,7 @@ func (msg MsgRemoveVPNOnResolver) GetSignBytes() []byte {
 	if err != nil {
 		panic(err)
 	}
-
+	
 	return bz
 }
 
@@ -345,11 +345,11 @@ func (msg MsgRemoveVPNOnResolver) Route() string {
 	return RouterKey
 }
 
-func NewMsgRemoveVPNOnResolver(from sdk.AccAddress, nodeID hub.NodeID, resolver sdk.AccAddress) *MsgRemoveVPNOnResolver {
+func NewMsgRemoveVPNOnResolver(from sdk.AccAddress, nodeID hub.NodeID, resolver hub.ResolverID) *MsgRemoveVPNOnResolver {
 	return &MsgRemoveVPNOnResolver{
-		From:     from,
-		NodeID:   nodeID,
-		Resolver: resolver,
+		From:       from,
+		NodeID:     nodeID,
+		ResolverID: resolver,
 	}
 }
 
@@ -368,7 +368,7 @@ func (msg MsgDeregisterNode) ValidateBasic() sdk.Error {
 	if msg.From == nil || msg.From.Empty() {
 		return ErrorInvalidField("from")
 	}
-
+	
 	return nil
 }
 
@@ -377,7 +377,7 @@ func (msg MsgDeregisterNode) GetSignBytes() []byte {
 	if err != nil {
 		panic(err)
 	}
-
+	
 	return bz
 }
 

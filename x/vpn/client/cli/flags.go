@@ -16,5 +16,5 @@ const (
 	flagClientSign     = "client-sign"
 	flagNodeOwnerSign  = "node-owner-sign"
 	flagSubscriptionID = "subscription-id"
-	flagResolver       = "resolver"
+	flagResolverID     = "resolver-id"
 )

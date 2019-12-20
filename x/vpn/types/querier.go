@@ -2,7 +2,7 @@ package types
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
-
+	
 	hub "github.com/sentinel-official/hub/types"
 )
 
@@ -10,25 +10,25 @@ const (
 	QueryNode           = "node"
 	QueryNodesOfAddress = "nodes_of_address"
 	QueryAllNodes       = "all_nodes"
-
+	
 	QueryFreeNodesOfClient = "free_nodes_of_client"
 	QueryFreeClientsOfNode = "free_clients_of_node"
-
+	
 	QueryResolversOfNode = "resolvers_of_node"
 	QueryNodesOfResolver = "nodes_of_resolver"
-
+	
 	QuerySubscription                = "subscription"
 	QuerySubscriptionsOfNode         = "subscriptions_of_node"
 	QuerySubscriptionsOfAddress      = "subscriptions_of_address"
 	QueryAllSubscriptions            = "all_subscriptions"
 	QuerySessionsCountOfSubscription = "sessions_count_of_subscription"
-
+	
 	QuerySession                = "session"
 	QuerySessionOfSubscription  = "session_of_subscription"
 	QuerySessionsOfSubscription = "sessions_of_subscription"
 	QueryAllSessions            = "all_sessions"
 	QueryParams                 = "params"
-	QueryResolvers = "resolvers"
+	QueryResolvers              = "resolvers"
 )
 
 type QueryNodeParams struct {
@@ -82,12 +82,12 @@ func NewQueryResolversOfNodeParams(id hub.NodeID) QueryResolversOfNodeParams {
 }
 
 type QueryNodesOfResolverPrams struct {
-	Address sdk.AccAddress
+	ID hub.ResolverID
 }
 
-func NewQueryNodesOfResolverPrams(address sdk.AccAddress) QueryNodesOfResolverPrams {
+func NewQueryNodesOfResolverPrams(resolverID hub.ResolverID) QueryNodesOfResolverPrams {
 	return QueryNodesOfResolverPrams{
-		Address: address,
+		ID: resolverID,
 	}
 }
 
