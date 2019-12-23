@@ -47,7 +47,6 @@ func (k Keeper) GetResolver(ctx sdk.Context, id hub.ResolverID) (resolver types.
 	
 	k.cdc.MustUnmarshalBinaryLengthPrefixed(value, &resolver)
 	return resolver, true
-	
 }
 
 func (k Keeper) SetResolverCountOfAddress(ctx sdk.Context, address sdk.AccAddress, count uint64) {
@@ -80,7 +79,8 @@ func (k Keeper) SetResolverIDByAddress(ctx sdk.Context, address sdk.AccAddress, 
 	store.Set(key, value)
 }
 
-func (k Keeper) GetResolverIDByAddress(ctx sdk.Context, address sdk.AccAddress, i uint64) (id hub.ResolverID, found bool) {
+func (k Keeper) GetResolverIDByAddress(ctx sdk.Context, address sdk.AccAddress,
+	i uint64) (id hub.ResolverID, found bool) {
 	key := types.ResolverIDByAddressKey(address, i)
 	
 	store := ctx.KVStore(k.resolverKey)
@@ -128,7 +128,8 @@ func (k Keeper) SetResolverOfNode(ctx sdk.Context, nodeID hub.NodeID, resolver h
 	store.Set(key, value)
 }
 
-func (k Keeper) GetNodeOfResolver(ctx sdk.Context, resolverID hub.ResolverID, nodeID hub.NodeID) (id hub.NodeID, found bool) {
+func (k Keeper) GetNodeOfResolver(ctx sdk.Context, resolverID hub.ResolverID,
+	nodeID hub.NodeID) (id hub.NodeID, found bool) {
 	key := types.NodeOfResolverKey(resolverID, nodeID)
 	
 	store := ctx.KVStore(k.resolverKey)
@@ -166,7 +167,8 @@ func (k Keeper) SetNodeOfResolver(ctx sdk.Context, resolverID hub.ResolverID, no
 	store.Set(key, value)
 }
 
-func (k Keeper) GetResolverOfNode(ctx sdk.Context, nodeID hub.NodeID, resolverID hub.ResolverID) (id hub.ResolverID, found bool) {
+func (k Keeper) GetResolverOfNode(ctx sdk.Context, nodeID hub.NodeID,
+	resolverID hub.ResolverID) (id hub.ResolverID, found bool) {
 	key := types.ResolverOfNodeKey(nodeID, resolverID)
 	
 	store := ctx.KVStore(k.resolverKey)

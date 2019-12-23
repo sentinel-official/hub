@@ -115,7 +115,7 @@ var (
 	RandomSubscription                        = keeper.RandomSubscription
 	RandomSession                             = keeper.RandomSession
 	RandomResolver                            = keeper.RandomResolver
-
+	
 	// variable aliases
 	ModuleCdc                            = types.ModuleCdc
 	NodesCountKey                        = types.NodesCountKey
@@ -138,16 +138,30 @@ var (
 	KeyFreeNodesCount                    = types.KeyFreeNodesCount
 	KeyDeposit                           = types.KeyDeposit
 	KeySessionInactiveInterval           = types.KeySessionInactiveInterval
-
-	EventTypeMsgRegisterNode       = types.EventTypeMsgRegisterNode
-	EventTypeMsgRegisterResolver   = types.EventTypeMsgRegisterResolver
-	EventTypeMsgUpdateResolverInfo = types.EventTypeMsgUpdateResolverInfo
-	EventTypeMsgDeregisterResolver = types.EventTypeMsgDeregisterResolver
-
-	AttributeKeyAddress    = types.AttributeKeyAddress
-	AttributeKeyID         = types.AttributeKeyID
-	AttributeKeyStatus     = types.AttributeKeyStatus
-	AttributeKeyCommission = types.AttributeKeyCommission
+	
+	EventTypeMsgRegisterNode            = types.EventTypeMsgRegisterNode
+	EventTypeMsgUpdateNodeInfo          = types.EventTypeMsgUpdateNodeInfo
+	EventTypeMsgDeregisterNode          = types.EventTypeMsgDeregisterNode
+	EventTypeMsgRegisterResolver        = types.EventTypeMsgRegisterResolver
+	EventTypeMsgUpdateResolverInfo      = types.EventTypeMsgUpdateResolverInfo
+	EventTypeMsgDeregisterResolver      = types.EventTypeMsgDeregisterResolver
+	EventTypeMsgAddFreeClient           = types.EventTypeMsgAddFreeClient
+	EventTypeMsgRemoveFreeClient        = types.EventTypeMsgRemoveFreeClient
+	EventTypeMsgRegisterVPNOnResolver   = types.EventTypeMsgRegisterVPNOnResolver
+	EventTypeMsgDeregisterVPNOnResolver = types.EventTypeMsgDeregisterVPNOnResolver
+	EventTypeMsgStartSubscription       = types.EventTypeMsgStartSubscription
+	EventTypeMsgEndSubscription         = types.EventTypeMsgEndSubscription
+	EventTypeMsgUpdateSessionInfo       = types.EventTypeMsgUpdateSessionInfo
+	
+	AttributeKeyClientAddress = types.AttributeKeyClientAddress
+	AttributeKeyFromAddress   = types.AttributeKeyFromAddress
+	AttributeKeyNodeID        = types.AttributeKeyNodeID
+	AttributeKeyResolverID    = types.AttributeKeyResolverID
+	AttributeSubscriptionID   = types.AttributeSubscriptionID
+	AttributeSessionID        = types.AttributeSessionID
+	AttributeKeyStatus        = types.AttributeKeyStatus
+	AttributeKeyCommission    = types.AttributeKeyCommission
+	AttributeKeyDeposit       = types.AttributeKeyDeposit
 )
 
 type (

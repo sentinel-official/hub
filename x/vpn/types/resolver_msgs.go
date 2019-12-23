@@ -115,7 +115,6 @@ func (msg MsgDeregisterResolver) Type() string {
 }
 
 func (msg MsgDeregisterResolver) ValidateBasic() sdk.Error {
-	
 	if msg.From == nil || msg.From.Empty() {
 		return ErrorInvalidField("from")
 	}

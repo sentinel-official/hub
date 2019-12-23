@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 	"path"
-
+	
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/keys"
 	"github.com/cosmos/cosmos-sdk/client/lcd"
@@ -18,7 +18,7 @@ import (
 	"github.com/spf13/viper"
 	_amino "github.com/tendermint/go-amino"
 	"github.com/tendermint/tendermint/libs/cli"
-
+	
 	"github.com/sentinel-official/hub/app"
 	"github.com/sentinel-official/hub/simapp"
 	"github.com/sentinel-official/hub/version"
@@ -26,22 +26,22 @@ import (
 
 func main() {
 	cdc := app.MakeCodec()
-
+	
 	config := sdk.GetConfig()
 	simapp.SetBech32AddressPrefixes(config)
 	config.Seal()
-
+	
 	cobra.EnableCommandSorting = false
 	rootCmd := &cobra.Command{
 		Use:   "sentinel-hubcli",
 		Short: "Sentinel Hub light-client",
 	}
-
+	
 	rootCmd.PersistentFlags().String(client.FlagChainID, "", "Chain ID of tendermint node")
 	rootCmd.PersistentPreRunE = func(_ *cobra.Command, _ []string) error {
 		return initConfig(rootCmd)
 	}
-
+	
 	rootCmd.AddCommand(
 		rpc.StatusCommand(),
 		client.ConfigCmd(app.DefaultCLIHome),
@@ -55,7 +55,7 @@ func main() {
 		version.Cmd,
 		client.NewCompletionCmd(rootCmd, true),
 	)
-
+	
 	executor := cli.PrepareMainCmd(rootCmd, "HUB", app.DefaultCLIHome)
 	if err := executor.Execute(); err != nil {
 		panic(err)
@@ -68,7 +68,7 @@ func queryCmd(cdc *_amino.Codec) *cobra.Command {
 		Aliases: []string{"q"},
 		Short:   "Querying subcommands",
 	}
-
+	
 	cmd.AddCommand(
 		authCli.GetAccountCmd(cdc),
 		client.LineBreak,
@@ -78,7 +78,7 @@ func queryCmd(cdc *_amino.Codec) *cobra.Command {
 		authCli.QueryTxCmd(cdc),
 		client.LineBreak,
 	)
-
+	
 	app.ModuleBasics.AddQueryCommands(cmd, cdc)
 	return cmd
 }
@@ -88,7 +88,7 @@ func txCmd(cdc *_amino.Codec) *cobra.Command {
 		Use:   "tx",
 		Short: "Transactions subcommands",
 	}
-
+	
 	cmd.AddCommand(
 		bankCli.SendTxCmd(cdc),
 		client.LineBreak,
@@ -99,16 +99,16 @@ func txCmd(cdc *_amino.Codec) *cobra.Command {
 		authCli.GetEncodeCommand(cdc),
 		client.LineBreak,
 	)
-
+	
 	app.ModuleBasics.AddTxCommands(cmd, cdc)
-
+	
 	var cmdsToRemove []*cobra.Command
 	for _, cmd := range cmd.Commands() {
 		if cmd.Use == auth.ModuleName || cmd.Use == bank.ModuleName {
 			cmdsToRemove = append(cmdsToRemove, cmd)
 		}
 	}
-
+	
 	cmd.RemoveCommand(cmdsToRemove...)
 	return cmd
 }
@@ -124,11 +124,11 @@ func initConfig(cmd *cobra.Command) error {
 	if err != nil {
 		return err
 	}
-
+	
 	cfgFile := path.Join(home, "config", "config.toml")
 	if _, err := os.Stat(cfgFile); err == nil {
 		viper.SetConfigFile(cfgFile)
-
+		
 		if err := viper.ReadInConfig(); err != nil {
 			return err
 		}
@@ -139,6 +139,6 @@ func initConfig(cmd *cobra.Command) error {
 	if err := viper.BindPFlag(cli.EncodingFlag, cmd.PersistentFlags().Lookup(cli.EncodingFlag)); err != nil {
 		return err
 	}
-
+	
 	return viper.BindPFlag(cli.OutputFlag, cmd.PersistentFlags().Lookup(cli.OutputFlag))
 }

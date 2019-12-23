@@ -5,14 +5,18 @@ type GenesisState struct {
 	Subscriptions []Subscription `json:"subscriptions"`
 	Sessions      []Session      `json:"sessions"`
 	Resolvers     []Resolver     `json:"resolvers"`
+	FreeClients   []FreeClient   `json:"free_clients"`
 	Params        Params         `json:"params"`
 }
 
-func NewGenesisState(nodes []Node, subscriptions []Subscription, sessions []Session, params Params) GenesisState {
+func NewGenesisState(nodes []Node, subscriptions []Subscription, sessions []Session, resolvers []Resolver,
+	freeClients []FreeClient, params Params) GenesisState {
 	return GenesisState{
 		Nodes:         nodes,
 		Subscriptions: subscriptions,
 		Sessions:      sessions,
+		Resolvers:     resolvers,
+		FreeClients:   freeClients,
 		Params:        params,
 	}
 }

@@ -2,18 +2,18 @@ package types
 
 import (
 	"fmt"
-
+	
 	sdk "github.com/cosmos/cosmos-sdk/types"
-
+	
 	hub "github.com/sentinel-official/hub/types"
 )
 
 const (
 	Codespace = sdk.CodespaceType("deposit")
-
+	
 	errCodeUnknownQueryType         = 101
 	errCodeInsufficientDepositFunds = 102
-
+	
 	errMsgUnknownQueryType         = "Invalid query type: "
 	errMsgInsufficientDepositFunds = "insufficient deposit funds: %s < %s"
 )

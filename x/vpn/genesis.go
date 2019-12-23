@@ -45,6 +45,22 @@ func InitGenesis(ctx sdk.Context, k Keeper, data types.GenesisState) {
 		k.SetSessionsCountOfSubscription(ctx, session.SubscriptionID, scs+1)
 	}
 	
+	for _, resolver := range data.Resolvers {
+		k.SetResolver(ctx, resolver)
+		
+		rc := k.GetResolverCount(ctx)
+		rca := k.GetResolversCountOfAddress(ctx, resolver.Owner)
+		
+		k.SetResolverIDByAddress(ctx, resolver.Owner, rca, resolver.ID)
+		k.SetResolverCount(ctx, rc+1)
+		k.SetResolverCountOfAddress(ctx, resolver.Owner, rca+1)
+	}
+	
+	for _, freeClient := range data.FreeClients {
+		k.SetFreeClient(ctx, freeClient)
+		k.SetFreeClientOfNode(ctx, freeClient.NodeID, freeClient.Client)
+		k.SetFreeNodeOfClient(ctx, freeClient.Client, freeClient.NodeID)
+	}
 }
 
 func ExportGenesis(ctx sdk.Context, k Keeper) types.GenesisState {
@@ -52,8 +68,10 @@ func ExportGenesis(ctx sdk.Context, k Keeper) types.GenesisState {
 	nodes := k.GetAllNodes(ctx)
 	subscriptions := k.GetAllSubscriptions(ctx)
 	sessions := k.GetAllSessions(ctx)
+	resolvers := k.GetAllResolvers(ctx)
+	freeClients := k.GetFreeClients(ctx)
 	
-	return types.NewGenesisState(nodes, subscriptions, sessions, params)
+	return types.NewGenesisState(nodes, subscriptions, sessions, resolvers, freeClients, params)
 }
 
 func ValidateGenesis(data types.GenesisState) error {

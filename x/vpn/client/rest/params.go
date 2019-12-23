@@ -11,7 +11,6 @@ import (
 
 func getParamsHandlerFunc(ctx context.CLIContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		
 		res, err := common.QueryParams(ctx)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())

@@ -27,7 +27,6 @@ func queryResolvers(ctx sdk.Context, req abci.RequestQuery, k keeper.Keeper) ([]
 		resolvers = append(resolvers, resolver)
 	} else {
 		resolvers = k.GetAllResolvers(ctx)
-		
 	}
 	
 	res, err := types.ModuleCdc.MarshalJSON(resolvers)
@@ -35,7 +34,6 @@ func queryResolvers(ctx sdk.Context, req abci.RequestQuery, k keeper.Keeper) ([]
 		return nil, types.ErrorMarshal()
 	}
 	return res, nil
-	
 }
 
 func queryResolversOfAddress(ctx sdk.Context, req abci.RequestQuery, k keeper.Keeper) ([]byte, sdk.Error) {

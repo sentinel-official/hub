@@ -39,7 +39,8 @@ func (k Keeper) GetFreeClientsOfNode(ctx sdk.Context, nodeID hub.NodeID) (freeCl
 	return freeClients
 }
 
-func (k Keeper) GetFreeClientOfNode(ctx sdk.Context, nodeID hub.NodeID, client sdk.AccAddress) (address sdk.AccAddress, found bool) {
+func (k Keeper) GetFreeClientOfNode(ctx sdk.Context, nodeID hub.NodeID,
+	client sdk.AccAddress) (address sdk.AccAddress, found bool) {
 	store := ctx.KVStore(k.nodeKey)
 	
 	key := types.FreeClientOfNodeKey(nodeID, client)
@@ -55,7 +56,8 @@ func (k Keeper) GetFreeClientOfNode(ctx sdk.Context, nodeID hub.NodeID, client s
 	return freeClient, true
 }
 
-func (k Keeper) GetFreeNodesOfClient(ctx sdk.Context, client sdk.AccAddress) (freeNodes []hub.NodeID) {
+func (k Keeper) GetFreeNodesOfClient(ctx sdk.Context,
+	client sdk.AccAddress) (freeNodes []hub.NodeID) {
 	store := ctx.KVStore(k.nodeKey)
 	
 	key := types.FreeNodesOfClientKey(client, nil)
@@ -71,7 +73,8 @@ func (k Keeper) GetFreeNodesOfClient(ctx sdk.Context, client sdk.AccAddress) (fr
 	return freeNodes
 }
 
-func (k Keeper) GetFreeNodeOfClient(ctx sdk.Context, client sdk.AccAddress, nodeID hub.NodeID) (id hub.NodeID, found bool) {
+func (k Keeper) GetFreeNodeOfClient(ctx sdk.Context, client sdk.AccAddress,
+	nodeID hub.NodeID) (id hub.NodeID, found bool) {
 	store := ctx.KVStore(k.nodeKey)
 	
 	key := types.FreeNodesOfClientKey(client, nodeID)

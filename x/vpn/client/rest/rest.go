@@ -41,7 +41,6 @@ func registerTxRoutes(ctx context.CLIContext, r *mux.Router) {
 		Methods("PUT")
 	r.HandleFunc("/resolver/de-register", deregisterResolverHandleFunc(ctx)).
 		Methods("DELETE")
-	
 }
 
 func registerQueryRoutes(ctx context.CLIContext, r *mux.Router) {
@@ -81,5 +80,4 @@ func registerQueryRoutes(ctx context.CLIContext, r *mux.Router) {
 		Methods("GET")
 	r.HandleFunc("/vpn/params", getParamsHandlerFunc(ctx)).
 		Methods("GET")
-	
 }

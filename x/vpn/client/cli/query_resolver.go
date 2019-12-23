@@ -23,8 +23,7 @@ func QueryResolversCmd(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 			
-			ctx.PrintOutput(resolvers)
-			return nil
+			return ctx.PrintOutput(resolvers)
 		},
 	}
 	cmd.Flags().String(flagAddress, "", "Resolver address")

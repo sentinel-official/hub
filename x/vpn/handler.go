@@ -27,7 +27,7 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 		case types.MsgRegisterVPNOnResolver:
 			return handleRegisterVPNOnResolver(ctx, k, msg)
 		case types.MsgDeregisterVPNOnResolver:
-			return handleRemoveVPNOnResolver(ctx, k, msg)
+			return handleDeregisterVPNOnResolver(ctx, k, msg)
 		case types.MsgDeregisterNode:
 			return handleDeregisterNode(ctx, k, msg)
 		case types.MsgStartSubscription:
@@ -137,8 +137,9 @@ func handleRegisterNode(ctx sdk.Context, k keeper.Keeper, msg types.MsgRegisterN
 	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(
 			EventTypeMsgRegisterNode,
-			sdk.NewAttribute(AttributeKeyAddress, node.Owner.String()),
-			sdk.NewAttribute(AttributeKeyID, node.ID.String()),
+			sdk.NewAttribute(AttributeKeyFromAddress, node.Owner.String()),
+			sdk.NewAttribute(AttributeKeyNodeID, node.ID.String()),
+			sdk.NewAttribute(AttributeKeyStatus, node.Status),
 		),
 	)
 	
@@ -169,7 +170,16 @@ func handleUpdateNodeInfo(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpdateN
 	
 	k.SetNode(ctx, node)
 	
-	return sdk.Result{Events: ctx.EventManager().Events()}
+	ctx.EventManager().EmitEvent(
+		sdk.NewEvent(
+			EventTypeMsgUpdateNodeInfo,
+			sdk.NewAttribute(AttributeKeyNodeID, msg.ID.String()),
+			sdk.NewAttribute(AttributeKeyFromAddress, msg.From.String()),
+		),
+	)
+	
+	return sdk.Result{Events: ctx.EventManager().Events(),
+		Data: types.ModuleCdc.MustMarshalJSON(node)}
 }
 
 func handleAddFreeClient(ctx sdk.Context, k keeper.Keeper, msg types.MsgAddFreeClient) sdk.Result {
@@ -193,6 +203,14 @@ func handleAddFreeClient(ctx sdk.Context, k keeper.Keeper, msg types.MsgAddFreeC
 	}
 	k.SetFreeClient(ctx, freeClient)
 	
+	ctx.EventManager().EmitEvent(
+		sdk.NewEvent(
+			EventTypeMsgAddFreeClient,
+			sdk.NewAttribute(AttributeKeyNodeID, msg.NodeID.String()),
+			sdk.NewAttribute(AttributeKeyClientAddress, msg.Client.String()),
+			sdk.NewAttribute(AttributeKeyFromAddress, msg.Client.String()),
+		),
+	)
 	return sdk.Result{Events: ctx.EventManager().Events()}
 }
 
@@ -215,6 +233,14 @@ func handleRemoveFreeClient(ctx sdk.Context, k keeper.Keeper, msg types.MsgRemov
 	
 	k.RemoveFreeClientOfNode(ctx, msg.NodeID, msg.Client)
 	k.RemoveFreeClient(ctx, msg.NodeID)
+	
+	ctx.EventManager().EmitEvent(
+		sdk.NewEvent(
+			EventTypeMsgRemoveFreeClient,
+			sdk.NewAttribute(AttributeKeyNodeID, msg.NodeID.String()),
+			sdk.NewAttribute(AttributeKeyClientAddress, msg.Client.String()),
+			sdk.NewAttribute(AttributeKeyFromAddress, msg.From.String()),
+		), )
 	
 	return sdk.Result{Events: ctx.EventManager().Events()}
 }
@@ -242,10 +268,19 @@ func handleRegisterVPNOnResolver(ctx sdk.Context, k keeper.Keeper, msg types.Msg
 	k.SetResolverOfNode(ctx, node.ID, resolver.ID)
 	k.SetNodeOfResolver(ctx, resolver.ID, node.ID)
 	
+	ctx.EventManager().EmitEvent(
+		sdk.NewEvent(
+			EventTypeMsgRegisterVPNOnResolver,
+			sdk.NewAttribute(AttributeKeyNodeID, msg.NodeID.String()),
+			sdk.NewAttribute(AttributeKeyResolverID, msg.ResolverID.String()),
+			sdk.NewAttribute(AttributeKeyFromAddress, msg.From.String()),
+		),
+	)
+	
 	return sdk.Result{Events: ctx.EventManager().Events()}
 }
 
-func handleRemoveVPNOnResolver(ctx sdk.Context, k keeper.Keeper, msg types.MsgDeregisterVPNOnResolver) sdk.Result {
+func handleDeregisterVPNOnResolver(ctx sdk.Context, k keeper.Keeper, msg types.MsgDeregisterVPNOnResolver) sdk.Result {
 	node, found := k.GetNode(ctx, msg.NodeID)
 	if !found {
 		return types.ErrorNodeDoesNotExist().Result()
@@ -263,6 +298,15 @@ func handleRemoveVPNOnResolver(ctx sdk.Context, k keeper.Keeper, msg types.MsgDe
 	}
 	
 	k.RemoveVPNNodeOnResolver(ctx, msg.NodeID, resolver)
+	
+	ctx.EventManager().EmitEvent(
+		sdk.NewEvent(
+			EventTypeMsgDeregisterVPNOnResolver,
+			sdk.NewAttribute(AttributeKeyNodeID, msg.NodeID.String()),
+			sdk.NewAttribute(AttributeKeyFromAddress, msg.From.String()),
+			sdk.NewAttribute(AttributeKeyResolverID, msg.ResolverID.String()),
+		),
+	)
 	
 	return sdk.Result{Events: ctx.EventManager().Events()}
 }
@@ -290,9 +334,18 @@ func handleDeregisterNode(ctx sdk.Context, k keeper.Keeper, msg types.MsgDeregis
 	
 	k.SetNode(ctx, node)
 	
+	ctx.EventManager().EmitEvent(
+		sdk.NewEvent(
+			EventTypeMsgDeregisterNode,
+			sdk.NewAttribute(AttributeKeyFromAddress, msg.From.String()),
+			sdk.NewAttribute(AttributeKeyStatus, node.Status),
+			sdk.NewAttribute(AttributeKeyNodeID, msg.ID.String()),
+		), )
+	
 	return sdk.Result{Events: ctx.EventManager().Events()}
 }
 
+// nolint:funlen
 func handleStartSubscription(ctx sdk.Context, k keeper.Keeper, msg types.MsgStartSubscription) sdk.Result {
 	node, found := k.GetNode(ctx, msg.NodeID)
 	if !found {
@@ -308,7 +361,6 @@ func handleStartSubscription(ctx sdk.Context, k keeper.Keeper, msg types.MsgStar
 	}
 	
 	freeClients := k.GetFreeClientsOfNode(ctx, msg.NodeID)
-	
 	if !types.IsFreeClient(freeClients, msg.From) {
 		if err := k.AddDeposit(ctx, msg.From, msg.Deposit); err != nil {
 			return err.Result()
@@ -319,7 +371,6 @@ func handleStartSubscription(ctx sdk.Context, k keeper.Keeper, msg types.MsgStar
 	if err != nil {
 		return err.Result()
 	}
-	
 	pricePerGB := node.FindPricePerGB(msg.Deposit.Denom)
 	
 	sc := k.GetSubscriptionsCount(ctx)
@@ -335,7 +386,6 @@ func handleStartSubscription(ctx sdk.Context, k keeper.Keeper, msg types.MsgStar
 		Status:             types.StatusActive,
 		StatusModifiedAt:   ctx.BlockHeight(),
 	}
-	
 	k.SetSubscription(ctx, subscription)
 	k.SetSubscriptionsCount(ctx, sc+1)
 	
@@ -347,6 +397,17 @@ func handleStartSubscription(ctx sdk.Context, k keeper.Keeper, msg types.MsgStar
 	k.SetSubscriptionIDByAddress(ctx, subscription.Client, sca, subscription.ID)
 	k.SetSubscriptionsCountOfAddress(ctx, subscription.Client, sca+1)
 	
+	ctx.EventManager().EmitEvent(
+		sdk.NewEvent(
+			EventTypeMsgStartSubscription,
+			sdk.NewAttribute(AttributeSubscriptionID, subscription.ID.String()),
+			sdk.NewAttribute(AttributeKeyNodeID, subscription.NodeID.String()),
+			sdk.NewAttribute(AttributeKeyResolverID, subscription.ResolverID.String()),
+			sdk.NewAttribute(AttributeKeyFromAddress, msg.From.String()),
+			sdk.NewAttribute(AttributeKeyStatus, subscription.Status),
+			sdk.NewAttribute(AttributeKeyDeposit, msg.Deposit.String()),
+		),
+	)
 	return sdk.Result{Events: ctx.EventManager().Events()}
 }
 
@@ -382,6 +443,14 @@ func handleEndSubscription(ctx sdk.Context, k keeper.Keeper, msg types.MsgEndSub
 	
 	k.SetSubscription(ctx, subscription)
 	
+	ctx.EventManager().EmitEvent(
+		sdk.NewEvent(
+			EventTypeMsgEndSubscription,
+			sdk.NewAttribute(AttributeSubscriptionID, subscription.ID.String()),
+			sdk.NewAttribute(AttributeKeyStatus, subscription.Status),
+		),
+	)
+	
 	return sdk.Result{Events: ctx.EventManager().Events()}
 }
 
@@ -410,11 +479,9 @@ func handleUpdateSessionInfo(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpda
 	if !msg.ClientSignature.VerifyBytes(data, msg.ClientSignature.Signature) {
 		return types.ErrorInvalidBandwidthSignature().Result()
 	}
-	
 	if subscription.RemainingBandwidth.AnyLT(msg.Bandwidth) {
 		return types.ErrorInvalidBandwidth().Result()
 	}
-	
 	var session types.Session
 	
 	id, found := k.GetSessionIDBySubscriptionID(ctx, subscription.ID, scs)
@@ -425,7 +492,6 @@ func handleUpdateSessionInfo(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpda
 			SubscriptionID: subscription.ID,
 			Bandwidth:      hub.NewBandwidthFromInt64(0, 0),
 		}
-		
 		k.SetSessionsCount(ctx, sc+1)
 		k.SetSessionIDBySubscriptionID(ctx, subscription.ID, scs, session.ID)
 	} else {
@@ -434,14 +500,21 @@ func handleUpdateSessionInfo(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpda
 	
 	k.RemoveSessionIDFromActiveList(ctx, session.StatusModifiedAt, session.ID)
 	k.AddSessionIDToActiveList(ctx, ctx.BlockHeight(), session.ID)
-	
 	session.Bandwidth = msg.Bandwidth
 	session.Status = types.StatusActive
 	session.StatusModifiedAt = ctx.BlockHeight()
 	
 	k.SetSession(ctx, session)
 	
-	return sdk.Result{Events: ctx.EventManager().Events()}
+	ctx.EventManager().EmitEvent(
+		sdk.NewEvent(
+			EventTypeMsgUpdateSessionInfo,
+			sdk.NewAttribute(AttributeSubscriptionID, session.SubscriptionID.String()),
+			sdk.NewAttribute(AttributeSessionID, session.ID.String()),
+			sdk.NewAttribute(AttributeKeyFromAddress, msg.From.String()),
+		),
+	)
+	return sdk.Result{Events: ctx.EventManager().Events(), Data: types.ModuleCdc.MustMarshalJSON(session.Bandwidth)}
 }
 
 func handleRegisterResolver(ctx sdk.Context, k keeper.Keeper, msg types.MsgRegisterResolver) sdk.Result {
@@ -465,8 +538,8 @@ func handleRegisterResolver(ctx sdk.Context, k keeper.Keeper, msg types.MsgRegis
 	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(
 			EventTypeMsgRegisterResolver,
-			sdk.NewAttribute(AttributeKeyAddress, resolver.Owner.String()),
-			sdk.NewAttribute(AttributeKeyID, resolver.ID.String()),
+			sdk.NewAttribute(AttributeKeyClientAddress, resolver.Owner.String()),
+			sdk.NewAttribute(AttributeKeyNodeID, resolver.ID.String()),
 			sdk.NewAttribute(AttributeKeyStatus, resolver.Status),
 		))
 	
@@ -476,7 +549,6 @@ func handleRegisterResolver(ctx sdk.Context, k keeper.Keeper, msg types.MsgRegis
 }
 
 func handleUpdateResolverInfo(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpdateResolverInfo) sdk.Result {
-	
 	resolver, found := k.GetResolver(ctx, msg.ResolverID)
 	if !found {
 		return types.ErrorResolverDoesNotExist().Result()
@@ -498,8 +570,8 @@ func handleUpdateResolverInfo(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpd
 	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(
 			EventTypeMsgUpdateResolverInfo,
-			sdk.NewAttribute(AttributeKeyAddress, msg.From.String()),
-			sdk.NewAttribute(AttributeKeyID, msg.ResolverID.String()),
+			sdk.NewAttribute(AttributeKeyClientAddress, msg.From.String()),
+			sdk.NewAttribute(AttributeKeyNodeID, msg.ResolverID.String()),
 			sdk.NewAttribute(AttributeKeyCommission, msg.Commission.String()),
 		),
 	)
@@ -530,8 +602,8 @@ func handleDeregisterResolver(ctx sdk.Context, k keeper.Keeper, msg types.MsgDer
 	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(
 			EventTypeMsgDeregisterResolver,
-			sdk.NewAttribute(AttributeKeyAddress, msg.From.String()),
-			sdk.NewAttribute(AttributeKeyID, msg.ResolverID.String()),
+			sdk.NewAttribute(AttributeKeyClientAddress, msg.From.String()),
+			sdk.NewAttribute(AttributeKeyNodeID, msg.ResolverID.String()),
 			sdk.NewAttribute(AttributeKeyStatus, resolver.Status),
 		))
 	

@@ -294,7 +294,8 @@ func (msg MsgRegisterVPNOnResolver) Route() string {
 	return RouterKey
 }
 
-func NewMsgRegisterVPNOnResolver(from sdk.AccAddress, nodeID hub.NodeID, resolverID hub.ResolverID) *MsgRegisterVPNOnResolver {
+func NewMsgRegisterVPNOnResolver(from sdk.AccAddress, nodeID hub.NodeID,
+	resolverID hub.ResolverID) *MsgRegisterVPNOnResolver {
 	return &MsgRegisterVPNOnResolver{
 		From:       from,
 		NodeID:     nodeID,
@@ -345,7 +346,8 @@ func (msg MsgDeregisterVPNOnResolver) Route() string {
 	return RouterKey
 }
 
-func NewMsgDeregisterVPNOnResolver(from sdk.AccAddress, nodeID hub.NodeID, resolver hub.ResolverID) *MsgDeregisterVPNOnResolver {
+func NewMsgDeregisterVPNOnResolver(from sdk.AccAddress, nodeID hub.NodeID,
+	resolver hub.ResolverID) *MsgDeregisterVPNOnResolver {
 	return &MsgDeregisterVPNOnResolver{
 		From:       from,
 		NodeID:     nodeID,
