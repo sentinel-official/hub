@@ -47,7 +47,7 @@ func TestKeeper_FreeClients(t *testing.T) {
 	freeclients = k.GetFreeClientsOfNode(ctx, hub.NewNodeID(0))
 	require.Equal(t, 2, len(freeclients))
 	
-	k.RemoveFreeClient(ctx, hub.NewNodeID(0), types.TestAddress2)
+	k.RemoveFreeClientOfNode(ctx, hub.NewNodeID(0), types.TestAddress2)
 	nodes = k.GetFreeNodesOfClient(ctx, types.TestAddress2)
 	require.Equal(t, 0, len(nodes))
 	

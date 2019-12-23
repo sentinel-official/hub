@@ -251,19 +251,19 @@ func NewMsgRemoveFreeClient(from sdk.AccAddress, nodeID hub.NodeID, client sdk.A
 	}
 }
 
-var _ sdk.Msg = (*MsgAddVPNOnResolver)(nil)
+var _ sdk.Msg = (*MsgRegisterVPNOnResolver)(nil)
 
-type MsgAddVPNOnResolver struct {
+type MsgRegisterVPNOnResolver struct {
 	From       sdk.AccAddress `json:"from"`
 	NodeID     hub.NodeID     `json:"node_id"`
 	ResolverID hub.ResolverID `json:"resolver_id"`
 }
 
-func (msg MsgAddVPNOnResolver) Type() string {
+func (msg MsgRegisterVPNOnResolver) Type() string {
 	return "add_vpn_on_resolver"
 }
 
-func (msg MsgAddVPNOnResolver) ValidateBasic() sdk.Error {
+func (msg MsgRegisterVPNOnResolver) ValidateBasic() sdk.Error {
 	if msg.From == nil || msg.From.Empty() {
 		return ErrorInvalidField("from")
 	}
@@ -277,7 +277,7 @@ func (msg MsgAddVPNOnResolver) ValidateBasic() sdk.Error {
 	return nil
 }
 
-func (msg MsgAddVPNOnResolver) GetSignBytes() []byte {
+func (msg MsgRegisterVPNOnResolver) GetSignBytes() []byte {
 	bz, err := json.Marshal(msg)
 	if err != nil {
 		panic(err)
@@ -286,35 +286,35 @@ func (msg MsgAddVPNOnResolver) GetSignBytes() []byte {
 	return bz
 }
 
-func (msg MsgAddVPNOnResolver) GetSigners() []sdk.AccAddress {
+func (msg MsgRegisterVPNOnResolver) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{msg.From}
 }
 
-func (msg MsgAddVPNOnResolver) Route() string {
+func (msg MsgRegisterVPNOnResolver) Route() string {
 	return RouterKey
 }
 
-func NewMsgAddVPNOnResolver(from sdk.AccAddress, nodeID hub.NodeID, resolverID hub.ResolverID) *MsgAddVPNOnResolver {
-	return &MsgAddVPNOnResolver{
+func NewMsgRegisterVPNOnResolver(from sdk.AccAddress, nodeID hub.NodeID, resolverID hub.ResolverID) *MsgRegisterVPNOnResolver {
+	return &MsgRegisterVPNOnResolver{
 		From:       from,
 		NodeID:     nodeID,
 		ResolverID: resolverID,
 	}
 }
 
-var _ sdk.Msg = (*MsgRemoveVPNOnResolver)(nil)
+var _ sdk.Msg = (*MsgDeregisterVPNOnResolver)(nil)
 
-type MsgRemoveVPNOnResolver struct {
+type MsgDeregisterVPNOnResolver struct {
 	From       sdk.AccAddress `json:"from"`
 	NodeID     hub.NodeID     `json:"node_id"`
 	ResolverID hub.ResolverID `json:"resolver_id"`
 }
 
-func (msg MsgRemoveVPNOnResolver) Type() string {
+func (msg MsgDeregisterVPNOnResolver) Type() string {
 	return "remove_vpn_on_resolver"
 }
 
-func (msg MsgRemoveVPNOnResolver) ValidateBasic() sdk.Error {
+func (msg MsgDeregisterVPNOnResolver) ValidateBasic() sdk.Error {
 	if msg.From == nil || msg.From.Empty() {
 		return ErrorInvalidField("from")
 	}
@@ -328,7 +328,7 @@ func (msg MsgRemoveVPNOnResolver) ValidateBasic() sdk.Error {
 	return nil
 }
 
-func (msg MsgRemoveVPNOnResolver) GetSignBytes() []byte {
+func (msg MsgDeregisterVPNOnResolver) GetSignBytes() []byte {
 	bz, err := json.Marshal(msg)
 	if err != nil {
 		panic(err)
@@ -337,16 +337,16 @@ func (msg MsgRemoveVPNOnResolver) GetSignBytes() []byte {
 	return bz
 }
 
-func (msg MsgRemoveVPNOnResolver) GetSigners() []sdk.AccAddress {
+func (msg MsgDeregisterVPNOnResolver) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{msg.From}
 }
 
-func (msg MsgRemoveVPNOnResolver) Route() string {
+func (msg MsgDeregisterVPNOnResolver) Route() string {
 	return RouterKey
 }
 
-func NewMsgRemoveVPNOnResolver(from sdk.AccAddress, nodeID hub.NodeID, resolver hub.ResolverID) *MsgRemoveVPNOnResolver {
-	return &MsgRemoveVPNOnResolver{
+func NewMsgDeregisterVPNOnResolver(from sdk.AccAddress, nodeID hub.NodeID, resolver hub.ResolverID) *MsgDeregisterVPNOnResolver {
+	return &MsgDeregisterVPNOnResolver{
 		From:       from,
 		NodeID:     nodeID,
 		ResolverID: resolver,

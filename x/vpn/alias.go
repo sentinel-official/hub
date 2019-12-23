@@ -83,8 +83,8 @@ var (
 	NewMsgRegisterNode                        = types.NewMsgRegisterNode
 	NewMsgAddFreeClient                       = types.NewMsgAddFreeClient
 	NewMsgRemoveFreeClient                    = types.NewMsgRemoveFreeClient
-	NewMsgAddVPNOnResolver                    = types.NewMsgAddVPNOnResolver
-	NewMsgRemoveVPNOnResolver                 = types.NewMsgRemoveVPNOnResolver
+	NewMsgRegisterVPNOnResolver               = types.NewMsgRegisterVPNOnResolver
+	NewMsgDeregisterVPNOnResolver             = types.NewMsgDeregisterVPNOnResolver
 	NewMsgUpdateNodeInfo                      = types.NewMsgUpdateNodeInfo
 	NewMsgDeregisterNode                      = types.NewMsgDeregisterNode
 	NewMsgRegisterResolver                    = types.NewMsgRegisterResolver

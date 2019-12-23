@@ -15,8 +15,8 @@ import (
 
 func RemoveVPNOnResolverTxCmd(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "remove-vpn-on-resolver",
-		Short: "Removing vpn node on resolver node",
+		Use:   "deregister-vpn-on-resolver",
+		Short: "Deregister vpn node on resolver node",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			txb := auth.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
 			ctx := context.NewCLIContext().WithCodec(cdc)
@@ -31,7 +31,7 @@ func RemoveVPNOnResolverTxCmd(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 			
-			msg := types.NewMsgRemoveVPNOnResolver(ctx.FromAddress, nodeID, resolver)
+			msg := types.NewMsgDeregisterVPNOnResolver(ctx.FromAddress, nodeID, resolver)
 			
 			return utils.GenerateOrBroadcastMsgs(ctx, txb, []sdk.Msg{msg})
 		},

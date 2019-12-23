@@ -13,10 +13,10 @@ import (
 	"github.com/sentinel-official/hub/x/vpn/types"
 )
 
-func AddVPNOnResolverTxCmd(cdc *codec.Codec) *cobra.Command {
+func RegisterVPNOnResolverTxCmd(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "add-vpn-on-resolver",
-		Short: "Adding vpn node on resolver node",
+		Use:   "register-vpn-on-resolver",
+		Short: "Register vpn node on resolver node",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			txb := auth.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
 			ctx := context.NewCLIContext().WithCodec(cdc)
@@ -31,7 +31,7 @@ func AddVPNOnResolverTxCmd(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 			
-			msg := types.NewMsgAddVPNOnResolver(ctx.FromAddress, nodeID, resolver)
+			msg := types.NewMsgRegisterVPNOnResolver(ctx.FromAddress, nodeID, resolver)
 			
 			return utils.GenerateOrBroadcastMsgs(ctx, txb, []sdk.Msg{msg})
 		},

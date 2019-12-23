@@ -339,28 +339,28 @@ func TestMsgRemoveFreeClient_Route(t *testing.T) {
 func TestMsgAddVPNOnResolver_ValidateBasic(t *testing.T) {
 	tests := []struct {
 		name string
-		msg  *MsgAddVPNOnResolver
+		msg  *MsgRegisterVPNOnResolver
 		want sdk.Error
 	}{
 		{
 			"from is nil",
-			NewMsgAddVPNOnResolver(nil, hub.NewNodeID(1), hub.NewResolverID(0)),
+			NewMsgRegisterVPNOnResolver(nil, hub.NewNodeID(1), hub.NewResolverID(0)),
 			ErrorInvalidField("from"),
 		}, {
 			"from is empty",
-			NewMsgAddVPNOnResolver([]byte(""), hub.NewNodeID(1), hub.NewResolverID(0)),
+			NewMsgRegisterVPNOnResolver([]byte(""), hub.NewNodeID(1), hub.NewResolverID(0)),
 			ErrorInvalidField("from"),
 		}, {
 			"node_id is nil",
-			NewMsgAddVPNOnResolver(TestAddress1, nil, hub.NewResolverID(0)),
+			NewMsgRegisterVPNOnResolver(TestAddress1, nil, hub.NewResolverID(0)),
 			ErrorInvalidField("node_id"),
 		}, {
 			"resolver is nil",
-			NewMsgAddVPNOnResolver(TestAddress1, hub.NewNodeID(1), nil),
+			NewMsgRegisterVPNOnResolver(TestAddress1, hub.NewNodeID(1), nil),
 			ErrorInvalidField("resolver"),
 		}, {
 			"valid",
-			NewMsgAddVPNOnResolver(TestAddress1, hub.NewNodeID(1), hub.NewResolverID(0)),
+			NewMsgRegisterVPNOnResolver(TestAddress1, hub.NewNodeID(1), hub.NewResolverID(0)),
 			nil,
 		},
 	}
@@ -375,7 +375,7 @@ func TestMsgAddVPNOnResolver_ValidateBasic(t *testing.T) {
 }
 
 func TestMsgAddVPNOnResolver_GetSignBytes(t *testing.T) {
-	msg := NewMsgAddVPNOnResolver(TestAddress1, hub.NewNodeID(1), hub.NewResolverID(0))
+	msg := NewMsgRegisterVPNOnResolver(TestAddress1, hub.NewNodeID(1), hub.NewResolverID(0))
 	msgBytes, err := json.Marshal(msg)
 	if err != nil {
 		panic(err)
@@ -385,45 +385,45 @@ func TestMsgAddVPNOnResolver_GetSignBytes(t *testing.T) {
 }
 
 func TestMsgAddVPNOnResolver_GetSigners(t *testing.T) {
-	msg := NewMsgAddVPNOnResolver(TestAddress1, hub.NewNodeID(1), hub.NewResolverID(0))
+	msg := NewMsgRegisterVPNOnResolver(TestAddress1, hub.NewNodeID(1), hub.NewResolverID(0))
 	require.Equal(t, []sdk.AccAddress{TestAddress1}, msg.GetSigners())
 }
 
 func TestMsgAddVPNOnResolver_Type(t *testing.T) {
-	msg := NewMsgAddVPNOnResolver(TestAddress1, hub.NewNodeID(1), hub.NewResolverID(0))
+	msg := NewMsgRegisterVPNOnResolver(TestAddress1, hub.NewNodeID(1), hub.NewResolverID(0))
 	require.Equal(t, "add_vpn_on_resolver", msg.Type())
 }
 
 func TestMsgAddVPNOnResolver_Route(t *testing.T) {
-	msg := NewMsgAddVPNOnResolver(TestAddress1, hub.NewNodeID(1), hub.NewResolverID(0))
+	msg := NewMsgRegisterVPNOnResolver(TestAddress1, hub.NewNodeID(1), hub.NewResolverID(0))
 	require.Equal(t, RouterKey, msg.Route())
 }
 
 func TestMsgRemoveVPNOnResolver_ValidateBasic(t *testing.T) {
 	tests := []struct {
 		name string
-		msg  *MsgRemoveVPNOnResolver
+		msg  *MsgDeregisterVPNOnResolver
 		want sdk.Error
 	}{
 		{
 			"from is nil",
-			NewMsgRemoveVPNOnResolver(nil, hub.NewNodeID(1), hub.NewResolverID(0)),
+			NewMsgDeregisterVPNOnResolver(nil, hub.NewNodeID(1), hub.NewResolverID(0)),
 			ErrorInvalidField("from"),
 		}, {
 			"from is empty",
-			NewMsgRemoveVPNOnResolver([]byte(""), hub.NewNodeID(1), hub.NewResolverID(0)),
+			NewMsgDeregisterVPNOnResolver([]byte(""), hub.NewNodeID(1), hub.NewResolverID(0)),
 			ErrorInvalidField("from"),
 		}, {
 			"node_id is nil",
-			NewMsgRemoveVPNOnResolver(TestAddress1, nil, hub.NewResolverID(0)),
+			NewMsgDeregisterVPNOnResolver(TestAddress1, nil, hub.NewResolverID(0)),
 			ErrorInvalidField("node_id"),
 		}, {
 			"resolver is nil",
-			NewMsgRemoveVPNOnResolver(TestAddress1, hub.NewNodeID(1), nil),
+			NewMsgDeregisterVPNOnResolver(TestAddress1, hub.NewNodeID(1), nil),
 			ErrorInvalidField("resolver"),
 		}, {
 			"valid",
-			NewMsgRemoveVPNOnResolver(TestAddress1, hub.NewNodeID(1), hub.NewResolverID(0)),
+			NewMsgDeregisterVPNOnResolver(TestAddress1, hub.NewNodeID(1), hub.NewResolverID(0)),
 			nil,
 		},
 	}
@@ -438,7 +438,7 @@ func TestMsgRemoveVPNOnResolver_ValidateBasic(t *testing.T) {
 }
 
 func TestMsgRemoveVPNOnResolver_GetSignBytes(t *testing.T) {
-	msg := NewMsgRemoveVPNOnResolver(TestAddress1, hub.NewNodeID(1), hub.NewResolverID(0))
+	msg := NewMsgDeregisterVPNOnResolver(TestAddress1, hub.NewNodeID(1), hub.NewResolverID(0))
 	msgBytes, err := json.Marshal(msg)
 	if err != nil {
 		panic(err)
@@ -448,17 +448,17 @@ func TestMsgRemoveVPNOnResolver_GetSignBytes(t *testing.T) {
 }
 
 func TestMsgRemoveVPNOnResolver_GetSigners(t *testing.T) {
-	msg := NewMsgRemoveVPNOnResolver(TestAddress1, hub.NewNodeID(1), hub.NewResolverID(0))
+	msg := NewMsgDeregisterVPNOnResolver(TestAddress1, hub.NewNodeID(1), hub.NewResolverID(0))
 	require.Equal(t, []sdk.AccAddress{TestAddress1}, msg.GetSigners())
 }
 
 func TestMsgRemoveVPNOnResolver_Type(t *testing.T) {
-	msg := NewMsgRemoveVPNOnResolver(TestAddress1, hub.NewNodeID(1), hub.NewResolverID(0))
+	msg := NewMsgDeregisterVPNOnResolver(TestAddress1, hub.NewNodeID(1), hub.NewResolverID(0))
 	require.Equal(t, "remove_vpn_on_resolver", msg.Type())
 }
 
 func TestMsgRemoveVPNOnResolver_Route(t *testing.T) {
-	msg := NewMsgRemoveVPNOnResolver(TestAddress1, hub.NewNodeID(1), hub.NewResolverID(0))
+	msg := NewMsgDeregisterVPNOnResolver(TestAddress1, hub.NewNodeID(1), hub.NewResolverID(0))
 	require.Equal(t, RouterKey, msg.Route())
 }
 

@@ -3,7 +3,7 @@ package simapp
 const (
 	StakePerAccount           = "stake_per_account"
 	InitiallyBondedValidators = "initially_bonded_validators"
-
+	
 	OpWeightMsgRegisterNode      = "op_weight_msg_register_node"
 	OpWeightMsgUpdateNodeInfo    = "op_weight_msg_update_node_info"
 	OpWeightMsgUpdateNodeStatus  = "op_weight_msg_update_node_status"

@@ -44,6 +44,7 @@ func InitGenesis(ctx sdk.Context, k Keeper, data types.GenesisState) {
 		k.SetSessionsCount(ctx, k.GetSessionsCount(ctx)+1)
 		k.SetSessionsCountOfSubscription(ctx, session.SubscriptionID, scs+1)
 	}
+	
 }
 
 func ExportGenesis(ctx sdk.Context, k Keeper) types.GenesisState {

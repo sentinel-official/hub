@@ -18,7 +18,7 @@ type msgAddVPNOnResolver struct {
 	ResolverID string       `json:"resolver_id"`
 }
 
-func addVPNOnResolverHandlerFunc(ctx context.CLIContext) http.HandlerFunc {
+func registerVPNOnResolverHandlerFunc(ctx context.CLIContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var req msgAddVPNOnResolver
 		
@@ -49,7 +49,7 @@ func addVPNOnResolverHandlerFunc(ctx context.CLIContext) http.HandlerFunc {
 			return
 		}
 		
-		msg := types.NewMsgAddVPNOnResolver(fromAddress, nodeID, resolverID)
+		msg := types.NewMsgRegisterVPNOnResolver(fromAddress, nodeID, resolverID)
 		if err := msg.ValidateBasic(); err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return

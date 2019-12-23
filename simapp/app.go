@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"io"
 	"os"
-
+	
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -26,7 +26,7 @@ import (
 	"github.com/tendermint/tendermint/libs/common"
 	"github.com/tendermint/tendermint/libs/log"
 	db "github.com/tendermint/tm-db"
-
+	
 	"github.com/sentinel-official/hub/types"
 	"github.com/sentinel-official/hub/version"
 	"github.com/sentinel-official/hub/x/deposit"
@@ -40,7 +40,7 @@ const (
 var (
 	DefaultCLIHome  = os.ExpandEnv("$HOME/.simapp")
 	DefaultNodeHome = os.ExpandEnv("$HOME/.simapp")
-
+	
 	ModuleBasics = module.NewBasicManager(
 		genaccounts.AppModuleBasic{},
 		genutil.AppModuleBasic{},
@@ -57,7 +57,7 @@ var (
 		deposit.AppModuleBasic{},
 		vpn.AppModuleBasic{},
 	)
-
+	
 	moduleAccountPermissions = map[string][]string{
 		auth.FeeCollectorName:     nil,
 		distribution.ModuleName:   nil,
@@ -71,13 +71,13 @@ var (
 
 func MakeCodec() *codec.Codec {
 	var cdc = codec.New()
-
+	
 	sdk.RegisterCodec(cdc)
 	types.RegisterCodec(cdc)
 	codec.RegisterCrypto(cdc)
 	codec.RegisterEvidences(cdc)
 	ModuleBasics.RegisterCodec(cdc)
-
+	
 	return cdc
 }
 
@@ -90,12 +90,12 @@ func SetBech32AddressPrefixes(config *sdk.Config) {
 type SimApp struct {
 	*baseapp.BaseApp
 	cdc *codec.Codec
-
+	
 	invCheckPeriod uint
-
+	
 	keys          map[string]*sdk.KVStoreKey
 	transientKeys map[string]*sdk.TransientStoreKey
-
+	
 	accountKeeper      auth.AccountKeeper
 	bankKeeper         bank.Keeper
 	supplyKeeper       supply.Keeper
@@ -108,7 +108,7 @@ type SimApp struct {
 	paramsKeeper       params.Keeper
 	depositKeeper      deposit.Keeper
 	vpnKeeper          vpn.Keeper
-
+	
 	mm *module.Manager
 }
 
@@ -117,20 +117,20 @@ func NewSimApp(logger log.Logger, db db.DB,
 	traceStore io.Writer, loadLatest bool, invCheckPeriod uint,
 	baseAppOptions ...func(*baseapp.BaseApp)) *SimApp {
 	cdc := MakeCodec()
-
+	
 	bApp := baseapp.NewBaseApp(appName, logger, db, auth.DefaultTxDecoder(cdc), baseAppOptions...)
 	bApp.SetCommitMultiStoreTracer(traceStore)
 	bApp.SetAppVersion(version.Version)
-
+	
 	keys := sdk.NewKVStoreKeys(
 		baseapp.MainStoreKey, auth.StoreKey, staking.StoreKey,
 		supply.StoreKey, mint.StoreKey, distribution.StoreKey, slashing.StoreKey,
 		gov.StoreKey, params.StoreKey, deposit.StoreKey,
 		vpn.StoreKeyNode, vpn.StoreKeySubscription, vpn.StoreKeySession,
 	)
-
+	
 	transientKeys := sdk.NewTransientStoreKeys(staking.TStoreKey, params.TStoreKey)
-
+	
 	var app = &SimApp{
 		BaseApp:        bApp,
 		cdc:            cdc,
@@ -138,7 +138,7 @@ func NewSimApp(logger log.Logger, db db.DB,
 		keys:           keys,
 		transientKeys:  transientKeys,
 	}
-
+	
 	app.paramsKeeper = params.NewKeeper(app.cdc,
 		keys[params.StoreKey],
 		transientKeys[params.TStoreKey],
@@ -151,7 +151,7 @@ func NewSimApp(logger log.Logger, db db.DB,
 	slashingSubspace := app.paramsKeeper.Subspace(slashing.DefaultParamspace)
 	govSubspace := app.paramsKeeper.Subspace(gov.DefaultParamspace)
 	crisisSubspace := app.paramsKeeper.Subspace(crisis.DefaultParamspace)
-
+	
 	app.accountKeeper = auth.NewAccountKeeper(app.cdc,
 		keys[auth.StoreKey],
 		authSubspace,
@@ -194,12 +194,12 @@ func NewSimApp(logger log.Logger, db db.DB,
 		invCheckPeriod,
 		app.supplyKeeper,
 		auth.FeeCollectorName)
-
+	
 	govRouter := gov.NewRouter()
 	govRouter.AddRoute(gov.RouterKey, gov.ProposalHandler).
 		AddRoute(params.RouterKey, params.NewParamChangeProposalHandler(app.paramsKeeper)).
 		AddRoute(distribution.RouterKey, distribution.NewCommunityPoolSpendProposalHandler(app.distributionKeeper))
-
+	
 	app.govKeeper = gov.NewKeeper(app.cdc,
 		keys[gov.StoreKey],
 		app.paramsKeeper,
@@ -208,10 +208,10 @@ func NewSimApp(logger log.Logger, db db.DB,
 		&stakingKeeper,
 		gov.DefaultCodespace,
 		govRouter)
-
+	
 	app.stakingKeeper = *stakingKeeper.SetHooks(
 		staking.NewMultiStakingHooks(app.distributionKeeper.Hooks(), app.slashingKeeper.Hooks()))
-
+	
 	app.depositKeeper = deposit.NewKeeper(app.cdc,
 		keys[deposit.StoreKey],
 		app.supplyKeeper)
@@ -222,7 +222,7 @@ func NewSimApp(logger log.Logger, db db.DB,
 		keys[vpn.StoreKeyResolver],
 		app.paramsKeeper.Subspace(vpn.DefaultParamspace),
 		app.depositKeeper)
-
+	
 	app.mm = module.NewManager(
 		genaccounts.NewAppModule(app.accountKeeper),
 		genutil.NewAppModule(app.accountKeeper, app.stakingKeeper, app.BaseApp.DeliverTx),
@@ -238,7 +238,7 @@ func NewSimApp(logger log.Logger, db db.DB,
 		deposit.NewAppModule(app.depositKeeper),
 		vpn.NewAppModule(app.vpnKeeper),
 	)
-
+	
 	app.mm.SetOrderBeginBlockers(mint.ModuleName, distribution.ModuleName, slashing.ModuleName)
 	app.mm.SetOrderEndBlockers(crisis.ModuleName, gov.ModuleName, staking.ModuleName, vpn.ModuleName)
 	app.mm.SetOrderInitGenesis(
@@ -247,24 +247,24 @@ func NewSimApp(logger log.Logger, db db.DB,
 		mint.ModuleName, supply.ModuleName, crisis.ModuleName, genutil.ModuleName,
 		deposit.ModuleName, vpn.ModuleName,
 	)
-
+	
 	app.mm.RegisterInvariants(&app.crisisKeeper)
 	app.mm.RegisterRoutes(app.Router(), app.QueryRouter())
 	app.MountKVStores(keys)
 	app.MountTransientStores(transientKeys)
-
+	
 	app.SetInitChainer(app.InitChainer)
 	app.SetBeginBlocker(app.BeginBlocker)
 	app.SetAnteHandler(
 		auth.NewAnteHandler(app.accountKeeper, app.supplyKeeper, auth.DefaultSigVerificationGasConsumer))
 	app.SetEndBlocker(app.EndBlocker)
-
+	
 	if loadLatest {
 		if err := app.LoadLatestVersion(app.keys[baseapp.MainStoreKey]); err != nil {
 			common.Exit(err.Error())
 		}
 	}
-
+	
 	return app
 }
 
@@ -279,7 +279,7 @@ func (app *SimApp) EndBlocker(ctx sdk.Context, req abci.RequestEndBlock) abci.Re
 func (app *SimApp) InitChainer(ctx sdk.Context, req abci.RequestInitChain) abci.ResponseInitChain {
 	var state map[string]json.RawMessage
 	app.cdc.MustUnmarshalJSON(req.AppStateBytes, &state)
-
+	
 	return app.mm.InitGenesis(ctx, state)
 }
 
@@ -292,6 +292,6 @@ func (app *SimApp) ModuleAccountAddrs() map[string]bool {
 	for acc := range moduleAccountPermissions {
 		moduleAccounts[supply.NewModuleAddress(acc).String()] = true
 	}
-
+	
 	return moduleAccounts
 }

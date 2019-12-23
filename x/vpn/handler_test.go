@@ -983,7 +983,7 @@ func Test_UpdateVPNOrResolver(t *testing.T) {
 	node := types.TestNode
 	resolver := types.TestResolver
 	
-	addMsg := NewMsgAddVPNOnResolver(types.TestAddress1, hub.NewNodeID(3), resolver.ID)
+	addMsg := NewMsgRegisterVPNOnResolver(types.TestAddress1, hub.NewNodeID(3), resolver.ID)
 	res := handler(ctx, *addMsg)
 	require.False(t, res.IsOK())
 	require.Equal(t, types.ErrorNodeDoesNotExist().ABCILog(), res.Log)
@@ -992,17 +992,17 @@ func Test_UpdateVPNOrResolver(t *testing.T) {
 	k.SetNode(ctx, node)
 	k.SetResolver(ctx, resolver)
 	
-	addMsg = NewMsgAddVPNOnResolver(types.TestAddress2, node.ID, resolver.ID)
+	addMsg = NewMsgRegisterVPNOnResolver(types.TestAddress2, node.ID, resolver.ID)
 	res = handler(ctx, *addMsg)
 	require.False(t, res.IsOK())
 	require.Equal(t, types.ErrorUnauthorized().ABCILog(), res.Log)
 	
-	addMsg = NewMsgAddVPNOnResolver(types.TestAddress1, node.ID, hub.NewResolverID(4))
+	addMsg = NewMsgRegisterVPNOnResolver(types.TestAddress1, node.ID, hub.NewResolverID(4))
 	res = handler(ctx, *addMsg)
 	require.False(t, res.IsOK())
 	require.Equal(t, types.ErrorResolverDoesNotExist().ABCILog(), res.Log)
 	
-	addMsg = NewMsgAddVPNOnResolver(types.TestAddress1, node.ID, resolver.ID)
+	addMsg = NewMsgRegisterVPNOnResolver(types.TestAddress1, node.ID, resolver.ID)
 	res = handler(ctx, *addMsg)
 	require.True(t, res.IsOK())
 	
@@ -1012,7 +1012,7 @@ func Test_UpdateVPNOrResolver(t *testing.T) {
 	resolver.Status = types.StatusDeRegistered
 	k.SetResolver(ctx, resolver)
 	
-	addMsg = NewMsgAddVPNOnResolver(types.TestAddress1, node.ID, resolver.ID)
+	addMsg = NewMsgRegisterVPNOnResolver(types.TestAddress1, node.ID, resolver.ID)
 	res = handler(ctx, *addMsg)
 	require.False(t, res.IsOK())
 	require.Equal(t, types.ErrorInvalidResolverStatus().ABCILog(), res.Log)
@@ -1020,22 +1020,22 @@ func Test_UpdateVPNOrResolver(t *testing.T) {
 	node.Status = types.StatusDeRegistered
 	k.SetNode(ctx, node)
 	
-	addMsg = NewMsgAddVPNOnResolver(types.TestAddress1, node.ID, resolver.ID)
+	addMsg = NewMsgRegisterVPNOnResolver(types.TestAddress1, node.ID, resolver.ID)
 	res = handler(ctx, *addMsg)
 	require.False(t, res.IsOK())
 	require.Equal(t, types.ErrorInvalidNodeStatus().ABCILog(), res.Log)
 	
-	removeMsg := NewMsgRemoveVPNOnResolver(types.TestAddress1, hub.NewNodeID(3), resolver.ID)
+	removeMsg := NewMsgDeregisterVPNOnResolver(types.TestAddress1, hub.NewNodeID(3), resolver.ID)
 	res = handler(ctx, *removeMsg)
 	require.False(t, res.IsOK())
 	require.Equal(t, types.ErrorNodeDoesNotExist().ABCILog(), res.Log)
 	
-	removeMsg = NewMsgRemoveVPNOnResolver(types.TestAddress2, node.ID, resolver.ID)
+	removeMsg = NewMsgDeregisterVPNOnResolver(types.TestAddress2, node.ID, resolver.ID)
 	res = handler(ctx, *removeMsg)
 	require.False(t, res.IsOK())
 	require.Equal(t, types.ErrorUnauthorized().ABCILog(), res.Log)
 	
-	removeMsg = NewMsgRemoveVPNOnResolver(types.TestAddress1, node.ID, resolver.ID)
+	removeMsg = NewMsgDeregisterVPNOnResolver(types.TestAddress1, node.ID, resolver.ID)
 	res = handler(ctx, *removeMsg)
 	require.False(t, res.IsOK())
 	require.Equal(t, types.ErrorInvalidNodeStatus().ABCILog(), res.Log)
@@ -1043,7 +1043,7 @@ func Test_UpdateVPNOrResolver(t *testing.T) {
 	node.Status = types.StatusRegistered
 	k.SetNode(ctx, node)
 	
-	removeMsg = NewMsgRemoveVPNOnResolver(types.TestAddress1, node.ID, hub.NewResolverID(4))
+	removeMsg = NewMsgDeregisterVPNOnResolver(types.TestAddress1, node.ID, hub.NewResolverID(4))
 	res = handler(ctx, *removeMsg)
 	require.False(t, res.IsOK())
 	require.Equal(t, types.ErrorResolverDoesNotExist().ABCILog(), res.Log)
@@ -1058,7 +1058,7 @@ func Test_UpdateVPNOrResolver(t *testing.T) {
 	require.True(t, found)
 	require.Equal(t, resolver.ID, address)
 	
-	removeMsg = NewMsgRemoveVPNOnResolver(types.TestAddress1, node.ID, resolver.ID)
+	removeMsg = NewMsgDeregisterVPNOnResolver(types.TestAddress1, node.ID, resolver.ID)
 	res = handler(ctx, *removeMsg)
 	require.True(t, res.IsOK())
 	

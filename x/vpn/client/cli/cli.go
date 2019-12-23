@@ -57,7 +57,7 @@ func nodeTxCmd(cdc *codec.Codec) *cobra.Command {
 		UpdateNodeInfoTxCmd(cdc),
 		AddFreeClientTxCmd(cdc),
 		RemoveFreeClientTxCmd(cdc),
-		AddVPNOnResolverTxCmd(cdc),
+		RegisterVPNOnResolverTxCmd(cdc),
 		RemoveVPNOnResolverTxCmd(cdc),
 		DeregisterNodeTxCmd(cdc),
 	)...)

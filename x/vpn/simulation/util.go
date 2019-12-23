@@ -2,10 +2,10 @@ package simulation
 
 import (
 	"math/rand"
-
+	
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
-
+	
 	hub "github.com/sentinel-official/hub/types"
 	"github.com/sentinel-official/hub/x/vpn/types"
 )
@@ -27,17 +27,17 @@ func getRandomStatus(r *rand.Rand) string {
 
 func getRandomNodeID(r *rand.Rand) hub.NodeID {
 	i := uint64(r.Int63n(10))
-
+	
 	return hub.NewNodeID(i)
 }
 func getRandomSessionID(r *rand.Rand) hub.SessionID {
 	i := uint64(r.Int63n(10))
-
+	
 	return hub.NewSessionID(i)
 }
 func getRandomSubscriptionID(r *rand.Rand) hub.SubscriptionID {
 	i := uint64(r.Int63n(10))
-
+	
 	return hub.NewSubscriptionID(i)
 }
 
@@ -60,13 +60,13 @@ func getRandomMoniker(r *rand.Rand) string {
 func getRandomCoin(r *rand.Rand) sdk.Coin {
 	denom := getRandomDenom(r)
 	amount := simulation.RandIntBetween(r, 1, 1000)
-
+	
 	return sdk.NewCoin(denom, sdk.NewInt(int64(amount)))
 }
 
 func getRandomCoins(r *rand.Rand) (coins sdk.Coins) {
 	coins = append(coins, getRandomCoin(r))
-
+	
 	size := r.Intn(2)
 	for i := 0; i < size; i++ {
 		coin := getRandomCoin(r)
@@ -74,14 +74,14 @@ func getRandomCoins(r *rand.Rand) (coins sdk.Coins) {
 			coins = append(coins, coin)
 		}
 	}
-
+	
 	return coins.Sort()
 }
 
 func getRandomBandwidth(r *rand.Rand) hub.Bandwidth {
 	upload := r.Int63n(hub.GB.Int64())
 	download := r.Int63n(hub.GB.Int64())
-
+	
 	return hub.NewBandwidthFromInt64(upload, download)
 }
 
@@ -114,7 +114,7 @@ func GenerateRandomSubscription(r *rand.Rand, node types.Node) types.Subscriptio
 		Status:             getRandomStatus(r),
 		StatusModifiedAt:   0,
 	}
-
+	
 	return subscription
 }
 

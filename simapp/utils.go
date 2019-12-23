@@ -10,14 +10,14 @@ import (
 	"io/ioutil"
 	"math/rand"
 	"time"
-
+	
 	"github.com/tendermint/tendermint/crypto"
 	"github.com/tendermint/tendermint/crypto/secp256k1"
 	cmn "github.com/tendermint/tendermint/libs/common"
 	"github.com/tendermint/tendermint/libs/log"
 	tmtypes "github.com/tendermint/tendermint/types"
 	dbm "github.com/tendermint/tm-db"
-
+	
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -31,9 +31,9 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/slashing"
 	"github.com/cosmos/cosmos-sdk/x/staking"
 	"github.com/cosmos/cosmos-sdk/x/supply"
-
+	
 	"github.com/sentinel-official/hub/x/vpn"
-
+	
 	vpnsim "github.com/sentinel-official/hub/x/vpn/simulation"
 )
 
@@ -61,7 +61,7 @@ var (
 func NewSimAppUNSAFE(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest bool,
 	invCheckPeriod uint, baseAppOptions ...func(*baseapp.BaseApp),
 ) (gapp *SimApp, keyMain, keyStaking *sdk.KVStoreKey, stakingKeeper staking.Keeper) {
-
+	
 	gapp = NewSimApp(logger, db, traceStore, loadLatest, invCheckPeriod, baseAppOptions...)
 	return gapp, gapp.keys[baseapp.MainStoreKey], gapp.keys[staking.StoreKey], gapp.stakingKeeper
 }
@@ -69,31 +69,31 @@ func NewSimAppUNSAFE(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLat
 func AppStateFromGenesisFileFn(
 	r *rand.Rand, _ []simulation.Account, _ time.Time,
 ) (json.RawMessage, []simulation.Account, string) {
-
+	
 	var genesis tmtypes.GenesisDoc
 	cdc := MakeCodec()
-
+	
 	bytes, err := ioutil.ReadFile(genesisFile)
 	if err != nil {
 		panic(err)
 	}
-
+	
 	cdc.MustUnmarshalJSON(bytes, &genesis)
-
+	
 	var appState GenesisState
 	cdc.MustUnmarshalJSON(genesis.AppState, &appState)
-
+	
 	accounts := genaccounts.GetGenesisStateFromAppState(cdc, appState)
-
+	
 	var newAccs []simulation.Account
 	for _, acc := range accounts {
 		privkeySeed := make([]byte, 15)
 		r.Read(privkeySeed)
-
+		
 		privKey := secp256k1.GenPrivKeySecp256k1(privkeySeed)
 		newAccs = append(newAccs, simulation.Account{privKey, privKey.PubKey(), acc.Address})
 	}
-
+	
 	return genesis.AppState, newAccs, genesis.ChainID
 }
 
@@ -142,7 +142,7 @@ func GenAuthGenesisState(cdc *codec.Codec, r *rand.Rand, ap simulation.AppParams
 			}(r),
 		),
 	)
-
+	
 	fmt.Printf("Selected randomly generated auth parameters:\n%s\n", codec.MustMarshalJSONIndent(cdc, authGenesis.Params))
 	genesisState[auth.ModuleName] = cdc.MustMarshalJSON(authGenesis)
 }
@@ -158,7 +158,7 @@ func GenBankGenesisState(cdc *codec.Codec, r *rand.Rand, ap simulation.AppParams
 			return v
 		}(r),
 	)
-
+	
 	fmt.Printf("Selected randomly generated bank parameters:\n%s\n", codec.MustMarshalJSONIndent(cdc, bankGenesis))
 	genesisState[bank.ModuleName] = cdc.MustMarshalJSON(bankGenesis)
 }
@@ -168,7 +168,7 @@ func GenSupplyGenesisState(cdc *codec.Codec, amount, numInitiallyBonded, numAccs
 	supplyGenesis := supply.NewGenesisState(
 		sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, totalSupply)),
 	)
-
+	
 	fmt.Printf("Generated supply parameters:\n%s\n", codec.MustMarshalJSONIndent(cdc, supplyGenesis))
 	genesisState[supply.ModuleName] = cdc.MustMarshalJSON(supplyGenesis)
 }
@@ -178,41 +178,41 @@ func GenGenesisAccounts(
 	genesisTimestamp time.Time, amount, numInitiallyBonded int64,
 	genesisState map[string]json.RawMessage,
 ) {
-
+	
 	var genesisAccounts []genaccounts.GenesisAccount
-
+	
 	// randomly generate some genesis accounts
 	for i, acc := range accs {
 		coins := sdk.Coins{sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(amount))}
 		bacc := auth.NewBaseAccountWithAddress(acc.Address)
 		bacc.SetCoins(coins)
-
+		
 		var gacc genaccounts.GenesisAccount
-
+		
 		if int64(i) > numInitiallyBonded && r.Intn(100) < 50 {
 			var (
 				vacc    auth.VestingAccount
 				endTime int64
 			)
-
+			
 			startTime := genesisTimestamp.Unix()
-
+			
 			if r.Intn(100) < 50 {
 				endTime = int64(simulation.RandIntBetween(r, int(startTime), int(startTime+(60*60*24*30))))
 			} else {
 				endTime = int64(simulation.RandIntBetween(r, int(startTime), int(startTime+(60*60*12))))
 			}
-
+			
 			if startTime == endTime {
 				endTime++
 			}
-
+			
 			if r.Intn(100) < 50 {
 				vacc = auth.NewContinuousVestingAccount(&bacc, startTime, endTime)
 			} else {
 				vacc = auth.NewDelayedVestingAccount(&bacc, endTime)
 			}
-
+			
 			var err error
 			gacc, err = genaccounts.NewGenesisAccountI(vacc)
 			if err != nil {
@@ -221,10 +221,10 @@ func GenGenesisAccounts(
 		} else {
 			gacc = genaccounts.NewGenesisAccount(&bacc)
 		}
-
+		
 		genesisAccounts = append(genesisAccounts, gacc)
 	}
-
+	
 	genesisState[genaccounts.ModuleName] = cdc.MustMarshalJSON(genesisAccounts)
 }
 
@@ -234,7 +234,7 @@ func GenGovGenesisState(cdc *codec.Codec, r *rand.Rand, ap simulation.AppParams,
 		func(r *rand.Rand) {
 			vp = simulation.ModuleParamSimulator[simulation.VotingParamsVotingPeriod](r).(time.Duration)
 		})
-
+	
 	govGenesis := gov.NewGenesisState(
 		uint64(r.Intn(100)),
 		gov.NewDepositParams(
@@ -276,7 +276,7 @@ func GenGovGenesisState(cdc *codec.Codec, r *rand.Rand, ap simulation.AppParams,
 			}(r),
 		),
 	)
-
+	
 	fmt.Printf("Selected randomly generated governance parameters:\n%s\n", codec.MustMarshalJSONIndent(cdc, govGenesis))
 	genesisState[gov.ModuleName] = cdc.MustMarshalJSON(govGenesis)
 }
@@ -330,7 +330,7 @@ func GenMintGenesisState(cdc *codec.Codec, r *rand.Rand, ap simulation.AppParams
 			uint64(60*60*8766/5),
 		),
 	)
-
+	
 	fmt.Printf("Selected randomly generated minting parameters:\n%s\n", codec.MustMarshalJSONIndent(cdc, mintGenesis.Params))
 	genesisState[mint.ModuleName] = cdc.MustMarshalJSON(mintGenesis)
 }
@@ -363,7 +363,7 @@ func GenDistrGenesisState(cdc *codec.Codec, r *rand.Rand, ap simulation.AppParam
 			return v
 		}(r),
 	}
-
+	
 	fmt.Printf("Selected randomly generated distribution parameters:\n%s\n", codec.MustMarshalJSONIndent(cdc, distrGenesis))
 	genesisState[distribution.ModuleName] = cdc.MustMarshalJSON(distrGenesis)
 }
@@ -374,21 +374,21 @@ func GenVpnGenesisState(cdc *codec.Codec, r *rand.Rand, accs []simulation.Accoun
 		subscriptions []vpn.Subscription
 		sessions      []vpn.Session
 	)
-
+	
 	// Random Nodes
 	for i := 0; i < int(40); i++ {
 		node := vpnsim.GenerateRandomNode(r)
 		node.Owner = simulation.RandomAcc(r, accs).Address
 		nodes = append(nodes, node)
-
+		
 		subscription := vpnsim.GenerateRandomSubscription(r, nodes[i])
 		subscription.Client = simulation.RandomAcc(r, accs).Address
 		subscriptions = append(subscriptions, subscription)
-
+		
 		session := vpnsim.GenerateRandomSession(r, subscriptions[i].ID)
 		sessions = append(sessions, session)
 	}
-
+	
 	vpnGenesis := vpn.GenesisState{
 		Params: vpn.NewParams(
 			func(r *rand.Rand) uint64 {
@@ -475,7 +475,7 @@ func GenSlashingGenesisState(
 		nil,
 		nil,
 	)
-
+	
 	fmt.Printf("Selected randomly generated slashing parameters:\n%s\n", codec.MustMarshalJSONIndent(cdc, slashingGenesis.Params))
 	genesisState[slashing.ModuleName] = cdc.MustMarshalJSON(slashingGenesis)
 }
@@ -484,7 +484,7 @@ func GenStakingGenesisState(
 	cdc *codec.Codec, r *rand.Rand, accs []simulation.Account, amount, numAccs, numInitiallyBonded int64,
 	ap simulation.AppParams, genesisState map[string]json.RawMessage,
 ) staking.GenesisState {
-
+	
 	stakingGenesis := staking.NewGenesisState(
 		staking.NewParams(
 			func(r *rand.Rand) time.Duration {
@@ -509,17 +509,17 @@ func GenStakingGenesisState(
 		nil,
 		nil,
 	)
-
+	
 	var (
 		validators  []staking.Validator
 		delegations []staking.Delegation
 	)
-
+	
 	valAddrs := make([]sdk.ValAddress, numInitiallyBonded)
 	for i := 0; i < int(numInitiallyBonded); i++ {
 		valAddr := sdk.ValAddress(accs[i].Address)
 		valAddrs[i] = valAddr
-
+		
 		validator := staking.NewValidator(valAddr, accs[i].PubKey, staking.Description{})
 		validator.Tokens = sdk.NewInt(amount)
 		validator.DelegatorShares = sdk.NewDec(amount)
@@ -527,23 +527,23 @@ func GenStakingGenesisState(
 		validators = append(validators, validator)
 		delegations = append(delegations, delegation)
 	}
-
+	
 	stakingGenesis.Validators = validators
 	stakingGenesis.Delegations = delegations
-
+	
 	fmt.Printf("Selected randomly generated staking parameters:\n%s\n", codec.MustMarshalJSONIndent(cdc, stakingGenesis.Params))
 	genesisState[staking.ModuleName] = cdc.MustMarshalJSON(stakingGenesis)
-
+	
 	return stakingGenesis
 }
 
 func GetSimulationLog(storeName string, cdcA, cdcB *codec.Codec, kvA, kvB cmn.KVPair) (log string) {
 	log = fmt.Sprintf("store A %X => %X\nstore B %X => %X\n", kvA.Key, kvA.Value, kvB.Key, kvB.Value)
-
+	
 	if len(kvA.Value) == 0 && len(kvB.Value) == 0 {
 		return
 	}
-
+	
 	switch storeName {
 	case auth.StoreKey:
 		return DecodeAccountStore(cdcA, cdcB, kvA, kvB)
@@ -601,49 +601,49 @@ func DecodeDistributionStore(cdcA, cdcB *codec.Codec, kvA, kvB cmn.KVPair) strin
 		cdcA.MustUnmarshalBinaryLengthPrefixed(kvA.Value, &feePoolA)
 		cdcB.MustUnmarshalBinaryLengthPrefixed(kvB.Value, &feePoolB)
 		return fmt.Sprintf("%v\n%v", feePoolA, feePoolB)
-
+	
 	case bytes.Equal(kvA.Key[:1], distribution.ProposerKey):
 		return fmt.Sprintf("%v\n%v", sdk.ConsAddress(kvA.Value), sdk.ConsAddress(kvB.Value))
-
+	
 	case bytes.Equal(kvA.Key[:1], distribution.ValidatorOutstandingRewardsPrefix):
 		var rewardsA, rewardsB distribution.ValidatorOutstandingRewards
 		cdcA.MustUnmarshalBinaryLengthPrefixed(kvA.Value, &rewardsA)
 		cdcB.MustUnmarshalBinaryLengthPrefixed(kvB.Value, &rewardsB)
 		return fmt.Sprintf("%v\n%v", rewardsA, rewardsB)
-
+	
 	case bytes.Equal(kvA.Key[:1], distribution.DelegatorWithdrawAddrPrefix):
 		return fmt.Sprintf("%v\n%v", sdk.AccAddress(kvA.Value), sdk.AccAddress(kvB.Value))
-
+	
 	case bytes.Equal(kvA.Key[:1], distribution.DelegatorStartingInfoPrefix):
 		var infoA, infoB distribution.DelegatorStartingInfo
 		cdcA.MustUnmarshalBinaryLengthPrefixed(kvA.Value, &infoA)
 		cdcB.MustUnmarshalBinaryLengthPrefixed(kvB.Value, &infoB)
 		return fmt.Sprintf("%v\n%v", infoA, infoB)
-
+	
 	case bytes.Equal(kvA.Key[:1], distribution.ValidatorHistoricalRewardsPrefix):
 		var rewardsA, rewardsB distribution.ValidatorHistoricalRewards
 		cdcA.MustUnmarshalBinaryLengthPrefixed(kvA.Value, &rewardsA)
 		cdcB.MustUnmarshalBinaryLengthPrefixed(kvB.Value, &rewardsB)
 		return fmt.Sprintf("%v\n%v", rewardsA, rewardsB)
-
+	
 	case bytes.Equal(kvA.Key[:1], distribution.ValidatorCurrentRewardsPrefix):
 		var rewardsA, rewardsB distribution.ValidatorCurrentRewards
 		cdcA.MustUnmarshalBinaryLengthPrefixed(kvA.Value, &rewardsA)
 		cdcB.MustUnmarshalBinaryLengthPrefixed(kvB.Value, &rewardsB)
 		return fmt.Sprintf("%v\n%v", rewardsA, rewardsB)
-
+	
 	case bytes.Equal(kvA.Key[:1], distribution.ValidatorAccumulatedCommissionPrefix):
 		var commissionA, commissionB distribution.ValidatorAccumulatedCommission
 		cdcA.MustUnmarshalBinaryLengthPrefixed(kvA.Value, &commissionA)
 		cdcB.MustUnmarshalBinaryLengthPrefixed(kvB.Value, &commissionB)
 		return fmt.Sprintf("%v\n%v", commissionA, commissionB)
-
+	
 	case bytes.Equal(kvA.Key[:1], distribution.ValidatorSlashEventPrefix):
 		var eventA, eventB distribution.ValidatorSlashEvent
 		cdcA.MustUnmarshalBinaryLengthPrefixed(kvA.Value, &eventA)
 		cdcB.MustUnmarshalBinaryLengthPrefixed(kvB.Value, &eventB)
 		return fmt.Sprintf("%v\n%v", eventA, eventB)
-
+	
 	default:
 		panic(fmt.Sprintf("invalid distribution key prefix %X", kvA.Key[:1]))
 	}
@@ -656,38 +656,38 @@ func DecodeStakingStore(cdcA, cdcB *codec.Codec, kvA, kvB cmn.KVPair) string {
 		cdcA.MustUnmarshalBinaryLengthPrefixed(kvA.Value, &powerA)
 		cdcB.MustUnmarshalBinaryLengthPrefixed(kvB.Value, &powerB)
 		return fmt.Sprintf("%v\n%v", powerA, powerB)
-
+	
 	case bytes.Equal(kvA.Key[:1], staking.ValidatorsKey):
 		var validatorA, validatorB staking.Validator
 		cdcA.MustUnmarshalBinaryLengthPrefixed(kvA.Value, &validatorA)
 		cdcB.MustUnmarshalBinaryLengthPrefixed(kvB.Value, &validatorB)
 		return fmt.Sprintf("%v\n%v", validatorA, validatorB)
-
+	
 	case bytes.Equal(kvA.Key[:1], staking.LastValidatorPowerKey),
 		bytes.Equal(kvA.Key[:1], staking.ValidatorsByConsAddrKey),
 		bytes.Equal(kvA.Key[:1], staking.ValidatorsByPowerIndexKey):
 		return fmt.Sprintf("%v\n%v", sdk.ValAddress(kvA.Value), sdk.ValAddress(kvB.Value))
-
+	
 	case bytes.Equal(kvA.Key[:1], staking.DelegationKey):
 		var delegationA, delegationB staking.Delegation
 		cdcA.MustUnmarshalBinaryLengthPrefixed(kvA.Value, &delegationA)
 		cdcB.MustUnmarshalBinaryLengthPrefixed(kvB.Value, &delegationB)
 		return fmt.Sprintf("%v\n%v", delegationA, delegationB)
-
+	
 	case bytes.Equal(kvA.Key[:1], staking.UnbondingDelegationKey),
 		bytes.Equal(kvA.Key[:1], staking.UnbondingDelegationByValIndexKey):
 		var ubdA, ubdB staking.UnbondingDelegation
 		cdcA.MustUnmarshalBinaryLengthPrefixed(kvA.Value, &ubdA)
 		cdcB.MustUnmarshalBinaryLengthPrefixed(kvB.Value, &ubdB)
 		return fmt.Sprintf("%v\n%v", ubdA, ubdB)
-
+	
 	case bytes.Equal(kvA.Key[:1], staking.RedelegationKey),
 		bytes.Equal(kvA.Key[:1], staking.RedelegationByValSrcIndexKey):
 		var redA, redB staking.Redelegation
 		cdcA.MustUnmarshalBinaryLengthPrefixed(kvA.Value, &redA)
 		cdcB.MustUnmarshalBinaryLengthPrefixed(kvB.Value, &redB)
 		return fmt.Sprintf("%v\n%v", redA, redB)
-
+	
 	default:
 		panic(fmt.Sprintf("invalid staking key prefix %X", kvA.Key[:1]))
 	}
@@ -700,13 +700,13 @@ func DecodeSlashingStore(cdcA, cdcB *codec.Codec, kvA, kvB cmn.KVPair) string {
 		cdcA.MustUnmarshalBinaryLengthPrefixed(kvA.Value, &infoA)
 		cdcB.MustUnmarshalBinaryLengthPrefixed(kvB.Value, &infoB)
 		return fmt.Sprintf("%v\n%v", infoA, infoB)
-
+	
 	case bytes.Equal(kvA.Key[:1], slashing.ValidatorMissedBlockBitArrayKey):
 		var missedA, missedB bool
 		cdcA.MustUnmarshalBinaryLengthPrefixed(kvA.Value, &missedA)
 		cdcB.MustUnmarshalBinaryLengthPrefixed(kvB.Value, &missedB)
 		return fmt.Sprintf("missedA: %v\nmissedB: %v", missedA, missedB)
-
+	
 	case bytes.Equal(kvA.Key[:1], slashing.AddrPubkeyRelationKey):
 		var pubKeyA, pubKeyB crypto.PubKey
 		cdcA.MustUnmarshalBinaryLengthPrefixed(kvA.Value, &pubKeyA)
@@ -714,7 +714,7 @@ func DecodeSlashingStore(cdcA, cdcB *codec.Codec, kvA, kvB cmn.KVPair) string {
 		bechPKA := sdk.MustBech32ifyAccPub(pubKeyA)
 		bechPKB := sdk.MustBech32ifyAccPub(pubKeyB)
 		return fmt.Sprintf("PubKeyA: %s\nPubKeyB: %s", bechPKA, bechPKB)
-
+	
 	default:
 		panic(fmt.Sprintf("invalid slashing key prefix %X", kvA.Key[:1]))
 	}
@@ -727,26 +727,26 @@ func DecodeGovStore(cdcA, cdcB *codec.Codec, kvA, kvB cmn.KVPair) string {
 		cdcA.MustUnmarshalBinaryLengthPrefixed(kvA.Value, &proposalA)
 		cdcB.MustUnmarshalBinaryLengthPrefixed(kvB.Value, &proposalB)
 		return fmt.Sprintf("%v\n%v", proposalA, proposalB)
-
+	
 	case bytes.Equal(kvA.Key[:1], gov.ActiveProposalQueuePrefix),
 		bytes.Equal(kvA.Key[:1], gov.InactiveProposalQueuePrefix),
 		bytes.Equal(kvA.Key[:1], gov.ProposalIDKey):
 		proposalIDA := binary.LittleEndian.Uint64(kvA.Value)
 		proposalIDB := binary.LittleEndian.Uint64(kvB.Value)
 		return fmt.Sprintf("proposalIDA: %d\nProposalIDB: %d", proposalIDA, proposalIDB)
-
+	
 	case bytes.Equal(kvA.Key[:1], gov.DepositsKeyPrefix):
 		var depositA, depositB gov.Deposit
 		cdcA.MustUnmarshalBinaryLengthPrefixed(kvA.Value, &depositA)
 		cdcB.MustUnmarshalBinaryLengthPrefixed(kvB.Value, &depositB)
 		return fmt.Sprintf("%v\n%v", depositA, depositB)
-
+	
 	case bytes.Equal(kvA.Key[:1], gov.VotesKeyPrefix):
 		var voteA, voteB gov.Vote
 		cdcA.MustUnmarshalBinaryLengthPrefixed(kvA.Value, &voteA)
 		cdcB.MustUnmarshalBinaryLengthPrefixed(kvB.Value, &voteB)
 		return fmt.Sprintf("%v\n%v", voteA, voteB)
-
+	
 	default:
 		panic(fmt.Sprintf("invalid governance key prefix %X", kvA.Key[:1]))
 	}

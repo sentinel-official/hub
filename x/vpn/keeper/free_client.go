@@ -87,11 +87,41 @@ func (k Keeper) GetFreeNodeOfClient(ctx sdk.Context, client sdk.AccAddress, node
 	return freeNode, true
 }
 
-func (k Keeper) RemoveFreeClient(ctx sdk.Context, nodeID hub.NodeID, client sdk.AccAddress) {
+func (k Keeper) RemoveFreeClientOfNode(ctx sdk.Context, nodeID hub.NodeID, client sdk.AccAddress) {
 	clientKey := types.FreeNodesOfClientKey(client, nodeID)
 	nodeKey := types.FreeClientOfNodeKey(nodeID, client)
 	
 	store := ctx.KVStore(k.nodeKey)
 	store.Delete(clientKey)
 	store.Delete(nodeKey)
+}
+
+func (k Keeper) SetFreeClient(ctx sdk.Context, freeClient types.FreeClient) {
+	key := types.GetFreeClientKey(freeClient.NodeID)
+	value := k.cdc.MustMarshalBinaryLengthPrefixed(freeClient)
+	
+	store := ctx.KVStore(k.nodeKey)
+	store.Set(key, value)
+}
+
+func (k Keeper) GetFreeClients(ctx sdk.Context) (freeClients []types.FreeClient) {
+	store := ctx.KVStore(k.nodeKey)
+	
+	iter := sdk.KVStorePrefixIterator(store, types.FreeClientKey)
+	defer iter.Close()
+	
+	for ; iter.Valid(); iter.Next() {
+		var freeClient types.FreeClient
+		k.cdc.MustUnmarshalBinaryLengthPrefixed(iter.Value(), &freeClient)
+		freeClients = append(freeClients, freeClient)
+	}
+	
+	return freeClients
+}
+
+func (k Keeper) RemoveFreeClient(ctx sdk.Context, nodeID hub.NodeID) {
+	freeClientKey := types.GetFreeClientKey(nodeID)
+	
+	store := ctx.KVStore(k.nodeKey)
+	store.Delete(freeClientKey)
 }

@@ -4,6 +4,7 @@ type GenesisState struct {
 	Nodes         []Node         `json:"nodes"`
 	Subscriptions []Subscription `json:"subscriptions"`
 	Sessions      []Session      `json:"sessions"`
+	Resolvers     []Resolver     `json:"resolvers"`
 	Params        Params         `json:"params"`
 }
 

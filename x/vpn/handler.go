@@ -24,9 +24,9 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 			return handleAddFreeClient(ctx, k, msg)
 		case types.MsgRemoveFreeClient:
 			return handleRemoveFreeClient(ctx, k, msg)
-		case types.MsgAddVPNOnResolver:
-			return handleAddVPNOnResolver(ctx, k, msg)
-		case types.MsgRemoveVPNOnResolver:
+		case types.MsgRegisterVPNOnResolver:
+			return handleRegisterVPNOnResolver(ctx, k, msg)
+		case types.MsgDeregisterVPNOnResolver:
 			return handleRemoveVPNOnResolver(ctx, k, msg)
 		case types.MsgDeregisterNode:
 			return handleDeregisterNode(ctx, k, msg)
@@ -187,6 +187,12 @@ func handleAddFreeClient(ctx sdk.Context, k keeper.Keeper, msg types.MsgAddFreeC
 	k.SetFreeNodeOfClient(ctx, msg.Client, msg.NodeID)
 	k.SetFreeClientOfNode(ctx, msg.NodeID, msg.Client)
 	
+	freeClient := types.FreeClient{
+		NodeID: msg.NodeID,
+		Client: msg.Client,
+	}
+	k.SetFreeClient(ctx, freeClient)
+	
 	return sdk.Result{Events: ctx.EventManager().Events()}
 }
 
@@ -207,12 +213,13 @@ func handleRemoveFreeClient(ctx sdk.Context, k keeper.Keeper, msg types.MsgRemov
 		return types.ErrorFreeClientDoesNotExist().Result()
 	}
 	
-	k.RemoveFreeClient(ctx, msg.NodeID, msg.Client)
+	k.RemoveFreeClientOfNode(ctx, msg.NodeID, msg.Client)
+	k.RemoveFreeClient(ctx, msg.NodeID)
 	
 	return sdk.Result{Events: ctx.EventManager().Events()}
 }
 
-func handleAddVPNOnResolver(ctx sdk.Context, k keeper.Keeper, msg types.MsgAddVPNOnResolver) sdk.Result {
+func handleRegisterVPNOnResolver(ctx sdk.Context, k keeper.Keeper, msg types.MsgRegisterVPNOnResolver) sdk.Result {
 	node, found := k.GetNode(ctx, msg.NodeID)
 	if !found {
 		return types.ErrorNodeDoesNotExist().Result()
@@ -238,7 +245,7 @@ func handleAddVPNOnResolver(ctx sdk.Context, k keeper.Keeper, msg types.MsgAddVP
 	return sdk.Result{Events: ctx.EventManager().Events()}
 }
 
-func handleRemoveVPNOnResolver(ctx sdk.Context, k keeper.Keeper, msg types.MsgRemoveVPNOnResolver) sdk.Result {
+func handleRemoveVPNOnResolver(ctx sdk.Context, k keeper.Keeper, msg types.MsgDeregisterVPNOnResolver) sdk.Result {
 	node, found := k.GetNode(ctx, msg.NodeID)
 	if !found {
 		return types.ErrorNodeDoesNotExist().Result()

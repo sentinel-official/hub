@@ -7,7 +7,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/cosmos/cosmos-sdk/x/auth/client/utils"
 	"github.com/spf13/cobra"
-
+	
 	hub "github.com/sentinel-official/hub/types"
 	"github.com/sentinel-official/hub/x/vpn/types"
 )
@@ -20,18 +20,18 @@ func EndSubscriptionTxCmd(cdc *codec.Codec) *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			txb := auth.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
 			ctx := context.NewCLIContext().WithCodec(cdc)
-
+			
 			id, err := hub.NewSubscriptionIDFromString(args[0])
 			if err != nil {
 				return err
 			}
-
+			
 			fromAddress := ctx.GetFromAddress()
-
+			
 			msg := types.NewMsgEndSubscription(fromAddress, id)
 			return utils.GenerateOrBroadcastMsgs(ctx, txb, []sdk.Msg{msg})
 		},
 	}
-
+	
 	return cmd
 }
