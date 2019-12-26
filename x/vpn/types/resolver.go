@@ -19,11 +19,11 @@ type Resolver struct {
 
 func (resolver Resolver) String() string {
 	return fmt.Sprintf(`
-  ID : %s
-  Owner : %s
-  Commission : %s
-  Status : %s
-  StatusModifiedAt : %d
+  ID :                 %s
+  Owner :              %s
+  Commission :         %s
+  Status :             %s
+  StatusModifiedAt :   %d
 `, resolver.ID.String(), resolver.Owner, resolver.Commission,
 		resolver.Status, resolver.StatusModifiedAt)
 }

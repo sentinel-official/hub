@@ -539,7 +539,7 @@ func handleRegisterResolver(ctx sdk.Context, k keeper.Keeper, msg types.MsgRegis
 		sdk.NewEvent(
 			EventTypeMsgRegisterResolver,
 			sdk.NewAttribute(AttributeKeyClientAddress, resolver.Owner.String()),
-			sdk.NewAttribute(AttributeKeyNodeID, resolver.ID.String()),
+			sdk.NewAttribute(AttributeKeyResolverID, resolver.ID.String()),
 			sdk.NewAttribute(AttributeKeyStatus, resolver.Status),
 		))
 	
@@ -571,7 +571,7 @@ func handleUpdateResolverInfo(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpd
 		sdk.NewEvent(
 			EventTypeMsgUpdateResolverInfo,
 			sdk.NewAttribute(AttributeKeyClientAddress, msg.From.String()),
-			sdk.NewAttribute(AttributeKeyNodeID, msg.ResolverID.String()),
+			sdk.NewAttribute(AttributeKeyResolverID, msg.ResolverID.String()),
 			sdk.NewAttribute(AttributeKeyCommission, msg.Commission.String()),
 		),
 	)
@@ -603,7 +603,7 @@ func handleDeregisterResolver(ctx sdk.Context, k keeper.Keeper, msg types.MsgDer
 		sdk.NewEvent(
 			EventTypeMsgDeregisterResolver,
 			sdk.NewAttribute(AttributeKeyClientAddress, msg.From.String()),
-			sdk.NewAttribute(AttributeKeyNodeID, msg.ResolverID.String()),
+			sdk.NewAttribute(AttributeKeyResolverID, msg.ResolverID.String()),
 			sdk.NewAttribute(AttributeKeyStatus, resolver.Status),
 		))
 	

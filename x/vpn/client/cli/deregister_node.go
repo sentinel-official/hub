@@ -14,7 +14,7 @@ import (
 
 func DeregisterNodeTxCmd(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "deregister",
+		Use:   "deregister [node-id]",
 		Short: "Deregister node",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {

@@ -22,7 +22,7 @@ func QueryNodeCmd(cdc *codec.Codec) *cobra.Command {
 			
 			node, err := common.QueryNode(ctx, args[0])
 			if err != nil {
-				return err
+				return nil
 			}
 			
 			fmt.Println(node)

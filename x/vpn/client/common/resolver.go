@@ -5,15 +5,21 @@ import (
 	
 	"github.com/cosmos/cosmos-sdk/client/context"
 	
+	hub "github.com/sentinel-official/hub/types"
 	"github.com/sentinel-official/hub/x/vpn/types"
 )
 
-func QueryResolvers(ctx context.CLIContext, address string) (types.Resolvers, error) {
+func QueryResolvers(ctx context.CLIContext, resolverID string) (types.Resolvers, error) {
 	var res []byte
 	var err error
 	
-	if address != "" {
-		bytes, err := ctx.Codec.MarshalJSON(address)
+	if resolverID != "" {
+		
+		_id, err := hub.NewResolverIDFromString(resolverID)
+		if err != nil {
+			return nil, err
+		}
+		bytes, err := ctx.Codec.MarshalJSON(_id)
 		if err != nil {
 			return nil, err
 		}

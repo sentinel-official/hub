@@ -260,7 +260,7 @@ type MsgRegisterVPNOnResolver struct {
 }
 
 func (msg MsgRegisterVPNOnResolver) Type() string {
-	return "add_vpn_on_resolver"
+	return "register_vpn_on_resolver"
 }
 
 func (msg MsgRegisterVPNOnResolver) ValidateBasic() sdk.Error {
@@ -312,7 +312,7 @@ type MsgDeregisterVPNOnResolver struct {
 }
 
 func (msg MsgDeregisterVPNOnResolver) Type() string {
-	return "remove_vpn_on_resolver"
+	return "deregister_vpn_on_resolver"
 }
 
 func (msg MsgDeregisterVPNOnResolver) ValidateBasic() sdk.Error {

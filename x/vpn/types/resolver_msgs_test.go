@@ -4,10 +4,10 @@ import (
 	"encoding/json"
 	"reflect"
 	"testing"
-	
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
-	
+
 	hub "github.com/sentinel-official/hub/types"
 	"github.com/sentinel-official/hub/x/deposit/types"
 )
@@ -18,7 +18,7 @@ func TestMsgRegisterResolver_GetSignBytes(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	
+
 	require.Equal(t, msgBytes, msg.GetSignBytes())
 }
 
@@ -34,7 +34,7 @@ func TestMsgRegisterResolver_Route(t *testing.T) {
 
 func TestMsgRegisterResolver_Type(t *testing.T) {
 	msg := NewMsgRegisterResolver(TestAddress1, sdk.NewDecWithPrec(1, 2))
-	require.Equal(t, "register_resolver_node", msg.Type())
+	require.Equal(t, "register_resolver", msg.Type())
 }
 
 func TestMsgRegisterResolver_ValidateBasic(t *testing.T) {
@@ -69,7 +69,7 @@ func TestMsgRegisterResolver_ValidateBasic(t *testing.T) {
 			nil,
 		},
 	}
-	
+
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			if got := tc.msg.ValidateBasic(); !reflect.DeepEqual(got, tc.want) {
@@ -85,7 +85,7 @@ func TestMsgUpdateResolverInfo_GetSignBytes(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	
+
 	require.Equal(t, msgBytes, msg.GetSignBytes())
 }
 
@@ -155,7 +155,7 @@ func TestMsgDeregisterResolver_GetSignBytes(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	
+
 	require.Equal(t, msgBytes, msg.GetSignBytes())
 }
 
@@ -171,7 +171,7 @@ func TestMsgDeregisterResolver_Route(t *testing.T) {
 
 func TestMsgDeregisterResolver_Type(t *testing.T) {
 	msg := NewMsgDeregisterResolver(TestAddress1, hub.NewResolverID(0))
-	require.Equal(t, "deregister_resolver_node", msg.Type())
+	require.Equal(t, "deregister_resolver", msg.Type())
 }
 
 func TestMsgDeregisterResolver_ValidateBasic(t *testing.T) {
@@ -198,7 +198,7 @@ func TestMsgDeregisterResolver_ValidateBasic(t *testing.T) {
 			nil,
 		},
 	}
-	
+
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			if got := tc.msg.ValidateBasic(); !reflect.DeepEqual(got, tc.want) {

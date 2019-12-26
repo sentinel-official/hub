@@ -18,7 +18,7 @@ func (msg MsgRegisterResolver) Route() string {
 }
 
 func (msg MsgRegisterResolver) Type() string {
-	return "register_resolver_node"
+	return "register_resolver"
 }
 
 func (msg MsgRegisterResolver) ValidateBasic() sdk.Error {
@@ -111,7 +111,7 @@ func (msg MsgDeregisterResolver) Route() string {
 }
 
 func (msg MsgDeregisterResolver) Type() string {
-	return "deregister_resolver_node"
+	return "deregister_resolver"
 }
 
 func (msg MsgDeregisterResolver) ValidateBasic() sdk.Error {

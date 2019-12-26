@@ -1,6 +1,8 @@
 package cli
 
 import (
+	"fmt"
+	
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/spf13/cobra"
@@ -16,17 +18,23 @@ func QueryResolversCmd(cdc *codec.Codec) *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := context.NewCLIContext().WithCodec(cdc)
 			
-			address := viper.GetString(flagAddress)
-			
-			resolvers, err := common.QueryResolvers(ctx, address)
+			resolverID := viper.GetString(flagResolverID)
+			resolvers, err := common.QueryResolvers(ctx, resolverID)
 			if err != nil {
 				return err
 			}
 			
-			return ctx.PrintOutput(resolvers)
+			if len(resolvers) == 0 {
+				return nil
+			}
+			
+			for _, resolver := range resolvers {
+				fmt.Println(resolver)
+			}
+			return nil
 		},
 	}
-	cmd.Flags().String(flagAddress, "", "Resolver address")
+	cmd.Flags().String(flagResolverID, "", "Resolver address")
 	
 	return cmd
 }
