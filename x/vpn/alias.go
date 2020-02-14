@@ -89,6 +89,10 @@ var (
 	NewMsgDeregisterNode                      = types.NewMsgDeregisterNode
 	NewMsgRegisterResolver                    = types.NewMsgRegisterResolver
 	NewMsgUpdateResolverInfo                  = types.NewMsgUpdateResolverInfo
+	NewMsgUpdateSessionInfo                   = types.NewMsgUpdateSessionInfo
+	NewMsgStartSubscription                   = types.NewMsgStartSubscription
+	NewMsgEndSubscription                     = types.NewMsgEndSubscription
+	NewMsgEndSession                          = types.NewMsgEndSession
 	NewMsgDeregisterResolver                  = types.NewMsgDeregisterResolver
 	NewParams                                 = types.NewParams
 	DefaultParams                             = types.DefaultParams
@@ -105,9 +109,6 @@ var (
 	NewQuerySessionParams                     = types.NewQuerySessionParams
 	NewQuerySessionOfSubscriptionPrams        = types.NewQuerySessionOfSubscriptionPrams
 	NewQuerySessionsOfSubscriptionPrams       = types.NewQuerySessionsOfSubscriptionPrams
-	NewMsgUpdateSessionInfo                   = types.NewMsgUpdateSessionInfo
-	NewMsgStartSubscription                   = types.NewMsgStartSubscription
-	NewMsgEndSubscription                     = types.NewMsgEndSubscription
 	NewKeeper                                 = keeper.NewKeeper
 	ParamKeyTable                             = keeper.ParamKeyTable
 	NewQuerier                                = querier.NewQuerier
@@ -115,7 +116,7 @@ var (
 	RandomSubscription                        = keeper.RandomSubscription
 	RandomSession                             = keeper.RandomSession
 	RandomResolver                            = keeper.RandomResolver
-	
+
 	// variable aliases
 	ModuleCdc                            = types.ModuleCdc
 	NodesCountKey                        = types.NodesCountKey
@@ -138,7 +139,7 @@ var (
 	KeyFreeNodesCount                    = types.KeyFreeNodesCount
 	KeyDeposit                           = types.KeyDeposit
 	KeySessionInactiveInterval           = types.KeySessionInactiveInterval
-	
+
 	EventTypeMsgRegisterNode            = types.EventTypeMsgRegisterNode
 	EventTypeMsgUpdateNodeInfo          = types.EventTypeMsgUpdateNodeInfo
 	EventTypeMsgDeregisterNode          = types.EventTypeMsgDeregisterNode
@@ -152,7 +153,7 @@ var (
 	EventTypeMsgStartSubscription       = types.EventTypeMsgStartSubscription
 	EventTypeMsgEndSubscription         = types.EventTypeMsgEndSubscription
 	EventTypeMsgUpdateSessionInfo       = types.EventTypeMsgUpdateSessionInfo
-	
+
 	AttributeKeyClientAddress = types.AttributeKeyClientAddress
 	AttributeKeyFromAddress   = types.AttributeKeyFromAddress
 	AttributeKeyNodeID        = types.AttributeKeyNodeID

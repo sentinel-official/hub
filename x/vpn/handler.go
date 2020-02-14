@@ -80,12 +80,14 @@ func EndBlock(ctx sdk.Context, k keeper.Keeper) {
 
 				commission := _resolver.GetCommission(payCoin)
 
-				if err := k.SendDeposit(ctx, subscription.Client, _resolver.Owner, commission); err != nil {
-					panic(err)
-				}
+				if commission.IsPositive() {
+					if err := k.SendDeposit(ctx, subscription.Client, _resolver.Owner, commission); err != nil {
+						panic(err)
+					}
 
-				if err := k.SendDeposit(ctx, subscription.Client, node.Owner, payCoin.Sub(commission)); err != nil {
-					panic(err)
+					if err := k.SendDeposit(ctx, subscription.Client, node.Owner, payCoin.Sub(commission)); err != nil {
+						panic(err)
+					}
 				}
 			}
 		}
