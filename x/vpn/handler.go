@@ -89,6 +89,12 @@ func EndBlock(ctx sdk.Context, k keeper.Keeper) {
 						panic(err)
 					}
 				}
+
+				if commission.IsZero() {
+					if err := k.SendDeposit(ctx, subscription.Client, node.Owner, payCoin); err != nil {
+						panic(err)
+					}
+				}
 			}
 		}
 
@@ -546,6 +552,48 @@ func handleEndSession(ctx sdk.Context, k keeper.Keeper, msg types.MsgEndSession)
 
 	session.Status = types.StatusInactive
 	session.StatusModifiedAt = ctx.BlockHeight()
+
+	freeClients := k.GetFreeClientsOfNode(ctx, subscription.NodeID)
+
+	bandwidth := session.Bandwidth.CeilTo(hub.GB.Quo(subscription.PricePerGB.Amount))
+
+	pay := sdk.NewInt(0)
+	if !types.IsFreeClient(freeClients, subscription.Client) {
+		amount := bandwidth.Sum().Mul(subscription.PricePerGB.Amount).Quo(hub.GB)
+		payCoin := sdk.NewCoin(subscription.PricePerGB.Denom, amount)
+
+		pay = payCoin.Amount
+		if !pay.IsZero() {
+			node, _ := k.GetNode(ctx, subscription.NodeID)
+
+			_resolver, found := k.GetResolver(ctx, subscription.ResolverID)
+			if !found {
+				panic("no resolver found")
+			}
+
+			commission := _resolver.GetCommission(payCoin)
+
+			if commission.IsPositive() {
+				if err := k.SendDeposit(ctx, subscription.Client, _resolver.Owner, commission); err != nil {
+					panic(err)
+				}
+
+				if err := k.SendDeposit(ctx, subscription.Client, node.Owner, payCoin.Sub(commission)); err != nil {
+					panic(err)
+				}
+			}
+
+			if commission.IsZero() {
+				if err := k.SendDeposit(ctx, subscription.Client, node.Owner, payCoin); err != nil {
+					panic(err)
+				}
+			}
+		}
+	}
+
+	subscription.RemainingDeposit.Amount = subscription.RemainingDeposit.Amount.Sub(pay)
+	subscription.RemainingBandwidth = subscription.RemainingBandwidth.Sub(bandwidth)
+	k.SetSubscription(ctx, subscription)
 
 	k.SetSession(ctx, session)
 	k.SetSessionsCountOfSubscription(ctx, subscription.ID, scs+1)
