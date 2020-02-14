@@ -2,10 +2,10 @@ package types
 
 import (
 	"encoding/json"
-	
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
-	
+
 	hub "github.com/sentinel-official/hub/types"
 )
 
@@ -36,7 +36,7 @@ func (msg MsgUpdateSessionInfo) ValidateBasic() sdk.Error {
 	if msg.ClientSignature.Signature == nil || msg.ClientSignature.PubKey == nil {
 		return ErrorInvalidField("client_signature")
 	}
-	
+
 	return nil
 }
 
@@ -45,7 +45,7 @@ func (msg MsgUpdateSessionInfo) GetSignBytes() []byte {
 	if err != nil {
 		panic(err)
 	}
-	
+
 	return bz
 }
 
@@ -66,5 +66,48 @@ func NewMsgUpdateSessionInfo(from sdk.AccAddress,
 		Bandwidth:          bandwidth,
 		NodeOwnerSignature: nodeOwnerSignature,
 		ClientSignature:    clientSignature,
+	}
+}
+
+var _ sdk.Msg = (*MsgEndSession)(nil)
+
+type MsgEndSession struct {
+	From           sdk.AccAddress     `json:"from"`
+	SubscriptionID hub.SubscriptionID `json:"subscription_id"`
+}
+
+func (msg MsgEndSession) Type() string {
+	return "end_session"
+}
+
+func (msg MsgEndSession) ValidateBasic() sdk.Error {
+	if msg.From == nil || msg.From.Empty() {
+		return ErrorInvalidField("from")
+	}
+
+	return nil
+}
+
+func (msg MsgEndSession) GetSignBytes() []byte {
+	bz, err := json.Marshal(msg)
+	if err != nil {
+		panic(err)
+	}
+
+	return bz
+}
+
+func (msg MsgEndSession) GetSigners() []sdk.AccAddress {
+	return []sdk.AccAddress{msg.From}
+}
+
+func (msg MsgEndSession) Route() string {
+	return RouterKey
+}
+
+func NewMsgEndSession(from sdk.AccAddress, subscriptionID hub.SubscriptionID) *MsgEndSession {
+	return &MsgEndSession{
+		From:           from,
+		SubscriptionID: subscriptionID,
 	}
 }
