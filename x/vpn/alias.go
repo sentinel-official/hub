@@ -186,5 +186,6 @@ type (
 	Subscription                           = types.Subscription
 	MsgStartSubscription                   = types.MsgStartSubscription
 	MsgEndSubscription                     = types.MsgEndSubscription
+	MsgEndSession                          = types.MsgEndSession
 	Keeper                                 = keeper.Keeper
 )
