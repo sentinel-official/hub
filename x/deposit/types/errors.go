@@ -11,11 +11,13 @@ import (
 const (
 	Codespace = sdk.CodespaceType("deposit")
 
-	errCodeUnknownQueryType         = 101
+	errCodeInvalidQueryType         = 101
 	errCodeInsufficientDepositFunds = 102
+	errCodeDepositDoesNotExist      = 103
 
-	errMsgUnknownQueryType         = "Invalid query type: "
+	errMsgInvalidQueryType         = "invalid query type: %s"
 	errMsgInsufficientDepositFunds = "insufficient deposit funds: %s < %s"
+	errMsgDepositDoesNotExist      = "deposit does not exist"
 )
 
 func ErrorMarshal() sdk.Error {
@@ -27,9 +29,13 @@ func ErrorUnmarshal() sdk.Error {
 }
 
 func ErrorInvalidQueryType(queryType string) sdk.Error {
-	return sdk.NewError(Codespace, errCodeUnknownQueryType, errMsgUnknownQueryType+queryType)
+	return sdk.NewError(Codespace, errCodeInvalidQueryType, fmt.Sprintf(errMsgInvalidQueryType, queryType))
 }
 
 func ErrorInsufficientDepositFunds(x, y sdk.Coins) sdk.Error {
 	return sdk.NewError(Codespace, errCodeInsufficientDepositFunds, fmt.Sprintf(errMsgInsufficientDepositFunds, x, y))
+}
+
+func ErrorDepositDoesNotExist() sdk.Error {
+	return sdk.NewError(Codespace, errCodeDepositDoesNotExist, errMsgDepositDoesNotExist)
 }
