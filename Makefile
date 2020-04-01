@@ -12,9 +12,9 @@ LD_FLAGS := -s -w \
     -X github.com/sentinel-official/hub/version.Name=sentinel-hub \
     -X github.com/sentinel-official/hub/version.ServerName=sentinel-hubd \
     -X github.com/sentinel-official/hub/version.ClientName=sentinel-hubcli \
-	-X github.com/sentinel-official/hub/version.Version=${VERSION} \
-	-X github.com/sentinel-official/hub/version.Commit=${COMMIT} \
-	-X github.com/sentinel-official/hub/version.BuildTags=${BUILD_TAGS}
+    -X github.com/sentinel-official/hub/version.Version=${VERSION} \
+    -X github.com/sentinel-official/hub/version.Commit=${COMMIT} \
+    -X github.com/sentinel-official/hub/version.BuildTags=${BUILD_TAGS}
 BUILD_FLAGS := -tags "${BUILD_TAGS}" -ldflags "${LD_FLAGS}"
 
 all: install test
