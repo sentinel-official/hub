@@ -1,63 +1,66 @@
+# v1.24.0
+
 run:
-  deadline: 5m
-  issues-exit-code: 1
+  concurrency: 4
+  timeout: 5m
   tests: false
 
-output:
-  format: colored-line-number
-  print-issued-lines: true
-  print-linter-name: true
-
 linters-settings:
-  errcheck:
-    check-type-assertions: true
-    check-blank: false
-  govet:
-    check-shadowing: true
-  golint:
-    min-confidence: 0.8
-  gofmt:
-    simplify: true
-  goimports:
-    local-prefixes: github.com/sentinel-official/hub
-  gocyclo:
-    min-complexity: 10
-  maligned:
-    suggest-new: true
-  dupl:
-    threshold: 100
-  goconst:
-    min-len: 5
-    min-occurrences: 5
-  misspell:
-    locale: US
-  lll:
-    line-length: 120
-    tab-width: 1
-  unused:
-    check-exported: false
-  unparam:
-    check-exported: false
-  nakedret:
-    max-func-lines: 30
-  prealloc:
-    simple: true
-    range-loops: true
-    for-loops: true
+  funlen:
+    lines: 120
+    statements: 80
   gocritic:
     enabled-tags:
       - diagnostic
       - experimental
       - performance
       - style
+  gocyclo:
+    min-complexity: 15
+  goimports:
+    local-prefixes: github.com/sentinel-official/sentinel
 
 linters:
-  enable-all: true
-  disable:
-    - dupl
-    - gochecknoglobals
-    - gochecknoinits
-    - gocognit
-    - gocritic
-    - gocyclo
-    - wsl
+  disable-all: true
+  enable:
+    - bodyclose
+    - deadcode
+    - depguard
+    - dogsled
+    #- dupl
+    - errcheck
+    - funlen
+    #- gochecknoglobals
+    #- gochecknoinits
+    #- gocognit
+    #- goconst
+    #- gocritic
+    #- gocyclo
+    - godox
+    - gofmt
+    - goimports
+    - golint
+    #- gomnd
+    - goprintffuncname
+    - gosec
+    - gosimple
+    - govet
+    - ineffassign
+    - interfacer
+    - lll
+    - maligned
+    - misspell
+    - nakedret
+    - prealloc
+    - rowserrcheck
+    - scopelint
+    - staticcheck
+    - structcheck
+    - stylecheck
+    - typecheck
+    - unconvert
+    - unparam
+    - unused
+    - varcheck
+    - whitespace
+    #- wsl

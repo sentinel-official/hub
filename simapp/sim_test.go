@@ -53,7 +53,6 @@ func getSimulateFromSeedInput(tb testing.TB, w io.Writer, app *SimApp) (
 	testing.TB, io.Writer, *baseapp.BaseApp, simulation.AppStateFn, int64,
 	simulation.WeightedOperations, sdk.Invariants, int, int, int, int, string,
 	bool, bool, bool, bool, bool, map[string]bool) {
-
 	exportParams := exportParamsPath != ""
 
 	return tb, w, app.BaseApp, appStateFn, seed,
@@ -65,7 +64,6 @@ func getSimulateFromSeedInput(tb testing.TB, w io.Writer, app *SimApp) (
 func appStateFn(
 	r *rand.Rand, accs []simulation.Account,
 ) (appState json.RawMessage, simAccs []simulation.Account, chainID string, genesisTimestamp time.Time) {
-
 	cdc := MakeCodec()
 
 	if genesisTime == 0 {
@@ -102,7 +100,6 @@ func appStateFn(
 func appStateRandomizedFn(
 	r *rand.Rand, accs []simulation.Account, genesisTimestamp time.Time, appParams simulation.AppParams,
 ) (json.RawMessage, []simulation.Account, string) {
-
 	cdc := MakeCodec()
 	genesisState := NewDefaultGenesisState()
 
@@ -150,7 +147,6 @@ func appStateRandomizedFn(
 }
 
 func testAndRunTxs(app *SimApp) []simulation.WeightedOperation {
-
 	cdc := MakeCodec()
 	ap := make(simulation.AppParams)
 
@@ -478,7 +474,6 @@ func TestAppImportExport(t *testing.T) {
 		fmt.Printf("Compared %d key/value pairs between %s and %s\n", count, storeKeyA, storeKeyB)
 		require.True(t, equal, GetSimulationLog(storeKeyA.Name(), app.cdc, newApp.cdc, kvA, kvB))
 	}
-
 }
 
 func TestAppSimulationAfterImport(t *testing.T) {

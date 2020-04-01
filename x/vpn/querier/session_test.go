@@ -67,7 +67,7 @@ func Test_querySessionOfSubscription(t *testing.T) {
 	require.Len(t, res, 0)
 
 	k.SetSubscription(ctx, types.TestSubscription)
-	k.SetSessionIDBySubscriptionID(ctx, types.TestSubscription.ID, 0, types.TestSession.ID, )
+	k.SetSessionIDBySubscriptionID(ctx, types.TestSubscription.ID, 0, types.TestSession.ID)
 	k.SetSessionsCountOfSubscription(ctx, types.TestSubscription.ID, 1)
 
 	req.Data, err = cdc.MarshalJSON(types.NewQuerySessionsOfSubscriptionPrams(hub.NewSubscriptionID(0)))

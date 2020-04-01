@@ -96,7 +96,6 @@ func TestKeeper_SetSessionIDBySubscriptionID(t *testing.T) {
 	id, found = k.GetSessionIDBySubscriptionID(ctx, hub.NewSubscriptionID(1), 5)
 	require.Equal(t, true, found)
 	require.Equal(t, hub.NewSessionID(1), id)
-
 }
 
 func TestKeeper_GetSessionIDBySubscriptionID(t *testing.T) {
@@ -151,7 +150,6 @@ func TestKeeper_SetActiveSessionIDs(t *testing.T) {
 	k.SetActiveSessionIDs(ctx, 2, hub.IDs{})
 	ids = k.GetActiveSessionIDs(ctx, 2)
 	require.Equal(t, hub.IDs(nil), ids)
-
 }
 
 func TestKeeper_GetActiveSessionIDs(t *testing.T) {

@@ -191,7 +191,6 @@ func TestKeeper_GetSubscriptionsOfNode(t *testing.T) {
 
 	subscriptions = k.GetSubscriptionsOfNode(ctx, hub.NewNodeID(0))
 	require.Equal(t, append([]types.Subscription{types.TestSubscription}, types.TestSubscription), subscriptions)
-
 }
 
 func TestKeeper_GetSubscriptionsOfAddress(t *testing.T) {

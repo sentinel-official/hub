@@ -256,5 +256,4 @@ func Test_querySessionsCountOfSubscription(t *testing.T) {
 	err = cdc.UnmarshalJSON(res, &count)
 	require.Nil(t, err)
 	require.Equal(t, uint64(2), count)
-
 }
