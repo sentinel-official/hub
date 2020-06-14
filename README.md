@@ -16,8 +16,8 @@ Requires [Go 1.14+](https://golang.org/dl/)
 
 `$ make install`
 
-**Note:** To install specific version or commit use `git checkout` command
+**Note:** To install a specific version or commit use `git checkout` command
 
 ## Additional Documentation
 
-For additional documentation on the Sentinel Hub, please visit - https://docs.sentinel.co
+For the additional documentation on the Sentinel Hub, please visit - https://docs.sentinel.co

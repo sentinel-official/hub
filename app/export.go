@@ -12,120 +12,120 @@ import (
 	tm "github.com/tendermint/tendermint/types"
 )
 
-func (app *HubApp) ExportAppStateAndValidators(forZeroHeight bool,
-	jailWhiteList []string) (json.RawMessage, []tm.GenesisValidator, error) {
-	ctx := app.NewContext(true, abci.Header{Height: app.LastBlockHeight()})
+func (a *App) ExportAppStateAndValidators(zeroHeight bool,
+	jailWhitelist []string) (json.RawMessage, []tm.GenesisValidator, error) {
+	ctx := a.NewContext(true, abci.Header{Height: a.LastBlockHeight()})
 
-	if forZeroHeight {
-		app.prepForZeroHeightGenesis(ctx, jailWhiteList)
+	if zeroHeight {
+		a.prepForZeroHeightGenesis(ctx, jailWhitelist)
 	}
 
-	state := app.mm.ExportGenesis(ctx)
-	appState, err := codec.MarshalJSONIndent(app.cdc, state)
+	state, err := codec.MarshalJSONIndent(a.cdc, a.manager.ExportGenesis(ctx))
 	if err != nil {
 		return nil, nil, err
 	}
 
-	validators := staking.WriteValidators(ctx, app.stakingKeeper)
-	return appState, validators, nil
+	return state, staking.WriteValidators(ctx, a.stakingKeeper), nil
 }
 
-// nolint:funlen
-func (app *HubApp) prepForZeroHeightGenesis(
-	ctx sdk.Context, jailWhiteList []string) {
-	applyWhiteList := false
-	if len(jailWhiteList) > 0 {
-		applyWhiteList = true
+func (a *App) prepForZeroHeightGenesis(ctx sdk.Context, jailWhitelist []string) {
+	jail := false
+	if len(jailWhitelist) > 0 {
+		jail = true
 	}
 
-	whiteListMap := make(map[string]bool)
-	for _, addr := range jailWhiteList {
-		_, err := sdk.ValAddressFromBech32(addr)
+	jailed := make(map[string]bool)
+	for _, address := range jailWhitelist {
+		_, err := sdk.ValAddressFromBech32(address)
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		whiteListMap[addr] = true
+		jailed[address] = true
 	}
 
-	app.crisisKeeper.AssertInvariants(ctx)
+	a.crisisKeeper.AssertInvariants(ctx)
 
-	app.stakingKeeper.IterateValidators(ctx, func(_ int64, val staking.ValidatorI) (stop bool) {
-		_, _ = app.distributionKeeper.WithdrawValidatorCommission(ctx, val.GetOperator())
+	a.stakingKeeper.IterateValidators(ctx, func(_ int64, item staking.ValidatorI) (stop bool) {
+		_, _ = a.distributionKeeper.WithdrawValidatorCommission(ctx, item.GetOperator())
 		return false
 	})
 
-	delegations := app.stakingKeeper.GetAllDelegations(ctx)
+	delegations := a.stakingKeeper.GetAllDelegations(ctx)
 	for _, delegation := range delegations {
-		_, _ = app.distributionKeeper.WithdrawDelegationRewards(ctx,
+		_, _ = a.distributionKeeper.WithdrawDelegationRewards(ctx,
 			delegation.DelegatorAddress, delegation.ValidatorAddress)
 	}
 
-	app.distributionKeeper.DeleteAllValidatorSlashEvents(ctx)
-	app.distributionKeeper.DeleteAllValidatorHistoricalRewards(ctx)
+	a.distributionKeeper.DeleteAllValidatorSlashEvents(ctx)
+	a.distributionKeeper.DeleteAllValidatorHistoricalRewards(ctx)
 
 	height := ctx.BlockHeight()
 	ctx = ctx.WithBlockHeight(0)
 
-	app.stakingKeeper.IterateValidators(ctx, func(_ int64, val staking.ValidatorI) (stop bool) {
-		scraps := app.distributionKeeper.GetValidatorOutstandingRewards(ctx, val.GetOperator())
-		feePool := app.distributionKeeper.GetFeePool(ctx)
+	a.stakingKeeper.IterateValidators(ctx, func(_ int64, item staking.ValidatorI) (stop bool) {
+		scraps := a.distributionKeeper.GetValidatorOutstandingRewards(ctx, item.GetOperator())
+		feePool := a.distributionKeeper.GetFeePool(ctx)
 		feePool.CommunityPool = feePool.CommunityPool.Add(scraps)
-		app.distributionKeeper.SetFeePool(ctx, feePool)
+		a.distributionKeeper.SetFeePool(ctx, feePool)
 
-		app.distributionKeeper.Hooks().AfterValidatorCreated(ctx, val.GetOperator())
+		a.distributionKeeper.Hooks().AfterValidatorCreated(ctx, item.GetOperator())
 		return false
 	})
 
-	for _, del := range delegations {
-		app.distributionKeeper.Hooks().BeforeDelegationCreated(ctx, del.DelegatorAddress, del.ValidatorAddress)
-		app.distributionKeeper.Hooks().AfterDelegationModified(ctx, del.DelegatorAddress, del.ValidatorAddress)
+	for _, delegation := range delegations {
+		a.distributionKeeper.Hooks().
+			BeforeDelegationCreated(ctx, delegation.DelegatorAddress, delegation.ValidatorAddress)
+		a.distributionKeeper.Hooks().
+			AfterDelegationModified(ctx, delegation.DelegatorAddress, delegation.ValidatorAddress)
 	}
 
 	ctx = ctx.WithBlockHeight(height)
 
-	app.stakingKeeper.IterateRedelegations(ctx, func(_ int64, red staking.Redelegation) (stop bool) {
-		for i := range red.Entries {
-			red.Entries[i].CreationHeight = 0
+	a.stakingKeeper.IterateRedelegations(ctx, func(_ int64, item staking.Redelegation) (stop bool) {
+		for i := range item.Entries {
+			item.Entries[i].CreationHeight = 0
 		}
-		app.stakingKeeper.SetRedelegation(ctx, red)
+
+		a.stakingKeeper.SetRedelegation(ctx, item)
 		return false
 	})
 
-	app.stakingKeeper.IterateUnbondingDelegations(ctx, func(_ int64, ubd staking.UnbondingDelegation) (stop bool) {
-		for i := range ubd.Entries {
-			ubd.Entries[i].CreationHeight = 0
+	a.stakingKeeper.IterateUnbondingDelegations(ctx, func(_ int64, item staking.UnbondingDelegation) (stop bool) {
+		for i := range item.Entries {
+			item.Entries[i].CreationHeight = 0
 		}
-		app.stakingKeeper.SetUnbondingDelegation(ctx, ubd)
+
+		a.stakingKeeper.SetUnbondingDelegation(ctx, item)
 		return false
 	})
 
-	store := ctx.KVStore(app.keys[staking.StoreKey])
-	iter := sdk.KVStoreReversePrefixIterator(store, staking.ValidatorsKey)
-	defer iter.Close()
+	store := ctx.KVStore(a.keys[staking.StoreKey])
+	iterator := sdk.KVStoreReversePrefixIterator(store, staking.ValidatorsKey)
+	defer iterator.Close()
 
-	for ; iter.Valid(); iter.Next() {
-		addr := sdk.ValAddress(iter.Key()[1:])
-		validator, found := app.stakingKeeper.GetValidator(ctx, addr)
+	for ; iterator.Valid(); iterator.Next() {
+		address := sdk.ValAddress(iterator.Key()[1:])
+		validator, found := a.stakingKeeper.GetValidator(ctx, address)
 		if !found {
-			panic("expected validator, not found")
+			panic("expected validator not found")
 		}
 
 		validator.UnbondingHeight = 0
-		if applyWhiteList && !whiteListMap[addr.String()] {
+		if jail && !jailed[address.String()] {
 			validator.Jailed = true
 		}
 
-		app.stakingKeeper.SetValidator(ctx, validator)
+		a.stakingKeeper.SetValidator(ctx, validator)
 	}
 
-	_ = app.stakingKeeper.ApplyAndReturnValidatorSetUpdates(ctx)
+	_ = a.stakingKeeper.ApplyAndReturnValidatorSetUpdates(ctx)
 
-	app.slashingKeeper.IterateValidatorSigningInfos(
+	a.slashingKeeper.IterateValidatorSigningInfos(
 		ctx,
-		func(addr sdk.ConsAddress, info slashing.ValidatorSigningInfo) (stop bool) {
-			info.StartHeight = 0
-			app.slashingKeeper.SetValidatorSigningInfo(ctx, addr, info)
+		func(addr sdk.ConsAddress, item slashing.ValidatorSigningInfo) (stop bool) {
+			item.StartHeight = 0
+			a.slashingKeeper.SetValidatorSigningInfo(ctx, addr, item)
 			return false
 		},
 	)
