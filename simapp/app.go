@@ -9,6 +9,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
+	"github.com/cosmos/cosmos-sdk/version"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/cosmos/cosmos-sdk/x/bank"
 	"github.com/cosmos/cosmos-sdk/x/crisis"
@@ -28,7 +29,6 @@ import (
 	db "github.com/tendermint/tm-db"
 
 	"github.com/sentinel-official/hub/types"
-	"github.com/sentinel-official/hub/version"
 	"github.com/sentinel-official/hub/x/deposit"
 	"github.com/sentinel-official/hub/x/vpn"
 )

@@ -5,8 +5,8 @@ run:
 
 linters-settings:
   funlen:
-    lines: 120
-    statements: 80
+    lines: 180
+    statements: 120
   gocritic:
     enabled-tags:
       - diagnostic
