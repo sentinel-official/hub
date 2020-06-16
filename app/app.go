@@ -29,8 +29,6 @@ import (
 	db "github.com/tendermint/tm-db"
 
 	"github.com/sentinel-official/hub/types"
-	"github.com/sentinel-official/hub/x/deposit"
-	"github.com/sentinel-official/hub/x/vpn"
 )
 
 const (
@@ -54,8 +52,6 @@ var (
 		slashing.AppModuleBasic{},
 		crisis.AppModuleBasic{},
 		gov.NewAppModuleBasic(client.ProposalHandler, distribution.ProposalHandler),
-		deposit.AppModuleBasic{},
-		vpn.AppModuleBasic{},
 	)
 
 	moduleAccountPermissions = map[string][]string{
@@ -65,7 +61,6 @@ var (
 		mint.ModuleName:           {supply.Minter},
 		distribution.ModuleName:   nil,
 		gov.ModuleName:            {supply.Burner},
-		deposit.ModuleName:        nil,
 	}
 )
 
@@ -99,8 +94,6 @@ type App struct {
 	slashingKeeper     slashing.Keeper
 	crisisKeeper       crisis.Keeper
 	govKeeper          gov.Keeper
-	depositKeeper      deposit.Keeper
-	vpnKeeper          vpn.Keeper
 }
 
 func NewApp(logger log.Logger, db db.DB, tracer io.Writer, latest bool, invarCheckPeriod uint,
@@ -113,7 +106,6 @@ func NewApp(logger log.Logger, db db.DB, tracer io.Writer, latest bool, invarChe
 	keys := sdk.NewKVStoreKeys(baseapp.MainStoreKey,
 		params.StoreKey, auth.StoreKey, supply.StoreKey, staking.StoreKey,
 		mint.StoreKey, distribution.StoreKey, slashing.StoreKey, gov.StoreKey,
-		deposit.StoreKey, vpn.StoreKeyNode, vpn.StoreKeySubscription, vpn.StoreKeySession,
 	)
 	transientKeys := sdk.NewTransientStoreKeys(params.TStoreKey, staking.TStoreKey)
 
@@ -196,15 +188,6 @@ func NewApp(logger log.Logger, db db.DB, tracer io.Writer, latest bool, invarChe
 		govRouter)
 	app.stakingKeeper = *stakingKeeper.SetHooks(
 		staking.NewMultiStakingHooks(app.distributionKeeper.Hooks(), app.slashingKeeper.Hooks()))
-	app.depositKeeper = deposit.NewKeeper(app.cdc,
-		keys[deposit.StoreKey],
-		app.supplyKeeper)
-	app.vpnKeeper = vpn.NewKeeper(app.cdc,
-		keys[vpn.StoreKeyNode],
-		keys[vpn.StoreKeySubscription],
-		keys[vpn.StoreKeySession],
-		app.paramsKeeper.Subspace(vpn.DefaultParamspace),
-		app.depositKeeper)
 
 	app.manager = module.NewManager(
 		genaccounts.NewAppModule(app.accountKeeper),
@@ -218,17 +201,15 @@ func NewApp(logger log.Logger, db db.DB, tracer io.Writer, latest bool, invarChe
 		slashing.NewAppModule(app.slashingKeeper, app.stakingKeeper),
 		crisis.NewAppModule(&app.crisisKeeper),
 		gov.NewAppModule(app.govKeeper, app.supplyKeeper),
-		deposit.NewAppModule(app.depositKeeper),
-		vpn.NewAppModule(app.vpnKeeper),
 	)
 
 	// NOTE: order is very important here
 	app.manager.SetOrderBeginBlockers(mint.ModuleName, distribution.ModuleName, slashing.ModuleName)
-	app.manager.SetOrderEndBlockers(crisis.ModuleName, gov.ModuleName, staking.ModuleName, vpn.ModuleName)
+	app.manager.SetOrderEndBlockers(crisis.ModuleName, gov.ModuleName, staking.ModuleName)
 	app.manager.SetOrderInitGenesis(
 		genaccounts.ModuleName, distribution.ModuleName, staking.ModuleName, auth.ModuleName,
 		bank.ModuleName, slashing.ModuleName, gov.ModuleName, mint.ModuleName,
-		supply.ModuleName, crisis.ModuleName, genutil.ModuleName, deposit.ModuleName, vpn.ModuleName,
+		supply.ModuleName, crisis.ModuleName, genutil.ModuleName,
 	)
 
 	app.manager.RegisterInvariants(&app.crisisKeeper)
