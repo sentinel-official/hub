@@ -8,10 +8,11 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/cosmos/cosmos-sdk/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 const (
+	ProviderIDPrefix     = "prov"
 	NodeIDPrefix         = "node"
 	SessionIDPrefix      = "sess"
 	SubscriptionIDPrefix = "subs"
@@ -22,25 +23,124 @@ type ID interface {
 	Uint64() uint64
 	Bytes() []byte
 	Prefix() string
-	IsEqual(ID) bool
+	IsEqual(v ID) bool
 	MarshalJSON() ([]byte, error)
+	UnmarshalJSON(bytes []byte) error
 }
 
 var (
-	_ ID = NodeID{}
-	_ ID = SessionID{}
-	_ ID = SubscriptionID{}
+	_ ID = &ProviderID{}
+	_ ID = &NodeID{}
+	_ ID = &SessionID{}
+	_ ID = &SubscriptionID{}
 )
+
+type ProviderID []byte
+
+func NewProviderID(i uint64) ProviderID {
+	return sdk.Uint64ToBigEndian(i)
+}
+
+func (p ProviderID) String() string {
+	return fmt.Sprintf("%s%x", ProviderID{}, p.Uint64())
+}
+
+func (p ProviderID) Uint64() uint64 {
+	return binary.BigEndian.Uint64(p)
+}
+
+func (p ProviderID) Bytes() []byte {
+	return p
+}
+
+func (p ProviderID) Prefix() string {
+	return ProviderIDPrefix
+}
+
+func (p ProviderID) IsEqual(v ID) bool {
+	return p.String() == v.String()
+}
+
+func (p ProviderID) MarshalJSON() ([]byte, error) {
+	return json.Marshal(p.String())
+}
+
+func (p *ProviderID) UnmarshalJSON(bytes []byte) error {
+	var v string
+	if err := json.Unmarshal(bytes, &v); err != nil {
+		return err
+	}
+
+	id, err := NewProviderIDFromString(v)
+	if err != nil {
+		return err
+	}
+
+	*p = id
+	return nil
+}
+
+func NewProviderIDFromString(s string) (ProviderID, error) {
+	if len(s) < 5 {
+		return nil, fmt.Errorf("invalid provider id length")
+	}
+
+	i, err := strconv.ParseUint(s[4:], 16, 64)
+	if err != nil {
+		return nil, err
+	}
+
+	return NewProviderID(i), nil
+}
 
 type NodeID []byte
 
 func NewNodeID(i uint64) NodeID {
-	return types.Uint64ToBigEndian(i)
+	return sdk.Uint64ToBigEndian(i)
+}
+
+func (n NodeID) String() string {
+	return fmt.Sprintf("%s%x", NodeIDPrefix, n.Uint64())
+}
+
+func (n NodeID) Uint64() uint64 {
+	return binary.BigEndian.Uint64(n)
+}
+
+func (n NodeID) Bytes() []byte {
+	return n
+}
+
+func (n NodeID) Prefix() string {
+	return NodeIDPrefix
+}
+
+func (n NodeID) IsEqual(v ID) bool {
+	return n.String() == v.String()
+}
+
+func (n NodeID) MarshalJSON() ([]byte, error) {
+	return json.Marshal(n.String())
+}
+
+func (n *NodeID) UnmarshalJSON(bytes []byte) error {
+	var x string
+	if err := json.Unmarshal(bytes, &x); err != nil {
+		return err
+	}
+
+	id, err := NewNodeIDFromString(x)
+	if err != nil {
+		return err
+	}
+
+	*n = id
+	return nil
 }
 
 func NewNodeIDFromString(s string) (NodeID, error) {
 	if len(s) < 5 {
-		return nil, fmt.Errorf("invalid node is length")
+		return nil, fmt.Errorf("invalid node id length")
 	}
 
 	i, err := strconv.ParseUint(s[4:], 16, 64)
@@ -51,109 +151,49 @@ func NewNodeIDFromString(s string) (NodeID, error) {
 	return NewNodeID(i), nil
 }
 
-func (id NodeID) String() string {
-	return fmt.Sprintf("%s%x", NodeIDPrefix, id.Uint64())
-}
-
-func (id NodeID) Uint64() uint64 {
-	return binary.BigEndian.Uint64(id)
-}
-
-func (id NodeID) Bytes() []byte {
-	return id
-}
-
-func (id NodeID) Prefix() string {
-	return NodeIDPrefix
-}
-
-func (id NodeID) IsEqual(_id ID) bool {
-	return id.String() == _id.String()
-}
-
-func (id NodeID) MarshalJSON() ([]byte, error) {
-	return json.Marshal(id.String())
-}
-
-func (id *NodeID) UnmarshalJSON(bytes []byte) error {
-	var s string
-	if err := json.Unmarshal(bytes, &s); err != nil {
-		return err
-	}
-
-	_id, err := NewNodeIDFromString(s)
-	if err != nil {
-		return err
-	}
-
-	*id = _id
-
-	return nil
-}
-
-type SessionID []byte
-
-func NewSessionID(i uint64) SessionID {
-	return types.Uint64ToBigEndian(i)
-}
-
-func NewSessionIDFromString(s string) (SessionID, error) {
-	if len(s) < 5 {
-		return nil, fmt.Errorf("invalid session id length")
-	}
-
-	i, err := strconv.ParseUint(s[4:], 16, 64)
-	if err != nil {
-		panic(err)
-	}
-
-	return NewSessionID(i), nil
-}
-
-func (id SessionID) String() string {
-	return fmt.Sprintf("%s%x", SessionIDPrefix, id.Uint64())
-}
-
-func (id SessionID) Uint64() uint64 {
-	return binary.BigEndian.Uint64(id)
-}
-
-func (id SessionID) Bytes() []byte {
-	return id
-}
-
-func (id SessionID) Prefix() string {
-	return SessionIDPrefix
-}
-
-func (id SessionID) IsEqual(_id ID) bool {
-	return id.String() == _id.String()
-}
-
-func (id SessionID) MarshalJSON() ([]byte, error) {
-	return json.Marshal(id.String())
-}
-
-func (id *SessionID) UnmarshalJSON(b []byte) error {
-	var s string
-	if err := json.Unmarshal(b, &s); err != nil {
-		return err
-	}
-
-	_id, err := NewSessionIDFromString(s)
-	if err != nil {
-		return err
-	}
-
-	*id = _id
-
-	return nil
-}
-
 type SubscriptionID []byte
 
 func NewSubscriptionID(i uint64) SubscriptionID {
-	return types.Uint64ToBigEndian(i)
+	return sdk.Uint64ToBigEndian(i)
+}
+
+func (s SubscriptionID) String() string {
+	return fmt.Sprintf("%s%x", SubscriptionIDPrefix, s.Uint64())
+}
+
+func (s SubscriptionID) Uint64() uint64 {
+	return binary.BigEndian.Uint64(s)
+}
+
+func (s SubscriptionID) Bytes() []byte {
+	return s
+}
+
+func (s SubscriptionID) Prefix() string {
+	return SubscriptionIDPrefix
+}
+
+func (s SubscriptionID) IsEqual(v ID) bool {
+	return s.String() == v.String()
+}
+
+func (s SubscriptionID) MarshalJSON() ([]byte, error) {
+	return json.Marshal(s.String())
+}
+
+func (s *SubscriptionID) UnmarshalJSON(bytes []byte) error {
+	var x string
+	if err := json.Unmarshal(bytes, &x); err != nil {
+		return err
+	}
+
+	id, err := NewSubscriptionIDFromString(x)
+	if err != nil {
+		return err
+	}
+
+	*s = id
+	return nil
 }
 
 func NewSubscriptionIDFromString(s string) (SubscriptionID, error) {
@@ -169,92 +209,109 @@ func NewSubscriptionIDFromString(s string) (SubscriptionID, error) {
 	return NewSubscriptionID(i), nil
 }
 
-func (id SubscriptionID) String() string {
-	return fmt.Sprintf("%s%x", SubscriptionIDPrefix, id.Uint64())
+type SessionID []byte
+
+func NewSessionID(i uint64) SessionID {
+	return sdk.Uint64ToBigEndian(i)
 }
 
-func (id SubscriptionID) Uint64() uint64 {
-	return binary.BigEndian.Uint64(id)
+func (s SessionID) String() string {
+	return fmt.Sprintf("%s%x", SessionIDPrefix, s.Uint64())
 }
 
-func (id SubscriptionID) Bytes() []byte {
-	return id
+func (s SessionID) Uint64() uint64 {
+	return binary.BigEndian.Uint64(s)
 }
 
-func (id SubscriptionID) Prefix() string {
-	return SubscriptionIDPrefix
+func (s SessionID) Bytes() []byte {
+	return s
 }
 
-func (id SubscriptionID) IsEqual(_id ID) bool {
-	return id.String() == _id.String()
+func (s SessionID) Prefix() string {
+	return SessionIDPrefix
 }
 
-func (id SubscriptionID) MarshalJSON() ([]byte, error) {
-	return json.Marshal(id.String())
+func (s SessionID) IsEqual(v ID) bool {
+	return s.String() == v.String()
 }
 
-func (id *SubscriptionID) UnmarshalJSON(bytes []byte) error {
-	var s string
-	if err := json.Unmarshal(bytes, &s); err != nil {
+func (s SessionID) MarshalJSON() ([]byte, error) {
+	return json.Marshal(s.String())
+}
+
+func (s *SessionID) UnmarshalJSON(bytes []byte) error {
+	var x string
+	if err := json.Unmarshal(bytes, &x); err != nil {
 		return err
 	}
 
-	_id, err := NewSubscriptionIDFromString(s)
+	id, err := NewSessionIDFromString(x)
 	if err != nil {
 		return err
 	}
 
-	*id = _id
-
+	*s = id
 	return nil
+}
+
+func NewSessionIDFromString(s string) (SessionID, error) {
+	if len(s) < 5 {
+		return nil, fmt.Errorf("invalid session id length")
+	}
+
+	i, err := strconv.ParseUint(s[4:], 16, 64)
+	if err != nil {
+		return nil, err
+	}
+
+	return NewSessionID(i), nil
 }
 
 var _ sort.Interface = (*IDs)(nil)
 
 type IDs []ID
 
-func (ids IDs) Append(id ID) IDs {
-	return append(ids, id)
+func (i IDs) Append(id ID) IDs {
+	return append(i, id)
 }
 
-func (ids IDs) Len() int {
-	return len(ids)
+func (i IDs) Len() int {
+	return len(i)
 }
 
-func (ids IDs) Less(x, y int) bool {
-	i := strings.Compare(ids[x].Prefix(), ids[y].Prefix())
-	if i < 0 {
+func (i IDs) Less(x, y int) bool {
+	v := strings.Compare(i[x].Prefix(), i[y].Prefix())
+	if v < 0 {
 		return true
-	} else if i == 0 {
-		return ids[x].Uint64() < ids[y].Uint64()
+	} else if v == 0 {
+		return i[x].Uint64() < i[y].Uint64()
 	}
 
 	return false
 }
 
-func (ids IDs) Swap(x, y int) {
-	ids[x], ids[y] = ids[y], ids[x]
+func (i IDs) Swap(x, y int) {
+	i[x], i[y] = i[y], i[x]
 }
 
-func (ids IDs) Sort() IDs {
-	sort.Slice(ids, ids.Less)
-	return ids
+func (i IDs) Sort() IDs {
+	sort.Slice(i, i.Less)
+	return i
 }
 
-func (ids IDs) Delete(x int) IDs {
-	ids[x] = ids[ids.Len()-1]
-	return ids[:ids.Len()-1]
+func (i IDs) Delete(x int) IDs {
+	i[x] = i[i.Len()-1]
+	return i[:i.Len()-1]
 }
 
-func (ids IDs) Search(id ID) int {
-	i := id.Uint64()
-	index := sort.Search(len(ids), func(x int) bool {
-		return ids[x].Prefix() > id.Prefix() || ids[x].Uint64() >= i
+func (i IDs) Search(id ID) int {
+	v := id.Uint64()
+	index := sort.Search(len(i), func(x int) bool {
+		return i[x].Prefix() > id.Prefix() || i[x].Uint64() >= v
 	})
 
-	if (index == ids.Len()) ||
-		(index < ids.Len() && ids[index].String() != id.String()) {
-		return ids.Len()
+	if index == i.Len() || !i[index].IsEqual(id) {
+		return i.Len()
 	}
 
 	return index
