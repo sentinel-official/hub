@@ -29,6 +29,7 @@ import (
 	db "github.com/tendermint/tm-db"
 
 	"github.com/sentinel-official/hub/types"
+	"github.com/sentinel-official/hub/x/dvpn"
 )
 
 const (
@@ -52,6 +53,7 @@ var (
 		slashing.AppModuleBasic{},
 		crisis.AppModuleBasic{},
 		gov.NewAppModuleBasic(client.ProposalHandler, distribution.ProposalHandler),
+		dvpn.AppModuleBasic{},
 	)
 
 	moduleAccountPermissions = map[string][]string{
@@ -94,11 +96,13 @@ type App struct {
 	slashingKeeper     slashing.Keeper
 	crisisKeeper       crisis.Keeper
 	govKeeper          gov.Keeper
+	dVPNKeeper         dvpn.Keeper
 }
 
 func NewApp(logger log.Logger, db db.DB, tracer io.Writer, latest bool, invarCheckPeriod uint,
 	options ...func(*baseapp.BaseApp)) *App {
 	cdc := MakeCodec()
+
 	baseApp := baseapp.NewBaseApp(appName, logger, db, auth.DefaultTxDecoder(cdc), options...)
 	baseApp.SetCommitMultiStoreTracer(tracer)
 	baseApp.SetAppVersion(version.Version)
@@ -106,6 +110,7 @@ func NewApp(logger log.Logger, db db.DB, tracer io.Writer, latest bool, invarChe
 	keys := sdk.NewKVStoreKeys(baseapp.MainStoreKey,
 		params.StoreKey, auth.StoreKey, supply.StoreKey, staking.StoreKey,
 		mint.StoreKey, distribution.StoreKey, slashing.StoreKey, gov.StoreKey,
+		dvpn.StoreKey,
 	)
 	transientKeys := sdk.NewTransientStoreKeys(params.TStoreKey, staking.TStoreKey)
 
@@ -188,6 +193,7 @@ func NewApp(logger log.Logger, db db.DB, tracer io.Writer, latest bool, invarChe
 		govRouter)
 	app.stakingKeeper = *stakingKeeper.SetHooks(
 		staking.NewMultiStakingHooks(app.distributionKeeper.Hooks(), app.slashingKeeper.Hooks()))
+	app.dVPNKeeper = dvpn.NewKeeper(app.cdc, keys[dvpn.StoreKey])
 
 	app.manager = module.NewManager(
 		genaccounts.NewAppModule(app.accountKeeper),
@@ -201,6 +207,7 @@ func NewApp(logger log.Logger, db db.DB, tracer io.Writer, latest bool, invarChe
 		slashing.NewAppModule(app.slashingKeeper, app.stakingKeeper),
 		crisis.NewAppModule(&app.crisisKeeper),
 		gov.NewAppModule(app.govKeeper, app.supplyKeeper),
+		dvpn.NewAppModule(app.dVPNKeeper),
 	)
 
 	// NOTE: order is very important here
@@ -209,7 +216,7 @@ func NewApp(logger log.Logger, db db.DB, tracer io.Writer, latest bool, invarChe
 	app.manager.SetOrderInitGenesis(
 		genaccounts.ModuleName, distribution.ModuleName, staking.ModuleName, auth.ModuleName,
 		bank.ModuleName, slashing.ModuleName, gov.ModuleName, mint.ModuleName,
-		supply.ModuleName, crisis.ModuleName, genutil.ModuleName,
+		supply.ModuleName, crisis.ModuleName, genutil.ModuleName, dvpn.ModuleName,
 	)
 
 	app.manager.RegisterInvariants(&app.crisisKeeper)
