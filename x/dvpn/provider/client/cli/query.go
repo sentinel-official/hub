@@ -11,7 +11,7 @@ import (
 	"github.com/sentinel-official/hub/x/dvpn/provider/client/common"
 )
 
-func GetQueryProviderCmd(cdc *codec.Codec) *cobra.Command {
+func getQueryProviderCmd(cdc *codec.Codec) *cobra.Command {
 	return &cobra.Command{
 		Use:   "provider",
 		Short: "Query provider",
@@ -35,7 +35,7 @@ func GetQueryProviderCmd(cdc *codec.Codec) *cobra.Command {
 	}
 }
 
-func GetQueryProvidersCmd(cdc *codec.Codec) *cobra.Command {
+func getQueryProvidersCmd(cdc *codec.Codec) *cobra.Command {
 	return &cobra.Command{
 		Use:   "providers",
 		Short: "Query providers",
@@ -47,7 +47,10 @@ func GetQueryProvidersCmd(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			fmt.Println(providers)
+			for _, provider := range providers {
+				fmt.Println(provider)
+			}
+
 			return nil
 		},
 	}

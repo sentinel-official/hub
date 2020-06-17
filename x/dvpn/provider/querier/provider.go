@@ -28,7 +28,7 @@ func queryProvider(ctx sdk.Context, req abci.RequestQuery, k keeper.Keeper) ([]b
 }
 
 func queryProviders(ctx sdk.Context, _ abci.RequestQuery, k keeper.Keeper) ([]byte, sdk.Error) {
-	res, err := types.ModuleCdc.MarshalJSON(k.GetAllProviders(ctx))
+	res, err := types.ModuleCdc.MarshalJSON(k.GetProviders(ctx))
 	if err != nil {
 		return nil, types.ErrorMarshal()
 	}

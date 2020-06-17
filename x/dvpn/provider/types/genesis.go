@@ -1,8 +1,8 @@
 package types
 
-type GenesisState []Provider
+type GenesisState = Providers
 
-func NewGenesisState(providers []Provider) GenesisState {
+func NewGenesisState(providers Providers) GenesisState {
 	return providers
 }
 

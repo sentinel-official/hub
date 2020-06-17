@@ -47,7 +47,7 @@ func (k Keeper) GetProvider(ctx sdk.Context, id hub.ProviderID) (provider types.
 	return provider, true
 }
 
-func (k Keeper) GetAllProviders(ctx sdk.Context) (providers []types.Provider) {
+func (k Keeper) GetProviders(ctx sdk.Context) (providers types.Providers) {
 	store := k.Store(ctx)
 
 	iter := sdk.KVStorePrefixIterator(store, types.ProviderKeyPrefix)

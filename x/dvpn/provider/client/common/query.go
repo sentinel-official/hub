@@ -33,7 +33,7 @@ func QueryProvider(ctx context.CLIContext, id hub.ProviderID) (*types.Provider, 
 	return &provider, nil
 }
 
-func QueryProviders(ctx context.CLIContext) ([]types.Provider, error) {
+func QueryProviders(ctx context.CLIContext) (types.Providers, error) {
 	path := fmt.Sprintf("custom/%s/%s/%s", "dvpn", types.QuerierRoute, types.QueryProviders)
 	res, _, err := ctx.QueryWithData(path, nil)
 	if err != nil {
@@ -43,7 +43,7 @@ func QueryProviders(ctx context.CLIContext) ([]types.Provider, error) {
 		return nil, fmt.Errorf("no providers found")
 	}
 
-	var providers []types.Provider
+	var providers types.Providers
 	if err := ctx.Codec.UnmarshalJSON(res, &providers); err != nil {
 		return nil, err
 	}

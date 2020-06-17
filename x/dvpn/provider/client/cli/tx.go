@@ -11,7 +11,7 @@ import (
 	"github.com/sentinel-official/hub/x/dvpn/provider/types"
 )
 
-func GetTxRegisterProviderCmd(cdc *codec.Codec) *cobra.Command {
+func getTxRegisterProviderCmd(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "register",
 		Short: "Register provider",

@@ -1,7 +1,6 @@
 package cli
 
 import (
-	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/spf13/cobra"
 
@@ -13,10 +12,9 @@ func GetQueryCmd(cdc *codec.Codec) *cobra.Command {
 		Use: "dvpn",
 	}
 
-	cmd.AddCommand(client.GetCommands(
-		provider.GetQueryProviderCmd(cdc),
-		provider.GetQueryProvidersCmd(cdc),
-	)...)
+	cmd.AddCommand(
+		provider.GetQueryCommands(cdc)...,
+	)
 
 	return cmd
 }
@@ -26,9 +24,9 @@ func GetTxCmd(cdc *codec.Codec) *cobra.Command {
 		Use: "dvpn",
 	}
 
-	cmd.AddCommand(client.PostCommands(
-		provider.GetTxRegisterProviderCmd(cdc),
-	)...)
+	cmd.AddCommand(
+		provider.GetTxCommands(cdc)...,
+	)
 
 	return cmd
 }
