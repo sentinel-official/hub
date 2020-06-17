@@ -13,27 +13,27 @@ const (
 )
 
 const (
-	errCodeUnknownMsgType = iota + 101
-	errCodeUnknownQueryType
+	errorCodeUnknownMsgType = iota + 101
+	errorCodeUnknownQueryType
 )
 
 const (
-	errMsgUnknownMsgType   = "unknown message type: %s"
-	errMsgUnknownQueryType = "unknown query type: %s"
+	errorMsgUnknownMsgType   = "unknown message type: %s"
+	errorMsgUnknownQueryType = "unknown query type: %s"
 )
 
 func ErrorMarshal() sdk.Error {
-	return sdk.NewError(Codespace, hub.ErrCodeMarshal, hub.ErrMsgMarshal)
+	return sdk.NewError(Codespace, hub.ErrorCodeMarshal, hub.ErrorMsgMarshal)
 }
 
 func ErrorUnmarshal() sdk.Error {
-	return sdk.NewError(Codespace, hub.ErrCodeUnmarshal, hub.ErrMsgUnmarshal)
+	return sdk.NewError(Codespace, hub.ErrorCodeUnmarshal, hub.ErrorMsgUnmarshal)
 }
 
 func ErrorUnknownMsgType(v string) sdk.Error {
-	return sdk.NewError(Codespace, errCodeUnknownMsgType, fmt.Sprintf(errMsgUnknownMsgType, v))
+	return sdk.NewError(Codespace, errorCodeUnknownMsgType, fmt.Sprintf(errorMsgUnknownMsgType, v))
 }
 
 func ErrorUnknownQueryType(v string) sdk.Error {
-	return sdk.NewError(Codespace, errCodeUnknownQueryType, fmt.Sprintf(errMsgUnknownQueryType, v))
+	return sdk.NewError(Codespace, errorCodeUnknownQueryType, fmt.Sprintf(errorMsgUnknownQueryType, v))
 }
