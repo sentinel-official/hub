@@ -42,7 +42,7 @@ func NewProviderID(i uint64) ProviderID {
 }
 
 func (p ProviderID) String() string {
-	return fmt.Sprintf("%s%x", ProviderID{}, p.Uint64())
+	return fmt.Sprintf("%s%x", ProviderIDPrefix, p.Uint64())
 }
 
 func (p ProviderID) Uint64() uint64 {
@@ -81,8 +81,8 @@ func (p *ProviderID) UnmarshalJSON(bytes []byte) error {
 }
 
 func NewProviderIDFromString(s string) (ProviderID, error) {
-	if len(s) < 5 {
-		return nil, fmt.Errorf("invalid provider id length")
+	if len(s) < 5 || s[:4] != ProviderIDPrefix {
+		return nil, fmt.Errorf("invalid provider id")
 	}
 
 	i, err := strconv.ParseUint(s[4:], 16, 64)
@@ -139,8 +139,8 @@ func (n *NodeID) UnmarshalJSON(bytes []byte) error {
 }
 
 func NewNodeIDFromString(s string) (NodeID, error) {
-	if len(s) < 5 {
-		return nil, fmt.Errorf("invalid node id length")
+	if len(s) < 5 || s[:4] != NodeIDPrefix {
+		return nil, fmt.Errorf("invalid node id")
 	}
 
 	i, err := strconv.ParseUint(s[4:], 16, 64)
@@ -197,8 +197,8 @@ func (s *SubscriptionID) UnmarshalJSON(bytes []byte) error {
 }
 
 func NewSubscriptionIDFromString(s string) (SubscriptionID, error) {
-	if len(s) < 5 {
-		return nil, fmt.Errorf("invalid subscription id length")
+	if len(s) < 5 || s[:4] != SubscriptionIDPrefix {
+		return nil, fmt.Errorf("invalid subscription id")
 	}
 
 	i, err := strconv.ParseUint(s[4:], 16, 64)
@@ -255,8 +255,8 @@ func (s *SessionID) UnmarshalJSON(bytes []byte) error {
 }
 
 func NewSessionIDFromString(s string) (SessionID, error) {
-	if len(s) < 5 {
-		return nil, fmt.Errorf("invalid session id length")
+	if len(s) < 5 || s[:4] != SessionIDPrefix {
+		return nil, fmt.Errorf("invalid session id")
 	}
 
 	i, err := strconv.ParseUint(s[4:], 16, 64)

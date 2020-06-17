@@ -8,21 +8,18 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/keys"
 	"github.com/cosmos/cosmos-sdk/client/lcd"
 	"github.com/cosmos/cosmos-sdk/client/rpc"
+	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/version"
-	"github.com/cosmos/cosmos-sdk/x/auth"
 	authCli "github.com/cosmos/cosmos-sdk/x/auth/client/cli"
 	authRest "github.com/cosmos/cosmos-sdk/x/auth/client/rest"
-	"github.com/cosmos/cosmos-sdk/x/bank"
 	bankCli "github.com/cosmos/cosmos-sdk/x/bank/client/cli"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"github.com/tendermint/go-amino"
 	"github.com/tendermint/tendermint/libs/cli"
 
-	"github.com/sentinel-official/hub/types"
-
 	hub "github.com/sentinel-official/hub/app"
+	"github.com/sentinel-official/hub/types"
 )
 
 func main() {
@@ -48,12 +45,11 @@ func main() {
 	cmd.AddCommand(
 		rpc.StatusCommand(),
 		client.ConfigCmd(hub.DefaultCLIHome),
-		queryCmd(cdc),
-		txCmd(cdc),
-		client.LineBreak,
-		lcd.ServeCommand(cdc, registerRoutes),
 		client.LineBreak,
 		keys.Commands(),
+		queryCmd(cdc),
+		txCmd(cdc),
+		lcd.ServeCommand(cdc, registerRoutes),
 		client.LineBreak,
 		version.Cmd,
 		client.NewCompletionCmd(cmd, true),
@@ -65,7 +61,7 @@ func main() {
 	}
 }
 
-func queryCmd(cdc *amino.Codec) *cobra.Command {
+func queryCmd(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "query",
 		Aliases: []string{"q"},
@@ -73,12 +69,12 @@ func queryCmd(cdc *amino.Codec) *cobra.Command {
 	}
 
 	cmd.AddCommand(
-		authCli.GetAccountCmd(cdc),
-		client.LineBreak,
-		rpc.ValidatorCommand(cdc),
 		rpc.BlockCommand(),
-		authCli.QueryTxsByEventsCmd(cdc),
+		rpc.ValidatorCommand(cdc),
+		client.LineBreak,
+		authCli.GetAccountCmd(cdc),
 		authCli.QueryTxCmd(cdc),
+		authCli.QueryTxsByEventsCmd(cdc),
 		client.LineBreak,
 	)
 
@@ -86,31 +82,23 @@ func queryCmd(cdc *amino.Codec) *cobra.Command {
 	return cmd
 }
 
-func txCmd(cdc *amino.Codec) *cobra.Command {
+func txCmd(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "tx",
 		Short: "Transaction sub-commands",
 	}
 
 	cmd.AddCommand(
-		bankCli.SendTxCmd(cdc),
-		client.LineBreak,
 		authCli.GetSignCommand(cdc),
 		authCli.GetMultiSignCommand(cdc),
-		client.LineBreak,
-		authCli.GetBroadcastCommand(cdc),
 		authCli.GetEncodeCommand(cdc),
+		authCli.GetBroadcastCommand(cdc),
+		client.LineBreak,
+		bankCli.SendTxCmd(cdc),
 		client.LineBreak,
 	)
 
 	hub.ModuleBasics.AddTxCommands(cmd, cdc)
-
-	for _, cmd := range cmd.Commands() {
-		if cmd.Use == auth.ModuleName || cmd.Use == bank.ModuleName {
-			cmd.RemoveCommand(cmd)
-		}
-	}
-
 	return cmd
 }
 
