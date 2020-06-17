@@ -13,44 +13,52 @@ import (
 )
 
 const (
-	Codespace                  = types.Codespace
-	EventTypeSetProvidersCount = types.EventTypeSetProvidersCount
-	EventTypeSetProvider       = types.EventTypeSetProvider
-	AttributeKeyProvidersCount = types.AttributeKeyProvidersCount
-	AttributeKeyProviderID     = types.AttributeKeyProviderID
-	ModuleName                 = types.ModuleName
-	QuerierRoute               = types.QuerierRoute
-	QueryProvider              = types.QueryProvider
-	QueryProviders             = types.QueryProviders
+	Codespace                   = types.Codespace
+	EventTypeSetProvidersCount  = types.EventTypeSetProvidersCount
+	EventTypeSetProvider        = types.EventTypeSetProvider
+	EventTypeUpdateProvider     = types.EventTypeUpdateProvider
+	AttributeKeyProvidersCount  = types.AttributeKeyProvidersCount
+	AttributeKeyProviderID      = types.AttributeKeyProviderID
+	AttributeKeyProviderAddress = types.AttributeKeyProviderAddress
+	ModuleName                  = types.ModuleName
+	QuerierRoute                = types.QuerierRoute
+	QueryProvider               = types.QueryProvider
+	QueryProviders              = types.QueryProviders
 )
 
 var (
 	// functions aliases
-	NewKeeper              = keeper.NewKeeper
-	Querier                = querier.Querier
-	RegisterCodec          = types.RegisterCodec
-	ErrorMarshal           = types.ErrorMarshal
-	ErrorUnmarshal         = types.ErrorUnmarshal
-	ErrorUnknownMsgType    = types.ErrorUnknownMsgType
-	ErrorUnknownQueryType  = types.ErrorUnknownQueryType
-	ErrorInvalidField      = types.ErrorInvalidField
-	NewGenesisState        = types.NewGenesisState
-	DefaultGenesisState    = types.DefaultGenesisState
-	ProviderKey            = types.ProviderKey
-	NewMsgRegisterProvider = types.NewMsgRegisterProvider
-	NewQueryProviderParams = types.NewQueryProviderParams
+	NewKeeper                     = keeper.NewKeeper
+	Querier                       = querier.Querier
+	RegisterCodec                 = types.RegisterCodec
+	ErrorMarshal                  = types.ErrorMarshal
+	ErrorUnmarshal                = types.ErrorUnmarshal
+	ErrorUnknownMsgType           = types.ErrorUnknownMsgType
+	ErrorUnknownQueryType         = types.ErrorUnknownQueryType
+	ErrorInvalidField             = types.ErrorInvalidField
+	ErrorDuplicateProviderAddress = types.ErrorDuplicateProviderAddress
+	ErrorNoProviderFound          = types.ErrorNoProviderFound
+	ErrorUnauthorised             = types.ErrorUnauthorised
+	NewGenesisState               = types.NewGenesisState
+	DefaultGenesisState           = types.DefaultGenesisState
+	ProviderKey                   = types.ProviderKey
+	ProviderIDForAddressKey       = types.ProviderIDForAddressKey
+	NewMsgRegisterProvider        = types.NewMsgRegisterProvider
+	NewQueryProviderParams        = types.NewQueryProviderParams
 
 	// variable aliases
-	ModuleCdc         = types.ModuleCdc
-	RouterKey         = types.RouterKey
-	ProvidersCountKey = types.ProvidersCountKey
-	ProviderKeyPrefix = types.ProviderKeyPrefix
+	ModuleCdc                     = types.ModuleCdc
+	RouterKey                     = types.RouterKey
+	ProvidersCountKey             = types.ProvidersCountKey
+	ProviderKeyPrefix             = types.ProviderKeyPrefix
+	ProviderIDForAddressKeyPrefix = types.ProviderIDForAddressKeyPrefix
 )
 
 type (
 	Keeper              = keeper.Keeper
 	GenesisState        = types.GenesisState
 	MsgRegisterProvider = types.MsgRegisterProvider
+	MsgUpdateProvider   = types.MsgUpdateProvider
 	Provider            = types.Provider
 	Providers           = types.Providers
 	QueryProviderParams = types.QueryProviderParams

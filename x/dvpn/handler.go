@@ -13,6 +13,8 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 		switch msg := msg.(type) {
 		case provider.MsgRegisterProvider:
 			return provider.HandleRegisterProvider(ctx, k.Provider, msg)
+		case provider.MsgUpdateProvider:
+			return provider.HandleUpdateProvider(ctx, k.Provider, msg)
 		default:
 			return types.ErrorUnknownMsgType(msg.Type()).Result()
 		}

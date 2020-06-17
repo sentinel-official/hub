@@ -16,12 +16,18 @@ const (
 	errorCodeUnknownMsgType = iota + 101
 	errorCodeUnknownQueryType
 	errorCodeInvalidField
+	errorCodeDuplicateProviderAddress
+	errorCodeNoProviderFound
+	errorCodeUnauthorised
 )
 
 const (
-	errorMsgUnknownMsgType   = "unknown message type: %s"
-	errorMsgUnknownQueryType = "unknown query type: %s"
-	errorMsgInvalidField     = "invalid field: %s"
+	errorMsgUnknownMsgType           = "unknown message type: %s"
+	errorMsgUnknownQueryType         = "unknown query type: %s"
+	errorMsgInvalidField             = "invalid field: %s"
+	errorMsgDuplicateProviderAddress = "duplicate provider address"
+	errorMsgNoProviderFound          = "no provider found"
+	errorMsgUnauthorised             = "unauthorised"
 )
 
 func ErrorMarshal() sdk.Error {
@@ -42,4 +48,16 @@ func ErrorUnknownQueryType(v string) sdk.Error {
 
 func ErrorInvalidField(v string) sdk.Error {
 	return sdk.NewError(Codespace, errorCodeInvalidField, fmt.Sprintf(errorMsgInvalidField, v))
+}
+
+func ErrorDuplicateProviderAddress() sdk.Error {
+	return sdk.NewError(Codespace, errorCodeDuplicateProviderAddress, errorMsgDuplicateProviderAddress)
+}
+
+func ErrorNoProviderFound() sdk.Error {
+	return sdk.NewError(Codespace, errorCodeNoProviderFound, errorMsgNoProviderFound)
+}
+
+func ErrorUnauthorised() sdk.Error {
+	return sdk.NewError(Codespace, errorCodeUnauthorised, errorMsgUnauthorised)
 }
