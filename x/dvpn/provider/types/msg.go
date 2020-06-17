@@ -75,6 +75,17 @@ type MsgUpdateProvider struct {
 	Description string         `json:"description"`
 }
 
+func NewMsgUpdateProvider(from sdk.AccAddress, id hub.ProviderID,
+	name, website, description string) MsgUpdateProvider {
+	return MsgUpdateProvider{
+		From:        from,
+		ID:          id,
+		Name:        name,
+		Website:     website,
+		Description: description,
+	}
+}
+
 func (m MsgUpdateProvider) Route() string {
 	return RouterKey
 }

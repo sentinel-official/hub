@@ -44,6 +44,7 @@ var (
 	ProviderKey                   = types.ProviderKey
 	ProviderIDForAddressKey       = types.ProviderIDForAddressKey
 	NewMsgRegisterProvider        = types.NewMsgRegisterProvider
+	NewMsgUpdateProvider          = types.NewMsgUpdateProvider
 	NewQueryProviderParams        = types.NewQueryProviderParams
 
 	// variable aliases
