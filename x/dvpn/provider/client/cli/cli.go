@@ -21,6 +21,7 @@ func GetTxCommands(cdc *codec.Codec) []*cobra.Command {
 
 	cmd.AddCommand(client.PostCommands(
 		getTxRegisterProviderCmd(cdc),
+		getTxUpdateProviderCmd(cdc),
 	)...)
 
 	return []*cobra.Command{cmd}

@@ -78,3 +78,22 @@ func (k Keeper) IterateProviders(ctx sdk.Context, f func(i int, provider types.P
 		i++
 	}
 }
+
+func (k Keeper) SetProviderIDForAddress(ctx sdk.Context, address sdk.AccAddress, id hub.ProviderID) {
+	value := k.cdc.MustMarshalBinaryLengthPrefixed(id)
+
+	store := k.Store(ctx)
+	store.Set(types.ProviderIDForAddressKey(address), value)
+}
+
+func (k Keeper) GetProviderIDForAddress(ctx sdk.Context, address sdk.AccAddress) (id hub.ProviderID, found bool) {
+	store := k.Store(ctx)
+
+	value := store.Get(types.ProviderIDForAddressKey(address))
+	if value == nil {
+		return nil, false
+	}
+
+	k.cdc.MustUnmarshalBinaryLengthPrefixed(value, &id)
+	return id, true
+}
