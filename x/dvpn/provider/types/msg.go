@@ -33,6 +33,19 @@ func (m MsgRegisterProvider) Type() string {
 }
 
 func (m MsgRegisterProvider) ValidateBasic() sdk.Error {
+	if m.From == nil || m.From.Empty() {
+		return ErrorInvalidField("from")
+	}
+	if len(m.Name) == 0 || len(m.Name) > 32 {
+		return ErrorInvalidField("name")
+	}
+	if len(m.Website) > 32 {
+		return ErrorInvalidField("website")
+	}
+	if len(m.Description) > 256 {
+		return ErrorInvalidField("description")
+	}
+
 	return nil
 }
 
