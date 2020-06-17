@@ -42,7 +42,7 @@ func NewProviderID(i uint64) ProviderID {
 }
 
 func (p ProviderID) String() string {
-	return fmt.Sprintf("%s%x", ProviderID{}, p.Uint64())
+	return fmt.Sprintf("%s%x", ProviderIDPrefix, p.Uint64())
 }
 
 func (p ProviderID) Uint64() uint64 {

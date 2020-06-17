@@ -7,8 +7,10 @@ import (
 const (
 	ModuleName   = "provider"
 	QuerierRoute = ModuleName
-	RouterKey    = ModuleName
-	StoreKey     = ModuleName
+)
+
+var (
+	RouterKey = ""
 )
 
 var (

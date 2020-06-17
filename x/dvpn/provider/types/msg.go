@@ -15,6 +15,15 @@ type MsgRegisterProvider struct {
 	Description string         `json:"description"`
 }
 
+func NewMsgRegisterProvider(from sdk.AccAddress, name, website, description string) MsgRegisterProvider {
+	return MsgRegisterProvider{
+		From:        from,
+		Name:        name,
+		Website:     website,
+		Description: description,
+	}
+}
+
 func (m MsgRegisterProvider) Route() string {
 	return RouterKey
 }

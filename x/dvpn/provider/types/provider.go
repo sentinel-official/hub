@@ -1,6 +1,8 @@
 package types
 
-import hub "github.com/sentinel-official/hub/types"
+import (
+	hub "github.com/sentinel-official/hub/types"
+)
 
 type Provider struct {
 	ID          hub.ProviderID `json:"id"`

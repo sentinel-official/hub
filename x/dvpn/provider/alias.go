@@ -16,8 +16,6 @@ const (
 	Codespace      = types.Codespace
 	ModuleName     = types.ModuleName
 	QuerierRoute   = types.QuerierRoute
-	RouterKey      = types.RouterKey
-	StoreKey       = types.StoreKey
 	QueryProvider  = types.QueryProvider
 	QueryProviders = types.QueryProviders
 )
@@ -34,10 +32,12 @@ var (
 	NewGenesisState        = types.NewGenesisState
 	DefaultGenesisState    = types.DefaultGenesisState
 	ProviderKey            = types.ProviderKey
+	NewMsgRegisterProvider = types.NewMsgRegisterProvider
 	NewQueryProviderParams = types.NewQueryProviderParams
 
 	// variable aliases
 	ModuleCdc         = types.ModuleCdc
+	RouterKey         = types.RouterKey
 	ProvidersCountKey = types.ProvidersCountKey
 	ProviderKeyPrefix = types.ProviderKeyPrefix
 )
