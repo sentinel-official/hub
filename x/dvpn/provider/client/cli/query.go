@@ -19,12 +19,12 @@ func getQueryProviderCmd(cdc *codec.Codec) *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := context.NewCLIContext().WithCodec(cdc)
 
-			id, err := hub.NewProviderIDFromString(args[0])
+			address, err := hub.ProvAddressFromBech32(args[0])
 			if err != nil {
 				return err
 			}
 
-			provider, err := common.QueryProvider(ctx, id)
+			provider, err := common.QueryProvider(ctx, address)
 			if err != nil {
 				return err
 			}

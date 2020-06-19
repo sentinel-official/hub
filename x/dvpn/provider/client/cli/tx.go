@@ -1,6 +1,8 @@
 package cli
 
 import (
+	"fmt"
+
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -55,18 +57,18 @@ func getTxUpdateProviderCmd(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "update",
 		Short: "Update provider",
+		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			txb := auth.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
 			ctx := context.NewCLIContext().WithCodec(cdc)
 
-			s, err := cmd.Flags().GetString(flagID)
+			address, err := hub.ProvAddressFromBech32(args[0])
 			if err != nil {
 				return err
 			}
 
-			id, err := hub.NewProviderIDFromString(s)
-			if err != nil {
-				return err
+			if !address.Equals(ctx.FromAddress) {
+				return fmt.Errorf("provider address does not belong from address")
 			}
 
 			name, err := cmd.Flags().GetString(flagName)
@@ -84,16 +86,14 @@ func getTxUpdateProviderCmd(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgUpdateProvider(ctx.FromAddress, id, name, website, description)
+			msg := types.NewMsgUpdateProvider(address.Bytes(), name, website, description)
 			return utils.GenerateOrBroadcastMsgs(ctx, txb, []sdk.Msg{msg})
 		},
 	}
 
-	cmd.Flags().String(flagID, "", "Provider ID")
 	cmd.Flags().String(flagName, "", "Provider name")
 	cmd.Flags().String(flagWebsite, "", "Provider website")
 	cmd.Flags().String(flagDescription, "", "Provider description")
 
-	_ = cmd.MarkFlagRequired(flagID)
 	return cmd
 }

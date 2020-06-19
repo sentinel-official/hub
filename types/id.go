@@ -12,8 +12,6 @@ import (
 )
 
 const (
-	ProviderIDPrefix     = "prov"
-	NodeIDPrefix         = "node"
 	SessionIDPrefix      = "sess"
 	SubscriptionIDPrefix = "subs"
 )
@@ -29,127 +27,9 @@ type ID interface {
 }
 
 var (
-	_ ID = &ProviderID{}
-	_ ID = &NodeID{}
 	_ ID = &SessionID{}
 	_ ID = &SubscriptionID{}
 )
-
-type ProviderID []byte
-
-func NewProviderID(i uint64) ProviderID {
-	return sdk.Uint64ToBigEndian(i)
-}
-
-func (p ProviderID) String() string {
-	return fmt.Sprintf("%s%x", ProviderIDPrefix, p.Uint64())
-}
-
-func (p ProviderID) Uint64() uint64 {
-	return binary.BigEndian.Uint64(p)
-}
-
-func (p ProviderID) Bytes() []byte {
-	return p
-}
-
-func (p ProviderID) Prefix() string {
-	return ProviderIDPrefix
-}
-
-func (p ProviderID) IsEqual(v ID) bool {
-	return p.String() == v.String()
-}
-
-func (p ProviderID) MarshalJSON() ([]byte, error) {
-	return json.Marshal(p.String())
-}
-
-func (p *ProviderID) UnmarshalJSON(bytes []byte) error {
-	var v string
-	if err := json.Unmarshal(bytes, &v); err != nil {
-		return err
-	}
-
-	id, err := NewProviderIDFromString(v)
-	if err != nil {
-		return err
-	}
-
-	*p = id
-	return nil
-}
-
-func NewProviderIDFromString(s string) (ProviderID, error) {
-	if len(s) < 5 || s[:4] != ProviderIDPrefix {
-		return nil, fmt.Errorf("invalid provider id")
-	}
-
-	i, err := strconv.ParseUint(s[4:], 16, 64)
-	if err != nil {
-		return nil, err
-	}
-
-	return NewProviderID(i), nil
-}
-
-type NodeID []byte
-
-func NewNodeID(i uint64) NodeID {
-	return sdk.Uint64ToBigEndian(i)
-}
-
-func (n NodeID) String() string {
-	return fmt.Sprintf("%s%x", NodeIDPrefix, n.Uint64())
-}
-
-func (n NodeID) Uint64() uint64 {
-	return binary.BigEndian.Uint64(n)
-}
-
-func (n NodeID) Bytes() []byte {
-	return n
-}
-
-func (n NodeID) Prefix() string {
-	return NodeIDPrefix
-}
-
-func (n NodeID) IsEqual(v ID) bool {
-	return n.String() == v.String()
-}
-
-func (n NodeID) MarshalJSON() ([]byte, error) {
-	return json.Marshal(n.String())
-}
-
-func (n *NodeID) UnmarshalJSON(bytes []byte) error {
-	var x string
-	if err := json.Unmarshal(bytes, &x); err != nil {
-		return err
-	}
-
-	id, err := NewNodeIDFromString(x)
-	if err != nil {
-		return err
-	}
-
-	*n = id
-	return nil
-}
-
-func NewNodeIDFromString(s string) (NodeID, error) {
-	if len(s) < 5 || s[:4] != NodeIDPrefix {
-		return nil, fmt.Errorf("invalid node id")
-	}
-
-	i, err := strconv.ParseUint(s[4:], 16, 64)
-	if err != nil {
-		return nil, err
-	}
-
-	return NewNodeID(i), nil
-}
 
 type SubscriptionID []byte
 

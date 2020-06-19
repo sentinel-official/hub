@@ -1,4 +1,4 @@
-package app
+package hub
 
 import (
 	"encoding/json"

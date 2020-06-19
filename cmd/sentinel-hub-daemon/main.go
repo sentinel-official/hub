@@ -8,7 +8,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/server"
 	"github.com/cosmos/cosmos-sdk/store"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/genaccounts"
 	genaccountsCli "github.com/cosmos/cosmos-sdk/x/genaccounts/client/cli"
 	genutilCli "github.com/cosmos/cosmos-sdk/x/genutil/client/cli"
@@ -21,7 +20,7 @@ import (
 	tm "github.com/tendermint/tendermint/types"
 	db "github.com/tendermint/tm-db"
 
-	hub "github.com/sentinel-official/hub/app"
+	"github.com/sentinel-official/hub"
 	"github.com/sentinel-official/hub/types"
 )
 
@@ -36,7 +35,7 @@ var (
 func main() {
 	cdc := hub.MakeCodec()
 
-	config := sdk.GetConfig()
+	config := types.GetConfig()
 	config.SetBech32PrefixForAccount(types.Bech32PrefixAccAddr, types.Bech32PrefixAccPub)
 	config.SetBech32PrefixForValidator(types.Bech32PrefixValAddr, types.Bech32PrefixValPub)
 	config.SetBech32PrefixForConsensusNode(types.Bech32PrefixConsAddr, types.Bech32PrefixConsPub)

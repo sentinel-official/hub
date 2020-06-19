@@ -9,8 +9,8 @@ import (
 	"github.com/sentinel-official/hub/x/dvpn/provider/types"
 )
 
-func QueryProvider(ctx context.CLIContext, id hub.ProviderID) (*types.Provider, error) {
-	params := types.NewQueryProviderParams(id)
+func QueryProvider(ctx context.CLIContext, address hub.ProvAddress) (*types.Provider, error) {
+	params := types.NewQueryProviderParams(address)
 	bytes, err := ctx.Codec.MarshalJSON(params)
 	if err != nil {
 		return nil, err
