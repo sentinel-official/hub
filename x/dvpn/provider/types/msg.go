@@ -68,18 +68,15 @@ func (m MsgRegisterProvider) GetSigners() []sdk.AccAddress {
 }
 
 type MsgUpdateProvider struct {
-	From        sdk.AccAddress `json:"from"`
-	ID          hub.ProviderID `json:"id"`
-	Name        string         `json:"name"`
-	Website     string         `json:"website"`
-	Description string         `json:"description"`
+	From        hub.ProvAddress `json:"from"`
+	Name        string          `json:"name"`
+	Website     string          `json:"website"`
+	Description string          `json:"description"`
 }
 
-func NewMsgUpdateProvider(from sdk.AccAddress, id hub.ProviderID,
-	name, website, description string) MsgUpdateProvider {
+func NewMsgUpdateProvider(from hub.ProvAddress, name, website, description string) MsgUpdateProvider {
 	return MsgUpdateProvider{
 		From:        from,
-		ID:          id,
 		Name:        name,
 		Website:     website,
 		Description: description,
@@ -97,9 +94,6 @@ func (m MsgUpdateProvider) Type() string {
 func (m MsgUpdateProvider) ValidateBasic() sdk.Error {
 	if m.From == nil || m.From.Empty() {
 		return ErrorInvalidField("from")
-	}
-	if m.ID == nil {
-		return ErrorInvalidField("id")
 	}
 	if len(m.Name) != 0 && len(m.Name) > 32 {
 		return ErrorInvalidField("name")
@@ -124,5 +118,5 @@ func (m MsgUpdateProvider) GetSignBytes() []byte {
 }
 
 func (m MsgUpdateProvider) GetSigners() []sdk.AccAddress {
-	return []sdk.AccAddress{m.From}
+	return []sdk.AccAddress{m.From.Bytes()}
 }

@@ -9,7 +9,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/lcd"
 	"github.com/cosmos/cosmos-sdk/client/rpc"
 	"github.com/cosmos/cosmos-sdk/codec"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/version"
 	authCli "github.com/cosmos/cosmos-sdk/x/auth/client/cli"
 	authRest "github.com/cosmos/cosmos-sdk/x/auth/client/rest"
@@ -18,14 +17,14 @@ import (
 	"github.com/spf13/viper"
 	"github.com/tendermint/tendermint/libs/cli"
 
-	hub "github.com/sentinel-official/hub/app"
+	"github.com/sentinel-official/hub/app"
 	"github.com/sentinel-official/hub/types"
 )
 
 func main() {
-	cdc := hub.MakeCodec()
+	cdc := app.MakeCodec()
 
-	config := sdk.GetConfig()
+	config := types.GetConfig()
 	config.SetBech32PrefixForAccount(types.Bech32PrefixAccAddr, types.Bech32PrefixAccPub)
 	config.SetBech32PrefixForValidator(types.Bech32PrefixValAddr, types.Bech32PrefixValPub)
 	config.SetBech32PrefixForConsensusNode(types.Bech32PrefixConsAddr, types.Bech32PrefixConsPub)
@@ -44,7 +43,7 @@ func main() {
 
 	cmd.AddCommand(
 		rpc.StatusCommand(),
-		client.ConfigCmd(hub.DefaultCLIHome),
+		client.ConfigCmd(app.DefaultCLIHome),
 		client.LineBreak,
 		keys.Commands(),
 		queryCmd(cdc),
@@ -55,7 +54,7 @@ func main() {
 		client.NewCompletionCmd(cmd, true),
 	)
 
-	executor := cli.PrepareMainCmd(cmd, "SENTINEL_HUB", hub.DefaultCLIHome)
+	executor := cli.PrepareMainCmd(cmd, "SENTINEL_HUB", app.DefaultCLIHome)
 	if err := executor.Execute(); err != nil {
 		panic(err)
 	}
@@ -78,7 +77,7 @@ func queryCmd(cdc *codec.Codec) *cobra.Command {
 		client.LineBreak,
 	)
 
-	hub.ModuleBasics.AddQueryCommands(cmd, cdc)
+	app.ModuleBasics.AddQueryCommands(cmd, cdc)
 	return cmd
 }
 
@@ -98,14 +97,14 @@ func txCmd(cdc *codec.Codec) *cobra.Command {
 		client.LineBreak,
 	)
 
-	hub.ModuleBasics.AddTxCommands(cmd, cdc)
+	app.ModuleBasics.AddTxCommands(cmd, cdc)
 	return cmd
 }
 
 func registerRoutes(rs *lcd.RestServer) {
 	client.RegisterRoutes(rs.CliCtx, rs.Mux)
 	authRest.RegisterTxRoutes(rs.CliCtx, rs.Mux)
-	hub.ModuleBasics.RegisterRESTRoutes(rs.CliCtx, rs.Mux)
+	app.ModuleBasics.RegisterRESTRoutes(rs.CliCtx, rs.Mux)
 }
 
 func initConfig(cmd *cobra.Command) error {

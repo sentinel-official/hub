@@ -10,11 +10,11 @@ const (
 )
 
 type QueryProviderParams struct {
-	ID hub.ProviderID `json:"id"`
+	Address hub.ProvAddress `json:"address"`
 }
 
-func NewQueryProviderParams(id hub.ProviderID) QueryProviderParams {
+func NewQueryProviderParams(address hub.ProvAddress) QueryProviderParams {
 	return QueryProviderParams{
-		ID: id,
+		Address: address,
 	}
 }

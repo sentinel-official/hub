@@ -16,18 +16,16 @@ const (
 	errorCodeUnknownMsgType = iota + 101
 	errorCodeUnknownQueryType
 	errorCodeInvalidField
-	errorCodeDuplicateProviderAddress
+	errorCodeDuplicateProvider
 	errorCodeNoProviderFound
-	errorCodeUnauthorised
 )
 
 const (
-	errorMsgUnknownMsgType           = "unknown message type: %s"
-	errorMsgUnknownQueryType         = "unknown query type: %s"
-	errorMsgInvalidField             = "invalid field: %s"
-	errorMsgDuplicateProviderAddress = "duplicate provider address"
-	errorMsgNoProviderFound          = "no provider found"
-	errorMsgUnauthorised             = "unauthorised"
+	errorMsgUnknownMsgType    = "unknown message type: %s"
+	errorMsgUnknownQueryType  = "unknown query type: %s"
+	errorMsgInvalidField      = "invalid field: %s"
+	errorMsgDuplicateProvider = "duplicate provider"
+	errorMsgNoProviderFound   = "no provider found"
 )
 
 func ErrorMarshal() sdk.Error {
@@ -50,14 +48,10 @@ func ErrorInvalidField(v string) sdk.Error {
 	return sdk.NewError(Codespace, errorCodeInvalidField, fmt.Sprintf(errorMsgInvalidField, v))
 }
 
-func ErrorDuplicateProviderAddress() sdk.Error {
-	return sdk.NewError(Codespace, errorCodeDuplicateProviderAddress, errorMsgDuplicateProviderAddress)
+func ErrorDuplicateProvider() sdk.Error {
+	return sdk.NewError(Codespace, errorCodeDuplicateProvider, errorMsgDuplicateProvider)
 }
 
 func ErrorNoProviderFound() sdk.Error {
 	return sdk.NewError(Codespace, errorCodeNoProviderFound, errorMsgNoProviderFound)
-}
-
-func ErrorUnauthorised() sdk.Error {
-	return sdk.NewError(Codespace, errorCodeUnauthorised, errorMsgUnauthorised)
 }

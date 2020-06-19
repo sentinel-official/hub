@@ -14,7 +14,7 @@ func queryProvider(ctx sdk.Context, req abci.RequestQuery, k keeper.Keeper) ([]b
 		return nil, types.ErrorUnmarshal()
 	}
 
-	provider, found := k.GetProvider(ctx, params.ID)
+	provider, found := k.GetProvider(ctx, params.Address)
 	if !found {
 		return nil, nil
 	}
