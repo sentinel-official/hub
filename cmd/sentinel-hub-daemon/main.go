@@ -20,7 +20,7 @@ import (
 	tm "github.com/tendermint/tendermint/types"
 	db "github.com/tendermint/tm-db"
 
-	"github.com/sentinel-official/hub/app"
+	"github.com/sentinel-official/hub"
 	"github.com/sentinel-official/hub/types"
 )
 
@@ -33,7 +33,7 @@ var (
 )
 
 func main() {
-	cdc := app.MakeCodec()
+	cdc := hub.MakeCodec()
 
 	config := types.GetConfig()
 	config.SetBech32PrefixForAccount(types.Bech32PrefixAccAddr, types.Bech32PrefixAccPub)
@@ -49,26 +49,26 @@ func main() {
 		PersistentPreRunE: server.PersistentPreRunEFn(ctx),
 	}
 
-	cmd.AddCommand(genutilCli.InitCmd(ctx, cdc, app.ModuleBasics, app.DefaultNodeHome))
-	cmd.AddCommand(genutilCli.CollectGenTxsCmd(ctx, cdc, genaccounts.AppModuleBasic{}, app.DefaultNodeHome))
-	cmd.AddCommand(genutilCli.GenTxCmd(ctx, cdc, app.ModuleBasics, staking.AppModuleBasic{},
-		genaccounts.AppModuleBasic{}, app.DefaultNodeHome, app.DefaultCLIHome))
-	cmd.AddCommand(genutilCli.ValidateGenesisCmd(ctx, cdc, app.ModuleBasics))
-	cmd.AddCommand(genaccountsCli.AddGenesisAccountCmd(ctx, cdc, app.DefaultNodeHome, app.DefaultCLIHome))
+	cmd.AddCommand(genutilCli.InitCmd(ctx, cdc, hub.ModuleBasics, hub.DefaultNodeHome))
+	cmd.AddCommand(genutilCli.CollectGenTxsCmd(ctx, cdc, genaccounts.AppModuleBasic{}, hub.DefaultNodeHome))
+	cmd.AddCommand(genutilCli.GenTxCmd(ctx, cdc, hub.ModuleBasics, staking.AppModuleBasic{},
+		genaccounts.AppModuleBasic{}, hub.DefaultNodeHome, hub.DefaultCLIHome))
+	cmd.AddCommand(genutilCli.ValidateGenesisCmd(ctx, cdc, hub.ModuleBasics))
+	cmd.AddCommand(genaccountsCli.AddGenesisAccountCmd(ctx, cdc, hub.DefaultNodeHome, hub.DefaultCLIHome))
 	cmd.AddCommand(client.NewCompletionCmd(cmd, true))
 
 	server.AddCommands(ctx, cdc, cmd, newApp, exportAppStateAndValidators)
 	cmd.PersistentFlags().
 		UintVar(&invarCheckPeriod, flagInvarCheckPeriod, 0, "Assert registered invariants every N blocks")
 
-	executor := cli.PrepareBaseCmd(cmd, "SENTINEL_HUB", app.DefaultNodeHome)
+	executor := cli.PrepareBaseCmd(cmd, "SENTINEL_HUB", hub.DefaultNodeHome)
 	if err := executor.Execute(); err != nil {
 		panic(err)
 	}
 }
 
 func newApp(logger log.Logger, db db.DB, tracer io.Writer) abci.Application {
-	return app.NewApp(
+	return hub.NewApp(
 		logger, db, tracer, true, invarCheckPeriod,
 		baseapp.SetPruning(store.NewPruningOptionsFromString(viper.GetString("pruning"))),
 		baseapp.SetMinGasPrices(viper.GetString(server.FlagMinGasPrices)),
@@ -79,14 +79,14 @@ func newApp(logger log.Logger, db db.DB, tracer io.Writer) abci.Application {
 func exportAppStateAndValidators(logger log.Logger, db db.DB, tracer io.Writer, height int64, zeroHeight bool,
 	jailWhitelist []string) (json.RawMessage, []tm.GenesisValidator, error) {
 	if height != -1 {
-		hub := app.NewApp(logger, db, tracer, false, uint(1))
-		if err := hub.LoadHeight(height); err != nil {
+		app := hub.NewApp(logger, db, tracer, false, uint(1))
+		if err := app.LoadHeight(height); err != nil {
 			return nil, nil, err
 		}
 
-		return hub.ExportAppStateAndValidators(zeroHeight, jailWhitelist)
+		return app.ExportAppStateAndValidators(zeroHeight, jailWhitelist)
 	}
 
-	hub := app.NewApp(logger, db, tracer, true, uint(1))
-	return hub.ExportAppStateAndValidators(zeroHeight, jailWhitelist)
+	app := hub.NewApp(logger, db, tracer, true, uint(1))
+	return app.ExportAppStateAndValidators(zeroHeight, jailWhitelist)
 }

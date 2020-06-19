@@ -17,12 +17,12 @@ import (
 	"github.com/spf13/viper"
 	"github.com/tendermint/tendermint/libs/cli"
 
-	"github.com/sentinel-official/hub/app"
+	"github.com/sentinel-official/hub"
 	"github.com/sentinel-official/hub/types"
 )
 
 func main() {
-	cdc := app.MakeCodec()
+	cdc := hub.MakeCodec()
 
 	config := types.GetConfig()
 	config.SetBech32PrefixForAccount(types.Bech32PrefixAccAddr, types.Bech32PrefixAccPub)
@@ -43,7 +43,7 @@ func main() {
 
 	cmd.AddCommand(
 		rpc.StatusCommand(),
-		client.ConfigCmd(app.DefaultCLIHome),
+		client.ConfigCmd(hub.DefaultCLIHome),
 		client.LineBreak,
 		keys.Commands(),
 		queryCmd(cdc),
@@ -54,7 +54,7 @@ func main() {
 		client.NewCompletionCmd(cmd, true),
 	)
 
-	executor := cli.PrepareMainCmd(cmd, "SENTINEL_HUB", app.DefaultCLIHome)
+	executor := cli.PrepareMainCmd(cmd, "SENTINEL_HUB", hub.DefaultCLIHome)
 	if err := executor.Execute(); err != nil {
 		panic(err)
 	}
@@ -77,7 +77,7 @@ func queryCmd(cdc *codec.Codec) *cobra.Command {
 		client.LineBreak,
 	)
 
-	app.ModuleBasics.AddQueryCommands(cmd, cdc)
+	hub.ModuleBasics.AddQueryCommands(cmd, cdc)
 	return cmd
 }
 
@@ -97,14 +97,14 @@ func txCmd(cdc *codec.Codec) *cobra.Command {
 		client.LineBreak,
 	)
 
-	app.ModuleBasics.AddTxCommands(cmd, cdc)
+	hub.ModuleBasics.AddTxCommands(cmd, cdc)
 	return cmd
 }
 
 func registerRoutes(rs *lcd.RestServer) {
 	client.RegisterRoutes(rs.CliCtx, rs.Mux)
 	authRest.RegisterTxRoutes(rs.CliCtx, rs.Mux)
-	app.ModuleBasics.RegisterRESTRoutes(rs.CliCtx, rs.Mux)
+	hub.ModuleBasics.RegisterRESTRoutes(rs.CliCtx, rs.Mux)
 }
 
 func initConfig(cmd *cobra.Command) error {
