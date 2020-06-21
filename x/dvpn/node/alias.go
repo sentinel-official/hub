@@ -17,18 +17,21 @@ import (
 )
 
 const (
-	Codespace               = types.Codespace
-	EventTypeSetNode        = types.EventTypeSetNode
-	EventTypeUpdateNode     = types.EventTypeUpdateNode
-	AttributeKeyProvider    = types.AttributeKeyProvider
-	AttributeKeyNodeAddress = types.AttributeKeyNodeAddress
-	ModuleName              = types.ModuleName
-	QuerierRoute            = types.QuerierRoute
-	CategoryUnknown         = types.CategoryUnknown
-	StatusUnknown           = types.StatusUnknown
-	QueryNode               = types.QueryNode
-	QueryNodes              = types.QueryNodes
-	QueryNodesOfProvider    = types.QueryNodesOfProvider
+	Codespace              = types.Codespace
+	EventTypeSetNode       = types.EventTypeSetNode
+	EventTypeUpdateNode    = types.EventTypeUpdateNode
+	EventTypeSetNodeStatus = types.EventTypeSetNodeStatus
+	AttributeKeyProvider   = types.AttributeKeyProvider
+	AttributeKeyAddress    = types.AttributeKeyAddress
+	AttributeKeyStatus     = types.AttributeKeyStatus
+	AttributeKeyStatusAt   = types.AttributeKeyStatusAt
+	ModuleName             = types.ModuleName
+	QuerierRoute           = types.QuerierRoute
+	CategoryUnknown        = types.CategoryUnknown
+	StatusUnknown          = types.StatusUnknown
+	QueryNode              = types.QueryNode
+	QueryNodes             = types.QueryNodes
+	QueryNodesOfProvider   = types.QueryNodesOfProvider
 )
 
 var (
@@ -51,6 +54,7 @@ var (
 	NodeAddressForProviderKey       = types.NodeAddressForProviderKey
 	NewMsgRegisterNode              = types.NewMsgRegisterNode
 	NewMsgUpdateNode                = types.NewMsgUpdateNode
+	NewMsgSetNodeStatus             = types.NewMsgSetNodeStatus
 	NodeCategoryFromString          = types.NodeCategoryFromString
 	NodeStatusFromString            = types.NodeStatusFromString
 	NewNodeBandwidthSpeed           = types.NewNodeBandwidthSpeed
@@ -71,6 +75,7 @@ type (
 	GenesisState               = types.GenesisState
 	MsgRegisterNode            = types.MsgRegisterNode
 	MsgUpdateNode              = types.MsgUpdateNode
+	MsgSetNodeStatus           = types.MsgSetNodeStatus
 	NodeCategory               = types.NodeCategory
 	NodeStatus                 = types.NodeStatus
 	NodeBandwidthSpeed         = types.NodeBandwidthSpeed

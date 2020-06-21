@@ -8,4 +8,5 @@ const (
 	flagUploadSpeed   = "upload-speed"
 	flagDownloadSpeed = "download-speed"
 	flagCategory      = "category"
+	flagStatus        = "status"
 )

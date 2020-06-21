@@ -6,5 +6,5 @@ const (
 )
 
 const (
-	AttributeKeyProviderAddress = "provider_address"
+	AttributeKeyAddress = "address"
 )

@@ -2,14 +2,16 @@ package cli
 
 import (
 	"fmt"
+
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/cosmos/cosmos-sdk/x/auth/client/utils"
+	"github.com/spf13/cobra"
+
 	hub "github.com/sentinel-official/hub/types"
 	"github.com/sentinel-official/hub/x/dvpn/node/types"
-	"github.com/spf13/cobra"
 )
 
 func txRegisterNodeCmd(cdc *codec.Codec) *cobra.Command {
@@ -167,5 +169,39 @@ func txUpdateNodeCmd(cdc *codec.Codec) *cobra.Command {
 	cmd.Flags().Uint64(flagDownloadSpeed, 0, "Node download speed")
 	cmd.Flags().String(flagCategory, "", "Node category")
 
+	return cmd
+}
+
+func txSetNodeStatusCmd(cdc *codec.Codec) *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "set-status",
+		Short: "Set node status",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			txb := auth.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
+			ctx := context.NewCLIContext().WithCodec(cdc)
+
+			address, err := hub.NodeAddressFromBech32(args[0])
+			if err != nil {
+				return err
+			}
+
+			if !address.Equals(ctx.FromAddress) {
+				return fmt.Errorf("node address is not equal to from address")
+			}
+
+			s, err := cmd.Flags().GetString(flagStatus)
+			if err != nil {
+				return err
+			}
+
+			msg := types.NewMsgSetNodeStatus(ctx.FromAddress.Bytes(), types.NodeStatusFromString(s))
+			return utils.GenerateOrBroadcastMsgs(ctx, txb, []sdk.Msg{msg})
+		},
+	}
+
+	cmd.Flags().String(flagStatus, "", "Node status")
+
+	_ = cmd.MarkFlagRequired(flagStatus)
 	return cmd
 }

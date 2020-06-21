@@ -1,6 +1,8 @@
 package node
 
 import (
+	"fmt"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/sentinel-official/hub/x/dvpn/node/keeper"
@@ -19,15 +21,15 @@ func HandleRegisterNode(ctx sdk.Context, k keeper.Keeper, msg types.MsgRegisterN
 	}
 
 	node := types.Node{
-		Address:          msg.From.Bytes(),
-		Provider:         msg.Provider,
-		PricePerGB:       msg.PricePerGB,
-		RemoteURL:        msg.RemoteURL,
-		Version:          msg.Version,
-		BandwidthSpeed:   msg.BandwidthSpeed,
-		Category:         msg.Category,
-		Status:           types.StatusInactive,
-		StatusModifiedAt: ctx.BlockHeight(),
+		Address:        msg.From.Bytes(),
+		Provider:       msg.Provider,
+		PricePerGB:     msg.PricePerGB,
+		RemoteURL:      msg.RemoteURL,
+		Version:        msg.Version,
+		BandwidthSpeed: msg.BandwidthSpeed,
+		Category:       msg.Category,
+		Status:         types.StatusInactive,
+		StatusAt:       ctx.BlockHeight(),
 	}
 
 	k.SetNode(ctx, node)
@@ -35,7 +37,7 @@ func HandleRegisterNode(ctx sdk.Context, k keeper.Keeper, msg types.MsgRegisterN
 	ctx.EventManager().EmitEvent(sdk.NewEvent(
 		types.EventTypeSetNode,
 		sdk.NewAttribute(types.AttributeKeyProvider, node.Provider.String()),
-		sdk.NewAttribute(types.AttributeKeyNodeAddress, node.Address.String()),
+		sdk.NewAttribute(types.AttributeKeyAddress, node.Address.String()),
 	))
 
 	return sdk.Result{Events: ctx.EventManager().Events()}
@@ -74,7 +76,26 @@ func HandleUpdateNode(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpdateNode)
 	k.SetNode(ctx, node)
 	ctx.EventManager().EmitEvent(sdk.NewEvent(
 		types.EventTypeUpdateNode,
-		sdk.NewAttribute(types.AttributeKeyNodeAddress, node.Address.String()),
+		sdk.NewAttribute(types.AttributeKeyAddress, node.Address.String()),
+	))
+
+	return sdk.Result{Events: ctx.EventManager().Events()}
+}
+
+func HandleSetNodeStatus(ctx sdk.Context, k keeper.Keeper, msg types.MsgSetNodeStatus) sdk.Result {
+	node, found := k.GetNode(ctx, msg.From)
+	if !found {
+		return ErrorNoNodeFound().Result()
+	}
+
+	node.Status = msg.Status
+	node.StatusAt = ctx.BlockHeight()
+
+	k.SetNode(ctx, node)
+	ctx.EventManager().EmitEvent(sdk.NewEvent(
+		types.EventTypeSetNodeStatus,
+		sdk.NewAttribute(types.AttributeKeyStatus, node.Status.String()),
+		sdk.NewAttribute(types.AttributeKeyStatusAt, fmt.Sprintf("%d", node.StatusAt)),
 	))
 
 	return sdk.Result{Events: ctx.EventManager().Events()}

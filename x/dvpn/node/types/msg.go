@@ -10,6 +10,8 @@ import (
 
 var (
 	_ sdk.Msg = (*MsgRegisterNode)(nil)
+	_ sdk.Msg = (*MsgUpdateNode)(nil)
+	_ sdk.Msg = (*MsgSetNodeStatus)(nil)
 )
 
 type MsgRegisterNode struct {
@@ -149,5 +151,49 @@ func (m MsgUpdateNode) GetSignBytes() []byte {
 }
 
 func (m MsgUpdateNode) GetSigners() []sdk.AccAddress {
+	return []sdk.AccAddress{m.From.Bytes()}
+}
+
+type MsgSetNodeStatus struct {
+	From   hub.NodeAddress `json:"from"`
+	Status NodeStatus      `json:"status"`
+}
+
+func NewMsgSetNodeStatus(from hub.NodeAddress, status NodeStatus) MsgSetNodeStatus {
+	return MsgSetNodeStatus{
+		From:   from,
+		Status: status,
+	}
+}
+
+func (m MsgSetNodeStatus) Route() string {
+	return RouterKey
+}
+
+func (m MsgSetNodeStatus) Type() string {
+	return "set_node_status"
+}
+
+func (m MsgSetNodeStatus) ValidateBasic() sdk.Error {
+	if m.From == nil || m.From.Empty() {
+		return ErrorInvalidField("from")
+	}
+	if !m.Status.IsValid() {
+		return ErrorInvalidField("status")
+	}
+
+	return nil
+}
+
+func (m MsgSetNodeStatus) GetSignBytes() []byte {
+	bytes, err := json.Marshal(m)
+	if err != nil {
+		panic(err)
+	}
+
+	return bytes
+}
+
+func (m MsgSetNodeStatus) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{m.From.Bytes()}
 }

@@ -24,7 +24,7 @@ func HandleRegisterProvider(ctx sdk.Context, k keeper.Keeper, msg types.MsgRegis
 	k.SetProvider(ctx, provider)
 	ctx.EventManager().EmitEvent(sdk.NewEvent(
 		types.EventTypeSetProvider,
-		sdk.NewAttribute(types.AttributeKeyProviderAddress, provider.Address.String()),
+		sdk.NewAttribute(types.AttributeKeyAddress, provider.Address.String()),
 	))
 
 	return sdk.Result{Events: ctx.EventManager().Events()}
@@ -52,7 +52,7 @@ func HandleUpdateProvider(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpdateP
 	k.SetProvider(ctx, provider)
 	ctx.EventManager().EmitEvent(sdk.NewEvent(
 		types.EventTypeUpdateProvider,
-		sdk.NewAttribute(types.AttributeKeyProviderAddress, provider.Address.String()),
+		sdk.NewAttribute(types.AttributeKeyAddress, provider.Address.String()),
 	))
 
 	return sdk.Result{Events: ctx.EventManager().Events()}

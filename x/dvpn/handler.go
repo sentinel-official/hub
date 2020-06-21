@@ -20,6 +20,8 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 			return node.HandleRegisterNode(ctx, k.Node, msg)
 		case node.MsgUpdateNode:
 			return node.HandleUpdateNode(ctx, k.Node, msg)
+		case node.MsgSetNodeStatus:
+			return node.HandleSetNodeStatus(ctx, k.Node, msg)
 		default:
 			return types.ErrorUnknownMsgType(msg.Type()).Result()
 		}

@@ -67,6 +67,10 @@ func NodeStatusFromString(s string) NodeStatus {
 	}
 }
 
+func (n NodeStatus) IsValid() bool {
+	return n == StatusActive || n == StatusInactive
+}
+
 func (n NodeStatus) Equal(v NodeStatus) bool {
 	return n == v
 }
@@ -107,15 +111,15 @@ func (n NodeBandwidthSpeed) String() string {
 }
 
 type Node struct {
-	Address          hub.NodeAddress    `json:"address"`
-	Provider         hub.ProvAddress    `json:"provider"`
-	PricePerGB       sdk.Coins          `json:"price_per_gb"`
-	RemoteURL        string             `json:"remote_url"`
-	Version          string             `json:"version"`
-	BandwidthSpeed   NodeBandwidthSpeed `json:"bandwidth_speed"`
-	Category         NodeCategory       `json:"category"`
-	Status           NodeStatus         `json:"status"`
-	StatusModifiedAt int64              `json:"status_modified_at"`
+	Address        hub.NodeAddress    `json:"address"`
+	Provider       hub.ProvAddress    `json:"provider"`
+	PricePerGB     sdk.Coins          `json:"price_per_gb"`
+	RemoteURL      string             `json:"remote_url"`
+	Version        string             `json:"version"`
+	BandwidthSpeed NodeBandwidthSpeed `json:"bandwidth_speed"`
+	Category       NodeCategory       `json:"category"`
+	Status         NodeStatus         `json:"status"`
+	StatusAt       int64              `json:"status_at"`
 }
 
 func (n Node) String() string {
@@ -128,9 +132,9 @@ Version: %s
 Bandwidth speed: %s
 Category: %s
 Status: %s
-Status modified at: %d
+Status at: %d
 `, n.Address, n.Provider, n.PricePerGB, n.RemoteURL, n.Version,
-		n.BandwidthSpeed, n.Category, n.Status, n.StatusModifiedAt))
+		n.BandwidthSpeed, n.Category, n.Status, n.StatusAt))
 }
 
 type Nodes []Node

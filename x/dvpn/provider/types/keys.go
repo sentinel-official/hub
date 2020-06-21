@@ -10,7 +10,7 @@ const (
 )
 
 var (
-	RouterKey = ""
+	RouterKey = ModuleName
 )
 
 var (

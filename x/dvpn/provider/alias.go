@@ -17,14 +17,14 @@ import (
 )
 
 const (
-	Codespace                   = types.Codespace
-	EventTypeSetProvider        = types.EventTypeSetProvider
-	EventTypeUpdateProvider     = types.EventTypeUpdateProvider
-	AttributeKeyProviderAddress = types.AttributeKeyProviderAddress
-	ModuleName                  = types.ModuleName
-	QuerierRoute                = types.QuerierRoute
-	QueryProvider               = types.QueryProvider
-	QueryProviders              = types.QueryProviders
+	Codespace               = types.Codespace
+	EventTypeSetProvider    = types.EventTypeSetProvider
+	EventTypeUpdateProvider = types.EventTypeUpdateProvider
+	AttributeKeyAddress     = types.AttributeKeyAddress
+	ModuleName              = types.ModuleName
+	QuerierRoute            = types.QuerierRoute
+	QueryProvider           = types.QueryProvider
+	QueryProviders          = types.QueryProviders
 )
 
 var (

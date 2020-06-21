@@ -22,6 +22,7 @@ func GetTxCommands(cdc *codec.Codec) []*cobra.Command {
 	cmd.AddCommand(client.PostCommands(
 		txRegisterNodeCmd(cdc),
 		txUpdateNodeCmd(cdc),
+		txSetNodeStatusCmd(cdc),
 	)...)
 
 	return []*cobra.Command{cmd}
