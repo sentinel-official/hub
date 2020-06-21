@@ -7,10 +7,14 @@ import (
 	"github.com/sentinel-official/hub/x/dvpn/provider/types"
 )
 
-func InitGenesis(ctx sdk.Context, k keeper.Keeper, state types.GenesisState) {}
+func InitGenesis(ctx sdk.Context, k keeper.Keeper, state types.GenesisState) {
+	for _, provider := range state {
+		k.SetProvider(ctx, provider)
+	}
+}
 
 func ExportGenesis(ctx sdk.Context, k keeper.Keeper) types.GenesisState {
-	return nil
+	return k.GetProviders(ctx)
 }
 
 func ValidateGenesis(state types.GenesisState) error {
