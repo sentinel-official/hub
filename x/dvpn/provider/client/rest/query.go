@@ -1,14 +1,18 @@
 package rest
 
-import "net/http"
+import (
+	"net/http"
 
-func GetQueryProviderHandlerFunc() http.HandlerFunc {
+	"github.com/cosmos/cosmos-sdk/client/context"
+)
+
+func queryProviderHandlerFunc(ctx context.CLIContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
 	}
 }
 
-func GetQueryProvidersHandlerFunc() http.HandlerFunc {
+func queryProvidersHandlerFunc(ctx context.CLIContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
 	}
