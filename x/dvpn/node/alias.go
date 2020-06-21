@@ -19,6 +19,7 @@ import (
 const (
 	Codespace               = types.Codespace
 	EventTypeSetNode        = types.EventTypeSetNode
+	EventTypeUpdateNode     = types.EventTypeUpdateNode
 	AttributeKeyProvider    = types.AttributeKeyProvider
 	AttributeKeyNodeAddress = types.AttributeKeyNodeAddress
 	ModuleName              = types.ModuleName
@@ -49,6 +50,7 @@ var (
 	NodeAddressForProviderKeyPrefix = types.NodeAddressForProviderKeyPrefix
 	NodeAddressForProviderKey       = types.NodeAddressForProviderKey
 	NewMsgRegisterNode              = types.NewMsgRegisterNode
+	NewMsgUpdateNode                = types.NewMsgUpdateNode
 	NodeCategoryFromString          = types.NodeCategoryFromString
 	NodeStatusFromString            = types.NodeStatusFromString
 	NewNodeBandwidthSpeed           = types.NewNodeBandwidthSpeed
@@ -68,6 +70,7 @@ type (
 	Keeper                     = keeper.Keeper
 	GenesisState               = types.GenesisState
 	MsgRegisterNode            = types.MsgRegisterNode
+	MsgUpdateNode              = types.MsgUpdateNode
 	NodeCategory               = types.NodeCategory
 	NodeStatus                 = types.NodeStatus
 	NodeBandwidthSpeed         = types.NodeBandwidthSpeed

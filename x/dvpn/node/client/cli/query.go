@@ -12,7 +12,7 @@ import (
 	"github.com/sentinel-official/hub/x/dvpn/node/types"
 )
 
-func getQueryNodeCmd(cdc *codec.Codec) *cobra.Command {
+func queryNodeCmd(cdc *codec.Codec) *cobra.Command {
 	return &cobra.Command{
 		Use:   "node",
 		Short: "Query node",
@@ -36,7 +36,7 @@ func getQueryNodeCmd(cdc *codec.Codec) *cobra.Command {
 	}
 }
 
-func getQueryNodesCmd(cdc *codec.Codec) *cobra.Command {
+func queryNodesCmd(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "nodes",
 		Short: "Query nodes",

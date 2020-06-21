@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	CategoryUnknown = iota + 0x01
+	CategoryUnknown = iota + 0x00
 	CategoryOpenVPN
 	CategoryWireGuard
 )
@@ -49,7 +49,7 @@ func (n NodeCategory) IsValid() bool {
 }
 
 const (
-	StatusUnknown = iota + 0x01
+	StatusUnknown = iota + 0x00
 	StatusActive
 	StatusInactive
 )
@@ -96,6 +96,10 @@ func NewNodeBandwidthSpeed(upload, download uint64) NodeBandwidthSpeed {
 
 func (n NodeBandwidthSpeed) IsAnyZero() bool {
 	return n.Upload == 0 || n.Download == 0
+}
+
+func (n NodeBandwidthSpeed) IsAllZero() bool {
+	return n.Upload == 0 && n.Download == 0
 }
 
 func (n NodeBandwidthSpeed) String() string {
