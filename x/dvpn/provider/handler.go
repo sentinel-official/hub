@@ -16,6 +16,7 @@ func HandleRegisterProvider(ctx sdk.Context, k keeper.Keeper, msg types.MsgRegis
 	provider := types.Provider{
 		Address:     msg.From.Bytes(),
 		Name:        msg.Name,
+		Identity:    msg.Identity,
 		Website:     msg.Website,
 		Description: msg.Description,
 	}
@@ -37,6 +38,9 @@ func HandleUpdateProvider(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpdateP
 
 	if len(msg.Name) > 0 {
 		provider.Name = msg.Name
+	}
+	if len(msg.Identity) > 0 {
+		provider.Identity = msg.Identity
 	}
 	if len(msg.Website) > 0 {
 		provider.Website = msg.Website
