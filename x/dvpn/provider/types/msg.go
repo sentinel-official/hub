@@ -16,14 +16,16 @@ var (
 type MsgRegisterProvider struct {
 	From        sdk.AccAddress `json:"from"`
 	Name        string         `json:"name"`
+	Identity    string         `json:"identity"`
 	Website     string         `json:"website"`
 	Description string         `json:"description"`
 }
 
-func NewMsgRegisterProvider(from sdk.AccAddress, name, website, description string) MsgRegisterProvider {
+func NewMsgRegisterProvider(from sdk.AccAddress, name, identity, website, description string) MsgRegisterProvider {
 	return MsgRegisterProvider{
 		From:        from,
 		Name:        name,
+		Identity:    identity,
 		Website:     website,
 		Description: description,
 	}
@@ -43,6 +45,9 @@ func (m MsgRegisterProvider) ValidateBasic() sdk.Error {
 	}
 	if len(m.Name) == 0 || len(m.Name) > 32 {
 		return ErrorInvalidField("name")
+	}
+	if len(m.Identity) > 32 {
+		return ErrorInvalidField("identity")
 	}
 	if len(m.Website) > 32 {
 		return ErrorInvalidField("website")
@@ -70,14 +75,16 @@ func (m MsgRegisterProvider) GetSigners() []sdk.AccAddress {
 type MsgUpdateProvider struct {
 	From        hub.ProvAddress `json:"from"`
 	Name        string          `json:"name"`
+	Identity    string          `json:"identity"`
 	Website     string          `json:"website"`
 	Description string          `json:"description"`
 }
 
-func NewMsgUpdateProvider(from hub.ProvAddress, name, website, description string) MsgUpdateProvider {
+func NewMsgUpdateProvider(from hub.ProvAddress, name, identity, website, description string) MsgUpdateProvider {
 	return MsgUpdateProvider{
 		From:        from,
 		Name:        name,
+		Identity:    identity,
 		Website:     website,
 		Description: description,
 	}
@@ -97,6 +104,9 @@ func (m MsgUpdateProvider) ValidateBasic() sdk.Error {
 	}
 	if len(m.Name) != 0 && len(m.Name) > 32 {
 		return ErrorInvalidField("name")
+	}
+	if len(m.Identity) != 0 && len(m.Identity) > 32 {
+		return ErrorInvalidField("identity")
 	}
 	if len(m.Website) != 0 && len(m.Website) > 32 {
 		return ErrorInvalidField("website")
