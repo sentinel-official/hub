@@ -5,6 +5,7 @@ import (
 	abci "github.com/tendermint/tendermint/abci/types"
 
 	"github.com/sentinel-official/hub/x/dvpn/keeper"
+	"github.com/sentinel-official/hub/x/dvpn/node"
 	"github.com/sentinel-official/hub/x/dvpn/provider"
 	"github.com/sentinel-official/hub/x/dvpn/types"
 )
@@ -14,6 +15,8 @@ func NewQuerier(k keeper.Keeper) sdk.Querier {
 		switch path[0] {
 		case provider.ModuleName:
 			return provider.Querier(ctx, path[1:], req, k.Provider)
+		case node.ModuleName:
+			return node.Querier(ctx, path[1:], req, k.Node)
 		default:
 			return nil, types.ErrorUnknownQueryType(path[0])
 		}

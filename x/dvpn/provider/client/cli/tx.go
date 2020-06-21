@@ -14,7 +14,7 @@ import (
 	"github.com/sentinel-official/hub/x/dvpn/provider/types"
 )
 
-func getTxRegisterProviderCmd(cdc *codec.Codec) *cobra.Command {
+func txRegisterProviderCmd(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "register",
 		Short: "Register provider",
@@ -60,7 +60,7 @@ func getTxRegisterProviderCmd(cdc *codec.Codec) *cobra.Command {
 	return cmd
 }
 
-func getTxUpdateProviderCmd(cdc *codec.Codec) *cobra.Command {
+func txUpdateProviderCmd(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "update",
 		Short: "Update provider",
@@ -75,7 +75,7 @@ func getTxUpdateProviderCmd(cdc *codec.Codec) *cobra.Command {
 			}
 
 			if !address.Equals(ctx.FromAddress) {
-				return fmt.Errorf("provider address does not belong from address")
+				return fmt.Errorf("provider address is not equal to from address")
 			}
 
 			name, err := cmd.Flags().GetString(flagName)

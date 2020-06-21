@@ -5,15 +5,19 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func registerQueryRoutes(context context.CLIContext, router *mux.Router) {
-
+func registerQueryRoutes(ctx context.CLIContext, router *mux.Router) {
+	router.HandleFunc("/providers", queryProvidersHandlerFunc(ctx)).
+		Methods("GET")
+	router.HandleFunc("/providers/{address}", queryProviderHandlerFunc(ctx)).
+		Methods("GET")
 }
 
-func registerTxRoutes(context context.CLIContext, router *mux.Router) {
-
+func registerTxRoutes(ctx context.CLIContext, router *mux.Router) {
+	router.HandleFunc("/providers", txRegisterProviderHandlerFunc(ctx)).
+		Methods("POST")
 }
 
-func RegisterRoutes(context context.CLIContext, router *mux.Router) {
-	registerQueryRoutes(context, router)
-	registerTxRoutes(context, router)
+func RegisterRoutes(ctx context.CLIContext, router *mux.Router) {
+	registerQueryRoutes(ctx, router)
+	registerTxRoutes(ctx, router)
 }
