@@ -129,7 +129,7 @@ func (m MsgUpdateNode) ValidateBasic() sdk.Error {
 	if len(m.Version) != 0 && len(m.Version) > 32 {
 		return ErrorInvalidField("version")
 	}
-	if !m.BandwidthSpeed.IsAllZero() || m.BandwidthSpeed.IsAnyZero() {
+	if !m.BandwidthSpeed.IsAllZero() && m.BandwidthSpeed.IsAnyZero() {
 		return ErrorInvalidField("bandwidth_speed")
 	}
 	if m.Category != CategoryUnknown && !m.Category.IsValid() {
