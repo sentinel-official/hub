@@ -27,6 +27,11 @@ func getTxRegisterProviderCmd(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
+			identity, err := cmd.Flags().GetString(flagIdentity)
+			if err != nil {
+				return err
+			}
+
 			website, err := cmd.Flags().GetString(flagWebsite)
 			if err != nil {
 				return err
@@ -37,16 +42,18 @@ func getTxRegisterProviderCmd(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgRegisterProvider(ctx.FromAddress, name, website, description)
+			msg := types.NewMsgRegisterProvider(ctx.FromAddress, name, identity, website, description)
 			return utils.GenerateOrBroadcastMsgs(ctx, txb, []sdk.Msg{msg})
 		},
 	}
 
 	cmd.Flags().String(flagName, "", "Provider name")
+	cmd.Flags().String(flagIdentity, "", "Provider identity")
 	cmd.Flags().String(flagWebsite, "", "Provider website")
 	cmd.Flags().String(flagDescription, "", "Provider description")
 
 	_ = cmd.MarkFlagRequired(flagName)
+	_ = cmd.MarkFlagRequired(flagIdentity)
 	_ = cmd.MarkFlagRequired(flagWebsite)
 	_ = cmd.MarkFlagRequired(flagDescription)
 
@@ -76,6 +83,11 @@ func getTxUpdateProviderCmd(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
+			identity, err := cmd.Flags().GetString(flagIdentity)
+			if err != nil {
+				return err
+			}
+
 			website, err := cmd.Flags().GetString(flagWebsite)
 			if err != nil {
 				return err
@@ -86,12 +98,13 @@ func getTxUpdateProviderCmd(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgUpdateProvider(address.Bytes(), name, website, description)
+			msg := types.NewMsgUpdateProvider(address.Bytes(), name, identity, website, description)
 			return utils.GenerateOrBroadcastMsgs(ctx, txb, []sdk.Msg{msg})
 		},
 	}
 
 	cmd.Flags().String(flagName, "", "Provider name")
+	cmd.Flags().String(flagIdentity, "", "Provider identity")
 	cmd.Flags().String(flagWebsite, "", "Provider website")
 	cmd.Flags().String(flagDescription, "", "Provider description")
 
