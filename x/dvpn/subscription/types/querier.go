@@ -15,7 +15,7 @@ type QueryPlanParams struct {
 	ID      uint64          `json:"id"`
 }
 
-func NewQueryNodeParams(address hub.ProvAddress, id uint64) QueryPlanParams {
+func NewQueryPlanParams(address hub.ProvAddress, id uint64) QueryPlanParams {
 	return QueryPlanParams{
 		Address: address,
 		ID:      id,

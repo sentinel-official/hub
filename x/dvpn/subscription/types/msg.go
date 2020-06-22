@@ -22,6 +22,17 @@ type MsgAddPlan struct {
 	MaxDuration  time.Duration   `json:"max_duration"`
 }
 
+func NewMsgAddPlan(from hub.ProvAddress, price sdk.Coins, duration time.Duration,
+	maxBandwidth hub.Bandwidth, maxDuration time.Duration) MsgAddPlan {
+	return MsgAddPlan{
+		From:         from,
+		Price:        price,
+		Duration:     duration,
+		MaxBandwidth: maxBandwidth,
+		MaxDuration:  maxDuration,
+	}
+}
+
 func (m MsgAddPlan) Route() string {
 	return RouterKey
 }
@@ -64,6 +75,14 @@ type MsgSetPlanStatus struct {
 	From   hub.ProvAddress `json:"from"`
 	ID     uint64          `json:"id"`
 	Status hub.Status      `json:"status"`
+}
+
+func NewMsgSetPlanStatus(from hub.ProvAddress, id uint64, status hub.Status) MsgSetPlanStatus {
+	return MsgSetPlanStatus{
+		From:   from,
+		ID:     id,
+		Status: status,
+	}
 }
 
 func (m MsgSetPlanStatus) Route() string {
