@@ -28,7 +28,6 @@ const (
 	ModuleName             = types.ModuleName
 	QuerierRoute           = types.QuerierRoute
 	CategoryUnknown        = types.CategoryUnknown
-	StatusUnknown          = types.StatusUnknown
 	QueryNode              = types.QueryNode
 	QueryNodes             = types.QueryNodes
 	QueryNodesOfProvider   = types.QueryNodesOfProvider
@@ -56,7 +55,6 @@ var (
 	NewMsgUpdateNode                = types.NewMsgUpdateNode
 	NewMsgSetNodeStatus             = types.NewMsgSetNodeStatus
 	NodeCategoryFromString          = types.NodeCategoryFromString
-	NodeStatusFromString            = types.NodeStatusFromString
 	NewQueryNodeParams              = types.NewQueryNodeParams
 	NewQueryNodesOfProviderParams   = types.NewQueryNodesOfProviderParams
 	GetQueryCommands                = cli.GetQueryCommands
@@ -76,7 +74,6 @@ type (
 	MsgUpdateNode              = types.MsgUpdateNode
 	MsgSetNodeStatus           = types.MsgSetNodeStatus
 	NodeCategory               = types.NodeCategory
-	NodeStatus                 = types.NodeStatus
 	Node                       = types.Node
 	Nodes                      = types.Nodes
 	QueryNodeParams            = types.QueryNodeParams

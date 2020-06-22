@@ -146,10 +146,10 @@ func (m MsgUpdateNode) GetSigners() []sdk.AccAddress {
 
 type MsgSetNodeStatus struct {
 	From   hub.NodeAddress `json:"from"`
-	Status NodeStatus      `json:"status"`
+	Status hub.Status      `json:"status"`
 }
 
-func NewMsgSetNodeStatus(from hub.NodeAddress, status NodeStatus) MsgSetNodeStatus {
+func NewMsgSetNodeStatus(from hub.NodeAddress, status hub.Status) MsgSetNodeStatus {
 	return MsgSetNodeStatus{
 		From:   from,
 		Status: status,

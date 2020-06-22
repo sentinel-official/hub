@@ -2,8 +2,9 @@ package types
 
 import (
 	"fmt"
-	hub "github.com/sentinel-official/hub/types"
 	"strings"
+
+	hub "github.com/sentinel-official/hub/types"
 )
 
 const (
@@ -45,44 +46,6 @@ func (n NodeCategory) IsValid() bool {
 		n == CategoryWireGuard
 }
 
-const (
-	StatusUnknown = iota + 0x00
-	StatusActive
-	StatusInactive
-)
-
-type NodeStatus byte
-
-func NodeStatusFromString(s string) NodeStatus {
-	switch s {
-	case "Active":
-		return StatusActive
-	case "Inactive":
-		return StatusInactive
-	default:
-		return StatusUnknown
-	}
-}
-
-func (n NodeStatus) IsValid() bool {
-	return n == StatusActive || n == StatusInactive
-}
-
-func (n NodeStatus) Equal(v NodeStatus) bool {
-	return n == v
-}
-
-func (n NodeStatus) String() string {
-	switch n {
-	case StatusActive:
-		return "Active"
-	case StatusInactive:
-		return "Inactive"
-	default:
-		return "Unknown"
-	}
-}
-
 type Node struct {
 	Address       hub.NodeAddress `json:"address"`
 	Provider      hub.ProvAddress `json:"provider"`
@@ -90,7 +53,7 @@ type Node struct {
 	RemoteURL     string          `json:"remote_url"`
 	Version       string          `json:"version"`
 	Category      NodeCategory    `json:"category"`
-	Status        NodeStatus      `json:"status"`
+	Status        hub.Status      `json:"status"`
 	StatusAt      int64           `json:"status_at"`
 }
 

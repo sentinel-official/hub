@@ -90,11 +90,11 @@ func (p ProvAddress) String() string {
 func (p ProvAddress) Format(f fmt.State, c rune) {
 	switch c {
 	case 's':
-		f.Write([]byte(p.String()))
+		_, _ = f.Write([]byte(p.String()))
 	case 'p':
-		f.Write([]byte(fmt.Sprintf("%p", p)))
+		_, _ = f.Write([]byte(fmt.Sprintf("%p", p)))
 	default:
-		f.Write([]byte(fmt.Sprintf("%X", p.Bytes())))
+		_, _ = f.Write([]byte(fmt.Sprintf("%X", p.Bytes())))
 	}
 }
 
@@ -197,11 +197,11 @@ func (n NodeAddress) String() string {
 func (n NodeAddress) Format(f fmt.State, c rune) {
 	switch c {
 	case 's':
-		f.Write([]byte(n.String()))
+		_, _ = f.Write([]byte(n.String()))
 	case 'p':
-		f.Write([]byte(fmt.Sprintf("%p", n)))
+		_, _ = f.Write([]byte(fmt.Sprintf("%p", n)))
 	default:
-		f.Write([]byte(fmt.Sprintf("%X", n.Bytes())))
+		_, _ = f.Write([]byte(fmt.Sprintf("%X", n.Bytes())))
 	}
 }
 

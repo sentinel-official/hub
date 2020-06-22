@@ -5,6 +5,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
+	hub "github.com/sentinel-official/hub/types"
 	"github.com/sentinel-official/hub/x/dvpn/node/keeper"
 	"github.com/sentinel-official/hub/x/dvpn/node/types"
 )
@@ -27,7 +28,7 @@ func HandleRegisterNode(ctx sdk.Context, k keeper.Keeper, msg types.MsgRegisterN
 		RemoteURL:     msg.RemoteURL,
 		Version:       msg.Version,
 		Category:      msg.Category,
-		Status:        types.StatusInactive,
+		Status:        hub.StatusInactive,
 		StatusAt:      ctx.BlockHeight(),
 	}
 

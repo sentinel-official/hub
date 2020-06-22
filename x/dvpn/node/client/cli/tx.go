@@ -172,7 +172,7 @@ func txSetNodeStatusCmd(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgSetNodeStatus(ctx.FromAddress.Bytes(), types.NodeStatusFromString(s))
+			msg := types.NewMsgSetNodeStatus(ctx.FromAddress.Bytes(), hub.StatusFromString(s))
 			return utils.GenerateOrBroadcastMsgs(ctx, txb, []sdk.Msg{msg})
 		},
 	}
