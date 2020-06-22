@@ -57,7 +57,6 @@ var (
 	NewMsgSetNodeStatus             = types.NewMsgSetNodeStatus
 	NodeCategoryFromString          = types.NodeCategoryFromString
 	NodeStatusFromString            = types.NodeStatusFromString
-	NewNodeBandwidthSpeed           = types.NewNodeBandwidthSpeed
 	NewQueryNodeParams              = types.NewQueryNodeParams
 	NewQueryNodesOfProviderParams   = types.NewQueryNodesOfProviderParams
 	GetQueryCommands                = cli.GetQueryCommands
@@ -78,7 +77,6 @@ type (
 	MsgSetNodeStatus           = types.MsgSetNodeStatus
 	NodeCategory               = types.NodeCategory
 	NodeStatus                 = types.NodeStatus
-	NodeBandwidthSpeed         = types.NodeBandwidthSpeed
 	Node                       = types.Node
 	Nodes                      = types.Nodes
 	QueryNodeParams            = types.QueryNodeParams

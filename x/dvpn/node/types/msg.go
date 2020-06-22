@@ -15,25 +15,23 @@ var (
 )
 
 type MsgRegisterNode struct {
-	From           sdk.AccAddress     `json:"from"`
-	Provider       hub.ProvAddress    `json:"provider"`
-	PricePerGB     sdk.Coins          `json:"price_per_gb"`
-	RemoteURL      string             `json:"remote_url"`
-	Version        string             `json:"version"`
-	BandwidthSpeed NodeBandwidthSpeed `json:"bandwidth_speed"`
-	Category       NodeCategory       `json:"category"`
+	From          sdk.AccAddress  `json:"from"`
+	Provider      hub.ProvAddress `json:"provider"`
+	InternetSpeed hub.Bandwidth   `json:"internet_speed"`
+	RemoteURL     string          `json:"remote_url"`
+	Version       string          `json:"version"`
+	Category      NodeCategory    `json:"category"`
 }
 
-func NewMsgRegisterNode(from sdk.AccAddress, provider hub.ProvAddress, pricePerGB sdk.Coins,
-	remoteURL, version string, bandwidthSpeed NodeBandwidthSpeed, category NodeCategory) MsgRegisterNode {
+func NewMsgRegisterNode(from sdk.AccAddress, provider hub.ProvAddress, speed hub.Bandwidth,
+	remoteURL, version string, category NodeCategory) MsgRegisterNode {
 	return MsgRegisterNode{
-		From:           from,
-		Provider:       provider,
-		PricePerGB:     pricePerGB,
-		RemoteURL:      remoteURL,
-		Version:        version,
-		BandwidthSpeed: bandwidthSpeed,
-		Category:       category,
+		From:          from,
+		Provider:      provider,
+		InternetSpeed: speed,
+		RemoteURL:     remoteURL,
+		Version:       version,
+		Category:      category,
 	}
 }
 
@@ -52,17 +50,14 @@ func (m MsgRegisterNode) ValidateBasic() sdk.Error {
 	if m.Provider == nil || m.Provider.Empty() {
 		return ErrorInvalidField("provider")
 	}
-	if m.PricePerGB == nil || !m.PricePerGB.IsValid() {
-		return ErrorInvalidField("price_per_gb")
+	if m.InternetSpeed.IsAnyZero() {
+		return ErrorInvalidField("internet_speed")
 	}
 	if len(m.RemoteURL) == 0 || len(m.RemoteURL) > 32 {
 		return ErrorInvalidField("remote_url")
 	}
 	if len(m.Version) == 0 || len(m.Version) > 32 {
 		return ErrorInvalidField("version")
-	}
-	if m.BandwidthSpeed.IsAnyZero() {
-		return ErrorInvalidField("bandwidth_speed")
 	}
 	if !m.Category.IsValid() {
 		return ErrorInvalidField("category")
@@ -85,25 +80,23 @@ func (m MsgRegisterNode) GetSigners() []sdk.AccAddress {
 }
 
 type MsgUpdateNode struct {
-	From           hub.NodeAddress    `json:"from"`
-	Provider       hub.ProvAddress    `json:"provider"`
-	PricePerGB     sdk.Coins          `json:"price_per_gb"`
-	RemoteURL      string             `json:"remote_url"`
-	Version        string             `json:"version"`
-	BandwidthSpeed NodeBandwidthSpeed `json:"bandwidth_speed"`
-	Category       NodeCategory       `json:"category"`
+	From          hub.NodeAddress `json:"from"`
+	Provider      hub.ProvAddress `json:"provider"`
+	InternetSpeed hub.Bandwidth   `json:"internet_speed"`
+	RemoteURL     string          `json:"remote_url"`
+	Version       string          `json:"version"`
+	Category      NodeCategory    `json:"category"`
 }
 
-func NewMsgUpdateNode(from hub.NodeAddress, provider hub.ProvAddress, pricePerGB sdk.Coins,
-	remoteURL, version string, bandwidthSpeed NodeBandwidthSpeed, category NodeCategory) MsgUpdateNode {
+func NewMsgUpdateNode(from hub.NodeAddress, provider hub.ProvAddress, speed hub.Bandwidth,
+	remoteURL, version string, category NodeCategory) MsgUpdateNode {
 	return MsgUpdateNode{
-		From:           from,
-		Provider:       provider,
-		PricePerGB:     pricePerGB,
-		RemoteURL:      remoteURL,
-		Version:        version,
-		BandwidthSpeed: bandwidthSpeed,
-		Category:       category,
+		From:          from,
+		Provider:      provider,
+		InternetSpeed: speed,
+		RemoteURL:     remoteURL,
+		Version:       version,
+		Category:      category,
 	}
 }
 
@@ -122,17 +115,14 @@ func (m MsgUpdateNode) ValidateBasic() sdk.Error {
 	if m.Provider != nil && m.Provider.Empty() {
 		return ErrorInvalidField("provider")
 	}
-	if m.PricePerGB != nil && !m.PricePerGB.IsValid() {
-		return ErrorInvalidField("price_per_gb")
+	if !m.InternetSpeed.IsAllZero() && m.InternetSpeed.IsAnyZero() {
+		return ErrorInvalidField("internet_speed")
 	}
 	if len(m.RemoteURL) != 0 && len(m.RemoteURL) > 32 {
 		return ErrorInvalidField("remote_url")
 	}
 	if len(m.Version) != 0 && len(m.Version) > 32 {
 		return ErrorInvalidField("version")
-	}
-	if !m.BandwidthSpeed.IsAllZero() && m.BandwidthSpeed.IsAnyZero() {
-		return ErrorInvalidField("bandwidth_speed")
 	}
 	if m.Category != CategoryUnknown && !m.Category.IsValid() {
 		return ErrorInvalidField("category")

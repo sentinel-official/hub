@@ -2,11 +2,8 @@ package types
 
 import (
 	"fmt"
-	"strings"
-
-	sdk "github.com/cosmos/cosmos-sdk/types"
-
 	hub "github.com/sentinel-official/hub/types"
+	"strings"
 )
 
 const (
@@ -86,55 +83,28 @@ func (n NodeStatus) String() string {
 	}
 }
 
-type NodeBandwidthSpeed struct {
-	Upload   uint64 `json:"upload"`
-	Download uint64 `json:"download"`
-}
-
-func NewNodeBandwidthSpeed(upload, download uint64) NodeBandwidthSpeed {
-	return NodeBandwidthSpeed{
-		Upload:   upload,
-		Download: download,
-	}
-}
-
-func (n NodeBandwidthSpeed) IsAnyZero() bool {
-	return n.Upload == 0 || n.Download == 0
-}
-
-func (n NodeBandwidthSpeed) IsAllZero() bool {
-	return n.Upload == 0 && n.Download == 0
-}
-
-func (n NodeBandwidthSpeed) String() string {
-	return fmt.Sprintf("%d↑, %d↓", n.Upload, n.Download)
-}
-
 type Node struct {
-	Address        hub.NodeAddress    `json:"address"`
-	Provider       hub.ProvAddress    `json:"provider"`
-	PricePerGB     sdk.Coins          `json:"price_per_gb"`
-	RemoteURL      string             `json:"remote_url"`
-	Version        string             `json:"version"`
-	BandwidthSpeed NodeBandwidthSpeed `json:"bandwidth_speed"`
-	Category       NodeCategory       `json:"category"`
-	Status         NodeStatus         `json:"status"`
-	StatusAt       int64              `json:"status_at"`
+	Address       hub.NodeAddress `json:"address"`
+	Provider      hub.ProvAddress `json:"provider"`
+	InternetSpeed hub.Bandwidth   `json:"internet_speed"`
+	RemoteURL     string          `json:"remote_url"`
+	Version       string          `json:"version"`
+	Category      NodeCategory    `json:"category"`
+	Status        NodeStatus      `json:"status"`
+	StatusAt      int64           `json:"status_at"`
 }
 
 func (n Node) String() string {
 	return strings.TrimSpace(fmt.Sprintf(`
 Address: %s
 Provider: %s
-Price per Gigabyte: %s
+Internet speed: %s
 Remote URL: %s
 Version: %s
-Bandwidth speed: %s
 Category: %s
 Status: %s
 Status at: %d
-`, n.Address, n.Provider, n.PricePerGB, n.RemoteURL, n.Version,
-		n.BandwidthSpeed, n.Category, n.Status, n.StatusAt))
+`, n.Address, n.Provider, n.InternetSpeed, n.RemoteURL, n.Version, n.Category, n.Status, n.StatusAt))
 }
 
 type Nodes []Node
