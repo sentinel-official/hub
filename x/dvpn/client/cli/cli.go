@@ -11,7 +11,8 @@ import (
 
 func GetQueryCmd(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
-		Use: "dvpn",
+		Use:   "dvpn",
+		Short: "dVPN module sub-commands",
 	}
 
 	cmd.AddCommand(provider.GetQueryCommands(cdc)...)
@@ -23,7 +24,8 @@ func GetQueryCmd(cdc *codec.Codec) *cobra.Command {
 
 func GetTxCmd(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
-		Use: "dvpn",
+		Use:   "dvpn",
+		Short: "dVPN module sub-commands",
 	}
 
 	cmd.AddCommand(provider.GetTxCommands(cdc)...)
