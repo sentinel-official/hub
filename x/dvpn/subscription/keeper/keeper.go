@@ -5,20 +5,20 @@ import (
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/sentinel-official/hub/x/dvpn/provider"
+	"github.com/sentinel-official/hub/x/dvpn/node"
 )
 
 type Keeper struct {
-	cdc      *codec.Codec
-	key      sdk.StoreKey
-	provider provider.Keeper
+	cdc  *codec.Codec
+	key  sdk.StoreKey
+	node node.Keeper
 }
 
-func NewKeeper(cdc *codec.Codec, key sdk.StoreKey, provider provider.Keeper) Keeper {
+func NewKeeper(cdc *codec.Codec, key sdk.StoreKey, node node.Keeper) Keeper {
 	return Keeper{
-		cdc:      cdc,
-		key:      key,
-		provider: provider,
+		cdc:  cdc,
+		key:  key,
+		node: node,
 	}
 }
 

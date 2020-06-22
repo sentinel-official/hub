@@ -4,11 +4,12 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	hub "github.com/sentinel-official/hub/types"
+	"github.com/sentinel-official/hub/x/dvpn/node"
 	"github.com/sentinel-official/hub/x/dvpn/subscription/types"
 )
 
 func (k Keeper) SetPlansCountForProvider(ctx sdk.Context, address hub.ProvAddress, count uint64) {
-	key := types.PlansCountForProviderKey(address)
+	key := types.PlansCountKey(address)
 	value := k.cdc.MustMarshalBinaryLengthPrefixed(count)
 
 	store := k.PlanStore(ctx)
@@ -18,7 +19,7 @@ func (k Keeper) SetPlansCountForProvider(ctx sdk.Context, address hub.ProvAddres
 func (k Keeper) GetPlansCountForProvider(ctx sdk.Context, address hub.ProvAddress) (count uint64) {
 	store := k.PlanStore(ctx)
 
-	key := types.PlansCountForProviderKey(address)
+	key := types.PlansCountKey(address)
 	value := store.Get(key)
 	if value == nil {
 		return 0
@@ -29,7 +30,7 @@ func (k Keeper) GetPlansCountForProvider(ctx sdk.Context, address hub.ProvAddres
 }
 
 func (k Keeper) SetPlan(ctx sdk.Context, plan types.Plan) {
-	key := types.PlanForProviderKey(plan.Provider, plan.ID)
+	key := types.PlanKey(plan.Provider, plan.ID)
 	value := k.cdc.MustMarshalBinaryLengthPrefixed(plan)
 
 	store := k.PlanStore(ctx)
@@ -39,7 +40,7 @@ func (k Keeper) SetPlan(ctx sdk.Context, plan types.Plan) {
 func (k Keeper) GetPlan(ctx sdk.Context, address hub.ProvAddress, i uint64) (plan types.Plan, found bool) {
 	store := k.PlanStore(ctx)
 
-	key := types.PlanForProviderKey(address, i)
+	key := types.PlanKey(address, i)
 	value := store.Get(key)
 	if value == nil {
 		return plan, false
@@ -77,4 +78,38 @@ func (k Keeper) GetPlansOfProvider(ctx sdk.Context, address hub.ProvAddress) (pl
 	}
 
 	return plans
+}
+
+func (k Keeper) SetNodeAddressForPlan(ctx sdk.Context, pa hub.ProvAddress, i uint64, na hub.NodeAddress) {
+	key := types.NodeKey(pa, i, na)
+	value := k.cdc.MustMarshalBinaryLengthPrefixed(na)
+
+	store := k.PlanStore(ctx)
+	store.Set(key, value)
+}
+
+func (k Keeper) HasNodeAddressForPlan(ctx sdk.Context, pa hub.ProvAddress, i uint64, na hub.NodeAddress) bool {
+	store := k.PlanStore(ctx)
+
+	key := types.NodeKey(pa, i, na)
+	value := store.Get(key)
+
+	return value != nil
+}
+
+func (k Keeper) GetNodesForPlan(ctx sdk.Context, address hub.ProvAddress, i uint64) (nodes node.Nodes) {
+	store := k.PlanStore(ctx)
+
+	iter := sdk.KVStorePrefixIterator(store, types.NodeForPlanKeyPrefix(address, i))
+	defer iter.Close()
+
+	for ; iter.Valid(); iter.Next() {
+		var na hub.NodeAddress
+		k.cdc.MustUnmarshalBinaryLengthPrefixed(iter.Value(), &na)
+
+		n, _ := k.GetNode(ctx, na)
+		nodes = append(nodes, n)
+	}
+
+	return nodes
 }

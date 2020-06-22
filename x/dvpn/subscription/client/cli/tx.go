@@ -87,7 +87,7 @@ func txAddPlanCmd(cdc *codec.Codec) *cobra.Command {
 
 func txSetPlanStatusCmd(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "plan-set-status",
+		Use:   "plan-status-set",
 		Short: "Set plan status",
 		Args:  cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) error {

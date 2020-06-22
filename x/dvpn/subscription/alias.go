@@ -46,9 +46,12 @@ var (
 	ErrorNoPlanFound              = types.ErrorNoPlanFound
 	NewGenesisState               = types.NewGenesisState
 	DefaultGenesisState           = types.DefaultGenesisState
-	PlansCountForProviderKey      = types.PlansCountForProviderKey
+	PlansCountKey                 = types.PlansCountKey
 	PlanForProviderKeyPrefix      = types.PlanForProviderKeyPrefix
-	PlanForProviderKey            = types.PlanForProviderKey
+	PlanKey                       = types.PlanKey
+	NodeForProviderKeyPrefix      = types.NodeForProviderKeyPrefix
+	NodeForPlanKeyPrefix          = types.NodeForPlanKeyPrefix
+	NodeKey                       = types.NodeKey
 	NewMsgAddPlan                 = types.NewMsgAddPlan
 	NewMsgSetPlanStatus           = types.NewMsgSetPlanStatus
 	NewQueryPlanParams            = types.NewQueryPlanParams
@@ -58,11 +61,12 @@ var (
 	RegisterRoutes                = rest.RegisterRoutes
 
 	// variable aliases
-	ModuleCdc                      = types.ModuleCdc
-	RouterKey                      = types.RouterKey
-	StoreKey                       = types.StoreKey
-	PlansCountForProviderKeyPrefix = types.PlansCountForProviderKeyPrefix
-	PlanKeyPrefix                  = types.PlanKeyPrefix
+	ModuleCdc           = types.ModuleCdc
+	RouterKey           = types.RouterKey
+	StoreKey            = types.StoreKey
+	PlansCountKeyPrefix = types.PlansCountKeyPrefix
+	PlanKeyPrefix       = types.PlanKeyPrefix
+	NodeKeyPrefix       = types.NodeKeyPrefix
 )
 
 type (
