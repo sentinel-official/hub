@@ -16,7 +16,7 @@ func QueryProvider(ctx context.CLIContext, address hub.ProvAddress) (*types.Prov
 		return nil, err
 	}
 
-	path := fmt.Sprintf("custom/%s/%s/%s", "dvpn", types.QuerierRoute, types.QueryProvider)
+	path := fmt.Sprintf("custom/%s/%s/%s", types.StoreKey, types.QuerierRoute, types.QueryProvider)
 	res, _, err := ctx.QueryWithData(path, bytes)
 	if err != nil {
 		return nil, err
@@ -34,7 +34,7 @@ func QueryProvider(ctx context.CLIContext, address hub.ProvAddress) (*types.Prov
 }
 
 func QueryProviders(ctx context.CLIContext) (types.Providers, error) {
-	path := fmt.Sprintf("custom/%s/%s/%s", "dvpn", types.QuerierRoute, types.QueryProviders)
+	path := fmt.Sprintf("custom/%s/%s/%s", types.StoreKey, types.QuerierRoute, types.QueryProviders)
 	res, _, err := ctx.QueryWithData(path, nil)
 	if err != nil {
 		return nil, err
