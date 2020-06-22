@@ -153,7 +153,7 @@ func txSetNodeStatusCmd(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "set-status",
 		Short: "Set node status",
-		Args:  cobra.ExactArgs(1),
+		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			txb := auth.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
 			ctx := context.NewCLIContext().WithCodec(cdc)
@@ -167,18 +167,10 @@ func txSetNodeStatusCmd(cdc *codec.Codec) *cobra.Command {
 				return fmt.Errorf("node address is not equal to from address")
 			}
 
-			s, err := cmd.Flags().GetString(flagStatus)
-			if err != nil {
-				return err
-			}
-
-			msg := types.NewMsgSetNodeStatus(ctx.FromAddress.Bytes(), hub.StatusFromString(s))
+			msg := types.NewMsgSetNodeStatus(ctx.FromAddress.Bytes(), hub.StatusFromString(args[1]))
 			return utils.GenerateOrBroadcastMsgs(ctx, txb, []sdk.Msg{msg})
 		},
 	}
 
-	cmd.Flags().String(flagStatus, "", "Node status")
-
-	_ = cmd.MarkFlagRequired(flagStatus)
 	return cmd
 }

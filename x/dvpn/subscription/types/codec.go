@@ -2,10 +2,6 @@ package types
 
 import (
 	"github.com/cosmos/cosmos-sdk/codec"
-
-	"github.com/sentinel-official/hub/x/dvpn/node"
-	"github.com/sentinel-official/hub/x/dvpn/provider"
-	"github.com/sentinel-official/hub/x/dvpn/subscription"
 )
 
 var (
@@ -20,7 +16,6 @@ func init() {
 }
 
 func RegisterCodec(cdc *codec.Codec) {
-	provider.RegisterCodec(cdc)
-	node.RegisterCodec(cdc)
-	subscription.RegisterCodec(cdc)
+	cdc.RegisterConcrete(MsgAddPlan{}, "x/dvpn/subscription/MsgAddPlan", nil)
+	cdc.RegisterConcrete(MsgSetPlanStatus{}, "x/dvpn/subscription/MsgSetPlanStatus", nil)
 }

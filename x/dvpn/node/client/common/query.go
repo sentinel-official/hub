@@ -16,7 +16,7 @@ func QueryNode(ctx context.CLIContext, address hub.NodeAddress) (*types.Node, er
 		return nil, err
 	}
 
-	path := fmt.Sprintf("custom/%s/%s/%s", "dvpn", types.QuerierRoute, types.QueryNode)
+	path := fmt.Sprintf("custom/%s/%s/%s", types.StoreKey, types.QuerierRoute, types.QueryNode)
 	res, _, err := ctx.QueryWithData(path, bytes)
 	if err != nil {
 		return nil, err
@@ -34,7 +34,7 @@ func QueryNode(ctx context.CLIContext, address hub.NodeAddress) (*types.Node, er
 }
 
 func QueryNodes(ctx context.CLIContext) (types.Nodes, error) {
-	path := fmt.Sprintf("custom/%s/%s/%s", "dvpn", types.QuerierRoute, types.QueryNodes)
+	path := fmt.Sprintf("custom/%s/%s/%s", types.StoreKey, types.QuerierRoute, types.QueryNodes)
 	res, _, err := ctx.QueryWithData(path, nil)
 	if err != nil {
 		return nil, err
@@ -58,7 +58,7 @@ func QueryNodesOfProvider(ctx context.CLIContext, address hub.ProvAddress) (type
 		return nil, err
 	}
 
-	path := fmt.Sprintf("custom/%s/%s/%s", "dvpn", types.QuerierRoute, types.QueryNodesOfProvider)
+	path := fmt.Sprintf("custom/%s/%s/%s", types.StoreKey, types.QuerierRoute, types.QueryNodesOfProvider)
 	res, _, err := ctx.QueryWithData(path, bytes)
 	if err != nil {
 		return nil, err
