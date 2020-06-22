@@ -52,6 +52,7 @@ var (
 	// variable aliases
 	ModuleCdc         = types.ModuleCdc
 	RouterKey         = types.RouterKey
+	StoreKey          = types.StoreKey
 	ProviderKeyPrefix = types.ProviderKeyPrefix
 )
 

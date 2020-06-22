@@ -11,6 +11,7 @@ const (
 
 var (
 	RouterKey = ModuleName
+	StoreKey  = ModuleName
 )
 
 var (
