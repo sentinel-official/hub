@@ -12,6 +12,8 @@ import (
 var (
 	_ sdk.Msg = (*MsgAddPlan)(nil)
 	_ sdk.Msg = (*MsgSetPlanStatus)(nil)
+	_ sdk.Msg = (*MsgAddNode)(nil)
+	_ sdk.Msg = (*MsgRemoveNode)(nil)
 )
 
 type MsgAddPlan struct {
@@ -114,5 +116,97 @@ func (m MsgSetPlanStatus) GetSignBytes() []byte {
 }
 
 func (m MsgSetPlanStatus) GetSigners() []sdk.AccAddress {
+	return []sdk.AccAddress{m.From.Bytes()}
+}
+
+type MsgAddNode struct {
+	From    hub.ProvAddress `json:"from"`
+	ID      uint64          `json:"id"`
+	Address hub.NodeAddress `json:"address"`
+}
+
+func NewMsgAddNode(from hub.ProvAddress, id uint64, address hub.NodeAddress) MsgAddNode {
+	return MsgAddNode{
+		From:    from,
+		ID:      id,
+		Address: address,
+	}
+}
+
+func (m MsgAddNode) Route() string {
+	return RouterKey
+}
+
+func (m MsgAddNode) Type() string {
+	return "add_node"
+}
+
+func (m MsgAddNode) ValidateBasic() sdk.Error {
+	if m.From == nil || m.From.Empty() {
+		return ErrorInvalidField("from")
+	}
+	if m.Address == nil || m.Address.Empty() {
+		return ErrorInvalidField("address")
+	}
+
+	return nil
+}
+
+func (m MsgAddNode) GetSignBytes() []byte {
+	bytes, err := json.Marshal(m)
+	if err != nil {
+		panic(err)
+	}
+
+	return bytes
+}
+
+func (m MsgAddNode) GetSigners() []sdk.AccAddress {
+	return []sdk.AccAddress{m.From.Bytes()}
+}
+
+type MsgRemoveNode struct {
+	From    hub.ProvAddress `json:"from"`
+	ID      uint64          `json:"id"`
+	Address hub.NodeAddress `json:"address"`
+}
+
+func NewMsgRemoveNode(from hub.ProvAddress, id uint64, address hub.NodeAddress) MsgRemoveNode {
+	return MsgRemoveNode{
+		From:    from,
+		ID:      id,
+		Address: address,
+	}
+}
+
+func (m MsgRemoveNode) Route() string {
+	return RouterKey
+}
+
+func (m MsgRemoveNode) Type() string {
+	return "remove_node"
+}
+
+func (m MsgRemoveNode) ValidateBasic() sdk.Error {
+	if m.From == nil || m.From.Empty() {
+		return ErrorInvalidField("from")
+	}
+	if m.Address == nil || m.Address.Empty() {
+		return ErrorInvalidField("address")
+	}
+
+	return nil
+}
+
+func (m MsgRemoveNode) GetSignBytes() []byte {
+	bytes, err := json.Marshal(m)
+	if err != nil {
+		panic(err)
+	}
+
+	return bytes
+}
+
+func (m MsgRemoveNode) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{m.From.Bytes()}
 }

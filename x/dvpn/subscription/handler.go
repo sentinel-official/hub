@@ -16,7 +16,7 @@ func HandleAddPlan(ctx sdk.Context, k keeper.Keeper, msg types.MsgAddPlan) sdk.R
 		return types.ErrorNoProviderFound().Result()
 	}
 
-	count := k.GetPlansCountForProvider(ctx, msg.From)
+	count := k.GetPlansCount(ctx, msg.From)
 	plan := types.Plan{
 		ID:           count,
 		Provider:     msg.From,
@@ -35,7 +35,7 @@ func HandleAddPlan(ctx sdk.Context, k keeper.Keeper, msg types.MsgAddPlan) sdk.R
 		sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", plan.ID)),
 	))
 
-	k.SetPlansCountForProvider(ctx, plan.Provider, count+1)
+	k.SetPlansCount(ctx, plan.Provider, count+1)
 	ctx.EventManager().EmitEvent(sdk.NewEvent(
 		types.EventTypeSetPlansCount,
 		sdk.NewAttribute(types.AttributeKeyAddress, plan.Provider.String()),
@@ -60,6 +60,66 @@ func HandleSetPlanStatus(ctx sdk.Context, k keeper.Keeper, msg types.MsgSetPlanS
 		sdk.NewAttribute(types.AttributeKeyAddress, plan.Provider.String()),
 		sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", plan.ID)),
 		sdk.NewAttribute(types.AttributeKeyStatus, plan.Status.String()),
+	))
+
+	return sdk.Result{Events: ctx.EventManager().Events()}
+}
+
+func HandleAddNode(ctx sdk.Context, k keeper.Keeper, msg types.MsgAddNode) sdk.Result {
+	plan, found := k.GetPlan(ctx, msg.From, msg.ID)
+	if !found {
+		return ErrorNoPlanFound().Result()
+	}
+
+	node, found := k.GetNode(ctx, msg.Address)
+	if !found {
+		return types.ErrorNoNodeFound().Result()
+	}
+
+	if !plan.Provider.Equals(node.Provider) {
+		return types.ErrorUnauthorized().Result()
+	}
+
+	if k.HasNodeAddressForPlan(ctx, plan.Provider, plan.ID, node.Address) {
+		return types.ErrorDuplicateNode().Result()
+	}
+
+	k.SetNodeAddressForPlan(ctx, plan.Provider, plan.ID, node.Address)
+	ctx.EventManager().EmitEvent(sdk.NewEvent(
+		types.EventTypeSetNodeAddressForPlan,
+		sdk.NewAttribute(types.AttributeKeyAddress, plan.Provider.String()),
+		sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", plan.ID)),
+		sdk.NewAttribute(types.AttributeKeyAddress, node.Address.String()),
+	))
+
+	return sdk.Result{Events: ctx.EventManager().Events()}
+}
+
+func HandleRemoveNode(ctx sdk.Context, k keeper.Keeper, msg types.MsgRemoveNode) sdk.Result {
+	node, found := k.GetNode(ctx, msg.Address)
+	if !found {
+		return types.ErrorNoNodeFound().Result()
+	}
+
+	plan, found := k.GetPlan(ctx, msg.From, msg.ID)
+	if !found {
+		return ErrorNoPlanFound().Result()
+	}
+
+	if !plan.Provider.Equals(node.Provider) {
+		return types.ErrorUnauthorized().Result()
+	}
+
+	if !k.HasNodeAddressForPlan(ctx, plan.Provider, plan.ID, node.Address) {
+		return types.ErrorNoNodeAdded().Result()
+	}
+
+	k.DeleteNodeAddressForPlan(ctx, plan.Provider, plan.ID, node.Address)
+	ctx.EventManager().EmitEvent(sdk.NewEvent(
+		types.EventTypeDeleteNodeAddressForPlan,
+		sdk.NewAttribute(types.AttributeKeyAddress, plan.Provider.String()),
+		sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", plan.ID)),
+		sdk.NewAttribute(types.AttributeKeyAddress, node.Address.String()),
 	))
 
 	return sdk.Result{Events: ctx.EventManager().Events()}

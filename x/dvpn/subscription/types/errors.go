@@ -18,6 +18,10 @@ const (
 	errorCodeInvalidField
 	errorCodeNoProviderFound
 	errorCodeNoPlanFound
+	errorCodeNoNodeFound
+	errorCodeUnauthorized
+	errorCodeDuplicateNode
+	errorCodeNoNodeAdded
 )
 
 const (
@@ -26,6 +30,10 @@ const (
 	errorMsgInvalidField     = "invalid field: %s"
 	errorMsgNoProviderFound  = "no provider found"
 	errorMsgNoPlanFound      = "no plan found"
+	errorMsgNoNodeFound      = "no node found"
+	errorMsgUnauthorized     = "unauthorized"
+	errorMsgDuplicateNode    = "duplicate node"
+	errorMsgNoNodeAdded      = "no node added"
 )
 
 func ErrorMarshal() sdk.Error {
@@ -54,4 +62,20 @@ func ErrorNoProviderFound() sdk.Error {
 
 func ErrorNoPlanFound() sdk.Error {
 	return sdk.NewError(Codespace, errorCodeNoPlanFound, errorMsgNoPlanFound)
+}
+
+func ErrorNoNodeFound() sdk.Error {
+	return sdk.NewError(Codespace, errorCodeNoNodeFound, errorMsgNoNodeFound)
+}
+
+func ErrorUnauthorized() sdk.Error {
+	return sdk.NewError(Codespace, errorCodeUnauthorized, errorMsgUnauthorized)
+}
+
+func ErrorDuplicateNode() sdk.Error {
+	return sdk.NewError(Codespace, errorCodeDuplicateNode, errorMsgDuplicateNode)
+}
+
+func ErrorNoNodeAdded() sdk.Error {
+	return sdk.NewError(Codespace, errorCodeNoNodeAdded, errorMsgNoNodeAdded)
 }

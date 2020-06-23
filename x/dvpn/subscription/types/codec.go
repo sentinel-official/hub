@@ -18,4 +18,6 @@ func init() {
 func RegisterCodec(cdc *codec.Codec) {
 	cdc.RegisterConcrete(MsgAddPlan{}, "x/dvpn/subscription/MsgAddPlan", nil)
 	cdc.RegisterConcrete(MsgSetPlanStatus{}, "x/dvpn/subscription/MsgSetPlanStatus", nil)
+	cdc.RegisterConcrete(MsgAddNode{}, "x/dvpn/subscription/MsgAddNode", nil)
+	cdc.RegisterConcrete(MsgRemoveNode{}, "x/dvpn/subscription/MsgRemoveNode", nil)
 }

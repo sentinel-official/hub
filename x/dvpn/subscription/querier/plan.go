@@ -49,3 +49,17 @@ func queryPlansOfProvider(ctx sdk.Context, req abci.RequestQuery, k keeper.Keepe
 
 	return res, nil
 }
+
+func queryNodesOfPlan(ctx sdk.Context, req abci.RequestQuery, k keeper.Keeper) ([]byte, sdk.Error) {
+	var params types.QueryNodesOfPlanParams
+	if err := types.ModuleCdc.UnmarshalJSON(req.Data, &params); err != nil {
+		return nil, types.ErrorUnmarshal()
+	}
+
+	res, err := types.ModuleCdc.MarshalJSON(k.GetNodesForPlan(ctx, params.Address, params.ID))
+	if err != nil {
+		return nil, types.ErrorMarshal()
+	}
+
+	return res, nil
+}

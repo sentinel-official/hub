@@ -8,7 +8,7 @@ import (
 	"github.com/sentinel-official/hub/x/dvpn/subscription/types"
 )
 
-func (k Keeper) SetPlansCountForProvider(ctx sdk.Context, address hub.ProvAddress, count uint64) {
+func (k Keeper) SetPlansCount(ctx sdk.Context, address hub.ProvAddress, count uint64) {
 	key := types.PlansCountKey(address)
 	value := k.cdc.MustMarshalBinaryLengthPrefixed(count)
 
@@ -16,7 +16,7 @@ func (k Keeper) SetPlansCountForProvider(ctx sdk.Context, address hub.ProvAddres
 	store.Set(key, value)
 }
 
-func (k Keeper) GetPlansCountForProvider(ctx sdk.Context, address hub.ProvAddress) (count uint64) {
+func (k Keeper) GetPlansCount(ctx sdk.Context, address hub.ProvAddress) (count uint64) {
 	store := k.PlanStore(ctx)
 
 	key := types.PlansCountKey(address)
@@ -81,7 +81,7 @@ func (k Keeper) GetPlansOfProvider(ctx sdk.Context, address hub.ProvAddress) (pl
 }
 
 func (k Keeper) SetNodeAddressForPlan(ctx sdk.Context, pa hub.ProvAddress, i uint64, na hub.NodeAddress) {
-	key := types.NodeKey(pa, i, na)
+	key := types.NodeAddressKey(pa, i, na)
 	value := k.cdc.MustMarshalBinaryLengthPrefixed(na)
 
 	store := k.PlanStore(ctx)
@@ -91,16 +91,23 @@ func (k Keeper) SetNodeAddressForPlan(ctx sdk.Context, pa hub.ProvAddress, i uin
 func (k Keeper) HasNodeAddressForPlan(ctx sdk.Context, pa hub.ProvAddress, i uint64, na hub.NodeAddress) bool {
 	store := k.PlanStore(ctx)
 
-	key := types.NodeKey(pa, i, na)
+	key := types.NodeAddressKey(pa, i, na)
 	value := store.Get(key)
 
 	return value != nil
 }
 
+func (k Keeper) DeleteNodeAddressForPlan(ctx sdk.Context, pa hub.ProvAddress, i uint64, na hub.NodeAddress) {
+	store := k.PlanStore(ctx)
+
+	key := types.NodeAddressKey(pa, i, na)
+	store.Delete(key)
+}
+
 func (k Keeper) GetNodesForPlan(ctx sdk.Context, address hub.ProvAddress, i uint64) (nodes node.Nodes) {
 	store := k.PlanStore(ctx)
 
-	iter := sdk.KVStorePrefixIterator(store, types.NodeForPlanKeyPrefix(address, i))
+	iter := sdk.KVStorePrefixIterator(store, types.NodeAddressForPlanKeyPrefix(address, i))
 	defer iter.Close()
 
 	for ; iter.Valid(); iter.Next() {
