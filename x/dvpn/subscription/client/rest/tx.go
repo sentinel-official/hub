@@ -17,3 +17,9 @@ func txSetPlanStatusHandlerFunc(ctx context.CLIContext) http.HandlerFunc {
 
 	}
 }
+
+func txAddNodeHandlerFunc(ctx context.CLIContext) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+
+	}
+}
