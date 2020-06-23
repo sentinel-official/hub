@@ -27,6 +27,10 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 			return subscription.HandleAddPlan(ctx, k.Subscription, msg)
 		case subscription.MsgSetPlanStatus:
 			return subscription.HandleSetPlanStatus(ctx, k.Subscription, msg)
+		case subscription.MsgAddNode:
+			return subscription.HandleAddNode(ctx, k.Subscription, msg)
+		case subscription.MsgRemoveNode:
+			return subscription.HandleRemoveNode(ctx, k.Subscription, msg)
 		default:
 			return types.ErrorUnknownMsgType(msg.Type()).Result()
 		}

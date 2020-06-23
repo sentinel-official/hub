@@ -13,14 +13,14 @@ import (
 func InitGenesis(ctx sdk.Context, k keeper.Keeper, state types.GenesisState) {
 	provider.InitGenesis(ctx, k.Provider, state.Providers)
 	node.InitGenesis(ctx, k.Node, state.Nodes)
-	subscription.InitGenesis(ctx, k.Subscription, state.Subscriptions)
+	subscription.InitGenesis(ctx, k.Subscription, state.Subscription)
 }
 
 func ExportGenesis(ctx sdk.Context, k keeper.Keeper) types.GenesisState {
 	return types.GenesisState{
-		Providers:     provider.ExportGenesis(ctx, k.Provider),
-		Nodes:         node.ExportGenesis(ctx, k.Node),
-		Subscriptions: subscription.ExportGenesis(ctx, k.Subscription),
+		Providers:    provider.ExportGenesis(ctx, k.Provider),
+		Nodes:        node.ExportGenesis(ctx, k.Node),
+		Subscription: subscription.ExportGenesis(ctx, k.Subscription),
 	}
 }
 
@@ -31,7 +31,7 @@ func ValidateGenesis(state types.GenesisState) error {
 	if err := node.ValidateGenesis(state.Nodes); err != nil {
 		return err
 	}
-	if err := subscription.ValidateGenesis(state.Subscriptions); err != nil {
+	if err := subscription.ValidateGenesis(state.Subscription); err != nil {
 		return err
 	}
 

@@ -7,24 +7,24 @@ import (
 )
 
 type GenesisState struct {
-	Providers     provider.GenesisState     `json:"providers"`
-	Nodes         node.GenesisState         `json:"nodes"`
-	Subscriptions subscription.GenesisState `json:"subscriptions"`
+	Providers    provider.GenesisState     `json:"providers"`
+	Nodes        node.GenesisState         `json:"nodes"`
+	Subscription subscription.GenesisState `json:"subscription"`
 }
 
 func NewGenesisState(providers provider.GenesisState, nodes node.GenesisState,
-	subscriptions subscription.GenesisState) GenesisState {
+	subscription subscription.GenesisState) GenesisState {
 	return GenesisState{
-		Providers:     providers,
-		Nodes:         nodes,
-		Subscriptions: subscriptions,
+		Providers:    providers,
+		Nodes:        nodes,
+		Subscription: subscription,
 	}
 }
 
 func DefaultGenesisState() GenesisState {
 	return GenesisState{
-		Providers:     provider.DefaultGenesisState(),
-		Nodes:         node.DefaultGenesisState(),
-		Subscriptions: subscription.DefaultGenesisState(),
+		Providers:    provider.DefaultGenesisState(),
+		Nodes:        node.DefaultGenesisState(),
+		Subscription: subscription.DefaultGenesisState(),
 	}
 }
