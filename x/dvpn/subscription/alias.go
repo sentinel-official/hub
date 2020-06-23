@@ -17,65 +17,80 @@ import (
 )
 
 const (
-	Codespace              = types.Codespace
-	EventTypeSetPlan       = types.EventTypeSetPlan
-	EventTypeSetPlansCount = types.EventTypeSetPlansCount
-	EventTypeSetPlanStatus = types.EventTypeSetPlanStatus
-	AttributeKeyAddress    = types.AttributeKeyAddress
-	AttributeKeyID         = types.AttributeKeyID
-	AttributeKeyCount      = types.AttributeKeyCount
-	AttributeKeyStatus     = types.AttributeKeyStatus
-	ModuleName             = types.ModuleName
-	QuerierRoute           = types.QuerierRoute
-	QueryPlan              = types.QueryPlan
-	QueryPlans             = types.QueryPlans
-	QueryPlansOfProvider   = types.QueryPlansOfProvider
+	Codespace                         = types.Codespace
+	EventTypeSetPlan                  = types.EventTypeSetPlan
+	EventTypeSetPlansCount            = types.EventTypeSetPlansCount
+	EventTypeSetPlanStatus            = types.EventTypeSetPlanStatus
+	EventTypeSetNodeAddressForPlan    = types.EventTypeSetNodeAddressForPlan
+	EventTypeDeleteNodeAddressForPlan = types.EventTypeDeleteNodeAddressForPlan
+	AttributeKeyAddress               = types.AttributeKeyAddress
+	AttributeKeyID                    = types.AttributeKeyID
+	AttributeKeyCount                 = types.AttributeKeyCount
+	AttributeKeyStatus                = types.AttributeKeyStatus
+	ModuleName                        = types.ModuleName
+	QuerierRoute                      = types.QuerierRoute
+	QueryPlan                         = types.QueryPlan
+	QueryPlans                        = types.QueryPlans
+	QueryPlansOfProvider              = types.QueryPlansOfProvider
+	QueryNodesOfPlan                  = types.QueryNodesOfPlan
 )
 
 var (
 	// functions aliases
-	NewKeeper                     = keeper.NewKeeper
-	Querier                       = querier.Querier
-	RegisterCodec                 = types.RegisterCodec
-	ErrorMarshal                  = types.ErrorMarshal
-	ErrorUnmarshal                = types.ErrorUnmarshal
-	ErrorUnknownMsgType           = types.ErrorUnknownMsgType
-	ErrorUnknownQueryType         = types.ErrorUnknownQueryType
-	ErrorInvalidField             = types.ErrorInvalidField
-	ErrorNoProviderFound          = types.ErrorNoProviderFound
-	ErrorNoPlanFound              = types.ErrorNoPlanFound
-	NewGenesisState               = types.NewGenesisState
-	DefaultGenesisState           = types.DefaultGenesisState
-	PlansCountKey                 = types.PlansCountKey
-	PlanForProviderKeyPrefix      = types.PlanForProviderKeyPrefix
-	PlanKey                       = types.PlanKey
-	NodeForProviderKeyPrefix      = types.NodeForProviderKeyPrefix
-	NodeForPlanKeyPrefix          = types.NodeForPlanKeyPrefix
-	NodeKey                       = types.NodeKey
-	NewMsgAddPlan                 = types.NewMsgAddPlan
-	NewMsgSetPlanStatus           = types.NewMsgSetPlanStatus
-	NewQueryPlanParams            = types.NewQueryPlanParams
-	NewQueryPlansOfProviderParams = types.NewQueryPlansOfProviderParams
-	GetQueryCommands              = cli.GetQueryCommands
-	GetTxCommands                 = cli.GetTxCommands
-	RegisterRoutes                = rest.RegisterRoutes
+	NewKeeper                       = keeper.NewKeeper
+	Querier                         = querier.Querier
+	RegisterCodec                   = types.RegisterCodec
+	ErrorMarshal                    = types.ErrorMarshal
+	ErrorUnmarshal                  = types.ErrorUnmarshal
+	ErrorUnknownMsgType             = types.ErrorUnknownMsgType
+	ErrorUnknownQueryType           = types.ErrorUnknownQueryType
+	ErrorInvalidField               = types.ErrorInvalidField
+	ErrorNoProviderFound            = types.ErrorNoProviderFound
+	ErrorNoPlanFound                = types.ErrorNoPlanFound
+	ErrorNoNodeFound                = types.ErrorNoNodeFound
+	ErrorUnauthorized               = types.ErrorUnauthorized
+	ErrorDuplicateNode              = types.ErrorDuplicateNode
+	ErrorNoNodeAdded                = types.ErrorNoNodeAdded
+	NewGenesisState                 = types.NewGenesisState
+	DefaultGenesisState             = types.DefaultGenesisState
+	PlansCountKey                   = types.PlansCountKey
+	PlanForProviderKeyPrefix        = types.PlanForProviderKeyPrefix
+	PlanKey                         = types.PlanKey
+	NodeAddressForProviderKeyPrefix = types.NodeAddressForProviderKeyPrefix
+	NodeAddressForPlanKeyPrefix     = types.NodeAddressForPlanKeyPrefix
+	NodeAddressKey                  = types.NodeAddressKey
+	NewMsgAddPlan                   = types.NewMsgAddPlan
+	NewMsgSetPlanStatus             = types.NewMsgSetPlanStatus
+	NewMsgAddNode                   = types.NewMsgAddNode
+	NewMsgRemoveNode                = types.NewMsgRemoveNode
+	NewQueryPlanParams              = types.NewQueryPlanParams
+	NewQueryPlansOfProviderParams   = types.NewQueryPlansOfProviderParams
+	NewQueryNodesOfPlanParams       = types.NewQueryNodesOfPlanParams
+	GetQueryCommands                = cli.GetQueryCommands
+	GetTxCommands                   = cli.GetTxCommands
+	RegisterRoutes                  = rest.RegisterRoutes
 
 	// variable aliases
-	ModuleCdc           = types.ModuleCdc
-	RouterKey           = types.RouterKey
-	StoreKey            = types.StoreKey
-	PlansCountKeyPrefix = types.PlansCountKeyPrefix
-	PlanKeyPrefix       = types.PlanKeyPrefix
-	NodeKeyPrefix       = types.NodeKeyPrefix
+	ModuleCdc            = types.ModuleCdc
+	RouterKey            = types.RouterKey
+	StoreKey             = types.StoreKey
+	PlansCountKeyPrefix  = types.PlansCountKeyPrefix
+	PlanKeyPrefix        = types.PlanKeyPrefix
+	NodeAddressKeyPrefix = types.NodeAddressKeyPrefix
 )
 
 type (
 	Keeper                     = keeper.Keeper
+	GenesisPlan                = types.GenesisPlan
+	GenesisPlans               = types.GenesisPlans
 	GenesisState               = types.GenesisState
 	MsgAddPlan                 = types.MsgAddPlan
 	MsgSetPlanStatus           = types.MsgSetPlanStatus
+	MsgAddNode                 = types.MsgAddNode
+	MsgRemoveNode              = types.MsgRemoveNode
 	Plan                       = types.Plan
 	Plans                      = types.Plans
 	QueryPlanParams            = types.QueryPlanParams
 	QueryPlansOfProviderParams = types.QueryPlansOfProviderParams
+	QueryNodesOfPlanParams     = types.QueryNodesOfPlanParams
 )
