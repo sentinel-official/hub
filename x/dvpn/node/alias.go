@@ -62,10 +62,11 @@ var (
 	RegisterRoutes                  = rest.RegisterRoutes
 
 	// variable aliases
-	ModuleCdc     = types.ModuleCdc
-	RouterKey     = types.RouterKey
-	StoreKey      = types.StoreKey
-	NodeKeyPrefix = types.NodeKeyPrefix
+	ModuleCdc            = types.ModuleCdc
+	RouterKey            = types.RouterKey
+	StoreKey             = types.StoreKey
+	NodeKeyPrefix        = types.NodeKeyPrefix
+	NodeAddressKeyPrefix = types.NodeAddressKeyPrefix
 )
 
 type (
