@@ -36,6 +36,13 @@ func (k Keeper) SetNodeAddressForProvider(ctx sdk.Context, pa hub.ProvAddress, n
 	store.Set(key, value)
 }
 
+func (k Keeper) DeleteNodeAddressForProvider(ctx sdk.Context, pa hub.ProvAddress, na hub.NodeAddress) {
+	store := k.Store(ctx)
+
+	key := types.NodeAddressForProviderKey(pa, na)
+	store.Delete(key)
+}
+
 func (k Keeper) GetNodes(ctx sdk.Context) (nodes types.Nodes) {
 	store := k.Store(ctx)
 

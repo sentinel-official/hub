@@ -11,12 +11,14 @@ import (
 )
 
 func HandleRegisterNode(ctx sdk.Context, k keeper.Keeper, msg types.MsgRegisterNode) sdk.Result {
-	_, found := k.GetProvider(ctx, msg.Provider)
-	if !found {
-		return types.ErrorNoProviderFound().Result()
+	if msg.Provider != nil {
+		_, found := k.GetProvider(ctx, msg.Provider)
+		if !found {
+			return types.ErrorNoProviderFound().Result()
+		}
 	}
 
-	_, found = k.GetNode(ctx, msg.From.Bytes())
+	_, found := k.GetNode(ctx, msg.From.Bytes())
 	if found {
 		return types.ErrorDuplicateNode().Result()
 	}
@@ -24,12 +26,17 @@ func HandleRegisterNode(ctx sdk.Context, k keeper.Keeper, msg types.MsgRegisterN
 	node := types.Node{
 		Address:       msg.From.Bytes(),
 		Provider:      msg.Provider,
+		PricePerGB:    msg.PricePerGB,
 		InternetSpeed: msg.InternetSpeed,
 		RemoteURL:     msg.RemoteURL,
 		Version:       msg.Version,
 		Category:      msg.Category,
 		Status:        hub.StatusInactive,
 		StatusAt:      ctx.BlockHeight(),
+	}
+
+	if node.Provider != nil {
+		node.PricePerGB = nil
 	}
 
 	k.SetNode(ctx, node)
@@ -55,7 +62,13 @@ func HandleUpdateNode(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpdateNode)
 			return ErrorNoProviderFound().Result()
 		}
 
+		k.DeleteNodeAddressForProvider(ctx, node.Provider, node.Address)
+
 		node.Provider = msg.Provider
+		k.SetNodeAddressForProvider(ctx, node.Provider, node.Address)
+	}
+	if msg.PricePerGB != nil {
+		node.PricePerGB = msg.PricePerGB
 	}
 	if !msg.InternetSpeed.IsAnyZero() {
 		node.InternetSpeed = msg.InternetSpeed
@@ -70,9 +83,14 @@ func HandleUpdateNode(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpdateNode)
 		node.Category = msg.Category
 	}
 
+	if node.Provider != nil {
+		node.PricePerGB = nil
+	}
+
 	k.SetNode(ctx, node)
 	ctx.EventManager().EmitEvent(sdk.NewEvent(
 		types.EventTypeUpdateNode,
+		sdk.NewAttribute(types.AttributeKeyProvider, node.Provider.String()),
 		sdk.NewAttribute(types.AttributeKeyAddress, node.Address.String()),
 	))
 

@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"strings"
 
+	sdk "github.com/cosmos/cosmos-sdk/types"
+
 	hub "github.com/sentinel-official/hub/types"
 )
 
@@ -48,7 +50,8 @@ func (n NodeCategory) IsValid() bool {
 
 type Node struct {
 	Address       hub.NodeAddress `json:"address"`
-	Provider      hub.ProvAddress `json:"provider"`
+	Provider      hub.ProvAddress `json:"provider,omitempty"`
+	PricePerGB    sdk.Coins       `json:"price_per_gb,omitempty"`
 	InternetSpeed hub.Bandwidth   `json:"internet_speed"`
 	RemoteURL     string          `json:"remote_url"`
 	Version       string          `json:"version"`
@@ -61,13 +64,14 @@ func (n Node) String() string {
 	return strings.TrimSpace(fmt.Sprintf(`
 Address: %s
 Provider: %s
+Price per Gigabyte: %s
 Internet speed: %s
 Remote URL: %s
 Version: %s
 Category: %s
 Status: %s
 Status at: %d
-`, n.Address, n.Provider, n.InternetSpeed, n.RemoteURL, n.Version, n.Category, n.Status, n.StatusAt))
+`, n.Address, n.Provider, n.PricePerGB, n.InternetSpeed, n.RemoteURL, n.Version, n.Category, n.Status, n.StatusAt))
 }
 
 type Nodes []Node

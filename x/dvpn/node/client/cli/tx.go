@@ -30,6 +30,16 @@ func txRegisterNodeCmd(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
+			s, err = cmd.Flags().GetString(flagPricePerGB)
+			if err != nil {
+				return err
+			}
+
+			pricePerGB, err := sdk.ParseCoins(s)
+			if err != nil {
+				return err
+			}
+
 			upload, err := cmd.Flags().GetUint64(flagUploadSpeed)
 			if err != nil {
 				return err
@@ -55,20 +65,20 @@ func txRegisterNodeCmd(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgRegisterNode(ctx.FromAddress, provider,
+			msg := types.NewMsgRegisterNode(ctx.FromAddress, provider, pricePerGB,
 				hub.NewBandwidth(upload, download), remoteURL, version, types.NodeCategoryFromString(s))
 			return utils.GenerateOrBroadcastMsgs(ctx, txb, []sdk.Msg{msg})
 		},
 	}
 
 	cmd.Flags().String(flagProvider, "", "Node provider address")
+	cmd.Flags().String(flagPricePerGB, "", "Node price per Gigabyte")
 	cmd.Flags().String(flagRemoteURL, "", "Node remove URL")
 	cmd.Flags().String(flagVersion, "", "Node version")
 	cmd.Flags().Uint64(flagUploadSpeed, 0, "Node upload speed")
 	cmd.Flags().Uint64(flagDownloadSpeed, 0, "Node download speed")
 	cmd.Flags().String(flagCategory, "", "Node category")
 
-	_ = cmd.MarkFlagRequired(flagProvider)
 	_ = cmd.MarkFlagRequired(flagRemoteURL)
 	_ = cmd.MarkFlagRequired(flagVersion)
 	_ = cmd.MarkFlagRequired(flagUploadSpeed)
@@ -96,6 +106,16 @@ func txUpdateNodeCmd(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
+			s, err = cmd.Flags().GetString(flagPricePerGB)
+			if err != nil {
+				return err
+			}
+
+			pricePerGB, err := sdk.ParseCoins(s)
+			if err != nil {
+				return err
+			}
+
 			upload, err := cmd.Flags().GetUint64(flagUploadSpeed)
 			if err != nil {
 				return err
@@ -121,13 +141,14 @@ func txUpdateNodeCmd(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgUpdateNode(ctx.FromAddress.Bytes(), provider,
+			msg := types.NewMsgUpdateNode(ctx.FromAddress.Bytes(), provider, pricePerGB,
 				hub.NewBandwidth(upload, download), remoteURL, version, types.NodeCategoryFromString(s))
 			return utils.GenerateOrBroadcastMsgs(ctx, txb, []sdk.Msg{msg})
 		},
 	}
 
 	cmd.Flags().String(flagProvider, "", "Node provider address")
+	cmd.Flags().String(flagPricePerGB, "", "Node price per Gigabyte")
 	cmd.Flags().String(flagRemoteURL, "", "Node remove URL")
 	cmd.Flags().String(flagVersion, "", "Node version")
 	cmd.Flags().Uint64(flagUploadSpeed, 0, "Node upload speed")

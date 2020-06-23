@@ -17,17 +17,19 @@ var (
 type MsgRegisterNode struct {
 	From          sdk.AccAddress  `json:"from"`
 	Provider      hub.ProvAddress `json:"provider"`
+	PricePerGB    sdk.Coins       `json:"price_per_gb"`
 	InternetSpeed hub.Bandwidth   `json:"internet_speed"`
 	RemoteURL     string          `json:"remote_url"`
 	Version       string          `json:"version"`
 	Category      NodeCategory    `json:"category"`
 }
 
-func NewMsgRegisterNode(from sdk.AccAddress, provider hub.ProvAddress, speed hub.Bandwidth,
-	remoteURL, version string, category NodeCategory) MsgRegisterNode {
+func NewMsgRegisterNode(from sdk.AccAddress, provider hub.ProvAddress, pricePerGB sdk.Coins,
+	speed hub.Bandwidth, remoteURL, version string, category NodeCategory) MsgRegisterNode {
 	return MsgRegisterNode{
 		From:          from,
 		Provider:      provider,
+		PricePerGB:    pricePerGB,
 		InternetSpeed: speed,
 		RemoteURL:     remoteURL,
 		Version:       version,
@@ -47,8 +49,11 @@ func (m MsgRegisterNode) ValidateBasic() sdk.Error {
 	if m.From == nil || m.From.Empty() {
 		return ErrorInvalidField("from")
 	}
-	if m.Provider == nil || m.Provider.Empty() {
+	if m.Provider != nil && m.Provider.Empty() {
 		return ErrorInvalidField("provider")
+	}
+	if m.PricePerGB != nil && !m.PricePerGB.IsValid() {
+		return ErrorInvalidField("price_per_gb")
 	}
 	if m.InternetSpeed.IsAnyZero() {
 		return ErrorInvalidField("internet_speed")
@@ -82,17 +87,19 @@ func (m MsgRegisterNode) GetSigners() []sdk.AccAddress {
 type MsgUpdateNode struct {
 	From          hub.NodeAddress `json:"from"`
 	Provider      hub.ProvAddress `json:"provider"`
+	PricePerGB    sdk.Coins       `json:"price_per_gb"`
 	InternetSpeed hub.Bandwidth   `json:"internet_speed"`
 	RemoteURL     string          `json:"remote_url"`
 	Version       string          `json:"version"`
 	Category      NodeCategory    `json:"category"`
 }
 
-func NewMsgUpdateNode(from hub.NodeAddress, provider hub.ProvAddress, speed hub.Bandwidth,
-	remoteURL, version string, category NodeCategory) MsgUpdateNode {
+func NewMsgUpdateNode(from hub.NodeAddress, provider hub.ProvAddress, pricePerGB sdk.Coins,
+	speed hub.Bandwidth, remoteURL, version string, category NodeCategory) MsgUpdateNode {
 	return MsgUpdateNode{
 		From:          from,
 		Provider:      provider,
+		PricePerGB:    pricePerGB,
 		InternetSpeed: speed,
 		RemoteURL:     remoteURL,
 		Version:       version,
@@ -114,6 +121,9 @@ func (m MsgUpdateNode) ValidateBasic() sdk.Error {
 	}
 	if m.Provider != nil && m.Provider.Empty() {
 		return ErrorInvalidField("provider")
+	}
+	if m.PricePerGB != nil && !m.PricePerGB.IsValid() {
+		return ErrorInvalidField("price_per_gb")
 	}
 	if !m.InternetSpeed.IsAllZero() && m.InternetSpeed.IsAnyZero() {
 		return ErrorInvalidField("internet_speed")
