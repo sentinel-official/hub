@@ -51,18 +51,18 @@ func (k Keeper) GetNodes(ctx sdk.Context) (nodes types.Nodes) {
 	return nodes
 }
 
-func (k Keeper) GetNodesOfProvider(ctx sdk.Context, address hub.ProvAddress) (nodes types.Nodes) {
+func (k Keeper) GetNodesForProvider(ctx sdk.Context, address hub.ProvAddress) (nodes types.Nodes) {
 	store := k.Store(ctx)
 
-	iter := sdk.KVStorePrefixIterator(store, types.NodeAddressForProviderKeyPrefix(address))
+	iter := sdk.KVStorePrefixIterator(store, address.Bytes())
 	defer iter.Close()
 
 	for ; iter.Valid(); iter.Next() {
-		var na hub.NodeAddress
-		k.cdc.MustUnmarshalBinaryLengthPrefixed(iter.Value(), &na)
+		var address hub.NodeAddress
+		k.cdc.MustUnmarshalBinaryLengthPrefixed(iter.Value(), &address)
 
-		node, _ := k.GetNode(ctx, na)
-		nodes = append(nodes, node)
+		n, _ := k.GetNode(ctx, address)
+		nodes = append(nodes, n)
 	}
 
 	return nodes

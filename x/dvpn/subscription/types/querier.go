@@ -12,14 +12,12 @@ const (
 )
 
 type QueryPlanParams struct {
-	Address hub.ProvAddress `json:"address"`
-	ID      uint64          `json:"id"`
+	ID uint64 `json:"id"`
 }
 
-func NewQueryPlanParams(address hub.ProvAddress, id uint64) QueryPlanParams {
+func NewQueryPlanParams(id uint64) QueryPlanParams {
 	return QueryPlanParams{
-		Address: address,
-		ID:      id,
+		ID: id,
 	}
 }
 
@@ -34,13 +32,11 @@ func NewQueryPlansOfProviderParams(address hub.ProvAddress) QueryPlansOfProvider
 }
 
 type QueryNodesOfPlanParams struct {
-	Address hub.ProvAddress `json:"address"`
-	ID      uint64          `json:"id"`
+	ID uint64 `json:"id"`
 }
 
-func NewQueryNodesOfPlanParams(address hub.ProvAddress, id uint64) QueryNodesOfPlanParams {
+func NewQueryNodesOfPlanParams(id uint64) QueryNodesOfPlanParams {
 	return QueryNodesOfPlanParams{
-		Address: address,
-		ID:      id,
+		ID: id,
 	}
 }

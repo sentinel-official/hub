@@ -35,38 +35,36 @@ const (
 
 var (
 	// functions aliases
-	NewKeeper                       = keeper.NewKeeper
-	Querier                         = querier.Querier
-	RegisterCodec                   = types.RegisterCodec
-	ErrorMarshal                    = types.ErrorMarshal
-	ErrorUnmarshal                  = types.ErrorUnmarshal
-	ErrorUnknownMsgType             = types.ErrorUnknownMsgType
-	ErrorUnknownQueryType           = types.ErrorUnknownQueryType
-	ErrorInvalidField               = types.ErrorInvalidField
-	ErrorNoProviderFound            = types.ErrorNoProviderFound
-	ErrorDuplicateNode              = types.ErrorDuplicateNode
-	ErrorNoNodeFound                = types.ErrorNoNodeFound
-	NewGenesisState                 = types.NewGenesisState
-	DefaultGenesisState             = types.DefaultGenesisState
-	NodeKey                         = types.NodeKey
-	NodeAddressForProviderKeyPrefix = types.NodeAddressForProviderKeyPrefix
-	NodeAddressForProviderKey       = types.NodeAddressForProviderKey
-	NewMsgRegisterNode              = types.NewMsgRegisterNode
-	NewMsgUpdateNode                = types.NewMsgUpdateNode
-	NewMsgSetNodeStatus             = types.NewMsgSetNodeStatus
-	NodeCategoryFromString          = types.NodeCategoryFromString
-	NewQueryNodeParams              = types.NewQueryNodeParams
-	NewQueryNodesOfProviderParams   = types.NewQueryNodesOfProviderParams
-	GetQueryCommands                = cli.GetQueryCommands
-	GetTxCommands                   = cli.GetTxCommands
-	RegisterRoutes                  = rest.RegisterRoutes
+	NewKeeper                     = keeper.NewKeeper
+	Querier                       = querier.Querier
+	RegisterCodec                 = types.RegisterCodec
+	ErrorMarshal                  = types.ErrorMarshal
+	ErrorUnmarshal                = types.ErrorUnmarshal
+	ErrorUnknownMsgType           = types.ErrorUnknownMsgType
+	ErrorUnknownQueryType         = types.ErrorUnknownQueryType
+	ErrorInvalidField             = types.ErrorInvalidField
+	ErrorNoProviderFound          = types.ErrorNoProviderFound
+	ErrorDuplicateNode            = types.ErrorDuplicateNode
+	ErrorNoNodeFound              = types.ErrorNoNodeFound
+	NewGenesisState               = types.NewGenesisState
+	DefaultGenesisState           = types.DefaultGenesisState
+	NodeKey                       = types.NodeKey
+	NodeAddressForProviderKey     = types.NodeAddressForProviderKey
+	NewMsgRegisterNode            = types.NewMsgRegisterNode
+	NewMsgUpdateNode              = types.NewMsgUpdateNode
+	NewMsgSetNodeStatus           = types.NewMsgSetNodeStatus
+	NodeCategoryFromString        = types.NodeCategoryFromString
+	NewQueryNodeParams            = types.NewQueryNodeParams
+	NewQueryNodesOfProviderParams = types.NewQueryNodesOfProviderParams
+	GetQueryCommands              = cli.GetQueryCommands
+	GetTxCommands                 = cli.GetTxCommands
+	RegisterRoutes                = rest.RegisterRoutes
 
 	// variable aliases
-	ModuleCdc            = types.ModuleCdc
-	RouterKey            = types.RouterKey
-	StoreKey             = types.StoreKey
-	NodeKeyPrefix        = types.NodeKeyPrefix
-	NodeAddressKeyPrefix = types.NodeAddressKeyPrefix
+	ModuleCdc     = types.ModuleCdc
+	RouterKey     = types.RouterKey
+	StoreKey      = types.StoreKey
+	NodeKeyPrefix = types.NodeKeyPrefix
 )
 
 type (

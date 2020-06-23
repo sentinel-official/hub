@@ -17,21 +17,16 @@ func queryPlanCmd(cdc *codec.Codec) *cobra.Command {
 	return &cobra.Command{
 		Use:   "plan",
 		Short: "Query plan",
-		Args:  cobra.ExactArgs(2),
+		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := context.NewCLIContext().WithCodec(cdc)
 
-			address, err := hub.ProvAddressFromBech32(args[0])
+			id, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
 
-			id, err := strconv.ParseUint(args[1], 10, 64)
-			if err != nil {
-				return err
-			}
-
-			plan, err := common.QueryPlan(ctx, address, id)
+			plan, err := common.QueryPlan(ctx, id)
 			if err != nil {
 				return err
 			}
@@ -49,15 +44,15 @@ func queryPlansCmd(cdc *codec.Codec) *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			ctx := context.NewCLIContext().WithCodec(cdc)
 
-			s, err := cmd.Flags().GetString(flagProvider)
+			provider, err := cmd.Flags().GetString(flagProvider)
 			if err != nil {
 				return err
 			}
 
 			var plans types.Plans
 
-			if len(s) > 0 {
-				address, err := hub.ProvAddressFromBech32(s)
+			if len(provider) > 0 {
+				address, err := hub.ProvAddressFromBech32(provider)
 				if err != nil {
 					return err
 				}
@@ -89,21 +84,16 @@ func queryNodesOfPlanCmd(cdc *codec.Codec) *cobra.Command {
 	return &cobra.Command{
 		Use:   "plan-nodes",
 		Short: "Query nodes of a plan",
-		Args:  cobra.ExactArgs(2),
+		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := context.NewCLIContext().WithCodec(cdc)
 
-			address, err := hub.ProvAddressFromBech32(args[0])
+			id, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
 
-			id, err := strconv.ParseUint(args[1], 10, 64)
-			if err != nil {
-				return err
-			}
-
-			nodes, err := common.QueryNodesOfPlan(ctx, address, id)
+			nodes, err := common.QueryNodesOfPlan(ctx, id)
 			if err != nil {
 				return err
 			}

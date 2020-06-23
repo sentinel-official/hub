@@ -1,7 +1,6 @@
 package cli
 
 import (
-	"fmt"
 	"strconv"
 	"time"
 
@@ -89,26 +88,17 @@ func txSetPlanStatusCmd(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "plan-status-set",
 		Short: "Set plan status",
-		Args:  cobra.ExactArgs(3),
+		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			txb := auth.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
 			ctx := context.NewCLIContext().WithCodec(cdc)
 
-			address, err := hub.ProvAddressFromBech32(args[0])
+			id, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
 
-			if !address.Equals(ctx.FromAddress) {
-				return fmt.Errorf("provider address is not equal to from address")
-			}
-
-			id, err := strconv.ParseUint(args[1], 10, 64)
-			if err != nil {
-				return err
-			}
-
-			msg := types.NewMsgSetPlanStatus(ctx.FromAddress.Bytes(), id, hub.StatusFromString(args[2]))
+			msg := types.NewMsgSetPlanStatus(ctx.FromAddress.Bytes(), id, hub.StatusFromString(args[1]))
 			return utils.GenerateOrBroadcastMsgs(ctx, txb, []sdk.Msg{msg})
 		},
 	}
@@ -120,26 +110,17 @@ func txAddNodeCmd(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "plan-node-add",
 		Short: "Add a node to plan",
-		Args:  cobra.ExactArgs(3),
+		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			txb := auth.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
 			ctx := context.NewCLIContext().WithCodec(cdc)
 
-			provider, err := hub.ProvAddressFromBech32(args[0])
+			id, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
 
-			if !provider.Equals(ctx.FromAddress) {
-				return fmt.Errorf("provider address is not equal to from address")
-			}
-
-			id, err := strconv.ParseUint(args[1], 10, 64)
-			if err != nil {
-				return err
-			}
-
-			node, err := hub.NodeAddressFromBech32(args[2])
+			node, err := hub.NodeAddressFromBech32(args[1])
 			if err != nil {
 				return err
 			}
@@ -156,26 +137,17 @@ func txRemoveNodeCmd(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "plan-node-remove",
 		Short: "Remove a node from plan",
-		Args:  cobra.ExactArgs(3),
+		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			txb := auth.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
 			ctx := context.NewCLIContext().WithCodec(cdc)
 
-			provider, err := hub.ProvAddressFromBech32(args[0])
+			id, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
 
-			if !provider.Equals(ctx.FromAddress) {
-				return fmt.Errorf("provider address is not equal to from address")
-			}
-
-			id, err := strconv.ParseUint(args[1], 10, 64)
-			if err != nil {
-				return err
-			}
-
-			node, err := hub.NodeAddressFromBech32(args[2])
+			node, err := hub.NodeAddressFromBech32(args[1])
 			if err != nil {
 				return err
 			}

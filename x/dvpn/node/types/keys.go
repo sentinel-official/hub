@@ -15,18 +15,13 @@ var (
 )
 
 var (
-	NodeKeyPrefix        = []byte{0x00}
-	NodeAddressKeyPrefix = []byte{0x01}
+	NodeKeyPrefix = []byte{0x00}
 )
 
 func NodeKey(address hub.NodeAddress) []byte {
 	return append(NodeKeyPrefix, address.Bytes()...)
 }
 
-func NodeAddressForProviderKeyPrefix(address hub.ProvAddress) []byte {
-	return append(NodeAddressKeyPrefix, address.Bytes()...)
-}
-
 func NodeAddressForProviderKey(pa hub.ProvAddress, na hub.NodeAddress) []byte {
-	return append(NodeAddressForProviderKeyPrefix(pa), na.Bytes()...)
+	return append(pa.Bytes(), na.Bytes()...)
 }

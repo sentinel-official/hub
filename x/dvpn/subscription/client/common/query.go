@@ -10,8 +10,8 @@ import (
 	"github.com/sentinel-official/hub/x/dvpn/subscription/types"
 )
 
-func QueryPlan(ctx context.CLIContext, address hub.ProvAddress, id uint64) (*types.Plan, error) {
-	params := types.NewQueryPlanParams(address, id)
+func QueryPlan(ctx context.CLIContext, id uint64) (*types.Plan, error) {
+	params := types.NewQueryPlanParams(id)
 	bytes, err := ctx.Codec.MarshalJSON(params)
 	if err != nil {
 		return nil, err
@@ -76,8 +76,8 @@ func QueryPlansOfProvider(ctx context.CLIContext, address hub.ProvAddress) (type
 	return plans, nil
 }
 
-func QueryNodesOfPlan(ctx context.CLIContext, address hub.ProvAddress, id uint64) (node.Nodes, error) {
-	params := types.NewQueryNodesOfPlanParams(address, id)
+func QueryNodesOfPlan(ctx context.CLIContext, id uint64) (node.Nodes, error) {
+	params := types.NewQueryNodesOfPlanParams(id)
 	bytes, err := ctx.Codec.MarshalJSON(params)
 	if err != nil {
 		return nil, err

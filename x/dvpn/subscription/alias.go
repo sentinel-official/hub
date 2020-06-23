@@ -37,46 +37,42 @@ const (
 
 var (
 	// functions aliases
-	NewKeeper                       = keeper.NewKeeper
-	Querier                         = querier.Querier
-	RegisterCodec                   = types.RegisterCodec
-	ErrorMarshal                    = types.ErrorMarshal
-	ErrorUnmarshal                  = types.ErrorUnmarshal
-	ErrorUnknownMsgType             = types.ErrorUnknownMsgType
-	ErrorUnknownQueryType           = types.ErrorUnknownQueryType
-	ErrorInvalidField               = types.ErrorInvalidField
-	ErrorNoProviderFound            = types.ErrorNoProviderFound
-	ErrorNoPlanFound                = types.ErrorNoPlanFound
-	ErrorNoNodeFound                = types.ErrorNoNodeFound
-	ErrorUnauthorized               = types.ErrorUnauthorized
-	ErrorDuplicateNode              = types.ErrorDuplicateNode
-	ErrorNoNodeAdded                = types.ErrorNoNodeAdded
-	NewGenesisState                 = types.NewGenesisState
-	DefaultGenesisState             = types.DefaultGenesisState
-	PlansCountKey                   = types.PlansCountKey
-	PlanForProviderKeyPrefix        = types.PlanForProviderKeyPrefix
-	PlanKey                         = types.PlanKey
-	NodeAddressForProviderKeyPrefix = types.NodeAddressForProviderKeyPrefix
-	NodeAddressForPlanKeyPrefix     = types.NodeAddressForPlanKeyPrefix
-	NodeAddressKey                  = types.NodeAddressKey
-	NewMsgAddPlan                   = types.NewMsgAddPlan
-	NewMsgSetPlanStatus             = types.NewMsgSetPlanStatus
-	NewMsgAddNode                   = types.NewMsgAddNode
-	NewMsgRemoveNode                = types.NewMsgRemoveNode
-	NewQueryPlanParams              = types.NewQueryPlanParams
-	NewQueryPlansOfProviderParams   = types.NewQueryPlansOfProviderParams
-	NewQueryNodesOfPlanParams       = types.NewQueryNodesOfPlanParams
-	GetQueryCommands                = cli.GetQueryCommands
-	GetTxCommands                   = cli.GetTxCommands
-	RegisterRoutes                  = rest.RegisterRoutes
+	NewKeeper                     = keeper.NewKeeper
+	Querier                       = querier.Querier
+	RegisterCodec                 = types.RegisterCodec
+	ErrorMarshal                  = types.ErrorMarshal
+	ErrorUnmarshal                = types.ErrorUnmarshal
+	ErrorUnknownMsgType           = types.ErrorUnknownMsgType
+	ErrorUnknownQueryType         = types.ErrorUnknownQueryType
+	ErrorInvalidField             = types.ErrorInvalidField
+	ErrorNoProviderFound          = types.ErrorNoProviderFound
+	ErrorNoPlanFound              = types.ErrorNoPlanFound
+	ErrorNoNodeFound              = types.ErrorNoNodeFound
+	ErrorUnauthorized             = types.ErrorUnauthorized
+	ErrorDuplicateNode            = types.ErrorDuplicateNode
+	ErrorNoNodeAdded              = types.ErrorNoNodeAdded
+	NewGenesisState               = types.NewGenesisState
+	DefaultGenesisState           = types.DefaultGenesisState
+	PlanKey                       = types.PlanKey
+	PlanIDForProviderKey          = types.PlanIDForProviderKey
+	NodeAddressForPlanKey         = types.NodeAddressForPlanKey
+	NewMsgAddPlan                 = types.NewMsgAddPlan
+	NewMsgSetPlanStatus           = types.NewMsgSetPlanStatus
+	NewMsgAddNode                 = types.NewMsgAddNode
+	NewMsgRemoveNode              = types.NewMsgRemoveNode
+	NewQueryPlanParams            = types.NewQueryPlanParams
+	NewQueryPlansOfProviderParams = types.NewQueryPlansOfProviderParams
+	NewQueryNodesOfPlanParams     = types.NewQueryNodesOfPlanParams
+	GetQueryCommands              = cli.GetQueryCommands
+	GetTxCommands                 = cli.GetTxCommands
+	RegisterRoutes                = rest.RegisterRoutes
 
 	// variable aliases
-	ModuleCdc            = types.ModuleCdc
-	RouterKey            = types.RouterKey
-	StoreKey             = types.StoreKey
-	PlansCountKeyPrefix  = types.PlansCountKeyPrefix
-	PlanKeyPrefix        = types.PlanKeyPrefix
-	NodeAddressKeyPrefix = types.NodeAddressKeyPrefix
+	ModuleCdc     = types.ModuleCdc
+	RouterKey     = types.RouterKey
+	StoreKey      = types.StoreKey
+	PlansCountKey = types.PlansCountKey
+	PlanKeyPrefix = types.PlanKeyPrefix
 )
 
 type (

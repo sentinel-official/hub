@@ -17,31 +17,18 @@ var (
 )
 
 var (
-	PlansCountKeyPrefix  = []byte{0x00}
-	PlanKeyPrefix        = []byte{0x01}
-	NodeAddressKeyPrefix = []byte{0x02}
+	PlansCountKey = []byte{0x00}
+	PlanKeyPrefix = []byte{0x01}
 )
 
-func PlansCountKey(address hub.ProvAddress) []byte {
-	return append(PlansCountKeyPrefix, address.Bytes()...)
+func PlanKey(i uint64) []byte {
+	return append(PlanKeyPrefix, sdk.Uint64ToBigEndian(i)...)
 }
 
-func PlanForProviderKeyPrefix(address hub.ProvAddress) []byte {
-	return append(PlanKeyPrefix, address.Bytes()...)
+func PlanIDForProviderKey(address hub.ProvAddress, i uint64) []byte {
+	return append(address, sdk.Uint64ToBigEndian(i)...)
 }
 
-func PlanKey(address hub.ProvAddress, i uint64) []byte {
-	return append(PlanForProviderKeyPrefix(address), sdk.Uint64ToBigEndian(i)...)
-}
-
-func NodeAddressForProviderKeyPrefix(address hub.ProvAddress) []byte {
-	return append(NodeAddressKeyPrefix, address.Bytes()...)
-}
-
-func NodeAddressForPlanKeyPrefix(address hub.ProvAddress, i uint64) []byte {
-	return append(NodeAddressForProviderKeyPrefix(address), sdk.Uint64ToBigEndian(i)...)
-}
-
-func NodeAddressKey(pa hub.ProvAddress, i uint64, na hub.NodeAddress) []byte {
-	return append(NodeAddressForPlanKeyPrefix(pa, i), na.Bytes()...)
+func NodeAddressForPlanKey(i uint64, address hub.NodeAddress) []byte {
+	return append(sdk.Uint64ToBigEndian(i), address.Bytes()...)
 }

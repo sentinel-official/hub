@@ -1,8 +1,6 @@
 package cli
 
 import (
-	"fmt"
-
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -10,7 +8,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/auth/client/utils"
 	"github.com/spf13/cobra"
 
-	hub "github.com/sentinel-official/hub/types"
 	"github.com/sentinel-official/hub/x/dvpn/provider/types"
 )
 
@@ -64,19 +61,9 @@ func txUpdateProviderCmd(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "update",
 		Short: "Update provider",
-		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			txb := auth.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
 			ctx := context.NewCLIContext().WithCodec(cdc)
-
-			address, err := hub.ProvAddressFromBech32(args[0])
-			if err != nil {
-				return err
-			}
-
-			if !address.Equals(ctx.FromAddress) {
-				return fmt.Errorf("provider address is not equal to from address")
-			}
 
 			name, err := cmd.Flags().GetString(flagName)
 			if err != nil {
@@ -98,7 +85,7 @@ func txUpdateProviderCmd(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgUpdateProvider(address.Bytes(), name, identity, website, description)
+			msg := types.NewMsgUpdateProvider(ctx.FromAddress.Bytes(), name, identity, website, description)
 			return utils.GenerateOrBroadcastMsgs(ctx, txb, []sdk.Msg{msg})
 		},
 	}

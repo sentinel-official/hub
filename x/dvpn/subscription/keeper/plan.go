@@ -8,18 +8,18 @@ import (
 	"github.com/sentinel-official/hub/x/dvpn/subscription/types"
 )
 
-func (k Keeper) SetPlansCount(ctx sdk.Context, address hub.ProvAddress, count uint64) {
-	key := types.PlansCountKey(address)
+func (k Keeper) SetPlansCount(ctx sdk.Context, count uint64) {
+	key := types.PlansCountKey
 	value := k.cdc.MustMarshalBinaryLengthPrefixed(count)
 
 	store := k.PlanStore(ctx)
 	store.Set(key, value)
 }
 
-func (k Keeper) GetPlansCount(ctx sdk.Context, address hub.ProvAddress) (count uint64) {
+func (k Keeper) GetPlansCount(ctx sdk.Context) (count uint64) {
 	store := k.PlanStore(ctx)
 
-	key := types.PlansCountKey(address)
+	key := types.PlansCountKey
 	value := store.Get(key)
 	if value == nil {
 		return 0
@@ -30,17 +30,17 @@ func (k Keeper) GetPlansCount(ctx sdk.Context, address hub.ProvAddress) (count u
 }
 
 func (k Keeper) SetPlan(ctx sdk.Context, plan types.Plan) {
-	key := types.PlanKey(plan.Provider, plan.ID)
+	key := types.PlanKey(plan.ID)
 	value := k.cdc.MustMarshalBinaryLengthPrefixed(plan)
 
 	store := k.PlanStore(ctx)
 	store.Set(key, value)
 }
 
-func (k Keeper) GetPlan(ctx sdk.Context, address hub.ProvAddress, i uint64) (plan types.Plan, found bool) {
+func (k Keeper) GetPlan(ctx sdk.Context, id uint64) (plan types.Plan, found bool) {
 	store := k.PlanStore(ctx)
 
-	key := types.PlanKey(address, i)
+	key := types.PlanKey(id)
 	value := store.Get(key)
 	if value == nil {
 		return plan, false
@@ -65,56 +65,66 @@ func (k Keeper) GetPlans(ctx sdk.Context) (plans types.Plans) {
 	return plans
 }
 
-func (k Keeper) GetPlansOfProvider(ctx sdk.Context, address hub.ProvAddress) (plans types.Plans) {
-	store := k.PlanStore(ctx)
-
-	iter := sdk.KVStorePrefixIterator(store, types.PlanForProviderKeyPrefix(address))
-	defer iter.Close()
-
-	for ; iter.Valid(); iter.Next() {
-		var plan types.Plan
-		k.cdc.MustUnmarshalBinaryLengthPrefixed(iter.Value(), &plan)
-		plans = append(plans, plan)
-	}
-
-	return plans
-}
-
-func (k Keeper) SetNodeAddressForPlan(ctx sdk.Context, pa hub.ProvAddress, i uint64, na hub.NodeAddress) {
-	key := types.NodeAddressKey(pa, i, na)
-	value := k.cdc.MustMarshalBinaryLengthPrefixed(na)
+func (k Keeper) SetPlanIDForProvider(ctx sdk.Context, address hub.ProvAddress, id uint64) {
+	key := types.PlanIDForProviderKey(address, id)
+	value := k.cdc.MustMarshalBinaryLengthPrefixed(id)
 
 	store := k.PlanStore(ctx)
 	store.Set(key, value)
 }
 
-func (k Keeper) HasNodeAddressForPlan(ctx sdk.Context, pa hub.ProvAddress, i uint64, na hub.NodeAddress) bool {
+func (k Keeper) GetPlansForProvider(ctx sdk.Context, address hub.ProvAddress) (plans types.Plans) {
 	store := k.PlanStore(ctx)
 
-	key := types.NodeAddressKey(pa, i, na)
+	iter := sdk.KVStorePrefixIterator(store, address.Bytes())
+	defer iter.Close()
+
+	for ; iter.Valid(); iter.Next() {
+		var id uint64
+		k.cdc.MustUnmarshalBinaryLengthPrefixed(iter.Value(), &id)
+
+		p, _ := k.GetPlan(ctx, id)
+		plans = append(plans, p)
+	}
+
+	return plans
+}
+
+func (k Keeper) SetNodeAddressForPlan(ctx sdk.Context, id uint64, address hub.NodeAddress) {
+	key := types.NodeAddressForPlanKey(id, address)
+	value := k.cdc.MustMarshalBinaryLengthPrefixed(address)
+
+	store := k.PlanStore(ctx)
+	store.Set(key, value)
+}
+
+func (k Keeper) HasNodeAddressForPlan(ctx sdk.Context, id uint64, address hub.NodeAddress) bool {
+	store := k.PlanStore(ctx)
+
+	key := types.NodeAddressForPlanKey(id, address)
 	value := store.Get(key)
 
 	return value != nil
 }
 
-func (k Keeper) DeleteNodeAddressForPlan(ctx sdk.Context, pa hub.ProvAddress, i uint64, na hub.NodeAddress) {
+func (k Keeper) DeleteNodeAddressForPlan(ctx sdk.Context, id uint64, address hub.NodeAddress) {
 	store := k.PlanStore(ctx)
 
-	key := types.NodeAddressKey(pa, i, na)
+	key := types.NodeAddressForPlanKey(id, address)
 	store.Delete(key)
 }
 
-func (k Keeper) GetNodesForPlan(ctx sdk.Context, address hub.ProvAddress, i uint64) (nodes node.Nodes) {
+func (k Keeper) GetNodesForPlan(ctx sdk.Context, id uint64) (nodes node.Nodes) {
 	store := k.PlanStore(ctx)
 
-	iter := sdk.KVStorePrefixIterator(store, types.NodeAddressForPlanKeyPrefix(address, i))
+	iter := sdk.KVStorePrefixIterator(store, sdk.Uint64ToBigEndian(id))
 	defer iter.Close()
 
 	for ; iter.Valid(); iter.Next() {
-		var na hub.NodeAddress
-		k.cdc.MustUnmarshalBinaryLengthPrefixed(iter.Value(), &na)
+		var address hub.NodeAddress
+		k.cdc.MustUnmarshalBinaryLengthPrefixed(iter.Value(), &address)
 
-		n, _ := k.GetNode(ctx, na)
+		n, _ := k.GetNode(ctx, address)
 		nodes = append(nodes, n)
 	}
 

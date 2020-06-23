@@ -1,8 +1,6 @@
 package cli
 
 import (
-	"fmt"
-
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -84,19 +82,9 @@ func txUpdateNodeCmd(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "update",
 		Short: "Update node",
-		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			txb := auth.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
 			ctx := context.NewCLIContext().WithCodec(cdc)
-
-			address, err := hub.NodeAddressFromBech32(args[0])
-			if err != nil {
-				return err
-			}
-
-			if !address.Equals(ctx.FromAddress) {
-				return fmt.Errorf("node address is not equal to from address")
-			}
 
 			s, err := cmd.Flags().GetString(flagProvider)
 			if err != nil {
@@ -153,21 +141,12 @@ func txSetNodeStatusCmd(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "set-status",
 		Short: "Set node status",
-		Args:  cobra.ExactArgs(2),
+		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			txb := auth.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
 			ctx := context.NewCLIContext().WithCodec(cdc)
 
-			address, err := hub.NodeAddressFromBech32(args[0])
-			if err != nil {
-				return err
-			}
-
-			if !address.Equals(ctx.FromAddress) {
-				return fmt.Errorf("node address is not equal to from address")
-			}
-
-			msg := types.NewMsgSetNodeStatus(ctx.FromAddress.Bytes(), hub.StatusFromString(args[1]))
+			msg := types.NewMsgSetNodeStatus(ctx.FromAddress.Bytes(), hub.StatusFromString(args[0]))
 			return utils.GenerateOrBroadcastMsgs(ctx, txb, []sdk.Msg{msg})
 		},
 	}

@@ -42,7 +42,7 @@ func queryNodesOfProvider(ctx sdk.Context, req abci.RequestQuery, k keeper.Keepe
 		return nil, types.ErrorUnmarshal()
 	}
 
-	res, err := types.ModuleCdc.MarshalJSON(k.GetNodesOfProvider(ctx, params.Address))
+	res, err := types.ModuleCdc.MarshalJSON(k.GetNodesForProvider(ctx, params.Address))
 	if err != nil {
 		return nil, types.ErrorMarshal()
 	}

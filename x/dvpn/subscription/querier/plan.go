@@ -14,7 +14,7 @@ func queryPlan(ctx sdk.Context, req abci.RequestQuery, k keeper.Keeper) ([]byte,
 		return nil, types.ErrorUnmarshal()
 	}
 
-	plan, found := k.GetPlan(ctx, params.Address, params.ID)
+	plan, found := k.GetPlan(ctx, params.ID)
 	if !found {
 		return nil, nil
 	}
@@ -42,7 +42,7 @@ func queryPlansOfProvider(ctx sdk.Context, req abci.RequestQuery, k keeper.Keepe
 		return nil, types.ErrorUnmarshal()
 	}
 
-	res, err := types.ModuleCdc.MarshalJSON(k.GetPlansOfProvider(ctx, params.Address))
+	res, err := types.ModuleCdc.MarshalJSON(k.GetPlansForProvider(ctx, params.Address))
 	if err != nil {
 		return nil, types.ErrorMarshal()
 	}
@@ -56,7 +56,7 @@ func queryNodesOfPlan(ctx sdk.Context, req abci.RequestQuery, k keeper.Keeper) (
 		return nil, types.ErrorUnmarshal()
 	}
 
-	res, err := types.ModuleCdc.MarshalJSON(k.GetNodesForPlan(ctx, params.Address, params.ID))
+	res, err := types.ModuleCdc.MarshalJSON(k.GetNodesForPlan(ctx, params.ID))
 	if err != nil {
 		return nil, types.ErrorMarshal()
 	}
