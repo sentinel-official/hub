@@ -101,9 +101,14 @@ func txUpdateNodeCmd(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			provider, err := hub.ProvAddressFromBech32(s)
-			if err != nil {
-				return err
+			var provider hub.ProvAddress
+			if s == "-" {
+				provider = hub.EmptyProviderAddress
+			} else {
+				provider, err = hub.ProvAddressFromBech32(s)
+				if err != nil {
+					return err
+				}
 			}
 
 			s, err = cmd.Flags().GetString(flagPricePerGB)
@@ -111,9 +116,14 @@ func txUpdateNodeCmd(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			pricePerGB, err := sdk.ParseCoins(s)
-			if err != nil {
-				return err
+			var pricePerGB sdk.Coins
+			if s == "-" {
+				pricePerGB = hub.EmptyCoins
+			} else {
+				pricePerGB, err = sdk.ParseCoins(s)
+				if err != nil {
+					return err
+				}
 			}
 
 			upload, err := cmd.Flags().GetUint64(flagUploadSpeed)

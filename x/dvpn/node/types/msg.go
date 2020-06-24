@@ -122,7 +122,7 @@ func (m MsgUpdateNode) ValidateBasic() sdk.Error {
 	if m.Provider != nil && m.Provider.Empty() {
 		return ErrorInvalidField("provider")
 	}
-	if m.PricePerGB != nil && !m.PricePerGB.IsValid() {
+	if m.PricePerGB != nil && !hub.AreEmptyCoins(m.PricePerGB) && !m.PricePerGB.IsValid() {
 		return ErrorInvalidField("price_per_gb")
 	}
 	if !m.InternetSpeed.IsAllZero() && m.InternetSpeed.IsAnyZero() {

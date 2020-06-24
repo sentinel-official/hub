@@ -35,10 +35,6 @@ func HandleRegisterNode(ctx sdk.Context, k keeper.Keeper, msg types.MsgRegisterN
 		StatusAt:      ctx.BlockHeight(),
 	}
 
-	if node.Provider != nil {
-		node.PricePerGB = nil
-	}
-
 	k.SetNode(ctx, node)
 	k.SetNodeAddressForProvider(ctx, node.Provider, node.Address)
 	ctx.EventManager().EmitEvent(sdk.NewEvent(
@@ -57,18 +53,27 @@ func HandleUpdateNode(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpdateNode)
 	}
 
 	if msg.Provider != nil {
-		_, found := k.GetProvider(ctx, msg.Provider)
-		if !found {
-			return ErrorNoProviderFound().Result()
-		}
-
 		k.DeleteNodeAddressForProvider(ctx, node.Provider, node.Address)
 
-		node.Provider = msg.Provider
+		if msg.Provider.Equals(hub.EmptyProviderAddress) {
+			node.Provider = nil
+		} else {
+			_, found := k.GetProvider(ctx, msg.Provider)
+			if !found {
+				return ErrorNoProviderFound().Result()
+			}
+
+			node.Provider = msg.Provider
+		}
+
 		k.SetNodeAddressForProvider(ctx, node.Provider, node.Address)
 	}
 	if msg.PricePerGB != nil {
 		node.PricePerGB = msg.PricePerGB
+
+		if hub.AreEmptyCoins(msg.PricePerGB) {
+			node.PricePerGB = nil
+		}
 	}
 	if !msg.InternetSpeed.IsAnyZero() {
 		node.InternetSpeed = msg.InternetSpeed
@@ -81,10 +86,6 @@ func HandleUpdateNode(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpdateNode)
 	}
 	if msg.Category.IsValid() {
 		node.Category = msg.Category
-	}
-
-	if node.Provider != nil {
-		node.PricePerGB = nil
 	}
 
 	k.SetNode(ctx, node)
