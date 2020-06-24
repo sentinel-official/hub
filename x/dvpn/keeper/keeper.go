@@ -17,8 +17,14 @@ type Keeper struct {
 
 func NewKeeper(cdc *codec.Codec, key sdk.StoreKey) Keeper {
 	pk := provider.NewKeeper(cdc, key)
-	nk := node.NewKeeper(cdc, key, pk)
-	sk := subscription.NewKeeper(cdc, key, nk)
+	nk := node.NewKeeper(cdc, key)
+	sk := subscription.NewKeeper(cdc, key)
+
+	nk.WithProviderKeeper(&pk)
+	nk.WithSubscriptionKeeper(&sk)
+
+	sk.WithProviderKeeper(&pk)
+	sk.WithNodeKeeper(&nk)
 
 	return Keeper{
 		Provider:     pk,

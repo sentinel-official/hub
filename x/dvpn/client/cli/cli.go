@@ -4,9 +4,9 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/spf13/cobra"
 
-	"github.com/sentinel-official/hub/x/dvpn/node"
-	"github.com/sentinel-official/hub/x/dvpn/provider"
-	"github.com/sentinel-official/hub/x/dvpn/subscription"
+	node "github.com/sentinel-official/hub/x/dvpn/node/client/cli"
+	provider "github.com/sentinel-official/hub/x/dvpn/provider/client/cli"
+	subscription "github.com/sentinel-official/hub/x/dvpn/subscription/client/cli"
 )
 
 func GetQueryCmd(cdc *codec.Codec) *cobra.Command {

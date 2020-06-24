@@ -25,7 +25,7 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) types.GenesisState {
 	plans := k.GetPlans(ctx)
 
 	for _, item := range plans {
-		plan := GenesisPlan{
+		plan := types.GenesisPlan{
 			Plan:  item,
 			Nodes: nil,
 		}

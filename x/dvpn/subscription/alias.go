@@ -4,13 +4,9 @@
 // ALIASGEN: github.com/sentinel-official/hub/x/dvpn/subscription/keeper
 // ALIASGEN: github.com/sentinel-official/hub/x/dvpn/subscription/querier
 // ALIASGEN: github.com/sentinel-official/hub/x/dvpn/subscription/types
-// ALIASGEN: github.com/sentinel-official/hub/x/dvpn/subscription/client/cli
-// ALIASGEN: github.com/sentinel-official/hub/x/dvpn/subscription/client/rest
 package subscription
 
 import (
-	"github.com/sentinel-official/hub/x/dvpn/subscription/client/cli"
-	"github.com/sentinel-official/hub/x/dvpn/subscription/client/rest"
 	"github.com/sentinel-official/hub/x/dvpn/subscription/keeper"
 	"github.com/sentinel-official/hub/x/dvpn/subscription/querier"
 	"github.com/sentinel-official/hub/x/dvpn/subscription/types"
@@ -63,9 +59,6 @@ var (
 	NewQueryPlanParams            = types.NewQueryPlanParams
 	NewQueryPlansOfProviderParams = types.NewQueryPlansOfProviderParams
 	NewQueryNodesOfPlanParams     = types.NewQueryNodesOfPlanParams
-	GetQueryCommands              = cli.GetQueryCommands
-	GetTxCommands                 = cli.GetTxCommands
-	RegisterRoutes                = rest.RegisterRoutes
 
 	// variable aliases
 	ModuleCdc     = types.ModuleCdc

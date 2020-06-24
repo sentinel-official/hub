@@ -4,13 +4,9 @@
 // ALIASGEN: github.com/sentinel-official/hub/x/dvpn/node/keeper
 // ALIASGEN: github.com/sentinel-official/hub/x/dvpn/node/querier
 // ALIASGEN: github.com/sentinel-official/hub/x/dvpn/node/types
-// ALIASGEN: github.com/sentinel-official/hub/x/dvpn/node/client/cli
-// ALIASGEN: github.com/sentinel-official/hub/x/dvpn/node/client/rest
 package node
 
 import (
-	"github.com/sentinel-official/hub/x/dvpn/node/client/cli"
-	"github.com/sentinel-official/hub/x/dvpn/node/client/rest"
 	"github.com/sentinel-official/hub/x/dvpn/node/keeper"
 	"github.com/sentinel-official/hub/x/dvpn/node/querier"
 	"github.com/sentinel-official/hub/x/dvpn/node/types"
@@ -56,9 +52,6 @@ var (
 	NodeCategoryFromString        = types.NodeCategoryFromString
 	NewQueryNodeParams            = types.NewQueryNodeParams
 	NewQueryNodesOfProviderParams = types.NewQueryNodesOfProviderParams
-	GetQueryCommands              = cli.GetQueryCommands
-	GetTxCommands                 = cli.GetTxCommands
-	RegisterRoutes                = rest.RegisterRoutes
 
 	// variable aliases
 	ModuleCdc     = types.ModuleCdc
