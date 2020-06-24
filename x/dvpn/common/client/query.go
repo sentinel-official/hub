@@ -5,8 +5,8 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/client/context"
 
-	"github.com/sentinel-official/hub/x/dvpn/node"
-	"github.com/sentinel-official/hub/x/dvpn/subscription"
+	node "github.com/sentinel-official/hub/x/dvpn/node/types"
+	subscription "github.com/sentinel-official/hub/x/dvpn/subscription/types"
 )
 
 func QueryNodesOfPlan(ctx context.CLIContext, id uint64) (node.Nodes, error) {

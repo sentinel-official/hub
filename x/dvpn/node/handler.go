@@ -36,7 +36,10 @@ func HandleRegisterNode(ctx sdk.Context, k keeper.Keeper, msg types.MsgRegisterN
 	}
 
 	k.SetNode(ctx, node)
-	k.SetNodeAddressForProvider(ctx, node.Provider, node.Address)
+	if node.Provider != nil {
+		k.SetNodeAddressForProvider(ctx, node.Provider, node.Address)
+	}
+
 	ctx.EventManager().EmitEvent(sdk.NewEvent(
 		types.EventTypeSetNode,
 		sdk.NewAttribute(types.AttributeKeyProvider, node.Provider.String()),
