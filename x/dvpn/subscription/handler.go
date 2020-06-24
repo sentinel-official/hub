@@ -18,7 +18,7 @@ func HandleAddPlan(ctx sdk.Context, k keeper.Keeper, msg types.MsgAddPlan) sdk.R
 
 	count := k.GetPlansCount(ctx)
 	plan := types.Plan{
-		ID:           count,
+		ID:           count + 1,
 		Provider:     msg.From,
 		Price:        msg.Price,
 		Duration:     msg.Duration,
