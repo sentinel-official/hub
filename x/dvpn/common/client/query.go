@@ -16,7 +16,10 @@ func QueryNodesOfPlan(ctx context.CLIContext, id uint64) (node.Nodes, error) {
 		return nil, err
 	}
 
-	res, _, err := ctx.QueryWithData(subscription.QueryNodesOfPlanPath, bytes)
+	path := fmt.Sprintf("custom/%s/%s/%s",
+		subscription.StoreKey, subscription.QuerierRoute, subscription.QueryNodesOfPlan)
+
+	res, _, err := ctx.QueryWithData(path, bytes)
 	if err != nil {
 		return nil, err
 	}

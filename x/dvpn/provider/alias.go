@@ -23,8 +23,8 @@ const (
 	AttributeKeyAddress     = types.AttributeKeyAddress
 	ModuleName              = types.ModuleName
 	QuerierRoute            = types.QuerierRoute
-	QueryKeyProvider        = types.QueryKeyProvider
-	QueryKeyProviders       = types.QueryKeyProviders
+	QueryProvider           = types.QueryProvider
+	QueryProviders          = types.QueryProviders
 )
 
 var (
@@ -50,12 +50,10 @@ var (
 	RegisterRoutes         = rest.RegisterRoutes
 
 	// variable aliases
-	ModuleCdc          = types.ModuleCdc
-	RouterKey          = types.RouterKey
-	StoreKey           = types.StoreKey
-	ProviderKeyPrefix  = types.ProviderKeyPrefix
-	QueryProviderPath  = types.QueryProviderPath
-	QueryProvidersPath = types.QueryProvidersPath
+	ModuleCdc         = types.ModuleCdc
+	RouterKey         = types.RouterKey
+	StoreKey          = types.StoreKey
+	ProviderKeyPrefix = types.ProviderKeyPrefix
 )
 
 type (

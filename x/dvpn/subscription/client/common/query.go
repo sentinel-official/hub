@@ -16,7 +16,8 @@ func QueryPlan(ctx context.CLIContext, id uint64) (*types.Plan, error) {
 		return nil, err
 	}
 
-	res, _, err := ctx.QueryWithData(types.QueryPlanPath, bytes)
+	path := fmt.Sprintf("custom/%s/%s/%s", types.StoreKey, types.QuerierRoute, types.QueryPlan)
+	res, _, err := ctx.QueryWithData(path, bytes)
 	if err != nil {
 		return nil, err
 	}
@@ -33,7 +34,8 @@ func QueryPlan(ctx context.CLIContext, id uint64) (*types.Plan, error) {
 }
 
 func QueryPlans(ctx context.CLIContext) (types.Plans, error) {
-	res, _, err := ctx.QueryWithData(types.QueryPlansPath, nil)
+	path := fmt.Sprintf("custom/%s/%s/%s", types.StoreKey, types.QuerierRoute, types.QueryPlans)
+	res, _, err := ctx.QueryWithData(path, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -56,7 +58,8 @@ func QueryPlansOfProvider(ctx context.CLIContext, address hub.ProvAddress) (type
 		return nil, err
 	}
 
-	res, _, err := ctx.QueryWithData(types.QueryPlansOfProviderPath, bytes)
+	path := fmt.Sprintf("custom/%s/%s/%s", types.StoreKey, types.QuerierRoute, types.QueryPlansOfProvider)
+	res, _, err := ctx.QueryWithData(path, bytes)
 	if err != nil {
 		return nil, err
 	}

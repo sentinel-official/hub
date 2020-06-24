@@ -10,11 +10,11 @@ import (
 
 func Querier(ctx sdk.Context, path []string, req abci.RequestQuery, k keeper.Keeper) ([]byte, sdk.Error) {
 	switch path[0] {
-	case types.QueryKeyNode:
+	case types.QueryNode:
 		return queryNode(ctx, req, k)
-	case types.QueryKeyNodes:
+	case types.QueryNodes:
 		return queryNodes(ctx, req, k)
-	case types.QueryKeyNodesOfProvider:
+	case types.QueryNodesOfProvider:
 		return queryNodesOfProvider(ctx, req, k)
 	default:
 		return nil, types.ErrorUnknownQueryType(path[0])

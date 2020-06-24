@@ -17,20 +17,20 @@ import (
 )
 
 const (
-	Codespace               = types.Codespace
-	EventTypeSetNode        = types.EventTypeSetNode
-	EventTypeUpdateNode     = types.EventTypeUpdateNode
-	EventTypeSetNodeStatus  = types.EventTypeSetNodeStatus
-	AttributeKeyProvider    = types.AttributeKeyProvider
-	AttributeKeyAddress     = types.AttributeKeyAddress
-	AttributeKeyStatus      = types.AttributeKeyStatus
-	AttributeKeyStatusAt    = types.AttributeKeyStatusAt
-	ModuleName              = types.ModuleName
-	QuerierRoute            = types.QuerierRoute
-	CategoryUnknown         = types.CategoryUnknown
-	QueryKeyNode            = types.QueryKeyNode
-	QueryKeyNodes           = types.QueryKeyNodes
-	QueryKeyNodesOfProvider = types.QueryKeyNodesOfProvider
+	Codespace              = types.Codespace
+	EventTypeSetNode       = types.EventTypeSetNode
+	EventTypeUpdateNode    = types.EventTypeUpdateNode
+	EventTypeSetNodeStatus = types.EventTypeSetNodeStatus
+	AttributeKeyProvider   = types.AttributeKeyProvider
+	AttributeKeyAddress    = types.AttributeKeyAddress
+	AttributeKeyStatus     = types.AttributeKeyStatus
+	AttributeKeyStatusAt   = types.AttributeKeyStatusAt
+	ModuleName             = types.ModuleName
+	QuerierRoute           = types.QuerierRoute
+	CategoryUnknown        = types.CategoryUnknown
+	QueryNode              = types.QueryNode
+	QueryNodes             = types.QueryNodes
+	QueryNodesOfProvider   = types.QueryNodesOfProvider
 )
 
 var (
@@ -61,13 +61,10 @@ var (
 	RegisterRoutes                = rest.RegisterRoutes
 
 	// variable aliases
-	ModuleCdc                = types.ModuleCdc
-	RouterKey                = types.RouterKey
-	StoreKey                 = types.StoreKey
-	NodeKeyPrefix            = types.NodeKeyPrefix
-	QueryNodePath            = types.QueryNodePath
-	QueryNodesPath           = types.QueryNodesPath
-	QueryNodesOfProviderPath = types.QueryNodesOfProviderPath
+	ModuleCdc     = types.ModuleCdc
+	RouterKey     = types.RouterKey
+	StoreKey      = types.StoreKey
+	NodeKeyPrefix = types.NodeKeyPrefix
 )
 
 type (

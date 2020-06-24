@@ -29,10 +29,10 @@ const (
 	AttributeKeyStatus                = types.AttributeKeyStatus
 	ModuleName                        = types.ModuleName
 	QuerierRoute                      = types.QuerierRoute
-	QueryKeyPlan                      = types.QueryKeyPlan
-	QueryKeyPlans                     = types.QueryKeyPlans
-	QueryKeyPlansOfProvider           = types.QueryKeyPlansOfProvider
-	QueryKeyNodesOfPlan               = types.QueryKeyNodesOfPlan
+	QueryPlan                         = types.QueryPlan
+	QueryPlans                        = types.QueryPlans
+	QueryPlansOfProvider              = types.QueryPlansOfProvider
+	QueryNodesOfPlan                  = types.QueryNodesOfPlan
 )
 
 var (
@@ -68,15 +68,11 @@ var (
 	RegisterRoutes                = rest.RegisterRoutes
 
 	// variable aliases
-	ModuleCdc                = types.ModuleCdc
-	RouterKey                = types.RouterKey
-	StoreKey                 = types.StoreKey
-	PlansCountKey            = types.PlansCountKey
-	PlanKeyPrefix            = types.PlanKeyPrefix
-	QueryPlanPath            = types.QueryPlanPath
-	QueryPlansPath           = types.QueryPlansPath
-	QueryPlansOfProviderPath = types.QueryPlansOfProviderPath
-	QueryNodesOfPlanPath     = types.QueryNodesOfPlanPath
+	ModuleCdc     = types.ModuleCdc
+	RouterKey     = types.RouterKey
+	StoreKey      = types.StoreKey
+	PlansCountKey = types.PlansCountKey
+	PlanKeyPrefix = types.PlanKeyPrefix
 )
 
 type (

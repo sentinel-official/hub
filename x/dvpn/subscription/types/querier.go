@@ -1,23 +1,14 @@
 package types
 
 import (
-	"fmt"
-
 	hub "github.com/sentinel-official/hub/types"
 )
 
 const (
-	QueryKeyPlan            = "query_plan"
-	QueryKeyPlans           = "query_plans"
-	QueryKeyPlansOfProvider = "query_plans_of_provider"
-	QueryKeyNodesOfPlan     = "query_nodes_of_plan"
-)
-
-var (
-	QueryPlanPath            = fmt.Sprintf("custom/%s/%s/%s", StoreKey, QuerierRoute, QueryKeyPlan)
-	QueryPlansPath           = fmt.Sprintf("custom/%s/%s/%s", StoreKey, QuerierRoute, QueryKeyPlans)
-	QueryPlansOfProviderPath = fmt.Sprintf("custom/%s/%s/%s", StoreKey, QuerierRoute, QueryKeyPlansOfProvider)
-	QueryNodesOfPlanPath     = fmt.Sprintf("custom/%s/%s/%s", StoreKey, QuerierRoute, QueryKeyNodesOfPlan)
+	QueryPlan            = "query_plan"
+	QueryPlans           = "query_plans"
+	QueryPlansOfProvider = "query_plans_of_provider"
+	QueryNodesOfPlan     = "query_nodes_of_plan"
 )
 
 type QueryPlanParams struct {
