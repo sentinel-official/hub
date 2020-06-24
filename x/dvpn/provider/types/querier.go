@@ -1,12 +1,19 @@
 package types
 
 import (
+	"fmt"
+
 	hub "github.com/sentinel-official/hub/types"
 )
 
 const (
-	QueryProvider  = "query_provider"
-	QueryProviders = "query_providers"
+	QueryKeyProvider  = "query_provider"
+	QueryKeyProviders = "query_providers"
+)
+
+var (
+	QueryProviderPath  = fmt.Sprintf("custom/%s/%s/%s", StoreKey, QuerierRoute, QueryKeyProvider)
+	QueryProvidersPath = fmt.Sprintf("custom/%s/%s/%s", StoreKey, QuerierRoute, QueryKeyProviders)
 )
 
 type QueryProviderParams struct {

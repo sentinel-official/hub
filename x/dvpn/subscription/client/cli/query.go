@@ -79,30 +79,3 @@ func queryPlansCmd(cdc *codec.Codec) *cobra.Command {
 	cmd.Flags().String(flagProvider, "", "Provider address")
 	return cmd
 }
-
-func queryNodesOfPlanCmd(cdc *codec.Codec) *cobra.Command {
-	return &cobra.Command{
-		Use:   "plan-nodes",
-		Short: "Query nodes of a plan",
-		Args:  cobra.ExactArgs(1),
-		RunE: func(cmd *cobra.Command, args []string) error {
-			ctx := context.NewCLIContext().WithCodec(cdc)
-
-			id, err := strconv.ParseUint(args[0], 10, 64)
-			if err != nil {
-				return err
-			}
-
-			nodes, err := common.QueryNodesOfPlan(ctx, id)
-			if err != nil {
-				return err
-			}
-
-			for _, node := range nodes {
-				fmt.Println(node)
-			}
-
-			return nil
-		},
-	}
-}

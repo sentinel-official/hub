@@ -10,7 +10,6 @@ func GetQueryCommands(cdc *codec.Codec) []*cobra.Command {
 	return client.GetCommands(
 		queryPlanCmd(cdc),
 		queryPlansCmd(cdc),
-		queryNodesOfPlanCmd(cdc),
 	)
 }
 

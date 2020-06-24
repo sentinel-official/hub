@@ -10,13 +10,13 @@ import (
 
 func Querier(ctx sdk.Context, path []string, req abci.RequestQuery, k keeper.Keeper) ([]byte, sdk.Error) {
 	switch path[0] {
-	case types.QueryPlan:
+	case types.QueryKeyPlan:
 		return queryPlan(ctx, req, k)
-	case types.QueryPlans:
+	case types.QueryKeyPlans:
 		return queryPlans(ctx, req, k)
-	case types.QueryPlansOfProvider:
+	case types.QueryKeyPlansOfProvider:
 		return queryPlansOfProvider(ctx, req, k)
-	case types.QueryNodesOfPlan:
+	case types.QueryKeyNodesOfPlan:
 		return queryNodesOfPlan(ctx, req, k)
 	default:
 		return nil, types.ErrorUnknownQueryType(path[0])

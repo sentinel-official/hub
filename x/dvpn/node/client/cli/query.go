@@ -8,6 +8,7 @@ import (
 	"github.com/spf13/cobra"
 
 	hub "github.com/sentinel-official/hub/types"
+	"github.com/sentinel-official/hub/x/dvpn/common/client"
 	"github.com/sentinel-official/hub/x/dvpn/node/client/common"
 	"github.com/sentinel-official/hub/x/dvpn/node/types"
 )
@@ -43,20 +44,30 @@ func queryNodesCmd(cdc *codec.Codec) *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			ctx := context.NewCLIContext().WithCodec(cdc)
 
-			s, err := cmd.Flags().GetString(flagProvider)
+			provider, err := cmd.Flags().GetString(flagProvider)
+			if err != nil {
+				return err
+			}
+
+			plan, err := cmd.Flags().GetUint64(flagPlan)
 			if err != nil {
 				return err
 			}
 
 			var nodes types.Nodes
 
-			if len(s) > 0 {
-				address, err := hub.ProvAddressFromBech32(s)
+			if len(provider) > 0 {
+				address, err := hub.ProvAddressFromBech32(provider)
 				if err != nil {
 					return err
 				}
 
 				nodes, err = common.QueryNodesOfProvider(ctx, address)
+				if err != nil {
+					return err
+				}
+			} else if plan > 0 {
+				nodes, err = client.QueryNodesOfPlan(ctx, plan)
 				if err != nil {
 					return err
 				}
@@ -76,5 +87,7 @@ func queryNodesCmd(cdc *codec.Codec) *cobra.Command {
 	}
 
 	cmd.Flags().String(flagProvider, "", "Provider address")
+	cmd.Flags().Uint64(flagPlan, 0, "Subscription plan ID")
+
 	return cmd
 }
