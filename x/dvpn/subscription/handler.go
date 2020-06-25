@@ -21,7 +21,7 @@ func HandleAddPlan(ctx sdk.Context, k keeper.Keeper, msg types.MsgAddPlan) sdk.R
 		ID:           count + 1,
 		Provider:     msg.From,
 		Price:        msg.Price,
-		Duration:     msg.Duration,
+		Validity:     msg.Validity,
 		MaxBandwidth: msg.MaxBandwidth,
 		MaxDuration:  msg.MaxDuration,
 		Status:       hub.StatusInactive,

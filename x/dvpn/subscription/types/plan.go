@@ -14,7 +14,7 @@ type Plan struct {
 	ID           uint64          `json:"id"`
 	Provider     hub.ProvAddress `json:"provider"`
 	Price        sdk.Coins       `json:"price"`
-	Duration     time.Duration   `json:"duration"`
+	Validity     time.Duration   `json:"validity"`
 	MaxBandwidth hub.Bandwidth   `json:"max_bandwidth"`
 	MaxDuration  time.Duration   `json:"max_duration"`
 	Status       hub.Status      `json:"status"`
@@ -26,12 +26,12 @@ func (p Plan) String() string {
 ID: %d
 Provider: %s
 Price: %s
-Duration: %s
+Validity: %s
 Max bandwidth: %s
 Max duration: %s
 Status: %s
 Status at: %d
-`, p.ID, p.Provider, p.Price, p.Duration, p.MaxBandwidth, p.MaxDuration, p.Status, p.StatusAt))
+`, p.ID, p.Provider, p.Price, p.Validity, p.MaxBandwidth, p.MaxDuration, p.Status, p.StatusAt))
 }
 
 type Plans []Plan

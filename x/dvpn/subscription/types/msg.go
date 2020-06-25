@@ -19,17 +19,17 @@ var (
 type MsgAddPlan struct {
 	From         hub.ProvAddress `json:"from"`
 	Price        sdk.Coins       `json:"price"`
-	Duration     time.Duration   `json:"duration"`
+	Validity     time.Duration   `json:"validity"`
 	MaxBandwidth hub.Bandwidth   `json:"max_bandwidth"`
 	MaxDuration  time.Duration   `json:"max_duration"`
 }
 
-func NewMsgAddPlan(from hub.ProvAddress, price sdk.Coins, duration time.Duration,
+func NewMsgAddPlan(from hub.ProvAddress, price sdk.Coins, validity time.Duration,
 	maxBandwidth hub.Bandwidth, maxDuration time.Duration) MsgAddPlan {
 	return MsgAddPlan{
 		From:         from,
 		Price:        price,
-		Duration:     duration,
+		Validity:     validity,
 		MaxBandwidth: maxBandwidth,
 		MaxDuration:  maxDuration,
 	}
@@ -50,8 +50,8 @@ func (m MsgAddPlan) ValidateBasic() sdk.Error {
 	if m.Price == nil || m.Price.IsAnyNegative() {
 		return ErrorInvalidField("price")
 	}
-	if m.Duration < 0 {
-		return ErrorInvalidField("duration")
+	if m.Validity < 0 {
+		return ErrorInvalidField("validity")
 	}
 	if m.MaxDuration < 0 {
 		return ErrorInvalidField("max_duration")

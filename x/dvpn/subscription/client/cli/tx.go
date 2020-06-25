@@ -33,12 +33,12 @@ func txAddPlanCmd(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			s, err = cmd.Flags().GetString(flagDuration)
+			s, err = cmd.Flags().GetString(flagValidity)
 			if err != nil {
 				return err
 			}
 
-			duration, err := time.ParseDuration(s)
+			validity, err := time.ParseDuration(s)
 			if err != nil {
 				return err
 			}
@@ -63,20 +63,20 @@ func txAddPlanCmd(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgAddPlan(ctx.FromAddress.Bytes(), price, duration,
+			msg := types.NewMsgAddPlan(ctx.FromAddress.Bytes(), price, validity,
 				hub.NewBandwidth(upload, download), maxDuration)
 			return utils.GenerateOrBroadcastMsgs(ctx, txb, []sdk.Msg{msg})
 		},
 	}
 
 	cmd.Flags().String(flagPrice, "", "Plan price")
-	cmd.Flags().String(flagDuration, "", "Plan duration")
+	cmd.Flags().String(flagValidity, "", "Plan validity")
 	cmd.Flags().Uint64(flagMaxUpload, 0, "Plan max upload bandwidth")
 	cmd.Flags().Uint64(flagMaxDownload, 0, "Plan max download bandwidth")
 	cmd.Flags().String(flagMaxDuration, "", "Plan max duration")
 
 	_ = cmd.MarkFlagRequired(flagPrice)
-	_ = cmd.MarkFlagRequired(flagDuration)
+	_ = cmd.MarkFlagRequired(flagValidity)
 	_ = cmd.MarkFlagRequired(flagMaxUpload)
 	_ = cmd.MarkFlagRequired(flagMaxDownload)
 	_ = cmd.MarkFlagRequired(flagMaxDuration)
