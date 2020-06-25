@@ -14,9 +14,13 @@ var (
 	}
 )
 
+func IsEmptyCoin(coin sdk.Coin) bool {
+	return coin.Denom == "" && coin.Amount.Int64() == 0
+}
+
 func AreEmptyCoins(coins sdk.Coins) bool {
 	for _, coin := range coins {
-		if coin.Denom == "" && coin.Amount.Int64() == 0 {
+		if IsEmptyCoin(coin) {
 			continue
 		} else {
 			return false

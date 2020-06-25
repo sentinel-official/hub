@@ -3,7 +3,7 @@ package cli
 const (
 	flagProvider      = "provider"
 	flagPlan          = "plan"
-	flagPricePerGB    = "price-per-gb"
+	flagPrice         = "price"
 	flagRemoteURL     = "remote-url"
 	flagVersion       = "version"
 	flagUploadSpeed   = "upload-speed"

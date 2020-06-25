@@ -2,9 +2,7 @@ package types
 
 import (
 	"encoding/json"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
-
 	hub "github.com/sentinel-official/hub/types"
 )
 
@@ -14,22 +12,23 @@ var (
 	_ sdk.Msg = (*MsgSetNodeStatus)(nil)
 )
 
+// MsgRegisterNode is for registering a dVPN node
 type MsgRegisterNode struct {
 	From          sdk.AccAddress  `json:"from"`
 	Provider      hub.ProvAddress `json:"provider"`
-	PricePerGB    sdk.Coins       `json:"price_per_gb"`
+	Price         sdk.Coins       `json:"price"`
 	InternetSpeed hub.Bandwidth   `json:"internet_speed"`
 	RemoteURL     string          `json:"remote_url"`
 	Version       string          `json:"version"`
 	Category      NodeCategory    `json:"category"`
 }
 
-func NewMsgRegisterNode(from sdk.AccAddress, provider hub.ProvAddress, pricePerGB sdk.Coins,
+func NewMsgRegisterNode(from sdk.AccAddress, provider hub.ProvAddress, price sdk.Coins,
 	speed hub.Bandwidth, remoteURL, version string, category NodeCategory) MsgRegisterNode {
 	return MsgRegisterNode{
 		From:          from,
 		Provider:      provider,
-		PricePerGB:    pricePerGB,
+		Price:         price,
 		InternetSpeed: speed,
 		RemoteURL:     remoteURL,
 		Version:       version,
@@ -49,21 +48,33 @@ func (m MsgRegisterNode) ValidateBasic() sdk.Error {
 	if m.From == nil || m.From.Empty() {
 		return ErrorInvalidField("from")
 	}
+
+	// Provider can be nil. If not, it shouldn't be empty
 	if m.Provider != nil && m.Provider.Empty() {
 		return ErrorInvalidField("provider")
 	}
-	if m.PricePerGB != nil && !m.PricePerGB.IsValid() {
-		return ErrorInvalidField("price_per_gb")
+
+	// Price can be nil. If not, it should be valid
+	if m.Price != nil && !m.Price.IsValid() {
+		return ErrorInvalidField("price")
 	}
+
+	// InternetSpeed can't be zero and should be positive
 	if m.InternetSpeed.IsAnyZero() {
 		return ErrorInvalidField("internet_speed")
 	}
+
+	// RemoteURL can't be empty and length should be (0, 32]
 	if len(m.RemoteURL) == 0 || len(m.RemoteURL) > 32 {
 		return ErrorInvalidField("remote_url")
 	}
+
+	// Version can't be empty and length should be (0, 32]
 	if len(m.Version) == 0 || len(m.Version) > 32 {
 		return ErrorInvalidField("version")
 	}
+
+	// Category can't be invalid
 	if !m.Category.IsValid() {
 		return ErrorInvalidField("category")
 	}
@@ -84,22 +95,23 @@ func (m MsgRegisterNode) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{m.From}
 }
 
+// MsgUpdateNode is for updating the information of a dVPN node
 type MsgUpdateNode struct {
 	From          hub.NodeAddress `json:"from"`
 	Provider      hub.ProvAddress `json:"provider"`
-	PricePerGB    sdk.Coins       `json:"price_per_gb"`
+	Price         sdk.Coins       `json:"price"`
 	InternetSpeed hub.Bandwidth   `json:"internet_speed"`
 	RemoteURL     string          `json:"remote_url"`
 	Version       string          `json:"version"`
 	Category      NodeCategory    `json:"category"`
 }
 
-func NewMsgUpdateNode(from hub.NodeAddress, provider hub.ProvAddress, pricePerGB sdk.Coins,
+func NewMsgUpdateNode(from hub.NodeAddress, provider hub.ProvAddress, price sdk.Coins,
 	speed hub.Bandwidth, remoteURL, version string, category NodeCategory) MsgUpdateNode {
 	return MsgUpdateNode{
 		From:          from,
 		Provider:      provider,
-		PricePerGB:    pricePerGB,
+		Price:         price,
 		InternetSpeed: speed,
 		RemoteURL:     remoteURL,
 		Version:       version,
@@ -119,21 +131,33 @@ func (m MsgUpdateNode) ValidateBasic() sdk.Error {
 	if m.From == nil || m.From.Empty() {
 		return ErrorInvalidField("from")
 	}
+
+	// Provider can be nil. If not, it shouldn't be empty
 	if m.Provider != nil && m.Provider.Empty() {
 		return ErrorInvalidField("provider")
 	}
-	if m.PricePerGB != nil && !hub.AreEmptyCoins(m.PricePerGB) && !m.PricePerGB.IsValid() {
-		return ErrorInvalidField("price_per_gb")
+
+	// Price can be nil. If not, it should be empty or valid
+	if m.Price != nil && !hub.AreEmptyCoins(m.Price) && !m.Price.IsValid() {
+		return ErrorInvalidField("price")
 	}
+
+	// InternetSpeed can be zero. If not, it should be positive
 	if !m.InternetSpeed.IsAllZero() && m.InternetSpeed.IsAnyZero() {
 		return ErrorInvalidField("internet_speed")
 	}
+
+	// RemoteURL can be empty. If not, length should be (0, 32]
 	if len(m.RemoteURL) != 0 && len(m.RemoteURL) > 32 {
 		return ErrorInvalidField("remote_url")
 	}
+
+	// Version can be empty. If not, length should be (0, 32]
 	if len(m.Version) != 0 && len(m.Version) > 32 {
 		return ErrorInvalidField("version")
 	}
+
+	// Category can be Unknown. If not, should be valid
 	if m.Category != CategoryUnknown && !m.Category.IsValid() {
 		return ErrorInvalidField("category")
 	}
@@ -154,6 +178,7 @@ func (m MsgUpdateNode) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{m.From.Bytes()}
 }
 
+// MsgSetNodeStatus is for updating the status of a dVPN node
 type MsgSetNodeStatus struct {
 	From   hub.NodeAddress `json:"from"`
 	Status hub.Status      `json:"status"`

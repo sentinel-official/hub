@@ -51,7 +51,7 @@ func (n NodeCategory) IsValid() bool {
 type Node struct {
 	Address       hub.NodeAddress `json:"address"`
 	Provider      hub.ProvAddress `json:"provider,omitempty"`
-	PricePerGB    sdk.Coins       `json:"price_per_gb,omitempty"`
+	Price         sdk.Coins       `json:"price,omitempty"`
 	InternetSpeed hub.Bandwidth   `json:"internet_speed"`
 	RemoteURL     string          `json:"remote_url"`
 	Version       string          `json:"version"`
@@ -71,7 +71,7 @@ Version: %s
 Category: %s
 Status: %s
 Status at: %d
-`, n.Address, n.Provider, n.PricePerGB, n.InternetSpeed, n.RemoteURL, n.Version, n.Category, n.Status, n.StatusAt))
+`, n.Address, n.Provider, n.Price, n.InternetSpeed, n.RemoteURL, n.Version, n.Category, n.Status, n.StatusAt))
 }
 
 type Nodes []Node

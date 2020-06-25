@@ -26,7 +26,7 @@ func HandleRegisterNode(ctx sdk.Context, k keeper.Keeper, msg types.MsgRegisterN
 	node := types.Node{
 		Address:       msg.From.Bytes(),
 		Provider:      msg.Provider,
-		PricePerGB:    msg.PricePerGB,
+		Price:         msg.Price,
 		InternetSpeed: msg.InternetSpeed,
 		RemoteURL:     msg.RemoteURL,
 		Version:       msg.Version,
@@ -80,15 +80,15 @@ func HandleUpdateNode(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpdateNode)
 			k.SetNodeAddressForProvider(ctx, node.Provider, node.Address)
 		}
 	}
-	if msg.PricePerGB != nil {
-		node.PricePerGB = msg.PricePerGB
+	if msg.Price != nil {
+		node.Price = msg.Price
 
-		if hub.AreEmptyCoins(msg.PricePerGB) {
-			node.PricePerGB = nil
+		if hub.AreEmptyCoins(msg.Price) {
+			node.Price = nil
 		}
 	}
 	if node.Provider != nil {
-		node.PricePerGB = nil
+		node.Price = nil
 	}
 	if !msg.InternetSpeed.IsAnyZero() {
 		node.InternetSpeed = msg.InternetSpeed

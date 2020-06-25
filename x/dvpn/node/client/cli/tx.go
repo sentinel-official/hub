@@ -30,12 +30,12 @@ func txRegisterNodeCmd(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			s, err = cmd.Flags().GetString(flagPricePerGB)
+			s, err = cmd.Flags().GetString(flagPrice)
 			if err != nil {
 				return err
 			}
 
-			pricePerGB, err := sdk.ParseCoins(s)
+			price, err := sdk.ParseCoins(s)
 			if err != nil {
 				return err
 			}
@@ -65,14 +65,14 @@ func txRegisterNodeCmd(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgRegisterNode(ctx.FromAddress, provider, pricePerGB,
+			msg := types.NewMsgRegisterNode(ctx.FromAddress, provider, price,
 				hub.NewBandwidth(upload, download), remoteURL, version, types.NodeCategoryFromString(s))
 			return utils.GenerateOrBroadcastMsgs(ctx, txb, []sdk.Msg{msg})
 		},
 	}
 
 	cmd.Flags().String(flagProvider, "", "Node provider address")
-	cmd.Flags().String(flagPricePerGB, "", "Node price per Gigabyte")
+	cmd.Flags().String(flagPrice, "", "Node price per Gigabyte")
 	cmd.Flags().String(flagRemoteURL, "", "Node remove URL")
 	cmd.Flags().String(flagVersion, "", "Node version")
 	cmd.Flags().Uint64(flagUploadSpeed, 0, "Node upload speed")
@@ -111,16 +111,16 @@ func txUpdateNodeCmd(cdc *codec.Codec) *cobra.Command {
 				}
 			}
 
-			s, err = cmd.Flags().GetString(flagPricePerGB)
+			s, err = cmd.Flags().GetString(flagPrice)
 			if err != nil {
 				return err
 			}
 
-			var pricePerGB sdk.Coins
+			var price sdk.Coins
 			if s == "-" {
-				pricePerGB = hub.EmptyCoins
+				price = hub.EmptyCoins
 			} else {
-				pricePerGB, err = sdk.ParseCoins(s)
+				price, err = sdk.ParseCoins(s)
 				if err != nil {
 					return err
 				}
@@ -151,14 +151,14 @@ func txUpdateNodeCmd(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgUpdateNode(ctx.FromAddress.Bytes(), provider, pricePerGB,
+			msg := types.NewMsgUpdateNode(ctx.FromAddress.Bytes(), provider, price,
 				hub.NewBandwidth(upload, download), remoteURL, version, types.NodeCategoryFromString(s))
 			return utils.GenerateOrBroadcastMsgs(ctx, txb, []sdk.Msg{msg})
 		},
 	}
 
 	cmd.Flags().String(flagProvider, "", "Node provider address")
-	cmd.Flags().String(flagPricePerGB, "", "Node price per Gigabyte")
+	cmd.Flags().String(flagPrice, "", "Node price per Gigabyte")
 	cmd.Flags().String(flagRemoteURL, "", "Node remove URL")
 	cmd.Flags().String(flagVersion, "", "Node version")
 	cmd.Flags().Uint64(flagUploadSpeed, 0, "Node upload speed")
