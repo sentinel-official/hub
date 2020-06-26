@@ -45,22 +45,22 @@ func (m MsgRegisterProvider) ValidateBasic() sdk.Error {
 		return ErrorInvalidField("from")
 	}
 
-	// Name can't be empty and length should be <= 64
+	// Name can't be empty and length should be (0, 64]
 	if len(m.Name) == 0 || len(m.Name) > 64 {
 		return ErrorInvalidField("name")
 	}
 
-	// Identity length should be <= 64
+	// Identity length should be [0, 64]
 	if len(m.Identity) > 64 {
 		return ErrorInvalidField("identity")
 	}
 
-	// Website length should be <= 64
+	// Website length should be [0, 64]
 	if len(m.Website) > 64 {
 		return ErrorInvalidField("website")
 	}
 
-	// Description length should be <= 256
+	// Description length should be [0, 256]
 	if len(m.Description) > 256 {
 		return ErrorInvalidField("description")
 	}
@@ -113,22 +113,22 @@ func (m MsgUpdateProvider) ValidateBasic() sdk.Error {
 		return ErrorInvalidField("from")
 	}
 
-	// Name length should be <= 64
+	// Name length should be [0, 64]
 	if len(m.Name) > 64 {
 		return ErrorInvalidField("name")
 	}
 
-	// Identity length should be <= 64
+	// Identity length should be [0, 64]
 	if len(m.Identity) > 64 {
 		return ErrorInvalidField("identity")
 	}
 
-	// Website length should be <= 64
+	// Website length should be [0, 64]
 	if len(m.Website) > 64 {
 		return ErrorInvalidField("website")
 	}
 
-	// Description length should be <= 256
+	// Description length should be [0, 256]
 	if len(m.Description) > 256 {
 		return ErrorInvalidField("description")
 	}

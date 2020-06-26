@@ -17,8 +17,8 @@ var (
 // MsgRegisterNode is for registering a dVPN node.
 type MsgRegisterNode struct {
 	From          sdk.AccAddress  `json:"from"`
-	Provider      hub.ProvAddress `json:"provider"`
-	Price         sdk.Coins       `json:"price"`
+	Provider      hub.ProvAddress `json:"provider,omitempty"`
+	Price         sdk.Coins       `json:"price,omitempty"`
 	InternetSpeed hub.Bandwidth   `json:"internet_speed"`
 	RemoteURL     string          `json:"remote_url"`
 	Version       string          `json:"version"`
@@ -61,22 +61,22 @@ func (m MsgRegisterNode) ValidateBasic() sdk.Error {
 		return ErrorInvalidField("price")
 	}
 
-	// InternetSpeed can't be negative and zero
+	// InternetSpeed shouldn't be negative and zero
 	if !m.InternetSpeed.IsValid() {
 		return ErrorInvalidField("internet_speed")
 	}
 
-	// RemoteURL can't be empty and length should be (0, 32]
-	if len(m.RemoteURL) == 0 || len(m.RemoteURL) > 32 {
+	// RemoteURL can't be empty and length should be (0, 64]
+	if len(m.RemoteURL) == 0 || len(m.RemoteURL) > 64 {
 		return ErrorInvalidField("remote_url")
 	}
 
-	// Version can't be empty and length should be (0, 32]
-	if len(m.Version) == 0 || len(m.Version) > 32 {
+	// Version can't be empty and length should be (0, 64]
+	if len(m.Version) == 0 || len(m.Version) > 64 {
 		return ErrorInvalidField("version")
 	}
 
-	// Category can't be invalid
+	// Category should be valid
 	if !m.Category.IsValid() {
 		return ErrorInvalidField("category")
 	}
@@ -100,12 +100,12 @@ func (m MsgRegisterNode) GetSigners() []sdk.AccAddress {
 // MsgUpdateNode is for updating the information of a dVPN node.
 type MsgUpdateNode struct {
 	From          hub.NodeAddress `json:"from"`
-	Provider      hub.ProvAddress `json:"provider"`
-	Price         sdk.Coins       `json:"price"`
-	InternetSpeed hub.Bandwidth   `json:"internet_speed"`
-	RemoteURL     string          `json:"remote_url"`
-	Version       string          `json:"version"`
-	Category      NodeCategory    `json:"category"`
+	Provider      hub.ProvAddress `json:"provider,omitempty"`
+	Price         sdk.Coins       `json:"price,omitempty"`
+	InternetSpeed hub.Bandwidth   `json:"internet_speed,omitempty"`
+	RemoteURL     string          `json:"remote_url,omitempty"`
+	Version       string          `json:"version,omitempty"`
+	Category      NodeCategory    `json:"category,omitempty"`
 }
 
 func NewMsgUpdateNode(from hub.NodeAddress, provider hub.ProvAddress, price sdk.Coins,
@@ -149,13 +149,13 @@ func (m MsgUpdateNode) ValidateBasic() sdk.Error {
 		return ErrorInvalidField("internet_speed")
 	}
 
-	// RemoteURL can be empty. If not, length should be (0, 32]
-	if len(m.RemoteURL) != 0 && len(m.RemoteURL) > 32 {
+	// RemoteURL length should be [0, 64]
+	if len(m.RemoteURL) > 64 {
 		return ErrorInvalidField("remote_url")
 	}
 
-	// Version can be empty. If not, length should be (0, 32]
-	if len(m.Version) != 0 && len(m.Version) > 32 {
+	// Version length should be [0, 64]
+	if len(m.Version) > 64 {
 		return ErrorInvalidField("version")
 	}
 
@@ -205,6 +205,8 @@ func (m MsgSetNodeStatus) ValidateBasic() sdk.Error {
 	if m.From == nil || m.From.Empty() {
 		return ErrorInvalidField("from")
 	}
+
+	// Status should be valid
 	if !m.Status.IsValid() {
 		return ErrorInvalidField("status")
 	}

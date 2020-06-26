@@ -12,7 +12,7 @@ func HandleRegisterNode(ctx sdk.Context, k keeper.Keeper, msg types.MsgRegisterN
 	if msg.Provider != nil {
 		_, found := k.GetProvider(ctx, msg.Provider)
 		if !found {
-			return types.ErrorNoProviderFound().Result()
+			return types.ErrorProviderDoesNotExist().Result()
 		}
 	}
 
@@ -50,7 +50,7 @@ func HandleRegisterNode(ctx sdk.Context, k keeper.Keeper, msg types.MsgRegisterN
 func HandleUpdateNode(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpdateNode) sdk.Result {
 	node, found := k.GetNode(ctx, msg.From)
 	if !found {
-		return types.ErrorNoNodeFound().Result()
+		return types.ErrorNodeDoesNotExist().Result()
 	}
 
 	if msg.Provider != nil && !msg.Provider.Equals(node.Provider) {
@@ -68,7 +68,7 @@ func HandleUpdateNode(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpdateNode)
 		} else {
 			_, found := k.GetProvider(ctx, msg.Provider)
 			if !found {
-				return types.ErrorNoProviderFound().Result()
+				return types.ErrorProviderDoesNotExist().Result()
 			}
 
 			node.Provider = msg.Provider
@@ -113,7 +113,7 @@ func HandleUpdateNode(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpdateNode)
 func HandleSetNodeStatus(ctx sdk.Context, k keeper.Keeper, msg types.MsgSetNodeStatus) sdk.Result {
 	node, found := k.GetNode(ctx, msg.From)
 	if !found {
-		return types.ErrorNoNodeFound().Result()
+		return types.ErrorNodeDoesNotExist().Result()
 	}
 
 	node.Status = msg.Status

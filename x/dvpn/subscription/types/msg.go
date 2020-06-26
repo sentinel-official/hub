@@ -56,17 +56,17 @@ func (m MsgAddPlan) ValidateBasic() sdk.Error {
 		return ErrorInvalidField("price")
 	}
 
-	// Validity can't be negative and zero
+	// Validity shouldn't be negative and zero
 	if m.Validity <= 0 {
 		return ErrorInvalidField("validity")
 	}
 
-	// Bandwidth can't be negative and zero
+	// Bandwidth shouldn't be negative and zero
 	if !m.Bandwidth.IsValid() {
 		return ErrorInvalidField("bandwidth")
 	}
 
-	// Duration can't be negative and zero
+	// Duration shouldn't be negative and zero
 	if m.Duration <= 0 {
 		return ErrorInvalidField("duration")
 	}
@@ -115,12 +115,12 @@ func (m MsgSetPlanStatus) ValidateBasic() sdk.Error {
 		return ErrorInvalidField("from")
 	}
 
-	// ID can't be zero
+	// ID shouldn't be zero
 	if m.ID == 0 {
 		return ErrorInvalidField("id")
 	}
 
-	// Status can't be invalid
+	// Status should be valid
 	if !m.Status.IsValid() {
 		return ErrorInvalidField("status")
 	}
@@ -169,12 +169,12 @@ func (m MsgAddNodeForPlan) ValidateBasic() sdk.Error {
 		return ErrorInvalidField("from")
 	}
 
-	// ID can't be zero
+	// ID shouldn't be zero
 	if m.ID == 0 {
 		return ErrorInvalidField("id")
 	}
 
-	// Address can't be nil or empty
+	// Address shouldn't be nil or empty
 	if m.Address == nil || m.Address.Empty() {
 		return ErrorInvalidField("address")
 	}
@@ -223,12 +223,12 @@ func (m MsgRemoveNodeForPlan) ValidateBasic() sdk.Error {
 		return ErrorInvalidField("from")
 	}
 
-	// ID can't be zero
+	// ID shouldn't be zero
 	if m.ID == 0 {
 		return ErrorInvalidField("id")
 	}
 
-	// Address can't be nil or empty
+	// Address shouldn't be nil or empty
 	if m.Address == nil || m.Address.Empty() {
 		return ErrorInvalidField("address")
 	}
@@ -274,12 +274,12 @@ func (m MsgStartSubscription) ValidateBasic() sdk.Error {
 	}
 
 	if m.ID > 0 {
-		// ID can't be zero
+		// ID shouldn't be zero
 		if m.ID == 0 {
 			return ErrorInvalidField("id")
 		}
 
-		// Denom length can't be zero
+		// Denom length should be [3, 16]
 		if len(m.Denom) < 3 || len(m.Denom) > 16 {
 			return ErrorInvalidField("denom")
 		}
@@ -287,7 +287,7 @@ func (m MsgStartSubscription) ValidateBasic() sdk.Error {
 		return nil
 	}
 
-	// Address can't be nil or empty
+	// Address shouldn't be nil or empty
 	if m.Address == nil || m.Address.Empty() {
 		return ErrorInvalidField("address")
 	}
@@ -332,7 +332,7 @@ func (m MsgEndSubscription) ValidateBasic() sdk.Error {
 		return ErrorInvalidField("from")
 	}
 
-	// ID can't be zero
+	// ID shouldn't be zero
 	if m.ID == 0 {
 		return ErrorInvalidField("id")
 	}

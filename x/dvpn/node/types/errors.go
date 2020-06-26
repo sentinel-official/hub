@@ -16,18 +16,18 @@ const (
 	errorCodeUnknownMsgType = iota + 101
 	errorCodeUnknownQueryType
 	errorCodeInvalidField
-	errorCodeNoProviderFound
+	errorCodeProviderDoesNotExist
 	errorCodeDuplicateNode
-	errorCodeNoNodeFound
+	errorCodeNodeDoesNotExist
 )
 
 const (
-	errorMsgUnknownMsgType   = "unknown message type: %s"
-	errorMsgUnknownQueryType = "unknown query type: %s"
-	errorMsgInvalidField     = "invalid field: %s"
-	errorMsgNoProviderFound  = "no provider found"
-	errorMsgDuplicateNode    = "duplicate node"
-	errorMsgNoNodeFound      = "no node found"
+	errorMsgUnknownMsgType       = "unknown message type: %s"
+	errorMsgUnknownQueryType     = "unknown query type: %s"
+	errorMsgInvalidField         = "invalid field: %s"
+	errorMsgProviderDoesNotExist = "provider does not exist"
+	errorMsgDuplicateNode        = "duplicate node"
+	errorMsgNodeDoesNotExist     = "node does not exist"
 )
 
 func ErrorMarshal() sdk.Error {
@@ -50,14 +50,14 @@ func ErrorInvalidField(v string) sdk.Error {
 	return sdk.NewError(Codespace, errorCodeInvalidField, fmt.Sprintf(errorMsgInvalidField, v))
 }
 
-func ErrorNoProviderFound() sdk.Error {
-	return sdk.NewError(Codespace, errorCodeNoProviderFound, errorMsgNoProviderFound)
+func ErrorProviderDoesNotExist() sdk.Error {
+	return sdk.NewError(Codespace, errorCodeProviderDoesNotExist, errorMsgProviderDoesNotExist)
 }
 
 func ErrorDuplicateNode() sdk.Error {
 	return sdk.NewError(Codespace, errorCodeDuplicateNode, errorMsgDuplicateNode)
 }
 
-func ErrorNoNodeFound() sdk.Error {
-	return sdk.NewError(Codespace, errorCodeNoNodeFound, errorMsgNoNodeFound)
+func ErrorNodeDoesNotExist() sdk.Error {
+	return sdk.NewError(Codespace, errorCodeNodeDoesNotExist, errorMsgNodeDoesNotExist)
 }

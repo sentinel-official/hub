@@ -36,9 +36,9 @@ var (
 	ErrorUnknownMsgType           = types.ErrorUnknownMsgType
 	ErrorUnknownQueryType         = types.ErrorUnknownQueryType
 	ErrorInvalidField             = types.ErrorInvalidField
-	ErrorNoProviderFound          = types.ErrorNoProviderFound
+	ErrorProviderDoesNotExist     = types.ErrorProviderDoesNotExist
 	ErrorDuplicateNode            = types.ErrorDuplicateNode
-	ErrorNoNodeFound              = types.ErrorNoNodeFound
+	ErrorNodeDoesNotExist         = types.ErrorNodeDoesNotExist
 	NewGenesisState               = types.NewGenesisState
 	DefaultGenesisState           = types.DefaultGenesisState
 	NodeKey                       = types.NodeKey

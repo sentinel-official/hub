@@ -62,17 +62,29 @@ type Node struct {
 }
 
 func (n Node) String() string {
-	return strings.TrimSpace(fmt.Sprintf(`
-Address: %s
-Provider: %s
-Price: %s
+	if n.Provider == nil {
+		return strings.TrimSpace(fmt.Sprintf(`
+Address:        %s
+Price:          %s
 Internet speed: %s
-Remote URL: %s
-Version: %s
-Category: %s
-Status: %s
-Status at: %s
-`, n.Address, n.Provider, n.Price, n.InternetSpeed, n.RemoteURL, n.Version, n.Category, n.Status, n.StatusAt))
+Remote URL:     %s
+Version:        %s
+Category:       %s
+Status:         %s
+Status at:      %s
+`, n.Address, n.Price, n.InternetSpeed, n.RemoteURL, n.Version, n.Category, n.Status, n.StatusAt))
+	}
+
+	return strings.TrimSpace(fmt.Sprintf(`
+Address:        %s
+Provider:       %s
+Internet speed: %s
+Remote URL:     %s
+Version:        %s
+Category:       %s
+Status:         %s
+Status at:      %s
+`, n.Address, n.Provider, n.InternetSpeed, n.RemoteURL, n.Version, n.Category, n.Status, n.StatusAt))
 }
 
 func (n Node) GetPriceForDenom(s string) (sdk.Coin, bool) {
@@ -88,7 +100,7 @@ func (n Node) GetPriceForDenom(s string) (sdk.Coin, bool) {
 func (n Node) BandwidthForCoin(coin sdk.Coin) (hub.Bandwidth, error) {
 	price, found := n.GetPriceForDenom(coin.Denom)
 	if !found {
-		return hub.Bandwidth{}, fmt.Errorf("invalid price denom")
+		return hub.Bandwidth{}, fmt.Errorf("price does not exist")
 	}
 
 	bytes := coin.Amount.Mul(hub.Gigabyte).Quo(price.Amount)
