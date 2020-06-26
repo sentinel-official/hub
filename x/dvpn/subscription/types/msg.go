@@ -14,24 +14,27 @@ var (
 	_ sdk.Msg = (*MsgSetPlanStatus)(nil)
 	_ sdk.Msg = (*MsgAddNode)(nil)
 	_ sdk.Msg = (*MsgRemoveNode)(nil)
+	_ sdk.Msg = (*MsgStartPlanSubscription)(nil)
+	_ sdk.Msg = (*MsgStartNodeSubscription)(nil)
+	_ sdk.Msg = (*MsgEndSubscription)(nil)
 )
 
 type MsgAddPlan struct {
-	From         hub.ProvAddress `json:"from"`
-	Price        sdk.Coins       `json:"price"`
-	Validity     time.Duration   `json:"validity"`
-	MaxBandwidth hub.Bandwidth   `json:"max_bandwidth"`
-	MaxDuration  time.Duration   `json:"max_duration"`
+	From      hub.ProvAddress `json:"from"`
+	Price     sdk.Coins       `json:"price"`
+	Validity  time.Duration   `json:"validity"`
+	Bandwidth hub.Bandwidth   `json:"bandwidth"`
+	Duration  time.Duration   `json:"duration"`
 }
 
 func NewMsgAddPlan(from hub.ProvAddress, price sdk.Coins, validity time.Duration,
-	maxBandwidth hub.Bandwidth, maxDuration time.Duration) MsgAddPlan {
+	bandwidth hub.Bandwidth, duration time.Duration) MsgAddPlan {
 	return MsgAddPlan{
-		From:         from,
-		Price:        price,
-		Validity:     validity,
-		MaxBandwidth: maxBandwidth,
-		MaxDuration:  maxDuration,
+		From:      from,
+		Price:     price,
+		Validity:  validity,
+		Bandwidth: bandwidth,
+		Duration:  duration,
 	}
 }
 
@@ -47,14 +50,25 @@ func (m MsgAddPlan) ValidateBasic() sdk.Error {
 	if m.From == nil || m.From.Empty() {
 		return ErrorInvalidField("from")
 	}
-	if m.Price == nil || m.Price.IsAnyNegative() {
+
+	// Price can be nil. If not, it should be valid
+	if m.Price != nil && !m.Price.IsValid() {
 		return ErrorInvalidField("price")
 	}
+
+	// Validity can't be negative
 	if m.Validity < 0 {
 		return ErrorInvalidField("validity")
 	}
-	if m.MaxDuration < 0 {
-		return ErrorInvalidField("max_duration")
+
+	// Bandwidth can be zero. If not, it should be positive
+	if !m.Bandwidth.IsAllZero() && !m.Bandwidth.IsValid() {
+		return ErrorInvalidField("bandwidth")
+	}
+
+	// Duration can't be negative
+	if m.Duration < 0 {
+		return ErrorInvalidField("duration")
 	}
 
 	return nil
@@ -98,6 +112,9 @@ func (m MsgSetPlanStatus) Type() string {
 func (m MsgSetPlanStatus) ValidateBasic() sdk.Error {
 	if m.From == nil || m.From.Empty() {
 		return ErrorInvalidField("from")
+	}
+	if m.ID == 0 {
+		return ErrorInvalidField("id")
 	}
 	if !m.Status.IsValid() {
 		return ErrorInvalidField("status")
@@ -145,6 +162,9 @@ func (m MsgAddNode) ValidateBasic() sdk.Error {
 	if m.From == nil || m.From.Empty() {
 		return ErrorInvalidField("from")
 	}
+	if m.ID == 0 {
+		return ErrorInvalidField("id")
+	}
 	if m.Address == nil || m.Address.Empty() {
 		return ErrorInvalidField("address")
 	}
@@ -191,6 +211,9 @@ func (m MsgRemoveNode) ValidateBasic() sdk.Error {
 	if m.From == nil || m.From.Empty() {
 		return ErrorInvalidField("from")
 	}
+	if m.ID == 0 {
+		return ErrorInvalidField("id")
+	}
 	if m.Address == nil || m.Address.Empty() {
 		return ErrorInvalidField("address")
 	}
@@ -209,4 +232,127 @@ func (m MsgRemoveNode) GetSignBytes() []byte {
 
 func (m MsgRemoveNode) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{m.From.Bytes()}
+}
+
+type MsgStartPlanSubscription struct {
+	From  sdk.AccAddress `json:"from"`
+	ID    uint64         `json:"id"`
+	Denom string         `json:"denom"`
+}
+
+func (m MsgStartPlanSubscription) Route() string {
+	return RouterKey
+}
+
+func (m MsgStartPlanSubscription) Type() string {
+	return "stat_plan_subscription"
+}
+
+func (m MsgStartPlanSubscription) ValidateBasic() sdk.Error {
+	if m.From == nil || m.From.Empty() {
+		return ErrorInvalidField("from")
+	}
+	if m.ID == 0 {
+		return ErrorInvalidField("id")
+	}
+	if len(m.Denom) == 0 {
+		return ErrorInvalidField("denom")
+	}
+
+	return nil
+}
+
+func (m MsgStartPlanSubscription) GetSignBytes() []byte {
+	bytes, err := json.Marshal(m)
+	if err != nil {
+		panic(err)
+	}
+
+	return bytes
+}
+
+func (m MsgStartPlanSubscription) GetSigners() []sdk.AccAddress {
+	return []sdk.AccAddress{m.From}
+}
+
+type MsgStartNodeSubscription struct {
+	From    sdk.AccAddress  `json:"from"`
+	Address hub.NodeAddress `json:"address"`
+	Deposit sdk.Coin        `json:"deposit"`
+}
+
+func (m MsgStartNodeSubscription) Route() string {
+	return RouterKey
+}
+
+func (m MsgStartNodeSubscription) Type() string {
+	return "start_node_subscription"
+}
+
+func (m MsgStartNodeSubscription) ValidateBasic() sdk.Error {
+	if m.From == nil || m.From.Empty() {
+		return ErrorInvalidField("from")
+	}
+
+	// Address can't be nil and empty
+	if m.Address == nil || m.Address.Empty() {
+		return ErrorInvalidField("address")
+	}
+
+	// Deposit can be empty. If not, it should be valid
+	if !hub.IsEmptyCoin(m.Deposit) && !m.Deposit.IsValid() {
+		return ErrorInvalidField("deposit")
+	}
+
+	return nil
+}
+
+func (m MsgStartNodeSubscription) GetSignBytes() []byte {
+	bytes, err := json.Marshal(m)
+	if err != nil {
+		panic(err)
+	}
+
+	return bytes
+}
+
+func (m MsgStartNodeSubscription) GetSigners() []sdk.AccAddress {
+	return []sdk.AccAddress{m.From}
+}
+
+type MsgEndSubscription struct {
+	From sdk.AccAddress `json:"from"`
+	ID   uint64         `json:"id"`
+}
+
+func (m MsgEndSubscription) Route() string {
+	return RouterKey
+}
+
+func (m MsgEndSubscription) Type() string {
+	return "end_subscription"
+}
+
+func (m MsgEndSubscription) ValidateBasic() sdk.Error {
+	if m.From == nil || m.From.Empty() {
+		return ErrorInvalidField("from")
+	}
+	if m.ID == 0 {
+		return ErrorInvalidField("id")
+	}
+
+	return nil
+}
+
+func (m MsgEndSubscription) GetSignBytes() []byte {
+	bytes, err := json.Marshal(m)
+	if err != nil {
+		panic(err)
+	}
+
+	return bytes
+}
+
+func (m MsgEndSubscription) GetSigners() []sdk.AccAddress {
+	return []sdk.AccAddress{m.From}
 }

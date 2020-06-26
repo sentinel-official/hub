@@ -15,3 +15,7 @@ type ProviderKeeper interface {
 type NodeKeeper interface {
 	GetNode(ctx sdk.Context, address hub.NodeAddress) (node.Node, bool)
 }
+
+type BankKeeper interface {
+	SendCoins(ctx sdk.Context, from sdk.AccAddress, to sdk.AccAddress, amount sdk.Coins) sdk.Error
+}

@@ -40,12 +40,12 @@ func txRegisterNodeCmd(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			upload, err := cmd.Flags().GetUint64(flagUploadSpeed)
+			upload, err := cmd.Flags().GetInt64(flagUploadSpeed)
 			if err != nil {
 				return err
 			}
 
-			download, err := cmd.Flags().GetUint64(flagDownloadSpeed)
+			download, err := cmd.Flags().GetInt64(flagDownloadSpeed)
 			if err != nil {
 				return err
 			}
@@ -66,7 +66,7 @@ func txRegisterNodeCmd(cdc *codec.Codec) *cobra.Command {
 			}
 
 			msg := types.NewMsgRegisterNode(ctx.FromAddress, provider, price,
-				hub.NewBandwidth(upload, download), remoteURL, version, types.NodeCategoryFromString(s))
+				hub.NewBandwidthFromInt64(upload, download), remoteURL, version, types.NodeCategoryFromString(s))
 			return utils.GenerateOrBroadcastMsgs(ctx, txb, []sdk.Msg{msg})
 		},
 	}
@@ -75,8 +75,8 @@ func txRegisterNodeCmd(cdc *codec.Codec) *cobra.Command {
 	cmd.Flags().String(flagPrice, "", "Node price per Gigabyte")
 	cmd.Flags().String(flagRemoteURL, "", "Node remove URL")
 	cmd.Flags().String(flagVersion, "", "Node version")
-	cmd.Flags().Uint64(flagUploadSpeed, 0, "Node upload speed")
-	cmd.Flags().Uint64(flagDownloadSpeed, 0, "Node download speed")
+	cmd.Flags().Int64(flagUploadSpeed, 0, "Node upload speed")
+	cmd.Flags().Int64(flagDownloadSpeed, 0, "Node download speed")
 	cmd.Flags().String(flagCategory, "", "Node category")
 
 	_ = cmd.MarkFlagRequired(flagRemoteURL)
@@ -126,12 +126,12 @@ func txUpdateNodeCmd(cdc *codec.Codec) *cobra.Command {
 				}
 			}
 
-			upload, err := cmd.Flags().GetUint64(flagUploadSpeed)
+			upload, err := cmd.Flags().GetInt64(flagUploadSpeed)
 			if err != nil {
 				return err
 			}
 
-			download, err := cmd.Flags().GetUint64(flagDownloadSpeed)
+			download, err := cmd.Flags().GetInt64(flagDownloadSpeed)
 			if err != nil {
 				return err
 			}
@@ -152,7 +152,7 @@ func txUpdateNodeCmd(cdc *codec.Codec) *cobra.Command {
 			}
 
 			msg := types.NewMsgUpdateNode(ctx.FromAddress.Bytes(), provider, price,
-				hub.NewBandwidth(upload, download), remoteURL, version, types.NodeCategoryFromString(s))
+				hub.NewBandwidthFromInt64(upload, download), remoteURL, version, types.NodeCategoryFromString(s))
 			return utils.GenerateOrBroadcastMsgs(ctx, txb, []sdk.Msg{msg})
 		},
 	}
@@ -161,8 +161,8 @@ func txUpdateNodeCmd(cdc *codec.Codec) *cobra.Command {
 	cmd.Flags().String(flagPrice, "", "Node price per Gigabyte")
 	cmd.Flags().String(flagRemoteURL, "", "Node remove URL")
 	cmd.Flags().String(flagVersion, "", "Node version")
-	cmd.Flags().Uint64(flagUploadSpeed, 0, "Node upload speed")
-	cmd.Flags().Uint64(flagDownloadSpeed, 0, "Node download speed")
+	cmd.Flags().Int64(flagUploadSpeed, 0, "Node upload speed")
+	cmd.Flags().Int64(flagDownloadSpeed, 0, "Node download speed")
 	cmd.Flags().String(flagCategory, "", "Node category")
 
 	return cmd

@@ -1,8 +1,6 @@
 package node
 
 import (
-	"fmt"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	hub "github.com/sentinel-official/hub/types"
@@ -32,7 +30,7 @@ func HandleRegisterNode(ctx sdk.Context, k keeper.Keeper, msg types.MsgRegisterN
 		Version:       msg.Version,
 		Category:      msg.Category,
 		Status:        hub.StatusInactive,
-		StatusAt:      ctx.BlockHeight(),
+		StatusAt:      ctx.BlockTime(),
 	}
 
 	k.SetNode(ctx, node)
@@ -106,7 +104,6 @@ func HandleUpdateNode(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpdateNode)
 	k.SetNode(ctx, node)
 	ctx.EventManager().EmitEvent(sdk.NewEvent(
 		types.EventTypeUpdateNode,
-		sdk.NewAttribute(types.AttributeKeyProvider, node.Provider.String()),
 		sdk.NewAttribute(types.AttributeKeyAddress, node.Address.String()),
 	))
 
@@ -120,13 +117,13 @@ func HandleSetNodeStatus(ctx sdk.Context, k keeper.Keeper, msg types.MsgSetNodeS
 	}
 
 	node.Status = msg.Status
-	node.StatusAt = ctx.BlockHeight()
+	node.StatusAt = ctx.BlockTime()
 
 	k.SetNode(ctx, node)
 	ctx.EventManager().EmitEvent(sdk.NewEvent(
 		types.EventTypeSetNodeStatus,
+		sdk.NewAttribute(types.AttributeKeyAddress, node.Address.String()),
 		sdk.NewAttribute(types.AttributeKeyStatus, node.Status.String()),
-		sdk.NewAttribute(types.AttributeKeyStatusAt, fmt.Sprintf("%d", node.StatusAt)),
 	))
 
 	return sdk.Result{Events: ctx.EventManager().Events()}

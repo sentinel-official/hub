@@ -193,7 +193,7 @@ func NewApp(logger log.Logger, db db.DB, tracer io.Writer, latest bool, invarChe
 		govRouter)
 	app.stakingKeeper = *stakingKeeper.SetHooks(
 		staking.NewMultiStakingHooks(app.distributionKeeper.Hooks(), app.slashingKeeper.Hooks()))
-	app.dVPNKeeper = dvpn.NewKeeper(app.cdc, keys[dvpn.StoreKey])
+	app.dVPNKeeper = dvpn.NewKeeper(app.cdc, keys[dvpn.StoreKey], app.bankKeeper)
 
 	app.manager = module.NewManager(
 		genaccounts.NewAppModule(app.accountKeeper),

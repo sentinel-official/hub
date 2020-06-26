@@ -3,6 +3,7 @@ package keeper
 import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/x/bank"
 
 	"github.com/sentinel-official/hub/x/dvpn/node"
 	"github.com/sentinel-official/hub/x/dvpn/provider"
@@ -15,7 +16,7 @@ type Keeper struct {
 	Subscription subscription.Keeper
 }
 
-func NewKeeper(cdc *codec.Codec, key sdk.StoreKey) Keeper {
+func NewKeeper(cdc *codec.Codec, key sdk.StoreKey, bk bank.Keeper) Keeper {
 	pk := provider.NewKeeper(cdc, key)
 	nk := node.NewKeeper(cdc, key)
 	sk := subscription.NewKeeper(cdc, key)
@@ -25,6 +26,7 @@ func NewKeeper(cdc *codec.Codec, key sdk.StoreKey) Keeper {
 
 	sk.WithProviderKeeper(&pk)
 	sk.WithNodeKeeper(&nk)
+	sk.WithBankKeeper(bk)
 
 	return Keeper{
 		Provider:     pk,

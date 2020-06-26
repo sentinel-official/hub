@@ -15,3 +15,7 @@ func (k Keeper) GetProvider(ctx sdk.Context, address hub.ProvAddress) (provider.
 func (k Keeper) GetNode(ctx sdk.Context, address hub.NodeAddress) (node.Node, bool) {
 	return k.node.GetNode(ctx, address)
 }
+
+func (k Keeper) SendCoin(ctx sdk.Context, from sdk.AccAddress, to sdk.AccAddress, coin sdk.Coin) sdk.Error {
+	return k.bank.SendCoins(ctx, from, to, sdk.NewCoins(coin))
+}

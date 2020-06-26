@@ -3,6 +3,7 @@ package types
 import (
 	"fmt"
 	"strings"
+	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
@@ -57,21 +58,41 @@ type Node struct {
 	Version       string          `json:"version"`
 	Category      NodeCategory    `json:"category"`
 	Status        hub.Status      `json:"status"`
-	StatusAt      int64           `json:"status_at"`
+	StatusAt      time.Time       `json:"status_at"`
 }
 
 func (n Node) String() string {
 	return strings.TrimSpace(fmt.Sprintf(`
 Address: %s
 Provider: %s
-Price per Gigabyte: %s
+Price: %s
 Internet speed: %s
 Remote URL: %s
 Version: %s
 Category: %s
 Status: %s
-Status at: %d
+Status at: %s
 `, n.Address, n.Provider, n.Price, n.InternetSpeed, n.RemoteURL, n.Version, n.Category, n.Status, n.StatusAt))
+}
+
+func (n Node) GetPriceForDenom(s string) (sdk.Coin, bool) {
+	for _, coin := range n.Price {
+		if coin.Denom == s {
+			return coin, true
+		}
+	}
+
+	return sdk.Coin{}, false
+}
+
+func (n Node) BandwidthForCoin(coin sdk.Coin) (hub.Bandwidth, error) {
+	price, found := n.GetPriceForDenom(coin.Denom)
+	if !found {
+		return hub.Bandwidth{}, fmt.Errorf("invalid price denom")
+	}
+
+	bytes := coin.Amount.Mul(hub.Gigabyte).Quo(price.Amount)
+	return hub.NewBandwidth(bytes, bytes), nil
 }
 
 type Nodes []Node

@@ -18,14 +18,14 @@ func HandleAddPlan(ctx sdk.Context, k keeper.Keeper, msg types.MsgAddPlan) sdk.R
 
 	count := k.GetPlansCount(ctx)
 	plan := types.Plan{
-		ID:           count + 1,
-		Provider:     msg.From,
-		Price:        msg.Price,
-		Validity:     msg.Validity,
-		MaxBandwidth: msg.MaxBandwidth,
-		MaxDuration:  msg.MaxDuration,
-		Status:       hub.StatusInactive,
-		StatusAt:     ctx.BlockHeight(),
+		ID:        count + 1,
+		Provider:  msg.From,
+		Price:     msg.Price,
+		Validity:  msg.Validity,
+		Bandwidth: msg.Bandwidth,
+		Duration:  msg.Duration,
+		Status:    hub.StatusInactive,
+		StatusAt:  ctx.BlockTime(),
 	}
 
 	k.SetPlan(ctx, plan)
@@ -55,7 +55,7 @@ func HandleSetPlanStatus(ctx sdk.Context, k keeper.Keeper, msg types.MsgSetPlanS
 	}
 
 	plan.Status = msg.Status
-	plan.StatusAt = ctx.BlockHeight()
+	plan.StatusAt = ctx.BlockTime()
 
 	k.SetPlan(ctx, plan)
 	ctx.EventManager().EmitEvent(sdk.NewEvent(
@@ -117,6 +117,69 @@ func HandleRemoveNode(ctx sdk.Context, k keeper.Keeper, msg types.MsgRemoveNode)
 		sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", plan.ID)),
 		sdk.NewAttribute(types.AttributeKeyAddress, msg.Address.String()),
 	))
+
+	return sdk.Result{Events: ctx.EventManager().Events()}
+}
+
+func HandleStartPlanSubscription(ctx sdk.Context, k keeper.Keeper, msg types.MsgStartPlanSubscription) sdk.Result {
+	plan, found := k.GetPlan(ctx, msg.ID)
+	if !found {
+		return types.ErrorNoPlanFound().Result()
+	}
+	if !plan.Status.Equal(hub.StatusActive) {
+		return types.ErrorInvalidPlanStatus().Result()
+	}
+
+	price, found := plan.GetPriceForDenom(msg.Denom)
+	if !found {
+		return types.ErrorNoPriceFound().Result()
+	}
+
+	if err := k.SendCoin(ctx, msg.From, plan.Provider.Bytes(), price); err != nil {
+		return err.Result()
+	}
+
+	count := k.GetSubscriptionsCount(ctx)
+	subscription := types.Subscription{
+		ID:        count + 1,
+		Address:   msg.From,
+		Plan:      plan.ID,
+		Duration:  plan.Duration,
+		ExpiresAt: ctx.BlockTime().Add(plan.Validity),
+		Node:      nil,
+		Price:     sdk.Coin{},
+		Deposit:   sdk.Coin{},
+		Bandwidth: plan.Bandwidth,
+		Status:    hub.StatusActive,
+		StatusAt:  ctx.BlockTime(),
+	}
+
+	k.SetSubscription(ctx, subscription)
+	k.SetSubscriptionIDForAddress(ctx, subscription.Address, subscription.ID)
+	ctx.EventManager().EmitEvent(sdk.NewEvent(
+		types.EventTypeSetSubscription,
+		sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", subscription.ID)),
+		sdk.NewAttribute(types.AttributeKeyAddress, subscription.Address.String()),
+		sdk.NewAttribute(types.AttributeKeyPlan, fmt.Sprintf("%d", subscription.Plan)),
+	))
+
+	k.SetSubscriptionsCount(ctx, count+1)
+	ctx.EventManager().EmitEvent(sdk.NewEvent(
+		types.EventTypeSetSubscriptionsCount,
+		sdk.NewAttribute(types.AttributeKeyCount, fmt.Sprintf("%d", count+1)),
+	))
+
+	return sdk.Result{Events: ctx.EventManager().Events()}
+}
+
+func HandleStartNodeSubscription(ctx sdk.Context, k keeper.Keeper, msg types.MsgStartNodeSubscription) sdk.Result {
+	node, found := k.GetNode(ctx, msg.Address)
+	if !found {
+		return types.ErrorNoNodeFound().Result()
+	}
+	if !node.Status.Equal(hub.StatusActive) {
+		return types.ErrorInvalidNodeStatus().Result()
+	}
 
 	return sdk.Result{Events: ctx.EventManager().Events()}
 }

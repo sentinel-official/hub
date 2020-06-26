@@ -10,5 +10,4 @@ const (
 	AttributeKeyProvider = "provider"
 	AttributeKeyAddress  = "address"
 	AttributeKeyStatus   = "status"
-	AttributeKeyStatusAt = "status_at"
 )

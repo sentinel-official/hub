@@ -2,7 +2,9 @@ package types
 
 import (
 	"encoding/json"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
 	hub "github.com/sentinel-official/hub/types"
 )
 
@@ -12,7 +14,7 @@ var (
 	_ sdk.Msg = (*MsgSetNodeStatus)(nil)
 )
 
-// MsgRegisterNode is for registering a dVPN node
+// MsgRegisterNode is for registering a dVPN node.
 type MsgRegisterNode struct {
 	From          sdk.AccAddress  `json:"from"`
 	Provider      hub.ProvAddress `json:"provider"`
@@ -59,8 +61,8 @@ func (m MsgRegisterNode) ValidateBasic() sdk.Error {
 		return ErrorInvalidField("price")
 	}
 
-	// InternetSpeed can't be zero and should be positive
-	if m.InternetSpeed.IsAnyZero() {
+	// InternetSpeed can't be negative and zero
+	if !m.InternetSpeed.IsValid() {
 		return ErrorInvalidField("internet_speed")
 	}
 
@@ -95,7 +97,7 @@ func (m MsgRegisterNode) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{m.From}
 }
 
-// MsgUpdateNode is for updating the information of a dVPN node
+// MsgUpdateNode is for updating the information of a dVPN node.
 type MsgUpdateNode struct {
 	From          hub.NodeAddress `json:"from"`
 	Provider      hub.ProvAddress `json:"provider"`
@@ -142,8 +144,8 @@ func (m MsgUpdateNode) ValidateBasic() sdk.Error {
 		return ErrorInvalidField("price")
 	}
 
-	// InternetSpeed can be zero. If not, it should be positive
-	if !m.InternetSpeed.IsAllZero() && m.InternetSpeed.IsAnyZero() {
+	// InternetSpeed can be zero. If not, it shouldn't be negative and zero
+	if !m.InternetSpeed.IsAllZero() && !m.InternetSpeed.IsValid() {
 		return ErrorInvalidField("internet_speed")
 	}
 
@@ -178,7 +180,7 @@ func (m MsgUpdateNode) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{m.From.Bytes()}
 }
 
-// MsgSetNodeStatus is for updating the status of a dVPN node
+// MsgSetNodeStatus is for updating the status of a dVPN node.
 type MsgSetNodeStatus struct {
 	From   hub.NodeAddress `json:"from"`
 	Status hub.Status      `json:"status"`

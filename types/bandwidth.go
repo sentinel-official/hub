@@ -2,14 +2,22 @@ package types
 
 import (
 	"fmt"
+
+	sdk "github.com/cosmos/cosmos-sdk/types"
+)
+
+var (
+	Kilobyte = sdk.NewInt(1000)
+	Megabyte = sdk.NewInt(1000).Mul(Kilobyte)
+	Gigabyte = sdk.NewInt(1000).Mul(Megabyte)
 )
 
 type Bandwidth struct {
-	Upload   uint64 `json:"upload"`
-	Download uint64 `json:"download"`
+	Upload   sdk.Int `json:"upload"`
+	Download sdk.Int `json:"download"`
 }
 
-func NewBandwidth(upload, download uint64) Bandwidth {
+func NewBandwidth(upload, download sdk.Int) Bandwidth {
 	return Bandwidth{
 		Upload:   upload,
 		Download: download,
@@ -17,13 +25,28 @@ func NewBandwidth(upload, download uint64) Bandwidth {
 }
 
 func (n Bandwidth) IsAnyZero() bool {
-	return n.Upload == 0 || n.Download == 0
+	return n.Upload.IsZero() || n.Download.IsZero()
 }
 
 func (n Bandwidth) IsAllZero() bool {
-	return n.Upload == 0 && n.Download == 0
+	return n.Upload.IsZero() && n.Download.IsZero()
+}
+
+func (n Bandwidth) IsAnyNegative() bool {
+	return n.Upload.IsNegative() || n.Download.IsNegative()
+}
+
+func (n Bandwidth) IsValid() bool {
+	return !n.IsAnyNegative() && !n.IsAnyZero()
 }
 
 func (n Bandwidth) String() string {
-	return fmt.Sprintf("%d↑, %d↓", n.Upload, n.Download)
+	return fmt.Sprintf("%s↑, %s↓ bytes", n.Upload, n.Download)
+}
+
+func NewBandwidthFromInt64(upload, download int64) Bandwidth {
+	return Bandwidth{
+		Upload:   sdk.NewInt(upload),
+		Download: sdk.NewInt(download),
+	}
 }

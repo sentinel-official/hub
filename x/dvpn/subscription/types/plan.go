@@ -11,14 +11,14 @@ import (
 )
 
 type Plan struct {
-	ID           uint64          `json:"id"`
-	Provider     hub.ProvAddress `json:"provider"`
-	Price        sdk.Coins       `json:"price"`
-	Validity     time.Duration   `json:"validity"`
-	MaxBandwidth hub.Bandwidth   `json:"max_bandwidth"`
-	MaxDuration  time.Duration   `json:"max_duration"`
-	Status       hub.Status      `json:"status"`
-	StatusAt     int64           `json:"status_at"`
+	ID        uint64          `json:"id"`
+	Provider  hub.ProvAddress `json:"provider"`
+	Price     sdk.Coins       `json:"price"`
+	Validity  time.Duration   `json:"validity"`
+	Bandwidth hub.Bandwidth   `json:"bandwidth"`
+	Duration  time.Duration   `json:"duration"`
+	Status    hub.Status      `json:"status"`
+	StatusAt  time.Time       `json:"status_at"`
 }
 
 func (p Plan) String() string {
@@ -27,11 +27,21 @@ ID: %d
 Provider: %s
 Price: %s
 Validity: %s
-Max bandwidth: %s
-Max duration: %s
+Bandwidth: %s
+Duration: %s
 Status: %s
-Status at: %d
-`, p.ID, p.Provider, p.Price, p.Validity, p.MaxBandwidth, p.MaxDuration, p.Status, p.StatusAt))
+Status at: %s
+`, p.ID, p.Provider, p.Price, p.Validity, p.Bandwidth, p.Duration, p.Status, p.StatusAt))
+}
+
+func (p Plan) GetPriceForDenom(s string) (sdk.Coin, bool) {
+	for _, coin := range p.Price {
+		if coin.Denom == s {
+			return coin, true
+		}
+	}
+
+	return sdk.Coin{}, false
 }
 
 type Plans []Plan

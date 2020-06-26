@@ -19,10 +19,13 @@ const (
 	EventTypeSetPlanStatus            = types.EventTypeSetPlanStatus
 	EventTypeSetNodeAddressForPlan    = types.EventTypeSetNodeAddressForPlan
 	EventTypeDeleteNodeAddressForPlan = types.EventTypeDeleteNodeAddressForPlan
+	EventTypeSetSubscription          = types.EventTypeSetSubscription
+	EventTypeSetSubscriptionsCount    = types.EventTypeSetSubscriptionsCount
 	AttributeKeyAddress               = types.AttributeKeyAddress
 	AttributeKeyID                    = types.AttributeKeyID
 	AttributeKeyCount                 = types.AttributeKeyCount
 	AttributeKeyStatus                = types.AttributeKeyStatus
+	AttributeKeyPlan                  = types.AttributeKeyPlan
 	ModuleName                        = types.ModuleName
 	QuerierRoute                      = types.QuerierRoute
 	QueryPlan                         = types.QueryPlan
@@ -45,11 +48,16 @@ var (
 	ErrorUnauthorized             = types.ErrorUnauthorized
 	ErrorDuplicateNode            = types.ErrorDuplicateNode
 	ErrorNoNodeAdded              = types.ErrorNoNodeAdded
+	ErrorInvalidPlanStatus        = types.ErrorInvalidPlanStatus
+	ErrorNoPriceFound             = types.ErrorNoPriceFound
+	ErrorInvalidNodeStatus        = types.ErrorInvalidNodeStatus
 	NewGenesisState               = types.NewGenesisState
 	DefaultGenesisState           = types.DefaultGenesisState
 	PlanKey                       = types.PlanKey
 	PlanIDForProviderKey          = types.PlanIDForProviderKey
 	NodeAddressForPlanKey         = types.NodeAddressForPlanKey
+	SubscriptionKey               = types.SubscriptionKey
+	SubscriptionIDForAddressKey   = types.SubscriptionIDForAddressKey
 	NewMsgAddPlan                 = types.NewMsgAddPlan
 	NewMsgSetPlanStatus           = types.NewMsgSetPlanStatus
 	NewMsgAddNode                 = types.NewMsgAddNode
@@ -61,11 +69,13 @@ var (
 	Querier                       = querier.Querier
 
 	// variable aliases
-	ModuleCdc     = types.ModuleCdc
-	RouterKey     = types.RouterKey
-	StoreKey      = types.StoreKey
-	PlansCountKey = types.PlansCountKey
-	PlanKeyPrefix = types.PlanKeyPrefix
+	ModuleCdc             = types.ModuleCdc
+	RouterKey             = types.RouterKey
+	StoreKey              = types.StoreKey
+	PlansCountKey         = types.PlansCountKey
+	PlanKeyPrefix         = types.PlanKeyPrefix
+	SubscriptionsCountKey = types.SubscriptionsCountKey
+	SubscriptionKeyPrefix = types.SubscriptionKeyPrefix
 )
 
 type (
@@ -76,10 +86,15 @@ type (
 	MsgSetPlanStatus           = types.MsgSetPlanStatus
 	MsgAddNode                 = types.MsgAddNode
 	MsgRemoveNode              = types.MsgRemoveNode
+	MsgStartPlanSubscription   = types.MsgStartPlanSubscription
+	MsgStartNodeSubscription   = types.MsgStartNodeSubscription
+	MsgEndSubscription         = types.MsgEndSubscription
 	Plan                       = types.Plan
 	Plans                      = types.Plans
 	QueryPlanParams            = types.QueryPlanParams
 	QueryPlansOfProviderParams = types.QueryPlansOfProviderParams
 	QueryNodesOfPlanParams     = types.QueryNodesOfPlanParams
+	Subscription               = types.Subscription
+	Subscriptions              = types.Subscriptions
 	Keeper                     = keeper.Keeper
 )

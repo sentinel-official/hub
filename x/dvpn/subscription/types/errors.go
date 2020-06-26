@@ -22,18 +22,24 @@ const (
 	errorCodeUnauthorized
 	errorCodeDuplicateNode
 	errorCodeNoNodeAdded
+	errorCodeInvalidPlanStatus
+	errorCodeNoPriceFound
+	errorCodeInvalidNodeStatus
 )
 
 const (
-	errorMsgUnknownMsgType   = "unknown message type: %s"
-	errorMsgUnknownQueryType = "unknown query type: %s"
-	errorMsgInvalidField     = "invalid field: %s"
-	errorMsgNoProviderFound  = "no provider found"
-	errorMsgNoPlanFound      = "no plan found"
-	errorMsgNoNodeFound      = "no node found"
-	errorMsgUnauthorized     = "unauthorized"
-	errorMsgDuplicateNode    = "duplicate node"
-	errorMsgNoNodeAdded      = "no node added"
+	errorMsgUnknownMsgType    = "unknown message type: %s"
+	errorMsgUnknownQueryType  = "unknown query type: %s"
+	errorMsgInvalidField      = "invalid field: %s"
+	errorMsgNoProviderFound   = "no provider found"
+	errorMsgNoPlanFound       = "no plan found"
+	errorMsgNoNodeFound       = "no node found"
+	errorMsgUnauthorized      = "unauthorized"
+	errorMsgDuplicateNode     = "duplicate node"
+	errorMsgNoNodeAdded       = "no node added"
+	errorMsgInvalidPlanStatus = "invalid plan status"
+	errorMsgNoPriceFound      = "no price found"
+	errorMsgInvalidNodeStatus = "invalid node status"
 )
 
 func ErrorMarshal() sdk.Error {
@@ -78,4 +84,16 @@ func ErrorDuplicateNode() sdk.Error {
 
 func ErrorNoNodeAdded() sdk.Error {
 	return sdk.NewError(Codespace, errorCodeNoNodeAdded, errorMsgNoNodeAdded)
+}
+
+func ErrorInvalidPlanStatus() sdk.Error {
+	return sdk.NewError(Codespace, errorCodeInvalidPlanStatus, errorMsgInvalidPlanStatus)
+}
+
+func ErrorNoPriceFound() sdk.Error {
+	return sdk.NewError(Codespace, errorCodeNoPriceFound, errorMsgNoPriceFound)
+}
+
+func ErrorInvalidNodeStatus() sdk.Error {
+	return sdk.NewError(Codespace, errorCodeInvalidNodeStatus, errorMsgInvalidNodeStatus)
 }

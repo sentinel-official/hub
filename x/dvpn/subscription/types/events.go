@@ -6,6 +6,8 @@ const (
 	EventTypeSetPlanStatus            = "set_plan_status"
 	EventTypeSetNodeAddressForPlan    = "set_node_address_for_plan"
 	EventTypeDeleteNodeAddressForPlan = "delete_node_address_for_plan"
+	EventTypeSetSubscription          = "set_subscription"
+	EventTypeSetSubscriptionsCount    = "set_subscriptions_count"
 )
 
 const (
@@ -13,4 +15,5 @@ const (
 	AttributeKeyID      = "id"
 	AttributeKeyCount   = "count"
 	AttributeKeyStatus  = "status"
+	AttributeKeyPlan    = "plan"
 )

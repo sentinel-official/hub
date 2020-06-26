@@ -20,7 +20,6 @@ const (
 	AttributeKeyProvider   = types.AttributeKeyProvider
 	AttributeKeyAddress    = types.AttributeKeyAddress
 	AttributeKeyStatus     = types.AttributeKeyStatus
-	AttributeKeyStatusAt   = types.AttributeKeyStatusAt
 	ModuleName             = types.ModuleName
 	QuerierRoute           = types.QuerierRoute
 	CategoryUnknown        = types.CategoryUnknown

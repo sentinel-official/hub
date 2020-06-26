@@ -19,6 +19,9 @@ var (
 var (
 	PlansCountKey = []byte{0x00}
 	PlanKeyPrefix = []byte{0x01}
+
+	SubscriptionsCountKey = []byte{0x00}
+	SubscriptionKeyPrefix = []byte{0x01}
 )
 
 func PlanKey(i uint64) []byte {
@@ -31,4 +34,12 @@ func PlanIDForProviderKey(address hub.ProvAddress, i uint64) []byte {
 
 func NodeAddressForPlanKey(i uint64, address hub.NodeAddress) []byte {
 	return append(sdk.Uint64ToBigEndian(i), address.Bytes()...)
+}
+
+func SubscriptionKey(i uint64) []byte {
+	return append(SubscriptionKeyPrefix, sdk.Uint64ToBigEndian(i)...)
+}
+
+func SubscriptionIDForAddressKey(address sdk.AccAddress, i uint64) []byte {
+	return append(address.Bytes(), sdk.Uint64ToBigEndian(i)...)
 }
