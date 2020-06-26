@@ -159,3 +159,48 @@ func txRemoveNodeForPlanCmd(cdc *codec.Codec) *cobra.Command {
 
 	return cmd
 }
+
+func txStartPlanSubscription(cdc *codec.Codec) *cobra.Command {
+	return &cobra.Command{
+		Use:   "subscribe-plan",
+		Short: "Subscribe to a plan",
+		Args:  cobra.ExactArgs(2),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			txb := auth.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
+			ctx := context.NewCLIContext().WithCodec(cdc)
+
+			id, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			msg := types.NewMsgStartSubscription(ctx.FromAddress.Bytes(), id, args[1], nil, sdk.Coin{})
+			return utils.GenerateOrBroadcastMsgs(ctx, txb, []sdk.Msg{msg})
+		},
+	}
+}
+
+func txStartNodeSubscription(cdc *codec.Codec) *cobra.Command {
+	return &cobra.Command{
+		Use:   "subscribe-node",
+		Short: "Subscribe to a node",
+		Args:  cobra.ExactArgs(2),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			txb := auth.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
+			ctx := context.NewCLIContext().WithCodec(cdc)
+
+			address, err := hub.NodeAddressFromBech32(args[0])
+			if err != nil {
+				return err
+			}
+
+			deposit, err := sdk.ParseCoin(args[1])
+			if err != nil {
+				return err
+			}
+
+			msg := types.NewMsgStartSubscription(ctx.FromAddress.Bytes(), 0, "", address, deposit)
+			return utils.GenerateOrBroadcastMsgs(ctx, txb, []sdk.Msg{msg})
+		},
+	}
+}

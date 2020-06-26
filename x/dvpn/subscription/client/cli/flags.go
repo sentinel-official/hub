@@ -1,10 +1,13 @@
 package cli
 
 const (
-	flagProvider = "provider"
-	flagPrice    = "price"
-	flagValidity = "validity"
-	flagUpload   = "upload"
-	flagDownload = "download"
-	flagDuration = "duration"
+	flagProvider    = "provider"
+	flagAddress     = "address"
+	flagNodeAddress = "node-address"
+	flagPlan        = "plan"
+	flagPrice       = "price"
+	flagValidity    = "validity"
+	flagUpload      = "upload"
+	flagDownload    = "download"
+	flagDuration    = "duration"
 )

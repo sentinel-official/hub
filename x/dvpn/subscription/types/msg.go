@@ -260,6 +260,17 @@ type MsgStartSubscription struct {
 	Deposit sdk.Coin        `json:"deposit,omitempty"`
 }
 
+func NewMsgStartSubscription(from sdk.AccAddress, id uint64, denom string,
+	address hub.NodeAddress, deposit sdk.Coin) MsgStartSubscription {
+	return MsgStartSubscription{
+		From:    from,
+		ID:      id,
+		Denom:   denom,
+		Address: address,
+		Deposit: deposit,
+	}
+}
+
 func (m MsgStartSubscription) Route() string {
 	return RouterKey
 }
@@ -317,6 +328,13 @@ func (m MsgStartSubscription) GetSigners() []sdk.AccAddress {
 type MsgEndSubscription struct {
 	From sdk.AccAddress `json:"from"`
 	ID   uint64         `json:"id"`
+}
+
+func NewMsgEndSubscription(from sdk.AccAddress, id uint64) MsgEndSubscription {
+	return MsgEndSubscription{
+		From: from,
+		ID:   id,
+	}
 }
 
 func (m MsgEndSubscription) Route() string {
