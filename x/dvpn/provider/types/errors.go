@@ -17,15 +17,15 @@ const (
 	errorCodeUnknownQueryType
 	errorCodeInvalidField
 	errorCodeDuplicateProvider
-	errorCodeNoProviderFound
+	errorCodeProviderDoesNotExist
 )
 
 const (
-	errorMsgUnknownMsgType    = "unknown message type: %s"
-	errorMsgUnknownQueryType  = "unknown query type: %s"
-	errorMsgInvalidField      = "invalid field: %s"
-	errorMsgDuplicateProvider = "duplicate provider"
-	errorMsgNoProviderFound   = "no provider found"
+	errorMsgUnknownMsgType       = "unknown message type: %s"
+	errorMsgUnknownQueryType     = "unknown query type: %s"
+	errorMsgInvalidField         = "invalid field: %s"
+	errorMsgDuplicateProvider    = "duplicate provider"
+	errorMsgProviderDoesNotExist = "provider does not exist"
 )
 
 func ErrorMarshal() sdk.Error {
@@ -52,6 +52,6 @@ func ErrorDuplicateProvider() sdk.Error {
 	return sdk.NewError(Codespace, errorCodeDuplicateProvider, errorMsgDuplicateProvider)
 }
 
-func ErrorNoProviderFound() sdk.Error {
-	return sdk.NewError(Codespace, errorCodeNoProviderFound, errorMsgNoProviderFound)
+func ErrorProviderDoesNotExist() sdk.Error {
+	return sdk.NewError(Codespace, errorCodeProviderDoesNotExist, errorMsgProviderDoesNotExist)
 }

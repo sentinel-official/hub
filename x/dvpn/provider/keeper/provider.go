@@ -28,22 +28,22 @@ func (k Keeper) GetProvider(ctx sdk.Context, address hub.ProvAddress) (provider 
 	return provider, true
 }
 
-func (k Keeper) GetProviders(ctx sdk.Context) (providers types.Providers) {
+func (k Keeper) GetProviders(ctx sdk.Context) (items types.Providers) {
 	store := k.Store(ctx)
 
 	iter := sdk.KVStorePrefixIterator(store, types.ProviderKeyPrefix)
 	defer iter.Close()
 
 	for ; iter.Valid(); iter.Next() {
-		var provider types.Provider
-		k.cdc.MustUnmarshalBinaryLengthPrefixed(iter.Value(), &provider)
-		providers = append(providers, provider)
+		var item types.Provider
+		k.cdc.MustUnmarshalBinaryLengthPrefixed(iter.Value(), &item)
+		items = append(items, item)
 	}
 
-	return providers
+	return items
 }
 
-func (k Keeper) IterateProviders(ctx sdk.Context, f func(i int, provider types.Provider) (stop bool)) {
+func (k Keeper) IterateProviders(ctx sdk.Context, f func(index int, item types.Provider) (stop bool)) {
 	store := k.Store(ctx)
 
 	iter := sdk.KVStorePrefixIterator(store, types.ProviderKeyPrefix)

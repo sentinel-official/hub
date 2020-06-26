@@ -50,9 +50,6 @@ func txRegisterProviderCmd(cdc *codec.Codec) *cobra.Command {
 	cmd.Flags().String(flagDescription, "", "Provider description")
 
 	_ = cmd.MarkFlagRequired(flagName)
-	_ = cmd.MarkFlagRequired(flagIdentity)
-	_ = cmd.MarkFlagRequired(flagWebsite)
-	_ = cmd.MarkFlagRequired(flagDescription)
 
 	return cmd
 }

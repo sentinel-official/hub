@@ -13,6 +13,7 @@ var (
 	_ sdk.Msg = (*MsgUpdateProvider)(nil)
 )
 
+// MsgRegisterProvider is for registering a provider.
 type MsgRegisterProvider struct {
 	From        sdk.AccAddress `json:"from"`
 	Name        string         `json:"name"`
@@ -43,15 +44,23 @@ func (m MsgRegisterProvider) ValidateBasic() sdk.Error {
 	if m.From == nil || m.From.Empty() {
 		return ErrorInvalidField("from")
 	}
-	if len(m.Name) == 0 || len(m.Name) > 32 {
+
+	// Name can't be empty and length should be <= 64
+	if len(m.Name) == 0 || len(m.Name) > 64 {
 		return ErrorInvalidField("name")
 	}
-	if len(m.Identity) > 32 {
+
+	// Identity length should be <= 64
+	if len(m.Identity) > 64 {
 		return ErrorInvalidField("identity")
 	}
-	if len(m.Website) > 32 {
+
+	// Website length should be <= 64
+	if len(m.Website) > 64 {
 		return ErrorInvalidField("website")
 	}
+
+	// Description length should be <= 256
 	if len(m.Description) > 256 {
 		return ErrorInvalidField("description")
 	}
@@ -72,12 +81,13 @@ func (m MsgRegisterProvider) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{m.From}
 }
 
+// MsgUpdateProvider is for updating a provider.
 type MsgUpdateProvider struct {
 	From        hub.ProvAddress `json:"from"`
-	Name        string          `json:"name"`
-	Identity    string          `json:"identity"`
-	Website     string          `json:"website"`
-	Description string          `json:"description"`
+	Name        string          `json:"name,omitempty"`
+	Identity    string          `json:"identity,omitempty"`
+	Website     string          `json:"website,omitempty"`
+	Description string          `json:"description,omitempty"`
 }
 
 func NewMsgUpdateProvider(from hub.ProvAddress, name, identity, website, description string) MsgUpdateProvider {
@@ -102,16 +112,24 @@ func (m MsgUpdateProvider) ValidateBasic() sdk.Error {
 	if m.From == nil || m.From.Empty() {
 		return ErrorInvalidField("from")
 	}
-	if len(m.Name) != 0 && len(m.Name) > 32 {
+
+	// Name length should be <= 64
+	if len(m.Name) > 64 {
 		return ErrorInvalidField("name")
 	}
-	if len(m.Identity) != 0 && len(m.Identity) > 32 {
+
+	// Identity length should be <= 64
+	if len(m.Identity) > 64 {
 		return ErrorInvalidField("identity")
 	}
-	if len(m.Website) != 0 && len(m.Website) > 32 {
+
+	// Website length should be <= 64
+	if len(m.Website) > 64 {
 		return ErrorInvalidField("website")
 	}
-	if len(m.Description) != 0 && len(m.Description) > 256 {
+
+	// Description length should be <= 256
+	if len(m.Description) > 256 {
 		return ErrorInvalidField("description")
 	}
 

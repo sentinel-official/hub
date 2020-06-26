@@ -25,22 +25,22 @@ const (
 
 var (
 	// functions aliases
-	RegisterCodec          = types.RegisterCodec
-	ErrorMarshal           = types.ErrorMarshal
-	ErrorUnmarshal         = types.ErrorUnmarshal
-	ErrorUnknownMsgType    = types.ErrorUnknownMsgType
-	ErrorUnknownQueryType  = types.ErrorUnknownQueryType
-	ErrorInvalidField      = types.ErrorInvalidField
-	ErrorDuplicateProvider = types.ErrorDuplicateProvider
-	ErrorNoProviderFound   = types.ErrorNoProviderFound
-	NewGenesisState        = types.NewGenesisState
-	DefaultGenesisState    = types.DefaultGenesisState
-	ProviderKey            = types.ProviderKey
-	NewMsgRegisterProvider = types.NewMsgRegisterProvider
-	NewMsgUpdateProvider   = types.NewMsgUpdateProvider
-	NewQueryProviderParams = types.NewQueryProviderParams
-	NewKeeper              = keeper.NewKeeper
-	Querier                = querier.Querier
+	RegisterCodec             = types.RegisterCodec
+	ErrorMarshal              = types.ErrorMarshal
+	ErrorUnmarshal            = types.ErrorUnmarshal
+	ErrorUnknownMsgType       = types.ErrorUnknownMsgType
+	ErrorUnknownQueryType     = types.ErrorUnknownQueryType
+	ErrorInvalidField         = types.ErrorInvalidField
+	ErrorDuplicateProvider    = types.ErrorDuplicateProvider
+	ErrorProviderDoesNotExist = types.ErrorProviderDoesNotExist
+	NewGenesisState           = types.NewGenesisState
+	DefaultGenesisState       = types.DefaultGenesisState
+	ProviderKey               = types.ProviderKey
+	NewMsgRegisterProvider    = types.NewMsgRegisterProvider
+	NewMsgUpdateProvider      = types.NewMsgUpdateProvider
+	NewQueryProviderParams    = types.NewQueryProviderParams
+	NewKeeper                 = keeper.NewKeeper
+	Querier                   = querier.Querier
 
 	// variable aliases
 	ModuleCdc         = types.ModuleCdc

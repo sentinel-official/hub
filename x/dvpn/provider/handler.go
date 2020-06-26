@@ -33,7 +33,7 @@ func HandleRegisterProvider(ctx sdk.Context, k keeper.Keeper, msg types.MsgRegis
 func HandleUpdateProvider(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpdateProvider) sdk.Result {
 	provider, found := k.GetProvider(ctx, msg.From)
 	if !found {
-		return types.ErrorNoProviderFound().Result()
+		return types.ErrorProviderDoesNotExist().Result()
 	}
 
 	if len(msg.Name) > 0 {
