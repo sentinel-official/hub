@@ -22,8 +22,8 @@ func GetTxCommands(cdc *codec.Codec) []*cobra.Command {
 	cmd.AddCommand(client.PostCommands(
 		txAddPlanCmd(cdc),
 		txSetPlanStatusCmd(cdc),
-		txAddNodeCmd(cdc),
-		txRemoveNodeCmd(cdc),
+		txAddNodeForPlanCmd(cdc),
+		txRemoveNodeForPlanCmd(cdc),
 	)...)
 
 	return []*cobra.Command{cmd}

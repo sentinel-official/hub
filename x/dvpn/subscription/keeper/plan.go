@@ -50,19 +50,19 @@ func (k Keeper) GetPlan(ctx sdk.Context, id uint64) (plan types.Plan, found bool
 	return plan, true
 }
 
-func (k Keeper) GetPlans(ctx sdk.Context) (plans types.Plans) {
+func (k Keeper) GetPlans(ctx sdk.Context) (items types.Plans) {
 	store := k.PlanStore(ctx)
 
 	iter := sdk.KVStorePrefixIterator(store, types.PlanKeyPrefix)
 	defer iter.Close()
 
 	for ; iter.Valid(); iter.Next() {
-		var plan types.Plan
-		k.cdc.MustUnmarshalBinaryLengthPrefixed(iter.Value(), &plan)
-		plans = append(plans, plan)
+		var item types.Plan
+		k.cdc.MustUnmarshalBinaryLengthPrefixed(iter.Value(), &item)
+		items = append(items, item)
 	}
 
-	return plans
+	return items
 }
 
 func (k Keeper) SetPlanIDForProvider(ctx sdk.Context, address hub.ProvAddress, id uint64) {
@@ -73,7 +73,7 @@ func (k Keeper) SetPlanIDForProvider(ctx sdk.Context, address hub.ProvAddress, i
 	store.Set(key, value)
 }
 
-func (k Keeper) GetPlansForProvider(ctx sdk.Context, address hub.ProvAddress) (plans types.Plans) {
+func (k Keeper) GetPlansForProvider(ctx sdk.Context, address hub.ProvAddress) (items types.Plans) {
 	store := k.PlanStore(ctx)
 
 	iter := sdk.KVStorePrefixIterator(store, address.Bytes())
@@ -83,11 +83,11 @@ func (k Keeper) GetPlansForProvider(ctx sdk.Context, address hub.ProvAddress) (p
 		var id uint64
 		k.cdc.MustUnmarshalBinaryLengthPrefixed(iter.Value(), &id)
 
-		p, _ := k.GetPlan(ctx, id)
-		plans = append(plans, p)
+		item, _ := k.GetPlan(ctx, id)
+		items = append(items, item)
 	}
 
-	return plans
+	return items
 }
 
 func (k Keeper) SetNodeAddressForPlan(ctx sdk.Context, id uint64, address hub.NodeAddress) {
@@ -114,7 +114,7 @@ func (k Keeper) DeleteNodeAddressForPlan(ctx sdk.Context, id uint64, address hub
 	store.Delete(key)
 }
 
-func (k Keeper) GetNodesForPlan(ctx sdk.Context, id uint64) (nodes node.Nodes) {
+func (k Keeper) GetNodesForPlan(ctx sdk.Context, id uint64) (items node.Nodes) {
 	store := k.PlanStore(ctx)
 
 	iter := sdk.KVStorePrefixIterator(store, sdk.Uint64ToBigEndian(id))
@@ -124,9 +124,9 @@ func (k Keeper) GetNodesForPlan(ctx sdk.Context, id uint64) (nodes node.Nodes) {
 		var address hub.NodeAddress
 		k.cdc.MustUnmarshalBinaryLengthPrefixed(iter.Value(), &address)
 
-		n, _ := k.GetNode(ctx, address)
-		nodes = append(nodes, n)
+		item, _ := k.GetNode(ctx, address)
+		items = append(items, item)
 	}
 
-	return nodes
+	return items
 }

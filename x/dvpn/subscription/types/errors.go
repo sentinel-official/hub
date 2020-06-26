@@ -16,30 +16,30 @@ const (
 	errorCodeUnknownMsgType = iota + 101
 	errorCodeUnknownQueryType
 	errorCodeInvalidField
-	errorCodeNoProviderFound
-	errorCodeNoPlanFound
-	errorCodeNoNodeFound
+	errorCodeProviderDoesNotExist
+	errorCodePlanDoesNotExist
+	errorCodeNodeDoesNotExist
 	errorCodeUnauthorized
 	errorCodeDuplicateNode
-	errorCodeNoNodeAdded
+	errorCodeNodeWasNotAdded
 	errorCodeInvalidPlanStatus
-	errorCodeNoPriceFound
+	errorCodePriceDoesNotExist
 	errorCodeInvalidNodeStatus
 )
 
 const (
-	errorMsgUnknownMsgType    = "unknown message type: %s"
-	errorMsgUnknownQueryType  = "unknown query type: %s"
-	errorMsgInvalidField      = "invalid field: %s"
-	errorMsgNoProviderFound   = "no provider found"
-	errorMsgNoPlanFound       = "no plan found"
-	errorMsgNoNodeFound       = "no node found"
-	errorMsgUnauthorized      = "unauthorized"
-	errorMsgDuplicateNode     = "duplicate node"
-	errorMsgNoNodeAdded       = "no node added"
-	errorMsgInvalidPlanStatus = "invalid plan status"
-	errorMsgNoPriceFound      = "no price found"
-	errorMsgInvalidNodeStatus = "invalid node status"
+	errorMsgUnknownMsgType       = "unknown message type: %s"
+	errorMsgUnknownQueryType     = "unknown query type: %s"
+	errorMsgInvalidField         = "invalid field: %s"
+	errorMsgProviderDoesNotExist = "provider does not exist"
+	errorMsgPlanDoesNotExist     = "plan does not exist"
+	errorMsgNodeDoesNotExist     = "node does not exist"
+	errorMsgUnauthorized         = "unauthorized"
+	errorMsgDuplicateNode        = "duplicate node"
+	errorMsgNodeWasNotAdded      = "node was not added"
+	errorMsgInvalidPlanStatus    = "invalid plan status"
+	errorMsgPriceDoesNotExist    = "price does not exist"
+	errorMsgInvalidNodeStatus    = "invalid node status"
 )
 
 func ErrorMarshal() sdk.Error {
@@ -62,16 +62,16 @@ func ErrorInvalidField(v string) sdk.Error {
 	return sdk.NewError(Codespace, errorCodeInvalidField, fmt.Sprintf(errorMsgInvalidField, v))
 }
 
-func ErrorNoProviderFound() sdk.Error {
-	return sdk.NewError(Codespace, errorCodeNoProviderFound, errorMsgNoProviderFound)
+func ErrorProviderDoesNotExist() sdk.Error {
+	return sdk.NewError(Codespace, errorCodeProviderDoesNotExist, errorMsgProviderDoesNotExist)
 }
 
-func ErrorNoPlanFound() sdk.Error {
-	return sdk.NewError(Codespace, errorCodeNoPlanFound, errorMsgNoPlanFound)
+func ErrorPlanDoesNotExist() sdk.Error {
+	return sdk.NewError(Codespace, errorCodePlanDoesNotExist, errorMsgPlanDoesNotExist)
 }
 
-func ErrorNoNodeFound() sdk.Error {
-	return sdk.NewError(Codespace, errorCodeNoNodeFound, errorMsgNoNodeFound)
+func ErrorNodeDoesNotExist() sdk.Error {
+	return sdk.NewError(Codespace, errorCodeNodeDoesNotExist, errorMsgNodeDoesNotExist)
 }
 
 func ErrorUnauthorized() sdk.Error {
@@ -82,16 +82,16 @@ func ErrorDuplicateNode() sdk.Error {
 	return sdk.NewError(Codespace, errorCodeDuplicateNode, errorMsgDuplicateNode)
 }
 
-func ErrorNoNodeAdded() sdk.Error {
-	return sdk.NewError(Codespace, errorCodeNoNodeAdded, errorMsgNoNodeAdded)
+func ErrorNodeWasNotAdded() sdk.Error {
+	return sdk.NewError(Codespace, errorCodeNodeWasNotAdded, errorMsgNodeWasNotAdded)
 }
 
 func ErrorInvalidPlanStatus() sdk.Error {
 	return sdk.NewError(Codespace, errorCodeInvalidPlanStatus, errorMsgInvalidPlanStatus)
 }
 
-func ErrorNoPriceFound() sdk.Error {
-	return sdk.NewError(Codespace, errorCodeNoPriceFound, errorMsgNoPriceFound)
+func ErrorPriceDoesNotExist() sdk.Error {
+	return sdk.NewError(Codespace, errorCodePriceDoesNotExist, errorMsgPriceDoesNotExist)
 }
 
 func ErrorInvalidNodeStatus() sdk.Error {

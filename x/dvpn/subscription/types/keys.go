@@ -43,3 +43,7 @@ func SubscriptionKey(i uint64) []byte {
 func SubscriptionIDForAddressKey(address sdk.AccAddress, i uint64) []byte {
 	return append(address.Bytes(), sdk.Uint64ToBigEndian(i)...)
 }
+
+func SubscriptionIDForPlanKey(id, i uint64) []byte {
+	return append(sdk.Uint64ToBigEndian(id), sdk.Uint64ToBigEndian(i)...)
+}

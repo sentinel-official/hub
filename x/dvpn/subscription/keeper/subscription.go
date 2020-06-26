@@ -48,19 +48,19 @@ func (k Keeper) GetSubscription(ctx sdk.Context, id uint64) (subscription types.
 	return subscription, true
 }
 
-func (k Keeper) GetSubscriptions(ctx sdk.Context) (subscriptions types.Subscriptions) {
+func (k Keeper) GetSubscriptions(ctx sdk.Context) (items types.Subscriptions) {
 	store := k.SubscriptionStore(ctx)
 
 	iter := sdk.KVStorePrefixIterator(store, types.PlanKeyPrefix)
 	defer iter.Close()
 
 	for ; iter.Valid(); iter.Next() {
-		var subscription types.Subscription
-		k.cdc.MustUnmarshalBinaryLengthPrefixed(iter.Value(), &subscription)
-		subscriptions = append(subscriptions, subscription)
+		var item types.Subscription
+		k.cdc.MustUnmarshalBinaryLengthPrefixed(iter.Value(), &item)
+		items = append(items, item)
 	}
 
-	return subscriptions
+	return items
 }
 
 func (k Keeper) SetSubscriptionIDForAddress(ctx sdk.Context, address sdk.AccAddress, id uint64) {
@@ -71,7 +71,7 @@ func (k Keeper) SetSubscriptionIDForAddress(ctx sdk.Context, address sdk.AccAddr
 	store.Set(key, value)
 }
 
-func (k Keeper) GetSubscriptionsForAddress(ctx sdk.Context, address sdk.AccAddress) (subscriptions types.Subscriptions) {
+func (k Keeper) GetSubscriptionsForAddress(ctx sdk.Context, address sdk.AccAddress) (items types.Subscriptions) {
 	store := k.SubscriptionStore(ctx)
 
 	iter := sdk.KVStorePrefixIterator(store, address.Bytes())
@@ -81,9 +81,34 @@ func (k Keeper) GetSubscriptionsForAddress(ctx sdk.Context, address sdk.AccAddre
 		var id uint64
 		k.cdc.MustUnmarshalBinaryLengthPrefixed(iter.Value(), &id)
 
-		s, _ := k.GetSubscription(ctx, id)
-		subscriptions = append(subscriptions, s)
+		item, _ := k.GetSubscription(ctx, id)
+		items = append(items, item)
 	}
 
-	return subscriptions
+	return items
+}
+
+func (k Keeper) SetSubscriptionIDForPlan(ctx sdk.Context, plan, id uint64) {
+	key := types.SubscriptionIDForPlanKey(plan, id)
+	value := k.cdc.MustMarshalBinaryLengthPrefixed(id)
+
+	store := k.SubscriptionStore(ctx)
+	store.Set(key, value)
+}
+
+func (k Keeper) GetSubscriptionsForPlan(ctx sdk.Context, plan uint64) (items types.Subscriptions) {
+	store := k.SubscriptionStore(ctx)
+
+	iter := sdk.KVStorePrefixIterator(store, sdk.Uint64ToBigEndian(plan))
+	defer iter.Close()
+
+	for ; iter.Valid(); iter.Next() {
+		var id uint64
+		k.cdc.MustUnmarshalBinaryLengthPrefixed(iter.Value(), &id)
+
+		item, _ := k.GetSubscription(ctx, id)
+		items = append(items, item)
+	}
+
+	return items
 }

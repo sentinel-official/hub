@@ -106,10 +106,10 @@ func txSetPlanStatusCmd(cdc *codec.Codec) *cobra.Command {
 	return cmd
 }
 
-func txAddNodeCmd(cdc *codec.Codec) *cobra.Command {
+func txAddNodeForPlanCmd(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "plan-node-add",
-		Short: "Add a node to plan",
+		Short: "Add a node for plan",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			txb := auth.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
@@ -125,7 +125,7 @@ func txAddNodeCmd(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgAddNode(ctx.FromAddress.Bytes(), id, node)
+			msg := types.NewMsgAddNodeForPlan(ctx.FromAddress.Bytes(), id, node)
 			return utils.GenerateOrBroadcastMsgs(ctx, txb, []sdk.Msg{msg})
 		},
 	}
@@ -133,10 +133,10 @@ func txAddNodeCmd(cdc *codec.Codec) *cobra.Command {
 	return cmd
 }
 
-func txRemoveNodeCmd(cdc *codec.Codec) *cobra.Command {
+func txRemoveNodeForPlanCmd(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "plan-node-remove",
-		Short: "Remove a node from plan",
+		Short: "Remove a node for plan",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			txb := auth.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
@@ -152,7 +152,7 @@ func txRemoveNodeCmd(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgRemoveNode(ctx.FromAddress.Bytes(), id, node)
+			msg := types.NewMsgRemoveNodeForPlan(ctx.FromAddress.Bytes(), id, node)
 			return utils.GenerateOrBroadcastMsgs(ctx, txb, []sdk.Msg{msg})
 		},
 	}

@@ -13,7 +13,7 @@ import (
 func HandleAddPlan(ctx sdk.Context, k keeper.Keeper, msg types.MsgAddPlan) sdk.Result {
 	_, found := k.GetProvider(ctx, msg.From)
 	if !found {
-		return types.ErrorNoProviderFound().Result()
+		return types.ErrorProviderDoesNotExist().Result()
 	}
 
 	count := k.GetPlansCount(ctx)
@@ -32,8 +32,8 @@ func HandleAddPlan(ctx sdk.Context, k keeper.Keeper, msg types.MsgAddPlan) sdk.R
 	k.SetPlanIDForProvider(ctx, plan.Provider, plan.ID)
 	ctx.EventManager().EmitEvent(sdk.NewEvent(
 		types.EventTypeSetPlan,
-		sdk.NewAttribute(types.AttributeKeyAddress, plan.Provider.String()),
 		sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", plan.ID)),
+		sdk.NewAttribute(types.AttributeKeyAddress, plan.Provider.String()),
 	))
 
 	k.SetPlansCount(ctx, count+1)
@@ -48,7 +48,7 @@ func HandleAddPlan(ctx sdk.Context, k keeper.Keeper, msg types.MsgAddPlan) sdk.R
 func HandleSetPlanStatus(ctx sdk.Context, k keeper.Keeper, msg types.MsgSetPlanStatus) sdk.Result {
 	plan, found := k.GetPlan(ctx, msg.ID)
 	if !found {
-		return types.ErrorNoPlanFound().Result()
+		return types.ErrorPlanDoesNotExist().Result()
 	}
 	if !msg.From.Equals(plan.Provider) {
 		return types.ErrorUnauthorized().Result()
@@ -67,10 +67,10 @@ func HandleSetPlanStatus(ctx sdk.Context, k keeper.Keeper, msg types.MsgSetPlanS
 	return sdk.Result{Events: ctx.EventManager().Events()}
 }
 
-func HandleAddNode(ctx sdk.Context, k keeper.Keeper, msg types.MsgAddNode) sdk.Result {
+func HandleAddNodeForPlan(ctx sdk.Context, k keeper.Keeper, msg types.MsgAddNodeForPlan) sdk.Result {
 	plan, found := k.GetPlan(ctx, msg.ID)
 	if !found {
-		return types.ErrorNoPlanFound().Result()
+		return types.ErrorPlanDoesNotExist().Result()
 	}
 	if !msg.From.Equals(plan.Provider) {
 		return types.ErrorUnauthorized().Result()
@@ -78,7 +78,7 @@ func HandleAddNode(ctx sdk.Context, k keeper.Keeper, msg types.MsgAddNode) sdk.R
 
 	node, found := k.GetNode(ctx, msg.Address)
 	if !found {
-		return types.ErrorNoNodeFound().Result()
+		return types.ErrorNodeDoesNotExist().Result()
 	}
 	if !msg.From.Equals(node.Provider) {
 		return types.ErrorUnauthorized().Result()
@@ -98,17 +98,17 @@ func HandleAddNode(ctx sdk.Context, k keeper.Keeper, msg types.MsgAddNode) sdk.R
 	return sdk.Result{Events: ctx.EventManager().Events()}
 }
 
-func HandleRemoveNode(ctx sdk.Context, k keeper.Keeper, msg types.MsgRemoveNode) sdk.Result {
+func HandleRemoveNodeForPlan(ctx sdk.Context, k keeper.Keeper, msg types.MsgRemoveNodeForPlan) sdk.Result {
 	plan, found := k.GetPlan(ctx, msg.ID)
 	if !found {
-		return types.ErrorNoPlanFound().Result()
+		return types.ErrorPlanDoesNotExist().Result()
 	}
 	if !msg.From.Equals(plan.Provider) {
 		return types.ErrorUnauthorized().Result()
 	}
 
 	if !k.HasNodeAddressForPlan(ctx, plan.ID, msg.Address) {
-		return types.ErrorNoNodeAdded().Result()
+		return types.ErrorNodeWasNotAdded().Result()
 	}
 
 	k.DeleteNodeAddressForPlan(ctx, plan.ID, msg.Address)
@@ -121,28 +121,36 @@ func HandleRemoveNode(ctx sdk.Context, k keeper.Keeper, msg types.MsgRemoveNode)
 	return sdk.Result{Events: ctx.EventManager().Events()}
 }
 
-func HandleStartPlanSubscription(ctx sdk.Context, k keeper.Keeper, msg types.MsgStartPlanSubscription) sdk.Result {
-	plan, found := k.GetPlan(ctx, msg.ID)
+func HandleStartSubscription(ctx sdk.Context, k keeper.Keeper, msg types.MsgStartSubscription) sdk.Result {
+	if msg.ID > 0 {
+		return handleStartPlanSubscription(ctx, k, msg.From, msg.ID, msg.Denom)
+	}
+	return handleStartNodeSubscription(ctx, k, msg.From, msg.Address, msg.Deposit)
+}
+
+func handleStartPlanSubscription(ctx sdk.Context, k keeper.Keeper,
+	from sdk.AccAddress, id uint64, denom string) sdk.Result {
+	plan, found := k.GetPlan(ctx, id)
 	if !found {
-		return types.ErrorNoPlanFound().Result()
+		return types.ErrorPlanDoesNotExist().Result()
 	}
 	if !plan.Status.Equal(hub.StatusActive) {
 		return types.ErrorInvalidPlanStatus().Result()
 	}
 
-	price, found := plan.GetPriceForDenom(msg.Denom)
+	price, found := plan.GetPriceForDenom(denom)
 	if !found {
-		return types.ErrorNoPriceFound().Result()
+		return types.ErrorPriceDoesNotExist().Result()
 	}
 
-	if err := k.SendCoin(ctx, msg.From, plan.Provider.Bytes(), price); err != nil {
+	if err := k.SendCoin(ctx, from, plan.Provider.Bytes(), price); err != nil {
 		return err.Result()
 	}
 
 	count := k.GetSubscriptionsCount(ctx)
 	subscription := types.Subscription{
 		ID:        count + 1,
-		Address:   msg.From,
+		Address:   from,
 		Plan:      plan.ID,
 		Duration:  plan.Duration,
 		ExpiresAt: ctx.BlockTime().Add(plan.Validity),
@@ -156,11 +164,12 @@ func HandleStartPlanSubscription(ctx sdk.Context, k keeper.Keeper, msg types.Msg
 
 	k.SetSubscription(ctx, subscription)
 	k.SetSubscriptionIDForAddress(ctx, subscription.Address, subscription.ID)
+	k.SetSubscriptionIDForPlan(ctx, subscription.Plan, subscription.ID)
 	ctx.EventManager().EmitEvent(sdk.NewEvent(
 		types.EventTypeSetSubscription,
 		sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", subscription.ID)),
-		sdk.NewAttribute(types.AttributeKeyAddress, subscription.Address.String()),
 		sdk.NewAttribute(types.AttributeKeyPlan, fmt.Sprintf("%d", subscription.Plan)),
+		sdk.NewAttribute(types.AttributeKeyAddress, subscription.Address.String()),
 	))
 
 	k.SetSubscriptionsCount(ctx, count+1)
@@ -172,14 +181,19 @@ func HandleStartPlanSubscription(ctx sdk.Context, k keeper.Keeper, msg types.Msg
 	return sdk.Result{Events: ctx.EventManager().Events()}
 }
 
-func HandleStartNodeSubscription(ctx sdk.Context, k keeper.Keeper, msg types.MsgStartNodeSubscription) sdk.Result {
-	node, found := k.GetNode(ctx, msg.Address)
+func handleStartNodeSubscription(ctx sdk.Context, k keeper.Keeper,
+	from sdk.AccAddress, address hub.NodeAddress, deposit sdk.Coin) sdk.Result {
+	node, found := k.GetNode(ctx, address)
 	if !found {
-		return types.ErrorNoNodeFound().Result()
+		return types.ErrorNodeDoesNotExist().Result()
 	}
 	if !node.Status.Equal(hub.StatusActive) {
 		return types.ErrorInvalidNodeStatus().Result()
 	}
 
+	return sdk.Result{Events: ctx.EventManager().Events()}
+}
+
+func HandleEndSubscription(ctx sdk.Context, k keeper.Keeper, msg types.MsgEndSubscription) sdk.Result {
 	return sdk.Result{Events: ctx.EventManager().Events()}
 }

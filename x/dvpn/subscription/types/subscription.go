@@ -28,19 +28,29 @@ type Subscription struct {
 }
 
 func (s Subscription) String() string {
-	return fmt.Sprintf(strings.TrimSpace(`
-ID: %d
-Address: %s
-Plan: %d
-Duration: %s
+	if s.Plan > 0 {
+		return fmt.Sprintf(strings.TrimSpace(`
+ID:         %d
+Address:    %s
+Plan:       %d
+Bandwidth:  %s
+Duration:   %s
 Expires at: %s
-Node: %s
-Price: %s
-Deposit: %s
+Status:     %s
+Status at:  %s
+`), s.ID, s.Address, s.Plan, s.Bandwidth, s.Duration, s.ExpiresAt, s.Status, s.StatusAt)
+	}
+
+	return fmt.Sprintf(strings.TrimSpace(`
+ID:        %d
+Address:   %s
+Node:      %s
+Price:     %s
+Deposit:   %s
 Bandwidth: %s
-Status: %s
+Status:    %s
 Status at: %s
-`), s.ID, s.Address, s.Plan, s.Duration, s.ExpiresAt, s.Node, s.Price, s.Deposit, s.Bandwidth, s.Status, s.StatusAt)
+`), s.ID, s.Address, s.Node, s.Price, s.Deposit, s.Bandwidth, s.Status, s.StatusAt)
 }
 
 type Subscriptions []Subscription

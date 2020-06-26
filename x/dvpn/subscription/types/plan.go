@@ -23,13 +23,13 @@ type Plan struct {
 
 func (p Plan) String() string {
 	return strings.TrimSpace(fmt.Sprintf(`
-ID: %d
-Provider: %s
-Price: %s
-Validity: %s
+ID:        %d
+Provider:  %s
+Price:     %s
+Validity:  %s
 Bandwidth: %s
-Duration: %s
-Status: %s
+Duration:  %s
+Status:    %s
 Status at: %s
 `, p.ID, p.Provider, p.Price, p.Validity, p.Bandwidth, p.Duration, p.Status, p.StatusAt))
 }
