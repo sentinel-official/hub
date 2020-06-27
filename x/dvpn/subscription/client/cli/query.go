@@ -58,7 +58,7 @@ func queryPlansCmd(cdc *codec.Codec) *cobra.Command {
 					return err
 				}
 
-				plans, err = common.QueryPlansOfProvider(ctx, address)
+				plans, err = common.QueryPlansForProvider(ctx, address)
 				if err != nil {
 					return err
 				}
@@ -135,12 +135,12 @@ func querySubscriptionsCmd(cdc *codec.Codec) *cobra.Command {
 					return err
 				}
 
-				subscriptions, err = common.QuerySubscriptionsOfAddress(ctx, address)
+				subscriptions, err = common.QuerySubscriptionsForAddress(ctx, address)
 				if err != nil {
 					return err
 				}
 			} else if plan > 0 {
-				subscriptions, err = common.QuerySubscriptionsOfPlan(ctx, plan)
+				subscriptions, err = common.QuerySubscriptionsForPlan(ctx, plan)
 				if err != nil {
 					return err
 				}
@@ -150,7 +150,7 @@ func querySubscriptionsCmd(cdc *codec.Codec) *cobra.Command {
 					return err
 				}
 
-				subscriptions, err = common.QuerySubscriptionsOfNode(ctx, address)
+				subscriptions, err = common.QuerySubscriptionsForNode(ctx, address)
 				if err != nil {
 					return err
 				}

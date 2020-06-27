@@ -5,9 +5,9 @@ import (
 )
 
 const (
-	QueryNode            = "query_node"
-	QueryNodes           = "query_nodes"
-	QueryNodesOfProvider = "query_nodes_of_provider"
+	QueryNode             = "query_node"
+	QueryNodes            = "query_nodes"
+	QueryNodesForProvider = "query_nodes_for_provider"
 )
 
 type QueryNodeParams struct {
@@ -20,12 +20,12 @@ func NewQueryNodeParams(address hub.NodeAddress) QueryNodeParams {
 	}
 }
 
-type QueryNodesOfProviderParams struct {
+type QueryNodesForProviderParams struct {
 	Address hub.ProvAddress `json:"address"`
 }
 
-func NewQueryNodesOfProviderParams(address hub.ProvAddress) QueryNodesOfProviderParams {
-	return QueryNodesOfProviderParams{
+func NewQueryNodesForProviderParams(address hub.ProvAddress) QueryNodesForProviderParams {
+	return QueryNodesForProviderParams{
 		Address: address,
 	}
 }

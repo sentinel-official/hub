@@ -8,7 +8,7 @@ import (
 func registerQueryRoutes(ctx context.CLIContext, router *mux.Router) {
 	router.HandleFunc("/plans", queryPlansHandlerFunc(ctx)).
 		Methods("GET")
-	router.HandleFunc("/plans/{address}", queryPlansOfProviderHandlerFunc(ctx)).
+	router.HandleFunc("/plans/{address}", queryPlansForProviderHandlerFunc(ctx)).
 		Methods("GET")
 	router.HandleFunc("/plans/{address}/{id}", queryPlanHandlerFunc(ctx)).
 		Methods("GET")

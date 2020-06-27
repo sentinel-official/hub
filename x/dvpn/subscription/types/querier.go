@@ -7,16 +7,16 @@ import (
 )
 
 const (
-	QueryPlan            = "query_plan"
-	QueryPlans           = "query_plans"
-	QueryPlansOfProvider = "query_plans_of_provider"
-	QueryNodesOfPlan     = "query_nodes_of_plan"
+	QueryPlan             = "query_plan"
+	QueryPlans            = "query_plans"
+	QueryPlansForProvider = "query_plans_for_provider"
+	QueryNodesForPlan     = "query_nodes_for_plan"
 
-	QuerySubscription           = "query_subscription"
-	QuerySubscriptions          = "query_subscriptions"
-	QuerySubscriptionsOfAddress = "query_subscriptions_of_address"
-	QuerySubscriptionsOfPlan    = "query_subscriptions_of_plan"
-	QuerySubscriptionsOfNode    = "query_subscriptions_of_node"
+	QuerySubscription            = "query_subscription"
+	QuerySubscriptions           = "query_subscriptions"
+	QuerySubscriptionsForAddress = "query_subscriptions_for_address"
+	QuerySubscriptionsForPlan    = "query_subscriptions_for_plan"
+	QuerySubscriptionsForNode    = "query_subscriptions_for_node"
 )
 
 type QueryPlanParams struct {
@@ -29,22 +29,22 @@ func NewQueryPlanParams(id uint64) QueryPlanParams {
 	}
 }
 
-type QueryPlansOfProviderParams struct {
+type QueryPlansForProviderParams struct {
 	Address hub.ProvAddress `json:"address"`
 }
 
-func NewQueryPlansOfProviderParams(address hub.ProvAddress) QueryPlansOfProviderParams {
-	return QueryPlansOfProviderParams{
+func NewQueryPlansForProviderParams(address hub.ProvAddress) QueryPlansForProviderParams {
+	return QueryPlansForProviderParams{
 		Address: address,
 	}
 }
 
-type QueryNodesOfPlanParams struct {
+type QueryNodesForPlanParams struct {
 	ID uint64 `json:"id"`
 }
 
-func NewQueryNodesOfPlanParams(id uint64) QueryNodesOfPlanParams {
-	return QueryNodesOfPlanParams{
+func NewQueryNodesForPlanParams(id uint64) QueryNodesForPlanParams {
+	return QueryNodesForPlanParams{
 		ID: id,
 	}
 }
@@ -59,32 +59,32 @@ func NewQuerySubscriptionParams(id uint64) QuerySubscriptionParams {
 	}
 }
 
-type QuerySubscriptionsOfAddressParams struct {
+type QuerySubscriptionsForAddressParams struct {
 	Address sdk.AccAddress `json:"address"`
 }
 
-func NewQuerySubscriptionsOfAddressParams(address sdk.AccAddress) QuerySubscriptionsOfAddressParams {
-	return QuerySubscriptionsOfAddressParams{
+func NewQuerySubscriptionsForAddressParams(address sdk.AccAddress) QuerySubscriptionsForAddressParams {
+	return QuerySubscriptionsForAddressParams{
 		Address: address,
 	}
 }
 
-type QuerySubscriptionsOfPlanParams struct {
+type QuerySubscriptionsForPlanParams struct {
 	ID uint64 `json:"id"`
 }
 
-func NewQuerySubscriptionsOfPlanParams(id uint64) QuerySubscriptionsOfPlanParams {
-	return QuerySubscriptionsOfPlanParams{
+func NewQuerySubscriptionsForPlanParams(id uint64) QuerySubscriptionsForPlanParams {
+	return QuerySubscriptionsForPlanParams{
 		ID: id,
 	}
 }
 
-type QuerySubscriptionsOfNodeParams struct {
+type QuerySubscriptionsForNodeParams struct {
 	Address hub.NodeAddress `json:"address"`
 }
 
-func NewQuerySubscriptionsOfNodeParams(address hub.NodeAddress) QuerySubscriptionsOfNodeParams {
-	return QuerySubscriptionsOfNodeParams{
+func NewQuerySubscriptionsForNodeParams(address hub.NodeAddress) QuerySubscriptionsForNodeParams {
+	return QuerySubscriptionsForNodeParams{
 		Address: address,
 	}
 }

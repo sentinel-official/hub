@@ -52,14 +52,14 @@ func QueryPlans(ctx context.CLIContext) (types.Plans, error) {
 	return plans, nil
 }
 
-func QueryPlansOfProvider(ctx context.CLIContext, address hub.ProvAddress) (types.Plans, error) {
-	params := types.NewQueryPlansOfProviderParams(address)
+func QueryPlansForProvider(ctx context.CLIContext, address hub.ProvAddress) (types.Plans, error) {
+	params := types.NewQueryPlansForProviderParams(address)
 	bytes, err := ctx.Codec.MarshalJSON(params)
 	if err != nil {
 		return nil, err
 	}
 
-	path := fmt.Sprintf("custom/%s/%s/%s", types.StoreKey, types.QuerierRoute, types.QueryPlansOfProvider)
+	path := fmt.Sprintf("custom/%s/%s/%s", types.StoreKey, types.QuerierRoute, types.QueryPlansForProvider)
 	res, _, err := ctx.QueryWithData(path, bytes)
 	if err != nil {
 		return nil, err
@@ -118,14 +118,14 @@ func QuerySubscriptions(ctx context.CLIContext) (types.Subscriptions, error) {
 	return subscriptions, nil
 }
 
-func QuerySubscriptionsOfAddress(ctx context.CLIContext, address sdk.AccAddress) (types.Subscriptions, error) {
-	params := types.NewQuerySubscriptionsOfAddressParams(address)
+func QuerySubscriptionsForAddress(ctx context.CLIContext, address sdk.AccAddress) (types.Subscriptions, error) {
+	params := types.NewQuerySubscriptionsForAddressParams(address)
 	bytes, err := ctx.Codec.MarshalJSON(params)
 	if err != nil {
 		return nil, err
 	}
 
-	path := fmt.Sprintf("custom/%s/%s/%s", types.StoreKey, types.QuerierRoute, types.QuerySubscriptionsOfAddress)
+	path := fmt.Sprintf("custom/%s/%s/%s", types.StoreKey, types.QuerierRoute, types.QuerySubscriptionsForAddress)
 	res, _, err := ctx.QueryWithData(path, bytes)
 	if err != nil {
 		return nil, err
@@ -142,14 +142,14 @@ func QuerySubscriptionsOfAddress(ctx context.CLIContext, address sdk.AccAddress)
 	return subscriptions, nil
 }
 
-func QuerySubscriptionsOfPlan(ctx context.CLIContext, id uint64) (types.Subscriptions, error) {
-	params := types.NewQuerySubscriptionsOfPlanParams(id)
+func QuerySubscriptionsForPlan(ctx context.CLIContext, id uint64) (types.Subscriptions, error) {
+	params := types.NewQuerySubscriptionsForPlanParams(id)
 	bytes, err := ctx.Codec.MarshalJSON(params)
 	if err != nil {
 		return nil, err
 	}
 
-	path := fmt.Sprintf("custom/%s/%s/%s", types.StoreKey, types.QuerierRoute, types.QuerySubscriptionsOfPlan)
+	path := fmt.Sprintf("custom/%s/%s/%s", types.StoreKey, types.QuerierRoute, types.QuerySubscriptionsForPlan)
 	res, _, err := ctx.QueryWithData(path, bytes)
 	if err != nil {
 		return nil, err
@@ -166,14 +166,14 @@ func QuerySubscriptionsOfPlan(ctx context.CLIContext, id uint64) (types.Subscrip
 	return subscriptions, nil
 }
 
-func QuerySubscriptionsOfNode(ctx context.CLIContext, address hub.NodeAddress) (types.Subscriptions, error) {
-	params := types.NewQuerySubscriptionsOfNodeParams(address)
+func QuerySubscriptionsForNode(ctx context.CLIContext, address hub.NodeAddress) (types.Subscriptions, error) {
+	params := types.NewQuerySubscriptionsForNodeParams(address)
 	bytes, err := ctx.Codec.MarshalJSON(params)
 	if err != nil {
 		return nil, err
 	}
 
-	path := fmt.Sprintf("custom/%s/%s/%s", types.StoreKey, types.QuerierRoute, types.QuerySubscriptionsOfNode)
+	path := fmt.Sprintf("custom/%s/%s/%s", types.StoreKey, types.QuerierRoute, types.QuerySubscriptionsForNode)
 	res, _, err := ctx.QueryWithData(path, bytes)
 	if err != nil {
 		return nil, err

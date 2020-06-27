@@ -8,7 +8,6 @@ import (
 	"github.com/spf13/cobra"
 
 	hub "github.com/sentinel-official/hub/types"
-	"github.com/sentinel-official/hub/x/dvpn/common/client"
 	"github.com/sentinel-official/hub/x/dvpn/node/client/common"
 	"github.com/sentinel-official/hub/x/dvpn/node/types"
 )
@@ -62,12 +61,12 @@ func queryNodesCmd(cdc *codec.Codec) *cobra.Command {
 					return err
 				}
 
-				nodes, err = common.QueryNodesOfProvider(ctx, address)
+				nodes, err = common.QueryNodesForProvider(ctx, address)
 				if err != nil {
 					return err
 				}
 			} else if plan > 0 {
-				nodes, err = client.QueryNodesOfPlan(ctx, plan)
+				nodes, err = common.QueryNodesForPlan(ctx, plan)
 				if err != nil {
 					return err
 				}

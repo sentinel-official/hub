@@ -18,7 +18,7 @@ func queryPlansHandlerFunc(ctx context.CLIContext) http.HandlerFunc {
 	}
 }
 
-func queryPlansOfProviderHandlerFunc(ctx context.CLIContext) http.HandlerFunc {
+func queryPlansForProviderHandlerFunc(ctx context.CLIContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
 	}

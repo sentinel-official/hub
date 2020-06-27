@@ -3,6 +3,7 @@ package keeper
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
+	hub "github.com/sentinel-official/hub/types"
 	"github.com/sentinel-official/hub/x/dvpn/subscription/types"
 )
 
@@ -74,7 +75,7 @@ func (k Keeper) SetSubscriptionIDForAddress(ctx sdk.Context, address sdk.AccAddr
 func (k Keeper) GetSubscriptionsForAddress(ctx sdk.Context, address sdk.AccAddress) (items types.Subscriptions) {
 	store := k.SubscriptionStore(ctx)
 
-	iter := sdk.KVStorePrefixIterator(store, address.Bytes())
+	iter := sdk.KVStorePrefixIterator(store, types.SubscriptionIDForAddressKeyPrefix(address))
 	defer iter.Close()
 
 	for ; iter.Valid(); iter.Next() {
@@ -100,6 +101,31 @@ func (k Keeper) GetSubscriptionsForPlan(ctx sdk.Context, plan uint64) (items typ
 	store := k.SubscriptionStore(ctx)
 
 	iter := sdk.KVStorePrefixIterator(store, sdk.Uint64ToBigEndian(plan))
+	defer iter.Close()
+
+	for ; iter.Valid(); iter.Next() {
+		var id uint64
+		k.cdc.MustUnmarshalBinaryLengthPrefixed(iter.Value(), &id)
+
+		item, _ := k.GetSubscription(ctx, id)
+		items = append(items, item)
+	}
+
+	return items
+}
+
+func (k Keeper) SetSubscriptionIDForNode(ctx sdk.Context, address hub.NodeAddress, id uint64) {
+	key := types.SubscriptionIDForNodeKey(address, id)
+	value := k.cdc.MustMarshalBinaryLengthPrefixed(id)
+
+	store := k.SubscriptionStore(ctx)
+	store.Set(key, value)
+}
+
+func (k Keeper) GetSubscriptionsForNode(ctx sdk.Context, address hub.NodeAddress) (items types.Subscriptions) {
+	store := k.SubscriptionStore(ctx)
+
+	iter := sdk.KVStorePrefixIterator(store, types.SubscriptionIDForNodeKeyPrefix(address))
 	defer iter.Close()
 
 	for ; iter.Valid(); iter.Next() {

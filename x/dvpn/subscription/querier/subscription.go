@@ -36,8 +36,8 @@ func querySubscriptions(ctx sdk.Context, _ abci.RequestQuery, k keeper.Keeper) (
 	return res, nil
 }
 
-func querySubscriptionsOfAddress(ctx sdk.Context, req abci.RequestQuery, k keeper.Keeper) ([]byte, sdk.Error) {
-	var params types.QuerySubscriptionsOfAddressParams
+func querySubscriptionsForAddress(ctx sdk.Context, req abci.RequestQuery, k keeper.Keeper) ([]byte, sdk.Error) {
+	var params types.QuerySubscriptionsForAddressParams
 	if err := types.ModuleCdc.UnmarshalJSON(req.Data, &params); err != nil {
 		return nil, types.ErrorUnmarshal()
 	}
@@ -50,8 +50,8 @@ func querySubscriptionsOfAddress(ctx sdk.Context, req abci.RequestQuery, k keepe
 	return res, nil
 }
 
-func querySubscriptionsOfPlan(ctx sdk.Context, req abci.RequestQuery, k keeper.Keeper) ([]byte, sdk.Error) {
-	var params types.QuerySubscriptionsOfPlanParams
+func querySubscriptionsForPlan(ctx sdk.Context, req abci.RequestQuery, k keeper.Keeper) ([]byte, sdk.Error) {
+	var params types.QuerySubscriptionsForPlanParams
 	if err := types.ModuleCdc.UnmarshalJSON(req.Data, &params); err != nil {
 		return nil, types.ErrorUnmarshal()
 	}
@@ -64,11 +64,16 @@ func querySubscriptionsOfPlan(ctx sdk.Context, req abci.RequestQuery, k keeper.K
 	return res, nil
 }
 
-func querySubscriptionsOfNode(ctx sdk.Context, req abci.RequestQuery, k keeper.Keeper) ([]byte, sdk.Error) {
-	var params types.QuerySubscriptionsOfNodeParams
+func querySubscriptionsForNode(ctx sdk.Context, req abci.RequestQuery, k keeper.Keeper) ([]byte, sdk.Error) {
+	var params types.QuerySubscriptionsForNodeParams
 	if err := types.ModuleCdc.UnmarshalJSON(req.Data, &params); err != nil {
 		return nil, types.ErrorUnmarshal()
 	}
 
-	return nil, nil
+	res, err := types.ModuleCdc.MarshalJSON(k.GetSubscriptionsForNode(ctx, params.Address))
+	if err != nil {
+		return nil, types.ErrorMarshal()
+	}
+
+	return res, nil
 }

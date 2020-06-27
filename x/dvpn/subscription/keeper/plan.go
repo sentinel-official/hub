@@ -4,7 +4,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	hub "github.com/sentinel-official/hub/types"
-	"github.com/sentinel-official/hub/x/dvpn/node"
+	node "github.com/sentinel-official/hub/x/dvpn/node/types"
 	"github.com/sentinel-official/hub/x/dvpn/subscription/types"
 )
 

@@ -14,20 +14,20 @@ func Querier(ctx sdk.Context, path []string, req abci.RequestQuery, k keeper.Kee
 		return queryPlan(ctx, req, k)
 	case types.QueryPlans:
 		return queryPlans(ctx, req, k)
-	case types.QueryPlansOfProvider:
-		return queryPlansOfProvider(ctx, req, k)
-	case types.QueryNodesOfPlan:
-		return queryNodesOfPlan(ctx, req, k)
+	case types.QueryPlansForProvider:
+		return queryPlansForProvider(ctx, req, k)
+	case types.QueryNodesForPlan:
+		return queryNodesForPlan(ctx, req, k)
 	case types.QuerySubscription:
 		return querySubscription(ctx, req, k)
 	case types.QuerySubscriptions:
 		return querySubscriptions(ctx, req, k)
-	case types.QuerySubscriptionsOfAddress:
-		return querySubscriptionsOfAddress(ctx, req, k)
-	case types.QuerySubscriptionsOfPlan:
-		return querySubscriptionsOfPlan(ctx, req, k)
-	case types.QuerySubscriptionsOfNode:
-		return querySubscriptionsOfNode(ctx, req, k)
+	case types.QuerySubscriptionsForAddress:
+		return querySubscriptionsForAddress(ctx, req, k)
+	case types.QuerySubscriptionsForPlan:
+		return querySubscriptionsForPlan(ctx, req, k)
+	case types.QuerySubscriptionsForNode:
+		return querySubscriptionsForNode(ctx, req, k)
 	default:
 		return nil, types.ErrorUnknownQueryType(path[0])
 	}
