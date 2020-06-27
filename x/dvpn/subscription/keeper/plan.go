@@ -102,9 +102,7 @@ func (k Keeper) HasNodeAddressForPlan(ctx sdk.Context, id uint64, address hub.No
 	store := k.PlanStore(ctx)
 
 	key := types.NodeAddressForPlanKey(id, address)
-	value := store.Get(key)
-
-	return value != nil
+	return store.Has(key)
 }
 
 func (k Keeper) DeleteNodeAddressForPlan(ctx sdk.Context, id uint64, address hub.NodeAddress) {

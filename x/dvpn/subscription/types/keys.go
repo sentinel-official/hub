@@ -50,14 +50,26 @@ func SubscriptionIDForAddressKey(address sdk.AccAddress, i uint64) []byte {
 	return append(SubscriptionIDForAddressKeyPrefix(address), sdk.Uint64ToBigEndian(i)...)
 }
 
+func SubscriptionIDForPlanKeyPrefix(id uint64) []byte {
+	return append([]byte{0x03}, sdk.Uint64ToBigEndian(id)...)
+}
+
 func SubscriptionIDForPlanKey(id, i uint64) []byte {
-	return append(sdk.Uint64ToBigEndian(id), sdk.Uint64ToBigEndian(i)...)
+	return append(SubscriptionIDForPlanKeyPrefix(id), sdk.Uint64ToBigEndian(i)...)
 }
 
 func SubscriptionIDForNodeKeyPrefix(address hub.NodeAddress) []byte {
-	return append([]byte{0x03}, address.Bytes()...)
+	return append([]byte{0x04}, address.Bytes()...)
 }
 
 func SubscriptionIDForNodeKey(address hub.NodeAddress, i uint64) []byte {
 	return append(SubscriptionIDForNodeKeyPrefix(address), sdk.Uint64ToBigEndian(i)...)
+}
+
+func AddressForSubscriptionIDKeyPrefix(id uint64) []byte {
+	return append([]byte{0x05}, sdk.Uint64ToBigEndian(id)...)
+}
+
+func AddressForSubscriptionIDKey(id uint64, address sdk.AccAddress) []byte {
+	return append(AddressForSubscriptionIDKeyPrefix(id), address.Bytes()...)
 }

@@ -15,6 +15,7 @@ var (
 	_ sdk.Msg = (*MsgAddNodeForPlan)(nil)
 	_ sdk.Msg = (*MsgRemoveNodeForPlan)(nil)
 	_ sdk.Msg = (*MsgStartSubscription)(nil)
+	_ sdk.Msg = (*MsgAddAddressForSubscription)(nil)
 	_ sdk.Msg = (*MsgEndSubscription)(nil)
 )
 
@@ -321,6 +322,52 @@ func (m MsgStartSubscription) GetSignBytes() []byte {
 }
 
 func (m MsgStartSubscription) GetSigners() []sdk.AccAddress {
+	return []sdk.AccAddress{m.From}
+}
+
+// MsgAddAddressForSubscription is for adding an address for subscription.
+type MsgAddAddressForSubscription struct {
+	From    sdk.AccAddress `json:"from"`
+	ID      uint64         `json:"id"`
+	Address sdk.AccAddress `json:"address"`
+}
+
+func (m MsgAddAddressForSubscription) Route() string {
+	return RouterKey
+}
+
+func (m MsgAddAddressForSubscription) Type() string {
+	return "add_address_for_subscription"
+}
+
+func (m MsgAddAddressForSubscription) ValidateBasic() sdk.Error {
+	if m.From == nil || m.From.Empty() {
+		return ErrorInvalidField("from")
+	}
+
+	// ID shouldn't be zero
+	if m.ID == 0 {
+		return ErrorInvalidField("id")
+	}
+
+	// Address shouldn't be nil or empty
+	if m.Address == nil || m.Address.Empty() {
+		return ErrorInvalidField("address")
+	}
+
+	return nil
+}
+
+func (m MsgAddAddressForSubscription) GetSignBytes() []byte {
+	bytes, err := json.Marshal(m)
+	if err != nil {
+		panic(err)
+	}
+
+	return bytes
+}
+
+func (m MsgAddAddressForSubscription) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{m.From}
 }
 

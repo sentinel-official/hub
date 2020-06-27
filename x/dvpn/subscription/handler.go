@@ -121,7 +121,7 @@ func HandleRemoveNodeForPlan(ctx sdk.Context, k keeper.Keeper, msg types.MsgRemo
 	return sdk.Result{Events: ctx.EventManager().Events()}
 }
 
-func handleStartPlanSubscription(ctx sdk.Context, k keeper.Keeper,
+func startPlanSubscription(ctx sdk.Context, k keeper.Keeper,
 	from sdk.AccAddress, id uint64, denom string) sdk.Result {
 	plan, found := k.GetPlan(ctx, id)
 	if !found {
@@ -154,6 +154,7 @@ func handleStartPlanSubscription(ctx sdk.Context, k keeper.Keeper,
 
 	k.SetSubscription(ctx, subscription)
 	k.SetSubscriptionIDForAddress(ctx, subscription.Address, subscription.ID)
+	k.SetAddressForSubscriptionID(ctx, subscription.ID, subscription.Address)
 	k.SetSubscriptionIDForPlan(ctx, subscription.Plan, subscription.ID)
 	ctx.EventManager().EmitEvent(sdk.NewEvent(
 		types.EventTypeSetSubscription,
@@ -171,7 +172,7 @@ func handleStartPlanSubscription(ctx sdk.Context, k keeper.Keeper,
 	return sdk.Result{Events: ctx.EventManager().Events()}
 }
 
-func handleStartNodeSubscription(ctx sdk.Context, k keeper.Keeper,
+func startNodeSubscription(ctx sdk.Context, k keeper.Keeper,
 	from sdk.AccAddress, address hub.NodeAddress, deposit sdk.Coin) sdk.Result {
 	node, found := k.GetNode(ctx, address)
 	if !found {
@@ -206,6 +207,7 @@ func handleStartNodeSubscription(ctx sdk.Context, k keeper.Keeper,
 
 	k.SetSubscription(ctx, subscription)
 	k.SetSubscriptionIDForAddress(ctx, subscription.Address, subscription.ID)
+	k.SetAddressForSubscriptionID(ctx, subscription.ID, subscription.Address)
 	k.SetSubscriptionIDForNode(ctx, subscription.Node, subscription.ID)
 	ctx.EventManager().EmitEvent(sdk.NewEvent(
 		types.EventTypeSetSubscription,
@@ -225,9 +227,37 @@ func handleStartNodeSubscription(ctx sdk.Context, k keeper.Keeper,
 
 func HandleStartSubscription(ctx sdk.Context, k keeper.Keeper, msg types.MsgStartSubscription) sdk.Result {
 	if msg.ID > 0 {
-		return handleStartPlanSubscription(ctx, k, msg.From, msg.ID, msg.Denom)
+		return startPlanSubscription(ctx, k, msg.From, msg.ID, msg.Denom)
 	}
-	return handleStartNodeSubscription(ctx, k, msg.From, msg.Address, msg.Deposit)
+
+	return startNodeSubscription(ctx, k, msg.From, msg.Address, msg.Deposit)
+}
+
+func HandleAddAddressForSubscription(ctx sdk.Context, k keeper.Keeper, msg types.MsgAddAddressForSubscription) sdk.Result {
+	subscription, found := k.GetSubscription(ctx, msg.ID)
+	if !found {
+		return types.ErrorSubscriptionDoesNotExist().Result()
+	}
+	if !msg.From.Equals(subscription.Address) {
+		return types.ErrorUnauthorized().Result()
+	}
+	if !subscription.Status.Equal(hub.StatusActive) {
+		return types.ErrorInvalidSubscriptionStatus().Result()
+	}
+
+	if k.HasSubscriptionIDForAddress(ctx, msg.Address, subscription.ID) {
+		return types.ErrorDuplicateAddress().Result()
+	}
+
+	k.SetSubscriptionIDForAddress(ctx, msg.Address, subscription.ID)
+	k.SetAddressForSubscriptionID(ctx, subscription.ID, msg.Address)
+	ctx.EventManager().EmitEvent(sdk.NewEvent(
+		types.EventTypeSetAddressForSubscription,
+		sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", subscription.ID)),
+		sdk.NewAttribute(types.AttributeKeyAddress, msg.Address.String()),
+	))
+
+	return sdk.Result{Events: ctx.EventManager().Events()}
 }
 
 func HandleEndSubscription(ctx sdk.Context, k keeper.Keeper, msg types.MsgEndSubscription) sdk.Result {

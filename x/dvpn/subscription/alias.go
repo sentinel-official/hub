@@ -13,31 +13,32 @@ import (
 )
 
 const (
-	Codespace                         = types.Codespace
-	EventTypeSetPlan                  = types.EventTypeSetPlan
-	EventTypeSetPlansCount            = types.EventTypeSetPlansCount
-	EventTypeSetPlanStatus            = types.EventTypeSetPlanStatus
-	EventTypeSetNodeAddressForPlan    = types.EventTypeSetNodeAddressForPlan
-	EventTypeDeleteNodeAddressForPlan = types.EventTypeDeleteNodeAddressForPlan
-	EventTypeSetSubscription          = types.EventTypeSetSubscription
-	EventTypeSetSubscriptionsCount    = types.EventTypeSetSubscriptionsCount
-	AttributeKeyAddress               = types.AttributeKeyAddress
-	AttributeKeyID                    = types.AttributeKeyID
-	AttributeKeyNode                  = types.AttributeKeyNode
-	AttributeKeyCount                 = types.AttributeKeyCount
-	AttributeKeyStatus                = types.AttributeKeyStatus
-	AttributeKeyPlan                  = types.AttributeKeyPlan
-	ModuleName                        = types.ModuleName
-	QuerierRoute                      = types.QuerierRoute
-	QueryPlan                         = types.QueryPlan
-	QueryPlans                        = types.QueryPlans
-	QueryPlansForProvider             = types.QueryPlansForProvider
-	QueryNodesForPlan                 = types.QueryNodesForPlan
-	QuerySubscription                 = types.QuerySubscription
-	QuerySubscriptions                = types.QuerySubscriptions
-	QuerySubscriptionsForAddress      = types.QuerySubscriptionsForAddress
-	QuerySubscriptionsForPlan         = types.QuerySubscriptionsForPlan
-	QuerySubscriptionsForNode         = types.QuerySubscriptionsForNode
+	Codespace                          = types.Codespace
+	EventTypeSetPlan                   = types.EventTypeSetPlan
+	EventTypeSetPlansCount             = types.EventTypeSetPlansCount
+	EventTypeSetPlanStatus             = types.EventTypeSetPlanStatus
+	EventTypeSetNodeAddressForPlan     = types.EventTypeSetNodeAddressForPlan
+	EventTypeDeleteNodeAddressForPlan  = types.EventTypeDeleteNodeAddressForPlan
+	EventTypeSetSubscription           = types.EventTypeSetSubscription
+	EventTypeSetSubscriptionsCount     = types.EventTypeSetSubscriptionsCount
+	EventTypeSetAddressForSubscription = types.EventTypeSetAddressForSubscription
+	AttributeKeyAddress                = types.AttributeKeyAddress
+	AttributeKeyID                     = types.AttributeKeyID
+	AttributeKeyNode                   = types.AttributeKeyNode
+	AttributeKeyCount                  = types.AttributeKeyCount
+	AttributeKeyStatus                 = types.AttributeKeyStatus
+	AttributeKeyPlan                   = types.AttributeKeyPlan
+	ModuleName                         = types.ModuleName
+	QuerierRoute                       = types.QuerierRoute
+	QueryPlan                          = types.QueryPlan
+	QueryPlans                         = types.QueryPlans
+	QueryPlansForProvider              = types.QueryPlansForProvider
+	QueryNodesForPlan                  = types.QueryNodesForPlan
+	QuerySubscription                  = types.QuerySubscription
+	QuerySubscriptions                 = types.QuerySubscriptions
+	QuerySubscriptionsForAddress       = types.QuerySubscriptionsForAddress
+	QuerySubscriptionsForPlan          = types.QuerySubscriptionsForPlan
+	QuerySubscriptionsForNode          = types.QuerySubscriptionsForNode
 )
 
 var (
@@ -58,6 +59,9 @@ var (
 	ErrorPriceDoesNotExist                = types.ErrorPriceDoesNotExist
 	ErrorInvalidNodeStatus                = types.ErrorInvalidNodeStatus
 	ErrorPriceDoesNotExit                 = types.ErrorPriceDoesNotExit
+	ErrorSubscriptionDoesNotExist         = types.ErrorSubscriptionDoesNotExist
+	ErrorInvalidSubscriptionStatus        = types.ErrorInvalidSubscriptionStatus
+	ErrorDuplicateAddress                 = types.ErrorDuplicateAddress
 	NewGenesisState                       = types.NewGenesisState
 	DefaultGenesisState                   = types.DefaultGenesisState
 	PlanKey                               = types.PlanKey
@@ -66,9 +70,12 @@ var (
 	SubscriptionKey                       = types.SubscriptionKey
 	SubscriptionIDForAddressKeyPrefix     = types.SubscriptionIDForAddressKeyPrefix
 	SubscriptionIDForAddressKey           = types.SubscriptionIDForAddressKey
+	SubscriptionIDForPlanKeyPrefix        = types.SubscriptionIDForPlanKeyPrefix
 	SubscriptionIDForPlanKey              = types.SubscriptionIDForPlanKey
 	SubscriptionIDForNodeKeyPrefix        = types.SubscriptionIDForNodeKeyPrefix
 	SubscriptionIDForNodeKey              = types.SubscriptionIDForNodeKey
+	AddressForSubscriptionIDKeyPrefix     = types.AddressForSubscriptionIDKeyPrefix
+	AddressForSubscriptionIDKey           = types.AddressForSubscriptionIDKey
 	NewMsgAddPlan                         = types.NewMsgAddPlan
 	NewMsgSetPlanStatus                   = types.NewMsgSetPlanStatus
 	NewMsgAddNodeForPlan                  = types.NewMsgAddNodeForPlan
@@ -104,6 +111,7 @@ type (
 	MsgAddNodeForPlan                  = types.MsgAddNodeForPlan
 	MsgRemoveNodeForPlan               = types.MsgRemoveNodeForPlan
 	MsgStartSubscription               = types.MsgStartSubscription
+	MsgAddAddressForSubscription       = types.MsgAddAddressForSubscription
 	MsgEndSubscription                 = types.MsgEndSubscription
 	Plan                               = types.Plan
 	Plans                              = types.Plans

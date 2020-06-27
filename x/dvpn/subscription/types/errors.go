@@ -26,22 +26,28 @@ const (
 	errorCodePriceDoesNotExist
 	errorCodeInvalidNodeStatus
 	errorCodePriceDoesNotExit
+	errorCodeSubscriptionDoesNotExist
+	errorCodeInvalidSubscriptionStatus
+	errorCodeDuplicateAddress
 )
 
 const (
-	errorMsgUnknownMsgType       = "unknown message type: %s"
-	errorMsgUnknownQueryType     = "unknown query type: %s"
-	errorMsgInvalidField         = "invalid field: %s"
-	errorMsgProviderDoesNotExist = "provider does not exist"
-	errorMsgPlanDoesNotExist     = "plan does not exist"
-	errorMsgNodeDoesNotExist     = "node does not exist"
-	errorMsgUnauthorized         = "unauthorized"
-	errorMsgDuplicateNode        = "duplicate node"
-	errorMsgNodeWasNotAdded      = "node was not added"
-	errorMsgInvalidPlanStatus    = "invalid plan status"
-	errorMsgPriceDoesNotExist    = "price does not exist"
-	errorMsgInvalidNodeStatus    = "invalid node status"
-	errorMsgPriceDoesNotExit     = "price does not exist"
+	errorMsgUnknownMsgType            = "unknown message type: %s"
+	errorMsgUnknownQueryType          = "unknown query type: %s"
+	errorMsgInvalidField              = "invalid field: %s"
+	errorMsgProviderDoesNotExist      = "provider does not exist"
+	errorMsgPlanDoesNotExist          = "plan does not exist"
+	errorMsgNodeDoesNotExist          = "node does not exist"
+	errorMsgUnauthorized              = "unauthorized"
+	errorMsgDuplicateNode             = "duplicate node"
+	errorMsgNodeWasNotAdded           = "node was not added"
+	errorMsgInvalidPlanStatus         = "invalid plan status"
+	errorMsgPriceDoesNotExist         = "price does not exist"
+	errorMsgInvalidNodeStatus         = "invalid node status"
+	errorMsgPriceDoesNotExit          = "price does not exist"
+	errorMsgSubscriptionDoesNotExist  = "subscription does not exist"
+	errorMsgInvalidSubscriptionStatus = "invalid subscription status"
+	errorMsgDuplicateAddress          = "duplicate address"
 )
 
 func ErrorMarshal() sdk.Error {
@@ -102,4 +108,16 @@ func ErrorInvalidNodeStatus() sdk.Error {
 
 func ErrorPriceDoesNotExit() sdk.Error {
 	return sdk.NewError(Codespace, errorCodePriceDoesNotExit, errorMsgPriceDoesNotExit)
+}
+
+func ErrorSubscriptionDoesNotExist() sdk.Error {
+	return sdk.NewError(Codespace, errorCodeSubscriptionDoesNotExist, errorMsgSubscriptionDoesNotExist)
+}
+
+func ErrorInvalidSubscriptionStatus() sdk.Error {
+	return sdk.NewError(Codespace, errorCodeInvalidSubscriptionStatus, errorMsgInvalidSubscriptionStatus)
+}
+
+func ErrorDuplicateAddress() sdk.Error {
+	return sdk.NewError(Codespace, errorCodeDuplicateAddress, errorMsgDuplicateAddress)
 }
