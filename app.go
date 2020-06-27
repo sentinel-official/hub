@@ -30,6 +30,7 @@ import (
 
 	"github.com/sentinel-official/hub/types"
 	"github.com/sentinel-official/hub/x/dvpn"
+	"github.com/sentinel-official/hub/x/dvpn/deposit"
 )
 
 const (
@@ -63,6 +64,7 @@ var (
 		mint.ModuleName:           {supply.Minter},
 		distribution.ModuleName:   nil,
 		gov.ModuleName:            {supply.Burner},
+		deposit.ModuleName:        nil,
 	}
 )
 
@@ -193,7 +195,10 @@ func NewApp(logger log.Logger, db db.DB, tracer io.Writer, latest bool, invarChe
 		govRouter)
 	app.stakingKeeper = *stakingKeeper.SetHooks(
 		staking.NewMultiStakingHooks(app.distributionKeeper.Hooks(), app.slashingKeeper.Hooks()))
-	app.dVPNKeeper = dvpn.NewKeeper(app.cdc, keys[dvpn.StoreKey], app.bankKeeper)
+	app.dVPNKeeper = dvpn.NewKeeper(app.cdc,
+		keys[dvpn.StoreKey],
+		app.bankKeeper,
+		app.supplyKeeper)
 
 	app.manager = module.NewManager(
 		genaccounts.NewAppModule(app.accountKeeper),

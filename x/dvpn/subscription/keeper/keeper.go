@@ -12,6 +12,7 @@ type Keeper struct {
 	cdc      *codec.Codec
 	key      sdk.StoreKey
 	bank     expected.BankKeeper
+	deposit  expected.DepositKeeper
 	provider expected.ProviderKeeper
 	node     expected.NodeKeeper
 }
@@ -25,6 +26,10 @@ func NewKeeper(cdc *codec.Codec, key sdk.StoreKey) Keeper {
 
 func (k *Keeper) WithBankKeeper(keeper expected.BankKeeper) {
 	k.bank = keeper
+}
+
+func (k *Keeper) WithDepositKeeper(keeper expected.DepositKeeper) {
+	k.deposit = keeper
 }
 
 func (k *Keeper) WithProviderKeeper(keeper expected.ProviderKeeper) {

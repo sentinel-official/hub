@@ -25,6 +25,7 @@ const (
 	errorCodeInvalidPlanStatus
 	errorCodePriceDoesNotExist
 	errorCodeInvalidNodeStatus
+	errorCodePriceDoesNotExit
 )
 
 const (
@@ -40,6 +41,7 @@ const (
 	errorMsgInvalidPlanStatus    = "invalid plan status"
 	errorMsgPriceDoesNotExist    = "price does not exist"
 	errorMsgInvalidNodeStatus    = "invalid node status"
+	errorMsgPriceDoesNotExit     = "price does not exist"
 )
 
 func ErrorMarshal() sdk.Error {
@@ -96,4 +98,8 @@ func ErrorPriceDoesNotExist() sdk.Error {
 
 func ErrorInvalidNodeStatus() sdk.Error {
 	return sdk.NewError(Codespace, errorCodeInvalidNodeStatus, errorMsgInvalidNodeStatus)
+}
+
+func ErrorPriceDoesNotExit() sdk.Error {
+	return sdk.NewError(Codespace, errorCodePriceDoesNotExit, errorMsgPriceDoesNotExit)
 }

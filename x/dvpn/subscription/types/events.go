@@ -13,6 +13,7 @@ const (
 const (
 	AttributeKeyAddress = "address"
 	AttributeKeyID      = "id"
+	AttributeKeyNode    = "node"
 	AttributeKeyCount   = "count"
 	AttributeKeyStatus  = "status"
 	AttributeKeyPlan    = "plan"

@@ -23,6 +23,7 @@ const (
 	EventTypeSetSubscriptionsCount    = types.EventTypeSetSubscriptionsCount
 	AttributeKeyAddress               = types.AttributeKeyAddress
 	AttributeKeyID                    = types.AttributeKeyID
+	AttributeKeyNode                  = types.AttributeKeyNode
 	AttributeKeyCount                 = types.AttributeKeyCount
 	AttributeKeyStatus                = types.AttributeKeyStatus
 	AttributeKeyPlan                  = types.AttributeKeyPlan
@@ -56,6 +57,7 @@ var (
 	ErrorInvalidPlanStatus                = types.ErrorInvalidPlanStatus
 	ErrorPriceDoesNotExist                = types.ErrorPriceDoesNotExist
 	ErrorInvalidNodeStatus                = types.ErrorInvalidNodeStatus
+	ErrorPriceDoesNotExit                 = types.ErrorPriceDoesNotExit
 	NewGenesisState                       = types.NewGenesisState
 	DefaultGenesisState                   = types.DefaultGenesisState
 	PlanKey                               = types.PlanKey

@@ -8,14 +8,18 @@ import (
 	provider "github.com/sentinel-official/hub/x/dvpn/provider/types"
 )
 
+type BankKeeper interface {
+	SendCoins(ctx sdk.Context, from sdk.AccAddress, to sdk.AccAddress, amount sdk.Coins) sdk.Error
+}
+
+type DepositKeeper interface {
+	Add(ctx sdk.Context, address sdk.AccAddress, coins sdk.Coins) sdk.Error
+}
+
 type ProviderKeeper interface {
 	GetProvider(ctx sdk.Context, address hub.ProvAddress) (provider.Provider, bool)
 }
 
 type NodeKeeper interface {
 	GetNode(ctx sdk.Context, address hub.NodeAddress) (node.Node, bool)
-}
-
-type BankKeeper interface {
-	SendCoins(ctx sdk.Context, from sdk.AccAddress, to sdk.AccAddress, amount sdk.Coins) sdk.Error
 }

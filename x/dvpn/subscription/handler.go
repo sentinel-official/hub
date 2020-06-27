@@ -147,9 +147,6 @@ func handleStartPlanSubscription(ctx sdk.Context, k keeper.Keeper,
 		Plan:      plan.ID,
 		Duration:  plan.Duration,
 		ExpiresAt: ctx.BlockTime().Add(plan.Validity),
-		Node:      nil,
-		Price:     sdk.Coin{},
-		Deposit:   sdk.Coin{},
 		Bandwidth: plan.Bandwidth,
 		Status:    hub.StatusActive,
 		StatusAt:  ctx.BlockTime(),
@@ -183,6 +180,45 @@ func handleStartNodeSubscription(ctx sdk.Context, k keeper.Keeper,
 	if !node.Status.Equal(hub.StatusActive) {
 		return types.ErrorInvalidNodeStatus().Result()
 	}
+
+	if err := k.AddDeposit(ctx, from, deposit); err != nil {
+		return err.Result()
+	}
+
+	price, found := node.GetPriceForDenom(deposit.Denom)
+	if !found {
+		return types.ErrorPriceDoesNotExist().Result()
+	}
+
+	bandwidth, _ := node.BandwidthForCoin(deposit)
+	count := k.GetSubscriptionsCount(ctx)
+
+	subscription := types.Subscription{
+		ID:        count + 1,
+		Address:   from,
+		Node:      address,
+		Price:     price,
+		Deposit:   deposit,
+		Bandwidth: bandwidth,
+		Status:    hub.StatusActive,
+		StatusAt:  ctx.BlockTime(),
+	}
+
+	k.SetSubscription(ctx, subscription)
+	k.SetSubscriptionIDForAddress(ctx, subscription.Address, subscription.ID)
+	k.SetSubscriptionIDForNode(ctx, subscription.Node, subscription.ID)
+	ctx.EventManager().EmitEvent(sdk.NewEvent(
+		types.EventTypeSetSubscription,
+		sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", subscription.ID)),
+		sdk.NewAttribute(types.AttributeKeyNode, subscription.Node.String()),
+		sdk.NewAttribute(types.AttributeKeyAddress, subscription.Address.String()),
+	))
+
+	k.SetSubscriptionsCount(ctx, count+1)
+	ctx.EventManager().EmitEvent(sdk.NewEvent(
+		types.EventTypeSetSubscriptionsCount,
+		sdk.NewAttribute(types.AttributeKeyCount, fmt.Sprintf("%d", count+1)),
+	))
 
 	return sdk.Result{Events: ctx.EventManager().Events()}
 }

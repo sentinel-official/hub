@@ -12,17 +12,20 @@ type GenesisPlan struct {
 type GenesisPlans []GenesisPlan
 
 type GenesisState struct {
-	Plans GenesisPlans `json:"plans"`
+	Plans GenesisPlans  `json:"plans"`
+	List  Subscriptions `json:"list"`
 }
 
-func NewGenesisState(plans GenesisPlans) GenesisState {
+func NewGenesisState(plans GenesisPlans, list Subscriptions) GenesisState {
 	return GenesisState{
 		Plans: plans,
+		List:  list,
 	}
 }
 
 func DefaultGenesisState() GenesisState {
 	return GenesisState{
 		Plans: GenesisPlans{},
+		List:  Subscriptions{},
 	}
 }
