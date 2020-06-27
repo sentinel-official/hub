@@ -12,21 +12,25 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, state types.GenesisState) {
 		k.SetPlan(ctx, item.Plan)
 		k.SetPlanIDForProvider(ctx, item.Plan.Provider, item.Plan.ID)
 
-		for _, address := range item.Nodes {
-			k.SetNodeAddressForPlan(ctx, item.Plan.ID, address)
+		for _, node := range item.Nodes {
+			k.SetNodeAddressForPlan(ctx, item.Plan.ID, node)
 		}
 
 		k.SetPlansCount(ctx, k.GetPlansCount(ctx)+1)
 	}
 
 	for _, item := range state.List {
-		k.SetSubscription(ctx, item)
-		k.SetSubscriptionIDForAddress(ctx, item.Address, item.ID)
+		k.SetSubscription(ctx, item.Subscription)
 
-		if item.ID > 0 {
-			k.SetSubscriptionIDForPlan(ctx, item.Plan, item.ID)
+		for _, member := range item.Members {
+			k.SetSubscriptionIDForAddress(ctx, member, item.Subscription.ID)
+			k.SetAddressForSubscriptionID(ctx, item.Subscription.ID, member)
+		}
+
+		if item.Subscription.ID > 0 {
+			k.SetSubscriptionIDForPlan(ctx, item.Subscription.Plan, item.Subscription.ID)
 		} else {
-			k.SetSubscriptionIDForNode(ctx, item.Node, item.ID)
+			k.SetSubscriptionIDForNode(ctx, item.Subscription.Node, item.Subscription.ID)
 		}
 
 		k.SetSubscriptionsCount(ctx, k.GetSubscriptionsCount(ctx)+1)
@@ -35,7 +39,7 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, state types.GenesisState) {
 
 func ExportGenesis(ctx sdk.Context, k keeper.Keeper) types.GenesisState {
 	_plans := k.GetPlans(ctx)
-	subscriptions := k.GetSubscriptions(ctx)
+	_subscriptions := k.GetSubscriptions(ctx)
 
 	plans := make(types.GenesisPlans, 0, len(_plans))
 	for _, item := range _plans {
@@ -50,6 +54,14 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) types.GenesisState {
 		}
 
 		plans = append(plans, plan)
+	}
+
+	subscriptions := make(types.GenesisSubscriptions, 0, len(_subscriptions))
+	for _, item := range _subscriptions {
+		subscriptions = append(subscriptions, types.GenesisSubscription{
+			Subscription: item,
+			Members:      k.GetAddressesForSubscriptionID(ctx, item.ID),
+		})
 	}
 
 	return types.NewGenesisState(plans, subscriptions)
