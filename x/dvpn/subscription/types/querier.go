@@ -17,6 +17,7 @@ const (
 	QuerySubscriptionsForAddress = "query_subscriptions_for_address"
 	QuerySubscriptionsForPlan    = "query_subscriptions_for_plan"
 	QuerySubscriptionsForNode    = "query_subscriptions_for_node"
+	QueryMembersForSubscription  = "query_members_for_subscription"
 )
 
 type QueryPlanParams struct {
@@ -86,5 +87,15 @@ type QuerySubscriptionsForNodeParams struct {
 func NewQuerySubscriptionsForNodeParams(address hub.NodeAddress) QuerySubscriptionsForNodeParams {
 	return QuerySubscriptionsForNodeParams{
 		Address: address,
+	}
+}
+
+type QueryMembersForSubscriptionParams struct {
+	ID uint64 `json:"id"`
+}
+
+func NewQueryMembersForSubscriptionParams(id uint64) QueryMembersForSubscriptionParams {
+	return QueryMembersForSubscriptionParams{
+		ID: id,
 	}
 }

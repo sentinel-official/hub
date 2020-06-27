@@ -105,7 +105,7 @@ func (k Keeper) GetSubscriptionsForAddress(ctx sdk.Context, address sdk.AccAddre
 
 func (k Keeper) SetAddressForSubscriptionID(ctx sdk.Context, id uint64, address sdk.AccAddress) {
 	key := types.AddressForSubscriptionIDKey(id, address)
-	value := k.cdc.MustMarshalBinaryLengthPrefixed(id)
+	value := k.cdc.MustMarshalBinaryLengthPrefixed(address)
 
 	store := k.SubscriptionStore(ctx)
 	store.Set(key, value)

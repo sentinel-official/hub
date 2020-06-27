@@ -40,6 +40,7 @@ const (
 	QuerySubscriptionsForAddress          = types.QuerySubscriptionsForAddress
 	QuerySubscriptionsForPlan             = types.QuerySubscriptionsForPlan
 	QuerySubscriptionsForNode             = types.QuerySubscriptionsForNode
+	QueryMembersForSubscription           = types.QueryMembersForSubscription
 )
 
 var (
@@ -84,6 +85,8 @@ var (
 	NewMsgAddNodeForPlan                  = types.NewMsgAddNodeForPlan
 	NewMsgRemoveNodeForPlan               = types.NewMsgRemoveNodeForPlan
 	NewMsgStartSubscription               = types.NewMsgStartSubscription
+	NewMsgAddAddressForSubscription       = types.NewMsgAddAddressForSubscription
+	NewMsgRemoveAddressForSubscription    = types.NewMsgRemoveAddressForSubscription
 	NewMsgEndSubscription                 = types.NewMsgEndSubscription
 	NewQueryPlanParams                    = types.NewQueryPlanParams
 	NewQueryPlansForProviderParams        = types.NewQueryPlansForProviderParams
@@ -92,6 +95,7 @@ var (
 	NewQuerySubscriptionsForAddressParams = types.NewQuerySubscriptionsForAddressParams
 	NewQuerySubscriptionsForPlanParams    = types.NewQuerySubscriptionsForPlanParams
 	NewQuerySubscriptionsForNodeParams    = types.NewQuerySubscriptionsForNodeParams
+	NewQueryMembersForSubscriptionParams  = types.NewQueryMembersForSubscriptionParams
 	NewKeeper                             = keeper.NewKeeper
 	Querier                               = querier.Querier
 
@@ -108,6 +112,8 @@ var (
 type (
 	GenesisPlan                        = types.GenesisPlan
 	GenesisPlans                       = types.GenesisPlans
+	GenesisSubscription                = types.GenesisSubscription
+	GenesisSubscriptions               = types.GenesisSubscriptions
 	GenesisState                       = types.GenesisState
 	MsgAddPlan                         = types.MsgAddPlan
 	MsgSetPlanStatus                   = types.MsgSetPlanStatus
@@ -126,6 +132,7 @@ type (
 	QuerySubscriptionsForAddressParams = types.QuerySubscriptionsForAddressParams
 	QuerySubscriptionsForPlanParams    = types.QuerySubscriptionsForPlanParams
 	QuerySubscriptionsForNodeParams    = types.QuerySubscriptionsForNodeParams
+	QueryMembersForSubscriptionParams  = types.QueryMembersForSubscriptionParams
 	Subscription                       = types.Subscription
 	Subscriptions                      = types.Subscriptions
 	Keeper                             = keeper.Keeper

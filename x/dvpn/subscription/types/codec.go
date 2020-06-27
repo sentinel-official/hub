@@ -20,6 +20,9 @@ func RegisterCodec(cdc *codec.Codec) {
 	cdc.RegisterConcrete(MsgSetPlanStatus{}, "x/dvpn/subscription/MsgSetPlanStatus", nil)
 	cdc.RegisterConcrete(MsgAddNodeForPlan{}, "x/dvpn/subscription/MsgAddNodeForPlan", nil)
 	cdc.RegisterConcrete(MsgRemoveNodeForPlan{}, "x/dvpn/subscription/MsgRemoveNodeForPlan", nil)
+
 	cdc.RegisterConcrete(MsgStartSubscription{}, "x/dvpn/subscription/MsgStartSubscription", nil)
+	cdc.RegisterConcrete(MsgAddAddressForSubscription{}, "x/dvpn/subscription/MsgAddAddressForSubscription", nil)
+	cdc.RegisterConcrete(MsgRemoveAddressForSubscription{}, "x/dvpn/subscription/MsgRemoveAddressForSubscription", nil)
 	cdc.RegisterConcrete(MsgEndSubscription{}, "x/dvpn/subscription/MsgEndSubscription", nil)
 }

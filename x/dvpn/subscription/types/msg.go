@@ -14,6 +14,7 @@ var (
 	_ sdk.Msg = (*MsgSetPlanStatus)(nil)
 	_ sdk.Msg = (*MsgAddNodeForPlan)(nil)
 	_ sdk.Msg = (*MsgRemoveNodeForPlan)(nil)
+
 	_ sdk.Msg = (*MsgStartSubscription)(nil)
 	_ sdk.Msg = (*MsgAddAddressForSubscription)(nil)
 	_ sdk.Msg = (*MsgRemoveAddressForSubscription)(nil)
@@ -333,6 +334,14 @@ type MsgAddAddressForSubscription struct {
 	Address sdk.AccAddress `json:"address"`
 }
 
+func NewMsgAddAddressForSubscription(from sdk.AccAddress, id uint64, address sdk.AccAddress) MsgAddAddressForSubscription {
+	return MsgAddAddressForSubscription{
+		From:    from,
+		ID:      id,
+		Address: address,
+	}
+}
+
 func (m MsgAddAddressForSubscription) Route() string {
 	return RouterKey
 }
@@ -377,6 +386,14 @@ type MsgRemoveAddressForSubscription struct {
 	From    sdk.AccAddress `json:"from"`
 	ID      uint64         `json:"id"`
 	Address sdk.AccAddress `json:"address"`
+}
+
+func NewMsgRemoveAddressForSubscription(from sdk.AccAddress, id uint64, address sdk.AccAddress) MsgRemoveAddressForSubscription {
+	return MsgRemoveAddressForSubscription{
+		From:    from,
+		ID:      id,
+		Address: address,
+	}
 }
 
 func (m MsgRemoveAddressForSubscription) Route() string {

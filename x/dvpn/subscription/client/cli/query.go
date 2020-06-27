@@ -82,16 +82,34 @@ func queryPlansCmd(cdc *codec.Codec) *cobra.Command {
 }
 
 func querySubscriptionCmd(cdc *codec.Codec) *cobra.Command {
-	return &cobra.Command{
+	cmd := &cobra.Command{
 		Use:   "subscription",
 		Short: "Query subscription",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := context.NewCLIContext().WithCodec(cdc)
 
+			membersOnly, err := cmd.Flags().GetBool(flagMembersOnly)
+			if err != nil {
+				return err
+			}
+
 			id, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
+			}
+
+			if membersOnly {
+				members, err := common.QueryMembersForSubscription(ctx, id)
+				if err != nil {
+					return err
+				}
+
+				for _, member := range members {
+					fmt.Println(member.String())
+				}
+
+				return nil
 			}
 
 			subscription, err := common.QuerySubscription(ctx, id)
@@ -103,6 +121,9 @@ func querySubscriptionCmd(cdc *codec.Codec) *cobra.Command {
 			return nil
 		},
 	}
+
+	cmd.Flags().Bool(flagMembersOnly, false, "Show members only")
+	return cmd
 }
 
 func querySubscriptionsCmd(cdc *codec.Codec) *cobra.Command {

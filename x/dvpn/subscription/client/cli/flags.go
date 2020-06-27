@@ -10,4 +10,5 @@ const (
 	flagUpload      = "upload"
 	flagDownload    = "download"
 	flagDuration    = "duration"
+	flagMembersOnly = "members-only"
 )

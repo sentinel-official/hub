@@ -189,3 +189,27 @@ func QuerySubscriptionsForNode(ctx context.CLIContext, address hub.NodeAddress) 
 
 	return subscriptions, nil
 }
+
+func QueryMembersForSubscription(ctx context.CLIContext, id uint64) ([]sdk.AccAddress, error) {
+	params := types.NewQueryMembersForSubscriptionParams(id)
+	bytes, err := ctx.Codec.MarshalJSON(params)
+	if err != nil {
+		return nil, err
+	}
+
+	path := fmt.Sprintf("custom/%s/%s/%s", types.StoreKey, types.QuerierRoute, types.QueryMembersForSubscription)
+	res, _, err := ctx.QueryWithData(path, bytes)
+	if err != nil {
+		return nil, err
+	}
+	if res == nil {
+		return nil, fmt.Errorf("no subscriptions found")
+	}
+
+	var members []sdk.AccAddress
+	if err := ctx.Codec.UnmarshalJSON(res, &members); err != nil {
+		return nil, err
+	}
+
+	return members, nil
+}

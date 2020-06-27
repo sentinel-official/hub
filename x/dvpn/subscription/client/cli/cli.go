@@ -29,6 +29,8 @@ func GetTxCommands(cdc *codec.Codec) []*cobra.Command {
 		client.LineBreak,
 		txStartPlanSubscription(cdc),
 		txStartNodeSubscription(cdc),
+		txAddAddressForSubscription(cdc),
+		txRemoveAddressForSubscription(cdc),
 	)...)
 
 	return []*cobra.Command{cmd}

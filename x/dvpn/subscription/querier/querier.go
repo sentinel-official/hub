@@ -28,6 +28,8 @@ func Querier(ctx sdk.Context, path []string, req abci.RequestQuery, k keeper.Kee
 		return querySubscriptionsForPlan(ctx, req, k)
 	case types.QuerySubscriptionsForNode:
 		return querySubscriptionsForNode(ctx, req, k)
+	case types.QueryMembersForSubscription:
+		return queryMembersForSubscription(ctx, req, k)
 	default:
 		return nil, types.ErrorUnknownQueryType(path[0])
 	}

@@ -77,3 +77,17 @@ func querySubscriptionsForNode(ctx sdk.Context, req abci.RequestQuery, k keeper.
 
 	return res, nil
 }
+
+func queryMembersForSubscription(ctx sdk.Context, req abci.RequestQuery, k keeper.Keeper) ([]byte, sdk.Error) {
+	var params types.QueryMembersForSubscriptionParams
+	if err := types.ModuleCdc.UnmarshalJSON(req.Data, &params); err != nil {
+		return nil, types.ErrorUnmarshal()
+	}
+
+	res, err := types.ModuleCdc.MarshalJSON(k.GetAddressesForSubscriptionID(ctx, params.ID))
+	if err != nil {
+		return nil, types.ErrorMarshal()
+	}
+
+	return res, nil
+}
