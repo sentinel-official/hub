@@ -121,13 +121,6 @@ func HandleRemoveNodeForPlan(ctx sdk.Context, k keeper.Keeper, msg types.MsgRemo
 	return sdk.Result{Events: ctx.EventManager().Events()}
 }
 
-func HandleStartSubscription(ctx sdk.Context, k keeper.Keeper, msg types.MsgStartSubscription) sdk.Result {
-	if msg.ID > 0 {
-		return handleStartPlanSubscription(ctx, k, msg.From, msg.ID, msg.Denom)
-	}
-	return handleStartNodeSubscription(ctx, k, msg.From, msg.Address, msg.Deposit)
-}
-
 func handleStartPlanSubscription(ctx sdk.Context, k keeper.Keeper,
 	from sdk.AccAddress, id uint64, denom string) sdk.Result {
 	plan, found := k.GetPlan(ctx, id)
@@ -192,6 +185,13 @@ func handleStartNodeSubscription(ctx sdk.Context, k keeper.Keeper,
 	}
 
 	return sdk.Result{Events: ctx.EventManager().Events()}
+}
+
+func HandleStartSubscription(ctx sdk.Context, k keeper.Keeper, msg types.MsgStartSubscription) sdk.Result {
+	if msg.ID > 0 {
+		return handleStartPlanSubscription(ctx, k, msg.From, msg.ID, msg.Denom)
+	}
+	return handleStartNodeSubscription(ctx, k, msg.From, msg.Address, msg.Deposit)
 }
 
 func HandleEndSubscription(ctx sdk.Context, k keeper.Keeper, msg types.MsgEndSubscription) sdk.Result {
