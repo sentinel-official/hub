@@ -29,6 +29,8 @@ const (
 	errorCodeSubscriptionDoesNotExist
 	errorCodeInvalidSubscriptionStatus
 	errorCodeDuplicateAddress
+	errorCodeAddressWasNotAdded
+	errorCodeCanNotRemoveAddress
 )
 
 const (
@@ -48,6 +50,8 @@ const (
 	errorMsgSubscriptionDoesNotExist  = "subscription does not exist"
 	errorMsgInvalidSubscriptionStatus = "invalid subscription status"
 	errorMsgDuplicateAddress          = "duplicate address"
+	errorMsgAddressWasNotAdded        = "address was not added"
+	errorMsgCanNotRemoveAddress       = "can not remove address"
 )
 
 func ErrorMarshal() sdk.Error {
@@ -120,4 +124,12 @@ func ErrorInvalidSubscriptionStatus() sdk.Error {
 
 func ErrorDuplicateAddress() sdk.Error {
 	return sdk.NewError(Codespace, errorCodeDuplicateAddress, errorMsgDuplicateAddress)
+}
+
+func ErrorAddressWasNotAdded() sdk.Error {
+	return sdk.NewError(Codespace, errorCodeAddressWasNotAdded, errorMsgAddressWasNotAdded)
+}
+
+func ErrorCanNotRemoveAddress() sdk.Error {
+	return sdk.NewError(Codespace, errorCodeCanNotRemoveAddress, errorMsgCanNotRemoveAddress)
 }

@@ -33,6 +33,10 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 			return subscription.HandleRemoveNodeForPlan(ctx, k.Subscription, msg)
 		case subscription.MsgStartSubscription:
 			return subscription.HandleStartSubscription(ctx, k.Subscription, msg)
+		case subscription.MsgAddAddressForSubscription:
+			return subscription.HandleAddAddressForSubscription(ctx, k.Subscription, msg)
+		case subscription.MsgRemoveAddressForSubscription:
+			return subscription.HandleRemoveAddressForSubscription(ctx, k.Subscription, msg)
 		case subscription.MsgEndSubscription:
 			return subscription.HandleEndSubscription(ctx, k.Subscription, msg)
 		default:

@@ -79,6 +79,13 @@ func (k Keeper) HasSubscriptionIDForAddress(ctx sdk.Context, address sdk.AccAddr
 	return store.Has(key)
 }
 
+func (k Keeper) DeleteSubscriptionIDForAddress(ctx sdk.Context, address sdk.AccAddress, id uint64) {
+	key := types.SubscriptionIDForAddressKey(address, id)
+
+	store := k.SubscriptionStore(ctx)
+	store.Delete(key)
+}
+
 func (k Keeper) GetSubscriptionsForAddress(ctx sdk.Context, address sdk.AccAddress) (items types.Subscriptions) {
 	store := k.SubscriptionStore(ctx)
 
@@ -102,6 +109,13 @@ func (k Keeper) SetAddressForSubscriptionID(ctx sdk.Context, id uint64, address 
 
 	store := k.SubscriptionStore(ctx)
 	store.Set(key, value)
+}
+
+func (k Keeper) DeleteAddressForSubscriptionID(ctx sdk.Context, id uint64, address sdk.AccAddress) {
+	key := types.AddressForSubscriptionIDKey(id, address)
+
+	store := k.SubscriptionStore(ctx)
+	store.Delete(key)
 }
 
 func (k Keeper) GetAddressesForSubscriptionID(ctx sdk.Context, id uint64) (items []sdk.AccAddress) {

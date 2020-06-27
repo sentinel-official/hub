@@ -16,6 +16,7 @@ var (
 	_ sdk.Msg = (*MsgRemoveNodeForPlan)(nil)
 	_ sdk.Msg = (*MsgStartSubscription)(nil)
 	_ sdk.Msg = (*MsgAddAddressForSubscription)(nil)
+	_ sdk.Msg = (*MsgRemoveAddressForSubscription)(nil)
 	_ sdk.Msg = (*MsgEndSubscription)(nil)
 )
 
@@ -368,6 +369,52 @@ func (m MsgAddAddressForSubscription) GetSignBytes() []byte {
 }
 
 func (m MsgAddAddressForSubscription) GetSigners() []sdk.AccAddress {
+	return []sdk.AccAddress{m.From}
+}
+
+// MsgRemoveAddressForSubscription is for removing an address for subscription.
+type MsgRemoveAddressForSubscription struct {
+	From    sdk.AccAddress `json:"from"`
+	ID      uint64         `json:"id"`
+	Address sdk.AccAddress `json:"address"`
+}
+
+func (m MsgRemoveAddressForSubscription) Route() string {
+	return RouterKey
+}
+
+func (m MsgRemoveAddressForSubscription) Type() string {
+	return "remove_address_for_subscription"
+}
+
+func (m MsgRemoveAddressForSubscription) ValidateBasic() sdk.Error {
+	if m.From == nil || m.From.Empty() {
+		return ErrorInvalidField("from")
+	}
+
+	// ID shouldn't be zero
+	if m.ID == 0 {
+		return ErrorInvalidField("id")
+	}
+
+	// Address shouldn't be nil or empty
+	if m.Address == nil || m.Address.Empty() {
+		return ErrorInvalidField("address")
+	}
+
+	return nil
+}
+
+func (m MsgRemoveAddressForSubscription) GetSignBytes() []byte {
+	bytes, err := json.Marshal(m)
+	if err != nil {
+		panic(err)
+	}
+
+	return bytes
+}
+
+func (m MsgRemoveAddressForSubscription) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{m.From}
 }
 

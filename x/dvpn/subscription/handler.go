@@ -113,7 +113,7 @@ func HandleRemoveNodeForPlan(ctx sdk.Context, k keeper.Keeper, msg types.MsgRemo
 
 	k.DeleteNodeAddressForPlan(ctx, plan.ID, msg.Address)
 	ctx.EventManager().EmitEvent(sdk.NewEvent(
-		types.EventTypeDeleteNodeAddressForPlan,
+		types.EventTypeRemoveNodeAddressForPlan,
 		sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", plan.ID)),
 		sdk.NewAttribute(types.AttributeKeyAddress, msg.Address.String()),
 	))
@@ -253,6 +253,36 @@ func HandleAddAddressForSubscription(ctx sdk.Context, k keeper.Keeper, msg types
 	k.SetAddressForSubscriptionID(ctx, subscription.ID, msg.Address)
 	ctx.EventManager().EmitEvent(sdk.NewEvent(
 		types.EventTypeSetAddressForSubscription,
+		sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", subscription.ID)),
+		sdk.NewAttribute(types.AttributeKeyAddress, msg.Address.String()),
+	))
+
+	return sdk.Result{Events: ctx.EventManager().Events()}
+}
+
+func HandleRemoveAddressForSubscription(ctx sdk.Context, k keeper.Keeper, msg types.MsgRemoveAddressForSubscription) sdk.Result {
+	subscription, found := k.GetSubscription(ctx, msg.ID)
+	if !found {
+		return types.ErrorSubscriptionDoesNotExist().Result()
+	}
+	if !msg.From.Equals(subscription.Address) {
+		return types.ErrorUnauthorized().Result()
+	}
+	if msg.Address.Equals(subscription.Address) {
+		return types.ErrorCanNotRemoveAddress().Result()
+	}
+	if !subscription.Status.Equal(hub.StatusActive) {
+		return types.ErrorInvalidSubscriptionStatus().Result()
+	}
+
+	if !k.HasSubscriptionIDForAddress(ctx, msg.Address, subscription.ID) {
+		return types.ErrorAddressWasNotAdded().Result()
+	}
+
+	k.DeleteSubscriptionIDForAddress(ctx, msg.Address, subscription.ID)
+	k.DeleteAddressForSubscriptionID(ctx, subscription.ID, msg.Address)
+	ctx.EventManager().EmitEvent(sdk.NewEvent(
+		types.EventTypeRemoveAddressForSubscription,
 		sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", subscription.ID)),
 		sdk.NewAttribute(types.AttributeKeyAddress, msg.Address.String()),
 	))
