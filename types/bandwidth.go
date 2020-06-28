@@ -56,6 +56,14 @@ func (b Bandwidth) Add(v Bandwidth) Bandwidth {
 	return b
 }
 
+func (b Bandwidth) IsAllLTE(v Bandwidth) bool {
+	return b.Upload.LTE(v.Upload) && b.Download.LTE(v.Download)
+}
+
+func (b Bandwidth) IsAnyGT(v Bandwidth) bool {
+	return b.Upload.GT(v.Upload) || b.Download.GT(v.Download)
+}
+
 func (b Bandwidth) CeilTo(precision sdk.Int) Bandwidth {
 	v := NewBandwidth(
 		precision.Sub(sdk.NewIntFromBigInt(
