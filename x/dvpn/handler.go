@@ -6,6 +6,7 @@ import (
 	"github.com/sentinel-official/hub/x/dvpn/keeper"
 	"github.com/sentinel-official/hub/x/dvpn/node"
 	"github.com/sentinel-official/hub/x/dvpn/provider"
+	"github.com/sentinel-official/hub/x/dvpn/session"
 	"github.com/sentinel-official/hub/x/dvpn/subscription"
 	"github.com/sentinel-official/hub/x/dvpn/types"
 )
@@ -39,6 +40,8 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 			return subscription.HandleRemoveAddressForSubscription(ctx, k.Subscription, msg)
 		case subscription.MsgEndSubscription:
 			return subscription.HandleEndSubscription(ctx, k.Subscription, msg)
+		case session.MsgUpdateSession:
+			return session.HandleUpdateSession(ctx, k.Session, msg)
 		default:
 			return types.ErrorUnknownMsgType(msg.Type()).Result()
 		}

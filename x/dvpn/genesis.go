@@ -7,6 +7,7 @@ import (
 	"github.com/sentinel-official/hub/x/dvpn/keeper"
 	"github.com/sentinel-official/hub/x/dvpn/node"
 	"github.com/sentinel-official/hub/x/dvpn/provider"
+	"github.com/sentinel-official/hub/x/dvpn/session"
 	"github.com/sentinel-official/hub/x/dvpn/subscription"
 	"github.com/sentinel-official/hub/x/dvpn/types"
 )
@@ -16,6 +17,7 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, state types.GenesisState) {
 	provider.InitGenesis(ctx, k.Provider, state.Providers)
 	node.InitGenesis(ctx, k.Node, state.Nodes)
 	subscription.InitGenesis(ctx, k.Subscription, state.Subscription)
+	session.InitGenesis(ctx, k.Session, state.Sessions)
 }
 
 func ExportGenesis(ctx sdk.Context, k keeper.Keeper) types.GenesisState {
@@ -24,6 +26,7 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) types.GenesisState {
 		Providers:    provider.ExportGenesis(ctx, k.Provider),
 		Nodes:        node.ExportGenesis(ctx, k.Node),
 		Subscription: subscription.ExportGenesis(ctx, k.Subscription),
+		Sessions:     session.ExportGenesis(ctx, k.Session),
 	}
 }
 
@@ -38,6 +41,9 @@ func ValidateGenesis(state types.GenesisState) error {
 		return err
 	}
 	if err := subscription.ValidateGenesis(state.Subscription); err != nil {
+		return err
+	}
+	if err := session.ValidateGenesis(state.Sessions); err != nil {
 		return err
 	}
 

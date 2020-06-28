@@ -9,6 +9,7 @@ import (
 	"github.com/sentinel-official/hub/x/dvpn/deposit"
 	"github.com/sentinel-official/hub/x/dvpn/node"
 	"github.com/sentinel-official/hub/x/dvpn/provider"
+	"github.com/sentinel-official/hub/x/dvpn/session"
 	"github.com/sentinel-official/hub/x/dvpn/subscription"
 )
 
@@ -17,29 +18,34 @@ type Keeper struct {
 	Provider     provider.Keeper
 	Node         node.Keeper
 	Subscription subscription.Keeper
+	Session      session.Keeper
 }
 
 func NewKeeper(cdc *codec.Codec, key sdk.StoreKey,
 	bankKeeper bank.Keeper, supplyKeeper supply.Keeper) Keeper {
-	dk := deposit.NewKeeper(cdc, key)
-	pk := provider.NewKeeper(cdc, key)
-	nk := node.NewKeeper(cdc, key)
-	sk := subscription.NewKeeper(cdc, key)
+	depositKeeper := deposit.NewKeeper(cdc, key)
+	providerKeeper := provider.NewKeeper(cdc, key)
+	nodeKeeper := node.NewKeeper(cdc, key)
+	subscriptionKeeper := subscription.NewKeeper(cdc, key)
+	sessionKeeper := session.NewKeeper(cdc, key)
 
-	dk.WithSupplyKeeper(supplyKeeper)
+	depositKeeper.WithSupplyKeeper(supplyKeeper)
 
-	nk.WithProviderKeeper(&pk)
-	nk.WithSubscriptionKeeper(&sk)
+	nodeKeeper.WithProviderKeeper(&providerKeeper)
+	nodeKeeper.WithSubscriptionKeeper(&subscriptionKeeper)
 
-	sk.WithDepositKeeper(&dk)
-	sk.WithBankKeeper(bankKeeper)
-	sk.WithProviderKeeper(&pk)
-	sk.WithNodeKeeper(&nk)
+	subscriptionKeeper.WithDepositKeeper(&depositKeeper)
+	subscriptionKeeper.WithBankKeeper(bankKeeper)
+	subscriptionKeeper.WithProviderKeeper(&providerKeeper)
+	subscriptionKeeper.WithNodeKeeper(&nodeKeeper)
+
+	sessionKeeper.WithSubscriptionKeeper(&subscriptionKeeper)
 
 	return Keeper{
-		Deposit:      dk,
-		Provider:     pk,
-		Node:         nk,
-		Subscription: sk,
+		Deposit:      depositKeeper,
+		Provider:     providerKeeper,
+		Node:         nodeKeeper,
+		Subscription: subscriptionKeeper,
+		Session:      sessionKeeper,
 	}
 }
