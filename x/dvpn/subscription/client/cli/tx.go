@@ -207,7 +207,7 @@ func txStartNodeSubscription(cdc *codec.Codec) *cobra.Command {
 
 func txAddAddressForSubscription(cdc *codec.Codec) *cobra.Command {
 	return &cobra.Command{
-		Use:   "subscription-address-add",
+		Use:   "address-add",
 		Short: "Add an address for a subscription",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -232,7 +232,7 @@ func txAddAddressForSubscription(cdc *codec.Codec) *cobra.Command {
 
 func txRemoveAddressForSubscription(cdc *codec.Codec) *cobra.Command {
 	return &cobra.Command{
-		Use:   "subscription-address-remove",
+		Use:   "address-remove",
 		Short: "Remove an address for a subscription",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -250,6 +250,26 @@ func txRemoveAddressForSubscription(cdc *codec.Codec) *cobra.Command {
 			}
 
 			msg := types.NewMsgRemoveAddressForSubscription(ctx.FromAddress, id, address)
+			return utils.GenerateOrBroadcastMsgs(ctx, txb, []sdk.Msg{msg})
+		},
+	}
+}
+
+func txEndSubscription(cdc *codec.Codec) *cobra.Command {
+	return &cobra.Command{
+		Use:   "end",
+		Short: "End a subscription",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			txb := auth.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
+			ctx := context.NewCLIContext().WithCodec(cdc)
+
+			id, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			msg := types.NewMsgEndSubscription(ctx.FromAddress, id)
 			return utils.GenerateOrBroadcastMsgs(ctx, txb, []sdk.Msg{msg})
 		},
 	}

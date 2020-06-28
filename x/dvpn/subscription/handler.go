@@ -145,9 +145,7 @@ func startPlanSubscription(ctx sdk.Context, k keeper.Keeper,
 		ID:        count + 1,
 		Address:   from,
 		Plan:      plan.ID,
-		Duration:  plan.Duration,
 		ExpiresAt: ctx.BlockTime().Add(plan.Validity),
-		Bandwidth: plan.Bandwidth,
 		Status:    hub.StatusActive,
 		StatusAt:  ctx.BlockTime(),
 	}
@@ -191,18 +189,15 @@ func startNodeSubscription(ctx sdk.Context, k keeper.Keeper,
 		return types.ErrorPriceDoesNotExist().Result()
 	}
 
-	bandwidth, _ := node.BandwidthForCoin(deposit)
 	count := k.GetSubscriptionsCount(ctx)
-
 	subscription := types.Subscription{
-		ID:        count + 1,
-		Address:   from,
-		Node:      address,
-		Price:     price,
-		Deposit:   deposit,
-		Bandwidth: bandwidth,
-		Status:    hub.StatusActive,
-		StatusAt:  ctx.BlockTime(),
+		ID:       count + 1,
+		Address:  from,
+		Node:     address,
+		Price:    price,
+		Deposit:  deposit,
+		Status:   hub.StatusActive,
+		StatusAt: ctx.BlockTime(),
 	}
 
 	k.SetSubscription(ctx, subscription)
@@ -304,8 +299,10 @@ func HandleEndSubscription(ctx sdk.Context, k keeper.Keeper, msg types.MsgEndSub
 
 	if subscription.Node != nil {
 		amount := subscription.Deposit.Sub(subscription.Amount())
-		if err := k.SubtractDeposit(ctx, subscription.Address, amount); err != nil {
-			return err.Result()
+		if amount.IsPositive() {
+			if err := k.SubtractDeposit(ctx, subscription.Address, amount); err != nil {
+				return err.Result()
+			}
 		}
 	}
 

@@ -60,7 +60,12 @@ func (s Subscription) Amount() sdk.Coin {
 		Mul(s.Price.Amount).
 		Quo(hub.Gigabyte)
 
-	return sdk.NewCoin(s.Price.Denom, amount)
+	coin := sdk.NewCoin(s.Price.Denom, amount)
+	if coin.IsGTE(s.Deposit) {
+		return s.Deposit
+	}
+
+	return coin
 }
 
 type Subscriptions []Subscription
