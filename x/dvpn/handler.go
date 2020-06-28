@@ -5,6 +5,7 @@ import (
 
 	"github.com/sentinel-official/hub/x/dvpn/keeper"
 	"github.com/sentinel-official/hub/x/dvpn/node"
+	"github.com/sentinel-official/hub/x/dvpn/plan"
 	"github.com/sentinel-official/hub/x/dvpn/provider"
 	"github.com/sentinel-official/hub/x/dvpn/session"
 	"github.com/sentinel-official/hub/x/dvpn/subscription"
@@ -24,14 +25,14 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 			return node.HandleUpdateNode(ctx, k.Node, msg)
 		case node.MsgSetNodeStatus:
 			return node.HandleSetNodeStatus(ctx, k.Node, msg)
-		case subscription.MsgAddPlan:
-			return subscription.HandleAddPlan(ctx, k.Subscription, msg)
-		case subscription.MsgSetPlanStatus:
-			return subscription.HandleSetPlanStatus(ctx, k.Subscription, msg)
-		case subscription.MsgAddNodeForPlan:
-			return subscription.HandleAddNodeForPlan(ctx, k.Subscription, msg)
-		case subscription.MsgRemoveNodeForPlan:
-			return subscription.HandleRemoveNodeForPlan(ctx, k.Subscription, msg)
+		case plan.MsgAddPlan:
+			return plan.HandleAddPlan(ctx, k.Plan, msg)
+		case plan.MsgSetPlanStatus:
+			return plan.HandleSetPlanStatus(ctx, k.Plan, msg)
+		case plan.MsgAddNodeForPlan:
+			return plan.HandleAddNodeForPlan(ctx, k.Plan, msg)
+		case plan.MsgRemoveNodeForPlan:
+			return plan.HandleRemoveNodeForPlan(ctx, k.Plan, msg)
 		case subscription.MsgStartSubscription:
 			return subscription.HandleStartSubscription(ctx, k.Subscription, msg)
 		case subscription.MsgAddAddressForSubscription:

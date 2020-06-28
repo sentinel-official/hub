@@ -10,14 +10,6 @@ import (
 
 func Querier(ctx sdk.Context, path []string, req abci.RequestQuery, k keeper.Keeper) ([]byte, sdk.Error) {
 	switch path[0] {
-	case types.QueryPlan:
-		return queryPlan(ctx, req, k)
-	case types.QueryPlans:
-		return queryPlans(ctx, req, k)
-	case types.QueryPlansForProvider:
-		return queryPlansForProvider(ctx, req, k)
-	case types.QueryNodesForPlan:
-		return queryNodesForPlan(ctx, req, k)
 	case types.QuerySubscription:
 		return querySubscription(ctx, req, k)
 	case types.QuerySubscriptions:

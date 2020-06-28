@@ -7,7 +7,7 @@ import (
 
 	hub "github.com/sentinel-official/hub/types"
 	"github.com/sentinel-official/hub/x/dvpn/node/types"
-	subscription "github.com/sentinel-official/hub/x/dvpn/subscription/types"
+	plan "github.com/sentinel-official/hub/x/dvpn/plan/types"
 )
 
 func QueryNode(ctx context.CLIContext, address hub.NodeAddress) (*types.Node, error) {
@@ -77,15 +77,13 @@ func QueryNodesForProvider(ctx context.CLIContext, address hub.ProvAddress) (typ
 }
 
 func QueryNodesForPlan(ctx context.CLIContext, id uint64) (types.Nodes, error) {
-	params := subscription.NewQueryNodesForPlanParams(id)
+	params := plan.NewQueryNodesForPlanParams(id)
 	bytes, err := ctx.Codec.MarshalJSON(params)
 	if err != nil {
 		return nil, err
 	}
 
-	path := fmt.Sprintf("custom/%s/%s/%s",
-		subscription.StoreKey, subscription.QuerierRoute, subscription.QueryNodesForPlan)
-
+	path := fmt.Sprintf("custom/%s/%s/%s", plan.StoreKey, plan.QuerierRoute, plan.QueryNodesForPlan)
 	res, _, err := ctx.QueryWithData(path, bytes)
 	if err != nil {
 		return nil, err

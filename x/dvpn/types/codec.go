@@ -5,6 +5,7 @@ import (
 
 	"github.com/sentinel-official/hub/x/dvpn/deposit"
 	"github.com/sentinel-official/hub/x/dvpn/node"
+	"github.com/sentinel-official/hub/x/dvpn/plan"
 	"github.com/sentinel-official/hub/x/dvpn/provider"
 	"github.com/sentinel-official/hub/x/dvpn/session"
 	"github.com/sentinel-official/hub/x/dvpn/subscription"
@@ -25,6 +26,7 @@ func RegisterCodec(cdc *codec.Codec) {
 	deposit.RegisterCodec(cdc)
 	provider.RegisterCodec(cdc)
 	node.RegisterCodec(cdc)
+	plan.RegisterCodec(cdc)
 	subscription.RegisterCodec(cdc)
 	session.RegisterCodec(cdc)
 }

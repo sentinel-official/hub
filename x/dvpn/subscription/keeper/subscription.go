@@ -11,12 +11,12 @@ func (k Keeper) SetSubscriptionsCount(ctx sdk.Context, count uint64) {
 	key := types.SubscriptionsCountKey
 	value := k.cdc.MustMarshalBinaryLengthPrefixed(count)
 
-	store := k.SubscriptionStore(ctx)
+	store := k.Store(ctx)
 	store.Set(key, value)
 }
 
 func (k Keeper) GetSubscriptionsCount(ctx sdk.Context) (count uint64) {
-	store := k.SubscriptionStore(ctx)
+	store := k.Store(ctx)
 
 	key := types.SubscriptionsCountKey
 	value := store.Get(key)
@@ -32,12 +32,12 @@ func (k Keeper) SetSubscription(ctx sdk.Context, subscription types.Subscription
 	key := types.SubscriptionKey(subscription.ID)
 	value := k.cdc.MustMarshalBinaryLengthPrefixed(subscription)
 
-	store := k.SubscriptionStore(ctx)
+	store := k.Store(ctx)
 	store.Set(key, value)
 }
 
 func (k Keeper) GetSubscription(ctx sdk.Context, id uint64) (subscription types.Subscription, found bool) {
-	store := k.SubscriptionStore(ctx)
+	store := k.Store(ctx)
 
 	key := types.SubscriptionKey(id)
 	value := store.Get(key)
@@ -50,7 +50,7 @@ func (k Keeper) GetSubscription(ctx sdk.Context, id uint64) (subscription types.
 }
 
 func (k Keeper) GetSubscriptions(ctx sdk.Context) (items types.Subscriptions) {
-	store := k.SubscriptionStore(ctx)
+	store := k.Store(ctx)
 
 	iter := sdk.KVStorePrefixIterator(store, types.SubscriptionKeyPrefix)
 	defer iter.Close()
@@ -68,26 +68,26 @@ func (k Keeper) SetSubscriptionIDForAddress(ctx sdk.Context, address sdk.AccAddr
 	key := types.SubscriptionIDForAddressKey(address, id)
 	value := k.cdc.MustMarshalBinaryLengthPrefixed(id)
 
-	store := k.SubscriptionStore(ctx)
+	store := k.Store(ctx)
 	store.Set(key, value)
 }
 
 func (k Keeper) HasSubscriptionIDForAddress(ctx sdk.Context, address sdk.AccAddress, id uint64) bool {
 	key := types.SubscriptionIDForAddressKey(address, id)
 
-	store := k.SubscriptionStore(ctx)
+	store := k.Store(ctx)
 	return store.Has(key)
 }
 
 func (k Keeper) DeleteSubscriptionIDForAddress(ctx sdk.Context, address sdk.AccAddress, id uint64) {
 	key := types.SubscriptionIDForAddressKey(address, id)
 
-	store := k.SubscriptionStore(ctx)
+	store := k.Store(ctx)
 	store.Delete(key)
 }
 
 func (k Keeper) GetSubscriptionsForAddress(ctx sdk.Context, address sdk.AccAddress) (items types.Subscriptions) {
-	store := k.SubscriptionStore(ctx)
+	store := k.Store(ctx)
 
 	iter := sdk.KVStorePrefixIterator(store, types.SubscriptionIDForAddressKeyPrefix(address))
 	defer iter.Close()
@@ -107,26 +107,26 @@ func (k Keeper) SetAddressForSubscriptionID(ctx sdk.Context, id uint64, address 
 	key := types.AddressForSubscriptionIDKey(id, address)
 	value := k.cdc.MustMarshalBinaryLengthPrefixed(address)
 
-	store := k.SubscriptionStore(ctx)
+	store := k.Store(ctx)
 	store.Set(key, value)
 }
 
 func (k Keeper) HasAddressForSubscriptionID(ctx sdk.Context, id uint64, address sdk.AccAddress) bool {
 	key := types.AddressForSubscriptionIDKey(id, address)
 
-	store := k.SubscriptionStore(ctx)
+	store := k.Store(ctx)
 	return store.Has(key)
 }
 
 func (k Keeper) DeleteAddressForSubscriptionID(ctx sdk.Context, id uint64, address sdk.AccAddress) {
 	key := types.AddressForSubscriptionIDKey(id, address)
 
-	store := k.SubscriptionStore(ctx)
+	store := k.Store(ctx)
 	store.Delete(key)
 }
 
 func (k Keeper) GetAddressesForSubscriptionID(ctx sdk.Context, id uint64) (items []sdk.AccAddress) {
-	store := k.SubscriptionStore(ctx)
+	store := k.Store(ctx)
 
 	iter := sdk.KVStorePrefixIterator(store, types.AddressForSubscriptionIDKeyPrefix(id))
 	defer iter.Close()
@@ -144,12 +144,12 @@ func (k Keeper) SetSubscriptionIDForPlan(ctx sdk.Context, plan, id uint64) {
 	key := types.SubscriptionIDForPlanKey(plan, id)
 	value := k.cdc.MustMarshalBinaryLengthPrefixed(id)
 
-	store := k.SubscriptionStore(ctx)
+	store := k.Store(ctx)
 	store.Set(key, value)
 }
 
 func (k Keeper) GetSubscriptionsForPlan(ctx sdk.Context, plan uint64) (items types.Subscriptions) {
-	store := k.SubscriptionStore(ctx)
+	store := k.Store(ctx)
 
 	iter := sdk.KVStorePrefixIterator(store, sdk.Uint64ToBigEndian(plan))
 	defer iter.Close()
@@ -169,19 +169,19 @@ func (k Keeper) SetSubscriptionIDForNode(ctx sdk.Context, address hub.NodeAddres
 	key := types.SubscriptionIDForNodeKey(address, id)
 	value := k.cdc.MustMarshalBinaryLengthPrefixed(id)
 
-	store := k.SubscriptionStore(ctx)
+	store := k.Store(ctx)
 	store.Set(key, value)
 }
 
 func (k Keeper) HasSubscriptionIDForNode(ctx sdk.Context, address hub.NodeAddress, id uint64) bool {
 	key := types.SubscriptionIDForNodeKey(address, id)
 
-	store := k.SubscriptionStore(ctx)
+	store := k.Store(ctx)
 	return store.Has(key)
 }
 
 func (k Keeper) GetSubscriptionsForNode(ctx sdk.Context, address hub.NodeAddress) (items types.Subscriptions) {
-	store := k.SubscriptionStore(ctx)
+	store := k.Store(ctx)
 
 	iter := sdk.KVStorePrefixIterator(store, types.SubscriptionIDForNodeKeyPrefix(address))
 	defer iter.Close()

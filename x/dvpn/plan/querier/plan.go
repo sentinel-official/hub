@@ -4,8 +4,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	abci "github.com/tendermint/tendermint/abci/types"
 
-	"github.com/sentinel-official/hub/x/dvpn/subscription/keeper"
-	"github.com/sentinel-official/hub/x/dvpn/subscription/types"
+	"github.com/sentinel-official/hub/x/dvpn/plan/keeper"
+	"github.com/sentinel-official/hub/x/dvpn/plan/types"
 )
 
 func queryPlan(ctx sdk.Context, req abci.RequestQuery, k keeper.Keeper) ([]byte, sdk.Error) {

@@ -2,16 +2,7 @@ package types
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
-
-	hub "github.com/sentinel-official/hub/types"
 )
-
-type GenesisPlan struct {
-	Plan  Plan              `json:"_"`
-	Nodes []hub.NodeAddress `json:"nodes"`
-}
-
-type GenesisPlans []GenesisPlan
 
 type GenesisSubscription struct {
 	Subscription Subscription     `json:"_"`
@@ -20,21 +11,12 @@ type GenesisSubscription struct {
 
 type GenesisSubscriptions []GenesisSubscription
 
-type GenesisState struct {
-	Plans GenesisPlans         `json:"plans"`
-	List  GenesisSubscriptions `json:"list"`
-}
+type GenesisState = GenesisSubscriptions
 
-func NewGenesisState(plans GenesisPlans, list GenesisSubscriptions) GenesisState {
-	return GenesisState{
-		Plans: plans,
-		List:  list,
-	}
+func NewGenesisState(subscriptions GenesisSubscriptions) GenesisState {
+	return subscriptions
 }
 
 func DefaultGenesisState() GenesisState {
-	return GenesisState{
-		Plans: GenesisPlans{},
-		List:  GenesisSubscriptions{},
-	}
+	return GenesisState{}
 }

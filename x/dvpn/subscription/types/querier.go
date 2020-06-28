@@ -7,11 +7,6 @@ import (
 )
 
 const (
-	QueryPlan             = "query_plan"
-	QueryPlans            = "query_plans"
-	QueryPlansForProvider = "query_plans_for_provider"
-	QueryNodesForPlan     = "query_nodes_for_plan"
-
 	QuerySubscription            = "query_subscription"
 	QuerySubscriptions           = "query_subscriptions"
 	QuerySubscriptionsForAddress = "query_subscriptions_for_address"

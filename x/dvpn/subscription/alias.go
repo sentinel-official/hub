@@ -14,11 +14,6 @@ import (
 
 const (
 	Codespace                             = types.Codespace
-	EventTypeSetPlan                      = types.EventTypeSetPlan
-	EventTypeSetPlansCount                = types.EventTypeSetPlansCount
-	EventTypeSetPlanStatus                = types.EventTypeSetPlanStatus
-	EventTypeSetNodeAddressForPlan        = types.EventTypeSetNodeAddressForPlan
-	EventTypeRemoveNodeAddressForPlan     = types.EventTypeRemoveNodeAddressForPlan
 	EventTypeSetSubscription              = types.EventTypeSetSubscription
 	EventTypeSetSubscriptionsCount        = types.EventTypeSetSubscriptionsCount
 	EventTypeSetAddressForSubscription    = types.EventTypeSetAddressForSubscription
@@ -28,14 +23,9 @@ const (
 	AttributeKeyID                        = types.AttributeKeyID
 	AttributeKeyNode                      = types.AttributeKeyNode
 	AttributeKeyCount                     = types.AttributeKeyCount
-	AttributeKeyStatus                    = types.AttributeKeyStatus
 	AttributeKeyPlan                      = types.AttributeKeyPlan
 	ModuleName                            = types.ModuleName
 	QuerierRoute                          = types.QuerierRoute
-	QueryPlan                             = types.QueryPlan
-	QueryPlans                            = types.QueryPlans
-	QueryPlansForProvider                 = types.QueryPlansForProvider
-	QueryNodesForPlan                     = types.QueryNodesForPlan
 	QuerySubscription                     = types.QuerySubscription
 	QuerySubscriptions                    = types.QuerySubscriptions
 	QuerySubscriptionsForAddress          = types.QuerySubscriptionsForAddress
@@ -52,16 +42,12 @@ var (
 	ErrorUnknownMsgType                   = types.ErrorUnknownMsgType
 	ErrorUnknownQueryType                 = types.ErrorUnknownQueryType
 	ErrorInvalidField                     = types.ErrorInvalidField
-	ErrorProviderDoesNotExist             = types.ErrorProviderDoesNotExist
 	ErrorPlanDoesNotExist                 = types.ErrorPlanDoesNotExist
 	ErrorNodeDoesNotExist                 = types.ErrorNodeDoesNotExist
 	ErrorUnauthorized                     = types.ErrorUnauthorized
-	ErrorDuplicateNode                    = types.ErrorDuplicateNode
-	ErrorNodeWasNotAdded                  = types.ErrorNodeWasNotAdded
 	ErrorInvalidPlanStatus                = types.ErrorInvalidPlanStatus
 	ErrorPriceDoesNotExist                = types.ErrorPriceDoesNotExist
 	ErrorInvalidNodeStatus                = types.ErrorInvalidNodeStatus
-	ErrorPriceDoesNotExit                 = types.ErrorPriceDoesNotExit
 	ErrorSubscriptionDoesNotExist         = types.ErrorSubscriptionDoesNotExist
 	ErrorInvalidSubscriptionStatus        = types.ErrorInvalidSubscriptionStatus
 	ErrorDuplicateAddress                 = types.ErrorDuplicateAddress
@@ -69,9 +55,6 @@ var (
 	ErrorCanNotRemoveAddress              = types.ErrorCanNotRemoveAddress
 	NewGenesisState                       = types.NewGenesisState
 	DefaultGenesisState                   = types.DefaultGenesisState
-	PlanKey                               = types.PlanKey
-	PlanIDForProviderKey                  = types.PlanIDForProviderKey
-	NodeAddressForPlanKey                 = types.NodeAddressForPlanKey
 	SubscriptionKey                       = types.SubscriptionKey
 	SubscriptionIDForAddressKeyPrefix     = types.SubscriptionIDForAddressKeyPrefix
 	SubscriptionIDForAddressKey           = types.SubscriptionIDForAddressKey
@@ -81,10 +64,6 @@ var (
 	SubscriptionIDForNodeKey              = types.SubscriptionIDForNodeKey
 	AddressForSubscriptionIDKeyPrefix     = types.AddressForSubscriptionIDKeyPrefix
 	AddressForSubscriptionIDKey           = types.AddressForSubscriptionIDKey
-	NewMsgAddPlan                         = types.NewMsgAddPlan
-	NewMsgSetPlanStatus                   = types.NewMsgSetPlanStatus
-	NewMsgAddNodeForPlan                  = types.NewMsgAddNodeForPlan
-	NewMsgRemoveNodeForPlan               = types.NewMsgRemoveNodeForPlan
 	NewMsgStartSubscription               = types.NewMsgStartSubscription
 	NewMsgAddAddressForSubscription       = types.NewMsgAddAddressForSubscription
 	NewMsgRemoveAddressForSubscription    = types.NewMsgRemoveAddressForSubscription
@@ -104,28 +83,18 @@ var (
 	ModuleCdc             = types.ModuleCdc
 	RouterKey             = types.RouterKey
 	StoreKey              = types.StoreKey
-	PlansCountKey         = types.PlansCountKey
-	PlanKeyPrefix         = types.PlanKeyPrefix
 	SubscriptionsCountKey = types.SubscriptionsCountKey
 	SubscriptionKeyPrefix = types.SubscriptionKeyPrefix
 )
 
 type (
-	GenesisPlan                        = types.GenesisPlan
-	GenesisPlans                       = types.GenesisPlans
 	GenesisSubscription                = types.GenesisSubscription
 	GenesisSubscriptions               = types.GenesisSubscriptions
 	GenesisState                       = types.GenesisState
-	MsgAddPlan                         = types.MsgAddPlan
-	MsgSetPlanStatus                   = types.MsgSetPlanStatus
-	MsgAddNodeForPlan                  = types.MsgAddNodeForPlan
-	MsgRemoveNodeForPlan               = types.MsgRemoveNodeForPlan
 	MsgStartSubscription               = types.MsgStartSubscription
 	MsgAddAddressForSubscription       = types.MsgAddAddressForSubscription
 	MsgRemoveAddressForSubscription    = types.MsgRemoveAddressForSubscription
 	MsgEndSubscription                 = types.MsgEndSubscription
-	Plan                               = types.Plan
-	Plans                              = types.Plans
 	QueryPlanParams                    = types.QueryPlanParams
 	QueryPlansForProviderParams        = types.QueryPlansForProviderParams
 	QueryNodesForPlanParams            = types.QueryNodesForPlanParams

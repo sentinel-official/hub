@@ -8,8 +8,6 @@ import (
 
 func GetQueryCommands(cdc *codec.Codec) []*cobra.Command {
 	return client.GetCommands(
-		queryPlanCmd(cdc),
-		queryPlansCmd(cdc),
 		querySubscriptionCmd(cdc),
 		querySubscriptionsCmd(cdc),
 	)
@@ -22,11 +20,6 @@ func GetTxCommands(cdc *codec.Codec) []*cobra.Command {
 	}
 
 	cmd.AddCommand(client.PostCommands(
-		txAddPlanCmd(cdc),
-		txSetPlanStatusCmd(cdc),
-		txAddNodeForPlanCmd(cdc),
-		txRemoveNodeForPlanCmd(cdc),
-		client.LineBreak,
 		txStartPlanSubscription(cdc),
 		txStartNodeSubscription(cdc),
 		txAddAddressForSubscription(cdc),

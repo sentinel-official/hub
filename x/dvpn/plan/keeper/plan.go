@@ -5,19 +5,19 @@ import (
 
 	hub "github.com/sentinel-official/hub/types"
 	node "github.com/sentinel-official/hub/x/dvpn/node/types"
-	"github.com/sentinel-official/hub/x/dvpn/subscription/types"
+	"github.com/sentinel-official/hub/x/dvpn/plan/types"
 )
 
 func (k Keeper) SetPlansCount(ctx sdk.Context, count uint64) {
 	key := types.PlansCountKey
 	value := k.cdc.MustMarshalBinaryLengthPrefixed(count)
 
-	store := k.PlanStore(ctx)
+	store := k.Store(ctx)
 	store.Set(key, value)
 }
 
 func (k Keeper) GetPlansCount(ctx sdk.Context) (count uint64) {
-	store := k.PlanStore(ctx)
+	store := k.Store(ctx)
 
 	key := types.PlansCountKey
 	value := store.Get(key)
@@ -33,12 +33,12 @@ func (k Keeper) SetPlan(ctx sdk.Context, plan types.Plan) {
 	key := types.PlanKey(plan.ID)
 	value := k.cdc.MustMarshalBinaryLengthPrefixed(plan)
 
-	store := k.PlanStore(ctx)
+	store := k.Store(ctx)
 	store.Set(key, value)
 }
 
 func (k Keeper) GetPlan(ctx sdk.Context, id uint64) (plan types.Plan, found bool) {
-	store := k.PlanStore(ctx)
+	store := k.Store(ctx)
 
 	key := types.PlanKey(id)
 	value := store.Get(key)
@@ -51,7 +51,7 @@ func (k Keeper) GetPlan(ctx sdk.Context, id uint64) (plan types.Plan, found bool
 }
 
 func (k Keeper) GetPlans(ctx sdk.Context) (items types.Plans) {
-	store := k.PlanStore(ctx)
+	store := k.Store(ctx)
 
 	iter := sdk.KVStorePrefixIterator(store, types.PlanKeyPrefix)
 	defer iter.Close()
@@ -69,12 +69,12 @@ func (k Keeper) SetPlanIDForProvider(ctx sdk.Context, address hub.ProvAddress, i
 	key := types.PlanIDForProviderKey(address, id)
 	value := k.cdc.MustMarshalBinaryLengthPrefixed(id)
 
-	store := k.PlanStore(ctx)
+	store := k.Store(ctx)
 	store.Set(key, value)
 }
 
 func (k Keeper) GetPlansForProvider(ctx sdk.Context, address hub.ProvAddress) (items types.Plans) {
-	store := k.PlanStore(ctx)
+	store := k.Store(ctx)
 
 	iter := sdk.KVStorePrefixIterator(store, address.Bytes())
 	defer iter.Close()
@@ -94,26 +94,26 @@ func (k Keeper) SetNodeAddressForPlan(ctx sdk.Context, id uint64, address hub.No
 	key := types.NodeAddressForPlanKey(id, address)
 	value := k.cdc.MustMarshalBinaryLengthPrefixed(address)
 
-	store := k.PlanStore(ctx)
+	store := k.Store(ctx)
 	store.Set(key, value)
 }
 
 func (k Keeper) HasNodeAddressForPlan(ctx sdk.Context, id uint64, address hub.NodeAddress) bool {
-	store := k.PlanStore(ctx)
+	store := k.Store(ctx)
 
 	key := types.NodeAddressForPlanKey(id, address)
 	return store.Has(key)
 }
 
 func (k Keeper) DeleteNodeAddressForPlan(ctx sdk.Context, id uint64, address hub.NodeAddress) {
-	store := k.PlanStore(ctx)
+	store := k.Store(ctx)
 
 	key := types.NodeAddressForPlanKey(id, address)
 	store.Delete(key)
 }
 
 func (k Keeper) GetNodesForPlan(ctx sdk.Context, id uint64) (items node.Nodes) {
-	store := k.PlanStore(ctx)
+	store := k.Store(ctx)
 
 	iter := sdk.KVStorePrefixIterator(store, sdk.Uint64ToBigEndian(id))
 	defer iter.Close()

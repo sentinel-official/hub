@@ -11,6 +11,7 @@ import (
 type Keeper struct {
 	cdc          *codec.Codec
 	key          sdk.StoreKey
+	plan         expected.PlanKeeper
 	subscription expected.SubscriptionKeeper
 }
 
@@ -19,6 +20,10 @@ func NewKeeper(cdc *codec.Codec, key sdk.StoreKey) Keeper {
 		cdc: cdc,
 		key: key,
 	}
+}
+
+func (k *Keeper) WithPlanKeeper(keeper expected.PlanKeeper) {
+	k.plan = keeper
 }
 
 func (k *Keeper) WithSubscriptionKeeper(keeper expected.SubscriptionKeeper) {

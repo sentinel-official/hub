@@ -12,7 +12,7 @@ var (
 	_ sdk.Msg = (*MsgUpdateSession)(nil)
 )
 
-// MsgUpdateSession is for updating the session of a plan
+// MsgUpdateSession is for updating the session of a plan.
 type MsgUpdateSession struct {
 	From         hub.NodeAddress `json:"from"`
 	Subscription uint64          `json:"subscription"`

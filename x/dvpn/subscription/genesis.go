@@ -8,18 +8,7 @@ import (
 )
 
 func InitGenesis(ctx sdk.Context, k keeper.Keeper, state types.GenesisState) {
-	for _, item := range state.Plans {
-		k.SetPlan(ctx, item.Plan)
-		k.SetPlanIDForProvider(ctx, item.Plan.Provider, item.Plan.ID)
-
-		for _, node := range item.Nodes {
-			k.SetNodeAddressForPlan(ctx, item.Plan.ID, node)
-		}
-
-		k.SetPlansCount(ctx, k.GetPlansCount(ctx)+1)
-	}
-
-	for _, item := range state.List {
+	for _, item := range state {
 		k.SetSubscription(ctx, item.Subscription)
 
 		for _, member := range item.Members {
@@ -38,23 +27,7 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, state types.GenesisState) {
 }
 
 func ExportGenesis(ctx sdk.Context, k keeper.Keeper) types.GenesisState {
-	_plans := k.GetPlans(ctx)
 	_subscriptions := k.GetSubscriptions(ctx)
-
-	plans := make(types.GenesisPlans, 0, len(_plans))
-	for _, item := range _plans {
-		plan := types.GenesisPlan{
-			Plan:  item,
-			Nodes: nil,
-		}
-
-		nodes := k.GetNodesForPlan(ctx, item.ID)
-		for _, node := range nodes {
-			plan.Nodes = append(plan.Nodes, node.Address)
-		}
-
-		plans = append(plans, plan)
-	}
 
 	subscriptions := make(types.GenesisSubscriptions, 0, len(_subscriptions))
 	for _, item := range _subscriptions {
@@ -64,7 +37,7 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) types.GenesisState {
 		})
 	}
 
-	return types.NewGenesisState(plans, subscriptions)
+	return types.NewGenesisState(subscriptions)
 }
 
 func ValidateGenesis(state types.GenesisState) error {

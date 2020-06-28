@@ -9,10 +9,10 @@ import (
 )
 
 type Keeper struct {
-	cdc          *codec.Codec
-	key          sdk.StoreKey
-	provider     expected.ProviderKeeper
-	subscription expected.SubscriptionKeeper
+	cdc      *codec.Codec
+	key      sdk.StoreKey
+	provider expected.ProviderKeeper
+	plan     expected.PlanKeeper
 }
 
 func NewKeeper(cdc *codec.Codec, key sdk.StoreKey) Keeper {
@@ -26,8 +26,8 @@ func (k *Keeper) WithProviderKeeper(keeper expected.ProviderKeeper) {
 	k.provider = keeper
 }
 
-func (k *Keeper) WithSubscriptionKeeper(keeper expected.SubscriptionKeeper) {
-	k.subscription = keeper
+func (k *Keeper) WithPlanKeeper(keeper expected.PlanKeeper) {
+	k.plan = keeper
 }
 
 func (k Keeper) Store(ctx sdk.Context) sdk.KVStore {

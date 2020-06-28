@@ -47,6 +47,7 @@ var (
 	DefaultGenesisState                   = types.DefaultGenesisState
 	SessionKey                            = types.SessionKey
 	ActiveSessionIDKey                    = types.ActiveSessionIDKey
+	NewMsgUpdateSession                   = types.NewMsgUpdateSession
 	NewQuerySessionParams                 = types.NewQuerySessionParams
 	NewQuerySessionsForSubscriptionParams = types.NewQuerySessionsForSubscriptionParams
 	NewQuerySessionsForNodeParams         = types.NewQuerySessionsForNodeParams
