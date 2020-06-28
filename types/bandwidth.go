@@ -2,6 +2,7 @@ package types
 
 import (
 	"fmt"
+	"math/big"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
@@ -24,24 +25,53 @@ func NewBandwidth(upload, download sdk.Int) Bandwidth {
 	}
 }
 
-func (n Bandwidth) IsAnyZero() bool {
-	return n.Upload.IsZero() || n.Download.IsZero()
+func (b Bandwidth) String() string {
+	return fmt.Sprintf("%s↑, %s↓ bytes", b.Upload, b.Download)
 }
 
-func (n Bandwidth) IsAllZero() bool {
-	return n.Upload.IsZero() && n.Download.IsZero()
+func (b Bandwidth) IsAnyZero() bool {
+	return b.Upload.IsZero() || b.Download.IsZero()
 }
 
-func (n Bandwidth) IsAnyNegative() bool {
-	return n.Upload.IsNegative() || n.Download.IsNegative()
+func (b Bandwidth) IsAllZero() bool {
+	return b.Upload.IsZero() && b.Download.IsZero()
 }
 
-func (n Bandwidth) IsValid() bool {
-	return !n.IsAnyNegative() && !n.IsAnyZero()
+func (b Bandwidth) IsAnyNegative() bool {
+	return b.Upload.IsNegative() || b.Download.IsNegative()
 }
 
-func (n Bandwidth) String() string {
-	return fmt.Sprintf("%s↑, %s↓ bytes", n.Upload, n.Download)
+func (b Bandwidth) IsValid() bool {
+	return !b.IsAnyNegative() && !b.IsAnyZero()
+}
+
+func (b Bandwidth) Sum() sdk.Int {
+	return b.Upload.Add(b.Download)
+}
+
+func (b Bandwidth) Add(v Bandwidth) Bandwidth {
+	b.Upload = b.Upload.Add(v.Upload)
+	b.Download = b.Download.Add(v.Download)
+
+	return b
+}
+
+func (b Bandwidth) CeilTo(precision sdk.Int) Bandwidth {
+	v := NewBandwidth(
+		precision.Sub(sdk.NewIntFromBigInt(
+			big.NewInt(0).Rem(b.Upload.BigInt(), precision.BigInt()))),
+		precision.Sub(sdk.NewIntFromBigInt(
+			big.NewInt(0).Rem(b.Download.BigInt(), precision.BigInt()))),
+	)
+
+	if v.Upload.Equal(precision) {
+		v.Upload = sdk.NewInt(0)
+	}
+	if v.Download.Equal(precision) {
+		v.Download = sdk.NewInt(0)
+	}
+
+	return b.Add(v)
 }
 
 func NewBandwidthFromInt64(upload, download int64) Bandwidth {

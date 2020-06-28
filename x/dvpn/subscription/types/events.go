@@ -10,6 +10,7 @@ const (
 	EventTypeSetSubscriptionsCount        = "set_subscriptions_count"
 	EventTypeSetAddressForSubscription    = "set_address_for_subscription"
 	EventTypeRemoveAddressForSubscription = "remove_address_for_subscription"
+	EventTypeEndSubscription              = "end_subscription"
 )
 
 const (

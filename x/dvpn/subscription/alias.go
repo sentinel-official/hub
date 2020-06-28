@@ -23,6 +23,7 @@ const (
 	EventTypeSetSubscriptionsCount        = types.EventTypeSetSubscriptionsCount
 	EventTypeSetAddressForSubscription    = types.EventTypeSetAddressForSubscription
 	EventTypeRemoveAddressForSubscription = types.EventTypeRemoveAddressForSubscription
+	EventTypeEndSubscription              = types.EventTypeEndSubscription
 	AttributeKeyAddress                   = types.AttributeKeyAddress
 	AttributeKeyID                        = types.AttributeKeyID
 	AttributeKeyNode                      = types.AttributeKeyNode

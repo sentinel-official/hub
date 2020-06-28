@@ -103,7 +103,10 @@ func (n Node) BandwidthForCoin(coin sdk.Coin) (hub.Bandwidth, error) {
 		return hub.Bandwidth{}, fmt.Errorf("price does not exist")
 	}
 
-	bytes := coin.Amount.Mul(hub.Gigabyte).Quo(price.Amount)
+	bytes := coin.Amount.
+		Mul(hub.Gigabyte.QuoRaw(2)).
+		Quo(price.Amount)
+
 	return hub.NewBandwidth(bytes, bytes), nil
 }
 

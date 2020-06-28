@@ -291,5 +291,32 @@ func HandleRemoveAddressForSubscription(ctx sdk.Context, k keeper.Keeper, msg ty
 }
 
 func HandleEndSubscription(ctx sdk.Context, k keeper.Keeper, msg types.MsgEndSubscription) sdk.Result {
+	subscription, found := k.GetSubscription(ctx, msg.ID)
+	if !found {
+		return types.ErrorSubscriptionDoesNotExist().Result()
+	}
+	if !msg.From.Equals(subscription.Address) {
+		return types.ErrorUnauthorized().Result()
+	}
+	if !subscription.Status.Equal(hub.StatusActive) {
+		return types.ErrorInvalidSubscriptionStatus().Result()
+	}
+
+	if subscription.Node != nil {
+		amount := subscription.Deposit.Sub(subscription.Amount())
+		if err := k.SubtractDeposit(ctx, subscription.Address, amount); err != nil {
+			return err.Result()
+		}
+	}
+
+	subscription.Status = hub.StatusInactive
+	subscription.StatusAt = ctx.BlockTime()
+
+	k.SetSubscription(ctx, subscription)
+	ctx.EventManager().EmitEvent(sdk.NewEvent(
+		types.EventTypeEndSubscription,
+		sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", subscription.ID)),
+	))
+
 	return sdk.Result{Events: ctx.EventManager().Events()}
 }

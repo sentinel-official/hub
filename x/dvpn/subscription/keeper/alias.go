@@ -23,3 +23,7 @@ func (k Keeper) SendCoin(ctx sdk.Context, from sdk.AccAddress, to sdk.AccAddress
 func (k Keeper) AddDeposit(ctx sdk.Context, address sdk.AccAddress, coin sdk.Coin) sdk.Error {
 	return k.deposit.Add(ctx, address, sdk.Coins{coin})
 }
+
+func (k Keeper) SubtractDeposit(ctx sdk.Context, address sdk.AccAddress, coin sdk.Coin) sdk.Error {
+	return k.deposit.Subtract(ctx, address, sdk.Coins{coin})
+}

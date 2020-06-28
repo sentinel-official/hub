@@ -15,14 +15,14 @@ type Subscription struct {
 	Address sdk.AccAddress `json:"address"`
 
 	Plan      uint64        `json:"plan,omitempty"`
-	Duration  time.Duration `json:"duration,omitempty"` // Remaining duration
+	Duration  time.Duration `json:"duration,omitempty"`
 	ExpiresAt time.Time     `json:"expires_at,omitempty"`
 
 	Node    hub.NodeAddress `json:"node,omitempty"`
 	Price   sdk.Coin        `json:"price,omitempty"`
 	Deposit sdk.Coin        `json:"deposit,omitempty"`
 
-	Bandwidth hub.Bandwidth `json:"bandwidth"` // Remaining bandwidth
+	Bandwidth hub.Bandwidth `json:"bandwidth"`
 	Status    hub.Status    `json:"status"`
 	StatusAt  time.Time     `json:"status_at"`
 }
@@ -51,6 +51,16 @@ Bandwidth: %s
 Status:    %s
 Status at: %s
 `), s.ID, s.Address, s.Node, s.Price, s.Deposit, s.Bandwidth, s.Status, s.StatusAt)
+}
+
+func (s Subscription) Amount() sdk.Coin {
+	amount := s.Bandwidth.
+		CeilTo(hub.Gigabyte.Quo(s.Price.Amount)).
+		Sum().
+		Mul(s.Price.Amount).
+		Quo(hub.Gigabyte)
+
+	return sdk.NewCoin(s.Price.Denom, amount)
 }
 
 type Subscriptions []Subscription

@@ -14,6 +14,7 @@ type BankKeeper interface {
 
 type DepositKeeper interface {
 	Add(ctx sdk.Context, address sdk.AccAddress, coins sdk.Coins) sdk.Error
+	Subtract(ctx sdk.Context, address sdk.AccAddress, coins sdk.Coins) sdk.Error
 }
 
 type ProviderKeeper interface {
