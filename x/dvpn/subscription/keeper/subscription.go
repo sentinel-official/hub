@@ -18,7 +18,7 @@ func (k Keeper) SetSubscriptionsCount(ctx sdk.Context, count uint64) {
 func (k Keeper) GetSubscriptionsCount(ctx sdk.Context) (count uint64) {
 	store := k.SubscriptionStore(ctx)
 
-	key := types.PlansCountKey
+	key := types.SubscriptionsCountKey
 	value := store.Get(key)
 	if value == nil {
 		return 0
@@ -29,7 +29,7 @@ func (k Keeper) GetSubscriptionsCount(ctx sdk.Context) (count uint64) {
 }
 
 func (k Keeper) SetSubscription(ctx sdk.Context, subscription types.Subscription) {
-	key := types.PlanKey(subscription.ID)
+	key := types.SubscriptionKey(subscription.ID)
 	value := k.cdc.MustMarshalBinaryLengthPrefixed(subscription)
 
 	store := k.SubscriptionStore(ctx)
@@ -52,7 +52,7 @@ func (k Keeper) GetSubscription(ctx sdk.Context, id uint64) (subscription types.
 func (k Keeper) GetSubscriptions(ctx sdk.Context) (items types.Subscriptions) {
 	store := k.SubscriptionStore(ctx)
 
-	iter := sdk.KVStorePrefixIterator(store, types.PlanKeyPrefix)
+	iter := sdk.KVStorePrefixIterator(store, types.SubscriptionKeyPrefix)
 	defer iter.Close()
 
 	for ; iter.Valid(); iter.Next() {
@@ -111,6 +111,13 @@ func (k Keeper) SetAddressForSubscriptionID(ctx sdk.Context, id uint64, address 
 	store.Set(key, value)
 }
 
+func (k Keeper) HasAddressForSubscriptionID(ctx sdk.Context, id uint64, address sdk.AccAddress) bool {
+	key := types.AddressForSubscriptionIDKey(id, address)
+
+	store := k.SubscriptionStore(ctx)
+	return store.Has(key)
+}
+
 func (k Keeper) DeleteAddressForSubscriptionID(ctx sdk.Context, id uint64, address sdk.AccAddress) {
 	key := types.AddressForSubscriptionIDKey(id, address)
 
@@ -164,6 +171,13 @@ func (k Keeper) SetSubscriptionIDForNode(ctx sdk.Context, address hub.NodeAddres
 
 	store := k.SubscriptionStore(ctx)
 	store.Set(key, value)
+}
+
+func (k Keeper) HasSubscriptionIDForNode(ctx sdk.Context, address hub.NodeAddress, id uint64) bool {
+	key := types.SubscriptionIDForNodeKey(address, id)
+
+	store := k.SubscriptionStore(ctx)
+	return store.Has(key)
 }
 
 func (k Keeper) GetSubscriptionsForNode(ctx sdk.Context, address hub.NodeAddress) (items types.Subscriptions) {

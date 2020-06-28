@@ -142,12 +142,14 @@ func startPlanSubscription(ctx sdk.Context, k keeper.Keeper,
 
 	count := k.GetSubscriptionsCount(ctx)
 	subscription := types.Subscription{
-		ID:        count + 1,
-		Address:   from,
-		Plan:      plan.ID,
-		ExpiresAt: ctx.BlockTime().Add(plan.Validity),
-		Status:    hub.StatusActive,
-		StatusAt:  ctx.BlockTime(),
+		ID:             count + 1,
+		Address:        from,
+		Plan:           plan.ID,
+		ExpiresAt:      ctx.BlockTime().Add(plan.Validity),
+		Bandwidth:      hub.NewBandwidthFromInt64(0, 0),
+		TotalBandwidth: plan.Bandwidth,
+		Status:         hub.StatusActive,
+		StatusAt:       ctx.BlockTime(),
 	}
 
 	k.SetSubscription(ctx, subscription)
@@ -189,15 +191,19 @@ func startNodeSubscription(ctx sdk.Context, k keeper.Keeper,
 		return types.ErrorPriceDoesNotExist().Result()
 	}
 
+	bandwidth, _ := node.BandwidthForCoin(deposit)
+
 	count := k.GetSubscriptionsCount(ctx)
 	subscription := types.Subscription{
-		ID:       count + 1,
-		Address:  from,
-		Node:     address,
-		Price:    price,
-		Deposit:  deposit,
-		Status:   hub.StatusActive,
-		StatusAt: ctx.BlockTime(),
+		ID:             count + 1,
+		Address:        from,
+		Node:           address,
+		Price:          price,
+		Deposit:        deposit,
+		Bandwidth:      hub.NewBandwidthFromInt64(0, 0),
+		TotalBandwidth: bandwidth,
+		Status:         hub.StatusActive,
+		StatusAt:       ctx.BlockTime(),
 	}
 
 	k.SetSubscription(ctx, subscription)

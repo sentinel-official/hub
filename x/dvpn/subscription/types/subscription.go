@@ -22,35 +22,38 @@ type Subscription struct {
 	Price   sdk.Coin        `json:"price,omitempty"`
 	Deposit sdk.Coin        `json:"deposit,omitempty"`
 
-	Bandwidth hub.Bandwidth `json:"bandwidth"`
-	Status    hub.Status    `json:"status"`
-	StatusAt  time.Time     `json:"status_at"`
+	Bandwidth      hub.Bandwidth `json:"bandwidth"`
+	TotalBandwidth hub.Bandwidth `json:"total_bandwidth"`
+	Status         hub.Status    `json:"status"`
+	StatusAt       time.Time     `json:"status_at"`
 }
 
 func (s Subscription) String() string {
 	if s.Plan > 0 {
 		return fmt.Sprintf(strings.TrimSpace(`
-ID:         %d
-Address:    %s
-Plan:       %d
-Bandwidth:  %s
-Duration:   %s
-Expires at: %s
-Status:     %s
-Status at:  %s
-`), s.ID, s.Address, s.Plan, s.Bandwidth, s.Duration, s.ExpiresAt, s.Status, s.StatusAt)
+ID:              %d
+Address:         %s
+Plan:            %d
+Duration:        %s
+Bandwidth:       %s
+Total bandwidth: %s
+Expires at:      %s
+Status:          %s
+Status at:       %s
+`), s.ID, s.Address, s.Plan, s.Duration, s.Bandwidth, s.TotalBandwidth, s.ExpiresAt, s.Status, s.StatusAt)
 	}
 
 	return fmt.Sprintf(strings.TrimSpace(`
-ID:        %d
-Address:   %s
-Node:      %s
-Price:     %s
-Deposit:   %s
-Bandwidth: %s
-Status:    %s
-Status at: %s
-`), s.ID, s.Address, s.Node, s.Price, s.Deposit, s.Bandwidth, s.Status, s.StatusAt)
+ID:              %d
+Address:         %s
+Node:            %s
+Price:           %s
+Deposit:         %s
+Bandwidth:       %s
+Total bandwidth: %s
+Status:          %s
+Status at:       %s
+`), s.ID, s.Address, s.Node, s.Price, s.Deposit, s.Bandwidth, s.TotalBandwidth, s.Status, s.StatusAt)
 }
 
 func (s Subscription) Amount() sdk.Coin {
