@@ -20,7 +20,7 @@ func startPlanSubscription(ctx sdk.Context, k keeper.Keeper,
 		return types.ErrorInvalidPlanStatus().Result()
 	}
 
-	price, found := plan.GetPriceForDenom(denom)
+	price, found := plan.PriceForDenom(denom)
 	if !found {
 		return types.ErrorPriceDoesNotExist().Result()
 	}
@@ -34,6 +34,8 @@ func startPlanSubscription(ctx sdk.Context, k keeper.Keeper,
 		ID:             count + 1,
 		Address:        from,
 		Plan:           plan.ID,
+		Duration:       0,
+		TotalDuration:  plan.Duration,
 		ExpiresAt:      ctx.BlockTime().Add(plan.Validity),
 		Bandwidth:      hub.NewBandwidthFromInt64(0, 0),
 		TotalBandwidth: plan.Bandwidth,
@@ -42,9 +44,9 @@ func startPlanSubscription(ctx sdk.Context, k keeper.Keeper,
 	}
 
 	k.SetSubscription(ctx, subscription)
-	k.SetSubscriptionIDForAddress(ctx, subscription.Address, subscription.ID)
-	k.SetAddressForSubscriptionID(ctx, subscription.ID, subscription.Address)
-	k.SetSubscriptionIDForPlan(ctx, subscription.Plan, subscription.ID)
+	k.SetSubscriptionForAddress(ctx, subscription.Address, subscription.ID)
+	k.SetMemberForSubscription(ctx, subscription.ID, subscription.Address)
+	k.SetSubscriptionForPlan(ctx, subscription.Plan, subscription.ID)
 	ctx.EventManager().EmitEvent(sdk.NewEvent(
 		types.EventTypeSetSubscription,
 		sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", subscription.ID)),
@@ -75,7 +77,7 @@ func startNodeSubscription(ctx sdk.Context, k keeper.Keeper,
 		return err.Result()
 	}
 
-	price, found := node.GetPriceForDenom(deposit.Denom)
+	price, found := node.PriceForDenom(deposit.Denom)
 	if !found {
 		return types.ErrorPriceDoesNotExist().Result()
 	}
@@ -96,9 +98,9 @@ func startNodeSubscription(ctx sdk.Context, k keeper.Keeper,
 	}
 
 	k.SetSubscription(ctx, subscription)
-	k.SetSubscriptionIDForAddress(ctx, subscription.Address, subscription.ID)
-	k.SetAddressForSubscriptionID(ctx, subscription.ID, subscription.Address)
-	k.SetSubscriptionIDForNode(ctx, subscription.Node, subscription.ID)
+	k.SetSubscriptionForAddress(ctx, subscription.Address, subscription.ID)
+	k.SetMemberForSubscription(ctx, subscription.ID, subscription.Address)
+	k.SetSubscriptionForNode(ctx, subscription.Node, subscription.ID)
 	ctx.EventManager().EmitEvent(sdk.NewEvent(
 		types.EventTypeSetSubscription,
 		sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", subscription.ID)),
@@ -116,11 +118,11 @@ func startNodeSubscription(ctx sdk.Context, k keeper.Keeper,
 }
 
 func HandleStartSubscription(ctx sdk.Context, k keeper.Keeper, msg types.MsgStartSubscription) sdk.Result {
-	if msg.ID > 0 {
-		return startPlanSubscription(ctx, k, msg.From, msg.ID, msg.Denom)
+	if msg.ID == 0 {
+		return startNodeSubscription(ctx, k, msg.From, msg.Address, msg.Deposit)
 	}
 
-	return startNodeSubscription(ctx, k, msg.From, msg.Address, msg.Deposit)
+	return startPlanSubscription(ctx, k, msg.From, msg.ID, msg.Denom)
 }
 
 func HandleAddAddressForSubscription(ctx sdk.Context, k keeper.Keeper, msg types.MsgAddAddressForSubscription) sdk.Result {
@@ -135,14 +137,14 @@ func HandleAddAddressForSubscription(ctx sdk.Context, k keeper.Keeper, msg types
 		return types.ErrorInvalidSubscriptionStatus().Result()
 	}
 
-	if k.HasSubscriptionIDForAddress(ctx, msg.Address, subscription.ID) {
+	if k.HasSubscriptionForAddress(ctx, msg.Address, subscription.ID) {
 		return types.ErrorDuplicateAddress().Result()
 	}
 
-	k.SetSubscriptionIDForAddress(ctx, msg.Address, subscription.ID)
-	k.SetAddressForSubscriptionID(ctx, subscription.ID, msg.Address)
+	k.SetSubscriptionForAddress(ctx, msg.Address, subscription.ID)
+	k.SetMemberForSubscription(ctx, subscription.ID, msg.Address)
 	ctx.EventManager().EmitEvent(sdk.NewEvent(
-		types.EventTypeSetAddressForSubscription,
+		types.EventTypeAddAddressForSubscription,
 		sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", subscription.ID)),
 		sdk.NewAttribute(types.AttributeKeyAddress, msg.Address.String()),
 	))
@@ -165,12 +167,12 @@ func HandleRemoveAddressForSubscription(ctx sdk.Context, k keeper.Keeper, msg ty
 		return types.ErrorInvalidSubscriptionStatus().Result()
 	}
 
-	if !k.HasSubscriptionIDForAddress(ctx, msg.Address, subscription.ID) {
+	if !k.HasSubscriptionForAddress(ctx, msg.Address, subscription.ID) {
 		return types.ErrorAddressWasNotAdded().Result()
 	}
 
-	k.DeleteSubscriptionIDForAddress(ctx, msg.Address, subscription.ID)
-	k.DeleteAddressForSubscriptionID(ctx, subscription.ID, msg.Address)
+	k.DeleteSubscriptionForAddress(ctx, msg.Address, subscription.ID)
+	k.DeleteMemberForSubscription(ctx, subscription.ID, msg.Address)
 	ctx.EventManager().EmitEvent(sdk.NewEvent(
 		types.EventTypeRemoveAddressForSubscription,
 		sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", subscription.ID)),

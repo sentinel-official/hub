@@ -137,7 +137,7 @@ func QueryMembersForSubscription(ctx context.CLIContext, id uint64) ([]sdk.AccAd
 		return nil, err
 	}
 	if res == nil {
-		return nil, fmt.Errorf("no subscriptions found")
+		return nil, fmt.Errorf("no members found")
 	}
 
 	var members []sdk.AccAddress

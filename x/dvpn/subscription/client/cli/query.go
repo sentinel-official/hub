@@ -17,7 +17,7 @@ import (
 func querySubscriptionCmd(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "subscription",
-		Short: "Query subscription",
+		Short: "Query a subscription",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := context.NewCLIContext().WithCodec(cdc)
@@ -56,6 +56,7 @@ func querySubscriptionCmd(cdc *codec.Codec) *cobra.Command {
 	}
 
 	cmd.Flags().Bool(flagMembersOnly, false, "Show members only")
+
 	return cmd
 }
 

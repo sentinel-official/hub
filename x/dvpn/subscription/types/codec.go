@@ -16,8 +16,8 @@ func init() {
 }
 
 func RegisterCodec(cdc *codec.Codec) {
-	cdc.RegisterConcrete(MsgStartSubscription{}, "x/dvpn/subscription/MsgStartSubscription", nil)
-	cdc.RegisterConcrete(MsgAddAddressForSubscription{}, "x/dvpn/subscription/MsgAddAddressForSubscription", nil)
-	cdc.RegisterConcrete(MsgRemoveAddressForSubscription{}, "x/dvpn/subscription/MsgRemoveAddressForSubscription", nil)
-	cdc.RegisterConcrete(MsgEndSubscription{}, "x/dvpn/subscription/MsgEndSubscription", nil)
+	cdc.RegisterConcrete(MsgStartSubscription{}, "sentinel/MsgStartSubscription", nil)
+	cdc.RegisterConcrete(MsgAddAddressForSubscription{}, "sentinel/MsgAddAddressForSubscription", nil)
+	cdc.RegisterConcrete(MsgRemoveAddressForSubscription{}, "sentinel/MsgRemoveAddressForSubscription", nil)
+	cdc.RegisterConcrete(MsgEndSubscription{}, "sentinel/MsgEndSubscription", nil)
 }

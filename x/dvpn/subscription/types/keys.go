@@ -21,38 +21,38 @@ var (
 	SubscriptionKeyPrefix = []byte{0x01}
 )
 
-func SubscriptionKey(i uint64) []byte {
-	return append(SubscriptionKeyPrefix, sdk.Uint64ToBigEndian(i)...)
+func SubscriptionKey(id uint64) []byte {
+	return append(SubscriptionKeyPrefix, sdk.Uint64ToBigEndian(id)...)
 }
 
-func SubscriptionIDForAddressKeyPrefix(address sdk.AccAddress) []byte {
+func SubscriptionForAddressKeyPrefix(address sdk.AccAddress) []byte {
 	return append([]byte{0x02}, address.Bytes()...)
 }
 
-func SubscriptionIDForAddressKey(address sdk.AccAddress, i uint64) []byte {
-	return append(SubscriptionIDForAddressKeyPrefix(address), sdk.Uint64ToBigEndian(i)...)
+func SubscriptionForAddressKey(address sdk.AccAddress, i uint64) []byte {
+	return append(SubscriptionForAddressKeyPrefix(address), sdk.Uint64ToBigEndian(i)...)
 }
 
-func SubscriptionIDForPlanKeyPrefix(id uint64) []byte {
+func SubscriptionForPlanKeyPrefix(id uint64) []byte {
 	return append([]byte{0x03}, sdk.Uint64ToBigEndian(id)...)
 }
 
-func SubscriptionIDForPlanKey(id, i uint64) []byte {
-	return append(SubscriptionIDForPlanKeyPrefix(id), sdk.Uint64ToBigEndian(i)...)
+func SubscriptionForPlanKey(p, s uint64) []byte {
+	return append(SubscriptionForPlanKeyPrefix(p), sdk.Uint64ToBigEndian(s)...)
 }
 
-func SubscriptionIDForNodeKeyPrefix(address hub.NodeAddress) []byte {
+func SubscriptionForNodeKeyPrefix(address hub.NodeAddress) []byte {
 	return append([]byte{0x04}, address.Bytes()...)
 }
 
-func SubscriptionIDForNodeKey(address hub.NodeAddress, i uint64) []byte {
-	return append(SubscriptionIDForNodeKeyPrefix(address), sdk.Uint64ToBigEndian(i)...)
+func SubscriptionForNodeKey(address hub.NodeAddress, id uint64) []byte {
+	return append(SubscriptionForNodeKeyPrefix(address), sdk.Uint64ToBigEndian(id)...)
 }
 
-func AddressForSubscriptionIDKeyPrefix(id uint64) []byte {
+func MemberForSubscriptionKeyPrefix(id uint64) []byte {
 	return append([]byte{0x05}, sdk.Uint64ToBigEndian(id)...)
 }
 
-func AddressForSubscriptionIDKey(id uint64, address sdk.AccAddress) []byte {
-	return append(AddressForSubscriptionIDKeyPrefix(id), address.Bytes()...)
+func MemberForSubscriptionKey(id uint64, address sdk.AccAddress) []byte {
+	return append(MemberForSubscriptionKeyPrefix(id), address.Bytes()...)
 }

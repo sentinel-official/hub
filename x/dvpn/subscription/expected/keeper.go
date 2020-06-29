@@ -9,7 +9,7 @@ import (
 )
 
 type BankKeeper interface {
-	SendCoins(ctx sdk.Context, from sdk.AccAddress, to sdk.AccAddress, amount sdk.Coins) sdk.Error
+	SendCoins(ctx sdk.Context, from sdk.AccAddress, to sdk.AccAddress, coins sdk.Coins) sdk.Error
 }
 
 type DepositKeeper interface {

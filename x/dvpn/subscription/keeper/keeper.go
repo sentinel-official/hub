@@ -1,11 +1,14 @@
 package keeper
 
 import (
+	"fmt"
+
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/sentinel-official/hub/x/dvpn/subscription/expected"
+	"github.com/sentinel-official/hub/x/dvpn/subscription/types"
 )
 
 type Keeper struct {
@@ -41,5 +44,6 @@ func (k *Keeper) WithPlanKeeper(keeper expected.PlanKeeper) {
 }
 
 func (k Keeper) Store(ctx sdk.Context) sdk.KVStore {
-	return prefix.NewStore(ctx.KVStore(k.key), []byte("subscription/"))
+	child := fmt.Sprintf("%s/", types.ModuleName)
+	return prefix.NewStore(ctx.KVStore(k.key), []byte(child))
 }

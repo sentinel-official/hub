@@ -3,7 +3,7 @@ package types
 const (
 	EventTypeSetSubscription              = "set_subscription"
 	EventTypeSetSubscriptionsCount        = "set_subscriptions_count"
-	EventTypeSetAddressForSubscription    = "set_address_for_subscription"
+	EventTypeAddAddressForSubscription    = "add_address_for_subscription"
 	EventTypeRemoveAddressForSubscription = "remove_address_for_subscription"
 	EventTypeEndSubscription              = "end_subscription"
 )

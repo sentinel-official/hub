@@ -84,7 +84,7 @@ func queryMembersForSubscription(ctx sdk.Context, req abci.RequestQuery, k keepe
 		return nil, types.ErrorUnmarshal()
 	}
 
-	res, err := types.ModuleCdc.MarshalJSON(k.GetAddressesForSubscriptionID(ctx, params.ID))
+	res, err := types.ModuleCdc.MarshalJSON(k.GetMembersForSubscription(ctx, params.ID))
 	if err != nil {
 		return nil, types.ErrorMarshal()
 	}
