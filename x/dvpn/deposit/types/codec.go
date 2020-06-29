@@ -15,6 +15,4 @@ func init() {
 	ModuleCdc.Seal()
 }
 
-func RegisterCodec(cdc *codec.Codec) {
-
-}
+func RegisterCodec(_ *codec.Codec) {}

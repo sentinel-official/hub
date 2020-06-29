@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	Codespace = sdk.CodespaceType("deposit")
+	Codespace = sdk.CodespaceType(ModuleName)
 )
 
 const (
