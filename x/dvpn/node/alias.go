@@ -42,7 +42,8 @@ var (
 	NewGenesisState                = types.NewGenesisState
 	DefaultGenesisState            = types.DefaultGenesisState
 	NodeKey                        = types.NodeKey
-	NodeAddressForProviderKey      = types.NodeAddressForProviderKey
+	NodeForProviderKeyPrefix       = types.NodeForProviderKeyPrefix
+	NodeForProviderKey             = types.NodeForProviderKey
 	NewMsgRegisterNode             = types.NewMsgRegisterNode
 	NewMsgUpdateNode               = types.NewMsgUpdateNode
 	NewMsgSetNodeStatus            = types.NewMsgSetNodeStatus

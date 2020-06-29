@@ -16,6 +16,10 @@ func (k Keeper) GetPlansForProvider(ctx sdk.Context, address hub.ProvAddress) pl
 	return k.plan.GetPlansForProvider(ctx, address)
 }
 
-func (k Keeper) DeleteNodeAddressForPlan(ctx sdk.Context, id uint64, address hub.NodeAddress) {
-	k.plan.DeleteNodeAddressForPlan(ctx, id, address)
+func (k Keeper) DeleteNodeForPlan(ctx sdk.Context, id uint64, address hub.NodeAddress) {
+	k.plan.DeleteNodeForPlan(ctx, id, address)
+}
+
+func (k Keeper) DeletePlanForNode(ctx sdk.Context, address hub.NodeAddress, id uint64) {
+	k.plan.DeletePlanForNode(ctx, address, id)
 }

@@ -22,6 +22,10 @@ func NodeKey(address hub.NodeAddress) []byte {
 	return append(NodeKeyPrefix, address.Bytes()...)
 }
 
-func NodeAddressForProviderKey(pa hub.ProvAddress, na hub.NodeAddress) []byte {
-	return append(pa.Bytes(), na.Bytes()...)
+func NodeForProviderKeyPrefix(address hub.ProvAddress) []byte {
+	return append([]byte{0x01}, address.Bytes()...)
+}
+
+func NodeForProviderKey(p hub.ProvAddress, n hub.NodeAddress) []byte {
+	return append(NodeForProviderKeyPrefix(p), n.Bytes()...)
 }

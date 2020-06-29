@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	Codespace = sdk.CodespaceType("node")
+	Codespace = sdk.CodespaceType(ModuleName)
 )
 
 const (

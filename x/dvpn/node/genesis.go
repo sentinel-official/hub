@@ -10,7 +10,7 @@ import (
 func InitGenesis(ctx sdk.Context, k keeper.Keeper, state types.GenesisState) {
 	for _, node := range state {
 		k.SetNode(ctx, node)
-		k.SetNodeAddressForProvider(ctx, node.Provider, node.Address)
+		k.SetNodeForProvider(ctx, node.Provider, node.Address)
 	}
 }
 

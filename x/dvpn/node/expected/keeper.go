@@ -14,5 +14,7 @@ type ProviderKeeper interface {
 
 type PlanKeeper interface {
 	GetPlansForProvider(ctx sdk.Context, address hub.ProvAddress) plan.Plans
-	DeleteNodeAddressForPlan(ctx sdk.Context, id uint64, address hub.NodeAddress)
+
+	DeleteNodeForPlan(ctx sdk.Context, id uint64, address hub.NodeAddress)
+	DeletePlanForNode(ctx sdk.Context, address hub.NodeAddress, id uint64)
 }

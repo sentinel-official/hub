@@ -15,7 +15,7 @@ import (
 func queryNodeCmd(cdc *codec.Codec) *cobra.Command {
 	return &cobra.Command{
 		Use:   "node",
-		Short: "Query node",
+		Short: "Query a node",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := context.NewCLIContext().WithCodec(cdc)

@@ -87,7 +87,7 @@ Status at:      %s
 `, n.Address, n.Provider, n.InternetSpeed, n.RemoteURL, n.Version, n.Category, n.Status, n.StatusAt))
 }
 
-func (n Node) GetPriceForDenom(s string) (sdk.Coin, bool) {
+func (n Node) PriceForDenom(s string) (sdk.Coin, bool) {
 	for _, coin := range n.Price {
 		if coin.Denom == s {
 			return coin, true
@@ -98,7 +98,7 @@ func (n Node) GetPriceForDenom(s string) (sdk.Coin, bool) {
 }
 
 func (n Node) BandwidthForCoin(coin sdk.Coin) (hub.Bandwidth, error) {
-	price, found := n.GetPriceForDenom(coin.Denom)
+	price, found := n.PriceForDenom(coin.Denom)
 	if !found {
 		return hub.Bandwidth{}, fmt.Errorf("price does not exist")
 	}

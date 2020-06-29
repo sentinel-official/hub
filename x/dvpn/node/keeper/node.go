@@ -28,18 +28,18 @@ func (k Keeper) GetNode(ctx sdk.Context, address hub.NodeAddress) (node types.No
 	return node, true
 }
 
-func (k Keeper) SetNodeAddressForProvider(ctx sdk.Context, pa hub.ProvAddress, na hub.NodeAddress) {
-	key := types.NodeAddressForProviderKey(pa, na)
-	value := k.cdc.MustMarshalBinaryLengthPrefixed(na)
+func (k Keeper) SetNodeForProvider(ctx sdk.Context, p hub.ProvAddress, n hub.NodeAddress) {
+	key := types.NodeForProviderKey(p, n)
+	value := k.cdc.MustMarshalBinaryLengthPrefixed(n)
 
 	store := k.Store(ctx)
 	store.Set(key, value)
 }
 
-func (k Keeper) DeleteNodeAddressForProvider(ctx sdk.Context, pa hub.ProvAddress, na hub.NodeAddress) {
+func (k Keeper) DeleteNodeForProvider(ctx sdk.Context, p hub.ProvAddress, n hub.NodeAddress) {
 	store := k.Store(ctx)
 
-	key := types.NodeAddressForProviderKey(pa, na)
+	key := types.NodeForProviderKey(p, n)
 	store.Delete(key)
 }
 
@@ -61,7 +61,7 @@ func (k Keeper) GetNodes(ctx sdk.Context) (items types.Nodes) {
 func (k Keeper) GetNodesForProvider(ctx sdk.Context, address hub.ProvAddress) (items types.Nodes) {
 	store := k.Store(ctx)
 
-	iter := sdk.KVStorePrefixIterator(store, address.Bytes())
+	iter := sdk.KVStorePrefixIterator(store, types.NodeForProviderKeyPrefix(address))
 	defer iter.Close()
 
 	for ; iter.Valid(); iter.Next() {

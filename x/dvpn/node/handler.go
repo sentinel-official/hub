@@ -35,7 +35,7 @@ func HandleRegisterNode(ctx sdk.Context, k keeper.Keeper, msg types.MsgRegisterN
 
 	k.SetNode(ctx, node)
 	if node.Provider != nil {
-		k.SetNodeAddressForProvider(ctx, node.Provider, node.Address)
+		k.SetNodeForProvider(ctx, node.Provider, node.Address)
 	}
 
 	ctx.EventManager().EmitEvent(sdk.NewEvent(
@@ -55,11 +55,12 @@ func HandleUpdateNode(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpdateNode)
 
 	if msg.Provider != nil && !msg.Provider.Equals(node.Provider) {
 		if node.Provider != nil {
-			k.DeleteNodeAddressForProvider(ctx, node.Provider, node.Address)
+			k.DeleteNodeForProvider(ctx, node.Provider, node.Address)
 
 			plans := k.GetPlansForProvider(ctx, node.Provider)
 			for _, plan := range plans {
-				k.DeleteNodeAddressForPlan(ctx, plan.ID, node.Address)
+				k.DeleteNodeForPlan(ctx, plan.ID, node.Address)
+				k.DeletePlanForNode(ctx, node.Address, plan.ID)
 			}
 		}
 
@@ -75,9 +76,10 @@ func HandleUpdateNode(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpdateNode)
 		}
 
 		if node.Provider != nil {
-			k.SetNodeAddressForProvider(ctx, node.Provider, node.Address)
+			k.SetNodeForProvider(ctx, node.Provider, node.Address)
 		}
 	}
+
 	if msg.Price != nil {
 		node.Price = msg.Price
 
@@ -88,6 +90,7 @@ func HandleUpdateNode(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpdateNode)
 	if node.Provider != nil {
 		node.Price = nil
 	}
+
 	if !msg.InternetSpeed.IsAnyZero() {
 		node.InternetSpeed = msg.InternetSpeed
 	}
