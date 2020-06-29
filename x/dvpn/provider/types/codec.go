@@ -16,6 +16,6 @@ func init() {
 }
 
 func RegisterCodec(cdc *codec.Codec) {
-	cdc.RegisterConcrete(MsgRegisterProvider{}, "x/dvpn/provider/MsgRegisterProvider", nil)
-	cdc.RegisterConcrete(MsgUpdateProvider{}, "x/dvpn/provider/MsgUpdateProvider", nil)
+	cdc.RegisterConcrete(MsgRegisterProvider{}, "sentinel/MsgRegisterProvider", nil)
+	cdc.RegisterConcrete(MsgUpdateProvider{}, "sentinel/MsgUpdateProvider", nil)
 }

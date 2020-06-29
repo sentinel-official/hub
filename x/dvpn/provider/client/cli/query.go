@@ -14,7 +14,7 @@ import (
 func queryProviderCmd(cdc *codec.Codec) *cobra.Command {
 	return &cobra.Command{
 		Use:   "provider",
-		Short: "Query provider",
+		Short: "Query a provider",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := context.NewCLIContext().WithCodec(cdc)

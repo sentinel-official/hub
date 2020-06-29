@@ -45,7 +45,7 @@ func (m MsgRegisterProvider) ValidateBasic() sdk.Error {
 		return ErrorInvalidField("from")
 	}
 
-	// Name can't be empty and length should be (0, 64]
+	// Name can't be empty and length should be [1, 64]
 	if len(m.Name) == 0 || len(m.Name) > 64 {
 		return ErrorInvalidField("name")
 	}
