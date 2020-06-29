@@ -65,8 +65,8 @@ func (k Keeper) GetPlans(ctx sdk.Context) (items types.Plans) {
 	return items
 }
 
-func (k Keeper) SetPlanIDForProvider(ctx sdk.Context, address hub.ProvAddress, id uint64) {
-	key := types.PlanIDForProviderKey(address, id)
+func (k Keeper) SetPlanForProvider(ctx sdk.Context, address hub.ProvAddress, id uint64) {
+	key := types.PlanForProviderKey(address, id)
 	value := k.cdc.MustMarshalBinaryLengthPrefixed(id)
 
 	store := k.Store(ctx)
@@ -76,7 +76,7 @@ func (k Keeper) SetPlanIDForProvider(ctx sdk.Context, address hub.ProvAddress, i
 func (k Keeper) GetPlansForProvider(ctx sdk.Context, address hub.ProvAddress) (items types.Plans) {
 	store := k.Store(ctx)
 
-	iter := sdk.KVStorePrefixIterator(store, address.Bytes())
+	iter := sdk.KVStorePrefixIterator(store, types.PlanForProviderKeyPrefix(address))
 	defer iter.Close()
 
 	for ; iter.Valid(); iter.Next() {
@@ -90,32 +90,71 @@ func (k Keeper) GetPlansForProvider(ctx sdk.Context, address hub.ProvAddress) (i
 	return items
 }
 
-func (k Keeper) SetNodeAddressForPlan(ctx sdk.Context, id uint64, address hub.NodeAddress) {
-	key := types.NodeAddressForPlanKey(id, address)
+func (k Keeper) SetPlanForNode(ctx sdk.Context, address hub.NodeAddress, id uint64) {
+	key := types.PlanForNodeKey(address, id)
+	value := k.cdc.MustMarshalBinaryLengthPrefixed(id)
+
+	store := k.Store(ctx)
+	store.Set(key, value)
+}
+
+func (k Keeper) HashPlanForNode(ctx sdk.Context, address hub.NodeAddress, id uint64) bool {
+	key := types.PlanForNodeKey(address, id)
+
+	store := k.Store(ctx)
+	return store.Has(key)
+}
+
+func (k Keeper) DeletePlanForNode(ctx sdk.Context, address hub.NodeAddress, id uint64) {
+	key := types.PlanForNodeKey(address, id)
+
+	store := k.Store(ctx)
+	store.Delete(key)
+}
+
+func (k Keeper) GetPlansForNode(ctx sdk.Context, address hub.NodeAddress) (items types.Plans) {
+	store := k.Store(ctx)
+
+	iter := sdk.KVStorePrefixIterator(store, types.PlanForNodeKeyPrefix(address))
+	defer iter.Close()
+
+	for ; iter.Valid(); iter.Next() {
+		var id uint64
+		k.cdc.MustUnmarshalBinaryLengthPrefixed(iter.Value(), &id)
+
+		item, _ := k.GetPlan(ctx, id)
+		items = append(items, item)
+	}
+
+	return items
+}
+
+func (k Keeper) SetNodeForPlan(ctx sdk.Context, id uint64, address hub.NodeAddress) {
+	key := types.NodeForPlanKey(id, address)
 	value := k.cdc.MustMarshalBinaryLengthPrefixed(address)
 
 	store := k.Store(ctx)
 	store.Set(key, value)
 }
 
-func (k Keeper) HasNodeAddressForPlan(ctx sdk.Context, id uint64, address hub.NodeAddress) bool {
+func (k Keeper) HasNodeForPlan(ctx sdk.Context, id uint64, address hub.NodeAddress) bool {
 	store := k.Store(ctx)
 
-	key := types.NodeAddressForPlanKey(id, address)
+	key := types.NodeForPlanKey(id, address)
 	return store.Has(key)
 }
 
-func (k Keeper) DeleteNodeAddressForPlan(ctx sdk.Context, id uint64, address hub.NodeAddress) {
+func (k Keeper) DeleteNodeForPlan(ctx sdk.Context, id uint64, address hub.NodeAddress) {
 	store := k.Store(ctx)
 
-	key := types.NodeAddressForPlanKey(id, address)
+	key := types.NodeForPlanKey(id, address)
 	store.Delete(key)
 }
 
 func (k Keeper) GetNodesForPlan(ctx sdk.Context, id uint64) (items node.Nodes) {
 	store := k.Store(ctx)
 
-	iter := sdk.KVStorePrefixIterator(store, sdk.Uint64ToBigEndian(id))
+	iter := sdk.KVStorePrefixIterator(store, types.NodeForPlanKeyPrefix(id))
 	defer iter.Close()
 
 	for ; iter.Valid(); iter.Next() {

@@ -16,8 +16,8 @@ func init() {
 }
 
 func RegisterCodec(cdc *codec.Codec) {
-	cdc.RegisterConcrete(MsgAddPlan{}, "x/dvpn/plan/MsgAddPlan", nil)
-	cdc.RegisterConcrete(MsgSetPlanStatus{}, "x/dvpn/plan/MsgSetPlanStatus", nil)
-	cdc.RegisterConcrete(MsgAddNodeForPlan{}, "x/dvpn/plan/MsgAddNodeForPlan", nil)
-	cdc.RegisterConcrete(MsgRemoveNodeForPlan{}, "x/dvpn/plan/MsgRemoveNodeForPlan", nil)
+	cdc.RegisterConcrete(MsgAddPlan{}, "sentinel/MsgAddPlan", nil)
+	cdc.RegisterConcrete(MsgSetPlanStatus{}, "sentinel/MsgSetPlanStatus", nil)
+	cdc.RegisterConcrete(MsgAddNodeForPlan{}, "sentinel/MsgAddNodeForPlan", nil)
+	cdc.RegisterConcrete(MsgRemoveNodeForPlan{}, "sentinel/MsgRemoveNodeForPlan", nil)
 }

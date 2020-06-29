@@ -8,6 +8,7 @@ const (
 	QueryPlan             = "query_plan"
 	QueryPlans            = "query_plans"
 	QueryPlansForProvider = "query_plans_for_provider"
+	QueryPlansForNode     = "query_plans_for_node"
 	QueryNodesForPlan     = "query_nodes_for_plan"
 )
 
@@ -27,6 +28,16 @@ type QueryPlansForProviderParams struct {
 
 func NewQueryPlansForProviderParams(address hub.ProvAddress) QueryPlansForProviderParams {
 	return QueryPlansForProviderParams{
+		Address: address,
+	}
+}
+
+type QueryPlansForNodeParams struct {
+	Address hub.NodeAddress `json:"address"`
+}
+
+func NewQueryPlansForNodeParams(address hub.NodeAddress) QueryPlansForNodeParams {
+	return QueryPlansForNodeParams{
 		Address: address,
 	}
 }

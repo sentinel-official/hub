@@ -16,7 +16,7 @@ import (
 func queryPlanCmd(cdc *codec.Codec) *cobra.Command {
 	return &cobra.Command{
 		Use:   "plan",
-		Short: "Query plan",
+		Short: "Query a plan",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := context.NewCLIContext().WithCodec(cdc)
@@ -77,5 +77,6 @@ func queryPlansCmd(cdc *codec.Codec) *cobra.Command {
 	}
 
 	cmd.Flags().String(flagProvider, "", "Provider address")
+
 	return cmd
 }

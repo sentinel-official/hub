@@ -10,10 +10,11 @@ import (
 func InitGenesis(ctx sdk.Context, k keeper.Keeper, state types.GenesisState) {
 	for _, item := range state {
 		k.SetPlan(ctx, item.Plan)
-		k.SetPlanIDForProvider(ctx, item.Plan.Provider, item.Plan.ID)
+		k.SetPlanForProvider(ctx, item.Plan.Provider, item.Plan.ID)
 
 		for _, node := range item.Nodes {
-			k.SetNodeAddressForPlan(ctx, item.Plan.ID, node)
+			k.SetNodeForPlan(ctx, item.Plan.ID, node)
+			k.SetPlanForNode(ctx, node, item.Plan.ID)
 		}
 
 		k.SetPlansCount(ctx, k.GetPlansCount(ctx)+1)

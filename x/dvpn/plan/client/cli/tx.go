@@ -87,7 +87,7 @@ func txAddPlanCmd(cdc *codec.Codec) *cobra.Command {
 func txSetPlanStatusCmd(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "status-set",
-		Short: "Set plan status",
+		Short: "Set a plan status",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			txb := auth.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))

@@ -13,22 +13,23 @@ import (
 )
 
 const (
-	Codespace                         = types.Codespace
-	EventTypeSetPlan                  = types.EventTypeSetPlan
-	EventTypeSetPlansCount            = types.EventTypeSetPlansCount
-	EventTypeSetPlanStatus            = types.EventTypeSetPlanStatus
-	EventTypeSetNodeAddressForPlan    = types.EventTypeSetNodeAddressForPlan
-	EventTypeRemoveNodeAddressForPlan = types.EventTypeRemoveNodeAddressForPlan
-	AttributeKeyAddress               = types.AttributeKeyAddress
-	AttributeKeyID                    = types.AttributeKeyID
-	AttributeKeyCount                 = types.AttributeKeyCount
-	AttributeKeyStatus                = types.AttributeKeyStatus
-	ModuleName                        = types.ModuleName
-	QuerierRoute                      = types.QuerierRoute
-	QueryPlan                         = types.QueryPlan
-	QueryPlans                        = types.QueryPlans
-	QueryPlansForProvider             = types.QueryPlansForProvider
-	QueryNodesForPlan                 = types.QueryNodesForPlan
+	Codespace                  = types.Codespace
+	EventTypeSetPlan           = types.EventTypeSetPlan
+	EventTypeSetPlansCount     = types.EventTypeSetPlansCount
+	EventTypeSetPlanStatus     = types.EventTypeSetPlanStatus
+	EventTypeAddNodeForPlan    = types.EventTypeAddNodeForPlan
+	EventTypeRemoveNodeForPlan = types.EventTypeRemoveNodeForPlan
+	AttributeKeyAddress        = types.AttributeKeyAddress
+	AttributeKeyID             = types.AttributeKeyID
+	AttributeKeyCount          = types.AttributeKeyCount
+	AttributeKeyStatus         = types.AttributeKeyStatus
+	ModuleName                 = types.ModuleName
+	QuerierRoute               = types.QuerierRoute
+	QueryPlan                  = types.QueryPlan
+	QueryPlans                 = types.QueryPlans
+	QueryPlansForProvider      = types.QueryPlansForProvider
+	QueryPlansForNode          = types.QueryPlansForNode
+	QueryNodesForPlan          = types.QueryNodesForPlan
 )
 
 var (
@@ -48,14 +49,19 @@ var (
 	NewGenesisState                = types.NewGenesisState
 	DefaultGenesisState            = types.DefaultGenesisState
 	PlanKey                        = types.PlanKey
-	PlanIDForProviderKey           = types.PlanIDForProviderKey
-	NodeAddressForPlanKey          = types.NodeAddressForPlanKey
+	PlanForProviderKeyPrefix       = types.PlanForProviderKeyPrefix
+	PlanForProviderKey             = types.PlanForProviderKey
+	PlanForNodeKeyPrefix           = types.PlanForNodeKeyPrefix
+	PlanForNodeKey                 = types.PlanForNodeKey
+	NodeForPlanKeyPrefix           = types.NodeForPlanKeyPrefix
+	NodeForPlanKey                 = types.NodeForPlanKey
 	NewMsgAddPlan                  = types.NewMsgAddPlan
 	NewMsgSetPlanStatus            = types.NewMsgSetPlanStatus
 	NewMsgAddNodeForPlan           = types.NewMsgAddNodeForPlan
 	NewMsgRemoveNodeForPlan        = types.NewMsgRemoveNodeForPlan
 	NewQueryPlanParams             = types.NewQueryPlanParams
 	NewQueryPlansForProviderParams = types.NewQueryPlansForProviderParams
+	NewQueryPlansForNodeParams     = types.NewQueryPlansForNodeParams
 	NewQueryNodesForPlanParams     = types.NewQueryNodesForPlanParams
 	NewKeeper                      = keeper.NewKeeper
 	Querier                        = querier.Querier
@@ -80,6 +86,7 @@ type (
 	Plans                       = types.Plans
 	QueryPlanParams             = types.QueryPlanParams
 	QueryPlansForProviderParams = types.QueryPlansForProviderParams
+	QueryPlansForNodeParams     = types.QueryPlansForNodeParams
 	QueryNodesForPlanParams     = types.QueryNodesForPlanParams
 	Keeper                      = keeper.Keeper
 )
