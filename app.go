@@ -28,7 +28,6 @@ import (
 	"github.com/tendermint/tendermint/libs/log"
 	db "github.com/tendermint/tm-db"
 
-	"github.com/sentinel-official/hub/types"
 	"github.com/sentinel-official/hub/x/dvpn"
 	"github.com/sentinel-official/hub/x/dvpn/deposit"
 )
@@ -72,7 +71,6 @@ func MakeCodec() *codec.Codec {
 	var cdc = codec.New()
 
 	sdk.RegisterCodec(cdc)
-	types.RegisterCodec(cdc)
 	codec.RegisterCrypto(cdc)
 	codec.RegisterEvidences(cdc)
 	ModuleBasics.RegisterCodec(cdc)
@@ -197,6 +195,7 @@ func NewApp(logger log.Logger, db db.DB, tracer io.Writer, latest bool, invarChe
 		staking.NewMultiStakingHooks(app.distributionKeeper.Hooks(), app.slashingKeeper.Hooks()))
 	app.dVPNKeeper = dvpn.NewKeeper(app.cdc,
 		keys[dvpn.StoreKey],
+		app.paramsKeeper,
 		app.bankKeeper,
 		app.supplyKeeper)
 

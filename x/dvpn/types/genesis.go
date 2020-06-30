@@ -15,11 +15,11 @@ type GenesisState struct {
 	Nodes         node.GenesisState         `json:"nodes"`
 	Plans         plan.GenesisState         `json:"plans"`
 	Subscriptions subscription.GenesisState `json:"subscriptions"`
-	Sessions      session.Sessions          `json:"sessions"`
+	Sessions      session.GenesisState      `json:"sessions"`
 }
 
 func NewGenesisState(deposits deposit.GenesisState, providers provider.GenesisState, nodes node.GenesisState,
-	plans plan.GenesisState, subscriptions subscription.GenesisState, sessions session.Sessions) GenesisState {
+	plans plan.GenesisState, subscriptions subscription.GenesisState, sessions session.GenesisState) GenesisState {
 	return GenesisState{
 		Deposits:      deposits,
 		Providers:     providers,

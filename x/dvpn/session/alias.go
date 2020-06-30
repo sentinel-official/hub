@@ -21,7 +21,9 @@ const (
 	AttributeKeyNode             = types.AttributeKeyNode
 	AttributeKeyAddress          = types.AttributeKeyAddress
 	ModuleName                   = types.ModuleName
+	ParamsSubspace               = types.ParamsSubspace
 	QuerierRoute                 = types.QuerierRoute
+	DefaultInactiveDuration      = types.DefaultInactiveDuration
 	QuerySession                 = types.QuerySession
 	QuerySessions                = types.QuerySessions
 	QuerySessionsForSubscription = types.QuerySessionsForSubscription
@@ -48,6 +50,9 @@ var (
 	SessionKey                            = types.SessionKey
 	ActiveSessionKey                      = types.ActiveSessionKey
 	NewMsgUpdateSession                   = types.NewMsgUpdateSession
+	NewParams                             = types.NewParams
+	DefaultParams                         = types.DefaultParams
+	ParamsKeyTable                        = types.ParamsKeyTable
 	NewQuerySessionParams                 = types.NewQuerySessionParams
 	NewQuerySessionsForSubscriptionParams = types.NewQuerySessionsForSubscriptionParams
 	NewQuerySessionsForNodeParams         = types.NewQuerySessionsForNodeParams
@@ -61,11 +66,13 @@ var (
 	SessionsCountKey       = types.SessionsCountKey
 	SessionKeyPrefix       = types.SessionKeyPrefix
 	ActiveSessionKeyPrefix = types.ActiveSessionKeyPrefix
+	KeyInactiveDuration    = types.KeyInactiveDuration
 )
 
 type (
 	GenesisState                       = types.GenesisState
 	MsgUpdateSession                   = types.MsgUpdateSession
+	Params                             = types.Params
 	QuerySessionParams                 = types.QuerySessionParams
 	QuerySessionsForSubscriptionParams = types.QuerySessionsForSubscriptionParams
 	QuerySessionsForNodeParams         = types.QuerySessionsForNodeParams

@@ -7,8 +7,9 @@ import (
 )
 
 const (
-	ModuleName   = "session"
-	QuerierRoute = ModuleName
+	ModuleName     = "session"
+	ParamsSubspace = ModuleName
+	QuerierRoute   = ModuleName
 )
 
 var (

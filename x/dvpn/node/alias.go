@@ -13,19 +13,21 @@ import (
 )
 
 const (
-	Codespace              = types.Codespace
-	EventTypeSetNode       = types.EventTypeSetNode
-	EventTypeUpdateNode    = types.EventTypeUpdateNode
-	EventTypeSetNodeStatus = types.EventTypeSetNodeStatus
-	AttributeKeyProvider   = types.AttributeKeyProvider
-	AttributeKeyAddress    = types.AttributeKeyAddress
-	AttributeKeyStatus     = types.AttributeKeyStatus
-	ModuleName             = types.ModuleName
-	QuerierRoute           = types.QuerierRoute
-	CategoryUnknown        = types.CategoryUnknown
-	QueryNode              = types.QueryNode
-	QueryNodes             = types.QueryNodes
-	QueryNodesForProvider  = types.QueryNodesForProvider
+	Codespace               = types.Codespace
+	EventTypeSetNode        = types.EventTypeSetNode
+	EventTypeUpdateNode     = types.EventTypeUpdateNode
+	EventTypeSetNodeStatus  = types.EventTypeSetNodeStatus
+	AttributeKeyProvider    = types.AttributeKeyProvider
+	AttributeKeyAddress     = types.AttributeKeyAddress
+	AttributeKeyStatus      = types.AttributeKeyStatus
+	ModuleName              = types.ModuleName
+	ParamsSubspace          = types.ParamsSubspace
+	QuerierRoute            = types.QuerierRoute
+	CategoryUnknown         = types.CategoryUnknown
+	DefaultInactiveDuration = types.DefaultInactiveDuration
+	QueryNode               = types.QueryNode
+	QueryNodes              = types.QueryNodes
+	QueryNodesForProvider   = types.QueryNodesForProvider
 )
 
 var (
@@ -49,16 +51,20 @@ var (
 	NewMsgUpdateNode               = types.NewMsgUpdateNode
 	NewMsgSetNodeStatus            = types.NewMsgSetNodeStatus
 	NodeCategoryFromString         = types.NodeCategoryFromString
+	NewParams                      = types.NewParams
+	DefaultParams                  = types.DefaultParams
+	ParamsKeyTable                 = types.ParamsKeyTable
 	NewQueryNodeParams             = types.NewQueryNodeParams
 	NewQueryNodesForProviderParams = types.NewQueryNodesForProviderParams
 	NewKeeper                      = keeper.NewKeeper
 	Querier                        = querier.Querier
 
 	// variable aliases
-	ModuleCdc     = types.ModuleCdc
-	RouterKey     = types.RouterKey
-	StoreKey      = types.StoreKey
-	NodeKeyPrefix = types.NodeKeyPrefix
+	ModuleCdc           = types.ModuleCdc
+	RouterKey           = types.RouterKey
+	StoreKey            = types.StoreKey
+	NodeKeyPrefix       = types.NodeKeyPrefix
+	KeyInactiveDuration = types.KeyInactiveDuration
 )
 
 type (
@@ -69,6 +75,7 @@ type (
 	NodeCategory                = types.NodeCategory
 	Node                        = types.Node
 	Nodes                       = types.Nodes
+	Params                      = types.Params
 	QueryNodeParams             = types.QueryNodeParams
 	QueryNodesForProviderParams = types.QueryNodesForProviderParams
 	Keeper                      = keeper.Keeper

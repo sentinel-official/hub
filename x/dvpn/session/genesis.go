@@ -9,7 +9,8 @@ import (
 )
 
 func InitGenesis(ctx sdk.Context, k keeper.Keeper, state types.GenesisState) {
-	for _, session := range state {
+	k.SetParams(ctx, state.Params)
+	for _, session := range state.Sessions {
 		k.SetSession(ctx, session)
 		if session.Status.Equal(hub.StatusActive) {
 			k.SetActiveSession(ctx, session.Subscription, session.Node, session.Address, session.ID)
@@ -20,7 +21,10 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, state types.GenesisState) {
 }
 
 func ExportGenesis(ctx sdk.Context, k keeper.Keeper) types.GenesisState {
-	return k.GetSessions(ctx)
+	return types.NewGenesisState(
+		k.GetSessions(ctx),
+		k.GetParams(ctx),
+	)
 }
 
 func ValidateGenesis(state types.GenesisState) error {

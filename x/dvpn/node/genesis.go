@@ -8,14 +8,18 @@ import (
 )
 
 func InitGenesis(ctx sdk.Context, k keeper.Keeper, state types.GenesisState) {
-	for _, node := range state {
+	k.SetParams(ctx, state.Params)
+	for _, node := range state.Nodes {
 		k.SetNode(ctx, node)
 		k.SetNodeForProvider(ctx, node.Provider, node.Address)
 	}
 }
 
 func ExportGenesis(ctx sdk.Context, k keeper.Keeper) types.GenesisState {
-	return k.GetNodes(ctx)
+	return types.NewGenesisState(
+		k.GetNodes(ctx),
+		k.GetParams(ctx),
+	)
 }
 
 func ValidateGenesis(state types.GenesisState) error {

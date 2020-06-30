@@ -5,8 +5,9 @@ import (
 )
 
 const (
-	ModuleName   = "node"
-	QuerierRoute = ModuleName
+	ModuleName     = "node"
+	ParamsSubspace = ModuleName
+	QuerierRoute   = ModuleName
 )
 
 var (
