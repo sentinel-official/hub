@@ -11,8 +11,7 @@ import (
 )
 
 func HandleAddPlan(ctx sdk.Context, k keeper.Keeper, msg types.MsgAddPlan) sdk.Result {
-	_, found := k.GetProvider(ctx, msg.From)
-	if !found {
+	if !k.HasProvider(ctx, msg.From) {
 		return types.ErrorProviderDoesNotExist().Result()
 	}
 
@@ -89,7 +88,6 @@ func HandleAddNodeForPlan(ctx sdk.Context, k keeper.Keeper, msg types.MsgAddNode
 	}
 
 	k.SetNodeForPlan(ctx, plan.ID, node.Address)
-	k.SetPlanForNode(ctx, node.Address, plan.ID)
 	ctx.EventManager().EmitEvent(sdk.NewEvent(
 		types.EventTypeAddNodeForPlan,
 		sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", plan.ID)),
@@ -113,7 +111,6 @@ func HandleRemoveNodeForPlan(ctx sdk.Context, k keeper.Keeper, msg types.MsgRemo
 	}
 
 	k.DeleteNodeForPlan(ctx, plan.ID, msg.Address)
-	k.DeletePlanForNode(ctx, msg.Address, plan.ID)
 	ctx.EventManager().EmitEvent(sdk.NewEvent(
 		types.EventTypeRemoveNodeForPlan,
 		sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", plan.ID)),

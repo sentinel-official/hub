@@ -8,13 +8,13 @@ import (
 )
 
 type PlanKeeper interface {
-	HasNodeAddressForPlan(ctx sdk.Context, id uint64, address hub.NodeAddress) bool
+	HasNodeForPlan(ctx sdk.Context, id uint64, address hub.NodeAddress) bool
 }
 
 type SubscriptionKeeper interface {
 	SetSubscription(ctx sdk.Context, subscription subscription.Subscription)
 	GetSubscription(ctx sdk.Context, id uint64) (subscription.Subscription, bool)
 
-	HasSubscriptionIDForNode(ctx sdk.Context, address hub.NodeAddress, id uint64) bool
-	HasAddressForSubscriptionID(ctx sdk.Context, id uint64, address sdk.AccAddress) bool
+	HasSubscriptionForNode(ctx sdk.Context, address hub.NodeAddress, id uint64) bool
+	HasSubscriptionForAddress(ctx sdk.Context, address sdk.AccAddress, id uint64) bool
 }

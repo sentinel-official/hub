@@ -9,15 +9,11 @@ import (
 )
 
 func HandleRegisterNode(ctx sdk.Context, k keeper.Keeper, msg types.MsgRegisterNode) sdk.Result {
-	if msg.Provider != nil {
-		_, found := k.GetProvider(ctx, msg.Provider)
-		if !found {
-			return types.ErrorProviderDoesNotExist().Result()
-		}
+	if !k.HasProvider(ctx, msg.Provider) {
+		return types.ErrorProviderDoesNotExist().Result()
 	}
 
-	_, found := k.GetNode(ctx, msg.From.Bytes())
-	if found {
+	if k.HasNode(ctx, msg.From.Bytes()) {
 		return types.ErrorDuplicateNode().Result()
 	}
 
@@ -52,45 +48,33 @@ func HandleUpdateNode(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpdateNode)
 	if !found {
 		return types.ErrorNodeDoesNotExist().Result()
 	}
+	if node.Provider.Equals(msg.Provider) {
+		return types.ErrorCanNotUpdate().Result()
+	}
 
-	if msg.Provider != nil && !msg.Provider.Equals(node.Provider) {
-		if node.Provider != nil {
-			k.DeleteNodeForProvider(ctx, node.Provider, node.Address)
+	if msg.Provider != nil || msg.Price != nil {
+		k.DeleteNodeForProvider(ctx, node.Provider, node.Address)
 
-			plans := k.GetPlansForProvider(ctx, node.Provider)
-			for _, plan := range plans {
-				k.DeleteNodeForPlan(ctx, plan.ID, node.Address)
-				k.DeletePlanForNode(ctx, node.Address, plan.ID)
-			}
-		}
-
-		if msg.Provider.Equals(hub.EmptyProviderAddress) {
-			node.Provider = nil
-		} else {
-			_, found := k.GetProvider(ctx, msg.Provider)
-			if !found {
-				return types.ErrorProviderDoesNotExist().Result()
-			}
-
-			node.Provider = msg.Provider
-		}
-
-		if node.Provider != nil {
-			k.SetNodeForProvider(ctx, node.Provider, node.Address)
+		plans := k.GetPlansForProvider(ctx, node.Provider)
+		for _, plan := range plans {
+			k.DeleteNodeForPlan(ctx, plan.ID, node.Address)
 		}
 	}
 
-	if msg.Price != nil {
-		node.Price = msg.Price
-
-		if hub.AreEmptyCoins(msg.Price) {
-			node.Price = nil
+	if msg.Provider != nil {
+		if !k.HasProvider(ctx, msg.Provider) {
+			return types.ErrorProviderDoesNotExist().Result()
 		}
-	}
-	if node.Provider != nil {
+
+		node.Provider = msg.Provider
 		node.Price = nil
-	}
 
+		k.SetNodeForProvider(ctx, node.Provider, node.Address)
+	}
+	if msg.Price != nil {
+		node.Provider = nil
+		node.Price = msg.Price
+	}
 	if !msg.InternetSpeed.IsAnyZero() {
 		node.InternetSpeed = msg.InternetSpeed
 	}

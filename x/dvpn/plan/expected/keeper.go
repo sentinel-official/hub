@@ -5,11 +5,10 @@ import (
 
 	hub "github.com/sentinel-official/hub/types"
 	node "github.com/sentinel-official/hub/x/dvpn/node/types"
-	provider "github.com/sentinel-official/hub/x/dvpn/provider/types"
 )
 
 type ProviderKeeper interface {
-	GetProvider(ctx sdk.Context, address hub.ProvAddress) (provider.Provider, bool)
+	HasProvider(ctx sdk.Context, address hub.ProvAddress) bool
 }
 
 type NodeKeeper interface {

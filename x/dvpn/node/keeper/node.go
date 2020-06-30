@@ -15,6 +15,13 @@ func (k Keeper) SetNode(ctx sdk.Context, node types.Node) {
 	store.Set(key, value)
 }
 
+func (k Keeper) HasNode(ctx sdk.Context, address hub.NodeAddress) bool {
+	store := k.Store(ctx)
+
+	key := types.NodeKey(address)
+	return store.Has(key)
+}
+
 func (k Keeper) GetNode(ctx sdk.Context, address hub.NodeAddress) (node types.Node, found bool) {
 	store := k.Store(ctx)
 

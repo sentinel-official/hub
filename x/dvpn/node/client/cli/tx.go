@@ -102,9 +102,7 @@ func txUpdateNodeCmd(cdc *codec.Codec) *cobra.Command {
 			}
 
 			var provider hub.ProvAddress
-			if s == "-" {
-				provider = hub.EmptyProviderAddress
-			} else {
+			if len(s) > 0 {
 				provider, err = hub.ProvAddressFromBech32(s)
 				if err != nil {
 					return err
@@ -117,9 +115,7 @@ func txUpdateNodeCmd(cdc *codec.Codec) *cobra.Command {
 			}
 
 			var price sdk.Coins
-			if s == "-" {
-				price = hub.EmptyCoins
-			} else {
+			if len(s) > 0 {
 				price, err = sdk.ParseCoins(s)
 				if err != nil {
 					return err

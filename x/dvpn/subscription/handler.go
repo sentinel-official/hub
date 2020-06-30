@@ -10,8 +10,7 @@ import (
 	"github.com/sentinel-official/hub/x/dvpn/subscription/types"
 )
 
-func startPlanSubscription(ctx sdk.Context, k keeper.Keeper,
-	from sdk.AccAddress, id uint64, denom string) sdk.Result {
+func startPlanSubscription(ctx sdk.Context, k keeper.Keeper, from sdk.AccAddress, id uint64, denom string) sdk.Result {
 	plan, found := k.GetPlan(ctx, id)
 	if !found {
 		return types.ErrorPlanDoesNotExist().Result()
@@ -31,12 +30,14 @@ func startPlanSubscription(ctx sdk.Context, k keeper.Keeper,
 
 	count := k.GetSubscriptionsCount(ctx)
 	subscription := types.Subscription{
-		ID:             count + 1,
-		Address:        from,
-		Plan:           plan.ID,
-		Duration:       0,
-		TotalDuration:  plan.Duration,
-		ExpiresAt:      ctx.BlockTime().Add(plan.Validity),
+		ID:      count + 1,
+		Address: from,
+
+		Plan:          plan.ID,
+		Duration:      0,
+		TotalDuration: plan.Duration,
+		ExpiresAt:     ctx.BlockTime().Add(plan.Validity),
+
 		Bandwidth:      hub.NewBandwidthFromInt64(0, 0),
 		TotalBandwidth: plan.Bandwidth,
 		Status:         hub.StatusActive,
@@ -45,8 +46,8 @@ func startPlanSubscription(ctx sdk.Context, k keeper.Keeper,
 
 	k.SetSubscription(ctx, subscription)
 	k.SetSubscriptionForAddress(ctx, subscription.Address, subscription.ID)
-	k.SetMemberForSubscription(ctx, subscription.ID, subscription.Address)
 	k.SetSubscriptionForPlan(ctx, subscription.Plan, subscription.ID)
+	k.SetMemberForSubscription(ctx, subscription.ID, subscription.Address)
 	ctx.EventManager().EmitEvent(sdk.NewEvent(
 		types.EventTypeSetSubscription,
 		sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", subscription.ID)),
@@ -63,14 +64,16 @@ func startPlanSubscription(ctx sdk.Context, k keeper.Keeper,
 	return sdk.Result{Events: ctx.EventManager().Events()}
 }
 
-func startNodeSubscription(ctx sdk.Context, k keeper.Keeper,
-	from sdk.AccAddress, address hub.NodeAddress, deposit sdk.Coin) sdk.Result {
+func startNodeSubscription(ctx sdk.Context, k keeper.Keeper, from sdk.AccAddress, address hub.NodeAddress, deposit sdk.Coin) sdk.Result {
 	node, found := k.GetNode(ctx, address)
 	if !found {
 		return types.ErrorNodeDoesNotExist().Result()
 	}
 	if !node.Status.Equal(hub.StatusActive) {
 		return types.ErrorInvalidNodeStatus().Result()
+	}
+	if node.Provider != nil {
+		return types.ErrorCanNotSubscribe().Result()
 	}
 
 	if err := k.AddDeposit(ctx, from, deposit); err != nil {
@@ -82,15 +85,17 @@ func startNodeSubscription(ctx sdk.Context, k keeper.Keeper,
 		return types.ErrorPriceDoesNotExist().Result()
 	}
 
+	count := k.GetSubscriptionsCount(ctx)
 	bandwidth, _ := node.BandwidthForCoin(deposit)
 
-	count := k.GetSubscriptionsCount(ctx)
 	subscription := types.Subscription{
-		ID:             count + 1,
-		Address:        from,
-		Node:           address,
-		Price:          price,
-		Deposit:        deposit,
+		ID:      count + 1,
+		Address: from,
+
+		Node:    address,
+		Price:   price,
+		Deposit: deposit,
+
 		Bandwidth:      hub.NewBandwidthFromInt64(0, 0),
 		TotalBandwidth: bandwidth,
 		Status:         hub.StatusActive,
@@ -99,8 +104,8 @@ func startNodeSubscription(ctx sdk.Context, k keeper.Keeper,
 
 	k.SetSubscription(ctx, subscription)
 	k.SetSubscriptionForAddress(ctx, subscription.Address, subscription.ID)
-	k.SetMemberForSubscription(ctx, subscription.ID, subscription.Address)
 	k.SetSubscriptionForNode(ctx, subscription.Node, subscription.ID)
+	k.SetMemberForSubscription(ctx, subscription.ID, subscription.Address)
 	ctx.EventManager().EmitEvent(sdk.NewEvent(
 		types.EventTypeSetSubscription,
 		sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", subscription.ID)),
@@ -125,7 +130,7 @@ func HandleStartSubscription(ctx sdk.Context, k keeper.Keeper, msg types.MsgStar
 	return startPlanSubscription(ctx, k, msg.From, msg.ID, msg.Denom)
 }
 
-func HandleAddAddressForSubscription(ctx sdk.Context, k keeper.Keeper, msg types.MsgAddAddressForSubscription) sdk.Result {
+func HandleAddMemberForSubscription(ctx sdk.Context, k keeper.Keeper, msg types.MsgAddMemberForSubscription) sdk.Result {
 	subscription, found := k.GetSubscription(ctx, msg.ID)
 	if !found {
 		return types.ErrorSubscriptionDoesNotExist().Result()
@@ -137,7 +142,7 @@ func HandleAddAddressForSubscription(ctx sdk.Context, k keeper.Keeper, msg types
 		return types.ErrorInvalidSubscriptionStatus().Result()
 	}
 
-	if k.HasSubscriptionForAddress(ctx, msg.Address, subscription.ID) {
+	if k.HasMemberForSubscription(ctx, subscription.ID, msg.Address) {
 		return types.ErrorDuplicateAddress().Result()
 	}
 
@@ -152,7 +157,7 @@ func HandleAddAddressForSubscription(ctx sdk.Context, k keeper.Keeper, msg types
 	return sdk.Result{Events: ctx.EventManager().Events()}
 }
 
-func HandleRemoveAddressForSubscription(ctx sdk.Context, k keeper.Keeper, msg types.MsgRemoveAddressForSubscription) sdk.Result {
+func HandleRemoveMemberForSubscription(ctx sdk.Context, k keeper.Keeper, msg types.MsgRemoveMemberForSubscription) sdk.Result {
 	subscription, found := k.GetSubscription(ctx, msg.ID)
 	if !found {
 		return types.ErrorSubscriptionDoesNotExist().Result()
@@ -160,14 +165,11 @@ func HandleRemoveAddressForSubscription(ctx sdk.Context, k keeper.Keeper, msg ty
 	if !msg.From.Equals(subscription.Address) {
 		return types.ErrorUnauthorized().Result()
 	}
-	if msg.Address.Equals(subscription.Address) {
-		return types.ErrorCanNotRemoveAddress().Result()
-	}
 	if !subscription.Status.Equal(hub.StatusActive) {
 		return types.ErrorInvalidSubscriptionStatus().Result()
 	}
 
-	if !k.HasSubscriptionForAddress(ctx, msg.Address, subscription.ID) {
+	if !k.HasMemberForSubscription(ctx, subscription.ID, msg.Address) {
 		return types.ErrorAddressWasNotAdded().Result()
 	}
 
@@ -194,12 +196,10 @@ func HandleEndSubscription(ctx sdk.Context, k keeper.Keeper, msg types.MsgEndSub
 		return types.ErrorInvalidSubscriptionStatus().Result()
 	}
 
-	if subscription.Node != nil {
+	if subscription.Plan == 0 {
 		amount := subscription.Deposit.Sub(subscription.Amount())
-		if amount.IsPositive() {
-			if err := k.SubtractDeposit(ctx, subscription.Address, amount); err != nil {
-				return err.Result()
-			}
+		if err := k.SubtractDeposit(ctx, subscription.Address, amount); err != nil {
+			return err.Result()
 		}
 	}
 

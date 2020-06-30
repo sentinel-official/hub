@@ -51,6 +51,11 @@ func (m MsgRegisterNode) ValidateBasic() sdk.Error {
 		return ErrorInvalidField("from")
 	}
 
+	// Provider and Price both shouldn't nil at the same time
+	if m.Provider != nil && m.Price != nil {
+		return ErrorInvalidField("provider and price")
+	}
+
 	// Provider can be nil. If not, it shouldn't be empty
 	if m.Provider != nil && m.Provider.Empty() {
 		return ErrorInvalidField("provider")
@@ -134,13 +139,18 @@ func (m MsgUpdateNode) ValidateBasic() sdk.Error {
 		return ErrorInvalidField("from")
 	}
 
+	// Provider and Price both shouldn't nil at the same time
+	if m.Provider != nil && m.Price != nil {
+		return ErrorInvalidField("provider and price")
+	}
+
 	// Provider can be nil. If not, it shouldn't be empty
 	if m.Provider != nil && m.Provider.Empty() {
 		return ErrorInvalidField("provider")
 	}
 
-	// Price can be nil. If not, it should be empty or valid
-	if m.Price != nil && !hub.AreEmptyCoins(m.Price) && !m.Price.IsValid() {
+	// Price can be nil. If not, it should be valid
+	if m.Price != nil && !m.Price.IsValid() {
 		return ErrorInvalidField("price")
 	}
 

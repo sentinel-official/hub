@@ -17,6 +17,10 @@ func (k Keeper) AddDeposit(ctx sdk.Context, address sdk.AccAddress, coin sdk.Coi
 }
 
 func (k Keeper) SubtractDeposit(ctx sdk.Context, address sdk.AccAddress, coin sdk.Coin) sdk.Error {
+	if coin.IsZero() {
+		return nil
+	}
+
 	return k.deposit.Subtract(ctx, address, sdk.Coins{coin})
 }
 

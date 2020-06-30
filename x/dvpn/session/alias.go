@@ -3,7 +3,6 @@
 // aliases generated for the following subdirectories:
 // ALIASGEN: github.com/sentinel-official/hub/x/dvpn/session/types
 // ALIASGEN: github.com/sentinel-official/hub/x/dvpn/session/keeper
-// ALIASGEN: github.com/sentinel-official/hub/x/dvpn/session/querier
 package session
 
 import (
@@ -42,11 +41,12 @@ var (
 	ErrorInvalidSubscriptionStatus        = types.ErrorInvalidSubscriptionStatus
 	ErrorUnauthorized                     = types.ErrorUnauthorized
 	ErrorAddressWasNotAdded               = types.ErrorAddressWasNotAdded
+	ErrorInvalidDuration                  = types.ErrorInvalidDuration
 	ErrorInvalidBandwidth                 = types.ErrorInvalidBandwidth
 	NewGenesisState                       = types.NewGenesisState
 	DefaultGenesisState                   = types.DefaultGenesisState
 	SessionKey                            = types.SessionKey
-	ActiveSessionIDKey                    = types.ActiveSessionIDKey
+	ActiveSessionKey                      = types.ActiveSessionKey
 	NewMsgUpdateSession                   = types.NewMsgUpdateSession
 	NewQuerySessionParams                 = types.NewQuerySessionParams
 	NewQuerySessionsForSubscriptionParams = types.NewQuerySessionsForSubscriptionParams
@@ -55,11 +55,12 @@ var (
 	NewKeeper                             = keeper.NewKeeper
 
 	// variable aliases
-	ModuleCdc        = types.ModuleCdc
-	RouterKey        = types.RouterKey
-	StoreKey         = types.StoreKey
-	SessionsCountKey = types.SessionsCountKey
-	SessionKeyPrefix = types.SessionKeyPrefix
+	ModuleCdc              = types.ModuleCdc
+	RouterKey              = types.RouterKey
+	StoreKey               = types.StoreKey
+	SessionsCountKey       = types.SessionsCountKey
+	SessionKeyPrefix       = types.SessionKeyPrefix
+	ActiveSessionKeyPrefix = types.ActiveSessionKeyPrefix
 )
 
 type (

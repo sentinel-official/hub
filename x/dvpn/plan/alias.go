@@ -28,7 +28,6 @@ const (
 	QueryPlan                  = types.QueryPlan
 	QueryPlans                 = types.QueryPlans
 	QueryPlansForProvider      = types.QueryPlansForProvider
-	QueryPlansForNode          = types.QueryPlansForNode
 	QueryNodesForPlan          = types.QueryNodesForPlan
 )
 
@@ -51,8 +50,6 @@ var (
 	PlanKey                        = types.PlanKey
 	PlanForProviderKeyPrefix       = types.PlanForProviderKeyPrefix
 	PlanForProviderKey             = types.PlanForProviderKey
-	PlanForNodeKeyPrefix           = types.PlanForNodeKeyPrefix
-	PlanForNodeKey                 = types.PlanForNodeKey
 	NodeForPlanKeyPrefix           = types.NodeForPlanKeyPrefix
 	NodeForPlanKey                 = types.NodeForPlanKey
 	NewMsgAddPlan                  = types.NewMsgAddPlan
@@ -61,7 +58,6 @@ var (
 	NewMsgRemoveNodeForPlan        = types.NewMsgRemoveNodeForPlan
 	NewQueryPlanParams             = types.NewQueryPlanParams
 	NewQueryPlansForProviderParams = types.NewQueryPlansForProviderParams
-	NewQueryPlansForNodeParams     = types.NewQueryPlansForNodeParams
 	NewQueryNodesForPlanParams     = types.NewQueryNodesForPlanParams
 	NewKeeper                      = keeper.NewKeeper
 	Querier                        = querier.Querier
@@ -86,7 +82,6 @@ type (
 	Plans                       = types.Plans
 	QueryPlanParams             = types.QueryPlanParams
 	QueryPlansForProviderParams = types.QueryPlansForProviderParams
-	QueryPlansForNodeParams     = types.QueryPlansForNodeParams
 	QueryNodesForPlanParams     = types.QueryNodesForPlanParams
 	Keeper                      = keeper.Keeper
 )

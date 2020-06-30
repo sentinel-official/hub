@@ -15,6 +15,7 @@ type Session struct {
 	Subscription uint64          `json:"subscription"`
 	Node         hub.NodeAddress `json:"node"`
 	Address      sdk.AccAddress  `json:"address"`
+	Duration     time.Duration   `json:"duration"`
 	Bandwidth    hub.Bandwidth   `json:"bandwidth"`
 	Status       hub.Status      `json:"status"`
 	StatusAt     time.Time       `json:"status_at"`
@@ -26,10 +27,11 @@ ID:           %d
 Subscription: %d
 Node:         %s
 Address:      %s
+Duration:     %s
 Bandwidth:    %s
 Status:       %s
 Status at:    %s
-`), s.ID, s.Subscription, s.Node, s.Address, s.Bandwidth, s.Status, s.StatusAt)
+`), s.ID, s.Subscription, s.Node, s.Address, s.Duration, s.Bandwidth, s.Status, s.StatusAt)
 }
 
 type Sessions []Session

@@ -81,32 +81,25 @@ func (k Keeper) IterateSessions(ctx sdk.Context, f func(index int, item types.Se
 	}
 }
 
-func (k Keeper) SetActiveSessionID(ctx sdk.Context, subscription uint64, node hub.NodeAddress, address sdk.AccAddress, id uint64) {
-	key := types.ActiveSessionIDKey(subscription, node, address)
+func (k Keeper) SetActiveSession(ctx sdk.Context, s uint64, n hub.NodeAddress, a sdk.AccAddress, id uint64) {
+	key := types.ActiveSessionKey(s, n, a)
 	value := k.cdc.MustMarshalBinaryLengthPrefixed(id)
 
 	store := k.Store(ctx)
 	store.Set(key, value)
 }
 
-func (k Keeper) GetActiveSessionID(ctx sdk.Context, subscription uint64, node hub.NodeAddress, address sdk.AccAddress) (id uint64, found bool) {
+func (k Keeper) GetActiveSession(ctx sdk.Context, s uint64, n hub.NodeAddress, a sdk.AccAddress) (session types.Session, found bool) {
 	store := k.Store(ctx)
 
-	key := types.ActiveSessionIDKey(subscription, node, address)
+	key := types.ActiveSessionKey(s, n, a)
 	value := store.Get(key)
 	if value == nil {
-		return 0, false
-	}
-
-	k.cdc.MustUnmarshalBinaryLengthPrefixed(value, &id)
-	return id, true
-}
-
-func (k Keeper) GetActiveSession(ctx sdk.Context, subscription uint64, node hub.NodeAddress, address sdk.AccAddress) (session types.Session, found bool) {
-	id, found := k.GetActiveSessionID(ctx, subscription, node, address)
-	if !found {
 		return session, false
 	}
+
+	var id uint64
+	k.cdc.MustUnmarshalBinaryLengthPrefixed(value, &id)
 
 	return k.GetSession(ctx, id)
 }

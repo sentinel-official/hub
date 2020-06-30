@@ -17,14 +17,17 @@ var (
 )
 
 var (
-	SessionsCountKey = []byte{0x00}
-	SessionKeyPrefix = []byte{0x01}
+	SessionsCountKey       = []byte{0x00}
+	SessionKeyPrefix       = []byte{0x01}
+	ActiveSessionKeyPrefix = []byte{0x02}
 )
 
-func SessionKey(i uint64) []byte {
-	return append(SessionKeyPrefix, sdk.Uint64ToBigEndian(i)...)
+func SessionKey(id uint64) []byte {
+	return append(SessionKeyPrefix, sdk.Uint64ToBigEndian(id)...)
 }
 
-func ActiveSessionIDKey(subscription uint64, node hub.NodeAddress, address sdk.AccAddress) []byte {
-	return append(sdk.Uint64ToBigEndian(subscription), append(node.Bytes(), address.Bytes()...)...)
+func ActiveSessionKey(s uint64, n hub.NodeAddress, a sdk.AccAddress) []byte {
+	return append(ActiveSessionKeyPrefix,
+		append(sdk.Uint64ToBigEndian(s),
+			append(n.Bytes(), a.Bytes()...)...)...)
 }

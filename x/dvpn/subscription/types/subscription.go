@@ -66,7 +66,7 @@ func (s Subscription) Amount() sdk.Coin {
 		Quo(hub.Gigabyte)
 
 	coin := sdk.NewCoin(s.Price.Denom, amount)
-	if coin.IsGTE(s.Deposit) {
+	if s.Deposit.IsLT(coin) {
 		return s.Deposit
 	}
 

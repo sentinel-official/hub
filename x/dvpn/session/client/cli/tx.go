@@ -2,6 +2,7 @@ package cli
 
 import (
 	"strconv"
+	"time"
 
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -18,7 +19,7 @@ func txUpdateSession(cdc *codec.Codec) *cobra.Command {
 	return &cobra.Command{
 		Use:   "update",
 		Short: "Update a session",
-		Args:  cobra.ExactArgs(4),
+		Args:  cobra.ExactArgs(5),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			txb := auth.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
 			ctx := context.NewCLIContext().WithCodec(cdc)
@@ -33,18 +34,23 @@ func txUpdateSession(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			upload, err := strconv.ParseInt(args[2], 10, 64)
+			duration, err := time.ParseDuration(args[2])
 			if err != nil {
 				return err
 			}
 
-			download, err := strconv.ParseInt(args[3], 10, 64)
+			upload, err := strconv.ParseInt(args[3], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			download, err := strconv.ParseInt(args[4], 10, 64)
 			if err != nil {
 				return err
 			}
 
 			msg := types.NewMsgUpdateSession(ctx.FromAddress.Bytes(),
-				subscription, address, hub.NewBandwidthFromInt64(upload, download))
+				subscription, address, duration, hub.NewBandwidthFromInt64(upload, download))
 			return utils.GenerateOrBroadcastMsgs(ctx, txb, []sdk.Msg{msg})
 		},
 	}

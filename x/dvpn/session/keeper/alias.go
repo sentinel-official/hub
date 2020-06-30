@@ -7,8 +7,8 @@ import (
 	subscription "github.com/sentinel-official/hub/x/dvpn/subscription/types"
 )
 
-func (k Keeper) HasNodeAddressForPlan(ctx sdk.Context, id uint64, address hub.NodeAddress) bool {
-	return k.plan.HasNodeAddressForPlan(ctx, id, address)
+func (k Keeper) HasNodeForPlan(ctx sdk.Context, id uint64, address hub.NodeAddress) bool {
+	return k.plan.HasNodeForPlan(ctx, id, address)
 }
 
 func (k Keeper) SetSubscription(ctx sdk.Context, subscription subscription.Subscription) {
@@ -19,10 +19,10 @@ func (k Keeper) GetSubscription(ctx sdk.Context, id uint64) (subscription.Subscr
 	return k.subscription.GetSubscription(ctx, id)
 }
 
-func (k Keeper) HasSubscriptionIDForNode(ctx sdk.Context, address hub.NodeAddress, id uint64) bool {
-	return k.subscription.HasSubscriptionIDForNode(ctx, address, id)
+func (k Keeper) HasSubscriptionForNode(ctx sdk.Context, address hub.NodeAddress, id uint64) bool {
+	return k.subscription.HasSubscriptionForNode(ctx, address, id)
 }
 
-func (k Keeper) HasAddressForSubscriptionID(ctx sdk.Context, id uint64, address sdk.AccAddress) bool {
-	return k.subscription.HasAddressForSubscriptionID(ctx, id, address)
+func (k Keeper) HasSubscriptionForAddress(ctx sdk.Context, address sdk.AccAddress, id uint64) bool {
+	return k.subscription.HasSubscriptionForAddress(ctx, address, id)
 }

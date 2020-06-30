@@ -52,7 +52,7 @@ var (
 	ErrorInvalidSubscriptionStatus        = types.ErrorInvalidSubscriptionStatus
 	ErrorDuplicateAddress                 = types.ErrorDuplicateAddress
 	ErrorAddressWasNotAdded               = types.ErrorAddressWasNotAdded
-	ErrorCanNotRemoveAddress              = types.ErrorCanNotRemoveAddress
+	ErrorCanNotSubscribe                  = types.ErrorCanNotSubscribe
 	NewGenesisState                       = types.NewGenesisState
 	DefaultGenesisState                   = types.DefaultGenesisState
 	SubscriptionKey                       = types.SubscriptionKey
@@ -65,8 +65,8 @@ var (
 	MemberForSubscriptionKeyPrefix        = types.MemberForSubscriptionKeyPrefix
 	MemberForSubscriptionKey              = types.MemberForSubscriptionKey
 	NewMsgStartSubscription               = types.NewMsgStartSubscription
-	NewMsgAddAddressForSubscription       = types.NewMsgAddAddressForSubscription
-	NewMsgRemoveAddressForSubscription    = types.NewMsgRemoveAddressForSubscription
+	NewMsgAddMemberForSubscription        = types.NewMsgAddMemberForSubscription
+	NewMsgRemoveMemberForSubscription     = types.NewMsgRemoveMemberForSubscription
 	NewMsgEndSubscription                 = types.NewMsgEndSubscription
 	NewQueryPlanParams                    = types.NewQueryPlanParams
 	NewQueryPlansForProviderParams        = types.NewQueryPlansForProviderParams
@@ -92,8 +92,8 @@ type (
 	GenesisSubscriptions               = types.GenesisSubscriptions
 	GenesisState                       = types.GenesisState
 	MsgStartSubscription               = types.MsgStartSubscription
-	MsgAddAddressForSubscription       = types.MsgAddAddressForSubscription
-	MsgRemoveAddressForSubscription    = types.MsgRemoveAddressForSubscription
+	MsgAddMemberForSubscription        = types.MsgAddMemberForSubscription
+	MsgRemoveMemberForSubscription     = types.MsgRemoveMemberForSubscription
 	MsgEndSubscription                 = types.MsgEndSubscription
 	QueryPlanParams                    = types.QueryPlanParams
 	QueryPlansForProviderParams        = types.QueryPlansForProviderParams

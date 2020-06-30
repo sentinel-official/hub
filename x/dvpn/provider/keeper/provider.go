@@ -15,6 +15,13 @@ func (k Keeper) SetProvider(ctx sdk.Context, provider types.Provider) {
 	store.Set(key, value)
 }
 
+func (k Keeper) HasProvider(ctx sdk.Context, address hub.ProvAddress) bool {
+	store := k.Store(ctx)
+
+	key := types.ProviderKey(address)
+	return store.Has(key)
+}
+
 func (k Keeper) GetProvider(ctx sdk.Context, address hub.ProvAddress) (provider types.Provider, found bool) {
 	store := k.Store(ctx)
 

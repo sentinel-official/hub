@@ -35,10 +35,10 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 			return plan.HandleRemoveNodeForPlan(ctx, k.Plan, msg)
 		case subscription.MsgStartSubscription:
 			return subscription.HandleStartSubscription(ctx, k.Subscription, msg)
-		case subscription.MsgAddAddressForSubscription:
-			return subscription.HandleAddAddressForSubscription(ctx, k.Subscription, msg)
-		case subscription.MsgRemoveAddressForSubscription:
-			return subscription.HandleRemoveAddressForSubscription(ctx, k.Subscription, msg)
+		case subscription.MsgAddMemberForSubscription:
+			return subscription.HandleAddMemberForSubscription(ctx, k.Subscription, msg)
+		case subscription.MsgRemoveMemberForSubscription:
+			return subscription.HandleRemoveMemberForSubscription(ctx, k.Subscription, msg)
 		case subscription.MsgEndSubscription:
 			return subscription.HandleEndSubscription(ctx, k.Subscription, msg)
 		case session.MsgUpdateSession:

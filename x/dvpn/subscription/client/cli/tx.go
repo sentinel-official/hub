@@ -61,8 +61,8 @@ func txStartNodeSubscription(cdc *codec.Codec) *cobra.Command {
 
 func txAddAddressForSubscription(cdc *codec.Codec) *cobra.Command {
 	return &cobra.Command{
-		Use:   "address-add",
-		Short: "Add an address for a subscription",
+		Use:   "member-add",
+		Short: "Add a member for a subscription",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			txb := auth.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
@@ -78,7 +78,7 @@ func txAddAddressForSubscription(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgAddAddressForSubscription(ctx.FromAddress, id, address)
+			msg := types.NewMsgAddMemberForSubscription(ctx.FromAddress, id, address)
 			return utils.GenerateOrBroadcastMsgs(ctx, txb, []sdk.Msg{msg})
 		},
 	}
@@ -86,8 +86,8 @@ func txAddAddressForSubscription(cdc *codec.Codec) *cobra.Command {
 
 func txRemoveAddressForSubscription(cdc *codec.Codec) *cobra.Command {
 	return &cobra.Command{
-		Use:   "address-remove",
-		Short: "Remove an address for a subscription",
+		Use:   "member-remove",
+		Short: "Remove a member for a subscription",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			txb := auth.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
@@ -103,7 +103,7 @@ func txRemoveAddressForSubscription(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgRemoveAddressForSubscription(ctx.FromAddress, id, address)
+			msg := types.NewMsgRemoveMemberForSubscription(ctx.FromAddress, id, address)
 			return utils.GenerateOrBroadcastMsgs(ctx, txb, []sdk.Msg{msg})
 		},
 	}

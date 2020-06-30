@@ -11,8 +11,8 @@ import (
 )
 
 func isAuthorized(ctx sdk.Context, k keeper.Keeper, p, s uint64, n hub.NodeAddress) bool {
-	return p == 0 && k.HasSubscriptionIDForNode(ctx, n, s) ||
-		k.HasNodeAddressForPlan(ctx, p, n)
+	return p == 0 && k.HasSubscriptionForNode(ctx, n, s) ||
+		k.HasNodeForPlan(ctx, p, n)
 }
 
 func HandleUpdateSession(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpdateSession) sdk.Result {
@@ -26,8 +26,13 @@ func HandleUpdateSession(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpdateSe
 	if !isAuthorized(ctx, k, subscription.Plan, subscription.ID, msg.From) {
 		return types.ErrorUnauthorized().Result()
 	}
-	if !k.HasAddressForSubscriptionID(ctx, subscription.ID, msg.Address) {
+	if !k.HasSubscriptionForAddress(ctx, msg.Address, subscription.ID) {
 		return types.ErrorAddressWasNotAdded().Result()
+	}
+
+	subscription.Duration = subscription.Duration + msg.Duration
+	if subscription.Duration > subscription.TotalDuration {
+		return types.ErrorInvalidDuration().Result()
 	}
 
 	subscription.Bandwidth = subscription.Bandwidth.Add(msg.Bandwidth)
@@ -43,6 +48,7 @@ func HandleUpdateSession(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpdateSe
 			Subscription: subscription.ID,
 			Node:         msg.From,
 			Address:      msg.Address,
+			Duration:     0,
 			Bandwidth:    hub.NewBandwidthFromInt64(0, 0),
 			Status:       hub.StatusActive,
 			StatusAt:     ctx.BlockTime(),
@@ -54,7 +60,7 @@ func HandleUpdateSession(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpdateSe
 			sdk.NewAttribute(types.AttributeKeyCount, fmt.Sprintf("%d", count+1)),
 		))
 
-		k.SetActiveSessionID(ctx, session.Subscription, session.Node, session.Address, session.ID)
+		k.SetActiveSession(ctx, session.Subscription, session.Node, session.Address, session.ID)
 		ctx.EventManager().EmitEvent(sdk.NewEvent(
 			types.EventTypeSetActiveSession,
 			sdk.NewAttribute(types.AttributeKeySubscription, fmt.Sprintf("%d", session.Subscription)),
@@ -64,6 +70,7 @@ func HandleUpdateSession(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpdateSe
 		))
 	}
 
+	session.Duration = session.Duration + msg.Duration
 	session.Bandwidth = session.Bandwidth.Add(msg.Bandwidth)
 
 	k.SetSession(ctx, session)

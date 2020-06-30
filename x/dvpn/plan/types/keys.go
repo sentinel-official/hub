@@ -33,16 +33,8 @@ func PlanForProviderKey(address hub.ProvAddress, id uint64) []byte {
 	return append(PlanForProviderKeyPrefix(address), sdk.Uint64ToBigEndian(id)...)
 }
 
-func PlanForNodeKeyPrefix(address hub.NodeAddress) []byte {
-	return append([]byte{0x03}, address.Bytes()...)
-}
-
-func PlanForNodeKey(address hub.NodeAddress, id uint64) []byte {
-	return append(PlanForNodeKeyPrefix(address), sdk.Uint64ToBigEndian(id)...)
-}
-
 func NodeForPlanKeyPrefix(id uint64) []byte {
-	return append([]byte{0x04}, sdk.Uint64ToBigEndian(id)...)
+	return append([]byte{0x03}, sdk.Uint64ToBigEndian(id)...)
 }
 
 func NodeForPlanKey(id uint64, address hub.NodeAddress) []byte {

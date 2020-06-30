@@ -16,10 +16,10 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, state types.GenesisState) {
 			k.SetMemberForSubscription(ctx, item.Subscription.ID, member)
 		}
 
-		if item.Subscription.ID > 0 {
-			k.SetSubscriptionForPlan(ctx, item.Subscription.Plan, item.Subscription.ID)
-		} else {
+		if item.Subscription.ID == 0 {
 			k.SetSubscriptionForNode(ctx, item.Subscription.Node, item.Subscription.ID)
+		} else {
+			k.SetSubscriptionForPlan(ctx, item.Subscription.Plan, item.Subscription.ID)
 		}
 
 		k.SetSubscriptionsCount(ctx, k.GetSubscriptionsCount(ctx)+1)

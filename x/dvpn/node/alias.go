@@ -39,6 +39,7 @@ var (
 	ErrorProviderDoesNotExist      = types.ErrorProviderDoesNotExist
 	ErrorDuplicateNode             = types.ErrorDuplicateNode
 	ErrorNodeDoesNotExist          = types.ErrorNodeDoesNotExist
+	ErrorCanNotUpdate              = types.ErrorCanNotUpdate
 	NewGenesisState                = types.NewGenesisState
 	DefaultGenesisState            = types.DefaultGenesisState
 	NodeKey                        = types.NodeKey

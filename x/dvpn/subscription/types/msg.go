@@ -10,8 +10,8 @@ import (
 
 var (
 	_ sdk.Msg = (*MsgStartSubscription)(nil)
-	_ sdk.Msg = (*MsgAddAddressForSubscription)(nil)
-	_ sdk.Msg = (*MsgRemoveAddressForSubscription)(nil)
+	_ sdk.Msg = (*MsgAddMemberForSubscription)(nil)
+	_ sdk.Msg = (*MsgRemoveMemberForSubscription)(nil)
 	_ sdk.Msg = (*MsgEndSubscription)(nil)
 )
 
@@ -50,28 +50,23 @@ func (m MsgStartSubscription) ValidateBasic() sdk.Error {
 		return ErrorInvalidField("from")
 	}
 
-	if m.ID > 0 {
-		// ID shouldn't be zero
-		if m.ID == 0 {
-			return ErrorInvalidField("id")
+	if m.ID == 0 {
+		// Address shouldn't be nil or empty
+		if m.Address == nil || m.Address.Empty() {
+			return ErrorInvalidField("address")
 		}
 
-		// Denom length should be [3, 16]
-		if len(m.Denom) < 3 || len(m.Denom) > 16 {
-			return ErrorInvalidField("denom")
+		// Deposit should be valid
+		if !m.Deposit.IsValid() {
+			return ErrorInvalidField("deposit")
 		}
 
 		return nil
 	}
 
-	// Address shouldn't be nil or empty
-	if m.Address == nil || m.Address.Empty() {
-		return ErrorInvalidField("address")
-	}
-
-	// Deposit can be empty. If not, it should be valid
-	if !hub.IsEmptyCoin(m.Deposit) && !m.Deposit.IsValid() {
-		return ErrorInvalidField("deposit")
+	// Denom length should be [3, 16]
+	if len(m.Denom) < 3 || len(m.Denom) > 16 {
+		return ErrorInvalidField("denom")
 	}
 
 	return nil
@@ -90,30 +85,30 @@ func (m MsgStartSubscription) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{m.From}
 }
 
-// MsgAddAddressForSubscription is for adding an address for subscription.
-type MsgAddAddressForSubscription struct {
+// MsgAddMemberForSubscription is for adding a member for a subscription.
+type MsgAddMemberForSubscription struct {
 	From    sdk.AccAddress `json:"from"`
 	ID      uint64         `json:"id"`
 	Address sdk.AccAddress `json:"address"`
 }
 
-func NewMsgAddAddressForSubscription(from sdk.AccAddress, id uint64, address sdk.AccAddress) MsgAddAddressForSubscription {
-	return MsgAddAddressForSubscription{
+func NewMsgAddMemberForSubscription(from sdk.AccAddress, id uint64, address sdk.AccAddress) MsgAddMemberForSubscription {
+	return MsgAddMemberForSubscription{
 		From:    from,
 		ID:      id,
 		Address: address,
 	}
 }
 
-func (m MsgAddAddressForSubscription) Route() string {
+func (m MsgAddMemberForSubscription) Route() string {
 	return RouterKey
 }
 
-func (m MsgAddAddressForSubscription) Type() string {
-	return "add_address_for_subscription"
+func (m MsgAddMemberForSubscription) Type() string {
+	return "add_member_for_subscription"
 }
 
-func (m MsgAddAddressForSubscription) ValidateBasic() sdk.Error {
+func (m MsgAddMemberForSubscription) ValidateBasic() sdk.Error {
 	if m.From == nil || m.From.Empty() {
 		return ErrorInvalidField("from")
 	}
@@ -128,10 +123,15 @@ func (m MsgAddAddressForSubscription) ValidateBasic() sdk.Error {
 		return ErrorInvalidField("address")
 	}
 
+	// From and Address both shouldn't be same
+	if m.From.Equals(m.Address) {
+		return ErrorInvalidField("from and address")
+	}
+
 	return nil
 }
 
-func (m MsgAddAddressForSubscription) GetSignBytes() []byte {
+func (m MsgAddMemberForSubscription) GetSignBytes() []byte {
 	bytes, err := json.Marshal(m)
 	if err != nil {
 		panic(err)
@@ -140,34 +140,34 @@ func (m MsgAddAddressForSubscription) GetSignBytes() []byte {
 	return bytes
 }
 
-func (m MsgAddAddressForSubscription) GetSigners() []sdk.AccAddress {
+func (m MsgAddMemberForSubscription) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{m.From}
 }
 
-// MsgRemoveAddressForSubscription is for removing an address for subscription.
-type MsgRemoveAddressForSubscription struct {
+// MsgRemoveMemberForSubscription is for removing a member for a subscription.
+type MsgRemoveMemberForSubscription struct {
 	From    sdk.AccAddress `json:"from"`
 	ID      uint64         `json:"id"`
 	Address sdk.AccAddress `json:"address"`
 }
 
-func NewMsgRemoveAddressForSubscription(from sdk.AccAddress, id uint64, address sdk.AccAddress) MsgRemoveAddressForSubscription {
-	return MsgRemoveAddressForSubscription{
+func NewMsgRemoveMemberForSubscription(from sdk.AccAddress, id uint64, address sdk.AccAddress) MsgRemoveMemberForSubscription {
+	return MsgRemoveMemberForSubscription{
 		From:    from,
 		ID:      id,
 		Address: address,
 	}
 }
 
-func (m MsgRemoveAddressForSubscription) Route() string {
+func (m MsgRemoveMemberForSubscription) Route() string {
 	return RouterKey
 }
 
-func (m MsgRemoveAddressForSubscription) Type() string {
+func (m MsgRemoveMemberForSubscription) Type() string {
 	return "remove_address_for_subscription"
 }
 
-func (m MsgRemoveAddressForSubscription) ValidateBasic() sdk.Error {
+func (m MsgRemoveMemberForSubscription) ValidateBasic() sdk.Error {
 	if m.From == nil || m.From.Empty() {
 		return ErrorInvalidField("from")
 	}
@@ -182,10 +182,15 @@ func (m MsgRemoveAddressForSubscription) ValidateBasic() sdk.Error {
 		return ErrorInvalidField("address")
 	}
 
+	// From and Address both shouldn't be same
+	if m.From.Equals(m.Address) {
+		return ErrorInvalidField("from and address")
+	}
+
 	return nil
 }
 
-func (m MsgRemoveAddressForSubscription) GetSignBytes() []byte {
+func (m MsgRemoveMemberForSubscription) GetSignBytes() []byte {
 	bytes, err := json.Marshal(m)
 	if err != nil {
 		panic(err)
@@ -194,7 +199,7 @@ func (m MsgRemoveAddressForSubscription) GetSignBytes() []byte {
 	return bytes
 }
 
-func (m MsgRemoveAddressForSubscription) GetSigners() []sdk.AccAddress {
+func (m MsgRemoveMemberForSubscription) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{m.From}
 }
 

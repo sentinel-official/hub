@@ -19,6 +19,7 @@ const (
 	errorCodeProviderDoesNotExist
 	errorCodeDuplicateNode
 	errorCodeNodeDoesNotExist
+	errorCodeCanNotUpdate
 )
 
 const (
@@ -28,6 +29,7 @@ const (
 	errorMsgProviderDoesNotExist = "provider does not exist"
 	errorMsgDuplicateNode        = "duplicate node"
 	errorMsgNodeDoesNotExist     = "node does not exist"
+	errorMsgCanNotUpdate         = "can not update"
 )
 
 func ErrorMarshal() sdk.Error {
@@ -60,4 +62,8 @@ func ErrorDuplicateNode() sdk.Error {
 
 func ErrorNodeDoesNotExist() sdk.Error {
 	return sdk.NewError(Codespace, errorCodeNodeDoesNotExist, errorMsgNodeDoesNotExist)
+}
+
+func ErrorCanNotUpdate() sdk.Error {
+	return sdk.NewError(Codespace, errorCodeCanNotUpdate, errorMsgCanNotUpdate)
 }
