@@ -52,7 +52,8 @@ func (m MsgRegisterNode) ValidateBasic() sdk.Error {
 	}
 
 	// Provider and Price both shouldn't nil at the same time
-	if m.Provider != nil && m.Price != nil {
+	if (m.Provider != nil && m.Price != nil) ||
+		(m.Provider == nil && m.Price == nil) {
 		return ErrorInvalidField("provider and price")
 	}
 
