@@ -215,7 +215,7 @@ func NewApp(logger log.Logger, db db.DB, tracer io.Writer, latest bool, invarChe
 	)
 
 	// NOTE: order is very important here
-	app.manager.SetOrderBeginBlockers(mint.ModuleName, distribution.ModuleName, slashing.ModuleName)
+	app.manager.SetOrderBeginBlockers(mint.ModuleName, distribution.ModuleName, slashing.ModuleName, dvpn.ModuleName)
 	app.manager.SetOrderEndBlockers(crisis.ModuleName, gov.ModuleName, staking.ModuleName)
 	app.manager.SetOrderInitGenesis(
 		genaccounts.ModuleName, distribution.ModuleName, staking.ModuleName, auth.ModuleName,
