@@ -1,6 +1,8 @@
 package keeper
 
 import (
+	"time"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	hub "github.com/sentinel-official/hub/types"
@@ -68,7 +70,7 @@ func (k Keeper) GetNodes(ctx sdk.Context) (items types.Nodes) {
 func (k Keeper) GetNodesForProvider(ctx sdk.Context, address hub.ProvAddress) (items types.Nodes) {
 	store := k.Store(ctx)
 
-	iter := sdk.KVStorePrefixIterator(store, types.NodeForProviderKeyPrefix(address))
+	iter := sdk.KVStorePrefixIterator(store, types.NodeForProviderByProviderKey(address))
 	defer iter.Close()
 
 	for ; iter.Valid(); iter.Next() {
@@ -92,6 +94,39 @@ func (k Keeper) IterateNodes(ctx sdk.Context, f func(index int, item types.Node)
 		var node types.Node
 		k.cdc.MustUnmarshalBinaryLengthPrefixed(iter.Value(), &node)
 
+		if stop := f(i, node); stop {
+			break
+		}
+		i++
+	}
+}
+
+func (k Keeper) SetActiveNodeAt(ctx sdk.Context, at time.Time, address hub.NodeAddress) {
+	key := types.ActiveNodeAtKey(at, address)
+	value := k.cdc.MustMarshalBinaryLengthPrefixed(address)
+
+	store := k.Store(ctx)
+	store.Set(key, value)
+}
+
+func (k Keeper) DeleteActiveNodeAt(ctx sdk.Context, at time.Time, address hub.NodeAddress) {
+	key := types.ActiveNodeAtKey(at, address)
+
+	store := k.Store(ctx)
+	store.Delete(key)
+}
+
+func (k Keeper) IterateActiveNodes(ctx sdk.Context, end time.Time, f func(index int, item types.Node) (stop bool)) {
+	store := k.Store(ctx)
+
+	iter := store.Iterator(types.ActiveNodeAtKeyPrefix, sdk.PrefixEndBytes(types.ActiveNodeAtByTimeKey(end)))
+	defer iter.Close()
+
+	for i := 0; iter.Valid(); iter.Next() {
+		var address hub.NodeAddress
+		k.cdc.MustUnmarshalBinaryLengthPrefixed(iter.Value(), &address)
+
+		node, _ := k.GetNode(ctx, address)
 		if stop := f(i, node); stop {
 			break
 		}

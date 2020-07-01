@@ -45,8 +45,10 @@ var (
 	NewGenesisState                = types.NewGenesisState
 	DefaultGenesisState            = types.DefaultGenesisState
 	NodeKey                        = types.NodeKey
-	NodeForProviderKeyPrefix       = types.NodeForProviderKeyPrefix
+	NodeForProviderByProviderKey   = types.NodeForProviderByProviderKey
 	NodeForProviderKey             = types.NodeForProviderKey
+	ActiveNodeAtByTimeKey          = types.ActiveNodeAtByTimeKey
+	ActiveNodeAtKey                = types.ActiveNodeAtKey
 	NewMsgRegisterNode             = types.NewMsgRegisterNode
 	NewMsgUpdateNode               = types.NewMsgUpdateNode
 	NewMsgSetNodeStatus            = types.NewMsgSetNodeStatus
@@ -60,11 +62,13 @@ var (
 	Querier                        = querier.Querier
 
 	// variable aliases
-	ModuleCdc           = types.ModuleCdc
-	RouterKey           = types.RouterKey
-	StoreKey            = types.StoreKey
-	NodeKeyPrefix       = types.NodeKeyPrefix
-	KeyInactiveDuration = types.KeyInactiveDuration
+	ModuleCdc                = types.ModuleCdc
+	RouterKey                = types.RouterKey
+	StoreKey                 = types.StoreKey
+	NodeKeyPrefix            = types.NodeKeyPrefix
+	NodeForProviderKeyPrefix = types.NodeForProviderKeyPrefix
+	ActiveNodeAtKeyPrefix    = types.ActiveNodeAtKeyPrefix
+	KeyInactiveDuration      = types.KeyInactiveDuration
 )
 
 type (
