@@ -8,6 +8,19 @@ import (
 	"github.com/sentinel-official/hub/x/dvpn/node/types"
 )
 
+func BeginBlock(ctx sdk.Context, k keeper.Keeper) {
+	end := ctx.BlockTime().Add(-1 * k.InactiveDuration(ctx))
+	k.IterateActiveNodes(ctx, end, func(_ int, node types.Node) (stop bool) {
+		k.DeleteActiveNodeAt(ctx, node.StatusAt, node.Address)
+
+		node.Status = hub.StatusInactive
+		node.StatusAt = ctx.BlockTime()
+		k.SetNode(ctx, node)
+
+		return false
+	})
+}
+
 func HandleRegisterNode(ctx sdk.Context, k keeper.Keeper, msg types.MsgRegisterNode) sdk.Result {
 	if !k.HasProvider(ctx, msg.Provider) {
 		return types.ErrorProviderDoesNotExist().Result()
@@ -102,6 +115,9 @@ func HandleSetNodeStatus(ctx sdk.Context, k keeper.Keeper, msg types.MsgSetNodeS
 	if !found {
 		return types.ErrorNodeDoesNotExist().Result()
 	}
+
+	k.DeleteActiveNodeAt(ctx, node.StatusAt, node.Address)
+	k.SetActiveNodeAt(ctx, ctx.BlockTime(), node.Address)
 
 	node.Status = msg.Status
 	node.StatusAt = ctx.BlockTime()

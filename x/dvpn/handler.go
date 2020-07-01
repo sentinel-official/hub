@@ -12,6 +12,13 @@ import (
 	"github.com/sentinel-official/hub/x/dvpn/types"
 )
 
+func BeginBlock(ctx sdk.Context, k keeper.Keeper) {
+	ctx, write := ctx.CacheContext()
+	defer write()
+
+	node.BeginBlock(ctx, k.Node)
+}
+
 func NewHandler(k keeper.Keeper) sdk.Handler {
 	return func(ctx sdk.Context, msg sdk.Msg) sdk.Result {
 		switch msg := msg.(type) {
