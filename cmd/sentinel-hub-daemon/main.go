@@ -34,12 +34,7 @@ var (
 
 func main() {
 	cdc := hub.MakeCodec()
-
-	config := types.GetConfig()
-	config.SetBech32PrefixForAccount(types.Bech32PrefixAccAddr, types.Bech32PrefixAccPub)
-	config.SetBech32PrefixForValidator(types.Bech32PrefixValAddr, types.Bech32PrefixValPub)
-	config.SetBech32PrefixForConsensusNode(types.Bech32PrefixConsAddr, types.Bech32PrefixConsPub)
-	config.Seal()
+	types.GetConfig().Seal()
 
 	ctx := server.NewDefaultContext()
 	cobra.EnableCommandSorting = false
