@@ -54,7 +54,7 @@ linters:
     - maligned
     - misspell
     - nakedret
-    - nestif
+    #- nestif
     #- nolintlint
     - prealloc
     - rowserrcheck
