@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	CategoryUnknown = iota + 0x00
+	CategoryUnknown NodeCategory = iota + 0x00
 	CategoryOpenVPN
 	CategoryWireGuard
 )
