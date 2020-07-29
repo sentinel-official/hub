@@ -21,9 +21,9 @@ import (
 	"github.com/tendermint/tendermint/libs/log"
 	tm "github.com/tendermint/tendermint/types"
 
-	node "github.com/sentinel-official/hub/x/vpn/node/simulation"
-	plan "github.com/sentinel-official/hub/x/vpn/plan/simulation"
-	provider "github.com/sentinel-official/hub/x/vpn/provider/simulation"
+	node "github.com/sentinel-official/hub/x/node/simulation"
+	plan "github.com/sentinel-official/hub/x/plan/simulation"
+	provider "github.com/sentinel-official/hub/x/provider/simulation"
 )
 
 var (

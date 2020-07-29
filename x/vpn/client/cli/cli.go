@@ -4,12 +4,12 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/spf13/cobra"
 
-	deposit "github.com/sentinel-official/hub/x/vpn/deposit/client/cli"
-	node "github.com/sentinel-official/hub/x/vpn/node/client/cli"
-	plan "github.com/sentinel-official/hub/x/vpn/plan/client/cli"
-	provider "github.com/sentinel-official/hub/x/vpn/provider/client/cli"
-	session "github.com/sentinel-official/hub/x/vpn/session/client/cli"
-	subscription "github.com/sentinel-official/hub/x/vpn/subscription/client/cli"
+	deposit "github.com/sentinel-official/hub/x/deposit/client/cli"
+	node "github.com/sentinel-official/hub/x/node/client/cli"
+	plan "github.com/sentinel-official/hub/x/plan/client/cli"
+	provider "github.com/sentinel-official/hub/x/provider/client/cli"
+	session "github.com/sentinel-official/hub/x/session/client/cli"
+	subscription "github.com/sentinel-official/hub/x/subscription/client/cli"
 )
 
 func GetQueryCmd(cdc *codec.Codec) *cobra.Command {

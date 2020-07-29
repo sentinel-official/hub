@@ -1,12 +1,12 @@
 package types
 
 import (
-	deposit "github.com/sentinel-official/hub/x/vpn/deposit/types"
-	node "github.com/sentinel-official/hub/x/vpn/node/types"
-	plan "github.com/sentinel-official/hub/x/vpn/plan/types"
-	provider "github.com/sentinel-official/hub/x/vpn/provider/types"
-	session "github.com/sentinel-official/hub/x/vpn/session/types"
-	subscription "github.com/sentinel-official/hub/x/vpn/subscription/types"
+	deposit "github.com/sentinel-official/hub/x/deposit/types"
+	node "github.com/sentinel-official/hub/x/node/types"
+	plan "github.com/sentinel-official/hub/x/plan/types"
+	provider "github.com/sentinel-official/hub/x/provider/types"
+	session "github.com/sentinel-official/hub/x/session/types"
+	subscription "github.com/sentinel-official/hub/x/subscription/types"
 )
 
 func init() {

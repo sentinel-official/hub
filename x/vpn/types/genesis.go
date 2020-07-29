@@ -1,12 +1,12 @@
 package types
 
 import (
-	"github.com/sentinel-official/hub/x/vpn/deposit"
-	"github.com/sentinel-official/hub/x/vpn/node"
-	"github.com/sentinel-official/hub/x/vpn/plan"
-	"github.com/sentinel-official/hub/x/vpn/provider"
-	"github.com/sentinel-official/hub/x/vpn/session"
-	"github.com/sentinel-official/hub/x/vpn/subscription"
+	"github.com/sentinel-official/hub/x/deposit"
+	"github.com/sentinel-official/hub/x/node"
+	"github.com/sentinel-official/hub/x/plan"
+	"github.com/sentinel-official/hub/x/provider"
+	"github.com/sentinel-official/hub/x/session"
+	"github.com/sentinel-official/hub/x/subscription"
 )
 
 type GenesisState struct {

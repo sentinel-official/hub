@@ -28,8 +28,8 @@ import (
 	"github.com/tendermint/tendermint/libs/log"
 	db "github.com/tendermint/tm-db"
 
+	"github.com/sentinel-official/hub/x/deposit"
 	"github.com/sentinel-official/hub/x/vpn"
-	"github.com/sentinel-official/hub/x/vpn/deposit"
 )
 
 const (
@@ -96,7 +96,7 @@ type App struct {
 	slashingKeeper     slashing.Keeper
 	crisisKeeper       crisis.Keeper
 	govKeeper          gov.Keeper
-	vpnKeeper         vpn.Keeper
+	vpnKeeper          vpn.Keeper
 }
 
 func NewApp(logger log.Logger, db db.DB, tracer io.Writer, latest bool, invarCheckPeriod uint,
