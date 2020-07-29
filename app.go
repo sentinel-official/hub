@@ -28,8 +28,8 @@ import (
 	"github.com/tendermint/tendermint/libs/log"
 	db "github.com/tendermint/tm-db"
 
-	"github.com/sentinel-official/hub/x/dvpn"
-	"github.com/sentinel-official/hub/x/dvpn/deposit"
+	"github.com/sentinel-official/hub/x/deposit"
+	"github.com/sentinel-official/hub/x/vpn"
 )
 
 const (
@@ -53,7 +53,7 @@ var (
 		slashing.AppModuleBasic{},
 		crisis.AppModuleBasic{},
 		gov.NewAppModuleBasic(client.ProposalHandler, distribution.ProposalHandler),
-		dvpn.AppModuleBasic{},
+		vpn.AppModuleBasic{},
 	)
 
 	moduleAccountPermissions = map[string][]string{
@@ -96,7 +96,7 @@ type App struct {
 	slashingKeeper     slashing.Keeper
 	crisisKeeper       crisis.Keeper
 	govKeeper          gov.Keeper
-	dVPNKeeper         dvpn.Keeper
+	vpnKeeper          vpn.Keeper
 }
 
 func NewApp(logger log.Logger, db db.DB, tracer io.Writer, latest bool, invarCheckPeriod uint,
@@ -110,7 +110,7 @@ func NewApp(logger log.Logger, db db.DB, tracer io.Writer, latest bool, invarChe
 	keys := sdk.NewKVStoreKeys(baseapp.MainStoreKey,
 		params.StoreKey, auth.StoreKey, supply.StoreKey, staking.StoreKey,
 		mint.StoreKey, distribution.StoreKey, slashing.StoreKey, gov.StoreKey,
-		dvpn.StoreKey,
+		vpn.StoreKey,
 	)
 	transientKeys := sdk.NewTransientStoreKeys(params.TStoreKey, staking.TStoreKey)
 
@@ -193,8 +193,8 @@ func NewApp(logger log.Logger, db db.DB, tracer io.Writer, latest bool, invarChe
 		govRouter)
 	app.stakingKeeper = *stakingKeeper.SetHooks(
 		staking.NewMultiStakingHooks(app.distributionKeeper.Hooks(), app.slashingKeeper.Hooks()))
-	app.dVPNKeeper = dvpn.NewKeeper(app.cdc,
-		keys[dvpn.StoreKey],
+	app.vpnKeeper = vpn.NewKeeper(app.cdc,
+		keys[vpn.StoreKey],
 		app.paramsKeeper,
 		app.bankKeeper,
 		app.supplyKeeper)
@@ -211,16 +211,16 @@ func NewApp(logger log.Logger, db db.DB, tracer io.Writer, latest bool, invarChe
 		slashing.NewAppModule(app.slashingKeeper, app.stakingKeeper),
 		crisis.NewAppModule(&app.crisisKeeper),
 		gov.NewAppModule(app.govKeeper, app.supplyKeeper),
-		dvpn.NewAppModule(app.dVPNKeeper),
+		vpn.NewAppModule(app.vpnKeeper),
 	)
 
 	// NOTE: order is very important here
-	app.manager.SetOrderBeginBlockers(mint.ModuleName, distribution.ModuleName, slashing.ModuleName, dvpn.ModuleName)
+	app.manager.SetOrderBeginBlockers(mint.ModuleName, distribution.ModuleName, slashing.ModuleName, vpn.ModuleName)
 	app.manager.SetOrderEndBlockers(crisis.ModuleName, gov.ModuleName, staking.ModuleName)
 	app.manager.SetOrderInitGenesis(
 		genaccounts.ModuleName, distribution.ModuleName, staking.ModuleName, auth.ModuleName,
 		bank.ModuleName, slashing.ModuleName, gov.ModuleName, mint.ModuleName,
-		supply.ModuleName, crisis.ModuleName, genutil.ModuleName, dvpn.ModuleName,
+		supply.ModuleName, crisis.ModuleName, genutil.ModuleName, vpn.ModuleName,
 	)
 
 	app.manager.RegisterInvariants(&app.crisisKeeper)

@@ -52,7 +52,7 @@ linters:
     - govet
     - ineffassign
     - interfacer
-    - lll
+    #- lll
     - maligned
     - misspell
     - nakedret
