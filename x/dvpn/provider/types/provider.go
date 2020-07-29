@@ -25,7 +25,7 @@ Description: %s
 `, p.Address, p.Identity, p.Name, p.Website, p.Description))
 }
 
-func (p *Provider) Validate() error {
+func (p Provider) Validate() error {
 	if p.Address == nil || p.Address.Empty() {
 		return fmt.Errorf("invalid address; found nil or empty")
 	}
