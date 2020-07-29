@@ -33,6 +33,8 @@ var (
 	DepositKey                    = types.DepositKey
 	NewQueryDepositParams         = types.NewQueryDepositParams
 	NewKeeper                     = keeper.NewKeeper
+	CreateTestInput               = keeper.CreateTestInput
+	MakeTestCodec                 = keeper.MakeTestCodec
 	Querier                       = querier.Querier
 
 	// variable aliases
