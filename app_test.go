@@ -21,9 +21,9 @@ import (
 	"github.com/tendermint/tendermint/libs/log"
 	tm "github.com/tendermint/tendermint/types"
 
-	node "github.com/sentinel-official/hub/x/dvpn/node/simulation"
-	plan "github.com/sentinel-official/hub/x/dvpn/plan/simulation"
-	provider "github.com/sentinel-official/hub/x/dvpn/provider/simulation"
+	node "github.com/sentinel-official/hub/x/vpn/node/simulation"
+	plan "github.com/sentinel-official/hub/x/vpn/plan/simulation"
+	provider "github.com/sentinel-official/hub/x/vpn/provider/simulation"
 )
 
 var (
@@ -252,7 +252,7 @@ func operations(app *App) []simulation.WeightedOperation {
 				)
 				return v
 			}(nil),
-			Op: provider.SimulateMsgRegisterProvider(app.dVPNKeeper.Provider),
+			Op: provider.SimulateMsgRegisterProvider(app.vpnKeeper.Provider),
 		},
 		{
 			Weight: func(_ *rand.Rand) (v int) {
@@ -261,7 +261,7 @@ func operations(app *App) []simulation.WeightedOperation {
 				)
 				return v
 			}(nil),
-			Op: provider.SimulateMsgUpdateProvider(app.dVPNKeeper.Provider),
+			Op: provider.SimulateMsgUpdateProvider(app.vpnKeeper.Provider),
 		},
 		{
 			Weight: func(_ *rand.Rand) (v int) {
@@ -270,7 +270,7 @@ func operations(app *App) []simulation.WeightedOperation {
 				)
 				return v
 			}(nil),
-			Op: plan.SimulateMsgAddPlan(app.dVPNKeeper.Provider, app.dVPNKeeper.Plan),
+			Op: plan.SimulateMsgAddPlan(app.vpnKeeper.Provider, app.vpnKeeper.Plan),
 		},
 		{
 			Weight: func(_ *rand.Rand) (v int) {
@@ -279,7 +279,7 @@ func operations(app *App) []simulation.WeightedOperation {
 				)
 				return v
 			}(nil),
-			Op: plan.SimulateMsgSetPlanStatus(app.dVPNKeeper.Provider, app.dVPNKeeper.Plan),
+			Op: plan.SimulateMsgSetPlanStatus(app.vpnKeeper.Provider, app.vpnKeeper.Plan),
 		},
 		{
 			Weight: func(_ *rand.Rand) (v int) {
@@ -288,7 +288,7 @@ func operations(app *App) []simulation.WeightedOperation {
 				)
 				return v
 			}(nil),
-			Op: node.SimulateMsgRegisterNode(app.dVPNKeeper.Provider, app.dVPNKeeper.Node),
+			Op: node.SimulateMsgRegisterNode(app.vpnKeeper.Provider, app.vpnKeeper.Node),
 		},
 		{
 			Weight: func(_ *rand.Rand) (v int) {
@@ -297,7 +297,7 @@ func operations(app *App) []simulation.WeightedOperation {
 				)
 				return v
 			}(nil),
-			Op: node.SimulateMsgUpdateNode(app.dVPNKeeper.Provider, app.dVPNKeeper.Node),
+			Op: node.SimulateMsgUpdateNode(app.vpnKeeper.Provider, app.vpnKeeper.Node),
 		},
 		{
 			Weight: func(_ *rand.Rand) (v int) {
@@ -306,7 +306,7 @@ func operations(app *App) []simulation.WeightedOperation {
 				)
 				return v
 			}(nil),
-			Op: node.SimulateMsgSetNodeStatus(app.dVPNKeeper.Node),
+			Op: node.SimulateMsgSetNodeStatus(app.vpnKeeper.Node),
 		},
 		{
 			Weight: func(_ *rand.Rand) (v int) {
@@ -315,7 +315,7 @@ func operations(app *App) []simulation.WeightedOperation {
 				)
 				return v
 			}(nil),
-			Op: plan.SimulateMsgAddNodeForPlan(app.dVPNKeeper.Provider, app.dVPNKeeper.Node, app.dVPNKeeper.Plan),
+			Op: plan.SimulateMsgAddNodeForPlan(app.vpnKeeper.Provider, app.vpnKeeper.Node, app.vpnKeeper.Plan),
 		},
 		{
 			Weight: func(_ *rand.Rand) (v int) {
@@ -324,7 +324,7 @@ func operations(app *App) []simulation.WeightedOperation {
 				)
 				return v
 			}(nil),
-			Op: plan.SimulateMsgRemoveNodeForPlan(app.dVPNKeeper.Provider, app.dVPNKeeper.Node, app.dVPNKeeper.Plan),
+			Op: plan.SimulateMsgRemoveNodeForPlan(app.vpnKeeper.Provider, app.vpnKeeper.Node, app.vpnKeeper.Plan),
 		},
 	}
 }

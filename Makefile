@@ -28,14 +28,14 @@ else
 endif
 
 install: mod_verify
-	@go install -mod=readonly ${BUILD_FLAGS} ./cmd/sentinel-hub-daemon
-	@go install -mod=readonly ${BUILD_FLAGS} ./cmd/sentinel-hub-cli
+	go install -mod=readonly ${BUILD_FLAGS} ./cmd/sentinel-hub-daemon
+	go install -mod=readonly ${BUILD_FLAGS} ./cmd/sentinel-hub-cli
 
 test:
-	@go test -mod=readonly -cover ${PACKAGES}
+	@go test -mod=readonly -v -cover ${PACKAGES}
 
 benchmark:
-	@go test -mod=readonly -bench ${PACKAGES}
+	@go test -mod=readonly -v -bench ${PACKAGES}
 
 simulate_short:
 	@go test -mod=readonly -v -timeout=1h -run TestFullAppSimulation \
@@ -45,7 +45,7 @@ simulate_multi:
 	@runsim -Jobs=4 -SimAppPkg=. 500 1 TestFullAppSimulation
 
 mod_verify:
-	@echo "--> Ensure dependencies have not been modified"
+	@echo "Ensure dependencies have not been modified"
 	@go mod verify
 
 .PHONY: all build install test benchmark \
