@@ -1,6 +1,8 @@
 package deposit
 
 import (
+	"fmt"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/sentinel-official/hub/x/dvpn/deposit/types"
@@ -17,5 +19,21 @@ func ExportGenesis(ctx sdk.Context, k Keeper) types.GenesisState {
 }
 
 func ValidateGenesis(state types.GenesisState) error {
+	for _, deposit := range state {
+		if err := deposit.Validate(); err != nil {
+			return err
+		}
+	}
+
+	deposits := make(map[string]bool)
+	for _, deposit := range state {
+		address := deposit.Address.String()
+		if deposits[address] {
+			return fmt.Errorf("found duplicate deposit address '%s'", deposit.Address)
+		}
+
+		deposits[address] = true
+	}
+
 	return nil
 }

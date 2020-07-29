@@ -26,7 +26,7 @@ func ValidateGenesis(state types.GenesisState) error {
 		}
 	}
 
-	var providers = make(map[string]bool)
+	providers := make(map[string]bool)
 	for _, provider := range state {
 		address := provider.Address.String()
 		if providers[address] {

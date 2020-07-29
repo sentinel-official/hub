@@ -18,4 +18,15 @@ Address: %s
 Coins:   %s`), d.Address, d.Coins)
 }
 
+func (d Deposit) Validate() error {
+	if d.Address == nil || d.Address.Empty() {
+		return fmt.Errorf("invalid address; found nil or empty")
+	}
+	if d.Coins == nil || !d.Coins.IsValid() {
+		return fmt.Errorf("invalid coins; found nil or invalid")
+	}
+
+	return nil
+}
+
 type Deposits []Deposit
