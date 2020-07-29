@@ -20,10 +20,10 @@ Coins:   %s`), d.Address, d.Coins)
 
 func (d Deposit) Validate() error {
 	if d.Address == nil || d.Address.Empty() {
-		return fmt.Errorf("invalid address; found nil or empty")
+		return fmt.Errorf("address should not be nil and empty")
 	}
 	if d.Coins == nil || !d.Coins.IsValid() {
-		return fmt.Errorf("invalid coins; found nil or invalid")
+		return fmt.Errorf("coins should not be nil and invalid")
 	}
 
 	return nil

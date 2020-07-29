@@ -19,7 +19,7 @@ func TestMsgRegisterProvider_ValidateBasic(t *testing.T) {
 		{"from nil", NewMsgRegisterProvider(nil, "", "", "", ""), ErrorInvalidField("from")},
 		{"from zero", NewMsgRegisterProvider(sdk.AccAddress{}, "", "", "", ""), ErrorInvalidField("from")},
 		{"from empty", NewMsgRegisterProvider(sdk.AccAddress(""), "", "", "", ""), ErrorInvalidField("from")},
-		{"name length zero", NewMsgRegisterProvider(sdk.AccAddress("address-1"), "", "", "", ""), ErrorInvalidField("name")},
+		{"name length 0", NewMsgRegisterProvider(sdk.AccAddress("address-1"), "", "", "", ""), ErrorInvalidField("name")},
 		{"name length greater than 64", NewMsgRegisterProvider(sdk.AccAddress("address-1"), strings.Repeat("-", 64+1), "", "", ""), ErrorInvalidField("name")},
 		{"identity length greater than 64", NewMsgRegisterProvider(sdk.AccAddress("address-1"), "name", strings.Repeat("-", 64+1), "", ""), ErrorInvalidField("identity")},
 		{"website length greater than 64", NewMsgRegisterProvider(sdk.AccAddress("address-1"), "name", "", strings.Repeat("-", 64+1), ""), ErrorInvalidField("website")},

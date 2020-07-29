@@ -16,7 +16,7 @@ func TestProvider_Validate(t *testing.T) {
 		{"address nil", Provider{nil, "", "", "", ""}, true},
 		{"address zero", Provider{hub.ProvAddress{}, "", "", "", ""}, true},
 		{"address empty", Provider{hub.ProvAddress(""), "", "", "", ""}, true},
-		{"name length zero", Provider{hub.ProvAddress("address-1"), "", "", "", ""}, true},
+		{"name length 0", Provider{hub.ProvAddress("address-1"), "", "", "", ""}, true},
 		{"name length greater than 64", Provider{hub.ProvAddress("address-1"), strings.Repeat("-", 64+1), "", "", ""}, true},
 		{"identity length greater than 64", Provider{hub.ProvAddress("address-1"), "name", strings.Repeat("-", 64+1), "", ""}, true},
 		{"website length greater than 64", Provider{hub.ProvAddress("address-1"), "name", "", strings.Repeat("-", 64+1), ""}, true},

@@ -30,7 +30,7 @@ func ValidateGenesis(state types.GenesisState) error {
 	for _, provider := range state {
 		address := provider.Address.String()
 		if providers[address] {
-			return fmt.Errorf("found duplicate provider address '%s'", provider.Address)
+			return fmt.Errorf("found duplicate provider address %s", address)
 		}
 
 		providers[address] = true

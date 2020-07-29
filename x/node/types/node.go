@@ -87,9 +87,39 @@ Status at:      %s
 `, n.Address, n.Provider, n.InternetSpeed, n.RemoteURL, n.Version, n.Category, n.Status, n.StatusAt))
 }
 
-func (n Node) PriceForDenom(s string) (sdk.Coin, bool) {
+func (n Node) Validate() error {
+	if n.Address == nil || n.Address.Empty() {
+		return fmt.Errorf("address should not be nil and empty")
+	}
+	if (n.Provider != nil && n.Price != nil) ||
+		(n.Provider == nil && n.Price == nil) {
+		return fmt.Errorf("either provider or price should be nil")
+	}
+	if n.Provider != nil && n.Provider.Empty() {
+		return fmt.Errorf("provider should not be empty")
+	}
+	if n.Price != nil && !n.Price.IsValid() {
+		return fmt.Errorf("price should be valid")
+	}
+	if !n.InternetSpeed.IsValid() {
+		return fmt.Errorf("internet_speed should be valid")
+	}
+	if len(n.RemoteURL) == 0 || len(n.RemoteURL) > 64 {
+		return fmt.Errorf("remote_url length should be (0, 64]")
+	}
+	if len(n.Version) == 0 || len(n.Version) > 64 {
+		return fmt.Errorf("version length should be (0, 64]")
+	}
+	if !n.Category.IsValid() {
+		return fmt.Errorf("category should be valid")
+	}
+
+	return nil
+}
+
+func (n Node) PriceForDenom(d string) (sdk.Coin, bool) {
 	for _, coin := range n.Price {
-		if coin.Denom == s {
+		if coin.Denom == d {
 			return coin, true
 		}
 	}

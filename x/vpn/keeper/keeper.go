@@ -28,15 +28,19 @@ type Keeper struct {
 }
 
 func NewKeeper(cdc *codec.Codec, key sdk.StoreKey, paramsKeeper params.Keeper, bankKeeper bank.Keeper, supplyKeeper supply.Keeper) Keeper {
-	nodeParams := paramsKeeper.Subspace(fmt.Sprintf("%s/%s", types.ModuleName, node.ParamsSubspace))
-	sessionParams := paramsKeeper.Subspace(fmt.Sprintf("%s/%s", types.ModuleName, session.ParamsSubspace))
+	var (
+		nodeParams    = paramsKeeper.Subspace(fmt.Sprintf("%s/%s", types.ModuleName, node.ParamsSubspace))
+		sessionParams = paramsKeeper.Subspace(fmt.Sprintf("%s/%s", types.ModuleName, session.ParamsSubspace))
+	)
 
-	depositKeeper := deposit.NewKeeper(cdc, key)
-	providerKeeper := provider.NewKeeper(cdc, key)
-	nodeKeeper := node.NewKeeper(cdc, key, nodeParams)
-	planKeeper := plan.NewKeeper(cdc, key)
-	subscriptionKeeper := subscription.NewKeeper(cdc, key)
-	sessionKeeper := session.NewKeeper(cdc, key, sessionParams)
+	var (
+		depositKeeper      = deposit.NewKeeper(cdc, key)
+		providerKeeper     = provider.NewKeeper(cdc, key)
+		nodeKeeper         = node.NewKeeper(cdc, key, nodeParams)
+		planKeeper         = plan.NewKeeper(cdc, key)
+		subscriptionKeeper = subscription.NewKeeper(cdc, key)
+		sessionKeeper      = session.NewKeeper(cdc, key, sessionParams)
+	)
 
 	depositKeeper.WithSupplyKeeper(supplyKeeper)
 

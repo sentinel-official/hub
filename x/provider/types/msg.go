@@ -17,9 +17,9 @@ var (
 type MsgRegisterProvider struct {
 	From        sdk.AccAddress `json:"from"`
 	Name        string         `json:"name"`
-	Identity    string         `json:"identity"`
-	Website     string         `json:"website"`
-	Description string         `json:"description"`
+	Identity    string         `json:"identity,omitempty"`
+	Website     string         `json:"website,omitempty"`
+	Description string         `json:"description,omitempty"`
 }
 
 func NewMsgRegisterProvider(from sdk.AccAddress, name, identity, website, description string) MsgRegisterProvider {

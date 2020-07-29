@@ -22,12 +22,11 @@ func BeginBlock(ctx sdk.Context, k keeper.Keeper) {
 }
 
 func HandleRegisterNode(ctx sdk.Context, k keeper.Keeper, msg types.MsgRegisterNode) sdk.Result {
-	if !k.HasProvider(ctx, msg.Provider) {
-		return types.ErrorProviderDoesNotExist().Result()
-	}
-
 	if k.HasNode(ctx, msg.From.Bytes()) {
 		return types.ErrorDuplicateNode().Result()
+	}
+	if !k.HasProvider(ctx, msg.Provider) {
+		return types.ErrorProviderDoesNotExist().Result()
 	}
 
 	node := types.Node{

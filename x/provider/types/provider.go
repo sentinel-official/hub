@@ -10,9 +10,9 @@ import (
 type Provider struct {
 	Address     hub.ProvAddress `json:"address"`
 	Name        string          `json:"name"`
-	Identity    string          `json:"identity"`
-	Website     string          `json:"website"`
-	Description string          `json:"description"`
+	Identity    string          `json:"identity,omitempty"`
+	Website     string          `json:"website,omitempty"`
+	Description string          `json:"description,omitempty"`
 }
 
 func (p Provider) String() string {
@@ -27,19 +27,19 @@ Description: %s
 
 func (p Provider) Validate() error {
 	if p.Address == nil || p.Address.Empty() {
-		return fmt.Errorf("invalid address; found nil or empty")
+		return fmt.Errorf("address should not be nil and empty")
 	}
 	if len(p.Name) == 0 || len(p.Name) > 64 {
-		return fmt.Errorf("invalid name; found length zero or greater than 64")
+		return fmt.Errorf("name length should be (0, 64]")
 	}
 	if len(p.Identity) > 64 {
-		return fmt.Errorf("invalid identity; found length greater than 64")
+		return fmt.Errorf("identity length should be (0, 64]")
 	}
 	if len(p.Website) > 64 {
-		return fmt.Errorf("invalid website; found length greater than 64")
+		return fmt.Errorf("website length should be (0, 64]")
 	}
 	if len(p.Description) > 256 {
-		return fmt.Errorf("invalid description; found length greater than 256")
+		return fmt.Errorf("description length should be (0, 256]")
 	}
 
 	return nil
