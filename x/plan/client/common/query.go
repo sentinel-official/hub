@@ -33,9 +33,15 @@ func QueryPlan(ctx context.CLIContext, id uint64) (*types.Plan, error) {
 	return &plan, nil
 }
 
-func QueryPlans(ctx context.CLIContext) (types.Plans, error) {
+func QueryPlans(ctx context.CLIContext, page, limit int) (types.Plans, error) {
+	params := types.NewQueryPlansParams(page, limit)
+	bytes, err := ctx.Codec.MarshalJSON(params)
+	if err != nil {
+		return nil, err
+	}
+
 	path := fmt.Sprintf("custom/%s/%s/%s", types.StoreKey, types.QuerierRoute, types.QueryPlans)
-	res, _, err := ctx.QueryWithData(path, nil)
+	res, _, err := ctx.QueryWithData(path, bytes)
 	if err != nil {
 		return nil, err
 	}
@@ -51,8 +57,8 @@ func QueryPlans(ctx context.CLIContext) (types.Plans, error) {
 	return plans, nil
 }
 
-func QueryPlansForProvider(ctx context.CLIContext, address hub.ProvAddress) (types.Plans, error) {
-	params := types.NewQueryPlansForProviderParams(address)
+func QueryPlansForProvider(ctx context.CLIContext, address hub.ProvAddress, page, limit int) (types.Plans, error) {
+	params := types.NewQueryPlansForProviderParams(address, page, limit)
 	bytes, err := ctx.Codec.MarshalJSON(params)
 	if err != nil {
 		return nil, err

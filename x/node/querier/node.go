@@ -1,6 +1,7 @@
 package querier
 
 import (
+	"github.com/cosmos/cosmos-sdk/client"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	abci "github.com/tendermint/tendermint/abci/types"
 
@@ -27,8 +28,22 @@ func queryNode(ctx sdk.Context, req abci.RequestQuery, k keeper.Keeper) ([]byte,
 	return res, nil
 }
 
-func queryNodes(ctx sdk.Context, _ abci.RequestQuery, k keeper.Keeper) ([]byte, sdk.Error) {
-	res, err := types.ModuleCdc.MarshalJSON(k.GetNodes(ctx))
+func queryNodes(ctx sdk.Context, req abci.RequestQuery, k keeper.Keeper) ([]byte, sdk.Error) {
+	var params types.QueryNodesParams
+	if err := types.ModuleCdc.UnmarshalJSON(req.Data, &params); err != nil {
+		return nil, types.ErrorUnmarshal()
+	}
+
+	nodes := k.GetNodes(ctx)
+
+	start, end := client.Paginate(len(nodes), params.Page, params.Limit, len(nodes))
+	if start < 0 || end < 0 {
+		nodes = types.Nodes{}
+	} else {
+		nodes = nodes[start:end]
+	}
+
+	res, err := types.ModuleCdc.MarshalJSON(nodes)
 	if err != nil {
 		return nil, types.ErrorMarshal()
 	}
@@ -42,7 +57,16 @@ func queryNodesForProvider(ctx sdk.Context, req abci.RequestQuery, k keeper.Keep
 		return nil, types.ErrorUnmarshal()
 	}
 
-	res, err := types.ModuleCdc.MarshalJSON(k.GetNodesForProvider(ctx, params.Address))
+	nodes := k.GetNodesForProvider(ctx, params.Address)
+
+	start, end := client.Paginate(len(nodes), params.Page, params.Limit, len(nodes))
+	if start < 0 || end < 0 {
+		nodes = types.Nodes{}
+	} else {
+		nodes = nodes[start:end]
+	}
+
+	res, err := types.ModuleCdc.MarshalJSON(nodes)
 	if err != nil {
 		return nil, types.ErrorMarshal()
 	}

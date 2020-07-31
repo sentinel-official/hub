@@ -32,6 +32,7 @@ var (
 	DefaultGenesisState           = types.DefaultGenesisState
 	DepositKey                    = types.DepositKey
 	NewQueryDepositParams         = types.NewQueryDepositParams
+	NewQueryDepositsParams        = types.NewQueryDepositsParams
 	NewKeeper                     = keeper.NewKeeper
 	CreateTestInput               = keeper.CreateTestInput
 	MakeTestCodec                 = keeper.MakeTestCodec
@@ -45,9 +46,10 @@ var (
 )
 
 type (
-	Deposit            = types.Deposit
-	Deposits           = types.Deposits
-	GenesisState       = types.GenesisState
-	QueryDepositParams = types.QueryDepositParams
-	Keeper             = keeper.Keeper
+	Deposit             = types.Deposit
+	Deposits            = types.Deposits
+	GenesisState        = types.GenesisState
+	QueryDepositParams  = types.QueryDepositParams
+	QueryDepositsParams = types.QueryDepositsParams
+	Keeper              = keeper.Keeper
 )

@@ -13,7 +13,7 @@ const (
 )
 
 const (
-	errorCodeUnknownMsgType = iota + 101
+	errorCodeUnknownMsgType sdk.CodeType = iota + 101
 	errorCodeUnknownQueryType
 	errorCodeInvalidField
 	errorCodeSubscriptionDoesNotExit

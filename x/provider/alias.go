@@ -39,6 +39,7 @@ var (
 	NewMsgRegisterProvider    = types.NewMsgRegisterProvider
 	NewMsgUpdateProvider      = types.NewMsgUpdateProvider
 	NewQueryProviderParams    = types.NewQueryProviderParams
+	NewQueryProvidersParams   = types.NewQueryProvidersParams
 	NewKeeper                 = keeper.NewKeeper
 	Querier                   = querier.Querier
 
@@ -50,11 +51,12 @@ var (
 )
 
 type (
-	GenesisState        = types.GenesisState
-	MsgRegisterProvider = types.MsgRegisterProvider
-	MsgUpdateProvider   = types.MsgUpdateProvider
-	Provider            = types.Provider
-	Providers           = types.Providers
-	QueryProviderParams = types.QueryProviderParams
-	Keeper              = keeper.Keeper
+	GenesisState         = types.GenesisState
+	MsgRegisterProvider  = types.MsgRegisterProvider
+	MsgUpdateProvider    = types.MsgUpdateProvider
+	Provider             = types.Provider
+	Providers            = types.Providers
+	QueryProviderParams  = types.QueryProviderParams
+	QueryProvidersParams = types.QueryProvidersParams
+	Keeper               = keeper.Keeper
 )

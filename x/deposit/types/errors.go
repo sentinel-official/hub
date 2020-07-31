@@ -13,7 +13,7 @@ const (
 )
 
 const (
-	errorCodeUnknownQueryType = iota + 101
+	errorCodeUnknownQueryType sdk.CodeType = iota + 101
 	errorCodeInsufficientDepositFunds
 	errorCodeDepositDoesNotExist
 )
