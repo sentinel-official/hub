@@ -76,7 +76,7 @@ func (k Keeper) SetPlanForProvider(ctx sdk.Context, address hub.ProvAddress, id 
 func (k Keeper) GetPlansForProvider(ctx sdk.Context, address hub.ProvAddress) (items types.Plans) {
 	store := k.Store(ctx)
 
-	iter := sdk.KVStorePrefixIterator(store, types.PlanForProviderKeyPrefix(address))
+	iter := sdk.KVStorePrefixIterator(store, types.PlanForProviderByProviderKey(address))
 	defer iter.Close()
 
 	for ; iter.Valid(); iter.Next() {
@@ -115,7 +115,7 @@ func (k Keeper) DeleteNodeForPlan(ctx sdk.Context, id uint64, address hub.NodeAd
 func (k Keeper) GetNodesForPlan(ctx sdk.Context, id uint64) (items node.Nodes) {
 	store := k.Store(ctx)
 
-	iter := sdk.KVStorePrefixIterator(store, types.NodeForPlanKeyPrefix(id))
+	iter := sdk.KVStorePrefixIterator(store, types.NodeForPlanByPlanKey(id))
 	defer iter.Close()
 
 	for ; iter.Valid(); iter.Next() {

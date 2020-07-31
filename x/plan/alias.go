@@ -48,9 +48,9 @@ var (
 	NewGenesisState                = types.NewGenesisState
 	DefaultGenesisState            = types.DefaultGenesisState
 	PlanKey                        = types.PlanKey
-	PlanForProviderKeyPrefix       = types.PlanForProviderKeyPrefix
+	PlanForProviderKeyPrefix       = types.PlanForProviderByProviderKey
 	PlanForProviderKey             = types.PlanForProviderKey
-	NodeForPlanKeyPrefix           = types.NodeForPlanKeyPrefix
+	NodeForPlanKeyPrefix           = types.NodeForPlanByPlanKey
 	NodeForPlanKey                 = types.NodeForPlanKey
 	NewMsgAddPlan                  = types.NewMsgAddPlan
 	NewMsgSetPlanStatus            = types.NewMsgSetPlanStatus

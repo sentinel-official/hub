@@ -34,9 +34,9 @@ Status at: %s
 `, p.ID, p.Provider, p.Price, p.Validity, p.Bandwidth, p.Duration, p.Status, p.StatusAt))
 }
 
-func (p Plan) PriceForDenom(s string) (sdk.Coin, bool) {
+func (p Plan) PriceForDenom(d string) (sdk.Coin, bool) {
 	for _, coin := range p.Price {
-		if coin.Denom == s {
+		if coin.Denom == d {
 			return coin, true
 		}
 	}
