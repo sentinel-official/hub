@@ -18,3 +18,15 @@ func NewQueryProviderParams(address hub.ProvAddress) QueryProviderParams {
 		Address: address,
 	}
 }
+
+type QueryProvidersParams struct {
+	Page  int `json:"page"`
+	Limit int `json:"limit"`
+}
+
+func NewQueryProvidersParams(page, limit int) QueryProvidersParams {
+	return QueryProvidersParams{
+		Page:  page,
+		Limit: limit,
+	}
+}

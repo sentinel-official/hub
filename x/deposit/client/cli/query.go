@@ -36,13 +36,23 @@ func queryDepositCmd(cdc *codec.Codec) *cobra.Command {
 }
 
 func queryDepositsCmd(cdc *codec.Codec) *cobra.Command {
-	return &cobra.Command{
+	cmd := &cobra.Command{
 		Use:   "deposits",
 		Short: "Query deposits",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := context.NewCLIContext().WithCodec(cdc)
 
-			deposits, err := common.QueryDeposits(ctx)
+			page, err := cmd.Flags().GetInt(flagPage)
+			if err != nil {
+				return err
+			}
+
+			limit, err := cmd.Flags().GetInt(flagLimit)
+			if err != nil {
+				return err
+			}
+
+			deposits, err := common.QueryDeposits(ctx, page, limit)
 			if err != nil {
 				return err
 			}
@@ -54,4 +64,9 @@ func queryDepositsCmd(cdc *codec.Codec) *cobra.Command {
 			return nil
 		},
 	}
+
+	cmd.Flags().Int(flagPage, 1, "page")
+	cmd.Flags().Int(flagLimit, 0, "limit")
+
+	return cmd
 }

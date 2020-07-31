@@ -10,11 +10,23 @@ const (
 )
 
 type QueryDepositParams struct {
-	Address sdk.AccAddress
+	Address sdk.AccAddress `json:"address"`
 }
 
 func NewQueryDepositParams(address sdk.AccAddress) QueryDepositParams {
 	return QueryDepositParams{
 		Address: address,
+	}
+}
+
+type QueryDepositsParams struct {
+	Page  int `json:"page"`
+	Limit int `json:"limit"`
+}
+
+func NewQueryDepositsParams(page, limit int) QueryDepositsParams {
+	return QueryDepositsParams{
+		Page:  page,
+		Limit: limit,
 	}
 }

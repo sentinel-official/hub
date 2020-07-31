@@ -57,6 +57,7 @@ var (
 	DefaultParams                  = types.DefaultParams
 	ParamsKeyTable                 = types.ParamsKeyTable
 	NewQueryNodeParams             = types.NewQueryNodeParams
+	NewQueryNodesParams            = types.NewQueryNodesParams
 	NewQueryNodesForProviderParams = types.NewQueryNodesForProviderParams
 	NewKeeper                      = keeper.NewKeeper
 	Querier                        = querier.Querier
@@ -81,6 +82,7 @@ type (
 	Nodes                       = types.Nodes
 	Params                      = types.Params
 	QueryNodeParams             = types.QueryNodeParams
+	QueryNodesParams            = types.QueryNodesParams
 	QueryNodesForProviderParams = types.QueryNodesForProviderParams
 	Keeper                      = keeper.Keeper
 )

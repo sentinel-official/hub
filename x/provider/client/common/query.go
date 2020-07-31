@@ -33,9 +33,15 @@ func QueryProvider(ctx context.CLIContext, address hub.ProvAddress) (*types.Prov
 	return &provider, nil
 }
 
-func QueryProviders(ctx context.CLIContext) (types.Providers, error) {
+func QueryProviders(ctx context.CLIContext, page, limit int) (types.Providers, error) {
+	params := types.NewQueryProvidersParams(page, limit)
+	bytes, err := ctx.Codec.MarshalJSON(params)
+	if err != nil {
+		return nil, err
+	}
+
 	path := fmt.Sprintf("custom/%s/%s/%s", types.StoreKey, types.QuerierRoute, types.QueryProviders)
-	res, _, err := ctx.QueryWithData(path, nil)
+	res, _, err := ctx.QueryWithData(path, bytes)
 	if err != nil {
 		return nil, err
 	}

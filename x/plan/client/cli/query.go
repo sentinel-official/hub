@@ -49,6 +49,16 @@ func queryPlansCmd(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
+			page, err := cmd.Flags().GetInt(flagPage)
+			if err != nil {
+				return err
+			}
+
+			limit, err := cmd.Flags().GetInt(flagLimit)
+			if err != nil {
+				return err
+			}
+
 			var plans types.Plans
 
 			if len(provider) > 0 {
@@ -57,12 +67,12 @@ func queryPlansCmd(cdc *codec.Codec) *cobra.Command {
 					return err
 				}
 
-				plans, err = common.QueryPlansForProvider(ctx, address)
+				plans, err = common.QueryPlansForProvider(ctx, address, page, limit)
 				if err != nil {
 					return err
 				}
 			} else {
-				plans, err = common.QueryPlans(ctx)
+				plans, err = common.QueryPlans(ctx, page, limit)
 				if err != nil {
 					return err
 				}
@@ -77,6 +87,8 @@ func queryPlansCmd(cdc *codec.Codec) *cobra.Command {
 	}
 
 	cmd.Flags().String(flagProvider, "", "Provider address")
+	cmd.Flags().Int(flagPage, 1, "page")
+	cmd.Flags().Int(flagLimit, 0, "limit")
 
 	return cmd
 }

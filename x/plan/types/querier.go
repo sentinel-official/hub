@@ -21,22 +21,42 @@ func NewQueryPlanParams(id uint64) QueryPlanParams {
 	}
 }
 
-type QueryPlansForProviderParams struct {
-	Address hub.ProvAddress `json:"address"`
+type QueryPlansParams struct {
+	Page  int `json:"page"`
+	Limit int `json:"limit"`
 }
 
-func NewQueryPlansForProviderParams(address hub.ProvAddress) QueryPlansForProviderParams {
+func NewQueryPlansParams(page, limit int) QueryPlansParams {
+	return QueryPlansParams{
+		Page:  page,
+		Limit: limit,
+	}
+}
+
+type QueryPlansForProviderParams struct {
+	Address hub.ProvAddress `json:"address"`
+	Page    int             `json:"page"`
+	Limit   int             `json:"limit"`
+}
+
+func NewQueryPlansForProviderParams(address hub.ProvAddress, page, limit int) QueryPlansForProviderParams {
 	return QueryPlansForProviderParams{
 		Address: address,
+		Page:    page,
+		Limit:   limit,
 	}
 }
 
 type QueryNodesForPlanParams struct {
-	ID uint64 `json:"id"`
+	ID    uint64 `json:"id"`
+	Page  int    `json:"page"`
+	Limit int    `json:"limit"`
 }
 
-func NewQueryNodesForPlanParams(id uint64) QueryNodesForPlanParams {
+func NewQueryNodesForPlanParams(id uint64, page, limit int) QueryNodesForPlanParams {
 	return QueryNodesForPlanParams{
-		ID: id,
+		ID:    id,
+		Page:  page,
+		Limit: limit,
 	}
 }

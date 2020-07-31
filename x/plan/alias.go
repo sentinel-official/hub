@@ -48,26 +48,29 @@ var (
 	NewGenesisState                = types.NewGenesisState
 	DefaultGenesisState            = types.DefaultGenesisState
 	PlanKey                        = types.PlanKey
-	PlanForProviderKeyPrefix       = types.PlanForProviderByProviderKey
+	PlanForProviderByProviderKey   = types.PlanForProviderByProviderKey
 	PlanForProviderKey             = types.PlanForProviderKey
-	NodeForPlanKeyPrefix           = types.NodeForPlanByPlanKey
+	NodeForPlanByPlanKey           = types.NodeForPlanByPlanKey
 	NodeForPlanKey                 = types.NodeForPlanKey
 	NewMsgAddPlan                  = types.NewMsgAddPlan
 	NewMsgSetPlanStatus            = types.NewMsgSetPlanStatus
 	NewMsgAddNodeForPlan           = types.NewMsgAddNodeForPlan
 	NewMsgRemoveNodeForPlan        = types.NewMsgRemoveNodeForPlan
 	NewQueryPlanParams             = types.NewQueryPlanParams
+	NewQueryPlansParams            = types.NewQueryPlansParams
 	NewQueryPlansForProviderParams = types.NewQueryPlansForProviderParams
 	NewQueryNodesForPlanParams     = types.NewQueryNodesForPlanParams
 	NewKeeper                      = keeper.NewKeeper
 	Querier                        = querier.Querier
 
 	// variable aliases
-	ModuleCdc     = types.ModuleCdc
-	RouterKey     = types.RouterKey
-	StoreKey      = types.StoreKey
-	PlansCountKey = types.PlansCountKey
-	PlanKeyPrefix = types.PlanKeyPrefix
+	ModuleCdc                = types.ModuleCdc
+	RouterKey                = types.RouterKey
+	StoreKey                 = types.StoreKey
+	PlansCountKey            = types.PlansCountKey
+	PlanKeyPrefix            = types.PlanKeyPrefix
+	PlanForProviderKeyPrefix = types.PlanForProviderKeyPrefix
+	NodeForPlanKeyPrefix     = types.NodeForPlanKeyPrefix
 )
 
 type (
@@ -81,6 +84,7 @@ type (
 	Plan                        = types.Plan
 	Plans                       = types.Plans
 	QueryPlanParams             = types.QueryPlanParams
+	QueryPlansParams            = types.QueryPlansParams
 	QueryPlansForProviderParams = types.QueryPlansForProviderParams
 	QueryNodesForPlanParams     = types.QueryNodesForPlanParams
 	Keeper                      = keeper.Keeper

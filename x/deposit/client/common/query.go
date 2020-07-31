@@ -33,9 +33,15 @@ func QueryDeposit(ctx context.CLIContext, address sdk.AccAddress) (*types.Deposi
 	return &deposit, nil
 }
 
-func QueryDeposits(ctx context.CLIContext) (types.Deposits, error) {
+func QueryDeposits(ctx context.CLIContext, page, limit int) (types.Deposits, error) {
+	params := types.NewQueryDepositsParams(page, limit)
+	bytes, err := ctx.Codec.MarshalJSON(params)
+	if err != nil {
+		return nil, err
+	}
+
 	path := fmt.Sprintf("custom/%s/%s/%s", types.StoreKey, types.QuerierRoute, types.QueryDeposits)
-	res, _, err := ctx.QueryWithData(path, nil)
+	res, _, err := ctx.QueryWithData(path, bytes)
 	if err != nil {
 		return nil, err
 	}
