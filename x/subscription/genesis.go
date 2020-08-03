@@ -11,9 +11,9 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, state types.GenesisState) {
 	for _, item := range state {
 		k.SetSubscription(ctx, item.Subscription)
 
-		for _, member := range item.Members {
-			k.SetSubscriptionForAddress(ctx, member, item.Subscription.ID)
-			k.SetMemberForSubscription(ctx, item.Subscription.ID, member)
+		for _, quota := range item.Quotas {
+			k.SetQuotaForSubscription(ctx, item.Subscription.ID, quota)
+			k.SetSubscriptionForAddress(ctx, quota.Address, item.Subscription.ID)
 		}
 
 		if item.Subscription.ID == 0 {
@@ -33,7 +33,7 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) types.GenesisState {
 	for _, item := range _subscriptions {
 		subscriptions = append(subscriptions, types.GenesisSubscription{
 			Subscription: item,
-			Members:      k.GetMembersForSubscription(ctx, item.ID),
+			Quotas:       k.GetQuotasForSubscription(ctx, item.ID),
 		})
 	}
 

@@ -10,8 +10,8 @@ import (
 
 var (
 	_ sdk.Msg = (*MsgStartSubscription)(nil)
-	_ sdk.Msg = (*MsgAddMemberForSubscription)(nil)
-	_ sdk.Msg = (*MsgRemoveMemberForSubscription)(nil)
+	_ sdk.Msg = (*MsgAddQuotaForSubscription)(nil)
+	_ sdk.Msg = (*MsgUpdateQuotaForSubscription)(nil)
 	_ sdk.Msg = (*MsgEndSubscription)(nil)
 )
 
@@ -85,30 +85,33 @@ func (m MsgStartSubscription) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{m.From}
 }
 
-// MsgAddMemberForSubscription is for adding a member for a subscription.
-type MsgAddMemberForSubscription struct {
-	From    sdk.AccAddress `json:"from"`
-	ID      uint64         `json:"id"`
-	Address sdk.AccAddress `json:"address"`
+// MsgAddQuotaForSubscription is for adding the bandwidth quota for an address.
+type MsgAddQuotaForSubscription struct {
+	From      sdk.AccAddress `json:"from"`
+	ID        uint64         `json:"id"`
+	Address   sdk.AccAddress `json:"address"`
+	Bandwidth hub.Bandwidth  `json:"bandwidth"`
 }
 
-func NewMsgAddMemberForSubscription(from sdk.AccAddress, id uint64, address sdk.AccAddress) MsgAddMemberForSubscription {
-	return MsgAddMemberForSubscription{
-		From:    from,
-		ID:      id,
-		Address: address,
+func NewMsgAddQuotaForSubscription(from sdk.AccAddress, id uint64,
+	address sdk.AccAddress, bandwidth hub.Bandwidth) MsgAddQuotaForSubscription {
+	return MsgAddQuotaForSubscription{
+		From:      from,
+		ID:        id,
+		Address:   address,
+		Bandwidth: bandwidth,
 	}
 }
 
-func (m MsgAddMemberForSubscription) Route() string {
+func (m MsgAddQuotaForSubscription) Route() string {
 	return RouterKey
 }
 
-func (m MsgAddMemberForSubscription) Type() string {
-	return "add_member_for_subscription"
+func (m MsgAddQuotaForSubscription) Type() string {
+	return "add_quota_for_subscription"
 }
 
-func (m MsgAddMemberForSubscription) ValidateBasic() sdk.Error {
+func (m MsgAddQuotaForSubscription) ValidateBasic() sdk.Error {
 	if m.From == nil || m.From.Empty() {
 		return ErrorInvalidField("from")
 	}
@@ -128,10 +131,15 @@ func (m MsgAddMemberForSubscription) ValidateBasic() sdk.Error {
 		return ErrorInvalidField("from and address")
 	}
 
+	// Bandwidth should be valid
+	if !m.Bandwidth.IsValid() {
+		return ErrorInvalidField("bandwidth")
+	}
+
 	return nil
 }
 
-func (m MsgAddMemberForSubscription) GetSignBytes() []byte {
+func (m MsgAddQuotaForSubscription) GetSignBytes() []byte {
 	bytes, err := json.Marshal(m)
 	if err != nil {
 		panic(err)
@@ -140,34 +148,37 @@ func (m MsgAddMemberForSubscription) GetSignBytes() []byte {
 	return bytes
 }
 
-func (m MsgAddMemberForSubscription) GetSigners() []sdk.AccAddress {
+func (m MsgAddQuotaForSubscription) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{m.From}
 }
 
-// MsgRemoveMemberForSubscription is for removing a member for a subscription.
-type MsgRemoveMemberForSubscription struct {
-	From    sdk.AccAddress `json:"from"`
-	ID      uint64         `json:"id"`
-	Address sdk.AccAddress `json:"address"`
+// MsgUpdateQuotaForSubscription is for updating the bandwidth quota for an address.
+type MsgUpdateQuotaForSubscription struct {
+	From      sdk.AccAddress `json:"from"`
+	ID        uint64         `json:"id"`
+	Address   sdk.AccAddress `json:"address"`
+	Bandwidth hub.Bandwidth  `json:"bandwidth"`
 }
 
-func NewMsgRemoveMemberForSubscription(from sdk.AccAddress, id uint64, address sdk.AccAddress) MsgRemoveMemberForSubscription {
-	return MsgRemoveMemberForSubscription{
-		From:    from,
-		ID:      id,
-		Address: address,
+func NewMsgUpdateQuotaForSubscription(from sdk.AccAddress, id uint64,
+	address sdk.AccAddress, bandwidth hub.Bandwidth) MsgUpdateQuotaForSubscription {
+	return MsgUpdateQuotaForSubscription{
+		From:      from,
+		ID:        id,
+		Address:   address,
+		Bandwidth: bandwidth,
 	}
 }
 
-func (m MsgRemoveMemberForSubscription) Route() string {
+func (m MsgUpdateQuotaForSubscription) Route() string {
 	return RouterKey
 }
 
-func (m MsgRemoveMemberForSubscription) Type() string {
-	return "remove_address_for_subscription"
+func (m MsgUpdateQuotaForSubscription) Type() string {
+	return "update_quota_for_subscription"
 }
 
-func (m MsgRemoveMemberForSubscription) ValidateBasic() sdk.Error {
+func (m MsgUpdateQuotaForSubscription) ValidateBasic() sdk.Error {
 	if m.From == nil || m.From.Empty() {
 		return ErrorInvalidField("from")
 	}
@@ -187,10 +198,15 @@ func (m MsgRemoveMemberForSubscription) ValidateBasic() sdk.Error {
 		return ErrorInvalidField("from and address")
 	}
 
+	// Bandwidth should be valid
+	if !m.Bandwidth.IsValid() {
+		return ErrorInvalidField("bandwidth")
+	}
+
 	return nil
 }
 
-func (m MsgRemoveMemberForSubscription) GetSignBytes() []byte {
+func (m MsgUpdateQuotaForSubscription) GetSignBytes() []byte {
 	bytes, err := json.Marshal(m)
 	if err != nil {
 		panic(err)
@@ -199,7 +215,7 @@ func (m MsgRemoveMemberForSubscription) GetSignBytes() []byte {
 	return bytes
 }
 
-func (m MsgRemoveMemberForSubscription) GetSigners() []sdk.AccAddress {
+func (m MsgUpdateQuotaForSubscription) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{m.From}
 }
 

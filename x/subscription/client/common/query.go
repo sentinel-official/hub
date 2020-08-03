@@ -34,9 +34,15 @@ func QuerySubscription(ctx context.CLIContext, id uint64) (*types.Subscription, 
 	return &subscription, nil
 }
 
-func QuerySubscriptions(ctx context.CLIContext) (types.Subscriptions, error) {
+func QuerySubscriptions(ctx context.CLIContext, page, limit int) (types.Subscriptions, error) {
+	params := types.NewQuerySubscriptionsParams(page, limit)
+	bytes, err := ctx.Codec.MarshalJSON(params)
+	if err != nil {
+		return nil, err
+	}
+
 	path := fmt.Sprintf("custom/%s/%s/%s", types.StoreKey, types.QuerierRoute, types.QuerySubscriptions)
-	res, _, err := ctx.QueryWithData(path, nil)
+	res, _, err := ctx.QueryWithData(path, bytes)
 	if err != nil {
 		return nil, err
 	}
@@ -52,8 +58,8 @@ func QuerySubscriptions(ctx context.CLIContext) (types.Subscriptions, error) {
 	return subscriptions, nil
 }
 
-func QuerySubscriptionsForAddress(ctx context.CLIContext, address sdk.AccAddress) (types.Subscriptions, error) {
-	params := types.NewQuerySubscriptionsForAddressParams(address)
+func QuerySubscriptionsForAddress(ctx context.CLIContext, address sdk.AccAddress, page, limit int) (types.Subscriptions, error) {
+	params := types.NewQuerySubscriptionsForAddressParams(address, page, limit)
 	bytes, err := ctx.Codec.MarshalJSON(params)
 	if err != nil {
 		return nil, err
@@ -76,8 +82,8 @@ func QuerySubscriptionsForAddress(ctx context.CLIContext, address sdk.AccAddress
 	return subscriptions, nil
 }
 
-func QuerySubscriptionsForPlan(ctx context.CLIContext, id uint64) (types.Subscriptions, error) {
-	params := types.NewQuerySubscriptionsForPlanParams(id)
+func QuerySubscriptionsForPlan(ctx context.CLIContext, id uint64, page, limit int) (types.Subscriptions, error) {
+	params := types.NewQuerySubscriptionsForPlanParams(id, page, limit)
 	bytes, err := ctx.Codec.MarshalJSON(params)
 	if err != nil {
 		return nil, err
@@ -100,8 +106,8 @@ func QuerySubscriptionsForPlan(ctx context.CLIContext, id uint64) (types.Subscri
 	return subscriptions, nil
 }
 
-func QuerySubscriptionsForNode(ctx context.CLIContext, address hub.NodeAddress) (types.Subscriptions, error) {
-	params := types.NewQuerySubscriptionsForNodeParams(address)
+func QuerySubscriptionsForNode(ctx context.CLIContext, address hub.NodeAddress, page, limit int) (types.Subscriptions, error) {
+	params := types.NewQuerySubscriptionsForNodeParams(address, page, limit)
 	bytes, err := ctx.Codec.MarshalJSON(params)
 	if err != nil {
 		return nil, err
@@ -124,26 +130,50 @@ func QuerySubscriptionsForNode(ctx context.CLIContext, address hub.NodeAddress) 
 	return subscriptions, nil
 }
 
-func QueryMembersForSubscription(ctx context.CLIContext, id uint64) ([]sdk.AccAddress, error) {
-	params := types.NewQueryMembersForSubscriptionParams(id)
+func QueryQuotaForSubscription(ctx context.CLIContext, id uint64, address sdk.AccAddress) (*types.Quota, error) {
+	params := types.NewQueryQuotaForSubscriptionParams(id, address)
 	bytes, err := ctx.Codec.MarshalJSON(params)
 	if err != nil {
 		return nil, err
 	}
 
-	path := fmt.Sprintf("custom/%s/%s/%s", types.StoreKey, types.QuerierRoute, types.QueryMembersForSubscription)
+	path := fmt.Sprintf("custom/%s/%s/%s", types.StoreKey, types.QuerierRoute, types.QueryQuotaForSubscription)
 	res, _, err := ctx.QueryWithData(path, bytes)
 	if err != nil {
 		return nil, err
 	}
 	if res == nil {
-		return nil, fmt.Errorf("no members found")
+		return nil, fmt.Errorf("no quota found")
 	}
 
-	var members []sdk.AccAddress
-	if err := ctx.Codec.UnmarshalJSON(res, &members); err != nil {
+	var quota types.Quota
+	if err := ctx.Codec.UnmarshalJSON(res, &quota); err != nil {
 		return nil, err
 	}
 
-	return members, nil
+	return &quota, nil
+}
+
+func QueryQuotasForSubscription(ctx context.CLIContext, id uint64, page, limit int) (types.Quotas, error) {
+	params := types.NewQueryQuotasForSubscriptionParams(id, page, limit)
+	bytes, err := ctx.Codec.MarshalJSON(params)
+	if err != nil {
+		return nil, err
+	}
+
+	path := fmt.Sprintf("custom/%s/%s/%s", types.StoreKey, types.QuerierRoute, types.QueryQuotasForSubscription)
+	res, _, err := ctx.QueryWithData(path, bytes)
+	if err != nil {
+		return nil, err
+	}
+	if res == nil {
+		return nil, fmt.Errorf("no quotas found")
+	}
+
+	var quotas types.Quotas
+	if err := ctx.Codec.UnmarshalJSON(res, &quotas); err != nil {
+		return nil, err
+	}
+
+	return quotas, nil
 }

@@ -22,27 +22,9 @@ func querySubscriptionCmd(cdc *codec.Codec) *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := context.NewCLIContext().WithCodec(cdc)
 
-			membersOnly, err := cmd.Flags().GetBool(flagMembersOnly)
-			if err != nil {
-				return err
-			}
-
 			id, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
-			}
-
-			if membersOnly {
-				members, err := common.QueryMembersForSubscription(ctx, id)
-				if err != nil {
-					return err
-				}
-
-				for _, member := range members {
-					fmt.Println(member.String())
-				}
-
-				return nil
 			}
 
 			subscription, err := common.QuerySubscription(ctx, id)
@@ -54,8 +36,6 @@ func querySubscriptionCmd(cdc *codec.Codec) *cobra.Command {
 			return nil
 		},
 	}
-
-	cmd.Flags().Bool(flagMembersOnly, false, "Show members only")
 
 	return cmd
 }
@@ -82,20 +62,29 @@ func querySubscriptionsCmd(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			var subscriptions types.Subscriptions
+			page, err := cmd.Flags().GetInt(flagPlan)
+			if err != nil {
+				return err
+			}
 
+			limit, err := cmd.Flags().GetInt(flagPlan)
+			if err != nil {
+				return err
+			}
+
+			var subscriptions types.Subscriptions
 			if len(address) > 0 {
 				address, err := sdk.AccAddressFromBech32(address)
 				if err != nil {
 					return err
 				}
 
-				subscriptions, err = common.QuerySubscriptionsForAddress(ctx, address)
+				subscriptions, err = common.QuerySubscriptionsForAddress(ctx, address, page, limit)
 				if err != nil {
 					return err
 				}
 			} else if plan > 0 {
-				subscriptions, err = common.QuerySubscriptionsForPlan(ctx, plan)
+				subscriptions, err = common.QuerySubscriptionsForPlan(ctx, plan, page, limit)
 				if err != nil {
 					return err
 				}
@@ -105,12 +94,12 @@ func querySubscriptionsCmd(cdc *codec.Codec) *cobra.Command {
 					return err
 				}
 
-				subscriptions, err = common.QuerySubscriptionsForNode(ctx, address)
+				subscriptions, err = common.QuerySubscriptionsForNode(ctx, address, page, limit)
 				if err != nil {
 					return err
 				}
 			} else {
-				subscriptions, err = common.QuerySubscriptions(ctx)
+				subscriptions, err = common.QuerySubscriptions(ctx, page, limit)
 				if err != nil {
 					return err
 				}
@@ -127,6 +116,81 @@ func querySubscriptionsCmd(cdc *codec.Codec) *cobra.Command {
 	cmd.Flags().String(flagAddress, "", "Account address")
 	cmd.Flags().Uint64(flagPlan, 0, "Plan ID")
 	cmd.Flags().String(flagNodeAddress, "", "Node address")
+	cmd.Flags().Int(flagPage, 1, "page")
+	cmd.Flags().Int(flagLimit, 0, "limit")
+
+	return cmd
+}
+
+func queryQuotaCmd(cdc *codec.Codec) *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "quota",
+		Short: "Query a subscription quota",
+		Args:  cobra.ExactArgs(2),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx := context.NewCLIContext().WithCodec(cdc)
+
+			id, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			address, err := sdk.AccAddressFromBech32(args[1])
+			if err != nil {
+				return err
+			}
+
+			quota, err := common.QueryQuotaForSubscription(ctx, id, address)
+			if err != nil {
+				return err
+			}
+
+			fmt.Println(quota)
+			return nil
+		},
+	}
+
+	return cmd
+}
+
+func queryQuotasCmd(cdc *codec.Codec) *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "quotas",
+		Short: "Query quotas of a subscription",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) (err error) {
+			ctx := context.NewCLIContext().WithCodec(cdc)
+
+			id, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			page, err := cmd.Flags().GetInt(flagPlan)
+			if err != nil {
+				return err
+			}
+
+			limit, err := cmd.Flags().GetInt(flagPlan)
+			if err != nil {
+				return err
+			}
+
+			quotas, err := common.QueryQuotasForSubscription(ctx, id, page, limit)
+			if err != nil {
+				return err
+			}
+
+			for _, quota := range quotas {
+				fmt.Println(quota)
+			}
+
+			return nil
+		},
+	}
+
+	cmd.Flags().Int(flagPage, 1, "page")
+	cmd.Flags().Int(flagLimit, 0, "limit")
 
 	return cmd
 }

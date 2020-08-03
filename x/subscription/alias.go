@@ -13,25 +13,29 @@ import (
 )
 
 const (
-	Codespace                             = types.Codespace
-	EventTypeSetSubscription              = types.EventTypeSetSubscription
-	EventTypeSetSubscriptionsCount        = types.EventTypeSetSubscriptionsCount
-	EventTypeAddAddressForSubscription    = types.EventTypeAddAddressForSubscription
-	EventTypeRemoveAddressForSubscription = types.EventTypeRemoveAddressForSubscription
-	EventTypeEndSubscription              = types.EventTypeEndSubscription
-	AttributeKeyAddress                   = types.AttributeKeyAddress
-	AttributeKeyID                        = types.AttributeKeyID
-	AttributeKeyNode                      = types.AttributeKeyNode
-	AttributeKeyCount                     = types.AttributeKeyCount
-	AttributeKeyPlan                      = types.AttributeKeyPlan
-	ModuleName                            = types.ModuleName
-	QuerierRoute                          = types.QuerierRoute
-	QuerySubscription                     = types.QuerySubscription
-	QuerySubscriptions                    = types.QuerySubscriptions
-	QuerySubscriptionsForAddress          = types.QuerySubscriptionsForAddress
-	QuerySubscriptionsForPlan             = types.QuerySubscriptionsForPlan
-	QuerySubscriptionsForNode             = types.QuerySubscriptionsForNode
-	QueryMembersForSubscription           = types.QueryMembersForSubscription
+	Codespace                           = types.Codespace
+	EventTypeSetSubscription            = types.EventTypeSetSubscription
+	EventTypeSetSubscriptionsCount      = types.EventTypeSetSubscriptionsCount
+	EventTypeAddQuotaForSubscription    = types.EventTypeAddQuotaForSubscription
+	EventTypeUpdateQuotaForSubscription = types.EventTypeUpdateQuotaForSubscription
+	EventTypeRemoveQuotaForSubscription = types.EventTypeRemoveQuotaForSubscription
+	EventTypeEndSubscription            = types.EventTypeEndSubscription
+	AttributeKeyAddress                 = types.AttributeKeyAddress
+	AttributeKeyID                      = types.AttributeKeyID
+	AttributeKeyNode                    = types.AttributeKeyNode
+	AttributeKeyCount                   = types.AttributeKeyCount
+	AttributeKeyPlan                    = types.AttributeKeyPlan
+	AttributeKeyConsumed                = types.AttributeKeyConsumed
+	AttributeKeyAllocated               = types.AttributeKeyAllocated
+	ModuleName                          = types.ModuleName
+	QuerierRoute                        = types.QuerierRoute
+	QuerySubscription                   = types.QuerySubscription
+	QuerySubscriptions                  = types.QuerySubscriptions
+	QuerySubscriptionsForAddress        = types.QuerySubscriptionsForAddress
+	QuerySubscriptionsForPlan           = types.QuerySubscriptionsForPlan
+	QuerySubscriptionsForNode           = types.QuerySubscriptionsForNode
+	QueryQuotaForSubscription           = types.QueryQuotaForSubscription
+	QueryQuotasForSubscription          = types.QueryQuotasForSubscription
 )
 
 var (
@@ -53,38 +57,44 @@ var (
 	ErrorDuplicateAddress                 = types.ErrorDuplicateAddress
 	ErrorAddressWasNotAdded               = types.ErrorAddressWasNotAdded
 	ErrorCanNotSubscribe                  = types.ErrorCanNotSubscribe
+	ErrorInvalidQuota                     = types.ErrorInvalidQuota
+	ErrorDuplicateQuota                   = types.ErrorDuplicateQuota
+	ErrorQuotaDoesNotExist                = types.ErrorQuotaDoesNotExist
 	NewGenesisState                       = types.NewGenesisState
 	DefaultGenesisState                   = types.DefaultGenesisState
 	SubscriptionKey                       = types.SubscriptionKey
-	SubscriptionForAddressKeyPrefix       = types.SubscriptionForAddressKeyPrefix
+	SubscriptionForAddressByAddressKey    = types.SubscriptionForAddressByAddressKey
 	SubscriptionForAddressKey             = types.SubscriptionForAddressKey
-	SubscriptionForPlanKeyPrefix          = types.SubscriptionForPlanKeyPrefix
+	SubscriptionForPlanByPlanKey          = types.SubscriptionForPlanByPlanKey
 	SubscriptionForPlanKey                = types.SubscriptionForPlanKey
-	SubscriptionForNodeKeyPrefix          = types.SubscriptionForNodeKeyPrefix
+	SubscriptionForNodeByNodeKey          = types.SubscriptionForNodeByNodeKey
 	SubscriptionForNodeKey                = types.SubscriptionForNodeKey
-	MemberForSubscriptionKeyPrefix        = types.MemberForSubscriptionKeyPrefix
-	MemberForSubscriptionKey              = types.MemberForSubscriptionKey
+	QuotaForSubscriptionBySubscriptionKey = types.QuotaForSubscriptionBySubscriptionKey
+	QuotaForSubscriptionKey               = types.QuotaForSubscriptionKey
 	NewMsgStartSubscription               = types.NewMsgStartSubscription
-	NewMsgAddMemberForSubscription        = types.NewMsgAddMemberForSubscription
-	NewMsgRemoveMemberForSubscription     = types.NewMsgRemoveMemberForSubscription
+	NewMsgAddQuotaForSubscription         = types.NewMsgAddQuotaForSubscription
+	NewMsgUpdateQuotaForSubscription      = types.NewMsgUpdateQuotaForSubscription
 	NewMsgEndSubscription                 = types.NewMsgEndSubscription
-	NewQueryPlanParams                    = types.NewQueryPlanParams
-	NewQueryPlansForProviderParams        = types.NewQueryPlansForProviderParams
-	NewQueryNodesForPlanParams            = types.NewQueryNodesForPlanParams
 	NewQuerySubscriptionParams            = types.NewQuerySubscriptionParams
+	NewQuerySubscriptionsParams           = types.NewQuerySubscriptionsParams
 	NewQuerySubscriptionsForAddressParams = types.NewQuerySubscriptionsForAddressParams
 	NewQuerySubscriptionsForPlanParams    = types.NewQuerySubscriptionsForPlanParams
 	NewQuerySubscriptionsForNodeParams    = types.NewQuerySubscriptionsForNodeParams
-	NewQueryMembersForSubscriptionParams  = types.NewQueryMembersForSubscriptionParams
+	NewQueryQuotaForSubscriptionParams    = types.NewQueryQuotaForSubscriptionParams
+	NewQueryQuotasForSubscriptionParams   = types.NewQueryQuotasForSubscriptionParams
 	NewKeeper                             = keeper.NewKeeper
 	Querier                               = querier.Querier
 
 	// variable aliases
-	ModuleCdc             = types.ModuleCdc
-	RouterKey             = types.RouterKey
-	StoreKey              = types.StoreKey
-	SubscriptionsCountKey = types.SubscriptionsCountKey
-	SubscriptionKeyPrefix = types.SubscriptionKeyPrefix
+	ModuleCdc                       = types.ModuleCdc
+	RouterKey                       = types.RouterKey
+	StoreKey                        = types.StoreKey
+	SubscriptionsCountKey           = types.SubscriptionsCountKey
+	SubscriptionKeyPrefix           = types.SubscriptionKeyPrefix
+	SubscriptionForAddressKeyPrefix = types.SubscriptionForAddressKeyPrefix
+	SubscriptionForPlanKeyPrefix    = types.SubscriptionForPlanKeyPrefix
+	SubscriptionForNodeKeyPrefix    = types.SubscriptionForNodeKeyPrefix
+	QuotaForSubscriptionKeyPrefix   = types.QuotaForSubscriptionKeyPrefix
 )
 
 type (
@@ -92,18 +102,19 @@ type (
 	GenesisSubscriptions               = types.GenesisSubscriptions
 	GenesisState                       = types.GenesisState
 	MsgStartSubscription               = types.MsgStartSubscription
-	MsgAddMemberForSubscription        = types.MsgAddMemberForSubscription
-	MsgRemoveMemberForSubscription     = types.MsgRemoveMemberForSubscription
+	MsgAddQuotaForSubscription         = types.MsgAddQuotaForSubscription
+	MsgUpdateQuotaForSubscription      = types.MsgUpdateQuotaForSubscription
 	MsgEndSubscription                 = types.MsgEndSubscription
-	QueryPlanParams                    = types.QueryPlanParams
-	QueryPlansForProviderParams        = types.QueryPlansForProviderParams
-	QueryNodesForPlanParams            = types.QueryNodesForPlanParams
 	QuerySubscriptionParams            = types.QuerySubscriptionParams
+	QuerySubscriptionsParams           = types.QuerySubscriptionsParams
 	QuerySubscriptionsForAddressParams = types.QuerySubscriptionsForAddressParams
 	QuerySubscriptionsForPlanParams    = types.QuerySubscriptionsForPlanParams
 	QuerySubscriptionsForNodeParams    = types.QuerySubscriptionsForNodeParams
-	QueryMembersForSubscriptionParams  = types.QueryMembersForSubscriptionParams
+	QueryQuotaForSubscriptionParams    = types.QueryQuotaForSubscriptionParams
+	QueryQuotasForSubscriptionParams   = types.QueryQuotasForSubscriptionParams
 	Subscription                       = types.Subscription
 	Subscriptions                      = types.Subscriptions
+	Quota                              = types.Quota
+	Quotas                             = types.Quotas
 	Keeper                             = keeper.Keeper
 )

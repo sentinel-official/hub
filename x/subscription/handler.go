@@ -19,40 +19,50 @@ func startPlanSubscription(ctx sdk.Context, k keeper.Keeper, from sdk.AccAddress
 		return types.ErrorInvalidPlanStatus().Result()
 	}
 
-	price, found := plan.PriceForDenom(denom)
-	if !found {
-		return types.ErrorPriceDoesNotExist().Result()
-	}
+	if plan.Price != nil {
+		price, found := plan.PriceForDenom(denom)
+		if !found {
+			return types.ErrorPriceDoesNotExist().Result()
+		}
 
-	if err := k.SendCoin(ctx, from, plan.Provider.Bytes(), price); err != nil {
-		return err.Result()
+		if err := k.SendCoin(ctx, from, plan.Provider.Bytes(), price); err != nil {
+			return err.Result()
+		}
 	}
 
 	count := k.GetSubscriptionsCount(ctx)
 	subscription := types.Subscription{
-		ID:      count + 1,
-		Address: from,
-
-		Plan:          plan.ID,
-		Duration:      0,
-		TotalDuration: plan.Duration,
-		ExpiresAt:     ctx.BlockTime().Add(plan.Validity),
-
-		Bandwidth:      hub.NewBandwidthFromInt64(0, 0),
-		TotalBandwidth: plan.Bandwidth,
-		Status:         hub.StatusActive,
-		StatusAt:       ctx.BlockTime(),
+		ID:          count + 1,
+		Address:     from,
+		Plan:        plan.ID,
+		ExpiresAt:   ctx.BlockTime().Add(plan.Validity),
+		Unallocated: hub.NewBandwidthFromInt64(0, 0),
+		Status:      hub.StatusActive,
+		StatusAt:    ctx.BlockTime(),
 	}
 
 	k.SetSubscription(ctx, subscription)
-	k.SetSubscriptionForAddress(ctx, subscription.Address, subscription.ID)
 	k.SetSubscriptionForPlan(ctx, subscription.Plan, subscription.ID)
-	k.SetMemberForSubscription(ctx, subscription.ID, subscription.Address)
 	ctx.EventManager().EmitEvent(sdk.NewEvent(
 		types.EventTypeSetSubscription,
 		sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", subscription.ID)),
 		sdk.NewAttribute(types.AttributeKeyPlan, fmt.Sprintf("%d", subscription.Plan)),
 		sdk.NewAttribute(types.AttributeKeyAddress, subscription.Address.String()),
+	))
+
+	quota := types.Quota{
+		Address:   from,
+		Consumed:  hub.NewBandwidthFromInt64(0, 0),
+		Allocated: plan.Bandwidth,
+	}
+
+	k.SetQuotaForSubscription(ctx, subscription.ID, quota)
+	k.SetSubscriptionForAddress(ctx, quota.Address, subscription.ID)
+	ctx.EventManager().EmitEvent(sdk.NewEvent(
+		types.EventTypeAddQuotaForSubscription,
+		sdk.NewAttribute(types.AttributeKeyAddress, quota.Address.String()),
+		sdk.NewAttribute(types.AttributeKeyConsumed, quota.Consumed.String()),
+		sdk.NewAttribute(types.AttributeKeyAllocated, quota.Allocated.String()),
 	))
 
 	k.SetSubscriptionsCount(ctx, count+1)
@@ -76,41 +86,50 @@ func startNodeSubscription(ctx sdk.Context, k keeper.Keeper, from sdk.AccAddress
 		return types.ErrorCanNotSubscribe().Result()
 	}
 
-	if err := k.AddDeposit(ctx, from, deposit); err != nil {
-		return err.Result()
-	}
-
 	price, found := node.PriceForDenom(deposit.Denom)
 	if !found {
 		return types.ErrorPriceDoesNotExist().Result()
 	}
 
+	if err := k.AddDeposit(ctx, from, deposit); err != nil {
+		return err.Result()
+	}
+
 	count := k.GetSubscriptionsCount(ctx)
-	bandwidth, _ := node.BandwidthForCoin(deposit)
-
 	subscription := types.Subscription{
-		ID:      count + 1,
-		Address: from,
-
-		Node:    address,
-		Price:   price,
-		Deposit: deposit,
-
-		Bandwidth:      hub.NewBandwidthFromInt64(0, 0),
-		TotalBandwidth: bandwidth,
-		Status:         hub.StatusActive,
-		StatusAt:       ctx.BlockTime(),
+		ID:          count + 1,
+		Address:     from,
+		Node:        address,
+		Price:       price,
+		Deposit:     deposit,
+		Unallocated: hub.NewBandwidthFromInt64(0, 0),
+		Status:      hub.StatusActive,
+		StatusAt:    ctx.BlockTime(),
 	}
 
 	k.SetSubscription(ctx, subscription)
-	k.SetSubscriptionForAddress(ctx, subscription.Address, subscription.ID)
 	k.SetSubscriptionForNode(ctx, subscription.Node, subscription.ID)
-	k.SetMemberForSubscription(ctx, subscription.ID, subscription.Address)
 	ctx.EventManager().EmitEvent(sdk.NewEvent(
 		types.EventTypeSetSubscription,
 		sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", subscription.ID)),
 		sdk.NewAttribute(types.AttributeKeyNode, subscription.Node.String()),
 		sdk.NewAttribute(types.AttributeKeyAddress, subscription.Address.String()),
+	))
+
+	bandwidth, _ := node.BandwidthForCoin(deposit)
+	quota := types.Quota{
+		Address:   from,
+		Consumed:  hub.NewBandwidthFromInt64(0, 0),
+		Allocated: bandwidth,
+	}
+
+	k.SetQuotaForSubscription(ctx, subscription.ID, quota)
+	k.SetSubscriptionForAddress(ctx, quota.Address, subscription.ID)
+	ctx.EventManager().EmitEvent(sdk.NewEvent(
+		types.EventTypeAddQuotaForSubscription,
+		sdk.NewAttribute(types.AttributeKeyAddress, quota.Address.String()),
+		sdk.NewAttribute(types.AttributeKeyConsumed, quota.Consumed.String()),
+		sdk.NewAttribute(types.AttributeKeyAllocated, quota.Allocated.String()),
 	))
 
 	k.SetSubscriptionsCount(ctx, count+1)
@@ -130,7 +149,7 @@ func HandleStartSubscription(ctx sdk.Context, k keeper.Keeper, msg types.MsgStar
 	return startPlanSubscription(ctx, k, msg.From, msg.ID, msg.Denom)
 }
 
-func HandleAddMemberForSubscription(ctx sdk.Context, k keeper.Keeper, msg types.MsgAddMemberForSubscription) sdk.Result {
+func HandleAddQuotaForSubscription(ctx sdk.Context, k keeper.Keeper, msg types.MsgAddQuotaForSubscription) sdk.Result {
 	subscription, found := k.GetSubscription(ctx, msg.ID)
 	if !found {
 		return types.ErrorSubscriptionDoesNotExist().Result()
@@ -138,26 +157,39 @@ func HandleAddMemberForSubscription(ctx sdk.Context, k keeper.Keeper, msg types.
 	if !msg.From.Equals(subscription.Address) {
 		return types.ErrorUnauthorized().Result()
 	}
+	if msg.Bandwidth.IsAnyGT(subscription.Unallocated) {
+		return types.ErrorInvalidQuota().Result()
+	}
 	if !subscription.Status.Equal(hub.StatusActive) {
 		return types.ErrorInvalidSubscriptionStatus().Result()
 	}
 
-	if k.HasMemberForSubscription(ctx, subscription.ID, msg.Address) {
-		return types.ErrorDuplicateAddress().Result()
+	if k.HasQuotaForSubscription(ctx, subscription.ID, msg.Address) {
+		return types.ErrorDuplicateQuota().Result()
 	}
 
-	k.SetSubscriptionForAddress(ctx, msg.Address, subscription.ID)
-	k.SetMemberForSubscription(ctx, subscription.ID, msg.Address)
+	subscription.Unallocated = subscription.Unallocated.Sub(msg.Bandwidth)
+	k.SetSubscription(ctx, subscription)
+
+	quota := types.Quota{
+		Address:   msg.Address,
+		Consumed:  hub.NewBandwidthFromInt64(0, 0),
+		Allocated: msg.Bandwidth,
+	}
+
+	k.SetQuotaForSubscription(ctx, subscription.ID, quota)
+	k.SetSubscriptionForAddress(ctx, quota.Address, subscription.ID)
 	ctx.EventManager().EmitEvent(sdk.NewEvent(
-		types.EventTypeAddAddressForSubscription,
-		sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", subscription.ID)),
-		sdk.NewAttribute(types.AttributeKeyAddress, msg.Address.String()),
+		types.EventTypeAddQuotaForSubscription,
+		sdk.NewAttribute(types.AttributeKeyAddress, quota.Address.String()),
+		sdk.NewAttribute(types.AttributeKeyConsumed, quota.Consumed.String()),
+		sdk.NewAttribute(types.AttributeKeyAllocated, quota.Allocated.String()),
 	))
 
 	return sdk.Result{Events: ctx.EventManager().Events()}
 }
 
-func HandleRemoveMemberForSubscription(ctx sdk.Context, k keeper.Keeper, msg types.MsgRemoveMemberForSubscription) sdk.Result {
+func HandleUpdateQuotaForSubscription(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpdateQuotaForSubscription) sdk.Result {
 	subscription, found := k.GetSubscription(ctx, msg.ID)
 	if !found {
 		return types.ErrorSubscriptionDoesNotExist().Result()
@@ -169,16 +201,27 @@ func HandleRemoveMemberForSubscription(ctx sdk.Context, k keeper.Keeper, msg typ
 		return types.ErrorInvalidSubscriptionStatus().Result()
 	}
 
-	if !k.HasMemberForSubscription(ctx, subscription.ID, msg.Address) {
-		return types.ErrorAddressWasNotAdded().Result()
+	quota, found := k.GetQuotaForSubscription(ctx, subscription.ID, msg.Address)
+	if !found {
+		return types.ErrorQuotaDoesNotExist().Result()
 	}
 
-	k.DeleteSubscriptionForAddress(ctx, msg.Address, subscription.ID)
-	k.DeleteMemberForSubscription(ctx, subscription.ID, msg.Address)
+	subscription.Unallocated = subscription.Unallocated.
+		Add(quota.Allocated).Sub(quota.Consumed)
+	if msg.Bandwidth.IsAnyGT(subscription.Unallocated) {
+		return types.ErrorInvalidQuota().Result()
+	}
+
+	subscription.Unallocated = subscription.Unallocated.Sub(msg.Bandwidth)
+	k.SetSubscription(ctx, subscription)
+
+	quota.Allocated = msg.Bandwidth
+	k.SetQuotaForSubscription(ctx, subscription.ID, quota)
 	ctx.EventManager().EmitEvent(sdk.NewEvent(
-		types.EventTypeRemoveAddressForSubscription,
-		sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", subscription.ID)),
-		sdk.NewAttribute(types.AttributeKeyAddress, msg.Address.String()),
+		types.EventTypeAddQuotaForSubscription,
+		sdk.NewAttribute(types.AttributeKeyAddress, quota.Address.String()),
+		sdk.NewAttribute(types.AttributeKeyConsumed, quota.Consumed.String()),
+		sdk.NewAttribute(types.AttributeKeyAllocated, quota.Allocated.String()),
 	))
 
 	return sdk.Result{Events: ctx.EventManager().Events()}
@@ -197,7 +240,13 @@ func HandleEndSubscription(ctx sdk.Context, k keeper.Keeper, msg types.MsgEndSub
 	}
 
 	if subscription.Plan == 0 {
-		amount := subscription.Deposit.Sub(subscription.Amount())
+		consumed := hub.NewBandwidthFromInt64(0, 0)
+		k.IterateQuotasForSubscription(ctx, subscription.ID, func(_ int, item types.Quota) bool {
+			consumed = consumed.Add(item.Consumed)
+			return false
+		})
+
+		amount := subscription.Deposit.Sub(subscription.Amount(consumed))
 		if err := k.SubtractDeposit(ctx, subscription.Address, amount); err != nil {
 			return err.Result()
 		}

@@ -22,7 +22,6 @@ func HandleAddPlan(ctx sdk.Context, k keeper.Keeper, msg types.MsgAddPlan) sdk.R
 		Price:     msg.Price,
 		Validity:  msg.Validity,
 		Bandwidth: msg.Bandwidth,
-		Duration:  msg.Duration,
 		Status:    hub.StatusInactive,
 		StatusAt:  ctx.BlockTime(),
 	}

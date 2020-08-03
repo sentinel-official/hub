@@ -26,10 +26,9 @@ func SimulateMsgAddPlan(pk expected.ProviderKeeper, k keeper.Keeper) simulation.
 			price     = sdk.NewCoins(sdk.NewCoin("stake", sdk.NewInt(r.Int63n(100)+1)))
 			validity  = time.Duration(r.Intn(24)+1) * time.Hour
 			bandwidth = hub.NewBandwidthFromInt64(r.Int63n(1e12)+1, r.Int63n(1e12)+1)
-			duration  = time.Duration(r.Intn(24)+1) * time.Hour
 		)
 
-		msg := types.NewMsgAddPlan(from, price, validity, bandwidth, duration)
+		msg := types.NewMsgAddPlan(from, price, validity, bandwidth)
 		if msg.ValidateBasic() != nil {
 			return simulation.NoOpMsg(types.ModuleName), nil, fmt.Errorf("expected msg to pass ValidateBasic: %s", msg.GetSignBytes())
 		}

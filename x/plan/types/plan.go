@@ -16,7 +16,6 @@ type Plan struct {
 	Price     sdk.Coins       `json:"price"`
 	Validity  time.Duration   `json:"validity"`
 	Bandwidth hub.Bandwidth   `json:"bandwidth"`
-	Duration  time.Duration   `json:"duration"`
 	Status    hub.Status      `json:"status"`
 	StatusAt  time.Time       `json:"status_at"`
 }
@@ -28,10 +27,9 @@ Provider:  %s
 Price:     %s
 Validity:  %s
 Bandwidth: %s
-Duration:  %s
 Status:    %s
 Status at: %s
-`, p.ID, p.Provider, p.Price, p.Validity, p.Bandwidth, p.Duration, p.Status, p.StatusAt))
+`, p.ID, p.Provider, p.Price, p.Validity, p.Bandwidth, p.Status, p.StatusAt))
 }
 
 func (p Plan) PriceForDenom(d string) (sdk.Coin, bool) {

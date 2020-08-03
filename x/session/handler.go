@@ -30,16 +30,6 @@ func HandleUpdateSession(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpdateSe
 		return types.ErrorAddressWasNotAdded().Result()
 	}
 
-	subscription.Duration = subscription.Duration + msg.Duration
-	if subscription.Duration > subscription.TotalDuration {
-		return types.ErrorInvalidDuration().Result()
-	}
-
-	subscription.Bandwidth = subscription.Bandwidth.Add(msg.Bandwidth)
-	if subscription.Bandwidth.IsAnyGT(subscription.TotalBandwidth) {
-		return types.ErrorInvalidBandwidth().Result()
-	}
-
 	session, found := k.GetActiveSession(ctx, subscription.ID, msg.From, msg.Address)
 	if !found {
 		count := k.GetSessionsCount(ctx)
