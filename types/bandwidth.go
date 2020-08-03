@@ -56,6 +56,13 @@ func (b Bandwidth) Add(v Bandwidth) Bandwidth {
 	return b
 }
 
+func (b Bandwidth) Sub(v Bandwidth) Bandwidth {
+	b.Upload = b.Upload.Sub(v.Upload)
+	b.Download = b.Download.Sub(v.Download)
+
+	return b
+}
+
 func (b Bandwidth) IsAllLTE(v Bandwidth) bool {
 	return b.Upload.LTE(v.Upload) && b.Download.LTE(v.Download)
 }

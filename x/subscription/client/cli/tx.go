@@ -59,11 +59,11 @@ func txStartNodeSubscription(cdc *codec.Codec) *cobra.Command {
 	}
 }
 
-func txAddAddressForSubscription(cdc *codec.Codec) *cobra.Command {
+func txAddQuotaForSubscription(cdc *codec.Codec) *cobra.Command {
 	return &cobra.Command{
-		Use:   "member-add",
-		Short: "Add a member for a subscription",
-		Args:  cobra.ExactArgs(2),
+		Use:   "quota-add",
+		Short: "Add a quota for a subscription",
+		Args:  cobra.ExactArgs(4),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			txb := auth.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
 			ctx := context.NewCLIContext().WithCodec(cdc)
@@ -78,17 +78,28 @@ func txAddAddressForSubscription(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgAddMemberForSubscription(ctx.FromAddress, id, address)
+			upload, err := strconv.ParseInt(args[2], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			download, err := strconv.ParseInt(args[3], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			msg := types.NewMsgAddQuotaForSubscription(ctx.FromAddress, id, address,
+				hub.NewBandwidthFromInt64(upload, download))
 			return utils.GenerateOrBroadcastMsgs(ctx, txb, []sdk.Msg{msg})
 		},
 	}
 }
 
-func txRemoveAddressForSubscription(cdc *codec.Codec) *cobra.Command {
+func txUpdateQuotaForSubscription(cdc *codec.Codec) *cobra.Command {
 	return &cobra.Command{
-		Use:   "member-remove",
-		Short: "Remove a member for a subscription",
-		Args:  cobra.ExactArgs(2),
+		Use:   "quota-update",
+		Short: "Update the quota for a subscription",
+		Args:  cobra.ExactArgs(4),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			txb := auth.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
 			ctx := context.NewCLIContext().WithCodec(cdc)
@@ -103,7 +114,18 @@ func txRemoveAddressForSubscription(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgRemoveMemberForSubscription(ctx.FromAddress, id, address)
+			upload, err := strconv.ParseInt(args[2], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			download, err := strconv.ParseInt(args[3], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			msg := types.NewMsgUpdateQuotaForSubscription(ctx.FromAddress, id, address,
+				hub.NewBandwidthFromInt64(upload, download))
 			return utils.GenerateOrBroadcastMsgs(ctx, txb, []sdk.Msg{msg})
 		},
 	}

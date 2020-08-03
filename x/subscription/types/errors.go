@@ -27,6 +27,9 @@ const (
 	errorCodeDuplicateAddress
 	errorCodeAddressWasNotAdded
 	errorCodeCanNotSubscribe
+	errorCodeInvalidQuota
+	errorCodeDuplicateQuota
+	errorCodeQuotaDoesNotExist
 )
 
 const (
@@ -44,6 +47,9 @@ const (
 	errorMsgDuplicateAddress          = "duplicate address"
 	errorMsgAddressWasNotAdded        = "address was not added"
 	errorMsgCanNotSubscribe           = "can not subscribe"
+	errorMsgInvalidQuota              = "invalid quota"
+	errorMsgDuplicateQuota            = "duplicate quota"
+	errorMsgQuotaDoesNotExist         = "quota does not exist"
 )
 
 func ErrorMarshal() sdk.Error {
@@ -108,4 +114,16 @@ func ErrorAddressWasNotAdded() sdk.Error {
 
 func ErrorCanNotSubscribe() sdk.Error {
 	return sdk.NewError(Codespace, errorCodeCanNotSubscribe, errorMsgCanNotSubscribe)
+}
+
+func ErrorInvalidQuota() sdk.Error {
+	return sdk.NewError(Codespace, errorCodeInvalidQuota, errorMsgInvalidQuota)
+}
+
+func ErrorDuplicateQuota() sdk.Error {
+	return sdk.NewError(Codespace, errorCodeDuplicateQuota, errorMsgDuplicateQuota)
+}
+
+func ErrorQuotaDoesNotExist() sdk.Error {
+	return sdk.NewError(Codespace, errorCodeQuotaDoesNotExist, errorMsgQuotaDoesNotExist)
 }

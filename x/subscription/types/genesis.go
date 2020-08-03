@@ -1,12 +1,8 @@
 package types
 
-import (
-	sdk "github.com/cosmos/cosmos-sdk/types"
-)
-
 type GenesisSubscription struct {
-	Subscription Subscription     `json:"_"`
-	Members      []sdk.AccAddress `json:"members"`
+	Subscription Subscription `json:"_"`
+	Quotas       Quotas       `json:"quotas"`
 }
 
 type GenesisSubscriptions []GenesisSubscription

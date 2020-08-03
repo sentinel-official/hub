@@ -89,7 +89,7 @@ func (k Keeper) DeleteSubscriptionForAddress(ctx sdk.Context, address sdk.AccAdd
 func (k Keeper) GetSubscriptionsForAddress(ctx sdk.Context, address sdk.AccAddress) (items types.Subscriptions) {
 	store := k.Store(ctx)
 
-	iter := sdk.KVStorePrefixIterator(store, types.SubscriptionForAddressKeyPrefix(address))
+	iter := sdk.KVStorePrefixIterator(store, types.SubscriptionForAddressByAddressKey(address))
 	defer iter.Close()
 
 	for ; iter.Valid(); iter.Next() {
@@ -103,49 +103,19 @@ func (k Keeper) GetSubscriptionsForAddress(ctx sdk.Context, address sdk.AccAddre
 	return items
 }
 
-func (k Keeper) SetMemberForSubscription(ctx sdk.Context, id uint64, address sdk.AccAddress) {
-	key := types.MemberForSubscriptionKey(id, address)
-	value := k.cdc.MustMarshalBinaryLengthPrefixed(address)
-
-	store := k.Store(ctx)
-	store.Set(key, value)
-}
-
-func (k Keeper) HasMemberForSubscription(ctx sdk.Context, id uint64, address sdk.AccAddress) bool {
-	key := types.MemberForSubscriptionKey(id, address)
-
-	store := k.Store(ctx)
-	return store.Has(key)
-}
-
-func (k Keeper) DeleteMemberForSubscription(ctx sdk.Context, id uint64, address sdk.AccAddress) {
-	key := types.MemberForSubscriptionKey(id, address)
-
-	store := k.Store(ctx)
-	store.Delete(key)
-}
-
-func (k Keeper) GetMembersForSubscription(ctx sdk.Context, id uint64) (items []sdk.AccAddress) {
-	store := k.Store(ctx)
-
-	iter := sdk.KVStorePrefixIterator(store, types.MemberForSubscriptionKeyPrefix(id))
-	defer iter.Close()
-
-	for ; iter.Valid(); iter.Next() {
-		var item sdk.AccAddress
-		k.cdc.MustUnmarshalBinaryLengthPrefixed(iter.Value(), &item)
-		items = append(items, item)
-	}
-
-	return items
-}
-
 func (k Keeper) SetSubscriptionForPlan(ctx sdk.Context, plan, id uint64) {
 	key := types.SubscriptionForPlanKey(plan, id)
 	value := k.cdc.MustMarshalBinaryLengthPrefixed(id)
 
 	store := k.Store(ctx)
 	store.Set(key, value)
+}
+
+func (k Keeper) HasSubscriptionForPlan(ctx sdk.Context, plan, id uint64) bool {
+	key := types.SubscriptionForPlanKey(plan, id)
+
+	store := k.Store(ctx)
+	return store.Has(key)
 }
 
 func (k Keeper) GetSubscriptionsForPlan(ctx sdk.Context, plan uint64) (items types.Subscriptions) {
@@ -183,7 +153,7 @@ func (k Keeper) HasSubscriptionForNode(ctx sdk.Context, address hub.NodeAddress,
 func (k Keeper) GetSubscriptionsForNode(ctx sdk.Context, address hub.NodeAddress) (items types.Subscriptions) {
 	store := k.Store(ctx)
 
-	iter := sdk.KVStorePrefixIterator(store, types.SubscriptionForNodeKeyPrefix(address))
+	iter := sdk.KVStorePrefixIterator(store, types.SubscriptionForNodeByNodeKey(address))
 	defer iter.Close()
 
 	for ; iter.Valid(); iter.Next() {
@@ -195,4 +165,71 @@ func (k Keeper) GetSubscriptionsForNode(ctx sdk.Context, address hub.NodeAddress
 	}
 
 	return items
+}
+
+func (k Keeper) SetQuotaForSubscription(ctx sdk.Context, id uint64, quota types.Quota) {
+	key := types.QuotaForSubscriptionKey(id, quota.Address)
+	value := k.cdc.MustMarshalBinaryLengthPrefixed(quota)
+
+	store := k.Store(ctx)
+	store.Set(key, value)
+}
+
+func (k Keeper) GetQuotaForSubscription(ctx sdk.Context, id uint64, address sdk.AccAddress) (quota types.Quota, found bool) {
+	store := k.Store(ctx)
+
+	key := types.QuotaForSubscriptionKey(id, address)
+	value := store.Get(key)
+	if value == nil {
+		return quota, false
+	}
+
+	k.cdc.MustUnmarshalBinaryLengthPrefixed(value, &quota)
+	return quota, true
+}
+
+func (k Keeper) HasQuotaForSubscription(ctx sdk.Context, id uint64, address sdk.AccAddress) bool {
+	key := types.QuotaForSubscriptionKey(id, address)
+
+	store := k.Store(ctx)
+	return store.Has(key)
+}
+
+func (k Keeper) DeleteQuotaForSubscription(ctx sdk.Context, id uint64, address sdk.AccAddress) {
+	key := types.QuotaForSubscriptionKey(id, address)
+
+	store := k.Store(ctx)
+	store.Delete(key)
+}
+
+func (k Keeper) GetQuotasForSubscription(ctx sdk.Context, id uint64) (items types.Quotas) {
+	store := k.Store(ctx)
+
+	iter := sdk.KVStorePrefixIterator(store, types.QuotaForSubscriptionBySubscriptionKey(id))
+	defer iter.Close()
+
+	for ; iter.Valid(); iter.Next() {
+		var item types.Quota
+		k.cdc.MustUnmarshalBinaryLengthPrefixed(iter.Value(), &item)
+		items = append(items, item)
+	}
+
+	return items
+}
+
+func (k Keeper) IterateQuotasForSubscription(ctx sdk.Context, id uint64, f func(index int, item types.Quota) (stop bool)) {
+	store := k.Store(ctx)
+
+	iter := sdk.KVStorePrefixIterator(store, types.QuotaForSubscriptionBySubscriptionKey(id))
+	defer iter.Close()
+
+	for i := 0; iter.Valid(); iter.Next() {
+		var quota types.Quota
+		k.cdc.MustUnmarshalBinaryLengthPrefixed(iter.Value(), &quota)
+
+		if stop := f(i, quota); stop {
+			break
+		}
+		i++
+	}
 }

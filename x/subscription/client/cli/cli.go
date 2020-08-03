@@ -10,6 +10,8 @@ func GetQueryCommands(cdc *codec.Codec) []*cobra.Command {
 	return client.GetCommands(
 		querySubscriptionCmd(cdc),
 		querySubscriptionsCmd(cdc),
+		queryQuotaCmd(cdc),
+		queryQuotasCmd(cdc),
 	)
 }
 
@@ -22,8 +24,8 @@ func GetTxCommands(cdc *codec.Codec) []*cobra.Command {
 	cmd.AddCommand(client.PostCommands(
 		txStartPlanSubscription(cdc),
 		txStartNodeSubscription(cdc),
-		txAddAddressForSubscription(cdc),
-		txRemoveAddressForSubscription(cdc),
+		txAddQuotaForSubscription(cdc),
+		txUpdateQuotaForSubscription(cdc),
 		txEndSubscription(cdc),
 	)...)
 
