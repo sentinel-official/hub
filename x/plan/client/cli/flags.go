@@ -8,5 +8,4 @@ const (
 	flagValidity = "validity"
 	flagUpload   = "upload"
 	flagDownload = "download"
-	flagDuration = "duration"
 )
