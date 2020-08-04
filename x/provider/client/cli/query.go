@@ -11,7 +11,7 @@ import (
 	"github.com/sentinel-official/hub/x/provider/client/common"
 )
 
-func queryProviderCmd(cdc *codec.Codec) *cobra.Command {
+func queryProvider(cdc *codec.Codec) *cobra.Command {
 	return &cobra.Command{
 		Use:   "provider",
 		Short: "Query a provider",
@@ -35,7 +35,7 @@ func queryProviderCmd(cdc *codec.Codec) *cobra.Command {
 	}
 }
 
-func queryProvidersCmd(cdc *codec.Codec) *cobra.Command {
+func queryProviders(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "providers",
 		Short: "Query providers",

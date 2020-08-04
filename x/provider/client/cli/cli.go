@@ -8,8 +8,8 @@ import (
 
 func GetQueryCommands(cdc *codec.Codec) []*cobra.Command {
 	return client.GetCommands(
-		queryProviderCmd(cdc),
-		queryProvidersCmd(cdc),
+		queryProvider(cdc),
+		queryProviders(cdc),
 	)
 }
 
@@ -20,8 +20,8 @@ func GetTxCommands(cdc *codec.Codec) []*cobra.Command {
 	}
 
 	cmd.AddCommand(client.PostCommands(
-		txRegisterProviderCmd(cdc),
-		txUpdateProviderCmd(cdc),
+		txRegister(cdc),
+		txUpdate(cdc),
 	)...)
 
 	return []*cobra.Command{cmd}

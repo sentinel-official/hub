@@ -10,21 +10,21 @@ import (
 	hub "github.com/sentinel-official/hub/types"
 )
 
-func TestMsgRegisterProvider_ValidateBasic(t *testing.T) {
+func TestMsgRegister_ValidateBasic(t *testing.T) {
 	tests := []struct {
 		name string
-		m    MsgRegisterProvider
+		m    MsgRegister
 		want sdk.Error
 	}{
-		{"from nil", NewMsgRegisterProvider(nil, "", "", "", ""), ErrorInvalidField("from")},
-		{"from zero", NewMsgRegisterProvider(sdk.AccAddress{}, "", "", "", ""), ErrorInvalidField("from")},
-		{"from empty", NewMsgRegisterProvider(sdk.AccAddress(""), "", "", "", ""), ErrorInvalidField("from")},
-		{"name length 0", NewMsgRegisterProvider(sdk.AccAddress("address-1"), "", "", "", ""), ErrorInvalidField("name")},
-		{"name length greater than 64", NewMsgRegisterProvider(sdk.AccAddress("address-1"), strings.Repeat("-", 64+1), "", "", ""), ErrorInvalidField("name")},
-		{"identity length greater than 64", NewMsgRegisterProvider(sdk.AccAddress("address-1"), "name", strings.Repeat("-", 64+1), "", ""), ErrorInvalidField("identity")},
-		{"website length greater than 64", NewMsgRegisterProvider(sdk.AccAddress("address-1"), "name", "", strings.Repeat("-", 64+1), ""), ErrorInvalidField("website")},
-		{"description length greater than 256", NewMsgRegisterProvider(sdk.AccAddress("address-1"), "name", "", "", strings.Repeat("-", 256+1)), ErrorInvalidField("description")},
-		{"valid", NewMsgRegisterProvider(sdk.AccAddress("address-1"), "name", "", "", ""), nil},
+		{"from nil", NewMsgRegister(nil, "", "", "", ""), ErrorInvalidField("from")},
+		{"from zero", NewMsgRegister(sdk.AccAddress{}, "", "", "", ""), ErrorInvalidField("from")},
+		{"from empty", NewMsgRegister(sdk.AccAddress(""), "", "", "", ""), ErrorInvalidField("from")},
+		{"name length zero", NewMsgRegister(sdk.AccAddress("address-1"), "", "", "", ""), ErrorInvalidField("name")},
+		{"name length greater than 64", NewMsgRegister(sdk.AccAddress("address-1"), strings.Repeat("-", 64+1), "", "", ""), ErrorInvalidField("name")},
+		{"identity length greater than 64", NewMsgRegister(sdk.AccAddress("address-1"), "name", strings.Repeat("-", 64+1), "", ""), ErrorInvalidField("identity")},
+		{"website length greater than 64", NewMsgRegister(sdk.AccAddress("address-1"), "name", "", strings.Repeat("-", 64+1), ""), ErrorInvalidField("website")},
+		{"description length greater than 256", NewMsgRegister(sdk.AccAddress("address-1"), "name", "", "", strings.Repeat("-", 256+1)), ErrorInvalidField("description")},
+		{"valid", NewMsgRegister(sdk.AccAddress("address-1"), "name", "", "", ""), nil},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -35,20 +35,20 @@ func TestMsgRegisterProvider_ValidateBasic(t *testing.T) {
 	}
 }
 
-func TestMsgUpdateProvider_ValidateBasic(t *testing.T) {
+func TestMsgUpdate_ValidateBasic(t *testing.T) {
 	tests := []struct {
 		name string
-		m    MsgUpdateProvider
+		m    MsgUpdate
 		want sdk.Error
 	}{
-		{"from nil", NewMsgUpdateProvider(nil, "", "", "", ""), ErrorInvalidField("from")},
-		{"from zero", NewMsgUpdateProvider(hub.ProvAddress{}, "", "", "", ""), ErrorInvalidField("from")},
-		{"from empty", NewMsgUpdateProvider(hub.ProvAddress(""), "", "", "", ""), ErrorInvalidField("from")},
-		{"name length greater than 64", NewMsgUpdateProvider(hub.ProvAddress("address-1"), strings.Repeat("-", 64+1), "", "", ""), ErrorInvalidField("name")},
-		{"identity length greater than 64", NewMsgUpdateProvider(hub.ProvAddress("address-1"), "", strings.Repeat("-", 64+1), "", ""), ErrorInvalidField("identity")},
-		{"website length greater than 64", NewMsgUpdateProvider(hub.ProvAddress("address-1"), "", "", strings.Repeat("-", 64+1), ""), ErrorInvalidField("website")},
-		{"description length greater than 256", NewMsgUpdateProvider(hub.ProvAddress("address-1"), "", "", "", strings.Repeat("-", 256+1)), ErrorInvalidField("description")},
-		{"valid", NewMsgUpdateProvider(hub.ProvAddress("address-1"), "", "", "", ""), nil},
+		{"from nil", NewMsgUpdate(nil, "", "", "", ""), ErrorInvalidField("from")},
+		{"from zero", NewMsgUpdate(hub.ProvAddress{}, "", "", "", ""), ErrorInvalidField("from")},
+		{"from empty", NewMsgUpdate(hub.ProvAddress(""), "", "", "", ""), ErrorInvalidField("from")},
+		{"name length greater than 64", NewMsgUpdate(hub.ProvAddress("address-1"), strings.Repeat("-", 64+1), "", "", ""), ErrorInvalidField("name")},
+		{"identity length greater than 64", NewMsgUpdate(hub.ProvAddress("address-1"), "", strings.Repeat("-", 64+1), "", ""), ErrorInvalidField("identity")},
+		{"website length greater than 64", NewMsgUpdate(hub.ProvAddress("address-1"), "", "", strings.Repeat("-", 64+1), ""), ErrorInvalidField("website")},
+		{"description length greater than 256", NewMsgUpdate(hub.ProvAddress("address-1"), "", "", "", strings.Repeat("-", 256+1)), ErrorInvalidField("description")},
+		{"valid", NewMsgUpdate(hub.ProvAddress("address-1"), "", "", "", ""), nil},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

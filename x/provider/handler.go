@@ -7,7 +7,7 @@ import (
 	"github.com/sentinel-official/hub/x/provider/types"
 )
 
-func HandleRegisterProvider(ctx sdk.Context, k keeper.Keeper, msg types.MsgRegisterProvider) sdk.Result {
+func HandleRegister(ctx sdk.Context, k keeper.Keeper, msg types.MsgRegister) sdk.Result {
 	_, found := k.GetProvider(ctx, msg.From.Bytes())
 	if found {
 		return types.ErrorDuplicateProvider().Result()
@@ -23,14 +23,14 @@ func HandleRegisterProvider(ctx sdk.Context, k keeper.Keeper, msg types.MsgRegis
 
 	k.SetProvider(ctx, provider)
 	ctx.EventManager().EmitEvent(sdk.NewEvent(
-		types.EventTypeSetProvider,
+		types.EventTypeSet,
 		sdk.NewAttribute(types.AttributeKeyAddress, provider.Address.String()),
 	))
 
 	return sdk.Result{Events: ctx.EventManager().Events()}
 }
 
-func HandleUpdateProvider(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpdateProvider) sdk.Result {
+func HandleUpdate(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpdate) sdk.Result {
 	provider, found := k.GetProvider(ctx, msg.From)
 	if !found {
 		return types.ErrorProviderDoesNotExist().Result()
@@ -51,7 +51,7 @@ func HandleUpdateProvider(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpdateP
 
 	k.SetProvider(ctx, provider)
 	ctx.EventManager().EmitEvent(sdk.NewEvent(
-		types.EventTypeUpdateProvider,
+		types.EventTypeUpdate,
 		sdk.NewAttribute(types.AttributeKeyAddress, provider.Address.String()),
 	))
 

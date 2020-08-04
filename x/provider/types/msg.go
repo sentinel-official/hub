@@ -9,12 +9,12 @@ import (
 )
 
 var (
-	_ sdk.Msg = (*MsgRegisterProvider)(nil)
-	_ sdk.Msg = (*MsgUpdateProvider)(nil)
+	_ sdk.Msg = (*MsgRegister)(nil)
+	_ sdk.Msg = (*MsgUpdate)(nil)
 )
 
-// MsgRegisterProvider is for registering a provider.
-type MsgRegisterProvider struct {
+// MsgRegister is for registering a provider.
+type MsgRegister struct {
 	From        sdk.AccAddress `json:"from"`
 	Name        string         `json:"name"`
 	Identity    string         `json:"identity,omitempty"`
@@ -22,8 +22,8 @@ type MsgRegisterProvider struct {
 	Description string         `json:"description,omitempty"`
 }
 
-func NewMsgRegisterProvider(from sdk.AccAddress, name, identity, website, description string) MsgRegisterProvider {
-	return MsgRegisterProvider{
+func NewMsgRegister(from sdk.AccAddress, name, identity, website, description string) MsgRegister {
+	return MsgRegister{
 		From:        from,
 		Name:        name,
 		Identity:    identity,
@@ -32,15 +32,15 @@ func NewMsgRegisterProvider(from sdk.AccAddress, name, identity, website, descri
 	}
 }
 
-func (m MsgRegisterProvider) Route() string {
+func (m MsgRegister) Route() string {
 	return RouterKey
 }
 
-func (m MsgRegisterProvider) Type() string {
-	return "register_provider"
+func (m MsgRegister) Type() string {
+	return "register"
 }
 
-func (m MsgRegisterProvider) ValidateBasic() sdk.Error {
+func (m MsgRegister) ValidateBasic() sdk.Error {
 	if m.From == nil || m.From.Empty() {
 		return ErrorInvalidField("from")
 	}
@@ -68,7 +68,7 @@ func (m MsgRegisterProvider) ValidateBasic() sdk.Error {
 	return nil
 }
 
-func (m MsgRegisterProvider) GetSignBytes() []byte {
+func (m MsgRegister) GetSignBytes() []byte {
 	bytes, err := json.Marshal(m)
 	if err != nil {
 		panic(err)
@@ -77,12 +77,12 @@ func (m MsgRegisterProvider) GetSignBytes() []byte {
 	return bytes
 }
 
-func (m MsgRegisterProvider) GetSigners() []sdk.AccAddress {
+func (m MsgRegister) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{m.From}
 }
 
-// MsgUpdateProvider is for updating a provider.
-type MsgUpdateProvider struct {
+// MsgUpdate is for updating a provider.
+type MsgUpdate struct {
 	From        hub.ProvAddress `json:"from"`
 	Name        string          `json:"name,omitempty"`
 	Identity    string          `json:"identity,omitempty"`
@@ -90,8 +90,8 @@ type MsgUpdateProvider struct {
 	Description string          `json:"description,omitempty"`
 }
 
-func NewMsgUpdateProvider(from hub.ProvAddress, name, identity, website, description string) MsgUpdateProvider {
-	return MsgUpdateProvider{
+func NewMsgUpdate(from hub.ProvAddress, name, identity, website, description string) MsgUpdate {
+	return MsgUpdate{
 		From:        from,
 		Name:        name,
 		Identity:    identity,
@@ -100,15 +100,15 @@ func NewMsgUpdateProvider(from hub.ProvAddress, name, identity, website, descrip
 	}
 }
 
-func (m MsgUpdateProvider) Route() string {
+func (m MsgUpdate) Route() string {
 	return RouterKey
 }
 
-func (m MsgUpdateProvider) Type() string {
-	return "update_provider"
+func (m MsgUpdate) Type() string {
+	return "update"
 }
 
-func (m MsgUpdateProvider) ValidateBasic() sdk.Error {
+func (m MsgUpdate) ValidateBasic() sdk.Error {
 	if m.From == nil || m.From.Empty() {
 		return ErrorInvalidField("from")
 	}
@@ -136,7 +136,7 @@ func (m MsgUpdateProvider) ValidateBasic() sdk.Error {
 	return nil
 }
 
-func (m MsgUpdateProvider) GetSignBytes() []byte {
+func (m MsgUpdate) GetSignBytes() []byte {
 	bytes, err := json.Marshal(m)
 	if err != nil {
 		panic(err)
@@ -145,6 +145,6 @@ func (m MsgUpdateProvider) GetSignBytes() []byte {
 	return bytes
 }
 
-func (m MsgUpdateProvider) GetSigners() []sdk.AccAddress {
+func (m MsgUpdate) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{m.From.Bytes()}
 }

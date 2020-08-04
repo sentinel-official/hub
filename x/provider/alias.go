@@ -13,14 +13,14 @@ import (
 )
 
 const (
-	Codespace               = types.Codespace
-	EventTypeSetProvider    = types.EventTypeSetProvider
-	EventTypeUpdateProvider = types.EventTypeUpdateProvider
-	AttributeKeyAddress     = types.AttributeKeyAddress
-	ModuleName              = types.ModuleName
-	QuerierRoute            = types.QuerierRoute
-	QueryProvider           = types.QueryProvider
-	QueryProviders          = types.QueryProviders
+	Codespace           = types.Codespace
+	EventTypeSet        = types.EventTypeSet
+	EventTypeUpdate     = types.EventTypeUpdate
+	AttributeKeyAddress = types.AttributeKeyAddress
+	ModuleName          = types.ModuleName
+	QuerierRoute        = types.QuerierRoute
+	QueryProvider       = types.QueryProvider
+	QueryProviders      = types.QueryProviders
 )
 
 var (
@@ -36,8 +36,8 @@ var (
 	NewGenesisState           = types.NewGenesisState
 	DefaultGenesisState       = types.DefaultGenesisState
 	ProviderKey               = types.ProviderKey
-	NewMsgRegisterProvider    = types.NewMsgRegisterProvider
-	NewMsgUpdateProvider      = types.NewMsgUpdateProvider
+	NewMsgRegister            = types.NewMsgRegister
+	NewMsgUpdate              = types.NewMsgUpdate
 	NewQueryProviderParams    = types.NewQueryProviderParams
 	NewQueryProvidersParams   = types.NewQueryProvidersParams
 	NewKeeper                 = keeper.NewKeeper
@@ -52,8 +52,8 @@ var (
 
 type (
 	GenesisState         = types.GenesisState
-	MsgRegisterProvider  = types.MsgRegisterProvider
-	MsgUpdateProvider    = types.MsgUpdateProvider
+	MsgRegister          = types.MsgRegister
+	MsgUpdate            = types.MsgUpdate
 	Provider             = types.Provider
 	Providers            = types.Providers
 	QueryProviderParams  = types.QueryProviderParams
