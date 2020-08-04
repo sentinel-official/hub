@@ -42,4 +42,30 @@ func (p Plan) PriceForDenom(d string) (sdk.Coin, bool) {
 	return sdk.Coin{}, false
 }
 
+func (p Plan) Validate() error {
+	if p.ID == 0 {
+		return fmt.Errorf("id should not be zero")
+	}
+	if p.Provider == nil || p.Provider.Empty() {
+		return fmt.Errorf("provider should not be nil and empty")
+	}
+	if p.Price != nil && !p.Price.IsValid() {
+		return fmt.Errorf("price should be nil or valid")
+	}
+	if p.Validity <= 0 {
+		return fmt.Errorf("validity should be positive")
+	}
+	if !p.Bandwidth.IsValid() {
+		return fmt.Errorf("bandiwdth should be positive")
+	}
+	if !p.Status.IsValid() {
+		return fmt.Errorf("status should be valid")
+	}
+	if p.StatusAt.IsZero() {
+		return fmt.Errorf("status_at should not be zero")
+	}
+
+	return nil
+}
+
 type Plans []Plan

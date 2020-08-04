@@ -10,7 +10,7 @@ import (
 	"github.com/sentinel-official/hub/x/plan/types"
 )
 
-func HandleAddPlan(ctx sdk.Context, k keeper.Keeper, msg types.MsgAddPlan) sdk.Result {
+func HandleAdd(ctx sdk.Context, k keeper.Keeper, msg types.MsgAdd) sdk.Result {
 	if !k.HasProvider(ctx, msg.From) {
 		return types.ErrorProviderDoesNotExist().Result()
 	}
@@ -29,21 +29,21 @@ func HandleAddPlan(ctx sdk.Context, k keeper.Keeper, msg types.MsgAddPlan) sdk.R
 	k.SetPlan(ctx, plan)
 	k.SetPlanForProvider(ctx, plan.Provider, plan.ID)
 	ctx.EventManager().EmitEvent(sdk.NewEvent(
-		types.EventTypeSetPlan,
+		types.EventTypeSet,
 		sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", plan.ID)),
 		sdk.NewAttribute(types.AttributeKeyAddress, plan.Provider.String()),
 	))
 
 	k.SetPlansCount(ctx, count+1)
 	ctx.EventManager().EmitEvent(sdk.NewEvent(
-		types.EventTypeSetPlansCount,
+		types.EventTypeSetCount,
 		sdk.NewAttribute(types.AttributeKeyCount, fmt.Sprintf("%d", count+1)),
 	))
 
 	return sdk.Result{Events: ctx.EventManager().Events()}
 }
 
-func HandleSetPlanStatus(ctx sdk.Context, k keeper.Keeper, msg types.MsgSetPlanStatus) sdk.Result {
+func HandleSetStatus(ctx sdk.Context, k keeper.Keeper, msg types.MsgSetStatus) sdk.Result {
 	plan, found := k.GetPlan(ctx, msg.ID)
 	if !found {
 		return types.ErrorPlanDoesNotExist().Result()
@@ -57,7 +57,7 @@ func HandleSetPlanStatus(ctx sdk.Context, k keeper.Keeper, msg types.MsgSetPlanS
 
 	k.SetPlan(ctx, plan)
 	ctx.EventManager().EmitEvent(sdk.NewEvent(
-		types.EventTypeSetPlanStatus,
+		types.EventTypeSetStatus,
 		sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", plan.ID)),
 		sdk.NewAttribute(types.AttributeKeyStatus, plan.Status.String()),
 	))
@@ -65,7 +65,7 @@ func HandleSetPlanStatus(ctx sdk.Context, k keeper.Keeper, msg types.MsgSetPlanS
 	return sdk.Result{Events: ctx.EventManager().Events()}
 }
 
-func HandleAddNodeForPlan(ctx sdk.Context, k keeper.Keeper, msg types.MsgAddNodeForPlan) sdk.Result {
+func HandleAddNode(ctx sdk.Context, k keeper.Keeper, msg types.MsgAddNode) sdk.Result {
 	plan, found := k.GetPlan(ctx, msg.ID)
 	if !found {
 		return types.ErrorPlanDoesNotExist().Result()
@@ -88,7 +88,7 @@ func HandleAddNodeForPlan(ctx sdk.Context, k keeper.Keeper, msg types.MsgAddNode
 
 	k.SetNodeForPlan(ctx, plan.ID, node.Address)
 	ctx.EventManager().EmitEvent(sdk.NewEvent(
-		types.EventTypeAddNodeForPlan,
+		types.EventTypeAddNode,
 		sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", plan.ID)),
 		sdk.NewAttribute(types.AttributeKeyAddress, node.Address.String()),
 	))
@@ -96,7 +96,7 @@ func HandleAddNodeForPlan(ctx sdk.Context, k keeper.Keeper, msg types.MsgAddNode
 	return sdk.Result{Events: ctx.EventManager().Events()}
 }
 
-func HandleRemoveNodeForPlan(ctx sdk.Context, k keeper.Keeper, msg types.MsgRemoveNodeForPlan) sdk.Result {
+func HandleRemoveNode(ctx sdk.Context, k keeper.Keeper, msg types.MsgRemoveNode) sdk.Result {
 	plan, found := k.GetPlan(ctx, msg.ID)
 	if !found {
 		return types.ErrorPlanDoesNotExist().Result()
@@ -111,7 +111,7 @@ func HandleRemoveNodeForPlan(ctx sdk.Context, k keeper.Keeper, msg types.MsgRemo
 
 	k.DeleteNodeForPlan(ctx, plan.ID, msg.Address)
 	ctx.EventManager().EmitEvent(sdk.NewEvent(
-		types.EventTypeRemoveNodeForPlan,
+		types.EventTypeRemoveNode,
 		sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", plan.ID)),
 		sdk.NewAttribute(types.AttributeKeyAddress, msg.Address.String()),
 	))

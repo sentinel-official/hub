@@ -15,7 +15,7 @@ import (
 	"github.com/sentinel-official/hub/x/plan/types"
 )
 
-func txAddPlanCmd(cdc *codec.Codec) *cobra.Command {
+func txAdd(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "add",
 		Short: "Add a plan",
@@ -53,16 +53,16 @@ func txAddPlanCmd(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgAddPlan(ctx.FromAddress.Bytes(), price,
-				validity, hub.NewBandwidthFromInt64(upload, download))
+			msg := types.NewMsgAdd(ctx.FromAddress.Bytes(), price, validity,
+				hub.NewBandwidthFromInt64(upload, download))
 			return utils.GenerateOrBroadcastMsgs(ctx, txb, []sdk.Msg{msg})
 		},
 	}
 
-	cmd.Flags().String(flagPrice, "", "Plan price")
-	cmd.Flags().String(flagValidity, "", "Plan validity")
-	cmd.Flags().Int64(flagUpload, 0, "Plan upload bandwidth")
-	cmd.Flags().Int64(flagDownload, 0, "Plan download bandwidth")
+	cmd.Flags().String(flagPrice, "", "plan price")
+	cmd.Flags().String(flagValidity, "", "plan validity")
+	cmd.Flags().Int64(flagUpload, 0, "plan upload bandwidth")
+	cmd.Flags().Int64(flagDownload, 0, "plan download bandwidth")
 
 	_ = cmd.MarkFlagRequired(flagPrice)
 	_ = cmd.MarkFlagRequired(flagValidity)
@@ -72,7 +72,7 @@ func txAddPlanCmd(cdc *codec.Codec) *cobra.Command {
 	return cmd
 }
 
-func txSetPlanStatusCmd(cdc *codec.Codec) *cobra.Command {
+func txSetStatus(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "status-set",
 		Short: "Set a plan status",
@@ -86,7 +86,7 @@ func txSetPlanStatusCmd(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgSetPlanStatus(ctx.FromAddress.Bytes(), id, hub.StatusFromString(args[1]))
+			msg := types.NewMsgSetStatus(ctx.FromAddress.Bytes(), id, hub.StatusFromString(args[1]))
 			return utils.GenerateOrBroadcastMsgs(ctx, txb, []sdk.Msg{msg})
 		},
 	}
@@ -94,7 +94,7 @@ func txSetPlanStatusCmd(cdc *codec.Codec) *cobra.Command {
 	return cmd
 }
 
-func txAddNodeForPlanCmd(cdc *codec.Codec) *cobra.Command {
+func txAddNode(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "node-add",
 		Short: "Add a node for a plan",
@@ -113,7 +113,7 @@ func txAddNodeForPlanCmd(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgAddNodeForPlan(ctx.FromAddress.Bytes(), id, node)
+			msg := types.NewMsgAddNode(ctx.FromAddress.Bytes(), id, node)
 			return utils.GenerateOrBroadcastMsgs(ctx, txb, []sdk.Msg{msg})
 		},
 	}
@@ -121,7 +121,7 @@ func txAddNodeForPlanCmd(cdc *codec.Codec) *cobra.Command {
 	return cmd
 }
 
-func txRemoveNodeForPlanCmd(cdc *codec.Codec) *cobra.Command {
+func txRemoveNode(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "node-remove",
 		Short: "Remove a node for a plan",
@@ -140,7 +140,7 @@ func txRemoveNodeForPlanCmd(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgRemoveNodeForPlan(ctx.FromAddress.Bytes(), id, node)
+			msg := types.NewMsgRemoveNode(ctx.FromAddress.Bytes(), id, node)
 			return utils.GenerateOrBroadcastMsgs(ctx, txb, []sdk.Msg{msg})
 		},
 	}

@@ -5,10 +5,11 @@ import (
 )
 
 const (
-	QueryPlan             = "query_plan"
-	QueryPlans            = "query_plans"
-	QueryPlansForProvider = "query_plans_for_provider"
-	QueryNodesForPlan     = "query_nodes_for_plan"
+	QueryPlan             = "plan"
+	QueryPlans            = "plans"
+	QueryPlansForProvider = "plans_for_provider"
+
+	QueryNodesForPlan = "nodes_for_plan"
 )
 
 type QueryPlanParams struct {

@@ -1,11 +1,11 @@
 package types
 
 const (
-	EventTypeSetPlan           = "set_plan"
-	EventTypeSetPlansCount     = "set_plans_count"
-	EventTypeSetPlanStatus     = "set_plan_status"
-	EventTypeAddNodeForPlan    = "add_node_for_plan"
-	EventTypeRemoveNodeForPlan = "remove_node_for_plan"
+	EventTypeSetCount   = "plan:set_count"
+	EventTypeSet        = "plan:set"
+	EventTypeSetStatus  = "plan:set_status"
+	EventTypeAddNode    = "plan:add_node"
+	EventTypeRemoveNode = "plan:remove_node"
 )
 
 const (
