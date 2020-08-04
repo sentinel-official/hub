@@ -16,7 +16,7 @@ func init() {
 }
 
 func RegisterCodec(cdc *codec.Codec) {
-	cdc.RegisterConcrete(MsgRegisterNode{}, "sentinel/MsgRegisterNode", nil)
-	cdc.RegisterConcrete(MsgUpdateNode{}, "sentinel/MsgUpdateNode", nil)
-	cdc.RegisterConcrete(MsgSetNodeStatus{}, "sentinel/MsgSetNodeStatus", nil)
+	cdc.RegisterConcrete(MsgRegister{}, "x/node/MsgRegister", nil)
+	cdc.RegisterConcrete(MsgUpdate{}, "x/node/MsgUpdate", nil)
+	cdc.RegisterConcrete(MsgSetStatus{}, "x/node/MsgSetStatus", nil)
 }

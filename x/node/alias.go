@@ -14,9 +14,9 @@ import (
 
 const (
 	Codespace               = types.Codespace
-	EventTypeSetNode        = types.EventTypeSetNode
-	EventTypeUpdateNode     = types.EventTypeUpdateNode
-	EventTypeSetNodeStatus  = types.EventTypeSetNodeStatus
+	EventTypeSet            = types.EventTypeSet
+	EventTypeUpdate         = types.EventTypeUpdate
+	EventTypeSetStatus      = types.EventTypeSetStatus
 	AttributeKeyProvider    = types.AttributeKeyProvider
 	AttributeKeyAddress     = types.AttributeKeyAddress
 	AttributeKeyStatus      = types.AttributeKeyStatus
@@ -45,14 +45,14 @@ var (
 	NewGenesisState                = types.NewGenesisState
 	DefaultGenesisState            = types.DefaultGenesisState
 	NodeKey                        = types.NodeKey
-	NodeForProviderByProviderKey   = types.NodeForProviderByProviderKey
+	GetNodeForProviderKeyPrefix    = types.GetNodeForProviderKeyPrefix
 	NodeForProviderKey             = types.NodeForProviderKey
-	ActiveNodeAtByTimeKey          = types.ActiveNodeAtByTimeKey
+	GetActiveNodeAtKeyPrefix       = types.GetActiveNodeAtKeyPrefix
 	ActiveNodeAtKey                = types.ActiveNodeAtKey
-	NewMsgRegisterNode             = types.NewMsgRegisterNode
-	NewMsgUpdateNode               = types.NewMsgUpdateNode
-	NewMsgSetNodeStatus            = types.NewMsgSetNodeStatus
-	NodeCategoryFromString         = types.NodeCategoryFromString
+	NewMsgRegister                 = types.NewMsgRegister
+	NewMsgUpdate                   = types.NewMsgUpdate
+	NewMsgSetStatus                = types.NewMsgSetStatus
+	CategoryFromString             = types.CategoryFromString
 	NewParams                      = types.NewParams
 	DefaultParams                  = types.DefaultParams
 	ParamsKeyTable                 = types.ParamsKeyTable
@@ -74,10 +74,10 @@ var (
 
 type (
 	GenesisState                = types.GenesisState
-	MsgRegisterNode             = types.MsgRegisterNode
-	MsgUpdateNode               = types.MsgUpdateNode
-	MsgSetNodeStatus            = types.MsgSetNodeStatus
-	NodeCategory                = types.NodeCategory
+	MsgRegister                 = types.MsgRegister
+	MsgUpdate                   = types.MsgUpdate
+	MsgSetStatus                = types.MsgSetStatus
+	Category                    = types.Category
 	Node                        = types.Node
 	Nodes                       = types.Nodes
 	Params                      = types.Params

@@ -11,14 +11,14 @@ import (
 )
 
 const (
-	CategoryUnknown NodeCategory = iota + 0x00
+	CategoryUnknown Category = iota + 0x00
 	CategoryOpenVPN
 	CategoryWireGuard
 )
 
-type NodeCategory byte
+type Category byte
 
-func NodeCategoryFromString(s string) NodeCategory {
+func CategoryFromString(s string) Category {
 	switch s {
 	case "OpenVPN":
 		return CategoryOpenVPN
@@ -29,11 +29,11 @@ func NodeCategoryFromString(s string) NodeCategory {
 	}
 }
 
-func (n NodeCategory) Equal(v NodeCategory) bool {
+func (n Category) Equal(v Category) bool {
 	return n == v
 }
 
-func (n NodeCategory) String() string {
+func (n Category) String() string {
 	switch n {
 	case CategoryOpenVPN:
 		return "OpenVPN"
@@ -44,7 +44,7 @@ func (n NodeCategory) String() string {
 	}
 }
 
-func (n NodeCategory) IsValid() bool {
+func (n Category) IsValid() bool {
 	return n == CategoryOpenVPN ||
 		n == CategoryWireGuard
 }
@@ -56,7 +56,7 @@ type Node struct {
 	InternetSpeed hub.Bandwidth   `json:"internet_speed"`
 	RemoteURL     string          `json:"remote_url"`
 	Version       string          `json:"version"`
-	Category      NodeCategory    `json:"category"`
+	Category      Category        `json:"category"`
 	Status        hub.Status      `json:"status"`
 	StatusAt      time.Time       `json:"status_at"`
 }

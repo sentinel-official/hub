@@ -1,9 +1,9 @@
 package types
 
 const (
-	EventTypeSetNode       = "set_node"
-	EventTypeUpdateNode    = "update_node"
-	EventTypeSetNodeStatus = "set_node_status"
+	EventTypeSet       = "node:set"
+	EventTypeUpdate    = "node:update"
+	EventTypeSetStatus = "node:set_status"
 )
 
 const (

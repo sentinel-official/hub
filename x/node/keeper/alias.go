@@ -8,7 +8,11 @@ import (
 )
 
 func (k Keeper) HasProvider(ctx sdk.Context, address hub.ProvAddress) bool {
-	return address == nil || k.provider.HasProvider(ctx, address)
+	if address == nil {
+		return true
+	}
+
+	return k.provider.HasProvider(ctx, address)
 }
 
 func (k Keeper) GetPlansForProvider(ctx sdk.Context, address hub.ProvAddress) plan.Plans {

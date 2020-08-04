@@ -9,25 +9,25 @@ import (
 )
 
 var (
-	_ sdk.Msg = (*MsgRegisterNode)(nil)
-	_ sdk.Msg = (*MsgUpdateNode)(nil)
-	_ sdk.Msg = (*MsgSetNodeStatus)(nil)
+	_ sdk.Msg = (*MsgRegister)(nil)
+	_ sdk.Msg = (*MsgUpdate)(nil)
+	_ sdk.Msg = (*MsgSetStatus)(nil)
 )
 
-// MsgRegisterNode is for registering a VPN node.
-type MsgRegisterNode struct {
+// MsgRegister is for registering a VPN node.
+type MsgRegister struct {
 	From          sdk.AccAddress  `json:"from"`
 	Provider      hub.ProvAddress `json:"provider,omitempty"`
 	Price         sdk.Coins       `json:"price,omitempty"`
 	InternetSpeed hub.Bandwidth   `json:"internet_speed"`
 	RemoteURL     string          `json:"remote_url"`
 	Version       string          `json:"version"`
-	Category      NodeCategory    `json:"category"`
+	Category      Category        `json:"category"`
 }
 
-func NewMsgRegisterNode(from sdk.AccAddress, provider hub.ProvAddress, price sdk.Coins,
-	speed hub.Bandwidth, remoteURL, version string, category NodeCategory) MsgRegisterNode {
-	return MsgRegisterNode{
+func NewMsgRegister(from sdk.AccAddress, provider hub.ProvAddress, price sdk.Coins,
+	speed hub.Bandwidth, remoteURL, version string, category Category) MsgRegister {
+	return MsgRegister{
 		From:          from,
 		Provider:      provider,
 		Price:         price,
@@ -38,15 +38,15 @@ func NewMsgRegisterNode(from sdk.AccAddress, provider hub.ProvAddress, price sdk
 	}
 }
 
-func (m MsgRegisterNode) Route() string {
+func (m MsgRegister) Route() string {
 	return RouterKey
 }
 
-func (m MsgRegisterNode) Type() string {
-	return "register_node"
+func (m MsgRegister) Type() string {
+	return "register"
 }
 
-func (m MsgRegisterNode) ValidateBasic() sdk.Error {
+func (m MsgRegister) ValidateBasic() sdk.Error {
 	if m.From == nil || m.From.Empty() {
 		return ErrorInvalidField("from")
 	}
@@ -90,7 +90,7 @@ func (m MsgRegisterNode) ValidateBasic() sdk.Error {
 	return nil
 }
 
-func (m MsgRegisterNode) GetSignBytes() []byte {
+func (m MsgRegister) GetSignBytes() []byte {
 	bytes, err := json.Marshal(m)
 	if err != nil {
 		panic(err)
@@ -99,24 +99,24 @@ func (m MsgRegisterNode) GetSignBytes() []byte {
 	return bytes
 }
 
-func (m MsgRegisterNode) GetSigners() []sdk.AccAddress {
+func (m MsgRegister) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{m.From}
 }
 
-// MsgUpdateNode is for updating the information of a VPN node.
-type MsgUpdateNode struct {
+// MsgUpdate is for updating the information of a VPN node.
+type MsgUpdate struct {
 	From          hub.NodeAddress `json:"from"`
 	Provider      hub.ProvAddress `json:"provider,omitempty"`
 	Price         sdk.Coins       `json:"price,omitempty"`
 	InternetSpeed hub.Bandwidth   `json:"internet_speed,omitempty"`
 	RemoteURL     string          `json:"remote_url,omitempty"`
 	Version       string          `json:"version,omitempty"`
-	Category      NodeCategory    `json:"category,omitempty"`
+	Category      Category        `json:"category,omitempty"`
 }
 
-func NewMsgUpdateNode(from hub.NodeAddress, provider hub.ProvAddress, price sdk.Coins,
-	speed hub.Bandwidth, remoteURL, version string, category NodeCategory) MsgUpdateNode {
-	return MsgUpdateNode{
+func NewMsgUpdate(from hub.NodeAddress, provider hub.ProvAddress, price sdk.Coins,
+	speed hub.Bandwidth, remoteURL, version string, category Category) MsgUpdate {
+	return MsgUpdate{
 		From:          from,
 		Provider:      provider,
 		Price:         price,
@@ -127,15 +127,15 @@ func NewMsgUpdateNode(from hub.NodeAddress, provider hub.ProvAddress, price sdk.
 	}
 }
 
-func (m MsgUpdateNode) Route() string {
+func (m MsgUpdate) Route() string {
 	return RouterKey
 }
 
-func (m MsgUpdateNode) Type() string {
-	return "update_node"
+func (m MsgUpdate) Type() string {
+	return "update"
 }
 
-func (m MsgUpdateNode) ValidateBasic() sdk.Error {
+func (m MsgUpdate) ValidateBasic() sdk.Error {
 	if m.From == nil || m.From.Empty() {
 		return ErrorInvalidField("from")
 	}
@@ -178,7 +178,7 @@ func (m MsgUpdateNode) ValidateBasic() sdk.Error {
 	return nil
 }
 
-func (m MsgUpdateNode) GetSignBytes() []byte {
+func (m MsgUpdate) GetSignBytes() []byte {
 	bytes, err := json.Marshal(m)
 	if err != nil {
 		panic(err)
@@ -187,32 +187,32 @@ func (m MsgUpdateNode) GetSignBytes() []byte {
 	return bytes
 }
 
-func (m MsgUpdateNode) GetSigners() []sdk.AccAddress {
+func (m MsgUpdate) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{m.From.Bytes()}
 }
 
-// MsgSetNodeStatus is for updating the status of a VPN node.
-type MsgSetNodeStatus struct {
+// MsgSetStatus is for updating the status of a VPN node.
+type MsgSetStatus struct {
 	From   hub.NodeAddress `json:"from"`
 	Status hub.Status      `json:"status"`
 }
 
-func NewMsgSetNodeStatus(from hub.NodeAddress, status hub.Status) MsgSetNodeStatus {
-	return MsgSetNodeStatus{
+func NewMsgSetStatus(from hub.NodeAddress, status hub.Status) MsgSetStatus {
+	return MsgSetStatus{
 		From:   from,
 		Status: status,
 	}
 }
 
-func (m MsgSetNodeStatus) Route() string {
+func (m MsgSetStatus) Route() string {
 	return RouterKey
 }
 
-func (m MsgSetNodeStatus) Type() string {
-	return "set_node_status"
+func (m MsgSetStatus) Type() string {
+	return "set_status"
 }
 
-func (m MsgSetNodeStatus) ValidateBasic() sdk.Error {
+func (m MsgSetStatus) ValidateBasic() sdk.Error {
 	if m.From == nil || m.From.Empty() {
 		return ErrorInvalidField("from")
 	}
@@ -225,7 +225,7 @@ func (m MsgSetNodeStatus) ValidateBasic() sdk.Error {
 	return nil
 }
 
-func (m MsgSetNodeStatus) GetSignBytes() []byte {
+func (m MsgSetStatus) GetSignBytes() []byte {
 	bytes, err := json.Marshal(m)
 	if err != nil {
 		panic(err)
@@ -234,6 +234,6 @@ func (m MsgSetNodeStatus) GetSignBytes() []byte {
 	return bytes
 }
 
-func (m MsgSetNodeStatus) GetSigners() []sdk.AccAddress {
+func (m MsgSetStatus) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{m.From.Bytes()}
 }
