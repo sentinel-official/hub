@@ -8,7 +8,6 @@ package session
 
 import (
 	"github.com/sentinel-official/hub/x/session/keeper"
-	"github.com/sentinel-official/hub/x/session/querier"
 	"github.com/sentinel-official/hub/x/session/types"
 )
 

@@ -39,7 +39,7 @@ benchmark:
 
 simulate_short:
 	@go test -mod=readonly -v -timeout=1h -run TestFullAppSimulation \
-		-Enabled=true -Seed=9 -NumBlocks=100 -BlockSize=100 -Commit=true
+		-Enabled=true -Seed=4 -NumBlocks=50 -BlockSize=50 -Commit=true
 
 simulate_multi:
 	@runsim -Jobs=4 -SimAppPkg=. 500 1 TestFullAppSimulation

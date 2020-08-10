@@ -54,8 +54,8 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 		case subscription.MsgUpdateQuota:
 			return subscription.HandleUpdateQuota(ctx, k.Subscription, msg)
 
-		case session.MsgUpdateSession:
-			return session.HandleUpdateSession(ctx, k.Session, msg)
+		case session.MsgUpdate:
+			return session.HandleUpdate(ctx, k.Session, msg)
 		default:
 			return types.ErrorUnknownMsgType(msg.Type()).Result()
 		}

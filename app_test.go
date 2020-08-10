@@ -24,6 +24,7 @@ import (
 	node "github.com/sentinel-official/hub/x/node/simulation"
 	plan "github.com/sentinel-official/hub/x/plan/simulation"
 	provider "github.com/sentinel-official/hub/x/provider/simulation"
+	subscription "github.com/sentinel-official/hub/x/subscription/simulation"
 )
 
 var (
@@ -98,7 +99,7 @@ func TestFullAppSimulation(t *testing.T) {
 		fmt.Println("Exporting app state")
 		state, _, err := app.ExportAppStateAndValidators(false, nil)
 		require.NoError(t, err)
-		require.NoError(t, ioutil.WriteFile(exportStatePath, []byte(state), 0644))
+		require.NoError(t, ioutil.WriteFile(exportStatePath, state, 0644))
 	}
 	if exportParamsPath != "" {
 		fmt.Println("Exporting simulation params")
@@ -325,6 +326,51 @@ func operations(app *App) []simulation.WeightedOperation {
 				return v
 			}(nil),
 			Op: plan.SimulateMsgRemoveNode(app.vpnKeeper.Provider, app.vpnKeeper.Node, app.vpnKeeper.Plan),
+		},
+		{
+			Weight: func(_ *rand.Rand) (v int) {
+				params.GetOrGenerate(cdc, "subscription:weight_msg_subscribe_to_plan", &v, nil,
+					func(_ *rand.Rand) { v = 100 },
+				)
+				return v
+			}(nil),
+			Op: subscription.SimulateMsgSubscribeToPlan(app.vpnKeeper.Plan, app.vpnKeeper.Subscription),
+		},
+		{
+			Weight: func(_ *rand.Rand) (v int) {
+				params.GetOrGenerate(cdc, "subscription:weight_msg_subscribe_to_node", &v, nil,
+					func(_ *rand.Rand) { v = 100 },
+				)
+				return v
+			}(nil),
+			Op: subscription.SimulateMsgSubscribeToNode(app.vpnKeeper.Node, app.vpnKeeper.Subscription),
+		},
+		{
+			Weight: func(_ *rand.Rand) (v int) {
+				params.GetOrGenerate(cdc, "subscription:weight_msg_end", &v, nil,
+					func(_ *rand.Rand) { v = 100 },
+				)
+				return v
+			}(nil),
+			Op: subscription.SimulateMsgEnd(app.vpnKeeper.Subscription),
+		},
+		{
+			Weight: func(_ *rand.Rand) (v int) {
+				params.GetOrGenerate(cdc, "subscription:weight_msg_add_quota", &v, nil,
+					func(_ *rand.Rand) { v = 100 },
+				)
+				return v
+			}(nil),
+			Op: subscription.SimulateMsgAddQuota(app.vpnKeeper.Subscription),
+		},
+		{
+			Weight: func(_ *rand.Rand) (v int) {
+				params.GetOrGenerate(cdc, "subscription:weight_msg_update_quota", &v, nil,
+					func(_ *rand.Rand) { v = 100 },
+				)
+				return v
+			}(nil),
+			Op: subscription.SimulateMsgUpdateQuota(app.vpnKeeper.Subscription),
 		},
 	}
 }
