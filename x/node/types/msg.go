@@ -2,6 +2,7 @@ package types
 
 import (
 	"encoding/json"
+	"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
@@ -43,7 +44,7 @@ func (m MsgRegister) Route() string {
 }
 
 func (m MsgRegister) Type() string {
-	return "register"
+	return fmt.Sprintf("%s:register", ModuleName)
 }
 
 func (m MsgRegister) ValidateBasic() sdk.Error {
@@ -132,7 +133,7 @@ func (m MsgUpdate) Route() string {
 }
 
 func (m MsgUpdate) Type() string {
-	return "update"
+	return fmt.Sprintf("%s:update", ModuleName)
 }
 
 func (m MsgUpdate) ValidateBasic() sdk.Error {
@@ -209,7 +210,7 @@ func (m MsgSetStatus) Route() string {
 }
 
 func (m MsgSetStatus) Type() string {
-	return "set_status"
+	return fmt.Sprintf("%s:set_status", ModuleName)
 }
 
 func (m MsgSetStatus) ValidateBasic() sdk.Error {

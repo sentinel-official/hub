@@ -88,7 +88,7 @@ func queryNodes(cdc *codec.Codec) *cobra.Command {
 			}
 
 			for _, node := range nodes {
-				fmt.Println(node)
+				fmt.Printf("%s\n\n", node)
 			}
 
 			return nil

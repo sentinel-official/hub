@@ -58,7 +58,7 @@ func queryDeposits(cdc *codec.Codec) *cobra.Command {
 			}
 
 			for _, deposit := range deposits {
-				fmt.Println(deposit)
+				fmt.Printf("%s\n\n", deposit)
 			}
 
 			return nil

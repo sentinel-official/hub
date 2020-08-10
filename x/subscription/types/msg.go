@@ -2,6 +2,7 @@ package types
 
 import (
 	"encoding/json"
+	"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
@@ -9,59 +10,45 @@ import (
 )
 
 var (
-	_ sdk.Msg = (*MsgStartSubscription)(nil)
-	_ sdk.Msg = (*MsgAddQuotaForSubscription)(nil)
-	_ sdk.Msg = (*MsgUpdateQuotaForSubscription)(nil)
-	_ sdk.Msg = (*MsgEndSubscription)(nil)
+	_ sdk.Msg = (*MsgSubscribeToPlan)(nil)
+	_ sdk.Msg = (*MsgSubscribeToNode)(nil)
+	_ sdk.Msg = (*MsgEnd)(nil)
+
+	_ sdk.Msg = (*MsgAddQuota)(nil)
+	_ sdk.Msg = (*MsgUpdateQuota)(nil)
 )
 
-// MsgStartSubscription is for starting a subscription.
-type MsgStartSubscription struct {
-	From sdk.AccAddress `json:"from"`
-
-	ID    uint64 `json:"id,omitempty"`
-	Denom string `json:"denom,omitempty"`
-
-	Address hub.NodeAddress `json:"address,omitempty"`
-	Deposit sdk.Coin        `json:"deposit,omitempty"`
+// MsgSubscribeToPlan is for starting a plan subscription.
+type MsgSubscribeToPlan struct {
+	From  sdk.AccAddress `json:"from"`
+	ID    uint64         `json:"id"`
+	Denom string         `json:"denom"`
 }
 
-func NewMsgStartSubscription(from sdk.AccAddress, id uint64, denom string,
-	address hub.NodeAddress, deposit sdk.Coin) MsgStartSubscription {
-	return MsgStartSubscription{
-		From:    from,
-		ID:      id,
-		Denom:   denom,
-		Address: address,
-		Deposit: deposit,
+func NewMsgSubscribeToPlan(from sdk.AccAddress, id uint64, denom string) MsgSubscribeToPlan {
+	return MsgSubscribeToPlan{
+		From:  from,
+		ID:    id,
+		Denom: denom,
 	}
 }
 
-func (m MsgStartSubscription) Route() string {
+func (m MsgSubscribeToPlan) Route() string {
 	return RouterKey
 }
 
-func (m MsgStartSubscription) Type() string {
-	return "start_subscription"
+func (m MsgSubscribeToPlan) Type() string {
+	return fmt.Sprintf("%s:subscribe_to_plan", ModuleName)
 }
 
-func (m MsgStartSubscription) ValidateBasic() sdk.Error {
+func (m MsgSubscribeToPlan) ValidateBasic() sdk.Error {
 	if m.From == nil || m.From.Empty() {
 		return ErrorInvalidField("from")
 	}
 
+	// ID shouldn't be zero
 	if m.ID == 0 {
-		// Address shouldn't be nil or empty
-		if m.Address == nil || m.Address.Empty() {
-			return ErrorInvalidField("address")
-		}
-
-		// Deposit should be valid
-		if !m.Deposit.IsValid() {
-			return ErrorInvalidField("deposit")
-		}
-
-		return nil
+		return ErrorInvalidField("id")
 	}
 
 	// Denom length should be [3, 16]
@@ -72,7 +59,7 @@ func (m MsgStartSubscription) ValidateBasic() sdk.Error {
 	return nil
 }
 
-func (m MsgStartSubscription) GetSignBytes() []byte {
+func (m MsgSubscribeToPlan) GetSignBytes() []byte {
 	bytes, err := json.Marshal(m)
 	if err != nil {
 		panic(err)
@@ -81,44 +68,36 @@ func (m MsgStartSubscription) GetSignBytes() []byte {
 	return bytes
 }
 
-func (m MsgStartSubscription) GetSigners() []sdk.AccAddress {
+func (m MsgSubscribeToPlan) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{m.From}
 }
 
-// MsgAddQuotaForSubscription is for adding the bandwidth quota for an address.
-type MsgAddQuotaForSubscription struct {
-	From      sdk.AccAddress `json:"from"`
-	ID        uint64         `json:"id"`
-	Address   sdk.AccAddress `json:"address"`
-	Bandwidth hub.Bandwidth  `json:"bandwidth"`
+// MsgSubscribeToNode is for starting a node subscription.
+type MsgSubscribeToNode struct {
+	From    sdk.AccAddress  `json:"from"`
+	Address hub.NodeAddress `json:"address"`
+	Deposit sdk.Coin        `json:"deposit"`
 }
 
-func NewMsgAddQuotaForSubscription(from sdk.AccAddress, id uint64,
-	address sdk.AccAddress, bandwidth hub.Bandwidth) MsgAddQuotaForSubscription {
-	return MsgAddQuotaForSubscription{
-		From:      from,
-		ID:        id,
-		Address:   address,
-		Bandwidth: bandwidth,
+func NewMsgSubscribeToNode(from sdk.AccAddress, address hub.NodeAddress, deposit sdk.Coin) MsgSubscribeToNode {
+	return MsgSubscribeToNode{
+		From:    from,
+		Address: address,
+		Deposit: deposit,
 	}
 }
 
-func (m MsgAddQuotaForSubscription) Route() string {
+func (m MsgSubscribeToNode) Route() string {
 	return RouterKey
 }
 
-func (m MsgAddQuotaForSubscription) Type() string {
-	return "add_quota_for_subscription"
+func (m MsgSubscribeToNode) Type() string {
+	return fmt.Sprintf("%s:subscribe_to_node", ModuleName)
 }
 
-func (m MsgAddQuotaForSubscription) ValidateBasic() sdk.Error {
+func (m MsgSubscribeToNode) ValidateBasic() sdk.Error {
 	if m.From == nil || m.From.Empty() {
 		return ErrorInvalidField("from")
-	}
-
-	// ID shouldn't be zero
-	if m.ID == 0 {
-		return ErrorInvalidField("id")
 	}
 
 	// Address shouldn't be nil or empty
@@ -126,20 +105,15 @@ func (m MsgAddQuotaForSubscription) ValidateBasic() sdk.Error {
 		return ErrorInvalidField("address")
 	}
 
-	// From and Address both shouldn't be same
-	if m.From.Equals(m.Address) {
-		return ErrorInvalidField("from and address")
-	}
-
-	// Bandwidth should be valid
-	if !m.Bandwidth.IsValid() {
-		return ErrorInvalidField("bandwidth")
+	// Deposit should be valid
+	if !m.Deposit.IsValid() {
+		return ErrorInvalidField("deposit")
 	}
 
 	return nil
 }
 
-func (m MsgAddQuotaForSubscription) GetSignBytes() []byte {
+func (m MsgSubscribeToNode) GetSignBytes() []byte {
 	bytes, err := json.Marshal(m)
 	if err != nil {
 		panic(err)
@@ -148,99 +122,32 @@ func (m MsgAddQuotaForSubscription) GetSignBytes() []byte {
 	return bytes
 }
 
-func (m MsgAddQuotaForSubscription) GetSigners() []sdk.AccAddress {
+func (m MsgSubscribeToNode) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{m.From}
 }
 
-// MsgUpdateQuotaForSubscription is for updating the bandwidth quota for an address.
-type MsgUpdateQuotaForSubscription struct {
-	From      sdk.AccAddress `json:"from"`
-	ID        uint64         `json:"id"`
-	Address   sdk.AccAddress `json:"address"`
-	Bandwidth hub.Bandwidth  `json:"bandwidth"`
-}
-
-func NewMsgUpdateQuotaForSubscription(from sdk.AccAddress, id uint64,
-	address sdk.AccAddress, bandwidth hub.Bandwidth) MsgUpdateQuotaForSubscription {
-	return MsgUpdateQuotaForSubscription{
-		From:      from,
-		ID:        id,
-		Address:   address,
-		Bandwidth: bandwidth,
-	}
-}
-
-func (m MsgUpdateQuotaForSubscription) Route() string {
-	return RouterKey
-}
-
-func (m MsgUpdateQuotaForSubscription) Type() string {
-	return "update_quota_for_subscription"
-}
-
-func (m MsgUpdateQuotaForSubscription) ValidateBasic() sdk.Error {
-	if m.From == nil || m.From.Empty() {
-		return ErrorInvalidField("from")
-	}
-
-	// ID shouldn't be zero
-	if m.ID == 0 {
-		return ErrorInvalidField("id")
-	}
-
-	// Address shouldn't be nil or empty
-	if m.Address == nil || m.Address.Empty() {
-		return ErrorInvalidField("address")
-	}
-
-	// From and Address both shouldn't be same
-	if m.From.Equals(m.Address) {
-		return ErrorInvalidField("from and address")
-	}
-
-	// Bandwidth should be valid
-	if !m.Bandwidth.IsValid() {
-		return ErrorInvalidField("bandwidth")
-	}
-
-	return nil
-}
-
-func (m MsgUpdateQuotaForSubscription) GetSignBytes() []byte {
-	bytes, err := json.Marshal(m)
-	if err != nil {
-		panic(err)
-	}
-
-	return bytes
-}
-
-func (m MsgUpdateQuotaForSubscription) GetSigners() []sdk.AccAddress {
-	return []sdk.AccAddress{m.From}
-}
-
-// MsgEndSubscription is for ending a subscription.
-type MsgEndSubscription struct {
+// MsgEnd is for ending a subscription.
+type MsgEnd struct {
 	From sdk.AccAddress `json:"from"`
 	ID   uint64         `json:"id"`
 }
 
-func NewMsgEndSubscription(from sdk.AccAddress, id uint64) MsgEndSubscription {
-	return MsgEndSubscription{
+func NewMsgEnd(from sdk.AccAddress, id uint64) MsgEnd {
+	return MsgEnd{
 		From: from,
 		ID:   id,
 	}
 }
 
-func (m MsgEndSubscription) Route() string {
+func (m MsgEnd) Route() string {
 	return RouterKey
 }
 
-func (m MsgEndSubscription) Type() string {
-	return "end_subscription"
+func (m MsgEnd) Type() string {
+	return fmt.Sprintf("%s:end", ModuleName)
 }
 
-func (m MsgEndSubscription) ValidateBasic() sdk.Error {
+func (m MsgEnd) ValidateBasic() sdk.Error {
 	if m.From == nil || m.From.Empty() {
 		return ErrorInvalidField("from")
 	}
@@ -253,7 +160,7 @@ func (m MsgEndSubscription) ValidateBasic() sdk.Error {
 	return nil
 }
 
-func (m MsgEndSubscription) GetSignBytes() []byte {
+func (m MsgEnd) GetSignBytes() []byte {
 	bytes, err := json.Marshal(m)
 	if err != nil {
 		panic(err)
@@ -262,6 +169,128 @@ func (m MsgEndSubscription) GetSignBytes() []byte {
 	return bytes
 }
 
-func (m MsgEndSubscription) GetSigners() []sdk.AccAddress {
+func (m MsgEnd) GetSigners() []sdk.AccAddress {
+	return []sdk.AccAddress{m.From}
+}
+
+// MsgAddQuota is for adding the bandwidth quota for an address.
+type MsgAddQuota struct {
+	From      sdk.AccAddress `json:"from"`
+	ID        uint64         `json:"id"`
+	Address   sdk.AccAddress `json:"address"`
+	Bandwidth hub.Bandwidth  `json:"bandwidth"`
+}
+
+func NewMsgAddQuota(from sdk.AccAddress, id uint64, address sdk.AccAddress, bandwidth hub.Bandwidth) MsgAddQuota {
+	return MsgAddQuota{
+		From:      from,
+		ID:        id,
+		Address:   address,
+		Bandwidth: bandwidth,
+	}
+}
+
+func (m MsgAddQuota) Route() string {
+	return RouterKey
+}
+
+func (m MsgAddQuota) Type() string {
+	return fmt.Sprintf("%s:add_quota", ModuleName)
+}
+
+func (m MsgAddQuota) ValidateBasic() sdk.Error {
+	if m.From == nil || m.From.Empty() {
+		return ErrorInvalidField("from")
+	}
+
+	// ID shouldn't be zero
+	if m.ID == 0 {
+		return ErrorInvalidField("id")
+	}
+
+	// Address shouldn't be nil or empty
+	if m.Address == nil || m.Address.Empty() {
+		return ErrorInvalidField("address")
+	}
+
+	// Bandwidth should be valid
+	if !m.Bandwidth.IsValid() {
+		return ErrorInvalidField("bandwidth")
+	}
+
+	return nil
+}
+
+func (m MsgAddQuota) GetSignBytes() []byte {
+	bytes, err := json.Marshal(m)
+	if err != nil {
+		panic(err)
+	}
+
+	return bytes
+}
+
+func (m MsgAddQuota) GetSigners() []sdk.AccAddress {
+	return []sdk.AccAddress{m.From}
+}
+
+// MsgUpdateQuota is for updating the bandwidth quota for an address.
+type MsgUpdateQuota struct {
+	From      sdk.AccAddress `json:"from"`
+	ID        uint64         `json:"id"`
+	Address   sdk.AccAddress `json:"address"`
+	Bandwidth hub.Bandwidth  `json:"bandwidth"`
+}
+
+func NewMsgUpdateQuota(from sdk.AccAddress, id uint64, address sdk.AccAddress, bandwidth hub.Bandwidth) MsgUpdateQuota {
+	return MsgUpdateQuota{
+		From:      from,
+		ID:        id,
+		Address:   address,
+		Bandwidth: bandwidth,
+	}
+}
+
+func (m MsgUpdateQuota) Route() string {
+	return RouterKey
+}
+
+func (m MsgUpdateQuota) Type() string {
+	return fmt.Sprintf("%s:update_quota", ModuleName)
+}
+
+func (m MsgUpdateQuota) ValidateBasic() sdk.Error {
+	if m.From == nil || m.From.Empty() {
+		return ErrorInvalidField("from")
+	}
+
+	// ID shouldn't be zero
+	if m.ID == 0 {
+		return ErrorInvalidField("id")
+	}
+
+	// Address shouldn't be nil or empty
+	if m.Address == nil || m.Address.Empty() {
+		return ErrorInvalidField("address")
+	}
+
+	// Bandwidth should be valid
+	if !m.Bandwidth.IsValid() {
+		return ErrorInvalidField("bandwidth")
+	}
+
+	return nil
+}
+
+func (m MsgUpdateQuota) GetSignBytes() []byte {
+	bytes, err := json.Marshal(m)
+	if err != nil {
+		panic(err)
+	}
+
+	return bytes
+}
+
+func (m MsgUpdateQuota) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{m.From}
 }

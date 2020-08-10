@@ -16,7 +16,7 @@ func GetQueryCommands(cdc *codec.Codec) []*cobra.Command {
 func GetTxCommands(cdc *codec.Codec) []*cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "plan",
-		Short: "plan module sub-commands",
+		Short: "Plan module sub-commands",
 	}
 
 	cmd.AddCommand(client.PostCommands(

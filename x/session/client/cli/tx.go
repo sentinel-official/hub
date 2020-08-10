@@ -49,7 +49,7 @@ func txUpdateSession(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgUpdateSession(ctx.FromAddress.Bytes(),
+			msg := types.NewMsgUpdate(ctx.FromAddress.Bytes(),
 				subscription, address, duration, hub.NewBandwidthFromInt64(upload, download))
 			return utils.GenerateOrBroadcastMsgs(ctx, txb, []sdk.Msg{msg})
 		},

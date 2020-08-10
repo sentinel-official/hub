@@ -8,10 +8,10 @@ import (
 
 func GetQueryCommands(cdc *codec.Codec) []*cobra.Command {
 	return client.GetCommands(
-		querySubscriptionCmd(cdc),
-		querySubscriptionsCmd(cdc),
-		queryQuotaCmd(cdc),
-		queryQuotasCmd(cdc),
+		querySubscription(cdc),
+		querySubscriptions(cdc),
+		queryQuota(cdc),
+		queryQuotas(cdc),
 	)
 }
 
@@ -22,11 +22,11 @@ func GetTxCommands(cdc *codec.Codec) []*cobra.Command {
 	}
 
 	cmd.AddCommand(client.PostCommands(
-		txStartPlanSubscription(cdc),
-		txStartNodeSubscription(cdc),
-		txAddQuotaForSubscription(cdc),
-		txUpdateQuotaForSubscription(cdc),
-		txEndSubscription(cdc),
+		txSubscribeToPlan(cdc),
+		txSubscribeToNode(cdc),
+		txEnd(cdc),
+		txAddQuota(cdc),
+		txUpdateQuota(cdc),
 	)...)
 
 	return []*cobra.Command{cmd}

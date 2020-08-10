@@ -40,6 +40,7 @@ func HandleAdd(ctx sdk.Context, k keeper.Keeper, msg types.MsgAdd) sdk.Result {
 		sdk.NewAttribute(types.AttributeKeyCount, fmt.Sprintf("%d", count+1)),
 	))
 
+	ctx.EventManager().EmitEvent(types.EventModuleName)
 	return sdk.Result{Events: ctx.EventManager().Events()}
 }
 
@@ -62,6 +63,7 @@ func HandleSetStatus(ctx sdk.Context, k keeper.Keeper, msg types.MsgSetStatus) s
 		sdk.NewAttribute(types.AttributeKeyStatus, plan.Status.String()),
 	))
 
+	ctx.EventManager().EmitEvent(types.EventModuleName)
 	return sdk.Result{Events: ctx.EventManager().Events()}
 }
 
@@ -93,6 +95,7 @@ func HandleAddNode(ctx sdk.Context, k keeper.Keeper, msg types.MsgAddNode) sdk.R
 		sdk.NewAttribute(types.AttributeKeyAddress, node.Address.String()),
 	))
 
+	ctx.EventManager().EmitEvent(types.EventModuleName)
 	return sdk.Result{Events: ctx.EventManager().Events()}
 }
 
@@ -116,5 +119,6 @@ func HandleRemoveNode(ctx sdk.Context, k keeper.Keeper, msg types.MsgRemoveNode)
 		sdk.NewAttribute(types.AttributeKeyAddress, msg.Address.String()),
 	))
 
+	ctx.EventManager().EmitEvent(types.EventModuleName)
 	return sdk.Result{Events: ctx.EventManager().Events()}
 }

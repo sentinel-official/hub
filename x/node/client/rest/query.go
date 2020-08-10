@@ -44,9 +44,14 @@ func queryNodes(ctx context.CLIContext) http.HandlerFunc {
 			return
 		}
 
-		var nodes types.Nodes
+		var (
+			id      uint64
+			nodes   types.Nodes
+			address hub.ProvAddress
+		)
+
 		if query.Get("address") != "" {
-			address, err := hub.ProvAddressFromBech32(query.Get("address"))
+			address, err = hub.ProvAddressFromBech32(query.Get("address"))
 			if err != nil {
 				rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 				return
@@ -54,7 +59,7 @@ func queryNodes(ctx context.CLIContext) http.HandlerFunc {
 
 			nodes, err = common.QueryNodesForProvider(ctx, address, page, limit)
 		} else if query.Get("id") != "" {
-			id, err := strconv.ParseUint(query.Get("id"), 10, 64)
+			id, err = strconv.ParseUint(query.Get("id"), 10, 64)
 			if err != nil {
 				rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 				return

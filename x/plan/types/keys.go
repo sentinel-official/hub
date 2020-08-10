@@ -17,6 +17,13 @@ var (
 )
 
 var (
+	EventModuleName = sdk.NewEvent(
+		sdk.EventTypeMessage,
+		sdk.NewAttribute(sdk.AttributeKeyModule, ModuleName),
+	)
+)
+
+var (
 	CountKey                 = []byte{0x00}
 	PlanKeyPrefix            = []byte{0x01}
 	PlanForProviderKeyPrefix = []byte{0x02}

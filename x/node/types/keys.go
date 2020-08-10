@@ -20,6 +20,13 @@ var (
 )
 
 var (
+	EventModuleName = sdk.NewEvent(
+		sdk.EventTypeMessage,
+		sdk.NewAttribute(sdk.AttributeKeyModule, ModuleName),
+	)
+)
+
+var (
 	NodeKeyPrefix            = []byte{0x00}
 	NodeForProviderKeyPrefix = []byte{0x01}
 	ActiveNodeAtKeyPrefix    = []byte{0x02}

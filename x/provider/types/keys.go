@@ -1,6 +1,8 @@
 package types
 
 import (
+	sdk "github.com/cosmos/cosmos-sdk/types"
+
 	hub "github.com/sentinel-official/hub/types"
 )
 
@@ -12,6 +14,13 @@ const (
 var (
 	RouterKey = ModuleName
 	StoreKey  = ModuleName
+)
+
+var (
+	EventModuleName = sdk.NewEvent(
+		sdk.EventTypeMessage,
+		sdk.NewAttribute(sdk.AttributeKeyModule, ModuleName),
+	)
 )
 
 var (

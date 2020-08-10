@@ -27,6 +27,7 @@ func HandleRegister(ctx sdk.Context, k keeper.Keeper, msg types.MsgRegister) sdk
 		sdk.NewAttribute(types.AttributeKeyAddress, provider.Address.String()),
 	))
 
+	ctx.EventManager().EmitEvent(types.EventModuleName)
 	return sdk.Result{Events: ctx.EventManager().Events()}
 }
 
@@ -55,5 +56,6 @@ func HandleUpdate(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpdate) sdk.Res
 		sdk.NewAttribute(types.AttributeKeyAddress, provider.Address.String()),
 	))
 
+	ctx.EventManager().EmitEvent(types.EventModuleName)
 	return sdk.Result{Events: ctx.EventManager().Events()}
 }

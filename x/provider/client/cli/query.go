@@ -58,7 +58,7 @@ func queryProviders(cdc *codec.Codec) *cobra.Command {
 			}
 
 			for _, provider := range providers {
-				fmt.Println(provider)
+				fmt.Printf("%s\n\n", provider)
 			}
 
 			return nil

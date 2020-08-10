@@ -1,12 +1,11 @@
 package types
 
 const (
-	EventTypeSetSubscription            = "set_subscription"
-	EventTypeSetSubscriptionsCount      = "set_subscriptions_count"
-	EventTypeAddQuotaForSubscription    = "add_quota_for_subscription"
-	EventTypeUpdateQuotaForSubscription = "update_quota_for_subscription"
-	EventTypeRemoveQuotaForSubscription = "remove_quota_for_subscription"
-	EventTypeEndSubscription            = "end_subscription"
+	EventTypeSetCount    = "subscription:set_count"
+	EventTypeSet         = "subscription:set"
+	EventTypeEnd         = "subscription:end"
+	EventTypeAddQuota    = "subscription:add_quota"
+	EventTypeUpdateQuota = "subscription:update_quota"
 )
 
 const (

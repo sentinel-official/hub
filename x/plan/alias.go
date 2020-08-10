@@ -67,6 +67,7 @@ var (
 	ModuleCdc                = types.ModuleCdc
 	RouterKey                = types.RouterKey
 	StoreKey                 = types.StoreKey
+	EventModuleName          = types.EventModuleName
 	CountKey                 = types.CountKey
 	PlanKeyPrefix            = types.PlanKeyPrefix
 	PlanForProviderKeyPrefix = types.PlanForProviderKeyPrefix

@@ -8,4 +8,4 @@ install_golangci-lint:
 install_runsim:
 	@go get github.com/cosmos/tools/cmd/runsim
 
-.PHONY: install_golangci install_runsim
+.PHONY: install_golangci-lint install_runsim

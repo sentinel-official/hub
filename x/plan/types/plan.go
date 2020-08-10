@@ -56,7 +56,7 @@ func (p Plan) Validate() error {
 		return fmt.Errorf("validity should be positive")
 	}
 	if !p.Bandwidth.IsValid() {
-		return fmt.Errorf("bandiwdth should be positive")
+		return fmt.Errorf("bandwidth should be positive")
 	}
 	if !p.Status.IsValid() {
 		return fmt.Errorf("status should be valid")

@@ -42,6 +42,7 @@ var (
 	ModuleCdc        = types.ModuleCdc
 	RouterKey        = types.RouterKey
 	StoreKey         = types.StoreKey
+	EventModuleName  = types.EventModuleName
 	DepositKeyPrefix = types.DepositKeyPrefix
 )
 

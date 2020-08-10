@@ -79,7 +79,7 @@ func queryPlans(cdc *codec.Codec) *cobra.Command {
 			}
 
 			for _, plan := range plans {
-				fmt.Println(plan)
+				fmt.Printf("%s\n\n", plan)
 			}
 
 			return nil

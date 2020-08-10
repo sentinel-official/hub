@@ -2,6 +2,7 @@ package types
 
 import (
 	"encoding/json"
+	"fmt"
 	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -38,7 +39,7 @@ func (m MsgAdd) Route() string {
 }
 
 func (m MsgAdd) Type() string {
-	return "add"
+	return fmt.Sprintf("%s:add", ModuleName)
 }
 
 func (m MsgAdd) ValidateBasic() sdk.Error {
@@ -97,7 +98,7 @@ func (m MsgSetStatus) Route() string {
 }
 
 func (m MsgSetStatus) Type() string {
-	return "set_status"
+	return fmt.Sprintf("%s:set_status", ModuleName)
 }
 
 func (m MsgSetStatus) ValidateBasic() sdk.Error {
@@ -151,7 +152,7 @@ func (m MsgAddNode) Route() string {
 }
 
 func (m MsgAddNode) Type() string {
-	return "add_node"
+	return fmt.Sprintf("%s:add_node", ModuleName)
 }
 
 func (m MsgAddNode) ValidateBasic() sdk.Error {
@@ -205,7 +206,7 @@ func (m MsgRemoveNode) Route() string {
 }
 
 func (m MsgRemoveNode) Type() string {
-	return "remove_node"
+	return fmt.Sprintf("%s:remove_node", ModuleName)
 }
 
 func (m MsgRemoveNode) ValidateBasic() sdk.Error {

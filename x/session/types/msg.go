@@ -2,6 +2,7 @@ package types
 
 import (
 	"encoding/json"
+	"fmt"
 	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -10,11 +11,11 @@ import (
 )
 
 var (
-	_ sdk.Msg = (*MsgUpdateSession)(nil)
+	_ sdk.Msg = (*MsgUpdate)(nil)
 )
 
-// MsgUpdateSession is for updating the session of a plan.
-type MsgUpdateSession struct {
+// MsgUpdate is for updating the session of a plan.
+type MsgUpdate struct {
 	From         hub.NodeAddress `json:"from"`
 	Subscription uint64          `json:"subscription"`
 	Address      sdk.AccAddress  `json:"address"`
@@ -22,9 +23,9 @@ type MsgUpdateSession struct {
 	Bandwidth    hub.Bandwidth   `json:"bandwidth"`
 }
 
-func NewMsgUpdateSession(from hub.NodeAddress, subscription uint64,
-	address sdk.AccAddress, duration time.Duration, bandwidth hub.Bandwidth) MsgUpdateSession {
-	return MsgUpdateSession{
+func NewMsgUpdate(from hub.NodeAddress, subscription uint64,
+	address sdk.AccAddress, duration time.Duration, bandwidth hub.Bandwidth) MsgUpdate {
+	return MsgUpdate{
 		From:         from,
 		Subscription: subscription,
 		Address:      address,
@@ -33,15 +34,15 @@ func NewMsgUpdateSession(from hub.NodeAddress, subscription uint64,
 	}
 }
 
-func (m MsgUpdateSession) Route() string {
+func (m MsgUpdate) Route() string {
 	return RouterKey
 }
 
-func (m MsgUpdateSession) Type() string {
-	return "update_session"
+func (m MsgUpdate) Type() string {
+	return fmt.Sprintf("%s:update", ModuleName)
 }
 
-func (m MsgUpdateSession) ValidateBasic() sdk.Error {
+func (m MsgUpdate) ValidateBasic() sdk.Error {
 	if m.From == nil || m.From.Empty() {
 		return ErrorInvalidField("from")
 	}
@@ -69,7 +70,7 @@ func (m MsgUpdateSession) ValidateBasic() sdk.Error {
 	return nil
 }
 
-func (m MsgUpdateSession) GetSignBytes() []byte {
+func (m MsgUpdate) GetSignBytes() []byte {
 	bytes, err := json.Marshal(m)
 	if err != nil {
 		panic(err)
@@ -78,6 +79,6 @@ func (m MsgUpdateSession) GetSignBytes() []byte {
 	return bytes
 }
 
-func (m MsgUpdateSession) GetSigners() []sdk.AccAddress {
+func (m MsgUpdate) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{m.From.Bytes()}
 }

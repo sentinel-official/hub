@@ -12,7 +12,7 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, state types.GenesisState) {
 		k.SetSubscription(ctx, item.Subscription)
 
 		for _, quota := range item.Quotas {
-			k.SetQuotaForSubscription(ctx, item.Subscription.ID, quota)
+			k.SetQuota(ctx, item.Subscription.ID, quota)
 			k.SetSubscriptionForAddress(ctx, quota.Address, item.Subscription.ID)
 		}
 
@@ -33,7 +33,7 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) types.GenesisState {
 	for _, item := range _subscriptions {
 		subscriptions = append(subscriptions, types.GenesisSubscription{
 			Subscription: item,
-			Quotas:       k.GetQuotasForSubscription(ctx, item.ID),
+			Quotas:       k.GetQuotas(ctx, item.ID),
 		})
 	}
 

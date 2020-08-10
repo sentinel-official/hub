@@ -130,14 +130,14 @@ func QuerySubscriptionsForNode(ctx context.CLIContext, address hub.NodeAddress, 
 	return subscriptions, nil
 }
 
-func QueryQuotaForSubscription(ctx context.CLIContext, id uint64, address sdk.AccAddress) (*types.Quota, error) {
-	params := types.NewQueryQuotaForSubscriptionParams(id, address)
+func QueryQuota(ctx context.CLIContext, id uint64, address sdk.AccAddress) (*types.Quota, error) {
+	params := types.NewQueryQuotaParams(id, address)
 	bytes, err := ctx.Codec.MarshalJSON(params)
 	if err != nil {
 		return nil, err
 	}
 
-	path := fmt.Sprintf("custom/%s/%s/%s", types.StoreKey, types.QuerierRoute, types.QueryQuotaForSubscription)
+	path := fmt.Sprintf("custom/%s/%s/%s", types.StoreKey, types.QuerierRoute, types.QueryQuota)
 	res, _, err := ctx.QueryWithData(path, bytes)
 	if err != nil {
 		return nil, err
@@ -154,14 +154,14 @@ func QueryQuotaForSubscription(ctx context.CLIContext, id uint64, address sdk.Ac
 	return &quota, nil
 }
 
-func QueryQuotasForSubscription(ctx context.CLIContext, id uint64, page, limit int) (types.Quotas, error) {
-	params := types.NewQueryQuotasForSubscriptionParams(id, page, limit)
+func QueryQuotas(ctx context.CLIContext, id uint64, page, limit int) (types.Quotas, error) {
+	params := types.NewQueryQuotasParams(id, page, limit)
 	bytes, err := ctx.Codec.MarshalJSON(params)
 	if err != nil {
 		return nil, err
 	}
 
-	path := fmt.Sprintf("custom/%s/%s/%s", types.StoreKey, types.QuerierRoute, types.QueryQuotasForSubscription)
+	path := fmt.Sprintf("custom/%s/%s/%s", types.StoreKey, types.QuerierRoute, types.QueryQuotas)
 	res, _, err := ctx.QueryWithData(path, bytes)
 	if err != nil {
 		return nil, err
