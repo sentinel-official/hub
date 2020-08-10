@@ -22,32 +22,38 @@ func BeginBlock(ctx sdk.Context, k keeper.Keeper) {
 func NewHandler(k keeper.Keeper) sdk.Handler {
 	return func(ctx sdk.Context, msg sdk.Msg) sdk.Result {
 		switch msg := msg.(type) {
-		case provider.MsgRegisterProvider:
-			return provider.HandleRegisterProvider(ctx, k.Provider, msg)
-		case provider.MsgUpdateProvider:
-			return provider.HandleUpdateProvider(ctx, k.Provider, msg)
-		case node.MsgRegisterNode:
-			return node.HandleRegisterNode(ctx, k.Node, msg)
-		case node.MsgUpdateNode:
-			return node.HandleUpdateNode(ctx, k.Node, msg)
-		case node.MsgSetNodeStatus:
-			return node.HandleSetNodeStatus(ctx, k.Node, msg)
-		case plan.MsgAddPlan:
-			return plan.HandleAddPlan(ctx, k.Plan, msg)
-		case plan.MsgSetPlanStatus:
-			return plan.HandleSetPlanStatus(ctx, k.Plan, msg)
-		case plan.MsgAddNodeForPlan:
-			return plan.HandleAddNodeForPlan(ctx, k.Plan, msg)
-		case plan.MsgRemoveNodeForPlan:
-			return plan.HandleRemoveNodeForPlan(ctx, k.Plan, msg)
-		case subscription.MsgStartSubscription:
-			return subscription.HandleStartSubscription(ctx, k.Subscription, msg)
-		case subscription.MsgAddQuotaForSubscription:
-			return subscription.HandleAddQuotaForSubscription(ctx, k.Subscription, msg)
-		case subscription.MsgUpdateQuotaForSubscription:
-			return subscription.HandleUpdateQuotaForSubscription(ctx, k.Subscription, msg)
-		case subscription.MsgEndSubscription:
-			return subscription.HandleEndSubscription(ctx, k.Subscription, msg)
+		case provider.MsgRegister:
+			return provider.HandleRegister(ctx, k.Provider, msg)
+		case provider.MsgUpdate:
+			return provider.HandleUpdate(ctx, k.Provider, msg)
+
+		case node.MsgRegister:
+			return node.HandleRegister(ctx, k.Node, msg)
+		case node.MsgUpdate:
+			return node.HandleUpdate(ctx, k.Node, msg)
+		case node.MsgSetStatus:
+			return node.HandleSetStatus(ctx, k.Node, msg)
+
+		case plan.MsgAdd:
+			return plan.HandleAdd(ctx, k.Plan, msg)
+		case plan.MsgSetStatus:
+			return plan.HandleSetStatus(ctx, k.Plan, msg)
+		case plan.MsgAddNode:
+			return plan.HandleAddNode(ctx, k.Plan, msg)
+		case plan.MsgRemoveNode:
+			return plan.HandleRemoveNode(ctx, k.Plan, msg)
+
+		case subscription.MsgSubscribeToPlan:
+			return subscription.HandleSubscribeToPlan(ctx, k.Subscription, msg)
+		case subscription.MsgSubscribeToNode:
+			return subscription.HandleSubscribeToNode(ctx, k.Subscription, msg)
+		case subscription.MsgEnd:
+			return subscription.HandleEnd(ctx, k.Subscription, msg)
+		case subscription.MsgAddQuota:
+			return subscription.HandleAddQuota(ctx, k.Subscription, msg)
+		case subscription.MsgUpdateQuota:
+			return subscription.HandleUpdateQuota(ctx, k.Subscription, msg)
+
 		case session.MsgUpdateSession:
 			return session.HandleUpdateSession(ctx, k.Session, msg)
 		default:

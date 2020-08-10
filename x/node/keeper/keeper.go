@@ -7,6 +7,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/params"
+	"github.com/tendermint/tendermint/libs/log"
 
 	"github.com/sentinel-official/hub/x/node/expected"
 	"github.com/sentinel-official/hub/x/node/types"
@@ -34,6 +35,10 @@ func (k *Keeper) WithProviderKeeper(keeper expected.ProviderKeeper) {
 
 func (k *Keeper) WithPlanKeeper(keeper expected.PlanKeeper) {
 	k.plan = keeper
+}
+
+func (k Keeper) Logger(ctx sdk.Context) log.Logger {
+	return ctx.Logger().With("module", fmt.Sprintf("x/%s", types.ModuleName))
 }
 
 func (k Keeper) Store(ctx sdk.Context) sdk.KVStore {

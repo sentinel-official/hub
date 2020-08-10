@@ -17,46 +17,54 @@ var (
 )
 
 var (
-	SubscriptionsCountKey           = []byte{0x00}
+	EventModuleName = sdk.NewEvent(
+		sdk.EventTypeMessage,
+		sdk.NewAttribute(sdk.AttributeKeyModule, ModuleName),
+	)
+)
+
+var (
+	CountKey                        = []byte{0x00}
 	SubscriptionKeyPrefix           = []byte{0x01}
 	SubscriptionForAddressKeyPrefix = []byte{0x02}
 	SubscriptionForPlanKeyPrefix    = []byte{0x03}
 	SubscriptionForNodeKeyPrefix    = []byte{0x04}
-	QuotaForSubscriptionKeyPrefix   = []byte{0x05}
+
+	QuotaKeyPrefix = []byte{0x05}
 )
 
 func SubscriptionKey(id uint64) []byte {
 	return append(SubscriptionKeyPrefix, sdk.Uint64ToBigEndian(id)...)
 }
 
-func SubscriptionForAddressByAddressKey(address sdk.AccAddress) []byte {
+func GetSubscriptionForAddressKeyPrefix(address sdk.AccAddress) []byte {
 	return append(SubscriptionForAddressKeyPrefix, address.Bytes()...)
 }
 
 func SubscriptionForAddressKey(address sdk.AccAddress, i uint64) []byte {
-	return append(SubscriptionForAddressByAddressKey(address), sdk.Uint64ToBigEndian(i)...)
+	return append(GetSubscriptionForAddressKeyPrefix(address), sdk.Uint64ToBigEndian(i)...)
 }
 
-func SubscriptionForPlanByPlanKey(id uint64) []byte {
+func GetSubscriptionForPlanKeyPrefix(id uint64) []byte {
 	return append(SubscriptionForPlanKeyPrefix, sdk.Uint64ToBigEndian(id)...)
 }
 
 func SubscriptionForPlanKey(p, s uint64) []byte {
-	return append(SubscriptionForPlanByPlanKey(p), sdk.Uint64ToBigEndian(s)...)
+	return append(GetSubscriptionForPlanKeyPrefix(p), sdk.Uint64ToBigEndian(s)...)
 }
 
-func SubscriptionForNodeByNodeKey(address hub.NodeAddress) []byte {
+func GetSubscriptionForNodeKeyPrefix(address hub.NodeAddress) []byte {
 	return append(SubscriptionForNodeKeyPrefix, address.Bytes()...)
 }
 
 func SubscriptionForNodeKey(address hub.NodeAddress, id uint64) []byte {
-	return append(SubscriptionForNodeByNodeKey(address), sdk.Uint64ToBigEndian(id)...)
+	return append(GetSubscriptionForNodeKeyPrefix(address), sdk.Uint64ToBigEndian(id)...)
 }
 
-func QuotaForSubscriptionBySubscriptionKey(id uint64) []byte {
-	return append(QuotaForSubscriptionKeyPrefix, sdk.Uint64ToBigEndian(id)...)
+func GetQuotaKeyPrefix(id uint64) []byte {
+	return append(QuotaKeyPrefix, sdk.Uint64ToBigEndian(id)...)
 }
 
-func QuotaForSubscriptionKey(id uint64, address sdk.AccAddress) []byte {
-	return append(QuotaForSubscriptionBySubscriptionKey(id), address.Bytes()...)
+func QuotaKey(id uint64, address sdk.AccAddress) []byte {
+	return append(GetQuotaKeyPrefix(id), address.Bytes()...)
 }

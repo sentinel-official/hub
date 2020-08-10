@@ -13,7 +13,7 @@ import (
 	"github.com/sentinel-official/hub/x/plan/types"
 )
 
-func queryPlanCmd(cdc *codec.Codec) *cobra.Command {
+func queryPlan(cdc *codec.Codec) *cobra.Command {
 	return &cobra.Command{
 		Use:   "plan",
 		Short: "Query a plan",
@@ -37,7 +37,7 @@ func queryPlanCmd(cdc *codec.Codec) *cobra.Command {
 	}
 }
 
-func queryPlansCmd(cdc *codec.Codec) *cobra.Command {
+func queryPlans(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "plans",
 		Short: "Query plans",
@@ -79,14 +79,14 @@ func queryPlansCmd(cdc *codec.Codec) *cobra.Command {
 			}
 
 			for _, plan := range plans {
-				fmt.Println(plan)
+				fmt.Printf("%s\n\n", plan)
 			}
 
 			return nil
 		},
 	}
 
-	cmd.Flags().String(flagProvider, "", "Provider address")
+	cmd.Flags().String(flagProvider, "", "provider address")
 	cmd.Flags().Int(flagPage, 1, "page")
 	cmd.Flags().Int(flagLimit, 0, "limit")
 

@@ -8,6 +8,7 @@ package session
 
 import (
 	"github.com/sentinel-official/hub/x/session/keeper"
+	"github.com/sentinel-official/hub/x/session/querier"
 	"github.com/sentinel-official/hub/x/session/types"
 )
 
@@ -50,7 +51,7 @@ var (
 	DefaultGenesisState                   = types.DefaultGenesisState
 	SessionKey                            = types.SessionKey
 	ActiveSessionKey                      = types.ActiveSessionKey
-	NewMsgUpdateSession                   = types.NewMsgUpdateSession
+	NewMsgUpdate                          = types.NewMsgUpdate
 	NewParams                             = types.NewParams
 	DefaultParams                         = types.DefaultParams
 	ParamsKeyTable                        = types.ParamsKeyTable
@@ -64,6 +65,7 @@ var (
 	ModuleCdc              = types.ModuleCdc
 	RouterKey              = types.RouterKey
 	StoreKey               = types.StoreKey
+	EventModuleName        = types.EventModuleName
 	SessionsCountKey       = types.SessionsCountKey
 	SessionKeyPrefix       = types.SessionKeyPrefix
 	ActiveSessionKeyPrefix = types.ActiveSessionKeyPrefix
@@ -72,7 +74,7 @@ var (
 
 type (
 	GenesisState                       = types.GenesisState
-	MsgUpdateSession                   = types.MsgUpdateSession
+	MsgUpdate                          = types.MsgUpdate
 	Params                             = types.Params
 	QuerySessionParams                 = types.QuerySessionParams
 	QuerySessionsForSubscriptionParams = types.QuerySessionsForSubscriptionParams

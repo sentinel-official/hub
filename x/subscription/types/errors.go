@@ -24,8 +24,6 @@ const (
 	errorCodeInvalidNodeStatus
 	errorCodeSubscriptionDoesNotExist
 	errorCodeInvalidSubscriptionStatus
-	errorCodeDuplicateAddress
-	errorCodeAddressWasNotAdded
 	errorCodeCanNotSubscribe
 	errorCodeInvalidQuota
 	errorCodeDuplicateQuota
@@ -44,8 +42,6 @@ const (
 	errorMsgInvalidNodeStatus         = "invalid node status"
 	errorMsgSubscriptionDoesNotExist  = "subscription does not exist"
 	errorMsgInvalidSubscriptionStatus = "invalid subscription status"
-	errorMsgDuplicateAddress          = "duplicate address"
-	errorMsgAddressWasNotAdded        = "address was not added"
 	errorMsgCanNotSubscribe           = "can not subscribe"
 	errorMsgInvalidQuota              = "invalid quota"
 	errorMsgDuplicateQuota            = "duplicate quota"
@@ -102,14 +98,6 @@ func ErrorSubscriptionDoesNotExist() sdk.Error {
 
 func ErrorInvalidSubscriptionStatus() sdk.Error {
 	return sdk.NewError(Codespace, errorCodeInvalidSubscriptionStatus, errorMsgInvalidSubscriptionStatus)
-}
-
-func ErrorDuplicateAddress() sdk.Error {
-	return sdk.NewError(Codespace, errorCodeDuplicateAddress, errorMsgDuplicateAddress)
-}
-
-func ErrorAddressWasNotAdded() sdk.Error {
-	return sdk.NewError(Codespace, errorCodeAddressWasNotAdded, errorMsgAddressWasNotAdded)
 }
 
 func ErrorCanNotSubscribe() sdk.Error {

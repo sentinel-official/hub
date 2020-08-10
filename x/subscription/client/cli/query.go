@@ -14,7 +14,7 @@ import (
 	"github.com/sentinel-official/hub/x/subscription/types"
 )
 
-func querySubscriptionCmd(cdc *codec.Codec) *cobra.Command {
+func querySubscription(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "subscription",
 		Short: "Query a subscription",
@@ -40,7 +40,7 @@ func querySubscriptionCmd(cdc *codec.Codec) *cobra.Command {
 	return cmd
 }
 
-func querySubscriptionsCmd(cdc *codec.Codec) *cobra.Command {
+func querySubscriptions(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "subscriptions",
 		Short: "Query subscriptions",
@@ -62,12 +62,12 @@ func querySubscriptionsCmd(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			page, err := cmd.Flags().GetInt(flagPlan)
+			page, err := cmd.Flags().GetInt(flagPage)
 			if err != nil {
 				return err
 			}
 
-			limit, err := cmd.Flags().GetInt(flagPlan)
+			limit, err := cmd.Flags().GetInt(flagLimit)
 			if err != nil {
 				return err
 			}
@@ -106,26 +106,26 @@ func querySubscriptionsCmd(cdc *codec.Codec) *cobra.Command {
 			}
 
 			for _, subscription := range subscriptions {
-				fmt.Println(subscription)
+				fmt.Printf("%s\n\n", subscription)
 			}
 
 			return nil
 		},
 	}
 
-	cmd.Flags().String(flagAddress, "", "Account address")
-	cmd.Flags().Uint64(flagPlan, 0, "Plan ID")
-	cmd.Flags().String(flagNodeAddress, "", "Node address")
+	cmd.Flags().String(flagAddress, "", "account address")
+	cmd.Flags().Uint64(flagPlan, 0, "plan ID")
+	cmd.Flags().String(flagNodeAddress, "", "node address")
 	cmd.Flags().Int(flagPage, 1, "page")
 	cmd.Flags().Int(flagLimit, 0, "limit")
 
 	return cmd
 }
 
-func queryQuotaCmd(cdc *codec.Codec) *cobra.Command {
+func queryQuota(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "quota",
-		Short: "Query a subscription quota",
+		Short: "Query a quota of a subscription",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := context.NewCLIContext().WithCodec(cdc)
@@ -140,7 +140,7 @@ func queryQuotaCmd(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			quota, err := common.QueryQuotaForSubscription(ctx, id, address)
+			quota, err := common.QueryQuota(ctx, id, address)
 			if err != nil {
 				return err
 			}
@@ -153,7 +153,7 @@ func queryQuotaCmd(cdc *codec.Codec) *cobra.Command {
 	return cmd
 }
 
-func queryQuotasCmd(cdc *codec.Codec) *cobra.Command {
+func queryQuotas(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "quotas",
 		Short: "Query quotas of a subscription",
@@ -176,13 +176,13 @@ func queryQuotasCmd(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			quotas, err := common.QueryQuotasForSubscription(ctx, id, page, limit)
+			quotas, err := common.QueryQuotas(ctx, id, page, limit)
 			if err != nil {
 				return err
 			}
 
 			for _, quota := range quotas {
-				fmt.Println(quota)
+				fmt.Printf("%s\n\n", quota)
 			}
 
 			return nil

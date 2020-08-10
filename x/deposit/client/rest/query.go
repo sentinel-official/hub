@@ -12,7 +12,7 @@ import (
 	"github.com/sentinel-official/hub/x/deposit/client/common"
 )
 
-func getDepositHandlerFunc(ctx context.CLIContext) http.HandlerFunc {
+func queryDeposit(ctx context.CLIContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 
@@ -32,7 +32,7 @@ func getDepositHandlerFunc(ctx context.CLIContext) http.HandlerFunc {
 	}
 }
 
-func getDeposits(ctx context.CLIContext) http.HandlerFunc {
+func queryDeposits(ctx context.CLIContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		page, limit, err := utils.ParseQuery(r.URL.Query())
 		if err != nil {

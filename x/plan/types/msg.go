@@ -2,6 +2,7 @@ package types
 
 import (
 	"encoding/json"
+	"fmt"
 	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -10,22 +11,22 @@ import (
 )
 
 var (
-	_ sdk.Msg = (*MsgAddPlan)(nil)
-	_ sdk.Msg = (*MsgSetPlanStatus)(nil)
-	_ sdk.Msg = (*MsgAddNodeForPlan)(nil)
-	_ sdk.Msg = (*MsgRemoveNodeForPlan)(nil)
+	_ sdk.Msg = (*MsgAdd)(nil)
+	_ sdk.Msg = (*MsgSetStatus)(nil)
+	_ sdk.Msg = (*MsgAddNode)(nil)
+	_ sdk.Msg = (*MsgRemoveNode)(nil)
 )
 
-// MsgAddPlan is adding a subscription plan.
-type MsgAddPlan struct {
+// MsgAdd is adding a subscription plan.
+type MsgAdd struct {
 	From      hub.ProvAddress `json:"from"`
 	Price     sdk.Coins       `json:"price"`
 	Validity  time.Duration   `json:"validity"`
 	Bandwidth hub.Bandwidth   `json:"bandwidth"`
 }
 
-func NewMsgAddPlan(from hub.ProvAddress, price sdk.Coins, validity time.Duration, bandwidth hub.Bandwidth) MsgAddPlan {
-	return MsgAddPlan{
+func NewMsgAdd(from hub.ProvAddress, price sdk.Coins, validity time.Duration, bandwidth hub.Bandwidth) MsgAdd {
+	return MsgAdd{
 		From:      from,
 		Price:     price,
 		Validity:  validity,
@@ -33,15 +34,15 @@ func NewMsgAddPlan(from hub.ProvAddress, price sdk.Coins, validity time.Duration
 	}
 }
 
-func (m MsgAddPlan) Route() string {
+func (m MsgAdd) Route() string {
 	return RouterKey
 }
 
-func (m MsgAddPlan) Type() string {
-	return "add_plan"
+func (m MsgAdd) Type() string {
+	return fmt.Sprintf("%s:add", ModuleName)
 }
 
-func (m MsgAddPlan) ValidateBasic() sdk.Error {
+func (m MsgAdd) ValidateBasic() sdk.Error {
 	if m.From == nil || m.From.Empty() {
 		return ErrorInvalidField("from")
 	}
@@ -64,7 +65,7 @@ func (m MsgAddPlan) ValidateBasic() sdk.Error {
 	return nil
 }
 
-func (m MsgAddPlan) GetSignBytes() []byte {
+func (m MsgAdd) GetSignBytes() []byte {
 	bytes, err := json.Marshal(m)
 	if err != nil {
 		panic(err)
@@ -73,34 +74,34 @@ func (m MsgAddPlan) GetSignBytes() []byte {
 	return bytes
 }
 
-func (m MsgAddPlan) GetSigners() []sdk.AccAddress {
+func (m MsgAdd) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{m.From.Bytes()}
 }
 
-// MsgSetPlanStatus is for updating the status of a plan.
-type MsgSetPlanStatus struct {
+// MsgSetStatus is for updating the status of a plan.
+type MsgSetStatus struct {
 	From   hub.ProvAddress `json:"from"`
 	ID     uint64          `json:"id"`
 	Status hub.Status      `json:"status"`
 }
 
-func NewMsgSetPlanStatus(from hub.ProvAddress, id uint64, status hub.Status) MsgSetPlanStatus {
-	return MsgSetPlanStatus{
+func NewMsgSetStatus(from hub.ProvAddress, id uint64, status hub.Status) MsgSetStatus {
+	return MsgSetStatus{
 		From:   from,
 		ID:     id,
 		Status: status,
 	}
 }
 
-func (m MsgSetPlanStatus) Route() string {
+func (m MsgSetStatus) Route() string {
 	return RouterKey
 }
 
-func (m MsgSetPlanStatus) Type() string {
-	return "set_plan_status"
+func (m MsgSetStatus) Type() string {
+	return fmt.Sprintf("%s:set_status", ModuleName)
 }
 
-func (m MsgSetPlanStatus) ValidateBasic() sdk.Error {
+func (m MsgSetStatus) ValidateBasic() sdk.Error {
 	if m.From == nil || m.From.Empty() {
 		return ErrorInvalidField("from")
 	}
@@ -118,7 +119,7 @@ func (m MsgSetPlanStatus) ValidateBasic() sdk.Error {
 	return nil
 }
 
-func (m MsgSetPlanStatus) GetSignBytes() []byte {
+func (m MsgSetStatus) GetSignBytes() []byte {
 	bytes, err := json.Marshal(m)
 	if err != nil {
 		panic(err)
@@ -127,34 +128,34 @@ func (m MsgSetPlanStatus) GetSignBytes() []byte {
 	return bytes
 }
 
-func (m MsgSetPlanStatus) GetSigners() []sdk.AccAddress {
+func (m MsgSetStatus) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{m.From.Bytes()}
 }
 
-// MsgAddNodeForPlan is for adding a node for a plan.
-type MsgAddNodeForPlan struct {
+// MsgAddNode is for adding a node for a plan.
+type MsgAddNode struct {
 	From    hub.ProvAddress `json:"from"`
 	ID      uint64          `json:"id"`
 	Address hub.NodeAddress `json:"address"`
 }
 
-func NewMsgAddNodeForPlan(from hub.ProvAddress, id uint64, address hub.NodeAddress) MsgAddNodeForPlan {
-	return MsgAddNodeForPlan{
+func NewMsgAddNode(from hub.ProvAddress, id uint64, address hub.NodeAddress) MsgAddNode {
+	return MsgAddNode{
 		From:    from,
 		ID:      id,
 		Address: address,
 	}
 }
 
-func (m MsgAddNodeForPlan) Route() string {
+func (m MsgAddNode) Route() string {
 	return RouterKey
 }
 
-func (m MsgAddNodeForPlan) Type() string {
-	return "add_node_for_plan"
+func (m MsgAddNode) Type() string {
+	return fmt.Sprintf("%s:add_node", ModuleName)
 }
 
-func (m MsgAddNodeForPlan) ValidateBasic() sdk.Error {
+func (m MsgAddNode) ValidateBasic() sdk.Error {
 	if m.From == nil || m.From.Empty() {
 		return ErrorInvalidField("from")
 	}
@@ -172,7 +173,7 @@ func (m MsgAddNodeForPlan) ValidateBasic() sdk.Error {
 	return nil
 }
 
-func (m MsgAddNodeForPlan) GetSignBytes() []byte {
+func (m MsgAddNode) GetSignBytes() []byte {
 	bytes, err := json.Marshal(m)
 	if err != nil {
 		panic(err)
@@ -181,34 +182,34 @@ func (m MsgAddNodeForPlan) GetSignBytes() []byte {
 	return bytes
 }
 
-func (m MsgAddNodeForPlan) GetSigners() []sdk.AccAddress {
+func (m MsgAddNode) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{m.From.Bytes()}
 }
 
-// MsgRemoveNodeForPlan is for removing a node for a plan.
-type MsgRemoveNodeForPlan struct {
+// MsgRemoveNode is for removing a node for a plan.
+type MsgRemoveNode struct {
 	From    hub.ProvAddress `json:"from"`
 	ID      uint64          `json:"id"`
 	Address hub.NodeAddress `json:"address"`
 }
 
-func NewMsgRemoveNodeForPlan(from hub.ProvAddress, id uint64, address hub.NodeAddress) MsgRemoveNodeForPlan {
-	return MsgRemoveNodeForPlan{
+func NewMsgRemoveNode(from hub.ProvAddress, id uint64, address hub.NodeAddress) MsgRemoveNode {
+	return MsgRemoveNode{
 		From:    from,
 		ID:      id,
 		Address: address,
 	}
 }
 
-func (m MsgRemoveNodeForPlan) Route() string {
+func (m MsgRemoveNode) Route() string {
 	return RouterKey
 }
 
-func (m MsgRemoveNodeForPlan) Type() string {
-	return "remove_node_for_plan"
+func (m MsgRemoveNode) Type() string {
+	return fmt.Sprintf("%s:remove_node", ModuleName)
 }
 
-func (m MsgRemoveNodeForPlan) ValidateBasic() sdk.Error {
+func (m MsgRemoveNode) ValidateBasic() sdk.Error {
 	if m.From == nil || m.From.Empty() {
 		return ErrorInvalidField("from")
 	}
@@ -226,7 +227,7 @@ func (m MsgRemoveNodeForPlan) ValidateBasic() sdk.Error {
 	return nil
 }
 
-func (m MsgRemoveNodeForPlan) GetSignBytes() []byte {
+func (m MsgRemoveNode) GetSignBytes() []byte {
 	bytes, err := json.Marshal(m)
 	if err != nil {
 		panic(err)
@@ -235,6 +236,6 @@ func (m MsgRemoveNodeForPlan) GetSignBytes() []byte {
 	return bytes
 }
 
-func (m MsgRemoveNodeForPlan) GetSigners() []sdk.AccAddress {
+func (m MsgRemoveNode) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{m.From.Bytes()}
 }

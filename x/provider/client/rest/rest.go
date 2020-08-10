@@ -6,15 +6,17 @@ import (
 )
 
 func registerQueryRoutes(ctx context.CLIContext, router *mux.Router) {
-	router.HandleFunc("/providers", queryProvidersHandlerFunc(ctx)).
+	router.HandleFunc("/providers", queryProviders(ctx)).
 		Methods("GET")
-	router.HandleFunc("/providers/{address}", queryProviderHandlerFunc(ctx)).
+	router.HandleFunc("/providers/{address}", queryProvider(ctx)).
 		Methods("GET")
 }
 
 func registerTxRoutes(ctx context.CLIContext, router *mux.Router) {
-	router.HandleFunc("/providers", txRegisterProviderHandlerFunc(ctx)).
+	router.HandleFunc("/providers", txRegister(ctx)).
 		Methods("POST")
+	router.HandleFunc("/providers/{address}", txUpdate(ctx)).
+		Methods("PUT")
 }
 
 func RegisterRoutes(ctx context.CLIContext, router *mux.Router) {

@@ -10,8 +10,8 @@ import (
 	"github.com/sentinel-official/hub/x/subscription/types"
 )
 
-func startPlanSubscription(ctx sdk.Context, k keeper.Keeper, from sdk.AccAddress, id uint64, denom string) sdk.Result {
-	plan, found := k.GetPlan(ctx, id)
+func HandleSubscribeToPlan(ctx sdk.Context, k keeper.Keeper, msg types.MsgSubscribeToPlan) sdk.Result {
+	plan, found := k.GetPlan(ctx, msg.ID)
 	if !found {
 		return types.ErrorPlanDoesNotExist().Result()
 	}
@@ -20,62 +20,63 @@ func startPlanSubscription(ctx sdk.Context, k keeper.Keeper, from sdk.AccAddress
 	}
 
 	if plan.Price != nil {
-		price, found := plan.PriceForDenom(denom)
+		price, found := plan.PriceForDenom(msg.Denom)
 		if !found {
 			return types.ErrorPriceDoesNotExist().Result()
 		}
 
-		if err := k.SendCoin(ctx, from, plan.Provider.Bytes(), price); err != nil {
+		if err := k.SendCoin(ctx, msg.From, plan.Provider.Bytes(), price); err != nil {
 			return err.Result()
 		}
 	}
 
 	count := k.GetSubscriptionsCount(ctx)
 	subscription := types.Subscription{
-		ID:          count + 1,
-		Address:     from,
-		Plan:        plan.ID,
-		ExpiresAt:   ctx.BlockTime().Add(plan.Validity),
-		Unallocated: hub.NewBandwidthFromInt64(0, 0),
-		Status:      hub.StatusActive,
-		StatusAt:    ctx.BlockTime(),
+		ID:       count + 1,
+		Address:  msg.From,
+		Plan:     plan.ID,
+		Expiry:   ctx.BlockTime().Add(plan.Validity),
+		Free:     hub.NewBandwidthFromInt64(0, 0),
+		Status:   hub.StatusActive,
+		StatusAt: ctx.BlockTime(),
 	}
 
 	k.SetSubscription(ctx, subscription)
 	k.SetSubscriptionForPlan(ctx, subscription.Plan, subscription.ID)
 	ctx.EventManager().EmitEvent(sdk.NewEvent(
-		types.EventTypeSetSubscription,
+		types.EventTypeSet,
 		sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", subscription.ID)),
 		sdk.NewAttribute(types.AttributeKeyPlan, fmt.Sprintf("%d", subscription.Plan)),
 		sdk.NewAttribute(types.AttributeKeyAddress, subscription.Address.String()),
 	))
 
 	quota := types.Quota{
-		Address:   from,
-		Consumed:  hub.NewBandwidthFromInt64(0, 0),
-		Allocated: plan.Bandwidth,
+		Address: msg.From,
+		Current: hub.NewBandwidthFromInt64(0, 0),
+		Maximum: plan.Bandwidth,
 	}
 
-	k.SetQuotaForSubscription(ctx, subscription.ID, quota)
+	k.SetQuota(ctx, subscription.ID, quota)
 	k.SetSubscriptionForAddress(ctx, quota.Address, subscription.ID)
 	ctx.EventManager().EmitEvent(sdk.NewEvent(
-		types.EventTypeAddQuotaForSubscription,
+		types.EventTypeAddQuota,
 		sdk.NewAttribute(types.AttributeKeyAddress, quota.Address.String()),
-		sdk.NewAttribute(types.AttributeKeyConsumed, quota.Consumed.String()),
-		sdk.NewAttribute(types.AttributeKeyAllocated, quota.Allocated.String()),
+		sdk.NewAttribute(types.AttributeKeyConsumed, quota.Current.String()),
+		sdk.NewAttribute(types.AttributeKeyAllocated, quota.Maximum.String()),
 	))
 
 	k.SetSubscriptionsCount(ctx, count+1)
 	ctx.EventManager().EmitEvent(sdk.NewEvent(
-		types.EventTypeSetSubscriptionsCount,
+		types.EventTypeSetCount,
 		sdk.NewAttribute(types.AttributeKeyCount, fmt.Sprintf("%d", count+1)),
 	))
 
+	ctx.EventManager().EmitEvent(types.EventModuleName)
 	return sdk.Result{Events: ctx.EventManager().Events()}
 }
 
-func startNodeSubscription(ctx sdk.Context, k keeper.Keeper, from sdk.AccAddress, address hub.NodeAddress, deposit sdk.Coin) sdk.Result {
-	node, found := k.GetNode(ctx, address)
+func HandleSubscribeToNode(ctx sdk.Context, k keeper.Keeper, msg types.MsgSubscribeToNode) sdk.Result {
+	node, found := k.GetNode(ctx, msg.Address)
 	if !found {
 		return types.ErrorNodeDoesNotExist().Result()
 	}
@@ -86,148 +87,63 @@ func startNodeSubscription(ctx sdk.Context, k keeper.Keeper, from sdk.AccAddress
 		return types.ErrorCanNotSubscribe().Result()
 	}
 
-	price, found := node.PriceForDenom(deposit.Denom)
+	price, found := node.PriceForDenom(msg.Deposit.Denom)
 	if !found {
 		return types.ErrorPriceDoesNotExist().Result()
 	}
 
-	if err := k.AddDeposit(ctx, from, deposit); err != nil {
+	if err := k.AddDeposit(ctx, msg.From, msg.Deposit); err != nil {
 		return err.Result()
 	}
 
 	count := k.GetSubscriptionsCount(ctx)
 	subscription := types.Subscription{
-		ID:          count + 1,
-		Address:     from,
-		Node:        address,
-		Price:       price,
-		Deposit:     deposit,
-		Unallocated: hub.NewBandwidthFromInt64(0, 0),
-		Status:      hub.StatusActive,
-		StatusAt:    ctx.BlockTime(),
+		ID:       count + 1,
+		Address:  msg.From,
+		Node:     node.Address,
+		Price:    price,
+		Deposit:  msg.Deposit,
+		Free:     hub.NewBandwidthFromInt64(0, 0),
+		Status:   hub.StatusActive,
+		StatusAt: ctx.BlockTime(),
 	}
 
 	k.SetSubscription(ctx, subscription)
 	k.SetSubscriptionForNode(ctx, subscription.Node, subscription.ID)
 	ctx.EventManager().EmitEvent(sdk.NewEvent(
-		types.EventTypeSetSubscription,
+		types.EventTypeSet,
 		sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", subscription.ID)),
 		sdk.NewAttribute(types.AttributeKeyNode, subscription.Node.String()),
 		sdk.NewAttribute(types.AttributeKeyAddress, subscription.Address.String()),
 	))
 
-	bandwidth, _ := node.BandwidthForCoin(deposit)
+	bandwidth, _ := node.BandwidthForCoin(msg.Deposit)
 	quota := types.Quota{
-		Address:   from,
-		Consumed:  hub.NewBandwidthFromInt64(0, 0),
-		Allocated: bandwidth,
+		Address: msg.From,
+		Current: hub.NewBandwidthFromInt64(0, 0),
+		Maximum: bandwidth,
 	}
 
-	k.SetQuotaForSubscription(ctx, subscription.ID, quota)
+	k.SetQuota(ctx, subscription.ID, quota)
 	k.SetSubscriptionForAddress(ctx, quota.Address, subscription.ID)
 	ctx.EventManager().EmitEvent(sdk.NewEvent(
-		types.EventTypeAddQuotaForSubscription,
+		types.EventTypeAddQuota,
 		sdk.NewAttribute(types.AttributeKeyAddress, quota.Address.String()),
-		sdk.NewAttribute(types.AttributeKeyConsumed, quota.Consumed.String()),
-		sdk.NewAttribute(types.AttributeKeyAllocated, quota.Allocated.String()),
+		sdk.NewAttribute(types.AttributeKeyConsumed, quota.Current.String()),
+		sdk.NewAttribute(types.AttributeKeyAllocated, quota.Maximum.String()),
 	))
 
 	k.SetSubscriptionsCount(ctx, count+1)
 	ctx.EventManager().EmitEvent(sdk.NewEvent(
-		types.EventTypeSetSubscriptionsCount,
+		types.EventTypeSetCount,
 		sdk.NewAttribute(types.AttributeKeyCount, fmt.Sprintf("%d", count+1)),
 	))
 
+	ctx.EventManager().EmitEvent(types.EventModuleName)
 	return sdk.Result{Events: ctx.EventManager().Events()}
 }
 
-func HandleStartSubscription(ctx sdk.Context, k keeper.Keeper, msg types.MsgStartSubscription) sdk.Result {
-	if msg.ID == 0 {
-		return startNodeSubscription(ctx, k, msg.From, msg.Address, msg.Deposit)
-	}
-
-	return startPlanSubscription(ctx, k, msg.From, msg.ID, msg.Denom)
-}
-
-func HandleAddQuotaForSubscription(ctx sdk.Context, k keeper.Keeper, msg types.MsgAddQuotaForSubscription) sdk.Result {
-	subscription, found := k.GetSubscription(ctx, msg.ID)
-	if !found {
-		return types.ErrorSubscriptionDoesNotExist().Result()
-	}
-	if !msg.From.Equals(subscription.Address) {
-		return types.ErrorUnauthorized().Result()
-	}
-	if msg.Bandwidth.IsAnyGT(subscription.Unallocated) {
-		return types.ErrorInvalidQuota().Result()
-	}
-	if !subscription.Status.Equal(hub.StatusActive) {
-		return types.ErrorInvalidSubscriptionStatus().Result()
-	}
-
-	if k.HasQuotaForSubscription(ctx, subscription.ID, msg.Address) {
-		return types.ErrorDuplicateQuota().Result()
-	}
-
-	subscription.Unallocated = subscription.Unallocated.Sub(msg.Bandwidth)
-	k.SetSubscription(ctx, subscription)
-
-	quota := types.Quota{
-		Address:   msg.Address,
-		Consumed:  hub.NewBandwidthFromInt64(0, 0),
-		Allocated: msg.Bandwidth,
-	}
-
-	k.SetQuotaForSubscription(ctx, subscription.ID, quota)
-	k.SetSubscriptionForAddress(ctx, quota.Address, subscription.ID)
-	ctx.EventManager().EmitEvent(sdk.NewEvent(
-		types.EventTypeAddQuotaForSubscription,
-		sdk.NewAttribute(types.AttributeKeyAddress, quota.Address.String()),
-		sdk.NewAttribute(types.AttributeKeyConsumed, quota.Consumed.String()),
-		sdk.NewAttribute(types.AttributeKeyAllocated, quota.Allocated.String()),
-	))
-
-	return sdk.Result{Events: ctx.EventManager().Events()}
-}
-
-func HandleUpdateQuotaForSubscription(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpdateQuotaForSubscription) sdk.Result {
-	subscription, found := k.GetSubscription(ctx, msg.ID)
-	if !found {
-		return types.ErrorSubscriptionDoesNotExist().Result()
-	}
-	if !msg.From.Equals(subscription.Address) {
-		return types.ErrorUnauthorized().Result()
-	}
-	if !subscription.Status.Equal(hub.StatusActive) {
-		return types.ErrorInvalidSubscriptionStatus().Result()
-	}
-
-	quota, found := k.GetQuotaForSubscription(ctx, subscription.ID, msg.Address)
-	if !found {
-		return types.ErrorQuotaDoesNotExist().Result()
-	}
-
-	subscription.Unallocated = subscription.Unallocated.
-		Add(quota.Allocated).Sub(quota.Consumed)
-	if msg.Bandwidth.IsAnyGT(subscription.Unallocated) {
-		return types.ErrorInvalidQuota().Result()
-	}
-
-	subscription.Unallocated = subscription.Unallocated.Sub(msg.Bandwidth)
-	k.SetSubscription(ctx, subscription)
-
-	quota.Allocated = msg.Bandwidth
-	k.SetQuotaForSubscription(ctx, subscription.ID, quota)
-	ctx.EventManager().EmitEvent(sdk.NewEvent(
-		types.EventTypeAddQuotaForSubscription,
-		sdk.NewAttribute(types.AttributeKeyAddress, quota.Address.String()),
-		sdk.NewAttribute(types.AttributeKeyConsumed, quota.Consumed.String()),
-		sdk.NewAttribute(types.AttributeKeyAllocated, quota.Allocated.String()),
-	))
-
-	return sdk.Result{Events: ctx.EventManager().Events()}
-}
-
-func HandleEndSubscription(ctx sdk.Context, k keeper.Keeper, msg types.MsgEndSubscription) sdk.Result {
+func HandleEnd(ctx sdk.Context, k keeper.Keeper, msg types.MsgEnd) sdk.Result {
 	subscription, found := k.GetSubscription(ctx, msg.ID)
 	if !found {
 		return types.ErrorSubscriptionDoesNotExist().Result()
@@ -241,8 +157,8 @@ func HandleEndSubscription(ctx sdk.Context, k keeper.Keeper, msg types.MsgEndSub
 
 	if subscription.Plan == 0 {
 		consumed := hub.NewBandwidthFromInt64(0, 0)
-		k.IterateQuotasForSubscription(ctx, subscription.ID, func(_ int, item types.Quota) bool {
-			consumed = consumed.Add(item.Consumed)
+		k.IterateQuotas(ctx, subscription.ID, func(_ int, item types.Quota) bool {
+			consumed = consumed.Add(item.Current)
 			return false
 		})
 
@@ -257,9 +173,90 @@ func HandleEndSubscription(ctx sdk.Context, k keeper.Keeper, msg types.MsgEndSub
 
 	k.SetSubscription(ctx, subscription)
 	ctx.EventManager().EmitEvent(sdk.NewEvent(
-		types.EventTypeEndSubscription,
+		types.EventTypeEnd,
 		sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", subscription.ID)),
 	))
 
+	ctx.EventManager().EmitEvent(types.EventModuleName)
+	return sdk.Result{Events: ctx.EventManager().Events()}
+}
+
+func HandleAddQuota(ctx sdk.Context, k keeper.Keeper, msg types.MsgAddQuota) sdk.Result {
+	subscription, found := k.GetSubscription(ctx, msg.ID)
+	if !found {
+		return types.ErrorSubscriptionDoesNotExist().Result()
+	}
+	if !msg.From.Equals(subscription.Address) {
+		return types.ErrorUnauthorized().Result()
+	}
+	if !subscription.Status.Equal(hub.StatusActive) {
+		return types.ErrorInvalidSubscriptionStatus().Result()
+	}
+	if msg.Bandwidth.IsAnyGT(subscription.Free) {
+		return types.ErrorInvalidQuota().Result()
+	}
+
+	if k.HasQuota(ctx, subscription.ID, msg.Address) {
+		return types.ErrorDuplicateQuota().Result()
+	}
+
+	subscription.Free = subscription.Free.Sub(msg.Bandwidth)
+	k.SetSubscription(ctx, subscription)
+
+	quota := types.Quota{
+		Address: msg.Address,
+		Current: hub.NewBandwidthFromInt64(0, 0),
+		Maximum: msg.Bandwidth,
+	}
+
+	k.SetQuota(ctx, subscription.ID, quota)
+	k.SetSubscriptionForAddress(ctx, quota.Address, subscription.ID)
+	ctx.EventManager().EmitEvent(sdk.NewEvent(
+		types.EventTypeAddQuota,
+		sdk.NewAttribute(types.AttributeKeyAddress, quota.Address.String()),
+		sdk.NewAttribute(types.AttributeKeyConsumed, quota.Current.String()),
+		sdk.NewAttribute(types.AttributeKeyAllocated, quota.Maximum.String()),
+	))
+
+	ctx.EventManager().EmitEvent(types.EventModuleName)
+	return sdk.Result{Events: ctx.EventManager().Events()}
+}
+
+func HandleUpdateQuota(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpdateQuota) sdk.Result {
+	subscription, found := k.GetSubscription(ctx, msg.ID)
+	if !found {
+		return types.ErrorSubscriptionDoesNotExist().Result()
+	}
+	if !msg.From.Equals(subscription.Address) {
+		return types.ErrorUnauthorized().Result()
+	}
+	if !subscription.Status.Equal(hub.StatusActive) {
+		return types.ErrorInvalidSubscriptionStatus().Result()
+	}
+
+	quota, found := k.GetQuota(ctx, subscription.ID, msg.Address)
+	if !found {
+		return types.ErrorQuotaDoesNotExist().Result()
+	}
+
+	subscription.Free = subscription.Free.
+		Add(quota.Maximum).Sub(quota.Current)
+	if msg.Bandwidth.IsAnyGT(subscription.Free) {
+		return types.ErrorInvalidQuota().Result()
+	}
+
+	subscription.Free = subscription.Free.Sub(msg.Bandwidth)
+	k.SetSubscription(ctx, subscription)
+
+	quota.Maximum = msg.Bandwidth
+	k.SetQuota(ctx, subscription.ID, quota)
+	ctx.EventManager().EmitEvent(sdk.NewEvent(
+		types.EventTypeUpdateQuota,
+		sdk.NewAttribute(types.AttributeKeyAddress, quota.Address.String()),
+		sdk.NewAttribute(types.AttributeKeyConsumed, quota.Current.String()),
+		sdk.NewAttribute(types.AttributeKeyAllocated, quota.Maximum.String()),
+	))
+
+	ctx.EventManager().EmitEvent(types.EventModuleName)
 	return sdk.Result{Events: ctx.EventManager().Events()}
 }

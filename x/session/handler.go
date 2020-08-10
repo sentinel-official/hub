@@ -15,7 +15,7 @@ func isAuthorized(ctx sdk.Context, k keeper.Keeper, p, s uint64, n hub.NodeAddre
 		k.HasNodeForPlan(ctx, p, n)
 }
 
-func HandleUpdateSession(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpdateSession) sdk.Result {
+func HandleUpdateSession(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpdate) sdk.Result {
 	subscription, found := k.GetSubscription(ctx, msg.Subscription)
 	if !found {
 		return types.ErrorSubscriptionDoesNotExit().Result()
@@ -70,5 +70,7 @@ func HandleUpdateSession(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpdateSe
 	))
 
 	k.SetSubscription(ctx, subscription)
+
+	ctx.EventManager().EmitEvent(types.EventModuleName)
 	return sdk.Result{Events: ctx.EventManager().Events()}
 }

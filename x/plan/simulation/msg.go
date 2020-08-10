@@ -18,7 +18,7 @@ import (
 	provider "github.com/sentinel-official/hub/x/provider/simulation"
 )
 
-func SimulateMsgAddPlan(pk expected.ProviderKeeper, k keeper.Keeper) simulation.Operation {
+func SimulateMsgAdd(pk expected.ProviderKeeper, k keeper.Keeper) simulation.Operation {
 	return func(r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accounts []simulation.Account) (
 		simulation.OperationMsg, []simulation.FutureOperation, error) {
 		var (
@@ -28,13 +28,13 @@ func SimulateMsgAddPlan(pk expected.ProviderKeeper, k keeper.Keeper) simulation.
 			bandwidth = hub.NewBandwidthFromInt64(r.Int63n(1e12)+1, r.Int63n(1e12)+1)
 		)
 
-		msg := types.NewMsgAddPlan(from, price, validity, bandwidth)
+		msg := types.NewMsgAdd(from, price, validity, bandwidth)
 		if msg.ValidateBasic() != nil {
 			return simulation.NoOpMsg(types.ModuleName), nil, fmt.Errorf("expected msg to pass ValidateBasic: %s", msg.GetSignBytes())
 		}
 
 		ctx, write := ctx.CacheContext()
-		ok := plan.HandleAddPlan(ctx, k, msg).IsOK()
+		ok := plan.HandleAdd(ctx, k, msg).IsOK()
 		if ok {
 			write()
 		}
@@ -43,7 +43,7 @@ func SimulateMsgAddPlan(pk expected.ProviderKeeper, k keeper.Keeper) simulation.
 	}
 }
 
-func SimulateMsgSetPlanStatus(pk expected.ProviderKeeper, k keeper.Keeper) simulation.Operation {
+func SimulateMsgSetStatus(pk expected.ProviderKeeper, k keeper.Keeper) simulation.Operation {
 	return func(r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accounts []simulation.Account) (
 		simulation.OperationMsg, []simulation.FutureOperation, error) {
 		var (
@@ -59,13 +59,13 @@ func SimulateMsgSetPlanStatus(pk expected.ProviderKeeper, k keeper.Keeper) simul
 			status = hub.StatusInactive
 		}
 
-		msg := types.NewMsgSetPlanStatus(from, id, status)
+		msg := types.NewMsgSetStatus(from, id, status)
 		if msg.ValidateBasic() != nil {
 			return simulation.NoOpMsg(types.ModuleName), nil, fmt.Errorf("expected msg to pass ValidateBasic: %s", msg.GetSignBytes())
 		}
 
 		ctx, write := ctx.CacheContext()
-		ok := plan.HandleSetPlanStatus(ctx, k, msg).IsOK()
+		ok := plan.HandleSetStatus(ctx, k, msg).IsOK()
 		if ok {
 			write()
 		}
@@ -74,7 +74,7 @@ func SimulateMsgSetPlanStatus(pk expected.ProviderKeeper, k keeper.Keeper) simul
 	}
 }
 
-func SimulateMsgAddNodeForPlan(pk expected.ProviderKeeper, nk expected.NodeKeeper, k keeper.Keeper) simulation.Operation {
+func SimulateMsgAddNode(pk expected.ProviderKeeper, nk expected.NodeKeeper, k keeper.Keeper) simulation.Operation {
 	return func(r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accounts []simulation.Account) (
 		simulation.OperationMsg, []simulation.FutureOperation, error) {
 		var (
@@ -83,13 +83,13 @@ func SimulateMsgAddNodeForPlan(pk expected.ProviderKeeper, nk expected.NodeKeepe
 			address = node.RandomNode(r, nk.GetNodes(ctx)).Address
 		)
 
-		msg := types.NewMsgAddNodeForPlan(from, id, address)
+		msg := types.NewMsgAddNode(from, id, address)
 		if msg.ValidateBasic() != nil {
 			return simulation.NoOpMsg(types.ModuleName), nil, fmt.Errorf("expected msg to pass ValidateBasic: %s", msg.GetSignBytes())
 		}
 
 		ctx, write := ctx.CacheContext()
-		ok := plan.HandleAddNodeForPlan(ctx, k, msg).IsOK()
+		ok := plan.HandleAddNode(ctx, k, msg).IsOK()
 		if ok {
 			write()
 		}
@@ -98,7 +98,7 @@ func SimulateMsgAddNodeForPlan(pk expected.ProviderKeeper, nk expected.NodeKeepe
 	}
 }
 
-func SimulateMsgRemoveNodeForPlan(pk expected.ProviderKeeper, nk expected.NodeKeeper, k keeper.Keeper) simulation.Operation {
+func SimulateMsgRemoveNode(pk expected.ProviderKeeper, nk expected.NodeKeeper, k keeper.Keeper) simulation.Operation {
 	return func(r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accounts []simulation.Account) (
 		simulation.OperationMsg, []simulation.FutureOperation, error) {
 		var (
@@ -107,13 +107,13 @@ func SimulateMsgRemoveNodeForPlan(pk expected.ProviderKeeper, nk expected.NodeKe
 			address = node.RandomNode(r, nk.GetNodes(ctx)).Address
 		)
 
-		msg := types.NewMsgRemoveNodeForPlan(from, id, address)
+		msg := types.NewMsgRemoveNode(from, id, address)
 		if msg.ValidateBasic() != nil {
 			return simulation.NoOpMsg(types.ModuleName), nil, fmt.Errorf("expected msg to pass ValidateBasic: %s", msg.GetSignBytes())
 		}
 
 		ctx, write := ctx.CacheContext()
-		ok := plan.HandleRemoveNodeForPlan(ctx, k, msg).IsOK()
+		ok := plan.HandleRemoveNode(ctx, k, msg).IsOK()
 		if ok {
 			write()
 		}

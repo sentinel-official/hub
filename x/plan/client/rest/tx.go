@@ -6,19 +6,25 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/context"
 )
 
-func txAddPlanHandlerFunc(ctx context.CLIContext) http.HandlerFunc {
+func txAdd(ctx context.CLIContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
 	}
 }
 
-func txSetPlanStatusHandlerFunc(ctx context.CLIContext) http.HandlerFunc {
+func txSetStatus(ctx context.CLIContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
 	}
 }
 
-func txAddNodeHandlerFunc(ctx context.CLIContext) http.HandlerFunc {
+func txAddNode(ctx context.CLIContext) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+
+	}
+}
+
+func txRemoveNode(ctx context.CLIContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
 	}

@@ -5,8 +5,8 @@ import (
 )
 
 const (
-	QueryProvider  = "query_provider"
-	QueryProviders = "query_providers"
+	QueryProvider  = "provider"
+	QueryProviders = "providers"
 )
 
 type QueryProviderParams struct {

@@ -16,7 +16,7 @@ import (
 	provider "github.com/sentinel-official/hub/x/provider/simulation"
 )
 
-func SimulateMsgRegisterNode(pk expected.ProviderKeeper, k keeper.Keeper) simulation.Operation {
+func SimulateMsgRegister(pk expected.ProviderKeeper, k keeper.Keeper) simulation.Operation {
 	return func(r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accounts []simulation.Account) (
 		simulation.OperationMsg, []simulation.FutureOperation, error) {
 		var (
@@ -25,7 +25,7 @@ func SimulateMsgRegisterNode(pk expected.ProviderKeeper, k keeper.Keeper) simula
 			speed    = hub.NewBandwidthFromInt64(r.Int63n(1e9)+1, r.Int63n(1e9)+1)
 			remote   = simulation.RandStringOfLength(r, 64)
 			version  = simulation.RandStringOfLength(r, 64)
-			category types.NodeCategory
+			category types.Category
 		)
 
 		switch r.Intn(2) {
@@ -35,13 +35,13 @@ func SimulateMsgRegisterNode(pk expected.ProviderKeeper, k keeper.Keeper) simula
 			category = types.CategoryWireGuard
 		}
 
-		msg := types.NewMsgRegisterNode(from, prov, nil, speed, remote, version, category)
+		msg := types.NewMsgRegister(from, prov, nil, speed, remote, version, category)
 		if msg.ValidateBasic() != nil {
 			return simulation.NoOpMsg(types.ModuleName), nil, fmt.Errorf("expected msg to pass ValidateBasic: %s", msg.GetSignBytes())
 		}
 
 		ctx, write := ctx.CacheContext()
-		ok := node.HandleRegisterNode(ctx, k, msg).IsOK()
+		ok := node.HandleRegister(ctx, k, msg).IsOK()
 		if ok {
 			write()
 		}
@@ -50,7 +50,7 @@ func SimulateMsgRegisterNode(pk expected.ProviderKeeper, k keeper.Keeper) simula
 	}
 }
 
-func SimulateMsgUpdateNode(pk expected.ProviderKeeper, k keeper.Keeper) simulation.Operation {
+func SimulateMsgUpdate(pk expected.ProviderKeeper, k keeper.Keeper) simulation.Operation {
 	return func(r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accounts []simulation.Account) (
 		simulation.OperationMsg, []simulation.FutureOperation, error) {
 		var (
@@ -59,7 +59,7 @@ func SimulateMsgUpdateNode(pk expected.ProviderKeeper, k keeper.Keeper) simulati
 			speed    = hub.NewBandwidthFromInt64(r.Int63n(1e9)+1, r.Int63n(1e9)+1)
 			remote   = simulation.RandStringOfLength(r, 64)
 			version  = simulation.RandStringOfLength(r, 64)
-			category types.NodeCategory
+			category types.Category
 		)
 
 		switch r.Intn(2) {
@@ -69,13 +69,13 @@ func SimulateMsgUpdateNode(pk expected.ProviderKeeper, k keeper.Keeper) simulati
 			category = types.CategoryWireGuard
 		}
 
-		msg := types.NewMsgUpdateNode(from, prov, nil, speed, remote, version, category)
+		msg := types.NewMsgUpdate(from, prov, nil, speed, remote, version, category)
 		if msg.ValidateBasic() != nil {
 			return simulation.NoOpMsg(types.ModuleName), nil, fmt.Errorf("expected msg to pass ValidateBasic: %s", msg.GetSignBytes())
 		}
 
 		ctx, write := ctx.CacheContext()
-		ok := node.HandleUpdateNode(ctx, k, msg).IsOK()
+		ok := node.HandleUpdate(ctx, k, msg).IsOK()
 		if ok {
 			write()
 		}
@@ -84,7 +84,7 @@ func SimulateMsgUpdateNode(pk expected.ProviderKeeper, k keeper.Keeper) simulati
 	}
 }
 
-func SimulateMsgSetNodeStatus(k keeper.Keeper) simulation.Operation {
+func SimulateMsgSetStatus(k keeper.Keeper) simulation.Operation {
 	return func(r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accounts []simulation.Account) (
 		simulation.OperationMsg, []simulation.FutureOperation, error) {
 		var (
@@ -99,13 +99,13 @@ func SimulateMsgSetNodeStatus(k keeper.Keeper) simulation.Operation {
 			status = hub.StatusInactive
 		}
 
-		msg := types.NewMsgSetNodeStatus(from, status)
+		msg := types.NewMsgSetStatus(from, status)
 		if msg.ValidateBasic() != nil {
 			return simulation.NoOpMsg(types.ModuleName), nil, fmt.Errorf("expected msg to pass ValidateBasic: %s", msg.GetSignBytes())
 		}
 
 		ctx, write := ctx.CacheContext()
-		ok := node.HandleSetNodeStatus(ctx, k, msg).IsOK()
+		ok := node.HandleSetStatus(ctx, k, msg).IsOK()
 		if ok {
 			write()
 		}

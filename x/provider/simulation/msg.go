@@ -13,7 +13,7 @@ import (
 	"github.com/sentinel-official/hub/x/provider/types"
 )
 
-func SimulateMsgRegisterProvider(k keeper.Keeper) simulation.Operation {
+func SimulateMsgRegister(k keeper.Keeper) simulation.Operation {
 	return func(r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accounts []simulation.Account) (
 		simulation.OperationMsg, []simulation.FutureOperation, error) {
 		var (
@@ -24,13 +24,13 @@ func SimulateMsgRegisterProvider(k keeper.Keeper) simulation.Operation {
 			description = simulation.RandStringOfLength(r, r.Intn(256)+1)
 		)
 
-		msg := types.NewMsgRegisterProvider(from, name, identity, website, description)
+		msg := types.NewMsgRegister(from, name, identity, website, description)
 		if msg.ValidateBasic() != nil {
 			return simulation.NoOpMsg(types.ModuleName), nil, fmt.Errorf("expected msg to pass ValidateBasic: %s", msg.GetSignBytes())
 		}
 
 		ctx, write := ctx.CacheContext()
-		ok := provider.HandleRegisterProvider(ctx, k, msg).IsOK()
+		ok := provider.HandleRegister(ctx, k, msg).IsOK()
 		if ok {
 			write()
 		}
@@ -39,7 +39,7 @@ func SimulateMsgRegisterProvider(k keeper.Keeper) simulation.Operation {
 	}
 }
 
-func SimulateMsgUpdateProvider(k keeper.Keeper) simulation.Operation {
+func SimulateMsgUpdate(k keeper.Keeper) simulation.Operation {
 	return func(r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accounts []simulation.Account) (
 		simulation.OperationMsg, []simulation.FutureOperation, error) {
 		var (
@@ -50,13 +50,13 @@ func SimulateMsgUpdateProvider(k keeper.Keeper) simulation.Operation {
 			description = simulation.RandStringOfLength(r, r.Intn(256))
 		)
 
-		msg := types.NewMsgUpdateProvider(from, name, identity, website, description)
+		msg := types.NewMsgUpdate(from, name, identity, website, description)
 		if msg.ValidateBasic() != nil {
 			return simulation.NoOpMsg(types.ModuleName), nil, fmt.Errorf("expected msg to pass ValidateBasic: %s", msg.GetSignBytes())
 		}
 
 		ctx, write := ctx.CacheContext()
-		ok := provider.HandleUpdateProvider(ctx, k, msg).IsOK()
+		ok := provider.HandleUpdate(ctx, k, msg).IsOK()
 		if ok {
 			write()
 		}

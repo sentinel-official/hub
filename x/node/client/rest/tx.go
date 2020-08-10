@@ -6,7 +6,19 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/context"
 )
 
-func txRegisterNodeHandlerFunc(ctx context.CLIContext) http.HandlerFunc {
+func txRegister(ctx context.CLIContext) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+
+	}
+}
+
+func txUpdate(ctx context.CLIContext) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+
+	}
+}
+
+func txSetStatus(ctx context.CLIContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
 	}

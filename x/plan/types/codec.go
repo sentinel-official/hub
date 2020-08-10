@@ -16,8 +16,8 @@ func init() {
 }
 
 func RegisterCodec(cdc *codec.Codec) {
-	cdc.RegisterConcrete(MsgAddPlan{}, "sentinel/MsgAddPlan", nil)
-	cdc.RegisterConcrete(MsgSetPlanStatus{}, "sentinel/MsgSetPlanStatus", nil)
-	cdc.RegisterConcrete(MsgAddNodeForPlan{}, "sentinel/MsgAddNodeForPlan", nil)
-	cdc.RegisterConcrete(MsgRemoveNodeForPlan{}, "sentinel/MsgRemoveNodeForPlan", nil)
+	cdc.RegisterConcrete(MsgAdd{}, "x/plan/MsgAdd", nil)
+	cdc.RegisterConcrete(MsgSetStatus{}, "x/plan/MsgSetStatus", nil)
+	cdc.RegisterConcrete(MsgAddNode{}, "x/plan/MsgAddNode", nil)
+	cdc.RegisterConcrete(MsgRemoveNode{}, "x/plan/MsgRemoveNode", nil)
 }

@@ -13,22 +13,22 @@ import (
 )
 
 const (
-	Codespace                  = types.Codespace
-	EventTypeSetPlan           = types.EventTypeSetPlan
-	EventTypeSetPlansCount     = types.EventTypeSetPlansCount
-	EventTypeSetPlanStatus     = types.EventTypeSetPlanStatus
-	EventTypeAddNodeForPlan    = types.EventTypeAddNodeForPlan
-	EventTypeRemoveNodeForPlan = types.EventTypeRemoveNodeForPlan
-	AttributeKeyAddress        = types.AttributeKeyAddress
-	AttributeKeyID             = types.AttributeKeyID
-	AttributeKeyCount          = types.AttributeKeyCount
-	AttributeKeyStatus         = types.AttributeKeyStatus
-	ModuleName                 = types.ModuleName
-	QuerierRoute               = types.QuerierRoute
-	QueryPlan                  = types.QueryPlan
-	QueryPlans                 = types.QueryPlans
-	QueryPlansForProvider      = types.QueryPlansForProvider
-	QueryNodesForPlan          = types.QueryNodesForPlan
+	Codespace             = types.Codespace
+	EventTypeSetCount     = types.EventTypeSetCount
+	EventTypeSet          = types.EventTypeSet
+	EventTypeSetStatus    = types.EventTypeSetStatus
+	EventTypeAddNode      = types.EventTypeAddNode
+	EventTypeRemoveNode   = types.EventTypeRemoveNode
+	AttributeKeyAddress   = types.AttributeKeyAddress
+	AttributeKeyID        = types.AttributeKeyID
+	AttributeKeyCount     = types.AttributeKeyCount
+	AttributeKeyStatus    = types.AttributeKeyStatus
+	ModuleName            = types.ModuleName
+	QuerierRoute          = types.QuerierRoute
+	QueryPlan             = types.QueryPlan
+	QueryPlans            = types.QueryPlans
+	QueryPlansForProvider = types.QueryPlansForProvider
+	QueryNodesForPlan     = types.QueryNodesForPlan
 )
 
 var (
@@ -48,14 +48,14 @@ var (
 	NewGenesisState                = types.NewGenesisState
 	DefaultGenesisState            = types.DefaultGenesisState
 	PlanKey                        = types.PlanKey
-	PlanForProviderByProviderKey   = types.PlanForProviderByProviderKey
+	GetPlanForProviderKeyPrefix    = types.GetPlanForProviderKeyPrefix
 	PlanForProviderKey             = types.PlanForProviderKey
-	NodeForPlanByPlanKey           = types.NodeForPlanByPlanKey
+	GetNodeForPlanKeyPrefix        = types.GetNodeForPlanKeyPrefix
 	NodeForPlanKey                 = types.NodeForPlanKey
-	NewMsgAddPlan                  = types.NewMsgAddPlan
-	NewMsgSetPlanStatus            = types.NewMsgSetPlanStatus
-	NewMsgAddNodeForPlan           = types.NewMsgAddNodeForPlan
-	NewMsgRemoveNodeForPlan        = types.NewMsgRemoveNodeForPlan
+	NewMsgAdd                      = types.NewMsgAdd
+	NewMsgSetStatus                = types.NewMsgSetStatus
+	NewMsgAddNode                  = types.NewMsgAddNode
+	NewMsgRemoveNode               = types.NewMsgRemoveNode
 	NewQueryPlanParams             = types.NewQueryPlanParams
 	NewQueryPlansParams            = types.NewQueryPlansParams
 	NewQueryPlansForProviderParams = types.NewQueryPlansForProviderParams
@@ -67,7 +67,8 @@ var (
 	ModuleCdc                = types.ModuleCdc
 	RouterKey                = types.RouterKey
 	StoreKey                 = types.StoreKey
-	PlansCountKey            = types.PlansCountKey
+	EventModuleName          = types.EventModuleName
+	CountKey                 = types.CountKey
 	PlanKeyPrefix            = types.PlanKeyPrefix
 	PlanForProviderKeyPrefix = types.PlanForProviderKeyPrefix
 	NodeForPlanKeyPrefix     = types.NodeForPlanKeyPrefix
@@ -77,10 +78,10 @@ type (
 	GenesisPlan                 = types.GenesisPlan
 	GenesisPlans                = types.GenesisPlans
 	GenesisState                = types.GenesisState
-	MsgAddPlan                  = types.MsgAddPlan
-	MsgSetPlanStatus            = types.MsgSetPlanStatus
-	MsgAddNodeForPlan           = types.MsgAddNodeForPlan
-	MsgRemoveNodeForPlan        = types.MsgRemoveNodeForPlan
+	MsgAdd                      = types.MsgAdd
+	MsgSetStatus                = types.MsgSetStatus
+	MsgAddNode                  = types.MsgAddNode
+	MsgRemoveNode               = types.MsgRemoveNode
 	Plan                        = types.Plan
 	Plans                       = types.Plans
 	QueryPlanParams             = types.QueryPlanParams

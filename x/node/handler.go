@@ -21,7 +21,7 @@ func BeginBlock(ctx sdk.Context, k keeper.Keeper) {
 	})
 }
 
-func HandleRegisterNode(ctx sdk.Context, k keeper.Keeper, msg types.MsgRegisterNode) sdk.Result {
+func HandleRegister(ctx sdk.Context, k keeper.Keeper, msg types.MsgRegister) sdk.Result {
 	if k.HasNode(ctx, msg.From.Bytes()) {
 		return types.ErrorDuplicateNode().Result()
 	}
@@ -47,15 +47,16 @@ func HandleRegisterNode(ctx sdk.Context, k keeper.Keeper, msg types.MsgRegisterN
 	}
 
 	ctx.EventManager().EmitEvent(sdk.NewEvent(
-		types.EventTypeSetNode,
+		types.EventTypeSet,
 		sdk.NewAttribute(types.AttributeKeyProvider, node.Provider.String()),
 		sdk.NewAttribute(types.AttributeKeyAddress, node.Address.String()),
 	))
 
+	ctx.EventManager().EmitEvent(types.EventModuleName)
 	return sdk.Result{Events: ctx.EventManager().Events()}
 }
 
-func HandleUpdateNode(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpdateNode) sdk.Result {
+func HandleUpdate(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpdate) sdk.Result {
 	node, found := k.GetNode(ctx, msg.From)
 	if !found {
 		return types.ErrorNodeDoesNotExist().Result()
@@ -102,14 +103,15 @@ func HandleUpdateNode(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpdateNode)
 
 	k.SetNode(ctx, node)
 	ctx.EventManager().EmitEvent(sdk.NewEvent(
-		types.EventTypeUpdateNode,
+		types.EventTypeUpdate,
 		sdk.NewAttribute(types.AttributeKeyAddress, node.Address.String()),
 	))
 
+	ctx.EventManager().EmitEvent(types.EventModuleName)
 	return sdk.Result{Events: ctx.EventManager().Events()}
 }
 
-func HandleSetNodeStatus(ctx sdk.Context, k keeper.Keeper, msg types.MsgSetNodeStatus) sdk.Result {
+func HandleSetStatus(ctx sdk.Context, k keeper.Keeper, msg types.MsgSetStatus) sdk.Result {
 	node, found := k.GetNode(ctx, msg.From)
 	if !found {
 		return types.ErrorNodeDoesNotExist().Result()
@@ -123,10 +125,11 @@ func HandleSetNodeStatus(ctx sdk.Context, k keeper.Keeper, msg types.MsgSetNodeS
 
 	k.SetNode(ctx, node)
 	ctx.EventManager().EmitEvent(sdk.NewEvent(
-		types.EventTypeSetNodeStatus,
+		types.EventTypeSetStatus,
 		sdk.NewAttribute(types.AttributeKeyAddress, node.Address.String()),
 		sdk.NewAttribute(types.AttributeKeyStatus, node.Status.String()),
 	))
 
+	ctx.EventManager().EmitEvent(types.EventModuleName)
 	return sdk.Result{Events: ctx.EventManager().Events()}
 }

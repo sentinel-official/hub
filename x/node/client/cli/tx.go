@@ -12,7 +12,7 @@ import (
 	"github.com/sentinel-official/hub/x/node/types"
 )
 
-func txRegisterNodeCmd(cdc *codec.Codec) *cobra.Command {
+func txRegister(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "register",
 		Short: "Register a node",
@@ -65,19 +65,19 @@ func txRegisterNodeCmd(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgRegisterNode(ctx.FromAddress, provider, price,
-				hub.NewBandwidthFromInt64(upload, download), remoteURL, version, types.NodeCategoryFromString(s))
+			msg := types.NewMsgRegister(ctx.FromAddress, provider, price,
+				hub.NewBandwidthFromInt64(upload, download), remoteURL, version, types.CategoryFromString(s))
 			return utils.GenerateOrBroadcastMsgs(ctx, txb, []sdk.Msg{msg})
 		},
 	}
 
-	cmd.Flags().String(flagProvider, "", "Node provider address")
-	cmd.Flags().String(flagPrice, "", "Node price per Gigabyte")
-	cmd.Flags().String(flagRemoteURL, "", "Node remove URL")
-	cmd.Flags().String(flagVersion, "", "Node version")
-	cmd.Flags().Int64(flagUploadSpeed, 0, "Node upload speed")
-	cmd.Flags().Int64(flagDownloadSpeed, 0, "Node download speed")
-	cmd.Flags().String(flagCategory, "", "Node category")
+	cmd.Flags().String(flagProvider, "", "node provider address")
+	cmd.Flags().String(flagPrice, "", "node price per Gigabyte")
+	cmd.Flags().String(flagRemoteURL, "", "node remove URL")
+	cmd.Flags().String(flagVersion, "", "node version")
+	cmd.Flags().Int64(flagUploadSpeed, 0, "node upload speed")
+	cmd.Flags().Int64(flagDownloadSpeed, 0, "node download speed")
+	cmd.Flags().String(flagCategory, "", "node category")
 
 	_ = cmd.MarkFlagRequired(flagRemoteURL)
 	_ = cmd.MarkFlagRequired(flagVersion)
@@ -88,7 +88,7 @@ func txRegisterNodeCmd(cdc *codec.Codec) *cobra.Command {
 	return cmd
 }
 
-func txUpdateNodeCmd(cdc *codec.Codec) *cobra.Command {
+func txUpdate(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "update",
 		Short: "Update a node",
@@ -147,24 +147,24 @@ func txUpdateNodeCmd(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgUpdateNode(ctx.FromAddress.Bytes(), provider, price,
-				hub.NewBandwidthFromInt64(upload, download), remoteURL, version, types.NodeCategoryFromString(s))
+			msg := types.NewMsgUpdate(ctx.FromAddress.Bytes(), provider, price,
+				hub.NewBandwidthFromInt64(upload, download), remoteURL, version, types.CategoryFromString(s))
 			return utils.GenerateOrBroadcastMsgs(ctx, txb, []sdk.Msg{msg})
 		},
 	}
 
-	cmd.Flags().String(flagProvider, "", "Node provider address")
-	cmd.Flags().String(flagPrice, "", "Node price per Gigabyte")
-	cmd.Flags().String(flagRemoteURL, "", "Node remove URL")
-	cmd.Flags().String(flagVersion, "", "Node version")
-	cmd.Flags().Int64(flagUploadSpeed, 0, "Node upload speed")
-	cmd.Flags().Int64(flagDownloadSpeed, 0, "Node download speed")
-	cmd.Flags().String(flagCategory, "", "Node category")
+	cmd.Flags().String(flagProvider, "", "node provider address")
+	cmd.Flags().String(flagPrice, "", "node price per Gigabyte")
+	cmd.Flags().String(flagRemoteURL, "", "node remove URL")
+	cmd.Flags().String(flagVersion, "", "node version")
+	cmd.Flags().Int64(flagUploadSpeed, 0, "node upload speed")
+	cmd.Flags().Int64(flagDownloadSpeed, 0, "node download speed")
+	cmd.Flags().String(flagCategory, "", "node category")
 
 	return cmd
 }
 
-func txSetNodeStatusCmd(cdc *codec.Codec) *cobra.Command {
+func txSetStatus(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "status-set",
 		Short: "Set a node status",
@@ -173,7 +173,7 @@ func txSetNodeStatusCmd(cdc *codec.Codec) *cobra.Command {
 			txb := auth.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
 			ctx := context.NewCLIContext().WithCodec(cdc)
 
-			msg := types.NewMsgSetNodeStatus(ctx.FromAddress.Bytes(), hub.StatusFromString(args[0]))
+			msg := types.NewMsgSetStatus(ctx.FromAddress.Bytes(), hub.StatusFromString(args[0]))
 			return utils.GenerateOrBroadcastMsgs(ctx, txb, []sdk.Msg{msg})
 		},
 	}

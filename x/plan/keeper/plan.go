@@ -4,12 +4,11 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	hub "github.com/sentinel-official/hub/types"
-	node "github.com/sentinel-official/hub/x/node/types"
 	"github.com/sentinel-official/hub/x/plan/types"
 )
 
 func (k Keeper) SetPlansCount(ctx sdk.Context, count uint64) {
-	key := types.PlansCountKey
+	key := types.CountKey
 	value := k.cdc.MustMarshalBinaryLengthPrefixed(count)
 
 	store := k.Store(ctx)
@@ -19,7 +18,7 @@ func (k Keeper) SetPlansCount(ctx sdk.Context, count uint64) {
 func (k Keeper) GetPlansCount(ctx sdk.Context) (count uint64) {
 	store := k.Store(ctx)
 
-	key := types.PlansCountKey
+	key := types.CountKey
 	value := store.Get(key)
 	if value == nil {
 		return 0
@@ -76,7 +75,7 @@ func (k Keeper) SetPlanForProvider(ctx sdk.Context, address hub.ProvAddress, id 
 func (k Keeper) GetPlansForProvider(ctx sdk.Context, address hub.ProvAddress) (items types.Plans) {
 	store := k.Store(ctx)
 
-	iter := sdk.KVStorePrefixIterator(store, types.PlanForProviderByProviderKey(address))
+	iter := sdk.KVStorePrefixIterator(store, types.GetPlanForProviderKeyPrefix(address))
 	defer iter.Close()
 
 	for ; iter.Valid(); iter.Next() {
@@ -84,45 +83,6 @@ func (k Keeper) GetPlansForProvider(ctx sdk.Context, address hub.ProvAddress) (i
 		k.cdc.MustUnmarshalBinaryLengthPrefixed(iter.Value(), &id)
 
 		item, _ := k.GetPlan(ctx, id)
-		items = append(items, item)
-	}
-
-	return items
-}
-
-func (k Keeper) SetNodeForPlan(ctx sdk.Context, id uint64, address hub.NodeAddress) {
-	key := types.NodeForPlanKey(id, address)
-	value := k.cdc.MustMarshalBinaryLengthPrefixed(address)
-
-	store := k.Store(ctx)
-	store.Set(key, value)
-}
-
-func (k Keeper) HasNodeForPlan(ctx sdk.Context, id uint64, address hub.NodeAddress) bool {
-	store := k.Store(ctx)
-
-	key := types.NodeForPlanKey(id, address)
-	return store.Has(key)
-}
-
-func (k Keeper) DeleteNodeForPlan(ctx sdk.Context, id uint64, address hub.NodeAddress) {
-	store := k.Store(ctx)
-
-	key := types.NodeForPlanKey(id, address)
-	store.Delete(key)
-}
-
-func (k Keeper) GetNodesForPlan(ctx sdk.Context, id uint64) (items node.Nodes) {
-	store := k.Store(ctx)
-
-	iter := sdk.KVStorePrefixIterator(store, types.NodeForPlanByPlanKey(id))
-	defer iter.Close()
-
-	for ; iter.Valid(); iter.Next() {
-		var address hub.NodeAddress
-		k.cdc.MustUnmarshalBinaryLengthPrefixed(iter.Value(), &address)
-
-		item, _ := k.GetNode(ctx, address)
 		items = append(items, item)
 	}
 

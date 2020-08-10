@@ -12,7 +12,7 @@ import (
 	"github.com/sentinel-official/hub/x/node/types"
 )
 
-func queryNodeCmd(cdc *codec.Codec) *cobra.Command {
+func queryNode(cdc *codec.Codec) *cobra.Command {
 	return &cobra.Command{
 		Use:   "node",
 		Short: "Query a node",
@@ -36,7 +36,7 @@ func queryNodeCmd(cdc *codec.Codec) *cobra.Command {
 	}
 }
 
-func queryNodesCmd(cdc *codec.Codec) *cobra.Command {
+func queryNodes(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "nodes",
 		Short: "Query nodes",
@@ -88,15 +88,15 @@ func queryNodesCmd(cdc *codec.Codec) *cobra.Command {
 			}
 
 			for _, node := range nodes {
-				fmt.Println(node)
+				fmt.Printf("%s\n\n", node)
 			}
 
 			return nil
 		},
 	}
 
-	cmd.Flags().String(flagProvider, "", "Provider address")
-	cmd.Flags().Uint64(flagPlan, 0, "Subscription plan ID")
+	cmd.Flags().String(flagProvider, "", "provider address")
+	cmd.Flags().Uint64(flagPlan, 0, "subscription plan ID")
 	cmd.Flags().Int(flagPage, 1, "page")
 	cmd.Flags().Int(flagLimit, 0, "limit")
 

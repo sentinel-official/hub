@@ -11,7 +11,7 @@ import (
 	"github.com/sentinel-official/hub/x/provider/types"
 )
 
-func txRegisterProviderCmd(cdc *codec.Codec) *cobra.Command {
+func txRegister(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "register",
 		Short: "Register a provider",
@@ -39,22 +39,22 @@ func txRegisterProviderCmd(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgRegisterProvider(ctx.FromAddress, name, identity, website, description)
+			msg := types.NewMsgRegister(ctx.FromAddress, name, identity, website, description)
 			return utils.GenerateOrBroadcastMsgs(ctx, txb, []sdk.Msg{msg})
 		},
 	}
 
-	cmd.Flags().String(flagName, "", "Provider name")
-	cmd.Flags().String(flagIdentity, "", "Provider identity")
-	cmd.Flags().String(flagWebsite, "", "Provider website")
-	cmd.Flags().String(flagDescription, "", "Provider description")
+	cmd.Flags().String(flagName, "", "provider name")
+	cmd.Flags().String(flagIdentity, "", "provider identity")
+	cmd.Flags().String(flagWebsite, "", "provider website")
+	cmd.Flags().String(flagDescription, "", "provider description")
 
 	_ = cmd.MarkFlagRequired(flagName)
 
 	return cmd
 }
 
-func txUpdateProviderCmd(cdc *codec.Codec) *cobra.Command {
+func txUpdate(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "update",
 		Short: "Update a provider",
@@ -82,15 +82,15 @@ func txUpdateProviderCmd(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgUpdateProvider(ctx.FromAddress.Bytes(), name, identity, website, description)
+			msg := types.NewMsgUpdate(ctx.FromAddress.Bytes(), name, identity, website, description)
 			return utils.GenerateOrBroadcastMsgs(ctx, txb, []sdk.Msg{msg})
 		},
 	}
 
-	cmd.Flags().String(flagName, "", "Provider name")
-	cmd.Flags().String(flagIdentity, "", "Provider identity")
-	cmd.Flags().String(flagWebsite, "", "Provider website")
-	cmd.Flags().String(flagDescription, "", "Provider description")
+	cmd.Flags().String(flagName, "", "provider name")
+	cmd.Flags().String(flagIdentity, "", "provider identity")
+	cmd.Flags().String(flagWebsite, "", "provider website")
+	cmd.Flags().String(flagDescription, "", "provider description")
 
 	return cmd
 }

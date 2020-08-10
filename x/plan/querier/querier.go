@@ -16,6 +16,7 @@ func Querier(ctx sdk.Context, path []string, req abci.RequestQuery, k keeper.Kee
 		return queryPlans(ctx, req, k)
 	case types.QueryPlansForProvider:
 		return queryPlansForProvider(ctx, req, k)
+
 	case types.QueryNodesForPlan:
 		return queryNodesForPlan(ctx, req, k)
 	default:

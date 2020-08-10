@@ -6,9 +6,9 @@ import (
 )
 
 func registerQueryRoutes(ctx context.CLIContext, router *mux.Router) {
-	router.HandleFunc("/deposits", getDeposits(ctx)).
+	router.HandleFunc("/deposits", queryDeposits(ctx)).
 		Methods("GET")
-	router.HandleFunc("/deposits/{address}", getDepositHandlerFunc(ctx)).
+	router.HandleFunc("/deposits/{address}", queryDeposit(ctx)).
 		Methods("GET")
 }
 

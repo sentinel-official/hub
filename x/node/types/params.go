@@ -30,7 +30,7 @@ Inactive duration: %s
 
 func (p Params) Validate() error {
 	if p.InactiveDuration <= 0 {
-		return fmt.Errorf("inactive_duration should be greater than 0")
+		return fmt.Errorf("inactive_duration should be positive")
 	}
 
 	return nil

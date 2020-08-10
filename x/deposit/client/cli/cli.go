@@ -8,7 +8,7 @@ import (
 
 func GetQueryCommands(cdc *codec.Codec) []*cobra.Command {
 	return client.GetCommands(
-		queryDepositCmd(cdc),
-		queryDepositsCmd(cdc),
+		queryDeposit(cdc),
+		queryDeposits(cdc),
 	)
 }

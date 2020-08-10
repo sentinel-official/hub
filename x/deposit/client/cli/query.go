@@ -11,7 +11,7 @@ import (
 	"github.com/sentinel-official/hub/x/deposit/client/common"
 )
 
-func queryDepositCmd(cdc *codec.Codec) *cobra.Command {
+func queryDeposit(cdc *codec.Codec) *cobra.Command {
 	return &cobra.Command{
 		Use:   "deposit",
 		Short: "Query a deposit",
@@ -35,7 +35,7 @@ func queryDepositCmd(cdc *codec.Codec) *cobra.Command {
 	}
 }
 
-func queryDepositsCmd(cdc *codec.Codec) *cobra.Command {
+func queryDeposits(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "deposits",
 		Short: "Query deposits",
@@ -58,7 +58,7 @@ func queryDepositsCmd(cdc *codec.Codec) *cobra.Command {
 			}
 
 			for _, deposit := range deposits {
-				fmt.Println(deposit)
+				fmt.Printf("%s\n\n", deposit)
 			}
 
 			return nil

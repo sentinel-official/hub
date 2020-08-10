@@ -18,6 +18,13 @@ var (
 )
 
 var (
+	EventModuleName = sdk.NewEvent(
+		sdk.EventTypeMessage,
+		sdk.NewAttribute(sdk.AttributeKeyModule, ModuleName),
+	)
+)
+
+var (
 	SessionsCountKey       = []byte{0x00}
 	SessionKeyPrefix       = []byte{0x01}
 	ActiveSessionKeyPrefix = []byte{0x02}

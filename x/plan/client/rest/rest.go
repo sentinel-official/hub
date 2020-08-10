@@ -6,21 +6,21 @@ import (
 )
 
 func registerQueryRoutes(ctx context.CLIContext, router *mux.Router) {
-	router.HandleFunc("/plans", queryPlansHandlerFunc(ctx)).
+	router.HandleFunc("/plans", queryPlans(ctx)).
 		Methods("GET")
-	router.HandleFunc("/plans/{address}", queryPlansForProviderHandlerFunc(ctx)).
-		Methods("GET")
-	router.HandleFunc("/plans/{address}/{id}", queryPlanHandlerFunc(ctx)).
+	router.HandleFunc("/plans/{id}", queryPlan(ctx)).
 		Methods("GET")
 }
 
 func registerTxRoutes(ctx context.CLIContext, router *mux.Router) {
-	router.HandleFunc("/plans", txAddPlanHandlerFunc(ctx)).
+	router.HandleFunc("/plans", txAdd(ctx)).
 		Methods("POST")
-	router.HandleFunc("/plans/{address}/{id}/status", txSetPlanStatusHandlerFunc(ctx)).
+	router.HandleFunc("/plans/{id}/status", txSetStatus(ctx)).
 		Methods("PUT")
-	router.HandleFunc("/plans/{address}/{id}/nodes", txAddNodeHandlerFunc(ctx)).
+	router.HandleFunc("/plans/{id}/nodes", txAddNode(ctx)).
 		Methods("POST")
+	router.HandleFunc("/plans/{id}/nodes/{address}", txRemoveNode(ctx)).
+		Methods("DELETE")
 }
 
 func RegisterRoutes(ctx context.CLIContext, router *mux.Router) {

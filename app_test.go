@@ -247,84 +247,84 @@ func operations(app *App) []simulation.WeightedOperation {
 	return []simulation.WeightedOperation{
 		{
 			Weight: func(_ *rand.Rand) (v int) {
-				params.GetOrGenerate(cdc, "op_weight_msg_register_provider", &v, nil,
+				params.GetOrGenerate(cdc, "provider:weight_msg_register", &v, nil,
 					func(_ *rand.Rand) { v = 100 },
 				)
 				return v
 			}(nil),
-			Op: provider.SimulateMsgRegisterProvider(app.vpnKeeper.Provider),
+			Op: provider.SimulateMsgRegister(app.vpnKeeper.Provider),
 		},
 		{
 			Weight: func(_ *rand.Rand) (v int) {
-				params.GetOrGenerate(cdc, "op_weight_msg_update_provider", &v, nil,
+				params.GetOrGenerate(cdc, "provider:weight_msg_update", &v, nil,
 					func(_ *rand.Rand) { v = 100 },
 				)
 				return v
 			}(nil),
-			Op: provider.SimulateMsgUpdateProvider(app.vpnKeeper.Provider),
+			Op: provider.SimulateMsgUpdate(app.vpnKeeper.Provider),
 		},
 		{
 			Weight: func(_ *rand.Rand) (v int) {
-				params.GetOrGenerate(cdc, "op_weight_msg_add_plan", &v, nil,
+				params.GetOrGenerate(cdc, "plan:weight_msg_add", &v, nil,
 					func(_ *rand.Rand) { v = 100 },
 				)
 				return v
 			}(nil),
-			Op: plan.SimulateMsgAddPlan(app.vpnKeeper.Provider, app.vpnKeeper.Plan),
+			Op: plan.SimulateMsgAdd(app.vpnKeeper.Provider, app.vpnKeeper.Plan),
 		},
 		{
 			Weight: func(_ *rand.Rand) (v int) {
-				params.GetOrGenerate(cdc, "op_weight_msg_set_plan_status", &v, nil,
+				params.GetOrGenerate(cdc, "plan:weight_msg_set_status", &v, nil,
 					func(_ *rand.Rand) { v = 100 },
 				)
 				return v
 			}(nil),
-			Op: plan.SimulateMsgSetPlanStatus(app.vpnKeeper.Provider, app.vpnKeeper.Plan),
+			Op: plan.SimulateMsgSetStatus(app.vpnKeeper.Provider, app.vpnKeeper.Plan),
 		},
 		{
 			Weight: func(_ *rand.Rand) (v int) {
-				params.GetOrGenerate(cdc, "op_weight_msg_register_node", &v, nil,
+				params.GetOrGenerate(cdc, "node:weight_msg_register", &v, nil,
 					func(_ *rand.Rand) { v = 100 },
 				)
 				return v
 			}(nil),
-			Op: node.SimulateMsgRegisterNode(app.vpnKeeper.Provider, app.vpnKeeper.Node),
+			Op: node.SimulateMsgRegister(app.vpnKeeper.Provider, app.vpnKeeper.Node),
 		},
 		{
 			Weight: func(_ *rand.Rand) (v int) {
-				params.GetOrGenerate(cdc, "op_weight_msg_update_node", &v, nil,
+				params.GetOrGenerate(cdc, "node:weight_msg_update", &v, nil,
 					func(_ *rand.Rand) { v = 100 },
 				)
 				return v
 			}(nil),
-			Op: node.SimulateMsgUpdateNode(app.vpnKeeper.Provider, app.vpnKeeper.Node),
+			Op: node.SimulateMsgUpdate(app.vpnKeeper.Provider, app.vpnKeeper.Node),
 		},
 		{
 			Weight: func(_ *rand.Rand) (v int) {
-				params.GetOrGenerate(cdc, "op_weight_msg_set_node_status", &v, nil,
+				params.GetOrGenerate(cdc, "node:weight_msg_set_status", &v, nil,
 					func(_ *rand.Rand) { v = 100 },
 				)
 				return v
 			}(nil),
-			Op: node.SimulateMsgSetNodeStatus(app.vpnKeeper.Node),
+			Op: node.SimulateMsgSetStatus(app.vpnKeeper.Node),
 		},
 		{
 			Weight: func(_ *rand.Rand) (v int) {
-				params.GetOrGenerate(cdc, "op_weight_msg_add_node_for_plan", &v, nil,
+				params.GetOrGenerate(cdc, "plan:weight_msg_add_node", &v, nil,
 					func(_ *rand.Rand) { v = 100 },
 				)
 				return v
 			}(nil),
-			Op: plan.SimulateMsgAddNodeForPlan(app.vpnKeeper.Provider, app.vpnKeeper.Node, app.vpnKeeper.Plan),
+			Op: plan.SimulateMsgAddNode(app.vpnKeeper.Provider, app.vpnKeeper.Node, app.vpnKeeper.Plan),
 		},
 		{
 			Weight: func(_ *rand.Rand) (v int) {
-				params.GetOrGenerate(cdc, "op_weight_msg_remove_node_for_plan", &v, nil,
+				params.GetOrGenerate(cdc, "plan:weight_msg_remove_node", &v, nil,
 					func(_ *rand.Rand) { v = 100 },
 				)
 				return v
 			}(nil),
-			Op: plan.SimulateMsgRemoveNodeForPlan(app.vpnKeeper.Provider, app.vpnKeeper.Node, app.vpnKeeper.Plan),
+			Op: plan.SimulateMsgRemoveNode(app.vpnKeeper.Provider, app.vpnKeeper.Node, app.vpnKeeper.Plan),
 		},
 	}
 }

@@ -6,15 +6,19 @@ import (
 )
 
 func registerQueryRoutes(ctx context.CLIContext, router *mux.Router) {
-	router.HandleFunc("/nodes", queryNodesHandlerFunc(ctx)).
+	router.HandleFunc("/nodes", queryNodes(ctx)).
 		Methods("GET")
-	router.HandleFunc("/nodes/{address}", queryNodeHandlerFunc(ctx)).
+	router.HandleFunc("/nodes/{address}", queryNode(ctx)).
 		Methods("GET")
 }
 
 func registerTxRoutes(ctx context.CLIContext, router *mux.Router) {
-	router.HandleFunc("/nodes", txRegisterNodeHandlerFunc(ctx)).
+	router.HandleFunc("/nodes", txRegister(ctx)).
 		Methods("POST")
+	router.HandleFunc("/nodes/{address}", txUpdate(ctx)).
+		Methods("PUT")
+	router.HandleFunc("/nodes/{address}/status", txSetStatus(ctx)).
+		Methods("PUT")
 }
 
 func RegisterRoutes(ctx context.CLIContext, router *mux.Router) {

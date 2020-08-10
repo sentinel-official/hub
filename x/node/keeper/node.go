@@ -37,21 +37,6 @@ func (k Keeper) GetNode(ctx sdk.Context, address hub.NodeAddress) (node types.No
 	return node, true
 }
 
-func (k Keeper) SetNodeForProvider(ctx sdk.Context, p hub.ProvAddress, n hub.NodeAddress) {
-	key := types.NodeForProviderKey(p, n)
-	value := k.cdc.MustMarshalBinaryLengthPrefixed(n)
-
-	store := k.Store(ctx)
-	store.Set(key, value)
-}
-
-func (k Keeper) DeleteNodeForProvider(ctx sdk.Context, p hub.ProvAddress, n hub.NodeAddress) {
-	store := k.Store(ctx)
-
-	key := types.NodeForProviderKey(p, n)
-	store.Delete(key)
-}
-
 func (k Keeper) GetNodes(ctx sdk.Context) (items types.Nodes) {
 	store := k.Store(ctx)
 
@@ -61,23 +46,6 @@ func (k Keeper) GetNodes(ctx sdk.Context) (items types.Nodes) {
 	for ; iter.Valid(); iter.Next() {
 		var item types.Node
 		k.cdc.MustUnmarshalBinaryLengthPrefixed(iter.Value(), &item)
-		items = append(items, item)
-	}
-
-	return items
-}
-
-func (k Keeper) GetNodesForProvider(ctx sdk.Context, address hub.ProvAddress) (items types.Nodes) {
-	store := k.Store(ctx)
-
-	iter := sdk.KVStorePrefixIterator(store, types.NodeForProviderByProviderKey(address))
-	defer iter.Close()
-
-	for ; iter.Valid(); iter.Next() {
-		var address hub.NodeAddress
-		k.cdc.MustUnmarshalBinaryLengthPrefixed(iter.Value(), &address)
-
-		item, _ := k.GetNode(ctx, address)
 		items = append(items, item)
 	}
 
@@ -101,6 +69,38 @@ func (k Keeper) IterateNodes(ctx sdk.Context, f func(index int, item types.Node)
 	}
 }
 
+func (k Keeper) SetNodeForProvider(ctx sdk.Context, p hub.ProvAddress, n hub.NodeAddress) {
+	key := types.NodeForProviderKey(p, n)
+	value := k.cdc.MustMarshalBinaryLengthPrefixed(n)
+
+	store := k.Store(ctx)
+	store.Set(key, value)
+}
+
+func (k Keeper) DeleteNodeForProvider(ctx sdk.Context, p hub.ProvAddress, n hub.NodeAddress) {
+	store := k.Store(ctx)
+
+	key := types.NodeForProviderKey(p, n)
+	store.Delete(key)
+}
+
+func (k Keeper) GetNodesForProvider(ctx sdk.Context, address hub.ProvAddress) (items types.Nodes) {
+	store := k.Store(ctx)
+
+	iter := sdk.KVStorePrefixIterator(store, types.GetNodeForProviderKeyPrefix(address))
+	defer iter.Close()
+
+	for ; iter.Valid(); iter.Next() {
+		var address hub.NodeAddress
+		k.cdc.MustUnmarshalBinaryLengthPrefixed(iter.Value(), &address)
+
+		item, _ := k.GetNode(ctx, address)
+		items = append(items, item)
+	}
+
+	return items
+}
+
 func (k Keeper) SetActiveNodeAt(ctx sdk.Context, at time.Time, address hub.NodeAddress) {
 	key := types.ActiveNodeAtKey(at, address)
 	value := k.cdc.MustMarshalBinaryLengthPrefixed(address)
@@ -119,7 +119,7 @@ func (k Keeper) DeleteActiveNodeAt(ctx sdk.Context, at time.Time, address hub.No
 func (k Keeper) IterateActiveNodes(ctx sdk.Context, end time.Time, f func(index int, item types.Node) (stop bool)) {
 	store := k.Store(ctx)
 
-	iter := store.Iterator(types.ActiveNodeAtKeyPrefix, sdk.PrefixEndBytes(types.ActiveNodeAtByTimeKey(end)))
+	iter := store.Iterator(types.ActiveNodeAtKeyPrefix, sdk.PrefixEndBytes(types.GetActiveNodeAtKeyPrefix(end)))
 	defer iter.Close()
 
 	for i := 0; iter.Valid(); iter.Next() {
