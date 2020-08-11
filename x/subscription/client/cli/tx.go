@@ -129,10 +129,10 @@ func txUpdateQuota(cdc *codec.Codec) *cobra.Command {
 	}
 }
 
-func txEnd(cdc *codec.Codec) *cobra.Command {
+func txCancel(cdc *codec.Codec) *cobra.Command {
 	return &cobra.Command{
-		Use:   "end",
-		Short: "End a subscription",
+		Use:   "cancel",
+		Short: "Cancel a subscription",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			txb := auth.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
@@ -143,7 +143,7 @@ func txEnd(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgEnd(ctx.FromAddress, id)
+			msg := types.NewMsgCancel(ctx.FromAddress, id)
 			return utils.GenerateOrBroadcastMsgs(ctx, txb, []sdk.Msg{msg})
 		},
 	}

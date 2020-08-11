@@ -143,7 +143,7 @@ func HandleSubscribeToNode(ctx sdk.Context, k keeper.Keeper, msg types.MsgSubscr
 	return sdk.Result{Events: ctx.EventManager().Events()}
 }
 
-func HandleEnd(ctx sdk.Context, k keeper.Keeper, msg types.MsgEnd) sdk.Result {
+func HandleCancel(ctx sdk.Context, k keeper.Keeper, msg types.MsgCancel) sdk.Result {
 	subscription, found := k.GetSubscription(ctx, msg.ID)
 	if !found {
 		return types.ErrorSubscriptionDoesNotExist().Result()
@@ -155,25 +155,13 @@ func HandleEnd(ctx sdk.Context, k keeper.Keeper, msg types.MsgEnd) sdk.Result {
 		return types.ErrorInvalidSubscriptionStatus().Result()
 	}
 
-	if subscription.Plan == 0 {
-		consumed := hub.NewBandwidthFromInt64(0, 0)
-		k.IterateQuotas(ctx, subscription.ID, func(_ int, item types.Quota) bool {
-			consumed = consumed.Add(item.Current)
-			return false
-		})
-
-		amount := subscription.Deposit.Sub(subscription.Amount(consumed))
-		if err := k.SubtractDeposit(ctx, subscription.Address, amount); err != nil {
-			return err.Result()
-		}
-	}
-
-	subscription.Status = hub.StatusInactive
+	subscription.Status = hub.StatusCancel
 	subscription.StatusAt = ctx.BlockTime()
 
 	k.SetSubscription(ctx, subscription)
+	k.SetCancelSubscriptionAt(ctx, subscription.StatusAt, subscription.ID)
 	ctx.EventManager().EmitEvent(sdk.NewEvent(
-		types.EventTypeEnd,
+		types.EventTypeCancel,
 		sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", subscription.ID)),
 	))
 

@@ -16,7 +16,7 @@ const (
 	Codespace                    = types.Codespace
 	EventTypeSetCount            = types.EventTypeSetCount
 	EventTypeSet                 = types.EventTypeSet
-	EventTypeEnd                 = types.EventTypeEnd
+	EventTypeCancel              = types.EventTypeCancel
 	EventTypeAddQuota            = types.EventTypeAddQuota
 	EventTypeUpdateQuota         = types.EventTypeUpdateQuota
 	AttributeKeyAddress          = types.AttributeKeyAddress
@@ -27,7 +27,9 @@ const (
 	AttributeKeyConsumed         = types.AttributeKeyConsumed
 	AttributeKeyAllocated        = types.AttributeKeyAllocated
 	ModuleName                   = types.ModuleName
+	ParamsSubspace               = types.ParamsSubspace
 	QuerierRoute                 = types.QuerierRoute
+	DefaultCancelDuration        = types.DefaultCancelDuration
 	QuerySubscription            = types.QuerySubscription
 	QuerySubscriptions           = types.QuerySubscriptions
 	QuerySubscriptionsForAddress = types.QuerySubscriptionsForAddress
@@ -66,13 +68,18 @@ var (
 	SubscriptionForPlanKey                = types.SubscriptionForPlanKey
 	GetSubscriptionForNodeKeyPrefix       = types.GetSubscriptionForNodeKeyPrefix
 	SubscriptionForNodeKey                = types.SubscriptionForNodeKey
+	GetCancelSubscriptionAtKeyPrefix      = types.GetCancelSubscriptionAtKeyPrefix
+	CancelSubscriptionAtKey               = types.CancelSubscriptionAtKey
 	GetQuotaKeyPrefix                     = types.GetQuotaKeyPrefix
 	QuotaKey                              = types.QuotaKey
 	NewMsgSubscribeToPlan                 = types.NewMsgSubscribeToPlan
 	NewMsgSubscribeToNode                 = types.NewMsgSubscribeToNode
-	NewMsgEnd                             = types.NewMsgEnd
+	NewMsgCancel                          = types.NewMsgCancel
 	NewMsgAddQuota                        = types.NewMsgAddQuota
 	NewMsgUpdateQuota                     = types.NewMsgUpdateQuota
+	NewParams                             = types.NewParams
+	DefaultParams                         = types.DefaultParams
+	ParamsKeyTable                        = types.ParamsKeyTable
 	NewQuerySubscriptionParams            = types.NewQuerySubscriptionParams
 	NewQuerySubscriptionsParams           = types.NewQuerySubscriptionsParams
 	NewQuerySubscriptionsForAddressParams = types.NewQuerySubscriptionsForAddressParams
@@ -93,7 +100,9 @@ var (
 	SubscriptionForAddressKeyPrefix = types.SubscriptionForAddressKeyPrefix
 	SubscriptionForPlanKeyPrefix    = types.SubscriptionForPlanKeyPrefix
 	SubscriptionForNodeKeyPrefix    = types.SubscriptionForNodeKeyPrefix
+	CancelSubscriptionAtKeyPrefix   = types.CancelSubscriptionAtKeyPrefix
 	QuotaKeyPrefix                  = types.QuotaKeyPrefix
+	KeyCancelDuration               = types.KeyCancelDuration
 )
 
 type (
@@ -102,9 +111,10 @@ type (
 	GenesisState                       = types.GenesisState
 	MsgSubscribeToPlan                 = types.MsgSubscribeToPlan
 	MsgSubscribeToNode                 = types.MsgSubscribeToNode
-	MsgEnd                             = types.MsgEnd
+	MsgCancel                          = types.MsgCancel
 	MsgAddQuota                        = types.MsgAddQuota
 	MsgUpdateQuota                     = types.MsgUpdateQuota
+	Params                             = types.Params
 	QuerySubscriptionParams            = types.QuerySubscriptionParams
 	QuerySubscriptionsParams           = types.QuerySubscriptionsParams
 	QuerySubscriptionsForAddressParams = types.QuerySubscriptionsForAddressParams

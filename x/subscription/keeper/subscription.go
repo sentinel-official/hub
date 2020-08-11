@@ -1,6 +1,8 @@
 package keeper
 
 import (
+	"time"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	hub "github.com/sentinel-official/hub/types"
@@ -165,4 +167,37 @@ func (k Keeper) GetSubscriptionsForNode(ctx sdk.Context, address hub.NodeAddress
 	}
 
 	return items
+}
+
+func (k Keeper) SetCancelSubscriptionAt(ctx sdk.Context, at time.Time, id uint64) {
+	key := types.CancelSubscriptionAtKey(at, id)
+	value := k.cdc.MustMarshalBinaryLengthPrefixed(id)
+
+	store := k.Store(ctx)
+	store.Set(key, value)
+}
+
+func (k Keeper) DeleteCancelSubscriptionAt(ctx sdk.Context, at time.Time, id uint64) {
+	key := types.CancelSubscriptionAtKey(at, id)
+
+	store := k.Store(ctx)
+	store.Delete(key)
+}
+
+func (k Keeper) IterateCancelSubscriptions(ctx sdk.Context, end time.Time, f func(index int, item types.Subscription) (stop bool)) {
+	store := k.Store(ctx)
+
+	iter := store.Iterator(types.CancelSubscriptionAtKeyPrefix, sdk.PrefixEndBytes(types.GetCancelSubscriptionAtKeyPrefix(end)))
+	defer iter.Close()
+
+	for i := 0; iter.Valid(); iter.Next() {
+		var id uint64
+		k.cdc.MustUnmarshalBinaryLengthPrefixed(iter.Value(), &id)
+
+		subscription, _ := k.GetSubscription(ctx, id)
+		if stop := f(i, subscription); stop {
+			break
+		}
+		i++
+	}
 }

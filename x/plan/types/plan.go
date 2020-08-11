@@ -58,8 +58,8 @@ func (p Plan) Validate() error {
 	if !p.Bandwidth.IsValid() {
 		return fmt.Errorf("bandwidth should be positive")
 	}
-	if !p.Status.IsValid() {
-		return fmt.Errorf("status should be valid")
+	if !p.Status.Equal(hub.StatusActive) && !p.Status.Equal(hub.StatusInactive) {
+		return fmt.Errorf("status should be either active or inactive")
 	}
 	if p.StatusAt.IsZero() {
 		return fmt.Errorf("status_at should not be zero")

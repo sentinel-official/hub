@@ -18,7 +18,7 @@ func init() {
 func RegisterCodec(cdc *codec.Codec) {
 	cdc.RegisterConcrete(MsgSubscribeToPlan{}, "x/subscription/MsgSubscribeToPlan", nil)
 	cdc.RegisterConcrete(MsgSubscribeToNode{}, "x/subscription/MsgSubscribeToNode", nil)
-	cdc.RegisterConcrete(MsgEnd{}, "x/subscription/MsgEnd", nil)
+	cdc.RegisterConcrete(MsgCancel{}, "x/subscription/MsgCancel", nil)
 
 	cdc.RegisterConcrete(MsgAddQuota{}, "x/subscription/MsgAddQuota", nil)
 	cdc.RegisterConcrete(MsgUpdateQuota{}, "x/subscription/MsgUpdateQuota", nil)

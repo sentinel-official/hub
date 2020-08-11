@@ -3,7 +3,7 @@ package types
 const (
 	EventTypeSetCount    = "subscription:set_count"
 	EventTypeSet         = "subscription:set"
-	EventTypeEnd         = "subscription:end"
+	EventTypeCancel      = "subscription:cancel"
 	EventTypeAddQuota    = "subscription:add_quota"
 	EventTypeUpdateQuota = "subscription:update_quota"
 )

@@ -29,8 +29,9 @@ type Keeper struct {
 
 func NewKeeper(cdc *codec.Codec, key sdk.StoreKey, paramsKeeper params.Keeper, bankKeeper bank.Keeper, supplyKeeper supply.Keeper) Keeper {
 	var (
-		nodeParams    = paramsKeeper.Subspace(fmt.Sprintf("%s/%s", types.ModuleName, node.ParamsSubspace))
-		sessionParams = paramsKeeper.Subspace(fmt.Sprintf("%s/%s", types.ModuleName, session.ParamsSubspace))
+		nodeParams         = paramsKeeper.Subspace(fmt.Sprintf("%s/%s", types.ModuleName, node.ParamsSubspace))
+		subscriptionParams = paramsKeeper.Subspace(fmt.Sprintf("%s/%s", types.ModuleName, subscription.ParamsSubspace))
+		sessionParams      = paramsKeeper.Subspace(fmt.Sprintf("%s/%s", types.ModuleName, session.ParamsSubspace))
 	)
 
 	var (
@@ -38,7 +39,7 @@ func NewKeeper(cdc *codec.Codec, key sdk.StoreKey, paramsKeeper params.Keeper, b
 		providerKeeper     = provider.NewKeeper(cdc, key)
 		nodeKeeper         = node.NewKeeper(cdc, key, nodeParams)
 		planKeeper         = plan.NewKeeper(cdc, key)
-		subscriptionKeeper = subscription.NewKeeper(cdc, key)
+		subscriptionKeeper = subscription.NewKeeper(cdc, key, subscriptionParams)
 		sessionKeeper      = session.NewKeeper(cdc, key, sessionParams)
 	)
 

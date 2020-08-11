@@ -8,7 +8,8 @@ import (
 )
 
 func InitGenesis(ctx sdk.Context, k keeper.Keeper, state types.GenesisState) {
-	for _, item := range state {
+	k.SetParams(ctx, state.Params)
+	for _, item := range state.Subscriptions {
 		k.SetSubscription(ctx, item.Subscription)
 
 		for _, quota := range item.Quotas {
@@ -37,7 +38,7 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) types.GenesisState {
 		})
 	}
 
-	return types.NewGenesisState(subscriptions)
+	return types.NewGenesisState(subscriptions, k.GetParams(ctx))
 }
 
 func ValidateGenesis(state types.GenesisState) error {

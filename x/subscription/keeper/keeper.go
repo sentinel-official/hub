@@ -6,6 +6,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/x/params"
 	"github.com/tendermint/tendermint/libs/log"
 
 	"github.com/sentinel-official/hub/x/subscription/expected"
@@ -15,16 +16,18 @@ import (
 type Keeper struct {
 	cdc     *codec.Codec
 	key     sdk.StoreKey
+	params  params.Subspace
 	bank    expected.BankKeeper
 	deposit expected.DepositKeeper
 	node    expected.NodeKeeper
 	plan    expected.PlanKeeper
 }
 
-func NewKeeper(cdc *codec.Codec, key sdk.StoreKey) Keeper {
+func NewKeeper(cdc *codec.Codec, key sdk.StoreKey, params params.Subspace) Keeper {
 	return Keeper{
-		cdc: cdc,
-		key: key,
+		cdc:    cdc,
+		key:    key,
+		params: params.WithKeyTable(types.ParamsKeyTable()),
 	}
 }
 
