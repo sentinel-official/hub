@@ -65,7 +65,7 @@ func ValidateGenesis(state types.GenesisState) error {
 		for _, node := range item.Nodes {
 			address := node.String()
 			if nodes[address] {
-				return fmt.Errorf("duplicate node for plan %s", address)
+				return fmt.Errorf("duplicate node for plan %d", item.Plan.ID)
 			}
 
 			nodes[address] = true

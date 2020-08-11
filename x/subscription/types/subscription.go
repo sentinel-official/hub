@@ -66,4 +66,41 @@ func (s Subscription) Amount(consumed hub.Bandwidth) sdk.Coin {
 	return coin
 }
 
+func (s Subscription) Validate() error {
+	if s.ID == 0 {
+		return fmt.Errorf("id should not be zero")
+	}
+	if s.Address == nil || s.Address.Empty() {
+		return fmt.Errorf("address should not nil and empty")
+	}
+
+	if s.Plan == 0 {
+		if s.Node == nil || s.Node.Empty() {
+			return fmt.Errorf("node should not be nil and empty")
+		}
+		if !s.Price.IsValid() {
+			return fmt.Errorf("price should be valid")
+		}
+		if !s.Deposit.IsValid() {
+			return fmt.Errorf("deposit should be valid")
+		}
+	} else {
+		if s.Expiry.IsZero() {
+			return fmt.Errorf("expiry should not be zero")
+		}
+	}
+
+	if s.Free.IsAnyNegative() {
+		return fmt.Errorf("free should not be negative")
+	}
+	if !s.Status.Equal(hub.StatusActive) && !s.Status.Equal(hub.StatusInactive) {
+		return fmt.Errorf("status should be either active or inactive")
+	}
+	if s.StatusAt.IsZero() {
+		return fmt.Errorf("status_at should not be zero")
+	}
+
+	return nil
+}
+
 type Subscriptions []Subscription
