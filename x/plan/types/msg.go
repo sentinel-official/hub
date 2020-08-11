@@ -112,7 +112,7 @@ func (m MsgSetStatus) ValidateBasic() sdk.Error {
 	}
 
 	// Status should be valid
-	if !m.Status.IsValid() {
+	if !m.Status.Equal(hub.StatusActive) && !m.Status.Equal(hub.StatusInactive) {
 		return ErrorInvalidField("status")
 	}
 

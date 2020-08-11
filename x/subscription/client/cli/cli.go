@@ -24,7 +24,7 @@ func GetTxCommands(cdc *codec.Codec) []*cobra.Command {
 	cmd.AddCommand(client.PostCommands(
 		txSubscribeToPlan(cdc),
 		txSubscribeToNode(cdc),
-		txEnd(cdc),
+		txCancel(cdc),
 		txAddQuota(cdc),
 		txUpdateQuota(cdc),
 	)...)

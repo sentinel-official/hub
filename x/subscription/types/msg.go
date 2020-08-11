@@ -12,7 +12,7 @@ import (
 var (
 	_ sdk.Msg = (*MsgSubscribeToPlan)(nil)
 	_ sdk.Msg = (*MsgSubscribeToNode)(nil)
-	_ sdk.Msg = (*MsgEnd)(nil)
+	_ sdk.Msg = (*MsgCancel)(nil)
 
 	_ sdk.Msg = (*MsgAddQuota)(nil)
 	_ sdk.Msg = (*MsgUpdateQuota)(nil)
@@ -126,28 +126,28 @@ func (m MsgSubscribeToNode) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{m.From}
 }
 
-// MsgEnd is for ending a subscription.
-type MsgEnd struct {
+// MsgCancel is for cancelling a subscription.
+type MsgCancel struct {
 	From sdk.AccAddress `json:"from"`
 	ID   uint64         `json:"id"`
 }
 
-func NewMsgEnd(from sdk.AccAddress, id uint64) MsgEnd {
-	return MsgEnd{
+func NewMsgCancel(from sdk.AccAddress, id uint64) MsgCancel {
+	return MsgCancel{
 		From: from,
 		ID:   id,
 	}
 }
 
-func (m MsgEnd) Route() string {
+func (m MsgCancel) Route() string {
 	return RouterKey
 }
 
-func (m MsgEnd) Type() string {
-	return fmt.Sprintf("%s:end", ModuleName)
+func (m MsgCancel) Type() string {
+	return fmt.Sprintf("%s:cancel", ModuleName)
 }
 
-func (m MsgEnd) ValidateBasic() sdk.Error {
+func (m MsgCancel) ValidateBasic() sdk.Error {
 	if m.From == nil || m.From.Empty() {
 		return ErrorInvalidField("from")
 	}
@@ -160,7 +160,7 @@ func (m MsgEnd) ValidateBasic() sdk.Error {
 	return nil
 }
 
-func (m MsgEnd) GetSignBytes() []byte {
+func (m MsgCancel) GetSignBytes() []byte {
 	bytes, err := json.Marshal(m)
 	if err != nil {
 		panic(err)
@@ -169,7 +169,7 @@ func (m MsgEnd) GetSignBytes() []byte {
 	return bytes
 }
 
-func (m MsgEnd) GetSigners() []sdk.AccAddress {
+func (m MsgCancel) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{m.From}
 }
 

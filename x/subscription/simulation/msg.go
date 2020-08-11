@@ -65,7 +65,7 @@ func SimulateMsgSubscribeToNode(nk expected.NodeKeeper, k keeper.Keeper) simulat
 	}
 }
 
-func SimulateMsgEnd(k keeper.Keeper) simulation.Operation {
+func SimulateMsgCancel(k keeper.Keeper) simulation.Operation {
 	return func(r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accounts []simulation.Account) (
 		simulation.OperationMsg, []simulation.FutureOperation, error) {
 		var (
@@ -73,13 +73,13 @@ func SimulateMsgEnd(k keeper.Keeper) simulation.Operation {
 			id   = RandomSubscription(r, k.GetSubscriptions(ctx)).ID
 		)
 
-		msg := types.NewMsgEnd(from, id)
+		msg := types.NewMsgCancel(from, id)
 		if msg.ValidateBasic() != nil {
 			return simulation.NoOpMsg(types.ModuleName), nil, fmt.Errorf("expected msg to pass ValidateBasic: %s", msg.GetSignBytes())
 		}
 
 		ctx, write := ctx.CacheContext()
-		ok := subscription.HandleEnd(ctx, k, msg).IsOK()
+		ok := subscription.HandleCancel(ctx, k, msg).IsOK()
 		if ok {
 			write()
 		}

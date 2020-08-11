@@ -347,12 +347,12 @@ func operations(app *App) []simulation.WeightedOperation {
 		},
 		{
 			Weight: func(_ *rand.Rand) (v int) {
-				params.GetOrGenerate(cdc, "subscription:weight_msg_end", &v, nil,
+				params.GetOrGenerate(cdc, "subscription:weight_msg_cancel", &v, nil,
 					func(_ *rand.Rand) { v = 100 },
 				)
 				return v
 			}(nil),
-			Op: subscription.SimulateMsgEnd(app.vpnKeeper.Subscription),
+			Op: subscription.SimulateMsgCancel(app.vpnKeeper.Subscription),
 		},
 		{
 			Weight: func(_ *rand.Rand) (v int) {

@@ -1,14 +1,17 @@
 package types
 
 import (
+	"time"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	hub "github.com/sentinel-official/hub/types"
 )
 
 const (
-	ModuleName   = "subscription"
-	QuerierRoute = ModuleName
+	ModuleName     = "subscription"
+	ParamsSubspace = ModuleName
+	QuerierRoute   = ModuleName
 )
 
 var (
@@ -29,8 +32,9 @@ var (
 	SubscriptionForAddressKeyPrefix = []byte{0x02}
 	SubscriptionForPlanKeyPrefix    = []byte{0x03}
 	SubscriptionForNodeKeyPrefix    = []byte{0x04}
+	CancelSubscriptionAtKeyPrefix   = []byte{0x05}
 
-	QuotaKeyPrefix = []byte{0x05}
+	QuotaKeyPrefix = []byte{0x10}
 )
 
 func SubscriptionKey(id uint64) []byte {
@@ -59,6 +63,14 @@ func GetSubscriptionForNodeKeyPrefix(address hub.NodeAddress) []byte {
 
 func SubscriptionForNodeKey(address hub.NodeAddress, id uint64) []byte {
 	return append(GetSubscriptionForNodeKeyPrefix(address), sdk.Uint64ToBigEndian(id)...)
+}
+
+func GetCancelSubscriptionAtKeyPrefix(at time.Time) []byte {
+	return append(CancelSubscriptionAtKeyPrefix, sdk.FormatTimeBytes(at)...)
+}
+
+func CancelSubscriptionAtKey(at time.Time, id uint64) []byte {
+	return append(GetCancelSubscriptionAtKeyPrefix(at), sdk.Uint64ToBigEndian(id)...)
 }
 
 func GetQuotaKeyPrefix(id uint64) []byte {

@@ -8,19 +8,6 @@ import (
 	"github.com/sentinel-official/hub/x/node/types"
 )
 
-func BeginBlock(ctx sdk.Context, k keeper.Keeper) {
-	end := ctx.BlockTime().Add(-1 * k.InactiveDuration(ctx))
-	k.IterateActiveNodes(ctx, end, func(_ int, node types.Node) (stop bool) {
-		k.DeleteActiveNodeAt(ctx, node.StatusAt, node.Address)
-
-		node.Status = hub.StatusInactive
-		node.StatusAt = ctx.BlockTime()
-		k.SetNode(ctx, node)
-
-		return false
-	})
-}
-
 func HandleRegister(ctx sdk.Context, k keeper.Keeper, msg types.MsgRegister) sdk.Result {
 	if k.HasNode(ctx, msg.From.Bytes()) {
 		return types.ErrorDuplicateNode().Result()
@@ -118,12 +105,12 @@ func HandleSetStatus(ctx sdk.Context, k keeper.Keeper, msg types.MsgSetStatus) s
 	}
 
 	k.DeleteActiveNodeAt(ctx, node.StatusAt, node.Address)
-	k.SetActiveNodeAt(ctx, ctx.BlockTime(), node.Address)
 
 	node.Status = msg.Status
 	node.StatusAt = ctx.BlockTime()
 
 	k.SetNode(ctx, node)
+	k.SetActiveNodeAt(ctx, node.StatusAt, node.Address)
 	ctx.EventManager().EmitEvent(sdk.NewEvent(
 		types.EventTypeSetStatus,
 		sdk.NewAttribute(types.AttributeKeyAddress, node.Address.String()),
