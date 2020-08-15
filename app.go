@@ -37,7 +37,7 @@ const (
 )
 
 var (
-	DefaultNodeHome = os.ExpandEnv("$HOME/.sentinel-hub-daemon")
+	DefaultNodeHome = os.ExpandEnv("$HOME/.sentinel-hubd")
 	DefaultCLIHome  = os.ExpandEnv("$HOME/.sentinel-hub-cli")
 
 	ModuleBasics = module.NewBasicManager(

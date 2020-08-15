@@ -9,7 +9,7 @@ BUILD_TAGS := $(strip ${BUILD_TAGS})
 
 LD_FLAGS := -s -w \
     -X github.com/cosmos/cosmos-sdk/version.Name=sentinel-hub \
-    -X github.com/cosmos/cosmos-sdk/version.ServerName=sentinel-hub-daemon \
+    -X github.com/cosmos/cosmos-sdk/version.ServerName=sentinel-hubd \
     -X github.com/cosmos/cosmos-sdk/version.ClientName=sentinel-hub-cli \
     -X github.com/cosmos/cosmos-sdk/version.Version=${VERSION} \
     -X github.com/cosmos/cosmos-sdk/version.Commit=${COMMIT} \
@@ -20,15 +20,15 @@ all: install test benchmark
 
 build: mod_verify
 ifeq (${OS},Windows_NT)
-	go build -mod=readonly ${BUILD_FLAGS} -o bin/sentinel-hub-daemon.exe ./cmd/sentinel-hub-daemon
+	go build -mod=readonly ${BUILD_FLAGS} -o bin/sentinel-hubd.exe ./cmd/sentinel-hubd
 	go build -mod=readonly ${BUILD_FLAGS} -o bin/sentinel-hub-cli.exe ./cmd/sentinel-hub-cli
 else
-	go build -mod=readonly ${BUILD_FLAGS} -o bin/sentinel-hub-daemon ./cmd/sentinel-hub-daemon
+	go build -mod=readonly ${BUILD_FLAGS} -o bin/sentinel-hubd ./cmd/sentinel-hubd
 	go build -mod=readonly ${BUILD_FLAGS} -o bin/sentinel-hub-cli ./cmd/sentinel-hub-cli
 endif
 
 install: mod_verify
-	go install -mod=readonly ${BUILD_FLAGS} ./cmd/sentinel-hub-daemon
+	go install -mod=readonly ${BUILD_FLAGS} ./cmd/sentinel-hubd
 	go install -mod=readonly ${BUILD_FLAGS} ./cmd/sentinel-hub-cli
 
 test:

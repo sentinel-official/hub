@@ -39,7 +39,7 @@ func main() {
 	ctx := server.NewDefaultContext()
 	cobra.EnableCommandSorting = false
 	cmd := &cobra.Command{
-		Use:               "sentinel-hub-daemon",
+		Use:               "sentinel-hubd",
 		Short:             "Sentinel Hub Daemon (server)",
 		PersistentPreRunE: server.PersistentPreRunEFn(ctx),
 	}
