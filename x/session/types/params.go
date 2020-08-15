@@ -34,6 +34,14 @@ func (p *Params) ParamSetPairs() params.ParamSetPairs {
 	}
 }
 
+func (p Params) Validate() error {
+	if p.InactiveDuration <= 0 {
+		return fmt.Errorf("inactive_duration should be positive")
+	}
+
+	return nil
+}
+
 func NewParams(inactiveDuration time.Duration) Params {
 	return Params{
 		InactiveDuration: inactiveDuration,

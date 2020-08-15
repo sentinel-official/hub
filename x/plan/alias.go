@@ -43,8 +43,6 @@ var (
 	ErrorPlanDoesNotExist          = types.ErrorPlanDoesNotExist
 	ErrorNodeDoesNotExist          = types.ErrorNodeDoesNotExist
 	ErrorUnauthorized              = types.ErrorUnauthorized
-	ErrorDuplicateNode             = types.ErrorDuplicateNode
-	ErrorNodeWasNotAdded           = types.ErrorNodeWasNotAdded
 	NewGenesisState                = types.NewGenesisState
 	DefaultGenesisState            = types.DefaultGenesisState
 	PlanKey                        = types.PlanKey

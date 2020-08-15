@@ -63,28 +63,26 @@ func queryNodes(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			var nodes types.Nodes
+			var (
+				address hub.ProvAddress
+				nodes   types.Nodes
+			)
 
 			if len(provider) > 0 {
-				address, err := hub.ProvAddressFromBech32(provider)
+				address, err = hub.ProvAddressFromBech32(provider)
 				if err != nil {
 					return err
 				}
 
 				nodes, err = common.QueryNodesForProvider(ctx, address, page, limit)
-				if err != nil {
-					return err
-				}
 			} else if plan > 0 {
 				nodes, err = common.QueryNodesForPlan(ctx, plan, page, limit)
-				if err != nil {
-					return err
-				}
 			} else {
 				nodes, err = common.QueryNodes(ctx, page, limit)
-				if err != nil {
-					return err
-				}
+			}
+
+			if err != nil {
+				return err
 			}
 
 			for _, node := range nodes {

@@ -7,5 +7,5 @@ func NewGenesisState(providers Providers) GenesisState {
 }
 
 func DefaultGenesisState() GenesisState {
-	return GenesisState{}
+	return nil
 }

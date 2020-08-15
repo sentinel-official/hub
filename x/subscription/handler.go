@@ -33,7 +33,7 @@ func HandleSubscribeToPlan(ctx sdk.Context, k keeper.Keeper, msg types.MsgSubscr
 	count := k.GetSubscriptionsCount(ctx)
 	subscription := types.Subscription{
 		ID:       count + 1,
-		Address:  msg.From,
+		Owner:    msg.From,
 		Plan:     plan.ID,
 		Expiry:   ctx.BlockTime().Add(plan.Validity),
 		Free:     hub.NewBandwidthFromInt64(0, 0),
@@ -47,13 +47,13 @@ func HandleSubscribeToPlan(ctx sdk.Context, k keeper.Keeper, msg types.MsgSubscr
 		types.EventTypeSet,
 		sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", subscription.ID)),
 		sdk.NewAttribute(types.AttributeKeyPlan, fmt.Sprintf("%d", subscription.Plan)),
-		sdk.NewAttribute(types.AttributeKeyAddress, subscription.Address.String()),
+		sdk.NewAttribute(types.AttributeKeyOwner, subscription.Owner.String()),
 	))
 
 	quota := types.Quota{
-		Address: msg.From,
-		Current: hub.NewBandwidthFromInt64(0, 0),
-		Maximum: plan.Bandwidth,
+		Address:   msg.From,
+		Consumed:  hub.NewBandwidthFromInt64(0, 0),
+		Allocated: plan.Bandwidth,
 	}
 
 	k.SetQuota(ctx, subscription.ID, quota)
@@ -61,8 +61,8 @@ func HandleSubscribeToPlan(ctx sdk.Context, k keeper.Keeper, msg types.MsgSubscr
 	ctx.EventManager().EmitEvent(sdk.NewEvent(
 		types.EventTypeAddQuota,
 		sdk.NewAttribute(types.AttributeKeyAddress, quota.Address.String()),
-		sdk.NewAttribute(types.AttributeKeyConsumed, quota.Current.String()),
-		sdk.NewAttribute(types.AttributeKeyAllocated, quota.Maximum.String()),
+		sdk.NewAttribute(types.AttributeKeyConsumed, quota.Consumed.String()),
+		sdk.NewAttribute(types.AttributeKeyAllocated, quota.Allocated.String()),
 	))
 
 	k.SetSubscriptionsCount(ctx, count+1)
@@ -99,7 +99,7 @@ func HandleSubscribeToNode(ctx sdk.Context, k keeper.Keeper, msg types.MsgSubscr
 	count := k.GetSubscriptionsCount(ctx)
 	subscription := types.Subscription{
 		ID:       count + 1,
-		Address:  msg.From,
+		Owner:    msg.From,
 		Node:     node.Address,
 		Price:    price,
 		Deposit:  msg.Deposit,
@@ -114,14 +114,14 @@ func HandleSubscribeToNode(ctx sdk.Context, k keeper.Keeper, msg types.MsgSubscr
 		types.EventTypeSet,
 		sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", subscription.ID)),
 		sdk.NewAttribute(types.AttributeKeyNode, subscription.Node.String()),
-		sdk.NewAttribute(types.AttributeKeyAddress, subscription.Address.String()),
+		sdk.NewAttribute(types.AttributeKeyOwner, subscription.Owner.String()),
 	))
 
 	bandwidth, _ := node.BandwidthForCoin(msg.Deposit)
 	quota := types.Quota{
-		Address: msg.From,
-		Current: hub.NewBandwidthFromInt64(0, 0),
-		Maximum: bandwidth,
+		Address:   msg.From,
+		Consumed:  hub.NewBandwidthFromInt64(0, 0),
+		Allocated: bandwidth,
 	}
 
 	k.SetQuota(ctx, subscription.ID, quota)
@@ -129,8 +129,8 @@ func HandleSubscribeToNode(ctx sdk.Context, k keeper.Keeper, msg types.MsgSubscr
 	ctx.EventManager().EmitEvent(sdk.NewEvent(
 		types.EventTypeAddQuota,
 		sdk.NewAttribute(types.AttributeKeyAddress, quota.Address.String()),
-		sdk.NewAttribute(types.AttributeKeyConsumed, quota.Current.String()),
-		sdk.NewAttribute(types.AttributeKeyAllocated, quota.Maximum.String()),
+		sdk.NewAttribute(types.AttributeKeyConsumed, quota.Consumed.String()),
+		sdk.NewAttribute(types.AttributeKeyAllocated, quota.Allocated.String()),
 	))
 
 	k.SetSubscriptionsCount(ctx, count+1)
@@ -148,7 +148,7 @@ func HandleCancel(ctx sdk.Context, k keeper.Keeper, msg types.MsgCancel) sdk.Res
 	if !found {
 		return types.ErrorSubscriptionDoesNotExist().Result()
 	}
-	if !msg.From.Equals(subscription.Address) {
+	if !msg.From.Equals(subscription.Owner) {
 		return types.ErrorUnauthorized().Result()
 	}
 	if !subscription.Status.Equal(hub.StatusActive) {
@@ -174,7 +174,7 @@ func HandleAddQuota(ctx sdk.Context, k keeper.Keeper, msg types.MsgAddQuota) sdk
 	if !found {
 		return types.ErrorSubscriptionDoesNotExist().Result()
 	}
-	if !msg.From.Equals(subscription.Address) {
+	if !msg.From.Equals(subscription.Owner) {
 		return types.ErrorUnauthorized().Result()
 	}
 	if !subscription.Status.Equal(hub.StatusActive) {
@@ -192,9 +192,9 @@ func HandleAddQuota(ctx sdk.Context, k keeper.Keeper, msg types.MsgAddQuota) sdk
 	k.SetSubscription(ctx, subscription)
 
 	quota := types.Quota{
-		Address: msg.Address,
-		Current: hub.NewBandwidthFromInt64(0, 0),
-		Maximum: msg.Bandwidth,
+		Address:   msg.Address,
+		Consumed:  hub.NewBandwidthFromInt64(0, 0),
+		Allocated: msg.Bandwidth,
 	}
 
 	k.SetQuota(ctx, subscription.ID, quota)
@@ -202,8 +202,8 @@ func HandleAddQuota(ctx sdk.Context, k keeper.Keeper, msg types.MsgAddQuota) sdk
 	ctx.EventManager().EmitEvent(sdk.NewEvent(
 		types.EventTypeAddQuota,
 		sdk.NewAttribute(types.AttributeKeyAddress, quota.Address.String()),
-		sdk.NewAttribute(types.AttributeKeyConsumed, quota.Current.String()),
-		sdk.NewAttribute(types.AttributeKeyAllocated, quota.Maximum.String()),
+		sdk.NewAttribute(types.AttributeKeyConsumed, quota.Consumed.String()),
+		sdk.NewAttribute(types.AttributeKeyAllocated, quota.Allocated.String()),
 	))
 
 	ctx.EventManager().EmitEvent(types.EventModuleName)
@@ -215,7 +215,7 @@ func HandleUpdateQuota(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpdateQuot
 	if !found {
 		return types.ErrorSubscriptionDoesNotExist().Result()
 	}
-	if !msg.From.Equals(subscription.Address) {
+	if !msg.From.Equals(subscription.Owner) {
 		return types.ErrorUnauthorized().Result()
 	}
 	if !subscription.Status.Equal(hub.StatusActive) {
@@ -228,21 +228,23 @@ func HandleUpdateQuota(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpdateQuot
 	}
 
 	subscription.Free = subscription.Free.
-		Add(quota.Maximum).Sub(quota.Current)
-	if msg.Bandwidth.IsAnyGT(subscription.Free) {
+		Add(quota.Allocated).Sub(quota.Consumed)
+	if msg.Bandwidth.IsAnyGT(subscription.Free) ||
+		quota.Consumed.IsAnyGT(msg.Bandwidth) {
 		return types.ErrorInvalidQuota().Result()
 	}
 
-	subscription.Free = subscription.Free.Sub(msg.Bandwidth)
+	subscription.Free = subscription.Free.
+		Add(quota.Consumed).Sub(msg.Bandwidth)
 	k.SetSubscription(ctx, subscription)
 
-	quota.Maximum = msg.Bandwidth
+	quota.Allocated = msg.Bandwidth
 	k.SetQuota(ctx, subscription.ID, quota)
 	ctx.EventManager().EmitEvent(sdk.NewEvent(
 		types.EventTypeUpdateQuota,
 		sdk.NewAttribute(types.AttributeKeyAddress, quota.Address.String()),
-		sdk.NewAttribute(types.AttributeKeyConsumed, quota.Current.String()),
-		sdk.NewAttribute(types.AttributeKeyAllocated, quota.Maximum.String()),
+		sdk.NewAttribute(types.AttributeKeyConsumed, quota.Consumed.String()),
+		sdk.NewAttribute(types.AttributeKeyAllocated, quota.Allocated.String()),
 	))
 
 	ctx.EventManager().EmitEvent(types.EventModuleName)

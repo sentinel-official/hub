@@ -47,7 +47,7 @@ func querySubscriptions(cdc *codec.Codec) *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			ctx := context.NewCLIContext().WithCodec(cdc)
 
-			address, err := cmd.Flags().GetString(flagAddress)
+			bech32Address, err := cmd.Flags().GetString(flagAddress)
 			if err != nil {
 				return err
 			}
@@ -57,7 +57,7 @@ func querySubscriptions(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			nodeAddress, err := cmd.Flags().GetString(flagNodeAddress)
+			bech32Node, err := cmd.Flags().GetString(flagNodeAddress)
 			if err != nil {
 				return err
 			}
@@ -72,37 +72,34 @@ func querySubscriptions(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			var subscriptions types.Subscriptions
-			if len(address) > 0 {
-				address, err := sdk.AccAddressFromBech32(address)
+			var (
+				address       sdk.AccAddress
+				node          hub.NodeAddress
+				subscriptions types.Subscriptions
+			)
+
+			if len(bech32Address) > 0 {
+				address, err = sdk.AccAddressFromBech32(bech32Address)
 				if err != nil {
 					return err
 				}
 
 				subscriptions, err = common.QuerySubscriptionsForAddress(ctx, address, page, limit)
-				if err != nil {
-					return err
-				}
 			} else if plan > 0 {
 				subscriptions, err = common.QuerySubscriptionsForPlan(ctx, plan, page, limit)
-				if err != nil {
-					return err
-				}
-			} else if len(nodeAddress) > 0 {
-				address, err := hub.NodeAddressFromBech32(nodeAddress)
+			} else if len(bech32Node) > 0 {
+				node, err = hub.NodeAddressFromBech32(bech32Node)
 				if err != nil {
 					return err
 				}
 
-				subscriptions, err = common.QuerySubscriptionsForNode(ctx, address, page, limit)
-				if err != nil {
-					return err
-				}
+				subscriptions, err = common.QuerySubscriptionsForNode(ctx, node, page, limit)
 			} else {
 				subscriptions, err = common.QuerySubscriptions(ctx, page, limit)
-				if err != nil {
-					return err
-				}
+			}
+
+			if err != nil {
+				return err
 			}
 
 			for _, subscription := range subscriptions {

@@ -24,6 +24,7 @@ import (
 	node "github.com/sentinel-official/hub/x/node/simulation"
 	plan "github.com/sentinel-official/hub/x/plan/simulation"
 	provider "github.com/sentinel-official/hub/x/provider/simulation"
+	session "github.com/sentinel-official/hub/x/session/simulation"
 	subscription "github.com/sentinel-official/hub/x/subscription/simulation"
 )
 
@@ -371,6 +372,15 @@ func operations(app *App) []simulation.WeightedOperation {
 				return v
 			}(nil),
 			Op: subscription.SimulateMsgUpdateQuota(app.vpnKeeper.Subscription),
+		},
+		{
+			Weight: func(_ *rand.Rand) (v int) {
+				params.GetOrGenerate(cdc, "session:weight_msg_upsert", &v, nil,
+					func(_ *rand.Rand) { v = 100 },
+				)
+				return v
+			}(nil),
+			Op: session.SimulateUpsert(app.vpnKeeper.Node, app.vpnKeeper.Subscription, app.vpnKeeper.Session),
 		},
 	}
 }

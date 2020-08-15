@@ -11,8 +11,8 @@ import (
 )
 
 type Subscription struct {
-	ID      uint64         `json:"id"`
-	Address sdk.AccAddress `json:"address"`
+	ID    uint64         `json:"id"`
+	Owner sdk.AccAddress `json:"owner"`
 
 	Plan   uint64    `json:"plan,omitempty"`
 	Expiry time.Time `json:"expiry,omitempty"`
@@ -30,25 +30,25 @@ func (s Subscription) String() string {
 	if s.Plan == 0 {
 		return fmt.Sprintf(strings.TrimSpace(`
 ID:        %d
-Address:   %s
+Owner:     %s
 Node:      %s
 Price:     %s
 Deposit:   %s
 Free:      %s
 Status:    %s
 Status at: %s
-`), s.ID, s.Address, s.Node, s.Price, s.Deposit, s.Free, s.Status, s.StatusAt)
+`), s.ID, s.Owner, s.Node, s.Price, s.Deposit, s.Free, s.Status, s.StatusAt)
 	}
 
 	return fmt.Sprintf(strings.TrimSpace(`
 ID:        %d
-Address:   %s
+Owner:     %s
 Plan:      %d
 Expiry:    %s
 Free:      %s
 Status:    %s
 Status at: %s
-`), s.ID, s.Address, s.Plan, s.Expiry, s.Free, s.Status, s.StatusAt)
+`), s.ID, s.Owner, s.Plan, s.Expiry, s.Free, s.Status, s.StatusAt)
 }
 
 func (s Subscription) Amount(consumed hub.Bandwidth) sdk.Coin {
@@ -70,13 +70,13 @@ func (s Subscription) Validate() error {
 	if s.ID == 0 {
 		return fmt.Errorf("id should not be zero")
 	}
-	if s.Address == nil || s.Address.Empty() {
-		return fmt.Errorf("address should not nil and empty")
+	if s.Owner == nil || s.Owner.Empty() {
+		return fmt.Errorf("owner should not nil or empty")
 	}
 
 	if s.Plan == 0 {
 		if s.Node == nil || s.Node.Empty() {
-			return fmt.Errorf("node should not be nil and empty")
+			return fmt.Errorf("node should not be nil or empty")
 		}
 		if !s.Price.IsValid() {
 			return fmt.Errorf("price should be valid")

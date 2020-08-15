@@ -8,18 +8,18 @@ package session
 
 import (
 	"github.com/sentinel-official/hub/x/session/keeper"
+	"github.com/sentinel-official/hub/x/session/querier"
 	"github.com/sentinel-official/hub/x/session/types"
 )
 
 const (
 	Codespace                    = types.Codespace
-	EventTypeSetSessionsCount    = types.EventTypeSetSessionsCount
-	EventTypeSetActiveSession    = types.EventTypeSetActiveSession
-	EventTypeUpdateSession       = types.EventTypeUpdateSession
+	EventTypeSetCount            = types.EventTypeSetCount
+	EventTypeSetActive           = types.EventTypeSetActive
+	EventTypeUpdate              = types.EventTypeUpdate
 	AttributeKeyCount            = types.AttributeKeyCount
 	AttributeKeyID               = types.AttributeKeyID
 	AttributeKeySubscription     = types.AttributeKeySubscription
-	AttributeKeyNode             = types.AttributeKeyNode
 	AttributeKeyAddress          = types.AttributeKeyAddress
 	ModuleName                   = types.ModuleName
 	ParamsSubspace               = types.ParamsSubspace
@@ -30,6 +30,7 @@ const (
 	QuerySessionsForSubscription = types.QuerySessionsForSubscription
 	QuerySessionsForNode         = types.QuerySessionsForNode
 	QuerySessionsForAddress      = types.QuerySessionsForAddress
+	QueryOngoingSession          = types.QueryOngoingSession
 )
 
 var (
@@ -43,42 +44,59 @@ var (
 	ErrorSubscriptionDoesNotExit          = types.ErrorSubscriptionDoesNotExit
 	ErrorInvalidSubscriptionStatus        = types.ErrorInvalidSubscriptionStatus
 	ErrorUnauthorized                     = types.ErrorUnauthorized
-	ErrorAddressWasNotAdded               = types.ErrorAddressWasNotAdded
-	ErrorInvalidDuration                  = types.ErrorInvalidDuration
+	ErrorQuotaDoesNotExist                = types.ErrorQuotaDoesNotExist
 	ErrorInvalidBandwidth                 = types.ErrorInvalidBandwidth
 	NewGenesisState                       = types.NewGenesisState
 	DefaultGenesisState                   = types.DefaultGenesisState
 	SessionKey                            = types.SessionKey
-	ActiveSessionKey                      = types.ActiveSessionKey
-	NewMsgUpdate                          = types.NewMsgUpdate
+	GetSessionForSubscriptionKeyPrefix    = types.GetSessionForSubscriptionKeyPrefix
+	SessionForSubscriptionKey             = types.SessionForSubscriptionKey
+	GetSessionForNodeKeyPrefix            = types.GetSessionForNodeKeyPrefix
+	SessionForNodeKey                     = types.SessionForNodeKey
+	GetSessionForAddressKeyPrefix         = types.GetSessionForAddressKeyPrefix
+	SessionForAddressKey                  = types.SessionForAddressKey
+	GetOngoingSessionPrefix               = types.GetOngoingSessionPrefix
+	OngoingSessionKey                     = types.OngoingSessionKey
+	GetActiveSessionAtKeyPrefix           = types.GetActiveSessionAtKeyPrefix
+	ActiveSessionAtKey                    = types.ActiveSessionAtKey
+	NewMsgUpsert                          = types.NewMsgUpsert
 	NewParams                             = types.NewParams
 	DefaultParams                         = types.DefaultParams
 	ParamsKeyTable                        = types.ParamsKeyTable
 	NewQuerySessionParams                 = types.NewQuerySessionParams
+	NewQuerySessionsParams                = types.NewQuerySessionsParams
 	NewQuerySessionsForSubscriptionParams = types.NewQuerySessionsForSubscriptionParams
 	NewQuerySessionsForNodeParams         = types.NewQuerySessionsForNodeParams
 	NewQuerySessionsForAddressParams      = types.NewQuerySessionsForAddressParams
+	NewQueryOngoingSessionParams          = types.NewQueryOngoingSessionParams
 	NewKeeper                             = keeper.NewKeeper
+	Querier                               = querier.Querier
 
 	// variable aliases
-	ModuleCdc              = types.ModuleCdc
-	RouterKey              = types.RouterKey
-	StoreKey               = types.StoreKey
-	EventModuleName        = types.EventModuleName
-	SessionsCountKey       = types.SessionsCountKey
-	SessionKeyPrefix       = types.SessionKeyPrefix
-	ActiveSessionKeyPrefix = types.ActiveSessionKeyPrefix
-	KeyInactiveDuration    = types.KeyInactiveDuration
+	ModuleCdc                       = types.ModuleCdc
+	RouterKey                       = types.RouterKey
+	StoreKey                        = types.StoreKey
+	EventModuleName                 = types.EventModuleName
+	CountKey                        = types.CountKey
+	SessionKeyPrefix                = types.SessionKeyPrefix
+	SessionForSubscriptionKeyPrefix = types.SessionForSubscriptionKeyPrefix
+	SessionForNodeKeyPrefix         = types.SessionForNodeKeyPrefix
+	SessionForAddressKeyPrefix      = types.SessionForAddressKeyPrefix
+	OngoingSessionKeyPrefix         = types.OngoingSessionKeyPrefix
+	ActiveSessionAtKeyPrefix        = types.ActiveSessionAtKeyPrefix
+	KeyInactiveDuration             = types.KeyInactiveDuration
 )
 
 type (
 	GenesisState                       = types.GenesisState
-	MsgUpdate                          = types.MsgUpdate
+	MsgUpsert                          = types.MsgUpsert
 	Params                             = types.Params
 	QuerySessionParams                 = types.QuerySessionParams
+	QuerySessionsParams                = types.QuerySessionsParams
 	QuerySessionsForSubscriptionParams = types.QuerySessionsForSubscriptionParams
 	QuerySessionsForNodeParams         = types.QuerySessionsForNodeParams
 	QuerySessionsForAddressParams      = types.QuerySessionsForAddressParams
+	QueryOngoingSessionParams          = types.QueryOngoingSessionParams
 	Session                            = types.Session
 	Sessions                           = types.Sessions
 	Keeper                             = keeper.Keeper

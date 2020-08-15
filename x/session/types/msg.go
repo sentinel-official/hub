@@ -11,45 +11,45 @@ import (
 )
 
 var (
-	_ sdk.Msg = (*MsgUpdate)(nil)
+	_ sdk.Msg = (*MsgUpsert)(nil)
 )
 
-// MsgUpdate is for updating the session of a plan.
-type MsgUpdate struct {
-	From         hub.NodeAddress `json:"from"`
-	Subscription uint64          `json:"subscription"`
-	Address      sdk.AccAddress  `json:"address"`
-	Duration     time.Duration   `json:"duration"`
-	Bandwidth    hub.Bandwidth   `json:"bandwidth"`
+// MsgUpsert is for updating or inserting a session of a plan.
+type MsgUpsert struct {
+	From      hub.NodeAddress `json:"from"`
+	ID        uint64          `json:"id"`
+	Address   sdk.AccAddress  `json:"address"`
+	Duration  time.Duration   `json:"duration"`
+	Bandwidth hub.Bandwidth   `json:"bandwidth"`
 }
 
-func NewMsgUpdate(from hub.NodeAddress, subscription uint64,
-	address sdk.AccAddress, duration time.Duration, bandwidth hub.Bandwidth) MsgUpdate {
-	return MsgUpdate{
-		From:         from,
-		Subscription: subscription,
-		Address:      address,
-		Duration:     duration,
-		Bandwidth:    bandwidth,
+func NewMsgUpsert(from hub.NodeAddress, id uint64, address sdk.AccAddress,
+	duration time.Duration, bandwidth hub.Bandwidth) MsgUpsert {
+	return MsgUpsert{
+		From:      from,
+		ID:        id,
+		Address:   address,
+		Duration:  duration,
+		Bandwidth: bandwidth,
 	}
 }
 
-func (m MsgUpdate) Route() string {
+func (m MsgUpsert) Route() string {
 	return RouterKey
 }
 
-func (m MsgUpdate) Type() string {
-	return fmt.Sprintf("%s:update", ModuleName)
+func (m MsgUpsert) Type() string {
+	return fmt.Sprintf("%s:upsert", ModuleName)
 }
 
-func (m MsgUpdate) ValidateBasic() sdk.Error {
+func (m MsgUpsert) ValidateBasic() sdk.Error {
 	if m.From == nil || m.From.Empty() {
 		return ErrorInvalidField("from")
 	}
 
-	// Subscription shouldn't be zero
-	if m.Subscription == 0 {
-		return ErrorInvalidField("subscription")
+	// ID shouldn't be zero
+	if m.ID == 0 {
+		return ErrorInvalidField("id")
 	}
 
 	// Address shouldn't be nil or empty
@@ -70,7 +70,7 @@ func (m MsgUpdate) ValidateBasic() sdk.Error {
 	return nil
 }
 
-func (m MsgUpdate) GetSignBytes() []byte {
+func (m MsgUpsert) GetSignBytes() []byte {
 	bytes, err := json.Marshal(m)
 	if err != nil {
 		panic(err)
@@ -79,6 +79,6 @@ func (m MsgUpdate) GetSignBytes() []byte {
 	return bytes
 }
 
-func (m MsgUpdate) GetSigners() []sdk.AccAddress {
+func (m MsgUpsert) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{m.From.Bytes()}
 }

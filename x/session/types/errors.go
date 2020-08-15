@@ -19,8 +19,7 @@ const (
 	errorCodeSubscriptionDoesNotExit
 	errorCodeInvalidSubscriptionStatus
 	errorCodeUnauthorized
-	errorCodeAddressWasNotAdded
-	errorCodeInvalidDuration
+	errorCodeQuotaDoesNotExist
 	errorCodeInvalidBandwidth
 )
 
@@ -31,8 +30,7 @@ const (
 	errorMsgSubscriptionDoesNotExit   = "subscription does not exist"
 	errorMsgInvalidSubscriptionStatus = "invalid subscription status"
 	errorMsgUnauthorized              = "unauthorized"
-	errorMsgAddressWasNotAdded        = "address was not added"
-	errorMsgInvalidDuration           = "invalid duration"
+	errorMsgQuotaDoesNotExist         = "quota does not exist"
 	errorMsgInvalidBandwidth          = "invalid bandwidth"
 )
 
@@ -68,12 +66,8 @@ func ErrorUnauthorized() sdk.Error {
 	return sdk.NewError(Codespace, errorCodeUnauthorized, errorMsgUnauthorized)
 }
 
-func ErrorAddressWasNotAdded() sdk.Error {
-	return sdk.NewError(Codespace, errorCodeAddressWasNotAdded, errorMsgAddressWasNotAdded)
-}
-
-func ErrorInvalidDuration() sdk.Error {
-	return sdk.NewError(Codespace, errorCodeInvalidDuration, errorMsgInvalidDuration)
+func ErrorQuotaDoesNotExist() sdk.Error {
+	return sdk.NewError(Codespace, errorCodeQuotaDoesNotExist, errorMsgQuotaDoesNotExist)
 }
 
 func ErrorInvalidBandwidth() sdk.Error {

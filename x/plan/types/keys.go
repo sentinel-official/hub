@@ -27,8 +27,7 @@ var (
 	CountKey                 = []byte{0x00}
 	PlanKeyPrefix            = []byte{0x01}
 	PlanForProviderKeyPrefix = []byte{0x02}
-
-	NodeForPlanKeyPrefix = []byte{0x03}
+	NodeForPlanKeyPrefix     = []byte{0x03}
 )
 
 func PlanKey(i uint64) []byte {

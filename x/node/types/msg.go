@@ -172,7 +172,7 @@ func (m MsgUpdate) ValidateBasic() sdk.Error {
 	}
 
 	// Category can be Unknown. If not, should be valid
-	if m.Category != CategoryUnknown && !m.Category.IsValid() {
+	if !m.Category.Equal(CategoryUnknown) && !m.Category.IsValid() {
 		return ErrorInvalidField("category")
 	}
 

@@ -19,6 +19,7 @@ const (
 	EventTypeCancel              = types.EventTypeCancel
 	EventTypeAddQuota            = types.EventTypeAddQuota
 	EventTypeUpdateQuota         = types.EventTypeUpdateQuota
+	AttributeKeyOwner            = types.AttributeKeyOwner
 	AttributeKeyAddress          = types.AttributeKeyAddress
 	AttributeKeyID               = types.AttributeKeyID
 	AttributeKeyNode             = types.AttributeKeyNode

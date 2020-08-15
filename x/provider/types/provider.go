@@ -27,7 +27,7 @@ Description: %s
 
 func (p Provider) Validate() error {
 	if p.Address == nil || p.Address.Empty() {
-		return fmt.Errorf("address should not be nil and empty")
+		return fmt.Errorf("address should not be nil or empty")
 	}
 	if len(p.Name) == 0 || len(p.Name) > 64 {
 		return fmt.Errorf("name length should be (0, 64]")

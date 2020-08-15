@@ -11,10 +11,6 @@ func (k Keeper) HasNodeForPlan(ctx sdk.Context, id uint64, address hub.NodeAddre
 	return k.plan.HasNodeForPlan(ctx, id, address)
 }
 
-func (k Keeper) SetSubscription(ctx sdk.Context, subscription subscription.Subscription) {
-	k.subscription.SetSubscription(ctx, subscription)
-}
-
 func (k Keeper) GetSubscription(ctx sdk.Context, id uint64) (subscription.Subscription, bool) {
 	return k.subscription.GetSubscription(ctx, id)
 }
@@ -23,6 +19,10 @@ func (k Keeper) HasSubscriptionForNode(ctx sdk.Context, address hub.NodeAddress,
 	return k.subscription.HasSubscriptionForNode(ctx, address, id)
 }
 
-func (k Keeper) HasSubscriptionForAddress(ctx sdk.Context, address sdk.AccAddress, id uint64) bool {
-	return k.subscription.HasSubscriptionForAddress(ctx, address, id)
+func (k Keeper) SetQuota(ctx sdk.Context, id uint64, quota subscription.Quota) {
+	k.subscription.SetQuota(ctx, id, quota)
+}
+
+func (k Keeper) GetQuota(ctx sdk.Context, id uint64, address sdk.AccAddress) (subscription.Quota, bool) {
+	return k.subscription.GetQuota(ctx, id, address)
 }

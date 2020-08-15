@@ -84,10 +84,6 @@ func HandleAddNode(ctx sdk.Context, k keeper.Keeper, msg types.MsgAddNode) sdk.R
 		return types.ErrorUnauthorized().Result()
 	}
 
-	if k.HasNodeForPlan(ctx, plan.ID, node.Address) {
-		return types.ErrorDuplicateNode().Result()
-	}
-
 	k.SetNodeForPlan(ctx, plan.ID, node.Address)
 	ctx.EventManager().EmitEvent(sdk.NewEvent(
 		types.EventTypeAddNode,
@@ -106,10 +102,6 @@ func HandleRemoveNode(ctx sdk.Context, k keeper.Keeper, msg types.MsgRemoveNode)
 	}
 	if !msg.From.Equals(plan.Provider) {
 		return types.ErrorUnauthorized().Result()
-	}
-
-	if !k.HasNodeForPlan(ctx, plan.ID, msg.Address) {
-		return types.ErrorNodeWasNotAdded().Result()
 	}
 
 	k.DeleteNodeForPlan(ctx, plan.ID, msg.Address)

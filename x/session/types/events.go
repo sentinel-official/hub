@@ -1,15 +1,14 @@
 package types
 
 const (
-	EventTypeSetSessionsCount = "sessions_count"
-	EventTypeSetActiveSession = "set_active_session"
-	EventTypeUpdateSession    = "update_session"
+	EventTypeSetCount  = "session:set_count"
+	EventTypeSetActive = "session:set_active"
+	EventTypeUpdate    = "session:update"
 )
 
 const (
 	AttributeKeyCount        = "count"
 	AttributeKeyID           = "id"
 	AttributeKeySubscription = "subscription"
-	AttributeKeyNode         = "node"
 	AttributeKeyAddress      = "address"
 )

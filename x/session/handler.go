@@ -10,27 +10,53 @@ import (
 	"github.com/sentinel-official/hub/x/session/types"
 )
 
-func isAuthorized(ctx sdk.Context, k keeper.Keeper, p, s uint64, n hub.NodeAddress) bool {
-	return p == 0 && k.HasSubscriptionForNode(ctx, n, s) ||
-		k.HasNodeForPlan(ctx, p, n)
+func isAuthorized(ctx sdk.Context, k keeper.Keeper, p uint64, n hub.NodeAddress, s uint64) bool {
+	if p == 0 {
+		return k.HasSubscriptionForNode(ctx, n, s)
+	}
+
+	return k.HasNodeForPlan(ctx, p, n)
 }
 
-func HandleUpdate(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpdate) sdk.Result {
-	subscription, found := k.GetSubscription(ctx, msg.Subscription)
+func HandleUpsert(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpsert) sdk.Result {
+	subscription, found := k.GetSubscription(ctx, msg.ID)
 	if !found {
 		return types.ErrorSubscriptionDoesNotExit().Result()
 	}
-	if !subscription.Status.Equal(hub.StatusActive) {
+	if subscription.Status.Equal(hub.StatusInactive) {
 		return types.ErrorInvalidSubscriptionStatus().Result()
 	}
-	if !isAuthorized(ctx, k, subscription.Plan, subscription.ID, msg.From) {
+
+	// Check whether the msg.From is authorized to upsert the session or not
+	// msg.From is authorized only if the node belongs to the subscription or to the plan.
+	if !isAuthorized(ctx, k, subscription.Plan, msg.From, subscription.ID) {
 		return types.ErrorUnauthorized().Result()
 	}
-	if !k.HasSubscriptionForAddress(ctx, msg.Address, subscription.ID) {
-		return types.ErrorAddressWasNotAdded().Result()
+
+	quota, found := k.GetQuota(ctx, subscription.ID, msg.Address)
+	if !found {
+		return types.ErrorQuotaDoesNotExist().Result()
 	}
 
-	session, found := k.GetActiveSession(ctx, subscription.ID, msg.From, msg.Address)
+	quota.Consumed = quota.Consumed.Add(msg.Bandwidth)
+	if quota.Consumed.IsAnyGT(quota.Allocated) {
+		return types.ErrorInvalidBandwidth().Result()
+	}
+
+	k.SetQuota(ctx, subscription.ID, quota)
+
+	session, found := k.GetOngoingSession(ctx, subscription.ID, msg.Address)
+	if found {
+		k.DeleteActiveSessionAt(ctx, session.StatusAt, session.ID)
+		if !session.Node.Equals(msg.From) {
+			session.Status = hub.StatusInactive
+			session.StatusAt = ctx.BlockTime()
+			k.SetSession(ctx, session)
+
+			found = false
+		}
+	}
+
 	if !found {
 		count := k.GetSessionsCount(ctx)
 		session = types.Session{
@@ -46,15 +72,17 @@ func HandleUpdate(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpdate) sdk.Res
 
 		k.SetSessionsCount(ctx, count+1)
 		ctx.EventManager().EmitEvent(sdk.NewEvent(
-			types.EventTypeSetSessionsCount,
+			types.EventTypeSetCount,
 			sdk.NewAttribute(types.AttributeKeyCount, fmt.Sprintf("%d", count+1)),
 		))
 
-		k.SetActiveSession(ctx, session.Subscription, session.Node, session.Address, session.ID)
+		k.SetSessionForSubscription(ctx, session.Subscription, session.ID)
+		k.SetSessionForNode(ctx, session.Node, session.ID)
+		k.SetSessionForAddress(ctx, session.Address, session.ID)
+		k.SetOngoingSession(ctx, session.Subscription, session.Address, session.ID)
 		ctx.EventManager().EmitEvent(sdk.NewEvent(
-			types.EventTypeSetActiveSession,
+			types.EventTypeSetActive,
 			sdk.NewAttribute(types.AttributeKeySubscription, fmt.Sprintf("%d", session.Subscription)),
-			sdk.NewAttribute(types.AttributeKeyNode, session.Node.String()),
 			sdk.NewAttribute(types.AttributeKeyAddress, session.Address.String()),
 			sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", session.ID)),
 		))
@@ -64,12 +92,11 @@ func HandleUpdate(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpdate) sdk.Res
 	session.Bandwidth = session.Bandwidth.Add(msg.Bandwidth)
 
 	k.SetSession(ctx, session)
+	k.SetActiveSessionAt(ctx, session.StatusAt, session.ID)
 	ctx.EventManager().EmitEvent(sdk.NewEvent(
-		types.EventTypeUpdateSession,
+		types.EventTypeUpdate,
 		sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", session.ID)),
 	))
-
-	k.SetSubscription(ctx, subscription)
 
 	ctx.EventManager().EmitEvent(types.EventModuleName)
 	return sdk.Result{Events: ctx.EventManager().Events()}

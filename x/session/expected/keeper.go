@@ -12,9 +12,10 @@ type PlanKeeper interface {
 }
 
 type SubscriptionKeeper interface {
-	SetSubscription(ctx sdk.Context, subscription subscription.Subscription)
 	GetSubscription(ctx sdk.Context, id uint64) (subscription.Subscription, bool)
 
 	HasSubscriptionForNode(ctx sdk.Context, address hub.NodeAddress, id uint64) bool
-	HasSubscriptionForAddress(ctx sdk.Context, address sdk.AccAddress, id uint64) bool
+
+	SetQuota(ctx sdk.Context, id uint64, quota subscription.Quota)
+	GetQuota(ctx sdk.Context, id uint64, address sdk.AccAddress) (subscription.Quota, bool)
 }

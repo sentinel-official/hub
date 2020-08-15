@@ -45,18 +45,18 @@ func queryPlans(ctx context.CLIContext) http.HandlerFunc {
 		}
 
 		var (
-			plans   types.Plans
-			address hub.ProvAddress
+			provider hub.ProvAddress
+			plans    types.Plans
 		)
 
-		if query.Get("address") != "" {
-			address, err = hub.ProvAddressFromBech32(query.Get("address"))
+		if query.Get("provider") != "" {
+			provider, err = hub.ProvAddressFromBech32(query.Get("provider"))
 			if err != nil {
 				rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 				return
 			}
 
-			plans, err = common.QueryPlansForProvider(ctx, address, page, limit)
+			plans, err = common.QueryPlansForProvider(ctx, provider, page, limit)
 		} else {
 			plans, err = common.QueryPlans(ctx, page, limit)
 		}

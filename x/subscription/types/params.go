@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	DefaultCancelDuration = 12 * time.Hour
+	DefaultCancelDuration = 6 * time.Hour
 )
 
 var (

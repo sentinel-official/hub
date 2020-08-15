@@ -97,9 +97,7 @@ func (a AppModule) NewQuerierHandler() sdk.Querier {
 	return querier.NewQuerier(a.k)
 }
 
-func (a AppModule) BeginBlock(ctx sdk.Context, _ abci.RequestBeginBlock) {
-	BeginBlock(ctx, a.k)
-}
+func (a AppModule) BeginBlock(_ sdk.Context, _ abci.RequestBeginBlock) {}
 
 func (a AppModule) EndBlock(ctx sdk.Context, _ abci.RequestEndBlock) []abci.ValidatorUpdate {
 	return EndBlock(ctx, a.k)
