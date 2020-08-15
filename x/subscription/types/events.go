@@ -9,6 +9,7 @@ const (
 )
 
 const (
+	AttributeKeyOwner     = "owner"
 	AttributeKeyAddress   = "address"
 	AttributeKeyID        = "id"
 	AttributeKeyNode      = "node"
