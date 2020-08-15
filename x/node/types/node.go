@@ -89,7 +89,7 @@ Status at:      %s
 
 func (n Node) Validate() error {
 	if n.Address == nil || n.Address.Empty() {
-		return fmt.Errorf("address should not be nil and empty")
+		return fmt.Errorf("address should not be nil or empty")
 	}
 	if (n.Provider != nil && n.Price != nil) ||
 		(n.Provider == nil && n.Price == nil) {

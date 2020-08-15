@@ -45,27 +45,27 @@ func queryNodes(ctx context.CLIContext) http.HandlerFunc {
 		}
 
 		var (
-			id      uint64
-			nodes   types.Nodes
-			address hub.ProvAddress
+			plan     uint64
+			provider hub.ProvAddress
+			nodes    types.Nodes
 		)
 
-		if query.Get("address") != "" {
-			address, err = hub.ProvAddressFromBech32(query.Get("address"))
+		if query.Get("provider") != "" {
+			provider, err = hub.ProvAddressFromBech32(query.Get("provider"))
 			if err != nil {
 				rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 				return
 			}
 
-			nodes, err = common.QueryNodesForProvider(ctx, address, page, limit)
-		} else if query.Get("id") != "" {
-			id, err = strconv.ParseUint(query.Get("id"), 10, 64)
+			nodes, err = common.QueryNodesForProvider(ctx, provider, page, limit)
+		} else if query.Get("plan") != "" {
+			plan, err = strconv.ParseUint(query.Get("plan"), 10, 64)
 			if err != nil {
 				rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 				return
 			}
 
-			nodes, err = common.QueryNodesForPlan(ctx, id, page, limit)
+			nodes, err = common.QueryNodesForPlan(ctx, plan, page, limit)
 		} else {
 			nodes, err = common.QueryNodes(ctx, page, limit)
 		}

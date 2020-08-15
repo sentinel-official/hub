@@ -48,8 +48,9 @@ func HandleUpdate(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpdate) sdk.Res
 	if !found {
 		return types.ErrorNodeDoesNotExist().Result()
 	}
+
 	if node.Provider.Equals(msg.Provider) {
-		return types.ErrorCanNotUpdate().Result()
+		msg.Provider = nil
 	}
 
 	if msg.Provider != nil || msg.Price != nil {
@@ -104,13 +105,18 @@ func HandleSetStatus(ctx sdk.Context, k keeper.Keeper, msg types.MsgSetStatus) s
 		return types.ErrorNodeDoesNotExist().Result()
 	}
 
-	k.DeleteActiveNodeAt(ctx, node.StatusAt, node.Address)
+	if node.Status.Equal(hub.StatusActive) {
+		k.DeleteActiveNodeAt(ctx, node.StatusAt, node.Address)
+	}
 
 	node.Status = msg.Status
 	node.StatusAt = ctx.BlockTime()
 
+	if node.Status.Equal(hub.StatusActive) {
+		k.SetActiveNodeAt(ctx, node.StatusAt, node.Address)
+	}
+
 	k.SetNode(ctx, node)
-	k.SetActiveNodeAt(ctx, node.StatusAt, node.Address)
 	ctx.EventManager().EmitEvent(sdk.NewEvent(
 		types.EventTypeSetStatus,
 		sdk.NewAttribute(types.AttributeKeyAddress, node.Address.String()),
