@@ -8,6 +8,7 @@ import (
 	"github.com/sentinel-official/hub/x/node"
 	"github.com/sentinel-official/hub/x/plan"
 	"github.com/sentinel-official/hub/x/provider"
+	"github.com/sentinel-official/hub/x/session"
 	"github.com/sentinel-official/hub/x/subscription"
 	"github.com/sentinel-official/hub/x/vpn/keeper"
 	"github.com/sentinel-official/hub/x/vpn/types"
@@ -26,6 +27,8 @@ func NewQuerier(k keeper.Keeper) sdk.Querier {
 			return plan.Querier(ctx, path[1:], req, k.Plan)
 		case subscription.ModuleName:
 			return subscription.Querier(ctx, path[1:], req, k.Subscription)
+		case session.ModuleName:
+			return session.Querier(ctx, path[1:], req, k.Session)
 		default:
 			return nil, types.ErrorUnknownQueryType(path[0])
 		}
