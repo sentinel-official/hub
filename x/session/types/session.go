@@ -34,4 +34,33 @@ Status at:    %s
 `), s.ID, s.Subscription, s.Node, s.Address, s.Duration, s.Bandwidth, s.Status, s.StatusAt)
 }
 
+func (s Session) Validate() error {
+	if s.ID == 0 {
+		return fmt.Errorf("id should not be zero")
+	}
+	if s.Subscription == 0 {
+		return fmt.Errorf("subscription should not be zero")
+	}
+	if s.Node == nil || s.Node.Empty() {
+		return fmt.Errorf("node should not be nil or empty")
+	}
+	if s.Address == nil || s.Address.Empty() {
+		return fmt.Errorf("address should not be nil or empty")
+	}
+	if s.Duration <= 0 {
+		return fmt.Errorf("duration should be positive")
+	}
+	if s.Bandwidth.IsValid() {
+		return fmt.Errorf("bandwidth should be valid")
+	}
+	if !s.Status.Equal(hub.StatusActive) && !s.Status.Equal(hub.StatusInactive) {
+		return fmt.Errorf("status should be either active or inactive")
+	}
+	if s.StatusAt.IsZero() {
+		return fmt.Errorf("status_at should not be zero")
+	}
+
+	return nil
+}
+
 type Sessions []Session

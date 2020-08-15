@@ -13,7 +13,7 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, state types.GenesisState) {
 	for _, session := range state.Sessions {
 		k.SetSession(ctx, session)
 		if session.Status.Equal(hub.StatusActive) {
-			k.SetActiveSession(ctx, session.Subscription, session.Node, session.Address, session.ID)
+			k.SetOngoingSession(ctx, session.Subscription, session.Address, session.ID)
 		}
 
 		k.SetSessionsCount(ctx, k.GetSessionsCount(ctx)+1)

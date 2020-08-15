@@ -7,7 +7,10 @@ import (
 )
 
 func GetQueryCommands(cdc *codec.Codec) []*cobra.Command {
-	return nil
+	return client.GetCommands(
+		querySession(cdc),
+		querySessions(cdc),
+	)
 }
 
 func GetTxCommands(cdc *codec.Codec) []*cobra.Command {
@@ -17,7 +20,7 @@ func GetTxCommands(cdc *codec.Codec) []*cobra.Command {
 	}
 
 	cmd.AddCommand(client.PostCommands(
-		txUpdateSession(cdc),
+		txUpsert(cdc),
 	)...)
 
 	return []*cobra.Command{cmd}

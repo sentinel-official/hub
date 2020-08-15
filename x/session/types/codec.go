@@ -16,5 +16,5 @@ func init() {
 }
 
 func RegisterCodec(cdc *codec.Codec) {
-	cdc.RegisterConcrete(MsgUpdate{}, "x/session/MsgUpdate", nil)
+	cdc.RegisterConcrete(MsgUpsert{}, "x/session/MsgUpsert", nil)
 }

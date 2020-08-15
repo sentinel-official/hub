@@ -15,10 +15,10 @@ import (
 	"github.com/sentinel-official/hub/x/session/types"
 )
 
-func txUpdateSession(cdc *codec.Codec) *cobra.Command {
+func txUpsert(cdc *codec.Codec) *cobra.Command {
 	return &cobra.Command{
-		Use:   "update",
-		Short: "Update a session",
+		Use:   "upsert",
+		Short: "Add or update a session",
 		Args:  cobra.ExactArgs(5),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			txb := auth.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
@@ -49,7 +49,7 @@ func txUpdateSession(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgUpdate(ctx.FromAddress.Bytes(),
+			msg := types.NewMsgUpsert(ctx.FromAddress.Bytes(),
 				subscription, address, duration, hub.NewBandwidthFromInt64(upload, download))
 			return utils.GenerateOrBroadcastMsgs(ctx, txb, []sdk.Msg{msg})
 		},
