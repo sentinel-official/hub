@@ -1,106 +1,56 @@
 package vpn
 
 import (
-	"fmt"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
+	"github.com/sentinel-official/hub/x/deposit"
+	"github.com/sentinel-official/hub/x/node"
+	"github.com/sentinel-official/hub/x/plan"
+	"github.com/sentinel-official/hub/x/provider"
+	"github.com/sentinel-official/hub/x/session"
+	"github.com/sentinel-official/hub/x/subscription"
+	"github.com/sentinel-official/hub/x/vpn/keeper"
 	"github.com/sentinel-official/hub/x/vpn/types"
 )
 
-func InitGenesis(ctx sdk.Context, k Keeper, data types.GenesisState) {
-	k.SetParams(ctx, data.Params)
+func InitGenesis(ctx sdk.Context, k keeper.Keeper, state types.GenesisState) {
+	deposit.InitGenesis(ctx, k.Deposit, state.Deposits)
+	provider.InitGenesis(ctx, k.Provider, state.Providers)
+	node.InitGenesis(ctx, k.Node, state.Nodes)
+	plan.InitGenesis(ctx, k.Plan, state.Plans)
+	subscription.InitGenesis(ctx, k.Subscription, state.Subscriptions)
+	session.InitGenesis(ctx, k.Session, state.Sessions)
+}
 
-	for _, node := range data.Nodes {
-		k.SetNode(ctx, node)
-
-		nca := k.GetNodesCountOfAddress(ctx, node.Owner)
-		k.SetNodeIDByAddress(ctx, node.Owner, nca, node.ID)
-
-		k.SetNodesCount(ctx, k.GetNodesCount(ctx)+1)
-		k.SetNodesCountOfAddress(ctx, node.Owner, nca+1)
-	}
-
-	for _, subscription := range data.Subscriptions {
-		k.SetSubscription(ctx, subscription)
-
-		scn := k.GetSubscriptionsCountOfNode(ctx, subscription.NodeID)
-		k.SetSubscriptionIDByNodeID(ctx, subscription.NodeID, scn, subscription.ID)
-
-		sca := k.GetSubscriptionsCountOfAddress(ctx, subscription.Client)
-		k.SetSubscriptionIDByAddress(ctx, subscription.Client, sca, subscription.ID)
-
-		k.SetSubscriptionsCount(ctx, k.GetSubscriptionsCount(ctx)+1)
-		k.SetSubscriptionsCountOfNode(ctx, subscription.NodeID, scn+1)
-		k.SetSubscriptionsCountOfAddress(ctx, subscription.Client, sca+1)
-	}
-
-	for _, session := range data.Sessions {
-		k.SetSession(ctx, session)
-
-		scs := k.GetSessionsCountOfSubscription(ctx, session.SubscriptionID)
-		k.SetSessionIDBySubscriptionID(ctx, session.SubscriptionID, scs, session.ID)
-
-		k.SetSessionsCount(ctx, k.GetSessionsCount(ctx)+1)
-		k.SetSessionsCountOfSubscription(ctx, session.SubscriptionID, scs+1)
+func ExportGenesis(ctx sdk.Context, k keeper.Keeper) types.GenesisState {
+	return types.GenesisState{
+		Deposits:      deposit.ExportGenesis(ctx, k.Deposit),
+		Providers:     provider.ExportGenesis(ctx, k.Provider),
+		Nodes:         node.ExportGenesis(ctx, k.Node),
+		Plans:         plan.ExportGenesis(ctx, k.Plan),
+		Subscriptions: subscription.ExportGenesis(ctx, k.Subscription),
+		Sessions:      session.ExportGenesis(ctx, k.Session),
 	}
 }
 
-func ExportGenesis(ctx sdk.Context, k Keeper) types.GenesisState {
-	params := k.GetParams(ctx)
-	nodes := k.GetAllNodes(ctx)
-	subscriptions := k.GetAllSubscriptions(ctx)
-	sessions := k.GetAllSessions(ctx)
-
-	return types.NewGenesisState(nodes, subscriptions, sessions, params)
-}
-
-func ValidateGenesis(data types.GenesisState) error {
-	if err := data.Params.Validate(); err != nil {
+func ValidateGenesis(state types.GenesisState) error {
+	if err := deposit.ValidateGenesis(state.Deposits); err != nil {
 		return err
 	}
-
-	sessionsMap := make(map[uint64]bool, len(data.Sessions))
-	for _, session := range data.Sessions {
-		if err := session.IsValid(); err != nil {
-			return fmt.Errorf("%s for the %s", err.Error(), session)
-		}
-
-		if sessionsMap[session.ID.Uint64()] {
-			return fmt.Errorf("duplicate id for the %s", session)
-		}
-
-		sessionsMap[session.ID.Uint64()] = true
+	if err := provider.ValidateGenesis(state.Providers); err != nil {
+		return err
 	}
-
-	subscriptionsMap := make(map[uint64]bool, len(data.Subscriptions))
-	for _, subscription := range data.Subscriptions {
-		if err := subscription.IsValid(); err != nil {
-			return fmt.Errorf("%s for the %s", err.Error(), subscription)
-		}
-
-		if subscriptionsMap[subscription.ID.Uint64()] {
-			return fmt.Errorf("duplicate id for the %s", subscription)
-		}
-
-		subscriptionsMap[subscription.ID.Uint64()] = true
+	if err := node.ValidateGenesis(state.Nodes); err != nil {
+		return err
 	}
-
-	nodeIDsMap := make(map[uint64]bool, len(data.Nodes))
-	for _, node := range data.Nodes {
-		if err := node.IsValid(); err != nil {
-			return fmt.Errorf("%s for the %s", err.Error(), node)
-		}
-
-		if node.Deposit.Denom != data.Params.Deposit.Denom {
-			return fmt.Errorf("invalid deposit for the %s", node)
-		}
-
-		if nodeIDsMap[node.ID.Uint64()] {
-			return fmt.Errorf("duplicate id for the %s", node)
-		}
-
-		nodeIDsMap[node.ID.Uint64()] = true
+	if err := plan.ValidateGenesis(state.Plans); err != nil {
+		return err
+	}
+	if err := subscription.ValidateGenesis(state.Subscriptions); err != nil {
+		return err
+	}
+	if err := session.ValidateGenesis(state.Sessions); err != nil {
+		return err
 	}
 
 	return nil

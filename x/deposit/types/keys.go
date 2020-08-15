@@ -6,13 +6,23 @@ import (
 
 const (
 	ModuleName   = "deposit"
-	StoreKey     = ModuleName
-	RouterKey    = ModuleName
 	QuerierRoute = ModuleName
 )
 
 var (
-	DepositKeyPrefix = []byte{0x01}
+	RouterKey = ModuleName
+	StoreKey  = ModuleName
+)
+
+var (
+	EventModuleName = sdk.NewEvent(
+		sdk.EventTypeMessage,
+		sdk.NewAttribute(sdk.AttributeKeyModule, ModuleName),
+	)
+)
+
+var (
+	DepositKeyPrefix = []byte{0x00}
 )
 
 func DepositKey(address sdk.AccAddress) []byte {

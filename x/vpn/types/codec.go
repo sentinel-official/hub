@@ -2,24 +2,31 @@ package types
 
 import (
 	"github.com/cosmos/cosmos-sdk/codec"
+
+	"github.com/sentinel-official/hub/x/deposit"
+	"github.com/sentinel-official/hub/x/node"
+	"github.com/sentinel-official/hub/x/plan"
+	"github.com/sentinel-official/hub/x/provider"
+	"github.com/sentinel-official/hub/x/session"
+	"github.com/sentinel-official/hub/x/subscription"
 )
 
 var (
 	ModuleCdc *codec.Codec
 )
 
-func RegisterCodec(cdc *codec.Codec) {
-	cdc.RegisterConcrete(MsgRegisterNode{}, "x/vpn/MsgRegisterNode", nil)
-	cdc.RegisterConcrete(MsgUpdateNodeInfo{}, "x/vpn/MsgUpdateNodeInfo", nil)
-	cdc.RegisterConcrete(MsgDeregisterNode{}, "x/vpn/MsgDeregisterNode", nil)
-	cdc.RegisterConcrete(MsgStartSubscription{}, "x/vpn/MsgStartSubscription", nil)
-	cdc.RegisterConcrete(MsgEndSubscription{}, "x/vpn/MsgEndSubscription", nil)
-	cdc.RegisterConcrete(MsgUpdateSessionInfo{}, "x/vpn/MsgUpdateSessionInfo", nil)
-}
-
 func init() {
 	ModuleCdc = codec.New()
-	RegisterCodec(ModuleCdc)
 	codec.RegisterCrypto(ModuleCdc)
+	RegisterCodec(ModuleCdc)
 	ModuleCdc.Seal()
+}
+
+func RegisterCodec(cdc *codec.Codec) {
+	deposit.RegisterCodec(cdc)
+	provider.RegisterCodec(cdc)
+	node.RegisterCodec(cdc)
+	plan.RegisterCodec(cdc)
+	subscription.RegisterCodec(cdc)
+	session.RegisterCodec(cdc)
 }

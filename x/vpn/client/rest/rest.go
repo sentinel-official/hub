@@ -3,53 +3,20 @@ package rest
 import (
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/gorilla/mux"
+
+	deposit "github.com/sentinel-official/hub/x/deposit/client/rest"
+	node "github.com/sentinel-official/hub/x/node/client/rest"
+	plan "github.com/sentinel-official/hub/x/plan/client/rest"
+	provider "github.com/sentinel-official/hub/x/provider/client/rest"
+	session "github.com/sentinel-official/hub/x/session/client/rest"
+	subscription "github.com/sentinel-official/hub/x/subscription/client/rest"
 )
 
-func RegisterRoutes(ctx context.CLIContext, r *mux.Router) {
-	registerTxRoutes(ctx, r)
-	registerQueryRoutes(ctx, r)
-}
-
-func registerTxRoutes(ctx context.CLIContext, r *mux.Router) {
-	r.HandleFunc("/nodes", registerNodeHandlerFunc(ctx)).
-		Methods("POST")
-	r.HandleFunc("/nodes/{id}", deregisterNodeHandlerFunc(ctx)).
-		Methods("DELETE")
-	r.HandleFunc("/nodes/{id}/info", updateNodeInfoHandlerFunc(ctx)).
-		Methods("PUT")
-	r.HandleFunc("/nodes/{id}/subscriptions", startSubscriptionHandlerFunc(ctx)).
-		Methods("POST")
-
-	r.HandleFunc("/subscriptions/{id}", endSubscriptionHandlerFunc(ctx)).
-		Methods("DELETE")
-	r.HandleFunc("/subscriptions/{id}/sessions/bandwidth/sign", signSessionBandwidthHandlerFunc(ctx)).
-		Methods("POST")
-	r.HandleFunc("/subscriptions/{id}/sessions", updateSessionInfoHandlerFunc(ctx)).
-		Methods("PUT")
-}
-
-func registerQueryRoutes(ctx context.CLIContext, r *mux.Router) {
-	r.HandleFunc("/nodes", getAllNodesHandlerFunc(ctx)).
-		Methods("GET")
-	r.HandleFunc("/nodes/{id}", getNodeHandlerFunc(ctx)).
-		Methods("GET")
-	r.HandleFunc("/nodes/{id}/subscriptions", getSubscriptionsOfNodeHandlerFunc(ctx)).
-		Methods("GET")
-
-	r.HandleFunc("/subscriptions", getAllSubscriptionsHandlerFunc(ctx)).
-		Methods("GET")
-	r.HandleFunc("/subscriptions/{id}", getSubscriptionHandlerFunc(ctx)).
-		Methods("GET")
-	r.HandleFunc("/subscriptions/{id}/sessions", getSessionsOfSubscriptionHandlerFunc(ctx)).
-		Methods("GET")
-
-	r.HandleFunc("/sessions", getAllSessionsHandlerFunc(ctx)).
-		Methods("GET")
-	r.HandleFunc("/sessions/{id}", getSessionHandlerFunc(ctx)).
-		Methods("GET")
-
-	r.HandleFunc("/accounts/{address}/subscriptions", getSubscriptionsOfAddressHandlerFunc(ctx)).
-		Methods("GET")
-	r.HandleFunc("/accounts/{address}/nodes", getNodesOfAddressHandlerFunc(ctx)).
-		Methods("GET")
+func RegisterRoutes(context context.CLIContext, router *mux.Router) {
+	deposit.RegisterRoutes(context, router)
+	provider.RegisterRoutes(context, router)
+	node.RegisterRoutes(context, router)
+	plan.RegisterRoutes(context, router)
+	subscription.RegisterRoutes(context, router)
+	session.RegisterRoutes(context, router)
 }

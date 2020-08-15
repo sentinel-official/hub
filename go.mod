@@ -1,15 +1,14 @@
 module github.com/sentinel-official/hub
 
-go 1.13
+go 1.14
 
 require (
-	github.com/cosmos/cosmos-sdk v0.37.4
-	github.com/gorilla/mux v1.7.3
-	github.com/spf13/cobra v0.0.5
-	github.com/spf13/viper v1.5.0
-	github.com/stretchr/testify v1.4.0
-	github.com/tendermint/go-amino v0.15.1
-	github.com/tendermint/tendermint v0.32.8
+	github.com/cosmos/cosmos-sdk v0.37.14
+	github.com/gorilla/mux v1.7.4
+	github.com/spf13/cobra v1.0.0
+	github.com/spf13/viper v1.7.1
+	github.com/stretchr/testify v1.6.1
+	github.com/tendermint/tendermint v0.32.13
 	github.com/tendermint/tm-db v0.2.0
-	gopkg.in/yaml.v2 v2.2.7
+	gopkg.in/yaml.v2 v2.3.0
 )

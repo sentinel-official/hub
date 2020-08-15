@@ -9,27 +9,37 @@ import (
 )
 
 const (
-	Codespace = sdk.CodespaceType("deposit")
+	Codespace = sdk.CodespaceType(ModuleName)
+)
 
-	errCodeUnknownQueryType         = 101
-	errCodeInsufficientDepositFunds = 102
+const (
+	errorCodeUnknownQueryType sdk.CodeType = iota + 101
+	errorCodeInsufficientDepositFunds
+	errorCodeDepositDoesNotExist
+)
 
-	errMsgUnknownQueryType         = "Invalid query type: "
-	errMsgInsufficientDepositFunds = "insufficient deposit funds: %s < %s"
+const (
+	errorMsgUnknownQueryType         = "unknown query type: %s"
+	errorMsgInsufficientDepositFunds = "insufficient deposit funds"
+	errorMsgDepositDoesNotExist      = "deposit does not exist"
 )
 
 func ErrorMarshal() sdk.Error {
-	return sdk.NewError(Codespace, hub.ErrCodeMarshal, hub.ErrMsgMarshal)
+	return sdk.NewError(Codespace, hub.ErrorCodeMarshal, hub.ErrorMsgMarshal)
 }
 
 func ErrorUnmarshal() sdk.Error {
-	return sdk.NewError(Codespace, hub.ErrCodeUnmarshal, hub.ErrMsgUnmarshal)
+	return sdk.NewError(Codespace, hub.ErrorCodeUnmarshal, hub.ErrorMsgUnmarshal)
 }
 
-func ErrorInvalidQueryType(queryType string) sdk.Error {
-	return sdk.NewError(Codespace, errCodeUnknownQueryType, errMsgUnknownQueryType+queryType)
+func ErrorUnknownQueryType(v string) sdk.Error {
+	return sdk.NewError(Codespace, errorCodeUnknownQueryType, fmt.Sprintf(errorMsgUnknownQueryType, v))
 }
 
-func ErrorInsufficientDepositFunds(x, y sdk.Coins) sdk.Error {
-	return sdk.NewError(Codespace, errCodeInsufficientDepositFunds, fmt.Sprintf(errMsgInsufficientDepositFunds, x, y))
+func ErrorInsufficientDepositFunds() sdk.Error {
+	return sdk.NewError(Codespace, errorCodeInsufficientDepositFunds, errorMsgInsufficientDepositFunds)
+}
+
+func ErrorDepositDoesNotExist() sdk.Error {
+	return sdk.NewError(Codespace, errorCodeDepositDoesNotExist, errorMsgDepositDoesNotExist)
 }

@@ -8,7 +8,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/server"
 	"github.com/cosmos/cosmos-sdk/store"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/genaccounts"
 	genaccountsCli "github.com/cosmos/cosmos-sdk/x/genaccounts/client/cli"
 	genutilCli "github.com/cosmos/cosmos-sdk/x/genutil/client/cli"
@@ -21,73 +20,68 @@ import (
 	tm "github.com/tendermint/tendermint/types"
 	db "github.com/tendermint/tm-db"
 
-	"github.com/sentinel-official/hub/app"
-	_server "github.com/sentinel-official/hub/server"
-	hub "github.com/sentinel-official/hub/types"
+	"github.com/sentinel-official/hub"
+	"github.com/sentinel-official/hub/types"
 )
 
 const (
-	flagInvCheckPeriod = "inv-check-period"
+	flagInvarCheckPeriod = "invar-check-period"
 )
 
 var (
-	invCheckPeriod uint
+	invarCheckPeriod uint
 )
 
 func main() {
-	cdc := app.MakeCodec()
-
-	config := sdk.GetConfig()
-	config.SetBech32PrefixForAccount(hub.Bech32PrefixAccAddr, hub.Bech32PrefixAccPub)
-	config.SetBech32PrefixForValidator(hub.Bech32PrefixValAddr, hub.Bech32PrefixValPub)
-	config.SetBech32PrefixForConsensusNode(hub.Bech32PrefixConsAddr, hub.Bech32PrefixConsPub)
-	config.Seal()
+	cdc := hub.MakeCodec()
+	types.GetConfig().Seal()
 
 	ctx := server.NewDefaultContext()
 	cobra.EnableCommandSorting = false
-	rootCmd := &cobra.Command{
+	cmd := &cobra.Command{
 		Use:               "sentinel-hubd",
 		Short:             "Sentinel Hub Daemon (server)",
 		PersistentPreRunE: server.PersistentPreRunEFn(ctx),
 	}
 
-	rootCmd.AddCommand(genutilCli.InitCmd(ctx, cdc, app.ModuleBasics, app.DefaultNodeHome))
-	rootCmd.AddCommand(genutilCli.CollectGenTxsCmd(ctx, cdc, genaccounts.AppModuleBasic{}, app.DefaultNodeHome))
-	rootCmd.AddCommand(genutilCli.GenTxCmd(ctx, cdc, app.ModuleBasics, staking.AppModuleBasic{},
-		genaccounts.AppModuleBasic{}, app.DefaultNodeHome, app.DefaultCLIHome))
-	rootCmd.AddCommand(genutilCli.ValidateGenesisCmd(ctx, cdc, app.ModuleBasics))
-	rootCmd.AddCommand(genaccountsCli.AddGenesisAccountCmd(ctx, cdc, app.DefaultNodeHome, app.DefaultCLIHome))
-	rootCmd.AddCommand(client.NewCompletionCmd(rootCmd, true))
+	cmd.AddCommand(genutilCli.InitCmd(ctx, cdc, hub.ModuleBasics, hub.DefaultNodeHome))
+	cmd.AddCommand(genutilCli.CollectGenTxsCmd(ctx, cdc, genaccounts.AppModuleBasic{}, hub.DefaultNodeHome))
+	cmd.AddCommand(genutilCli.GenTxCmd(ctx, cdc, hub.ModuleBasics, staking.AppModuleBasic{},
+		genaccounts.AppModuleBasic{}, hub.DefaultNodeHome, hub.DefaultCLIHome))
+	cmd.AddCommand(genutilCli.ValidateGenesisCmd(ctx, cdc, hub.ModuleBasics))
+	cmd.AddCommand(genaccountsCli.AddGenesisAccountCmd(ctx, cdc, hub.DefaultNodeHome, hub.DefaultCLIHome))
+	cmd.AddCommand(client.NewCompletionCmd(cmd, true))
 
-	_server.AddCommands(ctx, cdc, rootCmd, newApp, exportAppStateAndTMValidators)
-	rootCmd.PersistentFlags().UintVar(&invCheckPeriod, flagInvCheckPeriod,
-		0, "Assert registered invariants every N blocks")
+	server.AddCommands(ctx, cdc, cmd, newApp, exportAppStateAndValidators)
+	cmd.PersistentFlags().
+		UintVar(&invarCheckPeriod, flagInvarCheckPeriod, 0, "Assert registered invariants every N blocks")
 
-	executor := cli.PrepareBaseCmd(rootCmd, "SENT_HUB", app.DefaultNodeHome)
+	executor := cli.PrepareBaseCmd(cmd, "SENTINEL_HUB", hub.DefaultNodeHome)
 	if err := executor.Execute(); err != nil {
 		panic(err)
 	}
 }
 
-func newApp(logger log.Logger, db db.DB, traceStore io.Writer) abci.Application {
-	return app.NewHubApp(
-		logger, db, traceStore, true, invCheckPeriod,
+func newApp(logger log.Logger, db db.DB, tracer io.Writer) abci.Application {
+	return hub.NewApp(
+		logger, db, tracer, true, invarCheckPeriod,
 		baseapp.SetPruning(store.NewPruningOptionsFromString(viper.GetString("pruning"))),
 		baseapp.SetMinGasPrices(viper.GetString(server.FlagMinGasPrices)),
 		baseapp.SetHaltHeight(uint64(viper.GetInt(server.FlagHaltHeight))),
 	)
 }
 
-func exportAppStateAndTMValidators(logger log.Logger, db db.DB, traceStore io.Writer, height int64, forZeroHeight bool,
-	jailWhiteList []string) (json.RawMessage, []tm.GenesisValidator, error) {
+func exportAppStateAndValidators(logger log.Logger, db db.DB, tracer io.Writer, height int64, zeroHeight bool,
+	jailWhitelist []string) (json.RawMessage, []tm.GenesisValidator, error) {
 	if height != -1 {
-		hubApp := app.NewHubApp(logger, db, traceStore, false, uint(1))
-		err := hubApp.LoadHeight(height)
-		if err != nil {
+		app := hub.NewApp(logger, db, tracer, false, uint(1))
+		if err := app.LoadHeight(height); err != nil {
 			return nil, nil, err
 		}
-		return hubApp.ExportAppStateAndValidators(forZeroHeight, jailWhiteList)
+
+		return app.ExportAppStateAndValidators(zeroHeight, jailWhitelist)
 	}
-	hubApp := app.NewHubApp(logger, db, traceStore, true, uint(1))
-	return hubApp.ExportAppStateAndValidators(forZeroHeight, jailWhiteList)
+
+	app := hub.NewApp(logger, db, tracer, true, uint(1))
+	return app.ExportAppStateAndValidators(zeroHeight, jailWhitelist)
 }

@@ -13,6 +13,9 @@ import (
 
 	"github.com/sentinel-official/hub/x/vpn/client/cli"
 	"github.com/sentinel-official/hub/x/vpn/client/rest"
+	"github.com/sentinel-official/hub/x/vpn/keeper"
+	"github.com/sentinel-official/hub/x/vpn/querier"
+	"github.com/sentinel-official/hub/x/vpn/types"
 )
 
 var (
@@ -23,28 +26,26 @@ var (
 type AppModuleBasic struct{}
 
 func (a AppModuleBasic) Name() string {
-	return ModuleName
+	return types.ModuleName
 }
 
 func (a AppModuleBasic) RegisterCodec(cdc *codec.Codec) {
-	RegisterCodec(cdc)
+	types.RegisterCodec(cdc)
 }
 
 func (a AppModuleBasic) DefaultGenesis() json.RawMessage {
-	return ModuleCdc.MustMarshalJSON(DefaultGenesisState())
+	return types.ModuleCdc.MustMarshalJSON(types.DefaultGenesisState())
 }
 
 func (a AppModuleBasic) ValidateGenesis(data json.RawMessage) error {
-	var state GenesisState
-	if err := ModuleCdc.UnmarshalJSON(data, &state); err != nil {
-		return err
-	}
+	var state types.GenesisState
+	types.ModuleCdc.MustUnmarshalJSON(data, &state)
 
 	return ValidateGenesis(state)
 }
 
-func (a AppModuleBasic) RegisterRESTRoutes(ctx context.CLIContext, r *mux.Router) {
-	rest.RegisterRoutes(ctx, r)
+func (a AppModuleBasic) RegisterRESTRoutes(context context.CLIContext, router *mux.Router) {
+	rest.RegisterRoutes(context, router)
 }
 
 func (a AppModuleBasic) GetTxCmd(cdc *codec.Codec) *cobra.Command {
@@ -57,49 +58,47 @@ func (a AppModuleBasic) GetQueryCmd(cdc *codec.Codec) *cobra.Command {
 
 type AppModule struct {
 	AppModuleBasic
-	keeper Keeper
+	k keeper.Keeper
 }
 
-func NewAppModule(k Keeper) AppModule {
+func NewAppModule(k keeper.Keeper) AppModule {
 	return AppModule{
-		keeper: k,
+		k: k,
 	}
 }
 
 func (a AppModule) InitGenesis(ctx sdk.Context, data json.RawMessage) []abci.ValidatorUpdate {
-	var state GenesisState
-	ModuleCdc.MustUnmarshalJSON(data, &state)
-	InitGenesis(ctx, a.keeper, state)
+	var state types.GenesisState
+	types.ModuleCdc.MustUnmarshalJSON(data, &state)
+	InitGenesis(ctx, a.k, state)
 
 	return nil
 }
 
 func (a AppModule) ExportGenesis(ctx sdk.Context) json.RawMessage {
-	state := ExportGenesis(ctx, a.keeper)
-	return ModuleCdc.MustMarshalJSON(state)
+	return types.ModuleCdc.MustMarshalJSON(ExportGenesis(ctx, a.k))
 }
 
 func (a AppModule) RegisterInvariants(_ sdk.InvariantRegistry) {}
 
 func (a AppModule) Route() string {
-	return RouterKey
+	return types.RouterKey
 }
 
 func (a AppModule) NewHandler() sdk.Handler {
-	return NewHandler(a.keeper)
+	return NewHandler(a.k)
 }
 
 func (a AppModule) QuerierRoute() string {
-	return QuerierRoute
+	return types.QuerierRoute
 }
 
 func (a AppModule) NewQuerierHandler() sdk.Querier {
-	return NewQuerier(a.keeper)
+	return querier.NewQuerier(a.k)
 }
 
 func (a AppModule) BeginBlock(_ sdk.Context, _ abci.RequestBeginBlock) {}
 
 func (a AppModule) EndBlock(ctx sdk.Context, _ abci.RequestEndBlock) []abci.ValidatorUpdate {
-	EndBlock(ctx, a.keeper)
-	return nil
+	return EndBlock(ctx, a.k)
 }

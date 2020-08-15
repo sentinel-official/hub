@@ -2,6 +2,7 @@ package types
 
 import (
 	"fmt"
+	"strings"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
@@ -12,18 +13,21 @@ type Deposit struct {
 }
 
 func (d Deposit) String() string {
-	return fmt.Sprintf(`Deposit
-  Address: %s
-  Coins:   %s`, d.Address, d.Coins)
+	return fmt.Sprintf(strings.TrimSpace(`
+Address: %s
+Coins  : %s
+`), d.Address, d.Coins)
 }
 
-func (d Deposit) IsValid() error {
+func (d Deposit) Validate() error {
 	if d.Address == nil || d.Address.Empty() {
-		return fmt.Errorf("invalid address")
+		return fmt.Errorf("address should not be nil or empty")
 	}
-	if !d.Coins.IsValid() {
-		return fmt.Errorf("invalid coins")
+	if d.Coins == nil || !d.Coins.IsValid() {
+		return fmt.Errorf("coins should not be nil or invalid")
 	}
 
 	return nil
 }
+
+type Deposits []Deposit

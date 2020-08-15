@@ -5,16 +5,28 @@ import (
 )
 
 const (
-	QueryDepositOfAddress = "deposit_of_address"
-	QueryAllDeposits      = "all_deposits"
+	QueryDeposit  = "deposit"
+	QueryDeposits = "deposits"
 )
 
-type QueryDepositOfAddressPrams struct {
-	Address sdk.AccAddress
+type QueryDepositParams struct {
+	Address sdk.AccAddress `json:"address"`
 }
 
-func NewQueryDepositOfAddressParams(address sdk.AccAddress) QueryDepositOfAddressPrams {
-	return QueryDepositOfAddressPrams{
+func NewQueryDepositParams(address sdk.AccAddress) QueryDepositParams {
+	return QueryDepositParams{
 		Address: address,
+	}
+}
+
+type QueryDepositsParams struct {
+	Page  int `json:"page"`
+	Limit int `json:"limit"`
+}
+
+func NewQueryDepositsParams(page, limit int) QueryDepositsParams {
+	return QueryDepositsParams{
+		Page:  page,
+		Limit: limit,
 	}
 }

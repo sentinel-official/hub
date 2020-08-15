@@ -1,11 +1,11 @@
 package types
 
-type GenesisState []Deposit
+type GenesisState = Deposits
 
-func NewGenesisState(deposits []Deposit) GenesisState {
+func NewGenesisState(deposits Deposits) GenesisState {
 	return deposits
 }
 
 func DefaultGenesisState() GenesisState {
-	return GenesisState{}
+	return nil
 }

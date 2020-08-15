@@ -5,13 +5,13 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func RegisterRoutes(ctx context.CLIContext, r *mux.Router) {
-	registerQueryRoutes(ctx, r)
+func registerQueryRoutes(ctx context.CLIContext, router *mux.Router) {
+	router.HandleFunc("/deposits", queryDeposits(ctx)).
+		Methods("GET")
+	router.HandleFunc("/deposits/{address}", queryDeposit(ctx)).
+		Methods("GET")
 }
 
-func registerQueryRoutes(ctx context.CLIContext, r *mux.Router) {
-	r.HandleFunc("/deposits", getAllDeposits(ctx)).
-		Methods("GET")
-	r.HandleFunc("/deposits/{address}", getDepositOfAddressHandlerFunc(ctx)).
-		Methods("GET")
+func RegisterRoutes(ctx context.CLIContext, router *mux.Router) {
+	registerQueryRoutes(ctx, router)
 }

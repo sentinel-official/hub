@@ -9,20 +9,14 @@ import (
 	"github.com/sentinel-official/hub/x/deposit/types"
 )
 
-func QueryDepositOfAddress(ctx context.CLIContext, s string) (*types.Deposit, error) {
-	address, err := sdk.AccAddressFromBech32(s)
-	if err != nil {
-		return nil, err
-	}
-
-	params := types.NewQueryDepositOfAddressParams(address)
-
+func QueryDeposit(ctx context.CLIContext, address sdk.AccAddress) (*types.Deposit, error) {
+	params := types.NewQueryDepositParams(address)
 	bytes, err := ctx.Codec.MarshalJSON(params)
 	if err != nil {
 		return nil, err
 	}
 
-	path := fmt.Sprintf("custom/%s/%s", types.QuerierRoute, types.QueryDepositOfAddress)
+	path := fmt.Sprintf("custom/%s/%s/%s", types.StoreKey, types.QuerierRoute, types.QueryDeposit)
 	res, _, err := ctx.QueryWithData(path, bytes)
 	if err != nil {
 		return nil, err
@@ -31,28 +25,34 @@ func QueryDepositOfAddress(ctx context.CLIContext, s string) (*types.Deposit, er
 		return nil, fmt.Errorf("no deposit found")
 	}
 
-	var d types.Deposit
-	if err = ctx.Codec.UnmarshalJSON(res, &d); err != nil {
+	var deposit types.Deposit
+	if err = ctx.Codec.UnmarshalJSON(res, &deposit); err != nil {
 		return nil, err
 	}
 
-	return &d, nil
+	return &deposit, nil
 }
 
-func QueryAllDeposits(ctx context.CLIContext) ([]types.Deposit, error) {
-	path := fmt.Sprintf("custom/%s/%s", types.QuerierRoute, types.QueryAllDeposits)
-	res, _, err := ctx.QueryWithData(path, nil)
+func QueryDeposits(ctx context.CLIContext, page, limit int) (types.Deposits, error) {
+	params := types.NewQueryDepositsParams(page, limit)
+	bytes, err := ctx.Codec.MarshalJSON(params)
 	if err != nil {
 		return nil, err
 	}
-	if string(res) == "[]" || string(res) == "null" {
+
+	path := fmt.Sprintf("custom/%s/%s/%s", types.StoreKey, types.QuerierRoute, types.QueryDeposits)
+	res, _, err := ctx.QueryWithData(path, bytes)
+	if err != nil {
+		return nil, err
+	}
+	if res == nil {
 		return nil, fmt.Errorf("no deposits found")
 	}
 
-	var d []types.Deposit
-	if err = ctx.Codec.UnmarshalJSON(res, &d); err != nil {
+	var deposits types.Deposits
+	if err = ctx.Codec.UnmarshalJSON(res, &deposits); err != nil {
 		return nil, err
 	}
 
-	return d, nil
+	return deposits, nil
 }

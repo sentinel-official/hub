@@ -1,9 +1,11 @@
 package types
 
 const (
-	ErrCodeMarshal   = 101
-	ErrCodeUnmarshal = 102
+	ErrorCodeMarshal = iota + 101
+	ErrorCodeUnmarshal
+)
 
-	ErrMsgMarshal   = "Error occurred while marshalling the data" // nolint:misspell
-	ErrMsgUnmarshal = "Error occurred while unmarshalling the data"
+const (
+	ErrorMsgMarshal   = "error occurred while marshalling the data"
+	ErrorMsgUnmarshal = "error occurred while unmarshalling the data"
 )
