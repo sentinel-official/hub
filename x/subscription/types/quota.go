@@ -33,6 +33,9 @@ func (q Quota) Validate() error {
 	if !q.Allocated.IsValid() {
 		return fmt.Errorf("allocated should be valid")
 	}
+	if q.Consumed.IsAnyGT(q.Allocated) {
+		return fmt.Errorf("consumed should not be greater than allocated")
+	}
 
 	return nil
 }

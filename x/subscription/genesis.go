@@ -5,6 +5,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
+	hub "github.com/sentinel-official/hub/types"
 	"github.com/sentinel-official/hub/x/subscription/keeper"
 	"github.com/sentinel-official/hub/x/subscription/types"
 )
@@ -25,22 +26,26 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, state types.GenesisState) {
 			k.SetSubscriptionForPlan(ctx, item.Subscription.Plan, item.Subscription.ID)
 		}
 
-		k.SetSubscriptionsCount(ctx, k.GetSubscriptionsCount(ctx)+1)
+		if item.Subscription.Status.Equal(hub.StatusCancel) {
+			k.SetCancelSubscriptionAt(ctx, item.Subscription.StatusAt, item.Subscription.ID)
+		}
 	}
+
+	k.SetSubscriptionsCount(ctx, uint64(len(state.Subscriptions)))
 }
 
 func ExportGenesis(ctx sdk.Context, k keeper.Keeper) types.GenesisState {
-	_subscriptions := k.GetSubscriptions(ctx)
+	subscriptions := k.GetSubscriptions(ctx)
 
-	subscriptions := make(types.GenesisSubscriptions, 0, len(_subscriptions))
-	for _, item := range _subscriptions {
-		subscriptions = append(subscriptions, types.GenesisSubscription{
+	items := make(types.GenesisSubscriptions, 0, len(subscriptions))
+	for _, item := range subscriptions {
+		items = append(items, types.GenesisSubscription{
 			Subscription: item,
 			Quotas:       k.GetQuotas(ctx, item.ID),
 		})
 	}
 
-	return types.NewGenesisState(subscriptions, k.GetParams(ctx))
+	return types.NewGenesisState(items, k.GetParams(ctx))
 }
 
 func ValidateGenesis(state types.GenesisState) error {
@@ -62,6 +67,14 @@ func ValidateGenesis(state types.GenesisState) error {
 		}
 
 		subscriptions[id] = true
+	}
+
+	for _, item := range state.Subscriptions {
+		for _, quota := range item.Quotas {
+			if err := quota.Validate(); err != nil {
+				return err
+			}
+		}
 	}
 
 	for _, item := range state.Subscriptions {

@@ -76,6 +76,9 @@ func HandleUpsert(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpsert) sdk.Res
 			sdk.NewAttribute(types.AttributeKeyCount, fmt.Sprintf("%d", count+1)),
 		))
 
+		k.SetSessionForSubscription(ctx, session.Subscription, session.ID)
+		k.SetSessionForNode(ctx, session.Node, session.ID)
+		k.SetSessionForAddress(ctx, session.Address, session.ID)
 		k.SetOngoingSession(ctx, session.Subscription, session.Address, session.ID)
 		ctx.EventManager().EmitEvent(sdk.NewEvent(
 			types.EventTypeSetActive,

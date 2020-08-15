@@ -5,6 +5,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
+	hub "github.com/sentinel-official/hub/types"
 	"github.com/sentinel-official/hub/x/node/keeper"
 	"github.com/sentinel-official/hub/x/node/types"
 )
@@ -13,15 +14,17 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, state types.GenesisState) {
 	k.SetParams(ctx, state.Params)
 	for _, node := range state.Nodes {
 		k.SetNode(ctx, node)
-		k.SetNodeForProvider(ctx, node.Provider, node.Address)
+		if node.Provider != nil {
+			k.SetNodeForProvider(ctx, node.Provider, node.Address)
+		}
+		if node.Status.Equal(hub.StatusActive) {
+			k.SetActiveNodeAt(ctx, node.StatusAt, node.Address)
+		}
 	}
 }
 
 func ExportGenesis(ctx sdk.Context, k keeper.Keeper) types.GenesisState {
-	return types.NewGenesisState(
-		k.GetNodes(ctx),
-		k.GetParams(ctx),
-	)
+	return types.NewGenesisState(k.GetNodes(ctx), k.GetParams(ctx))
 }
 
 func ValidateGenesis(state types.GenesisState) error {

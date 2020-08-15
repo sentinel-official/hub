@@ -30,7 +30,7 @@ func ValidateGenesis(state types.GenesisState) error {
 	for _, deposit := range state {
 		address := deposit.Address.String()
 		if deposits[address] {
-			return fmt.Errorf("found duplicate deposit for address %s", address)
+			return fmt.Errorf("found duplicate deposit address %s", address)
 		}
 
 		deposits[address] = true

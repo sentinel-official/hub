@@ -17,9 +17,9 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, state types.GenesisState) {
 		for _, node := range item.Nodes {
 			k.SetNodeForPlan(ctx, item.Plan.ID, node)
 		}
-
-		k.SetPlansCount(ctx, k.GetPlansCount(ctx)+1)
 	}
+
+	k.SetPlansCount(ctx, uint64(len(state)))
 }
 
 func ExportGenesis(ctx sdk.Context, k keeper.Keeper) types.GenesisState {

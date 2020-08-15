@@ -18,5 +18,5 @@ func NewGenesisState(plans GenesisPlans) GenesisState {
 }
 
 func DefaultGenesisState() GenesisState {
-	return GenesisState{}
+	return nil
 }
