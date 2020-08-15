@@ -47,10 +47,10 @@ func (p Plan) Validate() error {
 		return fmt.Errorf("id should not be zero")
 	}
 	if p.Provider == nil || p.Provider.Empty() {
-		return fmt.Errorf("provider should not be nil and empty")
+		return fmt.Errorf("provider should not be nil or empty")
 	}
 	if p.Price != nil && !p.Price.IsValid() {
-		return fmt.Errorf("price should be nil or valid")
+		return fmt.Errorf("price should be either nil or valid")
 	}
 	if p.Validity <= 0 {
 		return fmt.Errorf("validity should be positive")

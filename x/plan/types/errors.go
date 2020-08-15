@@ -20,8 +20,6 @@ const (
 	errorCodePlanDoesNotExist
 	errorCodeNodeDoesNotExist
 	errorCodeUnauthorized
-	errorCodeDuplicateNode
-	errorCodeNodeWasNotAdded
 )
 
 const (
@@ -32,8 +30,6 @@ const (
 	errorMsgPlanDoesNotExist     = "plan does not exist"
 	errorMsgNodeDoesNotExist     = "node does not exist"
 	errorMsgUnauthorized         = "unauthorized"
-	errorMsgDuplicateNode        = "duplicate node"
-	errorMsgNodeWasNotAdded      = "node was not added"
 )
 
 func ErrorMarshal() sdk.Error {
@@ -70,12 +66,4 @@ func ErrorNodeDoesNotExist() sdk.Error {
 
 func ErrorUnauthorized() sdk.Error {
 	return sdk.NewError(Codespace, errorCodeUnauthorized, errorMsgUnauthorized)
-}
-
-func ErrorDuplicateNode() sdk.Error {
-	return sdk.NewError(Codespace, errorCodeDuplicateNode, errorMsgDuplicateNode)
-}
-
-func ErrorNodeWasNotAdded() sdk.Error {
-	return sdk.NewError(Codespace, errorCodeNodeWasNotAdded, errorMsgNodeWasNotAdded)
 }

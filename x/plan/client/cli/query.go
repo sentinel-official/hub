@@ -59,23 +59,24 @@ func queryPlans(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			var plans types.Plans
+			var (
+				address hub.ProvAddress
+				plans   types.Plans
+			)
 
 			if len(provider) > 0 {
-				address, err := hub.ProvAddressFromBech32(provider)
+				address, err = hub.ProvAddressFromBech32(provider)
 				if err != nil {
 					return err
 				}
 
 				plans, err = common.QueryPlansForProvider(ctx, address, page, limit)
-				if err != nil {
-					return err
-				}
 			} else {
 				plans, err = common.QueryPlans(ctx, page, limit)
-				if err != nil {
-					return err
-				}
+			}
+
+			if err != nil {
+				return err
 			}
 
 			for _, plan := range plans {
