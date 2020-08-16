@@ -80,11 +80,11 @@ func HandleSubscribeToNode(ctx sdk.Context, k keeper.Keeper, msg types.MsgSubscr
 	if !found {
 		return types.ErrorNodeDoesNotExist().Result()
 	}
-	if !node.Status.Equal(hub.StatusActive) {
-		return types.ErrorInvalidNodeStatus().Result()
-	}
 	if node.Provider != nil {
 		return types.ErrorCanNotSubscribe().Result()
+	}
+	if !node.Status.Equal(hub.StatusActive) {
+		return types.ErrorInvalidNodeStatus().Result()
 	}
 
 	price, found := node.PriceForDenom(msg.Deposit.Denom)
@@ -180,12 +180,11 @@ func HandleAddQuota(ctx sdk.Context, k keeper.Keeper, msg types.MsgAddQuota) sdk
 	if !subscription.Status.Equal(hub.StatusActive) {
 		return types.ErrorInvalidSubscriptionStatus().Result()
 	}
-	if msg.Bandwidth.IsAnyGT(subscription.Free) {
-		return types.ErrorInvalidQuota().Result()
-	}
-
 	if k.HasQuota(ctx, subscription.ID, msg.Address) {
 		return types.ErrorDuplicateQuota().Result()
+	}
+	if msg.Bandwidth.IsAnyGT(subscription.Free) {
+		return types.ErrorInvalidQuota().Result()
 	}
 
 	subscription.Free = subscription.Free.Sub(msg.Bandwidth)

@@ -15,8 +15,8 @@ func EndBlock(ctx sdk.Context, k keeper.Keeper) []abci.ValidatorUpdate {
 	defer write()
 
 	node.EndBlock(ctx, k.Node)
-	subscription.EndBlock(ctx, k.Subscription)
 	session.EndBlock(ctx, k.Session)
+	subscription.EndBlock(ctx, k.Subscription)
 
 	return nil
 }

@@ -179,7 +179,7 @@ func (k Keeper) GetOngoingSession(ctx sdk.Context, id uint64, address sdk.AccAdd
 	return k.GetSession(ctx, id)
 }
 
-func (k Keeper) DeleteActiveSession(ctx sdk.Context, id uint64, address sdk.AccAddress) {
+func (k Keeper) DeleteOngoingSession(ctx sdk.Context, id uint64, address sdk.AccAddress) {
 	key := types.OngoingSessionKey(id, address)
 
 	store := k.Store(ctx)

@@ -56,6 +56,7 @@ func NewKeeper(cdc *codec.Codec, key sdk.StoreKey, paramsKeeper params.Keeper, b
 	subscriptionKeeper.WithNodeKeeper(&nodeKeeper)
 	subscriptionKeeper.WithPlanKeeper(&planKeeper)
 
+	sessionKeeper.WithDepositKeeper(depositKeeper)
 	sessionKeeper.WithPlanKeeper(&planKeeper)
 	sessionKeeper.WithSubscriptionKeeper(&subscriptionKeeper)
 

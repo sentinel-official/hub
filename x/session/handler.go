@@ -10,7 +10,7 @@ import (
 	"github.com/sentinel-official/hub/x/session/types"
 )
 
-func isAuthorized(ctx sdk.Context, k keeper.Keeper, p uint64, n hub.NodeAddress, s uint64) bool {
+func authorized(ctx sdk.Context, k keeper.Keeper, p uint64, n hub.NodeAddress, s uint64) bool {
 	if p == 0 {
 		return k.HasSubscriptionForNode(ctx, n, s)
 	}
@@ -29,7 +29,7 @@ func HandleUpsert(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpsert) sdk.Res
 
 	// Check whether the msg.From is authorized to upsert the session or not
 	// msg.From is authorized only if the node belongs to the subscription or to the plan.
-	if !isAuthorized(ctx, k, subscription.Plan, msg.From, subscription.ID) {
+	if !authorized(ctx, k, subscription.Plan, msg.From, subscription.ID) {
 		return types.ErrorUnauthorized().Result()
 	}
 
@@ -90,6 +90,8 @@ func HandleUpsert(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpsert) sdk.Res
 
 	session.Duration = session.Duration + msg.Duration
 	session.Bandwidth = session.Bandwidth.Add(msg.Bandwidth)
+	session.Status = hub.StatusActive
+	session.StatusAt = ctx.BlockTime()
 
 	k.SetSession(ctx, session)
 	k.SetActiveSessionAt(ctx, session.StatusAt, session.ID)

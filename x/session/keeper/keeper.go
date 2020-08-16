@@ -17,6 +17,7 @@ type Keeper struct {
 	cdc          *codec.Codec
 	key          sdk.StoreKey
 	params       params.Subspace
+	deposit      expected.DepositKeeper
 	plan         expected.PlanKeeper
 	subscription expected.SubscriptionKeeper
 }
@@ -27,6 +28,10 @@ func NewKeeper(cdc *codec.Codec, key sdk.StoreKey, params params.Subspace) Keepe
 		key:    key,
 		params: params.WithKeyTable(types.ParamsKeyTable()),
 	}
+}
+
+func (k *Keeper) WithDepositKeeper(keeper expected.DepositKeeper) {
+	k.deposit = keeper
 }
 
 func (k *Keeper) WithPlanKeeper(keeper expected.PlanKeeper) {

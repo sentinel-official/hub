@@ -163,12 +163,12 @@ func queryQuotas(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			page, err := cmd.Flags().GetInt(flagPlan)
+			page, err := cmd.Flags().GetInt(flagPage)
 			if err != nil {
 				return err
 			}
 
-			limit, err := cmd.Flags().GetInt(flagPlan)
+			limit, err := cmd.Flags().GetInt(flagLimit)
 			if err != nil {
 				return err
 			}
