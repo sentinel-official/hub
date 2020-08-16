@@ -26,3 +26,11 @@ func (k Keeper) SetQuota(ctx sdk.Context, id uint64, quota subscription.Quota) {
 func (k Keeper) GetQuota(ctx sdk.Context, id uint64, address sdk.AccAddress) (subscription.Quota, bool) {
 	return k.subscription.GetQuota(ctx, id, address)
 }
+
+func (k Keeper) SendCoinsFromDepositToAccount(ctx sdk.Context, from, to sdk.AccAddress, coin sdk.Coin) sdk.Error {
+	if coin.IsZero() {
+		return nil
+	}
+
+	return k.deposit.SendCoinsFromDepositToAccount(ctx, from, to, sdk.NewCoins(coin))
+}

@@ -7,6 +7,10 @@ import (
 	subscription "github.com/sentinel-official/hub/x/subscription/types"
 )
 
+type DepositKeeper interface {
+	SendCoinsFromDepositToAccount(ctx sdk.Context, from, to sdk.AccAddress, coins sdk.Coins) sdk.Error
+}
+
 type PlanKeeper interface {
 	HasNodeForPlan(ctx sdk.Context, id uint64, address hub.NodeAddress) bool
 }

@@ -52,12 +52,12 @@ func querySessions(ctx sdk.Context, req abci.RequestQuery, k keeper.Keeper) ([]b
 }
 
 func querySessionsForSubscription(ctx sdk.Context, req abci.RequestQuery, k keeper.Keeper) ([]byte, sdk.Error) {
-	var params types.QuerySessionsForAddressParams
+	var params types.QuerySessionsForSubscriptionParams
 	if err := types.ModuleCdc.UnmarshalJSON(req.Data, &params); err != nil {
 		return nil, types.ErrorUnmarshal()
 	}
 
-	sessions := k.GetSessionsForAddress(ctx, params.Address)
+	sessions := k.GetSessionsForSubscription(ctx, params.ID)
 
 	start, end := client.Paginate(len(sessions), params.Page, params.Limit, len(sessions))
 	if start < 0 || end < 0 {
@@ -75,12 +75,12 @@ func querySessionsForSubscription(ctx sdk.Context, req abci.RequestQuery, k keep
 }
 
 func querySessionsForNode(ctx sdk.Context, req abci.RequestQuery, k keeper.Keeper) ([]byte, sdk.Error) {
-	var params types.QuerySessionsForAddressParams
+	var params types.QuerySessionsForNodeParams
 	if err := types.ModuleCdc.UnmarshalJSON(req.Data, &params); err != nil {
 		return nil, types.ErrorUnmarshal()
 	}
 
-	sessions := k.GetSessionsForAddress(ctx, params.Address)
+	sessions := k.GetSessionsForNode(ctx, params.Address)
 
 	start, end := client.Paginate(len(sessions), params.Page, params.Limit, len(sessions))
 	if start < 0 || end < 0 {
