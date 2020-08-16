@@ -12,6 +12,9 @@ import (
 func EndBlock(ctx sdk.Context, k keeper.Keeper) []abci.ValidatorUpdate {
 	end := ctx.BlockTime().Add(-1 * k.CancelDuration(ctx))
 	k.IterateCancelSubscriptions(ctx, end, func(_ int, item types.Subscription) bool {
+		k.Logger(ctx).Info("Inactive subscription", "id", item.ID,
+			"owner", item.Owner, "plan", item.Plan, "node", item.Node)
+
 		if item.Plan == 0 {
 			consumed := hub.NewBandwidthFromInt64(0, 0)
 			k.IterateQuotas(ctx, item.ID, func(_ int, item types.Quota) bool {
@@ -20,6 +23,9 @@ func EndBlock(ctx sdk.Context, k keeper.Keeper) []abci.ValidatorUpdate {
 			})
 
 			amount := item.Deposit.Sub(item.Amount(consumed))
+			k.Logger(ctx).Info("", "price", item.Price,
+				"deposit", item.Deposit, "consumed", consumed, "amount", amount)
+
 			if err := k.SubtractDeposit(ctx, item.Owner, amount); err != nil {
 				panic(err)
 			}

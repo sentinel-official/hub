@@ -13,7 +13,7 @@ func (k Keeper) SendCoin(ctx sdk.Context, from sdk.AccAddress, to sdk.AccAddress
 }
 
 func (k Keeper) AddDeposit(ctx sdk.Context, address sdk.AccAddress, coin sdk.Coin) sdk.Error {
-	return k.deposit.Add(ctx, address, sdk.Coins{coin})
+	return k.deposit.Add(ctx, address, sdk.NewCoins(coin))
 }
 
 func (k Keeper) SubtractDeposit(ctx sdk.Context, address sdk.AccAddress, coin sdk.Coin) sdk.Error {
@@ -21,7 +21,7 @@ func (k Keeper) SubtractDeposit(ctx sdk.Context, address sdk.AccAddress, coin sd
 		return nil
 	}
 
-	return k.deposit.Subtract(ctx, address, sdk.Coins{coin})
+	return k.deposit.Subtract(ctx, address, sdk.NewCoins(coin))
 }
 
 func (k Keeper) GetNode(ctx sdk.Context, address hub.NodeAddress) (node.Node, bool) {
