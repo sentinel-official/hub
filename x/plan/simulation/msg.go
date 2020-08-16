@@ -23,7 +23,7 @@ func SimulateMsgAdd(pk expected.ProviderKeeper, k keeper.Keeper) simulation.Oper
 		simulation.OperationMsg, []simulation.FutureOperation, error) {
 		var (
 			from      = provider.RandomProvider(r, pk.GetProviders(ctx)).Address
-			price     = sdk.NewCoins(sdk.NewCoin("tsent", sdk.NewInt(r.Int63n(100)+1)))
+			price     = sdk.NewCoins(sdk.NewCoin("stake", sdk.NewInt(r.Int63n(100)+1)))
 			validity  = time.Duration(r.Intn(24)+1) * time.Hour
 			bandwidth = hub.NewBandwidthFromInt64(r.Int63n(1e12)+1, r.Int63n(1e12)+1)
 		)

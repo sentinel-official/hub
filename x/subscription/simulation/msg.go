@@ -23,7 +23,7 @@ func SimulateMsgSubscribeToPlan(pk expected.PlanKeeper, k keeper.Keeper) simulat
 		var (
 			from  = simulation.RandomAcc(r, accounts).Address
 			id    = plan.RandomPlan(r, pk.GetPlans(ctx)).ID
-			denom = "tsent"
+			denom = "stake"
 		)
 
 		msg := types.NewMsgSubscribeToPlan(from, id, denom)
@@ -47,7 +47,7 @@ func SimulateMsgSubscribeToNode(nk expected.NodeKeeper, k keeper.Keeper) simulat
 		var (
 			from    = simulation.RandomAcc(r, accounts).Address
 			address = node.RandomNode(r, nk.GetNodes(ctx)).Address
-			deposit = sdk.NewCoin("tsent", simulation.RandomAmount(r, sdk.NewInt(1e3)))
+			deposit = sdk.NewCoin("stake", simulation.RandomAmount(r, sdk.NewInt(1e3)))
 		)
 
 		msg := types.NewMsgSubscribeToNode(from, address, deposit)
