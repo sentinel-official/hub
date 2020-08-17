@@ -52,8 +52,20 @@ Status at: %s
 }
 
 func (s Subscription) Amount(consumed hub.Bandwidth) sdk.Coin {
-	x := hub.Gigabyte.Quo(s.Price.Amount)
-	amount := consumed.CeilTo(x).Sum().Quo(x)
+	var (
+		amount sdk.Int
+		bytes  = hub.Gigabyte.Quo(s.Price.Amount)
+	)
+
+	if bytes.IsPositive() {
+		amount = consumed.CeilTo(bytes).
+			Sum().Quo(bytes)
+	} else {
+		price := sdk.NewDec(s.Price.Amount.Int64()).
+			QuoInt(hub.Gigabyte).
+			Ceil().TruncateInt()
+		amount = consumed.Sum().Mul(price)
+	}
 
 	coin := sdk.NewCoin(s.Price.Denom, amount)
 	if s.Deposit.IsLT(coin) {
