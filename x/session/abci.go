@@ -10,27 +10,29 @@ import (
 )
 
 func EndBlock(ctx sdk.Context, k keeper.Keeper) []abci.ValidatorUpdate {
+	log := k.Logger(ctx)
+
 	end := ctx.BlockTime().Add(-1 * k.InactiveDuration(ctx))
 	k.IterateActiveSessions(ctx, end, func(_ int, item types.Session) bool {
-		k.Logger(ctx).Info("Inactive session", "id", item.ID,
+		log.Info("Inactive session", "id", item.ID,
 			"subscription", item.Subscription, "node", item.Node, "address", item.Address)
 
 		s, _ := k.GetSubscription(ctx, item.Subscription)
 		if s.Plan == 0 {
 			var (
-				amount   = s.Amount(item.Bandwidth)
-				quota, _ = k.GetQuota(ctx, item.Subscription, item.Address)
-				ceil     = item.Bandwidth.CeilTo(hub.Gigabyte.Quo(s.Price.Amount))
+				amount    = s.Amount(item.Bandwidth)
+				quota, _  = k.GetQuota(ctx, item.Subscription, item.Address)
+				bandwidth = item.Bandwidth.CeilTo(hub.Gigabyte.Quo(s.Price.Amount))
 			)
 
-			k.Logger(ctx).Info("", "price", s.Price, "deposit", s.Deposit,
-				"consumed", item.Bandwidth, "ceil", ceil, "amount", amount)
+			log.Info("", "price", s.Price, "deposit", s.Deposit,
+				"consumed", item.Bandwidth, "ceil", bandwidth, "amount", amount)
 
 			if err := k.SendCoinsFromDepositToAccount(ctx, item.Address, item.Node.Bytes(), amount); err != nil {
 				panic(err)
 			}
 
-			quota.Consumed = quota.Consumed.Sub(item.Bandwidth).Add(ceil)
+			quota.Consumed = quota.Consumed.Sub(item.Bandwidth).Add(bandwidth)
 			k.SetQuota(ctx, item.Subscription, quota)
 		}
 
