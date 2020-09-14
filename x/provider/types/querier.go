@@ -9,6 +9,7 @@ const (
 	QueryProviders = "providers"
 )
 
+// QueryProviderParams is the request parameters for querying a provider.
 type QueryProviderParams struct {
 	Address hub.ProvAddress `json:"address"`
 }
@@ -19,6 +20,7 @@ func NewQueryProviderParams(address hub.ProvAddress) QueryProviderParams {
 	}
 }
 
+// QueryProvidersParams is the request parameters for querying the providers.
 type QueryProvidersParams struct {
 	Page  int `json:"page"`
 	Limit int `json:"limit"`
