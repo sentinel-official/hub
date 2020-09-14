@@ -31,9 +31,11 @@ func EndBlock(ctx sdk.Context, k keeper.Keeper) []abci.ValidatorUpdate {
 			if err := k.SubtractDeposit(ctx, item.Owner, amount); err != nil {
 				panic(err)
 			}
-		}
 
-		k.DeleteCancelSubscriptionAt(ctx, item.StatusAt, item.ID)
+			k.DeleteCancelSubscriptionAt(ctx, item.StatusAt, item.ID)
+		} else {
+			k.DeleteCancelSubscriptionAt(ctx, item.Expiry, item.ID)
+		}
 
 		item.Status = hub.StatusInactive
 		item.StatusAt = ctx.BlockTime()
