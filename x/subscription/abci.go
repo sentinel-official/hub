@@ -14,17 +14,13 @@ func EndBlock(ctx sdk.Context, k keeper.Keeper) []abci.ValidatorUpdate {
 
 	end := ctx.BlockTime().Add(-1 * k.CancelDuration(ctx))
 	k.IterateCancelSubscriptions(ctx, end, func(_ int, item types.Subscription) bool {
-		log.Info("Inactive subscription", "id", item.ID,
+		log.Info("Cancel subscription", "id", item.ID,
 			"owner", item.Owner, "plan", item.Plan, "node", item.Node)
 
 		if item.Plan == 0 {
-			var (
-				precision = hub.Gigabyte.Quo(item.Price.Amount)
-				consumed  = hub.NewBandwidthFromInt64(0, 0)
-			)
-
+			consumed := sdk.ZeroInt()
 			k.IterateQuotas(ctx, item.ID, func(_ int, item types.Quota) bool {
-				consumed = consumed.Add(item.Consumed.CeilTo(precision))
+				consumed = consumed.Add(item.Consumed)
 				return false
 			})
 

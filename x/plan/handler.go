@@ -17,13 +17,13 @@ func HandleAdd(ctx sdk.Context, k keeper.Keeper, msg types.MsgAdd) sdk.Result {
 
 	count := k.GetPlansCount(ctx)
 	plan := types.Plan{
-		ID:        count + 1,
-		Provider:  msg.From,
-		Price:     msg.Price,
-		Validity:  msg.Validity,
-		Bandwidth: msg.Bandwidth,
-		Status:    hub.StatusInactive,
-		StatusAt:  ctx.BlockTime(),
+		ID:       count + 1,
+		Provider: msg.From,
+		Price:    msg.Price,
+		Validity: msg.Validity,
+		Bytes:    msg.Bytes,
+		Status:   hub.StatusInactive,
+		StatusAt: ctx.BlockTime(),
 	}
 
 	k.SetPlan(ctx, plan)

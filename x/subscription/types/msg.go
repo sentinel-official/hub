@@ -175,18 +175,18 @@ func (m MsgCancel) GetSigners() []sdk.AccAddress {
 
 // MsgAddQuota is for adding the bandwidth quota for an address.
 type MsgAddQuota struct {
-	From      sdk.AccAddress `json:"from"`
-	ID        uint64         `json:"id"`
-	Address   sdk.AccAddress `json:"address"`
-	Bandwidth hub.Bandwidth  `json:"bandwidth"`
+	From    sdk.AccAddress `json:"from"`
+	ID      uint64         `json:"id"`
+	Address sdk.AccAddress `json:"address"`
+	Bytes   sdk.Int        `json:"bytes"`
 }
 
-func NewMsgAddQuota(from sdk.AccAddress, id uint64, address sdk.AccAddress, bandwidth hub.Bandwidth) MsgAddQuota {
+func NewMsgAddQuota(from sdk.AccAddress, id uint64, address sdk.AccAddress, bytes sdk.Int) MsgAddQuota {
 	return MsgAddQuota{
-		From:      from,
-		ID:        id,
-		Address:   address,
-		Bandwidth: bandwidth,
+		From:    from,
+		ID:      id,
+		Address: address,
+		Bytes:   bytes,
 	}
 }
 
@@ -213,9 +213,9 @@ func (m MsgAddQuota) ValidateBasic() sdk.Error {
 		return ErrorInvalidField("address")
 	}
 
-	// Bandwidth should be valid
-	if !m.Bandwidth.IsValid() {
-		return ErrorInvalidField("bandwidth")
+	// Bytes should be positive
+	if !m.Bytes.IsPositive() {
+		return ErrorInvalidField("bytes")
 	}
 
 	return nil
@@ -236,18 +236,18 @@ func (m MsgAddQuota) GetSigners() []sdk.AccAddress {
 
 // MsgUpdateQuota is for updating the bandwidth quota for an address.
 type MsgUpdateQuota struct {
-	From      sdk.AccAddress `json:"from"`
-	ID        uint64         `json:"id"`
-	Address   sdk.AccAddress `json:"address"`
-	Bandwidth hub.Bandwidth  `json:"bandwidth"`
+	From    sdk.AccAddress `json:"from"`
+	ID      uint64         `json:"id"`
+	Address sdk.AccAddress `json:"address"`
+	Bytes   sdk.Int        `json:"bytes"`
 }
 
-func NewMsgUpdateQuota(from sdk.AccAddress, id uint64, address sdk.AccAddress, bandwidth hub.Bandwidth) MsgUpdateQuota {
+func NewMsgUpdateQuota(from sdk.AccAddress, id uint64, address sdk.AccAddress, bytes sdk.Int) MsgUpdateQuota {
 	return MsgUpdateQuota{
-		From:      from,
-		ID:        id,
-		Address:   address,
-		Bandwidth: bandwidth,
+		From:    from,
+		ID:      id,
+		Address: address,
+		Bytes:   bytes,
 	}
 }
 
@@ -274,9 +274,9 @@ func (m MsgUpdateQuota) ValidateBasic() sdk.Error {
 		return ErrorInvalidField("address")
 	}
 
-	// Bandwidth should be valid
-	if !m.Bandwidth.IsValid() {
-		return ErrorInvalidField("bandwidth")
+	// Bytes should be positive
+	if !m.Bytes.IsPositive() {
+		return ErrorInvalidField("bytes")
 	}
 
 	return nil

@@ -43,31 +43,23 @@ func txAdd(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			upload, err := cmd.Flags().GetInt64(flagUpload)
+			bytes, err := cmd.Flags().GetInt64(flagBytes)
 			if err != nil {
 				return err
 			}
 
-			download, err := cmd.Flags().GetInt64(flagDownload)
-			if err != nil {
-				return err
-			}
-
-			msg := types.NewMsgAdd(ctx.FromAddress.Bytes(), price, validity,
-				hub.NewBandwidthFromInt64(upload, download))
+			msg := types.NewMsgAdd(ctx.FromAddress.Bytes(), price, validity, sdk.NewInt(bytes))
 			return utils.GenerateOrBroadcastMsgs(ctx, txb, []sdk.Msg{msg})
 		},
 	}
 
 	cmd.Flags().String(flagPrice, "", "plan price")
 	cmd.Flags().String(flagValidity, "", "plan validity")
-	cmd.Flags().Int64(flagUpload, 0, "plan upload bandwidth")
-	cmd.Flags().Int64(flagDownload, 0, "plan download bandwidth")
+	cmd.Flags().Int64(flagBytes, 0, "plan bytes (upload + download)")
 
 	_ = cmd.MarkFlagRequired(flagPrice)
 	_ = cmd.MarkFlagRequired(flagValidity)
-	_ = cmd.MarkFlagRequired(flagUpload)
-	_ = cmd.MarkFlagRequired(flagDownload)
+	_ = cmd.MarkFlagRequired(flagBytes)
 
 	return cmd
 }

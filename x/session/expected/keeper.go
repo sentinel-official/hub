@@ -22,4 +22,5 @@ type SubscriptionKeeper interface {
 
 	SetQuota(ctx sdk.Context, id uint64, quota subscription.Quota)
 	GetQuota(ctx sdk.Context, id uint64, address sdk.AccAddress) (subscription.Quota, bool)
+	HasQuota(ctx sdk.Context, id uint64, address sdk.AccAddress) bool
 }

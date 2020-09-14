@@ -63,7 +63,7 @@ func txAddQuota(cdc *codec.Codec) *cobra.Command {
 	return &cobra.Command{
 		Use:   "quota-add",
 		Short: "Add a quota of a subscription",
-		Args:  cobra.ExactArgs(4),
+		Args:  cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			txb := auth.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
 			ctx := context.NewCLIContext().WithCodec(cdc)
@@ -78,17 +78,12 @@ func txAddQuota(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			upload, err := strconv.ParseInt(args[2], 10, 64)
+			bytes, err := strconv.ParseInt(args[2], 10, 64)
 			if err != nil {
 				return err
 			}
 
-			download, err := strconv.ParseInt(args[3], 10, 64)
-			if err != nil {
-				return err
-			}
-
-			msg := types.NewMsgAddQuota(ctx.FromAddress, id, address, hub.NewBandwidthFromInt64(upload, download))
+			msg := types.NewMsgAddQuota(ctx.FromAddress, id, address, sdk.NewInt(bytes))
 			return utils.GenerateOrBroadcastMsgs(ctx, txb, []sdk.Msg{msg})
 		},
 	}
@@ -98,7 +93,7 @@ func txUpdateQuota(cdc *codec.Codec) *cobra.Command {
 	return &cobra.Command{
 		Use:   "quota-update",
 		Short: "Update a quota of a subscription",
-		Args:  cobra.ExactArgs(4),
+		Args:  cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			txb := auth.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
 			ctx := context.NewCLIContext().WithCodec(cdc)
@@ -113,17 +108,12 @@ func txUpdateQuota(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			upload, err := strconv.ParseInt(args[2], 10, 64)
+			bytes, err := strconv.ParseInt(args[2], 10, 64)
 			if err != nil {
 				return err
 			}
 
-			download, err := strconv.ParseInt(args[3], 10, 64)
-			if err != nil {
-				return err
-			}
-
-			msg := types.NewMsgUpdateQuota(ctx.FromAddress, id, address, hub.NewBandwidthFromInt64(upload, download))
+			msg := types.NewMsgUpdateQuota(ctx.FromAddress, id, address, sdk.NewInt(bytes))
 			return utils.GenerateOrBroadcastMsgs(ctx, txb, []sdk.Msg{msg})
 		},
 	}
