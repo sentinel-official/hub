@@ -43,6 +43,7 @@ func HandleSubscribeToPlan(ctx sdk.Context, k keeper.Keeper, msg types.MsgSubscr
 
 	k.SetSubscription(ctx, subscription)
 	k.SetSubscriptionForPlan(ctx, subscription.Plan, subscription.ID)
+	k.SetCancelSubscriptionAt(ctx, subscription.Expiry, subscription.ID)
 	ctx.EventManager().EmitEvent(sdk.NewEvent(
 		types.EventTypeSet,
 		sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", subscription.ID)),
@@ -155,14 +156,23 @@ func HandleCancel(ctx sdk.Context, k keeper.Keeper, msg types.MsgCancel) sdk.Res
 		return types.ErrorInvalidSubscriptionStatus().Result()
 	}
 
-	subscription.Status = hub.StatusCancel
-	subscription.StatusAt = ctx.BlockTime()
+	if subscription.Plan == 0 {
+		subscription.Status = hub.StatusCancel
+		subscription.StatusAt = ctx.BlockTime().Add(k.CancelDuration(ctx))
+
+		k.SetCancelSubscriptionAt(ctx, subscription.StatusAt, subscription.ID)
+	} else {
+		subscription.Status = hub.StatusInactive
+		subscription.StatusAt = ctx.BlockTime()
+
+		k.DeleteCancelSubscriptionAt(ctx, subscription.Expiry, subscription.ID)
+	}
 
 	k.SetSubscription(ctx, subscription)
-	k.SetCancelSubscriptionAt(ctx, subscription.StatusAt, subscription.ID)
 	ctx.EventManager().EmitEvent(sdk.NewEvent(
 		types.EventTypeCancel,
 		sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", subscription.ID)),
+		sdk.NewAttribute(types.AttributeKeyStatus, subscription.Status.String()),
 	))
 
 	ctx.EventManager().EmitEvent(types.EventModuleName)
