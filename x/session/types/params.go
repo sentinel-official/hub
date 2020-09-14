@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	DefaultInactiveDuration = 30 * time.Minute
+	DefaultInactiveDuration = 5 * time.Minute
 )
 
 var (

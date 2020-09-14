@@ -5,7 +5,6 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	hub "github.com/sentinel-official/hub/types"
 	"github.com/sentinel-official/hub/x/subscription/types"
 )
 
@@ -25,8 +24,8 @@ func RandomQuota(r *rand.Rand, quotas types.Quotas) types.Quota {
 	if len(quotas) == 0 {
 		return types.Quota{
 			Address:   sdk.AccAddress("address"),
-			Consumed:  hub.NewBandwidthFromInt64(0, 0),
-			Allocated: hub.NewBandwidthFromInt64(1, 1),
+			Consumed:  sdk.ZeroInt(),
+			Allocated: sdk.OneInt(),
 		}
 	}
 

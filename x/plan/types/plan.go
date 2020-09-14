@@ -11,13 +11,13 @@ import (
 )
 
 type Plan struct {
-	ID        uint64          `json:"id"`
-	Provider  hub.ProvAddress `json:"provider"`
-	Price     sdk.Coins       `json:"price"`
-	Validity  time.Duration   `json:"validity"`
-	Bandwidth hub.Bandwidth   `json:"bandwidth"`
-	Status    hub.Status      `json:"status"`
-	StatusAt  time.Time       `json:"status_at"`
+	ID       uint64          `json:"id"`
+	Provider hub.ProvAddress `json:"provider"`
+	Price    sdk.Coins       `json:"price"`
+	Validity time.Duration   `json:"validity"`
+	Bytes    sdk.Int         `json:"bytes"`
+	Status   hub.Status      `json:"status"`
+	StatusAt time.Time       `json:"status_at"`
 }
 
 func (p Plan) String() string {
@@ -26,10 +26,10 @@ ID:        %d
 Provider:  %s
 Price:     %s
 Validity:  %s
-Bandwidth: %s
+Bytes:     %s
 Status:    %s
 Status at: %s
-`, p.ID, p.Provider, p.Price, p.Validity, p.Bandwidth, p.Status, p.StatusAt))
+`, p.ID, p.Provider, p.Price, p.Validity, p.Bytes, p.Status, p.StatusAt))
 }
 
 func (p Plan) PriceForDenom(d string) (sdk.Coin, bool) {
@@ -55,8 +55,8 @@ func (p Plan) Validate() error {
 	if p.Validity <= 0 {
 		return fmt.Errorf("validity should be positive")
 	}
-	if !p.Bandwidth.IsValid() {
-		return fmt.Errorf("bandwidth should be positive")
+	if !p.Bytes.IsPositive() {
+		return fmt.Errorf("bytes should be positive")
 	}
 	if !p.Status.Equal(hub.StatusActive) && !p.Status.Equal(hub.StatusInactive) {
 		return fmt.Errorf("status should be either active or inactive")

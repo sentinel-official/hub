@@ -7,6 +7,7 @@ import (
 	"github.com/sentinel-official/hub/x/provider/types"
 )
 
+// SetProvider is for inserting a provider into the KVStore.
 func (k Keeper) SetProvider(ctx sdk.Context, provider types.Provider) {
 	key := types.ProviderKey(provider.Address)
 	value := k.cdc.MustMarshalBinaryLengthPrefixed(provider)
@@ -15,6 +16,7 @@ func (k Keeper) SetProvider(ctx sdk.Context, provider types.Provider) {
 	store.Set(key, value)
 }
 
+// HasProvider is for checking whether a provider with an address exists or not in the KVStore.
 func (k Keeper) HasProvider(ctx sdk.Context, address hub.ProvAddress) bool {
 	store := k.Store(ctx)
 
@@ -22,6 +24,7 @@ func (k Keeper) HasProvider(ctx sdk.Context, address hub.ProvAddress) bool {
 	return store.Has(key)
 }
 
+// GetProvider is for getting a provider with an address from the KVStore.
 func (k Keeper) GetProvider(ctx sdk.Context, address hub.ProvAddress) (provider types.Provider, found bool) {
 	store := k.Store(ctx)
 
@@ -35,6 +38,7 @@ func (k Keeper) GetProvider(ctx sdk.Context, address hub.ProvAddress) (provider 
 	return provider, true
 }
 
+// GetProviders is for getting the providers from the KVStore.
 func (k Keeper) GetProviders(ctx sdk.Context) (items types.Providers) {
 	store := k.Store(ctx)
 
@@ -50,7 +54,8 @@ func (k Keeper) GetProviders(ctx sdk.Context) (items types.Providers) {
 	return items
 }
 
-func (k Keeper) IterateProviders(ctx sdk.Context, f func(index int, item types.Provider) (stop bool)) {
+// IterateProviders is for iterating over the providers to perform an action.
+func (k Keeper) IterateProviders(ctx sdk.Context, fn func(index int, item types.Provider) (stop bool)) {
 	store := k.Store(ctx)
 
 	iter := sdk.KVStorePrefixIterator(store, types.ProviderKeyPrefix)
@@ -60,7 +65,7 @@ func (k Keeper) IterateProviders(ctx sdk.Context, f func(index int, item types.P
 		var provider types.Provider
 		k.cdc.MustUnmarshalBinaryLengthPrefixed(iter.Value(), &provider)
 
-		if stop := f(i, provider); stop {
+		if stop := fn(i, provider); stop {
 			break
 		}
 		i++

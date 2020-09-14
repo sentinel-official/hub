@@ -28,6 +28,7 @@ const (
 	errorCodeInvalidQuota
 	errorCodeDuplicateQuota
 	errorCodeQuotaDoesNotExist
+	errorCodeCanNotAddQuota
 )
 
 const (
@@ -46,6 +47,7 @@ const (
 	errorMsgInvalidQuota              = "invalid quota"
 	errorMsgDuplicateQuota            = "duplicate quota"
 	errorMsgQuotaDoesNotExist         = "quota does not exist"
+	errorMsgCanNotAddQuota            = "can not add quota"
 )
 
 func ErrorMarshal() sdk.Error {
@@ -114,4 +116,8 @@ func ErrorDuplicateQuota() sdk.Error {
 
 func ErrorQuotaDoesNotExist() sdk.Error {
 	return sdk.NewError(Codespace, errorCodeQuotaDoesNotExist, errorMsgQuotaDoesNotExist)
+}
+
+func ErrorCanNotAddQuota() sdk.Error {
+	return sdk.NewError(Codespace, errorCodeCanNotAddQuota, errorMsgCanNotAddQuota)
 }

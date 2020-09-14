@@ -22,13 +22,13 @@ func SimulateMsgAdd(pk expected.ProviderKeeper, k keeper.Keeper) simulation.Oper
 	return func(r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accounts []simulation.Account) (
 		simulation.OperationMsg, []simulation.FutureOperation, error) {
 		var (
-			from      = provider.RandomProvider(r, pk.GetProviders(ctx)).Address
-			price     = sdk.NewCoins(sdk.NewCoin("stake", sdk.NewInt(r.Int63n(100)+1)))
-			validity  = time.Duration(r.Intn(24)+1) * time.Hour
-			bandwidth = hub.NewBandwidthFromInt64(r.Int63n(1e12)+1, r.Int63n(1e12)+1)
+			from     = provider.RandomProvider(r, pk.GetProviders(ctx)).Address
+			price    = sdk.NewCoins(sdk.NewCoin("stake", sdk.NewInt(r.Int63n(100)+1)))
+			validity = time.Duration(r.Intn(24)+1) * time.Hour
+			bytes    = sdk.NewInt(r.Int63n(1e12) + 1)
 		)
 
-		msg := types.NewMsgAdd(from, price, validity, bandwidth)
+		msg := types.NewMsgAdd(from, price, validity, bytes)
 		if msg.ValidateBasic() != nil {
 			return simulation.NoOpMsg(types.ModuleName), nil, fmt.Errorf("expected msg to pass ValidateBasic: %s", msg.GetSignBytes())
 		}
