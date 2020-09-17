@@ -19,18 +19,18 @@ var (
 
 // MsgAdd is adding a subscription plan.
 type MsgAdd struct {
-	From      hub.ProvAddress `json:"from"`
-	Price     sdk.Coins       `json:"price"`
-	Validity  time.Duration   `json:"validity"`
-	Bandwidth hub.Bandwidth   `json:"bandwidth"`
+	From     hub.ProvAddress `json:"from"`
+	Price    sdk.Coins       `json:"price"`
+	Validity time.Duration   `json:"validity"`
+	Bytes    sdk.Int         `json:"bytes"`
 }
 
-func NewMsgAdd(from hub.ProvAddress, price sdk.Coins, validity time.Duration, bandwidth hub.Bandwidth) MsgAdd {
+func NewMsgAdd(from hub.ProvAddress, price sdk.Coins, validity time.Duration, bytes sdk.Int) MsgAdd {
 	return MsgAdd{
-		From:      from,
-		Price:     price,
-		Validity:  validity,
-		Bandwidth: bandwidth,
+		From:     from,
+		Price:    price,
+		Validity: validity,
+		Bytes:    bytes,
 	}
 }
 
@@ -57,9 +57,9 @@ func (m MsgAdd) ValidateBasic() sdk.Error {
 		return ErrorInvalidField("validity")
 	}
 
-	// Bandwidth shouldn't be negative and zero
-	if !m.Bandwidth.IsValid() {
-		return ErrorInvalidField("bandwidth")
+	// Bytes shouldn't be negative and zero
+	if !m.Bytes.IsPositive() {
+		return ErrorInvalidField("bytes")
 	}
 
 	return nil

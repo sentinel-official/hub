@@ -5,14 +5,12 @@ import (
 	"strings"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-
-	hub "github.com/sentinel-official/hub/types"
 )
 
 type Quota struct {
 	Address   sdk.AccAddress `json:"address"`
-	Consumed  hub.Bandwidth  `json:"consumed"`
-	Allocated hub.Bandwidth  `json:"allocated"`
+	Consumed  sdk.Int        `json:"consumed"`
+	Allocated sdk.Int        `json:"allocated"`
 }
 
 func (q Quota) String() string {
@@ -25,16 +23,16 @@ Allocated: %s
 
 func (q Quota) Validate() error {
 	if q.Address == nil || q.Address.Empty() {
-		return fmt.Errorf("address should not be nil or empty")
+		return fmt.Errorf("address is nil or empty")
 	}
-	if !q.Consumed.IsValid() {
-		return fmt.Errorf("consumed should be valid")
+	if q.Consumed.IsNegative() {
+		return fmt.Errorf("consumed is negative")
 	}
-	if !q.Allocated.IsValid() {
-		return fmt.Errorf("allocated should be valid")
+	if q.Allocated.IsNegative() {
+		return fmt.Errorf("allocated is netgative")
 	}
-	if q.Consumed.IsAnyGT(q.Allocated) {
-		return fmt.Errorf("consumed should not be greater than allocated")
+	if q.Consumed.GT(q.Allocated) {
+		return fmt.Errorf("consumed is greater than allocated")
 	}
 
 	return nil

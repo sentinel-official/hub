@@ -10,9 +10,11 @@ import (
 )
 
 func EndBlock(ctx sdk.Context, k keeper.Keeper) []abci.ValidatorUpdate {
+	log := k.Logger(ctx)
+
 	end := ctx.BlockTime().Add(-1 * k.InactiveDuration(ctx))
 	k.IterateActiveNodes(ctx, end, func(_ int, item types.Node) bool {
-		k.Logger(ctx).Info("Inactive node", "address", item.Address, "provider", item.Provider)
+		log.Info("Inactive node", "address", item.Address, "provider", item.Provider)
 
 		k.DeleteActiveNodeAt(ctx, item.StatusAt, item.Address)
 

@@ -27,23 +27,13 @@ func HandleUpsert(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpsert) sdk.Res
 		return types.ErrorInvalidSubscriptionStatus().Result()
 	}
 
-	// Check whether the msg.From is authorized to upsert the session or not
-	// msg.From is authorized only if the node belongs to the subscription or to the plan.
 	if !authorized(ctx, k, subscription.Plan, msg.From, subscription.ID) {
 		return types.ErrorUnauthorized().Result()
 	}
 
-	quota, found := k.GetQuota(ctx, subscription.ID, msg.Address)
-	if !found {
+	if !k.HasQuota(ctx, subscription.ID, msg.Address) {
 		return types.ErrorQuotaDoesNotExist().Result()
 	}
-
-	quota.Consumed = quota.Consumed.Add(msg.Bandwidth)
-	if quota.Consumed.IsAnyGT(quota.Allocated) {
-		return types.ErrorInvalidBandwidth().Result()
-	}
-
-	k.SetQuota(ctx, subscription.ID, quota)
 
 	session, found := k.GetOngoingSession(ctx, subscription.ID, msg.Address)
 	if found {

@@ -127,17 +127,22 @@ func (n Node) PriceForDenom(d string) (sdk.Coin, bool) {
 	return sdk.Coin{}, false
 }
 
-func (n Node) BandwidthForCoin(coin sdk.Coin) (hub.Bandwidth, error) {
+func (n Node) BytesForCoin(coin sdk.Coin) (sdk.Int, error) {
 	price, found := n.PriceForDenom(coin.Denom)
 	if !found {
-		return hub.Bandwidth{}, fmt.Errorf("price does not exist")
+		return sdk.ZeroInt(), fmt.Errorf("price does not exist")
 	}
 
-	bytes := coin.Amount.
-		Mul(hub.Gigabyte.QuoRaw(2)).
-		Quo(price.Amount)
+	x := hub.Gigabyte.Quo(price.Amount)
+	if x.IsPositive() {
+		return coin.Amount.Mul(x), nil
+	}
 
-	return hub.NewBandwidth(bytes, bytes), nil
+	y := sdk.NewDecFromInt(price.Amount).
+		QuoInt(hub.Gigabyte).
+		Ceil().TruncateInt()
+
+	return coin.Amount.Quo(y), nil
 }
 
 type Nodes []Node

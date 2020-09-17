@@ -8,7 +8,6 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 
-	hub "github.com/sentinel-official/hub/types"
 	node "github.com/sentinel-official/hub/x/node/simulation"
 	plan "github.com/sentinel-official/hub/x/plan/simulation"
 	"github.com/sentinel-official/hub/x/subscription"
@@ -92,13 +91,13 @@ func SimulateMsgAddQuota(k keeper.Keeper) simulation.Operation {
 	return func(r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accounts []simulation.Account) (
 		simulation.OperationMsg, []simulation.FutureOperation, error) {
 		var (
-			from      = simulation.RandomAcc(r, accounts).Address
-			id        = RandomSubscription(r, k.GetSubscriptions(ctx)).ID
-			address   = simulation.RandomAcc(r, accounts).Address
-			bandwidth = hub.NewBandwidthFromInt64(r.Int63n(1e9)+1, r.Int63n(1e9)+1)
+			from    = simulation.RandomAcc(r, accounts).Address
+			id      = RandomSubscription(r, k.GetSubscriptions(ctx)).ID
+			address = simulation.RandomAcc(r, accounts).Address
+			bytes   = sdk.NewInt(r.Int63n(1e9) + 1)
 		)
 
-		msg := types.NewMsgAddQuota(from, id, address, bandwidth)
+		msg := types.NewMsgAddQuota(from, id, address, bytes)
 		if msg.ValidateBasic() != nil {
 			return simulation.NoOpMsg(types.ModuleName), nil, fmt.Errorf("expected msg to pass ValidateBasic: %s", msg.GetSignBytes())
 		}
@@ -117,13 +116,13 @@ func SimulateMsgUpdateQuota(k keeper.Keeper) simulation.Operation {
 	return func(r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accounts []simulation.Account) (
 		simulation.OperationMsg, []simulation.FutureOperation, error) {
 		var (
-			from      = simulation.RandomAcc(r, accounts).Address
-			id        = RandomSubscription(r, k.GetSubscriptions(ctx)).ID
-			address   = simulation.RandomAcc(r, accounts).Address
-			bandwidth = hub.NewBandwidthFromInt64(r.Int63n(1e9)+1, r.Int63n(1e9)+1)
+			from    = simulation.RandomAcc(r, accounts).Address
+			id      = RandomSubscription(r, k.GetSubscriptions(ctx)).ID
+			address = simulation.RandomAcc(r, accounts).Address
+			bytes   = sdk.NewInt(r.Int63n(1e9) + 1)
 		)
 
-		msg := types.NewMsgUpdateQuota(from, id, address, bandwidth)
+		msg := types.NewMsgUpdateQuota(from, id, address, bytes)
 		if msg.ValidateBasic() != nil {
 			return simulation.NoOpMsg(types.ModuleName), nil, fmt.Errorf("expected msg to pass ValidateBasic: %s", msg.GetSignBytes())
 		}

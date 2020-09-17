@@ -72,6 +72,10 @@ func (b Bandwidth) IsAnyGT(v Bandwidth) bool {
 }
 
 func (b Bandwidth) CeilTo(precision sdk.Int) Bandwidth {
+	if !precision.IsPositive() {
+		return b
+	}
+
 	v := NewBandwidth(
 		precision.Sub(sdk.NewIntFromBigInt(
 			big.NewInt(0).Rem(b.Upload.BigInt(), precision.BigInt()))),

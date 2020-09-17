@@ -21,9 +21,9 @@ type Subscription struct {
 	Price   sdk.Coin        `json:"price,omitempty"`
 	Deposit sdk.Coin        `json:"deposit,omitempty"`
 
-	Free     hub.Bandwidth `json:"free"`
-	Status   hub.Status    `json:"status"`
-	StatusAt time.Time     `json:"status_at"`
+	Free     sdk.Int    `json:"free"`
+	Status   hub.Status `json:"status"`
+	StatusAt time.Time  `json:"status_at"`
 }
 
 func (s Subscription) String() string {
@@ -51,16 +51,24 @@ Status at: %s
 `), s.ID, s.Owner, s.Plan, s.Expiry, s.Free, s.Status, s.StatusAt)
 }
 
-func (s Subscription) Amount(consumed hub.Bandwidth) sdk.Coin {
-	x := hub.Gigabyte.Quo(s.Price.Amount)
-	amount := consumed.CeilTo(x).Sum().Quo(x)
+func (s Subscription) Amount(consumed sdk.Int) sdk.Coin {
+	var (
+		amount sdk.Int
+		x      = hub.Gigabyte.Quo(s.Price.Amount)
+	)
 
-	coin := sdk.NewCoin(s.Price.Denom, amount)
-	if s.Deposit.IsLT(coin) {
-		return s.Deposit
+	if x.IsPositive() {
+		amount = hub.NewBandwidth(consumed, sdk.ZeroInt()).
+			CeilTo(x).
+			Sum().Quo(x)
+	} else {
+		y := sdk.NewDecFromInt(s.Price.Amount).
+			QuoInt(hub.Gigabyte).
+			Ceil().TruncateInt()
+		amount = consumed.Mul(y)
 	}
 
-	return coin
+	return sdk.NewCoin(s.Price.Denom, amount)
 }
 
 func (s Subscription) Validate() error {
@@ -87,7 +95,7 @@ func (s Subscription) Validate() error {
 		}
 	}
 
-	if s.Free.IsAnyNegative() {
+	if s.Free.IsNegative() {
 		return fmt.Errorf("free should not be negative")
 	}
 	if !s.Status.Equal(hub.StatusActive) && !s.Status.Equal(hub.StatusInactive) {

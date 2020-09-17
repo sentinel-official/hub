@@ -36,7 +36,7 @@ func HandleSubscribeToPlan(ctx sdk.Context, k keeper.Keeper, msg types.MsgSubscr
 		Owner:    msg.From,
 		Plan:     plan.ID,
 		Expiry:   ctx.BlockTime().Add(plan.Validity),
-		Free:     hub.NewBandwidthFromInt64(0, 0),
+		Free:     sdk.ZeroInt(),
 		Status:   hub.StatusActive,
 		StatusAt: ctx.BlockTime(),
 	}
@@ -52,8 +52,8 @@ func HandleSubscribeToPlan(ctx sdk.Context, k keeper.Keeper, msg types.MsgSubscr
 
 	quota := types.Quota{
 		Address:   msg.From,
-		Consumed:  hub.NewBandwidthFromInt64(0, 0),
-		Allocated: plan.Bandwidth,
+		Consumed:  sdk.ZeroInt(),
+		Allocated: plan.Bytes,
 	}
 
 	k.SetQuota(ctx, subscription.ID, quota)
@@ -103,7 +103,7 @@ func HandleSubscribeToNode(ctx sdk.Context, k keeper.Keeper, msg types.MsgSubscr
 		Node:     node.Address,
 		Price:    price,
 		Deposit:  msg.Deposit,
-		Free:     hub.NewBandwidthFromInt64(0, 0),
+		Free:     sdk.ZeroInt(),
 		Status:   hub.StatusActive,
 		StatusAt: ctx.BlockTime(),
 	}
@@ -117,10 +117,10 @@ func HandleSubscribeToNode(ctx sdk.Context, k keeper.Keeper, msg types.MsgSubscr
 		sdk.NewAttribute(types.AttributeKeyOwner, subscription.Owner.String()),
 	))
 
-	bandwidth, _ := node.BandwidthForCoin(msg.Deposit)
+	bandwidth, _ := node.BytesForCoin(msg.Deposit)
 	quota := types.Quota{
 		Address:   msg.From,
-		Consumed:  hub.NewBandwidthFromInt64(0, 0),
+		Consumed:  sdk.ZeroInt(),
 		Allocated: bandwidth,
 	}
 
@@ -174,6 +174,9 @@ func HandleAddQuota(ctx sdk.Context, k keeper.Keeper, msg types.MsgAddQuota) sdk
 	if !found {
 		return types.ErrorSubscriptionDoesNotExist().Result()
 	}
+	if subscription.Plan == 0 {
+		return types.ErrorCanNotAddQuota().Result()
+	}
 	if !msg.From.Equals(subscription.Owner) {
 		return types.ErrorUnauthorized().Result()
 	}
@@ -183,17 +186,17 @@ func HandleAddQuota(ctx sdk.Context, k keeper.Keeper, msg types.MsgAddQuota) sdk
 	if k.HasQuota(ctx, subscription.ID, msg.Address) {
 		return types.ErrorDuplicateQuota().Result()
 	}
-	if msg.Bandwidth.IsAnyGT(subscription.Free) {
+	if msg.Bytes.GT(subscription.Free) {
 		return types.ErrorInvalidQuota().Result()
 	}
 
-	subscription.Free = subscription.Free.Sub(msg.Bandwidth)
+	subscription.Free = subscription.Free.Sub(msg.Bytes)
 	k.SetSubscription(ctx, subscription)
 
 	quota := types.Quota{
 		Address:   msg.Address,
-		Consumed:  hub.NewBandwidthFromInt64(0, 0),
-		Allocated: msg.Bandwidth,
+		Consumed:  sdk.ZeroInt(),
+		Allocated: msg.Bytes,
 	}
 
 	k.SetQuota(ctx, subscription.ID, quota)
@@ -226,18 +229,15 @@ func HandleUpdateQuota(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpdateQuot
 		return types.ErrorQuotaDoesNotExist().Result()
 	}
 
-	subscription.Free = subscription.Free.
-		Add(quota.Allocated).Sub(quota.Consumed)
-	if msg.Bandwidth.IsAnyGT(subscription.Free) ||
-		quota.Consumed.IsAnyGT(msg.Bandwidth) {
+	subscription.Free = subscription.Free.Add(quota.Allocated)
+	if msg.Bytes.LT(quota.Consumed) || msg.Bytes.GT(subscription.Free) {
 		return types.ErrorInvalidQuota().Result()
 	}
 
-	subscription.Free = subscription.Free.
-		Add(quota.Consumed).Sub(msg.Bandwidth)
+	subscription.Free = subscription.Free.Sub(msg.Bytes)
 	k.SetSubscription(ctx, subscription)
 
-	quota.Allocated = msg.Bandwidth
+	quota.Allocated = msg.Bytes
 	k.SetQuota(ctx, subscription.ID, quota)
 	ctx.EventManager().EmitEvent(sdk.NewEvent(
 		types.EventTypeUpdateQuota,

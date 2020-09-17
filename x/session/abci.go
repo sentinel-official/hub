@@ -15,23 +15,8 @@ func EndBlock(ctx sdk.Context, k keeper.Keeper) []abci.ValidatorUpdate {
 		k.Logger(ctx).Info("Inactive session", "id", item.ID,
 			"subscription", item.Subscription, "node", item.Node, "address", item.Address)
 
-		s, _ := k.GetSubscription(ctx, item.Subscription)
-		if s.Plan == 0 {
-			var (
-				amount   = s.Amount(item.Bandwidth)
-				quota, _ = k.GetQuota(ctx, item.Subscription, item.Address)
-				ceil     = item.Bandwidth.CeilTo(hub.Gigabyte.Quo(s.Price.Amount))
-			)
-
-			k.Logger(ctx).Info("", "price", s.Price, "deposit", s.Deposit,
-				"consumed", item.Bandwidth, "ceil", ceil, "amount", amount)
-
-			if err := k.SendCoinsFromDepositToAccount(ctx, item.Address, item.Node.Bytes(), amount); err != nil {
-				panic(err)
-			}
-
-			quota.Consumed = quota.Consumed.Sub(item.Bandwidth).Add(ceil)
-			k.SetQuota(ctx, item.Subscription, quota)
+		if err := k.Pay(ctx, item); err != nil {
+			panic(err)
 		}
 
 		k.DeleteOngoingSession(ctx, item.Subscription, item.Address)
