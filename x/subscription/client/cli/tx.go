@@ -16,7 +16,7 @@ import (
 
 func txSubscribeToPlan(cdc *codec.Codec) *cobra.Command {
 	return &cobra.Command{
-		Use:   "subscribe-plan",
+		Use:   "subscribe-plan [plan] [denom]",
 		Short: "Subscribe to a plan",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -36,7 +36,7 @@ func txSubscribeToPlan(cdc *codec.Codec) *cobra.Command {
 
 func txSubscribeToNode(cdc *codec.Codec) *cobra.Command {
 	return &cobra.Command{
-		Use:   "subscribe-node",
+		Use:   "subscribe-node [node] [deposit]",
 		Short: "Subscribe to a node",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -61,7 +61,7 @@ func txSubscribeToNode(cdc *codec.Codec) *cobra.Command {
 
 func txAddQuota(cdc *codec.Codec) *cobra.Command {
 	return &cobra.Command{
-		Use:   "quota-add",
+		Use:   "quota-add [subscription] [address] [bytes]",
 		Short: "Add a quota of a subscription",
 		Args:  cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -91,7 +91,7 @@ func txAddQuota(cdc *codec.Codec) *cobra.Command {
 
 func txUpdateQuota(cdc *codec.Codec) *cobra.Command {
 	return &cobra.Command{
-		Use:   "quota-update",
+		Use:   "quota-update [subscription] [address] [bytes]",
 		Short: "Update a quota of a subscription",
 		Args:  cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -121,7 +121,7 @@ func txUpdateQuota(cdc *codec.Codec) *cobra.Command {
 
 func txCancel(cdc *codec.Codec) *cobra.Command {
 	return &cobra.Command{
-		Use:   "cancel",
+		Use:   "cancel [subscription]",
 		Short: "Cancel a subscription",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {

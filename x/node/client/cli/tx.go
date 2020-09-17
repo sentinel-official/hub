@@ -166,7 +166,7 @@ func txUpdate(cdc *codec.Codec) *cobra.Command {
 
 func txSetStatus(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "status-set",
+		Use:   "status-set [Active | Inactive]",
 		Short: "Set a node status",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
