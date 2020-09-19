@@ -17,6 +17,7 @@ func HandleRegister(ctx sdk.Context, k keeper.Keeper, msg types.MsgRegister) sdk
 	}
 
 	node := types.Node{
+		Moniker:       msg.Moniker,
 		Address:       msg.From.Bytes(),
 		Provider:      msg.Provider,
 		Price:         msg.Price,
@@ -78,6 +79,9 @@ func HandleUpdate(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpdate) sdk.Res
 	}
 	if !msg.InternetSpeed.IsAnyZero() {
 		node.InternetSpeed = msg.InternetSpeed
+	}
+	if len(msg.Moniker) > 0 {
+		node.Moniker = msg.Moniker
 	}
 	if len(msg.RemoteURL) > 0 {
 		node.RemoteURL = msg.RemoteURL

@@ -30,6 +30,11 @@ func txRegister(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
+			moniker, err := cmd.Flags().GetString(flagMoniker)
+			if err != nil {
+				return err
+			}
+
 			s, err = cmd.Flags().GetString(flagPrice)
 			if err != nil {
 				return err
@@ -65,13 +70,14 @@ func txRegister(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgRegister(ctx.FromAddress, provider, price,
+			msg := types.NewMsgRegister(ctx.FromAddress, moniker, provider, price,
 				hub.NewBandwidthFromInt64(upload, download), remoteURL, version, types.CategoryFromString(s))
 			return utils.GenerateOrBroadcastMsgs(ctx, txb, []sdk.Msg{msg})
 		},
 	}
 
 	cmd.Flags().String(flagProvider, "", "node provider address")
+	cmd.Flags().String(flagMoniker, "", "node moniker")
 	cmd.Flags().String(flagPrice, "", "node price per Gigabyte")
 	cmd.Flags().String(flagRemoteURL, "", "node remove URL")
 	cmd.Flags().String(flagVersion, "", "node version")
@@ -80,6 +86,7 @@ func txRegister(cdc *codec.Codec) *cobra.Command {
 	cmd.Flags().String(flagCategory, "", "node category")
 
 	_ = cmd.MarkFlagRequired(flagRemoteURL)
+	_ = cmd.MarkFlagRequired(flagMoniker)
 	_ = cmd.MarkFlagRequired(flagVersion)
 	_ = cmd.MarkFlagRequired(flagUploadSpeed)
 	_ = cmd.MarkFlagRequired(flagDownloadSpeed)
@@ -107,6 +114,11 @@ func txUpdate(cdc *codec.Codec) *cobra.Command {
 				if err != nil {
 					return err
 				}
+			}
+
+			moniker, err := cmd.Flags().GetString(flagMoniker)
+			if err != nil {
+				return err
 			}
 
 			s, err = cmd.Flags().GetString(flagPrice)
@@ -147,13 +159,14 @@ func txUpdate(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgUpdate(ctx.FromAddress.Bytes(), provider, price,
+			msg := types.NewMsgUpdate(ctx.FromAddress.Bytes(), moniker, provider, price,
 				hub.NewBandwidthFromInt64(upload, download), remoteURL, version, types.CategoryFromString(s))
 			return utils.GenerateOrBroadcastMsgs(ctx, txb, []sdk.Msg{msg})
 		},
 	}
 
 	cmd.Flags().String(flagProvider, "", "node provider address")
+	cmd.Flags().String(flagMoniker, "", "node moniker")
 	cmd.Flags().String(flagPrice, "", "node price per Gigabyte")
 	cmd.Flags().String(flagRemoteURL, "", "node remove URL")
 	cmd.Flags().String(flagVersion, "", "node version")

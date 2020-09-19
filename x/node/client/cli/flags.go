@@ -10,5 +10,6 @@ const (
 	flagVersion       = "version"
 	flagUploadSpeed   = "upload-speed"
 	flagDownloadSpeed = "download-speed"
+	flagMoniker       = "moniker"
 	flagCategory      = "category"
 )
