@@ -66,7 +66,7 @@ func txAdd(cdc *codec.Codec) *cobra.Command {
 
 func txSetStatus(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "status-set",
+		Use:   "status-set [plan] [Active | Inactive]",
 		Short: "Set a plan status",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -88,7 +88,7 @@ func txSetStatus(cdc *codec.Codec) *cobra.Command {
 
 func txAddNode(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "node-add",
+		Use:   "node-add [plan] [node]",
 		Short: "Add a node for a plan",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -115,7 +115,7 @@ func txAddNode(cdc *codec.Codec) *cobra.Command {
 
 func txRemoveNode(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "node-remove",
+		Use:   "node-remove [plan] [node]",
 		Short: "Remove a node for a plan",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {

@@ -50,6 +50,7 @@ func (n Category) IsValid() bool {
 }
 
 type Node struct {
+	Moniker       string          `json:"moniker"`
 	Address       hub.NodeAddress `json:"address"`
 	Provider      hub.ProvAddress `json:"provider,omitempty"`
 	Price         sdk.Coins       `json:"price,omitempty"`
@@ -64,6 +65,7 @@ type Node struct {
 func (n Node) String() string {
 	if n.Provider == nil {
 		return strings.TrimSpace(fmt.Sprintf(`
+Moniker:        %s
 Address:        %s
 Price:          %s
 Internet speed: %s
@@ -72,10 +74,11 @@ Version:        %s
 Category:       %s
 Status:         %s
 Status at:      %s
-`, n.Address, n.Price, n.InternetSpeed, n.RemoteURL, n.Version, n.Category, n.Status, n.StatusAt))
+`, n.Moniker, n.Address, n.Price, n.InternetSpeed, n.RemoteURL, n.Version, n.Category, n.Status, n.StatusAt))
 	}
 
 	return strings.TrimSpace(fmt.Sprintf(`
+Moniker:        %s
 Address:        %s
 Provider:       %s
 Internet speed: %s
@@ -84,10 +87,13 @@ Version:        %s
 Category:       %s
 Status:         %s
 Status at:      %s
-`, n.Address, n.Provider, n.InternetSpeed, n.RemoteURL, n.Version, n.Category, n.Status, n.StatusAt))
+`, n.Moniker, n.Address, n.Provider, n.InternetSpeed, n.RemoteURL, n.Version, n.Category, n.Status, n.StatusAt))
 }
 
 func (n Node) Validate() error {
+	if len(n.Moniker) == 0 || len(n.Moniker) > 64 {
+		return fmt.Errorf("moniker length should be (0, 64]")
+	}
 	if n.Address == nil || n.Address.Empty() {
 		return fmt.Errorf("address should not be nil or empty")
 	}

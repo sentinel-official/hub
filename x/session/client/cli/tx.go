@@ -17,7 +17,7 @@ import (
 
 func txUpsert(cdc *codec.Codec) *cobra.Command {
 	return &cobra.Command{
-		Use:   "upsert",
+		Use:   "upsert [subscription] [address] [duration] [upload] [download]",
 		Short: "Add or update a session",
 		Args:  cobra.ExactArgs(5),
 		RunE: func(cmd *cobra.Command, args []string) error {

@@ -18,6 +18,7 @@ var (
 // MsgRegister is for registering a VPN node.
 type MsgRegister struct {
 	From          sdk.AccAddress  `json:"from"`
+	Moniker       string          `json:"moniker"`
 	Provider      hub.ProvAddress `json:"provider,omitempty"`
 	Price         sdk.Coins       `json:"price,omitempty"`
 	InternetSpeed hub.Bandwidth   `json:"internet_speed"`
@@ -26,10 +27,11 @@ type MsgRegister struct {
 	Category      Category        `json:"category"`
 }
 
-func NewMsgRegister(from sdk.AccAddress, provider hub.ProvAddress, price sdk.Coins,
+func NewMsgRegister(from sdk.AccAddress, moniker string, provider hub.ProvAddress, price sdk.Coins,
 	speed hub.Bandwidth, remoteURL, version string, category Category) MsgRegister {
 	return MsgRegister{
 		From:          from,
+		Moniker:       moniker,
 		Provider:      provider,
 		Price:         price,
 		InternetSpeed: speed,
@@ -50,6 +52,11 @@ func (m MsgRegister) Type() string {
 func (m MsgRegister) ValidateBasic() sdk.Error {
 	if m.From == nil || m.From.Empty() {
 		return ErrorInvalidField("from")
+	}
+
+	// Moniker can't be empty and length should be (0, 64]
+	if len(m.Moniker) == 0 || len(m.Moniker) > 64 {
+		return ErrorInvalidField("moniker")
 	}
 
 	// Either provider or price should be nil
@@ -107,6 +114,7 @@ func (m MsgRegister) GetSigners() []sdk.AccAddress {
 // MsgUpdate is for updating the information of a VPN node.
 type MsgUpdate struct {
 	From          hub.NodeAddress `json:"from"`
+	Moniker       string          `json:"moniker"`
 	Provider      hub.ProvAddress `json:"provider,omitempty"`
 	Price         sdk.Coins       `json:"price,omitempty"`
 	InternetSpeed hub.Bandwidth   `json:"internet_speed,omitempty"`
@@ -115,10 +123,11 @@ type MsgUpdate struct {
 	Category      Category        `json:"category,omitempty"`
 }
 
-func NewMsgUpdate(from hub.NodeAddress, provider hub.ProvAddress, price sdk.Coins,
+func NewMsgUpdate(from hub.NodeAddress, moniker string, provider hub.ProvAddress, price sdk.Coins,
 	speed hub.Bandwidth, remoteURL, version string, category Category) MsgUpdate {
 	return MsgUpdate{
 		From:          from,
+		Moniker:       moniker,
 		Provider:      provider,
 		Price:         price,
 		InternetSpeed: speed,
@@ -139,6 +148,11 @@ func (m MsgUpdate) Type() string {
 func (m MsgUpdate) ValidateBasic() sdk.Error {
 	if m.From == nil || m.From.Empty() {
 		return ErrorInvalidField("from")
+	}
+
+	// Moniker length should be [0, 64]
+	if len(m.Moniker) > 64 {
+		return ErrorInvalidField("moniker")
 	}
 
 	// Provider and Price both shouldn't nil at the same time

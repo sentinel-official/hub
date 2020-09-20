@@ -22,6 +22,7 @@ const (
 	AttributeKeyOwner            = types.AttributeKeyOwner
 	AttributeKeyAddress          = types.AttributeKeyAddress
 	AttributeKeyID               = types.AttributeKeyID
+	AttributeKeyStatus           = types.AttributeKeyStatus
 	AttributeKeyNode             = types.AttributeKeyNode
 	AttributeKeyCount            = types.AttributeKeyCount
 	AttributeKeyPlan             = types.AttributeKeyPlan
@@ -60,6 +61,7 @@ var (
 	ErrorInvalidQuota                     = types.ErrorInvalidQuota
 	ErrorDuplicateQuota                   = types.ErrorDuplicateQuota
 	ErrorQuotaDoesNotExist                = types.ErrorQuotaDoesNotExist
+	ErrorCanNotAddQuota                   = types.ErrorCanNotAddQuota
 	NewGenesisState                       = types.NewGenesisState
 	DefaultGenesisState                   = types.DefaultGenesisState
 	SubscriptionKey                       = types.SubscriptionKey
