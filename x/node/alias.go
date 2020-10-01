@@ -13,7 +13,6 @@ import (
 )
 
 const (
-	Codespace               = types.Codespace
 	EventTypeSet            = types.EventTypeSet
 	EventTypeUpdate         = types.EventTypeUpdate
 	EventTypeSetStatus      = types.EventTypeSetStatus
@@ -33,14 +32,6 @@ const (
 var (
 	// functions aliases
 	RegisterCodec                  = types.RegisterCodec
-	ErrorMarshal                   = types.ErrorMarshal
-	ErrorUnmarshal                 = types.ErrorUnmarshal
-	ErrorUnknownMsgType            = types.ErrorUnknownMsgType
-	ErrorUnknownQueryType          = types.ErrorUnknownQueryType
-	ErrorInvalidField              = types.ErrorInvalidField
-	ErrorProviderDoesNotExist      = types.ErrorProviderDoesNotExist
-	ErrorDuplicateNode             = types.ErrorDuplicateNode
-	ErrorNodeDoesNotExist          = types.ErrorNodeDoesNotExist
 	NewGenesisState                = types.NewGenesisState
 	DefaultGenesisState            = types.DefaultGenesisState
 	NodeKey                        = types.NodeKey
@@ -62,14 +53,22 @@ var (
 	Querier                        = querier.Querier
 
 	// variable aliases
-	ModuleCdc                = types.ModuleCdc
-	RouterKey                = types.RouterKey
-	StoreKey                 = types.StoreKey
-	EventModuleName          = types.EventModuleName
-	NodeKeyPrefix            = types.NodeKeyPrefix
-	NodeForProviderKeyPrefix = types.NodeForProviderKeyPrefix
-	ActiveNodeAtKeyPrefix    = types.ActiveNodeAtKeyPrefix
-	KeyInactiveDuration      = types.KeyInactiveDuration
+	ModuleCdc                 = types.ModuleCdc
+	ErrorMarshal              = types.ErrorMarshal
+	ErrorUnmarshal            = types.ErrorUnmarshal
+	ErrorUnknownMsgType       = types.ErrorUnknownMsgType
+	ErrorUnknownQueryType     = types.ErrorUnknownQueryType
+	ErrorInvalidField         = types.ErrorInvalidField
+	ErrorProviderDoesNotExist = types.ErrorProviderDoesNotExist
+	ErrorDuplicateNode        = types.ErrorDuplicateNode
+	ErrorNodeDoesNotExist     = types.ErrorNodeDoesNotExist
+	RouterKey                 = types.RouterKey
+	StoreKey                  = types.StoreKey
+	EventModuleName           = types.EventModuleName
+	NodeKeyPrefix             = types.NodeKeyPrefix
+	NodeForProviderKeyPrefix  = types.NodeForProviderKeyPrefix
+	ActiveNodeAtKeyPrefix     = types.ActiveNodeAtKeyPrefix
+	KeyInactiveDuration       = types.KeyInactiveDuration
 )
 
 type (

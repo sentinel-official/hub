@@ -8,12 +8,12 @@ import (
 	"github.com/sentinel-official/hub/x/node/types"
 )
 
-func HandleRegister(ctx sdk.Context, k keeper.Keeper, msg types.MsgRegister) sdk.Result {
+func HandleRegister(ctx sdk.Context, k keeper.Keeper, msg types.MsgRegister) (*sdk.Result, error) {
 	if k.HasNode(ctx, msg.From.Bytes()) {
-		return types.ErrorDuplicateNode().Result()
+		return nil, types.ErrorDuplicateNode
 	}
 	if !k.HasProvider(ctx, msg.Provider) {
-		return types.ErrorProviderDoesNotExist().Result()
+		return nil, types.ErrorProviderDoesNotExist
 	}
 
 	node := types.Node{
@@ -41,13 +41,13 @@ func HandleRegister(ctx sdk.Context, k keeper.Keeper, msg types.MsgRegister) sdk
 	))
 
 	ctx.EventManager().EmitEvent(types.EventModuleName)
-	return sdk.Result{Events: ctx.EventManager().Events()}
+	return &sdk.Result{Events: ctx.EventManager().Events()}, nil
 }
 
-func HandleUpdate(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpdate) sdk.Result {
+func HandleUpdate(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpdate) (*sdk.Result, error) {
 	node, found := k.GetNode(ctx, msg.From)
 	if !found {
-		return types.ErrorNodeDoesNotExist().Result()
+		return nil, types.ErrorNodeDoesNotExist
 	}
 
 	if node.Provider.Equals(msg.Provider) {
@@ -65,7 +65,7 @@ func HandleUpdate(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpdate) sdk.Res
 
 	if msg.Provider != nil {
 		if !k.HasProvider(ctx, msg.Provider) {
-			return types.ErrorProviderDoesNotExist().Result()
+			return nil, types.ErrorProviderDoesNotExist
 		}
 
 		node.Provider = msg.Provider
@@ -100,13 +100,13 @@ func HandleUpdate(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpdate) sdk.Res
 	))
 
 	ctx.EventManager().EmitEvent(types.EventModuleName)
-	return sdk.Result{Events: ctx.EventManager().Events()}
+	return &sdk.Result{Events: ctx.EventManager().Events()}, nil
 }
 
-func HandleSetStatus(ctx sdk.Context, k keeper.Keeper, msg types.MsgSetStatus) sdk.Result {
+func HandleSetStatus(ctx sdk.Context, k keeper.Keeper, msg types.MsgSetStatus) (*sdk.Result, error) {
 	node, found := k.GetNode(ctx, msg.From)
 	if !found {
-		return types.ErrorNodeDoesNotExist().Result()
+		return nil, types.ErrorNodeDoesNotExist
 	}
 
 	if node.Status.Equal(hub.StatusActive) {
@@ -128,5 +128,5 @@ func HandleSetStatus(ctx sdk.Context, k keeper.Keeper, msg types.MsgSetStatus) s
 	))
 
 	ctx.EventManager().EmitEvent(types.EventModuleName)
-	return sdk.Result{Events: ctx.EventManager().Events()}
+	return &sdk.Result{Events: ctx.EventManager().Events()}, nil
 }
