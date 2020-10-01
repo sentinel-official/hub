@@ -9,12 +9,12 @@ import (
 )
 
 type BankKeeper interface {
-	SendCoins(ctx sdk.Context, from sdk.AccAddress, to sdk.AccAddress, coins sdk.Coins) sdk.Error
+	SendCoins(ctx sdk.Context, from sdk.AccAddress, to sdk.AccAddress, coins sdk.Coins) error
 }
 
 type DepositKeeper interface {
-	Add(ctx sdk.Context, address sdk.AccAddress, coins sdk.Coins) sdk.Error
-	Subtract(ctx sdk.Context, address sdk.AccAddress, coins sdk.Coins) sdk.Error
+	Add(ctx sdk.Context, address sdk.AccAddress, coins sdk.Coins) error
+	Subtract(ctx sdk.Context, address sdk.AccAddress, coins sdk.Coins) error
 }
 
 type NodeKeeper interface {

@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"bufio"
 	"strconv"
 
 	"github.com/cosmos/cosmos-sdk/client/context"
@@ -20,8 +21,9 @@ func txSubscribeToPlan(cdc *codec.Codec) *cobra.Command {
 		Short: "Subscribe to a plan",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			txb := auth.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
-			ctx := context.NewCLIContext().WithCodec(cdc)
+			buffer := bufio.NewReader(cmd.InOrStdin())
+			txb := auth.NewTxBuilderFromCLI(buffer).WithTxEncoder(utils.GetTxEncoder(cdc))
+			ctx := context.NewCLIContextWithInput(buffer).WithCodec(cdc)
 
 			id, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
@@ -40,8 +42,9 @@ func txSubscribeToNode(cdc *codec.Codec) *cobra.Command {
 		Short: "Subscribe to a node",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			txb := auth.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
-			ctx := context.NewCLIContext().WithCodec(cdc)
+			buffer := bufio.NewReader(cmd.InOrStdin())
+			txb := auth.NewTxBuilderFromCLI(buffer).WithTxEncoder(utils.GetTxEncoder(cdc))
+			ctx := context.NewCLIContextWithInput(buffer).WithCodec(cdc)
 
 			address, err := hub.NodeAddressFromBech32(args[0])
 			if err != nil {
@@ -65,8 +68,9 @@ func txAddQuota(cdc *codec.Codec) *cobra.Command {
 		Short: "Add a quota of a subscription",
 		Args:  cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			txb := auth.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
-			ctx := context.NewCLIContext().WithCodec(cdc)
+			buffer := bufio.NewReader(cmd.InOrStdin())
+			txb := auth.NewTxBuilderFromCLI(buffer).WithTxEncoder(utils.GetTxEncoder(cdc))
+			ctx := context.NewCLIContextWithInput(buffer).WithCodec(cdc)
 
 			id, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
@@ -95,8 +99,9 @@ func txUpdateQuota(cdc *codec.Codec) *cobra.Command {
 		Short: "Update a quota of a subscription",
 		Args:  cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			txb := auth.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
-			ctx := context.NewCLIContext().WithCodec(cdc)
+			buffer := bufio.NewReader(cmd.InOrStdin())
+			txb := auth.NewTxBuilderFromCLI(buffer).WithTxEncoder(utils.GetTxEncoder(cdc))
+			ctx := context.NewCLIContextWithInput(buffer).WithCodec(cdc)
 
 			id, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
@@ -125,8 +130,9 @@ func txCancel(cdc *codec.Codec) *cobra.Command {
 		Short: "Cancel a subscription",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			txb := auth.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
-			ctx := context.NewCLIContext().WithCodec(cdc)
+			buffer := bufio.NewReader(cmd.InOrStdin())
+			txb := auth.NewTxBuilderFromCLI(buffer).WithTxEncoder(utils.GetTxEncoder(cdc))
+			ctx := context.NewCLIContextWithInput(buffer).WithCodec(cdc)
 
 			id, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {

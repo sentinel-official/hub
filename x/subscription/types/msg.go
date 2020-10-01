@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/errors"
 
 	hub "github.com/sentinel-official/hub/types"
 )
@@ -41,19 +42,19 @@ func (m MsgSubscribeToPlan) Type() string {
 	return fmt.Sprintf("%s:subscribe_to_plan", ModuleName)
 }
 
-func (m MsgSubscribeToPlan) ValidateBasic() sdk.Error {
+func (m MsgSubscribeToPlan) ValidateBasic() error {
 	if m.From == nil || m.From.Empty() {
-		return ErrorInvalidField("from")
+		return errors.Wrapf(ErrorInvalidField, "%s", "from")
 	}
 
 	// ID shouldn't be zero
 	if m.ID == 0 {
-		return ErrorInvalidField("id")
+		return errors.Wrapf(ErrorInvalidField, "%s", "id")
 	}
 
 	// Denom length should be [3, 16]
 	if len(m.Denom) < 3 || len(m.Denom) > 16 {
-		return ErrorInvalidField("denom")
+		return errors.Wrapf(ErrorInvalidField, "%s", "denom")
 	}
 
 	return nil
@@ -95,19 +96,19 @@ func (m MsgSubscribeToNode) Type() string {
 	return fmt.Sprintf("%s:subscribe_to_node", ModuleName)
 }
 
-func (m MsgSubscribeToNode) ValidateBasic() sdk.Error {
+func (m MsgSubscribeToNode) ValidateBasic() error {
 	if m.From == nil || m.From.Empty() {
-		return ErrorInvalidField("from")
+		return errors.Wrapf(ErrorInvalidField, "%s", "from")
 	}
 
 	// Address shouldn't be nil or empty
 	if m.Address == nil || m.Address.Empty() {
-		return ErrorInvalidField("address")
+		return errors.Wrapf(ErrorInvalidField, "%s", "address")
 	}
 
 	// Deposit should be valid
 	if !m.Deposit.IsValid() {
-		return ErrorInvalidField("deposit")
+		return errors.Wrapf(ErrorInvalidField, "%s", "deposit")
 	}
 
 	return nil
@@ -147,14 +148,14 @@ func (m MsgCancel) Type() string {
 	return fmt.Sprintf("%s:cancel", ModuleName)
 }
 
-func (m MsgCancel) ValidateBasic() sdk.Error {
+func (m MsgCancel) ValidateBasic() error {
 	if m.From == nil || m.From.Empty() {
-		return ErrorInvalidField("from")
+		return errors.Wrapf(ErrorInvalidField, "%s", "from")
 	}
 
 	// ID shouldn't be zero
 	if m.ID == 0 {
-		return ErrorInvalidField("id")
+		return errors.Wrapf(ErrorInvalidField, "%s", "id")
 	}
 
 	return nil
@@ -198,24 +199,24 @@ func (m MsgAddQuota) Type() string {
 	return fmt.Sprintf("%s:add_quota", ModuleName)
 }
 
-func (m MsgAddQuota) ValidateBasic() sdk.Error {
+func (m MsgAddQuota) ValidateBasic() error {
 	if m.From == nil || m.From.Empty() {
-		return ErrorInvalidField("from")
+		return errors.Wrapf(ErrorInvalidField, "%s", "from")
 	}
 
 	// ID shouldn't be zero
 	if m.ID == 0 {
-		return ErrorInvalidField("id")
+		return errors.Wrapf(ErrorInvalidField, "%s", "id")
 	}
 
 	// Address shouldn't be nil or empty
 	if m.Address == nil || m.Address.Empty() {
-		return ErrorInvalidField("address")
+		return errors.Wrapf(ErrorInvalidField, "%s", "address")
 	}
 
 	// Bytes should be positive
 	if !m.Bytes.IsPositive() {
-		return ErrorInvalidField("bytes")
+		return errors.Wrapf(ErrorInvalidField, "%s", "bytes")
 	}
 
 	return nil
@@ -259,24 +260,24 @@ func (m MsgUpdateQuota) Type() string {
 	return fmt.Sprintf("%s:update_quota", ModuleName)
 }
 
-func (m MsgUpdateQuota) ValidateBasic() sdk.Error {
+func (m MsgUpdateQuota) ValidateBasic() error {
 	if m.From == nil || m.From.Empty() {
-		return ErrorInvalidField("from")
+		return errors.Wrapf(ErrorInvalidField, "%s", "from")
 	}
 
 	// ID shouldn't be zero
 	if m.ID == 0 {
-		return ErrorInvalidField("id")
+		return errors.Wrapf(ErrorInvalidField, "%s", "id")
 	}
 
 	// Address shouldn't be nil or empty
 	if m.Address == nil || m.Address.Empty() {
-		return ErrorInvalidField("address")
+		return errors.Wrapf(ErrorInvalidField, "%s", "address")
 	}
 
 	// Bytes should be positive
 	if !m.Bytes.IsPositive() {
-		return ErrorInvalidField("bytes")
+		return errors.Wrapf(ErrorInvalidField, "%s", "bytes")
 	}
 
 	return nil

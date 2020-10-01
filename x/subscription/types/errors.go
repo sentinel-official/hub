@@ -1,123 +1,26 @@
 package types
 
 import (
-	"fmt"
-
-	sdk "github.com/cosmos/cosmos-sdk/types"
-
-	hub "github.com/sentinel-official/hub/types"
+	"github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-const (
-	Codespace = sdk.CodespaceType(ModuleName)
+var (
+	ErrorMarshal                   = errors.Register(ModuleName, 101, "error occurred while marshalling")
+	ErrorUnmarshal                 = errors.Register(ModuleName, 102, "error occurred while unmarshalling")
+	ErrorUnknownMsgType            = errors.Register(ModuleName, 103, "unknown message type")
+	ErrorUnknownQueryType          = errors.Register(ModuleName, 104, "unknown query type")
+	ErrorInvalidField              = errors.Register(ModuleName, 105, "invalid field")
+	ErrorPlanDoesNotExist          = errors.Register(ModuleName, 106, "plan does not exist")
+	ErrorNodeDoesNotExist          = errors.Register(ModuleName, 107, "node does not exist")
+	ErrorUnauthorized              = errors.Register(ModuleName, 108, "unauthorized")
+	ErrorInvalidPlanStatus         = errors.Register(ModuleName, 109, "invalid plan status")
+	ErrorPriceDoesNotExist         = errors.Register(ModuleName, 110, "price does not exist")
+	ErrorInvalidNodeStatus         = errors.Register(ModuleName, 111, "invalid node status")
+	ErrorSubscriptionDoesNotExist  = errors.Register(ModuleName, 112, "subscription does not exist")
+	ErrorInvalidSubscriptionStatus = errors.Register(ModuleName, 113, "invalid subscription status")
+	ErrorCanNotSubscribe           = errors.Register(ModuleName, 114, "can not subscribe")
+	ErrorInvalidQuota              = errors.Register(ModuleName, 115, "invalid quota")
+	ErrorDuplicateQuota            = errors.Register(ModuleName, 116, "duplicate quota")
+	ErrorQuotaDoesNotExist         = errors.Register(ModuleName, 117, "quota does not exist")
+	ErrorCanNotAddQuota            = errors.Register(ModuleName, 118, "can not add quota")
 )
-
-const (
-	errorCodeUnknownMsgType sdk.CodeType = iota + 101
-	errorCodeUnknownQueryType
-	errorCodeInvalidField
-	errorCodePlanDoesNotExist
-	errorCodeNodeDoesNotExist
-	errorCodeUnauthorized
-	errorCodeInvalidPlanStatus
-	errorCodePriceDoesNotExist
-	errorCodeInvalidNodeStatus
-	errorCodeSubscriptionDoesNotExist
-	errorCodeInvalidSubscriptionStatus
-	errorCodeCanNotSubscribe
-	errorCodeInvalidQuota
-	errorCodeDuplicateQuota
-	errorCodeQuotaDoesNotExist
-	errorCodeCanNotAddQuota
-)
-
-const (
-	errorMsgUnknownMsgType            = "unknown message type: %s"
-	errorMsgUnknownQueryType          = "unknown query type: %s"
-	errorMsgInvalidField              = "invalid field: %s"
-	errorMsgPlanDoesNotExist          = "plan does not exist"
-	errorMsgNodeDoesNotExist          = "node does not exist"
-	errorMsgUnauthorized              = "unauthorized"
-	errorMsgInvalidPlanStatus         = "invalid plan status"
-	errorMsgPriceDoesNotExist         = "price does not exist"
-	errorMsgInvalidNodeStatus         = "invalid node status"
-	errorMsgSubscriptionDoesNotExist  = "subscription does not exist"
-	errorMsgInvalidSubscriptionStatus = "invalid subscription status"
-	errorMsgCanNotSubscribe           = "can not subscribe"
-	errorMsgInvalidQuota              = "invalid quota"
-	errorMsgDuplicateQuota            = "duplicate quota"
-	errorMsgQuotaDoesNotExist         = "quota does not exist"
-	errorMsgCanNotAddQuota            = "can not add quota"
-)
-
-func ErrorMarshal() sdk.Error {
-	return sdk.NewError(Codespace, hub.ErrorCodeMarshal, hub.ErrorMsgMarshal)
-}
-
-func ErrorUnmarshal() sdk.Error {
-	return sdk.NewError(Codespace, hub.ErrorCodeUnmarshal, hub.ErrorMsgUnmarshal)
-}
-
-func ErrorUnknownMsgType(v string) sdk.Error {
-	return sdk.NewError(Codespace, errorCodeUnknownMsgType, fmt.Sprintf(errorMsgUnknownMsgType, v))
-}
-
-func ErrorUnknownQueryType(v string) sdk.Error {
-	return sdk.NewError(Codespace, errorCodeUnknownQueryType, fmt.Sprintf(errorMsgUnknownQueryType, v))
-}
-
-func ErrorInvalidField(v string) sdk.Error {
-	return sdk.NewError(Codespace, errorCodeInvalidField, fmt.Sprintf(errorMsgInvalidField, v))
-}
-
-func ErrorPlanDoesNotExist() sdk.Error {
-	return sdk.NewError(Codespace, errorCodePlanDoesNotExist, errorMsgPlanDoesNotExist)
-}
-
-func ErrorNodeDoesNotExist() sdk.Error {
-	return sdk.NewError(Codespace, errorCodeNodeDoesNotExist, errorMsgNodeDoesNotExist)
-}
-
-func ErrorUnauthorized() sdk.Error {
-	return sdk.NewError(Codespace, errorCodeUnauthorized, errorMsgUnauthorized)
-}
-
-func ErrorInvalidPlanStatus() sdk.Error {
-	return sdk.NewError(Codespace, errorCodeInvalidPlanStatus, errorMsgInvalidPlanStatus)
-}
-
-func ErrorPriceDoesNotExist() sdk.Error {
-	return sdk.NewError(Codespace, errorCodePriceDoesNotExist, errorMsgPriceDoesNotExist)
-}
-
-func ErrorInvalidNodeStatus() sdk.Error {
-	return sdk.NewError(Codespace, errorCodeInvalidNodeStatus, errorMsgInvalidNodeStatus)
-}
-
-func ErrorSubscriptionDoesNotExist() sdk.Error {
-	return sdk.NewError(Codespace, errorCodeSubscriptionDoesNotExist, errorMsgSubscriptionDoesNotExist)
-}
-
-func ErrorInvalidSubscriptionStatus() sdk.Error {
-	return sdk.NewError(Codespace, errorCodeInvalidSubscriptionStatus, errorMsgInvalidSubscriptionStatus)
-}
-
-func ErrorCanNotSubscribe() sdk.Error {
-	return sdk.NewError(Codespace, errorCodeCanNotSubscribe, errorMsgCanNotSubscribe)
-}
-
-func ErrorInvalidQuota() sdk.Error {
-	return sdk.NewError(Codespace, errorCodeInvalidQuota, errorMsgInvalidQuota)
-}
-
-func ErrorDuplicateQuota() sdk.Error {
-	return sdk.NewError(Codespace, errorCodeDuplicateQuota, errorMsgDuplicateQuota)
-}
-
-func ErrorQuotaDoesNotExist() sdk.Error {
-	return sdk.NewError(Codespace, errorCodeQuotaDoesNotExist, errorMsgQuotaDoesNotExist)
-}
-
-func ErrorCanNotAddQuota() sdk.Error {
-	return sdk.NewError(Codespace, errorCodeCanNotAddQuota, errorMsgCanNotAddQuota)
-}

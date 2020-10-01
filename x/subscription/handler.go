@@ -10,23 +10,23 @@ import (
 	"github.com/sentinel-official/hub/x/subscription/types"
 )
 
-func HandleSubscribeToPlan(ctx sdk.Context, k keeper.Keeper, msg types.MsgSubscribeToPlan) sdk.Result {
+func HandleSubscribeToPlan(ctx sdk.Context, k keeper.Keeper, msg types.MsgSubscribeToPlan) (*sdk.Result, error) {
 	plan, found := k.GetPlan(ctx, msg.ID)
 	if !found {
-		return types.ErrorPlanDoesNotExist().Result()
+		return nil, types.ErrorPlanDoesNotExist
 	}
 	if !plan.Status.Equal(hub.StatusActive) {
-		return types.ErrorInvalidPlanStatus().Result()
+		return nil, types.ErrorInvalidPlanStatus
 	}
 
 	if plan.Price != nil {
 		price, found := plan.PriceForDenom(msg.Denom)
 		if !found {
-			return types.ErrorPriceDoesNotExist().Result()
+			return nil, types.ErrorPriceDoesNotExist
 		}
 
 		if err := k.SendCoin(ctx, msg.From, plan.Provider.Bytes(), price); err != nil {
-			return err.Result()
+			return nil, err
 		}
 	}
 
@@ -73,28 +73,28 @@ func HandleSubscribeToPlan(ctx sdk.Context, k keeper.Keeper, msg types.MsgSubscr
 	))
 
 	ctx.EventManager().EmitEvent(types.EventModuleName)
-	return sdk.Result{Events: ctx.EventManager().Events()}
+	return &sdk.Result{Events: ctx.EventManager().Events()}, nil
 }
 
-func HandleSubscribeToNode(ctx sdk.Context, k keeper.Keeper, msg types.MsgSubscribeToNode) sdk.Result {
+func HandleSubscribeToNode(ctx sdk.Context, k keeper.Keeper, msg types.MsgSubscribeToNode) (*sdk.Result, error) {
 	node, found := k.GetNode(ctx, msg.Address)
 	if !found {
-		return types.ErrorNodeDoesNotExist().Result()
+		return nil, types.ErrorNodeDoesNotExist
 	}
 	if node.Provider != nil {
-		return types.ErrorCanNotSubscribe().Result()
+		return nil, types.ErrorCanNotSubscribe
 	}
 	if !node.Status.Equal(hub.StatusActive) {
-		return types.ErrorInvalidNodeStatus().Result()
+		return nil, types.ErrorInvalidNodeStatus
 	}
 
 	price, found := node.PriceForDenom(msg.Deposit.Denom)
 	if !found {
-		return types.ErrorPriceDoesNotExist().Result()
+		return nil, types.ErrorPriceDoesNotExist
 	}
 
 	if err := k.AddDeposit(ctx, msg.From, msg.Deposit); err != nil {
-		return err.Result()
+		return nil, err
 	}
 
 	count := k.GetSubscriptionsCount(ctx)
@@ -141,19 +141,19 @@ func HandleSubscribeToNode(ctx sdk.Context, k keeper.Keeper, msg types.MsgSubscr
 	))
 
 	ctx.EventManager().EmitEvent(types.EventModuleName)
-	return sdk.Result{Events: ctx.EventManager().Events()}
+	return &sdk.Result{Events: ctx.EventManager().Events()}, nil
 }
 
-func HandleCancel(ctx sdk.Context, k keeper.Keeper, msg types.MsgCancel) sdk.Result {
+func HandleCancel(ctx sdk.Context, k keeper.Keeper, msg types.MsgCancel) (*sdk.Result, error) {
 	subscription, found := k.GetSubscription(ctx, msg.ID)
 	if !found {
-		return types.ErrorSubscriptionDoesNotExist().Result()
+		return nil, types.ErrorSubscriptionDoesNotExist
 	}
 	if !msg.From.Equals(subscription.Owner) {
-		return types.ErrorUnauthorized().Result()
+		return nil, types.ErrorUnauthorized
 	}
 	if !subscription.Status.Equal(hub.StatusActive) {
-		return types.ErrorInvalidSubscriptionStatus().Result()
+		return nil, types.ErrorInvalidSubscriptionStatus
 	}
 
 	if subscription.Plan == 0 {
@@ -176,28 +176,28 @@ func HandleCancel(ctx sdk.Context, k keeper.Keeper, msg types.MsgCancel) sdk.Res
 	))
 
 	ctx.EventManager().EmitEvent(types.EventModuleName)
-	return sdk.Result{Events: ctx.EventManager().Events()}
+	return &sdk.Result{Events: ctx.EventManager().Events()}, nil
 }
 
-func HandleAddQuota(ctx sdk.Context, k keeper.Keeper, msg types.MsgAddQuota) sdk.Result {
+func HandleAddQuota(ctx sdk.Context, k keeper.Keeper, msg types.MsgAddQuota) (*sdk.Result, error) {
 	subscription, found := k.GetSubscription(ctx, msg.ID)
 	if !found {
-		return types.ErrorSubscriptionDoesNotExist().Result()
+		return nil, types.ErrorSubscriptionDoesNotExist
 	}
 	if subscription.Plan == 0 {
-		return types.ErrorCanNotAddQuota().Result()
+		return nil, types.ErrorCanNotAddQuota
 	}
 	if !msg.From.Equals(subscription.Owner) {
-		return types.ErrorUnauthorized().Result()
+		return nil, types.ErrorUnauthorized
 	}
 	if !subscription.Status.Equal(hub.StatusActive) {
-		return types.ErrorInvalidSubscriptionStatus().Result()
+		return nil, types.ErrorInvalidSubscriptionStatus
 	}
 	if k.HasQuota(ctx, subscription.ID, msg.Address) {
-		return types.ErrorDuplicateQuota().Result()
+		return nil, types.ErrorDuplicateQuota
 	}
 	if msg.Bytes.GT(subscription.Free) {
-		return types.ErrorInvalidQuota().Result()
+		return nil, types.ErrorInvalidQuota
 	}
 
 	subscription.Free = subscription.Free.Sub(msg.Bytes)
@@ -219,29 +219,29 @@ func HandleAddQuota(ctx sdk.Context, k keeper.Keeper, msg types.MsgAddQuota) sdk
 	))
 
 	ctx.EventManager().EmitEvent(types.EventModuleName)
-	return sdk.Result{Events: ctx.EventManager().Events()}
+	return &sdk.Result{Events: ctx.EventManager().Events()}, nil
 }
 
-func HandleUpdateQuota(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpdateQuota) sdk.Result {
+func HandleUpdateQuota(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpdateQuota) (*sdk.Result, error) {
 	subscription, found := k.GetSubscription(ctx, msg.ID)
 	if !found {
-		return types.ErrorSubscriptionDoesNotExist().Result()
+		return nil, types.ErrorSubscriptionDoesNotExist
 	}
 	if !msg.From.Equals(subscription.Owner) {
-		return types.ErrorUnauthorized().Result()
+		return nil, types.ErrorUnauthorized
 	}
 	if !subscription.Status.Equal(hub.StatusActive) {
-		return types.ErrorInvalidSubscriptionStatus().Result()
+		return nil, types.ErrorInvalidSubscriptionStatus
 	}
 
 	quota, found := k.GetQuota(ctx, subscription.ID, msg.Address)
 	if !found {
-		return types.ErrorQuotaDoesNotExist().Result()
+		return nil, types.ErrorQuotaDoesNotExist
 	}
 
 	subscription.Free = subscription.Free.Add(quota.Allocated)
 	if msg.Bytes.LT(quota.Consumed) || msg.Bytes.GT(subscription.Free) {
-		return types.ErrorInvalidQuota().Result()
+		return nil, types.ErrorInvalidQuota
 	}
 
 	subscription.Free = subscription.Free.Sub(msg.Bytes)
@@ -257,5 +257,5 @@ func HandleUpdateQuota(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpdateQuot
 	))
 
 	ctx.EventManager().EmitEvent(types.EventModuleName)
-	return sdk.Result{Events: ctx.EventManager().Events()}
+	return &sdk.Result{Events: ctx.EventManager().Events()}, nil
 }
