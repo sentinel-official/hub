@@ -13,7 +13,6 @@ import (
 )
 
 const (
-	Codespace    = types.Codespace
 	ModuleName   = types.ModuleName
 	RouterKey    = types.RouterKey
 	QuerierRoute = types.QuerierRoute
@@ -22,18 +21,19 @@ const (
 
 var (
 	// functions aliases
-	RegisterCodec         = types.RegisterCodec
+	RegisterCodec       = types.RegisterCodec
+	NewGenesisState     = types.NewGenesisState
+	DefaultGenesisState = types.DefaultGenesisState
+	NewKeeper           = keeper.NewKeeper
+	NewQuerier          = querier.NewQuerier
+
+	// variable aliases
+	ModuleCdc             = types.ModuleCdc
 	ErrorMarshal          = types.ErrorMarshal
 	ErrorUnmarshal        = types.ErrorUnmarshal
 	ErrorUnknownMsgType   = types.ErrorUnknownMsgType
 	ErrorUnknownQueryType = types.ErrorUnknownQueryType
-	NewGenesisState       = types.NewGenesisState
-	DefaultGenesisState   = types.DefaultGenesisState
-	NewKeeper             = keeper.NewKeeper
-	NewQuerier            = querier.NewQuerier
-
-	// variable aliases
-	ModuleCdc = types.ModuleCdc
+	ErrorInvalidField     = types.ErrorInvalidField
 )
 
 type (
