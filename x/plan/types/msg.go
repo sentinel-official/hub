@@ -6,6 +6,7 @@ import (
 	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/errors"
 
 	hub "github.com/sentinel-official/hub/types"
 )
@@ -42,24 +43,24 @@ func (m MsgAdd) Type() string {
 	return fmt.Sprintf("%s:add", ModuleName)
 }
 
-func (m MsgAdd) ValidateBasic() sdk.Error {
+func (m MsgAdd) ValidateBasic() error {
 	if m.From == nil || m.From.Empty() {
-		return ErrorInvalidField("from")
+		return errors.Wrapf(ErrorInvalidField, "%s", "from")
 	}
 
 	// Price can be nil. If not, it should be valid
 	if m.Price != nil && !m.Price.IsValid() {
-		return ErrorInvalidField("price")
+		return errors.Wrapf(ErrorInvalidField, "%s", "price")
 	}
 
 	// Validity shouldn't be negative and zero
 	if m.Validity <= 0 {
-		return ErrorInvalidField("validity")
+		return errors.Wrapf(ErrorInvalidField, "%s", "validity")
 	}
 
 	// Bytes shouldn't be negative and zero
 	if !m.Bytes.IsPositive() {
-		return ErrorInvalidField("bytes")
+		return errors.Wrapf(ErrorInvalidField, "%s", "bytes")
 	}
 
 	return nil
@@ -101,19 +102,19 @@ func (m MsgSetStatus) Type() string {
 	return fmt.Sprintf("%s:set_status", ModuleName)
 }
 
-func (m MsgSetStatus) ValidateBasic() sdk.Error {
+func (m MsgSetStatus) ValidateBasic() error {
 	if m.From == nil || m.From.Empty() {
-		return ErrorInvalidField("from")
+		return errors.Wrapf(ErrorInvalidField, "%s", "from")
 	}
 
 	// ID shouldn't be zero
 	if m.ID == 0 {
-		return ErrorInvalidField("id")
+		return errors.Wrapf(ErrorInvalidField, "%s", "id")
 	}
 
 	// Status should be valid
 	if !m.Status.Equal(hub.StatusActive) && !m.Status.Equal(hub.StatusInactive) {
-		return ErrorInvalidField("status")
+		return errors.Wrapf(ErrorInvalidField, "%s", "status")
 	}
 
 	return nil
@@ -155,19 +156,19 @@ func (m MsgAddNode) Type() string {
 	return fmt.Sprintf("%s:add_node", ModuleName)
 }
 
-func (m MsgAddNode) ValidateBasic() sdk.Error {
+func (m MsgAddNode) ValidateBasic() error {
 	if m.From == nil || m.From.Empty() {
-		return ErrorInvalidField("from")
+		return errors.Wrapf(ErrorInvalidField, "%s", "from")
 	}
 
 	// ID shouldn't be zero
 	if m.ID == 0 {
-		return ErrorInvalidField("id")
+		return errors.Wrapf(ErrorInvalidField, "%s", "id")
 	}
 
 	// Address shouldn't be nil or empty
 	if m.Address == nil || m.Address.Empty() {
-		return ErrorInvalidField("address")
+		return errors.Wrapf(ErrorInvalidField, "%s", "address")
 	}
 
 	return nil
@@ -209,19 +210,19 @@ func (m MsgRemoveNode) Type() string {
 	return fmt.Sprintf("%s:remove_node", ModuleName)
 }
 
-func (m MsgRemoveNode) ValidateBasic() sdk.Error {
+func (m MsgRemoveNode) ValidateBasic() error {
 	if m.From == nil || m.From.Empty() {
-		return ErrorInvalidField("from")
+		return errors.Wrapf(ErrorInvalidField, "%s", "from")
 	}
 
 	// ID shouldn't be zero
 	if m.ID == 0 {
-		return ErrorInvalidField("id")
+		return errors.Wrapf(ErrorInvalidField, "%s", "id")
 	}
 
 	// Address shouldn't be nil or empty
 	if m.Address == nil || m.Address.Empty() {
-		return ErrorInvalidField("address")
+		return errors.Wrapf(ErrorInvalidField, "%s", "address")
 	}
 
 	return nil

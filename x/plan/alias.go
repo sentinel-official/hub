@@ -13,7 +13,6 @@ import (
 )
 
 const (
-	Codespace             = types.Codespace
 	EventTypeSetCount     = types.EventTypeSetCount
 	EventTypeSet          = types.EventTypeSet
 	EventTypeSetStatus    = types.EventTypeSetStatus
@@ -34,15 +33,6 @@ const (
 var (
 	// functions aliases
 	RegisterCodec                  = types.RegisterCodec
-	ErrorMarshal                   = types.ErrorMarshal
-	ErrorUnmarshal                 = types.ErrorUnmarshal
-	ErrorUnknownMsgType            = types.ErrorUnknownMsgType
-	ErrorUnknownQueryType          = types.ErrorUnknownQueryType
-	ErrorInvalidField              = types.ErrorInvalidField
-	ErrorProviderDoesNotExist      = types.ErrorProviderDoesNotExist
-	ErrorPlanDoesNotExist          = types.ErrorPlanDoesNotExist
-	ErrorNodeDoesNotExist          = types.ErrorNodeDoesNotExist
-	ErrorUnauthorized              = types.ErrorUnauthorized
 	NewGenesisState                = types.NewGenesisState
 	DefaultGenesisState            = types.DefaultGenesisState
 	PlanKey                        = types.PlanKey
@@ -62,14 +52,23 @@ var (
 	Querier                        = querier.Querier
 
 	// variable aliases
-	ModuleCdc                = types.ModuleCdc
-	RouterKey                = types.RouterKey
-	StoreKey                 = types.StoreKey
-	EventModuleName          = types.EventModuleName
-	CountKey                 = types.CountKey
-	PlanKeyPrefix            = types.PlanKeyPrefix
-	PlanForProviderKeyPrefix = types.PlanForProviderKeyPrefix
-	NodeForPlanKeyPrefix     = types.NodeForPlanKeyPrefix
+	ModuleCdc                 = types.ModuleCdc
+	ErrorMarshal              = types.ErrorMarshal
+	ErrorUnmarshal            = types.ErrorUnmarshal
+	ErrorUnknownMsgType       = types.ErrorUnknownMsgType
+	ErrorUnknownQueryType     = types.ErrorUnknownQueryType
+	ErrorInvalidField         = types.ErrorInvalidField
+	ErrorProviderDoesNotExist = types.ErrorProviderDoesNotExist
+	ErrorPlanDoesNotExist     = types.ErrorPlanDoesNotExist
+	ErrorNodeDoesNotExist     = types.ErrorNodeDoesNotExist
+	ErrorUnauthorized         = types.ErrorUnauthorized
+	RouterKey                 = types.RouterKey
+	StoreKey                  = types.StoreKey
+	EventModuleName           = types.EventModuleName
+	CountKey                  = types.CountKey
+	PlanKeyPrefix             = types.PlanKeyPrefix
+	PlanForProviderKeyPrefix  = types.PlanForProviderKeyPrefix
+	NodeForPlanKeyPrefix      = types.NodeForPlanKeyPrefix
 )
 
 type (

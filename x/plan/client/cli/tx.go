@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"bufio"
 	"strconv"
 	"time"
 
@@ -20,8 +21,9 @@ func txAdd(cdc *codec.Codec) *cobra.Command {
 		Use:   "add",
 		Short: "Add a plan",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			txb := auth.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
-			ctx := context.NewCLIContext().WithCodec(cdc)
+			buffer := bufio.NewReader(cmd.InOrStdin())
+			txb := auth.NewTxBuilderFromCLI(buffer).WithTxEncoder(utils.GetTxEncoder(cdc))
+			ctx := context.NewCLIContextWithInput(buffer).WithCodec(cdc)
 
 			s, err := cmd.Flags().GetString(flagPrice)
 			if err != nil {
@@ -70,8 +72,9 @@ func txSetStatus(cdc *codec.Codec) *cobra.Command {
 		Short: "Set a plan status",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			txb := auth.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
-			ctx := context.NewCLIContext().WithCodec(cdc)
+			buffer := bufio.NewReader(cmd.InOrStdin())
+			txb := auth.NewTxBuilderFromCLI(buffer).WithTxEncoder(utils.GetTxEncoder(cdc))
+			ctx := context.NewCLIContextWithInput(buffer).WithCodec(cdc)
 
 			id, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
@@ -92,8 +95,9 @@ func txAddNode(cdc *codec.Codec) *cobra.Command {
 		Short: "Add a node for a plan",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			txb := auth.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
-			ctx := context.NewCLIContext().WithCodec(cdc)
+			buffer := bufio.NewReader(cmd.InOrStdin())
+			txb := auth.NewTxBuilderFromCLI(buffer).WithTxEncoder(utils.GetTxEncoder(cdc))
+			ctx := context.NewCLIContextWithInput(buffer).WithCodec(cdc)
 
 			id, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
@@ -119,8 +123,9 @@ func txRemoveNode(cdc *codec.Codec) *cobra.Command {
 		Short: "Remove a node for a plan",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			txb := auth.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
-			ctx := context.NewCLIContext().WithCodec(cdc)
+			buffer := bufio.NewReader(cmd.InOrStdin())
+			txb := auth.NewTxBuilderFromCLI(buffer).WithTxEncoder(utils.GetTxEncoder(cdc))
+			ctx := context.NewCLIContextWithInput(buffer).WithCodec(cdc)
 
 			id, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
