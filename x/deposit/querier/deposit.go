@@ -3,16 +3,17 @@ package querier
 import (
 	"github.com/cosmos/cosmos-sdk/client"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/errors"
 	abci "github.com/tendermint/tendermint/abci/types"
 
 	"github.com/sentinel-official/hub/x/deposit/keeper"
 	"github.com/sentinel-official/hub/x/deposit/types"
 )
 
-func queryDeposit(ctx sdk.Context, req abci.RequestQuery, k keeper.Keeper) ([]byte, sdk.Error) {
+func queryDeposit(ctx sdk.Context, req abci.RequestQuery, k keeper.Keeper) ([]byte, error) {
 	var params types.QueryDepositParams
 	if err := types.ModuleCdc.UnmarshalJSON(req.Data, &params); err != nil {
-		return nil, types.ErrorUnmarshal()
+		return nil, errors.Wrap(types.ErrorUnmarshal, err.Error())
 	}
 
 	deposit, found := k.GetDeposit(ctx, params.Address)
@@ -22,16 +23,16 @@ func queryDeposit(ctx sdk.Context, req abci.RequestQuery, k keeper.Keeper) ([]by
 
 	res, err := types.ModuleCdc.MarshalJSON(deposit)
 	if err != nil {
-		return nil, types.ErrorMarshal()
+		return nil, errors.Wrap(types.ErrorMarshal, err.Error())
 	}
 
 	return res, nil
 }
 
-func queryDeposits(ctx sdk.Context, req abci.RequestQuery, k keeper.Keeper) ([]byte, sdk.Error) {
+func queryDeposits(ctx sdk.Context, req abci.RequestQuery, k keeper.Keeper) ([]byte, error) {
 	var params types.QueryDepositsParams
 	if err := types.ModuleCdc.UnmarshalJSON(req.Data, &params); err != nil {
-		return nil, types.ErrorUnmarshal()
+		return nil, errors.Wrap(types.ErrorUnmarshal, err.Error())
 	}
 
 	deposits := k.GetDeposits(ctx)
@@ -45,7 +46,7 @@ func queryDeposits(ctx sdk.Context, req abci.RequestQuery, k keeper.Keeper) ([]b
 
 	res, err := types.ModuleCdc.MarshalJSON(deposits)
 	if err != nil {
-		return nil, types.ErrorMarshal()
+		return nil, errors.Wrap(types.ErrorMarshal, err.Error())
 	}
 
 	return res, nil
