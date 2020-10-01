@@ -6,6 +6,7 @@ import (
 	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/errors"
 
 	hub "github.com/sentinel-official/hub/types"
 )
@@ -42,29 +43,29 @@ func (m MsgUpsert) Type() string {
 	return fmt.Sprintf("%s:upsert", ModuleName)
 }
 
-func (m MsgUpsert) ValidateBasic() sdk.Error {
+func (m MsgUpsert) ValidateBasic() error {
 	if m.From == nil || m.From.Empty() {
-		return ErrorInvalidField("from")
+		return errors.Wrapf(ErrorInvalidField, "%s", "from")
 	}
 
 	// ID shouldn't be zero
 	if m.ID == 0 {
-		return ErrorInvalidField("id")
+		return errors.Wrapf(ErrorInvalidField, "%s", "id")
 	}
 
 	// Address shouldn't be nil or empty
 	if m.Address == nil || m.Address.Empty() {
-		return ErrorInvalidField("address")
+		return errors.Wrapf(ErrorInvalidField, "%s", "address")
 	}
 
 	// Duration shouldn't be zero
 	if m.Duration == 0 {
-		return ErrorInvalidField("duration")
+		return errors.Wrapf(ErrorInvalidField, "%s", "duration")
 	}
 
 	// Bandwidth shouldn't be zero
 	if m.Bandwidth.IsAllZero() {
-		return ErrorInvalidField("bandwidth")
+		return errors.Wrapf(ErrorInvalidField, "%s", "bandwidth")
 	}
 
 	return nil

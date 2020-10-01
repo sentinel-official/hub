@@ -8,7 +8,7 @@ import (
 )
 
 type DepositKeeper interface {
-	SendCoinsFromDepositToAccount(ctx sdk.Context, from, to sdk.AccAddress, coins sdk.Coins) sdk.Error
+	SendCoinsFromDepositToAccount(ctx sdk.Context, from, to sdk.AccAddress, coins sdk.Coins) error
 }
 
 type PlanKeeper interface {

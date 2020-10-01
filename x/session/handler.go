@@ -18,21 +18,21 @@ func authorized(ctx sdk.Context, k keeper.Keeper, p uint64, n hub.NodeAddress, s
 	return k.HasNodeForPlan(ctx, p, n)
 }
 
-func HandleUpsert(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpsert) sdk.Result {
+func HandleUpsert(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpsert) (*sdk.Result, error) {
 	subscription, found := k.GetSubscription(ctx, msg.ID)
 	if !found {
-		return types.ErrorSubscriptionDoesNotExit().Result()
+		return nil, types.ErrorSubscriptionDoesNotExit
 	}
 	if subscription.Status.Equal(hub.StatusInactive) {
-		return types.ErrorInvalidSubscriptionStatus().Result()
+		return nil, types.ErrorInvalidSubscriptionStatus
 	}
 
 	if !authorized(ctx, k, subscription.Plan, msg.From, subscription.ID) {
-		return types.ErrorUnauthorized().Result()
+		return nil, types.ErrorUnauthorized
 	}
 
 	if !k.HasQuota(ctx, subscription.ID, msg.Address) {
-		return types.ErrorQuotaDoesNotExist().Result()
+		return nil, types.ErrorQuotaDoesNotExist
 	}
 
 	session, found := k.GetOngoingSession(ctx, subscription.ID, msg.Address)
@@ -91,5 +91,5 @@ func HandleUpsert(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpsert) sdk.Res
 	))
 
 	ctx.EventManager().EmitEvent(types.EventModuleName)
-	return sdk.Result{Events: ctx.EventManager().Events()}
+	return &sdk.Result{Events: ctx.EventManager().Events()}, nil
 }

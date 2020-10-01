@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"bufio"
 	"strconv"
 	"time"
 
@@ -21,8 +22,9 @@ func txUpsert(cdc *codec.Codec) *cobra.Command {
 		Short: "Add or update a session",
 		Args:  cobra.ExactArgs(5),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			txb := auth.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
-			ctx := context.NewCLIContext().WithCodec(cdc)
+			buffer := bufio.NewReader(cmd.InOrStdin())
+			txb := auth.NewTxBuilderFromCLI(buffer).WithTxEncoder(utils.GetTxEncoder(cdc))
+			ctx := context.NewCLIContextWithInput(buffer).WithCodec(cdc)
 
 			subscription, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {

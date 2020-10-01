@@ -13,7 +13,6 @@ import (
 )
 
 const (
-	Codespace                    = types.Codespace
 	EventTypeSetCount            = types.EventTypeSetCount
 	EventTypeSetActive           = types.EventTypeSetActive
 	EventTypeUpdate              = types.EventTypeUpdate
@@ -36,16 +35,6 @@ const (
 var (
 	// functions aliases
 	RegisterCodec                         = types.RegisterCodec
-	ErrorMarshal                          = types.ErrorMarshal
-	ErrorUnmarshal                        = types.ErrorUnmarshal
-	ErrorUnknownMsgType                   = types.ErrorUnknownMsgType
-	ErrorUnknownQueryType                 = types.ErrorUnknownQueryType
-	ErrorInvalidField                     = types.ErrorInvalidField
-	ErrorSubscriptionDoesNotExit          = types.ErrorSubscriptionDoesNotExit
-	ErrorInvalidSubscriptionStatus        = types.ErrorInvalidSubscriptionStatus
-	ErrorUnauthorized                     = types.ErrorUnauthorized
-	ErrorQuotaDoesNotExist                = types.ErrorQuotaDoesNotExist
-	ErrorInvalidBandwidth                 = types.ErrorInvalidBandwidth
 	NewGenesisState                       = types.NewGenesisState
 	DefaultGenesisState                   = types.DefaultGenesisState
 	SessionKey                            = types.SessionKey
@@ -74,6 +63,16 @@ var (
 
 	// variable aliases
 	ModuleCdc                       = types.ModuleCdc
+	ErrorMarshal                    = types.ErrorMarshal
+	ErrorUnmarshal                  = types.ErrorUnmarshal
+	ErrorUnknownMsgType             = types.ErrorUnknownMsgType
+	ErrorUnknownQueryType           = types.ErrorUnknownQueryType
+	ErrorInvalidField               = types.ErrorInvalidField
+	ErrorSubscriptionDoesNotExit    = types.ErrorSubscriptionDoesNotExit
+	ErrorInvalidSubscriptionStatus  = types.ErrorInvalidSubscriptionStatus
+	ErrorUnauthorized               = types.ErrorUnauthorized
+	ErrorQuotaDoesNotExist          = types.ErrorQuotaDoesNotExist
+	ErrorInvalidBandwidth           = types.ErrorInvalidBandwidth
 	RouterKey                       = types.RouterKey
 	StoreKey                        = types.StoreKey
 	EventModuleName                 = types.EventModuleName
