@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/errors"
 
 	hub "github.com/sentinel-official/hub/types"
 )
@@ -41,29 +42,29 @@ func (m MsgRegister) Type() string {
 	return fmt.Sprintf("%s:register", ModuleName)
 }
 
-func (m MsgRegister) ValidateBasic() sdk.Error {
+func (m MsgRegister) ValidateBasic() error {
 	if m.From == nil || m.From.Empty() {
-		return ErrorInvalidField("from")
+		return errors.Wrapf(ErrorInvalidField, "%s", "from")
 	}
 
 	// Name can't be empty and length should be [1, 64]
 	if len(m.Name) == 0 || len(m.Name) > 64 {
-		return ErrorInvalidField("name")
+		return errors.Wrapf(ErrorInvalidField, "%s", "name")
 	}
 
 	// Identity length should be [0, 64]
 	if len(m.Identity) > 64 {
-		return ErrorInvalidField("identity")
+		return errors.Wrapf(ErrorInvalidField, "%s", "identity")
 	}
 
 	// Website length should be [0, 64]
 	if len(m.Website) > 64 {
-		return ErrorInvalidField("website")
+		return errors.Wrapf(ErrorInvalidField, "%s", "website")
 	}
 
 	// Description length should be [0, 256]
 	if len(m.Description) > 256 {
-		return ErrorInvalidField("description")
+		return errors.Wrapf(ErrorInvalidField, "%s", "description")
 	}
 
 	return nil
@@ -109,29 +110,29 @@ func (m MsgUpdate) Type() string {
 	return fmt.Sprintf("%s:update", ModuleName)
 }
 
-func (m MsgUpdate) ValidateBasic() sdk.Error {
+func (m MsgUpdate) ValidateBasic() error {
 	if m.From == nil || m.From.Empty() {
-		return ErrorInvalidField("from")
+		return errors.Wrapf(ErrorInvalidField, "%s", "from")
 	}
 
 	// Name length should be [0, 64]
 	if len(m.Name) > 64 {
-		return ErrorInvalidField("name")
+		return errors.Wrapf(ErrorInvalidField, "%s", "name")
 	}
 
 	// Identity length should be [0, 64]
 	if len(m.Identity) > 64 {
-		return ErrorInvalidField("identity")
+		return errors.Wrapf(ErrorInvalidField, "%s", "identity")
 	}
 
 	// Website length should be [0, 64]
 	if len(m.Website) > 64 {
-		return ErrorInvalidField("website")
+		return errors.Wrapf(ErrorInvalidField, "%s", "website")
 	}
 
 	// Description length should be [0, 256]
 	if len(m.Description) > 256 {
-		return ErrorInvalidField("description")
+		return errors.Wrapf(ErrorInvalidField, "%s", "description")
 	}
 
 	return nil

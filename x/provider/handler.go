@@ -7,10 +7,10 @@ import (
 	"github.com/sentinel-official/hub/x/provider/types"
 )
 
-func HandleRegister(ctx sdk.Context, k keeper.Keeper, msg types.MsgRegister) sdk.Result {
+func HandleRegister(ctx sdk.Context, k keeper.Keeper, msg types.MsgRegister) (*sdk.Result, error) {
 	_, found := k.GetProvider(ctx, msg.From.Bytes())
 	if found {
-		return types.ErrorDuplicateProvider().Result()
+		return nil, types.ErrorDuplicateProvider
 	}
 
 	provider := types.Provider{
@@ -28,13 +28,13 @@ func HandleRegister(ctx sdk.Context, k keeper.Keeper, msg types.MsgRegister) sdk
 	))
 
 	ctx.EventManager().EmitEvent(types.EventModuleName)
-	return sdk.Result{Events: ctx.EventManager().Events()}
+	return &sdk.Result{Events: ctx.EventManager().Events()}, nil
 }
 
-func HandleUpdate(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpdate) sdk.Result {
+func HandleUpdate(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpdate) (*sdk.Result, error) {
 	provider, found := k.GetProvider(ctx, msg.From)
 	if !found {
-		return types.ErrorProviderDoesNotExist().Result()
+		return nil, types.ErrorProviderDoesNotExist
 	}
 
 	if len(msg.Name) > 0 {
@@ -57,5 +57,5 @@ func HandleUpdate(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpdate) sdk.Res
 	))
 
 	ctx.EventManager().EmitEvent(types.EventModuleName)
-	return sdk.Result{Events: ctx.EventManager().Events()}
+	return &sdk.Result{Events: ctx.EventManager().Events()}, nil
 }
