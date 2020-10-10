@@ -54,7 +54,7 @@ func HandleUpdate(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpdate) sdk.Res
 		msg.Provider = nil
 	}
 
-	if msg.Provider != nil || msg.Price != nil {
+	if node.Provider != nil && (msg.Provider != nil || msg.Price != nil) {
 		k.DeleteNodeForProvider(ctx, node.Provider, node.Address)
 
 		plans := k.GetPlansForProvider(ctx, node.Provider)
