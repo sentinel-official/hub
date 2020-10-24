@@ -17,16 +17,12 @@ func HandleRegister(ctx sdk.Context, k keeper.Keeper, msg types.MsgRegister) sdk
 	}
 
 	node := types.Node{
-		Moniker:       msg.Moniker,
-		Address:       msg.From.Bytes(),
-		Provider:      msg.Provider,
-		Price:         msg.Price,
-		InternetSpeed: msg.InternetSpeed,
-		RemoteURL:     msg.RemoteURL,
-		Version:       msg.Version,
-		Category:      msg.Category,
-		Status:        hub.StatusInactive,
-		StatusAt:      ctx.BlockTime(),
+		Address:   msg.From.Bytes(),
+		Provider:  msg.Provider,
+		Price:     msg.Price,
+		RemoteURL: msg.RemoteURL,
+		Status:    hub.StatusInactive,
+		StatusAt:  ctx.BlockTime(),
 	}
 
 	k.SetNode(ctx, node)
@@ -87,20 +83,8 @@ func HandleUpdate(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpdate) sdk.Res
 		node.Provider = nil
 		node.Price = msg.Price
 	}
-	if !msg.InternetSpeed.IsAnyZero() {
-		node.InternetSpeed = msg.InternetSpeed
-	}
-	if len(msg.Moniker) > 0 {
-		node.Moniker = msg.Moniker
-	}
 	if len(msg.RemoteURL) > 0 {
 		node.RemoteURL = msg.RemoteURL
-	}
-	if len(msg.Version) > 0 {
-		node.Version = msg.Version
-	}
-	if msg.Category.IsValid() {
-		node.Category = msg.Category
 	}
 
 	k.SetNode(ctx, node)

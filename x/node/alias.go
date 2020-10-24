@@ -23,7 +23,6 @@ const (
 	ModuleName              = types.ModuleName
 	ParamsSubspace          = types.ParamsSubspace
 	QuerierRoute            = types.QuerierRoute
-	CategoryUnknown         = types.CategoryUnknown
 	DefaultInactiveDuration = types.DefaultInactiveDuration
 	QueryNode               = types.QueryNode
 	QueryNodes              = types.QueryNodes
@@ -57,7 +56,6 @@ var (
 	NewMsgRegister                      = types.NewMsgRegister
 	NewMsgUpdate                        = types.NewMsgUpdate
 	NewMsgSetStatus                     = types.NewMsgSetStatus
-	CategoryFromString                  = types.CategoryFromString
 	NewParams                           = types.NewParams
 	DefaultParams                       = types.DefaultParams
 	ParamsKeyTable                      = types.ParamsKeyTable
@@ -87,7 +85,6 @@ type (
 	MsgRegister                 = types.MsgRegister
 	MsgUpdate                   = types.MsgUpdate
 	MsgSetStatus                = types.MsgSetStatus
-	Category                    = types.Category
 	Node                        = types.Node
 	Nodes                       = types.Nodes
 	Params                      = types.Params
