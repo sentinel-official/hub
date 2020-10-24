@@ -20,23 +20,12 @@ func SimulateMsgRegister(pk expected.ProviderKeeper, k keeper.Keeper) simulation
 	return func(r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accounts []simulation.Account) (
 		simulation.OperationMsg, []simulation.FutureOperation, error) {
 		var (
-			from     = simulation.RandomAcc(r, accounts).Address
-			prov     = provider.RandomProvider(r, pk.GetProviders(ctx)).Address
-			speed    = hub.NewBandwidthFromInt64(r.Int63n(1e9)+1, r.Int63n(1e9)+1)
-			moniker  = simulation.RandStringOfLength(r, 64)
-			remote   = simulation.RandStringOfLength(r, 64)
-			version  = simulation.RandStringOfLength(r, 64)
-			category types.Category
+			from   = simulation.RandomAcc(r, accounts).Address
+			prov   = provider.RandomProvider(r, pk.GetProviders(ctx)).Address
+			remote = simulation.RandStringOfLength(r, 64)
 		)
 
-		switch r.Intn(2) {
-		case 0:
-			category = types.CategoryOpenVPN
-		case 1:
-			category = types.CategoryWireGuard
-		}
-
-		msg := types.NewMsgRegister(from, moniker, prov, nil, speed, remote, version, category)
+		msg := types.NewMsgRegister(from, prov, nil, remote)
 		if msg.ValidateBasic() != nil {
 			return simulation.NoOpMsg(types.ModuleName), nil, fmt.Errorf("expected msg to pass ValidateBasic: %s", msg.GetSignBytes())
 		}
@@ -55,23 +44,12 @@ func SimulateMsgUpdate(pk expected.ProviderKeeper, k keeper.Keeper) simulation.O
 	return func(r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accounts []simulation.Account) (
 		simulation.OperationMsg, []simulation.FutureOperation, error) {
 		var (
-			from     = RandomNode(r, k.GetNodes(ctx)).Address
-			prov     = provider.RandomProvider(r, pk.GetProviders(ctx)).Address
-			speed    = hub.NewBandwidthFromInt64(r.Int63n(1e9)+1, r.Int63n(1e9)+1)
-			moniker  = simulation.RandStringOfLength(r, 64)
-			remote   = simulation.RandStringOfLength(r, 64)
-			version  = simulation.RandStringOfLength(r, 64)
-			category types.Category
+			from   = RandomNode(r, k.GetNodes(ctx)).Address
+			prov   = provider.RandomProvider(r, pk.GetProviders(ctx)).Address
+			remote = simulation.RandStringOfLength(r, 64)
 		)
 
-		switch r.Intn(2) {
-		case 0:
-			category = types.CategoryOpenVPN
-		case 1:
-			category = types.CategoryWireGuard
-		}
-
-		msg := types.NewMsgUpdate(from, moniker, prov, nil, speed, remote, version, category)
+		msg := types.NewMsgUpdate(from, prov, nil, remote)
 		if msg.ValidateBasic() != nil {
 			return simulation.NoOpMsg(types.ModuleName), nil, fmt.Errorf("expected msg to pass ValidateBasic: %s", msg.GetSignBytes())
 		}
