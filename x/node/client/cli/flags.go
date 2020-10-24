@@ -12,4 +12,5 @@ const (
 	flagDownloadSpeed = "download-speed"
 	flagMoniker       = "moniker"
 	flagCategory      = "category"
+	flagStatus        = "status"
 )

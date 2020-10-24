@@ -53,6 +53,11 @@ func queryNodes(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
+			s, err := cmd.Flags().GetString(flagStatus)
+			if err != nil {
+				return err
+			}
+
 			page, err := cmd.Flags().GetInt(flagPage)
 			if err != nil {
 				return err
@@ -66,6 +71,7 @@ func queryNodes(cdc *codec.Codec) *cobra.Command {
 			var (
 				address hub.ProvAddress
 				nodes   types.Nodes
+				status  = hub.StatusFromString(s)
 			)
 
 			if len(provider) > 0 {
@@ -74,11 +80,11 @@ func queryNodes(cdc *codec.Codec) *cobra.Command {
 					return err
 				}
 
-				nodes, err = common.QueryNodesForProvider(ctx, address, page, limit)
+				nodes, err = common.QueryNodesForProvider(ctx, address, status, page, limit)
 			} else if plan > 0 {
 				nodes, err = common.QueryNodesForPlan(ctx, plan, page, limit)
 			} else {
-				nodes, err = common.QueryNodes(ctx, page, limit)
+				nodes, err = common.QueryNodes(ctx, status, page, limit)
 			}
 
 			if err != nil {
@@ -95,6 +101,7 @@ func queryNodes(cdc *codec.Codec) *cobra.Command {
 
 	cmd.Flags().String(flagProvider, "", "provider address")
 	cmd.Flags().Uint64(flagPlan, 0, "subscription plan ID")
+	cmd.Flags().String(flagStatus, "", "status")
 	cmd.Flags().Int(flagPage, 1, "page")
 	cmd.Flags().Int(flagLimit, 0, "limit")
 

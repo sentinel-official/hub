@@ -34,8 +34,8 @@ func QueryNode(ctx context.CLIContext, address hub.NodeAddress) (*types.Node, er
 	return &node, nil
 }
 
-func QueryNodes(ctx context.CLIContext, page, limit int) (types.Nodes, error) {
-	params := types.NewQueryNodesParams(page, limit)
+func QueryNodes(ctx context.CLIContext, status hub.Status, page, limit int) (types.Nodes, error) {
+	params := types.NewQueryNodesParams(status, page, limit)
 	bytes, err := ctx.Codec.MarshalJSON(params)
 	if err != nil {
 		return nil, err
@@ -58,8 +58,8 @@ func QueryNodes(ctx context.CLIContext, page, limit int) (types.Nodes, error) {
 	return nodes, nil
 }
 
-func QueryNodesForProvider(ctx context.CLIContext, address hub.ProvAddress, page, limit int) (types.Nodes, error) {
-	params := types.NewQueryNodesForProviderParams(address, page, limit)
+func QueryNodesForProvider(ctx context.CLIContext, address hub.ProvAddress, status hub.Status, page, limit int) (types.Nodes, error) {
+	params := types.NewQueryNodesForProviderParams(address, status, page, limit)
 	bytes, err := ctx.Codec.MarshalJSON(params)
 	if err != nil {
 		return nil, err

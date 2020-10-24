@@ -5,6 +5,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	abci "github.com/tendermint/tendermint/abci/types"
 
+	hub "github.com/sentinel-official/hub/types"
 	"github.com/sentinel-official/hub/x/node/keeper"
 	"github.com/sentinel-official/hub/x/node/types"
 )
@@ -34,7 +35,17 @@ func queryNodes(ctx sdk.Context, req abci.RequestQuery, k keeper.Keeper) ([]byte
 		return nil, types.ErrorUnmarshal()
 	}
 
-	nodes := k.GetNodes(ctx)
+	var nodes types.Nodes
+	if params.Status.Equal(hub.StatusActive) {
+		nodes = k.GetActiveNodes(ctx)
+	} else if params.Status.Equal(hub.StatusInactive) {
+		nodes = k.GetInActiveNodes(ctx)
+	} else {
+		nodes = append(
+			k.GetActiveNodes(ctx),
+			k.GetInActiveNodes(ctx)...,
+		)
+	}
 
 	start, end := client.Paginate(len(nodes), params.Page, params.Limit, len(nodes))
 	if start < 0 || end < 0 {
@@ -57,7 +68,17 @@ func queryNodesForProvider(ctx sdk.Context, req abci.RequestQuery, k keeper.Keep
 		return nil, types.ErrorUnmarshal()
 	}
 
-	nodes := k.GetNodesForProvider(ctx, params.Address)
+	var nodes types.Nodes
+	if params.Status.Equal(hub.StatusActive) {
+		nodes = k.GetActiveNodesForProvider(ctx, params.Address)
+	} else if params.Status.Equal(hub.StatusInactive) {
+		nodes = k.GetInActiveNodesForProvider(ctx, params.Address)
+	} else {
+		nodes = append(
+			k.GetActiveNodesForProvider(ctx, params.Address),
+			k.GetInActiveNodesForProvider(ctx, params.Address)...,
+		)
+	}
 
 	start, end := client.Paginate(len(nodes), params.Page, params.Limit, len(nodes))
 	if start < 0 || end < 0 {

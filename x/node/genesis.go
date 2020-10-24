@@ -12,13 +12,22 @@ import (
 
 func InitGenesis(ctx sdk.Context, k keeper.Keeper, state types.GenesisState) {
 	k.SetParams(ctx, state.Params)
+
 	for _, node := range state.Nodes {
 		k.SetNode(ctx, node)
-		if node.Provider != nil {
-			k.SetNodeForProvider(ctx, node.Provider, node.Address)
-		}
+
 		if node.Status.Equal(hub.StatusActive) {
-			k.SetActiveNodeAt(ctx, node.StatusAt, node.Address)
+			k.SetActiveNode(ctx, node.Address)
+			if node.Provider != nil {
+				k.SetActiveNodeForProvider(ctx, node.Provider, node.Address)
+			}
+
+			k.SetInActiveNodeAt(ctx, node.StatusAt, node.Address)
+		} else {
+			k.SetInActiveNode(ctx, node.Address)
+			if node.Provider != nil {
+				k.SetInActiveNodeForProvider(ctx, node.Provider, node.Address)
+			}
 		}
 	}
 }

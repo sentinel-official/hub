@@ -48,6 +48,7 @@ func queryNodes(ctx context.CLIContext) http.HandlerFunc {
 			plan     uint64
 			provider hub.ProvAddress
 			nodes    types.Nodes
+			status   = hub.StatusFromString(query.Get("status"))
 		)
 
 		if query.Get("provider") != "" {
@@ -57,7 +58,7 @@ func queryNodes(ctx context.CLIContext) http.HandlerFunc {
 				return
 			}
 
-			nodes, err = common.QueryNodesForProvider(ctx, provider, page, limit)
+			nodes, err = common.QueryNodesForProvider(ctx, provider, status, page, limit)
 		} else if query.Get("plan") != "" {
 			plan, err = strconv.ParseUint(query.Get("plan"), 10, 64)
 			if err != nil {
@@ -67,7 +68,7 @@ func queryNodes(ctx context.CLIContext) http.HandlerFunc {
 
 			nodes, err = common.QueryNodesForPlan(ctx, plan, page, limit)
 		} else {
-			nodes, err = common.QueryNodes(ctx, page, limit)
+			nodes, err = common.QueryNodes(ctx, status, page, limit)
 		}
 
 		if err != nil {
