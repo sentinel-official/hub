@@ -3,6 +3,7 @@ package keeper
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
+	hub "github.com/sentinel-official/hub/types"
 	"github.com/sentinel-official/hub/x/subscription/types"
 )
 
@@ -41,17 +42,22 @@ func (k Keeper) DeleteQuota(ctx sdk.Context, id uint64, address sdk.AccAddress) 
 	store.Delete(key)
 }
 
-func (k Keeper) GetQuotas(ctx sdk.Context, id uint64) (items types.Quotas) {
-	store := k.Store(ctx)
+func (k Keeper) GetQuotas(ctx sdk.Context, id uint64, skip, limit int) (items types.Quotas) {
+	var (
+		store = k.Store(ctx)
+		iter  = hub.NewPaginatedIterator(
+			sdk.KVStorePrefixIterator(store, types.GetQuotaKeyPrefix(id)),
+		)
+	)
 
-	iter := sdk.KVStorePrefixIterator(store, types.GetQuotaKeyPrefix(id))
 	defer iter.Close()
 
-	for ; iter.Valid(); iter.Next() {
+	iter.Skip(skip)
+	iter.Limit(limit, func(iter sdk.Iterator) {
 		var item types.Quota
 		k.cdc.MustUnmarshalBinaryLengthPrefixed(iter.Value(), &item)
 		items = append(items, item)
-	}
+	})
 
 	return items
 }

@@ -37,17 +37,22 @@ func (k Keeper) GetNode(ctx sdk.Context, address hub.NodeAddress) (node types.No
 	return node, true
 }
 
-func (k Keeper) GetNodes(ctx sdk.Context) (items types.Nodes) {
-	store := k.Store(ctx)
+func (k Keeper) GetNodes(ctx sdk.Context, skip, limit int) (items types.Nodes) {
+	var (
+		store = k.Store(ctx)
+		iter  = hub.NewPaginatedIterator(
+			sdk.KVStorePrefixIterator(store, types.NodeKeyPrefix),
+		)
+	)
 
-	iter := sdk.KVStorePrefixIterator(store, types.NodeKeyPrefix)
 	defer iter.Close()
 
-	for ; iter.Valid(); iter.Next() {
+	iter.Skip(skip)
+	iter.Limit(limit, func(iter sdk.Iterator) {
 		var item types.Node
 		k.cdc.MustUnmarshalBinaryLengthPrefixed(iter.Value(), &item)
 		items = append(items, item)
-	}
+	})
 
 	return items
 }
@@ -84,19 +89,24 @@ func (k Keeper) DeleteActiveNode(ctx sdk.Context, address hub.NodeAddress) {
 	store.Delete(key)
 }
 
-func (k Keeper) GetActiveNodes(ctx sdk.Context) (items types.Nodes) {
-	store := k.Store(ctx)
+func (k Keeper) GetActiveNodes(ctx sdk.Context, skip, limit int) (items types.Nodes) {
+	var (
+		store = k.Store(ctx)
+		iter  = hub.NewPaginatedIterator(
+			sdk.KVStorePrefixIterator(store, types.ActiveNodeKeyPrefix),
+		)
+	)
 
-	iter := sdk.KVStorePrefixIterator(store, types.ActiveNodeKeyPrefix)
 	defer iter.Close()
 
-	for ; iter.Valid(); iter.Next() {
+	iter.Skip(skip)
+	iter.Limit(limit, func(iter sdk.Iterator) {
 		var address hub.NodeAddress
 		k.cdc.MustUnmarshalBinaryLengthPrefixed(iter.Value(), &address)
 
 		item, _ := k.GetNode(ctx, address)
 		items = append(items, item)
-	}
+	})
 
 	return items
 }
@@ -116,19 +126,47 @@ func (k Keeper) DeleteInActiveNode(ctx sdk.Context, address hub.NodeAddress) {
 	store.Delete(key)
 }
 
-func (k Keeper) GetInActiveNodes(ctx sdk.Context) (items types.Nodes) {
-	store := k.Store(ctx)
+func (k Keeper) GetInActiveNodes(ctx sdk.Context, skip, limit int) (items types.Nodes) {
+	var (
+		store = k.Store(ctx)
+		iter  = hub.NewPaginatedIterator(
+			sdk.KVStorePrefixIterator(store, types.InActiveNodeKeyPrefix),
+		)
+	)
 
-	iter := sdk.KVStorePrefixIterator(store, types.InActiveNodeKeyPrefix)
 	defer iter.Close()
 
-	for ; iter.Valid(); iter.Next() {
+	iter.Skip(skip)
+	iter.Limit(limit, func(iter sdk.Iterator) {
 		var address hub.NodeAddress
 		k.cdc.MustUnmarshalBinaryLengthPrefixed(iter.Value(), &address)
 
 		item, _ := k.GetNode(ctx, address)
 		items = append(items, item)
-	}
+	})
+
+	return items
+}
+
+func (k Keeper) GetNodesForProvider(ctx sdk.Context, address hub.ProvAddress, skip, limit int) (items types.Nodes) {
+	var (
+		store = k.Store(ctx)
+		iter  = hub.NewPaginatedIterator(
+			sdk.KVStorePrefixIterator(store, types.GetActiveNodeForProviderKeyPrefix(address)),
+			sdk.KVStorePrefixIterator(store, types.GetInActiveNodeForProviderKeyPrefix(address)),
+		)
+	)
+
+	defer iter.Close()
+
+	iter.Skip(skip)
+	iter.Limit(limit, func(iter sdk.Iterator) {
+		var address hub.NodeAddress
+		k.cdc.MustUnmarshalBinaryLengthPrefixed(iter.Value(), &address)
+
+		item, _ := k.GetNode(ctx, address)
+		items = append(items, item)
+	})
 
 	return items
 }
@@ -148,19 +186,24 @@ func (k Keeper) DeleteActiveNodeForProvider(ctx sdk.Context, p hub.ProvAddress, 
 	store.Delete(key)
 }
 
-func (k Keeper) GetActiveNodesForProvider(ctx sdk.Context, address hub.ProvAddress) (items types.Nodes) {
-	store := k.Store(ctx)
+func (k Keeper) GetActiveNodesForProvider(ctx sdk.Context, address hub.ProvAddress, skip, limit int) (items types.Nodes) {
+	var (
+		store = k.Store(ctx)
+		iter  = hub.NewPaginatedIterator(
+			sdk.KVStorePrefixIterator(store, types.GetActiveNodeForProviderKeyPrefix(address)),
+		)
+	)
 
-	iter := sdk.KVStorePrefixIterator(store, types.GetActiveNodeForProviderKeyPrefix(address))
 	defer iter.Close()
 
-	for ; iter.Valid(); iter.Next() {
+	iter.Skip(skip)
+	iter.Limit(limit, func(iter sdk.Iterator) {
 		var address hub.NodeAddress
 		k.cdc.MustUnmarshalBinaryLengthPrefixed(iter.Value(), &address)
 
 		item, _ := k.GetNode(ctx, address)
 		items = append(items, item)
-	}
+	})
 
 	return items
 }
@@ -180,19 +223,24 @@ func (k Keeper) DeleteInActiveNodeForProvider(ctx sdk.Context, p hub.ProvAddress
 	store.Delete(key)
 }
 
-func (k Keeper) GetInActiveNodesForProvider(ctx sdk.Context, address hub.ProvAddress) (items types.Nodes) {
-	store := k.Store(ctx)
+func (k Keeper) GetInActiveNodesForProvider(ctx sdk.Context, address hub.ProvAddress, skip, limit int) (items types.Nodes) {
+	var (
+		store = k.Store(ctx)
+		iter  = hub.NewPaginatedIterator(
+			sdk.KVStorePrefixIterator(store, types.GetInActiveNodeForProviderKeyPrefix(address)),
+		)
+	)
 
-	iter := sdk.KVStorePrefixIterator(store, types.GetInActiveNodeForProviderKeyPrefix(address))
 	defer iter.Close()
 
-	for ; iter.Valid(); iter.Next() {
+	iter.Skip(skip)
+	iter.Limit(limit, func(iter sdk.Iterator) {
 		var address hub.NodeAddress
 		k.cdc.MustUnmarshalBinaryLengthPrefixed(iter.Value(), &address)
 
 		item, _ := k.GetNode(ctx, address)
 		items = append(items, item)
-	}
+	})
 
 	return items
 }

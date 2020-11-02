@@ -33,8 +33,8 @@ func QueryProvider(ctx context.CLIContext, address hub.ProvAddress) (*types.Prov
 	return &provider, nil
 }
 
-func QueryProviders(ctx context.CLIContext, page, limit int) (types.Providers, error) {
-	params := types.NewQueryProvidersParams(page, limit)
+func QueryProviders(ctx context.CLIContext, skip, limit int) (types.Providers, error) {
+	params := types.NewQueryProvidersParams(skip, limit)
 	bytes, err := ctx.Codec.MarshalJSON(params)
 	if err != nil {
 		return nil, err

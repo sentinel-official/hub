@@ -58,7 +58,7 @@ func queryNodes(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			page, err := cmd.Flags().GetInt(flagPage)
+			skip, err := cmd.Flags().GetInt(flagSkip)
 			if err != nil {
 				return err
 			}
@@ -80,11 +80,11 @@ func queryNodes(cdc *codec.Codec) *cobra.Command {
 					return err
 				}
 
-				nodes, err = common.QueryNodesForProvider(ctx, address, status, page, limit)
+				nodes, err = common.QueryNodesForProvider(ctx, address, status, skip, limit)
 			} else if plan > 0 {
-				nodes, err = common.QueryNodesForPlan(ctx, plan, page, limit)
+				nodes, err = common.QueryNodesForPlan(ctx, plan, skip, limit)
 			} else {
-				nodes, err = common.QueryNodes(ctx, status, page, limit)
+				nodes, err = common.QueryNodes(ctx, status, skip, limit)
 			}
 
 			if err != nil {
@@ -102,8 +102,8 @@ func queryNodes(cdc *codec.Codec) *cobra.Command {
 	cmd.Flags().String(flagProvider, "", "provider address")
 	cmd.Flags().Uint64(flagPlan, 0, "subscription plan ID")
 	cmd.Flags().String(flagStatus, "", "status")
-	cmd.Flags().Int(flagPage, 1, "page")
-	cmd.Flags().Int(flagLimit, 0, "limit")
+	cmd.Flags().Int(flagSkip, 0, "skip")
+	cmd.Flags().Int(flagLimit, 25, "limit")
 
 	return cmd
 }

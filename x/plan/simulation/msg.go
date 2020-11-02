@@ -22,7 +22,7 @@ func SimulateMsgAdd(pk expected.ProviderKeeper, k keeper.Keeper) simulation.Oper
 	return func(r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accounts []simulation.Account) (
 		simulation.OperationMsg, []simulation.FutureOperation, error) {
 		var (
-			from     = provider.RandomProvider(r, pk.GetProviders(ctx)).Address
+			from     = provider.RandomProvider(r, pk.GetProviders(ctx, 0, 0)).Address
 			price    = sdk.NewCoins(sdk.NewCoin("stake", sdk.NewInt(r.Int63n(100)+1)))
 			validity = time.Duration(r.Intn(24)+1) * time.Hour
 			bytes    = sdk.NewInt(r.Int63n(1e12) + 1)
@@ -47,8 +47,8 @@ func SimulateMsgSetStatus(pk expected.ProviderKeeper, k keeper.Keeper) simulatio
 	return func(r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accounts []simulation.Account) (
 		simulation.OperationMsg, []simulation.FutureOperation, error) {
 		var (
-			from   = provider.RandomProvider(r, pk.GetProviders(ctx)).Address
-			id     = RandomPlan(r, k.GetPlansForProvider(ctx, from)).ID
+			from   = provider.RandomProvider(r, pk.GetProviders(ctx, 0, 0)).Address
+			id     = RandomPlan(r, k.GetPlansForProvider(ctx, from, 0, 0)).ID
 			status hub.Status
 		)
 
@@ -78,9 +78,9 @@ func SimulateMsgAddNode(pk expected.ProviderKeeper, nk expected.NodeKeeper, k ke
 	return func(r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accounts []simulation.Account) (
 		simulation.OperationMsg, []simulation.FutureOperation, error) {
 		var (
-			from    = provider.RandomProvider(r, pk.GetProviders(ctx)).Address
-			id      = RandomPlan(r, k.GetPlansForProvider(ctx, from)).ID
-			address = node.RandomNode(r, nk.GetNodes(ctx)).Address
+			from    = provider.RandomProvider(r, pk.GetProviders(ctx, 0, 0)).Address
+			id      = RandomPlan(r, k.GetPlansForProvider(ctx, from, 0, 0)).ID
+			address = node.RandomNode(r, nk.GetNodes(ctx, 0, 0)).Address
 		)
 
 		msg := types.NewMsgAddNode(from, id, address)
@@ -102,9 +102,9 @@ func SimulateMsgRemoveNode(pk expected.ProviderKeeper, nk expected.NodeKeeper, k
 	return func(r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accounts []simulation.Account) (
 		simulation.OperationMsg, []simulation.FutureOperation, error) {
 		var (
-			from    = provider.RandomProvider(r, pk.GetProviders(ctx)).Address
-			id      = RandomPlan(r, k.GetPlansForProvider(ctx, from)).ID
-			address = node.RandomNode(r, nk.GetNodes(ctx)).Address
+			from    = provider.RandomProvider(r, pk.GetProviders(ctx, 0, 0)).Address
+			id      = RandomPlan(r, k.GetPlansForProvider(ctx, from, 0, 0)).ID
+			address = node.RandomNode(r, nk.GetNodes(ctx, 0, 0)).Address
 		)
 
 		msg := types.NewMsgRemoveNode(from, id, address)

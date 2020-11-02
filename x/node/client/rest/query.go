@@ -38,7 +38,7 @@ func queryNodes(ctx context.CLIContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		query := r.URL.Query()
 
-		page, limit, err := utils.ParseQuery(query)
+		skip, limit, err := utils.ParseQuery(query)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
@@ -58,7 +58,7 @@ func queryNodes(ctx context.CLIContext) http.HandlerFunc {
 				return
 			}
 
-			nodes, err = common.QueryNodesForProvider(ctx, provider, status, page, limit)
+			nodes, err = common.QueryNodesForProvider(ctx, provider, status, skip, limit)
 		} else if query.Get("plan") != "" {
 			plan, err = strconv.ParseUint(query.Get("plan"), 10, 64)
 			if err != nil {
@@ -66,9 +66,9 @@ func queryNodes(ctx context.CLIContext) http.HandlerFunc {
 				return
 			}
 
-			nodes, err = common.QueryNodesForPlan(ctx, plan, page, limit)
+			nodes, err = common.QueryNodesForPlan(ctx, plan, skip, limit)
 		} else {
-			nodes, err = common.QueryNodes(ctx, status, page, limit)
+			nodes, err = common.QueryNodes(ctx, status, skip, limit)
 		}
 
 		if err != nil {

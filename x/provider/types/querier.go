@@ -22,13 +22,13 @@ func NewQueryProviderParams(address hub.ProvAddress) QueryProviderParams {
 
 // QueryProvidersParams is the request parameters for querying the providers.
 type QueryProvidersParams struct {
-	Page  int `json:"page"`
+	Skip  int `json:"skip"`
 	Limit int `json:"limit"`
 }
 
-func NewQueryProvidersParams(page, limit int) QueryProvidersParams {
+func NewQueryProvidersParams(skip, limit int) QueryProvidersParams {
 	return QueryProvidersParams{
-		Page:  page,
+		Skip:  skip,
 		Limit: limit,
 	}
 }

@@ -43,7 +43,7 @@ func SimulateMsgUpdate(k keeper.Keeper) simulation.Operation {
 	return func(r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accounts []simulation.Account) (
 		simulation.OperationMsg, []simulation.FutureOperation, error) {
 		var (
-			from        = RandomProvider(r, k.GetProviders(ctx)).Address
+			from        = RandomProvider(r, k.GetProviders(ctx, 0, 0)).Address
 			name        = simulation.RandStringOfLength(r, r.Intn(64))
 			identity    = simulation.RandStringOfLength(r, r.Intn(64))
 			website     = simulation.RandStringOfLength(r, r.Intn(64))

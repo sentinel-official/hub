@@ -9,11 +9,11 @@ import (
 )
 
 type ProviderKeeper interface {
-	GetProviders(ctx sdk.Context) provider.Providers
+	GetProviders(ctx sdk.Context, skip, limit int) provider.Providers
 	HasProvider(ctx sdk.Context, address hub.ProvAddress) bool
 }
 
 type NodeKeeper interface {
 	GetNode(ctx sdk.Context, address hub.NodeAddress) (node.Node, bool)
-	GetNodes(ctx sdk.Context) node.Nodes
+	GetNodes(ctx sdk.Context, skip, limit int) node.Nodes
 }

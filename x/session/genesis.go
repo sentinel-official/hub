@@ -28,7 +28,10 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, state types.GenesisState) {
 }
 
 func ExportGenesis(ctx sdk.Context, k keeper.Keeper) types.GenesisState {
-	return types.NewGenesisState(k.GetSessions(ctx), k.GetParams(ctx))
+	return types.NewGenesisState(
+		k.GetSessions(ctx, 0, 0),
+		k.GetParams(ctx),
+	)
 }
 
 func ValidateGenesis(state types.GenesisState) error {

@@ -5,11 +5,11 @@ import (
 	"strconv"
 )
 
-func ParseQuery(query url.Values) (page, limit int, err error) {
-	page, limit = 1, 0
+func ParseQuery(query url.Values) (skip, limit int, err error) {
+	skip, limit = 1, 25
 
-	if query.Get("page") != "" {
-		page, err = strconv.Atoi(query.Get("page"))
+	if query.Get("skip") != "" {
+		skip, err = strconv.Atoi(query.Get("skip"))
 		if err != nil {
 			return 0, 0, err
 		}
@@ -22,5 +22,5 @@ func ParseQuery(query url.Values) (page, limit int, err error) {
 		}
 	}
 
-	return page, limit, nil
+	return skip, limit, nil
 }

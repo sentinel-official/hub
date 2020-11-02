@@ -42,7 +42,7 @@ func queryProviders(cdc *codec.Codec) *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := context.NewCLIContext().WithCodec(cdc)
 
-			page, err := cmd.Flags().GetInt(flagPage)
+			skip, err := cmd.Flags().GetInt(flagSkip)
 			if err != nil {
 				return err
 			}
@@ -52,7 +52,7 @@ func queryProviders(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			providers, err := common.QueryProviders(ctx, page, limit)
+			providers, err := common.QueryProviders(ctx, skip, limit)
 			if err != nil {
 				return err
 			}
@@ -65,8 +65,8 @@ func queryProviders(cdc *codec.Codec) *cobra.Command {
 		},
 	}
 
-	cmd.Flags().Int(flagPage, 1, "page")
-	cmd.Flags().Int(flagLimit, 0, "limit")
+	cmd.Flags().Int(flagSkip, 0, "skip")
+	cmd.Flags().Int(flagLimit, 25, "limit")
 
 	return cmd
 }

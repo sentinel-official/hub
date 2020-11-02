@@ -23,8 +23,8 @@ func SimulateUpsert(nk node.Keeper, sk subscription.Keeper, k keeper.Keeper) sim
 	return func(r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accounts []simulation.Account) (
 		simulation.OperationMsg, []simulation.FutureOperation, error) {
 		var (
-			from      = nodesimulation.RandomNode(r, nk.GetNodes(ctx)).Address
-			id        = subscriptionsimulation.RandomSubscription(r, sk.GetSubscriptionsForNode(ctx, from)).ID
+			from      = nodesimulation.RandomNode(r, nk.GetNodes(ctx, 0, 0)).Address
+			id        = subscriptionsimulation.RandomSubscription(r, sk.GetSubscriptionsForNode(ctx, from, 0, 0)).ID
 			address   = simulation.RandomAcc(r, accounts).Address
 			duration  = time.Duration(r.Int63n(1e3)+1) * time.Second
 			bandwidth = hub.NewBandwidthFromInt64(r.Int63n(1e6)+1, r.Int63n(1e6)+1)

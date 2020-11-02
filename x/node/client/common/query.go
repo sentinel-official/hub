@@ -34,8 +34,8 @@ func QueryNode(ctx context.CLIContext, address hub.NodeAddress) (*types.Node, er
 	return &node, nil
 }
 
-func QueryNodes(ctx context.CLIContext, status hub.Status, page, limit int) (types.Nodes, error) {
-	params := types.NewQueryNodesParams(status, page, limit)
+func QueryNodes(ctx context.CLIContext, status hub.Status, skip, limit int) (types.Nodes, error) {
+	params := types.NewQueryNodesParams(status, skip, limit)
 	bytes, err := ctx.Codec.MarshalJSON(params)
 	if err != nil {
 		return nil, err
@@ -58,8 +58,8 @@ func QueryNodes(ctx context.CLIContext, status hub.Status, page, limit int) (typ
 	return nodes, nil
 }
 
-func QueryNodesForProvider(ctx context.CLIContext, address hub.ProvAddress, status hub.Status, page, limit int) (types.Nodes, error) {
-	params := types.NewQueryNodesForProviderParams(address, status, page, limit)
+func QueryNodesForProvider(ctx context.CLIContext, address hub.ProvAddress, status hub.Status, skip, limit int) (types.Nodes, error) {
+	params := types.NewQueryNodesForProviderParams(address, status, skip, limit)
 	bytes, err := ctx.Codec.MarshalJSON(params)
 	if err != nil {
 		return nil, err
@@ -82,8 +82,8 @@ func QueryNodesForProvider(ctx context.CLIContext, address hub.ProvAddress, stat
 	return nodes, nil
 }
 
-func QueryNodesForPlan(ctx context.CLIContext, id uint64, page, limit int) (types.Nodes, error) {
-	params := plan.NewQueryNodesForPlanParams(id, page, limit)
+func QueryNodesForPlan(ctx context.CLIContext, id uint64, skip, limit int) (types.Nodes, error) {
+	params := plan.NewQueryNodesForPlanParams(id, skip, limit)
 	bytes, err := ctx.Codec.MarshalJSON(params)
 	if err != nil {
 		return nil, err

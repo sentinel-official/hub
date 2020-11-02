@@ -34,8 +34,8 @@ func QuerySubscription(ctx context.CLIContext, id uint64) (*types.Subscription, 
 	return &subscription, nil
 }
 
-func QuerySubscriptions(ctx context.CLIContext, page, limit int) (types.Subscriptions, error) {
-	params := types.NewQuerySubscriptionsParams(page, limit)
+func QuerySubscriptions(ctx context.CLIContext, skip, limit int) (types.Subscriptions, error) {
+	params := types.NewQuerySubscriptionsParams(skip, limit)
 	bytes, err := ctx.Codec.MarshalJSON(params)
 	if err != nil {
 		return nil, err
@@ -58,8 +58,8 @@ func QuerySubscriptions(ctx context.CLIContext, page, limit int) (types.Subscrip
 	return subscriptions, nil
 }
 
-func QuerySubscriptionsForAddress(ctx context.CLIContext, address sdk.AccAddress, page, limit int) (types.Subscriptions, error) {
-	params := types.NewQuerySubscriptionsForAddressParams(address, page, limit)
+func QuerySubscriptionsForAddress(ctx context.CLIContext, address sdk.AccAddress, skip, limit int) (types.Subscriptions, error) {
+	params := types.NewQuerySubscriptionsForAddressParams(address, skip, limit)
 	bytes, err := ctx.Codec.MarshalJSON(params)
 	if err != nil {
 		return nil, err
@@ -82,8 +82,8 @@ func QuerySubscriptionsForAddress(ctx context.CLIContext, address sdk.AccAddress
 	return subscriptions, nil
 }
 
-func QuerySubscriptionsForPlan(ctx context.CLIContext, id uint64, page, limit int) (types.Subscriptions, error) {
-	params := types.NewQuerySubscriptionsForPlanParams(id, page, limit)
+func QuerySubscriptionsForPlan(ctx context.CLIContext, id uint64, skip, limit int) (types.Subscriptions, error) {
+	params := types.NewQuerySubscriptionsForPlanParams(id, skip, limit)
 	bytes, err := ctx.Codec.MarshalJSON(params)
 	if err != nil {
 		return nil, err
@@ -106,8 +106,8 @@ func QuerySubscriptionsForPlan(ctx context.CLIContext, id uint64, page, limit in
 	return subscriptions, nil
 }
 
-func QuerySubscriptionsForNode(ctx context.CLIContext, address hub.NodeAddress, page, limit int) (types.Subscriptions, error) {
-	params := types.NewQuerySubscriptionsForNodeParams(address, page, limit)
+func QuerySubscriptionsForNode(ctx context.CLIContext, address hub.NodeAddress, skip, limit int) (types.Subscriptions, error) {
+	params := types.NewQuerySubscriptionsForNodeParams(address, skip, limit)
 	bytes, err := ctx.Codec.MarshalJSON(params)
 	if err != nil {
 		return nil, err
@@ -154,8 +154,8 @@ func QueryQuota(ctx context.CLIContext, id uint64, address sdk.AccAddress) (*typ
 	return &quota, nil
 }
 
-func QueryQuotas(ctx context.CLIContext, id uint64, page, limit int) (types.Quotas, error) {
-	params := types.NewQueryQuotasParams(id, page, limit)
+func QueryQuotas(ctx context.CLIContext, id uint64, skip, limit int) (types.Quotas, error) {
+	params := types.NewQueryQuotasParams(id, skip, limit)
 	bytes, err := ctx.Codec.MarshalJSON(params)
 	if err != nil {
 		return nil, err
