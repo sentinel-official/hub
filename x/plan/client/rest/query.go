@@ -38,7 +38,7 @@ func queryPlans(ctx context.CLIContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		query := r.URL.Query()
 
-		page, limit, err := utils.ParseQuery(query)
+		skip, limit, err := utils.ParseQuery(query)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
@@ -56,9 +56,9 @@ func queryPlans(ctx context.CLIContext) http.HandlerFunc {
 				return
 			}
 
-			plans, err = common.QueryPlansForProvider(ctx, provider, page, limit)
+			plans, err = common.QueryPlansForProvider(ctx, provider, skip, limit)
 		} else {
-			plans, err = common.QueryPlans(ctx, page, limit)
+			plans, err = common.QueryPlans(ctx, skip, limit)
 		}
 
 		if err != nil {

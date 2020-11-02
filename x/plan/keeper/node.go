@@ -30,19 +30,24 @@ func (k Keeper) DeleteNodeForPlan(ctx sdk.Context, id uint64, address hub.NodeAd
 	store.Delete(key)
 }
 
-func (k Keeper) GetNodesForPlan(ctx sdk.Context, id uint64) (items node.Nodes) {
-	store := k.Store(ctx)
+func (k Keeper) GetNodesForPlan(ctx sdk.Context, id uint64, skip, limit int) (items node.Nodes) {
+	var (
+		store = k.Store(ctx)
+		iter  = hub.NewPaginatedIterator(
+			sdk.KVStorePrefixIterator(store, types.GetNodeForPlanKeyPrefix(id)),
+		)
+	)
 
-	iter := sdk.KVStorePrefixIterator(store, types.GetNodeForPlanKeyPrefix(id))
 	defer iter.Close()
 
-	for ; iter.Valid(); iter.Next() {
+	iter.Skip(skip)
+	iter.Limit(limit, func(iter sdk.Iterator) {
 		var address hub.NodeAddress
 		k.cdc.MustUnmarshalBinaryLengthPrefixed(iter.Value(), &address)
 
 		item, _ := k.GetNode(ctx, address)
 		items = append(items, item)
-	}
+	})
 
 	return items
 }

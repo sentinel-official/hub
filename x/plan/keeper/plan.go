@@ -49,17 +49,22 @@ func (k Keeper) GetPlan(ctx sdk.Context, id uint64) (plan types.Plan, found bool
 	return plan, true
 }
 
-func (k Keeper) GetPlans(ctx sdk.Context) (items types.Plans) {
-	store := k.Store(ctx)
+func (k Keeper) GetPlans(ctx sdk.Context, skip, limit int) (items types.Plans) {
+	var (
+		store = k.Store(ctx)
+		iter  = hub.NewPaginatedIterator(
+			sdk.KVStorePrefixIterator(store, types.PlanKeyPrefix),
+		)
+	)
 
-	iter := sdk.KVStorePrefixIterator(store, types.PlanKeyPrefix)
 	defer iter.Close()
 
-	for ; iter.Valid(); iter.Next() {
+	iter.Skip(skip)
+	iter.Limit(limit, func(iter sdk.Iterator) {
 		var item types.Plan
 		k.cdc.MustUnmarshalBinaryLengthPrefixed(iter.Value(), &item)
 		items = append(items, item)
-	}
+	})
 
 	return items
 }
@@ -72,19 +77,24 @@ func (k Keeper) SetPlanForProvider(ctx sdk.Context, address hub.ProvAddress, id 
 	store.Set(key, value)
 }
 
-func (k Keeper) GetPlansForProvider(ctx sdk.Context, address hub.ProvAddress) (items types.Plans) {
-	store := k.Store(ctx)
+func (k Keeper) GetPlansForProvider(ctx sdk.Context, address hub.ProvAddress, skip, limit int) (items types.Plans) {
+	var (
+		store = k.Store(ctx)
+		iter  = hub.NewPaginatedIterator(
+			sdk.KVStorePrefixIterator(store, types.GetPlanForProviderKeyPrefix(address)),
+		)
+	)
 
-	iter := sdk.KVStorePrefixIterator(store, types.GetPlanForProviderKeyPrefix(address))
 	defer iter.Close()
 
-	for ; iter.Valid(); iter.Next() {
+	iter.Skip(skip)
+	iter.Limit(limit, func(iter sdk.Iterator) {
 		var id uint64
 		k.cdc.MustUnmarshalBinaryLengthPrefixed(iter.Value(), &id)
 
 		item, _ := k.GetPlan(ctx, id)
 		items = append(items, item)
-	}
+	})
 
 	return items
 }

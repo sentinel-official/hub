@@ -62,7 +62,7 @@ func querySessions(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			page, err := cmd.Flags().GetInt(flagPage)
+			skip, err := cmd.Flags().GetInt(flagSkip)
 			if err != nil {
 				return err
 			}
@@ -79,23 +79,23 @@ func querySessions(cdc *codec.Codec) *cobra.Command {
 			)
 
 			if subscription > 0 {
-				sessions, err = common.QuerySessionsForSubscription(ctx, subscription, page, limit)
+				sessions, err = common.QuerySessionsForSubscription(ctx, subscription, skip, limit)
 			} else if len(bech32Node) > 0 {
 				node, err = hub.NodeAddressFromBech32(bech32Node)
 				if err != nil {
 					return err
 				}
 
-				sessions, err = common.QuerySessionsForNode(ctx, node, page, limit)
+				sessions, err = common.QuerySessionsForNode(ctx, node, skip, limit)
 			} else if len(bech32Address) > 0 {
 				address, err = sdk.AccAddressFromBech32(bech32Address)
 				if err != nil {
 					return err
 				}
 
-				sessions, err = common.QuerySessionsForAddress(ctx, address, page, limit)
+				sessions, err = common.QuerySessionsForAddress(ctx, address, skip, limit)
 			} else {
-				sessions, err = common.QuerySessions(ctx, page, limit)
+				sessions, err = common.QuerySessions(ctx, skip, limit)
 			}
 
 			if err != nil {
@@ -113,8 +113,8 @@ func querySessions(cdc *codec.Codec) *cobra.Command {
 	cmd.Flags().String(flagAddress, "", "account address")
 	cmd.Flags().Uint64(flagSubscription, 0, "subscription ID")
 	cmd.Flags().String(flagNodeAddress, "", "node address")
-	cmd.Flags().Int(flagPage, 1, "page")
-	cmd.Flags().Int(flagLimit, 0, "limit")
+	cmd.Flags().Int(flagSkip, 0, "skip")
+	cmd.Flags().Int(flagLimit, 25, "limit")
 
 	return cmd
 }

@@ -39,7 +39,7 @@ func querySubscriptions(ctx context.CLIContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		query := r.URL.Query()
 
-		page, limit, err := utils.ParseQuery(query)
+		skip, limit, err := utils.ParseQuery(query)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
@@ -59,7 +59,7 @@ func querySubscriptions(ctx context.CLIContext) http.HandlerFunc {
 				return
 			}
 
-			subscriptions, err = common.QuerySubscriptionsForAddress(ctx, address, page, limit)
+			subscriptions, err = common.QuerySubscriptionsForAddress(ctx, address, skip, limit)
 		} else if query.Get("plan") != "" {
 			plan, err = strconv.ParseUint(query.Get("plan"), 10, 64)
 			if err != nil {
@@ -67,7 +67,7 @@ func querySubscriptions(ctx context.CLIContext) http.HandlerFunc {
 				return
 			}
 
-			subscriptions, err = common.QuerySubscriptionsForPlan(ctx, plan, page, limit)
+			subscriptions, err = common.QuerySubscriptionsForPlan(ctx, plan, skip, limit)
 		} else if query.Get("node") != "" {
 			node, err = hub.NodeAddressFromBech32(query.Get("node"))
 			if err != nil {
@@ -75,9 +75,9 @@ func querySubscriptions(ctx context.CLIContext) http.HandlerFunc {
 				return
 			}
 
-			subscriptions, err = common.QuerySubscriptionsForNode(ctx, node, page, limit)
+			subscriptions, err = common.QuerySubscriptionsForNode(ctx, node, skip, limit)
 		} else {
-			subscriptions, err = common.QuerySubscriptions(ctx, page, limit)
+			subscriptions, err = common.QuerySubscriptions(ctx, skip, limit)
 		}
 
 		if err != nil {
@@ -119,7 +119,7 @@ func queryQuotas(ctx context.CLIContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		query := r.URL.Query()
 
-		page, limit, err := utils.ParseQuery(query)
+		skip, limit, err := utils.ParseQuery(query)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
@@ -133,7 +133,7 @@ func queryQuotas(ctx context.CLIContext) http.HandlerFunc {
 			return
 		}
 
-		quotas, err := common.QueryQuotas(ctx, id, page, limit)
+		quotas, err := common.QueryQuotas(ctx, id, skip, limit)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return

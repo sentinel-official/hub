@@ -62,7 +62,7 @@ func querySubscriptions(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			page, err := cmd.Flags().GetInt(flagPage)
+			skip, err := cmd.Flags().GetInt(flagSkip)
 			if err != nil {
 				return err
 			}
@@ -84,18 +84,18 @@ func querySubscriptions(cdc *codec.Codec) *cobra.Command {
 					return err
 				}
 
-				subscriptions, err = common.QuerySubscriptionsForAddress(ctx, address, page, limit)
+				subscriptions, err = common.QuerySubscriptionsForAddress(ctx, address, skip, limit)
 			} else if plan > 0 {
-				subscriptions, err = common.QuerySubscriptionsForPlan(ctx, plan, page, limit)
+				subscriptions, err = common.QuerySubscriptionsForPlan(ctx, plan, skip, limit)
 			} else if len(bech32Node) > 0 {
 				node, err = hub.NodeAddressFromBech32(bech32Node)
 				if err != nil {
 					return err
 				}
 
-				subscriptions, err = common.QuerySubscriptionsForNode(ctx, node, page, limit)
+				subscriptions, err = common.QuerySubscriptionsForNode(ctx, node, skip, limit)
 			} else {
-				subscriptions, err = common.QuerySubscriptions(ctx, page, limit)
+				subscriptions, err = common.QuerySubscriptions(ctx, skip, limit)
 			}
 
 			if err != nil {
@@ -113,8 +113,8 @@ func querySubscriptions(cdc *codec.Codec) *cobra.Command {
 	cmd.Flags().String(flagAddress, "", "account address")
 	cmd.Flags().Uint64(flagPlan, 0, "plan ID")
 	cmd.Flags().String(flagNodeAddress, "", "node address")
-	cmd.Flags().Int(flagPage, 1, "page")
-	cmd.Flags().Int(flagLimit, 0, "limit")
+	cmd.Flags().Int(flagSkip, 0, "skip")
+	cmd.Flags().Int(flagLimit, 25, "limit")
 
 	return cmd
 }
@@ -163,7 +163,7 @@ func queryQuotas(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			page, err := cmd.Flags().GetInt(flagPage)
+			skip, err := cmd.Flags().GetInt(flagSkip)
 			if err != nil {
 				return err
 			}
@@ -173,7 +173,7 @@ func queryQuotas(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			quotas, err := common.QueryQuotas(ctx, id, page, limit)
+			quotas, err := common.QueryQuotas(ctx, id, skip, limit)
 			if err != nil {
 				return err
 			}
@@ -186,8 +186,8 @@ func queryQuotas(cdc *codec.Codec) *cobra.Command {
 		},
 	}
 
-	cmd.Flags().Int(flagPage, 1, "page")
-	cmd.Flags().Int(flagLimit, 0, "limit")
+	cmd.Flags().Int(flagSkip, 0, "skip")
+	cmd.Flags().Int(flagLimit, 25, "limit")
 
 	return cmd
 }

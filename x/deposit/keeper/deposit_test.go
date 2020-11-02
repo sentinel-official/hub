@@ -49,22 +49,22 @@ func TestKeeper_GetDeposit(t *testing.T) {
 func TestKeeper_GetDeposits(t *testing.T) {
 	ctx, keeper, _ := CreateTestInput(t, false)
 
-	deposits := keeper.GetDeposits(ctx)
+	deposits := keeper.GetDeposits(ctx, 0, 0)
 	require.Len(t, deposits, 0)
 	require.Equal(t, types.Deposits(nil), deposits)
 
 	keeper.SetDeposit(ctx, types.Deposit{Address: sdk.AccAddress("address-1"), Coins: sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(0)}}})
-	deposits = keeper.GetDeposits(ctx)
+	deposits = keeper.GetDeposits(ctx, 0, 0)
 	require.Len(t, deposits, 1)
 	require.Equal(t, types.Deposits{types.Deposit{Address: sdk.AccAddress("address-1"), Coins: sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(0)}}}}, deposits)
 
 	keeper.SetDeposit(ctx, types.Deposit{Address: sdk.AccAddress("address-1"), Coins: sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(0)}}})
-	deposits = keeper.GetDeposits(ctx)
+	deposits = keeper.GetDeposits(ctx, 0, 0)
 	require.Len(t, deposits, 1)
 	require.Equal(t, types.Deposits{types.Deposit{Address: sdk.AccAddress("address-1"), Coins: sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(0)}}}}, deposits)
 
 	keeper.SetDeposit(ctx, types.Deposit{Address: sdk.AccAddress("address-2"), Coins: sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(0)}}})
-	deposits = keeper.GetDeposits(ctx)
+	deposits = keeper.GetDeposits(ctx, 0, 0)
 	require.Len(t, deposits, 2)
 	require.Equal(t, types.Deposits{types.Deposit{Address: sdk.AccAddress("address-1"), Coins: sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(0)}}}, types.Deposit{Address: sdk.AccAddress("address-2"), Coins: sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(0)}}}}, deposits)
 }

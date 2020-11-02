@@ -33,8 +33,8 @@ func QueryDeposit(ctx context.CLIContext, address sdk.AccAddress) (*types.Deposi
 	return &deposit, nil
 }
 
-func QueryDeposits(ctx context.CLIContext, page, limit int) (types.Deposits, error) {
-	params := types.NewQueryDepositsParams(page, limit)
+func QueryDeposits(ctx context.CLIContext, skip, limit int) (types.Deposits, error) {
+	params := types.NewQueryDepositsParams(skip, limit)
 	bytes, err := ctx.Codec.MarshalJSON(params)
 	if err != nil {
 		return nil, err

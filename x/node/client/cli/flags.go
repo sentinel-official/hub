@@ -1,7 +1,7 @@
 package cli
 
 const (
-	flagPage      = "page"
+	flagSkip      = "skip"
 	flagLimit     = "limit"
 	flagProvider  = "provider"
 	flagPlan      = "plan"

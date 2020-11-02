@@ -21,7 +21,7 @@ func SimulateMsgSubscribeToPlan(pk expected.PlanKeeper, k keeper.Keeper) simulat
 		simulation.OperationMsg, []simulation.FutureOperation, error) {
 		var (
 			from  = simulation.RandomAcc(r, accounts).Address
-			id    = plan.RandomPlan(r, pk.GetPlans(ctx)).ID
+			id    = plan.RandomPlan(r, pk.GetPlans(ctx, 0, 0)).ID
 			denom = "stake"
 		)
 
@@ -45,7 +45,7 @@ func SimulateMsgSubscribeToNode(nk expected.NodeKeeper, k keeper.Keeper) simulat
 		simulation.OperationMsg, []simulation.FutureOperation, error) {
 		var (
 			from    = simulation.RandomAcc(r, accounts).Address
-			address = node.RandomNode(r, nk.GetNodes(ctx)).Address
+			address = node.RandomNode(r, nk.GetNodes(ctx, 0, 0)).Address
 			deposit = sdk.NewCoin("stake", simulation.RandomAmount(r, sdk.NewInt(1e3)))
 		)
 
@@ -69,7 +69,7 @@ func SimulateMsgCancel(k keeper.Keeper) simulation.Operation {
 		simulation.OperationMsg, []simulation.FutureOperation, error) {
 		var (
 			from = simulation.RandomAcc(r, accounts).Address
-			id   = RandomSubscription(r, k.GetSubscriptions(ctx)).ID
+			id   = RandomSubscription(r, k.GetSubscriptions(ctx, 0, 0)).ID
 		)
 
 		msg := types.NewMsgCancel(from, id)
@@ -92,7 +92,7 @@ func SimulateMsgAddQuota(k keeper.Keeper) simulation.Operation {
 		simulation.OperationMsg, []simulation.FutureOperation, error) {
 		var (
 			from    = simulation.RandomAcc(r, accounts).Address
-			id      = RandomSubscription(r, k.GetSubscriptions(ctx)).ID
+			id      = RandomSubscription(r, k.GetSubscriptions(ctx, 0, 0)).ID
 			address = simulation.RandomAcc(r, accounts).Address
 			bytes   = sdk.NewInt(r.Int63n(1e9) + 1)
 		)
@@ -117,7 +117,7 @@ func SimulateMsgUpdateQuota(k keeper.Keeper) simulation.Operation {
 		simulation.OperationMsg, []simulation.FutureOperation, error) {
 		var (
 			from    = simulation.RandomAcc(r, accounts).Address
-			id      = RandomSubscription(r, k.GetSubscriptions(ctx)).ID
+			id      = RandomSubscription(r, k.GetSubscriptions(ctx, 0, 0)).ID
 			address = simulation.RandomAcc(r, accounts).Address
 			bytes   = sdk.NewInt(r.Int63n(1e9) + 1)
 		)

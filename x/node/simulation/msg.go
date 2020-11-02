@@ -21,7 +21,7 @@ func SimulateMsgRegister(pk expected.ProviderKeeper, k keeper.Keeper) simulation
 		simulation.OperationMsg, []simulation.FutureOperation, error) {
 		var (
 			from   = simulation.RandomAcc(r, accounts).Address
-			prov   = provider.RandomProvider(r, pk.GetProviders(ctx)).Address
+			prov   = provider.RandomProvider(r, pk.GetProviders(ctx, 0, 0)).Address
 			remote = simulation.RandStringOfLength(r, 64)
 		)
 
@@ -44,8 +44,8 @@ func SimulateMsgUpdate(pk expected.ProviderKeeper, k keeper.Keeper) simulation.O
 	return func(r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accounts []simulation.Account) (
 		simulation.OperationMsg, []simulation.FutureOperation, error) {
 		var (
-			from   = RandomNode(r, k.GetNodes(ctx)).Address
-			prov   = provider.RandomProvider(r, pk.GetProviders(ctx)).Address
+			from   = RandomNode(r, k.GetNodes(ctx, 0, 0)).Address
+			prov   = provider.RandomProvider(r, pk.GetProviders(ctx, 0, 0)).Address
 			remote = simulation.RandStringOfLength(r, 64)
 		)
 
@@ -68,7 +68,7 @@ func SimulateMsgSetStatus(k keeper.Keeper) simulation.Operation {
 	return func(r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accounts []simulation.Account) (
 		simulation.OperationMsg, []simulation.FutureOperation, error) {
 		var (
-			from   = RandomNode(r, k.GetNodes(ctx)).Address
+			from   = RandomNode(r, k.GetNodes(ctx, 0, 0)).Address
 			status hub.Status
 		)
 

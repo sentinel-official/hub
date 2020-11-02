@@ -1,7 +1,6 @@
 package querier
 
 import (
-	"github.com/cosmos/cosmos-sdk/client"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	abci "github.com/tendermint/tendermint/abci/types"
 
@@ -34,14 +33,7 @@ func querySubscriptions(ctx sdk.Context, req abci.RequestQuery, k keeper.Keeper)
 		return nil, types.ErrorUnmarshal()
 	}
 
-	subscriptions := k.GetSubscriptions(ctx)
-
-	start, end := client.Paginate(len(subscriptions), params.Page, params.Limit, len(subscriptions))
-	if start < 0 || end < 0 {
-		subscriptions = types.Subscriptions{}
-	} else {
-		subscriptions = subscriptions[start:end]
-	}
+	subscriptions := k.GetSubscriptions(ctx, params.Skip, params.Limit)
 
 	res, err := types.ModuleCdc.MarshalJSON(subscriptions)
 	if err != nil {
@@ -57,14 +49,7 @@ func querySubscriptionsForAddress(ctx sdk.Context, req abci.RequestQuery, k keep
 		return nil, types.ErrorUnmarshal()
 	}
 
-	subscriptions := k.GetSubscriptionsForAddress(ctx, params.Address)
-
-	start, end := client.Paginate(len(subscriptions), params.Page, params.Limit, len(subscriptions))
-	if start < 0 || end < 0 {
-		subscriptions = types.Subscriptions{}
-	} else {
-		subscriptions = subscriptions[start:end]
-	}
+	subscriptions := k.GetSubscriptionsForAddress(ctx, params.Address, params.Skip, params.Limit)
 
 	res, err := types.ModuleCdc.MarshalJSON(subscriptions)
 	if err != nil {
@@ -80,14 +65,7 @@ func querySubscriptionsForPlan(ctx sdk.Context, req abci.RequestQuery, k keeper.
 		return nil, types.ErrorUnmarshal()
 	}
 
-	subscriptions := k.GetSubscriptionsForPlan(ctx, params.ID)
-
-	start, end := client.Paginate(len(subscriptions), params.Page, params.Limit, len(subscriptions))
-	if start < 0 || end < 0 {
-		subscriptions = types.Subscriptions{}
-	} else {
-		subscriptions = subscriptions[start:end]
-	}
+	subscriptions := k.GetSubscriptionsForPlan(ctx, params.ID, params.Skip, params.Limit)
 
 	res, err := types.ModuleCdc.MarshalJSON(subscriptions)
 	if err != nil {
@@ -103,14 +81,7 @@ func querySubscriptionsForNode(ctx sdk.Context, req abci.RequestQuery, k keeper.
 		return nil, types.ErrorUnmarshal()
 	}
 
-	subscriptions := k.GetSubscriptionsForNode(ctx, params.Address)
-
-	start, end := client.Paginate(len(subscriptions), params.Page, params.Limit, len(subscriptions))
-	if start < 0 || end < 0 {
-		subscriptions = types.Subscriptions{}
-	} else {
-		subscriptions = subscriptions[start:end]
-	}
+	subscriptions := k.GetSubscriptionsForNode(ctx, params.Address, params.Skip, params.Limit)
 
 	res, err := types.ModuleCdc.MarshalJSON(subscriptions)
 	if err != nil {

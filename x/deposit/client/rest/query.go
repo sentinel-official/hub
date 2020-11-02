@@ -34,13 +34,13 @@ func queryDeposit(ctx context.CLIContext) http.HandlerFunc {
 
 func queryDeposits(ctx context.CLIContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		page, limit, err := utils.ParseQuery(r.URL.Query())
+		skip, limit, err := utils.ParseQuery(r.URL.Query())
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
 		}
 
-		deposits, err := common.QueryDeposits(ctx, page, limit)
+		deposits, err := common.QueryDeposits(ctx, skip, limit)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return

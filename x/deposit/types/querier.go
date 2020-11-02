@@ -22,13 +22,13 @@ func NewQueryDepositParams(address sdk.AccAddress) QueryDepositParams {
 
 // QueryDepositsParams is the request parameters for querying the deposits.
 type QueryDepositsParams struct {
-	Page  int `json:"page"`
+	Skip  int `json:"skip"`
 	Limit int `json:"limit"`
 }
 
-func NewQueryDepositsParams(page, limit int) QueryDepositsParams {
+func NewQueryDepositsParams(skip, limit int) QueryDepositsParams {
 	return QueryDepositsParams{
-		Page:  page,
+		Skip:  skip,
 		Limit: limit,
 	}
 }

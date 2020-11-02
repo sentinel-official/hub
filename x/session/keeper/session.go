@@ -51,17 +51,22 @@ func (k Keeper) GetSession(ctx sdk.Context, id uint64) (session types.Session, f
 	return session, true
 }
 
-func (k Keeper) GetSessions(ctx sdk.Context) (items types.Sessions) {
-	store := k.Store(ctx)
+func (k Keeper) GetSessions(ctx sdk.Context, skip, limit int) (items types.Sessions) {
+	var (
+		store = k.Store(ctx)
+		iter  = hub.NewPaginatedIterator(
+			sdk.KVStorePrefixIterator(store, types.SessionKeyPrefix),
+		)
+	)
 
-	iter := sdk.KVStorePrefixIterator(store, types.SessionKeyPrefix)
 	defer iter.Close()
 
-	for ; iter.Valid(); iter.Next() {
+	iter.Skip(skip)
+	iter.Limit(limit, func(iter sdk.Iterator) {
 		var item types.Session
 		k.cdc.MustUnmarshalBinaryLengthPrefixed(iter.Value(), &item)
 		items = append(items, item)
-	}
+	})
 
 	return items
 }
@@ -91,19 +96,24 @@ func (k Keeper) SetSessionForSubscription(ctx sdk.Context, subscription, id uint
 	store.Set(key, value)
 }
 
-func (k Keeper) GetSessionsForSubscription(ctx sdk.Context, id uint64) (items types.Sessions) {
-	store := k.Store(ctx)
+func (k Keeper) GetSessionsForSubscription(ctx sdk.Context, id uint64, skip, limit int) (items types.Sessions) {
+	var (
+		store = k.Store(ctx)
+		iter  = hub.NewPaginatedIterator(
+			sdk.KVStorePrefixIterator(store, types.GetSessionForSubscriptionKeyPrefix(id)),
+		)
+	)
 
-	iter := sdk.KVStorePrefixIterator(store, types.GetSessionForSubscriptionKeyPrefix(id))
 	defer iter.Close()
 
-	for ; iter.Valid(); iter.Next() {
+	iter.Skip(skip)
+	iter.Limit(limit, func(iter sdk.Iterator) {
 		var id uint64
 		k.cdc.MustUnmarshalBinaryLengthPrefixed(iter.Value(), &id)
 
 		item, _ := k.GetSession(ctx, id)
 		items = append(items, item)
-	}
+	})
 
 	return items
 }
@@ -116,19 +126,24 @@ func (k Keeper) SetSessionForNode(ctx sdk.Context, address hub.NodeAddress, id u
 	store.Set(key, value)
 }
 
-func (k Keeper) GetSessionsForNode(ctx sdk.Context, address hub.NodeAddress) (items types.Sessions) {
-	store := k.Store(ctx)
+func (k Keeper) GetSessionsForNode(ctx sdk.Context, address hub.NodeAddress, skip, limit int) (items types.Sessions) {
+	var (
+		store = k.Store(ctx)
+		iter  = hub.NewPaginatedIterator(
+			sdk.KVStorePrefixIterator(store, types.GetSessionForNodeKeyPrefix(address)),
+		)
+	)
 
-	iter := sdk.KVStorePrefixIterator(store, types.GetSessionForNodeKeyPrefix(address))
 	defer iter.Close()
 
-	for ; iter.Valid(); iter.Next() {
+	iter.Skip(skip)
+	iter.Limit(limit, func(iter sdk.Iterator) {
 		var id uint64
 		k.cdc.MustUnmarshalBinaryLengthPrefixed(iter.Value(), &id)
 
 		item, _ := k.GetSession(ctx, id)
 		items = append(items, item)
-	}
+	})
 
 	return items
 }
@@ -141,19 +156,24 @@ func (k Keeper) SetSessionForAddress(ctx sdk.Context, address sdk.AccAddress, id
 	store.Set(key, value)
 }
 
-func (k Keeper) GetSessionsForAddress(ctx sdk.Context, address sdk.AccAddress) (items types.Sessions) {
-	store := k.Store(ctx)
+func (k Keeper) GetSessionsForAddress(ctx sdk.Context, address sdk.AccAddress, skip, limit int) (items types.Sessions) {
+	var (
+		store = k.Store(ctx)
+		iter  = hub.NewPaginatedIterator(
+			sdk.KVStorePrefixIterator(store, types.GetSessionForAddressKeyPrefix(address)),
+		)
+	)
 
-	iter := sdk.KVStorePrefixIterator(store, types.GetSessionForAddressKeyPrefix(address))
 	defer iter.Close()
 
-	for ; iter.Valid(); iter.Next() {
+	iter.Skip(skip)
+	iter.Limit(limit, func(iter sdk.Iterator) {
 		var id uint64
 		k.cdc.MustUnmarshalBinaryLengthPrefixed(iter.Value(), &id)
 
 		item, _ := k.GetSession(ctx, id)
 		items = append(items, item)
-	}
+	})
 
 	return items
 }
