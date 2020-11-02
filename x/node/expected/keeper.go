@@ -10,10 +10,10 @@ import (
 
 type ProviderKeeper interface {
 	HasProvider(ctx sdk.Context, address hub.ProvAddress) bool
-	GetProviders(ctx sdk.Context) provider.Providers
+	GetProviders(ctx sdk.Context, skip, limit int) provider.Providers
 }
 
 type PlanKeeper interface {
-	GetPlansForProvider(ctx sdk.Context, address hub.ProvAddress) plan.Plans
+	GetPlansForProvider(ctx sdk.Context, address hub.ProvAddress, skip, limit int) plan.Plans
 	DeleteNodeForPlan(ctx sdk.Context, id uint64, address hub.NodeAddress)
 }

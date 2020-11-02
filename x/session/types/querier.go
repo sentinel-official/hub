@@ -27,55 +27,55 @@ func NewQuerySessionParams(id uint64) QuerySessionParams {
 }
 
 type QuerySessionsParams struct {
-	Page  int `json:"page"`
+	Skip  int `json:"skip"`
 	Limit int `json:"limit"`
 }
 
-func NewQuerySessionsParams(page, limit int) QuerySessionsParams {
+func NewQuerySessionsParams(skip, limit int) QuerySessionsParams {
 	return QuerySessionsParams{
-		Page:  page,
+		Skip:  skip,
 		Limit: limit,
 	}
 }
 
 type QuerySessionsForSubscriptionParams struct {
 	ID    uint64 `json:"id"`
-	Page  int    `json:"page"`
+	Skip  int    `json:"skip"`
 	Limit int    `json:"limit"`
 }
 
-func NewQuerySessionsForSubscriptionParams(id uint64, page, limit int) QuerySessionsForSubscriptionParams {
+func NewQuerySessionsForSubscriptionParams(id uint64, skip, limit int) QuerySessionsForSubscriptionParams {
 	return QuerySessionsForSubscriptionParams{
 		ID:    id,
-		Page:  page,
+		Skip:  skip,
 		Limit: limit,
 	}
 }
 
 type QuerySessionsForNodeParams struct {
 	Address hub.NodeAddress `json:"address"`
-	Page    int             `json:"page"`
+	Skip    int             `json:"skip"`
 	Limit   int             `json:"limit"`
 }
 
-func NewQuerySessionsForNodeParams(address hub.NodeAddress, page, limit int) QuerySessionsForNodeParams {
+func NewQuerySessionsForNodeParams(address hub.NodeAddress, skip, limit int) QuerySessionsForNodeParams {
 	return QuerySessionsForNodeParams{
 		Address: address,
-		Page:    page,
+		Skip:    skip,
 		Limit:   limit,
 	}
 }
 
 type QuerySessionsForAddressParams struct {
 	Address sdk.AccAddress `json:"address"`
-	Page    int            `json:"page"`
+	Skip    int            `json:"skip"`
 	Limit   int            `json:"limit"`
 }
 
-func NewQuerySessionsForAddressParams(address sdk.AccAddress, page, limit int) QuerySessionsForAddressParams {
+func NewQuerySessionsForAddressParams(address sdk.AccAddress, skip, limit int) QuerySessionsForAddressParams {
 	return QuerySessionsForAddressParams{
 		Address: address,
-		Page:    page,
+		Skip:    skip,
 		Limit:   limit,
 	}
 }

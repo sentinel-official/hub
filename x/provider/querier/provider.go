@@ -1,7 +1,6 @@
 package querier
 
 import (
-	"github.com/cosmos/cosmos-sdk/client"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/errors"
 	abci "github.com/tendermint/tendermint/abci/types"
@@ -35,14 +34,7 @@ func queryProviders(ctx sdk.Context, req abci.RequestQuery, k keeper.Keeper) ([]
 		return nil, errors.Wrap(types.ErrorUnmarshal, err.Error())
 	}
 
-	providers := k.GetProviders(ctx)
-
-	start, end := client.Paginate(len(providers), params.Page, params.Limit, len(providers))
-	if start < 0 || end < 0 {
-		providers = types.Providers{}
-	} else {
-		providers = providers[start:end]
-	}
+	providers := k.GetProviders(ctx, params.Skip, params.Limit)
 
 	res, err := types.ModuleCdc.MarshalJSON(providers)
 	if err != nil {

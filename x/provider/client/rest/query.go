@@ -34,13 +34,13 @@ func queryProvider(ctx context.CLIContext) http.HandlerFunc {
 
 func queryProviders(ctx context.CLIContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		page, limit, err := utils.ParseQuery(r.URL.Query())
+		skip, limit, err := utils.ParseQuery(r.URL.Query())
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
 		}
 
-		providers, err := common.QueryProviders(ctx, page, limit)
+		providers, err := common.QueryProviders(ctx, skip, limit)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return

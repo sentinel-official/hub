@@ -1,7 +1,6 @@
 package querier
 
 import (
-	"github.com/cosmos/cosmos-sdk/client"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/errors"
 	abci "github.com/tendermint/tendermint/abci/types"
@@ -35,14 +34,7 @@ func queryQuotas(ctx sdk.Context, req abci.RequestQuery, k keeper.Keeper) ([]byt
 		return nil, errors.Wrap(types.ErrorUnmarshal, err.Error())
 	}
 
-	quotas := k.GetQuotas(ctx, params.ID)
-
-	start, end := client.Paginate(len(quotas), params.Page, params.Limit, len(quotas))
-	if start < 0 || end < 0 {
-		quotas = types.Quotas{}
-	} else {
-		quotas = quotas[start:end]
-	}
+	quotas := k.GetQuotas(ctx, params.ID, params.Skip, params.Limit)
 
 	res, err := types.ModuleCdc.MarshalJSON(quotas)
 	if err != nil {

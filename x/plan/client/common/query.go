@@ -33,8 +33,8 @@ func QueryPlan(ctx context.CLIContext, id uint64) (*types.Plan, error) {
 	return &plan, nil
 }
 
-func QueryPlans(ctx context.CLIContext, page, limit int) (types.Plans, error) {
-	params := types.NewQueryPlansParams(page, limit)
+func QueryPlans(ctx context.CLIContext, skip, limit int) (types.Plans, error) {
+	params := types.NewQueryPlansParams(skip, limit)
 	bytes, err := ctx.Codec.MarshalJSON(params)
 	if err != nil {
 		return nil, err
@@ -57,8 +57,8 @@ func QueryPlans(ctx context.CLIContext, page, limit int) (types.Plans, error) {
 	return plans, nil
 }
 
-func QueryPlansForProvider(ctx context.CLIContext, address hub.ProvAddress, page, limit int) (types.Plans, error) {
-	params := types.NewQueryPlansForProviderParams(address, page, limit)
+func QueryPlansForProvider(ctx context.CLIContext, address hub.ProvAddress, skip, limit int) (types.Plans, error) {
+	params := types.NewQueryPlansForProviderParams(address, skip, limit)
 	bytes, err := ctx.Codec.MarshalJSON(params)
 	if err != nil {
 		return nil, err

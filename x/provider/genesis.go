@@ -16,7 +16,7 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, state types.GenesisState) {
 }
 
 func ExportGenesis(ctx sdk.Context, k keeper.Keeper) types.GenesisState {
-	return k.GetProviders(ctx)
+	return k.GetProviders(ctx, 0, 0)
 }
 
 func ValidateGenesis(state types.GenesisState) error {

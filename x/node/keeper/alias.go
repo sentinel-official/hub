@@ -16,7 +16,7 @@ func (k Keeper) HasProvider(ctx sdk.Context, address hub.ProvAddress) bool {
 }
 
 func (k Keeper) GetPlansForProvider(ctx sdk.Context, address hub.ProvAddress) plan.Plans {
-	return k.plan.GetPlansForProvider(ctx, address)
+	return k.plan.GetPlansForProvider(ctx, address, 0, 0)
 }
 
 func (k Keeper) DeleteNodeForPlan(ctx sdk.Context, id uint64, address hub.NodeAddress) {

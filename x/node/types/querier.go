@@ -21,27 +21,31 @@ func NewQueryNodeParams(address hub.NodeAddress) QueryNodeParams {
 }
 
 type QueryNodesParams struct {
-	Page  int `json:"page"`
-	Limit int `json:"limit"`
+	Status hub.Status `json:"status"`
+	Skip   int        `json:"skip"`
+	Limit  int        `json:"limit"`
 }
 
-func NewQueryNodesParams(page, limit int) QueryNodesParams {
+func NewQueryNodesParams(status hub.Status, skip, limit int) QueryNodesParams {
 	return QueryNodesParams{
-		Page:  page,
-		Limit: limit,
+		Status: status,
+		Skip:   skip,
+		Limit:  limit,
 	}
 }
 
 type QueryNodesForProviderParams struct {
 	Address hub.ProvAddress `json:"address"`
-	Page    int             `json:"page"`
+	Status  hub.Status      `json:"status"`
+	Skip    int             `json:"skip"`
 	Limit   int             `json:"limit"`
 }
 
-func NewQueryNodesForProviderParams(address hub.ProvAddress, page, limit int) QueryNodesForProviderParams {
+func NewQueryNodesForProviderParams(address hub.ProvAddress, status hub.Status, skip, limit int) QueryNodesForProviderParams {
 	return QueryNodesForProviderParams{
 		Address: address,
-		Page:    page,
+		Status:  status,
+		Skip:    skip,
 		Limit:   limit,
 	}
 }

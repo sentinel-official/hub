@@ -1,7 +1,6 @@
 package querier
 
 import (
-	"github.com/cosmos/cosmos-sdk/client"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/errors"
 	abci "github.com/tendermint/tendermint/abci/types"
@@ -35,14 +34,7 @@ func querySessions(ctx sdk.Context, req abci.RequestQuery, k keeper.Keeper) ([]b
 		return nil, errors.Wrap(types.ErrorUnmarshal, err.Error())
 	}
 
-	sessions := k.GetSessions(ctx)
-
-	start, end := client.Paginate(len(sessions), params.Page, params.Limit, len(sessions))
-	if start < 0 || end < 0 {
-		sessions = types.Sessions{}
-	} else {
-		sessions = sessions[start:end]
-	}
+	sessions := k.GetSessions(ctx, params.Skip, params.Limit)
 
 	res, err := types.ModuleCdc.MarshalJSON(sessions)
 	if err != nil {
@@ -58,14 +50,7 @@ func querySessionsForSubscription(ctx sdk.Context, req abci.RequestQuery, k keep
 		return nil, errors.Wrap(types.ErrorUnmarshal, err.Error())
 	}
 
-	sessions := k.GetSessionsForSubscription(ctx, params.ID)
-
-	start, end := client.Paginate(len(sessions), params.Page, params.Limit, len(sessions))
-	if start < 0 || end < 0 {
-		sessions = types.Sessions{}
-	} else {
-		sessions = sessions[start:end]
-	}
+	sessions := k.GetSessionsForSubscription(ctx, params.ID, params.Skip, params.Limit)
 
 	res, err := types.ModuleCdc.MarshalJSON(sessions)
 	if err != nil {
@@ -81,14 +66,7 @@ func querySessionsForNode(ctx sdk.Context, req abci.RequestQuery, k keeper.Keepe
 		return nil, errors.Wrap(types.ErrorUnmarshal, err.Error())
 	}
 
-	sessions := k.GetSessionsForNode(ctx, params.Address)
-
-	start, end := client.Paginate(len(sessions), params.Page, params.Limit, len(sessions))
-	if start < 0 || end < 0 {
-		sessions = types.Sessions{}
-	} else {
-		sessions = sessions[start:end]
-	}
+	sessions := k.GetSessionsForNode(ctx, params.Address, params.Skip, params.Limit)
 
 	res, err := types.ModuleCdc.MarshalJSON(sessions)
 	if err != nil {
@@ -104,14 +82,7 @@ func querySessionsForAddress(ctx sdk.Context, req abci.RequestQuery, k keeper.Ke
 		return nil, errors.Wrap(types.ErrorUnmarshal, err.Error())
 	}
 
-	sessions := k.GetSessionsForAddress(ctx, params.Address)
-
-	start, end := client.Paginate(len(sessions), params.Page, params.Limit, len(sessions))
-	if start < 0 || end < 0 {
-		sessions = types.Sessions{}
-	} else {
-		sessions = sessions[start:end]
-	}
+	sessions := k.GetSessionsForAddress(ctx, params.Address, params.Skip, params.Limit)
 
 	res, err := types.ModuleCdc.MarshalJSON(sessions)
 	if err != nil {
