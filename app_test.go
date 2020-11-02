@@ -130,7 +130,7 @@ func simulateFromSeed(t testing.TB, app *App) (
 	sdk.Invariants, int, int, int, int, string, bool, bool, bool, bool, bool, map[string]bool) {
 	return t, os.Stdout, app.BaseApp, appState, seed, operations(app), invariants(app), initialBlockHeight, numBlocks,
 		exportParamsHeight, blockSize, exportStatsPath, exportParamsPath != "", commit, lean, onOperation,
-		allInvariants, app.ModuleAccountAddresses()
+		allInvariants, app.ModuleAccounts()
 }
 
 func appState(r *rand.Rand, accounts []simulation.Account) (json.RawMessage, []simulation.Account, string, time.Time) {
