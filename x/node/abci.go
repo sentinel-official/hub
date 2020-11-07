@@ -15,18 +15,18 @@ func EndBlock(ctx sdk.Context, k keeper.Keeper) []abci.ValidatorUpdate {
 		end = ctx.BlockTime().Add(-1 * k.InactiveDuration(ctx))
 	)
 
-	k.IterateInActiveNodesAt(ctx, end, func(_ int, item types.Node) bool {
+	k.IterateInactiveNodesAt(ctx, end, func(_ int, item types.Node) bool {
 		log.Info("Inactive node", "address", item.Address, "provider", item.Provider)
 
 		k.DeleteActiveNode(ctx, item.Address)
-		k.SetInActiveNode(ctx, item.Address)
+		k.SetInactiveNode(ctx, item.Address)
 
 		if item.Provider != nil {
 			k.DeleteActiveNodeForProvider(ctx, item.Provider, item.Address)
-			k.SetInActiveNodeForProvider(ctx, item.Provider, item.Address)
+			k.SetInactiveNodeForProvider(ctx, item.Provider, item.Address)
 		}
 
-		k.DeleteInActiveNodeAt(ctx, item.StatusAt, item.Address)
+		k.DeleteInactiveNodeAt(ctx, item.StatusAt, item.Address)
 
 		item.Status = hub.StatusInactive
 		item.StatusAt = ctx.BlockTime()

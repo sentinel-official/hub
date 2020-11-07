@@ -22,11 +22,11 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, state types.GenesisState) {
 				k.SetActiveNodeForProvider(ctx, node.Provider, node.Address)
 			}
 
-			k.SetInActiveNodeAt(ctx, node.StatusAt, node.Address)
+			k.SetInactiveNodeAt(ctx, node.StatusAt, node.Address)
 		} else {
-			k.SetInActiveNode(ctx, node.Address)
+			k.SetInactiveNode(ctx, node.Address)
 			if node.Provider != nil {
-				k.SetInActiveNodeForProvider(ctx, node.Provider, node.Address)
+				k.SetInactiveNodeForProvider(ctx, node.Provider, node.Address)
 			}
 		}
 	}

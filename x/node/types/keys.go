@@ -30,13 +30,13 @@ var (
 	NodeKeyPrefix = []byte{0x00}
 
 	ActiveNodeKeyPrefix   = []byte{0x10}
-	InActiveNodeKeyPrefix = []byte{0x11}
+	InactiveNodeKeyPrefix = []byte{0x11}
 
 	ActiveNodeForProviderKeyPrefix   = []byte{0x20}
-	InActiveNodeForProviderKeyPrefix = []byte{0x21}
+	InactiveNodeForProviderKeyPrefix = []byte{0x21}
 
 	ActiveNodeAtKeyPrefix   = []byte{0x30}
-	InActiveNodeAtKeyPrefix = []byte{0x31}
+	InactiveNodeAtKeyPrefix = []byte{0x31}
 )
 
 func NodeKey(address hub.NodeAddress) []byte {
@@ -47,8 +47,8 @@ func ActiveNodeKey(address hub.NodeAddress) []byte {
 	return append(ActiveNodeKeyPrefix, address.Bytes()...)
 }
 
-func InActiveNodeKey(address hub.NodeAddress) []byte {
-	return append(InActiveNodeKeyPrefix, address.Bytes()...)
+func InactiveNodeKey(address hub.NodeAddress) []byte {
+	return append(InactiveNodeKeyPrefix, address.Bytes()...)
 }
 
 func GetActiveNodeForProviderKeyPrefix(address hub.ProvAddress) []byte {
@@ -59,12 +59,12 @@ func ActiveNodeForProviderKey(p hub.ProvAddress, n hub.NodeAddress) []byte {
 	return append(GetActiveNodeForProviderKeyPrefix(p), n.Bytes()...)
 }
 
-func GetInActiveNodeForProviderKeyPrefix(address hub.ProvAddress) []byte {
-	return append(InActiveNodeForProviderKeyPrefix, address.Bytes()...)
+func GetInactiveNodeForProviderKeyPrefix(address hub.ProvAddress) []byte {
+	return append(InactiveNodeForProviderKeyPrefix, address.Bytes()...)
 }
 
-func InActiveNodeForProviderKey(p hub.ProvAddress, n hub.NodeAddress) []byte {
-	return append(GetInActiveNodeForProviderKeyPrefix(p), n.Bytes()...)
+func InactiveNodeForProviderKey(p hub.ProvAddress, n hub.NodeAddress) []byte {
+	return append(GetInactiveNodeForProviderKeyPrefix(p), n.Bytes()...)
 }
 
 func GetActiveNodeAtKeyPrefix(at time.Time) []byte {
@@ -75,10 +75,10 @@ func ActiveNodeAtKey(at time.Time, address hub.NodeAddress) []byte {
 	return append(GetActiveNodeAtKeyPrefix(at), address.Bytes()...)
 }
 
-func GetInActiveNodeAtKeyPrefix(at time.Time) []byte {
-	return append(InActiveNodeAtKeyPrefix, sdk.FormatTimeBytes(at)...)
+func GetInactiveNodeAtKeyPrefix(at time.Time) []byte {
+	return append(InactiveNodeAtKeyPrefix, sdk.FormatTimeBytes(at)...)
 }
 
-func InActiveNodeAtKey(at time.Time, address hub.NodeAddress) []byte {
-	return append(GetInActiveNodeAtKeyPrefix(at), address.Bytes()...)
+func InactiveNodeAtKey(at time.Time, address hub.NodeAddress) []byte {
+	return append(GetInactiveNodeAtKeyPrefix(at), address.Bytes()...)
 }

@@ -44,15 +44,15 @@ var (
 	DefaultGenesisState                 = types.DefaultGenesisState
 	NodeKey                             = types.NodeKey
 	ActiveNodeKey                       = types.ActiveNodeKey
-	InActiveNodeKey                     = types.InActiveNodeKey
+	InactiveNodeKey                     = types.InactiveNodeKey
 	GetActiveNodeForProviderKeyPrefix   = types.GetActiveNodeForProviderKeyPrefix
 	ActiveNodeForProviderKey            = types.ActiveNodeForProviderKey
-	GetInActiveNodeForProviderKeyPrefix = types.GetInActiveNodeForProviderKeyPrefix
-	InActiveNodeForProviderKey          = types.InActiveNodeForProviderKey
+	GetInactiveNodeForProviderKeyPrefix = types.GetInactiveNodeForProviderKeyPrefix
+	InactiveNodeForProviderKey          = types.InactiveNodeForProviderKey
 	GetActiveNodeAtKeyPrefix            = types.GetActiveNodeAtKeyPrefix
 	ActiveNodeAtKey                     = types.ActiveNodeAtKey
-	GetInActiveNodeAtKeyPrefix          = types.GetInActiveNodeAtKeyPrefix
-	InActiveNodeAtKey                   = types.InActiveNodeAtKey
+	GetInactiveNodeAtKeyPrefix          = types.GetInactiveNodeAtKeyPrefix
+	InactiveNodeAtKey                   = types.InactiveNodeAtKey
 	NewMsgRegister                      = types.NewMsgRegister
 	NewMsgUpdate                        = types.NewMsgUpdate
 	NewMsgSetStatus                     = types.NewMsgSetStatus
@@ -72,11 +72,11 @@ var (
 	EventModuleName                  = types.EventModuleName
 	NodeKeyPrefix                    = types.NodeKeyPrefix
 	ActiveNodeKeyPrefix              = types.ActiveNodeKeyPrefix
-	InActiveNodeKeyPrefix            = types.InActiveNodeKeyPrefix
+	InactiveNodeKeyPrefix            = types.InactiveNodeKeyPrefix
 	ActiveNodeForProviderKeyPrefix   = types.ActiveNodeForProviderKeyPrefix
-	InActiveNodeForProviderKeyPrefix = types.InActiveNodeForProviderKeyPrefix
+	InactiveNodeForProviderKeyPrefix = types.InactiveNodeForProviderKeyPrefix
 	ActiveNodeAtKeyPrefix            = types.ActiveNodeAtKeyPrefix
-	InActiveNodeAtKeyPrefix          = types.InActiveNodeAtKeyPrefix
+	InactiveNodeAtKeyPrefix          = types.InactiveNodeAtKeyPrefix
 	KeyInactiveDuration              = types.KeyInactiveDuration
 )
 
