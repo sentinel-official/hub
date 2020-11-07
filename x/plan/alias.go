@@ -33,43 +33,50 @@ const (
 
 var (
 	// functions aliases
-	RegisterCodec                  = types.RegisterCodec
-	ErrorMarshal                   = types.ErrorMarshal
-	ErrorUnmarshal                 = types.ErrorUnmarshal
-	ErrorUnknownMsgType            = types.ErrorUnknownMsgType
-	ErrorUnknownQueryType          = types.ErrorUnknownQueryType
-	ErrorInvalidField              = types.ErrorInvalidField
-	ErrorProviderDoesNotExist      = types.ErrorProviderDoesNotExist
-	ErrorPlanDoesNotExist          = types.ErrorPlanDoesNotExist
-	ErrorNodeDoesNotExist          = types.ErrorNodeDoesNotExist
-	ErrorUnauthorized              = types.ErrorUnauthorized
-	NewGenesisState                = types.NewGenesisState
-	DefaultGenesisState            = types.DefaultGenesisState
-	PlanKey                        = types.PlanKey
-	GetPlanForProviderKeyPrefix    = types.GetPlanForProviderKeyPrefix
-	PlanForProviderKey             = types.PlanForProviderKey
-	GetNodeForPlanKeyPrefix        = types.GetNodeForPlanKeyPrefix
-	NodeForPlanKey                 = types.NodeForPlanKey
-	NewMsgAdd                      = types.NewMsgAdd
-	NewMsgSetStatus                = types.NewMsgSetStatus
-	NewMsgAddNode                  = types.NewMsgAddNode
-	NewMsgRemoveNode               = types.NewMsgRemoveNode
-	NewQueryPlanParams             = types.NewQueryPlanParams
-	NewQueryPlansParams            = types.NewQueryPlansParams
-	NewQueryPlansForProviderParams = types.NewQueryPlansForProviderParams
-	NewQueryNodesForPlanParams     = types.NewQueryNodesForPlanParams
-	NewKeeper                      = keeper.NewKeeper
-	Querier                        = querier.Querier
+	RegisterCodec                       = types.RegisterCodec
+	ErrorMarshal                        = types.ErrorMarshal
+	ErrorUnmarshal                      = types.ErrorUnmarshal
+	ErrorUnknownMsgType                 = types.ErrorUnknownMsgType
+	ErrorUnknownQueryType               = types.ErrorUnknownQueryType
+	ErrorInvalidField                   = types.ErrorInvalidField
+	ErrorProviderDoesNotExist           = types.ErrorProviderDoesNotExist
+	ErrorPlanDoesNotExist               = types.ErrorPlanDoesNotExist
+	ErrorNodeDoesNotExist               = types.ErrorNodeDoesNotExist
+	ErrorUnauthorized                   = types.ErrorUnauthorized
+	NewGenesisState                     = types.NewGenesisState
+	DefaultGenesisState                 = types.DefaultGenesisState
+	PlanKey                             = types.PlanKey
+	ActivePlanKey                       = types.ActivePlanKey
+	InactivePlanKey                     = types.InactivePlanKey
+	GetActivePlanForProviderKeyPrefix   = types.GetActivePlanForProviderKeyPrefix
+	ActivePlanForProviderKey            = types.ActivePlanForProviderKey
+	GetInactivePlanForProviderKeyPrefix = types.GetInactivePlanForProviderKeyPrefix
+	InactivePlanForProviderKey          = types.InactivePlanForProviderKey
+	GetNodeForPlanKeyPrefix             = types.GetNodeForPlanKeyPrefix
+	NodeForPlanKey                      = types.NodeForPlanKey
+	NewMsgAdd                           = types.NewMsgAdd
+	NewMsgSetStatus                     = types.NewMsgSetStatus
+	NewMsgAddNode                       = types.NewMsgAddNode
+	NewMsgRemoveNode                    = types.NewMsgRemoveNode
+	NewQueryPlanParams                  = types.NewQueryPlanParams
+	NewQueryPlansParams                 = types.NewQueryPlansParams
+	NewQueryPlansForProviderParams      = types.NewQueryPlansForProviderParams
+	NewQueryNodesForPlanParams          = types.NewQueryNodesForPlanParams
+	NewKeeper                           = keeper.NewKeeper
+	Querier                             = querier.Querier
 
 	// variable aliases
-	ModuleCdc                = types.ModuleCdc
-	RouterKey                = types.RouterKey
-	StoreKey                 = types.StoreKey
-	EventModuleName          = types.EventModuleName
-	CountKey                 = types.CountKey
-	PlanKeyPrefix            = types.PlanKeyPrefix
-	PlanForProviderKeyPrefix = types.PlanForProviderKeyPrefix
-	NodeForPlanKeyPrefix     = types.NodeForPlanKeyPrefix
+	ModuleCdc                        = types.ModuleCdc
+	RouterKey                        = types.RouterKey
+	StoreKey                         = types.StoreKey
+	EventModuleName                  = types.EventModuleName
+	CountKey                         = types.CountKey
+	PlanKeyPrefix                    = types.PlanKeyPrefix
+	ActivePlanKeyPrefix              = types.ActivePlanKeyPrefix
+	InactivePlanKeyPrefix            = types.InactivePlanKeyPrefix
+	ActivePlanForProviderKeyPrefix   = types.ActivePlanForProviderKeyPrefix
+	InactivePlanForProviderKeyPrefix = types.InactivePlanForProviderKeyPrefix
+	NodeForPlanKeyPrefix             = types.NodeForPlanKeyPrefix
 )
 
 type (
