@@ -6,7 +6,7 @@ import (
 	"github.com/sentinel-official/hub/x/deposit"
 	"github.com/sentinel-official/hub/x/node"
 	"github.com/sentinel-official/hub/x/plan"
-	"github.com/sentinel-official/hub/x/provider"
+	providerKeeper "github.com/sentinel-official/hub/x/provider/keeper"
 	"github.com/sentinel-official/hub/x/session"
 	"github.com/sentinel-official/hub/x/subscription"
 	"github.com/sentinel-official/hub/x/vpn/keeper"
@@ -15,7 +15,7 @@ import (
 
 func InitGenesis(ctx sdk.Context, k keeper.Keeper, state types.GenesisState) {
 	deposit.InitGenesis(ctx, k.Deposit, state.Deposits)
-	provider.InitGenesis(ctx, k.Provider, state.Providers)
+	providerKeeper.InitGenesis(ctx, k.Provider, state.Providers)
 	node.InitGenesis(ctx, k.Node, state.Nodes)
 	plan.InitGenesis(ctx, k.Plan, state.Plans)
 	subscription.InitGenesis(ctx, k.Subscription, state.Subscriptions)
@@ -25,7 +25,7 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, state types.GenesisState) {
 func ExportGenesis(ctx sdk.Context, k keeper.Keeper) types.GenesisState {
 	return types.GenesisState{
 		Deposits:      deposit.ExportGenesis(ctx, k.Deposit),
-		Providers:     provider.ExportGenesis(ctx, k.Provider),
+		Providers:     providerKeeper.ExportGenesis(ctx, k.Provider),
 		Nodes:         node.ExportGenesis(ctx, k.Node),
 		Plans:         plan.ExportGenesis(ctx, k.Plan),
 		Subscriptions: subscription.ExportGenesis(ctx, k.Subscription),
@@ -37,7 +37,7 @@ func ValidateGenesis(state types.GenesisState) error {
 	if err := deposit.ValidateGenesis(state.Deposits); err != nil {
 		return err
 	}
-	if err := provider.ValidateGenesis(state.Providers); err != nil {
+	if err := providerKeeper.ValidateGenesis(state.Providers); err != nil {
 		return err
 	}
 	if err := node.ValidateGenesis(state.Nodes); err != nil {
