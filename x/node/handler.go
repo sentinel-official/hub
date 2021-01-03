@@ -26,10 +26,10 @@ func HandleRegister(ctx sdk.Context, k keeper.Keeper, msg types.MsgRegister) (*s
 	}
 
 	k.SetNode(ctx, node)
-	k.SetInActiveNode(ctx, node.Address)
+	k.SetInactiveNode(ctx, node.Address)
 
 	if node.Provider != nil {
-		k.SetInActiveNodeForProvider(ctx, node.Provider, node.Address)
+		k.SetInactiveNodeForProvider(ctx, node.Provider, node.Address)
 	}
 
 	ctx.EventManager().EmitEvent(sdk.NewEvent(
@@ -56,7 +56,7 @@ func HandleUpdate(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpdate) (*sdk.R
 		if node.Status.Equal(hub.StatusActive) {
 			k.DeleteActiveNodeForProvider(ctx, node.Provider, node.Address)
 		} else {
-			k.DeleteInActiveNodeForProvider(ctx, node.Provider, node.Address)
+			k.DeleteInactiveNodeForProvider(ctx, node.Provider, node.Address)
 		}
 
 		plans := k.GetPlansForProvider(ctx, node.Provider)
@@ -76,7 +76,7 @@ func HandleUpdate(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpdate) (*sdk.R
 		if node.Status.Equal(hub.StatusActive) {
 			k.SetActiveNodeForProvider(ctx, node.Provider, node.Address)
 		} else {
-			k.SetInActiveNodeForProvider(ctx, node.Provider, node.Address)
+			k.SetInactiveNodeForProvider(ctx, node.Provider, node.Address)
 		}
 	}
 	if msg.Price != nil {
@@ -106,22 +106,22 @@ func HandleSetStatus(ctx sdk.Context, k keeper.Keeper, msg types.MsgSetStatus) (
 	if node.Status.Equal(hub.StatusActive) {
 		if msg.Status.Equal(hub.StatusInactive) {
 			k.DeleteActiveNode(ctx, node.Address)
-			k.SetInActiveNode(ctx, node.Address)
+			k.SetInactiveNode(ctx, node.Address)
 
 			if node.Provider != nil {
 				k.DeleteActiveNodeForProvider(ctx, node.Provider, node.Address)
-				k.SetInActiveNodeForProvider(ctx, node.Provider, node.Address)
+				k.SetInactiveNodeForProvider(ctx, node.Provider, node.Address)
 			}
 		}
 
-		k.DeleteInActiveNodeAt(ctx, node.StatusAt, node.Address)
+		k.DeleteInactiveNodeAt(ctx, node.StatusAt, node.Address)
 	} else {
 		if msg.Status.Equal(hub.StatusActive) {
-			k.DeleteInActiveNode(ctx, node.Address)
+			k.DeleteInactiveNode(ctx, node.Address)
 			k.SetActiveNode(ctx, node.Address)
 
 			if node.Provider != nil {
-				k.DeleteInActiveNodeForProvider(ctx, node.Provider, node.Address)
+				k.DeleteInactiveNodeForProvider(ctx, node.Provider, node.Address)
 				k.SetActiveNodeForProvider(ctx, node.Provider, node.Address)
 			}
 		}
@@ -131,7 +131,7 @@ func HandleSetStatus(ctx sdk.Context, k keeper.Keeper, msg types.MsgSetStatus) (
 	node.StatusAt = ctx.BlockTime()
 
 	if node.Status.Equal(hub.StatusActive) {
-		k.SetInActiveNodeAt(ctx, node.StatusAt, node.Address)
+		k.SetInactiveNodeAt(ctx, node.StatusAt, node.Address)
 	}
 
 	k.SetNode(ctx, node)

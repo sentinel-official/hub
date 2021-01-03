@@ -23,26 +23,30 @@ func NewQueryPlanParams(id uint64) QueryPlanParams {
 }
 
 type QueryPlansParams struct {
-	Skip  int `json:"skip"`
-	Limit int `json:"limit"`
+	Status hub.Status `json:"status"`
+	Skip   int        `json:"skip"`
+	Limit  int        `json:"limit"`
 }
 
-func NewQueryPlansParams(skip, limit int) QueryPlansParams {
+func NewQueryPlansParams(status hub.Status, skip, limit int) QueryPlansParams {
 	return QueryPlansParams{
-		Skip:  skip,
-		Limit: limit,
+		Status: status,
+		Skip:   skip,
+		Limit:  limit,
 	}
 }
 
 type QueryPlansForProviderParams struct {
 	Address hub.ProvAddress `json:"address"`
+	Status  hub.Status      `json:"status"`
 	Skip    int             `json:"skip"`
 	Limit   int             `json:"limit"`
 }
 
-func NewQueryPlansForProviderParams(address hub.ProvAddress, skip, limit int) QueryPlansForProviderParams {
+func NewQueryPlansForProviderParams(address hub.ProvAddress, status hub.Status, skip, limit int) QueryPlansForProviderParams {
 	return QueryPlansForProviderParams{
 		Address: address,
+		Status:  status,
 		Skip:    skip,
 		Limit:   limit,
 	}

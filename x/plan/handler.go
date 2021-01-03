@@ -15,7 +15,7 @@ func HandleAdd(ctx sdk.Context, k keeper.Keeper, msg types.MsgAdd) (*sdk.Result,
 		return nil, types.ErrorProviderDoesNotExist
 	}
 
-	count := k.GetPlansCount(ctx)
+	count := k.GetCount(ctx)
 	plan := types.Plan{
 		ID:       count + 1,
 		Provider: msg.From,
@@ -27,14 +27,15 @@ func HandleAdd(ctx sdk.Context, k keeper.Keeper, msg types.MsgAdd) (*sdk.Result,
 	}
 
 	k.SetPlan(ctx, plan)
-	k.SetPlanForProvider(ctx, plan.Provider, plan.ID)
+	k.SetInactivePlan(ctx, plan.ID)
+	k.SetInactivePlanForProvider(ctx, plan.Provider, plan.ID)
 	ctx.EventManager().EmitEvent(sdk.NewEvent(
 		types.EventTypeSet,
 		sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", plan.ID)),
 		sdk.NewAttribute(types.AttributeKeyAddress, plan.Provider.String()),
 	))
 
-	k.SetPlansCount(ctx, count+1)
+	k.SetCount(ctx, count+1)
 	ctx.EventManager().EmitEvent(sdk.NewEvent(
 		types.EventTypeSetCount,
 		sdk.NewAttribute(types.AttributeKeyCount, fmt.Sprintf("%d", count+1)),
@@ -51,6 +52,24 @@ func HandleSetStatus(ctx sdk.Context, k keeper.Keeper, msg types.MsgSetStatus) (
 	}
 	if !msg.From.Equals(plan.Provider) {
 		return nil, types.ErrorUnauthorized
+	}
+
+	if plan.Status.Equal(hub.StatusActive) {
+		if msg.Status.Equal(hub.StatusInactive) {
+			k.DeleteActivePlan(ctx, plan.ID)
+			k.DeleteActivePlanForProvider(ctx, plan.Provider, plan.ID)
+
+			k.SetInactivePlan(ctx, plan.ID)
+			k.SetInactivePlanForProvider(ctx, plan.Provider, plan.ID)
+		}
+	} else {
+		if msg.Status.Equal(hub.StatusActive) {
+			k.DeleteInactivePlan(ctx, plan.ID)
+			k.DeleteInactivePlanForProvider(ctx, plan.Provider, plan.ID)
+
+			k.SetActivePlan(ctx, plan.ID)
+			k.SetActivePlanForProvider(ctx, plan.Provider, plan.ID)
+		}
 	}
 
 	plan.Status = msg.Status

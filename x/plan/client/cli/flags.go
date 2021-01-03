@@ -7,4 +7,5 @@ const (
 	flagPrice    = "price"
 	flagValidity = "validity"
 	flagBytes    = "bytes"
+	flagStatus   = "status"
 )

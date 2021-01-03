@@ -39,7 +39,7 @@ func queryNodes(ctx sdk.Context, req abci.RequestQuery, k keeper.Keeper) ([]byte
 	if params.Status.Equal(hub.StatusActive) {
 		nodes = k.GetActiveNodes(ctx, params.Skip, params.Limit)
 	} else if params.Status.Equal(hub.StatusInactive) {
-		nodes = k.GetInActiveNodes(ctx, params.Skip, params.Limit)
+		nodes = k.GetInactiveNodes(ctx, params.Skip, params.Limit)
 	} else {
 		nodes = k.GetNodes(ctx, params.Skip, params.Limit)
 	}
@@ -62,7 +62,7 @@ func queryNodesForProvider(ctx sdk.Context, req abci.RequestQuery, k keeper.Keep
 	if params.Status.Equal(hub.StatusActive) {
 		nodes = k.GetActiveNodesForProvider(ctx, params.Address, params.Skip, params.Limit)
 	} else if params.Status.Equal(hub.StatusInactive) {
-		nodes = k.GetInActiveNodesForProvider(ctx, params.Address, params.Skip, params.Limit)
+		nodes = k.GetInactiveNodesForProvider(ctx, params.Address, params.Skip, params.Limit)
 	} else {
 		nodes = k.GetNodesForProvider(ctx, params.Address, params.Skip, params.Limit)
 	}
