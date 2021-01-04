@@ -2,11 +2,17 @@ package expected
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/x/auth/exported"
 
 	hub "github.com/sentinel-official/hub/types"
 	node "github.com/sentinel-official/hub/x/node/types"
 	plan "github.com/sentinel-official/hub/x/plan/types"
 )
+
+type AccountKeeper interface {
+	IterateAccounts(ctx sdk.Context, process func(exported.Account) (stop bool))
+	GetAccount(ctx sdk.Context, addr sdk.AccAddress) exported.Account
+}
 
 type BankKeeper interface {
 	SendCoins(ctx sdk.Context, from sdk.AccAddress, to sdk.AccAddress, coins sdk.Coins) error

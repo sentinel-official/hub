@@ -2,25 +2,30 @@ package vpn
 
 import (
 	"encoding/json"
+	"math/rand"
 
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
+	xsimulation "github.com/cosmos/cosmos-sdk/x/simulation"
 	"github.com/gorilla/mux"
 	"github.com/spf13/cobra"
 	abci "github.com/tendermint/tendermint/abci/types"
 
 	"github.com/sentinel-official/hub/x/vpn/client/cli"
 	"github.com/sentinel-official/hub/x/vpn/client/rest"
+	"github.com/sentinel-official/hub/x/vpn/expected"
 	"github.com/sentinel-official/hub/x/vpn/keeper"
 	"github.com/sentinel-official/hub/x/vpn/querier"
+	"github.com/sentinel-official/hub/x/vpn/simulation"
 	"github.com/sentinel-official/hub/x/vpn/types"
 )
 
 var (
-	_ module.AppModuleBasic = AppModuleBasic{}
-	_ module.AppModule      = AppModule{}
+	_ module.AppModule           = AppModule{}
+	_ module.AppModuleBasic      = AppModuleBasic{}
+	_ module.AppModuleSimulation = AppModule{}
 )
 
 type AppModuleBasic struct{}
@@ -58,7 +63,8 @@ func (a AppModuleBasic) GetQueryCmd(cdc *codec.Codec) *cobra.Command {
 
 type AppModule struct {
 	AppModuleBasic
-	k keeper.Keeper
+	ak expected.AccountKeeper
+	k  keeper.Keeper
 }
 
 func NewAppModule(k keeper.Keeper) AppModule {
@@ -101,4 +107,18 @@ func (a AppModule) BeginBlock(_ sdk.Context, _ abci.RequestBeginBlock) {}
 
 func (a AppModule) EndBlock(ctx sdk.Context, _ abci.RequestEndBlock) []abci.ValidatorUpdate {
 	return EndBlock(ctx, a.k)
+}
+
+func (a AppModule) GenerateGenesisState(_ *module.SimulationState) {}
+
+func (a AppModule) ProposalContents(_ module.SimulationState) []xsimulation.WeightedProposalContent {
+	return nil
+}
+
+func (a AppModule) RandomizedParams(_ *rand.Rand) []xsimulation.ParamChange { return nil }
+
+func (a AppModule) RegisterStoreDecoder(_ sdk.StoreDecoderRegistry) {}
+
+func (a AppModule) WeightedOperations(state module.SimulationState) []xsimulation.WeightedOperation {
+	return simulation.WeightedOperations(state.AppParams, state.Cdc, a.ak, a.k)
 }
