@@ -43,6 +43,10 @@ func txRegister(cdc *codec.Codec) *cobra.Command {
 			}
 
 			msg := types.NewMsgRegister(ctx.FromAddress, name, identity, website, description)
+			if err := msg.ValidateBasic(); err != nil {
+				return err
+			}
+
 			return utils.GenerateOrBroadcastMsgs(ctx, txb, []sdk.Msg{msg})
 		},
 	}
@@ -87,6 +91,10 @@ func txUpdate(cdc *codec.Codec) *cobra.Command {
 			}
 
 			msg := types.NewMsgUpdate(ctx.FromAddress.Bytes(), name, identity, website, description)
+			if err := msg.ValidateBasic(); err != nil {
+				return err
+			}
+
 			return utils.GenerateOrBroadcastMsgs(ctx, txb, []sdk.Msg{msg})
 		},
 	}

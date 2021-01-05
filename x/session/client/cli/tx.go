@@ -53,6 +53,10 @@ func txUpsert(cdc *codec.Codec) *cobra.Command {
 
 			msg := types.NewMsgUpsert(ctx.FromAddress.Bytes(),
 				subscription, address, duration, hub.NewBandwidthFromInt64(upload, download))
+			if err := msg.ValidateBasic(); err != nil {
+				return err
+			}
+
 			return utils.GenerateOrBroadcastMsgs(ctx, txb, []sdk.Msg{msg})
 		},
 	}

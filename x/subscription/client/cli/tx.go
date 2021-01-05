@@ -31,6 +31,10 @@ func txSubscribeToPlan(cdc *codec.Codec) *cobra.Command {
 			}
 
 			msg := types.NewMsgSubscribeToPlan(ctx.FromAddress, id, args[1])
+			if err := msg.ValidateBasic(); err != nil {
+				return err
+			}
+
 			return utils.GenerateOrBroadcastMsgs(ctx, txb, []sdk.Msg{msg})
 		},
 	}
@@ -57,6 +61,10 @@ func txSubscribeToNode(cdc *codec.Codec) *cobra.Command {
 			}
 
 			msg := types.NewMsgSubscribeToNode(ctx.FromAddress, address, deposit)
+			if err := msg.ValidateBasic(); err != nil {
+				return err
+			}
+
 			return utils.GenerateOrBroadcastMsgs(ctx, txb, []sdk.Msg{msg})
 		},
 	}
@@ -88,6 +96,10 @@ func txAddQuota(cdc *codec.Codec) *cobra.Command {
 			}
 
 			msg := types.NewMsgAddQuota(ctx.FromAddress, id, address, sdk.NewInt(bytes))
+			if err := msg.ValidateBasic(); err != nil {
+				return err
+			}
+
 			return utils.GenerateOrBroadcastMsgs(ctx, txb, []sdk.Msg{msg})
 		},
 	}
@@ -119,6 +131,10 @@ func txUpdateQuota(cdc *codec.Codec) *cobra.Command {
 			}
 
 			msg := types.NewMsgUpdateQuota(ctx.FromAddress, id, address, sdk.NewInt(bytes))
+			if err := msg.ValidateBasic(); err != nil {
+				return err
+			}
+
 			return utils.GenerateOrBroadcastMsgs(ctx, txb, []sdk.Msg{msg})
 		},
 	}
@@ -140,6 +156,10 @@ func txCancel(cdc *codec.Codec) *cobra.Command {
 			}
 
 			msg := types.NewMsgCancel(ctx.FromAddress, id)
+			if err := msg.ValidateBasic(); err != nil {
+				return err
+			}
+
 			return utils.GenerateOrBroadcastMsgs(ctx, txb, []sdk.Msg{msg})
 		},
 	}

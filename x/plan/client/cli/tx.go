@@ -51,6 +51,10 @@ func txAdd(cdc *codec.Codec) *cobra.Command {
 			}
 
 			msg := types.NewMsgAdd(ctx.FromAddress.Bytes(), price, validity, sdk.NewInt(bytes))
+			if err := msg.ValidateBasic(); err != nil {
+				return err
+			}
+
 			return utils.GenerateOrBroadcastMsgs(ctx, txb, []sdk.Msg{msg})
 		},
 	}
@@ -82,6 +86,10 @@ func txSetStatus(cdc *codec.Codec) *cobra.Command {
 			}
 
 			msg := types.NewMsgSetStatus(ctx.FromAddress.Bytes(), id, hub.StatusFromString(args[1]))
+			if err := msg.ValidateBasic(); err != nil {
+				return err
+			}
+
 			return utils.GenerateOrBroadcastMsgs(ctx, txb, []sdk.Msg{msg})
 		},
 	}
@@ -110,6 +118,10 @@ func txAddNode(cdc *codec.Codec) *cobra.Command {
 			}
 
 			msg := types.NewMsgAddNode(ctx.FromAddress.Bytes(), id, node)
+			if err := msg.ValidateBasic(); err != nil {
+				return err
+			}
+
 			return utils.GenerateOrBroadcastMsgs(ctx, txb, []sdk.Msg{msg})
 		},
 	}
@@ -138,6 +150,10 @@ func txRemoveNode(cdc *codec.Codec) *cobra.Command {
 			}
 
 			msg := types.NewMsgRemoveNode(ctx.FromAddress.Bytes(), id, node)
+			if err := msg.ValidateBasic(); err != nil {
+				return err
+			}
+
 			return utils.GenerateOrBroadcastMsgs(ctx, txb, []sdk.Msg{msg})
 		},
 	}

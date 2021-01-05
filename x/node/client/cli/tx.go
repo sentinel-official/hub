@@ -49,6 +49,10 @@ func txRegister(cdc *codec.Codec) *cobra.Command {
 			}
 
 			msg := types.NewMsgRegister(ctx.FromAddress, provider, price, remoteURL)
+			if err := msg.ValidateBasic(); err != nil {
+				return err
+			}
+
 			return utils.GenerateOrBroadcastMsgs(ctx, txb, []sdk.Msg{msg})
 		},
 	}
@@ -103,6 +107,10 @@ func txUpdate(cdc *codec.Codec) *cobra.Command {
 			}
 
 			msg := types.NewMsgUpdate(ctx.FromAddress.Bytes(), provider, price, remoteURL)
+			if err := msg.ValidateBasic(); err != nil {
+				return err
+			}
+
 			return utils.GenerateOrBroadcastMsgs(ctx, txb, []sdk.Msg{msg})
 		},
 	}
@@ -125,6 +133,10 @@ func txSetStatus(cdc *codec.Codec) *cobra.Command {
 			ctx := context.NewCLIContextWithInput(buffer).WithCodec(cdc)
 
 			msg := types.NewMsgSetStatus(ctx.FromAddress.Bytes(), hub.StatusFromString(args[0]))
+			if err := msg.ValidateBasic(); err != nil {
+				return err
+			}
+
 			return utils.GenerateOrBroadcastMsgs(ctx, txb, []sdk.Msg{msg})
 		},
 	}
