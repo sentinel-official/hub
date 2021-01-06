@@ -13,7 +13,6 @@ import (
 )
 
 const (
-	Codespace                    = types.Codespace
 	EventTypeSetCount            = types.EventTypeSetCount
 	EventTypeSet                 = types.EventTypeSet
 	EventTypeCancel              = types.EventTypeCancel
@@ -44,24 +43,6 @@ const (
 var (
 	// functions aliases
 	RegisterCodec                         = types.RegisterCodec
-	ErrorMarshal                          = types.ErrorMarshal
-	ErrorUnmarshal                        = types.ErrorUnmarshal
-	ErrorUnknownMsgType                   = types.ErrorUnknownMsgType
-	ErrorUnknownQueryType                 = types.ErrorUnknownQueryType
-	ErrorInvalidField                     = types.ErrorInvalidField
-	ErrorPlanDoesNotExist                 = types.ErrorPlanDoesNotExist
-	ErrorNodeDoesNotExist                 = types.ErrorNodeDoesNotExist
-	ErrorUnauthorized                     = types.ErrorUnauthorized
-	ErrorInvalidPlanStatus                = types.ErrorInvalidPlanStatus
-	ErrorPriceDoesNotExist                = types.ErrorPriceDoesNotExist
-	ErrorInvalidNodeStatus                = types.ErrorInvalidNodeStatus
-	ErrorSubscriptionDoesNotExist         = types.ErrorSubscriptionDoesNotExist
-	ErrorInvalidSubscriptionStatus        = types.ErrorInvalidSubscriptionStatus
-	ErrorCanNotSubscribe                  = types.ErrorCanNotSubscribe
-	ErrorInvalidQuota                     = types.ErrorInvalidQuota
-	ErrorDuplicateQuota                   = types.ErrorDuplicateQuota
-	ErrorQuotaDoesNotExist                = types.ErrorQuotaDoesNotExist
-	ErrorCanNotAddQuota                   = types.ErrorCanNotAddQuota
 	NewGenesisState                       = types.NewGenesisState
 	DefaultGenesisState                   = types.DefaultGenesisState
 	SubscriptionKey                       = types.SubscriptionKey
@@ -95,6 +76,24 @@ var (
 
 	// variable aliases
 	ModuleCdc                       = types.ModuleCdc
+	ErrorMarshal                    = types.ErrorMarshal
+	ErrorUnmarshal                  = types.ErrorUnmarshal
+	ErrorUnknownMsgType             = types.ErrorUnknownMsgType
+	ErrorUnknownQueryType           = types.ErrorUnknownQueryType
+	ErrorInvalidField               = types.ErrorInvalidField
+	ErrorPlanDoesNotExist           = types.ErrorPlanDoesNotExist
+	ErrorNodeDoesNotExist           = types.ErrorNodeDoesNotExist
+	ErrorUnauthorized               = types.ErrorUnauthorized
+	ErrorInvalidPlanStatus          = types.ErrorInvalidPlanStatus
+	ErrorPriceDoesNotExist          = types.ErrorPriceDoesNotExist
+	ErrorInvalidNodeStatus          = types.ErrorInvalidNodeStatus
+	ErrorSubscriptionDoesNotExist   = types.ErrorSubscriptionDoesNotExist
+	ErrorInvalidSubscriptionStatus  = types.ErrorInvalidSubscriptionStatus
+	ErrorCanNotSubscribe            = types.ErrorCanNotSubscribe
+	ErrorInvalidQuota               = types.ErrorInvalidQuota
+	ErrorDuplicateQuota             = types.ErrorDuplicateQuota
+	ErrorQuotaDoesNotExist          = types.ErrorQuotaDoesNotExist
+	ErrorCanNotAddQuota             = types.ErrorCanNotAddQuota
 	RouterKey                       = types.RouterKey
 	StoreKey                        = types.StoreKey
 	EventModuleName                 = types.EventModuleName

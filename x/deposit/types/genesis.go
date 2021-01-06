@@ -1,6 +1,8 @@
 package types
 
-type GenesisState = Deposits
+type (
+	GenesisState = Deposits
+)
 
 func NewGenesisState(deposits Deposits) GenesisState {
 	return deposits

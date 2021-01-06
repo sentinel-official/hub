@@ -20,7 +20,7 @@ func (a *App) ExportAppStateAndValidators(zeroHeight bool,
 		a.prepForZeroHeightGenesis(ctx, jailWhitelist)
 	}
 
-	state, err := codec.MarshalJSONIndent(a.cdc, a.manager.ExportGenesis(ctx))
+	state, err := codec.MarshalJSONIndent(a.cdc, a.mm.ExportGenesis(ctx))
 	if err != nil {
 		return nil, nil, err
 	}
@@ -66,7 +66,7 @@ func (a *App) prepForZeroHeightGenesis(ctx sdk.Context, jailWhitelist []string) 
 	a.stakingKeeper.IterateValidators(ctx, func(_ int64, item staking.ValidatorI) (stop bool) {
 		scraps := a.distributionKeeper.GetValidatorOutstandingRewards(ctx, item.GetOperator())
 		feePool := a.distributionKeeper.GetFeePool(ctx)
-		feePool.CommunityPool = feePool.CommunityPool.Add(scraps)
+		feePool.CommunityPool = feePool.CommunityPool.Add(scraps...)
 		a.distributionKeeper.SetFeePool(ctx, feePool)
 
 		a.distributionKeeper.Hooks().AfterValidatorCreated(ctx, item.GetOperator())

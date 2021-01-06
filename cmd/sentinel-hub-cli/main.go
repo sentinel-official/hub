@@ -5,14 +5,15 @@ import (
 	"path"
 
 	"github.com/cosmos/cosmos-sdk/client"
+	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/keys"
 	"github.com/cosmos/cosmos-sdk/client/lcd"
 	"github.com/cosmos/cosmos-sdk/client/rpc"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/version"
-	authCli "github.com/cosmos/cosmos-sdk/x/auth/client/cli"
-	authRest "github.com/cosmos/cosmos-sdk/x/auth/client/rest"
-	bankCli "github.com/cosmos/cosmos-sdk/x/bank/client/cli"
+	authcli "github.com/cosmos/cosmos-sdk/x/auth/client/cli"
+	authrest "github.com/cosmos/cosmos-sdk/x/auth/client/rest"
+	bankcli "github.com/cosmos/cosmos-sdk/x/bank/client/cli"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"github.com/tendermint/tendermint/libs/cli"
@@ -22,16 +23,18 @@ import (
 )
 
 func main() {
-	cdc := hub.MakeCodec()
 	types.GetConfig().Seal()
-
 	cobra.EnableCommandSorting = false
-	cmd := &cobra.Command{
-		Use:   "sentinel-hub-cli",
-		Short: "Sentinel Hub Command-line Interface (light-client)",
-	}
 
-	cmd.PersistentFlags().String(client.FlagChainID, "", "Chain ID of Tendermint node")
+	var (
+		cdc = hub.MakeCodec()
+		cmd = &cobra.Command{
+			Use:   "sentinel-hub-cli",
+			Short: "Sentinel Hub Command-line Interface (light-client)",
+		}
+	)
+
+	cmd.PersistentFlags().String(flags.FlagChainID, "", "Chain ID of Tendermint node")
 	cmd.PersistentPreRunE = func(_ *cobra.Command, _ []string) error {
 		return initConfig(cmd)
 	}
@@ -39,14 +42,14 @@ func main() {
 	cmd.AddCommand(
 		rpc.StatusCommand(),
 		client.ConfigCmd(hub.DefaultCLIHome),
-		client.LineBreak,
+		flags.LineBreak,
 		keys.Commands(),
 		queryCmd(cdc),
 		txCmd(cdc),
 		lcd.ServeCommand(cdc, registerRoutes),
-		client.LineBreak,
+		flags.LineBreak,
 		version.Cmd,
-		client.NewCompletionCmd(cmd, true),
+		flags.NewCompletionCmd(cmd, true),
 	)
 
 	executor := cli.PrepareMainCmd(cmd, "SENTINEL_HUB", hub.DefaultCLIHome)
@@ -65,11 +68,11 @@ func queryCmd(cdc *codec.Codec) *cobra.Command {
 	cmd.AddCommand(
 		rpc.BlockCommand(),
 		rpc.ValidatorCommand(cdc),
-		client.LineBreak,
-		authCli.GetAccountCmd(cdc),
-		authCli.QueryTxCmd(cdc),
-		authCli.QueryTxsByEventsCmd(cdc),
-		client.LineBreak,
+		flags.LineBreak,
+		authcli.GetAccountCmd(cdc),
+		authcli.QueryTxCmd(cdc),
+		authcli.QueryTxsByEventsCmd(cdc),
+		flags.LineBreak,
 	)
 
 	hub.ModuleBasics.AddQueryCommands(cmd, cdc)
@@ -83,13 +86,13 @@ func txCmd(cdc *codec.Codec) *cobra.Command {
 	}
 
 	cmd.AddCommand(
-		authCli.GetSignCommand(cdc),
-		authCli.GetMultiSignCommand(cdc),
-		authCli.GetEncodeCommand(cdc),
-		authCli.GetBroadcastCommand(cdc),
-		client.LineBreak,
-		bankCli.SendTxCmd(cdc),
-		client.LineBreak,
+		authcli.GetSignCommand(cdc),
+		authcli.GetMultiSignCommand(cdc),
+		authcli.GetEncodeCommand(cdc),
+		authcli.GetBroadcastCommand(cdc),
+		flags.LineBreak,
+		bankcli.SendTxCmd(cdc),
+		flags.LineBreak,
 	)
 
 	hub.ModuleBasics.AddTxCommands(cmd, cdc)
@@ -98,7 +101,7 @@ func txCmd(cdc *codec.Codec) *cobra.Command {
 
 func registerRoutes(rs *lcd.RestServer) {
 	client.RegisterRoutes(rs.CliCtx, rs.Mux)
-	authRest.RegisterTxRoutes(rs.CliCtx, rs.Mux)
+	authrest.RegisterTxRoutes(rs.CliCtx, rs.Mux)
 	hub.ModuleBasics.RegisterRESTRoutes(rs.CliCtx, rs.Mux)
 }
 
@@ -116,7 +119,7 @@ func initConfig(cmd *cobra.Command) error {
 		}
 	}
 
-	if err := viper.BindPFlag(client.FlagChainID, cmd.PersistentFlags().Lookup(client.FlagChainID)); err != nil {
+	if err := viper.BindPFlag(flags.FlagChainID, cmd.PersistentFlags().Lookup(flags.FlagChainID)); err != nil {
 		return err
 	}
 	if err := viper.BindPFlag(cli.EncodingFlag, cmd.PersistentFlags().Lookup(cli.EncodingFlag)); err != nil {

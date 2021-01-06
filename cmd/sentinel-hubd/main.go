@@ -5,12 +5,13 @@ import (
 	"io"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
-	"github.com/cosmos/cosmos-sdk/client"
+	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/server"
 	"github.com/cosmos/cosmos-sdk/store"
-	"github.com/cosmos/cosmos-sdk/x/genaccounts"
-	genaccountsCli "github.com/cosmos/cosmos-sdk/x/genaccounts/client/cli"
-	genutilCli "github.com/cosmos/cosmos-sdk/x/genutil/client/cli"
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/x/auth"
+	genutilcli "github.com/cosmos/cosmos-sdk/x/genutil/client/cli"
 	"github.com/cosmos/cosmos-sdk/x/staking"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -33,24 +34,26 @@ var (
 )
 
 func main() {
-	cdc := hub.MakeCodec()
 	types.GetConfig().Seal()
-
-	ctx := server.NewDefaultContext()
 	cobra.EnableCommandSorting = false
-	cmd := &cobra.Command{
-		Use:               "sentinel-hubd",
-		Short:             "Sentinel Hub Daemon (server)",
-		PersistentPreRunE: server.PersistentPreRunEFn(ctx),
-	}
 
-	cmd.AddCommand(genutilCli.InitCmd(ctx, cdc, hub.ModuleBasics, hub.DefaultNodeHome))
-	cmd.AddCommand(genutilCli.CollectGenTxsCmd(ctx, cdc, genaccounts.AppModuleBasic{}, hub.DefaultNodeHome))
-	cmd.AddCommand(genutilCli.GenTxCmd(ctx, cdc, hub.ModuleBasics, staking.AppModuleBasic{},
-		genaccounts.AppModuleBasic{}, hub.DefaultNodeHome, hub.DefaultCLIHome))
-	cmd.AddCommand(genutilCli.ValidateGenesisCmd(ctx, cdc, hub.ModuleBasics))
-	cmd.AddCommand(genaccountsCli.AddGenesisAccountCmd(ctx, cdc, hub.DefaultNodeHome, hub.DefaultCLIHome))
-	cmd.AddCommand(client.NewCompletionCmd(cmd, true))
+	var (
+		cdc = hub.MakeCodec()
+		ctx = server.NewDefaultContext()
+		cmd = &cobra.Command{
+			Use:               "sentinel-hubd",
+			Short:             "Sentinel Hub Daemon (server)",
+			PersistentPreRunE: server.PersistentPreRunEFn(ctx),
+		}
+	)
+
+	cmd.AddCommand(genutilcli.InitCmd(ctx, cdc, hub.ModuleBasics, hub.DefaultNodeHome))
+	cmd.AddCommand(genutilcli.CollectGenTxsCmd(ctx, cdc, auth.GenesisAccountIterator{}, hub.DefaultNodeHome))
+	cmd.AddCommand(genutilcli.GenTxCmd(ctx, cdc, hub.ModuleBasics, staking.AppModuleBasic{},
+		auth.GenesisAccountIterator{}, hub.DefaultNodeHome, hub.DefaultCLIHome))
+	cmd.AddCommand(genutilcli.ValidateGenesisCmd(ctx, cdc, hub.ModuleBasics))
+	// cmd.AddCommand(genutilcli.AddGenesisAccountCmd(ctx, cdc, hub.DefaultNodeHome, hub.DefaultCLIHome))
+	cmd.AddCommand(flags.NewCompletionCmd(cmd, true))
 
 	server.AddCommands(ctx, cdc, cmd, newApp, exportAppStateAndValidators)
 	cmd.PersistentFlags().
@@ -63,18 +66,30 @@ func main() {
 }
 
 func newApp(logger log.Logger, db db.DB, tracer io.Writer) abci.Application {
+	var cache sdk.MultiStorePersistentCache
+	if viper.GetBool(server.FlagInterBlockCache) {
+		cache = store.NewCommitKVStoreCacheManager()
+	}
+
+	var skipUpgradeHeights = make(map[int64]bool)
+	for _, height := range viper.GetIntSlice(server.FlagUnsafeSkipUpgrades) {
+		skipUpgradeHeights[int64(height)] = true
+	}
+
 	return hub.NewApp(
-		logger, db, tracer, true, invarCheckPeriod,
-		baseapp.SetPruning(store.NewPruningOptionsFromString(viper.GetString("pruning"))),
+		logger, db, tracer, true, skipUpgradeHeights, invarCheckPeriod,
+		baseapp.SetPruning(storetypes.NewPruningOptionsFromString(viper.GetString("pruning"))),
 		baseapp.SetMinGasPrices(viper.GetString(server.FlagMinGasPrices)),
-		baseapp.SetHaltHeight(uint64(viper.GetInt(server.FlagHaltHeight))),
+		baseapp.SetHaltHeight(viper.GetUint64(server.FlagHaltHeight)),
+		baseapp.SetHaltTime(viper.GetUint64(server.FlagHaltTime)),
+		baseapp.SetInterBlockCache(cache),
 	)
 }
 
 func exportAppStateAndValidators(logger log.Logger, db db.DB, tracer io.Writer, height int64, zeroHeight bool,
 	jailWhitelist []string) (json.RawMessage, []tm.GenesisValidator, error) {
 	if height != -1 {
-		app := hub.NewApp(logger, db, tracer, false, uint(1))
+		app := hub.NewApp(logger, db, tracer, false, map[int64]bool{}, uint(1))
 		if err := app.LoadHeight(height); err != nil {
 			return nil, nil, err
 		}
@@ -82,6 +97,6 @@ func exportAppStateAndValidators(logger log.Logger, db db.DB, tracer io.Writer, 
 		return app.ExportAppStateAndValidators(zeroHeight, jailWhitelist)
 	}
 
-	app := hub.NewApp(logger, db, tracer, true, uint(1))
+	app := hub.NewApp(logger, db, tracer, true, map[int64]bool{}, uint(1))
 	return app.ExportAppStateAndValidators(zeroHeight, jailWhitelist)
 }

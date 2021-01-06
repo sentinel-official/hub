@@ -2,6 +2,7 @@ package vpn
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/errors"
 
 	"github.com/sentinel-official/hub/x/node"
 	"github.com/sentinel-official/hub/x/plan"
@@ -13,7 +14,7 @@ import (
 )
 
 func NewHandler(k keeper.Keeper) sdk.Handler {
-	return func(ctx sdk.Context, msg sdk.Msg) sdk.Result {
+	return func(ctx sdk.Context, msg sdk.Msg) (*sdk.Result, error) {
 		ctx = ctx.WithEventManager(sdk.NewEventManager())
 
 		switch msg := msg.(type) {
@@ -52,7 +53,7 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 		case session.MsgUpsert:
 			return session.HandleUpsert(ctx, k.Session, msg)
 		default:
-			return types.ErrorUnknownMsgType(msg.Type()).Result()
+			return nil, errors.Wrapf(types.ErrorUnknownMsgType, "%s", msg.Type())
 		}
 	}
 }

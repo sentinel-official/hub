@@ -1,6 +1,8 @@
 package cli
 
 import (
+	"bufio"
+
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -17,8 +19,9 @@ func txRegister(cdc *codec.Codec) *cobra.Command {
 		Use:   "register",
 		Short: "Register a node",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			txb := auth.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
-			ctx := context.NewCLIContext().WithCodec(cdc)
+			buffer := bufio.NewReader(cmd.InOrStdin())
+			txb := auth.NewTxBuilderFromCLI(buffer).WithTxEncoder(utils.GetTxEncoder(cdc))
+			ctx := context.NewCLIContextWithInput(buffer).WithCodec(cdc)
 
 			s, err := cmd.Flags().GetString(flagProvider)
 			if err != nil {
@@ -46,13 +49,17 @@ func txRegister(cdc *codec.Codec) *cobra.Command {
 			}
 
 			msg := types.NewMsgRegister(ctx.FromAddress, provider, price, remoteURL)
+			if err := msg.ValidateBasic(); err != nil {
+				return err
+			}
+
 			return utils.GenerateOrBroadcastMsgs(ctx, txb, []sdk.Msg{msg})
 		},
 	}
 
 	cmd.Flags().String(flagProvider, "", "node provider address")
 	cmd.Flags().String(flagPrice, "", "node price per Gigabyte")
-	cmd.Flags().String(flagRemoteURL, "", "node remove URL")
+	cmd.Flags().String(flagRemoteURL, "", "node remote URL")
 
 	_ = cmd.MarkFlagRequired(flagRemoteURL)
 
@@ -64,8 +71,9 @@ func txUpdate(cdc *codec.Codec) *cobra.Command {
 		Use:   "update",
 		Short: "Update a node",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			txb := auth.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
-			ctx := context.NewCLIContext().WithCodec(cdc)
+			buffer := bufio.NewReader(cmd.InOrStdin())
+			txb := auth.NewTxBuilderFromCLI(buffer).WithTxEncoder(utils.GetTxEncoder(cdc))
+			ctx := context.NewCLIContextWithInput(buffer).WithCodec(cdc)
 
 			s, err := cmd.Flags().GetString(flagProvider)
 			if err != nil {
@@ -99,13 +107,17 @@ func txUpdate(cdc *codec.Codec) *cobra.Command {
 			}
 
 			msg := types.NewMsgUpdate(ctx.FromAddress.Bytes(), provider, price, remoteURL)
+			if err := msg.ValidateBasic(); err != nil {
+				return err
+			}
+
 			return utils.GenerateOrBroadcastMsgs(ctx, txb, []sdk.Msg{msg})
 		},
 	}
 
 	cmd.Flags().String(flagProvider, "", "node provider address")
 	cmd.Flags().String(flagPrice, "", "node price per Gigabyte")
-	cmd.Flags().String(flagRemoteURL, "", "node remove URL")
+	cmd.Flags().String(flagRemoteURL, "", "node remote URL")
 
 	return cmd
 }
@@ -116,10 +128,15 @@ func txSetStatus(cdc *codec.Codec) *cobra.Command {
 		Short: "Set a node status",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			txb := auth.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
-			ctx := context.NewCLIContext().WithCodec(cdc)
+			buffer := bufio.NewReader(cmd.InOrStdin())
+			txb := auth.NewTxBuilderFromCLI(buffer).WithTxEncoder(utils.GetTxEncoder(cdc))
+			ctx := context.NewCLIContextWithInput(buffer).WithCodec(cdc)
 
 			msg := types.NewMsgSetStatus(ctx.FromAddress.Bytes(), hub.StatusFromString(args[0]))
+			if err := msg.ValidateBasic(); err != nil {
+				return err
+			}
+
 			return utils.GenerateOrBroadcastMsgs(ctx, txb, []sdk.Msg{msg})
 		},
 	}

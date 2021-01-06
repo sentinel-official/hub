@@ -31,7 +31,7 @@ func (k Keeper) HasQuota(ctx sdk.Context, id uint64, address sdk.AccAddress) boo
 	return k.subscription.HasQuota(ctx, id, address)
 }
 
-func (k Keeper) SendCoinsFromDepositToAccount(ctx sdk.Context, from, to sdk.AccAddress, coin sdk.Coin) sdk.Error {
+func (k Keeper) SendCoinsFromDepositToAccount(ctx sdk.Context, from, to sdk.AccAddress, coin sdk.Coin) error {
 	if coin.IsZero() {
 		return nil
 	}
