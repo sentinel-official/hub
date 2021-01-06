@@ -82,3 +82,15 @@ func GetInactiveNodeAtKeyPrefix(at time.Time) []byte {
 func InactiveNodeAtKey(at time.Time, address hub.NodeAddress) []byte {
 	return append(GetInactiveNodeAtKeyPrefix(at), address.Bytes()...)
 }
+
+func AddressFromStatusNodeKey(key []byte) hub.NodeAddress {
+	return key[1:]
+}
+
+func AddressFromStatusNodeForProviderKey(key []byte) hub.NodeAddress {
+	return key[1+sdk.AddrLen:]
+}
+
+func AddressFromStatusNodeAtKey(key []byte) hub.NodeAddress {
+	return key[1+29:]
+}

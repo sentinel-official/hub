@@ -6,6 +6,5 @@ import (
 )
 
 type AccountKeeper interface {
-	IterateAccounts(ctx sdk.Context, process func(exported.Account) (stop bool))
 	GetAccount(ctx sdk.Context, addr sdk.AccAddress) exported.Account
 }

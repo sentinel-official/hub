@@ -13,8 +13,6 @@ import (
 )
 
 const (
-	EventTypeSet        = types.EventTypeSet
-	EventTypeUpdate     = types.EventTypeUpdate
 	AttributeKeyAddress = types.AttributeKeyAddress
 	ModuleName          = types.ModuleName
 	QuerierRoute        = types.QuerierRoute
@@ -44,6 +42,8 @@ var (
 	ErrorInvalidField         = types.ErrorInvalidField
 	ErrorDuplicateProvider    = types.ErrorDuplicateProvider
 	ErrorProviderDoesNotExist = types.ErrorProviderDoesNotExist
+	EventTypeSet              = types.EventTypeSet
+	EventTypeUpdate           = types.EventTypeUpdate
 	RouterKey                 = types.RouterKey
 	StoreKey                  = types.StoreKey
 	EventModuleName           = types.EventModuleName

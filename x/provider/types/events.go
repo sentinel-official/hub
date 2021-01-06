@@ -1,10 +1,14 @@
 package types
 
-const (
-	EventTypeSet    = "provider:set"
-	EventTypeUpdate = "provider:update"
+import (
+	"fmt"
 )
 
 const (
 	AttributeKeyAddress = "address"
+)
+
+var (
+	EventTypeSet    = fmt.Sprintf("%s:set", ModuleName)
+	EventTypeUpdate = fmt.Sprintf("%s:update", ModuleName)
 )

@@ -47,22 +47,22 @@ func (m MsgRegister) ValidateBasic() error {
 		return errors.Wrapf(ErrorInvalidField, "%s", "from")
 	}
 
-	// Name can't be empty and length should be [1, 64]
+	// Name can't be empty and length should be between 1 and 64
 	if len(m.Name) == 0 || len(m.Name) > 64 {
 		return errors.Wrapf(ErrorInvalidField, "%s", "name")
 	}
 
-	// Identity length should be [0, 64]
+	// Identity length should be between 0 and 64
 	if len(m.Identity) > 64 {
 		return errors.Wrapf(ErrorInvalidField, "%s", "identity")
 	}
 
-	// Website length should be [0, 64]
+	// Website length should be between 0 and 64
 	if len(m.Website) > 64 {
 		return errors.Wrapf(ErrorInvalidField, "%s", "website")
 	}
 
-	// Description length should be [0, 256]
+	// Description length should be between 0 and 256
 	if len(m.Description) > 256 {
 		return errors.Wrapf(ErrorInvalidField, "%s", "description")
 	}
@@ -115,22 +115,22 @@ func (m MsgUpdate) ValidateBasic() error {
 		return errors.Wrapf(ErrorInvalidField, "%s", "from")
 	}
 
-	// Name length should be [0, 64]
+	// Name length should be between 0 and 64
 	if len(m.Name) > 64 {
 		return errors.Wrapf(ErrorInvalidField, "%s", "name")
 	}
 
-	// Identity length should be [0, 64]
+	// Identity length should be between 0 and 64
 	if len(m.Identity) > 64 {
 		return errors.Wrapf(ErrorInvalidField, "%s", "identity")
 	}
 
-	// Website length should be [0, 64]
+	// Website length should be between 0 and 64
 	if len(m.Website) > 64 {
 		return errors.Wrapf(ErrorInvalidField, "%s", "website")
 	}
 
-	// Description length should be [0, 256]
+	// Description length should be between 0 and 256
 	if len(m.Description) > 256 {
 		return errors.Wrapf(ErrorInvalidField, "%s", "description")
 	}

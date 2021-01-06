@@ -13,9 +13,6 @@ import (
 )
 
 const (
-	EventTypeSet            = types.EventTypeSet
-	EventTypeUpdate         = types.EventTypeUpdate
-	EventTypeSetStatus      = types.EventTypeSetStatus
 	AttributeKeyProvider    = types.AttributeKeyProvider
 	AttributeKeyAddress     = types.AttributeKeyAddress
 	AttributeKeyStatus      = types.AttributeKeyStatus
@@ -44,6 +41,9 @@ var (
 	ActiveNodeAtKey                     = types.ActiveNodeAtKey
 	GetInactiveNodeAtKeyPrefix          = types.GetInactiveNodeAtKeyPrefix
 	InactiveNodeAtKey                   = types.InactiveNodeAtKey
+	AddressFromStatusNodeKey            = types.AddressFromStatusNodeKey
+	AddressFromStatusNodeForProviderKey = types.AddressFromStatusNodeForProviderKey
+	AddressFromStatusNodeAtKey          = types.AddressFromStatusNodeAtKey
 	NewMsgRegister                      = types.NewMsgRegister
 	NewMsgUpdate                        = types.NewMsgUpdate
 	NewMsgSetStatus                     = types.NewMsgSetStatus
@@ -66,6 +66,9 @@ var (
 	ErrorProviderDoesNotExist        = types.ErrorProviderDoesNotExist
 	ErrorDuplicateNode               = types.ErrorDuplicateNode
 	ErrorNodeDoesNotExist            = types.ErrorNodeDoesNotExist
+	EventTypeSet                     = types.EventTypeSet
+	EventTypeUpdate                  = types.EventTypeUpdate
+	EventTypeSetStatus               = types.EventTypeSetStatus
 	RouterKey                        = types.RouterKey
 	StoreKey                         = types.StoreKey
 	EventModuleName                  = types.EventModuleName

@@ -16,7 +16,7 @@ var (
 	_ sdk.Msg = (*MsgSetStatus)(nil)
 )
 
-// MsgRegister is for registering a VPN node.
+// MsgRegister is for registering a node.
 type MsgRegister struct {
 	From      sdk.AccAddress  `json:"from"`
 	Provider  hub.ProvAddress `json:"provider,omitempty"`
@@ -49,7 +49,7 @@ func (m MsgRegister) ValidateBasic() error {
 	// Either provider or price should be nil
 	if (m.Provider != nil && m.Price != nil) ||
 		(m.Provider == nil && m.Price == nil) {
-		return errors.Wrapf(ErrorInvalidField, "%s", "provider and price")
+		return errors.Wrapf(ErrorInvalidField, "%s", "provider or price")
 	}
 
 	// Provider can be nil. If not, it shouldn't be empty
@@ -62,7 +62,7 @@ func (m MsgRegister) ValidateBasic() error {
 		return errors.Wrapf(ErrorInvalidField, "%s", "price")
 	}
 
-	// RemoteURL can't be empty and length should be (0, 64]
+	// RemoteURL can't be empty and length should be between 1 and 64
 	if len(m.RemoteURL) == 0 || len(m.RemoteURL) > 64 {
 		return errors.Wrapf(ErrorInvalidField, "%s", "remote_url")
 	}
@@ -83,7 +83,7 @@ func (m MsgRegister) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{m.From}
 }
 
-// MsgUpdate is for updating the information of a VPN node.
+// MsgUpdate is for updating the information of a node.
 type MsgUpdate struct {
 	From      hub.NodeAddress `json:"from"`
 	Provider  hub.ProvAddress `json:"provider,omitempty"`
@@ -113,9 +113,8 @@ func (m MsgUpdate) ValidateBasic() error {
 		return errors.Wrapf(ErrorInvalidField, "%s", "from")
 	}
 
-	// Provider and Price both shouldn't nil at the same time
 	if m.Provider != nil && m.Price != nil {
-		return errors.Wrapf(ErrorInvalidField, "%s", "provider and price")
+		return errors.Wrapf(ErrorInvalidField, "%s", "provider or price")
 	}
 
 	// Provider can be nil. If not, it shouldn't be empty
@@ -128,7 +127,7 @@ func (m MsgUpdate) ValidateBasic() error {
 		return errors.Wrapf(ErrorInvalidField, "%s", "price")
 	}
 
-	// RemoteURL length should be [0, 64]
+	// RemoteURL length should be between 0 and 64
 	if len(m.RemoteURL) > 64 {
 		return errors.Wrapf(ErrorInvalidField, "%s", "remote_url")
 	}
@@ -149,7 +148,7 @@ func (m MsgUpdate) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{m.From.Bytes()}
 }
 
-// MsgSetStatus is for updating the status of a VPN node.
+// MsgSetStatus is for updating the status of a node.
 type MsgSetStatus struct {
 	From   hub.NodeAddress `json:"from"`
 	Status hub.Status      `json:"status"`
@@ -175,7 +174,7 @@ func (m MsgSetStatus) ValidateBasic() error {
 		return errors.Wrapf(ErrorInvalidField, "%s", "from")
 	}
 
-	// Status should be valid
+	// Status should be either Active or Inactive
 	if !m.Status.Equal(hub.StatusActive) && !m.Status.Equal(hub.StatusInactive) {
 		return errors.Wrapf(ErrorInvalidField, "%s", "status")
 	}

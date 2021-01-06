@@ -5,9 +5,9 @@ import (
 )
 
 const (
-	QueryNode             = "node"
-	QueryNodes            = "nodes"
-	QueryNodesForProvider = "nodes_for_provider"
+	QueryNode             = "Node"
+	QueryNodes            = "Nodes"
+	QueryNodesForProvider = "NodesForProvider"
 )
 
 type QueryNodeParams struct {

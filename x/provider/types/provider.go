@@ -33,13 +33,13 @@ func (p Provider) Validate() error {
 		return fmt.Errorf("name length should be between 1 and 64")
 	}
 	if len(p.Identity) > 64 {
-		return fmt.Errorf("identity length should be between 1 and 64")
+		return fmt.Errorf("identity length should be between 0 and 64")
 	}
 	if len(p.Website) > 64 {
-		return fmt.Errorf("website length should be between 1 and 64")
+		return fmt.Errorf("website length should be between 0 and 64")
 	}
 	if len(p.Description) > 256 {
-		return fmt.Errorf("description length should be between 1 and 256")
+		return fmt.Errorf("description length should be between 0 and 256")
 	}
 
 	return nil

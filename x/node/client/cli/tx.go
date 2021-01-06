@@ -59,7 +59,7 @@ func txRegister(cdc *codec.Codec) *cobra.Command {
 
 	cmd.Flags().String(flagProvider, "", "node provider address")
 	cmd.Flags().String(flagPrice, "", "node price per Gigabyte")
-	cmd.Flags().String(flagRemoteURL, "", "node remove URL")
+	cmd.Flags().String(flagRemoteURL, "", "node remote URL")
 
 	_ = cmd.MarkFlagRequired(flagRemoteURL)
 
@@ -117,7 +117,7 @@ func txUpdate(cdc *codec.Codec) *cobra.Command {
 
 	cmd.Flags().String(flagProvider, "", "node provider address")
 	cmd.Flags().String(flagPrice, "", "node price per Gigabyte")
-	cmd.Flags().String(flagRemoteURL, "", "node remove URL")
+	cmd.Flags().String(flagRemoteURL, "", "node remote URL")
 
 	return cmd
 }
