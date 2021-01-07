@@ -1,6 +1,7 @@
 package types
 
 import (
+	"encoding/binary"
 	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -79,4 +80,24 @@ func GetQuotaKeyPrefix(id uint64) []byte {
 
 func QuotaKey(id uint64, address sdk.AccAddress) []byte {
 	return append(GetQuotaKeyPrefix(id), address.Bytes()...)
+}
+
+func IDFromSubscriptionForAddressKey(key []byte) (i uint64) {
+	binary.BigEndian.PutUint64(key[1+sdk.AddrLen:], i)
+	return
+}
+
+func IDFromSubscriptionForPlanKey(key []byte) (i uint64) {
+	binary.BigEndian.PutUint64(key[1+8:], i)
+	return
+}
+
+func IDFromSubscriptionForNodeKey(key []byte) (i uint64) {
+	binary.BigEndian.PutUint64(key[1+sdk.AddrLen:], i)
+	return
+}
+
+func IDFromCancelSubscriptionAtKey(key []byte) (i uint64) {
+	binary.BigEndian.PutUint64(key[1+29:], i)
+	return
 }

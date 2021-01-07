@@ -9,7 +9,7 @@ import (
 	"github.com/sentinel-official/hub/x/subscription/types"
 )
 
-func (k Keeper) SetSubscriptionsCount(ctx sdk.Context, count uint64) {
+func (k Keeper) SetCount(ctx sdk.Context, count uint64) {
 	key := types.CountKey
 	value := k.cdc.MustMarshalBinaryLengthPrefixed(count)
 
@@ -17,7 +17,7 @@ func (k Keeper) SetSubscriptionsCount(ctx sdk.Context, count uint64) {
 	store.Set(key, value)
 }
 
-func (k Keeper) GetSubscriptionsCount(ctx sdk.Context) (count uint64) {
+func (k Keeper) GetCount(ctx sdk.Context) (count uint64) {
 	store := k.Store(ctx)
 
 	key := types.CountKey
@@ -73,7 +73,7 @@ func (k Keeper) GetSubscriptions(ctx sdk.Context, skip, limit int) (items types.
 
 func (k Keeper) SetSubscriptionForAddress(ctx sdk.Context, address sdk.AccAddress, id uint64) {
 	key := types.SubscriptionForAddressKey(address, id)
-	value := k.cdc.MustMarshalBinaryLengthPrefixed(id)
+	value := k.cdc.MustMarshalBinaryLengthPrefixed(true)
 
 	store := k.Store(ctx)
 	store.Set(key, value)
@@ -105,10 +105,7 @@ func (k Keeper) GetSubscriptionsForAddress(ctx sdk.Context, address sdk.AccAddre
 
 	iter.Skip(skip)
 	iter.Limit(limit, func(iter sdk.Iterator) {
-		var id uint64
-		k.cdc.MustUnmarshalBinaryLengthPrefixed(iter.Value(), &id)
-
-		item, _ := k.GetSubscription(ctx, id)
+		item, _ := k.GetSubscription(ctx, types.IDFromSubscriptionForAddressKey(iter.Key()))
 		items = append(items, item)
 	})
 
@@ -117,7 +114,7 @@ func (k Keeper) GetSubscriptionsForAddress(ctx sdk.Context, address sdk.AccAddre
 
 func (k Keeper) SetSubscriptionForPlan(ctx sdk.Context, plan, id uint64) {
 	key := types.SubscriptionForPlanKey(plan, id)
-	value := k.cdc.MustMarshalBinaryLengthPrefixed(id)
+	value := k.cdc.MustMarshalBinaryLengthPrefixed(true)
 
 	store := k.Store(ctx)
 	store.Set(key, value)
@@ -142,10 +139,7 @@ func (k Keeper) GetSubscriptionsForPlan(ctx sdk.Context, plan uint64, skip, limi
 
 	iter.Skip(skip)
 	iter.Limit(limit, func(iter sdk.Iterator) {
-		var id uint64
-		k.cdc.MustUnmarshalBinaryLengthPrefixed(iter.Value(), &id)
-
-		item, _ := k.GetSubscription(ctx, id)
+		item, _ := k.GetSubscription(ctx, types.IDFromSubscriptionForPlanKey(iter.Key()))
 		items = append(items, item)
 	})
 
@@ -154,7 +148,7 @@ func (k Keeper) GetSubscriptionsForPlan(ctx sdk.Context, plan uint64, skip, limi
 
 func (k Keeper) SetSubscriptionForNode(ctx sdk.Context, address hub.NodeAddress, id uint64) {
 	key := types.SubscriptionForNodeKey(address, id)
-	value := k.cdc.MustMarshalBinaryLengthPrefixed(id)
+	value := k.cdc.MustMarshalBinaryLengthPrefixed(true)
 
 	store := k.Store(ctx)
 	store.Set(key, value)
@@ -179,10 +173,7 @@ func (k Keeper) GetSubscriptionsForNode(ctx sdk.Context, address hub.NodeAddress
 
 	iter.Skip(skip)
 	iter.Limit(limit, func(iter sdk.Iterator) {
-		var id uint64
-		k.cdc.MustUnmarshalBinaryLengthPrefixed(iter.Value(), &id)
-
-		item, _ := k.GetSubscription(ctx, id)
+		item, _ := k.GetSubscription(ctx, types.IDFromSubscriptionForNodeKey(iter.Key()))
 		items = append(items, item)
 	})
 
@@ -191,7 +182,7 @@ func (k Keeper) GetSubscriptionsForNode(ctx sdk.Context, address hub.NodeAddress
 
 func (k Keeper) SetCancelSubscriptionAt(ctx sdk.Context, at time.Time, id uint64) {
 	key := types.CancelSubscriptionAtKey(at, id)
-	value := k.cdc.MustMarshalBinaryLengthPrefixed(id)
+	value := k.cdc.MustMarshalBinaryLengthPrefixed(true)
 
 	store := k.Store(ctx)
 	store.Set(key, value)
@@ -211,10 +202,7 @@ func (k Keeper) IterateCancelSubscriptions(ctx sdk.Context, end time.Time, fn fu
 	defer iter.Close()
 
 	for i := 0; iter.Valid(); iter.Next() {
-		var id uint64
-		k.cdc.MustUnmarshalBinaryLengthPrefixed(iter.Value(), &id)
-
-		subscription, _ := k.GetSubscription(ctx, id)
+		subscription, _ := k.GetSubscription(ctx, types.IDFromCancelSubscriptionAtKey(iter.Key()))
 		if stop := fn(i, subscription); stop {
 			break
 		}

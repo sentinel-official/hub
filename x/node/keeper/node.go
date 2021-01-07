@@ -57,7 +57,7 @@ func (k Keeper) GetNodes(ctx sdk.Context, skip, limit int) (items types.Nodes) {
 	return items
 }
 
-func (k Keeper) IterateNodes(ctx sdk.Context, f func(index int, item types.Node) (stop bool)) {
+func (k Keeper) IterateNodes(ctx sdk.Context, fn func(index int, item types.Node) (stop bool)) {
 	store := k.Store(ctx)
 
 	iter := sdk.KVStorePrefixIterator(store, types.NodeKeyPrefix)
@@ -67,7 +67,7 @@ func (k Keeper) IterateNodes(ctx sdk.Context, f func(index int, item types.Node)
 		var node types.Node
 		k.cdc.MustUnmarshalBinaryLengthPrefixed(iter.Value(), &node)
 
-		if stop := f(i, node); stop {
+		if stop := fn(i, node); stop {
 			break
 		}
 		i++

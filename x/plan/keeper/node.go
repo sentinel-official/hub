@@ -10,7 +10,7 @@ import (
 
 func (k Keeper) SetNodeForPlan(ctx sdk.Context, id uint64, address hub.NodeAddress) {
 	key := types.NodeForPlanKey(id, address)
-	value := k.cdc.MustMarshalBinaryLengthPrefixed(address)
+	value := k.cdc.MustMarshalBinaryLengthPrefixed(true)
 
 	store := k.Store(ctx)
 	store.Set(key, value)
@@ -42,10 +42,7 @@ func (k Keeper) GetNodesForPlan(ctx sdk.Context, id uint64, skip, limit int) (it
 
 	iter.Skip(skip)
 	iter.Limit(limit, func(iter sdk.Iterator) {
-		var address hub.NodeAddress
-		k.cdc.MustUnmarshalBinaryLengthPrefixed(iter.Value(), &address)
-
-		item, _ := k.GetNode(ctx, address)
+		item, _ := k.GetNode(ctx, types.AddressFromNodeForPlanKey(iter.Key()))
 		items = append(items, item)
 	})
 

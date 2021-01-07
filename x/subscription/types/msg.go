@@ -52,7 +52,7 @@ func (m MsgSubscribeToPlan) ValidateBasic() error {
 		return errors.Wrapf(ErrorInvalidField, "%s", "id")
 	}
 
-	// Denom length should be [3, 16]
+	// Denom length should be between 3 and 16
 	if len(m.Denom) < 3 || len(m.Denom) > 16 {
 		return errors.Wrapf(ErrorInvalidField, "%s", "denom")
 	}

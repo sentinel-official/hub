@@ -1,6 +1,8 @@
 package types
 
 import (
+	"encoding/binary"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	hub "github.com/sentinel-official/hub/types"
@@ -71,4 +73,18 @@ func GetNodeForPlanKeyPrefix(id uint64) []byte {
 
 func NodeForPlanKey(id uint64, address hub.NodeAddress) []byte {
 	return append(GetNodeForPlanKeyPrefix(id), address.Bytes()...)
+}
+
+func IDFromStatusPlanKey(key []byte) (i uint64) {
+	binary.BigEndian.PutUint64(key[1:], i)
+	return
+}
+
+func IDFromStatusPlanForProviderKey(key []byte) (i uint64) {
+	binary.BigEndian.PutUint64(key[1+sdk.AddrLen:], i)
+	return
+}
+
+func AddressFromNodeForPlanKey(key []byte) hub.NodeAddress {
+	return key[1+8:]
 }

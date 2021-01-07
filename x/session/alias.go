@@ -13,9 +13,6 @@ import (
 )
 
 const (
-	EventTypeSetCount            = types.EventTypeSetCount
-	EventTypeSetActive           = types.EventTypeSetActive
-	EventTypeUpdate              = types.EventTypeUpdate
 	AttributeKeyCount            = types.AttributeKeyCount
 	AttributeKeyID               = types.AttributeKeyID
 	AttributeKeySubscription     = types.AttributeKeySubscription
@@ -48,6 +45,10 @@ var (
 	OngoingSessionKey                     = types.OngoingSessionKey
 	GetActiveSessionAtKeyPrefix           = types.GetActiveSessionAtKeyPrefix
 	ActiveSessionAtKey                    = types.ActiveSessionAtKey
+	IDFromSessionForSubscriptionKey       = types.IDFromSessionForSubscriptionKey
+	IDFromSessionForNodeKey               = types.IDFromSessionForNodeKey
+	IDFromSessionForAddressKey            = types.IDFromSessionForAddressKey
+	IDFromActiveSessionAtKey              = types.IDFromActiveSessionAtKey
 	NewMsgUpsert                          = types.NewMsgUpsert
 	NewParams                             = types.NewParams
 	DefaultParams                         = types.DefaultParams
@@ -73,6 +74,9 @@ var (
 	ErrorUnauthorized               = types.ErrorUnauthorized
 	ErrorQuotaDoesNotExist          = types.ErrorQuotaDoesNotExist
 	ErrorInvalidBandwidth           = types.ErrorInvalidBandwidth
+	EventTypeSetCount               = types.EventTypeSetCount
+	EventTypeSetActive              = types.EventTypeSetActive
+	EventTypeUpdate                 = types.EventTypeUpdate
 	RouterKey                       = types.RouterKey
 	StoreKey                        = types.StoreKey
 	EventModuleName                 = types.EventModuleName

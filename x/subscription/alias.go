@@ -13,11 +13,6 @@ import (
 )
 
 const (
-	EventTypeSetCount            = types.EventTypeSetCount
-	EventTypeSet                 = types.EventTypeSet
-	EventTypeCancel              = types.EventTypeCancel
-	EventTypeAddQuota            = types.EventTypeAddQuota
-	EventTypeUpdateQuota         = types.EventTypeUpdateQuota
 	AttributeKeyOwner            = types.AttributeKeyOwner
 	AttributeKeyAddress          = types.AttributeKeyAddress
 	AttributeKeyID               = types.AttributeKeyID
@@ -56,6 +51,10 @@ var (
 	CancelSubscriptionAtKey               = types.CancelSubscriptionAtKey
 	GetQuotaKeyPrefix                     = types.GetQuotaKeyPrefix
 	QuotaKey                              = types.QuotaKey
+	IDFromSubscriptionForAddressKey       = types.IDFromSubscriptionForAddressKey
+	IDFromSubscriptionForPlanKey          = types.IDFromSubscriptionForPlanKey
+	IDFromSubscriptionForNodeKey          = types.IDFromSubscriptionForNodeKey
+	IDFromCancelSubscriptionAtKey         = types.IDFromCancelSubscriptionAtKey
 	NewMsgSubscribeToPlan                 = types.NewMsgSubscribeToPlan
 	NewMsgSubscribeToNode                 = types.NewMsgSubscribeToNode
 	NewMsgCancel                          = types.NewMsgCancel
@@ -94,6 +93,11 @@ var (
 	ErrorDuplicateQuota             = types.ErrorDuplicateQuota
 	ErrorQuotaDoesNotExist          = types.ErrorQuotaDoesNotExist
 	ErrorCanNotAddQuota             = types.ErrorCanNotAddQuota
+	EventTypeSetCount               = types.EventTypeSetCount
+	EventTypeSet                    = types.EventTypeSet
+	EventTypeCancel                 = types.EventTypeCancel
+	EventTypeAddQuota               = types.EventTypeAddQuota
+	EventTypeUpdateQuota            = types.EventTypeUpdateQuota
 	RouterKey                       = types.RouterKey
 	StoreKey                        = types.StoreKey
 	EventModuleName                 = types.EventModuleName

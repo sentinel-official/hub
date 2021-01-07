@@ -9,7 +9,7 @@ import (
 	"github.com/sentinel-official/hub/x/session/types"
 )
 
-func (k Keeper) SetSessionsCount(ctx sdk.Context, count uint64) {
+func (k Keeper) SetCount(ctx sdk.Context, count uint64) {
 	key := types.CountKey
 	value := k.cdc.MustMarshalBinaryLengthPrefixed(count)
 
@@ -17,7 +17,7 @@ func (k Keeper) SetSessionsCount(ctx sdk.Context, count uint64) {
 	store.Set(key, value)
 }
 
-func (k Keeper) GetSessionsCount(ctx sdk.Context) (count uint64) {
+func (k Keeper) GetCount(ctx sdk.Context) (count uint64) {
 	store := k.Store(ctx)
 
 	key := types.CountKey
@@ -71,7 +71,7 @@ func (k Keeper) GetSessions(ctx sdk.Context, skip, limit int) (items types.Sessi
 	return items
 }
 
-func (k Keeper) IterateSessions(ctx sdk.Context, f func(index int, item types.Session) (stop bool)) {
+func (k Keeper) IterateSessions(ctx sdk.Context, fn func(index int, item types.Session) (stop bool)) {
 	store := k.Store(ctx)
 
 	iter := sdk.KVStorePrefixIterator(store, types.SessionKeyPrefix)
@@ -81,7 +81,7 @@ func (k Keeper) IterateSessions(ctx sdk.Context, f func(index int, item types.Se
 		var session types.Session
 		k.cdc.MustUnmarshalBinaryLengthPrefixed(iter.Value(), &session)
 
-		if stop := f(i, session); stop {
+		if stop := fn(i, session); stop {
 			break
 		}
 		i++
@@ -90,7 +90,7 @@ func (k Keeper) IterateSessions(ctx sdk.Context, f func(index int, item types.Se
 
 func (k Keeper) SetSessionForSubscription(ctx sdk.Context, subscription, id uint64) {
 	key := types.SessionForSubscriptionKey(subscription, id)
-	value := k.cdc.MustMarshalBinaryLengthPrefixed(id)
+	value := k.cdc.MustMarshalBinaryLengthPrefixed(true)
 
 	store := k.Store(ctx)
 	store.Set(key, value)
@@ -108,10 +108,7 @@ func (k Keeper) GetSessionsForSubscription(ctx sdk.Context, id uint64, skip, lim
 
 	iter.Skip(skip)
 	iter.Limit(limit, func(iter sdk.Iterator) {
-		var id uint64
-		k.cdc.MustUnmarshalBinaryLengthPrefixed(iter.Value(), &id)
-
-		item, _ := k.GetSession(ctx, id)
+		item, _ := k.GetSession(ctx, types.IDFromSessionForSubscriptionKey(iter.Key()))
 		items = append(items, item)
 	})
 
@@ -120,7 +117,7 @@ func (k Keeper) GetSessionsForSubscription(ctx sdk.Context, id uint64, skip, lim
 
 func (k Keeper) SetSessionForNode(ctx sdk.Context, address hub.NodeAddress, id uint64) {
 	key := types.SessionForNodeKey(address, id)
-	value := k.cdc.MustMarshalBinaryLengthPrefixed(id)
+	value := k.cdc.MustMarshalBinaryLengthPrefixed(true)
 
 	store := k.Store(ctx)
 	store.Set(key, value)
@@ -138,10 +135,7 @@ func (k Keeper) GetSessionsForNode(ctx sdk.Context, address hub.NodeAddress, ski
 
 	iter.Skip(skip)
 	iter.Limit(limit, func(iter sdk.Iterator) {
-		var id uint64
-		k.cdc.MustUnmarshalBinaryLengthPrefixed(iter.Value(), &id)
-
-		item, _ := k.GetSession(ctx, id)
+		item, _ := k.GetSession(ctx, types.IDFromSessionForNodeKey(iter.Key()))
 		items = append(items, item)
 	})
 
@@ -150,7 +144,7 @@ func (k Keeper) GetSessionsForNode(ctx sdk.Context, address hub.NodeAddress, ski
 
 func (k Keeper) SetSessionForAddress(ctx sdk.Context, address sdk.AccAddress, id uint64) {
 	key := types.SessionForAddressKey(address, id)
-	value := k.cdc.MustMarshalBinaryLengthPrefixed(id)
+	value := k.cdc.MustMarshalBinaryLengthPrefixed(true)
 
 	store := k.Store(ctx)
 	store.Set(key, value)
@@ -168,10 +162,7 @@ func (k Keeper) GetSessionsForAddress(ctx sdk.Context, address sdk.AccAddress, s
 
 	iter.Skip(skip)
 	iter.Limit(limit, func(iter sdk.Iterator) {
-		var id uint64
-		k.cdc.MustUnmarshalBinaryLengthPrefixed(iter.Value(), &id)
-
-		item, _ := k.GetSession(ctx, id)
+		item, _ := k.GetSession(ctx, types.IDFromSessionForAddressKey(iter.Key()))
 		items = append(items, item)
 	})
 
@@ -208,7 +199,7 @@ func (k Keeper) DeleteOngoingSession(ctx sdk.Context, id uint64, address sdk.Acc
 
 func (k Keeper) SetActiveSessionAt(ctx sdk.Context, at time.Time, id uint64) {
 	key := types.ActiveSessionAtKey(at, id)
-	value := k.cdc.MustMarshalBinaryLengthPrefixed(id)
+	value := k.cdc.MustMarshalBinaryLengthPrefixed(true)
 
 	store := k.Store(ctx)
 	store.Set(key, value)
@@ -221,18 +212,15 @@ func (k Keeper) DeleteActiveSessionAt(ctx sdk.Context, at time.Time, id uint64) 
 	store.Delete(key)
 }
 
-func (k Keeper) IterateActiveSessions(ctx sdk.Context, end time.Time, f func(index int, item types.Session) (stop bool)) {
+func (k Keeper) IterateActiveSessions(ctx sdk.Context, end time.Time, fn func(index int, item types.Session) (stop bool)) {
 	store := k.Store(ctx)
 
 	iter := store.Iterator(types.ActiveSessionAtKeyPrefix, sdk.PrefixEndBytes(types.GetActiveSessionAtKeyPrefix(end)))
 	defer iter.Close()
 
 	for i := 0; iter.Valid(); iter.Next() {
-		var id uint64
-		k.cdc.MustUnmarshalBinaryLengthPrefixed(iter.Value(), &id)
-
-		session, _ := k.GetSession(ctx, id)
-		if stop := f(i, session); stop {
+		session, _ := k.GetSession(ctx, types.IDFromActiveSessionAtKey(iter.Key()))
+		if stop := fn(i, session); stop {
 			break
 		}
 		i++

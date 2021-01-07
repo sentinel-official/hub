@@ -7,13 +7,13 @@ import (
 )
 
 const (
-	QuerySession                 = "session"
-	QuerySessions                = "sessions"
-	QuerySessionsForSubscription = "sessions_for_subscription"
-	QuerySessionsForNode         = "sessions_for_node"
-	QuerySessionsForAddress      = "sessions_for_address"
+	QuerySession                 = "Session"
+	QuerySessions                = "Sessions"
+	QuerySessionsForSubscription = "SessionsForSubscription"
+	QuerySessionsForNode         = "SessionsForNode"
+	QuerySessionsForAddress      = "SessionsForAddress"
 
-	QueryOngoingSession = "ongoing_session"
+	QueryOngoingSession = "OngoingSession"
 )
 
 type QuerySessionParams struct {

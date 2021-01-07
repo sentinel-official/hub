@@ -1,6 +1,7 @@
 package types
 
 import (
+	"encoding/binary"
 	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -78,4 +79,24 @@ func GetActiveSessionAtKeyPrefix(at time.Time) []byte {
 
 func ActiveSessionAtKey(at time.Time, id uint64) []byte {
 	return append(GetActiveSessionAtKeyPrefix(at), sdk.Uint64ToBigEndian(id)...)
+}
+
+func IDFromSessionForSubscriptionKey(key []byte) (i uint64) {
+	binary.BigEndian.PutUint64(key[1+8:], i)
+	return
+}
+
+func IDFromSessionForNodeKey(key []byte) (i uint64) {
+	binary.BigEndian.PutUint64(key[1+sdk.AddrLen:], i)
+	return
+}
+
+func IDFromSessionForAddressKey(key []byte) (i uint64) {
+	binary.BigEndian.PutUint64(key[1+sdk.AddrLen:], i)
+	return
+}
+
+func IDFromActiveSessionAtKey(key []byte) (i uint64) {
+	binary.BigEndian.PutUint64(key[1+29:], i)
+	return
 }

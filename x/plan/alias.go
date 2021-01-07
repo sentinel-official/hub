@@ -13,11 +13,6 @@ import (
 )
 
 const (
-	EventTypeSetCount     = types.EventTypeSetCount
-	EventTypeSet          = types.EventTypeSet
-	EventTypeSetStatus    = types.EventTypeSetStatus
-	EventTypeAddNode      = types.EventTypeAddNode
-	EventTypeRemoveNode   = types.EventTypeRemoveNode
 	AttributeKeyAddress   = types.AttributeKeyAddress
 	AttributeKeyID        = types.AttributeKeyID
 	AttributeKeyCount     = types.AttributeKeyCount
@@ -44,6 +39,9 @@ var (
 	InactivePlanForProviderKey          = types.InactivePlanForProviderKey
 	GetNodeForPlanKeyPrefix             = types.GetNodeForPlanKeyPrefix
 	NodeForPlanKey                      = types.NodeForPlanKey
+	IDFromStatusPlanKey                 = types.IDFromStatusPlanKey
+	IDFromStatusPlanForProviderKey      = types.IDFromStatusPlanForProviderKey
+	AddressFromNodeForPlanKey           = types.AddressFromNodeForPlanKey
 	NewMsgAdd                           = types.NewMsgAdd
 	NewMsgSetStatus                     = types.NewMsgSetStatus
 	NewMsgAddNode                       = types.NewMsgAddNode
@@ -66,6 +64,11 @@ var (
 	ErrorPlanDoesNotExist            = types.ErrorPlanDoesNotExist
 	ErrorNodeDoesNotExist            = types.ErrorNodeDoesNotExist
 	ErrorUnauthorized                = types.ErrorUnauthorized
+	EventTypeSetCount                = types.EventTypeSetCount
+	EventTypeSet                     = types.EventTypeSet
+	EventTypeSetStatus               = types.EventTypeSetStatus
+	EventTypeAddNode                 = types.EventTypeAddNode
+	EventTypeRemoveNode              = types.EventTypeRemoveNode
 	RouterKey                        = types.RouterKey
 	StoreKey                         = types.StoreKey
 	EventModuleName                  = types.EventModuleName

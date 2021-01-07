@@ -11,7 +11,9 @@ type GenesisPlan struct {
 
 type GenesisPlans []GenesisPlan
 
-type GenesisState = GenesisPlans
+type (
+	GenesisState = GenesisPlans
+)
 
 func NewGenesisState(plans GenesisPlans) GenesisState {
 	return plans

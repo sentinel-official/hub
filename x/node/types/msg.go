@@ -62,7 +62,7 @@ func (m MsgRegister) ValidateBasic() error {
 		return errors.Wrapf(ErrorInvalidField, "%s", "price")
 	}
 
-	// RemoteURL can't be empty and length should be between 1 and 64
+	// RemoteURL length should be between 1 and 64
 	if len(m.RemoteURL) == 0 || len(m.RemoteURL) > 64 {
 		return errors.Wrapf(ErrorInvalidField, "%s", "remote_url")
 	}

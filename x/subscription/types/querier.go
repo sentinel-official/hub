@@ -7,14 +7,14 @@ import (
 )
 
 const (
-	QuerySubscription            = "subscription"
-	QuerySubscriptions           = "subscriptions"
-	QuerySubscriptionsForAddress = "subscriptions_for_address"
-	QuerySubscriptionsForPlan    = "subscriptions_for_plan"
-	QuerySubscriptionsForNode    = "subscriptions_for_node"
+	QuerySubscription            = "Subscription"
+	QuerySubscriptions           = "Subscriptions"
+	QuerySubscriptionsForAddress = "SubscriptionsForAddress"
+	QuerySubscriptionsForPlan    = "SubscriptionsForPlan"
+	QuerySubscriptionsForNode    = "SubscriptionsForNode"
 
-	QueryQuota  = "quota"
-	QueryQuotas = "quotas"
+	QueryQuota  = "Quota"
+	QueryQuotas = "Quotas"
 )
 
 type QuerySubscriptionParams struct {

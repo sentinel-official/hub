@@ -31,7 +31,7 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, state types.GenesisState) {
 		}
 	}
 
-	k.SetSubscriptionsCount(ctx, uint64(len(state.Subscriptions)))
+	k.SetCount(ctx, uint64(len(state.Subscriptions)))
 }
 
 func ExportGenesis(ctx sdk.Context, k keeper.Keeper) types.GenesisState {

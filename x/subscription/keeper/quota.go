@@ -62,7 +62,7 @@ func (k Keeper) GetQuotas(ctx sdk.Context, id uint64, skip, limit int) (items ty
 	return items
 }
 
-func (k Keeper) IterateQuotas(ctx sdk.Context, id uint64, f func(index int, item types.Quota) (stop bool)) {
+func (k Keeper) IterateQuotas(ctx sdk.Context, id uint64, fn func(index int, item types.Quota) (stop bool)) {
 	store := k.Store(ctx)
 
 	iter := sdk.KVStorePrefixIterator(store, types.GetQuotaKeyPrefix(id))
@@ -72,7 +72,7 @@ func (k Keeper) IterateQuotas(ctx sdk.Context, id uint64, f func(index int, item
 		var quota types.Quota
 		k.cdc.MustUnmarshalBinaryLengthPrefixed(iter.Value(), &quota)
 
-		if stop := f(i, quota); stop {
+		if stop := fn(i, quota); stop {
 			break
 		}
 		i++

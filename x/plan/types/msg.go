@@ -18,7 +18,7 @@ var (
 	_ sdk.Msg = (*MsgRemoveNode)(nil)
 )
 
-// MsgAdd is adding a subscription plan.
+// MsgAdd is for adding a subscription plan.
 type MsgAdd struct {
 	From     hub.ProvAddress `json:"from"`
 	Price    sdk.Coins       `json:"price"`
@@ -53,12 +53,12 @@ func (m MsgAdd) ValidateBasic() error {
 		return errors.Wrapf(ErrorInvalidField, "%s", "price")
 	}
 
-	// Validity shouldn't be negative and zero
+	// Validity should be positive
 	if m.Validity <= 0 {
 		return errors.Wrapf(ErrorInvalidField, "%s", "validity")
 	}
 
-	// Bytes shouldn't be negative and zero
+	// Bytes should be positive
 	if !m.Bytes.IsPositive() {
 		return errors.Wrapf(ErrorInvalidField, "%s", "bytes")
 	}
@@ -112,7 +112,7 @@ func (m MsgSetStatus) ValidateBasic() error {
 		return errors.Wrapf(ErrorInvalidField, "%s", "id")
 	}
 
-	// Status should be valid
+	// Status should be either Active or Inactive
 	if !m.Status.Equal(hub.StatusActive) && !m.Status.Equal(hub.StatusInactive) {
 		return errors.Wrapf(ErrorInvalidField, "%s", "status")
 	}

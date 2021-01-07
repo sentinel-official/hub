@@ -23,16 +23,16 @@ Allocated: %s
 
 func (q Quota) Validate() error {
 	if q.Address == nil || q.Address.Empty() {
-		return fmt.Errorf("address is nil or empty")
+		return fmt.Errorf("address should not be nil or empty")
 	}
 	if q.Consumed.IsNegative() {
-		return fmt.Errorf("consumed is negative")
+		return fmt.Errorf("consumed should not be negative")
 	}
 	if q.Allocated.IsNegative() {
-		return fmt.Errorf("allocated is netgative")
+		return fmt.Errorf("allocated should not be negative")
 	}
 	if q.Consumed.GT(q.Allocated) {
-		return fmt.Errorf("consumed is greater than allocated")
+		return fmt.Errorf("consumed should not be greater than allocated")
 	}
 
 	return nil

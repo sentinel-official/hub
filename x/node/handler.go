@@ -59,6 +59,7 @@ func HandleUpdate(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpdate) (*sdk.R
 			k.DeleteInactiveNodeForProvider(ctx, node.Provider, node.Address)
 		}
 
+		// TODO: Remove or optimize this?
 		plans := k.GetPlansForProvider(ctx, node.Provider)
 		for _, plan := range plans {
 			k.DeleteNodeForPlan(ctx, plan.ID, node.Address)
@@ -70,8 +71,8 @@ func HandleUpdate(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpdate) (*sdk.R
 			return nil, types.ErrorProviderDoesNotExist
 		}
 
-		node.Provider = msg.Provider
 		node.Price = nil
+		node.Provider = msg.Provider
 
 		if node.Status.Equal(hub.StatusActive) {
 			k.SetActiveNodeForProvider(ctx, node.Provider, node.Address)

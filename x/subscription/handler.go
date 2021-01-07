@@ -30,7 +30,7 @@ func HandleSubscribeToPlan(ctx sdk.Context, k keeper.Keeper, msg types.MsgSubscr
 		}
 	}
 
-	count := k.GetSubscriptionsCount(ctx)
+	count := k.GetCount(ctx)
 	subscription := types.Subscription{
 		ID:       count + 1,
 		Owner:    msg.From,
@@ -66,7 +66,7 @@ func HandleSubscribeToPlan(ctx sdk.Context, k keeper.Keeper, msg types.MsgSubscr
 		sdk.NewAttribute(types.AttributeKeyAllocated, quota.Allocated.String()),
 	))
 
-	k.SetSubscriptionsCount(ctx, count+1)
+	k.SetCount(ctx, count+1)
 	ctx.EventManager().EmitEvent(sdk.NewEvent(
 		types.EventTypeSetCount,
 		sdk.NewAttribute(types.AttributeKeyCount, fmt.Sprintf("%d", count+1)),
@@ -97,7 +97,7 @@ func HandleSubscribeToNode(ctx sdk.Context, k keeper.Keeper, msg types.MsgSubscr
 		return nil, err
 	}
 
-	count := k.GetSubscriptionsCount(ctx)
+	count := k.GetCount(ctx)
 	subscription := types.Subscription{
 		ID:       count + 1,
 		Owner:    msg.From,
@@ -134,7 +134,7 @@ func HandleSubscribeToNode(ctx sdk.Context, k keeper.Keeper, msg types.MsgSubscr
 		sdk.NewAttribute(types.AttributeKeyAllocated, quota.Allocated.String()),
 	))
 
-	k.SetSubscriptionsCount(ctx, count+1)
+	k.SetCount(ctx, count+1)
 	ctx.EventManager().EmitEvent(sdk.NewEvent(
 		types.EventTypeSetCount,
 		sdk.NewAttribute(types.AttributeKeyCount, fmt.Sprintf("%d", count+1)),

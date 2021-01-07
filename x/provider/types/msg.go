@@ -47,7 +47,7 @@ func (m MsgRegister) ValidateBasic() error {
 		return errors.Wrapf(ErrorInvalidField, "%s", "from")
 	}
 
-	// Name can't be empty and length should be between 1 and 64
+	// Name length should be between 1 and 64
 	if len(m.Name) == 0 || len(m.Name) > 64 {
 		return errors.Wrapf(ErrorInvalidField, "%s", "name")
 	}

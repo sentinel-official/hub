@@ -10,7 +10,7 @@ import (
 	"github.com/sentinel-official/hub/x/session/types"
 )
 
-func authorized(ctx sdk.Context, k keeper.Keeper, p uint64, n hub.NodeAddress, s uint64) bool {
+func isAuthorized(ctx sdk.Context, k keeper.Keeper, p uint64, n hub.NodeAddress, s uint64) bool {
 	if p == 0 {
 		return k.HasSubscriptionForNode(ctx, n, s)
 	}
@@ -27,7 +27,7 @@ func HandleUpsert(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpsert) (*sdk.R
 		return nil, types.ErrorInvalidSubscriptionStatus
 	}
 
-	if !authorized(ctx, k, subscription.Plan, msg.From, subscription.ID) {
+	if !isAuthorized(ctx, k, subscription.Plan, msg.From, subscription.ID) {
 		return nil, types.ErrorUnauthorized
 	}
 
@@ -48,7 +48,7 @@ func HandleUpsert(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpsert) (*sdk.R
 	}
 
 	if !found {
-		count := k.GetSessionsCount(ctx)
+		count := k.GetCount(ctx)
 		session = types.Session{
 			ID:           count + 1,
 			Subscription: subscription.ID,
@@ -60,7 +60,7 @@ func HandleUpsert(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpsert) (*sdk.R
 			StatusAt:     ctx.BlockTime(),
 		}
 
-		k.SetSessionsCount(ctx, count+1)
+		k.SetCount(ctx, count+1)
 		ctx.EventManager().EmitEvent(sdk.NewEvent(
 			types.EventTypeSetCount,
 			sdk.NewAttribute(types.AttributeKeyCount, fmt.Sprintf("%d", count+1)),

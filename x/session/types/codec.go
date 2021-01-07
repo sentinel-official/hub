@@ -1,6 +1,8 @@
 package types
 
 import (
+	"fmt"
+
 	"github.com/cosmos/cosmos-sdk/codec"
 )
 
@@ -16,5 +18,5 @@ func init() {
 }
 
 func RegisterCodec(cdc *codec.Codec) {
-	cdc.RegisterConcrete(MsgUpsert{}, "x/session/MsgUpsert", nil)
+	cdc.RegisterConcrete(MsgUpsert{}, fmt.Sprintf("x/%s/MsgUpsert", ModuleName), nil)
 }

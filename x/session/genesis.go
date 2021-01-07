@@ -24,7 +24,7 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, state types.GenesisState) {
 		}
 	}
 
-	k.SetSessionsCount(ctx, uint64(len(state.Sessions)))
+	k.SetCount(ctx, uint64(len(state.Sessions)))
 }
 
 func ExportGenesis(ctx sdk.Context, k keeper.Keeper) types.GenesisState {
