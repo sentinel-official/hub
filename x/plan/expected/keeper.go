@@ -21,4 +21,5 @@ type ProviderKeeper interface {
 type NodeKeeper interface {
 	GetNode(ctx sdk.Context, address hub.NodeAddress) (node.Node, bool)
 	GetNodes(ctx sdk.Context, skip, limit int) node.Nodes
+	GetNodesForProvider(ctx sdk.Context, address hub.ProvAddress, skip, limit int) node.Nodes
 }

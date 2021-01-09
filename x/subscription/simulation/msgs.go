@@ -7,7 +7,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/simapp/helpers"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/x/auth/exported"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 
 	node "github.com/sentinel-official/hub/x/node/simulation"
@@ -20,17 +19,29 @@ import (
 func SimulateMsgSubscribeToNode(ak expected.AccountKeeper, nk expected.NodeKeeper) simulation.Operation {
 	return func(r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accounts []simulation.Account, chainID string) (
 		simulation.OperationMsg, []simulation.FutureOperation, error) {
-		var (
-			from, account = func() (simulation.Account, exported.Account) {
-				from, _ := simulation.RandomAcc(r, accounts)
-				return from, ak.GetAccount(ctx, from.Address)
-			}()
+		nodes := nk.GetActiveNodes(ctx, 0, 0)
+		if len(nodes) == 0 {
+			return simulation.NoOpMsg(types.ModuleName), nil, nil
+		}
 
-			address = node.RandomNode(r, nk.GetNodes(ctx, 0, 0)).Address
-			deposit = sdk.NewCoin("stake", simulation.RandomAmount(r, sdk.NewInt(1e3)))
+		rNode := node.RandomNode(r, nodes)
+		if rNode.Provider != nil {
+			return simulation.NoOpMsg(types.ModuleName), nil, nil
+		}
+
+		var (
+			rAccount, _ = simulation.RandomAcc(r, accounts)
+			account     = ak.GetAccount(ctx, rAccount.Address)
 		)
 
-		msg := types.NewMsgSubscribeToNode(from.Address, address, deposit)
+		amount := simulation.RandomAmount(r, account.SpendableCoins(ctx.BlockTime()).AmountOf("stake"))
+		if !amount.IsPositive() {
+			return simulation.NoOpMsg(types.ModuleName), nil, nil
+		}
+
+		deposit := sdk.NewCoin("stake", amount)
+
+		msg := types.NewMsgSubscribeToNode(rAccount.Address, rNode.Address, deposit)
 		if msg.ValidateBasic() != nil {
 			return simulation.NoOpMsg(types.ModuleName), nil, fmt.Errorf("expected msg to pass ValidateBasic: %s", msg.GetSignBytes())
 		}
@@ -42,7 +53,7 @@ func SimulateMsgSubscribeToNode(ak expected.AccountKeeper, nk expected.NodeKeepe
 			chainID,
 			[]uint64{account.GetAccountNumber()},
 			[]uint64{account.GetSequence()},
-			from.PrivKey,
+			rAccount.PrivKey,
 		)
 
 		_, _, err := app.Deliver(tx)
@@ -57,17 +68,23 @@ func SimulateMsgSubscribeToNode(ak expected.AccountKeeper, nk expected.NodeKeepe
 func SimulateMsgSubscribeToPlan(ak expected.AccountKeeper, pk expected.PlanKeeper) simulation.Operation {
 	return func(r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accounts []simulation.Account, chainID string) (
 		simulation.OperationMsg, []simulation.FutureOperation, error) {
-		var (
-			from, account = func() (simulation.Account, exported.Account) {
-				from, _ := simulation.RandomAcc(r, accounts)
-				return from, ak.GetAccount(ctx, from.Address)
-			}()
+		plans := pk.GetActivePlans(ctx, 0, 0)
+		if len(plans) == 0 {
+			return simulation.NoOpMsg(types.ModuleName), nil, nil
+		}
 
-			id    = plan.RandomPlan(r, pk.GetPlans(ctx, 0, 0)).ID
-			denom = "stake"
+		var (
+			rPlan       = plan.RandomPlan(r, plans)
+			rAccount, _ = simulation.RandomAcc(r, accounts)
+			account     = ak.GetAccount(ctx, rAccount.Address)
+			denom       = "stake"
 		)
 
-		msg := types.NewMsgSubscribeToPlan(from.Address, id, denom)
+		if account.SpendableCoins(ctx.BlockTime()).AmountOf(denom).LT(rPlan.Price.AmountOf(denom)) {
+			return simulation.NoOpMsg(types.ModuleName), nil, nil
+		}
+
+		msg := types.NewMsgSubscribeToPlan(rAccount.Address, rPlan.ID, denom)
 		if msg.ValidateBasic() != nil {
 			return simulation.NoOpMsg(types.ModuleName), nil, fmt.Errorf("expected msg to pass ValidateBasic: %s", msg.GetSignBytes())
 		}
@@ -79,7 +96,7 @@ func SimulateMsgSubscribeToPlan(ak expected.AccountKeeper, pk expected.PlanKeepe
 			chainID,
 			[]uint64{account.GetAccountNumber()},
 			[]uint64{account.GetSequence()},
-			from.PrivKey,
+			rAccount.PrivKey,
 		)
 
 		_, _, err := app.Deliver(tx)
@@ -94,16 +111,19 @@ func SimulateMsgSubscribeToPlan(ak expected.AccountKeeper, pk expected.PlanKeepe
 func SimulateMsgCancel(ak expected.AccountKeeper, k keeper.Keeper) simulation.Operation {
 	return func(r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accounts []simulation.Account, chainID string) (
 		simulation.OperationMsg, []simulation.FutureOperation, error) {
-		var (
-			from, account = func() (simulation.Account, exported.Account) {
-				from, _ := simulation.RandomAcc(r, accounts)
-				return from, ak.GetAccount(ctx, from.Address)
-			}()
+		rAccount, _ := simulation.RandomAcc(r, accounts)
 
-			id = RandomSubscription(r, k.GetSubscriptions(ctx, 0, 0)).ID
+		subscriptions := k.GetActiveSubscriptionsForAddress(ctx, rAccount.Address, 0, 0)
+		if len(subscriptions) == 0 {
+			return simulation.NoOpMsg(types.ModuleName), nil, nil
+		}
+
+		var (
+			account       = ak.GetAccount(ctx, rAccount.Address)
+			rSubscription = RandomSubscription(r, subscriptions)
 		)
 
-		msg := types.NewMsgCancel(from.Address, id)
+		msg := types.NewMsgCancel(rAccount.Address, rSubscription.ID)
 		if msg.ValidateBasic() != nil {
 			return simulation.NoOpMsg(types.ModuleName), nil, fmt.Errorf("expected msg to pass ValidateBasic: %s", msg.GetSignBytes())
 		}
@@ -115,7 +135,7 @@ func SimulateMsgCancel(ak expected.AccountKeeper, k keeper.Keeper) simulation.Op
 			chainID,
 			[]uint64{account.GetAccountNumber()},
 			[]uint64{account.GetSequence()},
-			from.PrivKey,
+			rAccount.PrivKey,
 		)
 
 		_, _, err := app.Deliver(tx)
@@ -130,18 +150,33 @@ func SimulateMsgCancel(ak expected.AccountKeeper, k keeper.Keeper) simulation.Op
 func SimulateMsgAddQuota(ak expected.AccountKeeper, k keeper.Keeper) simulation.Operation {
 	return func(r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accounts []simulation.Account, chainID string) (
 		simulation.OperationMsg, []simulation.FutureOperation, error) {
-		var (
-			from, account = func() (simulation.Account, exported.Account) {
-				from, _ := simulation.RandomAcc(r, accounts)
-				return from, ak.GetAccount(ctx, from.Address)
-			}()
+		rAccount, _ := simulation.RandomAcc(r, accounts)
 
-			id    = RandomSubscription(r, k.GetSubscriptions(ctx, 0, 0)).ID
-			to, _ = simulation.RandomAcc(r, accounts)
-			bytes = sdk.NewInt(r.Int63n(1e9) + 1)
+		subscriptions := k.GetActiveSubscriptionsForAddress(ctx, rAccount.Address, 0, 0)
+		if len(subscriptions) == 0 {
+			return simulation.NoOpMsg(types.ModuleName), nil, nil
+		}
+
+		rSubscription := RandomSubscription(r, subscriptions)
+		if rSubscription.Plan == 0 {
+			return simulation.NoOpMsg(types.ModuleName), nil, nil
+		}
+		if rSubscription.Free.IsZero() {
+			return simulation.NoOpMsg(types.ModuleName), nil, nil
+		}
+
+		toAccount, _ := simulation.RandomAcc(r, accounts)
+
+		if k.HasQuota(ctx, rSubscription.ID, toAccount.Address) {
+			return simulation.NoOpMsg(types.ModuleName), nil, nil
+		}
+
+		var (
+			account = ak.GetAccount(ctx, rAccount.Address)
+			bytes   = sdk.NewInt(r.Int63n(rSubscription.Free.Int64()) + 1)
 		)
 
-		msg := types.NewMsgAddQuota(from.Address, id, to.Address, bytes)
+		msg := types.NewMsgAddQuota(rAccount.Address, rSubscription.ID, toAccount.Address, bytes)
 		if msg.ValidateBasic() != nil {
 			return simulation.NoOpMsg(types.ModuleName), nil, fmt.Errorf("expected msg to pass ValidateBasic: %s", msg.GetSignBytes())
 		}
@@ -153,7 +188,7 @@ func SimulateMsgAddQuota(ak expected.AccountKeeper, k keeper.Keeper) simulation.
 			chainID,
 			[]uint64{account.GetAccountNumber()},
 			[]uint64{account.GetSequence()},
-			from.PrivKey,
+			rAccount.PrivKey,
 		)
 
 		_, _, err := app.Deliver(tx)
@@ -168,18 +203,31 @@ func SimulateMsgAddQuota(ak expected.AccountKeeper, k keeper.Keeper) simulation.
 func SimulateMsgUpdateQuota(ak expected.AccountKeeper, k keeper.Keeper) simulation.Operation {
 	return func(r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accounts []simulation.Account, chainID string) (
 		simulation.OperationMsg, []simulation.FutureOperation, error) {
-		var (
-			from, account = func() (simulation.Account, exported.Account) {
-				from, _ := simulation.RandomAcc(r, accounts)
-				return from, ak.GetAccount(ctx, from.Address)
-			}()
+		rAccount, _ := simulation.RandomAcc(r, accounts)
 
-			id    = RandomSubscription(r, k.GetSubscriptions(ctx, 0, 0)).ID
-			to, _ = simulation.RandomAcc(r, accounts)
-			bytes = sdk.NewInt(r.Int63n(1e9) + 1)
+		subscriptions := k.GetActiveSubscriptionsForAddress(ctx, rAccount.Address, 0, 0)
+		if len(subscriptions) == 0 {
+			return simulation.NoOpMsg(types.ModuleName), nil, nil
+		}
+
+		rSubscription := RandomSubscription(r, subscriptions)
+		if rSubscription.Plan == 0 {
+			return simulation.NoOpMsg(types.ModuleName), nil, nil
+		}
+
+		quotas := k.GetQuotas(ctx, rSubscription.ID, 0, 0)
+		if len(quotas) == 0 {
+			return simulation.NoOpMsg(types.ModuleName), nil, nil
+		}
+
+		var (
+			account = ak.GetAccount(ctx, rAccount.Address)
+			rQuota  = RandomQuota(r, quotas)
+			bytes   = sdk.NewInt(r.Int63n(rSubscription.Free.
+				Add(rQuota.Allocated).Int64()) + rQuota.Consumed.Int64())
 		)
 
-		msg := types.NewMsgUpdateQuota(from.Address, id, to.Address, bytes)
+		msg := types.NewMsgUpdateQuota(rAccount.Address, rSubscription.ID, rQuota.Address, bytes)
 		if msg.ValidateBasic() != nil {
 			return simulation.NoOpMsg(types.ModuleName), nil, fmt.Errorf("expected msg to pass ValidateBasic: %s", msg.GetSignBytes())
 		}
@@ -191,7 +239,7 @@ func SimulateMsgUpdateQuota(ak expected.AccountKeeper, k keeper.Keeper) simulati
 			chainID,
 			[]uint64{account.GetAccountNumber()},
 			[]uint64{account.GetSequence()},
-			from.PrivKey,
+			rAccount.PrivKey,
 		)
 
 		_, _, err := app.Deliver(tx)

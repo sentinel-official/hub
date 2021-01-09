@@ -7,7 +7,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/simapp/helpers"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/x/auth/exported"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 
 	hub "github.com/sentinel-official/hub/types"
@@ -17,20 +16,27 @@ import (
 	provider "github.com/sentinel-official/hub/x/provider/simulation"
 )
 
-func SimulateMsgRegister(ak expected.AccountKeeper, pk expected.ProviderKeeper) simulation.Operation {
+func SimulateMsgRegister(ak expected.AccountKeeper, pk expected.ProviderKeeper, k keeper.Keeper) simulation.Operation {
 	return func(r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accounts []simulation.Account, chainID string) (
 		simulation.OperationMsg, []simulation.FutureOperation, error) {
-		var (
-			from, account = func() (simulation.Account, exported.Account) {
-				from, _ := simulation.RandomAcc(r, accounts)
-				return from, ak.GetAccount(ctx, from.Address)
-			}()
+		rAccount, _ := simulation.RandomAcc(r, accounts)
+		if _, found := k.GetNode(ctx, rAccount.Address.Bytes()); found {
+			return simulation.NoOpMsg(types.ModuleName), nil, nil
+		}
 
-			prov   = provider.RandomProvider(r, pk.GetProviders(ctx, 0, 0)).Address
-			remote = simulation.RandStringOfLength(r, 64)
+		account := ak.GetAccount(ctx, rAccount.Address)
+
+		providers := pk.GetProviders(ctx, 0, 0)
+		if len(providers) == 0 {
+			return simulation.NoOpMsg(types.ModuleName), nil, nil
+		}
+
+		var (
+			rProvider = provider.RandomProvider(r, providers)
+			remote    = simulation.RandStringOfLength(r, 64)
 		)
 
-		msg := types.NewMsgRegister(from.Address, prov, nil, remote)
+		msg := types.NewMsgRegister(rAccount.Address, rProvider.Address, nil, remote)
 		if msg.ValidateBasic() != nil {
 			return simulation.NoOpMsg(types.ModuleName), nil, fmt.Errorf("expected msg to pass ValidateBasic: %s", msg.GetSignBytes())
 		}
@@ -42,7 +48,7 @@ func SimulateMsgRegister(ak expected.AccountKeeper, pk expected.ProviderKeeper) 
 			chainID,
 			[]uint64{account.GetAccountNumber()},
 			[]uint64{account.GetSequence()},
-			from.PrivKey,
+			rAccount.PrivKey,
 		)
 
 		_, _, err := app.Deliver(tx)
@@ -57,18 +63,31 @@ func SimulateMsgRegister(ak expected.AccountKeeper, pk expected.ProviderKeeper) 
 func SimulateMsgUpdate(ak expected.AccountKeeper, pk expected.ProviderKeeper, k keeper.Keeper) simulation.Operation {
 	return func(r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accounts []simulation.Account, chainID string) (
 		simulation.OperationMsg, []simulation.FutureOperation, error) {
-		var (
-			rNode         = RandomNode(r, k.GetNodes(ctx, 0, 0))
-			from, account = func() (simulation.Account, exported.Account) {
-				from, _ := simulation.FindAccount(accounts, rNode.Address)
-				return from, ak.GetAccount(ctx, from.Address)
-			}()
+		nodes := k.GetNodes(ctx, 0, 0)
+		if len(nodes) == 0 {
+			return simulation.NoOpMsg(types.ModuleName), nil, nil
+		}
 
-			prov   = provider.RandomProvider(r, pk.GetProviders(ctx, 0, 0)).Address
-			remote = simulation.RandStringOfLength(r, 64)
+		rNode := RandomNode(r, nodes)
+
+		rAccount, found := simulation.FindAccount(accounts, rNode.Address)
+		if !found {
+			return simulation.NoOpMsg(types.ModuleName), nil, nil
+		}
+
+		account := ak.GetAccount(ctx, rAccount.Address)
+
+		providers := pk.GetProviders(ctx, 0, 0)
+		if len(providers) == 0 {
+			return simulation.NoOpMsg(types.ModuleName), nil, nil
+		}
+
+		var (
+			rProvider = provider.RandomProvider(r, providers)
+			remoteURL = simulation.RandStringOfLength(r, 64)
 		)
 
-		msg := types.NewMsgUpdate(rNode.Address, prov, nil, remote)
+		msg := types.NewMsgUpdate(rNode.Address, rProvider.Address, nil, remoteURL)
 		if msg.ValidateBasic() != nil {
 			return simulation.NoOpMsg(types.ModuleName), nil, fmt.Errorf("expected msg to pass ValidateBasic: %s", msg.GetSignBytes())
 		}
@@ -80,7 +99,7 @@ func SimulateMsgUpdate(ak expected.AccountKeeper, pk expected.ProviderKeeper, k 
 			chainID,
 			[]uint64{account.GetAccountNumber()},
 			[]uint64{account.GetSequence()},
-			from.PrivKey,
+			rAccount.PrivKey,
 		)
 
 		_, _, err := app.Deliver(tx)
@@ -95,16 +114,21 @@ func SimulateMsgUpdate(ak expected.AccountKeeper, pk expected.ProviderKeeper, k 
 func SimulateMsgSetStatus(ak expected.AccountKeeper, k keeper.Keeper) simulation.Operation {
 	return func(r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accounts []simulation.Account, chainID string) (
 		simulation.OperationMsg, []simulation.FutureOperation, error) {
-		var (
-			rNode         = RandomNode(r, k.GetNodes(ctx, 0, 0))
-			from, account = func() (simulation.Account, exported.Account) {
-				from, _ := simulation.FindAccount(accounts, rNode.Address)
-				return from, ak.GetAccount(ctx, from.Address)
-			}()
+		nodes := k.GetNodes(ctx, 0, 0)
+		if len(nodes) == 0 {
+			return simulation.NoOpMsg(types.ModuleName), nil, nil
+		}
 
-			status hub.Status
-		)
+		rNode := RandomNode(r, nodes)
 
+		rAccount, found := simulation.FindAccount(accounts, rNode.Address)
+		if !found {
+			return simulation.NoOpMsg(types.ModuleName), nil, nil
+		}
+
+		account := ak.GetAccount(ctx, rAccount.Address)
+
+		var status hub.Status
 		switch r.Intn(2) {
 		case 0:
 			status = hub.StatusActive
@@ -124,7 +148,7 @@ func SimulateMsgSetStatus(ak expected.AccountKeeper, k keeper.Keeper) simulation
 			chainID,
 			[]uint64{account.GetAccountNumber()},
 			[]uint64{account.GetSequence()},
-			from.PrivKey,
+			rAccount.PrivKey,
 		)
 
 		_, _, err := app.Deliver(tx)

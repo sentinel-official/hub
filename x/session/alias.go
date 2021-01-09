@@ -18,7 +18,6 @@ const (
 	AttributeKeySubscription     = types.AttributeKeySubscription
 	AttributeKeyAddress          = types.AttributeKeyAddress
 	ModuleName                   = types.ModuleName
-	ParamsSubspace               = types.ParamsSubspace
 	QuerierRoute                 = types.QuerierRoute
 	DefaultInactiveDuration      = types.DefaultInactiveDuration
 	QuerySession                 = types.QuerySession
@@ -77,6 +76,7 @@ var (
 	EventTypeSetCount               = types.EventTypeSetCount
 	EventTypeSetActive              = types.EventTypeSetActive
 	EventTypeUpdate                 = types.EventTypeUpdate
+	ParamsSubspace                  = types.ParamsSubspace
 	RouterKey                       = types.RouterKey
 	StoreKey                        = types.StoreKey
 	EventModuleName                 = types.EventModuleName

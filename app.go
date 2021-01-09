@@ -7,6 +7,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
+	"github.com/cosmos/cosmos-sdk/simapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/version"
@@ -75,6 +76,8 @@ func MakeCodec() *codec.Codec {
 
 	return cdc
 }
+
+var _ simapp.App = (*App)(nil)
 
 type App struct {
 	*baseapp.BaseApp
@@ -153,7 +156,7 @@ func NewApp(
 		auth.ProtoBaseAccount)
 	app.bankKeeper = bank.NewBaseKeeper(app.accountKeeper,
 		app.subspaces[bank.ModuleName],
-		app.ModuleAccountsBlackList())
+		app.ModuleAccountAddrsBlackList())
 	app.supplyKeeper = supply.NewKeeper(app.cdc,
 		keys[supply.StoreKey],
 		app.accountKeeper,
@@ -175,7 +178,7 @@ func NewApp(
 		&stakingKeeper,
 		app.supplyKeeper,
 		auth.FeeCollectorName,
-		app.ModuleAccounts())
+		app.ModuleAccountAddrs())
 	app.slashingKeeper = slashing.NewKeeper(app.cdc,
 		keys[slashing.StoreKey],
 		&stakingKeeper,
@@ -235,7 +238,7 @@ func NewApp(
 		staking.NewAppModule(app.stakingKeeper, app.accountKeeper, app.supplyKeeper),
 		supply.NewAppModule(app.supplyKeeper, app.accountKeeper),
 		upgrade.NewAppModule(app.upgradeKeeper),
-		vpn.NewAppModule(app.vpnKeeper),
+		vpn.NewAppModule(app.accountKeeper, app.vpnKeeper),
 	)
 
 	// NOTE: order is very important here
@@ -252,6 +255,21 @@ func NewApp(
 
 	app.mm.RegisterInvariants(&app.crisisKeeper)
 	app.mm.RegisterRoutes(app.Router(), app.QueryRouter())
+
+	app.msm = module.NewSimulationManager(
+		auth.NewAppModule(app.accountKeeper),
+		bank.NewAppModule(app.bankKeeper, app.accountKeeper),
+		distribution.NewAppModule(app.distributionKeeper, app.accountKeeper, app.supplyKeeper, app.stakingKeeper),
+		gov.NewAppModule(app.govKeeper, app.accountKeeper, app.supplyKeeper),
+		mint.NewAppModule(app.mintKeeper),
+		params.NewAppModule(),
+		slashing.NewAppModule(app.slashingKeeper, app.accountKeeper, app.stakingKeeper),
+		staking.NewAppModule(app.stakingKeeper, app.accountKeeper, app.supplyKeeper),
+		supply.NewAppModule(app.supplyKeeper, app.accountKeeper),
+		vpn.NewAppModule(app.accountKeeper, app.vpnKeeper),
+	)
+
+	app.msm.RegisterStoreDecoders()
 	app.MountKVStores(keys)
 	app.MountTransientStores(tkeys)
 
@@ -271,6 +289,10 @@ func NewApp(
 
 func (a *App) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) abci.ResponseBeginBlock {
 	return a.mm.BeginBlock(ctx, req)
+}
+
+func (a *App) Codec() *codec.Codec {
+	return a.cdc
 }
 
 func (a *App) EndBlocker(ctx sdk.Context, req abci.RequestEndBlock) abci.ResponseEndBlock {
@@ -300,14 +322,14 @@ func (a *App) ModuleAccountsPermissions() map[string][]string {
 	}
 }
 
-func (a *App) ModuleAccountsWhiteList() map[string]bool {
+func (a *App) ModuleAccountAddrsWhiteList() map[string]bool {
 	accounts := make(map[string]bool)
 	accounts[supply.NewModuleAddress(distribution.ModuleName).String()] = true
 
 	return accounts
 }
 
-func (a *App) ModuleAccounts() map[string]bool {
+func (a *App) ModuleAccountAddrs() map[string]bool {
 	accounts := make(map[string]bool)
 	for name := range a.ModuleAccountsPermissions() {
 		accounts[supply.NewModuleAddress(name).String()] = true
@@ -316,9 +338,9 @@ func (a *App) ModuleAccounts() map[string]bool {
 	return accounts
 }
 
-func (a *App) ModuleAccountsBlackList() map[string]bool {
-	accounts := a.ModuleAccounts()
-	for name := range a.ModuleAccountsWhiteList() {
+func (a *App) ModuleAccountAddrsBlackList() map[string]bool {
+	accounts := a.ModuleAccountAddrs()
+	for name := range a.ModuleAccountAddrsWhiteList() {
 		delete(accounts, supply.NewModuleAddress(name).String())
 	}
 

@@ -41,7 +41,11 @@ simulate_short:
 	@go test -mod=readonly -v -timeout=1h -run TestFullAppSimulation \
 		-Enabled=true -Seed=4 -NumBlocks=50 -BlockSize=50 -Commit=true
 
-simulate_multi:
+simulate_long:
+	@go test -mod=readonly -v -timeout=1h -run TestFullAppSimulation \
+		-Enabled=true -Seed=4 -NumBlocks=2500 -BlockSize=50 -Commit=true
+
+simulate_multi_long:
 	@runsim -Jobs=4 -SimAppPkg=. 500 1 TestFullAppSimulation
 
 mod_verify:

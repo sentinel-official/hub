@@ -19,6 +19,7 @@ type DepositKeeper interface {
 
 type PlanKeeper interface {
 	HasNodeForPlan(ctx sdk.Context, id uint64, address hub.NodeAddress) bool
+	GetNodesForPlan(ctx sdk.Context, id uint64, skip, limit int) node.Nodes
 }
 
 type NodeKeeper interface {
@@ -30,6 +31,8 @@ type SubscriptionKeeper interface {
 
 	GetSubscriptionsForNode(ctx sdk.Context, address hub.NodeAddress, skip, limit int) subscription.Subscriptions
 	HasSubscriptionForNode(ctx sdk.Context, address hub.NodeAddress, id uint64) bool
+
+	GetActiveSubscriptionsForAddress(ctx sdk.Context, address sdk.AccAddress, skip, limit int) subscription.Subscriptions
 
 	SetQuota(ctx sdk.Context, id uint64, quota subscription.Quota)
 	GetQuota(ctx sdk.Context, id uint64, address sdk.AccAddress) (subscription.Quota, bool)

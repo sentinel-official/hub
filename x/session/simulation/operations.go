@@ -11,7 +11,7 @@ import (
 	"github.com/sentinel-official/hub/x/session/types"
 )
 
-func WeightedOperations(params simulation.AppParams, cdc *codec.Codec, ak expected.AccountKeeper, nk expected.NodeKeeper, sk expected.SubscriptionKeeper) simulation.WeightedOperations {
+func WeightedOperations(params simulation.AppParams, cdc *codec.Codec, ak expected.AccountKeeper, pk expected.PlanKeeper, sk expected.SubscriptionKeeper) simulation.WeightedOperations {
 	return simulation.WeightedOperations{
 		{
 			Weight: func(_ *rand.Rand) (v int) {
@@ -20,7 +20,7 @@ func WeightedOperations(params simulation.AppParams, cdc *codec.Codec, ak expect
 				)
 				return v
 			}(nil),
-			Op: SimulateUpsert(ak, nk, sk),
+			Op: SimulateUpsert(ak, pk, sk),
 		},
 	}
 }

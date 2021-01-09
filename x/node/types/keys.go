@@ -9,14 +9,14 @@ import (
 )
 
 const (
-	ModuleName     = "node"
-	ParamsSubspace = ModuleName
-	QuerierRoute   = ModuleName
+	ModuleName   = "node"
+	QuerierRoute = ModuleName
 )
 
 var (
-	RouterKey = ModuleName
-	StoreKey  = ModuleName
+	ParamsSubspace = ModuleName
+	RouterKey      = ModuleName
+	StoreKey       = ModuleName
 )
 
 var (

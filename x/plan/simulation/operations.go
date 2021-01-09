@@ -30,7 +30,7 @@ func WeightedOperations(params simulation.AppParams, cdc *codec.Codec, ak expect
 				)
 				return v
 			}(nil),
-			Op: SimulateMsgSetStatus(ak, pk, k),
+			Op: SimulateMsgSetStatus(ak, k),
 		},
 		{
 			Weight: func(_ *rand.Rand) (v int) {
@@ -39,7 +39,7 @@ func WeightedOperations(params simulation.AppParams, cdc *codec.Codec, ak expect
 				)
 				return v
 			}(nil),
-			Op: SimulateMsgAddNode(ak, pk, nk, k),
+			Op: SimulateMsgAddNode(ak, nk, k),
 		},
 		{
 			Weight: func(_ *rand.Rand) (v int) {
@@ -48,7 +48,7 @@ func WeightedOperations(params simulation.AppParams, cdc *codec.Codec, ak expect
 				)
 				return v
 			}(nil),
-			Op: SimulateMsgRemoveNode(ak, pk, nk, k),
+			Op: SimulateMsgRemoveNode(ak, nk, k),
 		},
 	}
 }

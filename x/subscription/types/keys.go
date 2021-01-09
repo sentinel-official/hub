@@ -10,14 +10,14 @@ import (
 )
 
 const (
-	ModuleName     = "subscription"
-	ParamsSubspace = ModuleName
-	QuerierRoute   = ModuleName
+	ModuleName   = "subscription"
+	QuerierRoute = ModuleName
 )
 
 var (
-	RouterKey = ModuleName
-	StoreKey  = ModuleName
+	ParamsSubspace = ModuleName
+	RouterKey      = ModuleName
+	StoreKey       = ModuleName
 )
 
 var (
@@ -92,22 +92,18 @@ func QuotaKey(id uint64, address sdk.AccAddress) []byte {
 	return append(GetQuotaKeyPrefix(id), address.Bytes()...)
 }
 
-func IDFromSubscriptionForNodeKey(key []byte) (i uint64) {
-	binary.BigEndian.PutUint64(key[1+sdk.AddrLen:], i)
-	return
+func IDFromSubscriptionForNodeKey(key []byte) uint64 {
+	return binary.BigEndian.Uint64(key[1+sdk.AddrLen:])
 }
 
-func IDFromSubscriptionForPlanKey(key []byte) (i uint64) {
-	binary.BigEndian.PutUint64(key[1+8:], i)
-	return
+func IDFromSubscriptionForPlanKey(key []byte) uint64 {
+	return binary.BigEndian.Uint64(key[1+8:])
 }
 
-func IDFromStatusSubscriptionForAddressKey(key []byte) (i uint64) {
-	binary.BigEndian.PutUint64(key[1+sdk.AddrLen:], i)
-	return
+func IDFromStatusSubscriptionForAddressKey(key []byte) uint64 {
+	return binary.BigEndian.Uint64(key[1+sdk.AddrLen:])
 }
 
-func IDFromInactiveSubscriptionAtKey(key []byte) (i uint64) {
-	binary.BigEndian.PutUint64(key[1+29:], i)
-	return
+func IDFromInactiveSubscriptionAtKey(key []byte) uint64 {
+	return binary.BigEndian.Uint64(key[1+29:])
 }

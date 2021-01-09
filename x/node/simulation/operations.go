@@ -19,7 +19,7 @@ func WeightedOperations(params simulation.AppParams, cdc *codec.Codec, ak expect
 				)
 				return v
 			}(nil),
-			Op: SimulateMsgRegister(ak, pk),
+			Op: SimulateMsgRegister(ak, pk, k),
 		},
 		{
 			Weight: func(_ *rand.Rand) (v int) {

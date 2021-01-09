@@ -67,9 +67,10 @@ type AppModule struct {
 	k  keeper.Keeper
 }
 
-func NewAppModule(k keeper.Keeper) AppModule {
+func NewAppModule(ak expected.AccountKeeper, k keeper.Keeper) AppModule {
 	return AppModule{
-		k: k,
+		ak: ak,
+		k:  k,
 	}
 }
 
@@ -109,13 +110,17 @@ func (a AppModule) EndBlock(ctx sdk.Context, _ abci.RequestEndBlock) []abci.Vali
 	return EndBlock(ctx, a.k)
 }
 
-func (a AppModule) GenerateGenesisState(_ *module.SimulationState) {}
+func (a AppModule) GenerateGenesisState(state *module.SimulationState) {
+	simulation.RandomizedGenesisState(state)
+}
 
 func (a AppModule) ProposalContents(_ module.SimulationState) []xsimulation.WeightedProposalContent {
 	return nil
 }
 
-func (a AppModule) RandomizedParams(_ *rand.Rand) []xsimulation.ParamChange { return nil }
+func (a AppModule) RandomizedParams(_ *rand.Rand) []xsimulation.ParamChange {
+	return simulation.RandomizedParams()
+}
 
 func (a AppModule) RegisterStoreDecoder(_ sdk.StoreDecoderRegistry) {}
 

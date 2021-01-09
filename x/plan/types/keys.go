@@ -75,14 +75,12 @@ func NodeForPlanKey(id uint64, address hub.NodeAddress) []byte {
 	return append(GetNodeForPlanKeyPrefix(id), address.Bytes()...)
 }
 
-func IDFromStatusPlanKey(key []byte) (i uint64) {
-	binary.BigEndian.PutUint64(key[1:], i)
-	return
+func IDFromStatusPlanKey(key []byte) uint64 {
+	return binary.BigEndian.Uint64(key[1:])
 }
 
-func IDFromStatusPlanForProviderKey(key []byte) (i uint64) {
-	binary.BigEndian.PutUint64(key[1+sdk.AddrLen:], i)
-	return
+func IDFromStatusPlanForProviderKey(key []byte) uint64 {
+	return binary.BigEndian.Uint64(key[1+sdk.AddrLen:])
 }
 
 func AddressFromNodeForPlanKey(key []byte) hub.NodeAddress {

@@ -8,7 +8,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/simapp/helpers"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/x/auth/exported"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 
 	hub "github.com/sentinel-official/hub/types"
@@ -18,23 +17,38 @@ import (
 	subscription "github.com/sentinel-official/hub/x/subscription/simulation"
 )
 
-func SimulateUpsert(ak expected.AccountKeeper, nk expected.NodeKeeper, sk expected.SubscriptionKeeper) simulation.Operation {
+func SimulateUpsert(ak expected.AccountKeeper, pk expected.PlanKeeper, sk expected.SubscriptionKeeper) simulation.Operation {
 	return func(r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accounts []simulation.Account, chainID string) (
 		simulation.OperationMsg, []simulation.FutureOperation, error) {
 		var (
-			rNode         = node.RandomNode(r, nk.GetNodes(ctx, 0, 0))
-			from, account = func() (simulation.Account, exported.Account) {
-				from, _ := simulation.FindAccount(accounts, rNode.Address)
-				return from, ak.GetAccount(ctx, from.Address)
-			}()
-
-			id         = subscription.RandomSubscription(r, sk.GetSubscriptionsForNode(ctx, rNode.Address, 0, 0)).ID
-			address, _ = simulation.RandomAcc(r, accounts)
-			duration   = time.Duration(r.Int63n(1e3)+1) * time.Second
-			bandwidth  = hub.NewBandwidthFromInt64(r.Int63n(1e6)+1, r.Int63n(1e6)+1)
+			toAccount, _  = simulation.RandomAcc(r, accounts)
+			subscriptions = sk.GetActiveSubscriptionsForAddress(ctx, toAccount.Address, 0, 0)
 		)
 
-		msg := types.NewMsgUpsert(rNode.Address, id, address.Address, duration, bandwidth)
+		rSubscription := subscription.RandomSubscription(r, subscriptions)
+		if rSubscription.Plan == 0 {
+			return simulation.NoOpMsg(types.ModuleName), nil, nil
+		}
+
+		nodes := pk.GetNodesForPlan(ctx, rSubscription.Plan, 0, 0)
+		if len(nodes) == 0 {
+			return simulation.NoOpMsg(types.ModuleName), nil, nil
+		}
+
+		rNode := node.RandomNode(r, nodes)
+
+		rAccount, found := simulation.FindAccount(accounts, rNode.Address)
+		if !found {
+			return simulation.NoOpMsg(types.ModuleName), nil, nil
+		}
+
+		var (
+			account   = ak.GetAccount(ctx, rAccount.Address)
+			duration  = time.Duration(r.Int63n(1e3)+1) * time.Second
+			bandwidth = hub.NewBandwidthFromInt64(r.Int63n(1e6)+1, r.Int63n(1e6)+1)
+		)
+
+		msg := types.NewMsgUpsert(rNode.Address, rSubscription.ID, toAccount.Address, duration, bandwidth)
 		if msg.ValidateBasic() != nil {
 			return simulation.NoOpMsg(types.ModuleName), nil, fmt.Errorf("expected msg to pass ValidateBasic: %s", msg.GetSignBytes())
 		}
@@ -46,7 +60,7 @@ func SimulateUpsert(ak expected.AccountKeeper, nk expected.NodeKeeper, sk expect
 			chainID,
 			[]uint64{account.GetAccountNumber()},
 			[]uint64{account.GetSequence()},
-			from.PrivKey,
+			rAccount.PrivKey,
 		)
 
 		_, _, err := app.Deliver(tx)
