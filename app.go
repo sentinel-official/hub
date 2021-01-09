@@ -29,7 +29,7 @@ import (
 	abci "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/libs/log"
 	tmos "github.com/tendermint/tendermint/libs/os"
-	db "github.com/tendermint/tm-db"
+	tmdb "github.com/tendermint/tm-db"
 
 	"github.com/sentinel-official/hub/x/deposit"
 	"github.com/sentinel-official/hub/x/vpn"
@@ -40,8 +40,8 @@ const (
 )
 
 var (
-	DefaultNodeHome = os.ExpandEnv("$HOME/.sentinel-hubd")
-	DefaultCLIHome  = os.ExpandEnv("$HOME/.sentinel-hub-cli")
+	DefaultNodeHome = os.ExpandEnv("${HOME}/.sentinelhubd")
+	DefaultCLIHome  = os.ExpandEnv("${HOME}/.sentinelhubcli")
 	ModuleBasics    = module.NewBasicManager(
 		auth.AppModuleBasic{},
 		bank.AppModuleBasic{},
@@ -81,6 +81,7 @@ type App struct {
 
 	cdc *codec.Codec
 	mm  *module.Manager
+	msm *module.SimulationManager
 
 	keys      map[string]*sdk.KVStoreKey
 	tkeys     map[string]*sdk.TransientStoreKey
@@ -101,8 +102,15 @@ type App struct {
 	vpnKeeper          vpn.Keeper
 }
 
-func NewApp(logger log.Logger, db db.DB, tracer io.Writer, loadLatest bool, skipUpgradeHeights map[int64]bool,
-	invarCheckPeriod uint, options ...func(*baseapp.BaseApp)) *App {
+func NewApp(
+	logger log.Logger,
+	db tmdb.DB,
+	tracer io.Writer,
+	loadLatest bool,
+	skipUpgradeHeights map[int64]bool,
+	invarCheckPeriod uint,
+	options ...func(*baseapp.BaseApp),
+) *App {
 	var (
 		cdc  = MakeCodec()
 		keys = sdk.NewKVStoreKeys(baseapp.MainStoreKey,
@@ -117,11 +125,12 @@ func NewApp(logger log.Logger, db db.DB, tracer io.Writer, loadLatest bool, skip
 	baseApp.SetCommitMultiStoreTracer(tracer)
 	baseApp.SetAppVersion(version.Version)
 
-	var app = &App{
-		BaseApp: baseApp,
-		cdc:     cdc,
-		keys:    keys,
-		tkeys:   tkeys,
+	app := &App{
+		BaseApp:   baseApp,
+		cdc:       cdc,
+		keys:      keys,
+		tkeys:     tkeys,
+		subspaces: make(map[string]params.Subspace),
 	}
 
 	app.paramsKeeper = params.NewKeeper(app.cdc,
@@ -314,4 +323,8 @@ func (a *App) ModuleAccountsBlackList() map[string]bool {
 	}
 
 	return accounts
+}
+
+func (a *App) SimulationManager() *module.SimulationManager {
+	return a.msm
 }

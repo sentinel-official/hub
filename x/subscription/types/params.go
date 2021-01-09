@@ -38,7 +38,13 @@ func (p Params) Validate() error {
 
 func (p *Params) ParamSetPairs() params.ParamSetPairs {
 	return params.ParamSetPairs{
-		{Key: KeyInactiveDuration, Value: &p.InactiveDuration},
+		{
+			Key:   KeyInactiveDuration,
+			Value: &p.InactiveDuration,
+			ValidatorFn: func(_ interface{}) error {
+				return nil
+			},
+		},
 	}
 }
 
