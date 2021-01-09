@@ -41,7 +41,7 @@ func main() {
 		cdc = hub.MakeCodec()
 		ctx = server.NewDefaultContext()
 		cmd = &cobra.Command{
-			Use:               "sentinel-hubd",
+			Use:               "sentinelhubd",
 			Short:             "Sentinel Hub Daemon (server)",
 			PersistentPreRunE: server.PersistentPreRunEFn(ctx),
 		}

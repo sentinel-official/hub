@@ -29,7 +29,7 @@ func main() {
 	var (
 		cdc = hub.MakeCodec()
 		cmd = &cobra.Command{
-			Use:   "sentinel-hub-cli",
+			Use:   "sentinelhubcli",
 			Short: "Sentinel Hub Command-line Interface (light-client)",
 		}
 	)
