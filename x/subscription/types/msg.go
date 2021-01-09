@@ -11,67 +11,13 @@ import (
 )
 
 var (
-	_ sdk.Msg = (*MsgSubscribeToPlan)(nil)
 	_ sdk.Msg = (*MsgSubscribeToNode)(nil)
+	_ sdk.Msg = (*MsgSubscribeToPlan)(nil)
 	_ sdk.Msg = (*MsgCancel)(nil)
 
 	_ sdk.Msg = (*MsgAddQuota)(nil)
 	_ sdk.Msg = (*MsgUpdateQuota)(nil)
 )
-
-// MsgSubscribeToPlan is for starting a plan subscription.
-type MsgSubscribeToPlan struct {
-	From  sdk.AccAddress `json:"from"`
-	ID    uint64         `json:"id"`
-	Denom string         `json:"denom"`
-}
-
-func NewMsgSubscribeToPlan(from sdk.AccAddress, id uint64, denom string) MsgSubscribeToPlan {
-	return MsgSubscribeToPlan{
-		From:  from,
-		ID:    id,
-		Denom: denom,
-	}
-}
-
-func (m MsgSubscribeToPlan) Route() string {
-	return RouterKey
-}
-
-func (m MsgSubscribeToPlan) Type() string {
-	return fmt.Sprintf("%s:subscribe_to_plan", ModuleName)
-}
-
-func (m MsgSubscribeToPlan) ValidateBasic() error {
-	if m.From == nil || m.From.Empty() {
-		return errors.Wrapf(ErrorInvalidField, "%s", "from")
-	}
-
-	// ID shouldn't be zero
-	if m.ID == 0 {
-		return errors.Wrapf(ErrorInvalidField, "%s", "id")
-	}
-
-	// Denom length should be between 3 and 16
-	if len(m.Denom) < 3 || len(m.Denom) > 16 {
-		return errors.Wrapf(ErrorInvalidField, "%s", "denom")
-	}
-
-	return nil
-}
-
-func (m MsgSubscribeToPlan) GetSignBytes() []byte {
-	bytes, err := json.Marshal(m)
-	if err != nil {
-		panic(err)
-	}
-
-	return bytes
-}
-
-func (m MsgSubscribeToPlan) GetSigners() []sdk.AccAddress {
-	return []sdk.AccAddress{m.From}
-}
 
 // MsgSubscribeToNode is for starting a node subscription.
 type MsgSubscribeToNode struct {
@@ -124,6 +70,60 @@ func (m MsgSubscribeToNode) GetSignBytes() []byte {
 }
 
 func (m MsgSubscribeToNode) GetSigners() []sdk.AccAddress {
+	return []sdk.AccAddress{m.From}
+}
+
+// MsgSubscribeToPlan is for starting a plan subscription.
+type MsgSubscribeToPlan struct {
+	From  sdk.AccAddress `json:"from"`
+	ID    uint64         `json:"id"`
+	Denom string         `json:"denom"`
+}
+
+func NewMsgSubscribeToPlan(from sdk.AccAddress, id uint64, denom string) MsgSubscribeToPlan {
+	return MsgSubscribeToPlan{
+		From:  from,
+		ID:    id,
+		Denom: denom,
+	}
+}
+
+func (m MsgSubscribeToPlan) Route() string {
+	return RouterKey
+}
+
+func (m MsgSubscribeToPlan) Type() string {
+	return fmt.Sprintf("%s:subscribe_to_plan", ModuleName)
+}
+
+func (m MsgSubscribeToPlan) ValidateBasic() error {
+	if m.From == nil || m.From.Empty() {
+		return errors.Wrapf(ErrorInvalidField, "%s", "from")
+	}
+
+	// ID shouldn't be zero
+	if m.ID == 0 {
+		return errors.Wrapf(ErrorInvalidField, "%s", "id")
+	}
+
+	// Denom length should be between 3 and 16
+	if len(m.Denom) < 3 || len(m.Denom) > 16 {
+		return errors.Wrapf(ErrorInvalidField, "%s", "denom")
+	}
+
+	return nil
+}
+
+func (m MsgSubscribeToPlan) GetSignBytes() []byte {
+	bytes, err := json.Marshal(m)
+	if err != nil {
+		panic(err)
+	}
+
+	return bytes
+}
+
+func (m MsgSubscribeToPlan) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{m.From}
 }
 

@@ -15,12 +15,12 @@ func Querier(ctx sdk.Context, path []string, req abci.RequestQuery, k keeper.Kee
 		return querySubscription(ctx, req, k)
 	case types.QuerySubscriptions:
 		return querySubscriptions(ctx, req, k)
-	case types.QuerySubscriptionsForAddress:
-		return querySubscriptionsForAddress(ctx, req, k)
-	case types.QuerySubscriptionsForPlan:
-		return querySubscriptionsForPlan(ctx, req, k)
 	case types.QuerySubscriptionsForNode:
 		return querySubscriptionsForNode(ctx, req, k)
+	case types.QuerySubscriptionsForPlan:
+		return querySubscriptionsForPlan(ctx, req, k)
+	case types.QuerySubscriptionsForAddress:
+		return querySubscriptionsForAddress(ctx, req, k)
 
 	case types.QueryQuota:
 		return queryQuota(ctx, req, k)

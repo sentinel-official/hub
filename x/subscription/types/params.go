@@ -9,28 +9,28 @@ import (
 )
 
 const (
-	DefaultCancelDuration = 10 * time.Minute
+	DefaultInactiveDuration = 10 * time.Minute
 )
 
 var (
-	KeyCancelDuration = []byte("CancelDuration")
+	KeyInactiveDuration = []byte("InactiveDuration")
 )
 
 var _ params.ParamSet = (*Params)(nil)
 
 type Params struct {
-	CancelDuration time.Duration `json:"cancel_duration"`
+	InactiveDuration time.Duration `json:"inactive_duration"`
 }
 
 func (p Params) String() string {
 	return fmt.Sprintf(strings.TrimSpace(`
-Cancel duration: %s
-`), p.CancelDuration)
+Inactive duration: %s
+`), p.InactiveDuration)
 }
 
 func (p Params) Validate() error {
-	if p.CancelDuration <= 0 {
-		return fmt.Errorf("cancel_duration should be positive")
+	if p.InactiveDuration <= 0 {
+		return fmt.Errorf("inactive_duration should be positive")
 	}
 
 	return nil
@@ -38,19 +38,19 @@ func (p Params) Validate() error {
 
 func (p *Params) ParamSetPairs() params.ParamSetPairs {
 	return params.ParamSetPairs{
-		{Key: KeyCancelDuration, Value: &p.CancelDuration},
+		{Key: KeyInactiveDuration, Value: &p.InactiveDuration},
 	}
 }
 
-func NewParams(cancelDuration time.Duration) Params {
+func NewParams(inactiveDuration time.Duration) Params {
 	return Params{
-		CancelDuration: cancelDuration,
+		InactiveDuration: inactiveDuration,
 	}
 }
 
 func DefaultParams() Params {
 	return Params{
-		CancelDuration: DefaultCancelDuration,
+		InactiveDuration: DefaultInactiveDuration,
 	}
 }
 

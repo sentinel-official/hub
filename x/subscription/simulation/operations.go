@@ -16,21 +16,21 @@ func WeightedOperations(params simulation.AppParams, cdc *codec.Codec, ak expect
 	return simulation.WeightedOperations{
 		{
 			Weight: func(_ *rand.Rand) (v int) {
-				params.GetOrGenerate(cdc, fmt.Sprintf("%s:weight_msg_subscribe_to_plan", types.ModuleName), &v, nil,
-					func(_ *rand.Rand) { v = 100 },
-				)
-				return v
-			}(nil),
-			Op: SimulateMsgSubscribeToPlan(ak, pk),
-		},
-		{
-			Weight: func(_ *rand.Rand) (v int) {
 				params.GetOrGenerate(cdc, fmt.Sprintf("%s:weight_msg_subscribe_to_node", types.ModuleName), &v, nil,
 					func(_ *rand.Rand) { v = 100 },
 				)
 				return v
 			}(nil),
 			Op: SimulateMsgSubscribeToNode(ak, nk),
+		},
+		{
+			Weight: func(_ *rand.Rand) (v int) {
+				params.GetOrGenerate(cdc, fmt.Sprintf("%s:weight_msg_subscribe_to_plan", types.ModuleName), &v, nil,
+					func(_ *rand.Rand) { v = 100 },
+				)
+				return v
+			}(nil),
+			Op: SimulateMsgSubscribeToPlan(ak, pk),
 		},
 		{
 			Weight: func(_ *rand.Rand) (v int) {

@@ -3,7 +3,7 @@ package types
 const (
 	StatusUnknown Status = iota + 0x00
 	StatusActive
-	StatusCancel
+	StatusInactivePending
 	StatusInactive
 )
 
@@ -13,8 +13,8 @@ func StatusFromString(s string) Status {
 	switch s {
 	case "Active":
 		return StatusActive
-	case "Cancel":
-		return StatusCancel
+	case "InactivePending":
+		return StatusInactivePending
 	case "Inactive":
 		return StatusInactive
 	default:
@@ -24,7 +24,7 @@ func StatusFromString(s string) Status {
 
 func (s Status) IsValid() bool {
 	return s == StatusActive ||
-		s == StatusCancel ||
+		s == StatusInactivePending ||
 		s == StatusInactive
 }
 
@@ -36,8 +36,8 @@ func (s Status) String() string {
 	switch s {
 	case StatusActive:
 		return "Active"
-	case StatusCancel:
-		return "Cancel"
+	case StatusInactivePending:
+		return "InactivePending"
 	case StatusInactive:
 		return "Inactive"
 	default:

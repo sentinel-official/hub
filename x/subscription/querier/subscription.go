@@ -5,6 +5,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/errors"
 	abci "github.com/tendermint/tendermint/abci/types"
 
+	hub "github.com/sentinel-official/hub/types"
 	"github.com/sentinel-official/hub/x/subscription/keeper"
 	"github.com/sentinel-official/hub/x/subscription/types"
 )
@@ -44,13 +45,13 @@ func querySubscriptions(ctx sdk.Context, req abci.RequestQuery, k keeper.Keeper)
 	return res, nil
 }
 
-func querySubscriptionsForAddress(ctx sdk.Context, req abci.RequestQuery, k keeper.Keeper) ([]byte, error) {
-	var params types.QuerySubscriptionsForAddressParams
+func querySubscriptionsForNode(ctx sdk.Context, req abci.RequestQuery, k keeper.Keeper) ([]byte, error) {
+	var params types.QuerySubscriptionsForNodeParams
 	if err := types.ModuleCdc.UnmarshalJSON(req.Data, &params); err != nil {
 		return nil, errors.Wrap(types.ErrorUnmarshal, err.Error())
 	}
 
-	subscriptions := k.GetSubscriptionsForAddress(ctx, params.Address, params.Skip, params.Limit)
+	subscriptions := k.GetSubscriptionsForNode(ctx, params.Address, params.Skip, params.Limit)
 
 	res, err := types.ModuleCdc.MarshalJSON(subscriptions)
 	if err != nil {
@@ -76,13 +77,20 @@ func querySubscriptionsForPlan(ctx sdk.Context, req abci.RequestQuery, k keeper.
 	return res, nil
 }
 
-func querySubscriptionsForNode(ctx sdk.Context, req abci.RequestQuery, k keeper.Keeper) ([]byte, error) {
-	var params types.QuerySubscriptionsForNodeParams
+func querySubscriptionsForAddress(ctx sdk.Context, req abci.RequestQuery, k keeper.Keeper) ([]byte, error) {
+	var params types.QuerySubscriptionsForAddressParams
 	if err := types.ModuleCdc.UnmarshalJSON(req.Data, &params); err != nil {
 		return nil, errors.Wrap(types.ErrorUnmarshal, err.Error())
 	}
 
-	subscriptions := k.GetSubscriptionsForNode(ctx, params.Address, params.Skip, params.Limit)
+	var subscriptions types.Subscriptions
+	if params.Status.Equal(hub.StatusActive) {
+		subscriptions = k.GetActiveSubscriptionsForAddress(ctx, params.Address, params.Skip, params.Limit)
+	} else if params.Status.Equal(hub.StatusInactive) {
+		subscriptions = k.GetInactiveSubscriptionsForAddress(ctx, params.Address, params.Skip, params.Limit)
+	} else {
+		subscriptions = k.GetSubscriptionsForAddress(ctx, params.Address, params.Skip, params.Limit)
+	}
 
 	res, err := types.ModuleCdc.MarshalJSON(subscriptions)
 	if err != nil {

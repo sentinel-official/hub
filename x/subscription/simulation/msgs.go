@@ -17,7 +17,7 @@ import (
 	"github.com/sentinel-official/hub/x/subscription/types"
 )
 
-func SimulateMsgSubscribeToPlan(ak expected.AccountKeeper, pk expected.PlanKeeper) simulation.Operation {
+func SimulateMsgSubscribeToNode(ak expected.AccountKeeper, nk expected.NodeKeeper) simulation.Operation {
 	return func(r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accounts []simulation.Account, chainID string) (
 		simulation.OperationMsg, []simulation.FutureOperation, error) {
 		var (
@@ -26,11 +26,11 @@ func SimulateMsgSubscribeToPlan(ak expected.AccountKeeper, pk expected.PlanKeepe
 				return from, ak.GetAccount(ctx, from.Address)
 			}()
 
-			id    = plan.RandomPlan(r, pk.GetPlans(ctx, 0, 0)).ID
-			denom = "stake"
+			address = node.RandomNode(r, nk.GetNodes(ctx, 0, 0)).Address
+			deposit = sdk.NewCoin("stake", simulation.RandomAmount(r, sdk.NewInt(1e3)))
 		)
 
-		msg := types.NewMsgSubscribeToPlan(from.Address, id, denom)
+		msg := types.NewMsgSubscribeToNode(from.Address, address, deposit)
 		if msg.ValidateBasic() != nil {
 			return simulation.NoOpMsg(types.ModuleName), nil, fmt.Errorf("expected msg to pass ValidateBasic: %s", msg.GetSignBytes())
 		}
@@ -54,7 +54,7 @@ func SimulateMsgSubscribeToPlan(ak expected.AccountKeeper, pk expected.PlanKeepe
 	}
 }
 
-func SimulateMsgSubscribeToNode(ak expected.AccountKeeper, nk expected.NodeKeeper) simulation.Operation {
+func SimulateMsgSubscribeToPlan(ak expected.AccountKeeper, pk expected.PlanKeeper) simulation.Operation {
 	return func(r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accounts []simulation.Account, chainID string) (
 		simulation.OperationMsg, []simulation.FutureOperation, error) {
 		var (
@@ -63,11 +63,11 @@ func SimulateMsgSubscribeToNode(ak expected.AccountKeeper, nk expected.NodeKeepe
 				return from, ak.GetAccount(ctx, from.Address)
 			}()
 
-			address = node.RandomNode(r, nk.GetNodes(ctx, 0, 0)).Address
-			deposit = sdk.NewCoin("stake", simulation.RandomAmount(r, sdk.NewInt(1e3)))
+			id    = plan.RandomPlan(r, pk.GetPlans(ctx, 0, 0)).ID
+			denom = "stake"
 		)
 
-		msg := types.NewMsgSubscribeToNode(from.Address, address, deposit)
+		msg := types.NewMsgSubscribeToPlan(from.Address, id, denom)
 		if msg.ValidateBasic() != nil {
 			return simulation.NoOpMsg(types.ModuleName), nil, fmt.Errorf("expected msg to pass ValidateBasic: %s", msg.GetSignBytes())
 		}

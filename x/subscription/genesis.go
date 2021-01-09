@@ -15,19 +15,24 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, state types.GenesisState) {
 	for _, item := range state.Subscriptions {
 		k.SetSubscription(ctx, item.Subscription)
 
-		for _, quota := range item.Quotas {
-			k.SetQuota(ctx, item.Subscription.ID, quota)
-			k.SetSubscriptionForAddress(ctx, quota.Address, item.Subscription.ID)
-		}
-
 		if item.Subscription.ID == 0 {
 			k.SetSubscriptionForNode(ctx, item.Subscription.Node, item.Subscription.ID)
 		} else {
 			k.SetSubscriptionForPlan(ctx, item.Subscription.Plan, item.Subscription.ID)
 		}
 
-		if item.Subscription.Status.Equal(hub.StatusCancel) {
-			k.SetCancelSubscriptionAt(ctx, item.Subscription.StatusAt, item.Subscription.ID)
+		for _, quota := range item.Quotas {
+			k.SetQuota(ctx, item.Subscription.ID, quota)
+
+			if item.Subscription.Status.Equal(hub.StatusInactive) {
+				k.SetInactiveSubscriptionForAddress(ctx, quota.Address, item.Subscription.ID)
+			} else {
+				k.SetActiveSubscriptionForAddress(ctx, quota.Address, item.Subscription.ID)
+			}
+		}
+
+		if item.Subscription.Status.Equal(hub.StatusInactivePending) {
+			k.SetInactiveSubscriptionAt(ctx, item.Subscription.StatusAt.Add(k.InactiveDuration(ctx)), item.Subscription.ID)
 		}
 	}
 

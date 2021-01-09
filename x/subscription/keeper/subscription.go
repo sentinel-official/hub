@@ -71,33 +71,26 @@ func (k Keeper) GetSubscriptions(ctx sdk.Context, skip, limit int) (items types.
 	return items
 }
 
-func (k Keeper) SetSubscriptionForAddress(ctx sdk.Context, address sdk.AccAddress, id uint64) {
-	key := types.SubscriptionForAddressKey(address, id)
+func (k Keeper) SetSubscriptionForNode(ctx sdk.Context, address hub.NodeAddress, id uint64) {
+	key := types.SubscriptionForNodeKey(address, id)
 	value := k.cdc.MustMarshalBinaryLengthPrefixed(true)
 
 	store := k.Store(ctx)
 	store.Set(key, value)
 }
 
-func (k Keeper) HasSubscriptionForAddress(ctx sdk.Context, address sdk.AccAddress, id uint64) bool {
-	key := types.SubscriptionForAddressKey(address, id)
+func (k Keeper) HasSubscriptionForNode(ctx sdk.Context, address hub.NodeAddress, id uint64) bool {
+	key := types.SubscriptionForNodeKey(address, id)
 
 	store := k.Store(ctx)
 	return store.Has(key)
 }
 
-func (k Keeper) DeleteSubscriptionForAddress(ctx sdk.Context, address sdk.AccAddress, id uint64) {
-	key := types.SubscriptionForAddressKey(address, id)
-
-	store := k.Store(ctx)
-	store.Delete(key)
-}
-
-func (k Keeper) GetSubscriptionsForAddress(ctx sdk.Context, address sdk.AccAddress, skip, limit int) (items types.Subscriptions) {
+func (k Keeper) GetSubscriptionsForNode(ctx sdk.Context, address hub.NodeAddress, skip, limit int) (items types.Subscriptions) {
 	var (
 		store = k.Store(ctx)
 		iter  = hub.NewPaginatedIterator(
-			sdk.KVStorePrefixIterator(store, types.GetSubscriptionForAddressKeyPrefix(address)),
+			sdk.KVStorePrefixIterator(store, types.GetSubscriptionForNodeKeyPrefix(address)),
 		)
 	)
 
@@ -105,7 +98,7 @@ func (k Keeper) GetSubscriptionsForAddress(ctx sdk.Context, address sdk.AccAddre
 
 	iter.Skip(skip)
 	iter.Limit(limit, func(iter sdk.Iterator) {
-		item, _ := k.GetSubscription(ctx, types.IDFromSubscriptionForAddressKey(iter.Key()))
+		item, _ := k.GetSubscription(ctx, types.IDFromSubscriptionForNodeKey(iter.Key()))
 		items = append(items, item)
 	})
 
@@ -146,26 +139,26 @@ func (k Keeper) GetSubscriptionsForPlan(ctx sdk.Context, plan uint64, skip, limi
 	return items
 }
 
-func (k Keeper) SetSubscriptionForNode(ctx sdk.Context, address hub.NodeAddress, id uint64) {
-	key := types.SubscriptionForNodeKey(address, id)
+func (k Keeper) SetActiveSubscriptionForAddress(ctx sdk.Context, address sdk.AccAddress, id uint64) {
+	key := types.ActiveSubscriptionForAddressKey(address, id)
 	value := k.cdc.MustMarshalBinaryLengthPrefixed(true)
 
 	store := k.Store(ctx)
 	store.Set(key, value)
 }
 
-func (k Keeper) HasSubscriptionForNode(ctx sdk.Context, address hub.NodeAddress, id uint64) bool {
-	key := types.SubscriptionForNodeKey(address, id)
-
+func (k Keeper) DeleteActiveSubscriptionForAddress(ctx sdk.Context, address sdk.AccAddress, id uint64) {
 	store := k.Store(ctx)
-	return store.Has(key)
+
+	key := types.ActiveSubscriptionForAddressKey(address, id)
+	store.Delete(key)
 }
 
-func (k Keeper) GetSubscriptionsForNode(ctx sdk.Context, address hub.NodeAddress, skip, limit int) (items types.Subscriptions) {
+func (k Keeper) GetActiveSubscriptionsForAddress(ctx sdk.Context, address sdk.AccAddress, skip, limit int) (items types.Subscriptions) {
 	var (
 		store = k.Store(ctx)
 		iter  = hub.NewPaginatedIterator(
-			sdk.KVStorePrefixIterator(store, types.GetSubscriptionForNodeKeyPrefix(address)),
+			sdk.KVStorePrefixIterator(store, types.GetActiveSubscriptionForAddressKeyPrefix(address)),
 		)
 	)
 
@@ -173,36 +166,90 @@ func (k Keeper) GetSubscriptionsForNode(ctx sdk.Context, address hub.NodeAddress
 
 	iter.Skip(skip)
 	iter.Limit(limit, func(iter sdk.Iterator) {
-		item, _ := k.GetSubscription(ctx, types.IDFromSubscriptionForNodeKey(iter.Key()))
+		item, _ := k.GetSubscription(ctx, types.IDFromStatusSubscriptionForAddressKey(iter.Key()))
 		items = append(items, item)
 	})
 
 	return items
 }
 
-func (k Keeper) SetCancelSubscriptionAt(ctx sdk.Context, at time.Time, id uint64) {
-	key := types.CancelSubscriptionAtKey(at, id)
+func (k Keeper) SetInactiveSubscriptionForAddress(ctx sdk.Context, address sdk.AccAddress, id uint64) {
+	key := types.InactiveSubscriptionForAddressKey(address, id)
 	value := k.cdc.MustMarshalBinaryLengthPrefixed(true)
 
 	store := k.Store(ctx)
 	store.Set(key, value)
 }
 
-func (k Keeper) DeleteCancelSubscriptionAt(ctx sdk.Context, at time.Time, id uint64) {
-	key := types.CancelSubscriptionAtKey(at, id)
+func (k Keeper) DeleteInactiveSubscriptionForAddress(ctx sdk.Context, address sdk.AccAddress, id uint64) {
+	store := k.Store(ctx)
+
+	key := types.InactiveSubscriptionForAddressKey(address, id)
+	store.Delete(key)
+}
+
+func (k Keeper) GetInactiveSubscriptionsForAddress(ctx sdk.Context, address sdk.AccAddress, skip, limit int) (items types.Subscriptions) {
+	var (
+		store = k.Store(ctx)
+		iter  = hub.NewPaginatedIterator(
+			sdk.KVStorePrefixIterator(store, types.GetInactiveSubscriptionForAddressKeyPrefix(address)),
+		)
+	)
+
+	defer iter.Close()
+
+	iter.Skip(skip)
+	iter.Limit(limit, func(iter sdk.Iterator) {
+		item, _ := k.GetSubscription(ctx, types.IDFromStatusSubscriptionForAddressKey(iter.Key()))
+		items = append(items, item)
+	})
+
+	return items
+}
+
+func (k Keeper) GetSubscriptionsForAddress(ctx sdk.Context, address sdk.AccAddress, skip, limit int) (items types.Subscriptions) {
+	var (
+		store = k.Store(ctx)
+		iter  = hub.NewPaginatedIterator(
+			sdk.KVStorePrefixIterator(store, types.GetActiveSubscriptionForAddressKeyPrefix(address)),
+			sdk.KVStorePrefixIterator(store, types.GetInactiveSubscriptionForAddressKeyPrefix(address)),
+		)
+	)
+
+	defer iter.Close()
+
+	iter.Skip(skip)
+	iter.Limit(limit, func(iter sdk.Iterator) {
+		item, _ := k.GetSubscription(ctx, types.IDFromStatusSubscriptionForAddressKey(iter.Key()))
+		items = append(items, item)
+	})
+
+	return items
+}
+
+func (k Keeper) SetInactiveSubscriptionAt(ctx sdk.Context, at time.Time, id uint64) {
+	key := types.InactiveSubscriptionAtKey(at, id)
+	value := k.cdc.MustMarshalBinaryLengthPrefixed(true)
+
+	store := k.Store(ctx)
+	store.Set(key, value)
+}
+
+func (k Keeper) DeleteInactiveSubscriptionAt(ctx sdk.Context, at time.Time, id uint64) {
+	key := types.InactiveSubscriptionAtKey(at, id)
 
 	store := k.Store(ctx)
 	store.Delete(key)
 }
 
-func (k Keeper) IterateCancelSubscriptions(ctx sdk.Context, end time.Time, fn func(index int, item types.Subscription) (stop bool)) {
+func (k Keeper) IterateInactiveSubscriptions(ctx sdk.Context, end time.Time, fn func(index int, item types.Subscription) (stop bool)) {
 	store := k.Store(ctx)
 
-	iter := store.Iterator(types.CancelSubscriptionAtKeyPrefix, sdk.PrefixEndBytes(types.GetCancelSubscriptionAtKeyPrefix(end)))
+	iter := store.Iterator(types.InactiveSubscriptionAtKeyPrefix, sdk.PrefixEndBytes(types.GetInactiveSubscriptionAtKeyPrefix(end)))
 	defer iter.Close()
 
 	for i := 0; iter.Valid(); iter.Next() {
-		subscription, _ := k.GetSubscription(ctx, types.IDFromCancelSubscriptionAtKey(iter.Key()))
+		subscription, _ := k.GetSubscription(ctx, types.IDFromInactiveSubscriptionAtKey(iter.Key()))
 		if stop := fn(i, subscription); stop {
 			break
 		}

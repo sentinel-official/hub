@@ -9,9 +9,9 @@ import (
 const (
 	QuerySubscription            = "Subscription"
 	QuerySubscriptions           = "Subscriptions"
-	QuerySubscriptionsForAddress = "SubscriptionsForAddress"
-	QuerySubscriptionsForPlan    = "SubscriptionsForPlan"
 	QuerySubscriptionsForNode    = "SubscriptionsForNode"
+	QuerySubscriptionsForPlan    = "SubscriptionsForPlan"
+	QuerySubscriptionsForAddress = "SubscriptionsForAddress"
 
 	QueryQuota  = "Quota"
 	QueryQuotas = "Quotas"
@@ -39,14 +39,14 @@ func NewQuerySubscriptionsParams(skip, limit int) QuerySubscriptionsParams {
 	}
 }
 
-type QuerySubscriptionsForAddressParams struct {
-	Address sdk.AccAddress `json:"address"`
-	Skip    int            `json:"skip"`
-	Limit   int            `json:"limit"`
+type QuerySubscriptionsForNodeParams struct {
+	Address hub.NodeAddress `json:"address"`
+	Skip    int             `json:"skip"`
+	Limit   int             `json:"limit"`
 }
 
-func NewQuerySubscriptionsForAddressParams(address sdk.AccAddress, skip, limit int) QuerySubscriptionsForAddressParams {
-	return QuerySubscriptionsForAddressParams{
+func NewQuerySubscriptionsForNodeParams(address hub.NodeAddress, skip, limit int) QuerySubscriptionsForNodeParams {
+	return QuerySubscriptionsForNodeParams{
 		Address: address,
 		Skip:    skip,
 		Limit:   limit,
@@ -67,15 +67,17 @@ func NewQuerySubscriptionsForPlanParams(id uint64, skip, limit int) QuerySubscri
 	}
 }
 
-type QuerySubscriptionsForNodeParams struct {
-	Address hub.NodeAddress `json:"address"`
-	Skip    int             `json:"skip"`
-	Limit   int             `json:"limit"`
+type QuerySubscriptionsForAddressParams struct {
+	Address sdk.AccAddress `json:"address"`
+	Status  hub.Status     `json:"status"`
+	Skip    int            `json:"skip"`
+	Limit   int            `json:"limit"`
 }
 
-func NewQuerySubscriptionsForNodeParams(address hub.NodeAddress, skip, limit int) QuerySubscriptionsForNodeParams {
-	return QuerySubscriptionsForNodeParams{
+func NewQuerySubscriptionsForAddressParams(address sdk.AccAddress, status hub.Status, skip, limit int) QuerySubscriptionsForAddressParams {
+	return QuerySubscriptionsForAddressParams{
 		Address: address,
+		Status:  status,
 		Skip:    skip,
 		Limit:   limit,
 	}
