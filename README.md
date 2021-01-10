@@ -11,7 +11,11 @@ Requires [Go 1.14+](https://golang.org/dl/)
 
 ### Linux
 
-`$ go get -d github.com/sentinel-official/hub`
+`$ mkdir -p ${GOPATH}/src/github.com/sentinel-official/`
+
+`$ cd ${GOPATH}/src/github.com/sentinel-official/`
+
+`$ git clone https://github.com/sentinel-official/hub.git`
 
 `$ cd ${GOPATH}/src/github.com/sentinel-official/hub`
 
