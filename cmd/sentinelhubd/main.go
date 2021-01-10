@@ -49,17 +49,18 @@ func main() {
 
 	cmd.AddCommand(genutilcli.InitCmd(ctx, cdc, hub.ModuleBasics, hub.DefaultNodeHome))
 	cmd.AddCommand(genutilcli.CollectGenTxsCmd(ctx, cdc, auth.GenesisAccountIterator{}, hub.DefaultNodeHome))
+	cmd.AddCommand(genutilcli.MigrateGenesisCmd(ctx, cdc))
 	cmd.AddCommand(genutilcli.GenTxCmd(ctx, cdc, hub.ModuleBasics, staking.AppModuleBasic{},
 		auth.GenesisAccountIterator{}, hub.DefaultNodeHome, hub.DefaultCLIHome))
 	cmd.AddCommand(genutilcli.ValidateGenesisCmd(ctx, cdc, hub.ModuleBasics))
-	// cmd.AddCommand(genutilcli.AddGenesisAccountCmd(ctx, cdc, hub.DefaultNodeHome, hub.DefaultCLIHome))
+	cmd.AddCommand(AddGenesisAccountCmd(ctx, cdc, hub.DefaultNodeHome, hub.DefaultCLIHome))
 	cmd.AddCommand(flags.NewCompletionCmd(cmd, true))
 
 	server.AddCommands(ctx, cdc, cmd, newApp, exportAppStateAndValidators)
-	cmd.PersistentFlags().
-		UintVar(&invarCheckPeriod, flagInvarCheckPeriod, 0, "Assert registered invariants every N blocks")
+	cmd.PersistentFlags().UintVar(&invarCheckPeriod, flagInvarCheckPeriod,
+		0, "Assert registered invariants every N blocks")
 
-	executor := cli.PrepareBaseCmd(cmd, "SENTINEL_HUB", hub.DefaultNodeHome)
+	executor := cli.PrepareBaseCmd(cmd, "SENTINELHUB", hub.DefaultNodeHome)
 	if err := executor.Execute(); err != nil {
 		panic(err)
 	}

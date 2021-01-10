@@ -45,8 +45,11 @@ simulate_long:
 	@go test -mod=readonly -v -timeout=1h -run TestFullAppSimulation \
 		-Enabled=true -Seed=4 -NumBlocks=2500 -BlockSize=50 -Commit=true
 
+simulate_multi_short:
+	@runsim -Jobs=4 -SimAppPkg=. 5 1 TestFullAppSimulation
+
 simulate_multi_long:
-	@runsim -Jobs=4 -SimAppPkg=. 500 1 TestFullAppSimulation
+	@runsim -Jobs=4 -SimAppPkg=. 250 1 TestFullAppSimulation
 
 mod_verify:
 	@echo "Ensure dependencies have not been modified"

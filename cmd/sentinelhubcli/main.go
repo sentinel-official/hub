@@ -52,7 +52,7 @@ func main() {
 		flags.NewCompletionCmd(cmd, true),
 	)
 
-	executor := cli.PrepareMainCmd(cmd, "SENTINEL_HUB", hub.DefaultCLIHome)
+	executor := cli.PrepareMainCmd(cmd, "SENTINELHUB", hub.DefaultCLIHome)
 	if err := executor.Execute(); err != nil {
 		panic(err)
 	}
