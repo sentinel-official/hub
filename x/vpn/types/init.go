@@ -1,6 +1,8 @@
 package types
 
 import (
+	"fmt"
+
 	deposit "github.com/sentinel-official/hub/x/deposit/types"
 	node "github.com/sentinel-official/hub/x/node/types"
 	plan "github.com/sentinel-official/hub/x/plan/types"
@@ -10,6 +12,10 @@ import (
 )
 
 func init() {
+	node.ParamsSubspace = fmt.Sprintf("%s/%s", ModuleName, node.ModuleName)
+	subscription.ParamsSubspace = fmt.Sprintf("%s/%s", ModuleName, subscription.ModuleName)
+	session.ParamsSubspace = fmt.Sprintf("%s/%s", ModuleName, session.ModuleName)
+
 	deposit.RouterKey = ModuleName
 	provider.RouterKey = ModuleName
 	node.RouterKey = ModuleName

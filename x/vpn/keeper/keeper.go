@@ -1,8 +1,6 @@
 package keeper
 
 import (
-	"fmt"
-
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/bank"
@@ -15,7 +13,6 @@ import (
 	"github.com/sentinel-official/hub/x/provider"
 	"github.com/sentinel-official/hub/x/session"
 	"github.com/sentinel-official/hub/x/subscription"
-	"github.com/sentinel-official/hub/x/vpn/types"
 )
 
 type Keeper struct {
@@ -29,18 +26,12 @@ type Keeper struct {
 
 func NewKeeper(cdc *codec.Codec, key sdk.StoreKey, paramsKeeper params.Keeper, bankKeeper bank.Keeper, supplyKeeper supply.Keeper) Keeper {
 	var (
-		nodeParams         = paramsKeeper.Subspace(fmt.Sprintf("%s/%s", types.ModuleName, node.ParamsSubspace))
-		subscriptionParams = paramsKeeper.Subspace(fmt.Sprintf("%s/%s", types.ModuleName, subscription.ParamsSubspace))
-		sessionParams      = paramsKeeper.Subspace(fmt.Sprintf("%s/%s", types.ModuleName, session.ParamsSubspace))
-	)
-
-	var (
 		depositKeeper      = deposit.NewKeeper(cdc, key)
 		providerKeeper     = provider.NewKeeper(cdc, key)
-		nodeKeeper         = node.NewKeeper(cdc, key, nodeParams)
+		nodeKeeper         = node.NewKeeper(cdc, key, paramsKeeper.Subspace(node.ParamsSubspace))
 		planKeeper         = plan.NewKeeper(cdc, key)
-		subscriptionKeeper = subscription.NewKeeper(cdc, key, subscriptionParams)
-		sessionKeeper      = session.NewKeeper(cdc, key, sessionParams)
+		subscriptionKeeper = subscription.NewKeeper(cdc, key, paramsKeeper.Subspace(subscription.ParamsSubspace))
+		sessionKeeper      = session.NewKeeper(cdc, key, paramsKeeper.Subspace(session.ParamsSubspace))
 	)
 
 	depositKeeper.WithSupplyKeeper(supplyKeeper)

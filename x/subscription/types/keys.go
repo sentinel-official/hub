@@ -1,6 +1,7 @@
 package types
 
 import (
+	"encoding/binary"
 	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -9,14 +10,14 @@ import (
 )
 
 const (
-	ModuleName     = "subscription"
-	ParamsSubspace = ModuleName
-	QuerierRoute   = ModuleName
+	ModuleName   = "subscription"
+	QuerierRoute = ModuleName
 )
 
 var (
-	RouterKey = ModuleName
-	StoreKey  = ModuleName
+	ParamsSubspace = ModuleName
+	RouterKey      = ModuleName
+	StoreKey       = ModuleName
 )
 
 var (
@@ -27,34 +28,20 @@ var (
 )
 
 var (
-	CountKey                        = []byte{0x00}
-	SubscriptionKeyPrefix           = []byte{0x01}
-	SubscriptionForAddressKeyPrefix = []byte{0x02}
-	SubscriptionForPlanKeyPrefix    = []byte{0x03}
-	SubscriptionForNodeKeyPrefix    = []byte{0x04}
-	CancelSubscriptionAtKeyPrefix   = []byte{0x05}
+	CountKey                     = []byte{0x00}
+	SubscriptionKeyPrefix        = []byte{0x10}
+	SubscriptionForNodeKeyPrefix = []byte{0x20}
+	SubscriptionForPlanKeyPrefix = []byte{0x30}
 
-	QuotaKeyPrefix = []byte{0x10}
+	ActiveSubscriptionForAddressKeyPrefix   = []byte{0x40}
+	InactiveSubscriptionForAddressKeyPrefix = []byte{0x41}
+
+	InactiveSubscriptionAtKeyPrefix = []byte{0x50}
+	QuotaKeyPrefix                  = []byte{0x60}
 )
 
 func SubscriptionKey(id uint64) []byte {
 	return append(SubscriptionKeyPrefix, sdk.Uint64ToBigEndian(id)...)
-}
-
-func GetSubscriptionForAddressKeyPrefix(address sdk.AccAddress) []byte {
-	return append(SubscriptionForAddressKeyPrefix, address.Bytes()...)
-}
-
-func SubscriptionForAddressKey(address sdk.AccAddress, i uint64) []byte {
-	return append(GetSubscriptionForAddressKeyPrefix(address), sdk.Uint64ToBigEndian(i)...)
-}
-
-func GetSubscriptionForPlanKeyPrefix(id uint64) []byte {
-	return append(SubscriptionForPlanKeyPrefix, sdk.Uint64ToBigEndian(id)...)
-}
-
-func SubscriptionForPlanKey(p, s uint64) []byte {
-	return append(GetSubscriptionForPlanKeyPrefix(p), sdk.Uint64ToBigEndian(s)...)
 }
 
 func GetSubscriptionForNodeKeyPrefix(address hub.NodeAddress) []byte {
@@ -65,12 +52,36 @@ func SubscriptionForNodeKey(address hub.NodeAddress, id uint64) []byte {
 	return append(GetSubscriptionForNodeKeyPrefix(address), sdk.Uint64ToBigEndian(id)...)
 }
 
-func GetCancelSubscriptionAtKeyPrefix(at time.Time) []byte {
-	return append(CancelSubscriptionAtKeyPrefix, sdk.FormatTimeBytes(at)...)
+func GetSubscriptionForPlanKeyPrefix(id uint64) []byte {
+	return append(SubscriptionForPlanKeyPrefix, sdk.Uint64ToBigEndian(id)...)
 }
 
-func CancelSubscriptionAtKey(at time.Time, id uint64) []byte {
-	return append(GetCancelSubscriptionAtKeyPrefix(at), sdk.Uint64ToBigEndian(id)...)
+func SubscriptionForPlanKey(p, s uint64) []byte {
+	return append(GetSubscriptionForPlanKeyPrefix(p), sdk.Uint64ToBigEndian(s)...)
+}
+
+func GetActiveSubscriptionForAddressKeyPrefix(address sdk.AccAddress) []byte {
+	return append(ActiveSubscriptionForAddressKeyPrefix, address.Bytes()...)
+}
+
+func ActiveSubscriptionForAddressKey(address sdk.AccAddress, i uint64) []byte {
+	return append(GetActiveSubscriptionForAddressKeyPrefix(address), sdk.Uint64ToBigEndian(i)...)
+}
+
+func GetInactiveSubscriptionForAddressKeyPrefix(address sdk.AccAddress) []byte {
+	return append(InactiveSubscriptionForAddressKeyPrefix, address.Bytes()...)
+}
+
+func InactiveSubscriptionForAddressKey(address sdk.AccAddress, i uint64) []byte {
+	return append(GetInactiveSubscriptionForAddressKeyPrefix(address), sdk.Uint64ToBigEndian(i)...)
+}
+
+func GetInactiveSubscriptionAtKeyPrefix(at time.Time) []byte {
+	return append(InactiveSubscriptionAtKeyPrefix, sdk.FormatTimeBytes(at)...)
+}
+
+func InactiveSubscriptionAtKey(at time.Time, id uint64) []byte {
+	return append(GetInactiveSubscriptionAtKeyPrefix(at), sdk.Uint64ToBigEndian(id)...)
 }
 
 func GetQuotaKeyPrefix(id uint64) []byte {
@@ -79,4 +90,20 @@ func GetQuotaKeyPrefix(id uint64) []byte {
 
 func QuotaKey(id uint64, address sdk.AccAddress) []byte {
 	return append(GetQuotaKeyPrefix(id), address.Bytes()...)
+}
+
+func IDFromSubscriptionForNodeKey(key []byte) uint64 {
+	return binary.BigEndian.Uint64(key[1+sdk.AddrLen:])
+}
+
+func IDFromSubscriptionForPlanKey(key []byte) uint64 {
+	return binary.BigEndian.Uint64(key[1+8:])
+}
+
+func IDFromStatusSubscriptionForAddressKey(key []byte) uint64 {
+	return binary.BigEndian.Uint64(key[1+sdk.AddrLen:])
+}
+
+func IDFromInactiveSubscriptionAtKey(key []byte) uint64 {
+	return binary.BigEndian.Uint64(key[1+29:])
 }

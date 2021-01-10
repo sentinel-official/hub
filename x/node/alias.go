@@ -13,15 +13,10 @@ import (
 )
 
 const (
-	Codespace               = types.Codespace
-	EventTypeSet            = types.EventTypeSet
-	EventTypeUpdate         = types.EventTypeUpdate
-	EventTypeSetStatus      = types.EventTypeSetStatus
 	AttributeKeyProvider    = types.AttributeKeyProvider
 	AttributeKeyAddress     = types.AttributeKeyAddress
 	AttributeKeyStatus      = types.AttributeKeyStatus
 	ModuleName              = types.ModuleName
-	ParamsSubspace          = types.ParamsSubspace
 	QuerierRoute            = types.QuerierRoute
 	DefaultInactiveDuration = types.DefaultInactiveDuration
 	QueryNode               = types.QueryNode
@@ -32,14 +27,6 @@ const (
 var (
 	// functions aliases
 	RegisterCodec                       = types.RegisterCodec
-	ErrorMarshal                        = types.ErrorMarshal
-	ErrorUnmarshal                      = types.ErrorUnmarshal
-	ErrorUnknownMsgType                 = types.ErrorUnknownMsgType
-	ErrorUnknownQueryType               = types.ErrorUnknownQueryType
-	ErrorInvalidField                   = types.ErrorInvalidField
-	ErrorProviderDoesNotExist           = types.ErrorProviderDoesNotExist
-	ErrorDuplicateNode                  = types.ErrorDuplicateNode
-	ErrorNodeDoesNotExist               = types.ErrorNodeDoesNotExist
 	NewGenesisState                     = types.NewGenesisState
 	DefaultGenesisState                 = types.DefaultGenesisState
 	NodeKey                             = types.NodeKey
@@ -53,6 +40,9 @@ var (
 	ActiveNodeAtKey                     = types.ActiveNodeAtKey
 	GetInactiveNodeAtKeyPrefix          = types.GetInactiveNodeAtKeyPrefix
 	InactiveNodeAtKey                   = types.InactiveNodeAtKey
+	AddressFromStatusNodeKey            = types.AddressFromStatusNodeKey
+	AddressFromStatusNodeForProviderKey = types.AddressFromStatusNodeForProviderKey
+	AddressFromStatusNodeAtKey          = types.AddressFromStatusNodeAtKey
 	NewMsgRegister                      = types.NewMsgRegister
 	NewMsgUpdate                        = types.NewMsgUpdate
 	NewMsgSetStatus                     = types.NewMsgSetStatus
@@ -67,6 +57,18 @@ var (
 
 	// variable aliases
 	ModuleCdc                        = types.ModuleCdc
+	ErrorMarshal                     = types.ErrorMarshal
+	ErrorUnmarshal                   = types.ErrorUnmarshal
+	ErrorUnknownMsgType              = types.ErrorUnknownMsgType
+	ErrorUnknownQueryType            = types.ErrorUnknownQueryType
+	ErrorInvalidField                = types.ErrorInvalidField
+	ErrorProviderDoesNotExist        = types.ErrorProviderDoesNotExist
+	ErrorDuplicateNode               = types.ErrorDuplicateNode
+	ErrorNodeDoesNotExist            = types.ErrorNodeDoesNotExist
+	EventTypeSet                     = types.EventTypeSet
+	EventTypeUpdate                  = types.EventTypeUpdate
+	EventTypeSetStatus               = types.EventTypeSetStatus
+	ParamsSubspace                   = types.ParamsSubspace
 	RouterKey                        = types.RouterKey
 	StoreKey                         = types.StoreKey
 	EventModuleName                  = types.EventModuleName

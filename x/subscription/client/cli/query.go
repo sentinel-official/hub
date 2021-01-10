@@ -62,6 +62,11 @@ func querySubscriptions(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
+			status, err := cmd.Flags().GetString(flagStatus)
+			if err != nil {
+				return err
+			}
+
 			skip, err := cmd.Flags().GetInt(flagSkip)
 			if err != nil {
 				return err
@@ -84,7 +89,7 @@ func querySubscriptions(cdc *codec.Codec) *cobra.Command {
 					return err
 				}
 
-				subscriptions, err = common.QuerySubscriptionsForAddress(ctx, address, skip, limit)
+				subscriptions, err = common.QuerySubscriptionsForAddress(ctx, address, hub.StatusFromString(status), skip, limit)
 			} else if plan > 0 {
 				subscriptions, err = common.QuerySubscriptionsForPlan(ctx, plan, skip, limit)
 			} else if len(bech32Node) > 0 {
@@ -113,6 +118,7 @@ func querySubscriptions(cdc *codec.Codec) *cobra.Command {
 	cmd.Flags().String(flagAddress, "", "account address")
 	cmd.Flags().Uint64(flagPlan, 0, "plan ID")
 	cmd.Flags().String(flagNodeAddress, "", "node address")
+	cmd.Flags().String(flagStatus, "", "status")
 	cmd.Flags().Int(flagSkip, 0, "skip")
 	cmd.Flags().Int(flagLimit, 25, "limit")
 

@@ -71,7 +71,7 @@ func (k Keeper) GetPlans(ctx sdk.Context, skip, limit int) (items types.Plans) {
 
 func (k Keeper) SetActivePlan(ctx sdk.Context, id uint64) {
 	key := types.ActivePlanKey(id)
-	value := k.cdc.MustMarshalBinaryLengthPrefixed(id)
+	value := k.cdc.MustMarshalBinaryLengthPrefixed(true)
 
 	store := k.Store(ctx)
 	store.Set(key, value)
@@ -96,10 +96,7 @@ func (k Keeper) GetActivePlans(ctx sdk.Context, skip, limit int) (items types.Pl
 
 	iter.Skip(skip)
 	iter.Limit(limit, func(iter sdk.Iterator) {
-		var id uint64
-		k.cdc.MustUnmarshalBinaryLengthPrefixed(iter.Value(), &id)
-
-		item, _ := k.GetPlan(ctx, id)
+		item, _ := k.GetPlan(ctx, types.IDFromStatusPlanKey(iter.Key()))
 		items = append(items, item)
 	})
 
@@ -108,7 +105,7 @@ func (k Keeper) GetActivePlans(ctx sdk.Context, skip, limit int) (items types.Pl
 
 func (k Keeper) SetInactivePlan(ctx sdk.Context, id uint64) {
 	key := types.InactivePlanKey(id)
-	value := k.cdc.MustMarshalBinaryLengthPrefixed(id)
+	value := k.cdc.MustMarshalBinaryLengthPrefixed(true)
 
 	store := k.Store(ctx)
 	store.Set(key, value)
@@ -133,10 +130,7 @@ func (k Keeper) GetInactivePlans(ctx sdk.Context, skip, limit int) (items types.
 
 	iter.Skip(skip)
 	iter.Limit(limit, func(iter sdk.Iterator) {
-		var id uint64
-		k.cdc.MustUnmarshalBinaryLengthPrefixed(iter.Value(), &id)
-
-		item, _ := k.GetPlan(ctx, id)
+		item, _ := k.GetPlan(ctx, types.IDFromStatusPlanKey(iter.Key()))
 		items = append(items, item)
 	})
 
@@ -145,7 +139,7 @@ func (k Keeper) GetInactivePlans(ctx sdk.Context, skip, limit int) (items types.
 
 func (k Keeper) SetActivePlanForProvider(ctx sdk.Context, address hub.ProvAddress, id uint64) {
 	key := types.ActivePlanForProviderKey(address, id)
-	value := k.cdc.MustMarshalBinaryLengthPrefixed(id)
+	value := k.cdc.MustMarshalBinaryLengthPrefixed(true)
 
 	store := k.Store(ctx)
 	store.Set(key, value)
@@ -170,10 +164,7 @@ func (k Keeper) GetActivePlansForProvider(ctx sdk.Context, address hub.ProvAddre
 
 	iter.Skip(skip)
 	iter.Limit(limit, func(iter sdk.Iterator) {
-		var id uint64
-		k.cdc.MustUnmarshalBinaryLengthPrefixed(iter.Value(), &id)
-
-		item, _ := k.GetPlan(ctx, id)
+		item, _ := k.GetPlan(ctx, types.IDFromStatusPlanForProviderKey(iter.Key()))
 		items = append(items, item)
 	})
 
@@ -182,7 +173,7 @@ func (k Keeper) GetActivePlansForProvider(ctx sdk.Context, address hub.ProvAddre
 
 func (k Keeper) SetInactivePlanForProvider(ctx sdk.Context, address hub.ProvAddress, id uint64) {
 	key := types.InactivePlanForProviderKey(address, id)
-	value := k.cdc.MustMarshalBinaryLengthPrefixed(id)
+	value := k.cdc.MustMarshalBinaryLengthPrefixed(true)
 
 	store := k.Store(ctx)
 	store.Set(key, value)
@@ -207,10 +198,7 @@ func (k Keeper) GetInactivePlansForProvider(ctx sdk.Context, address hub.ProvAdd
 
 	iter.Skip(skip)
 	iter.Limit(limit, func(iter sdk.Iterator) {
-		var id uint64
-		k.cdc.MustUnmarshalBinaryLengthPrefixed(iter.Value(), &id)
-
-		item, _ := k.GetPlan(ctx, id)
+		item, _ := k.GetPlan(ctx, types.IDFromStatusPlanForProviderKey(iter.Key()))
 		items = append(items, item)
 	})
 
@@ -230,10 +218,7 @@ func (k Keeper) GetPlansForProvider(ctx sdk.Context, address hub.ProvAddress, sk
 
 	iter.Skip(skip)
 	iter.Limit(limit, func(iter sdk.Iterator) {
-		var id uint64
-		k.cdc.MustUnmarshalBinaryLengthPrefixed(iter.Value(), &id)
-
-		item, _ := k.GetPlan(ctx, id)
+		item, _ := k.GetPlan(ctx, types.IDFromStatusPlanForProviderKey(iter.Key()))
 		items = append(items, item)
 	})
 

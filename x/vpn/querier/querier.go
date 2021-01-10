@@ -2,6 +2,7 @@ package querier
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/errors"
 	abci "github.com/tendermint/tendermint/abci/types"
 
 	"github.com/sentinel-official/hub/x/deposit"
@@ -15,7 +16,7 @@ import (
 )
 
 func NewQuerier(k keeper.Keeper) sdk.Querier {
-	return func(ctx sdk.Context, path []string, req abci.RequestQuery) ([]byte, sdk.Error) {
+	return func(ctx sdk.Context, path []string, req abci.RequestQuery) ([]byte, error) {
 		switch path[0] {
 		case deposit.ModuleName:
 			return deposit.Querier(ctx, path[1:], req, k.Deposit)
@@ -30,7 +31,7 @@ func NewQuerier(k keeper.Keeper) sdk.Querier {
 		case session.ModuleName:
 			return session.Querier(ctx, path[1:], req, k.Session)
 		default:
-			return nil, types.ErrorUnknownQueryType(path[0])
+			return nil, errors.Wrapf(types.ErrorUnknownQueryType, "%s", path[0])
 		}
 	}
 }

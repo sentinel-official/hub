@@ -1,6 +1,8 @@
 package types
 
 import (
+	"fmt"
+
 	"github.com/cosmos/cosmos-sdk/codec"
 )
 
@@ -16,6 +18,6 @@ func init() {
 }
 
 func RegisterCodec(cdc *codec.Codec) {
-	cdc.RegisterConcrete(MsgRegister{}, "x/provider/MsgRegister", nil)
-	cdc.RegisterConcrete(MsgUpdate{}, "x/provider/MsgUpdate", nil)
+	cdc.RegisterConcrete(MsgRegister{}, fmt.Sprintf("x/%s/MsgRegister", ModuleName), nil)
+	cdc.RegisterConcrete(MsgUpdate{}, fmt.Sprintf("x/%s/MsgUpdate", ModuleName), nil)
 }

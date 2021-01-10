@@ -5,8 +5,8 @@ import (
 )
 
 const (
-	QueryProvider  = "provider"
-	QueryProviders = "providers"
+	QueryProvider  = "Provider"
+	QueryProviders = "Providers"
 )
 
 // QueryProviderParams is the request parameters for querying a provider.

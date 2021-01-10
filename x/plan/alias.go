@@ -13,12 +13,6 @@ import (
 )
 
 const (
-	Codespace             = types.Codespace
-	EventTypeSetCount     = types.EventTypeSetCount
-	EventTypeSet          = types.EventTypeSet
-	EventTypeSetStatus    = types.EventTypeSetStatus
-	EventTypeAddNode      = types.EventTypeAddNode
-	EventTypeRemoveNode   = types.EventTypeRemoveNode
 	AttributeKeyAddress   = types.AttributeKeyAddress
 	AttributeKeyID        = types.AttributeKeyID
 	AttributeKeyCount     = types.AttributeKeyCount
@@ -34,15 +28,6 @@ const (
 var (
 	// functions aliases
 	RegisterCodec                       = types.RegisterCodec
-	ErrorMarshal                        = types.ErrorMarshal
-	ErrorUnmarshal                      = types.ErrorUnmarshal
-	ErrorUnknownMsgType                 = types.ErrorUnknownMsgType
-	ErrorUnknownQueryType               = types.ErrorUnknownQueryType
-	ErrorInvalidField                   = types.ErrorInvalidField
-	ErrorProviderDoesNotExist           = types.ErrorProviderDoesNotExist
-	ErrorPlanDoesNotExist               = types.ErrorPlanDoesNotExist
-	ErrorNodeDoesNotExist               = types.ErrorNodeDoesNotExist
-	ErrorUnauthorized                   = types.ErrorUnauthorized
 	NewGenesisState                     = types.NewGenesisState
 	DefaultGenesisState                 = types.DefaultGenesisState
 	PlanKey                             = types.PlanKey
@@ -54,6 +39,9 @@ var (
 	InactivePlanForProviderKey          = types.InactivePlanForProviderKey
 	GetNodeForPlanKeyPrefix             = types.GetNodeForPlanKeyPrefix
 	NodeForPlanKey                      = types.NodeForPlanKey
+	IDFromStatusPlanKey                 = types.IDFromStatusPlanKey
+	IDFromStatusPlanForProviderKey      = types.IDFromStatusPlanForProviderKey
+	AddressFromNodeForPlanKey           = types.AddressFromNodeForPlanKey
 	NewMsgAdd                           = types.NewMsgAdd
 	NewMsgSetStatus                     = types.NewMsgSetStatus
 	NewMsgAddNode                       = types.NewMsgAddNode
@@ -67,6 +55,20 @@ var (
 
 	// variable aliases
 	ModuleCdc                        = types.ModuleCdc
+	ErrorMarshal                     = types.ErrorMarshal
+	ErrorUnmarshal                   = types.ErrorUnmarshal
+	ErrorUnknownMsgType              = types.ErrorUnknownMsgType
+	ErrorUnknownQueryType            = types.ErrorUnknownQueryType
+	ErrorInvalidField                = types.ErrorInvalidField
+	ErrorProviderDoesNotExist        = types.ErrorProviderDoesNotExist
+	ErrorPlanDoesNotExist            = types.ErrorPlanDoesNotExist
+	ErrorNodeDoesNotExist            = types.ErrorNodeDoesNotExist
+	ErrorUnauthorized                = types.ErrorUnauthorized
+	EventTypeSetCount                = types.EventTypeSetCount
+	EventTypeSet                     = types.EventTypeSet
+	EventTypeSetStatus               = types.EventTypeSetStatus
+	EventTypeAddNode                 = types.EventTypeAddNode
+	EventTypeRemoveNode              = types.EventTypeRemoveNode
 	RouterKey                        = types.RouterKey
 	StoreKey                         = types.StoreKey
 	EventModuleName                  = types.EventModuleName

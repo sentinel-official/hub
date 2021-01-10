@@ -13,7 +13,6 @@ import (
 )
 
 const (
-	Codespace     = types.Codespace
 	ModuleName    = types.ModuleName
 	QuerierRoute  = types.QuerierRoute
 	QueryDeposit  = types.QueryDeposit
@@ -22,28 +21,30 @@ const (
 
 var (
 	// functions aliases
-	RegisterCodec                 = types.RegisterCodec
-	ErrorMarshal                  = types.ErrorMarshal
-	ErrorUnmarshal                = types.ErrorUnmarshal
-	ErrorUnknownQueryType         = types.ErrorUnknownQueryType
-	ErrorInsufficientDepositFunds = types.ErrorInsufficientDepositFunds
-	ErrorDepositDoesNotExist      = types.ErrorDepositDoesNotExist
-	NewGenesisState               = types.NewGenesisState
-	DefaultGenesisState           = types.DefaultGenesisState
-	DepositKey                    = types.DepositKey
-	NewQueryDepositParams         = types.NewQueryDepositParams
-	NewQueryDepositsParams        = types.NewQueryDepositsParams
-	NewKeeper                     = keeper.NewKeeper
-	CreateTestInput               = keeper.CreateTestInput
-	MakeTestCodec                 = keeper.MakeTestCodec
-	Querier                       = querier.Querier
+	RegisterCodec          = types.RegisterCodec
+	NewGenesisState        = types.NewGenesisState
+	DefaultGenesisState    = types.DefaultGenesisState
+	DepositKey             = types.DepositKey
+	NewQueryDepositParams  = types.NewQueryDepositParams
+	NewQueryDepositsParams = types.NewQueryDepositsParams
+	NewKeeper              = keeper.NewKeeper
+	CreateTestInput        = keeper.CreateTestInput
+	MakeTestCodec          = keeper.MakeTestCodec
+	Querier                = querier.Querier
 
 	// variable aliases
-	ModuleCdc        = types.ModuleCdc
-	RouterKey        = types.RouterKey
-	StoreKey         = types.StoreKey
-	EventModuleName  = types.EventModuleName
-	DepositKeyPrefix = types.DepositKeyPrefix
+	ModuleCdc                     = types.ModuleCdc
+	ErrorMarshal                  = types.ErrorMarshal
+	ErrorUnmarshal                = types.ErrorUnmarshal
+	ErrorUnknownMsgType           = types.ErrorUnknownMsgType
+	ErrorUnknownQueryType         = types.ErrorUnknownQueryType
+	ErrorInvalidField             = types.ErrorInvalidField
+	ErrorInsufficientDepositFunds = types.ErrorInsufficientDepositFunds
+	ErrorDepositDoesNotExist      = types.ErrorDepositDoesNotExist
+	RouterKey                     = types.RouterKey
+	StoreKey                      = types.StoreKey
+	EventModuleName               = types.EventModuleName
+	DepositKeyPrefix              = types.DepositKeyPrefix
 )
 
 type (

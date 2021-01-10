@@ -1,6 +1,8 @@
 package cli
 
 import (
+	"bufio"
+
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -16,8 +18,9 @@ func txRegister(cdc *codec.Codec) *cobra.Command {
 		Use:   "register",
 		Short: "Register a provider",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			txb := auth.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
-			ctx := context.NewCLIContext().WithCodec(cdc)
+			buffer := bufio.NewReader(cmd.InOrStdin())
+			txb := auth.NewTxBuilderFromCLI(buffer).WithTxEncoder(utils.GetTxEncoder(cdc))
+			ctx := context.NewCLIContextWithInput(buffer).WithCodec(cdc)
 
 			name, err := cmd.Flags().GetString(flagName)
 			if err != nil {
@@ -40,6 +43,10 @@ func txRegister(cdc *codec.Codec) *cobra.Command {
 			}
 
 			msg := types.NewMsgRegister(ctx.FromAddress, name, identity, website, description)
+			if err := msg.ValidateBasic(); err != nil {
+				return err
+			}
+
 			return utils.GenerateOrBroadcastMsgs(ctx, txb, []sdk.Msg{msg})
 		},
 	}
@@ -59,8 +66,9 @@ func txUpdate(cdc *codec.Codec) *cobra.Command {
 		Use:   "update",
 		Short: "Update a provider",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			txb := auth.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
-			ctx := context.NewCLIContext().WithCodec(cdc)
+			buffer := bufio.NewReader(cmd.InOrStdin())
+			txb := auth.NewTxBuilderFromCLI(buffer).WithTxEncoder(utils.GetTxEncoder(cdc))
+			ctx := context.NewCLIContextWithInput(buffer).WithCodec(cdc)
 
 			name, err := cmd.Flags().GetString(flagName)
 			if err != nil {
@@ -83,6 +91,10 @@ func txUpdate(cdc *codec.Codec) *cobra.Command {
 			}
 
 			msg := types.NewMsgUpdate(ctx.FromAddress.Bytes(), name, identity, website, description)
+			if err := msg.ValidateBasic(); err != nil {
+				return err
+			}
+
 			return utils.GenerateOrBroadcastMsgs(ctx, txb, []sdk.Msg{msg})
 		},
 	}

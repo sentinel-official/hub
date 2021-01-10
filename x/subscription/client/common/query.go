@@ -58,14 +58,14 @@ func QuerySubscriptions(ctx context.CLIContext, skip, limit int) (types.Subscrip
 	return subscriptions, nil
 }
 
-func QuerySubscriptionsForAddress(ctx context.CLIContext, address sdk.AccAddress, skip, limit int) (types.Subscriptions, error) {
-	params := types.NewQuerySubscriptionsForAddressParams(address, skip, limit)
+func QuerySubscriptionsForNode(ctx context.CLIContext, address hub.NodeAddress, skip, limit int) (types.Subscriptions, error) {
+	params := types.NewQuerySubscriptionsForNodeParams(address, skip, limit)
 	bytes, err := ctx.Codec.MarshalJSON(params)
 	if err != nil {
 		return nil, err
 	}
 
-	path := fmt.Sprintf("custom/%s/%s/%s", types.StoreKey, types.QuerierRoute, types.QuerySubscriptionsForAddress)
+	path := fmt.Sprintf("custom/%s/%s/%s", types.StoreKey, types.QuerierRoute, types.QuerySubscriptionsForNode)
 	res, _, err := ctx.QueryWithData(path, bytes)
 	if err != nil {
 		return nil, err
@@ -106,14 +106,14 @@ func QuerySubscriptionsForPlan(ctx context.CLIContext, id uint64, skip, limit in
 	return subscriptions, nil
 }
 
-func QuerySubscriptionsForNode(ctx context.CLIContext, address hub.NodeAddress, skip, limit int) (types.Subscriptions, error) {
-	params := types.NewQuerySubscriptionsForNodeParams(address, skip, limit)
+func QuerySubscriptionsForAddress(ctx context.CLIContext, address sdk.AccAddress, status hub.Status, skip, limit int) (types.Subscriptions, error) {
+	params := types.NewQuerySubscriptionsForAddressParams(address, status, skip, limit)
 	bytes, err := ctx.Codec.MarshalJSON(params)
 	if err != nil {
 		return nil, err
 	}
 
-	path := fmt.Sprintf("custom/%s/%s/%s", types.StoreKey, types.QuerierRoute, types.QuerySubscriptionsForNode)
+	path := fmt.Sprintf("custom/%s/%s/%s", types.StoreKey, types.QuerierRoute, types.QuerySubscriptionsForAddress)
 	res, _, err := ctx.QueryWithData(path, bytes)
 	if err != nil {
 		return nil, err

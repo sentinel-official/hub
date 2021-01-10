@@ -1,6 +1,8 @@
 package types
 
 import (
+	"fmt"
+
 	"github.com/cosmos/cosmos-sdk/codec"
 )
 
@@ -16,10 +18,10 @@ func init() {
 }
 
 func RegisterCodec(cdc *codec.Codec) {
-	cdc.RegisterConcrete(MsgSubscribeToPlan{}, "x/subscription/MsgSubscribeToPlan", nil)
-	cdc.RegisterConcrete(MsgSubscribeToNode{}, "x/subscription/MsgSubscribeToNode", nil)
-	cdc.RegisterConcrete(MsgCancel{}, "x/subscription/MsgCancel", nil)
+	cdc.RegisterConcrete(MsgSubscribeToNode{}, fmt.Sprintf("x/%s/MsgSubscribeToNode", ModuleName), nil)
+	cdc.RegisterConcrete(MsgSubscribeToPlan{}, fmt.Sprintf("x/%s/MsgSubscribeToPlan", ModuleName), nil)
+	cdc.RegisterConcrete(MsgCancel{}, fmt.Sprintf("x/%s/MsgCancel", ModuleName), nil)
 
-	cdc.RegisterConcrete(MsgAddQuota{}, "x/subscription/MsgAddQuota", nil)
-	cdc.RegisterConcrete(MsgUpdateQuota{}, "x/subscription/MsgUpdateQuota", nil)
+	cdc.RegisterConcrete(MsgAddQuota{}, fmt.Sprintf("x/%s/MsgAddQuota", ModuleName), nil)
+	cdc.RegisterConcrete(MsgUpdateQuota{}, fmt.Sprintf("x/%s/MsgUpdateQuota", ModuleName), nil)
 }

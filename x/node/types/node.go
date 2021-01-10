@@ -54,7 +54,13 @@ func (n Node) Validate() error {
 		return fmt.Errorf("price should be valid")
 	}
 	if len(n.RemoteURL) == 0 || len(n.RemoteURL) > 64 {
-		return fmt.Errorf("remote_url length should be (0, 64]")
+		return fmt.Errorf("remote_url length should be between 1 and 64")
+	}
+	if !n.Status.Equal(hub.StatusActive) && !n.Status.Equal(hub.StatusInactive) {
+		return fmt.Errorf("status should be either active or inactive")
+	}
+	if n.StatusAt.IsZero() {
+		return fmt.Errorf("status_at should not be zero")
 	}
 
 	return nil

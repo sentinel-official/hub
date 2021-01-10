@@ -12,43 +12,43 @@ import (
 )
 
 const (
-	// Bech32PrefixAccAddr defines the Bech32 prefix of an account's address
+	// Bech32PrefixAccAddr defines the Bech32 prefix of an account's address.
 	Bech32MainPrefix = "sent"
 
-	// PrefixValidator is the prefix for validator keys
+	// PrefixValidator is the prefix for validator keys.
 	PrefixValidator = "val"
-	// PrefixConsensus is the prefix for consensus keys
+	// PrefixConsensus is the prefix for consensus keys.
 	PrefixConsensus = "cons"
-	// PrefixPublic is the prefix for public keys
+	// PrefixPublic is the prefix for public keys.
 	PrefixPublic = "pub"
-	// PrefixOperator is the prefix for operator keys
+	// PrefixOperator is the prefix for operator keys.
 	PrefixOperator = "oper"
 
-	// PrefixProvider is the prefix for provider keys
+	// PrefixProvider is the prefix for provider keys.
 	PrefixProvider = "prov"
-	// PrefixNode is the prefix for node keys
+	// PrefixNode is the prefix for node keys.
 	PrefixNode = "node"
 
-	// Bech32PrefixAccAddr defines the Bech32 prefix of an account's address
+	// Bech32PrefixAccAddr defines the Bech32 prefix of an account's address.
 	Bech32PrefixAccAddr = Bech32MainPrefix
-	// Bech32PrefixAccPub defines the Bech32 prefix of an account's public key
+	// Bech32PrefixAccPub defines the Bech32 prefix of an account's public key.
 	Bech32PrefixAccPub = Bech32MainPrefix + PrefixPublic
-	// Bech32PrefixValAddr defines the Bech32 prefix of a validator's operator address
+	// Bech32PrefixValAddr defines the Bech32 prefix of a validator's operator address.
 	Bech32PrefixValAddr = Bech32MainPrefix + PrefixValidator + PrefixOperator
-	// Bech32PrefixValPub defines the Bech32 prefix of a validator's operator public key
+	// Bech32PrefixValPub defines the Bech32 prefix of a validator's operator public key.
 	Bech32PrefixValPub = Bech32MainPrefix + PrefixValidator + PrefixOperator + PrefixPublic
-	// Bech32PrefixConsAddr defines the Bech32 prefix of a validator's consensus address
+	// Bech32PrefixConsAddr defines the Bech32 prefix of a validator's consensus address.
 	Bech32PrefixConsAddr = Bech32MainPrefix + PrefixValidator + PrefixConsensus
-	// Bech32PrefixConsPub defines the Bech32 prefix of a validator's consensus public key
+	// Bech32PrefixConsPub defines the Bech32 prefix of a validator's consensus public key.
 	Bech32PrefixConsPub = Bech32MainPrefix + PrefixValidator + PrefixConsensus + PrefixPublic
 
-	// Bech32PrefixProvAddr defines the Bech32 prefix of a providers's address
+	// Bech32PrefixProvAddr defines the Bech32 prefix of a providers's address.
 	Bech32PrefixProvAddr = Bech32MainPrefix + PrefixProvider
-	// Bech32PrefixProvPub defines the Bech32 prefix of a providers's public key
+	// Bech32PrefixProvPub defines the Bech32 prefix of a providers's public key.
 	Bech32PrefixProvPub = Bech32MainPrefix + PrefixProvider + PrefixPublic
-	// Bech32PrefixNodeAddr defines the Bech32 prefix of a node's address
+	// Bech32PrefixNodeAddr defines the Bech32 prefix of a node's address.
 	Bech32PrefixNodeAddr = Bech32MainPrefix + PrefixNode
-	// Bech32PrefixNodePub defines the Bech32 prefix of a node's public key
+	// Bech32PrefixNodePub defines the Bech32 prefix of a node's public key.
 	Bech32PrefixNodePub = Bech32MainPrefix + PrefixNode + PrefixPublic
 )
 

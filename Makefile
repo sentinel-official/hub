@@ -8,9 +8,9 @@ BUILD_TAGS := netgo,ledger
 BUILD_TAGS := $(strip ${BUILD_TAGS})
 
 LD_FLAGS := -s -w \
-    -X github.com/cosmos/cosmos-sdk/version.Name=sentinel-hub \
-    -X github.com/cosmos/cosmos-sdk/version.ServerName=sentinel-hubd \
-    -X github.com/cosmos/cosmos-sdk/version.ClientName=sentinel-hub-cli \
+    -X github.com/cosmos/cosmos-sdk/version.Name=sentinelhub \
+    -X github.com/cosmos/cosmos-sdk/version.ServerName=sentinelhubd \
+    -X github.com/cosmos/cosmos-sdk/version.ClientName=sentinelhubcli \
     -X github.com/cosmos/cosmos-sdk/version.Version=${VERSION} \
     -X github.com/cosmos/cosmos-sdk/version.Commit=${COMMIT} \
     -X github.com/cosmos/cosmos-sdk/version.BuildTags=${BUILD_TAGS}
@@ -20,16 +20,16 @@ all: install test benchmark
 
 build: mod_verify
 ifeq (${OS},Windows_NT)
-	go build -mod=readonly ${BUILD_FLAGS} -o bin/sentinel-hubd.exe ./cmd/sentinel-hubd
-	go build -mod=readonly ${BUILD_FLAGS} -o bin/sentinel-hub-cli.exe ./cmd/sentinel-hub-cli
+	go build -mod=readonly ${BUILD_FLAGS} -o bin/sentinelhubd.exe ./cmd/sentinelhubd
+	go build -mod=readonly ${BUILD_FLAGS} -o bin/sentinelhubcli.exe ./cmd/sentinelhubcli
 else
-	go build -mod=readonly ${BUILD_FLAGS} -o bin/sentinel-hubd ./cmd/sentinel-hubd
-	go build -mod=readonly ${BUILD_FLAGS} -o bin/sentinel-hub-cli ./cmd/sentinel-hub-cli
+	go build -mod=readonly ${BUILD_FLAGS} -o bin/sentinelhubd ./cmd/sentinelhubd
+	go build -mod=readonly ${BUILD_FLAGS} -o bin/sentinelhubcli ./cmd/sentinelhubcli
 endif
 
 install: mod_verify
-	go install -mod=readonly ${BUILD_FLAGS} ./cmd/sentinel-hubd
-	go install -mod=readonly ${BUILD_FLAGS} ./cmd/sentinel-hub-cli
+	go install -mod=readonly ${BUILD_FLAGS} ./cmd/sentinelhubd
+	go install -mod=readonly ${BUILD_FLAGS} ./cmd/sentinelhubcli
 
 test:
 	@go test -mod=readonly -v -cover ${PACKAGES}
@@ -41,8 +41,15 @@ simulate_short:
 	@go test -mod=readonly -v -timeout=1h -run TestFullAppSimulation \
 		-Enabled=true -Seed=4 -NumBlocks=50 -BlockSize=50 -Commit=true
 
-simulate_multi:
-	@runsim -Jobs=4 -SimAppPkg=. 500 1 TestFullAppSimulation
+simulate_long:
+	@go test -mod=readonly -v -timeout=1h -run TestFullAppSimulation \
+		-Enabled=true -Seed=4 -NumBlocks=2500 -BlockSize=50 -Commit=true
+
+simulate_multi_short:
+	@runsim -Jobs=4 -SimAppPkg=. 5 1 TestFullAppSimulation
+
+simulate_multi_long:
+	@runsim -Jobs=4 -SimAppPkg=. 250 1 TestFullAppSimulation
 
 mod_verify:
 	@echo "Ensure dependencies have not been modified"

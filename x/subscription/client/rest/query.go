@@ -50,6 +50,7 @@ func querySubscriptions(ctx context.CLIContext) http.HandlerFunc {
 			address       sdk.AccAddress
 			node          hub.NodeAddress
 			subscriptions types.Subscriptions
+			status        = hub.StatusFromString(query.Get("status"))
 		)
 
 		if query.Get("address") != "" {
@@ -59,7 +60,7 @@ func querySubscriptions(ctx context.CLIContext) http.HandlerFunc {
 				return
 			}
 
-			subscriptions, err = common.QuerySubscriptionsForAddress(ctx, address, skip, limit)
+			subscriptions, err = common.QuerySubscriptionsForAddress(ctx, address, status, skip, limit)
 		} else if query.Get("plan") != "" {
 			plan, err = strconv.ParseUint(query.Get("plan"), 10, 64)
 			if err != nil {

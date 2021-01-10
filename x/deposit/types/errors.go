@@ -1,45 +1,15 @@
 package types
 
 import (
-	"fmt"
-
-	sdk "github.com/cosmos/cosmos-sdk/types"
-
-	hub "github.com/sentinel-official/hub/types"
+	"github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-const (
-	Codespace = sdk.CodespaceType(ModuleName)
+var (
+	ErrorMarshal                  = errors.Register(ModuleName, 101, "error occurred while marshalling")
+	ErrorUnmarshal                = errors.Register(ModuleName, 102, "error occurred while unmarshalling")
+	ErrorUnknownMsgType           = errors.Register(ModuleName, 103, "unknown message type")
+	ErrorUnknownQueryType         = errors.Register(ModuleName, 104, "unknown query type")
+	ErrorInvalidField             = errors.Register(ModuleName, 105, "invalid field")
+	ErrorInsufficientDepositFunds = errors.Register(ModuleName, 106, "insufficient deposit funds")
+	ErrorDepositDoesNotExist      = errors.Register(ModuleName, 107, "deposit does not exist")
 )
-
-const (
-	errorCodeUnknownQueryType sdk.CodeType = iota + 101
-	errorCodeInsufficientDepositFunds
-	errorCodeDepositDoesNotExist
-)
-
-const (
-	errorMsgUnknownQueryType         = "unknown query type: %s"
-	errorMsgInsufficientDepositFunds = "insufficient deposit funds"
-	errorMsgDepositDoesNotExist      = "deposit does not exist"
-)
-
-func ErrorMarshal() sdk.Error {
-	return sdk.NewError(Codespace, hub.ErrorCodeMarshal, hub.ErrorMsgMarshal)
-}
-
-func ErrorUnmarshal() sdk.Error {
-	return sdk.NewError(Codespace, hub.ErrorCodeUnmarshal, hub.ErrorMsgUnmarshal)
-}
-
-func ErrorUnknownQueryType(v string) sdk.Error {
-	return sdk.NewError(Codespace, errorCodeUnknownQueryType, fmt.Sprintf(errorMsgUnknownQueryType, v))
-}
-
-func ErrorInsufficientDepositFunds() sdk.Error {
-	return sdk.NewError(Codespace, errorCodeInsufficientDepositFunds, errorMsgInsufficientDepositFunds)
-}
-
-func ErrorDepositDoesNotExist() sdk.Error {
-	return sdk.NewError(Codespace, errorCodeDepositDoesNotExist, errorMsgDepositDoesNotExist)
-}
