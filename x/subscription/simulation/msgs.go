@@ -123,6 +123,10 @@ func SimulateMsgCancel(ak expected.AccountKeeper, k keeper.Keeper) simulation.Op
 			rSubscription = RandomSubscription(r, subscriptions)
 		)
 
+		if !rSubscription.Owner.Equals(rAccount.Address) {
+			return simulation.NoOpMsg(types.ModuleName), nil, nil
+		}
+
 		msg := types.NewMsgCancel(rAccount.Address, rSubscription.ID)
 		if msg.ValidateBasic() != nil {
 			return simulation.NoOpMsg(types.ModuleName), nil, fmt.Errorf("expected msg to pass ValidateBasic: %s", msg.GetSignBytes())
@@ -158,6 +162,9 @@ func SimulateMsgAddQuota(ak expected.AccountKeeper, k keeper.Keeper) simulation.
 		}
 
 		rSubscription := RandomSubscription(r, subscriptions)
+		if !rSubscription.Owner.Equals(rAccount.Address) {
+			return simulation.NoOpMsg(types.ModuleName), nil, nil
+		}
 		if rSubscription.Plan == 0 {
 			return simulation.NoOpMsg(types.ModuleName), nil, nil
 		}
@@ -212,6 +219,9 @@ func SimulateMsgUpdateQuota(ak expected.AccountKeeper, k keeper.Keeper) simulati
 
 		rSubscription := RandomSubscription(r, subscriptions)
 		if rSubscription.Plan == 0 {
+			return simulation.NoOpMsg(types.ModuleName), nil, nil
+		}
+		if !rSubscription.Owner.Equals(rAccount.Address) {
 			return simulation.NoOpMsg(types.ModuleName), nil, nil
 		}
 
