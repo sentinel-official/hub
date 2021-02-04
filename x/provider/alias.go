@@ -28,6 +28,9 @@ var (
 	ProviderKey             = types.ProviderKey
 	NewMsgRegister          = types.NewMsgRegister
 	NewMsgUpdate            = types.NewMsgUpdate
+	NewParams               = types.NewParams
+	DefaultParams           = types.DefaultParams
+	ParamsKeyTable          = types.ParamsKeyTable
 	NewQueryProviderParams  = types.NewQueryProviderParams
 	NewQueryProvidersParams = types.NewQueryProvidersParams
 	NewKeeper               = keeper.NewKeeper
@@ -44,16 +47,20 @@ var (
 	ErrorProviderDoesNotExist = types.ErrorProviderDoesNotExist
 	EventTypeSet              = types.EventTypeSet
 	EventTypeUpdate           = types.EventTypeUpdate
+	ParamsSubspace            = types.ParamsSubspace
 	RouterKey                 = types.RouterKey
 	StoreKey                  = types.StoreKey
 	EventModuleName           = types.EventModuleName
 	ProviderKeyPrefix         = types.ProviderKeyPrefix
+	DefaultDeposit            = types.DefaultDeposit
+	KeyDeposit                = types.KeyDeposit
 )
 
 type (
 	GenesisState         = types.GenesisState
 	MsgRegister          = types.MsgRegister
 	MsgUpdate            = types.MsgUpdate
+	Params               = types.Params
 	Provider             = types.Provider
 	Providers            = types.Providers
 	QueryProviderParams  = types.QueryProviderParams
