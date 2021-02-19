@@ -223,6 +223,7 @@ func NewApp(
 		keys[vpn.StoreKey],
 		app.paramsKeeper,
 		app.bankKeeper,
+		app.distributionKeeper,
 		app.supplyKeeper)
 
 	app.mm = module.NewManager(
