@@ -58,13 +58,13 @@ func (m MsgUpsert) ValidateBasic() error {
 		return errors.Wrapf(ErrorInvalidField, "%s", "address")
 	}
 
-	// Duration shouldn't be zero
-	if m.Duration == 0 {
+	// Duration shouldn't be negative
+	if m.Duration < 0 {
 		return errors.Wrapf(ErrorInvalidField, "%s", "duration")
 	}
 
-	// Bandwidth shouldn't be zero
-	if m.Bandwidth.IsAllZero() {
+	// Bandwidth shouldn't be negative
+	if m.Bandwidth.IsAnyNegative() {
 		return errors.Wrapf(ErrorInvalidField, "%s", "bandwidth")
 	}
 
