@@ -28,9 +28,12 @@ func txRegister(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			provider, err := hub.ProvAddressFromBech32(s)
-			if err != nil {
-				return err
+			var provider hub.ProvAddress
+			if len(s) > 0 {
+				provider, err = hub.ProvAddressFromBech32(s)
+				if err != nil {
+					return err
+				}
 			}
 
 			s, err = cmd.Flags().GetString(flagPrice)
@@ -38,9 +41,12 @@ func txRegister(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			price, err := sdk.ParseCoins(s)
-			if err != nil {
-				return err
+			var price sdk.Coins
+			if len(s) > 0 {
+				price, err = sdk.ParseCoins(s)
+				if err != nil {
+					return err
+				}
 			}
 
 			remoteURL, err := cmd.Flags().GetString(flagRemoteURL)
