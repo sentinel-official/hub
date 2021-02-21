@@ -40,6 +40,7 @@ func NewKeeper(cdc *codec.Codec, key sdk.StoreKey, paramsKeeper params.Keeper,
 
 	providerKeeper.WithDistributionKeeper(distributionKeeper)
 
+	nodeKeeper.WithDistributionKeeper(distributionKeeper)
 	nodeKeeper.WithProviderKeeper(&providerKeeper)
 	nodeKeeper.WithPlanKeeper(&planKeeper)
 

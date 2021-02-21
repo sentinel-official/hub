@@ -16,6 +16,11 @@ func HandleRegister(ctx sdk.Context, k keeper.Keeper, msg types.MsgRegister) (*s
 		return nil, types.ErrorProviderDoesNotExist
 	}
 
+	deposit := k.Deposit(ctx)
+	if err := k.FundCommunityPool(ctx, msg.From, deposit); err != nil {
+		return nil, err
+	}
+
 	node := types.Node{
 		Address:   msg.From.Bytes(),
 		Provider:  msg.Provider,

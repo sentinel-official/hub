@@ -14,11 +14,12 @@ import (
 )
 
 type Keeper struct {
-	cdc      *codec.Codec
-	key      sdk.StoreKey
-	params   params.Subspace
-	provider expected.ProviderKeeper
-	plan     expected.PlanKeeper
+	cdc          *codec.Codec
+	key          sdk.StoreKey
+	params       params.Subspace
+	distribution expected.DistributionKeeper
+	provider     expected.ProviderKeeper
+	plan         expected.PlanKeeper
 }
 
 func NewKeeper(cdc *codec.Codec, key sdk.StoreKey, params params.Subspace) Keeper {
@@ -27,6 +28,10 @@ func NewKeeper(cdc *codec.Codec, key sdk.StoreKey, params params.Subspace) Keepe
 		key:    key,
 		params: params.WithKeyTable(types.ParamsKeyTable()),
 	}
+}
+
+func (k *Keeper) WithDistributionKeeper(keeper expected.DistributionKeeper) {
+	k.distribution = keeper
 }
 
 func (k *Keeper) WithProviderKeeper(keeper expected.ProviderKeeper) {
