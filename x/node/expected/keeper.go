@@ -13,6 +13,10 @@ type AccountKeeper interface {
 	GetAccount(ctx sdk.Context, address sdk.AccAddress) exported.Account
 }
 
+type DistributionKeeper interface {
+	FundCommunityPool(ctx sdk.Context, amount sdk.Coins, sender sdk.AccAddress) error
+}
+
 type ProviderKeeper interface {
 	HasProvider(ctx sdk.Context, address hub.ProvAddress) bool
 	GetProviders(ctx sdk.Context, skip, limit int) provider.Providers

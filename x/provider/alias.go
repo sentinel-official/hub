@@ -14,6 +14,7 @@ import (
 
 const (
 	AttributeKeyAddress = types.AttributeKeyAddress
+	AttributeKeyDeposit = types.AttributeKeyDeposit
 	ModuleName          = types.ModuleName
 	QuerierRoute        = types.QuerierRoute
 	QueryProvider       = types.QueryProvider
