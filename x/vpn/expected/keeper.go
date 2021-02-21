@@ -6,5 +6,5 @@ import (
 )
 
 type AccountKeeper interface {
-	GetAccount(ctx sdk.Context, addr sdk.AccAddress) exported.Account
+	GetAccount(ctx sdk.Context, address sdk.AccAddress) exported.Account
 }

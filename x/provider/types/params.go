@@ -3,14 +3,9 @@ package types
 import (
 	"fmt"
 	"strings"
-	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/params"
-)
-
-const (
-	DefaultInactiveDuration = 5 * time.Minute
 )
 
 var (
@@ -18,8 +13,7 @@ var (
 )
 
 var (
-	KeyDeposit          = []byte("Deposit")
-	KeyInactiveDuration = []byte("InactiveDuration")
+	KeyDeposit = []byte("Deposit")
 )
 
 var (
@@ -27,23 +21,18 @@ var (
 )
 
 type Params struct {
-	Deposit          sdk.Coin      `json:"deposit"`
-	InactiveDuration time.Duration `json:"inactive_duration"`
+	Deposit sdk.Coin `json:"deposit"`
 }
 
 func (p Params) String() string {
 	return fmt.Sprintf(strings.TrimSpace(`
-Deposit:           %s
-Inactive duration: %s
-`), p.Deposit, p.InactiveDuration)
+Deposit: %s
+`), p.Deposit)
 }
 
 func (p Params) Validate() error {
 	if !p.Deposit.IsValid() {
 		return fmt.Errorf("deposit should be valid")
-	}
-	if p.InactiveDuration <= 0 {
-		return fmt.Errorf("inactive_duration should be positive")
 	}
 
 	return nil
@@ -58,27 +47,18 @@ func (p *Params) ParamSetPairs() params.ParamSetPairs {
 				return nil
 			},
 		},
-		{
-			Key:   KeyInactiveDuration,
-			Value: &p.InactiveDuration,
-			ValidatorFn: func(_ interface{}) error {
-				return nil
-			},
-		},
 	}
 }
 
-func NewParams(deposit sdk.Coin, inactiveDuration time.Duration) Params {
+func NewParams(deposit sdk.Coin) Params {
 	return Params{
-		Deposit:          deposit,
-		InactiveDuration: inactiveDuration,
+		Deposit: deposit,
 	}
 }
 
 func DefaultParams() Params {
 	return Params{
-		Deposit:          DefaultDeposit,
-		InactiveDuration: DefaultInactiveDuration,
+		Deposit: DefaultDeposit,
 	}
 }
 

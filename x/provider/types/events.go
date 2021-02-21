@@ -6,6 +6,7 @@ import (
 
 const (
 	AttributeKeyAddress = "address"
+	AttributeKeyDeposit = "deposit"
 )
 
 var (

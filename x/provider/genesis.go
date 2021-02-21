@@ -10,24 +10,30 @@ import (
 )
 
 func InitGenesis(ctx sdk.Context, k keeper.Keeper, state types.GenesisState) {
-	for _, provider := range state {
+	k.SetParams(ctx, state.Params)
+
+	for _, provider := range state.Providers {
 		k.SetProvider(ctx, provider)
 	}
 }
 
 func ExportGenesis(ctx sdk.Context, k keeper.Keeper) types.GenesisState {
-	return k.GetProviders(ctx, 0, 0)
+	return types.NewGenesisState(k.GetProviders(ctx, 0, 0), k.GetParams(ctx))
 }
 
 func ValidateGenesis(state types.GenesisState) error {
-	for _, provider := range state {
+	if err := state.Params.Validate(); err != nil {
+		return err
+	}
+
+	for _, provider := range state.Providers {
 		if err := provider.Validate(); err != nil {
 			return err
 		}
 	}
 
 	providers := make(map[string]bool)
-	for _, provider := range state {
+	for _, provider := range state.Providers {
 		address := provider.Address.String()
 		if providers[address] {
 			return fmt.Errorf("found duplicate provider address %s", address)

@@ -12,8 +12,9 @@ const (
 )
 
 var (
-	RouterKey = ModuleName
-	StoreKey  = ModuleName
+	ParamsSubspace = ModuleName
+	RouterKey      = ModuleName
+	StoreKey       = ModuleName
 )
 
 var (

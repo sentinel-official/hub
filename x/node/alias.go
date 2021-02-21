@@ -79,6 +79,8 @@ var (
 	InactiveNodeForProviderKeyPrefix = types.InactiveNodeForProviderKeyPrefix
 	ActiveNodeAtKeyPrefix            = types.ActiveNodeAtKeyPrefix
 	InactiveNodeAtKeyPrefix          = types.InactiveNodeAtKeyPrefix
+	DefaultDeposit                   = types.DefaultDeposit
+	KeyDeposit                       = types.KeyDeposit
 	KeyInactiveDuration              = types.KeyInactiveDuration
 )
 

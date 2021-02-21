@@ -13,6 +13,11 @@ func HandleRegister(ctx sdk.Context, k keeper.Keeper, msg types.MsgRegister) (*s
 		return nil, types.ErrorDuplicateProvider
 	}
 
+	deposit := k.Deposit(ctx)
+	if err := k.FundCommunityPool(ctx, msg.From, deposit); err != nil {
+		return nil, err
+	}
+
 	provider := types.Provider{
 		Address:     msg.From.Bytes(),
 		Name:        msg.Name,
@@ -25,6 +30,7 @@ func HandleRegister(ctx sdk.Context, k keeper.Keeper, msg types.MsgRegister) (*s
 	ctx.EventManager().EmitEvent(sdk.NewEvent(
 		types.EventTypeSet,
 		sdk.NewAttribute(types.AttributeKeyAddress, provider.Address.String()),
+		sdk.NewAttribute(types.AttributeKeyDeposit, deposit.String()),
 	))
 
 	ctx.EventManager().EmitEvent(types.EventModuleName)
