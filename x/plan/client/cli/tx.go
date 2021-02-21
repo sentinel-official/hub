@@ -30,9 +30,12 @@ func txAdd(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			price, err := sdk.ParseCoins(s)
-			if err != nil {
-				return err
+			var price sdk.Coins
+			if len(s) > 0 {
+				price, err = sdk.ParseCoins(s)
+				if err != nil {
+					return err
+				}
 			}
 
 			s, err = cmd.Flags().GetString(flagValidity)
