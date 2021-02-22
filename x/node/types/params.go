@@ -26,11 +26,6 @@ var (
 	_ params.ParamSet = (*Params)(nil)
 )
 
-type Params struct {
-	Deposit          sdk.Coin      `json:"deposit"`
-	InactiveDuration time.Duration `json:"inactive_duration"`
-}
-
 func (p Params) String() string {
 	return fmt.Sprintf(strings.TrimSpace(`
 Deposit:           %s

@@ -7,14 +7,6 @@ import (
 	hub "github.com/sentinel-official/hub/types"
 )
 
-type Provider struct {
-	Address     hub.ProvAddress `json:"address"`
-	Name        string          `json:"name"`
-	Identity    string          `json:"identity,omitempty"`
-	Website     string          `json:"website,omitempty"`
-	Description string          `json:"description,omitempty"`
-}
-
 func (p Provider) String() string {
 	return strings.TrimSpace(fmt.Sprintf(`
 Address:     %s
@@ -26,7 +18,7 @@ Description: %s
 }
 
 func (p Provider) Validate() error {
-	if p.Address == nil || p.Address.Empty() {
+	if _, err := hub.ProvAddressFromBech32(p.Address); err != nil {
 		return fmt.Errorf("address should not be nil or empty")
 	}
 	if len(p.Name) == 0 || len(p.Name) > 64 {

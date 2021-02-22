@@ -20,10 +20,6 @@ var (
 	_ params.ParamSet = (*Params)(nil)
 )
 
-type Params struct {
-	Deposit sdk.Coin `json:"deposit"`
-}
-
 func (p Params) String() string {
 	return fmt.Sprintf(strings.TrimSpace(`
 Deposit: %s
