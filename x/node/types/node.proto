@@ -1,12 +1,13 @@
 syntax = "proto3";
-package com.github.sentinel.node.types;
-
-import "gogoproto/gogo.proto";
-import "cosmos/base/v1beta1/coin.proto";
-import "google/protobuf/timestamp.proto";
-import "github.com/sentinel-official/hub/types/status.proto";
+package sentinel.node.types;
 
 option go_package = "github.com/sentinel-official/hub/x/node/types";
+
+import "cosmos/base/v1beta1/coin.proto";
+import "gogoproto/gogo.proto";
+import "google/protobuf/timestamp.proto";
+
+import "github.com/sentinel-official/hub/types/status.proto";
 
 message Node {
   option (gogoproto.equal) = false;
@@ -19,7 +20,11 @@ message Node {
     (gogoproto.nullable) = false,
     (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
   ];
-  string remote_url = 4;
-  com.github.sentinel.types.Status status = 5;
-  google.protobuf.Timestamp status_at = 6;
+  string remoteURL = 4 [
+    (gogoproto.jsontag) = "remote_url,omitempty"
+  ];
+  sentinel.types.Status status = 5;
+  google.protobuf.Timestamp status_at = 6 [
+    (gogoproto.nullable) = false
+  ];
 }

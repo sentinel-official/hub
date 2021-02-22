@@ -1,0 +1,78 @@
+syntax = "proto3";
+package sentinel.node.types;
+
+option go_package = "github.com/sentinel-official/hub/x/node/types";
+
+import "cosmos/base/query/v1beta1/pagination.proto";
+import "gogoproto/gogo.proto";
+import "google/api/annotations.proto";
+
+import "github.com/sentinel-official/hub/types/status.proto";
+import "github.com/sentinel-official/hub/x/node/types/node.proto";
+
+message QueryNodesRequest {
+  option (gogoproto.equal) = false;
+  option (gogoproto.goproto_getters) = false;
+
+  sentinel.types.Status status = 1;
+  cosmos.base.query.v1beta1.PageRequest pagination = 2;
+}
+
+message QueryNodesForProviderRequest {
+  option (gogoproto.equal) = false;
+  option (gogoproto.goproto_getters) = false;
+
+  string address = 1;
+  sentinel.types.Status status = 2;
+  cosmos.base.query.v1beta1.PageRequest pagination = 3;
+}
+
+message QueryNodeRequest {
+  option (gogoproto.equal) = false;
+  option (gogoproto.goproto_getters) = false;
+
+  string address = 1;
+}
+
+message QueryNodesResponse {
+  option (gogoproto.equal) = false;
+  option (gogoproto.goproto_getters) = false;
+
+  repeated Node nodes = 1 [
+    (gogoproto.nullable) = false
+  ];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryNodesForProviderResponse {
+  option (gogoproto.equal) = false;
+  option (gogoproto.goproto_getters) = false;
+
+  repeated Node nodes = 1 [
+    (gogoproto.nullable) = false
+  ];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryNodeResponse {
+  option (gogoproto.equal) = false;
+  option (gogoproto.goproto_getters) = false;
+
+  Node node = 1 [
+    (gogoproto.nullable) = false
+  ];
+}
+
+service Query {
+  rpc Nodes(QueryNodesRequest) returns(QueryNodesResponse) {
+    option (google.api.http).get = "/nodes";
+  }
+
+  rpc NodesForProvider(QueryNodesForProviderRequest) returns(QueryNodesForProviderResponse) {
+    option (google.api.http).get = "/providers/{address}/nodes";
+  }
+
+  rpc Node(QueryNodeRequest) returns(QueryNodeResponse) {
+    option (google.api.http).get = "/nodes/{address}";
+  }
+}
