@@ -1,0 +1,80 @@
+syntax = "proto3";
+package sentinel.subscription.v1;
+
+option go_package = "github.com/sentinel-official/hub/x/subscription/types";
+
+import "gogoproto/gogo.proto";
+import "cosmos/base/v1beta1/coin.proto";
+
+import "sentinel/types/v1/status.proto";
+
+message SubscribeToNodeRequest {
+  option (gogoproto.equal)            = false;
+  option (gogoproto.goproto_getters)  = false;
+  option (gogoproto.goproto_stringer) = true;
+
+  string from                      = 1;
+  string address                   = 2;
+  cosmos.base.v1beta1.Coin deposit = 3 [ (gogoproto.nullable) = false ];
+}
+
+message SubscribeToPlanRequest {
+  option (gogoproto.equal)            = false;
+  option (gogoproto.goproto_getters)  = false;
+  option (gogoproto.goproto_stringer) = true;
+
+  string from  = 1;
+  uint64 id    = 2;
+  string denom = 3;
+}
+
+message CancelRequest {
+  option (gogoproto.equal)            = false;
+  option (gogoproto.goproto_getters)  = false;
+  option (gogoproto.goproto_stringer) = true;
+
+  string from = 1;
+  uint64 id   = 2;
+}
+
+message AddQuotaRequest {
+  option (gogoproto.equal)            = false;
+  option (gogoproto.goproto_getters)  = false;
+  option (gogoproto.goproto_stringer) = true;
+
+  string from    = 1;
+  uint64 id      = 2;
+  string address = 3;
+  string bytes   = 5 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable)   = false
+  ];
+}
+
+message UpdateQuotaRequest {
+  option (gogoproto.equal)            = false;
+  option (gogoproto.goproto_getters)  = false;
+  option (gogoproto.goproto_stringer) = true;
+
+  string from    = 1;
+  uint64 id      = 2;
+  string address = 3;
+  string bytes   = 5 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable)   = false
+  ];
+}
+
+message SubscribeToNodeResponse {}
+message SubscribeToPlanResponse {}
+message CancelResponse {}
+message AddQuotaResponse {}
+message UpdateQuotaResponse {}
+
+service MsgService {
+  rpc SubscribeToNode(SubscribeToNodeRequest) returns (SubscribeToNodeResponse);
+  rpc SubscribeToPlan(SubscribeToPlanRequest) returns (SubscribeToPlanResponse);
+  rpc Cancel(CancelRequest) returns (CancelResponse);
+  rpc AddQuota(AddQuotaRequest) returns (AddQuotaResponse);
+  rpc UpdateQuota(UpdateQuotaRequest) returns (UpdateQuotaResponse);
+}

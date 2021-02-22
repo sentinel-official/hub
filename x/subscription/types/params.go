@@ -18,10 +18,6 @@ var (
 
 var _ params.ParamSet = (*Params)(nil)
 
-type Params struct {
-	InactiveDuration time.Duration `json:"inactive_duration"`
-}
-
 func (p Params) String() string {
 	return fmt.Sprintf(strings.TrimSpace(`
 Inactive duration: %s

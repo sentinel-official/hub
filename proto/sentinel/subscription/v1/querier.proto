@@ -1,0 +1,114 @@
+syntax = "proto3";
+package sentinel.subscription.v1;
+
+option go_package = "github.com/sentinel-official/hub/x/subscription/types";
+
+import "cosmos/base/query/v1beta1/pagination.proto";
+import "gogoproto/gogo.proto";
+import "google/api/annotations.proto";
+
+import "sentinel/types/v1/status.proto";
+import "sentinel/subscription/v1/subscription.proto";
+
+message SubscriptionsRequest {
+  option (gogoproto.equal)           = false;
+  option (gogoproto.goproto_getters) = false;
+
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message SubscriptionsForNodeRequest {
+  option (gogoproto.equal)           = false;
+  option (gogoproto.goproto_getters) = false;
+
+  string address                                   = 1;
+  cosmos.base.query.v1beta1.PageRequest pagination = 2;
+}
+
+message SubscriptionsForPlanRequest {
+  option (gogoproto.equal)           = false;
+  option (gogoproto.goproto_getters) = false;
+
+  uint64 id                                        = 1;
+  cosmos.base.query.v1beta1.PageRequest pagination = 2;
+}
+
+message SubscriptionsForAddressRequest {
+  option (gogoproto.equal)           = false;
+  option (gogoproto.goproto_getters) = false;
+
+  string address                                   = 1;
+  sentinel.types.v1.Status status                  = 2;
+  cosmos.base.query.v1beta1.PageRequest pagination = 3;
+}
+
+message SubscriptionRequest {
+  option (gogoproto.equal)           = false;
+  option (gogoproto.goproto_getters) = false;
+
+  uint64 id = 1;
+}
+
+message SubscriptionsResponse {
+  option (gogoproto.equal)           = false;
+  option (gogoproto.goproto_getters) = false;
+
+  repeated Subscription subscriptions = 1 [ (gogoproto.nullable) = false ];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message SubscriptionsForNodeResponse {
+  option (gogoproto.equal)           = false;
+  option (gogoproto.goproto_getters) = false;
+
+  repeated Subscription subscriptions = 1 [ (gogoproto.nullable) = false ];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message SubscriptionsForPlanResponse {
+  option (gogoproto.equal)           = false;
+  option (gogoproto.goproto_getters) = false;
+
+  repeated Subscription subscriptions = 1 [ (gogoproto.nullable) = false ];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message SubscriptionsForAddressResponse {
+  option (gogoproto.equal)           = false;
+  option (gogoproto.goproto_getters) = false;
+
+  repeated Subscription subscriptions = 1 [ (gogoproto.nullable) = false ];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message SubscriptionResponse {
+  option (gogoproto.equal)           = false;
+  option (gogoproto.goproto_getters) = false;
+
+  Subscription subscription = 1 [ (gogoproto.nullable) = false ];
+}
+
+service QueryService {
+  rpc Subscriptions(SubscriptionsRequest) returns (SubscriptionsResponse) {
+    option (google.api.http).get = "/subscriptions";
+  }
+
+  rpc SubscriptionsForNode(SubscriptionsForNodeRequest)
+      returns (SubscriptionsForNodeResponse) {
+    option (google.api.http).get = "/nodes/{address}/subscriptions";
+  }
+
+  rpc SubscriptionsForPlan(SubscriptionsForPlanRequest)
+      returns (SubscriptionsForPlanResponse) {
+    option (google.api.http).get = "/plans/{id}/subscriptions";
+  }
+
+  rpc SubscriptionsForAddress(SubscriptionsForAddressRequest)
+      returns (SubscriptionsForAddressResponse) {
+    option (google.api.http).get = "/accounts/{address}/subscriptions";
+  }
+
+  rpc Subscription(SubscriptionRequest) returns (SubscriptionResponse) {
+    option (google.api.http).get = "/subscriptions/{id}";
+  }
+}

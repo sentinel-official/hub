@@ -44,6 +44,6 @@ service QueryService {
   }
 
   rpc Deposit(DepositRequest) returns (DepositResponse) {
-    option (google.api.http).get = "/deposits/{address}";
+    option (google.api.http).get = "/accounts/{address}/deposits";
   }
 }
