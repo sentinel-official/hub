@@ -1,0 +1,22 @@
+syntax = "proto3";
+package sentinel.provider.types;
+
+option go_package = "github.com/sentinel-official/hub/x/provider/types";
+
+import "gogoproto/gogo.proto";
+import "github.com/sentinel-official/hub/x/provider/types/params.proto";
+import "github.com/sentinel-official/hub/x/provider/types/provider.proto";
+
+message GenesisState {
+  option (gogoproto.equal) = false;
+  option (gogoproto.goproto_getters) = false;
+  option (gogoproto.goproto_stringer) = true;
+
+  repeated Provider providers = 1 [
+    (gogoproto.jsontag) = "_,omitempty",
+    (gogoproto.nullable) = false
+  ];
+  Params params = 2 [
+    (gogoproto.nullable) = false
+  ];
+}

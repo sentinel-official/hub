@@ -1,0 +1,53 @@
+syntax = "proto3";
+package sentinel.provider.types;
+
+option go_package = "github.com/sentinel-official/hub/x/provider/types";
+
+import "cosmos/base/query/v1beta1/pagination.proto";
+import "gogoproto/gogo.proto";
+import "google/api/annotations.proto";
+
+import "github.com/sentinel-official/hub/x/provider/types/provider.proto";
+
+message QueryProvidersRequest {
+  option (gogoproto.equal) = false;
+  option (gogoproto.goproto_getters) = false;
+
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryProviderRequest {
+  option (gogoproto.equal) = false;
+  option (gogoproto.goproto_getters) = false;
+
+  string address = 1;
+}
+
+message QueryProvidersResponse {
+  option (gogoproto.equal) = false;
+  option (gogoproto.goproto_getters) = false;
+
+  repeated Provider providers = 1 [
+    (gogoproto.nullable) = false
+  ];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryProviderResponse {
+  option (gogoproto.equal) = false;
+  option (gogoproto.goproto_getters) = false;
+
+  Provider provider = 1 [
+    (gogoproto.nullable) = false
+  ];
+}
+
+service Query {
+  rpc Deposits(QueryProvidersRequest) returns(QueryProvidersResponse) {
+    option (google.api.http).get = "/providers";
+  }
+
+  rpc Deposit(QueryProviderRequest) returns(QueryProviderResponse) {
+    option (google.api.http).get = "/providers/{address}";
+  }
+}
