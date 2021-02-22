@@ -1,10 +1,10 @@
 syntax = "proto3";
-package com.github.sentinel.deposit.types;
+package sentinel.deposit.types;
+
+option go_package = "github.com/sentinel-official/hub/x/deposit/types";
 
 import "gogoproto/gogo.proto";
 import "cosmos/base/v1beta1/coin.proto";
-
-option go_package = "github.com/sentinel-official/hub/x/deposit/types";
 
 message Deposit {
   option (gogoproto.equal) = false;
@@ -13,7 +13,6 @@ message Deposit {
 
   string address = 1;
   repeated cosmos.base.v1beta1.Coin coins = 2 [
-    (gogoproto.nullable) = false,
-    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
+    (gogoproto.nullable) = false
   ];
 }
