@@ -1,5 +1,5 @@
 syntax = "proto3";
-package sentinel.provider.types;
+package sentinel.provider.v1;
 
 option go_package = "github.com/sentinel-official/hub/x/provider/types";
 
@@ -7,7 +7,7 @@ import "cosmos/base/query/v1beta1/pagination.proto";
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 
-import "github.com/sentinel-official/hub/x/provider/types/provider.proto";
+import "sentinel/provider/v1/provider.proto";
 
 message QueryProvidersRequest {
   option (gogoproto.equal) = false;

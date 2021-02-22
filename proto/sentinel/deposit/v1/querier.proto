@@ -1,5 +1,5 @@
 syntax = "proto3";
-package sentinel.deposit.types;
+package sentinel.deposit.v1;
 
 option go_package = "github.com/sentinel-official/hub/x/deposit/types";
 
@@ -7,7 +7,7 @@ import "cosmos/base/query/v1beta1/pagination.proto";
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 
-import "github.com/sentinel-official/hub/x/deposit/types/deposit.proto";
+import "sentinel/deposit/v1/deposit.proto";
 
 message QueryDepositsRequest {
   option (gogoproto.equal) = false;

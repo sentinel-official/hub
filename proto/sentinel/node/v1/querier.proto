@@ -1,5 +1,5 @@
 syntax = "proto3";
-package sentinel.node.types;
+package sentinel.node.v1;
 
 option go_package = "github.com/sentinel-official/hub/x/node/types";
 
@@ -7,14 +7,14 @@ import "cosmos/base/query/v1beta1/pagination.proto";
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 
-import "github.com/sentinel-official/hub/types/status.proto";
-import "github.com/sentinel-official/hub/x/node/types/node.proto";
+import "sentinel/types/v1/status.proto";
+import "sentinel/node/v1/node.proto";
 
 message QueryNodesRequest {
   option (gogoproto.equal) = false;
   option (gogoproto.goproto_getters) = false;
 
-  sentinel.types.Status status = 1;
+  sentinel.types.v1.Status status = 1;
   cosmos.base.query.v1beta1.PageRequest pagination = 2;
 }
 
@@ -23,7 +23,7 @@ message QueryNodesForProviderRequest {
   option (gogoproto.goproto_getters) = false;
 
   string address = 1;
-  sentinel.types.Status status = 2;
+  sentinel.types.v1.Status status = 2;
   cosmos.base.query.v1beta1.PageRequest pagination = 3;
 }
 

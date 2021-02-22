@@ -1,5 +1,5 @@
 syntax = "proto3";
-package sentinel.node.types;
+package sentinel.node.v1;
 
 option go_package = "github.com/sentinel-official/hub/x/node/types";
 

@@ -1,12 +1,12 @@
 syntax = "proto3";
-package sentinel.node.types;
+package sentinel.node.v1;
 
 option go_package = "github.com/sentinel-official/hub/x/node/types";
 
 import "gogoproto/gogo.proto";
 import "cosmos/base/v1beta1/coin.proto";
 
-import "github.com/sentinel-official/hub/types/status.proto";
+import "sentinel/types/v1/status.proto";
 
 message MsgRegisterRequest {
   option (gogoproto.equal) = false;
@@ -44,7 +44,7 @@ message MsgSetStatusRequest {
   option (gogoproto.goproto_stringer) = true;
 
   string from = 1;
-  sentinel.types.Status status = 2;
+  sentinel.types.v1.Status status = 2;
 }
 
 message MsgRegisterResponse{}
