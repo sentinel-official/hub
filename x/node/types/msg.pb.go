@@ -6,6 +6,7 @@ package types
 import (
 	context "context"
 	fmt "fmt"
+	github_com_cosmos_cosmos_sdk_types "github.com/cosmos/cosmos-sdk/types"
 	types "github.com/cosmos/cosmos-sdk/types"
 	_ "github.com/gogo/protobuf/gogoproto"
 	grpc1 "github.com/gogo/protobuf/grpc"
@@ -30,25 +31,25 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
-type MsgRegisterRequest struct {
-	From      string       `protobuf:"bytes,1,opt,name=from,proto3" json:"from,omitempty"`
-	Provider  string       `protobuf:"bytes,2,opt,name=provider,proto3" json:"provider,omitempty"`
-	Price     []types.Coin `protobuf:"bytes,3,rep,name=price,proto3" json:"price"`
-	RemoteURL string       `protobuf:"bytes,4,opt,name=remoteURL,proto3" json:"remote_url,omitempty"`
+type RegisterRequest struct {
+	From      string                                   `protobuf:"bytes,1,opt,name=from,proto3" json:"from,omitempty"`
+	Provider  string                                   `protobuf:"bytes,2,opt,name=provider,proto3" json:"provider,omitempty"`
+	Price     github_com_cosmos_cosmos_sdk_types.Coins `protobuf:"bytes,3,rep,name=price,proto3,castrepeated=github.com/cosmos/cosmos-sdk/types.Coins" json:"price"`
+	RemoteUrl string                                   `protobuf:"bytes,4,opt,name=remote_url,json=remoteUrl,proto3" json:"remote_url,omitempty"`
 }
 
-func (m *MsgRegisterRequest) Reset()         { *m = MsgRegisterRequest{} }
-func (m *MsgRegisterRequest) String() string { return proto.CompactTextString(m) }
-func (*MsgRegisterRequest) ProtoMessage()    {}
-func (*MsgRegisterRequest) Descriptor() ([]byte, []int) {
+func (m *RegisterRequest) Reset()         { *m = RegisterRequest{} }
+func (m *RegisterRequest) String() string { return proto.CompactTextString(m) }
+func (*RegisterRequest) ProtoMessage()    {}
+func (*RegisterRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_6f2b348927ca90b6, []int{0}
 }
-func (m *MsgRegisterRequest) XXX_Unmarshal(b []byte) error {
+func (m *RegisterRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgRegisterRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *RegisterRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgRegisterRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_RegisterRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -58,37 +59,37 @@ func (m *MsgRegisterRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, 
 		return b[:n], nil
 	}
 }
-func (m *MsgRegisterRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgRegisterRequest.Merge(m, src)
+func (m *RegisterRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_RegisterRequest.Merge(m, src)
 }
-func (m *MsgRegisterRequest) XXX_Size() int {
+func (m *RegisterRequest) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgRegisterRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgRegisterRequest.DiscardUnknown(m)
+func (m *RegisterRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_RegisterRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgRegisterRequest proto.InternalMessageInfo
+var xxx_messageInfo_RegisterRequest proto.InternalMessageInfo
 
-type MsgUpdateRequest struct {
-	From      string       `protobuf:"bytes,1,opt,name=from,proto3" json:"from,omitempty"`
-	Provider  string       `protobuf:"bytes,2,opt,name=provider,proto3" json:"provider,omitempty"`
-	Price     []types.Coin `protobuf:"bytes,3,rep,name=price,proto3" json:"price"`
-	RemoteURL string       `protobuf:"bytes,4,opt,name=remoteURL,proto3" json:"remote_url,omitempty"`
+type UpdateRequest struct {
+	From      string                                   `protobuf:"bytes,1,opt,name=from,proto3" json:"from,omitempty"`
+	Provider  string                                   `protobuf:"bytes,2,opt,name=provider,proto3" json:"provider,omitempty"`
+	Price     github_com_cosmos_cosmos_sdk_types.Coins `protobuf:"bytes,3,rep,name=price,proto3,castrepeated=github.com/cosmos/cosmos-sdk/types.Coins" json:"price"`
+	RemoteUrl string                                   `protobuf:"bytes,4,opt,name=remote_url,json=remoteUrl,proto3" json:"remote_url,omitempty"`
 }
 
-func (m *MsgUpdateRequest) Reset()         { *m = MsgUpdateRequest{} }
-func (m *MsgUpdateRequest) String() string { return proto.CompactTextString(m) }
-func (*MsgUpdateRequest) ProtoMessage()    {}
-func (*MsgUpdateRequest) Descriptor() ([]byte, []int) {
+func (m *UpdateRequest) Reset()         { *m = UpdateRequest{} }
+func (m *UpdateRequest) String() string { return proto.CompactTextString(m) }
+func (*UpdateRequest) ProtoMessage()    {}
+func (*UpdateRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_6f2b348927ca90b6, []int{1}
 }
-func (m *MsgUpdateRequest) XXX_Unmarshal(b []byte) error {
+func (m *UpdateRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgUpdateRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *UpdateRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgUpdateRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_UpdateRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -98,35 +99,35 @@ func (m *MsgUpdateRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, er
 		return b[:n], nil
 	}
 }
-func (m *MsgUpdateRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgUpdateRequest.Merge(m, src)
+func (m *UpdateRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_UpdateRequest.Merge(m, src)
 }
-func (m *MsgUpdateRequest) XXX_Size() int {
+func (m *UpdateRequest) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgUpdateRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgUpdateRequest.DiscardUnknown(m)
+func (m *UpdateRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_UpdateRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgUpdateRequest proto.InternalMessageInfo
+var xxx_messageInfo_UpdateRequest proto.InternalMessageInfo
 
-type MsgSetStatusRequest struct {
+type SetStatusRequest struct {
 	From   string        `protobuf:"bytes,1,opt,name=from,proto3" json:"from,omitempty"`
 	Status types1.Status `protobuf:"varint,2,opt,name=status,proto3,enum=sentinel.types.v1.Status" json:"status,omitempty"`
 }
 
-func (m *MsgSetStatusRequest) Reset()         { *m = MsgSetStatusRequest{} }
-func (m *MsgSetStatusRequest) String() string { return proto.CompactTextString(m) }
-func (*MsgSetStatusRequest) ProtoMessage()    {}
-func (*MsgSetStatusRequest) Descriptor() ([]byte, []int) {
+func (m *SetStatusRequest) Reset()         { *m = SetStatusRequest{} }
+func (m *SetStatusRequest) String() string { return proto.CompactTextString(m) }
+func (*SetStatusRequest) ProtoMessage()    {}
+func (*SetStatusRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_6f2b348927ca90b6, []int{2}
 }
-func (m *MsgSetStatusRequest) XXX_Unmarshal(b []byte) error {
+func (m *SetStatusRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgSetStatusRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *SetStatusRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgSetStatusRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_SetStatusRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -136,33 +137,33 @@ func (m *MsgSetStatusRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte,
 		return b[:n], nil
 	}
 }
-func (m *MsgSetStatusRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgSetStatusRequest.Merge(m, src)
+func (m *SetStatusRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_SetStatusRequest.Merge(m, src)
 }
-func (m *MsgSetStatusRequest) XXX_Size() int {
+func (m *SetStatusRequest) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgSetStatusRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgSetStatusRequest.DiscardUnknown(m)
+func (m *SetStatusRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_SetStatusRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgSetStatusRequest proto.InternalMessageInfo
+var xxx_messageInfo_SetStatusRequest proto.InternalMessageInfo
 
-type MsgRegisterResponse struct {
+type RegisterResponse struct {
 }
 
-func (m *MsgRegisterResponse) Reset()         { *m = MsgRegisterResponse{} }
-func (m *MsgRegisterResponse) String() string { return proto.CompactTextString(m) }
-func (*MsgRegisterResponse) ProtoMessage()    {}
-func (*MsgRegisterResponse) Descriptor() ([]byte, []int) {
+func (m *RegisterResponse) Reset()         { *m = RegisterResponse{} }
+func (m *RegisterResponse) String() string { return proto.CompactTextString(m) }
+func (*RegisterResponse) ProtoMessage()    {}
+func (*RegisterResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_6f2b348927ca90b6, []int{3}
 }
-func (m *MsgRegisterResponse) XXX_Unmarshal(b []byte) error {
+func (m *RegisterResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgRegisterResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *RegisterResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgRegisterResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_RegisterResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -172,33 +173,33 @@ func (m *MsgRegisterResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte,
 		return b[:n], nil
 	}
 }
-func (m *MsgRegisterResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgRegisterResponse.Merge(m, src)
+func (m *RegisterResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_RegisterResponse.Merge(m, src)
 }
-func (m *MsgRegisterResponse) XXX_Size() int {
+func (m *RegisterResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgRegisterResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgRegisterResponse.DiscardUnknown(m)
+func (m *RegisterResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_RegisterResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgRegisterResponse proto.InternalMessageInfo
+var xxx_messageInfo_RegisterResponse proto.InternalMessageInfo
 
-type MsgUpdateResponse struct {
+type UpdateResponse struct {
 }
 
-func (m *MsgUpdateResponse) Reset()         { *m = MsgUpdateResponse{} }
-func (m *MsgUpdateResponse) String() string { return proto.CompactTextString(m) }
-func (*MsgUpdateResponse) ProtoMessage()    {}
-func (*MsgUpdateResponse) Descriptor() ([]byte, []int) {
+func (m *UpdateResponse) Reset()         { *m = UpdateResponse{} }
+func (m *UpdateResponse) String() string { return proto.CompactTextString(m) }
+func (*UpdateResponse) ProtoMessage()    {}
+func (*UpdateResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_6f2b348927ca90b6, []int{4}
 }
-func (m *MsgUpdateResponse) XXX_Unmarshal(b []byte) error {
+func (m *UpdateResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgUpdateResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *UpdateResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgUpdateResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_UpdateResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -208,33 +209,33 @@ func (m *MsgUpdateResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, e
 		return b[:n], nil
 	}
 }
-func (m *MsgUpdateResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgUpdateResponse.Merge(m, src)
+func (m *UpdateResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_UpdateResponse.Merge(m, src)
 }
-func (m *MsgUpdateResponse) XXX_Size() int {
+func (m *UpdateResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgUpdateResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgUpdateResponse.DiscardUnknown(m)
+func (m *UpdateResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_UpdateResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgUpdateResponse proto.InternalMessageInfo
+var xxx_messageInfo_UpdateResponse proto.InternalMessageInfo
 
-type MsgSetStatusResponse struct {
+type SetStatusResponse struct {
 }
 
-func (m *MsgSetStatusResponse) Reset()         { *m = MsgSetStatusResponse{} }
-func (m *MsgSetStatusResponse) String() string { return proto.CompactTextString(m) }
-func (*MsgSetStatusResponse) ProtoMessage()    {}
-func (*MsgSetStatusResponse) Descriptor() ([]byte, []int) {
+func (m *SetStatusResponse) Reset()         { *m = SetStatusResponse{} }
+func (m *SetStatusResponse) String() string { return proto.CompactTextString(m) }
+func (*SetStatusResponse) ProtoMessage()    {}
+func (*SetStatusResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_6f2b348927ca90b6, []int{5}
 }
-func (m *MsgSetStatusResponse) XXX_Unmarshal(b []byte) error {
+func (m *SetStatusResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgSetStatusResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *SetStatusResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgSetStatusResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_SetStatusResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -244,61 +245,61 @@ func (m *MsgSetStatusResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte
 		return b[:n], nil
 	}
 }
-func (m *MsgSetStatusResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgSetStatusResponse.Merge(m, src)
+func (m *SetStatusResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_SetStatusResponse.Merge(m, src)
 }
-func (m *MsgSetStatusResponse) XXX_Size() int {
+func (m *SetStatusResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgSetStatusResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgSetStatusResponse.DiscardUnknown(m)
+func (m *SetStatusResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_SetStatusResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgSetStatusResponse proto.InternalMessageInfo
+var xxx_messageInfo_SetStatusResponse proto.InternalMessageInfo
 
 func init() {
-	proto.RegisterType((*MsgRegisterRequest)(nil), "sentinel.node.v1.MsgRegisterRequest")
-	proto.RegisterType((*MsgUpdateRequest)(nil), "sentinel.node.v1.MsgUpdateRequest")
-	proto.RegisterType((*MsgSetStatusRequest)(nil), "sentinel.node.v1.MsgSetStatusRequest")
-	proto.RegisterType((*MsgRegisterResponse)(nil), "sentinel.node.v1.MsgRegisterResponse")
-	proto.RegisterType((*MsgUpdateResponse)(nil), "sentinel.node.v1.MsgUpdateResponse")
-	proto.RegisterType((*MsgSetStatusResponse)(nil), "sentinel.node.v1.MsgSetStatusResponse")
+	proto.RegisterType((*RegisterRequest)(nil), "sentinel.node.v1.RegisterRequest")
+	proto.RegisterType((*UpdateRequest)(nil), "sentinel.node.v1.UpdateRequest")
+	proto.RegisterType((*SetStatusRequest)(nil), "sentinel.node.v1.SetStatusRequest")
+	proto.RegisterType((*RegisterResponse)(nil), "sentinel.node.v1.RegisterResponse")
+	proto.RegisterType((*UpdateResponse)(nil), "sentinel.node.v1.UpdateResponse")
+	proto.RegisterType((*SetStatusResponse)(nil), "sentinel.node.v1.SetStatusResponse")
 }
 
 func init() { proto.RegisterFile("sentinel/node/v1/msg.proto", fileDescriptor_6f2b348927ca90b6) }
 
 var fileDescriptor_6f2b348927ca90b6 = []byte{
-	// 479 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xd4, 0x54, 0xbf, 0x6f, 0xd3, 0x40,
-	0x14, 0xb6, 0x9b, 0x50, 0xd1, 0xe3, 0x57, 0xb8, 0x06, 0xe4, 0x7a, 0xb0, 0xab, 0xf0, 0x43, 0x1d,
-	0xe8, 0x9d, 0x1c, 0x04, 0x03, 0x63, 0x18, 0x58, 0xc8, 0xe2, 0xaa, 0x12, 0x62, 0x00, 0xd9, 0xce,
-	0xcb, 0xf5, 0x50, 0xec, 0x33, 0xbe, 0x73, 0x44, 0xff, 0x03, 0x46, 0x46, 0xc6, 0x88, 0x7f, 0x04,
-	0xb1, 0x75, 0xec, 0xc8, 0x54, 0xa1, 0x64, 0x41, 0xfc, 0x15, 0xc8, 0x77, 0x4e, 0x4a, 0xd2, 0xaa,
-	0x99, 0xd9, 0xce, 0xef, 0x7d, 0xfe, 0xbe, 0xef, 0xdd, 0xf7, 0x6c, 0xe4, 0x4a, 0xc8, 0x14, 0xcf,
-	0x60, 0x44, 0x33, 0x31, 0x00, 0x3a, 0x0e, 0x68, 0x2a, 0x19, 0xc9, 0x0b, 0xa1, 0x04, 0x6e, 0xcd,
-	0x7b, 0xa4, 0xea, 0x91, 0x71, 0xe0, 0xb6, 0x99, 0x60, 0x42, 0x37, 0x69, 0x75, 0x32, 0x38, 0xd7,
-	0x4b, 0x84, 0x4c, 0x85, 0xa4, 0x71, 0x24, 0x2b, 0x86, 0x18, 0x54, 0x14, 0xd0, 0x44, 0xf0, 0x6c,
-	0xde, 0x5f, 0x68, 0xa8, 0xe3, 0x1c, 0x64, 0x25, 0x22, 0x55, 0xa4, 0x4a, 0x69, 0xfa, 0x9d, 0x1f,
-	0x36, 0xc2, 0x7d, 0xc9, 0x42, 0x60, 0x5c, 0x2a, 0x28, 0x42, 0xf8, 0x58, 0x82, 0x54, 0x18, 0xa3,
-	0xe6, 0xb0, 0x10, 0xa9, 0x63, 0xef, 0xda, 0x7b, 0x5b, 0xa1, 0x3e, 0x63, 0x17, 0x5d, 0xcf, 0x0b,
-	0x31, 0xe6, 0x03, 0x28, 0x9c, 0x0d, 0x5d, 0x5f, 0x3c, 0xe3, 0x67, 0xe8, 0x5a, 0x5e, 0xf0, 0x04,
-	0x9c, 0xc6, 0x6e, 0x63, 0xef, 0x46, 0x77, 0x87, 0x18, 0x5b, 0xa4, 0xb2, 0x45, 0x6a, 0x5b, 0xe4,
-	0xa5, 0xe0, 0x59, 0xaf, 0x79, 0x72, 0xe6, 0x5b, 0xa1, 0x41, 0xe3, 0xe7, 0x68, 0xab, 0x80, 0x54,
-	0x28, 0x38, 0x0c, 0x5f, 0x3b, 0xcd, 0x8a, 0xb3, 0xe7, 0xfc, 0x39, 0xf3, 0xdb, 0xa6, 0xf8, 0xbe,
-	0x2c, 0x46, 0x4f, 0x44, 0xca, 0x15, 0xa4, 0xb9, 0x3a, 0x0e, 0xcf, 0xa1, 0x2f, 0x6e, 0x7e, 0x9e,
-	0xf8, 0xd6, 0xd7, 0x89, 0x6f, 0xff, 0x9e, 0xf8, 0x56, 0xe7, 0xbb, 0x8d, 0x5a, 0x7d, 0xc9, 0x0e,
-	0xf3, 0x41, 0xa4, 0xe0, 0xbf, 0x9c, 0xe0, 0x03, 0xda, 0xee, 0x4b, 0x76, 0x00, 0xea, 0x40, 0x67,
-	0x73, 0xd5, 0x0c, 0x01, 0xda, 0x34, 0x01, 0xea, 0x09, 0x6e, 0x77, 0x77, 0xc8, 0x62, 0x53, 0x74,
-	0xc2, 0x64, 0x1c, 0x90, 0x9a, 0xa5, 0x06, 0xae, 0x68, 0xdd, 0xd3, 0x5a, 0xe7, 0x81, 0xcb, 0x5c,
-	0x64, 0x12, 0x3a, 0xdb, 0xe8, 0xee, 0x3f, 0x77, 0x58, 0x17, 0xef, 0xa3, 0xf6, 0xb2, 0x2f, 0x53,
-	0xef, 0x7e, 0xdb, 0x40, 0x8d, 0xbe, 0x64, 0xf8, 0x1d, 0xba, 0xb3, 0xba, 0x39, 0x0f, 0xc9, 0xea,
-	0xe6, 0x92, 0x8b, 0xfb, 0xe5, 0x3e, 0x5a, 0x83, 0x32, 0x3a, 0xf8, 0x0d, 0xba, 0xb5, 0x9c, 0x6a,
-	0xe7, 0xd2, 0xf7, 0x96, 0x30, 0xee, 0x83, 0x2b, 0x31, 0x35, 0x73, 0x84, 0x5a, 0x17, 0xae, 0xfb,
-	0x72, 0x53, 0xab, 0x30, 0xf7, 0xf1, 0x3a, 0x98, 0x91, 0xe8, 0xbd, 0x3a, 0x99, 0x7a, 0xf6, 0xe9,
-	0xd4, 0xb3, 0x7f, 0x4d, 0x3d, 0xfb, 0xcb, 0xcc, 0xb3, 0x4e, 0x67, 0x9e, 0xf5, 0x73, 0xe6, 0x59,
-	0x6f, 0xf7, 0x19, 0x57, 0x47, 0x65, 0x4c, 0x12, 0x91, 0xd2, 0x39, 0xd7, 0xbe, 0x18, 0x0e, 0x79,
-	0xc2, 0xa3, 0x11, 0x3d, 0x2a, 0x63, 0xfa, 0xc9, 0xfc, 0x12, 0x74, 0xa2, 0xf1, 0xa6, 0xfe, 0x54,
-	0x9f, 0xfe, 0x0d, 0x00, 0x00, 0xff, 0xff, 0xa3, 0x1d, 0x3f, 0xa5, 0x30, 0x04, 0x00, 0x00,
+	// 472 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xdc, 0x54, 0xb1, 0x72, 0xd3, 0x40,
+	0x10, 0x95, 0x92, 0xe0, 0x89, 0x17, 0x08, 0xe6, 0xa0, 0x70, 0x34, 0x83, 0x64, 0x4c, 0xe3, 0xc6,
+	0x27, 0x64, 0x3a, 0xca, 0x50, 0x50, 0x30, 0x14, 0xd8, 0xa4, 0xa1, 0x61, 0x24, 0x79, 0xad, 0xdc,
+	0x60, 0xe9, 0xc4, 0xdd, 0x49, 0x03, 0x2d, 0x15, 0x25, 0x25, 0xa5, 0x6b, 0xbe, 0x24, 0x1d, 0xa1,
+	0xa3, 0x02, 0xc6, 0x6e, 0xf8, 0x0c, 0x46, 0x77, 0x92, 0x31, 0x06, 0xfc, 0x01, 0xa9, 0x7c, 0xde,
+	0x7d, 0x7a, 0xfb, 0xde, 0xed, 0x93, 0xc0, 0x91, 0x98, 0x29, 0x96, 0xe1, 0xdc, 0xcf, 0xf8, 0x14,
+	0xfd, 0x32, 0xf0, 0x53, 0x99, 0xd0, 0x5c, 0x70, 0xc5, 0x49, 0xa7, 0xe9, 0xd1, 0xaa, 0x47, 0xcb,
+	0xc0, 0xb9, 0x9d, 0xf0, 0x84, 0xeb, 0xa6, 0x5f, 0x9d, 0x0c, 0xce, 0x71, 0x63, 0x2e, 0x53, 0x2e,
+	0xfd, 0x28, 0x94, 0x15, 0x43, 0x84, 0x2a, 0x0c, 0xfc, 0x98, 0xb3, 0xac, 0xe9, 0xaf, 0x67, 0xa8,
+	0xb7, 0x39, 0xca, 0x6a, 0x88, 0x54, 0xa1, 0x2a, 0xa4, 0xe9, 0xf7, 0xbf, 0xd8, 0x70, 0x63, 0x8c,
+	0x09, 0x93, 0x0a, 0xc5, 0x18, 0x5f, 0x17, 0x28, 0x15, 0x21, 0x70, 0x30, 0x13, 0x3c, 0xed, 0xda,
+	0x3d, 0x7b, 0xd0, 0x1e, 0xeb, 0x33, 0x71, 0xe0, 0x30, 0x17, 0xbc, 0x64, 0x53, 0x14, 0xdd, 0x3d,
+	0x5d, 0x5f, 0xff, 0x27, 0x21, 0x5c, 0xc9, 0x05, 0x8b, 0xb1, 0xbb, 0xdf, 0xdb, 0x1f, 0x5c, 0x1d,
+	0x1d, 0x53, 0xa3, 0x89, 0x56, 0x9a, 0x68, 0xad, 0x89, 0x3e, 0xe2, 0x2c, 0x3b, 0xb9, 0x7f, 0xfe,
+	0xcd, 0xb3, 0x3e, 0x7d, 0xf7, 0x06, 0x09, 0x53, 0x67, 0x45, 0x44, 0x63, 0x9e, 0xfa, 0xb5, 0x01,
+	0xf3, 0x33, 0x94, 0xd3, 0x57, 0x46, 0xa9, 0x7e, 0x40, 0x8e, 0x0d, 0x33, 0xb9, 0x03, 0x20, 0x30,
+	0xe5, 0x0a, 0x5f, 0x16, 0x62, 0xde, 0x3d, 0xd0, 0x02, 0xda, 0xa6, 0x72, 0x2a, 0xe6, 0x0f, 0xaf,
+	0xbd, 0x5f, 0x78, 0xd6, 0xc7, 0x85, 0x67, 0xff, 0x5c, 0x78, 0x56, 0xff, 0xb3, 0x0d, 0xd7, 0x4f,
+	0xf3, 0x69, 0xa8, 0xf0, 0xb2, 0x38, 0x4a, 0xa0, 0x33, 0x41, 0x35, 0xd1, 0x8b, 0xdb, 0xe5, 0x29,
+	0x80, 0x96, 0xd9, 0xae, 0x76, 0x74, 0x34, 0x3a, 0xa6, 0xeb, 0x18, 0x19, 0x09, 0x65, 0x40, 0x6b,
+	0x96, 0x1a, 0xb8, 0x35, 0x88, 0x40, 0xe7, 0x77, 0x1a, 0x64, 0xce, 0x33, 0x89, 0xfd, 0x0e, 0x1c,
+	0x35, 0xb7, 0x59, 0x57, 0x6e, 0xc1, 0xcd, 0x0d, 0x39, 0xa6, 0x38, 0x7a, 0xb7, 0x07, 0xf0, 0x54,
+	0x26, 0x13, 0x14, 0x65, 0xe5, 0xef, 0x19, 0x1c, 0x36, 0x4c, 0xe4, 0x2e, 0xdd, 0x4e, 0x33, 0xdd,
+	0xca, 0x9c, 0xd3, 0xdf, 0x05, 0x31, 0x13, 0xc8, 0x13, 0x68, 0x19, 0x21, 0xc4, 0xfb, 0x1b, 0xfd,
+	0xc7, 0xc2, 0x9d, 0xde, 0xff, 0x01, 0x35, 0xd9, 0x73, 0x68, 0xaf, 0x3d, 0x90, 0x7f, 0x4c, 0xdf,
+	0xbe, 0x6f, 0xe7, 0xde, 0x4e, 0x8c, 0x61, 0x3d, 0x79, 0x7c, 0xbe, 0x74, 0xed, 0x8b, 0xa5, 0x6b,
+	0xff, 0x58, 0xba, 0xf6, 0x87, 0x95, 0x6b, 0x5d, 0xac, 0x5c, 0xeb, 0xeb, 0xca, 0xb5, 0x5e, 0x0c,
+	0x37, 0x02, 0xd2, 0x10, 0x0d, 0xf9, 0x6c, 0xc6, 0x62, 0x16, 0xce, 0xfd, 0xb3, 0x22, 0xf2, 0xdf,
+	0x98, 0xcf, 0x80, 0x5e, 0x54, 0xd4, 0xd2, 0xaf, 0xe7, 0x83, 0x5f, 0x01, 0x00, 0x00, 0xff, 0xff,
+	0x5b, 0x86, 0x5a, 0x77, 0x24, 0x04, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -309,151 +310,151 @@ var _ grpc.ClientConn
 // is compatible with the grpc package it is being compiled against.
 const _ = grpc.SupportPackageIsVersion4
 
-// MsgClient is the client API for Msg service.
+// MsgServiceClient is the client API for MsgService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
-type MsgClient interface {
-	RegisterRequest(ctx context.Context, in *MsgRegisterRequest, opts ...grpc.CallOption) (*MsgRegisterResponse, error)
-	UpdateRequest(ctx context.Context, in *MsgUpdateRequest, opts ...grpc.CallOption) (*MsgUpdateResponse, error)
-	SetStatusRequest(ctx context.Context, in *MsgSetStatusRequest, opts ...grpc.CallOption) (*MsgSetStatusResponse, error)
+type MsgServiceClient interface {
+	Register(ctx context.Context, in *RegisterRequest, opts ...grpc.CallOption) (*RegisterResponse, error)
+	Update(ctx context.Context, in *UpdateRequest, opts ...grpc.CallOption) (*UpdateResponse, error)
+	SetStatus(ctx context.Context, in *SetStatusRequest, opts ...grpc.CallOption) (*SetStatusResponse, error)
 }
 
-type msgClient struct {
+type msgServiceClient struct {
 	cc grpc1.ClientConn
 }
 
-func NewMsgClient(cc grpc1.ClientConn) MsgClient {
-	return &msgClient{cc}
+func NewMsgServiceClient(cc grpc1.ClientConn) MsgServiceClient {
+	return &msgServiceClient{cc}
 }
 
-func (c *msgClient) RegisterRequest(ctx context.Context, in *MsgRegisterRequest, opts ...grpc.CallOption) (*MsgRegisterResponse, error) {
-	out := new(MsgRegisterResponse)
-	err := c.cc.Invoke(ctx, "/sentinel.node.v1.Msg/RegisterRequest", in, out, opts...)
+func (c *msgServiceClient) Register(ctx context.Context, in *RegisterRequest, opts ...grpc.CallOption) (*RegisterResponse, error) {
+	out := new(RegisterResponse)
+	err := c.cc.Invoke(ctx, "/sentinel.node.v1.MsgService/Register", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *msgClient) UpdateRequest(ctx context.Context, in *MsgUpdateRequest, opts ...grpc.CallOption) (*MsgUpdateResponse, error) {
-	out := new(MsgUpdateResponse)
-	err := c.cc.Invoke(ctx, "/sentinel.node.v1.Msg/UpdateRequest", in, out, opts...)
+func (c *msgServiceClient) Update(ctx context.Context, in *UpdateRequest, opts ...grpc.CallOption) (*UpdateResponse, error) {
+	out := new(UpdateResponse)
+	err := c.cc.Invoke(ctx, "/sentinel.node.v1.MsgService/Update", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *msgClient) SetStatusRequest(ctx context.Context, in *MsgSetStatusRequest, opts ...grpc.CallOption) (*MsgSetStatusResponse, error) {
-	out := new(MsgSetStatusResponse)
-	err := c.cc.Invoke(ctx, "/sentinel.node.v1.Msg/SetStatusRequest", in, out, opts...)
+func (c *msgServiceClient) SetStatus(ctx context.Context, in *SetStatusRequest, opts ...grpc.CallOption) (*SetStatusResponse, error) {
+	out := new(SetStatusResponse)
+	err := c.cc.Invoke(ctx, "/sentinel.node.v1.MsgService/SetStatus", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-// MsgServer is the server API for Msg service.
-type MsgServer interface {
-	RegisterRequest(context.Context, *MsgRegisterRequest) (*MsgRegisterResponse, error)
-	UpdateRequest(context.Context, *MsgUpdateRequest) (*MsgUpdateResponse, error)
-	SetStatusRequest(context.Context, *MsgSetStatusRequest) (*MsgSetStatusResponse, error)
+// MsgServiceServer is the server API for MsgService service.
+type MsgServiceServer interface {
+	Register(context.Context, *RegisterRequest) (*RegisterResponse, error)
+	Update(context.Context, *UpdateRequest) (*UpdateResponse, error)
+	SetStatus(context.Context, *SetStatusRequest) (*SetStatusResponse, error)
 }
 
-// UnimplementedMsgServer can be embedded to have forward compatible implementations.
-type UnimplementedMsgServer struct {
+// UnimplementedMsgServiceServer can be embedded to have forward compatible implementations.
+type UnimplementedMsgServiceServer struct {
 }
 
-func (*UnimplementedMsgServer) RegisterRequest(ctx context.Context, req *MsgRegisterRequest) (*MsgRegisterResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method RegisterRequest not implemented")
+func (*UnimplementedMsgServiceServer) Register(ctx context.Context, req *RegisterRequest) (*RegisterResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Register not implemented")
 }
-func (*UnimplementedMsgServer) UpdateRequest(ctx context.Context, req *MsgUpdateRequest) (*MsgUpdateResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UpdateRequest not implemented")
+func (*UnimplementedMsgServiceServer) Update(ctx context.Context, req *UpdateRequest) (*UpdateResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Update not implemented")
 }
-func (*UnimplementedMsgServer) SetStatusRequest(ctx context.Context, req *MsgSetStatusRequest) (*MsgSetStatusResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SetStatusRequest not implemented")
-}
-
-func RegisterMsgServer(s grpc1.Server, srv MsgServer) {
-	s.RegisterService(&_Msg_serviceDesc, srv)
+func (*UnimplementedMsgServiceServer) SetStatus(ctx context.Context, req *SetStatusRequest) (*SetStatusResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SetStatus not implemented")
 }
 
-func _Msg_RegisterRequest_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgRegisterRequest)
+func RegisterMsgServiceServer(s grpc1.Server, srv MsgServiceServer) {
+	s.RegisterService(&_MsgService_serviceDesc, srv)
+}
+
+func _MsgService_Register_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RegisterRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MsgServer).RegisterRequest(ctx, in)
+		return srv.(MsgServiceServer).Register(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/sentinel.node.v1.Msg/RegisterRequest",
+		FullMethod: "/sentinel.node.v1.MsgService/Register",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).RegisterRequest(ctx, req.(*MsgRegisterRequest))
+		return srv.(MsgServiceServer).Register(ctx, req.(*RegisterRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Msg_UpdateRequest_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgUpdateRequest)
+func _MsgService_Update_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MsgServer).UpdateRequest(ctx, in)
+		return srv.(MsgServiceServer).Update(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/sentinel.node.v1.Msg/UpdateRequest",
+		FullMethod: "/sentinel.node.v1.MsgService/Update",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).UpdateRequest(ctx, req.(*MsgUpdateRequest))
+		return srv.(MsgServiceServer).Update(ctx, req.(*UpdateRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Msg_SetStatusRequest_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgSetStatusRequest)
+func _MsgService_SetStatus_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SetStatusRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MsgServer).SetStatusRequest(ctx, in)
+		return srv.(MsgServiceServer).SetStatus(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/sentinel.node.v1.Msg/SetStatusRequest",
+		FullMethod: "/sentinel.node.v1.MsgService/SetStatus",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).SetStatusRequest(ctx, req.(*MsgSetStatusRequest))
+		return srv.(MsgServiceServer).SetStatus(ctx, req.(*SetStatusRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-var _Msg_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "sentinel.node.v1.Msg",
-	HandlerType: (*MsgServer)(nil),
+var _MsgService_serviceDesc = grpc.ServiceDesc{
+	ServiceName: "sentinel.node.v1.MsgService",
+	HandlerType: (*MsgServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "RegisterRequest",
-			Handler:    _Msg_RegisterRequest_Handler,
+			MethodName: "Register",
+			Handler:    _MsgService_Register_Handler,
 		},
 		{
-			MethodName: "UpdateRequest",
-			Handler:    _Msg_UpdateRequest_Handler,
+			MethodName: "Update",
+			Handler:    _MsgService_Update_Handler,
 		},
 		{
-			MethodName: "SetStatusRequest",
-			Handler:    _Msg_SetStatusRequest_Handler,
+			MethodName: "SetStatus",
+			Handler:    _MsgService_SetStatus_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
 	Metadata: "sentinel/node/v1/msg.proto",
 }
 
-func (m *MsgRegisterRequest) Marshal() (dAtA []byte, err error) {
+func (m *RegisterRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -463,20 +464,20 @@ func (m *MsgRegisterRequest) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgRegisterRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *RegisterRequest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgRegisterRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *RegisterRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
-	if len(m.RemoteURL) > 0 {
-		i -= len(m.RemoteURL)
-		copy(dAtA[i:], m.RemoteURL)
-		i = encodeVarintMsg(dAtA, i, uint64(len(m.RemoteURL)))
+	if len(m.RemoteUrl) > 0 {
+		i -= len(m.RemoteUrl)
+		copy(dAtA[i:], m.RemoteUrl)
+		i = encodeVarintMsg(dAtA, i, uint64(len(m.RemoteUrl)))
 		i--
 		dAtA[i] = 0x22
 	}
@@ -511,7 +512,7 @@ func (m *MsgRegisterRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgUpdateRequest) Marshal() (dAtA []byte, err error) {
+func (m *UpdateRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -521,20 +522,20 @@ func (m *MsgUpdateRequest) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgUpdateRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *UpdateRequest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgUpdateRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *UpdateRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
-	if len(m.RemoteURL) > 0 {
-		i -= len(m.RemoteURL)
-		copy(dAtA[i:], m.RemoteURL)
-		i = encodeVarintMsg(dAtA, i, uint64(len(m.RemoteURL)))
+	if len(m.RemoteUrl) > 0 {
+		i -= len(m.RemoteUrl)
+		copy(dAtA[i:], m.RemoteUrl)
+		i = encodeVarintMsg(dAtA, i, uint64(len(m.RemoteUrl)))
 		i--
 		dAtA[i] = 0x22
 	}
@@ -569,7 +570,7 @@ func (m *MsgUpdateRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgSetStatusRequest) Marshal() (dAtA []byte, err error) {
+func (m *SetStatusRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -579,12 +580,12 @@ func (m *MsgSetStatusRequest) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgSetStatusRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *SetStatusRequest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgSetStatusRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *SetStatusRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -604,7 +605,7 @@ func (m *MsgSetStatusRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgRegisterResponse) Marshal() (dAtA []byte, err error) {
+func (m *RegisterResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -614,12 +615,12 @@ func (m *MsgRegisterResponse) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgRegisterResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *RegisterResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgRegisterResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *RegisterResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -627,7 +628,7 @@ func (m *MsgRegisterResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgUpdateResponse) Marshal() (dAtA []byte, err error) {
+func (m *UpdateResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -637,12 +638,12 @@ func (m *MsgUpdateResponse) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgUpdateResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *UpdateResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgUpdateResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *UpdateResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -650,7 +651,7 @@ func (m *MsgUpdateResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgSetStatusResponse) Marshal() (dAtA []byte, err error) {
+func (m *SetStatusResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -660,12 +661,12 @@ func (m *MsgSetStatusResponse) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgSetStatusResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *SetStatusResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgSetStatusResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *SetStatusResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -684,7 +685,7 @@ func encodeVarintMsg(dAtA []byte, offset int, v uint64) int {
 	dAtA[offset] = uint8(v)
 	return base
 }
-func (m *MsgRegisterRequest) Size() (n int) {
+func (m *RegisterRequest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -704,14 +705,14 @@ func (m *MsgRegisterRequest) Size() (n int) {
 			n += 1 + l + sovMsg(uint64(l))
 		}
 	}
-	l = len(m.RemoteURL)
+	l = len(m.RemoteUrl)
 	if l > 0 {
 		n += 1 + l + sovMsg(uint64(l))
 	}
 	return n
 }
 
-func (m *MsgUpdateRequest) Size() (n int) {
+func (m *UpdateRequest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -731,14 +732,14 @@ func (m *MsgUpdateRequest) Size() (n int) {
 			n += 1 + l + sovMsg(uint64(l))
 		}
 	}
-	l = len(m.RemoteURL)
+	l = len(m.RemoteUrl)
 	if l > 0 {
 		n += 1 + l + sovMsg(uint64(l))
 	}
 	return n
 }
 
-func (m *MsgSetStatusRequest) Size() (n int) {
+func (m *SetStatusRequest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -754,7 +755,7 @@ func (m *MsgSetStatusRequest) Size() (n int) {
 	return n
 }
 
-func (m *MsgRegisterResponse) Size() (n int) {
+func (m *RegisterResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -763,7 +764,7 @@ func (m *MsgRegisterResponse) Size() (n int) {
 	return n
 }
 
-func (m *MsgUpdateResponse) Size() (n int) {
+func (m *UpdateResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -772,7 +773,7 @@ func (m *MsgUpdateResponse) Size() (n int) {
 	return n
 }
 
-func (m *MsgSetStatusResponse) Size() (n int) {
+func (m *SetStatusResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -787,7 +788,7 @@ func sovMsg(x uint64) (n int) {
 func sozMsg(x uint64) (n int) {
 	return sovMsg(uint64((x << 1) ^ uint64((int64(x) >> 63))))
 }
-func (m *MsgRegisterRequest) Unmarshal(dAtA []byte) error {
+func (m *RegisterRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -810,10 +811,10 @@ func (m *MsgRegisterRequest) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgRegisterRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: RegisterRequest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgRegisterRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: RegisterRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -916,7 +917,7 @@ func (m *MsgRegisterRequest) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 4:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field RemoteURL", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field RemoteUrl", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -944,7 +945,7 @@ func (m *MsgRegisterRequest) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.RemoteURL = string(dAtA[iNdEx:postIndex])
+			m.RemoteUrl = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
@@ -967,7 +968,7 @@ func (m *MsgRegisterRequest) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgUpdateRequest) Unmarshal(dAtA []byte) error {
+func (m *UpdateRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -990,10 +991,10 @@ func (m *MsgUpdateRequest) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgUpdateRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: UpdateRequest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgUpdateRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: UpdateRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -1096,7 +1097,7 @@ func (m *MsgUpdateRequest) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 4:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field RemoteURL", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field RemoteUrl", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -1124,7 +1125,7 @@ func (m *MsgUpdateRequest) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.RemoteURL = string(dAtA[iNdEx:postIndex])
+			m.RemoteUrl = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
@@ -1147,7 +1148,7 @@ func (m *MsgUpdateRequest) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgSetStatusRequest) Unmarshal(dAtA []byte) error {
+func (m *SetStatusRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1170,10 +1171,10 @@ func (m *MsgSetStatusRequest) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgSetStatusRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: SetStatusRequest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgSetStatusRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: SetStatusRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -1248,7 +1249,7 @@ func (m *MsgSetStatusRequest) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgRegisterResponse) Unmarshal(dAtA []byte) error {
+func (m *RegisterResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1271,10 +1272,10 @@ func (m *MsgRegisterResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgRegisterResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: RegisterResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgRegisterResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: RegisterResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		default:
@@ -1298,7 +1299,7 @@ func (m *MsgRegisterResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgUpdateResponse) Unmarshal(dAtA []byte) error {
+func (m *UpdateResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1321,10 +1322,10 @@ func (m *MsgUpdateResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgUpdateResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: UpdateResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgUpdateResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: UpdateResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		default:
@@ -1348,7 +1349,7 @@ func (m *MsgUpdateResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgSetStatusResponse) Unmarshal(dAtA []byte) error {
+func (m *SetStatusResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1371,10 +1372,10 @@ func (m *MsgSetStatusResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgSetStatusResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: SetStatusResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgSetStatusResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: SetStatusResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		default:

@@ -3,22 +3,11 @@ package types
 import (
 	"fmt"
 	"strings"
-	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	hub "github.com/sentinel-official/hub/types"
 )
-
-type Plan struct {
-	ID       uint64          `json:"id"`
-	Provider hub.ProvAddress `json:"provider"`
-	Price    sdk.Coins       `json:"price"`
-	Validity time.Duration   `json:"validity"`
-	Bytes    sdk.Int         `json:"bytes"`
-	Status   hub.Status      `json:"status"`
-	StatusAt time.Time       `json:"status_at"`
-}
 
 func (p Plan) String() string {
 	return strings.TrimSpace(fmt.Sprintf(`
@@ -46,7 +35,7 @@ func (p Plan) Validate() error {
 	if p.ID == 0 {
 		return fmt.Errorf("id should not be zero")
 	}
-	if p.Provider == nil || p.Provider.Empty() {
+	if _, err := hub.ProvAddressFromBech32(p.Provider); err != nil {
 		return fmt.Errorf("provider should not be nil or empty")
 	}
 	if p.Price != nil && !p.Price.IsValid() {

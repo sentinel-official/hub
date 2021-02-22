@@ -10,64 +10,64 @@ import "google/api/annotations.proto";
 import "sentinel/types/v1/status.proto";
 import "sentinel/node/v1/node.proto";
 
-message QueryNodesRequest {
-  option (gogoproto.equal) = false;
+message NodesRequest {
+  option (gogoproto.equal)           = false;
   option (gogoproto.goproto_getters) = false;
 
-  sentinel.types.v1.Status status = 1;
+  sentinel.types.v1.Status status                  = 1;
   cosmos.base.query.v1beta1.PageRequest pagination = 2;
 }
 
-message QueryNodesForProviderRequest {
-  option (gogoproto.equal) = false;
+message NodesForProviderRequest {
+  option (gogoproto.equal)           = false;
   option (gogoproto.goproto_getters) = false;
 
-  string address = 1;
-  sentinel.types.v1.Status status = 2;
+  string address                                   = 1;
+  sentinel.types.v1.Status status                  = 2;
   cosmos.base.query.v1beta1.PageRequest pagination = 3;
 }
 
-message QueryNodeRequest {
-  option (gogoproto.equal) = false;
+message NodeRequest {
+  option (gogoproto.equal)           = false;
   option (gogoproto.goproto_getters) = false;
 
   string address = 1;
 }
 
-message QueryNodesResponse {
-  option (gogoproto.equal) = false;
+message NodesResponse {
+  option (gogoproto.equal)           = false;
   option (gogoproto.goproto_getters) = false;
 
-  repeated Node nodes = 1 [(gogoproto.nullable) = false];
+  repeated Node nodes = 1 [ (gogoproto.nullable) = false ];
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
-message QueryNodesForProviderResponse {
-  option (gogoproto.equal) = false;
+message NodesForProviderResponse {
+  option (gogoproto.equal)           = false;
   option (gogoproto.goproto_getters) = false;
 
-  repeated Node nodes = 1 [(gogoproto.nullable) = false];
+  repeated Node nodes = 1 [ (gogoproto.nullable) = false ];
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
-message QueryNodeResponse {
-  option (gogoproto.equal) = false;
+message NodeResponse {
+  option (gogoproto.equal)           = false;
   option (gogoproto.goproto_getters) = false;
 
-  Node node = 1 [(gogoproto.nullable) = false];
+  Node node = 1 [ (gogoproto.nullable) = false ];
 }
 
-service Query {
-  rpc Nodes(QueryNodesRequest) returns (QueryNodesResponse) {
+service QueryService {
+  rpc Nodes(NodesRequest) returns (NodesResponse) {
     option (google.api.http).get = "/nodes";
   }
 
-  rpc NodesForProvider(QueryNodesForProviderRequest)
-      returns (QueryNodesForProviderResponse) {
+  rpc NodesForProvider(NodesForProviderRequest)
+      returns (NodesForProviderResponse) {
     option (google.api.http).get = "/providers/{address}/nodes";
   }
 
-  rpc Node(QueryNodeRequest) returns (QueryNodeResponse) {
+  rpc Node(NodeRequest) returns (NodeResponse) {
     option (google.api.http).get = "/nodes/{address}";
   }
 }

@@ -9,41 +9,41 @@ import "google/api/annotations.proto";
 
 import "sentinel/deposit/v1/deposit.proto";
 
-message QueryDepositsRequest {
-  option (gogoproto.equal) = false;
+message DepositsRequest {
+  option (gogoproto.equal)           = false;
   option (gogoproto.goproto_getters) = false;
 
   cosmos.base.query.v1beta1.PageRequest pagination = 1;
 }
 
-message QueryDepositRequest {
-  option (gogoproto.equal) = false;
+message DepositRequest {
+  option (gogoproto.equal)           = false;
   option (gogoproto.goproto_getters) = false;
 
   string address = 1;
 }
 
-message QueryDepositsResponse {
-  option (gogoproto.equal) = false;
+message DepositsResponse {
+  option (gogoproto.equal)           = false;
   option (gogoproto.goproto_getters) = false;
 
-  repeated Deposit deposits = 1 [(gogoproto.nullable) = false];
+  repeated Deposit deposits = 1 [ (gogoproto.nullable) = false ];
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
-message QueryDepositResponse {
-  option (gogoproto.equal) = false;
+message DepositResponse {
+  option (gogoproto.equal)           = false;
   option (gogoproto.goproto_getters) = false;
 
-  Deposit deposit = 1 [(gogoproto.nullable) = false];
+  Deposit deposit = 1 [ (gogoproto.nullable) = false ];
 }
 
-service Query {
-  rpc Deposits(QueryDepositsRequest) returns (QueryDepositsResponse) {
+service QueryService {
+  rpc Deposits(DepositsRequest) returns (DepositsResponse) {
     option (google.api.http).get = "/deposits";
   }
 
-  rpc Deposit(QueryDepositRequest) returns (QueryDepositResponse) {
+  rpc Deposit(DepositRequest) returns (DepositResponse) {
     option (google.api.http).get = "/deposits/{address}";
   }
 }

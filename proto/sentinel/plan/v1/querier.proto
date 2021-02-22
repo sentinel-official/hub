@@ -1,0 +1,94 @@
+syntax = "proto3";
+package sentinel.plan.v1;
+
+option go_package = "github.com/sentinel-official/hub/x/plan/types";
+
+import "cosmos/base/query/v1beta1/pagination.proto";
+import "gogoproto/gogo.proto";
+import "google/api/annotations.proto";
+
+import "sentinel/node/v1/node.proto";
+import "sentinel/plan/v1/plan.proto";
+import "sentinel/types/v1/status.proto";
+
+message PlansRequest {
+  option (gogoproto.equal)           = false;
+  option (gogoproto.goproto_getters) = false;
+
+  sentinel.types.v1.Status status                  = 1;
+  cosmos.base.query.v1beta1.PageRequest pagination = 2;
+}
+
+message PlansForProviderRequest {
+  option (gogoproto.equal)           = false;
+  option (gogoproto.goproto_getters) = false;
+
+  string address                                   = 1;
+  sentinel.types.v1.Status status                  = 2;
+  cosmos.base.query.v1beta1.PageRequest pagination = 3;
+}
+
+message PlanRequest {
+  option (gogoproto.equal)           = false;
+  option (gogoproto.goproto_getters) = false;
+
+  uint64 id = 1;
+}
+
+message NodesForPlanRequest {
+  option (gogoproto.equal)           = false;
+  option (gogoproto.goproto_getters) = false;
+
+  uint64 id                                        = 1;
+  cosmos.base.query.v1beta1.PageRequest pagination = 2;
+}
+
+message PlansResponse {
+  option (gogoproto.equal)           = false;
+  option (gogoproto.goproto_getters) = false;
+
+  repeated Plan plans = 1 [ (gogoproto.nullable) = false ];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message PlansForProviderResponse {
+  option (gogoproto.equal)           = false;
+  option (gogoproto.goproto_getters) = false;
+
+  repeated Plan plans = 1 [ (gogoproto.nullable) = false ];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message PlanResponse {
+  option (gogoproto.equal)           = false;
+  option (gogoproto.goproto_getters) = false;
+
+  Plan plan = 1 [ (gogoproto.nullable) = false ];
+}
+
+message NodesForPlanResponse {
+  option (gogoproto.equal)           = false;
+  option (gogoproto.goproto_getters) = false;
+
+  repeated sentinel.node.v1.Node nodes = 1 [ (gogoproto.nullable) = false ];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+service QueryService {
+  rpc Plans(PlansRequest) returns (PlansResponse) {
+    option (google.api.http).get = "/plans";
+  }
+
+  rpc PlansForProvider(PlansForProviderRequest)
+      returns (PlansForProviderResponse) {
+    option (google.api.http).get = "/providers/{address}/plans";
+  }
+
+  rpc Plan(PlanRequest) returns (PlanResponse) {
+    option (google.api.http).get = "/plans/{id}";
+  }
+
+  rpc NodesForPlan(NodesForPlanRequest) returns (NodesForPlanResponse) {
+    option (google.api.http).get = "/plans/{id}/nodes";
+  }
+}
