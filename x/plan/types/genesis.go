@@ -1,6 +1,8 @@
 package types
 
-type GenesisPlans []GenesisPlan
+type (
+	GenesisPlans []GenesisPlan
+)
 
 type (
 	GenesisState = GenesisPlans

@@ -18,7 +18,7 @@ Validity:  %s
 Bytes:     %s
 Status:    %s
 Status at: %s
-`, p.ID, p.Provider, p.Price, p.Validity, p.Bytes, p.Status, p.StatusAt))
+`, p.Id, p.Provider, p.Price, p.Validity, p.Bytes, p.Status, p.StatusAt))
 }
 
 func (p Plan) PriceForDenom(d string) (sdk.Coin, bool) {
@@ -32,7 +32,7 @@ func (p Plan) PriceForDenom(d string) (sdk.Coin, bool) {
 }
 
 func (p Plan) Validate() error {
-	if p.ID == 0 {
+	if p.Id == 0 {
 		return fmt.Errorf("id should not be zero")
 	}
 	if _, err := hub.ProvAddressFromBech32(p.Provider); err != nil {
