@@ -28,12 +28,15 @@ var (
 	NewQuerier          = querier.NewQuerier
 
 	// variable aliases
-	ModuleCdc             = types.ModuleCdc
-	ErrorMarshal          = types.ErrorMarshal
-	ErrorUnmarshal        = types.ErrorUnmarshal
-	ErrorUnknownMsgType   = types.ErrorUnknownMsgType
-	ErrorUnknownQueryType = types.ErrorUnknownQueryType
-	ErrorInvalidField     = types.ErrorInvalidField
+	ModuleCdc                      = types.ModuleCdc
+	ErrorMarshal                   = types.ErrorMarshal
+	ErrorUnmarshal                 = types.ErrorUnmarshal
+	ErrorUnknownMsgType            = types.ErrorUnknownMsgType
+	ErrorUnknownQueryType          = types.ErrorUnknownQueryType
+	ErrorInvalidField              = types.ErrorInvalidField
+	ErrInvalidLengthGenesis        = types.ErrInvalidLengthGenesis
+	ErrIntOverflowGenesis          = types.ErrIntOverflowGenesis
+	ErrUnexpectedEndOfGroupGenesis = types.ErrUnexpectedEndOfGroupGenesis
 )
 
 type (

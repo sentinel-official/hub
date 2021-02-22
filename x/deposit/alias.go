@@ -21,37 +21,56 @@ const (
 
 var (
 	// functions aliases
-	RegisterCodec          = types.RegisterCodec
-	NewGenesisState        = types.NewGenesisState
-	DefaultGenesisState    = types.DefaultGenesisState
-	DepositKey             = types.DepositKey
-	NewQueryDepositParams  = types.NewQueryDepositParams
-	NewQueryDepositsParams = types.NewQueryDepositsParams
-	NewKeeper              = keeper.NewKeeper
-	CreateTestInput        = keeper.CreateTestInput
-	MakeTestCodec          = keeper.MakeTestCodec
-	Querier                = querier.Querier
+	RegisterCodec                           = types.RegisterCodec
+	NewGenesisState                         = types.NewGenesisState
+	DefaultGenesisState                     = types.DefaultGenesisState
+	DepositKey                              = types.DepositKey
+	NewQueryDepositParams                   = types.NewQueryDepositParams
+	NewQueryDepositsParams                  = types.NewQueryDepositsParams
+	NewQueryServiceClient                   = types.NewQueryServiceClient
+	RegisterQueryServiceServer              = types.RegisterQueryServiceServer
+	RegisterQueryServiceHandlerServer       = types.RegisterQueryServiceHandlerServer
+	RegisterQueryServiceHandlerFromEndpoint = types.RegisterQueryServiceHandlerFromEndpoint
+	RegisterQueryServiceHandler             = types.RegisterQueryServiceHandler
+	RegisterQueryServiceHandlerClient       = types.RegisterQueryServiceHandlerClient
+	NewKeeper                               = keeper.NewKeeper
+	CreateTestInput                         = keeper.CreateTestInput
+	MakeTestCodec                           = keeper.MakeTestCodec
+	Querier                                 = querier.Querier
 
 	// variable aliases
-	ModuleCdc                     = types.ModuleCdc
-	ErrorMarshal                  = types.ErrorMarshal
-	ErrorUnmarshal                = types.ErrorUnmarshal
-	ErrorUnknownMsgType           = types.ErrorUnknownMsgType
-	ErrorUnknownQueryType         = types.ErrorUnknownQueryType
-	ErrorInvalidField             = types.ErrorInvalidField
-	ErrorInsufficientDepositFunds = types.ErrorInsufficientDepositFunds
-	ErrorDepositDoesNotExist      = types.ErrorDepositDoesNotExist
-	RouterKey                     = types.RouterKey
-	StoreKey                      = types.StoreKey
-	EventModuleName               = types.EventModuleName
-	DepositKeyPrefix              = types.DepositKeyPrefix
+	ModuleCdc                      = types.ModuleCdc
+	ErrInvalidLengthDeposit        = types.ErrInvalidLengthDeposit
+	ErrIntOverflowDeposit          = types.ErrIntOverflowDeposit
+	ErrUnexpectedEndOfGroupDeposit = types.ErrUnexpectedEndOfGroupDeposit
+	ErrorMarshal                   = types.ErrorMarshal
+	ErrorUnmarshal                 = types.ErrorUnmarshal
+	ErrorUnknownMsgType            = types.ErrorUnknownMsgType
+	ErrorUnknownQueryType          = types.ErrorUnknownQueryType
+	ErrorInvalidField              = types.ErrorInvalidField
+	ErrorInsufficientDepositFunds  = types.ErrorInsufficientDepositFunds
+	ErrorDepositDoesNotExist       = types.ErrorDepositDoesNotExist
+	RouterKey                      = types.RouterKey
+	StoreKey                       = types.StoreKey
+	EventModuleName                = types.EventModuleName
+	DepositKeyPrefix               = types.DepositKeyPrefix
+	ErrInvalidLengthQuerier        = types.ErrInvalidLengthQuerier
+	ErrIntOverflowQuerier          = types.ErrIntOverflowQuerier
+	ErrUnexpectedEndOfGroupQuerier = types.ErrUnexpectedEndOfGroupQuerier
 )
 
 type (
-	Deposit             = types.Deposit
-	Deposits            = types.Deposits
-	GenesisState        = types.GenesisState
-	QueryDepositParams  = types.QueryDepositParams
-	QueryDepositsParams = types.QueryDepositsParams
-	Keeper              = keeper.Keeper
+	Deposits                        = types.Deposits
+	Deposit                         = types.Deposit
+	GenesisState                    = types.GenesisState
+	QueryDepositParams              = types.QueryDepositParams
+	QueryDepositsParams             = types.QueryDepositsParams
+	DepositsRequest                 = types.DepositsRequest
+	DepositRequest                  = types.DepositRequest
+	DepositsResponse                = types.DepositsResponse
+	DepositResponse                 = types.DepositResponse
+	QueryServiceClient              = types.QueryServiceClient
+	QueryServiceServer              = types.QueryServiceServer
+	UnimplementedQueryServiceServer = types.UnimplementedQueryServiceServer
+	Keeper                          = keeper.Keeper
 )

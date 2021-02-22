@@ -61,6 +61,8 @@ var (
 	NewMsgCancel                               = types.NewMsgCancel
 	NewMsgAddQuota                             = types.NewMsgAddQuota
 	NewMsgUpdateQuota                          = types.NewMsgUpdateQuota
+	NewMsgServiceClient                        = types.NewMsgServiceClient
+	RegisterMsgServiceServer                   = types.RegisterMsgServiceServer
 	NewParams                                  = types.NewParams
 	DefaultParams                              = types.DefaultParams
 	ParamsKeyTable                             = types.ParamsKeyTable
@@ -71,6 +73,12 @@ var (
 	NewQuerySubscriptionsForAddressParams      = types.NewQuerySubscriptionsForAddressParams
 	NewQueryQuotaParams                        = types.NewQueryQuotaParams
 	NewQueryQuotasParams                       = types.NewQueryQuotasParams
+	NewQueryServiceClient                      = types.NewQueryServiceClient
+	RegisterQueryServiceServer                 = types.RegisterQueryServiceServer
+	RegisterQueryServiceHandlerServer          = types.RegisterQueryServiceHandlerServer
+	RegisterQueryServiceHandlerFromEndpoint    = types.RegisterQueryServiceHandlerFromEndpoint
+	RegisterQueryServiceHandler                = types.RegisterQueryServiceHandler
+	RegisterQueryServiceHandlerClient          = types.RegisterQueryServiceHandlerClient
 	NewKeeper                                  = keeper.NewKeeper
 	Querier                                    = querier.Querier
 
@@ -99,6 +107,9 @@ var (
 	EventTypeCancel                         = types.EventTypeCancel
 	EventTypeAddQuota                       = types.EventTypeAddQuota
 	EventTypeUpdateQuota                    = types.EventTypeUpdateQuota
+	ErrInvalidLengthGenesis                 = types.ErrInvalidLengthGenesis
+	ErrIntOverflowGenesis                   = types.ErrIntOverflowGenesis
+	ErrUnexpectedEndOfGroupGenesis          = types.ErrUnexpectedEndOfGroupGenesis
 	ParamsSubspace                          = types.ParamsSubspace
 	RouterKey                               = types.RouterKey
 	StoreKey                                = types.StoreKey
@@ -111,18 +122,46 @@ var (
 	InactiveSubscriptionForAddressKeyPrefix = types.InactiveSubscriptionForAddressKeyPrefix
 	InactiveSubscriptionAtKeyPrefix         = types.InactiveSubscriptionAtKeyPrefix
 	QuotaKeyPrefix                          = types.QuotaKeyPrefix
+	ErrInvalidLengthMsg                     = types.ErrInvalidLengthMsg
+	ErrIntOverflowMsg                       = types.ErrIntOverflowMsg
+	ErrUnexpectedEndOfGroupMsg              = types.ErrUnexpectedEndOfGroupMsg
 	KeyInactiveDuration                     = types.KeyInactiveDuration
+	ErrInvalidLengthParams                  = types.ErrInvalidLengthParams
+	ErrIntOverflowParams                    = types.ErrIntOverflowParams
+	ErrUnexpectedEndOfGroupParams           = types.ErrUnexpectedEndOfGroupParams
+	ErrInvalidLengthQuerier                 = types.ErrInvalidLengthQuerier
+	ErrIntOverflowQuerier                   = types.ErrIntOverflowQuerier
+	ErrUnexpectedEndOfGroupQuerier          = types.ErrUnexpectedEndOfGroupQuerier
+	ErrInvalidLengthQuota                   = types.ErrInvalidLengthQuota
+	ErrIntOverflowQuota                     = types.ErrIntOverflowQuota
+	ErrUnexpectedEndOfGroupQuota            = types.ErrUnexpectedEndOfGroupQuota
+	ErrInvalidLengthSubscription            = types.ErrInvalidLengthSubscription
+	ErrIntOverflowSubscription              = types.ErrIntOverflowSubscription
+	ErrUnexpectedEndOfGroupSubscription     = types.ErrUnexpectedEndOfGroupSubscription
 )
 
 type (
-	GenesisSubscription                = types.GenesisSubscription
 	GenesisSubscriptions               = types.GenesisSubscriptions
+	GenesisSubscription                = types.GenesisSubscription
 	GenesisState                       = types.GenesisState
 	MsgSubscribeToNode                 = types.MsgSubscribeToNode
 	MsgSubscribeToPlan                 = types.MsgSubscribeToPlan
 	MsgCancel                          = types.MsgCancel
 	MsgAddQuota                        = types.MsgAddQuota
 	MsgUpdateQuota                     = types.MsgUpdateQuota
+	SubscribeToNodeRequest             = types.SubscribeToNodeRequest
+	SubscribeToPlanRequest             = types.SubscribeToPlanRequest
+	CancelRequest                      = types.CancelRequest
+	AddQuotaRequest                    = types.AddQuotaRequest
+	UpdateQuotaRequest                 = types.UpdateQuotaRequest
+	SubscribeToNodeResponse            = types.SubscribeToNodeResponse
+	SubscribeToPlanResponse            = types.SubscribeToPlanResponse
+	CancelResponse                     = types.CancelResponse
+	AddQuotaResponse                   = types.AddQuotaResponse
+	UpdateQuotaResponse                = types.UpdateQuotaResponse
+	MsgServiceClient                   = types.MsgServiceClient
+	MsgServiceServer                   = types.MsgServiceServer
+	UnimplementedMsgServiceServer      = types.UnimplementedMsgServiceServer
 	Params                             = types.Params
 	QuerySubscriptionParams            = types.QuerySubscriptionParams
 	QuerySubscriptionsParams           = types.QuerySubscriptionsParams
@@ -131,9 +170,22 @@ type (
 	QuerySubscriptionsForAddressParams = types.QuerySubscriptionsForAddressParams
 	QueryQuotaParams                   = types.QueryQuotaParams
 	QueryQuotasParams                  = types.QueryQuotasParams
-	Quota                              = types.Quota
+	SubscriptionsRequest               = types.SubscriptionsRequest
+	SubscriptionsForNodeRequest        = types.SubscriptionsForNodeRequest
+	SubscriptionsForPlanRequest        = types.SubscriptionsForPlanRequest
+	SubscriptionsForAddressRequest     = types.SubscriptionsForAddressRequest
+	SubscriptionRequest                = types.SubscriptionRequest
+	SubscriptionsResponse              = types.SubscriptionsResponse
+	SubscriptionsForNodeResponse       = types.SubscriptionsForNodeResponse
+	SubscriptionsForPlanResponse       = types.SubscriptionsForPlanResponse
+	SubscriptionsForAddressResponse    = types.SubscriptionsForAddressResponse
+	SubscriptionResponse               = types.SubscriptionResponse
+	QueryServiceClient                 = types.QueryServiceClient
+	QueryServiceServer                 = types.QueryServiceServer
+	UnimplementedQueryServiceServer    = types.UnimplementedQueryServiceServer
 	Quotas                             = types.Quotas
-	Subscription                       = types.Subscription
+	Quota                              = types.Quota
 	Subscriptions                      = types.Subscriptions
+	Subscription                       = types.Subscription
 	Keeper                             = keeper.Keeper
 )
