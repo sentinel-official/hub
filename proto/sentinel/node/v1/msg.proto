@@ -15,12 +15,8 @@ message MsgRegisterRequest {
 
   string from = 1;
   string provider = 2;
-  repeated cosmos.base.v1beta1.Coin price = 3 [
-    (gogoproto.nullable) = false
-  ];
-  string remoteURL = 4 [
-    (gogoproto.jsontag) = "remote_url,omitempty"
-  ];
+  repeated cosmos.base.v1beta1.Coin price = 3 [(gogoproto.nullable) = false];
+  string remoteURL = 4 [(gogoproto.jsontag) = "remote_url,omitempty"];
 }
 
 message MsgUpdateRequest {
@@ -30,12 +26,8 @@ message MsgUpdateRequest {
 
   string from = 1;
   string provider = 2;
-  repeated cosmos.base.v1beta1.Coin price = 3 [
-    (gogoproto.nullable) = false
-  ];
-  string remoteURL = 4 [
-    (gogoproto.jsontag) = "remote_url,omitempty"
-  ];
+  repeated cosmos.base.v1beta1.Coin price = 3 [(gogoproto.nullable) = false];
+  string remoteURL = 4 [(gogoproto.jsontag) = "remote_url,omitempty"];
 }
 
 message MsgSetStatusRequest {
@@ -47,9 +39,9 @@ message MsgSetStatusRequest {
   sentinel.types.v1.Status status = 2;
 }
 
-message MsgRegisterResponse{}
-message MsgUpdateResponse{}
-message MsgSetStatusResponse{}
+message MsgRegisterResponse {}
+message MsgUpdateResponse {}
+message MsgSetStatusResponse {}
 
 service Msg {
   rpc RegisterRequest(MsgRegisterRequest) returns (MsgRegisterResponse);

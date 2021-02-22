@@ -13,6 +13,7 @@ message Deposit {
 
   string address = 1;
   repeated cosmos.base.v1beta1.Coin coins = 2 [
-    (gogoproto.nullable) = false
+    (gogoproto.nullable) = false,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
   ];
 }

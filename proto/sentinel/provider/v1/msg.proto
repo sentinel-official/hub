@@ -29,8 +29,8 @@ message MsgUpdateRequest {
   string description = 5;
 }
 
-message MsgRegisterResponse{}
-message MsgUpdateResponse{}
+message MsgRegisterResponse {}
+message MsgUpdateResponse {}
 
 service Msg {
   rpc RegisterRequest(MsgRegisterRequest) returns (MsgRegisterResponse);

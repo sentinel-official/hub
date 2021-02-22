@@ -27,9 +27,7 @@ message QueryProvidersResponse {
   option (gogoproto.equal) = false;
   option (gogoproto.goproto_getters) = false;
 
-  repeated Provider providers = 1 [
-    (gogoproto.nullable) = false
-  ];
+  repeated Provider providers = 1 [(gogoproto.nullable) = false];
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
@@ -37,17 +35,15 @@ message QueryProviderResponse {
   option (gogoproto.equal) = false;
   option (gogoproto.goproto_getters) = false;
 
-  Provider provider = 1 [
-    (gogoproto.nullable) = false
-  ];
+  Provider provider = 1 [(gogoproto.nullable) = false];
 }
 
 service Query {
-  rpc Deposits(QueryProvidersRequest) returns(QueryProvidersResponse) {
+  rpc Deposits(QueryProvidersRequest) returns (QueryProvidersResponse) {
     option (google.api.http).get = "/providers";
   }
 
-  rpc Deposit(QueryProviderRequest) returns(QueryProviderResponse) {
+  rpc Deposit(QueryProviderRequest) returns (QueryProviderResponse) {
     option (google.api.http).get = "/providers/{address}";
   }
 }

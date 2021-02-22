@@ -27,9 +27,7 @@ message QueryDepositsResponse {
   option (gogoproto.equal) = false;
   option (gogoproto.goproto_getters) = false;
 
-  repeated Deposit deposits = 1 [
-    (gogoproto.nullable) = false
-  ];
+  repeated Deposit deposits = 1 [(gogoproto.nullable) = false];
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
@@ -37,17 +35,15 @@ message QueryDepositResponse {
   option (gogoproto.equal) = false;
   option (gogoproto.goproto_getters) = false;
 
-  Deposit deposit = 1 [
-    (gogoproto.nullable) = false
-  ];
+  Deposit deposit = 1 [(gogoproto.nullable) = false];
 }
 
 service Query {
-  rpc Deposits(QueryDepositsRequest) returns(QueryDepositsResponse) {
+  rpc Deposits(QueryDepositsRequest) returns (QueryDepositsResponse) {
     option (google.api.http).get = "/deposits";
   }
 
-  rpc Deposit(QueryDepositRequest) returns(QueryDepositResponse) {
+  rpc Deposit(QueryDepositRequest) returns (QueryDepositResponse) {
     option (google.api.http).get = "/deposits/{address}";
   }
 }

@@ -8,16 +8,9 @@ import "gogoproto/gogo.proto";
 enum Status {
   option (gogoproto.goproto_enum_prefix) = false;
 
-  STATUS_UNKNOWN = 0 [
-    (gogoproto.enumvalue_customname) = "Unknown"
-  ];
-  STATUS_ACTIVE = 1 [
-    (gogoproto.enumvalue_customname) = "Active"
-  ];
-  STATUS_INACTIVE_PENDING = 2 [
-    (gogoproto.enumvalue_customname) = "InactivePending"
-  ];
-  STATUS_INACTIVE = 3 [
-    (gogoproto.enumvalue_customname) = "Inactive"
-  ];
+  STATUS_UNKNOWN = 0 [(gogoproto.enumvalue_customname) = "Unknown"];
+  STATUS_ACTIVE = 1 [(gogoproto.enumvalue_customname) = "Active"];
+  STATUS_INACTIVE_PENDING = 2
+  [(gogoproto.enumvalue_customname) = "InactivePending"];
+  STATUS_INACTIVE = 3 [(gogoproto.enumvalue_customname) = "Inactive"];
 }

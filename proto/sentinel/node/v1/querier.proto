@@ -38,9 +38,7 @@ message QueryNodesResponse {
   option (gogoproto.equal) = false;
   option (gogoproto.goproto_getters) = false;
 
-  repeated Node nodes = 1 [
-    (gogoproto.nullable) = false
-  ];
+  repeated Node nodes = 1 [(gogoproto.nullable) = false];
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
@@ -48,9 +46,7 @@ message QueryNodesForProviderResponse {
   option (gogoproto.equal) = false;
   option (gogoproto.goproto_getters) = false;
 
-  repeated Node nodes = 1 [
-    (gogoproto.nullable) = false
-  ];
+  repeated Node nodes = 1 [(gogoproto.nullable) = false];
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
@@ -58,21 +54,20 @@ message QueryNodeResponse {
   option (gogoproto.equal) = false;
   option (gogoproto.goproto_getters) = false;
 
-  Node node = 1 [
-    (gogoproto.nullable) = false
-  ];
+  Node node = 1 [(gogoproto.nullable) = false];
 }
 
 service Query {
-  rpc Nodes(QueryNodesRequest) returns(QueryNodesResponse) {
+  rpc Nodes(QueryNodesRequest) returns (QueryNodesResponse) {
     option (google.api.http).get = "/nodes";
   }
 
-  rpc NodesForProvider(QueryNodesForProviderRequest) returns(QueryNodesForProviderResponse) {
+  rpc NodesForProvider(QueryNodesForProviderRequest)
+      returns (QueryNodesForProviderResponse) {
     option (google.api.http).get = "/providers/{address}/nodes";
   }
 
-  rpc Node(QueryNodeRequest) returns(QueryNodeResponse) {
+  rpc Node(QueryNodeRequest) returns (QueryNodeResponse) {
     option (google.api.http).get = "/nodes/{address}";
   }
 }
