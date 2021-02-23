@@ -1,7 +1,8 @@
 package cli
 
 const (
-	flagPage        = "page"
+	flagStatus      = "status"
+	flagSkip        = "skip"
 	flagLimit       = "limit"
 	flagAddress     = "address"
 	flagNodeAddress = "node-address"

@@ -13,17 +13,11 @@ import (
 )
 
 const (
-	Codespace               = types.Codespace
-	EventTypeSet            = types.EventTypeSet
-	EventTypeUpdate         = types.EventTypeUpdate
-	EventTypeSetStatus      = types.EventTypeSetStatus
 	AttributeKeyProvider    = types.AttributeKeyProvider
 	AttributeKeyAddress     = types.AttributeKeyAddress
 	AttributeKeyStatus      = types.AttributeKeyStatus
 	ModuleName              = types.ModuleName
-	ParamsSubspace          = types.ParamsSubspace
 	QuerierRoute            = types.QuerierRoute
-	CategoryUnknown         = types.CategoryUnknown
 	DefaultInactiveDuration = types.DefaultInactiveDuration
 	QueryNode               = types.QueryNode
 	QueryNodes              = types.QueryNodes
@@ -32,44 +26,62 @@ const (
 
 var (
 	// functions aliases
-	RegisterCodec                  = types.RegisterCodec
-	ErrorMarshal                   = types.ErrorMarshal
-	ErrorUnmarshal                 = types.ErrorUnmarshal
-	ErrorUnknownMsgType            = types.ErrorUnknownMsgType
-	ErrorUnknownQueryType          = types.ErrorUnknownQueryType
-	ErrorInvalidField              = types.ErrorInvalidField
-	ErrorProviderDoesNotExist      = types.ErrorProviderDoesNotExist
-	ErrorDuplicateNode             = types.ErrorDuplicateNode
-	ErrorNodeDoesNotExist          = types.ErrorNodeDoesNotExist
-	NewGenesisState                = types.NewGenesisState
-	DefaultGenesisState            = types.DefaultGenesisState
-	NodeKey                        = types.NodeKey
-	GetNodeForProviderKeyPrefix    = types.GetNodeForProviderKeyPrefix
-	NodeForProviderKey             = types.NodeForProviderKey
-	GetActiveNodeAtKeyPrefix       = types.GetActiveNodeAtKeyPrefix
-	ActiveNodeAtKey                = types.ActiveNodeAtKey
-	NewMsgRegister                 = types.NewMsgRegister
-	NewMsgUpdate                   = types.NewMsgUpdate
-	NewMsgSetStatus                = types.NewMsgSetStatus
-	CategoryFromString             = types.CategoryFromString
-	NewParams                      = types.NewParams
-	DefaultParams                  = types.DefaultParams
-	ParamsKeyTable                 = types.ParamsKeyTable
-	NewQueryNodeParams             = types.NewQueryNodeParams
-	NewQueryNodesParams            = types.NewQueryNodesParams
-	NewQueryNodesForProviderParams = types.NewQueryNodesForProviderParams
-	NewKeeper                      = keeper.NewKeeper
-	Querier                        = querier.Querier
+	RegisterCodec                       = types.RegisterCodec
+	NewGenesisState                     = types.NewGenesisState
+	DefaultGenesisState                 = types.DefaultGenesisState
+	NodeKey                             = types.NodeKey
+	ActiveNodeKey                       = types.ActiveNodeKey
+	InactiveNodeKey                     = types.InactiveNodeKey
+	GetActiveNodeForProviderKeyPrefix   = types.GetActiveNodeForProviderKeyPrefix
+	ActiveNodeForProviderKey            = types.ActiveNodeForProviderKey
+	GetInactiveNodeForProviderKeyPrefix = types.GetInactiveNodeForProviderKeyPrefix
+	InactiveNodeForProviderKey          = types.InactiveNodeForProviderKey
+	GetActiveNodeAtKeyPrefix            = types.GetActiveNodeAtKeyPrefix
+	ActiveNodeAtKey                     = types.ActiveNodeAtKey
+	GetInactiveNodeAtKeyPrefix          = types.GetInactiveNodeAtKeyPrefix
+	InactiveNodeAtKey                   = types.InactiveNodeAtKey
+	AddressFromStatusNodeKey            = types.AddressFromStatusNodeKey
+	AddressFromStatusNodeForProviderKey = types.AddressFromStatusNodeForProviderKey
+	AddressFromStatusNodeAtKey          = types.AddressFromStatusNodeAtKey
+	NewMsgRegister                      = types.NewMsgRegister
+	NewMsgUpdate                        = types.NewMsgUpdate
+	NewMsgSetStatus                     = types.NewMsgSetStatus
+	NewParams                           = types.NewParams
+	DefaultParams                       = types.DefaultParams
+	ParamsKeyTable                      = types.ParamsKeyTable
+	NewQueryNodeParams                  = types.NewQueryNodeParams
+	NewQueryNodesParams                 = types.NewQueryNodesParams
+	NewQueryNodesForProviderParams      = types.NewQueryNodesForProviderParams
+	NewKeeper                           = keeper.NewKeeper
+	Querier                             = querier.Querier
 
 	// variable aliases
-	ModuleCdc                = types.ModuleCdc
-	RouterKey                = types.RouterKey
-	StoreKey                 = types.StoreKey
-	EventModuleName          = types.EventModuleName
-	NodeKeyPrefix            = types.NodeKeyPrefix
-	NodeForProviderKeyPrefix = types.NodeForProviderKeyPrefix
-	ActiveNodeAtKeyPrefix    = types.ActiveNodeAtKeyPrefix
-	KeyInactiveDuration      = types.KeyInactiveDuration
+	ModuleCdc                        = types.ModuleCdc
+	ErrorMarshal                     = types.ErrorMarshal
+	ErrorUnmarshal                   = types.ErrorUnmarshal
+	ErrorUnknownMsgType              = types.ErrorUnknownMsgType
+	ErrorUnknownQueryType            = types.ErrorUnknownQueryType
+	ErrorInvalidField                = types.ErrorInvalidField
+	ErrorProviderDoesNotExist        = types.ErrorProviderDoesNotExist
+	ErrorDuplicateNode               = types.ErrorDuplicateNode
+	ErrorNodeDoesNotExist            = types.ErrorNodeDoesNotExist
+	EventTypeSet                     = types.EventTypeSet
+	EventTypeUpdate                  = types.EventTypeUpdate
+	EventTypeSetStatus               = types.EventTypeSetStatus
+	ParamsSubspace                   = types.ParamsSubspace
+	RouterKey                        = types.RouterKey
+	StoreKey                         = types.StoreKey
+	EventModuleName                  = types.EventModuleName
+	NodeKeyPrefix                    = types.NodeKeyPrefix
+	ActiveNodeKeyPrefix              = types.ActiveNodeKeyPrefix
+	InactiveNodeKeyPrefix            = types.InactiveNodeKeyPrefix
+	ActiveNodeForProviderKeyPrefix   = types.ActiveNodeForProviderKeyPrefix
+	InactiveNodeForProviderKeyPrefix = types.InactiveNodeForProviderKeyPrefix
+	ActiveNodeAtKeyPrefix            = types.ActiveNodeAtKeyPrefix
+	InactiveNodeAtKeyPrefix          = types.InactiveNodeAtKeyPrefix
+	DefaultDeposit                   = types.DefaultDeposit
+	KeyDeposit                       = types.KeyDeposit
+	KeyInactiveDuration              = types.KeyInactiveDuration
 )
 
 type (
@@ -77,7 +89,6 @@ type (
 	MsgRegister                 = types.MsgRegister
 	MsgUpdate                   = types.MsgUpdate
 	MsgSetStatus                = types.MsgSetStatus
-	Category                    = types.Category
 	Node                        = types.Node
 	Nodes                       = types.Nodes
 	Params                      = types.Params

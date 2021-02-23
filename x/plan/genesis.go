@@ -5,6 +5,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
+	hub "github.com/sentinel-official/hub/types"
 	"github.com/sentinel-official/hub/x/plan/keeper"
 	"github.com/sentinel-official/hub/x/plan/types"
 )
@@ -12,18 +13,25 @@ import (
 func InitGenesis(ctx sdk.Context, k keeper.Keeper, state types.GenesisState) {
 	for _, item := range state {
 		k.SetPlan(ctx, item.Plan)
-		k.SetPlanForProvider(ctx, item.Plan.Provider, item.Plan.ID)
+
+		if item.Plan.Status.Equal(hub.StatusActive) {
+			k.SetActivePlan(ctx, item.Plan.ID)
+			k.SetActivePlanForProvider(ctx, item.Plan.Provider, item.Plan.ID)
+		} else {
+			k.SetInactivePlan(ctx, item.Plan.ID)
+			k.SetInactivePlanForProvider(ctx, item.Plan.Provider, item.Plan.ID)
+		}
 
 		for _, node := range item.Nodes {
 			k.SetNodeForPlan(ctx, item.Plan.ID, node)
 		}
 	}
 
-	k.SetPlansCount(ctx, uint64(len(state)))
+	k.SetCount(ctx, uint64(len(state)))
 }
 
 func ExportGenesis(ctx sdk.Context, k keeper.Keeper) types.GenesisState {
-	plans := k.GetPlans(ctx)
+	plans := k.GetPlans(ctx, 0, 0)
 
 	items := make(types.GenesisPlans, 0, len(plans))
 	for _, plan := range plans {
@@ -32,7 +40,7 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) types.GenesisState {
 			Nodes: nil,
 		}
 
-		nodes := k.GetNodesForPlan(ctx, plan.ID)
+		nodes := k.GetNodesForPlan(ctx, plan.ID, 0, 0)
 		for _, node := range nodes {
 			item.Nodes = append(item.Nodes, node.Address)
 		}

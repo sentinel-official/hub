@@ -49,7 +49,12 @@ func queryPlans(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			page, err := cmd.Flags().GetInt(flagPage)
+			s, err := cmd.Flags().GetString(flagStatus)
+			if err != nil {
+				return err
+			}
+
+			skip, err := cmd.Flags().GetInt(flagSkip)
 			if err != nil {
 				return err
 			}
@@ -62,6 +67,7 @@ func queryPlans(cdc *codec.Codec) *cobra.Command {
 			var (
 				address hub.ProvAddress
 				plans   types.Plans
+				status  = hub.StatusFromString(s)
 			)
 
 			if len(provider) > 0 {
@@ -70,9 +76,9 @@ func queryPlans(cdc *codec.Codec) *cobra.Command {
 					return err
 				}
 
-				plans, err = common.QueryPlansForProvider(ctx, address, page, limit)
+				plans, err = common.QueryPlansForProvider(ctx, address, status, skip, limit)
 			} else {
-				plans, err = common.QueryPlans(ctx, page, limit)
+				plans, err = common.QueryPlans(ctx, status, skip, limit)
 			}
 
 			if err != nil {
@@ -88,8 +94,9 @@ func queryPlans(cdc *codec.Codec) *cobra.Command {
 	}
 
 	cmd.Flags().String(flagProvider, "", "provider address")
-	cmd.Flags().Int(flagPage, 1, "page")
-	cmd.Flags().Int(flagLimit, 0, "limit")
+	cmd.Flags().String(flagStatus, "", "status")
+	cmd.Flags().Int(flagSkip, 0, "skip")
+	cmd.Flags().Int(flagLimit, 25, "limit")
 
 	return cmd
 }

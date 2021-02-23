@@ -1,6 +1,6 @@
 package cli
 
 const (
-	flagPage  = "page"
+	flagSkip  = "skip"
 	flagLimit = "limit"
 )

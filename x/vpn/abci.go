@@ -10,7 +10,7 @@ import (
 	"github.com/sentinel-official/hub/x/vpn/keeper"
 )
 
-func EndBlock(ctx sdk.Context, k keeper.Keeper) []abci.ValidatorUpdate {
+func EndBlock(ctx sdk.Context, k keeper.Keeper) abci.ValidatorUpdates {
 	ctx, write := ctx.CacheContext()
 	defer write()
 

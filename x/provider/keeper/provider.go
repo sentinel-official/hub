@@ -39,17 +39,22 @@ func (k Keeper) GetProvider(ctx sdk.Context, address hub.ProvAddress) (provider 
 }
 
 // GetProviders is for getting the providers from the KVStore.
-func (k Keeper) GetProviders(ctx sdk.Context) (items types.Providers) {
-	store := k.Store(ctx)
+func (k Keeper) GetProviders(ctx sdk.Context, skip, limit int) (items types.Providers) {
+	var (
+		store = k.Store(ctx)
+		iter  = hub.NewPaginatedIterator(
+			sdk.KVStorePrefixIterator(store, types.ProviderKeyPrefix),
+		)
+	)
 
-	iter := sdk.KVStorePrefixIterator(store, types.ProviderKeyPrefix)
 	defer iter.Close()
 
-	for ; iter.Valid(); iter.Next() {
+	iter.Skip(skip)
+	iter.Limit(limit, func(iter sdk.Iterator) {
 		var item types.Provider
 		k.cdc.MustUnmarshalBinaryLengthPrefixed(iter.Value(), &item)
 		items = append(items, item)
-	}
+	})
 
 	return items
 }

@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"bufio"
 	"strconv"
 	"time"
 
@@ -20,17 +21,21 @@ func txAdd(cdc *codec.Codec) *cobra.Command {
 		Use:   "add",
 		Short: "Add a plan",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			txb := auth.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
-			ctx := context.NewCLIContext().WithCodec(cdc)
+			buffer := bufio.NewReader(cmd.InOrStdin())
+			txb := auth.NewTxBuilderFromCLI(buffer).WithTxEncoder(utils.GetTxEncoder(cdc))
+			ctx := context.NewCLIContextWithInput(buffer).WithCodec(cdc)
 
 			s, err := cmd.Flags().GetString(flagPrice)
 			if err != nil {
 				return err
 			}
 
-			price, err := sdk.ParseCoins(s)
-			if err != nil {
-				return err
+			var price sdk.Coins
+			if len(s) > 0 {
+				price, err = sdk.ParseCoins(s)
+				if err != nil {
+					return err
+				}
 			}
 
 			s, err = cmd.Flags().GetString(flagValidity)
@@ -49,6 +54,10 @@ func txAdd(cdc *codec.Codec) *cobra.Command {
 			}
 
 			msg := types.NewMsgAdd(ctx.FromAddress.Bytes(), price, validity, sdk.NewInt(bytes))
+			if err := msg.ValidateBasic(); err != nil {
+				return err
+			}
+
 			return utils.GenerateOrBroadcastMsgs(ctx, txb, []sdk.Msg{msg})
 		},
 	}
@@ -70,8 +79,9 @@ func txSetStatus(cdc *codec.Codec) *cobra.Command {
 		Short: "Set a plan status",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			txb := auth.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
-			ctx := context.NewCLIContext().WithCodec(cdc)
+			buffer := bufio.NewReader(cmd.InOrStdin())
+			txb := auth.NewTxBuilderFromCLI(buffer).WithTxEncoder(utils.GetTxEncoder(cdc))
+			ctx := context.NewCLIContextWithInput(buffer).WithCodec(cdc)
 
 			id, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
@@ -79,6 +89,10 @@ func txSetStatus(cdc *codec.Codec) *cobra.Command {
 			}
 
 			msg := types.NewMsgSetStatus(ctx.FromAddress.Bytes(), id, hub.StatusFromString(args[1]))
+			if err := msg.ValidateBasic(); err != nil {
+				return err
+			}
+
 			return utils.GenerateOrBroadcastMsgs(ctx, txb, []sdk.Msg{msg})
 		},
 	}
@@ -92,8 +106,9 @@ func txAddNode(cdc *codec.Codec) *cobra.Command {
 		Short: "Add a node for a plan",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			txb := auth.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
-			ctx := context.NewCLIContext().WithCodec(cdc)
+			buffer := bufio.NewReader(cmd.InOrStdin())
+			txb := auth.NewTxBuilderFromCLI(buffer).WithTxEncoder(utils.GetTxEncoder(cdc))
+			ctx := context.NewCLIContextWithInput(buffer).WithCodec(cdc)
 
 			id, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
@@ -106,6 +121,10 @@ func txAddNode(cdc *codec.Codec) *cobra.Command {
 			}
 
 			msg := types.NewMsgAddNode(ctx.FromAddress.Bytes(), id, node)
+			if err := msg.ValidateBasic(); err != nil {
+				return err
+			}
+
 			return utils.GenerateOrBroadcastMsgs(ctx, txb, []sdk.Msg{msg})
 		},
 	}
@@ -119,8 +138,9 @@ func txRemoveNode(cdc *codec.Codec) *cobra.Command {
 		Short: "Remove a node for a plan",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			txb := auth.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
-			ctx := context.NewCLIContext().WithCodec(cdc)
+			buffer := bufio.NewReader(cmd.InOrStdin())
+			txb := auth.NewTxBuilderFromCLI(buffer).WithTxEncoder(utils.GetTxEncoder(cdc))
+			ctx := context.NewCLIContextWithInput(buffer).WithCodec(cdc)
 
 			id, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
@@ -133,6 +153,10 @@ func txRemoveNode(cdc *codec.Codec) *cobra.Command {
 			}
 
 			msg := types.NewMsgRemoveNode(ctx.FromAddress.Bytes(), id, node)
+			if err := msg.ValidateBasic(); err != nil {
+				return err
+			}
+
 			return utils.GenerateOrBroadcastMsgs(ctx, txb, []sdk.Msg{msg})
 		},
 	}

@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/errors"
 
 	hub "github.com/sentinel-official/hub/types"
 )
@@ -15,29 +16,20 @@ var (
 	_ sdk.Msg = (*MsgSetStatus)(nil)
 )
 
-// MsgRegister is for registering a VPN node.
+// MsgRegister is for registering a node.
 type MsgRegister struct {
-	From          sdk.AccAddress  `json:"from"`
-	Moniker       string          `json:"moniker"`
-	Provider      hub.ProvAddress `json:"provider,omitempty"`
-	Price         sdk.Coins       `json:"price,omitempty"`
-	InternetSpeed hub.Bandwidth   `json:"internet_speed"`
-	RemoteURL     string          `json:"remote_url"`
-	Version       string          `json:"version"`
-	Category      Category        `json:"category"`
+	From      sdk.AccAddress  `json:"from"`
+	Provider  hub.ProvAddress `json:"provider,omitempty"`
+	Price     sdk.Coins       `json:"price,omitempty"`
+	RemoteURL string          `json:"remote_url"`
 }
 
-func NewMsgRegister(from sdk.AccAddress, moniker string, provider hub.ProvAddress, price sdk.Coins,
-	speed hub.Bandwidth, remoteURL, version string, category Category) MsgRegister {
+func NewMsgRegister(from sdk.AccAddress, provider hub.ProvAddress, price sdk.Coins, remoteURL string) MsgRegister {
 	return MsgRegister{
-		From:          from,
-		Moniker:       moniker,
-		Provider:      provider,
-		Price:         price,
-		InternetSpeed: speed,
-		RemoteURL:     remoteURL,
-		Version:       version,
-		Category:      category,
+		From:      from,
+		Provider:  provider,
+		Price:     price,
+		RemoteURL: remoteURL,
 	}
 }
 
@@ -49,50 +41,30 @@ func (m MsgRegister) Type() string {
 	return fmt.Sprintf("%s:register", ModuleName)
 }
 
-func (m MsgRegister) ValidateBasic() sdk.Error {
+func (m MsgRegister) ValidateBasic() error {
 	if m.From == nil || m.From.Empty() {
-		return ErrorInvalidField("from")
-	}
-
-	// Moniker can't be empty and length should be (0, 64]
-	if len(m.Moniker) == 0 || len(m.Moniker) > 64 {
-		return ErrorInvalidField("moniker")
+		return errors.Wrapf(ErrorInvalidField, "%s", "from")
 	}
 
 	// Either provider or price should be nil
 	if (m.Provider != nil && m.Price != nil) ||
 		(m.Provider == nil && m.Price == nil) {
-		return ErrorInvalidField("provider and price")
+		return errors.Wrapf(ErrorInvalidField, "%s", "provider or price")
 	}
 
 	// Provider can be nil. If not, it shouldn't be empty
 	if m.Provider != nil && m.Provider.Empty() {
-		return ErrorInvalidField("provider")
+		return errors.Wrapf(ErrorInvalidField, "%s", "provider")
 	}
 
 	// Price can be nil. If not, it should be valid
 	if m.Price != nil && !m.Price.IsValid() {
-		return ErrorInvalidField("price")
+		return errors.Wrapf(ErrorInvalidField, "%s", "price")
 	}
 
-	// InternetSpeed shouldn't be negative and zero
-	if !m.InternetSpeed.IsValid() {
-		return ErrorInvalidField("internet_speed")
-	}
-
-	// RemoteURL can't be empty and length should be (0, 64]
+	// RemoteURL length should be between 1 and 64
 	if len(m.RemoteURL) == 0 || len(m.RemoteURL) > 64 {
-		return ErrorInvalidField("remote_url")
-	}
-
-	// Version can't be empty and length should be (0, 64]
-	if len(m.Version) == 0 || len(m.Version) > 64 {
-		return ErrorInvalidField("version")
-	}
-
-	// Category should be valid
-	if !m.Category.IsValid() {
-		return ErrorInvalidField("category")
+		return errors.Wrapf(ErrorInvalidField, "%s", "remote_url")
 	}
 
 	return nil
@@ -111,29 +83,20 @@ func (m MsgRegister) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{m.From}
 }
 
-// MsgUpdate is for updating the information of a VPN node.
+// MsgUpdate is for updating the information of a node.
 type MsgUpdate struct {
-	From          hub.NodeAddress `json:"from"`
-	Moniker       string          `json:"moniker"`
-	Provider      hub.ProvAddress `json:"provider,omitempty"`
-	Price         sdk.Coins       `json:"price,omitempty"`
-	InternetSpeed hub.Bandwidth   `json:"internet_speed,omitempty"`
-	RemoteURL     string          `json:"remote_url,omitempty"`
-	Version       string          `json:"version,omitempty"`
-	Category      Category        `json:"category,omitempty"`
+	From      hub.NodeAddress `json:"from"`
+	Provider  hub.ProvAddress `json:"provider,omitempty"`
+	Price     sdk.Coins       `json:"price,omitempty"`
+	RemoteURL string          `json:"remote_url,omitempty"`
 }
 
-func NewMsgUpdate(from hub.NodeAddress, moniker string, provider hub.ProvAddress, price sdk.Coins,
-	speed hub.Bandwidth, remoteURL, version string, category Category) MsgUpdate {
+func NewMsgUpdate(from hub.NodeAddress, provider hub.ProvAddress, price sdk.Coins, remoteURL string) MsgUpdate {
 	return MsgUpdate{
-		From:          from,
-		Moniker:       moniker,
-		Provider:      provider,
-		Price:         price,
-		InternetSpeed: speed,
-		RemoteURL:     remoteURL,
-		Version:       version,
-		Category:      category,
+		From:      from,
+		Provider:  provider,
+		Price:     price,
+		RemoteURL: remoteURL,
 	}
 }
 
@@ -145,49 +108,28 @@ func (m MsgUpdate) Type() string {
 	return fmt.Sprintf("%s:update", ModuleName)
 }
 
-func (m MsgUpdate) ValidateBasic() sdk.Error {
+func (m MsgUpdate) ValidateBasic() error {
 	if m.From == nil || m.From.Empty() {
-		return ErrorInvalidField("from")
+		return errors.Wrapf(ErrorInvalidField, "%s", "from")
 	}
 
-	// Moniker length should be [0, 64]
-	if len(m.Moniker) > 64 {
-		return ErrorInvalidField("moniker")
-	}
-
-	// Provider and Price both shouldn't nil at the same time
 	if m.Provider != nil && m.Price != nil {
-		return ErrorInvalidField("provider and price")
+		return errors.Wrapf(ErrorInvalidField, "%s", "provider or price")
 	}
 
 	// Provider can be nil. If not, it shouldn't be empty
 	if m.Provider != nil && m.Provider.Empty() {
-		return ErrorInvalidField("provider")
+		return errors.Wrapf(ErrorInvalidField, "%s", "provider")
 	}
 
 	// Price can be nil. If not, it should be valid
 	if m.Price != nil && !m.Price.IsValid() {
-		return ErrorInvalidField("price")
+		return errors.Wrapf(ErrorInvalidField, "%s", "price")
 	}
 
-	// InternetSpeed can be zero. If not, it shouldn't be negative and zero
-	if !m.InternetSpeed.IsAllZero() && !m.InternetSpeed.IsValid() {
-		return ErrorInvalidField("internet_speed")
-	}
-
-	// RemoteURL length should be [0, 64]
+	// RemoteURL length should be between 0 and 64
 	if len(m.RemoteURL) > 64 {
-		return ErrorInvalidField("remote_url")
-	}
-
-	// Version length should be [0, 64]
-	if len(m.Version) > 64 {
-		return ErrorInvalidField("version")
-	}
-
-	// Category can be Unknown. If not, should be valid
-	if !m.Category.Equal(CategoryUnknown) && !m.Category.IsValid() {
-		return ErrorInvalidField("category")
+		return errors.Wrapf(ErrorInvalidField, "%s", "remote_url")
 	}
 
 	return nil
@@ -206,7 +148,7 @@ func (m MsgUpdate) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{m.From.Bytes()}
 }
 
-// MsgSetStatus is for updating the status of a VPN node.
+// MsgSetStatus is for updating the status of a node.
 type MsgSetStatus struct {
 	From   hub.NodeAddress `json:"from"`
 	Status hub.Status      `json:"status"`
@@ -227,14 +169,14 @@ func (m MsgSetStatus) Type() string {
 	return fmt.Sprintf("%s:set_status", ModuleName)
 }
 
-func (m MsgSetStatus) ValidateBasic() sdk.Error {
+func (m MsgSetStatus) ValidateBasic() error {
 	if m.From == nil || m.From.Empty() {
-		return ErrorInvalidField("from")
+		return errors.Wrapf(ErrorInvalidField, "%s", "from")
 	}
 
-	// Status should be valid
+	// Status should be either Active or Inactive
 	if !m.Status.Equal(hub.StatusActive) && !m.Status.Equal(hub.StatusInactive) {
-		return ErrorInvalidField("status")
+		return errors.Wrapf(ErrorInvalidField, "%s", "status")
 	}
 
 	return nil

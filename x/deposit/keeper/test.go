@@ -41,15 +41,13 @@ func CreateTestInput(t *testing.T, isCheckTx bool) (sdk.Context, Keeper, bank.Ke
 	var (
 		paramsKeeper = params.NewKeeper(cdc,
 			keyParams,
-			transientKeyParams,
-			params.DefaultCodespace)
+			transientKeyParams)
 		accountKeeper = auth.NewAccountKeeper(cdc,
 			keyAuth,
 			paramsKeeper.Subspace(auth.DefaultParamspace),
 			auth.ProtoBaseAccount)
 		bankKeeper = bank.NewBaseKeeper(accountKeeper,
 			paramsKeeper.Subspace(bank.DefaultParamspace),
-			bank.DefaultCodespace,
 			blacklist)
 		supplyKeeper = supply.NewKeeper(cdc,
 			keySupply,

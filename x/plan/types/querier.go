@@ -5,11 +5,11 @@ import (
 )
 
 const (
-	QueryPlan             = "plan"
-	QueryPlans            = "plans"
-	QueryPlansForProvider = "plans_for_provider"
+	QueryPlan             = "Plan"
+	QueryPlans            = "Plans"
+	QueryPlansForProvider = "PlansForProvider"
 
-	QueryNodesForPlan = "nodes_for_plan"
+	QueryNodesForPlan = "NodesForPlan"
 )
 
 type QueryPlanParams struct {
@@ -23,41 +23,45 @@ func NewQueryPlanParams(id uint64) QueryPlanParams {
 }
 
 type QueryPlansParams struct {
-	Page  int `json:"page"`
-	Limit int `json:"limit"`
+	Status hub.Status `json:"status"`
+	Skip   int        `json:"skip"`
+	Limit  int        `json:"limit"`
 }
 
-func NewQueryPlansParams(page, limit int) QueryPlansParams {
+func NewQueryPlansParams(status hub.Status, skip, limit int) QueryPlansParams {
 	return QueryPlansParams{
-		Page:  page,
-		Limit: limit,
+		Status: status,
+		Skip:   skip,
+		Limit:  limit,
 	}
 }
 
 type QueryPlansForProviderParams struct {
 	Address hub.ProvAddress `json:"address"`
-	Page    int             `json:"page"`
+	Status  hub.Status      `json:"status"`
+	Skip    int             `json:"skip"`
 	Limit   int             `json:"limit"`
 }
 
-func NewQueryPlansForProviderParams(address hub.ProvAddress, page, limit int) QueryPlansForProviderParams {
+func NewQueryPlansForProviderParams(address hub.ProvAddress, status hub.Status, skip, limit int) QueryPlansForProviderParams {
 	return QueryPlansForProviderParams{
 		Address: address,
-		Page:    page,
+		Status:  status,
+		Skip:    skip,
 		Limit:   limit,
 	}
 }
 
 type QueryNodesForPlanParams struct {
 	ID    uint64 `json:"id"`
-	Page  int    `json:"page"`
+	Skip  int    `json:"skip"`
 	Limit int    `json:"limit"`
 }
 
-func NewQueryNodesForPlanParams(id uint64, page, limit int) QueryNodesForPlanParams {
+func NewQueryNodesForPlanParams(id uint64, skip, limit int) QueryNodesForPlanParams {
 	return QueryNodesForPlanParams{
 		ID:    id,
-		Page:  page,
+		Skip:  skip,
 		Limit: limit,
 	}
 }

@@ -1,10 +1,11 @@
 package cli
 
 const (
-	flagPage     = "page"
+	flagSkip     = "skip"
 	flagLimit    = "limit"
 	flagProvider = "provider"
 	flagPrice    = "price"
 	flagValidity = "validity"
 	flagBytes    = "bytes"
+	flagStatus   = "status"
 )

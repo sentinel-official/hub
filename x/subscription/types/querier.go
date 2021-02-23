@@ -7,14 +7,14 @@ import (
 )
 
 const (
-	QuerySubscription            = "subscription"
-	QuerySubscriptions           = "subscriptions"
-	QuerySubscriptionsForAddress = "subscriptions_for_address"
-	QuerySubscriptionsForPlan    = "subscriptions_for_plan"
-	QuerySubscriptionsForNode    = "subscriptions_for_node"
+	QuerySubscription            = "Subscription"
+	QuerySubscriptions           = "Subscriptions"
+	QuerySubscriptionsForNode    = "SubscriptionsForNode"
+	QuerySubscriptionsForPlan    = "SubscriptionsForPlan"
+	QuerySubscriptionsForAddress = "SubscriptionsForAddress"
 
-	QueryQuota  = "quota"
-	QueryQuotas = "quotas"
+	QueryQuota  = "Quota"
+	QueryQuotas = "Quotas"
 )
 
 type QuerySubscriptionParams struct {
@@ -28,55 +28,57 @@ func NewQuerySubscriptionParams(id uint64) QuerySubscriptionParams {
 }
 
 type QuerySubscriptionsParams struct {
-	Page  int `json:"page"`
+	Skip  int `json:"skip"`
 	Limit int `json:"limit"`
 }
 
-func NewQuerySubscriptionsParams(page, limit int) QuerySubscriptionsParams {
+func NewQuerySubscriptionsParams(skip, limit int) QuerySubscriptionsParams {
 	return QuerySubscriptionsParams{
-		Page:  page,
-		Limit: limit,
-	}
-}
-
-type QuerySubscriptionsForAddressParams struct {
-	Address sdk.AccAddress `json:"address"`
-	Page    int            `json:"page"`
-	Limit   int            `json:"limit"`
-}
-
-func NewQuerySubscriptionsForAddressParams(address sdk.AccAddress, page, limit int) QuerySubscriptionsForAddressParams {
-	return QuerySubscriptionsForAddressParams{
-		Address: address,
-		Page:    page,
-		Limit:   limit,
-	}
-}
-
-type QuerySubscriptionsForPlanParams struct {
-	ID    uint64 `json:"id"`
-	Page  int    `json:"page"`
-	Limit int    `json:"limit"`
-}
-
-func NewQuerySubscriptionsForPlanParams(id uint64, page, limit int) QuerySubscriptionsForPlanParams {
-	return QuerySubscriptionsForPlanParams{
-		ID:    id,
-		Page:  page,
+		Skip:  skip,
 		Limit: limit,
 	}
 }
 
 type QuerySubscriptionsForNodeParams struct {
 	Address hub.NodeAddress `json:"address"`
-	Page    int             `json:"page"`
+	Skip    int             `json:"skip"`
 	Limit   int             `json:"limit"`
 }
 
-func NewQuerySubscriptionsForNodeParams(address hub.NodeAddress, page, limit int) QuerySubscriptionsForNodeParams {
+func NewQuerySubscriptionsForNodeParams(address hub.NodeAddress, skip, limit int) QuerySubscriptionsForNodeParams {
 	return QuerySubscriptionsForNodeParams{
 		Address: address,
-		Page:    page,
+		Skip:    skip,
+		Limit:   limit,
+	}
+}
+
+type QuerySubscriptionsForPlanParams struct {
+	ID    uint64 `json:"id"`
+	Skip  int    `json:"skip"`
+	Limit int    `json:"limit"`
+}
+
+func NewQuerySubscriptionsForPlanParams(id uint64, skip, limit int) QuerySubscriptionsForPlanParams {
+	return QuerySubscriptionsForPlanParams{
+		ID:    id,
+		Skip:  skip,
+		Limit: limit,
+	}
+}
+
+type QuerySubscriptionsForAddressParams struct {
+	Address sdk.AccAddress `json:"address"`
+	Status  hub.Status     `json:"status"`
+	Skip    int            `json:"skip"`
+	Limit   int            `json:"limit"`
+}
+
+func NewQuerySubscriptionsForAddressParams(address sdk.AccAddress, status hub.Status, skip, limit int) QuerySubscriptionsForAddressParams {
+	return QuerySubscriptionsForAddressParams{
+		Address: address,
+		Status:  status,
+		Skip:    skip,
 		Limit:   limit,
 	}
 }
@@ -95,14 +97,14 @@ func NewQueryQuotaParams(id uint64, address sdk.AccAddress) QueryQuotaParams {
 
 type QueryQuotasParams struct {
 	ID    uint64 `json:"id"`
-	Page  int    `json:"page"`
+	Skip  int    `json:"skip"`
 	Limit int    `json:"limit"`
 }
 
-func NewQueryQuotasParams(id uint64, page, limit int) QueryQuotasParams {
+func NewQueryQuotasParams(id uint64, skip, limit int) QueryQuotasParams {
 	return QueryQuotasParams{
 		ID:    id,
-		Page:  page,
+		Skip:  skip,
 		Limit: limit,
 	}
 }

@@ -14,12 +14,12 @@ type Subscription struct {
 	ID    uint64         `json:"id"`
 	Owner sdk.AccAddress `json:"owner"`
 
-	Plan   uint64    `json:"plan,omitempty"`
-	Expiry time.Time `json:"expiry,omitempty"`
-
 	Node    hub.NodeAddress `json:"node,omitempty"`
 	Price   sdk.Coin        `json:"price,omitempty"`
 	Deposit sdk.Coin        `json:"deposit,omitempty"`
+
+	Plan   uint64    `json:"plan,omitempty"`
+	Expiry time.Time `json:"expiry,omitempty"`
 
 	Free     sdk.Int    `json:"free"`
 	Status   hub.Status `json:"status"`
@@ -98,8 +98,8 @@ func (s Subscription) Validate() error {
 	if s.Free.IsNegative() {
 		return fmt.Errorf("free should not be negative")
 	}
-	if !s.Status.Equal(hub.StatusActive) && !s.Status.Equal(hub.StatusInactive) {
-		return fmt.Errorf("status should be either active or inactive")
+	if !s.Status.IsValid() {
+		return fmt.Errorf("status should be valid")
 	}
 	if s.StatusAt.IsZero() {
 		return fmt.Errorf("status_at should not be zero")

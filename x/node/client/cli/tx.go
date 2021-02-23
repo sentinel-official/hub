@@ -1,6 +1,8 @@
 package cli
 
 import (
+	"bufio"
+
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -17,91 +19,9 @@ func txRegister(cdc *codec.Codec) *cobra.Command {
 		Use:   "register",
 		Short: "Register a node",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			txb := auth.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
-			ctx := context.NewCLIContext().WithCodec(cdc)
-
-			s, err := cmd.Flags().GetString(flagProvider)
-			if err != nil {
-				return err
-			}
-
-			provider, err := hub.ProvAddressFromBech32(s)
-			if err != nil {
-				return err
-			}
-
-			moniker, err := cmd.Flags().GetString(flagMoniker)
-			if err != nil {
-				return err
-			}
-
-			s, err = cmd.Flags().GetString(flagPrice)
-			if err != nil {
-				return err
-			}
-
-			price, err := sdk.ParseCoins(s)
-			if err != nil {
-				return err
-			}
-
-			upload, err := cmd.Flags().GetInt64(flagUploadSpeed)
-			if err != nil {
-				return err
-			}
-
-			download, err := cmd.Flags().GetInt64(flagDownloadSpeed)
-			if err != nil {
-				return err
-			}
-
-			remoteURL, err := cmd.Flags().GetString(flagRemoteURL)
-			if err != nil {
-				return err
-			}
-
-			version, err := cmd.Flags().GetString(flagVersion)
-			if err != nil {
-				return err
-			}
-
-			s, err = cmd.Flags().GetString(flagCategory)
-			if err != nil {
-				return err
-			}
-
-			msg := types.NewMsgRegister(ctx.FromAddress, moniker, provider, price,
-				hub.NewBandwidthFromInt64(upload, download), remoteURL, version, types.CategoryFromString(s))
-			return utils.GenerateOrBroadcastMsgs(ctx, txb, []sdk.Msg{msg})
-		},
-	}
-
-	cmd.Flags().String(flagProvider, "", "node provider address")
-	cmd.Flags().String(flagMoniker, "", "node moniker")
-	cmd.Flags().String(flagPrice, "", "node price per Gigabyte")
-	cmd.Flags().String(flagRemoteURL, "", "node remove URL")
-	cmd.Flags().String(flagVersion, "", "node version")
-	cmd.Flags().Int64(flagUploadSpeed, 0, "node upload speed")
-	cmd.Flags().Int64(flagDownloadSpeed, 0, "node download speed")
-	cmd.Flags().String(flagCategory, "", "node category")
-
-	_ = cmd.MarkFlagRequired(flagRemoteURL)
-	_ = cmd.MarkFlagRequired(flagMoniker)
-	_ = cmd.MarkFlagRequired(flagVersion)
-	_ = cmd.MarkFlagRequired(flagUploadSpeed)
-	_ = cmd.MarkFlagRequired(flagDownloadSpeed)
-	_ = cmd.MarkFlagRequired(flagCategory)
-
-	return cmd
-}
-
-func txUpdate(cdc *codec.Codec) *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "update",
-		Short: "Update a node",
-		RunE: func(cmd *cobra.Command, args []string) error {
-			txb := auth.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
-			ctx := context.NewCLIContext().WithCodec(cdc)
+			buffer := bufio.NewReader(cmd.InOrStdin())
+			txb := auth.NewTxBuilderFromCLI(buffer).WithTxEncoder(utils.GetTxEncoder(cdc))
+			ctx := context.NewCLIContextWithInput(buffer).WithCodec(cdc)
 
 			s, err := cmd.Flags().GetString(flagProvider)
 			if err != nil {
@@ -114,11 +34,6 @@ func txUpdate(cdc *codec.Codec) *cobra.Command {
 				if err != nil {
 					return err
 				}
-			}
-
-			moniker, err := cmd.Flags().GetString(flagMoniker)
-			if err != nil {
-				return err
 			}
 
 			s, err = cmd.Flags().GetString(flagPrice)
@@ -134,19 +49,62 @@ func txUpdate(cdc *codec.Codec) *cobra.Command {
 				}
 			}
 
-			upload, err := cmd.Flags().GetInt64(flagUploadSpeed)
+			remoteURL, err := cmd.Flags().GetString(flagRemoteURL)
 			if err != nil {
 				return err
 			}
 
-			download, err := cmd.Flags().GetInt64(flagDownloadSpeed)
+			msg := types.NewMsgRegister(ctx.FromAddress, provider, price, remoteURL)
+			if err := msg.ValidateBasic(); err != nil {
+				return err
+			}
+
+			return utils.GenerateOrBroadcastMsgs(ctx, txb, []sdk.Msg{msg})
+		},
+	}
+
+	cmd.Flags().String(flagProvider, "", "node provider address")
+	cmd.Flags().String(flagPrice, "", "node price per Gigabyte")
+	cmd.Flags().String(flagRemoteURL, "", "node remote URL")
+
+	_ = cmd.MarkFlagRequired(flagRemoteURL)
+
+	return cmd
+}
+
+func txUpdate(cdc *codec.Codec) *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "update",
+		Short: "Update a node",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			buffer := bufio.NewReader(cmd.InOrStdin())
+			txb := auth.NewTxBuilderFromCLI(buffer).WithTxEncoder(utils.GetTxEncoder(cdc))
+			ctx := context.NewCLIContextWithInput(buffer).WithCodec(cdc)
+
+			s, err := cmd.Flags().GetString(flagProvider)
 			if err != nil {
 				return err
 			}
 
-			s, err = cmd.Flags().GetString(flagCategory)
+			var provider hub.ProvAddress
+			if len(s) > 0 {
+				provider, err = hub.ProvAddressFromBech32(s)
+				if err != nil {
+					return err
+				}
+			}
+
+			s, err = cmd.Flags().GetString(flagPrice)
 			if err != nil {
 				return err
+			}
+
+			var price sdk.Coins
+			if len(s) > 0 {
+				price, err = sdk.ParseCoins(s)
+				if err != nil {
+					return err
+				}
 			}
 
 			remoteURL, err := cmd.Flags().GetString(flagRemoteURL)
@@ -154,25 +112,18 @@ func txUpdate(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			version, err := cmd.Flags().GetString(flagVersion)
-			if err != nil {
+			msg := types.NewMsgUpdate(ctx.FromAddress.Bytes(), provider, price, remoteURL)
+			if err := msg.ValidateBasic(); err != nil {
 				return err
 			}
 
-			msg := types.NewMsgUpdate(ctx.FromAddress.Bytes(), moniker, provider, price,
-				hub.NewBandwidthFromInt64(upload, download), remoteURL, version, types.CategoryFromString(s))
 			return utils.GenerateOrBroadcastMsgs(ctx, txb, []sdk.Msg{msg})
 		},
 	}
 
 	cmd.Flags().String(flagProvider, "", "node provider address")
-	cmd.Flags().String(flagMoniker, "", "node moniker")
 	cmd.Flags().String(flagPrice, "", "node price per Gigabyte")
-	cmd.Flags().String(flagRemoteURL, "", "node remove URL")
-	cmd.Flags().String(flagVersion, "", "node version")
-	cmd.Flags().Int64(flagUploadSpeed, 0, "node upload speed")
-	cmd.Flags().Int64(flagDownloadSpeed, 0, "node download speed")
-	cmd.Flags().String(flagCategory, "", "node category")
+	cmd.Flags().String(flagRemoteURL, "", "node remote URL")
 
 	return cmd
 }
@@ -183,10 +134,15 @@ func txSetStatus(cdc *codec.Codec) *cobra.Command {
 		Short: "Set a node status",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			txb := auth.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
-			ctx := context.NewCLIContext().WithCodec(cdc)
+			buffer := bufio.NewReader(cmd.InOrStdin())
+			txb := auth.NewTxBuilderFromCLI(buffer).WithTxEncoder(utils.GetTxEncoder(cdc))
+			ctx := context.NewCLIContextWithInput(buffer).WithCodec(cdc)
 
 			msg := types.NewMsgSetStatus(ctx.FromAddress.Bytes(), hub.StatusFromString(args[0]))
+			if err := msg.ValidateBasic(); err != nil {
+				return err
+			}
+
 			return utils.GenerateOrBroadcastMsgs(ctx, txb, []sdk.Msg{msg})
 		},
 	}

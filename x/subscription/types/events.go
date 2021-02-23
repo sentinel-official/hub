@@ -1,11 +1,7 @@
 package types
 
-const (
-	EventTypeSetCount    = "subscription:set_count"
-	EventTypeSet         = "subscription:set"
-	EventTypeCancel      = "subscription:cancel"
-	EventTypeAddQuota    = "subscription:add_quota"
-	EventTypeUpdateQuota = "subscription:update_quota"
+import (
+	"fmt"
 )
 
 const (
@@ -18,4 +14,12 @@ const (
 	AttributeKeyPlan      = "plan"
 	AttributeKeyConsumed  = "consumed"
 	AttributeKeyAllocated = "allocated"
+)
+
+var (
+	EventTypeSetCount    = fmt.Sprintf("%s:set_count", ModuleName)
+	EventTypeSet         = fmt.Sprintf("%s:set", ModuleName)
+	EventTypeCancel      = fmt.Sprintf("%s:cancel", ModuleName)
+	EventTypeAddQuota    = fmt.Sprintf("%s:add_quota", ModuleName)
+	EventTypeUpdateQuota = fmt.Sprintf("%s:update_quota", ModuleName)
 )

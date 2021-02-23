@@ -1,11 +1,20 @@
 package types
 
-type GenesisState = Providers
+type GenesisState struct {
+	Providers Providers `json:"_"`
+	Params    Params    `json:"params"`
+}
 
-func NewGenesisState(providers Providers) GenesisState {
-	return providers
+func NewGenesisState(providers Providers, params Params) GenesisState {
+	return GenesisState{
+		Providers: providers,
+		Params:    params,
+	}
 }
 
 func DefaultGenesisState() GenesisState {
-	return nil
+	return GenesisState{
+		Providers: nil,
+		Params:    DefaultParams(),
+	}
 }

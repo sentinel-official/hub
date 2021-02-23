@@ -34,8 +34,8 @@ func QuerySession(ctx context.CLIContext, id uint64) (*types.Session, error) {
 	return &session, nil
 }
 
-func QuerySessions(ctx context.CLIContext, page, limit int) (types.Sessions, error) {
-	params := types.NewQuerySessionsParams(page, limit)
+func QuerySessions(ctx context.CLIContext, skip, limit int) (types.Sessions, error) {
+	params := types.NewQuerySessionsParams(skip, limit)
 	bytes, err := ctx.Codec.MarshalJSON(params)
 	if err != nil {
 		return nil, err
@@ -58,8 +58,8 @@ func QuerySessions(ctx context.CLIContext, page, limit int) (types.Sessions, err
 	return sessions, nil
 }
 
-func QuerySessionsForSubscription(ctx context.CLIContext, id uint64, page, limit int) (types.Sessions, error) {
-	params := types.NewQuerySessionsForSubscriptionParams(id, page, limit)
+func QuerySessionsForSubscription(ctx context.CLIContext, id uint64, skip, limit int) (types.Sessions, error) {
+	params := types.NewQuerySessionsForSubscriptionParams(id, skip, limit)
 	bytes, err := ctx.Codec.MarshalJSON(params)
 	if err != nil {
 		return nil, err
@@ -82,8 +82,8 @@ func QuerySessionsForSubscription(ctx context.CLIContext, id uint64, page, limit
 	return sessions, nil
 }
 
-func QuerySessionsForNode(ctx context.CLIContext, address hub.NodeAddress, page, limit int) (types.Sessions, error) {
-	params := types.NewQuerySessionsForNodeParams(address, page, limit)
+func QuerySessionsForNode(ctx context.CLIContext, address hub.NodeAddress, skip, limit int) (types.Sessions, error) {
+	params := types.NewQuerySessionsForNodeParams(address, skip, limit)
 	bytes, err := ctx.Codec.MarshalJSON(params)
 	if err != nil {
 		return nil, err
@@ -106,8 +106,8 @@ func QuerySessionsForNode(ctx context.CLIContext, address hub.NodeAddress, page,
 	return sessions, nil
 }
 
-func QuerySessionsForAddress(ctx context.CLIContext, address sdk.AccAddress, page, limit int) (types.Sessions, error) {
-	params := types.NewQuerySessionsForAddressParams(address, page, limit)
+func QuerySessionsForAddress(ctx context.CLIContext, address sdk.AccAddress, skip, limit int) (types.Sessions, error) {
+	params := types.NewQuerySessionsForAddressParams(address, skip, limit)
 	bytes, err := ctx.Codec.MarshalJSON(params)
 	if err != nil {
 		return nil, err

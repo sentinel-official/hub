@@ -39,7 +39,7 @@ func querySessions(ctx context.CLIContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		query := r.URL.Query()
 
-		page, limit, err := utils.ParseQuery(query)
+		skip, limit, err := utils.ParseQuery(query)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
@@ -59,7 +59,7 @@ func querySessions(ctx context.CLIContext) http.HandlerFunc {
 				return
 			}
 
-			sessions, err = common.QuerySessionsForSubscription(ctx, subscription, page, limit)
+			sessions, err = common.QuerySessionsForSubscription(ctx, subscription, skip, limit)
 		} else if query.Get("node") != "" {
 			node, err = hub.NodeAddressFromBech32(query.Get("node"))
 			if err != nil {
@@ -67,7 +67,7 @@ func querySessions(ctx context.CLIContext) http.HandlerFunc {
 				return
 			}
 
-			sessions, err = common.QuerySessionsForNode(ctx, node, page, limit)
+			sessions, err = common.QuerySessionsForNode(ctx, node, skip, limit)
 		} else if query.Get("address") != "" {
 			address, err = sdk.AccAddressFromBech32(query.Get("address"))
 			if err != nil {
@@ -75,9 +75,9 @@ func querySessions(ctx context.CLIContext) http.HandlerFunc {
 				return
 			}
 
-			sessions, err = common.QuerySessionsForAddress(ctx, address, page, limit)
+			sessions, err = common.QuerySessionsForAddress(ctx, address, skip, limit)
 		} else {
-			sessions, err = common.QuerySessions(ctx, page, limit)
+			sessions, err = common.QuerySessions(ctx, skip, limit)
 		}
 
 		if err != nil {

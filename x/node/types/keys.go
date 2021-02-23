@@ -9,14 +9,14 @@ import (
 )
 
 const (
-	ModuleName     = "node"
-	ParamsSubspace = ModuleName
-	QuerierRoute   = ModuleName
+	ModuleName   = "node"
+	QuerierRoute = ModuleName
 )
 
 var (
-	RouterKey = ModuleName
-	StoreKey  = ModuleName
+	ParamsSubspace = ModuleName
+	RouterKey      = ModuleName
+	StoreKey       = ModuleName
 )
 
 var (
@@ -27,21 +27,44 @@ var (
 )
 
 var (
-	NodeKeyPrefix            = []byte{0x00}
-	NodeForProviderKeyPrefix = []byte{0x01}
-	ActiveNodeAtKeyPrefix    = []byte{0x02}
+	NodeKeyPrefix = []byte{0x00}
+
+	ActiveNodeKeyPrefix   = []byte{0x10}
+	InactiveNodeKeyPrefix = []byte{0x11}
+
+	ActiveNodeForProviderKeyPrefix   = []byte{0x20}
+	InactiveNodeForProviderKeyPrefix = []byte{0x21}
+
+	ActiveNodeAtKeyPrefix   = []byte{0x30}
+	InactiveNodeAtKeyPrefix = []byte{0x31}
 )
 
 func NodeKey(address hub.NodeAddress) []byte {
 	return append(NodeKeyPrefix, address.Bytes()...)
 }
 
-func GetNodeForProviderKeyPrefix(address hub.ProvAddress) []byte {
-	return append(NodeForProviderKeyPrefix, address.Bytes()...)
+func ActiveNodeKey(address hub.NodeAddress) []byte {
+	return append(ActiveNodeKeyPrefix, address.Bytes()...)
 }
 
-func NodeForProviderKey(p hub.ProvAddress, n hub.NodeAddress) []byte {
-	return append(GetNodeForProviderKeyPrefix(p), n.Bytes()...)
+func InactiveNodeKey(address hub.NodeAddress) []byte {
+	return append(InactiveNodeKeyPrefix, address.Bytes()...)
+}
+
+func GetActiveNodeForProviderKeyPrefix(address hub.ProvAddress) []byte {
+	return append(ActiveNodeForProviderKeyPrefix, address.Bytes()...)
+}
+
+func ActiveNodeForProviderKey(p hub.ProvAddress, n hub.NodeAddress) []byte {
+	return append(GetActiveNodeForProviderKeyPrefix(p), n.Bytes()...)
+}
+
+func GetInactiveNodeForProviderKeyPrefix(address hub.ProvAddress) []byte {
+	return append(InactiveNodeForProviderKeyPrefix, address.Bytes()...)
+}
+
+func InactiveNodeForProviderKey(p hub.ProvAddress, n hub.NodeAddress) []byte {
+	return append(GetInactiveNodeForProviderKeyPrefix(p), n.Bytes()...)
 }
 
 func GetActiveNodeAtKeyPrefix(at time.Time) []byte {
@@ -50,4 +73,24 @@ func GetActiveNodeAtKeyPrefix(at time.Time) []byte {
 
 func ActiveNodeAtKey(at time.Time, address hub.NodeAddress) []byte {
 	return append(GetActiveNodeAtKeyPrefix(at), address.Bytes()...)
+}
+
+func GetInactiveNodeAtKeyPrefix(at time.Time) []byte {
+	return append(InactiveNodeAtKeyPrefix, sdk.FormatTimeBytes(at)...)
+}
+
+func InactiveNodeAtKey(at time.Time, address hub.NodeAddress) []byte {
+	return append(GetInactiveNodeAtKeyPrefix(at), address.Bytes()...)
+}
+
+func AddressFromStatusNodeKey(key []byte) hub.NodeAddress {
+	return key[1:]
+}
+
+func AddressFromStatusNodeForProviderKey(key []byte) hub.NodeAddress {
+	return key[1+sdk.AddrLen:]
+}
+
+func AddressFromStatusNodeAtKey(key []byte) hub.NodeAddress {
+	return key[1+29:]
 }

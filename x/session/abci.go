@@ -32,15 +32,15 @@ func EndBlock(ctx sdk.Context, k keeper.Keeper) []abci.ValidatorUpdate {
 	return nil
 }
 
-func process(ctx sdk.Context, k keeper.Keeper, session types.Session) sdk.Error {
+func process(ctx sdk.Context, k keeper.Keeper, session types.Session) error {
 	subscription, found := k.GetSubscription(ctx, session.Subscription)
 	if !found {
-		return types.ErrorSubscriptionDoesNotExit()
+		return types.ErrorSubscriptionDoesNotExit
 	}
 
 	quota, found := k.GetQuota(ctx, session.Subscription, session.Address)
 	if !found {
-		return types.ErrorQuotaDoesNotExist()
+		return types.ErrorQuotaDoesNotExist
 	}
 
 	free := quota.Allocated.Sub(quota.Consumed)

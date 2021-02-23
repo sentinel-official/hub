@@ -1,6 +1,7 @@
 package types
 
 import (
+	"encoding/binary"
 	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -9,14 +10,14 @@ import (
 )
 
 const (
-	ModuleName     = "session"
-	ParamsSubspace = ModuleName
-	QuerierRoute   = ModuleName
+	ModuleName   = "session"
+	QuerierRoute = ModuleName
 )
 
 var (
-	RouterKey = ModuleName
-	StoreKey  = ModuleName
+	ParamsSubspace = ModuleName
+	RouterKey      = ModuleName
+	StoreKey       = ModuleName
 )
 
 var (
@@ -78,4 +79,20 @@ func GetActiveSessionAtKeyPrefix(at time.Time) []byte {
 
 func ActiveSessionAtKey(at time.Time, id uint64) []byte {
 	return append(GetActiveSessionAtKeyPrefix(at), sdk.Uint64ToBigEndian(id)...)
+}
+
+func IDFromSessionForSubscriptionKey(key []byte) uint64 {
+	return binary.BigEndian.Uint64(key[1+8:])
+}
+
+func IDFromSessionForNodeKey(key []byte) uint64 {
+	return binary.BigEndian.Uint64(key[1+sdk.AddrLen:])
+}
+
+func IDFromSessionForAddressKey(key []byte) uint64 {
+	return binary.BigEndian.Uint64(key[1+sdk.AddrLen:])
+}
+
+func IDFromActiveSessionAtKey(key []byte) uint64 {
+	return binary.BigEndian.Uint64(key[1+29:])
 }

@@ -10,90 +10,36 @@ import (
 	hub "github.com/sentinel-official/hub/types"
 )
 
-const (
-	CategoryUnknown Category = iota + 0x00
-	CategoryOpenVPN
-	CategoryWireGuard
-)
-
-type Category byte
-
-func CategoryFromString(s string) Category {
-	switch s {
-	case "OpenVPN":
-		return CategoryOpenVPN
-	case "WireGuard":
-		return CategoryWireGuard
-	default:
-		return CategoryUnknown
-	}
-}
-
-func (n Category) Equal(v Category) bool {
-	return n == v
-}
-
-func (n Category) String() string {
-	switch n {
-	case CategoryOpenVPN:
-		return "OpenVPN"
-	case CategoryWireGuard:
-		return "WireGuard"
-	default:
-		return "Unknown"
-	}
-}
-
-func (n Category) IsValid() bool {
-	return n == CategoryOpenVPN ||
-		n == CategoryWireGuard
-}
-
 type Node struct {
-	Moniker       string          `json:"moniker"`
-	Address       hub.NodeAddress `json:"address"`
-	Provider      hub.ProvAddress `json:"provider,omitempty"`
-	Price         sdk.Coins       `json:"price,omitempty"`
-	InternetSpeed hub.Bandwidth   `json:"internet_speed"`
-	RemoteURL     string          `json:"remote_url"`
-	Version       string          `json:"version"`
-	Category      Category        `json:"category"`
-	Status        hub.Status      `json:"status"`
-	StatusAt      time.Time       `json:"status_at"`
+	Address   hub.NodeAddress `json:"address"`
+	Provider  hub.ProvAddress `json:"provider,omitempty"`
+	Price     sdk.Coins       `json:"price,omitempty"`
+	RemoteURL string          `json:"remote_url"`
+	Status    hub.Status      `json:"status"`
+	StatusAt  time.Time       `json:"status_at"`
 }
 
 func (n Node) String() string {
 	if n.Provider == nil {
 		return strings.TrimSpace(fmt.Sprintf(`
-Moniker:        %s
-Address:        %s
-Price:          %s
-Internet speed: %s
-Remote URL:     %s
-Version:        %s
-Category:       %s
-Status:         %s
-Status at:      %s
-`, n.Moniker, n.Address, n.Price, n.InternetSpeed, n.RemoteURL, n.Version, n.Category, n.Status, n.StatusAt))
+Address:    %s
+Price:      %s
+Remote URL: %s
+Status:     %s
+Status at:  %s
+`, n.Address, n.Price, n.RemoteURL, n.Status, n.StatusAt))
 	}
 
 	return strings.TrimSpace(fmt.Sprintf(`
-Moniker:        %s
-Address:        %s
-Provider:       %s
-Internet speed: %s
-Remote URL:     %s
-Version:        %s
-Category:       %s
-Status:         %s
-Status at:      %s
-`, n.Moniker, n.Address, n.Provider, n.InternetSpeed, n.RemoteURL, n.Version, n.Category, n.Status, n.StatusAt))
+Address:    %s
+Provider:   %s
+Remote URL: %s
+Status:     %s
+Status at:  %s
+`, n.Address, n.Provider, n.RemoteURL, n.Status, n.StatusAt))
 }
 
 func (n Node) Validate() error {
-	if len(n.Moniker) == 0 || len(n.Moniker) > 64 {
-		return fmt.Errorf("moniker length should be (0, 64]")
-	}
 	if n.Address == nil || n.Address.Empty() {
 		return fmt.Errorf("address should not be nil or empty")
 	}
@@ -107,17 +53,14 @@ func (n Node) Validate() error {
 	if n.Price != nil && !n.Price.IsValid() {
 		return fmt.Errorf("price should be valid")
 	}
-	if !n.InternetSpeed.IsValid() {
-		return fmt.Errorf("internet_speed should be valid")
-	}
 	if len(n.RemoteURL) == 0 || len(n.RemoteURL) > 64 {
-		return fmt.Errorf("remote_url length should be (0, 64]")
+		return fmt.Errorf("remote_url length should be between 1 and 64")
 	}
-	if len(n.Version) == 0 || len(n.Version) > 64 {
-		return fmt.Errorf("version length should be (0, 64]")
+	if !n.Status.Equal(hub.StatusActive) && !n.Status.Equal(hub.StatusInactive) {
+		return fmt.Errorf("status should be either active or inactive")
 	}
-	if !n.Category.IsValid() {
-		return fmt.Errorf("category should be valid")
+	if n.StatusAt.IsZero() {
+		return fmt.Errorf("status_at should not be zero")
 	}
 
 	return nil

@@ -38,7 +38,7 @@ func queryPlans(ctx context.CLIContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		query := r.URL.Query()
 
-		page, limit, err := utils.ParseQuery(query)
+		skip, limit, err := utils.ParseQuery(query)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
@@ -47,6 +47,7 @@ func queryPlans(ctx context.CLIContext) http.HandlerFunc {
 		var (
 			provider hub.ProvAddress
 			plans    types.Plans
+			status   = hub.StatusFromString(query.Get("status"))
 		)
 
 		if query.Get("provider") != "" {
@@ -56,9 +57,9 @@ func queryPlans(ctx context.CLIContext) http.HandlerFunc {
 				return
 			}
 
-			plans, err = common.QueryPlansForProvider(ctx, provider, page, limit)
+			plans, err = common.QueryPlansForProvider(ctx, provider, status, skip, limit)
 		} else {
-			plans, err = common.QueryPlans(ctx, page, limit)
+			plans, err = common.QueryPlans(ctx, status, skip, limit)
 		}
 
 		if err != nil {

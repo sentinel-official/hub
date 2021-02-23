@@ -10,12 +10,12 @@ import (
 	"github.com/sentinel-official/hub/x/plan/types"
 )
 
-func HandleAdd(ctx sdk.Context, k keeper.Keeper, msg types.MsgAdd) sdk.Result {
+func HandleAdd(ctx sdk.Context, k keeper.Keeper, msg types.MsgAdd) (*sdk.Result, error) {
 	if !k.HasProvider(ctx, msg.From) {
-		return types.ErrorProviderDoesNotExist().Result()
+		return nil, types.ErrorProviderDoesNotExist
 	}
 
-	count := k.GetPlansCount(ctx)
+	count := k.GetCount(ctx)
 	plan := types.Plan{
 		ID:       count + 1,
 		Provider: msg.From,
@@ -27,30 +27,49 @@ func HandleAdd(ctx sdk.Context, k keeper.Keeper, msg types.MsgAdd) sdk.Result {
 	}
 
 	k.SetPlan(ctx, plan)
-	k.SetPlanForProvider(ctx, plan.Provider, plan.ID)
+	k.SetInactivePlan(ctx, plan.ID)
+	k.SetInactivePlanForProvider(ctx, plan.Provider, plan.ID)
 	ctx.EventManager().EmitEvent(sdk.NewEvent(
 		types.EventTypeSet,
 		sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", plan.ID)),
 		sdk.NewAttribute(types.AttributeKeyAddress, plan.Provider.String()),
 	))
 
-	k.SetPlansCount(ctx, count+1)
+	k.SetCount(ctx, count+1)
 	ctx.EventManager().EmitEvent(sdk.NewEvent(
 		types.EventTypeSetCount,
 		sdk.NewAttribute(types.AttributeKeyCount, fmt.Sprintf("%d", count+1)),
 	))
 
 	ctx.EventManager().EmitEvent(types.EventModuleName)
-	return sdk.Result{Events: ctx.EventManager().Events()}
+	return &sdk.Result{Events: ctx.EventManager().Events()}, nil
 }
 
-func HandleSetStatus(ctx sdk.Context, k keeper.Keeper, msg types.MsgSetStatus) sdk.Result {
+func HandleSetStatus(ctx sdk.Context, k keeper.Keeper, msg types.MsgSetStatus) (*sdk.Result, error) {
 	plan, found := k.GetPlan(ctx, msg.ID)
 	if !found {
-		return types.ErrorPlanDoesNotExist().Result()
+		return nil, types.ErrorPlanDoesNotExist
 	}
 	if !msg.From.Equals(plan.Provider) {
-		return types.ErrorUnauthorized().Result()
+		return nil, types.ErrorUnauthorized
+	}
+
+	if plan.Status.Equal(hub.StatusActive) {
+		if msg.Status.Equal(hub.StatusInactive) {
+			k.DeleteActivePlan(ctx, plan.ID)
+			k.DeleteActivePlanForProvider(ctx, plan.Provider, plan.ID)
+
+			k.SetInactivePlan(ctx, plan.ID)
+			k.SetInactivePlanForProvider(ctx, plan.Provider, plan.ID)
+		}
+	} else {
+		if msg.Status.Equal(hub.StatusActive) {
+			k.DeleteInactivePlan(ctx, plan.ID)
+			k.DeleteInactivePlanForProvider(ctx, plan.Provider, plan.ID)
+
+			k.SetActivePlan(ctx, plan.ID)
+			k.SetActivePlanForProvider(ctx, plan.Provider, plan.ID)
+		}
 	}
 
 	plan.Status = msg.Status
@@ -64,24 +83,24 @@ func HandleSetStatus(ctx sdk.Context, k keeper.Keeper, msg types.MsgSetStatus) s
 	))
 
 	ctx.EventManager().EmitEvent(types.EventModuleName)
-	return sdk.Result{Events: ctx.EventManager().Events()}
+	return &sdk.Result{Events: ctx.EventManager().Events()}, nil
 }
 
-func HandleAddNode(ctx sdk.Context, k keeper.Keeper, msg types.MsgAddNode) sdk.Result {
+func HandleAddNode(ctx sdk.Context, k keeper.Keeper, msg types.MsgAddNode) (*sdk.Result, error) {
 	plan, found := k.GetPlan(ctx, msg.ID)
 	if !found {
-		return types.ErrorPlanDoesNotExist().Result()
+		return nil, types.ErrorPlanDoesNotExist
 	}
 	if !msg.From.Equals(plan.Provider) {
-		return types.ErrorUnauthorized().Result()
+		return nil, types.ErrorUnauthorized
 	}
 
 	node, found := k.GetNode(ctx, msg.Address)
 	if !found {
-		return types.ErrorNodeDoesNotExist().Result()
+		return nil, types.ErrorNodeDoesNotExist
 	}
 	if !msg.From.Equals(node.Provider) {
-		return types.ErrorUnauthorized().Result()
+		return nil, types.ErrorUnauthorized
 	}
 
 	k.SetNodeForPlan(ctx, plan.ID, node.Address)
@@ -92,16 +111,16 @@ func HandleAddNode(ctx sdk.Context, k keeper.Keeper, msg types.MsgAddNode) sdk.R
 	))
 
 	ctx.EventManager().EmitEvent(types.EventModuleName)
-	return sdk.Result{Events: ctx.EventManager().Events()}
+	return &sdk.Result{Events: ctx.EventManager().Events()}, nil
 }
 
-func HandleRemoveNode(ctx sdk.Context, k keeper.Keeper, msg types.MsgRemoveNode) sdk.Result {
+func HandleRemoveNode(ctx sdk.Context, k keeper.Keeper, msg types.MsgRemoveNode) (*sdk.Result, error) {
 	plan, found := k.GetPlan(ctx, msg.ID)
 	if !found {
-		return types.ErrorPlanDoesNotExist().Result()
+		return nil, types.ErrorPlanDoesNotExist
 	}
 	if !msg.From.Equals(plan.Provider) {
-		return types.ErrorUnauthorized().Result()
+		return nil, types.ErrorUnauthorized
 	}
 
 	k.DeleteNodeForPlan(ctx, plan.ID, msg.Address)
@@ -112,5 +131,5 @@ func HandleRemoveNode(ctx sdk.Context, k keeper.Keeper, msg types.MsgRemoveNode)
 	))
 
 	ctx.EventManager().EmitEvent(types.EventModuleName)
-	return sdk.Result{Events: ctx.EventManager().Events()}
+	return &sdk.Result{Events: ctx.EventManager().Events()}, nil
 }
