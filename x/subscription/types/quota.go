@@ -7,6 +7,19 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
+func (q Quota) GetAddress() sdk.AccAddress {
+	if q.Address == "" {
+		return nil
+	}
+
+	address, err := sdk.AccAddressFromBech32(q.Address)
+	if err != nil {
+		panic(err)
+	}
+
+	return address
+}
+
 func (q Quota) String() string {
 	return fmt.Sprintf(strings.TrimSpace(`
 Address:   %s
