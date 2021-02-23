@@ -2,7 +2,7 @@ package expected
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/x/auth/exported"
+	auth "github.com/cosmos/cosmos-sdk/x/auth/types"
 
 	hub "github.com/sentinel-official/hub/types"
 	plan "github.com/sentinel-official/hub/x/plan/types"
@@ -10,7 +10,7 @@ import (
 )
 
 type AccountKeeper interface {
-	GetAccount(ctx sdk.Context, address sdk.AccAddress) exported.Account
+	GetAccount(ctx sdk.Context, address sdk.AccAddress) auth.AccountI
 }
 
 type DistributionKeeper interface {
