@@ -3,12 +3,10 @@
 // aliases generated for the following subdirectories:
 // ALIASGEN: github.com/sentinel-official/hub/x/provider/types
 // ALIASGEN: github.com/sentinel-official/hub/x/provider/keeper
-// ALIASGEN: github.com/sentinel-official/hub/x/provider/querier
 package provider
 
 import (
 	"github.com/sentinel-official/hub/x/provider/keeper"
-	"github.com/sentinel-official/hub/x/provider/querier"
 	"github.com/sentinel-official/hub/x/provider/types"
 )
 
@@ -44,7 +42,6 @@ var (
 	RegisterQueryServiceHandler             = types.RegisterQueryServiceHandler
 	RegisterQueryServiceHandlerClient       = types.RegisterQueryServiceHandlerClient
 	NewKeeper                               = keeper.NewKeeper
-	Querier                                 = querier.Querier
 
 	// variable aliases
 	ModuleCdc                       = types.ModuleCdc
@@ -101,4 +98,5 @@ type (
 	QueryServiceServer              = types.QueryServiceServer
 	UnimplementedQueryServiceServer = types.UnimplementedQueryServiceServer
 	Keeper                          = keeper.Keeper
+	Querier                         = keeper.Querier
 )

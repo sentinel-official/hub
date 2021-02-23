@@ -7,6 +7,19 @@ import (
 	hub "github.com/sentinel-official/hub/types"
 )
 
+func (p Provider) GetAddress() hub.ProvAddress {
+	if p.Address == "" {
+		return nil
+	}
+
+	address, err := hub.ProvAddressFromBech32(p.Address)
+	if err != nil {
+		panic(err)
+	}
+
+	return address
+}
+
 func (p Provider) String() string {
 	return strings.TrimSpace(fmt.Sprintf(`
 Address:     %s

@@ -9,8 +9,8 @@ import (
 
 // SetProvider is for inserting a provider into the KVStore.
 func (k Keeper) SetProvider(ctx sdk.Context, provider types.Provider) {
-	key := types.ProviderKey(provider.Address)
-	value := k.cdc.MustMarshalBinaryLengthPrefixed(provider)
+	key := types.ProviderKey(provider.GetAddress())
+	value := k.cdc.MustMarshalBinaryBare(&provider)
 
 	store := k.Store(ctx)
 	store.Set(key, value)
@@ -34,7 +34,7 @@ func (k Keeper) GetProvider(ctx sdk.Context, address hub.ProvAddress) (provider 
 		return provider, false
 	}
 
-	k.cdc.MustUnmarshalBinaryLengthPrefixed(value, &provider)
+	k.cdc.MustUnmarshalBinaryBare(value, &provider)
 	return provider, true
 }
 
@@ -52,7 +52,7 @@ func (k Keeper) GetProviders(ctx sdk.Context, skip, limit int) (items types.Prov
 	iter.Skip(skip)
 	iter.Limit(limit, func(iter sdk.Iterator) {
 		var item types.Provider
-		k.cdc.MustUnmarshalBinaryLengthPrefixed(iter.Value(), &item)
+		k.cdc.MustUnmarshalBinaryBare(iter.Value(), &item)
 		items = append(items, item)
 	})
 
@@ -68,7 +68,7 @@ func (k Keeper) IterateProviders(ctx sdk.Context, fn func(index int, item types.
 
 	for i := 0; iter.Valid(); iter.Next() {
 		var provider types.Provider
-		k.cdc.MustUnmarshalBinaryLengthPrefixed(iter.Value(), &provider)
+		k.cdc.MustUnmarshalBinaryBare(iter.Value(), &provider)
 
 		if stop := fn(i, provider); stop {
 			break
