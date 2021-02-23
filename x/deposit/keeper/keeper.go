@@ -14,11 +14,11 @@ import (
 
 type Keeper struct {
 	key    sdk.StoreKey
-	cdc    *codec.Codec
+	cdc    codec.BinaryMarshaler
 	supply expected.SupplyKeeper
 }
 
-func NewKeeper(cdc *codec.Codec, key sdk.StoreKey) Keeper {
+func NewKeeper(cdc codec.BinaryMarshaler, key sdk.StoreKey) Keeper {
 	return Keeper{
 		key: key,
 		cdc: cdc,

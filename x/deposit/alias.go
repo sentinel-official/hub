@@ -3,12 +3,10 @@
 // aliases generated for the following subdirectories:
 // ALIASGEN: github.com/sentinel-official/hub/x/deposit/types
 // ALIASGEN: github.com/sentinel-official/hub/x/deposit/keeper
-// ALIASGEN: github.com/sentinel-official/hub/x/deposit/querier
 package deposit
 
 import (
 	"github.com/sentinel-official/hub/x/deposit/keeper"
-	"github.com/sentinel-official/hub/x/deposit/querier"
 	"github.com/sentinel-official/hub/x/deposit/types"
 )
 
@@ -35,9 +33,6 @@ var (
 	RegisterQueryServiceHandler             = types.RegisterQueryServiceHandler
 	RegisterQueryServiceHandlerClient       = types.RegisterQueryServiceHandlerClient
 	NewKeeper                               = keeper.NewKeeper
-	CreateTestInput                         = keeper.CreateTestInput
-	MakeTestCodec                           = keeper.MakeTestCodec
-	Querier                                 = querier.Querier
 
 	// variable aliases
 	ModuleCdc                      = types.ModuleCdc
@@ -72,4 +67,5 @@ type (
 	QueryServiceServer              = types.QueryServiceServer
 	UnimplementedQueryServiceServer = types.UnimplementedQueryServiceServer
 	Keeper                          = keeper.Keeper
+	Querier                         = keeper.Querier
 )
