@@ -3,12 +3,10 @@
 // aliases generated for the following subdirectories:
 // ALIASGEN: github.com/sentinel-official/hub/x/vpn/types
 // ALIASGEN: github.com/sentinel-official/hub/x/vpn/keeper
-// ALIASGEN: github.com/sentinel-official/hub/x/vpn/querier
 package vpn
 
 import (
 	"github.com/sentinel-official/hub/x/vpn/keeper"
-	"github.com/sentinel-official/hub/x/vpn/querier"
 	"github.com/sentinel-official/hub/x/vpn/types"
 )
 
@@ -25,7 +23,6 @@ var (
 	NewGenesisState     = types.NewGenesisState
 	DefaultGenesisState = types.DefaultGenesisState
 	NewKeeper           = keeper.NewKeeper
-	NewQuerier          = querier.NewQuerier
 
 	// variable aliases
 	ModuleCdc                      = types.ModuleCdc
@@ -42,4 +39,5 @@ var (
 type (
 	GenesisState = types.GenesisState
 	Keeper       = keeper.Keeper
+	Querier      = keeper.Querier
 )

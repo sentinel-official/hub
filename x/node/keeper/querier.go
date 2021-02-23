@@ -30,12 +30,12 @@ func (q *Querier) QueryNode(c context.Context, req *types.QueryNodeRequest) (*ty
 
 	ctx := sdk.UnwrapSDKContext(c)
 
-	node, found := q.GetNode(ctx, address)
+	item, found := q.GetNode(ctx, address)
 	if !found {
 		return nil, nil
 	}
 
-	return &types.QueryNodeResponse{Node: node}, nil
+	return &types.QueryNodeResponse{Node: item}, nil
 }
 
 func (q *Querier) QueryNodes(c context.Context, req *types.QueryNodesRequest) (res *types.QueryNodesResponse, err error) {
@@ -44,7 +44,7 @@ func (q *Querier) QueryNodes(c context.Context, req *types.QueryNodesRequest) (r
 	}
 
 	var (
-		nodes      types.Nodes
+		items      types.Nodes
 		pagination *query.PageResponse
 		ctx        = sdk.UnwrapSDKContext(c)
 	)
@@ -52,13 +52,13 @@ func (q *Querier) QueryNodes(c context.Context, req *types.QueryNodesRequest) (r
 	if req.Status.Equal(hub.Active) {
 		store := prefix.NewStore(q.Store(ctx), types.ActiveNodeKeyPrefix)
 		pagination, err = query.FilteredPaginate(store, req.Pagination, func(key, _ []byte, accumulate bool) (bool, error) {
-			node, found := q.GetNode(ctx, types.AddressFromStatusNodeKey(key))
+			item, found := q.GetNode(ctx, types.AddressFromStatusNodeKey(key))
 			if !found {
 				return false, nil
 			}
 
 			if accumulate {
-				nodes = append(nodes, node)
+				items = append(items, item)
 			}
 
 			return true, nil
@@ -66,13 +66,13 @@ func (q *Querier) QueryNodes(c context.Context, req *types.QueryNodesRequest) (r
 	} else if req.Status.Equal(hub.Inactive) {
 		store := prefix.NewStore(q.Store(ctx), types.InactiveNodeKeyPrefix)
 		pagination, err = query.FilteredPaginate(store, req.Pagination, func(key, _ []byte, accumulate bool) (bool, error) {
-			node, found := q.GetNode(ctx, types.AddressFromStatusNodeKey(key))
+			item, found := q.GetNode(ctx, types.AddressFromStatusNodeKey(key))
 			if !found {
 				return false, nil
 			}
 
 			if accumulate {
-				nodes = append(nodes, node)
+				items = append(items, item)
 			}
 
 			return true, nil
@@ -86,7 +86,7 @@ func (q *Querier) QueryNodes(c context.Context, req *types.QueryNodesRequest) (r
 			}
 
 			if accumulate {
-				nodes = append(nodes, node)
+				items = append(items, node)
 			}
 
 			return true, nil
@@ -97,7 +97,7 @@ func (q *Querier) QueryNodes(c context.Context, req *types.QueryNodesRequest) (r
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	return &types.QueryNodesResponse{Nodes: nodes, Pagination: pagination}, nil
+	return &types.QueryNodesResponse{Nodes: items, Pagination: pagination}, nil
 }
 
 func (q *Querier) QueryNodesForProvider(c context.Context, req *types.QueryNodesForProviderRequest) (res *types.QueryNodesForProviderResponse, err error) {
@@ -111,7 +111,7 @@ func (q *Querier) QueryNodesForProvider(c context.Context, req *types.QueryNodes
 	}
 
 	var (
-		nodes      types.Nodes
+		items      types.Nodes
 		pagination *query.PageResponse
 		ctx        = sdk.UnwrapSDKContext(c)
 	)
@@ -119,13 +119,13 @@ func (q *Querier) QueryNodesForProvider(c context.Context, req *types.QueryNodes
 	if req.Status.Equal(hub.Active) {
 		store := prefix.NewStore(q.Store(ctx), types.GetActiveNodeForProviderKeyPrefix(provider))
 		pagination, err = query.FilteredPaginate(store, req.Pagination, func(key, _ []byte, accumulate bool) (bool, error) {
-			node, found := q.GetNode(ctx, types.AddressFromStatusNodeForProviderKey(key))
+			item, found := q.GetNode(ctx, types.AddressFromStatusNodeForProviderKey(key))
 			if !found {
 				return false, nil
 			}
 
 			if accumulate {
-				nodes = append(nodes, node)
+				items = append(items, item)
 			}
 
 			return true, nil
@@ -133,13 +133,13 @@ func (q *Querier) QueryNodesForProvider(c context.Context, req *types.QueryNodes
 	} else if req.Status.Equal(hub.Inactive) {
 		store := prefix.NewStore(q.Store(ctx), types.GetInactiveNodeForProviderKeyPrefix(provider))
 		pagination, err = query.FilteredPaginate(store, req.Pagination, func(key, _ []byte, accumulate bool) (bool, error) {
-			node, found := q.GetNode(ctx, types.AddressFromStatusNodeForProviderKey(key))
+			item, found := q.GetNode(ctx, types.AddressFromStatusNodeForProviderKey(key))
 			if !found {
 				return false, nil
 			}
 
 			if accumulate {
-				nodes = append(nodes, node)
+				items = append(items, item)
 			}
 
 			return true, nil
@@ -149,16 +149,16 @@ func (q *Querier) QueryNodesForProvider(c context.Context, req *types.QueryNodes
 
 		store := prefix.NewStore(q.Store(ctx), types.NodeKeyPrefix)
 		pagination, err = query.FilteredPaginate(store, req.Pagination, func(_, value []byte, accumulate bool) (bool, error) {
-			var node types.Node
-			if err := q.cdc.UnmarshalBinaryBare(value, &node); err != nil {
+			var item types.Node
+			if err := q.cdc.UnmarshalBinaryBare(value, &item); err != nil {
 				return false, err
 			}
-			if !strings.EqualFold(node.Provider, req.Address) {
+			if !strings.EqualFold(item.Provider, req.Address) {
 				return false, nil
 			}
 
 			if accumulate {
-				nodes = append(nodes, node)
+				items = append(items, item)
 			}
 
 			return true, nil
@@ -169,5 +169,5 @@ func (q *Querier) QueryNodesForProvider(c context.Context, req *types.QueryNodes
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	return &types.QueryNodesForProviderResponse{Nodes: nodes, Pagination: pagination}, nil
+	return &types.QueryNodesForProviderResponse{Nodes: items, Pagination: pagination}, nil
 }

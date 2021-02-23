@@ -29,12 +29,12 @@ func (q *Querier) QueryProvider(c context.Context, req *types.QueryProviderReque
 
 	ctx := sdk.UnwrapSDKContext(c)
 
-	provider, found := q.GetProvider(ctx, address)
+	item, found := q.GetProvider(ctx, address)
 	if !found {
 		return nil, nil
 	}
 
-	return &types.QueryProviderResponse{Provider: provider}, nil
+	return &types.QueryProviderResponse{Provider: item}, nil
 }
 
 func (q *Querier) QueryProviders(c context.Context, req *types.QueryProvidersRequest) (*types.QueryProvidersResponse, error) {
@@ -43,18 +43,19 @@ func (q *Querier) QueryProviders(c context.Context, req *types.QueryProvidersReq
 	}
 
 	var (
-		providers types.Providers
-		ctx       = sdk.UnwrapSDKContext(c)
-		store     = prefix.NewStore(q.Store(ctx), types.ProviderKeyPrefix)
+		items types.Providers
+		ctx   = sdk.UnwrapSDKContext(c)
+		store = prefix.NewStore(q.Store(ctx), types.ProviderKeyPrefix)
 	)
 
 	pagination, err := query.FilteredPaginate(store, req.Pagination, func(_, value []byte, accumulate bool) (bool, error) {
-		var provider types.Provider
-		if err := q.cdc.UnmarshalBinaryBare(value, &provider); err != nil {
+		var item types.Provider
+		if err := q.cdc.UnmarshalBinaryBare(value, &item); err != nil {
 			return false, err
 		}
+
 		if accumulate {
-			providers = append(providers, provider)
+			items = append(items, item)
 		}
 
 		return true, nil
@@ -64,5 +65,5 @@ func (q *Querier) QueryProviders(c context.Context, req *types.QueryProvidersReq
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	return &types.QueryProvidersResponse{Providers: providers, Pagination: pagination}, nil
+	return &types.QueryProvidersResponse{Providers: items, Pagination: pagination}, nil
 }

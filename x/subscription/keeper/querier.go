@@ -49,6 +49,7 @@ func (q *Querier) QuerySubscriptions(c context.Context, req *types.QuerySubscrip
 		if err := q.cdc.UnmarshalBinaryBare(value, &item); err != nil {
 			return false, err
 		}
+
 		if accumulate {
 			items = append(items, item)
 		}
@@ -79,11 +80,12 @@ func (q *Querier) QuerySubscriptionsForNode(c context.Context, req *types.QueryS
 		store = prefix.NewStore(q.Store(ctx), types.GetSubscriptionForNodeKeyPrefix(address))
 	)
 
-	pagination, err := query.FilteredPaginate(store, req.Pagination, func(_, value []byte, accumulate bool) (bool, error) {
-		var item types.Subscription
-		if err := q.cdc.UnmarshalBinaryBare(value, &item); err != nil {
-			return false, err
+	pagination, err := query.FilteredPaginate(store, req.Pagination, func(key, _ []byte, accumulate bool) (bool, error) {
+		item, found := q.GetSubscription(ctx, types.IDFromSubscriptionForNodeKey(key))
+		if !found {
+			return false, nil
 		}
+
 		if accumulate {
 			items = append(items, item)
 		}
@@ -109,11 +111,12 @@ func (q *Querier) QuerySubscriptionsForPlan(c context.Context, req *types.QueryS
 		store = prefix.NewStore(q.Store(ctx), types.GetSubscriptionForPlanKeyPrefix(req.Id))
 	)
 
-	pagination, err := query.FilteredPaginate(store, req.Pagination, func(_, value []byte, accumulate bool) (bool, error) {
-		var item types.Subscription
-		if err := q.cdc.UnmarshalBinaryBare(value, &item); err != nil {
-			return false, err
+	pagination, err := query.FilteredPaginate(store, req.Pagination, func(key, _ []byte, accumulate bool) (bool, error) {
+		item, found := q.GetSubscription(ctx, types.IDFromSubscriptionForPlanKey(key))
+		if !found {
+			return false, nil
 		}
+
 		if accumulate {
 			items = append(items, item)
 		}
@@ -236,6 +239,7 @@ func (q *Querier) QueryQuotas(c context.Context, req *types.QueryQuotasRequest) 
 		if err := q.cdc.UnmarshalBinaryBare(value, &item); err != nil {
 			return false, err
 		}
+
 		if accumulate {
 			items = append(items, item)
 		}

@@ -28,12 +28,12 @@ func (q *Querier) QueryDeposit(c context.Context, req *types.QueryDepositRequest
 
 	ctx := sdk.UnwrapSDKContext(c)
 
-	deposit, found := q.GetDeposit(ctx, address)
+	item, found := q.GetDeposit(ctx, address)
 	if !found {
 		return nil, nil
 	}
 
-	return &types.QueryDepositResponse{Deposit: deposit}, nil
+	return &types.QueryDepositResponse{Deposit: item}, nil
 }
 
 func (q *Querier) QueryDeposits(c context.Context, req *types.QueryDepositsRequest) (*types.QueryDepositsResponse, error) {
@@ -42,18 +42,19 @@ func (q *Querier) QueryDeposits(c context.Context, req *types.QueryDepositsReque
 	}
 
 	var (
-		deposits types.Deposits
-		ctx      = sdk.UnwrapSDKContext(c)
-		store    = prefix.NewStore(q.Store(ctx), types.DepositKeyPrefix)
+		items types.Deposits
+		ctx   = sdk.UnwrapSDKContext(c)
+		store = prefix.NewStore(q.Store(ctx), types.DepositKeyPrefix)
 	)
 
 	pagination, err := query.FilteredPaginate(store, req.Pagination, func(_, value []byte, accumulate bool) (bool, error) {
-		var deposit types.Deposit
-		if err := q.cdc.UnmarshalBinaryBare(value, &deposit); err != nil {
+		var item types.Deposit
+		if err := q.cdc.UnmarshalBinaryBare(value, &item); err != nil {
 			return false, err
 		}
+
 		if accumulate {
-			deposits = append(deposits, deposit)
+			items = append(items, item)
 		}
 
 		return true, nil
@@ -63,5 +64,5 @@ func (q *Querier) QueryDeposits(c context.Context, req *types.QueryDepositsReque
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	return &types.QueryDepositsResponse{Deposits: deposits, Pagination: pagination}, nil
+	return &types.QueryDepositsResponse{Deposits: items, Pagination: pagination}, nil
 }

@@ -17,7 +17,6 @@ import (
 	"github.com/sentinel-official/hub/x/vpn/client/rest"
 	"github.com/sentinel-official/hub/x/vpn/expected"
 	"github.com/sentinel-official/hub/x/vpn/keeper"
-	"github.com/sentinel-official/hub/x/vpn/querier"
 	"github.com/sentinel-official/hub/x/vpn/simulation"
 	"github.com/sentinel-official/hub/x/vpn/types"
 )
@@ -101,7 +100,7 @@ func (a AppModule) QuerierRoute() string {
 }
 
 func (a AppModule) NewQuerierHandler() sdk.Querier {
-	return querier.NewQuerier(a.k)
+	return keeper.NewQuerier(a.k)
 }
 
 func (a AppModule) BeginBlock(_ sdk.Context, _ abci.RequestBeginBlock) {}
