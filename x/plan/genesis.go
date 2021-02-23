@@ -15,15 +15,20 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, state types.GenesisState) {
 		k.SetPlan(ctx, item.Plan)
 
 		if item.Plan.Status.Equal(hub.StatusActive) {
-			k.SetActivePlan(ctx, item.Plan.ID)
-			k.SetActivePlanForProvider(ctx, item.Plan.Provider, item.Plan.ID)
+			k.SetActivePlan(ctx, item.Plan.Id)
+			k.SetActivePlanForProvider(ctx, item.Plan.GetProvider(), item.Plan.Id)
 		} else {
-			k.SetInactivePlan(ctx, item.Plan.ID)
-			k.SetInactivePlanForProvider(ctx, item.Plan.Provider, item.Plan.ID)
+			k.SetInactivePlan(ctx, item.Plan.Id)
+			k.SetInactivePlanForProvider(ctx, item.Plan.GetProvider(), item.Plan.Id)
 		}
 
 		for _, node := range item.Nodes {
-			k.SetNodeForPlan(ctx, item.Plan.ID, node)
+			address, err := hub.NodeAddressFromBech32(node)
+			if err != nil {
+				panic(err)
+			}
+
+			k.SetNodeForPlan(ctx, item.Plan.Id, address)
 		}
 	}
 
@@ -40,7 +45,7 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) types.GenesisState {
 			Nodes: nil,
 		}
 
-		nodes := k.GetNodesForPlan(ctx, plan.ID, 0, 0)
+		nodes := k.GetNodesForPlan(ctx, plan.Id, 0, 0)
 		for _, node := range nodes {
 			item.Nodes = append(item.Nodes, node.Address)
 		}
@@ -60,7 +65,7 @@ func ValidateGenesis(state types.GenesisState) error {
 
 	plans := make(map[uint64]bool)
 	for _, item := range state {
-		id := item.Plan.ID
+		id := item.Plan.Id
 		if plans[id] {
 			return fmt.Errorf("duplicate plan id %d", id)
 		}
@@ -70,10 +75,9 @@ func ValidateGenesis(state types.GenesisState) error {
 
 	for _, item := range state {
 		nodes := make(map[string]bool)
-		for _, node := range item.Nodes {
-			address := node.String()
+		for _, address := range item.Nodes {
 			if nodes[address] {
-				return fmt.Errorf("duplicate node for plan %d", item.Plan.ID)
+				return fmt.Errorf("duplicate node for plan %d", item.Plan.Id)
 			}
 
 			nodes[address] = true

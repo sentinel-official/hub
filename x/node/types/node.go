@@ -22,6 +22,19 @@ func (n Node) GetAddress() hub.NodeAddress {
 	return address
 }
 
+func (n Node) GetProvider() hub.ProvAddress {
+	if n.Provider == "" {
+		return nil
+	}
+
+	address, err := hub.ProvAddressFromBech32(n.Provider)
+	if err != nil {
+		panic(err)
+	}
+
+	return address
+}
+
 func (n Node) String() string {
 	if n.Provider == "" {
 		return strings.TrimSpace(fmt.Sprintf(`

@@ -9,6 +9,32 @@ import (
 	hub "github.com/sentinel-official/hub/types"
 )
 
+func (s Session) GetAddress() sdk.AccAddress {
+	if s.Address == "" {
+		return nil
+	}
+
+	address, err := sdk.AccAddressFromBech32(s.Address)
+	if err != nil {
+		panic(err)
+	}
+
+	return address
+}
+
+func (s Session) GetNode() hub.NodeAddress {
+	if s.Address == "" {
+		return nil
+	}
+
+	address, err := hub.NodeAddressFromBech32(s.Address)
+	if err != nil {
+		panic(err)
+	}
+
+	return address
+}
+
 func (s Session) String() string {
 	return fmt.Sprintf(strings.TrimSpace(`
 Id:           %d

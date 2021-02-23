@@ -9,6 +9,19 @@ import (
 	hub "github.com/sentinel-official/hub/types"
 )
 
+func (p Plan) GetProvider() hub.ProvAddress {
+	if p.Provider == "" {
+		return nil
+	}
+
+	address, err := hub.ProvAddressFromBech32(p.Provider)
+	if err != nil {
+		panic(err)
+	}
+
+	return address
+}
+
 func (p Plan) String() string {
 	return strings.TrimSpace(fmt.Sprintf(`
 ID:        %d
