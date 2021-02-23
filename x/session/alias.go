@@ -30,7 +30,8 @@ const (
 
 var (
 	// functions aliases
-	RegisterCodec                           = types.RegisterCodec
+	RegisterLegacyAminoCodec                = types.RegisterLegacyAminoCodec
+	RegisterInterfaces                      = types.RegisterInterfaces
 	NewGenesisState                         = types.NewGenesisState
 	DefaultGenesisState                     = types.DefaultGenesisState
 	SessionKey                              = types.SessionKey
@@ -48,18 +49,18 @@ var (
 	IDFromSessionForNodeKey                 = types.IDFromSessionForNodeKey
 	IDFromSessionForAddressKey              = types.IDFromSessionForAddressKey
 	IDFromActiveSessionAtKey                = types.IDFromActiveSessionAtKey
-	NewMsgUpsert                            = types.NewMsgUpsert
+	NewMsgUpsertRequest                     = types.NewMsgUpsertRequest
 	NewMsgServiceClient                     = types.NewMsgServiceClient
 	RegisterMsgServiceServer                = types.RegisterMsgServiceServer
 	NewParams                               = types.NewParams
 	DefaultParams                           = types.DefaultParams
 	ParamsKeyTable                          = types.ParamsKeyTable
-	NewQuerySessionParams                   = types.NewQuerySessionParams
-	NewQuerySessionsParams                  = types.NewQuerySessionsParams
-	NewQuerySessionsForSubscriptionParams   = types.NewQuerySessionsForSubscriptionParams
-	NewQuerySessionsForNodeParams           = types.NewQuerySessionsForNodeParams
-	NewQuerySessionsForAddressParams        = types.NewQuerySessionsForAddressParams
-	NewQueryOngoingSessionParams            = types.NewQueryOngoingSessionParams
+	NewQuerySessionRequest                  = types.NewQuerySessionRequest
+	NewQuerySessionsRequest                 = types.NewQuerySessionsRequest
+	NewQuerySessionsForSubscriptionRequest  = types.NewQuerySessionsForSubscriptionRequest
+	NewQuerySessionsForNodeRequest          = types.NewQuerySessionsForNodeRequest
+	NewQuerySessionsForAddressRequest       = types.NewQuerySessionsForAddressRequest
+	NewQueryOngoingSessionRequest           = types.NewQueryOngoingSessionRequest
 	NewQueryServiceClient                   = types.NewQueryServiceClient
 	RegisterQueryServiceServer              = types.RegisterQueryServiceServer
 	RegisterQueryServiceHandlerServer       = types.RegisterQueryServiceHandlerServer
@@ -114,36 +115,29 @@ var (
 )
 
 type (
-	GenesisState                       = types.GenesisState
-	MsgUpsert                          = types.MsgUpsert
-	UpsertRequest                      = types.UpsertRequest
-	UpsertResponse                     = types.UpsertResponse
-	MsgServiceClient                   = types.MsgServiceClient
-	MsgServiceServer                   = types.MsgServiceServer
-	UnimplementedMsgServiceServer      = types.UnimplementedMsgServiceServer
-	Params                             = types.Params
-	QuerySessionParams                 = types.QuerySessionParams
-	QuerySessionsParams                = types.QuerySessionsParams
-	QuerySessionsForSubscriptionParams = types.QuerySessionsForSubscriptionParams
-	QuerySessionsForNodeParams         = types.QuerySessionsForNodeParams
-	QuerySessionsForAddressParams      = types.QuerySessionsForAddressParams
-	QueryOngoingSessionParams          = types.QueryOngoingSessionParams
-	SessionsRequest                    = types.SessionsRequest
-	SessionsForSubscriptionRequest     = types.SessionsForSubscriptionRequest
-	SessionsForNodeRequest             = types.SessionsForNodeRequest
-	SessionsForAddressRequest          = types.SessionsForAddressRequest
-	SessionRequest                     = types.SessionRequest
-	OngoingSessionRequest              = types.OngoingSessionRequest
-	SessionsResponse                   = types.SessionsResponse
-	SessionsForSubscriptionResponse    = types.SessionsForSubscriptionResponse
-	SessionsForNodeResponse            = types.SessionsForNodeResponse
-	SessionsForAddressResponse         = types.SessionsForAddressResponse
-	SessionResponse                    = types.SessionResponse
-	OngoingSessionResponse             = types.OngoingSessionResponse
-	QueryServiceClient                 = types.QueryServiceClient
-	QueryServiceServer                 = types.QueryServiceServer
-	UnimplementedQueryServiceServer    = types.UnimplementedQueryServiceServer
-	Sessions                           = types.Sessions
-	Session                            = types.Session
-	Keeper                             = keeper.Keeper
+	GenesisState                         = types.GenesisState
+	MsgUpsertRequest                     = types.MsgUpsertRequest
+	MsgUpsertResponse                    = types.MsgUpsertResponse
+	MsgServiceClient                     = types.MsgServiceClient
+	MsgServiceServer                     = types.MsgServiceServer
+	UnimplementedMsgServiceServer        = types.UnimplementedMsgServiceServer
+	Params                               = types.Params
+	QuerySessionsRequest                 = types.QuerySessionsRequest
+	QuerySessionsForSubscriptionRequest  = types.QuerySessionsForSubscriptionRequest
+	QuerySessionsForNodeRequest          = types.QuerySessionsForNodeRequest
+	QuerySessionsForAddressRequest       = types.QuerySessionsForAddressRequest
+	QuerySessionRequest                  = types.QuerySessionRequest
+	QueryOngoingSessionRequest           = types.QueryOngoingSessionRequest
+	QuerySessionsResponse                = types.QuerySessionsResponse
+	QuerySessionsForSubscriptionResponse = types.QuerySessionsForSubscriptionResponse
+	QuerySessionsForNodeResponse         = types.QuerySessionsForNodeResponse
+	QuerySessionsForAddressResponse      = types.QuerySessionsForAddressResponse
+	QuerySessionResponse                 = types.QuerySessionResponse
+	QueryOngoingSessionResponse          = types.QueryOngoingSessionResponse
+	QueryServiceClient                   = types.QueryServiceClient
+	QueryServiceServer                   = types.QueryServiceServer
+	UnimplementedQueryServiceServer      = types.UnimplementedQueryServiceServer
+	Sessions                             = types.Sessions
+	Session                              = types.Session
+	Keeper                               = keeper.Keeper
 )

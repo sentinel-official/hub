@@ -12,49 +12,39 @@ import (
 )
 
 var (
-	_ sdk.Msg = (*MsgUpsert)(nil)
+	_ sdk.Msg = (*MsgUpsertRequest)(nil)
 )
 
-// MsgUpsert is for updating or inserting a session of a plan.
-type MsgUpsert struct {
-	From      hub.NodeAddress `json:"from"`
-	ID        uint64          `json:"id"`
-	Address   sdk.AccAddress  `json:"address"`
-	Duration  time.Duration   `json:"duration"`
-	Bandwidth hub.Bandwidth   `json:"bandwidth"`
-}
-
-func NewMsgUpsert(from hub.NodeAddress, id uint64, address sdk.AccAddress,
-	duration time.Duration, bandwidth hub.Bandwidth) MsgUpsert {
-	return MsgUpsert{
+func NewMsgUpsertRequest(from string, id uint64, address string, duration time.Duration, bandwidth hub.Bandwidth) MsgUpsertRequest {
+	return MsgUpsertRequest{
 		From:      from,
-		ID:        id,
+		Id:        id,
 		Address:   address,
 		Duration:  duration,
 		Bandwidth: bandwidth,
 	}
 }
 
-func (m MsgUpsert) Route() string {
+func (m MsgUpsertRequest) Route() string {
 	return RouterKey
 }
 
-func (m MsgUpsert) Type() string {
+func (m MsgUpsertRequest) Type() string {
 	return fmt.Sprintf("%s:upsert", ModuleName)
 }
 
-func (m MsgUpsert) ValidateBasic() error {
-	if m.From == nil || m.From.Empty() {
+func (m MsgUpsertRequest) ValidateBasic() error {
+	if _, err := hub.NodeAddressFromBech32(m.From); err != nil {
 		return errors.Wrapf(ErrorInvalidField, "%s", "from")
 	}
 
-	// ID shouldn't be zero
-	if m.ID == 0 {
+	// Id shouldn't be zero
+	if m.Id == 0 {
 		return errors.Wrapf(ErrorInvalidField, "%s", "id")
 	}
 
-	// Address shouldn't be nil or empty
-	if m.Address == nil || m.Address.Empty() {
+	// Address should be valid
+	if _, err := sdk.AccAddressFromBech32(m.Address); err != nil {
 		return errors.Wrapf(ErrorInvalidField, "%s", "address")
 	}
 
@@ -71,7 +61,7 @@ func (m MsgUpsert) ValidateBasic() error {
 	return nil
 }
 
-func (m MsgUpsert) GetSignBytes() []byte {
+func (m MsgUpsertRequest) GetSignBytes() []byte {
 	bytes, err := json.Marshal(m)
 	if err != nil {
 		panic(err)
@@ -80,6 +70,11 @@ func (m MsgUpsert) GetSignBytes() []byte {
 	return bytes
 }
 
-func (m MsgUpsert) GetSigners() []sdk.AccAddress {
-	return []sdk.AccAddress{m.From.Bytes()}
+func (m MsgUpsertRequest) GetSigners() []sdk.AccAddress {
+	from, err := hub.NodeAddressFromBech32(m.From)
+	if err != nil {
+		panic(err)
+	}
+
+	return []sdk.AccAddress{from.Bytes()}
 }

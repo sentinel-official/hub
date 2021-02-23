@@ -21,12 +21,13 @@ const (
 
 var (
 	// functions aliases
-	RegisterCodec                           = types.RegisterCodec
+	RegisterLegacyAminoCodec                = types.RegisterLegacyAminoCodec
+	RegisterInterfaces                      = types.RegisterInterfaces
 	NewGenesisState                         = types.NewGenesisState
 	DefaultGenesisState                     = types.DefaultGenesisState
 	DepositKey                              = types.DepositKey
-	NewQueryDepositParams                   = types.NewQueryDepositParams
-	NewQueryDepositsParams                  = types.NewQueryDepositsParams
+	NewQueryDepositRequest                  = types.NewQueryDepositRequest
+	NewQueryDepositsRequest                 = types.NewQueryDepositsRequest
 	NewQueryServiceClient                   = types.NewQueryServiceClient
 	RegisterQueryServiceServer              = types.RegisterQueryServiceServer
 	RegisterQueryServiceHandlerServer       = types.RegisterQueryServiceHandlerServer
@@ -63,12 +64,10 @@ type (
 	Deposits                        = types.Deposits
 	Deposit                         = types.Deposit
 	GenesisState                    = types.GenesisState
-	QueryDepositParams              = types.QueryDepositParams
-	QueryDepositsParams             = types.QueryDepositsParams
-	DepositsRequest                 = types.DepositsRequest
-	DepositRequest                  = types.DepositRequest
-	DepositsResponse                = types.DepositsResponse
-	DepositResponse                 = types.DepositResponse
+	QueryDepositsRequest            = types.QueryDepositsRequest
+	QueryDepositRequest             = types.QueryDepositRequest
+	QueryDepositsResponse           = types.QueryDepositsResponse
+	QueryDepositResponse            = types.QueryDepositResponse
 	QueryServiceClient              = types.QueryServiceClient
 	QueryServiceServer              = types.QueryServiceServer
 	UnimplementedQueryServiceServer = types.UnimplementedQueryServiceServer

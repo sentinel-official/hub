@@ -31,22 +31,22 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
-type SessionsRequest struct {
+type QuerySessionsRequest struct {
 	Pagination *query.PageRequest `protobuf:"bytes,1,opt,name=pagination,proto3" json:"pagination,omitempty"`
 }
 
-func (m *SessionsRequest) Reset()         { *m = SessionsRequest{} }
-func (m *SessionsRequest) String() string { return proto.CompactTextString(m) }
-func (*SessionsRequest) ProtoMessage()    {}
-func (*SessionsRequest) Descriptor() ([]byte, []int) {
+func (m *QuerySessionsRequest) Reset()         { *m = QuerySessionsRequest{} }
+func (m *QuerySessionsRequest) String() string { return proto.CompactTextString(m) }
+func (*QuerySessionsRequest) ProtoMessage()    {}
+func (*QuerySessionsRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_b1b8fd13f8c99462, []int{0}
 }
-func (m *SessionsRequest) XXX_Unmarshal(b []byte) error {
+func (m *QuerySessionsRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *SessionsRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QuerySessionsRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_SessionsRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QuerySessionsRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -56,35 +56,35 @@ func (m *SessionsRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, err
 		return b[:n], nil
 	}
 }
-func (m *SessionsRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_SessionsRequest.Merge(m, src)
+func (m *QuerySessionsRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QuerySessionsRequest.Merge(m, src)
 }
-func (m *SessionsRequest) XXX_Size() int {
+func (m *QuerySessionsRequest) XXX_Size() int {
 	return m.Size()
 }
-func (m *SessionsRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_SessionsRequest.DiscardUnknown(m)
+func (m *QuerySessionsRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QuerySessionsRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_SessionsRequest proto.InternalMessageInfo
+var xxx_messageInfo_QuerySessionsRequest proto.InternalMessageInfo
 
-type SessionsForSubscriptionRequest struct {
+type QuerySessionsForSubscriptionRequest struct {
 	Id         uint64             `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 	Pagination *query.PageRequest `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
 }
 
-func (m *SessionsForSubscriptionRequest) Reset()         { *m = SessionsForSubscriptionRequest{} }
-func (m *SessionsForSubscriptionRequest) String() string { return proto.CompactTextString(m) }
-func (*SessionsForSubscriptionRequest) ProtoMessage()    {}
-func (*SessionsForSubscriptionRequest) Descriptor() ([]byte, []int) {
+func (m *QuerySessionsForSubscriptionRequest) Reset()         { *m = QuerySessionsForSubscriptionRequest{} }
+func (m *QuerySessionsForSubscriptionRequest) String() string { return proto.CompactTextString(m) }
+func (*QuerySessionsForSubscriptionRequest) ProtoMessage()    {}
+func (*QuerySessionsForSubscriptionRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_b1b8fd13f8c99462, []int{1}
 }
-func (m *SessionsForSubscriptionRequest) XXX_Unmarshal(b []byte) error {
+func (m *QuerySessionsForSubscriptionRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *SessionsForSubscriptionRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QuerySessionsForSubscriptionRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_SessionsForSubscriptionRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QuerySessionsForSubscriptionRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -94,35 +94,35 @@ func (m *SessionsForSubscriptionRequest) XXX_Marshal(b []byte, deterministic boo
 		return b[:n], nil
 	}
 }
-func (m *SessionsForSubscriptionRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_SessionsForSubscriptionRequest.Merge(m, src)
+func (m *QuerySessionsForSubscriptionRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QuerySessionsForSubscriptionRequest.Merge(m, src)
 }
-func (m *SessionsForSubscriptionRequest) XXX_Size() int {
+func (m *QuerySessionsForSubscriptionRequest) XXX_Size() int {
 	return m.Size()
 }
-func (m *SessionsForSubscriptionRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_SessionsForSubscriptionRequest.DiscardUnknown(m)
+func (m *QuerySessionsForSubscriptionRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QuerySessionsForSubscriptionRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_SessionsForSubscriptionRequest proto.InternalMessageInfo
+var xxx_messageInfo_QuerySessionsForSubscriptionRequest proto.InternalMessageInfo
 
-type SessionsForNodeRequest struct {
+type QuerySessionsForNodeRequest struct {
 	Address    string             `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
 	Pagination *query.PageRequest `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
 }
 
-func (m *SessionsForNodeRequest) Reset()         { *m = SessionsForNodeRequest{} }
-func (m *SessionsForNodeRequest) String() string { return proto.CompactTextString(m) }
-func (*SessionsForNodeRequest) ProtoMessage()    {}
-func (*SessionsForNodeRequest) Descriptor() ([]byte, []int) {
+func (m *QuerySessionsForNodeRequest) Reset()         { *m = QuerySessionsForNodeRequest{} }
+func (m *QuerySessionsForNodeRequest) String() string { return proto.CompactTextString(m) }
+func (*QuerySessionsForNodeRequest) ProtoMessage()    {}
+func (*QuerySessionsForNodeRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_b1b8fd13f8c99462, []int{2}
 }
-func (m *SessionsForNodeRequest) XXX_Unmarshal(b []byte) error {
+func (m *QuerySessionsForNodeRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *SessionsForNodeRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QuerySessionsForNodeRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_SessionsForNodeRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QuerySessionsForNodeRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -132,36 +132,36 @@ func (m *SessionsForNodeRequest) XXX_Marshal(b []byte, deterministic bool) ([]by
 		return b[:n], nil
 	}
 }
-func (m *SessionsForNodeRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_SessionsForNodeRequest.Merge(m, src)
+func (m *QuerySessionsForNodeRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QuerySessionsForNodeRequest.Merge(m, src)
 }
-func (m *SessionsForNodeRequest) XXX_Size() int {
+func (m *QuerySessionsForNodeRequest) XXX_Size() int {
 	return m.Size()
 }
-func (m *SessionsForNodeRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_SessionsForNodeRequest.DiscardUnknown(m)
+func (m *QuerySessionsForNodeRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QuerySessionsForNodeRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_SessionsForNodeRequest proto.InternalMessageInfo
+var xxx_messageInfo_QuerySessionsForNodeRequest proto.InternalMessageInfo
 
-type SessionsForAddressRequest struct {
+type QuerySessionsForAddressRequest struct {
 	Address    string             `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
 	Status     types.Status       `protobuf:"varint,2,opt,name=status,proto3,enum=sentinel.types.v1.Status" json:"status,omitempty"`
 	Pagination *query.PageRequest `protobuf:"bytes,3,opt,name=pagination,proto3" json:"pagination,omitempty"`
 }
 
-func (m *SessionsForAddressRequest) Reset()         { *m = SessionsForAddressRequest{} }
-func (m *SessionsForAddressRequest) String() string { return proto.CompactTextString(m) }
-func (*SessionsForAddressRequest) ProtoMessage()    {}
-func (*SessionsForAddressRequest) Descriptor() ([]byte, []int) {
+func (m *QuerySessionsForAddressRequest) Reset()         { *m = QuerySessionsForAddressRequest{} }
+func (m *QuerySessionsForAddressRequest) String() string { return proto.CompactTextString(m) }
+func (*QuerySessionsForAddressRequest) ProtoMessage()    {}
+func (*QuerySessionsForAddressRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_b1b8fd13f8c99462, []int{3}
 }
-func (m *SessionsForAddressRequest) XXX_Unmarshal(b []byte) error {
+func (m *QuerySessionsForAddressRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *SessionsForAddressRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QuerySessionsForAddressRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_SessionsForAddressRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QuerySessionsForAddressRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -171,34 +171,34 @@ func (m *SessionsForAddressRequest) XXX_Marshal(b []byte, deterministic bool) ([
 		return b[:n], nil
 	}
 }
-func (m *SessionsForAddressRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_SessionsForAddressRequest.Merge(m, src)
+func (m *QuerySessionsForAddressRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QuerySessionsForAddressRequest.Merge(m, src)
 }
-func (m *SessionsForAddressRequest) XXX_Size() int {
+func (m *QuerySessionsForAddressRequest) XXX_Size() int {
 	return m.Size()
 }
-func (m *SessionsForAddressRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_SessionsForAddressRequest.DiscardUnknown(m)
+func (m *QuerySessionsForAddressRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QuerySessionsForAddressRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_SessionsForAddressRequest proto.InternalMessageInfo
+var xxx_messageInfo_QuerySessionsForAddressRequest proto.InternalMessageInfo
 
-type SessionRequest struct {
+type QuerySessionRequest struct {
 	Id uint64 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 }
 
-func (m *SessionRequest) Reset()         { *m = SessionRequest{} }
-func (m *SessionRequest) String() string { return proto.CompactTextString(m) }
-func (*SessionRequest) ProtoMessage()    {}
-func (*SessionRequest) Descriptor() ([]byte, []int) {
+func (m *QuerySessionRequest) Reset()         { *m = QuerySessionRequest{} }
+func (m *QuerySessionRequest) String() string { return proto.CompactTextString(m) }
+func (*QuerySessionRequest) ProtoMessage()    {}
+func (*QuerySessionRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_b1b8fd13f8c99462, []int{4}
 }
-func (m *SessionRequest) XXX_Unmarshal(b []byte) error {
+func (m *QuerySessionRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *SessionRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QuerySessionRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_SessionRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QuerySessionRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -208,35 +208,35 @@ func (m *SessionRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, erro
 		return b[:n], nil
 	}
 }
-func (m *SessionRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_SessionRequest.Merge(m, src)
+func (m *QuerySessionRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QuerySessionRequest.Merge(m, src)
 }
-func (m *SessionRequest) XXX_Size() int {
+func (m *QuerySessionRequest) XXX_Size() int {
 	return m.Size()
 }
-func (m *SessionRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_SessionRequest.DiscardUnknown(m)
+func (m *QuerySessionRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QuerySessionRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_SessionRequest proto.InternalMessageInfo
+var xxx_messageInfo_QuerySessionRequest proto.InternalMessageInfo
 
-type OngoingSessionRequest struct {
+type QueryOngoingSessionRequest struct {
 	Id      uint64 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 	Address string `protobuf:"bytes,2,opt,name=address,proto3" json:"address,omitempty"`
 }
 
-func (m *OngoingSessionRequest) Reset()         { *m = OngoingSessionRequest{} }
-func (m *OngoingSessionRequest) String() string { return proto.CompactTextString(m) }
-func (*OngoingSessionRequest) ProtoMessage()    {}
-func (*OngoingSessionRequest) Descriptor() ([]byte, []int) {
+func (m *QueryOngoingSessionRequest) Reset()         { *m = QueryOngoingSessionRequest{} }
+func (m *QueryOngoingSessionRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryOngoingSessionRequest) ProtoMessage()    {}
+func (*QueryOngoingSessionRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_b1b8fd13f8c99462, []int{5}
 }
-func (m *OngoingSessionRequest) XXX_Unmarshal(b []byte) error {
+func (m *QueryOngoingSessionRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *OngoingSessionRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryOngoingSessionRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_OngoingSessionRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryOngoingSessionRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -246,35 +246,35 @@ func (m *OngoingSessionRequest) XXX_Marshal(b []byte, deterministic bool) ([]byt
 		return b[:n], nil
 	}
 }
-func (m *OngoingSessionRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_OngoingSessionRequest.Merge(m, src)
+func (m *QueryOngoingSessionRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryOngoingSessionRequest.Merge(m, src)
 }
-func (m *OngoingSessionRequest) XXX_Size() int {
+func (m *QueryOngoingSessionRequest) XXX_Size() int {
 	return m.Size()
 }
-func (m *OngoingSessionRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_OngoingSessionRequest.DiscardUnknown(m)
+func (m *QueryOngoingSessionRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryOngoingSessionRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_OngoingSessionRequest proto.InternalMessageInfo
+var xxx_messageInfo_QueryOngoingSessionRequest proto.InternalMessageInfo
 
-type SessionsResponse struct {
+type QuerySessionsResponse struct {
 	Sessions   []Session           `protobuf:"bytes,1,rep,name=sessions,proto3" json:"sessions"`
 	Pagination *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
 }
 
-func (m *SessionsResponse) Reset()         { *m = SessionsResponse{} }
-func (m *SessionsResponse) String() string { return proto.CompactTextString(m) }
-func (*SessionsResponse) ProtoMessage()    {}
-func (*SessionsResponse) Descriptor() ([]byte, []int) {
+func (m *QuerySessionsResponse) Reset()         { *m = QuerySessionsResponse{} }
+func (m *QuerySessionsResponse) String() string { return proto.CompactTextString(m) }
+func (*QuerySessionsResponse) ProtoMessage()    {}
+func (*QuerySessionsResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_b1b8fd13f8c99462, []int{6}
 }
-func (m *SessionsResponse) XXX_Unmarshal(b []byte) error {
+func (m *QuerySessionsResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *SessionsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QuerySessionsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_SessionsResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QuerySessionsResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -284,35 +284,35 @@ func (m *SessionsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, er
 		return b[:n], nil
 	}
 }
-func (m *SessionsResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_SessionsResponse.Merge(m, src)
+func (m *QuerySessionsResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QuerySessionsResponse.Merge(m, src)
 }
-func (m *SessionsResponse) XXX_Size() int {
+func (m *QuerySessionsResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *SessionsResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_SessionsResponse.DiscardUnknown(m)
+func (m *QuerySessionsResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QuerySessionsResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_SessionsResponse proto.InternalMessageInfo
+var xxx_messageInfo_QuerySessionsResponse proto.InternalMessageInfo
 
-type SessionsForSubscriptionResponse struct {
+type QuerySessionsForSubscriptionResponse struct {
 	Sessions   []Session           `protobuf:"bytes,1,rep,name=sessions,proto3" json:"sessions"`
 	Pagination *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
 }
 
-func (m *SessionsForSubscriptionResponse) Reset()         { *m = SessionsForSubscriptionResponse{} }
-func (m *SessionsForSubscriptionResponse) String() string { return proto.CompactTextString(m) }
-func (*SessionsForSubscriptionResponse) ProtoMessage()    {}
-func (*SessionsForSubscriptionResponse) Descriptor() ([]byte, []int) {
+func (m *QuerySessionsForSubscriptionResponse) Reset()         { *m = QuerySessionsForSubscriptionResponse{} }
+func (m *QuerySessionsForSubscriptionResponse) String() string { return proto.CompactTextString(m) }
+func (*QuerySessionsForSubscriptionResponse) ProtoMessage()    {}
+func (*QuerySessionsForSubscriptionResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_b1b8fd13f8c99462, []int{7}
 }
-func (m *SessionsForSubscriptionResponse) XXX_Unmarshal(b []byte) error {
+func (m *QuerySessionsForSubscriptionResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *SessionsForSubscriptionResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QuerySessionsForSubscriptionResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_SessionsForSubscriptionResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QuerySessionsForSubscriptionResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -322,35 +322,35 @@ func (m *SessionsForSubscriptionResponse) XXX_Marshal(b []byte, deterministic bo
 		return b[:n], nil
 	}
 }
-func (m *SessionsForSubscriptionResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_SessionsForSubscriptionResponse.Merge(m, src)
+func (m *QuerySessionsForSubscriptionResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QuerySessionsForSubscriptionResponse.Merge(m, src)
 }
-func (m *SessionsForSubscriptionResponse) XXX_Size() int {
+func (m *QuerySessionsForSubscriptionResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *SessionsForSubscriptionResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_SessionsForSubscriptionResponse.DiscardUnknown(m)
+func (m *QuerySessionsForSubscriptionResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QuerySessionsForSubscriptionResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_SessionsForSubscriptionResponse proto.InternalMessageInfo
+var xxx_messageInfo_QuerySessionsForSubscriptionResponse proto.InternalMessageInfo
 
-type SessionsForNodeResponse struct {
+type QuerySessionsForNodeResponse struct {
 	Sessions   []Session           `protobuf:"bytes,1,rep,name=sessions,proto3" json:"sessions"`
 	Pagination *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
 }
 
-func (m *SessionsForNodeResponse) Reset()         { *m = SessionsForNodeResponse{} }
-func (m *SessionsForNodeResponse) String() string { return proto.CompactTextString(m) }
-func (*SessionsForNodeResponse) ProtoMessage()    {}
-func (*SessionsForNodeResponse) Descriptor() ([]byte, []int) {
+func (m *QuerySessionsForNodeResponse) Reset()         { *m = QuerySessionsForNodeResponse{} }
+func (m *QuerySessionsForNodeResponse) String() string { return proto.CompactTextString(m) }
+func (*QuerySessionsForNodeResponse) ProtoMessage()    {}
+func (*QuerySessionsForNodeResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_b1b8fd13f8c99462, []int{8}
 }
-func (m *SessionsForNodeResponse) XXX_Unmarshal(b []byte) error {
+func (m *QuerySessionsForNodeResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *SessionsForNodeResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QuerySessionsForNodeResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_SessionsForNodeResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QuerySessionsForNodeResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -360,35 +360,35 @@ func (m *SessionsForNodeResponse) XXX_Marshal(b []byte, deterministic bool) ([]b
 		return b[:n], nil
 	}
 }
-func (m *SessionsForNodeResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_SessionsForNodeResponse.Merge(m, src)
+func (m *QuerySessionsForNodeResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QuerySessionsForNodeResponse.Merge(m, src)
 }
-func (m *SessionsForNodeResponse) XXX_Size() int {
+func (m *QuerySessionsForNodeResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *SessionsForNodeResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_SessionsForNodeResponse.DiscardUnknown(m)
+func (m *QuerySessionsForNodeResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QuerySessionsForNodeResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_SessionsForNodeResponse proto.InternalMessageInfo
+var xxx_messageInfo_QuerySessionsForNodeResponse proto.InternalMessageInfo
 
-type SessionsForAddressResponse struct {
+type QuerySessionsForAddressResponse struct {
 	Sessions   []Session           `protobuf:"bytes,1,rep,name=sessions,proto3" json:"sessions"`
 	Pagination *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
 }
 
-func (m *SessionsForAddressResponse) Reset()         { *m = SessionsForAddressResponse{} }
-func (m *SessionsForAddressResponse) String() string { return proto.CompactTextString(m) }
-func (*SessionsForAddressResponse) ProtoMessage()    {}
-func (*SessionsForAddressResponse) Descriptor() ([]byte, []int) {
+func (m *QuerySessionsForAddressResponse) Reset()         { *m = QuerySessionsForAddressResponse{} }
+func (m *QuerySessionsForAddressResponse) String() string { return proto.CompactTextString(m) }
+func (*QuerySessionsForAddressResponse) ProtoMessage()    {}
+func (*QuerySessionsForAddressResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_b1b8fd13f8c99462, []int{9}
 }
-func (m *SessionsForAddressResponse) XXX_Unmarshal(b []byte) error {
+func (m *QuerySessionsForAddressResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *SessionsForAddressResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QuerySessionsForAddressResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_SessionsForAddressResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QuerySessionsForAddressResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -398,34 +398,34 @@ func (m *SessionsForAddressResponse) XXX_Marshal(b []byte, deterministic bool) (
 		return b[:n], nil
 	}
 }
-func (m *SessionsForAddressResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_SessionsForAddressResponse.Merge(m, src)
+func (m *QuerySessionsForAddressResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QuerySessionsForAddressResponse.Merge(m, src)
 }
-func (m *SessionsForAddressResponse) XXX_Size() int {
+func (m *QuerySessionsForAddressResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *SessionsForAddressResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_SessionsForAddressResponse.DiscardUnknown(m)
+func (m *QuerySessionsForAddressResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QuerySessionsForAddressResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_SessionsForAddressResponse proto.InternalMessageInfo
+var xxx_messageInfo_QuerySessionsForAddressResponse proto.InternalMessageInfo
 
-type SessionResponse struct {
+type QuerySessionResponse struct {
 	Session Session `protobuf:"bytes,1,opt,name=session,proto3" json:"session"`
 }
 
-func (m *SessionResponse) Reset()         { *m = SessionResponse{} }
-func (m *SessionResponse) String() string { return proto.CompactTextString(m) }
-func (*SessionResponse) ProtoMessage()    {}
-func (*SessionResponse) Descriptor() ([]byte, []int) {
+func (m *QuerySessionResponse) Reset()         { *m = QuerySessionResponse{} }
+func (m *QuerySessionResponse) String() string { return proto.CompactTextString(m) }
+func (*QuerySessionResponse) ProtoMessage()    {}
+func (*QuerySessionResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_b1b8fd13f8c99462, []int{10}
 }
-func (m *SessionResponse) XXX_Unmarshal(b []byte) error {
+func (m *QuerySessionResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *SessionResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QuerySessionResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_SessionResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QuerySessionResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -435,34 +435,34 @@ func (m *SessionResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, err
 		return b[:n], nil
 	}
 }
-func (m *SessionResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_SessionResponse.Merge(m, src)
+func (m *QuerySessionResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QuerySessionResponse.Merge(m, src)
 }
-func (m *SessionResponse) XXX_Size() int {
+func (m *QuerySessionResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *SessionResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_SessionResponse.DiscardUnknown(m)
+func (m *QuerySessionResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QuerySessionResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_SessionResponse proto.InternalMessageInfo
+var xxx_messageInfo_QuerySessionResponse proto.InternalMessageInfo
 
-type OngoingSessionResponse struct {
+type QueryOngoingSessionResponse struct {
 	Session Session `protobuf:"bytes,1,opt,name=session,proto3" json:"session"`
 }
 
-func (m *OngoingSessionResponse) Reset()         { *m = OngoingSessionResponse{} }
-func (m *OngoingSessionResponse) String() string { return proto.CompactTextString(m) }
-func (*OngoingSessionResponse) ProtoMessage()    {}
-func (*OngoingSessionResponse) Descriptor() ([]byte, []int) {
+func (m *QueryOngoingSessionResponse) Reset()         { *m = QueryOngoingSessionResponse{} }
+func (m *QueryOngoingSessionResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryOngoingSessionResponse) ProtoMessage()    {}
+func (*QueryOngoingSessionResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_b1b8fd13f8c99462, []int{11}
 }
-func (m *OngoingSessionResponse) XXX_Unmarshal(b []byte) error {
+func (m *QueryOngoingSessionResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *OngoingSessionResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryOngoingSessionResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_OngoingSessionResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryOngoingSessionResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -472,84 +472,85 @@ func (m *OngoingSessionResponse) XXX_Marshal(b []byte, deterministic bool) ([]by
 		return b[:n], nil
 	}
 }
-func (m *OngoingSessionResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_OngoingSessionResponse.Merge(m, src)
+func (m *QueryOngoingSessionResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryOngoingSessionResponse.Merge(m, src)
 }
-func (m *OngoingSessionResponse) XXX_Size() int {
+func (m *QueryOngoingSessionResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *OngoingSessionResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_OngoingSessionResponse.DiscardUnknown(m)
+func (m *QueryOngoingSessionResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryOngoingSessionResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_OngoingSessionResponse proto.InternalMessageInfo
+var xxx_messageInfo_QueryOngoingSessionResponse proto.InternalMessageInfo
 
 func init() {
-	proto.RegisterType((*SessionsRequest)(nil), "sentinel.session.v1.SessionsRequest")
-	proto.RegisterType((*SessionsForSubscriptionRequest)(nil), "sentinel.session.v1.SessionsForSubscriptionRequest")
-	proto.RegisterType((*SessionsForNodeRequest)(nil), "sentinel.session.v1.SessionsForNodeRequest")
-	proto.RegisterType((*SessionsForAddressRequest)(nil), "sentinel.session.v1.SessionsForAddressRequest")
-	proto.RegisterType((*SessionRequest)(nil), "sentinel.session.v1.SessionRequest")
-	proto.RegisterType((*OngoingSessionRequest)(nil), "sentinel.session.v1.OngoingSessionRequest")
-	proto.RegisterType((*SessionsResponse)(nil), "sentinel.session.v1.SessionsResponse")
-	proto.RegisterType((*SessionsForSubscriptionResponse)(nil), "sentinel.session.v1.SessionsForSubscriptionResponse")
-	proto.RegisterType((*SessionsForNodeResponse)(nil), "sentinel.session.v1.SessionsForNodeResponse")
-	proto.RegisterType((*SessionsForAddressResponse)(nil), "sentinel.session.v1.SessionsForAddressResponse")
-	proto.RegisterType((*SessionResponse)(nil), "sentinel.session.v1.SessionResponse")
-	proto.RegisterType((*OngoingSessionResponse)(nil), "sentinel.session.v1.OngoingSessionResponse")
+	proto.RegisterType((*QuerySessionsRequest)(nil), "sentinel.session.v1.QuerySessionsRequest")
+	proto.RegisterType((*QuerySessionsForSubscriptionRequest)(nil), "sentinel.session.v1.QuerySessionsForSubscriptionRequest")
+	proto.RegisterType((*QuerySessionsForNodeRequest)(nil), "sentinel.session.v1.QuerySessionsForNodeRequest")
+	proto.RegisterType((*QuerySessionsForAddressRequest)(nil), "sentinel.session.v1.QuerySessionsForAddressRequest")
+	proto.RegisterType((*QuerySessionRequest)(nil), "sentinel.session.v1.QuerySessionRequest")
+	proto.RegisterType((*QueryOngoingSessionRequest)(nil), "sentinel.session.v1.QueryOngoingSessionRequest")
+	proto.RegisterType((*QuerySessionsResponse)(nil), "sentinel.session.v1.QuerySessionsResponse")
+	proto.RegisterType((*QuerySessionsForSubscriptionResponse)(nil), "sentinel.session.v1.QuerySessionsForSubscriptionResponse")
+	proto.RegisterType((*QuerySessionsForNodeResponse)(nil), "sentinel.session.v1.QuerySessionsForNodeResponse")
+	proto.RegisterType((*QuerySessionsForAddressResponse)(nil), "sentinel.session.v1.QuerySessionsForAddressResponse")
+	proto.RegisterType((*QuerySessionResponse)(nil), "sentinel.session.v1.QuerySessionResponse")
+	proto.RegisterType((*QueryOngoingSessionResponse)(nil), "sentinel.session.v1.QueryOngoingSessionResponse")
 }
 
 func init() { proto.RegisterFile("sentinel/session/v1/querier.proto", fileDescriptor_b1b8fd13f8c99462) }
 
 var fileDescriptor_b1b8fd13f8c99462 = []byte{
-	// 747 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xcc, 0x96, 0x3f, 0x6f, 0xd3, 0x4e,
-	0x18, 0xc7, 0x73, 0x69, 0xd5, 0x3f, 0xd7, 0x9f, 0xf2, 0x2b, 0x07, 0x94, 0xd6, 0x54, 0x0e, 0x2d,
-	0xa1, 0x54, 0x6d, 0xb9, 0x23, 0x29, 0x13, 0x42, 0x48, 0x74, 0x28, 0x12, 0x48, 0xfc, 0x49, 0x26,
-	0x98, 0x70, 0xec, 0xab, 0x7b, 0x28, 0xf5, 0xa5, 0x3e, 0x3b, 0xa2, 0xaa, 0x58, 0x2a, 0x06, 0x36,
-	0x90, 0x18, 0x18, 0x58, 0xba, 0xb0, 0x20, 0x24, 0x16, 0x26, 0x5e, 0x41, 0xc7, 0x4a, 0x2c, 0x4c,
-	0x80, 0x5a, 0x06, 0x5e, 0x06, 0xf2, 0xf9, 0xec, 0x38, 0xad, 0xeb, 0x04, 0xa9, 0x48, 0xdd, 0x12,
-	0xfb, 0xfb, 0x3c, 0xdf, 0xcf, 0xf3, 0xdc, 0x3d, 0x77, 0x86, 0x53, 0x82, 0x3a, 0x1e, 0x73, 0x68,
-	0x83, 0x08, 0x2a, 0x04, 0xe3, 0x0e, 0x69, 0x95, 0xc9, 0xba, 0x4f, 0x5d, 0x46, 0x5d, 0xdc, 0x74,
-	0xb9, 0xc7, 0xd1, 0xe9, 0x48, 0x82, 0x95, 0x04, 0xb7, 0xca, 0xda, 0x9c, 0xc9, 0xc5, 0x1a, 0x17,
-	0xa4, 0x6e, 0x08, 0x2a, 0xf5, 0x1b, 0xa4, 0x55, 0xae, 0x53, 0xcf, 0x28, 0x93, 0xa6, 0x61, 0x33,
-	0xc7, 0xf0, 0x02, 0xa1, 0x4c, 0xa0, 0x9d, 0xb1, 0xb9, 0xcd, 0xe5, 0x4f, 0x12, 0xfc, 0x52, 0x4f,
-	0x27, 0x6d, 0xce, 0xed, 0x06, 0x25, 0x46, 0x93, 0x11, 0xc3, 0x71, 0xb8, 0x27, 0x43, 0x84, 0x7a,
-	0xab, 0xc7, 0x5c, 0xde, 0x46, 0x93, 0x8a, 0x80, 0x4a, 0x78, 0x86, 0xe7, 0x47, 0xef, 0x53, 0xb9,
-	0x23, 0x3e, 0x29, 0x99, 0x36, 0xe1, 0xff, 0xb5, 0xf0, 0x81, 0xa8, 0xd2, 0x75, 0x9f, 0x0a, 0x0f,
-	0x2d, 0x43, 0xd8, 0xa6, 0x1b, 0x07, 0x17, 0xc0, 0xec, 0x48, 0x65, 0x06, 0x87, 0xa5, 0xe0, 0xa0,
-	0x14, 0x2c, 0x4b, 0xc1, 0xaa, 0x14, 0xfc, 0xc0, 0xb0, 0xa9, 0x8a, 0xad, 0x26, 0x22, 0xaf, 0x0f,
-	0xbd, 0xdc, 0x2e, 0xe6, 0x7e, 0x6f, 0x17, 0x73, 0xd3, 0x5b, 0x00, 0xea, 0x91, 0xcb, 0x32, 0x77,
-	0x6b, 0x7e, 0x5d, 0x98, 0x2e, 0x6b, 0x06, 0xaa, 0xc8, 0xb4, 0x00, 0xf3, 0xcc, 0x92, 0x66, 0xfd,
-	0xd5, 0x3c, 0xb3, 0x0e, 0x40, 0xe4, 0x8f, 0x01, 0xe2, 0x05, 0x80, 0x63, 0x09, 0x88, 0x7b, 0xdc,
-	0x8a, 0x02, 0xd0, 0x38, 0x1c, 0x34, 0x2c, 0xcb, 0xa5, 0x42, 0x48, 0x82, 0xe1, 0x6a, 0xf4, 0xf7,
-	0x1f, 0x60, 0x7c, 0x01, 0x70, 0x22, 0x81, 0x71, 0x2b, 0x34, 0xea, 0x4e, 0x52, 0x86, 0x03, 0xe1,
-	0xda, 0x4a, 0x8a, 0x42, 0x65, 0x02, 0xc7, 0x3b, 0x4e, 0x2e, 0x3e, 0x6e, 0x95, 0x71, 0x4d, 0x0a,
-	0xaa, 0x4a, 0x78, 0x00, 0xbe, 0xef, 0x18, 0xe0, 0xe7, 0x60, 0x41, 0xb1, 0x1f, 0xb1, 0x6e, 0x09,
-	0xed, 0x5d, 0x78, 0xf6, 0xbe, 0x63, 0x73, 0xe6, 0xd8, 0xd9, 0x21, 0xc9, 0x9a, 0xf3, 0x1d, 0x35,
-	0x27, 0x92, 0xbd, 0x07, 0x70, 0xb4, 0xbd, 0x4f, 0x45, 0x93, 0x3b, 0x82, 0xa2, 0x9b, 0x70, 0x48,
-	0x6d, 0xe6, 0xa0, 0x5b, 0x7d, 0xb3, 0x23, 0x95, 0x49, 0x9c, 0x32, 0x86, 0x58, 0x05, 0x2e, 0xf5,
-	0xef, 0x7c, 0x2f, 0xe6, 0xaa, 0x71, 0x0c, 0xba, 0x9d, 0xb2, 0xb8, 0x97, 0xbb, 0xf6, 0x27, 0x34,
-	0x3f, 0xa2, 0x41, 0x9f, 0x01, 0x2c, 0x1e, 0xb9, 0xd3, 0x4f, 0x2e, 0xf6, 0x47, 0x00, 0xcf, 0x1d,
-	0x9a, 0x8d, 0x93, 0x8b, 0xfb, 0x09, 0x40, 0x2d, 0x6d, 0x86, 0x4e, 0x2e, 0xf1, 0xa3, 0xf8, 0x98,
-	0x8d, 0x29, 0x6f, 0xc0, 0x41, 0xe5, 0xa8, 0xce, 0xd8, 0x5e, 0x20, 0xa3, 0x90, 0x44, 0xea, 0x27,
-	0x70, 0xec, 0xe0, 0x9c, 0x1d, 0xaf, 0x43, 0xe5, 0xc7, 0x00, 0xfc, 0xef, 0x61, 0x50, 0x71, 0x8d,
-	0xba, 0x2d, 0x66, 0x52, 0xf4, 0x14, 0x0e, 0x45, 0xed, 0x47, 0xa5, 0xac, 0x9c, 0xd1, 0xb9, 0xa6,
-	0x5d, 0xea, 0xa2, 0x0a, 0x89, 0xa7, 0x4f, 0x6d, 0x7d, 0xfd, 0xf5, 0x26, 0x3f, 0x82, 0x86, 0x49,
-	0xbc, 0x18, 0xaf, 0x40, 0xfb, 0x86, 0x52, 0x5b, 0x13, 0xcd, 0x67, 0x66, 0xeb, 0x3c, 0xdc, 0xb5,
-	0x85, 0xde, 0xc4, 0x8a, 0x60, 0x4a, 0x12, 0x9c, 0x47, 0x13, 0xc4, 0xe1, 0x16, 0x15, 0x64, 0x53,
-	0x9d, 0x45, 0xcf, 0xdb, 0x44, 0x1f, 0x3a, 0x87, 0x25, 0x39, 0xe3, 0x68, 0xb1, 0x9b, 0x59, 0xca,
-	0xdd, 0xa7, 0x5d, 0xfb, 0xbb, 0x20, 0x45, 0x5a, 0x92, 0xa4, 0x3a, 0x9a, 0x24, 0x22, 0xf1, 0x5a,
-	0x90, 0x4d, 0x66, 0x25, 0x60, 0xdf, 0x01, 0x88, 0x0e, 0x8f, 0x0a, 0xc2, 0xdd, 0x2c, 0x3b, 0xef,
-	0x25, 0x8d, 0xf4, 0xac, 0x3f, 0x44, 0x67, 0x98, 0x26, 0xf7, 0x1d, 0x2f, 0xb5, 0x95, 0x0d, 0x38,
-	0xa8, 0x72, 0xa0, 0x8b, 0x59, 0x0e, 0x11, 0x46, 0x29, 0x5b, 0xa4, 0xbc, 0xc7, 0xa4, 0xf7, 0x28,
-	0x2a, 0xc4, 0x46, 0xb2, 0x29, 0xe8, 0x2d, 0x80, 0x85, 0xce, 0x51, 0x41, 0x73, 0xa9, 0x09, 0x53,
-	0xef, 0x2d, 0x6d, 0xbe, 0x27, 0xad, 0x62, 0x58, 0x90, 0x0c, 0x33, 0xa8, 0x94, 0x55, 0x3f, 0xe1,
-	0x61, 0xf0, 0xd2, 0x9d, 0x9d, 0x3d, 0x1d, 0xec, 0xee, 0xe9, 0xe0, 0xe7, 0x9e, 0x0e, 0x5e, 0xef,
-	0xeb, 0xb9, 0xdd, 0x7d, 0x3d, 0xf7, 0x6d, 0x5f, 0xcf, 0x3d, 0xbe, 0x6a, 0x33, 0x6f, 0xd5, 0xaf,
-	0x63, 0x93, 0xaf, 0x91, 0xc8, 0xfe, 0x0a, 0x5f, 0x59, 0x61, 0x26, 0x33, 0x1a, 0x64, 0xd5, 0xaf,
-	0x93, 0x67, 0xf1, 0xc7, 0x9d, 0xfc, 0x0e, 0xa8, 0x0f, 0xc8, 0x0f, 0xbb, 0xc5, 0x3f, 0x01, 0x00,
-	0x00, 0xff, 0xff, 0x83, 0x42, 0xa6, 0x6d, 0xb5, 0x0a, 0x00, 0x00,
+	// 754 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xcc, 0x96, 0xcf, 0x4f, 0xd4, 0x5a,
+	0x14, 0xc7, 0xe7, 0x0e, 0x84, 0x1f, 0x97, 0xf7, 0xc8, 0x7b, 0x17, 0xde, 0x13, 0xca, 0xa4, 0x23,
+	0x48, 0x10, 0x88, 0xde, 0x4b, 0x07, 0x17, 0x6a, 0x8c, 0x89, 0x2c, 0x30, 0x71, 0xa1, 0x38, 0xec,
+	0x5c, 0x98, 0x74, 0xda, 0x4b, 0xb9, 0x09, 0xf4, 0x0e, 0xbd, 0xed, 0x44, 0x42, 0xdc, 0xb8, 0x51,
+	0x77, 0x26, 0xee, 0x0d, 0x2b, 0x17, 0xec, 0x4c, 0xdc, 0xb0, 0x72, 0xcb, 0x92, 0xc4, 0x8d, 0x2b,
+	0x63, 0xc0, 0x85, 0x7f, 0x86, 0xe9, 0xed, 0x6d, 0x69, 0x6b, 0x87, 0x19, 0x0c, 0x26, 0xec, 0x66,
+	0xda, 0xf3, 0x3d, 0xe7, 0x73, 0xce, 0x3d, 0xe7, 0x9e, 0xc2, 0x49, 0x41, 0x5d, 0x9f, 0xb9, 0x74,
+	0x83, 0x08, 0x2a, 0x04, 0xe3, 0x2e, 0x69, 0x19, 0x64, 0x2b, 0xa0, 0x1e, 0xa3, 0x1e, 0x6e, 0x7a,
+	0xdc, 0xe7, 0x68, 0x24, 0x36, 0xc1, 0xca, 0x04, 0xb7, 0x0c, 0x6d, 0xde, 0xe2, 0x62, 0x93, 0x0b,
+	0xd2, 0x30, 0x05, 0x95, 0xf6, 0xdb, 0xa4, 0x65, 0x34, 0xa8, 0x6f, 0x1a, 0xa4, 0x69, 0x3a, 0xcc,
+	0x35, 0xfd, 0xd0, 0x50, 0x3a, 0xd0, 0x46, 0x1d, 0xee, 0x70, 0xf9, 0x93, 0x84, 0xbf, 0xd4, 0xd3,
+	0x8a, 0xc3, 0xb9, 0xb3, 0x41, 0x89, 0xd9, 0x64, 0xc4, 0x74, 0x5d, 0xee, 0x4b, 0x89, 0x50, 0x6f,
+	0xf5, 0x84, 0xcb, 0xdf, 0x6e, 0x52, 0x11, 0x52, 0x09, 0xdf, 0xf4, 0x83, 0xf8, 0x7d, 0x21, 0x77,
+	0xcc, 0x27, 0x4d, 0xa6, 0xd6, 0xe1, 0xe8, 0xe3, 0x10, 0x6c, 0x35, 0x7a, 0x2a, 0xea, 0x74, 0x2b,
+	0xa0, 0xc2, 0x47, 0xcb, 0x10, 0x9e, 0x20, 0x8e, 0x81, 0xcb, 0x60, 0x76, 0xa8, 0x36, 0x83, 0xa3,
+	0x7c, 0x70, 0x98, 0x0f, 0x96, 0xf9, 0x60, 0x95, 0x0f, 0x5e, 0x31, 0x1d, 0xaa, 0xb4, 0xf5, 0x94,
+	0xf2, 0xf6, 0xc0, 0xab, 0xdd, 0x6a, 0xe9, 0xc7, 0x6e, 0xb5, 0x34, 0xf5, 0x12, 0xc0, 0x2b, 0x99,
+	0x50, 0xcb, 0xdc, 0x5b, 0x0d, 0x1a, 0xc2, 0xf2, 0x58, 0x33, 0x34, 0x8d, 0x23, 0x0f, 0xc3, 0x32,
+	0xb3, 0x65, 0xc4, 0xde, 0x7a, 0x99, 0xd9, 0x39, 0x92, 0xf2, 0x39, 0x90, 0xbc, 0x06, 0x70, 0x22,
+	0x4f, 0xf2, 0x90, 0xdb, 0xb1, 0x0a, 0x8d, 0xc1, 0x7e, 0xd3, 0xb6, 0x3d, 0x2a, 0x84, 0xc4, 0x18,
+	0xac, 0xc7, 0x7f, 0xff, 0x00, 0xcb, 0x27, 0x00, 0xf5, 0x3c, 0xcb, 0xbd, 0x28, 0x5a, 0x67, 0x1c,
+	0x03, 0xf6, 0x45, 0xe7, 0x2d, 0x51, 0x86, 0x6b, 0xe3, 0x38, 0xe9, 0x42, 0xd9, 0x10, 0xb8, 0x65,
+	0xe0, 0x55, 0x69, 0x50, 0x57, 0x86, 0xb9, 0x0c, 0x7a, 0xce, 0x21, 0x03, 0x02, 0x47, 0xd2, 0x09,
+	0xb4, 0x39, 0xc6, 0x94, 0x60, 0x05, 0x6a, 0x52, 0xf0, 0xc8, 0x75, 0x38, 0x73, 0x9d, 0xd3, 0x75,
+	0xe9, 0xec, 0xcb, 0x99, 0xec, 0x53, 0x1e, 0xf7, 0x00, 0xfc, 0x2f, 0xd7, 0xc5, 0xa2, 0xc9, 0x5d,
+	0x41, 0xd1, 0x5d, 0x38, 0xa0, 0xfa, 0x3d, 0x2c, 0x5e, 0xcf, 0xec, 0x50, 0xad, 0x82, 0x0b, 0x26,
+	0x15, 0x2b, 0xe1, 0x52, 0xef, 0xc1, 0xd7, 0x6a, 0xa9, 0x9e, 0x68, 0xd0, 0xfd, 0x82, 0x03, 0xbf,
+	0xda, 0xb1, 0x5c, 0x51, 0xf0, 0x36, 0xf5, 0xda, 0x07, 0x70, 0xfa, 0xf4, 0x39, 0xb8, 0xb8, 0xec,
+	0x1f, 0x00, 0xac, 0x14, 0x4f, 0xce, 0xc5, 0x65, 0xfe, 0x08, 0x60, 0xb5, 0xed, 0x84, 0x5d, 0x5c,
+	0xec, 0xa7, 0xd9, 0x8b, 0x39, 0x41, 0xbd, 0x03, 0xfb, 0x55, 0x58, 0x75, 0x2b, 0x77, 0x43, 0x1a,
+	0x4b, 0x52, 0xfe, 0xa9, 0xba, 0x03, 0xf3, 0x53, 0x78, 0xbe, 0x61, 0x6a, 0xfb, 0xfd, 0xf0, 0x2f,
+	0x95, 0x87, 0xd7, 0x62, 0x16, 0x45, 0xdb, 0xf0, 0xef, 0xcc, 0x69, 0xa0, 0xb9, 0x42, 0xc7, 0x45,
+	0x4b, 0x49, 0x9b, 0xef, 0xc6, 0x34, 0x4a, 0x60, 0xea, 0xdf, 0x17, 0x9f, 0xbf, 0xbf, 0x2d, 0x0f,
+	0xa1, 0x41, 0x92, 0x9c, 0xd2, 0x3b, 0x90, 0x5b, 0x76, 0xaa, 0x7b, 0xd1, 0x42, 0x67, 0xbf, 0xd9,
+	0x15, 0xa1, 0x19, 0x67, 0x50, 0x28, 0xa0, 0x49, 0x09, 0x34, 0x81, 0xc6, 0x89, 0xcb, 0x6d, 0x2a,
+	0xc8, 0x8e, 0xba, 0xc7, 0x9e, 0x9f, 0x00, 0xee, 0x17, 0x8c, 0x57, 0xfa, 0x6a, 0x40, 0x37, 0xbb,
+	0x0a, 0x5b, 0xb0, 0x55, 0xb5, 0x5b, 0xbf, 0xa1, 0x54, 0xe0, 0xd3, 0x12, 0x5c, 0x47, 0x15, 0x22,
+	0x52, 0xaf, 0x05, 0xd9, 0x61, 0x76, 0x8a, 0x7d, 0x0f, 0xc0, 0x4b, 0x6d, 0xc6, 0x0c, 0x2d, 0x76,
+	0x15, 0x3c, 0xbb, 0xf6, 0xb4, 0x1b, 0x67, 0x13, 0xfd, 0x02, 0x6b, 0x5a, 0x16, 0x0f, 0x5c, 0xbf,
+	0xb0, 0xd0, 0x3b, 0x49, 0x53, 0xca, 0x07, 0x68, 0xb6, 0x63, 0xac, 0x98, 0x6a, 0xae, 0x0b, 0x4b,
+	0x85, 0xf2, 0xbf, 0x44, 0xf9, 0x07, 0x0d, 0x27, 0x71, 0x65, 0xc9, 0xd0, 0x7b, 0xa0, 0x36, 0x66,
+	0x76, 0xf4, 0x10, 0x69, 0xef, 0xba, 0x70, 0x55, 0x6a, 0x0b, 0xdd, 0x0b, 0x14, 0xd2, 0x35, 0x89,
+	0x34, 0x83, 0xa6, 0x4f, 0xab, 0x0e, 0xe1, 0x91, 0x78, 0xe9, 0xc1, 0xc1, 0x91, 0x0e, 0x0e, 0x8f,
+	0x74, 0xf0, 0xed, 0x48, 0x07, 0x6f, 0x8e, 0xf5, 0xd2, 0xe1, 0xb1, 0x5e, 0xfa, 0x72, 0xac, 0x97,
+	0x9e, 0x2c, 0x38, 0xcc, 0x5f, 0x0f, 0x1a, 0xd8, 0xe2, 0x9b, 0x24, 0x66, 0xb8, 0xce, 0xd7, 0xd6,
+	0x98, 0xc5, 0xcc, 0x0d, 0xb2, 0x1e, 0x34, 0xc8, 0xb3, 0xe4, 0x93, 0x53, 0x7e, 0x89, 0x34, 0xfa,
+	0xe4, 0xe7, 0xe6, 0xe2, 0xcf, 0x00, 0x00, 0x00, 0xff, 0xff, 0x2d, 0x20, 0x19, 0x22, 0x4b, 0x0b,
+	0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -564,12 +565,12 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type QueryServiceClient interface {
-	Sessions(ctx context.Context, in *SessionsRequest, opts ...grpc.CallOption) (*SessionsResponse, error)
-	SessionsForNode(ctx context.Context, in *SessionsForNodeRequest, opts ...grpc.CallOption) (*SessionsForNodeResponse, error)
-	SessionsForSubscription(ctx context.Context, in *SessionsForSubscriptionRequest, opts ...grpc.CallOption) (*SessionsForSubscriptionResponse, error)
-	SessionsForAddress(ctx context.Context, in *SessionsForAddressRequest, opts ...grpc.CallOption) (*SessionsForAddressResponse, error)
-	Session(ctx context.Context, in *SessionRequest, opts ...grpc.CallOption) (*SessionResponse, error)
-	OngoingSession(ctx context.Context, in *OngoingSessionRequest, opts ...grpc.CallOption) (*OngoingSessionResponse, error)
+	QuerySessions(ctx context.Context, in *QuerySessionsRequest, opts ...grpc.CallOption) (*QuerySessionsResponse, error)
+	QuerySessionsForNode(ctx context.Context, in *QuerySessionsForNodeRequest, opts ...grpc.CallOption) (*QuerySessionsForNodeResponse, error)
+	QuerySessionsForSubscription(ctx context.Context, in *QuerySessionsForSubscriptionRequest, opts ...grpc.CallOption) (*QuerySessionsForSubscriptionResponse, error)
+	QuerySessionsForAddress(ctx context.Context, in *QuerySessionsForAddressRequest, opts ...grpc.CallOption) (*QuerySessionsForAddressResponse, error)
+	QuerySession(ctx context.Context, in *QuerySessionRequest, opts ...grpc.CallOption) (*QuerySessionResponse, error)
+	QueryOngoingSession(ctx context.Context, in *QueryOngoingSessionRequest, opts ...grpc.CallOption) (*QueryOngoingSessionResponse, error)
 }
 
 type queryServiceClient struct {
@@ -580,54 +581,54 @@ func NewQueryServiceClient(cc grpc1.ClientConn) QueryServiceClient {
 	return &queryServiceClient{cc}
 }
 
-func (c *queryServiceClient) Sessions(ctx context.Context, in *SessionsRequest, opts ...grpc.CallOption) (*SessionsResponse, error) {
-	out := new(SessionsResponse)
-	err := c.cc.Invoke(ctx, "/sentinel.session.v1.QueryService/Sessions", in, out, opts...)
+func (c *queryServiceClient) QuerySessions(ctx context.Context, in *QuerySessionsRequest, opts ...grpc.CallOption) (*QuerySessionsResponse, error) {
+	out := new(QuerySessionsResponse)
+	err := c.cc.Invoke(ctx, "/sentinel.session.v1.QueryService/QuerySessions", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *queryServiceClient) SessionsForNode(ctx context.Context, in *SessionsForNodeRequest, opts ...grpc.CallOption) (*SessionsForNodeResponse, error) {
-	out := new(SessionsForNodeResponse)
-	err := c.cc.Invoke(ctx, "/sentinel.session.v1.QueryService/SessionsForNode", in, out, opts...)
+func (c *queryServiceClient) QuerySessionsForNode(ctx context.Context, in *QuerySessionsForNodeRequest, opts ...grpc.CallOption) (*QuerySessionsForNodeResponse, error) {
+	out := new(QuerySessionsForNodeResponse)
+	err := c.cc.Invoke(ctx, "/sentinel.session.v1.QueryService/QuerySessionsForNode", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *queryServiceClient) SessionsForSubscription(ctx context.Context, in *SessionsForSubscriptionRequest, opts ...grpc.CallOption) (*SessionsForSubscriptionResponse, error) {
-	out := new(SessionsForSubscriptionResponse)
-	err := c.cc.Invoke(ctx, "/sentinel.session.v1.QueryService/SessionsForSubscription", in, out, opts...)
+func (c *queryServiceClient) QuerySessionsForSubscription(ctx context.Context, in *QuerySessionsForSubscriptionRequest, opts ...grpc.CallOption) (*QuerySessionsForSubscriptionResponse, error) {
+	out := new(QuerySessionsForSubscriptionResponse)
+	err := c.cc.Invoke(ctx, "/sentinel.session.v1.QueryService/QuerySessionsForSubscription", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *queryServiceClient) SessionsForAddress(ctx context.Context, in *SessionsForAddressRequest, opts ...grpc.CallOption) (*SessionsForAddressResponse, error) {
-	out := new(SessionsForAddressResponse)
-	err := c.cc.Invoke(ctx, "/sentinel.session.v1.QueryService/SessionsForAddress", in, out, opts...)
+func (c *queryServiceClient) QuerySessionsForAddress(ctx context.Context, in *QuerySessionsForAddressRequest, opts ...grpc.CallOption) (*QuerySessionsForAddressResponse, error) {
+	out := new(QuerySessionsForAddressResponse)
+	err := c.cc.Invoke(ctx, "/sentinel.session.v1.QueryService/QuerySessionsForAddress", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *queryServiceClient) Session(ctx context.Context, in *SessionRequest, opts ...grpc.CallOption) (*SessionResponse, error) {
-	out := new(SessionResponse)
-	err := c.cc.Invoke(ctx, "/sentinel.session.v1.QueryService/Session", in, out, opts...)
+func (c *queryServiceClient) QuerySession(ctx context.Context, in *QuerySessionRequest, opts ...grpc.CallOption) (*QuerySessionResponse, error) {
+	out := new(QuerySessionResponse)
+	err := c.cc.Invoke(ctx, "/sentinel.session.v1.QueryService/QuerySession", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *queryServiceClient) OngoingSession(ctx context.Context, in *OngoingSessionRequest, opts ...grpc.CallOption) (*OngoingSessionResponse, error) {
-	out := new(OngoingSessionResponse)
-	err := c.cc.Invoke(ctx, "/sentinel.session.v1.QueryService/OngoingSession", in, out, opts...)
+func (c *queryServiceClient) QueryOngoingSession(ctx context.Context, in *QueryOngoingSessionRequest, opts ...grpc.CallOption) (*QueryOngoingSessionResponse, error) {
+	out := new(QueryOngoingSessionResponse)
+	err := c.cc.Invoke(ctx, "/sentinel.session.v1.QueryService/QueryOngoingSession", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -636,145 +637,145 @@ func (c *queryServiceClient) OngoingSession(ctx context.Context, in *OngoingSess
 
 // QueryServiceServer is the server API for QueryService service.
 type QueryServiceServer interface {
-	Sessions(context.Context, *SessionsRequest) (*SessionsResponse, error)
-	SessionsForNode(context.Context, *SessionsForNodeRequest) (*SessionsForNodeResponse, error)
-	SessionsForSubscription(context.Context, *SessionsForSubscriptionRequest) (*SessionsForSubscriptionResponse, error)
-	SessionsForAddress(context.Context, *SessionsForAddressRequest) (*SessionsForAddressResponse, error)
-	Session(context.Context, *SessionRequest) (*SessionResponse, error)
-	OngoingSession(context.Context, *OngoingSessionRequest) (*OngoingSessionResponse, error)
+	QuerySessions(context.Context, *QuerySessionsRequest) (*QuerySessionsResponse, error)
+	QuerySessionsForNode(context.Context, *QuerySessionsForNodeRequest) (*QuerySessionsForNodeResponse, error)
+	QuerySessionsForSubscription(context.Context, *QuerySessionsForSubscriptionRequest) (*QuerySessionsForSubscriptionResponse, error)
+	QuerySessionsForAddress(context.Context, *QuerySessionsForAddressRequest) (*QuerySessionsForAddressResponse, error)
+	QuerySession(context.Context, *QuerySessionRequest) (*QuerySessionResponse, error)
+	QueryOngoingSession(context.Context, *QueryOngoingSessionRequest) (*QueryOngoingSessionResponse, error)
 }
 
 // UnimplementedQueryServiceServer can be embedded to have forward compatible implementations.
 type UnimplementedQueryServiceServer struct {
 }
 
-func (*UnimplementedQueryServiceServer) Sessions(ctx context.Context, req *SessionsRequest) (*SessionsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Sessions not implemented")
+func (*UnimplementedQueryServiceServer) QuerySessions(ctx context.Context, req *QuerySessionsRequest) (*QuerySessionsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QuerySessions not implemented")
 }
-func (*UnimplementedQueryServiceServer) SessionsForNode(ctx context.Context, req *SessionsForNodeRequest) (*SessionsForNodeResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SessionsForNode not implemented")
+func (*UnimplementedQueryServiceServer) QuerySessionsForNode(ctx context.Context, req *QuerySessionsForNodeRequest) (*QuerySessionsForNodeResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QuerySessionsForNode not implemented")
 }
-func (*UnimplementedQueryServiceServer) SessionsForSubscription(ctx context.Context, req *SessionsForSubscriptionRequest) (*SessionsForSubscriptionResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SessionsForSubscription not implemented")
+func (*UnimplementedQueryServiceServer) QuerySessionsForSubscription(ctx context.Context, req *QuerySessionsForSubscriptionRequest) (*QuerySessionsForSubscriptionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QuerySessionsForSubscription not implemented")
 }
-func (*UnimplementedQueryServiceServer) SessionsForAddress(ctx context.Context, req *SessionsForAddressRequest) (*SessionsForAddressResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SessionsForAddress not implemented")
+func (*UnimplementedQueryServiceServer) QuerySessionsForAddress(ctx context.Context, req *QuerySessionsForAddressRequest) (*QuerySessionsForAddressResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QuerySessionsForAddress not implemented")
 }
-func (*UnimplementedQueryServiceServer) Session(ctx context.Context, req *SessionRequest) (*SessionResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Session not implemented")
+func (*UnimplementedQueryServiceServer) QuerySession(ctx context.Context, req *QuerySessionRequest) (*QuerySessionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QuerySession not implemented")
 }
-func (*UnimplementedQueryServiceServer) OngoingSession(ctx context.Context, req *OngoingSessionRequest) (*OngoingSessionResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method OngoingSession not implemented")
+func (*UnimplementedQueryServiceServer) QueryOngoingSession(ctx context.Context, req *QueryOngoingSessionRequest) (*QueryOngoingSessionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryOngoingSession not implemented")
 }
 
 func RegisterQueryServiceServer(s grpc1.Server, srv QueryServiceServer) {
 	s.RegisterService(&_QueryService_serviceDesc, srv)
 }
 
-func _QueryService_Sessions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SessionsRequest)
+func _QueryService_QuerySessions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QuerySessionsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QueryServiceServer).Sessions(ctx, in)
+		return srv.(QueryServiceServer).QuerySessions(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/sentinel.session.v1.QueryService/Sessions",
+		FullMethod: "/sentinel.session.v1.QueryService/QuerySessions",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServiceServer).Sessions(ctx, req.(*SessionsRequest))
+		return srv.(QueryServiceServer).QuerySessions(ctx, req.(*QuerySessionsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _QueryService_SessionsForNode_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SessionsForNodeRequest)
+func _QueryService_QuerySessionsForNode_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QuerySessionsForNodeRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QueryServiceServer).SessionsForNode(ctx, in)
+		return srv.(QueryServiceServer).QuerySessionsForNode(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/sentinel.session.v1.QueryService/SessionsForNode",
+		FullMethod: "/sentinel.session.v1.QueryService/QuerySessionsForNode",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServiceServer).SessionsForNode(ctx, req.(*SessionsForNodeRequest))
+		return srv.(QueryServiceServer).QuerySessionsForNode(ctx, req.(*QuerySessionsForNodeRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _QueryService_SessionsForSubscription_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SessionsForSubscriptionRequest)
+func _QueryService_QuerySessionsForSubscription_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QuerySessionsForSubscriptionRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QueryServiceServer).SessionsForSubscription(ctx, in)
+		return srv.(QueryServiceServer).QuerySessionsForSubscription(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/sentinel.session.v1.QueryService/SessionsForSubscription",
+		FullMethod: "/sentinel.session.v1.QueryService/QuerySessionsForSubscription",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServiceServer).SessionsForSubscription(ctx, req.(*SessionsForSubscriptionRequest))
+		return srv.(QueryServiceServer).QuerySessionsForSubscription(ctx, req.(*QuerySessionsForSubscriptionRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _QueryService_SessionsForAddress_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SessionsForAddressRequest)
+func _QueryService_QuerySessionsForAddress_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QuerySessionsForAddressRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QueryServiceServer).SessionsForAddress(ctx, in)
+		return srv.(QueryServiceServer).QuerySessionsForAddress(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/sentinel.session.v1.QueryService/SessionsForAddress",
+		FullMethod: "/sentinel.session.v1.QueryService/QuerySessionsForAddress",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServiceServer).SessionsForAddress(ctx, req.(*SessionsForAddressRequest))
+		return srv.(QueryServiceServer).QuerySessionsForAddress(ctx, req.(*QuerySessionsForAddressRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _QueryService_Session_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SessionRequest)
+func _QueryService_QuerySession_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QuerySessionRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QueryServiceServer).Session(ctx, in)
+		return srv.(QueryServiceServer).QuerySession(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/sentinel.session.v1.QueryService/Session",
+		FullMethod: "/sentinel.session.v1.QueryService/QuerySession",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServiceServer).Session(ctx, req.(*SessionRequest))
+		return srv.(QueryServiceServer).QuerySession(ctx, req.(*QuerySessionRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _QueryService_OngoingSession_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(OngoingSessionRequest)
+func _QueryService_QueryOngoingSession_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryOngoingSessionRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QueryServiceServer).OngoingSession(ctx, in)
+		return srv.(QueryServiceServer).QueryOngoingSession(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/sentinel.session.v1.QueryService/OngoingSession",
+		FullMethod: "/sentinel.session.v1.QueryService/QueryOngoingSession",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServiceServer).OngoingSession(ctx, req.(*OngoingSessionRequest))
+		return srv.(QueryServiceServer).QueryOngoingSession(ctx, req.(*QueryOngoingSessionRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -784,35 +785,35 @@ var _QueryService_serviceDesc = grpc.ServiceDesc{
 	HandlerType: (*QueryServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "Sessions",
-			Handler:    _QueryService_Sessions_Handler,
+			MethodName: "QuerySessions",
+			Handler:    _QueryService_QuerySessions_Handler,
 		},
 		{
-			MethodName: "SessionsForNode",
-			Handler:    _QueryService_SessionsForNode_Handler,
+			MethodName: "QuerySessionsForNode",
+			Handler:    _QueryService_QuerySessionsForNode_Handler,
 		},
 		{
-			MethodName: "SessionsForSubscription",
-			Handler:    _QueryService_SessionsForSubscription_Handler,
+			MethodName: "QuerySessionsForSubscription",
+			Handler:    _QueryService_QuerySessionsForSubscription_Handler,
 		},
 		{
-			MethodName: "SessionsForAddress",
-			Handler:    _QueryService_SessionsForAddress_Handler,
+			MethodName: "QuerySessionsForAddress",
+			Handler:    _QueryService_QuerySessionsForAddress_Handler,
 		},
 		{
-			MethodName: "Session",
-			Handler:    _QueryService_Session_Handler,
+			MethodName: "QuerySession",
+			Handler:    _QueryService_QuerySession_Handler,
 		},
 		{
-			MethodName: "OngoingSession",
-			Handler:    _QueryService_OngoingSession_Handler,
+			MethodName: "QueryOngoingSession",
+			Handler:    _QueryService_QueryOngoingSession_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
 	Metadata: "sentinel/session/v1/querier.proto",
 }
 
-func (m *SessionsRequest) Marshal() (dAtA []byte, err error) {
+func (m *QuerySessionsRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -822,12 +823,12 @@ func (m *SessionsRequest) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *SessionsRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *QuerySessionsRequest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *SessionsRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QuerySessionsRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -847,7 +848,7 @@ func (m *SessionsRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *SessionsForSubscriptionRequest) Marshal() (dAtA []byte, err error) {
+func (m *QuerySessionsForSubscriptionRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -857,12 +858,12 @@ func (m *SessionsForSubscriptionRequest) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *SessionsForSubscriptionRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *QuerySessionsForSubscriptionRequest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *SessionsForSubscriptionRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QuerySessionsForSubscriptionRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -887,7 +888,7 @@ func (m *SessionsForSubscriptionRequest) MarshalToSizedBuffer(dAtA []byte) (int,
 	return len(dAtA) - i, nil
 }
 
-func (m *SessionsForNodeRequest) Marshal() (dAtA []byte, err error) {
+func (m *QuerySessionsForNodeRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -897,12 +898,12 @@ func (m *SessionsForNodeRequest) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *SessionsForNodeRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *QuerySessionsForNodeRequest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *SessionsForNodeRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QuerySessionsForNodeRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -929,7 +930,7 @@ func (m *SessionsForNodeRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) 
 	return len(dAtA) - i, nil
 }
 
-func (m *SessionsForAddressRequest) Marshal() (dAtA []byte, err error) {
+func (m *QuerySessionsForAddressRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -939,12 +940,12 @@ func (m *SessionsForAddressRequest) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *SessionsForAddressRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *QuerySessionsForAddressRequest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *SessionsForAddressRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QuerySessionsForAddressRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -976,7 +977,7 @@ func (m *SessionsForAddressRequest) MarshalToSizedBuffer(dAtA []byte) (int, erro
 	return len(dAtA) - i, nil
 }
 
-func (m *SessionRequest) Marshal() (dAtA []byte, err error) {
+func (m *QuerySessionRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -986,12 +987,12 @@ func (m *SessionRequest) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *SessionRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *QuerySessionRequest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *SessionRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QuerySessionRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1004,7 +1005,7 @@ func (m *SessionRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *OngoingSessionRequest) Marshal() (dAtA []byte, err error) {
+func (m *QueryOngoingSessionRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1014,12 +1015,12 @@ func (m *OngoingSessionRequest) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *OngoingSessionRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryOngoingSessionRequest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *OngoingSessionRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryOngoingSessionRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1039,7 +1040,7 @@ func (m *OngoingSessionRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *SessionsResponse) Marshal() (dAtA []byte, err error) {
+func (m *QuerySessionsResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1049,12 +1050,12 @@ func (m *SessionsResponse) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *SessionsResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *QuerySessionsResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *SessionsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QuerySessionsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1088,7 +1089,7 @@ func (m *SessionsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *SessionsForSubscriptionResponse) Marshal() (dAtA []byte, err error) {
+func (m *QuerySessionsForSubscriptionResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1098,12 +1099,12 @@ func (m *SessionsForSubscriptionResponse) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *SessionsForSubscriptionResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *QuerySessionsForSubscriptionResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *SessionsForSubscriptionResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QuerySessionsForSubscriptionResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1137,7 +1138,7 @@ func (m *SessionsForSubscriptionResponse) MarshalToSizedBuffer(dAtA []byte) (int
 	return len(dAtA) - i, nil
 }
 
-func (m *SessionsForNodeResponse) Marshal() (dAtA []byte, err error) {
+func (m *QuerySessionsForNodeResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1147,12 +1148,12 @@ func (m *SessionsForNodeResponse) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *SessionsForNodeResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *QuerySessionsForNodeResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *SessionsForNodeResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QuerySessionsForNodeResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1186,7 +1187,7 @@ func (m *SessionsForNodeResponse) MarshalToSizedBuffer(dAtA []byte) (int, error)
 	return len(dAtA) - i, nil
 }
 
-func (m *SessionsForAddressResponse) Marshal() (dAtA []byte, err error) {
+func (m *QuerySessionsForAddressResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1196,12 +1197,12 @@ func (m *SessionsForAddressResponse) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *SessionsForAddressResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *QuerySessionsForAddressResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *SessionsForAddressResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QuerySessionsForAddressResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1235,7 +1236,7 @@ func (m *SessionsForAddressResponse) MarshalToSizedBuffer(dAtA []byte) (int, err
 	return len(dAtA) - i, nil
 }
 
-func (m *SessionResponse) Marshal() (dAtA []byte, err error) {
+func (m *QuerySessionResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1245,12 +1246,12 @@ func (m *SessionResponse) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *SessionResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *QuerySessionResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *SessionResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QuerySessionResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1268,7 +1269,7 @@ func (m *SessionResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *OngoingSessionResponse) Marshal() (dAtA []byte, err error) {
+func (m *QueryOngoingSessionResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1278,12 +1279,12 @@ func (m *OngoingSessionResponse) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *OngoingSessionResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryOngoingSessionResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *OngoingSessionResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryOngoingSessionResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1312,7 +1313,7 @@ func encodeVarintQuerier(dAtA []byte, offset int, v uint64) int {
 	dAtA[offset] = uint8(v)
 	return base
 }
-func (m *SessionsRequest) Size() (n int) {
+func (m *QuerySessionsRequest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1325,7 +1326,7 @@ func (m *SessionsRequest) Size() (n int) {
 	return n
 }
 
-func (m *SessionsForSubscriptionRequest) Size() (n int) {
+func (m *QuerySessionsForSubscriptionRequest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1341,7 +1342,7 @@ func (m *SessionsForSubscriptionRequest) Size() (n int) {
 	return n
 }
 
-func (m *SessionsForNodeRequest) Size() (n int) {
+func (m *QuerySessionsForNodeRequest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1358,7 +1359,7 @@ func (m *SessionsForNodeRequest) Size() (n int) {
 	return n
 }
 
-func (m *SessionsForAddressRequest) Size() (n int) {
+func (m *QuerySessionsForAddressRequest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1378,7 +1379,7 @@ func (m *SessionsForAddressRequest) Size() (n int) {
 	return n
 }
 
-func (m *SessionRequest) Size() (n int) {
+func (m *QuerySessionRequest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1390,7 +1391,7 @@ func (m *SessionRequest) Size() (n int) {
 	return n
 }
 
-func (m *OngoingSessionRequest) Size() (n int) {
+func (m *QueryOngoingSessionRequest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1406,7 +1407,7 @@ func (m *OngoingSessionRequest) Size() (n int) {
 	return n
 }
 
-func (m *SessionsResponse) Size() (n int) {
+func (m *QuerySessionsResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1425,7 +1426,7 @@ func (m *SessionsResponse) Size() (n int) {
 	return n
 }
 
-func (m *SessionsForSubscriptionResponse) Size() (n int) {
+func (m *QuerySessionsForSubscriptionResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1444,7 +1445,7 @@ func (m *SessionsForSubscriptionResponse) Size() (n int) {
 	return n
 }
 
-func (m *SessionsForNodeResponse) Size() (n int) {
+func (m *QuerySessionsForNodeResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1463,7 +1464,7 @@ func (m *SessionsForNodeResponse) Size() (n int) {
 	return n
 }
 
-func (m *SessionsForAddressResponse) Size() (n int) {
+func (m *QuerySessionsForAddressResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1482,7 +1483,7 @@ func (m *SessionsForAddressResponse) Size() (n int) {
 	return n
 }
 
-func (m *SessionResponse) Size() (n int) {
+func (m *QuerySessionResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1493,7 +1494,7 @@ func (m *SessionResponse) Size() (n int) {
 	return n
 }
 
-func (m *OngoingSessionResponse) Size() (n int) {
+func (m *QueryOngoingSessionResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1510,7 +1511,7 @@ func sovQuerier(x uint64) (n int) {
 func sozQuerier(x uint64) (n int) {
 	return sovQuerier(uint64((x << 1) ^ uint64((int64(x) >> 63))))
 }
-func (m *SessionsRequest) Unmarshal(dAtA []byte) error {
+func (m *QuerySessionsRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1533,10 +1534,10 @@ func (m *SessionsRequest) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: SessionsRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: QuerySessionsRequest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: SessionsRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QuerySessionsRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -1596,7 +1597,7 @@ func (m *SessionsRequest) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *SessionsForSubscriptionRequest) Unmarshal(dAtA []byte) error {
+func (m *QuerySessionsForSubscriptionRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1619,10 +1620,10 @@ func (m *SessionsForSubscriptionRequest) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: SessionsForSubscriptionRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: QuerySessionsForSubscriptionRequest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: SessionsForSubscriptionRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QuerySessionsForSubscriptionRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -1701,7 +1702,7 @@ func (m *SessionsForSubscriptionRequest) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *SessionsForNodeRequest) Unmarshal(dAtA []byte) error {
+func (m *QuerySessionsForNodeRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1724,10 +1725,10 @@ func (m *SessionsForNodeRequest) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: SessionsForNodeRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: QuerySessionsForNodeRequest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: SessionsForNodeRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QuerySessionsForNodeRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -1819,7 +1820,7 @@ func (m *SessionsForNodeRequest) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *SessionsForAddressRequest) Unmarshal(dAtA []byte) error {
+func (m *QuerySessionsForAddressRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1842,10 +1843,10 @@ func (m *SessionsForAddressRequest) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: SessionsForAddressRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: QuerySessionsForAddressRequest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: SessionsForAddressRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QuerySessionsForAddressRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -1956,7 +1957,7 @@ func (m *SessionsForAddressRequest) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *SessionRequest) Unmarshal(dAtA []byte) error {
+func (m *QuerySessionRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1979,10 +1980,10 @@ func (m *SessionRequest) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: SessionRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: QuerySessionRequest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: SessionRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QuerySessionRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -2025,7 +2026,7 @@ func (m *SessionRequest) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *OngoingSessionRequest) Unmarshal(dAtA []byte) error {
+func (m *QueryOngoingSessionRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -2048,10 +2049,10 @@ func (m *OngoingSessionRequest) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: OngoingSessionRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryOngoingSessionRequest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: OngoingSessionRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryOngoingSessionRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -2126,7 +2127,7 @@ func (m *OngoingSessionRequest) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *SessionsResponse) Unmarshal(dAtA []byte) error {
+func (m *QuerySessionsResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -2149,10 +2150,10 @@ func (m *SessionsResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: SessionsResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: QuerySessionsResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: SessionsResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QuerySessionsResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -2246,7 +2247,7 @@ func (m *SessionsResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *SessionsForSubscriptionResponse) Unmarshal(dAtA []byte) error {
+func (m *QuerySessionsForSubscriptionResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -2269,10 +2270,10 @@ func (m *SessionsForSubscriptionResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: SessionsForSubscriptionResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: QuerySessionsForSubscriptionResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: SessionsForSubscriptionResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QuerySessionsForSubscriptionResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -2366,7 +2367,7 @@ func (m *SessionsForSubscriptionResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *SessionsForNodeResponse) Unmarshal(dAtA []byte) error {
+func (m *QuerySessionsForNodeResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -2389,10 +2390,10 @@ func (m *SessionsForNodeResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: SessionsForNodeResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: QuerySessionsForNodeResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: SessionsForNodeResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QuerySessionsForNodeResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -2486,7 +2487,7 @@ func (m *SessionsForNodeResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *SessionsForAddressResponse) Unmarshal(dAtA []byte) error {
+func (m *QuerySessionsForAddressResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -2509,10 +2510,10 @@ func (m *SessionsForAddressResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: SessionsForAddressResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: QuerySessionsForAddressResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: SessionsForAddressResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QuerySessionsForAddressResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -2606,7 +2607,7 @@ func (m *SessionsForAddressResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *SessionResponse) Unmarshal(dAtA []byte) error {
+func (m *QuerySessionResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -2629,10 +2630,10 @@ func (m *SessionResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: SessionResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: QuerySessionResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: SessionResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QuerySessionResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -2689,7 +2690,7 @@ func (m *SessionResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *OngoingSessionResponse) Unmarshal(dAtA []byte) error {
+func (m *QueryOngoingSessionResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -2712,10 +2713,10 @@ func (m *OngoingSessionResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: OngoingSessionResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryOngoingSessionResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: OngoingSessionResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryOngoingSessionResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:

@@ -1,6 +1,8 @@
 package types
 
 import (
+	"github.com/cosmos/cosmos-sdk/types/query"
+
 	hub "github.com/sentinel-official/hub/types"
 )
 
@@ -10,42 +12,23 @@ const (
 	QueryNodesForProvider = "NodesForProvider"
 )
 
-type QueryNodeParams struct {
-	Address hub.NodeAddress `json:"address"`
-}
-
-func NewQueryNodeParams(address hub.NodeAddress) QueryNodeParams {
-	return QueryNodeParams{
+func NewQueryNodeRequest(address string) QueryNodeRequest {
+	return QueryNodeRequest{
 		Address: address,
 	}
 }
 
-type QueryNodesParams struct {
-	Status hub.Status `json:"status"`
-	Skip   int        `json:"skip"`
-	Limit  int        `json:"limit"`
-}
-
-func NewQueryNodesParams(status hub.Status, skip, limit int) QueryNodesParams {
-	return QueryNodesParams{
-		Status: status,
-		Skip:   skip,
-		Limit:  limit,
+func NewQueryNodesRequest(status hub.Status, pagination *query.PageRequest) QueryNodesRequest {
+	return QueryNodesRequest{
+		Status:     status,
+		Pagination: pagination,
 	}
 }
 
-type QueryNodesForProviderParams struct {
-	Address hub.ProvAddress `json:"address"`
-	Status  hub.Status      `json:"status"`
-	Skip    int             `json:"skip"`
-	Limit   int             `json:"limit"`
-}
-
-func NewQueryNodesForProviderParams(address hub.ProvAddress, status hub.Status, skip, limit int) QueryNodesForProviderParams {
-	return QueryNodesForProviderParams{
-		Address: address,
-		Status:  status,
-		Skip:    skip,
-		Limit:   limit,
+func NewQueryNodesForProviderRequest(address string, status hub.Status, pagination *query.PageRequest) QueryNodesForProviderRequest {
+	return QueryNodesForProviderRequest{
+		Address:    address,
+		Status:     status,
+		Pagination: pagination,
 	}
 }

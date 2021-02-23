@@ -32,23 +32,23 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
-type PlansRequest struct {
+type QueryPlansRequest struct {
 	Status     types.Status       `protobuf:"varint,1,opt,name=status,proto3,enum=sentinel.types.v1.Status" json:"status,omitempty"`
 	Pagination *query.PageRequest `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
 }
 
-func (m *PlansRequest) Reset()         { *m = PlansRequest{} }
-func (m *PlansRequest) String() string { return proto.CompactTextString(m) }
-func (*PlansRequest) ProtoMessage()    {}
-func (*PlansRequest) Descriptor() ([]byte, []int) {
+func (m *QueryPlansRequest) Reset()         { *m = QueryPlansRequest{} }
+func (m *QueryPlansRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryPlansRequest) ProtoMessage()    {}
+func (*QueryPlansRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_63578d2f68a06f20, []int{0}
 }
-func (m *PlansRequest) XXX_Unmarshal(b []byte) error {
+func (m *QueryPlansRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *PlansRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryPlansRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_PlansRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryPlansRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -58,36 +58,36 @@ func (m *PlansRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error)
 		return b[:n], nil
 	}
 }
-func (m *PlansRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_PlansRequest.Merge(m, src)
+func (m *QueryPlansRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryPlansRequest.Merge(m, src)
 }
-func (m *PlansRequest) XXX_Size() int {
+func (m *QueryPlansRequest) XXX_Size() int {
 	return m.Size()
 }
-func (m *PlansRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_PlansRequest.DiscardUnknown(m)
+func (m *QueryPlansRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryPlansRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_PlansRequest proto.InternalMessageInfo
+var xxx_messageInfo_QueryPlansRequest proto.InternalMessageInfo
 
-type PlansForProviderRequest struct {
+type QueryPlansForProviderRequest struct {
 	Address    string             `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
 	Status     types.Status       `protobuf:"varint,2,opt,name=status,proto3,enum=sentinel.types.v1.Status" json:"status,omitempty"`
 	Pagination *query.PageRequest `protobuf:"bytes,3,opt,name=pagination,proto3" json:"pagination,omitempty"`
 }
 
-func (m *PlansForProviderRequest) Reset()         { *m = PlansForProviderRequest{} }
-func (m *PlansForProviderRequest) String() string { return proto.CompactTextString(m) }
-func (*PlansForProviderRequest) ProtoMessage()    {}
-func (*PlansForProviderRequest) Descriptor() ([]byte, []int) {
+func (m *QueryPlansForProviderRequest) Reset()         { *m = QueryPlansForProviderRequest{} }
+func (m *QueryPlansForProviderRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryPlansForProviderRequest) ProtoMessage()    {}
+func (*QueryPlansForProviderRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_63578d2f68a06f20, []int{1}
 }
-func (m *PlansForProviderRequest) XXX_Unmarshal(b []byte) error {
+func (m *QueryPlansForProviderRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *PlansForProviderRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryPlansForProviderRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_PlansForProviderRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryPlansForProviderRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -97,34 +97,34 @@ func (m *PlansForProviderRequest) XXX_Marshal(b []byte, deterministic bool) ([]b
 		return b[:n], nil
 	}
 }
-func (m *PlansForProviderRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_PlansForProviderRequest.Merge(m, src)
+func (m *QueryPlansForProviderRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryPlansForProviderRequest.Merge(m, src)
 }
-func (m *PlansForProviderRequest) XXX_Size() int {
+func (m *QueryPlansForProviderRequest) XXX_Size() int {
 	return m.Size()
 }
-func (m *PlansForProviderRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_PlansForProviderRequest.DiscardUnknown(m)
+func (m *QueryPlansForProviderRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryPlansForProviderRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_PlansForProviderRequest proto.InternalMessageInfo
+var xxx_messageInfo_QueryPlansForProviderRequest proto.InternalMessageInfo
 
-type PlanRequest struct {
+type QueryPlanRequest struct {
 	Id uint64 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 }
 
-func (m *PlanRequest) Reset()         { *m = PlanRequest{} }
-func (m *PlanRequest) String() string { return proto.CompactTextString(m) }
-func (*PlanRequest) ProtoMessage()    {}
-func (*PlanRequest) Descriptor() ([]byte, []int) {
+func (m *QueryPlanRequest) Reset()         { *m = QueryPlanRequest{} }
+func (m *QueryPlanRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryPlanRequest) ProtoMessage()    {}
+func (*QueryPlanRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_63578d2f68a06f20, []int{2}
 }
-func (m *PlanRequest) XXX_Unmarshal(b []byte) error {
+func (m *QueryPlanRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *PlanRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryPlanRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_PlanRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryPlanRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -134,35 +134,35 @@ func (m *PlanRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) 
 		return b[:n], nil
 	}
 }
-func (m *PlanRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_PlanRequest.Merge(m, src)
+func (m *QueryPlanRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryPlanRequest.Merge(m, src)
 }
-func (m *PlanRequest) XXX_Size() int {
+func (m *QueryPlanRequest) XXX_Size() int {
 	return m.Size()
 }
-func (m *PlanRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_PlanRequest.DiscardUnknown(m)
+func (m *QueryPlanRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryPlanRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_PlanRequest proto.InternalMessageInfo
+var xxx_messageInfo_QueryPlanRequest proto.InternalMessageInfo
 
-type NodesForPlanRequest struct {
+type QueryNodesForPlanRequest struct {
 	Id         uint64             `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 	Pagination *query.PageRequest `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
 }
 
-func (m *NodesForPlanRequest) Reset()         { *m = NodesForPlanRequest{} }
-func (m *NodesForPlanRequest) String() string { return proto.CompactTextString(m) }
-func (*NodesForPlanRequest) ProtoMessage()    {}
-func (*NodesForPlanRequest) Descriptor() ([]byte, []int) {
+func (m *QueryNodesForPlanRequest) Reset()         { *m = QueryNodesForPlanRequest{} }
+func (m *QueryNodesForPlanRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryNodesForPlanRequest) ProtoMessage()    {}
+func (*QueryNodesForPlanRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_63578d2f68a06f20, []int{3}
 }
-func (m *NodesForPlanRequest) XXX_Unmarshal(b []byte) error {
+func (m *QueryNodesForPlanRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *NodesForPlanRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryNodesForPlanRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_NodesForPlanRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryNodesForPlanRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -172,35 +172,35 @@ func (m *NodesForPlanRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte,
 		return b[:n], nil
 	}
 }
-func (m *NodesForPlanRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_NodesForPlanRequest.Merge(m, src)
+func (m *QueryNodesForPlanRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryNodesForPlanRequest.Merge(m, src)
 }
-func (m *NodesForPlanRequest) XXX_Size() int {
+func (m *QueryNodesForPlanRequest) XXX_Size() int {
 	return m.Size()
 }
-func (m *NodesForPlanRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_NodesForPlanRequest.DiscardUnknown(m)
+func (m *QueryNodesForPlanRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryNodesForPlanRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_NodesForPlanRequest proto.InternalMessageInfo
+var xxx_messageInfo_QueryNodesForPlanRequest proto.InternalMessageInfo
 
-type PlansResponse struct {
+type QueryPlansResponse struct {
 	Plans      []Plan              `protobuf:"bytes,1,rep,name=plans,proto3" json:"plans"`
 	Pagination *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
 }
 
-func (m *PlansResponse) Reset()         { *m = PlansResponse{} }
-func (m *PlansResponse) String() string { return proto.CompactTextString(m) }
-func (*PlansResponse) ProtoMessage()    {}
-func (*PlansResponse) Descriptor() ([]byte, []int) {
+func (m *QueryPlansResponse) Reset()         { *m = QueryPlansResponse{} }
+func (m *QueryPlansResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryPlansResponse) ProtoMessage()    {}
+func (*QueryPlansResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_63578d2f68a06f20, []int{4}
 }
-func (m *PlansResponse) XXX_Unmarshal(b []byte) error {
+func (m *QueryPlansResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *PlansResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryPlansResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_PlansResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryPlansResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -210,35 +210,35 @@ func (m *PlansResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error
 		return b[:n], nil
 	}
 }
-func (m *PlansResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_PlansResponse.Merge(m, src)
+func (m *QueryPlansResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryPlansResponse.Merge(m, src)
 }
-func (m *PlansResponse) XXX_Size() int {
+func (m *QueryPlansResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *PlansResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_PlansResponse.DiscardUnknown(m)
+func (m *QueryPlansResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryPlansResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_PlansResponse proto.InternalMessageInfo
+var xxx_messageInfo_QueryPlansResponse proto.InternalMessageInfo
 
-type PlansForProviderResponse struct {
+type QueryPlansForProviderResponse struct {
 	Plans      []Plan              `protobuf:"bytes,1,rep,name=plans,proto3" json:"plans"`
 	Pagination *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
 }
 
-func (m *PlansForProviderResponse) Reset()         { *m = PlansForProviderResponse{} }
-func (m *PlansForProviderResponse) String() string { return proto.CompactTextString(m) }
-func (*PlansForProviderResponse) ProtoMessage()    {}
-func (*PlansForProviderResponse) Descriptor() ([]byte, []int) {
+func (m *QueryPlansForProviderResponse) Reset()         { *m = QueryPlansForProviderResponse{} }
+func (m *QueryPlansForProviderResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryPlansForProviderResponse) ProtoMessage()    {}
+func (*QueryPlansForProviderResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_63578d2f68a06f20, []int{5}
 }
-func (m *PlansForProviderResponse) XXX_Unmarshal(b []byte) error {
+func (m *QueryPlansForProviderResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *PlansForProviderResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryPlansForProviderResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_PlansForProviderResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryPlansForProviderResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -248,34 +248,34 @@ func (m *PlansForProviderResponse) XXX_Marshal(b []byte, deterministic bool) ([]
 		return b[:n], nil
 	}
 }
-func (m *PlansForProviderResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_PlansForProviderResponse.Merge(m, src)
+func (m *QueryPlansForProviderResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryPlansForProviderResponse.Merge(m, src)
 }
-func (m *PlansForProviderResponse) XXX_Size() int {
+func (m *QueryPlansForProviderResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *PlansForProviderResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_PlansForProviderResponse.DiscardUnknown(m)
+func (m *QueryPlansForProviderResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryPlansForProviderResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_PlansForProviderResponse proto.InternalMessageInfo
+var xxx_messageInfo_QueryPlansForProviderResponse proto.InternalMessageInfo
 
-type PlanResponse struct {
+type QueryPlanResponse struct {
 	Plan Plan `protobuf:"bytes,1,opt,name=plan,proto3" json:"plan"`
 }
 
-func (m *PlanResponse) Reset()         { *m = PlanResponse{} }
-func (m *PlanResponse) String() string { return proto.CompactTextString(m) }
-func (*PlanResponse) ProtoMessage()    {}
-func (*PlanResponse) Descriptor() ([]byte, []int) {
+func (m *QueryPlanResponse) Reset()         { *m = QueryPlanResponse{} }
+func (m *QueryPlanResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryPlanResponse) ProtoMessage()    {}
+func (*QueryPlanResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_63578d2f68a06f20, []int{6}
 }
-func (m *PlanResponse) XXX_Unmarshal(b []byte) error {
+func (m *QueryPlanResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *PlanResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryPlanResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_PlanResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryPlanResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -285,35 +285,35 @@ func (m *PlanResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error)
 		return b[:n], nil
 	}
 }
-func (m *PlanResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_PlanResponse.Merge(m, src)
+func (m *QueryPlanResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryPlanResponse.Merge(m, src)
 }
-func (m *PlanResponse) XXX_Size() int {
+func (m *QueryPlanResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *PlanResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_PlanResponse.DiscardUnknown(m)
+func (m *QueryPlanResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryPlanResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_PlanResponse proto.InternalMessageInfo
+var xxx_messageInfo_QueryPlanResponse proto.InternalMessageInfo
 
-type NodesForPlanResponse struct {
+type QueryNodesForPlanResponse struct {
 	Nodes      []types1.Node       `protobuf:"bytes,1,rep,name=nodes,proto3" json:"nodes"`
 	Pagination *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
 }
 
-func (m *NodesForPlanResponse) Reset()         { *m = NodesForPlanResponse{} }
-func (m *NodesForPlanResponse) String() string { return proto.CompactTextString(m) }
-func (*NodesForPlanResponse) ProtoMessage()    {}
-func (*NodesForPlanResponse) Descriptor() ([]byte, []int) {
+func (m *QueryNodesForPlanResponse) Reset()         { *m = QueryNodesForPlanResponse{} }
+func (m *QueryNodesForPlanResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryNodesForPlanResponse) ProtoMessage()    {}
+func (*QueryNodesForPlanResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_63578d2f68a06f20, []int{7}
 }
-func (m *NodesForPlanResponse) XXX_Unmarshal(b []byte) error {
+func (m *QueryNodesForPlanResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *NodesForPlanResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryNodesForPlanResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_NodesForPlanResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryNodesForPlanResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -323,74 +323,75 @@ func (m *NodesForPlanResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte
 		return b[:n], nil
 	}
 }
-func (m *NodesForPlanResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_NodesForPlanResponse.Merge(m, src)
+func (m *QueryNodesForPlanResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryNodesForPlanResponse.Merge(m, src)
 }
-func (m *NodesForPlanResponse) XXX_Size() int {
+func (m *QueryNodesForPlanResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *NodesForPlanResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_NodesForPlanResponse.DiscardUnknown(m)
+func (m *QueryNodesForPlanResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryNodesForPlanResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_NodesForPlanResponse proto.InternalMessageInfo
+var xxx_messageInfo_QueryNodesForPlanResponse proto.InternalMessageInfo
 
 func init() {
-	proto.RegisterType((*PlansRequest)(nil), "sentinel.plan.v1.PlansRequest")
-	proto.RegisterType((*PlansForProviderRequest)(nil), "sentinel.plan.v1.PlansForProviderRequest")
-	proto.RegisterType((*PlanRequest)(nil), "sentinel.plan.v1.PlanRequest")
-	proto.RegisterType((*NodesForPlanRequest)(nil), "sentinel.plan.v1.NodesForPlanRequest")
-	proto.RegisterType((*PlansResponse)(nil), "sentinel.plan.v1.PlansResponse")
-	proto.RegisterType((*PlansForProviderResponse)(nil), "sentinel.plan.v1.PlansForProviderResponse")
-	proto.RegisterType((*PlanResponse)(nil), "sentinel.plan.v1.PlanResponse")
-	proto.RegisterType((*NodesForPlanResponse)(nil), "sentinel.plan.v1.NodesForPlanResponse")
+	proto.RegisterType((*QueryPlansRequest)(nil), "sentinel.plan.v1.QueryPlansRequest")
+	proto.RegisterType((*QueryPlansForProviderRequest)(nil), "sentinel.plan.v1.QueryPlansForProviderRequest")
+	proto.RegisterType((*QueryPlanRequest)(nil), "sentinel.plan.v1.QueryPlanRequest")
+	proto.RegisterType((*QueryNodesForPlanRequest)(nil), "sentinel.plan.v1.QueryNodesForPlanRequest")
+	proto.RegisterType((*QueryPlansResponse)(nil), "sentinel.plan.v1.QueryPlansResponse")
+	proto.RegisterType((*QueryPlansForProviderResponse)(nil), "sentinel.plan.v1.QueryPlansForProviderResponse")
+	proto.RegisterType((*QueryPlanResponse)(nil), "sentinel.plan.v1.QueryPlanResponse")
+	proto.RegisterType((*QueryNodesForPlanResponse)(nil), "sentinel.plan.v1.QueryNodesForPlanResponse")
 }
 
 func init() { proto.RegisterFile("sentinel/plan/v1/querier.proto", fileDescriptor_63578d2f68a06f20) }
 
 var fileDescriptor_63578d2f68a06f20 = []byte{
-	// 652 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xcc, 0x95, 0xcf, 0x4f, 0x13, 0x41,
-	0x14, 0xc7, 0x3b, 0xa5, 0x20, 0x4e, 0x81, 0xe0, 0x40, 0xb4, 0xac, 0xb8, 0x25, 0x4d, 0x04, 0x24,
-	0x61, 0xc6, 0xad, 0x37, 0x8f, 0x1c, 0x20, 0xf1, 0x60, 0x70, 0xb9, 0x18, 0x6e, 0xd3, 0xee, 0xb0,
-	0x4c, 0x52, 0x76, 0x96, 0x9d, 0xed, 0x0a, 0x21, 0x5c, 0x3c, 0x79, 0x31, 0x31, 0x21, 0xf1, 0x66,
-	0x82, 0xff, 0x85, 0x7f, 0x02, 0x27, 0x43, 0xe2, 0xc5, 0x93, 0x31, 0xe0, 0xc1, 0x3f, 0xc3, 0xcc,
-	0x8f, 0x85, 0x95, 0xb6, 0xc1, 0x18, 0x49, 0x3c, 0xb1, 0xf4, 0x7d, 0xdf, 0xfb, 0x7e, 0xde, 0x7b,
-	0xbb, 0x33, 0xd0, 0x95, 0x2c, 0x4a, 0x79, 0xc4, 0x3a, 0x24, 0xee, 0xd0, 0x88, 0x64, 0x1e, 0xd9,
-	0xed, 0xb2, 0x84, 0xb3, 0x04, 0xc7, 0x89, 0x48, 0x05, 0x9a, 0xcc, 0xe3, 0x58, 0xc5, 0x71, 0xe6,
-	0x39, 0x4b, 0x6d, 0x21, 0x77, 0x84, 0x24, 0x2d, 0x2a, 0x99, 0x16, 0xef, 0x93, 0xcc, 0x6b, 0xb1,
-	0x94, 0x7a, 0x24, 0xa6, 0x21, 0x8f, 0x68, 0xca, 0x45, 0x64, 0xb2, 0x9d, 0xe9, 0x50, 0x84, 0x42,
-	0x3f, 0x12, 0xf5, 0x64, 0x7f, 0x9d, 0x0d, 0x85, 0x08, 0x3b, 0x8c, 0xd0, 0x98, 0x13, 0x1a, 0x45,
-	0x22, 0xd5, 0x29, 0xd2, 0x46, 0xef, 0x5f, 0x10, 0x45, 0x22, 0x60, 0x8a, 0x48, 0xfd, 0xed, 0x09,
-	0xe6, 0xb8, 0x1a, 0xcb, 0x04, 0x2f, 0x7b, 0x49, 0xf7, 0x63, 0x26, 0x55, 0x54, 0xa6, 0x34, 0xed,
-	0xda, 0xca, 0x8d, 0x23, 0x00, 0xc7, 0xd6, 0x3b, 0x34, 0x92, 0x3e, 0xdb, 0xed, 0x32, 0x99, 0x22,
-	0x0f, 0x8e, 0x18, 0x41, 0x0d, 0xcc, 0x81, 0xc5, 0x89, 0xe6, 0x0c, 0xbe, 0xe8, 0x56, 0x57, 0xc0,
-	0x99, 0x87, 0x37, 0xb4, 0xc0, 0xb7, 0x42, 0xb4, 0x0a, 0xe1, 0x65, 0x97, 0xb5, 0xf2, 0x1c, 0x58,
-	0xac, 0x36, 0xe7, 0xb1, 0x19, 0x09, 0x56, 0x23, 0xc1, 0x7a, 0x24, 0xd8, 0x8e, 0x04, 0xaf, 0xd3,
-	0x90, 0x59, 0x3b, 0xbf, 0x90, 0xf9, 0x74, 0xf4, 0xcd, 0x71, 0xbd, 0xf4, 0xf3, 0xb8, 0x5e, 0x6a,
-	0x7c, 0x02, 0xf0, 0x9e, 0xa6, 0x5a, 0x15, 0xc9, 0x7a, 0x22, 0x32, 0x1e, 0xb0, 0x24, 0x07, 0xac,
-	0xc1, 0x5b, 0x34, 0x08, 0x12, 0x26, 0x0d, 0xe1, 0x6d, 0x3f, 0xff, 0xb7, 0x80, 0x5e, 0xfe, 0x3b,
-	0xf4, 0xa1, 0x7f, 0x80, 0xbe, 0x00, 0xab, 0x8a, 0x3c, 0xa7, 0x9d, 0x80, 0x65, 0x1e, 0x68, 0xd0,
-	0x8a, 0x5f, 0xe6, 0x41, 0x41, 0xf8, 0x0a, 0x4e, 0x3d, 0x17, 0x01, 0xd3, 0x2d, 0x0e, 0x4e, 0xb8,
-	0x81, 0xe1, 0xbe, 0x07, 0x70, 0xdc, 0xae, 0x5c, 0xc6, 0x22, 0x92, 0x0c, 0x35, 0xe1, 0xb0, 0x7a,
-	0x65, 0xd4, 0x40, 0x87, 0x16, 0xab, 0xcd, 0xbb, 0xf8, 0xea, 0x0b, 0x8e, 0x95, 0x7e, 0xa5, 0x72,
-	0xf2, 0xad, 0x5e, 0xf2, 0x8d, 0x14, 0xad, 0xf5, 0xe1, 0x5a, 0xb8, 0x96, 0xcb, 0x18, 0x0e, 0x00,
-	0xfb, 0x08, 0x60, 0xad, 0x77, 0xeb, 0xff, 0x17, 0xe3, 0x33, 0xf3, 0xb9, 0x5c, 0x60, 0x3d, 0x86,
-	0x15, 0xe5, 0xa5, 0x17, 0x76, 0x1d, 0x95, 0x56, 0x16, 0x6a, 0x7d, 0x00, 0x70, 0xfa, 0xf7, 0x57,
-	0xe0, 0xb2, 0x57, 0xf5, 0x7d, 0xf7, 0xe9, 0x55, 0x7f, 0xf6, 0x99, 0x87, 0x55, 0x5a, 0xde, 0xab,
-	0x96, 0xde, 0x40, 0xaf, 0xcd, 0xcf, 0x43, 0x70, 0xec, 0x85, 0x4a, 0xda, 0x60, 0x49, 0xc6, 0xdb,
-	0x0c, 0xbd, 0x84, 0xc3, 0x7a, 0x3f, 0xc8, 0xed, 0xdf, 0x67, 0x7e, 0x88, 0x38, 0xf5, 0x81, 0x71,
-	0x63, 0xd8, 0x98, 0x78, 0xfd, 0xe5, 0xc7, 0x51, 0x79, 0x14, 0x8d, 0x10, 0xb3, 0xa9, 0xb7, 0x00,
-	0x4e, 0x5e, 0x5d, 0x3d, 0x7a, 0x34, 0xa0, 0x4a, 0xef, 0xa1, 0xe0, 0x2c, 0xfd, 0x89, 0xd4, 0x7a,
-	0x37, 0xb4, 0xf7, 0x2c, 0x72, 0x48, 0x6c, 0x43, 0x92, 0x1c, 0xd8, 0x33, 0xe4, 0xd0, 0xf2, 0x6c,
-	0xc2, 0x8a, 0xca, 0x47, 0x0f, 0xfa, 0xd7, 0xcd, 0x6d, 0xdd, 0x41, 0x61, 0x6b, 0x35, 0xa5, 0xad,
-	0xc6, 0x51, 0xd5, 0x94, 0x25, 0x07, 0x3c, 0x38, 0x44, 0x7b, 0x70, 0xac, 0xb8, 0x75, 0xf4, 0xb0,
-	0xb7, 0x48, 0x9f, 0x83, 0xc1, 0x99, 0xbf, 0x4e, 0x66, 0x3d, 0x67, 0xb4, 0xe7, 0x14, 0xba, 0x53,
-	0xf0, 0xd4, 0xd7, 0x85, 0x5c, 0x59, 0x3b, 0x39, 0x73, 0xc1, 0xe9, 0x99, 0x0b, 0xbe, 0x9f, 0xb9,
-	0xe0, 0xdd, 0xb9, 0x5b, 0x3a, 0x3d, 0x77, 0x4b, 0x5f, 0xcf, 0xdd, 0xd2, 0xe6, 0x72, 0xc8, 0xd3,
-	0xed, 0x6e, 0x0b, 0xb7, 0xc5, 0x0e, 0xc9, 0x6d, 0x96, 0xc5, 0xd6, 0x16, 0x6f, 0x73, 0xda, 0x21,
-	0xdb, 0xdd, 0x16, 0xd9, 0x33, 0xb7, 0x8b, 0x3e, 0x48, 0x5b, 0x23, 0xfa, 0xf2, 0x78, 0xf2, 0x2b,
-	0x00, 0x00, 0xff, 0xff, 0x99, 0xa0, 0x33, 0xe5, 0x2a, 0x07, 0x00, 0x00,
+	// 657 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xcc, 0x95, 0xbf, 0x4f, 0x14, 0x41,
+	0x14, 0xc7, 0x77, 0x8e, 0x13, 0x61, 0x50, 0x02, 0x83, 0x9a, 0x63, 0xc5, 0x85, 0x1c, 0x46, 0x09,
+	0xca, 0x8c, 0x7b, 0x76, 0x96, 0x14, 0xd0, 0x29, 0x2e, 0x9d, 0xdd, 0xdc, 0xed, 0xb0, 0x4c, 0x72,
+	0xec, 0x2c, 0x3b, 0x7b, 0x1b, 0x09, 0xd2, 0xd8, 0x68, 0x62, 0x63, 0x62, 0x63, 0xa2, 0x05, 0xb1,
+	0xf0, 0xbf, 0xb0, 0xa7, 0x24, 0xb1, 0xb1, 0x32, 0xe6, 0xce, 0xc2, 0x3f, 0xc3, 0xcc, 0xec, 0xec,
+	0xdd, 0xc6, 0xfb, 0x01, 0x31, 0x92, 0x58, 0xdd, 0xdc, 0xbd, 0xef, 0x7b, 0xef, 0xf3, 0xde, 0xbc,
+	0x7b, 0x03, 0x1d, 0xc9, 0xc2, 0x84, 0x87, 0xac, 0x49, 0xa2, 0x26, 0x0d, 0x49, 0xea, 0x92, 0xfd,
+	0x16, 0x8b, 0x39, 0x8b, 0x71, 0x14, 0x8b, 0x44, 0xa0, 0x99, 0xdc, 0x8e, 0x95, 0x1d, 0xa7, 0xae,
+	0xbd, 0xda, 0x10, 0x72, 0x4f, 0x48, 0x52, 0xa7, 0x92, 0x69, 0xf1, 0x01, 0x49, 0xdd, 0x3a, 0x4b,
+	0xa8, 0x4b, 0x22, 0x1a, 0xf0, 0x90, 0x26, 0x5c, 0x84, 0x99, 0xb7, 0x7d, 0x2d, 0x10, 0x81, 0xd0,
+	0x47, 0xa2, 0x4e, 0xe6, 0xd7, 0x85, 0x40, 0x88, 0xa0, 0xc9, 0x08, 0x8d, 0x38, 0xa1, 0x61, 0x28,
+	0x12, 0xed, 0x22, 0x8d, 0xf5, 0x66, 0x97, 0x28, 0x14, 0x3e, 0x53, 0x44, 0xea, 0xb3, 0xcf, 0x98,
+	0xe3, 0x6a, 0xac, 0xcc, 0xd8, 0xab, 0x25, 0x39, 0x88, 0x98, 0x54, 0x56, 0x99, 0xd0, 0xa4, 0x65,
+	0x22, 0x57, 0xdf, 0x03, 0x38, 0xfb, 0x54, 0x01, 0x6f, 0x35, 0x69, 0x28, 0x3d, 0xb6, 0xdf, 0x62,
+	0x32, 0x41, 0x2e, 0x1c, 0xcf, 0x54, 0x15, 0xb0, 0x04, 0x56, 0xa6, 0x6b, 0xf3, 0xb8, 0x5b, 0xb2,
+	0x0e, 0x83, 0x53, 0x17, 0x6f, 0x6b, 0x81, 0x67, 0x84, 0x68, 0x03, 0xc2, 0x5e, 0xa9, 0x95, 0xd2,
+	0x12, 0x58, 0x99, 0xaa, 0xdd, 0xc1, 0x59, 0x5f, 0xb0, 0xea, 0x0b, 0xd6, 0x7d, 0xc1, 0xa6, 0x2f,
+	0x78, 0x8b, 0x06, 0xcc, 0xa4, 0xf3, 0x0a, 0x9e, 0x8f, 0x26, 0x5e, 0x1f, 0x2f, 0x5a, 0xbf, 0x8e,
+	0x17, 0xad, 0xea, 0x17, 0x00, 0x17, 0x7a, 0x68, 0x1b, 0x22, 0xde, 0x8a, 0x45, 0xca, 0x7d, 0x16,
+	0xe7, 0x94, 0x15, 0x78, 0x99, 0xfa, 0x7e, 0xcc, 0x64, 0x86, 0x39, 0xe9, 0xe5, 0x5f, 0x0b, 0xfc,
+	0xa5, 0xbf, 0xe3, 0x1f, 0xfb, 0x07, 0xfc, 0xf7, 0xe1, 0x4c, 0x17, 0x3f, 0x47, 0x9e, 0x86, 0x25,
+	0xee, 0x6b, 0xda, 0xb2, 0x57, 0xe2, 0x7e, 0x41, 0xfd, 0x02, 0x56, 0xb4, 0xfa, 0xb1, 0xf0, 0x99,
+	0x2e, 0x76, 0xb8, 0xd7, 0x05, 0xf4, 0xfa, 0x03, 0x80, 0xa8, 0x38, 0x06, 0x32, 0x12, 0xa1, 0x64,
+	0xa8, 0x06, 0x2f, 0xa9, 0x59, 0x52, 0xfd, 0x1d, 0x5b, 0x99, 0xaa, 0xdd, 0xc0, 0x7f, 0x4e, 0x3e,
+	0x56, 0xfa, 0xf5, 0xf2, 0xc9, 0xf7, 0x45, 0xcb, 0xcb, 0xa4, 0x68, 0x73, 0x00, 0xdc, 0xdd, 0x33,
+	0xe1, 0xb2, 0x84, 0x43, 0xe8, 0x3e, 0x03, 0x78, 0x6b, 0xc8, 0x24, 0xfc, 0x5f, 0xa0, 0x4f, 0x0a,
+	0x7f, 0xa6, 0x2e, 0xdb, 0x03, 0x58, 0x56, 0x09, 0xf5, 0xfd, 0x9d, 0x85, 0xa6, 0x95, 0x85, 0x80,
+	0x9f, 0x00, 0x9c, 0x1f, 0x30, 0x16, 0xbd, 0xaa, 0xd5, 0x1e, 0x18, 0x50, 0xb5, 0x5e, 0x0f, 0xa9,
+	0x8b, 0x95, 0x5b, 0x5e, 0xb5, 0x96, 0x5e, 0x40, 0xd5, 0xb5, 0x37, 0x65, 0x78, 0x45, 0x43, 0x6e,
+	0xb3, 0x38, 0xe5, 0x0d, 0x86, 0x02, 0x08, 0x7b, 0xd7, 0x85, 0x96, 0xfb, 0x2b, 0xee, 0xdb, 0x38,
+	0xf6, 0xed, 0xd1, 0xa2, 0x2c, 0x7f, 0x75, 0xfa, 0xe5, 0xd7, 0x9f, 0xef, 0x4a, 0x13, 0x68, 0x9c,
+	0x64, 0x57, 0xf8, 0x11, 0xc0, 0xeb, 0x03, 0x07, 0x03, 0xe1, 0x51, 0xf1, 0xfa, 0x77, 0x89, 0x4d,
+	0xce, 0xad, 0x37, 0x28, 0x55, 0x8d, 0xb2, 0x80, 0x6c, 0x12, 0x19, 0x93, 0x24, 0x87, 0x66, 0xff,
+	0x1c, 0x19, 0x3c, 0x0e, 0x27, 0xbb, 0x41, 0x50, 0x75, 0x44, 0x86, 0x9c, 0x62, 0x79, 0xa4, 0xc6,
+	0x64, 0x9e, 0xd3, 0x99, 0xaf, 0xa2, 0xa9, 0x2c, 0x0b, 0x39, 0xe4, 0xfe, 0x11, 0x7a, 0x95, 0xef,
+	0xf1, 0xe2, 0xa0, 0xa0, 0xd5, 0x21, 0xf1, 0x06, 0x2c, 0x19, 0xfb, 0xde, 0xb9, 0xb4, 0x86, 0x61,
+	0x5e, 0x33, 0xcc, 0xa1, 0xd9, 0x02, 0x83, 0x7e, 0x93, 0xe4, 0xfa, 0xe6, 0x49, 0xdb, 0x01, 0xa7,
+	0x6d, 0x07, 0xfc, 0x68, 0x3b, 0xe0, 0x6d, 0xc7, 0xb1, 0x4e, 0x3b, 0x8e, 0xf5, 0xad, 0xe3, 0x58,
+	0xcf, 0xd6, 0x02, 0x9e, 0xec, 0xb6, 0xea, 0xb8, 0x21, 0xf6, 0x48, 0x9e, 0x6b, 0x4d, 0xec, 0xec,
+	0xf0, 0x06, 0xa7, 0x4d, 0xb2, 0xdb, 0xaa, 0x93, 0xe7, 0xd9, 0x13, 0xa6, 0x77, 0x74, 0x7d, 0x5c,
+	0xbf, 0x50, 0x0f, 0x7f, 0x07, 0x00, 0x00, 0xff, 0xff, 0xe2, 0x35, 0x08, 0x8f, 0x8f, 0x07, 0x00,
+	0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -405,10 +406,10 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type QueryServiceClient interface {
-	Plans(ctx context.Context, in *PlansRequest, opts ...grpc.CallOption) (*PlansResponse, error)
-	PlansForProvider(ctx context.Context, in *PlansForProviderRequest, opts ...grpc.CallOption) (*PlansForProviderResponse, error)
-	Plan(ctx context.Context, in *PlanRequest, opts ...grpc.CallOption) (*PlanResponse, error)
-	NodesForPlan(ctx context.Context, in *NodesForPlanRequest, opts ...grpc.CallOption) (*NodesForPlanResponse, error)
+	QueryPlans(ctx context.Context, in *QueryPlansRequest, opts ...grpc.CallOption) (*QueryPlansResponse, error)
+	QueryPlansForProvider(ctx context.Context, in *QueryPlansForProviderRequest, opts ...grpc.CallOption) (*QueryPlansForProviderResponse, error)
+	QueryPlan(ctx context.Context, in *QueryPlanRequest, opts ...grpc.CallOption) (*QueryPlanResponse, error)
+	QueryNodesForPlan(ctx context.Context, in *QueryNodesForPlanRequest, opts ...grpc.CallOption) (*QueryNodesForPlanResponse, error)
 }
 
 type queryServiceClient struct {
@@ -419,36 +420,36 @@ func NewQueryServiceClient(cc grpc1.ClientConn) QueryServiceClient {
 	return &queryServiceClient{cc}
 }
 
-func (c *queryServiceClient) Plans(ctx context.Context, in *PlansRequest, opts ...grpc.CallOption) (*PlansResponse, error) {
-	out := new(PlansResponse)
-	err := c.cc.Invoke(ctx, "/sentinel.plan.v1.QueryService/Plans", in, out, opts...)
+func (c *queryServiceClient) QueryPlans(ctx context.Context, in *QueryPlansRequest, opts ...grpc.CallOption) (*QueryPlansResponse, error) {
+	out := new(QueryPlansResponse)
+	err := c.cc.Invoke(ctx, "/sentinel.plan.v1.QueryService/QueryPlans", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *queryServiceClient) PlansForProvider(ctx context.Context, in *PlansForProviderRequest, opts ...grpc.CallOption) (*PlansForProviderResponse, error) {
-	out := new(PlansForProviderResponse)
-	err := c.cc.Invoke(ctx, "/sentinel.plan.v1.QueryService/PlansForProvider", in, out, opts...)
+func (c *queryServiceClient) QueryPlansForProvider(ctx context.Context, in *QueryPlansForProviderRequest, opts ...grpc.CallOption) (*QueryPlansForProviderResponse, error) {
+	out := new(QueryPlansForProviderResponse)
+	err := c.cc.Invoke(ctx, "/sentinel.plan.v1.QueryService/QueryPlansForProvider", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *queryServiceClient) Plan(ctx context.Context, in *PlanRequest, opts ...grpc.CallOption) (*PlanResponse, error) {
-	out := new(PlanResponse)
-	err := c.cc.Invoke(ctx, "/sentinel.plan.v1.QueryService/Plan", in, out, opts...)
+func (c *queryServiceClient) QueryPlan(ctx context.Context, in *QueryPlanRequest, opts ...grpc.CallOption) (*QueryPlanResponse, error) {
+	out := new(QueryPlanResponse)
+	err := c.cc.Invoke(ctx, "/sentinel.plan.v1.QueryService/QueryPlan", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *queryServiceClient) NodesForPlan(ctx context.Context, in *NodesForPlanRequest, opts ...grpc.CallOption) (*NodesForPlanResponse, error) {
-	out := new(NodesForPlanResponse)
-	err := c.cc.Invoke(ctx, "/sentinel.plan.v1.QueryService/NodesForPlan", in, out, opts...)
+func (c *queryServiceClient) QueryNodesForPlan(ctx context.Context, in *QueryNodesForPlanRequest, opts ...grpc.CallOption) (*QueryNodesForPlanResponse, error) {
+	out := new(QueryNodesForPlanResponse)
+	err := c.cc.Invoke(ctx, "/sentinel.plan.v1.QueryService/QueryNodesForPlan", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -457,101 +458,101 @@ func (c *queryServiceClient) NodesForPlan(ctx context.Context, in *NodesForPlanR
 
 // QueryServiceServer is the server API for QueryService service.
 type QueryServiceServer interface {
-	Plans(context.Context, *PlansRequest) (*PlansResponse, error)
-	PlansForProvider(context.Context, *PlansForProviderRequest) (*PlansForProviderResponse, error)
-	Plan(context.Context, *PlanRequest) (*PlanResponse, error)
-	NodesForPlan(context.Context, *NodesForPlanRequest) (*NodesForPlanResponse, error)
+	QueryPlans(context.Context, *QueryPlansRequest) (*QueryPlansResponse, error)
+	QueryPlansForProvider(context.Context, *QueryPlansForProviderRequest) (*QueryPlansForProviderResponse, error)
+	QueryPlan(context.Context, *QueryPlanRequest) (*QueryPlanResponse, error)
+	QueryNodesForPlan(context.Context, *QueryNodesForPlanRequest) (*QueryNodesForPlanResponse, error)
 }
 
 // UnimplementedQueryServiceServer can be embedded to have forward compatible implementations.
 type UnimplementedQueryServiceServer struct {
 }
 
-func (*UnimplementedQueryServiceServer) Plans(ctx context.Context, req *PlansRequest) (*PlansResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Plans not implemented")
+func (*UnimplementedQueryServiceServer) QueryPlans(ctx context.Context, req *QueryPlansRequest) (*QueryPlansResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryPlans not implemented")
 }
-func (*UnimplementedQueryServiceServer) PlansForProvider(ctx context.Context, req *PlansForProviderRequest) (*PlansForProviderResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method PlansForProvider not implemented")
+func (*UnimplementedQueryServiceServer) QueryPlansForProvider(ctx context.Context, req *QueryPlansForProviderRequest) (*QueryPlansForProviderResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryPlansForProvider not implemented")
 }
-func (*UnimplementedQueryServiceServer) Plan(ctx context.Context, req *PlanRequest) (*PlanResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Plan not implemented")
+func (*UnimplementedQueryServiceServer) QueryPlan(ctx context.Context, req *QueryPlanRequest) (*QueryPlanResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryPlan not implemented")
 }
-func (*UnimplementedQueryServiceServer) NodesForPlan(ctx context.Context, req *NodesForPlanRequest) (*NodesForPlanResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method NodesForPlan not implemented")
+func (*UnimplementedQueryServiceServer) QueryNodesForPlan(ctx context.Context, req *QueryNodesForPlanRequest) (*QueryNodesForPlanResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryNodesForPlan not implemented")
 }
 
 func RegisterQueryServiceServer(s grpc1.Server, srv QueryServiceServer) {
 	s.RegisterService(&_QueryService_serviceDesc, srv)
 }
 
-func _QueryService_Plans_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(PlansRequest)
+func _QueryService_QueryPlans_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryPlansRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QueryServiceServer).Plans(ctx, in)
+		return srv.(QueryServiceServer).QueryPlans(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/sentinel.plan.v1.QueryService/Plans",
+		FullMethod: "/sentinel.plan.v1.QueryService/QueryPlans",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServiceServer).Plans(ctx, req.(*PlansRequest))
+		return srv.(QueryServiceServer).QueryPlans(ctx, req.(*QueryPlansRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _QueryService_PlansForProvider_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(PlansForProviderRequest)
+func _QueryService_QueryPlansForProvider_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryPlansForProviderRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QueryServiceServer).PlansForProvider(ctx, in)
+		return srv.(QueryServiceServer).QueryPlansForProvider(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/sentinel.plan.v1.QueryService/PlansForProvider",
+		FullMethod: "/sentinel.plan.v1.QueryService/QueryPlansForProvider",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServiceServer).PlansForProvider(ctx, req.(*PlansForProviderRequest))
+		return srv.(QueryServiceServer).QueryPlansForProvider(ctx, req.(*QueryPlansForProviderRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _QueryService_Plan_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(PlanRequest)
+func _QueryService_QueryPlan_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryPlanRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QueryServiceServer).Plan(ctx, in)
+		return srv.(QueryServiceServer).QueryPlan(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/sentinel.plan.v1.QueryService/Plan",
+		FullMethod: "/sentinel.plan.v1.QueryService/QueryPlan",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServiceServer).Plan(ctx, req.(*PlanRequest))
+		return srv.(QueryServiceServer).QueryPlan(ctx, req.(*QueryPlanRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _QueryService_NodesForPlan_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(NodesForPlanRequest)
+func _QueryService_QueryNodesForPlan_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryNodesForPlanRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QueryServiceServer).NodesForPlan(ctx, in)
+		return srv.(QueryServiceServer).QueryNodesForPlan(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/sentinel.plan.v1.QueryService/NodesForPlan",
+		FullMethod: "/sentinel.plan.v1.QueryService/QueryNodesForPlan",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServiceServer).NodesForPlan(ctx, req.(*NodesForPlanRequest))
+		return srv.(QueryServiceServer).QueryNodesForPlan(ctx, req.(*QueryNodesForPlanRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -561,27 +562,27 @@ var _QueryService_serviceDesc = grpc.ServiceDesc{
 	HandlerType: (*QueryServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "Plans",
-			Handler:    _QueryService_Plans_Handler,
+			MethodName: "QueryPlans",
+			Handler:    _QueryService_QueryPlans_Handler,
 		},
 		{
-			MethodName: "PlansForProvider",
-			Handler:    _QueryService_PlansForProvider_Handler,
+			MethodName: "QueryPlansForProvider",
+			Handler:    _QueryService_QueryPlansForProvider_Handler,
 		},
 		{
-			MethodName: "Plan",
-			Handler:    _QueryService_Plan_Handler,
+			MethodName: "QueryPlan",
+			Handler:    _QueryService_QueryPlan_Handler,
 		},
 		{
-			MethodName: "NodesForPlan",
-			Handler:    _QueryService_NodesForPlan_Handler,
+			MethodName: "QueryNodesForPlan",
+			Handler:    _QueryService_QueryNodesForPlan_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
 	Metadata: "sentinel/plan/v1/querier.proto",
 }
 
-func (m *PlansRequest) Marshal() (dAtA []byte, err error) {
+func (m *QueryPlansRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -591,12 +592,12 @@ func (m *PlansRequest) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *PlansRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryPlansRequest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *PlansRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryPlansRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -621,7 +622,7 @@ func (m *PlansRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *PlansForProviderRequest) Marshal() (dAtA []byte, err error) {
+func (m *QueryPlansForProviderRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -631,12 +632,12 @@ func (m *PlansForProviderRequest) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *PlansForProviderRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryPlansForProviderRequest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *PlansForProviderRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryPlansForProviderRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -668,7 +669,7 @@ func (m *PlansForProviderRequest) MarshalToSizedBuffer(dAtA []byte) (int, error)
 	return len(dAtA) - i, nil
 }
 
-func (m *PlanRequest) Marshal() (dAtA []byte, err error) {
+func (m *QueryPlanRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -678,12 +679,12 @@ func (m *PlanRequest) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *PlanRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryPlanRequest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *PlanRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryPlanRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -696,7 +697,7 @@ func (m *PlanRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *NodesForPlanRequest) Marshal() (dAtA []byte, err error) {
+func (m *QueryNodesForPlanRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -706,12 +707,12 @@ func (m *NodesForPlanRequest) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *NodesForPlanRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryNodesForPlanRequest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *NodesForPlanRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryNodesForPlanRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -736,7 +737,7 @@ func (m *NodesForPlanRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *PlansResponse) Marshal() (dAtA []byte, err error) {
+func (m *QueryPlansResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -746,12 +747,12 @@ func (m *PlansResponse) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *PlansResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryPlansResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *PlansResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryPlansResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -785,7 +786,7 @@ func (m *PlansResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *PlansForProviderResponse) Marshal() (dAtA []byte, err error) {
+func (m *QueryPlansForProviderResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -795,12 +796,12 @@ func (m *PlansForProviderResponse) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *PlansForProviderResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryPlansForProviderResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *PlansForProviderResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryPlansForProviderResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -834,7 +835,7 @@ func (m *PlansForProviderResponse) MarshalToSizedBuffer(dAtA []byte) (int, error
 	return len(dAtA) - i, nil
 }
 
-func (m *PlanResponse) Marshal() (dAtA []byte, err error) {
+func (m *QueryPlanResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -844,12 +845,12 @@ func (m *PlanResponse) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *PlanResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryPlanResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *PlanResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryPlanResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -867,7 +868,7 @@ func (m *PlanResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *NodesForPlanResponse) Marshal() (dAtA []byte, err error) {
+func (m *QueryNodesForPlanResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -877,12 +878,12 @@ func (m *NodesForPlanResponse) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *NodesForPlanResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryNodesForPlanResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *NodesForPlanResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryNodesForPlanResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -927,7 +928,7 @@ func encodeVarintQuerier(dAtA []byte, offset int, v uint64) int {
 	dAtA[offset] = uint8(v)
 	return base
 }
-func (m *PlansRequest) Size() (n int) {
+func (m *QueryPlansRequest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -943,7 +944,7 @@ func (m *PlansRequest) Size() (n int) {
 	return n
 }
 
-func (m *PlansForProviderRequest) Size() (n int) {
+func (m *QueryPlansForProviderRequest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -963,7 +964,7 @@ func (m *PlansForProviderRequest) Size() (n int) {
 	return n
 }
 
-func (m *PlanRequest) Size() (n int) {
+func (m *QueryPlanRequest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -975,7 +976,7 @@ func (m *PlanRequest) Size() (n int) {
 	return n
 }
 
-func (m *NodesForPlanRequest) Size() (n int) {
+func (m *QueryNodesForPlanRequest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -991,7 +992,7 @@ func (m *NodesForPlanRequest) Size() (n int) {
 	return n
 }
 
-func (m *PlansResponse) Size() (n int) {
+func (m *QueryPlansResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1010,7 +1011,7 @@ func (m *PlansResponse) Size() (n int) {
 	return n
 }
 
-func (m *PlansForProviderResponse) Size() (n int) {
+func (m *QueryPlansForProviderResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1029,7 +1030,7 @@ func (m *PlansForProviderResponse) Size() (n int) {
 	return n
 }
 
-func (m *PlanResponse) Size() (n int) {
+func (m *QueryPlanResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1040,7 +1041,7 @@ func (m *PlanResponse) Size() (n int) {
 	return n
 }
 
-func (m *NodesForPlanResponse) Size() (n int) {
+func (m *QueryNodesForPlanResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1065,7 +1066,7 @@ func sovQuerier(x uint64) (n int) {
 func sozQuerier(x uint64) (n int) {
 	return sovQuerier(uint64((x << 1) ^ uint64((int64(x) >> 63))))
 }
-func (m *PlansRequest) Unmarshal(dAtA []byte) error {
+func (m *QueryPlansRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1088,10 +1089,10 @@ func (m *PlansRequest) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: PlansRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryPlansRequest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: PlansRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryPlansRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -1170,7 +1171,7 @@ func (m *PlansRequest) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *PlansForProviderRequest) Unmarshal(dAtA []byte) error {
+func (m *QueryPlansForProviderRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1193,10 +1194,10 @@ func (m *PlansForProviderRequest) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: PlansForProviderRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryPlansForProviderRequest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: PlansForProviderRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryPlansForProviderRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -1307,7 +1308,7 @@ func (m *PlansForProviderRequest) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *PlanRequest) Unmarshal(dAtA []byte) error {
+func (m *QueryPlanRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1330,10 +1331,10 @@ func (m *PlanRequest) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: PlanRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryPlanRequest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: PlanRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryPlanRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -1376,7 +1377,7 @@ func (m *PlanRequest) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *NodesForPlanRequest) Unmarshal(dAtA []byte) error {
+func (m *QueryNodesForPlanRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1399,10 +1400,10 @@ func (m *NodesForPlanRequest) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: NodesForPlanRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryNodesForPlanRequest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: NodesForPlanRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryNodesForPlanRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -1481,7 +1482,7 @@ func (m *NodesForPlanRequest) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *PlansResponse) Unmarshal(dAtA []byte) error {
+func (m *QueryPlansResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1504,10 +1505,10 @@ func (m *PlansResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: PlansResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryPlansResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: PlansResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryPlansResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -1601,7 +1602,7 @@ func (m *PlansResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *PlansForProviderResponse) Unmarshal(dAtA []byte) error {
+func (m *QueryPlansForProviderResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1624,10 +1625,10 @@ func (m *PlansForProviderResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: PlansForProviderResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryPlansForProviderResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: PlansForProviderResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryPlansForProviderResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -1721,7 +1722,7 @@ func (m *PlansForProviderResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *PlanResponse) Unmarshal(dAtA []byte) error {
+func (m *QueryPlanResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1744,10 +1745,10 @@ func (m *PlanResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: PlanResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryPlanResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: PlanResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryPlanResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -1804,7 +1805,7 @@ func (m *PlanResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *NodesForPlanResponse) Unmarshal(dAtA []byte) error {
+func (m *QueryNodesForPlanResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1827,10 +1828,10 @@ func (m *NodesForPlanResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: NodesForPlanResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryNodesForPlanResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: NodesForPlanResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryNodesForPlanResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:

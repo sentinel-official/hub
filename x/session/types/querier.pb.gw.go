@@ -32,47 +32,47 @@ var _ = utilities.NewDoubleArray
 var _ = descriptor.ForMessage
 
 var (
-	filter_QueryService_Sessions_0 = &utilities.DoubleArray{Encoding: map[string]int{}, Base: []int(nil), Check: []int(nil)}
+	filter_QueryService_QuerySessions_0 = &utilities.DoubleArray{Encoding: map[string]int{}, Base: []int(nil), Check: []int(nil)}
 )
 
-func request_QueryService_Sessions_0(ctx context.Context, marshaler runtime.Marshaler, client QueryServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq SessionsRequest
+func request_QueryService_QuerySessions_0(ctx context.Context, marshaler runtime.Marshaler, client QueryServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq QuerySessionsRequest
 	var metadata runtime.ServerMetadata
 
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_QueryService_Sessions_0); err != nil {
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_QueryService_QuerySessions_0); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
-	msg, err := client.Sessions(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	msg, err := client.QuerySessions(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
 }
 
-func local_request_QueryService_Sessions_0(ctx context.Context, marshaler runtime.Marshaler, server QueryServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq SessionsRequest
+func local_request_QueryService_QuerySessions_0(ctx context.Context, marshaler runtime.Marshaler, server QueryServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq QuerySessionsRequest
 	var metadata runtime.ServerMetadata
 
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_QueryService_Sessions_0); err != nil {
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_QueryService_QuerySessions_0); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
-	msg, err := server.Sessions(ctx, &protoReq)
+	msg, err := server.QuerySessions(ctx, &protoReq)
 	return msg, metadata, err
 
 }
 
 var (
-	filter_QueryService_SessionsForNode_0 = &utilities.DoubleArray{Encoding: map[string]int{"address": 0}, Base: []int{1, 1, 0}, Check: []int{0, 1, 2}}
+	filter_QueryService_QuerySessionsForNode_0 = &utilities.DoubleArray{Encoding: map[string]int{"address": 0}, Base: []int{1, 1, 0}, Check: []int{0, 1, 2}}
 )
 
-func request_QueryService_SessionsForNode_0(ctx context.Context, marshaler runtime.Marshaler, client QueryServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq SessionsForNodeRequest
+func request_QueryService_QuerySessionsForNode_0(ctx context.Context, marshaler runtime.Marshaler, client QueryServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq QuerySessionsForNodeRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -96,17 +96,17 @@ func request_QueryService_SessionsForNode_0(ctx context.Context, marshaler runti
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_QueryService_SessionsForNode_0); err != nil {
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_QueryService_QuerySessionsForNode_0); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
-	msg, err := client.SessionsForNode(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	msg, err := client.QuerySessionsForNode(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
 }
 
-func local_request_QueryService_SessionsForNode_0(ctx context.Context, marshaler runtime.Marshaler, server QueryServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq SessionsForNodeRequest
+func local_request_QueryService_QuerySessionsForNode_0(ctx context.Context, marshaler runtime.Marshaler, server QueryServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq QuerySessionsForNodeRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -130,21 +130,21 @@ func local_request_QueryService_SessionsForNode_0(ctx context.Context, marshaler
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_QueryService_SessionsForNode_0); err != nil {
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_QueryService_QuerySessionsForNode_0); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
-	msg, err := server.SessionsForNode(ctx, &protoReq)
+	msg, err := server.QuerySessionsForNode(ctx, &protoReq)
 	return msg, metadata, err
 
 }
 
 var (
-	filter_QueryService_SessionsForSubscription_0 = &utilities.DoubleArray{Encoding: map[string]int{"id": 0}, Base: []int{1, 1, 0}, Check: []int{0, 1, 2}}
+	filter_QueryService_QuerySessionsForSubscription_0 = &utilities.DoubleArray{Encoding: map[string]int{"id": 0}, Base: []int{1, 1, 0}, Check: []int{0, 1, 2}}
 )
 
-func request_QueryService_SessionsForSubscription_0(ctx context.Context, marshaler runtime.Marshaler, client QueryServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq SessionsForSubscriptionRequest
+func request_QueryService_QuerySessionsForSubscription_0(ctx context.Context, marshaler runtime.Marshaler, client QueryServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq QuerySessionsForSubscriptionRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -168,17 +168,17 @@ func request_QueryService_SessionsForSubscription_0(ctx context.Context, marshal
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_QueryService_SessionsForSubscription_0); err != nil {
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_QueryService_QuerySessionsForSubscription_0); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
-	msg, err := client.SessionsForSubscription(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	msg, err := client.QuerySessionsForSubscription(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
 }
 
-func local_request_QueryService_SessionsForSubscription_0(ctx context.Context, marshaler runtime.Marshaler, server QueryServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq SessionsForSubscriptionRequest
+func local_request_QueryService_QuerySessionsForSubscription_0(ctx context.Context, marshaler runtime.Marshaler, server QueryServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq QuerySessionsForSubscriptionRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -202,21 +202,21 @@ func local_request_QueryService_SessionsForSubscription_0(ctx context.Context, m
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_QueryService_SessionsForSubscription_0); err != nil {
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_QueryService_QuerySessionsForSubscription_0); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
-	msg, err := server.SessionsForSubscription(ctx, &protoReq)
+	msg, err := server.QuerySessionsForSubscription(ctx, &protoReq)
 	return msg, metadata, err
 
 }
 
 var (
-	filter_QueryService_SessionsForAddress_0 = &utilities.DoubleArray{Encoding: map[string]int{"address": 0}, Base: []int{1, 1, 0}, Check: []int{0, 1, 2}}
+	filter_QueryService_QuerySessionsForAddress_0 = &utilities.DoubleArray{Encoding: map[string]int{"address": 0}, Base: []int{1, 1, 0}, Check: []int{0, 1, 2}}
 )
 
-func request_QueryService_SessionsForAddress_0(ctx context.Context, marshaler runtime.Marshaler, client QueryServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq SessionsForAddressRequest
+func request_QueryService_QuerySessionsForAddress_0(ctx context.Context, marshaler runtime.Marshaler, client QueryServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq QuerySessionsForAddressRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -240,17 +240,17 @@ func request_QueryService_SessionsForAddress_0(ctx context.Context, marshaler ru
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_QueryService_SessionsForAddress_0); err != nil {
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_QueryService_QuerySessionsForAddress_0); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
-	msg, err := client.SessionsForAddress(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	msg, err := client.QuerySessionsForAddress(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
 }
 
-func local_request_QueryService_SessionsForAddress_0(ctx context.Context, marshaler runtime.Marshaler, server QueryServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq SessionsForAddressRequest
+func local_request_QueryService_QuerySessionsForAddress_0(ctx context.Context, marshaler runtime.Marshaler, server QueryServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq QuerySessionsForAddressRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -274,17 +274,17 @@ func local_request_QueryService_SessionsForAddress_0(ctx context.Context, marsha
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_QueryService_SessionsForAddress_0); err != nil {
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_QueryService_QuerySessionsForAddress_0); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
-	msg, err := server.SessionsForAddress(ctx, &protoReq)
+	msg, err := server.QuerySessionsForAddress(ctx, &protoReq)
 	return msg, metadata, err
 
 }
 
-func request_QueryService_Session_0(ctx context.Context, marshaler runtime.Marshaler, client QueryServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq SessionRequest
+func request_QueryService_QuerySession_0(ctx context.Context, marshaler runtime.Marshaler, client QueryServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq QuerySessionRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -305,13 +305,13 @@ func request_QueryService_Session_0(ctx context.Context, marshaler runtime.Marsh
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "id", err)
 	}
 
-	msg, err := client.Session(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	msg, err := client.QuerySession(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
 }
 
-func local_request_QueryService_Session_0(ctx context.Context, marshaler runtime.Marshaler, server QueryServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq SessionRequest
+func local_request_QueryService_QuerySession_0(ctx context.Context, marshaler runtime.Marshaler, server QueryServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq QuerySessionRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -332,17 +332,17 @@ func local_request_QueryService_Session_0(ctx context.Context, marshaler runtime
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "id", err)
 	}
 
-	msg, err := server.Session(ctx, &protoReq)
+	msg, err := server.QuerySession(ctx, &protoReq)
 	return msg, metadata, err
 
 }
 
 var (
-	filter_QueryService_OngoingSession_0 = &utilities.DoubleArray{Encoding: map[string]int{"address": 0}, Base: []int{1, 1, 0}, Check: []int{0, 1, 2}}
+	filter_QueryService_QueryOngoingSession_0 = &utilities.DoubleArray{Encoding: map[string]int{"address": 0}, Base: []int{1, 1, 0}, Check: []int{0, 1, 2}}
 )
 
-func request_QueryService_OngoingSession_0(ctx context.Context, marshaler runtime.Marshaler, client QueryServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq OngoingSessionRequest
+func request_QueryService_QueryOngoingSession_0(ctx context.Context, marshaler runtime.Marshaler, client QueryServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq QueryOngoingSessionRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -366,17 +366,17 @@ func request_QueryService_OngoingSession_0(ctx context.Context, marshaler runtim
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_QueryService_OngoingSession_0); err != nil {
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_QueryService_QueryOngoingSession_0); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
-	msg, err := client.OngoingSession(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	msg, err := client.QueryOngoingSession(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
 }
 
-func local_request_QueryService_OngoingSession_0(ctx context.Context, marshaler runtime.Marshaler, server QueryServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq OngoingSessionRequest
+func local_request_QueryService_QueryOngoingSession_0(ctx context.Context, marshaler runtime.Marshaler, server QueryServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq QueryOngoingSessionRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -400,11 +400,11 @@ func local_request_QueryService_OngoingSession_0(ctx context.Context, marshaler 
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_QueryService_OngoingSession_0); err != nil {
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_QueryService_QueryOngoingSession_0); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
-	msg, err := server.OngoingSession(ctx, &protoReq)
+	msg, err := server.QueryOngoingSession(ctx, &protoReq)
 	return msg, metadata, err
 
 }
@@ -415,7 +415,7 @@ func local_request_QueryService_OngoingSession_0(ctx context.Context, marshaler 
 // Note that using this registration option will cause many gRPC library features (such as grpc.SendHeader, etc) to stop working. Consider using RegisterQueryServiceHandlerFromEndpoint instead.
 func RegisterQueryServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux, server QueryServiceServer) error {
 
-	mux.Handle("GET", pattern_QueryService_Sessions_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_QueryService_QuerySessions_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
@@ -424,18 +424,18 @@ func RegisterQueryServiceHandlerServer(ctx context.Context, mux *runtime.ServeMu
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_QueryService_Sessions_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_QueryService_QuerySessions_0(rctx, inboundMarshaler, server, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_QueryService_Sessions_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_QueryService_QuerySessions_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("GET", pattern_QueryService_SessionsForNode_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_QueryService_QuerySessionsForNode_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
@@ -444,18 +444,18 @@ func RegisterQueryServiceHandlerServer(ctx context.Context, mux *runtime.ServeMu
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_QueryService_SessionsForNode_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_QueryService_QuerySessionsForNode_0(rctx, inboundMarshaler, server, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_QueryService_SessionsForNode_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_QueryService_QuerySessionsForNode_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("GET", pattern_QueryService_SessionsForSubscription_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_QueryService_QuerySessionsForSubscription_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
@@ -464,18 +464,18 @@ func RegisterQueryServiceHandlerServer(ctx context.Context, mux *runtime.ServeMu
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_QueryService_SessionsForSubscription_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_QueryService_QuerySessionsForSubscription_0(rctx, inboundMarshaler, server, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_QueryService_SessionsForSubscription_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_QueryService_QuerySessionsForSubscription_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("GET", pattern_QueryService_SessionsForAddress_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_QueryService_QuerySessionsForAddress_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
@@ -484,18 +484,18 @@ func RegisterQueryServiceHandlerServer(ctx context.Context, mux *runtime.ServeMu
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_QueryService_SessionsForAddress_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_QueryService_QuerySessionsForAddress_0(rctx, inboundMarshaler, server, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_QueryService_SessionsForAddress_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_QueryService_QuerySessionsForAddress_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("GET", pattern_QueryService_Session_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_QueryService_QuerySession_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
@@ -504,18 +504,18 @@ func RegisterQueryServiceHandlerServer(ctx context.Context, mux *runtime.ServeMu
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_QueryService_Session_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_QueryService_QuerySession_0(rctx, inboundMarshaler, server, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_QueryService_Session_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_QueryService_QuerySession_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("GET", pattern_QueryService_OngoingSession_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_QueryService_QueryOngoingSession_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
@@ -524,14 +524,14 @@ func RegisterQueryServiceHandlerServer(ctx context.Context, mux *runtime.ServeMu
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_QueryService_OngoingSession_0(rctx, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_QueryService_QueryOngoingSession_0(rctx, inboundMarshaler, server, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_QueryService_OngoingSession_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_QueryService_QueryOngoingSession_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
@@ -576,7 +576,7 @@ func RegisterQueryServiceHandler(ctx context.Context, mux *runtime.ServeMux, con
 // "QueryServiceClient" to call the correct interceptors.
 func RegisterQueryServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux, client QueryServiceClient) error {
 
-	mux.Handle("GET", pattern_QueryService_Sessions_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_QueryService_QuerySessions_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
@@ -585,18 +585,18 @@ func RegisterQueryServiceHandlerClient(ctx context.Context, mux *runtime.ServeMu
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_QueryService_Sessions_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_QueryService_QuerySessions_0(rctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_QueryService_Sessions_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_QueryService_QuerySessions_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("GET", pattern_QueryService_SessionsForNode_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_QueryService_QuerySessionsForNode_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
@@ -605,18 +605,18 @@ func RegisterQueryServiceHandlerClient(ctx context.Context, mux *runtime.ServeMu
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_QueryService_SessionsForNode_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_QueryService_QuerySessionsForNode_0(rctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_QueryService_SessionsForNode_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_QueryService_QuerySessionsForNode_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("GET", pattern_QueryService_SessionsForSubscription_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_QueryService_QuerySessionsForSubscription_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
@@ -625,18 +625,18 @@ func RegisterQueryServiceHandlerClient(ctx context.Context, mux *runtime.ServeMu
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_QueryService_SessionsForSubscription_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_QueryService_QuerySessionsForSubscription_0(rctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_QueryService_SessionsForSubscription_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_QueryService_QuerySessionsForSubscription_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("GET", pattern_QueryService_SessionsForAddress_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_QueryService_QuerySessionsForAddress_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
@@ -645,18 +645,18 @@ func RegisterQueryServiceHandlerClient(ctx context.Context, mux *runtime.ServeMu
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_QueryService_SessionsForAddress_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_QueryService_QuerySessionsForAddress_0(rctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_QueryService_SessionsForAddress_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_QueryService_QuerySessionsForAddress_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("GET", pattern_QueryService_Session_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_QueryService_QuerySession_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
@@ -665,18 +665,18 @@ func RegisterQueryServiceHandlerClient(ctx context.Context, mux *runtime.ServeMu
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_QueryService_Session_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_QueryService_QuerySession_0(rctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_QueryService_Session_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_QueryService_QuerySession_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("GET", pattern_QueryService_OngoingSession_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_QueryService_QueryOngoingSession_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
@@ -685,14 +685,14 @@ func RegisterQueryServiceHandlerClient(ctx context.Context, mux *runtime.ServeMu
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_QueryService_OngoingSession_0(rctx, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_QueryService_QueryOngoingSession_0(rctx, inboundMarshaler, client, req, pathParams)
 		ctx = runtime.NewServerMetadataContext(ctx, md)
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_QueryService_OngoingSession_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_QueryService_QueryOngoingSession_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
@@ -700,29 +700,29 @@ func RegisterQueryServiceHandlerClient(ctx context.Context, mux *runtime.ServeMu
 }
 
 var (
-	pattern_QueryService_Sessions_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0}, []string{"sessions"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_QueryService_QuerySessions_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0}, []string{"sessions"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_QueryService_SessionsForNode_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1, 2, 2}, []string{"nodes", "address", "sessions"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_QueryService_QuerySessionsForNode_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1, 2, 2}, []string{"nodes", "address", "sessions"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_QueryService_SessionsForSubscription_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1, 2, 2}, []string{"subscriptions", "id", "sessions"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_QueryService_QuerySessionsForSubscription_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1, 2, 2}, []string{"subscriptions", "id", "sessions"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_QueryService_SessionsForAddress_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1, 2, 2}, []string{"accounts", "address", "sessions"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_QueryService_QuerySessionsForAddress_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1, 2, 2}, []string{"accounts", "address", "sessions"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_QueryService_Session_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1}, []string{"sessions", "id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_QueryService_QuerySession_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1}, []string{"sessions", "id"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_QueryService_OngoingSession_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1, 2, 2, 2, 3}, []string{"accounts", "address", "sessions", "ongoing"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_QueryService_QueryOngoingSession_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1, 2, 2, 2, 3}, []string{"accounts", "address", "sessions", "ongoing"}, "", runtime.AssumeColonVerbOpt(true)))
 )
 
 var (
-	forward_QueryService_Sessions_0 = runtime.ForwardResponseMessage
+	forward_QueryService_QuerySessions_0 = runtime.ForwardResponseMessage
 
-	forward_QueryService_SessionsForNode_0 = runtime.ForwardResponseMessage
+	forward_QueryService_QuerySessionsForNode_0 = runtime.ForwardResponseMessage
 
-	forward_QueryService_SessionsForSubscription_0 = runtime.ForwardResponseMessage
+	forward_QueryService_QuerySessionsForSubscription_0 = runtime.ForwardResponseMessage
 
-	forward_QueryService_SessionsForAddress_0 = runtime.ForwardResponseMessage
+	forward_QueryService_QuerySessionsForAddress_0 = runtime.ForwardResponseMessage
 
-	forward_QueryService_Session_0 = runtime.ForwardResponseMessage
+	forward_QueryService_QuerySession_0 = runtime.ForwardResponseMessage
 
-	forward_QueryService_OngoingSession_0 = runtime.ForwardResponseMessage
+	forward_QueryService_QueryOngoingSession_0 = runtime.ForwardResponseMessage
 )

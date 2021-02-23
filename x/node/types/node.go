@@ -17,7 +17,7 @@ Price:      %s
 Remote URL: %s
 Status:     %s
 Status at:  %s
-`, n.Address, n.Price, n.RemoteURL, n.Status, n.StatusAt))
+`, n.Address, n.Price, n.RemoteUrl, n.Status, n.StatusAt))
 	}
 
 	return strings.TrimSpace(fmt.Sprintf(`
@@ -26,7 +26,7 @@ Provider:   %s
 Remote URL: %s
 Status:     %s
 Status at:  %s
-`, n.Address, n.Provider, n.RemoteURL, n.Status, n.StatusAt))
+`, n.Address, n.Provider, n.RemoteUrl, n.Status, n.StatusAt))
 }
 
 func (n Node) Validate() error {
@@ -43,7 +43,7 @@ func (n Node) Validate() error {
 	if n.Price != nil && !n.Price.IsValid() {
 		return fmt.Errorf("price should be valid")
 	}
-	if len(n.RemoteURL) == 0 || len(n.RemoteURL) > 64 {
+	if len(n.RemoteUrl) == 0 || len(n.RemoteUrl) > 64 {
 		return fmt.Errorf("remote_url length should be between 1 and 64")
 	}
 	if !n.Status.Equal(hub.StatusActive) && !n.Status.Equal(hub.StatusInactive) {

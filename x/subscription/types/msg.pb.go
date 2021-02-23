@@ -31,24 +31,24 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
-type SubscribeToNodeRequest struct {
+type MsgSubscribeToNodeRequest struct {
 	From    string     `protobuf:"bytes,1,opt,name=from,proto3" json:"from,omitempty"`
 	Address string     `protobuf:"bytes,2,opt,name=address,proto3" json:"address,omitempty"`
 	Deposit types.Coin `protobuf:"bytes,3,opt,name=deposit,proto3" json:"deposit"`
 }
 
-func (m *SubscribeToNodeRequest) Reset()         { *m = SubscribeToNodeRequest{} }
-func (m *SubscribeToNodeRequest) String() string { return proto.CompactTextString(m) }
-func (*SubscribeToNodeRequest) ProtoMessage()    {}
-func (*SubscribeToNodeRequest) Descriptor() ([]byte, []int) {
+func (m *MsgSubscribeToNodeRequest) Reset()         { *m = MsgSubscribeToNodeRequest{} }
+func (m *MsgSubscribeToNodeRequest) String() string { return proto.CompactTextString(m) }
+func (*MsgSubscribeToNodeRequest) ProtoMessage()    {}
+func (*MsgSubscribeToNodeRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_b1c58e5012fc0b75, []int{0}
 }
-func (m *SubscribeToNodeRequest) XXX_Unmarshal(b []byte) error {
+func (m *MsgSubscribeToNodeRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *SubscribeToNodeRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgSubscribeToNodeRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_SubscribeToNodeRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgSubscribeToNodeRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -58,36 +58,36 @@ func (m *SubscribeToNodeRequest) XXX_Marshal(b []byte, deterministic bool) ([]by
 		return b[:n], nil
 	}
 }
-func (m *SubscribeToNodeRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_SubscribeToNodeRequest.Merge(m, src)
+func (m *MsgSubscribeToNodeRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgSubscribeToNodeRequest.Merge(m, src)
 }
-func (m *SubscribeToNodeRequest) XXX_Size() int {
+func (m *MsgSubscribeToNodeRequest) XXX_Size() int {
 	return m.Size()
 }
-func (m *SubscribeToNodeRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_SubscribeToNodeRequest.DiscardUnknown(m)
+func (m *MsgSubscribeToNodeRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgSubscribeToNodeRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_SubscribeToNodeRequest proto.InternalMessageInfo
+var xxx_messageInfo_MsgSubscribeToNodeRequest proto.InternalMessageInfo
 
-type SubscribeToPlanRequest struct {
+type MsgSubscribeToPlanRequest struct {
 	From  string `protobuf:"bytes,1,opt,name=from,proto3" json:"from,omitempty"`
 	Id    uint64 `protobuf:"varint,2,opt,name=id,proto3" json:"id,omitempty"`
 	Denom string `protobuf:"bytes,3,opt,name=denom,proto3" json:"denom,omitempty"`
 }
 
-func (m *SubscribeToPlanRequest) Reset()         { *m = SubscribeToPlanRequest{} }
-func (m *SubscribeToPlanRequest) String() string { return proto.CompactTextString(m) }
-func (*SubscribeToPlanRequest) ProtoMessage()    {}
-func (*SubscribeToPlanRequest) Descriptor() ([]byte, []int) {
+func (m *MsgSubscribeToPlanRequest) Reset()         { *m = MsgSubscribeToPlanRequest{} }
+func (m *MsgSubscribeToPlanRequest) String() string { return proto.CompactTextString(m) }
+func (*MsgSubscribeToPlanRequest) ProtoMessage()    {}
+func (*MsgSubscribeToPlanRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_b1c58e5012fc0b75, []int{1}
 }
-func (m *SubscribeToPlanRequest) XXX_Unmarshal(b []byte) error {
+func (m *MsgSubscribeToPlanRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *SubscribeToPlanRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgSubscribeToPlanRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_SubscribeToPlanRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgSubscribeToPlanRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -97,35 +97,35 @@ func (m *SubscribeToPlanRequest) XXX_Marshal(b []byte, deterministic bool) ([]by
 		return b[:n], nil
 	}
 }
-func (m *SubscribeToPlanRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_SubscribeToPlanRequest.Merge(m, src)
+func (m *MsgSubscribeToPlanRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgSubscribeToPlanRequest.Merge(m, src)
 }
-func (m *SubscribeToPlanRequest) XXX_Size() int {
+func (m *MsgSubscribeToPlanRequest) XXX_Size() int {
 	return m.Size()
 }
-func (m *SubscribeToPlanRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_SubscribeToPlanRequest.DiscardUnknown(m)
+func (m *MsgSubscribeToPlanRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgSubscribeToPlanRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_SubscribeToPlanRequest proto.InternalMessageInfo
+var xxx_messageInfo_MsgSubscribeToPlanRequest proto.InternalMessageInfo
 
-type CancelRequest struct {
+type MsgCancelRequest struct {
 	From string `protobuf:"bytes,1,opt,name=from,proto3" json:"from,omitempty"`
 	Id   uint64 `protobuf:"varint,2,opt,name=id,proto3" json:"id,omitempty"`
 }
 
-func (m *CancelRequest) Reset()         { *m = CancelRequest{} }
-func (m *CancelRequest) String() string { return proto.CompactTextString(m) }
-func (*CancelRequest) ProtoMessage()    {}
-func (*CancelRequest) Descriptor() ([]byte, []int) {
+func (m *MsgCancelRequest) Reset()         { *m = MsgCancelRequest{} }
+func (m *MsgCancelRequest) String() string { return proto.CompactTextString(m) }
+func (*MsgCancelRequest) ProtoMessage()    {}
+func (*MsgCancelRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_b1c58e5012fc0b75, []int{2}
 }
-func (m *CancelRequest) XXX_Unmarshal(b []byte) error {
+func (m *MsgCancelRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *CancelRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgCancelRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_CancelRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgCancelRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -135,37 +135,37 @@ func (m *CancelRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error
 		return b[:n], nil
 	}
 }
-func (m *CancelRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_CancelRequest.Merge(m, src)
+func (m *MsgCancelRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgCancelRequest.Merge(m, src)
 }
-func (m *CancelRequest) XXX_Size() int {
+func (m *MsgCancelRequest) XXX_Size() int {
 	return m.Size()
 }
-func (m *CancelRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_CancelRequest.DiscardUnknown(m)
+func (m *MsgCancelRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgCancelRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_CancelRequest proto.InternalMessageInfo
+var xxx_messageInfo_MsgCancelRequest proto.InternalMessageInfo
 
-type AddQuotaRequest struct {
+type MsgAddQuotaRequest struct {
 	From    string                                 `protobuf:"bytes,1,opt,name=from,proto3" json:"from,omitempty"`
 	Id      uint64                                 `protobuf:"varint,2,opt,name=id,proto3" json:"id,omitempty"`
 	Address string                                 `protobuf:"bytes,3,opt,name=address,proto3" json:"address,omitempty"`
 	Bytes   github_com_cosmos_cosmos_sdk_types.Int `protobuf:"bytes,5,opt,name=bytes,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"bytes"`
 }
 
-func (m *AddQuotaRequest) Reset()         { *m = AddQuotaRequest{} }
-func (m *AddQuotaRequest) String() string { return proto.CompactTextString(m) }
-func (*AddQuotaRequest) ProtoMessage()    {}
-func (*AddQuotaRequest) Descriptor() ([]byte, []int) {
+func (m *MsgAddQuotaRequest) Reset()         { *m = MsgAddQuotaRequest{} }
+func (m *MsgAddQuotaRequest) String() string { return proto.CompactTextString(m) }
+func (*MsgAddQuotaRequest) ProtoMessage()    {}
+func (*MsgAddQuotaRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_b1c58e5012fc0b75, []int{3}
 }
-func (m *AddQuotaRequest) XXX_Unmarshal(b []byte) error {
+func (m *MsgAddQuotaRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *AddQuotaRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgAddQuotaRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_AddQuotaRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgAddQuotaRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -175,37 +175,37 @@ func (m *AddQuotaRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, err
 		return b[:n], nil
 	}
 }
-func (m *AddQuotaRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_AddQuotaRequest.Merge(m, src)
+func (m *MsgAddQuotaRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgAddQuotaRequest.Merge(m, src)
 }
-func (m *AddQuotaRequest) XXX_Size() int {
+func (m *MsgAddQuotaRequest) XXX_Size() int {
 	return m.Size()
 }
-func (m *AddQuotaRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_AddQuotaRequest.DiscardUnknown(m)
+func (m *MsgAddQuotaRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgAddQuotaRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_AddQuotaRequest proto.InternalMessageInfo
+var xxx_messageInfo_MsgAddQuotaRequest proto.InternalMessageInfo
 
-type UpdateQuotaRequest struct {
+type MsgUpdateQuotaRequest struct {
 	From    string                                 `protobuf:"bytes,1,opt,name=from,proto3" json:"from,omitempty"`
 	Id      uint64                                 `protobuf:"varint,2,opt,name=id,proto3" json:"id,omitempty"`
 	Address string                                 `protobuf:"bytes,3,opt,name=address,proto3" json:"address,omitempty"`
 	Bytes   github_com_cosmos_cosmos_sdk_types.Int `protobuf:"bytes,5,opt,name=bytes,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"bytes"`
 }
 
-func (m *UpdateQuotaRequest) Reset()         { *m = UpdateQuotaRequest{} }
-func (m *UpdateQuotaRequest) String() string { return proto.CompactTextString(m) }
-func (*UpdateQuotaRequest) ProtoMessage()    {}
-func (*UpdateQuotaRequest) Descriptor() ([]byte, []int) {
+func (m *MsgUpdateQuotaRequest) Reset()         { *m = MsgUpdateQuotaRequest{} }
+func (m *MsgUpdateQuotaRequest) String() string { return proto.CompactTextString(m) }
+func (*MsgUpdateQuotaRequest) ProtoMessage()    {}
+func (*MsgUpdateQuotaRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_b1c58e5012fc0b75, []int{4}
 }
-func (m *UpdateQuotaRequest) XXX_Unmarshal(b []byte) error {
+func (m *MsgUpdateQuotaRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *UpdateQuotaRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgUpdateQuotaRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_UpdateQuotaRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgUpdateQuotaRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -215,33 +215,33 @@ func (m *UpdateQuotaRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, 
 		return b[:n], nil
 	}
 }
-func (m *UpdateQuotaRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_UpdateQuotaRequest.Merge(m, src)
+func (m *MsgUpdateQuotaRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgUpdateQuotaRequest.Merge(m, src)
 }
-func (m *UpdateQuotaRequest) XXX_Size() int {
+func (m *MsgUpdateQuotaRequest) XXX_Size() int {
 	return m.Size()
 }
-func (m *UpdateQuotaRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_UpdateQuotaRequest.DiscardUnknown(m)
+func (m *MsgUpdateQuotaRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgUpdateQuotaRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_UpdateQuotaRequest proto.InternalMessageInfo
+var xxx_messageInfo_MsgUpdateQuotaRequest proto.InternalMessageInfo
 
-type SubscribeToNodeResponse struct {
+type MsgSubscribeToNodeResponse struct {
 }
 
-func (m *SubscribeToNodeResponse) Reset()         { *m = SubscribeToNodeResponse{} }
-func (m *SubscribeToNodeResponse) String() string { return proto.CompactTextString(m) }
-func (*SubscribeToNodeResponse) ProtoMessage()    {}
-func (*SubscribeToNodeResponse) Descriptor() ([]byte, []int) {
+func (m *MsgSubscribeToNodeResponse) Reset()         { *m = MsgSubscribeToNodeResponse{} }
+func (m *MsgSubscribeToNodeResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgSubscribeToNodeResponse) ProtoMessage()    {}
+func (*MsgSubscribeToNodeResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_b1c58e5012fc0b75, []int{5}
 }
-func (m *SubscribeToNodeResponse) XXX_Unmarshal(b []byte) error {
+func (m *MsgSubscribeToNodeResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *SubscribeToNodeResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgSubscribeToNodeResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_SubscribeToNodeResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgSubscribeToNodeResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -251,33 +251,33 @@ func (m *SubscribeToNodeResponse) XXX_Marshal(b []byte, deterministic bool) ([]b
 		return b[:n], nil
 	}
 }
-func (m *SubscribeToNodeResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_SubscribeToNodeResponse.Merge(m, src)
+func (m *MsgSubscribeToNodeResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgSubscribeToNodeResponse.Merge(m, src)
 }
-func (m *SubscribeToNodeResponse) XXX_Size() int {
+func (m *MsgSubscribeToNodeResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *SubscribeToNodeResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_SubscribeToNodeResponse.DiscardUnknown(m)
+func (m *MsgSubscribeToNodeResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgSubscribeToNodeResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_SubscribeToNodeResponse proto.InternalMessageInfo
+var xxx_messageInfo_MsgSubscribeToNodeResponse proto.InternalMessageInfo
 
-type SubscribeToPlanResponse struct {
+type MsgSubscribeToPlanResponse struct {
 }
 
-func (m *SubscribeToPlanResponse) Reset()         { *m = SubscribeToPlanResponse{} }
-func (m *SubscribeToPlanResponse) String() string { return proto.CompactTextString(m) }
-func (*SubscribeToPlanResponse) ProtoMessage()    {}
-func (*SubscribeToPlanResponse) Descriptor() ([]byte, []int) {
+func (m *MsgSubscribeToPlanResponse) Reset()         { *m = MsgSubscribeToPlanResponse{} }
+func (m *MsgSubscribeToPlanResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgSubscribeToPlanResponse) ProtoMessage()    {}
+func (*MsgSubscribeToPlanResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_b1c58e5012fc0b75, []int{6}
 }
-func (m *SubscribeToPlanResponse) XXX_Unmarshal(b []byte) error {
+func (m *MsgSubscribeToPlanResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *SubscribeToPlanResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgSubscribeToPlanResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_SubscribeToPlanResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgSubscribeToPlanResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -287,33 +287,33 @@ func (m *SubscribeToPlanResponse) XXX_Marshal(b []byte, deterministic bool) ([]b
 		return b[:n], nil
 	}
 }
-func (m *SubscribeToPlanResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_SubscribeToPlanResponse.Merge(m, src)
+func (m *MsgSubscribeToPlanResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgSubscribeToPlanResponse.Merge(m, src)
 }
-func (m *SubscribeToPlanResponse) XXX_Size() int {
+func (m *MsgSubscribeToPlanResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *SubscribeToPlanResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_SubscribeToPlanResponse.DiscardUnknown(m)
+func (m *MsgSubscribeToPlanResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgSubscribeToPlanResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_SubscribeToPlanResponse proto.InternalMessageInfo
+var xxx_messageInfo_MsgSubscribeToPlanResponse proto.InternalMessageInfo
 
-type CancelResponse struct {
+type MsgCancelResponse struct {
 }
 
-func (m *CancelResponse) Reset()         { *m = CancelResponse{} }
-func (m *CancelResponse) String() string { return proto.CompactTextString(m) }
-func (*CancelResponse) ProtoMessage()    {}
-func (*CancelResponse) Descriptor() ([]byte, []int) {
+func (m *MsgCancelResponse) Reset()         { *m = MsgCancelResponse{} }
+func (m *MsgCancelResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgCancelResponse) ProtoMessage()    {}
+func (*MsgCancelResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_b1c58e5012fc0b75, []int{7}
 }
-func (m *CancelResponse) XXX_Unmarshal(b []byte) error {
+func (m *MsgCancelResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *CancelResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgCancelResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_CancelResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgCancelResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -323,33 +323,33 @@ func (m *CancelResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, erro
 		return b[:n], nil
 	}
 }
-func (m *CancelResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_CancelResponse.Merge(m, src)
+func (m *MsgCancelResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgCancelResponse.Merge(m, src)
 }
-func (m *CancelResponse) XXX_Size() int {
+func (m *MsgCancelResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *CancelResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_CancelResponse.DiscardUnknown(m)
+func (m *MsgCancelResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgCancelResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_CancelResponse proto.InternalMessageInfo
+var xxx_messageInfo_MsgCancelResponse proto.InternalMessageInfo
 
-type AddQuotaResponse struct {
+type MsgAddQuotaResponse struct {
 }
 
-func (m *AddQuotaResponse) Reset()         { *m = AddQuotaResponse{} }
-func (m *AddQuotaResponse) String() string { return proto.CompactTextString(m) }
-func (*AddQuotaResponse) ProtoMessage()    {}
-func (*AddQuotaResponse) Descriptor() ([]byte, []int) {
+func (m *MsgAddQuotaResponse) Reset()         { *m = MsgAddQuotaResponse{} }
+func (m *MsgAddQuotaResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgAddQuotaResponse) ProtoMessage()    {}
+func (*MsgAddQuotaResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_b1c58e5012fc0b75, []int{8}
 }
-func (m *AddQuotaResponse) XXX_Unmarshal(b []byte) error {
+func (m *MsgAddQuotaResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *AddQuotaResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgAddQuotaResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_AddQuotaResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgAddQuotaResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -359,33 +359,33 @@ func (m *AddQuotaResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, er
 		return b[:n], nil
 	}
 }
-func (m *AddQuotaResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_AddQuotaResponse.Merge(m, src)
+func (m *MsgAddQuotaResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgAddQuotaResponse.Merge(m, src)
 }
-func (m *AddQuotaResponse) XXX_Size() int {
+func (m *MsgAddQuotaResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *AddQuotaResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_AddQuotaResponse.DiscardUnknown(m)
+func (m *MsgAddQuotaResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgAddQuotaResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_AddQuotaResponse proto.InternalMessageInfo
+var xxx_messageInfo_MsgAddQuotaResponse proto.InternalMessageInfo
 
-type UpdateQuotaResponse struct {
+type MsgUpdateQuotaResponse struct {
 }
 
-func (m *UpdateQuotaResponse) Reset()         { *m = UpdateQuotaResponse{} }
-func (m *UpdateQuotaResponse) String() string { return proto.CompactTextString(m) }
-func (*UpdateQuotaResponse) ProtoMessage()    {}
-func (*UpdateQuotaResponse) Descriptor() ([]byte, []int) {
+func (m *MsgUpdateQuotaResponse) Reset()         { *m = MsgUpdateQuotaResponse{} }
+func (m *MsgUpdateQuotaResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgUpdateQuotaResponse) ProtoMessage()    {}
+func (*MsgUpdateQuotaResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_b1c58e5012fc0b75, []int{9}
 }
-func (m *UpdateQuotaResponse) XXX_Unmarshal(b []byte) error {
+func (m *MsgUpdateQuotaResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *UpdateQuotaResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgUpdateQuotaResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_UpdateQuotaResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgUpdateQuotaResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -395,29 +395,29 @@ func (m *UpdateQuotaResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte,
 		return b[:n], nil
 	}
 }
-func (m *UpdateQuotaResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_UpdateQuotaResponse.Merge(m, src)
+func (m *MsgUpdateQuotaResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgUpdateQuotaResponse.Merge(m, src)
 }
-func (m *UpdateQuotaResponse) XXX_Size() int {
+func (m *MsgUpdateQuotaResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *UpdateQuotaResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_UpdateQuotaResponse.DiscardUnknown(m)
+func (m *MsgUpdateQuotaResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgUpdateQuotaResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_UpdateQuotaResponse proto.InternalMessageInfo
+var xxx_messageInfo_MsgUpdateQuotaResponse proto.InternalMessageInfo
 
 func init() {
-	proto.RegisterType((*SubscribeToNodeRequest)(nil), "sentinel.subscription.v1.SubscribeToNodeRequest")
-	proto.RegisterType((*SubscribeToPlanRequest)(nil), "sentinel.subscription.v1.SubscribeToPlanRequest")
-	proto.RegisterType((*CancelRequest)(nil), "sentinel.subscription.v1.CancelRequest")
-	proto.RegisterType((*AddQuotaRequest)(nil), "sentinel.subscription.v1.AddQuotaRequest")
-	proto.RegisterType((*UpdateQuotaRequest)(nil), "sentinel.subscription.v1.UpdateQuotaRequest")
-	proto.RegisterType((*SubscribeToNodeResponse)(nil), "sentinel.subscription.v1.SubscribeToNodeResponse")
-	proto.RegisterType((*SubscribeToPlanResponse)(nil), "sentinel.subscription.v1.SubscribeToPlanResponse")
-	proto.RegisterType((*CancelResponse)(nil), "sentinel.subscription.v1.CancelResponse")
-	proto.RegisterType((*AddQuotaResponse)(nil), "sentinel.subscription.v1.AddQuotaResponse")
-	proto.RegisterType((*UpdateQuotaResponse)(nil), "sentinel.subscription.v1.UpdateQuotaResponse")
+	proto.RegisterType((*MsgSubscribeToNodeRequest)(nil), "sentinel.subscription.v1.MsgSubscribeToNodeRequest")
+	proto.RegisterType((*MsgSubscribeToPlanRequest)(nil), "sentinel.subscription.v1.MsgSubscribeToPlanRequest")
+	proto.RegisterType((*MsgCancelRequest)(nil), "sentinel.subscription.v1.MsgCancelRequest")
+	proto.RegisterType((*MsgAddQuotaRequest)(nil), "sentinel.subscription.v1.MsgAddQuotaRequest")
+	proto.RegisterType((*MsgUpdateQuotaRequest)(nil), "sentinel.subscription.v1.MsgUpdateQuotaRequest")
+	proto.RegisterType((*MsgSubscribeToNodeResponse)(nil), "sentinel.subscription.v1.MsgSubscribeToNodeResponse")
+	proto.RegisterType((*MsgSubscribeToPlanResponse)(nil), "sentinel.subscription.v1.MsgSubscribeToPlanResponse")
+	proto.RegisterType((*MsgCancelResponse)(nil), "sentinel.subscription.v1.MsgCancelResponse")
+	proto.RegisterType((*MsgAddQuotaResponse)(nil), "sentinel.subscription.v1.MsgAddQuotaResponse")
+	proto.RegisterType((*MsgUpdateQuotaResponse)(nil), "sentinel.subscription.v1.MsgUpdateQuotaResponse")
 }
 
 func init() {
@@ -425,43 +425,44 @@ func init() {
 }
 
 var fileDescriptor_b1c58e5012fc0b75 = []byte{
-	// 569 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xcc, 0x54, 0x3f, 0x73, 0xd3, 0x4e,
-	0x10, 0x95, 0x1c, 0x3b, 0xf9, 0x65, 0xf3, 0x23, 0xc9, 0x1c, 0x01, 0x14, 0x15, 0x72, 0xc6, 0x05,
-	0x18, 0x06, 0x9f, 0x70, 0x18, 0x0a, 0xe8, 0xe2, 0xd0, 0x50, 0xf0, 0x4f, 0x81, 0x06, 0x1a, 0x24,
-	0xdd, 0xd9, 0x39, 0xb0, 0x75, 0xc2, 0x77, 0xf2, 0x90, 0x6f, 0x40, 0x07, 0x25, 0xa5, 0x67, 0x98,
-	0x61, 0xf8, 0x28, 0x29, 0x53, 0x32, 0x14, 0x19, 0xc6, 0x6e, 0xf8, 0x18, 0x8c, 0x74, 0x12, 0x48,
-	0x0a, 0x06, 0xbb, 0xa3, 0xb2, 0x6e, 0xf7, 0xed, 0xbe, 0xe7, 0xdd, 0x7b, 0x07, 0x0d, 0x41, 0x03,
-	0xc9, 0x02, 0xda, 0xb7, 0x45, 0xe4, 0x09, 0x7f, 0xc8, 0x42, 0xc9, 0x78, 0x60, 0x8f, 0xda, 0xf6,
-	0x40, 0xf4, 0x70, 0x38, 0xe4, 0x92, 0x23, 0x23, 0xc3, 0xe0, 0x3c, 0x06, 0x8f, 0xda, 0xe6, 0x56,
-	0x8f, 0xf7, 0x78, 0x02, 0xb2, 0xe3, 0x2f, 0x85, 0x37, 0x2d, 0x9f, 0x8b, 0x01, 0x17, 0xb6, 0xe7,
-	0x0a, 0x6a, 0x8f, 0xda, 0x1e, 0x95, 0x6e, 0xdb, 0xf6, 0x39, 0x0b, 0xb2, 0xfc, 0x4f, 0x4e, 0x79,
-	0x14, 0x52, 0x11, 0x93, 0x09, 0xe9, 0xca, 0x48, 0xa8, 0x7c, 0xe3, 0x9d, 0x0e, 0x17, 0x0f, 0x14,
-	0x93, 0x47, 0x9f, 0xf0, 0x07, 0x9c, 0x50, 0x87, 0xbe, 0x8e, 0xa8, 0x90, 0x08, 0x41, 0xb5, 0x3b,
-	0xe4, 0x03, 0x43, 0xdf, 0xd1, 0x9b, 0xab, 0x4e, 0xf2, 0x8d, 0x0c, 0x58, 0x71, 0x09, 0x19, 0x52,
-	0x21, 0x8c, 0x4a, 0x12, 0xce, 0x8e, 0xe8, 0x36, 0xac, 0x10, 0x1a, 0x72, 0xc1, 0xa4, 0xb1, 0xb4,
-	0xa3, 0x37, 0xd7, 0x76, 0xb7, 0xb1, 0x92, 0x86, 0x63, 0x69, 0x38, 0x95, 0x86, 0xf7, 0x39, 0x0b,
-	0x3a, 0xd5, 0xe3, 0xd3, 0xba, 0xe6, 0x64, 0xf8, 0x3b, 0xff, 0xbf, 0x1d, 0xd7, 0xb5, 0x0f, 0xe3,
-	0xba, 0xfe, 0x7d, 0x5c, 0xd7, 0x1a, 0x2f, 0x0a, 0x82, 0x1e, 0xf5, 0xdd, 0xe0, 0x4f, 0x82, 0xd6,
-	0xa1, 0xc2, 0x48, 0xa2, 0xa5, 0xea, 0x54, 0x18, 0x41, 0x5b, 0x50, 0x23, 0x34, 0xe0, 0x83, 0x44,
-	0xc4, 0xaa, 0xa3, 0x0e, 0x25, 0x86, 0x3d, 0x38, 0xb7, 0xef, 0x06, 0x3e, 0xed, 0x2f, 0xd0, 0xb8,
-	0xd4, 0xe2, 0xa3, 0x0e, 0x1b, 0x7b, 0x84, 0x3c, 0x8e, 0xb8, 0x74, 0x17, 0x91, 0x97, 0x9b, 0xdf,
-	0x52, 0x71, 0x7e, 0x77, 0xa1, 0xe6, 0x1d, 0x49, 0x2a, 0x8c, 0x5a, 0x1c, 0xef, 0xe0, 0x78, 0x44,
-	0x5f, 0x4f, 0xeb, 0x97, 0x7b, 0x4c, 0x1e, 0x46, 0x1e, 0xf6, 0xf9, 0xc0, 0x4e, 0x57, 0xad, 0x7e,
-	0x5a, 0x82, 0xbc, 0x52, 0x3b, 0xc5, 0xf7, 0x02, 0xe9, 0xa8, 0xe2, 0x92, 0xca, 0x4f, 0x3a, 0xa0,
-	0xa7, 0x21, 0x71, 0x25, 0xfd, 0xc7, 0x85, 0x6e, 0xc3, 0xa5, 0x33, 0x97, 0x50, 0x84, 0x3c, 0x10,
-	0xb4, 0x94, 0x52, 0xd7, 0x21, 0x4d, 0x6d, 0xc2, 0x7a, 0xb6, 0xc7, 0x34, 0x82, 0x60, 0xf3, 0xd7,
-	0x56, 0xd2, 0xd8, 0x05, 0x38, 0x5f, 0x98, 0x81, 0x0a, 0xef, 0x7e, 0xae, 0x02, 0xdc, 0x17, 0xbd,
-	0x03, 0x3a, 0x1c, 0x31, 0x9f, 0xa2, 0x11, 0x6c, 0x94, 0x14, 0xa0, 0x1b, 0x78, 0x96, 0x17, 0xf1,
-	0xef, 0x1d, 0x63, 0xb6, 0x17, 0xa8, 0x50, 0x32, 0x4a, 0xbc, 0xf1, 0xdf, 0x9b, 0x93, 0x37, 0x67,
-	0x8c, 0x39, 0x79, 0xf3, 0xb3, 0x43, 0xcf, 0x61, 0x59, 0xcd, 0x0e, 0x5d, 0x99, 0x5d, 0x5c, 0x70,
-	0x89, 0xd9, 0xfc, 0x3b, 0x30, 0x6d, 0xee, 0xc2, 0x7f, 0xd9, 0x1a, 0xd0, 0xd5, 0xd9, 0x55, 0x25,
-	0x03, 0x99, 0xd7, 0xe6, 0x81, 0xa6, 0x14, 0x2f, 0x61, 0x2d, 0xb7, 0x55, 0x74, 0x7d, 0x76, 0xe9,
-	0x59, 0x03, 0x98, 0xad, 0x39, 0xd1, 0x8a, 0xab, 0xf3, 0xf0, 0x78, 0x62, 0xe9, 0x27, 0x13, 0x4b,
-	0xff, 0x36, 0xb1, 0xf4, 0xf7, 0x53, 0x4b, 0x3b, 0x99, 0x5a, 0xda, 0x97, 0xa9, 0xa5, 0x3d, 0xbb,
-	0x95, 0xbb, 0xf4, 0x59, 0xcb, 0x16, 0xef, 0x76, 0x99, 0xcf, 0xdc, 0xbe, 0x7d, 0x18, 0x79, 0xf6,
-	0x9b, 0xe2, 0x5b, 0x9f, 0xf8, 0xc0, 0x5b, 0x4e, 0xde, 0xde, 0x9b, 0x3f, 0x02, 0x00, 0x00, 0xff,
-	0xff, 0x57, 0x75, 0xb7, 0xdd, 0x11, 0x06, 0x00, 0x00,
+	// 577 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xcc, 0x95, 0xbf, 0x6f, 0xd3, 0x40,
+	0x14, 0xc7, 0xed, 0x36, 0xa5, 0xea, 0x15, 0x55, 0x70, 0x6d, 0x91, 0x6b, 0x21, 0xa7, 0xca, 0x80,
+	0x2a, 0x20, 0x77, 0xa4, 0x85, 0x01, 0x36, 0xd2, 0x2e, 0x0c, 0xe1, 0x87, 0x81, 0x85, 0xcd, 0xf6,
+	0x5d, 0xdc, 0x83, 0xc4, 0x67, 0xf2, 0xce, 0x11, 0x9d, 0x58, 0x19, 0x11, 0x13, 0x63, 0x26, 0x24,
+	0xfe, 0x93, 0x8e, 0x5d, 0x90, 0x10, 0x43, 0x85, 0x92, 0x85, 0x3f, 0x03, 0xd9, 0xe7, 0x54, 0x8e,
+	0x43, 0xa3, 0x64, 0x63, 0x8a, 0x7d, 0xef, 0xc7, 0xf7, 0x93, 0xf7, 0xee, 0x9b, 0xa0, 0x1a, 0xf0,
+	0x48, 0x89, 0x88, 0x77, 0x28, 0x24, 0x3e, 0x04, 0x3d, 0x11, 0x2b, 0x21, 0x23, 0xda, 0x6f, 0xd0,
+	0x2e, 0x84, 0x24, 0xee, 0x49, 0x25, 0xb1, 0x35, 0xce, 0x21, 0xc5, 0x1c, 0xd2, 0x6f, 0xd8, 0x5b,
+	0xa1, 0x0c, 0x65, 0x96, 0x44, 0xd3, 0x27, 0x9d, 0x6f, 0x3b, 0x81, 0x84, 0xae, 0x04, 0xea, 0x7b,
+	0xc0, 0x69, 0xbf, 0xe1, 0x73, 0xe5, 0x35, 0x68, 0x20, 0x45, 0x34, 0x8e, 0x5f, 0x68, 0xaa, 0x93,
+	0x98, 0x43, 0x2a, 0x06, 0xca, 0x53, 0x09, 0xe8, 0x78, 0xed, 0x8b, 0x89, 0x76, 0x5a, 0x10, 0xbe,
+	0xd4, 0x62, 0x3e, 0x7f, 0x25, 0x9f, 0x4a, 0xc6, 0x5d, 0xfe, 0x3e, 0xe1, 0xa0, 0x30, 0x46, 0x95,
+	0x76, 0x4f, 0x76, 0x2d, 0x73, 0xd7, 0xdc, 0x5b, 0x73, 0xb3, 0x67, 0x6c, 0xa1, 0x55, 0x8f, 0xb1,
+	0x1e, 0x07, 0xb0, 0x96, 0xb2, 0xe3, 0xf1, 0x2b, 0x7e, 0x88, 0x56, 0x19, 0x8f, 0x25, 0x08, 0x65,
+	0x2d, 0xef, 0x9a, 0x7b, 0xeb, 0xfb, 0x3b, 0x44, 0xd3, 0x91, 0x94, 0x8e, 0xe4, 0x74, 0xe4, 0x50,
+	0x8a, 0xa8, 0x59, 0x39, 0x3d, 0xaf, 0x1a, 0xee, 0x38, 0xff, 0xd1, 0xd5, 0x4f, 0x83, 0xaa, 0xf1,
+	0x75, 0x50, 0x35, 0xff, 0x0c, 0xaa, 0x46, 0x2d, 0x28, 0x33, 0x3d, 0xef, 0x78, 0xd1, 0x2c, 0xa6,
+	0x0d, 0xb4, 0x24, 0x58, 0x86, 0x53, 0x71, 0x97, 0x04, 0xc3, 0x5b, 0x68, 0x85, 0xf1, 0x48, 0x76,
+	0x33, 0x8e, 0x35, 0x57, 0xbf, 0x94, 0x44, 0x8e, 0xd0, 0xb5, 0x16, 0x84, 0x87, 0x5e, 0x14, 0xf0,
+	0xce, 0x02, 0xbd, 0x4b, 0x5d, 0xbe, 0x99, 0x08, 0xb7, 0x20, 0x7c, 0xcc, 0xd8, 0x8b, 0x44, 0x2a,
+	0x6f, 0x11, 0xc8, 0xc2, 0x20, 0x97, 0x27, 0x07, 0x79, 0x84, 0x56, 0xfc, 0x13, 0xc5, 0xc1, 0x5a,
+	0x49, 0xcf, 0x9b, 0x24, 0x9d, 0xd5, 0xaf, 0xf3, 0xea, 0xad, 0x50, 0xa8, 0xe3, 0xc4, 0x27, 0x81,
+	0xec, 0xd2, 0x7c, 0xed, 0xfa, 0xa3, 0x0e, 0xec, 0x9d, 0xde, 0x2f, 0x79, 0x12, 0x29, 0x57, 0x17,
+	0x97, 0x40, 0xbf, 0x9b, 0x68, 0xbb, 0x05, 0xe1, 0xeb, 0x98, 0x79, 0x8a, 0xff, 0xe7, 0xac, 0x37,
+	0x91, 0xfd, 0xaf, 0x3b, 0x09, 0xb1, 0x8c, 0x80, 0x4f, 0x47, 0xf5, 0xed, 0xc8, 0xa3, 0x9b, 0xe8,
+	0x7a, 0x61, 0xad, 0xf9, 0xe1, 0x36, 0xda, 0x9c, 0x58, 0x52, 0x7e, 0x6c, 0xa1, 0x1b, 0xe5, 0x91,
+	0xe8, 0xc8, 0xfe, 0x8f, 0x0a, 0x42, 0xa9, 0x08, 0xef, 0xf5, 0x45, 0xc0, 0xf1, 0xc7, 0x6c, 0xc9,
+	0x25, 0x20, 0x7c, 0x40, 0x2e, 0x33, 0x2b, 0xb9, 0xd4, 0x52, 0xf6, 0xfd, 0xc5, 0x8a, 0x34, 0xcf,
+	0x34, 0x40, 0xfa, 0x9d, 0xe7, 0x07, 0x28, 0xf8, 0x67, 0x7e, 0x80, 0xe2, 0x58, 0x31, 0x43, 0x6b,
+	0x17, 0x63, 0xc5, 0xb7, 0x67, 0xb6, 0x98, 0xb0, 0x94, 0x7d, 0x67, 0xae, 0xdc, 0x5c, 0xe5, 0x2d,
+	0x5a, 0x2f, 0xec, 0x09, 0xdf, 0x9d, 0x59, 0x5b, 0xf2, 0x9c, 0x5d, 0x9f, 0x33, 0x3b, 0xd7, 0x02,
+	0xb4, 0x31, 0xb9, 0x7c, 0x4c, 0x67, 0x36, 0x98, 0x76, 0x8e, 0x7d, 0x6f, 0xfe, 0x02, 0x2d, 0xda,
+	0x7c, 0x76, 0x3a, 0x74, 0xcc, 0xb3, 0xa1, 0x63, 0xfe, 0x1e, 0x3a, 0xe6, 0xe7, 0x91, 0x63, 0x9c,
+	0x8d, 0x1c, 0xe3, 0xe7, 0xc8, 0x31, 0xde, 0x3c, 0x28, 0x18, 0x66, 0xdc, 0xb5, 0x2e, 0xdb, 0x6d,
+	0x11, 0x08, 0xaf, 0x43, 0x8f, 0x13, 0x9f, 0x7e, 0x98, 0xfc, 0xdb, 0xc8, 0x3c, 0xe4, 0x5f, 0xc9,
+	0x7e, 0xc6, 0x0f, 0xfe, 0x06, 0x00, 0x00, 0xff, 0xff, 0xc3, 0x6e, 0x8b, 0x5e, 0x5c, 0x06, 0x00,
+	0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -476,11 +477,11 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type MsgServiceClient interface {
-	SubscribeToNode(ctx context.Context, in *SubscribeToNodeRequest, opts ...grpc.CallOption) (*SubscribeToNodeResponse, error)
-	SubscribeToPlan(ctx context.Context, in *SubscribeToPlanRequest, opts ...grpc.CallOption) (*SubscribeToPlanResponse, error)
-	Cancel(ctx context.Context, in *CancelRequest, opts ...grpc.CallOption) (*CancelResponse, error)
-	AddQuota(ctx context.Context, in *AddQuotaRequest, opts ...grpc.CallOption) (*AddQuotaResponse, error)
-	UpdateQuota(ctx context.Context, in *UpdateQuotaRequest, opts ...grpc.CallOption) (*UpdateQuotaResponse, error)
+	MsgSubscribeToNode(ctx context.Context, in *MsgSubscribeToNodeRequest, opts ...grpc.CallOption) (*MsgSubscribeToNodeResponse, error)
+	MsgSubscribeToPlan(ctx context.Context, in *MsgSubscribeToPlanRequest, opts ...grpc.CallOption) (*MsgSubscribeToPlanResponse, error)
+	MsgCancel(ctx context.Context, in *MsgCancelRequest, opts ...grpc.CallOption) (*MsgCancelResponse, error)
+	MsgAddQuota(ctx context.Context, in *MsgAddQuotaRequest, opts ...grpc.CallOption) (*MsgAddQuotaResponse, error)
+	MsgUpdateQuota(ctx context.Context, in *MsgUpdateQuotaRequest, opts ...grpc.CallOption) (*MsgUpdateQuotaResponse, error)
 }
 
 type msgServiceClient struct {
@@ -491,45 +492,45 @@ func NewMsgServiceClient(cc grpc1.ClientConn) MsgServiceClient {
 	return &msgServiceClient{cc}
 }
 
-func (c *msgServiceClient) SubscribeToNode(ctx context.Context, in *SubscribeToNodeRequest, opts ...grpc.CallOption) (*SubscribeToNodeResponse, error) {
-	out := new(SubscribeToNodeResponse)
-	err := c.cc.Invoke(ctx, "/sentinel.subscription.v1.MsgService/SubscribeToNode", in, out, opts...)
+func (c *msgServiceClient) MsgSubscribeToNode(ctx context.Context, in *MsgSubscribeToNodeRequest, opts ...grpc.CallOption) (*MsgSubscribeToNodeResponse, error) {
+	out := new(MsgSubscribeToNodeResponse)
+	err := c.cc.Invoke(ctx, "/sentinel.subscription.v1.MsgService/MsgSubscribeToNode", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *msgServiceClient) SubscribeToPlan(ctx context.Context, in *SubscribeToPlanRequest, opts ...grpc.CallOption) (*SubscribeToPlanResponse, error) {
-	out := new(SubscribeToPlanResponse)
-	err := c.cc.Invoke(ctx, "/sentinel.subscription.v1.MsgService/SubscribeToPlan", in, out, opts...)
+func (c *msgServiceClient) MsgSubscribeToPlan(ctx context.Context, in *MsgSubscribeToPlanRequest, opts ...grpc.CallOption) (*MsgSubscribeToPlanResponse, error) {
+	out := new(MsgSubscribeToPlanResponse)
+	err := c.cc.Invoke(ctx, "/sentinel.subscription.v1.MsgService/MsgSubscribeToPlan", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *msgServiceClient) Cancel(ctx context.Context, in *CancelRequest, opts ...grpc.CallOption) (*CancelResponse, error) {
-	out := new(CancelResponse)
-	err := c.cc.Invoke(ctx, "/sentinel.subscription.v1.MsgService/Cancel", in, out, opts...)
+func (c *msgServiceClient) MsgCancel(ctx context.Context, in *MsgCancelRequest, opts ...grpc.CallOption) (*MsgCancelResponse, error) {
+	out := new(MsgCancelResponse)
+	err := c.cc.Invoke(ctx, "/sentinel.subscription.v1.MsgService/MsgCancel", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *msgServiceClient) AddQuota(ctx context.Context, in *AddQuotaRequest, opts ...grpc.CallOption) (*AddQuotaResponse, error) {
-	out := new(AddQuotaResponse)
-	err := c.cc.Invoke(ctx, "/sentinel.subscription.v1.MsgService/AddQuota", in, out, opts...)
+func (c *msgServiceClient) MsgAddQuota(ctx context.Context, in *MsgAddQuotaRequest, opts ...grpc.CallOption) (*MsgAddQuotaResponse, error) {
+	out := new(MsgAddQuotaResponse)
+	err := c.cc.Invoke(ctx, "/sentinel.subscription.v1.MsgService/MsgAddQuota", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *msgServiceClient) UpdateQuota(ctx context.Context, in *UpdateQuotaRequest, opts ...grpc.CallOption) (*UpdateQuotaResponse, error) {
-	out := new(UpdateQuotaResponse)
-	err := c.cc.Invoke(ctx, "/sentinel.subscription.v1.MsgService/UpdateQuota", in, out, opts...)
+func (c *msgServiceClient) MsgUpdateQuota(ctx context.Context, in *MsgUpdateQuotaRequest, opts ...grpc.CallOption) (*MsgUpdateQuotaResponse, error) {
+	out := new(MsgUpdateQuotaResponse)
+	err := c.cc.Invoke(ctx, "/sentinel.subscription.v1.MsgService/MsgUpdateQuota", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -538,123 +539,123 @@ func (c *msgServiceClient) UpdateQuota(ctx context.Context, in *UpdateQuotaReque
 
 // MsgServiceServer is the server API for MsgService service.
 type MsgServiceServer interface {
-	SubscribeToNode(context.Context, *SubscribeToNodeRequest) (*SubscribeToNodeResponse, error)
-	SubscribeToPlan(context.Context, *SubscribeToPlanRequest) (*SubscribeToPlanResponse, error)
-	Cancel(context.Context, *CancelRequest) (*CancelResponse, error)
-	AddQuota(context.Context, *AddQuotaRequest) (*AddQuotaResponse, error)
-	UpdateQuota(context.Context, *UpdateQuotaRequest) (*UpdateQuotaResponse, error)
+	MsgSubscribeToNode(context.Context, *MsgSubscribeToNodeRequest) (*MsgSubscribeToNodeResponse, error)
+	MsgSubscribeToPlan(context.Context, *MsgSubscribeToPlanRequest) (*MsgSubscribeToPlanResponse, error)
+	MsgCancel(context.Context, *MsgCancelRequest) (*MsgCancelResponse, error)
+	MsgAddQuota(context.Context, *MsgAddQuotaRequest) (*MsgAddQuotaResponse, error)
+	MsgUpdateQuota(context.Context, *MsgUpdateQuotaRequest) (*MsgUpdateQuotaResponse, error)
 }
 
 // UnimplementedMsgServiceServer can be embedded to have forward compatible implementations.
 type UnimplementedMsgServiceServer struct {
 }
 
-func (*UnimplementedMsgServiceServer) SubscribeToNode(ctx context.Context, req *SubscribeToNodeRequest) (*SubscribeToNodeResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SubscribeToNode not implemented")
+func (*UnimplementedMsgServiceServer) MsgSubscribeToNode(ctx context.Context, req *MsgSubscribeToNodeRequest) (*MsgSubscribeToNodeResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MsgSubscribeToNode not implemented")
 }
-func (*UnimplementedMsgServiceServer) SubscribeToPlan(ctx context.Context, req *SubscribeToPlanRequest) (*SubscribeToPlanResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SubscribeToPlan not implemented")
+func (*UnimplementedMsgServiceServer) MsgSubscribeToPlan(ctx context.Context, req *MsgSubscribeToPlanRequest) (*MsgSubscribeToPlanResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MsgSubscribeToPlan not implemented")
 }
-func (*UnimplementedMsgServiceServer) Cancel(ctx context.Context, req *CancelRequest) (*CancelResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Cancel not implemented")
+func (*UnimplementedMsgServiceServer) MsgCancel(ctx context.Context, req *MsgCancelRequest) (*MsgCancelResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MsgCancel not implemented")
 }
-func (*UnimplementedMsgServiceServer) AddQuota(ctx context.Context, req *AddQuotaRequest) (*AddQuotaResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method AddQuota not implemented")
+func (*UnimplementedMsgServiceServer) MsgAddQuota(ctx context.Context, req *MsgAddQuotaRequest) (*MsgAddQuotaResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MsgAddQuota not implemented")
 }
-func (*UnimplementedMsgServiceServer) UpdateQuota(ctx context.Context, req *UpdateQuotaRequest) (*UpdateQuotaResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UpdateQuota not implemented")
+func (*UnimplementedMsgServiceServer) MsgUpdateQuota(ctx context.Context, req *MsgUpdateQuotaRequest) (*MsgUpdateQuotaResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MsgUpdateQuota not implemented")
 }
 
 func RegisterMsgServiceServer(s grpc1.Server, srv MsgServiceServer) {
 	s.RegisterService(&_MsgService_serviceDesc, srv)
 }
 
-func _MsgService_SubscribeToNode_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SubscribeToNodeRequest)
+func _MsgService_MsgSubscribeToNode_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgSubscribeToNodeRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MsgServiceServer).SubscribeToNode(ctx, in)
+		return srv.(MsgServiceServer).MsgSubscribeToNode(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/sentinel.subscription.v1.MsgService/SubscribeToNode",
+		FullMethod: "/sentinel.subscription.v1.MsgService/MsgSubscribeToNode",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServiceServer).SubscribeToNode(ctx, req.(*SubscribeToNodeRequest))
+		return srv.(MsgServiceServer).MsgSubscribeToNode(ctx, req.(*MsgSubscribeToNodeRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _MsgService_SubscribeToPlan_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SubscribeToPlanRequest)
+func _MsgService_MsgSubscribeToPlan_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgSubscribeToPlanRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MsgServiceServer).SubscribeToPlan(ctx, in)
+		return srv.(MsgServiceServer).MsgSubscribeToPlan(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/sentinel.subscription.v1.MsgService/SubscribeToPlan",
+		FullMethod: "/sentinel.subscription.v1.MsgService/MsgSubscribeToPlan",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServiceServer).SubscribeToPlan(ctx, req.(*SubscribeToPlanRequest))
+		return srv.(MsgServiceServer).MsgSubscribeToPlan(ctx, req.(*MsgSubscribeToPlanRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _MsgService_Cancel_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CancelRequest)
+func _MsgService_MsgCancel_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgCancelRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MsgServiceServer).Cancel(ctx, in)
+		return srv.(MsgServiceServer).MsgCancel(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/sentinel.subscription.v1.MsgService/Cancel",
+		FullMethod: "/sentinel.subscription.v1.MsgService/MsgCancel",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServiceServer).Cancel(ctx, req.(*CancelRequest))
+		return srv.(MsgServiceServer).MsgCancel(ctx, req.(*MsgCancelRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _MsgService_AddQuota_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(AddQuotaRequest)
+func _MsgService_MsgAddQuota_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgAddQuotaRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MsgServiceServer).AddQuota(ctx, in)
+		return srv.(MsgServiceServer).MsgAddQuota(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/sentinel.subscription.v1.MsgService/AddQuota",
+		FullMethod: "/sentinel.subscription.v1.MsgService/MsgAddQuota",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServiceServer).AddQuota(ctx, req.(*AddQuotaRequest))
+		return srv.(MsgServiceServer).MsgAddQuota(ctx, req.(*MsgAddQuotaRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _MsgService_UpdateQuota_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UpdateQuotaRequest)
+func _MsgService_MsgUpdateQuota_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgUpdateQuotaRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MsgServiceServer).UpdateQuota(ctx, in)
+		return srv.(MsgServiceServer).MsgUpdateQuota(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/sentinel.subscription.v1.MsgService/UpdateQuota",
+		FullMethod: "/sentinel.subscription.v1.MsgService/MsgUpdateQuota",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServiceServer).UpdateQuota(ctx, req.(*UpdateQuotaRequest))
+		return srv.(MsgServiceServer).MsgUpdateQuota(ctx, req.(*MsgUpdateQuotaRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -664,31 +665,31 @@ var _MsgService_serviceDesc = grpc.ServiceDesc{
 	HandlerType: (*MsgServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "SubscribeToNode",
-			Handler:    _MsgService_SubscribeToNode_Handler,
+			MethodName: "MsgSubscribeToNode",
+			Handler:    _MsgService_MsgSubscribeToNode_Handler,
 		},
 		{
-			MethodName: "SubscribeToPlan",
-			Handler:    _MsgService_SubscribeToPlan_Handler,
+			MethodName: "MsgSubscribeToPlan",
+			Handler:    _MsgService_MsgSubscribeToPlan_Handler,
 		},
 		{
-			MethodName: "Cancel",
-			Handler:    _MsgService_Cancel_Handler,
+			MethodName: "MsgCancel",
+			Handler:    _MsgService_MsgCancel_Handler,
 		},
 		{
-			MethodName: "AddQuota",
-			Handler:    _MsgService_AddQuota_Handler,
+			MethodName: "MsgAddQuota",
+			Handler:    _MsgService_MsgAddQuota_Handler,
 		},
 		{
-			MethodName: "UpdateQuota",
-			Handler:    _MsgService_UpdateQuota_Handler,
+			MethodName: "MsgUpdateQuota",
+			Handler:    _MsgService_MsgUpdateQuota_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
 	Metadata: "sentinel/subscription/v1/msg.proto",
 }
 
-func (m *SubscribeToNodeRequest) Marshal() (dAtA []byte, err error) {
+func (m *MsgSubscribeToNodeRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -698,12 +699,12 @@ func (m *SubscribeToNodeRequest) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *SubscribeToNodeRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgSubscribeToNodeRequest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *SubscribeToNodeRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgSubscribeToNodeRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -735,7 +736,7 @@ func (m *SubscribeToNodeRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) 
 	return len(dAtA) - i, nil
 }
 
-func (m *SubscribeToPlanRequest) Marshal() (dAtA []byte, err error) {
+func (m *MsgSubscribeToPlanRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -745,12 +746,12 @@ func (m *SubscribeToPlanRequest) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *SubscribeToPlanRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgSubscribeToPlanRequest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *SubscribeToPlanRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgSubscribeToPlanRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -777,7 +778,7 @@ func (m *SubscribeToPlanRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) 
 	return len(dAtA) - i, nil
 }
 
-func (m *CancelRequest) Marshal() (dAtA []byte, err error) {
+func (m *MsgCancelRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -787,12 +788,12 @@ func (m *CancelRequest) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *CancelRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgCancelRequest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *CancelRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgCancelRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -812,7 +813,7 @@ func (m *CancelRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *AddQuotaRequest) Marshal() (dAtA []byte, err error) {
+func (m *MsgAddQuotaRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -822,12 +823,12 @@ func (m *AddQuotaRequest) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *AddQuotaRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgAddQuotaRequest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *AddQuotaRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgAddQuotaRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -864,7 +865,7 @@ func (m *AddQuotaRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *UpdateQuotaRequest) Marshal() (dAtA []byte, err error) {
+func (m *MsgUpdateQuotaRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -874,12 +875,12 @@ func (m *UpdateQuotaRequest) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *UpdateQuotaRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgUpdateQuotaRequest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *UpdateQuotaRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgUpdateQuotaRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -916,7 +917,7 @@ func (m *UpdateQuotaRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *SubscribeToNodeResponse) Marshal() (dAtA []byte, err error) {
+func (m *MsgSubscribeToNodeResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -926,12 +927,12 @@ func (m *SubscribeToNodeResponse) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *SubscribeToNodeResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgSubscribeToNodeResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *SubscribeToNodeResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgSubscribeToNodeResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -939,7 +940,7 @@ func (m *SubscribeToNodeResponse) MarshalToSizedBuffer(dAtA []byte) (int, error)
 	return len(dAtA) - i, nil
 }
 
-func (m *SubscribeToPlanResponse) Marshal() (dAtA []byte, err error) {
+func (m *MsgSubscribeToPlanResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -949,12 +950,12 @@ func (m *SubscribeToPlanResponse) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *SubscribeToPlanResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgSubscribeToPlanResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *SubscribeToPlanResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgSubscribeToPlanResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -962,7 +963,7 @@ func (m *SubscribeToPlanResponse) MarshalToSizedBuffer(dAtA []byte) (int, error)
 	return len(dAtA) - i, nil
 }
 
-func (m *CancelResponse) Marshal() (dAtA []byte, err error) {
+func (m *MsgCancelResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -972,12 +973,12 @@ func (m *CancelResponse) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *CancelResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgCancelResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *CancelResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgCancelResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -985,7 +986,7 @@ func (m *CancelResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *AddQuotaResponse) Marshal() (dAtA []byte, err error) {
+func (m *MsgAddQuotaResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -995,12 +996,12 @@ func (m *AddQuotaResponse) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *AddQuotaResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgAddQuotaResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *AddQuotaResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgAddQuotaResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1008,7 +1009,7 @@ func (m *AddQuotaResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *UpdateQuotaResponse) Marshal() (dAtA []byte, err error) {
+func (m *MsgUpdateQuotaResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1018,12 +1019,12 @@ func (m *UpdateQuotaResponse) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *UpdateQuotaResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgUpdateQuotaResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *UpdateQuotaResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgUpdateQuotaResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1042,7 +1043,7 @@ func encodeVarintMsg(dAtA []byte, offset int, v uint64) int {
 	dAtA[offset] = uint8(v)
 	return base
 }
-func (m *SubscribeToNodeRequest) Size() (n int) {
+func (m *MsgSubscribeToNodeRequest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1061,7 +1062,7 @@ func (m *SubscribeToNodeRequest) Size() (n int) {
 	return n
 }
 
-func (m *SubscribeToPlanRequest) Size() (n int) {
+func (m *MsgSubscribeToPlanRequest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1081,7 +1082,7 @@ func (m *SubscribeToPlanRequest) Size() (n int) {
 	return n
 }
 
-func (m *CancelRequest) Size() (n int) {
+func (m *MsgCancelRequest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1097,29 +1098,7 @@ func (m *CancelRequest) Size() (n int) {
 	return n
 }
 
-func (m *AddQuotaRequest) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	l = len(m.From)
-	if l > 0 {
-		n += 1 + l + sovMsg(uint64(l))
-	}
-	if m.Id != 0 {
-		n += 1 + sovMsg(uint64(m.Id))
-	}
-	l = len(m.Address)
-	if l > 0 {
-		n += 1 + l + sovMsg(uint64(l))
-	}
-	l = m.Bytes.Size()
-	n += 1 + l + sovMsg(uint64(l))
-	return n
-}
-
-func (m *UpdateQuotaRequest) Size() (n int) {
+func (m *MsgAddQuotaRequest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1141,7 +1120,29 @@ func (m *UpdateQuotaRequest) Size() (n int) {
 	return n
 }
 
-func (m *SubscribeToNodeResponse) Size() (n int) {
+func (m *MsgUpdateQuotaRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.From)
+	if l > 0 {
+		n += 1 + l + sovMsg(uint64(l))
+	}
+	if m.Id != 0 {
+		n += 1 + sovMsg(uint64(m.Id))
+	}
+	l = len(m.Address)
+	if l > 0 {
+		n += 1 + l + sovMsg(uint64(l))
+	}
+	l = m.Bytes.Size()
+	n += 1 + l + sovMsg(uint64(l))
+	return n
+}
+
+func (m *MsgSubscribeToNodeResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1150,7 +1151,7 @@ func (m *SubscribeToNodeResponse) Size() (n int) {
 	return n
 }
 
-func (m *SubscribeToPlanResponse) Size() (n int) {
+func (m *MsgSubscribeToPlanResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1159,7 +1160,7 @@ func (m *SubscribeToPlanResponse) Size() (n int) {
 	return n
 }
 
-func (m *CancelResponse) Size() (n int) {
+func (m *MsgCancelResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1168,7 +1169,7 @@ func (m *CancelResponse) Size() (n int) {
 	return n
 }
 
-func (m *AddQuotaResponse) Size() (n int) {
+func (m *MsgAddQuotaResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1177,7 +1178,7 @@ func (m *AddQuotaResponse) Size() (n int) {
 	return n
 }
 
-func (m *UpdateQuotaResponse) Size() (n int) {
+func (m *MsgUpdateQuotaResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1192,7 +1193,7 @@ func sovMsg(x uint64) (n int) {
 func sozMsg(x uint64) (n int) {
 	return sovMsg(uint64((x << 1) ^ uint64((int64(x) >> 63))))
 }
-func (m *SubscribeToNodeRequest) Unmarshal(dAtA []byte) error {
+func (m *MsgSubscribeToNodeRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1215,10 +1216,10 @@ func (m *SubscribeToNodeRequest) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: SubscribeToNodeRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgSubscribeToNodeRequest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: SubscribeToNodeRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgSubscribeToNodeRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -1339,7 +1340,7 @@ func (m *SubscribeToNodeRequest) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *SubscribeToPlanRequest) Unmarshal(dAtA []byte) error {
+func (m *MsgSubscribeToPlanRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1362,10 +1363,10 @@ func (m *SubscribeToPlanRequest) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: SubscribeToPlanRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgSubscribeToPlanRequest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: SubscribeToPlanRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgSubscribeToPlanRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -1472,7 +1473,7 @@ func (m *SubscribeToPlanRequest) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *CancelRequest) Unmarshal(dAtA []byte) error {
+func (m *MsgCancelRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1495,10 +1496,10 @@ func (m *CancelRequest) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: CancelRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgCancelRequest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: CancelRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgCancelRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -1573,7 +1574,7 @@ func (m *CancelRequest) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *AddQuotaRequest) Unmarshal(dAtA []byte) error {
+func (m *MsgAddQuotaRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1596,177 +1597,10 @@ func (m *AddQuotaRequest) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: AddQuotaRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgAddQuotaRequest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: AddQuotaRequest: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field From", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowMsg
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthMsg
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthMsg
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.From = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 2:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Id", wireType)
-			}
-			m.Id = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowMsg
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				m.Id |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-		case 3:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Address", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowMsg
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthMsg
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthMsg
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Address = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 5:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Bytes", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowMsg
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthMsg
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthMsg
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if err := m.Bytes.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipMsg(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthMsg
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *UpdateQuotaRequest) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowMsg
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: UpdateQuotaRequest: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: UpdateQuotaRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgAddQuotaRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -1907,7 +1741,7 @@ func (m *UpdateQuotaRequest) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *SubscribeToNodeResponse) Unmarshal(dAtA []byte) error {
+func (m *MsgUpdateQuotaRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1930,10 +1764,177 @@ func (m *SubscribeToNodeResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: SubscribeToNodeResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgUpdateQuotaRequest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: SubscribeToNodeResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgUpdateQuotaRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field From", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowMsg
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthMsg
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthMsg
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.From = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Id", wireType)
+			}
+			m.Id = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowMsg
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Id |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Address", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowMsg
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthMsg
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthMsg
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Address = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 5:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Bytes", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowMsg
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthMsg
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthMsg
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := m.Bytes.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipMsg(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthMsg
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgSubscribeToNodeResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowMsg
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgSubscribeToNodeResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgSubscribeToNodeResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		default:
@@ -1957,7 +1958,7 @@ func (m *SubscribeToNodeResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *SubscribeToPlanResponse) Unmarshal(dAtA []byte) error {
+func (m *MsgSubscribeToPlanResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1980,10 +1981,10 @@ func (m *SubscribeToPlanResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: SubscribeToPlanResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgSubscribeToPlanResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: SubscribeToPlanResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgSubscribeToPlanResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		default:
@@ -2007,7 +2008,7 @@ func (m *SubscribeToPlanResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *CancelResponse) Unmarshal(dAtA []byte) error {
+func (m *MsgCancelResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -2030,10 +2031,10 @@ func (m *CancelResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: CancelResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgCancelResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: CancelResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgCancelResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		default:
@@ -2057,7 +2058,7 @@ func (m *CancelResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *AddQuotaResponse) Unmarshal(dAtA []byte) error {
+func (m *MsgAddQuotaResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -2080,10 +2081,10 @@ func (m *AddQuotaResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: AddQuotaResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgAddQuotaResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: AddQuotaResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgAddQuotaResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		default:
@@ -2107,7 +2108,7 @@ func (m *AddQuotaResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *UpdateQuotaResponse) Unmarshal(dAtA []byte) error {
+func (m *MsgUpdateQuotaResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -2130,10 +2131,10 @@ func (m *UpdateQuotaResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: UpdateQuotaResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgUpdateQuotaResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: UpdateQuotaResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgUpdateQuotaResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		default:

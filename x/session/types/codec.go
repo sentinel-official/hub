@@ -4,19 +4,31 @@ import (
 	"fmt"
 
 	"github.com/cosmos/cosmos-sdk/codec"
+	"github.com/cosmos/cosmos-sdk/codec/types"
+	crypto "github.com/cosmos/cosmos-sdk/crypto/codec"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/msgservice"
 )
 
 var (
-	ModuleCdc *codec.Codec
+	amino     = codec.NewLegacyAmino()
+	ModuleCdc = codec.NewAminoCodec(amino)
 )
 
 func init() {
-	ModuleCdc = codec.New()
-	codec.RegisterCrypto(ModuleCdc)
-	RegisterCodec(ModuleCdc)
-	ModuleCdc.Seal()
+	RegisterLegacyAminoCodec(amino)
+	crypto.RegisterCrypto(amino)
+	amino.Seal()
 }
 
-func RegisterCodec(cdc *codec.Codec) {
-	cdc.RegisterConcrete(MsgUpsert{}, fmt.Sprintf("x/%s/MsgUpsert", ModuleName), nil)
+func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
+	cdc.RegisterConcrete(MsgUpsertRequest{}, fmt.Sprintf("x/%s/MsgUpsert", ModuleName), nil)
+}
+
+func RegisterInterfaces(registry types.InterfaceRegistry) {
+	registry.RegisterImplementations((*sdk.Msg)(nil),
+		&MsgUpsertRequest{},
+	)
+
+	msgservice.RegisterMsgServiceDesc(registry, &_MsgService_serviceDesc)
 }

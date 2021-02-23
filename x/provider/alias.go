@@ -23,19 +23,20 @@ const (
 
 var (
 	// functions aliases
-	RegisterCodec                           = types.RegisterCodec
+	RegisterLegacyAminoCodec                = types.RegisterLegacyAminoCodec
+	RegisterInterfaces                      = types.RegisterInterfaces
 	NewGenesisState                         = types.NewGenesisState
 	DefaultGenesisState                     = types.DefaultGenesisState
 	ProviderKey                             = types.ProviderKey
-	NewMsgRegister                          = types.NewMsgRegister
-	NewMsgUpdate                            = types.NewMsgUpdate
+	NewMsgRegisterRequest                   = types.NewMsgRegisterRequest
+	NewMsgUpdateRequest                     = types.NewMsgUpdateRequest
 	NewMsgServiceClient                     = types.NewMsgServiceClient
 	RegisterMsgServiceServer                = types.RegisterMsgServiceServer
 	NewParams                               = types.NewParams
 	DefaultParams                           = types.DefaultParams
 	ParamsKeyTable                          = types.ParamsKeyTable
-	NewQueryProviderParams                  = types.NewQueryProviderParams
-	NewQueryProvidersParams                 = types.NewQueryProvidersParams
+	NewQueryProviderRequest                 = types.NewQueryProviderRequest
+	NewQueryProvidersRequest                = types.NewQueryProvidersRequest
 	NewQueryServiceClient                   = types.NewQueryServiceClient
 	RegisterQueryServiceServer              = types.RegisterQueryServiceServer
 	RegisterQueryServiceHandlerServer       = types.RegisterQueryServiceHandlerServer
@@ -82,24 +83,20 @@ var (
 
 type (
 	GenesisState                    = types.GenesisState
-	MsgRegister                     = types.MsgRegister
-	MsgUpdate                       = types.MsgUpdate
-	RegisterRequest                 = types.RegisterRequest
-	UpdateRequest                   = types.UpdateRequest
-	RegisterResponse                = types.RegisterResponse
-	UpdateResponse                  = types.UpdateResponse
+	MsgRegisterRequest              = types.MsgRegisterRequest
+	MsgUpdateRequest                = types.MsgUpdateRequest
+	MsgRegisterResponse             = types.MsgRegisterResponse
+	MsgUpdateResponse               = types.MsgUpdateResponse
 	MsgServiceClient                = types.MsgServiceClient
 	MsgServiceServer                = types.MsgServiceServer
 	UnimplementedMsgServiceServer   = types.UnimplementedMsgServiceServer
 	Params                          = types.Params
 	Providers                       = types.Providers
 	Provider                        = types.Provider
-	QueryProviderParams             = types.QueryProviderParams
-	QueryProvidersParams            = types.QueryProvidersParams
-	ProvidersRequest                = types.ProvidersRequest
-	ProviderRequest                 = types.ProviderRequest
-	ProvidersResponse               = types.ProvidersResponse
-	ProviderResponse                = types.ProviderResponse
+	QueryProvidersRequest           = types.QueryProvidersRequest
+	QueryProviderRequest            = types.QueryProviderRequest
+	QueryProvidersResponse          = types.QueryProvidersResponse
+	QueryProviderResponse           = types.QueryProviderResponse
 	QueryServiceClient              = types.QueryServiceClient
 	QueryServiceServer              = types.QueryServiceServer
 	UnimplementedQueryServiceServer = types.UnimplementedQueryServiceServer

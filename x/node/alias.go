@@ -26,7 +26,8 @@ const (
 
 var (
 	// functions aliases
-	RegisterCodec                           = types.RegisterCodec
+	RegisterLegacyAminoCodec                = types.RegisterLegacyAminoCodec
+	RegisterInterfaces                      = types.RegisterInterfaces
 	NewGenesisState                         = types.NewGenesisState
 	DefaultGenesisState                     = types.DefaultGenesisState
 	NodeKey                                 = types.NodeKey
@@ -43,17 +44,17 @@ var (
 	AddressFromStatusNodeKey                = types.AddressFromStatusNodeKey
 	AddressFromStatusNodeForProviderKey     = types.AddressFromStatusNodeForProviderKey
 	AddressFromStatusNodeAtKey              = types.AddressFromStatusNodeAtKey
-	NewMsgRegister                          = types.NewMsgRegister
-	NewMsgUpdate                            = types.NewMsgUpdate
-	NewMsgSetStatus                         = types.NewMsgSetStatus
+	NewMsgRegisterRequest                   = types.NewMsgRegisterRequest
+	NewMsgUpdateRequest                     = types.NewMsgUpdateRequest
+	NewMsgSetStatusRequest                  = types.NewMsgSetStatusRequest
 	NewMsgServiceClient                     = types.NewMsgServiceClient
 	RegisterMsgServiceServer                = types.RegisterMsgServiceServer
 	NewParams                               = types.NewParams
 	DefaultParams                           = types.DefaultParams
 	ParamsKeyTable                          = types.ParamsKeyTable
-	NewQueryNodeParams                      = types.NewQueryNodeParams
-	NewQueryNodesParams                     = types.NewQueryNodesParams
-	NewQueryNodesForProviderParams          = types.NewQueryNodesForProviderParams
+	NewQueryNodeRequest                     = types.NewQueryNodeRequest
+	NewQueryNodesRequest                    = types.NewQueryNodesRequest
+	NewQueryNodesForProviderRequest         = types.NewQueryNodesForProviderRequest
 	NewQueryServiceClient                   = types.NewQueryServiceClient
 	RegisterQueryServiceServer              = types.RegisterQueryServiceServer
 	RegisterQueryServiceHandlerServer       = types.RegisterQueryServiceHandlerServer
@@ -109,30 +110,24 @@ var (
 
 type (
 	GenesisState                    = types.GenesisState
-	MsgRegister                     = types.MsgRegister
-	MsgUpdate                       = types.MsgUpdate
-	MsgSetStatus                    = types.MsgSetStatus
-	RegisterRequest                 = types.RegisterRequest
-	UpdateRequest                   = types.UpdateRequest
-	SetStatusRequest                = types.SetStatusRequest
-	RegisterResponse                = types.RegisterResponse
-	UpdateResponse                  = types.UpdateResponse
-	SetStatusResponse               = types.SetStatusResponse
+	MsgRegisterRequest              = types.MsgRegisterRequest
+	MsgUpdateRequest                = types.MsgUpdateRequest
+	MsgSetStatusRequest             = types.MsgSetStatusRequest
+	MsgRegisterResponse             = types.MsgRegisterResponse
+	MsgUpdateResponse               = types.MsgUpdateResponse
+	MsgSetStatusResponse            = types.MsgSetStatusResponse
 	MsgServiceClient                = types.MsgServiceClient
 	MsgServiceServer                = types.MsgServiceServer
 	UnimplementedMsgServiceServer   = types.UnimplementedMsgServiceServer
 	Nodes                           = types.Nodes
 	Node                            = types.Node
 	Params                          = types.Params
-	QueryNodeParams                 = types.QueryNodeParams
-	QueryNodesParams                = types.QueryNodesParams
-	QueryNodesForProviderParams     = types.QueryNodesForProviderParams
-	NodesRequest                    = types.NodesRequest
-	NodesForProviderRequest         = types.NodesForProviderRequest
-	NodeRequest                     = types.NodeRequest
-	NodesResponse                   = types.NodesResponse
-	NodesForProviderResponse        = types.NodesForProviderResponse
-	NodeResponse                    = types.NodeResponse
+	QueryNodesRequest               = types.QueryNodesRequest
+	QueryNodesForProviderRequest    = types.QueryNodesForProviderRequest
+	QueryNodeRequest                = types.QueryNodeRequest
+	QueryNodesResponse              = types.QueryNodesResponse
+	QueryNodesForProviderResponse   = types.QueryNodesForProviderResponse
+	QueryNodeResponse               = types.QueryNodeResponse
 	QueryServiceClient              = types.QueryServiceClient
 	QueryServiceServer              = types.QueryServiceServer
 	UnimplementedQueryServiceServer = types.UnimplementedQueryServiceServer
