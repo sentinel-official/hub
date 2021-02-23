@@ -3,12 +3,10 @@
 // aliases generated for the following subdirectories:
 // ALIASGEN: github.com/sentinel-official/hub/x/session/types
 // ALIASGEN: github.com/sentinel-official/hub/x/session/keeper
-// ALIASGEN: github.com/sentinel-official/hub/x/session/querier
 package session
 
 import (
 	"github.com/sentinel-official/hub/x/session/keeper"
-	"github.com/sentinel-official/hub/x/session/querier"
 	"github.com/sentinel-official/hub/x/session/types"
 )
 
@@ -68,7 +66,6 @@ var (
 	RegisterQueryServiceHandler             = types.RegisterQueryServiceHandler
 	RegisterQueryServiceHandlerClient       = types.RegisterQueryServiceHandlerClient
 	NewKeeper                               = keeper.NewKeeper
-	Querier                                 = querier.Querier
 
 	// variable aliases
 	ModuleCdc                       = types.ModuleCdc
@@ -140,4 +137,5 @@ type (
 	Sessions                             = types.Sessions
 	Session                              = types.Session
 	Keeper                               = keeper.Keeper
+	Querier                              = keeper.Querier
 )
