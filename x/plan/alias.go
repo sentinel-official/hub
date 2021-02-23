@@ -3,12 +3,10 @@
 // aliases generated for the following subdirectories:
 // ALIASGEN: github.com/sentinel-official/hub/x/plan/types
 // ALIASGEN: github.com/sentinel-official/hub/x/plan/keeper
-// ALIASGEN: github.com/sentinel-official/hub/x/plan/querier
 package plan
 
 import (
 	"github.com/sentinel-official/hub/x/plan/keeper"
-	"github.com/sentinel-official/hub/x/plan/querier"
 	"github.com/sentinel-official/hub/x/plan/types"
 )
 
@@ -60,7 +58,6 @@ var (
 	RegisterQueryServiceHandler             = types.RegisterQueryServiceHandler
 	RegisterQueryServiceHandlerClient       = types.RegisterQueryServiceHandlerClient
 	NewKeeper                               = keeper.NewKeeper
-	Querier                                 = querier.Querier
 
 	// variable aliases
 	ModuleCdc                        = types.ModuleCdc
@@ -131,4 +128,5 @@ type (
 	QueryServiceServer              = types.QueryServiceServer
 	UnimplementedQueryServiceServer = types.UnimplementedQueryServiceServer
 	Keeper                          = keeper.Keeper
+	Querier                         = keeper.Querier
 )

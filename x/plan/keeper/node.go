@@ -2,6 +2,7 @@ package keeper
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	protobuf "github.com/gogo/protobuf/types"
 
 	hub "github.com/sentinel-official/hub/types"
 	node "github.com/sentinel-official/hub/x/node/types"
@@ -10,7 +11,7 @@ import (
 
 func (k Keeper) SetNodeForPlan(ctx sdk.Context, id uint64, address hub.NodeAddress) {
 	key := types.NodeForPlanKey(id, address)
-	value := k.cdc.MustMarshalBinaryLengthPrefixed(true)
+	value := k.cdc.MustMarshalBinaryBare(&protobuf.BoolValue{Value: true})
 
 	store := k.Store(ctx)
 	store.Set(key, value)
