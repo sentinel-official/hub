@@ -8,7 +8,7 @@ import "cosmos/base/v1beta1/coin.proto";
 
 import "sentinel/types/v1/status.proto";
 
-message SubscribeToNodeRequest {
+message MsgSubscribeToNodeRequest {
   option (gogoproto.equal)            = false;
   option (gogoproto.goproto_getters)  = false;
   option (gogoproto.goproto_stringer) = true;
@@ -18,7 +18,7 @@ message SubscribeToNodeRequest {
   cosmos.base.v1beta1.Coin deposit = 3 [ (gogoproto.nullable) = false ];
 }
 
-message SubscribeToPlanRequest {
+message MsgSubscribeToPlanRequest {
   option (gogoproto.equal)            = false;
   option (gogoproto.goproto_getters)  = false;
   option (gogoproto.goproto_stringer) = true;
@@ -28,7 +28,7 @@ message SubscribeToPlanRequest {
   string denom = 3;
 }
 
-message CancelRequest {
+message MsgCancelRequest {
   option (gogoproto.equal)            = false;
   option (gogoproto.goproto_getters)  = false;
   option (gogoproto.goproto_stringer) = true;
@@ -37,7 +37,7 @@ message CancelRequest {
   uint64 id   = 2;
 }
 
-message AddQuotaRequest {
+message MsgAddQuotaRequest {
   option (gogoproto.equal)            = false;
   option (gogoproto.goproto_getters)  = false;
   option (gogoproto.goproto_stringer) = true;
@@ -51,7 +51,7 @@ message AddQuotaRequest {
   ];
 }
 
-message UpdateQuotaRequest {
+message MsgUpdateQuotaRequest {
   option (gogoproto.equal)            = false;
   option (gogoproto.goproto_getters)  = false;
   option (gogoproto.goproto_stringer) = true;
@@ -65,16 +65,18 @@ message UpdateQuotaRequest {
   ];
 }
 
-message SubscribeToNodeResponse {}
-message SubscribeToPlanResponse {}
-message CancelResponse {}
-message AddQuotaResponse {}
-message UpdateQuotaResponse {}
+message MsgSubscribeToNodeResponse {}
+message MsgSubscribeToPlanResponse {}
+message MsgCancelResponse {}
+message MsgAddQuotaResponse {}
+message MsgUpdateQuotaResponse {}
 
 service MsgService {
-  rpc SubscribeToNode(SubscribeToNodeRequest) returns (SubscribeToNodeResponse);
-  rpc SubscribeToPlan(SubscribeToPlanRequest) returns (SubscribeToPlanResponse);
-  rpc Cancel(CancelRequest) returns (CancelResponse);
-  rpc AddQuota(AddQuotaRequest) returns (AddQuotaResponse);
-  rpc UpdateQuota(UpdateQuotaRequest) returns (UpdateQuotaResponse);
+  rpc MsgSubscribeToNode(MsgSubscribeToNodeRequest)
+      returns (MsgSubscribeToNodeResponse);
+  rpc MsgSubscribeToPlan(MsgSubscribeToPlanRequest)
+      returns (MsgSubscribeToPlanResponse);
+  rpc MsgCancel(MsgCancelRequest) returns (MsgCancelResponse);
+  rpc MsgAddQuota(MsgAddQuotaRequest) returns (MsgAddQuotaResponse);
+  rpc MsgUpdateQuota(MsgUpdateQuotaRequest) returns (MsgUpdateQuotaResponse);
 }

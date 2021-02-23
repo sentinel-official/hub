@@ -8,7 +8,7 @@ import "cosmos/base/v1beta1/coin.proto";
 
 import "sentinel/types/v1/status.proto";
 
-message RegisterRequest {
+message MsgRegisterRequest {
   option (gogoproto.equal)            = false;
   option (gogoproto.goproto_getters)  = false;
   option (gogoproto.goproto_stringer) = true;
@@ -22,7 +22,7 @@ message RegisterRequest {
   string remote_url = 4;
 }
 
-message UpdateRequest {
+message MsgUpdateRequest {
   option (gogoproto.equal)            = false;
   option (gogoproto.goproto_getters)  = false;
   option (gogoproto.goproto_stringer) = true;
@@ -36,7 +36,7 @@ message UpdateRequest {
   string remote_url = 4;
 }
 
-message SetStatusRequest {
+message MsgSetStatusRequest {
   option (gogoproto.equal)            = false;
   option (gogoproto.goproto_getters)  = false;
   option (gogoproto.goproto_stringer) = true;
@@ -45,12 +45,12 @@ message SetStatusRequest {
   sentinel.types.v1.Status status = 2;
 }
 
-message RegisterResponse {}
-message UpdateResponse {}
-message SetStatusResponse {}
+message MsgRegisterResponse {}
+message MsgUpdateResponse {}
+message MsgSetStatusResponse {}
 
 service MsgService {
-  rpc Register(RegisterRequest) returns (RegisterResponse);
-  rpc Update(UpdateRequest) returns (UpdateResponse);
-  rpc SetStatus(SetStatusRequest) returns (SetStatusResponse);
+  rpc MsgRegister(MsgRegisterRequest) returns (MsgRegisterResponse);
+  rpc MsgUpdate(MsgUpdateRequest) returns (MsgUpdateResponse);
+  rpc MsgSetStatus(MsgSetStatusRequest) returns (MsgSetStatusResponse);
 }

@@ -10,7 +10,7 @@ import "google/api/annotations.proto";
 import "sentinel/types/v1/status.proto";
 import "sentinel/node/v1/node.proto";
 
-message NodesRequest {
+message QueryNodesRequest {
   option (gogoproto.equal)           = false;
   option (gogoproto.goproto_getters) = false;
 
@@ -18,7 +18,7 @@ message NodesRequest {
   cosmos.base.query.v1beta1.PageRequest pagination = 2;
 }
 
-message NodesForProviderRequest {
+message QueryNodesForProviderRequest {
   option (gogoproto.equal)           = false;
   option (gogoproto.goproto_getters) = false;
 
@@ -27,14 +27,14 @@ message NodesForProviderRequest {
   cosmos.base.query.v1beta1.PageRequest pagination = 3;
 }
 
-message NodeRequest {
+message QueryNodeRequest {
   option (gogoproto.equal)           = false;
   option (gogoproto.goproto_getters) = false;
 
   string address = 1;
 }
 
-message NodesResponse {
+message QueryNodesResponse {
   option (gogoproto.equal)           = false;
   option (gogoproto.goproto_getters) = false;
 
@@ -42,7 +42,7 @@ message NodesResponse {
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
-message NodesForProviderResponse {
+message QueryNodesForProviderResponse {
   option (gogoproto.equal)           = false;
   option (gogoproto.goproto_getters) = false;
 
@@ -50,7 +50,7 @@ message NodesForProviderResponse {
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
-message NodeResponse {
+message QueryNodeResponse {
   option (gogoproto.equal)           = false;
   option (gogoproto.goproto_getters) = false;
 
@@ -58,16 +58,16 @@ message NodeResponse {
 }
 
 service QueryService {
-  rpc Nodes(NodesRequest) returns (NodesResponse) {
+  rpc QueryNodes(QueryNodesRequest) returns (QueryNodesResponse) {
     option (google.api.http).get = "/nodes";
   }
 
-  rpc NodesForProvider(NodesForProviderRequest)
-      returns (NodesForProviderResponse) {
+  rpc QueryNodesForProvider(QueryNodesForProviderRequest)
+      returns (QueryNodesForProviderResponse) {
     option (google.api.http).get = "/providers/{address}/nodes";
   }
 
-  rpc Node(NodeRequest) returns (NodeResponse) {
+  rpc QueryNode(QueryNodeRequest) returns (QueryNodeResponse) {
     option (google.api.http).get = "/nodes/{address}";
   }
 }

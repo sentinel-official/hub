@@ -9,21 +9,21 @@ import "google/api/annotations.proto";
 
 import "sentinel/deposit/v1/deposit.proto";
 
-message DepositsRequest {
+message QueryDepositsRequest {
   option (gogoproto.equal)           = false;
   option (gogoproto.goproto_getters) = false;
 
   cosmos.base.query.v1beta1.PageRequest pagination = 1;
 }
 
-message DepositRequest {
+message QueryDepositRequest {
   option (gogoproto.equal)           = false;
   option (gogoproto.goproto_getters) = false;
 
   string address = 1;
 }
 
-message DepositsResponse {
+message QueryDepositsResponse {
   option (gogoproto.equal)           = false;
   option (gogoproto.goproto_getters) = false;
 
@@ -31,7 +31,7 @@ message DepositsResponse {
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
-message DepositResponse {
+message QueryDepositResponse {
   option (gogoproto.equal)           = false;
   option (gogoproto.goproto_getters) = false;
 
@@ -39,11 +39,11 @@ message DepositResponse {
 }
 
 service QueryService {
-  rpc Deposits(DepositsRequest) returns (DepositsResponse) {
+  rpc QueryDeposits(QueryDepositsRequest) returns (QueryDepositsResponse) {
     option (google.api.http).get = "/deposits";
   }
 
-  rpc Deposit(DepositRequest) returns (DepositResponse) {
+  rpc QueryDeposit(QueryDepositRequest) returns (QueryDepositResponse) {
     option (google.api.http).get = "/accounts/{address}/deposits";
   }
 }

@@ -9,7 +9,7 @@ import "google/protobuf/duration.proto";
 
 import "sentinel/types/v1/status.proto";
 
-message AddRequest {
+message MsgAddRequest {
   option (gogoproto.equal)            = false;
   option (gogoproto.goproto_getters)  = false;
   option (gogoproto.goproto_stringer) = true;
@@ -27,7 +27,7 @@ message AddRequest {
   ];
 }
 
-message SetStatusRequest {
+message MsgSetStatusRequest {
   option (gogoproto.equal)            = false;
   option (gogoproto.goproto_getters)  = false;
   option (gogoproto.goproto_stringer) = true;
@@ -37,7 +37,7 @@ message SetStatusRequest {
   sentinel.types.v1.Status status = 3;
 }
 
-message AddNodeRequest {
+message MsgAddNodeRequest {
   option (gogoproto.equal)            = false;
   option (gogoproto.goproto_getters)  = false;
   option (gogoproto.goproto_stringer) = true;
@@ -47,7 +47,7 @@ message AddNodeRequest {
   string address = 3;
 }
 
-message RemoveNodeRequest {
+message MsgRemoveNodeRequest {
   option (gogoproto.equal)            = false;
   option (gogoproto.goproto_getters)  = false;
   option (gogoproto.goproto_stringer) = true;
@@ -57,14 +57,14 @@ message RemoveNodeRequest {
   string address = 3;
 }
 
-message AddResponse {}
-message SetStatusResponse {}
-message AddNodeResponse {}
-message RemoveNodeResponse {}
+message MsgAddResponse {}
+message MsgSetStatusResponse {}
+message MsgAddNodeResponse {}
+message MsgRemoveNodeResponse {}
 
 service MsgService {
-  rpc Add(AddRequest) returns (AddResponse);
-  rpc SetStatus(SetStatusRequest) returns (SetStatusResponse);
-  rpc AddNode(AddNodeRequest) returns (AddNodeResponse);
-  rpc RemoveNode(RemoveNodeRequest) returns (RemoveNodeResponse);
+  rpc MsgAdd(MsgAddRequest) returns (MsgAddResponse);
+  rpc MsgSetStatus(MsgSetStatusRequest) returns (MsgSetStatusResponse);
+  rpc MsgAddNode(MsgAddNodeRequest) returns (MsgAddNodeResponse);
+  rpc MsgRemoveNode(MsgRemoveNodeRequest) returns (MsgRemoveNodeResponse);
 }

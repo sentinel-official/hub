@@ -9,21 +9,21 @@ import "google/api/annotations.proto";
 
 import "sentinel/provider/v1/provider.proto";
 
-message ProvidersRequest {
+message QueryProvidersRequest {
   option (gogoproto.equal)           = false;
   option (gogoproto.goproto_getters) = false;
 
   cosmos.base.query.v1beta1.PageRequest pagination = 1;
 }
 
-message ProviderRequest {
+message QueryProviderRequest {
   option (gogoproto.equal)           = false;
   option (gogoproto.goproto_getters) = false;
 
   string address = 1;
 }
 
-message ProvidersResponse {
+message QueryProvidersResponse {
   option (gogoproto.equal)           = false;
   option (gogoproto.goproto_getters) = false;
 
@@ -31,7 +31,7 @@ message ProvidersResponse {
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
-message ProviderResponse {
+message QueryProviderResponse {
   option (gogoproto.equal)           = false;
   option (gogoproto.goproto_getters) = false;
 
@@ -39,11 +39,11 @@ message ProviderResponse {
 }
 
 service QueryService {
-  rpc Providers(ProvidersRequest) returns (ProvidersResponse) {
+  rpc QueryProviders(QueryProvidersRequest) returns (QueryProvidersResponse) {
     option (google.api.http).get = "/providers";
   }
 
-  rpc Provider(ProviderRequest) returns (ProviderResponse) {
+  rpc QueryProvider(QueryProviderRequest) returns (QueryProviderResponse) {
     option (google.api.http).get = "/providers/{address}";
   }
 }

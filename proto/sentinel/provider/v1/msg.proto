@@ -5,7 +5,7 @@ option go_package = "github.com/sentinel-official/hub/x/provider/types";
 
 import "gogoproto/gogo.proto";
 
-message RegisterRequest {
+message MsgRegisterRequest {
   option (gogoproto.equal)            = false;
   option (gogoproto.goproto_getters)  = false;
   option (gogoproto.goproto_stringer) = true;
@@ -17,7 +17,7 @@ message RegisterRequest {
   string description = 5;
 }
 
-message UpdateRequest {
+message MsgUpdateRequest {
   option (gogoproto.equal)            = false;
   option (gogoproto.goproto_getters)  = false;
   option (gogoproto.goproto_stringer) = true;
@@ -29,10 +29,10 @@ message UpdateRequest {
   string description = 5;
 }
 
-message RegisterResponse {}
-message UpdateResponse {}
+message MsgRegisterResponse {}
+message MsgUpdateResponse {}
 
 service MsgService {
-  rpc Register(RegisterRequest) returns (RegisterResponse);
-  rpc Update(UpdateRequest) returns (UpdateResponse);
+  rpc MsgRegister(MsgRegisterRequest) returns (MsgRegisterResponse);
+  rpc MsgUpdate(MsgUpdateRequest) returns (MsgUpdateResponse);
 }

@@ -10,14 +10,14 @@ import "google/api/annotations.proto";
 import "sentinel/types/v1/status.proto";
 import "sentinel/session/v1/session.proto";
 
-message SessionsRequest {
+message QuerySessionsRequest {
   option (gogoproto.equal)           = false;
   option (gogoproto.goproto_getters) = false;
 
   cosmos.base.query.v1beta1.PageRequest pagination = 1;
 }
 
-message SessionsForSubscriptionRequest {
+message QuerySessionsForSubscriptionRequest {
   option (gogoproto.equal)           = false;
   option (gogoproto.goproto_getters) = false;
 
@@ -25,7 +25,7 @@ message SessionsForSubscriptionRequest {
   cosmos.base.query.v1beta1.PageRequest pagination = 2;
 }
 
-message SessionsForNodeRequest {
+message QuerySessionsForNodeRequest {
   option (gogoproto.equal)           = false;
   option (gogoproto.goproto_getters) = false;
 
@@ -33,7 +33,7 @@ message SessionsForNodeRequest {
   cosmos.base.query.v1beta1.PageRequest pagination = 2;
 }
 
-message SessionsForAddressRequest {
+message QuerySessionsForAddressRequest {
   option (gogoproto.equal)           = false;
   option (gogoproto.goproto_getters) = false;
 
@@ -42,14 +42,14 @@ message SessionsForAddressRequest {
   cosmos.base.query.v1beta1.PageRequest pagination = 3;
 }
 
-message SessionRequest {
+message QuerySessionRequest {
   option (gogoproto.equal)           = false;
   option (gogoproto.goproto_getters) = false;
 
   uint64 id = 1;
 }
 
-message OngoingSessionRequest {
+message QueryOngoingSessionRequest {
   option (gogoproto.equal)           = false;
   option (gogoproto.goproto_getters) = false;
 
@@ -57,7 +57,7 @@ message OngoingSessionRequest {
   string address = 2;
 }
 
-message SessionsResponse {
+message QuerySessionsResponse {
   option (gogoproto.equal)           = false;
   option (gogoproto.goproto_getters) = false;
 
@@ -65,7 +65,7 @@ message SessionsResponse {
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
-message SessionsForSubscriptionResponse {
+message QuerySessionsForSubscriptionResponse {
   option (gogoproto.equal)           = false;
   option (gogoproto.goproto_getters) = false;
 
@@ -73,7 +73,7 @@ message SessionsForSubscriptionResponse {
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
-message SessionsForNodeResponse {
+message QuerySessionsForNodeResponse {
   option (gogoproto.equal)           = false;
   option (gogoproto.goproto_getters) = false;
 
@@ -81,7 +81,7 @@ message SessionsForNodeResponse {
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
-message SessionsForAddressResponse {
+message QuerySessionsForAddressResponse {
   option (gogoproto.equal)           = false;
   option (gogoproto.goproto_getters) = false;
 
@@ -89,14 +89,14 @@ message SessionsForAddressResponse {
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
-message SessionResponse {
+message QuerySessionResponse {
   option (gogoproto.equal)           = false;
   option (gogoproto.goproto_getters) = false;
 
   Session session = 1 [ (gogoproto.nullable) = false ];
 }
 
-message OngoingSessionResponse {
+message QueryOngoingSessionResponse {
   option (gogoproto.equal)           = false;
   option (gogoproto.goproto_getters) = false;
 
@@ -104,30 +104,31 @@ message OngoingSessionResponse {
 }
 
 service QueryService {
-  rpc Sessions(SessionsRequest) returns (SessionsResponse) {
+  rpc QuerySessions(QuerySessionsRequest) returns (QuerySessionsResponse) {
     option (google.api.http).get = "/sessions";
   }
 
-  rpc SessionsForNode(SessionsForNodeRequest)
-      returns (SessionsForNodeResponse) {
+  rpc QuerySessionsForNode(QuerySessionsForNodeRequest)
+      returns (QuerySessionsForNodeResponse) {
     option (google.api.http).get = "/nodes/{address}/sessions";
   }
 
-  rpc SessionsForSubscription(SessionsForSubscriptionRequest)
-      returns (SessionsForSubscriptionResponse) {
+  rpc QuerySessionsForSubscription(QuerySessionsForSubscriptionRequest)
+      returns (QuerySessionsForSubscriptionResponse) {
     option (google.api.http).get = "/subscriptions/{id}/sessions";
   }
 
-  rpc SessionsForAddress(SessionsForAddressRequest)
-      returns (SessionsForAddressResponse) {
+  rpc QuerySessionsForAddress(QuerySessionsForAddressRequest)
+      returns (QuerySessionsForAddressResponse) {
     option (google.api.http).get = "/accounts/{address}/sessions";
   }
 
-  rpc Session(SessionRequest) returns (SessionResponse) {
+  rpc QuerySession(QuerySessionRequest) returns (QuerySessionResponse) {
     option (google.api.http).get = "/sessions/{id}";
   }
 
-  rpc OngoingSession(OngoingSessionRequest) returns (OngoingSessionResponse) {
+  rpc QueryOngoingSession(QueryOngoingSessionRequest)
+      returns (QueryOngoingSessionResponse) {
     option (google.api.http).get = "/accounts/{address}/sessions/ongoing";
   }
 }
