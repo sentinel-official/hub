@@ -9,6 +9,19 @@ import (
 	hub "github.com/sentinel-official/hub/types"
 )
 
+func (n Node) GetAddress() hub.NodeAddress {
+	if n.Address == "" {
+		return nil
+	}
+
+	address, err := hub.NodeAddressFromBech32(n.Address)
+	if err != nil {
+		panic(err)
+	}
+
+	return address
+}
+
 func (n Node) String() string {
 	if n.Provider == "" {
 		return strings.TrimSpace(fmt.Sprintf(`
