@@ -22,6 +22,7 @@ func NewMsgUpsertRequest(from string, id uint64, address string, duration time.D
 		Address:   address,
 		Duration:  duration,
 		Bandwidth: bandwidth,
+		Signature: signature,
 	}
 }
 
@@ -56,6 +57,11 @@ func (m MsgUpsertRequest) ValidateBasic() error {
 	// Bandwidth shouldn't be negative
 	if m.Bandwidth.IsAnyNegative() {
 		return errors.Wrapf(ErrorInvalidField, "%s", "bandwidth")
+	}
+
+	// Signature can be nil, if not length should be 64
+	if m.Signature != nil && len(m.Signature) != 64 {
+		return errors.Wrapf(ErrorInvalidField, "%s", "signature")
 	}
 
 	return nil

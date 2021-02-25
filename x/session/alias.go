@@ -11,19 +11,20 @@ import (
 )
 
 const (
-	AttributeKeyCount            = types.AttributeKeyCount
-	AttributeKeyID               = types.AttributeKeyID
-	AttributeKeySubscription     = types.AttributeKeySubscription
-	AttributeKeyAddress          = types.AttributeKeyAddress
-	ModuleName                   = types.ModuleName
-	QuerierRoute                 = types.QuerierRoute
-	DefaultInactiveDuration      = types.DefaultInactiveDuration
-	QuerySession                 = types.QuerySession
-	QuerySessions                = types.QuerySessions
-	QuerySessionsForSubscription = types.QuerySessionsForSubscription
-	QuerySessionsForNode         = types.QuerySessionsForNode
-	QuerySessionsForAddress      = types.QuerySessionsForAddress
-	QueryOngoingSession          = types.QueryOngoingSession
+	AttributeKeyCount               = types.AttributeKeyCount
+	AttributeKeyID                  = types.AttributeKeyID
+	AttributeKeySubscription        = types.AttributeKeySubscription
+	AttributeKeyAddress             = types.AttributeKeyAddress
+	ModuleName                      = types.ModuleName
+	QuerierRoute                    = types.QuerierRoute
+	DefaultInactiveDuration         = types.DefaultInactiveDuration
+	DefaultProofVerificationEnabled = types.DefaultProofVerificationEnabled
+	QuerySession                    = types.QuerySession
+	QuerySessions                   = types.QuerySessions
+	QuerySessionsForSubscription    = types.QuerySessionsForSubscription
+	QuerySessionsForNode            = types.QuerySessionsForNode
+	QuerySessionsForAddress         = types.QuerySessionsForAddress
+	QueryOngoingSession             = types.QueryOngoingSession
 )
 
 var (
@@ -78,6 +79,7 @@ var (
 	ErrorInvalidSubscriptionStatus  = types.ErrorInvalidSubscriptionStatus
 	ErrorUnauthorized               = types.ErrorUnauthorized
 	ErrorQuotaDoesNotExist          = types.ErrorQuotaDoesNotExist
+	ErrorFailedToVerifyProof        = types.ErrorFailedToVerifyProof
 	ErrorInvalidBandwidth           = types.ErrorInvalidBandwidth
 	EventTypeSetCount               = types.EventTypeSetCount
 	EventTypeSetActive              = types.EventTypeSetActive

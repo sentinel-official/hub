@@ -2,6 +2,7 @@ package cli
 
 import (
 	"bufio"
+	"encoding/hex"
 	"strconv"
 	"time"
 
@@ -18,7 +19,7 @@ import (
 
 func txUpsert(cdc *codec.Codec) *cobra.Command {
 	return &cobra.Command{
-		Use:   "upsert [subscription] [address] [duration] [upload] [download]",
+		Use:   "upsert [subscription] [address] [duration] [upload] [download] (signature)",
 		Short: "Add or update a session",
 		Args:  cobra.ExactArgs(5),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -51,8 +52,16 @@ func txUpsert(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgUpsert(ctx.FromAddress.Bytes(),
-				subscription, address, duration, hub.NewBandwidthFromInt64(upload, download))
+			var signature []byte
+			if len(args[5]) > 0 {
+				signature, err = hex.DecodeString(args[5])
+				if err != nil {
+					return err
+				}
+			}
+
+			msg := types.NewMsgUpsert(ctx.FromAddress.Bytes(), subscription, address,
+				duration, hub.NewBandwidthFromInt64(upload, download), signature)
 			if err := msg.ValidateBasic(); err != nil {
 				return err
 			}

@@ -3,9 +3,11 @@ package keeper
 import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	bank "github.com/cosmos/cosmos-sdk/x/bank/keeper"
-	distribution "github.com/cosmos/cosmos-sdk/x/distribution/keeper"
-	params "github.com/cosmos/cosmos-sdk/x/params/keeper"
+	"github.com/cosmos/cosmos-sdk/x/auth"
+	"github.com/cosmos/cosmos-sdk/x/bank"
+	"github.com/cosmos/cosmos-sdk/x/distribution"
+	"github.com/cosmos/cosmos-sdk/x/params"
+	"github.com/cosmos/cosmos-sdk/x/supply"
 
 	"github.com/sentinel-official/hub/x/deposit"
 	"github.com/sentinel-official/hub/x/node"
@@ -24,8 +26,8 @@ type Keeper struct {
 	Session      session.Keeper
 }
 
-func NewKeeper(cdc codec.BinaryMarshaler, key sdk.StoreKey, paramsKeeper params.Keeper,
-	bankKeeper bank.Keeper, distributionKeeper distribution.Keeper) Keeper {
+func NewKeeper(cdc *codec.Codec, key sdk.StoreKey, paramsKeeper params.Keeper, accountKeeper auth.AccountKeeper,
+	bankKeeper bank.Keeper, distributionKeeper distribution.Keeper, supplyKeeper supply.Keeper) Keeper {
 	var (
 		depositKeeper      = deposit.NewKeeper(cdc, key)
 		providerKeeper     = provider.NewKeeper(cdc, key, paramsKeeper.Subspace(provider.ParamsSubspace))
@@ -51,6 +53,7 @@ func NewKeeper(cdc codec.BinaryMarshaler, key sdk.StoreKey, paramsKeeper params.
 	subscriptionKeeper.WithNodeKeeper(&nodeKeeper)
 	subscriptionKeeper.WithPlanKeeper(&planKeeper)
 
+	sessionKeeper.WithAccountKeeper(accountKeeper)
 	sessionKeeper.WithDepositKeeper(depositKeeper)
 	sessionKeeper.WithPlanKeeper(&planKeeper)
 	sessionKeeper.WithSubscriptionKeeper(&subscriptionKeeper)
