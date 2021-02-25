@@ -22,16 +22,18 @@ type MsgUpsert struct {
 	Address   sdk.AccAddress  `json:"address"`
 	Duration  time.Duration   `json:"duration"`
 	Bandwidth hub.Bandwidth   `json:"bandwidth"`
+	Signature []byte          `json:"signature,omitempty"`
 }
 
 func NewMsgUpsert(from hub.NodeAddress, id uint64, address sdk.AccAddress,
-	duration time.Duration, bandwidth hub.Bandwidth) MsgUpsert {
+	duration time.Duration, bandwidth hub.Bandwidth, signature []byte) MsgUpsert {
 	return MsgUpsert{
 		From:      from,
 		ID:        id,
 		Address:   address,
 		Duration:  duration,
 		Bandwidth: bandwidth,
+		Signature: signature,
 	}
 }
 
@@ -66,6 +68,11 @@ func (m MsgUpsert) ValidateBasic() error {
 	// Bandwidth shouldn't be negative
 	if m.Bandwidth.IsAnyNegative() {
 		return errors.Wrapf(ErrorInvalidField, "%s", "bandwidth")
+	}
+
+	// Signature can be nil, if not length should be 64
+	if m.Signature != nil && len(m.Signature) != 64 {
+		return errors.Wrapf(ErrorInvalidField, "%s", "signature")
 	}
 
 	return nil

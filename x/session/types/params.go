@@ -9,23 +9,27 @@ import (
 )
 
 const (
-	DefaultInactiveDuration = 5 * time.Minute
+	DefaultInactiveDuration         = 5 * time.Minute
+	DefaultProofVerificationEnabled = false
 )
 
 var (
-	KeyInactiveDuration = []byte("InactiveDuration")
+	KeyInactiveDuration         = []byte("InactiveDuration")
+	KeyProofVerificationEnabled = []byte("ProofVerificationEnabled")
 )
 
 var _ params.ParamSet = (*Params)(nil)
 
 type Params struct {
-	InactiveDuration time.Duration `json:"inactive_duration"`
+	InactiveDuration         time.Duration `json:"inactive_duration"`
+	ProofVerificationEnabled bool          `json:"proof_verification_enabled"`
 }
 
 func (p Params) String() string {
 	return fmt.Sprintf(strings.TrimSpace(`
-Inactive duration: %s
-`), p.InactiveDuration)
+Inactive duration:          %s
+Proof verification enabled: %t
+`), p.InactiveDuration, p.ProofVerificationEnabled)
 }
 
 func (p *Params) ParamSetPairs() params.ParamSetPairs {
@@ -33,6 +37,13 @@ func (p *Params) ParamSetPairs() params.ParamSetPairs {
 		{
 			Key:   KeyInactiveDuration,
 			Value: &p.InactiveDuration,
+			ValidatorFn: func(_ interface{}) error {
+				return nil
+			},
+		},
+		{
+			Key:   KeyProofVerificationEnabled,
+			Value: &p.ProofVerificationEnabled,
 			ValidatorFn: func(_ interface{}) error {
 				return nil
 			},
@@ -48,15 +59,17 @@ func (p Params) Validate() error {
 	return nil
 }
 
-func NewParams(inactiveDuration time.Duration) Params {
+func NewParams(inactiveDuration time.Duration, proofVerificationEnabled bool) Params {
 	return Params{
-		InactiveDuration: inactiveDuration,
+		InactiveDuration:         inactiveDuration,
+		ProofVerificationEnabled: proofVerificationEnabled,
 	}
 }
 
 func DefaultParams() Params {
 	return Params{
-		InactiveDuration: DefaultInactiveDuration,
+		InactiveDuration:         DefaultInactiveDuration,
+		ProofVerificationEnabled: DefaultProofVerificationEnabled,
 	}
 }
 
