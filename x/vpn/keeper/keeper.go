@@ -3,6 +3,7 @@ package keeper
 import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/cosmos/cosmos-sdk/x/bank"
 	"github.com/cosmos/cosmos-sdk/x/distribution"
 	"github.com/cosmos/cosmos-sdk/x/params"
@@ -25,7 +26,7 @@ type Keeper struct {
 	Session      session.Keeper
 }
 
-func NewKeeper(cdc *codec.Codec, key sdk.StoreKey, paramsKeeper params.Keeper,
+func NewKeeper(cdc *codec.Codec, key sdk.StoreKey, paramsKeeper params.Keeper, accountKeeper auth.AccountKeeper,
 	bankKeeper bank.Keeper, distributionKeeper distribution.Keeper, supplyKeeper supply.Keeper) Keeper {
 	var (
 		depositKeeper      = deposit.NewKeeper(cdc, key)
@@ -52,6 +53,7 @@ func NewKeeper(cdc *codec.Codec, key sdk.StoreKey, paramsKeeper params.Keeper,
 	subscriptionKeeper.WithNodeKeeper(&nodeKeeper)
 	subscriptionKeeper.WithPlanKeeper(&planKeeper)
 
+	sessionKeeper.WithAccountKeeper(accountKeeper)
 	sessionKeeper.WithDepositKeeper(depositKeeper)
 	sessionKeeper.WithPlanKeeper(&planKeeper)
 	sessionKeeper.WithSubscriptionKeeper(&subscriptionKeeper)

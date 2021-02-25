@@ -35,6 +35,18 @@ func HandleUpsert(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpsert) (*sdk.R
 		return nil, types.ErrorQuotaDoesNotExist
 	}
 
+	if k.ProofVerificationEnabled(ctx) {
+		proof := types.Proof{
+			Identity:  msg.ID,
+			Address:   msg.From,
+			Duration:  msg.Duration,
+			Bandwidth: msg.Bandwidth,
+		}
+		if err := k.VerifyProof(ctx, msg.Address, proof, msg.Signature); err != nil {
+			return nil, types.ErrorFailedToVerifyProof
+		}
+	}
+
 	session, found := k.GetOngoingSession(ctx, subscription.ID, msg.Address)
 	if found {
 		k.DeleteActiveSessionAt(ctx, session.StatusAt, session.ID)

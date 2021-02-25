@@ -222,6 +222,7 @@ func NewApp(
 	app.vpnKeeper = vpn.NewKeeper(app.cdc,
 		keys[vpn.StoreKey],
 		app.paramsKeeper,
+		app.accountKeeper,
 		app.bankKeeper,
 		app.distributionKeeper,
 		app.supplyKeeper)

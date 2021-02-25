@@ -14,5 +14,6 @@ var (
 	ErrorInvalidSubscriptionStatus = errors.Register(ModuleName, 107, "invalid subscription status")
 	ErrorUnauthorized              = errors.Register(ModuleName, 108, "unauthorized")
 	ErrorQuotaDoesNotExist         = errors.Register(ModuleName, 109, "quota does not exist")
-	ErrorInvalidBandwidth          = errors.Register(ModuleName, 110, "invalid bandwidth")
+	ErrorFailedToVerifyProof       = errors.Register(ModuleName, 110, "failed to verify proof")
+	ErrorInvalidBandwidth          = errors.Register(ModuleName, 111, "invalid bandwidth")
 )
