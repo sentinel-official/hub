@@ -6,20 +6,41 @@
 [![LoC](https://tokei.rs/b1/github/sentinel-official/hub)](https://github.com/sentinel-official/hub)
 
 ## Installation
+Two steps:
 
-Requires [Go 1.14+](https://golang.org/dl/)
+1) Setup a Go enviornment
+2) Compile and install Sentinel
 
-### Linux
+## Linux
 
-`$ mkdir -p ${GOPATH}/src/github.com/sentinel-official/`
+### Install Go: Ubuntu and Debian 
+Ubuntu and debian do not have the latest version of Go in their repositories.
 
-`$ cd ${GOPATH}/src/github.com/sentinel-official/`
+To get the latest version of Go, and configure your GOPATH, do like:
 
-`$ git clone https://github.com/sentinel-official/hub.git`
+```bash
+sudo add-apt-repository ppa:longsleep/golang-backports
+sudo apt-get update
+sudo apt-get install -y git golang-go build-essential
+mkdir ~/go
+export GOPATH=~/go
+export PATH=$PATH:/go/bin
+export GOBIN=~/go/bin
+```
 
-`$ cd ${GOPATH}/src/github.com/sentinel-official/hub`
+### Install GO: MacOS
 
-`$ make install`
+[Go 1.16+](https://golang.org/dl/)
+
+
+### Install 
+
+```bash
+git clone https://github.com/sentinel-official/hub/
+cd hub
+make install
+sentinelhubd init chooseanicehandle
+```
 
 **Note:** To install a specific version or commit use `git checkout` command
 
