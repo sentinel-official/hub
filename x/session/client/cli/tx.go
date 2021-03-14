@@ -19,7 +19,7 @@ import (
 
 func txUpsert(cdc *codec.Codec) *cobra.Command {
 	return &cobra.Command{
-		Use:   "upsert [subscription] [channel] [address] [duration] [upload] [download] (signature)",
+		Use:   "upsert [subscription] [address] [duration] [upload] [download] (channel) (signature)",
 		Short: "Add or update a session",
 		Args:  cobra.ExactArgs(5),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -32,32 +32,35 @@ func txUpsert(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			channel, err := strconv.ParseUint(args[1], 10, 64)
+			address, err := sdk.AccAddressFromBech32(args[1])
 			if err != nil {
 				return err
 			}
 
-			address, err := sdk.AccAddressFromBech32(args[2])
+			duration, err := time.ParseDuration(args[2])
 			if err != nil {
 				return err
 			}
 
-			duration, err := time.ParseDuration(args[3])
+			upload, err := strconv.ParseInt(args[3], 10, 64)
 			if err != nil {
 				return err
 			}
 
-			upload, err := strconv.ParseInt(args[4], 10, 64)
+			download, err := strconv.ParseInt(args[4], 10, 64)
 			if err != nil {
 				return err
 			}
 
-			download, err := strconv.ParseInt(args[5], 10, 64)
-			if err != nil {
-				return err
+			var channel uint64
+			if len(args) > 5 && args[5] != "" {
+				channel, err = strconv.ParseUint(args[3], 10, 64)
+				if err != nil {
+					return err
+				}
 			}
 
-			var signature []byte
+			var signature []byte = nil
 			if len(args) > 6 && args[6] != "" {
 				signature, err = hex.DecodeString(args[6])
 				if err != nil {
