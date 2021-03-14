@@ -42,9 +42,9 @@ func GetChannelKeyPrefix(address sdk.AccAddress) []byte {
 	return append(ChannelKeyPrefix, address.Bytes()...)
 }
 
-func ChannelKey(address sdk.AccAddress, id uint64, node hub.NodeAddress) []byte {
+func ChannelKey(address sdk.AccAddress, subscription uint64, node hub.NodeAddress) []byte {
 	return append(GetChannelKeyPrefix(address),
-		append(sdk.Uint64ToBigEndian(id), node.Bytes()...)...)
+		append(sdk.Uint64ToBigEndian(subscription), node.Bytes()...)...)
 }
 
 func SessionKey(id uint64) []byte {
@@ -79,9 +79,9 @@ func GetActiveSessionForAddressKeyPrefix(address sdk.AccAddress) []byte {
 	return append(ActiveSessionForAddressKeyPrefix, address.Bytes()...)
 }
 
-func ActiveSessionForAddressKey(address sdk.AccAddress, id uint64, node hub.NodeAddress) []byte {
+func ActiveSessionForAddressKey(address sdk.AccAddress, subscription uint64, node hub.NodeAddress) []byte {
 	return append(GetActiveSessionForAddressKeyPrefix(address),
-		append(sdk.Uint64ToBigEndian(id), node.Bytes()...)...)
+		append(sdk.Uint64ToBigEndian(subscription), node.Bytes()...)...)
 }
 
 func GetActiveSessionAtKeyPrefix(at time.Time) []byte {

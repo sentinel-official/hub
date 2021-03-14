@@ -94,7 +94,7 @@ func querySessions(cdc *codec.Codec) *cobra.Command {
 				}
 
 				var (
-					active = false
+					active bool
 					status hub.Status
 				)
 

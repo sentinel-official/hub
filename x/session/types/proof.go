@@ -15,7 +15,7 @@ type Proof struct {
 	Bandwidth    hub.Bandwidth   `json:"bandwidth"`
 }
 
-func (p *Proof) Bytes() []byte {
+func (p Proof) Bytes() []byte {
 	bytes, err := json.Marshal(p)
 	if err != nil {
 		panic(err)
