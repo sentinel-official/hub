@@ -93,7 +93,21 @@ func querySessions(cdc *codec.Codec) *cobra.Command {
 					return err
 				}
 
-				sessions, err = common.QuerySessionsForAddress(ctx, address, skip, limit)
+				var (
+					active bool
+					status hub.Status
+				)
+
+				active, err = cmd.Flags().GetBool(flagActive)
+				if err != nil {
+					return err
+				}
+
+				if active {
+					status = hub.StatusActive
+				}
+
+				sessions, err = common.QuerySessionsForAddress(ctx, address, status, skip, limit)
 			} else {
 				sessions, err = common.QuerySessions(ctx, skip, limit)
 			}
@@ -113,6 +127,7 @@ func querySessions(cdc *codec.Codec) *cobra.Command {
 	cmd.Flags().String(flagAddress, "", "account address")
 	cmd.Flags().Uint64(flagSubscription, 0, "subscription ID")
 	cmd.Flags().String(flagNodeAddress, "", "node address")
+	cmd.Flags().Bool(flagActive, false, "active sessions only")
 	cmd.Flags().Int(flagSkip, 0, "skip")
 	cmd.Flags().Int(flagLimit, 25, "limit")
 

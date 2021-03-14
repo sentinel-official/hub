@@ -142,18 +142,18 @@ func (k Keeper) GetInactiveNodes(ctx sdk.Context, skip, limit int) (items types.
 	return items
 }
 
-func (k Keeper) SetActiveNodeForProvider(ctx sdk.Context, p hub.ProvAddress, n hub.NodeAddress) {
-	key := types.ActiveNodeForProviderKey(p, n)
+func (k Keeper) SetActiveNodeForProvider(ctx sdk.Context, provider hub.ProvAddress, address hub.NodeAddress) {
+	key := types.ActiveNodeForProviderKey(provider, address)
 	value := k.cdc.MustMarshalBinaryLengthPrefixed(true)
 
 	store := k.Store(ctx)
 	store.Set(key, value)
 }
 
-func (k Keeper) DeleteActiveNodeForProvider(ctx sdk.Context, p hub.ProvAddress, n hub.NodeAddress) {
+func (k Keeper) DeleteActiveNodeForProvider(ctx sdk.Context, provider hub.ProvAddress, address hub.NodeAddress) {
 	store := k.Store(ctx)
 
-	key := types.ActiveNodeForProviderKey(p, n)
+	key := types.ActiveNodeForProviderKey(provider, address)
 	store.Delete(key)
 }
 
@@ -176,18 +176,18 @@ func (k Keeper) GetActiveNodesForProvider(ctx sdk.Context, address hub.ProvAddre
 	return items
 }
 
-func (k Keeper) SetInactiveNodeForProvider(ctx sdk.Context, p hub.ProvAddress, n hub.NodeAddress) {
-	key := types.InactiveNodeForProviderKey(p, n)
+func (k Keeper) SetInactiveNodeForProvider(ctx sdk.Context, provider hub.ProvAddress, address hub.NodeAddress) {
+	key := types.InactiveNodeForProviderKey(provider, address)
 	value := k.cdc.MustMarshalBinaryLengthPrefixed(true)
 
 	store := k.Store(ctx)
 	store.Set(key, value)
 }
 
-func (k Keeper) DeleteInactiveNodeForProvider(ctx sdk.Context, p hub.ProvAddress, n hub.NodeAddress) {
+func (k Keeper) DeleteInactiveNodeForProvider(ctx sdk.Context, provider hub.ProvAddress, address hub.NodeAddress) {
 	store := k.Store(ctx)
 
-	key := types.InactiveNodeForProviderKey(p, n)
+	key := types.InactiveNodeForProviderKey(provider, address)
 	store.Delete(key)
 }
 

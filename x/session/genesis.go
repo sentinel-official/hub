@@ -19,7 +19,7 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, state types.GenesisState) {
 		k.SetSessionForAddress(ctx, session.Address, session.ID)
 
 		if session.Status.Equal(hub.StatusActive) {
-			k.SetOngoingSession(ctx, session.Subscription, session.Address, session.ID)
+			k.SetActiveSessionForAddress(ctx, session.Address, session.Subscription, session.Node, session.ID)
 			k.SetActiveSessionAt(ctx, session.StatusAt, session.ID)
 		}
 	}

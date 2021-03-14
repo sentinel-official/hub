@@ -26,7 +26,7 @@ const (
 	QuerySessionsForSubscription    = types.QuerySessionsForSubscription
 	QuerySessionsForNode            = types.QuerySessionsForNode
 	QuerySessionsForAddress         = types.QuerySessionsForAddress
-	QueryOngoingSession             = types.QueryOngoingSession
+	QueryActiveSession              = types.QueryActiveSession
 )
 
 var (
@@ -34,6 +34,8 @@ var (
 	RegisterCodec                         = types.RegisterCodec
 	NewGenesisState                       = types.NewGenesisState
 	DefaultGenesisState                   = types.DefaultGenesisState
+	GetChannelKeyPrefix                   = types.GetChannelKeyPrefix
+	ChannelKey                            = types.ChannelKey
 	SessionKey                            = types.SessionKey
 	GetSessionForSubscriptionKeyPrefix    = types.GetSessionForSubscriptionKeyPrefix
 	SessionForSubscriptionKey             = types.SessionForSubscriptionKey
@@ -41,8 +43,8 @@ var (
 	SessionForNodeKey                     = types.SessionForNodeKey
 	GetSessionForAddressKeyPrefix         = types.GetSessionForAddressKeyPrefix
 	SessionForAddressKey                  = types.SessionForAddressKey
-	GetOngoingSessionPrefix               = types.GetOngoingSessionPrefix
-	OngoingSessionKey                     = types.OngoingSessionKey
+	GetActiveSessionForAddressKeyPrefix   = types.GetActiveSessionForAddressKeyPrefix
+	ActiveSessionForAddressKey            = types.ActiveSessionForAddressKey
 	GetActiveSessionAtKeyPrefix           = types.GetActiveSessionAtKeyPrefix
 	ActiveSessionAtKey                    = types.ActiveSessionAtKey
 	IDFromSessionForSubscriptionKey       = types.IDFromSessionForSubscriptionKey
@@ -58,39 +60,40 @@ var (
 	NewQuerySessionsForSubscriptionParams = types.NewQuerySessionsForSubscriptionParams
 	NewQuerySessionsForNodeParams         = types.NewQuerySessionsForNodeParams
 	NewQuerySessionsForAddressParams      = types.NewQuerySessionsForAddressParams
-	NewQueryOngoingSessionParams          = types.NewQueryOngoingSessionParams
+	NewQueryActiveSessionParams           = types.NewQueryActiveSessionParams
 	NewKeeper                             = keeper.NewKeeper
 	Querier                               = querier.Querier
 
 	// variable aliases
-	ModuleCdc                       = types.ModuleCdc
-	ErrorMarshal                    = types.ErrorMarshal
-	ErrorUnmarshal                  = types.ErrorUnmarshal
-	ErrorUnknownMsgType             = types.ErrorUnknownMsgType
-	ErrorUnknownQueryType           = types.ErrorUnknownQueryType
-	ErrorInvalidField               = types.ErrorInvalidField
-	ErrorSubscriptionDoesNotExit    = types.ErrorSubscriptionDoesNotExit
-	ErrorInvalidSubscriptionStatus  = types.ErrorInvalidSubscriptionStatus
-	ErrorUnauthorized               = types.ErrorUnauthorized
-	ErrorQuotaDoesNotExist          = types.ErrorQuotaDoesNotExist
-	ErrorFailedToVerifyProof        = types.ErrorFailedToVerifyProof
-	ErrorInvalidBandwidth           = types.ErrorInvalidBandwidth
-	EventTypeSetCount               = types.EventTypeSetCount
-	EventTypeSetActive              = types.EventTypeSetActive
-	EventTypeUpdate                 = types.EventTypeUpdate
-	ParamsSubspace                  = types.ParamsSubspace
-	RouterKey                       = types.RouterKey
-	StoreKey                        = types.StoreKey
-	EventModuleName                 = types.EventModuleName
-	CountKey                        = types.CountKey
-	SessionKeyPrefix                = types.SessionKeyPrefix
-	SessionForSubscriptionKeyPrefix = types.SessionForSubscriptionKeyPrefix
-	SessionForNodeKeyPrefix         = types.SessionForNodeKeyPrefix
-	SessionForAddressKeyPrefix      = types.SessionForAddressKeyPrefix
-	OngoingSessionKeyPrefix         = types.OngoingSessionKeyPrefix
-	ActiveSessionAtKeyPrefix        = types.ActiveSessionAtKeyPrefix
-	KeyInactiveDuration             = types.KeyInactiveDuration
-	KeyProofVerificationEnabled     = types.KeyProofVerificationEnabled
+	ModuleCdc                        = types.ModuleCdc
+	ErrorMarshal                     = types.ErrorMarshal
+	ErrorUnmarshal                   = types.ErrorUnmarshal
+	ErrorUnknownMsgType              = types.ErrorUnknownMsgType
+	ErrorUnknownQueryType            = types.ErrorUnknownQueryType
+	ErrorInvalidField                = types.ErrorInvalidField
+	ErrorSubscriptionDoesNotExit     = types.ErrorSubscriptionDoesNotExit
+	ErrorInvalidSubscriptionStatus   = types.ErrorInvalidSubscriptionStatus
+	ErrorUnauthorized                = types.ErrorUnauthorized
+	ErrorQuotaDoesNotExist           = types.ErrorQuotaDoesNotExist
+	ErrorInvalidChannel              = types.ErrorInvalidChannel
+	ErrorFailedToVerifyProof         = types.ErrorFailedToVerifyProof
+	EventTypeSetCount                = types.EventTypeSetCount
+	EventTypeSetActive               = types.EventTypeSetActive
+	EventTypeUpdate                  = types.EventTypeUpdate
+	ParamsSubspace                   = types.ParamsSubspace
+	RouterKey                        = types.RouterKey
+	StoreKey                         = types.StoreKey
+	EventModuleName                  = types.EventModuleName
+	CountKey                         = types.CountKey
+	ChannelKeyPrefix                 = types.ChannelKeyPrefix
+	SessionKeyPrefix                 = types.SessionKeyPrefix
+	SessionForSubscriptionKeyPrefix  = types.SessionForSubscriptionKeyPrefix
+	SessionForNodeKeyPrefix          = types.SessionForNodeKeyPrefix
+	SessionForAddressKeyPrefix       = types.SessionForAddressKeyPrefix
+	ActiveSessionAtKeyPrefix         = types.ActiveSessionAtKeyPrefix
+	ActiveSessionForAddressKeyPrefix = types.ActiveSessionForAddressKeyPrefix
+	KeyInactiveDuration              = types.KeyInactiveDuration
+	KeyProofVerificationEnabled      = types.KeyProofVerificationEnabled
 )
 
 type (
@@ -103,7 +106,7 @@ type (
 	QuerySessionsForSubscriptionParams = types.QuerySessionsForSubscriptionParams
 	QuerySessionsForNodeParams         = types.QuerySessionsForNodeParams
 	QuerySessionsForAddressParams      = types.QuerySessionsForAddressParams
-	QueryOngoingSessionParams          = types.QueryOngoingSessionParams
+	QueryActiveSessionParams           = types.QueryActiveSessionParams
 	Session                            = types.Session
 	Sessions                           = types.Sessions
 	Keeper                             = keeper.Keeper

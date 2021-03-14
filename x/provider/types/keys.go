@@ -25,7 +25,7 @@ var (
 )
 
 var (
-	ProviderKeyPrefix = []byte{0x00}
+	ProviderKeyPrefix = []byte{0x10}
 )
 
 func ProviderKey(address hub.ProvAddress) []byte {
