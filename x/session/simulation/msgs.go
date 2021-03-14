@@ -47,11 +47,11 @@ func SimulateUpsert(ak expected.AccountKeeper, pk expected.PlanKeeper, sk expect
 			duration  = time.Duration(r.Int63n(1e3)+1) * time.Second
 			bandwidth = hub.NewBandwidthFromInt64(r.Int63n(1e6)+1, r.Int63n(1e6)+1)
 			proof     = types.Proof{
-				Identity:  rSubscription.ID,
-				Channel:   0,
-				Address:   rNode.Address,
-				Duration:  duration,
-				Bandwidth: bandwidth,
+				Subscription: rSubscription.ID,
+				Channel:      0,
+				Node:         rNode.Address,
+				Duration:     duration,
+				Bandwidth:    bandwidth,
 			}
 		)
 

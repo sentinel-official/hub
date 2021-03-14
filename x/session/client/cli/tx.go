@@ -27,7 +27,7 @@ func txUpsert(cdc *codec.Codec) *cobra.Command {
 			txb := auth.NewTxBuilderFromCLI(buffer).WithTxEncoder(utils.GetTxEncoder(cdc))
 			ctx := context.NewCLIContextWithInput(buffer).WithCodec(cdc)
 
-			identity, err := strconv.ParseUint(args[0], 10, 64)
+			subscription, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
@@ -67,11 +67,11 @@ func txUpsert(cdc *codec.Codec) *cobra.Command {
 
 			var (
 				proof = types.Proof{
-					Identity:  identity,
-					Channel:   channel,
-					Address:   ctx.FromAddress.Bytes(),
-					Duration:  duration,
-					Bandwidth: hub.NewBandwidthFromInt64(upload, download),
+					Channel:      channel,
+					Subscription: subscription,
+					Node:         ctx.FromAddress.Bytes(),
+					Duration:     duration,
+					Bandwidth:    hub.NewBandwidthFromInt64(upload, download),
 				}
 			)
 

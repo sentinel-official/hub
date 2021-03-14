@@ -14,8 +14,10 @@ func HandleRegister(ctx sdk.Context, k keeper.Keeper, msg types.MsgRegister) (*s
 	}
 
 	deposit := k.Deposit(ctx)
-	if err := k.FundCommunityPool(ctx, msg.From, deposit); err != nil {
-		return nil, err
+	if deposit.IsPositive() {
+		if err := k.FundCommunityPool(ctx, msg.From, deposit); err != nil {
+			return nil, err
+		}
 	}
 
 	provider := types.Provider{

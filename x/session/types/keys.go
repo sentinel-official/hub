@@ -28,15 +28,12 @@ var (
 )
 
 var (
-	CountKey = []byte{0x00}
-
-	ChannelKeyPrefix = []byte{0x10}
-	SessionKeyPrefix = []byte{0x11}
-
-	SessionForSubscriptionKeyPrefix = []byte{0x20}
-	SessionForNodeKeyPrefix         = []byte{0x21}
-	SessionForAddressKeyPrefix      = []byte{0x22}
-
+	CountKey                         = []byte{0x00}
+	ChannelKeyPrefix                 = []byte{0x10}
+	SessionKeyPrefix                 = []byte{0x11}
+	SessionForSubscriptionKeyPrefix  = []byte{0x20}
+	SessionForNodeKeyPrefix          = []byte{0x21}
+	SessionForAddressKeyPrefix       = []byte{0x22}
 	ActiveSessionAtKeyPrefix         = []byte{0x30}
 	ActiveSessionForAddressKeyPrefix = []byte{0x31}
 )

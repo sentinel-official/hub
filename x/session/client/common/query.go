@@ -106,8 +106,8 @@ func QuerySessionsForNode(ctx context.CLIContext, address hub.NodeAddress, skip,
 	return sessions, nil
 }
 
-func QuerySessionsForAddress(ctx context.CLIContext, address sdk.AccAddress, skip, limit int) (types.Sessions, error) {
-	params := types.NewQuerySessionsForAddressParams(address, skip, limit)
+func QuerySessionsForAddress(ctx context.CLIContext, address sdk.AccAddress, status hub.Status, skip, limit int) (types.Sessions, error) {
+	params := types.NewQuerySessionsForAddressParams(address, status, skip, limit)
 	bytes, err := ctx.Codec.MarshalJSON(params)
 	if err != nil {
 		return nil, err

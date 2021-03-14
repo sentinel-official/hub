@@ -36,14 +36,14 @@ func (m MsgUpsert) Type() string {
 }
 
 func (m MsgUpsert) ValidateBasic() error {
-	// Identity shouldn't be zero
-	if m.Proof.Identity == 0 {
-		return errors.Wrapf(ErrorInvalidField, "%s", "proof->identity")
+	// Subscription shouldn't be zero
+	if m.Proof.Subscription == 0 {
+		return errors.Wrapf(ErrorInvalidField, "%s", "proof->subscription")
 	}
 
-	// Address shouldn't be nil or empty
-	if m.Proof.Address == nil || m.Proof.Address.Empty() {
-		return errors.Wrapf(ErrorInvalidField, "%s", "proof->address")
+	// Node shouldn't be nil or empty
+	if m.Proof.Node == nil || m.Proof.Node.Empty() {
+		return errors.Wrapf(ErrorInvalidField, "%s", "proof->node")
 	}
 
 	// Duration shouldn't be negative
@@ -79,5 +79,5 @@ func (m MsgUpsert) GetSignBytes() []byte {
 }
 
 func (m MsgUpsert) GetSigners() []sdk.AccAddress {
-	return []sdk.AccAddress{m.Proof.Address.Bytes()}
+	return []sdk.AccAddress{m.Proof.Node.Bytes()}
 }

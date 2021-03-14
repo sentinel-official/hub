@@ -17,7 +17,7 @@ func (k Keeper) VerifyProof(ctx sdk.Context, address sdk.AccAddress, proof types
 		return fmt.Errorf("public key does not exist")
 	}
 
-	if account.GetPubKey().VerifyBytes(proof.Bytes(), signature) == false {
+	if !account.GetPubKey().VerifyBytes(proof.Bytes(), signature) {
 		return fmt.Errorf("invalid signature")
 	}
 

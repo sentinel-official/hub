@@ -28,16 +28,14 @@ var (
 )
 
 var (
-	CountKey                     = []byte{0x00}
-	SubscriptionKeyPrefix        = []byte{0x10}
-	SubscriptionForNodeKeyPrefix = []byte{0x20}
-	SubscriptionForPlanKeyPrefix = []byte{0x30}
-
-	ActiveSubscriptionForAddressKeyPrefix   = []byte{0x40}
-	InactiveSubscriptionForAddressKeyPrefix = []byte{0x41}
-
-	InactiveSubscriptionAtKeyPrefix = []byte{0x50}
-	QuotaKeyPrefix                  = []byte{0x60}
+	CountKey                                = []byte{0x00}
+	SubscriptionKeyPrefix                   = []byte{0x10}
+	SubscriptionForNodeKeyPrefix            = []byte{0x11}
+	SubscriptionForPlanKeyPrefix            = []byte{0x12}
+	ActiveSubscriptionForAddressKeyPrefix   = []byte{0x20}
+	InactiveSubscriptionForAddressKeyPrefix = []byte{0x21}
+	InactiveSubscriptionAtKeyPrefix         = []byte{0x30}
+	QuotaKeyPrefix                          = []byte{0x40}
 )
 
 func SubscriptionKey(id uint64) []byte {

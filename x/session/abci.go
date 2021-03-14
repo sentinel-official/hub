@@ -24,7 +24,7 @@ func EndBlock(ctx sdk.Context, k keeper.Keeper) []abci.ValidatorUpdate {
 			k.SetChannel(ctx, item.Address, item.Subscription, item.Node, channel+1)
 		}
 
-		k.DeleteActiveSession(ctx, item.Address, item.Subscription, item.Node)
+		k.DeleteActiveSessionForAddress(ctx, item.Address, item.Subscription, item.Node)
 		k.DeleteActiveSessionAt(ctx, item.StatusAt, item.ID)
 
 		item.Status = hub.StatusInactive

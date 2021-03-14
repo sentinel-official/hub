@@ -10,16 +10,16 @@ import (
 	"github.com/sentinel-official/hub/x/session/types"
 )
 
-func isAuthorized(ctx sdk.Context, k keeper.Keeper, p, s uint64, n hub.NodeAddress) bool {
-	if p == 0 {
-		return k.HasSubscriptionForNode(ctx, n, s)
+func isAuthorized(ctx sdk.Context, k keeper.Keeper, plan, subscription uint64, node hub.NodeAddress) bool {
+	if plan == 0 {
+		return k.HasSubscriptionForNode(ctx, node, subscription)
 	}
 
-	return k.HasNodeForPlan(ctx, p, n)
+	return k.HasNodeForPlan(ctx, plan, node)
 }
 
 func HandleUpsert(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpsert) (*sdk.Result, error) {
-	subscription, found := k.GetSubscription(ctx, msg.Proof.Identity)
+	subscription, found := k.GetSubscription(ctx, msg.Proof.Subscription)
 	if !found {
 		return nil, types.ErrorSubscriptionDoesNotExit
 	}
@@ -27,7 +27,7 @@ func HandleUpsert(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpsert) (*sdk.R
 		return nil, types.ErrorInvalidSubscriptionStatus
 	}
 
-	if !isAuthorized(ctx, k, subscription.Plan, subscription.ID, msg.Proof.Address) {
+	if !isAuthorized(ctx, k, subscription.Plan, subscription.ID, msg.Proof.Node) {
 		return nil, types.ErrorUnauthorized
 	}
 
@@ -36,7 +36,7 @@ func HandleUpsert(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpsert) (*sdk.R
 	}
 
 	if k.ProofVerificationEnabled(ctx) {
-		channel := k.GetChannel(ctx, msg.Address, msg.Proof.Identity, msg.Proof.Address)
+		channel := k.GetChannel(ctx, msg.Address, msg.Proof.Subscription, msg.Proof.Node)
 		if msg.Proof.Channel != channel {
 			return nil, types.ErrorInvalidChannel
 		}
@@ -46,7 +46,7 @@ func HandleUpsert(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpsert) (*sdk.R
 		}
 	}
 
-	session, found := k.GetActiveSession(ctx, msg.Address, subscription.ID, msg.Proof.Address)
+	session, found := k.GetActiveSessionForAddress(ctx, msg.Address, subscription.ID, msg.Proof.Node)
 	if found {
 		k.DeleteActiveSessionAt(ctx, session.StatusAt, session.ID)
 	}
@@ -56,7 +56,7 @@ func HandleUpsert(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpsert) (*sdk.R
 		session = types.Session{
 			ID:           count + 1,
 			Subscription: subscription.ID,
-			Node:         msg.Proof.Address,
+			Node:         msg.Proof.Node,
 			Address:      msg.Address,
 			Duration:     0,
 			Bandwidth:    hub.NewBandwidthFromInt64(0, 0),
@@ -73,7 +73,7 @@ func HandleUpsert(ctx sdk.Context, k keeper.Keeper, msg types.MsgUpsert) (*sdk.R
 		k.SetSessionForSubscription(ctx, session.Subscription, session.ID)
 		k.SetSessionForNode(ctx, session.Node, session.ID)
 		k.SetSessionForAddress(ctx, session.Address, session.ID)
-		k.SetActiveSession(ctx, session.Address, session.Subscription, session.Node, session.ID)
+		k.SetActiveSessionForAddress(ctx, session.Address, session.Subscription, session.Node, session.ID)
 		ctx.EventManager().EmitEvent(sdk.NewEvent(
 			types.EventTypeSetActive,
 			sdk.NewAttribute(types.AttributeKeySubscription, fmt.Sprintf("%d", session.Subscription)),

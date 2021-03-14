@@ -169,7 +169,7 @@ func (k Keeper) GetSessionsForAddress(ctx sdk.Context, address sdk.AccAddress, s
 	return items
 }
 
-func (k Keeper) SetActiveSession(ctx sdk.Context, address sdk.AccAddress, subscription uint64, node hub.NodeAddress, id uint64) {
+func (k Keeper) SetActiveSessionForAddress(ctx sdk.Context, address sdk.AccAddress, subscription uint64, node hub.NodeAddress, id uint64) {
 	key := types.ActiveSessionForAddressKey(address, subscription, node)
 	value := k.cdc.MustMarshalBinaryLengthPrefixed(id)
 
@@ -177,7 +177,7 @@ func (k Keeper) SetActiveSession(ctx sdk.Context, address sdk.AccAddress, subscr
 	store.Set(key, value)
 }
 
-func (k Keeper) GetActiveSession(ctx sdk.Context, address sdk.AccAddress, id uint64, node hub.NodeAddress) (session types.Session, found bool) {
+func (k Keeper) GetActiveSessionForAddress(ctx sdk.Context, address sdk.AccAddress, id uint64, node hub.NodeAddress) (session types.Session, found bool) {
 	store := k.Store(ctx)
 
 	key := types.ActiveSessionForAddressKey(address, id, node)
@@ -190,7 +190,7 @@ func (k Keeper) GetActiveSession(ctx sdk.Context, address sdk.AccAddress, id uin
 	return k.GetSession(ctx, id)
 }
 
-func (k Keeper) DeleteActiveSession(ctx sdk.Context, address sdk.AccAddress, id uint64, node hub.NodeAddress) {
+func (k Keeper) DeleteActiveSessionForAddress(ctx sdk.Context, address sdk.AccAddress, id uint64, node hub.NodeAddress) {
 	key := types.ActiveSessionForAddressKey(address, id, node)
 
 	store := k.Store(ctx)
