@@ -11,7 +11,7 @@ import (
 
 func EndBlock(ctx sdk.Context, k keeper.Keeper) []abci.ValidatorUpdate {
 	end := ctx.BlockTime().Add(-1 * k.InactiveDuration(ctx))
-	k.IterateActiveSessions(ctx, end, func(_ int, item types.Session) bool {
+	k.IterateActiveSessionsAt(ctx, end, func(_ int, item types.Session) bool {
 		k.Logger(ctx).Info("Inactive session", "id", item.ID,
 			"subscription", item.Subscription, "node", item.Node, "address", item.Address)
 
@@ -19,7 +19,12 @@ func EndBlock(ctx sdk.Context, k keeper.Keeper) []abci.ValidatorUpdate {
 			panic(err)
 		}
 
-		k.DeleteOngoingSession(ctx, item.Subscription, item.Address)
+		if k.ProofVerificationEnabled(ctx) {
+			channel := k.GetChannel(ctx, item.Address, item.Subscription, item.Node)
+			k.SetChannel(ctx, item.Address, item.Subscription, item.Node, channel+1)
+		}
+
+		k.DeleteActiveSession(ctx, item.Address, item.Subscription, item.Node)
 		k.DeleteActiveSessionAt(ctx, item.StatusAt, item.ID)
 
 		item.Status = hub.StatusInactive

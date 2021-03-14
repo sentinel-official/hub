@@ -92,13 +92,13 @@ func querySessionsForAddress(ctx sdk.Context, req abci.RequestQuery, k keeper.Ke
 	return res, nil
 }
 
-func queryOngoingSession(ctx sdk.Context, req abci.RequestQuery, k keeper.Keeper) ([]byte, error) {
-	var params types.QueryOngoingSessionParams
+func queryActiveSession(ctx sdk.Context, req abci.RequestQuery, k keeper.Keeper) ([]byte, error) {
+	var params types.QueryActiveSessionParams
 	if err := types.ModuleCdc.UnmarshalJSON(req.Data, &params); err != nil {
 		return nil, errors.Wrap(types.ErrorUnmarshal, err.Error())
 	}
 
-	session, found := k.GetOngoingSession(ctx, params.ID, params.Address)
+	session, found := k.GetActiveSession(ctx, params.Address, params.ID, params.Node)
 	if !found {
 		return nil, nil
 	}

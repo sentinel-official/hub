@@ -9,12 +9,13 @@ import (
 
 type Proof struct {
 	Identity  uint64          `json:"identity"`
+	Channel   uint64          `json:"channel,omitempty"`
 	Address   hub.NodeAddress `json:"address"`
 	Duration  time.Duration   `json:"duration"`
 	Bandwidth hub.Bandwidth   `json:"bandwidth"`
 }
 
-func (p Proof) Bytes() []byte {
+func (p *Proof) Bytes() []byte {
 	bytes, err := json.Marshal(p)
 	if err != nil {
 		panic(err)

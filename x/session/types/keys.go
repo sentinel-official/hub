@@ -28,14 +28,27 @@ var (
 )
 
 var (
-	CountKey                        = []byte{0x00}
-	SessionKeyPrefix                = []byte{0x01}
-	SessionForSubscriptionKeyPrefix = []byte{0x02}
-	SessionForNodeKeyPrefix         = []byte{0x03}
-	SessionForAddressKeyPrefix      = []byte{0x04}
-	OngoingSessionKeyPrefix         = []byte{0x05}
-	ActiveSessionAtKeyPrefix        = []byte{0x06}
+	CountKey = []byte{0x00}
+
+	ChannelKeyPrefix = []byte{0x10}
+	SessionKeyPrefix = []byte{0x11}
+
+	SessionForSubscriptionKeyPrefix = []byte{0x20}
+	SessionForNodeKeyPrefix         = []byte{0x21}
+	SessionForAddressKeyPrefix      = []byte{0x22}
+
+	ActiveSessionAtKeyPrefix         = []byte{0x30}
+	ActiveSessionForAddressKeyPrefix = []byte{0x31}
 )
+
+func GetChannelKeyPrefix(address sdk.AccAddress) []byte {
+	return append(ChannelKeyPrefix, address.Bytes()...)
+}
+
+func ChannelKey(address sdk.AccAddress, id uint64, node hub.NodeAddress) []byte {
+	return append(GetChannelKeyPrefix(address),
+		append(sdk.Uint64ToBigEndian(id), node.Bytes()...)...)
+}
 
 func SessionKey(id uint64) []byte {
 	return append(SessionKeyPrefix, sdk.Uint64ToBigEndian(id)...)
@@ -65,12 +78,13 @@ func SessionForAddressKey(address sdk.AccAddress, id uint64) []byte {
 	return append(GetSessionForAddressKeyPrefix(address), sdk.Uint64ToBigEndian(id)...)
 }
 
-func GetOngoingSessionPrefix(id uint64) []byte {
-	return append(OngoingSessionKeyPrefix, sdk.Uint64ToBigEndian(id)...)
+func GetActiveSessionForAddressKeyPrefix(address sdk.AccAddress) []byte {
+	return append(ActiveSessionForAddressKeyPrefix, address.Bytes()...)
 }
 
-func OngoingSessionKey(id uint64, address sdk.AccAddress) []byte {
-	return append(GetOngoingSessionPrefix(id), address.Bytes()...)
+func ActiveSessionForAddressKey(address sdk.AccAddress, id uint64, node hub.NodeAddress) []byte {
+	return append(GetActiveSessionForAddressKeyPrefix(address),
+		append(sdk.Uint64ToBigEndian(id), node.Bytes()...)...)
 }
 
 func GetActiveSessionAtKeyPrefix(at time.Time) []byte {

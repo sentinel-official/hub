@@ -130,14 +130,14 @@ func QuerySessionsForAddress(ctx context.CLIContext, address sdk.AccAddress, ski
 	return sessions, nil
 }
 
-func QueryOngoingSession(ctx context.CLIContext, id uint64, address sdk.AccAddress) (*types.Session, error) {
-	params := types.NewQueryOngoingSessionParams(id, address)
+func QueryActiveSession(ctx context.CLIContext, address sdk.AccAddress, id uint64, node hub.NodeAddress) (*types.Session, error) {
+	params := types.NewQueryActiveSessionParams(address, id, node)
 	bytes, err := ctx.Codec.MarshalJSON(params)
 	if err != nil {
 		return nil, err
 	}
 
-	path := fmt.Sprintf("custom/%s/%s/%s", types.StoreKey, types.QuerierRoute, types.QueryOngoingSession)
+	path := fmt.Sprintf("custom/%s/%s/%s", types.StoreKey, types.QuerierRoute, types.QueryActiveSession)
 	res, _, err := ctx.QueryWithData(path, bytes)
 	if err != nil {
 		return nil, err

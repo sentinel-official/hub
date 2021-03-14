@@ -22,8 +22,8 @@ func Querier(ctx sdk.Context, path []string, req abci.RequestQuery, k keeper.Kee
 	case types.QuerySessionsForAddress:
 		return querySessionsForAddress(ctx, req, k)
 
-	case types.QueryOngoingSession:
-		return queryOngoingSession(ctx, req, k)
+	case types.QueryActiveSession:
+		return queryActiveSession(ctx, req, k)
 	default:
 		return nil, errors.Wrapf(types.ErrorUnknownQueryType, "%s", path[0])
 	}

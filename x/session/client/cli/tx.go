@@ -19,7 +19,7 @@ import (
 
 func txUpsert(cdc *codec.Codec) *cobra.Command {
 	return &cobra.Command{
-		Use:   "upsert [subscription] [address] [duration] [upload] [download] (signature)",
+		Use:   "upsert [subscription] [channel] [address] [duration] [upload] [download] (signature)",
 		Short: "Add or update a session",
 		Args:  cobra.ExactArgs(5),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -27,41 +27,55 @@ func txUpsert(cdc *codec.Codec) *cobra.Command {
 			txb := auth.NewTxBuilderFromCLI(buffer).WithTxEncoder(utils.GetTxEncoder(cdc))
 			ctx := context.NewCLIContextWithInput(buffer).WithCodec(cdc)
 
-			subscription, err := strconv.ParseUint(args[0], 10, 64)
+			identity, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
 
-			address, err := sdk.AccAddressFromBech32(args[1])
+			channel, err := strconv.ParseUint(args[1], 10, 64)
 			if err != nil {
 				return err
 			}
 
-			duration, err := time.ParseDuration(args[2])
+			address, err := sdk.AccAddressFromBech32(args[2])
 			if err != nil {
 				return err
 			}
 
-			upload, err := strconv.ParseInt(args[3], 10, 64)
+			duration, err := time.ParseDuration(args[3])
 			if err != nil {
 				return err
 			}
 
-			download, err := strconv.ParseInt(args[4], 10, 64)
+			upload, err := strconv.ParseInt(args[4], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			download, err := strconv.ParseInt(args[5], 10, 64)
 			if err != nil {
 				return err
 			}
 
 			var signature []byte
-			if len(args[5]) > 0 {
-				signature, err = hex.DecodeString(args[5])
+			if len(args) > 6 && args[6] != "" {
+				signature, err = hex.DecodeString(args[6])
 				if err != nil {
 					return err
 				}
 			}
 
-			msg := types.NewMsgUpsert(ctx.FromAddress.Bytes(), subscription, address,
-				duration, hub.NewBandwidthFromInt64(upload, download), signature)
+			var (
+				proof = types.Proof{
+					Identity:  identity,
+					Channel:   channel,
+					Address:   ctx.FromAddress.Bytes(),
+					Duration:  duration,
+					Bandwidth: hub.NewBandwidthFromInt64(upload, download),
+				}
+			)
+
+			msg := types.NewMsgUpsert(proof, address, signature)
 			if err := msg.ValidateBasic(); err != nil {
 				return err
 			}
