@@ -11,6 +11,6 @@ var (
 	ErrorUnknownQueryType = errors.Register(ModuleName, 104, "unknown query type")
 	ErrorInvalidField     = errors.Register(ModuleName, 105, "invalid field")
 	ErrorSwapIsDisabled   = errors.Register(ModuleName, 106, "swap is disabled")
-	ErrorUnauthorized     = errors.Register(ModuleName, 107, "unauthorized ")
+	ErrorUnauthorized     = errors.Register(ModuleName, 107, "unauthorized")
 	ErrorDuplicateSwap    = errors.Register(ModuleName, 108, "duplicate swap")
 )

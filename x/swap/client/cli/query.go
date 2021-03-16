@@ -25,8 +25,6 @@ func querySwap(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			fmt.Println(txHash, len(txHash))
-
 			swap, err := common.QuerySwap(ctx, types.BytesToHash(txHash))
 			if err != nil {
 				return err

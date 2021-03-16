@@ -15,8 +15,6 @@ func QuerySwap(ctx context.CLIContext, txHash types.EthereumHash) (*types.Swap, 
 		return nil, err
 	}
 
-	fmt.Println(string(bytes))
-
 	path := fmt.Sprintf("custom/%s/%s", types.QuerierRoute, types.QuerySwap)
 	res, _, err := ctx.QueryWithData(path, bytes)
 	if err != nil {
