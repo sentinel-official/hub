@@ -33,6 +33,7 @@ import (
 	tmdb "github.com/tendermint/tm-db"
 
 	"github.com/sentinel-official/hub/x/deposit"
+	"github.com/sentinel-official/hub/x/swap"
 	"github.com/sentinel-official/hub/x/vpn"
 )
 
@@ -61,6 +62,7 @@ var (
 		staking.AppModuleBasic{},
 		supply.AppModuleBasic{},
 		upgrade.AppModuleBasic{},
+		swap.AppModuleBasic{},
 		vpn.AppModuleBasic{},
 	)
 )
@@ -102,6 +104,7 @@ type App struct {
 	stakingKeeper      staking.Keeper
 	supplyKeeper       supply.Keeper
 	upgradeKeeper      upgrade.Keeper
+	swapKeeper         swap.Keeper
 	vpnKeeper          vpn.Keeper
 }
 
@@ -119,7 +122,7 @@ func NewApp(
 		keys = sdk.NewKVStoreKeys(baseapp.MainStoreKey,
 			auth.StoreKey, distribution.StoreKey, evidence.StoreKey, gov.StoreKey,
 			mint.StoreKey, params.StoreKey, slashing.StoreKey, staking.StoreKey,
-			supply.StoreKey, upgrade.StoreKey, vpn.StoreKey,
+			supply.StoreKey, upgrade.StoreKey, swap.StoreKey, vpn.StoreKey,
 		)
 		tkeys = sdk.NewTransientStoreKeys(params.TStoreKey)
 	)
@@ -149,6 +152,7 @@ func NewApp(
 	app.subspaces[mint.ModuleName] = app.paramsKeeper.Subspace(mint.DefaultParamspace)
 	app.subspaces[slashing.ModuleName] = app.paramsKeeper.Subspace(slashing.DefaultParamspace)
 	app.subspaces[staking.ModuleName] = app.paramsKeeper.Subspace(staking.DefaultParamspace)
+	app.subspaces[swap.ModuleName] = app.paramsKeeper.Subspace(swap.DefaultParamspace)
 
 	app.accountKeeper = auth.NewAccountKeeper(app.cdc,
 		keys[auth.StoreKey],
@@ -219,6 +223,10 @@ func NewApp(
 			app.slashingKeeper.Hooks(),
 		),
 	)
+	app.swapKeeper = swap.NewKeeper(cdc,
+		keys[swap.StoreKey],
+		app.subspaces[swap.ModuleName],
+		app.supplyKeeper)
 	app.vpnKeeper = vpn.NewKeeper(app.cdc,
 		keys[vpn.StoreKey],
 		app.paramsKeeper,
@@ -240,6 +248,7 @@ func NewApp(
 		staking.NewAppModule(app.stakingKeeper, app.accountKeeper, app.supplyKeeper),
 		supply.NewAppModule(app.supplyKeeper, app.accountKeeper),
 		upgrade.NewAppModule(app.upgradeKeeper),
+		swap.NewAppModule(app.swapKeeper),
 		vpn.NewAppModule(app.accountKeeper, app.vpnKeeper),
 	)
 
@@ -252,7 +261,8 @@ func NewApp(
 	app.mm.SetOrderInitGenesis(
 		auth.ModuleName, distribution.ModuleName, staking.ModuleName, bank.ModuleName,
 		slashing.ModuleName, gov.ModuleName, mint.ModuleName, supply.ModuleName,
-		crisis.ModuleName, genutil.ModuleName, evidence.ModuleName, vpn.ModuleName,
+		crisis.ModuleName, genutil.ModuleName, evidence.ModuleName,
+		swap.ModuleName, vpn.ModuleName,
 	)
 
 	app.mm.RegisterInvariants(&app.crisisKeeper)
@@ -268,6 +278,7 @@ func NewApp(
 		slashing.NewAppModule(app.slashingKeeper, app.accountKeeper, app.stakingKeeper),
 		staking.NewAppModule(app.stakingKeeper, app.accountKeeper, app.supplyKeeper),
 		supply.NewAppModule(app.supplyKeeper, app.accountKeeper),
+		swap.NewAppModule(app.swapKeeper),
 		vpn.NewAppModule(app.accountKeeper, app.vpnKeeper),
 	)
 
@@ -320,6 +331,7 @@ func (a *App) ModuleAccountsPermissions() map[string][]string {
 		mint.ModuleName:           {supply.Minter},
 		staking.BondedPoolName:    {supply.Burner, supply.Staking},
 		staking.NotBondedPoolName: {supply.Burner, supply.Staking},
+		swap.ModuleName:           {supply.Minter},
 		deposit.ModuleName:        nil,
 	}
 }
