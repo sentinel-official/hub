@@ -14,5 +14,6 @@ require (
 )
 
 replace (
+	github.com/cosmos/cosmos-sdk => github.com/sentinel-official/cosmos-sdk v0.39.2-sentinel
 	github.com/keybase/go-keychain => github.com/99designs/go-keychain v0.0.0-20191008050251-8e49817e8af4
 )
