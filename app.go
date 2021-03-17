@@ -160,7 +160,7 @@ func NewApp(
 		auth.ProtoBaseAccount)
 	app.bankKeeper = bank.NewBaseKeeper(app.accountKeeper,
 		app.subspaces[bank.ModuleName],
-		app.ModuleAccountAddrsBlackList())
+		app.ModuleAccountAddrs())
 	app.supplyKeeper = supply.NewKeeper(app.cdc,
 		keys[supply.StoreKey],
 		app.accountKeeper,
@@ -336,26 +336,10 @@ func (a *App) ModuleAccountsPermissions() map[string][]string {
 	}
 }
 
-func (a *App) ModuleAccountAddrsWhiteList() map[string]bool {
-	accounts := make(map[string]bool)
-	accounts[supply.NewModuleAddress(distribution.ModuleName).String()] = true
-
-	return accounts
-}
-
 func (a *App) ModuleAccountAddrs() map[string]bool {
 	accounts := make(map[string]bool)
 	for name := range a.ModuleAccountsPermissions() {
 		accounts[supply.NewModuleAddress(name).String()] = true
-	}
-
-	return accounts
-}
-
-func (a *App) ModuleAccountAddrsBlackList() map[string]bool {
-	accounts := a.ModuleAccountAddrs()
-	for name := range a.ModuleAccountAddrsWhiteList() {
-		delete(accounts, supply.NewModuleAddress(name).String())
 	}
 
 	return accounts
