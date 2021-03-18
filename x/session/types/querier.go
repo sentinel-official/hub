@@ -13,7 +13,7 @@ const (
 	QuerySessionsForNode         = "SessionsForNode"
 	QuerySessionsForAddress      = "SessionsForAddress"
 
-	QueryOngoingSession = "OngoingSession"
+	QueryActiveSession = "ActiveSession"
 )
 
 type QuerySessionParams struct {
@@ -68,26 +68,30 @@ func NewQuerySessionsForNodeParams(address hub.NodeAddress, skip, limit int) Que
 
 type QuerySessionsForAddressParams struct {
 	Address sdk.AccAddress `json:"address"`
+	Status  hub.Status     `json:"status"`
 	Skip    int            `json:"skip"`
 	Limit   int            `json:"limit"`
 }
 
-func NewQuerySessionsForAddressParams(address sdk.AccAddress, skip, limit int) QuerySessionsForAddressParams {
+func NewQuerySessionsForAddressParams(address sdk.AccAddress, status hub.Status, skip, limit int) QuerySessionsForAddressParams {
 	return QuerySessionsForAddressParams{
 		Address: address,
+		Status:  status,
 		Skip:    skip,
 		Limit:   limit,
 	}
 }
 
-type QueryOngoingSessionParams struct {
-	ID      uint64         `json:"id"`
-	Address sdk.AccAddress `json:"address"`
+type QueryActiveSessionParams struct {
+	Address      sdk.AccAddress  `json:"address"`
+	Subscription uint64          `json:"subscription"`
+	Node         hub.NodeAddress `json:"node"`
 }
 
-func NewQueryOngoingSessionParams(id uint64, address sdk.AccAddress) QueryOngoingSessionParams {
-	return QueryOngoingSessionParams{
-		ID:      id,
-		Address: address,
+func NewQueryActiveSessionParams(address sdk.AccAddress, subscription uint64, node hub.NodeAddress) QueryActiveSessionParams {
+	return QueryActiveSessionParams{
+		Address:      address,
+		Subscription: subscription,
+		Node:         node,
 	}
 }

@@ -169,18 +169,18 @@ func (k Keeper) GetSessionsForAddress(ctx sdk.Context, address sdk.AccAddress, s
 	return items
 }
 
-func (k Keeper) SetOngoingSession(ctx sdk.Context, subscription uint64, address sdk.AccAddress, id uint64) {
-	key := types.OngoingSessionKey(subscription, address)
+func (k Keeper) SetActiveSessionForAddress(ctx sdk.Context, address sdk.AccAddress, subscription uint64, node hub.NodeAddress, id uint64) {
+	key := types.ActiveSessionForAddressKey(address, subscription, node)
 	value := k.cdc.MustMarshalBinaryLengthPrefixed(id)
 
 	store := k.Store(ctx)
 	store.Set(key, value)
 }
 
-func (k Keeper) GetOngoingSession(ctx sdk.Context, id uint64, address sdk.AccAddress) (session types.Session, found bool) {
+func (k Keeper) GetActiveSessionForAddress(ctx sdk.Context, address sdk.AccAddress, id uint64, node hub.NodeAddress) (session types.Session, found bool) {
 	store := k.Store(ctx)
 
-	key := types.OngoingSessionKey(id, address)
+	key := types.ActiveSessionForAddressKey(address, id, node)
 	value := store.Get(key)
 	if value == nil {
 		return session, false
@@ -190,11 +190,33 @@ func (k Keeper) GetOngoingSession(ctx sdk.Context, id uint64, address sdk.AccAdd
 	return k.GetSession(ctx, id)
 }
 
-func (k Keeper) DeleteOngoingSession(ctx sdk.Context, id uint64, address sdk.AccAddress) {
-	key := types.OngoingSessionKey(id, address)
+func (k Keeper) DeleteActiveSessionForAddress(ctx sdk.Context, address sdk.AccAddress, id uint64, node hub.NodeAddress) {
+	key := types.ActiveSessionForAddressKey(address, id, node)
 
 	store := k.Store(ctx)
 	store.Delete(key)
+}
+
+func (k Keeper) GetActiveSessionsForAddress(ctx sdk.Context, address sdk.AccAddress, skip, limit int) (items types.Sessions) {
+	var (
+		store = k.Store(ctx)
+		iter  = hub.NewPaginatedIterator(
+			sdk.KVStorePrefixIterator(store, types.GetActiveSessionForAddressKeyPrefix(address)),
+		)
+	)
+
+	defer iter.Close()
+
+	iter.Skip(skip)
+	iter.Limit(limit, func(iter sdk.Iterator) {
+		var id uint64
+		k.cdc.MustUnmarshalBinaryLengthPrefixed(iter.Value(), &id)
+
+		item, _ := k.GetSession(ctx, id)
+		items = append(items, item)
+	})
+
+	return items
 }
 
 func (k Keeper) SetActiveSessionAt(ctx sdk.Context, at time.Time, id uint64) {
@@ -212,7 +234,7 @@ func (k Keeper) DeleteActiveSessionAt(ctx sdk.Context, at time.Time, id uint64) 
 	store.Delete(key)
 }
 
-func (k Keeper) IterateActiveSessions(ctx sdk.Context, end time.Time, fn func(index int, item types.Session) (stop bool)) {
+func (k Keeper) IterateActiveSessionsAt(ctx sdk.Context, end time.Time, fn func(index int, item types.Session) (stop bool)) {
 	store := k.Store(ctx)
 
 	iter := store.Iterator(types.ActiveSessionAtKeyPrefix, sdk.PrefixEndBytes(types.GetActiveSessionAtKeyPrefix(end)))

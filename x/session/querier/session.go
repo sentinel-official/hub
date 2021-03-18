@@ -5,6 +5,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/errors"
 	abci "github.com/tendermint/tendermint/abci/types"
 
+	hub "github.com/sentinel-official/hub/types"
 	"github.com/sentinel-official/hub/x/session/keeper"
 	"github.com/sentinel-official/hub/x/session/types"
 )
@@ -82,7 +83,12 @@ func querySessionsForAddress(ctx sdk.Context, req abci.RequestQuery, k keeper.Ke
 		return nil, errors.Wrap(types.ErrorUnmarshal, err.Error())
 	}
 
-	sessions := k.GetSessionsForAddress(ctx, params.Address, params.Skip, params.Limit)
+	var sessions types.Sessions
+	if params.Status.Equal(hub.StatusActive) {
+		sessions = k.GetActiveSessionsForAddress(ctx, params.Address, params.Skip, params.Limit)
+	} else {
+		sessions = k.GetSessionsForAddress(ctx, params.Address, params.Skip, params.Limit)
+	}
 
 	res, err := types.ModuleCdc.MarshalJSON(sessions)
 	if err != nil {
@@ -92,13 +98,13 @@ func querySessionsForAddress(ctx sdk.Context, req abci.RequestQuery, k keeper.Ke
 	return res, nil
 }
 
-func queryOngoingSession(ctx sdk.Context, req abci.RequestQuery, k keeper.Keeper) ([]byte, error) {
-	var params types.QueryOngoingSessionParams
+func queryActiveSession(ctx sdk.Context, req abci.RequestQuery, k keeper.Keeper) ([]byte, error) {
+	var params types.QueryActiveSessionParams
 	if err := types.ModuleCdc.UnmarshalJSON(req.Data, &params); err != nil {
 		return nil, errors.Wrap(types.ErrorUnmarshal, err.Error())
 	}
 
-	session, found := k.GetOngoingSession(ctx, params.ID, params.Address)
+	session, found := k.GetActiveSessionForAddress(ctx, params.Address, params.Subscription, params.Node)
 	if !found {
 		return nil, nil
 	}

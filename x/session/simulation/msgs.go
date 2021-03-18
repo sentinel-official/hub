@@ -46,9 +46,16 @@ func SimulateUpsert(ak expected.AccountKeeper, pk expected.PlanKeeper, sk expect
 			account   = ak.GetAccount(ctx, rAccount.Address)
 			duration  = time.Duration(r.Int63n(1e3)+1) * time.Second
 			bandwidth = hub.NewBandwidthFromInt64(r.Int63n(1e6)+1, r.Int63n(1e6)+1)
+			proof     = types.Proof{
+				Subscription: rSubscription.ID,
+				Channel:      0,
+				Node:         rNode.Address,
+				Duration:     duration,
+				Bandwidth:    bandwidth,
+			}
 		)
 
-		msg := types.NewMsgUpsert(rNode.Address, rSubscription.ID, toAccount.Address, duration, bandwidth)
+		msg := types.NewMsgUpsert(proof, toAccount.Address, nil)
 		if msg.ValidateBasic() != nil {
 			return simulation.NoOpMsg(types.ModuleName), nil, fmt.Errorf("expected msg to pass ValidateBasic: %s", msg.GetSignBytes())
 		}

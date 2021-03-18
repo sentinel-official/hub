@@ -13,19 +13,20 @@ import (
 )
 
 const (
-	AttributeKeyCount            = types.AttributeKeyCount
-	AttributeKeyID               = types.AttributeKeyID
-	AttributeKeySubscription     = types.AttributeKeySubscription
-	AttributeKeyAddress          = types.AttributeKeyAddress
-	ModuleName                   = types.ModuleName
-	QuerierRoute                 = types.QuerierRoute
-	DefaultInactiveDuration      = types.DefaultInactiveDuration
-	QuerySession                 = types.QuerySession
-	QuerySessions                = types.QuerySessions
-	QuerySessionsForSubscription = types.QuerySessionsForSubscription
-	QuerySessionsForNode         = types.QuerySessionsForNode
-	QuerySessionsForAddress      = types.QuerySessionsForAddress
-	QueryOngoingSession          = types.QueryOngoingSession
+	AttributeKeyCount               = types.AttributeKeyCount
+	AttributeKeyID                  = types.AttributeKeyID
+	AttributeKeySubscription        = types.AttributeKeySubscription
+	AttributeKeyAddress             = types.AttributeKeyAddress
+	ModuleName                      = types.ModuleName
+	QuerierRoute                    = types.QuerierRoute
+	DefaultInactiveDuration         = types.DefaultInactiveDuration
+	DefaultProofVerificationEnabled = types.DefaultProofVerificationEnabled
+	QuerySession                    = types.QuerySession
+	QuerySessions                   = types.QuerySessions
+	QuerySessionsForSubscription    = types.QuerySessionsForSubscription
+	QuerySessionsForNode            = types.QuerySessionsForNode
+	QuerySessionsForAddress         = types.QuerySessionsForAddress
+	QueryActiveSession              = types.QueryActiveSession
 )
 
 var (
@@ -33,6 +34,8 @@ var (
 	RegisterCodec                         = types.RegisterCodec
 	NewGenesisState                       = types.NewGenesisState
 	DefaultGenesisState                   = types.DefaultGenesisState
+	GetChannelKeyPrefix                   = types.GetChannelKeyPrefix
+	ChannelKey                            = types.ChannelKey
 	SessionKey                            = types.SessionKey
 	GetSessionForSubscriptionKeyPrefix    = types.GetSessionForSubscriptionKeyPrefix
 	SessionForSubscriptionKey             = types.SessionForSubscriptionKey
@@ -40,8 +43,8 @@ var (
 	SessionForNodeKey                     = types.SessionForNodeKey
 	GetSessionForAddressKeyPrefix         = types.GetSessionForAddressKeyPrefix
 	SessionForAddressKey                  = types.SessionForAddressKey
-	GetOngoingSessionPrefix               = types.GetOngoingSessionPrefix
-	OngoingSessionKey                     = types.OngoingSessionKey
+	GetActiveSessionForAddressKeyPrefix   = types.GetActiveSessionForAddressKeyPrefix
+	ActiveSessionForAddressKey            = types.ActiveSessionForAddressKey
 	GetActiveSessionAtKeyPrefix           = types.GetActiveSessionAtKeyPrefix
 	ActiveSessionAtKey                    = types.ActiveSessionAtKey
 	IDFromSessionForSubscriptionKey       = types.IDFromSessionForSubscriptionKey
@@ -57,49 +60,53 @@ var (
 	NewQuerySessionsForSubscriptionParams = types.NewQuerySessionsForSubscriptionParams
 	NewQuerySessionsForNodeParams         = types.NewQuerySessionsForNodeParams
 	NewQuerySessionsForAddressParams      = types.NewQuerySessionsForAddressParams
-	NewQueryOngoingSessionParams          = types.NewQueryOngoingSessionParams
+	NewQueryActiveSessionParams           = types.NewQueryActiveSessionParams
 	NewKeeper                             = keeper.NewKeeper
 	Querier                               = querier.Querier
 
 	// variable aliases
-	ModuleCdc                       = types.ModuleCdc
-	ErrorMarshal                    = types.ErrorMarshal
-	ErrorUnmarshal                  = types.ErrorUnmarshal
-	ErrorUnknownMsgType             = types.ErrorUnknownMsgType
-	ErrorUnknownQueryType           = types.ErrorUnknownQueryType
-	ErrorInvalidField               = types.ErrorInvalidField
-	ErrorSubscriptionDoesNotExit    = types.ErrorSubscriptionDoesNotExit
-	ErrorInvalidSubscriptionStatus  = types.ErrorInvalidSubscriptionStatus
-	ErrorUnauthorized               = types.ErrorUnauthorized
-	ErrorQuotaDoesNotExist          = types.ErrorQuotaDoesNotExist
-	ErrorInvalidBandwidth           = types.ErrorInvalidBandwidth
-	EventTypeSetCount               = types.EventTypeSetCount
-	EventTypeSetActive              = types.EventTypeSetActive
-	EventTypeUpdate                 = types.EventTypeUpdate
-	ParamsSubspace                  = types.ParamsSubspace
-	RouterKey                       = types.RouterKey
-	StoreKey                        = types.StoreKey
-	EventModuleName                 = types.EventModuleName
-	CountKey                        = types.CountKey
-	SessionKeyPrefix                = types.SessionKeyPrefix
-	SessionForSubscriptionKeyPrefix = types.SessionForSubscriptionKeyPrefix
-	SessionForNodeKeyPrefix         = types.SessionForNodeKeyPrefix
-	SessionForAddressKeyPrefix      = types.SessionForAddressKeyPrefix
-	OngoingSessionKeyPrefix         = types.OngoingSessionKeyPrefix
-	ActiveSessionAtKeyPrefix        = types.ActiveSessionAtKeyPrefix
-	KeyInactiveDuration             = types.KeyInactiveDuration
+	ModuleCdc                        = types.ModuleCdc
+	ErrorMarshal                     = types.ErrorMarshal
+	ErrorUnmarshal                   = types.ErrorUnmarshal
+	ErrorUnknownMsgType              = types.ErrorUnknownMsgType
+	ErrorUnknownQueryType            = types.ErrorUnknownQueryType
+	ErrorInvalidField                = types.ErrorInvalidField
+	ErrorSubscriptionDoesNotExit     = types.ErrorSubscriptionDoesNotExit
+	ErrorInvalidSubscriptionStatus   = types.ErrorInvalidSubscriptionStatus
+	ErrorUnauthorized                = types.ErrorUnauthorized
+	ErrorQuotaDoesNotExist           = types.ErrorQuotaDoesNotExist
+	ErrorInvalidChannel              = types.ErrorInvalidChannel
+	ErrorFailedToVerifyProof         = types.ErrorFailedToVerifyProof
+	EventTypeSetCount                = types.EventTypeSetCount
+	EventTypeSetActive               = types.EventTypeSetActive
+	EventTypeUpdate                  = types.EventTypeUpdate
+	ParamsSubspace                   = types.ParamsSubspace
+	RouterKey                        = types.RouterKey
+	StoreKey                         = types.StoreKey
+	EventModuleName                  = types.EventModuleName
+	CountKey                         = types.CountKey
+	ChannelKeyPrefix                 = types.ChannelKeyPrefix
+	SessionKeyPrefix                 = types.SessionKeyPrefix
+	SessionForSubscriptionKeyPrefix  = types.SessionForSubscriptionKeyPrefix
+	SessionForNodeKeyPrefix          = types.SessionForNodeKeyPrefix
+	SessionForAddressKeyPrefix       = types.SessionForAddressKeyPrefix
+	ActiveSessionAtKeyPrefix         = types.ActiveSessionAtKeyPrefix
+	ActiveSessionForAddressKeyPrefix = types.ActiveSessionForAddressKeyPrefix
+	KeyInactiveDuration              = types.KeyInactiveDuration
+	KeyProofVerificationEnabled      = types.KeyProofVerificationEnabled
 )
 
 type (
 	GenesisState                       = types.GenesisState
 	MsgUpsert                          = types.MsgUpsert
 	Params                             = types.Params
+	Proof                              = types.Proof
 	QuerySessionParams                 = types.QuerySessionParams
 	QuerySessionsParams                = types.QuerySessionsParams
 	QuerySessionsForSubscriptionParams = types.QuerySessionsForSubscriptionParams
 	QuerySessionsForNodeParams         = types.QuerySessionsForNodeParams
 	QuerySessionsForAddressParams      = types.QuerySessionsForAddressParams
-	QueryOngoingSessionParams          = types.QueryOngoingSessionParams
+	QueryActiveSessionParams           = types.QueryActiveSessionParams
 	Session                            = types.Session
 	Sessions                           = types.Sessions
 	Keeper                             = keeper.Keeper
