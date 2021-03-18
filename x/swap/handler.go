@@ -33,7 +33,7 @@ func handleSwap(ctx sdk.Context, k keeper.Keeper, msg types.MsgSwap) (*sdk.Resul
 	}
 
 	var (
-		coin = sdk.NewCoin(k.SwapDenom(ctx), msg.Amount.QuoRaw(100))
+		coin = sdk.NewCoin(k.SwapDenom(ctx), msg.Amount.Quo(types.PrecisionLoss))
 		swap = types.Swap{
 			TxHash:   msg.TxHash,
 			Receiver: msg.Receiver,

@@ -17,6 +17,10 @@ var (
 )
 
 var (
+	PrecisionLoss = sdk.NewInt(100)
+)
+
+var (
 	EventModuleName = sdk.NewEvent(
 		sdk.EventTypeMessage,
 		sdk.NewAttribute(sdk.AttributeKeyModule, ModuleName),

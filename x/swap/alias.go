@@ -56,6 +56,7 @@ var (
 	ParamsSubspace        = types.ParamsSubspace
 	RouterKey             = types.RouterKey
 	StoreKey              = types.StoreKey
+	PrecisionLoss         = types.PrecisionLoss
 	EventModuleName       = types.EventModuleName
 	SwapKeyPrefix         = types.SwapKeyPrefix
 	DefaultApproveBy      = types.DefaultApproveBy

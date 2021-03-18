@@ -41,7 +41,7 @@ func (m MsgSwap) ValidateBasic() error {
 		return errors.Wrapf(ErrorInvalidField, "%s", "receiver")
 	}
 
-	if m.Amount.LT(sdk.NewInt(100)) {
+	if m.Amount.LT(PrecisionLoss) {
 		return errors.Wrapf(ErrorInvalidField, "%s", "amount")
 	}
 
