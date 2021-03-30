@@ -75,7 +75,12 @@ func querySessions(ctx context.CLIContext) http.HandlerFunc {
 				return
 			}
 
-			sessions, err = common.QuerySessionsForAddress(ctx, address, skip, limit)
+			var status hub.Status
+			if query.Get("active") != "" {
+				status = hub.StatusActive
+			}
+
+			sessions, err = common.QuerySessionsForAddress(ctx, address, status, skip, limit)
 		} else {
 			sessions, err = common.QuerySessions(ctx, skip, limit)
 		}

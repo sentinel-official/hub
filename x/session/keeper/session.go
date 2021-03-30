@@ -4,7 +4,6 @@ import (
 	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	protobuf "github.com/gogo/protobuf/types"
 
 	hub "github.com/sentinel-official/hub/types"
 	"github.com/sentinel-official/hub/x/session/types"
@@ -12,13 +11,13 @@ import (
 
 func (k Keeper) SetCount(ctx sdk.Context, count uint64) {
 	key := types.CountKey
-	value := k.cdc.MustMarshalBinaryBare(&protobuf.UInt64Value{Value: count})
+	value := k.cdc.MustMarshalBinaryLengthPrefixed(count)
 
 	store := k.Store(ctx)
 	store.Set(key, value)
 }
 
-func (k Keeper) GetCount(ctx sdk.Context) uint64 {
+func (k Keeper) GetCount(ctx sdk.Context) (count uint64) {
 	store := k.Store(ctx)
 
 	key := types.CountKey
@@ -27,15 +26,13 @@ func (k Keeper) GetCount(ctx sdk.Context) uint64 {
 		return 0
 	}
 
-	var count protobuf.UInt64Value
-	k.cdc.MustUnmarshalBinaryBare(value, &count)
-
-	return count.GetValue()
+	k.cdc.MustUnmarshalBinaryLengthPrefixed(value, &count)
+	return count
 }
 
 func (k Keeper) SetSession(ctx sdk.Context, session types.Session) {
-	key := types.SessionKey(session.Id)
-	value := k.cdc.MustMarshalBinaryBare(&session)
+	key := types.SessionKey(session.ID)
+	value := k.cdc.MustMarshalBinaryLengthPrefixed(session)
 
 	store := k.Store(ctx)
 	store.Set(key, value)
@@ -50,7 +47,7 @@ func (k Keeper) GetSession(ctx sdk.Context, id uint64) (session types.Session, f
 		return session, false
 	}
 
-	k.cdc.MustUnmarshalBinaryBare(value, &session)
+	k.cdc.MustUnmarshalBinaryLengthPrefixed(value, &session)
 	return session, true
 }
 
@@ -67,7 +64,7 @@ func (k Keeper) GetSessions(ctx sdk.Context, skip, limit int) (items types.Sessi
 	iter.Skip(skip)
 	iter.Limit(limit, func(iter sdk.Iterator) {
 		var item types.Session
-		k.cdc.MustUnmarshalBinaryBare(iter.Value(), &item)
+		k.cdc.MustUnmarshalBinaryLengthPrefixed(iter.Value(), &item)
 		items = append(items, item)
 	})
 
@@ -82,7 +79,7 @@ func (k Keeper) IterateSessions(ctx sdk.Context, fn func(index int, item types.S
 
 	for i := 0; iter.Valid(); iter.Next() {
 		var session types.Session
-		k.cdc.MustUnmarshalBinaryBare(iter.Value(), &session)
+		k.cdc.MustUnmarshalBinaryLengthPrefixed(iter.Value(), &session)
 
 		if stop := fn(i, session); stop {
 			break
@@ -93,7 +90,7 @@ func (k Keeper) IterateSessions(ctx sdk.Context, fn func(index int, item types.S
 
 func (k Keeper) SetSessionForSubscription(ctx sdk.Context, subscription, id uint64) {
 	key := types.SessionForSubscriptionKey(subscription, id)
-	value := k.cdc.MustMarshalBinaryBare(&protobuf.BoolValue{Value: true})
+	value := k.cdc.MustMarshalBinaryLengthPrefixed(true)
 
 	store := k.Store(ctx)
 	store.Set(key, value)
@@ -120,7 +117,7 @@ func (k Keeper) GetSessionsForSubscription(ctx sdk.Context, id uint64, skip, lim
 
 func (k Keeper) SetSessionForNode(ctx sdk.Context, address hub.NodeAddress, id uint64) {
 	key := types.SessionForNodeKey(address, id)
-	value := k.cdc.MustMarshalBinaryBare(&protobuf.BoolValue{Value: true})
+	value := k.cdc.MustMarshalBinaryLengthPrefixed(true)
 
 	store := k.Store(ctx)
 	store.Set(key, value)
@@ -147,7 +144,7 @@ func (k Keeper) GetSessionsForNode(ctx sdk.Context, address hub.NodeAddress, ski
 
 func (k Keeper) SetSessionForAddress(ctx sdk.Context, address sdk.AccAddress, id uint64) {
 	key := types.SessionForAddressKey(address, id)
-	value := k.cdc.MustMarshalBinaryBare(&protobuf.BoolValue{Value: true})
+	value := k.cdc.MustMarshalBinaryLengthPrefixed(true)
 
 	store := k.Store(ctx)
 	store.Set(key, value)
@@ -172,39 +169,59 @@ func (k Keeper) GetSessionsForAddress(ctx sdk.Context, address sdk.AccAddress, s
 	return items
 }
 
-func (k Keeper) SetOngoingSession(ctx sdk.Context, subscription uint64, address sdk.AccAddress, id uint64) {
-	key := types.OngoingSessionKey(subscription, address)
-	value := k.cdc.MustMarshalBinaryBare(&protobuf.UInt64Value{Value: id})
+func (k Keeper) SetActiveSessionForAddress(ctx sdk.Context, address sdk.AccAddress, subscription uint64, node hub.NodeAddress, id uint64) {
+	key := types.ActiveSessionForAddressKey(address, subscription, node)
+	value := k.cdc.MustMarshalBinaryLengthPrefixed(id)
 
 	store := k.Store(ctx)
 	store.Set(key, value)
 }
 
-func (k Keeper) GetOngoingSession(ctx sdk.Context, subscription uint64, address sdk.AccAddress) (session types.Session, found bool) {
+func (k Keeper) GetActiveSessionForAddress(ctx sdk.Context, address sdk.AccAddress, id uint64, node hub.NodeAddress) (session types.Session, found bool) {
 	store := k.Store(ctx)
 
-	key := types.OngoingSessionKey(subscription, address)
+	key := types.ActiveSessionForAddressKey(address, id, node)
 	value := store.Get(key)
 	if value == nil {
 		return session, false
 	}
 
-	var id protobuf.UInt64Value
-	k.cdc.MustUnmarshalBinaryBare(value, &id)
-
-	return k.GetSession(ctx, id.GetValue())
+	k.cdc.MustUnmarshalBinaryLengthPrefixed(value, &id)
+	return k.GetSession(ctx, id)
 }
 
-func (k Keeper) DeleteOngoingSession(ctx sdk.Context, id uint64, address sdk.AccAddress) {
-	key := types.OngoingSessionKey(id, address)
+func (k Keeper) DeleteActiveSessionForAddress(ctx sdk.Context, address sdk.AccAddress, id uint64, node hub.NodeAddress) {
+	key := types.ActiveSessionForAddressKey(address, id, node)
 
 	store := k.Store(ctx)
 	store.Delete(key)
 }
 
+func (k Keeper) GetActiveSessionsForAddress(ctx sdk.Context, address sdk.AccAddress, skip, limit int) (items types.Sessions) {
+	var (
+		store = k.Store(ctx)
+		iter  = hub.NewPaginatedIterator(
+			sdk.KVStorePrefixIterator(store, types.GetActiveSessionForAddressKeyPrefix(address)),
+		)
+	)
+
+	defer iter.Close()
+
+	iter.Skip(skip)
+	iter.Limit(limit, func(iter sdk.Iterator) {
+		var id uint64
+		k.cdc.MustUnmarshalBinaryLengthPrefixed(iter.Value(), &id)
+
+		item, _ := k.GetSession(ctx, id)
+		items = append(items, item)
+	})
+
+	return items
+}
+
 func (k Keeper) SetActiveSessionAt(ctx sdk.Context, at time.Time, id uint64) {
 	key := types.ActiveSessionAtKey(at, id)
-	value := k.cdc.MustMarshalBinaryBare(&protobuf.BoolValue{Value: true})
+	value := k.cdc.MustMarshalBinaryLengthPrefixed(true)
 
 	store := k.Store(ctx)
 	store.Set(key, value)
@@ -217,7 +234,7 @@ func (k Keeper) DeleteActiveSessionAt(ctx sdk.Context, at time.Time, id uint64) 
 	store.Delete(key)
 }
 
-func (k Keeper) IterateActiveSessions(ctx sdk.Context, end time.Time, fn func(index int, item types.Session) (stop bool)) {
+func (k Keeper) IterateActiveSessionsAt(ctx sdk.Context, end time.Time, fn func(index int, item types.Session) (stop bool)) {
 	store := k.Store(ctx)
 
 	iter := store.Iterator(types.ActiveSessionAtKeyPrefix, sdk.PrefixEndBytes(types.GetActiveSessionAtKeyPrefix(end)))

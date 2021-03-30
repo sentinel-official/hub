@@ -45,8 +45,8 @@ func (m MsgSubscribeToNodeRequest) ValidateBasic() error {
 		return errors.Wrapf(ErrorInvalidField, "%s", "address")
 	}
 
-	// Deposit should be valid
-	if !m.Deposit.IsValid() {
+	// Deposit should be valid and positive
+	if !m.Deposit.IsValid() || !m.Deposit.IsPositive() {
 		return errors.Wrapf(ErrorInvalidField, "%s", "deposit")
 	}
 
@@ -97,8 +97,8 @@ func (m MsgSubscribeToPlanRequest) ValidateBasic() error {
 		return errors.Wrapf(ErrorInvalidField, "%s", "id")
 	}
 
-	// Denom length should be between 3 and 16
-	if len(m.Denom) < 3 || len(m.Denom) > 16 {
+	// Denom should be valid
+	if err := sdk.ValidateDenom(m.Denom); err != nil {
 		return errors.Wrapf(ErrorInvalidField, "%s", "denom")
 	}
 

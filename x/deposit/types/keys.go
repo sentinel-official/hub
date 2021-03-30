@@ -22,7 +22,7 @@ var (
 )
 
 var (
-	DepositKeyPrefix = []byte{0x00}
+	DepositKeyPrefix = []byte{0x10}
 )
 
 func DepositKey(address sdk.AccAddress) []byte {

@@ -13,8 +13,11 @@ func (k Keeper) VerifyProof(ctx sdk.Context, address sdk.AccAddress, proof types
 	if account == nil {
 		return fmt.Errorf("account does not exist")
 	}
+	if account.GetPubKey() == nil {
+		return fmt.Errorf("public key does not exist")
+	}
 
-	if account.GetPubKey().VerifyBytes(proof.Bytes(), signature) == false {
+	if !account.GetPubKey().VerifyBytes(proof.Bytes(), signature) {
 		return fmt.Errorf("invalid signature")
 	}
 

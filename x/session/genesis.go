@@ -14,13 +14,13 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, state types.GenesisState) {
 	k.SetParams(ctx, state.Params)
 	for _, session := range state.Sessions {
 		k.SetSession(ctx, session)
-		k.SetSessionForSubscription(ctx, session.Subscription, session.Id)
-		k.SetSessionForNode(ctx, session.GetNode(), session.Id)
-		k.SetSessionForAddress(ctx, session.GetAddress(), session.Id)
+		k.SetSessionForSubscription(ctx, session.Subscription, session.ID)
+		k.SetSessionForNode(ctx, session.Node, session.ID)
+		k.SetSessionForAddress(ctx, session.Address, session.ID)
 
 		if session.Status.Equal(hub.StatusActive) {
-			k.SetOngoingSession(ctx, session.Subscription, session.GetAddress(), session.Id)
-			k.SetActiveSessionAt(ctx, session.StatusAt, session.Id)
+			k.SetActiveSessionForAddress(ctx, session.Address, session.Subscription, session.Node, session.ID)
+			k.SetActiveSessionAt(ctx, session.StatusAt, session.ID)
 		}
 	}
 
@@ -47,11 +47,12 @@ func ValidateGenesis(state types.GenesisState) error {
 
 	sessions := make(map[uint64]bool)
 	for _, item := range state.Sessions {
-		if sessions[item.Id] {
-			return fmt.Errorf("duplicate session id %d", item.Id)
+		id := item.ID
+		if sessions[id] {
+			return fmt.Errorf("duplicate session id %d", id)
 		}
 
-		sessions[item.Id] = true
+		sessions[id] = true
 	}
 
 	return nil

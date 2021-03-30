@@ -26,29 +26,25 @@ var (
 )
 
 var (
-	CountKey = []byte{0x00}
-
-	PlanKeyPrefix = []byte{0x10}
-
-	ActivePlanKeyPrefix   = []byte{0x20}
-	InactivePlanKeyPrefix = []byte{0x21}
-
+	CountKey                         = []byte{0x00}
+	PlanKeyPrefix                    = []byte{0x10}
+	ActivePlanKeyPrefix              = []byte{0x20}
+	InactivePlanKeyPrefix            = []byte{0x21}
 	ActivePlanForProviderKeyPrefix   = []byte{0x30}
 	InactivePlanForProviderKeyPrefix = []byte{0x31}
-
-	NodeForPlanKeyPrefix = []byte{0x40}
+	NodeForPlanKeyPrefix             = []byte{0x40}
 )
 
-func PlanKey(i uint64) []byte {
-	return append(PlanKeyPrefix, sdk.Uint64ToBigEndian(i)...)
+func PlanKey(id uint64) []byte {
+	return append(PlanKeyPrefix, sdk.Uint64ToBigEndian(id)...)
 }
 
-func ActivePlanKey(i uint64) []byte {
-	return append(ActivePlanKeyPrefix, sdk.Uint64ToBigEndian(i)...)
+func ActivePlanKey(id uint64) []byte {
+	return append(ActivePlanKeyPrefix, sdk.Uint64ToBigEndian(id)...)
 }
 
-func InactivePlanKey(i uint64) []byte {
-	return append(InactivePlanKeyPrefix, sdk.Uint64ToBigEndian(i)...)
+func InactivePlanKey(id uint64) []byte {
+	return append(InactivePlanKeyPrefix, sdk.Uint64ToBigEndian(id)...)
 }
 
 func GetActivePlanForProviderKeyPrefix(address hub.ProvAddress) []byte {

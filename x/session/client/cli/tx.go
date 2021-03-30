@@ -19,7 +19,7 @@ import (
 
 func txUpsert(cdc *codec.Codec) *cobra.Command {
 	return &cobra.Command{
-		Use:   "upsert [subscription] [address] [duration] [upload] [download] (signature)",
+		Use:   "upsert [subscription] [address] [duration] [upload] [download] (channel) (signature)",
 		Short: "Add or update a session",
 		Args:  cobra.ExactArgs(5),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -52,16 +52,33 @@ func txUpsert(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			var signature []byte
-			if len(args[5]) > 0 {
-				signature, err = hex.DecodeString(args[5])
+			var channel uint64
+			if len(args) > 5 && args[5] != "" {
+				channel, err = strconv.ParseUint(args[3], 10, 64)
 				if err != nil {
 					return err
 				}
 			}
 
-			msg := types.NewMsgUpsert(ctx.FromAddress.Bytes(), subscription, address,
-				duration, hub.NewBandwidthFromInt64(upload, download), signature)
+			var signature []byte = nil
+			if len(args) > 6 && args[6] != "" {
+				signature, err = hex.DecodeString(args[6])
+				if err != nil {
+					return err
+				}
+			}
+
+			var (
+				proof = types.Proof{
+					Channel:      channel,
+					Subscription: subscription,
+					Node:         ctx.FromAddress.Bytes(),
+					Duration:     duration,
+					Bandwidth:    hub.NewBandwidthFromInt64(upload, download),
+				}
+			)
+
+			msg := types.NewMsgUpsert(proof, address, signature)
 			if err := msg.ValidateBasic(); err != nil {
 				return err
 			}

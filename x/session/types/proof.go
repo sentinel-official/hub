@@ -8,10 +8,11 @@ import (
 )
 
 type Proof struct {
-	Identity  uint64          `json:"identity"`
-	Address   hub.NodeAddress `json:"address"`
-	Duration  time.Duration   `json:"duration"`
-	Bandwidth hub.Bandwidth   `json:"bandwidth"`
+	Channel      uint64          `json:"channel,omitempty"`
+	Subscription uint64          `json:"subscription"`
+	Node         hub.NodeAddress `json:"node"`
+	Duration     time.Duration   `json:"duration"`
+	Bandwidth    hub.Bandwidth   `json:"bandwidth"`
 }
 
 func (p Proof) Bytes() []byte {

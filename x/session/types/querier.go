@@ -1,7 +1,9 @@
 package types
 
 import (
-	"github.com/cosmos/cosmos-sdk/types/query"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+
+	hub "github.com/sentinel-official/hub/types"
 )
 
 const (
@@ -11,45 +13,85 @@ const (
 	QuerySessionsForNode         = "SessionsForNode"
 	QuerySessionsForAddress      = "SessionsForAddress"
 
-	QueryOngoingSession = "OngoingSession"
+	QueryActiveSession = "ActiveSession"
 )
 
-func NewQuerySessionRequest(id uint64) QuerySessionRequest {
-	return QuerySessionRequest{
-		Id: id,
+type QuerySessionParams struct {
+	ID uint64 `json:"id"`
+}
+
+func NewQuerySessionParams(id uint64) QuerySessionParams {
+	return QuerySessionParams{
+		ID: id,
 	}
 }
 
-func NewQuerySessionsRequest(pagination *query.PageRequest) QuerySessionsRequest {
-	return QuerySessionsRequest{
-		Pagination: pagination,
+type QuerySessionsParams struct {
+	Skip  int `json:"skip"`
+	Limit int `json:"limit"`
+}
+
+func NewQuerySessionsParams(skip, limit int) QuerySessionsParams {
+	return QuerySessionsParams{
+		Skip:  skip,
+		Limit: limit,
 	}
 }
 
-func NewQuerySessionsForSubscriptionRequest(id uint64, pagination *query.PageRequest) QuerySessionsForSubscriptionRequest {
-	return QuerySessionsForSubscriptionRequest{
-		Id:         id,
-		Pagination: pagination,
+type QuerySessionsForSubscriptionParams struct {
+	ID    uint64 `json:"id"`
+	Skip  int    `json:"skip"`
+	Limit int    `json:"limit"`
+}
+
+func NewQuerySessionsForSubscriptionParams(id uint64, skip, limit int) QuerySessionsForSubscriptionParams {
+	return QuerySessionsForSubscriptionParams{
+		ID:    id,
+		Skip:  skip,
+		Limit: limit,
 	}
 }
 
-func NewQuerySessionsForNodeRequest(address string, pagination *query.PageRequest) QuerySessionsForNodeRequest {
-	return QuerySessionsForNodeRequest{
-		Address:    address,
-		Pagination: pagination,
-	}
+type QuerySessionsForNodeParams struct {
+	Address hub.NodeAddress `json:"address"`
+	Skip    int             `json:"skip"`
+	Limit   int             `json:"limit"`
 }
 
-func NewQuerySessionsForAddressRequest(address string, pagination *query.PageRequest) QuerySessionsForAddressRequest {
-	return QuerySessionsForAddressRequest{
-		Address:    address,
-		Pagination: pagination,
-	}
-}
-
-func NewQueryOngoingSessionRequest(id uint64, address string) QueryOngoingSessionRequest {
-	return QueryOngoingSessionRequest{
-		Id:      id,
+func NewQuerySessionsForNodeParams(address hub.NodeAddress, skip, limit int) QuerySessionsForNodeParams {
+	return QuerySessionsForNodeParams{
 		Address: address,
+		Skip:    skip,
+		Limit:   limit,
+	}
+}
+
+type QuerySessionsForAddressParams struct {
+	Address sdk.AccAddress `json:"address"`
+	Status  hub.Status     `json:"status"`
+	Skip    int            `json:"skip"`
+	Limit   int            `json:"limit"`
+}
+
+func NewQuerySessionsForAddressParams(address sdk.AccAddress, status hub.Status, skip, limit int) QuerySessionsForAddressParams {
+	return QuerySessionsForAddressParams{
+		Address: address,
+		Status:  status,
+		Skip:    skip,
+		Limit:   limit,
+	}
+}
+
+type QueryActiveSessionParams struct {
+	Address      sdk.AccAddress  `json:"address"`
+	Subscription uint64          `json:"subscription"`
+	Node         hub.NodeAddress `json:"node"`
+}
+
+func NewQueryActiveSessionParams(address sdk.AccAddress, subscription uint64, node hub.NodeAddress) QueryActiveSessionParams {
+	return QueryActiveSessionParams{
+		Address:      address,
+		Subscription: subscription,
+		Node:         node,
 	}
 }

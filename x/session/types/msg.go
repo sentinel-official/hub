@@ -3,60 +3,62 @@ package types
 import (
 	"encoding/json"
 	"fmt"
-	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/errors"
-
-	hub "github.com/sentinel-official/hub/types"
 )
 
 var (
-	_ sdk.Msg = (*MsgUpsertRequest)(nil)
+	_ sdk.Msg = (*MsgUpsert)(nil)
 )
 
-func NewMsgUpsertRequest(from string, id uint64, address string, duration time.Duration, bandwidth hub.Bandwidth) MsgUpsertRequest {
-	return MsgUpsertRequest{
-		From:      from,
-		Id:        id,
+// MsgUpsert is for updating or inserting a session of a plan.
+type MsgUpsert struct {
+	Proof     Proof          `json:"proof"`
+	Address   sdk.AccAddress `json:"address"`
+	Signature []byte         `json:"signature,omitempty"`
+}
+
+func NewMsgUpsert(proof Proof, address sdk.AccAddress, signature []byte) MsgUpsert {
+	return MsgUpsert{
+		Proof:     proof,
 		Address:   address,
-		Duration:  duration,
-		Bandwidth: bandwidth,
 		Signature: signature,
 	}
 }
 
-func (m MsgUpsertRequest) Route() string {
+func (m MsgUpsert) Route() string {
 	return RouterKey
 }
 
-func (m MsgUpsertRequest) Type() string {
+func (m MsgUpsert) Type() string {
 	return fmt.Sprintf("%s:upsert", ModuleName)
 }
 
-func (m MsgUpsertRequest) ValidateBasic() error {
-	if _, err := hub.NodeAddressFromBech32(m.From); err != nil {
-		return errors.Wrapf(ErrorInvalidField, "%s", "from")
+func (m MsgUpsert) ValidateBasic() error {
+	// Subscription shouldn't be zero
+	if m.Proof.Subscription == 0 {
+		return errors.Wrapf(ErrorInvalidField, "%s", "proof->subscription")
 	}
 
-	// Id shouldn't be zero
-	if m.Id == 0 {
-		return errors.Wrapf(ErrorInvalidField, "%s", "id")
-	}
-
-	// Address should be valid
-	if _, err := sdk.AccAddressFromBech32(m.Address); err != nil {
-		return errors.Wrapf(ErrorInvalidField, "%s", "address")
+	// Node shouldn't be nil or empty
+	if m.Proof.Node == nil || m.Proof.Node.Empty() {
+		return errors.Wrapf(ErrorInvalidField, "%s", "proof->node")
 	}
 
 	// Duration shouldn't be negative
-	if m.Duration < 0 {
-		return errors.Wrapf(ErrorInvalidField, "%s", "duration")
+	if m.Proof.Duration < 0 {
+		return errors.Wrapf(ErrorInvalidField, "%s", "proof->duration")
 	}
 
 	// Bandwidth shouldn't be negative
-	if m.Bandwidth.IsAnyNegative() {
-		return errors.Wrapf(ErrorInvalidField, "%s", "bandwidth")
+	if m.Proof.Bandwidth.IsAnyNegative() {
+		return errors.Wrapf(ErrorInvalidField, "%s", "proof->bandwidth")
+	}
+
+	// Address shouldn't be nil or empty
+	if m.Address == nil || m.Address.Empty() {
+		return errors.Wrapf(ErrorInvalidField, "%s", "address")
 	}
 
 	// Signature can be nil, if not length should be 64
@@ -67,7 +69,7 @@ func (m MsgUpsertRequest) ValidateBasic() error {
 	return nil
 }
 
-func (m MsgUpsertRequest) GetSignBytes() []byte {
+func (m MsgUpsert) GetSignBytes() []byte {
 	bytes, err := json.Marshal(m)
 	if err != nil {
 		panic(err)
@@ -76,11 +78,6 @@ func (m MsgUpsertRequest) GetSignBytes() []byte {
 	return bytes
 }
 
-func (m MsgUpsertRequest) GetSigners() []sdk.AccAddress {
-	from, err := hub.NodeAddressFromBech32(m.From)
-	if err != nil {
-		panic(err)
-	}
-
-	return []sdk.AccAddress{from.Bytes()}
+func (m MsgUpsert) GetSigners() []sdk.AccAddress {
+	return []sdk.AccAddress{m.Proof.Node.Bytes()}
 }
