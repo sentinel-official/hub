@@ -6,7 +6,7 @@ import (
 )
 
 const (
-	EthereumHashLength = 32
+	EthereumHashLength int = 32
 )
 
 func BytesToHash(b []byte) EthereumHash {
