@@ -14,4 +14,5 @@ message Params {
 
   google.protobuf.Duration inactive_duration = 1
       [ (gogoproto.nullable) = false, (gogoproto.stdduration) = true ];
+  bool proof_verification_enabled = 2;
 }
