@@ -1,16 +1,16 @@
 package types
 
+import (
+	"github.com/cosmos/cosmos-sdk/types/query"
+)
+
 const (
 	QuerySwap  = "Swap"
 	QuerySwaps = "Swaps"
 )
 
-type QuerySwapParams struct {
-	TxHash EthereumHash `json:"tx_hash"`
-}
-
-func NewQuerySwapParams(txHash EthereumHash) QuerySwapParams {
-	return QuerySwapParams{
+func NewQuerySwapRequest(txHash []byte) QuerySwapRequest {
+	return QuerySwapRequest{
 		TxHash: txHash,
 	}
 }
@@ -20,9 +20,8 @@ type QuerySwapsParams struct {
 	Limit int `json:"limit"`
 }
 
-func NewQuerySwapsParams(skip, limit int) QuerySwapsParams {
-	return QuerySwapsParams{
-		Skip:  skip,
-		Limit: limit,
+func NewQuerySwapsRequest(pagination *query.PageRequest) QuerySwapsRequest {
+	return QuerySwapsRequest{
+		Pagination: pagination,
 	}
 }
