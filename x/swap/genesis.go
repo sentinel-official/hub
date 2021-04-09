@@ -36,7 +36,7 @@ func ValidateGenesis(state types.GenesisState) error {
 
 	swaps := make(map[string]bool)
 	for _, item := range state.Swaps {
-		txHash := item.TxHash.String()
+		txHash := item.GetTxHash().String()
 		if swaps[txHash] {
 			return fmt.Errorf("duplicate swap for tx_hash %s", txHash)
 		}

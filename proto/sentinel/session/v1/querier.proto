@@ -49,12 +49,13 @@ message QuerySessionRequest {
   uint64 id = 1;
 }
 
-message QueryOngoingSessionRequest {
+message QueryActiveSessionRequest {
   option (gogoproto.equal)           = false;
   option (gogoproto.goproto_getters) = false;
 
-  uint64 id      = 1;
-  string address = 2;
+  string address      = 1;
+  string node         = 2;
+  uint64 subscription = 3;
 }
 
 message QuerySessionsResponse {
@@ -96,7 +97,7 @@ message QuerySessionResponse {
   Session session = 1 [ (gogoproto.nullable) = false ];
 }
 
-message QueryOngoingSessionResponse {
+message QueryActiveSessionResponse {
   option (gogoproto.equal)           = false;
   option (gogoproto.goproto_getters) = false;
 
@@ -127,8 +128,8 @@ service QueryService {
     option (google.api.http).get = "/sessions/{id}";
   }
 
-  rpc QueryOngoingSession(QueryOngoingSessionRequest)
-      returns (QueryOngoingSessionResponse) {
-    option (google.api.http).get = "/accounts/{address}/sessions/ongoing";
+  rpc QueryActiveSession(QueryActiveSessionRequest)
+      returns (QueryActiveSessionResponse) {
+    option (google.api.http).get = "/accounts/{address}/sessions/active";
   }
 }

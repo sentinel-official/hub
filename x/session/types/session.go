@@ -23,11 +23,11 @@ func (s Session) GetAddress() sdk.AccAddress {
 }
 
 func (s Session) GetNode() hub.NodeAddress {
-	if s.Address == "" {
+	if s.Node == "" {
 		return nil
 	}
 
-	address, err := hub.NodeAddressFromBech32(s.Address)
+	address, err := hub.NodeAddressFromBech32(s.Node)
 	if err != nil {
 		panic(err)
 	}

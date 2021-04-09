@@ -166,7 +166,7 @@ func (q *Querier) QuerySessionsForAddress(c context.Context, req *types.QuerySes
 	return &types.QuerySessionsForAddressResponse{Sessions: items, Pagination: pagination}, nil
 }
 
-func (q *Querier) QueryOngoingSession(c context.Context, req *types.QueryOngoingSessionRequest) (*types.QueryOngoingSessionResponse, error) {
+func (q *Querier) QueryActiveSession(c context.Context, req *types.QueryActiveSessionRequest) (*types.QueryActiveSessionResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "empty request")
 	}
@@ -176,12 +176,17 @@ func (q *Querier) QueryOngoingSession(c context.Context, req *types.QueryOngoing
 		return nil, status.Errorf(codes.InvalidArgument, "invalid address %s", req.Address)
 	}
 
+	node, err := hub.NodeAddressFromBech32(req.Node)
+	if err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, "invalid node address %s", req.Node)
+	}
+
 	ctx := sdk.UnwrapSDKContext(c)
 
-	session, found := q.GetOngoingSession(ctx, req.Id, address)
+	session, found := q.GetActiveSessionForAddress(ctx, address, req.Subscription, node)
 	if !found {
 		return nil, nil
 	}
 
-	return &types.QueryOngoingSessionResponse{Session: session}, nil
+	return &types.QueryActiveSessionResponse{Session: session}, nil
 }

@@ -13,10 +13,11 @@ import (
 	"github.com/spf13/cobra"
 	abci "github.com/tendermint/tendermint/abci/types"
 
+	"github.com/sentinel-official/hub/x/swap/querier"
+
 	"github.com/sentinel-official/hub/x/swap/client/cli"
 	"github.com/sentinel-official/hub/x/swap/client/rest"
 	"github.com/sentinel-official/hub/x/swap/keeper"
-	"github.com/sentinel-official/hub/x/swap/querier"
 	"github.com/sentinel-official/hub/x/swap/types"
 )
 

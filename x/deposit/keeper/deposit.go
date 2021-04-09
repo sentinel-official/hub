@@ -53,7 +53,7 @@ func (k Keeper) GetDeposits(ctx sdk.Context, skip, limit int) (items types.Depos
 
 // Add is for adding the amount to the deposit account from the bank account of an address.
 func (k Keeper) Add(ctx sdk.Context, address sdk.AccAddress, coins sdk.Coins) error {
-	if err := k.supply.SendCoinsFromAccountToModule(ctx, address, types.ModuleName, coins); err != nil {
+	if err := k.bank.SendCoinsFromAccountToModule(ctx, address, types.ModuleName, coins); err != nil {
 		return err
 	}
 
@@ -86,7 +86,7 @@ func (k Keeper) Subtract(ctx sdk.Context, address sdk.AccAddress, coins sdk.Coin
 		return types.ErrorInsufficientDepositFunds
 	}
 
-	if err := k.supply.SendCoinsFromModuleToAccount(ctx, types.ModuleName, address, coins); err != nil {
+	if err := k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, address, coins); err != nil {
 		return err
 	}
 
@@ -107,7 +107,7 @@ func (k Keeper) SendCoinsFromDepositToAccount(ctx sdk.Context, from, to sdk.AccA
 		return types.ErrorInsufficientDepositFunds
 	}
 
-	if err := k.supply.SendCoinsFromModuleToAccount(ctx, types.ModuleName, to, coins); err != nil {
+	if err := k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, to, coins); err != nil {
 		return err
 	}
 
@@ -118,7 +118,7 @@ func (k Keeper) SendCoinsFromDepositToAccount(ctx sdk.Context, from, to sdk.AccA
 // SendCoinsFromAccountToDeposit is for sending the amount
 // from the bank account of from address to the deposit account of to address.
 func (k Keeper) SendCoinsFromAccountToDeposit(ctx sdk.Context, from, to sdk.AccAddress, coins sdk.Coins) error {
-	if err := k.supply.SendCoinsFromAccountToModule(ctx, from, types.ModuleName, coins); err != nil {
+	if err := k.bank.SendCoinsFromAccountToModule(ctx, from, types.ModuleName, coins); err != nil {
 		return err
 	}
 

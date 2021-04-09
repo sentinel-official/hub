@@ -1,6 +1,8 @@
 package types
 
-type GenesisSubscriptions []GenesisSubscription
+type (
+	GenesisSubscriptions []GenesisSubscription
+)
 
 func NewGenesisState(subscriptions GenesisSubscriptions, params Params) GenesisState {
 	return GenesisState{

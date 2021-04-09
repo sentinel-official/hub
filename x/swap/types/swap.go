@@ -7,6 +7,10 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
+func (s Swap) GetTxHash() (hash EthereumHash) {
+	return BytesToHash(s.TxHash)
+}
+
 func (s Swap) String() string {
 	return fmt.Sprintf(strings.TrimSpace(`
 Tx hash:  %X

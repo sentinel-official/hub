@@ -27,7 +27,8 @@ const (
 
 var (
 	// functions aliases
-	RegisterCodec                           = types.RegisterCodec
+	RegisterLegacyAminoCodec                = types.RegisterLegacyAminoCodec
+	RegisterInterfaces                      = types.RegisterInterfaces
 	BytesToHash                             = types.BytesToHash
 	NewGenesisState                         = types.NewGenesisState
 	DefaultGenesisState                     = types.DefaultGenesisState
@@ -105,4 +106,5 @@ type (
 	Swaps                           = types.Swaps
 	Swap                            = types.Swap
 	Keeper                          = keeper.Keeper
+	Querier                         = keeper.Querier
 )

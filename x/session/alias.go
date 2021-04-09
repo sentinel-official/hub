@@ -140,13 +140,13 @@ type (
 	QuerySessionsForNodeRequest          = types.QuerySessionsForNodeRequest
 	QuerySessionsForAddressRequest       = types.QuerySessionsForAddressRequest
 	QuerySessionRequest                  = types.QuerySessionRequest
-	QueryOngoingSessionRequest           = types.QueryOngoingSessionRequest
+	QueryActiveSessionRequest            = types.QueryActiveSessionRequest
 	QuerySessionsResponse                = types.QuerySessionsResponse
 	QuerySessionsForSubscriptionResponse = types.QuerySessionsForSubscriptionResponse
 	QuerySessionsForNodeResponse         = types.QuerySessionsForNodeResponse
 	QuerySessionsForAddressResponse      = types.QuerySessionsForAddressResponse
 	QuerySessionResponse                 = types.QuerySessionResponse
-	QueryOngoingSessionResponse          = types.QueryOngoingSessionResponse
+	QueryActiveSessionResponse           = types.QueryActiveSessionResponse
 	QueryServiceClient                   = types.QueryServiceClient
 	QueryServiceServer                   = types.QueryServiceServer
 	UnimplementedQueryServiceServer      = types.UnimplementedQueryServiceServer

@@ -7,7 +7,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-func (d Deposit) GetAddress() sdk.AccAddress {
+func (d *Deposit) GetAddress() sdk.AccAddress {
 	if d.Address == "" {
 		return nil
 	}
@@ -20,7 +20,7 @@ func (d Deposit) GetAddress() sdk.AccAddress {
 	return address
 }
 
-func (d Deposit) String() string {
+func (d *Deposit) String() string {
 	return fmt.Sprintf(strings.TrimSpace(`
 Address: %s
 Coins  : %s
@@ -28,8 +28,8 @@ Coins  : %s
 }
 
 func (d Deposit) Validate() error {
-	if d.Address == "" {
-		return fmt.Errorf("address should not be empty")
+	if _, err := sdk.AccAddressFromBech32(d.Address); err != nil {
+		return err
 	}
 	if d.Coins == nil || !d.Coins.IsValid() {
 		return fmt.Errorf("coins should not be nil or invalid")
