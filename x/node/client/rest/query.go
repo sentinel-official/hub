@@ -1,20 +1,18 @@
 package rest
 
 import (
+	"context"
 	"net/http"
-	"strconv"
 
-	"github.com/cosmos/cosmos-sdk/client/context"
+	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/types/rest"
 	"github.com/gorilla/mux"
 
 	hub "github.com/sentinel-official/hub/types"
-	"github.com/sentinel-official/hub/utils"
-	"github.com/sentinel-official/hub/x/node/client/common"
 	"github.com/sentinel-official/hub/x/node/types"
 )
 
-func queryNode(ctx context.CLIContext) http.HandlerFunc {
+func queryNode(ctx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 
@@ -24,58 +22,58 @@ func queryNode(ctx context.CLIContext) http.HandlerFunc {
 			return
 		}
 
-		node, err := common.QueryNode(ctx, address)
+		var (
+			qc = types.NewQueryServiceClient(ctx)
+		)
+
+		res, err := qc.QueryNode(context.Background(),
+			types.NewQueryNodeRequest(address))
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
 		}
 
-		rest.PostProcessResponse(w, ctx, node)
+		rest.PostProcessResponse(w, ctx, res)
 	}
 }
 
-func queryNodes(ctx context.CLIContext) http.HandlerFunc {
+func queryNodes(ctx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		query := r.URL.Query()
-
-		skip, limit, err := utils.ParseQuery(query)
-		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
-			return
-		}
-
 		var (
-			plan     uint64
-			provider hub.ProvAddress
-			nodes    types.Nodes
-			status   = hub.StatusFromString(query.Get("status"))
+			query  = r.URL.Query()
+			status = hub.StatusFromString(query.Get("status"))
+			qc     = types.NewQueryServiceClient(ctx)
 		)
 
 		if query.Get("provider") != "" {
-			provider, err = hub.ProvAddressFromBech32(query.Get("provider"))
+			address, err := hub.ProvAddressFromBech32(query.Get("provider"))
 			if err != nil {
 				rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 				return
 			}
 
-			nodes, err = common.QueryNodesForProvider(ctx, provider, status, skip, limit)
+			res, err := qc.QueryNodesForProvider(context.Background(),
+				types.NewQueryNodesForProviderRequest(address, status, nil))
+			if err != nil {
+				rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+				return
+			}
+
+			rest.PostProcessResponse(w, ctx, res)
+			return
 		} else if query.Get("plan") != "" {
-			plan, err = strconv.ParseUint(query.Get("plan"), 10, 64)
+			rest.PostProcessResponse(w, ctx, nil)
+			return
+		} else {
+			res, err := qc.QueryNodes(context.Background(),
+				types.NewQueryNodesRequest(status, nil))
 			if err != nil {
-				rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+				rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 				return
 			}
 
-			nodes, err = common.QueryNodesForPlan(ctx, plan, skip, limit)
-		} else {
-			nodes, err = common.QueryNodes(ctx, status, skip, limit)
-		}
-
-		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+			rest.PostProcessResponse(w, ctx, res)
 			return
 		}
-
-		rest.PostProcessResponse(w, ctx, nodes)
 	}
 }

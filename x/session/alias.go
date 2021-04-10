@@ -19,12 +19,6 @@ const (
 	QuerierRoute                    = types.QuerierRoute
 	DefaultInactiveDuration         = types.DefaultInactiveDuration
 	DefaultProofVerificationEnabled = types.DefaultProofVerificationEnabled
-	QuerySession                    = types.QuerySession
-	QuerySessions                   = types.QuerySessions
-	QuerySessionsForSubscription    = types.QuerySessionsForSubscription
-	QuerySessionsForNode            = types.QuerySessionsForNode
-	QuerySessionsForAddress         = types.QuerySessionsForAddress
-	QueryActiveSession              = types.QueryActiveSession
 )
 
 var (
@@ -56,12 +50,13 @@ var (
 	NewParams                               = types.NewParams
 	DefaultParams                           = types.DefaultParams
 	ParamsKeyTable                          = types.ParamsKeyTable
-	NewQuerySessionParams                   = types.NewQuerySessionParams
-	NewQuerySessionsParams                  = types.NewQuerySessionsParams
-	NewQuerySessionsForSubscriptionParams   = types.NewQuerySessionsForSubscriptionParams
-	NewQuerySessionsForNodeParams           = types.NewQuerySessionsForNodeParams
-	NewQuerySessionsForAddressParams        = types.NewQuerySessionsForAddressParams
-	NewQueryActiveSessionParams             = types.NewQueryActiveSessionParams
+	NewProof                                = types.NewProof
+	NewQuerySessionRequest                  = types.NewQuerySessionRequest
+	NewQuerySessionsRequest                 = types.NewQuerySessionsRequest
+	NewQuerySessionsForSubscriptionRequest  = types.NewQuerySessionsForSubscriptionRequest
+	NewQuerySessionsForNodeRequest          = types.NewQuerySessionsForNodeRequest
+	NewQuerySessionsForAddressRequest       = types.NewQuerySessionsForAddressRequest
+	NewQueryActiveSessionRequest            = types.NewQueryActiveSessionRequest
 	NewQueryServiceClient                   = types.NewQueryServiceClient
 	RegisterQueryServiceServer              = types.RegisterQueryServiceServer
 	RegisterQueryServiceHandlerServer       = types.RegisterQueryServiceHandlerServer
@@ -69,6 +64,7 @@ var (
 	RegisterQueryServiceHandler             = types.RegisterQueryServiceHandler
 	RegisterQueryServiceHandlerClient       = types.RegisterQueryServiceHandlerClient
 	NewKeeper                               = keeper.NewKeeper
+	NewMsgServiceServer                     = keeper.NewMsgServiceServer
 
 	// variable aliases
 	ModuleCdc                        = types.ModuleCdc
@@ -129,12 +125,6 @@ type (
 	UnimplementedMsgServiceServer        = types.UnimplementedMsgServiceServer
 	Params                               = types.Params
 	Proof                                = types.Proof
-	QuerySessionParams                   = types.QuerySessionParams
-	QuerySessionsParams                  = types.QuerySessionsParams
-	QuerySessionsForSubscriptionParams   = types.QuerySessionsForSubscriptionParams
-	QuerySessionsForNodeParams           = types.QuerySessionsForNodeParams
-	QuerySessionsForAddressParams        = types.QuerySessionsForAddressParams
-	QueryActiveSessionParams             = types.QueryActiveSessionParams
 	QuerySessionsRequest                 = types.QuerySessionsRequest
 	QuerySessionsForSubscriptionRequest  = types.QuerySessionsForSubscriptionRequest
 	QuerySessionsForNodeRequest          = types.QuerySessionsForNodeRequest

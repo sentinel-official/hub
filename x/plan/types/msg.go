@@ -18,9 +18,9 @@ var (
 	_ sdk.Msg = (*MsgRemoveNodeRequest)(nil)
 )
 
-func NewMsgAddRequest(from string, price sdk.Coins, validity time.Duration, bytes sdk.Int) MsgAddRequest {
-	return MsgAddRequest{
-		From:     from,
+func NewMsgAddRequest(from hub.ProvAddress, price sdk.Coins, validity time.Duration, bytes sdk.Int) *MsgAddRequest {
+	return &MsgAddRequest{
+		From:     from.String(),
 		Price:    price,
 		Validity: validity,
 		Bytes:    bytes,
@@ -76,9 +76,9 @@ func (m MsgAddRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{from.Bytes()}
 }
 
-func NewMsgSetStatusRequest(from string, id uint64, status hub.Status) MsgSetStatusRequest {
-	return MsgSetStatusRequest{
-		From:   from,
+func NewMsgSetStatusRequest(from hub.ProvAddress, id uint64, status hub.Status) *MsgSetStatusRequest {
+	return &MsgSetStatusRequest{
+		From:   from.String(),
 		Id:     id,
 		Status: status,
 	}
@@ -128,11 +128,11 @@ func (m MsgSetStatusRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{from.Bytes()}
 }
 
-func NewMsgAddNodeRequest(from string, id uint64, address string) MsgAddNodeRequest {
-	return MsgAddNodeRequest{
-		From:    from,
+func NewMsgAddNodeRequest(from hub.ProvAddress, id uint64, address hub.NodeAddress) *MsgAddNodeRequest {
+	return &MsgAddNodeRequest{
+		From:    from.String(),
 		Id:      id,
-		Address: address,
+		Address: address.String(),
 	}
 }
 
@@ -180,11 +180,11 @@ func (m MsgAddNodeRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{from.Bytes()}
 }
 
-func NewMsgRemoveNodeRequest(from string, id uint64, address string) MsgRemoveNodeRequest {
-	return MsgRemoveNodeRequest{
-		From:    from,
+func NewMsgRemoveNodeRequest(from hub.ProvAddress, id uint64, address hub.NodeAddress) *MsgRemoveNodeRequest {
+	return &MsgRemoveNodeRequest{
+		From:    from.String(),
 		Id:      id,
-		Address: address,
+		Address: address.String(),
 	}
 }
 

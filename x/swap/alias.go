@@ -21,8 +21,6 @@ const (
 	DefaultSwapEnabled  = types.DefaultSwapEnabled
 	DefaultSwapDenom    = types.DefaultSwapDenom
 	DefaultApproveBy    = types.DefaultApproveBy
-	QuerySwap           = types.QuerySwap
-	QuerySwaps          = types.QuerySwaps
 )
 
 var (
@@ -48,6 +46,7 @@ var (
 	RegisterQueryServiceHandler             = types.RegisterQueryServiceHandler
 	RegisterQueryServiceHandlerClient       = types.RegisterQueryServiceHandlerClient
 	NewKeeper                               = keeper.NewKeeper
+	NewMsgServiceServer                     = keeper.NewMsgServiceServer
 
 	// variable aliases
 	ModuleCdc                      = types.ModuleCdc
@@ -95,7 +94,6 @@ type (
 	MsgServiceServer                = types.MsgServiceServer
 	UnimplementedMsgServiceServer   = types.UnimplementedMsgServiceServer
 	Params                          = types.Params
-	QuerySwapsParams                = types.QuerySwapsParams
 	QuerySwapsRequest               = types.QuerySwapsRequest
 	QuerySwapRequest                = types.QuerySwapRequest
 	QuerySwapsResponse              = types.QuerySwapsResponse

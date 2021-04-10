@@ -112,6 +112,6 @@ func (q *Querier) QuerySessionsForAddress(c context.Context, req *session.QueryS
 	return q.Session.QuerySessionsForAddress(c, req)
 }
 
-func (q *Querier) QueryOngoingSession(c context.Context, req *session.QueryOngoingSessionRequest) (*session.QueryOngoingSessionResponse, error) {
-	return q.Session.QueryOngoingSession(c, req)
+func (q *Querier) QueryActiveSession(c context.Context, req *session.QueryActiveSessionRequest) (*session.QueryActiveSessionResponse, error) {
+	return q.Session.QueryActiveSession(c, req)
 }

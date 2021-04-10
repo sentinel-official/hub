@@ -1,19 +1,18 @@
 package rest
 
 import (
+	"context"
 	"encoding/hex"
 	"net/http"
 
-	"github.com/cosmos/cosmos-sdk/client/context"
+	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/types/rest"
 	"github.com/gorilla/mux"
 
-	"github.com/sentinel-official/hub/utils"
-	"github.com/sentinel-official/hub/x/swap/client/common"
 	"github.com/sentinel-official/hub/x/swap/types"
 )
 
-func querySwap(ctx context.CLIContext) http.HandlerFunc {
+func querySwap(ctx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 
@@ -23,30 +22,34 @@ func querySwap(ctx context.CLIContext) http.HandlerFunc {
 			return
 		}
 
-		swap, err := common.QuerySwap(ctx, types.BytesToHash(txHash))
+		var (
+			qc = types.NewQueryServiceClient(ctx)
+		)
+
+		res, err := qc.QuerySwap(context.Background(),
+			types.NewQuerySwapRequest(types.BytesToHash(txHash)))
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
 		}
 
-		rest.PostProcessResponse(w, ctx, swap)
+		rest.PostProcessResponse(w, ctx, res)
 	}
 }
 
-func querySwaps(ctx context.CLIContext) http.HandlerFunc {
+func querySwaps(ctx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		skip, limit, err := utils.ParseQuery(r.URL.Query())
-		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
-			return
-		}
+		var (
+			qc = types.NewQueryServiceClient(ctx)
+		)
 
-		swaps, err := common.QuerySwaps(ctx, skip, limit)
+		res, err := qc.QuerySwaps(context.Background(),
+			types.NewQuerySwapsRequest(nil))
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
 		}
 
-		rest.PostProcessResponse(w, ctx, swaps)
+		rest.PostProcessResponse(w, ctx, res)
 	}
 }

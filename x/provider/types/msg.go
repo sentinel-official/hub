@@ -15,9 +15,9 @@ var (
 	_ sdk.Msg = (*MsgUpdateRequest)(nil)
 )
 
-func NewMsgRegisterRequest(from, name, identity, website, description string) MsgRegisterRequest {
-	return MsgRegisterRequest{
-		From:        from,
+func NewMsgRegisterRequest(from sdk.AccAddress, name, identity, website, description string) *MsgRegisterRequest {
+	return &MsgRegisterRequest{
+		From:        from.String(),
 		Name:        name,
 		Identity:    identity,
 		Website:     website,
@@ -79,9 +79,9 @@ func (m MsgRegisterRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{from}
 }
 
-func NewMsgUpdateRequest(from, name, identity, website, description string) MsgUpdateRequest {
-	return MsgUpdateRequest{
-		From:        from,
+func NewMsgUpdateRequest(from hub.ProvAddress, name, identity, website, description string) *MsgUpdateRequest {
+	return &MsgUpdateRequest{
+		From:        from.String(),
 		Name:        name,
 		Identity:    identity,
 		Website:     website,

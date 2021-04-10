@@ -11,16 +11,12 @@ import (
 )
 
 const (
-	AttributeKeyAddress   = types.AttributeKeyAddress
-	AttributeKeyID        = types.AttributeKeyID
-	AttributeKeyCount     = types.AttributeKeyCount
-	AttributeKeyStatus    = types.AttributeKeyStatus
-	ModuleName            = types.ModuleName
-	QuerierRoute          = types.QuerierRoute
-	QueryPlan             = types.QueryPlan
-	QueryPlans            = types.QueryPlans
-	QueryPlansForProvider = types.QueryPlansForProvider
-	QueryNodesForPlan     = types.QueryNodesForPlan
+	AttributeKeyAddress = types.AttributeKeyAddress
+	AttributeKeyID      = types.AttributeKeyID
+	AttributeKeyCount   = types.AttributeKeyCount
+	AttributeKeyStatus  = types.AttributeKeyStatus
+	ModuleName          = types.ModuleName
+	QuerierRoute        = types.QuerierRoute
 )
 
 var (
@@ -58,6 +54,7 @@ var (
 	RegisterQueryServiceHandler             = types.RegisterQueryServiceHandler
 	RegisterQueryServiceHandlerClient       = types.RegisterQueryServiceHandlerClient
 	NewKeeper                               = keeper.NewKeeper
+	NewMsgServiceServer                     = keeper.NewMsgServiceServer
 
 	// variable aliases
 	ModuleCdc                        = types.ModuleCdc

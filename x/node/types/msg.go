@@ -16,10 +16,10 @@ var (
 	_ sdk.Msg = (*MsgSetStatusRequest)(nil)
 )
 
-func NewMsgRegisterRequest(from, provider string, price sdk.Coins, remoteUrl string) MsgRegisterRequest {
-	return MsgRegisterRequest{
-		From:      from,
-		Provider:  provider,
+func NewMsgRegisterRequest(from sdk.AccAddress, provider hub.ProvAddress, price sdk.Coins, remoteUrl string) *MsgRegisterRequest {
+	return &MsgRegisterRequest{
+		From:      from.String(),
+		Provider:  provider.String(),
 		Price:     price,
 		RemoteUrl: remoteUrl,
 	}
@@ -82,10 +82,10 @@ func (m MsgRegisterRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{from}
 }
 
-func NewMsgUpdateRequest(from, provider string, price sdk.Coins, remoteUrl string) MsgUpdateRequest {
-	return MsgUpdateRequest{
-		From:      from,
-		Provider:  provider,
+func NewMsgUpdateRequest(from hub.NodeAddress, provider hub.ProvAddress, price sdk.Coins, remoteUrl string) *MsgUpdateRequest {
+	return &MsgUpdateRequest{
+		From:      from.String(),
+		Provider:  provider.String(),
 		Price:     price,
 		RemoteUrl: remoteUrl,
 	}
@@ -146,9 +146,9 @@ func (m MsgUpdateRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{from.Bytes()}
 }
 
-func NewMsgSetStatusRequest(from string, status hub.Status) MsgSetStatusRequest {
-	return MsgSetStatusRequest{
-		From:   from,
+func NewMsgSetStatusRequest(from hub.NodeAddress, status hub.Status) *MsgSetStatusRequest {
+	return &MsgSetStatusRequest{
+		From:   from.String(),
 		Status: status,
 	}
 }

@@ -15,8 +15,6 @@ const (
 	AttributeKeyDeposit = types.AttributeKeyDeposit
 	ModuleName          = types.ModuleName
 	QuerierRoute        = types.QuerierRoute
-	QueryProvider       = types.QueryProvider
-	QueryProviders      = types.QueryProviders
 )
 
 var (
@@ -42,6 +40,7 @@ var (
 	RegisterQueryServiceHandler             = types.RegisterQueryServiceHandler
 	RegisterQueryServiceHandlerClient       = types.RegisterQueryServiceHandlerClient
 	NewKeeper                               = keeper.NewKeeper
+	NewMsgServiceServer                     = keeper.NewMsgServiceServer
 
 	// variable aliases
 	ModuleCdc                       = types.ModuleCdc

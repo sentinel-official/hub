@@ -2,21 +2,18 @@ package types
 
 import (
 	"github.com/cosmos/cosmos-sdk/types/query"
+
+	hub "github.com/sentinel-official/hub/types"
 )
 
-const (
-	QueryProvider  = "Provider"
-	QueryProviders = "Providers"
-)
-
-func NewQueryProviderRequest(address string) QueryProviderRequest {
-	return QueryProviderRequest{
-		Address: address,
+func NewQueryProviderRequest(address hub.ProvAddress) *QueryProviderRequest {
+	return &QueryProviderRequest{
+		Address: address.String(),
 	}
 }
 
-func NewQueryProvidersRequest(pagination *query.PageRequest) QueryProvidersRequest {
-	return QueryProvidersRequest{
+func NewQueryProvidersRequest(pagination *query.PageRequest) *QueryProvidersRequest {
+	return &QueryProvidersRequest{
 		Pagination: pagination,
 	}
 }

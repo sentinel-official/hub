@@ -8,11 +8,11 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-func NewMsgSwapRequest(from string, txHash []byte, receiver string, amount sdk.Int) MsgSwapRequest {
-	return MsgSwapRequest{
-		From:     from,
-		TxHash:   txHash,
-		Receiver: receiver,
+func NewMsgSwapRequest(from sdk.AccAddress, txHash EthereumHash, receiver sdk.AccAddress, amount sdk.Int) *MsgSwapRequest {
+	return &MsgSwapRequest{
+		From:     from.String(),
+		TxHash:   txHash.Bytes(),
+		Receiver: receiver.String(),
 		Amount:   amount,
 	}
 }

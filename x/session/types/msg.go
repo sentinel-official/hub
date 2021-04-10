@@ -14,10 +14,10 @@ var (
 	_ sdk.Msg = (*MsgUpsertRequest)(nil)
 )
 
-func NewMsgUpsertRequest(proof Proof, address string, signature []byte) MsgUpsertRequest {
-	return MsgUpsertRequest{
+func NewMsgUpsertRequest(proof Proof, address sdk.AccAddress, signature []byte) *MsgUpsertRequest {
+	return &MsgUpsertRequest{
 		Proof:     proof,
-		Address:   address,
+		Address:   address.String(),
 		Signature: signature,
 	}
 }

@@ -11,25 +11,18 @@ import (
 )
 
 const (
-	AttributeKeyOwner            = types.AttributeKeyOwner
-	AttributeKeyAddress          = types.AttributeKeyAddress
-	AttributeKeyID               = types.AttributeKeyID
-	AttributeKeyStatus           = types.AttributeKeyStatus
-	AttributeKeyNode             = types.AttributeKeyNode
-	AttributeKeyCount            = types.AttributeKeyCount
-	AttributeKeyPlan             = types.AttributeKeyPlan
-	AttributeKeyConsumed         = types.AttributeKeyConsumed
-	AttributeKeyAllocated        = types.AttributeKeyAllocated
-	ModuleName                   = types.ModuleName
-	QuerierRoute                 = types.QuerierRoute
-	DefaultInactiveDuration      = types.DefaultInactiveDuration
-	QuerySubscription            = types.QuerySubscription
-	QuerySubscriptions           = types.QuerySubscriptions
-	QuerySubscriptionsForNode    = types.QuerySubscriptionsForNode
-	QuerySubscriptionsForPlan    = types.QuerySubscriptionsForPlan
-	QuerySubscriptionsForAddress = types.QuerySubscriptionsForAddress
-	QueryQuota                   = types.QueryQuota
-	QueryQuotas                  = types.QueryQuotas
+	AttributeKeyOwner       = types.AttributeKeyOwner
+	AttributeKeyAddress     = types.AttributeKeyAddress
+	AttributeKeyID          = types.AttributeKeyID
+	AttributeKeyStatus      = types.AttributeKeyStatus
+	AttributeKeyNode        = types.AttributeKeyNode
+	AttributeKeyCount       = types.AttributeKeyCount
+	AttributeKeyPlan        = types.AttributeKeyPlan
+	AttributeKeyConsumed    = types.AttributeKeyConsumed
+	AttributeKeyAllocated   = types.AttributeKeyAllocated
+	ModuleName              = types.ModuleName
+	QuerierRoute            = types.QuerierRoute
+	DefaultInactiveDuration = types.DefaultInactiveDuration
 )
 
 var (
@@ -79,6 +72,7 @@ var (
 	RegisterQueryServiceHandler                = types.RegisterQueryServiceHandler
 	RegisterQueryServiceHandlerClient          = types.RegisterQueryServiceHandlerClient
 	NewKeeper                                  = keeper.NewKeeper
+	NewMsgServiceServer                        = keeper.NewMsgServiceServer
 
 	// variable aliases
 	ModuleCdc                               = types.ModuleCdc

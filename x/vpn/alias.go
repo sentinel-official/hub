@@ -19,10 +19,11 @@ const (
 
 var (
 	// functions aliases
-	RegisterCodec       = types.RegisterCodec
-	NewGenesisState     = types.NewGenesisState
-	DefaultGenesisState = types.DefaultGenesisState
-	NewKeeper           = keeper.NewKeeper
+	RegisterLegacyAminoCodec = types.RegisterLegacyAminoCodec
+	RegisterInterfaces       = types.RegisterInterfaces
+	NewGenesisState          = types.NewGenesisState
+	DefaultGenesisState      = types.DefaultGenesisState
+	NewKeeper                = keeper.NewKeeper
 
 	// variable aliases
 	ModuleCdc                      = types.ModuleCdc

@@ -17,9 +17,6 @@ const (
 	ModuleName              = types.ModuleName
 	QuerierRoute            = types.QuerierRoute
 	DefaultInactiveDuration = types.DefaultInactiveDuration
-	QueryNode               = types.QueryNode
-	QueryNodes              = types.QueryNodes
-	QueryNodesForProvider   = types.QueryNodesForProvider
 )
 
 var (
@@ -60,6 +57,7 @@ var (
 	RegisterQueryServiceHandler             = types.RegisterQueryServiceHandler
 	RegisterQueryServiceHandlerClient       = types.RegisterQueryServiceHandlerClient
 	NewKeeper                               = keeper.NewKeeper
+	NewMsgServiceServer                     = keeper.NewMsgServiceServer
 
 	// variable aliases
 	ModuleCdc                        = types.ModuleCdc

@@ -1,51 +1,59 @@
 package cli
 
 import (
-	"fmt"
+	"context"
 	"strconv"
 
-	"github.com/cosmos/cosmos-sdk/client/context"
-	"github.com/cosmos/cosmos-sdk/codec"
+	"github.com/cosmos/cosmos-sdk/client"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/spf13/cobra"
 
 	hub "github.com/sentinel-official/hub/types"
-	"github.com/sentinel-official/hub/x/subscription/client/common"
 	"github.com/sentinel-official/hub/x/subscription/types"
 )
 
-func querySubscription(cdc *codec.Codec) *cobra.Command {
+func querySubscription() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "subscription",
 		Short: "Query a subscription",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			ctx := context.NewCLIContext().WithCodec(cdc)
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
 
 			id, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
 
-			subscription, err := common.QuerySubscription(ctx, id)
+			var (
+				qc = types.NewQueryServiceClient(ctx)
+			)
+
+			res, err := qc.QuerySubscription(context.Background(),
+				types.NewQuerySubscriptionRequest(id))
 			if err != nil {
 				return err
 			}
 
-			fmt.Println(subscription)
-			return nil
+			return ctx.PrintProto(res)
 		},
 	}
 
 	return cmd
 }
 
-func querySubscriptions(cdc *codec.Codec) *cobra.Command {
+func querySubscriptions() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "subscriptions",
 		Short: "Query subscriptions",
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
-			ctx := context.NewCLIContext().WithCodec(cdc)
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
 
 			bech32Address, err := cmd.Flags().GetString(flagAddress)
 			if err != nil {
@@ -67,51 +75,58 @@ func querySubscriptions(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			skip, err := cmd.Flags().GetInt(flagSkip)
-			if err != nil {
-				return err
-			}
-
-			limit, err := cmd.Flags().GetInt(flagLimit)
+			pagination, err := client.ReadPageRequest(cmd.Flags())
 			if err != nil {
 				return err
 			}
 
 			var (
-				address       sdk.AccAddress
-				node          hub.NodeAddress
-				subscriptions types.Subscriptions
+				qc = types.NewQueryServiceClient(ctx)
 			)
 
 			if len(bech32Address) > 0 {
-				address, err = sdk.AccAddressFromBech32(bech32Address)
+				address, err := sdk.AccAddressFromBech32(bech32Address)
 				if err != nil {
 					return err
 				}
 
-				subscriptions, err = common.QuerySubscriptionsForAddress(ctx, address, hub.StatusFromString(status), skip, limit)
+				res, err := qc.QuerySubscriptionsForAddress(context.Background(),
+					types.NewQuerySubscriptionsForAddressRequest(address, hub.StatusFromString(status), pagination))
+				if err != nil {
+					return err
+				}
+
+				return ctx.PrintProto(res)
 			} else if plan > 0 {
-				subscriptions, err = common.QuerySubscriptionsForPlan(ctx, plan, skip, limit)
-			} else if len(bech32Node) > 0 {
-				node, err = hub.NodeAddressFromBech32(bech32Node)
+				res, err := qc.QuerySubscriptionsForPlan(context.Background(),
+					types.NewQuerySubscriptionsForPlanRequest(plan, pagination))
 				if err != nil {
 					return err
 				}
 
-				subscriptions, err = common.QuerySubscriptionsForNode(ctx, node, skip, limit)
+				return ctx.PrintProto(res)
+			} else if len(bech32Node) > 0 {
+				address, err := hub.NodeAddressFromBech32(bech32Node)
+				if err != nil {
+					return err
+				}
+
+				res, err := qc.QuerySubscriptionsForNode(context.Background(),
+					types.NewQuerySubscriptionsForNodeRequest(address, pagination))
+				if err != nil {
+					return err
+				}
+
+				return ctx.PrintProto(res)
 			} else {
-				subscriptions, err = common.QuerySubscriptions(ctx, skip, limit)
-			}
+				res, err := qc.QuerySubscriptions(context.Background(),
+					types.NewQuerySubscriptionsRequest(pagination))
+				if err != nil {
+					return err
+				}
 
-			if err != nil {
-				return err
+				return ctx.PrintProto(res)
 			}
-
-			for _, subscription := range subscriptions {
-				fmt.Printf("%s\n\n", subscription)
-			}
-
-			return nil
 		},
 	}
 
@@ -119,19 +134,20 @@ func querySubscriptions(cdc *codec.Codec) *cobra.Command {
 	cmd.Flags().Uint64(flagPlan, 0, "plan ID")
 	cmd.Flags().String(flagNodeAddress, "", "node address")
 	cmd.Flags().String(flagStatus, "", "status")
-	cmd.Flags().Int(flagSkip, 0, "skip")
-	cmd.Flags().Int(flagLimit, 25, "limit")
 
 	return cmd
 }
 
-func queryQuota(cdc *codec.Codec) *cobra.Command {
+func queryQuota() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "quota",
 		Short: "Query a quota of a subscription",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			ctx := context.NewCLIContext().WithCodec(cdc)
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
 
 			id, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
@@ -143,57 +159,56 @@ func queryQuota(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			quota, err := common.QueryQuota(ctx, id, address)
+			var (
+				qc = types.NewQueryServiceClient(ctx)
+			)
+
+			res, err := qc.QueryQuota(context.Background(),
+				types.NewQueryQuotaRequest(id, address))
 			if err != nil {
 				return err
 			}
 
-			fmt.Println(quota)
-			return nil
+			return ctx.PrintProto(res)
 		},
 	}
 
 	return cmd
 }
 
-func queryQuotas(cdc *codec.Codec) *cobra.Command {
+func queryQuotas() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "quotas",
 		Short: "Query quotas of a subscription",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
-			ctx := context.NewCLIContext().WithCodec(cdc)
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
 
 			id, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
 
-			skip, err := cmd.Flags().GetInt(flagSkip)
+			pagination, err := client.ReadPageRequest(cmd.Flags())
 			if err != nil {
 				return err
 			}
 
-			limit, err := cmd.Flags().GetInt(flagLimit)
+			var (
+				qc = types.NewQueryServiceClient(ctx)
+			)
+
+			res, err := qc.QueryQuotas(context.Background(), types.NewQueryQuotasRequest(id, pagination))
 			if err != nil {
 				return err
 			}
 
-			quotas, err := common.QueryQuotas(ctx, id, skip, limit)
-			if err != nil {
-				return err
-			}
-
-			for _, quota := range quotas {
-				fmt.Printf("%s\n\n", quota)
-			}
-
-			return nil
+			return ctx.PrintProto(res)
 		},
 	}
-
-	cmd.Flags().Int(flagSkip, 0, "skip")
-	cmd.Flags().Int(flagLimit, 25, "limit")
 
 	return cmd
 }

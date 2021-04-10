@@ -11,50 +11,50 @@ import "sentinel/types/v1/status.proto";
 import "sentinel/node/v1/node.proto";
 
 message QueryNodesRequest {
-  option (gogoproto.equal)           = false;
+  option (gogoproto.equal) = false;
   option (gogoproto.goproto_getters) = false;
 
-  sentinel.types.v1.Status status                  = 1;
+  sentinel.types.v1.Status status = 1;
   cosmos.base.query.v1beta1.PageRequest pagination = 2;
 }
 
 message QueryNodesForProviderRequest {
-  option (gogoproto.equal)           = false;
+  option (gogoproto.equal) = false;
   option (gogoproto.goproto_getters) = false;
 
-  string address                                   = 1;
-  sentinel.types.v1.Status status                  = 2;
+  string address = 1;
+  sentinel.types.v1.Status status = 2;
   cosmos.base.query.v1beta1.PageRequest pagination = 3;
 }
 
 message QueryNodeRequest {
-  option (gogoproto.equal)           = false;
+  option (gogoproto.equal) = false;
   option (gogoproto.goproto_getters) = false;
 
   string address = 1;
 }
 
 message QueryNodesResponse {
-  option (gogoproto.equal)           = false;
+  option (gogoproto.equal) = false;
   option (gogoproto.goproto_getters) = false;
 
-  repeated Node nodes = 1 [ (gogoproto.nullable) = false ];
+  repeated Node nodes = 1 [(gogoproto.nullable) = false];
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
 message QueryNodesForProviderResponse {
-  option (gogoproto.equal)           = false;
+  option (gogoproto.equal) = false;
   option (gogoproto.goproto_getters) = false;
 
-  repeated Node nodes = 1 [ (gogoproto.nullable) = false ];
+  repeated Node nodes = 1 [(gogoproto.nullable) = false];
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
 message QueryNodeResponse {
-  option (gogoproto.equal)           = false;
+  option (gogoproto.equal) = false;
   option (gogoproto.goproto_getters) = false;
 
-  Node node = 1 [ (gogoproto.nullable) = false ];
+  Node node = 1 [(gogoproto.nullable) = false];
 }
 
 service QueryService {

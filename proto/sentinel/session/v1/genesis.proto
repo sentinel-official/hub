@@ -8,11 +8,11 @@ import "sentinel/session/v1/params.proto";
 import "sentinel/session/v1/session.proto";
 
 message GenesisState {
-  option (gogoproto.equal)            = false;
-  option (gogoproto.goproto_getters)  = false;
+  option (gogoproto.equal) = false;
+  option (gogoproto.goproto_getters) = false;
   option (gogoproto.goproto_stringer) = true;
 
   repeated Session sessions = 1
-      [ (gogoproto.jsontag) = "_,omitempty", (gogoproto.nullable) = false ];
-  Params params = 2 [ (gogoproto.nullable) = false ];
+  [(gogoproto.jsontag) = "_,omitempty", (gogoproto.nullable) = false];
+  Params params = 2 [(gogoproto.nullable) = false];
 }

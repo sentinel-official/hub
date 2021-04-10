@@ -9,59 +9,59 @@ import "cosmos/base/v1beta1/coin.proto";
 import "sentinel/types/v1/status.proto";
 
 message MsgSubscribeToNodeRequest {
-  option (gogoproto.equal)            = false;
-  option (gogoproto.goproto_getters)  = false;
+  option (gogoproto.equal) = false;
+  option (gogoproto.goproto_getters) = false;
   option (gogoproto.goproto_stringer) = true;
 
-  string from                      = 1;
-  string address                   = 2;
-  cosmos.base.v1beta1.Coin deposit = 3 [ (gogoproto.nullable) = false ];
+  string from = 1;
+  string address = 2;
+  cosmos.base.v1beta1.Coin deposit = 3 [(gogoproto.nullable) = false];
 }
 
 message MsgSubscribeToPlanRequest {
-  option (gogoproto.equal)            = false;
-  option (gogoproto.goproto_getters)  = false;
+  option (gogoproto.equal) = false;
+  option (gogoproto.goproto_getters) = false;
   option (gogoproto.goproto_stringer) = true;
 
-  string from  = 1;
-  uint64 id    = 2;
+  string from = 1;
+  uint64 id = 2;
   string denom = 3;
 }
 
 message MsgCancelRequest {
-  option (gogoproto.equal)            = false;
-  option (gogoproto.goproto_getters)  = false;
+  option (gogoproto.equal) = false;
+  option (gogoproto.goproto_getters) = false;
   option (gogoproto.goproto_stringer) = true;
 
   string from = 1;
-  uint64 id   = 2;
+  uint64 id = 2;
 }
 
 message MsgAddQuotaRequest {
-  option (gogoproto.equal)            = false;
-  option (gogoproto.goproto_getters)  = false;
+  option (gogoproto.equal) = false;
+  option (gogoproto.goproto_getters) = false;
   option (gogoproto.goproto_stringer) = true;
 
-  string from    = 1;
-  uint64 id      = 2;
+  string from = 1;
+  uint64 id = 2;
   string address = 3;
-  string bytes   = 5 [
+  string bytes = 5 [
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
-    (gogoproto.nullable)   = false
+    (gogoproto.nullable) = false
   ];
 }
 
 message MsgUpdateQuotaRequest {
-  option (gogoproto.equal)            = false;
-  option (gogoproto.goproto_getters)  = false;
+  option (gogoproto.equal) = false;
+  option (gogoproto.goproto_getters) = false;
   option (gogoproto.goproto_stringer) = true;
 
-  string from    = 1;
-  uint64 id      = 2;
+  string from = 1;
+  uint64 id = 2;
   string address = 3;
-  string bytes   = 5 [
+  string bytes = 5 [
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
-    (gogoproto.nullable)   = false
+    (gogoproto.nullable) = false
   ];
 }
 

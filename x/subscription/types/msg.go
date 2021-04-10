@@ -19,10 +19,10 @@ var (
 	_ sdk.Msg = (*MsgUpdateQuotaRequest)(nil)
 )
 
-func NewMsgSubscribeToNodeRequest(from, address string, deposit sdk.Coin) MsgSubscribeToNodeRequest {
-	return MsgSubscribeToNodeRequest{
-		From:    from,
-		Address: address,
+func NewMsgSubscribeToNodeRequest(from sdk.AccAddress, address hub.NodeAddress, deposit sdk.Coin) *MsgSubscribeToNodeRequest {
+	return &MsgSubscribeToNodeRequest{
+		From:    from.String(),
+		Address: address.String(),
 		Deposit: deposit,
 	}
 }
@@ -71,9 +71,9 @@ func (m MsgSubscribeToNodeRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{from}
 }
 
-func NewMsgSubscribeToPlanRequest(from string, id uint64, denom string) MsgSubscribeToPlanRequest {
-	return MsgSubscribeToPlanRequest{
-		From:  from,
+func NewMsgSubscribeToPlanRequest(from sdk.AccAddress, id uint64, denom string) *MsgSubscribeToPlanRequest {
+	return &MsgSubscribeToPlanRequest{
+		From:  from.String(),
 		Id:    id,
 		Denom: denom,
 	}
@@ -123,9 +123,9 @@ func (m MsgSubscribeToPlanRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{from}
 }
 
-func NewMsgCancelRequest(from string, id uint64) MsgCancelRequest {
-	return MsgCancelRequest{
-		From: from,
+func NewMsgCancelRequest(from sdk.AccAddress, id uint64) *MsgCancelRequest {
+	return &MsgCancelRequest{
+		From: from.String(),
 		Id:   id,
 	}
 }
@@ -169,11 +169,11 @@ func (m MsgCancelRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{from}
 }
 
-func NewMsgAddQuotaRequest(from string, id uint64, address string, bytes sdk.Int) MsgAddQuotaRequest {
-	return MsgAddQuotaRequest{
-		From:    from,
+func NewMsgAddQuotaRequest(from sdk.AccAddress, id uint64, address sdk.AccAddress, bytes sdk.Int) *MsgAddQuotaRequest {
+	return &MsgAddQuotaRequest{
+		From:    from.String(),
 		Id:      id,
-		Address: address,
+		Address: address.String(),
 		Bytes:   bytes,
 	}
 }
@@ -227,11 +227,11 @@ func (m MsgAddQuotaRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{from}
 }
 
-func NewMsgUpdateQuotaRequest(from string, id uint64, address string, bytes sdk.Int) MsgUpdateQuotaRequest {
-	return MsgUpdateQuotaRequest{
-		From:    from,
+func NewMsgUpdateQuotaRequest(from sdk.AccAddress, id uint64, address sdk.AccAddress, bytes sdk.Int) *MsgUpdateQuotaRequest {
+	return &MsgUpdateQuotaRequest{
+		From:    from.String(),
 		Id:      id,
-		Address: address,
+		Address: address.String(),
 		Bytes:   bytes,
 	}
 }

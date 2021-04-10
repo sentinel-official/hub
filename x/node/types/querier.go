@@ -6,28 +6,22 @@ import (
 	hub "github.com/sentinel-official/hub/types"
 )
 
-const (
-	QueryNode             = "Node"
-	QueryNodes            = "Nodes"
-	QueryNodesForProvider = "NodesForProvider"
-)
-
-func NewQueryNodeRequest(address string) QueryNodeRequest {
-	return QueryNodeRequest{
-		Address: address,
+func NewQueryNodeRequest(address hub.NodeAddress) *QueryNodeRequest {
+	return &QueryNodeRequest{
+		Address: address.String(),
 	}
 }
 
-func NewQueryNodesRequest(status hub.Status, pagination *query.PageRequest) QueryNodesRequest {
-	return QueryNodesRequest{
+func NewQueryNodesRequest(status hub.Status, pagination *query.PageRequest) *QueryNodesRequest {
+	return &QueryNodesRequest{
 		Status:     status,
 		Pagination: pagination,
 	}
 }
 
-func NewQueryNodesForProviderRequest(address string, status hub.Status, pagination *query.PageRequest) QueryNodesForProviderRequest {
-	return QueryNodesForProviderRequest{
-		Address:    address,
+func NewQueryNodesForProviderRequest(address hub.ProvAddress, status hub.Status, pagination *query.PageRequest) *QueryNodesForProviderRequest {
+	return &QueryNodesForProviderRequest{
+		Address:    address.String(),
 		Status:     status,
 		Pagination: pagination,
 	}
