@@ -5,17 +5,13 @@ import (
 	"strings"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/x/params"
-	"github.com/tendermint/tendermint/libs/rand"
+	params "github.com/cosmos/cosmos-sdk/x/params/types"
 )
 
 const (
 	DefaultSwapEnabled = false
 	DefaultSwapDenom   = "tsent"
-)
-
-var (
-	DefaultApproveBy = sdk.AccAddress(rand.Bytes(20))
+	DefaultApproveBy   = ""
 )
 
 var (
@@ -25,12 +21,6 @@ var (
 )
 
 var _ params.ParamSet = (*Params)(nil)
-
-type Params struct {
-	SwapEnabled bool           `json:"swap_enabled"`
-	SwapDenom   string         `json:"swap_denom"`
-	ApproveBy   sdk.AccAddress `json:"approve_by"`
-}
 
 func (p Params) String() string {
 	return fmt.Sprintf(strings.TrimSpace(`
@@ -44,7 +34,12 @@ func (p Params) Validate() error {
 	if err := sdk.ValidateDenom(p.SwapDenom); err != nil {
 		return err
 	}
-	if p.ApproveBy == nil || p.ApproveBy.Empty() {
+
+	approveBy, err := sdk.AccAddressFromBech32(p.ApproveBy)
+	if err != nil {
+		return err
+	}
+	if approveBy == nil || approveBy.Empty() {
 		return fmt.Errorf("approve_by should not nil or empty")
 	}
 
@@ -77,7 +72,7 @@ func (p *Params) ParamSetPairs() params.ParamSetPairs {
 	}
 }
 
-func NewParams(swapEnabled bool, swapDenom string, approveBy sdk.AccAddress) Params {
+func NewParams(swapEnabled bool, swapDenom, approveBy string) Params {
 	return Params{
 		SwapEnabled: swapEnabled,
 		SwapDenom:   swapDenom,

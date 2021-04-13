@@ -9,18 +9,9 @@ import (
 	"github.com/sentinel-official/hub/x/subscription"
 )
 
-type GenesisState struct {
-	Deposits      deposit.GenesisState      `json:"deposits"`
-	Providers     provider.GenesisState     `json:"providers"`
-	Nodes         node.GenesisState         `json:"nodes"`
-	Plans         plan.GenesisState         `json:"plans"`
-	Subscriptions subscription.GenesisState `json:"subscriptions"`
-	Sessions      session.GenesisState      `json:"sessions"`
-}
-
 func NewGenesisState(deposits deposit.GenesisState, providers provider.GenesisState, nodes node.GenesisState,
-	plans plan.GenesisState, subscriptions subscription.GenesisState, sessions session.GenesisState) GenesisState {
-	return GenesisState{
+	plans plan.GenesisState, subscriptions subscription.GenesisState, sessions session.GenesisState) *GenesisState {
+	return &GenesisState{
 		Deposits:      deposits,
 		Providers:     providers,
 		Nodes:         nodes,
@@ -30,8 +21,31 @@ func NewGenesisState(deposits deposit.GenesisState, providers provider.GenesisSt
 	}
 }
 
-func DefaultGenesisState() GenesisState {
-	return GenesisState{
+func (s *GenesisState) Validate() error {
+	if err := deposit.ValidateGenesis(s.Deposits); err != nil {
+		return err
+	}
+	if err := provider.ValidateGenesis(s.Providers); err != nil {
+		return err
+	}
+	if err := node.ValidateGenesis(s.Nodes); err != nil {
+		return err
+	}
+	if err := plan.ValidateGenesis(s.Plans); err != nil {
+		return err
+	}
+	if err := subscription.ValidateGenesis(s.Subscriptions); err != nil {
+		return err
+	}
+	if err := session.ValidateGenesis(s.Sessions); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func DefaultGenesisState() *GenesisState {
+	return &GenesisState{
 		Deposits:      deposit.DefaultGenesisState(),
 		Providers:     provider.DefaultGenesisState(),
 		Nodes:         node.DefaultGenesisState(),

@@ -1,67 +1,35 @@
 package types
 
 import (
+	"github.com/cosmos/cosmos-sdk/types/query"
+
 	hub "github.com/sentinel-official/hub/types"
 )
 
-const (
-	QueryPlan             = "Plan"
-	QueryPlans            = "Plans"
-	QueryPlansForProvider = "PlansForProvider"
-
-	QueryNodesForPlan = "NodesForPlan"
-)
-
-type QueryPlanParams struct {
-	ID uint64 `json:"id"`
-}
-
-func NewQueryPlanParams(id uint64) QueryPlanParams {
-	return QueryPlanParams{
-		ID: id,
+func NewQueryPlanRequest(id uint64) *QueryPlanRequest {
+	return &QueryPlanRequest{
+		Id: id,
 	}
 }
 
-type QueryPlansParams struct {
-	Status hub.Status `json:"status"`
-	Skip   int        `json:"skip"`
-	Limit  int        `json:"limit"`
-}
-
-func NewQueryPlansParams(status hub.Status, skip, limit int) QueryPlansParams {
-	return QueryPlansParams{
-		Status: status,
-		Skip:   skip,
-		Limit:  limit,
+func NewQueryPlansRequest(status hub.Status, pagination *query.PageRequest) *QueryPlansRequest {
+	return &QueryPlansRequest{
+		Status:     status,
+		Pagination: pagination,
 	}
 }
 
-type QueryPlansForProviderParams struct {
-	Address hub.ProvAddress `json:"address"`
-	Status  hub.Status      `json:"status"`
-	Skip    int             `json:"skip"`
-	Limit   int             `json:"limit"`
-}
-
-func NewQueryPlansForProviderParams(address hub.ProvAddress, status hub.Status, skip, limit int) QueryPlansForProviderParams {
-	return QueryPlansForProviderParams{
-		Address: address,
-		Status:  status,
-		Skip:    skip,
-		Limit:   limit,
+func NewQueryPlansForProviderRequest(address hub.ProvAddress, status hub.Status, pagination *query.PageRequest) *QueryPlansForProviderRequest {
+	return &QueryPlansForProviderRequest{
+		Address:    address.String(),
+		Status:     status,
+		Pagination: pagination,
 	}
 }
 
-type QueryNodesForPlanParams struct {
-	ID    uint64 `json:"id"`
-	Skip  int    `json:"skip"`
-	Limit int    `json:"limit"`
-}
-
-func NewQueryNodesForPlanParams(id uint64, skip, limit int) QueryNodesForPlanParams {
-	return QueryNodesForPlanParams{
-		ID:    id,
-		Skip:  skip,
-		Limit: limit,
+func NewQueryNodesForPlanRequest(id uint64, pagination *query.PageRequest) *QueryNodesForPlanRequest {
+	return &QueryNodesForPlanRequest{
+		Id:         id,
+		Pagination: pagination,
 	}
 }

@@ -5,7 +5,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/cosmos/cosmos-sdk/x/params"
+	params "github.com/cosmos/cosmos-sdk/x/params/types"
 )
 
 const (
@@ -17,10 +17,6 @@ var (
 )
 
 var _ params.ParamSet = (*Params)(nil)
-
-type Params struct {
-	InactiveDuration time.Duration `json:"inactive_duration"`
-}
 
 func (p Params) String() string {
 	return fmt.Sprintf(strings.TrimSpace(`

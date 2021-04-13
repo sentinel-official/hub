@@ -3,12 +3,10 @@
 // aliases generated for the following subdirectories:
 // ALIASGEN: github.com/sentinel-official/hub/x/provider/types
 // ALIASGEN: github.com/sentinel-official/hub/x/provider/keeper
-// ALIASGEN: github.com/sentinel-official/hub/x/provider/querier
 package provider
 
 import (
 	"github.com/sentinel-official/hub/x/provider/keeper"
-	"github.com/sentinel-official/hub/x/provider/querier"
 	"github.com/sentinel-official/hub/x/provider/types"
 )
 
@@ -17,54 +15,87 @@ const (
 	AttributeKeyDeposit = types.AttributeKeyDeposit
 	ModuleName          = types.ModuleName
 	QuerierRoute        = types.QuerierRoute
-	QueryProvider       = types.QueryProvider
-	QueryProviders      = types.QueryProviders
 )
 
 var (
 	// functions aliases
-	RegisterCodec           = types.RegisterCodec
-	NewGenesisState         = types.NewGenesisState
-	DefaultGenesisState     = types.DefaultGenesisState
-	ProviderKey             = types.ProviderKey
-	NewMsgRegister          = types.NewMsgRegister
-	NewMsgUpdate            = types.NewMsgUpdate
-	NewParams               = types.NewParams
-	DefaultParams           = types.DefaultParams
-	ParamsKeyTable          = types.ParamsKeyTable
-	NewQueryProviderParams  = types.NewQueryProviderParams
-	NewQueryProvidersParams = types.NewQueryProvidersParams
-	NewKeeper               = keeper.NewKeeper
-	Querier                 = querier.Querier
+	RegisterLegacyAminoCodec                = types.RegisterLegacyAminoCodec
+	RegisterInterfaces                      = types.RegisterInterfaces
+	NewGenesisState                         = types.NewGenesisState
+	DefaultGenesisState                     = types.DefaultGenesisState
+	ProviderKey                             = types.ProviderKey
+	NewMsgRegisterRequest                   = types.NewMsgRegisterRequest
+	NewMsgUpdateRequest                     = types.NewMsgUpdateRequest
+	NewMsgServiceClient                     = types.NewMsgServiceClient
+	RegisterMsgServiceServer                = types.RegisterMsgServiceServer
+	NewParams                               = types.NewParams
+	DefaultParams                           = types.DefaultParams
+	ParamsKeyTable                          = types.ParamsKeyTable
+	NewQueryProviderRequest                 = types.NewQueryProviderRequest
+	NewQueryProvidersRequest                = types.NewQueryProvidersRequest
+	NewQueryServiceClient                   = types.NewQueryServiceClient
+	RegisterQueryServiceServer              = types.RegisterQueryServiceServer
+	RegisterQueryServiceHandlerServer       = types.RegisterQueryServiceHandlerServer
+	RegisterQueryServiceHandlerFromEndpoint = types.RegisterQueryServiceHandlerFromEndpoint
+	RegisterQueryServiceHandler             = types.RegisterQueryServiceHandler
+	RegisterQueryServiceHandlerClient       = types.RegisterQueryServiceHandlerClient
+	NewKeeper                               = keeper.NewKeeper
+	NewMsgServiceServer                     = keeper.NewMsgServiceServer
+	NewQueryServiceServer                   = keeper.NewQueryServiceServer
 
 	// variable aliases
-	ModuleCdc                 = types.ModuleCdc
-	ErrorMarshal              = types.ErrorMarshal
-	ErrorUnmarshal            = types.ErrorUnmarshal
-	ErrorUnknownMsgType       = types.ErrorUnknownMsgType
-	ErrorUnknownQueryType     = types.ErrorUnknownQueryType
-	ErrorInvalidField         = types.ErrorInvalidField
-	ErrorDuplicateProvider    = types.ErrorDuplicateProvider
-	ErrorProviderDoesNotExist = types.ErrorProviderDoesNotExist
-	EventTypeSet              = types.EventTypeSet
-	EventTypeUpdate           = types.EventTypeUpdate
-	ParamsSubspace            = types.ParamsSubspace
-	RouterKey                 = types.RouterKey
-	StoreKey                  = types.StoreKey
-	EventModuleName           = types.EventModuleName
-	ProviderKeyPrefix         = types.ProviderKeyPrefix
-	DefaultDeposit            = types.DefaultDeposit
-	KeyDeposit                = types.KeyDeposit
+	ModuleCdc                       = types.ModuleCdc
+	ErrorMarshal                    = types.ErrorMarshal
+	ErrorUnmarshal                  = types.ErrorUnmarshal
+	ErrorUnknownMsgType             = types.ErrorUnknownMsgType
+	ErrorUnknownQueryType           = types.ErrorUnknownQueryType
+	ErrorInvalidField               = types.ErrorInvalidField
+	ErrorDuplicateProvider          = types.ErrorDuplicateProvider
+	ErrorProviderDoesNotExist       = types.ErrorProviderDoesNotExist
+	EventTypeSet                    = types.EventTypeSet
+	EventTypeUpdate                 = types.EventTypeUpdate
+	ErrInvalidLengthGenesis         = types.ErrInvalidLengthGenesis
+	ErrIntOverflowGenesis           = types.ErrIntOverflowGenesis
+	ErrUnexpectedEndOfGroupGenesis  = types.ErrUnexpectedEndOfGroupGenesis
+	ParamsSubspace                  = types.ParamsSubspace
+	RouterKey                       = types.RouterKey
+	StoreKey                        = types.StoreKey
+	EventModuleName                 = types.EventModuleName
+	ProviderKeyPrefix               = types.ProviderKeyPrefix
+	ErrInvalidLengthMsg             = types.ErrInvalidLengthMsg
+	ErrIntOverflowMsg               = types.ErrIntOverflowMsg
+	ErrUnexpectedEndOfGroupMsg      = types.ErrUnexpectedEndOfGroupMsg
+	DefaultDeposit                  = types.DefaultDeposit
+	KeyDeposit                      = types.KeyDeposit
+	ErrInvalidLengthParams          = types.ErrInvalidLengthParams
+	ErrIntOverflowParams            = types.ErrIntOverflowParams
+	ErrUnexpectedEndOfGroupParams   = types.ErrUnexpectedEndOfGroupParams
+	ErrInvalidLengthProvider        = types.ErrInvalidLengthProvider
+	ErrIntOverflowProvider          = types.ErrIntOverflowProvider
+	ErrUnexpectedEndOfGroupProvider = types.ErrUnexpectedEndOfGroupProvider
+	ErrInvalidLengthQuerier         = types.ErrInvalidLengthQuerier
+	ErrIntOverflowQuerier           = types.ErrIntOverflowQuerier
+	ErrUnexpectedEndOfGroupQuerier  = types.ErrUnexpectedEndOfGroupQuerier
 )
 
 type (
-	GenesisState         = types.GenesisState
-	MsgRegister          = types.MsgRegister
-	MsgUpdate            = types.MsgUpdate
-	Params               = types.Params
-	Provider             = types.Provider
-	Providers            = types.Providers
-	QueryProviderParams  = types.QueryProviderParams
-	QueryProvidersParams = types.QueryProvidersParams
-	Keeper               = keeper.Keeper
+	GenesisState                    = types.GenesisState
+	MsgRegisterRequest              = types.MsgRegisterRequest
+	MsgUpdateRequest                = types.MsgUpdateRequest
+	MsgRegisterResponse             = types.MsgRegisterResponse
+	MsgUpdateResponse               = types.MsgUpdateResponse
+	MsgServiceClient                = types.MsgServiceClient
+	MsgServiceServer                = types.MsgServiceServer
+	UnimplementedMsgServiceServer   = types.UnimplementedMsgServiceServer
+	Params                          = types.Params
+	Providers                       = types.Providers
+	Provider                        = types.Provider
+	QueryProvidersRequest           = types.QueryProvidersRequest
+	QueryProviderRequest            = types.QueryProviderRequest
+	QueryProvidersResponse          = types.QueryProvidersResponse
+	QueryProviderResponse           = types.QueryProviderResponse
+	QueryServiceClient              = types.QueryServiceClient
+	QueryServiceServer              = types.QueryServiceServer
+	UnimplementedQueryServiceServer = types.UnimplementedQueryServiceServer
+	Keeper                          = keeper.Keeper
 )

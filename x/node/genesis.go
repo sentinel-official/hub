@@ -17,16 +17,16 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, state types.GenesisState) {
 		k.SetNode(ctx, node)
 
 		if node.Status.Equal(hub.StatusActive) {
-			k.SetActiveNode(ctx, node.Address)
-			if node.Provider != nil {
-				k.SetActiveNodeForProvider(ctx, node.Provider, node.Address)
+			k.SetActiveNode(ctx, node.GetAddress())
+			if node.Provider != "" {
+				k.SetActiveNodeForProvider(ctx, node.GetProvider(), node.GetAddress())
 			}
 
-			k.SetInactiveNodeAt(ctx, node.StatusAt, node.Address)
+			k.SetInactiveNodeAt(ctx, node.StatusAt, node.GetAddress())
 		} else {
-			k.SetInactiveNode(ctx, node.Address)
-			if node.Provider != nil {
-				k.SetInactiveNodeForProvider(ctx, node.Provider, node.Address)
+			k.SetInactiveNode(ctx, node.GetAddress())
+			if node.Provider != "" {
+				k.SetInactiveNodeForProvider(ctx, node.GetProvider(), node.GetAddress())
 			}
 		}
 	}
@@ -49,12 +49,11 @@ func ValidateGenesis(state types.GenesisState) error {
 
 	nodes := make(map[string]bool)
 	for _, node := range state.Nodes {
-		address := node.Address.String()
-		if nodes[address] {
-			return fmt.Errorf("found duplicate node address %s", address)
+		if nodes[node.Address] {
+			return fmt.Errorf("found duplicate node address %s", node.Address)
 		}
 
-		nodes[address] = true
+		nodes[node.Address] = true
 	}
 
 	return nil

@@ -1,21 +1,20 @@
 package rest
 
 import (
+	"context"
 	"net/http"
 	"strconv"
 
-	"github.com/cosmos/cosmos-sdk/client/context"
+	"github.com/cosmos/cosmos-sdk/client"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/rest"
 	"github.com/gorilla/mux"
 
 	hub "github.com/sentinel-official/hub/types"
-	"github.com/sentinel-official/hub/utils"
-	"github.com/sentinel-official/hub/x/subscription/client/common"
 	"github.com/sentinel-official/hub/x/subscription/types"
 )
 
-func querySubscription(ctx context.CLIContext) http.HandlerFunc {
+func querySubscription(ctx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 
@@ -25,72 +24,92 @@ func querySubscription(ctx context.CLIContext) http.HandlerFunc {
 			return
 		}
 
-		subscription, err := common.QuerySubscription(ctx, id)
+		var (
+			qc = types.NewQueryServiceClient(ctx)
+		)
+
+		res, err := qc.QuerySubscription(context.Background(),
+			types.NewQuerySubscriptionRequest(id))
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
 		}
 
-		rest.PostProcessResponse(w, ctx, subscription)
+		rest.PostProcessResponse(w, ctx, res)
 	}
 }
 
-func querySubscriptions(ctx context.CLIContext) http.HandlerFunc {
+func querySubscriptions(ctx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		query := r.URL.Query()
-
-		skip, limit, err := utils.ParseQuery(query)
-		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
-			return
-		}
-
 		var (
-			plan          uint64
-			address       sdk.AccAddress
-			node          hub.NodeAddress
-			subscriptions types.Subscriptions
-			status        = hub.StatusFromString(query.Get("status"))
+			query  = r.URL.Query()
+			status = hub.StatusFromString(query.Get("status"))
+			qc     = types.NewQueryServiceClient(ctx)
 		)
 
 		if query.Get("address") != "" {
-			address, err = sdk.AccAddressFromBech32(query.Get("address"))
+			address, err := sdk.AccAddressFromBech32(query.Get("address"))
 			if err != nil {
 				rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 				return
 			}
 
-			subscriptions, err = common.QuerySubscriptionsForAddress(ctx, address, status, skip, limit)
+			res, err := qc.QuerySubscriptionsForAddress(context.Background(),
+				types.NewQuerySubscriptionsForAddressRequest(address, status, nil))
+			if err != nil {
+				rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+				return
+			}
+
+			rest.PostProcessResponse(w, ctx, res)
+			return
 		} else if query.Get("plan") != "" {
-			plan, err = strconv.ParseUint(query.Get("plan"), 10, 64)
+			id, err := strconv.ParseUint(query.Get("plan"), 10, 64)
 			if err != nil {
 				rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 				return
 			}
 
-			subscriptions, err = common.QuerySubscriptionsForPlan(ctx, plan, skip, limit)
+			res, err := qc.QuerySubscriptionsForPlan(context.Background(),
+				types.NewQuerySubscriptionsForPlanRequest(id, nil))
+			if err != nil {
+				rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+				return
+			}
+
+			rest.PostProcessResponse(w, ctx, res)
+			return
 		} else if query.Get("node") != "" {
-			node, err = hub.NodeAddressFromBech32(query.Get("node"))
+			address, err := hub.NodeAddressFromBech32(query.Get("node"))
 			if err != nil {
 				rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 				return
 			}
 
-			subscriptions, err = common.QuerySubscriptionsForNode(ctx, node, skip, limit)
-		} else {
-			subscriptions, err = common.QuerySubscriptions(ctx, skip, limit)
-		}
+			res, err := qc.QuerySubscriptionsForNode(context.Background(),
+				types.NewQuerySubscriptionsForNodeRequest(address, nil))
+			if err != nil {
+				rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+				return
+			}
 
-		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+			rest.PostProcessResponse(w, ctx, res)
+			return
+		} else {
+			res, err := qc.QuerySubscriptions(context.Background(),
+				types.NewQuerySubscriptionsRequest(nil))
+			if err != nil {
+				rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+				return
+			}
+
+			rest.PostProcessResponse(w, ctx, res)
 			return
 		}
-
-		rest.PostProcessResponse(w, ctx, subscriptions)
 	}
 }
 
-func queryQuota(ctx context.CLIContext) http.HandlerFunc {
+func queryQuota(ctx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 
@@ -106,27 +125,27 @@ func queryQuota(ctx context.CLIContext) http.HandlerFunc {
 			return
 		}
 
-		quota, err := common.QueryQuota(ctx, id, address)
+		var (
+			qc = types.NewQueryServiceClient(ctx)
+		)
+
+		res, err := qc.QueryQuota(context.Background(),
+			types.NewQueryQuotaRequest(id, address))
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
 		}
 
-		rest.PostProcessResponse(w, ctx, quota)
+		rest.PostProcessResponse(w, ctx, res)
 	}
 }
 
-func queryQuotas(ctx context.CLIContext) http.HandlerFunc {
+func queryQuotas(ctx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		query := r.URL.Query()
-
-		skip, limit, err := utils.ParseQuery(query)
-		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
-			return
-		}
-
-		vars := mux.Vars(r)
+		var (
+			vars = mux.Vars(r)
+			qc   = types.NewQueryServiceClient(ctx)
+		)
 
 		id, err := strconv.ParseUint(vars["id"], 10, 64)
 		if err != nil {
@@ -134,12 +153,13 @@ func queryQuotas(ctx context.CLIContext) http.HandlerFunc {
 			return
 		}
 
-		quotas, err := common.QueryQuotas(ctx, id, skip, limit)
+		res, err := qc.QueryQuotas(context.Background(),
+			types.NewQueryQuotasRequest(id, nil))
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
 		}
 
-		rest.PostProcessResponse(w, ctx, quotas)
+		rest.PostProcessResponse(w, ctx, res)
 	}
 }

@@ -1,25 +1,17 @@
 package types
 
 import (
-	"encoding/json"
 	"time"
 
 	hub "github.com/sentinel-official/hub/types"
 )
 
-type Proof struct {
-	Channel      uint64          `json:"channel,omitempty"`
-	Subscription uint64          `json:"subscription"`
-	Node         hub.NodeAddress `json:"node"`
-	Duration     time.Duration   `json:"duration"`
-	Bandwidth    hub.Bandwidth   `json:"bandwidth"`
-}
-
-func (p Proof) Bytes() []byte {
-	bytes, err := json.Marshal(p)
-	if err != nil {
-		panic(err)
+func NewProof(channel, subscription uint64, node hub.NodeAddress, duration time.Duration, bandwidth hub.Bandwidth) Proof {
+	return Proof{
+		Channel:      channel,
+		Subscription: subscription,
+		Node:         node.String(),
+		Duration:     duration,
+		Bandwidth:    bandwidth,
 	}
-
-	return bytes
 }

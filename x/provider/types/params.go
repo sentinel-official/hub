@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/x/params"
+	params "github.com/cosmos/cosmos-sdk/x/params/types"
 )
 
 var (
@@ -19,10 +19,6 @@ var (
 var (
 	_ params.ParamSet = (*Params)(nil)
 )
-
-type Params struct {
-	Deposit sdk.Coin `json:"deposit"`
-}
 
 func (p Params) String() string {
 	return fmt.Sprintf(strings.TrimSpace(`

@@ -13,20 +13,20 @@ import (
 )
 
 type Keeper struct {
-	key    sdk.StoreKey
-	cdc    *codec.Codec
-	supply expected.SupplyKeeper
+	key  sdk.StoreKey
+	cdc  codec.BinaryMarshaler
+	bank expected.BankKeeper
 }
 
-func NewKeeper(cdc *codec.Codec, key sdk.StoreKey) Keeper {
+func NewKeeper(cdc codec.BinaryMarshaler, key sdk.StoreKey) Keeper {
 	return Keeper{
 		key: key,
 		cdc: cdc,
 	}
 }
 
-func (k *Keeper) WithSupplyKeeper(keeper expected.SupplyKeeper) {
-	k.supply = keeper
+func (k *Keeper) WithBankKeeper(keeper expected.BankKeeper) {
+	k.bank = keeper
 }
 
 func (k Keeper) Logger(ctx sdk.Context) log.Logger {

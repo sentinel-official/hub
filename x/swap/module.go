@@ -1,22 +1,23 @@
 package swap
 
 import (
+	"context"
 	"encoding/json"
 	"math/rand"
 
-	"github.com/cosmos/cosmos-sdk/client/context"
+	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
+	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
-	xsimulation "github.com/cosmos/cosmos-sdk/x/simulation"
+	"github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/gorilla/mux"
+	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/spf13/cobra"
 	abci "github.com/tendermint/tendermint/abci/types"
 
 	"github.com/sentinel-official/hub/x/swap/client/cli"
-	"github.com/sentinel-official/hub/x/swap/client/rest"
 	"github.com/sentinel-official/hub/x/swap/keeper"
-	"github.com/sentinel-official/hub/x/swap/querier"
 	"github.com/sentinel-official/hub/x/swap/types"
 )
 
@@ -32,31 +33,39 @@ func (a AppModuleBasic) Name() string {
 	return types.ModuleName
 }
 
-func (a AppModuleBasic) RegisterCodec(cdc *codec.Codec) {
-	types.RegisterCodec(cdc)
+func (a AppModuleBasic) RegisterLegacyAminoCodec(amino *codec.LegacyAmino) {
+	types.RegisterLegacyAminoCodec(amino)
 }
 
-func (a AppModuleBasic) DefaultGenesis() json.RawMessage {
-	return types.ModuleCdc.MustMarshalJSON(types.DefaultGenesisState())
+func (a AppModuleBasic) RegisterInterfaces(registry codectypes.InterfaceRegistry) {
+	types.RegisterInterfaces(registry)
 }
 
-func (a AppModuleBasic) ValidateGenesis(data json.RawMessage) error {
+func (a AppModuleBasic) DefaultGenesis(cdc codec.JSONMarshaler) json.RawMessage {
+	return cdc.MustMarshalJSON(types.DefaultGenesisState())
+}
+
+func (a AppModuleBasic) ValidateGenesis(cdc codec.JSONMarshaler, _ client.TxEncodingConfig, message json.RawMessage) error {
 	var state types.GenesisState
-	types.ModuleCdc.MustUnmarshalJSON(data, &state)
+	if err := cdc.UnmarshalJSON(message, &state); err != nil {
+		return err
+	}
 
-	return ValidateGenesis(state)
+	return state.Validate()
 }
 
-func (a AppModuleBasic) RegisterRESTRoutes(context context.CLIContext, router *mux.Router) {
-	rest.RegisterRoutes(context, router)
+func (a AppModuleBasic) RegisterRESTRoutes(ctx client.Context, router *mux.Router) {}
+
+func (a AppModuleBasic) RegisterGRPCGatewayRoutes(ctx client.Context, mux *runtime.ServeMux) {
+	_ = types.RegisterQueryServiceHandlerClient(context.Background(), mux, types.NewQueryServiceClient(ctx))
 }
 
-func (a AppModuleBasic) GetTxCmd(cdc *codec.Codec) *cobra.Command {
-	return cli.GetTxCmd(cdc)
+func (a AppModuleBasic) GetTxCmd() *cobra.Command {
+	return cli.GetTxCmd()
 }
 
-func (a AppModuleBasic) GetQueryCmd(cdc *codec.Codec) *cobra.Command {
-	return cli.GetQueryCmd(cdc)
+func (a AppModuleBasic) GetQueryCmd() *cobra.Command {
+	return cli.GetQueryCmd()
 }
 
 type AppModule struct {
@@ -70,50 +79,49 @@ func NewAppModule(k keeper.Keeper) AppModule {
 	}
 }
 
-func (a AppModule) InitGenesis(ctx sdk.Context, data json.RawMessage) []abci.ValidatorUpdate {
+func (a AppModule) InitGenesis(ctx sdk.Context, cdc codec.JSONMarshaler, message json.RawMessage) []abci.ValidatorUpdate {
 	var state types.GenesisState
-	types.ModuleCdc.MustUnmarshalJSON(data, &state)
-	InitGenesis(ctx, a.k, state)
+	cdc.MustUnmarshalJSON(message, &state)
+	InitGenesis(ctx, a.k, &state)
 
 	return nil
 }
 
-func (a AppModule) ExportGenesis(ctx sdk.Context) json.RawMessage {
-	return types.ModuleCdc.MustMarshalJSON(ExportGenesis(ctx, a.k))
+func (a AppModule) ExportGenesis(ctx sdk.Context, cdc codec.JSONMarshaler) json.RawMessage {
+	return cdc.MustMarshalJSON(ExportGenesis(ctx, a.k))
 }
 
 func (a AppModule) RegisterInvariants(_ sdk.InvariantRegistry) {}
 
-func (a AppModule) Route() string {
-	return types.RouterKey
-}
-
-func (a AppModule) NewHandler() sdk.Handler {
-	return NewHandler(a.k)
+func (a AppModule) Route() sdk.Route {
+	return sdk.NewRoute(types.RouterKey, NewHandler(a.k))
 }
 
 func (a AppModule) QuerierRoute() string {
 	return types.QuerierRoute
 }
 
-func (a AppModule) NewQuerierHandler() sdk.Querier {
-	return querier.NewQuerier(a.k)
+func (a AppModule) LegacyQuerierHandler(_ *codec.LegacyAmino) sdk.Querier { return nil }
+
+func (a AppModule) RegisterServices(configurator module.Configurator) {
+	types.RegisterMsgServiceServer(configurator.MsgServer(), keeper.NewMsgServiceServer(a.k))
+	types.RegisterQueryServiceServer(configurator.QueryServer(), keeper.NewQueryServiceServer(a.k))
 }
 
 func (a AppModule) BeginBlock(_ sdk.Context, _ abci.RequestBeginBlock) {}
 
 func (a AppModule) EndBlock(_ sdk.Context, _ abci.RequestEndBlock) []abci.ValidatorUpdate { return nil }
 
-func (a AppModule) GenerateGenesisState(_ *module.SimulationState) {}
+func (a AppModule) GenerateGenesisState(input *module.SimulationState) {}
 
-func (a AppModule) ProposalContents(_ module.SimulationState) []xsimulation.WeightedProposalContent {
+func (a AppModule) ProposalContents(simState module.SimulationState) []simulation.WeightedProposalContent {
 	return nil
 }
 
-func (a AppModule) RandomizedParams(_ *rand.Rand) []xsimulation.ParamChange { return nil }
+func (a AppModule) RandomizedParams(r *rand.Rand) []simulation.ParamChange { return nil }
 
-func (a AppModule) RegisterStoreDecoder(_ sdk.StoreDecoderRegistry) {}
+func (a AppModule) RegisterStoreDecoder(registry sdk.StoreDecoderRegistry) {}
 
-func (a AppModule) WeightedOperations(_ module.SimulationState) []xsimulation.WeightedOperation {
+func (a AppModule) WeightedOperations(simState module.SimulationState) []simulation.WeightedOperation {
 	return nil
 }

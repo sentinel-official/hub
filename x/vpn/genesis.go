@@ -13,7 +13,7 @@ import (
 	"github.com/sentinel-official/hub/x/vpn/types"
 )
 
-func InitGenesis(ctx sdk.Context, k keeper.Keeper, state types.GenesisState) {
+func InitGenesis(ctx sdk.Context, k keeper.Keeper, state *types.GenesisState) {
 	deposit.InitGenesis(ctx, k.Deposit, state.Deposits)
 	provider.InitGenesis(ctx, k.Provider, state.Providers)
 	node.InitGenesis(ctx, k.Node, state.Nodes)
@@ -22,8 +22,8 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, state types.GenesisState) {
 	session.InitGenesis(ctx, k.Session, state.Sessions)
 }
 
-func ExportGenesis(ctx sdk.Context, k keeper.Keeper) types.GenesisState {
-	return types.GenesisState{
+func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
+	return &types.GenesisState{
 		Deposits:      deposit.ExportGenesis(ctx, k.Deposit),
 		Providers:     provider.ExportGenesis(ctx, k.Provider),
 		Nodes:         node.ExportGenesis(ctx, k.Node),
@@ -31,27 +31,4 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) types.GenesisState {
 		Subscriptions: subscription.ExportGenesis(ctx, k.Subscription),
 		Sessions:      session.ExportGenesis(ctx, k.Session),
 	}
-}
-
-func ValidateGenesis(state types.GenesisState) error {
-	if err := deposit.ValidateGenesis(state.Deposits); err != nil {
-		return err
-	}
-	if err := provider.ValidateGenesis(state.Providers); err != nil {
-		return err
-	}
-	if err := node.ValidateGenesis(state.Nodes); err != nil {
-		return err
-	}
-	if err := plan.ValidateGenesis(state.Plans); err != nil {
-		return err
-	}
-	if err := subscription.ValidateGenesis(state.Subscriptions); err != nil {
-		return err
-	}
-	if err := session.ValidateGenesis(state.Sessions); err != nil {
-		return err
-	}
-
-	return nil
 }

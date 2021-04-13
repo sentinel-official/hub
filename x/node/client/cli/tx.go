@@ -1,27 +1,25 @@
 package cli
 
 import (
-	"bufio"
-
-	"github.com/cosmos/cosmos-sdk/client/context"
-	"github.com/cosmos/cosmos-sdk/codec"
+	"github.com/cosmos/cosmos-sdk/client"
+	"github.com/cosmos/cosmos-sdk/client/flags"
+	"github.com/cosmos/cosmos-sdk/client/tx"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/x/auth"
-	"github.com/cosmos/cosmos-sdk/x/auth/client/utils"
 	"github.com/spf13/cobra"
 
 	hub "github.com/sentinel-official/hub/types"
 	"github.com/sentinel-official/hub/x/node/types"
 )
 
-func txRegister(cdc *codec.Codec) *cobra.Command {
+func txRegister() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "register",
 		Short: "Register a node",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			buffer := bufio.NewReader(cmd.InOrStdin())
-			txb := auth.NewTxBuilderFromCLI(buffer).WithTxEncoder(utils.GetTxEncoder(cdc))
-			ctx := context.NewCLIContextWithInput(buffer).WithCodec(cdc)
+			ctx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
 
 			s, err := cmd.Flags().GetString(flagProvider)
 			if err != nil {
@@ -43,7 +41,7 @@ func txRegister(cdc *codec.Codec) *cobra.Command {
 
 			var price sdk.Coins
 			if len(s) > 0 {
-				price, err = sdk.ParseCoins(s)
+				price, err = sdk.ParseCoinsNormalized(s)
 				if err != nil {
 					return err
 				}
@@ -54,15 +52,16 @@ func txRegister(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgRegister(ctx.FromAddress, provider, price, remoteURL)
+			msg := types.NewMsgRegisterRequest(ctx.FromAddress, provider, price, remoteURL)
 			if err := msg.ValidateBasic(); err != nil {
 				return err
 			}
 
-			return utils.GenerateOrBroadcastMsgs(ctx, txb, []sdk.Msg{msg})
+			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
 		},
 	}
 
+	flags.AddTxFlagsToCmd(cmd)
 	cmd.Flags().String(flagProvider, "", "node provider address")
 	cmd.Flags().String(flagPrice, "", "node price per Gigabyte")
 	cmd.Flags().String(flagRemoteURL, "", "node remote URL")
@@ -72,14 +71,15 @@ func txRegister(cdc *codec.Codec) *cobra.Command {
 	return cmd
 }
 
-func txUpdate(cdc *codec.Codec) *cobra.Command {
+func txUpdate() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "update",
 		Short: "Update a node",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			buffer := bufio.NewReader(cmd.InOrStdin())
-			txb := auth.NewTxBuilderFromCLI(buffer).WithTxEncoder(utils.GetTxEncoder(cdc))
-			ctx := context.NewCLIContextWithInput(buffer).WithCodec(cdc)
+			ctx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
 
 			s, err := cmd.Flags().GetString(flagProvider)
 			if err != nil {
@@ -101,7 +101,7 @@ func txUpdate(cdc *codec.Codec) *cobra.Command {
 
 			var price sdk.Coins
 			if len(s) > 0 {
-				price, err = sdk.ParseCoins(s)
+				price, err = sdk.ParseCoinsNormalized(s)
 				if err != nil {
 					return err
 				}
@@ -112,15 +112,16 @@ func txUpdate(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgUpdate(ctx.FromAddress.Bytes(), provider, price, remoteURL)
+			msg := types.NewMsgUpdateRequest(ctx.FromAddress.Bytes(), provider, price, remoteURL)
 			if err := msg.ValidateBasic(); err != nil {
 				return err
 			}
 
-			return utils.GenerateOrBroadcastMsgs(ctx, txb, []sdk.Msg{msg})
+			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
 		},
 	}
 
+	flags.AddTxFlagsToCmd(cmd)
 	cmd.Flags().String(flagProvider, "", "node provider address")
 	cmd.Flags().String(flagPrice, "", "node price per Gigabyte")
 	cmd.Flags().String(flagRemoteURL, "", "node remote URL")
@@ -128,24 +129,27 @@ func txUpdate(cdc *codec.Codec) *cobra.Command {
 	return cmd
 }
 
-func txSetStatus(cdc *codec.Codec) *cobra.Command {
+func txSetStatus() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "status-set [Active | Inactive]",
 		Short: "Set a node status",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			buffer := bufio.NewReader(cmd.InOrStdin())
-			txb := auth.NewTxBuilderFromCLI(buffer).WithTxEncoder(utils.GetTxEncoder(cdc))
-			ctx := context.NewCLIContextWithInput(buffer).WithCodec(cdc)
+			ctx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
 
-			msg := types.NewMsgSetStatus(ctx.FromAddress.Bytes(), hub.StatusFromString(args[0]))
+			msg := types.NewMsgSetStatusRequest(ctx.FromAddress.Bytes(), hub.StatusFromString(args[0]))
 			if err := msg.ValidateBasic(); err != nil {
 				return err
 			}
 
-			return utils.GenerateOrBroadcastMsgs(ctx, txb, []sdk.Msg{msg})
+			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
 		},
 	}
+
+	flags.AddTxFlagsToCmd(cmd)
 
 	return cmd
 }

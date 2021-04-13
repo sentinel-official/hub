@@ -3,12 +3,10 @@
 // aliases generated for the following subdirectories:
 // ALIASGEN: github.com/sentinel-official/hub/x/deposit/types
 // ALIASGEN: github.com/sentinel-official/hub/x/deposit/keeper
-// ALIASGEN: github.com/sentinel-official/hub/x/deposit/querier
 package deposit
 
 import (
 	"github.com/sentinel-official/hub/x/deposit/keeper"
-	"github.com/sentinel-official/hub/x/deposit/querier"
 	"github.com/sentinel-official/hub/x/deposit/types"
 )
 
@@ -21,37 +19,53 @@ const (
 
 var (
 	// functions aliases
-	RegisterCodec          = types.RegisterCodec
-	NewGenesisState        = types.NewGenesisState
-	DefaultGenesisState    = types.DefaultGenesisState
-	DepositKey             = types.DepositKey
-	NewQueryDepositParams  = types.NewQueryDepositParams
-	NewQueryDepositsParams = types.NewQueryDepositsParams
-	NewKeeper              = keeper.NewKeeper
-	CreateTestInput        = keeper.CreateTestInput
-	MakeTestCodec          = keeper.MakeTestCodec
-	Querier                = querier.Querier
+	RegisterLegacyAminoCodec                = types.RegisterLegacyAminoCodec
+	RegisterInterfaces                      = types.RegisterInterfaces
+	NewGenesisState                         = types.NewGenesisState
+	DefaultGenesisState                     = types.DefaultGenesisState
+	DepositKey                              = types.DepositKey
+	NewQueryDepositRequest                  = types.NewQueryDepositRequest
+	NewQueryDepositsRequest                 = types.NewQueryDepositsRequest
+	NewQueryServiceClient                   = types.NewQueryServiceClient
+	RegisterQueryServiceServer              = types.RegisterQueryServiceServer
+	RegisterQueryServiceHandlerServer       = types.RegisterQueryServiceHandlerServer
+	RegisterQueryServiceHandlerFromEndpoint = types.RegisterQueryServiceHandlerFromEndpoint
+	RegisterQueryServiceHandler             = types.RegisterQueryServiceHandler
+	RegisterQueryServiceHandlerClient       = types.RegisterQueryServiceHandlerClient
+	NewKeeper                               = keeper.NewKeeper
+	NewQueryServiceServer                   = keeper.NewQueryServiceServer
 
 	// variable aliases
-	ModuleCdc                     = types.ModuleCdc
-	ErrorMarshal                  = types.ErrorMarshal
-	ErrorUnmarshal                = types.ErrorUnmarshal
-	ErrorUnknownMsgType           = types.ErrorUnknownMsgType
-	ErrorUnknownQueryType         = types.ErrorUnknownQueryType
-	ErrorInvalidField             = types.ErrorInvalidField
-	ErrorInsufficientDepositFunds = types.ErrorInsufficientDepositFunds
-	ErrorDepositDoesNotExist      = types.ErrorDepositDoesNotExist
-	RouterKey                     = types.RouterKey
-	StoreKey                      = types.StoreKey
-	EventModuleName               = types.EventModuleName
-	DepositKeyPrefix              = types.DepositKeyPrefix
+	ModuleCdc                      = types.ModuleCdc
+	ErrInvalidLengthDeposit        = types.ErrInvalidLengthDeposit
+	ErrIntOverflowDeposit          = types.ErrIntOverflowDeposit
+	ErrUnexpectedEndOfGroupDeposit = types.ErrUnexpectedEndOfGroupDeposit
+	ErrorMarshal                   = types.ErrorMarshal
+	ErrorUnmarshal                 = types.ErrorUnmarshal
+	ErrorUnknownMsgType            = types.ErrorUnknownMsgType
+	ErrorUnknownQueryType          = types.ErrorUnknownQueryType
+	ErrorInvalidField              = types.ErrorInvalidField
+	ErrorInsufficientDepositFunds  = types.ErrorInsufficientDepositFunds
+	ErrorDepositDoesNotExist       = types.ErrorDepositDoesNotExist
+	RouterKey                      = types.RouterKey
+	StoreKey                       = types.StoreKey
+	EventModuleName                = types.EventModuleName
+	DepositKeyPrefix               = types.DepositKeyPrefix
+	ErrInvalidLengthQuerier        = types.ErrInvalidLengthQuerier
+	ErrIntOverflowQuerier          = types.ErrIntOverflowQuerier
+	ErrUnexpectedEndOfGroupQuerier = types.ErrUnexpectedEndOfGroupQuerier
 )
 
 type (
-	Deposit             = types.Deposit
-	Deposits            = types.Deposits
-	GenesisState        = types.GenesisState
-	QueryDepositParams  = types.QueryDepositParams
-	QueryDepositsParams = types.QueryDepositsParams
-	Keeper              = keeper.Keeper
+	Deposits                        = types.Deposits
+	Deposit                         = types.Deposit
+	GenesisState                    = types.GenesisState
+	QueryDepositsRequest            = types.QueryDepositsRequest
+	QueryDepositRequest             = types.QueryDepositRequest
+	QueryDepositsResponse           = types.QueryDepositsResponse
+	QueryDepositResponse            = types.QueryDepositResponse
+	QueryServiceClient              = types.QueryServiceClient
+	QueryServiceServer              = types.QueryServiceServer
+	UnimplementedQueryServiceServer = types.UnimplementedQueryServiceServer
+	Keeper                          = keeper.Keeper
 )

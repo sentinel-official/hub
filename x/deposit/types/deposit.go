@@ -7,12 +7,20 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-type Deposit struct {
-	Address sdk.AccAddress `json:"address"`
-	Coins   sdk.Coins      `json:"coins"`
+func (d *Deposit) GetAddress() sdk.AccAddress {
+	if d.Address == "" {
+		return nil
+	}
+
+	address, err := sdk.AccAddressFromBech32(d.Address)
+	if err != nil {
+		panic(err)
+	}
+
+	return address
 }
 
-func (d Deposit) String() string {
+func (d *Deposit) String() string {
 	return fmt.Sprintf(strings.TrimSpace(`
 Address: %s
 Coins  : %s
@@ -20,8 +28,8 @@ Coins  : %s
 }
 
 func (d Deposit) Validate() error {
-	if d.Address == nil || d.Address.Empty() {
-		return fmt.Errorf("address should not be nil or empty")
+	if _, err := sdk.AccAddressFromBech32(d.Address); err != nil {
+		return err
 	}
 	if d.Coins == nil || !d.Coins.IsValid() {
 		return fmt.Errorf("coins should not be nil or invalid")

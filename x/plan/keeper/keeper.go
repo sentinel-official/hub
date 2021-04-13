@@ -13,13 +13,13 @@ import (
 )
 
 type Keeper struct {
-	cdc      *codec.Codec
+	cdc      codec.BinaryMarshaler
 	key      sdk.StoreKey
 	provider expected.ProviderKeeper
 	node     expected.NodeKeeper
 }
 
-func NewKeeper(cdc *codec.Codec, key sdk.StoreKey) Keeper {
+func NewKeeper(cdc codec.BinaryMarshaler, key sdk.StoreKey) Keeper {
 	return Keeper{
 		cdc: cdc,
 		key: key,

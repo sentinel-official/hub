@@ -34,12 +34,11 @@ func ValidateGenesis(state types.GenesisState) error {
 
 	providers := make(map[string]bool)
 	for _, provider := range state.Providers {
-		address := provider.Address.String()
-		if providers[address] {
-			return fmt.Errorf("found duplicate provider address %s", address)
+		if providers[provider.Address] {
+			return fmt.Errorf("found duplicate provider address %s", provider.Address)
 		}
 
-		providers[address] = true
+		providers[provider.Address] = true
 	}
 
 	return nil

@@ -28,12 +28,11 @@ func ValidateGenesis(state types.GenesisState) error {
 
 	deposits := make(map[string]bool)
 	for _, deposit := range state {
-		address := deposit.Address.String()
-		if deposits[address] {
-			return fmt.Errorf("found duplicate deposit address %s", address)
+		if deposits[deposit.Address] {
+			return fmt.Errorf("found duplicate deposit address %s", deposit.Address)
 		}
 
-		deposits[address] = true
+		deposits[deposit.Address] = true
 	}
 
 	return nil

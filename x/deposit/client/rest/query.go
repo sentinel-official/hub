@@ -1,18 +1,18 @@
 package rest
 
 import (
+	"context"
 	"net/http"
 
-	"github.com/cosmos/cosmos-sdk/client/context"
+	"github.com/cosmos/cosmos-sdk/client"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/rest"
 	"github.com/gorilla/mux"
 
-	"github.com/sentinel-official/hub/utils"
-	"github.com/sentinel-official/hub/x/deposit/client/common"
+	"github.com/sentinel-official/hub/x/deposit/types"
 )
 
-func queryDeposit(ctx context.CLIContext) http.HandlerFunc {
+func queryDeposit(ctx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 
@@ -22,30 +22,34 @@ func queryDeposit(ctx context.CLIContext) http.HandlerFunc {
 			return
 		}
 
-		deposit, err := common.QueryDeposit(ctx, address)
+		var (
+			qc = types.NewQueryServiceClient(ctx)
+		)
+
+		res, err := qc.QueryDeposit(context.Background(),
+			types.NewQueryDepositRequest(address))
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
 		}
 
-		rest.PostProcessResponse(w, ctx, deposit)
+		rest.PostProcessResponse(w, ctx, res)
 	}
 }
 
-func queryDeposits(ctx context.CLIContext) http.HandlerFunc {
+func queryDeposits(ctx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		skip, limit, err := utils.ParseQuery(r.URL.Query())
-		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
-			return
-		}
+		var (
+			qc = types.NewQueryServiceClient(ctx)
+		)
 
-		deposits, err := common.QueryDeposits(ctx, skip, limit)
+		res, err := qc.QueryDeposits(context.Background(),
+			types.NewQueryDepositsRequest(nil))
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
 		}
 
-		rest.PostProcessResponse(w, ctx, deposits)
+		rest.PostProcessResponse(w, ctx, res)
 	}
 }

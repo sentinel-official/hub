@@ -15,24 +15,24 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, state types.GenesisState) {
 	for _, item := range state.Subscriptions {
 		k.SetSubscription(ctx, item.Subscription)
 
-		if item.Subscription.ID == 0 {
-			k.SetSubscriptionForNode(ctx, item.Subscription.Node, item.Subscription.ID)
+		if item.Subscription.Id == 0 {
+			k.SetSubscriptionForNode(ctx, item.Subscription.GetNode(), item.Subscription.Id)
 		} else {
-			k.SetSubscriptionForPlan(ctx, item.Subscription.Plan, item.Subscription.ID)
+			k.SetSubscriptionForPlan(ctx, item.Subscription.Plan, item.Subscription.Id)
 		}
 
 		for _, quota := range item.Quotas {
-			k.SetQuota(ctx, item.Subscription.ID, quota)
+			k.SetQuota(ctx, item.Subscription.Id, quota)
 
 			if item.Subscription.Status.Equal(hub.StatusInactive) {
-				k.SetInactiveSubscriptionForAddress(ctx, quota.Address, item.Subscription.ID)
+				k.SetInactiveSubscriptionForAddress(ctx, quota.GetAddress(), item.Subscription.Id)
 			} else {
-				k.SetActiveSubscriptionForAddress(ctx, quota.Address, item.Subscription.ID)
+				k.SetActiveSubscriptionForAddress(ctx, quota.GetAddress(), item.Subscription.Id)
 			}
 		}
 
 		if item.Subscription.Status.Equal(hub.StatusInactivePending) {
-			k.SetInactiveSubscriptionAt(ctx, item.Subscription.StatusAt.Add(k.InactiveDuration(ctx)), item.Subscription.ID)
+			k.SetInactiveSubscriptionAt(ctx, item.Subscription.StatusAt.Add(k.InactiveDuration(ctx)), item.Subscription.Id)
 		}
 	}
 
@@ -46,7 +46,7 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) types.GenesisState {
 	for _, item := range subscriptions {
 		items = append(items, types.GenesisSubscription{
 			Subscription: item,
-			Quotas:       k.GetQuotas(ctx, item.ID, 0, 0),
+			Quotas:       k.GetQuotas(ctx, item.Id, 0, 0),
 		})
 	}
 
@@ -66,12 +66,11 @@ func ValidateGenesis(state types.GenesisState) error {
 
 	subscriptions := make(map[uint64]bool)
 	for _, item := range state.Subscriptions {
-		id := item.Subscription.ID
-		if subscriptions[id] {
-			return fmt.Errorf("duplicate subscription id %d", id)
+		if subscriptions[item.Subscription.Id] {
+			return fmt.Errorf("duplicate subscription id %d", item.Subscription.Id)
 		}
 
-		subscriptions[id] = true
+		subscriptions[item.Subscription.Id] = true
 	}
 
 	for _, item := range state.Subscriptions {
@@ -85,12 +84,11 @@ func ValidateGenesis(state types.GenesisState) error {
 	for _, item := range state.Subscriptions {
 		quotas := make(map[string]bool)
 		for _, quota := range item.Quotas {
-			address := quota.Address.String()
-			if quotas[address] {
-				return fmt.Errorf("duplicate quota for subscription %d", item.Subscription.ID)
+			if quotas[quota.Address] {
+				return fmt.Errorf("duplicate quota for subscription %d", item.Subscription.Id)
 			}
 
-			quotas[address] = true
+			quotas[quota.Address] = true
 		}
 	}
 

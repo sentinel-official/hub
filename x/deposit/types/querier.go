@@ -2,6 +2,7 @@ package types
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/query"
 )
 
 const (
@@ -9,26 +10,14 @@ const (
 	QueryDeposits = "deposits"
 )
 
-// QueryDepositParams is the request parameters for querying a deposit.
-type QueryDepositParams struct {
-	Address sdk.AccAddress `json:"address"`
-}
-
-func NewQueryDepositParams(address sdk.AccAddress) QueryDepositParams {
-	return QueryDepositParams{
-		Address: address,
+func NewQueryDepositRequest(address sdk.AccAddress) *QueryDepositRequest {
+	return &QueryDepositRequest{
+		Address: address.String(),
 	}
 }
 
-// QueryDepositsParams is the request parameters for querying the deposits.
-type QueryDepositsParams struct {
-	Skip  int `json:"skip"`
-	Limit int `json:"limit"`
-}
-
-func NewQueryDepositsParams(skip, limit int) QueryDepositsParams {
-	return QueryDepositsParams{
-		Skip:  skip,
-		Limit: limit,
+func NewQueryDepositsRequest(pagination *query.PageRequest) *QueryDepositsRequest {
+	return &QueryDepositsRequest{
+		Pagination: pagination,
 	}
 }

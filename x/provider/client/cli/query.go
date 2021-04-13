@@ -1,72 +1,82 @@
 package cli
 
 import (
-	"fmt"
+	"context"
 
-	"github.com/cosmos/cosmos-sdk/client/context"
-	"github.com/cosmos/cosmos-sdk/codec"
+	"github.com/cosmos/cosmos-sdk/client"
+	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/spf13/cobra"
 
 	hub "github.com/sentinel-official/hub/types"
-	"github.com/sentinel-official/hub/x/provider/client/common"
+	"github.com/sentinel-official/hub/x/provider/types"
 )
 
-func queryProvider(cdc *codec.Codec) *cobra.Command {
-	return &cobra.Command{
+func queryProvider() *cobra.Command {
+	cmd := &cobra.Command{
 		Use:   "provider",
 		Short: "Query a provider",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			ctx := context.NewCLIContext().WithCodec(cdc)
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
 
 			address, err := hub.ProvAddressFromBech32(args[0])
 			if err != nil {
 				return err
 			}
 
-			provider, err := common.QueryProvider(ctx, address)
+			var (
+				qc = types.NewQueryServiceClient(ctx)
+			)
+
+			res, err := qc.QueryProvider(context.Background(),
+				types.NewQueryProviderRequest(address))
 			if err != nil {
 				return err
 			}
 
-			fmt.Println(provider)
-			return nil
+			return ctx.PrintProto(res)
 		},
 	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
 }
 
-func queryProviders(cdc *codec.Codec) *cobra.Command {
+func queryProviders() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "providers",
 		Short: "Query providers",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			ctx := context.NewCLIContext().WithCodec(cdc)
-
-			skip, err := cmd.Flags().GetInt(flagSkip)
+			ctx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
 			}
 
-			limit, err := cmd.Flags().GetInt(flagLimit)
+			pagination, err := client.ReadPageRequest(cmd.Flags())
 			if err != nil {
 				return err
 			}
 
-			providers, err := common.QueryProviders(ctx, skip, limit)
+			var (
+				qc = types.NewQueryServiceClient(ctx)
+			)
+
+			res, err := qc.QueryProviders(context.Background(),
+				types.NewQueryProvidersRequest(pagination))
 			if err != nil {
 				return err
 			}
 
-			for _, provider := range providers {
-				fmt.Printf("%s\n\n", provider)
-			}
-
-			return nil
+			return ctx.PrintProto(res)
 		},
 	}
 
-	cmd.Flags().Int(flagSkip, 0, "skip")
-	cmd.Flags().Int(flagLimit, 25, "limit")
+	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, "provider")
 
 	return cmd
 }

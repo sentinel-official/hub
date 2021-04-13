@@ -3,12 +3,10 @@
 // aliases generated for the following subdirectories:
 // ALIASGEN: github.com/sentinel-official/hub/x/swap/types
 // ALIASGEN: github.com/sentinel-official/hub/x/swap/keeper
-// ALIASGEN: github.com/sentinel-official/hub/x/swap/querier
 package swap
 
 import (
 	"github.com/sentinel-official/hub/x/swap/keeper"
-	"github.com/sentinel-official/hub/x/swap/querier"
 	"github.com/sentinel-official/hub/x/swap/types"
 )
 
@@ -22,57 +20,89 @@ const (
 	DefaultParamspace   = types.DefaultParamspace
 	DefaultSwapEnabled  = types.DefaultSwapEnabled
 	DefaultSwapDenom    = types.DefaultSwapDenom
-	QuerySwap           = types.QuerySwap
-	QuerySwaps          = types.QuerySwaps
+	DefaultApproveBy    = types.DefaultApproveBy
 )
 
 var (
 	// functions aliases
-	RegisterCodec       = types.RegisterCodec
-	BytesToHash         = types.BytesToHash
-	NewGenesisState     = types.NewGenesisState
-	DefaultGenesisState = types.DefaultGenesisState
-	SwapKey             = types.SwapKey
-	NewMsgSwap          = types.NewMsgSwap
-	NewParams           = types.NewParams
-	DefaultParams       = types.DefaultParams
-	ParamsKeyTable      = types.ParamsKeyTable
-	NewQuerySwapParams  = types.NewQuerySwapParams
-	NewQuerySwapsParams = types.NewQuerySwapsParams
-	NewKeeper           = keeper.NewKeeper
-	NewQuerier          = querier.NewQuerier
+	RegisterLegacyAminoCodec                = types.RegisterLegacyAminoCodec
+	RegisterInterfaces                      = types.RegisterInterfaces
+	BytesToHash                             = types.BytesToHash
+	NewGenesisState                         = types.NewGenesisState
+	DefaultGenesisState                     = types.DefaultGenesisState
+	SwapKey                                 = types.SwapKey
+	NewMsgSwapRequest                       = types.NewMsgSwapRequest
+	NewMsgServiceClient                     = types.NewMsgServiceClient
+	RegisterMsgServiceServer                = types.RegisterMsgServiceServer
+	NewParams                               = types.NewParams
+	DefaultParams                           = types.DefaultParams
+	ParamsKeyTable                          = types.ParamsKeyTable
+	NewQuerySwapRequest                     = types.NewQuerySwapRequest
+	NewQuerySwapsRequest                    = types.NewQuerySwapsRequest
+	NewQueryServiceClient                   = types.NewQueryServiceClient
+	RegisterQueryServiceServer              = types.RegisterQueryServiceServer
+	RegisterQueryServiceHandlerServer       = types.RegisterQueryServiceHandlerServer
+	RegisterQueryServiceHandlerFromEndpoint = types.RegisterQueryServiceHandlerFromEndpoint
+	RegisterQueryServiceHandler             = types.RegisterQueryServiceHandler
+	RegisterQueryServiceHandlerClient       = types.RegisterQueryServiceHandlerClient
+	NewKeeper                               = keeper.NewKeeper
+	NewMsgServiceServer                     = keeper.NewMsgServiceServer
+	NewQueryServiceServer                   = keeper.NewQueryServiceServer
 
 	// variable aliases
-	ModuleCdc             = types.ModuleCdc
-	ErrorMarshal          = types.ErrorMarshal
-	ErrorUnmarshal        = types.ErrorUnmarshal
-	ErrorUnknownMsgType   = types.ErrorUnknownMsgType
-	ErrorUnknownQueryType = types.ErrorUnknownQueryType
-	ErrorInvalidField     = types.ErrorInvalidField
-	ErrorSwapIsDisabled   = types.ErrorSwapIsDisabled
-	ErrorUnauthorized     = types.ErrorUnauthorized
-	ErrorDuplicateSwap    = types.ErrorDuplicateSwap
-	EventTypeSet          = types.EventTypeSet
-	ParamsSubspace        = types.ParamsSubspace
-	RouterKey             = types.RouterKey
-	StoreKey              = types.StoreKey
-	PrecisionLoss         = types.PrecisionLoss
-	EventModuleName       = types.EventModuleName
-	SwapKeyPrefix         = types.SwapKeyPrefix
-	DefaultApproveBy      = types.DefaultApproveBy
-	KeySwapEnabled        = types.KeySwapEnabled
-	KeySwapDenom          = types.KeySwapDenom
-	KeyApproveBy          = types.KeyApproveBy
+	ModuleCdc                      = types.ModuleCdc
+	ErrorMarshal                   = types.ErrorMarshal
+	ErrorUnmarshal                 = types.ErrorUnmarshal
+	ErrorUnknownMsgType            = types.ErrorUnknownMsgType
+	ErrorUnknownQueryType          = types.ErrorUnknownQueryType
+	ErrorInvalidField              = types.ErrorInvalidField
+	ErrorSwapIsDisabled            = types.ErrorSwapIsDisabled
+	ErrorUnauthorized              = types.ErrorUnauthorized
+	ErrorDuplicateSwap             = types.ErrorDuplicateSwap
+	EventTypeSet                   = types.EventTypeSet
+	ErrInvalidLengthGenesis        = types.ErrInvalidLengthGenesis
+	ErrIntOverflowGenesis          = types.ErrIntOverflowGenesis
+	ErrUnexpectedEndOfGroupGenesis = types.ErrUnexpectedEndOfGroupGenesis
+	ParamsSubspace                 = types.ParamsSubspace
+	RouterKey                      = types.RouterKey
+	StoreKey                       = types.StoreKey
+	PrecisionLoss                  = types.PrecisionLoss
+	EventModuleName                = types.EventModuleName
+	SwapKeyPrefix                  = types.SwapKeyPrefix
+	ErrInvalidLengthMsg            = types.ErrInvalidLengthMsg
+	ErrIntOverflowMsg              = types.ErrIntOverflowMsg
+	ErrUnexpectedEndOfGroupMsg     = types.ErrUnexpectedEndOfGroupMsg
+	KeySwapEnabled                 = types.KeySwapEnabled
+	KeySwapDenom                   = types.KeySwapDenom
+	KeyApproveBy                   = types.KeyApproveBy
+	ErrInvalidLengthParams         = types.ErrInvalidLengthParams
+	ErrIntOverflowParams           = types.ErrIntOverflowParams
+	ErrUnexpectedEndOfGroupParams  = types.ErrUnexpectedEndOfGroupParams
+	ErrInvalidLengthQuerier        = types.ErrInvalidLengthQuerier
+	ErrIntOverflowQuerier          = types.ErrIntOverflowQuerier
+	ErrUnexpectedEndOfGroupQuerier = types.ErrUnexpectedEndOfGroupQuerier
+	ErrInvalidLengthSwap           = types.ErrInvalidLengthSwap
+	ErrIntOverflowSwap             = types.ErrIntOverflowSwap
+	ErrUnexpectedEndOfGroupSwap    = types.ErrUnexpectedEndOfGroupSwap
 )
 
 type (
-	EthereumHash     = types.EthereumHash
-	GenesisState     = types.GenesisState
-	MsgSwap          = types.MsgSwap
-	Params           = types.Params
-	QuerySwapParams  = types.QuerySwapParams
-	QuerySwapsParams = types.QuerySwapsParams
-	Swap             = types.Swap
-	Swaps            = types.Swaps
-	Keeper           = keeper.Keeper
+	EthereumHash                    = types.EthereumHash
+	GenesisState                    = types.GenesisState
+	MsgSwapRequest                  = types.MsgSwapRequest
+	MsgSwapResponse                 = types.MsgSwapResponse
+	MsgServiceClient                = types.MsgServiceClient
+	MsgServiceServer                = types.MsgServiceServer
+	UnimplementedMsgServiceServer   = types.UnimplementedMsgServiceServer
+	Params                          = types.Params
+	QuerySwapsRequest               = types.QuerySwapsRequest
+	QuerySwapRequest                = types.QuerySwapRequest
+	QuerySwapsResponse              = types.QuerySwapsResponse
+	QuerySwapResponse               = types.QuerySwapResponse
+	QueryServiceClient              = types.QueryServiceClient
+	QueryServiceServer              = types.QueryServiceServer
+	UnimplementedQueryServiceServer = types.UnimplementedQueryServiceServer
+	Swaps                           = types.Swaps
+	Swap                            = types.Swap
+	Keeper                          = keeper.Keeper
 )

@@ -8,36 +8,29 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-type MsgSwap struct {
-	From     sdk.AccAddress `json:"from"`
-	TxHash   EthereumHash   `json:"tx_hash"`
-	Receiver sdk.AccAddress `json:"receiver"`
-	Amount   sdk.Int        `json:"amount"`
-}
-
-func NewMsgSwap(from sdk.AccAddress, txHash EthereumHash, receiver sdk.AccAddress, amount sdk.Int) MsgSwap {
-	return MsgSwap{
-		From:     from,
-		TxHash:   txHash,
-		Receiver: receiver,
+func NewMsgSwapRequest(from sdk.AccAddress, txHash EthereumHash, receiver sdk.AccAddress, amount sdk.Int) *MsgSwapRequest {
+	return &MsgSwapRequest{
+		From:     from.String(),
+		TxHash:   txHash.Bytes(),
+		Receiver: receiver.String(),
 		Amount:   amount,
 	}
 }
 
-func (m MsgSwap) Route() string {
+func (m MsgSwapRequest) Route() string {
 	return RouterKey
 }
 
-func (m MsgSwap) Type() string {
+func (m MsgSwapRequest) Type() string {
 	return fmt.Sprintf("%s:swap", ModuleName)
 }
 
-func (m MsgSwap) ValidateBasic() error {
-	if m.From == nil || m.From.Empty() {
+func (m MsgSwapRequest) ValidateBasic() error {
+	if _, err := sdk.AccAddressFromBech32(m.From); err != nil {
 		return errors.Wrapf(ErrorInvalidField, "%s", "from")
 	}
 
-	if m.Receiver == nil || m.Receiver.Empty() {
+	if _, err := sdk.AccAddressFromBech32(m.Receiver); err != nil {
 		return errors.Wrapf(ErrorInvalidField, "%s", "receiver")
 	}
 
@@ -48,7 +41,7 @@ func (m MsgSwap) ValidateBasic() error {
 	return nil
 }
 
-func (m MsgSwap) GetSignBytes() []byte {
+func (m MsgSwapRequest) GetSignBytes() []byte {
 	bytes, err := json.Marshal(m)
 	if err != nil {
 		panic(err)
@@ -57,6 +50,11 @@ func (m MsgSwap) GetSignBytes() []byte {
 	return bytes
 }
 
-func (m MsgSwap) GetSigners() []sdk.AccAddress {
-	return []sdk.AccAddress{m.From}
+func (m MsgSwapRequest) GetSigners() []sdk.AccAddress {
+	from, err := sdk.AccAddressFromBech32(m.From)
+	if err != nil {
+		panic(err)
+	}
+
+	return []sdk.AccAddress{from}
 }

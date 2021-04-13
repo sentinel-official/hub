@@ -1,0 +1,157 @@
+syntax = "proto3";
+package sentinel.subscription.v1;
+
+option go_package = "github.com/sentinel-official/hub/x/subscription/types";
+
+import "cosmos/base/query/v1beta1/pagination.proto";
+import "gogoproto/gogo.proto";
+import "google/api/annotations.proto";
+
+import "sentinel/subscription/v1/quota.proto";
+import "sentinel/types/v1/status.proto";
+import "sentinel/subscription/v1/subscription.proto";
+
+message QuerySubscriptionsRequest {
+  option (gogoproto.equal)           = false;
+  option (gogoproto.goproto_getters) = false;
+
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QuerySubscriptionsForNodeRequest {
+  option (gogoproto.equal)           = false;
+  option (gogoproto.goproto_getters) = false;
+
+  string address                                   = 1;
+  cosmos.base.query.v1beta1.PageRequest pagination = 2;
+}
+
+message QuerySubscriptionsForPlanRequest {
+  option (gogoproto.equal)           = false;
+  option (gogoproto.goproto_getters) = false;
+
+  uint64 id                                        = 1;
+  cosmos.base.query.v1beta1.PageRequest pagination = 2;
+}
+
+message QuerySubscriptionsForAddressRequest {
+  option (gogoproto.equal)           = false;
+  option (gogoproto.goproto_getters) = false;
+
+  string address                                   = 1;
+  sentinel.types.v1.Status status                  = 2;
+  cosmos.base.query.v1beta1.PageRequest pagination = 3;
+}
+
+message QuerySubscriptionRequest {
+  option (gogoproto.equal)           = false;
+  option (gogoproto.goproto_getters) = false;
+
+  uint64 id = 1;
+}
+
+message QueryQuotaRequest {
+  option (gogoproto.equal)           = false;
+  option (gogoproto.goproto_getters) = false;
+
+  uint64 id      = 1;
+  string address = 2;
+}
+
+message QueryQuotasRequest {
+  option (gogoproto.equal)           = false;
+  option (gogoproto.goproto_getters) = false;
+
+  uint64 id                                        = 1;
+  cosmos.base.query.v1beta1.PageRequest pagination = 2;
+}
+
+message QuerySubscriptionsResponse {
+  option (gogoproto.equal)           = false;
+  option (gogoproto.goproto_getters) = false;
+
+  repeated Subscription subscriptions = 1 [ (gogoproto.nullable) = false ];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QuerySubscriptionsForNodeResponse {
+  option (gogoproto.equal)           = false;
+  option (gogoproto.goproto_getters) = false;
+
+  repeated Subscription subscriptions = 1 [ (gogoproto.nullable) = false ];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QuerySubscriptionsForPlanResponse {
+  option (gogoproto.equal)           = false;
+  option (gogoproto.goproto_getters) = false;
+
+  repeated Subscription subscriptions = 1 [ (gogoproto.nullable) = false ];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QuerySubscriptionsForAddressResponse {
+  option (gogoproto.equal)           = false;
+  option (gogoproto.goproto_getters) = false;
+
+  repeated Subscription subscriptions = 1 [ (gogoproto.nullable) = false ];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QuerySubscriptionResponse {
+  option (gogoproto.equal)           = false;
+  option (gogoproto.goproto_getters) = false;
+
+  Subscription subscription = 1 [ (gogoproto.nullable) = false ];
+}
+
+message QueryQuotaResponse {
+  option (gogoproto.equal)           = false;
+  option (gogoproto.goproto_getters) = false;
+
+  Quota quota = 1 [ (gogoproto.nullable) = false ];
+}
+
+message QueryQuotasResponse {
+  option (gogoproto.equal)           = false;
+  option (gogoproto.goproto_getters) = false;
+
+  repeated Quota quotas = 1 [ (gogoproto.nullable) = false ];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+service QueryService {
+  rpc QuerySubscriptions(QuerySubscriptionsRequest)
+      returns (QuerySubscriptionsResponse) {
+    option (google.api.http).get = "/subscriptions";
+  }
+
+  rpc QuerySubscriptionsForNode(QuerySubscriptionsForNodeRequest)
+      returns (QuerySubscriptionsForNodeResponse) {
+    option (google.api.http).get = "/nodes/{address}/subscriptions";
+  }
+
+  rpc QuerySubscriptionsForPlan(QuerySubscriptionsForPlanRequest)
+      returns (QuerySubscriptionsForPlanResponse) {
+    option (google.api.http).get = "/plans/{id}/subscriptions";
+  }
+
+  rpc QuerySubscriptionsForAddress(QuerySubscriptionsForAddressRequest)
+      returns (QuerySubscriptionsForAddressResponse) {
+    option (google.api.http).get = "/accounts/{address}/subscriptions";
+  }
+
+  rpc QuerySubscription(QuerySubscriptionRequest)
+      returns (QuerySubscriptionResponse) {
+    option (google.api.http).get = "/subscriptions/{id}";
+  }
+
+  rpc QueryQuota(QueryQuotaRequest) returns (QueryQuotaResponse) {
+    option (google.api.http).get =
+        "/accounts/{address}/subscriptions/{id}/quotas";
+  }
+
+  rpc QueryQuotas(QueryQuotasRequest) returns (QueryQuotasResponse) {
+    option (google.api.http).get = "/subscriptions/{id}/quotas";
+  }
+}

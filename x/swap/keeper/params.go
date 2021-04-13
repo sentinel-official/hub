@@ -16,7 +16,7 @@ func (k Keeper) SwapDenom(ctx sdk.Context) (denom string) {
 	return
 }
 
-func (k Keeper) ApproveBy(ctx sdk.Context) (address sdk.AccAddress) {
+func (k Keeper) ApproveBy(ctx sdk.Context) (address string) {
 	k.params.Get(ctx, types.KeyApproveBy, &address)
 	return
 }

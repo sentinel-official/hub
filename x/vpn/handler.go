@@ -14,44 +14,67 @@ import (
 )
 
 func NewHandler(k keeper.Keeper) sdk.Handler {
+	var (
+		providerServer     = provider.NewMsgServiceServer(k.Provider)
+		nodeServer         = node.NewMsgServiceServer(k.Node)
+		planServer         = plan.NewMsgServiceServer(k.Plan)
+		subscriptionServer = subscription.NewMsgServiceServer(k.Subscription)
+		sessionServer      = session.NewMsgServiceServer(k.Session)
+	)
+
 	return func(ctx sdk.Context, msg sdk.Msg) (*sdk.Result, error) {
 		ctx = ctx.WithEventManager(sdk.NewEventManager())
 
 		switch msg := msg.(type) {
-		case provider.MsgRegister:
-			return provider.HandleRegister(ctx, k.Provider, msg)
-		case provider.MsgUpdate:
-			return provider.HandleUpdate(ctx, k.Provider, msg)
+		case *provider.MsgRegisterRequest:
+			res, err := providerServer.MsgRegister(sdk.WrapSDKContext(ctx), msg)
+			return sdk.WrapServiceResult(ctx, res, err)
+		case *provider.MsgUpdateRequest:
+			res, err := providerServer.MsgUpdate(sdk.WrapSDKContext(ctx), msg)
+			return sdk.WrapServiceResult(ctx, res, err)
 
-		case node.MsgRegister:
-			return node.HandleRegister(ctx, k.Node, msg)
-		case node.MsgUpdate:
-			return node.HandleUpdate(ctx, k.Node, msg)
-		case node.MsgSetStatus:
-			return node.HandleSetStatus(ctx, k.Node, msg)
+		case *node.MsgRegisterRequest:
+			res, err := nodeServer.MsgRegister(sdk.WrapSDKContext(ctx), msg)
+			return sdk.WrapServiceResult(ctx, res, err)
+		case *node.MsgUpdateRequest:
+			res, err := nodeServer.MsgUpdate(sdk.WrapSDKContext(ctx), msg)
+			return sdk.WrapServiceResult(ctx, res, err)
+		case *node.MsgSetStatusRequest:
+			res, err := nodeServer.MsgSetStatus(sdk.WrapSDKContext(ctx), msg)
+			return sdk.WrapServiceResult(ctx, res, err)
 
-		case plan.MsgAdd:
-			return plan.HandleAdd(ctx, k.Plan, msg)
-		case plan.MsgSetStatus:
-			return plan.HandleSetStatus(ctx, k.Plan, msg)
-		case plan.MsgAddNode:
-			return plan.HandleAddNode(ctx, k.Plan, msg)
-		case plan.MsgRemoveNode:
-			return plan.HandleRemoveNode(ctx, k.Plan, msg)
+		case *plan.MsgAddRequest:
+			res, err := planServer.MsgAdd(sdk.WrapSDKContext(ctx), msg)
+			return sdk.WrapServiceResult(ctx, res, err)
+		case *plan.MsgSetStatusRequest:
+			res, err := planServer.MsgSetStatus(sdk.WrapSDKContext(ctx), msg)
+			return sdk.WrapServiceResult(ctx, res, err)
+		case *plan.MsgAddNodeRequest:
+			res, err := planServer.MsgAddNode(sdk.WrapSDKContext(ctx), msg)
+			return sdk.WrapServiceResult(ctx, res, err)
+		case *plan.MsgRemoveNodeRequest:
+			res, err := planServer.MsgRemoveNode(sdk.WrapSDKContext(ctx), msg)
+			return sdk.WrapServiceResult(ctx, res, err)
 
-		case subscription.MsgSubscribeToPlan:
-			return subscription.HandleSubscribeToPlan(ctx, k.Subscription, msg)
-		case subscription.MsgSubscribeToNode:
-			return subscription.HandleSubscribeToNode(ctx, k.Subscription, msg)
-		case subscription.MsgCancel:
-			return subscription.HandleCancel(ctx, k.Subscription, msg)
-		case subscription.MsgAddQuota:
-			return subscription.HandleAddQuota(ctx, k.Subscription, msg)
-		case subscription.MsgUpdateQuota:
-			return subscription.HandleUpdateQuota(ctx, k.Subscription, msg)
+		case *subscription.MsgSubscribeToPlanRequest:
+			res, err := subscriptionServer.MsgSubscribeToPlan(sdk.WrapSDKContext(ctx), msg)
+			return sdk.WrapServiceResult(ctx, res, err)
+		case *subscription.MsgSubscribeToNodeRequest:
+			res, err := subscriptionServer.MsgSubscribeToNode(sdk.WrapSDKContext(ctx), msg)
+			return sdk.WrapServiceResult(ctx, res, err)
+		case *subscription.MsgCancelRequest:
+			res, err := subscriptionServer.MsgCancel(sdk.WrapSDKContext(ctx), msg)
+			return sdk.WrapServiceResult(ctx, res, err)
+		case *subscription.MsgAddQuotaRequest:
+			res, err := subscriptionServer.MsgAddQuota(sdk.WrapSDKContext(ctx), msg)
+			return sdk.WrapServiceResult(ctx, res, err)
+		case *subscription.MsgUpdateQuotaRequest:
+			res, err := subscriptionServer.MsgUpdateQuota(sdk.WrapSDKContext(ctx), msg)
+			return sdk.WrapServiceResult(ctx, res, err)
 
-		case session.MsgUpsert:
-			return session.HandleUpsert(ctx, k.Session, msg)
+		case *session.MsgUpsertRequest:
+			res, err := sessionServer.MsgUpsert(sdk.WrapSDKContext(ctx), msg)
+			return sdk.WrapServiceResult(ctx, res, err)
 		default:
 			return nil, errors.Wrapf(types.ErrorUnknownMsgType, "%s", msg.Type())
 		}

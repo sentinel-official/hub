@@ -3,28 +3,28 @@ package rest
 import (
 	"net/http"
 
-	"github.com/cosmos/cosmos-sdk/client/context"
+	"github.com/cosmos/cosmos-sdk/client"
 )
 
-func txAdd(_ context.CLIContext) http.HandlerFunc {
+func txAdd(_ client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
 	}
 }
 
-func txSetStatus(_ context.CLIContext) http.HandlerFunc {
+func txSetStatus(_ client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
 	}
 }
 
-func txAddNode(_ context.CLIContext) http.HandlerFunc {
+func txAddNode(_ client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
 	}
 }
 
-func txRemoveNode(_ context.CLIContext) http.HandlerFunc {
+func txRemoveNode(_ client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
 	}

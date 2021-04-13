@@ -1,29 +1,28 @@
 package cli
 
 import (
-	"bufio"
 	"encoding/hex"
 	"strconv"
 
-	"github.com/cosmos/cosmos-sdk/client/context"
-	"github.com/cosmos/cosmos-sdk/codec"
+	"github.com/cosmos/cosmos-sdk/client"
+	"github.com/cosmos/cosmos-sdk/client/flags"
+	"github.com/cosmos/cosmos-sdk/client/tx"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/x/auth"
-	"github.com/cosmos/cosmos-sdk/x/auth/client/utils"
 	"github.com/spf13/cobra"
 
 	"github.com/sentinel-official/hub/x/swap/types"
 )
 
-func txSwap(cdc *codec.Codec) *cobra.Command {
+func txSwap() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "swap [txHash] [receiver] [amount]",
 		Short: "Swap from SENT to DVPN",
 		Args:  cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			buffer := bufio.NewReader(cmd.InOrStdin())
-			txb := auth.NewTxBuilderFromCLI(buffer).WithTxEncoder(utils.GetTxEncoder(cdc))
-			ctx := context.NewCLIContextWithInput(buffer).WithCodec(cdc)
+			ctx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
 
 			txHash, err := hex.DecodeString(args[0])
 			if err != nil {
@@ -40,14 +39,16 @@ func txSwap(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgSwap(ctx.FromAddress, types.BytesToHash(txHash), receiver, sdk.NewInt(amount))
+			msg := types.NewMsgSwapRequest(ctx.FromAddress, types.BytesToHash(txHash), receiver, sdk.NewInt(amount))
 			if err := msg.ValidateBasic(); err != nil {
 				return err
 			}
 
-			return utils.GenerateOrBroadcastMsgs(ctx, txb, []sdk.Msg{msg})
+			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
 		},
 	}
+
+	flags.AddTxFlagsToCmd(cmd)
 
 	return cmd
 }

@@ -2,6 +2,8 @@ package types
 
 import (
 	"github.com/cosmos/cosmos-sdk/codec"
+	"github.com/cosmos/cosmos-sdk/codec/types"
+	crypto "github.com/cosmos/cosmos-sdk/crypto/codec"
 
 	"github.com/sentinel-official/hub/x/deposit"
 	"github.com/sentinel-official/hub/x/node"
@@ -12,21 +14,23 @@ import (
 )
 
 var (
-	ModuleCdc *codec.Codec
+	amino     = codec.NewLegacyAmino()
+	ModuleCdc = codec.NewAminoCodec(amino)
 )
 
 func init() {
-	ModuleCdc = codec.New()
-	codec.RegisterCrypto(ModuleCdc)
-	RegisterCodec(ModuleCdc)
-	ModuleCdc.Seal()
+	RegisterLegacyAminoCodec(amino)
+	crypto.RegisterCrypto(amino)
+	amino.Seal()
 }
 
-func RegisterCodec(cdc *codec.Codec) {
-	deposit.RegisterCodec(cdc)
-	provider.RegisterCodec(cdc)
-	node.RegisterCodec(cdc)
-	plan.RegisterCodec(cdc)
-	subscription.RegisterCodec(cdc)
-	session.RegisterCodec(cdc)
+func RegisterLegacyAminoCodec(_ *codec.LegacyAmino) {}
+
+func RegisterInterfaces(registry types.InterfaceRegistry) {
+	deposit.RegisterInterfaces(registry)
+	provider.RegisterInterfaces(registry)
+	node.RegisterInterfaces(registry)
+	plan.RegisterInterfaces(registry)
+	subscription.RegisterInterfaces(registry)
+	session.RegisterInterfaces(registry)
 }

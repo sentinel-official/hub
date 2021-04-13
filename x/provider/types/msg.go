@@ -11,22 +11,13 @@ import (
 )
 
 var (
-	_ sdk.Msg = (*MsgRegister)(nil)
-	_ sdk.Msg = (*MsgUpdate)(nil)
+	_ sdk.Msg = (*MsgRegisterRequest)(nil)
+	_ sdk.Msg = (*MsgUpdateRequest)(nil)
 )
 
-// MsgRegister is for registering a provider.
-type MsgRegister struct {
-	From        sdk.AccAddress `json:"from"`
-	Name        string         `json:"name"`
-	Identity    string         `json:"identity,omitempty"`
-	Website     string         `json:"website,omitempty"`
-	Description string         `json:"description,omitempty"`
-}
-
-func NewMsgRegister(from sdk.AccAddress, name, identity, website, description string) MsgRegister {
-	return MsgRegister{
-		From:        from,
+func NewMsgRegisterRequest(from sdk.AccAddress, name, identity, website, description string) *MsgRegisterRequest {
+	return &MsgRegisterRequest{
+		From:        from.String(),
 		Name:        name,
 		Identity:    identity,
 		Website:     website,
@@ -34,16 +25,16 @@ func NewMsgRegister(from sdk.AccAddress, name, identity, website, description st
 	}
 }
 
-func (m MsgRegister) Route() string {
+func (m MsgRegisterRequest) Route() string {
 	return RouterKey
 }
 
-func (m MsgRegister) Type() string {
+func (m MsgRegisterRequest) Type() string {
 	return fmt.Sprintf("%s:register", ModuleName)
 }
 
-func (m MsgRegister) ValidateBasic() error {
-	if m.From == nil || m.From.Empty() {
+func (m MsgRegisterRequest) ValidateBasic() error {
+	if _, err := sdk.AccAddressFromBech32(m.From); err != nil {
 		return errors.Wrapf(ErrorInvalidField, "%s", "from")
 	}
 
@@ -70,7 +61,7 @@ func (m MsgRegister) ValidateBasic() error {
 	return nil
 }
 
-func (m MsgRegister) GetSignBytes() []byte {
+func (m MsgRegisterRequest) GetSignBytes() []byte {
 	bytes, err := json.Marshal(m)
 	if err != nil {
 		panic(err)
@@ -79,22 +70,18 @@ func (m MsgRegister) GetSignBytes() []byte {
 	return bytes
 }
 
-func (m MsgRegister) GetSigners() []sdk.AccAddress {
-	return []sdk.AccAddress{m.From}
+func (m MsgRegisterRequest) GetSigners() []sdk.AccAddress {
+	from, err := sdk.AccAddressFromBech32(m.From)
+	if err != nil {
+		panic(err)
+	}
+
+	return []sdk.AccAddress{from}
 }
 
-// MsgUpdate is for updating a provider.
-type MsgUpdate struct {
-	From        hub.ProvAddress `json:"from"`
-	Name        string          `json:"name,omitempty"`
-	Identity    string          `json:"identity,omitempty"`
-	Website     string          `json:"website,omitempty"`
-	Description string          `json:"description,omitempty"`
-}
-
-func NewMsgUpdate(from hub.ProvAddress, name, identity, website, description string) MsgUpdate {
-	return MsgUpdate{
-		From:        from,
+func NewMsgUpdateRequest(from hub.ProvAddress, name, identity, website, description string) *MsgUpdateRequest {
+	return &MsgUpdateRequest{
+		From:        from.String(),
 		Name:        name,
 		Identity:    identity,
 		Website:     website,
@@ -102,16 +89,16 @@ func NewMsgUpdate(from hub.ProvAddress, name, identity, website, description str
 	}
 }
 
-func (m MsgUpdate) Route() string {
+func (m MsgUpdateRequest) Route() string {
 	return RouterKey
 }
 
-func (m MsgUpdate) Type() string {
+func (m MsgUpdateRequest) Type() string {
 	return fmt.Sprintf("%s:update", ModuleName)
 }
 
-func (m MsgUpdate) ValidateBasic() error {
-	if m.From == nil || m.From.Empty() {
+func (m MsgUpdateRequest) ValidateBasic() error {
+	if _, err := hub.ProvAddressFromBech32(m.From); err != nil {
 		return errors.Wrapf(ErrorInvalidField, "%s", "from")
 	}
 
@@ -138,7 +125,7 @@ func (m MsgUpdate) ValidateBasic() error {
 	return nil
 }
 
-func (m MsgUpdate) GetSignBytes() []byte {
+func (m MsgUpdateRequest) GetSignBytes() []byte {
 	bytes, err := json.Marshal(m)
 	if err != nil {
 		panic(err)
@@ -147,6 +134,11 @@ func (m MsgUpdate) GetSignBytes() []byte {
 	return bytes
 }
 
-func (m MsgUpdate) GetSigners() []sdk.AccAddress {
-	return []sdk.AccAddress{m.From.Bytes()}
+func (m MsgUpdateRequest) GetSigners() []sdk.AccAddress {
+	from, err := hub.ProvAddressFromBech32(m.From)
+	if err != nil {
+		panic(err)
+	}
+
+	return []sdk.AccAddress{from.Bytes()}
 }

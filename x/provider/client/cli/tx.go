@@ -1,26 +1,23 @@
 package cli
 
 import (
-	"bufio"
-
-	"github.com/cosmos/cosmos-sdk/client/context"
-	"github.com/cosmos/cosmos-sdk/codec"
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/x/auth"
-	"github.com/cosmos/cosmos-sdk/x/auth/client/utils"
+	"github.com/cosmos/cosmos-sdk/client"
+	"github.com/cosmos/cosmos-sdk/client/flags"
+	"github.com/cosmos/cosmos-sdk/client/tx"
 	"github.com/spf13/cobra"
 
 	"github.com/sentinel-official/hub/x/provider/types"
 )
 
-func txRegister(cdc *codec.Codec) *cobra.Command {
+func txRegister() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "register",
 		Short: "Register a provider",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			buffer := bufio.NewReader(cmd.InOrStdin())
-			txb := auth.NewTxBuilderFromCLI(buffer).WithTxEncoder(utils.GetTxEncoder(cdc))
-			ctx := context.NewCLIContextWithInput(buffer).WithCodec(cdc)
+			ctx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
 
 			name, err := cmd.Flags().GetString(flagName)
 			if err != nil {
@@ -42,15 +39,16 @@ func txRegister(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgRegister(ctx.FromAddress, name, identity, website, description)
+			msg := types.NewMsgRegisterRequest(ctx.FromAddress, name, identity, website, description)
 			if err := msg.ValidateBasic(); err != nil {
 				return err
 			}
 
-			return utils.GenerateOrBroadcastMsgs(ctx, txb, []sdk.Msg{msg})
+			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
 		},
 	}
 
+	flags.AddTxFlagsToCmd(cmd)
 	cmd.Flags().String(flagName, "", "provider name")
 	cmd.Flags().String(flagIdentity, "", "provider identity")
 	cmd.Flags().String(flagWebsite, "", "provider website")
@@ -61,14 +59,15 @@ func txRegister(cdc *codec.Codec) *cobra.Command {
 	return cmd
 }
 
-func txUpdate(cdc *codec.Codec) *cobra.Command {
+func txUpdate() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "update",
 		Short: "Update a provider",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			buffer := bufio.NewReader(cmd.InOrStdin())
-			txb := auth.NewTxBuilderFromCLI(buffer).WithTxEncoder(utils.GetTxEncoder(cdc))
-			ctx := context.NewCLIContextWithInput(buffer).WithCodec(cdc)
+			ctx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
 
 			name, err := cmd.Flags().GetString(flagName)
 			if err != nil {
@@ -90,15 +89,16 @@ func txUpdate(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgUpdate(ctx.FromAddress.Bytes(), name, identity, website, description)
+			msg := types.NewMsgUpdateRequest(ctx.FromAddress.Bytes(), name, identity, website, description)
 			if err := msg.ValidateBasic(); err != nil {
 				return err
 			}
 
-			return utils.GenerateOrBroadcastMsgs(ctx, txb, []sdk.Msg{msg})
+			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
 		},
 	}
 
+	flags.AddTxFlagsToCmd(cmd)
 	cmd.Flags().String(flagName, "", "provider name")
 	cmd.Flags().String(flagIdentity, "", "provider identity")
 	cmd.Flags().String(flagWebsite, "", "provider website")
