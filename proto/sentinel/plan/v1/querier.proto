@@ -12,65 +12,65 @@ import "sentinel/plan/v1/plan.proto";
 import "sentinel/types/v1/status.proto";
 
 message QueryPlansRequest {
-  option (gogoproto.equal) = false;
+  option (gogoproto.equal)           = false;
   option (gogoproto.goproto_getters) = false;
 
-  sentinel.types.v1.Status status = 1;
+  sentinel.types.v1.Status status                  = 1;
   cosmos.base.query.v1beta1.PageRequest pagination = 2;
 }
 
 message QueryPlansForProviderRequest {
-  option (gogoproto.equal) = false;
+  option (gogoproto.equal)           = false;
   option (gogoproto.goproto_getters) = false;
 
-  string address = 1;
-  sentinel.types.v1.Status status = 2;
+  string address                                   = 1;
+  sentinel.types.v1.Status status                  = 2;
   cosmos.base.query.v1beta1.PageRequest pagination = 3;
 }
 
 message QueryPlanRequest {
-  option (gogoproto.equal) = false;
+  option (gogoproto.equal)           = false;
   option (gogoproto.goproto_getters) = false;
 
   uint64 id = 1;
 }
 
 message QueryNodesForPlanRequest {
-  option (gogoproto.equal) = false;
+  option (gogoproto.equal)           = false;
   option (gogoproto.goproto_getters) = false;
 
-  uint64 id = 1;
+  uint64 id                                        = 1;
   cosmos.base.query.v1beta1.PageRequest pagination = 2;
 }
 
 message QueryPlansResponse {
-  option (gogoproto.equal) = false;
+  option (gogoproto.equal)           = false;
   option (gogoproto.goproto_getters) = false;
 
-  repeated Plan plans = 1 [(gogoproto.nullable) = false];
+  repeated Plan plans = 1 [ (gogoproto.nullable) = false ];
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
 message QueryPlansForProviderResponse {
-  option (gogoproto.equal) = false;
+  option (gogoproto.equal)           = false;
   option (gogoproto.goproto_getters) = false;
 
-  repeated Plan plans = 1 [(gogoproto.nullable) = false];
+  repeated Plan plans = 1 [ (gogoproto.nullable) = false ];
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
 message QueryPlanResponse {
-  option (gogoproto.equal) = false;
+  option (gogoproto.equal)           = false;
   option (gogoproto.goproto_getters) = false;
 
-  Plan plan = 1 [(gogoproto.nullable) = false];
+  Plan plan = 1 [ (gogoproto.nullable) = false ];
 }
 
 message QueryNodesForPlanResponse {
-  option (gogoproto.equal) = false;
+  option (gogoproto.equal)           = false;
   option (gogoproto.goproto_getters) = false;
 
-  repeated sentinel.node.v1.Node nodes = 1 [(gogoproto.nullable) = false];
+  repeated sentinel.node.v1.Node nodes = 1 [ (gogoproto.nullable) = false ];
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 

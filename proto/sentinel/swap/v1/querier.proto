@@ -10,32 +10,32 @@ import "google/api/annotations.proto";
 import "sentinel/swap/v1/swap.proto";
 
 message QuerySwapsRequest {
-  option (gogoproto.equal) = false;
+  option (gogoproto.equal)           = false;
   option (gogoproto.goproto_getters) = false;
 
   cosmos.base.query.v1beta1.PageRequest pagination = 1;
 }
 
 message QuerySwapRequest {
-  option (gogoproto.equal) = false;
+  option (gogoproto.equal)           = false;
   option (gogoproto.goproto_getters) = false;
 
   bytes tx_hash = 1;
 }
 
 message QuerySwapsResponse {
-  option (gogoproto.equal) = false;
+  option (gogoproto.equal)           = false;
   option (gogoproto.goproto_getters) = false;
 
-  repeated Swap swaps = 1 [(gogoproto.nullable) = false];
+  repeated Swap swaps = 1 [ (gogoproto.nullable) = false ];
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
 message QuerySwapResponse {
-  option (gogoproto.equal) = false;
+  option (gogoproto.equal)           = false;
   option (gogoproto.goproto_getters) = false;
 
-  Swap swap = 1 [(gogoproto.nullable) = false];
+  Swap swap = 1 [ (gogoproto.nullable) = false ];
 }
 
 service QueryService {

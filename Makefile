@@ -3,33 +3,22 @@ include contrib/tools/Makefile
 PACKAGES := $(shell go list ./...)
 VERSION := $(shell echo $(shell git describe --tags) | sed 's/^v//')
 COMMIT := $(shell git log -1 --format='%H')
-
-BUILD_TAGS := netgo,ledger
-BUILD_TAGS := $(strip ${BUILD_TAGS})
+TM_VERSION := $(shell go list -m github.com/tendermint/tendermint | sed 's:.* ::')
 
 LD_FLAGS := -s -w \
-    -X github.com/cosmos/cosmos-sdk/version.Name=sentinelhub \
-    -X github.com/cosmos/cosmos-sdk/version.ServerName=sentinelhubd \
-    -X github.com/cosmos/cosmos-sdk/version.ClientName=sentinelhubcli \
+    -X github.com/cosmos/cosmos-sdk/version.Name=sentinel \
+    -X github.com/cosmos/cosmos-sdk/version.AppName=sentinelhub \
     -X github.com/cosmos/cosmos-sdk/version.Version=${VERSION} \
     -X github.com/cosmos/cosmos-sdk/version.Commit=${COMMIT} \
-    -X github.com/cosmos/cosmos-sdk/version.BuildTags=${BUILD_TAGS}
+    -X github.com/cosmos/cosmos-sdk/version.BuildTags=${BUILD_TAGS} \
+    -X github.com/tendermint/tendermint/version.TMCoreSemVer=$(TM_VERSION)
+BUILD_TAGS := $(strip netgo,ledger)
 BUILD_FLAGS := -tags "${BUILD_TAGS}" -ldflags "${LD_FLAGS}"
 
 all: install test benchmark
 
-build: mod_verify
-ifeq (${OS},Windows_NT)
-	go build -mod=readonly ${BUILD_FLAGS} -o bin/sentinelhubd.exe ./cmd/sentinelhubd
-	go build -mod=readonly ${BUILD_FLAGS} -o bin/sentinelhubcli.exe ./cmd/sentinelhubcli
-else
-	go build -mod=readonly ${BUILD_FLAGS} -o bin/sentinelhubd ./cmd/sentinelhubd
-	go build -mod=readonly ${BUILD_FLAGS} -o bin/sentinelhubcli ./cmd/sentinelhubcli
-endif
-
-install: mod_verify
-	go install -mod=readonly ${BUILD_FLAGS} ./cmd/sentinelhubd
-	go install -mod=readonly ${BUILD_FLAGS} ./cmd/sentinelhubcli
+install: mod_vendor
+	go install -mod=readonly ${BUILD_FLAGS} ./cmd/sentinelhub
 
 test:
 	@go test -mod=readonly -v -cover ${PACKAGES}
@@ -37,23 +26,8 @@ test:
 benchmark:
 	@go test -mod=readonly -v -bench ${PACKAGES}
 
-simulate_short:
-	@go test -mod=readonly -v -timeout=1h -run TestFullAppSimulation \
-		-Enabled=true -Seed=4 -NumBlocks=50 -BlockSize=50 -Commit=true
+mod_vendor:
+	@go mod vendor
+	@modvendor -copy="**/*.proto" -include=github.com/cosmos/cosmos-sdk/proto,github.com/cosmos/cosmos-sdk/third_party/proto
 
-simulate_long:
-	@go test -mod=readonly -v -timeout=1h -run TestFullAppSimulation \
-		-Enabled=true -Seed=4 -NumBlocks=2500 -BlockSize=50 -Commit=true
-
-simulate_multi_short:
-	@runsim -Jobs=4 -SimAppPkg=. 5 1 TestFullAppSimulation
-
-simulate_multi_long:
-	@runsim -Jobs=4 -SimAppPkg=. 250 1 TestFullAppSimulation
-
-mod_verify:
-	@echo "Ensure dependencies have not been modified"
-	@go mod verify
-
-.PHONY: all build install test benchmark \
-simulate_short simulate_multi mod_verify
+.PHONY: all install test benchmark mod_vendor

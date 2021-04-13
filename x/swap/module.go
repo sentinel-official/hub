@@ -16,6 +16,7 @@ import (
 	"github.com/spf13/cobra"
 	abci "github.com/tendermint/tendermint/abci/types"
 
+	"github.com/sentinel-official/hub/x/swap/client/cli"
 	"github.com/sentinel-official/hub/x/swap/keeper"
 	"github.com/sentinel-official/hub/x/swap/types"
 )
@@ -53,20 +54,18 @@ func (a AppModuleBasic) ValidateGenesis(cdc codec.JSONMarshaler, _ client.TxEnco
 	return state.Validate()
 }
 
-func (a AppModuleBasic) RegisterRESTRoutes(ctx client.Context, router *mux.Router) {
-	panic("implement me")
-}
+func (a AppModuleBasic) RegisterRESTRoutes(ctx client.Context, router *mux.Router) {}
 
 func (a AppModuleBasic) RegisterGRPCGatewayRoutes(ctx client.Context, mux *runtime.ServeMux) {
-	types.RegisterQueryServiceHandlerClient(context.Background(), mux, types.NewQueryServiceClient(ctx))
+	_ = types.RegisterQueryServiceHandlerClient(context.Background(), mux, types.NewQueryServiceClient(ctx))
 }
 
 func (a AppModuleBasic) GetTxCmd() *cobra.Command {
-	panic("implement me")
+	return cli.GetTxCmd()
 }
 
 func (a AppModuleBasic) GetQueryCmd() *cobra.Command {
-	panic("implement me")
+	return cli.GetQueryCmd()
 }
 
 type AppModule struct {
@@ -106,28 +105,23 @@ func (a AppModule) LegacyQuerierHandler(_ *codec.LegacyAmino) sdk.Querier { retu
 
 func (a AppModule) RegisterServices(configurator module.Configurator) {
 	types.RegisterMsgServiceServer(configurator.MsgServer(), keeper.NewMsgServiceServer(a.k))
+	types.RegisterQueryServiceServer(configurator.QueryServer(), keeper.NewQueryServiceServer(a.k))
 }
 
 func (a AppModule) BeginBlock(_ sdk.Context, _ abci.RequestBeginBlock) {}
 
 func (a AppModule) EndBlock(_ sdk.Context, _ abci.RequestEndBlock) []abci.ValidatorUpdate { return nil }
 
-func (a AppModule) GenerateGenesisState(input *module.SimulationState) {
-	panic("implement me")
-}
+func (a AppModule) GenerateGenesisState(input *module.SimulationState) {}
 
 func (a AppModule) ProposalContents(simState module.SimulationState) []simulation.WeightedProposalContent {
-	panic("implement me")
+	return nil
 }
 
-func (a AppModule) RandomizedParams(r *rand.Rand) []simulation.ParamChange {
-	panic("implement me")
-}
+func (a AppModule) RandomizedParams(r *rand.Rand) []simulation.ParamChange { return nil }
 
-func (a AppModule) RegisterStoreDecoder(registry sdk.StoreDecoderRegistry) {
-	panic("implement me")
-}
+func (a AppModule) RegisterStoreDecoder(registry sdk.StoreDecoderRegistry) {}
 
 func (a AppModule) WeightedOperations(simState module.SimulationState) []simulation.WeightedOperation {
-	panic("implement me")
+	return nil
 }

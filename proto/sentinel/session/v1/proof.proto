@@ -10,13 +10,13 @@ import "google/protobuf/duration.proto";
 import "sentinel/types/v1/bandwidth.proto";
 
 message Proof {
-  option (gogoproto.equal) = false;
+  option (gogoproto.equal)           = false;
   option (gogoproto.goproto_getters) = false;
 
-  uint64 channel = 1;
-  uint64 subscription = 2;
-  string node = 3;
+  uint64 channel                    = 1;
+  uint64 subscription               = 2;
+  string node                       = 3;
   google.protobuf.Duration duration = 4
-  [(gogoproto.stdduration) = true, (gogoproto.nullable) = false];
-  sentinel.types.v1.Bandwidth bandwidth = 5 [(gogoproto.nullable) = false];
+      [ (gogoproto.stdduration) = true, (gogoproto.nullable) = false ];
+  sentinel.types.v1.Bandwidth bandwidth = 5 [ (gogoproto.nullable) = false ];
 }

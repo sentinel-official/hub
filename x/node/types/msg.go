@@ -16,12 +16,12 @@ var (
 	_ sdk.Msg = (*MsgSetStatusRequest)(nil)
 )
 
-func NewMsgRegisterRequest(from sdk.AccAddress, provider hub.ProvAddress, price sdk.Coins, remoteUrl string) *MsgRegisterRequest {
+func NewMsgRegisterRequest(from sdk.AccAddress, provider hub.ProvAddress, price sdk.Coins, remoteURL string) *MsgRegisterRequest {
 	return &MsgRegisterRequest{
 		From:      from.String(),
 		Provider:  provider.String(),
 		Price:     price,
-		RemoteUrl: remoteUrl,
+		RemoteURL: remoteURL,
 	}
 }
 
@@ -56,8 +56,8 @@ func (m MsgRegisterRequest) ValidateBasic() error {
 		return errors.Wrapf(ErrorInvalidField, "%s", "price")
 	}
 
-	// RemoteUrl length should be between 1 and 64
-	if len(m.RemoteUrl) == 0 || len(m.RemoteUrl) > 64 {
+	// RemoteURL length should be between 1 and 64
+	if len(m.RemoteURL) == 0 || len(m.RemoteURL) > 64 {
 		return errors.Wrapf(ErrorInvalidField, "%s", "remote_url")
 	}
 
@@ -82,12 +82,12 @@ func (m MsgRegisterRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{from}
 }
 
-func NewMsgUpdateRequest(from hub.NodeAddress, provider hub.ProvAddress, price sdk.Coins, remoteUrl string) *MsgUpdateRequest {
+func NewMsgUpdateRequest(from hub.NodeAddress, provider hub.ProvAddress, price sdk.Coins, remoteURL string) *MsgUpdateRequest {
 	return &MsgUpdateRequest{
 		From:      from.String(),
 		Provider:  provider.String(),
 		Price:     price,
-		RemoteUrl: remoteUrl,
+		RemoteURL: remoteURL,
 	}
 }
 
@@ -120,8 +120,8 @@ func (m MsgUpdateRequest) ValidateBasic() error {
 		return errors.Wrapf(ErrorInvalidField, "%s", "price")
 	}
 
-	// RemoteUrl length should be between 0 and 64
-	if len(m.RemoteUrl) > 64 {
+	// RemoteURL length should be between 0 and 64
+	if len(m.RemoteURL) > 64 {
 		return errors.Wrapf(ErrorInvalidField, "%s", "remote_url")
 	}
 

@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/cosmos/cosmos-sdk/client"
+	"github.com/cosmos/cosmos-sdk/client/flags"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/spf13/cobra"
 
@@ -41,6 +42,8 @@ func querySession() *cobra.Command {
 			return ctx.PrintProto(res)
 		},
 	}
+
+	flags.AddQueryFlagsToCmd(cmd)
 
 	return cmd
 }
@@ -138,6 +141,8 @@ func querySessions() *cobra.Command {
 		},
 	}
 
+	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, "sessions")
 	cmd.Flags().String(flagAddress, "", "account address")
 	cmd.Flags().Uint64(flagSubscription, 0, "subscription ID")
 	cmd.Flags().String(flagNodeAddress, "", "node address")

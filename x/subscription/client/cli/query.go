@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/cosmos/cosmos-sdk/client"
+	"github.com/cosmos/cosmos-sdk/client/flags"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/spf13/cobra"
 
@@ -41,6 +42,8 @@ func querySubscription() *cobra.Command {
 			return ctx.PrintProto(res)
 		},
 	}
+
+	flags.AddQueryFlagsToCmd(cmd)
 
 	return cmd
 }
@@ -130,6 +133,8 @@ func querySubscriptions() *cobra.Command {
 		},
 	}
 
+	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, "subscriptions")
 	cmd.Flags().String(flagAddress, "", "account address")
 	cmd.Flags().Uint64(flagPlan, 0, "plan ID")
 	cmd.Flags().String(flagNodeAddress, "", "node address")
@@ -173,6 +178,8 @@ func queryQuota() *cobra.Command {
 		},
 	}
 
+	flags.AddQueryFlagsToCmd(cmd)
+
 	return cmd
 }
 
@@ -209,6 +216,9 @@ func queryQuotas() *cobra.Command {
 			return ctx.PrintProto(res)
 		},
 	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, "quotas")
 
 	return cmd
 }

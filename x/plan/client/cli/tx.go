@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/cosmos/cosmos-sdk/client"
+	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/spf13/cobra"
@@ -60,6 +61,7 @@ func txAdd() *cobra.Command {
 		},
 	}
 
+	flags.AddTxFlagsToCmd(cmd)
 	cmd.Flags().String(flagPrice, "", "plan price")
 	cmd.Flags().String(flagValidity, "", "plan validity")
 	cmd.Flags().Int64(flagBytes, 0, "plan bytes (upload + download)")
@@ -95,6 +97,8 @@ func txSetStatus() *cobra.Command {
 			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
 		},
 	}
+
+	flags.AddTxFlagsToCmd(cmd)
 
 	return cmd
 }
@@ -161,6 +165,8 @@ func txRemoveNode() *cobra.Command {
 			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
 		},
 	}
+
+	flags.AddTxFlagsToCmd(cmd)
 
 	return cmd
 }

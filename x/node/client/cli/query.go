@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/cosmos/cosmos-sdk/client"
+	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/spf13/cobra"
 
 	hub "github.com/sentinel-official/hub/types"
@@ -11,7 +12,7 @@ import (
 )
 
 func queryNode() *cobra.Command {
-	return &cobra.Command{
+	cmd := &cobra.Command{
 		Use:   "node",
 		Short: "Query a node",
 		Args:  cobra.ExactArgs(1),
@@ -39,6 +40,10 @@ func queryNode() *cobra.Command {
 			return ctx.PrintProto(res)
 		},
 	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
 }
 
 func queryNodes() *cobra.Command {
@@ -103,6 +108,8 @@ func queryNodes() *cobra.Command {
 		},
 	}
 
+	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, "nodes")
 	cmd.Flags().String(flagProvider, "", "provider address")
 	cmd.Flags().Uint64(flagPlan, 0, "subscription plan ID")
 	cmd.Flags().String(flagStatus, "", "status")

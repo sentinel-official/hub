@@ -2,6 +2,7 @@ package cli
 
 import (
 	"github.com/cosmos/cosmos-sdk/client"
+	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/spf13/cobra"
@@ -60,6 +61,7 @@ func txRegister() *cobra.Command {
 		},
 	}
 
+	flags.AddTxFlagsToCmd(cmd)
 	cmd.Flags().String(flagProvider, "", "node provider address")
 	cmd.Flags().String(flagPrice, "", "node price per Gigabyte")
 	cmd.Flags().String(flagRemoteURL, "", "node remote URL")
@@ -119,6 +121,7 @@ func txUpdate() *cobra.Command {
 		},
 	}
 
+	flags.AddTxFlagsToCmd(cmd)
 	cmd.Flags().String(flagProvider, "", "node provider address")
 	cmd.Flags().String(flagPrice, "", "node price per Gigabyte")
 	cmd.Flags().String(flagRemoteURL, "", "node remote URL")
@@ -145,6 +148,8 @@ func txSetStatus() *cobra.Command {
 			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
 		},
 	}
+
+	flags.AddTxFlagsToCmd(cmd)
 
 	return cmd
 }

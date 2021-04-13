@@ -54,7 +54,7 @@ func (k server) MsgRegister(c context.Context, msg *types.MsgRegisterRequest) (*
 			Address:   nodeAddress.String(),
 			Provider:  msg.Provider,
 			Price:     msg.Price,
-			RemoteUrl: msg.RemoteUrl,
+			RemoteURL: msg.RemoteURL,
 			Status:    hub.StatusInactive,
 			StatusAt:  ctx.BlockTime(),
 		}
@@ -140,8 +140,8 @@ func (k server) MsgUpdate(c context.Context, msg *types.MsgUpdateRequest) (*type
 		node.Provider = ""
 		node.Price = msg.Price
 	}
-	if msg.RemoteUrl != "" {
-		node.RemoteUrl = msg.RemoteUrl
+	if msg.RemoteURL != "" {
+		node.RemoteURL = msg.RemoteURL
 	}
 
 	k.SetNode(ctx, node)

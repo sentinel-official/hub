@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/cosmos/cosmos-sdk/client"
+	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/spf13/cobra"
 
 	hub "github.com/sentinel-official/hub/types"
@@ -12,7 +13,7 @@ import (
 )
 
 func queryPlan() *cobra.Command {
-	return &cobra.Command{
+	cmd := &cobra.Command{
 		Use:   "plan",
 		Short: "Query a plan",
 		Args:  cobra.ExactArgs(1),
@@ -40,6 +41,10 @@ func queryPlan() *cobra.Command {
 			return ctx.PrintProto(res)
 		},
 	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
 }
 
 func queryPlans() *cobra.Command {
@@ -85,17 +90,19 @@ func queryPlans() *cobra.Command {
 				}
 
 				return ctx.PrintProto(res)
-			} else {
-				res, err := qc.QueryPlans(context.Background(), types.NewQueryPlansRequest(status, pagination))
-				if err != nil {
-					return err
-				}
-
-				return ctx.PrintProto(res)
 			}
+
+			res, err := qc.QueryPlans(context.Background(), types.NewQueryPlansRequest(status, pagination))
+			if err != nil {
+				return err
+			}
+
+			return ctx.PrintProto(res)
 		},
 	}
 
+	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, "providers")
 	cmd.Flags().String(flagProvider, "", "provider address")
 	cmd.Flags().String(flagStatus, "", "status")
 

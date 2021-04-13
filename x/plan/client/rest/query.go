@@ -61,15 +61,14 @@ func queryPlans(ctx client.Context) http.HandlerFunc {
 
 			rest.PostProcessResponse(w, ctx, res)
 			return
-		} else {
-			res, err := qc.QueryPlans(context.Background(), types.NewQueryPlansRequest(status, nil))
-			if err != nil {
-				rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
-				return
-			}
+		}
 
-			rest.PostProcessResponse(w, ctx, res)
+		res, err := qc.QueryPlans(context.Background(), types.NewQueryPlansRequest(status, nil))
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
 		}
+
+		rest.PostProcessResponse(w, ctx, res)
 	}
 }

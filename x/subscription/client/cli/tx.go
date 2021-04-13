@@ -4,6 +4,7 @@ import (
 	"strconv"
 
 	"github.com/cosmos/cosmos-sdk/client"
+	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/spf13/cobra"
@@ -13,7 +14,7 @@ import (
 )
 
 func txSubscribeToPlan() *cobra.Command {
-	return &cobra.Command{
+	cmd := &cobra.Command{
 		Use:   "subscribe-plan [plan] [denom]",
 		Short: "Subscribe to a plan",
 		Args:  cobra.ExactArgs(2),
@@ -36,10 +37,14 @@ func txSubscribeToPlan() *cobra.Command {
 			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
 		},
 	}
+
+	flags.AddTxFlagsToCmd(cmd)
+
+	return cmd
 }
 
 func txSubscribeToNode() *cobra.Command {
-	return &cobra.Command{
+	cmd := &cobra.Command{
 		Use:   "subscribe-node [node] [deposit]",
 		Short: "Subscribe to a node",
 		Args:  cobra.ExactArgs(2),
@@ -67,10 +72,14 @@ func txSubscribeToNode() *cobra.Command {
 			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
 		},
 	}
+
+	flags.AddTxFlagsToCmd(cmd)
+
+	return cmd
 }
 
 func txAddQuota() *cobra.Command {
-	return &cobra.Command{
+	cmd := &cobra.Command{
 		Use:   "quota-add [subscription] [address] [bytes]",
 		Short: "Add a quota of a subscription",
 		Args:  cobra.ExactArgs(3),
@@ -103,10 +112,14 @@ func txAddQuota() *cobra.Command {
 			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
 		},
 	}
+
+	flags.AddTxFlagsToCmd(cmd)
+
+	return cmd
 }
 
 func txUpdateQuota() *cobra.Command {
-	return &cobra.Command{
+	cmd := &cobra.Command{
 		Use:   "quota-update [subscription] [address] [bytes]",
 		Short: "Update a quota of a subscription",
 		Args:  cobra.ExactArgs(3),
@@ -139,10 +152,14 @@ func txUpdateQuota() *cobra.Command {
 			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
 		},
 	}
+
+	flags.AddTxFlagsToCmd(cmd)
+
+	return cmd
 }
 
 func txCancel() *cobra.Command {
-	return &cobra.Command{
+	cmd := &cobra.Command{
 		Use:   "cancel [subscription]",
 		Short: "Cancel a subscription",
 		Args:  cobra.ExactArgs(1),
@@ -165,4 +182,8 @@ func txCancel() *cobra.Command {
 			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
 		},
 	}
+
+	flags.AddTxFlagsToCmd(cmd)
+
+	return cmd
 }

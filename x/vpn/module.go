@@ -22,6 +22,7 @@ import (
 	"github.com/sentinel-official/hub/x/provider"
 	"github.com/sentinel-official/hub/x/session"
 	"github.com/sentinel-official/hub/x/subscription"
+	"github.com/sentinel-official/hub/x/vpn/client/cli"
 	"github.com/sentinel-official/hub/x/vpn/expected"
 	"github.com/sentinel-official/hub/x/vpn/keeper"
 	"github.com/sentinel-official/hub/x/vpn/types"
@@ -60,25 +61,23 @@ func (a AppModuleBasic) ValidateGenesis(cdc codec.JSONMarshaler, _ client.TxEnco
 	return state.Validate()
 }
 
-func (a AppModuleBasic) RegisterRESTRoutes(ctx client.Context, router *mux.Router) {
-	panic("implement me")
-}
+func (a AppModuleBasic) RegisterRESTRoutes(ctx client.Context, router *mux.Router) {}
 
 func (a AppModuleBasic) RegisterGRPCGatewayRoutes(ctx client.Context, mux *runtime.ServeMux) {
-	deposit.RegisterQueryServiceHandlerClient(context.Background(), mux, deposit.NewQueryServiceClient(ctx))
-	provider.RegisterQueryServiceHandlerClient(context.Background(), mux, provider.NewQueryServiceClient(ctx))
-	node.RegisterQueryServiceHandlerClient(context.Background(), mux, node.NewQueryServiceClient(ctx))
-	plan.RegisterQueryServiceHandlerClient(context.Background(), mux, plan.NewQueryServiceClient(ctx))
-	subscription.RegisterQueryServiceHandlerClient(context.Background(), mux, subscription.NewQueryServiceClient(ctx))
-	session.RegisterQueryServiceHandlerClient(context.Background(), mux, session.NewQueryServiceClient(ctx))
+	_ = deposit.RegisterQueryServiceHandlerClient(context.Background(), mux, deposit.NewQueryServiceClient(ctx))
+	_ = provider.RegisterQueryServiceHandlerClient(context.Background(), mux, provider.NewQueryServiceClient(ctx))
+	_ = node.RegisterQueryServiceHandlerClient(context.Background(), mux, node.NewQueryServiceClient(ctx))
+	_ = plan.RegisterQueryServiceHandlerClient(context.Background(), mux, plan.NewQueryServiceClient(ctx))
+	_ = subscription.RegisterQueryServiceHandlerClient(context.Background(), mux, subscription.NewQueryServiceClient(ctx))
+	_ = session.RegisterQueryServiceHandlerClient(context.Background(), mux, session.NewQueryServiceClient(ctx))
 }
 
 func (a AppModuleBasic) GetTxCmd() *cobra.Command {
-	panic("implement me")
+	return cli.GetTxCmd()
 }
 
 func (a AppModuleBasic) GetQueryCmd() *cobra.Command {
-	panic("implement me")
+	return cli.GetQueryCmd()
 }
 
 type AppModule struct {
@@ -124,6 +123,13 @@ func (a AppModule) RegisterServices(configurator module.Configurator) {
 	plan.RegisterMsgServiceServer(configurator.MsgServer(), plan.NewMsgServiceServer(a.k.Plan))
 	subscription.RegisterMsgServiceServer(configurator.MsgServer(), subscription.NewMsgServiceServer(a.k.Subscription))
 	session.RegisterMsgServiceServer(configurator.MsgServer(), session.NewMsgServiceServer(a.k.Session))
+
+	deposit.RegisterQueryServiceServer(configurator.QueryServer(), deposit.NewQueryServiceServer(a.k.Deposit))
+	provider.RegisterQueryServiceServer(configurator.QueryServer(), provider.NewQueryServiceServer(a.k.Provider))
+	node.RegisterQueryServiceServer(configurator.QueryServer(), node.NewQueryServiceServer(a.k.Node))
+	plan.RegisterQueryServiceServer(configurator.QueryServer(), plan.NewQueryServiceServer(a.k.Plan))
+	subscription.RegisterQueryServiceServer(configurator.QueryServer(), subscription.NewQueryServiceServer(a.k.Subscription))
+	session.RegisterQueryServiceServer(configurator.QueryServer(), session.NewQueryServiceServer(a.k.Session))
 }
 
 func (a AppModule) BeginBlock(_ sdk.Context, _ abci.RequestBeginBlock) {}
@@ -132,22 +138,18 @@ func (a AppModule) EndBlock(ctx sdk.Context, _ abci.RequestEndBlock) []abci.Vali
 	return EndBlock(ctx, a.k)
 }
 
-func (a AppModule) GenerateGenesisState(input *module.SimulationState) {
-	panic("implement me")
-}
+func (a AppModule) GenerateGenesisState(input *module.SimulationState) {}
 
 func (a AppModule) ProposalContents(simState module.SimulationState) []simulation.WeightedProposalContent {
-	panic("implement me")
+	return nil
 }
 
 func (a AppModule) RandomizedParams(r *rand.Rand) []simulation.ParamChange {
-	panic("implement me")
+	return nil
 }
 
-func (a AppModule) RegisterStoreDecoder(registry sdk.StoreDecoderRegistry) {
-	panic("implement me")
-}
+func (a AppModule) RegisterStoreDecoder(registry sdk.StoreDecoderRegistry) {}
 
 func (a AppModule) WeightedOperations(simState module.SimulationState) []simulation.WeightedOperation {
-	panic("implement me")
+	return nil
 }

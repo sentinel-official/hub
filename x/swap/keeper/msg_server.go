@@ -10,18 +10,18 @@ import (
 )
 
 var (
-	_ types.MsgServiceServer = server{}
+	_ types.MsgServiceServer = msgServer{}
 )
 
-type server struct {
+type msgServer struct {
 	Keeper
 }
 
 func NewMsgServiceServer(keeper Keeper) types.MsgServiceServer {
-	return &server{Keeper: keeper}
+	return &msgServer{Keeper: keeper}
 }
 
-func (k server) MsgSwap(c context.Context, msg *types.MsgSwapRequest) (*types.MsgSwapResponse, error) {
+func (k msgServer) MsgSwap(c context.Context, msg *types.MsgSwapRequest) (*types.MsgSwapResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
 	if !k.SwapEnabled(ctx) {

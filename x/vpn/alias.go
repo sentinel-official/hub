@@ -40,5 +40,4 @@ var (
 type (
 	GenesisState = types.GenesisState
 	Keeper       = keeper.Keeper
-	Querier      = keeper.Querier
 )

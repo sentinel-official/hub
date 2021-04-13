@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/cosmos/cosmos-sdk/client"
+	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/spf13/cobra"
@@ -15,7 +16,7 @@ import (
 )
 
 func txUpsert() *cobra.Command {
-	return &cobra.Command{
+	cmd := &cobra.Command{
 		Use:   "upsert [subscription] [address] [duration] [upload] [download] (channel) (signature)",
 		Short: "Add or update a session",
 		Args:  cobra.ExactArgs(5),
@@ -81,4 +82,8 @@ func txUpsert() *cobra.Command {
 			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
 		},
 	}
+
+	flags.AddTxFlagsToCmd(cmd)
+
+	return cmd
 }

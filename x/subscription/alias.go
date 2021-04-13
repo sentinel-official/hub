@@ -73,6 +73,7 @@ var (
 	RegisterQueryServiceHandlerClient          = types.RegisterQueryServiceHandlerClient
 	NewKeeper                                  = keeper.NewKeeper
 	NewMsgServiceServer                        = keeper.NewMsgServiceServer
+	NewQueryServiceServer                      = keeper.NewQueryServiceServer
 
 	// variable aliases
 	ModuleCdc                               = types.ModuleCdc
@@ -172,5 +173,4 @@ type (
 	Subscriptions                        = types.Subscriptions
 	Subscription                         = types.Subscription
 	Keeper                               = keeper.Keeper
-	Querier                              = keeper.Querier
 )

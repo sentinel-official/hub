@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/cosmos/cosmos-sdk/client"
+	"github.com/cosmos/cosmos-sdk/client/flags"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/spf13/cobra"
 
@@ -11,7 +12,7 @@ import (
 )
 
 func queryDeposit() *cobra.Command {
-	return &cobra.Command{
+	cmd := &cobra.Command{
 		Use:   "deposit",
 		Short: "Query a deposit",
 		Args:  cobra.ExactArgs(1),
@@ -39,6 +40,9 @@ func queryDeposit() *cobra.Command {
 			return ctx.PrintProto(res)
 		},
 	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+	return cmd
 }
 
 func queryDeposits() *cobra.Command {
@@ -69,6 +73,9 @@ func queryDeposits() *cobra.Command {
 			return ctx.PrintProto(res)
 		},
 	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, "deposits")
 
 	return cmd
 }

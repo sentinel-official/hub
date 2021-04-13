@@ -8,12 +8,12 @@ import "gogoproto/gogo.proto";
 import "sentinel/session/v1/proof.proto";
 
 message MsgUpsertRequest {
-  option (gogoproto.equal) = false;
-  option (gogoproto.goproto_getters) = false;
+  option (gogoproto.equal)            = false;
+  option (gogoproto.goproto_getters)  = false;
   option (gogoproto.goproto_stringer) = true;
 
-  Proof proof = 1 [(gogoproto.nullable) = false];
-  string address = 2;
+  Proof proof     = 1 [ (gogoproto.nullable) = false ];
+  string address  = 2;
   bytes signature = 3;
 }
 

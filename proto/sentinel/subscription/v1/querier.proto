@@ -12,111 +12,111 @@ import "sentinel/types/v1/status.proto";
 import "sentinel/subscription/v1/subscription.proto";
 
 message QuerySubscriptionsRequest {
-  option (gogoproto.equal) = false;
+  option (gogoproto.equal)           = false;
   option (gogoproto.goproto_getters) = false;
 
   cosmos.base.query.v1beta1.PageRequest pagination = 1;
 }
 
 message QuerySubscriptionsForNodeRequest {
-  option (gogoproto.equal) = false;
+  option (gogoproto.equal)           = false;
   option (gogoproto.goproto_getters) = false;
 
-  string address = 1;
+  string address                                   = 1;
   cosmos.base.query.v1beta1.PageRequest pagination = 2;
 }
 
 message QuerySubscriptionsForPlanRequest {
-  option (gogoproto.equal) = false;
+  option (gogoproto.equal)           = false;
   option (gogoproto.goproto_getters) = false;
 
-  uint64 id = 1;
+  uint64 id                                        = 1;
   cosmos.base.query.v1beta1.PageRequest pagination = 2;
 }
 
 message QuerySubscriptionsForAddressRequest {
-  option (gogoproto.equal) = false;
+  option (gogoproto.equal)           = false;
   option (gogoproto.goproto_getters) = false;
 
-  string address = 1;
-  sentinel.types.v1.Status status = 2;
+  string address                                   = 1;
+  sentinel.types.v1.Status status                  = 2;
   cosmos.base.query.v1beta1.PageRequest pagination = 3;
 }
 
 message QuerySubscriptionRequest {
-  option (gogoproto.equal) = false;
+  option (gogoproto.equal)           = false;
   option (gogoproto.goproto_getters) = false;
 
   uint64 id = 1;
 }
 
 message QueryQuotaRequest {
-  option (gogoproto.equal) = false;
+  option (gogoproto.equal)           = false;
   option (gogoproto.goproto_getters) = false;
 
-  uint64 id = 1;
+  uint64 id      = 1;
   string address = 2;
 }
 
 message QueryQuotasRequest {
-  option (gogoproto.equal) = false;
+  option (gogoproto.equal)           = false;
   option (gogoproto.goproto_getters) = false;
 
-  uint64 id = 1;
+  uint64 id                                        = 1;
   cosmos.base.query.v1beta1.PageRequest pagination = 2;
 }
 
 message QuerySubscriptionsResponse {
-  option (gogoproto.equal) = false;
+  option (gogoproto.equal)           = false;
   option (gogoproto.goproto_getters) = false;
 
-  repeated Subscription subscriptions = 1 [(gogoproto.nullable) = false];
+  repeated Subscription subscriptions = 1 [ (gogoproto.nullable) = false ];
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
 message QuerySubscriptionsForNodeResponse {
-  option (gogoproto.equal) = false;
+  option (gogoproto.equal)           = false;
   option (gogoproto.goproto_getters) = false;
 
-  repeated Subscription subscriptions = 1 [(gogoproto.nullable) = false];
+  repeated Subscription subscriptions = 1 [ (gogoproto.nullable) = false ];
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
 message QuerySubscriptionsForPlanResponse {
-  option (gogoproto.equal) = false;
+  option (gogoproto.equal)           = false;
   option (gogoproto.goproto_getters) = false;
 
-  repeated Subscription subscriptions = 1 [(gogoproto.nullable) = false];
+  repeated Subscription subscriptions = 1 [ (gogoproto.nullable) = false ];
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
 message QuerySubscriptionsForAddressResponse {
-  option (gogoproto.equal) = false;
+  option (gogoproto.equal)           = false;
   option (gogoproto.goproto_getters) = false;
 
-  repeated Subscription subscriptions = 1 [(gogoproto.nullable) = false];
+  repeated Subscription subscriptions = 1 [ (gogoproto.nullable) = false ];
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
 message QuerySubscriptionResponse {
-  option (gogoproto.equal) = false;
+  option (gogoproto.equal)           = false;
   option (gogoproto.goproto_getters) = false;
 
-  Subscription subscription = 1 [(gogoproto.nullable) = false];
+  Subscription subscription = 1 [ (gogoproto.nullable) = false ];
 }
 
 message QueryQuotaResponse {
-  option (gogoproto.equal) = false;
+  option (gogoproto.equal)           = false;
   option (gogoproto.goproto_getters) = false;
 
-  Quota quota = 1 [(gogoproto.nullable) = false];
+  Quota quota = 1 [ (gogoproto.nullable) = false ];
 }
 
 message QueryQuotasResponse {
-  option (gogoproto.equal) = false;
+  option (gogoproto.equal)           = false;
   option (gogoproto.goproto_getters) = false;
 
-  repeated Quota quotas = 1 [(gogoproto.nullable) = false];
+  repeated Quota quotas = 1 [ (gogoproto.nullable) = false ];
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 

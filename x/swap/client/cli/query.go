@@ -5,13 +5,14 @@ import (
 	"encoding/hex"
 
 	"github.com/cosmos/cosmos-sdk/client"
+	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/spf13/cobra"
 
 	"github.com/sentinel-official/hub/x/swap/types"
 )
 
 func querySwap() *cobra.Command {
-	return &cobra.Command{
+	cmd := &cobra.Command{
 		Use:   "swap",
 		Short: "Query a swap",
 		Args:  cobra.ExactArgs(1),
@@ -39,6 +40,10 @@ func querySwap() *cobra.Command {
 			return ctx.PrintProto(res)
 		},
 	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
 }
 
 func querySwaps() *cobra.Command {
@@ -69,6 +74,9 @@ func querySwaps() *cobra.Command {
 			return ctx.PrintProto(res)
 		},
 	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, "swaps")
 
 	return cmd
 }

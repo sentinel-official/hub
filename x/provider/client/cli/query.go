@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/cosmos/cosmos-sdk/client"
+	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/spf13/cobra"
 
 	hub "github.com/sentinel-official/hub/types"
@@ -11,7 +12,7 @@ import (
 )
 
 func queryProvider() *cobra.Command {
-	return &cobra.Command{
+	cmd := &cobra.Command{
 		Use:   "provider",
 		Short: "Query a provider",
 		Args:  cobra.ExactArgs(1),
@@ -39,6 +40,10 @@ func queryProvider() *cobra.Command {
 			return ctx.PrintProto(res)
 		},
 	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
 }
 
 func queryProviders() *cobra.Command {
@@ -69,6 +74,9 @@ func queryProviders() *cobra.Command {
 			return ctx.PrintProto(res)
 		},
 	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, "provider")
 
 	return cmd
 }

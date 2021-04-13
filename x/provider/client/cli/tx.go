@@ -2,6 +2,7 @@ package cli
 
 import (
 	"github.com/cosmos/cosmos-sdk/client"
+	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	"github.com/spf13/cobra"
 
@@ -47,6 +48,7 @@ func txRegister() *cobra.Command {
 		},
 	}
 
+	flags.AddTxFlagsToCmd(cmd)
 	cmd.Flags().String(flagName, "", "provider name")
 	cmd.Flags().String(flagIdentity, "", "provider identity")
 	cmd.Flags().String(flagWebsite, "", "provider website")
@@ -96,6 +98,7 @@ func txUpdate() *cobra.Command {
 		},
 	}
 
+	flags.AddTxFlagsToCmd(cmd)
 	cmd.Flags().String(flagName, "", "provider name")
 	cmd.Flags().String(flagIdentity, "", "provider identity")
 	cmd.Flags().String(flagWebsite, "", "provider website")
