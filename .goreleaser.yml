@@ -1,0 +1,32 @@
+builds:
+  - id: sentinelhub-linux-amd64
+    main: ./cmd/sentinelhub
+    binary: sentinelhub
+    goos:
+      - linux
+    goarch:
+      - amd64
+    flags:
+      - -trimpath
+      - -mod=readonly
+      - "{{ .Env.BUILD_FLAGS }}"
+    ldflags:
+      - -linkmode=external
+      - "{{ .Env.LD_FLAGS }}"
+  - id: sentinelhub-darwin-amd64
+    main: ./cmd/sentinelhub
+    binary: sentinelhub
+    goos:
+      - darwin
+    goarch:
+      - amd64
+    flags:
+      - -trimpath
+      - -mod=readonly
+      - "{{ .Env.BUILD_FLAGS }}"
+    ldflags:
+      - -linkmode=external
+      - "{{ .Env.LD_FLAGS }}"
+    env:
+      - CC=o64-clang
+      - CXX=o64-clang++
