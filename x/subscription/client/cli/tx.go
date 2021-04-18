@@ -1,84 +1,93 @@
 package cli
 
 import (
-	"bufio"
 	"strconv"
 
-	"github.com/cosmos/cosmos-sdk/client/context"
-	"github.com/cosmos/cosmos-sdk/codec"
+	"github.com/cosmos/cosmos-sdk/client"
+	"github.com/cosmos/cosmos-sdk/client/flags"
+	"github.com/cosmos/cosmos-sdk/client/tx"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/x/auth"
-	"github.com/cosmos/cosmos-sdk/x/auth/client/utils"
 	"github.com/spf13/cobra"
 
 	hub "github.com/sentinel-official/hub/types"
 	"github.com/sentinel-official/hub/x/subscription/types"
 )
 
-func txSubscribeToPlan(cdc *codec.Codec) *cobra.Command {
-	return &cobra.Command{
+func txSubscribeToPlan() *cobra.Command {
+	cmd := &cobra.Command{
 		Use:   "subscribe-plan [plan] [denom]",
 		Short: "Subscribe to a plan",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			buffer := bufio.NewReader(cmd.InOrStdin())
-			txb := auth.NewTxBuilderFromCLI(buffer).WithTxEncoder(utils.GetTxEncoder(cdc))
-			ctx := context.NewCLIContextWithInput(buffer).WithCodec(cdc)
+			ctx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
 
 			id, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
 
-			msg := types.NewMsgSubscribeToPlan(ctx.FromAddress, id, args[1])
+			msg := types.NewMsgSubscribeToPlanRequest(ctx.FromAddress, id, args[1])
 			if err := msg.ValidateBasic(); err != nil {
 				return err
 			}
 
-			return utils.GenerateOrBroadcastMsgs(ctx, txb, []sdk.Msg{msg})
+			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
 		},
 	}
+
+	flags.AddTxFlagsToCmd(cmd)
+
+	return cmd
 }
 
-func txSubscribeToNode(cdc *codec.Codec) *cobra.Command {
-	return &cobra.Command{
+func txSubscribeToNode() *cobra.Command {
+	cmd := &cobra.Command{
 		Use:   "subscribe-node [node] [deposit]",
 		Short: "Subscribe to a node",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			buffer := bufio.NewReader(cmd.InOrStdin())
-			txb := auth.NewTxBuilderFromCLI(buffer).WithTxEncoder(utils.GetTxEncoder(cdc))
-			ctx := context.NewCLIContextWithInput(buffer).WithCodec(cdc)
+			ctx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
 
 			address, err := hub.NodeAddressFromBech32(args[0])
 			if err != nil {
 				return err
 			}
 
-			deposit, err := sdk.ParseCoin(args[1])
+			deposit, err := sdk.ParseCoinNormalized(args[1])
 			if err != nil {
 				return err
 			}
 
-			msg := types.NewMsgSubscribeToNode(ctx.FromAddress, address, deposit)
+			msg := types.NewMsgSubscribeToNodeRequest(ctx.FromAddress, address, deposit)
 			if err := msg.ValidateBasic(); err != nil {
 				return err
 			}
 
-			return utils.GenerateOrBroadcastMsgs(ctx, txb, []sdk.Msg{msg})
+			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
 		},
 	}
+
+	flags.AddTxFlagsToCmd(cmd)
+
+	return cmd
 }
 
-func txAddQuota(cdc *codec.Codec) *cobra.Command {
-	return &cobra.Command{
+func txAddQuota() *cobra.Command {
+	cmd := &cobra.Command{
 		Use:   "quota-add [subscription] [address] [bytes]",
 		Short: "Add a quota of a subscription",
 		Args:  cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			buffer := bufio.NewReader(cmd.InOrStdin())
-			txb := auth.NewTxBuilderFromCLI(buffer).WithTxEncoder(utils.GetTxEncoder(cdc))
-			ctx := context.NewCLIContextWithInput(buffer).WithCodec(cdc)
+			ctx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
 
 			id, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
@@ -95,25 +104,30 @@ func txAddQuota(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgAddQuota(ctx.FromAddress, id, address, sdk.NewInt(bytes))
+			msg := types.NewMsgAddQuotaRequest(ctx.FromAddress, id, address, sdk.NewInt(bytes))
 			if err := msg.ValidateBasic(); err != nil {
 				return err
 			}
 
-			return utils.GenerateOrBroadcastMsgs(ctx, txb, []sdk.Msg{msg})
+			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
 		},
 	}
+
+	flags.AddTxFlagsToCmd(cmd)
+
+	return cmd
 }
 
-func txUpdateQuota(cdc *codec.Codec) *cobra.Command {
-	return &cobra.Command{
+func txUpdateQuota() *cobra.Command {
+	cmd := &cobra.Command{
 		Use:   "quota-update [subscription] [address] [bytes]",
 		Short: "Update a quota of a subscription",
 		Args:  cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			buffer := bufio.NewReader(cmd.InOrStdin())
-			txb := auth.NewTxBuilderFromCLI(buffer).WithTxEncoder(utils.GetTxEncoder(cdc))
-			ctx := context.NewCLIContextWithInput(buffer).WithCodec(cdc)
+			ctx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
 
 			id, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
@@ -130,37 +144,46 @@ func txUpdateQuota(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgUpdateQuota(ctx.FromAddress, id, address, sdk.NewInt(bytes))
+			msg := types.NewMsgUpdateQuotaRequest(ctx.FromAddress, id, address, sdk.NewInt(bytes))
 			if err := msg.ValidateBasic(); err != nil {
 				return err
 			}
 
-			return utils.GenerateOrBroadcastMsgs(ctx, txb, []sdk.Msg{msg})
+			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
 		},
 	}
+
+	flags.AddTxFlagsToCmd(cmd)
+
+	return cmd
 }
 
-func txCancel(cdc *codec.Codec) *cobra.Command {
-	return &cobra.Command{
+func txCancel() *cobra.Command {
+	cmd := &cobra.Command{
 		Use:   "cancel [subscription]",
 		Short: "Cancel a subscription",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			buffer := bufio.NewReader(cmd.InOrStdin())
-			txb := auth.NewTxBuilderFromCLI(buffer).WithTxEncoder(utils.GetTxEncoder(cdc))
-			ctx := context.NewCLIContextWithInput(buffer).WithCodec(cdc)
+			ctx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
 
 			id, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
 
-			msg := types.NewMsgCancel(ctx.FromAddress, id)
+			msg := types.NewMsgCancelRequest(ctx.FromAddress, id)
 			if err := msg.ValidateBasic(); err != nil {
 				return err
 			}
 
-			return utils.GenerateOrBroadcastMsgs(ctx, txb, []sdk.Msg{msg})
+			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
 		},
 	}
+
+	flags.AddTxFlagsToCmd(cmd)
+
+	return cmd
 }

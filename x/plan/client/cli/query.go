@@ -1,48 +1,61 @@
 package cli
 
 import (
-	"fmt"
+	"context"
 	"strconv"
 
-	"github.com/cosmos/cosmos-sdk/client/context"
-	"github.com/cosmos/cosmos-sdk/codec"
+	"github.com/cosmos/cosmos-sdk/client"
+	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/spf13/cobra"
 
 	hub "github.com/sentinel-official/hub/types"
-	"github.com/sentinel-official/hub/x/plan/client/common"
 	"github.com/sentinel-official/hub/x/plan/types"
 )
 
-func queryPlan(cdc *codec.Codec) *cobra.Command {
-	return &cobra.Command{
+func queryPlan() *cobra.Command {
+	cmd := &cobra.Command{
 		Use:   "plan",
 		Short: "Query a plan",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			ctx := context.NewCLIContext().WithCodec(cdc)
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
 
 			id, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
 
-			plan, err := common.QueryPlan(ctx, id)
+			var (
+				qc = types.NewQueryServiceClient(ctx)
+			)
+
+			res, err := qc.QueryPlan(context.Background(),
+				types.NewQueryPlanRequest(id))
 			if err != nil {
 				return err
 			}
 
-			fmt.Println(plan)
-			return nil
+			return ctx.PrintProto(res)
 		},
 	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
 }
 
-func queryPlans(cdc *codec.Codec) *cobra.Command {
+func queryPlans() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "plans",
 		Short: "Query plans",
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
-			ctx := context.NewCLIContext().WithCodec(cdc)
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
 
 			provider, err := cmd.Flags().GetString(flagProvider)
 			if err != nil {
@@ -54,49 +67,44 @@ func queryPlans(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			skip, err := cmd.Flags().GetInt(flagSkip)
-			if err != nil {
-				return err
-			}
-
-			limit, err := cmd.Flags().GetInt(flagLimit)
+			pagination, err := client.ReadPageRequest(cmd.Flags())
 			if err != nil {
 				return err
 			}
 
 			var (
-				address hub.ProvAddress
-				plans   types.Plans
-				status  = hub.StatusFromString(s)
+				status = hub.StatusFromString(s)
+				qc     = types.NewQueryServiceClient(ctx)
 			)
 
 			if len(provider) > 0 {
-				address, err = hub.ProvAddressFromBech32(provider)
+				address, err := hub.ProvAddressFromBech32(provider)
 				if err != nil {
 					return err
 				}
 
-				plans, err = common.QueryPlansForProvider(ctx, address, status, skip, limit)
-			} else {
-				plans, err = common.QueryPlans(ctx, status, skip, limit)
+				res, err := qc.QueryPlansForProvider(context.Background(),
+					types.NewQueryPlansForProviderRequest(address, status, pagination))
+				if err != nil {
+					return err
+				}
+
+				return ctx.PrintProto(res)
 			}
 
+			res, err := qc.QueryPlans(context.Background(), types.NewQueryPlansRequest(status, pagination))
 			if err != nil {
 				return err
 			}
 
-			for _, plan := range plans {
-				fmt.Printf("%s\n\n", plan)
-			}
-
-			return nil
+			return ctx.PrintProto(res)
 		},
 	}
 
+	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, "providers")
 	cmd.Flags().String(flagProvider, "", "provider address")
 	cmd.Flags().String(flagStatus, "", "status")
-	cmd.Flags().Int(flagSkip, 0, "skip")
-	cmd.Flags().Int(flagLimit, 25, "limit")
 
 	return cmd
 }

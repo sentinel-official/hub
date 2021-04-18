@@ -3,33 +3,29 @@ package types
 import (
 	"fmt"
 	"strings"
-	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	hub "github.com/sentinel-official/hub/types"
 )
 
-type Subscription struct {
-	ID    uint64         `json:"id"`
-	Owner sdk.AccAddress `json:"owner"`
+func (s Subscription) GetNode() hub.NodeAddress {
+	if s.Node == "" {
+		return nil
+	}
 
-	Node    hub.NodeAddress `json:"node,omitempty"`
-	Price   sdk.Coin        `json:"price,omitempty"`
-	Deposit sdk.Coin        `json:"deposit,omitempty"`
+	address, err := hub.NodeAddressFromBech32(s.Node)
+	if err != nil {
+		panic(err)
+	}
 
-	Plan   uint64    `json:"plan,omitempty"`
-	Expiry time.Time `json:"expiry,omitempty"`
-
-	Free     sdk.Int    `json:"free"`
-	Status   hub.Status `json:"status"`
-	StatusAt time.Time  `json:"status_at"`
+	return address
 }
 
 func (s Subscription) String() string {
 	if s.Plan == 0 {
 		return fmt.Sprintf(strings.TrimSpace(`
-ID:        %d
+Id:        %d
 Owner:     %s
 Node:      %s
 Price:     %s
@@ -37,18 +33,18 @@ Deposit:   %s
 Free:      %s
 Status:    %s
 Status at: %s
-`), s.ID, s.Owner, s.Node, s.Price, s.Deposit, s.Free, s.Status, s.StatusAt)
+`), s.Id, s.Owner, s.Node, s.Price, s.Deposit, s.Free, s.Status, s.StatusAt)
 	}
 
 	return fmt.Sprintf(strings.TrimSpace(`
-ID:        %d
+Id:        %d
 Owner:     %s
 Plan:      %d
 Expiry:    %s
 Free:      %s
 Status:    %s
 Status at: %s
-`), s.ID, s.Owner, s.Plan, s.Expiry, s.Free, s.Status, s.StatusAt)
+`), s.Id, s.Owner, s.Plan, s.Expiry, s.Free, s.Status, s.StatusAt)
 }
 
 func (s Subscription) Amount(consumed sdk.Int) sdk.Coin {
@@ -72,15 +68,15 @@ func (s Subscription) Amount(consumed sdk.Int) sdk.Coin {
 }
 
 func (s Subscription) Validate() error {
-	if s.ID == 0 {
+	if s.Id == 0 {
 		return fmt.Errorf("id should not be zero")
 	}
-	if s.Owner == nil || s.Owner.Empty() {
+	if _, err := sdk.AccAddressFromBech32(s.Owner); err != nil {
 		return fmt.Errorf("owner should not nil or empty")
 	}
 
 	if s.Plan == 0 {
-		if s.Node == nil || s.Node.Empty() {
+		if _, err := hub.NodeAddressFromBech32(s.Node); err != nil {
 			return fmt.Errorf("node should not be nil or empty")
 		}
 		if !s.Price.IsValid() {

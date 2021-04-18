@@ -3,12 +3,10 @@
 // aliases generated for the following subdirectories:
 // ALIASGEN: github.com/sentinel-official/hub/x/vpn/types
 // ALIASGEN: github.com/sentinel-official/hub/x/vpn/keeper
-// ALIASGEN: github.com/sentinel-official/hub/x/vpn/querier
 package vpn
 
 import (
 	"github.com/sentinel-official/hub/x/vpn/keeper"
-	"github.com/sentinel-official/hub/x/vpn/querier"
 	"github.com/sentinel-official/hub/x/vpn/types"
 )
 
@@ -21,19 +19,22 @@ const (
 
 var (
 	// functions aliases
-	RegisterCodec       = types.RegisterCodec
-	NewGenesisState     = types.NewGenesisState
-	DefaultGenesisState = types.DefaultGenesisState
-	NewKeeper           = keeper.NewKeeper
-	NewQuerier          = querier.NewQuerier
+	RegisterLegacyAminoCodec = types.RegisterLegacyAminoCodec
+	RegisterInterfaces       = types.RegisterInterfaces
+	NewGenesisState          = types.NewGenesisState
+	DefaultGenesisState      = types.DefaultGenesisState
+	NewKeeper                = keeper.NewKeeper
 
 	// variable aliases
-	ModuleCdc             = types.ModuleCdc
-	ErrorMarshal          = types.ErrorMarshal
-	ErrorUnmarshal        = types.ErrorUnmarshal
-	ErrorUnknownMsgType   = types.ErrorUnknownMsgType
-	ErrorUnknownQueryType = types.ErrorUnknownQueryType
-	ErrorInvalidField     = types.ErrorInvalidField
+	ModuleCdc                      = types.ModuleCdc
+	ErrorMarshal                   = types.ErrorMarshal
+	ErrorUnmarshal                 = types.ErrorUnmarshal
+	ErrorUnknownMsgType            = types.ErrorUnknownMsgType
+	ErrorUnknownQueryType          = types.ErrorUnknownQueryType
+	ErrorInvalidField              = types.ErrorInvalidField
+	ErrInvalidLengthGenesis        = types.ErrInvalidLengthGenesis
+	ErrIntOverflowGenesis          = types.ErrIntOverflowGenesis
+	ErrUnexpectedEndOfGroupGenesis = types.ErrUnexpectedEndOfGroupGenesis
 )
 
 type (

@@ -3,12 +3,10 @@
 // aliases generated for the following subdirectories:
 // ALIASGEN: github.com/sentinel-official/hub/x/node/types
 // ALIASGEN: github.com/sentinel-official/hub/x/node/keeper
-// ALIASGEN: github.com/sentinel-official/hub/x/node/querier
 package node
 
 import (
 	"github.com/sentinel-official/hub/x/node/keeper"
-	"github.com/sentinel-official/hub/x/node/querier"
 	"github.com/sentinel-official/hub/x/node/types"
 )
 
@@ -19,41 +17,48 @@ const (
 	ModuleName              = types.ModuleName
 	QuerierRoute            = types.QuerierRoute
 	DefaultInactiveDuration = types.DefaultInactiveDuration
-	QueryNode               = types.QueryNode
-	QueryNodes              = types.QueryNodes
-	QueryNodesForProvider   = types.QueryNodesForProvider
 )
 
 var (
 	// functions aliases
-	RegisterCodec                       = types.RegisterCodec
-	NewGenesisState                     = types.NewGenesisState
-	DefaultGenesisState                 = types.DefaultGenesisState
-	NodeKey                             = types.NodeKey
-	ActiveNodeKey                       = types.ActiveNodeKey
-	InactiveNodeKey                     = types.InactiveNodeKey
-	GetActiveNodeForProviderKeyPrefix   = types.GetActiveNodeForProviderKeyPrefix
-	ActiveNodeForProviderKey            = types.ActiveNodeForProviderKey
-	GetInactiveNodeForProviderKeyPrefix = types.GetInactiveNodeForProviderKeyPrefix
-	InactiveNodeForProviderKey          = types.InactiveNodeForProviderKey
-	GetActiveNodeAtKeyPrefix            = types.GetActiveNodeAtKeyPrefix
-	ActiveNodeAtKey                     = types.ActiveNodeAtKey
-	GetInactiveNodeAtKeyPrefix          = types.GetInactiveNodeAtKeyPrefix
-	InactiveNodeAtKey                   = types.InactiveNodeAtKey
-	AddressFromStatusNodeKey            = types.AddressFromStatusNodeKey
-	AddressFromStatusNodeForProviderKey = types.AddressFromStatusNodeForProviderKey
-	AddressFromStatusNodeAtKey          = types.AddressFromStatusNodeAtKey
-	NewMsgRegister                      = types.NewMsgRegister
-	NewMsgUpdate                        = types.NewMsgUpdate
-	NewMsgSetStatus                     = types.NewMsgSetStatus
-	NewParams                           = types.NewParams
-	DefaultParams                       = types.DefaultParams
-	ParamsKeyTable                      = types.ParamsKeyTable
-	NewQueryNodeParams                  = types.NewQueryNodeParams
-	NewQueryNodesParams                 = types.NewQueryNodesParams
-	NewQueryNodesForProviderParams      = types.NewQueryNodesForProviderParams
-	NewKeeper                           = keeper.NewKeeper
-	Querier                             = querier.Querier
+	RegisterLegacyAminoCodec                = types.RegisterLegacyAminoCodec
+	RegisterInterfaces                      = types.RegisterInterfaces
+	NewGenesisState                         = types.NewGenesisState
+	DefaultGenesisState                     = types.DefaultGenesisState
+	NodeKey                                 = types.NodeKey
+	ActiveNodeKey                           = types.ActiveNodeKey
+	InactiveNodeKey                         = types.InactiveNodeKey
+	GetActiveNodeForProviderKeyPrefix       = types.GetActiveNodeForProviderKeyPrefix
+	ActiveNodeForProviderKey                = types.ActiveNodeForProviderKey
+	GetInactiveNodeForProviderKeyPrefix     = types.GetInactiveNodeForProviderKeyPrefix
+	InactiveNodeForProviderKey              = types.InactiveNodeForProviderKey
+	GetActiveNodeAtKeyPrefix                = types.GetActiveNodeAtKeyPrefix
+	ActiveNodeAtKey                         = types.ActiveNodeAtKey
+	GetInactiveNodeAtKeyPrefix              = types.GetInactiveNodeAtKeyPrefix
+	InactiveNodeAtKey                       = types.InactiveNodeAtKey
+	AddressFromStatusNodeKey                = types.AddressFromStatusNodeKey
+	AddressFromStatusNodeForProviderKey     = types.AddressFromStatusNodeForProviderKey
+	AddressFromStatusNodeAtKey              = types.AddressFromStatusNodeAtKey
+	NewMsgRegisterRequest                   = types.NewMsgRegisterRequest
+	NewMsgUpdateRequest                     = types.NewMsgUpdateRequest
+	NewMsgSetStatusRequest                  = types.NewMsgSetStatusRequest
+	NewMsgServiceClient                     = types.NewMsgServiceClient
+	RegisterMsgServiceServer                = types.RegisterMsgServiceServer
+	NewParams                               = types.NewParams
+	DefaultParams                           = types.DefaultParams
+	ParamsKeyTable                          = types.ParamsKeyTable
+	NewQueryNodeRequest                     = types.NewQueryNodeRequest
+	NewQueryNodesRequest                    = types.NewQueryNodesRequest
+	NewQueryNodesForProviderRequest         = types.NewQueryNodesForProviderRequest
+	NewQueryServiceClient                   = types.NewQueryServiceClient
+	RegisterQueryServiceServer              = types.RegisterQueryServiceServer
+	RegisterQueryServiceHandlerServer       = types.RegisterQueryServiceHandlerServer
+	RegisterQueryServiceHandlerFromEndpoint = types.RegisterQueryServiceHandlerFromEndpoint
+	RegisterQueryServiceHandler             = types.RegisterQueryServiceHandler
+	RegisterQueryServiceHandlerClient       = types.RegisterQueryServiceHandlerClient
+	NewKeeper                               = keeper.NewKeeper
+	NewMsgServiceServer                     = keeper.NewMsgServiceServer
+	NewQueryServiceServer                   = keeper.NewQueryServiceServer
 
 	// variable aliases
 	ModuleCdc                        = types.ModuleCdc
@@ -68,6 +73,9 @@ var (
 	EventTypeSet                     = types.EventTypeSet
 	EventTypeUpdate                  = types.EventTypeUpdate
 	EventTypeSetStatus               = types.EventTypeSetStatus
+	ErrInvalidLengthGenesis          = types.ErrInvalidLengthGenesis
+	ErrIntOverflowGenesis            = types.ErrIntOverflowGenesis
+	ErrUnexpectedEndOfGroupGenesis   = types.ErrUnexpectedEndOfGroupGenesis
 	ParamsSubspace                   = types.ParamsSubspace
 	RouterKey                        = types.RouterKey
 	StoreKey                         = types.StoreKey
@@ -79,21 +87,45 @@ var (
 	InactiveNodeForProviderKeyPrefix = types.InactiveNodeForProviderKeyPrefix
 	ActiveNodeAtKeyPrefix            = types.ActiveNodeAtKeyPrefix
 	InactiveNodeAtKeyPrefix          = types.InactiveNodeAtKeyPrefix
+	ErrInvalidLengthMsg              = types.ErrInvalidLengthMsg
+	ErrIntOverflowMsg                = types.ErrIntOverflowMsg
+	ErrUnexpectedEndOfGroupMsg       = types.ErrUnexpectedEndOfGroupMsg
+	ErrInvalidLengthNode             = types.ErrInvalidLengthNode
+	ErrIntOverflowNode               = types.ErrIntOverflowNode
+	ErrUnexpectedEndOfGroupNode      = types.ErrUnexpectedEndOfGroupNode
 	DefaultDeposit                   = types.DefaultDeposit
 	KeyDeposit                       = types.KeyDeposit
 	KeyInactiveDuration              = types.KeyInactiveDuration
+	ErrInvalidLengthParams           = types.ErrInvalidLengthParams
+	ErrIntOverflowParams             = types.ErrIntOverflowParams
+	ErrUnexpectedEndOfGroupParams    = types.ErrUnexpectedEndOfGroupParams
+	ErrInvalidLengthQuerier          = types.ErrInvalidLengthQuerier
+	ErrIntOverflowQuerier            = types.ErrIntOverflowQuerier
+	ErrUnexpectedEndOfGroupQuerier   = types.ErrUnexpectedEndOfGroupQuerier
 )
 
 type (
-	GenesisState                = types.GenesisState
-	MsgRegister                 = types.MsgRegister
-	MsgUpdate                   = types.MsgUpdate
-	MsgSetStatus                = types.MsgSetStatus
-	Node                        = types.Node
-	Nodes                       = types.Nodes
-	Params                      = types.Params
-	QueryNodeParams             = types.QueryNodeParams
-	QueryNodesParams            = types.QueryNodesParams
-	QueryNodesForProviderParams = types.QueryNodesForProviderParams
-	Keeper                      = keeper.Keeper
+	GenesisState                    = types.GenesisState
+	MsgRegisterRequest              = types.MsgRegisterRequest
+	MsgUpdateRequest                = types.MsgUpdateRequest
+	MsgSetStatusRequest             = types.MsgSetStatusRequest
+	MsgRegisterResponse             = types.MsgRegisterResponse
+	MsgUpdateResponse               = types.MsgUpdateResponse
+	MsgSetStatusResponse            = types.MsgSetStatusResponse
+	MsgServiceClient                = types.MsgServiceClient
+	MsgServiceServer                = types.MsgServiceServer
+	UnimplementedMsgServiceServer   = types.UnimplementedMsgServiceServer
+	Nodes                           = types.Nodes
+	Node                            = types.Node
+	Params                          = types.Params
+	QueryNodesRequest               = types.QueryNodesRequest
+	QueryNodesForProviderRequest    = types.QueryNodesForProviderRequest
+	QueryNodeRequest                = types.QueryNodeRequest
+	QueryNodesResponse              = types.QueryNodesResponse
+	QueryNodesForProviderResponse   = types.QueryNodesForProviderResponse
+	QueryNodeResponse               = types.QueryNodeResponse
+	QueryServiceClient              = types.QueryServiceClient
+	QueryServiceServer              = types.QueryServiceServer
+	UnimplementedQueryServiceServer = types.UnimplementedQueryServiceServer
+	Keeper                          = keeper.Keeper
 )

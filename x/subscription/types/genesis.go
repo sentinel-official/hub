@@ -1,16 +1,8 @@
 package types
 
-type GenesisSubscription struct {
-	Subscription Subscription `json:"_"`
-	Quotas       Quotas       `json:"quotas"`
-}
-
-type GenesisSubscriptions []GenesisSubscription
-
-type GenesisState struct {
-	Subscriptions GenesisSubscriptions `json:"_"`
-	Params        Params               `json:"params"`
-}
+type (
+	GenesisSubscriptions []GenesisSubscription
+)
 
 func NewGenesisState(subscriptions GenesisSubscriptions, params Params) GenesisState {
 	return GenesisState{

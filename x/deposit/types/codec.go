@@ -2,17 +2,20 @@ package types
 
 import (
 	"github.com/cosmos/cosmos-sdk/codec"
+	"github.com/cosmos/cosmos-sdk/codec/types"
+	crypto "github.com/cosmos/cosmos-sdk/crypto/codec"
 )
 
 var (
-	ModuleCdc *codec.Codec
+	amino     = codec.NewLegacyAmino()
+	ModuleCdc = codec.NewAminoCodec(amino)
 )
 
 func init() {
-	ModuleCdc = codec.New()
-	codec.RegisterCrypto(ModuleCdc)
-	RegisterCodec(ModuleCdc)
-	ModuleCdc.Seal()
+	RegisterLegacyAminoCodec(amino)
+	crypto.RegisterCrypto(amino)
+	amino.Seal()
 }
 
-func RegisterCodec(_ *codec.Codec) {}
+func RegisterLegacyAminoCodec(_ *codec.LegacyAmino) {}
+func RegisterInterfaces(_ types.InterfaceRegistry)  {}

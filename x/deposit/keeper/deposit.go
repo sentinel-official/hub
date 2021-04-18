@@ -9,8 +9,8 @@ import (
 
 // SetDeposit is for inserting a deposit into KVStore.
 func (k Keeper) SetDeposit(ctx sdk.Context, deposit types.Deposit) {
-	key := types.DepositKey(deposit.Address)
-	value := k.cdc.MustMarshalBinaryLengthPrefixed(deposit)
+	key := types.DepositKey(deposit.GetAddress())
+	value := k.cdc.MustMarshalBinaryBare(&deposit)
 
 	store := k.Store(ctx)
 	store.Set(key, value)
@@ -26,7 +26,7 @@ func (k Keeper) GetDeposit(ctx sdk.Context, address sdk.AccAddress) (deposit typ
 		return deposit, false
 	}
 
-	k.cdc.MustUnmarshalBinaryLengthPrefixed(value, &deposit)
+	k.cdc.MustUnmarshalBinaryBare(value, &deposit)
 	return deposit, true
 }
 
@@ -44,7 +44,7 @@ func (k Keeper) GetDeposits(ctx sdk.Context, skip, limit int) (items types.Depos
 	iter.Skip(skip)
 	iter.Limit(limit, func(iter sdk.Iterator) {
 		var item types.Deposit
-		k.cdc.MustUnmarshalBinaryLengthPrefixed(iter.Value(), &item)
+		k.cdc.MustUnmarshalBinaryBare(iter.Value(), &item)
 		items = append(items, item)
 	})
 
@@ -53,14 +53,14 @@ func (k Keeper) GetDeposits(ctx sdk.Context, skip, limit int) (items types.Depos
 
 // Add is for adding the amount to the deposit account from the bank account of an address.
 func (k Keeper) Add(ctx sdk.Context, address sdk.AccAddress, coins sdk.Coins) error {
-	if err := k.supply.SendCoinsFromAccountToModule(ctx, address, types.ModuleName, coins); err != nil {
+	if err := k.bank.SendCoinsFromAccountToModule(ctx, address, types.ModuleName, coins); err != nil {
 		return err
 	}
 
 	deposit, found := k.GetDeposit(ctx, address)
 	if !found {
 		deposit = types.Deposit{
-			Address: address,
+			Address: address.String(),
 			Coins:   sdk.Coins{},
 		}
 	}
@@ -86,7 +86,7 @@ func (k Keeper) Subtract(ctx sdk.Context, address sdk.AccAddress, coins sdk.Coin
 		return types.ErrorInsufficientDepositFunds
 	}
 
-	if err := k.supply.SendCoinsFromModuleToAccount(ctx, types.ModuleName, address, coins); err != nil {
+	if err := k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, address, coins); err != nil {
 		return err
 	}
 
@@ -107,7 +107,7 @@ func (k Keeper) SendCoinsFromDepositToAccount(ctx sdk.Context, from, to sdk.AccA
 		return types.ErrorInsufficientDepositFunds
 	}
 
-	if err := k.supply.SendCoinsFromModuleToAccount(ctx, types.ModuleName, to, coins); err != nil {
+	if err := k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, to, coins); err != nil {
 		return err
 	}
 
@@ -118,14 +118,14 @@ func (k Keeper) SendCoinsFromDepositToAccount(ctx sdk.Context, from, to sdk.AccA
 // SendCoinsFromAccountToDeposit is for sending the amount
 // from the bank account of from address to the deposit account of to address.
 func (k Keeper) SendCoinsFromAccountToDeposit(ctx sdk.Context, from, to sdk.AccAddress, coins sdk.Coins) error {
-	if err := k.supply.SendCoinsFromAccountToModule(ctx, from, types.ModuleName, coins); err != nil {
+	if err := k.bank.SendCoinsFromAccountToModule(ctx, from, types.ModuleName, coins); err != nil {
 		return err
 	}
 
 	deposit, found := k.GetDeposit(ctx, to)
 	if !found {
 		deposit = types.Deposit{
-			Address: to,
+			Address: to.String(),
 			Coins:   sdk.Coins{},
 		}
 	}
@@ -148,7 +148,7 @@ func (k Keeper) IterateDeposits(ctx sdk.Context, fn func(index int64, item types
 
 	for i := int64(0); iterator.Valid(); iterator.Next() {
 		var deposit types.Deposit
-		k.cdc.MustUnmarshalBinaryLengthPrefixed(iterator.Value(), &deposit)
+		k.cdc.MustUnmarshalBinaryBare(iterator.Value(), &deposit)
 
 		if stop := fn(i, deposit); stop {
 			break

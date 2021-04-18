@@ -3,55 +3,59 @@
 // aliases generated for the following subdirectories:
 // ALIASGEN: github.com/sentinel-official/hub/x/plan/types
 // ALIASGEN: github.com/sentinel-official/hub/x/plan/keeper
-// ALIASGEN: github.com/sentinel-official/hub/x/plan/querier
 package plan
 
 import (
 	"github.com/sentinel-official/hub/x/plan/keeper"
-	"github.com/sentinel-official/hub/x/plan/querier"
 	"github.com/sentinel-official/hub/x/plan/types"
 )
 
 const (
-	AttributeKeyAddress   = types.AttributeKeyAddress
-	AttributeKeyID        = types.AttributeKeyID
-	AttributeKeyCount     = types.AttributeKeyCount
-	AttributeKeyStatus    = types.AttributeKeyStatus
-	ModuleName            = types.ModuleName
-	QuerierRoute          = types.QuerierRoute
-	QueryPlan             = types.QueryPlan
-	QueryPlans            = types.QueryPlans
-	QueryPlansForProvider = types.QueryPlansForProvider
-	QueryNodesForPlan     = types.QueryNodesForPlan
+	AttributeKeyAddress = types.AttributeKeyAddress
+	AttributeKeyID      = types.AttributeKeyID
+	AttributeKeyCount   = types.AttributeKeyCount
+	AttributeKeyStatus  = types.AttributeKeyStatus
+	ModuleName          = types.ModuleName
+	QuerierRoute        = types.QuerierRoute
 )
 
 var (
 	// functions aliases
-	RegisterCodec                       = types.RegisterCodec
-	NewGenesisState                     = types.NewGenesisState
-	DefaultGenesisState                 = types.DefaultGenesisState
-	PlanKey                             = types.PlanKey
-	ActivePlanKey                       = types.ActivePlanKey
-	InactivePlanKey                     = types.InactivePlanKey
-	GetActivePlanForProviderKeyPrefix   = types.GetActivePlanForProviderKeyPrefix
-	ActivePlanForProviderKey            = types.ActivePlanForProviderKey
-	GetInactivePlanForProviderKeyPrefix = types.GetInactivePlanForProviderKeyPrefix
-	InactivePlanForProviderKey          = types.InactivePlanForProviderKey
-	GetNodeForPlanKeyPrefix             = types.GetNodeForPlanKeyPrefix
-	NodeForPlanKey                      = types.NodeForPlanKey
-	IDFromStatusPlanKey                 = types.IDFromStatusPlanKey
-	IDFromStatusPlanForProviderKey      = types.IDFromStatusPlanForProviderKey
-	AddressFromNodeForPlanKey           = types.AddressFromNodeForPlanKey
-	NewMsgAdd                           = types.NewMsgAdd
-	NewMsgSetStatus                     = types.NewMsgSetStatus
-	NewMsgAddNode                       = types.NewMsgAddNode
-	NewMsgRemoveNode                    = types.NewMsgRemoveNode
-	NewQueryPlanParams                  = types.NewQueryPlanParams
-	NewQueryPlansParams                 = types.NewQueryPlansParams
-	NewQueryPlansForProviderParams      = types.NewQueryPlansForProviderParams
-	NewQueryNodesForPlanParams          = types.NewQueryNodesForPlanParams
-	NewKeeper                           = keeper.NewKeeper
-	Querier                             = querier.Querier
+	RegisterLegacyAminoCodec                = types.RegisterLegacyAminoCodec
+	RegisterInterfaces                      = types.RegisterInterfaces
+	NewGenesisState                         = types.NewGenesisState
+	DefaultGenesisState                     = types.DefaultGenesisState
+	PlanKey                                 = types.PlanKey
+	ActivePlanKey                           = types.ActivePlanKey
+	InactivePlanKey                         = types.InactivePlanKey
+	GetActivePlanForProviderKeyPrefix       = types.GetActivePlanForProviderKeyPrefix
+	ActivePlanForProviderKey                = types.ActivePlanForProviderKey
+	GetInactivePlanForProviderKeyPrefix     = types.GetInactivePlanForProviderKeyPrefix
+	InactivePlanForProviderKey              = types.InactivePlanForProviderKey
+	GetNodeForPlanKeyPrefix                 = types.GetNodeForPlanKeyPrefix
+	NodeForPlanKey                          = types.NodeForPlanKey
+	IDFromStatusPlanKey                     = types.IDFromStatusPlanKey
+	IDFromStatusPlanForProviderKey          = types.IDFromStatusPlanForProviderKey
+	AddressFromNodeForPlanKey               = types.AddressFromNodeForPlanKey
+	NewMsgAddRequest                        = types.NewMsgAddRequest
+	NewMsgSetStatusRequest                  = types.NewMsgSetStatusRequest
+	NewMsgAddNodeRequest                    = types.NewMsgAddNodeRequest
+	NewMsgRemoveNodeRequest                 = types.NewMsgRemoveNodeRequest
+	NewMsgServiceClient                     = types.NewMsgServiceClient
+	RegisterMsgServiceServer                = types.RegisterMsgServiceServer
+	NewQueryPlanRequest                     = types.NewQueryPlanRequest
+	NewQueryPlansRequest                    = types.NewQueryPlansRequest
+	NewQueryPlansForProviderRequest         = types.NewQueryPlansForProviderRequest
+	NewQueryNodesForPlanRequest             = types.NewQueryNodesForPlanRequest
+	NewQueryServiceClient                   = types.NewQueryServiceClient
+	RegisterQueryServiceServer              = types.RegisterQueryServiceServer
+	RegisterQueryServiceHandlerServer       = types.RegisterQueryServiceHandlerServer
+	RegisterQueryServiceHandlerFromEndpoint = types.RegisterQueryServiceHandlerFromEndpoint
+	RegisterQueryServiceHandler             = types.RegisterQueryServiceHandler
+	RegisterQueryServiceHandlerClient       = types.RegisterQueryServiceHandlerClient
+	NewKeeper                               = keeper.NewKeeper
+	NewMsgServiceServer                     = keeper.NewMsgServiceServer
+	NewQueryServiceServer                   = keeper.NewQueryServiceServer
 
 	// variable aliases
 	ModuleCdc                        = types.ModuleCdc
@@ -69,6 +73,9 @@ var (
 	EventTypeSetStatus               = types.EventTypeSetStatus
 	EventTypeAddNode                 = types.EventTypeAddNode
 	EventTypeRemoveNode              = types.EventTypeRemoveNode
+	ErrInvalidLengthGenesis          = types.ErrInvalidLengthGenesis
+	ErrIntOverflowGenesis            = types.ErrIntOverflowGenesis
+	ErrUnexpectedEndOfGroupGenesis   = types.ErrUnexpectedEndOfGroupGenesis
 	RouterKey                        = types.RouterKey
 	StoreKey                         = types.StoreKey
 	EventModuleName                  = types.EventModuleName
@@ -79,21 +86,44 @@ var (
 	ActivePlanForProviderKeyPrefix   = types.ActivePlanForProviderKeyPrefix
 	InactivePlanForProviderKeyPrefix = types.InactivePlanForProviderKeyPrefix
 	NodeForPlanKeyPrefix             = types.NodeForPlanKeyPrefix
+	ErrInvalidLengthMsg              = types.ErrInvalidLengthMsg
+	ErrIntOverflowMsg                = types.ErrIntOverflowMsg
+	ErrUnexpectedEndOfGroupMsg       = types.ErrUnexpectedEndOfGroupMsg
+	ErrInvalidLengthPlan             = types.ErrInvalidLengthPlan
+	ErrIntOverflowPlan               = types.ErrIntOverflowPlan
+	ErrUnexpectedEndOfGroupPlan      = types.ErrUnexpectedEndOfGroupPlan
+	ErrInvalidLengthQuerier          = types.ErrInvalidLengthQuerier
+	ErrIntOverflowQuerier            = types.ErrIntOverflowQuerier
+	ErrUnexpectedEndOfGroupQuerier   = types.ErrUnexpectedEndOfGroupQuerier
 )
 
 type (
-	GenesisPlan                 = types.GenesisPlan
-	GenesisPlans                = types.GenesisPlans
-	GenesisState                = types.GenesisState
-	MsgAdd                      = types.MsgAdd
-	MsgSetStatus                = types.MsgSetStatus
-	MsgAddNode                  = types.MsgAddNode
-	MsgRemoveNode               = types.MsgRemoveNode
-	Plan                        = types.Plan
-	Plans                       = types.Plans
-	QueryPlanParams             = types.QueryPlanParams
-	QueryPlansParams            = types.QueryPlansParams
-	QueryPlansForProviderParams = types.QueryPlansForProviderParams
-	QueryNodesForPlanParams     = types.QueryNodesForPlanParams
-	Keeper                      = keeper.Keeper
+	GenesisPlans                    = types.GenesisPlans
+	GenesisState                    = types.GenesisState
+	GenesisPlan                     = types.GenesisPlan
+	MsgAddRequest                   = types.MsgAddRequest
+	MsgSetStatusRequest             = types.MsgSetStatusRequest
+	MsgAddNodeRequest               = types.MsgAddNodeRequest
+	MsgRemoveNodeRequest            = types.MsgRemoveNodeRequest
+	MsgAddResponse                  = types.MsgAddResponse
+	MsgSetStatusResponse            = types.MsgSetStatusResponse
+	MsgAddNodeResponse              = types.MsgAddNodeResponse
+	MsgRemoveNodeResponse           = types.MsgRemoveNodeResponse
+	MsgServiceClient                = types.MsgServiceClient
+	MsgServiceServer                = types.MsgServiceServer
+	UnimplementedMsgServiceServer   = types.UnimplementedMsgServiceServer
+	Plans                           = types.Plans
+	Plan                            = types.Plan
+	QueryPlansRequest               = types.QueryPlansRequest
+	QueryPlansForProviderRequest    = types.QueryPlansForProviderRequest
+	QueryPlanRequest                = types.QueryPlanRequest
+	QueryNodesForPlanRequest        = types.QueryNodesForPlanRequest
+	QueryPlansResponse              = types.QueryPlansResponse
+	QueryPlansForProviderResponse   = types.QueryPlansForProviderResponse
+	QueryPlanResponse               = types.QueryPlanResponse
+	QueryNodesForPlanResponse       = types.QueryNodesForPlanResponse
+	QueryServiceClient              = types.QueryServiceClient
+	QueryServiceServer              = types.QueryServiceServer
+	UnimplementedQueryServiceServer = types.UnimplementedQueryServiceServer
+	Keeper                          = keeper.Keeper
 )

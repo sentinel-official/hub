@@ -2,13 +2,13 @@ package keeper
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/x/auth/exported"
+	auth "github.com/cosmos/cosmos-sdk/x/auth/types"
 
 	hub "github.com/sentinel-official/hub/types"
 	subscription "github.com/sentinel-official/hub/x/subscription/types"
 )
 
-func (k Keeper) GetAccount(ctx sdk.Context, address sdk.AccAddress) exported.Account {
+func (k Keeper) GetAccount(ctx sdk.Context, address sdk.AccAddress) auth.AccountI {
 	return k.account.GetAccount(ctx, address)
 }
 

@@ -13,11 +13,6 @@ var (
 	Gigabyte = sdk.NewInt(1000).Mul(Megabyte)
 )
 
-type Bandwidth struct {
-	Upload   sdk.Int `json:"upload"`
-	Download sdk.Int `json:"download"`
-}
-
 func NewBandwidth(upload, download sdk.Int) Bandwidth {
 	return Bandwidth{
 		Upload:   upload,

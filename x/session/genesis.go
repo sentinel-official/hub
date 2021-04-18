@@ -13,14 +13,19 @@ import (
 func InitGenesis(ctx sdk.Context, k keeper.Keeper, state types.GenesisState) {
 	k.SetParams(ctx, state.Params)
 	for _, session := range state.Sessions {
+		var (
+			sessionNode    = session.GetNode()
+			sessionAddress = session.GetAddress()
+		)
+
 		k.SetSession(ctx, session)
-		k.SetSessionForSubscription(ctx, session.Subscription, session.ID)
-		k.SetSessionForNode(ctx, session.Node, session.ID)
-		k.SetSessionForAddress(ctx, session.Address, session.ID)
+		k.SetSessionForSubscription(ctx, session.Subscription, session.Id)
+		k.SetSessionForNode(ctx, sessionNode, session.Id)
+		k.SetSessionForAddress(ctx, sessionAddress, session.Id)
 
 		if session.Status.Equal(hub.StatusActive) {
-			k.SetOngoingSession(ctx, session.Subscription, session.Address, session.ID)
-			k.SetActiveSessionAt(ctx, session.StatusAt, session.ID)
+			k.SetActiveSessionForAddress(ctx, sessionAddress, session.Subscription, sessionNode, session.Id)
+			k.SetActiveSessionAt(ctx, session.StatusAt, session.Id)
 		}
 	}
 
@@ -47,12 +52,11 @@ func ValidateGenesis(state types.GenesisState) error {
 
 	sessions := make(map[uint64]bool)
 	for _, item := range state.Sessions {
-		id := item.ID
-		if sessions[id] {
-			return fmt.Errorf("duplicate session id %d", id)
+		if sessions[item.Id] {
+			return fmt.Errorf("duplicate session id %d", item.Id)
 		}
 
-		sessions[id] = true
+		sessions[item.Id] = true
 	}
 
 	return nil

@@ -4,6 +4,7 @@ import (
 	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	protobuf "github.com/gogo/protobuf/types"
 
 	hub "github.com/sentinel-official/hub/types"
 	"github.com/sentinel-official/hub/x/subscription/types"
@@ -11,13 +12,13 @@ import (
 
 func (k Keeper) SetCount(ctx sdk.Context, count uint64) {
 	key := types.CountKey
-	value := k.cdc.MustMarshalBinaryLengthPrefixed(count)
+	value := k.cdc.MustMarshalBinaryBare(&protobuf.UInt64Value{Value: count})
 
 	store := k.Store(ctx)
 	store.Set(key, value)
 }
 
-func (k Keeper) GetCount(ctx sdk.Context) (count uint64) {
+func (k Keeper) GetCount(ctx sdk.Context) uint64 {
 	store := k.Store(ctx)
 
 	key := types.CountKey
@@ -26,13 +27,15 @@ func (k Keeper) GetCount(ctx sdk.Context) (count uint64) {
 		return 0
 	}
 
-	k.cdc.MustUnmarshalBinaryLengthPrefixed(value, &count)
-	return count
+	var count protobuf.UInt64Value
+	k.cdc.MustUnmarshalBinaryBare(value, &count)
+
+	return count.GetValue()
 }
 
 func (k Keeper) SetSubscription(ctx sdk.Context, subscription types.Subscription) {
-	key := types.SubscriptionKey(subscription.ID)
-	value := k.cdc.MustMarshalBinaryLengthPrefixed(subscription)
+	key := types.SubscriptionKey(subscription.Id)
+	value := k.cdc.MustMarshalBinaryBare(&subscription)
 
 	store := k.Store(ctx)
 	store.Set(key, value)
@@ -47,7 +50,7 @@ func (k Keeper) GetSubscription(ctx sdk.Context, id uint64) (subscription types.
 		return subscription, false
 	}
 
-	k.cdc.MustUnmarshalBinaryLengthPrefixed(value, &subscription)
+	k.cdc.MustUnmarshalBinaryBare(value, &subscription)
 	return subscription, true
 }
 
@@ -64,7 +67,7 @@ func (k Keeper) GetSubscriptions(ctx sdk.Context, skip, limit int) (items types.
 	iter.Skip(skip)
 	iter.Limit(limit, func(iter sdk.Iterator) {
 		var item types.Subscription
-		k.cdc.MustUnmarshalBinaryLengthPrefixed(iter.Value(), &item)
+		k.cdc.MustUnmarshalBinaryBare(iter.Value(), &item)
 		items = append(items, item)
 	})
 
@@ -73,7 +76,7 @@ func (k Keeper) GetSubscriptions(ctx sdk.Context, skip, limit int) (items types.
 
 func (k Keeper) SetSubscriptionForNode(ctx sdk.Context, address hub.NodeAddress, id uint64) {
 	key := types.SubscriptionForNodeKey(address, id)
-	value := k.cdc.MustMarshalBinaryLengthPrefixed(true)
+	value := k.cdc.MustMarshalBinaryBare(&protobuf.BoolValue{Value: true})
 
 	store := k.Store(ctx)
 	store.Set(key, value)
@@ -107,7 +110,7 @@ func (k Keeper) GetSubscriptionsForNode(ctx sdk.Context, address hub.NodeAddress
 
 func (k Keeper) SetSubscriptionForPlan(ctx sdk.Context, plan, id uint64) {
 	key := types.SubscriptionForPlanKey(plan, id)
-	value := k.cdc.MustMarshalBinaryLengthPrefixed(true)
+	value := k.cdc.MustMarshalBinaryBare(&protobuf.BoolValue{Value: true})
 
 	store := k.Store(ctx)
 	store.Set(key, value)
@@ -141,7 +144,7 @@ func (k Keeper) GetSubscriptionsForPlan(ctx sdk.Context, plan uint64, skip, limi
 
 func (k Keeper) SetActiveSubscriptionForAddress(ctx sdk.Context, address sdk.AccAddress, id uint64) {
 	key := types.ActiveSubscriptionForAddressKey(address, id)
-	value := k.cdc.MustMarshalBinaryLengthPrefixed(true)
+	value := k.cdc.MustMarshalBinaryBare(&protobuf.BoolValue{Value: true})
 
 	store := k.Store(ctx)
 	store.Set(key, value)
@@ -175,7 +178,7 @@ func (k Keeper) GetActiveSubscriptionsForAddress(ctx sdk.Context, address sdk.Ac
 
 func (k Keeper) SetInactiveSubscriptionForAddress(ctx sdk.Context, address sdk.AccAddress, id uint64) {
 	key := types.InactiveSubscriptionForAddressKey(address, id)
-	value := k.cdc.MustMarshalBinaryLengthPrefixed(true)
+	value := k.cdc.MustMarshalBinaryBare(&protobuf.BoolValue{Value: true})
 
 	store := k.Store(ctx)
 	store.Set(key, value)
@@ -229,7 +232,7 @@ func (k Keeper) GetSubscriptionsForAddress(ctx sdk.Context, address sdk.AccAddre
 
 func (k Keeper) SetInactiveSubscriptionAt(ctx sdk.Context, at time.Time, id uint64) {
 	key := types.InactiveSubscriptionAtKey(at, id)
-	value := k.cdc.MustMarshalBinaryLengthPrefixed(true)
+	value := k.cdc.MustMarshalBinaryBare(&protobuf.BoolValue{Value: true})
 
 	store := k.Store(ctx)
 	store.Set(key, value)

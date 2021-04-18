@@ -8,8 +8,8 @@ import (
 )
 
 func (k Keeper) SetQuota(ctx sdk.Context, id uint64, quota types.Quota) {
-	key := types.QuotaKey(id, quota.Address)
-	value := k.cdc.MustMarshalBinaryLengthPrefixed(quota)
+	key := types.QuotaKey(id, quota.GetAddress())
+	value := k.cdc.MustMarshalBinaryBare(&quota)
 
 	store := k.Store(ctx)
 	store.Set(key, value)
@@ -24,7 +24,7 @@ func (k Keeper) GetQuota(ctx sdk.Context, id uint64, address sdk.AccAddress) (qu
 		return quota, false
 	}
 
-	k.cdc.MustUnmarshalBinaryLengthPrefixed(value, &quota)
+	k.cdc.MustUnmarshalBinaryBare(value, &quota)
 	return quota, true
 }
 
@@ -55,7 +55,7 @@ func (k Keeper) GetQuotas(ctx sdk.Context, id uint64, skip, limit int) (items ty
 	iter.Skip(skip)
 	iter.Limit(limit, func(iter sdk.Iterator) {
 		var item types.Quota
-		k.cdc.MustUnmarshalBinaryLengthPrefixed(iter.Value(), &item)
+		k.cdc.MustUnmarshalBinaryBare(iter.Value(), &item)
 		items = append(items, item)
 	})
 
@@ -70,7 +70,7 @@ func (k Keeper) IterateQuotas(ctx sdk.Context, id uint64, fn func(index int, ite
 
 	for i := 0; iter.Valid(); iter.Next() {
 		var quota types.Quota
-		k.cdc.MustUnmarshalBinaryLengthPrefixed(iter.Value(), &quota)
+		k.cdc.MustUnmarshalBinaryBare(iter.Value(), &quota)
 
 		if stop := fn(i, quota); stop {
 			break

@@ -16,12 +16,12 @@ func EndBlock(ctx sdk.Context, k keeper.Keeper) []abci.ValidatorUpdate {
 	)
 
 	k.IterateInactiveSubscriptions(ctx, end, func(_ int, item types.Subscription) bool {
-		log.Info("Inactive subscription", "id", item.ID,
+		log.Info("Inactive subscription", "id", item.Id,
 			"owner", item.Owner, "plan", item.Plan, "node", item.Node)
 
 		if item.Plan == 0 {
 			consumed := sdk.ZeroInt()
-			k.IterateQuotas(ctx, item.ID, func(_ int, quota types.Quota) bool {
+			k.IterateQuotas(ctx, item.Id, func(_ int, quota types.Quota) bool {
 				consumed = consumed.Add(quota.Consumed)
 				return false
 			})
@@ -30,18 +30,27 @@ func EndBlock(ctx sdk.Context, k keeper.Keeper) []abci.ValidatorUpdate {
 			log.Info("", "price", item.Price,
 				"deposit", item.Deposit, "consumed", consumed, "amount", amount)
 
-			if err := k.SubtractDeposit(ctx, item.Owner, amount); err != nil {
+			itemOwner, err := sdk.AccAddressFromBech32(item.Owner)
+			if err != nil {
 				panic(err)
 			}
 
-			k.DeleteInactiveSubscriptionAt(ctx, item.StatusAt.Add(k.InactiveDuration(ctx)), item.ID)
+			if err := k.SubtractDeposit(ctx, itemOwner, amount); err != nil {
+				panic(err)
+			}
+
+			k.DeleteInactiveSubscriptionAt(ctx, item.StatusAt.Add(k.InactiveDuration(ctx)), item.Id)
 		} else {
-			k.DeleteInactiveSubscriptionAt(ctx, item.Expiry, item.ID)
+			k.DeleteInactiveSubscriptionAt(ctx, item.Expiry, item.Id)
 		}
 
-		k.IterateQuotas(ctx, item.ID, func(_ int, quota types.Quota) bool {
-			k.DeleteActiveSubscriptionForAddress(ctx, quota.Address, item.ID)
-			k.SetInactiveSubscriptionForAddress(ctx, quota.Address, item.ID)
+		k.IterateQuotas(ctx, item.Id, func(_ int, quota types.Quota) bool {
+			var (
+				quotaAddress = quota.GetAddress()
+			)
+
+			k.DeleteActiveSubscriptionForAddress(ctx, quotaAddress, item.Id)
+			k.SetInactiveSubscriptionForAddress(ctx, quotaAddress, item.Id)
 			return false
 		})
 

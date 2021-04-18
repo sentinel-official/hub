@@ -7,10 +7,17 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-type Quota struct {
-	Address   sdk.AccAddress `json:"address"`
-	Consumed  sdk.Int        `json:"consumed"`
-	Allocated sdk.Int        `json:"allocated"`
+func (q Quota) GetAddress() sdk.AccAddress {
+	if q.Address == "" {
+		return nil
+	}
+
+	address, err := sdk.AccAddressFromBech32(q.Address)
+	if err != nil {
+		panic(err)
+	}
+
+	return address
 }
 
 func (q Quota) String() string {
@@ -22,7 +29,7 @@ Allocated: %s
 }
 
 func (q Quota) Validate() error {
-	if q.Address == nil || q.Address.Empty() {
+	if _, err := sdk.AccAddressFromBech32(q.Address); err != nil {
 		return fmt.Errorf("address should not be nil or empty")
 	}
 	if q.Consumed.IsNegative() {
