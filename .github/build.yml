@@ -1,0 +1,14 @@
+name: build
+on: [push, pull_request]
+
+
+jobs:
+  build:
+    runs-on: ubuntu-latest   
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup go
+        uses: actions/setup-go@v1
+      - run: |
+             go mod download
+             make all
