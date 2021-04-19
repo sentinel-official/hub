@@ -5,12 +5,12 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	hub "github.com/sentinel-official/hub/types"
+	hubtypes "github.com/sentinel-official/hub/types"
 	"github.com/sentinel-official/hub/x/session/keeper"
 	"github.com/sentinel-official/hub/x/session/types"
 )
 
-func InitGenesis(ctx sdk.Context, k keeper.Keeper, state types.GenesisState) {
+func InitGenesis(ctx sdk.Context, k keeper.Keeper, state *types.GenesisState) {
 	k.SetParams(ctx, state.Params)
 	for _, session := range state.Sessions {
 		var (
@@ -23,7 +23,7 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, state types.GenesisState) {
 		k.SetSessionForNode(ctx, sessionNode, session.Id)
 		k.SetSessionForAddress(ctx, sessionAddress, session.Id)
 
-		if session.Status.Equal(hub.StatusActive) {
+		if session.Status.Equal(hubtypes.StatusActive) {
 			k.SetActiveSessionForAddress(ctx, sessionAddress, session.Subscription, sessionNode, session.Id)
 			k.SetActiveSessionAt(ctx, session.StatusAt, session.Id)
 		}
@@ -32,14 +32,14 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, state types.GenesisState) {
 	k.SetCount(ctx, uint64(len(state.Sessions)))
 }
 
-func ExportGenesis(ctx sdk.Context, k keeper.Keeper) types.GenesisState {
+func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 	return types.NewGenesisState(
 		k.GetSessions(ctx, 0, 0),
 		k.GetParams(ctx),
 	)
 }
 
-func ValidateGenesis(state types.GenesisState) error {
+func ValidateGenesis(state *types.GenesisState) error {
 	if err := state.Params.Validate(); err != nil {
 		return err
 	}

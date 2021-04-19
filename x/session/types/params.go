@@ -20,7 +20,7 @@ var (
 
 var _ params.ParamSet = (*Params)(nil)
 
-func (p Params) String() string {
+func (p *Params) String() string {
 	return fmt.Sprintf(strings.TrimSpace(`
 Inactive duration:          %s
 Proof verification enabled: %t
@@ -46,7 +46,7 @@ func (p *Params) ParamSetPairs() params.ParamSetPairs {
 	}
 }
 
-func (p Params) Validate() error {
+func (p *Params) Validate() error {
 	if p.InactiveDuration <= 0 {
 		return fmt.Errorf("inactive_duration should be positive")
 	}

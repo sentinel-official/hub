@@ -53,7 +53,7 @@ func NewKeeper(cdc codec.BinaryMarshaler, key sdk.StoreKey, paramsKeeper params.
 	subscriptionKeeper.WithPlanKeeper(&planKeeper)
 
 	sessionKeeper.WithAccountKeeper(accountKeeper)
-	sessionKeeper.WithDepositKeeper(depositKeeper)
+	sessionKeeper.WithDepositKeeper(&depositKeeper)
 	sessionKeeper.WithPlanKeeper(&planKeeper)
 	sessionKeeper.WithSubscriptionKeeper(&subscriptionKeeper)
 

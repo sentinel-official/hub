@@ -22,7 +22,7 @@ var (
 
 var _ params.ParamSet = (*Params)(nil)
 
-func (p Params) String() string {
+func (p *Params) String() string {
 	return fmt.Sprintf(strings.TrimSpace(`
 Swap enabled: %s
 Swap denom  : %s
@@ -30,7 +30,7 @@ Approve by  : %s
 `), p.SwapEnabled, p.SwapDenom, p.ApproveBy)
 }
 
-func (p Params) Validate() error {
+func (p *Params) Validate() error {
 	if err := sdk.ValidateDenom(p.SwapDenom); err != nil {
 		return err
 	}

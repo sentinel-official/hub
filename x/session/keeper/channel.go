@@ -4,11 +4,11 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	protobuf "github.com/gogo/protobuf/types"
 
-	hub "github.com/sentinel-official/hub/types"
+	hubtypes "github.com/sentinel-official/hub/types"
 	"github.com/sentinel-official/hub/x/session/types"
 )
 
-func (k Keeper) SetChannel(ctx sdk.Context, address sdk.AccAddress, subscription uint64, node hub.NodeAddress, channel uint64) {
+func (k *Keeper) SetChannel(ctx sdk.Context, address sdk.AccAddress, subscription uint64, node hubtypes.NodeAddress, channel uint64) {
 	key := types.ChannelKey(address, subscription, node)
 	value := k.cdc.MustMarshalBinaryBare(&protobuf.UInt64Value{Value: channel})
 
@@ -16,7 +16,7 @@ func (k Keeper) SetChannel(ctx sdk.Context, address sdk.AccAddress, subscription
 	store.Set(key, value)
 }
 
-func (k Keeper) GetChannel(ctx sdk.Context, address sdk.AccAddress, subscription uint64, node hub.NodeAddress) uint64 {
+func (k *Keeper) GetChannel(ctx sdk.Context, address sdk.AccAddress, subscription uint64, node hubtypes.NodeAddress) uint64 {
 	store := k.Store(ctx)
 
 	key := types.ChannelKey(address, subscription, node)

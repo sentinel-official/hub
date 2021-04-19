@@ -4,15 +4,15 @@ import (
 	"fmt"
 	"strings"
 
-	hub "github.com/sentinel-official/hub/types"
+	hubtypes "github.com/sentinel-official/hub/types"
 )
 
-func (p Provider) GetAddress() hub.ProvAddress {
+func (p *Provider) GetAddress() hubtypes.ProvAddress {
 	if p.Address == "" {
 		return nil
 	}
 
-	address, err := hub.ProvAddressFromBech32(p.Address)
+	address, err := hubtypes.ProvAddressFromBech32(p.Address)
 	if err != nil {
 		panic(err)
 	}
@@ -20,7 +20,7 @@ func (p Provider) GetAddress() hub.ProvAddress {
 	return address
 }
 
-func (p Provider) String() string {
+func (p *Provider) String() string {
 	return strings.TrimSpace(fmt.Sprintf(`
 Address:     %s
 Name:        %s
@@ -30,8 +30,8 @@ Description: %s
 `, p.Address, p.Identity, p.Name, p.Website, p.Description))
 }
 
-func (p Provider) Validate() error {
-	if _, err := hub.ProvAddressFromBech32(p.Address); err != nil {
+func (p *Provider) Validate() error {
+	if _, err := hubtypes.ProvAddressFromBech32(p.Address); err != nil {
 		return fmt.Errorf("address should not be nil or empty")
 	}
 	if len(p.Name) == 0 || len(p.Name) > 64 {

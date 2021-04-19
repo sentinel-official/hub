@@ -3,11 +3,11 @@ package keeper
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	hub "github.com/sentinel-official/hub/types"
+	hubtypes "github.com/sentinel-official/hub/types"
 	"github.com/sentinel-official/hub/x/subscription/types"
 )
 
-func (k Keeper) SetQuota(ctx sdk.Context, id uint64, quota types.Quota) {
+func (k *Keeper) SetQuota(ctx sdk.Context, id uint64, quota types.Quota) {
 	key := types.QuotaKey(id, quota.GetAddress())
 	value := k.cdc.MustMarshalBinaryBare(&quota)
 
@@ -15,7 +15,7 @@ func (k Keeper) SetQuota(ctx sdk.Context, id uint64, quota types.Quota) {
 	store.Set(key, value)
 }
 
-func (k Keeper) GetQuota(ctx sdk.Context, id uint64, address sdk.AccAddress) (quota types.Quota, found bool) {
+func (k *Keeper) GetQuota(ctx sdk.Context, id uint64, address sdk.AccAddress) (quota types.Quota, found bool) {
 	store := k.Store(ctx)
 
 	key := types.QuotaKey(id, address)
@@ -28,24 +28,24 @@ func (k Keeper) GetQuota(ctx sdk.Context, id uint64, address sdk.AccAddress) (qu
 	return quota, true
 }
 
-func (k Keeper) HasQuota(ctx sdk.Context, id uint64, address sdk.AccAddress) bool {
+func (k *Keeper) HasQuota(ctx sdk.Context, id uint64, address sdk.AccAddress) bool {
 	key := types.QuotaKey(id, address)
 
 	store := k.Store(ctx)
 	return store.Has(key)
 }
 
-func (k Keeper) DeleteQuota(ctx sdk.Context, id uint64, address sdk.AccAddress) {
+func (k *Keeper) DeleteQuota(ctx sdk.Context, id uint64, address sdk.AccAddress) {
 	key := types.QuotaKey(id, address)
 
 	store := k.Store(ctx)
 	store.Delete(key)
 }
 
-func (k Keeper) GetQuotas(ctx sdk.Context, id uint64, skip, limit int) (items types.Quotas) {
+func (k *Keeper) GetQuotas(ctx sdk.Context, id uint64, skip, limit int) (items types.Quotas) {
 	var (
 		store = k.Store(ctx)
-		iter  = hub.NewPaginatedIterator(
+		iter  = hubtypes.NewPaginatedIterator(
 			sdk.KVStorePrefixIterator(store, types.GetQuotaKeyPrefix(id)),
 		)
 	)
@@ -62,7 +62,7 @@ func (k Keeper) GetQuotas(ctx sdk.Context, id uint64, skip, limit int) (items ty
 	return items
 }
 
-func (k Keeper) IterateQuotas(ctx sdk.Context, id uint64, fn func(index int, item types.Quota) (stop bool)) {
+func (k *Keeper) IterateQuotas(ctx sdk.Context, id uint64, fn func(index int, item types.Quota) (stop bool)) {
 	store := k.Store(ctx)
 
 	iter := sdk.KVStorePrefixIterator(store, types.GetQuotaKeyPrefix(id))

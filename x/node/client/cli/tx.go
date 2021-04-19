@@ -7,7 +7,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/spf13/cobra"
 
-	hub "github.com/sentinel-official/hub/types"
+	hubtypes "github.com/sentinel-official/hub/types"
 	"github.com/sentinel-official/hub/x/node/types"
 )
 
@@ -26,9 +26,9 @@ func txRegister() *cobra.Command {
 				return err
 			}
 
-			var provider hub.ProvAddress
+			var provider hubtypes.ProvAddress
 			if len(s) > 0 {
-				provider, err = hub.ProvAddressFromBech32(s)
+				provider, err = hubtypes.ProvAddressFromBech32(s)
 				if err != nil {
 					return err
 				}
@@ -86,9 +86,9 @@ func txUpdate() *cobra.Command {
 				return err
 			}
 
-			var provider hub.ProvAddress
+			var provider hubtypes.ProvAddress
 			if len(s) > 0 {
-				provider, err = hub.ProvAddressFromBech32(s)
+				provider, err = hubtypes.ProvAddressFromBech32(s)
 				if err != nil {
 					return err
 				}
@@ -140,7 +140,7 @@ func txSetStatus() *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgSetStatusRequest(ctx.FromAddress.Bytes(), hub.StatusFromString(args[0]))
+			msg := types.NewMsgSetStatusRequest(ctx.FromAddress.Bytes(), hubtypes.StatusFromString(args[0]))
 			if err := msg.ValidateBasic(); err != nil {
 				return err
 			}

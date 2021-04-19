@@ -10,12 +10,12 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	hub "github.com/sentinel-official/hub/types"
+	hubtypes "github.com/sentinel-official/hub/types"
 	"github.com/sentinel-official/hub/x/node/types"
 )
 
 var (
-	_ types.QueryServiceServer = &queryServer{}
+	_ types.QueryServiceServer = (*queryServer)(nil)
 )
 
 type queryServer struct {
@@ -31,7 +31,7 @@ func (q *queryServer) QueryNode(c context.Context, req *types.QueryNodeRequest) 
 		return nil, status.Error(codes.InvalidArgument, "empty request")
 	}
 
-	address, err := hub.NodeAddressFromBech32(req.Address)
+	address, err := hubtypes.NodeAddressFromBech32(req.Address)
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid address %s", req.Address)
 	}
@@ -57,7 +57,7 @@ func (q *queryServer) QueryNodes(c context.Context, req *types.QueryNodesRequest
 		ctx        = sdk.UnwrapSDKContext(c)
 	)
 
-	if req.Status.Equal(hub.Active) {
+	if req.Status.Equal(hubtypes.Active) {
 		store := prefix.NewStore(q.Store(ctx), types.ActiveNodeKeyPrefix)
 		pagination, err = query.FilteredPaginate(store, req.Pagination, func(key, _ []byte, accumulate bool) (bool, error) {
 			item, found := q.GetNode(ctx, types.AddressFromStatusNodeKey(key))
@@ -71,7 +71,7 @@ func (q *queryServer) QueryNodes(c context.Context, req *types.QueryNodesRequest
 
 			return true, nil
 		})
-	} else if req.Status.Equal(hub.Inactive) {
+	} else if req.Status.Equal(hubtypes.Inactive) {
 		store := prefix.NewStore(q.Store(ctx), types.InactiveNodeKeyPrefix)
 		pagination, err = query.FilteredPaginate(store, req.Pagination, func(key, _ []byte, accumulate bool) (bool, error) {
 			item, found := q.GetNode(ctx, types.AddressFromStatusNodeKey(key))
@@ -113,7 +113,7 @@ func (q *queryServer) QueryNodesForProvider(c context.Context, req *types.QueryN
 		return nil, status.Error(codes.InvalidArgument, "empty request")
 	}
 
-	provider, err := hub.ProvAddressFromBech32(req.Address)
+	provider, err := hubtypes.ProvAddressFromBech32(req.Address)
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid address %s", req.Address)
 	}
@@ -124,7 +124,7 @@ func (q *queryServer) QueryNodesForProvider(c context.Context, req *types.QueryN
 		ctx        = sdk.UnwrapSDKContext(c)
 	)
 
-	if req.Status.Equal(hub.Active) {
+	if req.Status.Equal(hubtypes.Active) {
 		store := prefix.NewStore(q.Store(ctx), types.GetActiveNodeForProviderKeyPrefix(provider))
 		pagination, err = query.FilteredPaginate(store, req.Pagination, func(key, _ []byte, accumulate bool) (bool, error) {
 			item, found := q.GetNode(ctx, types.AddressFromStatusNodeForProviderKey(key))
@@ -138,7 +138,7 @@ func (q *queryServer) QueryNodesForProvider(c context.Context, req *types.QueryN
 
 			return true, nil
 		})
-	} else if req.Status.Equal(hub.Inactive) {
+	} else if req.Status.Equal(hubtypes.Inactive) {
 		store := prefix.NewStore(q.Store(ctx), types.GetInactiveNodeForProviderKeyPrefix(provider))
 		pagination, err = query.FilteredPaginate(store, req.Pagination, func(key, _ []byte, accumulate bool) (bool, error) {
 			item, found := q.GetNode(ctx, types.AddressFromStatusNodeForProviderKey(key))

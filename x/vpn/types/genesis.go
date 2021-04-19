@@ -9,8 +9,8 @@ import (
 	"github.com/sentinel-official/hub/x/subscription"
 )
 
-func NewGenesisState(deposits deposit.GenesisState, providers provider.GenesisState, nodes node.GenesisState,
-	plans plan.GenesisState, subscriptions subscription.GenesisState, sessions session.GenesisState) *GenesisState {
+func NewGenesisState(deposits deposit.GenesisState, providers *provider.GenesisState, nodes *node.GenesisState,
+	plans plan.GenesisState, subscriptions *subscription.GenesisState, sessions *session.GenesisState) *GenesisState {
 	return &GenesisState{
 		Deposits:      deposits,
 		Providers:     providers,
@@ -45,12 +45,12 @@ func (s *GenesisState) Validate() error {
 }
 
 func DefaultGenesisState() *GenesisState {
-	return &GenesisState{
-		Deposits:      deposit.DefaultGenesisState(),
-		Providers:     provider.DefaultGenesisState(),
-		Nodes:         node.DefaultGenesisState(),
-		Plans:         plan.DefaultGenesisState(),
-		Subscriptions: subscription.DefaultGenesisState(),
-		Sessions:      session.DefaultGenesisState(),
-	}
+	return NewGenesisState(
+		deposit.DefaultGenesisState(),
+		provider.DefaultGenesisState(),
+		node.DefaultGenesisState(),
+		plan.DefaultGenesisState(),
+		subscription.DefaultGenesisState(),
+		session.DefaultGenesisState(),
+	)
 }

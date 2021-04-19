@@ -5,11 +5,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/query"
 )
 
-const (
-	QueryDeposit  = "deposit"
-	QueryDeposits = "deposits"
-)
-
 func NewQueryDepositRequest(address sdk.AccAddress) *QueryDepositRequest {
 	return &QueryDepositRequest{
 		Address: address.String(),

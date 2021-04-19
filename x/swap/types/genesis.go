@@ -36,8 +36,5 @@ func (s *GenesisState) Validate() error {
 }
 
 func DefaultGenesisState() *GenesisState {
-	return &GenesisState{
-		Swaps:  nil,
-		Params: DefaultParams(),
-	}
+	return NewGenesisState(nil, DefaultParams())
 }

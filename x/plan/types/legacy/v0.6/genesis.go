@@ -6,7 +6,7 @@ import (
 )
 
 func MigrateGenesisPlan(item legacy.GenesisPlan) types.GenesisPlan {
-	var nodes []string
+	var nodes = make([]string, 0, len(item.Nodes))
 	for _, item := range item.Nodes {
 		nodes = append(nodes, item.String())
 	}

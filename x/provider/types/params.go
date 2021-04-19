@@ -20,13 +20,13 @@ var (
 	_ params.ParamSet = (*Params)(nil)
 )
 
-func (p Params) String() string {
+func (p *Params) String() string {
 	return fmt.Sprintf(strings.TrimSpace(`
 Deposit: %s
 `), p.Deposit)
 }
 
-func (p Params) Validate() error {
+func (p *Params) Validate() error {
 	if !p.Deposit.IsValid() {
 		return fmt.Errorf("deposit should be valid")
 	}

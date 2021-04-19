@@ -7,7 +7,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/spf13/cobra"
 
-	hub "github.com/sentinel-official/hub/types"
+	hubtypes "github.com/sentinel-official/hub/types"
 	"github.com/sentinel-official/hub/x/provider/types"
 )
 
@@ -22,7 +22,7 @@ func queryProvider() *cobra.Command {
 				return err
 			}
 
-			address, err := hub.ProvAddressFromBech32(args[0])
+			address, err := hubtypes.ProvAddressFromBech32(args[0])
 			if err != nil {
 				return err
 			}

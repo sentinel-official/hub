@@ -7,7 +7,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-func (q Quota) GetAddress() sdk.AccAddress {
+func (q *Quota) GetAddress() sdk.AccAddress {
 	if q.Address == "" {
 		return nil
 	}
@@ -20,7 +20,7 @@ func (q Quota) GetAddress() sdk.AccAddress {
 	return address
 }
 
-func (q Quota) String() string {
+func (q *Quota) String() string {
 	return fmt.Sprintf(strings.TrimSpace(`
 Address:   %s
 Consumed:  %s
@@ -28,7 +28,7 @@ Allocated: %s
 `), q.Address, q.Consumed, q.Allocated)
 }
 
-func (q Quota) Validate() error {
+func (q *Quota) Validate() error {
 	if _, err := sdk.AccAddressFromBech32(q.Address); err != nil {
 		return fmt.Errorf("address should not be nil or empty")
 	}

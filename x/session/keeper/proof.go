@@ -8,7 +8,7 @@ import (
 	"github.com/sentinel-official/hub/x/session/types"
 )
 
-func (k Keeper) VerifyProof(ctx sdk.Context, address sdk.AccAddress, proof types.Proof, signature []byte) error {
+func (k *Keeper) VerifyProof(ctx sdk.Context, address sdk.AccAddress, proof types.Proof, signature []byte) error {
 	account := k.GetAccount(ctx, address)
 	if account == nil {
 		return fmt.Errorf("account does not exist")

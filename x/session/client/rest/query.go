@@ -10,7 +10,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/rest"
 	"github.com/gorilla/mux"
 
-	hub "github.com/sentinel-official/hub/types"
+	hubtypes "github.com/sentinel-official/hub/types"
 	"github.com/sentinel-official/hub/x/session/types"
 )
 
@@ -63,7 +63,7 @@ func querySessions(ctx client.Context) http.HandlerFunc {
 			rest.PostProcessResponse(w, ctx, res)
 			return
 		} else if query.Get("node") != "" {
-			address, err := hub.NodeAddressFromBech32(query.Get("node"))
+			address, err := hubtypes.NodeAddressFromBech32(query.Get("node"))
 			if err != nil {
 				rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 				return
@@ -85,9 +85,9 @@ func querySessions(ctx client.Context) http.HandlerFunc {
 				return
 			}
 
-			var status hub.Status
+			var status hubtypes.Status
 			if query.Get("active") != "" {
-				status = hub.StatusActive
+				status = hubtypes.StatusActive
 			}
 
 			res, err := qc.QuerySessionsForAddress(context.Background(),

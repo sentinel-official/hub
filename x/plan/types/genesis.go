@@ -2,16 +2,14 @@ package types
 
 type (
 	GenesisPlans []GenesisPlan
-)
 
-type (
-	GenesisState = GenesisPlans
+	GenesisState GenesisPlans
 )
 
 func NewGenesisState(plans GenesisPlans) GenesisState {
-	return plans
+	return GenesisState(plans)
 }
 
 func DefaultGenesisState() GenesisState {
-	return nil
+	return NewGenesisState(nil)
 }

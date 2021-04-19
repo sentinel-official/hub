@@ -6,11 +6,11 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	protobuf "github.com/gogo/protobuf/types"
 
-	hub "github.com/sentinel-official/hub/types"
+	hubtypes "github.com/sentinel-official/hub/types"
 	"github.com/sentinel-official/hub/x/node/types"
 )
 
-func (k Keeper) SetNode(ctx sdk.Context, node types.Node) {
+func (k *Keeper) SetNode(ctx sdk.Context, node types.Node) {
 	key := types.NodeKey(node.GetAddress())
 	value := k.cdc.MustMarshalBinaryBare(&node)
 
@@ -18,14 +18,14 @@ func (k Keeper) SetNode(ctx sdk.Context, node types.Node) {
 	store.Set(key, value)
 }
 
-func (k Keeper) HasNode(ctx sdk.Context, address hub.NodeAddress) bool {
+func (k *Keeper) HasNode(ctx sdk.Context, address hubtypes.NodeAddress) bool {
 	store := k.Store(ctx)
 
 	key := types.NodeKey(address)
 	return store.Has(key)
 }
 
-func (k Keeper) GetNode(ctx sdk.Context, address hub.NodeAddress) (node types.Node, found bool) {
+func (k *Keeper) GetNode(ctx sdk.Context, address hubtypes.NodeAddress) (node types.Node, found bool) {
 	store := k.Store(ctx)
 
 	key := types.NodeKey(address)
@@ -38,10 +38,10 @@ func (k Keeper) GetNode(ctx sdk.Context, address hub.NodeAddress) (node types.No
 	return node, true
 }
 
-func (k Keeper) GetNodes(ctx sdk.Context, skip, limit int) (items types.Nodes) {
+func (k *Keeper) GetNodes(ctx sdk.Context, skip, limit int) (items types.Nodes) {
 	var (
 		store = k.Store(ctx)
-		iter  = hub.NewPaginatedIterator(
+		iter  = hubtypes.NewPaginatedIterator(
 			sdk.KVStorePrefixIterator(store, types.NodeKeyPrefix),
 		)
 	)
@@ -58,7 +58,7 @@ func (k Keeper) GetNodes(ctx sdk.Context, skip, limit int) (items types.Nodes) {
 	return items
 }
 
-func (k Keeper) IterateNodes(ctx sdk.Context, fn func(index int, item types.Node) (stop bool)) {
+func (k *Keeper) IterateNodes(ctx sdk.Context, fn func(index int, item types.Node) (stop bool)) {
 	store := k.Store(ctx)
 
 	iter := sdk.KVStorePrefixIterator(store, types.NodeKeyPrefix)
@@ -75,7 +75,7 @@ func (k Keeper) IterateNodes(ctx sdk.Context, fn func(index int, item types.Node
 	}
 }
 
-func (k Keeper) SetActiveNode(ctx sdk.Context, address hub.NodeAddress) {
+func (k *Keeper) SetActiveNode(ctx sdk.Context, address hubtypes.NodeAddress) {
 	key := types.ActiveNodeKey(address)
 	value := k.cdc.MustMarshalBinaryBare(&protobuf.BoolValue{Value: true})
 
@@ -83,17 +83,17 @@ func (k Keeper) SetActiveNode(ctx sdk.Context, address hub.NodeAddress) {
 	store.Set(key, value)
 }
 
-func (k Keeper) DeleteActiveNode(ctx sdk.Context, address hub.NodeAddress) {
+func (k *Keeper) DeleteActiveNode(ctx sdk.Context, address hubtypes.NodeAddress) {
 	key := types.ActiveNodeKey(address)
 
 	store := k.Store(ctx)
 	store.Delete(key)
 }
 
-func (k Keeper) GetActiveNodes(ctx sdk.Context, skip, limit int) (items types.Nodes) {
+func (k *Keeper) GetActiveNodes(ctx sdk.Context, skip, limit int) (items types.Nodes) {
 	var (
 		store = k.Store(ctx)
-		iter  = hub.NewPaginatedIterator(
+		iter  = hubtypes.NewPaginatedIterator(
 			sdk.KVStorePrefixIterator(store, types.ActiveNodeKeyPrefix),
 		)
 	)
@@ -109,7 +109,7 @@ func (k Keeper) GetActiveNodes(ctx sdk.Context, skip, limit int) (items types.No
 	return items
 }
 
-func (k Keeper) SetInactiveNode(ctx sdk.Context, address hub.NodeAddress) {
+func (k *Keeper) SetInactiveNode(ctx sdk.Context, address hubtypes.NodeAddress) {
 	key := types.InactiveNodeKey(address)
 	value := k.cdc.MustMarshalBinaryBare(&protobuf.BoolValue{Value: true})
 
@@ -117,17 +117,17 @@ func (k Keeper) SetInactiveNode(ctx sdk.Context, address hub.NodeAddress) {
 	store.Set(key, value)
 }
 
-func (k Keeper) DeleteInactiveNode(ctx sdk.Context, address hub.NodeAddress) {
+func (k *Keeper) DeleteInactiveNode(ctx sdk.Context, address hubtypes.NodeAddress) {
 	key := types.InactiveNodeKey(address)
 
 	store := k.Store(ctx)
 	store.Delete(key)
 }
 
-func (k Keeper) GetInactiveNodes(ctx sdk.Context, skip, limit int) (items types.Nodes) {
+func (k *Keeper) GetInactiveNodes(ctx sdk.Context, skip, limit int) (items types.Nodes) {
 	var (
 		store = k.Store(ctx)
-		iter  = hub.NewPaginatedIterator(
+		iter  = hubtypes.NewPaginatedIterator(
 			sdk.KVStorePrefixIterator(store, types.InactiveNodeKeyPrefix),
 		)
 	)
@@ -143,7 +143,7 @@ func (k Keeper) GetInactiveNodes(ctx sdk.Context, skip, limit int) (items types.
 	return items
 }
 
-func (k Keeper) SetActiveNodeForProvider(ctx sdk.Context, provider hub.ProvAddress, address hub.NodeAddress) {
+func (k *Keeper) SetActiveNodeForProvider(ctx sdk.Context, provider hubtypes.ProvAddress, address hubtypes.NodeAddress) {
 	key := types.ActiveNodeForProviderKey(provider, address)
 	value := k.cdc.MustMarshalBinaryBare(&protobuf.BoolValue{Value: true})
 
@@ -151,17 +151,17 @@ func (k Keeper) SetActiveNodeForProvider(ctx sdk.Context, provider hub.ProvAddre
 	store.Set(key, value)
 }
 
-func (k Keeper) DeleteActiveNodeForProvider(ctx sdk.Context, provider hub.ProvAddress, address hub.NodeAddress) {
+func (k *Keeper) DeleteActiveNodeForProvider(ctx sdk.Context, provider hubtypes.ProvAddress, address hubtypes.NodeAddress) {
 	store := k.Store(ctx)
 
 	key := types.ActiveNodeForProviderKey(provider, address)
 	store.Delete(key)
 }
 
-func (k Keeper) GetActiveNodesForProvider(ctx sdk.Context, address hub.ProvAddress, skip, limit int) (items types.Nodes) {
+func (k *Keeper) GetActiveNodesForProvider(ctx sdk.Context, address hubtypes.ProvAddress, skip, limit int) (items types.Nodes) {
 	var (
 		store = k.Store(ctx)
-		iter  = hub.NewPaginatedIterator(
+		iter  = hubtypes.NewPaginatedIterator(
 			sdk.KVStorePrefixIterator(store, types.GetActiveNodeForProviderKeyPrefix(address)),
 		)
 	)
@@ -177,7 +177,7 @@ func (k Keeper) GetActiveNodesForProvider(ctx sdk.Context, address hub.ProvAddre
 	return items
 }
 
-func (k Keeper) SetInactiveNodeForProvider(ctx sdk.Context, provider hub.ProvAddress, address hub.NodeAddress) {
+func (k *Keeper) SetInactiveNodeForProvider(ctx sdk.Context, provider hubtypes.ProvAddress, address hubtypes.NodeAddress) {
 	key := types.InactiveNodeForProviderKey(provider, address)
 	value := k.cdc.MustMarshalBinaryBare(&protobuf.BoolValue{Value: true})
 
@@ -185,17 +185,17 @@ func (k Keeper) SetInactiveNodeForProvider(ctx sdk.Context, provider hub.ProvAdd
 	store.Set(key, value)
 }
 
-func (k Keeper) DeleteInactiveNodeForProvider(ctx sdk.Context, provider hub.ProvAddress, address hub.NodeAddress) {
+func (k *Keeper) DeleteInactiveNodeForProvider(ctx sdk.Context, provider hubtypes.ProvAddress, address hubtypes.NodeAddress) {
 	store := k.Store(ctx)
 
 	key := types.InactiveNodeForProviderKey(provider, address)
 	store.Delete(key)
 }
 
-func (k Keeper) GetInactiveNodesForProvider(ctx sdk.Context, address hub.ProvAddress, skip, limit int) (items types.Nodes) {
+func (k *Keeper) GetInactiveNodesForProvider(ctx sdk.Context, address hubtypes.ProvAddress, skip, limit int) (items types.Nodes) {
 	var (
 		store = k.Store(ctx)
-		iter  = hub.NewPaginatedIterator(
+		iter  = hubtypes.NewPaginatedIterator(
 			sdk.KVStorePrefixIterator(store, types.GetInactiveNodeForProviderKeyPrefix(address)),
 		)
 	)
@@ -211,10 +211,10 @@ func (k Keeper) GetInactiveNodesForProvider(ctx sdk.Context, address hub.ProvAdd
 	return items
 }
 
-func (k Keeper) GetNodesForProvider(ctx sdk.Context, address hub.ProvAddress, skip, limit int) (items types.Nodes) {
+func (k *Keeper) GetNodesForProvider(ctx sdk.Context, address hubtypes.ProvAddress, skip, limit int) (items types.Nodes) {
 	var (
 		store = k.Store(ctx)
-		iter  = hub.NewPaginatedIterator(
+		iter  = hubtypes.NewPaginatedIterator(
 			sdk.KVStorePrefixIterator(store, types.GetActiveNodeForProviderKeyPrefix(address)),
 			sdk.KVStorePrefixIterator(store, types.GetInactiveNodeForProviderKeyPrefix(address)),
 		)
@@ -231,7 +231,7 @@ func (k Keeper) GetNodesForProvider(ctx sdk.Context, address hub.ProvAddress, sk
 	return items
 }
 
-func (k Keeper) SetInactiveNodeAt(ctx sdk.Context, at time.Time, address hub.NodeAddress) {
+func (k *Keeper) SetInactiveNodeAt(ctx sdk.Context, at time.Time, address hubtypes.NodeAddress) {
 	key := types.InactiveNodeAtKey(at, address)
 	value := k.cdc.MustMarshalBinaryBare(&protobuf.BoolValue{Value: true})
 
@@ -239,14 +239,14 @@ func (k Keeper) SetInactiveNodeAt(ctx sdk.Context, at time.Time, address hub.Nod
 	store.Set(key, value)
 }
 
-func (k Keeper) DeleteInactiveNodeAt(ctx sdk.Context, at time.Time, address hub.NodeAddress) {
+func (k *Keeper) DeleteInactiveNodeAt(ctx sdk.Context, at time.Time, address hubtypes.NodeAddress) {
 	key := types.InactiveNodeAtKey(at, address)
 
 	store := k.Store(ctx)
 	store.Delete(key)
 }
 
-func (k Keeper) IterateInactiveNodesAt(ctx sdk.Context, at time.Time, fn func(index int, item types.Node) (stop bool)) {
+func (k *Keeper) IterateInactiveNodesAt(ctx sdk.Context, at time.Time, fn func(index int, item types.Node) (stop bool)) {
 	store := k.Store(ctx)
 
 	iter := store.Iterator(types.InactiveNodeAtKeyPrefix, sdk.PrefixEndBytes(types.GetInactiveNodeAtKeyPrefix(at)))

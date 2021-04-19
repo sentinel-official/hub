@@ -10,7 +10,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/spf13/cobra"
 
-	hub "github.com/sentinel-official/hub/types"
+	hubtypes "github.com/sentinel-official/hub/types"
 	"github.com/sentinel-official/hub/x/plan/types"
 )
 
@@ -89,7 +89,7 @@ func txSetStatus() *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgSetStatusRequest(ctx.FromAddress.Bytes(), id, hub.StatusFromString(args[1]))
+			msg := types.NewMsgSetStatusRequest(ctx.FromAddress.Bytes(), id, hubtypes.StatusFromString(args[1]))
 			if err := msg.ValidateBasic(); err != nil {
 				return err
 			}
@@ -119,7 +119,7 @@ func txAddNode() *cobra.Command {
 				return err
 			}
 
-			node, err := hub.NodeAddressFromBech32(args[1])
+			node, err := hubtypes.NodeAddressFromBech32(args[1])
 			if err != nil {
 				return err
 			}
@@ -152,7 +152,7 @@ func txRemoveNode() *cobra.Command {
 				return err
 			}
 
-			node, err := hub.NodeAddressFromBech32(args[1])
+			node, err := hubtypes.NodeAddressFromBech32(args[1])
 			if err != nil {
 				return err
 			}

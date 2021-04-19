@@ -6,12 +6,12 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	hub "github.com/sentinel-official/hub/types"
+	hubtypes "github.com/sentinel-official/hub/types"
 	"github.com/sentinel-official/hub/x/subscription/types"
 )
 
 var (
-	_ types.MsgServiceServer = server{}
+	_ types.MsgServiceServer = (*server)(nil)
 )
 
 type server struct {
@@ -22,10 +22,10 @@ func NewMsgServiceServer(keeper Keeper) types.MsgServiceServer {
 	return &server{Keeper: keeper}
 }
 
-func (k server) MsgSubscribeToNode(c context.Context, msg *types.MsgSubscribeToNodeRequest) (*types.MsgSubscribeToNodeResponse, error) {
+func (k *server) MsgSubscribeToNode(c context.Context, msg *types.MsgSubscribeToNodeRequest) (*types.MsgSubscribeToNodeResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
-	msgAddress, err := hub.NodeAddressFromBech32(msg.Address)
+	msgAddress, err := hubtypes.NodeAddressFromBech32(msg.Address)
 	if err != nil {
 		return nil, err
 	}
@@ -37,7 +37,7 @@ func (k server) MsgSubscribeToNode(c context.Context, msg *types.MsgSubscribeToN
 	if node.Provider != "" {
 		return nil, types.ErrorCanNotSubscribe
 	}
-	if !node.Status.Equal(hub.StatusActive) {
+	if !node.Status.Equal(hubtypes.StatusActive) {
 		return nil, types.ErrorInvalidNodeStatus
 	}
 
@@ -64,7 +64,7 @@ func (k server) MsgSubscribeToNode(c context.Context, msg *types.MsgSubscribeToN
 			Price:    price,
 			Deposit:  msg.Deposit,
 			Free:     sdk.ZeroInt(),
-			Status:   hub.StatusActive,
+			Status:   hubtypes.StatusActive,
 			StatusAt: ctx.BlockTime(),
 		}
 		subscriptionNode = subscription.GetNode()
@@ -108,14 +108,14 @@ func (k server) MsgSubscribeToNode(c context.Context, msg *types.MsgSubscribeToN
 	return &types.MsgSubscribeToNodeResponse{}, nil
 }
 
-func (k server) MsgSubscribeToPlan(c context.Context, msg *types.MsgSubscribeToPlanRequest) (*types.MsgSubscribeToPlanResponse, error) {
+func (k *server) MsgSubscribeToPlan(c context.Context, msg *types.MsgSubscribeToPlanRequest) (*types.MsgSubscribeToPlanResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
 	plan, found := k.GetPlan(ctx, msg.Id)
 	if !found {
 		return nil, types.ErrorPlanDoesNotExist
 	}
-	if !plan.Status.Equal(hub.StatusActive) {
+	if !plan.Status.Equal(hubtypes.StatusActive) {
 		return nil, types.ErrorInvalidPlanStatus
 	}
 
@@ -147,7 +147,7 @@ func (k server) MsgSubscribeToPlan(c context.Context, msg *types.MsgSubscribeToP
 			Plan:     plan.Id,
 			Expiry:   ctx.BlockTime().Add(plan.Validity),
 			Free:     sdk.ZeroInt(),
-			Status:   hub.StatusActive,
+			Status:   hubtypes.StatusActive,
 			StatusAt: ctx.BlockTime(),
 		}
 	)
@@ -190,7 +190,7 @@ func (k server) MsgSubscribeToPlan(c context.Context, msg *types.MsgSubscribeToP
 	return &types.MsgSubscribeToPlanResponse{}, nil
 }
 
-func (k server) MsgCancel(c context.Context, msg *types.MsgCancelRequest) (*types.MsgCancelResponse, error) {
+func (k *server) MsgCancel(c context.Context, msg *types.MsgCancelRequest) (*types.MsgCancelResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
 	subscription, found := k.GetSubscription(ctx, msg.Id)
@@ -200,13 +200,13 @@ func (k server) MsgCancel(c context.Context, msg *types.MsgCancelRequest) (*type
 	if msg.From != subscription.Owner {
 		return nil, types.ErrorUnauthorized
 	}
-	if !subscription.Status.Equal(hub.StatusActive) {
+	if !subscription.Status.Equal(hubtypes.StatusActive) {
 		return nil, types.ErrorInvalidSubscriptionStatus
 	}
 
 	subscription.StatusAt = ctx.BlockTime()
 	if subscription.Plan == 0 {
-		subscription.Status = hub.StatusInactivePending
+		subscription.Status = hubtypes.StatusInactivePending
 		k.SetInactiveSubscriptionAt(ctx, subscription.StatusAt.Add(k.InactiveDuration(ctx)), subscription.Id)
 	} else {
 		k.IterateQuotas(ctx, subscription.Id, func(_ int, quota types.Quota) bool {
@@ -219,7 +219,7 @@ func (k server) MsgCancel(c context.Context, msg *types.MsgCancelRequest) (*type
 			return false
 		})
 
-		subscription.Status = hub.StatusInactive
+		subscription.Status = hubtypes.StatusInactive
 		k.DeleteInactiveSubscriptionAt(ctx, subscription.Expiry, subscription.Id)
 	}
 
@@ -234,7 +234,7 @@ func (k server) MsgCancel(c context.Context, msg *types.MsgCancelRequest) (*type
 	return &types.MsgCancelResponse{}, nil
 }
 
-func (k server) MsgAddQuota(c context.Context, msg *types.MsgAddQuotaRequest) (*types.MsgAddQuotaResponse, error) {
+func (k *server) MsgAddQuota(c context.Context, msg *types.MsgAddQuotaRequest) (*types.MsgAddQuotaResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
 	msgAddress, err := sdk.AccAddressFromBech32(msg.Address)
@@ -252,7 +252,7 @@ func (k server) MsgAddQuota(c context.Context, msg *types.MsgAddQuotaRequest) (*
 	if msg.From != subscription.Owner {
 		return nil, types.ErrorUnauthorized
 	}
-	if !subscription.Status.Equal(hub.StatusActive) {
+	if !subscription.Status.Equal(hubtypes.StatusActive) {
 		return nil, types.ErrorInvalidSubscriptionStatus
 	}
 	if k.HasQuota(ctx, subscription.Id, msgAddress) {
@@ -287,7 +287,7 @@ func (k server) MsgAddQuota(c context.Context, msg *types.MsgAddQuotaRequest) (*
 	return &types.MsgAddQuotaResponse{}, nil
 }
 
-func (k server) MsgUpdateQuota(c context.Context, msg *types.MsgUpdateQuotaRequest) (*types.MsgUpdateQuotaResponse, error) {
+func (k *server) MsgUpdateQuota(c context.Context, msg *types.MsgUpdateQuotaRequest) (*types.MsgUpdateQuotaResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
 	subscription, found := k.GetSubscription(ctx, msg.Id)
@@ -297,7 +297,7 @@ func (k server) MsgUpdateQuota(c context.Context, msg *types.MsgUpdateQuotaReque
 	if msg.From != subscription.Owner {
 		return nil, types.ErrorUnauthorized
 	}
-	if !subscription.Status.Equal(hub.StatusActive) {
+	if !subscription.Status.Equal(hubtypes.StatusActive) {
 		return nil, types.ErrorInvalidSubscriptionStatus
 	}
 

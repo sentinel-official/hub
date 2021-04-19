@@ -142,8 +142,8 @@ func migrateFunc(state genutiltypes.AppMap, ctx client.Context) (genutiltypes.Ap
 	amino.MustUnmarshalJSON(state[v05swaptypes.ModuleName], &swapGenesis)
 	amino.MustUnmarshalJSON(state[v05vpntypes.ModuleName], &vpnGenesis)
 
-	state[swaptypes.ModuleName] = ctx.JSONMarshaler.MustMarshalJSON(v06swaptypes.MigrateGenesisState(swapGenesis))
-	state[vpntypes.ModuleName] = ctx.JSONMarshaler.MustMarshalJSON(v06vpntypes.MigrateGenesisState(vpnGenesis))
+	state[swaptypes.ModuleName] = ctx.JSONMarshaler.MustMarshalJSON(v06swaptypes.MigrateGenesisState(&swapGenesis))
+	state[vpntypes.ModuleName] = ctx.JSONMarshaler.MustMarshalJSON(v06vpntypes.MigrateGenesisState(&vpnGenesis))
 
 	return state, nil
 }

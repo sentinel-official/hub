@@ -6,12 +6,12 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	hub "github.com/sentinel-official/hub/types"
+	hubtypes "github.com/sentinel-official/hub/types"
 	"github.com/sentinel-official/hub/x/plan/types"
 )
 
 var (
-	_ types.MsgServiceServer = server{}
+	_ types.MsgServiceServer = (*server)(nil)
 )
 
 type server struct {
@@ -22,10 +22,10 @@ func NewMsgServiceServer(keeper Keeper) types.MsgServiceServer {
 	return &server{Keeper: keeper}
 }
 
-func (k server) MsgAdd(c context.Context, msg *types.MsgAddRequest) (*types.MsgAddResponse, error) {
+func (k *server) MsgAdd(c context.Context, msg *types.MsgAddRequest) (*types.MsgAddResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
-	msgFrom, err := hub.ProvAddressFromBech32(msg.From)
+	msgFrom, err := hubtypes.ProvAddressFromBech32(msg.From)
 	if err != nil {
 		return nil, err
 	}
@@ -41,7 +41,7 @@ func (k server) MsgAdd(c context.Context, msg *types.MsgAddRequest) (*types.MsgA
 			Price:    msg.Price,
 			Validity: msg.Validity,
 			Bytes:    msg.Bytes,
-			Status:   hub.StatusInactive,
+			Status:   hubtypes.StatusInactive,
 			StatusAt: ctx.BlockTime(),
 		}
 	)
@@ -69,7 +69,7 @@ func (k server) MsgAdd(c context.Context, msg *types.MsgAddRequest) (*types.MsgA
 	return &types.MsgAddResponse{}, nil
 }
 
-func (k server) MsgSetStatus(c context.Context, msg *types.MsgSetStatusRequest) (*types.MsgSetStatusResponse, error) {
+func (k *server) MsgSetStatus(c context.Context, msg *types.MsgSetStatusRequest) (*types.MsgSetStatusResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
 	plan, found := k.GetPlan(ctx, msg.Id)
@@ -84,8 +84,8 @@ func (k server) MsgSetStatus(c context.Context, msg *types.MsgSetStatusRequest) 
 		planProvider = plan.GetProvider()
 	)
 
-	if plan.Status.Equal(hub.StatusActive) {
-		if msg.Status.Equal(hub.StatusInactive) {
+	if plan.Status.Equal(hubtypes.StatusActive) {
+		if msg.Status.Equal(hubtypes.StatusInactive) {
 			k.DeleteActivePlan(ctx, plan.Id)
 			k.DeleteActivePlanForProvider(ctx, planProvider, plan.Id)
 
@@ -93,7 +93,7 @@ func (k server) MsgSetStatus(c context.Context, msg *types.MsgSetStatusRequest) 
 			k.SetInactivePlanForProvider(ctx, planProvider, plan.Id)
 		}
 	} else {
-		if msg.Status.Equal(hub.StatusActive) {
+		if msg.Status.Equal(hubtypes.StatusActive) {
 			k.DeleteInactivePlan(ctx, plan.Id)
 			k.DeleteInactivePlanForProvider(ctx, planProvider, plan.Id)
 
@@ -116,7 +116,7 @@ func (k server) MsgSetStatus(c context.Context, msg *types.MsgSetStatusRequest) 
 	return &types.MsgSetStatusResponse{}, nil
 }
 
-func (k server) MsgAddNode(c context.Context, msg *types.MsgAddNodeRequest) (*types.MsgAddNodeResponse, error) {
+func (k *server) MsgAddNode(c context.Context, msg *types.MsgAddNodeRequest) (*types.MsgAddNodeResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
 	plan, found := k.GetPlan(ctx, msg.Id)
@@ -127,7 +127,7 @@ func (k server) MsgAddNode(c context.Context, msg *types.MsgAddNodeRequest) (*ty
 		return nil, types.ErrorUnauthorized
 	}
 
-	msgAddress, err := hub.NodeAddressFromBech32(msg.Address)
+	msgAddress, err := hubtypes.NodeAddressFromBech32(msg.Address)
 	if err != nil {
 		return nil, err
 	}
@@ -155,7 +155,7 @@ func (k server) MsgAddNode(c context.Context, msg *types.MsgAddNodeRequest) (*ty
 	return &types.MsgAddNodeResponse{}, nil
 }
 
-func (k server) MsgRemoveNode(c context.Context, msg *types.MsgRemoveNodeRequest) (*types.MsgRemoveNodeResponse, error) {
+func (k *server) MsgRemoveNode(c context.Context, msg *types.MsgRemoveNodeRequest) (*types.MsgRemoveNodeResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
 	plan, found := k.GetPlan(ctx, msg.Id)
@@ -166,7 +166,7 @@ func (k server) MsgRemoveNode(c context.Context, msg *types.MsgRemoveNodeRequest
 		return nil, types.ErrorUnauthorized
 	}
 
-	msgAddress, err := hub.NodeAddressFromBech32(msg.Address)
+	msgAddress, err := hubtypes.NodeAddressFromBech32(msg.Address)
 	if err != nil {
 		return nil, err
 	}

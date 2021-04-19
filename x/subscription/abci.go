@@ -4,7 +4,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	abci "github.com/tendermint/tendermint/abci/types"
 
-	hub "github.com/sentinel-official/hub/types"
+	hubtypes "github.com/sentinel-official/hub/types"
 	"github.com/sentinel-official/hub/x/subscription/keeper"
 	"github.com/sentinel-official/hub/x/subscription/types"
 )
@@ -54,7 +54,7 @@ func EndBlock(ctx sdk.Context, k keeper.Keeper) []abci.ValidatorUpdate {
 			return false
 		})
 
-		item.Status = hub.StatusInactive
+		item.Status = hubtypes.StatusInactive
 		item.StatusAt = ctx.BlockTime()
 		k.SetSubscription(ctx, item)
 

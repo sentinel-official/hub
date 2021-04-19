@@ -9,7 +9,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/spf13/cobra"
 
-	hub "github.com/sentinel-official/hub/types"
+	hubtypes "github.com/sentinel-official/hub/types"
 	"github.com/sentinel-official/hub/x/subscription/types"
 )
 
@@ -54,7 +54,7 @@ func txSubscribeToNode() *cobra.Command {
 				return err
 			}
 
-			address, err := hub.NodeAddressFromBech32(args[0])
+			address, err := hubtypes.NodeAddressFromBech32(args[0])
 			if err != nil {
 				return err
 			}

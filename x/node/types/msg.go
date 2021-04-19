@@ -7,7 +7,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/errors"
 
-	hub "github.com/sentinel-official/hub/types"
+	hubtypes "github.com/sentinel-official/hub/types"
 )
 
 var (
@@ -16,7 +16,7 @@ var (
 	_ sdk.Msg = (*MsgSetStatusRequest)(nil)
 )
 
-func NewMsgRegisterRequest(from sdk.AccAddress, provider hub.ProvAddress, price sdk.Coins, remoteURL string) *MsgRegisterRequest {
+func NewMsgRegisterRequest(from sdk.AccAddress, provider hubtypes.ProvAddress, price sdk.Coins, remoteURL string) *MsgRegisterRequest {
 	return &MsgRegisterRequest{
 		From:      from.String(),
 		Provider:  provider.String(),
@@ -25,15 +25,15 @@ func NewMsgRegisterRequest(from sdk.AccAddress, provider hub.ProvAddress, price 
 	}
 }
 
-func (m MsgRegisterRequest) Route() string {
+func (m *MsgRegisterRequest) Route() string {
 	return RouterKey
 }
 
-func (m MsgRegisterRequest) Type() string {
+func (m *MsgRegisterRequest) Type() string {
 	return fmt.Sprintf("%s:register", ModuleName)
 }
 
-func (m MsgRegisterRequest) ValidateBasic() error {
+func (m *MsgRegisterRequest) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.From); err != nil {
 		return errors.Wrapf(ErrorInvalidField, "%s", "from")
 	}
@@ -46,7 +46,7 @@ func (m MsgRegisterRequest) ValidateBasic() error {
 
 	// Provider can be empty. If not, it should be valid
 	if m.Provider != "" {
-		if _, err := hub.ProvAddressFromBech32(m.Provider); err != nil {
+		if _, err := hubtypes.ProvAddressFromBech32(m.Provider); err != nil {
 			return errors.Wrapf(ErrorInvalidField, "%s", "provider")
 		}
 	}
@@ -64,7 +64,7 @@ func (m MsgRegisterRequest) ValidateBasic() error {
 	return nil
 }
 
-func (m MsgRegisterRequest) GetSignBytes() []byte {
+func (m *MsgRegisterRequest) GetSignBytes() []byte {
 	bytes, err := json.Marshal(m)
 	if err != nil {
 		panic(err)
@@ -73,7 +73,7 @@ func (m MsgRegisterRequest) GetSignBytes() []byte {
 	return bytes
 }
 
-func (m MsgRegisterRequest) GetSigners() []sdk.AccAddress {
+func (m *MsgRegisterRequest) GetSigners() []sdk.AccAddress {
 	from, err := sdk.AccAddressFromBech32(m.From)
 	if err != nil {
 		panic(err)
@@ -82,7 +82,7 @@ func (m MsgRegisterRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{from}
 }
 
-func NewMsgUpdateRequest(from hub.NodeAddress, provider hub.ProvAddress, price sdk.Coins, remoteURL string) *MsgUpdateRequest {
+func NewMsgUpdateRequest(from hubtypes.NodeAddress, provider hubtypes.ProvAddress, price sdk.Coins, remoteURL string) *MsgUpdateRequest {
 	return &MsgUpdateRequest{
 		From:      from.String(),
 		Provider:  provider.String(),
@@ -91,16 +91,16 @@ func NewMsgUpdateRequest(from hub.NodeAddress, provider hub.ProvAddress, price s
 	}
 }
 
-func (m MsgUpdateRequest) Route() string {
+func (m *MsgUpdateRequest) Route() string {
 	return RouterKey
 }
 
-func (m MsgUpdateRequest) Type() string {
+func (m *MsgUpdateRequest) Type() string {
 	return fmt.Sprintf("%s:update", ModuleName)
 }
 
-func (m MsgUpdateRequest) ValidateBasic() error {
-	if _, err := hub.NodeAddressFromBech32(m.From); err != nil {
+func (m *MsgUpdateRequest) ValidateBasic() error {
+	if _, err := hubtypes.NodeAddressFromBech32(m.From); err != nil {
 		return errors.Wrapf(ErrorInvalidField, "%s", "from")
 	}
 
@@ -110,7 +110,7 @@ func (m MsgUpdateRequest) ValidateBasic() error {
 
 	// Provider can be empty. If not, it should be valid
 	if m.Provider != "" {
-		if _, err := hub.ProvAddressFromBech32(m.Provider); err != nil {
+		if _, err := hubtypes.ProvAddressFromBech32(m.Provider); err != nil {
 			return errors.Wrapf(ErrorInvalidField, "%s", "provider")
 		}
 	}
@@ -128,7 +128,7 @@ func (m MsgUpdateRequest) ValidateBasic() error {
 	return nil
 }
 
-func (m MsgUpdateRequest) GetSignBytes() []byte {
+func (m *MsgUpdateRequest) GetSignBytes() []byte {
 	bytes, err := json.Marshal(m)
 	if err != nil {
 		panic(err)
@@ -137,8 +137,8 @@ func (m MsgUpdateRequest) GetSignBytes() []byte {
 	return bytes
 }
 
-func (m MsgUpdateRequest) GetSigners() []sdk.AccAddress {
-	from, err := hub.NodeAddressFromBech32(m.From)
+func (m *MsgUpdateRequest) GetSigners() []sdk.AccAddress {
+	from, err := hubtypes.NodeAddressFromBech32(m.From)
 	if err != nil {
 		panic(err)
 	}
@@ -146,35 +146,35 @@ func (m MsgUpdateRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{from.Bytes()}
 }
 
-func NewMsgSetStatusRequest(from hub.NodeAddress, status hub.Status) *MsgSetStatusRequest {
+func NewMsgSetStatusRequest(from hubtypes.NodeAddress, status hubtypes.Status) *MsgSetStatusRequest {
 	return &MsgSetStatusRequest{
 		From:   from.String(),
 		Status: status,
 	}
 }
 
-func (m MsgSetStatusRequest) Route() string {
+func (m *MsgSetStatusRequest) Route() string {
 	return RouterKey
 }
 
-func (m MsgSetStatusRequest) Type() string {
+func (m *MsgSetStatusRequest) Type() string {
 	return fmt.Sprintf("%s:set_status", ModuleName)
 }
 
-func (m MsgSetStatusRequest) ValidateBasic() error {
-	if _, err := hub.NodeAddressFromBech32(m.From); err != nil {
+func (m *MsgSetStatusRequest) ValidateBasic() error {
+	if _, err := hubtypes.NodeAddressFromBech32(m.From); err != nil {
 		return errors.Wrapf(ErrorInvalidField, "%s", "from")
 	}
 
 	// Status should be either Active or Inactive
-	if !m.Status.Equal(hub.StatusActive) && !m.Status.Equal(hub.StatusInactive) {
+	if !m.Status.Equal(hubtypes.StatusActive) && !m.Status.Equal(hubtypes.StatusInactive) {
 		return errors.Wrapf(ErrorInvalidField, "%s", "status")
 	}
 
 	return nil
 }
 
-func (m MsgSetStatusRequest) GetSignBytes() []byte {
+func (m *MsgSetStatusRequest) GetSignBytes() []byte {
 	bytes, err := json.Marshal(m)
 	if err != nil {
 		panic(err)
@@ -183,8 +183,8 @@ func (m MsgSetStatusRequest) GetSignBytes() []byte {
 	return bytes
 }
 
-func (m MsgSetStatusRequest) GetSigners() []sdk.AccAddress {
-	from, err := hub.NodeAddressFromBech32(m.From)
+func (m *MsgSetStatusRequest) GetSigners() []sdk.AccAddress {
+	from, err := hubtypes.NodeAddressFromBech32(m.From)
 	if err != nil {
 		panic(err)
 	}

@@ -5,12 +5,12 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	hub "github.com/sentinel-official/hub/types"
+	hubtypes "github.com/sentinel-official/hub/types"
 	"github.com/sentinel-official/hub/x/node/types"
 )
 
 var (
-	_ types.MsgServiceServer = server{}
+	_ types.MsgServiceServer = (*server)(nil)
 )
 
 type server struct {
@@ -21,7 +21,7 @@ func NewMsgServiceServer(keeper Keeper) types.MsgServiceServer {
 	return &server{Keeper: keeper}
 }
 
-func (k server) MsgRegister(c context.Context, msg *types.MsgRegisterRequest) (*types.MsgRegisterResponse, error) {
+func (k *server) MsgRegister(c context.Context, msg *types.MsgRegisterRequest) (*types.MsgRegisterResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
 	msgFrom, err := sdk.AccAddressFromBech32(msg.From)
@@ -32,7 +32,7 @@ func (k server) MsgRegister(c context.Context, msg *types.MsgRegisterRequest) (*
 		return nil, types.ErrorDuplicateNode
 	}
 
-	msgProvider, err := hub.ProvAddressFromBech32(msg.Provider)
+	msgProvider, err := hubtypes.ProvAddressFromBech32(msg.Provider)
 	if err != nil {
 		return nil, err
 	}
@@ -48,14 +48,14 @@ func (k server) MsgRegister(c context.Context, msg *types.MsgRegisterRequest) (*
 	}
 
 	var (
-		nodeAddress  = hub.NodeAddress(msgFrom.Bytes())
-		nodeProvider = hub.ProvAddress(msgProvider.Bytes())
+		nodeAddress  = hubtypes.NodeAddress(msgFrom.Bytes())
+		nodeProvider = hubtypes.ProvAddress(msgProvider.Bytes())
 		node         = types.Node{
 			Address:   nodeAddress.String(),
 			Provider:  msg.Provider,
 			Price:     msg.Price,
 			RemoteURL: msg.RemoteURL,
-			Status:    hub.StatusInactive,
+			Status:    hubtypes.StatusInactive,
 			StatusAt:  ctx.BlockTime(),
 		}
 	)
@@ -77,10 +77,10 @@ func (k server) MsgRegister(c context.Context, msg *types.MsgRegisterRequest) (*
 	return &types.MsgRegisterResponse{}, nil
 }
 
-func (k server) MsgUpdate(c context.Context, msg *types.MsgUpdateRequest) (*types.MsgUpdateResponse, error) {
+func (k *server) MsgUpdate(c context.Context, msg *types.MsgUpdateRequest) (*types.MsgUpdateResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
-	msgFrom, err := hub.NodeAddressFromBech32(msg.From)
+	msgFrom, err := hubtypes.NodeAddressFromBech32(msg.From)
 	if err != nil {
 		return nil, err
 	}
@@ -100,7 +100,7 @@ func (k server) MsgUpdate(c context.Context, msg *types.MsgUpdateRequest) (*type
 			nodeProvider = node.GetProvider()
 		)
 
-		if node.Status.Equal(hub.StatusActive) {
+		if node.Status.Equal(hubtypes.StatusActive) {
 			k.DeleteActiveNodeForProvider(ctx, nodeProvider, nodeAddress)
 		} else {
 			k.DeleteInactiveNodeForProvider(ctx, nodeProvider, nodeAddress)
@@ -114,7 +114,7 @@ func (k server) MsgUpdate(c context.Context, msg *types.MsgUpdateRequest) (*type
 	}
 
 	if msg.Provider != "" {
-		msgProvider, err := hub.ProvAddressFromBech32(msg.Provider)
+		msgProvider, err := hubtypes.ProvAddressFromBech32(msg.Provider)
 		if err != nil {
 			return nil, err
 		}
@@ -130,7 +130,7 @@ func (k server) MsgUpdate(c context.Context, msg *types.MsgUpdateRequest) (*type
 			nodeProvider = node.GetProvider()
 		)
 
-		if node.Status.Equal(hub.StatusActive) {
+		if node.Status.Equal(hubtypes.StatusActive) {
 			k.SetActiveNodeForProvider(ctx, nodeProvider, nodeAddress)
 		} else {
 			k.SetInactiveNodeForProvider(ctx, nodeProvider, nodeAddress)
@@ -154,10 +154,10 @@ func (k server) MsgUpdate(c context.Context, msg *types.MsgUpdateRequest) (*type
 	return &types.MsgUpdateResponse{}, nil
 }
 
-func (k server) MsgSetStatus(c context.Context, msg *types.MsgSetStatusRequest) (*types.MsgSetStatusResponse, error) {
+func (k *server) MsgSetStatus(c context.Context, msg *types.MsgSetStatusRequest) (*types.MsgSetStatusResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
-	msgFrom, err := hub.NodeAddressFromBech32(msg.From)
+	msgFrom, err := hubtypes.NodeAddressFromBech32(msg.From)
 	if err != nil {
 		return nil, err
 	}
@@ -172,8 +172,8 @@ func (k server) MsgSetStatus(c context.Context, msg *types.MsgSetStatusRequest) 
 		nodeProvider = node.GetProvider()
 	)
 
-	if node.Status.Equal(hub.StatusActive) {
-		if msg.Status.Equal(hub.StatusInactive) {
+	if node.Status.Equal(hubtypes.StatusActive) {
+		if msg.Status.Equal(hubtypes.StatusInactive) {
 			k.DeleteActiveNode(ctx, nodeAddress)
 			k.SetInactiveNode(ctx, nodeAddress)
 
@@ -185,7 +185,7 @@ func (k server) MsgSetStatus(c context.Context, msg *types.MsgSetStatusRequest) 
 
 		k.DeleteInactiveNodeAt(ctx, node.StatusAt, nodeAddress)
 	} else {
-		if msg.Status.Equal(hub.StatusActive) {
+		if msg.Status.Equal(hubtypes.StatusActive) {
 			k.DeleteInactiveNode(ctx, nodeAddress)
 			k.SetActiveNode(ctx, nodeAddress)
 
@@ -199,7 +199,7 @@ func (k server) MsgSetStatus(c context.Context, msg *types.MsgSetStatusRequest) 
 	node.Status = msg.Status
 	node.StatusAt = ctx.BlockTime()
 
-	if node.Status.Equal(hub.StatusActive) {
+	if node.Status.Equal(hubtypes.StatusActive) {
 		k.SetInactiveNodeAt(ctx, node.StatusAt, nodeAddress)
 	}
 

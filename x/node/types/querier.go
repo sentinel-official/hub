@@ -3,23 +3,23 @@ package types
 import (
 	"github.com/cosmos/cosmos-sdk/types/query"
 
-	hub "github.com/sentinel-official/hub/types"
+	hubtypes "github.com/sentinel-official/hub/types"
 )
 
-func NewQueryNodeRequest(address hub.NodeAddress) *QueryNodeRequest {
+func NewQueryNodeRequest(address hubtypes.NodeAddress) *QueryNodeRequest {
 	return &QueryNodeRequest{
 		Address: address.String(),
 	}
 }
 
-func NewQueryNodesRequest(status hub.Status, pagination *query.PageRequest) *QueryNodesRequest {
+func NewQueryNodesRequest(status hubtypes.Status, pagination *query.PageRequest) *QueryNodesRequest {
 	return &QueryNodesRequest{
 		Status:     status,
 		Pagination: pagination,
 	}
 }
 
-func NewQueryNodesForProviderRequest(address hub.ProvAddress, status hub.Status, pagination *query.PageRequest) *QueryNodesForProviderRequest {
+func NewQueryNodesForProviderRequest(address hubtypes.ProvAddress, status hubtypes.Status, pagination *query.PageRequest) *QueryNodesForProviderRequest {
 	return &QueryNodesForProviderRequest{
 		Address:    address.String(),
 		Status:     status,

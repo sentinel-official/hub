@@ -5,12 +5,12 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	hub "github.com/sentinel-official/hub/types"
+	hubtypes "github.com/sentinel-official/hub/types"
 	"github.com/sentinel-official/hub/x/subscription/keeper"
 	"github.com/sentinel-official/hub/x/subscription/types"
 )
 
-func InitGenesis(ctx sdk.Context, k keeper.Keeper, state types.GenesisState) {
+func InitGenesis(ctx sdk.Context, k keeper.Keeper, state *types.GenesisState) {
 	k.SetParams(ctx, state.Params)
 	for _, item := range state.Subscriptions {
 		k.SetSubscription(ctx, item.Subscription)
@@ -24,14 +24,14 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, state types.GenesisState) {
 		for _, quota := range item.Quotas {
 			k.SetQuota(ctx, item.Subscription.Id, quota)
 
-			if item.Subscription.Status.Equal(hub.StatusInactive) {
+			if item.Subscription.Status.Equal(hubtypes.StatusInactive) {
 				k.SetInactiveSubscriptionForAddress(ctx, quota.GetAddress(), item.Subscription.Id)
 			} else {
 				k.SetActiveSubscriptionForAddress(ctx, quota.GetAddress(), item.Subscription.Id)
 			}
 		}
 
-		if item.Subscription.Status.Equal(hub.StatusInactivePending) {
+		if item.Subscription.Status.Equal(hubtypes.StatusInactivePending) {
 			k.SetInactiveSubscriptionAt(ctx, item.Subscription.StatusAt.Add(k.InactiveDuration(ctx)), item.Subscription.Id)
 		}
 	}
@@ -39,7 +39,7 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, state types.GenesisState) {
 	k.SetCount(ctx, uint64(len(state.Subscriptions)))
 }
 
-func ExportGenesis(ctx sdk.Context, k keeper.Keeper) types.GenesisState {
+func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 	subscriptions := k.GetSubscriptions(ctx, 0, 0)
 
 	items := make(types.GenesisSubscriptions, 0, len(subscriptions))
@@ -53,7 +53,7 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) types.GenesisState {
 	return types.NewGenesisState(items, k.GetParams(ctx))
 }
 
-func ValidateGenesis(state types.GenesisState) error {
+func ValidateGenesis(state *types.GenesisState) error {
 	if err := state.Params.Validate(); err != nil {
 		return err
 	}

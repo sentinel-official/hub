@@ -7,7 +7,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/errors"
 
-	hub "github.com/sentinel-official/hub/types"
+	hubtypes "github.com/sentinel-official/hub/types"
 )
 
 var (
@@ -22,22 +22,22 @@ func NewMsgUpsertRequest(proof Proof, address sdk.AccAddress, signature []byte) 
 	}
 }
 
-func (m MsgUpsertRequest) Route() string {
+func (m *MsgUpsertRequest) Route() string {
 	return RouterKey
 }
 
-func (m MsgUpsertRequest) Type() string {
+func (m *MsgUpsertRequest) Type() string {
 	return fmt.Sprintf("%s:upsert", ModuleName)
 }
 
-func (m MsgUpsertRequest) ValidateBasic() error {
+func (m *MsgUpsertRequest) ValidateBasic() error {
 	// Subscription shouldn't be zero
 	if m.Proof.Subscription == 0 {
 		return errors.Wrapf(ErrorInvalidField, "%s", "proof->subscription")
 	}
 
 	// Node shouldn't be nil or empty
-	if _, err := hub.NodeAddressFromBech32(m.Proof.Node); err != nil {
+	if _, err := hubtypes.NodeAddressFromBech32(m.Proof.Node); err != nil {
 		return errors.Wrapf(ErrorInvalidField, "%s", "proof->node")
 	}
 
@@ -64,7 +64,7 @@ func (m MsgUpsertRequest) ValidateBasic() error {
 	return nil
 }
 
-func (m MsgUpsertRequest) GetSignBytes() []byte {
+func (m *MsgUpsertRequest) GetSignBytes() []byte {
 	bytes, err := json.Marshal(m)
 	if err != nil {
 		panic(err)
@@ -73,8 +73,8 @@ func (m MsgUpsertRequest) GetSignBytes() []byte {
 	return bytes
 }
 
-func (m MsgUpsertRequest) GetSigners() []sdk.AccAddress {
-	from, err := hub.NodeAddressFromBech32(m.Proof.Node)
+func (m *MsgUpsertRequest) GetSigners() []sdk.AccAddress {
+	from, err := hubtypes.NodeAddressFromBech32(m.Proof.Node)
 	if err != nil {
 		panic(err)
 	}

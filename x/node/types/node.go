@@ -6,15 +6,15 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	hub "github.com/sentinel-official/hub/types"
+	hubtypes "github.com/sentinel-official/hub/types"
 )
 
-func (n Node) GetAddress() hub.NodeAddress {
+func (n *Node) GetAddress() hubtypes.NodeAddress {
 	if n.Address == "" {
 		return nil
 	}
 
-	address, err := hub.NodeAddressFromBech32(n.Address)
+	address, err := hubtypes.NodeAddressFromBech32(n.Address)
 	if err != nil {
 		panic(err)
 	}
@@ -22,12 +22,12 @@ func (n Node) GetAddress() hub.NodeAddress {
 	return address
 }
 
-func (n Node) GetProvider() hub.ProvAddress {
+func (n *Node) GetProvider() hubtypes.ProvAddress {
 	if n.Provider == "" {
 		return nil
 	}
 
-	address, err := hub.ProvAddressFromBech32(n.Provider)
+	address, err := hubtypes.ProvAddressFromBech32(n.Provider)
 	if err != nil {
 		panic(err)
 	}
@@ -35,7 +35,7 @@ func (n Node) GetProvider() hub.ProvAddress {
 	return address
 }
 
-func (n Node) String() string {
+func (n *Node) String() string {
 	if n.Provider == "" {
 		return strings.TrimSpace(fmt.Sprintf(`
 Address:    %s
@@ -55,15 +55,15 @@ Status at:  %s
 `, n.Address, n.Provider, n.RemoteURL, n.Status, n.StatusAt))
 }
 
-func (n Node) Validate() error {
-	if _, err := hub.NodeAddressFromBech32(n.Address); err != nil {
+func (n *Node) Validate() error {
+	if _, err := hubtypes.NodeAddressFromBech32(n.Address); err != nil {
 		return fmt.Errorf("address should not be nil or empty")
 	}
 	if (n.Provider != "" && n.Price != nil) ||
 		(n.Provider == "" && n.Price == nil) {
 		return fmt.Errorf("either provider or price should be nil")
 	}
-	if _, err := hub.ProvAddressFromBech32(n.Provider); err != nil {
+	if _, err := hubtypes.ProvAddressFromBech32(n.Provider); err != nil {
 		return fmt.Errorf("provider should not be empty")
 	}
 	if n.Price != nil && !n.Price.IsValid() {
@@ -72,7 +72,7 @@ func (n Node) Validate() error {
 	if len(n.RemoteURL) == 0 || len(n.RemoteURL) > 64 {
 		return fmt.Errorf("remote_url length should be between 1 and 64")
 	}
-	if !n.Status.Equal(hub.StatusActive) && !n.Status.Equal(hub.StatusInactive) {
+	if !n.Status.Equal(hubtypes.StatusActive) && !n.Status.Equal(hubtypes.StatusInactive) {
 		return fmt.Errorf("status should be either active or inactive")
 	}
 	if n.StatusAt.IsZero() {
@@ -82,7 +82,7 @@ func (n Node) Validate() error {
 	return nil
 }
 
-func (n Node) PriceForDenom(d string) (sdk.Coin, bool) {
+func (n *Node) PriceForDenom(d string) (sdk.Coin, bool) {
 	for _, coin := range n.Price {
 		if coin.Denom == d {
 			return coin, true
@@ -92,19 +92,19 @@ func (n Node) PriceForDenom(d string) (sdk.Coin, bool) {
 	return sdk.Coin{}, false
 }
 
-func (n Node) BytesForCoin(coin sdk.Coin) (sdk.Int, error) {
+func (n *Node) BytesForCoin(coin sdk.Coin) (sdk.Int, error) {
 	price, found := n.PriceForDenom(coin.Denom)
 	if !found {
 		return sdk.ZeroInt(), fmt.Errorf("price does not exist")
 	}
 
-	x := hub.Gigabyte.Quo(price.Amount)
+	x := hubtypes.Gigabyte.Quo(price.Amount)
 	if x.IsPositive() {
 		return coin.Amount.Mul(x), nil
 	}
 
 	y := sdk.NewDecFromInt(price.Amount).
-		QuoInt(hub.Gigabyte).
+		QuoInt(hubtypes.Gigabyte).
 		Ceil().TruncateInt()
 
 	return coin.Amount.Quo(y), nil
