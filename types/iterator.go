@@ -36,7 +36,7 @@ func (p *PaginatedIterator) Skip(skip int) {
 
 func (p PaginatedIterator) Limit(limit int, iterFunc func(iter sdk.Iterator)) {
 	if limit <= 0 {
-		limit = math.MaxInt64
+		limit = int64(math.MaxInt64)
 	}
 
 	for index, iter := range p.items {
