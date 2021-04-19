@@ -34,11 +34,11 @@ func (k *Keeper) WithNodeKeeper(keeper expected.NodeKeeper) {
 	k.node = keeper
 }
 
-func (k Keeper) Logger(ctx sdk.Context) log.Logger {
-	return ctx.Logger().With("module", fmt.Sprintf("x/%s", types.ModuleName))
+func (k *Keeper) Logger(ctx sdk.Context) log.Logger {
+	return ctx.Logger().With("module", types.ModuleName)
 }
 
-func (k Keeper) Store(ctx sdk.Context) sdk.KVStore {
+func (k *Keeper) Store(ctx sdk.Context) sdk.KVStore {
 	child := fmt.Sprintf("%s/", types.ModuleName)
 	return prefix.NewStore(ctx.KVStore(k.key), []byte(child))
 }

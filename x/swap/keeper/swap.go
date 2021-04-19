@@ -3,11 +3,11 @@ package keeper
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	hub "github.com/sentinel-official/hub/types"
+	hubtypes "github.com/sentinel-official/hub/types"
 	"github.com/sentinel-official/hub/x/swap/types"
 )
 
-func (k Keeper) SetSwap(ctx sdk.Context, swap types.Swap) {
+func (k *Keeper) SetSwap(ctx sdk.Context, swap types.Swap) {
 	key := types.SwapKey(swap.GetTxHash())
 	value := k.cdc.MustMarshalBinaryBare(&swap)
 
@@ -15,7 +15,7 @@ func (k Keeper) SetSwap(ctx sdk.Context, swap types.Swap) {
 	store.Set(key, value)
 }
 
-func (k Keeper) GetSwap(ctx sdk.Context, txHash types.EthereumHash) (swap types.Swap, found bool) {
+func (k *Keeper) GetSwap(ctx sdk.Context, txHash types.EthereumHash) (swap types.Swap, found bool) {
 	store := k.Store(ctx)
 
 	key := types.SwapKey(txHash)
@@ -28,17 +28,17 @@ func (k Keeper) GetSwap(ctx sdk.Context, txHash types.EthereumHash) (swap types.
 	return swap, true
 }
 
-func (k Keeper) HasSwap(ctx sdk.Context, txHash types.EthereumHash) bool {
+func (k *Keeper) HasSwap(ctx sdk.Context, txHash types.EthereumHash) bool {
 	key := types.SwapKey(txHash)
 
 	store := k.Store(ctx)
 	return store.Has(key)
 }
 
-func (k Keeper) GetSwaps(ctx sdk.Context, skip, limit int) (items types.Swaps) {
+func (k *Keeper) GetSwaps(ctx sdk.Context, skip, limit int) (items types.Swaps) {
 	var (
 		store = k.Store(ctx)
-		iter  = hub.NewPaginatedIterator(
+		iter  = hubtypes.NewPaginatedIterator(
 			sdk.KVStorePrefixIterator(store, types.SwapKeyPrefix),
 		)
 	)

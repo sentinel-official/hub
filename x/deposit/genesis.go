@@ -16,7 +16,11 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, state types.GenesisState) {
 }
 
 func ExportGenesis(ctx sdk.Context, k keeper.Keeper) types.GenesisState {
-	return k.GetDeposits(ctx, 0, 0)
+	var (
+		deposits = k.GetDeposits(ctx, 0, 0)
+	)
+
+	return types.NewGenesisState(deposits)
 }
 
 func ValidateGenesis(state types.GenesisState) error {

@@ -4,11 +4,11 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	protobuf "github.com/gogo/protobuf/types"
 
-	hub "github.com/sentinel-official/hub/types"
+	hubtypes "github.com/sentinel-official/hub/types"
 	"github.com/sentinel-official/hub/x/plan/types"
 )
 
-func (k Keeper) SetCount(ctx sdk.Context, count uint64) {
+func (k *Keeper) SetCount(ctx sdk.Context, count uint64) {
 	key := types.CountKey
 	value := k.cdc.MustMarshalBinaryBare(&protobuf.UInt64Value{Value: count})
 
@@ -16,7 +16,7 @@ func (k Keeper) SetCount(ctx sdk.Context, count uint64) {
 	store.Set(key, value)
 }
 
-func (k Keeper) GetCount(ctx sdk.Context) uint64 {
+func (k *Keeper) GetCount(ctx sdk.Context) uint64 {
 	store := k.Store(ctx)
 
 	key := types.CountKey
@@ -31,7 +31,7 @@ func (k Keeper) GetCount(ctx sdk.Context) uint64 {
 	return count.GetValue()
 }
 
-func (k Keeper) SetPlan(ctx sdk.Context, plan types.Plan) {
+func (k *Keeper) SetPlan(ctx sdk.Context, plan types.Plan) {
 	key := types.PlanKey(plan.Id)
 	value := k.cdc.MustMarshalBinaryBare(&plan)
 
@@ -39,7 +39,7 @@ func (k Keeper) SetPlan(ctx sdk.Context, plan types.Plan) {
 	store.Set(key, value)
 }
 
-func (k Keeper) GetPlan(ctx sdk.Context, id uint64) (plan types.Plan, found bool) {
+func (k *Keeper) GetPlan(ctx sdk.Context, id uint64) (plan types.Plan, found bool) {
 	store := k.Store(ctx)
 
 	key := types.PlanKey(id)
@@ -52,10 +52,10 @@ func (k Keeper) GetPlan(ctx sdk.Context, id uint64) (plan types.Plan, found bool
 	return plan, true
 }
 
-func (k Keeper) GetPlans(ctx sdk.Context, skip, limit int) (items types.Plans) {
+func (k *Keeper) GetPlans(ctx sdk.Context, skip, limit int) (items types.Plans) {
 	var (
 		store = k.Store(ctx)
-		iter  = hub.NewPaginatedIterator(
+		iter  = hubtypes.NewPaginatedIterator(
 			sdk.KVStorePrefixIterator(store, types.PlanKeyPrefix),
 		)
 	)
@@ -72,7 +72,7 @@ func (k Keeper) GetPlans(ctx sdk.Context, skip, limit int) (items types.Plans) {
 	return items
 }
 
-func (k Keeper) SetActivePlan(ctx sdk.Context, id uint64) {
+func (k *Keeper) SetActivePlan(ctx sdk.Context, id uint64) {
 	key := types.ActivePlanKey(id)
 	value := k.cdc.MustMarshalBinaryBare(&protobuf.BoolValue{Value: true})
 
@@ -80,17 +80,17 @@ func (k Keeper) SetActivePlan(ctx sdk.Context, id uint64) {
 	store.Set(key, value)
 }
 
-func (k Keeper) DeleteActivePlan(ctx sdk.Context, id uint64) {
+func (k *Keeper) DeleteActivePlan(ctx sdk.Context, id uint64) {
 	key := types.ActivePlanKey(id)
 
 	store := k.Store(ctx)
 	store.Delete(key)
 }
 
-func (k Keeper) GetActivePlans(ctx sdk.Context, skip, limit int) (items types.Plans) {
+func (k *Keeper) GetActivePlans(ctx sdk.Context, skip, limit int) (items types.Plans) {
 	var (
 		store = k.Store(ctx)
-		iter  = hub.NewPaginatedIterator(
+		iter  = hubtypes.NewPaginatedIterator(
 			sdk.KVStorePrefixIterator(store, types.ActivePlanKeyPrefix),
 		)
 	)
@@ -106,7 +106,7 @@ func (k Keeper) GetActivePlans(ctx sdk.Context, skip, limit int) (items types.Pl
 	return items
 }
 
-func (k Keeper) SetInactivePlan(ctx sdk.Context, id uint64) {
+func (k *Keeper) SetInactivePlan(ctx sdk.Context, id uint64) {
 	key := types.InactivePlanKey(id)
 	value := k.cdc.MustMarshalBinaryBare(&protobuf.BoolValue{Value: true})
 
@@ -114,17 +114,17 @@ func (k Keeper) SetInactivePlan(ctx sdk.Context, id uint64) {
 	store.Set(key, value)
 }
 
-func (k Keeper) DeleteInactivePlan(ctx sdk.Context, id uint64) {
+func (k *Keeper) DeleteInactivePlan(ctx sdk.Context, id uint64) {
 	key := types.InactivePlanKey(id)
 
 	store := k.Store(ctx)
 	store.Delete(key)
 }
 
-func (k Keeper) GetInactivePlans(ctx sdk.Context, skip, limit int) (items types.Plans) {
+func (k *Keeper) GetInactivePlans(ctx sdk.Context, skip, limit int) (items types.Plans) {
 	var (
 		store = k.Store(ctx)
-		iter  = hub.NewPaginatedIterator(
+		iter  = hubtypes.NewPaginatedIterator(
 			sdk.KVStorePrefixIterator(store, types.InactivePlanKeyPrefix),
 		)
 	)
@@ -140,7 +140,7 @@ func (k Keeper) GetInactivePlans(ctx sdk.Context, skip, limit int) (items types.
 	return items
 }
 
-func (k Keeper) SetActivePlanForProvider(ctx sdk.Context, address hub.ProvAddress, id uint64) {
+func (k *Keeper) SetActivePlanForProvider(ctx sdk.Context, address hubtypes.ProvAddress, id uint64) {
 	key := types.ActivePlanForProviderKey(address, id)
 	value := k.cdc.MustMarshalBinaryBare(&protobuf.BoolValue{Value: true})
 
@@ -148,17 +148,17 @@ func (k Keeper) SetActivePlanForProvider(ctx sdk.Context, address hub.ProvAddres
 	store.Set(key, value)
 }
 
-func (k Keeper) DeleteActivePlanForProvider(ctx sdk.Context, address hub.ProvAddress, id uint64) {
+func (k *Keeper) DeleteActivePlanForProvider(ctx sdk.Context, address hubtypes.ProvAddress, id uint64) {
 	store := k.Store(ctx)
 
 	key := types.ActivePlanForProviderKey(address, id)
 	store.Delete(key)
 }
 
-func (k Keeper) GetActivePlansForProvider(ctx sdk.Context, address hub.ProvAddress, skip, limit int) (items types.Plans) {
+func (k *Keeper) GetActivePlansForProvider(ctx sdk.Context, address hubtypes.ProvAddress, skip, limit int) (items types.Plans) {
 	var (
 		store = k.Store(ctx)
-		iter  = hub.NewPaginatedIterator(
+		iter  = hubtypes.NewPaginatedIterator(
 			sdk.KVStorePrefixIterator(store, types.GetActivePlanForProviderKeyPrefix(address)),
 		)
 	)
@@ -174,7 +174,7 @@ func (k Keeper) GetActivePlansForProvider(ctx sdk.Context, address hub.ProvAddre
 	return items
 }
 
-func (k Keeper) SetInactivePlanForProvider(ctx sdk.Context, address hub.ProvAddress, id uint64) {
+func (k *Keeper) SetInactivePlanForProvider(ctx sdk.Context, address hubtypes.ProvAddress, id uint64) {
 	key := types.InactivePlanForProviderKey(address, id)
 	value := k.cdc.MustMarshalBinaryBare(&protobuf.BoolValue{Value: true})
 
@@ -182,17 +182,17 @@ func (k Keeper) SetInactivePlanForProvider(ctx sdk.Context, address hub.ProvAddr
 	store.Set(key, value)
 }
 
-func (k Keeper) DeleteInactivePlanForProvider(ctx sdk.Context, address hub.ProvAddress, id uint64) {
+func (k *Keeper) DeleteInactivePlanForProvider(ctx sdk.Context, address hubtypes.ProvAddress, id uint64) {
 	store := k.Store(ctx)
 
 	key := types.InactivePlanForProviderKey(address, id)
 	store.Delete(key)
 }
 
-func (k Keeper) GetInactivePlansForProvider(ctx sdk.Context, address hub.ProvAddress, skip, limit int) (items types.Plans) {
+func (k *Keeper) GetInactivePlansForProvider(ctx sdk.Context, address hubtypes.ProvAddress, skip, limit int) (items types.Plans) {
 	var (
 		store = k.Store(ctx)
-		iter  = hub.NewPaginatedIterator(
+		iter  = hubtypes.NewPaginatedIterator(
 			sdk.KVStorePrefixIterator(store, types.GetInactivePlanForProviderKeyPrefix(address)),
 		)
 	)
@@ -208,10 +208,10 @@ func (k Keeper) GetInactivePlansForProvider(ctx sdk.Context, address hub.ProvAdd
 	return items
 }
 
-func (k Keeper) GetPlansForProvider(ctx sdk.Context, address hub.ProvAddress, skip, limit int) (items types.Plans) {
+func (k *Keeper) GetPlansForProvider(ctx sdk.Context, address hubtypes.ProvAddress, skip, limit int) (items types.Plans) {
 	var (
 		store = k.Store(ctx)
-		iter  = hub.NewPaginatedIterator(
+		iter  = hubtypes.NewPaginatedIterator(
 			sdk.KVStorePrefixIterator(store, types.GetActivePlanForProviderKeyPrefix(address)),
 			sdk.KVStorePrefixIterator(store, types.GetInactivePlanForProviderKeyPrefix(address)),
 		)

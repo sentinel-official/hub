@@ -4,7 +4,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	abci "github.com/tendermint/tendermint/abci/types"
 
-	hub "github.com/sentinel-official/hub/types"
+	hubtypes "github.com/sentinel-official/hub/types"
 	"github.com/sentinel-official/hub/x/session/keeper"
 	"github.com/sentinel-official/hub/x/session/types"
 )
@@ -32,7 +32,7 @@ func EndBlock(ctx sdk.Context, k keeper.Keeper) []abci.ValidatorUpdate {
 		k.DeleteActiveSessionForAddress(ctx, itemAddress, item.Subscription, itemNode)
 		k.DeleteActiveSessionAt(ctx, item.StatusAt, item.Id)
 
-		item.Status = hub.StatusInactive
+		item.Status = hubtypes.StatusInactive
 		item.StatusAt = ctx.BlockTime()
 		k.SetSession(ctx, item)
 
@@ -63,14 +63,14 @@ func process(ctx sdk.Context, k keeper.Keeper, session types.Session) error {
 	}
 
 	if subscription.Plan == 0 {
-		if subscription.Status.Equal(hub.StatusInactive) {
+		if subscription.Status.Equal(hubtypes.StatusInactive) {
 			return nil
 		}
 
-		bandwidth := hub.NewBandwidth(
+		bandwidth := hubtypes.NewBandwidth(
 			session.Bandwidth.Sum(), sdk.ZeroInt(),
 		).CeilTo(
-			hub.Gigabyte.Quo(subscription.Price.Amount),
+			hubtypes.Gigabyte.Quo(subscription.Price.Amount),
 		).Sum()
 		if bandwidth.GT(free) {
 			bandwidth = free
@@ -83,7 +83,7 @@ func process(ctx sdk.Context, k keeper.Keeper, session types.Session) error {
 		ctx.Logger().Info("", "price", subscription.Price, "deposit", subscription.Deposit,
 			"consumed", session.Bandwidth.Sum(), "rounded", bandwidth, "amount", amount)
 
-		sessionNode, err := hub.NodeAddressFromBech32(session.Node)
+		sessionNode, err := hubtypes.NodeAddressFromBech32(session.Node)
 		if err != nil {
 			return err
 		}

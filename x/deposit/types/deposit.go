@@ -27,7 +27,7 @@ Coins  : %s
 `), d.Address, d.Coins)
 }
 
-func (d Deposit) Validate() error {
+func (d *Deposit) Validate() error {
 	if _, err := sdk.AccAddressFromBech32(d.Address); err != nil {
 		return err
 	}
@@ -38,4 +38,6 @@ func (d Deposit) Validate() error {
 	return nil
 }
 
-type Deposits []Deposit
+type (
+	Deposits []Deposit
+)

@@ -21,7 +21,7 @@ func MigrateGenesisSubscriptions(items legacy.GenesisSubscriptions) types.Genesi
 	return subscriptions
 }
 
-func MigrateGenesisState(state legacy.GenesisState) types.GenesisState {
+func MigrateGenesisState(state *legacy.GenesisState) *types.GenesisState {
 	return types.NewGenesisState(
 		MigrateGenesisSubscriptions(state.Subscriptions),
 		MigrateParams(state.Params),

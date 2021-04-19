@@ -9,7 +9,7 @@ import (
 	"github.com/sentinel-official/hub/x/provider/types"
 )
 
-func InitGenesis(ctx sdk.Context, k keeper.Keeper, state types.GenesisState) {
+func InitGenesis(ctx sdk.Context, k keeper.Keeper, state *types.GenesisState) {
 	k.SetParams(ctx, state.Params)
 
 	for _, provider := range state.Providers {
@@ -17,11 +17,11 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, state types.GenesisState) {
 	}
 }
 
-func ExportGenesis(ctx sdk.Context, k keeper.Keeper) types.GenesisState {
+func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 	return types.NewGenesisState(k.GetProviders(ctx, 0, 0), k.GetParams(ctx))
 }
 
-func ValidateGenesis(state types.GenesisState) error {
+func ValidateGenesis(state *types.GenesisState) error {
 	if err := state.Params.Validate(); err != nil {
 		return err
 	}

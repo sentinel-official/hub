@@ -11,10 +11,8 @@ import (
 )
 
 const (
-	ModuleName    = types.ModuleName
-	QuerierRoute  = types.QuerierRoute
-	QueryDeposit  = types.QueryDeposit
-	QueryDeposits = types.QueryDeposits
+	ModuleName   = types.ModuleName
+	QuerierRoute = types.QuerierRoute
 )
 
 var (

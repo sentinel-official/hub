@@ -3,12 +3,12 @@ package keeper
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	hub "github.com/sentinel-official/hub/types"
+	hubtypes "github.com/sentinel-official/hub/types"
 	"github.com/sentinel-official/hub/x/deposit/types"
 )
 
 // SetDeposit is for inserting a deposit into KVStore.
-func (k Keeper) SetDeposit(ctx sdk.Context, deposit types.Deposit) {
+func (k *Keeper) SetDeposit(ctx sdk.Context, deposit types.Deposit) {
 	key := types.DepositKey(deposit.GetAddress())
 	value := k.cdc.MustMarshalBinaryBare(&deposit)
 
@@ -17,7 +17,7 @@ func (k Keeper) SetDeposit(ctx sdk.Context, deposit types.Deposit) {
 }
 
 // GetDeposit is for getting the deposit of an address from KVStore.
-func (k Keeper) GetDeposit(ctx sdk.Context, address sdk.AccAddress) (deposit types.Deposit, found bool) {
+func (k *Keeper) GetDeposit(ctx sdk.Context, address sdk.AccAddress) (deposit types.Deposit, found bool) {
 	store := k.Store(ctx)
 
 	key := types.DepositKey(address)
@@ -31,10 +31,10 @@ func (k Keeper) GetDeposit(ctx sdk.Context, address sdk.AccAddress) (deposit typ
 }
 
 // GetDeposits is for getting the deposits from KVStore.
-func (k Keeper) GetDeposits(ctx sdk.Context, skip, limit int) (items types.Deposits) {
+func (k *Keeper) GetDeposits(ctx sdk.Context, skip, limit int) (items types.Deposits) {
 	var (
 		store = k.Store(ctx)
-		iter  = hub.NewPaginatedIterator(
+		iter  = hubtypes.NewPaginatedIterator(
 			sdk.KVStorePrefixIterator(store, types.DepositKeyPrefix),
 		)
 	)
@@ -52,7 +52,7 @@ func (k Keeper) GetDeposits(ctx sdk.Context, skip, limit int) (items types.Depos
 }
 
 // Add is for adding the amount to the deposit account from the bank account of an address.
-func (k Keeper) Add(ctx sdk.Context, address sdk.AccAddress, coins sdk.Coins) error {
+func (k *Keeper) Add(ctx sdk.Context, address sdk.AccAddress, coins sdk.Coins) error {
 	if err := k.bank.SendCoinsFromAccountToModule(ctx, address, types.ModuleName, coins); err != nil {
 		return err
 	}
@@ -75,7 +75,7 @@ func (k Keeper) Add(ctx sdk.Context, address sdk.AccAddress, coins sdk.Coins) er
 }
 
 // Subtract is for adding the amount to the bank account from the deposit account of an address.
-func (k Keeper) Subtract(ctx sdk.Context, address sdk.AccAddress, coins sdk.Coins) error {
+func (k *Keeper) Subtract(ctx sdk.Context, address sdk.AccAddress, coins sdk.Coins) error {
 	deposit, found := k.GetDeposit(ctx, address)
 	if !found {
 		return types.ErrorDepositDoesNotExist
@@ -96,7 +96,7 @@ func (k Keeper) Subtract(ctx sdk.Context, address sdk.AccAddress, coins sdk.Coin
 
 // SendCoinsFromDepositToAccount is for sending the amount
 // from the deposit account of from address to the bank account of to address.
-func (k Keeper) SendCoinsFromDepositToAccount(ctx sdk.Context, from, to sdk.AccAddress, coins sdk.Coins) error {
+func (k *Keeper) SendCoinsFromDepositToAccount(ctx sdk.Context, from, to sdk.AccAddress, coins sdk.Coins) error {
 	deposit, found := k.GetDeposit(ctx, from)
 	if !found {
 		return types.ErrorDepositDoesNotExist
@@ -117,7 +117,7 @@ func (k Keeper) SendCoinsFromDepositToAccount(ctx sdk.Context, from, to sdk.AccA
 
 // SendCoinsFromAccountToDeposit is for sending the amount
 // from the bank account of from address to the deposit account of to address.
-func (k Keeper) SendCoinsFromAccountToDeposit(ctx sdk.Context, from, to sdk.AccAddress, coins sdk.Coins) error {
+func (k *Keeper) SendCoinsFromAccountToDeposit(ctx sdk.Context, from, to sdk.AccAddress, coins sdk.Coins) error {
 	if err := k.bank.SendCoinsFromAccountToModule(ctx, from, types.ModuleName, coins); err != nil {
 		return err
 	}
@@ -140,7 +140,7 @@ func (k Keeper) SendCoinsFromAccountToDeposit(ctx sdk.Context, from, to sdk.AccA
 }
 
 // IterateDeposits is for iterating over all the deposits to perform an action.
-func (k Keeper) IterateDeposits(ctx sdk.Context, fn func(index int64, item types.Deposit) (stop bool)) {
+func (k *Keeper) IterateDeposits(ctx sdk.Context, fn func(index int64, item types.Deposit) (stop bool)) {
 	store := k.Store(ctx)
 
 	iterator := sdk.KVStorePrefixIterator(store, types.DepositKeyPrefix)

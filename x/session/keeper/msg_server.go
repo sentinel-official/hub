@@ -6,12 +6,12 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	hub "github.com/sentinel-official/hub/types"
+	hubtypes "github.com/sentinel-official/hub/types"
 	"github.com/sentinel-official/hub/x/session/types"
 )
 
 var (
-	_ types.MsgServiceServer = server{}
+	_ types.MsgServiceServer = (*server)(nil)
 )
 
 type server struct {
@@ -22,7 +22,7 @@ func NewMsgServiceServer(keeper Keeper) types.MsgServiceServer {
 	return &server{Keeper: keeper}
 }
 
-func isAuthorized(ctx sdk.Context, k Keeper, plan, subscription uint64, node hub.NodeAddress) bool {
+func isAuthorized(ctx sdk.Context, k Keeper, plan, subscription uint64, node hubtypes.NodeAddress) bool {
 	if plan == 0 {
 		return k.HasSubscriptionForNode(ctx, node, subscription)
 	}
@@ -30,18 +30,18 @@ func isAuthorized(ctx sdk.Context, k Keeper, plan, subscription uint64, node hub
 	return k.HasNodeForPlan(ctx, plan, node)
 }
 
-func (k server) MsgUpsert(c context.Context, msg *types.MsgUpsertRequest) (*types.MsgUpsertResponse, error) {
+func (k *server) MsgUpsert(c context.Context, msg *types.MsgUpsertRequest) (*types.MsgUpsertResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
 	subscription, found := k.GetSubscription(ctx, msg.Proof.Subscription)
 	if !found {
 		return nil, types.ErrorSubscriptionDoesNotExit
 	}
-	if subscription.Status.Equal(hub.StatusInactive) {
+	if subscription.Status.Equal(hubtypes.StatusInactive) {
 		return nil, types.ErrorInvalidSubscriptionStatus
 	}
 
-	msgProofNode, err := hub.NodeAddressFromBech32(msg.Proof.Node)
+	msgProofNode, err := hubtypes.NodeAddressFromBech32(msg.Proof.Node)
 	if err != nil {
 		return nil, err
 	}
@@ -83,8 +83,8 @@ func (k server) MsgUpsert(c context.Context, msg *types.MsgUpsertRequest) (*type
 			Node:         msg.Proof.Node,
 			Address:      msg.Address,
 			Duration:     0,
-			Bandwidth:    hub.NewBandwidthFromInt64(0, 0),
-			Status:       hub.StatusActive,
+			Bandwidth:    hubtypes.NewBandwidthFromInt64(0, 0),
+			Status:       hubtypes.StatusActive,
 			StatusAt:     ctx.BlockTime(),
 		}
 
@@ -113,7 +113,7 @@ func (k server) MsgUpsert(c context.Context, msg *types.MsgUpsertRequest) (*type
 
 	session.Duration = msg.Proof.Duration
 	session.Bandwidth = msg.Proof.Bandwidth
-	session.Status = hub.StatusActive
+	session.Status = hubtypes.StatusActive
 	session.StatusAt = ctx.BlockTime()
 
 	k.SetSession(ctx, session)

@@ -9,7 +9,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/spf13/cobra"
 
-	hub "github.com/sentinel-official/hub/types"
+	hubtypes "github.com/sentinel-official/hub/types"
 	"github.com/sentinel-official/hub/x/subscription/types"
 )
 
@@ -94,7 +94,7 @@ func querySubscriptions() *cobra.Command {
 				}
 
 				res, err := qc.QuerySubscriptionsForAddress(context.Background(),
-					types.NewQuerySubscriptionsForAddressRequest(address, hub.StatusFromString(status), pagination))
+					types.NewQuerySubscriptionsForAddressRequest(address, hubtypes.StatusFromString(status), pagination))
 				if err != nil {
 					return err
 				}
@@ -109,7 +109,7 @@ func querySubscriptions() *cobra.Command {
 
 				return ctx.PrintProto(res)
 			} else if len(bech32Node) > 0 {
-				address, err := hub.NodeAddressFromBech32(bech32Node)
+				address, err := hubtypes.NodeAddressFromBech32(bech32Node)
 				if err != nil {
 					return err
 				}

@@ -11,7 +11,7 @@ import (
 	legacy "github.com/sentinel-official/hub/x/vpn/types/legacy/v0.5"
 )
 
-func MigrateGenesisState(state legacy.GenesisState) *types.GenesisState {
+func MigrateGenesisState(state *legacy.GenesisState) *types.GenesisState {
 	return types.NewGenesisState(
 		deposit.MigrateGenesisState(state.Deposits),
 		provider.MigrateGenesisState(state.Providers),

@@ -54,7 +54,7 @@ func (a AppModuleBasic) ValidateGenesis(cdc codec.JSONMarshaler, _ client.TxEnco
 	return state.Validate()
 }
 
-func (a AppModuleBasic) RegisterRESTRoutes(ctx client.Context, router *mux.Router) {}
+func (a AppModuleBasic) RegisterRESTRoutes(_ client.Context, _ *mux.Router) {}
 
 func (a AppModuleBasic) RegisterGRPCGatewayRoutes(ctx client.Context, mux *runtime.ServeMux) {
 	_ = types.RegisterQueryServiceHandlerClient(context.Background(), mux, types.NewQueryServiceClient(ctx))
@@ -112,16 +112,16 @@ func (a AppModule) BeginBlock(_ sdk.Context, _ abci.RequestBeginBlock) {}
 
 func (a AppModule) EndBlock(_ sdk.Context, _ abci.RequestEndBlock) []abci.ValidatorUpdate { return nil }
 
-func (a AppModule) GenerateGenesisState(input *module.SimulationState) {}
+func (a AppModule) GenerateGenesisState(_ *module.SimulationState) {}
 
-func (a AppModule) ProposalContents(simState module.SimulationState) []simulation.WeightedProposalContent {
+func (a AppModule) ProposalContents(_ module.SimulationState) []simulation.WeightedProposalContent {
 	return nil
 }
 
-func (a AppModule) RandomizedParams(r *rand.Rand) []simulation.ParamChange { return nil }
+func (a AppModule) RandomizedParams(_ *rand.Rand) []simulation.ParamChange { return nil }
 
-func (a AppModule) RegisterStoreDecoder(registry sdk.StoreDecoderRegistry) {}
+func (a AppModule) RegisterStoreDecoder(_ sdk.StoreDecoderRegistry) {}
 
-func (a AppModule) WeightedOperations(simState module.SimulationState) []simulation.WeightedOperation {
+func (a AppModule) WeightedOperations(_ module.SimulationState) []simulation.WeightedOperation {
 	return nil
 }

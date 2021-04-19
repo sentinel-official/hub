@@ -6,10 +6,10 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	hub "github.com/sentinel-official/hub/types"
+	hubtypes "github.com/sentinel-official/hub/types"
 )
 
-func (s Session) GetAddress() sdk.AccAddress {
+func (s *Session) GetAddress() sdk.AccAddress {
 	if s.Address == "" {
 		return nil
 	}
@@ -22,12 +22,12 @@ func (s Session) GetAddress() sdk.AccAddress {
 	return address
 }
 
-func (s Session) GetNode() hub.NodeAddress {
+func (s *Session) GetNode() hubtypes.NodeAddress {
 	if s.Node == "" {
 		return nil
 	}
 
-	address, err := hub.NodeAddressFromBech32(s.Node)
+	address, err := hubtypes.NodeAddressFromBech32(s.Node)
 	if err != nil {
 		panic(err)
 	}
@@ -35,7 +35,7 @@ func (s Session) GetNode() hub.NodeAddress {
 	return address
 }
 
-func (s Session) String() string {
+func (s *Session) String() string {
 	return fmt.Sprintf(strings.TrimSpace(`
 Id:           %d
 Subscription: %d
@@ -48,14 +48,14 @@ Status at:    %s
 `), s.Id, s.Subscription, s.Node, s.Address, s.Duration, s.Bandwidth, s.Status, s.StatusAt)
 }
 
-func (s Session) Validate() error {
+func (s *Session) Validate() error {
 	if s.Id == 0 {
 		return fmt.Errorf("id should not be zero")
 	}
 	if s.Subscription == 0 {
 		return fmt.Errorf("subscription should not be zero")
 	}
-	if _, err := hub.NodeAddressFromBech32(s.Node); err != nil {
+	if _, err := hubtypes.NodeAddressFromBech32(s.Node); err != nil {
 		return fmt.Errorf("node should not be nil or empty")
 	}
 	if _, err := sdk.AccAddressFromBech32(s.Address); err != nil {
@@ -67,7 +67,7 @@ func (s Session) Validate() error {
 	if s.Bandwidth.IsValid() {
 		return fmt.Errorf("bandwidth should be valid")
 	}
-	if !s.Status.Equal(hub.StatusActive) && !s.Status.Equal(hub.StatusInactive) {
+	if !s.Status.Equal(hubtypes.StatusActive) && !s.Status.Equal(hubtypes.StatusInactive) {
 		return fmt.Errorf("status should be either active or inactive")
 	}
 	if s.StatusAt.IsZero() {
@@ -77,4 +77,6 @@ func (s Session) Validate() error {
 	return nil
 }
 
-type Sessions []Session
+type (
+	Sessions []Session
+)

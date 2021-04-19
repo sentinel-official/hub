@@ -9,7 +9,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/rest"
 	"github.com/gorilla/mux"
 
-	hub "github.com/sentinel-official/hub/types"
+	hubtypes "github.com/sentinel-official/hub/types"
 	"github.com/sentinel-official/hub/x/plan/types"
 )
 
@@ -42,12 +42,12 @@ func queryPlans(ctx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var (
 			query  = r.URL.Query()
-			status = hub.StatusFromString(query.Get("status"))
+			status = hubtypes.StatusFromString(query.Get("status"))
 			qc     = types.NewQueryServiceClient(ctx)
 		)
 
 		if query.Get("provider") != "" {
-			address, err := hub.ProvAddressFromBech32(query.Get("provider"))
+			address, err := hubtypes.ProvAddressFromBech32(query.Get("provider"))
 			if err != nil {
 				rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 				return

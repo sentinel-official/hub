@@ -4,7 +4,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	auth "github.com/cosmos/cosmos-sdk/x/auth/types"
 
-	hub "github.com/sentinel-official/hub/types"
+	hubtypes "github.com/sentinel-official/hub/types"
 	node "github.com/sentinel-official/hub/x/node/types"
 	plan "github.com/sentinel-official/hub/x/plan/types"
 )
@@ -23,7 +23,7 @@ type DepositKeeper interface {
 }
 
 type NodeKeeper interface {
-	GetNode(ctx sdk.Context, address hub.NodeAddress) (node.Node, bool)
+	GetNode(ctx sdk.Context, address hubtypes.NodeAddress) (node.Node, bool)
 	GetNodes(ctx sdk.Context, skip, limit int) node.Nodes
 	GetActiveNodes(ctx sdk.Context, skip, limit int) node.Nodes
 }

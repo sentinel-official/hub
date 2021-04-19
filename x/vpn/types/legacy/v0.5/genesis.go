@@ -11,11 +11,11 @@ import (
 
 type (
 	GenesisState struct {
-		Deposits      deposit.GenesisState      `json:"deposits"`
-		Providers     provider.GenesisState     `json:"providers"`
-		Nodes         node.GenesisState         `json:"nodes"`
-		Plans         plan.GenesisState         `json:"plans"`
-		Subscriptions subscription.GenesisState `json:"subscriptions"`
-		Sessions      session.GenesisState      `json:"sessions"`
+		Deposits      deposit.GenesisState       `json:"deposits"`
+		Providers     *provider.GenesisState     `json:"providers"`
+		Nodes         *node.GenesisState         `json:"nodes"`
+		Plans         plan.GenesisState          `json:"plans"`
+		Subscriptions *subscription.GenesisState `json:"subscriptions"`
+		Sessions      *session.GenesisState      `json:"sessions"`
 	}
 )

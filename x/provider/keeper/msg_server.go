@@ -5,12 +5,12 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	hub "github.com/sentinel-official/hub/types"
+	hubtypes "github.com/sentinel-official/hub/types"
 	"github.com/sentinel-official/hub/x/provider/types"
 )
 
 var (
-	_ types.MsgServiceServer = server{}
+	_ types.MsgServiceServer = (*server)(nil)
 )
 
 type server struct {
@@ -21,7 +21,7 @@ func NewMsgServiceServer(keeper Keeper) types.MsgServiceServer {
 	return &server{Keeper: keeper}
 }
 
-func (k server) MsgRegister(c context.Context, msg *types.MsgRegisterRequest) (*types.MsgRegisterResponse, error) {
+func (k *server) MsgRegister(c context.Context, msg *types.MsgRegisterRequest) (*types.MsgRegisterResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
 	msgFrom, err := sdk.AccAddressFromBech32(msg.From)
@@ -42,7 +42,7 @@ func (k server) MsgRegister(c context.Context, msg *types.MsgRegisterRequest) (*
 	}
 
 	var (
-		provAddress = hub.ProvAddress(msgFrom.Bytes())
+		provAddress = hubtypes.ProvAddress(msgFrom.Bytes())
 		provider    = types.Provider{
 			Address:     provAddress.String(),
 			Name:        msg.Name,
@@ -63,10 +63,10 @@ func (k server) MsgRegister(c context.Context, msg *types.MsgRegisterRequest) (*
 	return &types.MsgRegisterResponse{}, nil
 }
 
-func (k server) MsgUpdate(c context.Context, msg *types.MsgUpdateRequest) (*types.MsgUpdateResponse, error) {
+func (k *server) MsgUpdate(c context.Context, msg *types.MsgUpdateRequest) (*types.MsgUpdateResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
-	msgFrom, err := hub.ProvAddressFromBech32(msg.From)
+	msgFrom, err := hubtypes.ProvAddressFromBech32(msg.From)
 	if err != nil {
 		return nil, err
 	}

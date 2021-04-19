@@ -10,13 +10,13 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	hub "github.com/sentinel-official/hub/types"
+	hubtypes "github.com/sentinel-official/hub/types"
 	node "github.com/sentinel-official/hub/x/node/types"
 	"github.com/sentinel-official/hub/x/plan/types"
 )
 
 var (
-	_ types.QueryServiceServer = &queryServer{}
+	_ types.QueryServiceServer = (*queryServer)(nil)
 )
 
 type queryServer struct {
@@ -53,7 +53,7 @@ func (q *queryServer) QueryPlans(c context.Context, req *types.QueryPlansRequest
 		ctx        = sdk.UnwrapSDKContext(c)
 	)
 
-	if req.Status.Equal(hub.Active) {
+	if req.Status.Equal(hubtypes.Active) {
 		store := prefix.NewStore(q.Store(ctx), types.ActivePlanKeyPrefix)
 		pagination, err = query.FilteredPaginate(store, req.Pagination, func(key, _ []byte, accumulate bool) (bool, error) {
 			item, found := q.GetPlan(ctx, types.IDFromStatusPlanKey(key))
@@ -67,7 +67,7 @@ func (q *queryServer) QueryPlans(c context.Context, req *types.QueryPlansRequest
 
 			return true, nil
 		})
-	} else if req.Status.Equal(hub.Inactive) {
+	} else if req.Status.Equal(hubtypes.Inactive) {
 		store := prefix.NewStore(q.Store(ctx), types.InactivePlanKeyPrefix)
 		pagination, err = query.FilteredPaginate(store, req.Pagination, func(key, _ []byte, accumulate bool) (bool, error) {
 			item, found := q.GetPlan(ctx, types.IDFromStatusPlanKey(key))
@@ -109,7 +109,7 @@ func (q *queryServer) QueryPlansForProvider(c context.Context, req *types.QueryP
 		return nil, status.Error(codes.InvalidArgument, "empty request")
 	}
 
-	address, err := hub.ProvAddressFromBech32(req.Address)
+	address, err := hubtypes.ProvAddressFromBech32(req.Address)
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid address %s", req.Address)
 	}
@@ -120,7 +120,7 @@ func (q *queryServer) QueryPlansForProvider(c context.Context, req *types.QueryP
 		ctx        = sdk.UnwrapSDKContext(c)
 	)
 
-	if req.Status.Equal(hub.Active) {
+	if req.Status.Equal(hubtypes.Active) {
 		store := prefix.NewStore(q.Store(ctx), types.GetActivePlanForProviderKeyPrefix(address))
 		pagination, err = query.FilteredPaginate(store, req.Pagination, func(key, _ []byte, accumulate bool) (bool, error) {
 			item, found := q.GetPlan(ctx, types.IDFromStatusPlanForProviderKey(key))
@@ -134,7 +134,7 @@ func (q *queryServer) QueryPlansForProvider(c context.Context, req *types.QueryP
 
 			return true, nil
 		})
-	} else if req.Status.Equal(hub.Inactive) {
+	} else if req.Status.Equal(hubtypes.Inactive) {
 		store := prefix.NewStore(q.Store(ctx), types.GetInactivePlanForProviderKeyPrefix(address))
 		pagination, err = query.FilteredPaginate(store, req.Pagination, func(key, _ []byte, accumulate bool) (bool, error) {
 			item, found := q.GetPlan(ctx, types.IDFromStatusPlanForProviderKey(key))

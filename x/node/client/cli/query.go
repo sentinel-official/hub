@@ -7,7 +7,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/spf13/cobra"
 
-	hub "github.com/sentinel-official/hub/types"
+	hubtypes "github.com/sentinel-official/hub/types"
 	"github.com/sentinel-official/hub/x/node/types"
 )
 
@@ -22,7 +22,7 @@ func queryNode() *cobra.Command {
 				return err
 			}
 
-			address, err := hub.NodeAddressFromBech32(args[0])
+			address, err := hubtypes.NodeAddressFromBech32(args[0])
 			if err != nil {
 				return err
 			}
@@ -77,12 +77,12 @@ func queryNodes() *cobra.Command {
 			}
 
 			var (
-				status = hub.StatusFromString(s)
+				status = hubtypes.StatusFromString(s)
 				qc     = types.NewQueryServiceClient(ctx)
 			)
 
 			if len(provider) > 0 {
-				address, err := hub.ProvAddressFromBech32(provider)
+				address, err := hubtypes.ProvAddressFromBech32(provider)
 				if err != nil {
 					return err
 				}

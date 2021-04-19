@@ -10,7 +10,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/rest"
 	"github.com/gorilla/mux"
 
-	hub "github.com/sentinel-official/hub/types"
+	hubtypes "github.com/sentinel-official/hub/types"
 	"github.com/sentinel-official/hub/x/subscription/types"
 )
 
@@ -43,7 +43,7 @@ func querySubscriptions(ctx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var (
 			query  = r.URL.Query()
-			status = hub.StatusFromString(query.Get("status"))
+			status = hubtypes.StatusFromString(query.Get("status"))
 			qc     = types.NewQueryServiceClient(ctx)
 		)
 
@@ -80,7 +80,7 @@ func querySubscriptions(ctx client.Context) http.HandlerFunc {
 			rest.PostProcessResponse(w, ctx, res)
 			return
 		} else if query.Get("node") != "" {
-			address, err := hub.NodeAddressFromBech32(query.Get("node"))
+			address, err := hubtypes.NodeAddressFromBech32(query.Get("node"))
 			if err != nil {
 				rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 				return

@@ -3,10 +3,10 @@ package types
 import (
 	"time"
 
-	hub "github.com/sentinel-official/hub/types"
+	hubtypes "github.com/sentinel-official/hub/types"
 )
 
-func NewProof(channel, subscription uint64, node hub.NodeAddress, duration time.Duration, bandwidth hub.Bandwidth) Proof {
+func NewProof(channel, subscription uint64, node hubtypes.NodeAddress, duration time.Duration, bandwidth hubtypes.Bandwidth) Proof {
 	return Proof{
 		Channel:      channel,
 		Subscription: subscription,

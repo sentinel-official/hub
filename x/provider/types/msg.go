@@ -7,7 +7,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/errors"
 
-	hub "github.com/sentinel-official/hub/types"
+	hubtypes "github.com/sentinel-official/hub/types"
 )
 
 var (
@@ -25,15 +25,15 @@ func NewMsgRegisterRequest(from sdk.AccAddress, name, identity, website, descrip
 	}
 }
 
-func (m MsgRegisterRequest) Route() string {
+func (m *MsgRegisterRequest) Route() string {
 	return RouterKey
 }
 
-func (m MsgRegisterRequest) Type() string {
+func (m *MsgRegisterRequest) Type() string {
 	return fmt.Sprintf("%s:register", ModuleName)
 }
 
-func (m MsgRegisterRequest) ValidateBasic() error {
+func (m *MsgRegisterRequest) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.From); err != nil {
 		return errors.Wrapf(ErrorInvalidField, "%s", "from")
 	}
@@ -61,7 +61,7 @@ func (m MsgRegisterRequest) ValidateBasic() error {
 	return nil
 }
 
-func (m MsgRegisterRequest) GetSignBytes() []byte {
+func (m *MsgRegisterRequest) GetSignBytes() []byte {
 	bytes, err := json.Marshal(m)
 	if err != nil {
 		panic(err)
@@ -70,7 +70,7 @@ func (m MsgRegisterRequest) GetSignBytes() []byte {
 	return bytes
 }
 
-func (m MsgRegisterRequest) GetSigners() []sdk.AccAddress {
+func (m *MsgRegisterRequest) GetSigners() []sdk.AccAddress {
 	from, err := sdk.AccAddressFromBech32(m.From)
 	if err != nil {
 		panic(err)
@@ -79,7 +79,7 @@ func (m MsgRegisterRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{from}
 }
 
-func NewMsgUpdateRequest(from hub.ProvAddress, name, identity, website, description string) *MsgUpdateRequest {
+func NewMsgUpdateRequest(from hubtypes.ProvAddress, name, identity, website, description string) *MsgUpdateRequest {
 	return &MsgUpdateRequest{
 		From:        from.String(),
 		Name:        name,
@@ -89,16 +89,16 @@ func NewMsgUpdateRequest(from hub.ProvAddress, name, identity, website, descript
 	}
 }
 
-func (m MsgUpdateRequest) Route() string {
+func (m *MsgUpdateRequest) Route() string {
 	return RouterKey
 }
 
-func (m MsgUpdateRequest) Type() string {
+func (m *MsgUpdateRequest) Type() string {
 	return fmt.Sprintf("%s:update", ModuleName)
 }
 
-func (m MsgUpdateRequest) ValidateBasic() error {
-	if _, err := hub.ProvAddressFromBech32(m.From); err != nil {
+func (m *MsgUpdateRequest) ValidateBasic() error {
+	if _, err := hubtypes.ProvAddressFromBech32(m.From); err != nil {
 		return errors.Wrapf(ErrorInvalidField, "%s", "from")
 	}
 
@@ -125,7 +125,7 @@ func (m MsgUpdateRequest) ValidateBasic() error {
 	return nil
 }
 
-func (m MsgUpdateRequest) GetSignBytes() []byte {
+func (m *MsgUpdateRequest) GetSignBytes() []byte {
 	bytes, err := json.Marshal(m)
 	if err != nil {
 		panic(err)
@@ -134,8 +134,8 @@ func (m MsgUpdateRequest) GetSignBytes() []byte {
 	return bytes
 }
 
-func (m MsgUpdateRequest) GetSigners() []sdk.AccAddress {
-	from, err := hub.ProvAddressFromBech32(m.From)
+func (m *MsgUpdateRequest) GetSigners() []sdk.AccAddress {
+	from, err := hubtypes.ProvAddressFromBech32(m.From)
 	if err != nil {
 		panic(err)
 	}

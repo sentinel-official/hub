@@ -9,12 +9,12 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	hub "github.com/sentinel-official/hub/types"
+	hubtypes "github.com/sentinel-official/hub/types"
 	"github.com/sentinel-official/hub/x/provider/types"
 )
 
 var (
-	_ types.QueryServiceServer = &queryServer{}
+	_ types.QueryServiceServer = (*queryServer)(nil)
 )
 
 type queryServer struct {
@@ -30,7 +30,7 @@ func (q *queryServer) QueryProvider(c context.Context, req *types.QueryProviderR
 		return nil, status.Error(codes.InvalidArgument, "empty request")
 	}
 
-	address, err := hub.ProvAddressFromBech32(req.Address)
+	address, err := hubtypes.ProvAddressFromBech32(req.Address)
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid address %s", req.Address)
 	}

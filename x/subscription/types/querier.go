@@ -4,7 +4,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/query"
 
-	hub "github.com/sentinel-official/hub/types"
+	hubtypes "github.com/sentinel-official/hub/types"
 )
 
 func NewQuerySubscriptionRequest(id uint64) *QuerySubscriptionRequest {
@@ -19,7 +19,7 @@ func NewQuerySubscriptionsRequest(pagination *query.PageRequest) *QuerySubscript
 	}
 }
 
-func NewQuerySubscriptionsForNodeRequest(address hub.NodeAddress, pagination *query.PageRequest) *QuerySubscriptionsForNodeRequest {
+func NewQuerySubscriptionsForNodeRequest(address hubtypes.NodeAddress, pagination *query.PageRequest) *QuerySubscriptionsForNodeRequest {
 	return &QuerySubscriptionsForNodeRequest{
 		Address:    address.String(),
 		Pagination: pagination,
@@ -33,7 +33,7 @@ func NewQuerySubscriptionsForPlanRequest(id uint64, pagination *query.PageReques
 	}
 }
 
-func NewQuerySubscriptionsForAddressRequest(address sdk.AccAddress, status hub.Status, pagination *query.PageRequest) *QuerySubscriptionsForAddressRequest {
+func NewQuerySubscriptionsForAddressRequest(address sdk.AccAddress, status hubtypes.Status, pagination *query.PageRequest) *QuerySubscriptionsForAddressRequest {
 	return &QuerySubscriptionsForAddressRequest{
 		Address:    address.String(),
 		Status:     status,

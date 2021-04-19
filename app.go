@@ -123,11 +123,6 @@ var (
 	)
 )
 
-func MakeCodecs() (codec.Marshaler, *codec.LegacyAmino) {
-	config := MakeEncodingConfig()
-	return config.Marshaler, config.Amino
-}
-
 var (
 	_ simapp.App              = (*App)(nil)
 	_ servertypes.Application = (*App)(nil)
@@ -517,7 +512,7 @@ func (a *App) RegisterTendermintService(ctx client.Context) {
 	tmservice.RegisterTendermintService(a.BaseApp.GRPCQueryRouter(), ctx, a.interfaceRegistry)
 }
 
-func (a *App) RegisterAPIRoutes(server *api.Server, config serverconfig.APIConfig) {
+func (a *App) RegisterAPIRoutes(server *api.Server, _ serverconfig.APIConfig) {
 	ctx := server.ClientCtx
 	rpc.RegisterRoutes(ctx, server.Router)
 	authrest.RegisterTxRoutes(ctx, server.Router)

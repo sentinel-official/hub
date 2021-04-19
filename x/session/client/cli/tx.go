@@ -11,7 +11,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/spf13/cobra"
 
-	hub "github.com/sentinel-official/hub/types"
+	hubtypes "github.com/sentinel-official/hub/types"
 	"github.com/sentinel-official/hub/x/session/types"
 )
 
@@ -73,7 +73,7 @@ func txUpsert() *cobra.Command {
 					subscription,
 					ctx.FromAddress.Bytes(),
 					duration,
-					hub.NewBandwidthFromInt64(upload, download),
+					hubtypes.NewBandwidthFromInt64(upload, download),
 				), address, signature)
 			if err := msg.ValidateBasic(); err != nil {
 				return err

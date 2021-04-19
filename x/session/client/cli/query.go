@@ -9,7 +9,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/spf13/cobra"
 
-	hub "github.com/sentinel-official/hub/types"
+	hubtypes "github.com/sentinel-official/hub/types"
 	"github.com/sentinel-official/hub/x/session/types"
 )
 
@@ -91,7 +91,7 @@ func querySessions() *cobra.Command {
 
 				return ctx.PrintProto(res)
 			} else if len(bech32Node) > 0 {
-				address, err := hub.NodeAddressFromBech32(bech32Node)
+				address, err := hubtypes.NodeAddressFromBech32(bech32Node)
 				if err != nil {
 					return err
 				}
@@ -110,7 +110,7 @@ func querySessions() *cobra.Command {
 
 				var (
 					active bool
-					status hub.Status
+					status hubtypes.Status
 				)
 
 				active, err = cmd.Flags().GetBool(flagActive)
@@ -119,7 +119,7 @@ func querySessions() *cobra.Command {
 				}
 
 				if active {
-					status = hub.StatusActive
+					status = hubtypes.StatusActive
 				}
 
 				res, err := qc.QuerySessionsForAddress(context.Background(),

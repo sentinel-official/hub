@@ -17,15 +17,15 @@ func NewMsgSwapRequest(from sdk.AccAddress, txHash EthereumHash, receiver sdk.Ac
 	}
 }
 
-func (m MsgSwapRequest) Route() string {
+func (m *MsgSwapRequest) Route() string {
 	return RouterKey
 }
 
-func (m MsgSwapRequest) Type() string {
+func (m *MsgSwapRequest) Type() string {
 	return fmt.Sprintf("%s:swap", ModuleName)
 }
 
-func (m MsgSwapRequest) ValidateBasic() error {
+func (m *MsgSwapRequest) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.From); err != nil {
 		return errors.Wrapf(ErrorInvalidField, "%s", "from")
 	}
@@ -41,7 +41,7 @@ func (m MsgSwapRequest) ValidateBasic() error {
 	return nil
 }
 
-func (m MsgSwapRequest) GetSignBytes() []byte {
+func (m *MsgSwapRequest) GetSignBytes() []byte {
 	bytes, err := json.Marshal(m)
 	if err != nil {
 		panic(err)
@@ -50,7 +50,7 @@ func (m MsgSwapRequest) GetSignBytes() []byte {
 	return bytes
 }
 
-func (m MsgSwapRequest) GetSigners() []sdk.AccAddress {
+func (m *MsgSwapRequest) GetSigners() []sdk.AccAddress {
 	from, err := sdk.AccAddressFromBech32(m.From)
 	if err != nil {
 		panic(err)

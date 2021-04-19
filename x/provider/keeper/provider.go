@@ -3,12 +3,12 @@ package keeper
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	hub "github.com/sentinel-official/hub/types"
+	hubtypes "github.com/sentinel-official/hub/types"
 	"github.com/sentinel-official/hub/x/provider/types"
 )
 
 // SetProvider is for inserting a provider into the KVStore.
-func (k Keeper) SetProvider(ctx sdk.Context, provider types.Provider) {
+func (k *Keeper) SetProvider(ctx sdk.Context, provider types.Provider) {
 	key := types.ProviderKey(provider.GetAddress())
 	value := k.cdc.MustMarshalBinaryBare(&provider)
 
@@ -17,7 +17,7 @@ func (k Keeper) SetProvider(ctx sdk.Context, provider types.Provider) {
 }
 
 // HasProvider is for checking whether a provider with an address exists or not in the KVStore.
-func (k Keeper) HasProvider(ctx sdk.Context, address hub.ProvAddress) bool {
+func (k *Keeper) HasProvider(ctx sdk.Context, address hubtypes.ProvAddress) bool {
 	store := k.Store(ctx)
 
 	key := types.ProviderKey(address)
@@ -25,7 +25,7 @@ func (k Keeper) HasProvider(ctx sdk.Context, address hub.ProvAddress) bool {
 }
 
 // GetProvider is for getting a provider with an address from the KVStore.
-func (k Keeper) GetProvider(ctx sdk.Context, address hub.ProvAddress) (provider types.Provider, found bool) {
+func (k *Keeper) GetProvider(ctx sdk.Context, address hubtypes.ProvAddress) (provider types.Provider, found bool) {
 	store := k.Store(ctx)
 
 	key := types.ProviderKey(address)
@@ -39,10 +39,10 @@ func (k Keeper) GetProvider(ctx sdk.Context, address hub.ProvAddress) (provider 
 }
 
 // GetProviders is for getting the providers from the KVStore.
-func (k Keeper) GetProviders(ctx sdk.Context, skip, limit int) (items types.Providers) {
+func (k *Keeper) GetProviders(ctx sdk.Context, skip, limit int) (items types.Providers) {
 	var (
 		store = k.Store(ctx)
-		iter  = hub.NewPaginatedIterator(
+		iter  = hubtypes.NewPaginatedIterator(
 			sdk.KVStorePrefixIterator(store, types.ProviderKeyPrefix),
 		)
 	)
@@ -60,7 +60,7 @@ func (k Keeper) GetProviders(ctx sdk.Context, skip, limit int) (items types.Prov
 }
 
 // IterateProviders is for iterating over the providers to perform an action.
-func (k Keeper) IterateProviders(ctx sdk.Context, fn func(index int, item types.Provider) (stop bool)) {
+func (k *Keeper) IterateProviders(ctx sdk.Context, fn func(index int, item types.Provider) (stop bool)) {
 	store := k.Store(ctx)
 
 	iter := sdk.KVStorePrefixIterator(store, types.ProviderKeyPrefix)

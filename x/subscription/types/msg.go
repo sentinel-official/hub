@@ -7,7 +7,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/errors"
 
-	hub "github.com/sentinel-official/hub/types"
+	hubtypes "github.com/sentinel-official/hub/types"
 )
 
 var (
@@ -19,7 +19,7 @@ var (
 	_ sdk.Msg = (*MsgUpdateQuotaRequest)(nil)
 )
 
-func NewMsgSubscribeToNodeRequest(from sdk.AccAddress, address hub.NodeAddress, deposit sdk.Coin) *MsgSubscribeToNodeRequest {
+func NewMsgSubscribeToNodeRequest(from sdk.AccAddress, address hubtypes.NodeAddress, deposit sdk.Coin) *MsgSubscribeToNodeRequest {
 	return &MsgSubscribeToNodeRequest{
 		From:    from.String(),
 		Address: address.String(),
@@ -27,21 +27,21 @@ func NewMsgSubscribeToNodeRequest(from sdk.AccAddress, address hub.NodeAddress, 
 	}
 }
 
-func (m MsgSubscribeToNodeRequest) Route() string {
+func (m *MsgSubscribeToNodeRequest) Route() string {
 	return RouterKey
 }
 
-func (m MsgSubscribeToNodeRequest) Type() string {
+func (m *MsgSubscribeToNodeRequest) Type() string {
 	return fmt.Sprintf("%s:subscribe_to_node", ModuleName)
 }
 
-func (m MsgSubscribeToNodeRequest) ValidateBasic() error {
+func (m *MsgSubscribeToNodeRequest) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.From); err != nil {
 		return errors.Wrapf(ErrorInvalidField, "%s", "from")
 	}
 
 	// Address should be valid
-	if _, err := hub.NodeAddressFromBech32(m.Address); err != nil {
+	if _, err := hubtypes.NodeAddressFromBech32(m.Address); err != nil {
 		return errors.Wrapf(ErrorInvalidField, "%s", "address")
 	}
 
@@ -53,7 +53,7 @@ func (m MsgSubscribeToNodeRequest) ValidateBasic() error {
 	return nil
 }
 
-func (m MsgSubscribeToNodeRequest) GetSignBytes() []byte {
+func (m *MsgSubscribeToNodeRequest) GetSignBytes() []byte {
 	bytes, err := json.Marshal(m)
 	if err != nil {
 		panic(err)
@@ -62,7 +62,7 @@ func (m MsgSubscribeToNodeRequest) GetSignBytes() []byte {
 	return bytes
 }
 
-func (m MsgSubscribeToNodeRequest) GetSigners() []sdk.AccAddress {
+func (m *MsgSubscribeToNodeRequest) GetSigners() []sdk.AccAddress {
 	from, err := sdk.AccAddressFromBech32(m.From)
 	if err != nil {
 		panic(err)
@@ -79,15 +79,15 @@ func NewMsgSubscribeToPlanRequest(from sdk.AccAddress, id uint64, denom string) 
 	}
 }
 
-func (m MsgSubscribeToPlanRequest) Route() string {
+func (m *MsgSubscribeToPlanRequest) Route() string {
 	return RouterKey
 }
 
-func (m MsgSubscribeToPlanRequest) Type() string {
+func (m *MsgSubscribeToPlanRequest) Type() string {
 	return fmt.Sprintf("%s:subscribe_to_plan", ModuleName)
 }
 
-func (m MsgSubscribeToPlanRequest) ValidateBasic() error {
+func (m *MsgSubscribeToPlanRequest) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.From); err != nil {
 		return errors.Wrapf(ErrorInvalidField, "%s", "from")
 	}
@@ -105,7 +105,7 @@ func (m MsgSubscribeToPlanRequest) ValidateBasic() error {
 	return nil
 }
 
-func (m MsgSubscribeToPlanRequest) GetSignBytes() []byte {
+func (m *MsgSubscribeToPlanRequest) GetSignBytes() []byte {
 	bytes, err := json.Marshal(m)
 	if err != nil {
 		panic(err)
@@ -114,7 +114,7 @@ func (m MsgSubscribeToPlanRequest) GetSignBytes() []byte {
 	return bytes
 }
 
-func (m MsgSubscribeToPlanRequest) GetSigners() []sdk.AccAddress {
+func (m *MsgSubscribeToPlanRequest) GetSigners() []sdk.AccAddress {
 	from, err := sdk.AccAddressFromBech32(m.From)
 	if err != nil {
 		panic(err)
@@ -130,15 +130,15 @@ func NewMsgCancelRequest(from sdk.AccAddress, id uint64) *MsgCancelRequest {
 	}
 }
 
-func (m MsgCancelRequest) Route() string {
+func (m *MsgCancelRequest) Route() string {
 	return RouterKey
 }
 
-func (m MsgCancelRequest) Type() string {
+func (m *MsgCancelRequest) Type() string {
 	return fmt.Sprintf("%s:cancel", ModuleName)
 }
 
-func (m MsgCancelRequest) ValidateBasic() error {
+func (m *MsgCancelRequest) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.From); err != nil {
 		return errors.Wrapf(ErrorInvalidField, "%s", "from")
 	}
@@ -151,7 +151,7 @@ func (m MsgCancelRequest) ValidateBasic() error {
 	return nil
 }
 
-func (m MsgCancelRequest) GetSignBytes() []byte {
+func (m *MsgCancelRequest) GetSignBytes() []byte {
 	bytes, err := json.Marshal(m)
 	if err != nil {
 		panic(err)
@@ -160,7 +160,7 @@ func (m MsgCancelRequest) GetSignBytes() []byte {
 	return bytes
 }
 
-func (m MsgCancelRequest) GetSigners() []sdk.AccAddress {
+func (m *MsgCancelRequest) GetSigners() []sdk.AccAddress {
 	from, err := sdk.AccAddressFromBech32(m.From)
 	if err != nil {
 		panic(err)
@@ -178,15 +178,15 @@ func NewMsgAddQuotaRequest(from sdk.AccAddress, id uint64, address sdk.AccAddres
 	}
 }
 
-func (m MsgAddQuotaRequest) Route() string {
+func (m *MsgAddQuotaRequest) Route() string {
 	return RouterKey
 }
 
-func (m MsgAddQuotaRequest) Type() string {
+func (m *MsgAddQuotaRequest) Type() string {
 	return fmt.Sprintf("%s:add_quota", ModuleName)
 }
 
-func (m MsgAddQuotaRequest) ValidateBasic() error {
+func (m *MsgAddQuotaRequest) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.From); err != nil {
 		return errors.Wrapf(ErrorInvalidField, "%s", "from")
 	}
@@ -209,7 +209,7 @@ func (m MsgAddQuotaRequest) ValidateBasic() error {
 	return nil
 }
 
-func (m MsgAddQuotaRequest) GetSignBytes() []byte {
+func (m *MsgAddQuotaRequest) GetSignBytes() []byte {
 	bytes, err := json.Marshal(m)
 	if err != nil {
 		panic(err)
@@ -218,7 +218,7 @@ func (m MsgAddQuotaRequest) GetSignBytes() []byte {
 	return bytes
 }
 
-func (m MsgAddQuotaRequest) GetSigners() []sdk.AccAddress {
+func (m *MsgAddQuotaRequest) GetSigners() []sdk.AccAddress {
 	from, err := sdk.AccAddressFromBech32(m.From)
 	if err != nil {
 		panic(err)
@@ -236,15 +236,15 @@ func NewMsgUpdateQuotaRequest(from sdk.AccAddress, id uint64, address sdk.AccAdd
 	}
 }
 
-func (m MsgUpdateQuotaRequest) Route() string {
+func (m *MsgUpdateQuotaRequest) Route() string {
 	return RouterKey
 }
 
-func (m MsgUpdateQuotaRequest) Type() string {
+func (m *MsgUpdateQuotaRequest) Type() string {
 	return fmt.Sprintf("%s:update_quota", ModuleName)
 }
 
-func (m MsgUpdateQuotaRequest) ValidateBasic() error {
+func (m *MsgUpdateQuotaRequest) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.From); err != nil {
 		return errors.Wrapf(ErrorInvalidField, "%s", "from")
 	}
@@ -267,7 +267,7 @@ func (m MsgUpdateQuotaRequest) ValidateBasic() error {
 	return nil
 }
 
-func (m MsgUpdateQuotaRequest) GetSignBytes() []byte {
+func (m *MsgUpdateQuotaRequest) GetSignBytes() []byte {
 	bytes, err := json.Marshal(m)
 	if err != nil {
 		panic(err)
@@ -276,7 +276,7 @@ func (m MsgUpdateQuotaRequest) GetSignBytes() []byte {
 	return bytes
 }
 
-func (m MsgUpdateQuotaRequest) GetSigners() []sdk.AccAddress {
+func (m *MsgUpdateQuotaRequest) GetSigners() []sdk.AccAddress {
 	from, err := sdk.AccAddressFromBech32(m.From)
 	if err != nil {
 		panic(err)

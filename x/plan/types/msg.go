@@ -8,7 +8,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/errors"
 
-	hub "github.com/sentinel-official/hub/types"
+	hubtypes "github.com/sentinel-official/hub/types"
 )
 
 var (
@@ -18,7 +18,7 @@ var (
 	_ sdk.Msg = (*MsgRemoveNodeRequest)(nil)
 )
 
-func NewMsgAddRequest(from hub.ProvAddress, price sdk.Coins, validity time.Duration, bytes sdk.Int) *MsgAddRequest {
+func NewMsgAddRequest(from hubtypes.ProvAddress, price sdk.Coins, validity time.Duration, bytes sdk.Int) *MsgAddRequest {
 	return &MsgAddRequest{
 		From:     from.String(),
 		Price:    price,
@@ -27,16 +27,16 @@ func NewMsgAddRequest(from hub.ProvAddress, price sdk.Coins, validity time.Durat
 	}
 }
 
-func (m MsgAddRequest) Route() string {
+func (m *MsgAddRequest) Route() string {
 	return RouterKey
 }
 
-func (m MsgAddRequest) Type() string {
+func (m *MsgAddRequest) Type() string {
 	return fmt.Sprintf("%s:add", ModuleName)
 }
 
-func (m MsgAddRequest) ValidateBasic() error {
-	if _, err := hub.ProvAddressFromBech32(m.From); err != nil {
+func (m *MsgAddRequest) ValidateBasic() error {
+	if _, err := hubtypes.ProvAddressFromBech32(m.From); err != nil {
 		return errors.Wrapf(ErrorInvalidField, "%s", "from")
 	}
 
@@ -58,7 +58,7 @@ func (m MsgAddRequest) ValidateBasic() error {
 	return nil
 }
 
-func (m MsgAddRequest) GetSignBytes() []byte {
+func (m *MsgAddRequest) GetSignBytes() []byte {
 	bytes, err := json.Marshal(m)
 	if err != nil {
 		panic(err)
@@ -67,8 +67,8 @@ func (m MsgAddRequest) GetSignBytes() []byte {
 	return bytes
 }
 
-func (m MsgAddRequest) GetSigners() []sdk.AccAddress {
-	from, err := hub.ProvAddressFromBech32(m.From)
+func (m *MsgAddRequest) GetSigners() []sdk.AccAddress {
+	from, err := hubtypes.ProvAddressFromBech32(m.From)
 	if err != nil {
 		panic(err)
 	}
@@ -76,7 +76,7 @@ func (m MsgAddRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{from.Bytes()}
 }
 
-func NewMsgSetStatusRequest(from hub.ProvAddress, id uint64, status hub.Status) *MsgSetStatusRequest {
+func NewMsgSetStatusRequest(from hubtypes.ProvAddress, id uint64, status hubtypes.Status) *MsgSetStatusRequest {
 	return &MsgSetStatusRequest{
 		From:   from.String(),
 		Id:     id,
@@ -84,16 +84,16 @@ func NewMsgSetStatusRequest(from hub.ProvAddress, id uint64, status hub.Status) 
 	}
 }
 
-func (m MsgSetStatusRequest) Route() string {
+func (m *MsgSetStatusRequest) Route() string {
 	return RouterKey
 }
 
-func (m MsgSetStatusRequest) Type() string {
+func (m *MsgSetStatusRequest) Type() string {
 	return fmt.Sprintf("%s:set_status", ModuleName)
 }
 
-func (m MsgSetStatusRequest) ValidateBasic() error {
-	if _, err := hub.ProvAddressFromBech32(m.From); err != nil {
+func (m *MsgSetStatusRequest) ValidateBasic() error {
+	if _, err := hubtypes.ProvAddressFromBech32(m.From); err != nil {
 		return errors.Wrapf(ErrorInvalidField, "%s", "from")
 	}
 
@@ -103,14 +103,14 @@ func (m MsgSetStatusRequest) ValidateBasic() error {
 	}
 
 	// Status should be either Active or Inactive
-	if !m.Status.Equal(hub.StatusActive) && !m.Status.Equal(hub.StatusInactive) {
+	if !m.Status.Equal(hubtypes.StatusActive) && !m.Status.Equal(hubtypes.StatusInactive) {
 		return errors.Wrapf(ErrorInvalidField, "%s", "status")
 	}
 
 	return nil
 }
 
-func (m MsgSetStatusRequest) GetSignBytes() []byte {
+func (m *MsgSetStatusRequest) GetSignBytes() []byte {
 	bytes, err := json.Marshal(m)
 	if err != nil {
 		panic(err)
@@ -119,8 +119,8 @@ func (m MsgSetStatusRequest) GetSignBytes() []byte {
 	return bytes
 }
 
-func (m MsgSetStatusRequest) GetSigners() []sdk.AccAddress {
-	from, err := hub.ProvAddressFromBech32(m.From)
+func (m *MsgSetStatusRequest) GetSigners() []sdk.AccAddress {
+	from, err := hubtypes.ProvAddressFromBech32(m.From)
 	if err != nil {
 		panic(err)
 	}
@@ -128,7 +128,7 @@ func (m MsgSetStatusRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{from.Bytes()}
 }
 
-func NewMsgAddNodeRequest(from hub.ProvAddress, id uint64, address hub.NodeAddress) *MsgAddNodeRequest {
+func NewMsgAddNodeRequest(from hubtypes.ProvAddress, id uint64, address hubtypes.NodeAddress) *MsgAddNodeRequest {
 	return &MsgAddNodeRequest{
 		From:    from.String(),
 		Id:      id,
@@ -136,16 +136,16 @@ func NewMsgAddNodeRequest(from hub.ProvAddress, id uint64, address hub.NodeAddre
 	}
 }
 
-func (m MsgAddNodeRequest) Route() string {
+func (m *MsgAddNodeRequest) Route() string {
 	return RouterKey
 }
 
-func (m MsgAddNodeRequest) Type() string {
+func (m *MsgAddNodeRequest) Type() string {
 	return fmt.Sprintf("%s:add_node", ModuleName)
 }
 
-func (m MsgAddNodeRequest) ValidateBasic() error {
-	if _, err := hub.ProvAddressFromBech32(m.From); err != nil {
+func (m *MsgAddNodeRequest) ValidateBasic() error {
+	if _, err := hubtypes.ProvAddressFromBech32(m.From); err != nil {
 		return errors.Wrapf(ErrorInvalidField, "%s", "from")
 	}
 
@@ -155,14 +155,14 @@ func (m MsgAddNodeRequest) ValidateBasic() error {
 	}
 
 	// Address shouldn't be nil or empty
-	if _, err := hub.NodeAddressFromBech32(m.Address); err != nil {
+	if _, err := hubtypes.NodeAddressFromBech32(m.Address); err != nil {
 		return errors.Wrapf(ErrorInvalidField, "%s", "address")
 	}
 
 	return nil
 }
 
-func (m MsgAddNodeRequest) GetSignBytes() []byte {
+func (m *MsgAddNodeRequest) GetSignBytes() []byte {
 	bytes, err := json.Marshal(m)
 	if err != nil {
 		panic(err)
@@ -171,8 +171,8 @@ func (m MsgAddNodeRequest) GetSignBytes() []byte {
 	return bytes
 }
 
-func (m MsgAddNodeRequest) GetSigners() []sdk.AccAddress {
-	from, err := hub.ProvAddressFromBech32(m.From)
+func (m *MsgAddNodeRequest) GetSigners() []sdk.AccAddress {
+	from, err := hubtypes.ProvAddressFromBech32(m.From)
 	if err != nil {
 		panic(err)
 	}
@@ -180,7 +180,7 @@ func (m MsgAddNodeRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{from.Bytes()}
 }
 
-func NewMsgRemoveNodeRequest(from hub.ProvAddress, id uint64, address hub.NodeAddress) *MsgRemoveNodeRequest {
+func NewMsgRemoveNodeRequest(from hubtypes.ProvAddress, id uint64, address hubtypes.NodeAddress) *MsgRemoveNodeRequest {
 	return &MsgRemoveNodeRequest{
 		From:    from.String(),
 		Id:      id,
@@ -188,16 +188,16 @@ func NewMsgRemoveNodeRequest(from hub.ProvAddress, id uint64, address hub.NodeAd
 	}
 }
 
-func (m MsgRemoveNodeRequest) Route() string {
+func (m *MsgRemoveNodeRequest) Route() string {
 	return RouterKey
 }
 
-func (m MsgRemoveNodeRequest) Type() string {
+func (m *MsgRemoveNodeRequest) Type() string {
 	return fmt.Sprintf("%s:remove_node", ModuleName)
 }
 
-func (m MsgRemoveNodeRequest) ValidateBasic() error {
-	if _, err := hub.ProvAddressFromBech32(m.From); err != nil {
+func (m *MsgRemoveNodeRequest) ValidateBasic() error {
+	if _, err := hubtypes.ProvAddressFromBech32(m.From); err != nil {
 		return errors.Wrapf(ErrorInvalidField, "%s", "from")
 	}
 
@@ -207,14 +207,14 @@ func (m MsgRemoveNodeRequest) ValidateBasic() error {
 	}
 
 	// Address should be valid
-	if _, err := hub.NodeAddressFromBech32(m.Address); err != nil {
+	if _, err := hubtypes.NodeAddressFromBech32(m.Address); err != nil {
 		return errors.Wrapf(ErrorInvalidField, "%s", "address")
 	}
 
 	return nil
 }
 
-func (m MsgRemoveNodeRequest) GetSignBytes() []byte {
+func (m *MsgRemoveNodeRequest) GetSignBytes() []byte {
 	bytes, err := json.Marshal(m)
 	if err != nil {
 		panic(err)
@@ -223,8 +223,8 @@ func (m MsgRemoveNodeRequest) GetSignBytes() []byte {
 	return bytes
 }
 
-func (m MsgRemoveNodeRequest) GetSigners() []sdk.AccAddress {
-	from, err := hub.ProvAddressFromBech32(m.From)
+func (m *MsgRemoveNodeRequest) GetSigners() []sdk.AccAddress {
+	from, err := hubtypes.ProvAddressFromBech32(m.From)
 	if err != nil {
 		panic(err)
 	}

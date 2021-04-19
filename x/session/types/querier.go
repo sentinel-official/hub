@@ -4,7 +4,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/query"
 
-	hub "github.com/sentinel-official/hub/types"
+	hubtypes "github.com/sentinel-official/hub/types"
 )
 
 func NewQuerySessionRequest(id uint64) *QuerySessionRequest {
@@ -26,14 +26,14 @@ func NewQuerySessionsForSubscriptionRequest(id uint64, pagination *query.PageReq
 	}
 }
 
-func NewQuerySessionsForNodeRequest(address hub.NodeAddress, pagination *query.PageRequest) *QuerySessionsForNodeRequest {
+func NewQuerySessionsForNodeRequest(address hubtypes.NodeAddress, pagination *query.PageRequest) *QuerySessionsForNodeRequest {
 	return &QuerySessionsForNodeRequest{
 		Address:    address.String(),
 		Pagination: pagination,
 	}
 }
 
-func NewQuerySessionsForAddressRequest(address sdk.AccAddress, status hub.Status, pagination *query.PageRequest) *QuerySessionsForAddressRequest {
+func NewQuerySessionsForAddressRequest(address sdk.AccAddress, status hubtypes.Status, pagination *query.PageRequest) *QuerySessionsForAddressRequest {
 	return &QuerySessionsForAddressRequest{
 		Address:    address.String(),
 		Status:     status,
@@ -41,7 +41,7 @@ func NewQuerySessionsForAddressRequest(address sdk.AccAddress, status hub.Status
 	}
 }
 
-func NewQueryActiveSessionRequest(address sdk.AccAddress, subscription uint64, node hub.NodeAddress) *QueryActiveSessionRequest {
+func NewQueryActiveSessionRequest(address sdk.AccAddress, subscription uint64, node hubtypes.NodeAddress) *QueryActiveSessionRequest {
 	return &QueryActiveSessionRequest{
 		Address:      address.String(),
 		Subscription: subscription,

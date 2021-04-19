@@ -6,15 +6,15 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	hub "github.com/sentinel-official/hub/types"
+	hubtypes "github.com/sentinel-official/hub/types"
 )
 
-func (p Plan) GetProvider() hub.ProvAddress {
+func (p *Plan) GetProvider() hubtypes.ProvAddress {
 	if p.Provider == "" {
 		return nil
 	}
 
-	address, err := hub.ProvAddressFromBech32(p.Provider)
+	address, err := hubtypes.ProvAddressFromBech32(p.Provider)
 	if err != nil {
 		panic(err)
 	}
@@ -22,7 +22,7 @@ func (p Plan) GetProvider() hub.ProvAddress {
 	return address
 }
 
-func (p Plan) String() string {
+func (p *Plan) String() string {
 	return strings.TrimSpace(fmt.Sprintf(`
 ID:        %d
 Provider:  %s
@@ -34,7 +34,7 @@ Status at: %s
 `, p.Id, p.Provider, p.Price, p.Validity, p.Bytes, p.Status, p.StatusAt))
 }
 
-func (p Plan) PriceForDenom(d string) (sdk.Coin, bool) {
+func (p *Plan) PriceForDenom(d string) (sdk.Coin, bool) {
 	for _, coin := range p.Price {
 		if coin.Denom == d {
 			return coin, true
@@ -44,11 +44,11 @@ func (p Plan) PriceForDenom(d string) (sdk.Coin, bool) {
 	return sdk.Coin{}, false
 }
 
-func (p Plan) Validate() error {
+func (p *Plan) Validate() error {
 	if p.Id == 0 {
 		return fmt.Errorf("id should not be zero")
 	}
-	if _, err := hub.ProvAddressFromBech32(p.Provider); err != nil {
+	if _, err := hubtypes.ProvAddressFromBech32(p.Provider); err != nil {
 		return fmt.Errorf("provider should not be nil or empty")
 	}
 	if p.Price != nil && !p.Price.IsValid() {
@@ -60,7 +60,7 @@ func (p Plan) Validate() error {
 	if !p.Bytes.IsPositive() {
 		return fmt.Errorf("bytes should be positive")
 	}
-	if !p.Status.Equal(hub.StatusActive) && !p.Status.Equal(hub.StatusInactive) {
+	if !p.Status.Equal(hubtypes.StatusActive) && !p.Status.Equal(hubtypes.StatusInactive) {
 		return fmt.Errorf("status should be either active or inactive")
 	}
 	if p.StatusAt.IsZero() {

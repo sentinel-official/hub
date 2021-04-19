@@ -5,7 +5,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	hub "github.com/sentinel-official/hub/types"
+	hubtypes "github.com/sentinel-official/hub/types"
 	"github.com/sentinel-official/hub/x/plan/keeper"
 	"github.com/sentinel-official/hub/x/plan/types"
 )
@@ -14,7 +14,7 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, state types.GenesisState) {
 	for _, item := range state {
 		k.SetPlan(ctx, item.Plan)
 
-		if item.Plan.Status.Equal(hub.StatusActive) {
+		if item.Plan.Status.Equal(hubtypes.StatusActive) {
 			k.SetActivePlan(ctx, item.Plan.Id)
 			k.SetActivePlanForProvider(ctx, item.Plan.GetProvider(), item.Plan.Id)
 		} else {
@@ -23,7 +23,7 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, state types.GenesisState) {
 		}
 
 		for _, node := range item.Nodes {
-			address, err := hub.NodeAddressFromBech32(node)
+			address, err := hubtypes.NodeAddressFromBech32(node)
 			if err != nil {
 				panic(err)
 			}
