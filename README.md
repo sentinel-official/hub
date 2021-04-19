@@ -16,7 +16,7 @@ mkdir -p ${GOPATH}/src/github.com/sentinel-official && \
 cd ${GOPATH}/src/github.com/sentinel-official/ && \
 git clone https://github.com/sentinel-official/hub.git && \
 cd ${GOPATH}/src/github.com/sentinel-official/hub/ && \
-make all
+make install
 ```
 
 **Note:** To install a specific version or commit use `git checkout` command
