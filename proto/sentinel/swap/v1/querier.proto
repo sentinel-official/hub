@@ -6,37 +6,23 @@ option go_package = "github.com/sentinel-official/hub/x/swap/types";
 import "cosmos/base/query/v1beta1/pagination.proto";
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
-
 import "sentinel/swap/v1/swap.proto";
 
-message QuerySwapsRequest {
-  option (gogoproto.equal)           = false;
-  option (gogoproto.goproto_getters) = false;
+option (gogoproto.equal_all)           = false;
+option (gogoproto.goproto_getters_all) = false;
 
+message QuerySwapsRequest {
   cosmos.base.query.v1beta1.PageRequest pagination = 1;
 }
 
-message QuerySwapRequest {
-  option (gogoproto.equal)           = false;
-  option (gogoproto.goproto_getters) = false;
-
-  bytes tx_hash = 1;
-}
+message QuerySwapRequest { bytes tx_hash = 1; }
 
 message QuerySwapsResponse {
-  option (gogoproto.equal)           = false;
-  option (gogoproto.goproto_getters) = false;
-
   repeated Swap swaps = 1 [ (gogoproto.nullable) = false ];
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
-message QuerySwapResponse {
-  option (gogoproto.equal)           = false;
-  option (gogoproto.goproto_getters) = false;
-
-  Swap swap = 1 [ (gogoproto.nullable) = false ];
-}
+message QuerySwapResponse { Swap swap = 1 [ (gogoproto.nullable) = false ]; }
 
 service QueryService {
   rpc QuerySwaps(QuerySwapsRequest) returns (QuerySwapsResponse) {

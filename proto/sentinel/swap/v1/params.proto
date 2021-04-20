@@ -5,11 +5,11 @@ option go_package = "github.com/sentinel-official/hub/x/swap/types";
 
 import "gogoproto/gogo.proto";
 
-message Params {
-  option (gogoproto.equal)            = false;
-  option (gogoproto.goproto_getters)  = false;
-  option (gogoproto.goproto_stringer) = false;
+option (gogoproto.equal_all)            = false;
+option (gogoproto.goproto_getters_all)  = false;
+option (gogoproto.goproto_stringer_all) = false;
 
+message Params {
   bool swap_enabled = 1;
   string swap_denom = 2;
   string approve_by = 3;

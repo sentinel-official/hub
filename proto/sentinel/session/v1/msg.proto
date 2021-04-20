@@ -4,14 +4,12 @@ package sentinel.session.v1;
 option go_package = "github.com/sentinel-official/hub/x/session/types";
 
 import "gogoproto/gogo.proto";
-
 import "sentinel/session/v1/proof.proto";
 
-message MsgUpsertRequest {
-  option (gogoproto.equal)            = false;
-  option (gogoproto.goproto_getters)  = false;
-  option (gogoproto.goproto_stringer) = true;
+option (gogoproto.equal_all)           = false;
+option (gogoproto.goproto_getters_all) = false;
 
+message MsgUpsertRequest {
   Proof proof     = 1 [ (gogoproto.nullable) = false ];
   string address  = 2;
   bytes signature = 3;

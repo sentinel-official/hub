@@ -49,6 +49,7 @@ tools:
 	@go install github.com/bufbuild/buf/cmd/buf@v0.37.0
 	@go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.27.0
 	@go install github.com/goware/modvendor@v0.3.0
+	@go install github.com/grpc-ecosystem/grpc-gateway/protoc-gen-grpc-gateway@v1.16.0
 .PHONY: tools
 
 release-dry-run: mod-vendor

@@ -36,8 +36,10 @@ func (k *server) MsgRegister(c context.Context, msg *types.MsgRegisterRequest) (
 	if err != nil {
 		return nil, err
 	}
-	if !k.HasProvider(ctx, msgProvider) {
-		return nil, types.ErrorProviderDoesNotExist
+	if msg.Provider != "" {
+		if !k.HasProvider(ctx, msgProvider) {
+			return nil, types.ErrorProviderDoesNotExist
+		}
 	}
 
 	deposit := k.Deposit(ctx)

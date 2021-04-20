@@ -12,10 +12,6 @@ func (k *Keeper) FundCommunityPool(ctx sdk.Context, from sdk.AccAddress, coin sd
 }
 
 func (k *Keeper) HasProvider(ctx sdk.Context, address hubtypes.ProvAddress) bool {
-	if address == nil {
-		return true
-	}
-
 	return k.provider.HasProvider(ctx, address)
 }
 

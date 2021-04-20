@@ -7,11 +7,10 @@ import "gogoproto/gogo.proto";
 import "sentinel/session/v1/params.proto";
 import "sentinel/session/v1/session.proto";
 
-message GenesisState {
-  option (gogoproto.equal)            = false;
-  option (gogoproto.goproto_getters)  = false;
-  option (gogoproto.goproto_stringer) = true;
+option (gogoproto.equal_all)           = false;
+option (gogoproto.goproto_getters_all) = false;
 
+message GenesisState {
   repeated Session sessions = 1
       [ (gogoproto.jsontag) = "_,omitempty", (gogoproto.nullable) = false ];
   Params params = 2 [ (gogoproto.nullable) = false ];
