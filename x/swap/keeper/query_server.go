@@ -36,7 +36,7 @@ func (q *queryServer) QuerySwap(c context.Context, req *types.QuerySwapRequest) 
 
 	item, found := q.GetSwap(ctx, hash)
 	if !found {
-		return nil, nil
+		return nil, status.Errorf(codes.NotFound, "swap does not exist for hash %X", req.TxHash)
 	}
 
 	return &types.QuerySwapResponse{Swap: item}, nil

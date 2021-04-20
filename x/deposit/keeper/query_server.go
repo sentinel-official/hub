@@ -38,7 +38,7 @@ func (q *queryServer) QueryDeposit(c context.Context, req *types.QueryDepositReq
 
 	item, found := q.GetDeposit(ctx, address)
 	if !found {
-		return nil, nil
+		return nil, status.Errorf(codes.NotFound, "deposit does not exist for address %s", req.Address)
 	}
 
 	return &types.QueryDepositResponse{Deposit: item}, nil

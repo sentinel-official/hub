@@ -40,7 +40,7 @@ func (q *queryServer) QueryNode(c context.Context, req *types.QueryNodeRequest) 
 
 	item, found := q.GetNode(ctx, address)
 	if !found {
-		return nil, nil
+		return nil, status.Errorf(codes.NotFound, "node does not exist for address %s", req.Address)
 	}
 
 	return &types.QueryNodeResponse{Node: item}, nil

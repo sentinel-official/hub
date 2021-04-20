@@ -36,7 +36,7 @@ func (q *queryServer) QueryPlan(c context.Context, req *types.QueryPlanRequest) 
 
 	item, found := q.GetPlan(ctx, req.Id)
 	if !found {
-		return nil, nil
+		return nil, status.Errorf(codes.NotFound, "plan does not exist for id %d", req.Id)
 	}
 
 	return &types.QueryPlanResponse{Plan: item}, nil

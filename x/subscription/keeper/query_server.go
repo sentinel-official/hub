@@ -35,7 +35,7 @@ func (q *queryServer) QuerySubscription(c context.Context, req *types.QuerySubsc
 
 	item, found := q.GetSubscription(ctx, req.Id)
 	if !found {
-		return nil, nil
+		return nil, status.Errorf(codes.NotFound, "subscription does not exist for id %d", req.Id)
 	}
 
 	return &types.QuerySubscriptionResponse{Subscription: item}, nil
@@ -225,7 +225,7 @@ func (q *queryServer) QueryQuota(c context.Context, req *types.QueryQuotaRequest
 
 	item, found := q.GetQuota(ctx, req.Id, address)
 	if !found {
-		return nil, nil
+		return nil, status.Errorf(codes.NotFound, "quota does not exist for id %d, and address %s", req.Id, req.Address)
 	}
 
 	return &types.QueryQuotaResponse{Quota: item}, nil

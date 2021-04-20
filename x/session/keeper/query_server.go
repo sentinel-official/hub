@@ -34,7 +34,7 @@ func (q *queryServer) QuerySession(c context.Context, req *types.QuerySessionReq
 
 	item, found := q.GetSession(ctx, req.Id)
 	if !found {
-		return nil, nil
+		return nil, status.Errorf(codes.NotFound, "session does not exist for id %d", req.Id)
 	}
 
 	return &types.QuerySessionResponse{Session: item}, nil
@@ -193,7 +193,7 @@ func (q *queryServer) QueryActiveSession(c context.Context, req *types.QueryActi
 
 	session, found := q.GetActiveSessionForAddress(ctx, address, req.Subscription, node)
 	if !found {
-		return nil, nil
+		return nil, status.Errorf(codes.NotFound, "active session does not exist for address %s, subscription %d, and node %s", req.Address, req.Subscription, req.Node)
 	}
 
 	return &types.QueryActiveSessionResponse{Session: session}, nil

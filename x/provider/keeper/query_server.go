@@ -39,7 +39,7 @@ func (q *queryServer) QueryProvider(c context.Context, req *types.QueryProviderR
 
 	item, found := q.GetProvider(ctx, address)
 	if !found {
-		return nil, nil
+		return nil, status.Errorf(codes.NotFound, "provider does not exist for address %s", req.Address)
 	}
 
 	return &types.QueryProviderResponse{Provider: item}, nil
