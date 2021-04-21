@@ -2,7 +2,6 @@ package types
 
 import (
 	"fmt"
-	"strings"
 	"time"
 
 	params "github.com/cosmos/cosmos-sdk/x/params/types"
@@ -19,13 +18,6 @@ var (
 )
 
 var _ params.ParamSet = (*Params)(nil)
-
-func (p *Params) String() string {
-	return fmt.Sprintf(strings.TrimSpace(`
-Inactive duration:          %s
-Proof verification enabled: %t
-`), p.InactiveDuration, p.ProofVerificationEnabled)
-}
 
 func (p *Params) ParamSetPairs() params.ParamSetPairs {
 	return params.ParamSetPairs{

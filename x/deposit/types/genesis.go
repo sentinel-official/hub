@@ -9,5 +9,5 @@ func NewGenesisState(deposits Deposits) GenesisState {
 }
 
 func DefaultGenesisState() GenesisState {
-	return nil
+	return NewGenesisState(nil)
 }

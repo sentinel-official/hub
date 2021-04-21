@@ -2,8 +2,6 @@ package types
 
 import (
 	"fmt"
-	"strings"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	hubtypes "github.com/sentinel-official/hub/types"
@@ -20,31 +18,6 @@ func (s *Subscription) GetNode() hubtypes.NodeAddress {
 	}
 
 	return address
-}
-
-func (s *Subscription) String() string {
-	if s.Plan == 0 {
-		return fmt.Sprintf(strings.TrimSpace(`
-Id:        %d
-Owner:     %s
-Node:      %s
-Price:     %s
-Deposit:   %s
-Free:      %s
-Status:    %s
-Status at: %s
-`), s.Id, s.Owner, s.Node, s.Price, s.Deposit, s.Free, s.Status, s.StatusAt)
-	}
-
-	return fmt.Sprintf(strings.TrimSpace(`
-Id:        %d
-Owner:     %s
-Plan:      %d
-Expiry:    %s
-Free:      %s
-Status:    %s
-Status at: %s
-`), s.Id, s.Owner, s.Plan, s.Expiry, s.Free, s.Status, s.StatusAt)
 }
 
 func (s *Subscription) Amount(consumed sdk.Int) sdk.Coin {

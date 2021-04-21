@@ -10,18 +10,18 @@ import (
 )
 
 var (
-	_ types.MsgServiceServer = (*server)(nil)
+	_ types.MsgServiceServer = (*msgServer)(nil)
 )
 
-type server struct {
+type msgServer struct {
 	Keeper
 }
 
 func NewMsgServiceServer(keeper Keeper) types.MsgServiceServer {
-	return &server{Keeper: keeper}
+	return &msgServer{Keeper: keeper}
 }
 
-func (k *server) MsgRegister(c context.Context, msg *types.MsgRegisterRequest) (*types.MsgRegisterResponse, error) {
+func (k *msgServer) MsgRegister(c context.Context, msg *types.MsgRegisterRequest) (*types.MsgRegisterResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
 	msgFrom, err := sdk.AccAddressFromBech32(msg.From)
@@ -63,7 +63,7 @@ func (k *server) MsgRegister(c context.Context, msg *types.MsgRegisterRequest) (
 	return &types.MsgRegisterResponse{}, nil
 }
 
-func (k *server) MsgUpdate(c context.Context, msg *types.MsgUpdateRequest) (*types.MsgUpdateResponse, error) {
+func (k *msgServer) MsgUpdate(c context.Context, msg *types.MsgUpdateRequest) (*types.MsgUpdateResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
 	msgFrom, err := hubtypes.ProvAddressFromBech32(msg.From)

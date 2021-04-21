@@ -11,18 +11,18 @@ import (
 )
 
 var (
-	_ types.MsgServiceServer = (*server)(nil)
+	_ types.MsgServiceServer = (*msgServer)(nil)
 )
 
-type server struct {
+type msgServer struct {
 	Keeper
 }
 
 func NewMsgServiceServer(keeper Keeper) types.MsgServiceServer {
-	return &server{Keeper: keeper}
+	return &msgServer{Keeper: keeper}
 }
 
-func (k *server) MsgAdd(c context.Context, msg *types.MsgAddRequest) (*types.MsgAddResponse, error) {
+func (k *msgServer) MsgAdd(c context.Context, msg *types.MsgAddRequest) (*types.MsgAddResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
 	msgFrom, err := hubtypes.ProvAddressFromBech32(msg.From)
@@ -69,7 +69,7 @@ func (k *server) MsgAdd(c context.Context, msg *types.MsgAddRequest) (*types.Msg
 	return &types.MsgAddResponse{}, nil
 }
 
-func (k *server) MsgSetStatus(c context.Context, msg *types.MsgSetStatusRequest) (*types.MsgSetStatusResponse, error) {
+func (k *msgServer) MsgSetStatus(c context.Context, msg *types.MsgSetStatusRequest) (*types.MsgSetStatusResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
 	plan, found := k.GetPlan(ctx, msg.Id)
@@ -116,7 +116,7 @@ func (k *server) MsgSetStatus(c context.Context, msg *types.MsgSetStatusRequest)
 	return &types.MsgSetStatusResponse{}, nil
 }
 
-func (k *server) MsgAddNode(c context.Context, msg *types.MsgAddNodeRequest) (*types.MsgAddNodeResponse, error) {
+func (k *msgServer) MsgAddNode(c context.Context, msg *types.MsgAddNodeRequest) (*types.MsgAddNodeResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
 	plan, found := k.GetPlan(ctx, msg.Id)
@@ -155,7 +155,7 @@ func (k *server) MsgAddNode(c context.Context, msg *types.MsgAddNodeRequest) (*t
 	return &types.MsgAddNodeResponse{}, nil
 }
 
-func (k *server) MsgRemoveNode(c context.Context, msg *types.MsgRemoveNodeRequest) (*types.MsgRemoveNodeResponse, error) {
+func (k *msgServer) MsgRemoveNode(c context.Context, msg *types.MsgRemoveNodeRequest) (*types.MsgRemoveNodeResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
 	plan, found := k.GetPlan(ctx, msg.Id)

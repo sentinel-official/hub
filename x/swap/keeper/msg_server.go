@@ -10,7 +10,7 @@ import (
 )
 
 var (
-	_ types.MsgServiceServer = msgServer{}
+	_ types.MsgServiceServer = (*msgServer)(nil)
 )
 
 type msgServer struct {

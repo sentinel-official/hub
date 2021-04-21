@@ -11,18 +11,18 @@ import (
 )
 
 var (
-	_ types.MsgServiceServer = (*server)(nil)
+	_ types.MsgServiceServer = (*msgServer)(nil)
 )
 
-type server struct {
+type msgServer struct {
 	Keeper
 }
 
 func NewMsgServiceServer(keeper Keeper) types.MsgServiceServer {
-	return &server{Keeper: keeper}
+	return &msgServer{Keeper: keeper}
 }
 
-func (k *server) MsgSubscribeToNode(c context.Context, msg *types.MsgSubscribeToNodeRequest) (*types.MsgSubscribeToNodeResponse, error) {
+func (k *msgServer) MsgSubscribeToNode(c context.Context, msg *types.MsgSubscribeToNodeRequest) (*types.MsgSubscribeToNodeResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
 	msgAddress, err := hubtypes.NodeAddressFromBech32(msg.Address)
@@ -108,7 +108,7 @@ func (k *server) MsgSubscribeToNode(c context.Context, msg *types.MsgSubscribeTo
 	return &types.MsgSubscribeToNodeResponse{}, nil
 }
 
-func (k *server) MsgSubscribeToPlan(c context.Context, msg *types.MsgSubscribeToPlanRequest) (*types.MsgSubscribeToPlanResponse, error) {
+func (k *msgServer) MsgSubscribeToPlan(c context.Context, msg *types.MsgSubscribeToPlanRequest) (*types.MsgSubscribeToPlanResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
 	plan, found := k.GetPlan(ctx, msg.Id)
@@ -190,7 +190,7 @@ func (k *server) MsgSubscribeToPlan(c context.Context, msg *types.MsgSubscribeTo
 	return &types.MsgSubscribeToPlanResponse{}, nil
 }
 
-func (k *server) MsgCancel(c context.Context, msg *types.MsgCancelRequest) (*types.MsgCancelResponse, error) {
+func (k *msgServer) MsgCancel(c context.Context, msg *types.MsgCancelRequest) (*types.MsgCancelResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
 	subscription, found := k.GetSubscription(ctx, msg.Id)
@@ -234,7 +234,7 @@ func (k *server) MsgCancel(c context.Context, msg *types.MsgCancelRequest) (*typ
 	return &types.MsgCancelResponse{}, nil
 }
 
-func (k *server) MsgAddQuota(c context.Context, msg *types.MsgAddQuotaRequest) (*types.MsgAddQuotaResponse, error) {
+func (k *msgServer) MsgAddQuota(c context.Context, msg *types.MsgAddQuotaRequest) (*types.MsgAddQuotaResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
 	msgAddress, err := sdk.AccAddressFromBech32(msg.Address)
@@ -287,7 +287,7 @@ func (k *server) MsgAddQuota(c context.Context, msg *types.MsgAddQuotaRequest) (
 	return &types.MsgAddQuotaResponse{}, nil
 }
 
-func (k *server) MsgUpdateQuota(c context.Context, msg *types.MsgUpdateQuotaRequest) (*types.MsgUpdateQuotaResponse, error) {
+func (k *msgServer) MsgUpdateQuota(c context.Context, msg *types.MsgUpdateQuotaRequest) (*types.MsgUpdateQuotaResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
 	subscription, found := k.GetSubscription(ctx, msg.Id)

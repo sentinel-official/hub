@@ -2,8 +2,6 @@ package types
 
 import (
 	"fmt"
-	"strings"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -20,19 +18,12 @@ func (d *Deposit) GetAddress() sdk.AccAddress {
 	return address
 }
 
-func (d *Deposit) String() string {
-	return fmt.Sprintf(strings.TrimSpace(`
-Address: %s
-Coins  : %s
-`), d.Address, d.Coins)
-}
-
 func (d *Deposit) Validate() error {
 	if _, err := sdk.AccAddressFromBech32(d.Address); err != nil {
 		return err
 	}
 	if d.Coins == nil || !d.Coins.IsValid() {
-		return fmt.Errorf("coins should not be nil or invalid")
+		return fmt.Errorf("coins is nil or invalid")
 	}
 
 	return nil

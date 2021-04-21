@@ -11,15 +11,15 @@ import (
 )
 
 var (
-	_ types.MsgServiceServer = (*server)(nil)
+	_ types.MsgServiceServer = (*msgServer)(nil)
 )
 
-type server struct {
+type msgServer struct {
 	Keeper
 }
 
 func NewMsgServiceServer(keeper Keeper) types.MsgServiceServer {
-	return &server{Keeper: keeper}
+	return &msgServer{Keeper: keeper}
 }
 
 func isAuthorized(ctx sdk.Context, k Keeper, plan, subscription uint64, node hubtypes.NodeAddress) bool {
@@ -30,7 +30,7 @@ func isAuthorized(ctx sdk.Context, k Keeper, plan, subscription uint64, node hub
 	return k.HasNodeForPlan(ctx, plan, node)
 }
 
-func (k *server) MsgUpsert(c context.Context, msg *types.MsgUpsertRequest) (*types.MsgUpsertResponse, error) {
+func (k *msgServer) MsgUpsert(c context.Context, msg *types.MsgUpsertRequest) (*types.MsgUpsertResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
 	subscription, found := k.GetSubscription(ctx, msg.Proof.Subscription)

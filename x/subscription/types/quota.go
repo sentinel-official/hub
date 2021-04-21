@@ -2,8 +2,6 @@ package types
 
 import (
 	"fmt"
-	"strings"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -18,14 +16,6 @@ func (q *Quota) GetAddress() sdk.AccAddress {
 	}
 
 	return address
-}
-
-func (q *Quota) String() string {
-	return fmt.Sprintf(strings.TrimSpace(`
-Address:   %s
-Consumed:  %s
-Allocated: %s
-`), q.Address, q.Consumed, q.Allocated)
 }
 
 func (q *Quota) Validate() error {

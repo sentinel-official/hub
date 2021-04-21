@@ -2,8 +2,6 @@ package types
 
 import (
 	"fmt"
-	"strings"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	params "github.com/cosmos/cosmos-sdk/x/params/types"
 )
@@ -19,12 +17,6 @@ var (
 var (
 	_ params.ParamSet = (*Params)(nil)
 )
-
-func (p *Params) String() string {
-	return fmt.Sprintf(strings.TrimSpace(`
-Deposit: %s
-`), p.Deposit)
-}
 
 func (p *Params) Validate() error {
 	if !p.Deposit.IsValid() {

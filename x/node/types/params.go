@@ -2,7 +2,6 @@ package types
 
 import (
 	"fmt"
-	"strings"
 	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -25,13 +24,6 @@ var (
 var (
 	_ params.ParamSet = (*Params)(nil)
 )
-
-func (p *Params) String() string {
-	return fmt.Sprintf(strings.TrimSpace(`
-Deposit:           %s
-Inactive duration: %s
-`), p.Deposit, p.InactiveDuration)
-}
 
 func (p *Params) Validate() error {
 	if !p.Deposit.IsValid() {

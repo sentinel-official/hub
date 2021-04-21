@@ -2,8 +2,6 @@ package types
 
 import (
 	"fmt"
-	"strings"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	params "github.com/cosmos/cosmos-sdk/x/params/types"
 )
@@ -21,14 +19,6 @@ var (
 )
 
 var _ params.ParamSet = (*Params)(nil)
-
-func (p *Params) String() string {
-	return fmt.Sprintf(strings.TrimSpace(`
-Swap enabled: %s
-Swap denom  : %s
-Approve by  : %s
-`), p.SwapEnabled, p.SwapDenom, p.ApproveBy)
-}
 
 func (p *Params) Validate() error {
 	if err := sdk.ValidateDenom(p.SwapDenom); err != nil {

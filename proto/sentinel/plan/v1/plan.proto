@@ -9,9 +9,8 @@ import "google/protobuf/duration.proto";
 import "google/protobuf/timestamp.proto";
 import "sentinel/types/v1/status.proto";
 
-option (gogoproto.equal_all)            = false;
-option (gogoproto.goproto_getters_all)  = false;
-option (gogoproto.goproto_stringer_all) = false;
+option (gogoproto.equal_all)           = false;
+option (gogoproto.goproto_getters_all) = false;
 
 message Plan {
   uint64 id                               = 1;

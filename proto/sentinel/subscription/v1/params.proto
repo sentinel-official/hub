@@ -6,9 +6,8 @@ option go_package = "github.com/sentinel-official/hub/x/subscription/types";
 import "gogoproto/gogo.proto";
 import "google/protobuf/duration.proto";
 
-option (gogoproto.equal_all)            = false;
-option (gogoproto.goproto_getters_all)  = false;
-option (gogoproto.goproto_stringer_all) = false;
+option (gogoproto.equal_all)           = false;
+option (gogoproto.goproto_getters_all) = false;
 
 message Params {
   google.protobuf.Duration inactive_duration = 1

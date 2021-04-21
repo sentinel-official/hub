@@ -1,7 +1,6 @@
 package types
 
 import (
-	"fmt"
 	"math/big"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -18,10 +17,6 @@ func NewBandwidth(upload, download sdk.Int) Bandwidth {
 		Upload:   upload,
 		Download: download,
 	}
-}
-
-func (b Bandwidth) String() string {
-	return fmt.Sprintf("%s↑, %s↓ bytes", b.Upload, b.Download)
 }
 
 func (b Bandwidth) IsAnyZero() bool {

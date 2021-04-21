@@ -2,8 +2,6 @@ package types
 
 import (
 	"fmt"
-	"strings"
-
 	hubtypes "github.com/sentinel-official/hub/types"
 )
 
@@ -18,16 +16,6 @@ func (p *Provider) GetAddress() hubtypes.ProvAddress {
 	}
 
 	return address
-}
-
-func (p *Provider) String() string {
-	return strings.TrimSpace(fmt.Sprintf(`
-Address:     %s
-Name:        %s
-Identity:    %s
-Website:     %s
-Description: %s
-`, p.Address, p.Identity, p.Name, p.Website, p.Description))
 }
 
 func (p *Provider) Validate() error {

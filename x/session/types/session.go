@@ -2,8 +2,6 @@ package types
 
 import (
 	"fmt"
-	"strings"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	hubtypes "github.com/sentinel-official/hub/types"
@@ -33,19 +31,6 @@ func (s *Session) GetNode() hubtypes.NodeAddress {
 	}
 
 	return address
-}
-
-func (s *Session) String() string {
-	return fmt.Sprintf(strings.TrimSpace(`
-Id:           %d
-Subscription: %d
-Node:         %s
-Address:      %s
-Duration:     %s
-Bandwidth:    %s
-Status:       %s
-Status at:    %s
-`), s.Id, s.Subscription, s.Node, s.Address, s.Duration, s.Bandwidth, s.Status, s.StatusAt)
 }
 
 func (s *Session) Validate() error {

@@ -8,9 +8,8 @@ import "gogoproto/gogo.proto";
 import "google/protobuf/timestamp.proto";
 import "sentinel/types/v1/status.proto";
 
-option (gogoproto.equal_all)            = false;
-option (gogoproto.goproto_getters_all)  = false;
-option (gogoproto.goproto_stringer_all) = false;
+option (gogoproto.equal_all)           = false;
+option (gogoproto.goproto_getters_all) = false;
 
 message Subscription {
   uint64 id                        = 1;

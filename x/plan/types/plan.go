@@ -2,8 +2,6 @@ package types
 
 import (
 	"fmt"
-	"strings"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	hubtypes "github.com/sentinel-official/hub/types"
@@ -20,18 +18,6 @@ func (p *Plan) GetProvider() hubtypes.ProvAddress {
 	}
 
 	return address
-}
-
-func (p *Plan) String() string {
-	return strings.TrimSpace(fmt.Sprintf(`
-ID:        %d
-Provider:  %s
-Price:     %s
-Validity:  %s
-Bytes:     %s
-Status:    %s
-Status at: %s
-`, p.Id, p.Provider, p.Price, p.Validity, p.Bytes, p.Status, p.StatusAt))
 }
 
 func (p *Plan) PriceForDenom(d string) (sdk.Coin, bool) {
