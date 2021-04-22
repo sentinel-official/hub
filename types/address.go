@@ -150,9 +150,8 @@ func (p *ProvAddress) UnmarshalYAML(data []byte) error {
 }
 
 func ProvAddressFromBech32(s string) (ProvAddress, error) {
-	s = strings.TrimSpace(s)
-	if len(s) == 0 {
-		return ProvAddress{}, nil
+	if len(strings.TrimSpace(s)) == 0 {
+		return ProvAddress{}, fmt.Errorf("empty address string is not allowed")
 	}
 
 	bz, err := sdk.GetFromBech32(s, GetConfig().GetBech32ProviderAddrPrefix())
@@ -257,9 +256,8 @@ func (n *NodeAddress) UnmarshalYAML(data []byte) error {
 }
 
 func NodeAddressFromBech32(s string) (NodeAddress, error) {
-	s = strings.TrimSpace(s)
-	if len(s) == 0 {
-		return NodeAddress{}, nil
+	if len(strings.TrimSpace(s)) == 0 {
+		return NodeAddress{}, fmt.Errorf("empty address string is not allowed")
 	}
 
 	bz, err := sdk.GetFromBech32(s, GetConfig().GetBech32NodeAddrPrefix())
