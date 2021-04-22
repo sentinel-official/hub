@@ -1,0 +1,39 @@
+syntax = "proto3";
+package sentinel.session.v1;
+
+option go_package = "github.com/sentinel-official/hub/x/session/types";
+
+import "gogoproto/gogo.proto";
+import "google/protobuf/duration.proto";
+import "sentinel/types/v1/bandwidth.proto";
+
+option (gogoproto.equal_all)           = false;
+option (gogoproto.goproto_getters_all) = false;
+
+message EventModule { string name = 1; }
+
+message EventSetSessionCount { uint64 count = 1; }
+
+message EventAddSession {
+  string from                       = 1;
+  uint64 channel                    = 2;
+  uint64 subscription               = 3;
+  string node                       = 4;
+  google.protobuf.Duration duration = 5
+      [ (gogoproto.stdduration) = true, (gogoproto.nullable) = false ];
+  sentinel.types.v1.Bandwidth bandwidth = 6 [ (gogoproto.nullable) = false ];
+  string address                        = 7;
+  bytes signature                       = 8;
+}
+
+message EventUpdateSession {
+  string from                       = 1;
+  uint64 channel                    = 2;
+  uint64 subscription               = 3;
+  string node                       = 4;
+  google.protobuf.Duration duration = 5
+      [ (gogoproto.stdduration) = true, (gogoproto.nullable) = false ];
+  sentinel.types.v1.Bandwidth bandwidth = 6 [ (gogoproto.nullable) = false ];
+  string address                        = 7;
+  bytes signature                       = 8;
+}
