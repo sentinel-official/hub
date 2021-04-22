@@ -24,12 +24,12 @@ type DepositKeeper interface {
 
 type NodeKeeper interface {
 	GetNode(ctx sdk.Context, address hubtypes.NodeAddress) (node.Node, bool)
-	GetNodes(ctx sdk.Context, skip, limit int) node.Nodes
-	GetActiveNodes(ctx sdk.Context, skip, limit int) node.Nodes
+	GetNodes(ctx sdk.Context, skip, limit int64) node.Nodes
+	GetActiveNodes(ctx sdk.Context, skip, limit int64) node.Nodes
 }
 
 type PlanKeeper interface {
 	GetPlan(ctx sdk.Context, id uint64) (plan.Plan, bool)
-	GetPlans(ctx sdk.Context, skip, limit int) plan.Plans
-	GetActivePlans(ctx sdk.Context, skip, limit int) plan.Plans
+	GetPlans(ctx sdk.Context, skip, limit int64) plan.Plans
+	GetActivePlans(ctx sdk.Context, skip, limit int64) plan.Plans
 }

@@ -11,9 +11,6 @@ import (
 )
 
 const (
-	AttributeKeyProvider    = types.AttributeKeyProvider
-	AttributeKeyAddress     = types.AttributeKeyAddress
-	AttributeKeyStatus      = types.AttributeKeyStatus
 	ModuleName              = types.ModuleName
 	QuerierRoute            = types.QuerierRoute
 	DefaultInactiveDuration = types.DefaultInactiveDuration
@@ -70,9 +67,9 @@ var (
 	ErrorProviderDoesNotExist        = types.ErrorProviderDoesNotExist
 	ErrorDuplicateNode               = types.ErrorDuplicateNode
 	ErrorNodeDoesNotExist            = types.ErrorNodeDoesNotExist
-	EventTypeSet                     = types.EventTypeSet
-	EventTypeUpdate                  = types.EventTypeUpdate
-	EventTypeSetStatus               = types.EventTypeSetStatus
+	ErrInvalidLengthEvents           = types.ErrInvalidLengthEvents
+	ErrIntOverflowEvents             = types.ErrIntOverflowEvents
+	ErrUnexpectedEndOfGroupEvents    = types.ErrUnexpectedEndOfGroupEvents
 	ErrInvalidLengthGenesis          = types.ErrInvalidLengthGenesis
 	ErrIntOverflowGenesis            = types.ErrIntOverflowGenesis
 	ErrUnexpectedEndOfGroupGenesis   = types.ErrUnexpectedEndOfGroupGenesis
@@ -105,6 +102,10 @@ var (
 )
 
 type (
+	EventModule                     = types.EventModule
+	EventRegisterNode               = types.EventRegisterNode
+	EventUpdateNode                 = types.EventUpdateNode
+	EventSetNodeStatus              = types.EventSetNodeStatus
 	GenesisState                    = types.GenesisState
 	MsgRegisterRequest              = types.MsgRegisterRequest
 	MsgUpdateRequest                = types.MsgUpdateRequest

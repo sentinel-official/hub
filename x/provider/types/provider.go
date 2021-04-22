@@ -2,6 +2,7 @@ package types
 
 import (
 	"fmt"
+
 	hubtypes "github.com/sentinel-official/hub/types"
 )
 

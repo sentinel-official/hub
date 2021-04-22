@@ -52,7 +52,7 @@ func (k *Keeper) GetPlan(ctx sdk.Context, id uint64) (plan types.Plan, found boo
 	return plan, true
 }
 
-func (k *Keeper) GetPlans(ctx sdk.Context, skip, limit int) (items types.Plans) {
+func (k *Keeper) GetPlans(ctx sdk.Context, skip, limit int64) (items types.Plans) {
 	var (
 		store = k.Store(ctx)
 		iter  = hubtypes.NewPaginatedIterator(
@@ -87,7 +87,7 @@ func (k *Keeper) DeleteActivePlan(ctx sdk.Context, id uint64) {
 	store.Delete(key)
 }
 
-func (k *Keeper) GetActivePlans(ctx sdk.Context, skip, limit int) (items types.Plans) {
+func (k *Keeper) GetActivePlans(ctx sdk.Context, skip, limit int64) (items types.Plans) {
 	var (
 		store = k.Store(ctx)
 		iter  = hubtypes.NewPaginatedIterator(
@@ -121,7 +121,7 @@ func (k *Keeper) DeleteInactivePlan(ctx sdk.Context, id uint64) {
 	store.Delete(key)
 }
 
-func (k *Keeper) GetInactivePlans(ctx sdk.Context, skip, limit int) (items types.Plans) {
+func (k *Keeper) GetInactivePlans(ctx sdk.Context, skip, limit int64) (items types.Plans) {
 	var (
 		store = k.Store(ctx)
 		iter  = hubtypes.NewPaginatedIterator(
@@ -155,7 +155,7 @@ func (k *Keeper) DeleteActivePlanForProvider(ctx sdk.Context, address hubtypes.P
 	store.Delete(key)
 }
 
-func (k *Keeper) GetActivePlansForProvider(ctx sdk.Context, address hubtypes.ProvAddress, skip, limit int) (items types.Plans) {
+func (k *Keeper) GetActivePlansForProvider(ctx sdk.Context, address hubtypes.ProvAddress, skip, limit int64) (items types.Plans) {
 	var (
 		store = k.Store(ctx)
 		iter  = hubtypes.NewPaginatedIterator(
@@ -189,7 +189,7 @@ func (k *Keeper) DeleteInactivePlanForProvider(ctx sdk.Context, address hubtypes
 	store.Delete(key)
 }
 
-func (k *Keeper) GetInactivePlansForProvider(ctx sdk.Context, address hubtypes.ProvAddress, skip, limit int) (items types.Plans) {
+func (k *Keeper) GetInactivePlansForProvider(ctx sdk.Context, address hubtypes.ProvAddress, skip, limit int64) (items types.Plans) {
 	var (
 		store = k.Store(ctx)
 		iter  = hubtypes.NewPaginatedIterator(
@@ -208,7 +208,7 @@ func (k *Keeper) GetInactivePlansForProvider(ctx sdk.Context, address hubtypes.P
 	return items
 }
 
-func (k *Keeper) GetPlansForProvider(ctx sdk.Context, address hubtypes.ProvAddress, skip, limit int) (items types.Plans) {
+func (k *Keeper) GetPlansForProvider(ctx sdk.Context, address hubtypes.ProvAddress, skip, limit int64) (items types.Plans) {
 	var (
 		store = k.Store(ctx)
 		iter  = hubtypes.NewPaginatedIterator(

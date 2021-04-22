@@ -18,13 +18,14 @@ message Subscription {
   cosmos.base.v1beta1.Coin price   = 4 [ (gogoproto.nullable) = false ];
   cosmos.base.v1beta1.Coin deposit = 5 [ (gogoproto.nullable) = false ];
   uint64 plan                      = 6;
-  google.protobuf.Timestamp expiry = 7
+  string denom                     = 7;
+  google.protobuf.Timestamp expiry = 8
       [ (gogoproto.nullable) = false, (gogoproto.stdtime) = true ];
-  string free = 8 [
+  string free = 9 [
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
     (gogoproto.nullable)   = false
   ];
-  sentinel.types.v1.Status status     = 9;
-  google.protobuf.Timestamp status_at = 10
+  sentinel.types.v1.Status status     = 10;
+  google.protobuf.Timestamp status_at = 11
       [ (gogoproto.nullable) = false, (gogoproto.stdtime) = true ];
 }

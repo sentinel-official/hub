@@ -39,7 +39,7 @@ func (k *Keeper) GetProvider(ctx sdk.Context, address hubtypes.ProvAddress) (pro
 }
 
 // GetProviders is for getting the providers from the KVStore.
-func (k *Keeper) GetProviders(ctx sdk.Context, skip, limit int) (items types.Providers) {
+func (k *Keeper) GetProviders(ctx sdk.Context, skip, limit int64) (items types.Providers) {
 	var (
 		store = k.Store(ctx)
 		iter  = hubtypes.NewPaginatedIterator(

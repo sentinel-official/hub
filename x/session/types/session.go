@@ -2,6 +2,7 @@ package types
 
 import (
 	"fmt"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	hubtypes "github.com/sentinel-official/hub/types"
@@ -49,7 +50,7 @@ func (s *Session) Validate() error {
 	if s.Duration <= 0 {
 		return fmt.Errorf("duration should be positive")
 	}
-	if s.Bandwidth.IsValid() {
+	if s.Bandwidth.IsAllPositive() {
 		return fmt.Errorf("bandwidth should be valid")
 	}
 	if !s.Status.Equal(hubtypes.StatusActive) && !s.Status.Equal(hubtypes.StatusInactive) {

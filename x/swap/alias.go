@@ -11,16 +11,13 @@ import (
 )
 
 const (
-	EthereumHashLength  = types.EthereumHashLength
-	AttributeKeyTxHash  = types.AttributeKeyTxHash
-	AttributeKeyAddress = types.AttributeKeyAddress
-	AttributeKeyAmount  = types.AttributeKeyAmount
-	ModuleName          = types.ModuleName
-	QuerierRoute        = types.QuerierRoute
-	DefaultParamspace   = types.DefaultParamspace
-	DefaultSwapEnabled  = types.DefaultSwapEnabled
-	DefaultSwapDenom    = types.DefaultSwapDenom
-	DefaultApproveBy    = types.DefaultApproveBy
+	EthereumHashLength = types.EthereumHashLength
+	ModuleName         = types.ModuleName
+	QuerierRoute       = types.QuerierRoute
+	DefaultParamspace  = types.DefaultParamspace
+	DefaultSwapEnabled = types.DefaultSwapEnabled
+	DefaultSwapDenom   = types.DefaultSwapDenom
+	DefaultApproveBy   = types.DefaultApproveBy
 )
 
 var (
@@ -59,7 +56,9 @@ var (
 	ErrorSwapIsDisabled            = types.ErrorSwapIsDisabled
 	ErrorUnauthorized              = types.ErrorUnauthorized
 	ErrorDuplicateSwap             = types.ErrorDuplicateSwap
-	EventTypeSet                   = types.EventTypeSet
+	ErrInvalidLengthEvents         = types.ErrInvalidLengthEvents
+	ErrIntOverflowEvents           = types.ErrIntOverflowEvents
+	ErrUnexpectedEndOfGroupEvents  = types.ErrUnexpectedEndOfGroupEvents
 	ErrInvalidLengthGenesis        = types.ErrInvalidLengthGenesis
 	ErrIntOverflowGenesis          = types.ErrIntOverflowGenesis
 	ErrUnexpectedEndOfGroupGenesis = types.ErrUnexpectedEndOfGroupGenesis
@@ -88,6 +87,8 @@ var (
 
 type (
 	EthereumHash                    = types.EthereumHash
+	EventModule                     = types.EventModule
+	EventSwap                       = types.EventSwap
 	GenesisState                    = types.GenesisState
 	MsgSwapRequest                  = types.MsgSwapRequest
 	MsgSwapResponse                 = types.MsgSwapResponse

@@ -11,12 +11,8 @@ import (
 )
 
 const (
-	AttributeKeyAddress = types.AttributeKeyAddress
-	AttributeKeyID      = types.AttributeKeyID
-	AttributeKeyCount   = types.AttributeKeyCount
-	AttributeKeyStatus  = types.AttributeKeyStatus
-	ModuleName          = types.ModuleName
-	QuerierRoute        = types.QuerierRoute
+	ModuleName   = types.ModuleName
+	QuerierRoute = types.QuerierRoute
 )
 
 var (
@@ -68,11 +64,9 @@ var (
 	ErrorPlanDoesNotExist            = types.ErrorPlanDoesNotExist
 	ErrorNodeDoesNotExist            = types.ErrorNodeDoesNotExist
 	ErrorUnauthorized                = types.ErrorUnauthorized
-	EventTypeSetCount                = types.EventTypeSetCount
-	EventTypeSet                     = types.EventTypeSet
-	EventTypeSetStatus               = types.EventTypeSetStatus
-	EventTypeAddNode                 = types.EventTypeAddNode
-	EventTypeRemoveNode              = types.EventTypeRemoveNode
+	ErrInvalidLengthEvents           = types.ErrInvalidLengthEvents
+	ErrIntOverflowEvents             = types.ErrIntOverflowEvents
+	ErrUnexpectedEndOfGroupEvents    = types.ErrUnexpectedEndOfGroupEvents
 	ErrInvalidLengthGenesis          = types.ErrInvalidLengthGenesis
 	ErrIntOverflowGenesis            = types.ErrIntOverflowGenesis
 	ErrUnexpectedEndOfGroupGenesis   = types.ErrUnexpectedEndOfGroupGenesis
@@ -98,6 +92,12 @@ var (
 )
 
 type (
+	EventModule                     = types.EventModule
+	EventSetPlanCount               = types.EventSetPlanCount
+	EventAddPlan                    = types.EventAddPlan
+	EventSetPlanStatus              = types.EventSetPlanStatus
+	EventAddNodeForPlan             = types.EventAddNodeForPlan
+	EventRemoveNodeForPlan          = types.EventRemoveNodeForPlan
 	GenesisPlans                    = types.GenesisPlans
 	GenesisState                    = types.GenesisState
 	GenesisPlan                     = types.GenesisPlan

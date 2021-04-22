@@ -35,7 +35,7 @@ func (k *Keeper) HasSwap(ctx sdk.Context, txHash types.EthereumHash) bool {
 	return store.Has(key)
 }
 
-func (k *Keeper) GetSwaps(ctx sdk.Context, skip, limit int) (items types.Swaps) {
+func (k *Keeper) GetSwaps(ctx sdk.Context, skip, limit int64) (items types.Swaps) {
 	var (
 		store = k.Store(ctx)
 		iter  = hubtypes.NewPaginatedIterator(

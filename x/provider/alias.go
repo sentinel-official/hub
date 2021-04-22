@@ -11,10 +11,8 @@ import (
 )
 
 const (
-	AttributeKeyAddress = types.AttributeKeyAddress
-	AttributeKeyDeposit = types.AttributeKeyDeposit
-	ModuleName          = types.ModuleName
-	QuerierRoute        = types.QuerierRoute
+	ModuleName   = types.ModuleName
+	QuerierRoute = types.QuerierRoute
 )
 
 var (
@@ -52,8 +50,9 @@ var (
 	ErrorInvalidField               = types.ErrorInvalidField
 	ErrorDuplicateProvider          = types.ErrorDuplicateProvider
 	ErrorProviderDoesNotExist       = types.ErrorProviderDoesNotExist
-	EventTypeSet                    = types.EventTypeSet
-	EventTypeUpdate                 = types.EventTypeUpdate
+	ErrInvalidLengthEvents          = types.ErrInvalidLengthEvents
+	ErrIntOverflowEvents            = types.ErrIntOverflowEvents
+	ErrUnexpectedEndOfGroupEvents   = types.ErrUnexpectedEndOfGroupEvents
 	ErrInvalidLengthGenesis         = types.ErrInvalidLengthGenesis
 	ErrIntOverflowGenesis           = types.ErrIntOverflowGenesis
 	ErrUnexpectedEndOfGroupGenesis  = types.ErrUnexpectedEndOfGroupGenesis
@@ -79,6 +78,9 @@ var (
 )
 
 type (
+	EventModule                     = types.EventModule
+	EventRegisterProvider           = types.EventRegisterProvider
+	EventUpdateProvider             = types.EventUpdateProvider
 	GenesisState                    = types.GenesisState
 	MsgRegisterRequest              = types.MsgRegisterRequest
 	MsgUpdateRequest                = types.MsgUpdateRequest

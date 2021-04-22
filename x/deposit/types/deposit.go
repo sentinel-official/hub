@@ -2,6 +2,7 @@ package types
 
 import (
 	"fmt"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -23,7 +24,7 @@ func (d *Deposit) Validate() error {
 		return err
 	}
 	if d.Coins == nil || !d.Coins.IsValid() {
-		return fmt.Errorf("coins is nil or invalid")
+		return fmt.Errorf("invalid coins; expected non-nil and valid value")
 	}
 
 	return nil

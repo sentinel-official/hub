@@ -54,7 +54,7 @@ func (k *Keeper) GetSession(ctx sdk.Context, id uint64) (session types.Session, 
 	return session, true
 }
 
-func (k *Keeper) GetSessions(ctx sdk.Context, skip, limit int) (items types.Sessions) {
+func (k *Keeper) GetSessions(ctx sdk.Context, skip, limit int64) (items types.Sessions) {
 	var (
 		store = k.Store(ctx)
 		iter  = hubtypes.NewPaginatedIterator(
@@ -99,7 +99,7 @@ func (k *Keeper) SetSessionForSubscription(ctx sdk.Context, subscription, id uin
 	store.Set(key, value)
 }
 
-func (k *Keeper) GetSessionsForSubscription(ctx sdk.Context, id uint64, skip, limit int) (items types.Sessions) {
+func (k *Keeper) GetSessionsForSubscription(ctx sdk.Context, id uint64, skip, limit int64) (items types.Sessions) {
 	var (
 		store = k.Store(ctx)
 		iter  = hubtypes.NewPaginatedIterator(
@@ -126,7 +126,7 @@ func (k *Keeper) SetSessionForNode(ctx sdk.Context, address hubtypes.NodeAddress
 	store.Set(key, value)
 }
 
-func (k *Keeper) GetSessionsForNode(ctx sdk.Context, address hubtypes.NodeAddress, skip, limit int) (items types.Sessions) {
+func (k *Keeper) GetSessionsForNode(ctx sdk.Context, address hubtypes.NodeAddress, skip, limit int64) (items types.Sessions) {
 	var (
 		store = k.Store(ctx)
 		iter  = hubtypes.NewPaginatedIterator(
@@ -153,7 +153,7 @@ func (k *Keeper) SetSessionForAddress(ctx sdk.Context, address sdk.AccAddress, i
 	store.Set(key, value)
 }
 
-func (k *Keeper) GetSessionsForAddress(ctx sdk.Context, address sdk.AccAddress, skip, limit int) (items types.Sessions) {
+func (k *Keeper) GetSessionsForAddress(ctx sdk.Context, address sdk.AccAddress, skip, limit int64) (items types.Sessions) {
 	var (
 		store = k.Store(ctx)
 		iter  = hubtypes.NewPaginatedIterator(
@@ -202,7 +202,7 @@ func (k *Keeper) DeleteActiveSessionForAddress(ctx sdk.Context, address sdk.AccA
 	store.Delete(key)
 }
 
-func (k *Keeper) GetActiveSessionsForAddress(ctx sdk.Context, address sdk.AccAddress, skip, limit int) (items types.Sessions) {
+func (k *Keeper) GetActiveSessionsForAddress(ctx sdk.Context, address sdk.AccAddress, skip, limit int64) (items types.Sessions) {
 	var (
 		store = k.Store(ctx)
 		iter  = hubtypes.NewPaginatedIterator(

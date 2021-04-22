@@ -42,7 +42,7 @@ func (k *Keeper) DeleteQuota(ctx sdk.Context, id uint64, address sdk.AccAddress)
 	store.Delete(key)
 }
 
-func (k *Keeper) GetQuotas(ctx sdk.Context, id uint64, skip, limit int) (items types.Quotas) {
+func (k *Keeper) GetQuotas(ctx sdk.Context, id uint64, skip, limit int64) (items types.Quotas) {
 	var (
 		store = k.Store(ctx)
 		iter  = hubtypes.NewPaginatedIterator(

@@ -27,7 +27,7 @@ func NewKeeper(cdc codec.BinaryMarshaler, key sdk.StoreKey, params params.Subspa
 }
 
 func (k *Keeper) Logger(ctx sdk.Context) log.Logger {
-	return ctx.Logger().With("module", types.ModuleName)
+	return ctx.Logger().With("module", "x/"+types.ModuleName)
 }
 
 func (k *Keeper) Store(ctx sdk.Context) sdk.KVStore {

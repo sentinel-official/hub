@@ -17,7 +17,9 @@ var (
 	KeyProofVerificationEnabled = []byte("ProofVerificationEnabled")
 )
 
-var _ params.ParamSet = (*Params)(nil)
+var (
+	_ params.ParamSet = (*Params)(nil)
+)
 
 func (p *Params) ParamSetPairs() params.ParamSetPairs {
 	return params.ParamSetPairs{

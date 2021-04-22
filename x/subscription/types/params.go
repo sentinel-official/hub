@@ -15,7 +15,9 @@ var (
 	KeyInactiveDuration = []byte("InactiveDuration")
 )
 
-var _ params.ParamSet = (*Params)(nil)
+var (
+	_ params.ParamSet = (*Params)(nil)
+)
 
 func (p *Params) Validate() error {
 	if p.InactiveDuration <= 0 {

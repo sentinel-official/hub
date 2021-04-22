@@ -38,7 +38,7 @@ func (k *Keeper) GetNode(ctx sdk.Context, address hubtypes.NodeAddress) (node ty
 	return node, true
 }
 
-func (k *Keeper) GetNodes(ctx sdk.Context, skip, limit int) (items types.Nodes) {
+func (k *Keeper) GetNodes(ctx sdk.Context, skip, limit int64) (items types.Nodes) {
 	var (
 		store = k.Store(ctx)
 		iter  = hubtypes.NewPaginatedIterator(
@@ -90,7 +90,7 @@ func (k *Keeper) DeleteActiveNode(ctx sdk.Context, address hubtypes.NodeAddress)
 	store.Delete(key)
 }
 
-func (k *Keeper) GetActiveNodes(ctx sdk.Context, skip, limit int) (items types.Nodes) {
+func (k *Keeper) GetActiveNodes(ctx sdk.Context, skip, limit int64) (items types.Nodes) {
 	var (
 		store = k.Store(ctx)
 		iter  = hubtypes.NewPaginatedIterator(
@@ -124,7 +124,7 @@ func (k *Keeper) DeleteInactiveNode(ctx sdk.Context, address hubtypes.NodeAddres
 	store.Delete(key)
 }
 
-func (k *Keeper) GetInactiveNodes(ctx sdk.Context, skip, limit int) (items types.Nodes) {
+func (k *Keeper) GetInactiveNodes(ctx sdk.Context, skip, limit int64) (items types.Nodes) {
 	var (
 		store = k.Store(ctx)
 		iter  = hubtypes.NewPaginatedIterator(
@@ -158,7 +158,7 @@ func (k *Keeper) DeleteActiveNodeForProvider(ctx sdk.Context, provider hubtypes.
 	store.Delete(key)
 }
 
-func (k *Keeper) GetActiveNodesForProvider(ctx sdk.Context, address hubtypes.ProvAddress, skip, limit int) (items types.Nodes) {
+func (k *Keeper) GetActiveNodesForProvider(ctx sdk.Context, address hubtypes.ProvAddress, skip, limit int64) (items types.Nodes) {
 	var (
 		store = k.Store(ctx)
 		iter  = hubtypes.NewPaginatedIterator(
@@ -192,7 +192,7 @@ func (k *Keeper) DeleteInactiveNodeForProvider(ctx sdk.Context, provider hubtype
 	store.Delete(key)
 }
 
-func (k *Keeper) GetInactiveNodesForProvider(ctx sdk.Context, address hubtypes.ProvAddress, skip, limit int) (items types.Nodes) {
+func (k *Keeper) GetInactiveNodesForProvider(ctx sdk.Context, address hubtypes.ProvAddress, skip, limit int64) (items types.Nodes) {
 	var (
 		store = k.Store(ctx)
 		iter  = hubtypes.NewPaginatedIterator(
@@ -211,7 +211,7 @@ func (k *Keeper) GetInactiveNodesForProvider(ctx sdk.Context, address hubtypes.P
 	return items
 }
 
-func (k *Keeper) GetNodesForProvider(ctx sdk.Context, address hubtypes.ProvAddress, skip, limit int) (items types.Nodes) {
+func (k *Keeper) GetNodesForProvider(ctx sdk.Context, address hubtypes.ProvAddress, skip, limit int64) (items types.Nodes) {
 	var (
 		store = k.Store(ctx)
 		iter  = hubtypes.NewPaginatedIterator(

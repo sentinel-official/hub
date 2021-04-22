@@ -11,10 +11,6 @@ import (
 )
 
 const (
-	AttributeKeyCount               = types.AttributeKeyCount
-	AttributeKeyID                  = types.AttributeKeyID
-	AttributeKeySubscription        = types.AttributeKeySubscription
-	AttributeKeyAddress             = types.AttributeKeyAddress
 	ModuleName                      = types.ModuleName
 	QuerierRoute                    = types.QuerierRoute
 	DefaultInactiveDuration         = types.DefaultInactiveDuration
@@ -80,9 +76,9 @@ var (
 	ErrorQuotaDoesNotExist           = types.ErrorQuotaDoesNotExist
 	ErrorInvalidChannel              = types.ErrorInvalidChannel
 	ErrorFailedToVerifyProof         = types.ErrorFailedToVerifyProof
-	EventTypeSetCount                = types.EventTypeSetCount
-	EventTypeSetActive               = types.EventTypeSetActive
-	EventTypeUpdate                  = types.EventTypeUpdate
+	ErrInvalidLengthEvents           = types.ErrInvalidLengthEvents
+	ErrIntOverflowEvents             = types.ErrIntOverflowEvents
+	ErrUnexpectedEndOfGroupEvents    = types.ErrUnexpectedEndOfGroupEvents
 	ErrInvalidLengthGenesis          = types.ErrInvalidLengthGenesis
 	ErrIntOverflowGenesis            = types.ErrIntOverflowGenesis
 	ErrUnexpectedEndOfGroupGenesis   = types.ErrUnexpectedEndOfGroupGenesis
@@ -118,6 +114,10 @@ var (
 )
 
 type (
+	EventModule                          = types.EventModule
+	EventSetSessionCount                 = types.EventSetSessionCount
+	EventAddSession                      = types.EventAddSession
+	EventUpdateSession                   = types.EventUpdateSession
 	GenesisState                         = types.GenesisState
 	MsgUpsertRequest                     = types.MsgUpsertRequest
 	MsgUpsertResponse                    = types.MsgUpsertResponse

@@ -2,7 +2,6 @@ package keeper
 
 import (
 	"context"
-	"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
@@ -32,6 +31,11 @@ func isAuthorized(ctx sdk.Context, k Keeper, plan, subscription uint64, node hub
 
 func (k *msgServer) MsgUpsert(c context.Context, msg *types.MsgUpsertRequest) (*types.MsgUpsertResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
+
+	msgFrom, err := hubtypes.NodeAddressFromBech32(msg.Proof.Node)
+	if err != nil {
+		return nil, err
+	}
 
 	subscription, found := k.GetSubscription(ctx, msg.Proof.Subscription)
 	if !found {
@@ -94,21 +98,28 @@ func (k *msgServer) MsgUpsert(c context.Context, msg *types.MsgUpsertRequest) (*
 		)
 
 		k.SetCount(ctx, count+1)
-		ctx.EventManager().EmitEvent(sdk.NewEvent(
-			types.EventTypeSetCount,
-			sdk.NewAttribute(types.AttributeKeyCount, fmt.Sprintf("%d", count+1)),
-		))
+		ctx.EventManager().EmitTypedEvent(
+			&types.EventSetSessionCount{
+				Count: count + 1,
+			},
+		)
 
 		k.SetSessionForSubscription(ctx, session.Subscription, session.Id)
 		k.SetSessionForNode(ctx, sessionNode, session.Id)
 		k.SetSessionForAddress(ctx, sessionAddress, session.Id)
 		k.SetActiveSessionForAddress(ctx, sessionAddress, session.Subscription, sessionNode, session.Id)
-		ctx.EventManager().EmitEvent(sdk.NewEvent(
-			types.EventTypeSetActive,
-			sdk.NewAttribute(types.AttributeKeySubscription, fmt.Sprintf("%d", session.Subscription)),
-			sdk.NewAttribute(types.AttributeKeyAddress, session.Address),
-			sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", session.Id)),
-		))
+		ctx.EventManager().EmitTypedEvent(
+			&types.EventAddSession{
+				From:         sdk.AccAddress(msgFrom.Bytes()).String(),
+				Channel:      msg.Proof.Channel,
+				Subscription: session.Id,
+				Node:         session.Node,
+				Duration:     session.Duration,
+				Bandwidth:    session.Bandwidth,
+				Address:      session.Address,
+				Signature:    msg.Signature,
+			},
+		)
 	}
 
 	session.Duration = msg.Proof.Duration
@@ -118,11 +129,19 @@ func (k *msgServer) MsgUpsert(c context.Context, msg *types.MsgUpsertRequest) (*
 
 	k.SetSession(ctx, session)
 	k.SetActiveSessionAt(ctx, session.StatusAt, session.Id)
-	ctx.EventManager().EmitEvent(sdk.NewEvent(
-		types.EventTypeUpdate,
-		sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", session.Id)),
-	))
+	ctx.EventManager().EmitTypedEvent(
+		&types.EventUpdateSession{
+			From:         sdk.AccAddress(msgFrom.Bytes()).String(),
+			Channel:      msg.Proof.Channel,
+			Subscription: session.Subscription,
+			Node:         session.Node,
+			Duration:     session.Duration,
+			Bandwidth:    session.Bandwidth,
+			Address:      session.Address,
+			Signature:    msg.Signature,
+		},
+	)
 
-	ctx.EventManager().EmitEvent(types.EventModuleName)
+	ctx.EventManager().EmitTypedEvent(&types.EventModuleName)
 	return &types.MsgUpsertResponse{}, nil
 }

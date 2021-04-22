@@ -2,6 +2,7 @@ package types
 
 import (
 	"fmt"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	params "github.com/cosmos/cosmos-sdk/x/params/types"
 )
@@ -18,7 +19,9 @@ var (
 	KeyApproveBy   = []byte("ApproveBy")
 )
 
-var _ params.ParamSet = (*Params)(nil)
+var (
+	_ params.ParamSet = (*Params)(nil)
+)
 
 func (p *Params) Validate() error {
 	if err := sdk.ValidateDenom(p.SwapDenom); err != nil {

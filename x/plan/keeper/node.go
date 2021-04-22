@@ -31,7 +31,7 @@ func (k *Keeper) DeleteNodeForPlan(ctx sdk.Context, id uint64, address hubtypes.
 	store.Delete(key)
 }
 
-func (k *Keeper) GetNodesForPlan(ctx sdk.Context, id uint64, skip, limit int) (items node.Nodes) {
+func (k *Keeper) GetNodesForPlan(ctx sdk.Context, id uint64, skip, limit int64) (items node.Nodes) {
 	var (
 		store = k.Store(ctx)
 		iter  = hubtypes.NewPaginatedIterator(

@@ -2,6 +2,7 @@ package types
 
 import (
 	"fmt"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	hubtypes "github.com/sentinel-official/hub/types"
@@ -32,25 +33,25 @@ func (p *Plan) PriceForDenom(d string) (sdk.Coin, bool) {
 
 func (p *Plan) Validate() error {
 	if p.Id == 0 {
-		return fmt.Errorf("id should not be zero")
+		return fmt.Errorf("invalid id; expected positive value")
 	}
 	if _, err := hubtypes.ProvAddressFromBech32(p.Provider); err != nil {
-		return fmt.Errorf("provider should not be nil or empty")
+		return err
 	}
 	if p.Price != nil && !p.Price.IsValid() {
-		return fmt.Errorf("price should be either nil or valid")
+		return fmt.Errorf("invalid price; expected non-nil and valid value")
 	}
 	if p.Validity <= 0 {
-		return fmt.Errorf("validity should be positive")
+		return fmt.Errorf("invalid validity; expected positive value")
 	}
 	if !p.Bytes.IsPositive() {
-		return fmt.Errorf("bytes should be positive")
+		return fmt.Errorf("invalid bytes; expected positive value")
 	}
 	if !p.Status.Equal(hubtypes.StatusActive) && !p.Status.Equal(hubtypes.StatusInactive) {
-		return fmt.Errorf("status should be either active or inactive")
+		return fmt.Errorf("invalid status; exptected active or inactive")
 	}
 	if p.StatusAt.IsZero() {
-		return fmt.Errorf("status_at should not be zero")
+		return fmt.Errorf("invalid status at; expected non-zero value")
 	}
 
 	return nil

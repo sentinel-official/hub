@@ -1,7 +1,7 @@
 package types
 
 const (
-	StatusUnknown Status = iota + 0x00
+	StatusUnknown Status = iota
 	StatusActive
 	StatusInactivePending
 	StatusInactive

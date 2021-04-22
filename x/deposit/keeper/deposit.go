@@ -31,7 +31,7 @@ func (k *Keeper) GetDeposit(ctx sdk.Context, address sdk.AccAddress) (deposit ty
 }
 
 // GetDeposits is for getting the deposits from KVStore.
-func (k *Keeper) GetDeposits(ctx sdk.Context, skip, limit int) (items types.Deposits) {
+func (k *Keeper) GetDeposits(ctx sdk.Context, skip, limit int64) (items types.Deposits) {
 	var (
 		store = k.Store(ctx)
 		iter  = hubtypes.NewPaginatedIterator(
@@ -61,7 +61,7 @@ func (k *Keeper) Add(ctx sdk.Context, address sdk.AccAddress, coins sdk.Coins) e
 	if !found {
 		deposit = types.Deposit{
 			Address: address.String(),
-			Coins:   sdk.Coins{},
+			Coins:   sdk.NewCoins(),
 		}
 	}
 

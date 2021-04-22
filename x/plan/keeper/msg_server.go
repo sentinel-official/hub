@@ -2,7 +2,6 @@ package keeper
 
 import (
 	"context"
-	"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
@@ -53,24 +52,34 @@ func (k *msgServer) MsgAdd(c context.Context, msg *types.MsgAddRequest) (*types.
 	k.SetPlan(ctx, plan)
 	k.SetInactivePlan(ctx, plan.Id)
 	k.SetInactivePlanForProvider(ctx, planProvider, plan.Id)
-	ctx.EventManager().EmitEvent(sdk.NewEvent(
-		types.EventTypeSet,
-		sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", plan.Id)),
-		sdk.NewAttribute(types.AttributeKeyAddress, plan.Provider),
-	))
+	ctx.EventManager().EmitTypedEvent(
+		&types.EventAddPlan{
+			From:     sdk.AccAddress(msgFrom.Bytes()).String(),
+			Provider: plan.Provider,
+			Price:    plan.Price,
+			Validity: plan.Validity,
+			Bytes:    plan.Bytes,
+		},
+	)
 
 	k.SetCount(ctx, count+1)
-	ctx.EventManager().EmitEvent(sdk.NewEvent(
-		types.EventTypeSetCount,
-		sdk.NewAttribute(types.AttributeKeyCount, fmt.Sprintf("%d", count+1)),
-	))
+	ctx.EventManager().EmitTypedEvent(
+		&types.EventSetPlanCount{
+			Count: count + 1,
+		},
+	)
 
-	ctx.EventManager().EmitEvent(types.EventModuleName)
+	ctx.EventManager().EmitTypedEvent(&types.EventModuleName)
 	return &types.MsgAddResponse{}, nil
 }
 
 func (k *msgServer) MsgSetStatus(c context.Context, msg *types.MsgSetStatusRequest) (*types.MsgSetStatusResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
+
+	msgFrom, err := hubtypes.ProvAddressFromBech32(msg.From)
+	if err != nil {
+		return nil, err
+	}
 
 	plan, found := k.GetPlan(ctx, msg.Id)
 	if !found {
@@ -106,18 +115,26 @@ func (k *msgServer) MsgSetStatus(c context.Context, msg *types.MsgSetStatusReque
 	plan.StatusAt = ctx.BlockTime()
 
 	k.SetPlan(ctx, plan)
-	ctx.EventManager().EmitEvent(sdk.NewEvent(
-		types.EventTypeSetStatus,
-		sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", plan.Id)),
-		sdk.NewAttribute(types.AttributeKeyStatus, plan.Status.String()),
-	))
+	ctx.EventManager().EmitTypedEvent(
+		&types.EventSetPlanStatus{
+			From:     sdk.AccAddress(msgFrom.Bytes()).String(),
+			Provider: plan.Provider,
+			Id:       plan.Id,
+			Status:   plan.Status,
+		},
+	)
 
-	ctx.EventManager().EmitEvent(types.EventModuleName)
+	ctx.EventManager().EmitTypedEvent(&types.EventModuleName)
 	return &types.MsgSetStatusResponse{}, nil
 }
 
 func (k *msgServer) MsgAddNode(c context.Context, msg *types.MsgAddNodeRequest) (*types.MsgAddNodeResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
+
+	msgFrom, err := hubtypes.ProvAddressFromBech32(msg.From)
+	if err != nil {
+		return nil, err
+	}
 
 	plan, found := k.GetPlan(ctx, msg.Id)
 	if !found {
@@ -145,18 +162,26 @@ func (k *msgServer) MsgAddNode(c context.Context, msg *types.MsgAddNodeRequest) 
 	)
 
 	k.SetNodeForPlan(ctx, plan.Id, nodeAddress)
-	ctx.EventManager().EmitEvent(sdk.NewEvent(
-		types.EventTypeAddNode,
-		sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", plan.Id)),
-		sdk.NewAttribute(types.AttributeKeyAddress, node.Address),
-	))
+	ctx.EventManager().EmitTypedEvent(
+		&types.EventAddNodeForPlan{
+			From:     sdk.AccAddress(msgFrom.Bytes()).String(),
+			Provider: plan.Provider,
+			Id:       plan.Id,
+			Address:  msg.Address,
+		},
+	)
 
-	ctx.EventManager().EmitEvent(types.EventModuleName)
+	ctx.EventManager().EmitTypedEvent(&types.EventModuleName)
 	return &types.MsgAddNodeResponse{}, nil
 }
 
 func (k *msgServer) MsgRemoveNode(c context.Context, msg *types.MsgRemoveNodeRequest) (*types.MsgRemoveNodeResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
+
+	msgFrom, err := hubtypes.ProvAddressFromBech32(msg.From)
+	if err != nil {
+		return nil, err
+	}
 
 	plan, found := k.GetPlan(ctx, msg.Id)
 	if !found {
@@ -172,12 +197,15 @@ func (k *msgServer) MsgRemoveNode(c context.Context, msg *types.MsgRemoveNodeReq
 	}
 
 	k.DeleteNodeForPlan(ctx, plan.Id, msgAddress)
-	ctx.EventManager().EmitEvent(sdk.NewEvent(
-		types.EventTypeRemoveNode,
-		sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", plan.Id)),
-		sdk.NewAttribute(types.AttributeKeyAddress, msg.Address),
-	))
+	ctx.EventManager().EmitTypedEvent(
+		&types.EventRemoveNodeForPlan{
+			From:     sdk.AccAddress(msgFrom.Bytes()).String(),
+			Provider: plan.Provider,
+			Id:       plan.Id,
+			Address:  msg.Address,
+		},
+	)
 
-	ctx.EventManager().EmitEvent(types.EventModuleName)
+	ctx.EventManager().EmitTypedEvent(&types.EventModuleName)
 	return &types.MsgRemoveNodeResponse{}, nil
 }

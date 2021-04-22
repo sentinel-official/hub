@@ -30,7 +30,7 @@ message MsgAddQuotaRequest {
   string from    = 1;
   uint64 id      = 2;
   string address = 3;
-  string bytes   = 5 [
+  string bytes   = 4 [
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
     (gogoproto.nullable)   = false
   ];
@@ -40,7 +40,7 @@ message MsgUpdateQuotaRequest {
   string from    = 1;
   uint64 id      = 2;
   string address = 3;
-  string bytes   = 5 [
+  string bytes   = 4 [
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
     (gogoproto.nullable)   = false
   ];

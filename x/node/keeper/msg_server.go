@@ -69,13 +69,17 @@ func (k *msgServer) MsgRegister(c context.Context, msg *types.MsgRegisterRequest
 		k.SetInactiveNodeForProvider(ctx, nodeProvider, nodeAddress)
 	}
 
-	ctx.EventManager().EmitEvent(sdk.NewEvent(
-		types.EventTypeSet,
-		sdk.NewAttribute(types.AttributeKeyProvider, node.Provider),
-		sdk.NewAttribute(types.AttributeKeyAddress, node.Address),
-	))
+	ctx.EventManager().EmitTypedEvent(
+		&types.EventRegisterNode{
+			From:      sdk.AccAddress(msgFrom.Bytes()).String(),
+			Address:   node.Address,
+			Provider:  node.Provider,
+			Price:     node.Price,
+			RemoteURL: node.RemoteURL,
+		},
+	)
 
-	ctx.EventManager().EmitEvent(types.EventModuleName)
+	ctx.EventManager().EmitTypedEvent(&types.EventModuleName)
 	return &types.MsgRegisterResponse{}, nil
 }
 
@@ -147,12 +151,17 @@ func (k *msgServer) MsgUpdate(c context.Context, msg *types.MsgUpdateRequest) (*
 	}
 
 	k.SetNode(ctx, node)
-	ctx.EventManager().EmitEvent(sdk.NewEvent(
-		types.EventTypeUpdate,
-		sdk.NewAttribute(types.AttributeKeyAddress, node.Address),
-	))
+	ctx.EventManager().EmitTypedEvent(
+		&types.EventUpdateNode{
+			From:      sdk.AccAddress(msgFrom.Bytes()).String(),
+			Address:   node.Address,
+			Provider:  msg.Provider,
+			Price:     msg.Price,
+			RemoteURL: msg.RemoteURL,
+		},
+	)
 
-	ctx.EventManager().EmitEvent(types.EventModuleName)
+	ctx.EventManager().EmitTypedEvent(&types.EventModuleName)
 	return &types.MsgUpdateResponse{}, nil
 }
 
@@ -206,12 +215,14 @@ func (k *msgServer) MsgSetStatus(c context.Context, msg *types.MsgSetStatusReque
 	}
 
 	k.SetNode(ctx, node)
-	ctx.EventManager().EmitEvent(sdk.NewEvent(
-		types.EventTypeSetStatus,
-		sdk.NewAttribute(types.AttributeKeyAddress, node.Address),
-		sdk.NewAttribute(types.AttributeKeyStatus, node.Status.String()),
-	))
+	ctx.EventManager().EmitTypedEvent(
+		&types.EventSetNodeStatus{
+			From:    sdk.AccAddress(msgFrom.Bytes()).String(),
+			Address: node.Address,
+			Status:  node.Status,
+		},
+	)
 
-	ctx.EventManager().EmitEvent(types.EventModuleName)
+	ctx.EventManager().EmitTypedEvent(&types.EventModuleName)
 	return &types.MsgSetStatusResponse{}, nil
 }

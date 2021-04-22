@@ -53,13 +53,18 @@ func (k *msgServer) MsgRegister(c context.Context, msg *types.MsgRegisterRequest
 	)
 
 	k.SetProvider(ctx, provider)
-	ctx.EventManager().EmitEvent(sdk.NewEvent(
-		types.EventTypeSet,
-		sdk.NewAttribute(types.AttributeKeyAddress, provider.Address),
-		sdk.NewAttribute(types.AttributeKeyDeposit, deposit.String()),
-	))
+	ctx.EventManager().EmitTypedEvent(
+		&types.EventRegisterProvider{
+			From:        sdk.AccAddress(msgFrom.Bytes()).String(),
+			Address:     provider.Address,
+			Name:        provider.Name,
+			Identity:    provider.Identity,
+			Website:     provider.Website,
+			Description: provider.Description,
+		},
+	)
 
-	ctx.EventManager().EmitEvent(types.EventModuleName)
+	ctx.EventManager().EmitTypedEvent(&types.EventModuleName)
 	return &types.MsgRegisterResponse{}, nil
 }
 
@@ -90,11 +95,17 @@ func (k *msgServer) MsgUpdate(c context.Context, msg *types.MsgUpdateRequest) (*
 	}
 
 	k.SetProvider(ctx, provider)
-	ctx.EventManager().EmitEvent(sdk.NewEvent(
-		types.EventTypeUpdate,
-		sdk.NewAttribute(types.AttributeKeyAddress, provider.Address),
-	))
+	ctx.EventManager().EmitTypedEvent(
+		&types.EventUpdateProvider{
+			From:        sdk.AccAddress(msgFrom.Bytes()).String(),
+			Address:     provider.Address,
+			Name:        msg.Name,
+			Identity:    msg.Identity,
+			Website:     msg.Website,
+			Description: msg.Description,
+		},
+	)
 
-	ctx.EventManager().EmitEvent(types.EventModuleName)
+	ctx.EventManager().EmitTypedEvent(&types.EventModuleName)
 	return &types.MsgUpdateResponse{}, nil
 }

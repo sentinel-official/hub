@@ -11,15 +11,6 @@ import (
 )
 
 const (
-	AttributeKeyOwner       = types.AttributeKeyOwner
-	AttributeKeyAddress     = types.AttributeKeyAddress
-	AttributeKeyID          = types.AttributeKeyID
-	AttributeKeyStatus      = types.AttributeKeyStatus
-	AttributeKeyNode        = types.AttributeKeyNode
-	AttributeKeyCount       = types.AttributeKeyCount
-	AttributeKeyPlan        = types.AttributeKeyPlan
-	AttributeKeyConsumed    = types.AttributeKeyConsumed
-	AttributeKeyAllocated   = types.AttributeKeyAllocated
 	ModuleName              = types.ModuleName
 	QuerierRoute            = types.QuerierRoute
 	DefaultInactiveDuration = types.DefaultInactiveDuration
@@ -95,11 +86,9 @@ var (
 	ErrorDuplicateQuota                     = types.ErrorDuplicateQuota
 	ErrorQuotaDoesNotExist                  = types.ErrorQuotaDoesNotExist
 	ErrorCanNotAddQuota                     = types.ErrorCanNotAddQuota
-	EventTypeSetCount                       = types.EventTypeSetCount
-	EventTypeSet                            = types.EventTypeSet
-	EventTypeCancel                         = types.EventTypeCancel
-	EventTypeAddQuota                       = types.EventTypeAddQuota
-	EventTypeUpdateQuota                    = types.EventTypeUpdateQuota
+	ErrInvalidLengthEvents                  = types.ErrInvalidLengthEvents
+	ErrIntOverflowEvents                    = types.ErrIntOverflowEvents
+	ErrUnexpectedEndOfGroupEvents           = types.ErrUnexpectedEndOfGroupEvents
 	ErrInvalidLengthGenesis                 = types.ErrInvalidLengthGenesis
 	ErrIntOverflowGenesis                   = types.ErrIntOverflowGenesis
 	ErrUnexpectedEndOfGroupGenesis          = types.ErrUnexpectedEndOfGroupGenesis
@@ -134,6 +123,13 @@ var (
 )
 
 type (
+	EventModule                          = types.EventModule
+	EventSetSubscriptionCount            = types.EventSetSubscriptionCount
+	EventSubscribeToNode                 = types.EventSubscribeToNode
+	EventSubscribeToPlan                 = types.EventSubscribeToPlan
+	EventCancelSubscription              = types.EventCancelSubscription
+	EventAddQuota                        = types.EventAddQuota
+	EventUpdateQuota                     = types.EventUpdateQuota
 	GenesisSubscriptions                 = types.GenesisSubscriptions
 	GenesisSubscription                  = types.GenesisSubscription
 	GenesisState                         = types.GenesisState

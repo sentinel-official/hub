@@ -54,7 +54,7 @@ func (k *Keeper) GetSubscription(ctx sdk.Context, id uint64) (subscription types
 	return subscription, true
 }
 
-func (k *Keeper) GetSubscriptions(ctx sdk.Context, skip, limit int) (items types.Subscriptions) {
+func (k *Keeper) GetSubscriptions(ctx sdk.Context, skip, limit int64) (items types.Subscriptions) {
 	var (
 		store = k.Store(ctx)
 		iter  = hubtypes.NewPaginatedIterator(
@@ -89,7 +89,7 @@ func (k *Keeper) HasSubscriptionForNode(ctx sdk.Context, address hubtypes.NodeAd
 	return store.Has(key)
 }
 
-func (k *Keeper) GetSubscriptionsForNode(ctx sdk.Context, address hubtypes.NodeAddress, skip, limit int) (items types.Subscriptions) {
+func (k *Keeper) GetSubscriptionsForNode(ctx sdk.Context, address hubtypes.NodeAddress, skip, limit int64) (items types.Subscriptions) {
 	var (
 		store = k.Store(ctx)
 		iter  = hubtypes.NewPaginatedIterator(
@@ -123,7 +123,7 @@ func (k *Keeper) HasSubscriptionForPlan(ctx sdk.Context, plan, id uint64) bool {
 	return store.Has(key)
 }
 
-func (k *Keeper) GetSubscriptionsForPlan(ctx sdk.Context, plan uint64, skip, limit int) (items types.Subscriptions) {
+func (k *Keeper) GetSubscriptionsForPlan(ctx sdk.Context, plan uint64, skip, limit int64) (items types.Subscriptions) {
 	var (
 		store = k.Store(ctx)
 		iter  = hubtypes.NewPaginatedIterator(
@@ -157,7 +157,7 @@ func (k *Keeper) DeleteActiveSubscriptionForAddress(ctx sdk.Context, address sdk
 	store.Delete(key)
 }
 
-func (k *Keeper) GetActiveSubscriptionsForAddress(ctx sdk.Context, address sdk.AccAddress, skip, limit int) (items types.Subscriptions) {
+func (k *Keeper) GetActiveSubscriptionsForAddress(ctx sdk.Context, address sdk.AccAddress, skip, limit int64) (items types.Subscriptions) {
 	var (
 		store = k.Store(ctx)
 		iter  = hubtypes.NewPaginatedIterator(
@@ -191,7 +191,7 @@ func (k *Keeper) DeleteInactiveSubscriptionForAddress(ctx sdk.Context, address s
 	store.Delete(key)
 }
 
-func (k *Keeper) GetInactiveSubscriptionsForAddress(ctx sdk.Context, address sdk.AccAddress, skip, limit int) (items types.Subscriptions) {
+func (k *Keeper) GetInactiveSubscriptionsForAddress(ctx sdk.Context, address sdk.AccAddress, skip, limit int64) (items types.Subscriptions) {
 	var (
 		store = k.Store(ctx)
 		iter  = hubtypes.NewPaginatedIterator(
@@ -210,7 +210,7 @@ func (k *Keeper) GetInactiveSubscriptionsForAddress(ctx sdk.Context, address sdk
 	return items
 }
 
-func (k *Keeper) GetSubscriptionsForAddress(ctx sdk.Context, address sdk.AccAddress, skip, limit int) (items types.Subscriptions) {
+func (k *Keeper) GetSubscriptionsForAddress(ctx sdk.Context, address sdk.AccAddress, skip, limit int64) (items types.Subscriptions) {
 	var (
 		store = k.Store(ctx)
 		iter  = hubtypes.NewPaginatedIterator(

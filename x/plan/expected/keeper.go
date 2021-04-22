@@ -14,12 +14,12 @@ type AccountKeeper interface {
 }
 
 type ProviderKeeper interface {
-	GetProviders(ctx sdk.Context, skip, limit int) provider.Providers
+	GetProviders(ctx sdk.Context, skip, limit int64) provider.Providers
 	HasProvider(ctx sdk.Context, address hubtypes.ProvAddress) bool
 }
 
 type NodeKeeper interface {
 	GetNode(ctx sdk.Context, address hubtypes.NodeAddress) (node.Node, bool)
-	GetNodes(ctx sdk.Context, skip, limit int) node.Nodes
-	GetNodesForProvider(ctx sdk.Context, address hubtypes.ProvAddress, skip, limit int) node.Nodes
+	GetNodes(ctx sdk.Context, skip, limit int64) node.Nodes
+	GetNodesForProvider(ctx sdk.Context, address hubtypes.ProvAddress, skip, limit int64) node.Nodes
 }

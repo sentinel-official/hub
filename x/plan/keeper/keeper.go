@@ -35,7 +35,7 @@ func (k *Keeper) WithNodeKeeper(keeper expected.NodeKeeper) {
 }
 
 func (k *Keeper) Logger(ctx sdk.Context) log.Logger {
-	return ctx.Logger().With("module", types.ModuleName)
+	return ctx.Logger().With("module", "x/"+types.ModuleName)
 }
 
 func (k *Keeper) Store(ctx sdk.Context) sdk.KVStore {

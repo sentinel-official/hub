@@ -31,8 +31,8 @@ func (b Bandwidth) IsAnyNegative() bool {
 	return b.Upload.IsNegative() || b.Download.IsNegative()
 }
 
-func (b Bandwidth) IsValid() bool {
-	return !b.IsAnyNegative() && !b.IsAnyZero()
+func (b Bandwidth) IsAllPositive() bool {
+	return b.Upload.IsPositive() && b.Download.IsPositive()
 }
 
 func (b Bandwidth) Sum() sdk.Int {

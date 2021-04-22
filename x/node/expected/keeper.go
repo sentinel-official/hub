@@ -19,10 +19,10 @@ type DistributionKeeper interface {
 
 type ProviderKeeper interface {
 	HasProvider(ctx sdk.Context, address hubtypes.ProvAddress) bool
-	GetProviders(ctx sdk.Context, skip, limit int) provider.Providers
+	GetProviders(ctx sdk.Context, skip, limit int64) provider.Providers
 }
 
 type PlanKeeper interface {
-	GetPlansForProvider(ctx sdk.Context, address hubtypes.ProvAddress, skip, limit int) plan.Plans
+	GetPlansForProvider(ctx sdk.Context, address hubtypes.ProvAddress, skip, limit int64) plan.Plans
 	DeleteNodeForPlan(ctx sdk.Context, id uint64, address hubtypes.NodeAddress)
 }
