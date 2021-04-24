@@ -1,7 +1,6 @@
 package types
 
 import (
-	"encoding/json"
 	"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -54,12 +53,7 @@ func (m *MsgSubscribeToNodeRequest) ValidateBasic() error {
 }
 
 func (m *MsgSubscribeToNodeRequest) GetSignBytes() []byte {
-	bytes, err := json.Marshal(m)
-	if err != nil {
-		panic(err)
-	}
-
-	return bytes
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(m))
 }
 
 func (m *MsgSubscribeToNodeRequest) GetSigners() []sdk.AccAddress {
@@ -106,12 +100,7 @@ func (m *MsgSubscribeToPlanRequest) ValidateBasic() error {
 }
 
 func (m *MsgSubscribeToPlanRequest) GetSignBytes() []byte {
-	bytes, err := json.Marshal(m)
-	if err != nil {
-		panic(err)
-	}
-
-	return bytes
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(m))
 }
 
 func (m *MsgSubscribeToPlanRequest) GetSigners() []sdk.AccAddress {
@@ -152,12 +141,7 @@ func (m *MsgCancelRequest) ValidateBasic() error {
 }
 
 func (m *MsgCancelRequest) GetSignBytes() []byte {
-	bytes, err := json.Marshal(m)
-	if err != nil {
-		panic(err)
-	}
-
-	return bytes
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(m))
 }
 
 func (m *MsgCancelRequest) GetSigners() []sdk.AccAddress {
@@ -210,12 +194,7 @@ func (m *MsgAddQuotaRequest) ValidateBasic() error {
 }
 
 func (m *MsgAddQuotaRequest) GetSignBytes() []byte {
-	bytes, err := json.Marshal(m)
-	if err != nil {
-		panic(err)
-	}
-
-	return bytes
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(m))
 }
 
 func (m *MsgAddQuotaRequest) GetSigners() []sdk.AccAddress {
@@ -268,12 +247,7 @@ func (m *MsgUpdateQuotaRequest) ValidateBasic() error {
 }
 
 func (m *MsgUpdateQuotaRequest) GetSignBytes() []byte {
-	bytes, err := json.Marshal(m)
-	if err != nil {
-		panic(err)
-	}
-
-	return bytes
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(m))
 }
 
 func (m *MsgUpdateQuotaRequest) GetSigners() []sdk.AccAddress {

@@ -1,7 +1,6 @@
 package types
 
 import (
-	"encoding/json"
 	"fmt"
 	"time"
 
@@ -59,12 +58,7 @@ func (m *MsgAddRequest) ValidateBasic() error {
 }
 
 func (m *MsgAddRequest) GetSignBytes() []byte {
-	bytes, err := json.Marshal(m)
-	if err != nil {
-		panic(err)
-	}
-
-	return bytes
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(m))
 }
 
 func (m *MsgAddRequest) GetSigners() []sdk.AccAddress {
@@ -111,12 +105,7 @@ func (m *MsgSetStatusRequest) ValidateBasic() error {
 }
 
 func (m *MsgSetStatusRequest) GetSignBytes() []byte {
-	bytes, err := json.Marshal(m)
-	if err != nil {
-		panic(err)
-	}
-
-	return bytes
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(m))
 }
 
 func (m *MsgSetStatusRequest) GetSigners() []sdk.AccAddress {
@@ -163,12 +152,7 @@ func (m *MsgAddNodeRequest) ValidateBasic() error {
 }
 
 func (m *MsgAddNodeRequest) GetSignBytes() []byte {
-	bytes, err := json.Marshal(m)
-	if err != nil {
-		panic(err)
-	}
-
-	return bytes
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(m))
 }
 
 func (m *MsgAddNodeRequest) GetSigners() []sdk.AccAddress {
@@ -215,12 +199,7 @@ func (m *MsgRemoveNodeRequest) ValidateBasic() error {
 }
 
 func (m *MsgRemoveNodeRequest) GetSignBytes() []byte {
-	bytes, err := json.Marshal(m)
-	if err != nil {
-		panic(err)
-	}
-
-	return bytes
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(m))
 }
 
 func (m *MsgRemoveNodeRequest) GetSigners() []sdk.AccAddress {
