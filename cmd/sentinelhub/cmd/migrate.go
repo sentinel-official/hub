@@ -4,10 +4,13 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"time"
 
 	"github.com/cosmos/cosmos-sdk/client"
+	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/version"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	capabilitytypes "github.com/cosmos/cosmos-sdk/x/capability/types"
 	evidencetypes "github.com/cosmos/cosmos-sdk/x/evidence/types"
@@ -18,6 +21,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/ibc/core/exported"
 	ibctypes "github.com/cosmos/cosmos-sdk/x/ibc/core/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 	tmjson "github.com/tendermint/tendermint/libs/json"
 	tmtypes "github.com/tendermint/tendermint/types"
@@ -30,11 +34,21 @@ import (
 	v06vpntypes "github.com/sentinel-official/hub/x/vpn/types/legacy/v0.6"
 )
 
+const (
+	flagGenesisTime     = "genesis-time"
+	flagInitialHeight   = "initial-height"
+	flagReplacementKeys = "replacement-cons-keys"
+)
+
 func migrateCmd() *cobra.Command {
 	cmd := cobra.Command{
 		Use:   "migrate [genesis-file]",
-		Short: "Migrate Genesis file from v0.5 to v0.6",
+		Short: "Migrate genesis to a specified target version",
 		Args:  cobra.ExactArgs(1),
+		Long: fmt.Sprintf(`Migrate the source genesis into the target version and print to STDOUT.
+Example:
+$ %s migrate /path/to/genesis.json --chain-id=sentinelhub-1 --genesis-time=2021-05-22T17:00:00Z --initial-height=50000
+`, version.AppName),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			var ctx = client.GetClientContextFromCmd(cmd)
 
@@ -107,6 +121,36 @@ func migrateCmd() *cobra.Command {
 				return err
 			}
 
+			// Set min genesis time
+			genesisTime, _ := cmd.Flags().GetString(flagGenesisTime)
+			if genesisTime != "" {
+				var t time.Time
+
+				err := t.UnmarshalText([]byte(genesisTime))
+				if err != nil {
+					return errors.Wrap(err, "failed to unmarshal genesis time")
+				}
+
+				genesis.GenesisTime = t
+			}
+
+			// Set new chain id
+			chainID, _ := cmd.Flags().GetString(flags.FlagChainID)
+			if chainID != "" {
+				genesis.ChainID = chainID
+			}
+
+			// Set initial height
+			initialHeight, _ := cmd.Flags().GetInt(flagInitialHeight)
+			genesis.InitialHeight = int64(initialHeight)
+
+			// Replace validator keys
+			replacementKeys, _ := cmd.Flags().GetString(flagReplacementKeys)
+
+			if replacementKeys != "" {
+				genesis = loadKeydataFromFile(ctx, replacementKeys, genesis)
+			}
+
 			blob, err = tmjson.Marshal(genesis)
 			if err != nil {
 				return err
@@ -122,6 +166,11 @@ func migrateCmd() *cobra.Command {
 		},
 	}
 
+	cmd.Flags().String(flagGenesisTime, "", "override genesis_time with this flag")
+	cmd.Flags().Int(flagInitialHeight, 0, "Set the starting height for the chain")
+	cmd.Flags().String(flagReplacementKeys, "", "Proviide a JSON file to replace the consensus keys of validators")
+	cmd.Flags().String(flags.FlagChainID, "", "override chain_id with this flag")
+	
 	return &cmd
 }
 
