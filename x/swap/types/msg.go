@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 func NewMsgSwapRequest(from sdk.AccAddress, txHash EthereumHash, receiver sdk.AccAddress, amount sdk.Int) *MsgSwapRequest {
@@ -26,15 +25,15 @@ func (m *MsgSwapRequest) Type() string {
 
 func (m *MsgSwapRequest) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.From); err != nil {
-		return errors.Wrapf(ErrorInvalidField, "%s", "from")
+		return ErrorInvalidFieldFrom
 	}
 
 	if _, err := sdk.AccAddressFromBech32(m.Receiver); err != nil {
-		return errors.Wrapf(ErrorInvalidField, "%s", "receiver")
+		return ErrorInvalidFieldReceiver
 	}
 
 	if m.Amount.LT(PrecisionLoss) {
-		return errors.Wrapf(ErrorInvalidField, "%s", "amount")
+		return ErrorInvalidFieldAmount
 	}
 
 	return nil
