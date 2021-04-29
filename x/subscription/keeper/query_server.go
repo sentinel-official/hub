@@ -184,7 +184,7 @@ func (q *queryServer) QuerySubscriptionsForAddress(c context.Context, req *types
 			return true, nil
 		})
 	} else {
-		// TODO: Use SubscriptionForAddressKeyPrefix?
+		// NOTE: Do not use this; less efficient; consider using active + inactive
 
 		store := prefix.NewStore(q.Store(ctx), types.SubscriptionKeyPrefix)
 		pagination, err = query.FilteredPaginate(store, req.Pagination, func(_, value []byte, accumulate bool) (bool, error) {

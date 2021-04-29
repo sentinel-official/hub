@@ -50,7 +50,7 @@ func (k *msgServer) MsgSubscribeToNode(c context.Context, msg *types.MsgSubscrib
 		return nil, err
 	}
 
-	if err := k.AddDeposit(ctx, msgFrom, msg.Deposit); err != nil {
+	if err = k.AddDeposit(ctx, msgFrom, msg.Deposit); err != nil {
 		return nil, err
 	}
 
@@ -142,7 +142,7 @@ func (k *msgServer) MsgSubscribeToPlan(c context.Context, msg *types.MsgSubscrib
 			planProvider = plan.GetProvider()
 		)
 
-		if err := k.SendCoin(ctx, msgFrom, planProvider.Bytes(), price); err != nil {
+		if err = k.SendCoin(ctx, msgFrom, planProvider.Bytes(), price); err != nil {
 			return nil, err
 		}
 	}

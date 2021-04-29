@@ -11,7 +11,7 @@ func (s *Swap) GetTxHash() (hash EthereumHash) {
 }
 
 func (s *Swap) Validate() error {
-	if s.TxHash == nil || len(s.TxHash) != EthereumHashLength {
+	if len(s.TxHash) != EthereumHashLength {
 		return fmt.Errorf("tx_hash length should be 32")
 	}
 

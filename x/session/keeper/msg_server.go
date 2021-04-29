@@ -69,7 +69,7 @@ func (k *msgServer) MsgUpsert(c context.Context, msg *types.MsgUpsertRequest) (*
 			return nil, types.ErrorInvalidChannel
 		}
 
-		if err := k.VerifyProof(ctx, msgAddress, msg.Proof, msg.Signature); err != nil {
+		if err = k.VerifyProof(ctx, msgAddress, msg.Proof, msg.Signature); err != nil {
 			return nil, types.ErrorFailedToVerifyProof
 		}
 	}

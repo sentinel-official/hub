@@ -149,7 +149,7 @@ func (q *queryServer) QueryPlansForProvider(c context.Context, req *types.QueryP
 			return true, nil
 		})
 	} else {
-		// TODO: Use PlanForProviderKeyPrefix?
+		// NOTE: Do not use this; less efficient; consider using active + inactive
 
 		store := prefix.NewStore(q.Store(ctx), types.PlanKeyPrefix)
 		pagination, err = query.FilteredPaginate(store, req.Pagination, func(_, value []byte, accumulate bool) (bool, error) {

@@ -153,7 +153,7 @@ func (q *queryServer) QueryNodesForProvider(c context.Context, req *types.QueryN
 			return true, nil
 		})
 	} else {
-		// TODO: Use NodeForProviderKeyPrefix?
+		// NOTE: Do not use this; less efficient; consider using active + inactive
 
 		store := prefix.NewStore(q.Store(ctx), types.NodeKeyPrefix)
 		pagination, err = query.FilteredPaginate(store, req.Pagination, func(_, value []byte, accumulate bool) (bool, error) {

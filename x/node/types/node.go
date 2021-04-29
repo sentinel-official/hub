@@ -61,9 +61,9 @@ func (n *Node) Validate() error {
 	return nil
 }
 
-func (n *Node) PriceForDenom(d string) (sdk.Coin, bool) {
+func (n *Node) PriceForDenom(s string) (sdk.Coin, bool) {
 	for _, coin := range n.Price {
-		if coin.Denom == d {
+		if coin.Denom == s {
 			return coin, true
 		}
 	}

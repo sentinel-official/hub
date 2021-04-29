@@ -32,11 +32,11 @@ func (k *msgServer) MsgRegister(c context.Context, msg *types.MsgRegisterRequest
 		return nil, types.ErrorDuplicateNode
 	}
 
-	msgProvider, err := hubtypes.ProvAddressFromBech32(msg.Provider)
-	if err != nil {
-		return nil, err
-	}
 	if msg.Provider != "" {
+		msgProvider, err := hubtypes.ProvAddressFromBech32(msg.Provider)
+		if err != nil {
+			return nil, err
+		}
 		if !k.HasProvider(ctx, msgProvider) {
 			return nil, types.ErrorProviderDoesNotExist
 		}
@@ -44,15 +44,14 @@ func (k *msgServer) MsgRegister(c context.Context, msg *types.MsgRegisterRequest
 
 	deposit := k.Deposit(ctx)
 	if deposit.IsPositive() {
-		if err := k.FundCommunityPool(ctx, msgFrom, deposit); err != nil {
+		if err = k.FundCommunityPool(ctx, msgFrom, deposit); err != nil {
 			return nil, err
 		}
 	}
 
 	var (
-		nodeAddress  = hubtypes.NodeAddress(msgFrom.Bytes())
-		nodeProvider = hubtypes.ProvAddress(msgProvider.Bytes())
-		node         = types.Node{
+		nodeAddress = hubtypes.NodeAddress(msgFrom.Bytes())
+		node        = types.Node{
 			Address:   nodeAddress.String(),
 			Provider:  msg.Provider,
 			Price:     msg.Price,
@@ -60,6 +59,7 @@ func (k *msgServer) MsgRegister(c context.Context, msg *types.MsgRegisterRequest
 			Status:    hubtypes.StatusInactive,
 			StatusAt:  ctx.BlockTime(),
 		}
+		nodeProvider = node.GetProvider()
 	)
 
 	k.SetNode(ctx, node)

@@ -43,9 +43,6 @@ func (k *msgServer) MsgAdd(c context.Context, msg *types.MsgAddRequest) (*types.
 			Status:   hubtypes.StatusInactive,
 			StatusAt: ctx.BlockTime(),
 		}
-	)
-
-	var (
 		planProvider = plan.GetProvider()
 	)
 
