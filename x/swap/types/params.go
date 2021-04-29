@@ -44,21 +44,41 @@ func (p *Params) ParamSetPairs() params.ParamSetPairs {
 		{
 			Key:   KeySwapEnabled,
 			Value: &p.SwapEnabled,
-			ValidatorFn: func(_ interface{}) error {
+			ValidatorFn: func(v interface{}) error {
+				_, ok := v.(bool)
+				if !ok {
+					return fmt.Errorf("invalid parameter type %T", v)
+				}
+
 				return nil
 			},
 		},
 		{
 			Key:   KeySwapDenom,
 			Value: &p.SwapDenom,
-			ValidatorFn: func(_ interface{}) error {
-				return nil
+			ValidatorFn: func(v interface{}) error {
+				value, ok := v.(string)
+				if !ok {
+					return fmt.Errorf("invalid parameter type %T", v)
+				}
+
+				return sdk.ValidateDenom(value)
 			},
 		},
 		{
 			Key:   KeyApproveBy,
 			Value: &p.ApproveBy,
-			ValidatorFn: func(_ interface{}) error {
+			ValidatorFn: func(v interface{}) error {
+				value, ok := v.(string)
+				if !ok {
+					return fmt.Errorf("invalid parameter type %T", v)
+				}
+
+				_, err := sdk.AccAddressFromBech32(value)
+				if err != nil {
+					return err
+				}
+
 				return nil
 			},
 		},

@@ -41,14 +41,32 @@ func (p *Params) ParamSetPairs() params.ParamSetPairs {
 		{
 			Key:   KeyDeposit,
 			Value: &p.Deposit,
-			ValidatorFn: func(_ interface{}) error {
+			ValidatorFn: func(v interface{}) error {
+				value, ok := v.(sdk.Coin)
+				if !ok {
+					return fmt.Errorf("invalid parameter type %T", v)
+				}
+
+				if !value.IsValid() {
+					return fmt.Errorf("deposit value should be valid")
+				}
+
 				return nil
 			},
 		},
 		{
 			Key:   KeyInactiveDuration,
 			Value: &p.InactiveDuration,
-			ValidatorFn: func(_ interface{}) error {
+			ValidatorFn: func(v interface{}) error {
+				value, ok := v.(time.Duration)
+				if !ok {
+					return fmt.Errorf("invalid parameter type %T", v)
+				}
+
+				if value <= 0 {
+					return fmt.Errorf("inactive duration value should be positive")
+				}
+
 				return nil
 			},
 		},
