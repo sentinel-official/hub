@@ -4,75 +4,80 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/errors"
 
-	"github.com/sentinel-official/hub/x/node"
-	"github.com/sentinel-official/hub/x/plan"
-	"github.com/sentinel-official/hub/x/provider"
-	"github.com/sentinel-official/hub/x/session"
-	"github.com/sentinel-official/hub/x/subscription"
+	nodekeeper "github.com/sentinel-official/hub/x/node/keeper"
+	nodetypes "github.com/sentinel-official/hub/x/node/types"
+	plankeeper "github.com/sentinel-official/hub/x/plan/keeper"
+	plantypes "github.com/sentinel-official/hub/x/plan/types"
+	providerkeeper "github.com/sentinel-official/hub/x/provider/keeper"
+	providertypes "github.com/sentinel-official/hub/x/provider/types"
+	sessionkeeper "github.com/sentinel-official/hub/x/session/keeper"
+	sessiontypes "github.com/sentinel-official/hub/x/session/types"
+	subscriptionkeeper "github.com/sentinel-official/hub/x/subscription/keeper"
+	subscriptiontypes "github.com/sentinel-official/hub/x/subscription/types"
 	"github.com/sentinel-official/hub/x/vpn/keeper"
 	"github.com/sentinel-official/hub/x/vpn/types"
 )
 
 func NewHandler(k keeper.Keeper) sdk.Handler {
 	var (
-		providerServer     = provider.NewMsgServiceServer(k.Provider)
-		nodeServer         = node.NewMsgServiceServer(k.Node)
-		planServer         = plan.NewMsgServiceServer(k.Plan)
-		subscriptionServer = subscription.NewMsgServiceServer(k.Subscription)
-		sessionServer      = session.NewMsgServiceServer(k.Session)
+		providerServer     = providerkeeper.NewMsgServiceServer(k.Provider)
+		nodeServer         = nodekeeper.NewMsgServiceServer(k.Node)
+		planServer         = plankeeper.NewMsgServiceServer(k.Plan)
+		subscriptionServer = subscriptionkeeper.NewMsgServiceServer(k.Subscription)
+		sessionServer      = sessionkeeper.NewMsgServiceServer(k.Session)
 	)
 
 	return func(ctx sdk.Context, msg sdk.Msg) (*sdk.Result, error) {
 		ctx = ctx.WithEventManager(sdk.NewEventManager())
 
 		switch msg := msg.(type) {
-		case *provider.MsgRegisterRequest:
+		case *providertypes.MsgRegisterRequest:
 			res, err := providerServer.MsgRegister(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
-		case *provider.MsgUpdateRequest:
+		case *providertypes.MsgUpdateRequest:
 			res, err := providerServer.MsgUpdate(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
 
-		case *node.MsgRegisterRequest:
+		case *nodetypes.MsgRegisterRequest:
 			res, err := nodeServer.MsgRegister(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
-		case *node.MsgUpdateRequest:
+		case *nodetypes.MsgUpdateRequest:
 			res, err := nodeServer.MsgUpdate(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
-		case *node.MsgSetStatusRequest:
+		case *nodetypes.MsgSetStatusRequest:
 			res, err := nodeServer.MsgSetStatus(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
 
-		case *plan.MsgAddRequest:
+		case *plantypes.MsgAddRequest:
 			res, err := planServer.MsgAdd(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
-		case *plan.MsgSetStatusRequest:
+		case *plantypes.MsgSetStatusRequest:
 			res, err := planServer.MsgSetStatus(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
-		case *plan.MsgAddNodeRequest:
+		case *plantypes.MsgAddNodeRequest:
 			res, err := planServer.MsgAddNode(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
-		case *plan.MsgRemoveNodeRequest:
+		case *plantypes.MsgRemoveNodeRequest:
 			res, err := planServer.MsgRemoveNode(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
 
-		case *subscription.MsgSubscribeToPlanRequest:
+		case *subscriptiontypes.MsgSubscribeToPlanRequest:
 			res, err := subscriptionServer.MsgSubscribeToPlan(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
-		case *subscription.MsgSubscribeToNodeRequest:
+		case *subscriptiontypes.MsgSubscribeToNodeRequest:
 			res, err := subscriptionServer.MsgSubscribeToNode(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
-		case *subscription.MsgCancelRequest:
+		case *subscriptiontypes.MsgCancelRequest:
 			res, err := subscriptionServer.MsgCancel(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
-		case *subscription.MsgAddQuotaRequest:
+		case *subscriptiontypes.MsgAddQuotaRequest:
 			res, err := subscriptionServer.MsgAddQuota(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
-		case *subscription.MsgUpdateQuotaRequest:
+		case *subscriptiontypes.MsgUpdateQuotaRequest:
 			res, err := subscriptionServer.MsgUpdateQuota(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
 
-		case *session.MsgUpsertRequest:
+		case *sessiontypes.MsgUpsertRequest:
 			res, err := sessionServer.MsgUpsert(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
 		default:

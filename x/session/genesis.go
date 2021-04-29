@@ -1,8 +1,6 @@
 package session
 
 import (
-	"fmt"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	hubtypes "github.com/sentinel-official/hub/types"
@@ -37,27 +35,4 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 		k.GetSessions(ctx, 0, 0),
 		k.GetParams(ctx),
 	)
-}
-
-func ValidateGenesis(state *types.GenesisState) error {
-	if err := state.Params.Validate(); err != nil {
-		return err
-	}
-
-	for _, session := range state.Sessions {
-		if err := session.Validate(); err != nil {
-			return err
-		}
-	}
-
-	sessions := make(map[uint64]bool)
-	for _, item := range state.Sessions {
-		if sessions[item.Id] {
-			return fmt.Errorf("duplicate session id %d", item.Id)
-		}
-
-		sessions[item.Id] = true
-	}
-
-	return nil
 }

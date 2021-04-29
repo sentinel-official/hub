@@ -5,7 +5,7 @@ import (
 	protobuf "github.com/gogo/protobuf/types"
 
 	hubtypes "github.com/sentinel-official/hub/types"
-	node "github.com/sentinel-official/hub/x/node/types"
+	nodetypes "github.com/sentinel-official/hub/x/node/types"
 	"github.com/sentinel-official/hub/x/plan/types"
 )
 
@@ -31,7 +31,7 @@ func (k *Keeper) DeleteNodeForPlan(ctx sdk.Context, id uint64, address hubtypes.
 	store.Delete(key)
 }
 
-func (k *Keeper) GetNodesForPlan(ctx sdk.Context, id uint64, skip, limit int64) (items node.Nodes) {
+func (k *Keeper) GetNodesForPlan(ctx sdk.Context, id uint64, skip, limit int64) (items nodetypes.Nodes) {
 	var (
 		store = k.Store(ctx)
 		iter  = hubtypes.NewPaginatedIterator(

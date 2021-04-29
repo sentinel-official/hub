@@ -3,14 +3,14 @@ package types
 import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/codec/types"
-	crypto "github.com/cosmos/cosmos-sdk/crypto/codec"
+	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
 
-	"github.com/sentinel-official/hub/x/deposit"
-	"github.com/sentinel-official/hub/x/node"
-	"github.com/sentinel-official/hub/x/plan"
-	"github.com/sentinel-official/hub/x/provider"
-	"github.com/sentinel-official/hub/x/session"
-	"github.com/sentinel-official/hub/x/subscription"
+	deposittypes "github.com/sentinel-official/hub/x/deposit/types"
+	nodetypes "github.com/sentinel-official/hub/x/node/types"
+	plantypes "github.com/sentinel-official/hub/x/plan/types"
+	providertypes "github.com/sentinel-official/hub/x/provider/types"
+	sessiontypes "github.com/sentinel-official/hub/x/session/types"
+	subscriptiontypes "github.com/sentinel-official/hub/x/subscription/types"
 )
 
 var (
@@ -20,17 +20,17 @@ var (
 
 func init() {
 	RegisterLegacyAminoCodec(amino)
-	crypto.RegisterCrypto(amino)
+	cryptocodec.RegisterCrypto(amino)
 	amino.Seal()
 }
 
 func RegisterLegacyAminoCodec(_ *codec.LegacyAmino) {}
 
 func RegisterInterfaces(registry types.InterfaceRegistry) {
-	deposit.RegisterInterfaces(registry)
-	provider.RegisterInterfaces(registry)
-	node.RegisterInterfaces(registry)
-	plan.RegisterInterfaces(registry)
-	subscription.RegisterInterfaces(registry)
-	session.RegisterInterfaces(registry)
+	deposittypes.RegisterInterfaces(registry)
+	providertypes.RegisterInterfaces(registry)
+	nodetypes.RegisterInterfaces(registry)
+	plantypes.RegisterInterfaces(registry)
+	subscriptiontypes.RegisterInterfaces(registry)
+	sessiontypes.RegisterInterfaces(registry)
 }

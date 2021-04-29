@@ -16,12 +16,18 @@ import (
 	"github.com/spf13/cobra"
 	abci "github.com/tendermint/tendermint/abci/types"
 
-	"github.com/sentinel-official/hub/x/deposit"
-	"github.com/sentinel-official/hub/x/node"
-	"github.com/sentinel-official/hub/x/plan"
-	"github.com/sentinel-official/hub/x/provider"
-	"github.com/sentinel-official/hub/x/session"
-	"github.com/sentinel-official/hub/x/subscription"
+	depositkeeper "github.com/sentinel-official/hub/x/deposit/keeper"
+	deposittypes "github.com/sentinel-official/hub/x/deposit/types"
+	nodekeeper "github.com/sentinel-official/hub/x/node/keeper"
+	nodetypes "github.com/sentinel-official/hub/x/node/types"
+	plankeeper "github.com/sentinel-official/hub/x/plan/keeper"
+	plantypes "github.com/sentinel-official/hub/x/plan/types"
+	providerkeeper "github.com/sentinel-official/hub/x/provider/keeper"
+	providertypes "github.com/sentinel-official/hub/x/provider/types"
+	sessionkeeper "github.com/sentinel-official/hub/x/session/keeper"
+	sessiontypes "github.com/sentinel-official/hub/x/session/types"
+	subscriptionkeeper "github.com/sentinel-official/hub/x/subscription/keeper"
+	subscriptiontypes "github.com/sentinel-official/hub/x/subscription/types"
 	"github.com/sentinel-official/hub/x/vpn/client/cli"
 	"github.com/sentinel-official/hub/x/vpn/expected"
 	"github.com/sentinel-official/hub/x/vpn/keeper"
@@ -64,12 +70,12 @@ func (a AppModuleBasic) ValidateGenesis(cdc codec.JSONMarshaler, _ client.TxEnco
 func (a AppModuleBasic) RegisterRESTRoutes(_ client.Context, _ *mux.Router) {}
 
 func (a AppModuleBasic) RegisterGRPCGatewayRoutes(ctx client.Context, mux *runtime.ServeMux) {
-	_ = deposit.RegisterQueryServiceHandlerClient(context.Background(), mux, deposit.NewQueryServiceClient(ctx))
-	_ = provider.RegisterQueryServiceHandlerClient(context.Background(), mux, provider.NewQueryServiceClient(ctx))
-	_ = node.RegisterQueryServiceHandlerClient(context.Background(), mux, node.NewQueryServiceClient(ctx))
-	_ = plan.RegisterQueryServiceHandlerClient(context.Background(), mux, plan.NewQueryServiceClient(ctx))
-	_ = subscription.RegisterQueryServiceHandlerClient(context.Background(), mux, subscription.NewQueryServiceClient(ctx))
-	_ = session.RegisterQueryServiceHandlerClient(context.Background(), mux, session.NewQueryServiceClient(ctx))
+	_ = deposittypes.RegisterQueryServiceHandlerClient(context.Background(), mux, deposittypes.NewQueryServiceClient(ctx))
+	_ = providertypes.RegisterQueryServiceHandlerClient(context.Background(), mux, providertypes.NewQueryServiceClient(ctx))
+	_ = nodetypes.RegisterQueryServiceHandlerClient(context.Background(), mux, nodetypes.NewQueryServiceClient(ctx))
+	_ = plantypes.RegisterQueryServiceHandlerClient(context.Background(), mux, plantypes.NewQueryServiceClient(ctx))
+	_ = subscriptiontypes.RegisterQueryServiceHandlerClient(context.Background(), mux, subscriptiontypes.NewQueryServiceClient(ctx))
+	_ = sessiontypes.RegisterQueryServiceHandlerClient(context.Background(), mux, sessiontypes.NewQueryServiceClient(ctx))
 }
 
 func (a AppModuleBasic) GetTxCmd() *cobra.Command {
@@ -118,18 +124,18 @@ func (a AppModule) QuerierRoute() string {
 func (a AppModule) LegacyQuerierHandler(_ *codec.LegacyAmino) sdk.Querier { return nil }
 
 func (a AppModule) RegisterServices(configurator module.Configurator) {
-	provider.RegisterMsgServiceServer(configurator.MsgServer(), provider.NewMsgServiceServer(a.k.Provider))
-	node.RegisterMsgServiceServer(configurator.MsgServer(), node.NewMsgServiceServer(a.k.Node))
-	plan.RegisterMsgServiceServer(configurator.MsgServer(), plan.NewMsgServiceServer(a.k.Plan))
-	subscription.RegisterMsgServiceServer(configurator.MsgServer(), subscription.NewMsgServiceServer(a.k.Subscription))
-	session.RegisterMsgServiceServer(configurator.MsgServer(), session.NewMsgServiceServer(a.k.Session))
+	providertypes.RegisterMsgServiceServer(configurator.MsgServer(), providerkeeper.NewMsgServiceServer(a.k.Provider))
+	nodetypes.RegisterMsgServiceServer(configurator.MsgServer(), nodekeeper.NewMsgServiceServer(a.k.Node))
+	plantypes.RegisterMsgServiceServer(configurator.MsgServer(), plankeeper.NewMsgServiceServer(a.k.Plan))
+	subscriptiontypes.RegisterMsgServiceServer(configurator.MsgServer(), subscriptionkeeper.NewMsgServiceServer(a.k.Subscription))
+	sessiontypes.RegisterMsgServiceServer(configurator.MsgServer(), sessionkeeper.NewMsgServiceServer(a.k.Session))
 
-	deposit.RegisterQueryServiceServer(configurator.QueryServer(), deposit.NewQueryServiceServer(a.k.Deposit))
-	provider.RegisterQueryServiceServer(configurator.QueryServer(), provider.NewQueryServiceServer(a.k.Provider))
-	node.RegisterQueryServiceServer(configurator.QueryServer(), node.NewQueryServiceServer(a.k.Node))
-	plan.RegisterQueryServiceServer(configurator.QueryServer(), plan.NewQueryServiceServer(a.k.Plan))
-	subscription.RegisterQueryServiceServer(configurator.QueryServer(), subscription.NewQueryServiceServer(a.k.Subscription))
-	session.RegisterQueryServiceServer(configurator.QueryServer(), session.NewQueryServiceServer(a.k.Session))
+	deposittypes.RegisterQueryServiceServer(configurator.QueryServer(), depositkeeper.NewQueryServiceServer(a.k.Deposit))
+	providertypes.RegisterQueryServiceServer(configurator.QueryServer(), providerkeeper.NewQueryServiceServer(a.k.Provider))
+	nodetypes.RegisterQueryServiceServer(configurator.QueryServer(), nodekeeper.NewQueryServiceServer(a.k.Node))
+	plantypes.RegisterQueryServiceServer(configurator.QueryServer(), plankeeper.NewQueryServiceServer(a.k.Plan))
+	subscriptiontypes.RegisterQueryServiceServer(configurator.QueryServer(), subscriptionkeeper.NewQueryServiceServer(a.k.Subscription))
+	sessiontypes.RegisterQueryServiceServer(configurator.QueryServer(), sessionkeeper.NewQueryServiceServer(a.k.Session))
 }
 
 func (a AppModule) BeginBlock(_ sdk.Context, _ abci.RequestBeginBlock) {}

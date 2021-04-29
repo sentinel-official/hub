@@ -2,13 +2,13 @@ package keeper
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	auth "github.com/cosmos/cosmos-sdk/x/auth/types"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 
 	hubtypes "github.com/sentinel-official/hub/types"
-	subscription "github.com/sentinel-official/hub/x/subscription/types"
+	subscriptiontypes "github.com/sentinel-official/hub/x/subscription/types"
 )
 
-func (k *Keeper) GetAccount(ctx sdk.Context, address sdk.AccAddress) auth.AccountI {
+func (k *Keeper) GetAccount(ctx sdk.Context, address sdk.AccAddress) authtypes.AccountI {
 	return k.account.GetAccount(ctx, address)
 }
 
@@ -16,7 +16,7 @@ func (k *Keeper) HasNodeForPlan(ctx sdk.Context, id uint64, address hubtypes.Nod
 	return k.plan.HasNodeForPlan(ctx, id, address)
 }
 
-func (k *Keeper) GetSubscription(ctx sdk.Context, id uint64) (subscription.Subscription, bool) {
+func (k *Keeper) GetSubscription(ctx sdk.Context, id uint64) (subscriptiontypes.Subscription, bool) {
 	return k.subscription.GetSubscription(ctx, id)
 }
 
@@ -24,11 +24,11 @@ func (k *Keeper) HasSubscriptionForNode(ctx sdk.Context, address hubtypes.NodeAd
 	return k.subscription.HasSubscriptionForNode(ctx, address, id)
 }
 
-func (k *Keeper) SetQuota(ctx sdk.Context, id uint64, quota subscription.Quota) {
+func (k *Keeper) SetQuota(ctx sdk.Context, id uint64, quota subscriptiontypes.Quota) {
 	k.subscription.SetQuota(ctx, id, quota)
 }
 
-func (k *Keeper) GetQuota(ctx sdk.Context, id uint64, address sdk.AccAddress) (subscription.Quota, bool) {
+func (k *Keeper) GetQuota(ctx sdk.Context, id uint64, address sdk.AccAddress) (subscriptiontypes.Quota, bool) {
 	return k.subscription.GetQuota(ctx, id, address)
 }
 

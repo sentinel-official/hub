@@ -11,7 +11,7 @@ import (
 	"google.golang.org/grpc/status"
 
 	hubtypes "github.com/sentinel-official/hub/types"
-	node "github.com/sentinel-official/hub/x/node/types"
+	nodetypes "github.com/sentinel-official/hub/x/node/types"
 	"github.com/sentinel-official/hub/x/plan/types"
 )
 
@@ -182,7 +182,7 @@ func (q *queryServer) QueryNodesForPlan(c context.Context, req *types.QueryNodes
 	}
 
 	var (
-		items      node.Nodes
+		items      nodetypes.Nodes
 		pagination *query.PageResponse
 		ctx        = sdk.UnwrapSDKContext(c)
 	)

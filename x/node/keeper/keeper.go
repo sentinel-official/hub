@@ -6,7 +6,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	params "github.com/cosmos/cosmos-sdk/x/params/types"
+	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"github.com/tendermint/tendermint/libs/log"
 
 	"github.com/sentinel-official/hub/x/node/expected"
@@ -16,13 +16,13 @@ import (
 type Keeper struct {
 	cdc          codec.BinaryMarshaler
 	key          sdk.StoreKey
-	params       params.Subspace
+	params       paramstypes.Subspace
 	distribution expected.DistributionKeeper
 	provider     expected.ProviderKeeper
 	plan         expected.PlanKeeper
 }
 
-func NewKeeper(cdc codec.BinaryMarshaler, key sdk.StoreKey, params params.Subspace) Keeper {
+func NewKeeper(cdc codec.BinaryMarshaler, key sdk.StoreKey, params paramstypes.Subspace) Keeper {
 	return Keeper{
 		cdc:    cdc,
 		key:    key,

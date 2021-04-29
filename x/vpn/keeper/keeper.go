@@ -3,37 +3,41 @@ package keeper
 import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	auth "github.com/cosmos/cosmos-sdk/x/auth/keeper"
-	bank "github.com/cosmos/cosmos-sdk/x/bank/keeper"
-	distribution "github.com/cosmos/cosmos-sdk/x/distribution/keeper"
-	params "github.com/cosmos/cosmos-sdk/x/params/keeper"
+	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
+	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
+	distributionkeeper "github.com/cosmos/cosmos-sdk/x/distribution/keeper"
+	paramskeeper "github.com/cosmos/cosmos-sdk/x/params/keeper"
 
-	"github.com/sentinel-official/hub/x/deposit"
-	"github.com/sentinel-official/hub/x/node"
-	"github.com/sentinel-official/hub/x/plan"
-	"github.com/sentinel-official/hub/x/provider"
-	"github.com/sentinel-official/hub/x/session"
-	"github.com/sentinel-official/hub/x/subscription"
+	depositkeeper "github.com/sentinel-official/hub/x/deposit/keeper"
+	nodekeeper "github.com/sentinel-official/hub/x/node/keeper"
+	nodetypes "github.com/sentinel-official/hub/x/node/types"
+	plankeeper "github.com/sentinel-official/hub/x/plan/keeper"
+	providerkeeper "github.com/sentinel-official/hub/x/provider/keeper"
+	providertypes "github.com/sentinel-official/hub/x/provider/types"
+	sessionkeeper "github.com/sentinel-official/hub/x/session/keeper"
+	sessiontypes "github.com/sentinel-official/hub/x/session/types"
+	subscriptionkeeper "github.com/sentinel-official/hub/x/subscription/keeper"
+	subscriptiontypes "github.com/sentinel-official/hub/x/subscription/types"
 )
 
 type Keeper struct {
-	Deposit      deposit.Keeper
-	Provider     provider.Keeper
-	Node         node.Keeper
-	Plan         plan.Keeper
-	Subscription subscription.Keeper
-	Session      session.Keeper
+	Deposit      depositkeeper.Keeper
+	Provider     providerkeeper.Keeper
+	Node         nodekeeper.Keeper
+	Plan         plankeeper.Keeper
+	Subscription subscriptionkeeper.Keeper
+	Session      sessionkeeper.Keeper
 }
 
-func NewKeeper(cdc codec.BinaryMarshaler, key sdk.StoreKey, paramsKeeper params.Keeper, accountKeeper auth.AccountKeeper,
-	bankKeeper bank.Keeper, distributionKeeper distribution.Keeper) Keeper {
+func NewKeeper(cdc codec.BinaryMarshaler, key sdk.StoreKey, paramsKeeper paramskeeper.Keeper, accountKeeper authkeeper.AccountKeeper,
+	bankKeeper bankkeeper.Keeper, distributionKeeper distributionkeeper.Keeper) Keeper {
 	var (
-		depositKeeper      = deposit.NewKeeper(cdc, key)
-		providerKeeper     = provider.NewKeeper(cdc, key, paramsKeeper.Subspace(provider.ParamsSubspace))
-		nodeKeeper         = node.NewKeeper(cdc, key, paramsKeeper.Subspace(node.ParamsSubspace))
-		planKeeper         = plan.NewKeeper(cdc, key)
-		subscriptionKeeper = subscription.NewKeeper(cdc, key, paramsKeeper.Subspace(subscription.ParamsSubspace))
-		sessionKeeper      = session.NewKeeper(cdc, key, paramsKeeper.Subspace(session.ParamsSubspace))
+		depositKeeper      = depositkeeper.NewKeeper(cdc, key)
+		providerKeeper     = providerkeeper.NewKeeper(cdc, key, paramsKeeper.Subspace(providertypes.ParamsSubspace))
+		nodeKeeper         = nodekeeper.NewKeeper(cdc, key, paramsKeeper.Subspace(nodetypes.ParamsSubspace))
+		planKeeper         = plankeeper.NewKeeper(cdc, key)
+		subscriptionKeeper = subscriptionkeeper.NewKeeper(cdc, key, paramsKeeper.Subspace(subscriptiontypes.ParamsSubspace))
+		sessionKeeper      = sessionkeeper.NewKeeper(cdc, key, paramsKeeper.Subspace(sessiontypes.ParamsSubspace))
 	)
 
 	depositKeeper.WithBankKeeper(bankKeeper)

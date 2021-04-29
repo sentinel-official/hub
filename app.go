@@ -359,15 +359,15 @@ func NewApp(
 	)
 	app.evidenceKeeper.SetRouter(evidenceRouter)
 
-	app.swapKeeper = swap.NewKeeper(
+	app.swapKeeper = swapkeeper.NewKeeper(
 		app.cdc,
-		app.keys[swap.StoreKey],
+		app.keys[swaptypes.StoreKey],
 		app.GetSubspace(swaptypes.ModuleName),
 		app.bankKeeper,
 	)
-	app.vpnKeeper = vpn.NewKeeper(
+	app.vpnKeeper = vpnkeeper.NewKeeper(
 		app.cdc,
-		app.keys[vpn.StoreKey],
+		app.keys[vpntypes.StoreKey],
 		app.paramsKeeper,
 		app.accountKeeper,
 		app.bankKeeper,
@@ -411,14 +411,14 @@ func NewApp(
 	)
 	app.manager.SetOrderEndBlockers(
 		crisistypes.ModuleName, govtypes.ModuleName, stakingtypes.ModuleName,
-		vpn.ModuleName,
+		vpntypes.ModuleName,
 	)
 	app.manager.SetOrderInitGenesis(
 		capabilitytypes.ModuleName, authtypes.ModuleName, banktypes.ModuleName,
 		distributiontypes.ModuleName, stakingtypes.ModuleName, slashingtypes.ModuleName,
 		govtypes.ModuleName, minttypes.ModuleName, crisistypes.ModuleName,
 		ibchost.ModuleName, genutiltypes.ModuleName, evidencetypes.ModuleName,
-		ibctransfertypes.ModuleName, swap.ModuleName, vpn.ModuleName,
+		ibctransfertypes.ModuleName, swaptypes.ModuleName, vpntypes.ModuleName,
 	)
 
 	app.manager.RegisterInvariants(&app.crisisKeeper)

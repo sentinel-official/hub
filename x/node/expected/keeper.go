@@ -2,15 +2,15 @@ package expected
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	auth "github.com/cosmos/cosmos-sdk/x/auth/types"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 
 	hubtypes "github.com/sentinel-official/hub/types"
-	plan "github.com/sentinel-official/hub/x/plan/types"
-	provider "github.com/sentinel-official/hub/x/provider/types"
+	plantypes "github.com/sentinel-official/hub/x/plan/types"
+	providertypes "github.com/sentinel-official/hub/x/provider/types"
 )
 
 type AccountKeeper interface {
-	GetAccount(ctx sdk.Context, address sdk.AccAddress) auth.AccountI
+	GetAccount(ctx sdk.Context, address sdk.AccAddress) authtypes.AccountI
 }
 
 type DistributionKeeper interface {
@@ -19,10 +19,10 @@ type DistributionKeeper interface {
 
 type ProviderKeeper interface {
 	HasProvider(ctx sdk.Context, address hubtypes.ProvAddress) bool
-	GetProviders(ctx sdk.Context, skip, limit int64) provider.Providers
+	GetProviders(ctx sdk.Context, skip, limit int64) providertypes.Providers
 }
 
 type PlanKeeper interface {
-	GetPlansForProvider(ctx sdk.Context, address hubtypes.ProvAddress, skip, limit int64) plan.Plans
+	GetPlansForProvider(ctx sdk.Context, address hubtypes.ProvAddress, skip, limit int64) plantypes.Plans
 	DeleteNodeForPlan(ctx sdk.Context, id uint64, address hubtypes.NodeAddress)
 }

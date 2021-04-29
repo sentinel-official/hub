@@ -1,8 +1,6 @@
 package provider
 
 import (
-	"fmt"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/sentinel-official/hub/x/provider/keeper"
@@ -19,27 +17,4 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, state *types.GenesisState) {
 
 func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 	return types.NewGenesisState(k.GetProviders(ctx, 0, 0), k.GetParams(ctx))
-}
-
-func ValidateGenesis(state *types.GenesisState) error {
-	if err := state.Params.Validate(); err != nil {
-		return err
-	}
-
-	for _, provider := range state.Providers {
-		if err := provider.Validate(); err != nil {
-			return err
-		}
-	}
-
-	providers := make(map[string]bool)
-	for _, provider := range state.Providers {
-		if providers[provider.Address] {
-			return fmt.Errorf("found duplicate provider address %s", provider.Address)
-		}
-
-		providers[provider.Address] = true
-	}
-
-	return nil
 }
