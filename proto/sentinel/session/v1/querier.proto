@@ -1,0 +1,99 @@
+syntax = "proto3";
+package sentinel.session.v1;
+
+option go_package = "github.com/sentinel-official/hub/x/session/types";
+
+import "cosmos/base/query/v1beta1/pagination.proto";
+import "gogoproto/gogo.proto";
+import "google/api/annotations.proto";
+import "sentinel/types/v1/status.proto";
+import "sentinel/session/v1/session.proto";
+
+option (gogoproto.equal_all)           = false;
+option (gogoproto.goproto_getters_all) = false;
+
+message QuerySessionsRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QuerySessionsForSubscriptionRequest {
+  uint64 id                                        = 1;
+  cosmos.base.query.v1beta1.PageRequest pagination = 2;
+}
+
+message QuerySessionsForNodeRequest {
+  string address                                   = 1;
+  cosmos.base.query.v1beta1.PageRequest pagination = 2;
+}
+
+message QuerySessionsForAddressRequest {
+  string address                                   = 1;
+  sentinel.types.v1.Status status                  = 2;
+  cosmos.base.query.v1beta1.PageRequest pagination = 3;
+}
+
+message QuerySessionRequest { uint64 id = 1; }
+
+message QueryActiveSessionRequest {
+  string address      = 1;
+  string node         = 2;
+  uint64 subscription = 3;
+}
+
+message QuerySessionsResponse {
+  repeated Session sessions = 1 [ (gogoproto.nullable) = false ];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QuerySessionsForSubscriptionResponse {
+  repeated Session sessions = 1 [ (gogoproto.nullable) = false ];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QuerySessionsForNodeResponse {
+  repeated Session sessions = 1 [ (gogoproto.nullable) = false ];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QuerySessionsForAddressResponse {
+  repeated Session sessions = 1 [ (gogoproto.nullable) = false ];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QuerySessionResponse {
+  Session session = 1 [ (gogoproto.nullable) = false ];
+}
+
+message QueryActiveSessionResponse {
+  Session session = 1 [ (gogoproto.nullable) = false ];
+}
+
+service QueryService {
+  rpc QuerySessions(QuerySessionsRequest) returns (QuerySessionsResponse) {
+    option (google.api.http).get = "/sessions";
+  }
+
+  rpc QuerySessionsForNode(QuerySessionsForNodeRequest)
+      returns (QuerySessionsForNodeResponse) {
+    option (google.api.http).get = "/nodes/{address}/sessions";
+  }
+
+  rpc QuerySessionsForSubscription(QuerySessionsForSubscriptionRequest)
+      returns (QuerySessionsForSubscriptionResponse) {
+    option (google.api.http).get = "/subscriptions/{id}/sessions";
+  }
+
+  rpc QuerySessionsForAddress(QuerySessionsForAddressRequest)
+      returns (QuerySessionsForAddressResponse) {
+    option (google.api.http).get = "/accounts/{address}/sessions";
+  }
+
+  rpc QuerySession(QuerySessionRequest) returns (QuerySessionResponse) {
+    option (google.api.http).get = "/sessions/{id}";
+  }
+
+  rpc QueryActiveSession(QueryActiveSessionRequest)
+      returns (QueryActiveSessionResponse) {
+    option (google.api.http).get = "/accounts/{address}/sessions/active";
+  }
+}

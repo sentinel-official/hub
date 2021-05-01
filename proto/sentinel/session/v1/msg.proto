@@ -1,0 +1,22 @@
+syntax = "proto3";
+package sentinel.session.v1;
+
+option go_package = "github.com/sentinel-official/hub/x/session/types";
+
+import "gogoproto/gogo.proto";
+import "sentinel/session/v1/proof.proto";
+
+option (gogoproto.equal_all)           = false;
+option (gogoproto.goproto_getters_all) = false;
+
+message MsgUpsertRequest {
+  Proof proof     = 1 [ (gogoproto.nullable) = false ];
+  string address  = 2;
+  bytes signature = 3;
+}
+
+message MsgUpsertResponse {}
+
+service MsgService {
+  rpc MsgUpsert(MsgUpsertRequest) returns (MsgUpsertResponse);
+}

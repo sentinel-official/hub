@@ -1,8 +1,6 @@
 package cli
 
 const (
-	flagSkip      = "skip"
-	flagLimit     = "limit"
 	flagProvider  = "provider"
 	flagPlan      = "plan"
 	flagPrice     = "price"

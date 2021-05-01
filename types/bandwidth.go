@@ -1,7 +1,6 @@
 package types
 
 import (
-	"fmt"
 	"math/big"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -13,20 +12,11 @@ var (
 	Gigabyte = sdk.NewInt(1000).Mul(Megabyte)
 )
 
-type Bandwidth struct {
-	Upload   sdk.Int `json:"upload"`
-	Download sdk.Int `json:"download"`
-}
-
 func NewBandwidth(upload, download sdk.Int) Bandwidth {
 	return Bandwidth{
 		Upload:   upload,
 		Download: download,
 	}
-}
-
-func (b Bandwidth) String() string {
-	return fmt.Sprintf("%s↑, %s↓ bytes", b.Upload, b.Download)
 }
 
 func (b Bandwidth) IsAnyZero() bool {
@@ -41,8 +31,8 @@ func (b Bandwidth) IsAnyNegative() bool {
 	return b.Upload.IsNegative() || b.Download.IsNegative()
 }
 
-func (b Bandwidth) IsValid() bool {
-	return !b.IsAnyNegative() && !b.IsAnyZero()
+func (b Bandwidth) IsAllPositive() bool {
+	return b.Upload.IsPositive() && b.Download.IsPositive()
 }
 
 func (b Bandwidth) Sum() sdk.Int {

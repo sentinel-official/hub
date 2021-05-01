@@ -2,58 +2,58 @@ package types
 
 import (
 	"fmt"
-	"strings"
-	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	hub "github.com/sentinel-official/hub/types"
+	hubtypes "github.com/sentinel-official/hub/types"
 )
 
-type Session struct {
-	ID           uint64          `json:"id"`
-	Subscription uint64          `json:"subscription"`
-	Node         hub.NodeAddress `json:"node"`
-	Address      sdk.AccAddress  `json:"address"`
-	Duration     time.Duration   `json:"duration"`
-	Bandwidth    hub.Bandwidth   `json:"bandwidth"`
-	Status       hub.Status      `json:"status"`
-	StatusAt     time.Time       `json:"status_at"`
+func (s *Session) GetAddress() sdk.AccAddress {
+	if s.Address == "" {
+		return nil
+	}
+
+	address, err := sdk.AccAddressFromBech32(s.Address)
+	if err != nil {
+		panic(err)
+	}
+
+	return address
 }
 
-func (s Session) String() string {
-	return fmt.Sprintf(strings.TrimSpace(`
-ID:           %d
-Subscription: %d
-Node:         %s
-Address:      %s
-Duration:     %s
-Bandwidth:    %s
-Status:       %s
-Status at:    %s
-`), s.ID, s.Subscription, s.Node, s.Address, s.Duration, s.Bandwidth, s.Status, s.StatusAt)
+func (s *Session) GetNode() hubtypes.NodeAddress {
+	if s.Node == "" {
+		return nil
+	}
+
+	address, err := hubtypes.NodeAddressFromBech32(s.Node)
+	if err != nil {
+		panic(err)
+	}
+
+	return address
 }
 
-func (s Session) Validate() error {
-	if s.ID == 0 {
+func (s *Session) Validate() error {
+	if s.Id == 0 {
 		return fmt.Errorf("id should not be zero")
 	}
 	if s.Subscription == 0 {
 		return fmt.Errorf("subscription should not be zero")
 	}
-	if s.Node == nil || s.Node.Empty() {
+	if _, err := hubtypes.NodeAddressFromBech32(s.Node); err != nil {
 		return fmt.Errorf("node should not be nil or empty")
 	}
-	if s.Address == nil || s.Address.Empty() {
+	if _, err := sdk.AccAddressFromBech32(s.Address); err != nil {
 		return fmt.Errorf("address should not be nil or empty")
 	}
 	if s.Duration <= 0 {
 		return fmt.Errorf("duration should be positive")
 	}
-	if s.Bandwidth.IsValid() {
+	if s.Bandwidth.IsAllPositive() {
 		return fmt.Errorf("bandwidth should be valid")
 	}
-	if !s.Status.Equal(hub.StatusActive) && !s.Status.Equal(hub.StatusInactive) {
+	if !s.Status.Equal(hubtypes.StatusActive) && !s.Status.Equal(hubtypes.StatusInactive) {
 		return fmt.Errorf("status should be either active or inactive")
 	}
 	if s.StatusAt.IsZero() {
@@ -63,4 +63,6 @@ func (s Session) Validate() error {
 	return nil
 }
 
-type Sessions []Session
+type (
+	Sessions []Session
+)

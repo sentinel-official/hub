@@ -17,7 +17,7 @@ func NewPaginatedIterator(items ...sdk.Iterator) *PaginatedIterator {
 	}
 }
 
-func (p *PaginatedIterator) Skip(skip int) {
+func (p *PaginatedIterator) Skip(skip int64) {
 	if skip <= 0 {
 		return
 	}
@@ -34,9 +34,9 @@ func (p *PaginatedIterator) Skip(skip int) {
 	}
 }
 
-func (p PaginatedIterator) Limit(limit int, iterFunc func(iter sdk.Iterator)) {
+func (p *PaginatedIterator) Limit(limit int64, iterFunc func(iter sdk.Iterator)) {
 	if limit <= 0 {
-		limit = math.MaxInt64
+		limit = int64(math.MaxInt64)
 	}
 
 	for index, iter := range p.items {
@@ -51,7 +51,7 @@ func (p PaginatedIterator) Limit(limit int, iterFunc func(iter sdk.Iterator)) {
 	}
 }
 
-func (p PaginatedIterator) Close() {
+func (p *PaginatedIterator) Close() {
 	for _, iter := range p.items {
 		iter.Close()
 	}

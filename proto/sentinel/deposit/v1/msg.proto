@@ -1,0 +1,4 @@
+syntax = "proto3";
+package sentinel.deposit.v1;
+
+option go_package = "github.com/sentinel-official/hub/x/deposit/types";

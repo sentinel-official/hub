@@ -3,30 +3,30 @@ package types
 import (
 	"fmt"
 
-	deposit "github.com/sentinel-official/hub/x/deposit/types"
-	node "github.com/sentinel-official/hub/x/node/types"
-	plan "github.com/sentinel-official/hub/x/plan/types"
-	provider "github.com/sentinel-official/hub/x/provider/types"
-	session "github.com/sentinel-official/hub/x/session/types"
-	subscription "github.com/sentinel-official/hub/x/subscription/types"
+	deposittypes "github.com/sentinel-official/hub/x/deposit/types"
+	nodetypes "github.com/sentinel-official/hub/x/node/types"
+	plantypes "github.com/sentinel-official/hub/x/plan/types"
+	providertypes "github.com/sentinel-official/hub/x/provider/types"
+	sessiontypes "github.com/sentinel-official/hub/x/session/types"
+	subscriptiontypes "github.com/sentinel-official/hub/x/subscription/types"
 )
 
 func init() {
-	node.ParamsSubspace = fmt.Sprintf("%s/%s", ModuleName, node.ModuleName)
-	subscription.ParamsSubspace = fmt.Sprintf("%s/%s", ModuleName, subscription.ModuleName)
-	session.ParamsSubspace = fmt.Sprintf("%s/%s", ModuleName, session.ModuleName)
+	nodetypes.ParamsSubspace = fmt.Sprintf("%s/%s", ModuleName, nodetypes.ModuleName)
+	subscriptiontypes.ParamsSubspace = fmt.Sprintf("%s/%s", ModuleName, subscriptiontypes.ModuleName)
+	sessiontypes.ParamsSubspace = fmt.Sprintf("%s/%s", ModuleName, sessiontypes.ModuleName)
 
-	deposit.RouterKey = ModuleName
-	provider.RouterKey = ModuleName
-	node.RouterKey = ModuleName
-	plan.RouterKey = ModuleName
-	subscription.RouterKey = ModuleName
-	session.RouterKey = ModuleName
+	deposittypes.RouterKey = ModuleName
+	providertypes.RouterKey = ModuleName
+	nodetypes.RouterKey = ModuleName
+	plantypes.RouterKey = ModuleName
+	subscriptiontypes.RouterKey = ModuleName
+	sessiontypes.RouterKey = ModuleName
 
-	deposit.StoreKey = ModuleName
-	provider.StoreKey = ModuleName
-	node.StoreKey = ModuleName
-	plan.StoreKey = ModuleName
-	subscription.StoreKey = ModuleName
-	session.StoreKey = ModuleName
+	deposittypes.StoreKey = ModuleName
+	providertypes.StoreKey = ModuleName
+	nodetypes.StoreKey = ModuleName
+	plantypes.StoreKey = ModuleName
+	subscriptiontypes.StoreKey = ModuleName
+	sessiontypes.StoreKey = ModuleName
 }

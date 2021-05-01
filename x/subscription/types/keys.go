@@ -6,7 +6,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	hub "github.com/sentinel-official/hub/types"
+	hubtypes "github.com/sentinel-official/hub/types"
 )
 
 const (
@@ -21,10 +21,7 @@ var (
 )
 
 var (
-	EventModuleName = sdk.NewEvent(
-		sdk.EventTypeMessage,
-		sdk.NewAttribute(sdk.AttributeKeyModule, ModuleName),
-	)
+	EventModuleName = EventModule{Name: ModuleName}
 )
 
 var (
@@ -42,11 +39,11 @@ func SubscriptionKey(id uint64) []byte {
 	return append(SubscriptionKeyPrefix, sdk.Uint64ToBigEndian(id)...)
 }
 
-func GetSubscriptionForNodeKeyPrefix(address hub.NodeAddress) []byte {
+func GetSubscriptionForNodeKeyPrefix(address hubtypes.NodeAddress) []byte {
 	return append(SubscriptionForNodeKeyPrefix, address.Bytes()...)
 }
 
-func SubscriptionForNodeKey(address hub.NodeAddress, id uint64) []byte {
+func SubscriptionForNodeKey(address hubtypes.NodeAddress, id uint64) []byte {
 	return append(GetSubscriptionForNodeKeyPrefix(address), sdk.Uint64ToBigEndian(id)...)
 }
 

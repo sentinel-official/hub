@@ -1,0 +1,23 @@
+syntax = "proto3";
+package sentinel.swap.v1;
+
+option go_package = "github.com/sentinel-official/hub/x/swap/types";
+
+import "gogoproto/gogo.proto";
+
+option (gogoproto.equal_all)           = false;
+option (gogoproto.goproto_getters_all) = false;
+
+message MsgSwapRequest {
+  string from     = 1;
+  bytes tx_hash   = 2;
+  string receiver = 3;
+  string amount   = 4 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable)   = false
+  ];
+}
+
+message MsgSwapResponse {}
+
+service MsgService { rpc MsgSwap(MsgSwapRequest) returns (MsgSwapResponse); }

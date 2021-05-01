@@ -2,15 +2,15 @@ package expected
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/x/auth/exported"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 
-	hub "github.com/sentinel-official/hub/types"
-	node "github.com/sentinel-official/hub/x/node/types"
-	plan "github.com/sentinel-official/hub/x/plan/types"
+	hubtypes "github.com/sentinel-official/hub/types"
+	nodetypes "github.com/sentinel-official/hub/x/node/types"
+	plantypes "github.com/sentinel-official/hub/x/plan/types"
 )
 
 type AccountKeeper interface {
-	GetAccount(ctx sdk.Context, address sdk.AccAddress) exported.Account
+	GetAccount(ctx sdk.Context, address sdk.AccAddress) authtypes.AccountI
 }
 
 type BankKeeper interface {
@@ -23,13 +23,13 @@ type DepositKeeper interface {
 }
 
 type NodeKeeper interface {
-	GetNode(ctx sdk.Context, address hub.NodeAddress) (node.Node, bool)
-	GetNodes(ctx sdk.Context, skip, limit int) node.Nodes
-	GetActiveNodes(ctx sdk.Context, skip, limit int) node.Nodes
+	GetNode(ctx sdk.Context, address hubtypes.NodeAddress) (nodetypes.Node, bool)
+	GetNodes(ctx sdk.Context, skip, limit int64) nodetypes.Nodes
+	GetActiveNodes(ctx sdk.Context, skip, limit int64) nodetypes.Nodes
 }
 
 type PlanKeeper interface {
-	GetPlan(ctx sdk.Context, id uint64) (plan.Plan, bool)
-	GetPlans(ctx sdk.Context, skip, limit int) plan.Plans
-	GetActivePlans(ctx sdk.Context, skip, limit int) plan.Plans
+	GetPlan(ctx sdk.Context, id uint64) (plantypes.Plan, bool)
+	GetPlans(ctx sdk.Context, skip, limit int64) plantypes.Plans
+	GetActivePlans(ctx sdk.Context, skip, limit int64) plantypes.Plans
 }

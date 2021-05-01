@@ -1,25 +1,33 @@
 package types
 
 import (
-	"fmt"
-
 	"github.com/cosmos/cosmos-sdk/codec"
+	"github.com/cosmos/cosmos-sdk/codec/types"
+	crypto "github.com/cosmos/cosmos-sdk/crypto/codec"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/msgservice"
 )
 
 var (
-	ModuleCdc *codec.Codec
+	amino     = codec.NewLegacyAmino()
+	ModuleCdc = codec.NewAminoCodec(amino)
 )
 
 func init() {
-	ModuleCdc = codec.New()
-	codec.RegisterCrypto(ModuleCdc)
-	RegisterCodec(ModuleCdc)
-	ModuleCdc.Seal()
+	RegisterLegacyAminoCodec(amino)
+	crypto.RegisterCrypto(amino)
+	amino.Seal()
 }
 
-func RegisterCodec(cdc *codec.Codec) {
-	cdc.RegisterConcrete(MsgAdd{}, fmt.Sprintf("x/%s/MsgAdd", ModuleName), nil)
-	cdc.RegisterConcrete(MsgSetStatus{}, fmt.Sprintf("x/%s/MsgSetStatus", ModuleName), nil)
-	cdc.RegisterConcrete(MsgAddNode{}, fmt.Sprintf("x/%s/MsgAddNode", ModuleName), nil)
-	cdc.RegisterConcrete(MsgRemoveNode{}, fmt.Sprintf("x/%s/MsgRemoveNode", ModuleName), nil)
+func RegisterLegacyAminoCodec(_ *codec.LegacyAmino) {}
+
+func RegisterInterfaces(registry types.InterfaceRegistry) {
+	registry.RegisterImplementations((*sdk.Msg)(nil),
+		&MsgAddRequest{},
+		&MsgSetStatusRequest{},
+		&MsgAddNodeRequest{},
+		&MsgRemoveNodeRequest{},
+	)
+
+	msgservice.RegisterMsgServiceDesc(registry, &_MsgService_serviceDesc)
 }

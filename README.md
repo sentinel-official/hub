@@ -7,22 +7,18 @@
 
 ## Installation
 
-Requires [Go 1.14+](https://golang.org/dl/)
+Requires [Go 1.16+](https://golang.org/dl/)
 
 ### Linux
 
-`$ mkdir -p ${GOPATH}/src/github.com/sentinel-official/`
-
-`$ cd ${GOPATH}/src/github.com/sentinel-official/`
-
-`$ git clone https://github.com/sentinel-official/hub.git`
-
-`$ cd ${GOPATH}/src/github.com/sentinel-official/hub`
-
-`$ make install`
+```shell
+mkdir -p ${GOPATH}/src/github.com/sentinel-official && \
+cd ${GOPATH}/src/github.com/sentinel-official/ && \
+git clone https://github.com/sentinel-official/hub.git && \
+cd ${GOPATH}/src/github.com/sentinel-official/hub/ && \
+make install
+```
 
 **Note:** To install a specific version or commit use `git checkout` command
 
-## Additional Documentation
-
-For the additional documentation on the Sentinel Hub, please visit - https://docs.sentinel.co
+For more documentation please visit [docs](https://github.com/sentinel-official/docs)

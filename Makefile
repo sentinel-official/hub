@@ -1,59 +1,80 @@
-include contrib/tools/Makefile
-
+PACKAGE_NAME := github.com/sentinel-official/hub
+GOLANG_VERSION := 1.16.3
+GOLANG_CROSS_VERSION := v$(GOLANG_VERSION)
 PACKAGES := $(shell go list ./...)
 VERSION := $(shell echo $(shell git describe --tags) | sed 's/^v//')
 COMMIT := $(shell git log -1 --format='%H')
+TM_CORE_SEMVER := $(shell go list -m github.com/tendermint/tendermint | sed 's:.* ::')
 
-BUILD_TAGS := netgo,ledger
-BUILD_TAGS := $(strip ${BUILD_TAGS})
-
+BUILD_TAGS := $(strip netgo,ledger)
 LD_FLAGS := -s -w \
-    -X github.com/cosmos/cosmos-sdk/version.Name=sentinelhub \
-    -X github.com/cosmos/cosmos-sdk/version.ServerName=sentinelhubd \
-    -X github.com/cosmos/cosmos-sdk/version.ClientName=sentinelhubcli \
+    -X github.com/cosmos/cosmos-sdk/version.Name=sentinel \
+    -X github.com/cosmos/cosmos-sdk/version.AppName=sentinelhub \
     -X github.com/cosmos/cosmos-sdk/version.Version=${VERSION} \
     -X github.com/cosmos/cosmos-sdk/version.Commit=${COMMIT} \
-    -X github.com/cosmos/cosmos-sdk/version.BuildTags=${BUILD_TAGS}
-BUILD_FLAGS := -tags "${BUILD_TAGS}" -ldflags "${LD_FLAGS}"
-
-all: install test benchmark
-
-build: mod_verify
-ifeq (${OS},Windows_NT)
-	go build -mod=readonly ${BUILD_FLAGS} -o bin/sentinelhubd.exe ./cmd/sentinelhubd
-	go build -mod=readonly ${BUILD_FLAGS} -o bin/sentinelhubcli.exe ./cmd/sentinelhubcli
-else
-	go build -mod=readonly ${BUILD_FLAGS} -o bin/sentinelhubd ./cmd/sentinelhubd
-	go build -mod=readonly ${BUILD_FLAGS} -o bin/sentinelhubcli ./cmd/sentinelhubcli
-endif
-
-install: mod_verify
-	go install -mod=readonly ${BUILD_FLAGS} ./cmd/sentinelhubd
-	go install -mod=readonly ${BUILD_FLAGS} ./cmd/sentinelhubcli
-
-test:
-	@go test -mod=readonly -v -cover ${PACKAGES}
+    -X github.com/cosmos/cosmos-sdk/version.BuildTags=${BUILD_TAGS} \
+    -X github.com/tendermint/tendermint/version.TMCoreSemVer=$(TM_CORE_SEMVER)
+BUILD_FLAGS := -tags="${BUILD_TAGS}"
 
 benchmark:
 	@go test -mod=readonly -v -bench ${PACKAGES}
+.PHONY: benchmark
 
-simulate_short:
-	@go test -mod=readonly -v -timeout=1h -run TestFullAppSimulation \
-		-Enabled=true -Seed=4 -NumBlocks=50 -BlockSize=50 -Commit=true
+install: mod-vendor
+	go install -mod=readonly ${BUILD_FLAGS} -ldflags "${LD_FLAGS}" ./cmd/sentinelhub
+.PHONY: install
 
-simulate_long:
-	@go test -mod=readonly -v -timeout=1h -run TestFullAppSimulation \
-		-Enabled=true -Seed=4 -NumBlocks=2500 -BlockSize=50 -Commit=true
+go-lint:
+	@golangci-lint run --fix
+.PHONY: go-lint
 
-simulate_multi_short:
-	@runsim -Jobs=4 -SimAppPkg=. 5 1 TestFullAppSimulation
+mod-vendor: tools
+	@go mod vendor
+	@modvendor -copy="**/*.proto" -include=github.com/cosmos/cosmos-sdk/proto,github.com/cosmos/cosmos-sdk/third_party/proto
+.PHONY: mod-vendor
 
-simulate_multi_long:
-	@runsim -Jobs=4 -SimAppPkg=. 250 1 TestFullAppSimulation
+proto-gen:
+	@scripts/proto-gen.sh
+.PHONY: proto-gen
 
-mod_verify:
-	@echo "Ensure dependencies have not been modified"
-	@go mod verify
+proto-lint:
+	@find proto -name *.proto -exec clang-format-12 -i {} \;
+.PHONY: proto-lint
 
-.PHONY: all build install test benchmark \
-simulate_short simulate_multi mod_verify
+test:
+	@go test -mod=readonly -v -cover ${PACKAGES}
+.PHONY: test
+
+tools:
+	@go install github.com/bufbuild/buf/cmd/buf@v0.37.0
+	@go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.27.0
+	@go install github.com/goware/modvendor@v0.3.0
+	@go install github.com/grpc-ecosystem/grpc-gateway/protoc-gen-grpc-gateway@v1.16.0
+.PHONY: tools
+
+release-dry-run: mod-vendor
+	docker run --rm --privileged \
+	--env CGO_ENABLED=1 \
+	--env BUILD_FLAGS=${BUILD_FLAGS} \
+	--env LD_FLAGS="${LD_FLAGS}" \
+	--volume `pwd`:/go/src/$(PACKAGE_NAME) \
+	--workdir /go/src/$(PACKAGE_NAME) \
+	troian/golang-cross:${GOLANG_CROSS_VERSION} \
+	--rm-dist --snapshot
+.PHONY: release-dry-run
+
+release: mod-vendor
+	@if [ -z "${GITHUB_TOKEN}" ]; then \
+		echo "\033[91mGITHUB_TOKEN is required for release\033[0m";\
+		exit 1;\
+	fi
+	docker run --rm --privileged \
+	--env CGO_ENABLED=1 \
+	--env BUILD_FLAGS=${BUILD_FLAGS} \
+	--env LD_FLAGS="${LD_FLAGS}" \
+	--env GITHUB_TOKEN=${GITHUB_TOKEN} \
+	--volume `pwd`:/go/src/$(PACKAGE_NAME) \
+	--workdir /go/src/$(PACKAGE_NAME) \
+	troian/golang-cross:${GOLANG_CROSS_VERSION} \
+	--rm-dist
+.PHONY: release

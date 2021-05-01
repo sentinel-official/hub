@@ -13,13 +13,13 @@ import (
 )
 
 type Keeper struct {
-	cdc      *codec.Codec
+	cdc      codec.BinaryMarshaler
 	key      sdk.StoreKey
 	provider expected.ProviderKeeper
 	node     expected.NodeKeeper
 }
 
-func NewKeeper(cdc *codec.Codec, key sdk.StoreKey) Keeper {
+func NewKeeper(cdc codec.BinaryMarshaler, key sdk.StoreKey) Keeper {
 	return Keeper{
 		cdc: cdc,
 		key: key,
@@ -34,11 +34,11 @@ func (k *Keeper) WithNodeKeeper(keeper expected.NodeKeeper) {
 	k.node = keeper
 }
 
-func (k Keeper) Logger(ctx sdk.Context) log.Logger {
-	return ctx.Logger().With("module", fmt.Sprintf("x/%s", types.ModuleName))
+func (k *Keeper) Logger(ctx sdk.Context) log.Logger {
+	return ctx.Logger().With("module", "x/"+types.ModuleName)
 }
 
-func (k Keeper) Store(ctx sdk.Context) sdk.KVStore {
+func (k *Keeper) Store(ctx sdk.Context) sdk.KVStore {
 	child := fmt.Sprintf("%s/", types.ModuleName)
 	return prefix.NewStore(ctx.KVStore(k.key), []byte(child))
 }

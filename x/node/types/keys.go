@@ -5,7 +5,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	hub "github.com/sentinel-official/hub/types"
+	hubtypes "github.com/sentinel-official/hub/types"
 )
 
 const (
@@ -20,10 +20,7 @@ var (
 )
 
 var (
-	EventModuleName = sdk.NewEvent(
-		sdk.EventTypeMessage,
-		sdk.NewAttribute(sdk.AttributeKeyModule, ModuleName),
-	)
+	EventModuleName = EventModule{Name: ModuleName}
 )
 
 var (
@@ -36,31 +33,31 @@ var (
 	InactiveNodeAtKeyPrefix          = []byte{0x41}
 )
 
-func NodeKey(address hub.NodeAddress) []byte {
+func NodeKey(address hubtypes.NodeAddress) []byte {
 	return append(NodeKeyPrefix, address.Bytes()...)
 }
 
-func ActiveNodeKey(address hub.NodeAddress) []byte {
+func ActiveNodeKey(address hubtypes.NodeAddress) []byte {
 	return append(ActiveNodeKeyPrefix, address.Bytes()...)
 }
 
-func InactiveNodeKey(address hub.NodeAddress) []byte {
+func InactiveNodeKey(address hubtypes.NodeAddress) []byte {
 	return append(InactiveNodeKeyPrefix, address.Bytes()...)
 }
 
-func GetActiveNodeForProviderKeyPrefix(address hub.ProvAddress) []byte {
+func GetActiveNodeForProviderKeyPrefix(address hubtypes.ProvAddress) []byte {
 	return append(ActiveNodeForProviderKeyPrefix, address.Bytes()...)
 }
 
-func ActiveNodeForProviderKey(provider hub.ProvAddress, address hub.NodeAddress) []byte {
+func ActiveNodeForProviderKey(provider hubtypes.ProvAddress, address hubtypes.NodeAddress) []byte {
 	return append(GetActiveNodeForProviderKeyPrefix(provider), address.Bytes()...)
 }
 
-func GetInactiveNodeForProviderKeyPrefix(address hub.ProvAddress) []byte {
+func GetInactiveNodeForProviderKeyPrefix(address hubtypes.ProvAddress) []byte {
 	return append(InactiveNodeForProviderKeyPrefix, address.Bytes()...)
 }
 
-func InactiveNodeForProviderKey(provider hub.ProvAddress, address hub.NodeAddress) []byte {
+func InactiveNodeForProviderKey(provider hubtypes.ProvAddress, address hubtypes.NodeAddress) []byte {
 	return append(GetInactiveNodeForProviderKeyPrefix(provider), address.Bytes()...)
 }
 
@@ -68,7 +65,7 @@ func GetActiveNodeAtKeyPrefix(at time.Time) []byte {
 	return append(ActiveNodeAtKeyPrefix, sdk.FormatTimeBytes(at)...)
 }
 
-func ActiveNodeAtKey(at time.Time, address hub.NodeAddress) []byte {
+func ActiveNodeAtKey(at time.Time, address hubtypes.NodeAddress) []byte {
 	return append(GetActiveNodeAtKeyPrefix(at), address.Bytes()...)
 }
 
@@ -76,18 +73,18 @@ func GetInactiveNodeAtKeyPrefix(at time.Time) []byte {
 	return append(InactiveNodeAtKeyPrefix, sdk.FormatTimeBytes(at)...)
 }
 
-func InactiveNodeAtKey(at time.Time, address hub.NodeAddress) []byte {
+func InactiveNodeAtKey(at time.Time, address hubtypes.NodeAddress) []byte {
 	return append(GetInactiveNodeAtKeyPrefix(at), address.Bytes()...)
 }
 
-func AddressFromStatusNodeKey(key []byte) hub.NodeAddress {
+func AddressFromStatusNodeKey(key []byte) hubtypes.NodeAddress {
 	return key[1:]
 }
 
-func AddressFromStatusNodeForProviderKey(key []byte) hub.NodeAddress {
+func AddressFromStatusNodeForProviderKey(key []byte) hubtypes.NodeAddress {
 	return key[1+sdk.AddrLen:]
 }
 
-func AddressFromStatusNodeAtKey(key []byte) hub.NodeAddress {
+func AddressFromStatusNodeAtKey(key []byte) hubtypes.NodeAddress {
 	return key[1+29:]
 }

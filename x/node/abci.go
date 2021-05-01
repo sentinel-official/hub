@@ -4,7 +4,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	abci "github.com/tendermint/tendermint/abci/types"
 
-	hub "github.com/sentinel-official/hub/types"
+	hubtypes "github.com/sentinel-official/hub/types"
 	"github.com/sentinel-official/hub/x/node/keeper"
 	"github.com/sentinel-official/hub/x/node/types"
 )
@@ -18,17 +18,25 @@ func EndBlock(ctx sdk.Context, k keeper.Keeper) []abci.ValidatorUpdate {
 	k.IterateInactiveNodesAt(ctx, end, func(_ int, item types.Node) bool {
 		log.Info("Inactive node", "address", item.Address, "provider", item.Provider)
 
-		k.DeleteActiveNode(ctx, item.Address)
-		k.SetInactiveNode(ctx, item.Address)
+		var (
+			itemAddress = item.GetAddress()
+		)
 
-		if item.Provider != nil {
-			k.DeleteActiveNodeForProvider(ctx, item.Provider, item.Address)
-			k.SetInactiveNodeForProvider(ctx, item.Provider, item.Address)
+		k.DeleteActiveNode(ctx, itemAddress)
+		k.SetInactiveNode(ctx, itemAddress)
+
+		if item.Provider != "" {
+			var (
+				itemProvider = item.GetProvider()
+			)
+
+			k.DeleteActiveNodeForProvider(ctx, itemProvider, itemAddress)
+			k.SetInactiveNodeForProvider(ctx, itemProvider, itemAddress)
 		}
 
-		k.DeleteInactiveNodeAt(ctx, item.StatusAt, item.Address)
+		k.DeleteInactiveNodeAt(ctx, item.StatusAt, itemAddress)
 
-		item.Status = hub.StatusInactive
+		item.Status = hubtypes.StatusInactive
 		item.StatusAt = ctx.BlockTime()
 		k.SetNode(ctx, item)
 

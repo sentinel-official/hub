@@ -1,51 +1,62 @@
 package cli
 
 import (
-	"fmt"
+	"context"
 	"strconv"
 
-	"github.com/cosmos/cosmos-sdk/client/context"
-	"github.com/cosmos/cosmos-sdk/codec"
+	"github.com/cosmos/cosmos-sdk/client"
+	"github.com/cosmos/cosmos-sdk/client/flags"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/spf13/cobra"
 
-	hub "github.com/sentinel-official/hub/types"
-	"github.com/sentinel-official/hub/x/session/client/common"
+	hubtypes "github.com/sentinel-official/hub/types"
 	"github.com/sentinel-official/hub/x/session/types"
 )
 
-func querySession(cdc *codec.Codec) *cobra.Command {
+func querySession() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "session",
 		Short: "Query a session",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			ctx := context.NewCLIContext().WithCodec(cdc)
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
 
 			id, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
 
-			session, err := common.QuerySession(ctx, id)
+			var (
+				qc = types.NewQueryServiceClient(ctx)
+			)
+
+			res, err := qc.QuerySession(context.Background(),
+				types.NewQuerySessionRequest(id))
 			if err != nil {
 				return err
 			}
 
-			fmt.Println(session)
-			return nil
+			return ctx.PrintProto(res)
 		},
 	}
+
+	flags.AddQueryFlagsToCmd(cmd)
 
 	return cmd
 }
 
-func querySessions(cdc *codec.Codec) *cobra.Command {
+func querySessions() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "sessions",
 		Short: "Query sessions",
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
-			ctx := context.NewCLIContext().WithCodec(cdc)
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
 
 			subscription, err := cmd.Flags().GetUint64(flagSubscription)
 			if err != nil {
@@ -62,40 +73,44 @@ func querySessions(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			skip, err := cmd.Flags().GetInt(flagSkip)
-			if err != nil {
-				return err
-			}
-
-			limit, err := cmd.Flags().GetInt(flagLimit)
+			pagination, err := client.ReadPageRequest(cmd.Flags())
 			if err != nil {
 				return err
 			}
 
 			var (
-				address  sdk.AccAddress
-				node     hub.NodeAddress
-				sessions types.Sessions
+				qc = types.NewQueryServiceClient(ctx)
 			)
 
 			if subscription > 0 {
-				sessions, err = common.QuerySessionsForSubscription(ctx, subscription, skip, limit)
-			} else if len(bech32Node) > 0 {
-				node, err = hub.NodeAddressFromBech32(bech32Node)
+				res, err := qc.QuerySessionsForSubscription(context.Background(),
+					types.NewQuerySessionsForSubscriptionRequest(subscription, pagination))
 				if err != nil {
 					return err
 				}
 
-				sessions, err = common.QuerySessionsForNode(ctx, node, skip, limit)
+				return ctx.PrintProto(res)
+			} else if len(bech32Node) > 0 {
+				address, err := hubtypes.NodeAddressFromBech32(bech32Node)
+				if err != nil {
+					return err
+				}
+
+				res, err := qc.QuerySessionsForNode(context.Background(), types.NewQuerySessionsForNodeRequest(address, pagination))
+				if err != nil {
+					return err
+				}
+
+				return ctx.PrintProto(res)
 			} else if len(bech32Address) > 0 {
-				address, err = sdk.AccAddressFromBech32(bech32Address)
+				address, err := sdk.AccAddressFromBech32(bech32Address)
 				if err != nil {
 					return err
 				}
 
 				var (
 					active bool
-					status hub.Status
+					status hubtypes.Status
 				)
 
 				active, err = cmd.Flags().GetBool(flagActive)
@@ -104,32 +119,34 @@ func querySessions(cdc *codec.Codec) *cobra.Command {
 				}
 
 				if active {
-					status = hub.StatusActive
+					status = hubtypes.StatusActive
 				}
 
-				sessions, err = common.QuerySessionsForAddress(ctx, address, status, skip, limit)
+				res, err := qc.QuerySessionsForAddress(context.Background(),
+					types.NewQuerySessionsForAddressRequest(address, status, pagination))
+				if err != nil {
+					return err
+				}
+
+				return ctx.PrintProto(res)
 			} else {
-				sessions, err = common.QuerySessions(ctx, skip, limit)
-			}
+				res, err := qc.QuerySessions(context.Background(),
+					types.NewQuerySessionsRequest(pagination))
+				if err != nil {
+					return err
+				}
 
-			if err != nil {
-				return err
+				return ctx.PrintProto(res)
 			}
-
-			for _, session := range sessions {
-				fmt.Printf("%s\n\n", session)
-			}
-
-			return nil
 		},
 	}
 
+	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, "sessions")
 	cmd.Flags().String(flagAddress, "", "account address")
 	cmd.Flags().Uint64(flagSubscription, 0, "subscription ID")
 	cmd.Flags().String(flagNodeAddress, "", "node address")
 	cmd.Flags().Bool(flagActive, false, "active sessions only")
-	cmd.Flags().Int(flagSkip, 0, "skip")
-	cmd.Flags().Int(flagLimit, 25, "limit")
 
 	return cmd
 }

@@ -1,18 +1,18 @@
 package rest
 
 import (
-	"github.com/cosmos/cosmos-sdk/client/context"
+	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/gorilla/mux"
 )
 
-func registerQueryRoutes(ctx context.CLIContext, router *mux.Router) {
+func registerQueryRoutes(ctx client.Context, router *mux.Router) {
 	router.HandleFunc("/plans", queryPlans(ctx)).
 		Methods("GET")
 	router.HandleFunc("/plans/{id}", queryPlan(ctx)).
 		Methods("GET")
 }
 
-func registerTxRoutes(ctx context.CLIContext, router *mux.Router) {
+func registerTxRoutes(ctx client.Context, router *mux.Router) {
 	router.HandleFunc("/plans", txAdd(ctx)).
 		Methods("POST")
 	router.HandleFunc("/plans/{id}/status", txSetStatus(ctx)).
@@ -23,7 +23,7 @@ func registerTxRoutes(ctx context.CLIContext, router *mux.Router) {
 		Methods("DELETE")
 }
 
-func RegisterRoutes(ctx context.CLIContext, router *mux.Router) {
+func RegisterRoutes(ctx client.Context, router *mux.Router) {
 	registerQueryRoutes(ctx, router)
 	registerTxRoutes(ctx, router)
 }

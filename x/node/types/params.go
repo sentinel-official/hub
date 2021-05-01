@@ -2,11 +2,10 @@ package types
 
 import (
 	"fmt"
-	"strings"
 	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/x/params"
+	params "github.com/cosmos/cosmos-sdk/x/params/types"
 )
 
 const (
@@ -26,19 +25,7 @@ var (
 	_ params.ParamSet = (*Params)(nil)
 )
 
-type Params struct {
-	Deposit          sdk.Coin      `json:"deposit"`
-	InactiveDuration time.Duration `json:"inactive_duration"`
-}
-
-func (p Params) String() string {
-	return fmt.Sprintf(strings.TrimSpace(`
-Deposit:           %s
-Inactive duration: %s
-`), p.Deposit, p.InactiveDuration)
-}
-
-func (p Params) Validate() error {
+func (p *Params) Validate() error {
 	if !p.Deposit.IsValid() {
 		return fmt.Errorf("deposit should be valid")
 	}
@@ -54,14 +41,32 @@ func (p *Params) ParamSetPairs() params.ParamSetPairs {
 		{
 			Key:   KeyDeposit,
 			Value: &p.Deposit,
-			ValidatorFn: func(_ interface{}) error {
+			ValidatorFn: func(v interface{}) error {
+				value, ok := v.(sdk.Coin)
+				if !ok {
+					return fmt.Errorf("invalid parameter type %T", v)
+				}
+
+				if !value.IsValid() {
+					return fmt.Errorf("deposit value should be valid")
+				}
+
 				return nil
 			},
 		},
 		{
 			Key:   KeyInactiveDuration,
 			Value: &p.InactiveDuration,
-			ValidatorFn: func(_ interface{}) error {
+			ValidatorFn: func(v interface{}) error {
+				value, ok := v.(time.Duration)
+				if !ok {
+					return fmt.Errorf("invalid parameter type %T", v)
+				}
+
+				if value <= 0 {
+					return fmt.Errorf("inactive duration value should be positive")
+				}
+
 				return nil
 			},
 		},

@@ -2,10 +2,9 @@ package types
 
 import (
 	"fmt"
-	"strings"
 	"time"
 
-	"github.com/cosmos/cosmos-sdk/x/params"
+	params "github.com/cosmos/cosmos-sdk/x/params/types"
 )
 
 const (
@@ -16,19 +15,11 @@ var (
 	KeyInactiveDuration = []byte("InactiveDuration")
 )
 
-var _ params.ParamSet = (*Params)(nil)
+var (
+	_ params.ParamSet = (*Params)(nil)
+)
 
-type Params struct {
-	InactiveDuration time.Duration `json:"inactive_duration"`
-}
-
-func (p Params) String() string {
-	return fmt.Sprintf(strings.TrimSpace(`
-Inactive duration: %s
-`), p.InactiveDuration)
-}
-
-func (p Params) Validate() error {
+func (p *Params) Validate() error {
 	if p.InactiveDuration <= 0 {
 		return fmt.Errorf("inactive_duration should be positive")
 	}
@@ -41,7 +32,16 @@ func (p *Params) ParamSetPairs() params.ParamSetPairs {
 		{
 			Key:   KeyInactiveDuration,
 			Value: &p.InactiveDuration,
-			ValidatorFn: func(_ interface{}) error {
+			ValidatorFn: func(v interface{}) error {
+				value, ok := v.(time.Duration)
+				if !ok {
+					return fmt.Errorf("invalid parameter type %T", v)
+				}
+
+				if value <= 0 {
+					return fmt.Errorf("inactive duration value should be positive")
+				}
+
 				return nil
 			},
 		},

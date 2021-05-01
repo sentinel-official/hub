@@ -1,50 +1,41 @@
 package types
 
 import (
-	"encoding/json"
 	"fmt"
 	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/errors"
 
-	hub "github.com/sentinel-official/hub/types"
+	hubtypes "github.com/sentinel-official/hub/types"
 )
 
 var (
-	_ sdk.Msg = (*MsgAdd)(nil)
-	_ sdk.Msg = (*MsgSetStatus)(nil)
-	_ sdk.Msg = (*MsgAddNode)(nil)
-	_ sdk.Msg = (*MsgRemoveNode)(nil)
+	_ sdk.Msg = (*MsgAddRequest)(nil)
+	_ sdk.Msg = (*MsgSetStatusRequest)(nil)
+	_ sdk.Msg = (*MsgAddNodeRequest)(nil)
+	_ sdk.Msg = (*MsgRemoveNodeRequest)(nil)
 )
 
-// MsgAdd is for adding a subscription plan.
-type MsgAdd struct {
-	From     hub.ProvAddress `json:"from"`
-	Price    sdk.Coins       `json:"price"`
-	Validity time.Duration   `json:"validity"`
-	Bytes    sdk.Int         `json:"bytes"`
-}
-
-func NewMsgAdd(from hub.ProvAddress, price sdk.Coins, validity time.Duration, bytes sdk.Int) MsgAdd {
-	return MsgAdd{
-		From:     from,
+func NewMsgAddRequest(from hubtypes.ProvAddress, price sdk.Coins, validity time.Duration, bytes sdk.Int) *MsgAddRequest {
+	return &MsgAddRequest{
+		From:     from.String(),
 		Price:    price,
 		Validity: validity,
 		Bytes:    bytes,
 	}
 }
 
-func (m MsgAdd) Route() string {
+func (m *MsgAddRequest) Route() string {
 	return RouterKey
 }
 
-func (m MsgAdd) Type() string {
+func (m *MsgAddRequest) Type() string {
 	return fmt.Sprintf("%s:add", ModuleName)
 }
 
-func (m MsgAdd) ValidateBasic() error {
-	if m.From == nil || m.From.Empty() {
+func (m *MsgAddRequest) ValidateBasic() error {
+	if _, err := hubtypes.ProvAddressFromBech32(m.From); err != nil {
 		return errors.Wrapf(ErrorInvalidField, "%s", "from")
 	}
 
@@ -66,177 +57,156 @@ func (m MsgAdd) ValidateBasic() error {
 	return nil
 }
 
-func (m MsgAdd) GetSignBytes() []byte {
-	bytes, err := json.Marshal(m)
+func (m *MsgAddRequest) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(m))
+}
+
+func (m *MsgAddRequest) GetSigners() []sdk.AccAddress {
+	from, err := hubtypes.ProvAddressFromBech32(m.From)
 	if err != nil {
 		panic(err)
 	}
 
-	return bytes
+	return []sdk.AccAddress{from.Bytes()}
 }
 
-func (m MsgAdd) GetSigners() []sdk.AccAddress {
-	return []sdk.AccAddress{m.From.Bytes()}
-}
-
-// MsgSetStatus is for updating the status of a plan.
-type MsgSetStatus struct {
-	From   hub.ProvAddress `json:"from"`
-	ID     uint64          `json:"id"`
-	Status hub.Status      `json:"status"`
-}
-
-func NewMsgSetStatus(from hub.ProvAddress, id uint64, status hub.Status) MsgSetStatus {
-	return MsgSetStatus{
-		From:   from,
-		ID:     id,
+func NewMsgSetStatusRequest(from hubtypes.ProvAddress, id uint64, status hubtypes.Status) *MsgSetStatusRequest {
+	return &MsgSetStatusRequest{
+		From:   from.String(),
+		Id:     id,
 		Status: status,
 	}
 }
 
-func (m MsgSetStatus) Route() string {
+func (m *MsgSetStatusRequest) Route() string {
 	return RouterKey
 }
 
-func (m MsgSetStatus) Type() string {
+func (m *MsgSetStatusRequest) Type() string {
 	return fmt.Sprintf("%s:set_status", ModuleName)
 }
 
-func (m MsgSetStatus) ValidateBasic() error {
-	if m.From == nil || m.From.Empty() {
+func (m *MsgSetStatusRequest) ValidateBasic() error {
+	if _, err := hubtypes.ProvAddressFromBech32(m.From); err != nil {
 		return errors.Wrapf(ErrorInvalidField, "%s", "from")
 	}
 
-	// ID shouldn't be zero
-	if m.ID == 0 {
+	// Id shouldn't be zero
+	if m.Id == 0 {
 		return errors.Wrapf(ErrorInvalidField, "%s", "id")
 	}
 
 	// Status should be either Active or Inactive
-	if !m.Status.Equal(hub.StatusActive) && !m.Status.Equal(hub.StatusInactive) {
+	if !m.Status.Equal(hubtypes.StatusActive) && !m.Status.Equal(hubtypes.StatusInactive) {
 		return errors.Wrapf(ErrorInvalidField, "%s", "status")
 	}
 
 	return nil
 }
 
-func (m MsgSetStatus) GetSignBytes() []byte {
-	bytes, err := json.Marshal(m)
+func (m *MsgSetStatusRequest) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(m))
+}
+
+func (m *MsgSetStatusRequest) GetSigners() []sdk.AccAddress {
+	from, err := hubtypes.ProvAddressFromBech32(m.From)
 	if err != nil {
 		panic(err)
 	}
 
-	return bytes
+	return []sdk.AccAddress{from.Bytes()}
 }
 
-func (m MsgSetStatus) GetSigners() []sdk.AccAddress {
-	return []sdk.AccAddress{m.From.Bytes()}
-}
-
-// MsgAddNode is for adding a node for a plan.
-type MsgAddNode struct {
-	From    hub.ProvAddress `json:"from"`
-	ID      uint64          `json:"id"`
-	Address hub.NodeAddress `json:"address"`
-}
-
-func NewMsgAddNode(from hub.ProvAddress, id uint64, address hub.NodeAddress) MsgAddNode {
-	return MsgAddNode{
-		From:    from,
-		ID:      id,
-		Address: address,
+func NewMsgAddNodeRequest(from hubtypes.ProvAddress, id uint64, address hubtypes.NodeAddress) *MsgAddNodeRequest {
+	return &MsgAddNodeRequest{
+		From:    from.String(),
+		Id:      id,
+		Address: address.String(),
 	}
 }
 
-func (m MsgAddNode) Route() string {
+func (m *MsgAddNodeRequest) Route() string {
 	return RouterKey
 }
 
-func (m MsgAddNode) Type() string {
+func (m *MsgAddNodeRequest) Type() string {
 	return fmt.Sprintf("%s:add_node", ModuleName)
 }
 
-func (m MsgAddNode) ValidateBasic() error {
-	if m.From == nil || m.From.Empty() {
+func (m *MsgAddNodeRequest) ValidateBasic() error {
+	if _, err := hubtypes.ProvAddressFromBech32(m.From); err != nil {
 		return errors.Wrapf(ErrorInvalidField, "%s", "from")
 	}
 
-	// ID shouldn't be zero
-	if m.ID == 0 {
+	// Id shouldn't be zero
+	if m.Id == 0 {
 		return errors.Wrapf(ErrorInvalidField, "%s", "id")
 	}
 
 	// Address shouldn't be nil or empty
-	if m.Address == nil || m.Address.Empty() {
+	if _, err := hubtypes.NodeAddressFromBech32(m.Address); err != nil {
 		return errors.Wrapf(ErrorInvalidField, "%s", "address")
 	}
 
 	return nil
 }
 
-func (m MsgAddNode) GetSignBytes() []byte {
-	bytes, err := json.Marshal(m)
+func (m *MsgAddNodeRequest) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(m))
+}
+
+func (m *MsgAddNodeRequest) GetSigners() []sdk.AccAddress {
+	from, err := hubtypes.ProvAddressFromBech32(m.From)
 	if err != nil {
 		panic(err)
 	}
 
-	return bytes
+	return []sdk.AccAddress{from.Bytes()}
 }
 
-func (m MsgAddNode) GetSigners() []sdk.AccAddress {
-	return []sdk.AccAddress{m.From.Bytes()}
-}
-
-// MsgRemoveNode is for removing a node for a plan.
-type MsgRemoveNode struct {
-	From    hub.ProvAddress `json:"from"`
-	ID      uint64          `json:"id"`
-	Address hub.NodeAddress `json:"address"`
-}
-
-func NewMsgRemoveNode(from hub.ProvAddress, id uint64, address hub.NodeAddress) MsgRemoveNode {
-	return MsgRemoveNode{
-		From:    from,
-		ID:      id,
-		Address: address,
+func NewMsgRemoveNodeRequest(from hubtypes.ProvAddress, id uint64, address hubtypes.NodeAddress) *MsgRemoveNodeRequest {
+	return &MsgRemoveNodeRequest{
+		From:    from.String(),
+		Id:      id,
+		Address: address.String(),
 	}
 }
 
-func (m MsgRemoveNode) Route() string {
+func (m *MsgRemoveNodeRequest) Route() string {
 	return RouterKey
 }
 
-func (m MsgRemoveNode) Type() string {
+func (m *MsgRemoveNodeRequest) Type() string {
 	return fmt.Sprintf("%s:remove_node", ModuleName)
 }
 
-func (m MsgRemoveNode) ValidateBasic() error {
-	if m.From == nil || m.From.Empty() {
+func (m *MsgRemoveNodeRequest) ValidateBasic() error {
+	if _, err := hubtypes.ProvAddressFromBech32(m.From); err != nil {
 		return errors.Wrapf(ErrorInvalidField, "%s", "from")
 	}
 
-	// ID shouldn't be zero
-	if m.ID == 0 {
+	// Id shouldn't be zero
+	if m.Id == 0 {
 		return errors.Wrapf(ErrorInvalidField, "%s", "id")
 	}
 
-	// Address shouldn't be nil or empty
-	if m.Address == nil || m.Address.Empty() {
+	// Address should be valid
+	if _, err := hubtypes.NodeAddressFromBech32(m.Address); err != nil {
 		return errors.Wrapf(ErrorInvalidField, "%s", "address")
 	}
 
 	return nil
 }
 
-func (m MsgRemoveNode) GetSignBytes() []byte {
-	bytes, err := json.Marshal(m)
+func (m *MsgRemoveNodeRequest) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(m))
+}
+
+func (m *MsgRemoveNodeRequest) GetSigners() []sdk.AccAddress {
+	from, err := hubtypes.ProvAddressFromBech32(m.From)
 	if err != nil {
 		panic(err)
 	}
 
-	return bytes
-}
-
-func (m MsgRemoveNode) GetSigners() []sdk.AccAddress {
-	return []sdk.AccAddress{m.From.Bytes()}
+	return []sdk.AccAddress{from.Bytes()}
 }

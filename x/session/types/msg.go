@@ -1,48 +1,42 @@
 package types
 
 import (
-	"encoding/json"
 	"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/errors"
+
+	hubtypes "github.com/sentinel-official/hub/types"
 )
 
 var (
-	_ sdk.Msg = (*MsgUpsert)(nil)
+	_ sdk.Msg = (*MsgUpsertRequest)(nil)
 )
 
-// MsgUpsert is for updating or inserting a session of a plan.
-type MsgUpsert struct {
-	Proof     Proof          `json:"proof"`
-	Address   sdk.AccAddress `json:"address"`
-	Signature []byte         `json:"signature,omitempty"`
-}
-
-func NewMsgUpsert(proof Proof, address sdk.AccAddress, signature []byte) MsgUpsert {
-	return MsgUpsert{
+func NewMsgUpsertRequest(proof Proof, address sdk.AccAddress, signature []byte) *MsgUpsertRequest {
+	return &MsgUpsertRequest{
 		Proof:     proof,
-		Address:   address,
+		Address:   address.String(),
 		Signature: signature,
 	}
 }
 
-func (m MsgUpsert) Route() string {
+func (m *MsgUpsertRequest) Route() string {
 	return RouterKey
 }
 
-func (m MsgUpsert) Type() string {
+func (m *MsgUpsertRequest) Type() string {
 	return fmt.Sprintf("%s:upsert", ModuleName)
 }
 
-func (m MsgUpsert) ValidateBasic() error {
+func (m *MsgUpsertRequest) ValidateBasic() error {
 	// Subscription shouldn't be zero
 	if m.Proof.Subscription == 0 {
 		return errors.Wrapf(ErrorInvalidField, "%s", "proof->subscription")
 	}
 
 	// Node shouldn't be nil or empty
-	if m.Proof.Node == nil || m.Proof.Node.Empty() {
+	if _, err := hubtypes.NodeAddressFromBech32(m.Proof.Node); err != nil {
 		return errors.Wrapf(ErrorInvalidField, "%s", "proof->node")
 	}
 
@@ -57,7 +51,7 @@ func (m MsgUpsert) ValidateBasic() error {
 	}
 
 	// Address shouldn't be nil or empty
-	if m.Address == nil || m.Address.Empty() {
+	if _, err := sdk.AccAddressFromBech32(m.Address); err != nil {
 		return errors.Wrapf(ErrorInvalidField, "%s", "address")
 	}
 
@@ -69,15 +63,15 @@ func (m MsgUpsert) ValidateBasic() error {
 	return nil
 }
 
-func (m MsgUpsert) GetSignBytes() []byte {
-	bytes, err := json.Marshal(m)
+func (m *MsgUpsertRequest) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(m))
+}
+
+func (m *MsgUpsertRequest) GetSigners() []sdk.AccAddress {
+	from, err := hubtypes.NodeAddressFromBech32(m.Proof.Node)
 	if err != nil {
 		panic(err)
 	}
 
-	return bytes
-}
-
-func (m MsgUpsert) GetSigners() []sdk.AccAddress {
-	return []sdk.AccAddress{m.Proof.Node.Bytes()}
+	return []sdk.AccAddress{from.Bytes()}
 }

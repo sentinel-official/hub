@@ -1,60 +1,53 @@
 package types
 
 import (
-	"encoding/json"
 	"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/errors"
 
-	hub "github.com/sentinel-official/hub/types"
+	hubtypes "github.com/sentinel-official/hub/types"
 )
 
 var (
-	_ sdk.Msg = (*MsgRegister)(nil)
-	_ sdk.Msg = (*MsgUpdate)(nil)
-	_ sdk.Msg = (*MsgSetStatus)(nil)
+	_ sdk.Msg = (*MsgRegisterRequest)(nil)
+	_ sdk.Msg = (*MsgUpdateRequest)(nil)
+	_ sdk.Msg = (*MsgSetStatusRequest)(nil)
 )
 
-// MsgRegister is for registering a node.
-type MsgRegister struct {
-	From      sdk.AccAddress  `json:"from"`
-	Provider  hub.ProvAddress `json:"provider,omitempty"`
-	Price     sdk.Coins       `json:"price,omitempty"`
-	RemoteURL string          `json:"remote_url"`
-}
-
-func NewMsgRegister(from sdk.AccAddress, provider hub.ProvAddress, price sdk.Coins, remoteURL string) MsgRegister {
-	return MsgRegister{
-		From:      from,
-		Provider:  provider,
+func NewMsgRegisterRequest(from sdk.AccAddress, provider hubtypes.ProvAddress, price sdk.Coins, remoteURL string) *MsgRegisterRequest {
+	return &MsgRegisterRequest{
+		From:      from.String(),
+		Provider:  provider.String(),
 		Price:     price,
 		RemoteURL: remoteURL,
 	}
 }
 
-func (m MsgRegister) Route() string {
+func (m *MsgRegisterRequest) Route() string {
 	return RouterKey
 }
 
-func (m MsgRegister) Type() string {
+func (m *MsgRegisterRequest) Type() string {
 	return fmt.Sprintf("%s:register", ModuleName)
 }
 
-func (m MsgRegister) ValidateBasic() error {
-	if m.From == nil || m.From.Empty() {
+func (m *MsgRegisterRequest) ValidateBasic() error {
+	if _, err := sdk.AccAddressFromBech32(m.From); err != nil {
 		return errors.Wrapf(ErrorInvalidField, "%s", "from")
 	}
 
-	// Either provider or price should be nil
-	if (m.Provider != nil && m.Price != nil) ||
-		(m.Provider == nil && m.Price == nil) {
+	// Either provider or price should be empty
+	if (m.Provider != "" && m.Price != nil) ||
+		(m.Provider == "" && m.Price == nil) {
 		return errors.Wrapf(ErrorInvalidField, "%s", "provider or price")
 	}
 
-	// Provider can be nil. If not, it shouldn't be empty
-	if m.Provider != nil && m.Provider.Empty() {
-		return errors.Wrapf(ErrorInvalidField, "%s", "provider")
+	// Provider can be empty. If not, it should be valid
+	if m.Provider != "" {
+		if _, err := hubtypes.ProvAddressFromBech32(m.Provider); err != nil {
+			return errors.Wrapf(ErrorInvalidField, "%s", "provider")
+		}
 	}
 
 	// Price can be nil. If not, it should be valid
@@ -70,56 +63,50 @@ func (m MsgRegister) ValidateBasic() error {
 	return nil
 }
 
-func (m MsgRegister) GetSignBytes() []byte {
-	bytes, err := json.Marshal(m)
+func (m *MsgRegisterRequest) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(m))
+}
+
+func (m *MsgRegisterRequest) GetSigners() []sdk.AccAddress {
+	from, err := sdk.AccAddressFromBech32(m.From)
 	if err != nil {
 		panic(err)
 	}
 
-	return bytes
+	return []sdk.AccAddress{from}
 }
 
-func (m MsgRegister) GetSigners() []sdk.AccAddress {
-	return []sdk.AccAddress{m.From}
-}
-
-// MsgUpdate is for updating the information of a node.
-type MsgUpdate struct {
-	From      hub.NodeAddress `json:"from"`
-	Provider  hub.ProvAddress `json:"provider,omitempty"`
-	Price     sdk.Coins       `json:"price,omitempty"`
-	RemoteURL string          `json:"remote_url,omitempty"`
-}
-
-func NewMsgUpdate(from hub.NodeAddress, provider hub.ProvAddress, price sdk.Coins, remoteURL string) MsgUpdate {
-	return MsgUpdate{
-		From:      from,
-		Provider:  provider,
+func NewMsgUpdateRequest(from hubtypes.NodeAddress, provider hubtypes.ProvAddress, price sdk.Coins, remoteURL string) *MsgUpdateRequest {
+	return &MsgUpdateRequest{
+		From:      from.String(),
+		Provider:  provider.String(),
 		Price:     price,
 		RemoteURL: remoteURL,
 	}
 }
 
-func (m MsgUpdate) Route() string {
+func (m *MsgUpdateRequest) Route() string {
 	return RouterKey
 }
 
-func (m MsgUpdate) Type() string {
+func (m *MsgUpdateRequest) Type() string {
 	return fmt.Sprintf("%s:update", ModuleName)
 }
 
-func (m MsgUpdate) ValidateBasic() error {
-	if m.From == nil || m.From.Empty() {
+func (m *MsgUpdateRequest) ValidateBasic() error {
+	if _, err := hubtypes.NodeAddressFromBech32(m.From); err != nil {
 		return errors.Wrapf(ErrorInvalidField, "%s", "from")
 	}
 
-	if m.Provider != nil && m.Price != nil {
+	if m.Provider != "" && m.Price != nil {
 		return errors.Wrapf(ErrorInvalidField, "%s", "provider or price")
 	}
 
-	// Provider can be nil. If not, it shouldn't be empty
-	if m.Provider != nil && m.Provider.Empty() {
-		return errors.Wrapf(ErrorInvalidField, "%s", "provider")
+	// Provider can be empty. If not, it should be valid
+	if m.Provider != "" {
+		if _, err := hubtypes.ProvAddressFromBech32(m.Provider); err != nil {
+			return errors.Wrapf(ErrorInvalidField, "%s", "provider")
+		}
 	}
 
 	// Price can be nil. If not, it should be valid
@@ -135,62 +122,56 @@ func (m MsgUpdate) ValidateBasic() error {
 	return nil
 }
 
-func (m MsgUpdate) GetSignBytes() []byte {
-	bytes, err := json.Marshal(m)
+func (m *MsgUpdateRequest) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(m))
+}
+
+func (m *MsgUpdateRequest) GetSigners() []sdk.AccAddress {
+	from, err := hubtypes.NodeAddressFromBech32(m.From)
 	if err != nil {
 		panic(err)
 	}
 
-	return bytes
+	return []sdk.AccAddress{from.Bytes()}
 }
 
-func (m MsgUpdate) GetSigners() []sdk.AccAddress {
-	return []sdk.AccAddress{m.From.Bytes()}
-}
-
-// MsgSetStatus is for updating the status of a node.
-type MsgSetStatus struct {
-	From   hub.NodeAddress `json:"from"`
-	Status hub.Status      `json:"status"`
-}
-
-func NewMsgSetStatus(from hub.NodeAddress, status hub.Status) MsgSetStatus {
-	return MsgSetStatus{
-		From:   from,
+func NewMsgSetStatusRequest(from hubtypes.NodeAddress, status hubtypes.Status) *MsgSetStatusRequest {
+	return &MsgSetStatusRequest{
+		From:   from.String(),
 		Status: status,
 	}
 }
 
-func (m MsgSetStatus) Route() string {
+func (m *MsgSetStatusRequest) Route() string {
 	return RouterKey
 }
 
-func (m MsgSetStatus) Type() string {
+func (m *MsgSetStatusRequest) Type() string {
 	return fmt.Sprintf("%s:set_status", ModuleName)
 }
 
-func (m MsgSetStatus) ValidateBasic() error {
-	if m.From == nil || m.From.Empty() {
+func (m *MsgSetStatusRequest) ValidateBasic() error {
+	if _, err := hubtypes.NodeAddressFromBech32(m.From); err != nil {
 		return errors.Wrapf(ErrorInvalidField, "%s", "from")
 	}
 
 	// Status should be either Active or Inactive
-	if !m.Status.Equal(hub.StatusActive) && !m.Status.Equal(hub.StatusInactive) {
+	if !m.Status.Equal(hubtypes.StatusActive) && !m.Status.Equal(hubtypes.StatusInactive) {
 		return errors.Wrapf(ErrorInvalidField, "%s", "status")
 	}
 
 	return nil
 }
 
-func (m MsgSetStatus) GetSignBytes() []byte {
-	bytes, err := json.Marshal(m)
+func (m *MsgSetStatusRequest) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(m))
+}
+
+func (m *MsgSetStatusRequest) GetSigners() []sdk.AccAddress {
+	from, err := hubtypes.NodeAddressFromBech32(m.From)
 	if err != nil {
 		panic(err)
 	}
 
-	return bytes
-}
-
-func (m MsgSetStatus) GetSigners() []sdk.AccAddress {
-	return []sdk.AccAddress{m.From.Bytes()}
+	return []sdk.AccAddress{from.Bytes()}
 }

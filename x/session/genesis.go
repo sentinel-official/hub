@@ -1,59 +1,38 @@
 package session
 
 import (
-	"fmt"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	hub "github.com/sentinel-official/hub/types"
+	hubtypes "github.com/sentinel-official/hub/types"
 	"github.com/sentinel-official/hub/x/session/keeper"
 	"github.com/sentinel-official/hub/x/session/types"
 )
 
-func InitGenesis(ctx sdk.Context, k keeper.Keeper, state types.GenesisState) {
+func InitGenesis(ctx sdk.Context, k keeper.Keeper, state *types.GenesisState) {
 	k.SetParams(ctx, state.Params)
 	for _, session := range state.Sessions {
-		k.SetSession(ctx, session)
-		k.SetSessionForSubscription(ctx, session.Subscription, session.ID)
-		k.SetSessionForNode(ctx, session.Node, session.ID)
-		k.SetSessionForAddress(ctx, session.Address, session.ID)
+		var (
+			sessionNode    = session.GetNode()
+			sessionAddress = session.GetAddress()
+		)
 
-		if session.Status.Equal(hub.StatusActive) {
-			k.SetActiveSessionForAddress(ctx, session.Address, session.Subscription, session.Node, session.ID)
-			k.SetActiveSessionAt(ctx, session.StatusAt, session.ID)
+		k.SetSession(ctx, session)
+		k.SetSessionForSubscription(ctx, session.Subscription, session.Id)
+		k.SetSessionForNode(ctx, sessionNode, session.Id)
+		k.SetSessionForAddress(ctx, sessionAddress, session.Id)
+
+		if session.Status.Equal(hubtypes.StatusActive) {
+			k.SetActiveSessionForAddress(ctx, sessionAddress, session.Subscription, sessionNode, session.Id)
+			k.SetActiveSessionAt(ctx, session.StatusAt, session.Id)
 		}
 	}
 
 	k.SetCount(ctx, uint64(len(state.Sessions)))
 }
 
-func ExportGenesis(ctx sdk.Context, k keeper.Keeper) types.GenesisState {
+func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 	return types.NewGenesisState(
 		k.GetSessions(ctx, 0, 0),
 		k.GetParams(ctx),
 	)
-}
-
-func ValidateGenesis(state types.GenesisState) error {
-	if err := state.Params.Validate(); err != nil {
-		return err
-	}
-
-	for _, session := range state.Sessions {
-		if err := session.Validate(); err != nil {
-			return err
-		}
-	}
-
-	sessions := make(map[uint64]bool)
-	for _, item := range state.Sessions {
-		id := item.ID
-		if sessions[id] {
-			return fmt.Errorf("duplicate session id %d", id)
-		}
-
-		sessions[id] = true
-	}
-
-	return nil
 }

@@ -1,0 +1,15 @@
+syntax = "proto3";
+package sentinel.swap.v1;
+
+option go_package = "github.com/sentinel-official/hub/x/swap/types";
+
+import "gogoproto/gogo.proto";
+
+option (gogoproto.equal_all)           = false;
+option (gogoproto.goproto_getters_all) = false;
+
+message Params {
+  bool swap_enabled = 1;
+  string swap_denom = 2;
+  string approve_by = 3;
+}

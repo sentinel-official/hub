@@ -1,7 +1,6 @@
 package cli
 
 import (
-	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/spf13/cobra"
 
 	deposit "github.com/sentinel-official/hub/x/deposit/client/cli"
@@ -12,33 +11,33 @@ import (
 	subscription "github.com/sentinel-official/hub/x/subscription/client/cli"
 )
 
-func GetQueryCmd(cdc *codec.Codec) *cobra.Command {
+func GetQueryCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "vpn",
 		Short: "Querying commands for the VPN module",
 	}
 
-	cmd.AddCommand(deposit.GetQueryCommands(cdc)...)
-	cmd.AddCommand(provider.GetQueryCommands(cdc)...)
-	cmd.AddCommand(node.GetQueryCommands(cdc)...)
-	cmd.AddCommand(plan.GetQueryCommands(cdc)...)
-	cmd.AddCommand(subscription.GetQueryCommands(cdc)...)
-	cmd.AddCommand(session.GetQueryCommands(cdc)...)
+	cmd.AddCommand(deposit.GetQueryCommands()...)
+	cmd.AddCommand(provider.GetQueryCommands()...)
+	cmd.AddCommand(node.GetQueryCommands()...)
+	cmd.AddCommand(plan.GetQueryCommands()...)
+	cmd.AddCommand(subscription.GetQueryCommands()...)
+	cmd.AddCommand(session.GetQueryCommands()...)
 
 	return cmd
 }
 
-func GetTxCmd(cdc *codec.Codec) *cobra.Command {
+func GetTxCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "vpn",
 		Short: "VPN transactions subcommands",
 	}
 
-	cmd.AddCommand(provider.GetTxCommands(cdc)...)
-	cmd.AddCommand(node.GetTxCommands(cdc)...)
-	cmd.AddCommand(plan.GetTxCommands(cdc)...)
-	cmd.AddCommand(subscription.GetTxCommands(cdc)...)
-	cmd.AddCommand(session.GetTxCommands(cdc)...)
+	cmd.AddCommand(provider.GetTxCommands()...)
+	cmd.AddCommand(node.GetTxCommands()...)
+	cmd.AddCommand(plan.GetTxCommands()...)
+	cmd.AddCommand(subscription.GetTxCommands()...)
+	cmd.AddCommand(session.GetTxCommands()...)
 
 	return cmd
 }

@@ -2,20 +2,15 @@ package types
 
 import (
 	"fmt"
-	"strings"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/x/params"
-	"github.com/tendermint/tendermint/libs/rand"
+	params "github.com/cosmos/cosmos-sdk/x/params/types"
 )
 
 const (
 	DefaultSwapEnabled = false
 	DefaultSwapDenom   = "tsent"
-)
-
-var (
-	DefaultApproveBy = sdk.AccAddress(rand.Bytes(20))
+	DefaultApproveBy   = ""
 )
 
 var (
@@ -24,27 +19,20 @@ var (
 	KeyApproveBy   = []byte("ApproveBy")
 )
 
-var _ params.ParamSet = (*Params)(nil)
+var (
+	_ params.ParamSet = (*Params)(nil)
+)
 
-type Params struct {
-	SwapEnabled bool           `json:"swap_enabled"`
-	SwapDenom   string         `json:"swap_denom"`
-	ApproveBy   sdk.AccAddress `json:"approve_by"`
-}
-
-func (p Params) String() string {
-	return fmt.Sprintf(strings.TrimSpace(`
-Swap enabled: %s
-Swap denom  : %s
-Approve by  : %s
-`), p.SwapEnabled, p.SwapDenom, p.ApproveBy)
-}
-
-func (p Params) Validate() error {
+func (p *Params) Validate() error {
 	if err := sdk.ValidateDenom(p.SwapDenom); err != nil {
 		return err
 	}
-	if p.ApproveBy == nil || p.ApproveBy.Empty() {
+
+	approveBy, err := sdk.AccAddressFromBech32(p.ApproveBy)
+	if err != nil {
+		return err
+	}
+	if approveBy == nil || approveBy.Empty() {
 		return fmt.Errorf("approve_by should not nil or empty")
 	}
 
@@ -56,28 +44,48 @@ func (p *Params) ParamSetPairs() params.ParamSetPairs {
 		{
 			Key:   KeySwapEnabled,
 			Value: &p.SwapEnabled,
-			ValidatorFn: func(_ interface{}) error {
+			ValidatorFn: func(v interface{}) error {
+				_, ok := v.(bool)
+				if !ok {
+					return fmt.Errorf("invalid parameter type %T", v)
+				}
+
 				return nil
 			},
 		},
 		{
 			Key:   KeySwapDenom,
 			Value: &p.SwapDenom,
-			ValidatorFn: func(_ interface{}) error {
-				return nil
+			ValidatorFn: func(v interface{}) error {
+				value, ok := v.(string)
+				if !ok {
+					return fmt.Errorf("invalid parameter type %T", v)
+				}
+
+				return sdk.ValidateDenom(value)
 			},
 		},
 		{
 			Key:   KeyApproveBy,
 			Value: &p.ApproveBy,
-			ValidatorFn: func(_ interface{}) error {
+			ValidatorFn: func(v interface{}) error {
+				value, ok := v.(string)
+				if !ok {
+					return fmt.Errorf("invalid parameter type %T", v)
+				}
+
+				_, err := sdk.AccAddressFromBech32(value)
+				if err != nil {
+					return err
+				}
+
 				return nil
 			},
 		},
 	}
 }
 
-func NewParams(swapEnabled bool, swapDenom string, approveBy sdk.AccAddress) Params {
+func NewParams(swapEnabled bool, swapDenom, approveBy string) Params {
 	return Params{
 		SwapEnabled: swapEnabled,
 		SwapDenom:   swapDenom,

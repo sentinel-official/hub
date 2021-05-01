@@ -1,0 +1,25 @@
+syntax = "proto3";
+package sentinel.node.v1;
+
+option go_package = "github.com/sentinel-official/hub/x/node/types";
+
+import "cosmos/base/v1beta1/coin.proto";
+import "gogoproto/gogo.proto";
+import "google/protobuf/timestamp.proto";
+import "sentinel/types/v1/status.proto";
+
+option (gogoproto.equal_all)           = false;
+option (gogoproto.goproto_getters_all) = false;
+
+message Node {
+  string address                          = 1;
+  string provider                         = 2;
+  repeated cosmos.base.v1beta1.Coin price = 3 [
+    (gogoproto.nullable)     = false,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
+  ];
+  string remote_url               = 4 [ (gogoproto.customname) = "RemoteURL" ];
+  sentinel.types.v1.Status status = 5;
+  google.protobuf.Timestamp status_at = 6
+      [ (gogoproto.nullable) = false, (gogoproto.stdtime) = true ];
+}

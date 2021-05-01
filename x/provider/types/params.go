@@ -2,10 +2,9 @@ package types
 
 import (
 	"fmt"
-	"strings"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/x/params"
+	params "github.com/cosmos/cosmos-sdk/x/params/types"
 )
 
 var (
@@ -20,17 +19,7 @@ var (
 	_ params.ParamSet = (*Params)(nil)
 )
 
-type Params struct {
-	Deposit sdk.Coin `json:"deposit"`
-}
-
-func (p Params) String() string {
-	return fmt.Sprintf(strings.TrimSpace(`
-Deposit: %s
-`), p.Deposit)
-}
-
-func (p Params) Validate() error {
+func (p *Params) Validate() error {
 	if !p.Deposit.IsValid() {
 		return fmt.Errorf("deposit should be valid")
 	}

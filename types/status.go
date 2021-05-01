@@ -1,13 +1,11 @@
 package types
 
 const (
-	StatusUnknown Status = iota + 0x00
+	StatusUnknown Status = iota
 	StatusActive
 	StatusInactivePending
 	StatusInactive
 )
-
-type Status byte
 
 func StatusFromString(s string) Status {
 	switch s {
@@ -30,17 +28,4 @@ func (s Status) IsValid() bool {
 
 func (s Status) Equal(v Status) bool {
 	return s == v
-}
-
-func (s Status) String() string {
-	switch s {
-	case StatusActive:
-		return "Active"
-	case StatusInactivePending:
-		return "InactivePending"
-	case StatusInactive:
-		return "Inactive"
-	default:
-		return "Unknown"
-	}
 }

@@ -2,73 +2,68 @@ package types
 
 import (
 	"fmt"
-	"strings"
-	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	hub "github.com/sentinel-official/hub/types"
+	hubtypes "github.com/sentinel-official/hub/types"
 )
 
-type Node struct {
-	Address   hub.NodeAddress `json:"address"`
-	Provider  hub.ProvAddress `json:"provider,omitempty"`
-	Price     sdk.Coins       `json:"price,omitempty"`
-	RemoteURL string          `json:"remote_url"`
-	Status    hub.Status      `json:"status"`
-	StatusAt  time.Time       `json:"status_at"`
+func (n *Node) GetAddress() hubtypes.NodeAddress {
+	if n.Address == "" {
+		return nil
+	}
+
+	address, err := hubtypes.NodeAddressFromBech32(n.Address)
+	if err != nil {
+		panic(err)
+	}
+
+	return address
 }
 
-func (n Node) String() string {
-	if n.Provider == nil {
-		return strings.TrimSpace(fmt.Sprintf(`
-Address:    %s
-Price:      %s
-Remote URL: %s
-Status:     %s
-Status at:  %s
-`, n.Address, n.Price, n.RemoteURL, n.Status, n.StatusAt))
+func (n *Node) GetProvider() hubtypes.ProvAddress {
+	if n.Provider == "" {
+		return nil
 	}
 
-	return strings.TrimSpace(fmt.Sprintf(`
-Address:    %s
-Provider:   %s
-Remote URL: %s
-Status:     %s
-Status at:  %s
-`, n.Address, n.Provider, n.RemoteURL, n.Status, n.StatusAt))
+	address, err := hubtypes.ProvAddressFromBech32(n.Provider)
+	if err != nil {
+		panic(err)
+	}
+
+	return address
 }
 
-func (n Node) Validate() error {
-	if n.Address == nil || n.Address.Empty() {
-		return fmt.Errorf("address should not be nil or empty")
+func (n *Node) Validate() error {
+	if _, err := hubtypes.NodeAddressFromBech32(n.Address); err != nil {
+		return err
 	}
-	if (n.Provider != nil && n.Price != nil) ||
-		(n.Provider == nil && n.Price == nil) {
-		return fmt.Errorf("either provider or price should be nil")
+	if (n.Provider != "" && n.Price != nil) ||
+		(n.Provider == "" && n.Price == nil) {
+		return fmt.Errorf("invalid provider and price combination; expected one of them empty")
 	}
-	if n.Provider != nil && n.Provider.Empty() {
-		return fmt.Errorf("provider should not be empty")
+	if _, err := hubtypes.ProvAddressFromBech32(n.Provider); err != nil {
+		return err
 	}
 	if n.Price != nil && !n.Price.IsValid() {
-		return fmt.Errorf("price should be valid")
+		return fmt.Errorf("invalid price; expected non-nil and valid value")
 	}
 	if len(n.RemoteURL) == 0 || len(n.RemoteURL) > 64 {
-		return fmt.Errorf("remote_url length should be between 1 and 64")
+		return fmt.Errorf("invalid remote url length; expected length is between 1 and 64")
 	}
-	if !n.Status.Equal(hub.StatusActive) && !n.Status.Equal(hub.StatusInactive) {
-		return fmt.Errorf("status should be either active or inactive")
+	if !n.Status.Equal(hubtypes.StatusActive) && !n.Status.Equal(hubtypes.StatusInactive) {
+		return fmt.Errorf("invalid status; exptected active or inactive")
 	}
 	if n.StatusAt.IsZero() {
-		return fmt.Errorf("status_at should not be zero")
+		return fmt.Errorf("invalid status at; expected non-zero value")
 	}
 
 	return nil
 }
 
-func (n Node) PriceForDenom(d string) (sdk.Coin, bool) {
+func (n *Node) PriceForDenom(s string) (sdk.Coin, bool) {
 	for _, coin := range n.Price {
-		if coin.Denom == d {
+		if coin.Denom == s {
 			return coin, true
 		}
 	}
@@ -76,19 +71,19 @@ func (n Node) PriceForDenom(d string) (sdk.Coin, bool) {
 	return sdk.Coin{}, false
 }
 
-func (n Node) BytesForCoin(coin sdk.Coin) (sdk.Int, error) {
+func (n *Node) BytesForCoin(coin sdk.Coin) (sdk.Int, error) {
 	price, found := n.PriceForDenom(coin.Denom)
 	if !found {
-		return sdk.ZeroInt(), fmt.Errorf("price does not exist")
+		return sdk.ZeroInt(), fmt.Errorf("price for denom %s does not exist", coin.Denom)
 	}
 
-	x := hub.Gigabyte.Quo(price.Amount)
+	x := hubtypes.Gigabyte.Quo(price.Amount)
 	if x.IsPositive() {
 		return coin.Amount.Mul(x), nil
 	}
 
 	y := sdk.NewDecFromInt(price.Amount).
-		QuoInt(hub.Gigabyte).
+		QuoInt(hubtypes.Gigabyte).
 		Ceil().TruncateInt()
 
 	return coin.Amount.Quo(y), nil

@@ -1,0 +1,16 @@
+syntax = "proto3";
+package sentinel.plan.v1;
+
+option go_package = "github.com/sentinel-official/hub/x/plan/types";
+
+import "gogoproto/gogo.proto";
+import "sentinel/plan/v1/plan.proto";
+
+option (gogoproto.equal_all)           = false;
+option (gogoproto.goproto_getters_all) = false;
+
+message GenesisPlan {
+  Plan plan = 1
+      [ (gogoproto.jsontag) = "_,omitempty", (gogoproto.nullable) = false ];
+  repeated string nodes = 2;
+}

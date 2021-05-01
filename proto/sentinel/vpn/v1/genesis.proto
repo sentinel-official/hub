@@ -1,0 +1,26 @@
+syntax = "proto3";
+package sentinel.vpn.v1;
+
+option go_package = "github.com/sentinel-official/hub/x/vpn/types";
+
+import "gogoproto/gogo.proto";
+import "sentinel/deposit/v1/deposit.proto";
+import "sentinel/node/v1/genesis.proto";
+import "sentinel/plan/v1/genesis.proto";
+import "sentinel/provider/v1/genesis.proto";
+import "sentinel/session/v1/genesis.proto";
+import "sentinel/subscription/v1/genesis.proto";
+
+option (gogoproto.equal_all)           = false;
+option (gogoproto.goproto_getters_all) = false;
+
+message GenesisState {
+  repeated sentinel.deposit.v1.Deposit deposits = 1
+      [ (gogoproto.nullable) = false ];
+  sentinel.node.v1.GenesisState nodes         = 2;
+  repeated sentinel.plan.v1.GenesisPlan plans = 3
+      [ (gogoproto.nullable) = false ];
+  sentinel.provider.v1.GenesisState providers         = 4;
+  sentinel.session.v1.GenesisState sessions           = 5;
+  sentinel.subscription.v1.GenesisState subscriptions = 6;
+}

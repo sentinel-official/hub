@@ -6,7 +6,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	hub "github.com/sentinel-official/hub/types"
+	hubtypes "github.com/sentinel-official/hub/types"
 )
 
 const (
@@ -21,10 +21,7 @@ var (
 )
 
 var (
-	EventModuleName = sdk.NewEvent(
-		sdk.EventTypeMessage,
-		sdk.NewAttribute(sdk.AttributeKeyModule, ModuleName),
-	)
+	EventModuleName = EventModule{Name: ModuleName}
 )
 
 var (
@@ -42,7 +39,7 @@ func GetChannelKeyPrefix(address sdk.AccAddress) []byte {
 	return append(ChannelKeyPrefix, address.Bytes()...)
 }
 
-func ChannelKey(address sdk.AccAddress, subscription uint64, node hub.NodeAddress) []byte {
+func ChannelKey(address sdk.AccAddress, subscription uint64, node hubtypes.NodeAddress) []byte {
 	return append(GetChannelKeyPrefix(address),
 		append(sdk.Uint64ToBigEndian(subscription), node.Bytes()...)...)
 }
@@ -59,11 +56,11 @@ func SessionForSubscriptionKey(subscription, id uint64) []byte {
 	return append(GetSessionForSubscriptionKeyPrefix(subscription), sdk.Uint64ToBigEndian(id)...)
 }
 
-func GetSessionForNodeKeyPrefix(address hub.NodeAddress) []byte {
+func GetSessionForNodeKeyPrefix(address hubtypes.NodeAddress) []byte {
 	return append(SessionForNodeKeyPrefix, address.Bytes()...)
 }
 
-func SessionForNodeKey(address hub.NodeAddress, id uint64) []byte {
+func SessionForNodeKey(address hubtypes.NodeAddress, id uint64) []byte {
 	return append(GetSessionForNodeKeyPrefix(address), sdk.Uint64ToBigEndian(id)...)
 }
 
@@ -79,7 +76,7 @@ func GetActiveSessionForAddressKeyPrefix(address sdk.AccAddress) []byte {
 	return append(ActiveSessionForAddressKeyPrefix, address.Bytes()...)
 }
 
-func ActiveSessionForAddressKey(address sdk.AccAddress, subscription uint64, node hub.NodeAddress) []byte {
+func ActiveSessionForAddressKey(address sdk.AccAddress, subscription uint64, node hubtypes.NodeAddress) []byte {
 	return append(GetActiveSessionForAddressKeyPrefix(address),
 		append(sdk.Uint64ToBigEndian(subscription), node.Bytes()...)...)
 }

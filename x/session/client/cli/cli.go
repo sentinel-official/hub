@@ -1,27 +1,25 @@
 package cli
 
 import (
-	"github.com/cosmos/cosmos-sdk/client/flags"
-	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/spf13/cobra"
 )
 
-func GetQueryCommands(cdc *codec.Codec) []*cobra.Command {
-	return flags.GetCommands(
-		querySession(cdc),
-		querySessions(cdc),
-	)
+func GetQueryCommands() []*cobra.Command {
+	return []*cobra.Command{
+		querySession(),
+		querySessions(),
+	}
 }
 
-func GetTxCommands(cdc *codec.Codec) []*cobra.Command {
+func GetTxCommands() []*cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "session",
 		Short: "Session module sub-commands",
 	}
 
-	cmd.AddCommand(flags.PostCommands(
-		txUpsert(cdc),
-	)...)
+	cmd.AddCommand(
+		txUpsert(),
+	)
 
 	return []*cobra.Command{cmd}
 }

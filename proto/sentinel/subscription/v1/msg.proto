@@ -1,0 +1,63 @@
+syntax = "proto3";
+package sentinel.subscription.v1;
+
+option go_package = "github.com/sentinel-official/hub/x/subscription/types";
+
+import "gogoproto/gogo.proto";
+import "cosmos/base/v1beta1/coin.proto";
+
+option (gogoproto.equal_all)           = false;
+option (gogoproto.goproto_getters_all) = false;
+
+message MsgSubscribeToNodeRequest {
+  string from                      = 1;
+  string address                   = 2;
+  cosmos.base.v1beta1.Coin deposit = 3 [ (gogoproto.nullable) = false ];
+}
+
+message MsgSubscribeToPlanRequest {
+  string from  = 1;
+  uint64 id    = 2;
+  string denom = 3;
+}
+
+message MsgCancelRequest {
+  string from = 1;
+  uint64 id   = 2;
+}
+
+message MsgAddQuotaRequest {
+  string from    = 1;
+  uint64 id      = 2;
+  string address = 3;
+  string bytes   = 4 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable)   = false
+  ];
+}
+
+message MsgUpdateQuotaRequest {
+  string from    = 1;
+  uint64 id      = 2;
+  string address = 3;
+  string bytes   = 4 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable)   = false
+  ];
+}
+
+message MsgSubscribeToNodeResponse {}
+message MsgSubscribeToPlanResponse {}
+message MsgCancelResponse {}
+message MsgAddQuotaResponse {}
+message MsgUpdateQuotaResponse {}
+
+service MsgService {
+  rpc MsgSubscribeToNode(MsgSubscribeToNodeRequest)
+      returns (MsgSubscribeToNodeResponse);
+  rpc MsgSubscribeToPlan(MsgSubscribeToPlanRequest)
+      returns (MsgSubscribeToPlanResponse);
+  rpc MsgCancel(MsgCancelRequest) returns (MsgCancelResponse);
+  rpc MsgAddQuota(MsgAddQuotaRequest) returns (MsgAddQuotaResponse);
+  rpc MsgUpdateQuota(MsgUpdateQuotaRequest) returns (MsgUpdateQuotaResponse);
+}

@@ -1,11 +1,9 @@
 package keeper
 
 import (
-	"fmt"
-
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/x/params"
+	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"github.com/tendermint/tendermint/libs/log"
 
 	"github.com/sentinel-official/hub/x/swap/expected"
@@ -13,25 +11,25 @@ import (
 )
 
 type Keeper struct {
-	cdc    *codec.Codec
+	cdc    codec.BinaryMarshaler
 	key    sdk.StoreKey
-	params params.Subspace
-	supply expected.SupplyKeeper
+	params paramstypes.Subspace
+	bank   expected.BankKeeper
 }
 
-func NewKeeper(cdc *codec.Codec, key sdk.StoreKey, params params.Subspace, supply expected.SupplyKeeper) Keeper {
+func NewKeeper(cdc codec.BinaryMarshaler, key sdk.StoreKey, params paramstypes.Subspace, bank expected.BankKeeper) Keeper {
 	return Keeper{
 		cdc:    cdc,
 		key:    key,
 		params: params.WithKeyTable(types.ParamsKeyTable()),
-		supply: supply,
+		bank:   bank,
 	}
 }
 
-func (k Keeper) Logger(ctx sdk.Context) log.Logger {
-	return ctx.Logger().With("module", fmt.Sprintf("x/%s", types.ModuleName))
+func (k *Keeper) Logger(ctx sdk.Context) log.Logger {
+	return ctx.Logger().With("module", "x/"+types.ModuleName)
 }
 
-func (k Keeper) Store(ctx sdk.Context) sdk.KVStore {
+func (k *Keeper) Store(ctx sdk.Context) sdk.KVStore {
 	return ctx.KVStore(k.key)
 }

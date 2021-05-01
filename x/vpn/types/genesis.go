@@ -1,26 +1,17 @@
 package types
 
 import (
-	"github.com/sentinel-official/hub/x/deposit"
-	"github.com/sentinel-official/hub/x/node"
-	"github.com/sentinel-official/hub/x/plan"
-	"github.com/sentinel-official/hub/x/provider"
-	"github.com/sentinel-official/hub/x/session"
-	"github.com/sentinel-official/hub/x/subscription"
+	deposittypes "github.com/sentinel-official/hub/x/deposit/types"
+	nodetypes "github.com/sentinel-official/hub/x/node/types"
+	plantypes "github.com/sentinel-official/hub/x/plan/types"
+	providertypes "github.com/sentinel-official/hub/x/provider/types"
+	sessiontypes "github.com/sentinel-official/hub/x/session/types"
+	subscriptiontypes "github.com/sentinel-official/hub/x/subscription/types"
 )
 
-type GenesisState struct {
-	Deposits      deposit.GenesisState      `json:"deposits"`
-	Providers     provider.GenesisState     `json:"providers"`
-	Nodes         node.GenesisState         `json:"nodes"`
-	Plans         plan.GenesisState         `json:"plans"`
-	Subscriptions subscription.GenesisState `json:"subscriptions"`
-	Sessions      session.GenesisState      `json:"sessions"`
-}
-
-func NewGenesisState(deposits deposit.GenesisState, providers provider.GenesisState, nodes node.GenesisState,
-	plans plan.GenesisState, subscriptions subscription.GenesisState, sessions session.GenesisState) GenesisState {
-	return GenesisState{
+func NewGenesisState(deposits deposittypes.GenesisState, providers *providertypes.GenesisState, nodes *nodetypes.GenesisState,
+	plans plantypes.GenesisState, subscriptions *subscriptiontypes.GenesisState, sessions *sessiontypes.GenesisState) *GenesisState {
+	return &GenesisState{
 		Deposits:      deposits,
 		Providers:     providers,
 		Nodes:         nodes,
@@ -30,13 +21,36 @@ func NewGenesisState(deposits deposit.GenesisState, providers provider.GenesisSt
 	}
 }
 
-func DefaultGenesisState() GenesisState {
-	return GenesisState{
-		Deposits:      deposit.DefaultGenesisState(),
-		Providers:     provider.DefaultGenesisState(),
-		Nodes:         node.DefaultGenesisState(),
-		Plans:         plan.DefaultGenesisState(),
-		Subscriptions: subscription.DefaultGenesisState(),
-		Sessions:      session.DefaultGenesisState(),
+func (s *GenesisState) Validate() error {
+	if err := deposittypes.ValidateGenesis(s.Deposits); err != nil {
+		return err
 	}
+	if err := providertypes.ValidateGenesis(s.Providers); err != nil {
+		return err
+	}
+	if err := nodetypes.ValidateGenesis(s.Nodes); err != nil {
+		return err
+	}
+	if err := plantypes.ValidateGenesis(s.Plans); err != nil {
+		return err
+	}
+	if err := subscriptiontypes.ValidateGenesis(s.Subscriptions); err != nil {
+		return err
+	}
+	if err := sessiontypes.ValidateGenesis(s.Sessions); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func DefaultGenesisState() *GenesisState {
+	return NewGenesisState(
+		deposittypes.DefaultGenesisState(),
+		providertypes.DefaultGenesisState(),
+		nodetypes.DefaultGenesisState(),
+		plantypes.DefaultGenesisState(),
+		subscriptiontypes.DefaultGenesisState(),
+		sessiontypes.DefaultGenesisState(),
+	)
 }

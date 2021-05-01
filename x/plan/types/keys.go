@@ -5,7 +5,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	hub "github.com/sentinel-official/hub/types"
+	hubtypes "github.com/sentinel-official/hub/types"
 )
 
 const (
@@ -19,10 +19,7 @@ var (
 )
 
 var (
-	EventModuleName = sdk.NewEvent(
-		sdk.EventTypeMessage,
-		sdk.NewAttribute(sdk.AttributeKeyModule, ModuleName),
-	)
+	EventModuleName = EventModule{Name: ModuleName}
 )
 
 var (
@@ -47,19 +44,19 @@ func InactivePlanKey(id uint64) []byte {
 	return append(InactivePlanKeyPrefix, sdk.Uint64ToBigEndian(id)...)
 }
 
-func GetActivePlanForProviderKeyPrefix(address hub.ProvAddress) []byte {
+func GetActivePlanForProviderKeyPrefix(address hubtypes.ProvAddress) []byte {
 	return append(ActivePlanForProviderKeyPrefix, address.Bytes()...)
 }
 
-func ActivePlanForProviderKey(address hub.ProvAddress, id uint64) []byte {
+func ActivePlanForProviderKey(address hubtypes.ProvAddress, id uint64) []byte {
 	return append(GetActivePlanForProviderKeyPrefix(address), sdk.Uint64ToBigEndian(id)...)
 }
 
-func GetInactivePlanForProviderKeyPrefix(address hub.ProvAddress) []byte {
+func GetInactivePlanForProviderKeyPrefix(address hubtypes.ProvAddress) []byte {
 	return append(InactivePlanForProviderKeyPrefix, address.Bytes()...)
 }
 
-func InactivePlanForProviderKey(address hub.ProvAddress, id uint64) []byte {
+func InactivePlanForProviderKey(address hubtypes.ProvAddress, id uint64) []byte {
 	return append(GetInactivePlanForProviderKeyPrefix(address), sdk.Uint64ToBigEndian(id)...)
 }
 
@@ -67,7 +64,7 @@ func GetNodeForPlanKeyPrefix(id uint64) []byte {
 	return append(NodeForPlanKeyPrefix, sdk.Uint64ToBigEndian(id)...)
 }
 
-func NodeForPlanKey(id uint64, address hub.NodeAddress) []byte {
+func NodeForPlanKey(id uint64, address hubtypes.NodeAddress) []byte {
 	return append(GetNodeForPlanKeyPrefix(id), address.Bytes()...)
 }
 
@@ -79,6 +76,6 @@ func IDFromStatusPlanForProviderKey(key []byte) uint64 {
 	return binary.BigEndian.Uint64(key[1+sdk.AddrLen:])
 }
 
-func AddressFromNodeForPlanKey(key []byte) hub.NodeAddress {
+func AddressFromNodeForPlanKey(key []byte) hubtypes.NodeAddress {
 	return key[1+8:]
 }

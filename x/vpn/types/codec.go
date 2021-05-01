@@ -2,31 +2,35 @@ package types
 
 import (
 	"github.com/cosmos/cosmos-sdk/codec"
+	"github.com/cosmos/cosmos-sdk/codec/types"
+	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
 
-	"github.com/sentinel-official/hub/x/deposit"
-	"github.com/sentinel-official/hub/x/node"
-	"github.com/sentinel-official/hub/x/plan"
-	"github.com/sentinel-official/hub/x/provider"
-	"github.com/sentinel-official/hub/x/session"
-	"github.com/sentinel-official/hub/x/subscription"
+	deposittypes "github.com/sentinel-official/hub/x/deposit/types"
+	nodetypes "github.com/sentinel-official/hub/x/node/types"
+	plantypes "github.com/sentinel-official/hub/x/plan/types"
+	providertypes "github.com/sentinel-official/hub/x/provider/types"
+	sessiontypes "github.com/sentinel-official/hub/x/session/types"
+	subscriptiontypes "github.com/sentinel-official/hub/x/subscription/types"
 )
 
 var (
-	ModuleCdc *codec.Codec
+	amino     = codec.NewLegacyAmino()
+	ModuleCdc = codec.NewAminoCodec(amino)
 )
 
 func init() {
-	ModuleCdc = codec.New()
-	codec.RegisterCrypto(ModuleCdc)
-	RegisterCodec(ModuleCdc)
-	ModuleCdc.Seal()
+	RegisterLegacyAminoCodec(amino)
+	cryptocodec.RegisterCrypto(amino)
+	amino.Seal()
 }
 
-func RegisterCodec(cdc *codec.Codec) {
-	deposit.RegisterCodec(cdc)
-	provider.RegisterCodec(cdc)
-	node.RegisterCodec(cdc)
-	plan.RegisterCodec(cdc)
-	subscription.RegisterCodec(cdc)
-	session.RegisterCodec(cdc)
+func RegisterLegacyAminoCodec(_ *codec.LegacyAmino) {}
+
+func RegisterInterfaces(registry types.InterfaceRegistry) {
+	deposittypes.RegisterInterfaces(registry)
+	providertypes.RegisterInterfaces(registry)
+	nodetypes.RegisterInterfaces(registry)
+	plantypes.RegisterInterfaces(registry)
+	subscriptiontypes.RegisterInterfaces(registry)
+	sessiontypes.RegisterInterfaces(registry)
 }

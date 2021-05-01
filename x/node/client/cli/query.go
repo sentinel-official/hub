@@ -1,47 +1,60 @@
 package cli
 
 import (
-	"fmt"
+	"context"
 
-	"github.com/cosmos/cosmos-sdk/client/context"
-	"github.com/cosmos/cosmos-sdk/codec"
+	"github.com/cosmos/cosmos-sdk/client"
+	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/spf13/cobra"
 
-	hub "github.com/sentinel-official/hub/types"
-	"github.com/sentinel-official/hub/x/node/client/common"
+	hubtypes "github.com/sentinel-official/hub/types"
 	"github.com/sentinel-official/hub/x/node/types"
 )
 
-func queryNode(cdc *codec.Codec) *cobra.Command {
-	return &cobra.Command{
+func queryNode() *cobra.Command {
+	cmd := &cobra.Command{
 		Use:   "node",
 		Short: "Query a node",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			ctx := context.NewCLIContext().WithCodec(cdc)
-
-			address, err := hub.NodeAddressFromBech32(args[0])
+			ctx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
 			}
 
-			node, err := common.QueryNode(ctx, address)
+			address, err := hubtypes.NodeAddressFromBech32(args[0])
 			if err != nil {
 				return err
 			}
 
-			fmt.Println(node)
-			return nil
+			var (
+				qc = types.NewQueryServiceClient(ctx)
+			)
+
+			res, err := qc.QueryNode(context.Background(),
+				types.NewQueryNodeRequest(address))
+			if err != nil {
+				return err
+			}
+
+			return ctx.PrintProto(res)
 		},
 	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
 }
 
-func queryNodes(cdc *codec.Codec) *cobra.Command {
+func queryNodes() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "nodes",
 		Short: "Query nodes",
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
-			ctx := context.NewCLIContext().WithCodec(cdc)
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
 
 			provider, err := cmd.Flags().GetString(flagProvider)
 			if err != nil {
@@ -58,52 +71,48 @@ func queryNodes(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			skip, err := cmd.Flags().GetInt(flagSkip)
-			if err != nil {
-				return err
-			}
-
-			limit, err := cmd.Flags().GetInt(flagLimit)
+			pagination, err := client.ReadPageRequest(cmd.Flags())
 			if err != nil {
 				return err
 			}
 
 			var (
-				address hub.ProvAddress
-				nodes   types.Nodes
-				status  = hub.StatusFromString(s)
+				status = hubtypes.StatusFromString(s)
+				qc     = types.NewQueryServiceClient(ctx)
 			)
 
 			if len(provider) > 0 {
-				address, err = hub.ProvAddressFromBech32(provider)
+				address, err := hubtypes.ProvAddressFromBech32(provider)
 				if err != nil {
 					return err
 				}
 
-				nodes, err = common.QueryNodesForProvider(ctx, address, status, skip, limit)
+				res, err := qc.QueryNodesForProvider(context.Background(),
+					types.NewQueryNodesForProviderRequest(address, status, pagination))
+				if err != nil {
+					return err
+				}
+
+				return ctx.PrintProto(res)
 			} else if plan > 0 {
-				nodes, err = common.QueryNodesForPlan(ctx, plan, skip, limit)
+				return nil
 			} else {
-				nodes, err = common.QueryNodes(ctx, status, skip, limit)
-			}
+				res, err := qc.QueryNodes(context.Background(),
+					types.NewQueryNodesRequest(status, pagination))
+				if err != nil {
+					return err
+				}
 
-			if err != nil {
-				return err
+				return ctx.PrintProto(res)
 			}
-
-			for _, node := range nodes {
-				fmt.Printf("%s\n\n", node)
-			}
-
-			return nil
 		},
 	}
 
+	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, "nodes")
 	cmd.Flags().String(flagProvider, "", "provider address")
 	cmd.Flags().Uint64(flagPlan, 0, "subscription plan ID")
 	cmd.Flags().String(flagStatus, "", "status")
-	cmd.Flags().Int(flagSkip, 0, "skip")
-	cmd.Flags().Int(flagLimit, 25, "limit")
 
 	return cmd
 }
