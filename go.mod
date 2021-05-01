@@ -18,7 +18,7 @@ require (
 )
 
 replace (
-	github.com/cosmos/cosmos-sdk => github.com/sentinel-official/cosmos-sdk v0.42.4-sentinel
+	github.com/cosmos/cosmos-sdk => github.com/sentinel-official/cosmos-sdk v0.42.5-sentinel
 	github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
 	google.golang.org/grpc => google.golang.org/grpc v1.33.2
 )
