@@ -23,7 +23,9 @@ func RegisterLegacyAminoCodec(_ *codec.LegacyAmino) {}
 
 func RegisterInterfaces(registry types.InterfaceRegistry) {
 	registry.RegisterImplementations((*sdk.Msg)(nil),
-		&MsgUpsertRequest{},
+		&MsgStartRequest{},
+		&MsgUpdateRequest{},
+		&MsgEndRequest{},
 	)
 
 	msgservice.RegisterMsgServiceDesc(registry, &_MsgService_serviceDesc)

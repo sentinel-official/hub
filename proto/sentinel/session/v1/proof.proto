@@ -5,16 +5,13 @@ option go_package = "github.com/sentinel-official/hub/x/session/types";
 
 import "gogoproto/gogo.proto";
 import "google/protobuf/duration.proto";
-import "sentinel/types/v1/bandwidth.proto";
 
-option (gogoproto.equal_all)           = false;
+option (gogoproto.equal_all) = false;
 option (gogoproto.goproto_getters_all) = false;
 
 message Proof {
-  uint64 channel                    = 1;
-  uint64 subscription               = 2;
-  string node                       = 3;
-  google.protobuf.Duration duration = 4
-      [ (gogoproto.stdduration) = true, (gogoproto.nullable) = false ];
-  sentinel.types.v1.Bandwidth bandwidth = 5 [ (gogoproto.nullable) = false ];
+  uint64 id = 1;
+  google.protobuf.Duration duration = 2[(gogoproto.stdduration) = true, (gogoproto.nullable) = false];
+  string upload = 3 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int", (gogoproto.nullable) = false];
+  string download = 4 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int", (gogoproto.nullable) = false];
 }

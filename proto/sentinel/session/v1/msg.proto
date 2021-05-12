@@ -6,17 +6,33 @@ option go_package = "github.com/sentinel-official/hub/x/session/types";
 import "gogoproto/gogo.proto";
 import "sentinel/session/v1/proof.proto";
 
-option (gogoproto.equal_all)           = false;
+option (gogoproto.equal_all) = false;
 option (gogoproto.goproto_getters_all) = false;
 
-message MsgUpsertRequest {
-  Proof proof     = 1 [ (gogoproto.nullable) = false ];
-  string address  = 2;
+message MsgStartRequest {
+  string from = 1;
+  uint64 id = 2;
+  string address = 3;
+}
+
+message MsgUpdateRequest {
+  string from = 1;
+  Proof proof = 2 [(gogoproto.nullable) = false];
   bytes signature = 3;
 }
 
-message MsgUpsertResponse {}
+message MsgEndRequest {
+  string from = 1;
+  uint64 id = 2;
+  uint64 rating = 3;
+}
+
+message MsgStartResponse {}
+message MsgUpdateResponse {}
+message MsgEndResponse {}
 
 service MsgService {
-  rpc MsgUpsert(MsgUpsertRequest) returns (MsgUpsertResponse);
+  rpc MsgStart(MsgStartRequest) returns (MsgStartResponse);
+  rpc MsgUpdate(MsgUpdateRequest) returns (MsgUpdateResponse);
+  rpc MsgEnd(MsgEndRequest) returns (MsgEndResponse);
 }
