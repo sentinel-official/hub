@@ -2,14 +2,14 @@ package node
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	abci "github.com/tendermint/tendermint/abci/types"
+	abcitypes "github.com/tendermint/tendermint/abci/types"
 
 	hubtypes "github.com/sentinel-official/hub/types"
 	"github.com/sentinel-official/hub/x/node/keeper"
 	"github.com/sentinel-official/hub/x/node/types"
 )
 
-func EndBlock(ctx sdk.Context, k keeper.Keeper) []abci.ValidatorUpdate {
+func EndBlock(ctx sdk.Context, k keeper.Keeper) []abcitypes.ValidatorUpdate {
 	var (
 		log = k.Logger(ctx)
 		end = ctx.BlockTime().Add(-1 * k.InactiveDuration(ctx))

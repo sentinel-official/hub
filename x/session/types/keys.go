@@ -25,24 +25,14 @@ var (
 )
 
 var (
-	CountKey                         = []byte{0x00}
-	ChannelKeyPrefix                 = []byte{0x10}
-	SessionKeyPrefix                 = []byte{0x11}
-	SessionForSubscriptionKeyPrefix  = []byte{0x20}
-	SessionForNodeKeyPrefix          = []byte{0x21}
-	SessionForAddressKeyPrefix       = []byte{0x22}
-	ActiveSessionAtKeyPrefix         = []byte{0x30}
-	ActiveSessionForAddressKeyPrefix = []byte{0x31}
+	CountKey                           = []byte{0x00}
+	SessionKeyPrefix                   = []byte{0x11}
+	SessionForSubscriptionKeyPrefix    = []byte{0x20}
+	SessionForNodeKeyPrefix            = []byte{0x21}
+	InactiveSessionForAddressKeyPrefix = []byte{0x30}
+	ActiveSessionForAddressKeyPrefix   = []byte{0x31}
+	ActiveSessionAtKeyPrefix           = []byte{0x40}
 )
-
-func GetChannelKeyPrefix(address sdk.AccAddress) []byte {
-	return append(ChannelKeyPrefix, address.Bytes()...)
-}
-
-func ChannelKey(address sdk.AccAddress, subscription uint64, node hubtypes.NodeAddress) []byte {
-	return append(GetChannelKeyPrefix(address),
-		append(sdk.Uint64ToBigEndian(subscription), node.Bytes()...)...)
-}
 
 func SessionKey(id uint64) []byte {
 	return append(SessionKeyPrefix, sdk.Uint64ToBigEndian(id)...)
@@ -64,21 +54,20 @@ func SessionForNodeKey(address hubtypes.NodeAddress, id uint64) []byte {
 	return append(GetSessionForNodeKeyPrefix(address), sdk.Uint64ToBigEndian(id)...)
 }
 
-func GetSessionForAddressKeyPrefix(address sdk.AccAddress) []byte {
-	return append(SessionForAddressKeyPrefix, address.Bytes()...)
+func GetInactiveSessionForAddressKeyPrefix(address sdk.AccAddress) []byte {
+	return append(InactiveSessionForAddressKeyPrefix, address.Bytes()...)
 }
 
-func SessionForAddressKey(address sdk.AccAddress, id uint64) []byte {
-	return append(GetSessionForAddressKeyPrefix(address), sdk.Uint64ToBigEndian(id)...)
+func InactiveSessionForAddressKey(address sdk.AccAddress, id uint64) []byte {
+	return append(GetInactiveSessionForAddressKeyPrefix(address), sdk.Uint64ToBigEndian(id)...)
 }
 
 func GetActiveSessionForAddressKeyPrefix(address sdk.AccAddress) []byte {
 	return append(ActiveSessionForAddressKeyPrefix, address.Bytes()...)
 }
 
-func ActiveSessionForAddressKey(address sdk.AccAddress, subscription uint64, node hubtypes.NodeAddress) []byte {
-	return append(GetActiveSessionForAddressKeyPrefix(address),
-		append(sdk.Uint64ToBigEndian(subscription), node.Bytes()...)...)
+func ActiveSessionForAddressKey(address sdk.AccAddress, id uint64) []byte {
+	return append(GetActiveSessionForAddressKeyPrefix(address), sdk.Uint64ToBigEndian(id)...)
 }
 
 func GetActiveSessionAtKeyPrefix(at time.Time) []byte {
@@ -97,7 +86,7 @@ func IDFromSessionForNodeKey(key []byte) uint64 {
 	return binary.BigEndian.Uint64(key[1+sdk.AddrLen:])
 }
 
-func IDFromSessionForAddressKey(key []byte) uint64 {
+func IDFromStatusSessionForAddressKey(key []byte) uint64 {
 	return binary.BigEndian.Uint64(key[1+sdk.AddrLen:])
 }
 

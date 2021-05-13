@@ -6,24 +6,24 @@ option go_package = "github.com/sentinel-official/hub/x/session/types";
 import "gogoproto/gogo.proto";
 import "sentinel/session/v1/proof.proto";
 
-option (gogoproto.equal_all) = false;
+option (gogoproto.equal_all)           = false;
 option (gogoproto.goproto_getters_all) = false;
 
 message MsgStartRequest {
-  string from = 1;
-  uint64 id = 2;
+  string from    = 1;
+  uint64 id      = 2;
   string address = 3;
 }
 
 message MsgUpdateRequest {
-  string from = 1;
-  Proof proof = 2 [(gogoproto.nullable) = false];
+  string from     = 1;
+  Proof proof     = 2 [ (gogoproto.nullable) = false ];
   bytes signature = 3;
 }
 
 message MsgEndRequest {
-  string from = 1;
-  uint64 id = 2;
+  string from   = 1;
+  uint64 id     = 2;
   uint64 rating = 3;
 }
 

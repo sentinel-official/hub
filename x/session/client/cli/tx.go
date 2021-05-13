@@ -8,7 +8,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/spf13/cobra"
 
 	hubtypes "github.com/sentinel-official/hub/types"
@@ -17,21 +16,16 @@ import (
 
 func txUpsert() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "upsert [subscription] [address] [duration] [upload] [download] (channel) (signature)",
+		Use:   "update [id] [upload] [download] [duration] (signature)",
 		Short: "Add or update a session",
-		Args:  cobra.ExactArgs(5),
+		Args:  cobra.ExactArgs(4),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
 			}
 
-			subscription, err := strconv.ParseUint(args[0], 10, 64)
-			if err != nil {
-				return err
-			}
-
-			address, err := sdk.AccAddressFromBech32(args[1])
+			id, err := strconv.ParseUint(args[1], 10, 64)
 			if err != nil {
 				return err
 			}
@@ -51,30 +45,21 @@ func txUpsert() *cobra.Command {
 				return err
 			}
 
-			var channel uint64
-			if len(args) > 5 && args[5] != "" {
-				channel, err = strconv.ParseUint(args[3], 10, 64)
-				if err != nil {
-					return err
-				}
-			}
-
 			var signature []byte = nil
-			if len(args) > 6 && args[6] != "" {
+			if len(args) > 5 && args[5] != "" {
 				signature, err = hex.DecodeString(args[6])
 				if err != nil {
 					return err
 				}
 			}
 
-			msg := types.NewMsgUpsertRequest(
-				types.NewProof(
-					channel,
-					subscription,
-					ctx.FromAddress.Bytes(),
-					duration,
-					hubtypes.NewBandwidthFromInt64(upload, download),
-				), address, signature)
+			msg := types.NewMsgUpdateRequest(
+				ctx.FromAddress.Bytes(),
+				types.Proof{
+					Id:        id,
+					Duration:  duration,
+					Bandwidth: hubtypes.NewBandwidthFromInt64(upload, download),
+				}, signature)
 			if err := msg.ValidateBasic(); err != nil {
 				return err
 			}

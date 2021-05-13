@@ -32,14 +32,17 @@ func (m *MsgStartRequest) Type() string {
 }
 
 func (m *MsgStartRequest) ValidateBasic() error {
+	// From shouldn't be nil or empty
 	if _, err := sdk.AccAddressFromBech32(m.From); err != nil {
 		return errors.Wrapf(ErrorInvalidField, "%s", "from")
 	}
 
+	// Id should be positive
 	if m.Id == 0 {
 		return errors.Wrapf(ErrorInvalidField, "%d", "id")
 	}
 
+	// Address shouldn't be nil or empty
 	if _, err := hubtypes.NodeAddressFromBech32(m.Address); err != nil {
 		return errors.Wrapf(ErrorInvalidField, "%s", "address")
 	}
@@ -87,14 +90,9 @@ func (m *MsgUpdateRequest) ValidateBasic() error {
 		return errors.Wrapf(ErrorInvalidField, "%s", "proof->duration")
 	}
 
-	// Upload shouldn't be negative
-	if m.Proof.Upload.IsNegative() {
-		return errors.Wrapf(ErrorInvalidField, "%s", "proof->upload")
-	}
-
-	// Download shouldn't be negative
-	if m.Proof.Download.IsNegative() {
-		return errors.Wrapf(ErrorInvalidField, "%s", "proof->download")
+	// Bandwidth shouldn't be negative
+	if m.Proof.Bandwidth.IsAnyNegative() {
+		return errors.Wrapf(ErrorInvalidField, "%s", "proof->bandwidth")
 	}
 
 	// Signature can be nil, if not length should be 64
@@ -135,14 +133,17 @@ func (m *MsgEndRequest) Type() string {
 }
 
 func (m *MsgEndRequest) ValidateBasic() error {
+	// From shouldn't be nil or empty
 	if _, err := sdk.AccAddressFromBech32(m.From); err != nil {
 		return errors.Wrapf(ErrorInvalidField, "%s", "from")
 	}
 
+	// Id should be positive
 	if m.Id == 0 {
 		return errors.Wrapf(ErrorInvalidField, "%d", "id")
 	}
 
+	// Rating shouldn't be greater than 10
 	if m.Rating > 10 {
 		return errors.Wrapf(ErrorInvalidField, "%d", "rating")
 	}
