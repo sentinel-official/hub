@@ -84,7 +84,7 @@ func (q *queryServer) QuerySessionsForSubscription(c context.Context, req *types
 	)
 
 	pagination, err := query.FilteredPaginate(store, req.Pagination, func(key, _ []byte, accumulate bool) (bool, error) {
-		item, found := q.GetSession(ctx, types.IDFromSessionForSubscriptionKey(key))
+		item, found := q.GetSession(ctx, sdk.BigEndianToUint64(key))
 		if !found {
 			return false, nil
 		}
@@ -120,7 +120,7 @@ func (q *queryServer) QuerySessionsForNode(c context.Context, req *types.QuerySe
 	)
 
 	pagination, err := query.FilteredPaginate(store, req.Pagination, func(key, _ []byte, accumulate bool) (bool, error) {
-		item, found := q.GetSession(ctx, types.IDFromSessionForNodeKey(key))
+		item, found := q.GetSession(ctx, sdk.BigEndianToUint64(key))
 		if !found {
 			return false, nil
 		}
@@ -158,7 +158,7 @@ func (q *queryServer) QuerySessionsForAddress(c context.Context, req *types.Quer
 	if req.Status.Equal(hubtypes.StatusActive) {
 		store := prefix.NewStore(q.Store(ctx), types.GetActiveSessionForAddressKeyPrefix(address))
 		pagination, err = query.FilteredPaginate(store, req.Pagination, func(key []byte, _ []byte, accumulate bool) (bool, error) {
-			item, found := q.GetSession(ctx, types.IDFromStatusSessionForAddressKey(key))
+			item, found := q.GetSession(ctx, sdk.BigEndianToUint64(key))
 			if !found {
 				return false, nil
 			}
@@ -172,7 +172,7 @@ func (q *queryServer) QuerySessionsForAddress(c context.Context, req *types.Quer
 	} else if req.Status.Equal(hubtypes.StatusInactive) {
 		store := prefix.NewStore(q.Store(ctx), types.GetInactiveSessionForAddressKeyPrefix(address))
 		pagination, err = query.FilteredPaginate(store, req.Pagination, func(key []byte, _ []byte, accumulate bool) (bool, error) {
-			item, found := q.GetSession(ctx, types.IDFromStatusSessionForAddressKey(key))
+			item, found := q.GetSession(ctx, sdk.BigEndianToUint64(key))
 			if !found {
 				return false, nil
 			}
