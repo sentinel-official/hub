@@ -246,15 +246,19 @@ func (k *Keeper) DeleteInactiveNodeAt(ctx sdk.Context, at time.Time, address hub
 	store.Delete(key)
 }
 
-func (k *Keeper) IterateInactiveNodesAt(ctx sdk.Context, at time.Time, fn func(index int, item types.Node) (stop bool)) {
+func (k *Keeper) IterateInactiveNodesAt(ctx sdk.Context, at time.Time, fn func(index int, key []byte, item types.Node) (stop bool)) {
 	store := k.Store(ctx)
 
 	iter := store.Iterator(types.InactiveNodeAtKeyPrefix, sdk.PrefixEndBytes(types.GetInactiveNodeAtKeyPrefix(at)))
 	defer iter.Close()
 
 	for i := 0; iter.Valid(); iter.Next() {
-		node, _ := k.GetNode(ctx, types.AddressFromStatusNodeAtKey(iter.Key()))
-		if stop := fn(i, node); stop {
+		var (
+			key     = iter.Key()
+			node, _ = k.GetNode(ctx, types.AddressFromStatusNodeAtKey(key))
+		)
+
+		if stop := fn(i, key, node); stop {
 			break
 		}
 		i++

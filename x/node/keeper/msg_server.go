@@ -179,8 +179,9 @@ func (k *msgServer) MsgSetStatus(c context.Context, msg *types.MsgSetStatusReque
 	}
 
 	var (
-		nodeAddress  = node.GetAddress()
-		nodeProvider = node.GetProvider()
+		nodeAddress      = node.GetAddress()
+		nodeProvider     = node.GetProvider()
+		inactiveDuration = k.InactiveDuration(ctx)
 	)
 
 	if node.Status.Equal(hubtypes.StatusActive) {
@@ -194,7 +195,7 @@ func (k *msgServer) MsgSetStatus(c context.Context, msg *types.MsgSetStatusReque
 			}
 		}
 
-		k.DeleteInactiveNodeAt(ctx, node.StatusAt, nodeAddress)
+		k.DeleteInactiveNodeAt(ctx, node.StatusAt.Add(inactiveDuration), nodeAddress)
 	} else {
 		if msg.Status.Equal(hubtypes.StatusActive) {
 			k.DeleteInactiveNode(ctx, nodeAddress)
@@ -211,7 +212,7 @@ func (k *msgServer) MsgSetStatus(c context.Context, msg *types.MsgSetStatusReque
 	node.StatusAt = ctx.BlockTime()
 
 	if node.Status.Equal(hubtypes.StatusActive) {
-		k.SetInactiveNodeAt(ctx, node.StatusAt, nodeAddress)
+		k.SetInactiveNodeAt(ctx, node.StatusAt.Add(inactiveDuration), nodeAddress)
 	}
 
 	k.SetNode(ctx, node)
