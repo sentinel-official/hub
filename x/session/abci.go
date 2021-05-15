@@ -2,105 +2,38 @@ package session
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	abci "github.com/tendermint/tendermint/abci/types"
+	abcitypes "github.com/tendermint/tendermint/abci/types"
 
 	hubtypes "github.com/sentinel-official/hub/types"
 	"github.com/sentinel-official/hub/x/session/keeper"
 	"github.com/sentinel-official/hub/x/session/types"
 )
 
-func EndBlock(ctx sdk.Context, k keeper.Keeper) []abci.ValidatorUpdate {
-	end := ctx.BlockTime().Add(-1 * k.InactiveDuration(ctx))
-	k.IterateActiveSessionsAt(ctx, end, func(_ int, item types.Session) bool {
-		k.Logger(ctx).Info("Inactive session", "id", item.Id,
-			"subscription", item.Subscription, "node", item.Node, "address", item.Address)
+func EndBlock(ctx sdk.Context, k keeper.Keeper) []abcitypes.ValidatorUpdate {
+	var (
+		log = k.Logger(ctx)
+		end = ctx.BlockTime().Add(-1 * k.InactiveDuration(ctx))
+	)
 
-		if err := process(ctx, k, item); err != nil {
+	k.IterateActiveSessionsAt(ctx, end, func(_ int, key []byte, item types.Session) bool {
+		log.Info("inactive session", "key", key, "value", item)
+
+		itemAddress := item.GetAddress()
+		if err := k.ProcessPaymentAndUpdateQuota(ctx, item); err != nil {
 			panic(err)
 		}
 
-		var (
-			itemAddress = item.GetAddress()
-			itemNode    = item.GetNode()
-		)
-
-		if k.ProofVerificationEnabled(ctx) {
-			channel := k.GetChannel(ctx, itemAddress, item.Subscription, itemNode)
-			k.SetChannel(ctx, itemAddress, item.Subscription, itemNode, channel+1)
-		}
-
-		k.DeleteActiveSessionForAddress(ctx, itemAddress, item.Subscription, itemNode)
+		k.DeleteActiveSessionForAddress(ctx, itemAddress, item.Id)
 		k.DeleteActiveSessionAt(ctx, item.StatusAt, item.Id)
 
 		item.Status = hubtypes.StatusInactive
 		item.StatusAt = ctx.BlockTime()
+
 		k.SetSession(ctx, item)
+		k.SetInactiveSessionForAddress(ctx, itemAddress, item.Id)
 
 		return false
 	})
-
-	return nil
-}
-
-func process(ctx sdk.Context, k keeper.Keeper, session types.Session) error {
-	subscription, found := k.GetSubscription(ctx, session.Subscription)
-	if !found {
-		return types.ErrorSubscriptionDoesNotExit
-	}
-
-	var (
-		sessionAddress = session.GetAddress()
-	)
-
-	quota, found := k.GetQuota(ctx, session.Subscription, sessionAddress)
-	if !found {
-		return types.ErrorQuotaDoesNotExist
-	}
-
-	free := quota.Allocated.Sub(quota.Consumed)
-	if !free.IsPositive() {
-		return nil
-	}
-
-	if subscription.Plan == 0 {
-		if subscription.Status.Equal(hubtypes.StatusInactive) {
-			return nil
-		}
-
-		bandwidth := hubtypes.NewBandwidth(
-			session.Bandwidth.Sum(), sdk.ZeroInt(),
-		).CeilTo(
-			hubtypes.Gigabyte.Quo(subscription.Price.Amount),
-		).Sum()
-		if bandwidth.GT(free) {
-			bandwidth = free
-		}
-
-		quota.Consumed = quota.Consumed.Add(bandwidth)
-		k.SetQuota(ctx, session.Subscription, quota)
-
-		amount := subscription.Amount(bandwidth)
-		ctx.Logger().Info("", "price", subscription.Price, "deposit", subscription.Deposit,
-			"consumed", session.Bandwidth.Sum(), "rounded", bandwidth, "amount", amount)
-
-		sessionNode, err := hubtypes.NodeAddressFromBech32(session.Node)
-		if err != nil {
-			return err
-		}
-
-		return k.SendCoinsFromDepositToAccount(ctx, sessionAddress, sessionNode.Bytes(), amount)
-	}
-
-	bandwidth := session.Bandwidth.Sum()
-	if bandwidth.GT(free) {
-		bandwidth = free
-	}
-
-	quota.Consumed = quota.Consumed.Add(bandwidth)
-	k.SetQuota(ctx, session.Subscription, quota)
-
-	ctx.Logger().Info("", "plan", subscription.Plan,
-		"consumed", session.Bandwidth.Sum(), "rounded", bandwidth)
 
 	return nil
 }

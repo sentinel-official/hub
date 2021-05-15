@@ -36,7 +36,7 @@ func (k *msgServer) MsgRegister(c context.Context, msg *types.MsgRegisterRequest
 
 	deposit := k.Deposit(ctx)
 	if deposit.IsPositive() {
-		if err = k.FundCommunityPool(ctx, msgFrom, deposit); err != nil {
+		if err := k.FundCommunityPool(ctx, msgFrom, deposit); err != nil {
 			return nil, err
 		}
 	}
