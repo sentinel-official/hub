@@ -133,6 +133,8 @@ func txAddNode() *cobra.Command {
 		},
 	}
 
+	flags.AddTxFlagsToCmd(cmd)
+
 	return cmd
 }
 
