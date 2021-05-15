@@ -19,6 +19,7 @@ type Keeper struct {
 	params       paramstypes.Subspace
 	account      expected.AccountKeeper
 	deposit      expected.DepositKeeper
+	node         expected.NodeKeeper
 	plan         expected.PlanKeeper
 	subscription expected.SubscriptionKeeper
 }
@@ -37,6 +38,10 @@ func (k *Keeper) WithAccountKeeper(keeper expected.AccountKeeper) {
 
 func (k *Keeper) WithDepositKeeper(keeper expected.DepositKeeper) {
 	k.deposit = keeper
+}
+
+func (k *Keeper) WithNodeKeeper(keeper expected.NodeKeeper) {
+	k.node = keeper
 }
 
 func (k *Keeper) WithPlanKeeper(keeper expected.PlanKeeper) {

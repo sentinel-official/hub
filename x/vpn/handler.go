@@ -77,8 +77,14 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 			res, err := subscriptionServer.MsgUpdateQuota(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
 
-		case *sessiontypes.MsgUpsertRequest:
-			res, err := sessionServer.MsgUpsert(sdk.WrapSDKContext(ctx), msg)
+		case *sessiontypes.MsgStartRequest:
+			res, err := sessionServer.MsgStart(sdk.WrapSDKContext(ctx), msg)
+			return sdk.WrapServiceResult(ctx, res, err)
+		case *sessiontypes.MsgUpdateRequest:
+			res, err := sessionServer.MsgUpdate(sdk.WrapSDKContext(ctx), msg)
+			return sdk.WrapServiceResult(ctx, res, err)
+		case *sessiontypes.MsgEndRequest:
+			res, err := sessionServer.MsgEnd(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
 		default:
 			return nil, errors.Wrapf(types.ErrorUnknownMsgType, "%s", msg.Type())

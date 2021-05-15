@@ -19,11 +19,12 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, state *types.GenesisState) {
 		k.SetSession(ctx, session)
 		k.SetSessionForSubscription(ctx, session.Subscription, session.Id)
 		k.SetSessionForNode(ctx, sessionNode, session.Id)
-		k.SetSessionForAddress(ctx, sessionAddress, session.Id)
 
 		if session.Status.Equal(hubtypes.StatusActive) {
-			k.SetActiveSessionForAddress(ctx, sessionAddress, session.Subscription, sessionNode, session.Id)
+			k.SetActiveSessionForAddress(ctx, sessionAddress, session.Id)
 			k.SetActiveSessionAt(ctx, session.StatusAt, session.Id)
+		} else {
+			k.SetInactiveSessionForAddress(ctx, sessionAddress, session.Id)
 		}
 	}
 

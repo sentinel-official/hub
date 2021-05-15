@@ -23,7 +23,7 @@ type PlanKeeper interface {
 }
 
 type NodeKeeper interface {
-	GetNodes(ctx sdk.Context, skip, limit int64) nodetypes.Nodes
+	GetNode(ctx sdk.Context, address hubtypes.NodeAddress) (nodetypes.Node, bool)
 }
 
 type SubscriptionKeeper interface {

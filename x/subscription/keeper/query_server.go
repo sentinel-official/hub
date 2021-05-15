@@ -89,7 +89,7 @@ func (q *queryServer) QuerySubscriptionsForNode(c context.Context, req *types.Qu
 	)
 
 	pagination, err := query.FilteredPaginate(store, req.Pagination, func(key, _ []byte, accumulate bool) (bool, error) {
-		item, found := q.GetSubscription(ctx, types.IDFromSubscriptionForNodeKey(key))
+		item, found := q.GetSubscription(ctx, sdk.BigEndianToUint64(key))
 		if !found {
 			return false, nil
 		}
@@ -120,7 +120,7 @@ func (q *queryServer) QuerySubscriptionsForPlan(c context.Context, req *types.Qu
 	)
 
 	pagination, err := query.FilteredPaginate(store, req.Pagination, func(key, _ []byte, accumulate bool) (bool, error) {
-		item, found := q.GetSubscription(ctx, types.IDFromSubscriptionForPlanKey(key))
+		item, found := q.GetSubscription(ctx, sdk.BigEndianToUint64(key))
 		if !found {
 			return false, nil
 		}
@@ -158,7 +158,7 @@ func (q *queryServer) QuerySubscriptionsForAddress(c context.Context, req *types
 	if req.Status.Equal(hubtypes.Active) {
 		store := prefix.NewStore(q.Store(ctx), types.GetActiveSubscriptionForAddressKeyPrefix(address))
 		pagination, err = query.FilteredPaginate(store, req.Pagination, func(key, _ []byte, accumulate bool) (bool, error) {
-			item, found := q.GetSubscription(ctx, types.IDFromStatusSubscriptionForAddressKey(key))
+			item, found := q.GetSubscription(ctx, sdk.BigEndianToUint64(key))
 			if !found {
 				return false, nil
 			}
@@ -172,7 +172,7 @@ func (q *queryServer) QuerySubscriptionsForAddress(c context.Context, req *types
 	} else if req.Status.Equal(hubtypes.Inactive) {
 		store := prefix.NewStore(q.Store(ctx), types.GetInactiveSubscriptionForAddressKeyPrefix(address))
 		pagination, err = query.FilteredPaginate(store, req.Pagination, func(key, _ []byte, accumulate bool) (bool, error) {
-			item, found := q.GetSubscription(ctx, types.IDFromStatusSubscriptionForAddressKey(key))
+			item, found := q.GetSubscription(ctx, sdk.BigEndianToUint64(key))
 			if !found {
 				return false, nil
 			}
@@ -239,7 +239,7 @@ func (q *queryServer) QueryQuotas(c context.Context, req *types.QueryQuotasReque
 	var (
 		items types.Quotas
 		ctx   = sdk.UnwrapSDKContext(c)
-		store = prefix.NewStore(q.Store(ctx), types.SubscriptionKeyPrefix)
+		store = prefix.NewStore(q.Store(ctx), types.GetQuotaKeyPrefix(req.Id))
 	)
 
 	pagination, err := query.FilteredPaginate(store, req.Pagination, func(_, value []byte, accumulate bool) (bool, error) {

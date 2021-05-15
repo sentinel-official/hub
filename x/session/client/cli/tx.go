@@ -8,73 +8,130 @@ import (
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/spf13/cobra"
 
 	hubtypes "github.com/sentinel-official/hub/types"
 	"github.com/sentinel-official/hub/x/session/types"
 )
 
-func txUpsert() *cobra.Command {
+func txStart() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "upsert [subscription] [address] [duration] [upload] [download] (channel) (signature)",
-		Short: "Add or update a session",
-		Args:  cobra.ExactArgs(5),
+		Use:   "start [id] [address]",
+		Short: "Start a session",
+		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
 			}
 
-			subscription, err := strconv.ParseUint(args[0], 10, 64)
+			id, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
 
-			address, err := sdk.AccAddressFromBech32(args[1])
+			address, err := hubtypes.NodeAddressFromBech32(args[1])
 			if err != nil {
 				return err
 			}
 
-			duration, err := time.ParseDuration(args[2])
+			msg := types.NewMsgStartRequest(ctx.FromAddress, id, address)
+			if err := msg.ValidateBasic(); err != nil {
+				return err
+			}
+
+			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
+		},
+	}
+
+	flags.AddTxFlagsToCmd(cmd)
+
+	return cmd
+}
+
+func txUpdate() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "update [id] [upload] [download] [duration] (signature)",
+		Short: "Add or update a session",
+		Args:  cobra.ExactArgs(4),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
 			}
 
-			upload, err := strconv.ParseInt(args[3], 10, 64)
+			id, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
 
-			download, err := strconv.ParseInt(args[4], 10, 64)
+			upload, err := strconv.ParseInt(args[1], 10, 64)
 			if err != nil {
 				return err
 			}
 
-			var channel uint64
-			if len(args) > 5 && args[5] != "" {
-				channel, err = strconv.ParseUint(args[3], 10, 64)
-				if err != nil {
-					return err
-				}
+			download, err := strconv.ParseInt(args[2], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			duration, err := time.ParseDuration(args[3])
+			if err != nil {
+				return err
 			}
 
 			var signature []byte = nil
-			if len(args) > 6 && args[6] != "" {
-				signature, err = hex.DecodeString(args[6])
+			if len(args) > 4 && args[4] != "" {
+				signature, err = hex.DecodeString(args[4])
 				if err != nil {
 					return err
 				}
 			}
 
-			msg := types.NewMsgUpsertRequest(
-				types.NewProof(
-					channel,
-					subscription,
-					ctx.FromAddress.Bytes(),
-					duration,
-					hubtypes.NewBandwidthFromInt64(upload, download),
-				), address, signature)
+			msg := types.NewMsgUpdateRequest(
+				ctx.FromAddress.Bytes(),
+				types.Proof{
+					Id:        id,
+					Duration:  duration,
+					Bandwidth: hubtypes.NewBandwidthFromInt64(upload, download),
+				},
+				signature,
+			)
+			if err := msg.ValidateBasic(); err != nil {
+				return err
+			}
+
+			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
+		},
+	}
+
+	flags.AddTxFlagsToCmd(cmd)
+
+	return cmd
+}
+
+func txEnd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "end [id] [rating]",
+		Short: "End a session",
+		Args:  cobra.ExactArgs(2),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			id, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			rating, err := strconv.ParseUint(args[1], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			msg := types.NewMsgEndRequest(ctx.FromAddress, id, rating)
 			if err := msg.ValidateBasic(); err != nil {
 				return err
 			}
