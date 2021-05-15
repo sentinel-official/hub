@@ -10,9 +10,9 @@ option (gogoproto.equal_all)           = false;
 option (gogoproto.goproto_getters_all) = false;
 
 message MsgStartRequest {
-  string from    = 1;
-  uint64 id      = 2;
-  string address = 3;
+  string from = 1;
+  uint64 id   = 2;
+  string node = 3;
 }
 
 message MsgUpdateRequest {

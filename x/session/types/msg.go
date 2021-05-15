@@ -15,11 +15,11 @@ var (
 	_ sdk.Msg = (*MsgEndRequest)(nil)
 )
 
-func NewMsgStartRequest(from sdk.AccAddress, id uint64, address hubtypes.NodeAddress) *MsgStartRequest {
+func NewMsgStartRequest(from sdk.AccAddress, id uint64, node hubtypes.NodeAddress) *MsgStartRequest {
 	return &MsgStartRequest{
-		From:    from.String(),
-		Id:      id,
-		Address: address.String(),
+		From: from.String(),
+		Id:   id,
+		Node: node.String(),
 	}
 }
 
@@ -43,7 +43,7 @@ func (m *MsgStartRequest) ValidateBasic() error {
 	}
 
 	// Address shouldn't be nil or empty
-	if _, err := hubtypes.NodeAddressFromBech32(m.Address); err != nil {
+	if _, err := hubtypes.NodeAddressFromBech32(m.Node); err != nil {
 		return errors.Wrapf(ErrorInvalidField, "%s", "address")
 	}
 
