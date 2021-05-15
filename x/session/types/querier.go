@@ -40,11 +40,3 @@ func NewQuerySessionsForAddressRequest(address sdk.AccAddress, status hubtypes.S
 		Pagination: pagination,
 	}
 }
-
-func NewQueryActiveSessionRequest(address sdk.AccAddress, subscription uint64, node hubtypes.NodeAddress) *QueryActiveSessionRequest {
-	return &QueryActiveSessionRequest{
-		Address:      address.String(),
-		Subscription: subscription,
-		Node:         node.String(),
-	}
-}

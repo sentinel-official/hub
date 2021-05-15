@@ -56,7 +56,7 @@ func (q *queryServer) QueryPlans(c context.Context, req *types.QueryPlansRequest
 	if req.Status.Equal(hubtypes.Active) {
 		store := prefix.NewStore(q.Store(ctx), types.ActivePlanKeyPrefix)
 		pagination, err = query.FilteredPaginate(store, req.Pagination, func(key, _ []byte, accumulate bool) (bool, error) {
-			item, found := q.GetPlan(ctx, types.IDFromStatusPlanKey(key))
+			item, found := q.GetPlan(ctx, sdk.BigEndianToUint64(key))
 			if !found {
 				return false, nil
 			}
@@ -70,7 +70,7 @@ func (q *queryServer) QueryPlans(c context.Context, req *types.QueryPlansRequest
 	} else if req.Status.Equal(hubtypes.Inactive) {
 		store := prefix.NewStore(q.Store(ctx), types.InactivePlanKeyPrefix)
 		pagination, err = query.FilteredPaginate(store, req.Pagination, func(key, _ []byte, accumulate bool) (bool, error) {
-			item, found := q.GetPlan(ctx, types.IDFromStatusPlanKey(key))
+			item, found := q.GetPlan(ctx, sdk.BigEndianToUint64(key))
 			if !found {
 				return false, nil
 			}
@@ -123,7 +123,7 @@ func (q *queryServer) QueryPlansForProvider(c context.Context, req *types.QueryP
 	if req.Status.Equal(hubtypes.Active) {
 		store := prefix.NewStore(q.Store(ctx), types.GetActivePlanForProviderKeyPrefix(address))
 		pagination, err = query.FilteredPaginate(store, req.Pagination, func(key, _ []byte, accumulate bool) (bool, error) {
-			item, found := q.GetPlan(ctx, types.IDFromStatusPlanForProviderKey(key))
+			item, found := q.GetPlan(ctx, sdk.BigEndianToUint64(key))
 			if !found {
 				return false, nil
 			}
@@ -137,7 +137,7 @@ func (q *queryServer) QueryPlansForProvider(c context.Context, req *types.QueryP
 	} else if req.Status.Equal(hubtypes.Inactive) {
 		store := prefix.NewStore(q.Store(ctx), types.GetInactivePlanForProviderKeyPrefix(address))
 		pagination, err = query.FilteredPaginate(store, req.Pagination, func(key, _ []byte, accumulate bool) (bool, error) {
-			item, found := q.GetPlan(ctx, types.IDFromStatusPlanForProviderKey(key))
+			item, found := q.GetPlan(ctx, sdk.BigEndianToUint64(key))
 			if !found {
 				return false, nil
 			}
@@ -189,7 +189,7 @@ func (q *queryServer) QueryNodesForPlan(c context.Context, req *types.QueryNodes
 
 	store := prefix.NewStore(q.Store(ctx), types.GetNodeForPlanKeyPrefix(req.Id))
 	pagination, err := query.FilteredPaginate(store, req.Pagination, func(key, _ []byte, accumulate bool) (bool, error) {
-		item, found := q.GetNode(ctx, types.AddressFromNodeForPlanKey(key))
+		item, found := q.GetNode(ctx, key)
 		if !found {
 			return false, nil
 		}

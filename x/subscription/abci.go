@@ -2,22 +2,21 @@ package subscription
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	abci "github.com/tendermint/tendermint/abci/types"
+	abcitypes "github.com/tendermint/tendermint/abci/types"
 
 	hubtypes "github.com/sentinel-official/hub/types"
 	"github.com/sentinel-official/hub/x/subscription/keeper"
 	"github.com/sentinel-official/hub/x/subscription/types"
 )
 
-func EndBlock(ctx sdk.Context, k keeper.Keeper) []abci.ValidatorUpdate {
+func EndBlock(ctx sdk.Context, k keeper.Keeper) []abcitypes.ValidatorUpdate {
 	var (
-		log = k.Logger(ctx)
-		end = ctx.BlockTime().Add(-1 * k.InactiveDuration(ctx))
+		log              = k.Logger(ctx)
+		inactiveDuration = k.InactiveDuration(ctx)
 	)
 
-	k.IterateInactiveSubscriptions(ctx, end, func(_ int, item types.Subscription) bool {
-		log.Info("Inactive subscription", "id", item.Id,
-			"owner", item.Owner, "plan", item.Plan, "node", item.Node)
+	k.IterateInactiveSubscriptions(ctx, ctx.BlockTime(), func(_ int, key []byte, item types.Subscription) bool {
+		log.Info("inactive subscription", "key", key, "value", item)
 
 		if item.Plan == 0 {
 			consumed := sdk.ZeroInt()
@@ -27,8 +26,8 @@ func EndBlock(ctx sdk.Context, k keeper.Keeper) []abci.ValidatorUpdate {
 			})
 
 			amount := item.Deposit.Sub(item.Amount(consumed))
-			log.Info("", "price", item.Price,
-				"deposit", item.Deposit, "consumed", consumed, "amount", amount)
+			log.Info("calculated refund of subscription", "id", item.Id,
+				"consumed", consumed, "amount", amount)
 
 			itemOwner, err := sdk.AccAddressFromBech32(item.Owner)
 			if err != nil {
@@ -38,19 +37,25 @@ func EndBlock(ctx sdk.Context, k keeper.Keeper) []abci.ValidatorUpdate {
 			if err := k.SubtractDeposit(ctx, itemOwner, amount); err != nil {
 				panic(err)
 			}
-
-			k.DeleteInactiveSubscriptionAt(ctx, item.StatusAt.Add(k.InactiveDuration(ctx)), item.Id)
 		} else {
-			k.DeleteInactiveSubscriptionAt(ctx, item.Expiry, item.Id)
+			if item.Status.Equal(hubtypes.StatusActive) {
+				item.Status = hubtypes.StatusInactivePending
+				item.StatusAt = item.Expiry
+
+				k.SetSubscription(ctx, item)
+				k.DeleteInactiveSubscriptionAt(ctx, item.Expiry, item.Id)
+				k.SetInactiveSubscriptionAt(ctx, item.Expiry.Add(inactiveDuration), item.Id)
+
+				return false
+			}
 		}
 
+		k.DeleteInactiveSubscriptionAt(ctx, item.StatusAt.Add(inactiveDuration), item.Id)
 		k.IterateQuotas(ctx, item.Id, func(_ int, quota types.Quota) bool {
-			var (
-				quotaAddress = quota.GetAddress()
-			)
-
+			quotaAddress := quota.GetAddress()
 			k.DeleteActiveSubscriptionForAddress(ctx, quotaAddress, item.Id)
 			k.SetInactiveSubscriptionForAddress(ctx, quotaAddress, item.Id)
+
 			return false
 		})
 
