@@ -245,15 +245,19 @@ func (k *Keeper) DeleteInactiveSubscriptionAt(ctx sdk.Context, at time.Time, id 
 	store.Delete(key)
 }
 
-func (k *Keeper) IterateInactiveSubscriptions(ctx sdk.Context, end time.Time, fn func(index int, item types.Subscription) (stop bool)) {
+func (k *Keeper) IterateInactiveSubscriptions(ctx sdk.Context, end time.Time, fn func(index int, key []byte, item types.Subscription) (stop bool)) {
 	store := k.Store(ctx)
 
 	iter := store.Iterator(types.InactiveSubscriptionAtKeyPrefix, sdk.PrefixEndBytes(types.GetInactiveSubscriptionAtKeyPrefix(end)))
 	defer iter.Close()
 
 	for i := 0; iter.Valid(); iter.Next() {
-		subscription, _ := k.GetSubscription(ctx, types.IDFromInactiveSubscriptionAtKey(iter.Key()))
-		if stop := fn(i, subscription); stop {
+		var (
+			key             = iter.Key()
+			subscription, _ = k.GetSubscription(ctx, types.IDFromInactiveSubscriptionAtKey(key))
+		)
+
+		if stop := fn(i, key, subscription); stop {
 			break
 		}
 		i++

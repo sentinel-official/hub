@@ -224,24 +224,14 @@ func (k *msgServer) MsgCancel(c context.Context, msg *types.MsgCancelRequest) (*
 		return nil, types.ErrorInvalidSubscriptionStatus
 	}
 
-	subscription.StatusAt = ctx.BlockTime()
-	if subscription.Plan == 0 {
-		subscription.Status = hubtypes.StatusInactivePending
-		k.SetInactiveSubscriptionAt(ctx, subscription.StatusAt.Add(k.InactiveDuration(ctx)), subscription.Id)
-	} else {
-		k.IterateQuotas(ctx, subscription.Id, func(_ int, quota types.Quota) bool {
-			var (
-				quotaAddress = quota.GetAddress()
-			)
-
-			k.DeleteActiveSubscriptionForAddress(ctx, quotaAddress, subscription.Id)
-			k.SetInactiveSubscriptionForAddress(ctx, quotaAddress, subscription.Id)
-			return false
-		})
-
-		subscription.Status = hubtypes.StatusInactive
+	inactiveDuration := k.InactiveDuration(ctx)
+	if subscription.Plan > 0 {
 		k.DeleteInactiveSubscriptionAt(ctx, subscription.Expiry, subscription.Id)
 	}
+
+	subscription.Status = hubtypes.StatusInactivePending
+	subscription.StatusAt = ctx.BlockTime()
+	k.SetInactiveSubscriptionAt(ctx, ctx.BlockTime().Add(inactiveDuration), subscription.Id)
 
 	k.SetSubscription(ctx, subscription)
 	ctx.EventManager().EmitTypedEvent(
