@@ -164,7 +164,7 @@ func (m *MsgAddNodeRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{from.Bytes()}
 }
 
-func NewMsgRemoveNodeRequest(from hubtypes.ProvAddress, id uint64, address hubtypes.NodeAddress) *MsgRemoveNodeRequest {
+func NewMsgRemoveNodeRequest(from sdk.AccAddress, id uint64, address hubtypes.NodeAddress) *MsgRemoveNodeRequest {
 	return &MsgRemoveNodeRequest{
 		From:    from.String(),
 		Id:      id,
@@ -181,7 +181,7 @@ func (m *MsgRemoveNodeRequest) Type() string {
 }
 
 func (m *MsgRemoveNodeRequest) ValidateBasic() error {
-	if _, err := hubtypes.ProvAddressFromBech32(m.From); err != nil {
+	if _, err := sdk.AccAddressFromBech32(m.From); err != nil {
 		return errors.Wrapf(ErrorInvalidField, "%s", "from")
 	}
 
@@ -203,10 +203,10 @@ func (m *MsgRemoveNodeRequest) GetSignBytes() []byte {
 }
 
 func (m *MsgRemoveNodeRequest) GetSigners() []sdk.AccAddress {
-	from, err := hubtypes.ProvAddressFromBech32(m.From)
+	from, err := sdk.AccAddressFromBech32(m.From)
 	if err != nil {
 		panic(err)
 	}
 
-	return []sdk.AccAddress{from.Bytes()}
+	return []sdk.AccAddress{from}
 }

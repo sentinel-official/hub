@@ -159,7 +159,7 @@ func txRemoveNode() *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgRemoveNodeRequest(ctx.FromAddress.Bytes(), id, node)
+			msg := types.NewMsgRemoveNodeRequest(ctx.FromAddress, id, node)
 			if err := msg.ValidateBasic(); err != nil {
 				return err
 			}
