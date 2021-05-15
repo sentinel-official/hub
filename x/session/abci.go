@@ -10,10 +10,13 @@ import (
 )
 
 func EndBlock(ctx sdk.Context, k keeper.Keeper) []abcitypes.ValidatorUpdate {
-	end := ctx.BlockTime().Add(-1 * k.InactiveDuration(ctx))
-	k.IterateActiveSessionsAt(ctx, end, func(_ int, item types.Session) bool {
-		k.Logger(ctx).Info("Inactive session", "id", item.Id,
-			"subscription", item.Subscription, "node", item.Node, "address", item.Address)
+	var (
+		log = k.Logger(ctx)
+		end = ctx.BlockTime().Add(-1 * k.InactiveDuration(ctx))
+	)
+
+	k.IterateActiveSessionsAt(ctx, end, func(_ int, key []byte, item types.Session) bool {
+		log.Info("inactive session", "key", key, "value", item)
 
 		itemAddress := item.GetAddress()
 		if err := k.ProcessPaymentAndUpdateQuota(ctx, item); err != nil {

@@ -19,4 +19,7 @@ var (
 	ErrorAccountDoesNotExist       = errors.Register(ModuleName, 112, "account does not exist")
 	ErrorPublicKeyDoesNotExist     = errors.Register(ModuleName, 113, "public key does not exist")
 	ErrorInvalidSignature          = errors.Register(ModuleName, 114, "invalid signature")
+	ErrorNodeAddressMismatch       = errors.Register(ModuleName, 115, "node address mismatch")
+	ErrorNodeDoesNotExistForPlan   = errors.Register(ModuleName, 116, "node does not exist for plan")
+	ErrorDuplicateSession          = errors.Register(ModuleName, 117, "duplicate session")
 )

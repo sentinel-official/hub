@@ -228,15 +228,19 @@ func (k *Keeper) DeleteActiveSessionAt(ctx sdk.Context, at time.Time, id uint64)
 	store.Delete(key)
 }
 
-func (k *Keeper) IterateActiveSessionsAt(ctx sdk.Context, end time.Time, fn func(index int, item types.Session) (stop bool)) {
+func (k *Keeper) IterateActiveSessionsAt(ctx sdk.Context, end time.Time, fn func(index int, key []byte, item types.Session) (stop bool)) {
 	store := k.Store(ctx)
 
 	iter := store.Iterator(types.ActiveSessionAtKeyPrefix, sdk.PrefixEndBytes(types.GetActiveSessionAtKeyPrefix(end)))
 	defer iter.Close()
 
 	for i := 0; iter.Valid(); iter.Next() {
-		session, _ := k.GetSession(ctx, types.IDFromActiveSessionAtKey(iter.Key()))
-		if stop := fn(i, session); stop {
+		var (
+			key        = iter.Key()
+			session, _ = k.GetSession(ctx, types.IDFromActiveSessionAtKey(key))
+		)
+
+		if stop := fn(i, key, session); stop {
 			break
 		}
 		i++

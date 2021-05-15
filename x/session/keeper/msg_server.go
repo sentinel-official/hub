@@ -37,6 +37,29 @@ func (k *msgServer) MsgStart(c context.Context, msg *types.MsgStartRequest) (*ty
 		return nil, types.ErrorInvalidSubscriptionStatus
 	}
 
+	msgNode, err := hubtypes.NodeAddressFromBech32(msg.Node)
+	if err != nil {
+		return nil, err
+	}
+
+	node, found := k.GetNode(ctx, msgNode)
+	if !found {
+		return nil, types.ErrorNodeDoesNotExist
+	}
+	if !node.Status.Equal(hubtypes.StatusActive) {
+		return nil, types.ErrorInvalidNodeStatus
+	}
+
+	if subscription.Plan == 0 {
+		if node.Address != subscription.Node {
+			return nil, types.ErrorNodeAddressMismatch
+		}
+	} else {
+		if k.HasNodeForPlan(ctx, subscription.Plan, msgNode) {
+			return nil, types.ErrorNodeDoesNotExistForPlan
+		}
+	}
+
 	quota, found := k.GetQuota(ctx, subscription.Id, msgFrom)
 	if !found {
 		return nil, types.ErrorQuotaDoesNotExist
@@ -45,17 +68,9 @@ func (k *msgServer) MsgStart(c context.Context, msg *types.MsgStartRequest) (*ty
 		return nil, types.ErrorNotEnoughQuota
 	}
 
-	msgAddress, err := hubtypes.NodeAddressFromBech32(msg.Address)
-	if err != nil {
-		return nil, err
-	}
-
-	node, found := k.GetNode(ctx, msgAddress)
-	if !found {
-		return nil, types.ErrorNodeDoesNotExist
-	}
-	if !node.Status.Equal(hubtypes.StatusActive) {
-		return nil, types.ErrorInvalidNodeStatus
+	items := k.GetActiveSessionsForAddress(ctx, msgFrom, 0, 1)
+	if len(items) > 0 {
+		return nil, types.ErrorDuplicateSession
 	}
 
 	var (
@@ -64,7 +79,7 @@ func (k *msgServer) MsgStart(c context.Context, msg *types.MsgStartRequest) (*ty
 			Id:           count + 1,
 			Subscription: subscription.Id,
 			Node:         node.Address,
-			Address:      msg.Address,
+			Address:      msg.From,
 			Duration:     0,
 			Bandwidth:    hubtypes.NewBandwidthFromInt64(0, 0),
 			Status:       hubtypes.StatusActive,
