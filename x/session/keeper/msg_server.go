@@ -21,110 +21,130 @@ func NewMsgServiceServer(keeper Keeper) types.MsgServiceServer {
 	return &msgServer{Keeper: keeper}
 }
 
-func isAuthorized(ctx sdk.Context, k Keeper, plan, subscription uint64, node hubtypes.NodeAddress) bool {
-	if plan == 0 {
-		return k.HasSubscriptionForNode(ctx, node, subscription)
-	}
-
-	return k.HasNodeForPlan(ctx, plan, node)
-}
-
-func (k *msgServer) MsgUpsert(c context.Context, msg *types.MsgUpsertRequest) (*types.MsgUpsertResponse, error) {
+func (k *msgServer) MsgStart(c context.Context, msg *types.MsgStartRequest) (*types.MsgStartResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
-	msgFrom, err := hubtypes.NodeAddressFromBech32(msg.Proof.Node)
+	msgFrom, err := sdk.AccAddressFromBech32(msg.From)
 	if err != nil {
 		return nil, err
 	}
 
-	subscription, found := k.GetSubscription(ctx, msg.Proof.Subscription)
+	subscription, found := k.GetSubscription(ctx, msg.Id)
 	if !found {
 		return nil, types.ErrorSubscriptionDoesNotExit
 	}
-	if subscription.Status.Equal(hubtypes.StatusInactive) {
+	if !subscription.Status.Equal(hubtypes.StatusActive) {
 		return nil, types.ErrorInvalidSubscriptionStatus
 	}
 
-	msgProofNode, err := hubtypes.NodeAddressFromBech32(msg.Proof.Node)
+	msgNode, err := hubtypes.NodeAddressFromBech32(msg.Node)
 	if err != nil {
 		return nil, err
 	}
 
-	if !isAuthorized(ctx, k.Keeper, subscription.Plan, subscription.Id, msgProofNode) {
-		return nil, types.ErrorUnauthorized
+	node, found := k.GetNode(ctx, msgNode)
+	if !found {
+		return nil, types.ErrorNodeDoesNotExist
+	}
+	if !node.Status.Equal(hubtypes.StatusActive) {
+		return nil, types.ErrorInvalidNodeStatus
 	}
 
-	msgAddress, err := sdk.AccAddressFromBech32(msg.Address)
-	if err != nil {
-		return nil, err
+	if subscription.Plan == 0 {
+		if node.Address != subscription.Node {
+			return nil, types.ErrorNodeAddressMismatch
+		}
+	} else {
+		if k.HasNodeForPlan(ctx, subscription.Plan, msgNode) {
+			return nil, types.ErrorNodeDoesNotExistForPlan
+		}
 	}
 
-	if !k.HasQuota(ctx, subscription.Id, msgAddress) {
+	quota, found := k.GetQuota(ctx, subscription.Id, msgFrom)
+	if !found {
 		return nil, types.ErrorQuotaDoesNotExist
 	}
-
-	if k.ProofVerificationEnabled(ctx) {
-		channel := k.GetChannel(ctx, msgAddress, msg.Proof.Subscription, msgProofNode)
-		if msg.Proof.Channel != channel {
-			return nil, types.ErrorInvalidChannel
-		}
-
-		if err = k.VerifyProof(ctx, msgAddress, msg.Proof, msg.Signature); err != nil {
-			return nil, types.ErrorFailedToVerifyProof
-		}
+	if quota.Consumed.GTE(quota.Allocated) {
+		return nil, types.ErrorNotEnoughQuota
 	}
 
-	session, found := k.GetActiveSessionForAddress(ctx, msgAddress, subscription.Id, msgProofNode)
-	if found {
-		k.DeleteActiveSessionAt(ctx, session.StatusAt, session.Id)
+	items := k.GetActiveSessionsForAddress(ctx, msgFrom, 0, 1)
+	if len(items) > 0 {
+		return nil, types.ErrorDuplicateSession
 	}
 
-	if !found {
-		count := k.GetCount(ctx)
+	var (
+		count   = k.GetCount(ctx)
 		session = types.Session{
 			Id:           count + 1,
 			Subscription: subscription.Id,
-			Node:         msg.Proof.Node,
-			Address:      msg.Address,
+			Node:         node.Address,
+			Address:      msg.From,
 			Duration:     0,
 			Bandwidth:    hubtypes.NewBandwidthFromInt64(0, 0),
 			Status:       hubtypes.StatusActive,
 			StatusAt:     ctx.BlockTime(),
 		}
+		sessionNode    = session.GetNode()
+		sessionAddress = session.GetAddress()
+	)
 
-		var (
-			sessionAddress = session.GetAddress()
-			sessionNode    = session.GetNode()
-		)
+	k.SetCount(ctx, count+1)
+	ctx.EventManager().EmitTypedEvent(
+		&types.EventSetSessionCount{
+			Count: count + 1,
+		},
+	)
 
-		k.SetCount(ctx, count+1)
-		ctx.EventManager().EmitTypedEvent(
-			&types.EventSetSessionCount{
-				Count: count + 1,
-			},
-		)
+	k.SetSession(ctx, session)
+	k.SetSessionForSubscription(ctx, session.Subscription, session.Id)
+	k.SetSessionForNode(ctx, sessionNode, session.Id)
 
-		k.SetSessionForSubscription(ctx, session.Subscription, session.Id)
-		k.SetSessionForNode(ctx, sessionNode, session.Id)
-		k.SetSessionForAddress(ctx, sessionAddress, session.Id)
-		k.SetActiveSessionForAddress(ctx, sessionAddress, session.Subscription, sessionNode, session.Id)
-		ctx.EventManager().EmitTypedEvent(
-			&types.EventAddSession{
-				From:         sdk.AccAddress(msgFrom.Bytes()).String(),
-				Channel:      msg.Proof.Channel,
-				Subscription: session.Id,
-				Node:         session.Node,
-				Duration:     session.Duration,
-				Bandwidth:    session.Bandwidth,
-				Address:      session.Address,
-				Signature:    msg.Signature,
-			},
-		)
+	k.SetActiveSessionForAddress(ctx, sessionAddress, session.Id)
+	k.SetActiveSessionAt(ctx, session.StatusAt, session.Id)
+	ctx.EventManager().EmitTypedEvent(
+		&types.EventStartSession{
+			From:         sdk.AccAddress(msgFrom.Bytes()).String(),
+			Id:           session.Id,
+			Subscription: session.Subscription,
+			Node:         session.Node,
+		},
+	)
+
+	ctx.EventManager().EmitTypedEvent(&types.EventModuleName)
+	return &types.MsgStartResponse{}, nil
+}
+
+func (k *msgServer) MsgUpdate(c context.Context, msg *types.MsgUpdateRequest) (*types.MsgUpdateResponse, error) {
+	ctx := sdk.UnwrapSDKContext(c)
+
+	msgFrom, err := hubtypes.NodeAddressFromBech32(msg.From)
+	if err != nil {
+		return nil, err
 	}
+
+	session, found := k.GetSession(ctx, msg.Proof.Id)
+	if !found {
+		return nil, types.ErrorSessionDoesNotExist
+	}
+	if !session.Status.Equal(hubtypes.StatusActive) {
+		return nil, types.ErrorInvalidSessionStatus
+	}
+	if msg.From != session.Node {
+		return nil, types.ErrorUnauthorized
+	}
+
+	if k.ProofVerificationEnabled(ctx) {
+		sessionAddress := session.GetAddress()
+		if err := k.VerifyProof(ctx, sessionAddress, msg.Proof, msg.Signature); err != nil {
+			return nil, types.ErrorFailedToVerifyProof
+		}
+	}
+
+	k.DeleteActiveSessionAt(ctx, session.StatusAt, session.Id)
 
 	session.Duration = msg.Proof.Duration
 	session.Bandwidth = msg.Proof.Bandwidth
-	session.Status = hubtypes.StatusActive
 	session.StatusAt = ctx.BlockTime()
 
 	k.SetSession(ctx, session)
@@ -132,16 +152,59 @@ func (k *msgServer) MsgUpsert(c context.Context, msg *types.MsgUpsertRequest) (*
 	ctx.EventManager().EmitTypedEvent(
 		&types.EventUpdateSession{
 			From:         sdk.AccAddress(msgFrom.Bytes()).String(),
-			Channel:      msg.Proof.Channel,
+			Id:           session.Id,
 			Subscription: session.Subscription,
 			Node:         session.Node,
+			Address:      session.Address,
 			Duration:     session.Duration,
 			Bandwidth:    session.Bandwidth,
-			Address:      session.Address,
-			Signature:    msg.Signature,
 		},
 	)
 
 	ctx.EventManager().EmitTypedEvent(&types.EventModuleName)
-	return &types.MsgUpsertResponse{}, nil
+	return &types.MsgUpdateResponse{}, nil
+}
+
+func (k *msgServer) MsgEnd(c context.Context, msg *types.MsgEndRequest) (*types.MsgEndResponse, error) {
+	ctx := sdk.UnwrapSDKContext(c)
+
+	msgFrom, err := sdk.AccAddressFromBech32(msg.From)
+	if err != nil {
+		return nil, err
+	}
+
+	session, found := k.GetSession(ctx, msg.Id)
+	if !found {
+		return nil, types.ErrorSessionDoesNotExist
+	}
+	if !session.Status.Equal(hubtypes.StatusActive) {
+		return nil, types.ErrorInvalidSessionStatus
+	}
+	if msg.From != session.Address {
+		return nil, types.ErrorUnauthorized
+	}
+
+	if err := k.ProcessPaymentAndUpdateQuota(ctx, session); err != nil {
+		return nil, err
+	}
+
+	k.DeleteActiveSessionForAddress(ctx, msgFrom, session.Id)
+	k.DeleteActiveSessionAt(ctx, session.StatusAt, session.Id)
+
+	session.Status = hubtypes.StatusInactive
+	session.StatusAt = ctx.BlockTime()
+
+	k.SetSession(ctx, session)
+	k.SetInactiveSessionForAddress(ctx, msgFrom, session.Id)
+	ctx.EventManager().EmitTypedEvent(
+		&types.EventEndSession{
+			From:         sdk.AccAddress(msgFrom.Bytes()).String(),
+			Id:           session.Id,
+			Subscription: session.Subscription,
+			Node:         session.Node,
+		},
+	)
+
+	ctx.EventManager().EmitTypedEvent(&types.EventModuleName)
+	return &types.MsgEndResponse{}, nil
 }

@@ -34,12 +34,6 @@ message QuerySessionsForAddressRequest {
 
 message QuerySessionRequest { uint64 id = 1; }
 
-message QueryActiveSessionRequest {
-  string address      = 1;
-  string node         = 2;
-  uint64 subscription = 3;
-}
-
 message QuerySessionsResponse {
   repeated Session sessions = 1 [ (gogoproto.nullable) = false ];
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
@@ -61,10 +55,6 @@ message QuerySessionsForAddressResponse {
 }
 
 message QuerySessionResponse {
-  Session session = 1 [ (gogoproto.nullable) = false ];
-}
-
-message QueryActiveSessionResponse {
   Session session = 1 [ (gogoproto.nullable) = false ];
 }
 
@@ -90,10 +80,5 @@ service QueryService {
 
   rpc QuerySession(QuerySessionRequest) returns (QuerySessionResponse) {
     option (google.api.http).get = "/sessions/{id}";
-  }
-
-  rpc QueryActiveSession(QueryActiveSessionRequest)
-      returns (QueryActiveSessionResponse) {
-    option (google.api.http).get = "/accounts/{address}/sessions/active";
   }
 }

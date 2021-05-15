@@ -145,19 +145,26 @@ func (k *Keeper) GetSessionsForNode(ctx sdk.Context, address hubtypes.NodeAddres
 	return items
 }
 
-func (k *Keeper) SetSessionForAddress(ctx sdk.Context, address sdk.AccAddress, id uint64) {
-	key := types.SessionForAddressKey(address, id)
+func (k *Keeper) SetInactiveSessionForAddress(ctx sdk.Context, address sdk.AccAddress, id uint64) {
+	key := types.InactiveSessionForAddressKey(address, id)
 	value := k.cdc.MustMarshalBinaryBare(&protobuf.BoolValue{Value: true})
 
 	store := k.Store(ctx)
 	store.Set(key, value)
 }
 
-func (k *Keeper) GetSessionsForAddress(ctx sdk.Context, address sdk.AccAddress, skip, limit int64) (items types.Sessions) {
+func (k *Keeper) DeleteInactiveSessionForAddress(ctx sdk.Context, address sdk.AccAddress, id uint64) {
+	key := types.InactiveSessionForAddressKey(address, id)
+
+	store := k.Store(ctx)
+	store.Delete(key)
+}
+
+func (k *Keeper) GetInactiveSessionsForAddress(ctx sdk.Context, address sdk.AccAddress, skip, limit int64) (items types.Sessions) {
 	var (
 		store = k.Store(ctx)
 		iter  = hubtypes.NewPaginatedIterator(
-			sdk.KVStorePrefixIterator(store, types.GetSessionForAddressKeyPrefix(address)),
+			sdk.KVStorePrefixIterator(store, types.GetInactiveSessionForAddressKeyPrefix(address)),
 		)
 	)
 
@@ -165,38 +172,23 @@ func (k *Keeper) GetSessionsForAddress(ctx sdk.Context, address sdk.AccAddress, 
 
 	iter.Skip(skip)
 	iter.Limit(limit, func(iter sdk.Iterator) {
-		item, _ := k.GetSession(ctx, types.IDFromSessionForAddressKey(iter.Key()))
+		item, _ := k.GetSession(ctx, types.IDFromStatusSessionForAddressKey(iter.Key()))
 		items = append(items, item)
 	})
 
 	return items
 }
 
-func (k *Keeper) SetActiveSessionForAddress(ctx sdk.Context, address sdk.AccAddress, subscription uint64, node hubtypes.NodeAddress, id uint64) {
-	key := types.ActiveSessionForAddressKey(address, subscription, node)
-	value := k.cdc.MustMarshalBinaryBare(&protobuf.UInt64Value{Value: id})
+func (k *Keeper) SetActiveSessionForAddress(ctx sdk.Context, address sdk.AccAddress, id uint64) {
+	key := types.ActiveSessionForAddressKey(address, id)
+	value := k.cdc.MustMarshalBinaryBare(&protobuf.BoolValue{Value: true})
 
 	store := k.Store(ctx)
 	store.Set(key, value)
 }
 
-func (k *Keeper) GetActiveSessionForAddress(ctx sdk.Context, address sdk.AccAddress, subscription uint64, node hubtypes.NodeAddress) (session types.Session, found bool) {
-	store := k.Store(ctx)
-
-	key := types.ActiveSessionForAddressKey(address, subscription, node)
-	value := store.Get(key)
-	if value == nil {
-		return session, false
-	}
-
-	var id protobuf.UInt64Value
-	k.cdc.MustUnmarshalBinaryBare(value, &id)
-
-	return k.GetSession(ctx, id.Value)
-}
-
-func (k *Keeper) DeleteActiveSessionForAddress(ctx sdk.Context, address sdk.AccAddress, id uint64, node hubtypes.NodeAddress) {
-	key := types.ActiveSessionForAddressKey(address, id, node)
+func (k *Keeper) DeleteActiveSessionForAddress(ctx sdk.Context, address sdk.AccAddress, id uint64) {
+	key := types.ActiveSessionForAddressKey(address, id)
 
 	store := k.Store(ctx)
 	store.Delete(key)
@@ -214,10 +206,7 @@ func (k *Keeper) GetActiveSessionsForAddress(ctx sdk.Context, address sdk.AccAdd
 
 	iter.Skip(skip)
 	iter.Limit(limit, func(iter sdk.Iterator) {
-		var id protobuf.UInt64Value
-		k.cdc.MustUnmarshalBinaryBare(iter.Value(), &id)
-
-		item, _ := k.GetSession(ctx, id.Value)
+		item, _ := k.GetSession(ctx, types.IDFromStatusSessionForAddressKey(iter.Key()))
 		items = append(items, item)
 	})
 
@@ -239,15 +228,19 @@ func (k *Keeper) DeleteActiveSessionAt(ctx sdk.Context, at time.Time, id uint64)
 	store.Delete(key)
 }
 
-func (k *Keeper) IterateActiveSessionsAt(ctx sdk.Context, end time.Time, fn func(index int, item types.Session) (stop bool)) {
+func (k *Keeper) IterateActiveSessionsAt(ctx sdk.Context, end time.Time, fn func(index int, key []byte, item types.Session) (stop bool)) {
 	store := k.Store(ctx)
 
 	iter := store.Iterator(types.ActiveSessionAtKeyPrefix, sdk.PrefixEndBytes(types.GetActiveSessionAtKeyPrefix(end)))
 	defer iter.Close()
 
 	for i := 0; iter.Valid(); iter.Next() {
-		session, _ := k.GetSession(ctx, types.IDFromActiveSessionAtKey(iter.Key()))
-		if stop := fn(i, session); stop {
+		var (
+			key        = iter.Key()
+			session, _ = k.GetSession(ctx, types.IDFromActiveSessionAtKey(key))
+		)
+
+		if stop := fn(i, key, session); stop {
 			break
 		}
 		i++

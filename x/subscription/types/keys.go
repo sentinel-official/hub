@@ -1,7 +1,6 @@
 package types
 
 import (
-	"encoding/binary"
 	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -88,17 +87,17 @@ func QuotaKey(id uint64, address sdk.AccAddress) []byte {
 }
 
 func IDFromSubscriptionForNodeKey(key []byte) uint64 {
-	return binary.BigEndian.Uint64(key[1+sdk.AddrLen:])
+	return sdk.BigEndianToUint64(key[1+sdk.AddrLen:])
 }
 
 func IDFromSubscriptionForPlanKey(key []byte) uint64 {
-	return binary.BigEndian.Uint64(key[1+8:])
+	return sdk.BigEndianToUint64(key[1+8:])
 }
 
 func IDFromStatusSubscriptionForAddressKey(key []byte) uint64 {
-	return binary.BigEndian.Uint64(key[1+sdk.AddrLen:])
+	return sdk.BigEndianToUint64(key[1+sdk.AddrLen:])
 }
 
 func IDFromInactiveSubscriptionAtKey(key []byte) uint64 {
-	return binary.BigEndian.Uint64(key[1+29:])
+	return sdk.BigEndianToUint64(key[1+29:])
 }
