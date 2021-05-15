@@ -39,7 +39,7 @@ func (m *MsgStartRequest) ValidateBasic() error {
 
 	// Id should be positive
 	if m.Id == 0 {
-		return errors.Wrapf(ErrorInvalidField, "%d", "id")
+		return errors.Wrapf(ErrorInvalidField, "%s", "id")
 	}
 
 	// Address shouldn't be nil or empty
@@ -140,12 +140,12 @@ func (m *MsgEndRequest) ValidateBasic() error {
 
 	// Id should be positive
 	if m.Id == 0 {
-		return errors.Wrapf(ErrorInvalidField, "%d", "id")
+		return errors.Wrapf(ErrorInvalidField, "%s", "id")
 	}
 
 	// Rating shouldn't be greater than 10
 	if m.Rating > 10 {
-		return errors.Wrapf(ErrorInvalidField, "%d", "rating")
+		return errors.Wrapf(ErrorInvalidField, "%s", "rating")
 	}
 
 	return nil
