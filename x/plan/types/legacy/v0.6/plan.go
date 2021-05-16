@@ -1,4 +1,4 @@
-package v0_6
+package v06
 
 import (
 	hubtypes "github.com/sentinel-official/hub/types/legacy/v0.6"

@@ -1,4 +1,4 @@
-package v0_6
+package v06
 
 import (
 	"github.com/sentinel-official/hub/x/deposit/types"

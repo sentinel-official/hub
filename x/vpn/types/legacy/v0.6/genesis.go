@@ -1,4 +1,4 @@
-package v0_6
+package v06
 
 import (
 	deposit "github.com/sentinel-official/hub/x/deposit/types/legacy/v0.6"
