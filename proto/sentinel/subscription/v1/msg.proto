@@ -9,23 +9,27 @@ import "cosmos/base/v1beta1/coin.proto";
 option (gogoproto.equal_all)           = false;
 option (gogoproto.goproto_getters_all) = false;
 
+// MsgSubscribeToNodeRequest defines the SDK message for subscribing to a node
 message MsgSubscribeToNodeRequest {
   string from                      = 1;
   string address                   = 2;
   cosmos.base.v1beta1.Coin deposit = 3 [ (gogoproto.nullable) = false ];
 }
 
+// MsgSubscribeToPlanRequest defines the SDK message for subscribing to a plan
 message MsgSubscribeToPlanRequest {
   string from  = 1;
   uint64 id    = 2;
   string denom = 3;
 }
 
+// MsgCancelRequest defines the SDK message for cancelling a subscription
 message MsgCancelRequest {
   string from = 1;
   uint64 id   = 2;
 }
 
+// MsgAddQuotaRequest defines the SDK message for adding the quota to an address
 message MsgAddQuotaRequest {
   string from    = 1;
   uint64 id      = 2;
@@ -36,6 +40,8 @@ message MsgAddQuotaRequest {
   ];
 }
 
+// MsgUpdateQuotaRequest defines the SDK message for updating the quota of an
+// address
 message MsgUpdateQuotaRequest {
   string from    = 1;
   uint64 id      = 2;
@@ -46,10 +52,21 @@ message MsgUpdateQuotaRequest {
   ];
 }
 
+// MsgSubscribeToNodeResponse defines the response of message
+// MsgSubscribeToNodeRequest
 message MsgSubscribeToNodeResponse {}
+
+// MsgSubscribeToPlanResponse defines the response of message
+// MsgSubscribeToPlanRequest
 message MsgSubscribeToPlanResponse {}
+
+// MsgCancelResponse defines the response of message MsgCancelRequest
 message MsgCancelResponse {}
+
+// MsgAddQuotaResponse defines the response of message MsgAddQuotaRequest
 message MsgAddQuotaResponse {}
+
+// MsgUpdateQuotaResponse defines the response of message MsgUpdateQuotaRequest
 message MsgUpdateQuotaResponse {}
 
 service MsgService {

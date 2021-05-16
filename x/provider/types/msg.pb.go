@@ -28,6 +28,7 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
+// MsgRegisterRequest defines the SDK message for registering a provider
 type MsgRegisterRequest struct {
 	From        string `protobuf:"bytes,1,opt,name=from,proto3" json:"from,omitempty"`
 	Name        string `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
@@ -69,6 +70,7 @@ func (m *MsgRegisterRequest) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgRegisterRequest proto.InternalMessageInfo
 
+// MsgUpdateRequest defines the SDK message for updating a provider
 type MsgUpdateRequest struct {
 	From        string `protobuf:"bytes,1,opt,name=from,proto3" json:"from,omitempty"`
 	Name        string `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
@@ -110,6 +112,7 @@ func (m *MsgUpdateRequest) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgUpdateRequest proto.InternalMessageInfo
 
+// MsgRegisterResponse defines the response of message MsgRegisterRequest
 type MsgRegisterResponse struct {
 }
 
@@ -146,6 +149,7 @@ func (m *MsgRegisterResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgRegisterResponse proto.InternalMessageInfo
 
+// MsgUpdateResponse defines the response of message MsgUpdateRequest
 type MsgUpdateResponse struct {
 }
 
