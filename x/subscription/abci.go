@@ -29,11 +29,7 @@ func EndBlock(ctx sdk.Context, k keeper.Keeper) []abcitypes.ValidatorUpdate {
 			log.Info("calculated refund of subscription", "id", item.Id,
 				"consumed", consumed, "amount", amount)
 
-			itemOwner, err := sdk.AccAddressFromBech32(item.Owner)
-			if err != nil {
-				panic(err)
-			}
-
+			itemOwner := item.GetOwner()
 			if err := k.SubtractDeposit(ctx, itemOwner, amount); err != nil {
 				panic(err)
 			}

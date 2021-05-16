@@ -21,6 +21,19 @@ func (s *Subscription) GetNode() hubtypes.NodeAddress {
 	return address
 }
 
+func (s *Subscription) GetOwner() sdk.AccAddress {
+	if s.Owner == "" {
+		return nil
+	}
+
+	address, err := sdk.AccAddressFromBech32(s.Owner)
+	if err != nil {
+		panic(err)
+	}
+
+	return address
+}
+
 func (s *Subscription) Amount(consumed sdk.Int) sdk.Coin {
 	var (
 		amount sdk.Int
