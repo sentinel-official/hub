@@ -17,8 +17,8 @@ func (k *Keeper) ProcessPaymentAndUpdateQuota(ctx sdk.Context, session types.Ses
 	if !found {
 		return types.ErrorSubscriptionDoesNotExit
 	}
-	if !subscription.Status.Equal(hubtypes.StatusActive) {
-		return types.ErrorInvalidSubscriptionStatus
+	if subscription.Status.Equal(hubtypes.StatusInactive) {
+		return nil
 	}
 
 	quota, found := k.GetQuota(ctx, session.Subscription, from)
