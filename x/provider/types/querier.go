@@ -17,3 +17,7 @@ func NewQueryProvidersRequest(pagination *query.PageRequest) *QueryProvidersRequ
 		Pagination: pagination,
 	}
 }
+
+func NewQueryParamsRequest() *QueryParamsRequest {
+	return &QueryParamsRequest{}
+}
