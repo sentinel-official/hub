@@ -9,6 +9,7 @@ import "google/api/annotations.proto";
 import "sentinel/subscription/v1/quota.proto";
 import "sentinel/types/v1/status.proto";
 import "sentinel/subscription/v1/subscription.proto";
+import "sentinel/subscription/v1/params.proto";
 
 option (gogoproto.equal_all)           = false;
 option (gogoproto.goproto_getters_all) = false;
@@ -45,6 +46,8 @@ message QueryQuotasRequest {
   cosmos.base.query.v1beta1.PageRequest pagination = 2;
 }
 
+message QueryParamsRequest {}
+
 message QuerySubscriptionsResponse {
   repeated Subscription subscriptions = 1 [ (gogoproto.nullable) = false ];
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
@@ -74,6 +77,10 @@ message QueryQuotaResponse { Quota quota = 1 [ (gogoproto.nullable) = false ]; }
 message QueryQuotasResponse {
   repeated Quota quotas = 1 [ (gogoproto.nullable) = false ];
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryParamsResponse {
+  Params params = 1 [ (gogoproto.nullable) = false ];
 }
 
 service QueryService {
@@ -109,5 +116,9 @@ service QueryService {
 
   rpc QueryQuotas(QueryQuotasRequest) returns (QueryQuotasResponse) {
     option (google.api.http).get = "/subscriptions/{id}/quotas";
+  }
+
+  rpc QueryParams(QueryParamsRequest) returns (QueryParamsResponse) {
+    option (google.api.http).get = "/modules/subscription/params";
   }
 }

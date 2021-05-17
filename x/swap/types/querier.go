@@ -15,3 +15,7 @@ func NewQuerySwapsRequest(pagination *query.PageRequest) *QuerySwapsRequest {
 		Pagination: pagination,
 	}
 }
+
+func NewQueryParamsRequest() *QueryParamsRequest {
+	return &QueryParamsRequest{}
+}

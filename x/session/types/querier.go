@@ -40,3 +40,7 @@ func NewQuerySessionsForAddressRequest(address sdk.AccAddress, status hubtypes.S
 		Pagination: pagination,
 	}
 }
+
+func NewQueryParamsRequest() *QueryParamsRequest {
+	return &QueryParamsRequest{}
+}

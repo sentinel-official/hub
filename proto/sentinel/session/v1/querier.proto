@@ -8,6 +8,7 @@ import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "sentinel/types/v1/status.proto";
 import "sentinel/session/v1/session.proto";
+import "sentinel/session/v1/params.proto";
 
 option (gogoproto.equal_all)           = false;
 option (gogoproto.goproto_getters_all) = false;
@@ -34,6 +35,8 @@ message QuerySessionsForAddressRequest {
 
 message QuerySessionRequest { uint64 id = 1; }
 
+message QueryParamsRequest {}
+
 message QuerySessionsResponse {
   repeated Session sessions = 1 [ (gogoproto.nullable) = false ];
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
@@ -58,6 +61,10 @@ message QuerySessionResponse {
   Session session = 1 [ (gogoproto.nullable) = false ];
 }
 
+message QueryParamsResponse {
+  Params params = 1 [ (gogoproto.nullable) = false ];
+}
+
 service QueryService {
   rpc QuerySessions(QuerySessionsRequest) returns (QuerySessionsResponse) {
     option (google.api.http).get = "/sessions";
@@ -80,5 +87,9 @@ service QueryService {
 
   rpc QuerySession(QuerySessionRequest) returns (QuerySessionResponse) {
     option (google.api.http).get = "/sessions/{id}";
+  }
+
+  rpc QueryParams(QueryParamsRequest) returns (QueryParamsResponse) {
+    option (google.api.http).get = "/modules/session/params";
   }
 }

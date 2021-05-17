@@ -210,3 +210,12 @@ func (q *queryServer) QuerySessionsForAddress(c context.Context, req *types.Quer
 
 	return &types.QuerySessionsForAddressResponse{Sessions: items, Pagination: pagination}, nil
 }
+
+func (q *queryServer) QueryParams(c context.Context, _ *types.QueryParamsRequest) (*types.QueryParamsResponse, error) {
+	var (
+		ctx    = sdk.UnwrapSDKContext(c)
+		params = q.GetParams(ctx)
+	)
+
+	return &types.QueryParamsResponse{Params: params}, nil
+}

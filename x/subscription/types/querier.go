@@ -54,3 +54,7 @@ func NewQueryQuotasRequest(id uint64, pagination *query.PageRequest) *QueryQuota
 		Pagination: pagination,
 	}
 }
+
+func NewQueryParamsRequest() *QueryParamsRequest {
+	return &QueryParamsRequest{}
+}

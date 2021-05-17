@@ -7,6 +7,7 @@ import "cosmos/base/query/v1beta1/pagination.proto";
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "sentinel/swap/v1/swap.proto";
+import "sentinel/swap/v1/params.proto";
 
 option (gogoproto.equal_all)           = false;
 option (gogoproto.goproto_getters_all) = false;
@@ -17,12 +18,18 @@ message QuerySwapsRequest {
 
 message QuerySwapRequest { bytes tx_hash = 1; }
 
+message QueryParamsRequest {}
+
 message QuerySwapsResponse {
   repeated Swap swaps = 1 [ (gogoproto.nullable) = false ];
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
 message QuerySwapResponse { Swap swap = 1 [ (gogoproto.nullable) = false ]; }
+
+message QueryParamsResponse {
+  Params params = 1 [ (gogoproto.nullable) = false ];
+}
 
 service QueryService {
   rpc QuerySwaps(QuerySwapsRequest) returns (QuerySwapsResponse) {
@@ -31,5 +38,9 @@ service QueryService {
 
   rpc QuerySwap(QuerySwapRequest) returns (QuerySwapResponse) {
     option (google.api.http).get = "/swaps/{tx_hash}";
+  }
+
+  rpc QueryParams(QueryParamsRequest) returns (QueryParamsResponse) {
+    option (google.api.http).get = "/modules/swap/params";
   }
 }
