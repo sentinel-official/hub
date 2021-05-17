@@ -10,6 +10,7 @@ func GetQueryCommands() []*cobra.Command {
 		querySubscriptions(),
 		queryQuota(),
 		queryQuotas(),
+		queryParams(),
 	}
 }
 

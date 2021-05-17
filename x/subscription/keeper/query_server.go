@@ -261,3 +261,12 @@ func (q *queryServer) QueryQuotas(c context.Context, req *types.QueryQuotasReque
 
 	return &types.QueryQuotasResponse{Quotas: items, Pagination: pagination}, nil
 }
+
+func (q *queryServer) QueryParams(c context.Context, _ *types.QueryParamsRequest) (*types.QueryParamsResponse, error) {
+	var (
+		ctx    = sdk.UnwrapSDKContext(c)
+		params = q.GetParams(ctx)
+	)
+
+	return &types.QueryParamsResponse{Params: params}, nil
+}
