@@ -1,8 +1,9 @@
 package types
 
 import (
-	hubtypes "github.com/sentinel-official/hub/types"
 	"testing"
+
+	hubtypes "github.com/sentinel-official/hub/types"
 )
 
 func TestProvider_Validate(t *testing.T) {

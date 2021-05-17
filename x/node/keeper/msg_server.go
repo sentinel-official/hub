@@ -106,16 +106,14 @@ func (k *msgServer) MsgUpdate(c context.Context, msg *types.MsgUpdateRequest) (*
 			nodeProvider = node.GetProvider()
 		)
 
+		if k.GetCountForNodeByProvider(ctx, nodeProvider, nodeAddress) > 0 {
+			return nil, types.ErrorInvalidPlanCount
+		}
+
 		if node.Status.Equal(hubtypes.StatusActive) {
 			k.DeleteActiveNodeForProvider(ctx, nodeProvider, nodeAddress)
 		} else {
 			k.DeleteInactiveNodeForProvider(ctx, nodeProvider, nodeAddress)
-		}
-
-		// TODO: Remove or optimize this?
-		plans := k.GetPlansForProvider(ctx, nodeProvider)
-		for _, plan := range plans {
-			k.DeleteNodeForPlan(ctx, plan.Id, nodeAddress)
 		}
 	}
 
