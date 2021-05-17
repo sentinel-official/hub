@@ -46,19 +46,19 @@ message QueryParamsResponse {
 
 service QueryService {
   rpc QueryNodes(QueryNodesRequest) returns (QueryNodesResponse) {
-    option (google.api.http).get = "/nodes";
+    option (google.api.http).get = "/sentinel/nodes";
   }
 
   rpc QueryNodesForProvider(QueryNodesForProviderRequest)
       returns (QueryNodesForProviderResponse) {
-    option (google.api.http).get = "/providers/{address}/nodes";
+    option (google.api.http).get = "/sentinel/providers/{address}/nodes";
   }
 
   rpc QueryNode(QueryNodeRequest) returns (QueryNodeResponse) {
-    option (google.api.http).get = "/nodes/{address}";
+    option (google.api.http).get = "/sentinel/nodes/{address}";
   }
 
   rpc QueryParams(QueryParamsRequest) returns (QueryParamsResponse) {
-    option (google.api.http).get = "/modules/node/params";
+    option (google.api.http).get = "/sentinel/modules/node/params";
   }
 }

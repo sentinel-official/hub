@@ -67,29 +67,29 @@ message QueryParamsResponse {
 
 service QueryService {
   rpc QuerySessions(QuerySessionsRequest) returns (QuerySessionsResponse) {
-    option (google.api.http).get = "/sessions";
+    option (google.api.http).get = "/sentinel/sessions";
   }
 
   rpc QuerySessionsForNode(QuerySessionsForNodeRequest)
       returns (QuerySessionsForNodeResponse) {
-    option (google.api.http).get = "/nodes/{address}/sessions";
+    option (google.api.http).get = "/sentinel/nodes/{address}/sessions";
   }
 
   rpc QuerySessionsForSubscription(QuerySessionsForSubscriptionRequest)
       returns (QuerySessionsForSubscriptionResponse) {
-    option (google.api.http).get = "/subscriptions/{id}/sessions";
+    option (google.api.http).get = "/sentinel/subscriptions/{id}/sessions";
   }
 
   rpc QuerySessionsForAddress(QuerySessionsForAddressRequest)
       returns (QuerySessionsForAddressResponse) {
-    option (google.api.http).get = "/accounts/{address}/sessions";
+    option (google.api.http).get = "/sentinel/accounts/{address}/sessions";
   }
 
   rpc QuerySession(QuerySessionRequest) returns (QuerySessionResponse) {
-    option (google.api.http).get = "/sessions/{id}";
+    option (google.api.http).get = "/sentinel/sessions/{id}";
   }
 
   rpc QueryParams(QueryParamsRequest) returns (QueryParamsResponse) {
-    option (google.api.http).get = "/modules/session/params";
+    option (google.api.http).get = "/sentinel/modules/session/params";
   }
 }

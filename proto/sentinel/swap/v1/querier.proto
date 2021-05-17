@@ -33,14 +33,14 @@ message QueryParamsResponse {
 
 service QueryService {
   rpc QuerySwaps(QuerySwapsRequest) returns (QuerySwapsResponse) {
-    option (google.api.http).get = "/swaps";
+    option (google.api.http).get = "/sentinel/swaps";
   }
 
   rpc QuerySwap(QuerySwapRequest) returns (QuerySwapResponse) {
-    option (google.api.http).get = "/swaps/{tx_hash}";
+    option (google.api.http).get = "/sentinel/swaps/{tx_hash}";
   }
 
   rpc QueryParams(QueryParamsRequest) returns (QueryParamsResponse) {
-    option (google.api.http).get = "/modules/swap/params";
+    option (google.api.http).get = "/sentinel/modules/swap/params";
   }
 }
