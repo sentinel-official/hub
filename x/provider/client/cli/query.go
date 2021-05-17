@@ -83,8 +83,8 @@ func queryProviders() *cobra.Command {
 
 func queryParams() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "params",
-		Short: "Query module parameters",
+		Use:   "provider-params",
+		Short: "Query provider module parameters",
 		RunE: func(cmd *cobra.Command, _ []string) error {
 			ctx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
