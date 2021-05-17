@@ -2,7 +2,7 @@
 name: Feature request
 about: Suggest an idea for this project
 title: ''
-labels: bug
+labels: enhancement
 assignees: ironman0x7b2
 
 ---
