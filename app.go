@@ -363,6 +363,7 @@ func NewApp(
 		app.cdc,
 		app.keys[swaptypes.StoreKey],
 		app.GetSubspace(swaptypes.ModuleName),
+		app.accountKeeper,
 		app.bankKeeper,
 	)
 	app.vpnKeeper = vpnkeeper.NewKeeper(
