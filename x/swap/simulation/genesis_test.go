@@ -11,8 +11,8 @@ import (
 	cryptocdc "github.com/cosmos/cosmos-sdk/crypto/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
-	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
-	hubtypes "github.com/sentinel-official/hub/x/swap/types"
+	sdksimulation "github.com/cosmos/cosmos-sdk/types/simulation"
+	"github.com/sentinel-official/hub/x/swap/types"
 	"github.com/stretchr/testify/require"
 )
 
@@ -25,24 +25,24 @@ func TestRandomizedGenesisState(t *testing.T) {
 	s := rand.NewSource(1)
 	r := rand.New(s)
 
-	ss := &module.SimulationState{
-		AppParams:    make(simtypes.AppParams),
+	simState := &module.SimulationState{
+		AppParams:    make(sdksimulation.AppParams),
 		Cdc:          cdc,
 		Rand:         r,
 		GenState:     make(map[string]json.RawMessage),
-		Accounts:     simtypes.RandomAccounts(r, 3),
+		Accounts:     sdksimulation.RandomAccounts(r, 3),
 		InitialStake: 1000,
 		NumBonded:    0,
 		GenTimestamp: time.Time{},
 		UnbondTime:   0,
-		ParamChanges: []simtypes.ParamChange{},
-		Contents:     []simtypes.WeightedProposalContent{},
+		ParamChanges: []sdksimulation.ParamChange{},
+		Contents:     []sdksimulation.WeightedProposalContent{},
 	}
 
-	GetRandomizedGenesisState(ss)
+	RandomizedGenesisState(simState)
 
-	var swapGenesis hubtypes.GenesisState
-	ss.Cdc.MustUnmarshalJSON(ss.GenState[hubtypes.ModuleName], &swapGenesis)
+	var swapGenesis types.GenesisState
+	simState.Cdc.MustUnmarshalJSON(simState.GenState[types.ModuleName], &swapGenesis)
 
 	require.Equal(t, "sent1grdunxx5jxd0ja75wt508sn6v39p70hhw53zs8", swapGenesis.Swaps[0].Receiver)
 	require.Equal(t, []byte{
@@ -53,5 +53,5 @@ func TestRandomizedGenesisState(t *testing.T) {
 	}, swapGenesis.Swaps[0].TxHash)
 	require.Equal(t, sdk.Coin{Denom: "sent", Amount: sdk.NewInt(1000)}, swapGenesis.Swaps[0].Amount)
 	require.Equal(t, false, swapGenesis.Params.SwapEnabled)
-	require.Equal(t, "tsent", swapGenesis.Params.SwapDenom)
+	require.Equal(t, "cxgdXhhuTSkuxK", swapGenesis.Params.SwapDenom)
 }

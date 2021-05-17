@@ -8,59 +8,67 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/types/simulation"
-	hubtypes "github.com/sentinel-official/hub/x/swap/types"
-)
-
-const (
-	swapEnabledKey = "swap_enabled"
-	approvedByKey  = "approve_by"
-	swapDenomKey   = "swap_denom"
+	"github.com/sentinel-official/hub/x/swap/types"
 )
 
 func GetRandomSwapDenom(r *rand.Rand) string {
-	return simulation.RandStringOfLength(r, r.Intn(8))
+	// denom length should be between 3-128
+	return simulation.RandStringOfLength(r, r.Intn(125)+3)
 }
 
-func GetRandomApprovedBy(r *rand.Rand) string {
-	return simulation.RandStringOfLength(r, 32)
+func GetRandomApproveBy(r *rand.Rand) string {
+	bz := make([]byte, 20)
+	_, err := r.Read(bz)
+	if err != nil {
+		panic(err)
+	}
+
+	return sdk.AccAddress(bz).String()
 }
 
 func GetRandomSwapEnabled(r *rand.Rand) bool {
 	return r.Intn(2) == 1
 }
 
-func GetRandomizedGenesisState(ss *module.SimulationState) {
+func RandomizedGenesisState(simState *module.SimulationState) {
 	var (
 		swapEnabled bool
-		approvedBy  string
+		approveBy   string
+		swapDenom   string
 	)
 
 	swapEnabledSim := func(r *rand.Rand) {
 		swapEnabled = GetRandomSwapEnabled(r)
 	}
 
-	approvedbySim := func(r *rand.Rand) {
-		approvedBy = GetRandomApprovedBy(r)
+	approveBySim := func(r *rand.Rand) {
+		approveBy = GetRandomApproveBy(r)
 	}
-	ss.AppParams.GetOrGenerate(ss.Cdc, swapEnabledKey, &swapEnabled, ss.Rand, swapEnabledSim)
-	ss.AppParams.GetOrGenerate(ss.Cdc, approvedByKey, &approvedBy, ss.Rand, approvedbySim)
 
-	params := hubtypes.NewParams(swapEnabled, hubtypes.DefaultSwapDenom, approvedBy)
+	swapDenomSim := func(r *rand.Rand) {
+		swapDenom = GetRandomSwapDenom(r)
+	}
 
-	var swaps hubtypes.Swaps
+	simState.AppParams.GetOrGenerate(simState.Cdc, string(types.KeySwapEnabled), &swapEnabled, simState.Rand, swapEnabledSim)
+	simState.AppParams.GetOrGenerate(simState.Cdc, string(types.KeyApproveBy), &approveBy, simState.Rand, approveBySim)
+	simState.AppParams.GetOrGenerate(simState.Cdc, string(types.KeySwapDenom), &swapDenom, simState.Rand, swapDenomSim)
 
-	swaps = append(swaps, hubtypes.Swap{
+	params := types.NewParams(swapEnabled, swapDenom, approveBy)
+
+	var swaps types.Swaps
+
+	swaps = append(swaps, types.Swap{
 		TxHash:   []byte("b37c4b36298f20ac7fc5de2b4ac1167d7a044402a40f2b5f1e1bb7f0ee5f6346"),
 		Receiver: "sent1grdunxx5jxd0ja75wt508sn6v39p70hhw53zs8",
 		Amount:   sdk.Coin{Denom: "sent", Amount: sdk.NewInt(1000)},
 	})
 
-	swapGenesis := hubtypes.NewGenesisState(swaps, params)
+	swapGenesis := types.NewGenesisState(swaps, params)
 	bz, err := json.MarshalIndent(&swapGenesis.Params, "", "")
 	if err != nil {
 		panic(err)
 	}
 
 	fmt.Printf("selected randomly generated swap parameters: %s\n", bz)
-	ss.GenState[hubtypes.ModuleName] = ss.Cdc.MustMarshalJSON(swapGenesis)
+	simState.GenState[types.ModuleName] = simState.Cdc.MustMarshalJSON(swapGenesis)
 }

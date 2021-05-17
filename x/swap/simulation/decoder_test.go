@@ -6,23 +6,12 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/cosmos/cosmos-sdk/codec"
-	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
 	"github.com/cosmos/cosmos-sdk/simapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/kv"
-	swaptypes "github.com/sentinel-official/hub/x/swap/types"
+	"github.com/sentinel-official/hub/x/swap/types"
 )
-
-func makeTestCodec() *codec.LegacyAmino {
-	cdc := codec.NewLegacyAmino()
-	sdk.RegisterLegacyAminoCodec(cdc)
-	cryptocodec.RegisterCrypto(cdc)
-	swaptypes.RegisterLegacyAminoCodec(cdc)
-
-	return cdc
-}
 
 func TestDecoderStore(t *testing.T) {
 	cdc, _ := simapp.MakeCodecs()
@@ -30,21 +19,21 @@ func TestDecoderStore(t *testing.T) {
 	swapperPK := ed25519.GenPrivKey().PubKey()
 	swapperAddr := sdk.AccAddress(swapperPK.Address())
 	receiver := sdk.AccAddress(swapperPK.Address())
-	txHash := swaptypes.EthereumHash{}
+	txHash := types.EthereumHash{}
 	txHash.SetBytes([]byte("6ca7abe5be0ee9bacf582a42f70a2c384b2121ffa6cc33f3ae0b7e41d3480dbe"))
 	amount := sdk.NewInt(1000)
 
-	swap := swaptypes.NewMsgSwapRequest(swapperAddr, txHash, receiver, amount)
+	swap := types.NewMsgSwapRequest(swapperAddr, txHash, receiver, amount)
 
 	KVPair := kv.Pair{
-		Key: swaptypes.SwapKeyPrefix, Value: cdc.MustMarshalBinaryBare(swap),
+		Key: types.SwapKeyPrefix, Value: cdc.MustMarshalBinaryBare(swap),
 	}
 
 	tests := []struct {
 		name string
 		want string
 	}{
-		{"SwapMessage", fmt.Sprintf("%v\n%v", *swap, *swap)},
+		{"SwapMessage", fmt.Sprintf("%s\n%s", *swap, *swap)},
 	}
 
 	for _, tt := range tests {

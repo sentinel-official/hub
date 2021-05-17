@@ -3,54 +3,65 @@ package simulation
 import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/simapp/helpers"
-	simappparams "github.com/cosmos/cosmos-sdk/simapp/params"
-	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
-	swapkeeper "github.com/sentinel-official/hub/x/swap/expected"
+	"github.com/cosmos/cosmos-sdk/simapp/params"
+	sdksimulation "github.com/cosmos/cosmos-sdk/types/simulation"
+	"github.com/cosmos/cosmos-sdk/x/simulation"
 	"github.com/sentinel-official/hub/x/swap/keeper"
-	swaptypes "github.com/sentinel-official/hub/x/swap/types"
+	types "github.com/sentinel-official/hub/x/swap/types"
+
+	"math/rand"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"math/rand"
 )
 
-const (
-	OpWeightMsgSwapRequest = "op_weight_msg_swap_request"
-)
+const OpWeightMsgSwapRequest = "op_weight_msg_swap_request"
 
-func SimulateMsgSwapRequest(bk swapkeeper.BankKeeper, ak swapkeeper.AccountKeeper, k keeper.Keeper, cdc codec.JSONMarshaler) simtypes.Operation {
+func WeightedOperations(ap sdksimulation.AppParams, cdc codec.JSONMarshaler, k keeper.Keeper) simulation.WeightedOperations {
+	var weightMsgSwapRequest int
+
+	randSwapFn := func(r *rand.Rand) {
+		weightMsgSwapRequest = 100
+	}
+	ap.GetOrGenerate(cdc, OpWeightMsgSwapRequest, &weightMsgSwapRequest, nil, randSwapFn)
+
+	operation := simulation.NewWeightedOperation(weightMsgSwapRequest, SimulateMsgSwapRequest(k, cdc))
+	return simulation.WeightedOperations{operation}
+}
+
+func SimulateMsgSwapRequest(k keeper.Keeper, cdc codec.JSONMarshaler) sdksimulation.Operation {
 	return func(
 		r *rand.Rand,
 		app *baseapp.BaseApp,
 		ctx sdk.Context,
-		accs []simtypes.Account,
+		accounts []sdksimulation.Account,
 		chainID string,
-	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
-		acc1, _ := simtypes.RandomAcc(r, accs)
-		acc2, _ := simtypes.RandomAcc(r, accs)
-		sender := ak.GetAccount(ctx, acc1.Address)
-		receiver := ak.GetAccount(ctx, acc2.Address)
-		hash := swaptypes.EthereumHash{}
+	) (sdksimulation.OperationMsg, []sdksimulation.FutureOperation, error) {
+		acc1, _ := sdksimulation.RandomAcc(r, accounts)
+		acc2, _ := sdksimulation.RandomAcc(r, accounts)
+		sender := k.GetAccount(ctx, acc1.Address)
+		receiver := k.GetAccount(ctx, acc2.Address)
+		hash := types.EthereumHash{}
 
 		denom := k.GetParams(ctx).SwapDenom
-		amount := simtypes.RandomAmount(r, sdk.NewInt(60<<13))
+		amount := sdksimulation.RandomAmount(r, sdk.NewInt(60<<13))
 
 		coins := sdk.Coins{
 			{Denom: denom, Amount: amount},
 		}
 
-		fees, err := simtypes.RandomFees(r, ctx, coins)
+		fees, err := sdksimulation.RandomFees(r, ctx, coins)
 		if err != nil {
-			return simtypes.NoOpMsg(swaptypes.ModuleName, "swap_request", err.Error()), nil, err
+			return sdksimulation.NoOpMsg(types.ModuleName, "swap_request", err.Error()), nil, err
 		}
 
 		_, found := k.GetSwap(ctx, hash)
 		if found {
-			return simtypes.NoOpMsg(swaptypes.ModuleName, "swap_request", "swap already exists for this txn hash"), nil, nil
+			return sdksimulation.NoOpMsg(types.ModuleName, "swap_request", "swap already exists for this txn hash"), nil, nil
 		}
 
-		msg := swaptypes.NewMsgSwapRequest(sender.GetAddress(), hash, receiver.GetAddress(), amount)
-		txGen := simappparams.MakeTestEncodingConfig().TxConfig
+		msg := types.NewMsgSwapRequest(sender.GetAddress(), hash, receiver.GetAddress(), amount)
+		txGen := params.MakeTestEncodingConfig().TxConfig
 
 		txn, err := helpers.GenTx(
 			txGen,
@@ -62,14 +73,14 @@ func SimulateMsgSwapRequest(bk swapkeeper.BankKeeper, ak swapkeeper.AccountKeepe
 			[]uint64{sender.GetSequence()},
 		)
 		if err != nil {
-			return simtypes.NoOpMsg(swaptypes.ModuleName, "swap_request", err.Error()), nil, err
+			return sdksimulation.NoOpMsg(types.ModuleName, "swap_request", err.Error()), nil, err
 		}
 
 		_, _, err = app.Deliver(txGen.TxEncoder(), txn)
 		if err != nil {
-			return simtypes.NoOpMsg(swaptypes.ModuleName, "swap_request", err.Error()), nil, err
+			return sdksimulation.NoOpMsg(types.ModuleName, "swap_request", err.Error()), nil, err
 		}
 
-		return simtypes.NewOperationMsg(msg, true, ""), nil, nil
+		return sdksimulation.NewOperationMsg(msg, true, ""), nil, nil
 	}
 }

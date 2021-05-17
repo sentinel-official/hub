@@ -17,9 +17,9 @@ func TestParamChanges(t *testing.T) {
 		simValue    string
 		subspace    string
 	}{
-		{"swap/SwapDenom", "SwapDenom", "p", "swap"},
+		{"swap/SwapDenom", "SwapDenom", "HeAerqyNEUzXPFGkqEGqiQWIXnkuHMYZLfGaEFPyynhwJyzAHyfjXUlrGhblTtxWduqtCDMLxiDHIMGFpXzp", "swap"},
 		{"swap/SwapEnabled", "SwapEnabled", "true", "swap"},
-		{"swap/ApproveBy", "ApproveBy", "fGaEFPyynhwJyzAHyfjXUlrGhblTtxWd", "swap"},
+		{"swap/ApproveBy", "ApproveBy", "sent1xeu4rw4zlakdguwys0c4lwgt4kehckpp0253jd", "swap"},
 	}
 
 	paramChanges := ParamChanges(r)
