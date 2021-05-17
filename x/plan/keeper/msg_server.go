@@ -154,11 +154,17 @@ func (k *msgServer) MsgAddNode(c context.Context, msg *types.MsgAddNodeRequest) 
 		return nil, types.ErrorUnauthorized
 	}
 
+	if k.HasNodeForPlan(ctx, plan.Id, msgAddress) {
+		return nil, types.DuplicateNodeForPlan
+	}
+
 	var (
-		nodeAddress = node.GetAddress()
+		planProvider = plan.GetProvider()
+		nodeAddress  = node.GetAddress()
 	)
 
 	k.SetNodeForPlan(ctx, plan.Id, nodeAddress)
+	k.IncreaseCountForNodeByProvider(ctx, planProvider, nodeAddress)
 	ctx.EventManager().EmitTypedEvent(
 		&types.EventAddNodeForPlan{
 			From:     sdk.AccAddress(msgFrom.Bytes()).String(),
@@ -180,11 +186,13 @@ func (k *msgServer) MsgRemoveNode(c context.Context, msg *types.MsgRemoveNodeReq
 		return nil, err
 	}
 
+	plan, found := k.GetPlan(ctx, msg.Id)
+	if !found {
+		return nil, types.ErrorPlanDoesNotExist
+	}
+
+	planProvider := plan.GetProvider()
 	if hubtypes.NodeAddress(msgFrom.Bytes()).String() != msg.Address {
-		plan, found := k.GetPlan(ctx, msg.Id)
-		if !found {
-			return nil, types.ErrorPlanDoesNotExist
-		}
 		if hubtypes.ProvAddress(msgFrom.Bytes()).String() != plan.Provider {
 			return nil, types.ErrorUnauthorized
 		}
@@ -195,11 +203,16 @@ func (k *msgServer) MsgRemoveNode(c context.Context, msg *types.MsgRemoveNodeReq
 		return nil, err
 	}
 
-	k.DeleteNodeForPlan(ctx, msg.Id, msgAddress)
+	if !k.HasNodeForPlan(ctx, plan.Id, msgAddress) {
+		return nil, types.ErrorNodeDoesNotExist
+	}
+
+	k.DeleteNodeForPlan(ctx, plan.Id, msgAddress)
+	k.DecreaseCountForNodeByProvider(ctx, planProvider, msgAddress)
 	ctx.EventManager().EmitTypedEvent(
 		&types.EventRemoveNodeForPlan{
 			From:    sdk.AccAddress(msgFrom.Bytes()).String(),
-			Id:      msg.Id,
+			Id:      plan.Id,
 			Address: msg.Address,
 		},
 	)
