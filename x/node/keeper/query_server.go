@@ -179,3 +179,12 @@ func (q *queryServer) QueryNodesForProvider(c context.Context, req *types.QueryN
 
 	return &types.QueryNodesForProviderResponse{Nodes: items, Pagination: pagination}, nil
 }
+
+func (q *queryServer) QueryParams(c context.Context, _ *types.QueryParamsRequest) (*types.QueryParamsResponse, error) {
+	var (
+		ctx    = sdk.UnwrapSDKContext(c)
+		params = q.GetParams(ctx)
+	)
+
+	return &types.QueryParamsResponse{Params: params}, nil
+}

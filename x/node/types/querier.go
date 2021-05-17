@@ -26,3 +26,7 @@ func NewQueryNodesForProviderRequest(address hubtypes.ProvAddress, status hubtyp
 		Pagination: pagination,
 	}
 }
+
+func NewQueryParamsRequest() *QueryParamsRequest {
+	return &QueryParamsRequest{}
+}

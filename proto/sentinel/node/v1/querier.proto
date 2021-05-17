@@ -8,6 +8,7 @@ import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "sentinel/types/v1/status.proto";
 import "sentinel/node/v1/node.proto";
+import "sentinel/node/v1/params.proto";
 
 option (gogoproto.equal_all)           = false;
 option (gogoproto.goproto_getters_all) = false;
@@ -25,6 +26,8 @@ message QueryNodesForProviderRequest {
 
 message QueryNodeRequest { string address = 1; }
 
+message QueryParamsRequest {}
+
 message QueryNodesResponse {
   repeated Node nodes = 1 [ (gogoproto.nullable) = false ];
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
@@ -36,6 +39,10 @@ message QueryNodesForProviderResponse {
 }
 
 message QueryNodeResponse { Node node = 1 [ (gogoproto.nullable) = false ]; }
+
+message QueryParamsResponse {
+  Params params = 1 [ (gogoproto.nullable) = false ];
+}
 
 service QueryService {
   rpc QueryNodes(QueryNodesRequest) returns (QueryNodesResponse) {
@@ -49,5 +56,9 @@ service QueryService {
 
   rpc QueryNode(QueryNodeRequest) returns (QueryNodeResponse) {
     option (google.api.http).get = "/nodes/{address}";
+  }
+
+  rpc QueryParams(QueryParamsRequest) returns (QueryParamsResponse) {
+    option (google.api.http).get = "/modules/node/params";
   }
 }
