@@ -8,6 +8,7 @@ func GetQueryCommands() []*cobra.Command {
 	return []*cobra.Command{
 		queryProvider(),
 		queryProviders(),
+		queryParams(),
 	}
 }
 

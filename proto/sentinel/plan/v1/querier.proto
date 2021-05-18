@@ -50,20 +50,20 @@ message QueryNodesForPlanResponse {
 
 service QueryService {
   rpc QueryPlans(QueryPlansRequest) returns (QueryPlansResponse) {
-    option (google.api.http).get = "/plans";
+    option (google.api.http).get = "/sentinel/plans";
   }
 
   rpc QueryPlansForProvider(QueryPlansForProviderRequest)
       returns (QueryPlansForProviderResponse) {
-    option (google.api.http).get = "/providers/{address}/plans";
+    option (google.api.http).get = "/sentinel/providers/{address}/plans";
   }
 
   rpc QueryPlan(QueryPlanRequest) returns (QueryPlanResponse) {
-    option (google.api.http).get = "/plans/{id}";
+    option (google.api.http).get = "/sentinel/plans/{id}";
   }
 
   rpc QueryNodesForPlan(QueryNodesForPlanRequest)
       returns (QueryNodesForPlanResponse) {
-    option (google.api.http).get = "/plans/{id}/nodes";
+    option (google.api.http).get = "/sentinel/plans/{id}/nodes";
   }
 }

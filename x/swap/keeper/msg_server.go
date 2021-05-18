@@ -52,10 +52,10 @@ func (k msgServer) MsgSwap(c context.Context, msg *types.MsgSwapRequest) (*types
 		return nil, err
 	}
 
-	if err = k.MintCoin(ctx, coin); err != nil {
+	if err := k.MintCoin(ctx, coin); err != nil {
 		return nil, err
 	}
-	if err = k.SendCoinFromModuleToAccount(ctx, msgReceiver, coin); err != nil {
+	if err := k.SendCoinFromModuleToAccount(ctx, msgReceiver, coin); err != nil {
 		return nil, err
 	}
 

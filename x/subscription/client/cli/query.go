@@ -145,8 +145,8 @@ func querySubscriptions() *cobra.Command {
 
 func queryQuota() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "quota",
-		Short: "Query a quota of a subscription",
+		Use:   "quota [id] [address]",
+		Short: "Query a quota of an address",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientQueryContext(cmd)
@@ -219,6 +219,35 @@ func queryQuotas() *cobra.Command {
 
 	flags.AddQueryFlagsToCmd(cmd)
 	flags.AddPaginationFlagsToCmd(cmd, "quotas")
+
+	return cmd
+}
+
+func queryParams() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "subscription-params",
+		Short: "Query subscription module parameters",
+		RunE: func(cmd *cobra.Command, _ []string) error {
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			var (
+				qc = types.NewQueryServiceClient(ctx)
+			)
+
+			res, err := qc.QueryParams(context.Background(),
+				types.NewQueryParamsRequest())
+			if err != nil {
+				return err
+			}
+
+			return ctx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
 
 	return cmd
 }

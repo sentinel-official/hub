@@ -10,14 +10,15 @@ import (
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
-	"github.com/cosmos/cosmos-sdk/types/simulation"
+	sdksimulation "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/gorilla/mux"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/spf13/cobra"
-	abci "github.com/tendermint/tendermint/abci/types"
+	abcitypes "github.com/tendermint/tendermint/abci/types"
 
 	"github.com/sentinel-official/hub/x/swap/client/cli"
 	"github.com/sentinel-official/hub/x/swap/keeper"
+	"github.com/sentinel-official/hub/x/swap/simulation"
 	"github.com/sentinel-official/hub/x/swap/types"
 )
 
@@ -70,16 +71,18 @@ func (a AppModuleBasic) GetQueryCmd() *cobra.Command {
 
 type AppModule struct {
 	AppModuleBasic
-	k keeper.Keeper
+	cdc codec.Marshaler
+	k   keeper.Keeper
 }
 
-func NewAppModule(k keeper.Keeper) AppModule {
+func NewAppModule(cdc codec.Marshaler, k keeper.Keeper) AppModule {
 	return AppModule{
-		k: k,
+		cdc: cdc,
+		k:   k,
 	}
 }
 
-func (a AppModule) InitGenesis(ctx sdk.Context, cdc codec.JSONMarshaler, message json.RawMessage) []abci.ValidatorUpdate {
+func (a AppModule) InitGenesis(ctx sdk.Context, cdc codec.JSONMarshaler, message json.RawMessage) []abcitypes.ValidatorUpdate {
 	var state types.GenesisState
 	cdc.MustUnmarshalJSON(message, &state)
 	InitGenesis(ctx, a.k, &state)
@@ -91,7 +94,8 @@ func (a AppModule) ExportGenesis(ctx sdk.Context, cdc codec.JSONMarshaler) json.
 	return cdc.MustMarshalJSON(ExportGenesis(ctx, a.k))
 }
 
-func (a AppModule) RegisterInvariants(_ sdk.InvariantRegistry) {}
+func (a AppModule) RegisterInvariants(_ sdk.InvariantRegistry) {
+}
 
 func (a AppModule) Route() sdk.Route {
 	return sdk.NewRoute(types.RouterKey, NewHandler(a.k))
@@ -108,20 +112,30 @@ func (a AppModule) RegisterServices(configurator module.Configurator) {
 	types.RegisterQueryServiceServer(configurator.QueryServer(), keeper.NewQueryServiceServer(a.k))
 }
 
-func (a AppModule) BeginBlock(_ sdk.Context, _ abci.RequestBeginBlock) {}
+func (a AppModule) BeginBlock(_ sdk.Context, _ abcitypes.RequestBeginBlock) {}
 
-func (a AppModule) EndBlock(_ sdk.Context, _ abci.RequestEndBlock) []abci.ValidatorUpdate { return nil }
-
-func (a AppModule) GenerateGenesisState(_ *module.SimulationState) {}
-
-func (a AppModule) ProposalContents(_ module.SimulationState) []simulation.WeightedProposalContent {
+func (a AppModule) EndBlock(_ sdk.Context, _ abcitypes.RequestEndBlock) []abcitypes.ValidatorUpdate {
 	return nil
 }
 
-func (a AppModule) RandomizedParams(_ *rand.Rand) []simulation.ParamChange { return nil }
+// AppSimulaion Methods
 
-func (a AppModule) RegisterStoreDecoder(_ sdk.StoreDecoderRegistry) {}
+func (AppModule) GenerateGenesisState(simState *module.SimulationState) {
+	simulation.RandomizedGenesisState(simState)
+}
 
-func (a AppModule) WeightedOperations(_ module.SimulationState) []simulation.WeightedOperation {
+func (a AppModule) ProposalContents(_ module.SimulationState) []sdksimulation.WeightedProposalContent {
 	return nil
+}
+
+func (a AppModule) RandomizedParams(r *rand.Rand) []sdksimulation.ParamChange {
+	return simulation.ParamChanges(r)
+}
+
+func (a AppModule) RegisterStoreDecoder(sdr sdk.StoreDecoderRegistry) {
+	sdr[types.StoreKey] = simulation.NewDecodeStore(a.cdc)
+}
+
+func (a AppModule) WeightedOperations(simState module.SimulationState) []sdksimulation.WeightedOperation {
+	return simulation.WeightedOperations(simState.AppParams, simState.Cdc, a.k)
 }

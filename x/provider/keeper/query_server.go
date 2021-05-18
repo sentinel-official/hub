@@ -75,3 +75,12 @@ func (q *queryServer) QueryProviders(c context.Context, req *types.QueryProvider
 
 	return &types.QueryProvidersResponse{Providers: items, Pagination: pagination}, nil
 }
+
+func (q *queryServer) QueryParams(c context.Context, _ *types.QueryParamsRequest) (*types.QueryParamsResponse, error) {
+	var (
+		ctx    = sdk.UnwrapSDKContext(c)
+		params = q.GetParams(ctx)
+	)
+
+	return &types.QueryParamsResponse{Params: params}, nil
+}

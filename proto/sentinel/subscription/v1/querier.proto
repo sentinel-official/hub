@@ -9,6 +9,7 @@ import "google/api/annotations.proto";
 import "sentinel/subscription/v1/quota.proto";
 import "sentinel/types/v1/status.proto";
 import "sentinel/subscription/v1/subscription.proto";
+import "sentinel/subscription/v1/params.proto";
 
 option (gogoproto.equal_all)           = false;
 option (gogoproto.goproto_getters_all) = false;
@@ -45,6 +46,8 @@ message QueryQuotasRequest {
   cosmos.base.query.v1beta1.PageRequest pagination = 2;
 }
 
+message QueryParamsRequest {}
+
 message QuerySubscriptionsResponse {
   repeated Subscription subscriptions = 1 [ (gogoproto.nullable) = false ];
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
@@ -76,30 +79,34 @@ message QueryQuotasResponse {
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
+message QueryParamsResponse {
+  Params params = 1 [ (gogoproto.nullable) = false ];
+}
+
 service QueryService {
   rpc QuerySubscriptions(QuerySubscriptionsRequest)
       returns (QuerySubscriptionsResponse) {
-    option (google.api.http).get = "/subscriptions";
+    option (google.api.http).get = "/sentinel/subscriptions";
   }
 
   rpc QuerySubscriptionsForNode(QuerySubscriptionsForNodeRequest)
       returns (QuerySubscriptionsForNodeResponse) {
-    option (google.api.http).get = "/nodes/{address}/subscriptions";
+    option (google.api.http).get = "/sentinel/nodes/{address}/subscriptions";
   }
 
   rpc QuerySubscriptionsForPlan(QuerySubscriptionsForPlanRequest)
       returns (QuerySubscriptionsForPlanResponse) {
-    option (google.api.http).get = "/plans/{id}/subscriptions";
+    option (google.api.http).get = "/sentinel/plans/{id}/subscriptions";
   }
 
   rpc QuerySubscriptionsForAddress(QuerySubscriptionsForAddressRequest)
       returns (QuerySubscriptionsForAddressResponse) {
-    option (google.api.http).get = "/accounts/{address}/subscriptions";
+    option (google.api.http).get = "/sentinel/accounts/{address}/subscriptions";
   }
 
   rpc QuerySubscription(QuerySubscriptionRequest)
       returns (QuerySubscriptionResponse) {
-    option (google.api.http).get = "/subscriptions/{id}";
+    option (google.api.http).get = "/sentinel/subscriptions/{id}";
   }
 
   rpc QueryQuota(QueryQuotaRequest) returns (QueryQuotaResponse) {
@@ -108,6 +115,10 @@ service QueryService {
   }
 
   rpc QueryQuotas(QueryQuotasRequest) returns (QueryQuotasResponse) {
-    option (google.api.http).get = "/subscriptions/{id}/quotas";
+    option (google.api.http).get = "/sentinel/subscriptions/{id}/quotas";
+  }
+
+  rpc QueryParams(QueryParamsRequest) returns (QueryParamsResponse) {
+    option (google.api.http).get = "/sentinel/modules/subscription/params";
   }
 }

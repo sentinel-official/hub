@@ -1,4 +1,4 @@
-package v0_6
+package v06
 
 import (
 	hubtypes "github.com/sentinel-official/hub/types/legacy/v0.6"
@@ -14,6 +14,7 @@ func MigrateSubscription(item legacy.Subscription) types.Subscription {
 		Price:    item.Price,
 		Deposit:  item.Deposit,
 		Plan:     item.Plan,
+		Denom:    "",
 		Expiry:   item.Expiry,
 		Free:     item.Free,
 		Status:   hubtypes.MigrateStatus(item.Status),

@@ -8,6 +8,8 @@ import "gogoproto/gogo.proto";
 option (gogoproto.equal_all)           = false;
 option (gogoproto.goproto_getters_all) = false;
 
+// MsgSwapRequest defines the SDK message for swapping an ERC-20 token to the
+// native coin
 message MsgSwapRequest {
   string from     = 1;
   bytes tx_hash   = 2;
@@ -18,6 +20,7 @@ message MsgSwapRequest {
   ];
 }
 
+// MsgSwapResponse defines the response of message MsgSwapRequest
 message MsgSwapResponse {}
 
 service MsgService { rpc MsgSwap(MsgSwapRequest) returns (MsgSwapResponse); }

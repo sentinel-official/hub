@@ -49,3 +49,34 @@ func (k *Keeper) GetNodesForPlan(ctx sdk.Context, id uint64, skip, limit int64) 
 
 	return items
 }
+
+func (k *Keeper) SetCountForNodeByProvider(ctx sdk.Context, p hubtypes.ProvAddress, n hubtypes.NodeAddress, count uint64) {
+	key := types.CountForNodeByProviderKey(p, n)
+	value := k.cdc.MustMarshalBinaryBare(&protobuf.UInt64Value{Value: count})
+
+	store := k.Store(ctx)
+	store.Set(key, value)
+}
+
+func (k *Keeper) GetCountForNodeByProvider(ctx sdk.Context, p hubtypes.ProvAddress, n hubtypes.NodeAddress) uint64 {
+	store := k.Store(ctx)
+
+	key := types.CountForNodeByProviderKey(p, n)
+	value := store.Get(key)
+	if value == nil {
+		return 0
+	}
+
+	var count protobuf.UInt64Value
+	k.cdc.MustUnmarshalBinaryBare(value, &count)
+
+	return count.GetValue()
+}
+
+func (k *Keeper) IncreaseCountForNodeByProvider(ctx sdk.Context, p hubtypes.ProvAddress, n hubtypes.NodeAddress) {
+	k.SetCountForNodeByProvider(ctx, p, n, k.GetCountForNodeByProvider(ctx, p, n)+1)
+}
+
+func (k *Keeper) DecreaseCountForNodeByProvider(ctx sdk.Context, p hubtypes.ProvAddress, n hubtypes.NodeAddress) {
+	k.SetCountForNodeByProvider(ctx, p, n, k.GetCountForNodeByProvider(ctx, p, n)-1)
+}

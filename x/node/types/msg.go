@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/types/errors"
 
 	hubtypes "github.com/sentinel-official/hub/types"
 )
@@ -34,30 +33,30 @@ func (m *MsgRegisterRequest) Type() string {
 
 func (m *MsgRegisterRequest) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.From); err != nil {
-		return errors.Wrapf(ErrorInvalidField, "%s", "from")
+		return ErrorInvalidFieldFrom
 	}
 
 	// Either provider or price should be empty
 	if (m.Provider != "" && m.Price != nil) ||
 		(m.Provider == "" && m.Price == nil) {
-		return errors.Wrapf(ErrorInvalidField, "%s", "provider or price")
+		return ErrorInvalidFieldProviderOrPrice
 	}
 
 	// Provider can be empty. If not, it should be valid
 	if m.Provider != "" {
 		if _, err := hubtypes.ProvAddressFromBech32(m.Provider); err != nil {
-			return errors.Wrapf(ErrorInvalidField, "%s", "provider")
+			return ErrorInvalidFieldProvider
 		}
 	}
 
 	// Price can be nil. If not, it should be valid
 	if m.Price != nil && !m.Price.IsValid() {
-		return errors.Wrapf(ErrorInvalidField, "%s", "price")
+		return ErrorInvalidFieldPrice
 	}
 
 	// RemoteURL length should be between 1 and 64
 	if len(m.RemoteURL) == 0 || len(m.RemoteURL) > 64 {
-		return errors.Wrapf(ErrorInvalidField, "%s", "remote_url")
+		return ErrorInvalidFieldRemoteURL
 	}
 
 	return nil
@@ -95,28 +94,28 @@ func (m *MsgUpdateRequest) Type() string {
 
 func (m *MsgUpdateRequest) ValidateBasic() error {
 	if _, err := hubtypes.NodeAddressFromBech32(m.From); err != nil {
-		return errors.Wrapf(ErrorInvalidField, "%s", "from")
+		return ErrorInvalidFieldFrom
 	}
 
 	if m.Provider != "" && m.Price != nil {
-		return errors.Wrapf(ErrorInvalidField, "%s", "provider or price")
+		return ErrorInvalidFieldProviderOrPrice
 	}
 
 	// Provider can be empty. If not, it should be valid
 	if m.Provider != "" {
 		if _, err := hubtypes.ProvAddressFromBech32(m.Provider); err != nil {
-			return errors.Wrapf(ErrorInvalidField, "%s", "provider")
+			return ErrorInvalidFieldProvider
 		}
 	}
 
 	// Price can be nil. If not, it should be valid
 	if m.Price != nil && !m.Price.IsValid() {
-		return errors.Wrapf(ErrorInvalidField, "%s", "price")
+		return ErrorInvalidFieldPrice
 	}
 
 	// RemoteURL length should be between 0 and 64
 	if len(m.RemoteURL) > 64 {
-		return errors.Wrapf(ErrorInvalidField, "%s", "remote_url")
+		return ErrorInvalidFieldRemoteURL
 	}
 
 	return nil
@@ -152,12 +151,12 @@ func (m *MsgSetStatusRequest) Type() string {
 
 func (m *MsgSetStatusRequest) ValidateBasic() error {
 	if _, err := hubtypes.NodeAddressFromBech32(m.From); err != nil {
-		return errors.Wrapf(ErrorInvalidField, "%s", "from")
+		return ErrorInvalidFieldFrom
 	}
 
 	// Status should be either Active or Inactive
 	if !m.Status.Equal(hubtypes.StatusActive) && !m.Status.Equal(hubtypes.StatusInactive) {
-		return errors.Wrapf(ErrorInvalidField, "%s", "status")
+		return ErrorInvalidFieldStatus
 	}
 
 	return nil

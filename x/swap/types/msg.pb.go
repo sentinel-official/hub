@@ -29,6 +29,8 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
+// MsgSwapRequest defines the SDK message for swapping an ERC-20 token to the
+// native coin
 type MsgSwapRequest struct {
 	From     string                                 `protobuf:"bytes,1,opt,name=from,proto3" json:"from,omitempty"`
 	TxHash   []byte                                 `protobuf:"bytes,2,opt,name=tx_hash,json=txHash,proto3" json:"tx_hash,omitempty"`
@@ -69,6 +71,7 @@ func (m *MsgSwapRequest) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgSwapRequest proto.InternalMessageInfo
 
+// MsgSwapResponse defines the response of message MsgSwapRequest
 type MsgSwapResponse struct {
 }
 

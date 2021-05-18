@@ -5,7 +5,6 @@ import (
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 
 	hubtypes "github.com/sentinel-official/hub/types"
-	plantypes "github.com/sentinel-official/hub/x/plan/types"
 	providertypes "github.com/sentinel-official/hub/x/provider/types"
 )
 
@@ -23,6 +22,5 @@ type ProviderKeeper interface {
 }
 
 type PlanKeeper interface {
-	GetPlansForProvider(ctx sdk.Context, address hubtypes.ProvAddress, skip, limit int64) plantypes.Plans
-	DeleteNodeForPlan(ctx sdk.Context, id uint64, address hubtypes.NodeAddress)
+	GetCountForNodeByProvider(ctx sdk.Context, p hubtypes.ProvAddress, n hubtypes.NodeAddress) uint64
 }

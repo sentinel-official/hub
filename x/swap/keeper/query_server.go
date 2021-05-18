@@ -72,3 +72,12 @@ func (q *queryServer) QuerySwaps(c context.Context, req *types.QuerySwapsRequest
 
 	return &types.QuerySwapsResponse{Swaps: items, Pagination: pagination}, nil
 }
+
+func (q *queryServer) QueryParams(c context.Context, _ *types.QueryParamsRequest) (*types.QueryParamsResponse, error) {
+	var (
+		ctx    = sdk.UnwrapSDKContext(c)
+		params = q.GetParams(ctx)
+	)
+
+	return &types.QueryParamsResponse{Params: params}, nil
+}

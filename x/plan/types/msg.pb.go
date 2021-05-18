@@ -35,6 +35,7 @@ var _ = time.Kitchen
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
+// MsgAddRequest defines the SDK message for adding a plan
 type MsgAddRequest struct {
 	From     string                                   `protobuf:"bytes,1,opt,name=from,proto3" json:"from,omitempty"`
 	Price    github_com_cosmos_cosmos_sdk_types.Coins `protobuf:"bytes,2,rep,name=price,proto3,castrepeated=github.com/cosmos/cosmos-sdk/types.Coins" json:"price"`
@@ -75,6 +76,8 @@ func (m *MsgAddRequest) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgAddRequest proto.InternalMessageInfo
 
+// MsgSetStatusRequest defines the SDK message for modifying the status of a
+// plan
 type MsgSetStatusRequest struct {
 	From   string        `protobuf:"bytes,1,opt,name=from,proto3" json:"from,omitempty"`
 	Id     uint64        `protobuf:"varint,2,opt,name=id,proto3" json:"id,omitempty"`
@@ -114,6 +117,7 @@ func (m *MsgSetStatusRequest) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgSetStatusRequest proto.InternalMessageInfo
 
+// MsgAddNodeRequest defines the SDK message for adding a node to a plan
 type MsgAddNodeRequest struct {
 	From    string `protobuf:"bytes,1,opt,name=from,proto3" json:"from,omitempty"`
 	Id      uint64 `protobuf:"varint,2,opt,name=id,proto3" json:"id,omitempty"`
@@ -153,6 +157,7 @@ func (m *MsgAddNodeRequest) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgAddNodeRequest proto.InternalMessageInfo
 
+// MsgRemoveNodeRequest defines the SDK message for removing a node from a plan
 type MsgRemoveNodeRequest struct {
 	From    string `protobuf:"bytes,1,opt,name=from,proto3" json:"from,omitempty"`
 	Id      uint64 `protobuf:"varint,2,opt,name=id,proto3" json:"id,omitempty"`
@@ -192,6 +197,7 @@ func (m *MsgRemoveNodeRequest) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgRemoveNodeRequest proto.InternalMessageInfo
 
+// MsgAddResponse defines the response of message MsgRegisterRequest
 type MsgAddResponse struct {
 }
 
@@ -228,6 +234,7 @@ func (m *MsgAddResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgAddResponse proto.InternalMessageInfo
 
+// MsgSetStatusResponse defines the response of message MsgSetStatusRequest
 type MsgSetStatusResponse struct {
 }
 
@@ -264,6 +271,7 @@ func (m *MsgSetStatusResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgSetStatusResponse proto.InternalMessageInfo
 
+// MsgAddNodeResponse defines the response of message MsgAddNodeRequest
 type MsgAddNodeResponse struct {
 }
 
@@ -300,6 +308,7 @@ func (m *MsgAddNodeResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgAddNodeResponse proto.InternalMessageInfo
 
+// MsgRemoveNodeResponse defines the response of message MsgRemoveNodeRequest
 type MsgRemoveNodeResponse struct {
 }
 

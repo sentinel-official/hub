@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"context"
+	"strings"
 
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -83,7 +84,7 @@ func (q *queryServer) QuerySessionsForSubscription(c context.Context, req *types
 	)
 
 	pagination, err := query.FilteredPaginate(store, req.Pagination, func(key, _ []byte, accumulate bool) (bool, error) {
-		item, found := q.GetSession(ctx, types.IDFromSessionForSubscriptionKey(key))
+		item, found := q.GetSession(ctx, sdk.BigEndianToUint64(key))
 		if !found {
 			return false, nil
 		}
@@ -119,7 +120,7 @@ func (q *queryServer) QuerySessionsForNode(c context.Context, req *types.QuerySe
 	)
 
 	pagination, err := query.FilteredPaginate(store, req.Pagination, func(key, _ []byte, accumulate bool) (bool, error) {
-		item, found := q.GetSession(ctx, types.IDFromSessionForNodeKey(key))
+		item, found := q.GetSession(ctx, sdk.BigEndianToUint64(key))
 		if !found {
 			return false, nil
 		}
@@ -149,23 +150,59 @@ func (q *queryServer) QuerySessionsForAddress(c context.Context, req *types.Quer
 	}
 
 	var (
-		items types.Sessions
-		ctx   = sdk.UnwrapSDKContext(c)
-		store = prefix.NewStore(q.Store(ctx), types.GetSessionForAddressKeyPrefix(address))
+		items      types.Sessions
+		pagination *query.PageResponse
+		ctx        = sdk.UnwrapSDKContext(c)
 	)
 
-	pagination, err := query.FilteredPaginate(store, req.Pagination, func(key, _ []byte, accumulate bool) (bool, error) {
-		item, found := q.GetSession(ctx, types.IDFromSessionForAddressKey(key))
-		if !found {
-			return false, nil
-		}
+	if req.Status.Equal(hubtypes.StatusActive) {
+		store := prefix.NewStore(q.Store(ctx), types.GetActiveSessionForAddressKeyPrefix(address))
+		pagination, err = query.FilteredPaginate(store, req.Pagination, func(key []byte, _ []byte, accumulate bool) (bool, error) {
+			item, found := q.GetSession(ctx, sdk.BigEndianToUint64(key))
+			if !found {
+				return false, nil
+			}
 
-		if accumulate {
-			items = append(items, item)
-		}
+			if accumulate {
+				items = append(items, item)
+			}
 
-		return true, nil
-	})
+			return true, nil
+		})
+	} else if req.Status.Equal(hubtypes.StatusInactive) {
+		store := prefix.NewStore(q.Store(ctx), types.GetInactiveSessionForAddressKeyPrefix(address))
+		pagination, err = query.FilteredPaginate(store, req.Pagination, func(key []byte, _ []byte, accumulate bool) (bool, error) {
+			item, found := q.GetSession(ctx, sdk.BigEndianToUint64(key))
+			if !found {
+				return false, nil
+			}
+
+			if accumulate {
+				items = append(items, item)
+			}
+
+			return true, nil
+		})
+	} else {
+		// NOTE: Do not use this; less efficient; consider using active + inactive
+
+		store := prefix.NewStore(q.Store(ctx), types.SessionKeyPrefix)
+		pagination, err = query.FilteredPaginate(store, req.Pagination, func(_, value []byte, accumulate bool) (bool, error) {
+			var item types.Session
+			if err := q.cdc.UnmarshalBinaryBare(value, &item); err != nil {
+				return false, err
+			}
+			if !strings.EqualFold(item.Address, req.Address) {
+				return false, nil
+			}
+
+			if accumulate {
+				items = append(items, item)
+			}
+
+			return true, nil
+		})
+	}
 
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
@@ -174,27 +211,11 @@ func (q *queryServer) QuerySessionsForAddress(c context.Context, req *types.Quer
 	return &types.QuerySessionsForAddressResponse{Sessions: items, Pagination: pagination}, nil
 }
 
-func (q *queryServer) QueryActiveSession(c context.Context, req *types.QueryActiveSessionRequest) (*types.QueryActiveSessionResponse, error) {
-	if req == nil {
-		return nil, status.Error(codes.InvalidArgument, "empty request")
-	}
+func (q *queryServer) QueryParams(c context.Context, _ *types.QueryParamsRequest) (*types.QueryParamsResponse, error) {
+	var (
+		ctx    = sdk.UnwrapSDKContext(c)
+		params = q.GetParams(ctx)
+	)
 
-	address, err := sdk.AccAddressFromBech32(req.Address)
-	if err != nil {
-		return nil, status.Errorf(codes.InvalidArgument, "invalid address %s", req.Address)
-	}
-
-	node, err := hubtypes.NodeAddressFromBech32(req.Node)
-	if err != nil {
-		return nil, status.Errorf(codes.InvalidArgument, "invalid node address %s", req.Node)
-	}
-
-	ctx := sdk.UnwrapSDKContext(c)
-
-	session, found := q.GetActiveSessionForAddress(ctx, address, req.Subscription, node)
-	if !found {
-		return nil, status.Errorf(codes.NotFound, "active session does not exist for address %s, subscription %d, and node %s", req.Address, req.Subscription, req.Node)
-	}
-
-	return &types.QueryActiveSessionResponse{Session: session}, nil
+	return &types.QueryParamsResponse{Params: params}, nil
 }

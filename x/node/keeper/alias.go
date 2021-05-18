@@ -4,7 +4,6 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	hubtypes "github.com/sentinel-official/hub/types"
-	plantypes "github.com/sentinel-official/hub/x/plan/types"
 )
 
 func (k *Keeper) FundCommunityPool(ctx sdk.Context, from sdk.AccAddress, coin sdk.Coin) error {
@@ -15,10 +14,6 @@ func (k *Keeper) HasProvider(ctx sdk.Context, address hubtypes.ProvAddress) bool
 	return k.provider.HasProvider(ctx, address)
 }
 
-func (k *Keeper) GetPlansForProvider(ctx sdk.Context, address hubtypes.ProvAddress) plantypes.Plans {
-	return k.plan.GetPlansForProvider(ctx, address, 0, 0)
-}
-
-func (k *Keeper) DeleteNodeForPlan(ctx sdk.Context, id uint64, address hubtypes.NodeAddress) {
-	k.plan.DeleteNodeForPlan(ctx, id, address)
+func (k *Keeper) GetCountForNodeByProvider(ctx sdk.Context, p hubtypes.ProvAddress, n hubtypes.NodeAddress) uint64 {
+	return k.plan.GetCountForNodeByProvider(ctx, p, n)
 }

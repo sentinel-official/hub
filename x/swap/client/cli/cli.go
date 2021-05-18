@@ -13,6 +13,7 @@ func GetQueryCmd() *cobra.Command {
 	cmd.AddCommand(
 		querySwap(),
 		querySwaps(),
+		queryParams(),
 	)
 
 	return cmd

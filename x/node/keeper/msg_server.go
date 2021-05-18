@@ -44,7 +44,7 @@ func (k *msgServer) MsgRegister(c context.Context, msg *types.MsgRegisterRequest
 
 	deposit := k.Deposit(ctx)
 	if deposit.IsPositive() {
-		if err = k.FundCommunityPool(ctx, msgFrom, deposit); err != nil {
+		if err := k.FundCommunityPool(ctx, msgFrom, deposit); err != nil {
 			return nil, err
 		}
 	}
@@ -106,16 +106,14 @@ func (k *msgServer) MsgUpdate(c context.Context, msg *types.MsgUpdateRequest) (*
 			nodeProvider = node.GetProvider()
 		)
 
+		if k.GetCountForNodeByProvider(ctx, nodeProvider, nodeAddress) > 0 {
+			return nil, types.ErrorInvalidPlanCount
+		}
+
 		if node.Status.Equal(hubtypes.StatusActive) {
 			k.DeleteActiveNodeForProvider(ctx, nodeProvider, nodeAddress)
 		} else {
 			k.DeleteInactiveNodeForProvider(ctx, nodeProvider, nodeAddress)
-		}
-
-		// TODO: Remove or optimize this?
-		plans := k.GetPlansForProvider(ctx, nodeProvider)
-		for _, plan := range plans {
-			k.DeleteNodeForPlan(ctx, plan.Id, nodeAddress)
 		}
 	}
 
@@ -179,8 +177,9 @@ func (k *msgServer) MsgSetStatus(c context.Context, msg *types.MsgSetStatusReque
 	}
 
 	var (
-		nodeAddress  = node.GetAddress()
-		nodeProvider = node.GetProvider()
+		nodeAddress      = node.GetAddress()
+		nodeProvider     = node.GetProvider()
+		inactiveDuration = k.InactiveDuration(ctx)
 	)
 
 	if node.Status.Equal(hubtypes.StatusActive) {
@@ -194,7 +193,7 @@ func (k *msgServer) MsgSetStatus(c context.Context, msg *types.MsgSetStatusReque
 			}
 		}
 
-		k.DeleteInactiveNodeAt(ctx, node.StatusAt, nodeAddress)
+		k.DeleteInactiveNodeAt(ctx, node.StatusAt.Add(inactiveDuration), nodeAddress)
 	} else {
 		if msg.Status.Equal(hubtypes.StatusActive) {
 			k.DeleteInactiveNode(ctx, nodeAddress)
@@ -211,7 +210,7 @@ func (k *msgServer) MsgSetStatus(c context.Context, msg *types.MsgSetStatusReque
 	node.StatusAt = ctx.BlockTime()
 
 	if node.Status.Equal(hubtypes.StatusActive) {
-		k.SetInactiveNodeAt(ctx, node.StatusAt, nodeAddress)
+		k.SetInactiveNodeAt(ctx, node.StatusAt.Add(inactiveDuration), nodeAddress)
 	}
 
 	k.SetNode(ctx, node)

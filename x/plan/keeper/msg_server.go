@@ -154,11 +154,17 @@ func (k *msgServer) MsgAddNode(c context.Context, msg *types.MsgAddNodeRequest) 
 		return nil, types.ErrorUnauthorized
 	}
 
+	if k.HasNodeForPlan(ctx, plan.Id, msgAddress) {
+		return nil, types.DuplicateNodeForPlan
+	}
+
 	var (
-		nodeAddress = node.GetAddress()
+		planProvider = plan.GetProvider()
+		nodeAddress  = node.GetAddress()
 	)
 
 	k.SetNodeForPlan(ctx, plan.Id, nodeAddress)
+	k.IncreaseCountForNodeByProvider(ctx, planProvider, nodeAddress)
 	ctx.EventManager().EmitTypedEvent(
 		&types.EventAddNodeForPlan{
 			From:     sdk.AccAddress(msgFrom.Bytes()).String(),
@@ -175,7 +181,7 @@ func (k *msgServer) MsgAddNode(c context.Context, msg *types.MsgAddNodeRequest) 
 func (k *msgServer) MsgRemoveNode(c context.Context, msg *types.MsgRemoveNodeRequest) (*types.MsgRemoveNodeResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
-	msgFrom, err := hubtypes.ProvAddressFromBech32(msg.From)
+	msgFrom, err := sdk.AccAddressFromBech32(msg.From)
 	if err != nil {
 		return nil, err
 	}
@@ -184,8 +190,12 @@ func (k *msgServer) MsgRemoveNode(c context.Context, msg *types.MsgRemoveNodeReq
 	if !found {
 		return nil, types.ErrorPlanDoesNotExist
 	}
-	if msg.From != plan.Provider {
-		return nil, types.ErrorUnauthorized
+
+	planProvider := plan.GetProvider()
+	if hubtypes.NodeAddress(msgFrom.Bytes()).String() != msg.Address {
+		if hubtypes.ProvAddress(msgFrom.Bytes()).String() != plan.Provider {
+			return nil, types.ErrorUnauthorized
+		}
 	}
 
 	msgAddress, err := hubtypes.NodeAddressFromBech32(msg.Address)
@@ -193,13 +203,17 @@ func (k *msgServer) MsgRemoveNode(c context.Context, msg *types.MsgRemoveNodeReq
 		return nil, err
 	}
 
+	if !k.HasNodeForPlan(ctx, plan.Id, msgAddress) {
+		return nil, types.ErrorNodeDoesNotExist
+	}
+
 	k.DeleteNodeForPlan(ctx, plan.Id, msgAddress)
+	k.DecreaseCountForNodeByProvider(ctx, planProvider, msgAddress)
 	ctx.EventManager().EmitTypedEvent(
 		&types.EventRemoveNodeForPlan{
-			From:     sdk.AccAddress(msgFrom.Bytes()).String(),
-			Provider: plan.Provider,
-			Id:       plan.Id,
-			Address:  msg.Address,
+			From:    sdk.AccAddress(msgFrom.Bytes()).String(),
+			Id:      plan.Id,
+			Address: msg.Address,
 		},
 	)
 

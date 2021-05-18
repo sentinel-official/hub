@@ -60,7 +60,7 @@ func (q *queryServer) QueryNodes(c context.Context, req *types.QueryNodesRequest
 	if req.Status.Equal(hubtypes.Active) {
 		store := prefix.NewStore(q.Store(ctx), types.ActiveNodeKeyPrefix)
 		pagination, err = query.FilteredPaginate(store, req.Pagination, func(key, _ []byte, accumulate bool) (bool, error) {
-			item, found := q.GetNode(ctx, types.AddressFromStatusNodeKey(key))
+			item, found := q.GetNode(ctx, key)
 			if !found {
 				return false, nil
 			}
@@ -74,7 +74,7 @@ func (q *queryServer) QueryNodes(c context.Context, req *types.QueryNodesRequest
 	} else if req.Status.Equal(hubtypes.Inactive) {
 		store := prefix.NewStore(q.Store(ctx), types.InactiveNodeKeyPrefix)
 		pagination, err = query.FilteredPaginate(store, req.Pagination, func(key, _ []byte, accumulate bool) (bool, error) {
-			item, found := q.GetNode(ctx, types.AddressFromStatusNodeKey(key))
+			item, found := q.GetNode(ctx, key)
 			if !found {
 				return false, nil
 			}
@@ -127,7 +127,7 @@ func (q *queryServer) QueryNodesForProvider(c context.Context, req *types.QueryN
 	if req.Status.Equal(hubtypes.Active) {
 		store := prefix.NewStore(q.Store(ctx), types.GetActiveNodeForProviderKeyPrefix(provider))
 		pagination, err = query.FilteredPaginate(store, req.Pagination, func(key, _ []byte, accumulate bool) (bool, error) {
-			item, found := q.GetNode(ctx, types.AddressFromStatusNodeForProviderKey(key))
+			item, found := q.GetNode(ctx, key)
 			if !found {
 				return false, nil
 			}
@@ -141,7 +141,7 @@ func (q *queryServer) QueryNodesForProvider(c context.Context, req *types.QueryN
 	} else if req.Status.Equal(hubtypes.Inactive) {
 		store := prefix.NewStore(q.Store(ctx), types.GetInactiveNodeForProviderKeyPrefix(provider))
 		pagination, err = query.FilteredPaginate(store, req.Pagination, func(key, _ []byte, accumulate bool) (bool, error) {
-			item, found := q.GetNode(ctx, types.AddressFromStatusNodeForProviderKey(key))
+			item, found := q.GetNode(ctx, key)
 			if !found {
 				return false, nil
 			}
@@ -178,4 +178,13 @@ func (q *queryServer) QueryNodesForProvider(c context.Context, req *types.QueryN
 	}
 
 	return &types.QueryNodesForProviderResponse{Nodes: items, Pagination: pagination}, nil
+}
+
+func (q *queryServer) QueryParams(c context.Context, _ *types.QueryParamsRequest) (*types.QueryParamsResponse, error) {
+	var (
+		ctx    = sdk.UnwrapSDKContext(c)
+		params = q.GetParams(ctx)
+	)
+
+	return &types.QueryParamsResponse{Params: params}, nil
 }

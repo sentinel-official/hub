@@ -8,6 +8,7 @@ func GetQueryCommands() []*cobra.Command {
 	return []*cobra.Command{
 		querySession(),
 		querySessions(),
+		queryParams(),
 	}
 }
 
@@ -18,7 +19,9 @@ func GetTxCommands() []*cobra.Command {
 	}
 
 	cmd.AddCommand(
-		txUpsert(),
+		txStart(),
+		txUpdate(),
+		txEnd(),
 	)
 
 	return []*cobra.Command{cmd}

@@ -8,6 +8,7 @@ import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "sentinel/types/v1/status.proto";
 import "sentinel/session/v1/session.proto";
+import "sentinel/session/v1/params.proto";
 
 option (gogoproto.equal_all)           = false;
 option (gogoproto.goproto_getters_all) = false;
@@ -34,11 +35,7 @@ message QuerySessionsForAddressRequest {
 
 message QuerySessionRequest { uint64 id = 1; }
 
-message QueryActiveSessionRequest {
-  string address      = 1;
-  string node         = 2;
-  uint64 subscription = 3;
-}
+message QueryParamsRequest {}
 
 message QuerySessionsResponse {
   repeated Session sessions = 1 [ (gogoproto.nullable) = false ];
@@ -64,36 +61,35 @@ message QuerySessionResponse {
   Session session = 1 [ (gogoproto.nullable) = false ];
 }
 
-message QueryActiveSessionResponse {
-  Session session = 1 [ (gogoproto.nullable) = false ];
+message QueryParamsResponse {
+  Params params = 1 [ (gogoproto.nullable) = false ];
 }
 
 service QueryService {
   rpc QuerySessions(QuerySessionsRequest) returns (QuerySessionsResponse) {
-    option (google.api.http).get = "/sessions";
+    option (google.api.http).get = "/sentinel/sessions";
   }
 
   rpc QuerySessionsForNode(QuerySessionsForNodeRequest)
       returns (QuerySessionsForNodeResponse) {
-    option (google.api.http).get = "/nodes/{address}/sessions";
+    option (google.api.http).get = "/sentinel/nodes/{address}/sessions";
   }
 
   rpc QuerySessionsForSubscription(QuerySessionsForSubscriptionRequest)
       returns (QuerySessionsForSubscriptionResponse) {
-    option (google.api.http).get = "/subscriptions/{id}/sessions";
+    option (google.api.http).get = "/sentinel/subscriptions/{id}/sessions";
   }
 
   rpc QuerySessionsForAddress(QuerySessionsForAddressRequest)
       returns (QuerySessionsForAddressResponse) {
-    option (google.api.http).get = "/accounts/{address}/sessions";
+    option (google.api.http).get = "/sentinel/accounts/{address}/sessions";
   }
 
   rpc QuerySession(QuerySessionRequest) returns (QuerySessionResponse) {
-    option (google.api.http).get = "/sessions/{id}";
+    option (google.api.http).get = "/sentinel/sessions/{id}";
   }
 
-  rpc QueryActiveSession(QueryActiveSessionRequest)
-      returns (QueryActiveSessionResponse) {
-    option (google.api.http).get = "/accounts/{address}/sessions/active";
+  rpc QueryParams(QueryParamsRequest) returns (QueryParamsResponse) {
+    option (google.api.http).get = "/sentinel/modules/session/params";
   }
 }

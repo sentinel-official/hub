@@ -363,6 +363,7 @@ func NewApp(
 		app.cdc,
 		app.keys[swaptypes.StoreKey],
 		app.GetSubspace(swaptypes.ModuleName),
+		app.accountKeeper,
 		app.bankKeeper,
 	)
 	app.vpnKeeper = vpnkeeper.NewKeeper(
@@ -399,7 +400,7 @@ func NewApp(
 		staking.NewAppModule(app.cdc, app.stakingKeeper, app.accountKeeper, app.bankKeeper),
 		upgrade.NewAppModule(app.upgradeKeeper),
 		transferModule,
-		swap.NewAppModule(app.swapKeeper),
+		swap.NewAppModule(app.cdc, app.swapKeeper),
 		vpn.NewAppModule(app.accountKeeper, app.vpnKeeper),
 	)
 
@@ -438,7 +439,7 @@ func NewApp(
 		slashing.NewAppModule(app.cdc, app.slashingKeeper, app.accountKeeper, app.bankKeeper, app.stakingKeeper),
 		staking.NewAppModule(app.cdc, app.stakingKeeper, app.accountKeeper, app.bankKeeper),
 		transferModule,
-		swap.NewAppModule(app.swapKeeper),
+		swap.NewAppModule(app.cdc, app.swapKeeper),
 		vpn.NewAppModule(app.accountKeeper, app.vpnKeeper),
 	)
 	app.simulationManager.RegisterStoreDecoders()
