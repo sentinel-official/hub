@@ -20,7 +20,7 @@ const OpWeightMsgSwapRequest = "op_weight_msg_swap_request"
 func WeightedOperations(ap sdksimulation.AppParams, cdc codec.JSONMarshaler, k keeper.Keeper) simulation.WeightedOperations {
 	var weightMsgSwapRequest int
 
-	randSwapFn := func(r *rand.Rand) {
+	randSwapFn := func(_ *rand.Rand) {
 		weightMsgSwapRequest = 100
 	}
 	ap.GetOrGenerate(cdc, OpWeightMsgSwapRequest, &weightMsgSwapRequest, nil, randSwapFn)

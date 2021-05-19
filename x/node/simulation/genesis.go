@@ -28,7 +28,6 @@ func getNodeAddress() hubtypes.NodeAddress {
 	}
 
 	return hubtypes.NodeAddress(bz)
-
 }
 
 func RandomizedGenState(simState *module.SimulationState) {
