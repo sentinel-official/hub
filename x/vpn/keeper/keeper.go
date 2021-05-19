@@ -47,6 +47,7 @@ func NewKeeper(cdc codec.BinaryMarshaler, key sdk.StoreKey, paramsKeeper paramsk
 	nodeKeeper.WithDistributionKeeper(distributionKeeper)
 	nodeKeeper.WithProviderKeeper(&providerKeeper)
 	nodeKeeper.WithPlanKeeper(&planKeeper)
+	nodeKeeper.WithAccountKeeper(&accountKeeper)
 
 	planKeeper.WithProviderKeeper(&providerKeeper)
 	planKeeper.WithNodeKeeper(&nodeKeeper)
