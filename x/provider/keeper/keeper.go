@@ -18,6 +18,7 @@ type Keeper struct {
 	key          sdk.StoreKey
 	params       paramstypes.Subspace
 	distribution expected.DistributionKeeper
+	account		 expected.AccountKeeper
 }
 
 func NewKeeper(cdc codec.BinaryMarshaler, key sdk.StoreKey, params paramstypes.Subspace) Keeper {
@@ -30,6 +31,10 @@ func NewKeeper(cdc codec.BinaryMarshaler, key sdk.StoreKey, params paramstypes.S
 
 func (k *Keeper) WithDistributionKeeper(keeper expected.DistributionKeeper) {
 	k.distribution = keeper
+}
+
+func (k *Keeper) WithAccountKeeper(keeper expected.AccountKeeper) {
+	k.account = keeper
 }
 
 func (k *Keeper) Logger(ctx sdk.Context) log.Logger {
