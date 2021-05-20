@@ -30,7 +30,7 @@ func getNodeAddress() hubtypes.NodeAddress {
 	return hubtypes.NodeAddress(bz)
 }
 
-func RandomizedGenState(simState *module.SimulationState) {
+func RandomizedGenState(simState *module.SimulationState) *types.GenesisState {
 
 	var (
 		deposit          int64
@@ -45,8 +45,8 @@ func RandomizedGenState(simState *module.SimulationState) {
 		inactiveDuration = getRandomInactiveDuration(r)
 	}
 
-	simState.AppParams.GetOrGenerate(simState.Cdc, string(types.KeyDeposit), *&deposit, nil, depositSim)
-	simState.AppParams.GetOrGenerate(simState.Cdc, string(types.KeyInactiveDuration), *&inactiveDuration, nil, inactiveDurationSim)
+	simState.AppParams.GetOrGenerate(simState.Cdc, string(types.KeyDeposit), deposit, nil, depositSim)
+	simState.AppParams.GetOrGenerate(simState.Cdc, string(types.KeyInactiveDuration), inactiveDuration, nil, inactiveDurationSim)
 
 	params := types.NewParams(sdk.Coin{Denom: "sent", Amount: sdk.NewInt(deposit)}, inactiveDuration)
 
@@ -67,5 +67,6 @@ func RandomizedGenState(simState *module.SimulationState) {
 	bz := simState.Cdc.MustMarshalJSON(&state.Params)
 
 	fmt.Printf("selected randomly generated nodes parameters: %s\n", bz)
-	simState.GenState[types.ModuleName] = simState.Cdc.MustMarshalJSON(state)
+	// simState.GenState[types.ModuleName] = simState.Cdc.MustMarshalJSON(state)
+	return state
 }
