@@ -20,7 +20,7 @@ func EndBlock(ctx sdk.Context, k keeper.Keeper) []abcitypes.ValidatorUpdate {
 
 		itemAddress := item.GetAddress()
 		if err := k.ProcessPaymentAndUpdateQuota(ctx, item); err != nil {
-			panic(err)
+			log.Error("failed to process the payment", "cause", err)
 		}
 
 		k.DeleteActiveSessionForAddress(ctx, itemAddress, item.Id)

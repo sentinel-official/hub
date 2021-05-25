@@ -31,7 +31,7 @@ func EndBlock(ctx sdk.Context, k keeper.Keeper) []abcitypes.ValidatorUpdate {
 
 			itemOwner := item.GetOwner()
 			if err := k.SubtractDeposit(ctx, itemOwner, amount); err != nil {
-				panic(err)
+				log.Error("failed to subtract the deposit", "cause", err)
 			}
 		} else {
 			if item.Status.Equal(hubtypes.StatusActive) {
