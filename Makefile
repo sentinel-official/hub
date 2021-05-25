@@ -16,6 +16,10 @@ LD_FLAGS := -s -w \
 benchmark:
 	@go test -mod=readonly -v -bench ${PACKAGES}
 
+.PHONY: clean
+clean:
+	rm -rf ./bin ./vendor
+
 .PHONY: install
 install: mod-vendor
 	go install -mod=readonly -tags="${BUILD_TAGS}" -ldflags="${LD_FLAGS}" ./cmd/sentinelhub
