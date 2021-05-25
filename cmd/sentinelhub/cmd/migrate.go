@@ -4,8 +4,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"time"
 
 	"github.com/cosmos/cosmos-sdk/client"
+	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
@@ -30,6 +32,11 @@ import (
 	v06vpntypes "github.com/sentinel-official/hub/x/vpn/types/legacy/v0.6"
 )
 
+const (
+	flagGenesisTime   = "genesis-time"
+	flagInitialHeight = "initial-height"
+)
+
 func migrateCmd() *cobra.Command {
 	cmd := cobra.Command{
 		Use:   "migrate [genesis-file]",
@@ -39,6 +46,21 @@ func migrateCmd() *cobra.Command {
 			var ctx = client.GetClientContextFromCmd(cmd)
 
 			blob, err := ioutil.ReadFile(args[0])
+			if err != nil {
+				return err
+			}
+
+			chainID, err := cmd.Flags().GetString(flags.FlagChainID)
+			if err != nil {
+				return err
+			}
+
+			genesisTime, err := cmd.Flags().GetString(flagGenesisTime)
+			if err != nil {
+				return err
+			}
+
+			initialHeight, err := cmd.Flags().GetInt64(flagInitialHeight)
 			if err != nil {
 				return err
 			}
@@ -83,6 +105,10 @@ func migrateCmd() *cobra.Command {
 
 			stakingGenesis.Params.HistoricalEntries = 10000
 
+			vpnGenesis.Nodes.Params.InactiveDuration = 1 * time.Hour
+			vpnGenesis.Sessions.Params.InactiveDuration = 2 * time.Hour
+			vpnGenesis.Subscriptions.Params.InactiveDuration = 4 * time.Hour
+
 			var (
 				ibcTransferGenesis = ibctransfertypes.DefaultGenesisState()
 				ibcGenesis         = ibctypes.DefaultGenesisState()
@@ -107,6 +133,20 @@ func migrateCmd() *cobra.Command {
 				return err
 			}
 
+			if genesisTime != "" {
+				var t time.Time
+				if err := t.UnmarshalText([]byte(genesisTime)); err != nil {
+					return err
+				}
+
+				genesis.GenesisTime = t
+			}
+			if chainID != "" {
+				genesis.ChainID = chainID
+			}
+
+			genesis.InitialHeight = initialHeight
+
 			blob, err = tmjson.Marshal(genesis)
 			if err != nil {
 				return err
@@ -121,6 +161,10 @@ func migrateCmd() *cobra.Command {
 			return nil
 		},
 	}
+
+	cmd.Flags().String(flags.FlagChainID, "", "set chain id")
+	cmd.Flags().String(flagGenesisTime, "", "set genesis time")
+	cmd.Flags().Int64(flagInitialHeight, 0, "set the initial height")
 
 	return &cmd
 }
