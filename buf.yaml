@@ -14,8 +14,6 @@ lint:
     - SENSIBLE
     - STYLE_BASIC
     - STYLE_DEFAULT
-  except:
-    - ENUM_ZERO_VALUE_SUFFIX
   ignore:
     - confio
     - cosmos
