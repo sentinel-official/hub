@@ -29,7 +29,6 @@ var (
 	InactiveNodeKeyPrefix            = []byte{0x21}
 	ActiveNodeForProviderKeyPrefix   = []byte{0x30}
 	InactiveNodeForProviderKeyPrefix = []byte{0x31}
-	ActiveNodeAtKeyPrefix            = []byte{0x40}
 	InactiveNodeAtKeyPrefix          = []byte{0x41}
 )
 
@@ -59,14 +58,6 @@ func GetInactiveNodeForProviderKeyPrefix(address hubtypes.ProvAddress) []byte {
 
 func InactiveNodeForProviderKey(provider hubtypes.ProvAddress, address hubtypes.NodeAddress) []byte {
 	return append(GetInactiveNodeForProviderKeyPrefix(provider), address.Bytes()...)
-}
-
-func GetActiveNodeAtKeyPrefix(at time.Time) []byte {
-	return append(ActiveNodeAtKeyPrefix, sdk.FormatTimeBytes(at)...)
-}
-
-func ActiveNodeAtKey(at time.Time, address hubtypes.NodeAddress) []byte {
-	return append(GetActiveNodeAtKeyPrefix(at), address.Bytes()...)
 }
 
 func GetInactiveNodeAtKeyPrefix(at time.Time) []byte {
