@@ -73,6 +73,8 @@ func getDelegatorDelegationsSum(c sdk.Context, sk stakingkeeper.Keeper, address 
 		for _, delegation := range res.DelegationResponses {
 			coins = coins.Add(delegation.GetBalance())
 		}
+	case codes.NotFound:
+		return coins, nil
 	default:
 		return nil, err
 	}
@@ -101,6 +103,8 @@ func getDelegatorUnbondingDelegationsSum(c sdk.Context, sk stakingkeeper.Keeper,
 				coins = coins.Add(sdk.NewCoin(denom, entry.Balance))
 			}
 		}
+	case codes.NotFound:
+		return coins, nil
 	default:
 		return nil, err
 	}
