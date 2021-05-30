@@ -1,7 +1,7 @@
 package types
 
 const (
-	ModuleName   = "customupgrade"
+	ModuleName   = "hotfix"
 	RouterKey    = ModuleName
 	QuerierRoute = ModuleName
 )

@@ -1,4 +1,4 @@
-package upgrade1
+package hotfix1
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -10,7 +10,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	"github.com/sentinel-official/hub/x/upgrade/expected"
+	"github.com/sentinel-official/hub/x/hotfix/expected"
 )
 
 func Handler(ctx sdk.Context, ak expected.AccountKeeper, bk expected.BankKeeper, sk stakingkeeper.Keeper) error {
@@ -74,7 +74,6 @@ func getDelegatorDelegationsSum(c sdk.Context, sk stakingkeeper.Keeper, address 
 			coins = coins.Add(delegation.GetBalance())
 		}
 	case codes.NotFound:
-		return coins, nil
 	default:
 		return nil, err
 	}
@@ -104,7 +103,6 @@ func getDelegatorUnbondingDelegationsSum(c sdk.Context, sk stakingkeeper.Keeper,
 			}
 		}
 	case codes.NotFound:
-		return coins, nil
 	default:
 		return nil, err
 	}

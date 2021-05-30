@@ -1,4 +1,4 @@
-package upgrade
+package hotfix
 
 import (
 	"encoding/json"
@@ -16,8 +16,8 @@ import (
 	"github.com/spf13/cobra"
 	abcitypes "github.com/tendermint/tendermint/abci/types"
 
-	"github.com/sentinel-official/hub/x/upgrade/expected"
-	"github.com/sentinel-official/hub/x/upgrade/types"
+	"github.com/sentinel-official/hub/x/hotfix/expected"
+	"github.com/sentinel-official/hub/x/hotfix/types"
 )
 
 var (

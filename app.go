@@ -82,11 +82,11 @@ import (
 
 	hubparams "github.com/sentinel-official/hub/params"
 	deposittypes "github.com/sentinel-official/hub/x/deposit/types"
+	"github.com/sentinel-official/hub/x/hotfix"
+	hotfixtypes "github.com/sentinel-official/hub/x/hotfix/types"
 	"github.com/sentinel-official/hub/x/swap"
 	swapkeeper "github.com/sentinel-official/hub/x/swap/keeper"
 	swaptypes "github.com/sentinel-official/hub/x/swap/types"
-	customupgrade "github.com/sentinel-official/hub/x/upgrade"
-	customupgradetypes "github.com/sentinel-official/hub/x/upgrade/types"
 	"github.com/sentinel-official/hub/x/vpn"
 	vpnkeeper "github.com/sentinel-official/hub/x/vpn/keeper"
 	vpntypes "github.com/sentinel-official/hub/x/vpn/types"
@@ -404,12 +404,12 @@ func NewApp(
 		transferModule,
 		swap.NewAppModule(app.cdc, app.swapKeeper),
 		vpn.NewAppModule(app.accountKeeper, app.vpnKeeper),
-		customupgrade.NewAppModule(app.accountKeeper, app.bankKeeper, app.stakingKeeper),
+		hotfix.NewAppModule(app.accountKeeper, app.bankKeeper, app.stakingKeeper),
 	)
 
 	// NOTE: order is very important here
 	app.manager.SetOrderBeginBlockers(
-		customupgradetypes.ModuleName,
+		hotfixtypes.ModuleName,
 		upgradetypes.ModuleName, minttypes.ModuleName, distributiontypes.ModuleName,
 		slashingtypes.ModuleName, evidencetypes.ModuleName, stakingtypes.ModuleName,
 		ibchost.ModuleName,
@@ -445,7 +445,7 @@ func NewApp(
 		transferModule,
 		swap.NewAppModule(app.cdc, app.swapKeeper),
 		vpn.NewAppModule(app.accountKeeper, app.vpnKeeper),
-		customupgrade.NewAppModule(app.accountKeeper, app.bankKeeper, app.stakingKeeper),
+		hotfix.NewAppModule(app.accountKeeper, app.bankKeeper, app.stakingKeeper),
 	)
 	app.simulationManager.RegisterStoreDecoders()
 
