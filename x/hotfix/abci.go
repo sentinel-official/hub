@@ -16,11 +16,11 @@ func BeginBlock(ctx sdk.Context, ak expected.AccountKeeper, bk expected.BankKeep
 	switch ctx.BlockHeight() {
 	case hotfix1.Height:
 		cacheCtx, writeCache := ctx.CacheContext()
-		if err := hotfix1.Handler(cacheCtx, ak, bk, sk); err == nil {
-			writeCache()
-		} else {
+		if err := hotfix1.Handler(cacheCtx, ak, bk, sk); err != nil {
 			ctx.Logger().With("module", types.ModuleName).
 				Error(fmt.Sprintf("failed to apply hotfix %s", hotfix1.Name), "cause", err)
+		} else {
+			writeCache()
 		}
 	}
 

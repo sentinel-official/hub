@@ -28,19 +28,18 @@ var (
 
 type AppModuleBasic struct{}
 
-func (a AppModuleBasic) Name() string                                         { return types.ModuleName }
-func (a AppModuleBasic) RegisterLegacyAminoCodec(_ *codec.LegacyAmino)        {}
-func (a AppModuleBasic) RegisterInterfaces(_ codectypes.InterfaceRegistry)    {}
-func (a AppModuleBasic) DefaultGenesis(_ codec.JSONMarshaler) json.RawMessage { return nil }
-
-func (a AppModuleBasic) ValidateGenesis(_ codec.JSONMarshaler, _ client.TxEncodingConfig, _ json.RawMessage) error {
-	return nil
-}
-
+func (a AppModuleBasic) Name() string                                                    { return types.ModuleName }
+func (a AppModuleBasic) RegisterLegacyAminoCodec(_ *codec.LegacyAmino)                   {}
+func (a AppModuleBasic) RegisterInterfaces(_ codectypes.InterfaceRegistry)               {}
+func (a AppModuleBasic) DefaultGenesis(_ codec.JSONMarshaler) json.RawMessage            { return nil }
 func (a AppModuleBasic) RegisterRESTRoutes(_ client.Context, _ *mux.Router)              {}
 func (a AppModuleBasic) RegisterGRPCGatewayRoutes(_ client.Context, _ *runtime.ServeMux) {}
 func (a AppModuleBasic) GetTxCmd() *cobra.Command                                        { return nil }
 func (a AppModuleBasic) GetQueryCmd() *cobra.Command                                     { return nil }
+
+func (a AppModuleBasic) ValidateGenesis(_ codec.JSONMarshaler, _ client.TxEncodingConfig, _ json.RawMessage) error {
+	return nil
+}
 
 type AppModule struct {
 	AppModuleBasic
@@ -57,34 +56,32 @@ func NewAppModule(ak expected.AccountKeeper, bk expected.BankKeeper, sk stakingk
 	}
 }
 
+func (a AppModule) ExportGenesis(_ sdk.Context, _ codec.JSONMarshaler) json.RawMessage { return nil }
+func (a AppModule) RegisterInvariants(_ sdk.InvariantRegistry)                         {}
+func (a AppModule) Route() sdk.Route                                                   { return sdk.NewRoute(types.RouterKey, nil) }
+func (a AppModule) QuerierRoute() string                                               { return types.QuerierRoute }
+func (a AppModule) LegacyQuerierHandler(_ *codec.LegacyAmino) sdk.Querier              { return nil }
+func (a AppModule) RegisterServices(_ module.Configurator)                             {}
+func (a AppModule) GenerateGenesisState(_ *module.SimulationState)                     {}
+func (a AppModule) RandomizedParams(_ *rand.Rand) []simulation.ParamChange             { return nil }
+func (a AppModule) RegisterStoreDecoder(_ sdk.StoreDecoderRegistry)                    {}
+
 func (a AppModule) InitGenesis(_ sdk.Context, _ codec.JSONMarshaler, _ json.RawMessage) []abcitypes.ValidatorUpdate {
 	return nil
-}
-
-func (a AppModule) ExportGenesis(ctx sdk.Context, cdc codec.JSONMarshaler) json.RawMessage { return nil }
-func (a AppModule) RegisterInvariants(_ sdk.InvariantRegistry)                             {}
-func (a AppModule) Route() sdk.Route                                                       { return sdk.NewRoute(types.RouterKey, nil) }
-func (a AppModule) QuerierRoute() string                                                   { return types.QuerierRoute }
-func (a AppModule) LegacyQuerierHandler(_ *codec.LegacyAmino) sdk.Querier                  { return nil }
-func (a AppModule) RegisterServices(_ module.Configurator)                                 {}
-
-func (a AppModule) BeginBlock(ctx sdk.Context, _ abcitypes.RequestBeginBlock) {
-	BeginBlock(ctx, a.ak, a.bk, a.sk)
 }
 
 func (a AppModule) EndBlock(_ sdk.Context, _ abcitypes.RequestEndBlock) []abcitypes.ValidatorUpdate {
 	return nil
 }
 
-func (a AppModule) GenerateGenesisState(_ *module.SimulationState) {}
-
 func (a AppModule) ProposalContents(_ module.SimulationState) []simulation.WeightedProposalContent {
 	return nil
 }
 
-func (a AppModule) RandomizedParams(_ *rand.Rand) []simulation.ParamChange { return nil }
-func (a AppModule) RegisterStoreDecoder(_ sdk.StoreDecoderRegistry)        {}
-
 func (a AppModule) WeightedOperations(_ module.SimulationState) []simulation.WeightedOperation {
 	return nil
+}
+
+func (a AppModule) BeginBlock(ctx sdk.Context, _ abcitypes.RequestBeginBlock) {
+	BeginBlock(ctx, a.ak, a.bk, a.sk)
 }
