@@ -10,9 +10,10 @@ import (
 )
 
 func getRandomDeposit(r *rand.Rand) sdk.Coin {
-	randomDenom := simulation.RandStringOfLength(r, r.Intn(125)+3)
-	randomBigInt := sdk.NewInt(r.Int63n(10<<12))
-	return sdk.NewCoin(randomDenom, randomBigInt)
+	denom := simulation.RandStringOfLength(r, r.Intn(125)+3)
+	amount := sdk.NewInt(r.Int63n(10<<12))
+
+	return sdk.NewCoin(denom, amount)
 }
 
 func getRandomProviders(r *rand.Rand) types.Providers {

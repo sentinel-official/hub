@@ -3,10 +3,15 @@ package keeper
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	hubtypes "github.com/sentinel-official/hub/types"
 	nodetypes "github.com/sentinel-official/hub/x/node/types"
 	plantypes "github.com/sentinel-official/hub/x/plan/types"
 )
+
+func (k *Keeper) GetAccount(ctx sdk.Context, address sdk.AccAddress) authtypes.AccountI {
+	return k.account.GetAccount(ctx, address)
+}
 
 func (k *Keeper) SendCoin(ctx sdk.Context, from sdk.AccAddress, to sdk.AccAddress, coin sdk.Coin) error {
 	return k.bank.SendCoins(ctx, from, to, sdk.NewCoins(coin))

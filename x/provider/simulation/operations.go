@@ -17,13 +17,13 @@ import (
 
 const (
 	OpWeightMsgRegisterRequest = "op_weight_msg_register_request"
-	OpWeightMsgUpdateRequest = "op_weight_msg_update_request"
+	OpWeightMsgUpdateRequest   = "op_weight_msg_update_request"
 )
 
 func WeightedOperations(ap sdksimulation.AppParams, cdc codec.JSONMarshaler, k keeper.Keeper) simulation.WeightedOperations {
 	var (
 		weightMsgRegisterRequest int
-		weightMsgUpdateRequest int
+		weightMsgUpdateRequest   int
 	)
 
 	randRegisterFn := func(_ *rand.Rand) {

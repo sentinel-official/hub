@@ -10,10 +10,10 @@ import (
 )
 
 func getRandomCoins(r *rand.Rand) sdk.Coins {
-	return sdk.NewCoins(sdk.NewCoin("sent", sdk.NewInt(r.Int63n(10<<12))))
+	return sdk.NewCoins(sdk.NewCoin("tsent", sdk.NewInt(r.Int63n(10<<12))))
 }
 
-func getRandonDeposits(r *rand.Rand) types.Deposits {
+func getRandomDeposit(r *rand.Rand) types.Deposits {
 	var deposits types.Deposits
 
 	for _, acc := range sdksimulation.RandomAccounts(r, r.Intn(18)+2) {
@@ -27,5 +27,5 @@ func getRandonDeposits(r *rand.Rand) types.Deposits {
 }
 
 func RandomizedGenesisState(simState *module.SimulationState) types.GenesisState {
-	return types.NewGenesisState(getRandonDeposits(simState.Rand))
+	return types.NewGenesisState(getRandomDeposit(simState.Rand))
 }
