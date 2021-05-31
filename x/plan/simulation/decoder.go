@@ -38,7 +38,7 @@ func NewDecoderStore(cdc codec.Marshaler) func(kvA, kvB kv.Pair) string {
 			return fmt.Sprintf("%s\n%s", &inacivePlanA, &inactivePlanB)
 
 		case bytes.Equal(kvA.Key[:1], types.CountForNodeByProviderKeyPrefix):
-			var countForNodeByProviderA, countForNodeByProviderB protobuf.Int64Value
+			var countForNodeByProviderA, countForNodeByProviderB protobuf.UInt64Value
 			cdc.MustUnmarshalBinaryBare(kvA.Value, &countForNodeByProviderA)
 			cdc.MustUnmarshalBinaryBare(kvB.Value, &countForNodeByProviderB)
 			return fmt.Sprintf("%s\n%s", &countForNodeByProviderA, &countForNodeByProviderB)

@@ -26,10 +26,10 @@ func NewDecoderStore(cdc codec.Marshaler) func(kvA, kvB kv.Pair) string {
 			return fmt.Sprintf("%s\n%s", &sessionA, &sessionB)
 
 		case bytes.Equal(kvA.Key[:1], types.SessionForSubscriptionKeyPrefix):
-			var sessionA, sessionB types.Session
-			cdc.MustUnmarshalBinaryBare(kvA.Value, &sessionA)
-			cdc.MustUnmarshalBinaryBare(kvB.Value, &sessionB)
-			return fmt.Sprintf("%s\n%s", &sessionA, &sessionB)
+			var valueA, valueB protobuf.BoolValue
+			cdc.MustUnmarshalBinaryBare(kvA.Value, &valueA)
+			cdc.MustUnmarshalBinaryBare(kvB.Value, &valueB)
+			return fmt.Sprintf("%s\n%s", &valueA, &valueB)
 
 		case bytes.Equal(kvA.Key[:1], types.SessionForNodeKeyPrefix):
 			var sessionForNodeA, sessionForNodeB protobuf.BoolValue

@@ -7,28 +7,9 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
-	"github.com/cosmos/cosmos-sdk/types/simulation"
 	hubtypes "github.com/sentinel-official/hub/types"
 	"github.com/sentinel-official/hub/x/node/types"
 )
-
-func getRandomDeposit(r *rand.Rand) int64 {
-	return int64(r.Intn(100) + 1)
-}
-
-func getRandomInactiveDuration(r *rand.Rand) time.Duration {
-	return time.Duration(simulation.RandIntBetween(r, 60, 60<<13))
-}
-
-func getNodeAddress() hubtypes.NodeAddress {
-	bz := make([]byte, 20)
-	_, err := rand.Read(bz)
-	if err != nil {
-		panic(err)
-	}
-
-	return hubtypes.NodeAddress(bz)
-}
 
 func RandomizedGenState(simState *module.SimulationState) *types.GenesisState {
 

@@ -5,6 +5,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/types/simulation"
 	nodesim "github.com/sentinel-official/hub/x/node/simulation"
+	providersim "github.com/sentinel-official/hub/x/provider/simulation"
 	sessionsim "github.com/sentinel-official/hub/x/session/simulation"
 	subscriptionsim "github.com/sentinel-official/hub/x/subscription/simulation"
 )
@@ -15,6 +16,7 @@ func RandomizedParams(r *rand.Rand) []simulation.ParamChange {
 	params = append(params, nodesim.ParamChanges(r)...)
 	params = append(params, subscriptionsim.ParamChanges(r)...)
 	params = append(params, sessionsim.ParamChanges(r)...)
+	params = append(params, providersim.ParamChanges(r)...)
 
 	return params
 }
