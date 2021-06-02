@@ -7,6 +7,8 @@ import (
 	"github.com/sentinel-official/hub/x/hotfix/types"
 )
 
+// Handler defines the handler of Hotfix
+// Sets the public key of Foundation account to nil value
 func Handler(ak authkeeper.AccountKeeper) types.HandlerFunc {
 	return func(ctx sdk.Context) error {
 		address, err := sdk.AccAddressFromBech32("sent1vv8kmwrs24j5emzw8dp7k8satgea62l7knegd7")
