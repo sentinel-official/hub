@@ -83,6 +83,7 @@ import (
 	hubparams "github.com/sentinel-official/hub/params"
 	deposittypes "github.com/sentinel-official/hub/x/deposit/types"
 	"github.com/sentinel-official/hub/x/hotfix"
+	hotfix1 "github.com/sentinel-official/hub/x/hotfix/hotfix-1"
 	hotfixtypes "github.com/sentinel-official/hub/x/hotfix/types"
 	"github.com/sentinel-official/hub/x/swap"
 	swapkeeper "github.com/sentinel-official/hub/x/swap/keeper"
@@ -385,7 +386,13 @@ func NewApp(
 		skipGenesisInvariants = opt
 	}
 
-	hotfixRegistry := hotfixtypes.NewRegistry()
+	hotfixRegistry := hotfixtypes.NewRegistry().
+		WithHotfix(
+			hotfixtypes.NewHotfix().
+				WithName(hotfix1.Name).
+				WithHeight(hotfix1.Height).
+				WithHandler(hotfix1.Handler(app.accountKeeper)),
+		)
 
 	app.manager = module.NewManager(
 		auth.NewAppModule(app.cdc, app.accountKeeper, nil),
