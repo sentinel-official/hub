@@ -82,6 +82,8 @@ import (
 
 	hubparams "github.com/sentinel-official/hub/params"
 	deposittypes "github.com/sentinel-official/hub/x/deposit/types"
+	"github.com/sentinel-official/hub/x/hotfix"
+	hotfixtypes "github.com/sentinel-official/hub/x/hotfix/types"
 	"github.com/sentinel-official/hub/x/swap"
 	swapkeeper "github.com/sentinel-official/hub/x/swap/keeper"
 	swaptypes "github.com/sentinel-official/hub/x/swap/types"
@@ -383,6 +385,8 @@ func NewApp(
 		skipGenesisInvariants = opt
 	}
 
+	hotfixRegistry := hotfixtypes.NewRegistry()
+
 	app.manager = module.NewManager(
 		auth.NewAppModule(app.cdc, app.accountKeeper, nil),
 		authvesting.NewAppModule(app.accountKeeper, app.bankKeeper),
@@ -402,10 +406,12 @@ func NewApp(
 		transferModule,
 		swap.NewAppModule(app.cdc, app.swapKeeper),
 		vpn.NewAppModule(app.accountKeeper, app.vpnKeeper),
+		hotfix.NewAppModule(hotfixRegistry),
 	)
 
 	// NOTE: order is very important here
 	app.manager.SetOrderBeginBlockers(
+		hotfixtypes.ModuleName,
 		upgradetypes.ModuleName, minttypes.ModuleName, distributiontypes.ModuleName,
 		slashingtypes.ModuleName, evidencetypes.ModuleName, stakingtypes.ModuleName,
 		ibchost.ModuleName,
@@ -441,6 +447,7 @@ func NewApp(
 		transferModule,
 		swap.NewAppModule(app.cdc, app.swapKeeper),
 		vpn.NewAppModule(app.accountKeeper, app.vpnKeeper),
+		hotfix.NewAppModule(hotfixRegistry),
 	)
 	app.simulationManager.RegisterStoreDecoders()
 
