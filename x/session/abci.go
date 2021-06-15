@@ -15,7 +15,7 @@ func EndBlock(ctx sdk.Context, k keeper.Keeper) []abcitypes.ValidatorUpdate {
 		end = ctx.BlockTime().Add(-1 * k.InactiveDuration(ctx))
 	)
 
-	k.IterateActiveSessionsAt(ctx, end, func(_ int, key []byte, item types.Session) bool {
+	k.IterateInactiveSessionsAt(ctx, end, func(_ int, key []byte, item types.Session) bool {
 		log.Info("inactive session", "key", key, "value", item)
 
 		itemAddress := item.GetAddress()
@@ -24,7 +24,7 @@ func EndBlock(ctx sdk.Context, k keeper.Keeper) []abcitypes.ValidatorUpdate {
 		}
 
 		k.DeleteActiveSessionForAddress(ctx, itemAddress, item.Id)
-		k.DeleteActiveSessionAt(ctx, item.StatusAt, item.Id)
+		k.DeleteInactiveSessionAt(ctx, item.StatusAt, item.Id)
 
 		item.Status = hubtypes.StatusInactive
 		item.StatusAt = ctx.BlockTime()

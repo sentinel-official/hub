@@ -101,7 +101,7 @@ func (k *msgServer) MsgStart(c context.Context, msg *types.MsgStartRequest) (*ty
 	k.SetSessionForNode(ctx, sessionNode, session.Id)
 
 	k.SetActiveSessionForAddress(ctx, sessionAddress, session.Id)
-	k.SetActiveSessionAt(ctx, session.StatusAt, session.Id)
+	k.SetInactiveSessionAt(ctx, session.StatusAt, session.Id)
 	ctx.EventManager().EmitTypedEvent(
 		&types.EventStartSession{
 			From:         sdk.AccAddress(msgFrom.Bytes()).String(),
@@ -141,14 +141,14 @@ func (k *msgServer) MsgUpdate(c context.Context, msg *types.MsgUpdateRequest) (*
 		}
 	}
 
-	k.DeleteActiveSessionAt(ctx, session.StatusAt, session.Id)
+	k.DeleteInactiveSessionAt(ctx, session.StatusAt, session.Id)
 
 	session.Duration = msg.Proof.Duration
 	session.Bandwidth = msg.Proof.Bandwidth
 	session.StatusAt = ctx.BlockTime()
 
 	k.SetSession(ctx, session)
-	k.SetActiveSessionAt(ctx, session.StatusAt, session.Id)
+	k.SetInactiveSessionAt(ctx, session.StatusAt, session.Id)
 	ctx.EventManager().EmitTypedEvent(
 		&types.EventUpdateSession{
 			From:         sdk.AccAddress(msgFrom.Bytes()).String(),
@@ -189,7 +189,7 @@ func (k *msgServer) MsgEnd(c context.Context, msg *types.MsgEndRequest) (*types.
 	}
 
 	k.DeleteActiveSessionForAddress(ctx, msgFrom, session.Id)
-	k.DeleteActiveSessionAt(ctx, session.StatusAt, session.Id)
+	k.DeleteInactiveSessionAt(ctx, session.StatusAt, session.Id)
 
 	session.Status = hubtypes.StatusInactive
 	session.StatusAt = ctx.BlockTime()
