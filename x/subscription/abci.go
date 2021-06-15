@@ -18,6 +18,25 @@ func EndBlock(ctx sdk.Context, k keeper.Keeper) []abcitypes.ValidatorUpdate {
 	k.IterateInactiveSubscriptions(ctx, ctx.BlockTime(), func(_ int, key []byte, item types.Subscription) bool {
 		log.Info("inactive subscription", "key", key, "value", item)
 
+		if item.Status.Equal(hubtypes.StatusActive) {
+			k.DeleteInactiveSubscriptionAt(ctx, item.Expiry, item.Id)
+			k.IterateQuotas(ctx, item.Id, func(_ int, quota types.Quota) bool {
+				address := quota.GetAddress()
+				k.DeleteActiveSubscriptionForAddress(ctx, address, item.Id)
+				k.SetInactiveSubscriptionForAddress(ctx, address, item.Id)
+
+				return false
+			})
+
+			item.Status = hubtypes.StatusInactivePending
+			item.StatusAt = ctx.BlockTime()
+
+			k.SetSubscription(ctx, item)
+			k.SetInactiveSubscriptionAt(ctx, item.StatusAt.Add(inactiveDuration), item.Id)
+
+			return false
+		}
+
 		if item.Plan == 0 {
 			consumed := sdk.ZeroInt()
 			k.IterateQuotas(ctx, item.Id, func(_ int, quota types.Quota) bool {
@@ -33,27 +52,9 @@ func EndBlock(ctx sdk.Context, k keeper.Keeper) []abcitypes.ValidatorUpdate {
 			if err := k.SubtractDeposit(ctx, itemOwner, amount); err != nil {
 				log.Error("failed to subtract the deposit", "cause", err)
 			}
-		} else {
-			if item.Status.Equal(hubtypes.StatusActive) {
-				item.Status = hubtypes.StatusInactivePending
-				item.StatusAt = item.Expiry
-
-				k.SetSubscription(ctx, item)
-				k.DeleteInactiveSubscriptionAt(ctx, item.Expiry, item.Id)
-				k.SetInactiveSubscriptionAt(ctx, item.Expiry.Add(inactiveDuration), item.Id)
-
-				return false
-			}
 		}
 
 		k.DeleteInactiveSubscriptionAt(ctx, item.StatusAt.Add(inactiveDuration), item.Id)
-		k.IterateQuotas(ctx, item.Id, func(_ int, quota types.Quota) bool {
-			quotaAddress := quota.GetAddress()
-			k.DeleteActiveSubscriptionForAddress(ctx, quotaAddress, item.Id)
-			k.SetInactiveSubscriptionForAddress(ctx, quotaAddress, item.Id)
-
-			return false
-		})
 
 		item.Status = hubtypes.StatusInactive
 		item.StatusAt = ctx.BlockTime()
