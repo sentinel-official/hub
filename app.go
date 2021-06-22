@@ -81,6 +81,7 @@ import (
 	tmdb "github.com/tendermint/tm-db"
 
 	hubparams "github.com/sentinel-official/hub/params"
+	upgrade1 "github.com/sentinel-official/hub/upgrades/upgrade-1"
 	deposittypes "github.com/sentinel-official/hub/x/deposit/types"
 	"github.com/sentinel-official/hub/x/swap"
 	swapkeeper "github.com/sentinel-official/hub/x/swap/keeper"
@@ -358,6 +359,8 @@ func NewApp(
 		app.slashingKeeper,
 	)
 	app.evidenceKeeper.SetRouter(evidenceRouter)
+
+	app.upgradeKeeper.SetUpgradeHandler(upgrade1.Name, upgrade1.Handler(app.accountKeeper))
 
 	app.swapKeeper = swapkeeper.NewKeeper(
 		app.cdc,
