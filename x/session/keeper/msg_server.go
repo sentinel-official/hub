@@ -55,7 +55,7 @@ func (k *msgServer) MsgStart(c context.Context, msg *types.MsgStartRequest) (*ty
 			return nil, types.ErrorNodeAddressMismatch
 		}
 	} else {
-		if k.HasNodeForPlan(ctx, subscription.Plan, msgNode) {
+		if !k.HasNodeForPlan(ctx, subscription.Plan, msgNode) {
 			return nil, types.ErrorNodeDoesNotExistForPlan
 		}
 	}

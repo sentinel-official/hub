@@ -85,6 +85,11 @@ func (m *MsgUpdateRequest) ValidateBasic() error {
 		return errors.Wrapf(ErrorInvalidField, "%s", "from")
 	}
 
+	// Id should be positive
+	if m.Proof.Id == 0 {
+		return errors.Wrapf(ErrorInvalidField, "%s", "proof->id")
+	}
+
 	// Duration shouldn't be negative
 	if m.Proof.Duration < 0 {
 		return errors.Wrapf(ErrorInvalidField, "%s", "proof->duration")
