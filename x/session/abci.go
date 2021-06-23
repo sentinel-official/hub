@@ -29,6 +29,13 @@ func EndBlock(ctx sdk.Context, k keeper.Keeper) []abcitypes.ValidatorUpdate {
 			k.SetSession(ctx, item)
 			k.SetInactiveSessionForAddress(ctx, itemAddress, item.Id)
 			k.SetInactiveSessionAt(ctx, item.StatusAt.Add(inactiveDuration), item.Id)
+			ctx.EventManager().EmitTypedEvent(
+				&types.EventEndSession{
+					Id:           item.Id,
+					Subscription: item.Subscription,
+					Node:         item.Node,
+				},
+			)
 
 			return false
 		}
