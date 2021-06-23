@@ -22,7 +22,7 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, state *types.GenesisState) {
 
 		if session.Status.Equal(hubtypes.StatusActive) {
 			k.SetActiveSessionForAddress(ctx, sessionAddress, session.Id)
-			k.SetActiveSessionAt(ctx, session.StatusAt, session.Id)
+			k.SetInactiveSessionAt(ctx, session.StatusAt, session.Id)
 		} else {
 			k.SetInactiveSessionForAddress(ctx, sessionAddress, session.Id)
 		}

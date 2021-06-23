@@ -30,7 +30,7 @@ var (
 	SessionForNodeKeyPrefix            = []byte{0x21}
 	InactiveSessionForAddressKeyPrefix = []byte{0x30}
 	ActiveSessionForAddressKeyPrefix   = []byte{0x31}
-	ActiveSessionAtKeyPrefix           = []byte{0x40}
+	InactiveSessionAtKeyPrefix         = []byte{0x40}
 )
 
 func SessionKey(id uint64) []byte {
@@ -69,12 +69,12 @@ func ActiveSessionForAddressKey(address sdk.AccAddress, id uint64) []byte {
 	return append(GetActiveSessionForAddressKeyPrefix(address), sdk.Uint64ToBigEndian(id)...)
 }
 
-func GetActiveSessionAtKeyPrefix(at time.Time) []byte {
-	return append(ActiveSessionAtKeyPrefix, sdk.FormatTimeBytes(at)...)
+func GetInactiveSessionAtKeyPrefix(at time.Time) []byte {
+	return append(InactiveSessionAtKeyPrefix, sdk.FormatTimeBytes(at)...)
 }
 
-func ActiveSessionAtKey(at time.Time, id uint64) []byte {
-	return append(GetActiveSessionAtKeyPrefix(at), sdk.Uint64ToBigEndian(id)...)
+func InactiveSessionAtKey(at time.Time, id uint64) []byte {
+	return append(GetInactiveSessionAtKeyPrefix(at), sdk.Uint64ToBigEndian(id)...)
 }
 
 func IDFromSessionForSubscriptionKey(key []byte) uint64 {
