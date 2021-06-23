@@ -229,11 +229,19 @@ func (k *msgServer) MsgCancel(c context.Context, msg *types.MsgCancelRequest) (*
 		k.DeleteInactiveSubscriptionAt(ctx, subscription.Expiry, subscription.Id)
 	}
 
+	k.IterateQuotas(ctx, subscription.Id, func(_ int, quota types.Quota) bool {
+		address := quota.GetAddress()
+		k.DeleteActiveSubscriptionForAddress(ctx, address, subscription.Id)
+		k.SetInactiveSubscriptionForAddress(ctx, address, subscription.Id)
+
+		return false
+	})
+
 	subscription.Status = hubtypes.StatusInactivePending
 	subscription.StatusAt = ctx.BlockTime()
-	k.SetInactiveSubscriptionAt(ctx, ctx.BlockTime().Add(inactiveDuration), subscription.Id)
 
 	k.SetSubscription(ctx, subscription)
+	k.SetInactiveSubscriptionAt(ctx, subscription.StatusAt.Add(inactiveDuration), subscription.Id)
 	ctx.EventManager().EmitTypedEvent(
 		&types.EventCancelSubscription{
 			From: sdk.AccAddress(msgFrom.Bytes()).String(),
