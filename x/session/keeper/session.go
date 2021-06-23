@@ -213,25 +213,25 @@ func (k *Keeper) GetActiveSessionsForAddress(ctx sdk.Context, address sdk.AccAdd
 	return items
 }
 
-func (k *Keeper) SetActiveSessionAt(ctx sdk.Context, at time.Time, id uint64) {
-	key := types.ActiveSessionAtKey(at, id)
+func (k *Keeper) SetInactiveSessionAt(ctx sdk.Context, at time.Time, id uint64) {
+	key := types.InactiveSessionAtKey(at, id)
 	value := k.cdc.MustMarshalBinaryBare(&protobuf.BoolValue{Value: true})
 
 	store := k.Store(ctx)
 	store.Set(key, value)
 }
 
-func (k *Keeper) DeleteActiveSessionAt(ctx sdk.Context, at time.Time, id uint64) {
-	key := types.ActiveSessionAtKey(at, id)
+func (k *Keeper) DeleteInactiveSessionAt(ctx sdk.Context, at time.Time, id uint64) {
+	key := types.InactiveSessionAtKey(at, id)
 
 	store := k.Store(ctx)
 	store.Delete(key)
 }
 
-func (k *Keeper) IterateActiveSessionsAt(ctx sdk.Context, end time.Time, fn func(index int, key []byte, item types.Session) (stop bool)) {
+func (k *Keeper) IterateInactiveSessionsAt(ctx sdk.Context, end time.Time, fn func(index int, key []byte, item types.Session) (stop bool)) {
 	store := k.Store(ctx)
 
-	iter := store.Iterator(types.ActiveSessionAtKeyPrefix, sdk.PrefixEndBytes(types.GetActiveSessionAtKeyPrefix(end)))
+	iter := store.Iterator(types.InactiveSessionAtKeyPrefix, sdk.PrefixEndBytes(types.GetInactiveSessionAtKeyPrefix(end)))
 	defer iter.Close()
 
 	for i := 0; iter.Valid(); iter.Next() {
