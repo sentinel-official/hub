@@ -49,7 +49,7 @@ func NewDecoderStore(cdc codec.Marshaler) func(kvA, kvB kv.Pair) string {
 			cdc.MustUnmarshalBinaryBare(kvB.Value, &activeSessionB)
 			return fmt.Sprintf("%s\n%s", &activeSessionA, &activeSessionB)
 
-		case bytes.Equal(kvA.Key[:1], types.ActiveSessionAtKeyPrefix):
+		case bytes.Equal(kvA.Key[:1], types.InactiveSessionAtKeyPrefix):
 			var activeSessionA, activeSessionB protobuf.BoolValue
 			cdc.MustUnmarshalBinaryBare(kvA.Value, &activeSessionA)
 			cdc.MustUnmarshalBinaryBare(kvB.Value, &activeSessionB)
