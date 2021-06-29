@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/types/errors"
 
 	hubtypes "github.com/sentinel-official/hub/types"
 )
@@ -36,17 +35,17 @@ func (m *MsgSubscribeToNodeRequest) Type() string {
 
 func (m *MsgSubscribeToNodeRequest) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.From); err != nil {
-		return errors.Wrapf(ErrorInvalidField, "%s", "from")
+		return ErrorInvalidFieldFrom
 	}
 
 	// Address should be valid
 	if _, err := hubtypes.NodeAddressFromBech32(m.Address); err != nil {
-		return errors.Wrapf(ErrorInvalidField, "%s", "address")
+		return ErrorInvalidFieldAddress
 	}
 
 	// Deposit should be valid and positive
 	if !m.Deposit.IsValid() || !m.Deposit.IsPositive() {
-		return errors.Wrapf(ErrorInvalidField, "%s", "deposit")
+		return ErrorInvalidFieldDeposit
 	}
 
 	return nil
@@ -83,17 +82,18 @@ func (m *MsgSubscribeToPlanRequest) Type() string {
 
 func (m *MsgSubscribeToPlanRequest) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.From); err != nil {
-		return errors.Wrapf(ErrorInvalidField, "%s", "from")
+		return ErrorInvalidFieldFrom
 	}
 
 	// Id shouldn't be zero
 	if m.Id == 0 {
-		return errors.Wrapf(ErrorInvalidField, "%s", "id")
+		return ErrorInvalidFieldId
 	}
 
 	// Denom should be valid
-	if err := sdk.ValidateDenom(m.Denom); err != nil {
-		return errors.Wrapf(ErrorInvalidField, "%s", "denom")
+	err := sdk.ValidateDenom(m.Denom)
+	if err != nil {
+		return ErrorInvalidFieldDenom
 	}
 
 	return nil
@@ -129,12 +129,12 @@ func (m *MsgCancelRequest) Type() string {
 
 func (m *MsgCancelRequest) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.From); err != nil {
-		return errors.Wrapf(ErrorInvalidField, "%s", "from")
+		return ErrorInvalidFieldFrom
 	}
 
 	// Id shouldn't be zero
 	if m.Id == 0 {
-		return errors.Wrapf(ErrorInvalidField, "%s", "id")
+		return ErrorInvalidFieldId
 	}
 
 	return nil
@@ -172,22 +172,22 @@ func (m *MsgAddQuotaRequest) Type() string {
 
 func (m *MsgAddQuotaRequest) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.From); err != nil {
-		return errors.Wrapf(ErrorInvalidField, "%s", "from")
+		return ErrorInvalidFieldFrom
 	}
 
 	// Id shouldn't be zero
 	if m.Id == 0 {
-		return errors.Wrapf(ErrorInvalidField, "%s", "id")
+		return ErrorInvalidFieldId
 	}
 
 	// Address should be valid
 	if _, err := sdk.AccAddressFromBech32(m.Address); err != nil {
-		return errors.Wrapf(ErrorInvalidField, "%s", "address")
+		return ErrorInvalidFieldAddress
 	}
 
 	// Bytes should be positive
 	if !m.Bytes.IsPositive() {
-		return errors.Wrapf(ErrorInvalidField, "%s", "bytes")
+		return ErrorInvalidFieldBytes
 	}
 
 	return nil
@@ -225,22 +225,22 @@ func (m *MsgUpdateQuotaRequest) Type() string {
 
 func (m *MsgUpdateQuotaRequest) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.From); err != nil {
-		return errors.Wrapf(ErrorInvalidField, "%s", "from")
+		return ErrorInvalidFieldFrom
 	}
 
 	// Id shouldn't be zero
 	if m.Id == 0 {
-		return errors.Wrapf(ErrorInvalidField, "%s", "id")
+		return ErrorInvalidFieldId
 	}
 
 	// Address shouldn be valid
 	if _, err := sdk.AccAddressFromBech32(m.Address); err != nil {
-		return errors.Wrapf(ErrorInvalidField, "%s", "address")
+		return ErrorInvalidFieldAddress
 	}
 
 	// Bytes should be positive
 	if !m.Bytes.IsPositive() {
-		return errors.Wrapf(ErrorInvalidField, "%s", "bytes")
+		return ErrorInvalidFieldBytes
 	}
 
 	return nil
