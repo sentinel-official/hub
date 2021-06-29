@@ -10,7 +10,7 @@ import (
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
-	"github.com/cosmos/cosmos-sdk/types/simulation"
+	sdksimulation "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/gorilla/mux"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/spf13/cobra"
@@ -31,6 +31,7 @@ import (
 	"github.com/sentinel-official/hub/x/vpn/client/cli"
 	"github.com/sentinel-official/hub/x/vpn/expected"
 	"github.com/sentinel-official/hub/x/vpn/keeper"
+	"github.com/sentinel-official/hub/x/vpn/simulation"
 	"github.com/sentinel-official/hub/x/vpn/types"
 )
 
@@ -88,14 +89,16 @@ func (a AppModuleBasic) GetQueryCmd() *cobra.Command {
 
 type AppModule struct {
 	AppModuleBasic
+	cdc codec.Marshaler
 	ak expected.AccountKeeper
 	k  keeper.Keeper
 }
 
-func NewAppModule(ak expected.AccountKeeper, k keeper.Keeper) AppModule {
+func NewAppModule(cdc codec.Marshaler, ak expected.AccountKeeper, k keeper.Keeper) AppModule {
 	return AppModule{
-		ak: ak,
-		k:  k,
+		cdc:            cdc,
+		ak:             ak,
+		k:              k,
 	}
 }
 
@@ -144,18 +147,22 @@ func (a AppModule) EndBlock(ctx sdk.Context, _ abcitypes.RequestEndBlock) []abci
 	return EndBlock(ctx, a.k)
 }
 
-func (a AppModule) GenerateGenesisState(_ *module.SimulationState) {}
+// App Simulation Methods
 
-func (a AppModule) ProposalContents(_ module.SimulationState) []simulation.WeightedProposalContent {
+func (a AppModule) GenerateGenesisState(simState *module.SimulationState) {
+	simulation.RandomizedGenesisState(simState)
+}
+
+func (a AppModule) ProposalContents(_ module.SimulationState) []sdksimulation.WeightedProposalContent {
 	return nil
 }
 
-func (a AppModule) RandomizedParams(_ *rand.Rand) []simulation.ParamChange {
-	return nil
+func (a AppModule) RandomizedParams(r *rand.Rand) []sdksimulation.ParamChange {
+	return simulation.RandomizedParams(r)
 }
 
 func (a AppModule) RegisterStoreDecoder(_ sdk.StoreDecoderRegistry) {}
 
-func (a AppModule) WeightedOperations(_ module.SimulationState) []simulation.WeightedOperation {
-	return nil
+func (a AppModule) WeightedOperations(simState module.SimulationState) []sdksimulation.WeightedOperation {
+	return simulation.WeightedOperations(simState.AppParams, a.cdc, a.k)
 }

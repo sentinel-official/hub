@@ -1,18 +1,17 @@
 package simulation
 
 import (
+	"math/rand"
+
+	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/simapp/helpers"
 	"github.com/cosmos/cosmos-sdk/simapp/params"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdksimulation "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 	"github.com/sentinel-official/hub/x/swap/keeper"
 	types "github.com/sentinel-official/hub/x/swap/types"
-
-	"math/rand"
-
-	"github.com/cosmos/cosmos-sdk/baseapp"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 const OpWeightMsgSwapRequest = "op_weight_msg_swap_request"
@@ -20,7 +19,7 @@ const OpWeightMsgSwapRequest = "op_weight_msg_swap_request"
 func WeightedOperations(ap sdksimulation.AppParams, cdc codec.JSONMarshaler, k keeper.Keeper) simulation.WeightedOperations {
 	var weightMsgSwapRequest int
 
-	randSwapFn := func(r *rand.Rand) {
+	randSwapFn := func(_ *rand.Rand) {
 		weightMsgSwapRequest = 100
 	}
 	ap.GetOrGenerate(cdc, OpWeightMsgSwapRequest, &weightMsgSwapRequest, nil, randSwapFn)

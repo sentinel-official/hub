@@ -404,7 +404,7 @@ func NewApp(
 		upgrade.NewAppModule(app.upgradeKeeper),
 		transferModule,
 		swap.NewAppModule(app.cdc, app.swapKeeper),
-		vpn.NewAppModule(app.accountKeeper, app.vpnKeeper),
+		vpn.NewAppModule(app.cdc, app.accountKeeper, app.vpnKeeper),
 	)
 
 	// NOTE: order is very important here
@@ -443,7 +443,7 @@ func NewApp(
 		staking.NewAppModule(app.cdc, app.stakingKeeper, app.accountKeeper, app.bankKeeper),
 		transferModule,
 		swap.NewAppModule(app.cdc, app.swapKeeper),
-		vpn.NewAppModule(app.accountKeeper, app.vpnKeeper),
+		vpn.NewAppModule(app.cdc, app.accountKeeper, app.vpnKeeper),
 	)
 	app.simulationManager.RegisterStoreDecoders()
 
