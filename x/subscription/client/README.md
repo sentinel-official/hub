@@ -13,6 +13,7 @@ The **Queries** submodule provides the logic to request information from subscri
 ## Subscription
 
 **Description**
+
 Query a single subscription.
 
 **Usage**	
@@ -28,6 +29,7 @@ Query a single subscription.
 ## Subscriptions
 
 **Description**
+
 Query multiple subscriptions.
 
 **Usage**
@@ -50,6 +52,7 @@ Query multiple subscriptions.
 ## Quota
 
 **Description**
+
 Query a single quota of a subscribed address.
 
 **Usage**
@@ -65,6 +68,7 @@ Query a single quota of a subscribed address.
 ## Quotas
 
 **Description**
+
 Query all quotas of a subscription.
 
 **Usage**
@@ -93,6 +97,7 @@ The **Transactions** submodule provides the logic to manage subscriptions and qu
 ## Quota Add
 
 **Description**
+
 Add a quota of a subscription.
 
 **Usage**
@@ -108,6 +113,7 @@ Add a quota of a subscription.
 ## Quota Update
 
 **Description**
+
 Update a quota of a subscription.
 
 **Usage**
@@ -123,6 +129,7 @@ Update a quota of a subscription.
 ## Subscribe To Node
 
 **Description**
+
 Subscribe to a node.
 
 **Usage**
@@ -138,6 +145,7 @@ Subscribe to a node.
 ## Subscribe to Plan
 
 **Description**
+
 Subscribe to a plan. This feature is not implemented yet.
 
 **Usage**
@@ -148,6 +156,7 @@ Subscribe to a plan. This feature is not implemented yet.
 ## Cancel
 
 **Description**
+
 Cancel a subscription.
 
 **Usage**
