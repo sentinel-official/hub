@@ -52,7 +52,7 @@ proto-lint:
 
 .PHONY: test
 test:
-	@go test -mod=readonly -v -cover ${PACKAGES}
+	@go test -mod=readonly -v -cover -covermode=atomic ${PACKAGES}
 
 .PHONY: tools
 tools:
