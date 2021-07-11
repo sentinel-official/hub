@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/errors"
 
 	hubtypes "github.com/sentinel-official/hub/types"
 )
@@ -33,28 +34,44 @@ func (p *Plan) PriceForDenom(d string) (sdk.Coin, bool) {
 
 func (p *Plan) Validate() error {
 	if p.Id == 0 {
-		return fmt.Errorf("invalid id; expected positive value")
+		return fmt.Errorf("id cannot be zero")
+	}
+	if p.Provider == "" {
+		return fmt.Errorf("provider cannot be empty")
 	}
 	if _, err := hubtypes.ProvAddressFromBech32(p.Provider); err != nil {
-		return err
+		return errors.Wrapf(err, "invalid provider %s", p.Provider)
 	}
-	if p.Price != nil && !p.Price.IsValid() {
-		return fmt.Errorf("invalid price; expected non-nil and valid value")
+	if p.Price != nil {
+		if p.Price.Len() == 0 {
+			return fmt.Errorf("price cannot be empty")
+		}
+		if !p.Price.IsValid() {
+			return fmt.Errorf("price must be valid")
+		}
 	}
-	if p.Validity <= 0 {
-		return fmt.Errorf("invalid validity; expected positive value")
+	if p.Validity < 0 {
+		return fmt.Errorf("validity cannot be negative")
 	}
-	if !p.Bytes.IsPositive() {
-		return fmt.Errorf("invalid bytes; expected positive value")
+	if p.Validity == 0 {
+		return fmt.Errorf("validity cannot be zero")
+	}
+	if p.Bytes.IsNegative() {
+		return fmt.Errorf("bytes cannot be negative")
+	}
+	if p.Bytes.IsZero() {
+		return fmt.Errorf("bytes cannot be zero")
 	}
 	if !p.Status.Equal(hubtypes.StatusActive) && !p.Status.Equal(hubtypes.StatusInactive) {
-		return fmt.Errorf("invalid status; exptected active or inactive")
+		return fmt.Errorf("status must be either active or inactive")
 	}
 	if p.StatusAt.IsZero() {
-		return fmt.Errorf("invalid status at; expected non-zero value")
+		return fmt.Errorf("status_at cannot be zero")
 	}
 
 	return nil
 }
 
-type Plans []Plan
+type (
+	Plans []Plan
+)
