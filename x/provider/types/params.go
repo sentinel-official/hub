@@ -20,8 +20,11 @@ var (
 )
 
 func (p *Params) Validate() error {
+	if p.Deposit.IsNegative() {
+		return fmt.Errorf("deposit cannot be negative")
+	}
 	if !p.Deposit.IsValid() {
-		return fmt.Errorf("deposit should be valid")
+		return fmt.Errorf("invalid deposit %s", p.Deposit)
 	}
 
 	return nil
@@ -32,7 +35,19 @@ func (p *Params) ParamSetPairs() params.ParamSetPairs {
 		{
 			Key:   KeyDeposit,
 			Value: &p.Deposit,
-			ValidatorFn: func(_ interface{}) error {
+			ValidatorFn: func(v interface{}) error {
+				value, ok := v.(sdk.Coin)
+				if !ok {
+					return fmt.Errorf("invalid parameter type %T", v)
+				}
+
+				if value.IsNegative() {
+					return fmt.Errorf("deposit cannot be negative")
+				}
+				if !value.IsValid() {
+					return fmt.Errorf("invalid deposit %s", value)
+				}
+
 				return nil
 			},
 		},
