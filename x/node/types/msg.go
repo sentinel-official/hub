@@ -2,8 +2,10 @@ package types
 
 import (
 	"fmt"
+	"net/url"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/errors"
 
 	hubtypes "github.com/sentinel-official/hub/types"
 )
@@ -32,31 +34,47 @@ func (m *MsgRegisterRequest) Type() string {
 }
 
 func (m *MsgRegisterRequest) ValidateBasic() error {
+	if m.From == "" {
+		return errors.Wrap(ErrorInvalidFrom, "from cannot be empty")
+	}
 	if _, err := sdk.AccAddressFromBech32(m.From); err != nil {
-		return ErrorInvalidFieldFrom
+		return errors.Wrapf(ErrorInvalidFrom, "%s", err)
 	}
-
-	// Either provider or price should be empty
-	if (m.Provider != "" && m.Price != nil) ||
-		(m.Provider == "" && m.Price == nil) {
-		return ErrorInvalidFieldProviderOrPrice
+	if m.Provider == "" && m.Price == nil {
+		return errors.Wrap(ErrorInvalidField, "both provider and price cannot be empty")
 	}
-
-	// Provider can be empty. If not, it should be valid
+	if m.Provider != "" && m.Price != nil {
+		return errors.Wrap(ErrorInvalidField, "either provider or price must be empty")
+	}
 	if m.Provider != "" {
 		if _, err := hubtypes.ProvAddressFromBech32(m.Provider); err != nil {
-			return ErrorInvalidFieldProvider
+			return errors.Wrapf(ErrorInvalidProvider, "%s", err)
 		}
 	}
-
-	// Price can be nil. If not, it should be valid
-	if m.Price != nil && !m.Price.IsValid() {
-		return ErrorInvalidFieldPrice
+	if m.Price != nil {
+		if m.Price.Len() == 0 {
+			return errors.Wrap(ErrorInvalidPrice, "price cannot be empty")
+		}
+		if !m.Price.IsValid() {
+			return errors.Wrap(ErrorInvalidPrice, "price must be valid")
+		}
+	}
+	if m.RemoteURL == "" {
+		return errors.Wrap(ErrorInvalidRemoteURL, "remote_url cannot be empty")
+	}
+	if len(m.RemoteURL) > 64 {
+		return errors.Wrapf(ErrorInvalidRemoteURL, "remote_url length cannot be greater than %d", 64)
 	}
 
-	// RemoteURL length should be between 1 and 64
-	if len(m.RemoteURL) == 0 || len(m.RemoteURL) > 64 {
-		return ErrorInvalidFieldRemoteURL
+	remoteURL, err := url.ParseRequestURI(m.RemoteURL)
+	if err != nil {
+		return errors.Wrapf(ErrorInvalidRemoteURL, "%s", err)
+	}
+	if remoteURL.Scheme != "https" {
+		return errors.Wrap(ErrorInvalidRemoteURL, "remote_url scheme must be https")
+	}
+	if remoteURL.Port() == "" {
+		return errors.Wrap(ErrorInvalidRemoteURL, "remote_url port cannot be empty")
 	}
 
 	return nil
@@ -93,29 +111,43 @@ func (m *MsgUpdateRequest) Type() string {
 }
 
 func (m *MsgUpdateRequest) ValidateBasic() error {
+	if m.From == "" {
+		return errors.Wrap(ErrorInvalidFrom, "from cannot be empty")
+	}
 	if _, err := hubtypes.NodeAddressFromBech32(m.From); err != nil {
-		return ErrorInvalidFieldFrom
+		return errors.Wrapf(ErrorInvalidFrom, "%s", err)
 	}
-
 	if m.Provider != "" && m.Price != nil {
-		return ErrorInvalidFieldProviderOrPrice
+		return errors.Wrap(ErrorInvalidField, "either provider or price must be empty")
 	}
-
-	// Provider can be empty. If not, it should be valid
 	if m.Provider != "" {
 		if _, err := hubtypes.ProvAddressFromBech32(m.Provider); err != nil {
-			return ErrorInvalidFieldProvider
+			return errors.Wrapf(ErrorInvalidProvider, "%s", err)
 		}
 	}
-
-	// Price can be nil. If not, it should be valid
-	if m.Price != nil && !m.Price.IsValid() {
-		return ErrorInvalidFieldPrice
+	if m.Price != nil {
+		if m.Price.Len() == 0 {
+			return errors.Wrap(ErrorInvalidPrice, "price cannot be empty")
+		}
+		if !m.Price.IsValid() {
+			return errors.Wrap(ErrorInvalidPrice, "price must be valid")
+		}
 	}
+	if m.RemoteURL != "" {
+		if len(m.RemoteURL) > 64 {
+			return errors.Wrapf(ErrorInvalidRemoteURL, "remote_url length cannot be greater than %d", 64)
+		}
 
-	// RemoteURL length should be between 0 and 64
-	if len(m.RemoteURL) > 64 {
-		return ErrorInvalidFieldRemoteURL
+		remoteURL, err := url.ParseRequestURI(m.RemoteURL)
+		if err != nil {
+			return errors.Wrapf(ErrorInvalidRemoteURL, "%s", err)
+		}
+		if remoteURL.Scheme != "https" {
+			return errors.Wrap(ErrorInvalidRemoteURL, "remote_url scheme must be https")
+		}
+		if remoteURL.Port() == "" {
+			return errors.Wrap(ErrorInvalidRemoteURL, "remote_url port cannot be empty")
+		}
 	}
 
 	return nil
@@ -150,13 +182,14 @@ func (m *MsgSetStatusRequest) Type() string {
 }
 
 func (m *MsgSetStatusRequest) ValidateBasic() error {
-	if _, err := hubtypes.NodeAddressFromBech32(m.From); err != nil {
-		return ErrorInvalidFieldFrom
+	if m.From == "" {
+		return errors.Wrap(ErrorInvalidFrom, "from cannot be empty")
 	}
-
-	// Status should be either Active or Inactive
+	if _, err := hubtypes.NodeAddressFromBech32(m.From); err != nil {
+		return errors.Wrapf(ErrorInvalidFrom, "%s", err)
+	}
 	if !m.Status.Equal(hubtypes.StatusActive) && !m.Status.Equal(hubtypes.StatusInactive) {
-		return ErrorInvalidFieldStatus
+		return errors.Wrap(ErrorInvalidStatus, "status must be either active or inactive")
 	}
 
 	return nil

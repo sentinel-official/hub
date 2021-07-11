@@ -2,8 +2,10 @@ package types
 
 import (
 	"fmt"
+	"net/url"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/errors"
 
 	hubtypes "github.com/sentinel-official/hub/types"
 )
@@ -35,27 +37,54 @@ func (n *Node) GetProvider() hubtypes.ProvAddress {
 }
 
 func (n *Node) Validate() error {
+	if n.Address == "" {
+		return fmt.Errorf("address cannot be empty")
+	}
 	if _, err := hubtypes.NodeAddressFromBech32(n.Address); err != nil {
-		return err
+		return errors.Wrapf(err, "invalid address %s", n.Address)
 	}
-	if (n.Provider != "" && n.Price != nil) ||
-		(n.Provider == "" && n.Price == nil) {
-		return fmt.Errorf("invalid provider and price combination; expected one of them empty")
+	if n.Provider == "" && n.Price == nil {
+		return fmt.Errorf("both provider and price cannot be empty")
 	}
-	if _, err := hubtypes.ProvAddressFromBech32(n.Provider); err != nil {
-		return err
+	if n.Provider != "" && n.Price != nil {
+		return fmt.Errorf("either provider or price must be empty")
 	}
-	if n.Price != nil && !n.Price.IsValid() {
-		return fmt.Errorf("invalid price; expected non-nil and valid value")
+	if n.Provider != "" {
+		if _, err := hubtypes.ProvAddressFromBech32(n.Provider); err != nil {
+			return errors.Wrapf(err, "invalid provider %s", n.Provider)
+		}
 	}
-	if len(n.RemoteURL) == 0 || len(n.RemoteURL) > 64 {
-		return fmt.Errorf("invalid remote url length; expected length is between 1 and 64")
+	if n.Price != nil {
+		if n.Price.Len() == 0 {
+			return fmt.Errorf("price cannot be empty")
+		}
+		if !n.Price.IsValid() {
+			return fmt.Errorf("price must be valid")
+		}
 	}
+	if n.RemoteURL == "" {
+		return fmt.Errorf("remote_url cannot be empty")
+	}
+	if len(n.RemoteURL) > 64 {
+		return fmt.Errorf("remote_url length cannot be greater than %d", 64)
+	}
+
+	remoteURL, err := url.ParseRequestURI(n.RemoteURL)
+	if err != nil {
+		return errors.Wrapf(err, "invalid remote_url %s", n.RemoteURL)
+	}
+	if remoteURL.Scheme != "https" {
+		return fmt.Errorf("remote_url scheme must be https")
+	}
+	if remoteURL.Port() == "" {
+		return fmt.Errorf("remote_url port cannot be empty")
+	}
+
 	if !n.Status.Equal(hubtypes.StatusActive) && !n.Status.Equal(hubtypes.StatusInactive) {
-		return fmt.Errorf("invalid status; exptected active or inactive")
+		return fmt.Errorf("status must be either active or inactive")
 	}
 	if n.StatusAt.IsZero() {
-		return fmt.Errorf("invalid status at; expected non-zero value")
+		return fmt.Errorf("status_at cannot be zero")
 	}
 
 	return nil
@@ -89,4 +118,6 @@ func (n *Node) BytesForCoin(coin sdk.Coin) (sdk.Int, error) {
 	return coin.Amount.Quo(y), nil
 }
 
-type Nodes []Node
+type (
+	Nodes []Node
+)

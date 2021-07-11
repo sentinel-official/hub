@@ -26,11 +26,17 @@ var (
 )
 
 func (p *Params) Validate() error {
-	if !p.Deposit.IsValid() {
-		return fmt.Errorf("deposit should be valid")
+	if p.Deposit.IsNegative() {
+		return fmt.Errorf("deposit cannot be negative")
 	}
-	if p.InactiveDuration <= 0 {
-		return fmt.Errorf("inactive_duration should be positive")
+	if !p.Deposit.IsValid() {
+		return fmt.Errorf("invalid deposit %s", p.Deposit)
+	}
+	if p.InactiveDuration < 0 {
+		return fmt.Errorf("inactive_duration cannot be negative")
+	}
+	if p.InactiveDuration == 0 {
+		return fmt.Errorf("inactive_duration cannot be zero")
 	}
 
 	return nil
@@ -47,8 +53,11 @@ func (p *Params) ParamSetPairs() params.ParamSetPairs {
 					return fmt.Errorf("invalid parameter type %T", v)
 				}
 
+				if value.IsNegative() {
+					return fmt.Errorf("deposit cannot be negative")
+				}
 				if !value.IsValid() {
-					return fmt.Errorf("deposit value should be valid")
+					return fmt.Errorf("invalid deposit %s", value)
 				}
 
 				return nil
@@ -63,8 +72,11 @@ func (p *Params) ParamSetPairs() params.ParamSetPairs {
 					return fmt.Errorf("invalid parameter type %T", v)
 				}
 
-				if value <= 0 {
-					return fmt.Errorf("inactive duration value should be positive")
+				if value < 0 {
+					return fmt.Errorf("inactive_duration cannot be negative")
+				}
+				if value == 0 {
+					return fmt.Errorf("inactive_duration cannot be zero")
 				}
 
 				return nil
