@@ -1,7 +1,6 @@
 package types
 
 import (
-	"fmt"
 	"net/url"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -30,7 +29,7 @@ func (m *MsgRegisterRequest) Route() string {
 }
 
 func (m *MsgRegisterRequest) Type() string {
-	return fmt.Sprintf("%s:register", ModuleName)
+	return TypeMsgRegisterRequest
 }
 
 func (m *MsgRegisterRequest) ValidateBasic() error {
@@ -92,7 +91,7 @@ func (m *MsgUpdateRequest) Route() string {
 }
 
 func (m *MsgUpdateRequest) Type() string {
-	return fmt.Sprintf("%s:update", ModuleName)
+	return TypeMsgUpdateRequest
 }
 
 func (m MsgUpdateRequest) ValidateBasic() error {

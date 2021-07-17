@@ -3,31 +3,62 @@ package simulation
 import (
 	"math/rand"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/types/simulation"
+	simulationtypes "github.com/cosmos/cosmos-sdk/types/simulation"
+
+	hubtypes "github.com/sentinel-official/hub/types"
 	"github.com/sentinel-official/hub/x/provider/types"
 )
 
-func getRandomDeposit(r *rand.Rand) sdk.Coin {
-	denom := simulation.RandStringOfLength(r, r.Intn(125)+3)
-	amount := sdk.NewInt(r.Int63n(10<<12))
+const (
+	MaxNameLength        = 56
+	MaxIdentityLength    = 64
+	MaxWebsiteLength     = 64
+	MaxDescriptionLength = 256
+)
 
-	return sdk.NewCoin(denom, amount)
-}
-
-func getRandomProviders(r *rand.Rand) types.Providers {
-	var providers types.Providers
-
-	for _, acc := range simulation.RandomAccounts(r, r.Intn(20)+4) {
-		providers = append(providers, types.Provider{
-			Address:     acc.Address.String(),
-			Name:        simulation.RandStringOfLength(r, r.Intn(60)+4),
-			Identity:    simulation.RandStringOfLength(r, r.Intn(60)+4),
-			Website:     simulation.RandStringOfLength(r, r.Intn(60)+4),
-			Description: simulation.RandStringOfLength(r, r.Intn(250)+6),
-		})
+func RandomProvider(r *rand.Rand, items types.Providers) types.Provider {
+	if len(items) == 0 {
+		return types.Provider{}
 	}
 
-	return providers
+	return items[r.Intn(len(items))]
 }
 
+func RandomProviders(r *rand.Rand, accounts []simulationtypes.Account) types.Providers {
+	var (
+		duplicates = make(map[string]bool)
+		items      = make(types.Providers, 0, r.Intn(len(accounts)))
+	)
+
+	for ; len(items) < cap(items); {
+		var (
+			account, _ = simulationtypes.RandomAcc(r, accounts)
+			address    = hubtypes.ProvAddress(account.Address).String()
+		)
+
+		if duplicates[address] {
+			continue
+		}
+
+		var (
+			name        = simulationtypes.RandStringOfLength(r, r.Intn(MaxNameLength)+8)
+			identity    = simulationtypes.RandStringOfLength(r, r.Intn(MaxIdentityLength))
+			website     = simulationtypes.RandStringOfLength(r, r.Intn(MaxWebsiteLength))
+			description = simulationtypes.RandStringOfLength(r, r.Intn(MaxDescriptionLength))
+		)
+
+		duplicates[address] = true
+		items = append(
+			items,
+			types.Provider{
+				Address:     address,
+				Name:        name,
+				Identity:    identity,
+				Website:     website,
+				Description: description,
+			},
+		)
+	}
+
+	return items
+}

@@ -8,157 +8,203 @@ import (
 	"github.com/cosmos/cosmos-sdk/simapp/helpers"
 	"github.com/cosmos/cosmos-sdk/simapp/params"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdksimulation "github.com/cosmos/cosmos-sdk/types/simulation"
+	simulationtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
+
 	hubtypes "github.com/sentinel-official/hub/types"
+	"github.com/sentinel-official/hub/x/provider/expected"
 	"github.com/sentinel-official/hub/x/provider/keeper"
-	types "github.com/sentinel-official/hub/x/provider/types"
+	"github.com/sentinel-official/hub/x/provider/types"
 )
 
-const (
-	OpWeightMsgRegisterRequest = "op_weight_msg_register_request"
-	OpWeightMsgUpdateRequest   = "op_weight_msg_update_request"
+var (
+	OperationWeightMsgRegisterRequest = "op_weight_" + types.TypeMsgRegisterRequest
+	OperationWeightMsgUpdateRequest   = "op_weight_" + types.TypeMsgUpdateRequest
 )
 
-func WeightedOperations(ap sdksimulation.AppParams, cdc codec.JSONMarshaler, k keeper.Keeper) simulation.WeightedOperations {
+func WeightedOperations(
+	params simulationtypes.AppParams,
+	cdc codec.JSONMarshaler,
+	ak expected.AccountKeeper,
+	bk expected.BankKeeper,
+	k keeper.Keeper,
+) simulation.WeightedOperations {
 	var (
 		weightMsgRegisterRequest int
 		weightMsgUpdateRequest   int
 	)
 
-	randRegisterFn := func(_ *rand.Rand) {
-		weightMsgRegisterRequest = 100
-	}
-
-	randUpdateFn := func(_ *rand.Rand) {
-		weightMsgUpdateRequest = 100
-	}
-	ap.GetOrGenerate(cdc, OpWeightMsgRegisterRequest, &weightMsgRegisterRequest, nil, randRegisterFn)
-	ap.GetOrGenerate(cdc, OpWeightMsgUpdateRequest, &weightMsgUpdateRequest, nil, randUpdateFn)
-
-	registerOperation := simulation.NewWeightedOperation(weightMsgRegisterRequest, SimulateMsgRegisterRequest(k, cdc))
-	updateOperation := simulation.NewWeightedOperation(weightMsgUpdateRequest, SimulateMsgUpdateRequest(k, cdc))
+	params.GetOrGenerate(
+		cdc,
+		OperationWeightMsgRegisterRequest,
+		&weightMsgRegisterRequest,
+		nil,
+		func(_ *rand.Rand) {
+			weightMsgRegisterRequest = 100
+		},
+	)
+	params.GetOrGenerate(
+		cdc,
+		OperationWeightMsgUpdateRequest,
+		&weightMsgUpdateRequest,
+		nil,
+		func(_ *rand.Rand) {
+			weightMsgUpdateRequest = 100
+		},
+	)
 
 	return simulation.WeightedOperations{
-		registerOperation,
-		updateOperation,
+		simulation.NewWeightedOperation(
+			weightMsgRegisterRequest,
+			SimulateMsgRegisterRequest(ak, bk, k),
+		),
+		simulation.NewWeightedOperation(
+			weightMsgUpdateRequest,
+			SimulateMsgUpdateRequest(ak, bk, k),
+		),
 	}
 }
 
-func SimulateMsgRegisterRequest(k keeper.Keeper, cdc codec.JSONMarshaler) sdksimulation.Operation {
+func SimulateMsgRegisterRequest(ak expected.AccountKeeper, bk expected.BankKeeper, k keeper.Keeper) simulationtypes.Operation {
 	return func(
 		r *rand.Rand,
 		app *baseapp.BaseApp,
 		ctx sdk.Context,
-		accounts []sdksimulation.Account,
+		accounts []simulationtypes.Account,
 		chainID string,
-	) (sdksimulation.OperationMsg, []sdksimulation.FutureOperation, error) {
-		acc, _ := sdksimulation.RandomAcc(r, accounts)
-		providerAccount := k.GetAccount(ctx, acc.Address)
-		providerAddress := hubtypes.ProvAddress(providerAccount.GetAddress().Bytes())
+	) (simulationtypes.OperationMsg, []simulationtypes.FutureOperation, error) {
+		var (
+			rAccount, _ = simulationtypes.RandomAcc(r, accounts)
+			account     = ak.GetAccount(ctx, rAccount.Address)
+			deposit     = k.Deposit(ctx)
+		)
 
-		denom := k.GetParams(ctx).Deposit.Denom
-		amount := sdksimulation.RandomAmount(r, sdk.NewInt(60<<13))
-
-		coins := sdk.Coins{
-			{Denom: denom, Amount: amount},
-		}
-
-		fees, err := sdksimulation.RandomFees(r, ctx, coins)
-		if err != nil {
-			return sdksimulation.NoOpMsg(types.ModuleName, "register_request", err.Error()), nil, err
-		}
-
-		_, found := k.GetProvider(ctx, providerAddress)
+		_, found := k.GetProvider(ctx, hubtypes.ProvAddress(account.GetAddress()))
 		if found {
-			return sdksimulation.NoOpMsg(types.ModuleName, "register_request", "provider already exists"), nil, nil
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgUpdateRequest, "provider already exists"), nil, nil
 		}
 
-		name := sdksimulation.RandStringOfLength(r, r.Intn(60)+4)
-		identity := sdksimulation.RandStringOfLength(r, r.Intn(60)+4)
-		website := sdksimulation.RandStringOfLength(r, r.Intn(60)+4)
-		description := sdksimulation.RandStringOfLength(r, r.Intn(250)+6)
+		balance := bk.SpendableCoins(ctx, account.GetAddress())
+		if !balance.IsAnyNegative() {
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgRegisterRequest, "balance cannot be negative"), nil, nil
+		}
 
-		msg := types.NewMsgRegisterRequest(providerAccount.GetAddress(), name, identity, website, description)
-		txGen := params.MakeTestEncodingConfig().TxConfig
+		fees, err := simulationtypes.RandomFees(r, ctx, balance)
+		if err != nil {
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgRegisterRequest, err.Error()), nil, err
+		}
+
+		balance = balance.Sub(fees)
+		if balance.AmountOf(deposit.Denom).LT(deposit.Amount) {
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgRegisterRequest, "balance cannot be less than deposit"), nil, err
+		}
+
+		var (
+			name        = simulationtypes.RandStringOfLength(r, r.Intn(MaxNameLength)+8)
+			identity    = simulationtypes.RandStringOfLength(r, r.Intn(MaxIdentityLength))
+			website     = simulationtypes.RandStringOfLength(r, r.Intn(MaxWebsiteLength))
+			description = simulationtypes.RandStringOfLength(r, r.Intn(MaxDescriptionLength))
+		)
+
+		var (
+			txConfig = params.MakeTestEncodingConfig().TxConfig
+			message  = types.NewMsgRegisterRequest(
+				account.GetAddress(),
+				name,
+				identity,
+				website,
+				description,
+			)
+		)
 
 		txn, err := helpers.GenTx(
-			txGen,
-			[]sdk.Msg{msg},
+			txConfig,
+			[]sdk.Msg{message},
 			fees,
 			helpers.DefaultGenTxGas,
 			chainID,
-			[]uint64{providerAccount.GetAccountNumber()},
-			[]uint64{providerAccount.GetSequence()},
+			[]uint64{account.GetAccountNumber()},
+			[]uint64{account.GetSequence()},
+			rAccount.PrivKey,
 		)
 		if err != nil {
-			return sdksimulation.NoOpMsg(types.ModuleName, "register_request", err.Error()), nil, err
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgRegisterRequest, err.Error()), nil, err
 		}
 
-		_, _, err = app.Deliver(txGen.TxEncoder(), txn)
+		_, _, err = app.Deliver(txConfig.TxEncoder(), txn)
 		if err != nil {
-			return sdksimulation.NoOpMsg(types.ModuleName, "register_request", err.Error()), nil, err
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgRegisterRequest, err.Error()), nil, err
 		}
 
-		return sdksimulation.NewOperationMsg(msg, true, ""), nil, nil
+		return simulationtypes.NewOperationMsg(message, true, ""), nil, nil
 	}
 }
 
-func SimulateMsgUpdateRequest(k keeper.Keeper, cdc codec.JSONMarshaler) sdksimulation.Operation {
+func SimulateMsgUpdateRequest(ak expected.AccountKeeper, bk expected.BankKeeper, k keeper.Keeper) simulationtypes.Operation {
 	return func(
 		r *rand.Rand,
 		app *baseapp.BaseApp,
 		ctx sdk.Context,
-		accounts []sdksimulation.Account,
+		accounts []simulationtypes.Account,
 		chainID string,
-	) (sdksimulation.OperationMsg, []sdksimulation.FutureOperation, error) {
-		acc, _ := sdksimulation.RandomAcc(r, accounts)
-		providerAccount := k.GetAccount(ctx, acc.Address)
-		providerAddress := hubtypes.ProvAddress(providerAccount.GetAddress().Bytes())
+	) (simulationtypes.OperationMsg, []simulationtypes.FutureOperation, error) {
+		var (
+			rAccount, _ = simulationtypes.RandomAcc(r, accounts)
+			account     = ak.GetAccount(ctx, rAccount.Address)
+		)
 
-		denom := k.GetParams(ctx).Deposit.Denom
-		amount := sdksimulation.RandomAmount(r, sdk.NewInt(60<<13))
-
-		coins := sdk.Coins{
-			{Denom: denom, Amount: amount},
-		}
-
-		fees, err := sdksimulation.RandomFees(r, ctx, coins)
-		if err != nil {
-			return sdksimulation.NoOpMsg(types.ModuleName, "update_request", err.Error()), nil, err
-		}
-
-		_, found := k.GetProvider(ctx, providerAddress)
+		_, found := k.GetProvider(ctx, hubtypes.ProvAddress(account.GetAddress()))
 		if !found {
-			return sdksimulation.NoOpMsg(types.ModuleName, "update_request", "provider does not exist"), nil, nil
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgUpdateRequest, "provider does not exist"), nil, nil
 		}
 
-		name := sdksimulation.RandStringOfLength(r, r.Intn(60)+4)
-		identity := sdksimulation.RandStringOfLength(r, r.Intn(60)+4)
-		website := sdksimulation.RandStringOfLength(r, r.Intn(60)+4)
-		description := sdksimulation.RandStringOfLength(r, r.Intn(250)+6)
+		balance := bk.SpendableCoins(ctx, account.GetAddress())
+		if !balance.IsAnyNegative() {
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgUpdateRequest, "balance cannot be negative"), nil, nil
+		}
 
-		msg := types.NewMsgUpdateRequest(providerAddress, name, identity, website, description)
-		txGen := params.MakeTestEncodingConfig().TxConfig
+		fees, err := simulationtypes.RandomFees(r, ctx, balance)
+		if err != nil {
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgUpdateRequest, err.Error()), nil, err
+		}
+
+		var (
+			name        = simulationtypes.RandStringOfLength(r, r.Intn(MaxNameLength+8))
+			identity    = simulationtypes.RandStringOfLength(r, r.Intn(MaxIdentityLength))
+			website     = simulationtypes.RandStringOfLength(r, r.Intn(MaxWebsiteLength))
+			description = simulationtypes.RandStringOfLength(r, r.Intn(MaxDescriptionLength))
+		)
+
+		var (
+			txConfig = params.MakeTestEncodingConfig().TxConfig
+			message  = types.NewMsgUpdateRequest(
+				hubtypes.ProvAddress(account.GetAddress()),
+				name,
+				identity,
+				website,
+				description,
+			)
+		)
 
 		txn, err := helpers.GenTx(
-			txGen,
-			[]sdk.Msg{msg},
+			txConfig,
+			[]sdk.Msg{message},
 			fees,
 			helpers.DefaultGenTxGas,
 			chainID,
-			[]uint64{providerAccount.GetAccountNumber()},
-			[]uint64{providerAccount.GetSequence()},
+			[]uint64{account.GetAccountNumber()},
+			[]uint64{account.GetSequence()},
+			rAccount.PrivKey,
 		)
 		if err != nil {
-			return sdksimulation.NoOpMsg(types.ModuleName, "update_request", err.Error()), nil, err
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgUpdateRequest, err.Error()), nil, err
 		}
 
-		_, _, err = app.Deliver(txGen.TxEncoder(), txn)
+		_, _, err = app.Deliver(txConfig.TxEncoder(), txn)
 		if err != nil {
-			return sdksimulation.NoOpMsg(types.ModuleName, "update_request", err.Error()), nil, err
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgUpdateRequest, err.Error()), nil, err
 		}
 
-		return sdksimulation.NewOperationMsg(msg, true, ""), nil, nil
+		return simulationtypes.NewOperationMsg(message, true, ""), nil, nil
 	}
 }

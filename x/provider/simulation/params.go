@@ -3,15 +3,28 @@ package simulation
 import (
 	"math/rand"
 
-	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
-	sdksimulation "github.com/cosmos/cosmos-sdk/x/simulation"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	simulationtypes "github.com/cosmos/cosmos-sdk/types/simulation"
+	"github.com/cosmos/cosmos-sdk/x/simulation"
+
 	"github.com/sentinel-official/hub/x/provider/types"
 )
 
-func ParamChanges(r *rand.Rand) []simtypes.ParamChange {
-	return []simtypes.ParamChange{
-		sdksimulation.NewSimParamChange(types.ModuleName, string(types.KeyDeposit), func(r *rand.Rand) string {
-			return getRandomDeposit(r).String()
-		}),
+const (
+	MaxDepositAmount = 1 << 18
+)
+
+func ParamChanges(_ *rand.Rand) []simulationtypes.ParamChange {
+	return []simulationtypes.ParamChange{
+		simulation.NewSimParamChange(
+			types.ModuleName,
+			string(types.KeyDeposit),
+			func(r *rand.Rand) string {
+				return sdk.NewInt64Coin(
+					sdk.DefaultBondDenom,
+					r.Int63n(MaxDepositAmount),
+				).String()
+			},
+		),
 	}
 }

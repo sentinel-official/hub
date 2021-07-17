@@ -5,23 +5,30 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
+
 	"github.com/sentinel-official/hub/x/provider/types"
 )
 
-func RandomizedGenesisState(simState *module.SimulationState) *types.GenesisState {
+func RandomizedGenesisState(state *module.SimulationState) *types.GenesisState {
+	var (
+		deposit sdk.Coin
+	)
 
-	var deposit sdk.Coin
+	state.AppParams.GetOrGenerate(
+		state.Cdc,
+		string(types.KeyDeposit),
+		&deposit,
+		state.Rand,
+		func(r *rand.Rand) {
+			deposit = sdk.NewInt64Coin(
+				sdk.DefaultBondDenom,
+				r.Int63n(MaxDepositAmount),
+			)
+		},
+	)
 
-	depositSim := func(r *rand.Rand) {
-		deposit = getRandomDeposit(r)
-	}
-
-	simState.AppParams.GetOrGenerate(simState.Cdc, string(types.KeyDeposit), &deposit, simState.Rand, depositSim)
-
-	params := types.NewParams(deposit)
-	providers := getRandomProviders(simState.Rand)
-
-	state := types.NewGenesisState(providers, params)
-
-	return state
+	return types.NewGenesisState(
+		RandomProviders(state.Rand, state.Accounts),
+		types.NewParams(deposit),
+	)
 }
