@@ -5,6 +5,8 @@ import (
 	"testing"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
+	_ "github.com/sentinel-official/hub/types"
 )
 
 func TestDeposit_GetAddress(t *testing.T) {
@@ -27,7 +29,7 @@ func TestDeposit_GetAddress(t *testing.T) {
 		{
 			"20 bytes",
 			fields{
-				Address: "cosmos1qypqxpq9qcrsszgszyfpx9q4zct3sxfq5j55ca",
+				Address: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
 			},
 			sdk.AccAddress{0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x20},
 		},
@@ -74,7 +76,7 @@ func TestDeposit_Validate(t *testing.T) {
 		{
 			"invalid prefix address",
 			fields{
-				Address: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Address: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
 				Coins:   nil,
 			},
 			true,
@@ -82,7 +84,7 @@ func TestDeposit_Validate(t *testing.T) {
 		{
 			"10 bytes address",
 			fields{
-				Address: "cosmos1qypqxpq9qcrsszgsxhghrp",
+				Address: "sent1qypqxpq9qcrsszgslawd5s",
 				Coins:   nil,
 			},
 			true,
@@ -90,21 +92,21 @@ func TestDeposit_Validate(t *testing.T) {
 		{
 			"20 bytes address",
 			fields{
-				Address: "cosmos1qypqxpq9qcrsszgszyfpx9q4zct3sxfq5j55ca",
+				Address: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
 			},
 			true,
 		},
 		{
 			"30 bytes address",
 			fields{
-				Address: "cosmos1qypqxpq9qcrsszgszyfpx9q4zct3sxfqyy3zxfp9ycnjs2fsjr9f5e",
+				Address: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfqyy3zxfp9ycnjs2fszvfck8",
 			},
 			true,
 		},
 		{
 			"nil coins",
 			fields{
-				Address: "cosmos1qypqxpq9qcrsszgszyfpx9q4zct3sxfq5j55ca",
+				Address: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
 				Coins:   nil,
 			},
 			true,
@@ -112,7 +114,7 @@ func TestDeposit_Validate(t *testing.T) {
 		{
 			"empty coins",
 			fields{
-				Address: "cosmos1qypqxpq9qcrsszgszyfpx9q4zct3sxfq5j55ca",
+				Address: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
 				Coins:   sdk.Coins{},
 			},
 			true,
@@ -120,7 +122,7 @@ func TestDeposit_Validate(t *testing.T) {
 		{
 			"empty denom coins",
 			fields{
-				Address: "cosmos1qypqxpq9qcrsszgszyfpx9q4zct3sxfq5j55ca",
+				Address: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
 				Coins:   sdk.Coins{sdk.Coin{Denom: ""}},
 			},
 			true,
@@ -128,7 +130,7 @@ func TestDeposit_Validate(t *testing.T) {
 		{
 			"invalid denom coins",
 			fields{
-				Address: "cosmos1qypqxpq9qcrsszgszyfpx9q4zct3sxfq5j55ca",
+				Address: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
 				Coins:   sdk.Coins{sdk.Coin{Denom: "o"}},
 			},
 			true,
@@ -136,7 +138,7 @@ func TestDeposit_Validate(t *testing.T) {
 		{
 			"negative amount coins",
 			fields{
-				Address: "cosmos1qypqxpq9qcrsszgszyfpx9q4zct3sxfq5j55ca",
+				Address: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
 				Coins:   sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(-1000)}},
 			},
 			true,
@@ -144,7 +146,7 @@ func TestDeposit_Validate(t *testing.T) {
 		{
 			"zero amount coins",
 			fields{
-				Address: "cosmos1qypqxpq9qcrsszgszyfpx9q4zct3sxfq5j55ca",
+				Address: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
 				Coins:   sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(0)}},
 			},
 			true,
@@ -152,7 +154,7 @@ func TestDeposit_Validate(t *testing.T) {
 		{
 			"positive amount coins",
 			fields{
-				Address: "cosmos1qypqxpq9qcrsszgszyfpx9q4zct3sxfq5j55ca",
+				Address: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
 				Coins:   sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
 			},
 			false,

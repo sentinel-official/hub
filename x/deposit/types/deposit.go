@@ -7,12 +7,12 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-func (d *Deposit) GetAddress() sdk.AccAddress {
-	if d.Address == "" {
+func (m *Deposit) GetAddress() sdk.AccAddress {
+	if m.Address == "" {
 		return nil
 	}
 
-	address, err := sdk.AccAddressFromBech32(d.Address)
+	address, err := sdk.AccAddressFromBech32(m.Address)
 	if err != nil {
 		panic(err)
 	}
@@ -20,20 +20,20 @@ func (d *Deposit) GetAddress() sdk.AccAddress {
 	return address
 }
 
-func (d *Deposit) Validate() error {
-	if d.Address == "" {
+func (m *Deposit) Validate() error {
+	if m.Address == "" {
 		return fmt.Errorf("address cannot be empty")
 	}
-	if _, err := sdk.AccAddressFromBech32(d.Address); err != nil {
-		return errors.Wrapf(err, "invalid address %s", d.Address)
+	if _, err := sdk.AccAddressFromBech32(m.Address); err != nil {
+		return errors.Wrapf(err, "invalid address %s", m.Address)
 	}
-	if d.Coins == nil {
+	if m.Coins == nil {
 		return fmt.Errorf("coins cannot be nil")
 	}
-	if d.Coins.Len() == 0 {
+	if m.Coins.Len() == 0 {
 		return fmt.Errorf("coins cannot be empty")
 	}
-	if !d.Coins.IsValid() {
+	if !m.Coins.IsValid() {
 		return fmt.Errorf("coins must be valid")
 	}
 
