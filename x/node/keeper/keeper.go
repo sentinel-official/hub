@@ -20,7 +20,6 @@ type Keeper struct {
 	distribution expected.DistributionKeeper
 	provider     expected.ProviderKeeper
 	plan         expected.PlanKeeper
-	account		 expected.AccountKeeper
 }
 
 func NewKeeper(cdc codec.BinaryMarshaler, key sdk.StoreKey, params paramstypes.Subspace) Keeper {
@@ -41,10 +40,6 @@ func (k *Keeper) WithProviderKeeper(keeper expected.ProviderKeeper) {
 
 func (k *Keeper) WithPlanKeeper(keeper expected.PlanKeeper) {
 	k.plan = keeper
-}
-
-func (k *Keeper) WithAccountKeeper(keeper expected.AccountKeeper) {
-	k.account = keeper
 }
 
 func (k *Keeper) Logger(ctx sdk.Context) log.Logger {

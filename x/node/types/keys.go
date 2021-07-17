@@ -20,6 +20,12 @@ var (
 )
 
 var (
+	TypeMsgRegisterRequest  = ModuleName + ":register"
+	TypeMsgUpdateRequest    = ModuleName + ":update"
+	TypeMsgSetStatusRequest = ModuleName + ":set_status"
+)
+
+var (
 	EventModuleName = EventModule{Name: ModuleName}
 )
 

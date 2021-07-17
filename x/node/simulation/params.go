@@ -3,21 +3,41 @@ package simulation
 import (
 	"fmt"
 	"math/rand"
+	"time"
 
-	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
-	sdksimulation "github.com/cosmos/cosmos-sdk/x/simulation"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	simulationtypes "github.com/cosmos/cosmos-sdk/types/simulation"
+	"github.com/cosmos/cosmos-sdk/x/simulation"
+
 	"github.com/sentinel-official/hub/x/node/types"
 )
 
-func ParamChanges(r *rand.Rand) []simtypes.ParamChange {
-	return []simtypes.ParamChange{
+const (
+	MaxDepositAmount    = 1 << 18
+	MaxInactiveDuration = 1 << 18
+)
 
-		sdksimulation.NewSimParamChange(types.ModuleName, string(types.KeyDeposit), func(r *rand.Rand) string {
-			return fmt.Sprintf("%d", getRandomDeposit(r))
-		}),
-
-		sdksimulation.NewSimParamChange(types.ModuleName, string(types.KeyInactiveDuration), func(r *rand.Rand) string {
-			return fmt.Sprintf("%v", getRandomInactiveDuration(r))
-		}),
+func ParamChanges(_ *rand.Rand) []simulationtypes.ParamChange {
+	return []simulationtypes.ParamChange{
+		simulation.NewSimParamChange(
+			types.ModuleName,
+			string(types.KeyDeposit),
+			func(r *rand.Rand) string {
+				return sdk.NewInt64Coin(
+					sdk.DefaultBondDenom,
+					r.Int63n(MaxDepositAmount),
+				).String()
+			},
+		),
+		simulation.NewSimParamChange(
+			types.ModuleName,
+			string(types.KeyInactiveDuration),
+			func(r *rand.Rand) string {
+				return fmt.Sprintf(
+					"%s",
+					time.Duration(r.Int63n(MaxInactiveDuration))*time.Millisecond,
+				)
+			},
+		),
 	}
 }

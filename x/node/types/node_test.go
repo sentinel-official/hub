@@ -1460,7 +1460,7 @@ func TestNode_Validate(t *testing.T) {
 				Address:   "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
 				Provider:  "",
 				Price:     sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
-				RemoteURL: "http://remote.url:80",
+				RemoteURL: "tcp://remote.url:80",
 			},
 			true,
 		},
