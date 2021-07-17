@@ -52,7 +52,11 @@ proto-lint:
 
 .PHONY: test
 test:
-	@go test -mod=readonly -v -cover -covermode=atomic ${PACKAGES}
+	@go test -mod=readonly -timeout 15m -v ${PACKAGES}
+
+.PHONT: test-coverage
+test-coverage:
+	@go test -mod=readonly -timeout 15m -v -covermode=atomic -coverprofile=coverage.txt ${PACKAGES}
 
 .PHONY: tools
 tools:
