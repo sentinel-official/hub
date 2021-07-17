@@ -1,67 +1,106 @@
 package simulation
 
 import (
+	"math"
 	"math/rand"
 	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/types/simulation"
+
 	hubtypes "github.com/sentinel-official/hub/types"
+	simulationhubtypes "github.com/sentinel-official/hub/types/simulation"
 	"github.com/sentinel-official/hub/x/plan/types"
 )
 
-func getRandomPlan(r *rand.Rand, plans types.Plans) types.Plan {
-	if len(plans) == 0 {
-		return types.Plan{
-			Provider: hubtypes.ProvAddress([]byte("provider-1")).String(),
-		}
+const (
+	MaxPlanId          = 1 << 18
+	MaxPlans           = 1 << 10
+	MaxPlanPriceAmount = 1 << 10
+	MaxPlanValidity    = 1 << 18
+	MaxPlanBytes       = math.MaxInt64
+)
+
+func RandomPlan(r *rand.Rand, items types.Plans) types.Plan {
+	if len(items) == 0 {
+		return types.Plan{}
 	}
 
-	index := r.Intn(len(plans)-1)
-	return plans[index]
+	return items[r.Intn(len(items))]
 }
 
-func getRandomNodes(r *rand.Rand) []string {
+func RandomPlans(r *rand.Rand) types.Plans {
+	var (
+		items      = make(types.Plans, 0, r.Intn(MaxPlans))
+		duplicates = make(map[uint64]bool)
+	)
 
-	nodes := make([]string, r.Intn(28)+4)
-
-	for range nodes {
-		bz := make([]byte, 20)
-		if _, err := r.Read(bz); err != nil {
-			panic(err)
+	for ; len(items) < cap(items); {
+		id := uint64(r.Int63n(MaxPlanId))
+		if duplicates[id] {
+			continue
 		}
-		nodeAddress := hubtypes.NodeAddress(bz)
-		nodes = append(nodes, nodeAddress.String())
+
+		var (
+			price = simulationhubtypes.RandomCoins(
+				r,
+				sdk.NewCoins(
+					sdk.NewInt64Coin(
+						sdk.DefaultBondDenom,
+						MaxPlanPriceAmount,
+					),
+				),
+			)
+			validity = time.Duration(r.Int63n(MaxPlanValidity)) * time.Minute
+			bytes    = sdk.NewInt(r.Int63n(MaxPlanBytes))
+			status   = hubtypes.StatusActive
+			statusAt = time.Now()
+		)
+
+		if rand.Intn(2) == 0 {
+			status = hubtypes.StatusInactive
+		}
+
+		duplicates[id] = true
+		items = append(
+			items,
+			types.Plan{
+				Id:       id,
+				Provider: "",
+				Price:    price,
+				Validity: validity,
+				Bytes:    bytes,
+				Status:   status,
+				StatusAt: statusAt,
+			},
+		)
 	}
 
-	return nodes
+	return items
 }
 
-func getRandomPlans(r *rand.Rand) types.Plans {
-
-	plans := make(types.Plans, r.Intn(28)+4)
-
-	for range plans {
-		bz := make([]byte, 20)
-		if _, err := r.Read(bz); err != nil {
-			panic(err)
-		}
-
-		providerAddress := hubtypes.ProvAddress(bz)
-
-		plans = append(plans, types.Plan{
-			Id:       r.Uint64(),
-			Provider: providerAddress.String(),
-			Price: sdk.NewCoins(sdk.Coin{
-				Denom:  simulation.RandStringOfLength(r, r.Intn(125)+3),
-				Amount: sdk.NewInt(r.Int63n(8 << 12)),
-			}),
-			Validity: time.Duration(simulation.RandIntBetween(r, weekDurationInSeconds, monthDurationInSeconds)),
-			Bytes:    sdk.NewInt(int64(simulation.RandIntBetween(r, gigabytes, terabytes))),
-			Status:   hubtypes.Status(r.Intn(3)),
-			StatusAt: simulation.RandTimestamp(r),
-		})
+func RandomGenesisPlan(r *rand.Rand, items types.GenesisPlans) types.GenesisPlan {
+	if len(items) == 0 {
+		return types.GenesisPlan{}
 	}
 
-	return plans
+	return items[r.Intn(len(items))]
+}
+
+func RandomGenesisPlans(r *rand.Rand) types.GenesisPlans {
+	var (
+		rItems = RandomPlans(r)
+		items  = make(types.GenesisPlans, 0, len(rItems))
+	)
+
+	for _, item := range rItems {
+		items = append(
+			items,
+			types.GenesisPlan{
+				Plan:  item,
+				Nodes: nil,
+			},
+		)
+	}
+
+	return items
 }

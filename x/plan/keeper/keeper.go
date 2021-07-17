@@ -17,7 +17,6 @@ type Keeper struct {
 	key      sdk.StoreKey
 	provider expected.ProviderKeeper
 	node     expected.NodeKeeper
-	account  expected.AccountKeeper
 }
 
 func NewKeeper(cdc codec.BinaryMarshaler, key sdk.StoreKey) Keeper {
@@ -25,10 +24,6 @@ func NewKeeper(cdc codec.BinaryMarshaler, key sdk.StoreKey) Keeper {
 		cdc: cdc,
 		key: key,
 	}
-}
-
-func (k *Keeper) WithAccountKeeper(keeper expected.AccountKeeper) {
-	k.account = keeper
 }
 
 func (k *Keeper) WithProviderKeeper(keeper expected.ProviderKeeper) {
