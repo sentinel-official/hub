@@ -17,6 +17,13 @@ var (
 )
 
 var (
+	TypeMsgAddRequest        = ModuleName + ":add"
+	TypeMsgSetStatusRequest  = ModuleName + ":set_status"
+	TypeMsgAddNodeRequest    = ModuleName + ":add_node"
+	TypeMsgRemoveNodeRequest = ModuleName + ":remove_node"
+)
+
+var (
 	EventModuleName = EventModule{Name: ModuleName}
 )
 

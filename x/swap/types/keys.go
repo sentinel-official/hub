@@ -17,11 +17,15 @@ var (
 )
 
 var (
-	PrecisionLoss = sdk.NewInt(100)
+	TypeMsgSwapRequest = ModuleName + ":swap"
 )
 
 var (
 	EventModuleName = EventModule{Name: ModuleName}
+)
+
+var (
+	PrecisionLoss = sdk.NewInt(100)
 )
 
 var (

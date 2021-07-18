@@ -19,30 +19,29 @@ func DefaultGenesisState() GenesisState {
 }
 
 func ValidateGenesis(state GenesisState) error {
-	for _, item := range state {
-		if err := item.Plan.Validate(); err != nil {
-			return err
-		}
-	}
-
 	plans := make(map[uint64]bool)
 	for _, item := range state {
-		id := item.Plan.Id
-		if plans[id] {
-			return fmt.Errorf("duplicate plan id %d", id)
+		if plans[item.Plan.Id] {
+			return fmt.Errorf("found duplicate plan for id %d", item.Plan.Id)
 		}
 
-		plans[id] = true
+		plans[item.Plan.Id] = true
 	}
 
 	for _, item := range state {
 		nodes := make(map[string]bool)
 		for _, address := range item.Nodes {
 			if nodes[address] {
-				return fmt.Errorf("duplicate node for plan %d", item.Plan.Id)
+				return fmt.Errorf("found duplicate node %s for plan %d", address, item.Plan.Id)
 			}
 
 			nodes[address] = true
+		}
+	}
+
+	for _, item := range state {
+		if err := item.Plan.Validate(); err != nil {
+			return err
 		}
 	}
 

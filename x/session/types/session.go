@@ -4,16 +4,17 @@ import (
 	"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/errors"
 
 	hubtypes "github.com/sentinel-official/hub/types"
 )
 
-func (s *Session) GetAddress() sdk.AccAddress {
-	if s.Address == "" {
+func (m *Session) GetAddress() sdk.AccAddress {
+	if m.Address == "" {
 		return nil
 	}
 
-	address, err := sdk.AccAddressFromBech32(s.Address)
+	address, err := sdk.AccAddressFromBech32(m.Address)
 	if err != nil {
 		panic(err)
 	}
@@ -21,12 +22,12 @@ func (s *Session) GetAddress() sdk.AccAddress {
 	return address
 }
 
-func (s *Session) GetNode() hubtypes.NodeAddress {
-	if s.Node == "" {
+func (m *Session) GetNode() hubtypes.NodeAddress {
+	if m.Node == "" {
 		return nil
 	}
 
-	address, err := hubtypes.NodeAddressFromBech32(s.Node)
+	address, err := hubtypes.NodeAddressFromBech32(m.Node)
 	if err != nil {
 		panic(err)
 	}
@@ -34,30 +35,36 @@ func (s *Session) GetNode() hubtypes.NodeAddress {
 	return address
 }
 
-func (s *Session) Validate() error {
-	if s.Id == 0 {
-		return fmt.Errorf("id should not be zero")
+func (m *Session) Validate() error {
+	if m.Id == 0 {
+		return fmt.Errorf("id cannot be zero")
 	}
-	if s.Subscription == 0 {
-		return fmt.Errorf("subscription should not be zero")
+	if m.Subscription == 0 {
+		return fmt.Errorf("subscription cannot be zero")
 	}
-	if _, err := hubtypes.NodeAddressFromBech32(s.Node); err != nil {
-		return fmt.Errorf("node should not be nil or empty")
+	if m.Node == "" {
+		return fmt.Errorf("node cannot be empty")
 	}
-	if _, err := sdk.AccAddressFromBech32(s.Address); err != nil {
-		return fmt.Errorf("address should not be nil or empty")
+	if _, err := hubtypes.NodeAddressFromBech32(m.Node); err != nil {
+		return errors.Wrapf(err, "invalid node %s", m.Node)
 	}
-	if s.Duration <= 0 {
-		return fmt.Errorf("duration should be positive")
+	if m.Address == "" {
+		return fmt.Errorf("address cannot be empty")
 	}
-	if s.Bandwidth.IsAllPositive() {
-		return fmt.Errorf("bandwidth should be valid")
+	if _, err := sdk.AccAddressFromBech32(m.Address); err != nil {
+		return errors.Wrapf(err, "invalid address %s", m.Address)
 	}
-	if !s.Status.Equal(hubtypes.StatusActive) && !s.Status.Equal(hubtypes.StatusInactive) {
-		return fmt.Errorf("status should be either active or inactive")
+	if m.Duration < 0 {
+		return fmt.Errorf("duration cannot be negative")
 	}
-	if s.StatusAt.IsZero() {
-		return fmt.Errorf("status_at should not be zero")
+	if m.Bandwidth.IsAnyNegative() {
+		return fmt.Errorf("bandwidth cannot be negative")
+	}
+	if !m.Status.IsValid() {
+		return fmt.Errorf("status must be valid")
+	}
+	if m.StatusAt.IsZero() {
+		return fmt.Errorf("status_at cannot be zero")
 	}
 
 	return nil

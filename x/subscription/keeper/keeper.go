@@ -21,6 +21,7 @@ type Keeper struct {
 	deposit expected.DepositKeeper
 	node    expected.NodeKeeper
 	plan    expected.PlanKeeper
+	account expected.AccountKeeper
 }
 
 func NewKeeper(cdc codec.BinaryMarshaler, key sdk.StoreKey, params paramstypes.Subspace) Keeper {
@@ -29,6 +30,10 @@ func NewKeeper(cdc codec.BinaryMarshaler, key sdk.StoreKey, params paramstypes.S
 		key:    key,
 		params: params.WithKeyTable(types.ParamsKeyTable()),
 	}
+}
+
+func (k *Keeper) WithAccountKeeper(keeper expected.AccountKeeper) {
+	k.account = keeper
 }
 
 func (k *Keeper) WithBankKeeper(keeper expected.BankKeeper) {

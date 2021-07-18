@@ -1,9 +1,10 @@
 package types
 
 import (
-	"fmt"
+	"net/url"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/errors"
 
 	hubtypes "github.com/sentinel-official/hub/types"
 )
@@ -28,32 +29,35 @@ func (m *MsgRegisterRequest) Route() string {
 }
 
 func (m *MsgRegisterRequest) Type() string {
-	return fmt.Sprintf("%s:register", ModuleName)
+	return TypeMsgRegisterRequest
 }
 
 func (m *MsgRegisterRequest) ValidateBasic() error {
+	if m.From == "" {
+		return errors.Wrap(ErrorInvalidFrom, "from cannot be empty")
+	}
 	if _, err := sdk.AccAddressFromBech32(m.From); err != nil {
-		return ErrorInvalidFieldFrom
+		return errors.Wrapf(ErrorInvalidFrom, "%s", err)
 	}
-
-	// Name length should be between 1 and 64
-	if len(m.Name) == 0 || len(m.Name) > 64 {
-		return ErrorInvalidFieldName
+	if m.Name == "" {
+		return errors.Wrap(ErrorInvalidName, "name cannot be empty")
 	}
-
-	// Identity length should be between 0 and 64
+	if len(m.Name) > 64 {
+		return errors.Wrapf(ErrorInvalidName, "name length cannot be greater than %d", 64)
+	}
 	if len(m.Identity) > 64 {
-		return ErrorInvalidFieldIdentity
+		return errors.Wrapf(ErrorInvalidIdentity, "identity length cannot be greater than %d", 64)
 	}
-
-	// Website length should be between 0 and 64
-	if len(m.Website) > 64 {
-		return ErrorInvalidFieldWebsite
+	if m.Website != "" {
+		if len(m.Website) > 64 {
+			return errors.Wrapf(ErrorInvalidWebsite, "website length cannot be greater than %d", 64)
+		}
+		if _, err := url.ParseRequestURI(m.Website); err != nil {
+			return errors.Wrapf(ErrorInvalidWebsite, "%s", err)
+		}
 	}
-
-	// Description length should be between 0 and 256
 	if len(m.Description) > 256 {
-		return ErrorInvalidFieldDescription
+		return errors.Wrapf(ErrorInvalidDescription, "description length cannot be greater than %d", 256)
 	}
 
 	return nil
@@ -87,32 +91,32 @@ func (m *MsgUpdateRequest) Route() string {
 }
 
 func (m *MsgUpdateRequest) Type() string {
-	return fmt.Sprintf("%s:update", ModuleName)
+	return TypeMsgUpdateRequest
 }
 
 func (m MsgUpdateRequest) ValidateBasic() error {
+	if m.From == "" {
+		return errors.Wrap(ErrorInvalidFrom, "from cannot be empty")
+	}
 	if _, err := hubtypes.ProvAddressFromBech32(m.From); err != nil {
-		return ErrorInvalidFieldFrom
+		return errors.Wrapf(ErrorInvalidFrom, "%s", err)
 	}
-
-	// Name length should be between 0 and 64
 	if len(m.Name) > 64 {
-		return ErrorInvalidFieldName
+		return errors.Wrapf(ErrorInvalidName, "name length cannot be greater than %d", 64)
 	}
-
-	// Identity length should be between 0 and 64
 	if len(m.Identity) > 64 {
-		return ErrorInvalidFieldIdentity
+		return errors.Wrapf(ErrorInvalidIdentity, "identity length cannot be greater than %d", 64)
 	}
-
-	// Website length should be between 0 and 64
-	if len(m.Website) > 64 {
-		return ErrorInvalidFieldWebsite
+	if m.Website != "" {
+		if len(m.Website) > 64 {
+			return errors.Wrapf(ErrorInvalidWebsite, "website length cannot be greater than %d", 64)
+		}
+		if _, err := url.ParseRequestURI(m.Website); err != nil {
+			return errors.Wrapf(ErrorInvalidWebsite, "%s", err)
+		}
 	}
-
-	// Description length should be between 0 and 256
 	if len(m.Description) > 256 {
-		return ErrorInvalidFieldDescription
+		return errors.Wrapf(ErrorInvalidDescription, "description length cannot be greater than %d", 256)
 	}
 
 	return nil

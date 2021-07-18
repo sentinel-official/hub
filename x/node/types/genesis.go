@@ -20,19 +20,19 @@ func ValidateGenesis(state *GenesisState) error {
 		return err
 	}
 
+	nodes := make(map[string]bool)
+	for _, node := range state.Nodes {
+		if nodes[node.Address] {
+			return fmt.Errorf("found duplicate node for address %s", node.Address)
+		}
+
+		nodes[node.Address] = true
+	}
+
 	for _, node := range state.Nodes {
 		if err := node.Validate(); err != nil {
 			return err
 		}
-	}
-
-	nodes := make(map[string]bool)
-	for _, node := range state.Nodes {
-		if nodes[node.Address] {
-			return fmt.Errorf("found duplicate node address %s", node.Address)
-		}
-
-		nodes[node.Address] = true
 	}
 
 	return nil
