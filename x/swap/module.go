@@ -118,8 +118,6 @@ func (a AppModule) EndBlock(_ sdk.Context, _ abcitypes.RequestEndBlock) []abcity
 	return nil
 }
 
-// AppSimulaion Methods
-
 func (AppModule) GenerateGenesisState(simState *module.SimulationState) {
 	simulation.RandomizedGenesisState(simState)
 }
@@ -133,9 +131,9 @@ func (a AppModule) RandomizedParams(r *rand.Rand) []sdksimulation.ParamChange {
 }
 
 func (a AppModule) RegisterStoreDecoder(sdr sdk.StoreDecoderRegistry) {
-	sdr[types.StoreKey] = simulation.NewDecodeStore(a.cdc)
+	sdr[types.StoreKey] = simulation.NewStoreDecoder(a.cdc)
 }
 
-func (a AppModule) WeightedOperations(simState module.SimulationState) []sdksimulation.WeightedOperation {
-	return simulation.WeightedOperations(simState.AppParams, simState.Cdc, a.k)
+func (a AppModule) WeightedOperations(_ module.SimulationState) []sdksimulation.WeightedOperation {
+	return nil
 }
