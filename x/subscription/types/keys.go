@@ -1,6 +1,7 @@
 package types
 
 import (
+	"fmt"
 	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -43,69 +44,150 @@ var (
 )
 
 func SubscriptionKey(id uint64) []byte {
-	return append(SubscriptionKeyPrefix, sdk.Uint64ToBigEndian(id)...)
+	v := append(SubscriptionKeyPrefix, sdk.Uint64ToBigEndian(id)...)
+	if len(v) != 1+8 {
+		panic(fmt.Errorf("invalid key length %d; expected %d", len(v), 1+8))
+	}
+
+	return v
 }
 
 func GetSubscriptionForNodeKeyPrefix(address hubtypes.NodeAddress) []byte {
-	return append(SubscriptionForNodeKeyPrefix, address.Bytes()...)
+	v := append(SubscriptionForNodeKeyPrefix, address.Bytes()...)
+	if len(v) != 1+sdk.AddrLen {
+		panic(fmt.Errorf("invalid key length %d; expected %d", len(v), 1+sdk.AddrLen))
+	}
+
+	return v
 }
 
 func SubscriptionForNodeKey(address hubtypes.NodeAddress, id uint64) []byte {
-	return append(GetSubscriptionForNodeKeyPrefix(address), sdk.Uint64ToBigEndian(id)...)
+	v := append(GetSubscriptionForNodeKeyPrefix(address), sdk.Uint64ToBigEndian(id)...)
+	if len(v) != 1+sdk.AddrLen+8 {
+		panic(fmt.Errorf("invalid key length %d; expected %d", len(v), 1+sdk.AddrLen+8))
+	}
+
+	return v
 }
 
 func GetSubscriptionForPlanKeyPrefix(id uint64) []byte {
-	return append(SubscriptionForPlanKeyPrefix, sdk.Uint64ToBigEndian(id)...)
+	v := append(SubscriptionForPlanKeyPrefix, sdk.Uint64ToBigEndian(id)...)
+	if len(v) != 1+8 {
+		panic(fmt.Errorf("invalid key length %d; expected %d", len(v), 1+8))
+	}
+
+	return v
 }
 
 func SubscriptionForPlanKey(p, s uint64) []byte {
-	return append(GetSubscriptionForPlanKeyPrefix(p), sdk.Uint64ToBigEndian(s)...)
+	v := append(GetSubscriptionForPlanKeyPrefix(p), sdk.Uint64ToBigEndian(s)...)
+	if len(v) != 1+2*8 {
+		panic(fmt.Errorf("invalid key length %d; expected %d", len(v), 1+2*8))
+	}
+
+	return v
 }
 
 func GetActiveSubscriptionForAddressKeyPrefix(address sdk.AccAddress) []byte {
-	return append(ActiveSubscriptionForAddressKeyPrefix, address.Bytes()...)
+	v := append(ActiveSubscriptionForAddressKeyPrefix, address.Bytes()...)
+	if len(v) != 1+sdk.AddrLen {
+		panic(fmt.Errorf("invalid key length %d; expected %d", len(v), 1+sdk.AddrLen))
+	}
+
+	return v
 }
 
 func ActiveSubscriptionForAddressKey(address sdk.AccAddress, i uint64) []byte {
-	return append(GetActiveSubscriptionForAddressKeyPrefix(address), sdk.Uint64ToBigEndian(i)...)
+	v := append(GetActiveSubscriptionForAddressKeyPrefix(address), sdk.Uint64ToBigEndian(i)...)
+	if len(v) != 1+sdk.AddrLen+8 {
+		panic(fmt.Errorf("invalid key length %d; expected %d", len(v), 1+sdk.AddrLen+8))
+	}
+
+	return v
 }
 
 func GetInactiveSubscriptionForAddressKeyPrefix(address sdk.AccAddress) []byte {
-	return append(InactiveSubscriptionForAddressKeyPrefix, address.Bytes()...)
+	v := append(InactiveSubscriptionForAddressKeyPrefix, address.Bytes()...)
+	if len(v) != 1+sdk.AddrLen {
+		panic(fmt.Errorf("invalid key length %d; expected %d", len(v), 1+sdk.AddrLen))
+	}
+
+	return v
 }
 
 func InactiveSubscriptionForAddressKey(address sdk.AccAddress, i uint64) []byte {
-	return append(GetInactiveSubscriptionForAddressKeyPrefix(address), sdk.Uint64ToBigEndian(i)...)
+	v := append(GetInactiveSubscriptionForAddressKeyPrefix(address), sdk.Uint64ToBigEndian(i)...)
+	if len(v) != 1+sdk.AddrLen+8 {
+		panic(fmt.Errorf("invalid key length %d; expected %d", len(v), 1+sdk.AddrLen+8))
+	}
+
+	return v
 }
 
 func GetInactiveSubscriptionAtKeyPrefix(at time.Time) []byte {
-	return append(InactiveSubscriptionAtKeyPrefix, sdk.FormatTimeBytes(at)...)
+	v := append(InactiveSubscriptionAtKeyPrefix, sdk.FormatTimeBytes(at)...)
+	if len(v) != 1+29 {
+		panic(fmt.Errorf("invalid key length %d; expected %d", len(v), 1+29))
+	}
+
+	return v
 }
 
 func InactiveSubscriptionAtKey(at time.Time, id uint64) []byte {
-	return append(GetInactiveSubscriptionAtKeyPrefix(at), sdk.Uint64ToBigEndian(id)...)
+	v := append(GetInactiveSubscriptionAtKeyPrefix(at), sdk.Uint64ToBigEndian(id)...)
+	if len(v) != 1+29+8 {
+		panic(fmt.Errorf("invalid key length %d; expected %d", len(v), 1+29+8))
+	}
+
+	return v
 }
 
 func GetQuotaKeyPrefix(id uint64) []byte {
-	return append(QuotaKeyPrefix, sdk.Uint64ToBigEndian(id)...)
+	v := append(QuotaKeyPrefix, sdk.Uint64ToBigEndian(id)...)
+	if len(v) != 1+8 {
+		panic(fmt.Errorf("invalid key length %d; expected %d", len(v), 1+8))
+	}
+
+	return v
 }
 
 func QuotaKey(id uint64, address sdk.AccAddress) []byte {
-	return append(GetQuotaKeyPrefix(id), address.Bytes()...)
+	v := append(GetQuotaKeyPrefix(id), address.Bytes()...)
+	if len(v) != 1+8+sdk.AddrLen {
+		panic(fmt.Errorf("invalid key length %d; expected %d", len(v), 1+8+sdk.AddrLen))
+	}
+
+	return v
 }
 
 func IDFromSubscriptionForNodeKey(key []byte) uint64 {
+	if len(key) != 1+sdk.AddrLen+8 {
+		panic(fmt.Errorf("invalid key length %d; expected %d", len(key), 1+sdk.AddrLen+8))
+	}
+
 	return sdk.BigEndianToUint64(key[1+sdk.AddrLen:])
 }
 
 func IDFromSubscriptionForPlanKey(key []byte) uint64 {
+	if len(key) != 1+2*8 {
+		panic(fmt.Errorf("invalid key length %d; expected %d", len(key), 1+2*8))
+	}
+
 	return sdk.BigEndianToUint64(key[1+8:])
 }
 
 func IDFromStatusSubscriptionForAddressKey(key []byte) uint64 {
+	if len(key) != 1+sdk.AddrLen+8 {
+		panic(fmt.Errorf("invalid key length %d; expected %d", len(key), 1+sdk.AddrLen+8))
+	}
+
 	return sdk.BigEndianToUint64(key[1+sdk.AddrLen:])
 }
 
 func IDFromInactiveSubscriptionAtKey(key []byte) uint64 {
+	if len(key) != 1+29+8 {
+		panic(fmt.Errorf("invalid key length %d; expected %d", len(key), 1+29+8))
+	}
+
 	return sdk.BigEndianToUint64(key[1+29:])
 }

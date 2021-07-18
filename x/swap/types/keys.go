@@ -1,6 +1,8 @@
 package types
 
 import (
+	"fmt"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -33,5 +35,10 @@ var (
 )
 
 func SwapKey(hash EthereumHash) []byte {
-	return append(SwapKeyPrefix, hash.Bytes()...)
+	v := append(SwapKeyPrefix, hash.Bytes()...)
+	if len(v) != 1+EthereumHashLength {
+		panic(fmt.Errorf("invalid key length %d; expected %d", len(v), 1+EthereumHashLength))
+	}
+
+	return v
 }
