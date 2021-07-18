@@ -31,7 +31,6 @@ func WeightedOperations(
 	cdc codec.JSONMarshaler,
 	ak expected.AccountKeeper,
 	bk expected.BankKeeper,
-	pk expected.ProviderKeeper,
 	k keeper.Keeper,
 ) simulation.WeightedOperations {
 	var (
@@ -81,24 +80,24 @@ func WeightedOperations(
 	return simulation.WeightedOperations{
 		simulation.NewWeightedOperation(
 			weightMsgAddRequest,
-			SimulateMsgAddRequest(ak, bk, pk),
+			SimulateMsgAddRequest(ak, bk, k),
 		),
 		simulation.NewWeightedOperation(
 			weightMsgSetStatusRequest,
-			SimulateMsgSetStatusRequest(ak, bk, pk, k),
+			SimulateMsgSetStatusRequest(ak, bk, k),
 		),
 		simulation.NewWeightedOperation(
 			weightMsgAddNodeRequest,
-			SimulateMsgAddNodeRequest(ak, bk, pk, k),
+			SimulateMsgAddNodeRequest(ak, bk, k),
 		),
 		simulation.NewWeightedOperation(
 			weightMsgRemoveNodeRequest,
-			SimulateMsgRemoveNodeRequest(ak, bk, pk, k),
+			SimulateMsgRemoveNodeRequest(ak, bk, k),
 		),
 	}
 }
 
-func SimulateMsgAddRequest(ak expected.AccountKeeper, bk expected.BankKeeper, pk expected.ProviderKeeper) simulationtypes.Operation {
+func SimulateMsgAddRequest(ak expected.AccountKeeper, bk expected.BankKeeper, k keeper.Keeper) simulationtypes.Operation {
 	return func(
 		r *rand.Rand,
 		app *baseapp.BaseApp,
@@ -107,18 +106,18 @@ func SimulateMsgAddRequest(ak expected.AccountKeeper, bk expected.BankKeeper, pk
 		chainID string,
 	) (simulationtypes.OperationMsg, []simulationtypes.FutureOperation, error) {
 		var (
-			rAccount, _ = simulationtypes.RandomAcc(r, accounts)
-			account     = ak.GetAccount(ctx, rAccount.Address)
+			rFrom, _ = simulationtypes.RandomAcc(r, accounts)
+			from     = ak.GetAccount(ctx, rFrom.Address)
 		)
 
-		found := pk.HasProvider(ctx, hubtypes.ProvAddress(account.GetAddress()))
+		found := k.HasProvider(ctx, hubtypes.ProvAddress(from.GetAddress()))
 		if !found {
 			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgAddRequest, "provider does not exist"), nil, nil
 		}
 
-		balance := bk.SpendableCoins(ctx, account.GetAddress())
+		balance := bk.SpendableCoins(ctx, from.GetAddress())
 		if !balance.IsAnyNegative() {
-			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgAddRequest, "balance cannot be negative"), nil, nil
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgAddRequest, "balance is negative"), nil, nil
 		}
 
 		fees, err := simulationtypes.RandomFees(r, ctx, balance)
@@ -143,7 +142,7 @@ func SimulateMsgAddRequest(ak expected.AccountKeeper, bk expected.BankKeeper, pk
 		var (
 			txConfig = params.MakeTestEncodingConfig().TxConfig
 			message  = types.NewMsgAddRequest(
-				hubtypes.ProvAddress(account.GetAddress()),
+				hubtypes.ProvAddress(from.GetAddress()),
 				price,
 				validity,
 				bytes,
@@ -156,9 +155,9 @@ func SimulateMsgAddRequest(ak expected.AccountKeeper, bk expected.BankKeeper, pk
 			fees,
 			helpers.DefaultGenTxGas,
 			chainID,
-			[]uint64{account.GetAccountNumber()},
-			[]uint64{account.GetSequence()},
-			rAccount.PrivKey,
+			[]uint64{from.GetAccountNumber()},
+			[]uint64{from.GetSequence()},
+			rFrom.PrivKey,
 		)
 		if err != nil {
 			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgAddRequest, err.Error()), nil, err
@@ -173,7 +172,7 @@ func SimulateMsgAddRequest(ak expected.AccountKeeper, bk expected.BankKeeper, pk
 	}
 }
 
-func SimulateMsgSetStatusRequest(ak expected.AccountKeeper, bk expected.BankKeeper, pk expected.ProviderKeeper, k keeper.Keeper) simulationtypes.Operation {
+func SimulateMsgSetStatusRequest(ak expected.AccountKeeper, bk expected.BankKeeper, k keeper.Keeper) simulationtypes.Operation {
 	return func(
 		r *rand.Rand,
 		app *baseapp.BaseApp,
@@ -182,23 +181,18 @@ func SimulateMsgSetStatusRequest(ak expected.AccountKeeper, bk expected.BankKeep
 		chainID string,
 	) (simulationtypes.OperationMsg, []simulationtypes.FutureOperation, error) {
 		var (
-			rAccount, _ = simulationtypes.RandomAcc(r, accounts)
-			account     = ak.GetAccount(ctx, rAccount.Address)
+			rFrom, _ = simulationtypes.RandomAcc(r, accounts)
+			from     = ak.GetAccount(ctx, rFrom.Address)
 		)
 
-		found := pk.HasProvider(ctx, hubtypes.ProvAddress(account.GetAddress()))
-		if !found {
-			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgSetStatusRequest, "provider does not exist"), nil, nil
-		}
-
-		plans := k.GetPlansForProvider(ctx, hubtypes.ProvAddress(account.GetAddress()), 0, 0)
+		plans := k.GetPlansForProvider(ctx, hubtypes.ProvAddress(from.GetAddress()), 0, 0)
 		if len(plans) == 0 {
-			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgSetStatusRequest, "plans does not exist for provider"), nil, nil
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgSetStatusRequest, "plans for provider does not exist"), nil, nil
 		}
 
-		balance := bk.SpendableCoins(ctx, account.GetAddress())
+		balance := bk.SpendableCoins(ctx, from.GetAddress())
 		if !balance.IsAnyNegative() {
-			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgSetStatusRequest, "balance cannot be negative"), nil, nil
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgSetStatusRequest, "balance is negative"), nil, nil
 		}
 
 		fees, err := simulationtypes.RandomFees(r, ctx, balance)
@@ -218,7 +212,7 @@ func SimulateMsgSetStatusRequest(ak expected.AccountKeeper, bk expected.BankKeep
 		var (
 			txConfig = params.MakeTestEncodingConfig().TxConfig
 			message  = types.NewMsgSetStatusRequest(
-				hubtypes.ProvAddress(account.GetAddress()),
+				hubtypes.ProvAddress(from.GetAddress()),
 				id,
 				status,
 			)
@@ -230,9 +224,9 @@ func SimulateMsgSetStatusRequest(ak expected.AccountKeeper, bk expected.BankKeep
 			fees,
 			helpers.DefaultGenTxGas,
 			chainID,
-			[]uint64{account.GetAccountNumber()},
-			[]uint64{account.GetSequence()},
-			rAccount.PrivKey,
+			[]uint64{from.GetAccountNumber()},
+			[]uint64{from.GetSequence()},
+			rFrom.PrivKey,
 		)
 		if err != nil {
 			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgSetStatusRequest, err.Error()), nil, err
@@ -247,7 +241,7 @@ func SimulateMsgSetStatusRequest(ak expected.AccountKeeper, bk expected.BankKeep
 	}
 }
 
-func SimulateMsgAddNodeRequest(ak expected.AccountKeeper, bk expected.BankKeeper, pk expected.ProviderKeeper, k keeper.Keeper) simulationtypes.Operation {
+func SimulateMsgAddNodeRequest(ak expected.AccountKeeper, bk expected.BankKeeper, k keeper.Keeper) simulationtypes.Operation {
 	return func(
 		r *rand.Rand,
 		app *baseapp.BaseApp,
@@ -256,30 +250,37 @@ func SimulateMsgAddNodeRequest(ak expected.AccountKeeper, bk expected.BankKeeper
 		chainID string,
 	) (simulationtypes.OperationMsg, []simulationtypes.FutureOperation, error) {
 		var (
-			rProvider, _ = simulationtypes.RandomAcc(r, accounts)
-			provider     = ak.GetAccount(ctx, rProvider.Address)
-			rNode, _     = simulationtypes.RandomAcc(r, accounts)
-			node         = ak.GetAccount(ctx, rNode.Address)
+			rFrom, _    = simulationtypes.RandomAcc(r, accounts)
+			from        = ak.GetAccount(ctx, rFrom.Address)
+			rAddress, _ = simulationtypes.RandomAcc(r, accounts)
+			address     = ak.GetAccount(ctx, rAddress.Address)
 		)
 
-		found := pk.HasProvider(ctx, hubtypes.ProvAddress(provider.GetAddress()))
-		if !found {
-			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgAddNodeRequest, "provider does not exist"), nil, nil
-		}
-
-		_, found = k.GetNode(ctx, hubtypes.NodeAddress(node.GetAddress()))
+		node, found := k.GetNode(ctx, hubtypes.NodeAddress(address.GetAddress()))
 		if !found {
 			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgAddNodeRequest, "node does not exist"), nil, nil
 		}
-
-		plans := k.GetPlansForProvider(ctx, hubtypes.ProvAddress(provider.GetAddress()), 0, 0)
-		if len(plans) == 0 {
-			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgAddNodeRequest, "plans does not exist for provider"), nil, nil
+		if node.Provider != hubtypes.ProvAddress(from.GetAddress()).String() {
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgAddNodeRequest, "node has different provider"), nil, nil
 		}
 
-		balance := bk.SpendableCoins(ctx, provider.GetAddress())
+		plans := k.GetPlansForProvider(ctx, hubtypes.ProvAddress(from.GetAddress()), 0, 0)
+		if len(plans) == 0 {
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgAddNodeRequest, "plans for provider does not exist"), nil, nil
+		}
+
+		var (
+			id = plans[r.Intn(len(plans))].Id
+		)
+
+		found = k.HasNodeForPlan(ctx, id, hubtypes.NodeAddress(address.GetAddress()))
+		if found {
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgAddNodeRequest, "node for plan already exists"), nil, nil
+		}
+
+		balance := bk.SpendableCoins(ctx, from.GetAddress())
 		if !balance.IsAnyNegative() {
-			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgAddNodeRequest, "balance cannot be negative"), nil, nil
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgAddNodeRequest, "balance is negative"), nil, nil
 		}
 
 		fees, err := simulationtypes.RandomFees(r, ctx, balance)
@@ -288,20 +289,11 @@ func SimulateMsgAddNodeRequest(ak expected.AccountKeeper, bk expected.BankKeeper
 		}
 
 		var (
-			id = plans[r.Intn(len(plans))].Id
-		)
-
-		found = k.HasNodeForPlan(ctx, id, hubtypes.NodeAddress(node.GetAddress()))
-		if found {
-			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgAddNodeRequest, "node for plan already exists"), nil, nil
-		}
-
-		var (
 			txConfig = params.MakeTestEncodingConfig().TxConfig
 			message  = types.NewMsgAddNodeRequest(
-				hubtypes.ProvAddress(provider.GetAddress()),
+				hubtypes.ProvAddress(from.GetAddress()),
 				id,
-				hubtypes.NodeAddress(node.GetAddress()),
+				hubtypes.NodeAddress(address.GetAddress()),
 			)
 		)
 
@@ -311,9 +303,9 @@ func SimulateMsgAddNodeRequest(ak expected.AccountKeeper, bk expected.BankKeeper
 			fees,
 			helpers.DefaultGenTxGas,
 			chainID,
-			[]uint64{provider.GetAccountNumber()},
-			[]uint64{provider.GetSequence()},
-			rProvider.PrivKey,
+			[]uint64{from.GetAccountNumber()},
+			[]uint64{from.GetSequence()},
+			rFrom.PrivKey,
 		)
 		if err != nil {
 			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgAddNodeRequest, err.Error()), nil, err
@@ -328,7 +320,7 @@ func SimulateMsgAddNodeRequest(ak expected.AccountKeeper, bk expected.BankKeeper
 	}
 }
 
-func SimulateMsgRemoveNodeRequest(ak expected.AccountKeeper, bk expected.BankKeeper, pk expected.ProviderKeeper, k keeper.Keeper) simulationtypes.Operation {
+func SimulateMsgRemoveNodeRequest(ak expected.AccountKeeper, bk expected.BankKeeper, k keeper.Keeper) simulationtypes.Operation {
 	return func(
 		r *rand.Rand,
 		app *baseapp.BaseApp,
@@ -337,30 +329,29 @@ func SimulateMsgRemoveNodeRequest(ak expected.AccountKeeper, bk expected.BankKee
 		chainID string,
 	) (simulationtypes.OperationMsg, []simulationtypes.FutureOperation, error) {
 		var (
-			rProvider, _ = simulationtypes.RandomAcc(r, accounts)
-			provider     = ak.GetAccount(ctx, rProvider.Address)
-			rNode, _     = simulationtypes.RandomAcc(r, accounts)
-			node         = ak.GetAccount(ctx, rNode.Address)
+			rFrom, _    = simulationtypes.RandomAcc(r, accounts)
+			from        = ak.GetAccount(ctx, rFrom.Address)
+			rAddress, _ = simulationtypes.RandomAcc(r, accounts)
+			address     = ak.GetAccount(ctx, rAddress.Address)
 		)
 
-		found := pk.HasProvider(ctx, hubtypes.ProvAddress(provider.GetAddress()))
-		if !found {
-			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgRemoveNodeRequest, "provider does not exist"), nil, nil
-		}
-
-		_, found = k.GetNode(ctx, hubtypes.NodeAddress(node.GetAddress()))
-		if !found {
-			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgRemoveNodeRequest, "node does not exist"), nil, nil
-		}
-
-		plans := k.GetPlansForProvider(ctx, hubtypes.ProvAddress(provider.GetAddress()), 0, 0)
+		plans := k.GetPlansForProvider(ctx, hubtypes.ProvAddress(from.GetAddress()), 0, 0)
 		if len(plans) == 0 {
-			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgRemoveNodeRequest, "plans does not exist for provider"), nil, nil
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgRemoveNodeRequest, "plans for provider does not exist"), nil, nil
 		}
 
-		balance := bk.SpendableCoins(ctx, provider.GetAddress())
+		var (
+			id = plans[r.Intn(len(plans))].Id
+		)
+
+		found := k.HasNodeForPlan(ctx, id, hubtypes.NodeAddress(address.GetAddress()))
+		if !found {
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgRemoveNodeRequest, "node for plan does not exist"), nil, nil
+		}
+
+		balance := bk.SpendableCoins(ctx, from.GetAddress())
 		if !balance.IsAnyNegative() {
-			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgRemoveNodeRequest, "balance cannot be negative"), nil, nil
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgRemoveNodeRequest, "balance is negative"), nil, nil
 		}
 
 		fees, err := simulationtypes.RandomFees(r, ctx, balance)
@@ -369,20 +360,11 @@ func SimulateMsgRemoveNodeRequest(ak expected.AccountKeeper, bk expected.BankKee
 		}
 
 		var (
-			id = plans[r.Intn(len(plans))].Id
-		)
-
-		found = k.HasNodeForPlan(ctx, id, hubtypes.NodeAddress(node.GetAddress()))
-		if !found {
-			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgRemoveNodeRequest, "node for plan does not exist"), nil, nil
-		}
-
-		var (
 			txConfig = params.MakeTestEncodingConfig().TxConfig
 			message  = types.NewMsgRemoveNodeRequest(
-				provider.GetAddress(),
+				from.GetAddress(),
 				id,
-				hubtypes.NodeAddress(node.GetAddress()),
+				hubtypes.NodeAddress(address.GetAddress()),
 			)
 		)
 
@@ -392,9 +374,9 @@ func SimulateMsgRemoveNodeRequest(ak expected.AccountKeeper, bk expected.BankKee
 			fees,
 			helpers.DefaultGenTxGas,
 			chainID,
-			[]uint64{provider.GetAccountNumber()},
-			[]uint64{provider.GetSequence()},
-			rProvider.PrivKey,
+			[]uint64{from.GetAccountNumber()},
+			[]uint64{from.GetSequence()},
+			rFrom.PrivKey,
 		)
 		if err != nil {
 			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgRemoveNodeRequest, err.Error()), nil, err

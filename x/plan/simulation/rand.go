@@ -34,7 +34,7 @@ func RandomPlans(r *rand.Rand) types.Plans {
 		duplicates = make(map[uint64]bool)
 	)
 
-	for ; len(items) < cap(items); {
+	for len(items) < cap(items) {
 		id := uint64(r.Int63n(MaxPlanId))
 		if duplicates[id] {
 			continue

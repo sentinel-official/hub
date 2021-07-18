@@ -30,7 +30,7 @@ func RandomProviders(r *rand.Rand, accounts []simulationtypes.Account) types.Pro
 		items      = make(types.Providers, 0, r.Intn(len(accounts)))
 	)
 
-	for ; len(items) < cap(items); {
+	for len(items) < cap(items) {
 		var (
 			account, _ = simulationtypes.RandomAcc(r, accounts)
 			address    = hubtypes.ProvAddress(account.Address).String()

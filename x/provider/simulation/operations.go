@@ -76,17 +76,16 @@ func SimulateMsgRegisterRequest(ak expected.AccountKeeper, bk expected.BankKeepe
 		var (
 			rAccount, _ = simulationtypes.RandomAcc(r, accounts)
 			account     = ak.GetAccount(ctx, rAccount.Address)
-			deposit     = k.Deposit(ctx)
 		)
 
-		_, found := k.GetProvider(ctx, hubtypes.ProvAddress(account.GetAddress()))
+		found := k.HasProvider(ctx, hubtypes.ProvAddress(account.GetAddress()))
 		if found {
 			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgUpdateRequest, "provider already exists"), nil, nil
 		}
 
 		balance := bk.SpendableCoins(ctx, account.GetAddress())
 		if !balance.IsAnyNegative() {
-			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgRegisterRequest, "balance cannot be negative"), nil, nil
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgRegisterRequest, "balance is negative"), nil, nil
 		}
 
 		fees, err := simulationtypes.RandomFees(r, ctx, balance)
@@ -94,9 +93,9 @@ func SimulateMsgRegisterRequest(ak expected.AccountKeeper, bk expected.BankKeepe
 			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgRegisterRequest, err.Error()), nil, err
 		}
 
-		balance = balance.Sub(fees)
-		if balance.AmountOf(deposit.Denom).LT(deposit.Amount) {
-			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgRegisterRequest, "balance cannot be less than deposit"), nil, err
+		deposit := k.Deposit(ctx)
+		if balance.Sub(fees).AmountOf(deposit.Denom).LT(deposit.Amount) {
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgRegisterRequest, "balance is less than deposit"), nil, nil
 		}
 
 		var (
@@ -153,14 +152,14 @@ func SimulateMsgUpdateRequest(ak expected.AccountKeeper, bk expected.BankKeeper,
 			account     = ak.GetAccount(ctx, rAccount.Address)
 		)
 
-		_, found := k.GetProvider(ctx, hubtypes.ProvAddress(account.GetAddress()))
+		found := k.HasProvider(ctx, hubtypes.ProvAddress(account.GetAddress()))
 		if !found {
 			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgUpdateRequest, "provider does not exist"), nil, nil
 		}
 
 		balance := bk.SpendableCoins(ctx, account.GetAddress())
 		if !balance.IsAnyNegative() {
-			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgUpdateRequest, "balance cannot be negative"), nil, nil
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgUpdateRequest, "balance is negative"), nil, nil
 		}
 
 		fees, err := simulationtypes.RandomFees(r, ctx, balance)

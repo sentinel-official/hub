@@ -91,19 +91,18 @@ func SimulateMsgRegisterRequest(ak expected.AccountKeeper, bk expected.BankKeepe
 		chainID string,
 	) (simulationtypes.OperationMsg, []simulationtypes.FutureOperation, error) {
 		var (
-			rAccount, _ = simulationtypes.RandomAcc(r, accounts)
-			account     = ak.GetAccount(ctx, rAccount.Address)
-			deposit     = k.Deposit(ctx)
+			rFrom, _ = simulationtypes.RandomAcc(r, accounts)
+			from     = ak.GetAccount(ctx, rFrom.Address)
 		)
 
-		_, found := k.GetNode(ctx, hubtypes.NodeAddress(account.GetAddress()))
+		found := k.HasNode(ctx, hubtypes.NodeAddress(from.GetAddress()))
 		if found {
 			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgRegisterRequest, "node already exists"), nil, nil
 		}
 
-		balance := bk.SpendableCoins(ctx, account.GetAddress())
+		balance := bk.SpendableCoins(ctx, from.GetAddress())
 		if !balance.IsAnyNegative() {
-			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgRegisterRequest, "balance cannot be negative"), nil, nil
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgRegisterRequest, "balance is negative"), nil, nil
 		}
 
 		fees, err := simulationtypes.RandomFees(r, ctx, balance)
@@ -111,9 +110,9 @@ func SimulateMsgRegisterRequest(ak expected.AccountKeeper, bk expected.BankKeepe
 			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgRegisterRequest, err.Error()), nil, err
 		}
 
-		balance = balance.Sub(fees)
-		if balance.AmountOf(deposit.Denom).LT(deposit.Amount) {
-			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgRegisterRequest, "balance cannot be less than deposit"), nil, err
+		deposit := k.Deposit(ctx)
+		if balance.Sub(fees).AmountOf(deposit.Denom).LT(deposit.Amount) {
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgRegisterRequest, "balance is less than deposit"), nil, nil
 		}
 
 		var (
@@ -127,7 +126,7 @@ func SimulateMsgRegisterRequest(ak expected.AccountKeeper, bk expected.BankKeepe
 		var (
 			txConfig = params.MakeTestEncodingConfig().TxConfig
 			message  = types.NewMsgRegisterRequest(
-				account.GetAddress(),
+				from.GetAddress(),
 				nil,
 				price,
 				remoteURL,
@@ -140,9 +139,9 @@ func SimulateMsgRegisterRequest(ak expected.AccountKeeper, bk expected.BankKeepe
 			fees,
 			helpers.DefaultGenTxGas,
 			chainID,
-			[]uint64{account.GetAccountNumber()},
-			[]uint64{account.GetSequence()},
-			rAccount.PrivKey,
+			[]uint64{from.GetAccountNumber()},
+			[]uint64{from.GetSequence()},
+			rFrom.PrivKey,
 		)
 		if err != nil {
 			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgRegisterRequest, err.Error()), nil, err
@@ -166,18 +165,18 @@ func SimulateMsgUpdateRequest(ak expected.AccountKeeper, bk expected.BankKeeper,
 		chainID string,
 	) (simulationtypes.OperationMsg, []simulationtypes.FutureOperation, error) {
 		var (
-			rAccount, _ = simulationtypes.RandomAcc(r, accounts)
-			account     = ak.GetAccount(ctx, rAccount.Address)
+			rFrom, _ = simulationtypes.RandomAcc(r, accounts)
+			from     = ak.GetAccount(ctx, rFrom.Address)
 		)
 
-		_, found := k.GetNode(ctx, hubtypes.NodeAddress(account.GetAddress()))
+		found := k.HasNode(ctx, hubtypes.NodeAddress(from.GetAddress()))
 		if !found {
 			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgUpdateRequest, "node does not exist"), nil, nil
 		}
 
-		balance := bk.SpendableCoins(ctx, account.GetAddress())
+		balance := bk.SpendableCoins(ctx, from.GetAddress())
 		if !balance.IsAnyNegative() {
-			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgUpdateRequest, "balance cannot be negative"), nil, nil
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgUpdateRequest, "balance is negative"), nil, nil
 		}
 
 		fees, err := simulationtypes.RandomFees(r, ctx, balance)
@@ -196,7 +195,7 @@ func SimulateMsgUpdateRequest(ak expected.AccountKeeper, bk expected.BankKeeper,
 		var (
 			txConfig = params.MakeTestEncodingConfig().TxConfig
 			message  = types.NewMsgUpdateRequest(
-				hubtypes.NodeAddress(account.GetAddress()),
+				hubtypes.NodeAddress(from.GetAddress()),
 				nil,
 				price,
 				remoteURL,
@@ -209,9 +208,9 @@ func SimulateMsgUpdateRequest(ak expected.AccountKeeper, bk expected.BankKeeper,
 			fees,
 			helpers.DefaultGenTxGas,
 			chainID,
-			[]uint64{account.GetAccountNumber()},
-			[]uint64{account.GetSequence()},
-			rAccount.PrivKey,
+			[]uint64{from.GetAccountNumber()},
+			[]uint64{from.GetSequence()},
+			rFrom.PrivKey,
 		)
 		if err != nil {
 			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgUpdateRequest, err.Error()), nil, err
@@ -235,18 +234,18 @@ func SimulateMsgSetStatusRequest(ak expected.AccountKeeper, bk expected.BankKeep
 		chainID string,
 	) (simulationtypes.OperationMsg, []simulationtypes.FutureOperation, error) {
 		var (
-			rAccount, _ = simulationtypes.RandomAcc(r, accounts)
-			account     = ak.GetAccount(ctx, rAccount.Address)
+			rFrom, _ = simulationtypes.RandomAcc(r, accounts)
+			from     = ak.GetAccount(ctx, rFrom.Address)
 		)
 
-		_, found := k.GetNode(ctx, hubtypes.NodeAddress(account.GetAddress()))
+		found := k.HasNode(ctx, hubtypes.NodeAddress(from.GetAddress()))
 		if !found {
 			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgSetStatusRequest, "node does not exist"), nil, nil
 		}
 
-		balance := bk.SpendableCoins(ctx, account.GetAddress())
+		balance := bk.SpendableCoins(ctx, from.GetAddress())
 		if !balance.IsAnyNegative() {
-			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgSetStatusRequest, "balance cannot be negative"), nil, nil
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgSetStatusRequest, "balance is negative"), nil, nil
 		}
 
 		fees, err := simulationtypes.RandomFees(r, ctx, balance)
@@ -254,10 +253,7 @@ func SimulateMsgSetStatusRequest(ak expected.AccountKeeper, bk expected.BankKeep
 			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgSetStatusRequest, err.Error()), nil, err
 		}
 
-		var (
-			status = hubtypes.StatusActive
-		)
-
+		status := hubtypes.StatusActive
 		if rand.Intn(2) == 0 {
 			status = hubtypes.StatusInactive
 		}
@@ -265,7 +261,7 @@ func SimulateMsgSetStatusRequest(ak expected.AccountKeeper, bk expected.BankKeep
 		var (
 			txConfig = params.MakeTestEncodingConfig().TxConfig
 			message  = types.NewMsgSetStatusRequest(
-				hubtypes.NodeAddress(account.GetAddress()),
+				hubtypes.NodeAddress(from.GetAddress()),
 				status,
 			)
 		)
@@ -276,9 +272,9 @@ func SimulateMsgSetStatusRequest(ak expected.AccountKeeper, bk expected.BankKeep
 			fees,
 			helpers.DefaultGenTxGas,
 			chainID,
-			[]uint64{account.GetAccountNumber()},
-			[]uint64{account.GetSequence()},
-			rAccount.PrivKey,
+			[]uint64{from.GetAccountNumber()},
+			[]uint64{from.GetSequence()},
+			rFrom.PrivKey,
 		)
 		if err != nil {
 			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgSetStatusRequest, err.Error()), nil, err

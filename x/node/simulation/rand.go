@@ -32,7 +32,7 @@ func RandomNodes(r *rand.Rand, accounts []simulationtypes.Account) types.Nodes {
 		items      = make(types.Nodes, 0, r.Intn(len(accounts)))
 	)
 
-	for ; len(items) < cap(items); {
+	for len(items) < cap(items) {
 		var (
 			account, _ = simulationtypes.RandomAcc(r, accounts)
 			address    = hubtypes.NodeAddress(account.Address).String()
