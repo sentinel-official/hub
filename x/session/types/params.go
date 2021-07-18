@@ -21,27 +21,33 @@ var (
 	_ params.ParamSet = (*Params)(nil)
 )
 
-func (p *Params) Validate() error {
-	if p.InactiveDuration <= 0 {
-		return fmt.Errorf("inactive_duration should be positive")
+func (m *Params) Validate() error {
+	if m.InactiveDuration < 0 {
+		return fmt.Errorf("inactive_duration cannot be negative")
+	}
+	if m.InactiveDuration == 0 {
+		return fmt.Errorf("inactive_duration cannot be zero")
 	}
 
 	return nil
 }
 
-func (p *Params) ParamSetPairs() params.ParamSetPairs {
+func (m *Params) ParamSetPairs() params.ParamSetPairs {
 	return params.ParamSetPairs{
 		{
 			Key:   KeyInactiveDuration,
-			Value: &p.InactiveDuration,
+			Value: &m.InactiveDuration,
 			ValidatorFn: func(v interface{}) error {
 				value, ok := v.(time.Duration)
 				if !ok {
 					return fmt.Errorf("invalid parameter type %T", v)
 				}
 
-				if value <= 0 {
-					return fmt.Errorf("inactive duration value should be positive")
+				if value < 0 {
+					return fmt.Errorf("value cannot be negative")
+				}
+				if value == 0 {
+					return fmt.Errorf("value cannot be zero")
 				}
 
 				return nil
@@ -49,7 +55,7 @@ func (p *Params) ParamSetPairs() params.ParamSetPairs {
 		},
 		{
 			Key:   KeyProofVerificationEnabled,
-			Value: &p.ProofVerificationEnabled,
+			Value: &m.ProofVerificationEnabled,
 			ValidatorFn: func(v interface{}) error {
 				_, ok := v.(bool)
 				if !ok {

@@ -20,6 +20,12 @@ var (
 )
 
 var (
+	TypeMsgStartRequest  = ModuleName + ":start"
+	TypeMsgUpdateRequest = ModuleName + ":update"
+	TypeMsgEndRequest    = ModuleName + ":end"
+)
+
+var (
 	EventModuleName = EventModule{Name: ModuleName}
 )
 
