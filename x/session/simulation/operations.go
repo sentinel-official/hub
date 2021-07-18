@@ -9,233 +9,296 @@ import (
 	"github.com/cosmos/cosmos-sdk/simapp/helpers"
 	"github.com/cosmos/cosmos-sdk/simapp/params"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdksimulation "github.com/cosmos/cosmos-sdk/types/simulation"
+	simulationtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
+
 	hubtypes "github.com/sentinel-official/hub/types"
+	"github.com/sentinel-official/hub/x/session/expected"
 	"github.com/sentinel-official/hub/x/session/keeper"
 	"github.com/sentinel-official/hub/x/session/types"
 )
 
-const (
-	OpWeightMsgStartRequest  = "op_weight_msg_start_request"
-	OpWeightMsgUpdateRequest = "op_weight_msg_update_session_request"
-	OpWeightMsgEndRequest    = "op_weight_msg_end_request"
+var (
+	OperationWeightMsgStartRequest  = "op_weight_" + types.TypeMsgStartRequest
+	OperationWeightMsgUpdateRequest = "op_weight_" + types.TypeMsgUpdateRequest
+	OperationWeightMsgEndRequest    = "op_weight_" + types.TypeMsgEndRequest
 )
 
-func WeightedOperations(ap sdksimulation.AppParams, cdc codec.JSONMarshaler, k keeper.Keeper) simulation.WeightedOperations {
+func WeightedOperations(
+	params simulationtypes.AppParams,
+	cdc codec.JSONMarshaler,
+	ak expected.AccountKeeper,
+	bk expected.BankKeeper,
+	k keeper.Keeper,
+) simulation.WeightedOperations {
 	var (
 		weightMsgStartRequest  int
-		weightMsgEndRequst     int
 		weightMsgUpdateRequest int
+		weightMsgEndRequest    int
 	)
 
-	randMsgStartRequest := func(_ *rand.Rand) {
-		weightMsgStartRequest = 100
-	}
-
-	randMsgUpdateRequest := func(_ *rand.Rand) {
-		weightMsgUpdateRequest = 100
-	}
-
-	randMsgEndRequest := func(_ *rand.Rand) {
-		weightMsgEndRequst = 100
-	}
-
-	ap.GetOrGenerate(cdc, OpWeightMsgStartRequest, &weightMsgStartRequest, nil, randMsgStartRequest)
-	ap.GetOrGenerate(cdc, OpWeightMsgUpdateRequest, &weightMsgUpdateRequest, nil, randMsgUpdateRequest)
-	ap.GetOrGenerate(cdc, OpWeightMsgEndRequest, &weightMsgEndRequst, nil, randMsgEndRequest)
-
-	startSessionOperation := simulation.NewWeightedOperation(weightMsgStartRequest, SimulateMsgStartRequest(k))
-	updateSessionOperation := simulation.NewWeightedOperation(weightMsgUpdateRequest, SimulateMsgUpdateRequest(k))
-	endSesionOperation := simulation.NewWeightedOperation(weightMsgEndRequst, SimulateMsgMsgEndRequest(k))
+	params.GetOrGenerate(
+		cdc,
+		OperationWeightMsgStartRequest,
+		&weightMsgStartRequest,
+		nil,
+		func(_ *rand.Rand) {
+			weightMsgStartRequest = 100
+		},
+	)
+	params.GetOrGenerate(
+		cdc,
+		OperationWeightMsgUpdateRequest,
+		&weightMsgUpdateRequest,
+		nil,
+		func(_ *rand.Rand) {
+			weightMsgUpdateRequest = 100
+		},
+	)
+	params.GetOrGenerate(
+		cdc,
+		OperationWeightMsgEndRequest,
+		&weightMsgEndRequest,
+		nil,
+		func(_ *rand.Rand) {
+			weightMsgEndRequest = 100
+		},
+	)
 
 	return simulation.WeightedOperations{
-		startSessionOperation,
-		updateSessionOperation,
-		endSesionOperation,
+		simulation.NewWeightedOperation(
+			weightMsgStartRequest,
+			SimulateMsgStartRequest(ak, bk, k),
+		),
+		simulation.NewWeightedOperation(
+			weightMsgUpdateRequest,
+			SimulateMsgUpdateRequest(ak, bk, k),
+		),
+		simulation.NewWeightedOperation(
+			weightMsgEndRequest,
+			SimulateMsgEndRequest(ak, bk, k),
+		),
 	}
 }
 
-func SimulateMsgStartRequest(k keeper.Keeper) sdksimulation.Operation {
+func SimulateMsgStartRequest(ak expected.AccountKeeper, bk expected.BankKeeper, k keeper.Keeper) simulationtypes.Operation {
 	return func(
 		r *rand.Rand,
 		app *baseapp.BaseApp,
 		ctx sdk.Context,
-		accounts []sdksimulation.Account,
+		accounts []simulationtypes.Account,
 		chainID string,
-	) (sdksimulation.OperationMsg, []sdksimulation.FutureOperation, error) {
-
-		acc, _ := sdksimulation.RandomAcc(r, accounts)
-		from := k.GetAccount(ctx, acc.Address)
-		nodeAddress := hubtypes.NodeAddress(acc.Address.Bytes())
-
-		sessionID := uint64(r.Uint64())
-
-		_, found := k.GetSession(ctx, sessionID)
-		if found {
-			return sdksimulation.NoOpMsg(types.ModuleName, "start_session", "session is already started"), nil, nil
-		}
-
-		denom := "tsent"
-		amount := sdksimulation.RandomAmount(r, sdk.NewInt(60<<13))
-
-		price := sdk.Coins{
-			{Denom: denom, Amount: amount},
-		}
-
-		fees, err := sdksimulation.RandomFees(r, ctx, price)
-		if err != nil {
-			return sdksimulation.NoOpMsg(types.ModuleName, "start_session", err.Error()), nil, err
-		}
-
-		msg := types.NewMsgStartRequest(from.GetAddress(), sessionID, nodeAddress)
-		txConfig := params.MakeTestEncodingConfig().TxConfig
-
-		txn, err := helpers.GenTx(
-			txConfig,
-			[]sdk.Msg{msg},
-			fees,
-			helpers.DefaultGenTxGas,
-			chainID,
-			[]uint64{from.GetAccountNumber()},
-			[]uint64{from.GetSequence()},
+	) (simulationtypes.OperationMsg, []simulationtypes.FutureOperation, error) {
+		var (
+			rFrom, _    = simulationtypes.RandomAcc(r, accounts)
+			from        = ak.GetAccount(ctx, rFrom.Address)
+			rAddress, _ = simulationtypes.RandomAcc(r, accounts)
+			address     = ak.GetAccount(ctx, rAddress.Address)
 		)
-		if err != nil {
-			return sdksimulation.NoOpMsg(types.ModuleName, "start_session", err.Error()), nil, err
+
+		subscriptions := k.GetActiveSubscriptionsForAddress(ctx, from.GetAddress(), 0, 0)
+		if len(subscriptions) == 0 {
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgStartRequest, "active subscriptions for address does not exist"), nil, nil
 		}
 
-		_, _, err = app.Deliver(txConfig.TxEncoder(), txn)
-		if err != nil {
-			return sdksimulation.NoOpMsg(types.ModuleName, "start_session", err.Error()), nil, err
-		}
-
-		return sdksimulation.NewOperationMsg(msg, true, ""), nil, nil
-	}
-}
-
-func SimulateMsgMsgEndRequest(k keeper.Keeper) sdksimulation.Operation {
-	return func(
-		r *rand.Rand,
-		app *baseapp.BaseApp,
-		ctx sdk.Context,
-		accounts []sdksimulation.Account,
-		chainID string,
-	) (sdksimulation.OperationMsg, []sdksimulation.FutureOperation, error) {
-
-		acc, _ := sdksimulation.RandomAcc(r, accounts)
-		from := k.GetAccount(ctx, acc.Address)
-
-		session := getRandomSession(r, k.GetActiveSessionsForAddress(ctx, from.GetAddress(), 0, 0))
-
-		denom := "tsent"
-		amount := sdksimulation.RandomAmount(r, sdk.NewInt(60<<13))
-
-		price := sdk.Coins{
-			{Denom: denom, Amount: amount},
-		}
-
-		fees, err := sdksimulation.RandomFees(r, ctx, price)
-		if err != nil {
-			return sdksimulation.NoOpMsg(types.ModuleName, "end_session", err.Error()), nil, err
-		}
-
-		msg := types.NewMsgEndRequest(from.GetAddress(), session.Id, uint64(r.Intn(5)+1))
-		txConfig := params.MakeTestEncodingConfig().TxConfig
-
-		txn, err := helpers.GenTx(
-			txConfig,
-			[]sdk.Msg{msg},
-			fees,
-			helpers.DefaultGenTxGas,
-			chainID,
-			[]uint64{from.GetAccountNumber()},
-			[]uint64{from.GetSequence()},
+		var (
+			rSubscription = subscriptions[r.Intn(len(subscriptions))]
 		)
-		if err != nil {
-			return sdksimulation.NoOpMsg(types.ModuleName, "end_session", err.Error()), nil, err
-		}
 
-		_, _, err = app.Deliver(txConfig.TxEncoder(), txn)
-		if err != nil {
-			return sdksimulation.NoOpMsg(types.ModuleName, "end_session", err.Error()), nil, err
-		}
-
-		return sdksimulation.NewOperationMsg(msg, true, ""), nil, nil
-	}
-}
-
-func SimulateMsgUpdateRequest(k keeper.Keeper) sdksimulation.Operation {
-	return func(
-		r *rand.Rand,
-		app *baseapp.BaseApp,
-		ctx sdk.Context,
-		accounts []sdksimulation.Account,
-		chainID string,
-	) (sdksimulation.OperationMsg, []sdksimulation.FutureOperation, error) {
-
-		acc, _ := sdksimulation.RandomAcc(r, accounts)
-		from := k.GetAccount(ctx, acc.Address)
-		nodeAddress := hubtypes.NodeAddress(acc.Address.Bytes())
-
-		_, found := k.GetNode(ctx, nodeAddress)
+		node, found := k.GetNode(ctx, hubtypes.NodeAddress(address.GetAddress()))
 		if !found {
-			return sdksimulation.NoOpMsg(types.ModuleName, "update_session_request", "session not found"), nil, nil
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgStartRequest, "node does not exist"), nil, nil
+		}
+		if !node.Status.Equal(hubtypes.StatusActive) {
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgStartRequest, "node status is not active"), nil, nil
+		}
+		if rSubscription.Plan != 0 {
+			if k.HasNodeForPlan(ctx, rSubscription.Plan, hubtypes.NodeAddress(address.String())) {
+				return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgStartRequest, "node for plan does not exist"), nil, nil
+			}
 		}
 
-		denom := "tsent"
-		amount := sdksimulation.RandomAmount(r, sdk.NewInt(60<<13))
-
-		price := sdk.Coins{
-			{Denom: denom, Amount: amount},
+		balance := bk.SpendableCoins(ctx, from.GetAddress())
+		if !balance.IsAnyNegative() {
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgStartRequest, "balance is negative"), nil, nil
 		}
 
-		fees, err := sdksimulation.RandomFees(r, ctx, price)
+		fees, err := simulationtypes.RandomFees(r, ctx, balance)
 		if err != nil {
-			return sdksimulation.NoOpMsg(types.ModuleName, "update_session_request", err.Error()), nil, err
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgStartRequest, err.Error()), nil, err
 		}
 
-		proof := types.Proof{
-			Id:        r.Uint64(),
-			Duration:  time.Duration(r.Int63n(1800) + 600),
-			Bandwidth: hubtypes.NewBandwidth(hubtypes.Gigabyte, hubtypes.Gigabyte),
-		}
-
-		signature := make([]byte, 64)
-		if _, err := r.Read(signature); err != nil {
-			panic(err)
-		}
-
-		msg := types.NewMsgUpdateRequest(nodeAddress, proof, signature)
-		txConfig := params.MakeTestEncodingConfig().TxConfig
+		var (
+			txConfig = params.MakeTestEncodingConfig().TxConfig
+			message  = types.NewMsgStartRequest(
+				from.GetAddress(),
+				rSubscription.Id,
+				hubtypes.NodeAddress(address.GetAddress()),
+			)
+		)
 
 		txn, err := helpers.GenTx(
 			txConfig,
-			[]sdk.Msg{msg},
+			[]sdk.Msg{message},
 			fees,
 			helpers.DefaultGenTxGas,
 			chainID,
 			[]uint64{from.GetAccountNumber()},
 			[]uint64{from.GetSequence()},
+			rFrom.PrivKey,
 		)
 		if err != nil {
-			return sdksimulation.NoOpMsg(types.ModuleName, "update_session_request", err.Error()), nil, err
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgStartRequest, err.Error()), nil, err
 		}
 
 		_, _, err = app.Deliver(txConfig.TxEncoder(), txn)
 		if err != nil {
-			return sdksimulation.NoOpMsg(types.ModuleName, "update_session_request", err.Error()), nil, err
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgStartRequest, err.Error()), nil, err
 		}
 
-		return sdksimulation.NewOperationMsg(msg, true, ""), nil, nil
+		return simulationtypes.NewOperationMsg(message, true, ""), nil, nil
 	}
 }
 
-func getRandomSession(r *rand.Rand, sessions types.Sessions) types.Session {
-	if len(sessions) == 0 {
-		return types.Session{
-			Id: uint64(1),
-		}
-	}
+func SimulateMsgUpdateRequest(ak expected.AccountKeeper, bk expected.BankKeeper, k keeper.Keeper) simulationtypes.Operation {
+	return func(
+		r *rand.Rand,
+		app *baseapp.BaseApp,
+		ctx sdk.Context,
+		accounts []simulationtypes.Account,
+		chainID string,
+	) (simulationtypes.OperationMsg, []simulationtypes.FutureOperation, error) {
+		var (
+			rFrom, _ = simulationtypes.RandomAcc(r, accounts)
+			from     = ak.GetAccount(ctx, rFrom.Address)
+			rId      = uint64(r.Int63n(1 << 18))
+		)
 
-	return sessions[r.Intn(len(sessions))]
+		rSession, found := k.GetSession(ctx, rId)
+		if !found {
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgUpdateRequest, "session does not exist"), nil, nil
+		}
+		if rSession.Status.Equal(hubtypes.Inactive) {
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgUpdateRequest, "session status is inactive"), nil, nil
+		}
+		if rSession.Node == hubtypes.NodeAddress(from.GetAddress()).String() {
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgUpdateRequest, "session does not belong to node"), nil, nil
+		}
+
+		balance := bk.SpendableCoins(ctx, from.GetAddress())
+		if !balance.IsAnyNegative() {
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgUpdateRequest, "balance is negative"), nil, nil
+		}
+
+		fees, err := simulationtypes.RandomFees(r, ctx, balance)
+		if err != nil {
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgUpdateRequest, err.Error()), nil, err
+		}
+
+		var (
+			duration  = time.Duration(r.Int63n(MaxSessionDuration)) * time.Minute
+			bandwidth = hubtypes.Bandwidth{
+				Upload:   sdk.NewInt(r.Int63n(MaxSessionBandwidthUpload)),
+				Download: sdk.NewInt(r.Int63n(MaxSessionBandwidthDownload)),
+			}
+		)
+
+		var (
+			txConfig = params.MakeTestEncodingConfig().TxConfig
+			message  = types.NewMsgUpdateRequest(
+				hubtypes.NodeAddress(from.GetAddress()),
+				types.Proof{
+					Id:        rSession.Id,
+					Duration:  duration,
+					Bandwidth: bandwidth,
+				},
+				nil,
+			)
+		)
+
+		txn, err := helpers.GenTx(
+			txConfig,
+			[]sdk.Msg{message},
+			fees,
+			helpers.DefaultGenTxGas,
+			chainID,
+			[]uint64{from.GetAccountNumber()},
+			[]uint64{from.GetSequence()},
+			rFrom.PrivKey,
+		)
+		if err != nil {
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgUpdateRequest, err.Error()), nil, err
+		}
+
+		_, _, err = app.Deliver(txConfig.TxEncoder(), txn)
+		if err != nil {
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgUpdateRequest, err.Error()), nil, err
+		}
+
+		return simulationtypes.NewOperationMsg(message, true, ""), nil, nil
+	}
+}
+
+func SimulateMsgEndRequest(ak expected.AccountKeeper, bk expected.BankKeeper, k keeper.Keeper) simulationtypes.Operation {
+	return func(
+		r *rand.Rand,
+		app *baseapp.BaseApp,
+		ctx sdk.Context,
+		accounts []simulationtypes.Account,
+		chainID string,
+	) (simulationtypes.OperationMsg, []simulationtypes.FutureOperation, error) {
+		var (
+			rFrom, _ = simulationtypes.RandomAcc(r, accounts)
+			from     = ak.GetAccount(ctx, rFrom.Address)
+		)
+
+		sessions := k.GetActiveSessionsForAddress(ctx, from.GetAddress(), 0, 0)
+		if len(sessions) == 0 {
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgEndRequest, "sessions for address does not exist"), nil, nil
+		}
+
+		var (
+			rSession = sessions[r.Intn(len(sessions))]
+		)
+
+		balance := bk.SpendableCoins(ctx, from.GetAddress())
+		if !balance.IsAnyNegative() {
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgEndRequest, "balance is negative"), nil, nil
+		}
+
+		fees, err := simulationtypes.RandomFees(r, ctx, balance)
+		if err != nil {
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgEndRequest, err.Error()), nil, err
+		}
+
+		var (
+			txConfig = params.MakeTestEncodingConfig().TxConfig
+			message  = types.NewMsgEndRequest(
+				from.GetAddress(),
+				rSession.Id,
+				0,
+			)
+		)
+
+		txn, err := helpers.GenTx(
+			txConfig,
+			[]sdk.Msg{message},
+			fees,
+			helpers.DefaultGenTxGas,
+			chainID,
+			[]uint64{from.GetAccountNumber()},
+			[]uint64{from.GetSequence()},
+			rFrom.PrivKey,
+		)
+		if err != nil {
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgEndRequest, err.Error()), nil, err
+		}
+
+		_, _, err = app.Deliver(txConfig.TxEncoder(), txn)
+		if err != nil {
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgEndRequest, err.Error()), nil, err
+		}
+
+		return simulationtypes.NewOperationMsg(message, true, ""), nil, nil
+	}
 }

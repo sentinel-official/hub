@@ -1,38 +1,31 @@
 package simulation
 
 import (
-	"fmt"
 	"math/rand"
 	"time"
 
 	"github.com/cosmos/cosmos-sdk/types/module"
+
 	"github.com/sentinel-official/hub/x/session/types"
 )
 
-func RandomizedGenState(simState *module.SimulationState) *types.GenesisState {
-
+func RandomizedGenesisState(state *module.SimulationState) *types.GenesisState {
 	var (
-		inactiveDuration          time.Duration
-		proofVerificationEnabled bool
+		inactiveDuration time.Duration
 	)
 
-	inactiveDurationSim := func(r *rand.Rand) {
-		inactiveDuration = getRandomInactiveDuration(r)
-	}
+	state.AppParams.GetOrGenerate(
+		state.Cdc,
+		string(types.KeyInactiveDuration),
+		&inactiveDuration,
+		state.Rand,
+		func(r *rand.Rand) {
+			inactiveDuration = time.Duration(r.Int63n(MaxInactiveDuration)) * time.Millisecond
+		},
+	)
 
-	proofVerificationEnabledSim := func(r *rand.Rand) {
-		proofVerificationEnabled = getRandomProofVerificationEnabled(r)
-	}
-
-	simState.AppParams.GetOrGenerate(simState.Cdc, string(types.KeyInactiveDuration), inactiveDuration, nil, inactiveDurationSim)
-	simState.AppParams.GetOrGenerate(simState.Cdc, string(types.KeyProofVerificationEnabled), proofVerificationEnabled, nil, proofVerificationEnabledSim)
-
-	params := types.NewParams(inactiveDuration, proofVerificationEnabled)
-	sessions := getRandomSessions(simState.Rand)
-
-	state := types.NewGenesisState(sessions, params)
-	bz := simState.Cdc.MustMarshalJSON(&state.Params)
-
-	fmt.Printf("selected randomly generated sessions parameters: %s\n", bz)
-	return state
+	return types.NewGenesisState(
+		nil,
+		types.NewParams(inactiveDuration, false),
+	)
 }

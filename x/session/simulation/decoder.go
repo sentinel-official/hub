@@ -6,58 +6,58 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/types/kv"
-	protobuf "github.com/gogo/protobuf/types"
+	protobuftypes "github.com/gogo/protobuf/types"
+
 	"github.com/sentinel-official/hub/x/session/types"
 )
 
-func NewDecoderStore(cdc codec.Marshaler) func(kvA, kvB kv.Pair) string {
-	decoderFn := func(kvA, kvB kv.Pair) string {
+func NewStoreDecoder(cdc codec.Marshaler) func(kvA, kvB kv.Pair) string {
+	return func(kvA, kvB kv.Pair) string {
 		switch {
 		case bytes.Equal(kvA.Key[:1], types.CountKey):
-			var countA, countB protobuf.UInt64Value
+			var countA, countB protobuftypes.UInt64Value
 			cdc.MustUnmarshalBinaryBare(kvA.Value, &countA)
 			cdc.MustUnmarshalBinaryBare(kvB.Value, &countB)
-			return fmt.Sprintf("%s\n%s", &countA, &countB)
 
+			return fmt.Sprintf("%v\n%v", &countA, &countB)
 		case bytes.Equal(kvA.Key[:1], types.SessionKeyPrefix):
 			var sessionA, sessionB types.Session
 			cdc.MustUnmarshalBinaryBare(kvA.Value, &sessionA)
 			cdc.MustUnmarshalBinaryBare(kvB.Value, &sessionB)
-			return fmt.Sprintf("%s\n%s", &sessionA, &sessionB)
 
+			return fmt.Sprintf("%v\n%v", &sessionA, &sessionB)
 		case bytes.Equal(kvA.Key[:1], types.SessionForSubscriptionKeyPrefix):
-			var valueA, valueB protobuf.BoolValue
-			cdc.MustUnmarshalBinaryBare(kvA.Value, &valueA)
-			cdc.MustUnmarshalBinaryBare(kvB.Value, &valueB)
-			return fmt.Sprintf("%s\n%s", &valueA, &valueB)
+			var sessionForSubscriptionA, sessionForSubscriptionB protobuftypes.BoolValue
+			cdc.MustUnmarshalBinaryBare(kvA.Value, &sessionForSubscriptionA)
+			cdc.MustUnmarshalBinaryBare(kvB.Value, &sessionForSubscriptionB)
 
+			return fmt.Sprintf("%v\n%v", &sessionForSubscriptionA, &sessionForSubscriptionB)
 		case bytes.Equal(kvA.Key[:1], types.SessionForNodeKeyPrefix):
-			var sessionForNodeA, sessionForNodeB protobuf.BoolValue
+			var sessionForNodeA, sessionForNodeB protobuftypes.BoolValue
 			cdc.MustUnmarshalBinaryBare(kvA.Value, &sessionForNodeA)
 			cdc.MustUnmarshalBinaryBare(kvB.Value, &sessionForNodeB)
-			return fmt.Sprintf("%s\n%s", &sessionForNodeA, &sessionForNodeB)
 
+			return fmt.Sprintf("%v\n%v", &sessionForNodeA, &sessionForNodeB)
 		case bytes.Equal(kvA.Key[:1], types.InactiveSessionForAddressKeyPrefix):
-			var inactiveSessionA, inactiveSessionB protobuf.BoolValue
-			cdc.MustUnmarshalBinaryBare(kvA.Value, &inactiveSessionA)
-			cdc.MustUnmarshalBinaryBare(kvB.Value, &inactiveSessionB)
-			return fmt.Sprintf("%s\n%s", &inactiveSessionA, &inactiveSessionB)
+			var inactiveSessionForAddressA, inactiveSessionForAddressB protobuftypes.BoolValue
+			cdc.MustUnmarshalBinaryBare(kvA.Value, &inactiveSessionForAddressA)
+			cdc.MustUnmarshalBinaryBare(kvB.Value, &inactiveSessionForAddressB)
 
+			return fmt.Sprintf("%v\n%v", &inactiveSessionForAddressA, &inactiveSessionForAddressB)
 		case bytes.Equal(kvA.Key[:1], types.ActiveSessionForAddressKeyPrefix):
-			var activeSessionA, activeSessionB protobuf.BoolValue
-			cdc.MustUnmarshalBinaryBare(kvA.Value, &activeSessionA)
-			cdc.MustUnmarshalBinaryBare(kvB.Value, &activeSessionB)
-			return fmt.Sprintf("%s\n%s", &activeSessionA, &activeSessionB)
+			var activeSessionForAddressA, activeSessionForAddressB protobuftypes.BoolValue
+			cdc.MustUnmarshalBinaryBare(kvA.Value, &activeSessionForAddressA)
+			cdc.MustUnmarshalBinaryBare(kvB.Value, &activeSessionForAddressB)
 
+			return fmt.Sprintf("%v\n%v", &activeSessionForAddressA, &activeSessionForAddressB)
 		case bytes.Equal(kvA.Key[:1], types.InactiveSessionAtKeyPrefix):
-			var activeSessionA, activeSessionB protobuf.BoolValue
-			cdc.MustUnmarshalBinaryBare(kvA.Value, &activeSessionA)
-			cdc.MustUnmarshalBinaryBare(kvB.Value, &activeSessionB)
-			return fmt.Sprintf("%s\n%s", &activeSessionA, &activeSessionB)
+			var inactiveSessionAtA, inactiveSessionAtB protobuftypes.BoolValue
+			cdc.MustUnmarshalBinaryBare(kvA.Value, &inactiveSessionAtA)
+			cdc.MustUnmarshalBinaryBare(kvB.Value, &inactiveSessionAtB)
+
+			return fmt.Sprintf("%v\n%v", &inactiveSessionAtA, &inactiveSessionAtB)
 		}
 
-		panic(fmt.Sprintf("invalid session key prefix: %X", kvA.Key[:1]))
+		panic(fmt.Sprintf("invalid key prefix %X", kvA.Key[:1]))
 	}
-
-	return decoderFn
 }
