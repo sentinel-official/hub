@@ -3,20 +3,20 @@ package simulation
 import (
 	"math/rand"
 
-	"github.com/cosmos/cosmos-sdk/types/simulation"
-	nodesim "github.com/sentinel-official/hub/x/node/simulation"
-	providersim "github.com/sentinel-official/hub/x/provider/simulation"
-	sessionsim "github.com/sentinel-official/hub/x/session/simulation"
-	subscriptionsim "github.com/sentinel-official/hub/x/subscription/simulation"
+	simulationtypes "github.com/cosmos/cosmos-sdk/types/simulation"
+
+	nodesimulation "github.com/sentinel-official/hub/x/node/simulation"
+	providersimulation "github.com/sentinel-official/hub/x/provider/simulation"
+	sessionsimulation "github.com/sentinel-official/hub/x/session/simulation"
+	subscriptionsimulation "github.com/sentinel-official/hub/x/subscription/simulation"
 )
 
-func RandomizedParams(r *rand.Rand) []simulation.ParamChange {
-	var params []simulation.ParamChange
-
-	params = append(params, nodesim.ParamChanges(r)...)
-	params = append(params, subscriptionsim.ParamChanges(r)...)
-	params = append(params, sessionsim.ParamChanges(r)...)
-	params = append(params, providersim.ParamChanges(r)...)
+func RandomizedParams(r *rand.Rand) []simulationtypes.ParamChange {
+	var params []simulationtypes.ParamChange
+	params = append(params, providersimulation.ParamChanges(r)...)
+	params = append(params, nodesimulation.ParamChanges(r)...)
+	params = append(params, subscriptionsimulation.ParamChanges(r)...)
+	params = append(params, sessionsimulation.ParamChanges(r)...)
 
 	return params
 }

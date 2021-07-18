@@ -90,15 +90,17 @@ func (a AppModuleBasic) GetQueryCmd() *cobra.Command {
 type AppModule struct {
 	AppModuleBasic
 	cdc codec.Marshaler
-	ak expected.AccountKeeper
-	k  keeper.Keeper
+	ak  expected.AccountKeeper
+	bk  expected.BankKeeper
+	k   keeper.Keeper
 }
 
-func NewAppModule(cdc codec.Marshaler, ak expected.AccountKeeper, k keeper.Keeper) AppModule {
+func NewAppModule(cdc codec.Marshaler, ak expected.AccountKeeper, bk expected.BankKeeper, k keeper.Keeper) AppModule {
 	return AppModule{
-		cdc:            cdc,
-		ak:             ak,
-		k:              k,
+		cdc: cdc,
+		ak:  ak,
+		bk:  bk,
+		k:   k,
 	}
 }
 
@@ -147,10 +149,8 @@ func (a AppModule) EndBlock(ctx sdk.Context, _ abcitypes.RequestEndBlock) []abci
 	return EndBlock(ctx, a.k)
 }
 
-// App Simulation Methods
-
-func (a AppModule) GenerateGenesisState(simState *module.SimulationState) {
-	simulation.RandomizedGenesisState(simState)
+func (a AppModule) GenerateGenesisState(state *module.SimulationState) {
+	simulation.RandomizedGenesisState(state)
 }
 
 func (a AppModule) ProposalContents(_ module.SimulationState) []sdksimulation.WeightedProposalContent {
@@ -163,6 +163,6 @@ func (a AppModule) RandomizedParams(r *rand.Rand) []sdksimulation.ParamChange {
 
 func (a AppModule) RegisterStoreDecoder(_ sdk.StoreDecoderRegistry) {}
 
-func (a AppModule) WeightedOperations(simState module.SimulationState) []sdksimulation.WeightedOperation {
-	return simulation.WeightedOperations(simState.AppParams, a.cdc, a.k)
+func (a AppModule) WeightedOperations(state module.SimulationState) []sdksimulation.WeightedOperation {
+	return simulation.WeightedOperations(state.AppParams, a.cdc, a.ak, a.bk, a.k)
 }
