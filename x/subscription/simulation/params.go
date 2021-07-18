@@ -3,16 +3,29 @@ package simulation
 import (
 	"fmt"
 	"math/rand"
+	"time"
 
-	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
-	sdksimulation "github.com/cosmos/cosmos-sdk/x/simulation"
+	simulationtypes "github.com/cosmos/cosmos-sdk/types/simulation"
+	"github.com/cosmos/cosmos-sdk/x/simulation"
+
 	"github.com/sentinel-official/hub/x/subscription/types"
 )
 
-func ParamChanges(r *rand.Rand) []simtypes.ParamChange {
-	return []simtypes.ParamChange{
-		sdksimulation.NewSimParamChange(types.ModuleName, string(types.KeyInactiveDuration), func(r *rand.Rand) string {
-			return fmt.Sprintf("%d", getRandomDuration(r))
-		}),
+const (
+	MaxInactiveDuration = 1 << 18
+)
+
+func ParamChanges(_ *rand.Rand) []simulationtypes.ParamChange {
+	return []simulationtypes.ParamChange{
+		simulation.NewSimParamChange(
+			types.ModuleName,
+			string(types.KeyInactiveDuration),
+			func(r *rand.Rand) string {
+				return fmt.Sprintf(
+					"%s",
+					time.Duration(r.Int63n(MaxInactiveDuration))*time.Millisecond,
+				)
+			},
+		),
 	}
 }

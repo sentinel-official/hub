@@ -1,6 +1,7 @@
 package simulation
 
 import (
+	"math"
 	"math/rand"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
@@ -8,356 +9,471 @@ import (
 	"github.com/cosmos/cosmos-sdk/simapp/helpers"
 	"github.com/cosmos/cosmos-sdk/simapp/params"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdksimulation "github.com/cosmos/cosmos-sdk/types/simulation"
+	simulationtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
+
 	hubtypes "github.com/sentinel-official/hub/types"
+	simulationhubtypes "github.com/sentinel-official/hub/types/simulation"
+	"github.com/sentinel-official/hub/x/subscription/expected"
 	"github.com/sentinel-official/hub/x/subscription/keeper"
 	"github.com/sentinel-official/hub/x/subscription/types"
 )
 
-const (
-	OpWeightMsgSubscribeToNodeRequest = "op_weight_msg_subscribe_to_node"
-	OpWeightMsgSubscribeToPlanRequest = "op_weight_msg_subscribe_to_plan"
-	OpWeightMsgAddQuotaRequest        = "op_weight_msg_add_quota_request"
-	OpWeightMsgUpdateQuotaRequest     = "op_weight_msg_update_quota_request"
-	OpWeightMsgCancelRequest          = "op_weight_msg_cancel_request"
+var (
+	OperationWeightMsgSubscribeToNodeRequest = "op_weight_" + types.TypeMsgSubscribeToNodeRequest
+	OperationWeightMsgSubscribeToPlanRequest = "op_weight_" + types.TypeMsgSubscribeToPlanRequest
+	OperationWeightMsgCancelRequest          = "op_weight_" + types.TypeMsgCancelRequest
+	OperationWeightMsgAddQuotaRequest        = "op_weight_" + types.TypeMsgAddQuotaRequest
+	OperationWeightMsgUpdateQuotaRequest     = "op_weight_" + types.TypeMsgUpdateQuotaRequest
 )
 
-func WeightedOperations(ap sdksimulation.AppParams, cdc codec.JSONMarshaler, k keeper.Keeper) simulation.WeightedOperations {
+func WeightedOperations(
+	params simulationtypes.AppParams,
+	cdc codec.JSONMarshaler,
+	ak expected.AccountKeeper,
+	bk expected.BankKeeper,
+	k keeper.Keeper,
+) simulation.WeightedOperations {
 	var (
-		weightMsgSubscribeToNode int
-		weightMsgSubscribeToPlan int
-		weightMsgAddQuota        int
-		weightMsgUpdateQuota     int
-		weightMsgCancel          int
+		weightMsgSubscribeToNodeRequest int
+		weightMsgSubscribeToPlanRequest int
+		weightMsgCancelRequest          int
+		weightMsgAddQuotaRequest        int
+		weightMsgUpdateQuotaRequest     int
 	)
 
-	randMsgSubscribeToNode := func(_ *rand.Rand) {
-		weightMsgSubscribeToNode = 100
-	}
-
-	randMsgSubscribeToPlan := func(_ *rand.Rand) {
-		weightMsgSubscribeToPlan = 100
-	}
-
-	randMsgAddQuota := func(_ *rand.Rand) {
-		weightMsgAddQuota = 100
-	}
-
-	randMsgUpdateQuota := func(_ *rand.Rand) {
-		weightMsgUpdateQuota = 100
-	}
-
-	randMsgCancel := func(_ *rand.Rand) {
-		weightMsgCancel = 100
-	}
-
-	ap.GetOrGenerate(cdc, OpWeightMsgSubscribeToNodeRequest, &weightMsgSubscribeToNode, nil, randMsgSubscribeToNode)
-	ap.GetOrGenerate(cdc, OpWeightMsgSubscribeToPlanRequest, &weightMsgSubscribeToPlan, nil, randMsgSubscribeToPlan)
-	ap.GetOrGenerate(cdc, OpWeightMsgAddQuotaRequest, &weightMsgAddQuota, nil, randMsgAddQuota)
-	ap.GetOrGenerate(cdc, OpWeightMsgUpdateQuotaRequest, &weightMsgUpdateQuota, nil, randMsgUpdateQuota)
-	ap.GetOrGenerate(cdc, OpWeightMsgCancelRequest, &weightMsgCancel, nil, randMsgCancel)
-
-	subscribeToNodeOperation := simulation.NewWeightedOperation(weightMsgSubscribeToNode, SimulateMsgSubscribeToNodeRequest(k))
-	subscribeToPlanOperation := simulation.NewWeightedOperation(weightMsgSubscribeToPlan, SimulateMsgSubscribeToPlanRequest(k))
-	addQuotaOperation := simulation.NewWeightedOperation(weightMsgAddQuota, SimulateMsgAddQuotaRequest(k))
-	updaateQuotaOperation := simulation.NewWeightedOperation(weightMsgUpdateQuota, SimulateMsgUpdateQuotaRequest(k))
-	cancelOperation := simulation.NewWeightedOperation(weightMsgCancel, SimulateMsgCancelRequest(k))
+	params.GetOrGenerate(
+		cdc,
+		OperationWeightMsgSubscribeToNodeRequest,
+		&weightMsgSubscribeToNodeRequest,
+		nil,
+		func(_ *rand.Rand) {
+			weightMsgSubscribeToNodeRequest = 100
+		},
+	)
+	params.GetOrGenerate(
+		cdc,
+		OperationWeightMsgSubscribeToPlanRequest,
+		&weightMsgSubscribeToPlanRequest,
+		nil,
+		func(_ *rand.Rand) {
+			weightMsgSubscribeToPlanRequest = 100
+		},
+	)
+	params.GetOrGenerate(
+		cdc,
+		OperationWeightMsgCancelRequest,
+		&weightMsgCancelRequest,
+		nil,
+		func(_ *rand.Rand) {
+			weightMsgCancelRequest = 100
+		},
+	)
+	params.GetOrGenerate(
+		cdc,
+		OperationWeightMsgAddQuotaRequest,
+		&weightMsgAddQuotaRequest,
+		nil,
+		func(_ *rand.Rand) {
+			weightMsgAddQuotaRequest = 100
+		},
+	)
+	params.GetOrGenerate(
+		cdc,
+		OperationWeightMsgUpdateQuotaRequest,
+		&weightMsgUpdateQuotaRequest,
+		nil,
+		func(_ *rand.Rand) {
+			weightMsgUpdateQuotaRequest = 100
+		},
+	)
 
 	return simulation.WeightedOperations{
-		subscribeToNodeOperation,
-		subscribeToPlanOperation,
-		addQuotaOperation,
-		updaateQuotaOperation,
-		cancelOperation,
+		simulation.NewWeightedOperation(
+			weightMsgSubscribeToNodeRequest,
+			SimulateMsgSubscribeToNodeRequest(ak, bk, k),
+		),
+		simulation.NewWeightedOperation(
+			weightMsgSubscribeToPlanRequest,
+			SimulateMsgSubscribeToPlanRequest(ak, bk, k),
+		),
+		simulation.NewWeightedOperation(
+			weightMsgCancelRequest,
+			SimulateMsgCancelRequest(ak, bk, k),
+		),
+		simulation.NewWeightedOperation(
+			weightMsgAddQuotaRequest,
+			SimulateMsgAddQuotaRequest(ak, bk, k),
+		),
+		simulation.NewWeightedOperation(
+			weightMsgUpdateQuotaRequest,
+			SimulateMsgUpdateQuotaRequest(ak, bk, k),
+		),
 	}
 }
 
-func SimulateMsgSubscribeToNodeRequest(k keeper.Keeper) sdksimulation.Operation {
+func SimulateMsgSubscribeToNodeRequest(ak expected.AccountKeeper, bk expected.BankKeeper, k keeper.Keeper) simulationtypes.Operation {
 	return func(
 		r *rand.Rand,
 		app *baseapp.BaseApp,
 		ctx sdk.Context,
-		accounts []sdksimulation.Account,
+		accounts []simulationtypes.Account,
 		chainID string,
-	) (sdksimulation.OperationMsg, []sdksimulation.FutureOperation, error) {
+	) (simulationtypes.OperationMsg, []simulationtypes.FutureOperation, error) {
+		var (
+			rFrom, _    = simulationtypes.RandomAcc(r, accounts)
+			from        = ak.GetAccount(ctx, rFrom.Address)
+			rAddress, _ = simulationtypes.RandomAcc(r, accounts)
+			address     = ak.GetAccount(ctx, rAddress.Address)
+		)
 
-		acc, _ := sdksimulation.RandomAcc(r, accounts)
-		from := k.GetAccount(ctx, acc.Address)
-		nodeAddress := hubtypes.NodeAddress(from.GetAddress().Bytes())
+		node, found := k.GetNode(ctx, hubtypes.NodeAddress(address.GetAddress()))
+		if !found {
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgSubscribeToNodeRequest, "node does not exist"), nil, nil
+		}
+		if node.Provider != "" {
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgSubscribeToNodeRequest, "provider of the node is not empty"), nil, nil
+		}
+		if !node.Status.Equal(hubtypes.StatusActive) {
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgSubscribeToNodeRequest, "node status is not active"), nil, nil
+		}
+
+		var (
+			deposit = simulationhubtypes.RandomCoin(
+				r,
+				sdk.NewInt64Coin(
+					sdk.DefaultBondDenom,
+					MaxSubscriptionDepositAmount,
+				),
+			)
+		)
+
+		_, found = node.PriceForDenom(deposit.Denom)
+		if !found {
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgSubscribeToNodeRequest, "price for denom does not exist"), nil, nil
+		}
+
+		balance := bk.SpendableCoins(ctx, from.GetAddress())
+		if !balance.IsAnyNegative() {
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgSubscribeToNodeRequest, "balance is negative"), nil, nil
+		}
+
+		fees, err := simulationtypes.RandomFees(r, ctx, balance)
+		if err != nil {
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgSubscribeToNodeRequest, err.Error()), nil, err
+		}
+
+		var (
+			txConfig = params.MakeTestEncodingConfig().TxConfig
+			message  = types.NewMsgSubscribeToNodeRequest(
+				from.GetAddress(),
+				hubtypes.NodeAddress(address.GetAddress()),
+				deposit,
+			)
+		)
+
+		txn, err := helpers.GenTx(
+			txConfig,
+			[]sdk.Msg{message},
+			fees,
+			helpers.DefaultGenTxGas,
+			chainID,
+			[]uint64{from.GetAccountNumber()},
+			[]uint64{from.GetSequence()},
+			rFrom.PrivKey,
+		)
+		if err != nil {
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgSubscribeToNodeRequest, err.Error()), nil, err
+		}
+
+		_, _, err = app.Deliver(txConfig.TxEncoder(), txn)
+		if err != nil {
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgSubscribeToNodeRequest, err.Error()), nil, err
+		}
+
+		return simulationtypes.NewOperationMsg(message, true, ""), nil, nil
+	}
+}
+
+func SimulateMsgSubscribeToPlanRequest(ak expected.AccountKeeper, bk expected.BankKeeper, k keeper.Keeper) simulationtypes.Operation {
+	return func(
+		r *rand.Rand,
+		app *baseapp.BaseApp,
+		ctx sdk.Context,
+		accounts []simulationtypes.Account,
+		chainID string,
+	) (simulationtypes.OperationMsg, []simulationtypes.FutureOperation, error) {
+		var (
+			rFrom, _ = simulationtypes.RandomAcc(r, accounts)
+			from     = ak.GetAccount(ctx, rFrom.Address)
+			rId      = uint64(r.Int63n(1 << 18))
+		)
+
+		plan, found := k.GetPlan(ctx, rId)
+		if !found {
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgSubscribeToPlanRequest, "plan does not exist"), nil, nil
+		}
+		if !plan.Status.Equal(hubtypes.Active) {
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgSubscribeToPlanRequest, "plan status is not active"), nil, nil
+		}
+
+		balance := bk.SpendableCoins(ctx, from.GetAddress())
+		if !balance.IsAnyNegative() {
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgSubscribeToPlanRequest, "balance is negative"), nil, nil
+		}
+
+		fees, err := simulationtypes.RandomFees(r, ctx, balance)
+		if err != nil {
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgSubscribeToPlanRequest, err.Error()), nil, err
+		}
+
+		var (
+			txConfig = params.MakeTestEncodingConfig().TxConfig
+			message  = types.NewMsgSubscribeToPlanRequest(
+				from.GetAddress(),
+				rId,
+				sdk.DefaultBondDenom,
+			)
+		)
+
+		txn, err := helpers.GenTx(
+			txConfig,
+			[]sdk.Msg{message},
+			fees,
+			helpers.DefaultGenTxGas,
+			chainID,
+			[]uint64{from.GetAccountNumber()},
+			[]uint64{from.GetSequence()},
+			rFrom.PrivKey,
+		)
+		if err != nil {
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgSubscribeToPlanRequest, err.Error()), nil, err
+		}
+
+		_, _, err = app.Deliver(txConfig.TxEncoder(), txn)
+		if err != nil {
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgSubscribeToPlanRequest, err.Error()), nil, err
+		}
+
+		return simulationtypes.NewOperationMsg(message, true, ""), nil, nil
+	}
+}
+
+func SimulateMsgCancelRequest(ak expected.AccountKeeper, bk expected.BankKeeper, k keeper.Keeper) simulationtypes.Operation {
+	return func(
+		r *rand.Rand,
+		app *baseapp.BaseApp,
+		ctx sdk.Context,
+		accounts []simulationtypes.Account,
+		chainID string,
+	) (simulationtypes.OperationMsg, []simulationtypes.FutureOperation, error) {
+		var (
+			rFrom, _ = simulationtypes.RandomAcc(r, accounts)
+			from     = ak.GetAccount(ctx, rFrom.Address)
+		)
 
 		subscriptions := k.GetActiveSubscriptionsForAddress(ctx, from.GetAddress(), 0, 0)
-		subscription := getRandomSubscription(r, subscriptions, "node")
-
-		_, found := k.GetSubscription(ctx, subscription.Id)
-		if found {
-			return sdksimulation.NoOpMsg(types.ModuleName, "subscribe_to_node_request", "already subscribed to node"), nil, nil
+		if len(subscriptions) == 0 {
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgCancelRequest, "active subscriptions for address does not exist"), nil, nil
 		}
 
-		denom := "tsent"
-		amount := sdksimulation.RandomAmount(r, sdk.NewInt(60<<13))
+		var (
+			rSubscription = subscriptions[r.Intn(len(subscriptions))]
+		)
 
-		deposit := sdk.Coins{
-			{Denom: denom, Amount: amount},
+		balance := bk.SpendableCoins(ctx, from.GetAddress())
+		if !balance.IsAnyNegative() {
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgCancelRequest, "balance is negative"), nil, nil
 		}
 
-		fees, err := sdksimulation.RandomFees(r, ctx, deposit)
+		fees, err := simulationtypes.RandomFees(r, ctx, balance)
 		if err != nil {
-			return sdksimulation.NoOpMsg(types.ModuleName, "subscribe_to_node_request", err.Error()), nil, err
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgCancelRequest, err.Error()), nil, err
 		}
 
-		msg := types.NewMsgSubscribeToNodeRequest(from.GetAddress(), nodeAddress, deposit[0])
-		txConfig := params.MakeTestEncodingConfig().TxConfig
+		var (
+			txConfig = params.MakeTestEncodingConfig().TxConfig
+			message  = types.NewMsgCancelRequest(
+				from.GetAddress(),
+				rSubscription.Id,
+			)
+		)
 
 		txn, err := helpers.GenTx(
 			txConfig,
-			[]sdk.Msg{msg},
+			[]sdk.Msg{message},
 			fees,
 			helpers.DefaultGenTxGas,
 			chainID,
 			[]uint64{from.GetAccountNumber()},
 			[]uint64{from.GetSequence()},
+			rFrom.PrivKey,
 		)
 		if err != nil {
-			return sdksimulation.NoOpMsg(types.ModuleName, "subscribe_to_node_request", err.Error()), nil, err
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgCancelRequest, err.Error()), nil, err
 		}
 
 		_, _, err = app.Deliver(txConfig.TxEncoder(), txn)
 		if err != nil {
-			return sdksimulation.NoOpMsg(types.ModuleName, "subscribe_to_node_request", err.Error()), nil, err
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgCancelRequest, err.Error()), nil, err
 		}
 
-		return sdksimulation.NewOperationMsg(msg, true, ""), nil, nil
+		return simulationtypes.NewOperationMsg(message, true, ""), nil, nil
 	}
 }
 
-func SimulateMsgSubscribeToPlanRequest(k keeper.Keeper) sdksimulation.Operation {
+func SimulateMsgAddQuotaRequest(ak expected.AccountKeeper, bk expected.BankKeeper, k keeper.Keeper) simulationtypes.Operation {
 	return func(
 		r *rand.Rand,
 		app *baseapp.BaseApp,
 		ctx sdk.Context,
-		accounts []sdksimulation.Account,
+		accounts []simulationtypes.Account,
 		chainID string,
-	) (sdksimulation.OperationMsg, []sdksimulation.FutureOperation, error) {
-
-		acc, _ := sdksimulation.RandomAcc(r, accounts)
-		from := k.GetAccount(ctx, acc.Address)
+	) (simulationtypes.OperationMsg, []simulationtypes.FutureOperation, error) {
+		var (
+			rFrom, _    = simulationtypes.RandomAcc(r, accounts)
+			from        = ak.GetAccount(ctx, rFrom.Address)
+			rAddress, _ = simulationtypes.RandomAcc(r, accounts)
+			address     = ak.GetAccount(ctx, rAddress.Address)
+		)
 
 		subscriptions := k.GetActiveSubscriptionsForAddress(ctx, from.GetAddress(), 0, 0)
-		plan := getRandomSubscription(r, subscriptions, "plan")
-
-		_, found := k.GetPlan(ctx, plan.Id)
-		if !found {
-			return sdksimulation.NoOpMsg(types.ModuleName, "subscribe_to_plan_request", "node is not registered"), nil, nil
+		if len(subscriptions) == 0 {
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgAddQuotaRequest, "active subscriptions for address does not exist"), nil, nil
 		}
 
-		denom := "tsent"
-		amount := sdksimulation.RandomAmount(r, sdk.NewInt(60<<13))
-
-		price := sdk.Coins{
-			{Denom: denom, Amount: amount},
+		rSubscription := subscriptions[r.Intn(len(subscriptions))]
+		if rSubscription.Plan == 0 {
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgAddQuotaRequest, "plan of the subscription is zero"), nil, nil
 		}
 
-		fees, err := sdksimulation.RandomFees(r, ctx, price)
-		if err != nil {
-			return sdksimulation.NoOpMsg(types.ModuleName, "subscribe_to_plan_request", err.Error()), nil, err
-		}
-
-		msg := types.NewMsgSubscribeToPlanRequest(from.GetAddress(), plan.Plan, denom)
-		txConfig := params.MakeTestEncodingConfig().TxConfig
-
-		txn, err := helpers.GenTx(
-			txConfig,
-			[]sdk.Msg{msg},
-			fees,
-			helpers.DefaultGenTxGas,
-			chainID,
-			[]uint64{from.GetAccountNumber()},
-			[]uint64{from.GetSequence()},
-		)
-		if err != nil {
-			return sdksimulation.NoOpMsg(types.ModuleName, "subscribe_to_plan_request", err.Error()), nil, err
-		}
-
-		_, _, err = app.Deliver(txConfig.TxEncoder(), txn)
-		if err != nil {
-			return sdksimulation.NoOpMsg(types.ModuleName, "subscribe_to_plan_request", err.Error()), nil, err
-		}
-
-		return sdksimulation.NewOperationMsg(msg, true, ""), nil, nil
-	}
-}
-
-func SimulateMsgAddQuotaRequest(k keeper.Keeper) sdksimulation.Operation {
-	return func(
-		r *rand.Rand,
-		app *baseapp.BaseApp,
-		ctx sdk.Context,
-		accounts []sdksimulation.Account,
-		chainID string,
-	) (sdksimulation.OperationMsg, []sdksimulation.FutureOperation, error) {
-
-		acc1, _ := sdksimulation.RandomAcc(r, accounts)
-		acc2, _ := sdksimulation.RandomAcc(r, accounts)
-		from := k.GetAccount(ctx, acc1.Address)
-		address := k.GetAccount(ctx, acc2.Address)
-
-		denom := "tsent"
-		amount := sdksimulation.RandomAmount(r, sdk.NewInt(1000))
-
-		price := sdk.Coins{
-			{Denom: denom, Amount: amount},
-		}
-
-		fees, err := sdksimulation.RandomFees(r, ctx, price)
-		if err != nil {
-			return sdksimulation.NoOpMsg(types.ModuleName, "add_quota_request", err.Error()), nil, err
-		}
-
-		plan := getRandomSubscription(r, k.GetSubscriptions(ctx, 0, 0), "node")
-
-		_, found := k.GetQuota(ctx, plan.Id, address.GetAddress())
+		found := k.HasQuota(ctx, rSubscription.Id, address.GetAddress())
 		if found {
-			return sdksimulation.NoOpMsg(types.ModuleName, "add_quota_request", "quota already exists"), nil, nil
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgAddQuotaRequest, "quota already exists"), nil, nil
 		}
 
-		msg := types.NewMsgAddQuotaRequest(from.GetAddress(), plan.Id, address.GetAddress(), getRandomBytes(r))
-		txConfig := params.MakeTestEncodingConfig().TxConfig
+		bytes := sdk.NewInt(r.Int63n(math.MaxInt32))
+		if bytes.GT(rSubscription.Free) {
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgAddQuotaRequest, "no enough quota"), nil, nil
+		}
+
+		balance := bk.SpendableCoins(ctx, from.GetAddress())
+		if !balance.IsAnyNegative() {
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgAddQuotaRequest, "balance is negative"), nil, nil
+		}
+
+		fees, err := simulationtypes.RandomFees(r, ctx, balance)
+		if err != nil {
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgAddQuotaRequest, err.Error()), nil, err
+		}
+
+		var (
+			txConfig = params.MakeTestEncodingConfig().TxConfig
+			message  = types.NewMsgAddQuotaRequest(
+				from.GetAddress(),
+				rSubscription.Id,
+				address.GetAddress(),
+				bytes,
+			)
+		)
 
 		txn, err := helpers.GenTx(
 			txConfig,
-			[]sdk.Msg{msg},
+			[]sdk.Msg{message},
 			fees,
 			helpers.DefaultGenTxGas,
 			chainID,
 			[]uint64{from.GetAccountNumber()},
 			[]uint64{from.GetSequence()},
+			rFrom.PrivKey,
 		)
 		if err != nil {
-			return sdksimulation.NoOpMsg(types.ModuleName, "add_quota_request", err.Error()), nil, err
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgAddQuotaRequest, err.Error()), nil, err
 		}
 
 		_, _, err = app.Deliver(txConfig.TxEncoder(), txn)
 		if err != nil {
-			return sdksimulation.NoOpMsg(types.ModuleName, "add_quota_request", err.Error()), nil, err
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgAddQuotaRequest, err.Error()), nil, err
 		}
 
-		return sdksimulation.NewOperationMsg(msg, true, ""), nil, nil
+		return simulationtypes.NewOperationMsg(message, true, ""), nil, nil
 	}
 }
 
-func SimulateMsgUpdateQuotaRequest(k keeper.Keeper) sdksimulation.Operation {
+func SimulateMsgUpdateQuotaRequest(ak expected.AccountKeeper, bk expected.BankKeeper, k keeper.Keeper) simulationtypes.Operation {
 	return func(
 		r *rand.Rand,
 		app *baseapp.BaseApp,
 		ctx sdk.Context,
-		accounts []sdksimulation.Account,
+		accounts []simulationtypes.Account,
 		chainID string,
-	) (sdksimulation.OperationMsg, []sdksimulation.FutureOperation, error) {
+	) (simulationtypes.OperationMsg, []simulationtypes.FutureOperation, error) {
+		var (
+			rFrom, _    = simulationtypes.RandomAcc(r, accounts)
+			from        = ak.GetAccount(ctx, rFrom.Address)
+			rAddress, _ = simulationtypes.RandomAcc(r, accounts)
+			address     = ak.GetAccount(ctx, rAddress.Address)
+		)
 
-		acc1, _ := sdksimulation.RandomAcc(r, accounts)
-		acc2, _ := sdksimulation.RandomAcc(r, accounts)
-		from := k.GetAccount(ctx, acc1.Address)
-		address := k.GetAccount(ctx, acc2.Address)
-
-		denom := "tsent"
-		amount := sdksimulation.RandomAmount(r, sdk.NewInt(1000))
-
-		price := sdk.Coins{
-			{Denom: denom, Amount: amount},
+		subscriptions := k.GetActiveSubscriptionsForAddress(ctx, from.GetAddress(), 0, 0)
+		if len(subscriptions) == 0 {
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgAddQuotaRequest, "active subscriptions for address does not exist"), nil, nil
 		}
 
-		fees, err := sdksimulation.RandomFees(r, ctx, price)
-		if err != nil {
-			return sdksimulation.NoOpMsg(types.ModuleName, "update_quota_request", err.Error()), nil, err
+		rSubscription := subscriptions[r.Intn(len(subscriptions))]
+		if rSubscription.Plan == 0 {
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgAddQuotaRequest, "plan of the subscription is zero"), nil, nil
 		}
 
-		plan := getRandomSubscription(r, k.GetSubscriptions(ctx, 0, 0), "node")
-
-		_, found := k.GetQuota(ctx, plan.Id, address.GetAddress())
+		quota, found := k.GetQuota(ctx, rSubscription.Id, address.GetAddress())
 		if !found {
-			return sdksimulation.NoOpMsg(types.ModuleName, "update_quota_request", "quota does not exists"), nil, nil
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgAddQuotaRequest, "quota does not exist"), nil, nil
 		}
 
-		msg := types.NewMsgUpdateQuotaRequest(from.GetAddress(), plan.Id, address.GetAddress(), getRandomBytes(r))
-		txConfig := params.MakeTestEncodingConfig().TxConfig
+		bytes := sdk.NewInt(r.Int63n(math.MaxInt32))
+		if bytes.LT(quota.Consumed) || bytes.GT(rSubscription.Free.Add(quota.Allocated)) {
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgAddQuotaRequest, "no enough quota"), nil, nil
+		}
+
+		balance := bk.SpendableCoins(ctx, from.GetAddress())
+		if !balance.IsAnyNegative() {
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgUpdateQuotaRequest, "balance is negative"), nil, nil
+		}
+
+		fees, err := simulationtypes.RandomFees(r, ctx, balance)
+		if err != nil {
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgUpdateQuotaRequest, err.Error()), nil, err
+		}
+
+		var (
+			txConfig = params.MakeTestEncodingConfig().TxConfig
+			message  = types.NewMsgUpdateQuotaRequest(
+				from.GetAddress(),
+				rSubscription.Id,
+				address.GetAddress(),
+				bytes,
+			)
+		)
 
 		txn, err := helpers.GenTx(
 			txConfig,
-			[]sdk.Msg{msg},
+			[]sdk.Msg{message},
 			fees,
 			helpers.DefaultGenTxGas,
 			chainID,
 			[]uint64{from.GetAccountNumber()},
 			[]uint64{from.GetSequence()},
+			rFrom.PrivKey,
 		)
 		if err != nil {
-			return sdksimulation.NoOpMsg(types.ModuleName, "update_quota_request", err.Error()), nil, err
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgUpdateQuotaRequest, err.Error()), nil, err
 		}
 
 		_, _, err = app.Deliver(txConfig.TxEncoder(), txn)
 		if err != nil {
-			return sdksimulation.NoOpMsg(types.ModuleName, "update_quota_request", err.Error()), nil, err
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgUpdateQuotaRequest, err.Error()), nil, err
 		}
 
-		return sdksimulation.NewOperationMsg(msg, true, ""), nil, nil
-	}
-}
-
-func SimulateMsgCancelRequest(k keeper.Keeper) sdksimulation.Operation {
-	return func(
-		r *rand.Rand,
-		app *baseapp.BaseApp,
-		ctx sdk.Context,
-		accounts []sdksimulation.Account,
-		chainID string,
-	) (sdksimulation.OperationMsg, []sdksimulation.FutureOperation, error) {
-
-		acc1, _ := sdksimulation.RandomAcc(r, accounts)
-		acc2, _ := sdksimulation.RandomAcc(r, accounts)
-		from := k.GetAccount(ctx, acc1.Address)
-		address := k.GetAccount(ctx, acc2.Address)
-
-		denom := "tsent"
-		amount := sdksimulation.RandomAmount(r, sdk.NewInt(1000))
-
-		price := sdk.Coins{
-			{Denom: denom, Amount: amount},
-		}
-
-		fees, err := sdksimulation.RandomFees(r, ctx, price)
-		if err != nil {
-			return sdksimulation.NoOpMsg(types.ModuleName, "cancel_request", err.Error()), nil, err
-		}
-
-		plan := getRandomSubscription(r, k.GetSubscriptions(ctx, 0, 0), "node")
-
-		_, found := k.GetQuota(ctx, plan.Id, address.GetAddress())
-		if !found {
-			return sdksimulation.NoOpMsg(types.ModuleName, "cancel_request", "quota does not exists"), nil, nil
-		}
-
-		msg := types.NewMsgCancelRequest(from.GetAddress(), plan.Id)
-		txConfig := params.MakeTestEncodingConfig().TxConfig
-
-		txn, err := helpers.GenTx(
-			txConfig,
-			[]sdk.Msg{msg},
-			fees,
-			helpers.DefaultGenTxGas,
-			chainID,
-			[]uint64{from.GetAccountNumber()},
-			[]uint64{from.GetSequence()},
-		)
-		if err != nil {
-			return sdksimulation.NoOpMsg(types.ModuleName, "cancel_request", err.Error()), nil, err
-		}
-
-		_, _, err = app.Deliver(txConfig.TxEncoder(), txn)
-		if err != nil {
-			return sdksimulation.NoOpMsg(types.ModuleName, "cancel_request", err.Error()), nil, err
-		}
-
-		return sdksimulation.NewOperationMsg(msg, true, ""), nil, nil
+		return simulationtypes.NewOperationMsg(message, true, ""), nil, nil
 	}
 }

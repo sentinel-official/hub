@@ -6,64 +6,64 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/types/kv"
-	protobuf "github.com/gogo/protobuf/types"
+	protobuftypes "github.com/gogo/protobuf/types"
+
 	"github.com/sentinel-official/hub/x/subscription/types"
 )
 
-func NewDecoderStore(cdc codec.Marshaler) func(kvA, kvB kv.Pair) string {
-	decoderFn := func(kvA, kvB kv.Pair) string {
+func NewStoreDecoder(cdc codec.Marshaler) func(kvA, kvB kv.Pair) string {
+	return func(kvA, kvB kv.Pair) string {
 		switch {
 		case bytes.Equal(kvA.Key[:1], types.CountKey):
-			var countA, countB protobuf.Int64Value
+			var countA, countB protobuftypes.UInt64Value
 			cdc.MustUnmarshalBinaryBare(kvA.Value, &countA)
 			cdc.MustUnmarshalBinaryBare(kvB.Value, &countB)
-			return fmt.Sprintf("%s\n%s", &countA, &countB)
 
+			return fmt.Sprintf("%v\n%v", &countA, &countB)
 		case bytes.Equal(kvA.Key[:1], types.SubscriptionKeyPrefix):
 			var subscriptionA, subscriptionB types.Subscription
 			cdc.MustUnmarshalBinaryBare(kvA.Value, &subscriptionA)
 			cdc.MustUnmarshalBinaryBare(kvB.Value, &subscriptionB)
-			return fmt.Sprintf("%s\n%s", &subscriptionA, &subscriptionB)
 
+			return fmt.Sprintf("%v\n%v", &subscriptionA, &subscriptionB)
 		case bytes.Equal(kvA.Key[:1], types.SubscriptionForNodeKeyPrefix):
-			var inActiveNodeA, inActiveNodeB protobuf.BoolValue
-			cdc.MustUnmarshalBinaryBare(kvA.Value, &inActiveNodeA)
-			cdc.MustUnmarshalBinaryBare(kvB.Value, &inActiveNodeB)
-			return fmt.Sprintf("%s\n%s", &inActiveNodeA, &inActiveNodeB)
+			var subscriptionForNodeA, subscriptionForNodeB protobuftypes.BoolValue
+			cdc.MustUnmarshalBinaryBare(kvA.Value, &subscriptionForNodeA)
+			cdc.MustUnmarshalBinaryBare(kvB.Value, &subscriptionForNodeB)
 
+			return fmt.Sprintf("%v\n%v", &subscriptionForNodeA, &subscriptionForNodeB)
 		case bytes.Equal(kvA.Key[:1], types.SubscriptionForPlanKeyPrefix):
-			var activeNodeForProviderA, activeNodeForProviderB protobuf.BoolValue
-			cdc.MustUnmarshalBinaryBare(kvA.Value, &activeNodeForProviderA)
-			cdc.MustUnmarshalBinaryBare(kvB.Value, &activeNodeForProviderB)
-			return fmt.Sprintf("%s\n%s", &activeNodeForProviderA, &activeNodeForProviderB)
+			var subscriptionForPlanA, subscriptionForPlanB protobuftypes.BoolValue
+			cdc.MustUnmarshalBinaryBare(kvA.Value, &subscriptionForPlanA)
+			cdc.MustUnmarshalBinaryBare(kvB.Value, &subscriptionForPlanB)
 
+			return fmt.Sprintf("%v\n%v", &subscriptionForPlanA, &subscriptionForPlanB)
 		case bytes.Equal(kvA.Key[:1], types.ActiveSubscriptionForAddressKeyPrefix):
-			var inactiveNodeForProviderA, inactiveNodeForProviderB protobuf.BoolValue
-			cdc.MustUnmarshalBinaryBare(kvA.Value, &inactiveNodeForProviderA)
-			cdc.MustUnmarshalBinaryBare(kvB.Value, &inactiveNodeForProviderB)
-			return fmt.Sprintf("%s\n%s", &inactiveNodeForProviderA, &inactiveNodeForProviderB)
+			var activeSubscriptionForAddressA, activeSubscriptionForAddressB protobuftypes.BoolValue
+			cdc.MustUnmarshalBinaryBare(kvA.Value, &activeSubscriptionForAddressA)
+			cdc.MustUnmarshalBinaryBare(kvB.Value, &activeSubscriptionForAddressB)
 
+			return fmt.Sprintf("%v\n%v", &activeSubscriptionForAddressA, &activeSubscriptionForAddressB)
 		case bytes.Equal(kvA.Key[:1], types.InactiveSubscriptionForAddressKeyPrefix):
-			var inactiveNodeAtPrefixA, inactiveNodeAtPrefixB protobuf.BoolValue
-			cdc.MustUnmarshalBinaryBare(kvA.Value, &inactiveNodeAtPrefixA)
-			cdc.MustUnmarshalBinaryBare(kvB.Value, &inactiveNodeAtPrefixB)
-			return fmt.Sprintf("%s\n%s", &inactiveNodeAtPrefixA, &inactiveNodeAtPrefixB)
+			var inactiveSubscriptionForAddressA, inactiveSubscriptionForAddressB protobuftypes.BoolValue
+			cdc.MustUnmarshalBinaryBare(kvA.Value, &inactiveSubscriptionForAddressA)
+			cdc.MustUnmarshalBinaryBare(kvB.Value, &inactiveSubscriptionForAddressB)
 
+			return fmt.Sprintf("%v\n%v", &inactiveSubscriptionForAddressA, &inactiveSubscriptionForAddressB)
 		case bytes.Equal(kvA.Key[:1], types.InactiveSubscriptionAtKeyPrefix):
-			var inactiveNodeAtPrefixA, inactiveNodeAtPrefixB protobuf.BoolValue
-			cdc.MustUnmarshalBinaryBare(kvA.Value, &inactiveNodeAtPrefixA)
-			cdc.MustUnmarshalBinaryBare(kvB.Value, &inactiveNodeAtPrefixB)
-			return fmt.Sprintf("%s\n%s", &inactiveNodeAtPrefixA, &inactiveNodeAtPrefixB)
+			var inactiveSubscriptionAtA, inactiveSubscriptionAtB protobuftypes.BoolValue
+			cdc.MustUnmarshalBinaryBare(kvA.Value, &inactiveSubscriptionAtA)
+			cdc.MustUnmarshalBinaryBare(kvB.Value, &inactiveSubscriptionAtB)
 
+			return fmt.Sprintf("%v\n%v", &inactiveSubscriptionAtA, &inactiveSubscriptionAtB)
 		case bytes.Equal(kvA.Key[:1], types.QuotaKeyPrefix):
-			var inactiveNodeAtPrefixA, inactiveNodeAtPrefixB protobuf.BoolValue
-			cdc.MustUnmarshalBinaryBare(kvA.Value, &inactiveNodeAtPrefixA)
-			cdc.MustUnmarshalBinaryBare(kvB.Value, &inactiveNodeAtPrefixB)
-			return fmt.Sprintf("%s\n%s", &inactiveNodeAtPrefixA, &inactiveNodeAtPrefixB)
+			var quotaA, quotaB types.Quota
+			cdc.MustUnmarshalBinaryBare(kvA.Value, &quotaA)
+			cdc.MustUnmarshalBinaryBare(kvB.Value, &quotaB)
+
+			return fmt.Sprintf("%v\n%v", &quotaA, &quotaB)
 		}
 
-		panic(fmt.Sprintf("invalid subscription key prefix: %X", kvA.Key[:1]))
+		panic(fmt.Sprintf("invalid key prefix %X", kvA.Key[:1]))
 	}
-
-	return decoderFn
 }
