@@ -26,7 +26,7 @@ var (
 
 func (m *Params) Validate() error {
 	if m.SwapDenom == "" {
-		return fmt.Errorf("swap_denom cannot be emtpy")
+		return fmt.Errorf("swap_denom cannot be empty")
 	}
 	if err := sdk.ValidateDenom(m.SwapDenom); err != nil {
 		return errors.Wrapf(err, "invalid swap_denom %s", m.SwapDenom)
@@ -65,7 +65,7 @@ func (m *Params) ParamSetPairs() params.ParamSetPairs {
 				}
 
 				if value == "" {
-					return fmt.Errorf("value cannot be emtpy")
+					return fmt.Errorf("value cannot be empty")
 				}
 				if err := sdk.ValidateDenom(value); err != nil {
 					return errors.Wrapf(err, "invalid value %s", value)
