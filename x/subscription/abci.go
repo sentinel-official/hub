@@ -15,8 +15,8 @@ func EndBlock(ctx sdk.Context, k keeper.Keeper) []abcitypes.ValidatorUpdate {
 		inactiveDuration = k.InactiveDuration(ctx)
 	)
 
-	k.IterateInactiveSubscriptions(ctx, ctx.BlockTime(), func(_ int, key []byte, item types.Subscription) bool {
-		log.Info("inactive subscription", "key", key, "value", item)
+	k.IterateInactiveSubscriptions(ctx, ctx.BlockTime(), func(_ int, item types.Subscription) bool {
+		log.Info("inactive subscription", "value", item)
 
 		if item.Status.Equal(hubtypes.StatusActive) {
 			k.DeleteInactiveSubscriptionAt(ctx, item.Expiry, item.Id)

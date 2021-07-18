@@ -50,7 +50,7 @@ func (k *Keeper) ProcessPaymentAndUpdateQuota(ctx sdk.Context, session types.Ses
 			"consumed", session.Bandwidth.Sum(), "rounded", bandwidth)
 
 		sessionNode := session.GetNode()
-		return k.SendCoinsFromDepositToAccount(ctx, from, sessionNode.Bytes(), amount)
+		return k.SendCoinFromDepositToAccount(ctx, from, sessionNode.Bytes(), amount)
 	}
 
 	bandwidth := session.Bandwidth.Sum()

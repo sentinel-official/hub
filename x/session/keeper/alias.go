@@ -14,7 +14,7 @@ func (k *Keeper) GetAccount(ctx sdk.Context, address sdk.AccAddress) authtypes.A
 	return k.account.GetAccount(ctx, address)
 }
 
-func (k *Keeper) SendCoinsFromDepositToAccount(ctx sdk.Context, from, to sdk.AccAddress, coin sdk.Coin) error {
+func (k *Keeper) SendCoinFromDepositToAccount(ctx sdk.Context, from, to sdk.AccAddress, coin sdk.Coin) error {
 	if coin.IsZero() {
 		return nil
 	}

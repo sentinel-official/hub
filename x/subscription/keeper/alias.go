@@ -9,10 +9,18 @@ import (
 )
 
 func (k *Keeper) SendCoin(ctx sdk.Context, from sdk.AccAddress, to sdk.AccAddress, coin sdk.Coin) error {
+	if coin.IsZero() {
+		return nil
+	}
+
 	return k.bank.SendCoins(ctx, from, to, sdk.NewCoins(coin))
 }
 
 func (k *Keeper) AddDeposit(ctx sdk.Context, address sdk.AccAddress, coin sdk.Coin) error {
+	if coin.IsZero() {
+		return nil
+	}
+
 	return k.deposit.Add(ctx, address, sdk.NewCoins(coin))
 }
 
