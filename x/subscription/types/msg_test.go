@@ -1,169 +1,712 @@
 package types
 
 import (
-	"errors"
 	"testing"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	hubtypes "github.com/sentinel-official/hub/types"
 )
 
-func TestMsgAddQuotaRequest_ValidateBasic(t *testing.T) {
-	correctAddress, err := sdk.AccAddressFromBech32("sent1grdunxx5jxd0ja75wt508sn6v39p70hhw53zs8")
-	if err != nil {
-		t.Errorf("invalid address: %s", err)
-	}
-
-	tests := []struct {
-		name string
-		m    *MsgAddQuotaRequest
-		want error
-	}{
-		{"nil from address", NewMsgAddQuotaRequest(nil, 0, nil, sdk.NewInt(0)), ErrorInvalidFieldFrom},
-		{"empty from address", NewMsgAddQuotaRequest(sdk.AccAddress{}, 0, nil, sdk.NewInt(0)), ErrorInvalidFieldFrom},
-		{"zero id", NewMsgAddQuotaRequest(correctAddress, 0, nil, sdk.NewInt(0)), ErrorInvalidFieldId},
-		{"nil address", NewMsgAddQuotaRequest(correctAddress, 10, nil, sdk.NewInt(0)), ErrorInvalidFieldAddress},
-		{"empty address", NewMsgAddQuotaRequest(correctAddress, 10, sdk.AccAddress{}, sdk.NewInt(0)), ErrorInvalidFieldAddress},
-		{"empty bytes", NewMsgAddQuotaRequest(correctAddress, 10, sdk.AccAddress{}, sdk.Int{}), ErrorInvalidFieldAddress},
-		{"zero bytes", NewMsgAddQuotaRequest(correctAddress, 10, correctAddress, sdk.NewInt(0)), ErrorInvalidFieldBytes},
-		{"valid", NewMsgAddQuotaRequest(correctAddress, 10, correctAddress, sdk.NewInt(1000)), nil},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if err := tt.m.ValidateBasic(); !errors.Is(err, tt.want) {
-				t.Errorf("ValidateBasic() = %s, want %s", err, tt.want)
-			}
-		})
-	}
-}
-
-func TestMsgUpdateQuotaRequest_ValidateBasic(t *testing.T) {
-	correctAddress, err := sdk.AccAddressFromBech32("sent1grdunxx5jxd0ja75wt508sn6v39p70hhw53zs8")
-	if err != nil {
-		t.Errorf("invalid address: %s", err)
-	}
-
-	tests := []struct {
-		name string
-		m    *MsgUpdateQuotaRequest
-		want error
-	}{
-		{"nil from address", NewMsgUpdateQuotaRequest(nil, 0, nil, sdk.NewInt(0)), ErrorInvalidFieldFrom},
-		{"empty from address", NewMsgUpdateQuotaRequest(sdk.AccAddress{}, 0, nil, sdk.NewInt(0)), ErrorInvalidFieldFrom},
-		{"zero id", NewMsgUpdateQuotaRequest(correctAddress, 0, nil, sdk.NewInt(0)), ErrorInvalidFieldId},
-		{"nil address", NewMsgUpdateQuotaRequest(correctAddress, 10, nil, sdk.NewInt(0)), ErrorInvalidFieldAddress},
-		{"empty address", NewMsgUpdateQuotaRequest(correctAddress, 10, sdk.AccAddress{}, sdk.NewInt(0)), ErrorInvalidFieldAddress},
-		{"empty bytes", NewMsgUpdateQuotaRequest(correctAddress, 10, sdk.AccAddress{}, sdk.Int{}), ErrorInvalidFieldAddress},
-		{"zero bytes", NewMsgUpdateQuotaRequest(correctAddress, 10, correctAddress, sdk.NewInt(0)), ErrorInvalidFieldBytes},
-		{"valid", NewMsgUpdateQuotaRequest(correctAddress, 10, correctAddress, sdk.NewInt(1000)), nil},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if err := tt.m.ValidateBasic(); !errors.Is(err, tt.want) {
-				t.Errorf("ValidateBasic() = %s, want %s", err, tt.want)
-			}
-		})
-	}
-}
-
-func TestMsgCancelRequest_ValidateBasic(t *testing.T) {
-	correctAddress, err := sdk.AccAddressFromBech32("sent1grdunxx5jxd0ja75wt508sn6v39p70hhw53zs8")
-	if err != nil {
-		t.Errorf("invalid address: %s", err)
-	}
-
-	tests := []struct {
-		name string
-		m    *MsgCancelRequest
-		want error
-	}{
-		{"nil from address", NewMsgCancelRequest(nil, 0), ErrorInvalidFieldFrom},
-		{"empty from address", NewMsgCancelRequest(sdk.AccAddress{}, 0), ErrorInvalidFieldFrom},
-		{"zero id", NewMsgCancelRequest(correctAddress, 0), ErrorInvalidFieldId},
-		{"valid", NewMsgCancelRequest(correctAddress, 10), nil},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if err := tt.m.ValidateBasic(); !errors.Is(err, tt.want) {
-				t.Errorf("ValidateBasic() = %s, want %s", err, tt.want)
-			}
-		})
-	}
-}
-
 func TestMsgSubscribeToNodeRequest_ValidateBasic(t *testing.T) {
-	correctAddress, err := sdk.AccAddressFromBech32("sent1grdunxx5jxd0ja75wt508sn6v39p70hhw53zs8")
-	if err != nil {
-		t.Errorf("invalid address: %s", err)
+	type fields struct {
+		From    string
+		Address string
+		Deposit sdk.Coin
 	}
-
-	nodeAddress, err := hubtypes.NodeAddressFromBech32("sentnode1grdunxx5jxd0ja75wt508sn6v39p70hhczsm43")
-	if err != nil {
-		t.Errorf("invalid node address: %s", err)
-	}
-
-	coinWithWrongDenom := sdk.Coin{
-		Denom:  "wrongdenom",
-		Amount: sdk.NewInt(0),
-	}
-	coinWithWrongAmount := sdk.Coin{
-		Denom:  "sent",
-		Amount: sdk.NewInt(-10),
-	}
-	validCoin := sdk.Coin{
-		Denom:  "sent",
-		Amount: sdk.NewInt(1000),
-	}
-
 	tests := []struct {
-		name string
-		m    *MsgSubscribeToNodeRequest
-		want error
+		name    string
+		fields  fields
+		wantErr bool
 	}{
-		{"nil from address", NewMsgSubscribeToNodeRequest(nil, nil, sdk.Coin{}), ErrorInvalidFieldFrom},
-		{"empty from address", NewMsgSubscribeToNodeRequest(sdk.AccAddress{}, nil, sdk.Coin{}), ErrorInvalidFieldFrom},
-		{"nil address", NewMsgSubscribeToNodeRequest(correctAddress, nil, sdk.Coin{}), ErrorInvalidFieldAddress},
-		{"empty address", NewMsgSubscribeToNodeRequest(correctAddress, hubtypes.NodeAddress{}, sdk.Coin{}), ErrorInvalidFieldAddress},
-		{"empty coin", NewMsgSubscribeToNodeRequest(correctAddress, nodeAddress, sdk.Coin{}), ErrorInvalidFieldDeposit},
-		{"wrong coin denom", NewMsgSubscribeToNodeRequest(correctAddress, nodeAddress, coinWithWrongDenom), ErrorInvalidFieldDeposit},
-		{"wrong coin amount", NewMsgSubscribeToNodeRequest(correctAddress, nodeAddress, coinWithWrongAmount), ErrorInvalidFieldDeposit},
-		{"valid", NewMsgSubscribeToNodeRequest(correctAddress, nodeAddress, validCoin), nil},
+		{
+			"empty from",
+			fields{
+				From: "",
+			},
+			true,
+		},
+		{
+			"invalid from",
+			fields{
+				From: "invalid",
+			},
+			true,
+		},
+		{
+			"invalid prefix from",
+			fields{
+				From: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+			},
+			true,
+		},
+		{
+			"10 bytes from",
+			fields{
+				From: "sent1qypqxpq9qcrsszgslawd5s",
+			},
+			true,
+		},
+		{
+			"20 bytes from",
+			fields{
+				From: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+			},
+			true,
+		},
+		{
+			"30 bytes from",
+			fields{
+				From: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfqyy3zxfp9ycnjs2fszvfck8",
+			},
+			true,
+		},
+		{
+			"empty address",
+			fields{
+				From:    "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Address: "",
+			},
+			true,
+		},
+		{
+			"invalid address",
+			fields{
+				From:    "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Address: "invalid",
+			},
+			true,
+		},
+		{
+			"invalid prefix address",
+			fields{
+				From:    "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Address: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+			},
+			true,
+		},
+		{
+			"10 bytes address",
+			fields{
+				From:    "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Address: "sentnode1qypqxpq9qcrsszgse4wwrm",
+			},
+			true,
+		},
+		{
+			"20 bytes address",
+			fields{
+				From:    "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Address: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				Deposit: sdk.Coin{Amount: sdk.NewInt(0)},
+			},
+			true,
+		},
+		{
+			"30 bytes address",
+			fields{
+				From:    "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Address: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqyy3zxfp9ycnjs2fsxqglcv",
+			},
+			true,
+		},
+		{
+			"empty deposit",
+			fields{
+				From:    "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Address: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				Deposit: sdk.Coin{Amount: sdk.NewInt(0)},
+			},
+			true,
+		},
+		{
+			"empty denom deposit",
+			fields{
+				From:    "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Address: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				Deposit: sdk.Coin{Denom: "", Amount: sdk.NewInt(0)},
+			},
+			true,
+		},
+		{
+			"invalid denom deposit",
+			fields{
+				From:    "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Address: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				Deposit: sdk.Coin{Denom: "o", Amount: sdk.NewInt(1000)},
+			},
+			true,
+		},
+		{
+			"negative amount deposit",
+			fields{
+				From:    "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Address: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				Deposit: sdk.Coin{Denom: "one", Amount: sdk.NewInt(-1000)},
+			},
+			true,
+		},
+		{
+			"zero amount deposit",
+			fields{
+				From:    "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Address: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				Deposit: sdk.Coin{Denom: "one", Amount: sdk.NewInt(0)},
+			},
+			true,
+		},
+		{
+			"positive amount deposit",
+			fields{
+				From:    "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Address: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				Deposit: sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)},
+			},
+			false,
+		},
 	}
-
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if err := tt.m.ValidateBasic(); !errors.Is(err, tt.want) {
-				t.Errorf("ValidateBasic() = %s, want %s", err, tt.want)
+			m := &MsgSubscribeToNodeRequest{
+				From:    tt.fields.From,
+				Address: tt.fields.Address,
+				Deposit: tt.fields.Deposit,
+			}
+			if err := m.ValidateBasic(); (err != nil) != tt.wantErr {
+				t.Errorf("ValidateBasic() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
 	}
 }
 
 func TestMsgSubscribeToPlanRequest_ValidateBasic(t *testing.T) {
-	correctAddress, err := sdk.AccAddressFromBech32("sent1grdunxx5jxd0ja75wt508sn6v39p70hhw53zs8")
-	if err != nil {
-		t.Errorf("invalid address: %s", err)
+	type fields struct {
+		From  string
+		Id    uint64
+		Denom string
 	}
-
 	tests := []struct {
-		name string
-		m    *MsgSubscribeToPlanRequest
-		want error
+		name    string
+		fields  fields
+		wantErr bool
 	}{
-		{"nil from address", NewMsgSubscribeToPlanRequest(nil, 0, ""), ErrorInvalidFieldFrom},
-		{"empty from address", NewMsgSubscribeToPlanRequest(sdk.AccAddress{}, 0, ""), ErrorInvalidFieldFrom},
-		{"zero id", NewMsgSubscribeToPlanRequest(correctAddress, 0, ""), ErrorInvalidFieldId},
-		{"wrong denom", NewMsgSubscribeToPlanRequest(correctAddress, 10, "!!wrongdenom"), ErrorInvalidFieldDenom},
-		{"valid", NewMsgSubscribeToPlanRequest(correctAddress, 10, "wrongdenom"), nil},
+		{
+			"empty from",
+			fields{
+				From: "",
+			},
+			true,
+		},
+		{
+			"invalid from",
+			fields{
+				From: "invalid",
+			},
+			true,
+		},
+		{
+			"invalid prefix from",
+			fields{
+				From: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+			},
+			true,
+		},
+		{
+			"10 bytes from",
+			fields{
+				From: "sent1qypqxpq9qcrsszgslawd5s",
+			},
+			true,
+		},
+		{
+			"20 bytes from",
+			fields{
+				From: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+			},
+			true,
+		},
+		{
+			"30 bytes from",
+			fields{
+				From: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfqyy3zxfp9ycnjs2fszvfck8",
+			},
+			true,
+		},
+		{
+			"zero id",
+			fields{
+				From: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Id:   0,
+			},
+			true,
+		},
+		{
+			"positive id",
+			fields{
+				From: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Id:   1000,
+			},
+			false,
+		},
+		{
+			"empty denom",
+			fields{
+				From:  "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Id:    1000,
+				Denom: "",
+			},
+			false,
+		},
+		{
+			"invalid denom",
+			fields{
+				From:  "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Id:    1000,
+				Denom: "o",
+			},
+			true,
+		},
+		{
+			"one denom",
+			fields{
+				From:  "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Id:    1000,
+				Denom: "one",
+			},
+			false,
+		},
 	}
-
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if err := tt.m.ValidateBasic(); !errors.Is(err, tt.want) {
-				t.Errorf("ValidateBasic() = %s, want %s", err, tt.want)
+			m := &MsgSubscribeToPlanRequest{
+				From:  tt.fields.From,
+				Id:    tt.fields.Id,
+				Denom: tt.fields.Denom,
+			}
+			if err := m.ValidateBasic(); (err != nil) != tt.wantErr {
+				t.Errorf("ValidateBasic() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
+}
+
+func TestMsgCancelRequest_ValidateBasic(t *testing.T) {
+	type fields struct {
+		From string
+		Id   uint64
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		wantErr bool
+	}{
+		{
+			"empty from",
+			fields{
+				From: "",
+			},
+			true,
+		},
+		{
+			"invalid from",
+			fields{
+				From: "invalid",
+			},
+			true,
+		},
+		{
+			"invalid prefix from",
+			fields{
+				From: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+			},
+			true,
+		},
+		{
+			"10 bytes from",
+			fields{
+				From: "sent1qypqxpq9qcrsszgslawd5s",
+			},
+			true,
+		},
+		{
+			"20 bytes from",
+			fields{
+				From: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+			},
+			true,
+		},
+		{
+			"30 bytes from",
+			fields{
+				From: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfqyy3zxfp9ycnjs2fszvfck8",
+			},
+			true,
+		},
+		{
+			"zero id",
+			fields{
+				From: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Id:   0,
+			},
+			true,
+		},
+		{
+			"positive id",
+			fields{
+				From: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Id:   1000,
+			},
+			false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			m := &MsgCancelRequest{
+				From: tt.fields.From,
+				Id:   tt.fields.Id,
+			}
+			if err := m.ValidateBasic(); (err != nil) != tt.wantErr {
+				t.Errorf("ValidateBasic() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
+}
+
+func TestMsgAddQuotaRequest_ValidateBasic(t *testing.T) {
+	type fields struct {
+		From    string
+		Id      uint64
+		Address string
+		Bytes   sdk.Int
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		wantErr bool
+	}{
+		{
+			"empty from",
+			fields{
+				From: "",
+			},
+			true,
+		},
+		{
+			"invalid from",
+			fields{
+				From: "invalid",
+			},
+			true,
+		},
+		{
+			"invalid prefix from",
+			fields{
+				From: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+			},
+			true,
+		},
+		{
+			"10 bytes from",
+			fields{
+				From: "sent1qypqxpq9qcrsszgslawd5s",
+			},
+			true,
+		},
+		{
+			"20 bytes from",
+			fields{
+				From: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+			},
+			true,
+		},
+		{
+			"30 bytes from",
+			fields{
+				From: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfqyy3zxfp9ycnjs2fszvfck8",
+			},
+			true,
+		},
+		{
+			"zero id",
+			fields{
+				From: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Id:   0,
+			},
+			true,
+		},
+		{
+			"positive id",
+			fields{
+				From: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Id:   1000,
+			},
+			true,
+		},
+		{
+			"empty address",
+			fields{
+				From:    "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Id:      1000,
+				Address: "",
+			},
+			true,
+		},
+		{
+			"invalid address",
+			fields{
+				From:    "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Id:      1000,
+				Address: "invalid",
+			},
+			true,
+		},
+		{
+			"invalid prefix address",
+			fields{
+				From:    "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Id:      1000,
+				Address: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+			},
+			true,
+		},
+		{
+			"10 bytes address",
+			fields{
+				From:    "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Id:      1000,
+				Address: "sent1qypqxpq9qcrsszgslawd5s",
+			},
+			true,
+		},
+		{
+			"20 bytes address",
+			fields{
+				From:    "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Id:      1000,
+				Address: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Bytes:   sdk.NewInt(0),
+			},
+			false,
+		},
+		{
+			"30 bytes address",
+			fields{
+				From:    "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Id:      1000,
+				Address: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfqyy3zxfp9ycnjs2fszvfck8",
+			},
+			true,
+		},
+		{
+			"negative bytes",
+			fields{
+				From:    "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Id:      1000,
+				Address: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Bytes:   sdk.NewInt(-1000),
+			},
+			true,
+		},
+		{
+			"zero bytes",
+			fields{
+				From:    "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Id:      1000,
+				Address: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Bytes:   sdk.NewInt(0),
+			},
+			false,
+		},
+		{
+			"positive bytes",
+			fields{
+				From:    "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Id:      1000,
+				Address: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Bytes:   sdk.NewInt(1000),
+			},
+			false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			m := &MsgAddQuotaRequest{
+				From:    tt.fields.From,
+				Id:      tt.fields.Id,
+				Address: tt.fields.Address,
+				Bytes:   tt.fields.Bytes,
+			}
+			if err := m.ValidateBasic(); (err != nil) != tt.wantErr {
+				t.Errorf("ValidateBasic() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
+}
+
+func TestMsgUpdateQuotaRequest_ValidateBasic(t *testing.T) {
+	type fields struct {
+		From    string
+		Id      uint64
+		Address string
+		Bytes   sdk.Int
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		wantErr bool
+	}{
+		{
+			"empty from",
+			fields{
+				From: "",
+			},
+			true,
+		},
+		{
+			"invalid from",
+			fields{
+				From: "invalid",
+			},
+			true,
+		},
+		{
+			"invalid prefix from",
+			fields{
+				From: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+			},
+			true,
+		},
+		{
+			"10 bytes from",
+			fields{
+				From: "sent1qypqxpq9qcrsszgslawd5s",
+			},
+			true,
+		},
+		{
+			"20 bytes from",
+			fields{
+				From: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+			},
+			true,
+		},
+		{
+			"30 bytes from",
+			fields{
+				From: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfqyy3zxfp9ycnjs2fszvfck8",
+			},
+			true,
+		},
+		{
+			"zero id",
+			fields{
+				From: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Id:   0,
+			},
+			true,
+		},
+		{
+			"positive id",
+			fields{
+				From: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Id:   1000,
+			},
+			true,
+		},
+		{
+			"empty address",
+			fields{
+				From:    "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Id:      1000,
+				Address: "",
+			},
+			true,
+		},
+		{
+			"invalid address",
+			fields{
+				From:    "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Id:      1000,
+				Address: "invalid",
+			},
+			true,
+		},
+		{
+			"invalid prefix address",
+			fields{
+				From:    "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Id:      1000,
+				Address: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+			},
+			true,
+		},
+		{
+			"10 bytes address",
+			fields{
+				From:    "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Id:      1000,
+				Address: "sent1qypqxpq9qcrsszgslawd5s",
+			},
+			true,
+		},
+		{
+			"20 bytes address",
+			fields{
+				From:    "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Id:      1000,
+				Address: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Bytes:   sdk.NewInt(0),
+			},
+			false,
+		},
+		{
+			"30 bytes address",
+			fields{
+				From:    "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Id:      1000,
+				Address: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfqyy3zxfp9ycnjs2fszvfck8",
+			},
+			true,
+		},
+		{
+			"negative bytes",
+			fields{
+				From:    "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Id:      1000,
+				Address: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Bytes:   sdk.NewInt(-1000),
+			},
+			true,
+		},
+		{
+			"zero bytes",
+			fields{
+				From:    "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Id:      1000,
+				Address: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Bytes:   sdk.NewInt(0),
+			},
+			false,
+		},
+		{
+			"positive bytes",
+			fields{
+				From:    "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Id:      1000,
+				Address: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Bytes:   sdk.NewInt(1000),
+			},
+			false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			m := &MsgUpdateQuotaRequest{
+				From:    tt.fields.From,
+				Id:      tt.fields.Id,
+				Address: tt.fields.Address,
+				Bytes:   tt.fields.Bytes,
+			}
+			if err := m.ValidateBasic(); (err != nil) != tt.wantErr {
+				t.Errorf("ValidateBasic() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
 	}

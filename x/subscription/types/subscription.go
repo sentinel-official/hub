@@ -4,16 +4,17 @@ import (
 	"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/errors"
 
 	hubtypes "github.com/sentinel-official/hub/types"
 )
 
-func (s *Subscription) GetNode() hubtypes.NodeAddress {
-	if s.Node == "" {
+func (m *Subscription) GetNode() hubtypes.NodeAddress {
+	if m.Node == "" {
 		return nil
 	}
 
-	address, err := hubtypes.NodeAddressFromBech32(s.Node)
+	address, err := hubtypes.NodeAddressFromBech32(m.Node)
 	if err != nil {
 		panic(err)
 	}
@@ -21,12 +22,12 @@ func (s *Subscription) GetNode() hubtypes.NodeAddress {
 	return address
 }
 
-func (s *Subscription) GetOwner() sdk.AccAddress {
-	if s.Owner == "" {
+func (m *Subscription) GetOwner() sdk.AccAddress {
+	if m.Owner == "" {
 		return nil
 	}
 
-	address, err := sdk.AccAddressFromBech32(s.Owner)
+	address, err := sdk.AccAddressFromBech32(m.Owner)
 	if err != nil {
 		panic(err)
 	}
@@ -34,10 +35,10 @@ func (s *Subscription) GetOwner() sdk.AccAddress {
 	return address
 }
 
-func (s *Subscription) Amount(consumed sdk.Int) sdk.Coin {
+func (m *Subscription) Amount(consumed sdk.Int) sdk.Coin {
 	var (
 		amount sdk.Int
-		x      = hubtypes.Gigabyte.Quo(s.Price.Amount)
+		x      = hubtypes.Gigabyte.Quo(m.Price.Amount)
 	)
 
 	if x.IsPositive() {
@@ -45,50 +46,71 @@ func (s *Subscription) Amount(consumed sdk.Int) sdk.Coin {
 			CeilTo(x).
 			Sum().Quo(x)
 	} else {
-		y := sdk.NewDecFromInt(s.Price.Amount).
+		y := sdk.NewDecFromInt(m.Price.Amount).
 			QuoInt(hubtypes.Gigabyte).
 			Ceil().TruncateInt()
 		amount = consumed.Mul(y)
 	}
 
-	return sdk.NewCoin(s.Price.Denom, amount)
+	return sdk.NewCoin(m.Price.Denom, amount)
 }
 
-func (s *Subscription) Validate() error {
-	if s.Id == 0 {
-		return fmt.Errorf("id should not be zero")
+func (m *Subscription) Validate() error {
+	if m.Id == 0 {
+		return fmt.Errorf("id cannot be zero")
 	}
-	if _, err := sdk.AccAddressFromBech32(s.Owner); err != nil {
-		return fmt.Errorf("owner should not nil or empty")
+	if m.Owner == "" {
+		return fmt.Errorf("owner cannot be empty")
 	}
-
-	if s.Plan == 0 {
-		if _, err := hubtypes.NodeAddressFromBech32(s.Node); err != nil {
-			return fmt.Errorf("node should not be nil or empty")
+	if _, err := sdk.AccAddressFromBech32(m.Owner); err != nil {
+		return errors.Wrapf(err, "invalid owner %s", m.Owner)
+	}
+	if m.Node == "" && m.Plan == 0 {
+		return fmt.Errorf("both node and plan cannot be empty")
+	}
+	if m.Node != "" && m.Plan != 0 {
+		return fmt.Errorf("either node or plan must be empty")
+	}
+	if m.Node != "" {
+		if _, err := hubtypes.NodeAddressFromBech32(m.Node); err != nil {
+			return errors.Wrapf(err, "invalid node %s", m.Node)
 		}
-		if !s.Price.IsValid() {
-			return fmt.Errorf("price should be valid")
+		if m.Price.IsZero() {
+			return fmt.Errorf("price cannot be zero")
 		}
-		if !s.Deposit.IsValid() {
-			return fmt.Errorf("deposit should be valid")
+		if !m.Price.IsValid() {
+			return fmt.Errorf("price must be valid")
 		}
-	} else {
-		if s.Expiry.IsZero() {
-			return fmt.Errorf("expiry should not be zero")
+		if m.Deposit.IsZero() {
+			return fmt.Errorf("deposit cannot be zero")
+		}
+		if !m.Deposit.IsValid() {
+			return fmt.Errorf("deposit must be valid")
 		}
 	}
-
-	if s.Free.IsNegative() {
-		return fmt.Errorf("free should not be negative")
+	if m.Plan != 0 {
+		if m.Denom != "" {
+			if err := sdk.ValidateDenom(m.Denom); err != nil {
+				return errors.Wrapf(err, "invalid denom %s", m.Denom)
+			}
+		}
+		if m.Expiry.IsZero() {
+			return fmt.Errorf("expiry cannot be zero")
+		}
 	}
-	if !s.Status.IsValid() {
-		return fmt.Errorf("status should be valid")
+	if m.Free.IsNegative() {
+		return fmt.Errorf("free cannot not be negative")
 	}
-	if s.StatusAt.IsZero() {
-		return fmt.Errorf("status_at should not be zero")
+	if !m.Status.IsValid() {
+		return fmt.Errorf("status must be valid")
+	}
+	if m.StatusAt.IsZero() {
+		return fmt.Errorf("status_at cannot be zero")
 	}
 
 	return nil
 }
 
-type Subscriptions []Subscription
+type (
+	Subscriptions []Subscription
+)
