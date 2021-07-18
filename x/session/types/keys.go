@@ -41,30 +41,15 @@ var (
 )
 
 func SessionKey(id uint64) []byte {
-	v := append(SessionKeyPrefix, sdk.Uint64ToBigEndian(id)...)
-	if len(v) != 1+8 {
-		panic(fmt.Errorf("invalid key length %d; expected %d", len(v), 1+8))
-	}
-
-	return v
+	return append(SessionKeyPrefix, sdk.Uint64ToBigEndian(id)...)
 }
 
 func GetSessionForSubscriptionKeyPrefix(id uint64) []byte {
-	v := append(SessionForSubscriptionKeyPrefix, sdk.Uint64ToBigEndian(id)...)
-	if len(v) != 1+8 {
-		panic(fmt.Errorf("invalid key length %d; expected %d", len(v), 1+8))
-	}
-
-	return v
+	return append(SessionForSubscriptionKeyPrefix, sdk.Uint64ToBigEndian(id)...)
 }
 
 func SessionForSubscriptionKey(subscription, id uint64) []byte {
-	v := append(GetSessionForSubscriptionKeyPrefix(subscription), sdk.Uint64ToBigEndian(id)...)
-	if len(v) != 1+2*8 {
-		panic(fmt.Errorf("invalid key length %d; expected %d", len(v), 1+2*8))
-	}
-
-	return v
+	return append(GetSessionForSubscriptionKeyPrefix(subscription), sdk.Uint64ToBigEndian(id)...)
 }
 
 func GetSessionForNodeKeyPrefix(address hubtypes.NodeAddress) []byte {
@@ -77,12 +62,7 @@ func GetSessionForNodeKeyPrefix(address hubtypes.NodeAddress) []byte {
 }
 
 func SessionForNodeKey(address hubtypes.NodeAddress, id uint64) []byte {
-	v := append(GetSessionForNodeKeyPrefix(address), sdk.Uint64ToBigEndian(id)...)
-	if len(v) != 1+sdk.AddrLen+8 {
-		panic(fmt.Errorf("invalid key length %d; expected %d", len(v), 1+sdk.AddrLen+8))
-	}
-
-	return v
+	return append(GetSessionForNodeKeyPrefix(address), sdk.Uint64ToBigEndian(id)...)
 }
 
 func GetInactiveSessionForAddressKeyPrefix(address sdk.AccAddress) []byte {
@@ -95,12 +75,7 @@ func GetInactiveSessionForAddressKeyPrefix(address sdk.AccAddress) []byte {
 }
 
 func InactiveSessionForAddressKey(address sdk.AccAddress, id uint64) []byte {
-	v := append(GetInactiveSessionForAddressKeyPrefix(address), sdk.Uint64ToBigEndian(id)...)
-	if len(v) != 1+sdk.AddrLen+8 {
-		panic(fmt.Errorf("invalid key length %d; expected %d", len(v), 1+sdk.AddrLen+8))
-	}
-
-	return v
+	return append(GetInactiveSessionForAddressKeyPrefix(address), sdk.Uint64ToBigEndian(id)...)
 }
 
 func GetActiveSessionForAddressKeyPrefix(address sdk.AccAddress) []byte {
@@ -113,30 +88,15 @@ func GetActiveSessionForAddressKeyPrefix(address sdk.AccAddress) []byte {
 }
 
 func ActiveSessionForAddressKey(address sdk.AccAddress, id uint64) []byte {
-	v := append(GetActiveSessionForAddressKeyPrefix(address), sdk.Uint64ToBigEndian(id)...)
-	if len(v) != 1+sdk.AddrLen+8 {
-		panic(fmt.Errorf("invalid key length %d; expected %d", len(v), 1+sdk.AddrLen+8))
-	}
-
-	return v
+	return append(GetActiveSessionForAddressKeyPrefix(address), sdk.Uint64ToBigEndian(id)...)
 }
 
 func GetInactiveSessionAtKeyPrefix(at time.Time) []byte {
-	v := append(InactiveSessionAtKeyPrefix, sdk.FormatTimeBytes(at)...)
-	if len(v) != 1+29 {
-		panic(fmt.Errorf("invalid key length %d; expected %d", len(v), 1+29))
-	}
-
-	return v
+	return append(InactiveSessionAtKeyPrefix, sdk.FormatTimeBytes(at)...)
 }
 
 func InactiveSessionAtKey(at time.Time, id uint64) []byte {
-	v := append(GetInactiveSessionAtKeyPrefix(at), sdk.Uint64ToBigEndian(id)...)
-	if len(v) != 1+29+8 {
-		panic(fmt.Errorf("invalid key length %d; expected %d", len(v), 1+29+8))
-	}
-
-	return v
+	return append(GetInactiveSessionAtKeyPrefix(at), sdk.Uint64ToBigEndian(id)...)
 }
 
 func IDFromSessionForSubscriptionKey(key []byte) uint64 {
