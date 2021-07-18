@@ -103,12 +103,7 @@ func InactiveNodeForProviderKey(provider hubtypes.ProvAddress, address hubtypes.
 }
 
 func GetInactiveNodeAtKeyPrefix(at time.Time) []byte {
-	v := append(InactiveNodeAtKeyPrefix, sdk.FormatTimeBytes(at)...)
-	if len(v) != 1+29 {
-		panic(fmt.Errorf("invalid key length %d; expected %d", len(v), 1+29))
-	}
-
-	return v
+	return append(InactiveNodeAtKeyPrefix, sdk.FormatTimeBytes(at)...)
 }
 
 func InactiveNodeAtKey(at time.Time, address hubtypes.NodeAddress) []byte {
