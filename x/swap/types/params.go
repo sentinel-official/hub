@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/errors"
 	params "github.com/cosmos/cosmos-sdk/x/params/types"
 )
 
@@ -23,27 +24,28 @@ var (
 	_ params.ParamSet = (*Params)(nil)
 )
 
-func (p *Params) Validate() error {
-	if err := sdk.ValidateDenom(p.SwapDenom); err != nil {
-		return err
+func (m *Params) Validate() error {
+	if m.SwapDenom == "" {
+		return fmt.Errorf("swap_denom cannot be emtpy")
 	}
-
-	approveBy, err := sdk.AccAddressFromBech32(p.ApproveBy)
-	if err != nil {
-		return err
+	if err := sdk.ValidateDenom(m.SwapDenom); err != nil {
+		return errors.Wrapf(err, "invalid swap_denom %s", m.SwapDenom)
 	}
-	if approveBy == nil || approveBy.Empty() {
-		return fmt.Errorf("approve_by should not nil or empty")
+	if m.ApproveBy == "" {
+		return fmt.Errorf("approve_by cannot be empty")
+	}
+	if _, err := sdk.AccAddressFromBech32(m.ApproveBy); err != nil {
+		return errors.Wrapf(err, "invalid approve_by %s", m.ApproveBy)
 	}
 
 	return nil
 }
 
-func (p *Params) ParamSetPairs() params.ParamSetPairs {
+func (m *Params) ParamSetPairs() params.ParamSetPairs {
 	return params.ParamSetPairs{
 		{
 			Key:   KeySwapEnabled,
-			Value: &p.SwapEnabled,
+			Value: &m.SwapEnabled,
 			ValidatorFn: func(v interface{}) error {
 				_, ok := v.(bool)
 				if !ok {
@@ -55,28 +57,37 @@ func (p *Params) ParamSetPairs() params.ParamSetPairs {
 		},
 		{
 			Key:   KeySwapDenom,
-			Value: &p.SwapDenom,
+			Value: &m.SwapDenom,
 			ValidatorFn: func(v interface{}) error {
 				value, ok := v.(string)
 				if !ok {
 					return fmt.Errorf("invalid parameter type %T", v)
 				}
 
-				return sdk.ValidateDenom(value)
+				if value == "" {
+					return fmt.Errorf("value cannot be emtpy")
+				}
+				if err := sdk.ValidateDenom(value); err != nil {
+					return errors.Wrapf(err, "invalid value %s", value)
+				}
+
+				return nil
 			},
 		},
 		{
 			Key:   KeyApproveBy,
-			Value: &p.ApproveBy,
+			Value: &m.ApproveBy,
 			ValidatorFn: func(v interface{}) error {
 				value, ok := v.(string)
 				if !ok {
 					return fmt.Errorf("invalid parameter type %T", v)
 				}
 
-				_, err := sdk.AccAddressFromBech32(value)
-				if err != nil {
-					return err
+				if value == "" {
+					return fmt.Errorf("value cannot be empty")
+				}
+				if _, err := sdk.AccAddressFromBech32(value); err != nil {
+					return errors.Wrapf(err, "invalid value %s", value)
 				}
 
 				return nil
