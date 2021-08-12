@@ -86,7 +86,6 @@ func (k *msgServer) MsgStart(c context.Context, msg *types.MsgStartRequest) (*ty
 			Status:       hubtypes.StatusActive,
 			StatusAt:     ctx.BlockTime(),
 		}
-		sessionNode    = session.GetNode()
 		sessionAddress = session.GetAddress()
 	)
 
@@ -98,9 +97,6 @@ func (k *msgServer) MsgStart(c context.Context, msg *types.MsgStartRequest) (*ty
 	)
 
 	k.SetSession(ctx, session)
-	k.SetSessionForSubscription(ctx, session.Subscription, session.Id)
-	k.SetSessionForNode(ctx, sessionNode, session.Id)
-
 	k.SetActiveSessionForAddress(ctx, sessionAddress, session.Id)
 	k.SetInactiveSessionAt(ctx, session.StatusAt.Add(inactiveDuration), session.Id)
 	ctx.EventManager().EmitTypedEvent(

@@ -91,60 +91,6 @@ func (k *Keeper) IterateSessions(ctx sdk.Context, fn func(index int, item types.
 	}
 }
 
-func (k *Keeper) SetSessionForSubscription(ctx sdk.Context, subscription, id uint64) {
-	key := types.SessionForSubscriptionKey(subscription, id)
-	value := k.cdc.MustMarshalBinaryBare(&protobuf.BoolValue{Value: true})
-
-	store := k.Store(ctx)
-	store.Set(key, value)
-}
-
-func (k *Keeper) GetSessionsForSubscription(ctx sdk.Context, id uint64, skip, limit int64) (items types.Sessions) {
-	var (
-		store = k.Store(ctx)
-		iter  = hubtypes.NewPaginatedIterator(
-			sdk.KVStorePrefixIterator(store, types.GetSessionForSubscriptionKeyPrefix(id)),
-		)
-	)
-
-	defer iter.Close()
-
-	iter.Skip(skip)
-	iter.Limit(limit, func(iter sdk.Iterator) {
-		item, _ := k.GetSession(ctx, types.IDFromSessionForSubscriptionKey(iter.Key()))
-		items = append(items, item)
-	})
-
-	return items
-}
-
-func (k *Keeper) SetSessionForNode(ctx sdk.Context, address hubtypes.NodeAddress, id uint64) {
-	key := types.SessionForNodeKey(address, id)
-	value := k.cdc.MustMarshalBinaryBare(&protobuf.BoolValue{Value: true})
-
-	store := k.Store(ctx)
-	store.Set(key, value)
-}
-
-func (k *Keeper) GetSessionsForNode(ctx sdk.Context, address hubtypes.NodeAddress, skip, limit int64) (items types.Sessions) {
-	var (
-		store = k.Store(ctx)
-		iter  = hubtypes.NewPaginatedIterator(
-			sdk.KVStorePrefixIterator(store, types.GetSessionForNodeKeyPrefix(address)),
-		)
-	)
-
-	defer iter.Close()
-
-	iter.Skip(skip)
-	iter.Limit(limit, func(iter sdk.Iterator) {
-		item, _ := k.GetSession(ctx, types.IDFromSessionForNodeKey(iter.Key()))
-		items = append(items, item)
-	})
-
-	return items
-}
-
 func (k *Keeper) SetInactiveSessionForAddress(ctx sdk.Context, address sdk.AccAddress, id uint64) {
 	key := types.InactiveSessionForAddressKey(address, id)
 	value := k.cdc.MustMarshalBinaryBare(&protobuf.BoolValue{Value: true})

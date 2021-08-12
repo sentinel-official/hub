@@ -11,10 +11,7 @@ import (
 func InitGenesis(ctx sdk.Context, k keeper.Keeper, state *types.GenesisState) {
 	k.SetParams(ctx, state.Params)
 
-	var (
-		inactiveDuration = k.InactiveDuration(ctx)
-	)
-
+	inactiveDuration := k.InactiveDuration(ctx)
 	for _, node := range state.Nodes {
 		var (
 			address  = node.GetAddress()
