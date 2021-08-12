@@ -5,8 +5,6 @@ import (
 	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-
-	hubtypes "github.com/sentinel-official/hub/types"
 )
 
 const (
@@ -35,8 +33,6 @@ var (
 var (
 	CountKey                                = []byte{0x00}
 	SubscriptionKeyPrefix                   = []byte{0x10}
-	SubscriptionForNodeKeyPrefix            = []byte{0x11}
-	SubscriptionForPlanKeyPrefix            = []byte{0x12}
 	ActiveSubscriptionForAddressKeyPrefix   = []byte{0x20}
 	InactiveSubscriptionForAddressKeyPrefix = []byte{0x21}
 	InactiveSubscriptionAtKeyPrefix         = []byte{0x30}
@@ -45,27 +41,6 @@ var (
 
 func SubscriptionKey(id uint64) []byte {
 	return append(SubscriptionKeyPrefix, sdk.Uint64ToBigEndian(id)...)
-}
-
-func GetSubscriptionForNodeKeyPrefix(address hubtypes.NodeAddress) []byte {
-	v := append(SubscriptionForNodeKeyPrefix, address.Bytes()...)
-	if len(v) != 1+sdk.AddrLen {
-		panic(fmt.Errorf("invalid key length %d; expected %d", len(v), 1+sdk.AddrLen))
-	}
-
-	return v
-}
-
-func SubscriptionForNodeKey(address hubtypes.NodeAddress, id uint64) []byte {
-	return append(GetSubscriptionForNodeKeyPrefix(address), sdk.Uint64ToBigEndian(id)...)
-}
-
-func GetSubscriptionForPlanKeyPrefix(id uint64) []byte {
-	return append(SubscriptionForPlanKeyPrefix, sdk.Uint64ToBigEndian(id)...)
-}
-
-func SubscriptionForPlanKey(p, s uint64) []byte {
-	return append(GetSubscriptionForPlanKeyPrefix(p), sdk.Uint64ToBigEndian(s)...)
 }
 
 func GetActiveSubscriptionForAddressKeyPrefix(address sdk.AccAddress) []byte {

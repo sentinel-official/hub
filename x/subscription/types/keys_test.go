@@ -196,39 +196,6 @@ func TestQuotaKey(t *testing.T) {
 	}
 }
 
-func TestSubscriptionForNodeKey(t *testing.T) {
-	var (
-		address []byte
-	)
-
-	for i := 0; i < 41; i++ {
-		address = make([]byte, i)
-		_, _ = rand.Read(address)
-
-		if i == 20 {
-			require.Equal(
-				t,
-				append(append(SubscriptionForNodeKeyPrefix, address...), sdk.Uint64ToBigEndian(1000)...),
-				SubscriptionForNodeKey(address, 1000),
-			)
-
-			continue
-		}
-
-		require.Panics(t, func() {
-			SubscriptionForNodeKey(address, 1000)
-		})
-	}
-}
-
-func TestSubscriptionForPlanKey(t *testing.T) {
-	require.Equal(
-		t,
-		append(append(SubscriptionForPlanKeyPrefix, sdk.Uint64ToBigEndian(1000)...), sdk.Uint64ToBigEndian(1000)...),
-		SubscriptionForPlanKey(1000, 1000),
-	)
-}
-
 func TestSubscriptionKey(t *testing.T) {
 	require.Equal(
 		t,

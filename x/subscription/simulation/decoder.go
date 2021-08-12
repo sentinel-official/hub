@@ -26,18 +26,7 @@ func NewStoreDecoder(cdc codec.Marshaler) func(kvA, kvB kv.Pair) string {
 			cdc.MustUnmarshalBinaryBare(kvB.Value, &subscriptionB)
 
 			return fmt.Sprintf("%v\n%v", &subscriptionA, &subscriptionB)
-		case bytes.Equal(kvA.Key[:1], types.SubscriptionForNodeKeyPrefix):
-			var subscriptionForNodeA, subscriptionForNodeB protobuftypes.BoolValue
-			cdc.MustUnmarshalBinaryBare(kvA.Value, &subscriptionForNodeA)
-			cdc.MustUnmarshalBinaryBare(kvB.Value, &subscriptionForNodeB)
 
-			return fmt.Sprintf("%v\n%v", &subscriptionForNodeA, &subscriptionForNodeB)
-		case bytes.Equal(kvA.Key[:1], types.SubscriptionForPlanKeyPrefix):
-			var subscriptionForPlanA, subscriptionForPlanB protobuftypes.BoolValue
-			cdc.MustUnmarshalBinaryBare(kvA.Value, &subscriptionForPlanA)
-			cdc.MustUnmarshalBinaryBare(kvB.Value, &subscriptionForPlanB)
-
-			return fmt.Sprintf("%v\n%v", &subscriptionForPlanA, &subscriptionForPlanB)
 		case bytes.Equal(kvA.Key[:1], types.ActiveSubscriptionForAddressKeyPrefix):
 			var activeSubscriptionForAddressA, activeSubscriptionForAddressB protobuftypes.BoolValue
 			cdc.MustUnmarshalBinaryBare(kvA.Value, &activeSubscriptionForAddressA)
