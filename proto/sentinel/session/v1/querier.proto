@@ -17,16 +17,6 @@ message QuerySessionsRequest {
   cosmos.base.query.v1beta1.PageRequest pagination = 1;
 }
 
-message QuerySessionsForSubscriptionRequest {
-  uint64 id                                        = 1;
-  cosmos.base.query.v1beta1.PageRequest pagination = 2;
-}
-
-message QuerySessionsForNodeRequest {
-  string address                                   = 1;
-  cosmos.base.query.v1beta1.PageRequest pagination = 2;
-}
-
 message QuerySessionsForAddressRequest {
   string address                                   = 1;
   sentinel.types.v1.Status status                  = 2;
@@ -38,16 +28,6 @@ message QuerySessionRequest { uint64 id = 1; }
 message QueryParamsRequest {}
 
 message QuerySessionsResponse {
-  repeated Session sessions = 1 [ (gogoproto.nullable) = false ];
-  cosmos.base.query.v1beta1.PageResponse pagination = 2;
-}
-
-message QuerySessionsForSubscriptionResponse {
-  repeated Session sessions = 1 [ (gogoproto.nullable) = false ];
-  cosmos.base.query.v1beta1.PageResponse pagination = 2;
-}
-
-message QuerySessionsForNodeResponse {
   repeated Session sessions = 1 [ (gogoproto.nullable) = false ];
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
@@ -68,16 +48,6 @@ message QueryParamsResponse {
 service QueryService {
   rpc QuerySessions(QuerySessionsRequest) returns (QuerySessionsResponse) {
     option (google.api.http).get = "/sentinel/sessions";
-  }
-
-  rpc QuerySessionsForNode(QuerySessionsForNodeRequest)
-      returns (QuerySessionsForNodeResponse) {
-    option (google.api.http).get = "/sentinel/nodes/{address}/sessions";
-  }
-
-  rpc QuerySessionsForSubscription(QuerySessionsForSubscriptionRequest)
-      returns (QuerySessionsForSubscriptionResponse) {
-    option (google.api.http).get = "/sentinel/subscriptions/{id}/sessions";
   }
 
   rpc QuerySessionsForAddress(QuerySessionsForAddressRequest)

@@ -5,8 +5,6 @@ import (
 	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-
-	hubtypes "github.com/sentinel-official/hub/types"
 )
 
 const (
@@ -33,8 +31,6 @@ var (
 var (
 	CountKey                           = []byte{0x00}
 	SessionKeyPrefix                   = []byte{0x11}
-	SessionForSubscriptionKeyPrefix    = []byte{0x20}
-	SessionForNodeKeyPrefix            = []byte{0x21}
 	InactiveSessionForAddressKeyPrefix = []byte{0x30}
 	ActiveSessionForAddressKeyPrefix   = []byte{0x31}
 	InactiveSessionAtKeyPrefix         = []byte{0x40}
@@ -42,27 +38,6 @@ var (
 
 func SessionKey(id uint64) []byte {
 	return append(SessionKeyPrefix, sdk.Uint64ToBigEndian(id)...)
-}
-
-func GetSessionForSubscriptionKeyPrefix(id uint64) []byte {
-	return append(SessionForSubscriptionKeyPrefix, sdk.Uint64ToBigEndian(id)...)
-}
-
-func SessionForSubscriptionKey(subscription, id uint64) []byte {
-	return append(GetSessionForSubscriptionKeyPrefix(subscription), sdk.Uint64ToBigEndian(id)...)
-}
-
-func GetSessionForNodeKeyPrefix(address hubtypes.NodeAddress) []byte {
-	v := append(SessionForNodeKeyPrefix, address.Bytes()...)
-	if len(v) != 1+sdk.AddrLen {
-		panic(fmt.Errorf("invalid key length %d; expected %d", len(v), 1+sdk.AddrLen))
-	}
-
-	return v
-}
-
-func SessionForNodeKey(address hubtypes.NodeAddress, id uint64) []byte {
-	return append(GetSessionForNodeKeyPrefix(address), sdk.Uint64ToBigEndian(id)...)
 }
 
 func GetInactiveSessionForAddressKeyPrefix(address sdk.AccAddress) []byte {
