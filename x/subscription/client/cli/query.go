@@ -9,13 +9,12 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/spf13/cobra"
 
-	hubtypes "github.com/sentinel-official/hub/types"
 	"github.com/sentinel-official/hub/x/subscription/types"
 )
 
 func querySubscription() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "subscription",
+		Use:   "subscription [id]",
 		Short: "Query a subscription",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -33,8 +32,12 @@ func querySubscription() *cobra.Command {
 				qc = types.NewQueryServiceClient(ctx)
 			)
 
-			res, err := qc.QuerySubscription(context.Background(),
-				types.NewQuerySubscriptionRequest(id))
+			res, err := qc.QuerySubscription(
+				context.Background(),
+				types.NewQuerySubscriptionRequest(
+					id,
+				),
+			)
 			if err != nil {
 				return err
 			}
@@ -58,12 +61,12 @@ func querySubscriptions() *cobra.Command {
 				return err
 			}
 
-			address, err := cmd.Flags().GetString(flagAddress)
+			address, err := GetAddress(cmd.Flags())
 			if err != nil {
 				return err
 			}
 
-			status, err := cmd.Flags().GetString(flagStatus)
+			status, err := GetStatus(cmd.Flags())
 			if err != nil {
 				return err
 			}
@@ -77,42 +80,47 @@ func querySubscriptions() *cobra.Command {
 				qc = types.NewQueryServiceClient(ctx)
 			)
 
-			if len(address) > 0 {
-				address, err := sdk.AccAddressFromBech32(address)
-				if err != nil {
-					return err
-				}
-
-				res, err := qc.QuerySubscriptionsForAddress(context.Background(),
-					types.NewQuerySubscriptionsForAddressRequest(address, hubtypes.StatusFromString(status), pagination))
-				if err != nil {
-					return err
-				}
-
-				return ctx.PrintProto(res)
-			} else {
-				res, err := qc.QuerySubscriptions(context.Background(),
-					types.NewQuerySubscriptionsRequest(pagination))
+			if address != nil {
+				res, err := qc.QuerySubscriptionsForAddress(
+					context.Background(),
+					types.NewQuerySubscriptionsForAddressRequest(
+						address,
+						status,
+						pagination,
+					),
+				)
 				if err != nil {
 					return err
 				}
 
 				return ctx.PrintProto(res)
 			}
+
+			res, err := qc.QuerySubscriptions(
+				context.Background(),
+				types.NewQuerySubscriptionsRequest(
+					pagination,
+				),
+			)
+			if err != nil {
+				return err
+			}
+
+			return ctx.PrintProto(res)
 		},
 	}
 
 	flags.AddQueryFlagsToCmd(cmd)
 	flags.AddPaginationFlagsToCmd(cmd, "subscriptions")
-	cmd.Flags().String(flagAddress, "", "account address")
-	cmd.Flags().String(flagStatus, "", "status")
+	cmd.Flags().String(flagAddress, "", "filter by account address")
+	cmd.Flags().String(flagStatus, "", "filter by status")
 
 	return cmd
 }
 
 func queryQuota() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "quota [id] [address]",
+		Use:   "quota [subscription] [address]",
 		Short: "Query a quota of an address",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -135,8 +143,13 @@ func queryQuota() *cobra.Command {
 				qc = types.NewQueryServiceClient(ctx)
 			)
 
-			res, err := qc.QueryQuota(context.Background(),
-				types.NewQueryQuotaRequest(id, address))
+			res, err := qc.QueryQuota(
+				context.Background(),
+				types.NewQueryQuotaRequest(
+					id,
+					address,
+				),
+			)
 			if err != nil {
 				return err
 			}
@@ -152,7 +165,7 @@ func queryQuota() *cobra.Command {
 
 func queryQuotas() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "quotas",
+		Use:   "quotas [subscription]",
 		Short: "Query quotas of a subscription",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
@@ -175,7 +188,13 @@ func queryQuotas() *cobra.Command {
 				qc = types.NewQueryServiceClient(ctx)
 			)
 
-			res, err := qc.QueryQuotas(context.Background(), types.NewQueryQuotasRequest(id, pagination))
+			res, err := qc.QueryQuotas(
+				context.Background(),
+				types.NewQueryQuotasRequest(
+					id,
+					pagination,
+				),
+			)
 			if err != nil {
 				return err
 			}
@@ -204,8 +223,10 @@ func queryParams() *cobra.Command {
 				qc = types.NewQueryServiceClient(ctx)
 			)
 
-			res, err := qc.QueryParams(context.Background(),
-				types.NewQueryParamsRequest())
+			res, err := qc.QueryParams(
+				context.Background(),
+				types.NewQueryParamsRequest(),
+			)
 			if err != nil {
 				return err
 			}

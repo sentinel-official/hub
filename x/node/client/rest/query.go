@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/cosmos/cosmos-sdk/client"
+	sdkquery "github.com/cosmos/cosmos-sdk/types/query"
 	"github.com/cosmos/cosmos-sdk/types/rest"
 	"github.com/gorilla/mux"
 
@@ -14,22 +15,23 @@ import (
 
 func queryNode(ctx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		vars := mux.Vars(r)
+		var (
+			qc   = types.NewQueryServiceClient(ctx)
+			vars = mux.Vars(r)
+		)
 
 		address, err := hubtypes.NodeAddressFromBech32(vars["address"])
-		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+		if rest.CheckBadRequestError(w, err) {
 			return
 		}
 
-		var (
-			qc = types.NewQueryServiceClient(ctx)
+		res, err := qc.QueryNode(
+			context.Background(),
+			types.NewQueryNodeRequest(
+				address,
+			),
 		)
-
-		res, err := qc.QueryNode(context.Background(),
-			types.NewQueryNodeRequest(address))
-		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+		if rest.CheckInternalServerError(w, err) {
 			return
 		}
 
@@ -40,22 +42,34 @@ func queryNode(ctx client.Context) http.HandlerFunc {
 func queryNodes(ctx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var (
+			qc     = types.NewQueryServiceClient(ctx)
 			query  = r.URL.Query()
 			status = hubtypes.StatusFromString(query.Get("status"))
-			qc     = types.NewQueryServiceClient(ctx)
 		)
+
+		_, page, limit, err := rest.ParseHTTPArgs(r)
+		if rest.CheckBadRequestError(w, err) {
+			return
+		}
 
 		if query.Get("provider") != "" {
 			address, err := hubtypes.ProvAddressFromBech32(query.Get("provider"))
-			if err != nil {
-				rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+			if rest.CheckBadRequestError(w, err) {
 				return
 			}
 
-			res, err := qc.QueryNodesForProvider(context.Background(),
-				types.NewQueryNodesForProviderRequest(address, status, nil))
-			if err != nil {
-				rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+			res, err := qc.QueryNodesForProvider(
+				context.Background(),
+				types.NewQueryNodesForProviderRequest(
+					address,
+					status,
+					&sdkquery.PageRequest{
+						Offset: uint64(page * limit),
+						Limit:  uint64(limit),
+					},
+				),
+			)
+			if rest.CheckInternalServerError(w, err) {
 				return
 			}
 
@@ -64,16 +78,22 @@ func queryNodes(ctx client.Context) http.HandlerFunc {
 		} else if query.Get("plan") != "" {
 			rest.PostProcessResponse(w, ctx, nil)
 			return
-		} else {
-			res, err := qc.QueryNodes(context.Background(),
-				types.NewQueryNodesRequest(status, nil))
-			if err != nil {
-				rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
-				return
-			}
+		}
 
-			rest.PostProcessResponse(w, ctx, res)
+		res, err := qc.QueryNodes(
+			context.Background(),
+			types.NewQueryNodesRequest(
+				status,
+				&sdkquery.PageRequest{
+					Offset: uint64(page * limit),
+					Limit:  uint64(limit),
+				},
+			),
+		)
+		if rest.CheckInternalServerError(w, err) {
 			return
 		}
+
+		rest.PostProcessResponse(w, ctx, res)
 	}
 }
