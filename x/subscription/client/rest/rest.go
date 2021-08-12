@@ -16,20 +16,6 @@ func registerQueryRoutes(ctx client.Context, router *mux.Router) {
 		Methods("GET")
 }
 
-func registerTxRoutes(ctx client.Context, router *mux.Router) {
-	router.HandleFunc("/subscriptions", txSubscribeToNode(ctx)).
-		Methods("POST")
-	router.HandleFunc("/subscriptions", txSubscribeToPlan(ctx)).
-		Methods("POST")
-	router.HandleFunc("/subscriptions", txCancel(ctx)).
-		Methods("DELETE")
-	router.HandleFunc("/subscriptions/{id}/quotas", txAddQuota(ctx)).
-		Methods("POST")
-	router.HandleFunc("/subscriptions/{id}/quotas/{address}", txUpdateQuota(ctx)).
-		Methods("PUT")
-}
-
 func RegisterRoutes(ctx client.Context, router *mux.Router) {
 	registerQueryRoutes(ctx, router)
-	registerTxRoutes(ctx, router)
 }

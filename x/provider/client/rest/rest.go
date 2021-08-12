@@ -12,14 +12,6 @@ func registerQueryRoutes(ctx client.Context, router *mux.Router) {
 		Methods("GET")
 }
 
-func registerTxRoutes(ctx client.Context, router *mux.Router) {
-	router.HandleFunc("/providers", txRegister(ctx)).
-		Methods("POST")
-	router.HandleFunc("/providers/{address}", txUpdate(ctx)).
-		Methods("PUT")
-}
-
 func RegisterRoutes(ctx client.Context, router *mux.Router) {
 	registerQueryRoutes(ctx, router)
-	registerTxRoutes(ctx, router)
 }
