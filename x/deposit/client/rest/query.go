@@ -6,6 +6,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/client"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkquery "github.com/cosmos/cosmos-sdk/types/query"
 	"github.com/cosmos/cosmos-sdk/types/rest"
 	"github.com/gorilla/mux"
 
@@ -14,22 +15,23 @@ import (
 
 func queryDeposit(ctx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		vars := mux.Vars(r)
+		var (
+			qc   = types.NewQueryServiceClient(ctx)
+			vars = mux.Vars(r)
+		)
 
 		address, err := sdk.AccAddressFromBech32(vars["address"])
-		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+		if rest.CheckBadRequestError(w, err) {
 			return
 		}
 
-		var (
-			qc = types.NewQueryServiceClient(ctx)
+		res, err := qc.QueryDeposit(
+			context.Background(),
+			types.NewQueryDepositRequest(
+				address,
+			),
 		)
-
-		res, err := qc.QueryDeposit(context.Background(),
-			types.NewQueryDepositRequest(address))
-		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+		if rest.CheckInternalServerError(w, err) {
 			return
 		}
 
@@ -43,10 +45,21 @@ func queryDeposits(ctx client.Context) http.HandlerFunc {
 			qc = types.NewQueryServiceClient(ctx)
 		)
 
-		res, err := qc.QueryDeposits(context.Background(),
-			types.NewQueryDepositsRequest(nil))
-		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+		_, page, limit, err := rest.ParseHTTPArgs(r)
+		if rest.CheckBadRequestError(w, err) {
+			return
+		}
+
+		res, err := qc.QueryDeposits(
+			context.Background(),
+			types.NewQueryDepositsRequest(
+				&sdkquery.PageRequest{
+					Offset: uint64(page * limit),
+					Limit:  uint64(limit),
+				},
+			),
+		)
+		if rest.CheckInternalServerError(w, err) {
 			return
 		}
 

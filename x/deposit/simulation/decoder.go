@@ -10,7 +10,7 @@ import (
 	"github.com/sentinel-official/hub/x/deposit/types"
 )
 
-func NewDecodeStore(cdc codec.Marshaler) func(kvA, kvB kv.Pair) string {
+func NewStoreDecoder(cdc codec.Marshaler) func(kvA, kvB kv.Pair) string {
 	return func(kvA, kvB kv.Pair) string {
 		if bytes.Equal(kvA.Key[:1], types.DepositKeyPrefix) {
 			var depositA, depositB types.Deposit
