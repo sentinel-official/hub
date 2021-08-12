@@ -19,20 +19,6 @@ func NewQuerySubscriptionsRequest(pagination *query.PageRequest) *QuerySubscript
 	}
 }
 
-func NewQuerySubscriptionsForNodeRequest(address hubtypes.NodeAddress, pagination *query.PageRequest) *QuerySubscriptionsForNodeRequest {
-	return &QuerySubscriptionsForNodeRequest{
-		Address:    address.String(),
-		Pagination: pagination,
-	}
-}
-
-func NewQuerySubscriptionsForPlanRequest(id uint64, pagination *query.PageRequest) *QuerySubscriptionsForPlanRequest {
-	return &QuerySubscriptionsForPlanRequest{
-		Id:         id,
-		Pagination: pagination,
-	}
-}
-
 func NewQuerySubscriptionsForAddressRequest(address sdk.AccAddress, status hubtypes.Status, pagination *query.PageRequest) *QuerySubscriptionsForAddressRequest {
 	return &QuerySubscriptionsForAddressRequest{
 		Address:    address.String(),

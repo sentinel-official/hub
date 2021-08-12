@@ -58,17 +58,7 @@ func querySubscriptions() *cobra.Command {
 				return err
 			}
 
-			bech32Address, err := cmd.Flags().GetString(flagAddress)
-			if err != nil {
-				return err
-			}
-
-			plan, err := cmd.Flags().GetUint64(flagPlan)
-			if err != nil {
-				return err
-			}
-
-			bech32Node, err := cmd.Flags().GetString(flagNodeAddress)
+			address, err := cmd.Flags().GetString(flagAddress)
 			if err != nil {
 				return err
 			}
@@ -87,35 +77,14 @@ func querySubscriptions() *cobra.Command {
 				qc = types.NewQueryServiceClient(ctx)
 			)
 
-			if len(bech32Address) > 0 {
-				address, err := sdk.AccAddressFromBech32(bech32Address)
+			if len(address) > 0 {
+				address, err := sdk.AccAddressFromBech32(address)
 				if err != nil {
 					return err
 				}
 
 				res, err := qc.QuerySubscriptionsForAddress(context.Background(),
 					types.NewQuerySubscriptionsForAddressRequest(address, hubtypes.StatusFromString(status), pagination))
-				if err != nil {
-					return err
-				}
-
-				return ctx.PrintProto(res)
-			} else if plan > 0 {
-				res, err := qc.QuerySubscriptionsForPlan(context.Background(),
-					types.NewQuerySubscriptionsForPlanRequest(plan, pagination))
-				if err != nil {
-					return err
-				}
-
-				return ctx.PrintProto(res)
-			} else if len(bech32Node) > 0 {
-				address, err := hubtypes.NodeAddressFromBech32(bech32Node)
-				if err != nil {
-					return err
-				}
-
-				res, err := qc.QuerySubscriptionsForNode(context.Background(),
-					types.NewQuerySubscriptionsForNodeRequest(address, pagination))
 				if err != nil {
 					return err
 				}
@@ -136,8 +105,6 @@ func querySubscriptions() *cobra.Command {
 	flags.AddQueryFlagsToCmd(cmd)
 	flags.AddPaginationFlagsToCmd(cmd, "subscriptions")
 	cmd.Flags().String(flagAddress, "", "account address")
-	cmd.Flags().Uint64(flagPlan, 0, "plan ID")
-	cmd.Flags().String(flagNodeAddress, "", "node address")
 	cmd.Flags().String(flagStatus, "", "status")
 
 	return cmd

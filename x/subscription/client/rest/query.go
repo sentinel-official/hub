@@ -63,38 +63,6 @@ func querySubscriptions(ctx client.Context) http.HandlerFunc {
 
 			rest.PostProcessResponse(w, ctx, res)
 			return
-		} else if query.Get("plan") != "" {
-			id, err := strconv.ParseUint(query.Get("plan"), 10, 64)
-			if err != nil {
-				rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
-				return
-			}
-
-			res, err := qc.QuerySubscriptionsForPlan(context.Background(),
-				types.NewQuerySubscriptionsForPlanRequest(id, nil))
-			if err != nil {
-				rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
-				return
-			}
-
-			rest.PostProcessResponse(w, ctx, res)
-			return
-		} else if query.Get("node") != "" {
-			address, err := hubtypes.NodeAddressFromBech32(query.Get("node"))
-			if err != nil {
-				rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
-				return
-			}
-
-			res, err := qc.QuerySubscriptionsForNode(context.Background(),
-				types.NewQuerySubscriptionsForNodeRequest(address, nil))
-			if err != nil {
-				rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
-				return
-			}
-
-			rest.PostProcessResponse(w, ctx, res)
-			return
 		} else {
 			res, err := qc.QuerySubscriptions(context.Background(),
 				types.NewQuerySubscriptionsRequest(nil))

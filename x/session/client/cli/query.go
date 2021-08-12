@@ -58,17 +58,7 @@ func querySessions() *cobra.Command {
 				return err
 			}
 
-			subscription, err := cmd.Flags().GetUint64(flagSubscription)
-			if err != nil {
-				return err
-			}
-
-			bech32Node, err := cmd.Flags().GetString(flagNodeAddress)
-			if err != nil {
-				return err
-			}
-
-			bech32Address, err := cmd.Flags().GetString(flagAddress)
+			address, err := cmd.Flags().GetString(flagAddress)
 			if err != nil {
 				return err
 			}
@@ -82,28 +72,8 @@ func querySessions() *cobra.Command {
 				qc = types.NewQueryServiceClient(ctx)
 			)
 
-			if subscription > 0 {
-				res, err := qc.QuerySessionsForSubscription(context.Background(),
-					types.NewQuerySessionsForSubscriptionRequest(subscription, pagination))
-				if err != nil {
-					return err
-				}
-
-				return ctx.PrintProto(res)
-			} else if len(bech32Node) > 0 {
-				address, err := hubtypes.NodeAddressFromBech32(bech32Node)
-				if err != nil {
-					return err
-				}
-
-				res, err := qc.QuerySessionsForNode(context.Background(), types.NewQuerySessionsForNodeRequest(address, pagination))
-				if err != nil {
-					return err
-				}
-
-				return ctx.PrintProto(res)
-			} else if len(bech32Address) > 0 {
-				address, err := sdk.AccAddressFromBech32(bech32Address)
+			if len(address) > 0 {
+				address, err := sdk.AccAddressFromBech32(address)
 				if err != nil {
 					return err
 				}
@@ -144,8 +114,6 @@ func querySessions() *cobra.Command {
 	flags.AddQueryFlagsToCmd(cmd)
 	flags.AddPaginationFlagsToCmd(cmd, "sessions")
 	cmd.Flags().String(flagAddress, "", "account address")
-	cmd.Flags().Uint64(flagSubscription, 0, "subscription ID")
-	cmd.Flags().String(flagNodeAddress, "", "node address")
 	cmd.Flags().Bool(flagActive, false, "active sessions only")
 
 	return cmd

@@ -46,39 +46,7 @@ func querySessions(ctx client.Context) http.HandlerFunc {
 			qc    = types.NewQueryServiceClient(ctx)
 		)
 
-		if query.Get("subscription") != "" {
-			id, err := strconv.ParseUint(query.Get("subscription"), 10, 64)
-			if err != nil {
-				rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
-				return
-			}
-
-			res, err := qc.QuerySessionsForSubscription(context.Background(),
-				types.NewQuerySessionsForSubscriptionRequest(id, nil))
-			if err != nil {
-				rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
-				return
-			}
-
-			rest.PostProcessResponse(w, ctx, res)
-			return
-		} else if query.Get("node") != "" {
-			address, err := hubtypes.NodeAddressFromBech32(query.Get("node"))
-			if err != nil {
-				rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
-				return
-			}
-
-			res, err := qc.QuerySessionsForNode(context.Background(),
-				types.NewQuerySessionsForNodeRequest(address, nil))
-			if err != nil {
-				rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
-				return
-			}
-
-			rest.PostProcessResponse(w, ctx, res)
-			return
-		} else if query.Get("address") != "" {
+		if query.Get("address") != "" {
 			address, err := sdk.AccAddressFromBech32(query.Get("address"))
 			if err != nil {
 				rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())

@@ -106,59 +106,6 @@ func TestNewQuerySubscriptionsForAddressRequest(t *testing.T) {
 	}
 }
 
-func TestNewQuerySubscriptionsForNodeRequest(t *testing.T) {
-	var (
-		address    []byte
-		pagination *query.PageRequest
-	)
-
-	for i := 0; i < 40; i++ {
-		address = make([]byte, i)
-		pagination = &query.PageRequest{
-			Key:        make([]byte, i),
-			Offset:     uint64(i),
-			Limit:      uint64(i),
-			CountTotal: i/2 == 0,
-		}
-
-		_, _ = rand.Read(address)
-		_, _ = rand.Read(pagination.Key)
-
-		require.Equal(
-			t,
-			&QuerySubscriptionsForNodeRequest{
-				Address:    hubtypes.NodeAddress(address).String(),
-				Pagination: pagination,
-			},
-			NewQuerySubscriptionsForNodeRequest(address, pagination),
-		)
-	}
-}
-
-func TestNewQuerySubscriptionsForPlanRequest(t *testing.T) {
-	var (
-		pagination *query.PageRequest
-	)
-
-	for i := 0; i < 20; i++ {
-		pagination = &query.PageRequest{
-			Key:        make([]byte, i),
-			Offset:     uint64(i),
-			Limit:      uint64(i),
-			CountTotal: i/2 == 0,
-		}
-
-		require.Equal(
-			t,
-			&QuerySubscriptionsForPlanRequest{
-				Id:         uint64(i),
-				Pagination: pagination,
-			},
-			NewQuerySubscriptionsForPlanRequest(uint64(i), pagination),
-		)
-	}
-}
-
 func TestNewQuerySubscriptionsRequest(t *testing.T) {
 	var (
 		pagination *query.PageRequest
