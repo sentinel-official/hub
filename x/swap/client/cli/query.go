@@ -31,8 +31,12 @@ func querySwap() *cobra.Command {
 				qc = types.NewQueryServiceClient(ctx)
 			)
 
-			res, err := qc.QuerySwap(context.Background(),
-				types.NewQuerySwapRequest(types.BytesToHash(txHash)))
+			res, err := qc.QuerySwap(
+				context.Background(),
+				types.NewQuerySwapRequest(
+					types.BytesToHash(txHash),
+				),
+			)
 			if err != nil {
 				return err
 			}
@@ -65,8 +69,12 @@ func querySwaps() *cobra.Command {
 				qc = types.NewQueryServiceClient(ctx)
 			)
 
-			res, err := qc.QuerySwaps(context.Background(),
-				types.NewQuerySwapsRequest(pagination))
+			res, err := qc.QuerySwaps(
+				context.Background(),
+				types.NewQuerySwapsRequest(
+					pagination,
+				),
+			)
 			if err != nil {
 				return err
 			}
@@ -95,8 +103,10 @@ func queryParams() *cobra.Command {
 				qc = types.NewQueryServiceClient(ctx)
 			)
 
-			res, err := qc.QueryParams(context.Background(),
-				types.NewQueryParamsRequest())
+			res, err := qc.QueryParams(
+				context.Background(),
+				types.NewQueryParamsRequest(),
+			)
 			if err != nil {
 				return err
 			}

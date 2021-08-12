@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/cosmos/cosmos-sdk/client"
+	sdkquery "github.com/cosmos/cosmos-sdk/types/query"
 	"github.com/cosmos/cosmos-sdk/types/rest"
 	"github.com/gorilla/mux"
 
@@ -14,22 +15,23 @@ import (
 
 func querySwap(ctx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		vars := mux.Vars(r)
+		var (
+			qc   = types.NewQueryServiceClient(ctx)
+			vars = mux.Vars(r)
+		)
 
 		txHash, err := hex.DecodeString(vars["txHash"])
-		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+		if rest.CheckBadRequestError(w, err) {
 			return
 		}
 
-		var (
-			qc = types.NewQueryServiceClient(ctx)
+		res, err := qc.QuerySwap(
+			context.Background(),
+			types.NewQuerySwapRequest(
+				types.BytesToHash(txHash),
+			),
 		)
-
-		res, err := qc.QuerySwap(context.Background(),
-			types.NewQuerySwapRequest(types.BytesToHash(txHash)))
-		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+		if rest.CheckInternalServerError(w, err) {
 			return
 		}
 
@@ -43,10 +45,21 @@ func querySwaps(ctx client.Context) http.HandlerFunc {
 			qc = types.NewQueryServiceClient(ctx)
 		)
 
-		res, err := qc.QuerySwaps(context.Background(),
-			types.NewQuerySwapsRequest(nil))
-		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+		_, page, limit, err := rest.ParseHTTPArgs(r)
+		if rest.CheckBadRequestError(w, err) {
+			return
+		}
+
+		res, err := qc.QuerySwaps(
+			context.Background(),
+			types.NewQuerySwapsRequest(
+				&sdkquery.PageRequest{
+					Offset: uint64(page * limit),
+					Limit:  uint64(limit),
+				},
+			),
+		)
+		if rest.CheckInternalServerError(w, err) {
 			return
 		}
 
