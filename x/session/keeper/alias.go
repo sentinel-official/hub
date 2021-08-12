@@ -30,10 +30,6 @@ func (k *Keeper) GetNode(ctx sdk.Context, address hubtypes.NodeAddress) (nodetyp
 	return k.node.GetNode(ctx, address)
 }
 
-func (k *Keeper) HasSubscriptionForNode(ctx sdk.Context, address hubtypes.NodeAddress, id uint64) bool {
-	return k.subscription.HasSubscriptionForNode(ctx, address, id)
-}
-
 func (k *Keeper) GetSubscription(ctx sdk.Context, id uint64) (subscriptiontypes.Subscription, bool) {
 	return k.subscription.GetSubscription(ctx, id)
 }
