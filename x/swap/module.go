@@ -17,6 +17,7 @@ import (
 	abcitypes "github.com/tendermint/tendermint/abci/types"
 
 	"github.com/sentinel-official/hub/x/swap/client/cli"
+	"github.com/sentinel-official/hub/x/swap/client/rest"
 	"github.com/sentinel-official/hub/x/swap/keeper"
 	"github.com/sentinel-official/hub/x/swap/simulation"
 	"github.com/sentinel-official/hub/x/swap/types"
@@ -55,7 +56,9 @@ func (a AppModuleBasic) ValidateGenesis(cdc codec.JSONMarshaler, _ client.TxEnco
 	return state.Validate()
 }
 
-func (a AppModuleBasic) RegisterRESTRoutes(_ client.Context, _ *mux.Router) {}
+func (a AppModuleBasic) RegisterRESTRoutes(ctx client.Context, router *mux.Router) {
+	rest.RegisterRoutes(ctx, router)
+}
 
 func (a AppModuleBasic) RegisterGRPCGatewayRoutes(ctx client.Context, mux *runtime.ServeMux) {
 	_ = types.RegisterQueryServiceHandlerClient(context.Background(), mux, types.NewQueryServiceClient(ctx))

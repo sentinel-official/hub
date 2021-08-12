@@ -120,7 +120,7 @@ func queryNodes() *cobra.Command {
 	flags.AddQueryFlagsToCmd(cmd)
 	flags.AddPaginationFlagsToCmd(cmd, "nodes")
 	cmd.Flags().String(flagProvider, "", "filter by provider address")
-	cmd.Flags().Uint64(flagPlan, 0, "filter by subscription plan identity")
+	cmd.Flags().Uint64(flagPlan, 0, "filter by plan identity")
 	cmd.Flags().String(flagStatus, "", "filter by status")
 
 	return cmd

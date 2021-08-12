@@ -29,6 +29,7 @@ import (
 	subscriptionkeeper "github.com/sentinel-official/hub/x/subscription/keeper"
 	subscriptiontypes "github.com/sentinel-official/hub/x/subscription/types"
 	"github.com/sentinel-official/hub/x/vpn/client/cli"
+	"github.com/sentinel-official/hub/x/vpn/client/rest"
 	"github.com/sentinel-official/hub/x/vpn/expected"
 	"github.com/sentinel-official/hub/x/vpn/keeper"
 	"github.com/sentinel-official/hub/x/vpn/simulation"
@@ -68,7 +69,9 @@ func (a AppModuleBasic) ValidateGenesis(cdc codec.JSONMarshaler, _ client.TxEnco
 	return state.Validate()
 }
 
-func (a AppModuleBasic) RegisterRESTRoutes(_ client.Context, _ *mux.Router) {}
+func (a AppModuleBasic) RegisterRESTRoutes(ctx client.Context, router *mux.Router) {
+	rest.RegisterRoutes(ctx, router)
+}
 
 func (a AppModuleBasic) RegisterGRPCGatewayRoutes(ctx client.Context, mux *runtime.ServeMux) {
 	_ = deposittypes.RegisterQueryServiceHandlerClient(context.Background(), mux, deposittypes.NewQueryServiceClient(ctx))
