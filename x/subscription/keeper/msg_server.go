@@ -66,11 +66,9 @@ func (k *msgServer) MsgSubscribeToNode(c context.Context, msg *types.MsgSubscrib
 			Status:   hubtypes.StatusActive,
 			StatusAt: ctx.BlockTime(),
 		}
-		subscriptionNode = subscription.GetNode()
 	)
 
 	k.SetSubscription(ctx, subscription)
-	k.SetSubscriptionForNode(ctx, subscriptionNode, subscription.Id)
 	ctx.EventManager().EmitTypedEvent(
 		&types.EventSubscribeToNode{
 			Id:      subscription.Id,
@@ -159,7 +157,6 @@ func (k *msgServer) MsgSubscribeToPlan(c context.Context, msg *types.MsgSubscrib
 	)
 
 	k.SetSubscription(ctx, subscription)
-	k.SetSubscriptionForPlan(ctx, subscription.Plan, subscription.Id)
 	k.SetInactiveSubscriptionAt(ctx, subscription.Expiry, subscription.Id)
 	ctx.EventManager().EmitTypedEvent(
 		&types.EventSubscribeToPlan{

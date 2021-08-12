@@ -30,7 +30,6 @@ type NodeKeeper interface {
 }
 
 type SubscriptionKeeper interface {
-	HasSubscriptionForNode(ctx sdk.Context, address hubtypes.NodeAddress, id uint64) bool
 	GetSubscription(ctx sdk.Context, id uint64) (subscriptiontypes.Subscription, bool)
 	GetActiveSubscriptionsForAddress(ctx sdk.Context, address sdk.AccAddress, skip, limit int64) subscriptiontypes.Subscriptions
 

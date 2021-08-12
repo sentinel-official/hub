@@ -34,10 +34,7 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, state types.GenesisState) {
 		}
 	}
 
-	var (
-		count uint64 = 0
-	)
-
+	count := uint64(0)
 	for _, item := range state {
 		if item.Plan.Id > count {
 			count = item.Plan.Id

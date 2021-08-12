@@ -10,14 +10,9 @@ import (
 
 func InitGenesis(ctx sdk.Context, k keeper.Keeper, state *types.GenesisState) {
 	k.SetParams(ctx, state.Params)
+
 	for _, item := range state.Subscriptions {
 		k.SetSubscription(ctx, item.Subscription)
-
-		if item.Subscription.Id == 0 {
-			k.SetSubscriptionForNode(ctx, item.Subscription.GetNode(), item.Subscription.Id)
-		} else {
-			k.SetSubscriptionForPlan(ctx, item.Subscription.Plan, item.Subscription.Id)
-		}
 
 		for _, quota := range item.Quotas {
 			k.SetQuota(ctx, item.Subscription.Id, quota)
