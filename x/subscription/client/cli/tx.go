@@ -15,7 +15,7 @@ import (
 
 func txSubscribeToPlan() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "subscribe-plan [plan] [denom]",
+		Use:   "subscribe-to-plan [plan] [denom]",
 		Short: "Subscribe to a plan",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -29,7 +29,11 @@ func txSubscribeToPlan() *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgSubscribeToPlanRequest(ctx.FromAddress, id, args[1])
+			msg := types.NewMsgSubscribeToPlanRequest(
+				ctx.FromAddress,
+				id,
+				args[1],
+			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err
 			}
@@ -45,7 +49,7 @@ func txSubscribeToPlan() *cobra.Command {
 
 func txSubscribeToNode() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "subscribe-node [node] [deposit]",
+		Use:   "subscribe-to-node [node] [deposit]",
 		Short: "Subscribe to a node",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -64,7 +68,11 @@ func txSubscribeToNode() *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgSubscribeToNodeRequest(ctx.FromAddress, address, deposit)
+			msg := types.NewMsgSubscribeToNodeRequest(
+				ctx.FromAddress,
+				address,
+				deposit,
+			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err
 			}
@@ -81,7 +89,7 @@ func txSubscribeToNode() *cobra.Command {
 func txAddQuota() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "quota-add [subscription] [address] [bytes]",
-		Short: "Add a quota of a subscription",
+		Short: "Add a quota for a subscription",
 		Args:  cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientTxContext(cmd)
@@ -104,7 +112,12 @@ func txAddQuota() *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgAddQuotaRequest(ctx.FromAddress, id, address, sdk.NewInt(bytes))
+			msg := types.NewMsgAddQuotaRequest(
+				ctx.FromAddress,
+				id,
+				address,
+				sdk.NewInt(bytes),
+			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err
 			}
@@ -121,7 +134,7 @@ func txAddQuota() *cobra.Command {
 func txUpdateQuota() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "quota-update [subscription] [address] [bytes]",
-		Short: "Update a quota of a subscription",
+		Short: "Update a quota from a subscription",
 		Args:  cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientTxContext(cmd)
@@ -144,7 +157,12 @@ func txUpdateQuota() *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgUpdateQuotaRequest(ctx.FromAddress, id, address, sdk.NewInt(bytes))
+			msg := types.NewMsgUpdateQuotaRequest(
+				ctx.FromAddress,
+				id,
+				address,
+				sdk.NewInt(bytes),
+			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err
 			}
@@ -160,7 +178,7 @@ func txUpdateQuota() *cobra.Command {
 
 func txCancel() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "cancel [subscription]",
+		Use:   "cancel [id]",
 		Short: "Cancel a subscription",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -174,7 +192,10 @@ func txCancel() *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgCancelRequest(ctx.FromAddress, id)
+			msg := types.NewMsgCancelRequest(
+				ctx.FromAddress,
+				id,
+			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err
 			}

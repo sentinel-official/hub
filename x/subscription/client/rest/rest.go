@@ -1,19 +1,21 @@
 package rest
 
 import (
+	"net/http"
+
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/gorilla/mux"
 )
 
 func registerQueryRoutes(ctx client.Context, router *mux.Router) {
 	router.HandleFunc("/subscriptions", querySubscriptions(ctx)).
-		Methods("GET")
+		Methods(http.MethodGet)
 	router.HandleFunc("/subscriptions/{id}", querySubscription(ctx)).
-		Methods("GET")
+		Methods(http.MethodGet)
 	router.HandleFunc("/subscriptions/{id}/quotas", queryQuotas(ctx)).
-		Methods("GET")
+		Methods(http.MethodGet)
 	router.HandleFunc("/subscriptions/{id}/quotas/{address}", queryQuota(ctx)).
-		Methods("GET")
+		Methods(http.MethodGet)
 }
 
 func RegisterRoutes(ctx client.Context, router *mux.Router) {
