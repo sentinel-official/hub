@@ -7,6 +7,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/client"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkquery "github.com/cosmos/cosmos-sdk/types/query"
 	"github.com/cosmos/cosmos-sdk/types/rest"
 	"github.com/gorilla/mux"
 
@@ -16,22 +17,23 @@ import (
 
 func querySession(ctx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		vars := mux.Vars(r)
+		var (
+			qc   = types.NewQueryServiceClient(ctx)
+			vars = mux.Vars(r)
+		)
 
 		id, err := strconv.ParseUint(vars["id"], 10, 64)
-		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+		if rest.CheckBadRequestError(w, err) {
 			return
 		}
 
-		var (
-			qc = types.NewQueryServiceClient(ctx)
+		res, err := qc.QuerySession(
+			context.Background(),
+			types.NewQuerySessionRequest(
+				id,
+			),
 		)
-
-		res, err := qc.QuerySession(context.Background(),
-			types.NewQuerySessionRequest(id))
-		if err != nil {
-			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+		if rest.CheckInternalServerError(w, err) {
 			return
 		}
 
@@ -42,40 +44,54 @@ func querySession(ctx client.Context) http.HandlerFunc {
 func querySessions(ctx client.Context) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var (
-			query = r.URL.Query()
-			qc    = types.NewQueryServiceClient(ctx)
+			qc     = types.NewQueryServiceClient(ctx)
+			query  = r.URL.Query()
+			status = hubtypes.StatusFromString(query.Get("status"))
 		)
+
+		_, page, limit, err := rest.ParseHTTPArgs(r)
+		if rest.CheckBadRequestError(w, err) {
+			return
+		}
 
 		if query.Get("address") != "" {
 			address, err := sdk.AccAddressFromBech32(query.Get("address"))
-			if err != nil {
-				rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+			if rest.CheckBadRequestError(w, err) {
 				return
 			}
 
-			var status hubtypes.Status
-			if query.Get("active") != "" {
-				status = hubtypes.StatusActive
-			}
-
-			res, err := qc.QuerySessionsForAddress(context.Background(),
-				types.NewQuerySessionsForAddressRequest(address, status, nil))
-			if err != nil {
-				rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
-				return
-			}
-
-			rest.PostProcessResponse(w, ctx, res)
-			return
-		} else {
-			res, err := qc.QuerySessions(context.Background(), types.NewQuerySessionsRequest(nil))
-			if err != nil {
-				rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+			res, err := qc.QuerySessionsForAddress(
+				context.Background(),
+				types.NewQuerySessionsForAddressRequest(
+					address,
+					status,
+					&sdkquery.PageRequest{
+						Offset: uint64(page * limit),
+						Limit:  uint64(limit),
+					},
+				),
+			)
+			if rest.CheckInternalServerError(w, err) {
 				return
 			}
 
 			rest.PostProcessResponse(w, ctx, res)
 			return
 		}
+
+		res, err := qc.QuerySessions(
+			context.Background(),
+			types.NewQuerySessionsRequest(
+				&sdkquery.PageRequest{
+					Offset: uint64(page * limit),
+					Limit:  uint64(limit),
+				},
+			),
+		)
+		if rest.CheckInternalServerError(w, err) {
+			return
+		}
+
+		rest.PostProcessResponse(w, ctx, res)
 	}
 }
