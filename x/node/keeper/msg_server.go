@@ -70,12 +70,9 @@ func (k *msgServer) MsgRegister(c context.Context, msg *types.MsgRegisterRequest
 	}
 
 	ctx.EventManager().EmitTypedEvent(
-		&types.EventRegisterNode{
-			From:      sdk.AccAddress(msgFrom.Bytes()).String(),
-			Address:   node.Address,
-			Provider:  node.Provider,
-			Price:     node.Price,
-			RemoteURL: node.RemoteURL,
+		&types.EventRegister{
+			Address:  node.Address,
+			Provider: node.Provider,
 		},
 	)
 
@@ -150,12 +147,9 @@ func (k *msgServer) MsgUpdate(c context.Context, msg *types.MsgUpdateRequest) (*
 
 	k.SetNode(ctx, node)
 	ctx.EventManager().EmitTypedEvent(
-		&types.EventUpdateNode{
-			From:      sdk.AccAddress(msgFrom.Bytes()).String(),
-			Address:   node.Address,
-			Provider:  msg.Provider,
-			Price:     msg.Price,
-			RemoteURL: msg.RemoteURL,
+		&types.EventUpdate{
+			Address:  node.Address,
+			Provider: node.Provider,
 		},
 	)
 
@@ -215,8 +209,7 @@ func (k *msgServer) MsgSetStatus(c context.Context, msg *types.MsgSetStatusReque
 
 	k.SetNode(ctx, node)
 	ctx.EventManager().EmitTypedEvent(
-		&types.EventSetNodeStatus{
-			From:    sdk.AccAddress(msgFrom.Bytes()).String(),
+		&types.EventSetStatus{
 			Address: node.Address,
 			Status:  node.Status,
 		},

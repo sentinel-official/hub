@@ -5,11 +5,9 @@ package types
 
 import (
 	fmt "fmt"
-	github_com_cosmos_cosmos_sdk_types "github.com/cosmos/cosmos-sdk/types"
-	types "github.com/cosmos/cosmos-sdk/types"
 	_ "github.com/gogo/protobuf/gogoproto"
 	proto "github.com/gogo/protobuf/proto"
-	types1 "github.com/sentinel-official/hub/types"
+	types "github.com/sentinel-official/hub/types"
 	io "io"
 	math "math"
 	math_bits "math/bits"
@@ -27,7 +25,7 @@ var _ = math.Inf
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
 type EventModule struct {
-	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty" yaml:"name"`
 }
 
 func (m *EventModule) Reset()         { *m = EventModule{} }
@@ -63,26 +61,23 @@ func (m *EventModule) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_EventModule proto.InternalMessageInfo
 
-type EventRegisterNode struct {
-	From      string                                   `protobuf:"bytes,1,opt,name=from,proto3" json:"from,omitempty"`
-	Address   string                                   `protobuf:"bytes,2,opt,name=address,proto3" json:"address,omitempty"`
-	Provider  string                                   `protobuf:"bytes,3,opt,name=provider,proto3" json:"provider,omitempty"`
-	Price     github_com_cosmos_cosmos_sdk_types.Coins `protobuf:"bytes,4,rep,name=price,proto3,castrepeated=github.com/cosmos/cosmos-sdk/types.Coins" json:"price"`
-	RemoteURL string                                   `protobuf:"bytes,5,opt,name=remote_url,json=remoteUrl,proto3" json:"remote_url,omitempty"`
+type EventRegister struct {
+	Address  string `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty" yaml:"address"`
+	Provider string `protobuf:"bytes,2,opt,name=provider,proto3" json:"provider,omitempty" yaml:"provider"`
 }
 
-func (m *EventRegisterNode) Reset()         { *m = EventRegisterNode{} }
-func (m *EventRegisterNode) String() string { return proto.CompactTextString(m) }
-func (*EventRegisterNode) ProtoMessage()    {}
-func (*EventRegisterNode) Descriptor() ([]byte, []int) {
+func (m *EventRegister) Reset()         { *m = EventRegister{} }
+func (m *EventRegister) String() string { return proto.CompactTextString(m) }
+func (*EventRegister) ProtoMessage()    {}
+func (*EventRegister) Descriptor() ([]byte, []int) {
 	return fileDescriptor_5fe9719c295e6061, []int{1}
 }
-func (m *EventRegisterNode) XXX_Unmarshal(b []byte) error {
+func (m *EventRegister) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *EventRegisterNode) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *EventRegister) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_EventRegisterNode.Marshal(b, m, deterministic)
+		return xxx_messageInfo_EventRegister.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -92,38 +87,35 @@ func (m *EventRegisterNode) XXX_Marshal(b []byte, deterministic bool) ([]byte, e
 		return b[:n], nil
 	}
 }
-func (m *EventRegisterNode) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_EventRegisterNode.Merge(m, src)
+func (m *EventRegister) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_EventRegister.Merge(m, src)
 }
-func (m *EventRegisterNode) XXX_Size() int {
+func (m *EventRegister) XXX_Size() int {
 	return m.Size()
 }
-func (m *EventRegisterNode) XXX_DiscardUnknown() {
-	xxx_messageInfo_EventRegisterNode.DiscardUnknown(m)
+func (m *EventRegister) XXX_DiscardUnknown() {
+	xxx_messageInfo_EventRegister.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_EventRegisterNode proto.InternalMessageInfo
+var xxx_messageInfo_EventRegister proto.InternalMessageInfo
 
-type EventUpdateNode struct {
-	From      string                                   `protobuf:"bytes,1,opt,name=from,proto3" json:"from,omitempty"`
-	Address   string                                   `protobuf:"bytes,2,opt,name=address,proto3" json:"address,omitempty"`
-	Provider  string                                   `protobuf:"bytes,3,opt,name=provider,proto3" json:"provider,omitempty"`
-	Price     github_com_cosmos_cosmos_sdk_types.Coins `protobuf:"bytes,4,rep,name=price,proto3,castrepeated=github.com/cosmos/cosmos-sdk/types.Coins" json:"price"`
-	RemoteURL string                                   `protobuf:"bytes,5,opt,name=remote_url,json=remoteUrl,proto3" json:"remote_url,omitempty"`
+type EventUpdate struct {
+	Address  string `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty" yaml:"address"`
+	Provider string `protobuf:"bytes,2,opt,name=provider,proto3" json:"provider,omitempty" yaml:"provider"`
 }
 
-func (m *EventUpdateNode) Reset()         { *m = EventUpdateNode{} }
-func (m *EventUpdateNode) String() string { return proto.CompactTextString(m) }
-func (*EventUpdateNode) ProtoMessage()    {}
-func (*EventUpdateNode) Descriptor() ([]byte, []int) {
+func (m *EventUpdate) Reset()         { *m = EventUpdate{} }
+func (m *EventUpdate) String() string { return proto.CompactTextString(m) }
+func (*EventUpdate) ProtoMessage()    {}
+func (*EventUpdate) Descriptor() ([]byte, []int) {
 	return fileDescriptor_5fe9719c295e6061, []int{2}
 }
-func (m *EventUpdateNode) XXX_Unmarshal(b []byte) error {
+func (m *EventUpdate) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *EventUpdateNode) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *EventUpdate) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_EventUpdateNode.Marshal(b, m, deterministic)
+		return xxx_messageInfo_EventUpdate.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -133,36 +125,35 @@ func (m *EventUpdateNode) XXX_Marshal(b []byte, deterministic bool) ([]byte, err
 		return b[:n], nil
 	}
 }
-func (m *EventUpdateNode) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_EventUpdateNode.Merge(m, src)
+func (m *EventUpdate) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_EventUpdate.Merge(m, src)
 }
-func (m *EventUpdateNode) XXX_Size() int {
+func (m *EventUpdate) XXX_Size() int {
 	return m.Size()
 }
-func (m *EventUpdateNode) XXX_DiscardUnknown() {
-	xxx_messageInfo_EventUpdateNode.DiscardUnknown(m)
+func (m *EventUpdate) XXX_DiscardUnknown() {
+	xxx_messageInfo_EventUpdate.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_EventUpdateNode proto.InternalMessageInfo
+var xxx_messageInfo_EventUpdate proto.InternalMessageInfo
 
-type EventSetNodeStatus struct {
-	From    string        `protobuf:"bytes,1,opt,name=from,proto3" json:"from,omitempty"`
-	Address string        `protobuf:"bytes,2,opt,name=address,proto3" json:"address,omitempty"`
-	Status  types1.Status `protobuf:"varint,3,opt,name=status,proto3,enum=sentinel.types.v1.Status" json:"status,omitempty"`
+type EventSetStatus struct {
+	Address string       `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty" yaml:"address"`
+	Status  types.Status `protobuf:"varint,2,opt,name=status,proto3,enum=sentinel.types.v1.Status" json:"status,omitempty" yaml:"status"`
 }
 
-func (m *EventSetNodeStatus) Reset()         { *m = EventSetNodeStatus{} }
-func (m *EventSetNodeStatus) String() string { return proto.CompactTextString(m) }
-func (*EventSetNodeStatus) ProtoMessage()    {}
-func (*EventSetNodeStatus) Descriptor() ([]byte, []int) {
+func (m *EventSetStatus) Reset()         { *m = EventSetStatus{} }
+func (m *EventSetStatus) String() string { return proto.CompactTextString(m) }
+func (*EventSetStatus) ProtoMessage()    {}
+func (*EventSetStatus) Descriptor() ([]byte, []int) {
 	return fileDescriptor_5fe9719c295e6061, []int{3}
 }
-func (m *EventSetNodeStatus) XXX_Unmarshal(b []byte) error {
+func (m *EventSetStatus) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *EventSetNodeStatus) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *EventSetStatus) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_EventSetNodeStatus.Marshal(b, m, deterministic)
+		return xxx_messageInfo_EventSetStatus.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -172,56 +163,51 @@ func (m *EventSetNodeStatus) XXX_Marshal(b []byte, deterministic bool) ([]byte, 
 		return b[:n], nil
 	}
 }
-func (m *EventSetNodeStatus) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_EventSetNodeStatus.Merge(m, src)
+func (m *EventSetStatus) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_EventSetStatus.Merge(m, src)
 }
-func (m *EventSetNodeStatus) XXX_Size() int {
+func (m *EventSetStatus) XXX_Size() int {
 	return m.Size()
 }
-func (m *EventSetNodeStatus) XXX_DiscardUnknown() {
-	xxx_messageInfo_EventSetNodeStatus.DiscardUnknown(m)
+func (m *EventSetStatus) XXX_DiscardUnknown() {
+	xxx_messageInfo_EventSetStatus.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_EventSetNodeStatus proto.InternalMessageInfo
+var xxx_messageInfo_EventSetStatus proto.InternalMessageInfo
 
 func init() {
 	proto.RegisterType((*EventModule)(nil), "sentinel.node.v1.EventModule")
-	proto.RegisterType((*EventRegisterNode)(nil), "sentinel.node.v1.EventRegisterNode")
-	proto.RegisterType((*EventUpdateNode)(nil), "sentinel.node.v1.EventUpdateNode")
-	proto.RegisterType((*EventSetNodeStatus)(nil), "sentinel.node.v1.EventSetNodeStatus")
+	proto.RegisterType((*EventRegister)(nil), "sentinel.node.v1.EventRegister")
+	proto.RegisterType((*EventUpdate)(nil), "sentinel.node.v1.EventUpdate")
+	proto.RegisterType((*EventSetStatus)(nil), "sentinel.node.v1.EventSetStatus")
 }
 
 func init() { proto.RegisterFile("sentinel/node/v1/events.proto", fileDescriptor_5fe9719c295e6061) }
 
 var fileDescriptor_5fe9719c295e6061 = []byte{
-	// 420 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xdc, 0x93, 0xcb, 0x8e, 0xd3, 0x30,
-	0x14, 0x86, 0x13, 0xe6, 0x02, 0xf5, 0x88, 0x5b, 0xc4, 0x22, 0x53, 0x09, 0x77, 0xe8, 0xaa, 0x0b,
-	0x6a, 0x93, 0xe1, 0x0d, 0x8a, 0xd8, 0x71, 0x91, 0x32, 0xea, 0x86, 0x0d, 0x4a, 0xe2, 0xd3, 0x8e,
-	0x45, 0x92, 0x13, 0xd9, 0x4e, 0x04, 0x6f, 0xc1, 0x63, 0x20, 0x9e, 0xa4, 0xcb, 0x59, 0xb2, 0x2a,
-	0x90, 0x6e, 0x11, 0xcf, 0x80, 0x6c, 0x37, 0x15, 0x5b, 0xb6, 0xac, 0x72, 0xec, 0xff, 0xcf, 0xf9,
-	0xcf, 0x27, 0x1d, 0x93, 0xc7, 0x1a, 0x6a, 0x23, 0x6b, 0x28, 0x79, 0x8d, 0x02, 0x78, 0x97, 0x70,
-	0xe8, 0xa0, 0x36, 0x9a, 0x35, 0x0a, 0x0d, 0x46, 0x0f, 0x06, 0x99, 0x59, 0x99, 0x75, 0xc9, 0xf8,
-	0xd1, 0x1a, 0xd7, 0xe8, 0x44, 0x6e, 0x2b, 0xef, 0x1b, 0xd3, 0x02, 0x75, 0x85, 0x9a, 0xe7, 0x99,
-	0xb6, 0x4d, 0x72, 0x30, 0x59, 0xc2, 0x0b, 0x94, 0xf5, 0xa0, 0x1f, 0x62, 0xcc, 0xa7, 0x06, 0xb4,
-	0xcd, 0xd1, 0x26, 0x33, 0xed, 0x3e, 0x67, 0xfa, 0x84, 0x9c, 0xbd, 0xb4, 0xb9, 0xaf, 0x51, 0xb4,
-	0x25, 0x44, 0x11, 0x39, 0xae, 0xb3, 0x0a, 0xe2, 0xf0, 0x22, 0x9c, 0x8d, 0x52, 0x57, 0x4f, 0x7f,
-	0x87, 0xe4, 0xa1, 0xf3, 0xa4, 0xb0, 0x96, 0xda, 0x80, 0x7a, 0x83, 0xc2, 0x39, 0x57, 0x0a, 0xab,
-	0xc1, 0x69, 0xeb, 0x28, 0x26, 0xb7, 0x33, 0x21, 0x14, 0x68, 0x1d, 0xdf, 0x72, 0xd7, 0xc3, 0x31,
-	0x1a, 0x93, 0x3b, 0x8d, 0xc2, 0x4e, 0x0a, 0x50, 0xf1, 0x91, 0x93, 0x0e, 0xe7, 0x28, 0x23, 0x27,
-	0x8d, 0x92, 0x05, 0xc4, 0xc7, 0x17, 0x47, 0xb3, 0xb3, 0xcb, 0x73, 0xe6, 0x91, 0x98, 0x45, 0x62,
-	0x7b, 0x24, 0xf6, 0x02, 0x65, 0xbd, 0x78, 0xb6, 0xd9, 0x4e, 0x82, 0xaf, 0xdf, 0x27, 0xb3, 0xb5,
-	0x34, 0xd7, 0x6d, 0xce, 0x0a, 0xac, 0xf8, 0x9e, 0xdf, 0x7f, 0xe6, 0x5a, 0x7c, 0xf0, 0xa0, 0xee,
-	0x07, 0x9d, 0xfa, 0xce, 0xd1, 0x53, 0x42, 0x14, 0x54, 0x68, 0xe0, 0x7d, 0xab, 0xca, 0xf8, 0xc4,
-	0x0e, 0xb0, 0xb8, 0xdb, 0x6f, 0x27, 0xa3, 0xd4, 0xdd, 0x2e, 0xd3, 0x57, 0xe9, 0xc8, 0x1b, 0x96,
-	0xaa, 0x9c, 0xfe, 0x0a, 0xc9, 0x7d, 0x07, 0xbc, 0x6c, 0x44, 0x66, 0xe0, 0x7f, 0xc7, 0x6d, 0x49,
-	0xe4, 0x68, 0xaf, 0xc0, 0x58, 0xd4, 0x2b, 0xb7, 0x1e, 0xff, 0x08, 0x9c, 0x90, 0x53, 0xbf, 0x56,
-	0x0e, 0xf7, 0xde, 0xe5, 0x39, 0x3b, 0xec, 0xaf, 0x9f, 0xaf, 0x4b, 0x98, 0x6f, 0x9c, 0xee, 0x8d,
-	0x8b, 0xb7, 0x9b, 0x9f, 0x34, 0xf8, 0xd2, 0xd3, 0x60, 0xd3, 0xd3, 0xf0, 0xa6, 0xa7, 0xe1, 0x8f,
-	0x9e, 0x86, 0x9f, 0x77, 0x34, 0xb8, 0xd9, 0xd1, 0xe0, 0xdb, 0x8e, 0x06, 0xef, 0xe6, 0x7f, 0x71,
-	0x0f, 0xed, 0xe6, 0xb8, 0x5a, 0xc9, 0x42, 0x66, 0x25, 0xbf, 0x6e, 0x73, 0xfe, 0xd1, 0x3f, 0x1e,
-	0x17, 0x91, 0x9f, 0xba, 0x8d, 0x7e, 0xfe, 0x27, 0x00, 0x00, 0xff, 0xff, 0xca, 0xd4, 0x2f, 0xfd,
-	0x5a, 0x03, 0x00, 0x00,
+	// 343 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xb4, 0x92, 0x3f, 0x4e, 0xfb, 0x30,
+	0x14, 0xc7, 0x93, 0x9f, 0x7e, 0x2a, 0xe0, 0xaa, 0x2d, 0x04, 0x86, 0x52, 0x09, 0x07, 0x99, 0x85,
+	0x81, 0xda, 0x6a, 0xd9, 0x18, 0x2b, 0x18, 0x11, 0x52, 0x2a, 0x16, 0xb6, 0xb4, 0x79, 0x4d, 0x23,
+	0xa5, 0x71, 0x14, 0x3b, 0x11, 0xdd, 0x39, 0x00, 0xc7, 0xe0, 0x28, 0x1d, 0x3b, 0x32, 0x45, 0x90,
+	0xde, 0x20, 0x27, 0x40, 0xb1, 0x93, 0xee, 0x0c, 0x6c, 0x96, 0xbf, 0x7f, 0x3e, 0xd6, 0x7b, 0x46,
+	0x17, 0x02, 0x22, 0x19, 0x44, 0x10, 0xb2, 0x88, 0x7b, 0xc0, 0xb2, 0x11, 0x83, 0x0c, 0x22, 0x29,
+	0x68, 0x9c, 0x70, 0xc9, 0xad, 0xe3, 0x46, 0xa6, 0x95, 0x4c, 0xb3, 0xd1, 0xe0, 0xcc, 0xe7, 0x3e,
+	0x57, 0x22, 0xab, 0x4e, 0xda, 0x37, 0xc0, 0xfb, 0x1a, 0xb9, 0x8e, 0x41, 0x54, 0x3d, 0x42, 0xba,
+	0x32, 0xad, 0x7b, 0xc8, 0x18, 0xb5, 0x1f, 0xaa, 0xde, 0x47, 0xee, 0xa5, 0x21, 0x58, 0x57, 0xe8,
+	0x7f, 0xe4, 0xae, 0xa0, 0x6f, 0x5e, 0x9a, 0xd7, 0x47, 0x93, 0x5e, 0x99, 0xdb, 0xed, 0xb5, 0xbb,
+	0x0a, 0xef, 0x48, 0x75, 0x4b, 0x1c, 0x25, 0x92, 0x08, 0x75, 0x54, 0xc6, 0x01, 0x3f, 0x10, 0x12,
+	0x12, 0xeb, 0x06, 0x1d, 0xb8, 0x9e, 0x97, 0x80, 0x10, 0x75, 0xd0, 0x2a, 0x73, 0xbb, 0xab, 0x83,
+	0xb5, 0x40, 0x9c, 0xc6, 0x62, 0x31, 0x74, 0x18, 0x27, 0x3c, 0x0b, 0x3c, 0x48, 0xfa, 0xff, 0x94,
+	0xfd, 0xb4, 0xcc, 0xed, 0x9e, 0xb6, 0x37, 0x0a, 0x71, 0xf6, 0x26, 0x12, 0xd6, 0x6f, 0x7c, 0x8e,
+	0x3d, 0x57, 0xc2, 0x5f, 0xd3, 0xde, 0x4c, 0xd4, 0x55, 0xb8, 0x29, 0xc8, 0xa9, 0x1a, 0xd5, 0x2f,
+	0x89, 0xf7, 0xa8, 0xa5, 0x47, 0xac, 0x78, 0xdd, 0xf1, 0x39, 0xdd, 0xef, 0x4a, 0xed, 0x80, 0x66,
+	0x23, 0xaa, 0x8b, 0x27, 0x27, 0x65, 0x6e, 0x77, 0x74, 0x8f, 0x8e, 0x10, 0xa7, 0xce, 0x4e, 0x9e,
+	0x36, 0xdf, 0xd8, 0xf8, 0x28, 0xb0, 0xb1, 0x29, 0xb0, 0xb9, 0x2d, 0xb0, 0xf9, 0x55, 0x60, 0xf3,
+	0x7d, 0x87, 0x8d, 0xed, 0x0e, 0x1b, 0x9f, 0x3b, 0x6c, 0xbc, 0x0c, 0xfd, 0x40, 0x2e, 0xd3, 0x19,
+	0x9d, 0xf3, 0x15, 0x6b, 0x08, 0x43, 0xbe, 0x58, 0x04, 0xf3, 0xc0, 0x0d, 0xd9, 0x32, 0x9d, 0xb1,
+	0x57, 0xfd, 0x77, 0x14, 0x75, 0xd6, 0x52, 0x0b, 0xbf, 0xfd, 0x09, 0x00, 0x00, 0xff, 0xff, 0x01,
+	0x69, 0x9c, 0x48, 0x59, 0x02, 0x00, 0x00,
 }
 
 func (m *EventModule) Marshal() (dAtA []byte, err error) {
@@ -254,7 +240,7 @@ func (m *EventModule) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *EventRegisterNode) Marshal() (dAtA []byte, err error) {
+func (m *EventRegister) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -264,62 +250,34 @@ func (m *EventRegisterNode) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *EventRegisterNode) MarshalTo(dAtA []byte) (int, error) {
+func (m *EventRegister) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *EventRegisterNode) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *EventRegister) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
-	if len(m.RemoteURL) > 0 {
-		i -= len(m.RemoteURL)
-		copy(dAtA[i:], m.RemoteURL)
-		i = encodeVarintEvents(dAtA, i, uint64(len(m.RemoteURL)))
-		i--
-		dAtA[i] = 0x2a
-	}
-	if len(m.Price) > 0 {
-		for iNdEx := len(m.Price) - 1; iNdEx >= 0; iNdEx-- {
-			{
-				size, err := m.Price[iNdEx].MarshalToSizedBuffer(dAtA[:i])
-				if err != nil {
-					return 0, err
-				}
-				i -= size
-				i = encodeVarintEvents(dAtA, i, uint64(size))
-			}
-			i--
-			dAtA[i] = 0x22
-		}
-	}
 	if len(m.Provider) > 0 {
 		i -= len(m.Provider)
 		copy(dAtA[i:], m.Provider)
 		i = encodeVarintEvents(dAtA, i, uint64(len(m.Provider)))
 		i--
-		dAtA[i] = 0x1a
+		dAtA[i] = 0x12
 	}
 	if len(m.Address) > 0 {
 		i -= len(m.Address)
 		copy(dAtA[i:], m.Address)
 		i = encodeVarintEvents(dAtA, i, uint64(len(m.Address)))
 		i--
-		dAtA[i] = 0x12
-	}
-	if len(m.From) > 0 {
-		i -= len(m.From)
-		copy(dAtA[i:], m.From)
-		i = encodeVarintEvents(dAtA, i, uint64(len(m.From)))
-		i--
 		dAtA[i] = 0xa
 	}
 	return len(dAtA) - i, nil
 }
 
-func (m *EventUpdateNode) Marshal() (dAtA []byte, err error) {
+func (m *EventUpdate) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -329,62 +287,34 @@ func (m *EventUpdateNode) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *EventUpdateNode) MarshalTo(dAtA []byte) (int, error) {
+func (m *EventUpdate) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *EventUpdateNode) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *EventUpdate) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
-	if len(m.RemoteURL) > 0 {
-		i -= len(m.RemoteURL)
-		copy(dAtA[i:], m.RemoteURL)
-		i = encodeVarintEvents(dAtA, i, uint64(len(m.RemoteURL)))
-		i--
-		dAtA[i] = 0x2a
-	}
-	if len(m.Price) > 0 {
-		for iNdEx := len(m.Price) - 1; iNdEx >= 0; iNdEx-- {
-			{
-				size, err := m.Price[iNdEx].MarshalToSizedBuffer(dAtA[:i])
-				if err != nil {
-					return 0, err
-				}
-				i -= size
-				i = encodeVarintEvents(dAtA, i, uint64(size))
-			}
-			i--
-			dAtA[i] = 0x22
-		}
-	}
 	if len(m.Provider) > 0 {
 		i -= len(m.Provider)
 		copy(dAtA[i:], m.Provider)
 		i = encodeVarintEvents(dAtA, i, uint64(len(m.Provider)))
 		i--
-		dAtA[i] = 0x1a
+		dAtA[i] = 0x12
 	}
 	if len(m.Address) > 0 {
 		i -= len(m.Address)
 		copy(dAtA[i:], m.Address)
 		i = encodeVarintEvents(dAtA, i, uint64(len(m.Address)))
 		i--
-		dAtA[i] = 0x12
-	}
-	if len(m.From) > 0 {
-		i -= len(m.From)
-		copy(dAtA[i:], m.From)
-		i = encodeVarintEvents(dAtA, i, uint64(len(m.From)))
-		i--
 		dAtA[i] = 0xa
 	}
 	return len(dAtA) - i, nil
 }
 
-func (m *EventSetNodeStatus) Marshal() (dAtA []byte, err error) {
+func (m *EventSetStatus) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -394,12 +324,12 @@ func (m *EventSetNodeStatus) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *EventSetNodeStatus) MarshalTo(dAtA []byte) (int, error) {
+func (m *EventSetStatus) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *EventSetNodeStatus) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *EventSetStatus) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -407,19 +337,12 @@ func (m *EventSetNodeStatus) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	if m.Status != 0 {
 		i = encodeVarintEvents(dAtA, i, uint64(m.Status))
 		i--
-		dAtA[i] = 0x18
+		dAtA[i] = 0x10
 	}
 	if len(m.Address) > 0 {
 		i -= len(m.Address)
 		copy(dAtA[i:], m.Address)
 		i = encodeVarintEvents(dAtA, i, uint64(len(m.Address)))
-		i--
-		dAtA[i] = 0x12
-	}
-	if len(m.From) > 0 {
-		i -= len(m.From)
-		copy(dAtA[i:], m.From)
-		i = encodeVarintEvents(dAtA, i, uint64(len(m.From)))
 		i--
 		dAtA[i] = 0xa
 	}
@@ -450,16 +373,12 @@ func (m *EventModule) Size() (n int) {
 	return n
 }
 
-func (m *EventRegisterNode) Size() (n int) {
+func (m *EventRegister) Size() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
-	l = len(m.From)
-	if l > 0 {
-		n += 1 + l + sovEvents(uint64(l))
-	}
 	l = len(m.Address)
 	if l > 0 {
 		n += 1 + l + sovEvents(uint64(l))
@@ -468,29 +387,15 @@ func (m *EventRegisterNode) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovEvents(uint64(l))
 	}
-	if len(m.Price) > 0 {
-		for _, e := range m.Price {
-			l = e.Size()
-			n += 1 + l + sovEvents(uint64(l))
-		}
-	}
-	l = len(m.RemoteURL)
-	if l > 0 {
-		n += 1 + l + sovEvents(uint64(l))
-	}
 	return n
 }
 
-func (m *EventUpdateNode) Size() (n int) {
+func (m *EventUpdate) Size() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
-	l = len(m.From)
-	if l > 0 {
-		n += 1 + l + sovEvents(uint64(l))
-	}
 	l = len(m.Address)
 	if l > 0 {
 		n += 1 + l + sovEvents(uint64(l))
@@ -499,29 +404,15 @@ func (m *EventUpdateNode) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovEvents(uint64(l))
 	}
-	if len(m.Price) > 0 {
-		for _, e := range m.Price {
-			l = e.Size()
-			n += 1 + l + sovEvents(uint64(l))
-		}
-	}
-	l = len(m.RemoteURL)
-	if l > 0 {
-		n += 1 + l + sovEvents(uint64(l))
-	}
 	return n
 }
 
-func (m *EventSetNodeStatus) Size() (n int) {
+func (m *EventSetStatus) Size() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
-	l = len(m.From)
-	if l > 0 {
-		n += 1 + l + sovEvents(uint64(l))
-	}
 	l = len(m.Address)
 	if l > 0 {
 		n += 1 + l + sovEvents(uint64(l))
@@ -620,7 +511,7 @@ func (m *EventModule) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *EventRegisterNode) Unmarshal(dAtA []byte) error {
+func (m *EventRegister) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -643,45 +534,13 @@ func (m *EventRegisterNode) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: EventRegisterNode: wiretype end group for non-group")
+			return fmt.Errorf("proto: EventRegister: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: EventRegisterNode: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: EventRegister: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field From", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowEvents
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthEvents
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthEvents
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.From = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 2:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Address", wireType)
 			}
@@ -713,7 +572,7 @@ func (m *EventRegisterNode) Unmarshal(dAtA []byte) error {
 			}
 			m.Address = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
-		case 3:
+		case 2:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Provider", wireType)
 			}
@@ -745,72 +604,6 @@ func (m *EventRegisterNode) Unmarshal(dAtA []byte) error {
 			}
 			m.Provider = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
-		case 4:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Price", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowEvents
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthEvents
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthEvents
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Price = append(m.Price, types.Coin{})
-			if err := m.Price[len(m.Price)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		case 5:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field RemoteURL", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowEvents
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthEvents
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthEvents
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.RemoteURL = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipEvents(dAtA[iNdEx:])
@@ -832,7 +625,7 @@ func (m *EventRegisterNode) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *EventUpdateNode) Unmarshal(dAtA []byte) error {
+func (m *EventUpdate) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -855,45 +648,13 @@ func (m *EventUpdateNode) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: EventUpdateNode: wiretype end group for non-group")
+			return fmt.Errorf("proto: EventUpdate: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: EventUpdateNode: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: EventUpdate: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field From", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowEvents
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthEvents
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthEvents
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.From = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 2:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Address", wireType)
 			}
@@ -925,7 +686,7 @@ func (m *EventUpdateNode) Unmarshal(dAtA []byte) error {
 			}
 			m.Address = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
-		case 3:
+		case 2:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Provider", wireType)
 			}
@@ -957,72 +718,6 @@ func (m *EventUpdateNode) Unmarshal(dAtA []byte) error {
 			}
 			m.Provider = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
-		case 4:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Price", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowEvents
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthEvents
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthEvents
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Price = append(m.Price, types.Coin{})
-			if err := m.Price[len(m.Price)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		case 5:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field RemoteURL", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowEvents
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthEvents
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthEvents
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.RemoteURL = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipEvents(dAtA[iNdEx:])
@@ -1044,7 +739,7 @@ func (m *EventUpdateNode) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *EventSetNodeStatus) Unmarshal(dAtA []byte) error {
+func (m *EventSetStatus) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1067,45 +762,13 @@ func (m *EventSetNodeStatus) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: EventSetNodeStatus: wiretype end group for non-group")
+			return fmt.Errorf("proto: EventSetStatus: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: EventSetNodeStatus: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: EventSetStatus: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field From", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowEvents
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthEvents
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthEvents
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.From = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 2:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Address", wireType)
 			}
@@ -1137,7 +800,7 @@ func (m *EventSetNodeStatus) Unmarshal(dAtA []byte) error {
 			}
 			m.Address = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
-		case 3:
+		case 2:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Status", wireType)
 			}
@@ -1151,7 +814,7 @@ func (m *EventSetNodeStatus) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.Status |= types1.Status(b&0x7F) << shift
+				m.Status |= types.Status(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
