@@ -46,8 +46,8 @@ func (k *msgServer) MsgAdd(c context.Context, msg *types.MsgAddRequest) (*types.
 		planProvider = plan.GetProvider()
 	)
 
-	k.SetPlan(ctx, plan)
 	k.SetCount(ctx, count+1)
+	k.SetPlan(ctx, plan)
 	k.SetInactivePlan(ctx, plan.Id)
 	k.SetInactivePlanForProvider(ctx, planProvider, plan.Id)
 	ctx.EventManager().EmitTypedEvent(
