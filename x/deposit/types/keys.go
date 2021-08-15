@@ -17,10 +17,7 @@ var (
 )
 
 var (
-	EventModuleName = sdk.NewEvent(
-		sdk.EventTypeMessage,
-		sdk.NewAttribute(sdk.AttributeKeyModule, ModuleName),
-	)
+	EventModuleName = EventModule{Name: ModuleName}
 )
 
 var (
