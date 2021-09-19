@@ -27,10 +27,6 @@ var (
 )
 
 var (
-	EventModuleName = EventModule{Name: ModuleName}
-)
-
-var (
 	NodeKeyPrefix                    = []byte{0x10}
 	ActiveNodeKeyPrefix              = []byte{0x20}
 	InactiveNodeKeyPrefix            = []byte{0x21}

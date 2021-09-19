@@ -26,10 +26,6 @@ var (
 )
 
 var (
-	EventModuleName = EventModule{Name: ModuleName}
-)
-
-var (
 	CountKey                         = []byte{0x00}
 	PlanKeyPrefix                    = []byte{0x10}
 	ActivePlanKeyPrefix              = []byte{0x20}

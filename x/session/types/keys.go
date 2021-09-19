@@ -25,10 +25,6 @@ var (
 )
 
 var (
-	EventModuleName = EventModule{Name: ModuleName}
-)
-
-var (
 	CountKey                           = []byte{0x00}
 	SessionKeyPrefix                   = []byte{0x11}
 	InactiveSessionForAddressKeyPrefix = []byte{0x30}

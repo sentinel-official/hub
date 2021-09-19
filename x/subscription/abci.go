@@ -34,8 +34,9 @@ func EndBlock(ctx sdk.Context, k keeper.Keeper) []abcitypes.ValidatorUpdate {
 			k.SetSubscription(ctx, item)
 			k.SetInactiveSubscriptionAt(ctx, item.StatusAt.Add(inactiveDuration), item.Id)
 			ctx.EventManager().EmitTypedEvent(
-				&types.EventCancelSubscription{
-					Id: item.Id,
+				&types.EventSetStatus{
+					Id:     item.Id,
+					Status: item.Status,
 				},
 			)
 
@@ -64,6 +65,13 @@ func EndBlock(ctx sdk.Context, k keeper.Keeper) []abcitypes.ValidatorUpdate {
 		item.Status = hubtypes.StatusInactive
 		item.StatusAt = ctx.BlockTime()
 		k.SetSubscription(ctx, item)
+
+		ctx.EventManager().EmitTypedEvent(
+			&types.EventSetStatus{
+				Id:     item.Id,
+				Status: item.Status,
+			},
+		)
 
 		return false
 	})

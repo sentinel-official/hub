@@ -53,12 +53,34 @@ func (k *Keeper) GetDeposits(ctx sdk.Context, skip, limit int64) (items types.De
 
 // Add is for adding the amount to the deposit account from the bank account of an address.
 func (k *Keeper) Add(ctx sdk.Context, address sdk.AccAddress, coins sdk.Coins) error {
-	return k.SendCoinsFromAccountToDeposit(ctx, address, address, coins)
+	if err := k.SendCoinsFromAccountToDeposit(ctx, address, address, coins); err != nil {
+		return err
+	}
+
+	ctx.EventManager().EmitTypedEvent(
+		&types.EventAdd{
+			Address: address.String(),
+			Coins:   coins,
+		},
+	)
+
+	return nil
 }
 
 // Subtract is for adding the amount to the bank account from the deposit account of an address.
 func (k *Keeper) Subtract(ctx sdk.Context, address sdk.AccAddress, coins sdk.Coins) error {
-	return k.SendCoinsFromDepositToAccount(ctx, address, address, coins)
+	if err := k.SendCoinsFromDepositToAccount(ctx, address, address, coins); err != nil {
+		return err
+	}
+
+	ctx.EventManager().EmitTypedEvent(
+		&types.EventSubtract{
+			Address: address.String(),
+			Coins:   coins,
+		},
+	)
+
+	return nil
 }
 
 // SendCoinsFromAccountToDeposit is for sending the amount

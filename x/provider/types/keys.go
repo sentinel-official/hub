@@ -25,10 +25,6 @@ var (
 )
 
 var (
-	EventModuleName = EventModule{Name: ModuleName}
-)
-
-var (
 	ProviderKeyPrefix = []byte{0x10}
 )
 

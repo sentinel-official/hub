@@ -44,12 +44,24 @@ func (k *Keeper) ProcessPaymentAndUpdateQuota(ctx sdk.Context, session types.Ses
 		quota.Consumed = quota.Consumed.Add(bandwidth)
 		k.SetQuota(ctx, session.Subscription, quota)
 
-		amount := subscription.Amount(bandwidth)
+		var (
+			amount      = subscription.Amount(bandwidth)
+			sessionNode = session.GetNode()
+		)
+
 		ctx.Logger().Info("calculated payment for session", "id", session.Id,
 			"price", subscription.Price, "deposit", subscription.Deposit, "amount", amount,
 			"consumed", session.Bandwidth.Sum(), "rounded", bandwidth)
 
-		sessionNode := session.GetNode()
+		ctx.EventManager().EmitTypedEvent(
+			&types.EventPay{
+				Id:           session.Id,
+				Node:         session.Node,
+				Subscription: session.Subscription,
+				Amount:       amount,
+			},
+		)
+
 		return k.SendCoinFromDepositToAccount(ctx, from, sessionNode.Bytes(), amount)
 	}
 

@@ -1,19 +1,13 @@
 syntax = "proto3";
 package sentinel.swap.v1;
 
-option go_package = "github.com/sentinel-official/hub/x/swap/types";
-
-import "cosmos/base/v1beta1/coin.proto";
 import "gogoproto/gogo.proto";
 
-option (gogoproto.equal_all)           = false;
+option go_package            = "github.com/sentinel-official/hub/x/swap/types";
+option (gogoproto.equal_all) = false;
 option (gogoproto.goproto_getters_all) = false;
 
-message EventModule { string name = 1; }
-
 message EventSwap {
-  string from                     = 1;
-  bytes tx_hash                   = 2;
-  string receiver                 = 3;
-  cosmos.base.v1beta1.Coin amount = 4 [ (gogoproto.nullable) = false ];
+  bytes tx_hash   = 1 [ (gogoproto.moretags) = "yaml:\"tx_hash\"" ];
+  string receiver = 2 [ (gogoproto.moretags) = "yaml:\"receiver\"" ];
 }

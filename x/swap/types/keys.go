@@ -21,10 +21,6 @@ var (
 )
 
 var (
-	EventModuleName = EventModule{Name: ModuleName}
-)
-
-var (
 	PrecisionLoss = sdk.NewInt(100)
 )
 

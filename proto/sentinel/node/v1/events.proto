@@ -1,41 +1,25 @@
 syntax = "proto3";
 package sentinel.node.v1;
 
-option go_package = "github.com/sentinel-official/hub/x/node/types";
-
 import "gogoproto/gogo.proto";
-import "cosmos/base/v1beta1/coin.proto";
 import "sentinel/types/v1/status.proto";
 
-option (gogoproto.equal_all)           = false;
+option go_package            = "github.com/sentinel-official/hub/x/node/types";
+option (gogoproto.equal_all) = false;
 option (gogoproto.goproto_getters_all) = false;
 
-message EventModule { string name = 1; }
-
-message EventRegisterNode {
-  string from                             = 1;
-  string address                          = 2;
-  string provider                         = 3;
-  repeated cosmos.base.v1beta1.Coin price = 4 [
-    (gogoproto.nullable)     = false,
-    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
-  ];
-  string remote_url = 5 [ (gogoproto.customname) = "RemoteURL" ];
+message EventRegister {
+  string address  = 1 [ (gogoproto.moretags) = "yaml:\"address\"" ];
+  string provider = 2 [ (gogoproto.moretags) = "yaml:\"provider\"" ];
 }
 
-message EventUpdateNode {
-  string from                             = 1;
-  string address                          = 2;
-  string provider                         = 3;
-  repeated cosmos.base.v1beta1.Coin price = 4 [
-    (gogoproto.nullable)     = false,
-    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
-  ];
-  string remote_url = 5 [ (gogoproto.customname) = "RemoteURL" ];
+message EventUpdate {
+  string address  = 1 [ (gogoproto.moretags) = "yaml:\"address\"" ];
+  string provider = 2 [ (gogoproto.moretags) = "yaml:\"provider\"" ];
 }
 
-message EventSetNodeStatus {
-  string from                     = 1;
-  string address                  = 2;
-  sentinel.types.v1.Status status = 3;
+message EventSetStatus {
+  string address = 1 [ (gogoproto.moretags) = "yaml:\"address\"" ];
+  sentinel.types.v1.Status status = 2
+      [ (gogoproto.moretags) = "yaml:\"status\"" ];
 }

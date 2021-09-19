@@ -68,16 +68,12 @@ func (k *msgServer) MsgSubscribeToNode(c context.Context, msg *types.MsgSubscrib
 		}
 	)
 
+	k.SetCount(ctx, count+1)
 	k.SetSubscription(ctx, subscription)
 	ctx.EventManager().EmitTypedEvent(
-		&types.EventSubscribeToNode{
-			Id:      subscription.Id,
-			From:    sdk.AccAddress(msgFrom.Bytes()).String(),
-			Owner:   subscription.Owner,
-			Node:    subscription.Node,
-			Price:   subscription.Price,
-			Deposit: subscription.Deposit,
-			Free:    subscription.Free,
+		&types.EventSubscribe{
+			Id:   subscription.Id,
+			Node: subscription.Node,
 		},
 	)
 
@@ -95,22 +91,11 @@ func (k *msgServer) MsgSubscribeToNode(c context.Context, msg *types.MsgSubscrib
 	k.SetActiveSubscriptionForAddress(ctx, quotaAddress, subscription.Id)
 	ctx.EventManager().EmitTypedEvent(
 		&types.EventAddQuota{
-			From:      subscription.Owner,
-			Id:        subscription.Id,
-			Address:   quota.Address,
-			Consumed:  quota.Consumed,
-			Allocated: quota.Allocated,
+			Id:      subscription.Id,
+			Address: quota.Address,
 		},
 	)
 
-	k.SetCount(ctx, count+1)
-	ctx.EventManager().EmitTypedEvent(
-		&types.EventSetSubscriptionCount{
-			Count: count + 1,
-		},
-	)
-
-	ctx.EventManager().EmitTypedEvent(&types.EventModuleName)
 	return &types.MsgSubscribeToNodeResponse{}, nil
 }
 
@@ -156,17 +141,13 @@ func (k *msgServer) MsgSubscribeToPlan(c context.Context, msg *types.MsgSubscrib
 		}
 	)
 
+	k.SetCount(ctx, count+1)
 	k.SetSubscription(ctx, subscription)
 	k.SetInactiveSubscriptionAt(ctx, subscription.Expiry, subscription.Id)
 	ctx.EventManager().EmitTypedEvent(
-		&types.EventSubscribeToPlan{
-			Id:     subscription.Id,
-			From:   sdk.AccAddress(msgFrom.Bytes()).String(),
-			Owner:  subscription.Owner,
-			Plan:   subscription.Plan,
-			Denom:  subscription.Denom,
-			Expiry: subscription.Expiry,
-			Free:   subscription.Free,
+		&types.EventSubscribe{
+			Id:   subscription.Id,
+			Plan: subscription.Plan,
 		},
 	)
 
@@ -183,32 +164,16 @@ func (k *msgServer) MsgSubscribeToPlan(c context.Context, msg *types.MsgSubscrib
 	k.SetActiveSubscriptionForAddress(ctx, quotaAddress, subscription.Id)
 	ctx.EventManager().EmitTypedEvent(
 		&types.EventAddQuota{
-			From:      subscription.Owner,
-			Id:        subscription.Id,
-			Address:   quota.Address,
-			Consumed:  quota.Consumed,
-			Allocated: quota.Allocated,
+			Id:      subscription.Id,
+			Address: quota.Address,
 		},
 	)
 
-	k.SetCount(ctx, count+1)
-	ctx.EventManager().EmitTypedEvent(
-		&types.EventSetSubscriptionCount{
-			Count: count + 1,
-		},
-	)
-
-	ctx.EventManager().EmitTypedEvent(&types.EventModuleName)
 	return &types.MsgSubscribeToPlanResponse{}, nil
 }
 
 func (k *msgServer) MsgCancel(c context.Context, msg *types.MsgCancelRequest) (*types.MsgCancelResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
-
-	msgFrom, err := sdk.AccAddressFromBech32(msg.From)
-	if err != nil {
-		return nil, err
-	}
 
 	subscription, found := k.GetSubscription(ctx, msg.Id)
 	if !found {
@@ -240,13 +205,12 @@ func (k *msgServer) MsgCancel(c context.Context, msg *types.MsgCancelRequest) (*
 	k.SetSubscription(ctx, subscription)
 	k.SetInactiveSubscriptionAt(ctx, subscription.StatusAt.Add(inactiveDuration), subscription.Id)
 	ctx.EventManager().EmitTypedEvent(
-		&types.EventCancelSubscription{
-			From: sdk.AccAddress(msgFrom.Bytes()).String(),
-			Id:   subscription.Id,
+		&types.EventSetStatus{
+			Id:     subscription.Id,
+			Status: subscription.Status,
 		},
 	)
 
-	ctx.EventManager().EmitTypedEvent(&types.EventModuleName)
 	return &types.MsgCancelResponse{}, nil
 }
 
@@ -294,15 +258,11 @@ func (k *msgServer) MsgAddQuota(c context.Context, msg *types.MsgAddQuotaRequest
 	k.SetActiveSubscriptionForAddress(ctx, quotaAddress, subscription.Id)
 	ctx.EventManager().EmitTypedEvent(
 		&types.EventAddQuota{
-			From:      subscription.Owner,
-			Id:        subscription.Id,
-			Address:   quota.Address,
-			Consumed:  quota.Consumed,
-			Allocated: quota.Allocated,
+			Id:      subscription.Id,
+			Address: quota.Address,
 		},
 	)
 
-	ctx.EventManager().EmitTypedEvent(&types.EventModuleName)
 	return &types.MsgAddQuotaResponse{}, nil
 }
 
@@ -342,14 +302,10 @@ func (k *msgServer) MsgUpdateQuota(c context.Context, msg *types.MsgUpdateQuotaR
 	k.SetQuota(ctx, subscription.Id, quota)
 	ctx.EventManager().EmitTypedEvent(
 		&types.EventUpdateQuota{
-			From:      subscription.Owner,
-			Id:        subscription.Id,
-			Address:   quota.Address,
-			Consumed:  quota.Consumed,
-			Allocated: quota.Allocated,
+			Id:      subscription.Id,
+			Address: quota.Address,
 		},
 	)
 
-	ctx.EventManager().EmitTypedEvent(&types.EventModuleName)
 	return &types.MsgUpdateQuotaResponse{}, nil
 }

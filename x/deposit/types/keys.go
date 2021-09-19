@@ -17,13 +17,6 @@ var (
 )
 
 var (
-	EventModuleName = sdk.NewEvent(
-		sdk.EventTypeMessage,
-		sdk.NewAttribute(sdk.AttributeKeyModule, ModuleName),
-	)
-)
-
-var (
 	DepositKeyPrefix = []byte{0x10}
 )
 

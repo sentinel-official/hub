@@ -642,8 +642,7 @@ func TestProvAddressFromBech32(t *testing.T) {
 		},
 		{
 			"invalid prefix",
-			args{s: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-			},
+			args{s: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj"},
 			nil,
 			true,
 		},
