@@ -175,6 +175,11 @@ func (k *msgServer) MsgSubscribeToPlan(c context.Context, msg *types.MsgSubscrib
 func (k *msgServer) MsgCancel(c context.Context, msg *types.MsgCancelRequest) (*types.MsgCancelResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
+	msgFrom, err := sdk.AccAddressFromBech32(msg.From)
+	if err != nil {
+		return nil, err
+	}
+
 	subscription, found := k.GetSubscription(ctx, msg.Id)
 	if !found {
 		return nil, types.ErrorSubscriptionDoesNotExist
@@ -184,6 +189,11 @@ func (k *msgServer) MsgCancel(c context.Context, msg *types.MsgCancelRequest) (*
 	}
 	if !subscription.Status.Equal(hubtypes.StatusActive) {
 		return nil, types.ErrorInvalidSubscriptionStatus
+	}
+
+	items := k.GetActiveSessionsForAddress(ctx, msgFrom, 0, 1)
+	if len(items) > 0 {
+		return nil, types.ErrorCanNotCancel
 	}
 
 	inactiveDuration := k.InactiveDuration(ctx)

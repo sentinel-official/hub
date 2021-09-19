@@ -61,6 +61,7 @@ func NewKeeper(
 	subscriptionKeeper.WithBankKeeper(bankKeeper)
 	subscriptionKeeper.WithNodeKeeper(&nodeKeeper)
 	subscriptionKeeper.WithPlanKeeper(&planKeeper)
+	subscriptionKeeper.WithSessionKeeper(&sessionKeeper)
 
 	sessionKeeper.WithAccountKeeper(accountKeeper)
 	sessionKeeper.WithDepositKeeper(&depositKeeper)
