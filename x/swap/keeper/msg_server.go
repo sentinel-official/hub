@@ -62,6 +62,5 @@ func (k msgServer) MsgSwap(c context.Context, msg *types.MsgSwapRequest) (*types
 		},
 	)
 
-	ctx.EventManager().EmitTypedEvent(&types.EventModuleName)
 	return &types.MsgSwapResponse{}, nil
 }

@@ -59,7 +59,6 @@ func (k *msgServer) MsgRegister(c context.Context, msg *types.MsgRegisterRequest
 		},
 	)
 
-	ctx.EventManager().EmitTypedEvent(&types.EventModuleName)
 	return &types.MsgRegisterResponse{}, nil
 }
 
@@ -96,6 +95,5 @@ func (k *msgServer) MsgUpdate(c context.Context, msg *types.MsgUpdateRequest) (*
 		},
 	)
 
-	ctx.EventManager().EmitTypedEvent(&types.EventModuleName)
 	return &types.MsgUpdateResponse{}, nil
 }

@@ -7,10 +7,6 @@ option go_package            = "github.com/sentinel-official/hub/x/swap/types";
 option (gogoproto.equal_all) = false;
 option (gogoproto.goproto_getters_all) = false;
 
-message EventModule {
-  string name = 1 [ (gogoproto.moretags) = "yaml:\"name\"" ];
-}
-
 message EventSwap {
   bytes tx_hash   = 1 [ (gogoproto.moretags) = "yaml:\"tx_hash\"" ];
   string receiver = 2 [ (gogoproto.moretags) = "yaml:\"receiver\"" ];

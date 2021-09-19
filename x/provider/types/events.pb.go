@@ -23,43 +23,6 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
-type EventModule struct {
-	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty" yaml:"name"`
-}
-
-func (m *EventModule) Reset()         { *m = EventModule{} }
-func (m *EventModule) String() string { return proto.CompactTextString(m) }
-func (*EventModule) ProtoMessage()    {}
-func (*EventModule) Descriptor() ([]byte, []int) {
-	return fileDescriptor_3ec27b3fe604bfcc, []int{0}
-}
-func (m *EventModule) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *EventModule) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_EventModule.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *EventModule) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_EventModule.Merge(m, src)
-}
-func (m *EventModule) XXX_Size() int {
-	return m.Size()
-}
-func (m *EventModule) XXX_DiscardUnknown() {
-	xxx_messageInfo_EventModule.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_EventModule proto.InternalMessageInfo
-
 type EventRegister struct {
 	Address string `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty" yaml:"address"`
 }
@@ -68,7 +31,7 @@ func (m *EventRegister) Reset()         { *m = EventRegister{} }
 func (m *EventRegister) String() string { return proto.CompactTextString(m) }
 func (*EventRegister) ProtoMessage()    {}
 func (*EventRegister) Descriptor() ([]byte, []int) {
-	return fileDescriptor_3ec27b3fe604bfcc, []int{1}
+	return fileDescriptor_3ec27b3fe604bfcc, []int{0}
 }
 func (m *EventRegister) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -105,7 +68,7 @@ func (m *EventUpdate) Reset()         { *m = EventUpdate{} }
 func (m *EventUpdate) String() string { return proto.CompactTextString(m) }
 func (*EventUpdate) ProtoMessage()    {}
 func (*EventUpdate) Descriptor() ([]byte, []int) {
-	return fileDescriptor_3ec27b3fe604bfcc, []int{2}
+	return fileDescriptor_3ec27b3fe604bfcc, []int{1}
 }
 func (m *EventUpdate) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -135,7 +98,6 @@ func (m *EventUpdate) XXX_DiscardUnknown() {
 var xxx_messageInfo_EventUpdate proto.InternalMessageInfo
 
 func init() {
-	proto.RegisterType((*EventModule)(nil), "sentinel.provider.v1.EventModule")
 	proto.RegisterType((*EventRegister)(nil), "sentinel.provider.v1.EventRegister")
 	proto.RegisterType((*EventUpdate)(nil), "sentinel.provider.v1.EventUpdate")
 }
@@ -143,54 +105,22 @@ func init() {
 func init() { proto.RegisterFile("sentinel/provider/v1/events.proto", fileDescriptor_3ec27b3fe604bfcc) }
 
 var fileDescriptor_3ec27b3fe604bfcc = []byte{
-	// 259 bytes of a gzipped FileDescriptorProto
+	// 225 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0x52, 0x2c, 0x4e, 0xcd, 0x2b,
 	0xc9, 0xcc, 0x4b, 0xcd, 0xd1, 0x2f, 0x28, 0xca, 0x2f, 0xcb, 0x4c, 0x49, 0x2d, 0xd2, 0x2f, 0x33,
 	0xd4, 0x4f, 0x2d, 0x4b, 0xcd, 0x2b, 0x29, 0xd6, 0x2b, 0x28, 0xca, 0x2f, 0xc9, 0x17, 0x12, 0x81,
 	0x29, 0xd1, 0x83, 0x29, 0xd1, 0x2b, 0x33, 0x94, 0x12, 0x49, 0xcf, 0x4f, 0xcf, 0x07, 0x2b, 0xd0,
-	0x07, 0xb1, 0x20, 0x6a, 0x95, 0x8c, 0xb8, 0xb8, 0x5d, 0x41, 0x7a, 0x7d, 0xf3, 0x53, 0x4a, 0x73,
-	0x52, 0x85, 0x94, 0xb9, 0x58, 0xf2, 0x12, 0x73, 0x53, 0x25, 0x18, 0x15, 0x18, 0x35, 0x38, 0x9d,
-	0xf8, 0x3f, 0xdd, 0x93, 0xe7, 0xae, 0x4c, 0xcc, 0xcd, 0xb1, 0x52, 0x02, 0x89, 0x2a, 0x05, 0x81,
-	0x25, 0x95, 0x6c, 0xb9, 0x78, 0xc1, 0x7a, 0x82, 0x52, 0xd3, 0x33, 0x8b, 0x4b, 0x52, 0x8b, 0x84,
-	0x74, 0xb8, 0xd8, 0x13, 0x53, 0x52, 0x8a, 0x52, 0x8b, 0x8b, 0xa1, 0x1a, 0x85, 0x3e, 0xdd, 0x93,
-	0xe7, 0x83, 0x68, 0x84, 0x4a, 0x28, 0x05, 0xc1, 0x94, 0x28, 0x59, 0x43, 0xad, 0x0c, 0x2d, 0x48,
-	0x49, 0x2c, 0x49, 0x25, 0x4d, 0xb3, 0x53, 0xf0, 0x89, 0x87, 0x72, 0x0c, 0x2b, 0x1e, 0xc9, 0x31,
-	0x9c, 0x78, 0x24, 0xc7, 0x78, 0xe1, 0x91, 0x1c, 0xe3, 0x83, 0x47, 0x72, 0x8c, 0x13, 0x1e, 0xcb,
-	0x31, 0x5c, 0x78, 0x2c, 0xc7, 0x70, 0xe3, 0xb1, 0x1c, 0x43, 0x94, 0x61, 0x7a, 0x66, 0x49, 0x46,
-	0x69, 0x92, 0x5e, 0x72, 0x7e, 0xae, 0x3e, 0x2c, 0x20, 0x74, 0xf3, 0xd3, 0xd2, 0x32, 0x93, 0x33,
-	0x13, 0x73, 0xf4, 0x33, 0x4a, 0x93, 0xf4, 0x2b, 0x10, 0x41, 0x57, 0x52, 0x59, 0x90, 0x5a, 0x9c,
-	0xc4, 0x06, 0x0e, 0x0b, 0x63, 0x40, 0x00, 0x00, 0x00, 0xff, 0xff, 0x64, 0x31, 0x3a, 0x35, 0x5c,
-	0x01, 0x00, 0x00,
-}
-
-func (m *EventModule) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *EventModule) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *EventModule) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if len(m.Name) > 0 {
-		i -= len(m.Name)
-		copy(dAtA[i:], m.Name)
-		i = encodeVarintEvents(dAtA, i, uint64(len(m.Name)))
-		i--
-		dAtA[i] = 0xa
-	}
-	return len(dAtA) - i, nil
+	0x07, 0xb1, 0x20, 0x6a, 0x95, 0x6c, 0xb9, 0x78, 0x5d, 0x41, 0x7a, 0x83, 0x52, 0xd3, 0x33, 0x8b,
+	0x4b, 0x52, 0x8b, 0x84, 0x74, 0xb8, 0xd8, 0x13, 0x53, 0x52, 0x8a, 0x52, 0x8b, 0x8b, 0x25, 0x18,
+	0x15, 0x18, 0x35, 0x38, 0x9d, 0x84, 0x3e, 0xdd, 0x93, 0xe7, 0xab, 0x4c, 0xcc, 0xcd, 0xb1, 0x52,
+	0x82, 0x4a, 0x28, 0x05, 0xc1, 0x94, 0x28, 0x59, 0x73, 0x71, 0x83, 0xb5, 0x87, 0x16, 0xa4, 0x24,
+	0x96, 0xa4, 0x92, 0xa6, 0xd9, 0x29, 0xf8, 0xc4, 0x43, 0x39, 0x86, 0x15, 0x8f, 0xe4, 0x18, 0x4e,
+	0x3c, 0x92, 0x63, 0xbc, 0xf0, 0x48, 0x8e, 0xf1, 0xc1, 0x23, 0x39, 0xc6, 0x09, 0x8f, 0xe5, 0x18,
+	0x2e, 0x3c, 0x96, 0x63, 0xb8, 0xf1, 0x58, 0x8e, 0x21, 0xca, 0x30, 0x3d, 0xb3, 0x24, 0xa3, 0x34,
+	0x49, 0x2f, 0x39, 0x3f, 0x57, 0x1f, 0xe6, 0x29, 0xdd, 0xfc, 0xb4, 0xb4, 0xcc, 0xe4, 0xcc, 0xc4,
+	0x1c, 0xfd, 0x8c, 0xd2, 0x24, 0xfd, 0x0a, 0x44, 0x30, 0x94, 0x54, 0x16, 0xa4, 0x16, 0x27, 0xb1,
+	0x81, 0xfd, 0x65, 0x0c, 0x08, 0x00, 0x00, 0xff, 0xff, 0xf7, 0x53, 0x30, 0x64, 0x28, 0x01, 0x00,
+	0x00,
 }
 
 func (m *EventRegister) Marshal() (dAtA []byte, err error) {
@@ -264,19 +194,6 @@ func encodeVarintEvents(dAtA []byte, offset int, v uint64) int {
 	dAtA[offset] = uint8(v)
 	return base
 }
-func (m *EventModule) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	l = len(m.Name)
-	if l > 0 {
-		n += 1 + l + sovEvents(uint64(l))
-	}
-	return n
-}
-
 func (m *EventRegister) Size() (n int) {
 	if m == nil {
 		return 0
@@ -308,88 +225,6 @@ func sovEvents(x uint64) (n int) {
 }
 func sozEvents(x uint64) (n int) {
 	return sovEvents(uint64((x << 1) ^ uint64((int64(x) >> 63))))
-}
-func (m *EventModule) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowEvents
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: EventModule: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: EventModule: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Name", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowEvents
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthEvents
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthEvents
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Name = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipEvents(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthEvents
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
 }
 func (m *EventRegister) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)

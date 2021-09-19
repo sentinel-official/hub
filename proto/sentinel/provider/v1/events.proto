@@ -7,10 +7,6 @@ option go_package = "github.com/sentinel-official/hub/x/provider/types";
 option (gogoproto.equal_all)           = false;
 option (gogoproto.goproto_getters_all) = false;
 
-message EventModule {
-  string name = 1 [ (gogoproto.moretags) = "yaml:\"name\"" ];
-}
-
 message EventRegister {
   string address = 1 [ (gogoproto.moretags) = "yaml:\"address\"" ];
 }

@@ -57,12 +57,11 @@ func (k *Keeper) Add(ctx sdk.Context, address sdk.AccAddress, coins sdk.Coins) e
 		return err
 	}
 
-	ctx.EventManager().EmitTypedEvents(
+	ctx.EventManager().EmitTypedEvent(
 		&types.EventAdd{
 			Address: address.String(),
 			Coins:   coins,
 		},
-		&types.EventModuleName,
 	)
 
 	return nil
@@ -74,12 +73,11 @@ func (k *Keeper) Subtract(ctx sdk.Context, address sdk.AccAddress, coins sdk.Coi
 		return err
 	}
 
-	ctx.EventManager().EmitTypedEvents(
+	ctx.EventManager().EmitTypedEvent(
 		&types.EventSubtract{
 			Address: address.String(),
 			Coins:   coins,
 		},
-		&types.EventModuleName,
 	)
 
 	return nil

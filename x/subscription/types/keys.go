@@ -27,10 +27,6 @@ var (
 )
 
 var (
-	EventModuleName = EventModule{Name: ModuleName}
-)
-
-var (
 	CountKey                                = []byte{0x00}
 	SubscriptionKeyPrefix                   = []byte{0x10}
 	ActiveSubscriptionForAddressKeyPrefix   = []byte{0x20}

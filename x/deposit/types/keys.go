@@ -17,10 +17,6 @@ var (
 )
 
 var (
-	EventModuleName = EventModule{Name: ModuleName}
-)
-
-var (
 	DepositKeyPrefix = []byte{0x10}
 )
 
