@@ -82,6 +82,7 @@ import (
 
 	hubparams "github.com/sentinel-official/hub/params"
 	upgrade1 "github.com/sentinel-official/hub/upgrades/upgrade-1"
+	upgrade2 "github.com/sentinel-official/hub/upgrades/upgrade-2"
 	deposittypes "github.com/sentinel-official/hub/x/deposit/types"
 	custommint "github.com/sentinel-official/hub/x/mint"
 	custommintkeeper "github.com/sentinel-official/hub/x/mint/keeper"
@@ -161,7 +162,7 @@ type App struct {
 	slashingKeeper     slashingkeeper.Keeper
 	stakingKeeper      stakingkeeper.Keeper
 	upgradeKeeper      upgradekeeper.Keeper
-	custommintKeeper   custommintkeeper.Keeper
+	customMintKeeper   custommintkeeper.Keeper
 	swapKeeper         swapkeeper.Keeper
 	vpnKeeper          vpnkeeper.Keeper
 
@@ -365,9 +366,7 @@ func NewApp(
 	)
 	app.evidenceKeeper.SetRouter(evidenceRouter)
 
-	app.upgradeKeeper.SetUpgradeHandler(upgrade1.Name, upgrade1.Handler(app.accountKeeper))
-
-	app.custommintKeeper = custommintkeeper.NewKeeper(
+	app.customMintKeeper = custommintkeeper.NewKeeper(
 		app.cdc,
 		app.keys[customminttypes.StoreKey],
 		app.mintKeeper,
@@ -413,7 +412,7 @@ func NewApp(
 		staking.NewAppModule(app.cdc, app.stakingKeeper, app.accountKeeper, app.bankKeeper),
 		upgrade.NewAppModule(app.upgradeKeeper),
 		transferModule,
-		custommint.NewAppModule(cdc, app.custommintKeeper),
+		custommint.NewAppModule(cdc, app.customMintKeeper),
 		swap.NewAppModule(app.cdc, app.swapKeeper),
 		vpn.NewAppModule(app.cdc, app.accountKeeper, app.bankKeeper, app.vpnKeeper),
 	)
@@ -453,7 +452,7 @@ func NewApp(
 		slashing.NewAppModule(app.cdc, app.slashingKeeper, app.accountKeeper, app.bankKeeper, app.stakingKeeper),
 		staking.NewAppModule(app.cdc, app.stakingKeeper, app.accountKeeper, app.bankKeeper),
 		transferModule,
-		custommint.NewAppModule(cdc, app.custommintKeeper),
+		custommint.NewAppModule(cdc, app.customMintKeeper),
 		swap.NewAppModule(app.cdc, app.swapKeeper),
 		vpn.NewAppModule(app.cdc, app.accountKeeper, app.bankKeeper, app.vpnKeeper),
 	)
@@ -474,6 +473,15 @@ func NewApp(
 		),
 	)
 	app.SetEndBlocker(app.EndBlocker)
+
+	app.upgradeKeeper.SetUpgradeHandler(
+		upgrade1.Name,
+		upgrade1.Handler(app.accountKeeper),
+	)
+	app.upgradeKeeper.SetUpgradeHandler(
+		upgrade2.Name,
+		upgrade2.Handler(app.SetStoreLoader, app.upgradeKeeper, app.customMintKeeper),
+	)
 
 	if loadLatest {
 		if err := app.LoadLatestVersion(); err != nil {
