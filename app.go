@@ -480,7 +480,7 @@ func NewApp(
 	)
 	app.upgradeKeeper.SetUpgradeHandler(
 		upgrade2.Name,
-		upgrade2.Handler(app.SetStoreLoader, app.upgradeKeeper, app.customMintKeeper),
+		upgrade2.Handler(app.SetStoreLoader, app.accountKeeper, app.upgradeKeeper, app.customMintKeeper),
 	)
 
 	if loadLatest {
