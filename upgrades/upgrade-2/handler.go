@@ -59,37 +59,37 @@ func setInflations(ctx sdk.Context, k custommintkeeper.Keeper) error {
 				Max:        sdk.NewDecWithPrec(49, 2),
 				Min:        sdk.NewDecWithPrec(43, 2),
 				RateChange: sdk.NewDecWithPrec(6, 2),
-				Timestamp:  time.Date(2021, 9, 27, 0, 0, 0, 0, time.UTC),
+				Timestamp:  time.Date(2021, 9, 27, 12, 0, 0, 0, time.UTC),
 			},
 			{
 				Max:        sdk.NewDecWithPrec(43, 2),
 				Min:        sdk.NewDecWithPrec(37, 2),
 				RateChange: sdk.NewDecWithPrec(6, 2),
-				Timestamp:  time.Date(2022, 3, 27, 0, 0, 0, 0, time.UTC),
+				Timestamp:  time.Date(2022, 3, 27, 12, 0, 0, 0, time.UTC),
 			},
 			{
 				Max:        sdk.NewDecWithPrec(37, 2),
 				Min:        sdk.NewDecWithPrec(31, 2),
 				RateChange: sdk.NewDecWithPrec(6, 2),
-				Timestamp:  time.Date(2022, 9, 27, 0, 0, 0, 0, time.UTC),
+				Timestamp:  time.Date(2022, 9, 27, 12, 0, 0, 0, time.UTC),
 			},
 			{
 				Max:        sdk.NewDecWithPrec(31, 2),
 				Min:        sdk.NewDecWithPrec(25, 2),
 				RateChange: sdk.NewDecWithPrec(6, 2),
-				Timestamp:  time.Date(2023, 3, 27, 0, 0, 0, 0, time.UTC),
+				Timestamp:  time.Date(2023, 3, 27, 12, 0, 0, 0, time.UTC),
 			},
 			{
 				Max:        sdk.NewDecWithPrec(25, 2),
 				Min:        sdk.NewDecWithPrec(19, 2),
 				RateChange: sdk.NewDecWithPrec(6, 2),
-				Timestamp:  time.Date(2023, 9, 27, 0, 0, 0, 0, time.UTC),
+				Timestamp:  time.Date(2023, 9, 27, 12, 0, 0, 0, time.UTC),
 			},
 			{
 				Max:        sdk.NewDecWithPrec(19, 2),
 				Min:        sdk.NewDecWithPrec(13, 2),
 				RateChange: sdk.NewDecWithPrec(6, 2),
-				Timestamp:  time.Date(2024, 3, 27, 0, 0, 0, 0, time.UTC),
+				Timestamp:  time.Date(2024, 3, 27, 12, 0, 0, 0, time.UTC),
 			},
 		}
 	)
@@ -106,7 +106,7 @@ func setInflations(ctx sdk.Context, k custommintkeeper.Keeper) error {
 	return nil
 }
 
-func updateVestingAccounts(ctx sdk.Context, accountKeeper authkeeper.AccountKeeper) error {
+func updateVestingAccounts(ctx sdk.Context, k authkeeper.AccountKeeper) error {
 	var (
 		foundation = "sent1vv8kmwrs24j5emzw8dp7k8satgea62l7knegd7"
 		investors  = []string{
@@ -150,17 +150,17 @@ func updateVestingAccounts(ctx sdk.Context, accountKeeper authkeeper.AccountKeep
 	)
 
 	for _, s := range investors {
-		account, err := getContinuousVestingAccount(ctx, accountKeeper, s)
+		account, err := getContinuousVestingAccount(ctx, k, s)
 		if err != nil {
 			return err
 		}
 
 		account.StartTime = time.Date(2022, 1, 1, 12, 0, 0, 0, time.UTC).Unix()
 		account.BaseVestingAccount.EndTime = time.Date(2023, 1, 1, 12, 0, 0, 0, time.UTC).Unix()
-		accountKeeper.SetAccount(ctx, account)
+		k.SetAccount(ctx, account)
 	}
 
-	account, err := getPeriodicVestingAccount(ctx, accountKeeper, foundation)
+	account, err := getPeriodicVestingAccount(ctx, k, foundation)
 	if err != nil {
 		return err
 	}
@@ -198,7 +198,7 @@ func updateVestingAccounts(ctx sdk.Context, accountKeeper authkeeper.AccountKeep
 		account.EndTime += lengths[i]
 	}
 
-	accountKeeper.SetAccount(ctx, account)
+	k.SetAccount(ctx, account)
 
 	return nil
 }
