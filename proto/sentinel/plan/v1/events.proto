@@ -1,51 +1,33 @@
 syntax = "proto3";
 package sentinel.plan.v1;
 
-option go_package = "github.com/sentinel-official/hub/x/plan/types";
-
-import "cosmos/base/v1beta1/coin.proto";
 import "gogoproto/gogo.proto";
-import "google/protobuf/duration.proto";
 import "sentinel/types/v1/status.proto";
 
-option (gogoproto.equal_all)           = false;
+option go_package            = "github.com/sentinel-official/hub/x/plan/types";
+option (gogoproto.equal_all) = false;
 option (gogoproto.goproto_getters_all) = false;
 
-message EventModule { string name = 1; }
-
-message EventSetPlanCount { uint64 count = 1; }
-
-message EventAddPlan {
-  string from                             = 1;
-  string provider                         = 2;
-  repeated cosmos.base.v1beta1.Coin price = 3 [
-    (gogoproto.nullable)     = false,
-    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
-  ];
-  google.protobuf.Duration validity = 4
-      [ (gogoproto.stdduration) = true, (gogoproto.nullable) = false ];
-  string bytes = 5 [
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
-    (gogoproto.nullable)   = false
-  ];
+message EventAdd {
+  uint64 id       = 1 [ (gogoproto.moretags) = "yaml:\"id\"" ];
+  string provider = 2 [ (gogoproto.moretags) = "yaml:\"provider\"" ];
 }
 
-message EventSetPlanStatus {
-  string from                     = 1;
-  string provider                 = 2;
-  uint64 id                       = 3;
-  sentinel.types.v1.Status status = 4;
+message EventSetStatus {
+  uint64 id       = 1 [ (gogoproto.moretags) = "yaml:\"id\"" ];
+  string provider = 2 [ (gogoproto.moretags) = "yaml:\"provider\"" ];
+  sentinel.types.v1.Status status = 3
+      [ (gogoproto.moretags) = "yaml:\"status\"" ];
 }
 
-message EventAddNodeForPlan {
-  string from     = 1;
-  string provider = 2;
-  uint64 id       = 3;
-  string address  = 4;
+message EventAddNode {
+  uint64 id       = 1 [ (gogoproto.moretags) = "yaml:\"id\"" ];
+  string node     = 2 [ (gogoproto.moretags) = "yaml:\"node\"" ];
+  string provider = 3 [ (gogoproto.moretags) = "yaml:\"provider\"" ];
 }
 
-message EventRemoveNodeForPlan {
-  string from    = 1;
-  uint64 id      = 2;
-  string address = 3;
+message EventRemoveNode {
+  uint64 id       = 1 [ (gogoproto.moretags) = "yaml:\"id\"" ];
+  string node     = 2 [ (gogoproto.moretags) = "yaml:\"node\"" ];
+  string provider = 3 [ (gogoproto.moretags) = "yaml:\"provider\"" ];
 }

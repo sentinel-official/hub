@@ -13,13 +13,16 @@ type AccountKeeper interface {
 	GetAccount(ctx sdk.Context, address sdk.AccAddress) authtypes.AccountI
 }
 
+type BankKeeper interface {
+	SpendableCoins(ctx sdk.Context, address sdk.AccAddress) sdk.Coins
+}
+
 type DepositKeeper interface {
 	SendCoinsFromDepositToAccount(ctx sdk.Context, from, to sdk.AccAddress, coins sdk.Coins) error
 }
 
 type PlanKeeper interface {
 	HasNodeForPlan(ctx sdk.Context, id uint64, address hubtypes.NodeAddress) bool
-	GetNodesForPlan(ctx sdk.Context, id uint64, skip, limit int64) nodetypes.Nodes
 }
 
 type NodeKeeper interface {
@@ -28,13 +31,9 @@ type NodeKeeper interface {
 
 type SubscriptionKeeper interface {
 	GetSubscription(ctx sdk.Context, id uint64) (subscriptiontypes.Subscription, bool)
-
-	GetSubscriptionsForNode(ctx sdk.Context, address hubtypes.NodeAddress, skip, limit int64) subscriptiontypes.Subscriptions
-	HasSubscriptionForNode(ctx sdk.Context, address hubtypes.NodeAddress, id uint64) bool
-
 	GetActiveSubscriptionsForAddress(ctx sdk.Context, address sdk.AccAddress, skip, limit int64) subscriptiontypes.Subscriptions
 
 	SetQuota(ctx sdk.Context, id uint64, quota subscriptiontypes.Quota)
-	GetQuota(ctx sdk.Context, id uint64, address sdk.AccAddress) (subscriptiontypes.Quota, bool)
 	HasQuota(ctx sdk.Context, id uint64, address sdk.AccAddress) bool
+	GetQuota(ctx sdk.Context, id uint64, address sdk.AccAddress) (subscriptiontypes.Quota, bool)
 }

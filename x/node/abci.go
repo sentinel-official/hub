@@ -15,8 +15,8 @@ func EndBlock(ctx sdk.Context, k keeper.Keeper) []abcitypes.ValidatorUpdate {
 		inactiveDuration = k.InactiveDuration(ctx)
 	)
 
-	k.IterateInactiveNodesAt(ctx, ctx.BlockTime(), func(_ int, key []byte, item types.Node) bool {
-		log.Info("inactive node", "key", key, "value", item)
+	k.IterateInactiveNodesAt(ctx, ctx.BlockTime(), func(_ int, item types.Node) bool {
+		log.Info("inactive node", "value", item)
 
 		itemAddress := item.GetAddress()
 		k.DeleteActiveNode(ctx, itemAddress)
@@ -33,6 +33,13 @@ func EndBlock(ctx sdk.Context, k keeper.Keeper) []abcitypes.ValidatorUpdate {
 		item.Status = hubtypes.StatusInactive
 		item.StatusAt = ctx.BlockTime()
 		k.SetNode(ctx, item)
+
+		ctx.EventManager().EmitTypedEvent(
+			&types.EventSetStatus{
+				Address: item.Address,
+				Status:  item.Status,
+			},
+		)
 
 		return false
 	})

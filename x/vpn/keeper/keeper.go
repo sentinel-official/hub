@@ -29,8 +29,14 @@ type Keeper struct {
 	Session      sessionkeeper.Keeper
 }
 
-func NewKeeper(cdc codec.BinaryMarshaler, key sdk.StoreKey, paramsKeeper paramskeeper.Keeper, accountKeeper authkeeper.AccountKeeper,
-	bankKeeper bankkeeper.Keeper, distributionKeeper distributionkeeper.Keeper) Keeper {
+func NewKeeper(
+	cdc codec.BinaryMarshaler,
+	key sdk.StoreKey,
+	paramsKeeper paramskeeper.Keeper,
+	accountKeeper authkeeper.AccountKeeper,
+	bankKeeper bankkeeper.Keeper,
+	distributionKeeper distributionkeeper.Keeper,
+) Keeper {
 	var (
 		depositKeeper      = depositkeeper.NewKeeper(cdc, key)
 		providerKeeper     = providerkeeper.NewKeeper(cdc, key, paramsKeeper.Subspace(providertypes.ParamsSubspace))
@@ -55,6 +61,7 @@ func NewKeeper(cdc codec.BinaryMarshaler, key sdk.StoreKey, paramsKeeper paramsk
 	subscriptionKeeper.WithBankKeeper(bankKeeper)
 	subscriptionKeeper.WithNodeKeeper(&nodeKeeper)
 	subscriptionKeeper.WithPlanKeeper(&planKeeper)
+	subscriptionKeeper.WithSessionKeeper(&sessionKeeper)
 
 	sessionKeeper.WithAccountKeeper(accountKeeper)
 	sessionKeeper.WithDepositKeeper(&depositKeeper)

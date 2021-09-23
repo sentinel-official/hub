@@ -82,7 +82,11 @@ import (
 
 	hubparams "github.com/sentinel-official/hub/params"
 	upgrade1 "github.com/sentinel-official/hub/upgrades/upgrade-1"
+	upgrade2 "github.com/sentinel-official/hub/upgrades/upgrade-2"
 	deposittypes "github.com/sentinel-official/hub/x/deposit/types"
+	custommint "github.com/sentinel-official/hub/x/mint"
+	custommintkeeper "github.com/sentinel-official/hub/x/mint/keeper"
+	customminttypes "github.com/sentinel-official/hub/x/mint/types"
 	"github.com/sentinel-official/hub/x/swap"
 	swapkeeper "github.com/sentinel-official/hub/x/swap/keeper"
 	swaptypes "github.com/sentinel-official/hub/x/swap/types"
@@ -119,6 +123,7 @@ var (
 		staking.AppModuleBasic{},
 		ibctransfer.AppModuleBasic{},
 		upgrade.AppModuleBasic{},
+		custommint.AppModule{},
 		swap.AppModuleBasic{},
 		vpn.AppModuleBasic{},
 	)
@@ -157,6 +162,7 @@ type App struct {
 	slashingKeeper     slashingkeeper.Keeper
 	stakingKeeper      stakingkeeper.Keeper
 	upgradeKeeper      upgradekeeper.Keeper
+	customMintKeeper   custommintkeeper.Keeper
 	swapKeeper         swapkeeper.Keeper
 	vpnKeeper          vpnkeeper.Keeper
 
@@ -187,7 +193,7 @@ func NewApp(
 			distributiontypes.StoreKey, evidencetypes.StoreKey, govtypes.StoreKey,
 			ibchost.StoreKey, ibctransfertypes.StoreKey, minttypes.StoreKey,
 			paramstypes.StoreKey, slashingtypes.StoreKey, stakingtypes.StoreKey,
-			upgradetypes.StoreKey, swaptypes.StoreKey, vpntypes.StoreKey,
+			upgradetypes.StoreKey, customminttypes.StoreKey, swaptypes.StoreKey, vpntypes.StoreKey,
 		)
 	)
 
@@ -360,8 +366,11 @@ func NewApp(
 	)
 	app.evidenceKeeper.SetRouter(evidenceRouter)
 
-	app.upgradeKeeper.SetUpgradeHandler(upgrade1.Name, upgrade1.Handler(app.accountKeeper))
-
+	app.customMintKeeper = custommintkeeper.NewKeeper(
+		app.cdc,
+		app.keys[customminttypes.StoreKey],
+		app.mintKeeper,
+	)
 	app.swapKeeper = swapkeeper.NewKeeper(
 		app.cdc,
 		app.keys[swaptypes.StoreKey],
@@ -403,13 +412,14 @@ func NewApp(
 		staking.NewAppModule(app.cdc, app.stakingKeeper, app.accountKeeper, app.bankKeeper),
 		upgrade.NewAppModule(app.upgradeKeeper),
 		transferModule,
+		custommint.NewAppModule(cdc, app.customMintKeeper),
 		swap.NewAppModule(app.cdc, app.swapKeeper),
-		vpn.NewAppModule(app.accountKeeper, app.vpnKeeper),
+		vpn.NewAppModule(app.cdc, app.accountKeeper, app.bankKeeper, app.vpnKeeper),
 	)
 
 	// NOTE: order is very important here
 	app.manager.SetOrderBeginBlockers(
-		upgradetypes.ModuleName, minttypes.ModuleName, distributiontypes.ModuleName,
+		upgradetypes.ModuleName, customminttypes.ModuleName, minttypes.ModuleName, distributiontypes.ModuleName,
 		slashingtypes.ModuleName, evidencetypes.ModuleName, stakingtypes.ModuleName,
 		ibchost.ModuleName,
 	)
@@ -422,7 +432,7 @@ func NewApp(
 		distributiontypes.ModuleName, stakingtypes.ModuleName, slashingtypes.ModuleName,
 		govtypes.ModuleName, minttypes.ModuleName, crisistypes.ModuleName,
 		ibchost.ModuleName, genutiltypes.ModuleName, evidencetypes.ModuleName,
-		ibctransfertypes.ModuleName, swaptypes.ModuleName, vpntypes.ModuleName,
+		ibctransfertypes.ModuleName, customminttypes.ModuleName, swaptypes.ModuleName, vpntypes.ModuleName,
 	)
 
 	app.manager.RegisterInvariants(&app.crisisKeeper)
@@ -442,8 +452,9 @@ func NewApp(
 		slashing.NewAppModule(app.cdc, app.slashingKeeper, app.accountKeeper, app.bankKeeper, app.stakingKeeper),
 		staking.NewAppModule(app.cdc, app.stakingKeeper, app.accountKeeper, app.bankKeeper),
 		transferModule,
+		custommint.NewAppModule(cdc, app.customMintKeeper),
 		swap.NewAppModule(app.cdc, app.swapKeeper),
-		vpn.NewAppModule(app.accountKeeper, app.vpnKeeper),
+		vpn.NewAppModule(app.cdc, app.accountKeeper, app.bankKeeper, app.vpnKeeper),
 	)
 	app.simulationManager.RegisterStoreDecoders()
 
@@ -462,6 +473,15 @@ func NewApp(
 		),
 	)
 	app.SetEndBlocker(app.EndBlocker)
+
+	app.upgradeKeeper.SetUpgradeHandler(
+		upgrade1.Name,
+		upgrade1.Handler(app.accountKeeper),
+	)
+	app.upgradeKeeper.SetUpgradeHandler(
+		upgrade2.Name,
+		upgrade2.Handler(app.SetStoreLoader, app.accountKeeper, app.upgradeKeeper, app.customMintKeeper),
+	)
 
 	if loadLatest {
 		if err := app.LoadLatestVersion(); err != nil {
@@ -540,6 +560,7 @@ func (a *App) ModuleAccountsPermissions() map[string][]string {
 		minttypes.ModuleName:           {authtypes.Minter},
 		stakingtypes.BondedPoolName:    {authtypes.Burner, authtypes.Staking},
 		stakingtypes.NotBondedPoolName: {authtypes.Burner, authtypes.Staking},
+		customminttypes.ModuleName:     nil,
 		swaptypes.ModuleName:           {authtypes.Minter},
 		deposittypes.ModuleName:        nil,
 	}

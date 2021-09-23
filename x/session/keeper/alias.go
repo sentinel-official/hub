@@ -14,6 +14,14 @@ func (k *Keeper) GetAccount(ctx sdk.Context, address sdk.AccAddress) authtypes.A
 	return k.account.GetAccount(ctx, address)
 }
 
+func (k *Keeper) SendCoinFromDepositToAccount(ctx sdk.Context, from, to sdk.AccAddress, coin sdk.Coin) error {
+	if coin.IsZero() {
+		return nil
+	}
+
+	return k.deposit.SendCoinsFromDepositToAccount(ctx, from, to, sdk.NewCoins(coin))
+}
+
 func (k *Keeper) HasNodeForPlan(ctx sdk.Context, id uint64, address hubtypes.NodeAddress) bool {
 	return k.plan.HasNodeForPlan(ctx, id, address)
 }
@@ -26,26 +34,18 @@ func (k *Keeper) GetSubscription(ctx sdk.Context, id uint64) (subscriptiontypes.
 	return k.subscription.GetSubscription(ctx, id)
 }
 
-func (k *Keeper) HasSubscriptionForNode(ctx sdk.Context, address hubtypes.NodeAddress, id uint64) bool {
-	return k.subscription.HasSubscriptionForNode(ctx, address, id)
+func (k *Keeper) GetActiveSubscriptionsForAddress(ctx sdk.Context, address sdk.AccAddress, skip, limit int64) subscriptiontypes.Subscriptions {
+	return k.subscription.GetActiveSubscriptionsForAddress(ctx, address, skip, limit)
 }
 
 func (k *Keeper) SetQuota(ctx sdk.Context, id uint64, quota subscriptiontypes.Quota) {
 	k.subscription.SetQuota(ctx, id, quota)
 }
 
-func (k *Keeper) GetQuota(ctx sdk.Context, id uint64, address sdk.AccAddress) (subscriptiontypes.Quota, bool) {
-	return k.subscription.GetQuota(ctx, id, address)
-}
-
 func (k *Keeper) HasQuota(ctx sdk.Context, id uint64, address sdk.AccAddress) bool {
 	return k.subscription.HasQuota(ctx, id, address)
 }
 
-func (k *Keeper) SendCoinsFromDepositToAccount(ctx sdk.Context, from, to sdk.AccAddress, coin sdk.Coin) error {
-	if coin.IsZero() {
-		return nil
-	}
-
-	return k.deposit.SendCoinsFromDepositToAccount(ctx, from, to, sdk.NewCoins(coin))
+func (k *Keeper) GetQuota(ctx sdk.Context, id uint64, address sdk.AccAddress) (subscriptiontypes.Quota, bool) {
+	return k.subscription.GetQuota(ctx, id, address)
 }

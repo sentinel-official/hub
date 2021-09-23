@@ -14,9 +14,7 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, state types.GenesisState) {
 }
 
 func ExportGenesis(ctx sdk.Context, k keeper.Keeper) types.GenesisState {
-	var (
-		deposits = k.GetDeposits(ctx, 0, 0)
+	return types.NewGenesisState(
+		k.GetDeposits(ctx, 0, 0),
 	)
-
-	return types.NewGenesisState(deposits)
 }

@@ -1,76 +1,31 @@
 syntax = "proto3";
 package sentinel.subscription.v1;
 
-option go_package = "github.com/sentinel-official/hub/x/subscription/types";
-
-import "cosmos/base/v1beta1/coin.proto";
 import "gogoproto/gogo.proto";
-import "google/protobuf/timestamp.proto";
 import "sentinel/types/v1/status.proto";
 
+option go_package = "github.com/sentinel-official/hub/x/subscription/types";
 option (gogoproto.equal_all)           = false;
 option (gogoproto.goproto_getters_all) = false;
 
-message EventModule { string name = 1; }
-
-message EventSetSubscriptionCount { uint64 count = 1; }
-
-message EventSubscribeToNode {
-  uint64 id                        = 1;
-  string from                      = 2;
-  string owner                     = 3;
-  string node                      = 4;
-  cosmos.base.v1beta1.Coin price   = 5 [ (gogoproto.nullable) = false ];
-  cosmos.base.v1beta1.Coin deposit = 6 [ (gogoproto.nullable) = false ];
-  string free                      = 7 [
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
-    (gogoproto.nullable)   = false
-  ];
+message EventSubscribe {
+  uint64 id   = 1 [ (gogoproto.moretags) = "yaml:\"id\"" ];
+  string node = 2 [ (gogoproto.moretags) = "yaml:\"node\"" ];
+  uint64 plan = 3 [ (gogoproto.moretags) = "yaml:\"plan\"" ];
 }
 
-message EventSubscribeToPlan {
-  uint64 id                        = 1;
-  string from                      = 2;
-  string owner                     = 3;
-  uint64 plan                      = 4;
-  string denom                     = 5;
-  google.protobuf.Timestamp expiry = 6
-      [ (gogoproto.nullable) = false, (gogoproto.stdtime) = true ];
-  string free = 7 [
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
-    (gogoproto.nullable)   = false
-  ];
-}
-
-message EventCancelSubscription {
-  string from = 1;
-  uint64 id   = 2;
+message EventSetStatus {
+  uint64 id                       = 1 [ (gogoproto.moretags) = "yaml:\"id\"" ];
+  sentinel.types.v1.Status status = 2
+      [ (gogoproto.moretags) = "yaml:\"status\"" ];
 }
 
 message EventAddQuota {
-  string from     = 1;
-  uint64 id       = 2;
-  string address  = 3;
-  string consumed = 4 [
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
-    (gogoproto.nullable)   = false
-  ];
-  string allocated = 5 [
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
-    (gogoproto.nullable)   = false
-  ];
+  uint64 id      = 1 [ (gogoproto.moretags) = "yaml:\"id\"" ];
+  string address = 2 [ (gogoproto.moretags) = "yaml:\"address\"" ];
 }
 
 message EventUpdateQuota {
-  string from     = 1;
-  uint64 id       = 2;
-  string address  = 3;
-  string consumed = 4 [
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
-    (gogoproto.nullable)   = false
-  ];
-  string allocated = 5 [
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
-    (gogoproto.nullable)   = false
-  ];
+  uint64 id      = 1 [ (gogoproto.moretags) = "yaml:\"id\"" ];
+  string address = 2 [ (gogoproto.moretags) = "yaml:\"address\"" ];
 }

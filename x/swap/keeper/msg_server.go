@@ -23,11 +23,6 @@ func NewMsgServiceServer(keeper Keeper) types.MsgServiceServer {
 func (k msgServer) MsgSwap(c context.Context, msg *types.MsgSwapRequest) (*types.MsgSwapResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
-	msgFrom, err := sdk.AccAddressFromBech32(msg.From)
-	if err != nil {
-		return nil, err
-	}
-
 	if !k.SwapEnabled(ctx) {
 		return nil, types.ErrorSwapIsDisabled
 	}
@@ -62,13 +57,10 @@ func (k msgServer) MsgSwap(c context.Context, msg *types.MsgSwapRequest) (*types
 	k.SetSwap(ctx, swap)
 	ctx.EventManager().EmitTypedEvent(
 		&types.EventSwap{
-			From:     sdk.AccAddress(msgFrom.Bytes()).String(),
 			TxHash:   swap.TxHash,
 			Receiver: swap.Receiver,
-			Amount:   swap.Amount,
 		},
 	)
 
-	ctx.EventManager().EmitTypedEvent(&types.EventModuleName)
 	return &types.MsgSwapResponse{}, nil
 }

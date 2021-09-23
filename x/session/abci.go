@@ -15,8 +15,8 @@ func EndBlock(ctx sdk.Context, k keeper.Keeper) []abcitypes.ValidatorUpdate {
 		inactiveDuration = k.InactiveDuration(ctx)
 	)
 
-	k.IterateInactiveSessionsAt(ctx, ctx.BlockTime(), func(_ int, key []byte, item types.Session) bool {
-		log.Info("inactive session", "key", key, "value", item)
+	k.IterateInactiveSessionsAt(ctx, ctx.BlockTime(), func(_ int, item types.Session) bool {
+		log.Info("inactive session", "value", item)
 
 		itemAddress := item.GetAddress()
 		if item.Status.Equal(hubtypes.Active) {
@@ -30,10 +30,11 @@ func EndBlock(ctx sdk.Context, k keeper.Keeper) []abcitypes.ValidatorUpdate {
 			k.SetInactiveSessionForAddress(ctx, itemAddress, item.Id)
 			k.SetInactiveSessionAt(ctx, item.StatusAt.Add(inactiveDuration), item.Id)
 			ctx.EventManager().EmitTypedEvent(
-				&types.EventEndSession{
+				&types.EventSetStatus{
 					Id:           item.Id,
-					Subscription: item.Subscription,
 					Node:         item.Node,
+					Subscription: item.Subscription,
+					Status:       item.Status,
 				},
 			)
 
@@ -49,6 +50,15 @@ func EndBlock(ctx sdk.Context, k keeper.Keeper) []abcitypes.ValidatorUpdate {
 		item.Status = hubtypes.StatusInactive
 		item.StatusAt = ctx.BlockTime()
 		k.SetSession(ctx, item)
+
+		ctx.EventManager().EmitTypedEvent(
+			&types.EventSetStatus{
+				Id:           item.Id,
+				Node:         item.Node,
+				Subscription: item.Subscription,
+				Status:       item.Status,
+			},
+		)
 
 		return false
 	})

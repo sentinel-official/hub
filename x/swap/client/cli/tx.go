@@ -39,7 +39,12 @@ func txSwap() *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgSwapRequest(ctx.FromAddress, types.BytesToHash(txHash), receiver, sdk.NewInt(amount))
+			msg := types.NewMsgSwapRequest(
+				ctx.FromAddress,
+				types.BytesToHash(txHash),
+				receiver,
+				sdk.NewInt(amount),
+			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err
 			}

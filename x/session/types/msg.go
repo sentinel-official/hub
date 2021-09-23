@@ -1,8 +1,6 @@
 package types
 
 import (
-	"fmt"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/errors"
 
@@ -28,23 +26,24 @@ func (m *MsgStartRequest) Route() string {
 }
 
 func (m *MsgStartRequest) Type() string {
-	return fmt.Sprintf("%s:start", ModuleName)
+	return TypeMsgStartRequest
 }
 
 func (m *MsgStartRequest) ValidateBasic() error {
-	// From shouldn't be nil or empty
+	if m.From == "" {
+		return errors.Wrap(ErrorInvalidFrom, "from cannot be empty")
+	}
 	if _, err := sdk.AccAddressFromBech32(m.From); err != nil {
-		return errors.Wrapf(ErrorInvalidField, "%s", "from")
+		return errors.Wrapf(ErrorInvalidFrom, "%s", err)
 	}
-
-	// Id should be positive
 	if m.Id == 0 {
-		return errors.Wrapf(ErrorInvalidField, "%s", "id")
+		return errors.Wrap(ErrorInvalidId, "id cannot be zero")
 	}
-
-	// Address shouldn't be nil or empty
+	if m.Node == "" {
+		return errors.Wrap(ErrorInvalidNode, "node cannot be empty")
+	}
 	if _, err := hubtypes.NodeAddressFromBech32(m.Node); err != nil {
-		return errors.Wrapf(ErrorInvalidField, "%s", "address")
+		return errors.Wrapf(ErrorInvalidNode, "%s", err)
 	}
 
 	return nil
@@ -76,33 +75,32 @@ func (m *MsgUpdateRequest) Route() string {
 }
 
 func (m *MsgUpdateRequest) Type() string {
-	return fmt.Sprintf("%s:update", ModuleName)
+	return TypeMsgUpdateRequest
 }
 
 func (m *MsgUpdateRequest) ValidateBasic() error {
-	// From shouldn't be nil or empty
+	if m.From == "" {
+		return errors.Wrap(ErrorInvalidFrom, "from cannot be empty")
+	}
 	if _, err := hubtypes.NodeAddressFromBech32(m.From); err != nil {
-		return errors.Wrapf(ErrorInvalidField, "%s", "from")
+		return errors.Wrapf(ErrorInvalidFrom, "%s", err)
 	}
-
-	// Id should be positive
 	if m.Proof.Id == 0 {
-		return errors.Wrapf(ErrorInvalidField, "%s", "proof->id")
+		return errors.Wrap(ErrorInvalidProofId, "proof->id cannot be zero")
 	}
-
-	// Duration shouldn't be negative
 	if m.Proof.Duration < 0 {
-		return errors.Wrapf(ErrorInvalidField, "%s", "proof->duration")
+		return errors.Wrap(ErrorInvalidProofDuration, "proof->duration cannot be negative")
 	}
-
-	// Bandwidth shouldn't be negative
 	if m.Proof.Bandwidth.IsAnyNegative() {
-		return errors.Wrapf(ErrorInvalidField, "%s", "proof->bandwidth")
+		return errors.Wrap(ErrorInvalidProofBandwidth, "proof->bandwidth cannot be negative")
 	}
-
-	// Signature can be nil, if not length should be 64
-	if m.Signature != nil && len(m.Signature) != 64 {
-		return errors.Wrapf(ErrorInvalidField, "%s", "signature")
+	if m.Signature != nil {
+		if len(m.Signature) < 64 {
+			return errors.Wrapf(ErrorInvalidSignature, "signature length cannot be less than %d", 64)
+		}
+		if len(m.Signature) > 64 {
+			return errors.Wrapf(ErrorInvalidSignature, "signature length cannot be greater than %d", 64)
+		}
 	}
 
 	return nil
@@ -134,23 +132,21 @@ func (m *MsgEndRequest) Route() string {
 }
 
 func (m *MsgEndRequest) Type() string {
-	return fmt.Sprintf("%s:end", ModuleName)
+	return TypeMsgEndRequest
 }
 
 func (m *MsgEndRequest) ValidateBasic() error {
-	// From shouldn't be nil or empty
+	if m.From == "" {
+		return errors.Wrap(ErrorInvalidFrom, "from cannot be empty")
+	}
 	if _, err := sdk.AccAddressFromBech32(m.From); err != nil {
-		return errors.Wrapf(ErrorInvalidField, "%s", "from")
+		return errors.Wrapf(ErrorInvalidFrom, "%s", err)
 	}
-
-	// Id should be positive
 	if m.Id == 0 {
-		return errors.Wrapf(ErrorInvalidField, "%s", "id")
+		return errors.Wrap(ErrorInvalidId, "id cannot be zero")
 	}
-
-	// Rating shouldn't be greater than 10
 	if m.Rating > 10 {
-		return errors.Wrapf(ErrorInvalidField, "%s", "rating")
+		return errors.Wrapf(ErrorInvalidRating, "rating cannot be greater than %d", 10)
 	}
 
 	return nil

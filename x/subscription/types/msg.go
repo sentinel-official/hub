@@ -1,8 +1,6 @@
 package types
 
 import (
-	"fmt"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/errors"
 
@@ -31,22 +29,30 @@ func (m *MsgSubscribeToNodeRequest) Route() string {
 }
 
 func (m *MsgSubscribeToNodeRequest) Type() string {
-	return fmt.Sprintf("%s:subscribe_to_node", ModuleName)
+	return TypeMsgSubscribeToNodeRequest
 }
 
 func (m *MsgSubscribeToNodeRequest) ValidateBasic() error {
+	if m.From == "" {
+		return errors.Wrap(ErrorInvalidFrom, "from cannot be empty")
+	}
 	if _, err := sdk.AccAddressFromBech32(m.From); err != nil {
-		return errors.Wrapf(ErrorInvalidField, "%s", "from")
+		return errors.Wrapf(ErrorInvalidFrom, "%s", err)
 	}
-
-	// Address should be valid
+	if m.Address == "" {
+		return errors.Wrap(ErrorInvalidAddress, "address cannot be empty")
+	}
 	if _, err := hubtypes.NodeAddressFromBech32(m.Address); err != nil {
-		return errors.Wrapf(ErrorInvalidField, "%s", "address")
+		return errors.Wrapf(ErrorInvalidAddress, "%s", err)
 	}
-
-	// Deposit should be valid and positive
-	if !m.Deposit.IsValid() || !m.Deposit.IsPositive() {
-		return errors.Wrapf(ErrorInvalidField, "%s", "deposit")
+	if m.Deposit.IsNegative() {
+		return errors.Wrap(ErrorInvalidDeposit, "deposit cannot be negative")
+	}
+	if m.Deposit.IsZero() {
+		return errors.Wrap(ErrorInvalidDeposit, "deposit cannot be zero")
+	}
+	if !m.Deposit.IsValid() {
+		return errors.Wrap(ErrorInvalidDeposit, "deposit must be valid")
 	}
 
 	return nil
@@ -78,22 +84,23 @@ func (m *MsgSubscribeToPlanRequest) Route() string {
 }
 
 func (m *MsgSubscribeToPlanRequest) Type() string {
-	return fmt.Sprintf("%s:subscribe_to_plan", ModuleName)
+	return TypeMsgSubscribeToPlanRequest
 }
 
 func (m *MsgSubscribeToPlanRequest) ValidateBasic() error {
+	if m.From == "" {
+		return errors.Wrap(ErrorInvalidFrom, "from cannot be empty")
+	}
 	if _, err := sdk.AccAddressFromBech32(m.From); err != nil {
-		return errors.Wrapf(ErrorInvalidField, "%s", "from")
+		return errors.Wrapf(ErrorInvalidFrom, "%s", err)
 	}
-
-	// Id shouldn't be zero
 	if m.Id == 0 {
-		return errors.Wrapf(ErrorInvalidField, "%s", "id")
+		return errors.Wrap(ErrorInvalidId, "id cannot be zero")
 	}
-
-	// Denom should be valid
-	if err := sdk.ValidateDenom(m.Denom); err != nil {
-		return errors.Wrapf(ErrorInvalidField, "%s", "denom")
+	if m.Denom != "" {
+		if err := sdk.ValidateDenom(m.Denom); err != nil {
+			return errors.Wrapf(ErrorInvalidDenom, "%s", err)
+		}
 	}
 
 	return nil
@@ -124,17 +131,18 @@ func (m *MsgCancelRequest) Route() string {
 }
 
 func (m *MsgCancelRequest) Type() string {
-	return fmt.Sprintf("%s:cancel", ModuleName)
+	return TypeMsgCancelRequest
 }
 
 func (m *MsgCancelRequest) ValidateBasic() error {
-	if _, err := sdk.AccAddressFromBech32(m.From); err != nil {
-		return errors.Wrapf(ErrorInvalidField, "%s", "from")
+	if m.From == "" {
+		return errors.Wrap(ErrorInvalidFrom, "from cannot be empty")
 	}
-
-	// Id shouldn't be zero
+	if _, err := sdk.AccAddressFromBech32(m.From); err != nil {
+		return errors.Wrapf(ErrorInvalidFrom, "%s", err)
+	}
 	if m.Id == 0 {
-		return errors.Wrapf(ErrorInvalidField, "%s", "id")
+		return errors.Wrap(ErrorInvalidId, "id cannot be zero")
 	}
 
 	return nil
@@ -167,27 +175,27 @@ func (m *MsgAddQuotaRequest) Route() string {
 }
 
 func (m *MsgAddQuotaRequest) Type() string {
-	return fmt.Sprintf("%s:add_quota", ModuleName)
+	return TypeMsgAddQuotaRequest
 }
 
 func (m *MsgAddQuotaRequest) ValidateBasic() error {
+	if m.From == "" {
+		return errors.Wrap(ErrorInvalidFrom, "from cannot be empty")
+	}
 	if _, err := sdk.AccAddressFromBech32(m.From); err != nil {
-		return errors.Wrapf(ErrorInvalidField, "%s", "from")
+		return errors.Wrapf(ErrorInvalidFrom, "%s", err)
 	}
-
-	// Id shouldn't be zero
 	if m.Id == 0 {
-		return errors.Wrapf(ErrorInvalidField, "%s", "id")
+		return errors.Wrap(ErrorInvalidId, "id cannot be zero")
 	}
-
-	// Address should be valid
+	if m.Address == "" {
+		return errors.Wrap(ErrorInvalidAddress, "address cannot be empty")
+	}
 	if _, err := sdk.AccAddressFromBech32(m.Address); err != nil {
-		return errors.Wrapf(ErrorInvalidField, "%s", "address")
+		return errors.Wrapf(ErrorInvalidAddress, "%s", err)
 	}
-
-	// Bytes should be positive
-	if !m.Bytes.IsPositive() {
-		return errors.Wrapf(ErrorInvalidField, "%s", "bytes")
+	if m.Bytes.IsNegative() {
+		return errors.Wrap(ErrorInvalidBytes, "bytes cannot be negative")
 	}
 
 	return nil
@@ -220,27 +228,27 @@ func (m *MsgUpdateQuotaRequest) Route() string {
 }
 
 func (m *MsgUpdateQuotaRequest) Type() string {
-	return fmt.Sprintf("%s:update_quota", ModuleName)
+	return TypeMsgUpdateQuotaRequest
 }
 
 func (m *MsgUpdateQuotaRequest) ValidateBasic() error {
+	if m.From == "" {
+		return errors.Wrap(ErrorInvalidFrom, "from cannot be empty")
+	}
 	if _, err := sdk.AccAddressFromBech32(m.From); err != nil {
-		return errors.Wrapf(ErrorInvalidField, "%s", "from")
+		return errors.Wrapf(ErrorInvalidFrom, "%s", err)
 	}
-
-	// Id shouldn't be zero
 	if m.Id == 0 {
-		return errors.Wrapf(ErrorInvalidField, "%s", "id")
+		return errors.Wrap(ErrorInvalidId, "id cannot be zero")
 	}
-
-	// Address shouldn be valid
+	if m.Address == "" {
+		return errors.Wrap(ErrorInvalidAddress, "address cannot be empty")
+	}
 	if _, err := sdk.AccAddressFromBech32(m.Address); err != nil {
-		return errors.Wrapf(ErrorInvalidField, "%s", "address")
+		return errors.Wrapf(ErrorInvalidAddress, "%s", err)
 	}
-
-	// Bytes should be positive
-	if !m.Bytes.IsPositive() {
-		return errors.Wrapf(ErrorInvalidField, "%s", "bytes")
+	if m.Bytes.IsNegative() {
+		return errors.Wrap(ErrorInvalidBytes, "bytes cannot be negative")
 	}
 
 	return nil

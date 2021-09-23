@@ -17,6 +17,7 @@ import (
 	abcitypes "github.com/tendermint/tendermint/abci/types"
 
 	"github.com/sentinel-official/hub/x/swap/client/cli"
+	"github.com/sentinel-official/hub/x/swap/client/rest"
 	"github.com/sentinel-official/hub/x/swap/keeper"
 	"github.com/sentinel-official/hub/x/swap/simulation"
 	"github.com/sentinel-official/hub/x/swap/types"
@@ -55,7 +56,9 @@ func (a AppModuleBasic) ValidateGenesis(cdc codec.JSONMarshaler, _ client.TxEnco
 	return state.Validate()
 }
 
-func (a AppModuleBasic) RegisterRESTRoutes(_ client.Context, _ *mux.Router) {}
+func (a AppModuleBasic) RegisterRESTRoutes(ctx client.Context, router *mux.Router) {
+	rest.RegisterRoutes(ctx, router)
+}
 
 func (a AppModuleBasic) RegisterGRPCGatewayRoutes(ctx client.Context, mux *runtime.ServeMux) {
 	_ = types.RegisterQueryServiceHandlerClient(context.Background(), mux, types.NewQueryServiceClient(ctx))
@@ -118,8 +121,6 @@ func (a AppModule) EndBlock(_ sdk.Context, _ abcitypes.RequestEndBlock) []abcity
 	return nil
 }
 
-// AppSimulaion Methods
-
 func (AppModule) GenerateGenesisState(simState *module.SimulationState) {
 	simulation.RandomizedGenesisState(simState)
 }
@@ -133,9 +134,9 @@ func (a AppModule) RandomizedParams(r *rand.Rand) []sdksimulation.ParamChange {
 }
 
 func (a AppModule) RegisterStoreDecoder(sdr sdk.StoreDecoderRegistry) {
-	sdr[types.StoreKey] = simulation.NewDecodeStore(a.cdc)
+	sdr[types.StoreKey] = simulation.NewStoreDecoder(a.cdc)
 }
 
-func (a AppModule) WeightedOperations(simState module.SimulationState) []sdksimulation.WeightedOperation {
-	return simulation.WeightedOperations(simState.AppParams, simState.Cdc, a.k)
+func (a AppModule) WeightedOperations(_ module.SimulationState) []sdksimulation.WeightedOperation {
+	return nil
 }

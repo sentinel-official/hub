@@ -16,6 +16,15 @@ LD_FLAGS := -s -w \
 benchmark:
 	@go test -mod=readonly -v -bench ${PACKAGES}
 
+.PHONY: build
+build:
+	GOOS=darwin GOARCH=amd64 go build -mod=readonly -tags="${BUILD_TAGS}" -ldflags="${LD_FLAGS}" \
+		-o ./build/sentinelhub-${VERSION}-darwin-amd64 ./cmd/sentinelhub
+	GOOS=linux GOARCH=amd64 go build -mod=readonly -tags="${BUILD_TAGS}" -ldflags="${LD_FLAGS}" \
+		-o ./build/sentinelhub-${VERSION}-linux-amd64 ./cmd/sentinelhub
+	GOOS=windows GOARCH=amd64 go build -mod=readonly -tags="${BUILD_TAGS}" -ldflags="${LD_FLAGS}" \
+		-o ./build/sentinelhub-${VERSION}-windows-amd64.exe ./cmd/sentinelhub
+
 .PHONY: clean
 clean:
 	rm -rf ./bin ./vendor
@@ -43,7 +52,11 @@ proto-lint:
 
 .PHONY: test
 test:
-	@go test -mod=readonly -v -cover ${PACKAGES}
+	@go test -mod=readonly -timeout 15m -v ${PACKAGES}
+
+.PHONT: test-coverage
+test-coverage:
+	@go test -mod=readonly -timeout 15m -v -covermode=atomic -coverprofile=coverage.txt ${PACKAGES}
 
 .PHONY: tools
 tools:
