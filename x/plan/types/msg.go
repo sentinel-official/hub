@@ -193,7 +193,7 @@ func (m *MsgRemoveNodeRequest) ValidateBasic() error {
 	if m.From == "" {
 		return errors.Wrap(ErrorInvalidFrom, "from cannot be empty")
 	}
-	if _, err := hubtypes.ProvAddressFromBech32(m.From); err != nil {
+	if _, err := sdk.AccAddressFromBech32(m.From); err != nil {
 		return errors.Wrapf(ErrorInvalidFrom, "%s", err)
 	}
 	if m.Id == 0 {
