@@ -477,37 +477,37 @@ func TestMsgRemoveNodeRequest_ValidateBasic(t *testing.T) {
 			true,
 		},
 		{
-			"invalid prefix address",
+			"invalid prefix from",
+			fields{
+				From: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+			},
+			true,
+		},
+		{
+			"10 bytes from",
+			fields{
+				From: "sent1qypqxpq9qcrsszgslawd5s",
+			},
+			true,
+		},
+		{
+			"20 bytes from",
 			fields{
 				From: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
 			},
 			true,
 		},
 		{
-			"10 bytes address",
+			"30 bytes from",
 			fields{
-				From: "sentprov1qypqxpq9qcrsszgsutj8xr",
-			},
-			true,
-		},
-		{
-			"20 bytes address",
-			fields{
-				From: "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-			},
-			true,
-		},
-		{
-			"30 bytes address",
-			fields{
-				From: "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfqyy3zxfp9ycnjs2fsh33zgx",
+				From: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfqyy3zxfp9ycnjs2fszvfck8",
 			},
 			true,
 		},
 		{
 			"zero id",
 			fields{
-				From: "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
+				From: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
 				Id:   0,
 			},
 			true,
@@ -515,7 +515,7 @@ func TestMsgRemoveNodeRequest_ValidateBasic(t *testing.T) {
 		{
 			"positive id",
 			fields{
-				From: "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
+				From: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
 				Id:   1000,
 			},
 			true,
@@ -523,7 +523,7 @@ func TestMsgRemoveNodeRequest_ValidateBasic(t *testing.T) {
 		{
 			"empty address",
 			fields{
-				From:    "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
+				From:    "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
 				Id:      1000,
 				Address: "",
 			},
@@ -532,7 +532,7 @@ func TestMsgRemoveNodeRequest_ValidateBasic(t *testing.T) {
 		{
 			"invalid address",
 			fields{
-				From:    "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
+				From:    "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
 				Id:      1000,
 				Address: "invalid",
 			},
@@ -541,7 +541,7 @@ func TestMsgRemoveNodeRequest_ValidateBasic(t *testing.T) {
 		{
 			"invalid prefix address",
 			fields{
-				From:    "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
+				From:    "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
 				Id:      1000,
 				Address: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
 			},
@@ -550,7 +550,7 @@ func TestMsgRemoveNodeRequest_ValidateBasic(t *testing.T) {
 		{
 			"10 bytes address",
 			fields{
-				From:    "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
+				From:    "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
 				Id:      1000,
 				Address: "sentnode1qypqxpq9qcrsszgse4wwrm",
 			},
@@ -559,7 +559,7 @@ func TestMsgRemoveNodeRequest_ValidateBasic(t *testing.T) {
 		{
 			"20 bytes address",
 			fields{
-				From:    "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
+				From:    "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
 				Id:      1000,
 				Address: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
 			},
@@ -568,7 +568,7 @@ func TestMsgRemoveNodeRequest_ValidateBasic(t *testing.T) {
 		{
 			"30 bytes address",
 			fields{
-				From:    "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
+				From:    "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
 				Id:      1000,
 				Address: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqyy3zxfp9ycnjs2fsxqglcv",
 			},
