@@ -1,7 +1,6 @@
 package cli
 
 import (
-	"encoding/hex"
 	"strconv"
 	"time"
 
@@ -16,7 +15,7 @@ import (
 
 func txStart() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "start [id] [address]",
+		Use:   "start [id] [node]",
 		Short: "Start a session",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -35,7 +34,11 @@ func txStart() *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgStartRequest(ctx.FromAddress, id, address)
+			msg := types.NewMsgStartRequest(
+				ctx.FromAddress,
+				id,
+				address,
+			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err
 			}
@@ -51,8 +54,8 @@ func txStart() *cobra.Command {
 
 func txUpdate() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "update [id] [upload] [download] [duration] (signature)",
-		Short: "Add or update a session",
+		Use:   "update [id] [upload] [download] [duration]",
+		Short: "Update a session",
 		Args:  cobra.ExactArgs(4),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientTxContext(cmd)
@@ -80,12 +83,9 @@ func txUpdate() *cobra.Command {
 				return err
 			}
 
-			var signature []byte = nil
-			if len(args) > 4 && args[4] != "" {
-				signature, err = hex.DecodeString(args[4])
-				if err != nil {
-					return err
-				}
+			signature, err := GetSignature(cmd.Flags())
+			if err != nil {
+				return err
 			}
 
 			msg := types.NewMsgUpdateRequest(
@@ -106,15 +106,16 @@ func txUpdate() *cobra.Command {
 	}
 
 	flags.AddTxFlagsToCmd(cmd)
+	cmd.Flags().String(flagSignature, "", "client signature of the bandwidth info")
 
 	return cmd
 }
 
 func txEnd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "end [id] [rating]",
+		Use:   "end [id]",
 		Short: "End a session",
-		Args:  cobra.ExactArgs(2),
+		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientTxContext(cmd)
 			if err != nil {
@@ -126,12 +127,16 @@ func txEnd() *cobra.Command {
 				return err
 			}
 
-			rating, err := strconv.ParseUint(args[1], 10, 64)
+			rating, err := cmd.Flags().GetUint64(flagRating)
 			if err != nil {
 				return err
 			}
 
-			msg := types.NewMsgEndRequest(ctx.FromAddress, id, rating)
+			msg := types.NewMsgEndRequest(
+				ctx.FromAddress,
+				id,
+				rating,
+			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err
 			}
@@ -141,6 +146,7 @@ func txEnd() *cobra.Command {
 	}
 
 	flags.AddTxFlagsToCmd(cmd)
+	cmd.Flags().Uint64(flagRating, 0, "rate the session quality [0, 10]")
 
 	return cmd
 }

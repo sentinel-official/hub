@@ -10,42 +10,56 @@ import (
 
 func InitGenesis(ctx sdk.Context, k keeper.Keeper, state *types.GenesisState) {
 	k.SetParams(ctx, state.Params)
+
+	inactiveDuration := k.InactiveDuration(ctx)
 	for _, item := range state.Subscriptions {
 		k.SetSubscription(ctx, item.Subscription)
 
-		if item.Subscription.Id == 0 {
-			k.SetSubscriptionForNode(ctx, item.Subscription.GetNode(), item.Subscription.Id)
-		} else {
-			k.SetSubscriptionForPlan(ctx, item.Subscription.Plan, item.Subscription.Id)
-		}
-
 		for _, quota := range item.Quotas {
+			address := quota.GetAddress()
 			k.SetQuota(ctx, item.Subscription.Id, quota)
 
-			if item.Subscription.Status.Equal(hubtypes.StatusInactive) {
-				k.SetInactiveSubscriptionForAddress(ctx, quota.GetAddress(), item.Subscription.Id)
+			if item.Subscription.Status.Equal(hubtypes.StatusActive) {
+				k.SetActiveSubscriptionForAddress(ctx, address, item.Subscription.Id)
 			} else {
-				k.SetActiveSubscriptionForAddress(ctx, quota.GetAddress(), item.Subscription.Id)
+				k.SetInactiveSubscriptionForAddress(ctx, address, item.Subscription.Id)
 			}
 		}
 
+		if item.Subscription.Status.Equal(hubtypes.StatusActive) {
+			if item.Subscription.Plan != 0 {
+				k.SetInactiveSubscriptionAt(ctx, item.Subscription.Expiry, item.Subscription.Id)
+			}
+		}
 		if item.Subscription.Status.Equal(hubtypes.StatusInactivePending) {
-			k.SetInactiveSubscriptionAt(ctx, item.Subscription.StatusAt.Add(k.InactiveDuration(ctx)), item.Subscription.Id)
+			k.SetInactiveSubscriptionAt(ctx, item.Subscription.StatusAt.Add(inactiveDuration), item.Subscription.Id)
 		}
 	}
 
-	k.SetCount(ctx, uint64(len(state.Subscriptions)))
+	count := uint64(0)
+	for _, item := range state.Subscriptions {
+		if item.Subscription.Id > count {
+			count = item.Subscription.Id
+		}
+	}
+
+	k.SetCount(ctx, count)
 }
 
 func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
-	subscriptions := k.GetSubscriptions(ctx, 0, 0)
+	var (
+		subscriptions = k.GetSubscriptions(ctx, 0, 0)
+		items         = make(types.GenesisSubscriptions, 0, len(subscriptions))
+	)
 
-	items := make(types.GenesisSubscriptions, 0, len(subscriptions))
 	for _, item := range subscriptions {
-		items = append(items, types.GenesisSubscription{
-			Subscription: item,
-			Quotas:       k.GetQuotas(ctx, item.Id, 0, 0),
-		})
+		items = append(
+			items,
+			types.GenesisSubscription{
+				Subscription: item,
+				Quotas:       k.GetQuotas(ctx, item.Id, 0, 0),
+			},
+		)
 	}
 
 	return types.NewGenesisState(items, k.GetParams(ctx))

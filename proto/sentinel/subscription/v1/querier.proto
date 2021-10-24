@@ -18,16 +18,6 @@ message QuerySubscriptionsRequest {
   cosmos.base.query.v1beta1.PageRequest pagination = 1;
 }
 
-message QuerySubscriptionsForNodeRequest {
-  string address                                   = 1;
-  cosmos.base.query.v1beta1.PageRequest pagination = 2;
-}
-
-message QuerySubscriptionsForPlanRequest {
-  uint64 id                                        = 1;
-  cosmos.base.query.v1beta1.PageRequest pagination = 2;
-}
-
 message QuerySubscriptionsForAddressRequest {
   string address                                   = 1;
   sentinel.types.v1.Status status                  = 2;
@@ -49,16 +39,6 @@ message QueryQuotasRequest {
 message QueryParamsRequest {}
 
 message QuerySubscriptionsResponse {
-  repeated Subscription subscriptions = 1 [ (gogoproto.nullable) = false ];
-  cosmos.base.query.v1beta1.PageResponse pagination = 2;
-}
-
-message QuerySubscriptionsForNodeResponse {
-  repeated Subscription subscriptions = 1 [ (gogoproto.nullable) = false ];
-  cosmos.base.query.v1beta1.PageResponse pagination = 2;
-}
-
-message QuerySubscriptionsForPlanResponse {
   repeated Subscription subscriptions = 1 [ (gogoproto.nullable) = false ];
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
@@ -87,16 +67,6 @@ service QueryService {
   rpc QuerySubscriptions(QuerySubscriptionsRequest)
       returns (QuerySubscriptionsResponse) {
     option (google.api.http).get = "/sentinel/subscriptions";
-  }
-
-  rpc QuerySubscriptionsForNode(QuerySubscriptionsForNodeRequest)
-      returns (QuerySubscriptionsForNodeResponse) {
-    option (google.api.http).get = "/sentinel/nodes/{address}/subscriptions";
-  }
-
-  rpc QuerySubscriptionsForPlan(QuerySubscriptionsForPlanRequest)
-      returns (QuerySubscriptionsForPlanResponse) {
-    option (google.api.http).get = "/sentinel/plans/{id}/subscriptions";
   }
 
   rpc QuerySubscriptionsForAddress(QuerySubscriptionsForAddressRequest)

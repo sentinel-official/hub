@@ -1,0 +1,16 @@
+syntax = "proto3";
+package sentinel.mint.v1;
+
+import "gogoproto/gogo.proto";
+import "sentinel/mint/v1/inflation.proto";
+
+option go_package            = "github.com/sentinel-official/hub/x/mint/types";
+option (gogoproto.equal_all) = false;
+option (gogoproto.goproto_getters_all) = false;
+
+message GenesisState {
+  repeated Inflation inflations = 1 [
+    (gogoproto.moretags) = "yaml:\"inflations\"",
+    (gogoproto.nullable) = false
+  ];
+}

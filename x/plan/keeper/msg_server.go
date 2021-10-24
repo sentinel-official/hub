@@ -46,37 +46,22 @@ func (k *msgServer) MsgAdd(c context.Context, msg *types.MsgAddRequest) (*types.
 		planProvider = plan.GetProvider()
 	)
 
+	k.SetCount(ctx, count+1)
 	k.SetPlan(ctx, plan)
 	k.SetInactivePlan(ctx, plan.Id)
 	k.SetInactivePlanForProvider(ctx, planProvider, plan.Id)
 	ctx.EventManager().EmitTypedEvent(
-		&types.EventAddPlan{
-			From:     sdk.AccAddress(msgFrom.Bytes()).String(),
+		&types.EventAdd{
+			Id:       plan.Id,
 			Provider: plan.Provider,
-			Price:    plan.Price,
-			Validity: plan.Validity,
-			Bytes:    plan.Bytes,
 		},
 	)
 
-	k.SetCount(ctx, count+1)
-	ctx.EventManager().EmitTypedEvent(
-		&types.EventSetPlanCount{
-			Count: count + 1,
-		},
-	)
-
-	ctx.EventManager().EmitTypedEvent(&types.EventModuleName)
 	return &types.MsgAddResponse{}, nil
 }
 
 func (k *msgServer) MsgSetStatus(c context.Context, msg *types.MsgSetStatusRequest) (*types.MsgSetStatusResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
-
-	msgFrom, err := hubtypes.ProvAddressFromBech32(msg.From)
-	if err != nil {
-		return nil, err
-	}
 
 	plan, found := k.GetPlan(ctx, msg.Id)
 	if !found {
@@ -113,25 +98,18 @@ func (k *msgServer) MsgSetStatus(c context.Context, msg *types.MsgSetStatusReque
 
 	k.SetPlan(ctx, plan)
 	ctx.EventManager().EmitTypedEvent(
-		&types.EventSetPlanStatus{
-			From:     sdk.AccAddress(msgFrom.Bytes()).String(),
-			Provider: plan.Provider,
+		&types.EventSetStatus{
 			Id:       plan.Id,
+			Provider: plan.Provider,
 			Status:   plan.Status,
 		},
 	)
 
-	ctx.EventManager().EmitTypedEvent(&types.EventModuleName)
 	return &types.MsgSetStatusResponse{}, nil
 }
 
 func (k *msgServer) MsgAddNode(c context.Context, msg *types.MsgAddNodeRequest) (*types.MsgAddNodeResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
-
-	msgFrom, err := hubtypes.ProvAddressFromBech32(msg.From)
-	if err != nil {
-		return nil, err
-	}
 
 	plan, found := k.GetPlan(ctx, msg.Id)
 	if !found {
@@ -166,15 +144,13 @@ func (k *msgServer) MsgAddNode(c context.Context, msg *types.MsgAddNodeRequest) 
 	k.SetNodeForPlan(ctx, plan.Id, nodeAddress)
 	k.IncreaseCountForNodeByProvider(ctx, planProvider, nodeAddress)
 	ctx.EventManager().EmitTypedEvent(
-		&types.EventAddNodeForPlan{
-			From:     sdk.AccAddress(msgFrom.Bytes()).String(),
-			Provider: plan.Provider,
+		&types.EventAddNode{
 			Id:       plan.Id,
-			Address:  msg.Address,
+			Node:     msgAddress.String(),
+			Provider: plan.Provider,
 		},
 	)
 
-	ctx.EventManager().EmitTypedEvent(&types.EventModuleName)
 	return &types.MsgAddNodeResponse{}, nil
 }
 
@@ -210,13 +186,12 @@ func (k *msgServer) MsgRemoveNode(c context.Context, msg *types.MsgRemoveNodeReq
 	k.DeleteNodeForPlan(ctx, plan.Id, msgAddress)
 	k.DecreaseCountForNodeByProvider(ctx, planProvider, msgAddress)
 	ctx.EventManager().EmitTypedEvent(
-		&types.EventRemoveNodeForPlan{
-			From:    sdk.AccAddress(msgFrom.Bytes()).String(),
-			Id:      plan.Id,
-			Address: msg.Address,
+		&types.EventRemoveNode{
+			Id:       plan.Id,
+			Node:     msgAddress.String(),
+			Provider: plan.Provider,
 		},
 	)
 
-	ctx.EventManager().EmitTypedEvent(&types.EventModuleName)
 	return &types.MsgRemoveNodeResponse{}, nil
 }

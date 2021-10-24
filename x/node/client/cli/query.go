@@ -13,7 +13,7 @@ import (
 
 func queryNode() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "node",
+		Use:   "node [address]",
 		Short: "Query a node",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -31,8 +31,12 @@ func queryNode() *cobra.Command {
 				qc = types.NewQueryServiceClient(ctx)
 			)
 
-			res, err := qc.QueryNode(context.Background(),
-				types.NewQueryNodeRequest(address))
+			res, err := qc.QueryNode(
+				context.Background(),
+				types.NewQueryNodeRequest(
+					address,
+				),
+			)
 			if err != nil {
 				return err
 			}
@@ -56,7 +60,7 @@ func queryNodes() *cobra.Command {
 				return err
 			}
 
-			provider, err := cmd.Flags().GetString(flagProvider)
+			provider, err := GetProvider(cmd.Flags())
 			if err != nil {
 				return err
 			}
@@ -66,7 +70,7 @@ func queryNodes() *cobra.Command {
 				return err
 			}
 
-			s, err := cmd.Flags().GetString(flagStatus)
+			status, err := GetStatus(cmd.Flags())
 			if err != nil {
 				return err
 			}
@@ -77,18 +81,18 @@ func queryNodes() *cobra.Command {
 			}
 
 			var (
-				status = hubtypes.StatusFromString(s)
-				qc     = types.NewQueryServiceClient(ctx)
+				qc = types.NewQueryServiceClient(ctx)
 			)
 
-			if len(provider) > 0 {
-				address, err := hubtypes.ProvAddressFromBech32(provider)
-				if err != nil {
-					return err
-				}
-
-				res, err := qc.QueryNodesForProvider(context.Background(),
-					types.NewQueryNodesForProviderRequest(address, status, pagination))
+			if provider != nil {
+				res, err := qc.QueryNodesForProvider(
+					context.Background(),
+					types.NewQueryNodesForProviderRequest(
+						provider,
+						status,
+						pagination,
+					),
+				)
 				if err != nil {
 					return err
 				}
@@ -96,23 +100,28 @@ func queryNodes() *cobra.Command {
 				return ctx.PrintProto(res)
 			} else if plan > 0 {
 				return nil
-			} else {
-				res, err := qc.QueryNodes(context.Background(),
-					types.NewQueryNodesRequest(status, pagination))
-				if err != nil {
-					return err
-				}
-
-				return ctx.PrintProto(res)
 			}
+
+			res, err := qc.QueryNodes(
+				context.Background(),
+				types.NewQueryNodesRequest(
+					status,
+					pagination,
+				),
+			)
+			if err != nil {
+				return err
+			}
+
+			return ctx.PrintProto(res)
 		},
 	}
 
 	flags.AddQueryFlagsToCmd(cmd)
 	flags.AddPaginationFlagsToCmd(cmd, "nodes")
-	cmd.Flags().String(flagProvider, "", "provider address")
-	cmd.Flags().Uint64(flagPlan, 0, "subscription plan ID")
-	cmd.Flags().String(flagStatus, "", "status")
+	cmd.Flags().String(flagProvider, "", "filter by provider address")
+	cmd.Flags().Uint64(flagPlan, 0, "filter by plan identity")
+	cmd.Flags().String(flagStatus, "", "filter by status")
 
 	return cmd
 }
@@ -131,8 +140,10 @@ func queryParams() *cobra.Command {
 				qc = types.NewQueryServiceClient(ctx)
 			)
 
-			res, err := qc.QueryParams(context.Background(),
-				types.NewQueryParamsRequest())
+			res, err := qc.QueryParams(
+				context.Background(),
+				types.NewQueryParamsRequest(),
+			)
 			if err != nil {
 				return err
 			}

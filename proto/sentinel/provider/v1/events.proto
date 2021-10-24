@@ -1,29 +1,16 @@
 syntax = "proto3";
 package sentinel.provider.v1;
 
-option go_package = "github.com/sentinel-official/hub/x/provider/types";
-
 import "gogoproto/gogo.proto";
 
+option go_package = "github.com/sentinel-official/hub/x/provider/types";
 option (gogoproto.equal_all)           = false;
 option (gogoproto.goproto_getters_all) = false;
 
-message EventModule { string name = 1; }
-
-message EventRegisterProvider {
-  string from        = 1;
-  string address     = 2;
-  string name        = 3;
-  string identity    = 4;
-  string website     = 5;
-  string description = 6;
+message EventRegister {
+  string address = 1 [ (gogoproto.moretags) = "yaml:\"address\"" ];
 }
 
-message EventUpdateProvider {
-  string from        = 1;
-  string address     = 2;
-  string name        = 3;
-  string identity    = 4;
-  string website     = 5;
-  string description = 6;
+message EventUpdate {
+  string address = 1 [ (gogoproto.moretags) = "yaml:\"address\"" ];
 }

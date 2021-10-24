@@ -55,7 +55,7 @@ func (k *msgServer) MsgStart(c context.Context, msg *types.MsgStartRequest) (*ty
 			return nil, types.ErrorNodeAddressMismatch
 		}
 	} else {
-		if k.HasNodeForPlan(ctx, subscription.Plan, msgNode) {
+		if !k.HasNodeForPlan(ctx, subscription.Plan, msgNode) {
 			return nil, types.ErrorNodeDoesNotExistForPlan
 		}
 	}
@@ -74,8 +74,9 @@ func (k *msgServer) MsgStart(c context.Context, msg *types.MsgStartRequest) (*ty
 	}
 
 	var (
-		count   = k.GetCount(ctx)
-		session = types.Session{
+		count            = k.GetCount(ctx)
+		inactiveDuration = k.InactiveDuration(ctx)
+		session          = types.Session{
 			Id:           count + 1,
 			Subscription: subscription.Id,
 			Node:         node.Address,
@@ -85,49 +86,32 @@ func (k *msgServer) MsgStart(c context.Context, msg *types.MsgStartRequest) (*ty
 			Status:       hubtypes.StatusActive,
 			StatusAt:     ctx.BlockTime(),
 		}
-		sessionNode    = session.GetNode()
 		sessionAddress = session.GetAddress()
 	)
 
 	k.SetCount(ctx, count+1)
-	ctx.EventManager().EmitTypedEvent(
-		&types.EventSetSessionCount{
-			Count: count + 1,
-		},
-	)
-
 	k.SetSession(ctx, session)
-	k.SetSessionForSubscription(ctx, session.Subscription, session.Id)
-	k.SetSessionForNode(ctx, sessionNode, session.Id)
-
 	k.SetActiveSessionForAddress(ctx, sessionAddress, session.Id)
-	k.SetActiveSessionAt(ctx, session.StatusAt, session.Id)
+	k.SetInactiveSessionAt(ctx, session.StatusAt.Add(inactiveDuration), session.Id)
 	ctx.EventManager().EmitTypedEvent(
-		&types.EventStartSession{
-			From:         sdk.AccAddress(msgFrom.Bytes()).String(),
+		&types.EventStart{
 			Id:           session.Id,
-			Subscription: session.Subscription,
 			Node:         session.Node,
+			Subscription: session.Subscription,
 		},
 	)
 
-	ctx.EventManager().EmitTypedEvent(&types.EventModuleName)
 	return &types.MsgStartResponse{}, nil
 }
 
 func (k *msgServer) MsgUpdate(c context.Context, msg *types.MsgUpdateRequest) (*types.MsgUpdateResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
-	msgFrom, err := hubtypes.NodeAddressFromBech32(msg.From)
-	if err != nil {
-		return nil, err
-	}
-
 	session, found := k.GetSession(ctx, msg.Proof.Id)
 	if !found {
 		return nil, types.ErrorSessionDoesNotExist
 	}
-	if !session.Status.Equal(hubtypes.StatusActive) {
+	if session.Status.Equal(hubtypes.StatusInactive) {
 		return nil, types.ErrorInvalidSessionStatus
 	}
 	if msg.From != session.Node {
@@ -141,27 +125,23 @@ func (k *msgServer) MsgUpdate(c context.Context, msg *types.MsgUpdateRequest) (*
 		}
 	}
 
-	k.DeleteActiveSessionAt(ctx, session.StatusAt, session.Id)
+	inactiveDuration := k.InactiveDuration(ctx)
+	k.DeleteInactiveSessionAt(ctx, session.StatusAt.Add(inactiveDuration), session.Id)
 
 	session.Duration = msg.Proof.Duration
 	session.Bandwidth = msg.Proof.Bandwidth
 	session.StatusAt = ctx.BlockTime()
 
 	k.SetSession(ctx, session)
-	k.SetActiveSessionAt(ctx, session.StatusAt, session.Id)
+	k.SetInactiveSessionAt(ctx, session.StatusAt.Add(inactiveDuration), session.Id)
 	ctx.EventManager().EmitTypedEvent(
-		&types.EventUpdateSession{
-			From:         sdk.AccAddress(msgFrom.Bytes()).String(),
+		&types.EventUpdate{
 			Id:           session.Id,
-			Subscription: session.Subscription,
 			Node:         session.Node,
-			Address:      session.Address,
-			Duration:     session.Duration,
-			Bandwidth:    session.Bandwidth,
+			Subscription: session.Subscription,
 		},
 	)
 
-	ctx.EventManager().EmitTypedEvent(&types.EventModuleName)
 	return &types.MsgUpdateResponse{}, nil
 }
 
@@ -184,27 +164,24 @@ func (k *msgServer) MsgEnd(c context.Context, msg *types.MsgEndRequest) (*types.
 		return nil, types.ErrorUnauthorized
 	}
 
-	if err := k.ProcessPaymentAndUpdateQuota(ctx, session); err != nil {
-		return nil, err
-	}
-
+	inactiveDuration := k.InactiveDuration(ctx)
 	k.DeleteActiveSessionForAddress(ctx, msgFrom, session.Id)
-	k.DeleteActiveSessionAt(ctx, session.StatusAt, session.Id)
+	k.DeleteInactiveSessionAt(ctx, session.StatusAt.Add(inactiveDuration), session.Id)
 
-	session.Status = hubtypes.StatusInactive
+	session.Status = hubtypes.StatusInactivePending
 	session.StatusAt = ctx.BlockTime()
 
 	k.SetSession(ctx, session)
 	k.SetInactiveSessionForAddress(ctx, msgFrom, session.Id)
+	k.SetInactiveSessionAt(ctx, session.StatusAt.Add(inactiveDuration), session.Id)
 	ctx.EventManager().EmitTypedEvent(
-		&types.EventEndSession{
-			From:         sdk.AccAddress(msgFrom.Bytes()).String(),
+		&types.EventSetStatus{
 			Id:           session.Id,
-			Subscription: session.Subscription,
 			Node:         session.Node,
+			Subscription: session.Subscription,
+			Status:       session.Status,
 		},
 	)
 
-	ctx.EventManager().EmitTypedEvent(&types.EventModuleName)
 	return &types.MsgEndResponse{}, nil
 }

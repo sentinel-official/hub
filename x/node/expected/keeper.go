@@ -5,11 +5,14 @@ import (
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 
 	hubtypes "github.com/sentinel-official/hub/types"
-	providertypes "github.com/sentinel-official/hub/x/provider/types"
 )
 
 type AccountKeeper interface {
 	GetAccount(ctx sdk.Context, address sdk.AccAddress) authtypes.AccountI
+}
+
+type BankKeeper interface {
+	SpendableCoins(ctx sdk.Context, address sdk.AccAddress) sdk.Coins
 }
 
 type DistributionKeeper interface {
@@ -18,7 +21,6 @@ type DistributionKeeper interface {
 
 type ProviderKeeper interface {
 	HasProvider(ctx sdk.Context, address hubtypes.ProvAddress) bool
-	GetProviders(ctx sdk.Context, skip, limit int64) providertypes.Providers
 }
 
 type PlanKeeper interface {

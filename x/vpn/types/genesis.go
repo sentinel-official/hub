@@ -1,6 +1,8 @@
 package types
 
 import (
+	"github.com/cosmos/cosmos-sdk/types/errors"
+
 	deposittypes "github.com/sentinel-official/hub/x/deposit/types"
 	nodetypes "github.com/sentinel-official/hub/x/node/types"
 	plantypes "github.com/sentinel-official/hub/x/plan/types"
@@ -9,8 +11,14 @@ import (
 	subscriptiontypes "github.com/sentinel-official/hub/x/subscription/types"
 )
 
-func NewGenesisState(deposits deposittypes.GenesisState, providers *providertypes.GenesisState, nodes *nodetypes.GenesisState,
-	plans plantypes.GenesisState, subscriptions *subscriptiontypes.GenesisState, sessions *sessiontypes.GenesisState) *GenesisState {
+func NewGenesisState(
+	deposits deposittypes.GenesisState,
+	providers *providertypes.GenesisState,
+	nodes *nodetypes.GenesisState,
+	plans plantypes.GenesisState,
+	subscriptions *subscriptiontypes.GenesisState,
+	sessions *sessiontypes.GenesisState,
+) *GenesisState {
 	return &GenesisState{
 		Deposits:      deposits,
 		Providers:     providers,
@@ -19,29 +27,6 @@ func NewGenesisState(deposits deposittypes.GenesisState, providers *providertype
 		Subscriptions: subscriptions,
 		Sessions:      sessions,
 	}
-}
-
-func (s *GenesisState) Validate() error {
-	if err := deposittypes.ValidateGenesis(s.Deposits); err != nil {
-		return err
-	}
-	if err := providertypes.ValidateGenesis(s.Providers); err != nil {
-		return err
-	}
-	if err := nodetypes.ValidateGenesis(s.Nodes); err != nil {
-		return err
-	}
-	if err := plantypes.ValidateGenesis(s.Plans); err != nil {
-		return err
-	}
-	if err := subscriptiontypes.ValidateGenesis(s.Subscriptions); err != nil {
-		return err
-	}
-	if err := sessiontypes.ValidateGenesis(s.Sessions); err != nil {
-		return err
-	}
-
-	return nil
 }
 
 func DefaultGenesisState() *GenesisState {
@@ -53,4 +38,27 @@ func DefaultGenesisState() *GenesisState {
 		subscriptiontypes.DefaultGenesisState(),
 		sessiontypes.DefaultGenesisState(),
 	)
+}
+
+func (m *GenesisState) Validate() error {
+	if err := deposittypes.ValidateGenesis(m.Deposits); err != nil {
+		return errors.Wrapf(err, "invalid deposit genesis")
+	}
+	if err := providertypes.ValidateGenesis(m.Providers); err != nil {
+		return errors.Wrapf(err, "invalid provider genesis")
+	}
+	if err := nodetypes.ValidateGenesis(m.Nodes); err != nil {
+		return errors.Wrapf(err, "invalid node genesis")
+	}
+	if err := plantypes.ValidateGenesis(m.Plans); err != nil {
+		return errors.Wrapf(err, "invalid plan genesis")
+	}
+	if err := subscriptiontypes.ValidateGenesis(m.Subscriptions); err != nil {
+		return errors.Wrapf(err, "invalid subscription genesis")
+	}
+	if err := sessiontypes.ValidateGenesis(m.Sessions); err != nil {
+		return errors.Wrapf(err, "invalid session genesis")
+	}
+
+	return nil
 }

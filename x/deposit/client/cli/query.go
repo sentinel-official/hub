@@ -13,7 +13,7 @@ import (
 
 func queryDeposit() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "deposit",
+		Use:   "deposit [address]",
 		Short: "Query a deposit",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -31,8 +31,12 @@ func queryDeposit() *cobra.Command {
 				qc = types.NewQueryServiceClient(ctx)
 			)
 
-			res, err := qc.QueryDeposit(context.Background(),
-				types.NewQueryDepositRequest(address))
+			res, err := qc.QueryDeposit(
+				context.Background(),
+				types.NewQueryDepositRequest(
+					address,
+				),
+			)
 			if err != nil {
 				return err
 			}
@@ -42,6 +46,7 @@ func queryDeposit() *cobra.Command {
 	}
 
 	flags.AddQueryFlagsToCmd(cmd)
+
 	return cmd
 }
 
@@ -64,8 +69,12 @@ func queryDeposits() *cobra.Command {
 				qc = types.NewQueryServiceClient(ctx)
 			)
 
-			res, err := qc.QueryDeposits(context.Background(),
-				types.NewQueryDepositsRequest(pagination))
+			res, err := qc.QueryDeposits(
+				context.Background(),
+				types.NewQueryDepositsRequest(
+					pagination,
+				),
+			)
 			if err != nil {
 				return err
 			}

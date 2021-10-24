@@ -13,7 +13,7 @@ import (
 
 func queryProvider() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "provider",
+		Use:   "provider [address]",
 		Short: "Query a provider",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -31,8 +31,12 @@ func queryProvider() *cobra.Command {
 				qc = types.NewQueryServiceClient(ctx)
 			)
 
-			res, err := qc.QueryProvider(context.Background(),
-				types.NewQueryProviderRequest(address))
+			res, err := qc.QueryProvider(
+				context.Background(),
+				types.NewQueryProviderRequest(
+					address,
+				),
+			)
 			if err != nil {
 				return err
 			}
@@ -65,8 +69,12 @@ func queryProviders() *cobra.Command {
 				qc = types.NewQueryServiceClient(ctx)
 			)
 
-			res, err := qc.QueryProviders(context.Background(),
-				types.NewQueryProvidersRequest(pagination))
+			res, err := qc.QueryProviders(
+				context.Background(),
+				types.NewQueryProvidersRequest(
+					pagination,
+				),
+			)
 			if err != nil {
 				return err
 			}
@@ -95,8 +103,10 @@ func queryParams() *cobra.Command {
 				qc = types.NewQueryServiceClient(ctx)
 			)
 
-			res, err := qc.QueryParams(context.Background(),
-				types.NewQueryParamsRequest())
+			res, err := qc.QueryParams(
+				context.Background(),
+				types.NewQueryParamsRequest(),
+			)
 			if err != nil {
 				return err
 			}

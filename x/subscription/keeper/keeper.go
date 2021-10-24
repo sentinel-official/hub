@@ -21,6 +21,7 @@ type Keeper struct {
 	deposit expected.DepositKeeper
 	node    expected.NodeKeeper
 	plan    expected.PlanKeeper
+	session expected.SessionKeeper
 }
 
 func NewKeeper(cdc codec.BinaryMarshaler, key sdk.StoreKey, params paramstypes.Subspace) Keeper {
@@ -45,6 +46,10 @@ func (k *Keeper) WithNodeKeeper(keeper expected.NodeKeeper) {
 
 func (k *Keeper) WithPlanKeeper(keeper expected.PlanKeeper) {
 	k.plan = keeper
+}
+
+func (k *Keeper) WithSessionKeeper(keeper expected.SessionKeeper) {
+	k.session = keeper
 }
 
 func (k *Keeper) Logger(ctx sdk.Context) log.Logger {

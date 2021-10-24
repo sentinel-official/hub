@@ -74,74 +74,6 @@ func (k *Keeper) GetSubscriptions(ctx sdk.Context, skip, limit int64) (items typ
 	return items
 }
 
-func (k *Keeper) SetSubscriptionForNode(ctx sdk.Context, address hubtypes.NodeAddress, id uint64) {
-	key := types.SubscriptionForNodeKey(address, id)
-	value := k.cdc.MustMarshalBinaryBare(&protobuf.BoolValue{Value: true})
-
-	store := k.Store(ctx)
-	store.Set(key, value)
-}
-
-func (k *Keeper) HasSubscriptionForNode(ctx sdk.Context, address hubtypes.NodeAddress, id uint64) bool {
-	key := types.SubscriptionForNodeKey(address, id)
-
-	store := k.Store(ctx)
-	return store.Has(key)
-}
-
-func (k *Keeper) GetSubscriptionsForNode(ctx sdk.Context, address hubtypes.NodeAddress, skip, limit int64) (items types.Subscriptions) {
-	var (
-		store = k.Store(ctx)
-		iter  = hubtypes.NewPaginatedIterator(
-			sdk.KVStorePrefixIterator(store, types.GetSubscriptionForNodeKeyPrefix(address)),
-		)
-	)
-
-	defer iter.Close()
-
-	iter.Skip(skip)
-	iter.Limit(limit, func(iter sdk.Iterator) {
-		item, _ := k.GetSubscription(ctx, types.IDFromSubscriptionForNodeKey(iter.Key()))
-		items = append(items, item)
-	})
-
-	return items
-}
-
-func (k *Keeper) SetSubscriptionForPlan(ctx sdk.Context, plan, id uint64) {
-	key := types.SubscriptionForPlanKey(plan, id)
-	value := k.cdc.MustMarshalBinaryBare(&protobuf.BoolValue{Value: true})
-
-	store := k.Store(ctx)
-	store.Set(key, value)
-}
-
-func (k *Keeper) HasSubscriptionForPlan(ctx sdk.Context, plan, id uint64) bool {
-	key := types.SubscriptionForPlanKey(plan, id)
-
-	store := k.Store(ctx)
-	return store.Has(key)
-}
-
-func (k *Keeper) GetSubscriptionsForPlan(ctx sdk.Context, plan uint64, skip, limit int64) (items types.Subscriptions) {
-	var (
-		store = k.Store(ctx)
-		iter  = hubtypes.NewPaginatedIterator(
-			sdk.KVStorePrefixIterator(store, sdk.Uint64ToBigEndian(plan)),
-		)
-	)
-
-	defer iter.Close()
-
-	iter.Skip(skip)
-	iter.Limit(limit, func(iter sdk.Iterator) {
-		item, _ := k.GetSubscription(ctx, types.IDFromSubscriptionForPlanKey(iter.Key()))
-		items = append(items, item)
-	})
-
-	return items
-}
-
 func (k *Keeper) SetActiveSubscriptionForAddress(ctx sdk.Context, address sdk.AccAddress, id uint64) {
 	key := types.ActiveSubscriptionForAddressKey(address, id)
 	value := k.cdc.MustMarshalBinaryBare(&protobuf.BoolValue{Value: true})
@@ -245,7 +177,7 @@ func (k *Keeper) DeleteInactiveSubscriptionAt(ctx sdk.Context, at time.Time, id 
 	store.Delete(key)
 }
 
-func (k *Keeper) IterateInactiveSubscriptions(ctx sdk.Context, end time.Time, fn func(index int, key []byte, item types.Subscription) (stop bool)) {
+func (k *Keeper) IterateInactiveSubscriptions(ctx sdk.Context, end time.Time, fn func(index int, item types.Subscription) (stop bool)) {
 	store := k.Store(ctx)
 
 	iter := store.Iterator(types.InactiveSubscriptionAtKeyPrefix, sdk.PrefixEndBytes(types.GetInactiveSubscriptionAtKeyPrefix(end)))
@@ -257,7 +189,7 @@ func (k *Keeper) IterateInactiveSubscriptions(ctx sdk.Context, end time.Time, fn
 			subscription, _ = k.GetSubscription(ctx, types.IDFromInactiveSubscriptionAtKey(key))
 		)
 
-		if stop := fn(i, key, subscription); stop {
+		if stop := fn(i, subscription); stop {
 			break
 		}
 		i++

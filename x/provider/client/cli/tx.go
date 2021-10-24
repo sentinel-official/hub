@@ -11,15 +11,11 @@ import (
 
 func txRegister() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "register",
+		Use:   "register [name]",
 		Short: "Register a provider",
+		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientTxContext(cmd)
-			if err != nil {
-				return err
-			}
-
-			name, err := cmd.Flags().GetString(flagName)
 			if err != nil {
 				return err
 			}
@@ -39,7 +35,13 @@ func txRegister() *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgRegisterRequest(ctx.FromAddress, name, identity, website, description)
+			msg := types.NewMsgRegisterRequest(
+				ctx.FromAddress,
+				args[0],
+				identity,
+				website,
+				description,
+			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err
 			}
@@ -49,12 +51,9 @@ func txRegister() *cobra.Command {
 	}
 
 	flags.AddTxFlagsToCmd(cmd)
-	cmd.Flags().String(flagName, "", "provider name")
-	cmd.Flags().String(flagIdentity, "", "provider identity")
-	cmd.Flags().String(flagWebsite, "", "provider website")
-	cmd.Flags().String(flagDescription, "", "provider description")
-
-	_ = cmd.MarkFlagRequired(flagName)
+	cmd.Flags().String(flagIdentity, "", "identity of the provider")
+	cmd.Flags().String(flagWebsite, "", "website of the provider")
+	cmd.Flags().String(flagDescription, "", "description of the provider")
 
 	return cmd
 }
@@ -89,7 +88,13 @@ func txUpdate() *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgUpdateRequest(ctx.FromAddress.Bytes(), name, identity, website, description)
+			msg := types.NewMsgUpdateRequest(
+				ctx.FromAddress.Bytes(),
+				name,
+				identity,
+				website,
+				description,
+			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err
 			}
@@ -99,10 +104,10 @@ func txUpdate() *cobra.Command {
 	}
 
 	flags.AddTxFlagsToCmd(cmd)
-	cmd.Flags().String(flagName, "", "provider name")
-	cmd.Flags().String(flagIdentity, "", "provider identity")
-	cmd.Flags().String(flagWebsite, "", "provider website")
-	cmd.Flags().String(flagDescription, "", "provider description")
+	cmd.Flags().String(flagName, "", "name of the provider")
+	cmd.Flags().String(flagIdentity, "", "identity of the provider")
+	cmd.Flags().String(flagWebsite, "", "website of the provider")
+	cmd.Flags().String(flagDescription, "", "description of the provider")
 
 	return cmd
 }

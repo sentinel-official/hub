@@ -1,89 +1,397 @@
 package types
 
 import (
-	"errors"
 	"strings"
 	"testing"
-
-	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-var (
-	GT64  = strings.Repeat("sentinel", 9)
-	GT256 = strings.Repeat("sentinel", 33)
-)
-
-func TestMsgRegister_ValidateBasic(t *testing.T) {
-	correctAddress, err := sdk.AccAddressFromBech32("sent1grdunxx5jxd0ja75wt508sn6v39p70hhw53zs8")
-	if err != nil {
-		t.Errorf("failed: %s\n", err)
+func TestMsgRegisterRequest_ValidateBasic(t *testing.T) {
+	type fields struct {
+		From        string
+		Name        string
+		Identity    string
+		Website     string
+		Description string
 	}
-
 	tests := []struct {
-		name string
-		m    *MsgRegisterRequest
-		want error
+		name    string
+		fields  fields
+		wantErr bool
 	}{
-		{"from nil", NewMsgRegisterRequest(nil, "", "", "", ""), ErrorInvalidFieldFrom},
-		{"from zero", NewMsgRegisterRequest(sdk.AccAddress{}, "", "", "", ""), ErrorInvalidFieldFrom},
-		{"from empty", NewMsgRegisterRequest(sdk.AccAddress(""), "", "", "", ""), ErrorInvalidFieldFrom},
-		{"name zero", NewMsgRegisterRequest(correctAddress, "", "", "", ""), ErrorInvalidFieldName},
-		{"name GT64", NewMsgRegisterRequest(correctAddress, GT64, "", "", ""), ErrorInvalidFieldName},
-		{"identity GT64", NewMsgRegisterRequest(correctAddress, "test-name", GT64, "", ""), ErrorInvalidFieldIdentity},
-		{"website GT64", NewMsgRegisterRequest(correctAddress, "test-name", "test-identity", GT64, ""), ErrorInvalidFieldWebsite},
-		{"description GT256", NewMsgRegisterRequest(correctAddress, "test-name", "test-identity", "test-website", GT256), ErrorInvalidFieldDescription},
-		{"from correct", NewMsgRegisterRequest(correctAddress, "test-name", "", "", ""), nil},
-		{"name correct", NewMsgRegisterRequest(correctAddress, "test-name", "", "", ""), nil},
-		{"identity empty", NewMsgRegisterRequest(correctAddress, "test-name", "", "", ""), nil},
-		{"identity correct", NewMsgRegisterRequest(correctAddress, "test-name", "test-identity", "", ""), nil},
-		{"website empty", NewMsgRegisterRequest(correctAddress, "test-name", "test-identity", "", ""), nil},
-		{"website correct", NewMsgRegisterRequest(correctAddress, "test-name", "test-identity", "test-website", ""), nil},
-		{"description empty", NewMsgRegisterRequest(correctAddress, "test-name", "test-identity", "", ""), nil},
-		{"description correct", NewMsgRegisterRequest(correctAddress, "test-name", "test-identity", "", "test-description"), nil},
+		{
+			"empty from",
+			fields{
+				From: "",
+			},
+			true,
+		},
+		{
+			"invalid from",
+			fields{
+				From: "invalid",
+			},
+			true,
+		},
+		{
+			"invalid prefix from",
+			fields{
+				From: "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
+			},
+			true,
+		},
+		{
+			"10 bytes from",
+			fields{
+				From: "sent1qypqxpq9qcrsszgslawd5s",
+			},
+			true,
+		},
+		{
+			"20 bytes from",
+			fields{
+				From: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+			},
+			true,
+		},
+		{
+			"30 bytes from",
+			fields{
+				From: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfqyy3zxfp9ycnjs2fszvfck8",
+			},
+			true,
+		},
+		{
+			"empty name",
+			fields{
+				From: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Name: "",
+			},
+			true,
+		},
+		{
+			"non-empty name",
+			fields{
+				From: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Name: "name",
+			},
+			false,
+		},
+		{
+			"length 72 name",
+			fields{
+				From: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Name: strings.Repeat("n", 72),
+			},
+			true,
+		},
+		{
+			"empty identity",
+			fields{
+				From:     "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Name:     "name",
+				Identity: "",
+			},
+			false,
+		},
+		{
+			"non-empty identity",
+			fields{
+				From:     "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Name:     "name",
+				Identity: "identity",
+			},
+			false,
+		},
+		{
+			"length 72 identity",
+			fields{
+				From:     "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Name:     "name",
+				Identity: strings.Repeat("i", 72),
+			},
+			true,
+		},
+		{
+			"empty website",
+			fields{
+				From:     "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Name:     "name",
+				Identity: "identity",
+				Website:  "",
+			},
+			false,
+		},
+		{
+			"non-empty website",
+			fields{
+				From:     "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Name:     "name",
+				Identity: "identity",
+				Website:  "https://website",
+			},
+			false,
+		},
+		{
+			"length 72 website",
+			fields{
+				From:     "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Name:     "name",
+				Identity: "identity",
+				Website:  strings.Repeat("w", 72),
+			},
+			true,
+		},
+		{
+			"invalid website",
+			fields{
+				From:     "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Name:     "name",
+				Identity: "identity",
+				Website:  "invalid",
+			},
+			true,
+		},
+		{
+			"empty description",
+			fields{
+				From:        "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Name:        "name",
+				Identity:    "identity",
+				Website:     "https://website",
+				Description: "",
+			},
+			false,
+		},
+		{
+			"non-empty description",
+			fields{
+				From:        "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Name:        "name",
+				Identity:    "identity",
+				Website:     "https://website",
+				Description: "description",
+			},
+			false,
+		},
+		{
+			"length 264 description",
+			fields{
+				From:        "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Name:        "name",
+				Identity:    "identity",
+				Website:     "https://website",
+				Description: strings.Repeat("d", 264),
+			},
+			true,
+		},
 	}
-
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if err := tt.m.ValidateBasic(); !errors.Is(tt.want, err) {
-				t.Errorf("ValidateBasic() = %v, want %v", err, tt.want)
+			m := &MsgRegisterRequest{
+				From:        tt.fields.From,
+				Name:        tt.fields.Name,
+				Identity:    tt.fields.Identity,
+				Website:     tt.fields.Website,
+				Description: tt.fields.Description,
+			}
+			if err := m.ValidateBasic(); (err != nil) != tt.wantErr {
+				t.Errorf("ValidateBasic() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
 	}
 }
 
-func TestMsgUpdate_ValidateBasic(t *testing.T) {
-	correctAddress, err := sdk.AccAddressFromBech32("sent1grdunxx5jxd0ja75wt508sn6v39p70hhw53zs8")
-	if err != nil {
-		t.Errorf("failed: %s\n", err)
+func TestMsgUpdateRequest_ValidateBasic(t *testing.T) {
+	type fields struct {
+		From        string
+		Name        string
+		Identity    string
+		Website     string
+		Description string
 	}
-
 	tests := []struct {
-		name string
-		m    *MsgRegisterRequest
-		want error
+		name    string
+		fields  fields
+		wantErr bool
 	}{
-		{"from nil", NewMsgRegisterRequest(nil, "", "", "", ""), ErrorInvalidFieldFrom},
-		{"from zero", NewMsgRegisterRequest(sdk.AccAddress{}, "", "", "", ""), ErrorInvalidFieldFrom},
-		{"from empty", NewMsgRegisterRequest(sdk.AccAddress(""), "", "", "", ""), ErrorInvalidFieldFrom},
-		{"name zero", NewMsgRegisterRequest(correctAddress, "", "", "", ""), ErrorInvalidFieldName},
-		{"name GT64", NewMsgRegisterRequest(correctAddress, GT64, "", "", ""), ErrorInvalidFieldName},
-		{"identity GT64", NewMsgRegisterRequest(correctAddress, "test-name", GT64, "", ""), ErrorInvalidFieldIdentity},
-		{"website GT64", NewMsgRegisterRequest(correctAddress, "test-name", "test-identity", GT64, ""), ErrorInvalidFieldWebsite},
-		{"description GT256", NewMsgRegisterRequest(correctAddress, "test-name", "test-identity", "test-website", GT256), ErrorInvalidFieldDescription},
-		{"from correct", NewMsgRegisterRequest(correctAddress, "test-name", "", "", ""), nil},
-		{"name correct", NewMsgRegisterRequest(correctAddress, "test-name", "", "", ""), nil},
-		{"identity empty", NewMsgRegisterRequest(correctAddress, "test-name", "", "", ""), nil},
-		{"identity correct", NewMsgRegisterRequest(correctAddress, "test-name", "test-identity", "", ""), nil},
-		{"website empty", NewMsgRegisterRequest(correctAddress, "test-name", "test-identity", "", ""), nil},
-		{"website correct", NewMsgRegisterRequest(correctAddress, "test-name", "test-identity", "test-website", ""), nil},
-		{"description empty", NewMsgRegisterRequest(correctAddress, "test-name", "test-identity", "", ""), nil},
-		{"description correct", NewMsgRegisterRequest(correctAddress, "test-name", "test-identity", "", "test-description"), nil},
+		{
+			"empty address",
+			fields{
+				From: "",
+			},
+			true,
+		},
+		{
+			"invalid address",
+			fields{
+				From: "invalid",
+			},
+			true,
+		},
+		{
+			"invalid prefix address",
+			fields{
+				From: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+			},
+			true,
+		},
+		{
+			"10 bytes address",
+			fields{
+				From: "sentprov1qypqxpq9qcrsszgsutj8xr",
+			},
+			true,
+		},
+		{
+			"20 bytes address",
+			fields{
+				From: "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
+			},
+			false,
+		},
+		{
+			"30 bytes address",
+			fields{
+				From: "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfqyy3zxfp9ycnjs2fsh33zgx",
+			},
+			true,
+		},
+		{
+			"empty name",
+			fields{
+				From: "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
+				Name: "",
+			},
+			false,
+		},
+		{
+			"non-empty name",
+			fields{
+				From: "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
+				Name: "name",
+			},
+			false,
+		},
+		{
+			"length 72 name",
+			fields{
+				From: "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
+				Name: strings.Repeat("n", 72),
+			},
+			true,
+		},
+		{
+			"empty identity",
+			fields{
+				From:     "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
+				Name:     "name",
+				Identity: "",
+			},
+			false,
+		},
+		{
+			"non-empty identity",
+			fields{
+				From:     "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
+				Name:     "name",
+				Identity: "identity",
+			},
+			false,
+		},
+		{
+			"length 72 identity",
+			fields{
+				From:     "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
+				Name:     "name",
+				Identity: strings.Repeat("i", 72),
+			},
+			true,
+		},
+		{
+			"empty website",
+			fields{
+				From:     "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
+				Name:     "name",
+				Identity: "identity",
+				Website:  "",
+			},
+			false,
+		},
+		{
+			"non-empty website",
+			fields{
+				From:     "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
+				Name:     "name",
+				Identity: "identity",
+				Website:  "https://website",
+			},
+			false,
+		},
+		{
+			"length 72 website",
+			fields{
+				From:     "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
+				Name:     "name",
+				Identity: "identity",
+				Website:  strings.Repeat("w", 72),
+			},
+			true,
+		},
+		{
+			"invalid website",
+			fields{
+				From:     "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
+				Name:     "name",
+				Identity: "identity",
+				Website:  "invalid",
+			},
+			true,
+		},
+		{
+			"empty description",
+			fields{
+				From:        "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
+				Name:        "name",
+				Identity:    "identity",
+				Website:     "https://website",
+				Description: "",
+			},
+			false,
+		},
+		{
+			"non-empty description",
+			fields{
+				From:        "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
+				Name:        "name",
+				Identity:    "identity",
+				Website:     "https://website",
+				Description: "description",
+			},
+			false,
+		},
+		{
+			"length 264 description",
+			fields{
+				From:        "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
+				Name:        "name",
+				Identity:    "identity",
+				Website:     "https://website",
+				Description: strings.Repeat("d", 264),
+			},
+			true,
+		},
 	}
-
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if err := tt.m.ValidateBasic(); !errors.Is(tt.want, err) {
-				t.Errorf("ValidateBasic() = %v, want %v", err, tt.want)
+			m := MsgUpdateRequest{
+				From:        tt.fields.From,
+				Name:        tt.fields.Name,
+				Identity:    tt.fields.Identity,
+				Website:     tt.fields.Website,
+				Description: tt.fields.Description,
+			}
+			if err := m.ValidateBasic(); (err != nil) != tt.wantErr {
+				t.Errorf("ValidateBasic() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
 	}

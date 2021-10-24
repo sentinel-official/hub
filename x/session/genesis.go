@@ -10,25 +10,34 @@ import (
 
 func InitGenesis(ctx sdk.Context, k keeper.Keeper, state *types.GenesisState) {
 	k.SetParams(ctx, state.Params)
-	for _, session := range state.Sessions {
-		var (
-			sessionNode    = session.GetNode()
-			sessionAddress = session.GetAddress()
-		)
 
+	inactiveDuration := k.InactiveDuration(ctx)
+	for _, session := range state.Sessions {
+		address := session.GetAddress()
 		k.SetSession(ctx, session)
-		k.SetSessionForSubscription(ctx, session.Subscription, session.Id)
-		k.SetSessionForNode(ctx, sessionNode, session.Id)
 
 		if session.Status.Equal(hubtypes.StatusActive) {
-			k.SetActiveSessionForAddress(ctx, sessionAddress, session.Id)
-			k.SetActiveSessionAt(ctx, session.StatusAt, session.Id)
+			k.SetActiveSessionForAddress(ctx, address, session.Id)
 		} else {
-			k.SetInactiveSessionForAddress(ctx, sessionAddress, session.Id)
+			k.SetInactiveSessionForAddress(ctx, address, session.Id)
+		}
+
+		if session.Status.Equal(hubtypes.StatusActive) {
+			k.SetInactiveSessionAt(ctx, session.StatusAt.Add(inactiveDuration), session.Id)
+		}
+		if session.Status.Equal(hubtypes.StatusInactivePending) {
+			k.SetInactiveSessionAt(ctx, session.StatusAt.Add(inactiveDuration), session.Id)
 		}
 	}
 
-	k.SetCount(ctx, uint64(len(state.Sessions)))
+	count := uint64(0)
+	for _, item := range state.Sessions {
+		if item.Id > count {
+			count = item.Id
+		}
+	}
+
+	k.SetCount(ctx, count)
 }
 
 func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {

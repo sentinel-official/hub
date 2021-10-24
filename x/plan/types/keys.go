@@ -1,6 +1,8 @@
 package types
 
 import (
+	"fmt"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	hubtypes "github.com/sentinel-official/hub/types"
@@ -17,7 +19,10 @@ var (
 )
 
 var (
-	EventModuleName = EventModule{Name: ModuleName}
+	TypeMsgAddRequest        = ModuleName + ":add"
+	TypeMsgSetStatusRequest  = ModuleName + ":set_status"
+	TypeMsgAddNodeRequest    = ModuleName + ":add_node"
+	TypeMsgRemoveNodeRequest = ModuleName + ":remove_node"
 )
 
 var (
@@ -44,7 +49,12 @@ func InactivePlanKey(id uint64) []byte {
 }
 
 func GetActivePlanForProviderKeyPrefix(address hubtypes.ProvAddress) []byte {
-	return append(ActivePlanForProviderKeyPrefix, address.Bytes()...)
+	v := append(ActivePlanForProviderKeyPrefix, address.Bytes()...)
+	if len(v) != 1+sdk.AddrLen {
+		panic(fmt.Errorf("invalid key length %d; expected %d", len(v), 1+sdk.AddrLen))
+	}
+
+	return v
 }
 
 func ActivePlanForProviderKey(address hubtypes.ProvAddress, id uint64) []byte {
@@ -52,7 +62,12 @@ func ActivePlanForProviderKey(address hubtypes.ProvAddress, id uint64) []byte {
 }
 
 func GetInactivePlanForProviderKeyPrefix(address hubtypes.ProvAddress) []byte {
-	return append(InactivePlanForProviderKeyPrefix, address.Bytes()...)
+	v := append(InactivePlanForProviderKeyPrefix, address.Bytes()...)
+	if len(v) != 1+sdk.AddrLen {
+		panic(fmt.Errorf("invalid key length %d; expected %d", len(v), 1+sdk.AddrLen))
+	}
+
+	return v
 }
 
 func InactivePlanForProviderKey(address hubtypes.ProvAddress, id uint64) []byte {
@@ -64,21 +79,48 @@ func GetNodeForPlanKeyPrefix(id uint64) []byte {
 }
 
 func NodeForPlanKey(id uint64, address hubtypes.NodeAddress) []byte {
-	return append(GetNodeForPlanKeyPrefix(id), address.Bytes()...)
+	v := append(GetNodeForPlanKeyPrefix(id), address.Bytes()...)
+	if len(v) != 1+8+sdk.AddrLen {
+		panic(fmt.Errorf("invalid key length %d; expected %d", len(v), 1+8+sdk.AddrLen))
+	}
+
+	return v
 }
 
 func CountForNodeByProviderKey(p hubtypes.ProvAddress, n hubtypes.NodeAddress) []byte {
-	return append(CountForNodeByProviderKeyPrefix, append(p.Bytes(), n.Bytes()...)...)
+	v := append(CountForNodeByProviderKeyPrefix, p.Bytes()...)
+	if len(v) != 1+sdk.AddrLen {
+		panic(fmt.Errorf("invalid key length %d; expected %d", len(v), 1+sdk.AddrLen))
+	}
+
+	v = append(v, n.Bytes()...)
+	if len(v) != 1+2*sdk.AddrLen {
+		panic(fmt.Errorf("invalid key length %d; expected %d", len(v), 1+2*sdk.AddrLen))
+	}
+
+	return v
 }
 
 func IDFromStatusPlanKey(key []byte) uint64 {
+	if len(key) != 1+8 {
+		panic(fmt.Errorf("invalid key length %d; expected %d", len(key), 1+8))
+	}
+
 	return sdk.BigEndianToUint64(key[1:])
 }
 
 func IDFromStatusPlanForProviderKey(key []byte) uint64 {
+	if len(key) != 1+sdk.AddrLen+8 {
+		panic(fmt.Errorf("invalid key length %d; expected %d", len(key), 1+sdk.AddrLen+8))
+	}
+
 	return sdk.BigEndianToUint64(key[1+sdk.AddrLen:])
 }
 
 func AddressFromNodeForPlanKey(key []byte) hubtypes.NodeAddress {
+	if len(key) != 1+8+sdk.AddrLen {
+		panic(fmt.Errorf("invalid key length %d; expected %d", len(key), 1+8+sdk.AddrLen))
+	}
+
 	return key[1+8:]
 }

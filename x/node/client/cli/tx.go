@@ -4,7 +4,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/spf13/cobra"
 
 	hubtypes "github.com/sentinel-official/hub/types"
@@ -13,46 +12,31 @@ import (
 
 func txRegister() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "register",
+		Use:   "register [remote-url]",
 		Short: "Register a node",
+		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
 			}
 
-			s, err := cmd.Flags().GetString(flagProvider)
+			provider, err := GetProvider(cmd.Flags())
 			if err != nil {
 				return err
 			}
 
-			var provider hubtypes.ProvAddress
-			if len(s) > 0 {
-				provider, err = hubtypes.ProvAddressFromBech32(s)
-				if err != nil {
-					return err
-				}
-			}
-
-			s, err = cmd.Flags().GetString(flagPrice)
+			price, err := GetPrice(cmd.Flags())
 			if err != nil {
 				return err
 			}
 
-			var price sdk.Coins
-			if len(s) > 0 {
-				price, err = sdk.ParseCoinsNormalized(s)
-				if err != nil {
-					return err
-				}
-			}
-
-			remoteURL, err := cmd.Flags().GetString(flagRemoteURL)
-			if err != nil {
-				return err
-			}
-
-			msg := types.NewMsgRegisterRequest(ctx.FromAddress, provider, price, remoteURL)
+			msg := types.NewMsgRegisterRequest(
+				ctx.FromAddress,
+				provider,
+				price,
+				args[0],
+			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err
 			}
@@ -62,11 +46,8 @@ func txRegister() *cobra.Command {
 	}
 
 	flags.AddTxFlagsToCmd(cmd)
-	cmd.Flags().String(flagProvider, "", "node provider address")
-	cmd.Flags().String(flagPrice, "", "node price per Gigabyte")
-	cmd.Flags().String(flagRemoteURL, "", "node remote URL")
-
-	_ = cmd.MarkFlagRequired(flagRemoteURL)
+	cmd.Flags().String(flagProvider, "", "provider address of the node")
+	cmd.Flags().String(flagPrice, "", "price per Gigabyte of the node")
 
 	return cmd
 }
@@ -81,30 +62,14 @@ func txUpdate() *cobra.Command {
 				return err
 			}
 
-			s, err := cmd.Flags().GetString(flagProvider)
+			provider, err := GetProvider(cmd.Flags())
 			if err != nil {
 				return err
 			}
 
-			var provider hubtypes.ProvAddress
-			if len(s) > 0 {
-				provider, err = hubtypes.ProvAddressFromBech32(s)
-				if err != nil {
-					return err
-				}
-			}
-
-			s, err = cmd.Flags().GetString(flagPrice)
+			price, err := GetPrice(cmd.Flags())
 			if err != nil {
 				return err
-			}
-
-			var price sdk.Coins
-			if len(s) > 0 {
-				price, err = sdk.ParseCoinsNormalized(s)
-				if err != nil {
-					return err
-				}
 			}
 
 			remoteURL, err := cmd.Flags().GetString(flagRemoteURL)
@@ -112,7 +77,12 @@ func txUpdate() *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgUpdateRequest(ctx.FromAddress.Bytes(), provider, price, remoteURL)
+			msg := types.NewMsgUpdateRequest(
+				ctx.FromAddress.Bytes(),
+				provider,
+				price,
+				remoteURL,
+			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err
 			}
@@ -122,17 +92,17 @@ func txUpdate() *cobra.Command {
 	}
 
 	flags.AddTxFlagsToCmd(cmd)
-	cmd.Flags().String(flagProvider, "", "node provider address")
-	cmd.Flags().String(flagPrice, "", "node price per Gigabyte")
-	cmd.Flags().String(flagRemoteURL, "", "node remote URL")
+	cmd.Flags().String(flagProvider, "", "provider address of the node")
+	cmd.Flags().String(flagPrice, "", "price per Gigabyte of the node")
+	cmd.Flags().String(flagRemoteURL, "", "remote URL of the node")
 
 	return cmd
 }
 
 func txSetStatus() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "status-set [Active | Inactive]",
-		Short: "Set a node status",
+		Use:   "status-set [status]",
+		Short: "Set status for a node",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientTxContext(cmd)
@@ -140,7 +110,10 @@ func txSetStatus() *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgSetStatusRequest(ctx.FromAddress.Bytes(), hubtypes.StatusFromString(args[0]))
+			msg := types.NewMsgSetStatusRequest(
+				ctx.FromAddress.Bytes(),
+				hubtypes.StatusFromString(args[0]),
+			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err
 			}

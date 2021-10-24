@@ -35,23 +35,31 @@ func (m *MsgAddRequest) Type() string {
 }
 
 func (m *MsgAddRequest) ValidateBasic() error {
+	if m.From == "" {
+		return errors.Wrap(ErrorInvalidFrom, "from cannot be empty")
+	}
 	if _, err := hubtypes.ProvAddressFromBech32(m.From); err != nil {
-		return errors.Wrapf(ErrorInvalidField, "%s", "from")
+		return errors.Wrapf(ErrorInvalidFrom, "%s", err)
 	}
-
-	// Price can be nil. If not, it should be valid
-	if m.Price != nil && !m.Price.IsValid() {
-		return errors.Wrapf(ErrorInvalidField, "%s", "price")
+	if m.Price != nil {
+		if m.Price.Len() == 0 {
+			return errors.Wrap(ErrorInvalidPrice, "price cannot be empty")
+		}
+		if !m.Price.IsValid() {
+			return errors.Wrap(ErrorInvalidPrice, "price must be valid")
+		}
 	}
-
-	// Validity should be positive
-	if m.Validity <= 0 {
-		return errors.Wrapf(ErrorInvalidField, "%s", "validity")
+	if m.Validity < 0 {
+		return errors.Wrap(ErrorInvalidValidity, "validity cannot be negative")
 	}
-
-	// Bytes should be positive
-	if !m.Bytes.IsPositive() {
-		return errors.Wrapf(ErrorInvalidField, "%s", "bytes")
+	if m.Validity == 0 {
+		return errors.Wrap(ErrorInvalidValidity, "validity cannot be zero")
+	}
+	if m.Bytes.IsNegative() {
+		return errors.Wrap(ErrorInvalidBytes, "bytes cannot be negative")
+	}
+	if m.Bytes.IsZero() {
+		return errors.Wrap(ErrorInvalidBytes, "bytes cannot be zero")
 	}
 
 	return nil
@@ -87,18 +95,17 @@ func (m *MsgSetStatusRequest) Type() string {
 }
 
 func (m *MsgSetStatusRequest) ValidateBasic() error {
+	if m.From == "" {
+		return errors.Wrap(ErrorInvalidFrom, "from cannot be empty")
+	}
 	if _, err := hubtypes.ProvAddressFromBech32(m.From); err != nil {
-		return errors.Wrapf(ErrorInvalidField, "%s", "from")
+		return errors.Wrapf(ErrorInvalidFrom, "%s", err)
 	}
-
-	// Id shouldn't be zero
 	if m.Id == 0 {
-		return errors.Wrapf(ErrorInvalidField, "%s", "id")
+		return errors.Wrap(ErrorInvalidId, "id cannot be zero")
 	}
-
-	// Status should be either Active or Inactive
 	if !m.Status.Equal(hubtypes.StatusActive) && !m.Status.Equal(hubtypes.StatusInactive) {
-		return errors.Wrapf(ErrorInvalidField, "%s", "status")
+		return errors.Wrap(ErrorInvalidStatus, "status must be either active or inactive")
 	}
 
 	return nil
@@ -134,18 +141,20 @@ func (m *MsgAddNodeRequest) Type() string {
 }
 
 func (m *MsgAddNodeRequest) ValidateBasic() error {
+	if m.From == "" {
+		return errors.Wrap(ErrorInvalidFrom, "from cannot be empty")
+	}
 	if _, err := hubtypes.ProvAddressFromBech32(m.From); err != nil {
-		return errors.Wrapf(ErrorInvalidField, "%s", "from")
+		return errors.Wrapf(ErrorInvalidFrom, "%s", err)
 	}
-
-	// Id shouldn't be zero
 	if m.Id == 0 {
-		return errors.Wrapf(ErrorInvalidField, "%s", "id")
+		return errors.Wrap(ErrorInvalidId, "id cannot be zero")
 	}
-
-	// Address shouldn't be nil or empty
+	if m.Address == "" {
+		return errors.Wrap(ErrorInvalidAddress, "address cannot be empty")
+	}
 	if _, err := hubtypes.NodeAddressFromBech32(m.Address); err != nil {
-		return errors.Wrapf(ErrorInvalidField, "%s", "address")
+		return errors.Wrapf(ErrorInvalidAddress, "%s", err)
 	}
 
 	return nil
@@ -181,18 +190,20 @@ func (m *MsgRemoveNodeRequest) Type() string {
 }
 
 func (m *MsgRemoveNodeRequest) ValidateBasic() error {
+	if m.From == "" {
+		return errors.Wrap(ErrorInvalidFrom, "from cannot be empty")
+	}
 	if _, err := sdk.AccAddressFromBech32(m.From); err != nil {
-		return errors.Wrapf(ErrorInvalidField, "%s", "from")
+		return errors.Wrapf(ErrorInvalidFrom, "%s", err)
 	}
-
-	// Id shouldn't be zero
 	if m.Id == 0 {
-		return errors.Wrapf(ErrorInvalidField, "%s", "id")
+		return errors.Wrap(ErrorInvalidId, "id cannot be zero")
 	}
-
-	// Address should be valid
+	if m.Address == "" {
+		return errors.Wrap(ErrorInvalidAddress, "address cannot be empty")
+	}
 	if _, err := hubtypes.NodeAddressFromBech32(m.Address); err != nil {
-		return errors.Wrapf(ErrorInvalidField, "%s", "address")
+		return errors.Wrapf(ErrorInvalidAddress, "%s", err)
 	}
 
 	return nil

@@ -11,26 +11,54 @@ import (
 
 func EndBlock(ctx sdk.Context, k keeper.Keeper) []abcitypes.ValidatorUpdate {
 	var (
-		log = k.Logger(ctx)
-		end = ctx.BlockTime().Add(-1 * k.InactiveDuration(ctx))
+		log              = k.Logger(ctx)
+		inactiveDuration = k.InactiveDuration(ctx)
 	)
 
-	k.IterateActiveSessionsAt(ctx, end, func(_ int, key []byte, item types.Session) bool {
-		log.Info("inactive session", "key", key, "value", item)
+	k.IterateInactiveSessionsAt(ctx, ctx.BlockTime(), func(_ int, item types.Session) bool {
+		log.Info("inactive session", "value", item)
 
 		itemAddress := item.GetAddress()
+		if item.Status.Equal(hubtypes.Active) {
+			k.DeleteActiveSessionForAddress(ctx, itemAddress, item.Id)
+			k.DeleteInactiveSessionAt(ctx, item.StatusAt.Add(inactiveDuration), item.Id)
+
+			item.Status = hubtypes.StatusInactivePending
+			item.StatusAt = ctx.BlockTime()
+
+			k.SetSession(ctx, item)
+			k.SetInactiveSessionForAddress(ctx, itemAddress, item.Id)
+			k.SetInactiveSessionAt(ctx, item.StatusAt.Add(inactiveDuration), item.Id)
+			ctx.EventManager().EmitTypedEvent(
+				&types.EventSetStatus{
+					Id:           item.Id,
+					Node:         item.Node,
+					Subscription: item.Subscription,
+					Status:       item.Status,
+				},
+			)
+
+			return false
+		}
+
 		if err := k.ProcessPaymentAndUpdateQuota(ctx, item); err != nil {
 			log.Error("failed to process the payment", "cause", err)
 		}
 
-		k.DeleteActiveSessionForAddress(ctx, itemAddress, item.Id)
-		k.DeleteActiveSessionAt(ctx, item.StatusAt, item.Id)
+		k.DeleteInactiveSessionAt(ctx, item.StatusAt.Add(inactiveDuration), item.Id)
 
 		item.Status = hubtypes.StatusInactive
 		item.StatusAt = ctx.BlockTime()
-
 		k.SetSession(ctx, item)
-		k.SetInactiveSessionForAddress(ctx, itemAddress, item.Id)
+
+		ctx.EventManager().EmitTypedEvent(
+			&types.EventSetStatus{
+				Id:           item.Id,
+				Node:         item.Node,
+				Subscription: item.Subscription,
+				Status:       item.Status,
+			},
+		)
 
 		return false
 	})
