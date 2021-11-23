@@ -11,38 +11,38 @@ import (
 	"github.com/sentinel-official/hub/x/session/types"
 )
 
-func NewStoreDecoder(cdc codec.Marshaler) func(kvA, kvB kv.Pair) string {
+func NewStoreDecoder(cdc codec.Codec) func(kvA, kvB kv.Pair) string {
 	return func(kvA, kvB kv.Pair) string {
 		switch {
 		case bytes.Equal(kvA.Key[:1], types.CountKey):
 			var countA, countB protobuftypes.UInt64Value
-			cdc.MustUnmarshalBinaryBare(kvA.Value, &countA)
-			cdc.MustUnmarshalBinaryBare(kvB.Value, &countB)
+			cdc.MustUnmarshal(kvA.Value, &countA)
+			cdc.MustUnmarshal(kvB.Value, &countB)
 
 			return fmt.Sprintf("%v\n%v", &countA, &countB)
 		case bytes.Equal(kvA.Key[:1], types.SessionKeyPrefix):
 			var sessionA, sessionB types.Session
-			cdc.MustUnmarshalBinaryBare(kvA.Value, &sessionA)
-			cdc.MustUnmarshalBinaryBare(kvB.Value, &sessionB)
+			cdc.MustUnmarshal(kvA.Value, &sessionA)
+			cdc.MustUnmarshal(kvB.Value, &sessionB)
 
 			return fmt.Sprintf("%v\n%v", &sessionA, &sessionB)
 
 		case bytes.Equal(kvA.Key[:1], types.InactiveSessionForAddressKeyPrefix):
 			var inactiveSessionForAddressA, inactiveSessionForAddressB protobuftypes.BoolValue
-			cdc.MustUnmarshalBinaryBare(kvA.Value, &inactiveSessionForAddressA)
-			cdc.MustUnmarshalBinaryBare(kvB.Value, &inactiveSessionForAddressB)
+			cdc.MustUnmarshal(kvA.Value, &inactiveSessionForAddressA)
+			cdc.MustUnmarshal(kvB.Value, &inactiveSessionForAddressB)
 
 			return fmt.Sprintf("%v\n%v", &inactiveSessionForAddressA, &inactiveSessionForAddressB)
 		case bytes.Equal(kvA.Key[:1], types.ActiveSessionForAddressKeyPrefix):
 			var activeSessionForAddressA, activeSessionForAddressB protobuftypes.BoolValue
-			cdc.MustUnmarshalBinaryBare(kvA.Value, &activeSessionForAddressA)
-			cdc.MustUnmarshalBinaryBare(kvB.Value, &activeSessionForAddressB)
+			cdc.MustUnmarshal(kvA.Value, &activeSessionForAddressA)
+			cdc.MustUnmarshal(kvB.Value, &activeSessionForAddressB)
 
 			return fmt.Sprintf("%v\n%v", &activeSessionForAddressA, &activeSessionForAddressB)
 		case bytes.Equal(kvA.Key[:1], types.InactiveSessionAtKeyPrefix):
 			var inactiveSessionAtA, inactiveSessionAtB protobuftypes.BoolValue
-			cdc.MustUnmarshalBinaryBare(kvA.Value, &inactiveSessionAtA)
-			cdc.MustUnmarshalBinaryBare(kvB.Value, &inactiveSessionAtB)
+			cdc.MustUnmarshal(kvA.Value, &inactiveSessionAtA)
+			cdc.MustUnmarshal(kvB.Value, &inactiveSessionAtB)
 
 			return fmt.Sprintf("%v\n%v", &inactiveSessionAtA, &inactiveSessionAtB)
 		}

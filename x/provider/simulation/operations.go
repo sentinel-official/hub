@@ -24,7 +24,7 @@ var (
 
 func WeightedOperations(
 	params simulationtypes.AppParams,
-	cdc codec.JSONMarshaler,
+	cdc codec.JSONCodec,
 	ak expected.AccountKeeper,
 	bk expected.BankKeeper,
 	k keeper.Keeper,

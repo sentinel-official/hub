@@ -11,7 +11,7 @@ import (
 
 func (k *Keeper) SetNodeForPlan(ctx sdk.Context, id uint64, address hubtypes.NodeAddress) {
 	key := types.NodeForPlanKey(id, address)
-	value := k.cdc.MustMarshalBinaryBare(&protobuf.BoolValue{Value: true})
+	value := k.cdc.MustMarshal(&protobuf.BoolValue{Value: true})
 
 	store := k.Store(ctx)
 	store.Set(key, value)
@@ -52,7 +52,7 @@ func (k *Keeper) GetNodesForPlan(ctx sdk.Context, id uint64, skip, limit int64) 
 
 func (k *Keeper) SetCountForNodeByProvider(ctx sdk.Context, p hubtypes.ProvAddress, n hubtypes.NodeAddress, count uint64) {
 	key := types.CountForNodeByProviderKey(p, n)
-	value := k.cdc.MustMarshalBinaryBare(&protobuf.UInt64Value{Value: count})
+	value := k.cdc.MustMarshal(&protobuf.UInt64Value{Value: count})
 
 	store := k.Store(ctx)
 	store.Set(key, value)
@@ -68,7 +68,7 @@ func (k *Keeper) GetCountForNodeByProvider(ctx sdk.Context, p hubtypes.ProvAddre
 	}
 
 	var count protobuf.UInt64Value
-	k.cdc.MustUnmarshalBinaryBare(value, &count)
+	k.cdc.MustUnmarshal(value, &count)
 
 	return count.GetValue()
 }

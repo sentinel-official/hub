@@ -37,7 +37,7 @@ func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
 	var (
 		config  = hub.MakeEncodingConfig()
 		context = client.Context{}.
-			WithJSONMarshaler(config.Marshaler).
+			WithJSONCodec(config.Marshaler).
 			WithInterfaceRegistry(config.InterfaceRegistry).
 			WithTxConfig(config.TxConfig).
 			WithLegacyAmino(config.Amino).
