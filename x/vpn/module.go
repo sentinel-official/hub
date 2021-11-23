@@ -169,3 +169,6 @@ func (a AppModule) RegisterStoreDecoder(_ sdk.StoreDecoderRegistry) {}
 func (a AppModule) WeightedOperations(state module.SimulationState) []sdksimulation.WeightedOperation {
 	return simulation.WeightedOperations(state.AppParams, a.cdc, a.ak, a.bk, a.k)
 }
+
+// ConsensusVersion implements AppModule/ConsensusVersion.
+func (AppModule) ConsensusVersion() uint64 { return 1 }

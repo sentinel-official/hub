@@ -140,3 +140,6 @@ func (a AppModule) RegisterStoreDecoder(sdr sdk.StoreDecoderRegistry) {
 func (a AppModule) WeightedOperations(_ module.SimulationState) []sdksimulation.WeightedOperation {
 	return nil
 }
+
+// ConsensusVersion implements AppModule/ConsensusVersion.
+func (AppModule) ConsensusVersion() uint64 { return 1 }
