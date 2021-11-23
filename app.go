@@ -204,7 +204,7 @@ func NewApp(
 		amino             = encodingConfig.Amino
 		interfaceRegistry = encodingConfig.InterfaceRegistry
 		tkeys             = sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
-		mkeys             = sdk.NewMemoryStoreKeys(capabilitytypes.MemStoreKey)
+		memKeys           = sdk.NewMemoryStoreKeys(capabilitytypes.MemStoreKey)
 		keys              = sdk.NewKVStoreKeys(
 			authtypes.StoreKey, banktypes.StoreKey, capabilitytypes.StoreKey,
 			distributiontypes.StoreKey, evidencetypes.StoreKey, govtypes.StoreKey,
@@ -225,7 +225,7 @@ func NewApp(
 		appCodec:          appCodec,
 		keys:              keys,
 		tkeys:             tkeys,
-		mkeys:             mkeys,
+		memKeys:           memKeys,
 		interfaceRegistry: interfaceRegistry,
 		invarCheckPeriod:  invarCheckPeriod,
 	}
@@ -259,7 +259,7 @@ func NewApp(
 	app.CapabilityKeeper = capabilitykeeper.NewKeeper(
 		app.appCodec,
 		app.keys[capabilitytypes.StoreKey],
-		app.mkeys[capabilitytypes.MemStoreKey],
+		app.memKeys[capabilitytypes.MemStoreKey],
 	)
 
 	var (
@@ -284,39 +284,39 @@ func NewApp(
 	stakingKeeper := stakingkeeper.NewKeeper(
 		app.appCodec,
 		app.keys[stakingtypes.StoreKey],
-		app.accountKeeper,
-		app.bankKeeper,
+		app.AccountKeeper,
+		app.BankKeeper,
 		app.GetSubspace(stakingtypes.ModuleName),
 	)
-	app.mintKeeper = mintkeeper.NewKeeper(
+	app.MintKeeper = mintkeeper.NewKeeper(
 		app.appCodec,
 		app.keys[minttypes.StoreKey],
 		app.GetSubspace(minttypes.ModuleName),
 		&stakingKeeper,
-		app.accountKeeper,
-		app.bankKeeper,
+		app.AccountKeeper,
+		app.BankKeeper,
 		authtypes.FeeCollectorName,
 	)
-	app.distributionKeeper = distributionkeeper.NewKeeper(
+	app.DistrKeeper = distributionkeeper.NewKeeper(
 		app.appCodec,
 		app.keys[distributiontypes.StoreKey],
 		app.GetSubspace(distributiontypes.ModuleName),
-		app.accountKeeper,
-		app.bankKeeper,
+		app.AccountKeeper,
+		app.BankKeeper,
 		&stakingKeeper,
 		authtypes.FeeCollectorName,
 		app.ModuleAccountAddrs(),
 	)
-	app.slashingKeeper = slashingkeeper.NewKeeper(
+	app.SlashingKeeper = slashingkeeper.NewKeeper(
 		app.appCodec,
 		app.keys[slashingtypes.StoreKey],
 		&stakingKeeper,
 		app.GetSubspace(slashingtypes.ModuleName),
 	)
-	app.crisisKeeper = crisiskeeper.NewKeeper(
+	app.CrisisKeeper = crisiskeeper.NewKeeper(
 		app.GetSubspace(crisistypes.ModuleName),
 		app.invarCheckPeriod,
-		app.bankKeeper,
+		app.BankKeeper,
 		authtypes.FeeCollectorName,
 	)
 	app.UpgradeKeeper = upgradekeeper.NewKeeper(
@@ -326,10 +326,10 @@ func NewApp(
 		homePath,
 		app.BaseApp,
 	)
-	app.stakingKeeper = *stakingKeeper.SetHooks(
+	app.StakingKeeper = *stakingKeeper.SetHooks(
 		stakingtypes.NewMultiStakingHooks(
-			app.distributionKeeper.Hooks(),
-			app.slashingKeeper.Hooks(),
+			app.DistrKeeper.Hooks(),
+			app.SlashingKeeper.Hooks(),
 		),
 	)
 
@@ -340,12 +340,12 @@ func NewApp(
 
 	govRouter := govtypes.NewRouter()
 	govRouter.AddRoute(govtypes.RouterKey, govtypes.ProposalHandler).
-		AddRoute(paramsproposal.RouterKey, params.NewParamChangeProposalHandler(app.paramsKeeper)).
-		AddRoute(distributiontypes.RouterKey, distribution.NewCommunityPoolSpendProposalHandler(app.distributionKeeper)).
-		AddRoute(upgradetypes.RouterKey, upgrade.NewSoftwareUpgradeProposalHandler(app.upgradeKeeper)).
+		AddRoute(paramsproposal.RouterKey, params.NewParamChangeProposalHandler(app.ParamsKeeper)).
+		AddRoute(distributiontypes.RouterKey, distribution.NewCommunityPoolSpendProposalHandler(app.DistrKeeper)).
+		AddRoute(upgradetypes.RouterKey, upgrade.NewSoftwareUpgradeProposalHandler(app.UpgradeKeeper)).
 		AddRoute(ibcclienttypes.RouterKey, ibcclient.NewClientProposalHandler(app.IBCKeeper.ClientKeeper))
 
-	app.govKeeper = govkeeper.NewKeeper(
+	app. = govkeeper.NewKeeper(
 		app.appCodec,
 		app.keys[govtypes.StoreKey],
 		app.GetSubspace(govtypes.ModuleName),
@@ -359,8 +359,8 @@ func NewApp(
 		app.appCodec,
 		app.keys[ibctransfertypes.StoreKey],
 		app.GetSubspace(ibctransfertypes.ModuleName),
-		app.ibcKeeper.ChannelKeeper,
-		&app.ibcKeeper.PortKeeper,
+		app.IBCKeeper.ChannelKeeper,
+		&app.IBCKeeper.PortKeeper,
 		app.accountKeeper,
 		app.bankKeeper,
 		scopedTransferKeeper,
@@ -373,7 +373,7 @@ func NewApp(
 	)
 
 	ibcRouter.AddRoute(ibctransfertypes.ModuleName, transferModule)
-	app.ibcKeeper.SetRouter(ibcRouter)
+	app.IBCKeeper.SetRouter(ibcRouter)
 
 	app.evidenceKeeper = *evidencekeeper.NewKeeper(
 		app.appCodec,
@@ -421,13 +421,13 @@ func NewApp(
 		distribution.NewAppModule(app.appCodec, app.distributionKeeper, app.accountKeeper, app.bankKeeper, app.stakingKeeper),
 		evidence.NewAppModule(app.evidenceKeeper),
 		genutil.NewAppModule(app.accountKeeper, app.stakingKeeper, app.BaseApp.DeliverTx, encodingConfig.TxConfig),
-		gov.NewAppModule(app.appCodec, app.govKeeper, app.accountKeeper, app.bankKeeper),
-		ibc.NewAppModule(app.ibcKeeper),
+		gov.NewAppModule(app.appCodec, app., app.accountKeeper, app.bankKeeper),
+		ibc.NewAppModule(app.IBCKeeper),
 		params.NewAppModule(app.paramsKeeper),
 		mint.NewAppModule(app.appCodec, app.mintKeeper, app.accountKeeper),
 		slashing.NewAppModule(app.appCodec, app.slashingKeeper, app.accountKeeper, app.bankKeeper, app.stakingKeeper),
 		staking.NewAppModule(app.appCodec, app.stakingKeeper, app.accountKeeper, app.bankKeeper),
-		upgrade.NewAppModule(app.upgradeKeeper),
+		upgrade.NewAppModule(app.UpgradeKeeper),
 		transferModule,
 		custommint.NewAppModule(appCodec, app.customMintKeeper),
 		swap.NewAppModule(app.appCodec, app.swapKeeper),
@@ -462,8 +462,8 @@ func NewApp(
 		capability.NewAppModule(app.appCodec, *app.capabilityKeeper),
 		distribution.NewAppModule(app.appCodec, app.distributionKeeper, app.accountKeeper, app.bankKeeper, app.stakingKeeper),
 		evidence.NewAppModule(app.evidenceKeeper),
-		gov.NewAppModule(app.appCodec, app.govKeeper, app.accountKeeper, app.bankKeeper),
-		ibc.NewAppModule(app.ibcKeeper),
+		gov.NewAppModule(app.appCodec, app., app.accountKeeper, app.bankKeeper),
+		ibc.NewAppModule(app.IBCKeeper),
 		mint.NewAppModule(app.appCodec, app.mintKeeper, app.accountKeeper),
 		params.NewAppModule(app.paramsKeeper),
 		slashing.NewAppModule(app.appCodec, app.slashingKeeper, app.accountKeeper, app.bankKeeper, app.stakingKeeper),
@@ -491,13 +491,13 @@ func NewApp(
 	)
 	app.SetEndBlocker(app.EndBlocker)
 
-	app.upgradeKeeper.SetUpgradeHandler(
+	app.UpgradeKeeper.SetUpgradeHandler(
 		upgrade1.Name,
 		upgrade1.Handler(app.accountKeeper),
 	)
-	app.upgradeKeeper.SetUpgradeHandler(
+	app.UpgradeKeeper.SetUpgradeHandler(
 		upgrade2.Name,
-		upgrade2.Handler(app.SetStoreLoader, app.accountKeeper, app.upgradeKeeper, app.customMintKeeper),
+		upgrade2.Handler(app.SetStoreLoader, app.accountKeeper, app.UpgradeKeeper, app.customMintKeeper),
 	)
 
 	if loadLatest {
