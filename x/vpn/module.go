@@ -56,13 +56,13 @@ func (a AppModuleBasic) RegisterInterfaces(registry codectypes.InterfaceRegistry
 	types.RegisterInterfaces(registry)
 }
 
-func (a AppModuleBasic) DefaultGenesis(cdc codec.JSONCodec) json.RawMessage {
-	return cdc.MustMarshalJSON(types.DefaultGenesisState())
+func (a AppModuleBasic) DefaultGenesis(appCodec codec.JSONCodec) json.RawMessage {
+	return appCodec.MustMarshalJSON(types.DefaultGenesisState())
 }
 
-func (a AppModuleBasic) ValidateGenesis(cdc codec.JSONCodec, _ client.TxEncodingConfig, message json.RawMessage) error {
+func (a AppModuleBasic) ValidateGenesis(appCodec codec.JSONCodec, _ client.TxEncodingConfig, message json.RawMessage) error {
 	var state types.GenesisState
-	if err := cdc.UnmarshalJSON(message, &state); err != nil {
+	if err := appCodec.UnmarshalJSON(message, &state); err != nil {
 		return err
 	}
 
@@ -92,31 +92,31 @@ func (a AppModuleBasic) GetQueryCmd() *cobra.Command {
 
 type AppModule struct {
 	AppModuleBasic
-	cdc codec.Codec
-	ak  expected.AccountKeeper
-	bk  expected.BankKeeper
-	k   keeper.Keeper
+	appCodec codec.Codec
+	ak       expected.AccountKeeper
+	bk       expected.BankKeeper
+	k        keeper.Keeper
 }
 
-func NewAppModule(cdc codec.Codec, ak expected.AccountKeeper, bk expected.BankKeeper, k keeper.Keeper) AppModule {
+func NewAppModule(appCodec codec.Codec, ak expected.AccountKeeper, bk expected.BankKeeper, k keeper.Keeper) AppModule {
 	return AppModule{
-		cdc: cdc,
-		ak:  ak,
-		bk:  bk,
-		k:   k,
+		appCodec: appCodec,
+		ak:       ak,
+		bk:       bk,
+		k:        k,
 	}
 }
 
-func (a AppModule) InitGenesis(ctx sdk.Context, cdc codec.JSONCodec, message json.RawMessage) []abcitypes.ValidatorUpdate {
+func (a AppModule) InitGenesis(ctx sdk.Context, appCodec codec.JSONCodec, message json.RawMessage) []abcitypes.ValidatorUpdate {
 	var state types.GenesisState
-	cdc.MustUnmarshalJSON(message, &state)
+	appCodec.MustUnmarshalJSON(message, &state)
 	InitGenesis(ctx, a.k, &state)
 
 	return nil
 }
 
-func (a AppModule) ExportGenesis(ctx sdk.Context, cdc codec.JSONCodec) json.RawMessage {
-	return cdc.MustMarshalJSON(ExportGenesis(ctx, a.k))
+func (a AppModule) ExportGenesis(ctx sdk.Context, appCodec codec.JSONCodec) json.RawMessage {
+	return appCodec.MustMarshalJSON(ExportGenesis(ctx, a.k))
 }
 
 func (a AppModule) RegisterInvariants(_ sdk.InvariantRegistry) {}
@@ -167,7 +167,7 @@ func (a AppModule) RandomizedParams(r *rand.Rand) []sdksimulation.ParamChange {
 func (a AppModule) RegisterStoreDecoder(_ sdk.StoreDecoderRegistry) {}
 
 func (a AppModule) WeightedOperations(state module.SimulationState) []sdksimulation.WeightedOperation {
-	return simulation.WeightedOperations(state.AppParams, a.cdc, a.ak, a.bk, a.k)
+	return simulation.WeightedOperations(state.AppParams, a.appCodec, a.ak, a.bk, a.k)
 }
 
 // ConsensusVersion implements AppModule/ConsensusVersion.

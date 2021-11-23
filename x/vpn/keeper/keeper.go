@@ -30,7 +30,7 @@ type Keeper struct {
 }
 
 func NewKeeper(
-	cdc codec.BinaryMarshaler,
+	appCodec codec.BinaryMarshaler,
 	key sdk.StoreKey,
 	paramsKeeper paramskeeper.Keeper,
 	accountKeeper authkeeper.AccountKeeper,
@@ -38,12 +38,12 @@ func NewKeeper(
 	distributionKeeper distributionkeeper.Keeper,
 ) Keeper {
 	var (
-		depositKeeper      = depositkeeper.NewKeeper(cdc, key)
-		providerKeeper     = providerkeeper.NewKeeper(cdc, key, paramsKeeper.Subspace(providertypes.ParamsSubspace))
-		nodeKeeper         = nodekeeper.NewKeeper(cdc, key, paramsKeeper.Subspace(nodetypes.ParamsSubspace))
-		planKeeper         = plankeeper.NewKeeper(cdc, key)
-		subscriptionKeeper = subscriptionkeeper.NewKeeper(cdc, key, paramsKeeper.Subspace(subscriptiontypes.ParamsSubspace))
-		sessionKeeper      = sessionkeeper.NewKeeper(cdc, key, paramsKeeper.Subspace(sessiontypes.ParamsSubspace))
+		depositKeeper      = depositkeeper.NewKeeper(appCodec, key)
+		providerKeeper     = providerkeeper.NewKeeper(appCodec, key, paramsKeeper.Subspace(providertypes.ParamsSubspace))
+		nodeKeeper         = nodekeeper.NewKeeper(appCodec, key, paramsKeeper.Subspace(nodetypes.ParamsSubspace))
+		planKeeper         = plankeeper.NewKeeper(appCodec, key)
+		subscriptionKeeper = subscriptionkeeper.NewKeeper(appCodec, key, paramsKeeper.Subspace(subscriptiontypes.ParamsSubspace))
+		sessionKeeper      = sessionkeeper.NewKeeper(appCodec, key, paramsKeeper.Subspace(sessiontypes.ParamsSubspace))
 	)
 
 	depositKeeper.WithBankKeeper(bankKeeper)

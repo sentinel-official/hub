@@ -11,20 +11,20 @@ import (
 )
 
 type Keeper struct {
-	cdc     codec.BinaryCodec
-	key     sdk.StoreKey
-	params  paramstypes.Subspace
-	account expected.AccountKeeper
-	bank    expected.BankKeeper
+	appCodec codec.BinaryCodec
+	key      sdk.StoreKey
+	params   paramstypes.Subspace
+	account  expected.AccountKeeper
+	bank     expected.BankKeeper
 }
 
-func NewKeeper(cdc codec.BinaryCodec, key sdk.StoreKey, params paramstypes.Subspace, account expected.AccountKeeper, bank expected.BankKeeper) Keeper {
+func NewKeeper(appCodec codec.BinaryCodec, key sdk.StoreKey, params paramstypes.Subspace, account expected.AccountKeeper, bank expected.BankKeeper) Keeper {
 	return Keeper{
-		cdc:     cdc,
-		key:     key,
-		params:  params.WithKeyTable(types.ParamsKeyTable()),
-		account: account,
-		bank:    bank,
+		appCodec: appCodec,
+		key:      key,
+		params:   params.WithKeyTable(types.ParamsKeyTable()),
+		account:  account,
+		bank:     bank,
 	}
 }
 

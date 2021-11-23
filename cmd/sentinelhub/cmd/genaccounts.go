@@ -40,7 +40,7 @@ contain valid denominations. Accounts may optionally be supplied with vesting pa
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx := client.GetClientContextFromCmd(cmd)
 			depCdc := clientCtx.JSONCodec
-			cdc := depCdc.(codec.Codec)
+			appCodec := depCdc.(codec.Codec)
 
 			serverCtx := server.GetServerContextFromCmd(cmd)
 			config := serverCtx.Config
@@ -128,7 +128,7 @@ contain valid denominations. Accounts may optionally be supplied with vesting pa
 				return fmt.Errorf("failed to unmarshal genesis state: %w", err)
 			}
 
-			authGenState := authtypes.GetGenesisStateFromAppState(cdc, appState)
+			authGenState := authtypes.GetGenesisStateFromAppState(appCodec, appState)
 
 			accs, err := authtypes.UnpackAccounts(authGenState.Accounts)
 			if err != nil {
@@ -148,7 +148,7 @@ contain valid denominations. Accounts may optionally be supplied with vesting pa
 			}
 			authGenState.Accounts = genAccs
 
-			authGenStateBz, err := cdc.MarshalJSON(&authGenState)
+			authGenStateBz, err := appCodec.MarshalJSON(&authGenState)
 			if err != nil {
 				return fmt.Errorf("failed to marshal auth genesis state: %w", err)
 			}
@@ -160,7 +160,7 @@ contain valid denominations. Accounts may optionally be supplied with vesting pa
 			bankGenState.Balances = banktypes.SanitizeGenesisBalances(bankGenState.Balances)
 			bankGenState.Supply = bankGenState.Supply.Add(balances.Coins...)
 
-			bankGenStateBz, err := cdc.MarshalJSON(bankGenState)
+			bankGenStateBz, err := appCodec.MarshalJSON(bankGenState)
 			if err != nil {
 				return fmt.Errorf("failed to marshal bank genesis state: %w", err)
 			}

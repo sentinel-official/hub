@@ -43,13 +43,13 @@ func (a AppModuleBasic) RegisterInterfaces(registry codectypes.InterfaceRegistry
 	types.RegisterInterfaces(registry)
 }
 
-func (a AppModuleBasic) DefaultGenesis(cdc codec.JSONCodec) json.RawMessage {
-	return cdc.MustMarshalJSON(types.DefaultGenesisState())
+func (a AppModuleBasic) DefaultGenesis(appCodec codec.JSONCodec) json.RawMessage {
+	return appCodec.MustMarshalJSON(types.DefaultGenesisState())
 }
 
-func (a AppModuleBasic) ValidateGenesis(cdc codec.JSONCodec, _ client.TxEncodingConfig, message json.RawMessage) error {
+func (a AppModuleBasic) ValidateGenesis(appCodec codec.JSONCodec, _ client.TxEncodingConfig, message json.RawMessage) error {
 	var state types.GenesisState
-	if err := cdc.UnmarshalJSON(message, &state); err != nil {
+	if err := appCodec.UnmarshalJSON(message, &state); err != nil {
 		return err
 	}
 
@@ -74,27 +74,27 @@ func (a AppModuleBasic) GetQueryCmd() *cobra.Command {
 
 type AppModule struct {
 	AppModuleBasic
-	cdc codec.Codec
-	k   keeper.Keeper
+	appCodec codec.Codec
+	k        keeper.Keeper
 }
 
-func NewAppModule(cdc codec.Codec, k keeper.Keeper) AppModule {
+func NewAppModule(appCodec codec.Codec, k keeper.Keeper) AppModule {
 	return AppModule{
-		cdc: cdc,
-		k:   k,
+		appCodec: appCodec,
+		k:        k,
 	}
 }
 
-func (a AppModule) InitGenesis(ctx sdk.Context, cdc codec.JSONCodec, message json.RawMessage) []abcitypes.ValidatorUpdate {
+func (a AppModule) InitGenesis(ctx sdk.Context, appCodec codec.JSONCodec, message json.RawMessage) []abcitypes.ValidatorUpdate {
 	var state types.GenesisState
-	cdc.MustUnmarshalJSON(message, &state)
+	appCodec.MustUnmarshalJSON(message, &state)
 	InitGenesis(ctx, a.k, &state)
 
 	return nil
 }
 
-func (a AppModule) ExportGenesis(ctx sdk.Context, cdc codec.JSONCodec) json.RawMessage {
-	return cdc.MustMarshalJSON(ExportGenesis(ctx, a.k))
+func (a AppModule) ExportGenesis(ctx sdk.Context, appCodec codec.JSONCodec) json.RawMessage {
+	return appCodec.MustMarshalJSON(ExportGenesis(ctx, a.k))
 }
 
 func (a AppModule) RegisterInvariants(_ sdk.InvariantRegistry) {
@@ -134,7 +134,7 @@ func (a AppModule) RandomizedParams(r *rand.Rand) []sdksimulation.ParamChange {
 }
 
 func (a AppModule) RegisterStoreDecoder(sdr sdk.StoreDecoderRegistry) {
-	sdr[types.StoreKey] = simulation.NewStoreDecoder(a.cdc)
+	sdr[types.StoreKey] = simulation.NewStoreDecoder(a.appCodec)
 }
 
 func (a AppModule) WeightedOperations(_ module.SimulationState) []sdksimulation.WeightedOperation {

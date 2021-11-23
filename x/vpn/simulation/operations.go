@@ -15,17 +15,17 @@ import (
 
 func WeightedOperations(
 	params simulationtypes.AppParams,
-	cdc codec.JSONCodec,
+	appCodec codec.JSONCodec,
 	ak expected.AccountKeeper,
 	bk expected.BankKeeper,
 	k keeper.Keeper,
 ) []simulationtypes.WeightedOperation {
 	var operations []simulationtypes.WeightedOperation
-	operations = append(operations, providersimulation.WeightedOperations(params, cdc, ak, bk, k.Provider)...)
-	operations = append(operations, nodesimulation.WeightedOperations(params, cdc, ak, bk, k.Node)...)
-	operations = append(operations, plansimulation.WeightedOperations(params, cdc, ak, bk, k.Plan)...)
-	operations = append(operations, subscriptionsimulation.WeightedOperations(params, cdc, ak, bk, k.Subscription)...)
-	operations = append(operations, sessionsimulation.WeightedOperations(params, cdc, ak, bk, k.Session)...)
+	operations = append(operations, providersimulation.WeightedOperations(params, appCodec, ak, bk, k.Provider)...)
+	operations = append(operations, nodesimulation.WeightedOperations(params, appCodec, ak, bk, k.Node)...)
+	operations = append(operations, plansimulation.WeightedOperations(params, appCodec, ak, bk, k.Plan)...)
+	operations = append(operations, subscriptionsimulation.WeightedOperations(params, appCodec, ak, bk, k.Subscription)...)
+	operations = append(operations, sessionsimulation.WeightedOperations(params, appCodec, ak, bk, k.Session)...)
 
 	return operations
 }

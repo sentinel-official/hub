@@ -10,12 +10,12 @@ import (
 	"github.com/sentinel-official/hub/x/swap/types"
 )
 
-func NewStoreDecoder(cdc codec.Codec) func(kvA, kvB kv.Pair) string {
+func NewStoreDecoder(appCodec codec.Codec) func(kvA, kvB kv.Pair) string {
 	return func(kvA, kvB kv.Pair) string {
 		if bytes.Equal(kvA.Key[:1], types.SwapKeyPrefix) {
 			var swapA, swapB types.MsgSwapRequest
-			cdc.MustUnmarshal(kvA.Value, &swapA)
-			cdc.MustUnmarshal(kvB.Value, &swapB)
+			appCodec.MustUnmarshal(kvA.Value, &swapA)
+			appCodec.MustUnmarshal(kvB.Value, &swapB)
 
 			return fmt.Sprintf("%v\n%v", swapA, swapB)
 		}

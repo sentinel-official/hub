@@ -12,7 +12,7 @@ import (
 
 func (k *Keeper) SetCount(ctx sdk.Context, count uint64) {
 	key := types.CountKey
-	value := k.cdc.MustMarshal(&protobuf.UInt64Value{Value: count})
+	value := k.appCodec.MustMarshal(&protobuf.UInt64Value{Value: count})
 
 	store := k.Store(ctx)
 	store.Set(key, value)
@@ -28,14 +28,14 @@ func (k *Keeper) GetCount(ctx sdk.Context) uint64 {
 	}
 
 	var count protobuf.UInt64Value
-	k.cdc.MustUnmarshal(value, &count)
+	k.appCodec.MustUnmarshal(value, &count)
 
 	return count.Value
 }
 
 func (k *Keeper) SetSession(ctx sdk.Context, session types.Session) {
 	key := types.SessionKey(session.Id)
-	value := k.cdc.MustMarshal(&session)
+	value := k.appCodec.MustMarshal(&session)
 
 	store := k.Store(ctx)
 	store.Set(key, value)
@@ -50,7 +50,7 @@ func (k *Keeper) GetSession(ctx sdk.Context, id uint64) (session types.Session, 
 		return session, false
 	}
 
-	k.cdc.MustUnmarshal(value, &session)
+	k.appCodec.MustUnmarshal(value, &session)
 	return session, true
 }
 
@@ -67,7 +67,7 @@ func (k *Keeper) GetSessions(ctx sdk.Context, skip, limit int64) (items types.Se
 	iter.Skip(skip)
 	iter.Limit(limit, func(iter sdk.Iterator) {
 		var item types.Session
-		k.cdc.MustUnmarshal(iter.Value(), &item)
+		k.appCodec.MustUnmarshal(iter.Value(), &item)
 		items = append(items, item)
 	})
 
@@ -82,7 +82,7 @@ func (k *Keeper) IterateSessions(ctx sdk.Context, fn func(index int, item types.
 
 	for i := 0; iter.Valid(); iter.Next() {
 		var session types.Session
-		k.cdc.MustUnmarshal(iter.Value(), &session)
+		k.appCodec.MustUnmarshal(iter.Value(), &session)
 
 		if stop := fn(i, session); stop {
 			break
@@ -93,7 +93,7 @@ func (k *Keeper) IterateSessions(ctx sdk.Context, fn func(index int, item types.
 
 func (k *Keeper) SetInactiveSessionForAddress(ctx sdk.Context, address sdk.AccAddress, id uint64) {
 	key := types.InactiveSessionForAddressKey(address, id)
-	value := k.cdc.MustMarshal(&protobuf.BoolValue{Value: true})
+	value := k.appCodec.MustMarshal(&protobuf.BoolValue{Value: true})
 
 	store := k.Store(ctx)
 	store.Set(key, value)
@@ -127,7 +127,7 @@ func (k *Keeper) GetInactiveSessionsForAddress(ctx sdk.Context, address sdk.AccA
 
 func (k *Keeper) SetActiveSessionForAddress(ctx sdk.Context, address sdk.AccAddress, id uint64) {
 	key := types.ActiveSessionForAddressKey(address, id)
-	value := k.cdc.MustMarshal(&protobuf.BoolValue{Value: true})
+	value := k.appCodec.MustMarshal(&protobuf.BoolValue{Value: true})
 
 	store := k.Store(ctx)
 	store.Set(key, value)
@@ -161,7 +161,7 @@ func (k *Keeper) GetActiveSessionsForAddress(ctx sdk.Context, address sdk.AccAdd
 
 func (k *Keeper) SetInactiveSessionAt(ctx sdk.Context, at time.Time, id uint64) {
 	key := types.InactiveSessionAtKey(at, id)
-	value := k.cdc.MustMarshal(&protobuf.BoolValue{Value: true})
+	value := k.appCodec.MustMarshal(&protobuf.BoolValue{Value: true})
 
 	store := k.Store(ctx)
 	store.Set(key, value)

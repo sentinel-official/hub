@@ -14,7 +14,7 @@ import (
 )
 
 type Keeper struct {
-	cdc          codec.BinaryCodec
+	appCodec     codec.BinaryCodec
 	key          sdk.StoreKey
 	params       paramstypes.Subspace
 	distribution expected.DistributionKeeper
@@ -22,11 +22,11 @@ type Keeper struct {
 	plan         expected.PlanKeeper
 }
 
-func NewKeeper(cdc codec.BinaryCodec, key sdk.StoreKey, params paramstypes.Subspace) Keeper {
+func NewKeeper(appCodec codec.BinaryCodec, key sdk.StoreKey, params paramstypes.Subspace) Keeper {
 	return Keeper{
-		cdc:    cdc,
-		key:    key,
-		params: params.WithKeyTable(types.ParamsKeyTable()),
+		appCodec: appCodec,
+		key:      key,
+		params:   params.WithKeyTable(types.ParamsKeyTable()),
 	}
 }
 

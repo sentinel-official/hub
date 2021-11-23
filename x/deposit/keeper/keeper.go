@@ -13,15 +13,15 @@ import (
 )
 
 type Keeper struct {
-	key  sdk.StoreKey
-	cdc  codec.BinaryCodec
-	bank expected.BankKeeper
+	key      sdk.StoreKey
+	appCodec codec.BinaryCodec
+	bank     expected.BankKeeper
 }
 
-func NewKeeper(cdc codec.BinaryCodec, key sdk.StoreKey) Keeper {
+func NewKeeper(appCodec codec.BinaryCodec, key sdk.StoreKey) Keeper {
 	return Keeper{
-		key: key,
-		cdc: cdc,
+		key:      key,
+		appCodec: appCodec,
 	}
 }
 

@@ -9,7 +9,7 @@ import (
 
 func (k *Keeper) SetSwap(ctx sdk.Context, swap types.Swap) {
 	key := types.SwapKey(swap.GetTxHash())
-	value := k.cdc.MustMarshal(&swap)
+	value := k.appCodec.MustMarshal(&swap)
 
 	store := k.Store(ctx)
 	store.Set(key, value)
@@ -24,7 +24,7 @@ func (k *Keeper) GetSwap(ctx sdk.Context, txHash types.EthereumHash) (swap types
 		return swap, false
 	}
 
-	k.cdc.MustUnmarshal(value, &swap)
+	k.appCodec.MustUnmarshal(value, &swap)
 	return swap, true
 }
 
@@ -48,7 +48,7 @@ func (k *Keeper) GetSwaps(ctx sdk.Context, skip, limit int64) (items types.Swaps
 	iter.Skip(skip)
 	iter.Limit(limit, func(iter sdk.Iterator) {
 		var item types.Swap
-		k.cdc.MustUnmarshal(iter.Value(), &item)
+		k.appCodec.MustUnmarshal(iter.Value(), &item)
 		items = append(items, item)
 	})
 

@@ -10,7 +10,7 @@ import (
 // SetDeposit is for inserting a deposit into KVStore.
 func (k *Keeper) SetDeposit(ctx sdk.Context, deposit types.Deposit) {
 	key := types.DepositKey(deposit.GetAddress())
-	value := k.cdc.MustMarshal(&deposit)
+	value := k.appCodec.MustMarshal(&deposit)
 
 	store := k.Store(ctx)
 	store.Set(key, value)
@@ -26,7 +26,7 @@ func (k *Keeper) GetDeposit(ctx sdk.Context, address sdk.AccAddress) (deposit ty
 		return deposit, false
 	}
 
-	k.cdc.MustUnmarshal(value, &deposit)
+	k.appCodec.MustUnmarshal(value, &deposit)
 	return deposit, true
 }
 
@@ -44,7 +44,7 @@ func (k *Keeper) GetDeposits(ctx sdk.Context, skip, limit int64) (items types.De
 	iter.Skip(skip)
 	iter.Limit(limit, func(iter sdk.Iterator) {
 		var item types.Deposit
-		k.cdc.MustUnmarshal(iter.Value(), &item)
+		k.appCodec.MustUnmarshal(iter.Value(), &item)
 		items = append(items, item)
 	})
 
@@ -137,7 +137,7 @@ func (k *Keeper) IterateDeposits(ctx sdk.Context, fn func(index int, item types.
 
 	for i := 0; iterator.Valid(); iterator.Next() {
 		var deposit types.Deposit
-		k.cdc.MustUnmarshal(iterator.Value(), &deposit)
+		k.appCodec.MustUnmarshal(iterator.Value(), &deposit)
 
 		if stop := fn(i, deposit); stop {
 			break

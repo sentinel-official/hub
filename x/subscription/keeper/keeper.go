@@ -14,21 +14,21 @@ import (
 )
 
 type Keeper struct {
-	cdc     codec.BinaryCodec
-	key     sdk.StoreKey
-	params  paramstypes.Subspace
-	bank    expected.BankKeeper
-	deposit expected.DepositKeeper
-	node    expected.NodeKeeper
-	plan    expected.PlanKeeper
-	session expected.SessionKeeper
+	appCodec codec.BinaryCodec
+	key      sdk.StoreKey
+	params   paramstypes.Subspace
+	bank     expected.BankKeeper
+	deposit  expected.DepositKeeper
+	node     expected.NodeKeeper
+	plan     expected.PlanKeeper
+	session  expected.SessionKeeper
 }
 
-func NewKeeper(cdc codec.BinaryCodec, key sdk.StoreKey, params paramstypes.Subspace) Keeper {
+func NewKeeper(appCodec codec.BinaryCodec, key sdk.StoreKey, params paramstypes.Subspace) Keeper {
 	return Keeper{
-		cdc:    cdc,
-		key:    key,
-		params: params.WithKeyTable(types.ParamsKeyTable()),
+		appCodec: appCodec,
+		key:      key,
+		params:   params.WithKeyTable(types.ParamsKeyTable()),
 	}
 }
 

@@ -29,7 +29,7 @@ var (
 
 func WeightedOperations(
 	params simulationtypes.AppParams,
-	cdc codec.JSONCodec,
+	appCodec codec.JSONCodec,
 	ak expected.AccountKeeper,
 	bk expected.BankKeeper,
 	k keeper.Keeper,
@@ -43,7 +43,7 @@ func WeightedOperations(
 	)
 
 	params.GetOrGenerate(
-		cdc,
+		appCodec,
 		OperationWeightMsgSubscribeToNodeRequest,
 		&weightMsgSubscribeToNodeRequest,
 		nil,
@@ -52,7 +52,7 @@ func WeightedOperations(
 		},
 	)
 	params.GetOrGenerate(
-		cdc,
+		appCodec,
 		OperationWeightMsgSubscribeToPlanRequest,
 		&weightMsgSubscribeToPlanRequest,
 		nil,
@@ -61,7 +61,7 @@ func WeightedOperations(
 		},
 	)
 	params.GetOrGenerate(
-		cdc,
+		appCodec,
 		OperationWeightMsgCancelRequest,
 		&weightMsgCancelRequest,
 		nil,
@@ -70,7 +70,7 @@ func WeightedOperations(
 		},
 	)
 	params.GetOrGenerate(
-		cdc,
+		appCodec,
 		OperationWeightMsgAddQuotaRequest,
 		&weightMsgAddQuotaRequest,
 		nil,
@@ -79,7 +79,7 @@ func WeightedOperations(
 		},
 	)
 	params.GetOrGenerate(
-		cdc,
+		appCodec,
 		OperationWeightMsgUpdateQuotaRequest,
 		&weightMsgUpdateQuotaRequest,
 		nil,

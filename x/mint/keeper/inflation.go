@@ -13,7 +13,7 @@ func (k *Keeper) SetInflation(ctx sdk.Context, inflation types.Inflation) {
 	var (
 		store = k.Store(ctx)
 		key   = types.InflationKey(inflation.Timestamp)
-		value = k.cdc.MustMarshal(&inflation)
+		value = k.appCodec.MustMarshal(&inflation)
 	)
 
 	store.Set(key, value)
@@ -30,7 +30,7 @@ func (k *Keeper) GetInflation(ctx sdk.Context, timestamp time.Time) (inflation t
 		return inflation, false
 	}
 
-	k.cdc.MustUnmarshal(value, &inflation)
+	k.appCodec.MustUnmarshal(value, &inflation)
 	return inflation, true
 }
 
@@ -56,7 +56,7 @@ func (k *Keeper) GetInflations(ctx sdk.Context, skip, limit int64) (items []type
 	iter.Skip(skip)
 	iter.Limit(limit, func(iter sdk.Iterator) {
 		var item types.Inflation
-		k.cdc.MustUnmarshal(iter.Value(), &item)
+		k.appCodec.MustUnmarshal(iter.Value(), &item)
 		items = append(items, item)
 	})
 
@@ -73,7 +73,7 @@ func (k *Keeper) IterateInflations(ctx sdk.Context, fn func(index int, item type
 
 	for i := 0; iter.Valid(); iter.Next() {
 		var item types.Inflation
-		k.cdc.MustUnmarshal(iter.Value(), &item)
+		k.appCodec.MustUnmarshal(iter.Value(), &item)
 
 		if stop := fn(i, item); stop {
 			break

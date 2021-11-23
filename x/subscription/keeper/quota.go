@@ -9,7 +9,7 @@ import (
 
 func (k *Keeper) SetQuota(ctx sdk.Context, id uint64, quota types.Quota) {
 	key := types.QuotaKey(id, quota.GetAddress())
-	value := k.cdc.MustMarshal(&quota)
+	value := k.appCodec.MustMarshal(&quota)
 
 	store := k.Store(ctx)
 	store.Set(key, value)
@@ -24,7 +24,7 @@ func (k *Keeper) GetQuota(ctx sdk.Context, id uint64, address sdk.AccAddress) (q
 		return quota, false
 	}
 
-	k.cdc.MustUnmarshal(value, &quota)
+	k.appCodec.MustUnmarshal(value, &quota)
 	return quota, true
 }
 
@@ -55,7 +55,7 @@ func (k *Keeper) GetQuotas(ctx sdk.Context, id uint64, skip, limit int64) (items
 	iter.Skip(skip)
 	iter.Limit(limit, func(iter sdk.Iterator) {
 		var item types.Quota
-		k.cdc.MustUnmarshal(iter.Value(), &item)
+		k.appCodec.MustUnmarshal(iter.Value(), &item)
 		items = append(items, item)
 	})
 
@@ -70,7 +70,7 @@ func (k *Keeper) IterateQuotas(ctx sdk.Context, id uint64, fn func(index int, it
 
 	for i := 0; iter.Valid(); iter.Next() {
 		var quota types.Quota
-		k.cdc.MustUnmarshal(iter.Value(), &quota)
+		k.appCodec.MustUnmarshal(iter.Value(), &quota)
 
 		if stop := fn(i, quota); stop {
 			break
