@@ -29,7 +29,7 @@ import (
 	"github.com/tendermint/tendermint/libs/log"
 	tmdb "github.com/tendermint/tm-db"
 
-	"github.com/sentinel-official/hub"
+	hub "github.com/sentinel-official/hub/app"
 	"github.com/sentinel-official/hub/params"
 )
 
@@ -96,7 +96,7 @@ func initRootCmd(rootCmd *cobra.Command, encodingConfig params.EncodingConfig) {
 		config.Cmd(),
 	)
 
-	server.AddCommands(rootCmd, hub.DefaultNodeHome, hub.App, appCreatorFunc(), addModuleInitFlags)
+	server.AddCommands(rootCmd, hub.DefaultNodeHome, appCreatorFunc(), appExportFunc(), addModuleInitFlags)
 
 	// add keybase, auxiliary RPC, query, and tx child commands
 	rootCmd.AddCommand(
