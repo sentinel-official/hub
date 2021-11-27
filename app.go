@@ -2,6 +2,7 @@ package hub
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 	"os"
 
@@ -84,8 +85,6 @@ import (
 	tmdb "github.com/tendermint/tm-db"
 
 	hubparams "github.com/sentinel-official/hub/params"
-	upgrade1 "github.com/sentinel-official/hub/upgrades/upgrade-1"
-	upgrade2 "github.com/sentinel-official/hub/upgrades/upgrade-2"
 	deposittypes "github.com/sentinel-official/hub/x/deposit/types"
 	custommint "github.com/sentinel-official/hub/x/mint"
 	custommintkeeper "github.com/sentinel-official/hub/x/mint/keeper"
@@ -201,16 +200,27 @@ func NewApp(
 ) *App {
 	var (
 		appCodec          = encodingConfig.Marshaler
-		amino             = encodingConfig.Amino
+		amino             = appCodec
 		interfaceRegistry = encodingConfig.InterfaceRegistry
 		tkeys             = sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
 		memKeys           = sdk.NewMemoryStoreKeys(capabilitytypes.MemStoreKey)
 		keys              = sdk.NewKVStoreKeys(
-			authtypes.StoreKey, banktypes.StoreKey, capabilitytypes.StoreKey,
-			distributiontypes.StoreKey, evidencetypes.StoreKey, govtypes.StoreKey,
-			ibchost.StoreKey, ibctransfertypes.StoreKey, minttypes.StoreKey,
-			paramstypes.StoreKey, slashingtypes.StoreKey, stakingtypes.StoreKey,
-			upgradetypes.StoreKey, customminttypes.StoreKey, swaptypes.StoreKey, vpntypes.StoreKey,
+			authtypes.StoreKey,
+			banktypes.StoreKey,
+			capabilitytypes.StoreKey,
+			distributiontypes.StoreKey,
+			evidencetypes.StoreKey,
+			govtypes.StoreKey,
+			ibchost.StoreKey,
+			ibctransfertypes.StoreKey,
+			minttypes.StoreKey,
+			paramstypes.StoreKey,
+			slashingtypes.StoreKey,
+			stakingtypes.StoreKey,
+			upgradetypes.StoreKey,
+			customminttypes.StoreKey,
+			swaptypes.StoreKey,
+			vpntypes.StoreKey,
 		)
 	)
 
@@ -315,7 +325,7 @@ func NewApp(
 	)
 	app.CrisisKeeper = crisiskeeper.NewKeeper(
 		app.GetSubspace(crisistypes.ModuleName),
-		app.invarCheckPeriod,
+		app.InvarCheckPeriod,
 		app.BankKeeper,
 		authtypes.FeeCollectorName,
 	)
@@ -349,8 +359,8 @@ func NewApp(
 		app.appCodec,
 		app.keys[govtypes.StoreKey],
 		app.GetSubspace(govtypes.ModuleName),
-		app.accountKeeper,
-		app.bankKeeper,
+		app.AccountKeeper,
+		app.BankKeeper,
 		&stakingKeeper,
 		govRouter,
 	)
@@ -361,8 +371,8 @@ func NewApp(
 		app.GetSubspace(ibctransfertypes.ModuleName),
 		app.IBCKeeper.ChannelKeeper,
 		&app.IBCKeeper.PortKeeper,
-		app.accountKeeper,
-		app.bankKeeper,
+		app.AccountKeeper,
+		app.BankKeeper,
 		scopedTransferKeeper,
 	)
 
@@ -375,33 +385,33 @@ func NewApp(
 	ibcRouter.AddRoute(ibctransfertypes.ModuleName, transferModule)
 	app.IBCKeeper.SetRouter(ibcRouter)
 
-	app.evidenceKeeper = *evidencekeeper.NewKeeper(
+	app.EvidenceKeeper = *evidencekeeper.NewKeeper(
 		app.appCodec,
 		app.keys[evidencetypes.StoreKey],
-		&app.stakingKeeper,
-		app.slashingKeeper,
+		&app.StakingKeeper,
+		app.SlashingKeeper,
 	)
-	app.evidenceKeeper.SetRouter(evidenceRouter)
+	app.EvidenceKeeper.SetRouter(evidenceRouter)
 
 	app.customMintKeeper = custommintkeeper.NewKeeper(
 		app.appCodec,
 		app.keys[customminttypes.StoreKey],
-		app.mintKeeper,
+		app.MintKeeper,
 	)
 	app.swapKeeper = swapkeeper.NewKeeper(
 		app.appCodec,
 		app.keys[swaptypes.StoreKey],
 		app.GetSubspace(swaptypes.ModuleName),
-		app.accountKeeper,
-		app.bankKeeper,
+		app.AccountKeeper,
+		app.BankKeeper,
 	)
 	app.vpnKeeper = vpnkeeper.NewKeeper(
 		app.appCodec,
 		app.keys[vpntypes.StoreKey],
-		app.paramsKeeper,
-		app.accountKeeper,
-		app.bankKeeper,
-		app.distributionKeeper,
+		app.ParamsKeeper,
+		app.AccountKeeper,
+		app.BankKeeper,
+		app.DistrKeeper,
 	)
 
 	var (
@@ -413,38 +423,38 @@ func NewApp(
 	}
 
 	app.manager = module.NewManager(
-		auth.NewAppModule(app.appCodec, app.accountKeeper, nil),
-		authvesting.NewAppModule(app.accountKeeper, app.bankKeeper),
-		bank.NewAppModule(app.appCodec, app.bankKeeper, app.accountKeeper),
-		capability.NewAppModule(app.appCodec, *app.capabilityKeeper),
-		crisis.NewAppModule(&app.crisisKeeper, skipGenesisInvariants),
-		distribution.NewAppModule(app.appCodec, app.distributionKeeper, app.accountKeeper, app.bankKeeper, app.stakingKeeper),
-		evidence.NewAppModule(app.evidenceKeeper),
-		genutil.NewAppModule(app.accountKeeper, app.stakingKeeper, app.BaseApp.DeliverTx, encodingConfig.TxConfig),
-		gov.NewAppModule(app.appCodec, app.GovKeeper, app.accountKeeper, app.bankKeeper),
+		auth.NewAppModule(app.appCodec, app.AccountKeeper, nil),
+		authvesting.NewAppModule(app.AccountKeeper, app.BankKeeper),
+		bank.NewAppModule(app.appCodec, app.BankKeeper, app.AccountKeeper),
+		capability.NewAppModule(app.appCodec, *app.CapabilityKeeper),
+		crisis.NewAppModule(&app.CrisisKeeper, skipGenesisInvariants),
+		distribution.NewAppModule(app.appCodec, app.DistrKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper),
+		evidence.NewAppModule(app.EvidenceKeeper),
+		genutil.NewAppModule(app.AccountKeeper, app.StakingKeeper, app.BaseApp.DeliverTx, encodingConfig.TxConfig),
+		gov.NewAppModule(app.appCodec, app.GovKeeper, app.AccountKeeper, app.BankKeeper),
 		ibc.NewAppModule(app.IBCKeeper),
-		params.NewAppModule(app.paramsKeeper),
-		mint.NewAppModule(app.appCodec, app.mintKeeper, app.accountKeeper),
-		slashing.NewAppModule(app.appCodec, app.slashingKeeper, app.accountKeeper, app.bankKeeper, app.stakingKeeper),
-		staking.NewAppModule(app.appCodec, app.stakingKeeper, app.accountKeeper, app.bankKeeper),
+		params.NewAppModule(app.ParamsKeeper),
+		mint.NewAppModule(app.appCodec, app.MintKeeper, app.AccountKeeper),
+		slashing.NewAppModule(app.appCodec, app.SlashingKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper),
+		staking.NewAppModule(app.appCodec, app.StakingKeeper, app.AccountKeeper, app.BankKeeper),
 		upgrade.NewAppModule(app.UpgradeKeeper),
 		transferModule,
-		custommint.NewAppModule(appCodec, app.customMintKeeper),
+		custommint.NewAppModule(appCodec, app.CustomMintKeeper),
 		swap.NewAppModule(app.appCodec, app.swapKeeper),
-		vpn.NewAppModule(app.appCodec, app.accountKeeper, app.bankKeeper, app.vpnKeeper),
+		vpn.NewAppModule(app.appCodec, app.AccountKeeper, app.BankKeeper, app.vpnKeeper),
 	)
 
 	// NOTE: order is very important here
-	app.manager.SetOrderBeginBlockers(
+	app.mm.SetOrderBeginBlockers(
 		upgradetypes.ModuleName, customminttypes.ModuleName, minttypes.ModuleName, distributiontypes.ModuleName,
 		slashingtypes.ModuleName, evidencetypes.ModuleName, stakingtypes.ModuleName,
 		ibchost.ModuleName,
 	)
-	app.manager.SetOrderEndBlockers(
+	app.mm.SetOrderEndBlockers(
 		crisistypes.ModuleName, govtypes.ModuleName, stakingtypes.ModuleName,
 		vpntypes.ModuleName,
 	)
-	app.manager.SetOrderInitGenesis(
+	app.mm.SetOrderInitGenesis(
 		capabilitytypes.ModuleName, authtypes.ModuleName, banktypes.ModuleName,
 		distributiontypes.ModuleName, stakingtypes.ModuleName, slashingtypes.ModuleName,
 		govtypes.ModuleName, minttypes.ModuleName, crisistypes.ModuleName,
@@ -452,52 +462,62 @@ func NewApp(
 		ibctransfertypes.ModuleName, customminttypes.ModuleName, swaptypes.ModuleName, vpntypes.ModuleName,
 	)
 
-	app.manager.RegisterInvariants(&app.crisisKeeper)
-	app.manager.RegisterRoutes(app.Router(), app.QueryRouter(), encodingConfig.Amino)
-	app.manager.RegisterServices(module.NewConfigurator(app.MsgServiceRouter(), app.GRPCQueryRouter()))
+	app.mm.RegisterInvariants(&app.CrisisKeeper)
+	app.mm.RegisterRoutes(app.Router(), app.QueryRouter(), encodingConfig.Amino)
+	app.mm.RegisterServices(app.configurator)
 
 	app.simulationManager = module.NewSimulationManager(
-		auth.NewAppModule(app.appCodec, app.accountKeeper, authsimulation.RandomGenesisAccounts),
-		bank.NewAppModule(app.appCodec, app.bankKeeper, app.accountKeeper),
-		capability.NewAppModule(app.appCodec, *app.capabilityKeeper),
-		distribution.NewAppModule(app.appCodec, app.distributionKeeper, app.accountKeeper, app.bankKeeper, app.stakingKeeper),
-		evidence.NewAppModule(app.evidenceKeeper),
-		gov.NewAppModule(app.appCodec, app., app.accountKeeper, app.bankKeeper),
+		auth.NewAppModule(app.appCodec, app.AccountKeeper, authsimulation.RandomGenesisAccounts),
+		bank.NewAppModule(app.appCodec, app.BankKeeper, app.AccountKeeper),
+		capability.NewAppModule(app.appCodec, *app.CapabilityKeeper),
+		distribution.NewAppModule(app.appCodec, app.DistrKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper),
+		evidence.NewAppModule(app.EvidenceKeeper),
+		gov.NewAppModule(app.appCodec, app.GovKeeper, app.AccountKeeper, app.BankKeeper),
 		ibc.NewAppModule(app.IBCKeeper),
-		mint.NewAppModule(app.appCodec, app.mintKeeper, app.accountKeeper),
-		params.NewAppModule(app.paramsKeeper),
-		slashing.NewAppModule(app.appCodec, app.slashingKeeper, app.accountKeeper, app.bankKeeper, app.stakingKeeper),
-		staking.NewAppModule(app.appCodec, app.stakingKeeper, app.accountKeeper, app.bankKeeper),
+		mint.NewAppModule(app.appCodec, app.MintKeeper, app.AccountKeeper),
+		params.NewAppModule(app.ParamsKeeper),
+		slashing.NewAppModule(app.appCodec, app.SlashingKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper),
+		staking.NewAppModule(app.appCodec, app.StakingKeeper, app.AccountKeeper, app.BankKeeper),
 		transferModule,
-		custommint.NewAppModule(appCodec, app.customMintKeeper),
+		custommint.NewAppModule(appCodec, app.CustomMintKeeper),
 		swap.NewAppModule(app.appCodec, app.swapKeeper),
-		vpn.NewAppModule(app.appCodec, app.accountKeeper, app.bankKeeper, app.vpnKeeper),
+		vpn.NewAppModule(app.appCodec, app.AccountKeeper, app.BankKeeper, app.vpnKeeper),
 	)
-	app.simulationManager.RegisterStoreDecoders()
+	app.sm.RegisterStoreDecoders()
 
 	app.MountKVStores(app.keys)
 	app.MountTransientStores(app.tkeys)
-	app.MountMemoryStores(app.mkeys)
+	app.MountMemoryStores(app.memKeys)
 
 	app.SetInitChainer(app.InitChainer)
 	app.SetBeginBlocker(app.BeginBlocker)
-	app.SetAnteHandler(
-		ante.NewAnteHandler(
-			app.accountKeeper,
-			app.bankKeeper,
-			ante.DefaultSigVerificationGasConsumer,
-			encodingConfig.TxConfig.SignModeHandler(),
-		),
+
+	anteHandler, err := NewAnteHandler(
+		HandlerOptions{
+			HandlerOptions: ante.HandlerOptions{
+				AccountKeeper:   app.AccountKeeper,
+				BankKeeper:      app.BankKeeper,
+				FeegrantKeeper:  app.FeeGrantKeeper,
+				SignModeHandler: encodingConfig.TxConfig.SignModeHandler(),
+				SigGasConsumer:  ante.DefaultSigVerificationGasConsumer,
+			},
+			IBCChannelkeeper: app.IBCKeeper.ChannelKeeper,
+		},
 	)
+	if err != nil {
+		panic(fmt.Errorf("failed to create AnteHandler: %s", err))
+	}
+
+	app.SetAnteHandler(anteHandler)
 	app.SetEndBlocker(app.EndBlocker)
 
 	app.UpgradeKeeper.SetUpgradeHandler(
 		upgrade1.Name,
-		upgrade1.Handler(app.accountKeeper),
+		upgrade1.Handler(app.AccountKeeper),
 	)
 	app.UpgradeKeeper.SetUpgradeHandler(
 		upgrade2.Name,
-		upgrade2.Handler(app.SetStoreLoader, app.accountKeeper, app.UpgradeKeeper, app.customMintKeeper),
+		upgrade2.Handler(app.SetStoreLoader, app.AccountKeeper, app.UpgradeKeeper, app.customMintKeeper),
 	)
 
 	if loadLatest {
@@ -506,11 +526,11 @@ func NewApp(
 		}
 
 		ctx := app.BaseApp.NewUncachedContext(true, tmproto.Header{})
-		app.capabilityKeeper.InitializeAndSeal(ctx)
+		app.CapabilityKeeper.InitializeAndSeal(ctx)
 	}
 
-	app.scopedIBCKeeper = scopedIBCKeeper
-	app.scopedIBCTransferKeeper = scopedTransferKeeper
+	app.ScopedIBCKeeper = scopedIBCKeeper
+	app.ScopedIBCTransferKeeper = scopedTransferKeeper
 
 	return app
 }
@@ -518,11 +538,11 @@ func NewApp(
 func (a *App) Name() string { return a.BaseApp.Name() }
 
 func (a *App) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) abci.ResponseBeginBlock {
-	return a.manager.BeginBlock(ctx, req)
+	return a.mm.BeginBlock(ctx, req)
 }
 
 func (a *App) EndBlocker(ctx sdk.Context, req abci.RequestEndBlock) abci.ResponseEndBlock {
-	return a.manager.EndBlock(ctx, req)
+	return a.mm.EndBlock(ctx, req)
 }
 
 func (a *App) InitChainer(ctx sdk.Context, req abci.RequestInitChain) abci.ResponseInitChain {
@@ -530,11 +550,11 @@ func (a *App) InitChainer(ctx sdk.Context, req abci.RequestInitChain) abci.Respo
 	if err := tmjson.Unmarshal(req.AppStateBytes, &state); err != nil {
 		panic(err)
 	}
-	return a.manager.InitGenesis(ctx, a.appCodec, state)
+	return a.mm.InitGenesis(ctx, a.appCodec, state)
 }
 
 func (a *App) LegacyAmino() *codec.LegacyAmino {
-	return a.amino
+	return a.legacyAmino
 }
 
 func (a *App) AppCodec() codec.Codec {
@@ -593,10 +613,10 @@ func (a *App) ModuleAccountAddrs() map[string]bool {
 }
 
 func (a *App) SimulationManager() *module.SimulationManager {
-	return a.simulationManager
+	return a.SimulationManager()
 }
 
 func (a *App) GetSubspace(moduleName string) paramstypes.Subspace {
-	subspace, _ := a.paramsKeeper.GetSubspace(moduleName)
+	subspace, _ := a.ParamsKeeper.GetSubspace(moduleName)
 	return subspace
 }
