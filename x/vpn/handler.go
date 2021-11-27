@@ -87,7 +87,7 @@ func NewHandler(k keeper.Keeper) sdk.Handler {
 			res, err := sessionServer.MsgEnd(sdk.WrapSDKContext(ctx), msg)
 			return sdk.WrapServiceResult(ctx, res, err)
 		default:
-			return nil, errors.Wrapf(types.ErrorUnknownMsgType, "%s", msg.Type())
+			return nil, errors.Wrapf(types.ErrorUnknownMsgType, "%s", msg.ValidateBasic().Error())
 		}
 	}
 }

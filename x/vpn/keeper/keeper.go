@@ -30,7 +30,7 @@ type Keeper struct {
 }
 
 func NewKeeper(
-	appCodec codec.BinaryMarshaler,
+	appCodec codec.BinaryCodec,
 	key sdk.StoreKey,
 	paramsKeeper paramskeeper.Keeper,
 	accountKeeper authkeeper.AccountKeeper,
