@@ -40,10 +40,11 @@ linters:
     #- gocyclo
     - godot
     - godox
+    - govet
     #- goerr113
     - gofmt
     - goimports
-    - golint
+    - revive
     #- gomnd
     - gomodguard
     - goprintffuncname
@@ -51,16 +52,15 @@ linters:
     - gosimple
     - govet
     - ineffassign
-    - interfacer
+    #- interfacer
     #- lll
-    - maligned
     - misspell
     - nakedret
     #- nestif
     #- nolintlint
     - prealloc
     - rowserrcheck
-    - scopelint
+    - exportloopref
     - staticcheck
     - structcheck
     - stylecheck

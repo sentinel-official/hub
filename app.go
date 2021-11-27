@@ -345,7 +345,7 @@ func NewApp(
 		AddRoute(upgradetypes.RouterKey, upgrade.NewSoftwareUpgradeProposalHandler(app.UpgradeKeeper)).
 		AddRoute(ibcclienttypes.RouterKey, ibcclient.NewClientProposalHandler(app.IBCKeeper.ClientKeeper))
 
-	app. = govkeeper.NewKeeper(
+	app.GovKeeper = govkeeper.NewKeeper(
 		app.appCodec,
 		app.keys[govtypes.StoreKey],
 		app.GetSubspace(govtypes.ModuleName),
@@ -421,7 +421,7 @@ func NewApp(
 		distribution.NewAppModule(app.appCodec, app.distributionKeeper, app.accountKeeper, app.bankKeeper, app.stakingKeeper),
 		evidence.NewAppModule(app.evidenceKeeper),
 		genutil.NewAppModule(app.accountKeeper, app.stakingKeeper, app.BaseApp.DeliverTx, encodingConfig.TxConfig),
-		gov.NewAppModule(app.appCodec, app., app.accountKeeper, app.bankKeeper),
+		gov.NewAppModule(app.appCodec, app.GovKeeper, app.accountKeeper, app.bankKeeper),
 		ibc.NewAppModule(app.IBCKeeper),
 		params.NewAppModule(app.paramsKeeper),
 		mint.NewAppModule(app.appCodec, app.mintKeeper, app.accountKeeper),
