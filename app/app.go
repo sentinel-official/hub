@@ -28,7 +28,7 @@ import (
 	authtx "github.com/cosmos/cosmos-sdk/x/auth/tx"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	authvesting "github.com/cosmos/cosmos-sdk/x/auth/vesting"
-	authzkeeper "github.com/cosmos/cosmos-sdk/x/authz"
+	authzkeeper "github.com/cosmos/cosmos-sdk/x/authz/keeper"
 	"github.com/cosmos/cosmos-sdk/x/bank"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
@@ -438,8 +438,8 @@ func NewApp(
 		upgrade.NewAppModule(app.UpgradeKeeper),
 		transferModule,
 		custommint.NewAppModule(appCodec, app.CustomMintKeeper),
-		swap.NewAppModule(app.appCodec, app.swapKeeper),
-		vpn.NewAppModule(app.appCodec, app.AccountKeeper, app.BankKeeper, app.vpnKeeper),
+		swap.NewAppModule(app.appCodec, app.SwapKeeper),
+		vpn.NewAppModule(app.appCodec, app.AccountKeeper, app.BankKeeper, app.VpnKeeper),
 	)
 
 	// NOTE: order is very important here
@@ -483,12 +483,10 @@ func NewApp(
 	)
 	app.sm.RegisterStoreDecoders()
 
-	app.MountKVStores(app.keys)
-	app.MountTransientStores(app.tkeys)
-	app.MountMemoryStores(app.memKeys)
-
-	app.SetInitChainer(app.InitChainer)
-	app.SetBeginBlocker(app.BeginBlocker)
+	// initialize stores
+	app.MountKVStores(keys)
+	app.MountTransientStores(tkeys)
+	app.MountMemoryStores(memKeys)
 
 	anteHandler, err := NewAnteHandler(
 		HandlerOptions{
@@ -507,6 +505,8 @@ func NewApp(
 	}
 
 	app.SetAnteHandler(anteHandler)
+	app.SetInitChainer(app.InitChainer)
+	app.SetBeginBlocker(app.BeginBlocker)
 	app.SetEndBlocker(app.EndBlocker)
 
 	/*
