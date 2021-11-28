@@ -195,18 +195,19 @@ func NewApp(
 	loadLatest bool,
 	skipUpgradeHeights map[int64]bool,
 	homePath string,
-	invarCheckPeriod uint,
+	invCheckPeriod uint,
 	encodingConfig hubparams.EncodingConfig,
 	appOptions servertypes.AppOptions,
 	baseAppOptions ...func(*baseapp.BaseApp),
 ) *App {
 	var (
 		appCodec          = encodingConfig.Marshaler
-		amino             = codec.legacyAmino
+		legacyAmino       = encodingConfig.Amino
 		interfaceRegistry = encodingConfig.InterfaceRegistry
-		tkeys             = sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
-		memKeys           = sdk.NewMemoryStoreKeys(capabilitytypes.MemStoreKey)
-		keys              = sdk.NewKVStoreKeys(
+
+		tkeys   = sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
+		memKeys = sdk.NewMemoryStoreKeys(capabilitytypes.MemStoreKey)
+		keys    = sdk.NewKVStoreKeys(
 			authtypes.StoreKey,
 			banktypes.StoreKey,
 			capabilitytypes.StoreKey,
@@ -239,7 +240,7 @@ func NewApp(
 		tkeys:             tkeys,
 		memKeys:           memKeys,
 		interfaceRegistry: interfaceRegistry,
-		invarCheckPeriod:  invarCheckPeriod,
+		invCheckPeriod:    invCheckPeriod,
 	}
 
 	app.ParamsKeeper = paramskeeper.NewKeeper(
@@ -327,7 +328,7 @@ func NewApp(
 	)
 	app.CrisisKeeper = crisiskeeper.NewKeeper(
 		app.GetSubspace(crisistypes.ModuleName),
-		app.invarCheckPeriod,
+		app.invCheckPeriod,
 		app.BankKeeper,
 		authtypes.FeeCollectorName,
 	)
@@ -367,7 +368,7 @@ func NewApp(
 		govRouter,
 	)
 
-	app.IBCTransferKeeper = ibctransferkeeper.NewKeeper(
+	app.TransferKeeper = ibctransferkeeper.NewKeeper(
 		app.appCodec,
 		app.keys[ibctransfertypes.StoreKey],
 		app.GetSubspace(ibctransfertypes.ModuleName),
@@ -380,7 +381,7 @@ func NewApp(
 
 	var (
 		evidenceRouter = evidencetypes.NewRouter()
-		transferModule = ibctransfer.NewAppModule(app.IBCTransferKeeper)
+		transferModule = ibctransfer.NewAppModule(app.TransferKeeper)
 	)
 
 	app.EvidenceKeeper = *evidencekeeper.NewKeeper(
