@@ -277,25 +277,11 @@ func TestMsgUpdateRequest_ValidateBasic(t *testing.T) {
 			true,
 		},
 		{
-			"10 bytes from",
-			fields{
-				From: "sentnode1qypqxpq9qcrsszgse4wwrm",
-			},
-			true,
-		},
-		{
 			"20 bytes from",
 			fields{
 				From: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
 			},
 			false,
-		},
-		{
-			"30 bytes from",
-			fields{
-				From: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqyy3zxfp9ycnjs2fsxqglcv",
-			},
-			true,
 		},
 		{
 			"empty provider and nil price",
@@ -324,28 +310,12 @@ func TestMsgUpdateRequest_ValidateBasic(t *testing.T) {
 			true,
 		},
 		{
-			"10 bytes provider",
-			fields{
-				From:     "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Provider: "sentprov1qypqxpq9qcrsszgsutj8xr",
-			},
-			true,
-		},
-		{
 			"20 bytes provider",
 			fields{
 				From:     "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
 				Provider: "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
 			},
 			false,
-		},
-		{
-			"30 bytes provider",
-			fields{
-				From:     "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Provider: "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfqyy3zxfp9ycnjs2fsh33zgx",
-			},
-			true,
 		},
 		{
 			"empty price",
