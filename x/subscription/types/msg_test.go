@@ -39,23 +39,9 @@ func TestMsgSubscribeToNodeRequest_ValidateBasic(t *testing.T) {
 			true,
 		},
 		{
-			"10 bytes from",
-			fields{
-				From: "sent1qypqxpq9qcrsszgslawd5s",
-			},
-			true,
-		},
-		{
 			"20 bytes from",
 			fields{
 				From: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-			},
-			true,
-		},
-		{
-			"30 bytes from",
-			fields{
-				From: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfqyy3zxfp9ycnjs2fszvfck8",
 			},
 			true,
 		},
@@ -84,27 +70,11 @@ func TestMsgSubscribeToNodeRequest_ValidateBasic(t *testing.T) {
 			true,
 		},
 		{
-			"10 bytes address",
-			fields{
-				From:    "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				Address: "sentnode1qypqxpq9qcrsszgse4wwrm",
-			},
-			true,
-		},
-		{
 			"20 bytes address",
 			fields{
 				From:    "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
 				Address: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
 				Deposit: sdk.Coin{Amount: sdk.NewInt(0)},
-			},
-			true,
-		},
-		{
-			"30 bytes address",
-			fields{
-				From:    "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				Address: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqyy3zxfp9ycnjs2fsxqglcv",
 			},
 			true,
 		},
@@ -210,23 +180,9 @@ func TestMsgSubscribeToPlanRequest_ValidateBasic(t *testing.T) {
 			true,
 		},
 		{
-			"10 bytes from",
-			fields{
-				From: "sent1qypqxpq9qcrsszgslawd5s",
-			},
-			true,
-		},
-		{
 			"20 bytes from",
 			fields{
 				From: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-			},
-			true,
-		},
-		{
-			"30 bytes from",
-			fields{
-				From: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfqyy3zxfp9ycnjs2fszvfck8",
 			},
 			true,
 		},

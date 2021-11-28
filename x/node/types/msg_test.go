@@ -43,23 +43,9 @@ func TestMsgRegisterRequest_ValidateBasic(t *testing.T) {
 			true,
 		},
 		{
-			"10 bytes from",
-			fields{
-				From: "sent1qypqxpq9qcrsszgslawd5s",
-			},
-			true,
-		},
-		{
 			"20 bytes from",
 			fields{
 				From: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-			},
-			true,
-		},
-		{
-			"30 bytes from",
-			fields{
-				From: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfqyy3zxfp9ycnjs2fszvfck8",
 			},
 			true,
 		},

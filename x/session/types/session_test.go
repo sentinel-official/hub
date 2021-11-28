@@ -184,29 +184,11 @@ func TestSession_Validate(t *testing.T) {
 			true,
 		},
 		{
-			"10 bytes node",
-			fields{
-				Id:           1000,
-				Subscription: 1000,
-				Node:         "sentnode1qypqxpq9qcrsszgse4wwrm",
-			},
-			true,
-		},
-		{
 			"20 bytes node",
 			fields{
 				Id:           1000,
 				Subscription: 1000,
 				Node:         "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-			},
-			true,
-		},
-		{
-			"30 bytes node",
-			fields{
-				Id:           1000,
-				Subscription: 1000,
-				Node:         "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqyy3zxfp9ycnjs2fsxqglcv",
 			},
 			true,
 		},
@@ -241,16 +223,6 @@ func TestSession_Validate(t *testing.T) {
 			true,
 		},
 		{
-			"10 bytes address",
-			fields{
-				Id:           1000,
-				Subscription: 1000,
-				Node:         "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Address:      "sent1qypqxpq9qcrsszgslawd5s",
-			},
-			true,
-		},
-		{
 			"20 bytes address",
 			fields{
 				Id:           1000,
@@ -258,16 +230,6 @@ func TestSession_Validate(t *testing.T) {
 				Node:         "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
 				Address:      "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
 				Bandwidth:    hubtypes.Bandwidth{Upload: sdk.NewInt(0), Download: sdk.NewInt(0)},
-			},
-			true,
-		},
-		{
-			"30 bytes address",
-			fields{
-				Id:           1000,
-				Subscription: 1000,
-				Node:         "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Address:      "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfqyy3zxfp9ycnjs2fszvfck8",
 			},
 			true,
 		},

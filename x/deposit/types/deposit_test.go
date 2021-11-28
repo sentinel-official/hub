@@ -82,24 +82,9 @@ func TestDeposit_Validate(t *testing.T) {
 			true,
 		},
 		{
-			"10 bytes address",
-			fields{
-				Address: "sent1qypqxpq9qcrsszgslawd5s",
-				Coins:   nil,
-			},
-			true,
-		},
-		{
 			"20 bytes address",
 			fields{
 				Address: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-			},
-			true,
-		},
-		{
-			"30 bytes address",
-			fields{
-				Address: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfqyy3zxfp9ycnjs2fszvfck8",
 			},
 			true,
 		},
