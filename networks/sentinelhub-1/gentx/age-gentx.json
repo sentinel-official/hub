@@ -1,0 +1,46 @@
+{
+  "type": "cosmos-sdk/StdTx",
+  "value": {
+    "msg": [
+      {
+        "type": "cosmos-sdk/MsgCreateValidator",
+        "value": {
+          "description": {
+            "moniker": "AGE Network",
+            "identity": "",
+            "website": "https://age.network",
+            "security_contact": "",
+            "details": ""
+          },
+          "commission": {
+            "rate": "0.100000000000000000",
+            "max_rate": "1.000000000000000000",
+            "max_change_rate": "0.050000000000000000"
+          },
+          "min_self_delegation": "1",
+          "delegator_address": "sent1reeywehc76ndcd3gkzaz3yasdk7nfxc06undq8",
+          "validator_address": "sentvaloper1reeywehc76ndcd3gkzaz3yasdk7nfxc09evq0w",
+          "pubkey": "sentvalconspub1zcjduepq806r0rdjqgphjpfqg6zwp4fzwq7ykd26eq9yjc7yqtpdz5n45fkqfw8f8q",
+          "value": {
+            "denom": "udvpn",
+            "amount": "1000000000"
+          }
+        }
+      }
+    ],
+    "fee": {
+      "amount": [],
+      "gas": "200000"
+    },
+    "signatures": [
+      {
+        "pub_key": {
+          "type": "tendermint/PubKeySecp256k1",
+          "value": "AguwRnscV8hrsR8xkKhmeCzTa2ZsyDDSm7dIzWbL8HeL"
+        },
+        "signature": "49rNsmhC91xJe9EG9sQ5mc1wWAr5GOMDPyfrrH9lxP9OrCoobftj0tF1YROqoHhjfJkCYDX/fbbLgRJup334fQ=="
+      }
+    ],
+    "memo": "eb808b174c705579873897174a66215fac0dd123@3.227.1.175:26656"
+  }
+}

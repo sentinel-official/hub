@@ -1,0 +1,61 @@
+{
+  "body": {
+    "messages": [
+      {
+        "@type": "/cosmos.staking.v1beta1.MsgCreateValidator",
+        "description": {
+          "moniker": "Cosmic Validator",
+          "identity": "FF4B91B50B71CEDA",
+          "website": "https://cosmicvalidator.com",
+          "security_contact": "",
+          "details": "A reliable, passionate and service oriented validator. We are long term trusted community members; and have received delegation from both Tendermint and the Interchain Foundation (ICF) as a reward for our continuous support and effort."
+        },
+        "commission": {
+          "rate": "0.100000000000000000",
+          "max_rate": "0.300000000000000000",
+          "max_change_rate": "0.100000000000000000"
+        },
+        "min_self_delegation": "1",
+        "delegator_address": "sent1ea3w5tra5xkhyklk2marlw6ps78tdjy0pvs2yw",
+        "validator_address": "sentvaloper1ea3w5tra5xkhyklk2marlw6ps78tdjy07f08t8",
+        "pubkey": {
+          "@type": "/cosmos.crypto.ed25519.PubKey",
+          "key": "AlafO6TIYLNjvYrFRoxQ5wkGtPJkSMMu+v+5siNg2ho="
+        },
+        "value": {
+          "denom": "ublue",
+          "amount": "100000000"
+        }
+      }
+    ],
+    "memo": "f31535b95c8aded27090763336a77394e7a951b6@10.128.0.7:26656",
+    "timeout_height": "0",
+    "extension_options": [],
+    "non_critical_extension_options": []
+  },
+  "auth_info": {
+    "signer_infos": [
+      {
+        "public_key": {
+          "@type": "/cosmos.crypto.secp256k1.PubKey",
+          "key": "A6Rl8Qfq13L7eIPSQpR1vU1s6Cz3s9+F7mQj29mi22tp"
+        },
+        "mode_info": {
+          "single": {
+            "mode": "SIGN_MODE_DIRECT"
+          }
+        },
+        "sequence": "0"
+      }
+    ],
+    "fee": {
+      "amount": [],
+      "gas_limit": "200000",
+      "payer": "",
+      "granter": ""
+    }
+  },
+  "signatures": [
+    "HyhL6lFGcsrSy7TCO7R27+XKMyDi/b1OGFns5bjIf1B4rD5yuWcNQwt5q+nZDf3N3AWWjwHO7iMR02cZg7xb8g=="
+  ]
+}
