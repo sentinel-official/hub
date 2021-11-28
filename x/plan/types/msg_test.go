@@ -226,23 +226,9 @@ func TestMsgSetStatusRequest_ValidateBasic(t *testing.T) {
 			true,
 		},
 		{
-			"10 bytes address",
-			fields{
-				From: "sentprov1qypqxpq9qcrsszgsutj8xr",
-			},
-			true,
-		},
-		{
 			"20 bytes address",
 			fields{
 				From: "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-			},
-			true,
-		},
-		{
-			"30 bytes address",
-			fields{
-				From: "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfqyy3zxfp9ycnjs2fsh33zgx",
 			},
 			true,
 		},
