@@ -11,6 +11,7 @@ import (
 const (
 	ModuleName   = "provider"
 	QuerierRoute = ModuleName
+	AddrLen      = 20
 )
 
 var (
@@ -30,8 +31,8 @@ var (
 
 func ProviderKey(address hubtypes.ProvAddress) []byte {
 	v := append(ProviderKeyPrefix, address.Bytes()...)
-	if len(v) != 1+sdk.AddrLen {
-		panic(fmt.Errorf("invalid key length %d; expected %d", len(v), 1+sdk.AddrLen))
+	if len(v) != 1+AddrLen {
+		panic(fmt.Errorf("invalid key length %d; expected %d", len(v), 1+AddrLen))
 	}
 
 	return v
