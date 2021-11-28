@@ -548,15 +548,6 @@ func TestMsgRemoveNodeRequest_ValidateBasic(t *testing.T) {
 			true,
 		},
 		{
-			"10 bytes address",
-			fields{
-				From:    "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				Id:      1000,
-				Address: "sentnode1qypqxpq9qcrsszgse4wwrm",
-			},
-			true,
-		},
-		{
 			"20 bytes address",
 			fields{
 				From:    "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
@@ -564,15 +555,6 @@ func TestMsgRemoveNodeRequest_ValidateBasic(t *testing.T) {
 				Address: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
 			},
 			false,
-		},
-		{
-			"30 bytes address",
-			fields{
-				From:    "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				Id:      1000,
-				Address: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqyy3zxfp9ycnjs2fsxqglcv",
-			},
-			true,
 		},
 	}
 	for _, tt := range tests {
