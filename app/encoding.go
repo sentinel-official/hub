@@ -1,4 +1,4 @@
-package hub
+package app
 
 import (
 	"github.com/cosmos/cosmos-sdk/std"
