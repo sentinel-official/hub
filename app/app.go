@@ -28,6 +28,7 @@ import (
 	authtx "github.com/cosmos/cosmos-sdk/x/auth/tx"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	authvesting "github.com/cosmos/cosmos-sdk/x/auth/vesting"
+	authzkeeper "github.com/cosmos/cosmos-sdk/x/authz"
 	"github.com/cosmos/cosmos-sdk/x/bank"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
@@ -75,14 +76,12 @@ import (
 	ibcclient "github.com/cosmos/ibc-go/v2/modules/core/02-client"
 	ibcclientclient "github.com/cosmos/ibc-go/v2/modules/core/02-client/client"
 	ibcclienttypes "github.com/cosmos/ibc-go/v2/modules/core/02-client/types"
-	ibcporttypes "github.com/cosmos/ibc-go/v2/modules/core/05-port/types"
 	ibchost "github.com/cosmos/ibc-go/v2/modules/core/24-host"
 	ibckeeper "github.com/cosmos/ibc-go/v2/modules/core/keeper"
 	abci "github.com/tendermint/tendermint/abci/types"
 	tmjson "github.com/tendermint/tendermint/libs/json"
 	"github.com/tendermint/tendermint/libs/log"
 	tmos "github.com/tendermint/tendermint/libs/os"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	tmdb "github.com/tendermint/tm-db"
 
 	hubparams "github.com/sentinel-official/hub/params"
@@ -171,9 +170,11 @@ type App struct { // nolint: golint
 	TransferKeeper   ibctransferkeeper.Keeper
 	FeeGrantKeeper   feegrantkeeper.Keeper
 	AuthzKeeper      authzkeeper.Keeper
+
 	//	RouterKeeper     routerkeeper.Keeper
-	swapKeeper swapkeeper.Keeper
-	vpnKeeper  vpnkeeper.Keeper
+	SwapKeeper       swapkeeper.Keeper
+	VpnKeeper        vpnkeeper.Keeper
+	CustomMintKeeper custommintkeeper.Keeper
 
 	// make scoped keepers public for test purposes
 	ScopedIBCKeeper      capabilitykeeper.ScopedKeeper
@@ -201,7 +202,7 @@ func NewApp(
 ) *App {
 	var (
 		appCodec          = encodingConfig.Marshaler
-		amino             = appCodec
+		amino             = codec.legacyAmino
 		interfaceRegistry = encodingConfig.InterfaceRegistry
 		tkeys             = sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
 		memKeys           = sdk.NewMemoryStoreKeys(capabilitytypes.MemStoreKey)
@@ -232,7 +233,7 @@ func NewApp(
 
 	app := &App{
 		BaseApp:           baseApp,
-		amino:             amino,
+		legacyAmino:       legacyAmino,
 		appCodec:          appCodec,
 		keys:              keys,
 		tkeys:             tkeys,
@@ -243,7 +244,7 @@ func NewApp(
 
 	app.ParamsKeeper = paramskeeper.NewKeeper(
 		app.appCodec,
-		app.amino,
+		app.legacyAmino,
 		keys[paramstypes.StoreKey],
 		tkeys[paramstypes.TStoreKey],
 	)
@@ -366,7 +367,7 @@ func NewApp(
 		govRouter,
 	)
 
-	app.ibcTransferKeeper = ibctransferkeeper.NewKeeper(
+	app.IBCTransferKeeper = ibctransferkeeper.NewKeeper(
 		app.appCodec,
 		app.keys[ibctransfertypes.StoreKey],
 		app.GetSubspace(ibctransfertypes.ModuleName),
@@ -379,12 +380,8 @@ func NewApp(
 
 	var (
 		evidenceRouter = evidencetypes.NewRouter()
-		ibcRouter      = ibcporttypes.NewRouter()
-		transferModule = ibctransfer.NewAppModule(app.ibcTransferKeeper)
+		transferModule = ibctransfer.NewAppModule(app.IBCTransferKeeper)
 	)
-
-	ibcRouter.AddRoute(ibctransfertypes.ModuleName, transferModule)
-	app.IBCKeeper.SetRouter(ibcRouter)
 
 	app.EvidenceKeeper = *evidencekeeper.NewKeeper(
 		app.appCodec,
@@ -394,19 +391,19 @@ func NewApp(
 	)
 	app.EvidenceKeeper.SetRouter(evidenceRouter)
 
-	app.customMintKeeper = custommintkeeper.NewKeeper(
+	app.CustomMintKeeper = custommintkeeper.NewKeeper(
 		app.appCodec,
 		app.keys[customminttypes.StoreKey],
 		app.MintKeeper,
 	)
-	app.swapKeeper = swapkeeper.NewKeeper(
+	app.SwapKeeper = swapkeeper.NewKeeper(
 		app.appCodec,
 		app.keys[swaptypes.StoreKey],
 		app.GetSubspace(swaptypes.ModuleName),
 		app.AccountKeeper,
 		app.BankKeeper,
 	)
-	app.vpnKeeper = vpnkeeper.NewKeeper(
+	app.VpnKeeper = vpnkeeper.NewKeeper(
 		app.appCodec,
 		app.keys[vpntypes.StoreKey],
 		app.ParamsKeeper,
@@ -423,7 +420,7 @@ func NewApp(
 		skipGenesisInvariants = opt
 	}
 
-	app.manager = module.NewManager(
+	app.mm = module.NewManager(
 		auth.NewAppModule(app.appCodec, app.AccountKeeper, nil),
 		authvesting.NewAppModule(app.AccountKeeper, app.BankKeeper),
 		bank.NewAppModule(app.appCodec, app.BankKeeper, app.AccountKeeper),
@@ -467,7 +464,7 @@ func NewApp(
 	app.mm.RegisterRoutes(app.Router(), app.QueryRouter(), encodingConfig.Amino)
 	app.mm.RegisterServices(app.configurator)
 
-	app.simulationManager = module.NewSimulationManager(
+	app.sm = module.NewSimulationManager(
 		auth.NewAppModule(app.appCodec, app.AccountKeeper, authsimulation.RandomGenesisAccounts),
 		bank.NewAppModule(app.appCodec, app.BankKeeper, app.AccountKeeper),
 		capability.NewAppModule(app.appCodec, *app.CapabilityKeeper),
@@ -481,8 +478,8 @@ func NewApp(
 		staking.NewAppModule(app.appCodec, app.StakingKeeper, app.AccountKeeper, app.BankKeeper),
 		transferModule,
 		custommint.NewAppModule(appCodec, app.CustomMintKeeper),
-		swap.NewAppModule(app.appCodec, app.swapKeeper),
-		vpn.NewAppModule(app.appCodec, app.AccountKeeper, app.BankKeeper, app.vpnKeeper),
+		swap.NewAppModule(app.appCodec, app.SwapKeeper),
+		vpn.NewAppModule(app.appCodec, app.AccountKeeper, app.BankKeeper, app.VpnKeeper),
 	)
 	app.sm.RegisterStoreDecoders()
 
@@ -512,26 +509,41 @@ func NewApp(
 	app.SetAnteHandler(anteHandler)
 	app.SetEndBlocker(app.EndBlocker)
 
-	app.UpgradeKeeper.SetUpgradeHandler(
-		upgrade1.Name,
-		upgrade1.Handler(app.AccountKeeper),
-	)
-	app.UpgradeKeeper.SetUpgradeHandler(
-		upgrade2.Name,
-		upgrade2.Handler(app.SetStoreLoader, app.AccountKeeper, app.UpgradeKeeper, app.customMintKeeper),
-	)
+	/*
+		app.UpgradeKeeper.SetUpgradeHandler(
+			upgrade1.Name,
+			upgrade1.Handler(app.AccountKeeper),
+		)
+		app.UpgradeKeeper.SetUpgradeHandler(
+			upgrade2.Name,
+			upgrade2.Handler(app.SetStoreLoader, app.AccountKeeper, app.UpgradeKeeper, app.customMintKeeper),
+		)
+	*/
+
+	/*
+		upgradeInfo, err := app.UpgradeKeeper.ReadUpgradeInfoFromDisk()
+		if err != nil {
+			panic(fmt.Sprintf("failed to read upgrade info from disk %s", err))
+		}
+
+		if upgradeInfo.Name == upgradeName && !app.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height) {
+			storeUpgrades := store.StoreUpgrades{
+				Added: []string{authz.ModuleName, feegrant.ModuleName, routertypes.ModuleName},
+			}
+
+			// configure store loader that checks if version == upgradeHeight and applies store upgrades
+			app.SetStoreLoader(upgradetypes.UpgradeStoreLoader(upgradeInfo.Height, &storeUpgrades))
+		}
+	*/
 
 	if loadLatest {
 		if err := app.LoadLatestVersion(); err != nil {
-			tmos.Exit(err.Error())
+			tmos.Exit(fmt.Sprintf("failed to load latest version: %s", err))
 		}
-
-		ctx := app.BaseApp.NewUncachedContext(true, tmproto.Header{})
-		app.CapabilityKeeper.InitializeAndSeal(ctx)
 	}
 
 	app.ScopedIBCKeeper = scopedIBCKeeper
-	app.ScopedIBCTransferKeeper = scopedTransferKeeper
+	app.ScopedTransferKeeper = scopedTransferKeeper
 
 	return app
 }

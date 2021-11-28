@@ -11,7 +11,7 @@ import (
 const (
 	ModuleName   = "plan"
 	QuerierRoute = ModuleName
-	AddrLen = 20
+	AddrLen      = 20
 )
 
 var (
@@ -115,7 +115,7 @@ func IDFromStatusPlanForProviderKey(key []byte) uint64 {
 		panic(fmt.Errorf("invalid key length %d; expected %d", len(key), 1+AddrLen+8))
 	}
 
-	return sdk.BigEndianToUint64(key[1+sdk.AddrLen:])
+	return sdk.BigEndianToUint64(key[1+AddrLen:])
 }
 
 func AddressFromNodeForPlanKey(key []byte) hubtypes.NodeAddress {

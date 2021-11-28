@@ -3,8 +3,6 @@ package types
 import (
 	"fmt"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
-
 	hubtypes "github.com/sentinel-official/hub/types"
 )
 

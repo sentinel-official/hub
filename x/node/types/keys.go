@@ -12,7 +12,7 @@ import (
 const (
 	ModuleName   = "node"
 	QuerierRoute = ModuleName
-	AddrLen	     = 20
+	AddrLen      = 20
 )
 
 var (
@@ -125,7 +125,7 @@ func AddressFromStatusNodeForProviderKey(key []byte) hubtypes.NodeAddress {
 		panic(fmt.Errorf("invalid key length %d; expected %d", len(key), 1+2*AddrLen))
 	}
 
-	return key[1+sdk.AddrLen:]
+	return key[1+AddrLen:]
 }
 
 func AddressFromStatusNodeAtKey(key []byte) hubtypes.NodeAddress {

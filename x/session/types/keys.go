@@ -84,7 +84,7 @@ func IDFromSessionForNodeKey(key []byte) uint64 {
 		panic(fmt.Errorf("invalid key length %d; expected %d", len(key), 1+AddrLen+8))
 	}
 
-	return sdk.BigEndianToUint64(key[1+sdk.AddrLen:])
+	return sdk.BigEndianToUint64(key[1+AddrLen:])
 }
 
 func IDFromStatusSessionForAddressKey(key []byte) uint64 {
@@ -92,7 +92,7 @@ func IDFromStatusSessionForAddressKey(key []byte) uint64 {
 		panic(fmt.Errorf("invalid key length %d; expected %d", len(key), 1+AddrLen+8))
 	}
 
-	return sdk.BigEndianToUint64(key[1+sdk.AddrLen:])
+	return sdk.BigEndianToUint64(key[1+AddrLen:])
 }
 
 func IDFromActiveSessionAtKey(key []byte) uint64 {

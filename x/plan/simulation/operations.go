@@ -168,7 +168,7 @@ func SimulateMsgAddRequest(ak expected.AccountKeeper, bk expected.BankKeeper, k 
 			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgAddRequest, err.Error()), nil, err
 		}
 
-		return simulationtypes.NewOperationMsg(message, true, ""), nil, nil
+		return simulationtypes.NewOperationMsg(message, true, "", nil), nil, nil
 	}
 }
 
@@ -237,7 +237,7 @@ func SimulateMsgSetStatusRequest(ak expected.AccountKeeper, bk expected.BankKeep
 			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgSetStatusRequest, err.Error()), nil, err
 		}
 
-		return simulationtypes.NewOperationMsg(message, true, ""), nil, nil
+		return simulationtypes.NewOperationMsg(message, true, "", nil), nil, nil
 	}
 }
 
@@ -316,7 +316,7 @@ func SimulateMsgAddNodeRequest(ak expected.AccountKeeper, bk expected.BankKeeper
 			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgAddNodeRequest, err.Error()), nil, err
 		}
 
-		return simulationtypes.NewOperationMsg(message, true, ""), nil, nil
+		return simulationtypes.NewOperationMsg(message, true, "", nil), nil, nil
 	}
 }
 
@@ -387,6 +387,6 @@ func SimulateMsgRemoveNodeRequest(ak expected.AccountKeeper, bk expected.BankKee
 			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgRemoveNodeRequest, err.Error()), nil, err
 		}
 
-		return simulationtypes.NewOperationMsg(message, true, ""), nil, nil
+		return simulationtypes.NewOperationMsg(message, true, "", nil), nil, nil
 	}
 }
