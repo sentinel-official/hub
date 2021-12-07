@@ -9,8 +9,9 @@ import (
 )
 
 const (
-	ModuleName   = "plan"
-	QuerierRoute = ModuleName
+	ModuleName       = "plan"
+	QuerierRoute     = ModuleName
+	AddrLen      int = 20
 )
 
 var (
@@ -50,8 +51,8 @@ func InactivePlanKey(id uint64) []byte {
 
 func GetActivePlanForProviderKeyPrefix(address hubtypes.ProvAddress) []byte {
 	v := append(ActivePlanForProviderKeyPrefix, address.Bytes()...)
-	if len(v) != 1+sdk.AddrLen {
-		panic(fmt.Errorf("invalid key length %d; expected %d", len(v), 1+sdk.AddrLen))
+	if len(v) != 1+AddrLen {
+		panic(fmt.Errorf("invalid key length %d; expected %d", len(v), 1+AddrLen))
 	}
 
 	return v
@@ -63,8 +64,8 @@ func ActivePlanForProviderKey(address hubtypes.ProvAddress, id uint64) []byte {
 
 func GetInactivePlanForProviderKeyPrefix(address hubtypes.ProvAddress) []byte {
 	v := append(InactivePlanForProviderKeyPrefix, address.Bytes()...)
-	if len(v) != 1+sdk.AddrLen {
-		panic(fmt.Errorf("invalid key length %d; expected %d", len(v), 1+sdk.AddrLen))
+	if len(v) != 1+AddrLen {
+		panic(fmt.Errorf("invalid key length %d; expected %d", len(v), 1+AddrLen))
 	}
 
 	return v
@@ -80,8 +81,8 @@ func GetNodeForPlanKeyPrefix(id uint64) []byte {
 
 func NodeForPlanKey(id uint64, address hubtypes.NodeAddress) []byte {
 	v := append(GetNodeForPlanKeyPrefix(id), address.Bytes()...)
-	if len(v) != 1+8+sdk.AddrLen {
-		panic(fmt.Errorf("invalid key length %d; expected %d", len(v), 1+8+sdk.AddrLen))
+	if len(v) != 1+8+AddrLen {
+		panic(fmt.Errorf("invalid key length %d; expected %d", len(v), 1+8+AddrLen))
 	}
 
 	return v
@@ -89,13 +90,13 @@ func NodeForPlanKey(id uint64, address hubtypes.NodeAddress) []byte {
 
 func CountForNodeByProviderKey(p hubtypes.ProvAddress, n hubtypes.NodeAddress) []byte {
 	v := append(CountForNodeByProviderKeyPrefix, p.Bytes()...)
-	if len(v) != 1+sdk.AddrLen {
-		panic(fmt.Errorf("invalid key length %d; expected %d", len(v), 1+sdk.AddrLen))
+	if len(v) != 1+AddrLen {
+		panic(fmt.Errorf("invalid key length %d; expected %d", len(v), 1+AddrLen))
 	}
 
 	v = append(v, n.Bytes()...)
-	if len(v) != 1+2*sdk.AddrLen {
-		panic(fmt.Errorf("invalid key length %d; expected %d", len(v), 1+2*sdk.AddrLen))
+	if len(v) != 1+2*AddrLen {
+		panic(fmt.Errorf("invalid key length %d; expected %d", len(v), 1+2*AddrLen))
 	}
 
 	return v
@@ -110,16 +111,16 @@ func IDFromStatusPlanKey(key []byte) uint64 {
 }
 
 func IDFromStatusPlanForProviderKey(key []byte) uint64 {
-	if len(key) != 1+sdk.AddrLen+8 {
-		panic(fmt.Errorf("invalid key length %d; expected %d", len(key), 1+sdk.AddrLen+8))
+	if len(key) != 1+AddrLen+8 {
+		panic(fmt.Errorf("invalid key length %d; expected %d", len(key), 1+AddrLen+8))
 	}
 
-	return sdk.BigEndianToUint64(key[1+sdk.AddrLen:])
+	return sdk.BigEndianToUint64(key[1+AddrLen:])
 }
 
 func AddressFromNodeForPlanKey(key []byte) hubtypes.NodeAddress {
-	if len(key) != 1+8+sdk.AddrLen {
-		panic(fmt.Errorf("invalid key length %d; expected %d", len(key), 1+8+sdk.AddrLen))
+	if len(key) != 1+8+AddrLen {
+		panic(fmt.Errorf("invalid key length %d; expected %d", len(key), 1+8+AddrLen))
 	}
 
 	return key[1+8:]

@@ -8,8 +8,9 @@ import (
 )
 
 const (
-	ModuleName   = "session"
-	QuerierRoute = ModuleName
+	ModuleName       = "session"
+	QuerierRoute     = ModuleName
+	AddrLen      int = 20
 )
 
 var (
@@ -38,8 +39,8 @@ func SessionKey(id uint64) []byte {
 
 func GetInactiveSessionForAddressKeyPrefix(address sdk.AccAddress) []byte {
 	v := append(InactiveSessionForAddressKeyPrefix, address.Bytes()...)
-	if len(v) != 1+sdk.AddrLen {
-		panic(fmt.Errorf("invalid key length %d; expected %d", len(v), 1+sdk.AddrLen))
+	if len(v) != 1+AddrLen {
+		panic(fmt.Errorf("invalid key length %d; expected %d", len(v), 1+AddrLen))
 	}
 
 	return v
@@ -51,8 +52,8 @@ func InactiveSessionForAddressKey(address sdk.AccAddress, id uint64) []byte {
 
 func GetActiveSessionForAddressKeyPrefix(address sdk.AccAddress) []byte {
 	v := append(ActiveSessionForAddressKeyPrefix, address.Bytes()...)
-	if len(v) != 1+sdk.AddrLen {
-		panic(fmt.Errorf("invalid key length %d; expected %d", len(v), 1+sdk.AddrLen))
+	if len(v) != 1+AddrLen {
+		panic(fmt.Errorf("invalid key length %d; expected %d", len(v), 1+AddrLen))
 	}
 
 	return v
@@ -79,19 +80,19 @@ func IDFromSessionForSubscriptionKey(key []byte) uint64 {
 }
 
 func IDFromSessionForNodeKey(key []byte) uint64 {
-	if len(key) != 1+sdk.AddrLen+8 {
-		panic(fmt.Errorf("invalid key length %d; expected %d", len(key), 1+sdk.AddrLen+8))
+	if len(key) != 1+AddrLen+8 {
+		panic(fmt.Errorf("invalid key length %d; expected %d", len(key), 1+AddrLen+8))
 	}
 
-	return sdk.BigEndianToUint64(key[1+sdk.AddrLen:])
+	return sdk.BigEndianToUint64(key[1+AddrLen:])
 }
 
 func IDFromStatusSessionForAddressKey(key []byte) uint64 {
-	if len(key) != 1+sdk.AddrLen+8 {
-		panic(fmt.Errorf("invalid key length %d; expected %d", len(key), 1+sdk.AddrLen+8))
+	if len(key) != 1+AddrLen+8 {
+		panic(fmt.Errorf("invalid key length %d; expected %d", len(key), 1+AddrLen+8))
 	}
 
-	return sdk.BigEndianToUint64(key[1+sdk.AddrLen:])
+	return sdk.BigEndianToUint64(key[1+AddrLen:])
 }
 
 func IDFromActiveSessionAtKey(key []byte) uint64 {
