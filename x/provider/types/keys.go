@@ -7,9 +7,9 @@ import (
 )
 
 const (
-	ModuleName   = "provider"
-	QuerierRoute = ModuleName
-	AddrLen      = 20
+	ModuleName       = "provider"
+	QuerierRoute     = ModuleName
+	AddrLen      int = 20
 )
 
 var (

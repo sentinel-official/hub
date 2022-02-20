@@ -7,9 +7,9 @@ import (
 )
 
 const (
-	ModuleName   = "deposit"
-	QuerierRoute = ModuleName
-	AddrLen = 20
+	ModuleName       = "deposit"
+	QuerierRoute     = ModuleName
+	AddrLen      int = 20
 )
 
 var (

@@ -10,9 +10,9 @@ import (
 )
 
 const (
-	ModuleName   = "node"
-	QuerierRoute = ModuleName
-	AddrLen      = 20
+	ModuleName       = "node"
+	QuerierRoute     = ModuleName
+	AddrLen      int = 20
 )
 
 var (

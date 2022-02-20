@@ -8,9 +8,9 @@ import (
 )
 
 const (
-	ModuleName   = "subscription"
-	QuerierRoute = ModuleName
-	AddrLen      = 20
+	ModuleName       = "subscription"
+	QuerierRoute     = ModuleName
+	AddrLen      int = 20
 )
 
 var (

@@ -8,9 +8,9 @@ import (
 )
 
 const (
-	ModuleName   = "session"
-	QuerierRoute = ModuleName
-	AddrLen      = 20
+	ModuleName       = "session"
+	QuerierRoute     = ModuleName
+	AddrLen      int = 20
 )
 
 var (

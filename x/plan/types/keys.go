@@ -9,9 +9,9 @@ import (
 )
 
 const (
-	ModuleName   = "plan"
-	QuerierRoute = ModuleName
-	AddrLen      = 20
+	ModuleName       = "plan"
+	QuerierRoute     = ModuleName
+	AddrLen      int = 20
 )
 
 var (
