@@ -54,7 +54,7 @@ func (q *queryServer) QuerySessions(c context.Context, req *types.QuerySessionsR
 
 	pagination, err := query.FilteredPaginate(store, req.Pagination, func(_, value []byte, accumulate bool) (bool, error) {
 		var item types.Session
-		if err := q.cdc.UnmarshalBinaryBare(value, &item); err != nil {
+		if err := q.cdc.Unmarshal(value, &item); err != nil {
 			return false, err
 		}
 
@@ -122,7 +122,7 @@ func (q *queryServer) QuerySessionsForAddress(c context.Context, req *types.Quer
 		store := prefix.NewStore(q.Store(ctx), types.SessionKeyPrefix)
 		pagination, err = query.FilteredPaginate(store, req.Pagination, func(_, value []byte, accumulate bool) (bool, error) {
 			var item types.Session
-			if err := q.cdc.UnmarshalBinaryBare(value, &item); err != nil {
+			if err := q.cdc.Unmarshal(value, &item); err != nil {
 				return false, err
 			}
 			if !strings.EqualFold(item.Address, req.Address) {

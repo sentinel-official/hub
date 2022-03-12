@@ -34,7 +34,7 @@ func TestActiveSessionForAddressKey(t *testing.T) {
 	}
 }
 
-func TestIDFromActiveSessionAtKey(t *testing.T) {
+func TestIDFromStatusSessionAtKey(t *testing.T) {
 	var (
 		key []byte
 	)
@@ -47,14 +47,14 @@ func TestIDFromActiveSessionAtKey(t *testing.T) {
 			require.Equal(
 				t,
 				sdk.BigEndianToUint64(key[30:]),
-				IDFromActiveSessionAtKey(key),
+				IDFromStatusSessionAtKey(key),
 			)
 
 			continue
 		}
 
 		require.Panics(t, func() {
-			IDFromActiveSessionAtKey(key)
+			IDFromStatusSessionAtKey(key)
 		})
 	}
 }
