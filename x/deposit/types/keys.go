@@ -1,9 +1,8 @@
 package types
 
 import (
-	"fmt"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/address"
 )
 
 const (
@@ -20,11 +19,6 @@ var (
 	DepositKeyPrefix = []byte{0x10}
 )
 
-func DepositKey(address sdk.AccAddress) []byte {
-	v := append(DepositKeyPrefix, address.Bytes()...)
-	if len(v) != 1+sdk.AddrLen {
-		panic(fmt.Errorf("invalid key length %d; expected %d", len(v), 1+sdk.AddrLen))
-	}
-
-	return v
+func DepositKey(addr sdk.AccAddress) []byte {
+	return append(DepositKeyPrefix, address.MustLengthPrefix(addr.Bytes())...)
 }
