@@ -29,7 +29,7 @@ var (
 
 func WeightedOperations(
 	params simulationtypes.AppParams,
-	cdc codec.JSONMarshaler,
+	cdc codec.JSONCodec,
 	ak expected.AccountKeeper,
 	bk expected.BankKeeper,
 	k keeper.Keeper,
@@ -191,7 +191,7 @@ func SimulateMsgSubscribeToNodeRequest(ak expected.AccountKeeper, bk expected.Ba
 			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgSubscribeToNodeRequest, err.Error()), nil, err
 		}
 
-		return simulationtypes.NewOperationMsg(message, true, ""), nil, nil
+		return simulationtypes.NewOperationMsg(message, true, "", nil), nil, nil
 	}
 }
 
@@ -255,7 +255,7 @@ func SimulateMsgSubscribeToPlanRequest(ak expected.AccountKeeper, bk expected.Ba
 			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgSubscribeToPlanRequest, err.Error()), nil, err
 		}
 
-		return simulationtypes.NewOperationMsg(message, true, ""), nil, nil
+		return simulationtypes.NewOperationMsg(message, true, "", nil), nil, nil
 	}
 }
 
@@ -318,7 +318,7 @@ func SimulateMsgCancelRequest(ak expected.AccountKeeper, bk expected.BankKeeper,
 			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgCancelRequest, err.Error()), nil, err
 		}
 
-		return simulationtypes.NewOperationMsg(message, true, ""), nil, nil
+		return simulationtypes.NewOperationMsg(message, true, "", nil), nil, nil
 	}
 }
 
@@ -396,7 +396,7 @@ func SimulateMsgAddQuotaRequest(ak expected.AccountKeeper, bk expected.BankKeepe
 			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgAddQuotaRequest, err.Error()), nil, err
 		}
 
-		return simulationtypes.NewOperationMsg(message, true, ""), nil, nil
+		return simulationtypes.NewOperationMsg(message, true, "", nil), nil, nil
 	}
 }
 
@@ -474,6 +474,6 @@ func SimulateMsgUpdateQuotaRequest(ak expected.AccountKeeper, bk expected.BankKe
 			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgUpdateQuotaRequest, err.Error()), nil, err
 		}
 
-		return simulationtypes.NewOperationMsg(message, true, ""), nil, nil
+		return simulationtypes.NewOperationMsg(message, true, "", nil), nil, nil
 	}
 }
