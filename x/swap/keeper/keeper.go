@@ -11,14 +11,14 @@ import (
 )
 
 type Keeper struct {
-	cdc     codec.BinaryMarshaler
+	cdc     codec.BinaryCodec
 	key     sdk.StoreKey
 	params  paramstypes.Subspace
 	account expected.AccountKeeper
 	bank    expected.BankKeeper
 }
 
-func NewKeeper(cdc codec.BinaryMarshaler, key sdk.StoreKey, params paramstypes.Subspace, account expected.AccountKeeper, bank expected.BankKeeper) Keeper {
+func NewKeeper(cdc codec.BinaryCodec, key sdk.StoreKey, params paramstypes.Subspace, account expected.AccountKeeper, bank expected.BankKeeper) Keeper {
 	return Keeper{
 		cdc:     cdc,
 		key:     key,

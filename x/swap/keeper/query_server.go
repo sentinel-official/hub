@@ -55,7 +55,7 @@ func (q *queryServer) QuerySwaps(c context.Context, req *types.QuerySwapsRequest
 
 	pagination, err := query.FilteredPaginate(store, req.Pagination, func(_, value []byte, accumulate bool) (bool, error) {
 		var item types.Swap
-		if err := q.cdc.UnmarshalBinaryBare(value, &item); err != nil {
+		if err := q.cdc.Unmarshal(value, &item); err != nil {
 			return false, err
 		}
 
