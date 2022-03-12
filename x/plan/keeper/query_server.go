@@ -85,7 +85,7 @@ func (q *queryServer) QueryPlans(c context.Context, req *types.QueryPlansRequest
 		store := prefix.NewStore(q.Store(ctx), types.PlanKeyPrefix)
 		pagination, err = query.FilteredPaginate(store, req.Pagination, func(_, value []byte, accumulate bool) (bool, error) {
 			var item types.Plan
-			if err := q.cdc.UnmarshalBinaryBare(value, &item); err != nil {
+			if err := q.cdc.Unmarshal(value, &item); err != nil {
 				return false, err
 			}
 
@@ -154,7 +154,7 @@ func (q *queryServer) QueryPlansForProvider(c context.Context, req *types.QueryP
 		store := prefix.NewStore(q.Store(ctx), types.PlanKeyPrefix)
 		pagination, err = query.FilteredPaginate(store, req.Pagination, func(_, value []byte, accumulate bool) (bool, error) {
 			var item types.Plan
-			if err := q.cdc.UnmarshalBinaryBare(value, &item); err != nil {
+			if err := q.cdc.Unmarshal(value, &item); err != nil {
 				return false, err
 			}
 			if !strings.EqualFold(item.Provider, req.Address) {
