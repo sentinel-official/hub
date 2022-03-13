@@ -28,6 +28,7 @@ import (
 	authtx "github.com/cosmos/cosmos-sdk/x/auth/tx"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	authvesting "github.com/cosmos/cosmos-sdk/x/auth/vesting"
+	authvestingtypes "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
 	authzkeeper "github.com/cosmos/cosmos-sdk/x/authz/keeper"
 	"github.com/cosmos/cosmos-sdk/x/bank"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
@@ -445,16 +446,21 @@ func NewApp(
 
 	// NOTE: order is very important here
 	app.mm.SetOrderBeginBlockers(
-		upgradetypes.ModuleName, customminttypes.ModuleName, minttypes.ModuleName, distributiontypes.ModuleName,
-		slashingtypes.ModuleName, evidencetypes.ModuleName, stakingtypes.ModuleName,
-		ibchost.ModuleName,
+		authvestingtypes.ModuleName, upgradetypes.ModuleName, paramstypes.ModuleName, capabilitytypes.ModuleName, authtypes.ModuleName, banktypes.ModuleName,
+		distributiontypes.ModuleName, stakingtypes.ModuleName, slashingtypes.ModuleName,
+		govtypes.ModuleName, minttypes.ModuleName, crisistypes.ModuleName,
+		ibchost.ModuleName, genutiltypes.ModuleName, evidencetypes.ModuleName,
+		ibctransfertypes.ModuleName, customminttypes.ModuleName, swaptypes.ModuleName, vpntypes.ModuleName,
 	)
 	app.mm.SetOrderEndBlockers(
-		crisistypes.ModuleName, govtypes.ModuleName, stakingtypes.ModuleName,
-		vpntypes.ModuleName,
+		authvestingtypes.ModuleName, upgradetypes.ModuleName, paramstypes.ModuleName, capabilitytypes.ModuleName, authtypes.ModuleName, banktypes.ModuleName,
+		distributiontypes.ModuleName, stakingtypes.ModuleName, slashingtypes.ModuleName,
+		govtypes.ModuleName, minttypes.ModuleName, crisistypes.ModuleName,
+		ibchost.ModuleName, genutiltypes.ModuleName, evidencetypes.ModuleName,
+		ibctransfertypes.ModuleName, customminttypes.ModuleName, swaptypes.ModuleName, vpntypes.ModuleName,
 	)
 	app.mm.SetOrderInitGenesis(
-		capabilitytypes.ModuleName, authtypes.ModuleName, banktypes.ModuleName,
+		authvestingtypes.ModuleName, upgradetypes.ModuleName, paramstypes.ModuleName, capabilitytypes.ModuleName, authtypes.ModuleName, banktypes.ModuleName,
 		distributiontypes.ModuleName, stakingtypes.ModuleName, slashingtypes.ModuleName,
 		govtypes.ModuleName, minttypes.ModuleName, crisistypes.ModuleName,
 		ibchost.ModuleName, genutiltypes.ModuleName, evidencetypes.ModuleName,
@@ -463,6 +469,8 @@ func NewApp(
 
 	app.mm.RegisterInvariants(&app.CrisisKeeper)
 	app.mm.RegisterRoutes(app.Router(), app.QueryRouter(), encodingConfig.Amino)
+
+	app.configurator = module.NewConfigurator(app.appCodec, app.MsgServiceRouter(), app.GRPCQueryRouter())
 	app.mm.RegisterServices(app.configurator)
 
 	app.sm = module.NewSimulationManager(
@@ -564,6 +572,9 @@ func (a *App) InitChainer(ctx sdk.Context, req abci.RequestInitChain) abci.Respo
 	if err := tmjson.Unmarshal(req.AppStateBytes, &state); err != nil {
 		panic(err)
 	}
+
+	fmt.Printf("state = %v \n", state)
+
 	return a.mm.InitGenesis(ctx, a.appCodec, state)
 }
 

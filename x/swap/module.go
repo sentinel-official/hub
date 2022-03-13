@@ -3,6 +3,7 @@ package swap
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"math/rand"
 
 	"github.com/cosmos/cosmos-sdk/client"
@@ -88,6 +89,9 @@ func NewAppModule(appCodec codec.Codec, k keeper.Keeper) AppModule {
 func (a AppModule) InitGenesis(ctx sdk.Context, appCodec codec.JSONCodec, message json.RawMessage) []abcitypes.ValidatorUpdate {
 	var state types.GenesisState
 	appCodec.MustUnmarshalJSON(message, &state)
+
+	fmt.Printf("genesis state = %v \n", state)
+
 	InitGenesis(ctx, a.k, &state)
 
 	return nil
