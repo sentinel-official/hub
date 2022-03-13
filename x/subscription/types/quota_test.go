@@ -80,13 +80,6 @@ func TestQuota_Validate(t *testing.T) {
 			true,
 		},
 		{
-			"10 bytes address",
-			fields{
-				Address: "sent1qypqxpq9qcrsszgslawd5s",
-			},
-			true,
-		},
-		{
 			"20 bytes address",
 			fields{
 				Address:   "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
@@ -94,13 +87,6 @@ func TestQuota_Validate(t *testing.T) {
 				Consumed:  sdk.NewInt(0),
 			},
 			false,
-		},
-		{
-			"30 bytes address",
-			fields{
-				Address: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfqyy3zxfp9ycnjs2fszvfck8",
-			},
-			true,
 		},
 		{
 			"negative allocated",

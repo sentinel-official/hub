@@ -240,7 +240,7 @@ func TestMsgUpdateRequest_ValidateBasic(t *testing.T) {
 			fields{
 				From: "sentprov1qypqxpq9qcrsszgsutj8xr",
 			},
-			true,
+			false,
 		},
 		{
 			"20 bytes address",
@@ -254,7 +254,7 @@ func TestMsgUpdateRequest_ValidateBasic(t *testing.T) {
 			fields{
 				From: "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfqyy3zxfp9ycnjs2fsh33zgx",
 			},
-			true,
+			false,
 		},
 		{
 			"empty name",

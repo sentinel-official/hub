@@ -42,28 +42,12 @@ func TestNodeAddressFromBech32(t *testing.T) {
 			true,
 		},
 		{
-			"10 bytes",
-			args{
-				s: "sentnode1qypqxpq9qcrsszgse4wwrm",
-			},
-			nil,
-			true,
-		},
-		{
 			"20 bytes",
 			args{
 				s: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
 			},
 			NodeAddress{0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x20},
 			false,
-		},
-		{
-			"30 bytes",
-			args{
-				s: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqyy3zxfp9ycnjs2fsxqglcv",
-			},
-			nil,
-			true,
 		},
 	}
 	for _, tt := range tests {
@@ -526,7 +510,7 @@ func TestNodeAddress_UnmarshalJSON(t *testing.T) {
 			args{
 				data: []byte(`"sentnode1qypqxpq9qcrsszgse4wwrm"`),
 			},
-			true,
+			false,
 		},
 		{
 			"20 bytes",
@@ -542,7 +526,7 @@ func TestNodeAddress_UnmarshalJSON(t *testing.T) {
 			args{
 				data: []byte(`"sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqyy3zxfp9ycnjs2fsxqglcv"`),
 			},
-			true,
+			false,
 		},
 	}
 	for _, tt := range tests {
@@ -586,7 +570,7 @@ func TestNodeAddress_UnmarshalYAML(t *testing.T) {
 			args{
 				data: []byte("sentnode1qypqxpq9qcrsszgse4wwrm"),
 			},
-			true,
+			false,
 		},
 		{
 			"20 bytes",
@@ -602,7 +586,7 @@ func TestNodeAddress_UnmarshalYAML(t *testing.T) {
 			args{
 				data: []byte("sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqyy3zxfp9ycnjs2fsxqglcv"),
 			},
-			true,
+			false,
 		},
 	}
 	for _, tt := range tests {
@@ -647,28 +631,12 @@ func TestProvAddressFromBech32(t *testing.T) {
 			true,
 		},
 		{
-			"10 bytes",
-			args{
-				s: "sentprov1qypqxpq9qcrsszgsutj8xr",
-			},
-			nil,
-			true,
-		},
-		{
 			"20 bytes",
 			args{
 				s: "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
 			},
 			ProvAddress{0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x20},
 			false,
-		},
-		{
-			"30 bytes",
-			args{
-				s: "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfqyy3zxfp9ycnjs2fsh33zgx",
-			},
-			nil,
-			true,
 		},
 	}
 	for _, tt := range tests {
@@ -1132,7 +1100,7 @@ func TestProvAddress_UnmarshalJSON(t *testing.T) {
 			args{
 				data: []byte(`"sentprov1qypqxpq9qcrsszgsutj8xr"`),
 			},
-			true,
+			false,
 		},
 		{
 			"20 bytes",
@@ -1148,7 +1116,7 @@ func TestProvAddress_UnmarshalJSON(t *testing.T) {
 			args{
 				data: []byte(`"sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfqyy3zxfp9ycnjs2fsh33zgx"`),
 			},
-			true,
+			false,
 		},
 	}
 	for _, tt := range tests {
@@ -1192,7 +1160,7 @@ func TestProvAddress_UnmarshalYAML(t *testing.T) {
 			args{
 				data: []byte("sentprov1qypqxpq9qcrsszgsutj8xr"),
 			},
-			true,
+			false,
 		},
 		{
 			"20 bytes",
@@ -1208,7 +1176,7 @@ func TestProvAddress_UnmarshalYAML(t *testing.T) {
 			args{
 				data: []byte("sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfqyy3zxfp9ycnjs2fsh33zgx"),
 			},
-			true,
+			false,
 		},
 	}
 	for _, tt := range tests {
