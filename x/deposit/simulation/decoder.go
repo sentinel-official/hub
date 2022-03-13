@@ -10,12 +10,12 @@ import (
 	"github.com/sentinel-official/hub/x/deposit/types"
 )
 
-func NewStoreDecoder(cdc codec.Marshaler) func(kvA, kvB kv.Pair) string {
+func NewStoreDecoder(cdc codec.Codec) func(kvA, kvB kv.Pair) string {
 	return func(kvA, kvB kv.Pair) string {
 		if bytes.Equal(kvA.Key[:1], types.DepositKeyPrefix) {
 			var depositA, depositB types.Deposit
-			cdc.MustUnmarshalBinaryBare(kvA.Value, &depositA)
-			cdc.MustUnmarshalBinaryBare(kvB.Value, &depositB)
+			cdc.MustUnmarshal(kvA.Value, &depositA)
+			cdc.MustUnmarshal(kvB.Value, &depositB)
 
 			return fmt.Sprintf("%v\n%v", depositA, depositB)
 		}

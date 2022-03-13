@@ -58,7 +58,7 @@ func (q *queryServer) QueryProviders(c context.Context, req *types.QueryProvider
 
 	pagination, err := query.FilteredPaginate(store, req.Pagination, func(_, value []byte, accumulate bool) (bool, error) {
 		var item types.Provider
-		if err := q.cdc.UnmarshalBinaryBare(value, &item); err != nil {
+		if err := q.cdc.Unmarshal(value, &item); err != nil {
 			return false, err
 		}
 

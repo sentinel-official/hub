@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/address"
 
 	hubtypes "github.com/sentinel-official/hub/types"
 )
@@ -48,79 +49,64 @@ func InactivePlanKey(id uint64) []byte {
 	return append(InactivePlanKeyPrefix, sdk.Uint64ToBigEndian(id)...)
 }
 
-func GetActivePlanForProviderKeyPrefix(address hubtypes.ProvAddress) []byte {
-	v := append(ActivePlanForProviderKeyPrefix, address.Bytes()...)
-	if len(v) != 1+sdk.AddrLen {
-		panic(fmt.Errorf("invalid key length %d; expected %d", len(v), 1+sdk.AddrLen))
-	}
-
-	return v
+func GetActivePlanForProviderKeyPrefix(addr hubtypes.ProvAddress) []byte {
+	return append(ActivePlanForProviderKeyPrefix, address.MustLengthPrefix(addr.Bytes())...)
 }
 
-func ActivePlanForProviderKey(address hubtypes.ProvAddress, id uint64) []byte {
-	return append(GetActivePlanForProviderKeyPrefix(address), sdk.Uint64ToBigEndian(id)...)
+func ActivePlanForProviderKey(addr hubtypes.ProvAddress, id uint64) []byte {
+	return append(GetActivePlanForProviderKeyPrefix(addr), sdk.Uint64ToBigEndian(id)...)
 }
 
-func GetInactivePlanForProviderKeyPrefix(address hubtypes.ProvAddress) []byte {
-	v := append(InactivePlanForProviderKeyPrefix, address.Bytes()...)
-	if len(v) != 1+sdk.AddrLen {
-		panic(fmt.Errorf("invalid key length %d; expected %d", len(v), 1+sdk.AddrLen))
-	}
-
-	return v
+func GetInactivePlanForProviderKeyPrefix(addr hubtypes.ProvAddress) []byte {
+	return append(InactivePlanForProviderKeyPrefix, address.MustLengthPrefix(addr.Bytes())...)
 }
 
-func InactivePlanForProviderKey(address hubtypes.ProvAddress, id uint64) []byte {
-	return append(GetInactivePlanForProviderKeyPrefix(address), sdk.Uint64ToBigEndian(id)...)
+func InactivePlanForProviderKey(addr hubtypes.ProvAddress, id uint64) []byte {
+	return append(GetInactivePlanForProviderKeyPrefix(addr), sdk.Uint64ToBigEndian(id)...)
 }
 
 func GetNodeForPlanKeyPrefix(id uint64) []byte {
 	return append(NodeForPlanKeyPrefix, sdk.Uint64ToBigEndian(id)...)
 }
 
-func NodeForPlanKey(id uint64, address hubtypes.NodeAddress) []byte {
-	v := append(GetNodeForPlanKeyPrefix(id), address.Bytes()...)
-	if len(v) != 1+8+sdk.AddrLen {
-		panic(fmt.Errorf("invalid key length %d; expected %d", len(v), 1+8+sdk.AddrLen))
-	}
-
-	return v
+func NodeForPlanKey(id uint64, addr hubtypes.NodeAddress) []byte {
+	return append(GetNodeForPlanKeyPrefix(id), address.MustLengthPrefix(addr.Bytes())...)
 }
 
-func CountForNodeByProviderKey(p hubtypes.ProvAddress, n hubtypes.NodeAddress) []byte {
-	v := append(CountForNodeByProviderKeyPrefix, p.Bytes()...)
-	if len(v) != 1+sdk.AddrLen {
-		panic(fmt.Errorf("invalid key length %d; expected %d", len(v), 1+sdk.AddrLen))
-	}
+func CountForNodeByProviderKey(provider hubtypes.ProvAddress, node hubtypes.NodeAddress) []byte {
+	v := append(CountForNodeByProviderKeyPrefix, address.MustLengthPrefix(provider.Bytes())...)
 
-	v = append(v, n.Bytes()...)
-	if len(v) != 1+2*sdk.AddrLen {
-		panic(fmt.Errorf("invalid key length %d; expected %d", len(v), 1+2*sdk.AddrLen))
-	}
-
-	return v
+	return append(v, address.MustLengthPrefix(node.Bytes())...)
 }
 
 func IDFromStatusPlanKey(key []byte) uint64 {
-	if len(key) != 1+8 {
-		panic(fmt.Errorf("invalid key length %d; expected %d", len(key), 1+8))
+	// prefix (1 byte) | plan (8 bytes)
+
+	if len(key) != 9 {
+		panic(fmt.Errorf("invalid key length %d; expected %d", len(key), 9))
 	}
 
 	return sdk.BigEndianToUint64(key[1:])
 }
 
 func IDFromStatusPlanForProviderKey(key []byte) uint64 {
-	if len(key) != 1+sdk.AddrLen+8 {
-		panic(fmt.Errorf("invalid key length %d; expected %d", len(key), 1+sdk.AddrLen+8))
+	// prefix (1 byte) | addrLen (1 byte) | addr | plan (8 bytes)
+
+	addrLen := int(key[1])
+	if len(key) != 10+addrLen {
+		panic(fmt.Errorf("invalid key length %d; expected %d", len(key), 10+addrLen))
 	}
 
-	return sdk.BigEndianToUint64(key[1+sdk.AddrLen:])
+	return sdk.BigEndianToUint64(key[2+addrLen:])
 }
 
 func AddressFromNodeForPlanKey(key []byte) hubtypes.NodeAddress {
-	if len(key) != 1+8+sdk.AddrLen {
-		panic(fmt.Errorf("invalid key length %d; expected %d", len(key), 1+8+sdk.AddrLen))
+	// prefix (1 byte) | plan (8 bytes) | addrLen (1 byte) | addr
+
+	addrLen := int(key[9])
+	if len(key) != 10+addrLen {
+		panic(fmt.Errorf("invalid key length %d; expected %d", len(key), 10+addrLen))
 	}
 
-	return key[1+8:]
+	return key[10:]
 }

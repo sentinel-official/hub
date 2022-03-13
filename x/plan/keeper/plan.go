@@ -10,7 +10,7 @@ import (
 
 func (k *Keeper) SetCount(ctx sdk.Context, count uint64) {
 	key := types.CountKey
-	value := k.cdc.MustMarshalBinaryBare(&protobuf.UInt64Value{Value: count})
+	value := k.cdc.MustMarshal(&protobuf.UInt64Value{Value: count})
 
 	store := k.Store(ctx)
 	store.Set(key, value)
@@ -26,14 +26,14 @@ func (k *Keeper) GetCount(ctx sdk.Context) uint64 {
 	}
 
 	var count protobuf.UInt64Value
-	k.cdc.MustUnmarshalBinaryBare(value, &count)
+	k.cdc.MustUnmarshal(value, &count)
 
 	return count.GetValue()
 }
 
 func (k *Keeper) SetPlan(ctx sdk.Context, plan types.Plan) {
 	key := types.PlanKey(plan.Id)
-	value := k.cdc.MustMarshalBinaryBare(&plan)
+	value := k.cdc.MustMarshal(&plan)
 
 	store := k.Store(ctx)
 	store.Set(key, value)
@@ -48,7 +48,7 @@ func (k *Keeper) GetPlan(ctx sdk.Context, id uint64) (plan types.Plan, found boo
 		return plan, false
 	}
 
-	k.cdc.MustUnmarshalBinaryBare(value, &plan)
+	k.cdc.MustUnmarshal(value, &plan)
 	return plan, true
 }
 
@@ -65,7 +65,7 @@ func (k *Keeper) GetPlans(ctx sdk.Context, skip, limit int64) (items types.Plans
 	iter.Skip(skip)
 	iter.Limit(limit, func(iter sdk.Iterator) {
 		var item types.Plan
-		k.cdc.MustUnmarshalBinaryBare(iter.Value(), &item)
+		k.cdc.MustUnmarshal(iter.Value(), &item)
 		items = append(items, item)
 	})
 
@@ -74,7 +74,7 @@ func (k *Keeper) GetPlans(ctx sdk.Context, skip, limit int64) (items types.Plans
 
 func (k *Keeper) SetActivePlan(ctx sdk.Context, id uint64) {
 	key := types.ActivePlanKey(id)
-	value := k.cdc.MustMarshalBinaryBare(&protobuf.BoolValue{Value: true})
+	value := k.cdc.MustMarshal(&protobuf.BoolValue{Value: true})
 
 	store := k.Store(ctx)
 	store.Set(key, value)
@@ -108,7 +108,7 @@ func (k *Keeper) GetActivePlans(ctx sdk.Context, skip, limit int64) (items types
 
 func (k *Keeper) SetInactivePlan(ctx sdk.Context, id uint64) {
 	key := types.InactivePlanKey(id)
-	value := k.cdc.MustMarshalBinaryBare(&protobuf.BoolValue{Value: true})
+	value := k.cdc.MustMarshal(&protobuf.BoolValue{Value: true})
 
 	store := k.Store(ctx)
 	store.Set(key, value)
@@ -142,7 +142,7 @@ func (k *Keeper) GetInactivePlans(ctx sdk.Context, skip, limit int64) (items typ
 
 func (k *Keeper) SetActivePlanForProvider(ctx sdk.Context, address hubtypes.ProvAddress, id uint64) {
 	key := types.ActivePlanForProviderKey(address, id)
-	value := k.cdc.MustMarshalBinaryBare(&protobuf.BoolValue{Value: true})
+	value := k.cdc.MustMarshal(&protobuf.BoolValue{Value: true})
 
 	store := k.Store(ctx)
 	store.Set(key, value)
@@ -176,7 +176,7 @@ func (k *Keeper) GetActivePlansForProvider(ctx sdk.Context, address hubtypes.Pro
 
 func (k *Keeper) SetInactivePlanForProvider(ctx sdk.Context, address hubtypes.ProvAddress, id uint64) {
 	key := types.InactivePlanForProviderKey(address, id)
-	value := k.cdc.MustMarshalBinaryBare(&protobuf.BoolValue{Value: true})
+	value := k.cdc.MustMarshal(&protobuf.BoolValue{Value: true})
 
 	store := k.Store(ctx)
 	store.Set(key, value)

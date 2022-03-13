@@ -24,7 +24,7 @@ var (
 
 func WeightedOperations(
 	params simulationtypes.AppParams,
-	cdc codec.JSONMarshaler,
+	cdc codec.JSONCodec,
 	ak expected.AccountKeeper,
 	bk expected.BankKeeper,
 	k keeper.Keeper,
@@ -135,7 +135,7 @@ func SimulateMsgRegisterRequest(ak expected.AccountKeeper, bk expected.BankKeepe
 			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgRegisterRequest, err.Error()), nil, err
 		}
 
-		return simulationtypes.NewOperationMsg(message, true, ""), nil, nil
+		return simulationtypes.NewOperationMsg(message, true, "", nil), nil, nil
 	}
 }
 
@@ -204,6 +204,6 @@ func SimulateMsgUpdateRequest(ak expected.AccountKeeper, bk expected.BankKeeper,
 			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgUpdateRequest, err.Error()), nil, err
 		}
 
-		return simulationtypes.NewOperationMsg(message, true, ""), nil, nil
+		return simulationtypes.NewOperationMsg(message, true, "", nil), nil, nil
 	}
 }

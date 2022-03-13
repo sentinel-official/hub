@@ -6,130 +6,31 @@ import (
 	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/address"
 	"github.com/stretchr/testify/require"
 )
 
 func TestActiveSessionForAddressKey(t *testing.T) {
 	var (
-		address []byte
+		addr []byte
 	)
 
-	for i := 0; i < 41; i++ {
-		address = make([]byte, i)
-		_, _ = rand.Read(address)
+	for i := 0; i < 512; i++ {
+		addr = make([]byte, i)
+		_, _ = rand.Read(addr)
 
-		if i == 20 {
+		if i < 256 {
 			require.Equal(
 				t,
-				append(append(ActiveSessionForAddressKeyPrefix, address...), sdk.Uint64ToBigEndian(1000)...),
-				ActiveSessionForAddressKey(address, 1000),
+				append(append(ActiveSessionForAddressKeyPrefix, address.MustLengthPrefix(addr)...), sdk.Uint64ToBigEndian(1000)...),
+				ActiveSessionForAddressKey(addr, 1000),
 			)
 
 			continue
 		}
 
 		require.Panics(t, func() {
-			ActiveSessionForAddressKey(address, 1000)
-		})
-	}
-}
-
-func TestIDFromActiveSessionAtKey(t *testing.T) {
-	var (
-		key []byte
-	)
-
-	for i := 0; i < 60; i++ {
-		key = make([]byte, i)
-		_, _ = rand.Read(key)
-
-		if i == 38 {
-			require.Equal(
-				t,
-				sdk.BigEndianToUint64(key[30:]),
-				IDFromActiveSessionAtKey(key),
-			)
-
-			continue
-		}
-
-		require.Panics(t, func() {
-			IDFromActiveSessionAtKey(key)
-		})
-	}
-}
-
-func TestIDFromSessionForNodeKey(t *testing.T) {
-	var (
-		key []byte
-	)
-
-	for i := 0; i < 60; i++ {
-		key = make([]byte, i)
-		_, _ = rand.Read(key)
-
-		if i == 29 {
-			require.Equal(
-				t,
-				sdk.BigEndianToUint64(key[21:]),
-				IDFromSessionForNodeKey(key),
-			)
-
-			continue
-		}
-
-		require.Panics(t, func() {
-			IDFromSessionForNodeKey(key)
-		})
-	}
-}
-
-func TestIDFromSessionForSubscriptionKey(t *testing.T) {
-	var (
-		key []byte
-	)
-
-	for i := 0; i < 60; i++ {
-		key = make([]byte, i)
-		_, _ = rand.Read(key)
-
-		if i == 17 {
-			require.Equal(
-				t,
-				sdk.BigEndianToUint64(key[9:]),
-				IDFromSessionForSubscriptionKey(key),
-			)
-
-			continue
-		}
-
-		require.Panics(t, func() {
-			IDFromSessionForSubscriptionKey(key)
-		})
-	}
-}
-
-func TestIDFromStatusSessionForAddressKey(t *testing.T) {
-	var (
-		key []byte
-	)
-
-	for i := 0; i < 60; i++ {
-		key = make([]byte, i)
-		_, _ = rand.Read(key)
-
-		if i == 29 {
-			require.Equal(
-				t,
-				sdk.BigEndianToUint64(key[21:]),
-				IDFromStatusSessionForAddressKey(key),
-			)
-
-			continue
-		}
-
-		require.Panics(t, func() {
-			IDFromStatusSessionForAddressKey(key)
+			ActiveSessionForAddressKey(addr, 1000)
 		})
 	}
 }
@@ -148,25 +49,25 @@ func TestInactiveSessionAtKey(t *testing.T) {
 
 func TestInactiveSessionForAddressKey(t *testing.T) {
 	var (
-		address []byte
+		addr []byte
 	)
 
-	for i := 0; i < 41; i++ {
-		address = make([]byte, i)
-		_, _ = rand.Read(address)
+	for i := 0; i < 512; i++ {
+		addr = make([]byte, i)
+		_, _ = rand.Read(addr)
 
-		if i == 20 {
+		if i < 256 {
 			require.Equal(
 				t,
-				append(append(InactiveSessionForAddressKeyPrefix, address...), sdk.Uint64ToBigEndian(1000)...),
-				InactiveSessionForAddressKey(address, 1000),
+				append(append(InactiveSessionForAddressKeyPrefix, address.MustLengthPrefix(addr)...), sdk.Uint64ToBigEndian(1000)...),
+				InactiveSessionForAddressKey(addr, 1000),
 			)
 
 			continue
 		}
 
 		require.Panics(t, func() {
-			InactiveSessionForAddressKey(address, 1000)
+			InactiveSessionForAddressKey(addr, 1000)
 		})
 	}
 }

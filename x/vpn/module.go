@@ -56,11 +56,11 @@ func (a AppModuleBasic) RegisterInterfaces(registry codectypes.InterfaceRegistry
 	types.RegisterInterfaces(registry)
 }
 
-func (a AppModuleBasic) DefaultGenesis(cdc codec.JSONMarshaler) json.RawMessage {
+func (a AppModuleBasic) DefaultGenesis(cdc codec.JSONCodec) json.RawMessage {
 	return cdc.MustMarshalJSON(types.DefaultGenesisState())
 }
 
-func (a AppModuleBasic) ValidateGenesis(cdc codec.JSONMarshaler, _ client.TxEncodingConfig, message json.RawMessage) error {
+func (a AppModuleBasic) ValidateGenesis(cdc codec.JSONCodec, _ client.TxEncodingConfig, message json.RawMessage) error {
 	var state types.GenesisState
 	if err := cdc.UnmarshalJSON(message, &state); err != nil {
 		return err
@@ -92,13 +92,13 @@ func (a AppModuleBasic) GetQueryCmd() *cobra.Command {
 
 type AppModule struct {
 	AppModuleBasic
-	cdc codec.Marshaler
+	cdc codec.Codec
 	ak  expected.AccountKeeper
 	bk  expected.BankKeeper
 	k   keeper.Keeper
 }
 
-func NewAppModule(cdc codec.Marshaler, ak expected.AccountKeeper, bk expected.BankKeeper, k keeper.Keeper) AppModule {
+func NewAppModule(cdc codec.Codec, ak expected.AccountKeeper, bk expected.BankKeeper, k keeper.Keeper) AppModule {
 	return AppModule{
 		cdc: cdc,
 		ak:  ak,
@@ -107,7 +107,7 @@ func NewAppModule(cdc codec.Marshaler, ak expected.AccountKeeper, bk expected.Ba
 	}
 }
 
-func (a AppModule) InitGenesis(ctx sdk.Context, cdc codec.JSONMarshaler, message json.RawMessage) []abcitypes.ValidatorUpdate {
+func (a AppModule) InitGenesis(ctx sdk.Context, cdc codec.JSONCodec, message json.RawMessage) []abcitypes.ValidatorUpdate {
 	var state types.GenesisState
 	cdc.MustUnmarshalJSON(message, &state)
 	InitGenesis(ctx, a.k, &state)
@@ -115,7 +115,7 @@ func (a AppModule) InitGenesis(ctx sdk.Context, cdc codec.JSONMarshaler, message
 	return nil
 }
 
-func (a AppModule) ExportGenesis(ctx sdk.Context, cdc codec.JSONMarshaler) json.RawMessage {
+func (a AppModule) ExportGenesis(ctx sdk.Context, cdc codec.JSONCodec) json.RawMessage {
 	return cdc.MustMarshalJSON(ExportGenesis(ctx, a.k))
 }
 
@@ -144,7 +144,14 @@ func (a AppModule) RegisterServices(configurator module.Configurator) {
 	plantypes.RegisterQueryServiceServer(configurator.QueryServer(), plankeeper.NewQueryServiceServer(a.k.Plan))
 	subscriptiontypes.RegisterQueryServiceServer(configurator.QueryServer(), subscriptionkeeper.NewQueryServiceServer(a.k.Subscription))
 	sessiontypes.RegisterQueryServiceServer(configurator.QueryServer(), sessionkeeper.NewQueryServiceServer(a.k.Session))
+
+	m := keeper.NewMigrator(a.k)
+	if err := configurator.RegisterMigration(types.ModuleName, 1, m.Migrate1to2); err != nil {
+		panic(err)
+	}
 }
+
+func (a AppModule) ConsensusVersion() uint64 { return 2 }
 
 func (a AppModule) BeginBlock(_ sdk.Context, _ abcitypes.RequestBeginBlock) {}
 

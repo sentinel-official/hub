@@ -23,7 +23,7 @@ func (a *App) ExportAppStateAndValidators(
 		a.prepForZeroHeightGenesis(ctx, jailAllowedAddrs)
 	}
 
-	genState := a.manager.ExportGenesis(ctx, a.cdc)
+	genState := a.moduleManager.ExportGenesis(ctx, a.cdc)
 	appState, err := json.MarshalIndent(genState, "", "  ")
 	if err != nil {
 		return servertypes.ExportedApp{}, err

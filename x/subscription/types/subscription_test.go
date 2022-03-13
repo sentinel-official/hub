@@ -191,30 +191,12 @@ func TestSubscription_Validate(t *testing.T) {
 			true,
 		},
 		{
-			"10 bytes node",
-			fields{
-				Id:    1000,
-				Owner: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				Node:  "sentnode1qypqxpq9qcrsszgse4wwrm",
-			},
-			true,
-		},
-		{
 			"20 bytes node",
 			fields{
 				Id:    1000,
 				Owner: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
 				Node:  "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
 				Price: sdk.Coin{Amount: sdk.NewInt(0)},
-			},
-			true,
-		},
-		{
-			"30 bytes node",
-			fields{
-				Id:    1000,
-				Owner: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				Node:  "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqyy3zxfp9ycnjs2fsxqglcv",
 			},
 			true,
 		},

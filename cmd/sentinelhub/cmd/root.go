@@ -1,25 +1,26 @@
 package cmd
 
 import (
+	"errors"
 	"io"
 	"os"
 	"path/filepath"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
+	clientconfig "github.com/cosmos/cosmos-sdk/client/config"
 	"github.com/cosmos/cosmos-sdk/client/debug"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/keys"
 	"github.com/cosmos/cosmos-sdk/client/rpc"
-	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/server"
+	serverconfig "github.com/cosmos/cosmos-sdk/server/config"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
 	"github.com/cosmos/cosmos-sdk/snapshots"
 	"github.com/cosmos/cosmos-sdk/store"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	authclient "github.com/cosmos/cosmos-sdk/x/auth/client"
-	authcmd "github.com/cosmos/cosmos-sdk/x/auth/client/cli"
-	"github.com/cosmos/cosmos-sdk/x/auth/types"
+	authcli "github.com/cosmos/cosmos-sdk/x/auth/client/cli"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	"github.com/cosmos/cosmos-sdk/x/crisis"
 	genutilcli "github.com/cosmos/cosmos-sdk/x/genutil/client/cli"
@@ -30,55 +31,86 @@ import (
 	tmdb "github.com/tendermint/tm-db"
 
 	"github.com/sentinel-official/hub"
-	"github.com/sentinel-official/hub/params"
+	hubparams "github.com/sentinel-official/hub/params"
 )
 
-func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
+func NewRootCmd() (*cobra.Command, hubparams.EncodingConfig) {
 	var (
-		config  = hub.MakeEncodingConfig()
-		context = client.Context{}.
-			WithJSONMarshaler(config.Marshaler).
-			WithInterfaceRegistry(config.InterfaceRegistry).
-			WithTxConfig(config.TxConfig).
-			WithLegacyAmino(config.Amino).
-			WithInput(os.Stdin).
-			WithAccountRetriever(types.AccountRetriever{}).
-			WithBroadcastMode(flags.BroadcastBlock).
-			WithHomeDir(hub.DefaultNodeHome)
+		config    = hub.MakeEncodingConfig()
+		clientCtx = client.Context{}.
+				WithCodec(config.Marshaler).
+				WithInterfaceRegistry(config.InterfaceRegistry).
+				WithTxConfig(config.TxConfig).
+				WithLegacyAmino(config.Amino).
+				WithInput(os.Stdin).
+				WithAccountRetriever(authtypes.AccountRetriever{}).
+				WithHomeDir(hub.DefaultNodeHome).
+				WithViper("")
 	)
 
-	cobra.EnableCommandSorting = false
-	root := &cobra.Command{
+	rootCmd := &cobra.Command{
 		Use:   "sentinelhub",
 		Short: "Sentinel",
 		PersistentPreRunE: func(cmd *cobra.Command, _ []string) error {
-			if err := client.SetCmdClientContextHandler(context, cmd); err != nil {
+			clientCtx, err := client.ReadPersistentCommandFlags(clientCtx, cmd.Flags())
+			if err != nil {
 				return err
 			}
 
-			return server.InterceptConfigsPreRunHandler(cmd)
+			clientCtx, err = clientconfig.ReadFromClientConfig(clientCtx)
+			if err != nil {
+				return err
+			}
+
+			if err = client.SetCmdClientContextHandler(clientCtx, cmd); err != nil {
+				return err
+			}
+
+			customAppConfigTemplate, customAppConfig := initAppConfig()
+			return server.InterceptConfigsPreRunHandler(cmd, customAppConfigTemplate, customAppConfig)
 		},
 	}
 
-	initRootCmd(root, config)
-	return root, config
+	initRootCmd(rootCmd, config)
+	return rootCmd, config
 }
 
-func initRootCmd(rootCmd *cobra.Command, encodingConfig params.EncodingConfig) {
-	authclient.Codec = encodingConfig.Marshaler
+func initAppConfig() (string, interface{}) {
+	type CustomAppConfig struct {
+		serverconfig.Config
+	}
+
+	srvCfg := serverconfig.DefaultConfig()
+	srvCfg.StateSync.SnapshotInterval = 1000
+	srvCfg.StateSync.SnapshotKeepRecent = 10
+
+	appConfig := CustomAppConfig{Config: *srvCfg}
+	appConfigTemplate := serverconfig.DefaultConfigTemplate
+
+	return appConfigTemplate, appConfig
+}
+
+func initRootCmd(rootCmd *cobra.Command, encodingConfig hubparams.EncodingConfig) {
+	cfg := sdk.GetConfig()
+	cfg.Seal()
+
 	rootCmd.AddCommand(
 		genutilcli.InitCmd(hub.ModuleBasics, hub.DefaultNodeHome),
 		genutilcli.CollectGenTxsCmd(banktypes.GenesisBalancesIterator{}, hub.DefaultNodeHome),
-		migrateCmd(),
 		genutilcli.GenTxCmd(hub.ModuleBasics, encodingConfig.TxConfig, banktypes.GenesisBalancesIterator{}, hub.DefaultNodeHome),
 		genutilcli.ValidateGenesisCmd(hub.ModuleBasics),
 		AddGenesisAccountCmd(hub.DefaultNodeHome),
 		tmcli.NewCompletionCmd(rootCmd, true),
 		testnetCmd(hub.ModuleBasics, banktypes.GenesisBalancesIterator{}),
 		debug.Cmd(),
+		clientconfig.Cmd(),
 	)
 
-	server.AddCommands(rootCmd, hub.DefaultNodeHome, appCreatorFunc, appExportFunc, addModuleInitFlags)
+	ac := appCreator{
+		encCfg: encodingConfig,
+	}
+	server.AddCommands(rootCmd, hub.DefaultNodeHome, ac.newApp, ac.appExport, addModuleInitFlags)
+
 	rootCmd.AddCommand(
 		rpc.StatusCommand(),
 		queryCommand(),
@@ -102,11 +134,11 @@ func queryCommand() *cobra.Command {
 	}
 
 	cmd.AddCommand(
-		authcmd.GetAccountCmd(),
+		authcli.GetAccountCmd(),
 		rpc.ValidatorCommand(),
 		rpc.BlockCommand(),
-		authcmd.QueryTxsByEventsCmd(),
-		authcmd.QueryTxCmd(),
+		authcli.QueryTxsByEventsCmd(),
+		authcli.QueryTxCmd(),
 	)
 
 	hub.ModuleBasics.AddQueryCommands(cmd)
@@ -125,14 +157,15 @@ func txCommand() *cobra.Command {
 	}
 
 	cmd.AddCommand(
-		authcmd.GetSignCommand(),
-		authcmd.GetSignBatchCommand(),
-		authcmd.GetMultiSignCommand(),
-		authcmd.GetMultiSignBatchCmd(),
-		authcmd.GetValidateSignaturesCommand(),
-		authcmd.GetBroadcastCommand(),
-		authcmd.GetEncodeCommand(),
-		authcmd.GetDecodeCommand(),
+		authcli.GetSignCommand(),
+		authcli.GetSignBatchCommand(),
+		authcli.GetMultiSignCommand(),
+		authcli.GetMultiSignBatchCmd(),
+		authcli.GetValidateSignaturesCommand(),
+		flags.LineBreak,
+		authcli.GetBroadcastCommand(),
+		authcli.GetEncodeCommand(),
+		authcli.GetDecodeCommand(),
 	)
 
 	hub.ModuleBasics.AddTxCommands(cmd)
@@ -141,18 +174,27 @@ func txCommand() *cobra.Command {
 	return cmd
 }
 
-func appCreatorFunc(logger log.Logger, db tmdb.DB, tracer io.Writer, options servertypes.AppOptions) servertypes.Application {
+type appCreator struct {
+	encCfg hubparams.EncodingConfig
+}
+
+func (ac appCreator) newApp(
+	logger log.Logger,
+	db tmdb.DB,
+	traceStore io.Writer,
+	options servertypes.AppOptions,
+) servertypes.Application {
 	var cache sdk.MultiStorePersistentCache
 	if cast.ToBool(options.Get(server.FlagInterBlockCache)) {
 		cache = store.NewCommitKVStoreCacheManager()
 	}
 
 	skipUpgradeHeights := make(map[int64]bool)
-	for _, height := range cast.ToIntSlice(options.Get(server.FlagUnsafeSkipUpgrades)) {
-		skipUpgradeHeights[int64(height)] = true
+	for _, h := range cast.ToIntSlice(options.Get(server.FlagUnsafeSkipUpgrades)) {
+		skipUpgradeHeights[int64(h)] = true
 	}
 
-	pruningOptions, err := server.GetPruningOptionsFromFlags(options)
+	pruningOpts, err := server.GetPruningOptionsFromFlags(options)
 	if err != nil {
 		panic(err)
 	}
@@ -168,12 +210,12 @@ func appCreatorFunc(logger log.Logger, db tmdb.DB, tracer io.Writer, options ser
 	}
 
 	return hub.NewApp(
-		logger, db, tracer, true, skipUpgradeHeights,
+		logger, db, traceStore, true, skipUpgradeHeights,
 		cast.ToString(options.Get(flags.FlagHome)),
 		cast.ToUint(options.Get(server.FlagInvCheckPeriod)),
-		hub.MakeEncodingConfig(),
+		ac.encCfg,
 		options,
-		baseapp.SetPruning(pruningOptions),
+		baseapp.SetPruning(pruningOpts),
 		baseapp.SetMinGasPrices(cast.ToString(options.Get(server.FlagMinGasPrices))),
 		baseapp.SetHaltHeight(cast.ToUint64(options.Get(server.FlagHaltHeight))),
 		baseapp.SetHaltTime(cast.ToUint64(options.Get(server.FlagHaltTime))),
@@ -187,20 +229,41 @@ func appCreatorFunc(logger log.Logger, db tmdb.DB, tracer io.Writer, options ser
 	)
 }
 
-func appExportFunc(logger log.Logger, db tmdb.DB, tracer io.Writer, height int64,
-	forZeroHeight bool, jailAllowedAddrs []string, options servertypes.AppOptions) (servertypes.ExportedApp, error) {
-	config := hub.MakeEncodingConfig()
-	config.Marshaler = codec.NewProtoCodec(config.InterfaceRegistry)
+func (ac appCreator) appExport(
+	logger log.Logger,
+	db tmdb.DB,
+	traceStore io.Writer,
+	height int64,
+	forZeroHeight bool,
+	jailAllowedAddrs []string,
+	appOpts servertypes.AppOptions,
+) (servertypes.ExportedApp, error) {
+	homePath, ok := appOpts.Get(flags.FlagHome).(string)
+	if !ok || homePath == "" {
+		return servertypes.ExportedApp{}, errors.New("application home is not set")
+	}
 
-	var app *hub.App
+	var loadLatest bool
+	if height == -1 {
+		loadLatest = true
+	}
+
+	app := hub.NewApp(
+		logger,
+		db,
+		traceStore,
+		loadLatest,
+		map[int64]bool{},
+		homePath,
+		cast.ToUint(appOpts.Get(server.FlagInvCheckPeriod)),
+		ac.encCfg,
+		appOpts,
+	)
+
 	if height != -1 {
-		app = hub.NewApp(logger, db, tracer, false, map[int64]bool{}, "", cast.ToUint(options.Get(server.FlagInvCheckPeriod)), config, options)
-
 		if err := app.LoadHeight(height); err != nil {
 			return servertypes.ExportedApp{}, err
 		}
-	} else {
-		app = hub.NewApp(logger, db, tracer, true, map[int64]bool{}, "", cast.ToUint(options.Get(server.FlagInvCheckPeriod)), config, options)
 	}
 
 	return app.ExportAppStateAndValidators(forZeroHeight, jailAllowedAddrs)

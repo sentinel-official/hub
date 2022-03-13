@@ -111,7 +111,7 @@ func TestMsgStartRequest_ValidateBasic(t *testing.T) {
 				Id:   1000,
 				Node: "sentnode1qypqxpq9qcrsszgse4wwrm",
 			},
-			true,
+			false,
 		},
 		{
 			"20 bytes node",
@@ -129,7 +129,7 @@ func TestMsgStartRequest_ValidateBasic(t *testing.T) {
 				Id:   1000,
 				Node: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqyy3zxfp9ycnjs2fsxqglcv",
 			},
-			true,
+			false,
 		},
 	}
 	for _, tt := range tests {

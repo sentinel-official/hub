@@ -12,7 +12,7 @@ import (
 
 func (k *Keeper) SetNode(ctx sdk.Context, node types.Node) {
 	key := types.NodeKey(node.GetAddress())
-	value := k.cdc.MustMarshalBinaryBare(&node)
+	value := k.cdc.MustMarshal(&node)
 
 	store := k.Store(ctx)
 	store.Set(key, value)
@@ -34,7 +34,7 @@ func (k *Keeper) GetNode(ctx sdk.Context, address hubtypes.NodeAddress) (node ty
 		return node, false
 	}
 
-	k.cdc.MustUnmarshalBinaryBare(value, &node)
+	k.cdc.MustUnmarshal(value, &node)
 	return node, true
 }
 
@@ -51,7 +51,7 @@ func (k *Keeper) GetNodes(ctx sdk.Context, skip, limit int64) (items types.Nodes
 	iter.Skip(skip)
 	iter.Limit(limit, func(iter sdk.Iterator) {
 		var item types.Node
-		k.cdc.MustUnmarshalBinaryBare(iter.Value(), &item)
+		k.cdc.MustUnmarshal(iter.Value(), &item)
 		items = append(items, item)
 	})
 
@@ -66,7 +66,7 @@ func (k *Keeper) IterateNodes(ctx sdk.Context, fn func(index int, item types.Nod
 
 	for i := 0; iter.Valid(); iter.Next() {
 		var node types.Node
-		k.cdc.MustUnmarshalBinaryBare(iter.Value(), &node)
+		k.cdc.MustUnmarshal(iter.Value(), &node)
 
 		if stop := fn(i, node); stop {
 			break
@@ -77,7 +77,7 @@ func (k *Keeper) IterateNodes(ctx sdk.Context, fn func(index int, item types.Nod
 
 func (k *Keeper) SetActiveNode(ctx sdk.Context, address hubtypes.NodeAddress) {
 	key := types.ActiveNodeKey(address)
-	value := k.cdc.MustMarshalBinaryBare(&protobuf.BoolValue{Value: true})
+	value := k.cdc.MustMarshal(&protobuf.BoolValue{Value: true})
 
 	store := k.Store(ctx)
 	store.Set(key, value)
@@ -111,7 +111,7 @@ func (k *Keeper) GetActiveNodes(ctx sdk.Context, skip, limit int64) (items types
 
 func (k *Keeper) SetInactiveNode(ctx sdk.Context, address hubtypes.NodeAddress) {
 	key := types.InactiveNodeKey(address)
-	value := k.cdc.MustMarshalBinaryBare(&protobuf.BoolValue{Value: true})
+	value := k.cdc.MustMarshal(&protobuf.BoolValue{Value: true})
 
 	store := k.Store(ctx)
 	store.Set(key, value)
@@ -145,7 +145,7 @@ func (k *Keeper) GetInactiveNodes(ctx sdk.Context, skip, limit int64) (items typ
 
 func (k *Keeper) SetActiveNodeForProvider(ctx sdk.Context, provider hubtypes.ProvAddress, address hubtypes.NodeAddress) {
 	key := types.ActiveNodeForProviderKey(provider, address)
-	value := k.cdc.MustMarshalBinaryBare(&protobuf.BoolValue{Value: true})
+	value := k.cdc.MustMarshal(&protobuf.BoolValue{Value: true})
 
 	store := k.Store(ctx)
 	store.Set(key, value)
@@ -179,7 +179,7 @@ func (k *Keeper) GetActiveNodesForProvider(ctx sdk.Context, address hubtypes.Pro
 
 func (k *Keeper) SetInactiveNodeForProvider(ctx sdk.Context, provider hubtypes.ProvAddress, address hubtypes.NodeAddress) {
 	key := types.InactiveNodeForProviderKey(provider, address)
-	value := k.cdc.MustMarshalBinaryBare(&protobuf.BoolValue{Value: true})
+	value := k.cdc.MustMarshal(&protobuf.BoolValue{Value: true})
 
 	store := k.Store(ctx)
 	store.Set(key, value)
@@ -233,7 +233,7 @@ func (k *Keeper) GetNodesForProvider(ctx sdk.Context, address hubtypes.ProvAddre
 
 func (k *Keeper) SetInactiveNodeAt(ctx sdk.Context, at time.Time, address hubtypes.NodeAddress) {
 	key := types.InactiveNodeAtKey(at, address)
-	value := k.cdc.MustMarshalBinaryBare(&protobuf.BoolValue{Value: true})
+	value := k.cdc.MustMarshal(&protobuf.BoolValue{Value: true})
 
 	store := k.Store(ctx)
 	store.Set(key, value)
