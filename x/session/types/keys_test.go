@@ -59,56 +59,6 @@ func TestIDFromStatusSessionAtKey(t *testing.T) {
 	}
 }
 
-func TestIDFromSessionForNodeKey(t *testing.T) {
-	var (
-		key []byte
-	)
-
-	for i := 0; i < 60; i++ {
-		key = make([]byte, i)
-		_, _ = rand.Read(key)
-
-		if i == 29 {
-			require.Equal(
-				t,
-				sdk.BigEndianToUint64(key[21:]),
-				IDFromSessionForNodeKey(key),
-			)
-
-			continue
-		}
-
-		require.Panics(t, func() {
-			IDFromSessionForNodeKey(key)
-		})
-	}
-}
-
-func TestIDFromSessionForSubscriptionKey(t *testing.T) {
-	var (
-		key []byte
-	)
-
-	for i := 0; i < 60; i++ {
-		key = make([]byte, i)
-		_, _ = rand.Read(key)
-
-		if i == 17 {
-			require.Equal(
-				t,
-				sdk.BigEndianToUint64(key[9:]),
-				IDFromSessionForSubscriptionKey(key),
-			)
-
-			continue
-		}
-
-		require.Panics(t, func() {
-			IDFromSessionForSubscriptionKey(key)
-		})
-	}
-}
-
 func TestIDFromStatusSessionForAddressKey(t *testing.T) {
 	var (
 		key []byte
