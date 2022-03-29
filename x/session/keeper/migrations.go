@@ -4,6 +4,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
+	hubtypes "github.com/sentinel-official/hub/types"
 	"github.com/sentinel-official/hub/x/session/types"
 )
 
@@ -23,6 +24,20 @@ func (m Migrator) Migrate1to2(ctx sdk.Context) error {
 	}
 	if err := migrateActiveSessionForAddressKeys(store); err != nil {
 		return err
+	}
+
+	count := m.k.GetCount(ctx)
+	for id := uint64(0); id <= count; id++ {
+		item, found := m.k.GetSession(ctx, id)
+		if !found {
+			continue
+		}
+		if !item.Status.Equal(hubtypes.StatusInactive) {
+			continue
+		}
+
+		m.k.DeleteSession(ctx, item.Id)
+		m.k.DeleteInactiveSessionForAddress(ctx, item.GetAddress(), item.Id)
 	}
 
 	return nil

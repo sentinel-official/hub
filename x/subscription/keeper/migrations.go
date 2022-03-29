@@ -4,6 +4,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
+	hubtypes "github.com/sentinel-official/hub/types"
 	"github.com/sentinel-official/hub/x/subscription/types"
 )
 
@@ -26,6 +27,26 @@ func (m Migrator) Migrate1to2(ctx sdk.Context) error {
 	}
 	if err := migrateQuotaKeys(store); err != nil {
 		return err
+	}
+
+	count := m.k.GetCount(ctx)
+	for id := uint64(0); id <= count; id++ {
+		item, found := m.k.GetSubscription(ctx, id)
+		if !found {
+			continue
+		}
+		if !item.Status.Equal(hubtypes.StatusInactive) {
+			continue
+		}
+
+		m.k.DeleteSubscription(ctx, item.Id)
+		m.k.IterateQuotas(ctx, item.Id, func(_ int, quota types.Quota) bool {
+			address := quota.GetAddress()
+			m.k.DeleteQuota(ctx, item.Id, address)
+			m.k.DeleteInactiveSubscriptionForAddress(ctx, address, item.Id)
+
+			return false
+		})
 	}
 
 	return nil
