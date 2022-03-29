@@ -54,6 +54,13 @@ func (k *Keeper) GetSession(ctx sdk.Context, id uint64) (session types.Session, 
 	return session, true
 }
 
+func (k *Keeper) DeleteSession(ctx sdk.Context, id uint64) {
+	key := types.SessionKey(id)
+
+	store := k.Store(ctx)
+	store.Delete(key)
+}
+
 func (k *Keeper) GetSessions(ctx sdk.Context, skip, limit int64) (items types.Sessions) {
 	var (
 		store = k.Store(ctx)
