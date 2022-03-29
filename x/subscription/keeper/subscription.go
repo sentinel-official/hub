@@ -54,6 +54,13 @@ func (k *Keeper) GetSubscription(ctx sdk.Context, id uint64) (subscription types
 	return subscription, true
 }
 
+func (k *Keeper) DeleteSubscription(ctx sdk.Context, id uint64) {
+	key := types.SubscriptionKey(id)
+
+	store := k.Store(ctx)
+	store.Delete(key)
+}
+
 func (k *Keeper) GetSubscriptions(ctx sdk.Context, skip, limit int64) (items types.Subscriptions) {
 	var (
 		store = k.Store(ctx)
