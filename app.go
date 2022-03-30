@@ -2,6 +2,7 @@ package hub
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 	"os"
 
@@ -15,6 +16,7 @@ import (
 	serverconfig "github.com/cosmos/cosmos-sdk/server/config"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
 	"github.com/cosmos/cosmos-sdk/simapp"
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/version"
@@ -26,6 +28,9 @@ import (
 	authtx "github.com/cosmos/cosmos-sdk/x/auth/tx"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	authvesting "github.com/cosmos/cosmos-sdk/x/auth/vesting"
+	"github.com/cosmos/cosmos-sdk/x/authz"
+	authzkeeper "github.com/cosmos/cosmos-sdk/x/authz/keeper"
+	authzmodule "github.com/cosmos/cosmos-sdk/x/authz/module"
 	"github.com/cosmos/cosmos-sdk/x/bank"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
@@ -42,19 +47,14 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/evidence"
 	evidencekeeper "github.com/cosmos/cosmos-sdk/x/evidence/keeper"
 	evidencetypes "github.com/cosmos/cosmos-sdk/x/evidence/types"
+	"github.com/cosmos/cosmos-sdk/x/feegrant"
+	feegrantkeeper "github.com/cosmos/cosmos-sdk/x/feegrant/keeper"
+	feegrantmodule "github.com/cosmos/cosmos-sdk/x/feegrant/module"
 	"github.com/cosmos/cosmos-sdk/x/genutil"
 	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
 	"github.com/cosmos/cosmos-sdk/x/gov"
 	govkeeper "github.com/cosmos/cosmos-sdk/x/gov/keeper"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
-	ibctransfer "github.com/cosmos/cosmos-sdk/x/ibc/applications/transfer"
-	ibctransferkeeper "github.com/cosmos/cosmos-sdk/x/ibc/applications/transfer/keeper"
-	ibctransfertypes "github.com/cosmos/cosmos-sdk/x/ibc/applications/transfer/types"
-	ibc "github.com/cosmos/cosmos-sdk/x/ibc/core"
-	ibcclient "github.com/cosmos/cosmos-sdk/x/ibc/core/02-client"
-	ibcporttypes "github.com/cosmos/cosmos-sdk/x/ibc/core/05-port/types"
-	ibchost "github.com/cosmos/cosmos-sdk/x/ibc/core/24-host"
-	ibckeeper "github.com/cosmos/cosmos-sdk/x/ibc/core/keeper"
 	"github.com/cosmos/cosmos-sdk/x/mint"
 	mintkeeper "github.com/cosmos/cosmos-sdk/x/mint/keeper"
 	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
@@ -73,16 +73,24 @@ import (
 	upgradeclient "github.com/cosmos/cosmos-sdk/x/upgrade/client"
 	upgradekeeper "github.com/cosmos/cosmos-sdk/x/upgrade/keeper"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
+	ibctransfer "github.com/cosmos/ibc-go/v2/modules/apps/transfer"
+	ibctransferkeeper "github.com/cosmos/ibc-go/v2/modules/apps/transfer/keeper"
+	ibctransfertypes "github.com/cosmos/ibc-go/v2/modules/apps/transfer/types"
+	ibc "github.com/cosmos/ibc-go/v2/modules/core"
+	ibcclient "github.com/cosmos/ibc-go/v2/modules/core/02-client"
+	ibcclientclient "github.com/cosmos/ibc-go/v2/modules/core/02-client/client"
+	ibcclienttypes "github.com/cosmos/ibc-go/v2/modules/core/02-client/types"
+	ibcporttypes "github.com/cosmos/ibc-go/v2/modules/core/05-port/types"
+	ibchost "github.com/cosmos/ibc-go/v2/modules/core/24-host"
+	ibckeeper "github.com/cosmos/ibc-go/v2/modules/core/keeper"
 	abci "github.com/tendermint/tendermint/abci/types"
 	tmjson "github.com/tendermint/tendermint/libs/json"
 	"github.com/tendermint/tendermint/libs/log"
 	tmos "github.com/tendermint/tendermint/libs/os"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	tmdb "github.com/tendermint/tm-db"
 
 	hubparams "github.com/sentinel-official/hub/params"
-	upgrade1 "github.com/sentinel-official/hub/upgrades/upgrade-1"
-	upgrade2 "github.com/sentinel-official/hub/upgrades/upgrade-2"
+	upgrade3 "github.com/sentinel-official/hub/upgrades/upgrade-3"
 	deposittypes "github.com/sentinel-official/hub/x/deposit/types"
 	custommint "github.com/sentinel-official/hub/x/mint"
 	custommintkeeper "github.com/sentinel-official/hub/x/mint/keeper"
@@ -104,14 +112,18 @@ var (
 	ModuleBasics    = module.NewBasicManager(
 		auth.AppModuleBasic{},
 		authvesting.AppModuleBasic{},
+		authzmodule.AppModuleBasic{},
 		bank.AppModuleBasic{},
 		capability.AppModule{},
 		crisis.AppModuleBasic{},
 		distribution.AppModuleBasic{},
 		evidence.AppModuleBasic{},
+		feegrantmodule.AppModuleBasic{},
 		genutil.AppModuleBasic{},
 		gov.NewAppModuleBasic(
 			distributionclient.ProposalHandler,
+			ibcclientclient.UpdateClientProposalHandler,
+			ibcclientclient.UpgradeProposalHandler,
 			paramsclient.ProposalHandler,
 			upgradeclient.ProposalHandler,
 			upgradeclient.CancelProposalHandler,
@@ -139,21 +151,21 @@ type App struct {
 
 	invarCheckPeriod  uint
 	amino             *codec.LegacyAmino
-	cdc               codec.Marshaler
+	cdc               codec.Codec
 	interfaceRegistry codectypes.InterfaceRegistry
-	manager           *module.Manager
-	simulationManager *module.SimulationManager
 
 	keys  map[string]*sdk.KVStoreKey
 	tkeys map[string]*sdk.TransientStoreKey
 	mkeys map[string]*sdk.MemoryStoreKey
 
 	accountKeeper      authkeeper.AccountKeeper
+	authzKeeper        authzkeeper.Keeper
 	bankKeeper         bankkeeper.Keeper
 	capabilityKeeper   *capabilitykeeper.Keeper
 	crisisKeeper       crisiskeeper.Keeper
 	distributionKeeper distributionkeeper.Keeper
 	evidenceKeeper     evidencekeeper.Keeper
+	feeGrantKeeper     feegrantkeeper.Keeper
 	govKeeper          govkeeper.Keeper
 	ibcKeeper          *ibckeeper.Keeper
 	ibcTransferKeeper  ibctransferkeeper.Keeper
@@ -168,6 +180,10 @@ type App struct {
 
 	scopedIBCKeeper         capabilitykeeper.ScopedKeeper
 	scopedIBCTransferKeeper capabilitykeeper.ScopedKeeper
+
+	configurator      module.Configurator
+	moduleManager     *module.Manager
+	simulationManager *module.SimulationManager
 }
 
 func NewApp(
@@ -189,8 +205,8 @@ func NewApp(
 		tkeys             = sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
 		mkeys             = sdk.NewMemoryStoreKeys(capabilitytypes.MemStoreKey)
 		keys              = sdk.NewKVStoreKeys(
-			authtypes.StoreKey, banktypes.StoreKey, capabilitytypes.StoreKey,
-			distributiontypes.StoreKey, evidencetypes.StoreKey, govtypes.StoreKey,
+			authtypes.StoreKey, authzkeeper.StoreKey, banktypes.StoreKey, capabilitytypes.StoreKey,
+			distributiontypes.StoreKey, evidencetypes.StoreKey, feegrant.StoreKey, govtypes.StoreKey,
 			ibchost.StoreKey, ibctransfertypes.StoreKey, minttypes.StoreKey,
 			paramstypes.StoreKey, slashingtypes.StoreKey, stakingtypes.StoreKey,
 			upgradetypes.StoreKey, customminttypes.StoreKey, swaptypes.StoreKey, vpntypes.StoreKey,
@@ -199,7 +215,7 @@ func NewApp(
 
 	baseApp := baseapp.NewBaseApp(appName, logger, db, encodingConfig.TxConfig.TxDecoder(), baseAppOptions...)
 	baseApp.SetCommitMultiStoreTracer(tracer)
-	baseApp.SetAppVersion(version.Version)
+	baseApp.SetVersion(version.Version)
 	baseApp.SetInterfaceRegistry(interfaceRegistry)
 
 	app := &App{
@@ -213,6 +229,7 @@ func NewApp(
 		invarCheckPeriod:  invarCheckPeriod,
 	}
 
+	app.configurator = module.NewConfigurator(app.cdc, app.MsgServiceRouter(), app.GRPCQueryRouter())
 	app.paramsKeeper = paramskeeper.NewKeeper(
 		app.cdc,
 		app.amino,
@@ -264,6 +281,16 @@ func NewApp(
 		app.GetSubspace(banktypes.ModuleName),
 		app.ModuleAccountAddrs(),
 	)
+	app.authzKeeper = authzkeeper.NewKeeper(
+		app.keys[authzkeeper.StoreKey],
+		app.cdc,
+		app.BaseApp.MsgServiceRouter(),
+	)
+	app.feeGrantKeeper = feegrantkeeper.NewKeeper(
+		app.cdc,
+		app.keys[feegrant.StoreKey],
+		app.accountKeeper,
+	)
 	stakingKeeper := stakingkeeper.NewKeeper(
 		app.cdc,
 		app.keys[stakingtypes.StoreKey],
@@ -307,6 +334,7 @@ func NewApp(
 		app.keys[upgradetypes.StoreKey],
 		app.cdc,
 		homePath,
+		app.BaseApp,
 	)
 	app.stakingKeeper = *stakingKeeper.SetHooks(
 		stakingtypes.NewMultiStakingHooks(
@@ -319,6 +347,7 @@ func NewApp(
 		app.keys[ibchost.StoreKey],
 		app.GetSubspace(ibchost.ModuleName),
 		app.stakingKeeper,
+		app.upgradeKeeper,
 		scopedIBCKeeper,
 	)
 
@@ -326,8 +355,10 @@ func NewApp(
 	govRouter.AddRoute(govtypes.RouterKey, govtypes.ProposalHandler).
 		AddRoute(paramsproposal.RouterKey, params.NewParamChangeProposalHandler(app.paramsKeeper)).
 		AddRoute(distributiontypes.RouterKey, distribution.NewCommunityPoolSpendProposalHandler(app.distributionKeeper)).
-		AddRoute(upgradetypes.RouterKey, upgrade.NewSoftwareUpgradeProposalHandler(app.upgradeKeeper)).
-		AddRoute(ibchost.RouterKey, ibcclient.NewClientUpdateProposalHandler(app.ibcKeeper.ClientKeeper))
+		AddRoute(ibcclienttypes.RouterKey, ibcclient.NewClientProposalHandler(app.ibcKeeper.ClientKeeper)).
+		AddRoute(ibchost.RouterKey, ibcclient.NewClientProposalHandler(app.ibcKeeper.ClientKeeper)).
+		AddRoute(upgradetypes.RouterKey, upgrade.NewSoftwareUpgradeProposalHandler(app.upgradeKeeper))
+
 	app.govKeeper = govkeeper.NewKeeper(
 		app.cdc,
 		app.keys[govtypes.StoreKey],
@@ -395,14 +426,16 @@ func NewApp(
 		skipGenesisInvariants = opt
 	}
 
-	app.manager = module.NewManager(
+	app.moduleManager = module.NewManager(
 		auth.NewAppModule(app.cdc, app.accountKeeper, nil),
 		authvesting.NewAppModule(app.accountKeeper, app.bankKeeper),
+		authzmodule.NewAppModule(app.cdc, app.authzKeeper, app.accountKeeper, app.bankKeeper, app.interfaceRegistry),
 		bank.NewAppModule(app.cdc, app.bankKeeper, app.accountKeeper),
 		capability.NewAppModule(app.cdc, *app.capabilityKeeper),
 		crisis.NewAppModule(&app.crisisKeeper, skipGenesisInvariants),
 		distribution.NewAppModule(app.cdc, app.distributionKeeper, app.accountKeeper, app.bankKeeper, app.stakingKeeper),
 		evidence.NewAppModule(app.evidenceKeeper),
+		feegrantmodule.NewAppModule(app.cdc, app.accountKeeper, app.bankKeeper, app.feeGrantKeeper, app.interfaceRegistry),
 		genutil.NewAppModule(app.accountKeeper, app.stakingKeeper, app.BaseApp.DeliverTx, encodingConfig.TxConfig),
 		gov.NewAppModule(app.cdc, app.govKeeper, app.accountKeeper, app.bankKeeper),
 		ibc.NewAppModule(app.ibcKeeper),
@@ -418,33 +451,36 @@ func NewApp(
 	)
 
 	// NOTE: order is very important here
-	app.manager.SetOrderBeginBlockers(
+	app.moduleManager.SetOrderBeginBlockers(
 		upgradetypes.ModuleName, customminttypes.ModuleName, minttypes.ModuleName, distributiontypes.ModuleName,
 		slashingtypes.ModuleName, evidencetypes.ModuleName, stakingtypes.ModuleName,
 		ibchost.ModuleName,
 	)
-	app.manager.SetOrderEndBlockers(
+	app.moduleManager.SetOrderEndBlockers(
 		crisistypes.ModuleName, govtypes.ModuleName, stakingtypes.ModuleName,
-		vpntypes.ModuleName,
+		feegrant.ModuleName, authz.ModuleName, vpntypes.ModuleName,
 	)
-	app.manager.SetOrderInitGenesis(
+	app.moduleManager.SetOrderInitGenesis(
 		capabilitytypes.ModuleName, authtypes.ModuleName, banktypes.ModuleName,
 		distributiontypes.ModuleName, stakingtypes.ModuleName, slashingtypes.ModuleName,
 		govtypes.ModuleName, minttypes.ModuleName, crisistypes.ModuleName,
 		ibchost.ModuleName, genutiltypes.ModuleName, evidencetypes.ModuleName,
-		ibctransfertypes.ModuleName, customminttypes.ModuleName, swaptypes.ModuleName, vpntypes.ModuleName,
+		ibctransfertypes.ModuleName, feegrant.ModuleName, authz.ModuleName,
+		customminttypes.ModuleName, swaptypes.ModuleName, vpntypes.ModuleName,
 	)
 
-	app.manager.RegisterInvariants(&app.crisisKeeper)
-	app.manager.RegisterRoutes(app.Router(), app.QueryRouter(), encodingConfig.Amino)
-	app.manager.RegisterServices(module.NewConfigurator(app.MsgServiceRouter(), app.GRPCQueryRouter()))
+	app.moduleManager.RegisterInvariants(&app.crisisKeeper)
+	app.moduleManager.RegisterRoutes(app.Router(), app.QueryRouter(), encodingConfig.Amino)
+	app.moduleManager.RegisterServices(app.configurator)
 
 	app.simulationManager = module.NewSimulationManager(
 		auth.NewAppModule(app.cdc, app.accountKeeper, authsimulation.RandomGenesisAccounts),
+		authzmodule.NewAppModule(app.cdc, app.authzKeeper, app.accountKeeper, app.bankKeeper, app.interfaceRegistry),
 		bank.NewAppModule(app.cdc, app.bankKeeper, app.accountKeeper),
 		capability.NewAppModule(app.cdc, *app.capabilityKeeper),
 		distribution.NewAppModule(app.cdc, app.distributionKeeper, app.accountKeeper, app.bankKeeper, app.stakingKeeper),
 		evidence.NewAppModule(app.evidenceKeeper),
+		feegrantmodule.NewAppModule(app.cdc, app.accountKeeper, app.bankKeeper, app.feeGrantKeeper, app.interfaceRegistry),
 		gov.NewAppModule(app.cdc, app.govKeeper, app.accountKeeper, app.bankKeeper),
 		ibc.NewAppModule(app.ibcKeeper),
 		mint.NewAppModule(app.cdc, app.mintKeeper, app.accountKeeper),
@@ -464,32 +500,51 @@ func NewApp(
 
 	app.SetInitChainer(app.InitChainer)
 	app.SetBeginBlocker(app.BeginBlocker)
-	app.SetAnteHandler(
-		ante.NewAnteHandler(
-			app.accountKeeper,
-			app.bankKeeper,
-			ante.DefaultSigVerificationGasConsumer,
-			encodingConfig.TxConfig.SignModeHandler(),
-		),
+
+	anteHandler, err := NewAnteHandler(
+		HandlerOptions{
+			HandlerOptions: ante.HandlerOptions{
+				AccountKeeper:   app.accountKeeper,
+				BankKeeper:      app.bankKeeper,
+				FeegrantKeeper:  app.feeGrantKeeper,
+				SignModeHandler: encodingConfig.TxConfig.SignModeHandler(),
+				SigGasConsumer:  ante.DefaultSigVerificationGasConsumer,
+			},
+			IBCChannelKeeper: app.ibcKeeper.ChannelKeeper,
+		},
 	)
+	if err != nil {
+		panic(err)
+	}
+
+	app.SetAnteHandler(anteHandler)
 	app.SetEndBlocker(app.EndBlocker)
 
 	app.upgradeKeeper.SetUpgradeHandler(
-		upgrade1.Name,
-		upgrade1.Handler(app.accountKeeper),
+		upgrade3.Name,
+		upgrade3.Handler(app.moduleManager, app.configurator, &app.ibcKeeper.ConnectionKeeper),
 	)
-	app.upgradeKeeper.SetUpgradeHandler(
-		upgrade2.Name,
-		upgrade2.Handler(app.SetStoreLoader, app.accountKeeper, app.upgradeKeeper, app.customMintKeeper),
-	)
+
+	upgradeInfo, err := app.upgradeKeeper.ReadUpgradeInfoFromDisk()
+	if err != nil {
+		panic(fmt.Sprintf("failed to read upgrade info from disk %s", err))
+	}
+
+	if upgradeInfo.Name == upgrade3.Name && !app.upgradeKeeper.IsSkipHeight(upgradeInfo.Height) {
+		storeUpgrades := storetypes.StoreUpgrades{
+			Added: []string{
+				authz.ModuleName,
+				feegrant.ModuleName,
+			},
+		}
+
+		app.SetStoreLoader(upgradetypes.UpgradeStoreLoader(upgradeInfo.Height, &storeUpgrades))
+	}
 
 	if loadLatest {
 		if err := app.LoadLatestVersion(); err != nil {
 			tmos.Exit(err.Error())
 		}
-
-		ctx := app.BaseApp.NewUncachedContext(true, tmproto.Header{})
-		app.capabilityKeeper.InitializeAndSeal(ctx)
 	}
 
 	app.scopedIBCKeeper = scopedIBCKeeper
@@ -501,11 +556,11 @@ func NewApp(
 func (a *App) Name() string { return a.BaseApp.Name() }
 
 func (a *App) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) abci.ResponseBeginBlock {
-	return a.manager.BeginBlock(ctx, req)
+	return a.moduleManager.BeginBlock(ctx, req)
 }
 
 func (a *App) EndBlocker(ctx sdk.Context, req abci.RequestEndBlock) abci.ResponseEndBlock {
-	return a.manager.EndBlock(ctx, req)
+	return a.moduleManager.EndBlock(ctx, req)
 }
 
 func (a *App) InitChainer(ctx sdk.Context, req abci.RequestInitChain) abci.ResponseInitChain {
@@ -513,14 +568,17 @@ func (a *App) InitChainer(ctx sdk.Context, req abci.RequestInitChain) abci.Respo
 	if err := tmjson.Unmarshal(req.AppStateBytes, &state); err != nil {
 		panic(err)
 	}
-	return a.manager.InitGenesis(ctx, a.cdc, state)
+
+	a.upgradeKeeper.SetModuleVersionMap(ctx, a.moduleManager.GetVersionMap())
+
+	return a.moduleManager.InitGenesis(ctx, a.cdc, state)
 }
 
 func (a *App) LegacyAmino() *codec.LegacyAmino {
 	return a.amino
 }
 
-func (a *App) AppCodec() codec.Marshaler {
+func (a *App) AppCodec() codec.Codec {
 	return a.cdc
 }
 

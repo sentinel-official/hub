@@ -281,7 +281,7 @@ func TestMsgUpdateRequest_ValidateBasic(t *testing.T) {
 			fields{
 				From: "sentnode1qypqxpq9qcrsszgse4wwrm",
 			},
-			true,
+			false,
 		},
 		{
 			"20 bytes from",
@@ -295,7 +295,7 @@ func TestMsgUpdateRequest_ValidateBasic(t *testing.T) {
 			fields{
 				From: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqyy3zxfp9ycnjs2fsxqglcv",
 			},
-			true,
+			false,
 		},
 		{
 			"empty provider and nil price",
@@ -329,7 +329,7 @@ func TestMsgUpdateRequest_ValidateBasic(t *testing.T) {
 				From:     "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
 				Provider: "sentprov1qypqxpq9qcrsszgsutj8xr",
 			},
-			true,
+			false,
 		},
 		{
 			"20 bytes provider",
@@ -345,7 +345,7 @@ func TestMsgUpdateRequest_ValidateBasic(t *testing.T) {
 				From:     "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
 				Provider: "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfqyy3zxfp9ycnjs2fsh33zgx",
 			},
-			true,
+			false,
 		},
 		{
 			"empty price",

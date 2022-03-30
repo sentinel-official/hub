@@ -283,6 +283,9 @@ func (k *msgServer) MsgUpdateQuota(c context.Context, msg *types.MsgUpdateQuotaR
 	if !found {
 		return nil, types.ErrorSubscriptionDoesNotExist
 	}
+	if subscription.Plan == 0 {
+		return nil, types.ErrorCanNotUpdateQuota
+	}
 	if msg.From != subscription.Owner {
 		return nil, types.ErrorUnauthorized
 	}

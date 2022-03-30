@@ -12,7 +12,7 @@ import (
 
 func (k *Keeper) SetCount(ctx sdk.Context, count uint64) {
 	key := types.CountKey
-	value := k.cdc.MustMarshalBinaryBare(&protobuf.UInt64Value{Value: count})
+	value := k.cdc.MustMarshal(&protobuf.UInt64Value{Value: count})
 
 	store := k.Store(ctx)
 	store.Set(key, value)
@@ -28,14 +28,14 @@ func (k *Keeper) GetCount(ctx sdk.Context) uint64 {
 	}
 
 	var count protobuf.UInt64Value
-	k.cdc.MustUnmarshalBinaryBare(value, &count)
+	k.cdc.MustUnmarshal(value, &count)
 
 	return count.GetValue()
 }
 
 func (k *Keeper) SetSubscription(ctx sdk.Context, subscription types.Subscription) {
 	key := types.SubscriptionKey(subscription.Id)
-	value := k.cdc.MustMarshalBinaryBare(&subscription)
+	value := k.cdc.MustMarshal(&subscription)
 
 	store := k.Store(ctx)
 	store.Set(key, value)
@@ -50,8 +50,15 @@ func (k *Keeper) GetSubscription(ctx sdk.Context, id uint64) (subscription types
 		return subscription, false
 	}
 
-	k.cdc.MustUnmarshalBinaryBare(value, &subscription)
+	k.cdc.MustUnmarshal(value, &subscription)
 	return subscription, true
+}
+
+func (k *Keeper) DeleteSubscription(ctx sdk.Context, id uint64) {
+	key := types.SubscriptionKey(id)
+
+	store := k.Store(ctx)
+	store.Delete(key)
 }
 
 func (k *Keeper) GetSubscriptions(ctx sdk.Context, skip, limit int64) (items types.Subscriptions) {
@@ -67,7 +74,7 @@ func (k *Keeper) GetSubscriptions(ctx sdk.Context, skip, limit int64) (items typ
 	iter.Skip(skip)
 	iter.Limit(limit, func(iter sdk.Iterator) {
 		var item types.Subscription
-		k.cdc.MustUnmarshalBinaryBare(iter.Value(), &item)
+		k.cdc.MustUnmarshal(iter.Value(), &item)
 		items = append(items, item)
 	})
 
@@ -76,7 +83,7 @@ func (k *Keeper) GetSubscriptions(ctx sdk.Context, skip, limit int64) (items typ
 
 func (k *Keeper) SetActiveSubscriptionForAddress(ctx sdk.Context, address sdk.AccAddress, id uint64) {
 	key := types.ActiveSubscriptionForAddressKey(address, id)
-	value := k.cdc.MustMarshalBinaryBare(&protobuf.BoolValue{Value: true})
+	value := k.cdc.MustMarshal(&protobuf.BoolValue{Value: true})
 
 	store := k.Store(ctx)
 	store.Set(key, value)
@@ -110,7 +117,7 @@ func (k *Keeper) GetActiveSubscriptionsForAddress(ctx sdk.Context, address sdk.A
 
 func (k *Keeper) SetInactiveSubscriptionForAddress(ctx sdk.Context, address sdk.AccAddress, id uint64) {
 	key := types.InactiveSubscriptionForAddressKey(address, id)
-	value := k.cdc.MustMarshalBinaryBare(&protobuf.BoolValue{Value: true})
+	value := k.cdc.MustMarshal(&protobuf.BoolValue{Value: true})
 
 	store := k.Store(ctx)
 	store.Set(key, value)
@@ -164,7 +171,7 @@ func (k *Keeper) GetSubscriptionsForAddress(ctx sdk.Context, address sdk.AccAddr
 
 func (k *Keeper) SetInactiveSubscriptionAt(ctx sdk.Context, at time.Time, id uint64) {
 	key := types.InactiveSubscriptionAtKey(at, id)
-	value := k.cdc.MustMarshalBinaryBare(&protobuf.BoolValue{Value: true})
+	value := k.cdc.MustMarshal(&protobuf.BoolValue{Value: true})
 
 	store := k.Store(ctx)
 	store.Set(key, value)

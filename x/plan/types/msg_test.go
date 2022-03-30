@@ -416,7 +416,7 @@ func TestMsgAddNodeRequest_ValidateBasic(t *testing.T) {
 				Id:      1000,
 				Address: "sentnode1qypqxpq9qcrsszgse4wwrm",
 			},
-			true,
+			false,
 		},
 		{
 			"20 bytes address",
@@ -434,7 +434,7 @@ func TestMsgAddNodeRequest_ValidateBasic(t *testing.T) {
 				Id:      1000,
 				Address: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqyy3zxfp9ycnjs2fsxqglcv",
 			},
-			true,
+			false,
 		},
 	}
 	for _, tt := range tests {
@@ -554,7 +554,7 @@ func TestMsgRemoveNodeRequest_ValidateBasic(t *testing.T) {
 				Id:      1000,
 				Address: "sentnode1qypqxpq9qcrsszgse4wwrm",
 			},
-			true,
+			false,
 		},
 		{
 			"20 bytes address",
@@ -572,7 +572,7 @@ func TestMsgRemoveNodeRequest_ValidateBasic(t *testing.T) {
 				Id:      1000,
 				Address: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqyy3zxfp9ycnjs2fsxqglcv",
 			},
-			true,
+			false,
 		},
 	}
 	for _, tt := range tests {

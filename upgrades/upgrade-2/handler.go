@@ -5,8 +5,8 @@ import (
 	"time"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
-	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/module"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	vestingtypes "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
@@ -18,37 +18,13 @@ import (
 )
 
 func Handler(
-	setStoreLoader func(baseapp.StoreLoader),
-	accountKeeper authkeeper.AccountKeeper,
-	upgradeKeeper upgradekeeper.Keeper,
-	customMintKeeper custommintkeeper.Keeper,
+	_ func(baseapp.StoreLoader),
+	_ authkeeper.AccountKeeper,
+	_ upgradekeeper.Keeper,
+	_ custommintkeeper.Keeper,
 ) upgradetypes.UpgradeHandler {
-	info, err := upgradeKeeper.ReadUpgradeInfoFromDisk()
-	if err != nil {
-		panic(err)
-	}
-
-	if info.Name == Name && !upgradeKeeper.IsSkipHeight(info.Height) {
-		upgrades := &storetypes.StoreUpgrades{
-			Added: []string{customminttypes.ModuleName},
-		}
-
-		setStoreLoader(
-			upgradetypes.UpgradeStoreLoader(
-				info.Height,
-				upgrades,
-			),
-		)
-	}
-
-	return func(ctx sdk.Context, _ upgradetypes.Plan) {
-		if err := setInflations(ctx, customMintKeeper); err != nil {
-			panic(err)
-		}
-
-		if err := updateVestingAccounts(ctx, accountKeeper); err != nil {
-			panic(err)
-		}
+	return func(ctx sdk.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
+		return fromVM, nil
 	}
 }
 

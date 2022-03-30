@@ -54,7 +54,7 @@ func (q *queryServer) QuerySubscriptions(c context.Context, req *types.QuerySubs
 
 	pagination, err := query.FilteredPaginate(store, req.Pagination, func(_, value []byte, accumulate bool) (bool, error) {
 		var item types.Subscription
-		if err := q.cdc.UnmarshalBinaryBare(value, &item); err != nil {
+		if err := q.cdc.Unmarshal(value, &item); err != nil {
 			return false, err
 		}
 
@@ -122,7 +122,7 @@ func (q *queryServer) QuerySubscriptionsForAddress(c context.Context, req *types
 		store := prefix.NewStore(q.Store(ctx), types.SubscriptionKeyPrefix)
 		pagination, err = query.FilteredPaginate(store, req.Pagination, func(_, value []byte, accumulate bool) (bool, error) {
 			var item types.Subscription
-			if err := q.cdc.UnmarshalBinaryBare(value, &item); err != nil {
+			if err := q.cdc.Unmarshal(value, &item); err != nil {
 				return false, err
 			}
 			if !strings.EqualFold(item.Owner, req.Address) {
@@ -177,7 +177,7 @@ func (q *queryServer) QueryQuotas(c context.Context, req *types.QueryQuotasReque
 
 	pagination, err := query.FilteredPaginate(store, req.Pagination, func(_, value []byte, accumulate bool) (bool, error) {
 		var item types.Quota
-		if err := q.cdc.UnmarshalBinaryBare(value, &item); err != nil {
+		if err := q.cdc.Unmarshal(value, &item); err != nil {
 			return false, err
 		}
 

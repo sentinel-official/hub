@@ -6,35 +6,36 @@ import (
 	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/address"
 	"github.com/stretchr/testify/require"
 )
 
 func TestActiveNodeForProviderKey(t *testing.T) {
 	var (
-		address  []byte
+		node     []byte
 		provider []byte
 	)
 
-	for i := 0; i < 41; i++ {
+	for i := 0; i < 512; i++ {
 		provider = make([]byte, i)
 		_, _ = rand.Read(provider)
 
-		for j := 0; j < 41; j++ {
-			address = make([]byte, j)
-			_, _ = rand.Read(address)
+		for j := 0; j < 512; j++ {
+			node = make([]byte, j)
+			_, _ = rand.Read(node)
 
-			if i == 20 && j == 20 {
+			if i < 256 && j < 256 {
 				require.Equal(
 					t,
-					append(append(ActiveNodeForProviderKeyPrefix, provider...), address...),
-					ActiveNodeForProviderKey(provider, address),
+					append(append(ActiveNodeForProviderKeyPrefix, address.MustLengthPrefix(provider)...), address.MustLengthPrefix(node)...),
+					ActiveNodeForProviderKey(provider, node),
 				)
 
 				continue
 			}
 
 			require.Panics(t, func() {
-				ActiveNodeForProviderKey(provider, address)
+				ActiveNodeForProviderKey(provider, node)
 			})
 		}
 	}
@@ -42,156 +43,81 @@ func TestActiveNodeForProviderKey(t *testing.T) {
 
 func TestActiveNodeKey(t *testing.T) {
 	var (
-		address []byte
+		addr []byte
 	)
 
-	for i := 0; i < 41; i++ {
-		address = make([]byte, i)
-		_, _ = rand.Read(address)
+	for i := 0; i < 512; i++ {
+		addr = make([]byte, i)
+		_, _ = rand.Read(addr)
 
-		if i == 20 {
+		if i < 256 {
 			require.Equal(
 				t,
-				append(ActiveNodeKeyPrefix, address...),
-				ActiveNodeKey(address),
+				append(ActiveNodeKeyPrefix, address.MustLengthPrefix(addr)...),
+				ActiveNodeKey(addr),
 			)
 
 			continue
 		}
 
 		require.Panics(t, func() {
-			ActiveNodeKey(address)
-		})
-	}
-}
-
-func TestAddressFromStatusNodeAtKey(t *testing.T) {
-	var (
-		key []byte
-	)
-
-	for i := 0; i < 60; i++ {
-		key = make([]byte, i)
-		_, _ = rand.Read(key)
-
-		if i == 50 {
-			require.Equal(
-				t,
-				key[30:],
-				AddressFromStatusNodeAtKey(key).Bytes(),
-			)
-
-			continue
-		}
-
-		require.Panics(t, func() {
-			AddressFromStatusNodeAtKey(key)
-		})
-	}
-}
-
-func TestAddressFromStatusNodeForProviderKey(t *testing.T) {
-	var (
-		key []byte
-	)
-
-	for i := 0; i < 60; i++ {
-		key = make([]byte, i)
-		_, _ = rand.Read(key)
-
-		if i == 41 {
-			require.Equal(
-				t,
-				key[21:],
-				AddressFromStatusNodeForProviderKey(key).Bytes(),
-			)
-
-			continue
-		}
-
-		require.Panics(t, func() {
-			AddressFromStatusNodeForProviderKey(key)
-		})
-	}
-}
-
-func TestAddressFromStatusNodeKey(t *testing.T) {
-	var (
-		key []byte
-	)
-
-	for i := 0; i < 60; i++ {
-		key = make([]byte, i)
-		_, _ = rand.Read(key)
-
-		if i == 21 {
-			require.Equal(
-				t,
-				key[1:],
-				AddressFromStatusNodeKey(key).Bytes(),
-			)
-
-			continue
-		}
-
-		require.Panics(t, func() {
-			AddressFromStatusNodeKey(key)
+			ActiveNodeKey(addr)
 		})
 	}
 }
 
 func TestInactiveNodeAtKey(t *testing.T) {
 	var (
-		at      = time.Now()
-		address []byte
+		at   = time.Now()
+		addr []byte
 	)
 
-	for i := 0; i < 41; i++ {
-		address = make([]byte, i)
-		_, _ = rand.Read(address)
+	for i := 0; i < 512; i++ {
+		addr = make([]byte, i)
+		_, _ = rand.Read(addr)
 
-		if i == 20 {
+		if i < 256 {
 			require.Equal(
 				t,
-				append(append(InactiveNodeAtKeyPrefix, sdk.FormatTimeBytes(at)...), address...),
-				InactiveNodeAtKey(at, address),
+				append(append(InactiveNodeAtKeyPrefix, sdk.FormatTimeBytes(at)...), address.MustLengthPrefix(addr)...),
+				InactiveNodeAtKey(at, addr),
 			)
 
 			continue
 		}
 
 		require.Panics(t, func() {
-			InactiveNodeAtKey(at, address)
+			InactiveNodeAtKey(at, addr)
 		})
 	}
 }
 
 func TestInactiveNodeForProviderKey(t *testing.T) {
 	var (
-		address  []byte
+		node     []byte
 		provider []byte
 	)
 
-	for i := 0; i < 41; i++ {
+	for i := 0; i < 512; i++ {
 		provider = make([]byte, i)
 		_, _ = rand.Read(provider)
 
-		for j := 0; j < 41; j++ {
-			address = make([]byte, j)
-			_, _ = rand.Read(address)
+		for j := 0; j < 512; j++ {
+			node = make([]byte, j)
+			_, _ = rand.Read(node)
 
-			if i == 20 && j == 20 {
+			if i < 256 && j < 256 {
 				require.Equal(
 					t,
-					append(append(InactiveNodeForProviderKeyPrefix, provider...), address...),
-					InactiveNodeForProviderKey(provider, address),
+					append(append(InactiveNodeForProviderKeyPrefix, address.MustLengthPrefix(provider)...), address.MustLengthPrefix(node)...),
+					InactiveNodeForProviderKey(provider, node),
 				)
 
 				continue
 			}
 
 			require.Panics(t, func() {
-				InactiveNodeForProviderKey(provider, address)
+				InactiveNodeForProviderKey(provider, node)
 			})
 		}
 	}
@@ -199,50 +125,50 @@ func TestInactiveNodeForProviderKey(t *testing.T) {
 
 func TestInactiveNodeKey(t *testing.T) {
 	var (
-		address []byte
+		addr []byte
 	)
 
-	for i := 0; i < 41; i++ {
-		address = make([]byte, i)
-		_, _ = rand.Read(address)
+	for i := 0; i < 512; i++ {
+		addr = make([]byte, i)
+		_, _ = rand.Read(addr)
 
-		if i == 20 {
+		if i < 256 {
 			require.Equal(
 				t,
-				append(InactiveNodeKeyPrefix, address...),
-				InactiveNodeKey(address),
+				append(InactiveNodeKeyPrefix, address.MustLengthPrefix(addr)...),
+				InactiveNodeKey(addr),
 			)
 
 			continue
 		}
 
 		require.Panics(t, func() {
-			InactiveNodeKey(address)
+			InactiveNodeKey(addr)
 		})
 	}
 }
 
 func TestNodeKey(t *testing.T) {
 	var (
-		address []byte
+		addr []byte
 	)
 
-	for i := 0; i < 41; i++ {
-		address = make([]byte, i)
-		_, _ = rand.Read(address)
+	for i := 0; i < 512; i++ {
+		addr = make([]byte, i)
+		_, _ = rand.Read(addr)
 
-		if i == 20 {
+		if i < 256 {
 			require.Equal(
 				t,
-				append(NodeKeyPrefix, address...),
-				NodeKey(address),
+				append(NodeKeyPrefix, address.MustLengthPrefix(addr)...),
+				NodeKey(addr),
 			)
 
 			continue
 		}
 
 		require.Panics(t, func() {
-			NodeKey(address)
+			NodeKey(addr)
 		})
 	}
 }

@@ -28,5 +28,6 @@ var (
 	ErrorDuplicateQuota            = errors.Register(ModuleName, 211, "duplicate quota")
 	ErrorQuotaDoesNotExist         = errors.Register(ModuleName, 212, "quota does not exist")
 	ErrorCanNotAddQuota            = errors.Register(ModuleName, 213, "can not add quota")
-	ErrorCanNotCancel              = errors.Register(ModuleName, 214, "can not cancel")
+	ErrorCanNotUpdateQuota         = errors.Register(ModuleName, 214, "can not update quota")
+	ErrorCanNotCancel              = errors.Register(ModuleName, 215, "can not cancel")
 )

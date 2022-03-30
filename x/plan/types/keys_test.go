@@ -5,30 +5,31 @@ import (
 	"testing"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/address"
 	"github.com/stretchr/testify/require"
 )
 
 func TestActivePlanForProviderKey(t *testing.T) {
 	var (
-		address []byte
+		addr []byte
 	)
 
-	for i := 0; i < 41; i++ {
-		address = make([]byte, i)
-		_, _ = rand.Read(address)
+	for i := 0; i < 512; i++ {
+		addr = make([]byte, i)
+		_, _ = rand.Read(addr)
 
-		if i == 20 {
+		if i < 256 {
 			require.Equal(
 				t,
-				append(append(ActivePlanForProviderKeyPrefix, address...), sdk.Uint64ToBigEndian(1000)...),
-				ActivePlanForProviderKey(address, 1000),
+				append(append(ActivePlanForProviderKeyPrefix, address.MustLengthPrefix(addr)...), sdk.Uint64ToBigEndian(1000)...),
+				ActivePlanForProviderKey(addr, 1000),
 			)
 
 			continue
 		}
 
 		require.Panics(t, func() {
-			ActivePlanForProviderKey(address, 1000)
+			ActivePlanForProviderKey(addr, 1000)
 		})
 	}
 }
@@ -41,133 +42,58 @@ func TestActivePlanKey(t *testing.T) {
 	)
 }
 
-func TestAddressFromNodeForPlanKey(t *testing.T) {
-	var (
-		key []byte
-	)
-
-	for i := 0; i < 60; i++ {
-		key = make([]byte, i)
-		_, _ = rand.Read(key)
-
-		if i == 29 {
-			require.Equal(
-				t,
-				key[9:],
-				AddressFromNodeForPlanKey(key).Bytes(),
-			)
-
-			continue
-		}
-
-		require.Panics(t, func() {
-			AddressFromNodeForPlanKey(key)
-		})
-	}
-}
-
 func TestCountForNodeByProviderKey(t *testing.T) {
 	var (
-		address  []byte
+		node     []byte
 		provider []byte
 	)
 
-	for i := 0; i < 41; i++ {
+	for i := 0; i < 512; i++ {
 		provider = make([]byte, i)
 		_, _ = rand.Read(provider)
 
-		for j := 0; j < 41; j++ {
-			address = make([]byte, j)
-			_, _ = rand.Read(address)
+		for j := 0; j < 512; j++ {
+			node = make([]byte, j)
+			_, _ = rand.Read(node)
 
-			if i == 20 && j == 20 {
+			if i < 256 && j < 256 {
 				require.Equal(
 					t,
-					append(append(CountForNodeByProviderKeyPrefix, provider...), address...),
-					CountForNodeByProviderKey(provider, address),
+					append(append(CountForNodeByProviderKeyPrefix, address.MustLengthPrefix(provider)...), address.MustLengthPrefix(node)...),
+					CountForNodeByProviderKey(provider, node),
 				)
 
 				continue
 			}
 
 			require.Panics(t, func() {
-				CountForNodeByProviderKey(provider, address)
+				CountForNodeByProviderKey(provider, node)
 			})
 		}
 	}
 }
 
-func TestIDFromStatusPlanForProviderKey(t *testing.T) {
-	var (
-		key []byte
-	)
-
-	for i := 0; i < 60; i++ {
-		key = make([]byte, i)
-		_, _ = rand.Read(key)
-
-		if i == 29 {
-			require.Equal(
-				t,
-				sdk.BigEndianToUint64(key[21:]),
-				IDFromStatusPlanForProviderKey(key),
-			)
-
-			continue
-		}
-
-		require.Panics(t, func() {
-			IDFromStatusPlanForProviderKey(key)
-		})
-	}
-}
-
-func TestIDFromStatusPlanKey(t *testing.T) {
-	var (
-		key []byte
-	)
-
-	for i := 0; i < 60; i++ {
-		key = make([]byte, i)
-		_, _ = rand.Read(key)
-
-		if i == 9 {
-			require.Equal(
-				t,
-				sdk.BigEndianToUint64(key[1:]),
-				IDFromStatusPlanKey(key),
-			)
-
-			continue
-		}
-
-		require.Panics(t, func() {
-			IDFromStatusPlanKey(key)
-		})
-	}
-}
-
 func TestInactivePlanForProviderKey(t *testing.T) {
 	var (
-		address []byte
+		addr []byte
 	)
 
-	for i := 0; i < 41; i++ {
-		address = make([]byte, i)
-		_, _ = rand.Read(address)
+	for i := 0; i < 512; i++ {
+		addr = make([]byte, i)
+		_, _ = rand.Read(addr)
 
-		if i == 20 {
+		if i < 256 {
 			require.Equal(
 				t,
-				append(append(InactivePlanForProviderKeyPrefix, address...), sdk.Uint64ToBigEndian(1000)...),
-				InactivePlanForProviderKey(address, 1000),
+				append(append(InactivePlanForProviderKeyPrefix, address.MustLengthPrefix(addr)...), sdk.Uint64ToBigEndian(1000)...),
+				InactivePlanForProviderKey(addr, 1000),
 			)
 
 			continue
 		}
 
 		require.Panics(t, func() {
-			InactivePlanForProviderKey(address, 1000)
+			InactivePlanForProviderKey(addr, 1000)
 		})
 	}
 }
@@ -182,25 +108,25 @@ func TestInactivePlanKey(t *testing.T) {
 
 func TestNodeForPlanKey(t *testing.T) {
 	var (
-		address []byte
+		addr []byte
 	)
 
-	for i := 0; i < 41; i++ {
-		address = make([]byte, i)
-		_, _ = rand.Read(address)
+	for i := 0; i < 512; i++ {
+		addr = make([]byte, i)
+		_, _ = rand.Read(addr)
 
-		if i == 20 {
+		if i < 256 {
 			require.Equal(
 				t,
-				append(append(NodeForPlanKeyPrefix, sdk.Uint64ToBigEndian(1000)...), address...),
-				NodeForPlanKey(1000, address),
+				append(append(NodeForPlanKeyPrefix, sdk.Uint64ToBigEndian(1000)...), address.MustLengthPrefix(addr)...),
+				NodeForPlanKey(1000, addr),
 			)
 
 			continue
 		}
 
 		require.Panics(t, func() {
-			NodeForPlanKey(1000, address)
+			NodeForPlanKey(1000, addr)
 		})
 	}
 }

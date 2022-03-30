@@ -1,9 +1,7 @@
 package types
 
 import (
-	"fmt"
-
-	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/address"
 
 	hubtypes "github.com/sentinel-official/hub/types"
 )
@@ -28,11 +26,6 @@ var (
 	ProviderKeyPrefix = []byte{0x10}
 )
 
-func ProviderKey(address hubtypes.ProvAddress) []byte {
-	v := append(ProviderKeyPrefix, address.Bytes()...)
-	if len(v) != 1+sdk.AddrLen {
-		panic(fmt.Errorf("invalid key length %d; expected %d", len(v), 1+sdk.AddrLen))
-	}
-
-	return v
+func ProviderKey(addr hubtypes.ProvAddress) []byte {
+	return append(ProviderKeyPrefix, address.MustLengthPrefix(addr.Bytes())...)
 }
