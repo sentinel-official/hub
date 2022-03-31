@@ -556,7 +556,7 @@ func NewApp(
 func (a *App) Name() string { return a.BaseApp.Name() }
 
 func (a *App) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) abci.ResponseBeginBlock {
-	if ctx.BlockHeight() == 5_140_000 {
+	if ctx.BlockHeight() >= 5_140_000 {
 		a.moduleManager.SetOrderBeginBlockers(
 			upgradetypes.ModuleName, capabilitytypes.ModuleName, customminttypes.ModuleName,
 			minttypes.ModuleName, distributiontypes.ModuleName, slashingtypes.ModuleName,
