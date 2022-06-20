@@ -53,12 +53,12 @@ func (q *queryServer) QuerySessions(c context.Context, req *types.QuerySessionsR
 	)
 
 	pagination, err := query.FilteredPaginate(store, req.Pagination, func(_, value []byte, accumulate bool) (bool, error) {
-		var item types.Session
-		if err := q.cdc.Unmarshal(value, &item); err != nil {
-			return false, err
-		}
-
 		if accumulate {
+			var item types.Session
+			if err := q.cdc.Unmarshal(value, &item); err != nil {
+				return false, err
+			}
+
 			items = append(items, item)
 		}
 
@@ -91,12 +91,12 @@ func (q *queryServer) QuerySessionsForAddress(c context.Context, req *types.Quer
 	if req.Status.Equal(hubtypes.StatusActive) {
 		store := prefix.NewStore(q.Store(ctx), types.GetActiveSessionForAddressKeyPrefix(address))
 		pagination, err = query.FilteredPaginate(store, req.Pagination, func(key []byte, _ []byte, accumulate bool) (bool, error) {
-			item, found := q.GetSession(ctx, sdk.BigEndianToUint64(key))
-			if !found {
-				return false, nil
-			}
-
 			if accumulate {
+				item, found := q.GetSession(ctx, sdk.BigEndianToUint64(key))
+				if !found {
+					return false, nil
+				}
+
 				items = append(items, item)
 			}
 
@@ -105,12 +105,12 @@ func (q *queryServer) QuerySessionsForAddress(c context.Context, req *types.Quer
 	} else if req.Status.Equal(hubtypes.StatusInactive) {
 		store := prefix.NewStore(q.Store(ctx), types.GetInactiveSessionForAddressKeyPrefix(address))
 		pagination, err = query.FilteredPaginate(store, req.Pagination, func(key []byte, _ []byte, accumulate bool) (bool, error) {
-			item, found := q.GetSession(ctx, sdk.BigEndianToUint64(key))
-			if !found {
-				return false, nil
-			}
-
 			if accumulate {
+				item, found := q.GetSession(ctx, sdk.BigEndianToUint64(key))
+				if !found {
+					return false, nil
+				}
+
 				items = append(items, item)
 			}
 
@@ -121,15 +121,15 @@ func (q *queryServer) QuerySessionsForAddress(c context.Context, req *types.Quer
 
 		store := prefix.NewStore(q.Store(ctx), types.SessionKeyPrefix)
 		pagination, err = query.FilteredPaginate(store, req.Pagination, func(_, value []byte, accumulate bool) (bool, error) {
-			var item types.Session
-			if err := q.cdc.Unmarshal(value, &item); err != nil {
-				return false, err
-			}
-			if !strings.EqualFold(item.Address, req.Address) {
-				return false, nil
-			}
-
 			if accumulate {
+				var item types.Session
+				if err := q.cdc.Unmarshal(value, &item); err != nil {
+					return false, err
+				}
+				if !strings.EqualFold(item.Address, req.Address) {
+					return false, nil
+				}
+
 				items = append(items, item)
 			}
 

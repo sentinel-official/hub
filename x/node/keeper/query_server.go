@@ -60,12 +60,12 @@ func (q *queryServer) QueryNodes(c context.Context, req *types.QueryNodesRequest
 	if req.Status.Equal(hubtypes.Active) {
 		store := prefix.NewStore(q.Store(ctx), types.ActiveNodeKeyPrefix)
 		pagination, err = query.FilteredPaginate(store, req.Pagination, func(key, _ []byte, accumulate bool) (bool, error) {
-			item, found := q.GetNode(ctx, key[1:])
-			if !found {
-				return false, nil
-			}
-
 			if accumulate {
+				item, found := q.GetNode(ctx, key[1:])
+				if !found {
+					return false, nil
+				}
+
 				items = append(items, item)
 			}
 
@@ -74,12 +74,12 @@ func (q *queryServer) QueryNodes(c context.Context, req *types.QueryNodesRequest
 	} else if req.Status.Equal(hubtypes.Inactive) {
 		store := prefix.NewStore(q.Store(ctx), types.InactiveNodeKeyPrefix)
 		pagination, err = query.FilteredPaginate(store, req.Pagination, func(key, _ []byte, accumulate bool) (bool, error) {
-			item, found := q.GetNode(ctx, key[1:])
-			if !found {
-				return false, nil
-			}
-
 			if accumulate {
+				item, found := q.GetNode(ctx, key[1:])
+				if !found {
+					return false, nil
+				}
+
 				items = append(items, item)
 			}
 
@@ -88,13 +88,13 @@ func (q *queryServer) QueryNodes(c context.Context, req *types.QueryNodesRequest
 	} else {
 		store := prefix.NewStore(q.Store(ctx), types.NodeKeyPrefix)
 		pagination, err = query.FilteredPaginate(store, req.Pagination, func(_, value []byte, accumulate bool) (bool, error) {
-			var node types.Node
-			if err := q.cdc.Unmarshal(value, &node); err != nil {
-				return false, err
-			}
-
 			if accumulate {
-				items = append(items, node)
+				var item types.Node
+				if err := q.cdc.Unmarshal(value, &item); err != nil {
+					return false, err
+				}
+
+				items = append(items, item)
 			}
 
 			return true, nil
@@ -127,12 +127,12 @@ func (q *queryServer) QueryNodesForProvider(c context.Context, req *types.QueryN
 	if req.Status.Equal(hubtypes.Active) {
 		store := prefix.NewStore(q.Store(ctx), types.GetActiveNodeForProviderKeyPrefix(provider))
 		pagination, err = query.FilteredPaginate(store, req.Pagination, func(key, _ []byte, accumulate bool) (bool, error) {
-			item, found := q.GetNode(ctx, key[1:])
-			if !found {
-				return false, nil
-			}
-
 			if accumulate {
+				item, found := q.GetNode(ctx, key[1:])
+				if !found {
+					return false, nil
+				}
+
 				items = append(items, item)
 			}
 
@@ -141,12 +141,12 @@ func (q *queryServer) QueryNodesForProvider(c context.Context, req *types.QueryN
 	} else if req.Status.Equal(hubtypes.Inactive) {
 		store := prefix.NewStore(q.Store(ctx), types.GetInactiveNodeForProviderKeyPrefix(provider))
 		pagination, err = query.FilteredPaginate(store, req.Pagination, func(key, _ []byte, accumulate bool) (bool, error) {
-			item, found := q.GetNode(ctx, key[1:])
-			if !found {
-				return false, nil
-			}
-
 			if accumulate {
+				item, found := q.GetNode(ctx, key[1:])
+				if !found {
+					return false, nil
+				}
+
 				items = append(items, item)
 			}
 
@@ -157,15 +157,15 @@ func (q *queryServer) QueryNodesForProvider(c context.Context, req *types.QueryN
 
 		store := prefix.NewStore(q.Store(ctx), types.NodeKeyPrefix)
 		pagination, err = query.FilteredPaginate(store, req.Pagination, func(_, value []byte, accumulate bool) (bool, error) {
-			var item types.Node
-			if err := q.cdc.Unmarshal(value, &item); err != nil {
-				return false, err
-			}
-			if !strings.EqualFold(item.Provider, req.Address) {
-				return false, nil
-			}
-
 			if accumulate {
+				var item types.Node
+				if err := q.cdc.Unmarshal(value, &item); err != nil {
+					return false, err
+				}
+				if !strings.EqualFold(item.Provider, req.Address) {
+					return false, nil
+				}
+
 				items = append(items, item)
 			}
 
