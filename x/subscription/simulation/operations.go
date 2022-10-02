@@ -173,6 +173,7 @@ func SimulateMsgSubscribeToNodeRequest(ak expected.AccountKeeper, bk expected.Ba
 		)
 
 		txn, err := helpers.GenTx(
+			r,
 			txConfig,
 			[]sdk.Msg{message},
 			fees,
@@ -237,6 +238,7 @@ func SimulateMsgSubscribeToPlanRequest(ak expected.AccountKeeper, bk expected.Ba
 		)
 
 		txn, err := helpers.GenTx(
+			r,
 			txConfig,
 			[]sdk.Msg{message},
 			fees,
@@ -300,6 +302,7 @@ func SimulateMsgCancelRequest(ak expected.AccountKeeper, bk expected.BankKeeper,
 		)
 
 		txn, err := helpers.GenTx(
+			r,
 			txConfig,
 			[]sdk.Msg{message},
 			fees,
@@ -378,6 +381,7 @@ func SimulateMsgAddQuotaRequest(ak expected.AccountKeeper, bk expected.BankKeepe
 		)
 
 		txn, err := helpers.GenTx(
+			r,
 			txConfig,
 			[]sdk.Msg{message},
 			fees,
@@ -456,6 +460,7 @@ func SimulateMsgUpdateQuotaRequest(ak expected.AccountKeeper, bk expected.BankKe
 		)
 
 		txn, err := helpers.GenTx(
+			r,
 			txConfig,
 			[]sdk.Msg{message},
 			fees,

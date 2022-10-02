@@ -94,7 +94,7 @@ func (m *MsgUpdateRequest) Type() string {
 	return TypeMsgUpdateRequest
 }
 
-func (m MsgUpdateRequest) ValidateBasic() error {
+func (m *MsgUpdateRequest) ValidateBasic() error {
 	if m.From == "" {
 		return errors.Wrap(ErrorInvalidFrom, "from cannot be empty")
 	}

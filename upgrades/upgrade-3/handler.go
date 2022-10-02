@@ -7,8 +7,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/authz"
 	"github.com/cosmos/cosmos-sdk/x/feegrant"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
-	ibcconnectionkeeper "github.com/cosmos/ibc-go/v2/modules/core/03-connection/keeper"
-	ibcconnectiontypes "github.com/cosmos/ibc-go/v2/modules/core/03-connection/types"
+	ibcconnectionkeeper "github.com/cosmos/ibc-go/v3/modules/core/03-connection/keeper"
+	ibcconnectiontypes "github.com/cosmos/ibc-go/v3/modules/core/03-connection/types"
 )
 
 func Handler(

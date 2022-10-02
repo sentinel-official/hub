@@ -4,27 +4,27 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/x/auth/ante"
-	ibcchannelkeeper "github.com/cosmos/ibc-go/v2/modules/core/04-channel/keeper"
-	ibcante "github.com/cosmos/ibc-go/v2/modules/core/ante"
+	ibcante "github.com/cosmos/ibc-go/v3/modules/core/ante"
+	ibckeeper "github.com/cosmos/ibc-go/v3/modules/core/keeper"
 )
 
 type HandlerOptions struct {
 	ante.HandlerOptions
-	IBCChannelKeeper ibcchannelkeeper.Keeper
+	IBCKeeper *ibckeeper.Keeper
 }
 
-func NewAnteHandler(options HandlerOptions) (sdk.AnteHandler, error) {
-	if options.AccountKeeper == nil {
+func NewAnteHandler(opts HandlerOptions) (sdk.AnteHandler, error) {
+	if opts.AccountKeeper == nil {
 		return nil, errors.Wrap(errors.ErrLogic, "account keeper is required for AnteHandler")
 	}
-	if options.BankKeeper == nil {
+	if opts.BankKeeper == nil {
 		return nil, errors.Wrap(errors.ErrLogic, "bank keeper is required for AnteHandler")
 	}
-	if options.SignModeHandler == nil {
+	if opts.SignModeHandler == nil {
 		return nil, errors.Wrap(errors.ErrLogic, "sign mode handler is required for ante builder")
 	}
 
-	var sigGasConsumer = options.SigGasConsumer
+	var sigGasConsumer = opts.SigGasConsumer
 	if sigGasConsumer == nil {
 		sigGasConsumer = ante.DefaultSigVerificationGasConsumer
 	}
@@ -35,16 +35,15 @@ func NewAnteHandler(options HandlerOptions) (sdk.AnteHandler, error) {
 		ante.NewMempoolFeeDecorator(),
 		ante.NewValidateBasicDecorator(),
 		ante.NewTxTimeoutHeightDecorator(),
-		ante.NewValidateMemoDecorator(options.AccountKeeper),
-		ante.NewConsumeGasForTxSizeDecorator(options.AccountKeeper),
-		ante.NewDeductFeeDecorator(options.AccountKeeper, options.BankKeeper, options.FeegrantKeeper),
-		// SetPubKeyDecorator must be called before all signature verification decorators
-		ante.NewSetPubKeyDecorator(options.AccountKeeper),
-		ante.NewValidateSigCountDecorator(options.AccountKeeper),
-		ante.NewSigGasConsumeDecorator(options.AccountKeeper, sigGasConsumer),
-		ante.NewSigVerificationDecorator(options.AccountKeeper, options.SignModeHandler),
-		ante.NewIncrementSequenceDecorator(options.AccountKeeper),
-		ibcante.NewAnteDecorator(options.IBCChannelKeeper),
+		ante.NewValidateMemoDecorator(opts.AccountKeeper),
+		ante.NewConsumeGasForTxSizeDecorator(opts.AccountKeeper),
+		ante.NewDeductFeeDecorator(opts.AccountKeeper, opts.BankKeeper, opts.FeegrantKeeper),
+		ante.NewSetPubKeyDecorator(opts.AccountKeeper),
+		ante.NewValidateSigCountDecorator(opts.AccountKeeper),
+		ante.NewSigGasConsumeDecorator(opts.AccountKeeper, sigGasConsumer),
+		ante.NewSigVerificationDecorator(opts.AccountKeeper, opts.SignModeHandler),
+		ante.NewIncrementSequenceDecorator(opts.AccountKeeper),
+		ibcante.NewAnteDecorator(opts.IBCKeeper),
 	}
 
 	return sdk.ChainAnteDecorators(anteDecorators...), nil

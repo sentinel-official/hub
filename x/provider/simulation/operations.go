@@ -117,6 +117,7 @@ func SimulateMsgRegisterRequest(ak expected.AccountKeeper, bk expected.BankKeepe
 		)
 
 		txn, err := helpers.GenTx(
+			r,
 			txConfig,
 			[]sdk.Msg{message},
 			fees,
@@ -186,6 +187,7 @@ func SimulateMsgUpdateRequest(ak expected.AccountKeeper, bk expected.BankKeeper,
 		)
 
 		txn, err := helpers.GenTx(
+			r,
 			txConfig,
 			[]sdk.Msg{message},
 			fees,
