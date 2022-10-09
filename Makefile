@@ -16,22 +16,13 @@ LD_FLAGS := -s -w \
 benchmark:
 	@go test -mod=readonly -v -bench ${PACKAGES}
 
-.PHONY: build
-build:
-	GOOS=darwin GOARCH=amd64 go build -mod=readonly -tags="${BUILD_TAGS}" -ldflags="${LD_FLAGS}" \
-		-o ./build/sentinelhub-${VERSION}-darwin-amd64 ./cmd/sentinelhub
-	GOOS=linux GOARCH=amd64 go build -mod=readonly -tags="${BUILD_TAGS}" -ldflags="${LD_FLAGS}" \
-		-o ./build/sentinelhub-${VERSION}-linux-amd64 ./cmd/sentinelhub
-	GOOS=windows GOARCH=amd64 go build -mod=readonly -tags="${BUILD_TAGS}" -ldflags="${LD_FLAGS}" \
-		-o ./build/sentinelhub-${VERSION}-windows-amd64.exe ./cmd/sentinelhub
-
 .PHONY: clean
 clean:
-	rm -rf ./bin ./vendor
+	rm -rf ./vendor
 
 .PHONY: install
 install: mod-vendor
-	go install -mod=readonly -tags="${BUILD_TAGS}" -ldflags="${LD_FLAGS}" ./cmd/sentinelhub
+	go install -mod=readonly -tags="${BUILD_TAGS}" -ldflags="${LD_FLAGS}" -trimpath ./cmd/sentinelhub
 
 .PHONY: go-lint
 go-lint:

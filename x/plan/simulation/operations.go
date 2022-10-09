@@ -150,7 +150,6 @@ func SimulateMsgAddRequest(ak expected.AccountKeeper, bk expected.BankKeeper, k 
 		)
 
 		txn, err := helpers.GenTx(
-			r,
 			txConfig,
 			[]sdk.Msg{message},
 			fees,
@@ -220,7 +219,6 @@ func SimulateMsgSetStatusRequest(ak expected.AccountKeeper, bk expected.BankKeep
 		)
 
 		txn, err := helpers.GenTx(
-			r,
 			txConfig,
 			[]sdk.Msg{message},
 			fees,
@@ -300,7 +298,6 @@ func SimulateMsgAddNodeRequest(ak expected.AccountKeeper, bk expected.BankKeeper
 		)
 
 		txn, err := helpers.GenTx(
-			r,
 			txConfig,
 			[]sdk.Msg{message},
 			fees,
@@ -372,7 +369,6 @@ func SimulateMsgRemoveNodeRequest(ak expected.AccountKeeper, bk expected.BankKee
 		)
 
 		txn, err := helpers.GenTx(
-			r,
 			txConfig,
 			[]sdk.Msg{message},
 			fees,

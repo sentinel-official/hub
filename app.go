@@ -5,7 +5,13 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"path/filepath"
+	"strings"
 
+	"github.com/CosmWasm/wasmd/x/wasm"
+	wasmclient "github.com/CosmWasm/wasmd/x/wasm/client"
+	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
+	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/grpc/tmservice"
@@ -94,6 +100,7 @@ import (
 	tmjson "github.com/tendermint/tendermint/libs/json"
 	"github.com/tendermint/tendermint/libs/log"
 	tmos "github.com/tendermint/tendermint/libs/os"
+	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	tmdb "github.com/tendermint/tm-db"
 
 	hubparams "github.com/sentinel-official/hub/params"
@@ -128,12 +135,15 @@ var (
 		feegrantmodule.AppModuleBasic{},
 		genutil.AppModuleBasic{},
 		gov.NewAppModuleBasic(
-			distributionclient.ProposalHandler,
-			ibcclientclient.UpdateClientProposalHandler,
-			ibcclientclient.UpgradeProposalHandler,
-			paramsclient.ProposalHandler,
-			upgradeclient.ProposalHandler,
-			upgradeclient.CancelProposalHandler,
+			append(
+				wasmclient.ProposalHandlers,
+				distributionclient.ProposalHandler,
+				ibcclientclient.UpdateClientProposalHandler,
+				ibcclientclient.UpgradeProposalHandler,
+				paramsclient.ProposalHandler,
+				upgradeclient.ProposalHandler,
+				upgradeclient.CancelProposalHandler,
+			)...,
 		),
 		ibc.AppModuleBasic{},
 		ibcica.AppModuleBasic{},
@@ -146,13 +156,35 @@ var (
 		custommint.AppModule{},
 		swap.AppModuleBasic{},
 		vpn.AppModuleBasic{},
+		wasm.AppModuleBasic{},
 	)
+	WasmEnableSpecificProposals = ""
+	WasmProposalsEnabled        = "true"
 )
 
 var (
 	_ simapp.App              = (*App)(nil)
 	_ servertypes.Application = (*App)(nil)
 )
+
+func GetWasmEnabledProposals() []wasm.ProposalType {
+	if WasmEnableSpecificProposals == "" {
+		if WasmProposalsEnabled == "true" {
+			return wasm.EnableAllProposals
+		}
+
+		return wasm.DisableAllProposals
+	}
+
+	chunks := strings.Split(WasmEnableSpecificProposals, ",")
+
+	proposals, err := wasm.ConvertToProposals(chunks)
+	if err != nil {
+		panic(err)
+	}
+
+	return proposals
+}
 
 type App struct {
 	*baseapp.BaseApp
@@ -186,10 +218,12 @@ type App struct {
 	customMintKeeper   custommintkeeper.Keeper
 	swapKeeper         swapkeeper.Keeper
 	vpnKeeper          vpnkeeper.Keeper
+	wasmKeeper         wasmkeeper.Keeper
 
 	scopedIBCKeeper         capabilitykeeper.ScopedKeeper
-	scopedIBCIACHostKeeper  capabilitykeeper.ScopedKeeper
+	scopedIBCICAHostKeeper  capabilitykeeper.ScopedKeeper
 	scopedIBCTransferKeeper capabilitykeeper.ScopedKeeper
+	scopedWasmKeeper        capabilitykeeper.ScopedKeeper
 
 	configurator      module.Configurator
 	moduleManager     *module.Manager
@@ -205,8 +239,10 @@ func NewApp(
 	homePath string,
 	invarCheckPeriod uint,
 	encodingConfig hubparams.EncodingConfig,
-	appOptions servertypes.AppOptions,
-	baseAppOptions ...func(*baseapp.BaseApp),
+	enabledProposals []wasmtypes.ProposalType,
+	appOpts servertypes.AppOptions,
+	wasmOpts []wasmkeeper.Option,
+	baseAppOpts ...func(*baseapp.BaseApp),
 ) *App {
 	var (
 		cdc               = encodingConfig.Marshaler
@@ -219,11 +255,11 @@ func NewApp(
 			distributiontypes.StoreKey, evidencetypes.StoreKey, feegrant.StoreKey, govtypes.StoreKey,
 			ibchost.StoreKey, ibcicahosttypes.StoreKey, ibctransfertypes.StoreKey, minttypes.StoreKey,
 			paramstypes.StoreKey, slashingtypes.StoreKey, stakingtypes.StoreKey, upgradetypes.StoreKey,
-			customminttypes.StoreKey, swaptypes.StoreKey, vpntypes.StoreKey,
+			customminttypes.StoreKey, swaptypes.StoreKey, vpntypes.StoreKey, wasmtypes.StoreKey,
 		)
 	)
 
-	baseApp := baseapp.NewBaseApp(appName, logger, db, encodingConfig.TxConfig.TxDecoder(), baseAppOptions...)
+	baseApp := baseapp.NewBaseApp(appName, logger, db, encodingConfig.TxConfig.TxDecoder(), baseAppOpts...)
 	baseApp.SetCommitMultiStoreTracer(tracer)
 	baseApp.SetVersion(version.Version)
 	baseApp.SetInterfaceRegistry(interfaceRegistry)
@@ -258,6 +294,7 @@ func NewApp(
 	app.paramsKeeper.Subspace(slashingtypes.ModuleName)
 	app.paramsKeeper.Subspace(stakingtypes.ModuleName)
 	app.paramsKeeper.Subspace(swaptypes.ModuleName)
+	app.paramsKeeper.Subspace(wasmtypes.ModuleName)
 
 	baseApp.SetParamStore(
 		app.paramsKeeper.
@@ -271,9 +308,10 @@ func NewApp(
 		app.mkeys[capabilitytypes.MemStoreKey],
 	)
 
-	scopedIBCKeeper := app.capabilityKeeper.ScopeToModule(ibchost.ModuleName)
-	scopedIBCICAHostKeeper := app.capabilityKeeper.ScopeToModule(ibcicahosttypes.SubModuleName)
-	scopedTransferKeeper := app.capabilityKeeper.ScopeToModule(ibctransfertypes.ModuleName)
+	app.scopedIBCKeeper = app.capabilityKeeper.ScopeToModule(ibchost.ModuleName)
+	app.scopedIBCICAHostKeeper = app.capabilityKeeper.ScopeToModule(ibcicahosttypes.SubModuleName)
+	app.scopedIBCTransferKeeper = app.capabilityKeeper.ScopeToModule(ibctransfertypes.ModuleName)
+	app.scopedWasmKeeper = app.capabilityKeeper.ScopeToModule(wasmtypes.ModuleName)
 	app.capabilityKeeper.Seal()
 
 	app.accountKeeper = authkeeper.NewAccountKeeper(
@@ -357,7 +395,7 @@ func NewApp(
 		app.GetSubspace(ibchost.ModuleName),
 		app.stakingKeeper,
 		app.upgradeKeeper,
-		scopedIBCKeeper,
+		app.scopedIBCKeeper,
 	)
 
 	govRouter := govtypes.NewRouter()
@@ -388,7 +426,7 @@ func NewApp(
 		&app.ibcKeeper.PortKeeper,
 		app.accountKeeper,
 		app.bankKeeper,
-		scopedTransferKeeper,
+		app.scopedIBCTransferKeeper,
 	)
 
 	var (
@@ -403,7 +441,7 @@ func NewApp(
 		app.ibcKeeper.ChannelKeeper,
 		&app.ibcKeeper.PortKeeper,
 		app.accountKeeper,
-		scopedIBCICAHostKeeper,
+		app.scopedIBCICAHostKeeper,
 		app.MsgServiceRouter(),
 	)
 
@@ -448,7 +486,40 @@ func NewApp(
 		app.distributionKeeper,
 	)
 
-	skipGenesisInvariants := cast.ToBool(appOptions.Get(crisis.FlagSkipGenesisInvariants))
+	wasmDir := filepath.Join(homePath, "data")
+
+	wasmConfig, err := wasm.ReadWasmConfig(appOpts)
+	if err != nil {
+		panic("error while reading wasm config: " + err.Error())
+	}
+
+	supportedFeatures := "iterator,staking,stargate"
+	app.wasmKeeper = wasmkeeper.NewKeeper(
+		app.cdc,
+		keys[wasmtypes.StoreKey],
+		app.GetSubspace(wasmtypes.ModuleName),
+		app.accountKeeper,
+		app.bankKeeper,
+		app.stakingKeeper,
+		app.distributionKeeper,
+		app.ibcKeeper.ChannelKeeper,
+		&app.ibcKeeper.PortKeeper,
+		app.scopedWasmKeeper,
+		app.ibcTransferKeeper,
+		app.MsgServiceRouter(),
+		app.GRPCQueryRouter(),
+		wasmDir,
+		wasmConfig,
+		supportedFeatures,
+		wasmOpts...,
+	)
+
+	ibcPortRouter.AddRoute(wasmtypes.ModuleName, wasm.NewIBCHandler(app.wasmKeeper, app.ibcKeeper.ChannelKeeper))
+	if len(enabledProposals) != 0 {
+		govRouter.AddRoute(wasmtypes.RouterKey, wasmkeeper.NewWasmProposalHandler(app.wasmKeeper, enabledProposals))
+	}
+
+	skipGenesisInvariants := cast.ToBool(appOpts.Get(crisis.FlagSkipGenesisInvariants))
 
 	app.moduleManager = module.NewManager(
 		auth.NewAppModule(app.cdc, app.accountKeeper, nil),
@@ -463,16 +534,17 @@ func NewApp(
 		genutil.NewAppModule(app.accountKeeper, app.stakingKeeper, app.BaseApp.DeliverTx, encodingConfig.TxConfig),
 		gov.NewAppModule(app.cdc, app.govKeeper, app.accountKeeper, app.bankKeeper),
 		ibc.NewAppModule(app.ibcKeeper),
+		ibcICAAppModule,
+		ibcTransferAppModule,
 		params.NewAppModule(app.paramsKeeper),
 		mint.NewAppModule(app.cdc, app.mintKeeper, app.accountKeeper),
 		slashing.NewAppModule(app.cdc, app.slashingKeeper, app.accountKeeper, app.bankKeeper, app.stakingKeeper),
 		staking.NewAppModule(app.cdc, app.stakingKeeper, app.accountKeeper, app.bankKeeper),
 		upgrade.NewAppModule(app.upgradeKeeper),
-		ibcICAAppModule,
-		ibcTransferAppModule,
 		custommint.NewAppModule(cdc, app.customMintKeeper),
 		swap.NewAppModule(app.cdc, app.swapKeeper),
 		vpn.NewAppModule(app.cdc, app.accountKeeper, app.bankKeeper, app.vpnKeeper),
+		wasm.NewAppModule(app.cdc, &app.wasmKeeper, app.stakingKeeper, app.accountKeeper, app.bankKeeper),
 	)
 
 	app.moduleManager.SetOrderBeginBlockers(
@@ -496,6 +568,7 @@ func NewApp(
 		feegrant.ModuleName,
 		paramstypes.ModuleName,
 		authvestingtypes.ModuleName,
+		wasmtypes.ModuleName,
 	)
 	app.moduleManager.SetOrderEndBlockers(
 		crisistypes.ModuleName,
@@ -518,6 +591,7 @@ func NewApp(
 		upgradetypes.ModuleName,
 		authvestingtypes.ModuleName,
 		vpntypes.ModuleName,
+		wasmtypes.ModuleName,
 	)
 	app.moduleManager.SetOrderInitGenesis(
 		capabilitytypes.ModuleName,
@@ -542,6 +616,7 @@ func NewApp(
 		customminttypes.ModuleName,
 		swaptypes.ModuleName,
 		vpntypes.ModuleName,
+		wasmtypes.ModuleName,
 	)
 
 	app.moduleManager.RegisterInvariants(&app.crisisKeeper)
@@ -549,6 +624,74 @@ func NewApp(
 
 	app.configurator = module.NewConfigurator(app.cdc, app.MsgServiceRouter(), app.GRPCQueryRouter())
 	app.moduleManager.RegisterServices(app.configurator)
+
+	app.MountKVStores(app.keys)
+	app.MountTransientStores(app.tkeys)
+	app.MountMemoryStores(app.mkeys)
+
+	anteHandler, err := NewAnteHandler(
+		HandlerOptions{
+			HandlerOptions: ante.HandlerOptions{
+				AccountKeeper:   app.accountKeeper,
+				BankKeeper:      app.bankKeeper,
+				FeegrantKeeper:  app.feeGrantKeeper,
+				SignModeHandler: encodingConfig.TxConfig.SignModeHandler(),
+				SigGasConsumer:  ante.DefaultSigVerificationGasConsumer,
+			},
+			TxCounterStoreKey: app.keys[wasmtypes.StoreKey],
+			IBCKeeper:         app.ibcKeeper,
+			WasmConfig:        wasmConfig,
+		},
+	)
+	if err != nil {
+		panic(err)
+	}
+
+	app.SetAnteHandler(anteHandler)
+	app.SetInitChainer(app.InitChainer)
+	app.SetBeginBlocker(app.BeginBlocker)
+	app.SetEndBlocker(app.EndBlocker)
+
+	if manager := app.SnapshotManager(); manager != nil {
+		err = manager.RegisterExtensions(
+			wasmkeeper.NewWasmSnapshotter(app.CommitMultiStore(), &app.wasmKeeper),
+		)
+		if err != nil {
+			panic("failed to register snapshot extension: " + err.Error())
+		}
+	}
+
+	app.upgradeKeeper.SetUpgradeHandler(
+		upgrade3.Name,
+		upgrade3.Handler(app.moduleManager, app.configurator, &app.ibcKeeper.ConnectionKeeper),
+	)
+
+	upgradeInfo, err := app.upgradeKeeper.ReadUpgradeInfoFromDisk()
+	if err != nil {
+		panic(fmt.Sprintf("failed to read upgrade info from disk %s", err))
+	}
+
+	if upgradeInfo.Name == upgrade3.Name && !app.upgradeKeeper.IsSkipHeight(upgradeInfo.Height) {
+		storeUpgrades := storetypes.StoreUpgrades{
+			Added: []string{
+				ibcicahosttypes.StoreKey,
+				wasmtypes.StoreKey,
+			},
+		}
+
+		app.SetStoreLoader(upgradetypes.UpgradeStoreLoader(upgradeInfo.Height, &storeUpgrades))
+	}
+
+	if loadLatest {
+		if err := app.LoadLatestVersion(); err != nil {
+			tmos.Exit(err.Error())
+		}
+
+		ctx := app.BaseApp.NewUncachedContext(true, tmproto.Header{})
+		if err := app.wasmKeeper.InitializePinnedCodes(ctx); err != nil {
+			tmos.Exit(fmt.Sprintf("failed initialize pinned codes %s", err))
+		}
+	}
 
 	app.simulationManager = module.NewSimulationManager(
 		auth.NewAppModule(app.cdc, app.accountKeeper, authsimulation.RandomGenesisAccounts),
@@ -570,60 +713,6 @@ func NewApp(
 		vpn.NewAppModule(app.cdc, app.accountKeeper, app.bankKeeper, app.vpnKeeper),
 	)
 	app.simulationManager.RegisterStoreDecoders()
-
-	app.MountKVStores(app.keys)
-	app.MountTransientStores(app.tkeys)
-	app.MountMemoryStores(app.mkeys)
-
-	anteHandler, err := NewAnteHandler(
-		HandlerOptions{
-			HandlerOptions: ante.HandlerOptions{
-				AccountKeeper:   app.accountKeeper,
-				BankKeeper:      app.bankKeeper,
-				FeegrantKeeper:  app.feeGrantKeeper,
-				SignModeHandler: encodingConfig.TxConfig.SignModeHandler(),
-				SigGasConsumer:  ante.DefaultSigVerificationGasConsumer,
-			},
-			IBCKeeper: app.ibcKeeper,
-		},
-	)
-	if err != nil {
-		panic(err)
-	}
-
-	app.SetAnteHandler(anteHandler)
-	app.SetInitChainer(app.InitChainer)
-	app.SetBeginBlocker(app.BeginBlocker)
-	app.SetEndBlocker(app.EndBlocker)
-
-	app.upgradeKeeper.SetUpgradeHandler(
-		upgrade3.Name,
-		upgrade3.Handler(app.moduleManager, app.configurator, &app.ibcKeeper.ConnectionKeeper),
-	)
-
-	upgradeInfo, err := app.upgradeKeeper.ReadUpgradeInfoFromDisk()
-	if err != nil {
-		panic(fmt.Sprintf("failed to read upgrade info from disk %s", err))
-	}
-
-	if upgradeInfo.Name == upgrade3.Name && !app.upgradeKeeper.IsSkipHeight(upgradeInfo.Height) {
-		storeUpgrades := storetypes.StoreUpgrades{
-			Added: []string{
-				ibcicahosttypes.StoreKey,
-			},
-		}
-
-		app.SetStoreLoader(upgradetypes.UpgradeStoreLoader(upgradeInfo.Height, &storeUpgrades))
-	}
-
-	if loadLatest {
-		if err := app.LoadLatestVersion(); err != nil {
-			tmos.Exit(err.Error())
-		}
-	}
-
-	app.scopedIBCKeeper = scopedIBCKeeper
-	app.scopedIBCTransferKeeper = scopedTransferKeeper
 
 	return app
 }
@@ -695,8 +784,9 @@ func (a *App) ModuleAccountsPermissions() map[string][]string {
 		stakingtypes.BondedPoolName:    {authtypes.Burner, authtypes.Staking},
 		stakingtypes.NotBondedPoolName: {authtypes.Burner, authtypes.Staking},
 		customminttypes.ModuleName:     nil,
-		swaptypes.ModuleName:           {authtypes.Minter},
 		deposittypes.ModuleName:        nil,
+		swaptypes.ModuleName:           {authtypes.Minter},
+		wasmtypes.ModuleName:           {authtypes.Burner},
 	}
 }
 
