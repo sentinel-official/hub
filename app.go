@@ -398,25 +398,6 @@ func NewApp(
 		app.scopedIBCKeeper,
 	)
 
-	govRouter := govtypes.NewRouter()
-	govRouter.
-		AddRoute(govtypes.RouterKey, govtypes.ProposalHandler).
-		AddRoute(paramsproposal.RouterKey, params.NewParamChangeProposalHandler(app.paramsKeeper)).
-		AddRoute(distributiontypes.RouterKey, distribution.NewCommunityPoolSpendProposalHandler(app.distributionKeeper)).
-		AddRoute(ibcclienttypes.RouterKey, ibcclient.NewClientProposalHandler(app.ibcKeeper.ClientKeeper)).
-		AddRoute(ibchost.RouterKey, ibcclient.NewClientProposalHandler(app.ibcKeeper.ClientKeeper)).
-		AddRoute(upgradetypes.RouterKey, upgrade.NewSoftwareUpgradeProposalHandler(app.upgradeKeeper))
-
-	app.govKeeper = govkeeper.NewKeeper(
-		app.cdc,
-		app.keys[govtypes.StoreKey],
-		app.GetSubspace(govtypes.ModuleName),
-		app.accountKeeper,
-		app.bankKeeper,
-		&stakingKeeper,
-		govRouter,
-	)
-
 	app.ibcTransferKeeper = ibctransferkeeper.NewKeeper(
 		app.cdc,
 		app.keys[ibctransfertypes.StoreKey],
@@ -449,11 +430,6 @@ func NewApp(
 		ibcICAAppModule     = ibcica.NewAppModule(nil, &app.ibcICAHostKeeper)
 		ibcICAHostIBCModule = ibcicahost.NewIBCModule(app.ibcICAHostKeeper)
 	)
-
-	ibcPortRouter := ibcporttypes.NewRouter()
-	ibcPortRouter.AddRoute(ibcicahosttypes.SubModuleName, ibcICAHostIBCModule).
-		AddRoute(ibctransfertypes.ModuleName, ibcTransferIBCModule)
-	app.ibcKeeper.SetRouter(ibcPortRouter)
 
 	app.evidenceKeeper = *evidencekeeper.NewKeeper(
 		app.cdc,
@@ -514,10 +490,33 @@ func NewApp(
 		wasmOpts...,
 	)
 
-	ibcPortRouter.AddRoute(wasmtypes.ModuleName, wasm.NewIBCHandler(app.wasmKeeper, app.ibcKeeper.ChannelKeeper))
+	ibcPortRouter := ibcporttypes.NewRouter()
+	ibcPortRouter.AddRoute(ibcicahosttypes.SubModuleName, ibcICAHostIBCModule).
+		AddRoute(ibctransfertypes.ModuleName, ibcTransferIBCModule).
+		AddRoute(wasmtypes.ModuleName, wasm.NewIBCHandler(app.wasmKeeper, app.ibcKeeper.ChannelKeeper))
+	app.ibcKeeper.SetRouter(ibcPortRouter)
+
+	govRouter := govtypes.NewRouter()
+	govRouter.AddRoute(govtypes.RouterKey, govtypes.ProposalHandler).
+		AddRoute(paramsproposal.RouterKey, params.NewParamChangeProposalHandler(app.paramsKeeper)).
+		AddRoute(distributiontypes.RouterKey, distribution.NewCommunityPoolSpendProposalHandler(app.distributionKeeper)).
+		AddRoute(ibcclienttypes.RouterKey, ibcclient.NewClientProposalHandler(app.ibcKeeper.ClientKeeper)).
+		AddRoute(ibchost.RouterKey, ibcclient.NewClientProposalHandler(app.ibcKeeper.ClientKeeper)).
+		AddRoute(upgradetypes.RouterKey, upgrade.NewSoftwareUpgradeProposalHandler(app.upgradeKeeper))
+
 	if len(enabledProposals) != 0 {
 		govRouter.AddRoute(wasmtypes.RouterKey, wasmkeeper.NewWasmProposalHandler(app.wasmKeeper, enabledProposals))
 	}
+
+	app.govKeeper = govkeeper.NewKeeper(
+		app.cdc,
+		app.keys[govtypes.StoreKey],
+		app.GetSubspace(govtypes.ModuleName),
+		app.accountKeeper,
+		app.bankKeeper,
+		&stakingKeeper,
+		govRouter,
+	)
 
 	skipGenesisInvariants := cast.ToBool(appOpts.Get(crisis.FlagSkipGenesisInvariants))
 
@@ -568,6 +567,8 @@ func NewApp(
 		feegrant.ModuleName,
 		paramstypes.ModuleName,
 		authvestingtypes.ModuleName,
+		swaptypes.ModuleName,
+		vpntypes.ModuleName,
 		wasmtypes.ModuleName,
 	)
 	app.moduleManager.SetOrderEndBlockers(
@@ -590,6 +591,8 @@ func NewApp(
 		paramstypes.ModuleName,
 		upgradetypes.ModuleName,
 		authvestingtypes.ModuleName,
+		customminttypes.ModuleName,
+		swaptypes.ModuleName,
 		vpntypes.ModuleName,
 		wasmtypes.ModuleName,
 	)
