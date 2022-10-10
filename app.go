@@ -22,7 +22,6 @@ import (
 	serverconfig "github.com/cosmos/cosmos-sdk/server/config"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
 	"github.com/cosmos/cosmos-sdk/simapp"
-	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/version"
@@ -104,7 +103,6 @@ import (
 	tmdb "github.com/tendermint/tm-db"
 
 	hubparams "github.com/sentinel-official/hub/params"
-	upgrade3 "github.com/sentinel-official/hub/upgrades/upgrade-3"
 	deposittypes "github.com/sentinel-official/hub/x/deposit/types"
 	custommint "github.com/sentinel-official/hub/x/mint"
 	custommintkeeper "github.com/sentinel-official/hub/x/mint/keeper"
@@ -662,27 +660,6 @@ func NewApp(
 		if err != nil {
 			panic("failed to register snapshot extension: " + err.Error())
 		}
-	}
-
-	app.upgradeKeeper.SetUpgradeHandler(
-		upgrade3.Name,
-		upgrade3.Handler(app.moduleManager, app.configurator, &app.ibcKeeper.ConnectionKeeper),
-	)
-
-	upgradeInfo, err := app.upgradeKeeper.ReadUpgradeInfoFromDisk()
-	if err != nil {
-		panic(fmt.Sprintf("failed to read upgrade info from disk %s", err))
-	}
-
-	if upgradeInfo.Name == upgrade3.Name && !app.upgradeKeeper.IsSkipHeight(upgradeInfo.Height) {
-		storeUpgrades := storetypes.StoreUpgrades{
-			Added: []string{
-				ibcicahosttypes.StoreKey,
-				wasmtypes.StoreKey,
-			},
-		}
-
-		app.SetStoreLoader(upgradetypes.UpgradeStoreLoader(upgradeInfo.Height, &storeUpgrades))
 	}
 
 	if loadLatest {
