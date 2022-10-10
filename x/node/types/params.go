@@ -13,12 +13,16 @@ const (
 )
 
 var (
-	DefaultDeposit = sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(1000))
+	DefaultDeposit  = sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(1000))
+	DefaultMaxPrice = sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(100)))
+	DefaultMinPrice = sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(10)))
 )
 
 var (
 	KeyDeposit          = []byte("Deposit")
 	KeyInactiveDuration = []byte("InactiveDuration")
+	KeyMaxPrice         = []byte("MaxPrice")
+	KeyMinPrice         = []byte("MinPrice")
 )
 
 var (
@@ -37,6 +41,16 @@ func (m *Params) Validate() error {
 	}
 	if m.InactiveDuration == 0 {
 		return fmt.Errorf("inactive_duration cannot be zero")
+	}
+	if m.MaxPrice != nil {
+		if !m.MaxPrice.IsValid() {
+			return fmt.Errorf("max_price must be valid")
+		}
+	}
+	if m.MinPrice != nil {
+		if !m.MinPrice.IsValid() {
+			return fmt.Errorf("min_price must be valid")
+		}
 	}
 
 	return nil
@@ -82,13 +96,51 @@ func (m *Params) ParamSetPairs() params.ParamSetPairs {
 				return nil
 			},
 		},
+		{
+			Key:   KeyMaxPrice,
+			Value: &m.MaxPrice,
+			ValidatorFn: func(v interface{}) error {
+				value, ok := v.(sdk.Coins)
+				if !ok {
+					return fmt.Errorf("invalid parameter type %T", v)
+				}
+
+				if value != nil {
+					if !value.IsValid() {
+						return fmt.Errorf("max_price must be valid")
+					}
+				}
+
+				return nil
+			},
+		},
+		{
+			Key:   KeyMinPrice,
+			Value: &m.MinPrice,
+			ValidatorFn: func(v interface{}) error {
+				value, ok := v.(sdk.Coins)
+				if !ok {
+					return fmt.Errorf("invalid parameter type %T", v)
+				}
+
+				if value != nil {
+					if !value.IsValid() {
+						return fmt.Errorf("min_price must be valid")
+					}
+				}
+
+				return nil
+			},
+		},
 	}
 }
 
-func NewParams(deposit sdk.Coin, inactiveDuration time.Duration) Params {
+func NewParams(deposit sdk.Coin, inactiveDuration time.Duration, maxPrice, minPrice sdk.Coins) Params {
 	return Params{
 		Deposit:          deposit,
 		InactiveDuration: inactiveDuration,
+		MaxPrice:         maxPrice,
+		MinPrice:         minPrice,
 	}
 }
 
@@ -96,6 +148,8 @@ func DefaultParams() Params {
 	return Params{
 		Deposit:          DefaultDeposit,
 		InactiveDuration: DefaultInactiveDuration,
+		MaxPrice:         DefaultMaxPrice,
+		MinPrice:         DefaultMinPrice,
 	}
 }
 

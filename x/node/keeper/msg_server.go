@@ -41,6 +41,9 @@ func (k *msgServer) MsgRegister(c context.Context, msg *types.MsgRegisterRequest
 			return nil, types.ErrorProviderDoesNotExist
 		}
 	}
+	if msg.Price != nil && !k.IsValidPrice(ctx, msg.Price) {
+		return nil, types.ErrorInvalidPrice
+	}
 
 	deposit := k.Deposit(ctx)
 	if deposit.IsPositive() {
@@ -137,6 +140,10 @@ func (k *msgServer) MsgUpdate(c context.Context, msg *types.MsgUpdateRequest) (*
 		}
 	}
 	if msg.Price != nil {
+		if !k.IsValidPrice(ctx, msg.Price) {
+			return nil, types.ErrorInvalidPrice
+		}
+
 		node.Provider = ""
 		node.Price = msg.Price
 	}

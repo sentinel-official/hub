@@ -15,6 +15,52 @@ func EndBlock(ctx sdk.Context, k keeper.Keeper) []abcitypes.ValidatorUpdate {
 		inactiveDuration = k.InactiveDuration(ctx)
 	)
 
+	if k.IsMaxPriceModified(ctx) {
+		price := k.MaxPrice(ctx)
+		k.IterateNodes(ctx, func(_ int, item types.Node) (stop bool) {
+			if item.Price == nil {
+				return false
+			}
+
+			for _, coin := range price {
+				amount := item.Price.AmountOf(coin.Denom)
+				if amount.GT(coin.Amount) {
+					item.Price = item.Price.Add(
+						sdk.NewCoin(coin.Denom, amount.Neg()),
+					).Add(coin)
+				}
+			}
+
+			k.SetNode(ctx, item)
+			return false
+		})
+
+		k.DeleteTransientKeyMaxPrice(ctx)
+	}
+
+	if k.IsMinPriceModified(ctx) {
+		price := k.MinPrice(ctx)
+		k.IterateNodes(ctx, func(_ int, item types.Node) (stop bool) {
+			if item.Price == nil {
+				return false
+			}
+
+			for _, coin := range price {
+				amount := item.Price.AmountOf(coin.Denom)
+				if amount.LT(coin.Amount) {
+					item.Price = item.Price.Add(
+						sdk.NewCoin(coin.Denom, amount.Neg()),
+					).Add(coin)
+				}
+			}
+
+			k.SetNode(ctx, item)
+			return false
+		})
+
+		k.DeleteTransientKeyMinPrice(ctx)
+	}
+
 	k.IterateInactiveNodesAt(ctx, ctx.BlockTime(), func(_ int, item types.Node) bool {
 		log.Info("inactive node", "value", item)
 

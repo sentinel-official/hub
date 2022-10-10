@@ -13,7 +13,7 @@ import (
 )
 
 const (
-	MaxDepositAmount    = 1 << 18
+	MaxAmount           = 1 << 18
 	MaxInactiveDuration = 1 << 18
 )
 
@@ -25,7 +25,7 @@ func ParamChanges(_ *rand.Rand) []simulationtypes.ParamChange {
 			func(r *rand.Rand) string {
 				return sdk.NewInt64Coin(
 					sdk.DefaultBondDenom,
-					r.Int63n(MaxDepositAmount),
+					r.Int63n(MaxAmount),
 				).String()
 			},
 		),

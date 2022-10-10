@@ -14,6 +14,8 @@ func RandomizedGenesisState(state *module.SimulationState) *types.GenesisState {
 	var (
 		deposit          sdk.Coin
 		inactiveDuration time.Duration
+		maxPrice         sdk.Coins
+		minPrice         sdk.Coins
 	)
 
 	state.AppParams.GetOrGenerate(
@@ -24,7 +26,7 @@ func RandomizedGenesisState(state *module.SimulationState) *types.GenesisState {
 		func(r *rand.Rand) {
 			deposit = sdk.NewInt64Coin(
 				sdk.DefaultBondDenom,
-				r.Int63n(MaxDepositAmount),
+				r.Int63n(MaxAmount),
 			)
 		},
 	)
@@ -37,9 +39,37 @@ func RandomizedGenesisState(state *module.SimulationState) *types.GenesisState {
 			inactiveDuration = time.Duration(r.Int63n(MaxInactiveDuration)) * time.Millisecond
 		},
 	)
+	state.AppParams.GetOrGenerate(
+		state.Cdc,
+		string(types.KeyMaxPrice),
+		&maxPrice,
+		state.Rand,
+		func(r *rand.Rand) {
+			maxPrice = sdk.NewCoins(
+				sdk.NewInt64Coin(
+					sdk.DefaultBondDenom,
+					r.Int63n(MaxAmount),
+				),
+			)
+		},
+	)
+	state.AppParams.GetOrGenerate(
+		state.Cdc,
+		string(types.KeyMinPrice),
+		&minPrice,
+		state.Rand,
+		func(r *rand.Rand) {
+			minPrice = sdk.NewCoins(
+				sdk.NewInt64Coin(
+					sdk.DefaultBondDenom,
+					r.Int63n(MaxAmount),
+				),
+			)
+		},
+	)
 
 	return types.NewGenesisState(
 		RandomNodes(state.Rand, state.Accounts),
-		types.NewParams(deposit, inactiveDuration),
+		types.NewParams(deposit, inactiveDuration, maxPrice, minPrice),
 	)
 }
