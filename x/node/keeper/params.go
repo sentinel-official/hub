@@ -4,7 +4,6 @@ import (
 	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 
 	"github.com/sentinel-official/hub/x/node/types"
 )
@@ -58,22 +57,4 @@ func (k *Keeper) IsMaxPriceModified(ctx sdk.Context) bool {
 
 func (k *Keeper) IsMinPriceModified(ctx sdk.Context) bool {
 	return k.params.Modified(ctx, types.KeyMinPrice)
-}
-
-func (k *Keeper) DeleteTransientKeyMaxPrice(ctx sdk.Context) {
-	var (
-		tkey  = sdk.NewTransientStoreKey(paramstypes.TStoreKey)
-		store = ctx.TransientStore(tkey)
-	)
-
-	store.Delete(types.KeyMaxPrice)
-}
-
-func (k *Keeper) DeleteTransientKeyMinPrice(ctx sdk.Context) {
-	var (
-		tkey  = sdk.NewTransientStoreKey(paramstypes.TStoreKey)
-		store = ctx.TransientStore(tkey)
-	)
-
-	store.Delete(types.KeyMinPrice)
 }

@@ -34,8 +34,6 @@ func EndBlock(ctx sdk.Context, k keeper.Keeper) []abcitypes.ValidatorUpdate {
 			k.SetNode(ctx, item)
 			return false
 		})
-
-		k.DeleteTransientKeyMaxPrice(ctx)
 	}
 
 	if k.IsMinPriceModified(ctx) {
@@ -57,8 +55,6 @@ func EndBlock(ctx sdk.Context, k keeper.Keeper) []abcitypes.ValidatorUpdate {
 			k.SetNode(ctx, item)
 			return false
 		})
-
-		k.DeleteTransientKeyMinPrice(ctx)
 	}
 
 	k.IterateInactiveNodesAt(ctx, ctx.BlockTime(), func(_ int, item types.Node) bool {
