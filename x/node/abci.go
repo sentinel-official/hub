@@ -39,8 +39,8 @@ func EndBlock(ctx sdk.Context, k keeper.Keeper) []abcitypes.ValidatorUpdate {
 				for _, coin := range maxPrice {
 					amount := item.Price.AmountOf(coin.Denom)
 					if amount.GT(coin.Amount) {
-						item.Price = item.Price.Add(
-							sdk.NewCoin(coin.Denom, amount.Neg()),
+						item.Price = item.Price.Sub(
+							sdk.NewCoins(sdk.NewCoin(coin.Denom, amount)),
 						).Add(coin)
 					}
 				}
@@ -50,8 +50,8 @@ func EndBlock(ctx sdk.Context, k keeper.Keeper) []abcitypes.ValidatorUpdate {
 				for _, coin := range minPrice {
 					amount := item.Price.AmountOf(coin.Denom)
 					if amount.LT(coin.Amount) {
-						item.Price = item.Price.Add(
-							sdk.NewCoin(coin.Denom, amount.Neg()),
+						item.Price = item.Price.Sub(
+							sdk.NewCoins(sdk.NewCoin(coin.Denom, amount)),
 						).Add(coin)
 					}
 				}
