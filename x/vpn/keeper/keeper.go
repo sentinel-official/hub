@@ -36,14 +36,15 @@ func NewKeeper(
 	accountKeeper authkeeper.AccountKeeper,
 	bankKeeper bankkeeper.Keeper,
 	distributionKeeper distributionkeeper.Keeper,
+	feeCollectorName string,
 ) Keeper {
 	var (
 		depositKeeper      = depositkeeper.NewKeeper(cdc, key)
 		providerKeeper     = providerkeeper.NewKeeper(cdc, key, paramsKeeper.Subspace(providertypes.ParamsSubspace))
 		nodeKeeper         = nodekeeper.NewKeeper(cdc, key, paramsKeeper.Subspace(nodetypes.ParamsSubspace))
 		planKeeper         = plankeeper.NewKeeper(cdc, key)
-		subscriptionKeeper = subscriptionkeeper.NewKeeper(cdc, key, paramsKeeper.Subspace(subscriptiontypes.ParamsSubspace))
-		sessionKeeper      = sessionkeeper.NewKeeper(cdc, key, paramsKeeper.Subspace(sessiontypes.ParamsSubspace))
+		subscriptionKeeper = subscriptionkeeper.NewKeeper(cdc, key, paramsKeeper.Subspace(subscriptiontypes.ParamsSubspace), feeCollectorName)
+		sessionKeeper      = sessionkeeper.NewKeeper(cdc, key, paramsKeeper.Subspace(sessiontypes.ParamsSubspace), feeCollectorName)
 	)
 
 	depositKeeper.WithBankKeeper(bankKeeper)
@@ -57,13 +58,15 @@ func NewKeeper(
 	planKeeper.WithProviderKeeper(&providerKeeper)
 	planKeeper.WithNodeKeeper(&nodeKeeper)
 
-	subscriptionKeeper.WithDepositKeeper(&depositKeeper)
 	subscriptionKeeper.WithBankKeeper(bankKeeper)
+	subscriptionKeeper.WithDepositKeeper(&depositKeeper)
+	subscriptionKeeper.WithProviderKeeper(&providerKeeper)
 	subscriptionKeeper.WithNodeKeeper(&nodeKeeper)
 	subscriptionKeeper.WithPlanKeeper(&planKeeper)
 	subscriptionKeeper.WithSessionKeeper(&sessionKeeper)
 
 	sessionKeeper.WithAccountKeeper(accountKeeper)
+	sessionKeeper.WithBankKeeper(bankKeeper)
 	sessionKeeper.WithDepositKeeper(&depositKeeper)
 	sessionKeeper.WithNodeKeeper(&nodeKeeper)
 	sessionKeeper.WithPlanKeeper(&planKeeper)

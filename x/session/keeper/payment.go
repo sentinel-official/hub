@@ -4,6 +4,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	hubtypes "github.com/sentinel-official/hub/types"
+	hubutils "github.com/sentinel-official/hub/utils"
 	"github.com/sentinel-official/hub/x/session/types"
 )
 
@@ -45,9 +46,18 @@ func (k *Keeper) ProcessPaymentAndUpdateQuota(ctx sdk.Context, session types.Ses
 		k.SetQuota(ctx, session.Subscription, quota)
 
 		var (
-			amount      = subscription.Amount(bandwidth)
-			sessionNode = session.GetNode()
+			amount   = subscription.Amount(bandwidth)
+			nodeAddr = session.GetNode()
 		)
+
+		var (
+			stakingShare  = k.node.StakingShare(ctx)
+			stakingReward = hubutils.GetProportionOfCoin(amount, stakingShare)
+		)
+
+		if err := k.SendCoinFromAccountToModule(ctx, from, k.feeCollectorName, stakingReward); err != nil {
+			return err
+		}
 
 		ctx.Logger().Info("calculated payment for session", "id", session.Id,
 			"price", subscription.Price, "deposit", subscription.Deposit, "amount", amount,
@@ -62,7 +72,8 @@ func (k *Keeper) ProcessPaymentAndUpdateQuota(ctx sdk.Context, session types.Ses
 			},
 		)
 
-		return k.SendCoinFromDepositToAccount(ctx, from, sessionNode.Bytes(), amount)
+		amount = amount.Sub(stakingReward)
+		return k.SendCoinFromDepositToAccount(ctx, from, nodeAddr.Bytes(), amount)
 	}
 
 	bandwidth := session.Bandwidth.Sum()

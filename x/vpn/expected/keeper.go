@@ -11,5 +11,6 @@ type AccountKeeper interface {
 
 type BankKeeper interface {
 	SendCoins(ctx sdk.Context, from sdk.AccAddress, to sdk.AccAddress, coins sdk.Coins) error
+	SendCoinsFromAccountToModule(ctx sdk.Context, address sdk.AccAddress, name string, coins sdk.Coins) error
 	SpendableCoins(ctx sdk.Context, address sdk.AccAddress) sdk.Coins
 }

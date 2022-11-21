@@ -458,6 +458,7 @@ func NewApp(
 		app.accountKeeper,
 		app.bankKeeper,
 		app.distributionKeeper,
+		authtypes.FeeCollectorName,
 	)
 
 	wasmDir := filepath.Join(homePath, "data")

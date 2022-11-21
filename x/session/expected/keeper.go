@@ -14,6 +14,7 @@ type AccountKeeper interface {
 }
 
 type BankKeeper interface {
+	SendCoinsFromAccountToModule(ctx sdk.Context, address sdk.AccAddress, name string, coins sdk.Coins) error
 	SpendableCoins(ctx sdk.Context, address sdk.AccAddress) sdk.Coins
 }
 
@@ -27,6 +28,7 @@ type PlanKeeper interface {
 
 type NodeKeeper interface {
 	GetNode(ctx sdk.Context, address hubtypes.NodeAddress) (nodetypes.Node, bool)
+	StakingShare(ctx sdk.Context) sdk.Dec
 }
 
 type SubscriptionKeeper interface {

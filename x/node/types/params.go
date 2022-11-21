@@ -13,9 +13,10 @@ const (
 )
 
 var (
-	DefaultDeposit  = sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(1000))
-	DefaultMaxPrice = sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(100)))
-	DefaultMinPrice = sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(10)))
+	DefaultDeposit      = sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(1000))
+	DefaultMaxPrice     = sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(100)))
+	DefaultMinPrice     = sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(10)))
+	DefaultStakingShare = sdk.NewDecWithPrec(1, 1)
 )
 
 var (
@@ -23,6 +24,7 @@ var (
 	KeyInactiveDuration = []byte("InactiveDuration")
 	KeyMaxPrice         = []byte("MaxPrice")
 	KeyMinPrice         = []byte("MinPrice")
+	KeyStakingShare     = []byte("StakingShare")
 )
 
 var (
@@ -51,6 +53,12 @@ func (m *Params) Validate() error {
 		if !m.MinPrice.IsValid() {
 			return fmt.Errorf("min_price must be valid")
 		}
+	}
+	if m.StakingShare.IsNegative() {
+		return fmt.Errorf("staking_share cannot be negative")
+	}
+	if m.StakingShare.GT(sdk.NewDec(1)) {
+		return fmt.Errorf("staking_share cannot be greater than 1")
 	}
 
 	return nil
@@ -132,15 +140,35 @@ func (m *Params) ParamSetPairs() params.ParamSetPairs {
 				return nil
 			},
 		},
+		{
+			Key:   KeyStakingShare,
+			Value: &m.StakingShare,
+			ValidatorFn: func(v interface{}) error {
+				value, ok := v.(sdk.Dec)
+				if !ok {
+					return fmt.Errorf("invalid parameter type %T", v)
+				}
+
+				if value.IsNegative() {
+					return fmt.Errorf("staking_share cannot be negative")
+				}
+				if value.GT(sdk.NewDec(1)) {
+					return fmt.Errorf("staking_share cannot be greater than 1")
+				}
+
+				return nil
+			},
+		},
 	}
 }
 
-func NewParams(deposit sdk.Coin, inactiveDuration time.Duration, maxPrice, minPrice sdk.Coins) Params {
+func NewParams(deposit sdk.Coin, inactiveDuration time.Duration, maxPrice, minPrice sdk.Coins, stakingShare sdk.Dec) Params {
 	return Params{
 		Deposit:          deposit,
 		InactiveDuration: inactiveDuration,
 		MaxPrice:         maxPrice,
 		MinPrice:         minPrice,
+		StakingShare:     stakingShare,
 	}
 }
 
@@ -150,6 +178,7 @@ func DefaultParams() Params {
 		InactiveDuration: DefaultInactiveDuration,
 		MaxPrice:         DefaultMaxPrice,
 		MinPrice:         DefaultMinPrice,
+		StakingShare:     DefaultStakingShare,
 	}
 }
 

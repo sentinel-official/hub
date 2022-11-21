@@ -17,6 +17,14 @@ func (k *Keeper) SendCoin(ctx sdk.Context, from sdk.AccAddress, to sdk.AccAddres
 	return k.bank.SendCoins(ctx, from, to, sdk.NewCoins(coin))
 }
 
+func (k *Keeper) SendCoinFromAccountToModule(ctx sdk.Context, from sdk.AccAddress, to string, coin sdk.Coin) error {
+	if coin.IsZero() {
+		return nil
+	}
+
+	return k.bank.SendCoinsFromAccountToModule(ctx, from, to, sdk.NewCoins(coin))
+}
+
 func (k *Keeper) AddDeposit(ctx sdk.Context, address sdk.AccAddress, coin sdk.Coin) error {
 	if coin.IsZero() {
 		return nil

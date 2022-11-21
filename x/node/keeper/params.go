@@ -8,23 +8,28 @@ import (
 	"github.com/sentinel-official/hub/x/node/types"
 )
 
-func (k *Keeper) Deposit(ctx sdk.Context) (deposit sdk.Coin) {
-	k.params.Get(ctx, types.KeyDeposit, &deposit)
+func (k *Keeper) Deposit(ctx sdk.Context) (v sdk.Coin) {
+	k.params.Get(ctx, types.KeyDeposit, &v)
 	return
 }
 
-func (k *Keeper) InactiveDuration(ctx sdk.Context) (duration time.Duration) {
-	k.params.Get(ctx, types.KeyInactiveDuration, &duration)
+func (k *Keeper) InactiveDuration(ctx sdk.Context) (v time.Duration) {
+	k.params.Get(ctx, types.KeyInactiveDuration, &v)
 	return
 }
 
-func (k *Keeper) MaxPrice(ctx sdk.Context) (price sdk.Coins) {
-	k.params.Get(ctx, types.KeyMaxPrice, &price)
+func (k *Keeper) MaxPrice(ctx sdk.Context) (v sdk.Coins) {
+	k.params.Get(ctx, types.KeyMaxPrice, &v)
 	return
 }
 
-func (k *Keeper) MinPrice(ctx sdk.Context) (price sdk.Coins) {
-	k.params.Get(ctx, types.KeyMinPrice, &price)
+func (k *Keeper) MinPrice(ctx sdk.Context) (v sdk.Coins) {
+	k.params.Get(ctx, types.KeyMinPrice, &v)
+	return
+}
+
+func (k *Keeper) StakingShare(ctx sdk.Context) (v sdk.Dec) {
+	k.params.Get(ctx, types.KeyStakingShare, &v)
 	return
 }
 
@@ -38,6 +43,7 @@ func (k *Keeper) GetParams(ctx sdk.Context) types.Params {
 		k.InactiveDuration(ctx),
 		k.MaxPrice(ctx),
 		k.MinPrice(ctx),
+		k.StakingShare(ctx),
 	)
 }
 

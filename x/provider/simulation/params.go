@@ -12,6 +12,7 @@ import (
 
 const (
 	MaxDepositAmount = 1 << 18
+	MaxInt           = 1 << 18
 )
 
 func ParamChanges(_ *rand.Rand) []simulationtypes.ParamChange {

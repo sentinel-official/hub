@@ -6,6 +6,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	hubtypes "github.com/sentinel-official/hub/types"
+	hubutils "github.com/sentinel-official/hub/utils"
 	"github.com/sentinel-official/hub/x/subscription/types"
 )
 
@@ -121,8 +122,21 @@ func (k *msgServer) MsgSubscribeToPlan(c context.Context, msg *types.MsgSubscrib
 			return nil, types.ErrorPriceDoesNotExist
 		}
 
-		planProvider := plan.GetProvider()
-		if err := k.SendCoin(ctx, msgFrom, planProvider.Bytes(), price); err != nil {
+		var (
+			stakingShare  = k.provider.StakingShare(ctx)
+			stakingReward = hubutils.GetProportionOfCoin(price, stakingShare)
+		)
+
+		if err := k.SendCoinFromAccountToModule(ctx, msgFrom, k.feeCollectorName, stakingReward); err != nil {
+			return nil, err
+		}
+
+		var (
+			providerAddr = plan.GetProvider()
+			amount       = price.Sub(stakingReward)
+		)
+
+		if err := k.SendCoin(ctx, msgFrom, providerAddr.Bytes(), amount); err != nil {
 			return nil, err
 		}
 	}

@@ -8,11 +8,13 @@ import (
 )
 
 var (
-	DefaultDeposit = sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(1000))
+	DefaultDeposit      = sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(1000))
+	DefaultStakingShare = sdk.NewDecWithPrec(1, 1)
 )
 
 var (
-	KeyDeposit = []byte("Deposit")
+	KeyDeposit      = []byte("Deposit")
+	KeyStakingShare = []byte("StakingShare")
 )
 
 var (
@@ -25,6 +27,12 @@ func (m *Params) Validate() error {
 	}
 	if !m.Deposit.IsValid() {
 		return fmt.Errorf("invalid deposit %s", m.Deposit)
+	}
+	if m.StakingShare.IsNegative() {
+		return fmt.Errorf("staking_share cannot be negative")
+	}
+	if m.StakingShare.GT(sdk.NewDec(1)) {
+		return fmt.Errorf("staking_share cannot be greater than 1")
 	}
 
 	return nil
@@ -51,18 +59,39 @@ func (m *Params) ParamSetPairs() params.ParamSetPairs {
 				return nil
 			},
 		},
+		{
+			Key:   KeyStakingShare,
+			Value: &m.StakingShare,
+			ValidatorFn: func(v interface{}) error {
+				value, ok := v.(sdk.Dec)
+				if !ok {
+					return fmt.Errorf("invalid parameter type %T", v)
+				}
+
+				if value.IsNegative() {
+					return fmt.Errorf("staking_share cannot be negative")
+				}
+				if value.GT(sdk.NewDec(1)) {
+					return fmt.Errorf("staking_share cannot be greater than 1")
+				}
+
+				return nil
+			},
+		},
 	}
 }
 
-func NewParams(deposit sdk.Coin) Params {
+func NewParams(deposit sdk.Coin, stakingShare sdk.Dec) Params {
 	return Params{
-		Deposit: deposit,
+		Deposit:      deposit,
+		StakingShare: stakingShare,
 	}
 }
 
 func DefaultParams() Params {
 	return Params{
-		Deposit: DefaultDeposit,
+		Deposit:      DefaultDeposit,
+		StakingShare: DefaultStakingShare,
 	}
 }
 
