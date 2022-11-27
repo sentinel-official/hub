@@ -5,7 +5,7 @@ import (
 )
 
 func (k *Keeper) FundCommunityPool(ctx sdk.Context, from sdk.AccAddress, coin sdk.Coin) error {
-	if coin.IsZero() {
+	if !coin.IsPositive() {
 		return nil
 	}
 

@@ -23,7 +23,7 @@ func RandomizedGenesisState(state *module.SimulationState) *types.GenesisState {
 		func(r *rand.Rand) {
 			deposit = sdk.NewInt64Coin(
 				sdk.DefaultBondDenom,
-				r.Int63n(MaxDepositAmount),
+				r.Int63n(MaxInt),
 			)
 		},
 	)
