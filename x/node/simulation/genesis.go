@@ -27,7 +27,7 @@ func RandomizedGenesisState(state *module.SimulationState) *types.GenesisState {
 		func(r *rand.Rand) {
 			deposit = sdk.NewInt64Coin(
 				sdk.DefaultBondDenom,
-				r.Int63n(MaxAmount),
+				r.Int63n(MaxInt),
 			)
 		},
 	)
@@ -37,7 +37,7 @@ func RandomizedGenesisState(state *module.SimulationState) *types.GenesisState {
 		&inactiveDuration,
 		state.Rand,
 		func(r *rand.Rand) {
-			inactiveDuration = time.Duration(r.Int63n(MaxInactiveDuration)) * time.Millisecond
+			inactiveDuration = time.Duration(r.Int63n(MaxInt)) * time.Millisecond
 		},
 	)
 	state.AppParams.GetOrGenerate(
@@ -49,7 +49,7 @@ func RandomizedGenesisState(state *module.SimulationState) *types.GenesisState {
 			maxPrice = sdk.NewCoins(
 				sdk.NewInt64Coin(
 					sdk.DefaultBondDenom,
-					r.Int63n(MaxAmount),
+					r.Int63n(MaxInt),
 				),
 			)
 		},
@@ -63,7 +63,7 @@ func RandomizedGenesisState(state *module.SimulationState) *types.GenesisState {
 			minPrice = sdk.NewCoins(
 				sdk.NewInt64Coin(
 					sdk.DefaultBondDenom,
-					r.Int63n(MaxAmount),
+					r.Int63n(MaxInt),
 				),
 			)
 		},
@@ -75,7 +75,7 @@ func RandomizedGenesisState(state *module.SimulationState) *types.GenesisState {
 		state.Rand,
 		func(r *rand.Rand) {
 			stakingShare = sdk.NewDecWithPrec(
-				r.Int63n(MaxAmount),
+				r.Int63n(MaxInt),
 				6,
 			)
 		},
