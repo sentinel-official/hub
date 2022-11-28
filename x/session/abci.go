@@ -18,16 +18,16 @@ func EndBlock(ctx sdk.Context, k keeper.Keeper) []abcitypes.ValidatorUpdate {
 	k.IterateInactiveSessionsAt(ctx, ctx.BlockTime(), func(_ int, item types.Session) bool {
 		log.Info("inactive session", "value", item)
 
-		itemAddress := item.GetAddress()
+		accAddr := item.GetAddress()
 		if item.Status.Equal(hubtypes.Active) {
-			k.DeleteActiveSessionForAddress(ctx, itemAddress, item.Id)
+			k.DeleteActiveSessionForAddress(ctx, accAddr, item.Id)
 			k.DeleteInactiveSessionAt(ctx, item.StatusAt.Add(inactiveDuration), item.Id)
 
 			item.Status = hubtypes.StatusInactivePending
 			item.StatusAt = ctx.BlockTime()
 
 			k.SetSession(ctx, item)
-			k.SetInactiveSessionForAddress(ctx, itemAddress, item.Id)
+			k.SetInactiveSessionForAddress(ctx, accAddr, item.Id)
 			k.SetInactiveSessionAt(ctx, item.StatusAt.Add(inactiveDuration), item.Id)
 			ctx.EventManager().EmitTypedEvent(
 				&types.EventSetStatus{
@@ -46,7 +46,7 @@ func EndBlock(ctx sdk.Context, k keeper.Keeper) []abcitypes.ValidatorUpdate {
 		}
 
 		k.DeleteSession(ctx, item.Id)
-		k.DeleteInactiveSessionForAddress(ctx, itemAddress, item.Id)
+		k.DeleteInactiveSessionForAddress(ctx, accAddr, item.Id)
 		k.DeleteInactiveSessionAt(ctx, item.StatusAt.Add(inactiveDuration), item.Id)
 
 		ctx.EventManager().EmitTypedEvent(
