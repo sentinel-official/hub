@@ -24,11 +24,11 @@ func NewMsgServiceServer(keeper Keeper) types.MsgServiceServer {
 func (k *msgServer) MsgAdd(c context.Context, msg *types.MsgAddRequest) (*types.MsgAddResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
-	msgFrom, err := hubtypes.ProvAddressFromBech32(msg.From)
+	fromAddr, err := hubtypes.ProvAddressFromBech32(msg.From)
 	if err != nil {
 		return nil, err
 	}
-	if !k.HasProvider(ctx, msgFrom) {
+	if !k.HasProvider(ctx, fromAddr) {
 		return nil, types.ErrorProviderDoesNotExist
 	}
 
@@ -43,13 +43,13 @@ func (k *msgServer) MsgAdd(c context.Context, msg *types.MsgAddRequest) (*types.
 			Status:   hubtypes.StatusInactive,
 			StatusAt: ctx.BlockTime(),
 		}
-		planProvider = plan.GetProvider()
+		provAddr = plan.GetProvider()
 	)
 
 	k.SetCount(ctx, count+1)
 	k.SetPlan(ctx, plan)
 	k.SetInactivePlan(ctx, plan.Id)
-	k.SetInactivePlanForProvider(ctx, planProvider, plan.Id)
+	k.SetInactivePlanForProvider(ctx, provAddr, plan.Id)
 	ctx.EventManager().EmitTypedEvent(
 		&types.EventAdd{
 			Id:       plan.Id,
@@ -71,25 +71,22 @@ func (k *msgServer) MsgSetStatus(c context.Context, msg *types.MsgSetStatusReque
 		return nil, types.ErrorUnauthorized
 	}
 
-	var (
-		planProvider = plan.GetProvider()
-	)
-
+	provAddr := plan.GetProvider()
 	if plan.Status.Equal(hubtypes.StatusActive) {
 		if msg.Status.Equal(hubtypes.StatusInactive) {
 			k.DeleteActivePlan(ctx, plan.Id)
-			k.DeleteActivePlanForProvider(ctx, planProvider, plan.Id)
+			k.DeleteActivePlanForProvider(ctx, provAddr, plan.Id)
 
 			k.SetInactivePlan(ctx, plan.Id)
-			k.SetInactivePlanForProvider(ctx, planProvider, plan.Id)
+			k.SetInactivePlanForProvider(ctx, provAddr, plan.Id)
 		}
 	} else {
 		if msg.Status.Equal(hubtypes.StatusActive) {
 			k.DeleteInactivePlan(ctx, plan.Id)
-			k.DeleteInactivePlanForProvider(ctx, planProvider, plan.Id)
+			k.DeleteInactivePlanForProvider(ctx, provAddr, plan.Id)
 
 			k.SetActivePlan(ctx, plan.Id)
-			k.SetActivePlanForProvider(ctx, planProvider, plan.Id)
+			k.SetActivePlanForProvider(ctx, provAddr, plan.Id)
 		}
 	}
 
@@ -119,12 +116,12 @@ func (k *msgServer) MsgAddNode(c context.Context, msg *types.MsgAddNodeRequest) 
 		return nil, types.ErrorUnauthorized
 	}
 
-	msgAddress, err := hubtypes.NodeAddressFromBech32(msg.Address)
+	nodeAddr, err := hubtypes.NodeAddressFromBech32(msg.Address)
 	if err != nil {
 		return nil, err
 	}
 
-	node, found := k.GetNode(ctx, msgAddress)
+	node, found := k.GetNode(ctx, nodeAddr)
 	if !found {
 		return nil, types.ErrorNodeDoesNotExist
 	}
@@ -132,21 +129,17 @@ func (k *msgServer) MsgAddNode(c context.Context, msg *types.MsgAddNodeRequest) 
 		return nil, types.ErrorUnauthorized
 	}
 
-	if k.HasNodeForPlan(ctx, plan.Id, msgAddress) {
+	if k.HasNodeForPlan(ctx, plan.Id, nodeAddr) {
 		return nil, types.DuplicateNodeForPlan
 	}
 
-	var (
-		planProvider = plan.GetProvider()
-		nodeAddress  = node.GetAddress()
-	)
-
-	k.SetNodeForPlan(ctx, plan.Id, nodeAddress)
-	k.IncreaseCountForNodeByProvider(ctx, planProvider, nodeAddress)
+	provAddr := plan.GetProvider()
+	k.SetNodeForPlan(ctx, plan.Id, nodeAddr)
+	k.IncreaseCountForNodeByProvider(ctx, provAddr, nodeAddr)
 	ctx.EventManager().EmitTypedEvent(
 		&types.EventAddNode{
 			Id:       plan.Id,
-			Node:     msgAddress.String(),
+			Node:     nodeAddr.String(),
 			Provider: plan.Provider,
 		},
 	)
@@ -157,7 +150,7 @@ func (k *msgServer) MsgAddNode(c context.Context, msg *types.MsgAddNodeRequest) 
 func (k *msgServer) MsgRemoveNode(c context.Context, msg *types.MsgRemoveNodeRequest) (*types.MsgRemoveNodeResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
-	msgFrom, err := sdk.AccAddressFromBech32(msg.From)
+	fromAddr, err := sdk.AccAddressFromBech32(msg.From)
 	if err != nil {
 		return nil, err
 	}
@@ -167,28 +160,28 @@ func (k *msgServer) MsgRemoveNode(c context.Context, msg *types.MsgRemoveNodeReq
 		return nil, types.ErrorPlanDoesNotExist
 	}
 
-	planProvider := plan.GetProvider()
-	if hubtypes.NodeAddress(msgFrom.Bytes()).String() != msg.Address {
-		if hubtypes.ProvAddress(msgFrom.Bytes()).String() != plan.Provider {
+	if hubtypes.NodeAddress(fromAddr.Bytes()).String() != msg.Address {
+		if hubtypes.ProvAddress(fromAddr.Bytes()).String() != plan.Provider {
 			return nil, types.ErrorUnauthorized
 		}
 	}
 
-	msgAddress, err := hubtypes.NodeAddressFromBech32(msg.Address)
+	nodeAddr, err := hubtypes.NodeAddressFromBech32(msg.Address)
 	if err != nil {
 		return nil, err
 	}
 
-	if !k.HasNodeForPlan(ctx, plan.Id, msgAddress) {
+	if !k.HasNodeForPlan(ctx, plan.Id, nodeAddr) {
 		return nil, types.ErrorNodeDoesNotExist
 	}
 
-	k.DeleteNodeForPlan(ctx, plan.Id, msgAddress)
-	k.DecreaseCountForNodeByProvider(ctx, planProvider, msgAddress)
+	provAddr := plan.GetProvider()
+	k.DeleteNodeForPlan(ctx, plan.Id, nodeAddr)
+	k.DecreaseCountForNodeByProvider(ctx, provAddr, nodeAddr)
 	ctx.EventManager().EmitTypedEvent(
 		&types.EventRemoveNode{
 			Id:       plan.Id,
-			Node:     msgAddress.String(),
+			Node:     nodeAddr.String(),
 			Provider: plan.Provider,
 		},
 	)
