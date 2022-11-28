@@ -7,7 +7,7 @@ import (
 	params "github.com/cosmos/cosmos-sdk/x/params/types"
 )
 
-const (
+var (
 	DefaultInactiveDuration = 10 * time.Minute
 )
 
@@ -20,11 +20,8 @@ var (
 )
 
 func (m *Params) Validate() error {
-	if m.InactiveDuration < 0 {
-		return fmt.Errorf("inactive_duration cannot be negative")
-	}
-	if m.InactiveDuration == 0 {
-		return fmt.Errorf("inactive_duration cannot be zero")
+	if err := validateInactiveDuration(m.InactiveDuration); err != nil {
+		return err
 	}
 
 	return nil
@@ -33,23 +30,9 @@ func (m *Params) Validate() error {
 func (m *Params) ParamSetPairs() params.ParamSetPairs {
 	return params.ParamSetPairs{
 		{
-			Key:   KeyInactiveDuration,
-			Value: &m.InactiveDuration,
-			ValidatorFn: func(v interface{}) error {
-				value, ok := v.(time.Duration)
-				if !ok {
-					return fmt.Errorf("invalid parameter type %T", v)
-				}
-
-				if value < 0 {
-					return fmt.Errorf("value cannot be negative")
-				}
-				if value == 0 {
-					return fmt.Errorf("value cannot be zero")
-				}
-
-				return nil
-			},
+			Key:         KeyInactiveDuration,
+			Value:       &m.InactiveDuration,
+			ValidatorFn: validateInactiveDuration,
 		},
 	}
 }
@@ -68,4 +51,20 @@ func DefaultParams() Params {
 
 func ParamsKeyTable() params.KeyTable {
 	return params.NewKeyTable().RegisterParamSet(&Params{})
+}
+
+func validateInactiveDuration(v interface{}) error {
+	value, ok := v.(time.Duration)
+	if !ok {
+		return fmt.Errorf("invalid parameter type %T", v)
+	}
+
+	if value < 0 {
+		return fmt.Errorf("inactive_duration cannot be negative")
+	}
+	if value == 0 {
+		return fmt.Errorf("inactive_duration cannot be zero")
+	}
+
+	return nil
 }

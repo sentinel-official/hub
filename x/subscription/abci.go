@@ -21,9 +21,9 @@ func EndBlock(ctx sdk.Context, k keeper.Keeper) []abcitypes.ValidatorUpdate {
 		if item.Status.Equal(hubtypes.StatusActive) {
 			k.DeleteInactiveSubscriptionAt(ctx, item.Expiry, item.Id)
 			k.IterateQuotas(ctx, item.Id, func(_ int, quota types.Quota) bool {
-				address := quota.GetAddress()
-				k.DeleteActiveSubscriptionForAddress(ctx, address, item.Id)
-				k.SetInactiveSubscriptionForAddress(ctx, address, item.Id)
+				accAddr := quota.GetAddress()
+				k.DeleteActiveSubscriptionForAddress(ctx, accAddr, item.Id)
+				k.SetInactiveSubscriptionForAddress(ctx, accAddr, item.Id)
 
 				return false
 			})
@@ -54,17 +54,17 @@ func EndBlock(ctx sdk.Context, k keeper.Keeper) []abcitypes.ValidatorUpdate {
 			log.Info("calculated refund of subscription", "id", item.Id,
 				"consumed", consumed, "amount", amount)
 
-			itemOwner := item.GetOwner()
-			if err := k.SubtractDeposit(ctx, itemOwner, amount); err != nil {
+			ownerAddr := item.GetOwner()
+			if err := k.SubtractDeposit(ctx, ownerAddr, amount); err != nil {
 				log.Error("failed to subtract the deposit", "cause", err)
 			}
 		}
 
 		k.DeleteSubscription(ctx, item.Id)
 		k.IterateQuotas(ctx, item.Id, func(_ int, quota types.Quota) bool {
-			address := quota.GetAddress()
-			k.DeleteQuota(ctx, item.Id, address)
-			k.DeleteInactiveSubscriptionForAddress(ctx, address, item.Id)
+			accAddr := quota.GetAddress()
+			k.DeleteQuota(ctx, item.Id, accAddr)
+			k.DeleteInactiveSubscriptionForAddress(ctx, accAddr, item.Id)
 
 			return false
 		})

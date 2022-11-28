@@ -25,12 +25,12 @@ func NewMsgServiceServer(keeper Keeper) types.MsgServiceServer {
 func (k *msgServer) MsgSubscribeToNode(c context.Context, msg *types.MsgSubscribeToNodeRequest) (*types.MsgSubscribeToNodeResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
-	msgAddress, err := hubtypes.NodeAddressFromBech32(msg.Address)
+	nodeAddr, err := hubtypes.NodeAddressFromBech32(msg.Address)
 	if err != nil {
 		return nil, err
 	}
 
-	node, found := k.GetNode(ctx, msgAddress)
+	node, found := k.GetNode(ctx, nodeAddr)
 	if !found {
 		return nil, types.ErrorNodeDoesNotExist
 	}
@@ -46,12 +46,12 @@ func (k *msgServer) MsgSubscribeToNode(c context.Context, msg *types.MsgSubscrib
 		return nil, types.ErrorPriceDoesNotExist
 	}
 
-	msgFrom, err := sdk.AccAddressFromBech32(msg.From)
+	fromAddr, err := sdk.AccAddressFromBech32(msg.From)
 	if err != nil {
 		return nil, err
 	}
 
-	if err := k.AddDeposit(ctx, msgFrom, msg.Deposit); err != nil {
+	if err := k.AddDeposit(ctx, fromAddr, msg.Deposit); err != nil {
 		return nil, err
 	}
 
@@ -85,11 +85,10 @@ func (k *msgServer) MsgSubscribeToNode(c context.Context, msg *types.MsgSubscrib
 			Consumed:  sdk.ZeroInt(),
 			Allocated: bandwidth,
 		}
-		quotaAddress = quota.GetAddress()
 	)
 
 	k.SetQuota(ctx, subscription.Id, quota)
-	k.SetActiveSubscriptionForAddress(ctx, quotaAddress, subscription.Id)
+	k.SetActiveSubscriptionForAddress(ctx, fromAddr, subscription.Id)
 	ctx.EventManager().EmitTypedEvent(
 		&types.EventAddQuota{
 			Id:      subscription.Id,
@@ -111,7 +110,7 @@ func (k *msgServer) MsgSubscribeToPlan(c context.Context, msg *types.MsgSubscrib
 		return nil, types.ErrorInvalidPlanStatus
 	}
 
-	msgFrom, err := sdk.AccAddressFromBech32(msg.From)
+	fromAddr, err := sdk.AccAddressFromBech32(msg.From)
 	if err != nil {
 		return nil, err
 	}
@@ -127,16 +126,16 @@ func (k *msgServer) MsgSubscribeToPlan(c context.Context, msg *types.MsgSubscrib
 			stakingReward = hubutils.GetProportionOfCoin(price, stakingShare)
 		)
 
-		if err := k.SendCoinFromAccountToModule(ctx, msgFrom, k.feeCollectorName, stakingReward); err != nil {
+		if err := k.SendCoinFromAccountToModule(ctx, fromAddr, k.feeCollectorName, stakingReward); err != nil {
 			return nil, err
 		}
 
 		var (
-			providerAddr = plan.GetProvider()
-			amount       = price.Sub(stakingReward)
+			provAddr = plan.GetProvider()
+			amount   = price.Sub(stakingReward)
 		)
 
-		if err := k.SendCoin(ctx, msgFrom, providerAddr.Bytes(), amount); err != nil {
+		if err := k.SendCoin(ctx, fromAddr, provAddr.Bytes(), amount); err != nil {
 			return nil, err
 		}
 	}
@@ -171,11 +170,10 @@ func (k *msgServer) MsgSubscribeToPlan(c context.Context, msg *types.MsgSubscrib
 			Consumed:  sdk.ZeroInt(),
 			Allocated: plan.Bytes,
 		}
-		quotaAddress = quota.GetAddress()
 	)
 
 	k.SetQuota(ctx, subscription.Id, quota)
-	k.SetActiveSubscriptionForAddress(ctx, quotaAddress, subscription.Id)
+	k.SetActiveSubscriptionForAddress(ctx, fromAddr, subscription.Id)
 	ctx.EventManager().EmitTypedEvent(
 		&types.EventAddQuota{
 			Id:      subscription.Id,
@@ -189,11 +187,6 @@ func (k *msgServer) MsgSubscribeToPlan(c context.Context, msg *types.MsgSubscrib
 func (k *msgServer) MsgCancel(c context.Context, msg *types.MsgCancelRequest) (*types.MsgCancelResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
-	msgFrom, err := sdk.AccAddressFromBech32(msg.From)
-	if err != nil {
-		return nil, err
-	}
-
 	subscription, found := k.GetSubscription(ctx, msg.Id)
 	if !found {
 		return nil, types.ErrorSubscriptionDoesNotExist
@@ -205,8 +198,21 @@ func (k *msgServer) MsgCancel(c context.Context, msg *types.MsgCancelRequest) (*
 		return nil, types.ErrorInvalidSubscriptionStatus
 	}
 
-	items := k.GetActiveSessionsForAddress(ctx, msgFrom, 0, 1)
-	if len(items) > 0 {
+	activeSessionExist := false
+	k.IterateQuotas(ctx, subscription.Id, func(_ int, quota types.Quota) bool {
+		var (
+			accAddr = quota.GetAddress()
+			items   = k.GetActiveSessionsForAddress(ctx, accAddr, 0, 1)
+		)
+
+		if len(items) > 0 {
+			activeSessionExist = true
+		}
+
+		return activeSessionExist
+	})
+
+	if activeSessionExist {
 		return nil, types.ErrorCanNotCancel
 	}
 
@@ -216,9 +222,9 @@ func (k *msgServer) MsgCancel(c context.Context, msg *types.MsgCancelRequest) (*
 	}
 
 	k.IterateQuotas(ctx, subscription.Id, func(_ int, quota types.Quota) bool {
-		address := quota.GetAddress()
-		k.DeleteActiveSubscriptionForAddress(ctx, address, subscription.Id)
-		k.SetInactiveSubscriptionForAddress(ctx, address, subscription.Id)
+		accAddr := quota.GetAddress()
+		k.DeleteActiveSubscriptionForAddress(ctx, accAddr, subscription.Id)
+		k.SetInactiveSubscriptionForAddress(ctx, accAddr, subscription.Id)
 
 		return false
 	})
@@ -241,7 +247,7 @@ func (k *msgServer) MsgCancel(c context.Context, msg *types.MsgCancelRequest) (*
 func (k *msgServer) MsgAddQuota(c context.Context, msg *types.MsgAddQuotaRequest) (*types.MsgAddQuotaResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
-	msgAddress, err := sdk.AccAddressFromBech32(msg.Address)
+	accAddr, err := sdk.AccAddressFromBech32(msg.Address)
 	if err != nil {
 		return nil, err
 	}
@@ -259,7 +265,7 @@ func (k *msgServer) MsgAddQuota(c context.Context, msg *types.MsgAddQuotaRequest
 	if !subscription.Status.Equal(hubtypes.StatusActive) {
 		return nil, types.ErrorInvalidSubscriptionStatus
 	}
-	if k.HasQuota(ctx, subscription.Id, msgAddress) {
+	if k.HasQuota(ctx, subscription.Id, accAddr) {
 		return nil, types.ErrorDuplicateQuota
 	}
 	if msg.Bytes.GT(subscription.Free) {
@@ -275,11 +281,10 @@ func (k *msgServer) MsgAddQuota(c context.Context, msg *types.MsgAddQuotaRequest
 			Consumed:  sdk.ZeroInt(),
 			Allocated: msg.Bytes,
 		}
-		quotaAddress = quota.GetAddress()
 	)
 
 	k.SetQuota(ctx, subscription.Id, quota)
-	k.SetActiveSubscriptionForAddress(ctx, quotaAddress, subscription.Id)
+	k.SetActiveSubscriptionForAddress(ctx, accAddr, subscription.Id)
 	ctx.EventManager().EmitTypedEvent(
 		&types.EventAddQuota{
 			Id:      subscription.Id,
@@ -307,12 +312,12 @@ func (k *msgServer) MsgUpdateQuota(c context.Context, msg *types.MsgUpdateQuotaR
 		return nil, types.ErrorInvalidSubscriptionStatus
 	}
 
-	msgAddress, err := sdk.AccAddressFromBech32(msg.Address)
+	accAddr, err := sdk.AccAddressFromBech32(msg.Address)
 	if err != nil {
 		return nil, err
 	}
 
-	quota, found := k.GetQuota(ctx, subscription.Id, msgAddress)
+	quota, found := k.GetQuota(ctx, subscription.Id, accAddr)
 	if !found {
 		return nil, types.ErrorQuotaDoesNotExist
 	}
