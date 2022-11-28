@@ -144,11 +144,6 @@ func (a AppModule) RegisterServices(configurator module.Configurator) {
 	plantypes.RegisterQueryServiceServer(configurator.QueryServer(), plankeeper.NewQueryServiceServer(a.k.Plan))
 	subscriptiontypes.RegisterQueryServiceServer(configurator.QueryServer(), subscriptionkeeper.NewQueryServiceServer(a.k.Subscription))
 	sessiontypes.RegisterQueryServiceServer(configurator.QueryServer(), sessionkeeper.NewQueryServiceServer(a.k.Session))
-
-	m := keeper.NewMigrator(a.k)
-	if err := configurator.RegisterMigration(types.ModuleName, 1, m.Migrate1to2); err != nil {
-		panic(err)
-	}
 }
 
 func (a AppModule) ConsensusVersion() uint64 { return 2 }

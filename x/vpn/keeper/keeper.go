@@ -3,10 +3,6 @@ package keeper
 import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
-	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
-	distributionkeeper "github.com/cosmos/cosmos-sdk/x/distribution/keeper"
-	paramskeeper "github.com/cosmos/cosmos-sdk/x/params/keeper"
 
 	depositkeeper "github.com/sentinel-official/hub/x/deposit/keeper"
 	nodekeeper "github.com/sentinel-official/hub/x/node/keeper"
@@ -18,6 +14,7 @@ import (
 	sessiontypes "github.com/sentinel-official/hub/x/session/types"
 	subscriptionkeeper "github.com/sentinel-official/hub/x/subscription/keeper"
 	subscriptiontypes "github.com/sentinel-official/hub/x/subscription/types"
+	"github.com/sentinel-official/hub/x/vpn/expected"
 )
 
 type Keeper struct {
@@ -32,10 +29,10 @@ type Keeper struct {
 func NewKeeper(
 	cdc codec.BinaryCodec,
 	key sdk.StoreKey,
-	paramsKeeper paramskeeper.Keeper,
-	accountKeeper authkeeper.AccountKeeper,
-	bankKeeper bankkeeper.Keeper,
-	distributionKeeper distributionkeeper.Keeper,
+	paramsKeeper expected.ParamsKeeper,
+	accountKeeper expected.AccountKeeper,
+	bankKeeper expected.BankKeeper,
+	distributionKeeper expected.DistributionKeeper,
 	feeCollectorName string,
 ) Keeper {
 	var (
