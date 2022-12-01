@@ -1,4 +1,4 @@
-package cmd
+package main
 
 import (
 	"errors"
@@ -33,14 +33,14 @@ import (
 	"github.com/tendermint/tendermint/libs/log"
 	tmdb "github.com/tendermint/tm-db"
 
-	sentinelhub "github.com/sentinel-official/hub"
-	sentinelhubparams "github.com/sentinel-official/hub/params"
-	sentinelhubtypes "github.com/sentinel-official/hub/types"
+	"github.com/sentinel-official/hub"
+	hubparams "github.com/sentinel-official/hub/params"
+	hubtypes "github.com/sentinel-official/hub/types"
 )
 
-func NewRootCmd() (*cobra.Command, sentinelhubparams.EncodingConfig) {
+func NewRootCmd() (*cobra.Command, hubparams.EncodingConfig) {
 	var (
-		config    = sentinelhub.MakeEncodingConfig()
+		config    = hub.MakeEncodingConfig()
 		clientCtx = client.Context{}.
 				WithCodec(config.Marshaler).
 				WithInterfaceRegistry(config.InterfaceRegistry).
@@ -48,7 +48,7 @@ func NewRootCmd() (*cobra.Command, sentinelhubparams.EncodingConfig) {
 				WithLegacyAmino(config.Amino).
 				WithInput(os.Stdin).
 				WithAccountRetriever(authtypes.AccountRetriever{}).
-				WithHomeDir(sentinelhub.DefaultNodeHome).
+				WithHomeDir(hub.DefaultNodeHome).
 				WithViper("SENTINEL")
 	)
 
@@ -94,30 +94,30 @@ func initAppConfig() (string, interface{}) {
 	return appConfigTemplate, appConfig
 }
 
-func initRootCmd(rootCmd *cobra.Command, encodingConfig sentinelhubparams.EncodingConfig) {
-	cfg := sentinelhubtypes.GetConfig()
+func initRootCmd(rootCmd *cobra.Command, encodingConfig hubparams.EncodingConfig) {
+	cfg := hubtypes.GetConfig()
 	cfg.Seal()
 
 	rootCmd.AddCommand(
-		genutilcli.InitCmd(sentinelhub.ModuleBasics, sentinelhub.DefaultNodeHome),
-		genutilcli.CollectGenTxsCmd(banktypes.GenesisBalancesIterator{}, sentinelhub.DefaultNodeHome),
-		genutilcli.GenTxCmd(sentinelhub.ModuleBasics, encodingConfig.TxConfig, banktypes.GenesisBalancesIterator{}, sentinelhub.DefaultNodeHome),
-		genutilcli.ValidateGenesisCmd(sentinelhub.ModuleBasics),
-		AddGenesisAccountCmd(sentinelhub.DefaultNodeHome),
-		AddGenesisWasmMsgCmd(sentinelhub.DefaultNodeHome),
+		genutilcli.InitCmd(hub.ModuleBasics, hub.DefaultNodeHome),
+		genutilcli.CollectGenTxsCmd(banktypes.GenesisBalancesIterator{}, hub.DefaultNodeHome),
+		genutilcli.GenTxCmd(hub.ModuleBasics, encodingConfig.TxConfig, banktypes.GenesisBalancesIterator{}, hub.DefaultNodeHome),
+		genutilcli.ValidateGenesisCmd(hub.ModuleBasics),
+		AddGenesisAccountCmd(hub.DefaultNodeHome),
+		AddGenesisWasmMsgCmd(hub.DefaultNodeHome),
 		tmcli.NewCompletionCmd(rootCmd, true),
 		debug.Cmd(),
 		clientconfig.Cmd(),
 	)
 
 	ac := appCreator{encCfg: encodingConfig}
-	server.AddCommands(rootCmd, sentinelhub.DefaultNodeHome, ac.newApp, ac.appExport, addModuleInitFlags)
+	server.AddCommands(rootCmd, hub.DefaultNodeHome, ac.newApp, ac.appExport, addModuleInitFlags)
 
 	rootCmd.AddCommand(
 		rpc.StatusCommand(),
 		queryCommand(),
 		txCommand(),
-		keys.Commands(sentinelhub.DefaultNodeHome),
+		keys.Commands(hub.DefaultNodeHome),
 	)
 }
 
@@ -144,7 +144,7 @@ func queryCommand() *cobra.Command {
 		authcli.QueryTxCmd(),
 	)
 
-	sentinelhub.ModuleBasics.AddQueryCommands(cmd)
+	hub.ModuleBasics.AddQueryCommands(cmd)
 	cmd.PersistentFlags().String(flags.FlagChainID, "", "The network chain ID")
 
 	return cmd
@@ -171,14 +171,14 @@ func txCommand() *cobra.Command {
 		authcli.GetDecodeCommand(),
 	)
 
-	sentinelhub.ModuleBasics.AddTxCommands(cmd)
+	hub.ModuleBasics.AddTxCommands(cmd)
 	cmd.PersistentFlags().String(flags.FlagChainID, "", "The network chain ID")
 
 	return cmd
 }
 
 type appCreator struct {
-	encCfg sentinelhubparams.EncodingConfig
+	encCfg hubparams.EncodingConfig
 }
 
 func (ac appCreator) newApp(
@@ -217,12 +217,12 @@ func (ac appCreator) newApp(
 		wasmOpts = append(wasmOpts, wasmkeeper.WithVMCacheMetrics(prometheus.DefaultRegisterer))
 	}
 
-	return sentinelhub.NewApp(
+	return hub.NewApp(
 		logger, db, tracer, true, skipUpgradeHeights,
 		cast.ToString(appOpts.Get(flags.FlagHome)),
 		cast.ToUint(appOpts.Get(server.FlagInvCheckPeriod)),
 		ac.encCfg,
-		sentinelhub.GetWasmEnabledProposals(),
+		hub.GetWasmEnabledProposals(),
 		appOpts,
 		wasmOpts,
 		baseapp.SetPruning(pruningOpts),
@@ -253,7 +253,7 @@ func (ac appCreator) appExport(
 		return servertypes.ExportedApp{}, errors.New("application home is not set")
 	}
 
-	app := sentinelhub.NewApp(
+	app := hub.NewApp(
 		logger,
 		db,
 		tracer,
@@ -262,7 +262,7 @@ func (ac appCreator) appExport(
 		homePath,
 		cast.ToUint(appOpts.Get(server.FlagInvCheckPeriod)),
 		ac.encCfg,
-		sentinelhub.GetWasmEnabledProposals(),
+		hub.GetWasmEnabledProposals(),
 		appOpts,
 		[]wasm.Option{},
 	)

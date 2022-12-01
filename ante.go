@@ -5,13 +5,13 @@ import (
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/cosmos/cosmos-sdk/x/auth/ante"
+	authante "github.com/cosmos/cosmos-sdk/x/auth/ante"
 	ibcante "github.com/cosmos/ibc-go/v3/modules/core/ante"
 	ibckeeper "github.com/cosmos/ibc-go/v3/modules/core/keeper"
 )
 
 type HandlerOptions struct {
-	ante.HandlerOptions
+	authante.HandlerOptions
 	IBCKeeper         *ibckeeper.Keeper
 	TxCounterStoreKey sdk.StoreKey
 	WasmConfig        wasmtypes.WasmConfig
@@ -30,25 +30,25 @@ func NewAnteHandler(opts HandlerOptions) (sdk.AnteHandler, error) {
 
 	var sigGasConsumer = opts.SigGasConsumer
 	if sigGasConsumer == nil {
-		sigGasConsumer = ante.DefaultSigVerificationGasConsumer
+		sigGasConsumer = authante.DefaultSigVerificationGasConsumer
 	}
 
 	anteDecorators := []sdk.AnteDecorator{
-		ante.NewSetUpContextDecorator(),
+		authante.NewSetUpContextDecorator(),
 		wasmkeeper.NewLimitSimulationGasDecorator(opts.WasmConfig.SimulationGasLimit),
 		wasmkeeper.NewCountTXDecorator(opts.TxCounterStoreKey),
-		ante.NewRejectExtensionOptionsDecorator(),
-		ante.NewMempoolFeeDecorator(),
-		ante.NewValidateBasicDecorator(),
-		ante.NewTxTimeoutHeightDecorator(),
-		ante.NewValidateMemoDecorator(opts.AccountKeeper),
-		ante.NewConsumeGasForTxSizeDecorator(opts.AccountKeeper),
-		ante.NewDeductFeeDecorator(opts.AccountKeeper, opts.BankKeeper, opts.FeegrantKeeper),
-		ante.NewSetPubKeyDecorator(opts.AccountKeeper),
-		ante.NewValidateSigCountDecorator(opts.AccountKeeper),
-		ante.NewSigGasConsumeDecorator(opts.AccountKeeper, sigGasConsumer),
-		ante.NewSigVerificationDecorator(opts.AccountKeeper, opts.SignModeHandler),
-		ante.NewIncrementSequenceDecorator(opts.AccountKeeper),
+		authante.NewRejectExtensionOptionsDecorator(),
+		authante.NewMempoolFeeDecorator(),
+		authante.NewValidateBasicDecorator(),
+		authante.NewTxTimeoutHeightDecorator(),
+		authante.NewValidateMemoDecorator(opts.AccountKeeper),
+		authante.NewConsumeGasForTxSizeDecorator(opts.AccountKeeper),
+		authante.NewDeductFeeDecorator(opts.AccountKeeper, opts.BankKeeper, opts.FeegrantKeeper),
+		authante.NewSetPubKeyDecorator(opts.AccountKeeper),
+		authante.NewValidateSigCountDecorator(opts.AccountKeeper),
+		authante.NewSigGasConsumeDecorator(opts.AccountKeeper, sigGasConsumer),
+		authante.NewSigVerificationDecorator(opts.AccountKeeper, opts.SignModeHandler),
+		authante.NewIncrementSequenceDecorator(opts.AccountKeeper),
 		ibcante.NewAnteDecorator(opts.IBCKeeper),
 	}
 

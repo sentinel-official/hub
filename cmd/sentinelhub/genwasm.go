@@ -1,4 +1,4 @@
-package cmd
+package main
 
 import (
 	wasmcli "github.com/CosmWasm/wasmd/x/wasm/client/cli"

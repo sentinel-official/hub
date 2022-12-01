@@ -2,16 +2,16 @@ package params
 
 import (
 	"github.com/cosmos/cosmos-sdk/codec"
-	"github.com/cosmos/cosmos-sdk/codec/types"
-	"github.com/cosmos/cosmos-sdk/x/auth/tx"
+	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
+	authtx "github.com/cosmos/cosmos-sdk/x/auth/tx"
 )
 
 func MakeEncodingConfig() EncodingConfig {
 	var (
 		amino             = codec.NewLegacyAmino()
-		interfaceRegistry = types.NewInterfaceRegistry()
+		interfaceRegistry = codectypes.NewInterfaceRegistry()
 		marshaler         = codec.NewProtoCodec(interfaceRegistry)
-		txConfig          = tx.NewTxConfig(marshaler, tx.DefaultSignModes)
+		txConfig          = authtx.NewTxConfig(marshaler, authtx.DefaultSignModes)
 	)
 
 	return EncodingConfig{

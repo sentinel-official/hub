@@ -26,7 +26,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/version"
 	"github.com/cosmos/cosmos-sdk/x/auth"
-	"github.com/cosmos/cosmos-sdk/x/auth/ante"
+	authante "github.com/cosmos/cosmos-sdk/x/auth/ante"
 	authrest "github.com/cosmos/cosmos-sdk/x/auth/client/rest"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	authsimulation "github.com/cosmos/cosmos-sdk/x/auth/simulation"
@@ -633,12 +633,12 @@ func NewApp(
 
 	anteHandler, err := NewAnteHandler(
 		HandlerOptions{
-			HandlerOptions: ante.HandlerOptions{
+			HandlerOptions: authante.HandlerOptions{
 				AccountKeeper:   app.accountKeeper,
 				BankKeeper:      app.bankKeeper,
 				FeegrantKeeper:  app.feeGrantKeeper,
 				SignModeHandler: encodingConfig.TxConfig.SignModeHandler(),
-				SigGasConsumer:  ante.DefaultSigVerificationGasConsumer,
+				SigGasConsumer:  authante.DefaultSigVerificationGasConsumer,
 			},
 			TxCounterStoreKey: app.keys[wasmtypes.StoreKey],
 			IBCKeeper:         app.ibcKeeper,
@@ -698,48 +698,48 @@ func NewApp(
 	return app
 }
 
-func (a *App) Name() string { return a.BaseApp.Name() }
+func (app *App) Name() string { return app.BaseApp.Name() }
 
-func (a *App) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) abci.ResponseBeginBlock {
-	return a.moduleManager.BeginBlock(ctx, req)
+func (app *App) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) abci.ResponseBeginBlock {
+	return app.moduleManager.BeginBlock(ctx, req)
 }
 
-func (a *App) EndBlocker(ctx sdk.Context, req abci.RequestEndBlock) abci.ResponseEndBlock {
-	return a.moduleManager.EndBlock(ctx, req)
+func (app *App) EndBlocker(ctx sdk.Context, req abci.RequestEndBlock) abci.ResponseEndBlock {
+	return app.moduleManager.EndBlock(ctx, req)
 }
 
-func (a *App) InitChainer(ctx sdk.Context, req abci.RequestInitChain) abci.ResponseInitChain {
+func (app *App) InitChainer(ctx sdk.Context, req abci.RequestInitChain) abci.ResponseInitChain {
 	var state map[string]json.RawMessage
 	if err := tmjson.Unmarshal(req.AppStateBytes, &state); err != nil {
 		panic(err)
 	}
 
-	a.upgradeKeeper.SetModuleVersionMap(ctx, a.moduleManager.GetVersionMap())
+	app.upgradeKeeper.SetModuleVersionMap(ctx, app.moduleManager.GetVersionMap())
 
-	return a.moduleManager.InitGenesis(ctx, a.cdc, state)
+	return app.moduleManager.InitGenesis(ctx, app.cdc, state)
 }
 
-func (a *App) LegacyAmino() *codec.LegacyAmino {
-	return a.amino
+func (app *App) LegacyAmino() *codec.LegacyAmino {
+	return app.amino
 }
 
-func (a *App) AppCodec() codec.Codec {
-	return a.cdc
+func (app *App) AppCodec() codec.Codec {
+	return app.cdc
 }
 
-func (a *App) InterfaceRegistry() codectypes.InterfaceRegistry {
-	return a.interfaceRegistry
+func (app *App) InterfaceRegistry() codectypes.InterfaceRegistry {
+	return app.interfaceRegistry
 }
 
-func (a *App) RegisterTxService(ctx client.Context) {
-	authtx.RegisterTxService(a.BaseApp.GRPCQueryRouter(), ctx, a.BaseApp.Simulate, a.interfaceRegistry)
+func (app *App) RegisterTxService(ctx client.Context) {
+	authtx.RegisterTxService(app.BaseApp.GRPCQueryRouter(), ctx, app.BaseApp.Simulate, app.interfaceRegistry)
 }
 
-func (a *App) RegisterTendermintService(ctx client.Context) {
-	tmservice.RegisterTendermintService(a.BaseApp.GRPCQueryRouter(), ctx, a.interfaceRegistry)
+func (app *App) RegisterTendermintService(ctx client.Context) {
+	tmservice.RegisterTendermintService(app.BaseApp.GRPCQueryRouter(), ctx, app.interfaceRegistry)
 }
 
-func (a *App) RegisterAPIRoutes(server *api.Server, _ serverconfig.APIConfig) {
+func (app *App) RegisterAPIRoutes(server *api.Server, _ serverconfig.APIConfig) {
 	ctx := server.ClientCtx
 	rpc.RegisterRoutes(ctx, server.Router)
 	authrest.RegisterTxRoutes(ctx, server.Router)
@@ -750,11 +750,11 @@ func (a *App) RegisterAPIRoutes(server *api.Server, _ serverconfig.APIConfig) {
 	ModuleBasics.RegisterGRPCGatewayRoutes(ctx, server.GRPCGatewayRouter)
 }
 
-func (a *App) LoadHeight(height int64) error {
-	return a.LoadVersion(height)
+func (app *App) LoadHeight(height int64) error {
+	return app.LoadVersion(height)
 }
 
-func (a *App) ModuleAccountsPermissions() map[string][]string {
+func (app *App) ModuleAccountsPermissions() map[string][]string {
 	return map[string][]string{
 		authtypes.FeeCollectorName:     nil,
 		distributiontypes.ModuleName:   nil,
@@ -771,20 +771,20 @@ func (a *App) ModuleAccountsPermissions() map[string][]string {
 	}
 }
 
-func (a *App) ModuleAccountAddrs() map[string]bool {
+func (app *App) ModuleAccountAddrs() map[string]bool {
 	accounts := make(map[string]bool)
-	for name := range a.ModuleAccountsPermissions() {
+	for name := range app.ModuleAccountsPermissions() {
 		accounts[authtypes.NewModuleAddress(name).String()] = true
 	}
 
 	return accounts
 }
 
-func (a *App) SimulationManager() *module.SimulationManager {
-	return a.simulationManager
+func (app *App) SimulationManager() *module.SimulationManager {
+	return app.simulationManager
 }
 
-func (a *App) GetSubspace(moduleName string) paramstypes.Subspace {
-	subspace, _ := a.paramsKeeper.GetSubspace(moduleName)
+func (app *App) GetSubspace(moduleName string) paramstypes.Subspace {
+	subspace, _ := app.paramsKeeper.GetSubspace(moduleName)
 	return subspace
 }
