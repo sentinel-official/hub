@@ -15,29 +15,33 @@ import (
 	ibcicacontrollertypes "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/controller/types"
 	ibcicahosttypes "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/host/types"
 	ibcicatypes "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/types"
+
+	vpnkeeper "github.com/sentinel-official/hub/x/vpn/keeper"
 )
 
-func Handler(mm *module.Manager, configurator module.Configurator, wasmKeeper wasmkeeper.Keeper) upgradetypes.UpgradeHandler {
-	return func(ctx sdk.Context, plan upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
-		controllerParams := ibcicacontrollertypes.Params{}
-		hostParams := ibcicahosttypes.Params{
-			HostEnabled: true,
-			AllowMessages: []string{
-				sdk.MsgTypeURL(&authz.MsgExec{}),
-				sdk.MsgTypeURL(&authz.MsgGrant{}),
-				sdk.MsgTypeURL(&authz.MsgRevoke{}),
-				sdk.MsgTypeURL(&banktypes.MsgSend{}),
-				sdk.MsgTypeURL(&distributiontypes.MsgFundCommunityPool{}),
-				sdk.MsgTypeURL(&distributiontypes.MsgSetWithdrawAddress{}),
-				sdk.MsgTypeURL(&distributiontypes.MsgWithdrawDelegatorReward{}),
-				sdk.MsgTypeURL(&distributiontypes.MsgWithdrawValidatorCommission{}),
-				sdk.MsgTypeURL(&govtypes.MsgVote{}),
-				sdk.MsgTypeURL(&stakingtypes.MsgBeginRedelegate{}),
-				sdk.MsgTypeURL(&stakingtypes.MsgCreateValidator{}),
-				sdk.MsgTypeURL(&stakingtypes.MsgDelegate{}),
-				sdk.MsgTypeURL(&stakingtypes.MsgEditValidator{}),
-			},
-		}
+func Handler(mm *module.Manager, configurator module.Configurator, vpnKeeper vpnkeeper.Keeper, wasmKeeper wasmkeeper.Keeper) upgradetypes.UpgradeHandler {
+	return func(ctx sdk.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
+		var (
+			controllerParams = ibcicacontrollertypes.Params{}
+			hostParams       = ibcicahosttypes.Params{
+				HostEnabled: true,
+				AllowMessages: []string{
+					sdk.MsgTypeURL(&authz.MsgExec{}),
+					sdk.MsgTypeURL(&authz.MsgGrant{}),
+					sdk.MsgTypeURL(&authz.MsgRevoke{}),
+					sdk.MsgTypeURL(&banktypes.MsgSend{}),
+					sdk.MsgTypeURL(&distributiontypes.MsgFundCommunityPool{}),
+					sdk.MsgTypeURL(&distributiontypes.MsgSetWithdrawAddress{}),
+					sdk.MsgTypeURL(&distributiontypes.MsgWithdrawDelegatorReward{}),
+					sdk.MsgTypeURL(&distributiontypes.MsgWithdrawValidatorCommission{}),
+					sdk.MsgTypeURL(&govtypes.MsgVote{}),
+					sdk.MsgTypeURL(&stakingtypes.MsgBeginRedelegate{}),
+					sdk.MsgTypeURL(&stakingtypes.MsgCreateValidator{}),
+					sdk.MsgTypeURL(&stakingtypes.MsgDelegate{}),
+					sdk.MsgTypeURL(&stakingtypes.MsgEditValidator{}),
+				},
+			}
+		)
 
 		icaModule, ok := mm.Modules[ibcicatypes.ModuleName].(ibcica.AppModule)
 		if !ok {
@@ -45,6 +49,16 @@ func Handler(mm *module.Manager, configurator module.Configurator, wasmKeeper wa
 		}
 
 		icaModule.InitModule(ctx, controllerParams, hostParams)
+
+		providerParams := vpnKeeper.Provider.GetParams(ctx)
+		providerParams.StakingShare = sdk.NewDecWithPrec(2, 1)
+		vpnKeeper.Provider.SetParams(ctx, providerParams)
+
+		nodeParams := vpnKeeper.Node.GetParams(ctx)
+		nodeParams.MaxPrice = sdk.NewCoins(sdk.NewInt64Coin("udvpn", 1000*1e6))
+		nodeParams.MinPrice = sdk.NewCoins(sdk.NewInt64Coin("udvpn", 100*1e6))
+		nodeParams.StakingShare = sdk.NewDecWithPrec(2, 1)
+		vpnKeeper.Node.SetParams(ctx, nodeParams)
 
 		wasmParams := wasmKeeper.GetParams(ctx)
 		wasmParams.CodeUploadAccess = wasmtypes.AllowNobody

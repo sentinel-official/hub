@@ -464,7 +464,7 @@ func NewApp(
 		authtypes.FeeCollectorName,
 	)
 
-	wasmDir := filepath.Join(homePath, "wasm")
+	wasmDir := filepath.Join(homePath, "data")
 
 	wasmConfig, err := wasm.ReadWasmConfig(appOpts)
 	if err != nil {
@@ -668,7 +668,7 @@ func NewApp(
 
 	app.upgradeKeeper.SetUpgradeHandler(
 		hubupgrades.Name,
-		hubupgrades.Handler(app.moduleManager, app.configurator, app.wasmKeeper),
+		hubupgrades.Handler(app.moduleManager, app.configurator, app.vpnKeeper, app.wasmKeeper),
 	)
 
 	upgradeInfo, err := app.upgradeKeeper.ReadUpgradeInfoFromDisk()
