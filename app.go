@@ -668,7 +668,13 @@ func NewApp(
 
 	app.upgradeKeeper.SetUpgradeHandler(
 		hubupgrades.Name,
-		hubupgrades.Handler(app.moduleManager, app.configurator, app.vpnKeeper, app.wasmKeeper),
+		hubupgrades.Handler(
+			app.moduleManager,
+			app.configurator,
+			app.keys[paramstypes.ModuleName],
+			app.vpnKeeper,
+			app.wasmKeeper,
+		),
 	)
 
 	upgradeInfo, err := app.upgradeKeeper.ReadUpgradeInfoFromDisk()

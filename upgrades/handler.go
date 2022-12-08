@@ -1,6 +1,8 @@
 package upgrades
 
 import (
+	"time"
+
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -16,10 +18,12 @@ import (
 	ibcicahosttypes "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/host/types"
 	ibcicatypes "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/types"
 
+	nodetypes "github.com/sentinel-official/hub/x/node/types"
+	providertypes "github.com/sentinel-official/hub/x/provider/types"
 	vpnkeeper "github.com/sentinel-official/hub/x/vpn/keeper"
 )
 
-func Handler(mm *module.Manager, configurator module.Configurator, vpnKeeper vpnkeeper.Keeper, wasmKeeper wasmkeeper.Keeper) upgradetypes.UpgradeHandler {
+func Handler(mm *module.Manager, configurator module.Configurator, paramsStoreKey sdk.StoreKey, vpnKeeper vpnkeeper.Keeper, wasmKeeper wasmkeeper.Keeper) upgradetypes.UpgradeHandler {
 	return func(ctx sdk.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
 		var (
 			controllerParams = ibcicacontrollertypes.Params{}
@@ -50,22 +54,47 @@ func Handler(mm *module.Manager, configurator module.Configurator, vpnKeeper vpn
 
 		icaModule.InitModule(ctx, controllerParams, hostParams)
 
-		providerParams := vpnKeeper.Provider.GetParams(ctx)
-		providerParams.StakingShare = sdk.NewDecWithPrec(2, 1)
-		vpnKeeper.Provider.SetParams(ctx, providerParams)
+		fromVM[ibcicatypes.ModuleName] = mm.Modules[ibcicatypes.ModuleName].ConsensusVersion()
 
-		nodeParams := vpnKeeper.Node.GetParams(ctx)
-		nodeParams.MaxPrice = sdk.NewCoins(sdk.NewInt64Coin("udvpn", 1000*1e6))
-		nodeParams.MinPrice = sdk.NewCoins(sdk.NewInt64Coin("udvpn", 100*1e6))
-		nodeParams.StakingShare = sdk.NewDecWithPrec(2, 1)
-		vpnKeeper.Node.SetParams(ctx, nodeParams)
+		newVM, err := mm.RunMigrations(ctx, configurator, fromVM)
+		if err != nil {
+			return newVM, err
+		}
+
+		var (
+			store = ctx.KVStore(paramsStoreKey)
+			iter  = sdk.KVStorePrefixIterator(store, append([]byte("provider"), '/'))
+		)
+
+		for ; iter.Valid(); iter.Next() {
+			ctx.Logger().Info("deleting the parameter", "key", iter.Key(), "value", iter.Value())
+			store.Delete(iter.Key())
+		}
+
+		iter.Close()
+
+		vpnKeeper.Provider.SetParams(
+			ctx,
+			providertypes.Params{
+				Deposit:      sdk.NewInt64Coin("udvpn", 25000*1e6),
+				StakingShare: sdk.NewDecWithPrec(2, 1),
+			},
+		)
+		vpnKeeper.Node.SetParams(
+			ctx,
+			nodetypes.Params{
+				Deposit:          sdk.NewInt64Coin("udvpn", 0),
+				InactiveDuration: 60 * time.Minute,
+				MaxPrice:         nil,
+				MinPrice:         sdk.NewCoins(sdk.NewInt64Coin("udvpn", 100*1e6)),
+				StakingShare:     sdk.NewDecWithPrec(2, 1),
+			},
+		)
 
 		wasmParams := wasmKeeper.GetParams(ctx)
 		wasmParams.CodeUploadAccess = wasmtypes.AllowNobody
 		wasmKeeper.SetParams(ctx, wasmParams)
 
-		fromVM[ibcicatypes.ModuleName] = mm.Modules[ibcicatypes.ModuleName].ConsensusVersion()
-
-		return mm.RunMigrations(ctx, configurator, fromVM)
+		return newVM, nil
 	}
 }
