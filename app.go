@@ -22,6 +22,7 @@ import (
 	serverconfig "github.com/cosmos/cosmos-sdk/server/config"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
 	"github.com/cosmos/cosmos-sdk/simapp"
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/version"
@@ -80,6 +81,7 @@ import (
 	upgradekeeper "github.com/cosmos/cosmos-sdk/x/upgrade/keeper"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 	ibcica "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts"
+	ibcicacontrollertypes "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/controller/types"
 	ibcicahost "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/host"
 	ibcicahostkeeper "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/host/keeper"
 	ibcicahosttypes "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/host/types"
@@ -103,6 +105,7 @@ import (
 	tmdb "github.com/tendermint/tm-db"
 
 	hubparams "github.com/sentinel-official/hub/params"
+	hubupgrades "github.com/sentinel-official/hub/upgrades"
 	deposittypes "github.com/sentinel-official/hub/x/deposit/types"
 	custommint "github.com/sentinel-official/hub/x/mint"
 	custommintkeeper "github.com/sentinel-official/hub/x/mint/keeper"
@@ -461,7 +464,7 @@ func NewApp(
 		authtypes.FeeCollectorName,
 	)
 
-	wasmDir := filepath.Join(homePath, "data")
+	wasmDir := filepath.Join(homePath, "wasm")
 
 	wasmConfig, err := wasm.ReadWasmConfig(appOpts)
 	if err != nil {
@@ -661,6 +664,28 @@ func NewApp(
 		if err != nil {
 			panic("failed to register snapshot extension: " + err.Error())
 		}
+	}
+
+	app.upgradeKeeper.SetUpgradeHandler(
+		hubupgrades.Name,
+		hubupgrades.Handler(app.moduleManager, app.configurator, app.wasmKeeper),
+	)
+
+	upgradeInfo, err := app.upgradeKeeper.ReadUpgradeInfoFromDisk()
+	if err != nil {
+		panic(fmt.Sprintf("failed to read upgrade info from disk %s", err))
+	}
+
+	if upgradeInfo.Name == hubupgrades.Name && !app.upgradeKeeper.IsSkipHeight(upgradeInfo.Height) {
+		storeUpgrades := storetypes.StoreUpgrades{
+			Added: []string{
+				ibcicacontrollertypes.StoreKey,
+				ibcicahosttypes.StoreKey,
+				wasmtypes.ModuleName,
+			},
+		}
+
+		app.SetStoreLoader(upgradetypes.UpgradeStoreLoader(upgradeInfo.Height, &storeUpgrades))
 	}
 
 	if loadLatest {
