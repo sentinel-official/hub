@@ -33,35 +33,32 @@ func (k *Keeper) ProcessPaymentAndUpdateQuota(ctx sdk.Context, session types.Ses
 	}
 
 	if subscription.Plan == 0 {
-		bandwidth := hubtypes.NewBandwidth(
+		consumed := hubtypes.NewBandwidth(
 			session.Bandwidth.Sum(), sdk.ZeroInt(),
 		).CeilTo(
 			hubtypes.Gigabyte.Quo(subscription.Price.Amount),
 		).Sum()
-		if bandwidth.GT(available) {
-			bandwidth = available
+		if consumed.GT(available) {
+			consumed = available
 		}
 
-		quota.Consumed = quota.Consumed.Add(bandwidth)
+		quota.Consumed = quota.Consumed.Add(consumed)
 		k.SetQuota(ctx, session.Subscription, quota)
 
 		var (
-			amount   = subscription.Amount(bandwidth)
-			nodeAddr = session.GetNode()
-		)
-
-		var (
+			amount        = subscription.Amount(consumed)
+			nodeAddr      = session.GetNode()
 			stakingShare  = k.node.StakingShare(ctx)
 			stakingReward = hubutils.GetProportionOfCoin(amount, stakingShare)
 		)
 
-		if err := k.SendCoinFromAccountToModule(ctx, from, k.feeCollectorName, stakingReward); err != nil {
+		if err := k.SendCoinFromDepositToModule(ctx, from, k.feeCollectorName, stakingReward); err != nil {
 			return err
 		}
 
-		ctx.Logger().Info("calculated payment for session", "id", session.Id,
-			"price", subscription.Price, "deposit", subscription.Deposit, "amount", amount,
-			"consumed", session.Bandwidth.Sum(), "rounded", bandwidth)
+		amount = amount.Sub(stakingReward)
+		ctx.Logger().Info("processing the payment for session", "id", session.Id,
+			"consumed", consumed, "to_address", nodeAddr, "amount", amount)
 
 		ctx.EventManager().EmitTypedEvent(
 			&types.EventPay{
@@ -72,19 +69,16 @@ func (k *Keeper) ProcessPaymentAndUpdateQuota(ctx sdk.Context, session types.Ses
 			},
 		)
 
-		amount = amount.Sub(stakingReward)
 		return k.SendCoinFromDepositToAccount(ctx, from, nodeAddr.Bytes(), amount)
 	}
 
-	bandwidth := session.Bandwidth.Sum()
-	if bandwidth.GT(available) {
-		bandwidth = available
+	consumed := session.Bandwidth.Sum()
+	if consumed.GT(available) {
+		consumed = available
 	}
 
-	quota.Consumed = quota.Consumed.Add(bandwidth)
+	quota.Consumed = quota.Consumed.Add(consumed)
 	k.SetQuota(ctx, session.Subscription, quota)
 
-	ctx.Logger().Info("calculated bandwidth for session", "id", session.Id,
-		"plan", subscription.Plan, "consumed", session.Bandwidth.Sum(), "rounded", bandwidth)
 	return nil
 }

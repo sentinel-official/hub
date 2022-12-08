@@ -16,7 +16,7 @@ func EndBlock(ctx sdk.Context, k keeper.Keeper) []abcitypes.ValidatorUpdate {
 	)
 
 	k.IterateInactiveSessionsAt(ctx, ctx.BlockTime(), func(_ int, item types.Session) bool {
-		log.Info("inactive session", "value", item)
+		log.Info("found an inactive session", "id", item.Id)
 
 		accAddr := item.GetAddress()
 		if item.Status.Equal(hubtypes.Active) {
@@ -42,7 +42,7 @@ func EndBlock(ctx sdk.Context, k keeper.Keeper) []abcitypes.ValidatorUpdate {
 		}
 
 		if err := k.ProcessPaymentAndUpdateQuota(ctx, item); err != nil {
-			log.Error("failed to process the payment", "cause", err)
+			log.Error("error occurred while processing the payment", "cause", err)
 		}
 
 		k.DeleteSession(ctx, item.Id)

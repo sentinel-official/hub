@@ -16,7 +16,7 @@ func EndBlock(ctx sdk.Context, k keeper.Keeper) []abcitypes.ValidatorUpdate {
 	)
 
 	k.IterateInactiveSubscriptions(ctx, ctx.BlockTime(), func(_ int, item types.Subscription) bool {
-		log.Info("inactive subscription", "value", item)
+		log.Info("found an inactive subscription", "id", item.Id)
 
 		if item.Status.Equal(hubtypes.StatusActive) {
 			k.DeleteInactiveSubscriptionAt(ctx, item.Expiry, item.Id)
@@ -50,13 +50,16 @@ func EndBlock(ctx sdk.Context, k keeper.Keeper) []abcitypes.ValidatorUpdate {
 				return false
 			})
 
-			amount := item.Deposit.Sub(item.Amount(consumed))
-			log.Info("calculated refund of subscription", "id", item.Id,
-				"consumed", consumed, "amount", amount)
+			var (
+				amount    = item.Deposit.Sub(item.Amount(consumed))
+				ownerAddr = item.GetOwner()
+			)
 
-			ownerAddr := item.GetOwner()
+			log.Info("releasing the amount for subscription", "id", item.Id,
+				"consumed", consumed, "to_address", ownerAddr, "amount", amount)
+
 			if err := k.SubtractDeposit(ctx, ownerAddr, amount); err != nil {
-				log.Error("failed to subtract the deposit", "cause", err)
+				log.Error("error occurred while releasing the amount", "cause", err)
 			}
 		}
 

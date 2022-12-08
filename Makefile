@@ -21,7 +21,7 @@ clean:
 	rm -rf ./vendor
 
 .PHONY: install
-install: mod-vendor
+install:
 	go install -mod=readonly -tags="${BUILD_TAGS}" -ldflags="${LD_FLAGS}" -trimpath ./cmd/sentinelhub
 
 .PHONY: go-lint

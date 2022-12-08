@@ -63,7 +63,7 @@ func EndBlock(ctx sdk.Context, k keeper.Keeper) []abcitypes.ValidatorUpdate {
 	}
 
 	k.IterateInactiveNodesAt(ctx, ctx.BlockTime(), func(_ int, item types.Node) bool {
-		log.Info("inactive node", "value", item)
+		log.Info("found an inactive node", "address", item.Address)
 
 		nodeAddr := item.GetAddress()
 		k.DeleteActiveNode(ctx, nodeAddr)
