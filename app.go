@@ -674,6 +674,7 @@ func NewApp(
 			app.keys[paramstypes.ModuleName],
 			app.accountKeeper,
 			app.bankKeeper,
+			app.customMintKeeper,
 			app.mintKeeper,
 			app.stakingKeeper,
 			app.vpnKeeper,

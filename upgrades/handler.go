@@ -27,14 +27,25 @@ import (
 	ibcicatypes "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/types"
 
 	hubutils "github.com/sentinel-official/hub/utils"
+	custommintkeeper "github.com/sentinel-official/hub/x/mint/keeper"
+	customminttypes "github.com/sentinel-official/hub/x/mint/types"
 	nodetypes "github.com/sentinel-official/hub/x/node/types"
 	providertypes "github.com/sentinel-official/hub/x/provider/types"
 	vpnkeeper "github.com/sentinel-official/hub/x/vpn/keeper"
 )
 
-func Handler(mm *module.Manager, configurator module.Configurator, paramsStoreKey sdk.StoreKey,
-	ak authkeeper.AccountKeeper, bk bankkeeper.Keeper, mk mintkeeper.Keeper,
-	sk stakingkeeper.Keeper, vk vpnkeeper.Keeper, wk wasmkeeper.Keeper) upgradetypes.UpgradeHandler {
+func Handler(
+	mm *module.Manager,
+	configurator module.Configurator,
+	paramsStoreKey sdk.StoreKey,
+	ak authkeeper.AccountKeeper,
+	bk bankkeeper.Keeper,
+	cmk custommintkeeper.Keeper,
+	mk mintkeeper.Keeper,
+	sk stakingkeeper.Keeper,
+	vk vpnkeeper.Keeper,
+	wk wasmkeeper.Keeper,
+) upgradetypes.UpgradeHandler {
 	return func(ctx sdk.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
 		var (
 			controllerParams = ibcicacontrollertypes.Params{}
@@ -141,6 +152,35 @@ func Handler(mm *module.Manager, configurator module.Configurator, paramsStoreKe
 			}
 		}
 
+		cmk.IterateInflations(ctx, func(_ int, item customminttypes.Inflation) (stop bool) {
+			cmk.DeleteInflation(ctx, item.Timestamp)
+			return false
+		})
+
+		inflations := []customminttypes.Inflation{
+			{
+				Max:        sdk.NewDecWithPrec(37, 2),
+				Min:        sdk.NewDecWithPrec(25, 2),
+				RateChange: sdk.NewDecWithPrec(12, 2),
+				Timestamp:  time.Date(2022, 9, 27, 12, 0, 0, 0, time.UTC),
+			},
+			{
+				Max:        sdk.NewDecWithPrec(25, 2),
+				Min:        sdk.NewDecWithPrec(13, 2),
+				RateChange: sdk.NewDecWithPrec(12, 2),
+				Timestamp:  time.Date(2023, 3, 27, 12, 0, 0, 0, time.UTC),
+			},
+		}
+
+		for _, inflation := range inflations {
+			if err := inflation.Validate(); err != nil {
+				return nil, err
+			}
+		}
+		for _, inflation := range inflations {
+			cmk.SetInflation(ctx, inflation)
+		}
+
 		return newVM, nil
 	}
 }
@@ -206,7 +246,7 @@ func createContinuousVestingAccountFromBaseAccount(
 		)
 	)
 
-	fmt.Println(address.String(), balances, bonded, unbonding, delegation, total, bonus)
+	ctx.Logger().Info("creating a continuous vesting account", "address", address, "total", total, "bonus", bonus)
 
 	if bonus.IsPositive() {
 		if err := mk.MintCoins(ctx, sdk.NewCoins(bonus)); err != nil {
