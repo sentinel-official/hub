@@ -168,18 +168,18 @@ var (
 	_ servertypes.Application = (*App)(nil)
 )
 
-func GetWasmEnabledProposals() []wasm.ProposalType {
+func GetWasmEnabledProposals() []wasmtypes.ProposalType {
 	if WasmEnableSpecificProposals == "" {
 		if WasmProposalsEnabled == "true" {
-			return wasm.EnableAllProposals
+			return wasmtypes.EnableAllProposals
 		}
 
-		return wasm.DisableAllProposals
+		return wasmtypes.DisableAllProposals
 	}
 
 	chunks := strings.Split(WasmEnableSpecificProposals, ",")
 
-	proposals, err := wasm.ConvertToProposals(chunks)
+	proposals, err := wasmtypes.ConvertToProposals(chunks)
 	if err != nil {
 		panic(err)
 	}
@@ -190,14 +190,13 @@ func GetWasmEnabledProposals() []wasm.ProposalType {
 type App struct {
 	*baseapp.BaseApp
 
-	invarCheckPeriod  uint
+	invCheckPeriod    uint
 	amino             *codec.LegacyAmino
 	cdc               codec.Codec
 	interfaceRegistry codectypes.InterfaceRegistry
-
-	keys  map[string]*sdk.KVStoreKey
-	tkeys map[string]*sdk.TransientStoreKey
-	mkeys map[string]*sdk.MemoryStoreKey
+	keys              map[string]*sdk.KVStoreKey
+	tkeys             map[string]*sdk.TransientStoreKey
+	mkeys             map[string]*sdk.MemoryStoreKey
 
 	accountKeeper      authkeeper.AccountKeeper
 	authzKeeper        authzkeeper.Keeper
@@ -238,7 +237,7 @@ func NewApp(
 	loadLatest bool,
 	skipUpgradeHeights map[int64]bool,
 	homePath string,
-	invarCheckPeriod uint,
+	invCheckPeriod uint,
 	encodingConfig hubparams.EncodingConfig,
 	enabledProposals []wasmtypes.ProposalType,
 	appOpts servertypes.AppOptions,
@@ -273,7 +272,7 @@ func NewApp(
 		tkeys:             tkeys,
 		mkeys:             mkeys,
 		interfaceRegistry: interfaceRegistry,
-		invarCheckPeriod:  invarCheckPeriod,
+		invCheckPeriod:    invCheckPeriod,
 	}
 
 	app.paramsKeeper = paramskeeper.NewKeeper(
@@ -320,7 +319,7 @@ func NewApp(
 		app.keys[authtypes.StoreKey],
 		app.GetSubspace(authtypes.ModuleName),
 		authtypes.ProtoBaseAccount,
-		app.ModuleAccountsPermissions(),
+		app.ModuleAccountPermissions(),
 	)
 	app.bankKeeper = bankkeeper.NewBaseKeeper(
 		app.cdc,
@@ -373,7 +372,7 @@ func NewApp(
 	)
 	app.crisisKeeper = crisiskeeper.NewKeeper(
 		app.GetSubspace(crisistypes.ModuleName),
-		app.invarCheckPeriod,
+		app.invCheckPeriod,
 		app.bankKeeper,
 		authtypes.FeeCollectorName,
 	)
@@ -471,7 +470,7 @@ func NewApp(
 		panic("error while reading wasm config: " + err.Error())
 	}
 
-	supportedFeatures := "iterator,staking,stargate"
+	wasmCapabilities := "iterator,staking,stargate,cosmwasm_1_1"
 	app.wasmKeeper = wasmkeeper.NewKeeper(
 		app.cdc,
 		keys[wasmtypes.StoreKey],
@@ -488,7 +487,7 @@ func NewApp(
 		app.GRPCQueryRouter(),
 		wasmDir,
 		wasmConfig,
-		supportedFeatures,
+		wasmCapabilities,
 		wasmOpts...,
 	)
 
@@ -503,7 +502,6 @@ func NewApp(
 		AddRoute(paramsproposal.RouterKey, params.NewParamChangeProposalHandler(app.paramsKeeper)).
 		AddRoute(distributiontypes.RouterKey, distribution.NewCommunityPoolSpendProposalHandler(app.distributionKeeper)).
 		AddRoute(ibcclienttypes.RouterKey, ibcclient.NewClientProposalHandler(app.ibcKeeper.ClientKeeper)).
-		AddRoute(ibchost.RouterKey, ibcclient.NewClientProposalHandler(app.ibcKeeper.ClientKeeper)).
 		AddRoute(upgradetypes.RouterKey, upgrade.NewSoftwareUpgradeProposalHandler(app.upgradeKeeper))
 
 	if len(enabledProposals) != 0 {
@@ -751,7 +749,6 @@ func (app *App) InitChainer(ctx sdk.Context, req abci.RequestInitChain) abci.Res
 	}
 
 	app.upgradeKeeper.SetModuleVersionMap(ctx, app.moduleManager.GetVersionMap())
-
 	return app.moduleManager.InitGenesis(ctx, app.cdc, state)
 }
 
@@ -790,7 +787,7 @@ func (app *App) LoadHeight(height int64) error {
 	return app.LoadVersion(height)
 }
 
-func (app *App) ModuleAccountsPermissions() map[string][]string {
+func (app *App) ModuleAccountPermissions() map[string][]string {
 	return map[string][]string{
 		authtypes.FeeCollectorName:     nil,
 		distributiontypes.ModuleName:   nil,
@@ -809,7 +806,7 @@ func (app *App) ModuleAccountsPermissions() map[string][]string {
 
 func (app *App) ModuleAccountAddrs() map[string]bool {
 	accounts := make(map[string]bool)
-	for name := range app.ModuleAccountsPermissions() {
+	for name := range app.ModuleAccountPermissions() {
 		accounts[authtypes.NewModuleAddress(name).String()] = true
 	}
 

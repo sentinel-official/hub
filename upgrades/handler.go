@@ -168,7 +168,7 @@ func Handler(
 				Max:        sdk.NewDecWithPrec(25, 2),
 				Min:        sdk.NewDecWithPrec(13, 2),
 				RateChange: sdk.NewDecWithPrec(12, 2),
-				Timestamp:  time.Date(2023, 3, 27, 12, 0, 0, 0, time.UTC),
+				Timestamp:  time.Date(2023, 9, 27, 12, 0, 0, 0, time.UTC),
 			},
 		}
 

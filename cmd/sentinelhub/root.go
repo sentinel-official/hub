@@ -212,7 +212,7 @@ func (ac appCreator) newApp(
 		panic(err)
 	}
 
-	var wasmOpts []wasm.Option
+	var wasmOpts []wasmkeeper.Option
 	if cast.ToBool(appOpts.Get("telemetry.enabled")) {
 		wasmOpts = append(wasmOpts, wasmkeeper.WithVMCacheMetrics(prometheus.DefaultRegisterer))
 	}
@@ -264,7 +264,7 @@ func (ac appCreator) appExport(
 		ac.encCfg,
 		hub.GetWasmEnabledProposals(),
 		appOpts,
-		[]wasm.Option{},
+		[]wasmkeeper.Option{},
 	)
 
 	if height != -1 {
