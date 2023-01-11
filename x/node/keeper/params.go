@@ -8,13 +8,28 @@ import (
 	"github.com/sentinel-official/hub/x/node/types"
 )
 
-func (k *Keeper) Deposit(ctx sdk.Context) (deposit sdk.Coin) {
-	k.params.Get(ctx, types.KeyDeposit, &deposit)
+func (k *Keeper) Deposit(ctx sdk.Context) (v sdk.Coin) {
+	k.params.Get(ctx, types.KeyDeposit, &v)
 	return
 }
 
-func (k *Keeper) InactiveDuration(ctx sdk.Context) (duration time.Duration) {
-	k.params.Get(ctx, types.KeyInactiveDuration, &duration)
+func (k *Keeper) InactiveDuration(ctx sdk.Context) (v time.Duration) {
+	k.params.Get(ctx, types.KeyInactiveDuration, &v)
+	return
+}
+
+func (k *Keeper) MaxPrice(ctx sdk.Context) (v sdk.Coins) {
+	k.params.Get(ctx, types.KeyMaxPrice, &v)
+	return
+}
+
+func (k *Keeper) MinPrice(ctx sdk.Context) (v sdk.Coins) {
+	k.params.Get(ctx, types.KeyMinPrice, &v)
+	return
+}
+
+func (k *Keeper) StakingShare(ctx sdk.Context) (v sdk.Dec) {
+	k.params.Get(ctx, types.KeyStakingShare, &v)
 	return
 }
 
@@ -26,5 +41,26 @@ func (k *Keeper) GetParams(ctx sdk.Context) types.Params {
 	return types.NewParams(
 		k.Deposit(ctx),
 		k.InactiveDuration(ctx),
+		k.MaxPrice(ctx),
+		k.MinPrice(ctx),
+		k.StakingShare(ctx),
 	)
+}
+
+func (k *Keeper) IsValidPrice(ctx sdk.Context, price sdk.Coins) bool {
+	var (
+		maxPrice = k.MaxPrice(ctx)
+		minPrice = k.MinPrice(ctx)
+	)
+
+	return price.IsAllLTE(maxPrice) &&
+		price.IsAllGTE(minPrice)
+}
+
+func (k *Keeper) IsMaxPriceModified(ctx sdk.Context) bool {
+	return k.params.Modified(ctx, types.KeyMaxPrice)
+}
+
+func (k *Keeper) IsMinPriceModified(ctx sdk.Context) bool {
+	return k.params.Modified(ctx, types.KeyMinPrice)
 }

@@ -8,7 +8,7 @@
 
 ## Installation
 
-Requires [Go 1.16+](https://golang.org/dl/)
+Requires [Go 1.19+](https://golang.org/dl/)
 
 ### Linux
 

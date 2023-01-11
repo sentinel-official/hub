@@ -12,6 +12,7 @@ import (
 )
 
 func init() {
+	providertypes.ParamsSubspace = fmt.Sprintf("%s/%s", ModuleName, providertypes.ModuleName)
 	nodetypes.ParamsSubspace = fmt.Sprintf("%s/%s", ModuleName, nodetypes.ModuleName)
 	subscriptiontypes.ParamsSubspace = fmt.Sprintf("%s/%s", ModuleName, subscriptiontypes.ModuleName)
 	sessiontypes.ParamsSubspace = fmt.Sprintf("%s/%s", ModuleName, sessiontypes.ModuleName)

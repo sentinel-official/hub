@@ -24,27 +24,25 @@ func NewMsgServiceServer(keeper Keeper) types.MsgServiceServer {
 func (k *msgServer) MsgRegister(c context.Context, msg *types.MsgRegisterRequest) (*types.MsgRegisterResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
-	msgFrom, err := sdk.AccAddressFromBech32(msg.From)
+	fromAddr, err := sdk.AccAddressFromBech32(msg.From)
 	if err != nil {
 		return nil, err
 	}
 
-	_, found := k.GetProvider(ctx, msgFrom.Bytes())
+	_, found := k.GetProvider(ctx, fromAddr.Bytes())
 	if found {
 		return nil, types.ErrorDuplicateProvider
 	}
 
 	deposit := k.Deposit(ctx)
-	if deposit.IsPositive() {
-		if err := k.FundCommunityPool(ctx, msgFrom, deposit); err != nil {
-			return nil, err
-		}
+	if err := k.FundCommunityPool(ctx, fromAddr, deposit); err != nil {
+		return nil, err
 	}
 
 	var (
-		provAddress = hubtypes.ProvAddress(msgFrom.Bytes())
-		provider    = types.Provider{
-			Address:     provAddress.String(),
+		provAddr = hubtypes.ProvAddress(fromAddr.Bytes())
+		provider = types.Provider{
+			Address:     provAddr.String(),
 			Name:        msg.Name,
 			Identity:    msg.Identity,
 			Website:     msg.Website,
@@ -65,12 +63,12 @@ func (k *msgServer) MsgRegister(c context.Context, msg *types.MsgRegisterRequest
 func (k *msgServer) MsgUpdate(c context.Context, msg *types.MsgUpdateRequest) (*types.MsgUpdateResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
-	msgFrom, err := hubtypes.ProvAddressFromBech32(msg.From)
+	fromAddr, err := hubtypes.ProvAddressFromBech32(msg.From)
 	if err != nil {
 		return nil, err
 	}
 
-	provider, found := k.GetProvider(ctx, msgFrom)
+	provider, found := k.GetProvider(ctx, fromAddr)
 	if !found {
 		return nil, types.ErrorProviderDoesNotExist
 	}

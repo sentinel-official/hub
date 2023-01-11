@@ -24,7 +24,7 @@ func NewMsgServiceServer(keeper Keeper) types.MsgServiceServer {
 func (k *msgServer) MsgStart(c context.Context, msg *types.MsgStartRequest) (*types.MsgStartResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
-	msgFrom, err := sdk.AccAddressFromBech32(msg.From)
+	fromAddr, err := sdk.AccAddressFromBech32(msg.From)
 	if err != nil {
 		return nil, err
 	}
@@ -37,12 +37,12 @@ func (k *msgServer) MsgStart(c context.Context, msg *types.MsgStartRequest) (*ty
 		return nil, types.ErrorInvalidSubscriptionStatus
 	}
 
-	msgNode, err := hubtypes.NodeAddressFromBech32(msg.Node)
+	nodeAddr, err := hubtypes.NodeAddressFromBech32(msg.Node)
 	if err != nil {
 		return nil, err
 	}
 
-	node, found := k.GetNode(ctx, msgNode)
+	node, found := k.GetNode(ctx, nodeAddr)
 	if !found {
 		return nil, types.ErrorNodeDoesNotExist
 	}
@@ -55,12 +55,12 @@ func (k *msgServer) MsgStart(c context.Context, msg *types.MsgStartRequest) (*ty
 			return nil, types.ErrorNodeAddressMismatch
 		}
 	} else {
-		if !k.HasNodeForPlan(ctx, subscription.Plan, msgNode) {
+		if !k.HasNodeForPlan(ctx, subscription.Plan, nodeAddr) {
 			return nil, types.ErrorNodeDoesNotExistForPlan
 		}
 	}
 
-	quota, found := k.GetQuota(ctx, subscription.Id, msgFrom)
+	quota, found := k.GetQuota(ctx, subscription.Id, fromAddr)
 	if !found {
 		return nil, types.ErrorQuotaDoesNotExist
 	}
@@ -68,7 +68,7 @@ func (k *msgServer) MsgStart(c context.Context, msg *types.MsgStartRequest) (*ty
 		return nil, types.ErrorNotEnoughQuota
 	}
 
-	items := k.GetActiveSessionsForAddress(ctx, msgFrom, 0, 1)
+	items := k.GetActiveSessionsForAddress(ctx, fromAddr, 0, 1)
 	if len(items) > 0 {
 		return nil, types.ErrorDuplicateSession
 	}
@@ -86,12 +86,11 @@ func (k *msgServer) MsgStart(c context.Context, msg *types.MsgStartRequest) (*ty
 			Status:       hubtypes.StatusActive,
 			StatusAt:     ctx.BlockTime(),
 		}
-		sessionAddress = session.GetAddress()
 	)
 
 	k.SetCount(ctx, count+1)
 	k.SetSession(ctx, session)
-	k.SetActiveSessionForAddress(ctx, sessionAddress, session.Id)
+	k.SetActiveSessionForAddress(ctx, fromAddr, session.Id)
 	k.SetInactiveSessionAt(ctx, session.StatusAt.Add(inactiveDuration), session.Id)
 	ctx.EventManager().EmitTypedEvent(
 		&types.EventStart{
@@ -119,8 +118,8 @@ func (k *msgServer) MsgUpdate(c context.Context, msg *types.MsgUpdateRequest) (*
 	}
 
 	if k.ProofVerificationEnabled(ctx) {
-		sessionAddress := session.GetAddress()
-		if err := k.VerifyProof(ctx, sessionAddress, msg.Proof, msg.Signature); err != nil {
+		accAddr := session.GetAddress()
+		if err := k.VerifyProof(ctx, accAddr, msg.Proof, msg.Signature); err != nil {
 			return nil, types.ErrorFailedToVerifyProof
 		}
 	}
@@ -148,7 +147,7 @@ func (k *msgServer) MsgUpdate(c context.Context, msg *types.MsgUpdateRequest) (*
 func (k *msgServer) MsgEnd(c context.Context, msg *types.MsgEndRequest) (*types.MsgEndResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
-	msgFrom, err := sdk.AccAddressFromBech32(msg.From)
+	fromAddr, err := sdk.AccAddressFromBech32(msg.From)
 	if err != nil {
 		return nil, err
 	}
@@ -165,14 +164,14 @@ func (k *msgServer) MsgEnd(c context.Context, msg *types.MsgEndRequest) (*types.
 	}
 
 	inactiveDuration := k.InactiveDuration(ctx)
-	k.DeleteActiveSessionForAddress(ctx, msgFrom, session.Id)
+	k.DeleteActiveSessionForAddress(ctx, fromAddr, session.Id)
 	k.DeleteInactiveSessionAt(ctx, session.StatusAt.Add(inactiveDuration), session.Id)
 
 	session.Status = hubtypes.StatusInactivePending
 	session.StatusAt = ctx.BlockTime()
 
 	k.SetSession(ctx, session)
-	k.SetInactiveSessionForAddress(ctx, msgFrom, session.Id)
+	k.SetInactiveSessionForAddress(ctx, fromAddr, session.Id)
 	k.SetInactiveSessionAt(ctx, session.StatusAt.Add(inactiveDuration), session.Id)
 	ctx.EventManager().EmitTypedEvent(
 		&types.EventSetStatus{

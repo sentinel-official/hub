@@ -14,21 +14,24 @@ import (
 )
 
 type Keeper struct {
-	cdc     codec.BinaryCodec
-	key     sdk.StoreKey
-	params  paramstypes.Subspace
-	bank    expected.BankKeeper
-	deposit expected.DepositKeeper
-	node    expected.NodeKeeper
-	plan    expected.PlanKeeper
-	session expected.SessionKeeper
+	cdc              codec.BinaryCodec
+	key              sdk.StoreKey
+	params           paramstypes.Subspace
+	bank             expected.BankKeeper
+	deposit          expected.DepositKeeper
+	provider         expected.ProviderKeeper
+	node             expected.NodeKeeper
+	plan             expected.PlanKeeper
+	session          expected.SessionKeeper
+	feeCollectorName string
 }
 
-func NewKeeper(cdc codec.BinaryCodec, key sdk.StoreKey, params paramstypes.Subspace) Keeper {
+func NewKeeper(cdc codec.BinaryCodec, key sdk.StoreKey, params paramstypes.Subspace, feeCollectorName string) Keeper {
 	return Keeper{
-		cdc:    cdc,
-		key:    key,
-		params: params.WithKeyTable(types.ParamsKeyTable()),
+		cdc:              cdc,
+		key:              key,
+		params:           params.WithKeyTable(types.ParamsKeyTable()),
+		feeCollectorName: feeCollectorName,
 	}
 }
 
@@ -38,6 +41,10 @@ func (k *Keeper) WithBankKeeper(keeper expected.BankKeeper) {
 
 func (k *Keeper) WithDepositKeeper(keeper expected.DepositKeeper) {
 	k.deposit = keeper
+}
+
+func (k *Keeper) WithProviderKeeper(keeper expected.ProviderKeeper) {
+	k.provider = keeper
 }
 
 func (k *Keeper) WithNodeKeeper(keeper expected.NodeKeeper) {

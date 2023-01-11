@@ -11,7 +11,8 @@ import (
 
 func RandomizedGenesisState(state *module.SimulationState) *types.GenesisState {
 	var (
-		deposit sdk.Coin
+		deposit      sdk.Coin
+		stakingShare sdk.Dec
 	)
 
 	state.AppParams.GetOrGenerate(
@@ -22,13 +23,25 @@ func RandomizedGenesisState(state *module.SimulationState) *types.GenesisState {
 		func(r *rand.Rand) {
 			deposit = sdk.NewInt64Coin(
 				sdk.DefaultBondDenom,
-				r.Int63n(MaxDepositAmount),
+				r.Int63n(MaxInt),
+			)
+		},
+	)
+	state.AppParams.GetOrGenerate(
+		state.Cdc,
+		string(types.KeyStakingShare),
+		&stakingShare,
+		state.Rand,
+		func(r *rand.Rand) {
+			stakingShare = sdk.NewDecWithPrec(
+				r.Int63n(MaxInt),
+				6,
 			)
 		},
 	)
 
 	return types.NewGenesisState(
 		RandomProviders(state.Rand, state.Accounts),
-		types.NewParams(deposit),
+		types.NewParams(deposit, stakingShare),
 	)
 }

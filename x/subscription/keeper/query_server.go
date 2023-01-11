@@ -53,12 +53,12 @@ func (q *queryServer) QuerySubscriptions(c context.Context, req *types.QuerySubs
 	)
 
 	pagination, err := query.FilteredPaginate(store, req.Pagination, func(_, value []byte, accumulate bool) (bool, error) {
-		var item types.Subscription
-		if err := q.cdc.Unmarshal(value, &item); err != nil {
-			return false, err
-		}
-
 		if accumulate {
+			var item types.Subscription
+			if err := q.cdc.Unmarshal(value, &item); err != nil {
+				return false, err
+			}
+
 			items = append(items, item)
 		}
 
@@ -91,12 +91,12 @@ func (q *queryServer) QuerySubscriptionsForAddress(c context.Context, req *types
 	if req.Status.Equal(hubtypes.Active) {
 		store := prefix.NewStore(q.Store(ctx), types.GetActiveSubscriptionForAddressKeyPrefix(address))
 		pagination, err = query.FilteredPaginate(store, req.Pagination, func(key, _ []byte, accumulate bool) (bool, error) {
-			item, found := q.GetSubscription(ctx, sdk.BigEndianToUint64(key))
-			if !found {
-				return false, nil
-			}
-
 			if accumulate {
+				item, found := q.GetSubscription(ctx, sdk.BigEndianToUint64(key))
+				if !found {
+					return false, nil
+				}
+
 				items = append(items, item)
 			}
 
@@ -105,12 +105,12 @@ func (q *queryServer) QuerySubscriptionsForAddress(c context.Context, req *types
 	} else if req.Status.Equal(hubtypes.Inactive) {
 		store := prefix.NewStore(q.Store(ctx), types.GetInactiveSubscriptionForAddressKeyPrefix(address))
 		pagination, err = query.FilteredPaginate(store, req.Pagination, func(key, _ []byte, accumulate bool) (bool, error) {
-			item, found := q.GetSubscription(ctx, sdk.BigEndianToUint64(key))
-			if !found {
-				return false, nil
-			}
-
 			if accumulate {
+				item, found := q.GetSubscription(ctx, sdk.BigEndianToUint64(key))
+				if !found {
+					return false, nil
+				}
+
 				items = append(items, item)
 			}
 
@@ -121,15 +121,15 @@ func (q *queryServer) QuerySubscriptionsForAddress(c context.Context, req *types
 
 		store := prefix.NewStore(q.Store(ctx), types.SubscriptionKeyPrefix)
 		pagination, err = query.FilteredPaginate(store, req.Pagination, func(_, value []byte, accumulate bool) (bool, error) {
-			var item types.Subscription
-			if err := q.cdc.Unmarshal(value, &item); err != nil {
-				return false, err
-			}
-			if !strings.EqualFold(item.Owner, req.Address) {
-				return false, nil
-			}
-
 			if accumulate {
+				var item types.Subscription
+				if err := q.cdc.Unmarshal(value, &item); err != nil {
+					return false, err
+				}
+				if !strings.EqualFold(item.Owner, req.Address) {
+					return false, nil
+				}
+
 				items = append(items, item)
 			}
 
@@ -176,12 +176,12 @@ func (q *queryServer) QueryQuotas(c context.Context, req *types.QueryQuotasReque
 	)
 
 	pagination, err := query.FilteredPaginate(store, req.Pagination, func(_, value []byte, accumulate bool) (bool, error) {
-		var item types.Quota
-		if err := q.cdc.Unmarshal(value, &item); err != nil {
-			return false, err
-		}
-
 		if accumulate {
+			var item types.Quota
+			if err := q.cdc.Unmarshal(value, &item); err != nil {
+				return false, err
+			}
+
 			items = append(items, item)
 		}
 

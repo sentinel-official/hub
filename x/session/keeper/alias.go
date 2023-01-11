@@ -22,6 +22,14 @@ func (k *Keeper) SendCoinFromDepositToAccount(ctx sdk.Context, from, to sdk.AccA
 	return k.deposit.SendCoinsFromDepositToAccount(ctx, from, to, sdk.NewCoins(coin))
 }
 
+func (k *Keeper) SendCoinFromDepositToModule(ctx sdk.Context, from sdk.AccAddress, to string, coin sdk.Coin) error {
+	if coin.IsZero() {
+		return nil
+	}
+
+	return k.deposit.SendCoinsFromDepositToModule(ctx, from, to, sdk.NewCoins(coin))
+}
+
 func (k *Keeper) HasNodeForPlan(ctx sdk.Context, id uint64, address hubtypes.NodeAddress) bool {
 	return k.plan.HasNodeForPlan(ctx, id, address)
 }

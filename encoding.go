@@ -1,15 +1,15 @@
 package hub
 
 import (
-	"github.com/cosmos/cosmos-sdk/std"
+	sdkstd "github.com/cosmos/cosmos-sdk/std"
 
-	"github.com/sentinel-official/hub/params"
+	hubparams "github.com/sentinel-official/hub/params"
 )
 
-func MakeEncodingConfig() params.EncodingConfig {
-	config := params.MakeEncodingConfig()
-	std.RegisterLegacyAminoCodec(config.Amino)
-	std.RegisterInterfaces(config.InterfaceRegistry)
+func MakeEncodingConfig() hubparams.EncodingConfig {
+	config := hubparams.MakeEncodingConfig()
+	sdkstd.RegisterLegacyAminoCodec(config.Amino)
+	sdkstd.RegisterInterfaces(config.InterfaceRegistry)
 	ModuleBasics.RegisterLegacyAminoCodec(config.Amino)
 	ModuleBasics.RegisterInterfaces(config.InterfaceRegistry)
 	return config

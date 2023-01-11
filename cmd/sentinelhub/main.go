@@ -4,15 +4,14 @@ import (
 	"os"
 
 	"github.com/cosmos/cosmos-sdk/server"
-	svrcmd "github.com/cosmos/cosmos-sdk/server/cmd"
+	servercmd "github.com/cosmos/cosmos-sdk/server/cmd"
 
 	"github.com/sentinel-official/hub"
-	"github.com/sentinel-official/hub/cmd/sentinelhub/cmd"
 )
 
 func main() {
-	root, _ := cmd.NewRootCmd()
-	if err := svrcmd.Execute(root, hub.DefaultNodeHome); err != nil {
+	root, _ := NewRootCmd()
+	if err := servercmd.Execute(root, hub.DefaultNodeHome); err != nil {
 		switch e := err.(type) {
 		case server.ErrorCode:
 			os.Exit(e.Code)

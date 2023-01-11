@@ -54,12 +54,12 @@ func (q *queryServer) QuerySwaps(c context.Context, req *types.QuerySwapsRequest
 	)
 
 	pagination, err := query.FilteredPaginate(store, req.Pagination, func(_, value []byte, accumulate bool) (bool, error) {
-		var item types.Swap
-		if err := q.cdc.Unmarshal(value, &item); err != nil {
-			return false, err
-		}
-
 		if accumulate {
+			var item types.Swap
+			if err := q.cdc.Unmarshal(value, &item); err != nil {
+				return false, err
+			}
+
 			items = append(items, item)
 		}
 

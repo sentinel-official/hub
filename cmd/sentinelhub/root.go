@@ -1,4 +1,4 @@
-package cmd
+package main
 
 import (
 	"errors"
@@ -6,6 +6,8 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/CosmWasm/wasmd/x/wasm"
+	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
 	clientconfig "github.com/cosmos/cosmos-sdk/client/config"
@@ -24,6 +26,7 @@ import (
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	"github.com/cosmos/cosmos-sdk/x/crisis"
 	genutilcli "github.com/cosmos/cosmos-sdk/x/genutil/client/cli"
+	"github.com/prometheus/client_golang/prometheus"
 	"github.com/spf13/cast"
 	"github.com/spf13/cobra"
 	tmcli "github.com/tendermint/tendermint/libs/cli"
@@ -32,6 +35,7 @@ import (
 
 	"github.com/sentinel-official/hub"
 	hubparams "github.com/sentinel-official/hub/params"
+	hubtypes "github.com/sentinel-official/hub/types"
 )
 
 func NewRootCmd() (*cobra.Command, hubparams.EncodingConfig) {
@@ -45,12 +49,12 @@ func NewRootCmd() (*cobra.Command, hubparams.EncodingConfig) {
 				WithInput(os.Stdin).
 				WithAccountRetriever(authtypes.AccountRetriever{}).
 				WithHomeDir(hub.DefaultNodeHome).
-				WithViper("")
+				WithViper("SENTINEL")
 	)
 
 	rootCmd := &cobra.Command{
 		Use:   "sentinelhub",
-		Short: "Sentinel",
+		Short: "Sentinel Hub application",
 		PersistentPreRunE: func(cmd *cobra.Command, _ []string) error {
 			clientCtx, err := client.ReadPersistentCommandFlags(clientCtx, cmd.Flags())
 			if err != nil {
@@ -81,8 +85,8 @@ func initAppConfig() (string, interface{}) {
 	}
 
 	srvCfg := serverconfig.DefaultConfig()
+	srvCfg.BaseConfig.MinGasPrices = "0.1udvpn"
 	srvCfg.StateSync.SnapshotInterval = 1000
-	srvCfg.StateSync.SnapshotKeepRecent = 10
 
 	appConfig := CustomAppConfig{Config: *srvCfg}
 	appConfigTemplate := serverconfig.DefaultConfigTemplate
@@ -91,7 +95,7 @@ func initAppConfig() (string, interface{}) {
 }
 
 func initRootCmd(rootCmd *cobra.Command, encodingConfig hubparams.EncodingConfig) {
-	cfg := sdk.GetConfig()
+	cfg := hubtypes.GetConfig()
 	cfg.Seal()
 
 	rootCmd.AddCommand(
@@ -100,15 +104,13 @@ func initRootCmd(rootCmd *cobra.Command, encodingConfig hubparams.EncodingConfig
 		genutilcli.GenTxCmd(hub.ModuleBasics, encodingConfig.TxConfig, banktypes.GenesisBalancesIterator{}, hub.DefaultNodeHome),
 		genutilcli.ValidateGenesisCmd(hub.ModuleBasics),
 		AddGenesisAccountCmd(hub.DefaultNodeHome),
+		AddGenesisWasmMsgCmd(hub.DefaultNodeHome),
 		tmcli.NewCompletionCmd(rootCmd, true),
-		testnetCmd(hub.ModuleBasics, banktypes.GenesisBalancesIterator{}),
 		debug.Cmd(),
 		clientconfig.Cmd(),
 	)
 
-	ac := appCreator{
-		encCfg: encodingConfig,
-	}
+	ac := appCreator{encCfg: encodingConfig}
 	server.AddCommands(rootCmd, hub.DefaultNodeHome, ac.newApp, ac.appExport, addModuleInitFlags)
 
 	rootCmd.AddCommand(
@@ -121,6 +123,7 @@ func initRootCmd(rootCmd *cobra.Command, encodingConfig hubparams.EncodingConfig
 
 func addModuleInitFlags(startCmd *cobra.Command) {
 	crisis.AddModuleInitFlags(startCmd)
+	wasm.AddModuleInitFlags(startCmd)
 }
 
 func queryCommand() *cobra.Command {
@@ -181,25 +184,25 @@ type appCreator struct {
 func (ac appCreator) newApp(
 	logger log.Logger,
 	db tmdb.DB,
-	traceStore io.Writer,
-	options servertypes.AppOptions,
+	tracer io.Writer,
+	appOpts servertypes.AppOptions,
 ) servertypes.Application {
 	var cache sdk.MultiStorePersistentCache
-	if cast.ToBool(options.Get(server.FlagInterBlockCache)) {
+	if cast.ToBool(appOpts.Get(server.FlagInterBlockCache)) {
 		cache = store.NewCommitKVStoreCacheManager()
 	}
 
 	skipUpgradeHeights := make(map[int64]bool)
-	for _, h := range cast.ToIntSlice(options.Get(server.FlagUnsafeSkipUpgrades)) {
+	for _, h := range cast.ToIntSlice(appOpts.Get(server.FlagUnsafeSkipUpgrades)) {
 		skipUpgradeHeights[int64(h)] = true
 	}
 
-	pruningOpts, err := server.GetPruningOptionsFromFlags(options)
+	pruningOpts, err := server.GetPruningOptionsFromFlags(appOpts)
 	if err != nil {
 		panic(err)
 	}
 
-	snapshotDir := filepath.Join(cast.ToString(options.Get(flags.FlagHome)), "data", "snapshots")
+	snapshotDir := filepath.Join(cast.ToString(appOpts.Get(flags.FlagHome)), "data", "snapshots")
 	snapshotDB, err := sdk.NewLevelDB("metadata", snapshotDir)
 	if err != nil {
 		panic(err)
@@ -209,33 +212,40 @@ func (ac appCreator) newApp(
 		panic(err)
 	}
 
+	var wasmOpts []wasmkeeper.Option
+	if cast.ToBool(appOpts.Get("telemetry.enabled")) {
+		wasmOpts = append(wasmOpts, wasmkeeper.WithVMCacheMetrics(prometheus.DefaultRegisterer))
+	}
+
 	return hub.NewApp(
-		logger, db, traceStore, true, skipUpgradeHeights,
-		cast.ToString(options.Get(flags.FlagHome)),
-		cast.ToUint(options.Get(server.FlagInvCheckPeriod)),
+		logger, db, tracer, true, skipUpgradeHeights,
+		cast.ToString(appOpts.Get(flags.FlagHome)),
+		cast.ToUint(appOpts.Get(server.FlagInvCheckPeriod)),
 		ac.encCfg,
-		options,
+		hub.GetWasmEnabledProposals(),
+		appOpts,
+		wasmOpts,
 		baseapp.SetPruning(pruningOpts),
-		baseapp.SetMinGasPrices(cast.ToString(options.Get(server.FlagMinGasPrices))),
-		baseapp.SetHaltHeight(cast.ToUint64(options.Get(server.FlagHaltHeight))),
-		baseapp.SetHaltTime(cast.ToUint64(options.Get(server.FlagHaltTime))),
-		baseapp.SetMinRetainBlocks(cast.ToUint64(options.Get(server.FlagMinRetainBlocks))),
+		baseapp.SetMinGasPrices(cast.ToString(appOpts.Get(server.FlagMinGasPrices))),
+		baseapp.SetHaltHeight(cast.ToUint64(appOpts.Get(server.FlagHaltHeight))),
+		baseapp.SetHaltTime(cast.ToUint64(appOpts.Get(server.FlagHaltTime))),
+		baseapp.SetMinRetainBlocks(cast.ToUint64(appOpts.Get(server.FlagMinRetainBlocks))),
 		baseapp.SetInterBlockCache(cache),
-		baseapp.SetTrace(cast.ToBool(options.Get(server.FlagTrace))),
-		baseapp.SetIndexEvents(cast.ToStringSlice(options.Get(server.FlagIndexEvents))),
+		baseapp.SetTrace(cast.ToBool(appOpts.Get(server.FlagTrace))),
+		baseapp.SetIndexEvents(cast.ToStringSlice(appOpts.Get(server.FlagIndexEvents))),
 		baseapp.SetSnapshotStore(snapshotStore),
-		baseapp.SetSnapshotInterval(cast.ToUint64(options.Get(server.FlagStateSyncSnapshotInterval))),
-		baseapp.SetSnapshotKeepRecent(cast.ToUint32(options.Get(server.FlagStateSyncSnapshotKeepRecent))),
+		baseapp.SetSnapshotInterval(cast.ToUint64(appOpts.Get(server.FlagStateSyncSnapshotInterval))),
+		baseapp.SetSnapshotKeepRecent(cast.ToUint32(appOpts.Get(server.FlagStateSyncSnapshotKeepRecent))),
 	)
 }
 
 func (ac appCreator) appExport(
 	logger log.Logger,
 	db tmdb.DB,
-	traceStore io.Writer,
+	tracer io.Writer,
 	height int64,
 	forZeroHeight bool,
-	jailAllowedAddrs []string,
+	jailWhitelist []string,
 	appOpts servertypes.AppOptions,
 ) (servertypes.ExportedApp, error) {
 	homePath, ok := appOpts.Get(flags.FlagHome).(string)
@@ -243,21 +253,18 @@ func (ac appCreator) appExport(
 		return servertypes.ExportedApp{}, errors.New("application home is not set")
 	}
 
-	var loadLatest bool
-	if height == -1 {
-		loadLatest = true
-	}
-
 	app := hub.NewApp(
 		logger,
 		db,
-		traceStore,
-		loadLatest,
+		tracer,
+		height == -1,
 		map[int64]bool{},
 		homePath,
 		cast.ToUint(appOpts.Get(server.FlagInvCheckPeriod)),
 		ac.encCfg,
+		hub.GetWasmEnabledProposals(),
 		appOpts,
+		[]wasmkeeper.Option{},
 	)
 
 	if height != -1 {
@@ -266,5 +273,5 @@ func (ac appCreator) appExport(
 		}
 	}
 
-	return app.ExportAppStateAndValidators(forZeroHeight, jailAllowedAddrs)
+	return app.ExportAppStateAndValidators(forZeroHeight, jailWhitelist)
 }
