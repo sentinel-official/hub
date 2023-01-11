@@ -234,19 +234,19 @@ func createContinuousVestingAccountFromBaseAccount(
 	baseAccount *authtypes.BaseAccount,
 ) error {
 	var (
-		address    = baseAccount.GetAddress()
-		balances   = bk.GetAllBalances(ctx, address)
-		bonded     = sk.GetDelegatorBonded(ctx, address)
-		unbonding  = sk.GetDelegatorUnbonding(ctx, address)
-		delegation = sdk.NewCoin(denom, bonded.Add(unbonding))
-		total      = balances.Add(delegation)
-		bonus      = hubutils.GetProportionOfCoin(
-			sdk.NewCoin(denom, total.AmountOf(denom)),
+		address             = baseAccount.GetAddress()
+		balances            = bk.GetAllBalances(ctx, address)
+		bondedDelegation    = sk.GetDelegatorBonded(ctx, address)
+		unbondingDelegation = sk.GetDelegatorUnbonding(ctx, address)
+		totalDelegation     = sdk.NewCoin(denom, bondedDelegation.Add(unbondingDelegation))
+		totalBalances       = balances.Add(totalDelegation)
+		bonus               = hubutils.GetProportionOfCoin(
+			sdk.NewCoin(denom, totalBalances.AmountOf(denom)),
 			bonusRate,
 		)
 	)
 
-	ctx.Logger().Info("creating a continuous vesting account", "address", address, "total", total, "bonus", bonus)
+	ctx.Logger().Info("creating a continuous vesting account", "address", address, "total_balances", totalBalances, "bonus", bonus)
 
 	if bonus.IsPositive() {
 		if err := mk.MintCoins(ctx, sdk.NewCoins(bonus)); err != nil {
@@ -257,19 +257,19 @@ func createContinuousVestingAccountFromBaseAccount(
 			return err
 		}
 
-		total = total.Add(bonus)
+		totalBalances = totalBalances.Add(bonus)
 	}
 
 	continuousVestingAccount := vestingtypes.NewContinuousVestingAccount(
 		baseAccount,
 		sdk.NewCoins(
-			sdk.NewCoin(denom, total.AmountOf(denom)),
+			sdk.NewCoin(denom, totalBalances.AmountOf(denom)),
 		),
 		startTime.Unix(),
 		endTime.Unix(),
 	)
 
-	continuousVestingAccount.TrackDelegation(ctx.BlockTime(), balances, sdk.NewCoins(delegation))
+	continuousVestingAccount.TrackDelegation(ctx.BlockTime(), totalBalances, sdk.NewCoins(totalDelegation))
 	ak.SetAccount(ctx, continuousVestingAccount)
 
 	return nil
