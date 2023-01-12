@@ -25,6 +25,7 @@ import (
 	ibcicacontrollertypes "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/controller/types"
 	ibcicahosttypes "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/host/types"
 	ibcicatypes "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/types"
+	ibctransfertypes "github.com/cosmos/ibc-go/v3/modules/apps/transfer/types"
 
 	hubutils "github.com/sentinel-official/hub/utils"
 	custommintkeeper "github.com/sentinel-official/hub/x/mint/keeper"
@@ -61,10 +62,17 @@ func Handler(
 					sdk.MsgTypeURL(&distributiontypes.MsgWithdrawDelegatorReward{}),
 					sdk.MsgTypeURL(&distributiontypes.MsgWithdrawValidatorCommission{}),
 					sdk.MsgTypeURL(&govtypes.MsgVote{}),
+					sdk.MsgTypeURL(&govtypes.MsgVoteWeighted{}),
+					sdk.MsgTypeURL(&ibctransfertypes.MsgTransfer{}),
 					sdk.MsgTypeURL(&stakingtypes.MsgBeginRedelegate{}),
 					sdk.MsgTypeURL(&stakingtypes.MsgCreateValidator{}),
 					sdk.MsgTypeURL(&stakingtypes.MsgDelegate{}),
 					sdk.MsgTypeURL(&stakingtypes.MsgEditValidator{}),
+					sdk.MsgTypeURL(&stakingtypes.MsgUndelegate{}),
+					sdk.MsgTypeURL(&wasmtypes.MsgExecuteContract{}),
+					sdk.MsgTypeURL(&wasmtypes.MsgInstantiateContract{}),
+					sdk.MsgTypeURL(&wasmtypes.MsgInstantiateContract2{}),
+					sdk.MsgTypeURL(&wasmtypes.MsgStoreCode{}),
 				},
 			}
 		)
