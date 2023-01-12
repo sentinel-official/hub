@@ -10,8 +10,14 @@ import (
 	"github.com/sentinel-official/hub/x/vpn/keeper"
 )
 
+func cacheContext(c sdk.Context) (cc sdk.Context, writeCache func()) {
+	cms := c.MultiStore().CacheMultiStore()
+	cc = c.WithMultiStore(cms)
+	return cc, cms.Write
+}
+
 func EndBlock(ctx sdk.Context, k keeper.Keeper) abcitypes.ValidatorUpdates {
-	ctx, write := ctx.CacheContext()
+	ctx, write := cacheContext(ctx)
 	defer write()
 
 	node.EndBlock(ctx, k.Node)
