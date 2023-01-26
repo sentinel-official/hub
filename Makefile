@@ -3,14 +3,31 @@ VERSION := $(shell echo $(shell git describe --tags) | sed 's/^v//')
 COMMIT := $(shell git log -1 --format='%H')
 TENDERMINT_VERSION := $(shell go list -m github.com/tendermint/tendermint | sed 's:.* ::')
 
-BUILD_TAGS := $(strip netgo,ledger)
-LD_FLAGS := -s -w \
+build_tags = netgo ledger
+build_tags += $(BUILD_TAGS)
+build_tags := $(strip $(build_tags))
+
+whitespace :=
+whitespace += $(whitespace)
+comma := ,
+build_tags_comma_sep := $(subst $(whitespace),$(comma),$(build_tags))
+
+ldflags := -s -w \
     -X github.com/cosmos/cosmos-sdk/version.Name=sentinel \
     -X github.com/cosmos/cosmos-sdk/version.AppName=sentinelhub \
     -X github.com/cosmos/cosmos-sdk/version.Version=${VERSION} \
     -X github.com/cosmos/cosmos-sdk/version.Commit=${COMMIT} \
-    -X github.com/cosmos/cosmos-sdk/version.BuildTags=${BUILD_TAGS} \
+    -X "github.com/cosmos/cosmos-sdk/version.BuildTags=$(build_tags_comma_sep)" \
     -X github.com/tendermint/tendermint/version.TMCoreSemVer=$(TENDERMINT_VERSION)
+
+ifeq ($(LINK_STATICALLY),true)
+  ldflags += -linkmode=external -extldflags "-Wl,-z,muldefs -static"
+endif
+ldflags += $(LDFLAGS)
+ldflags := $(strip $(ldflags)) 
+
+BUILD_FLAGS := -tags "$(build_tags)" -ldflags '$(ldflags)'
+
 
 .PHONY: benchmark
 benchmark:
@@ -20,9 +37,11 @@ benchmark:
 clean:
 	rm -rf ./vendor
 
-.PHONY: install
-install:
-	go install -mod=readonly -tags="${BUILD_TAGS}" -ldflags="${LD_FLAGS}" -trimpath ./cmd/sentinelhub
+BUILD_TARGETS := install build
+
+.PHONY: install build
+$(BUILD_TARGETS):
+	go $@ -mod=readonly $(BUILD_FLAGS) -trimpath ./cmd/sentinelhub
 
 .PHONY: go-lint
 go-lint:
