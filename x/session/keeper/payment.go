@@ -56,6 +56,15 @@ func (k *Keeper) ProcessPaymentAndUpdateQuota(ctx sdk.Context, session types.Ses
 			return err
 		}
 
+		ctx.EventManager().EmitTypedEvent(
+			&types.EventStakingReward{
+				Id:           session.Id,
+				Node:         session.Node,
+				Subscription: session.Subscription,
+				Amount:       stakingReward,
+			},
+		)
+
 		amount = amount.Sub(stakingReward)
 		ctx.Logger().Info("processing the payment for session", "id", session.Id,
 			"consumed", consumed, "to_address", nodeAddr, "amount", amount)

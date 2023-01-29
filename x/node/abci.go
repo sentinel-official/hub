@@ -58,6 +58,13 @@ func EndBlock(ctx sdk.Context, k keeper.Keeper) []abcitypes.ValidatorUpdate {
 			}
 
 			k.SetNode(ctx, item)
+			ctx.EventManager().EmitTypedEvent(
+				&types.EventUpdate{
+					Address:  item.Address,
+					Provider: item.Provider,
+				},
+			)
+
 			return false
 		})
 	}

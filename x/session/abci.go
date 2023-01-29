@@ -49,6 +49,9 @@ func EndBlock(ctx sdk.Context, k keeper.Keeper) []abcitypes.ValidatorUpdate {
 		k.DeleteInactiveSessionForAddress(ctx, accAddr, item.Id)
 		k.DeleteInactiveSessionAt(ctx, item.StatusAt.Add(inactiveDuration), item.Id)
 
+		item.Status = hubtypes.StatusInactive
+		item.StatusAt = ctx.BlockTime()
+
 		ctx.EventManager().EmitTypedEvent(
 			&types.EventSetStatus{
 				Id:           item.Id,

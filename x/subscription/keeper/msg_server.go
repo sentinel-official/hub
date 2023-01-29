@@ -115,16 +115,15 @@ func (k *msgServer) MsgSubscribeToPlan(c context.Context, msg *types.MsgSubscrib
 		return nil, err
 	}
 
+	var stakingReward sdk.Coin
 	if plan.Price != nil {
 		price, found := plan.PriceForDenom(msg.Denom)
 		if !found {
 			return nil, types.ErrorPriceDoesNotExist
 		}
 
-		var (
-			stakingShare  = k.provider.StakingShare(ctx)
-			stakingReward = hubutils.GetProportionOfCoin(price, stakingShare)
-		)
+		stakingShare := k.provider.StakingShare(ctx)
+		stakingReward = hubutils.GetProportionOfCoin(price, stakingShare)
 
 		if err := k.SendCoinFromAccountToModule(ctx, fromAddr, k.feeCollectorName, stakingReward); err != nil {
 			return nil, err
@@ -152,6 +151,15 @@ func (k *msgServer) MsgSubscribeToPlan(c context.Context, msg *types.MsgSubscrib
 			Status:   hubtypes.StatusActive,
 			StatusAt: ctx.BlockTime(),
 		}
+	)
+
+	ctx.EventManager().EmitTypedEvent(
+		&types.EventStakingReward{
+			Id:     subscription.Id,
+			Node:   subscription.Node,
+			Plan:   subscription.Plan,
+			Amount: stakingReward,
+		},
 	)
 
 	k.SetCount(ctx, count+1)
