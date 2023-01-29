@@ -73,8 +73,9 @@ func (k *msgServer) MsgSubscribeToNode(c context.Context, msg *types.MsgSubscrib
 	k.SetSubscription(ctx, subscription)
 	ctx.EventManager().EmitTypedEvent(
 		&types.EventSubscribe{
-			Id:   subscription.Id,
-			Node: subscription.Node,
+			Id:     subscription.Id,
+			Node:   subscription.Node,
+			Amount: msg.Deposit,
 		},
 	)
 
@@ -115,7 +116,11 @@ func (k *msgServer) MsgSubscribeToPlan(c context.Context, msg *types.MsgSubscrib
 		return nil, err
 	}
 
-	var stakingReward sdk.Coin
+	var (
+		stakingReward sdk.Coin
+		payment       sdk.Coin
+	)
+
 	if plan.Price != nil {
 		price, found := plan.PriceForDenom(msg.Denom)
 		if !found {
@@ -129,12 +134,10 @@ func (k *msgServer) MsgSubscribeToPlan(c context.Context, msg *types.MsgSubscrib
 			return nil, err
 		}
 
-		var (
-			provAddr = plan.GetProvider()
-			amount   = price.Sub(stakingReward)
-		)
+		provAddr := plan.GetProvider()
+		payment = price.Sub(stakingReward)
 
-		if err := k.SendCoin(ctx, fromAddr, provAddr.Bytes(), amount); err != nil {
+		if err := k.SendCoin(ctx, fromAddr, provAddr.Bytes(), payment); err != nil {
 			return nil, err
 		}
 	}
@@ -167,8 +170,9 @@ func (k *msgServer) MsgSubscribeToPlan(c context.Context, msg *types.MsgSubscrib
 	k.SetInactiveSubscriptionAt(ctx, subscription.Expiry, subscription.Id)
 	ctx.EventManager().EmitTypedEvent(
 		&types.EventSubscribe{
-			Id:   subscription.Id,
-			Plan: subscription.Plan,
+			Id:     subscription.Id,
+			Plan:   subscription.Plan,
+			Amount: payment,
 		},
 	)
 
