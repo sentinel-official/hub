@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"github.com/cosmos/cosmos-sdk/codec"
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"github.com/tendermint/tendermint/libs/log"
@@ -12,13 +13,13 @@ import (
 
 type Keeper struct {
 	cdc     codec.BinaryCodec
-	key     sdk.StoreKey
+	key     storetypes.StoreKey
 	params  paramstypes.Subspace
 	account expected.AccountKeeper
 	bank    expected.BankKeeper
 }
 
-func NewKeeper(cdc codec.BinaryCodec, key sdk.StoreKey, params paramstypes.Subspace, account expected.AccountKeeper, bank expected.BankKeeper) Keeper {
+func NewKeeper(cdc codec.BinaryCodec, key storetypes.StoreKey, params paramstypes.Subspace, account expected.AccountKeeper, bank expected.BankKeeper) Keeper {
 	return Keeper{
 		cdc:     cdc,
 		key:     key,

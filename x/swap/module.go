@@ -11,13 +11,11 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	sdksimulation "github.com/cosmos/cosmos-sdk/types/simulation"
-	"github.com/gorilla/mux"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/spf13/cobra"
 	abcitypes "github.com/tendermint/tendermint/abci/types"
 
 	"github.com/sentinel-official/hub/x/swap/client/cli"
-	"github.com/sentinel-official/hub/x/swap/client/rest"
 	"github.com/sentinel-official/hub/x/swap/keeper"
 	"github.com/sentinel-official/hub/x/swap/simulation"
 	"github.com/sentinel-official/hub/x/swap/types"
@@ -54,10 +52,6 @@ func (a AppModuleBasic) ValidateGenesis(cdc codec.JSONCodec, _ client.TxEncoding
 	}
 
 	return state.Validate()
-}
-
-func (a AppModuleBasic) RegisterRESTRoutes(ctx client.Context, router *mux.Router) {
-	rest.RegisterRoutes(ctx, router)
 }
 
 func (a AppModuleBasic) RegisterGRPCGatewayRoutes(ctx client.Context, mux *runtime.ServeMux) {
