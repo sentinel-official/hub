@@ -2,7 +2,7 @@ package keeper
 
 import (
 	"github.com/cosmos/cosmos-sdk/codec"
-	sdk "github.com/cosmos/cosmos-sdk/types"
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 
 	depositkeeper "github.com/sentinel-official/hub/x/deposit/keeper"
 	nodekeeper "github.com/sentinel-official/hub/x/node/keeper"
@@ -28,7 +28,7 @@ type Keeper struct {
 
 func NewKeeper(
 	cdc codec.BinaryCodec,
-	key sdk.StoreKey,
+	key storetypes.StoreKey,
 	paramsKeeper expected.ParamsKeeper,
 	accountKeeper expected.AccountKeeper,
 	bankKeeper expected.BankKeeper,
