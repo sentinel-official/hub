@@ -115,7 +115,7 @@ func (k *Keeper) SendCoinsFromDepositToAccount(ctx sdk.Context, from, to sdk.Acc
 		return types.ErrorDepositDoesNotExist
 	}
 
-	deposit.Coins, _ = deposit.Coins.SafeSub(coins)
+	deposit.Coins, _ = deposit.Coins.SafeSub(coins...)
 	if deposit.Coins.IsAnyNegative() {
 		return types.ErrorInsufficientDepositFunds
 	}
@@ -136,7 +136,7 @@ func (k *Keeper) SendCoinsFromDepositToModule(ctx sdk.Context, from sdk.AccAddre
 		return types.ErrorDepositDoesNotExist
 	}
 
-	deposit.Coins, _ = deposit.Coins.SafeSub(coins)
+	deposit.Coins, _ = deposit.Coins.SafeSub(coins...)
 	if deposit.Coins.IsAnyNegative() {
 		return types.ErrorInsufficientDepositFunds
 	}
