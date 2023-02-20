@@ -5,7 +5,6 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
-	"github.com/cosmos/cosmos-sdk/simapp/helpers"
 	"github.com/cosmos/cosmos-sdk/simapp/params"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	simulationtypes "github.com/cosmos/cosmos-sdk/types/simulation"
@@ -94,7 +93,7 @@ func SimulateMsgRegisterRequest(ak expected.AccountKeeper, bk expected.BankKeepe
 		}
 
 		deposit := k.Deposit(ctx)
-		if balance.Sub(fees).AmountOf(deposit.Denom).LT(deposit.Amount) {
+		if balance.Sub(fees...).AmountOf(deposit.Denom).LT(deposit.Amount) {
 			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgRegisterRequest, "balance is less than deposit"), nil, nil
 		}
 
@@ -116,26 +115,20 @@ func SimulateMsgRegisterRequest(ak expected.AccountKeeper, bk expected.BankKeepe
 			)
 		)
 
-		txn, err := helpers.GenTx(
-			txConfig,
-			[]sdk.Msg{message},
-			fees,
-			helpers.DefaultGenTxGas,
-			chainID,
-			[]uint64{account.GetAccountNumber()},
-			[]uint64{account.GetSequence()},
-			rAccount.PrivKey,
-		)
-		if err != nil {
-			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgRegisterRequest, err.Error()), nil, err
+		txCtx := simulation.OperationInput{
+			R:             r,
+			App:           app,
+			TxGen:         txConfig,
+			Cdc:           nil,
+			Msg:           message,
+			MsgType:       message.Type(),
+			Context:       ctx,
+			SimAccount:    rAccount,
+			AccountKeeper: ak,
+			ModuleName:    types.ModuleName,
 		}
 
-		_, _, err = app.Deliver(txConfig.TxEncoder(), txn)
-		if err != nil {
-			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgRegisterRequest, err.Error()), nil, err
-		}
-
-		return simulationtypes.NewOperationMsg(message, true, "", nil), nil, nil
+		return simulation.GenAndDeliverTx(txCtx, fees)
 	}
 }
 
@@ -185,25 +178,19 @@ func SimulateMsgUpdateRequest(ak expected.AccountKeeper, bk expected.BankKeeper,
 			)
 		)
 
-		txn, err := helpers.GenTx(
-			txConfig,
-			[]sdk.Msg{message},
-			fees,
-			helpers.DefaultGenTxGas,
-			chainID,
-			[]uint64{account.GetAccountNumber()},
-			[]uint64{account.GetSequence()},
-			rAccount.PrivKey,
-		)
-		if err != nil {
-			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgUpdateRequest, err.Error()), nil, err
+		txCtx := simulation.OperationInput{
+			R:             r,
+			App:           app,
+			TxGen:         txConfig,
+			Cdc:           nil,
+			Msg:           message,
+			MsgType:       message.Type(),
+			Context:       ctx,
+			SimAccount:    rAccount,
+			AccountKeeper: ak,
+			ModuleName:    types.ModuleName,
 		}
 
-		_, _, err = app.Deliver(txConfig.TxEncoder(), txn)
-		if err != nil {
-			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgUpdateRequest, err.Error()), nil, err
-		}
-
-		return simulationtypes.NewOperationMsg(message, true, "", nil), nil, nil
+		return simulation.GenAndDeliverTx(txCtx, fees)
 	}
 }
