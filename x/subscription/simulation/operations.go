@@ -6,7 +6,6 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
-	"github.com/cosmos/cosmos-sdk/simapp/helpers"
 	"github.com/cosmos/cosmos-sdk/simapp/params"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	simulationtypes "github.com/cosmos/cosmos-sdk/types/simulation"
@@ -172,26 +171,20 @@ func SimulateMsgSubscribeToNodeRequest(ak expected.AccountKeeper, bk expected.Ba
 			)
 		)
 
-		txn, err := helpers.GenTx(
-			txConfig,
-			[]sdk.Msg{message},
-			fees,
-			helpers.DefaultGenTxGas,
-			chainID,
-			[]uint64{from.GetAccountNumber()},
-			[]uint64{from.GetSequence()},
-			rFrom.PrivKey,
-		)
-		if err != nil {
-			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgSubscribeToNodeRequest, err.Error()), nil, err
+		txCtx := simulation.OperationInput{
+			R:             r,
+			App:           app,
+			TxGen:         txConfig,
+			Cdc:           nil,
+			Msg:           message,
+			MsgType:       message.Type(),
+			Context:       ctx,
+			SimAccount:    rFrom,
+			AccountKeeper: ak,
+			ModuleName:    types.ModuleName,
 		}
 
-		_, _, err = app.Deliver(txConfig.TxEncoder(), txn)
-		if err != nil {
-			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgSubscribeToNodeRequest, err.Error()), nil, err
-		}
-
-		return simulationtypes.NewOperationMsg(message, true, "", nil), nil, nil
+		return simulation.GenAndDeliverTx(txCtx, fees)
 	}
 }
 
@@ -236,26 +229,20 @@ func SimulateMsgSubscribeToPlanRequest(ak expected.AccountKeeper, bk expected.Ba
 			)
 		)
 
-		txn, err := helpers.GenTx(
-			txConfig,
-			[]sdk.Msg{message},
-			fees,
-			helpers.DefaultGenTxGas,
-			chainID,
-			[]uint64{from.GetAccountNumber()},
-			[]uint64{from.GetSequence()},
-			rFrom.PrivKey,
-		)
-		if err != nil {
-			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgSubscribeToPlanRequest, err.Error()), nil, err
+		txCtx := simulation.OperationInput{
+			R:             r,
+			App:           app,
+			TxGen:         txConfig,
+			Cdc:           nil,
+			Msg:           message,
+			MsgType:       message.Type(),
+			Context:       ctx,
+			SimAccount:    rFrom,
+			AccountKeeper: ak,
+			ModuleName:    types.ModuleName,
 		}
 
-		_, _, err = app.Deliver(txConfig.TxEncoder(), txn)
-		if err != nil {
-			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgSubscribeToPlanRequest, err.Error()), nil, err
-		}
-
-		return simulationtypes.NewOperationMsg(message, true, "", nil), nil, nil
+		return simulation.GenAndDeliverTx(txCtx, fees)
 	}
 }
 
@@ -299,26 +286,20 @@ func SimulateMsgCancelRequest(ak expected.AccountKeeper, bk expected.BankKeeper,
 			)
 		)
 
-		txn, err := helpers.GenTx(
-			txConfig,
-			[]sdk.Msg{message},
-			fees,
-			helpers.DefaultGenTxGas,
-			chainID,
-			[]uint64{from.GetAccountNumber()},
-			[]uint64{from.GetSequence()},
-			rFrom.PrivKey,
-		)
-		if err != nil {
-			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgCancelRequest, err.Error()), nil, err
+		txCtx := simulation.OperationInput{
+			R:             r,
+			App:           app,
+			TxGen:         txConfig,
+			Cdc:           nil,
+			Msg:           message,
+			MsgType:       message.Type(),
+			Context:       ctx,
+			SimAccount:    rFrom,
+			AccountKeeper: ak,
+			ModuleName:    types.ModuleName,
 		}
 
-		_, _, err = app.Deliver(txConfig.TxEncoder(), txn)
-		if err != nil {
-			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgCancelRequest, err.Error()), nil, err
-		}
-
-		return simulationtypes.NewOperationMsg(message, true, "", nil), nil, nil
+		return simulation.GenAndDeliverTx(txCtx, fees)
 	}
 }
 
@@ -377,26 +358,20 @@ func SimulateMsgAddQuotaRequest(ak expected.AccountKeeper, bk expected.BankKeepe
 			)
 		)
 
-		txn, err := helpers.GenTx(
-			txConfig,
-			[]sdk.Msg{message},
-			fees,
-			helpers.DefaultGenTxGas,
-			chainID,
-			[]uint64{from.GetAccountNumber()},
-			[]uint64{from.GetSequence()},
-			rFrom.PrivKey,
-		)
-		if err != nil {
-			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgAddQuotaRequest, err.Error()), nil, err
+		txCtx := simulation.OperationInput{
+			R:             r,
+			App:           app,
+			TxGen:         txConfig,
+			Cdc:           nil,
+			Msg:           message,
+			MsgType:       message.Type(),
+			Context:       ctx,
+			SimAccount:    rFrom,
+			AccountKeeper: ak,
+			ModuleName:    types.ModuleName,
 		}
 
-		_, _, err = app.Deliver(txConfig.TxEncoder(), txn)
-		if err != nil {
-			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgAddQuotaRequest, err.Error()), nil, err
-		}
-
-		return simulationtypes.NewOperationMsg(message, true, "", nil), nil, nil
+		return simulation.GenAndDeliverTx(txCtx, fees)
 	}
 }
 
@@ -455,25 +430,19 @@ func SimulateMsgUpdateQuotaRequest(ak expected.AccountKeeper, bk expected.BankKe
 			)
 		)
 
-		txn, err := helpers.GenTx(
-			txConfig,
-			[]sdk.Msg{message},
-			fees,
-			helpers.DefaultGenTxGas,
-			chainID,
-			[]uint64{from.GetAccountNumber()},
-			[]uint64{from.GetSequence()},
-			rFrom.PrivKey,
-		)
-		if err != nil {
-			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgUpdateQuotaRequest, err.Error()), nil, err
+		txCtx := simulation.OperationInput{
+			R:             r,
+			App:           app,
+			TxGen:         txConfig,
+			Cdc:           nil,
+			Msg:           message,
+			MsgType:       message.Type(),
+			Context:       ctx,
+			SimAccount:    rFrom,
+			AccountKeeper: ak,
+			ModuleName:    types.ModuleName,
 		}
 
-		_, _, err = app.Deliver(txConfig.TxEncoder(), txn)
-		if err != nil {
-			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgUpdateQuotaRequest, err.Error()), nil, err
-		}
-
-		return simulationtypes.NewOperationMsg(message, true, "", nil), nil, nil
+		return simulation.GenAndDeliverTx(txCtx, fees)
 	}
 }
