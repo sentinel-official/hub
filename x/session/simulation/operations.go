@@ -6,7 +6,6 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
-	"github.com/cosmos/cosmos-sdk/simapp/helpers"
 	"github.com/cosmos/cosmos-sdk/simapp/params"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	simulationtypes "github.com/cosmos/cosmos-sdk/types/simulation"
@@ -137,26 +136,20 @@ func SimulateMsgStartRequest(ak expected.AccountKeeper, bk expected.BankKeeper, 
 			)
 		)
 
-		txn, err := helpers.GenTx(
-			txConfig,
-			[]sdk.Msg{message},
-			fees,
-			helpers.DefaultGenTxGas,
-			chainID,
-			[]uint64{from.GetAccountNumber()},
-			[]uint64{from.GetSequence()},
-			rFrom.PrivKey,
-		)
-		if err != nil {
-			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgStartRequest, err.Error()), nil, err
+		txCtx := simulation.OperationInput{
+			R:             r,
+			App:           app,
+			TxGen:         txConfig,
+			Cdc:           nil,
+			Msg:           message,
+			MsgType:       message.Type(),
+			Context:       ctx,
+			SimAccount:    rFrom,
+			AccountKeeper: ak,
+			ModuleName:    types.ModuleName,
 		}
 
-		_, _, err = app.Deliver(txConfig.TxEncoder(), txn)
-		if err != nil {
-			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgStartRequest, err.Error()), nil, err
-		}
-
-		return simulationtypes.NewOperationMsg(message, true, "", nil), nil, nil
+		return simulation.GenAndDeliverTx(txCtx, fees)
 	}
 }
 
@@ -216,26 +209,20 @@ func SimulateMsgUpdateRequest(ak expected.AccountKeeper, bk expected.BankKeeper,
 			)
 		)
 
-		txn, err := helpers.GenTx(
-			txConfig,
-			[]sdk.Msg{message},
-			fees,
-			helpers.DefaultGenTxGas,
-			chainID,
-			[]uint64{from.GetAccountNumber()},
-			[]uint64{from.GetSequence()},
-			rFrom.PrivKey,
-		)
-		if err != nil {
-			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgUpdateRequest, err.Error()), nil, err
+		txCtx := simulation.OperationInput{
+			R:             r,
+			App:           app,
+			TxGen:         txConfig,
+			Cdc:           nil,
+			Msg:           message,
+			MsgType:       message.Type(),
+			Context:       ctx,
+			SimAccount:    rFrom,
+			AccountKeeper: ak,
+			ModuleName:    types.ModuleName,
 		}
 
-		_, _, err = app.Deliver(txConfig.TxEncoder(), txn)
-		if err != nil {
-			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgUpdateRequest, err.Error()), nil, err
-		}
-
-		return simulationtypes.NewOperationMsg(message, true, "", nil), nil, nil
+		return simulation.GenAndDeliverTx(txCtx, fees)
 	}
 }
 
@@ -280,25 +267,19 @@ func SimulateMsgEndRequest(ak expected.AccountKeeper, bk expected.BankKeeper, k 
 			)
 		)
 
-		txn, err := helpers.GenTx(
-			txConfig,
-			[]sdk.Msg{message},
-			fees,
-			helpers.DefaultGenTxGas,
-			chainID,
-			[]uint64{from.GetAccountNumber()},
-			[]uint64{from.GetSequence()},
-			rFrom.PrivKey,
-		)
-		if err != nil {
-			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgEndRequest, err.Error()), nil, err
+		txCtx := simulation.OperationInput{
+			R:             r,
+			App:           app,
+			TxGen:         txConfig,
+			Cdc:           nil,
+			Msg:           message,
+			MsgType:       message.Type(),
+			Context:       ctx,
+			SimAccount:    rFrom,
+			AccountKeeper: ak,
+			ModuleName:    types.ModuleName,
 		}
 
-		_, _, err = app.Deliver(txConfig.TxEncoder(), txn)
-		if err != nil {
-			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgEndRequest, err.Error()), nil, err
-		}
-
-		return simulationtypes.NewOperationMsg(message, true, "", nil), nil, nil
+		return simulation.GenAndDeliverTx(txCtx, fees)
 	}
 }

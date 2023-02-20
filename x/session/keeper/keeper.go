@@ -5,6 +5,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"github.com/tendermint/tendermint/libs/log"
@@ -15,7 +16,7 @@ import (
 
 type Keeper struct {
 	cdc              codec.BinaryCodec
-	key              sdk.StoreKey
+	key              storetypes.StoreKey
 	params           paramstypes.Subspace
 	account          expected.AccountKeeper
 	bank             expected.BankKeeper
@@ -26,7 +27,7 @@ type Keeper struct {
 	feeCollectorName string
 }
 
-func NewKeeper(cdc codec.BinaryCodec, key sdk.StoreKey, params paramstypes.Subspace, feeCollectorName string) Keeper {
+func NewKeeper(cdc codec.BinaryCodec, key storetypes.StoreKey, params paramstypes.Subspace, feeCollectorName string) Keeper {
 	return Keeper{
 		cdc:              cdc,
 		key:              key,
