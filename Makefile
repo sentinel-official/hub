@@ -1,5 +1,6 @@
+.DEFAULT_GOAL := default
 PACKAGES := $(shell go list ./...)
-VERSION := $(shell echo $(shell git describe --tags) | sed 's/^v//')
+VERSION := $(shell git describe --tags | sed 's/^v//' | rev | cut -d - -f 2- | rev)
 COMMIT := $(shell git log -1 --format='%H')
 TENDERMINT_VERSION := $(shell go list -m github.com/tendermint/tendermint | sed 's:.* ::')
 
@@ -16,9 +17,17 @@ LD_FLAGS := -s -w \
 benchmark:
 	@go test -mod=readonly -v -bench ${PACKAGES}
 
+.PHONY: build
+build:
+	go build -mod=readonly -tags="${BUILD_TAGS}" -ldflags="${LD_FLAGS}" -trimpath \
+		-o ./bin/sentinelhub ./cmd/sentinelhub
+
 .PHONY: clean
 clean:
-	rm -rf ./build ./vendor ./coverage.txt
+	rm -rf ./bin ./vendor ./coverage.txt
+
+.PHONE: default
+default: clean build
 
 .PHONY: install
 install:
@@ -27,6 +36,11 @@ install:
 .PHONY: go-lint
 go-lint:
 	@golangci-lint run --fix
+
+.PHONY: mod-vendor
+mod-vendor:
+	@go mod vendor
+	@modvendor -copy="**/*.proto" -include=github.com/cosmos/cosmos-sdk/proto,github.com/cosmos/cosmos-sdk/third_party/proto
 
 .PHONY: proto-gen
 proto-gen:
@@ -49,8 +63,3 @@ tools:
 	@go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.50.1
 	@go install github.com/goware/modvendor@v0.5.0
 	@go install github.com/grpc-ecosystem/grpc-gateway/protoc-gen-grpc-gateway@v1.16.0
-
-.PHONY: vendor
-vendor: tools
-	@go mod vendor
-	@modvendor -copy="**/*.proto" -include=github.com/cosmos/cosmos-sdk/proto,github.com/cosmos/cosmos-sdk/third_party/proto
