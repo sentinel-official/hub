@@ -1,4 +1,4 @@
-package hub
+package app
 
 import (
 	"encoding/json"
@@ -12,33 +12,34 @@ import (
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 )
 
-func (app *App) ExportAppStateAndValidators(
-	forZeroHeight bool, jailAllowedAddrs []string,
+func (a App) ExportAppStateAndValidators(
+	forZeroHeight bool,
+	jailAllowedAddrs []string,
 ) (servertypes.ExportedApp, error) {
-	ctx := app.NewContext(true, tmproto.Header{Height: app.LastBlockHeight()})
+	ctx := a.NewContext(true, tmproto.Header{Height: a.LastBlockHeight()})
 
-	height := app.LastBlockHeight() + 1
+	height := a.LastBlockHeight() + 1
 	if forZeroHeight {
 		height = 0
-		app.prepForZeroHeightGenesis(ctx, jailAllowedAddrs)
+		a.prepForZeroHeightGenesis(ctx, jailAllowedAddrs)
 	}
 
-	genState := app.moduleManager.ExportGenesis(ctx, app.cdc)
+	genState := a.mm.ExportGenesis(ctx, a.Codec)
 	appState, err := json.MarshalIndent(genState, "", "  ")
 	if err != nil {
 		return servertypes.ExportedApp{}, err
 	}
 
-	validators, err := staking.WriteValidators(ctx, app.stakingKeeper)
+	validators, err := staking.WriteValidators(ctx, a.StakingKeeper)
 	return servertypes.ExportedApp{
 		AppState:        appState,
 		Validators:      validators,
 		Height:          height,
-		ConsensusParams: app.BaseApp.GetConsensusParams(ctx),
+		ConsensusParams: a.BaseApp.GetConsensusParams(ctx),
 	}, err
 }
 
-func (app *App) prepForZeroHeightGenesis(ctx sdk.Context, jailAllowedAddrs []string) {
+func (a App) prepForZeroHeightGenesis(ctx sdk.Context, jailAllowedAddrs []string) {
 	applyAllowedAddrs := false
 
 	if len(jailAllowedAddrs) > 0 {
@@ -55,14 +56,14 @@ func (app *App) prepForZeroHeightGenesis(ctx sdk.Context, jailAllowedAddrs []str
 		allowedAddrsMap[addr] = true
 	}
 
-	app.crisisKeeper.AssertInvariants(ctx)
+	a.CrisisKeeper.AssertInvariants(ctx)
 
-	app.stakingKeeper.IterateValidators(ctx, func(_ int64, val stakingtypes.ValidatorI) (stop bool) {
-		_, _ = app.distributionKeeper.WithdrawValidatorCommission(ctx, val.GetOperator())
+	a.StakingKeeper.IterateValidators(ctx, func(_ int64, val stakingtypes.ValidatorI) (stop bool) {
+		_, _ = a.DistributionKeeper.WithdrawValidatorCommission(ctx, val.GetOperator())
 		return false
 	})
 
-	dels := app.stakingKeeper.GetAllDelegations(ctx)
+	dels := a.StakingKeeper.GetAllDelegations(ctx)
 	for _, delegation := range dels {
 		valAddr, err := sdk.ValAddressFromBech32(delegation.ValidatorAddress)
 		if err != nil {
@@ -73,23 +74,23 @@ func (app *App) prepForZeroHeightGenesis(ctx sdk.Context, jailAllowedAddrs []str
 		if err != nil {
 			panic(err)
 		}
-		_, _ = app.distributionKeeper.WithdrawDelegationRewards(ctx, delAddr, valAddr)
+		_, _ = a.DistributionKeeper.WithdrawDelegationRewards(ctx, delAddr, valAddr)
 	}
 
-	app.distributionKeeper.DeleteAllValidatorSlashEvents(ctx)
+	a.DistributionKeeper.DeleteAllValidatorSlashEvents(ctx)
 
-	app.distributionKeeper.DeleteAllValidatorHistoricalRewards(ctx)
+	a.DistributionKeeper.DeleteAllValidatorHistoricalRewards(ctx)
 
 	height := ctx.BlockHeight()
 	ctx = ctx.WithBlockHeight(0)
 
-	app.stakingKeeper.IterateValidators(ctx, func(_ int64, val stakingtypes.ValidatorI) (stop bool) {
-		scraps := app.distributionKeeper.GetValidatorOutstandingRewardsCoins(ctx, val.GetOperator())
-		feePool := app.distributionKeeper.GetFeePool(ctx)
+	a.StakingKeeper.IterateValidators(ctx, func(_ int64, val stakingtypes.ValidatorI) (stop bool) {
+		scraps := a.DistributionKeeper.GetValidatorOutstandingRewardsCoins(ctx, val.GetOperator())
+		feePool := a.DistributionKeeper.GetFeePool(ctx)
 		feePool.CommunityPool = feePool.CommunityPool.Add(scraps...)
-		app.distributionKeeper.SetFeePool(ctx, feePool)
+		a.DistributionKeeper.SetFeePool(ctx, feePool)
 
-		app.distributionKeeper.Hooks().AfterValidatorCreated(ctx, val.GetOperator())
+		a.DistributionKeeper.Hooks().AfterValidatorCreated(ctx, val.GetOperator())
 		return false
 	})
 
@@ -102,35 +103,35 @@ func (app *App) prepForZeroHeightGenesis(ctx sdk.Context, jailAllowedAddrs []str
 		if err != nil {
 			panic(err)
 		}
-		app.distributionKeeper.Hooks().BeforeDelegationCreated(ctx, delAddr, valAddr)
-		app.distributionKeeper.Hooks().AfterDelegationModified(ctx, delAddr, valAddr)
+		a.DistributionKeeper.Hooks().BeforeDelegationCreated(ctx, delAddr, valAddr)
+		a.DistributionKeeper.Hooks().AfterDelegationModified(ctx, delAddr, valAddr)
 	}
 
 	ctx = ctx.WithBlockHeight(height)
 
-	app.stakingKeeper.IterateRedelegations(ctx, func(_ int64, red stakingtypes.Redelegation) (stop bool) {
+	a.StakingKeeper.IterateRedelegations(ctx, func(_ int64, red stakingtypes.Redelegation) (stop bool) {
 		for i := range red.Entries {
 			red.Entries[i].CreationHeight = 0
 		}
-		app.stakingKeeper.SetRedelegation(ctx, red)
+		a.StakingKeeper.SetRedelegation(ctx, red)
 		return false
 	})
 
-	app.stakingKeeper.IterateUnbondingDelegations(ctx, func(_ int64, ubd stakingtypes.UnbondingDelegation) (stop bool) {
+	a.StakingKeeper.IterateUnbondingDelegations(ctx, func(_ int64, ubd stakingtypes.UnbondingDelegation) (stop bool) {
 		for i := range ubd.Entries {
 			ubd.Entries[i].CreationHeight = 0
 		}
-		app.stakingKeeper.SetUnbondingDelegation(ctx, ubd)
+		a.StakingKeeper.SetUnbondingDelegation(ctx, ubd)
 		return false
 	})
 
-	store := ctx.KVStore(app.keys[stakingtypes.StoreKey])
+	store := ctx.KVStore(a.KV(stakingtypes.StoreKey))
 	iter := sdk.KVStoreReversePrefixIterator(store, stakingtypes.ValidatorsKey)
 	counter := int16(0)
 
 	for ; iter.Valid(); iter.Next() {
 		addr := sdk.ValAddress(iter.Key()[1:])
-		validator, found := app.stakingKeeper.GetValidator(ctx, addr)
+		validator, found := a.StakingKeeper.GetValidator(ctx, addr)
 		if !found {
 			panic("expected validator, not found")
 		}
@@ -140,22 +141,22 @@ func (app *App) prepForZeroHeightGenesis(ctx sdk.Context, jailAllowedAddrs []str
 			validator.Jailed = true
 		}
 
-		app.stakingKeeper.SetValidator(ctx, validator)
+		a.StakingKeeper.SetValidator(ctx, validator)
 		counter++
 	}
 
 	iter.Close()
 
-	_, err := app.stakingKeeper.ApplyAndReturnValidatorSetUpdates(ctx)
+	_, err := a.StakingKeeper.ApplyAndReturnValidatorSetUpdates(ctx)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	app.slashingKeeper.IterateValidatorSigningInfos(
+	a.SlashingKeeper.IterateValidatorSigningInfos(
 		ctx,
 		func(addr sdk.ConsAddress, info slashingtypes.ValidatorSigningInfo) (stop bool) {
 			info.StartHeight = 0
-			app.slashingKeeper.SetValidatorSigningInfo(ctx, addr, info)
+			a.SlashingKeeper.SetValidatorSigningInfo(ctx, addr, info)
 			return false
 		},
 	)
