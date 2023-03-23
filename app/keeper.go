@@ -97,7 +97,7 @@ type Keepers struct {
 	// Other keepers
 	WasmKeeper wasmkeeper.Keeper
 
-	// Cosmos SDK scoped keepers
+	// Cosmos IBC scoped keepers
 	ScopedIBCKeeper              capabilitykeeper.ScopedKeeper
 	ScopedIBCFeeKeeper           capabilitykeeper.ScopedKeeper
 	ScopedIBCICAControllerKeeper capabilitykeeper.ScopedKeeper

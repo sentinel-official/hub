@@ -12,7 +12,7 @@ import (
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 )
 
-func (a App) ExportAppStateAndValidators(
+func (a *App) ExportAppStateAndValidators(
 	forZeroHeight bool,
 	jailAllowedAddrs []string,
 ) (servertypes.ExportedApp, error) {
@@ -39,7 +39,7 @@ func (a App) ExportAppStateAndValidators(
 	}, err
 }
 
-func (a App) prepForZeroHeightGenesis(ctx sdk.Context, jailAllowedAddrs []string) {
+func (a *App) prepForZeroHeightGenesis(ctx sdk.Context, jailAllowedAddrs []string) {
 	applyAllowedAddrs := false
 
 	if len(jailAllowedAddrs) > 0 {

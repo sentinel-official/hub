@@ -75,7 +75,7 @@ func NewApp(
 
 	wasmConfig, err := wasm.ReadWasmConfig(appOpts)
 	if err != nil {
-		panic("error while reading wasm config: " + err.Error())
+		panic("error while reading the wasm config: " + err.Error())
 	}
 
 	var (
@@ -119,7 +119,7 @@ func NewApp(
 
 	if loadLatest {
 		if err = app.LoadLatestVersion(); err != nil {
-			tmos.Exit("failed load the latest version: " + err.Error())
+			tmos.Exit("failed to load the latest version: " + err.Error())
 		}
 
 		ctx := app.BaseApp.NewUncachedContext(true, tmproto.Header{})
@@ -131,19 +131,19 @@ func NewApp(
 	return app
 }
 
-func (a App) LegacyAmino() *codec.LegacyAmino {
+func (a *App) LegacyAmino() *codec.LegacyAmino {
 	return a.Amino
 }
 
-func (a App) BeginBlocker(ctx sdk.Context, req abcitypes.RequestBeginBlock) abcitypes.ResponseBeginBlock {
+func (a *App) BeginBlocker(ctx sdk.Context, req abcitypes.RequestBeginBlock) abcitypes.ResponseBeginBlock {
 	return a.mm.BeginBlock(ctx, req)
 }
 
-func (a App) EndBlocker(ctx sdk.Context, req abcitypes.RequestEndBlock) abcitypes.ResponseEndBlock {
+func (a *App) EndBlocker(ctx sdk.Context, req abcitypes.RequestEndBlock) abcitypes.ResponseEndBlock {
 	return a.mm.EndBlock(ctx, req)
 }
 
-func (a App) InitChainer(ctx sdk.Context, req abcitypes.RequestInitChain) abcitypes.ResponseInitChain {
+func (a *App) InitChainer(ctx sdk.Context, req abcitypes.RequestInitChain) abcitypes.ResponseInitChain {
 	var state map[string]json.RawMessage
 	if err := tmjson.Unmarshal(req.AppStateBytes, &state); err != nil {
 		panic(err)
@@ -153,11 +153,11 @@ func (a App) InitChainer(ctx sdk.Context, req abcitypes.RequestInitChain) abcity
 	return a.mm.InitGenesis(ctx, a.Codec, state)
 }
 
-func (a App) LoadHeight(height int64) error {
+func (a *App) LoadHeight(height int64) error {
 	return a.LoadVersion(height)
 }
 
-func (a App) ModuleAccountAddrs() map[string]bool {
+func (a *App) ModuleAccountAddrs() map[string]bool {
 	addrs := make(map[string]bool)
 	for v := range ModuleAccPerms() {
 		addr := authtypes.NewModuleAddress(v)
@@ -167,11 +167,11 @@ func (a App) ModuleAccountAddrs() map[string]bool {
 	return addrs
 }
 
-func (a App) SimulationManager() *module.SimulationManager {
+func (a *App) SimulationManager() *module.SimulationManager {
 	return a.sm
 }
 
-func (a App) RegisterAPIRoutes(server *api.Server, _ serverconfig.APIConfig) {
+func (a *App) RegisterAPIRoutes(server *api.Server, _ serverconfig.APIConfig) {
 	ctx := server.ClientCtx
 	rpc.RegisterRoutes(ctx, server.Router)
 	authrest.RegisterTxRoutes(ctx, server.Router)
@@ -182,15 +182,15 @@ func (a App) RegisterAPIRoutes(server *api.Server, _ serverconfig.APIConfig) {
 	ModuleBasics.RegisterGRPCGatewayRoutes(ctx, server.GRPCGatewayRouter)
 }
 
-func (a App) RegisterTxService(ctx client.Context) {
+func (a *App) RegisterTxService(ctx client.Context) {
 	authtx.RegisterTxService(a.BaseApp.GRPCQueryRouter(), ctx, a.BaseApp.Simulate, a.InterfaceRegistry)
 }
 
-func (a App) RegisterTendermintService(ctx client.Context) {
+func (a *App) RegisterTendermintService(ctx client.Context) {
 	tmservice.RegisterTendermintService(a.BaseApp.GRPCQueryRouter(), ctx, a.InterfaceRegistry)
 }
 
-func (a App) SetupAnteHandler(wasmConfig wasmtypes.WasmConfig) {
+func (a *App) SetupAnteHandler(wasmConfig wasmtypes.WasmConfig) {
 	handler, err := ante.NewHandler(
 		ante.HandlerOptions{
 			HandlerOptions: authante.HandlerOptions{
@@ -212,7 +212,7 @@ func (a App) SetupAnteHandler(wasmConfig wasmtypes.WasmConfig) {
 	a.SetAnteHandler(handler)
 }
 
-func (a App) SetUpgradeStoreLoader() {
+func (a *App) SetUpgradeStoreLoader() {
 	upgradeInfo, err := a.UpgradeKeeper.ReadUpgradeInfoFromDisk()
 	if err != nil {
 		panic("failed to read the upgrade info from disk: " + err.Error())
@@ -229,7 +229,7 @@ func (a App) SetUpgradeStoreLoader() {
 	}
 }
 
-func (a App) SetUpgradeHandler(configurator module.Configurator) {
+func (a *App) SetUpgradeHandler(configurator module.Configurator) {
 	a.UpgradeKeeper.SetUpgradeHandler(
 		upgrades.Name,
 		upgrades.Handler(
@@ -240,7 +240,7 @@ func (a App) SetUpgradeHandler(configurator module.Configurator) {
 	)
 }
 
-func (a App) RegisterSnapshotExtensions() {
+func (a *App) RegisterSnapshotExtensions() {
 	if m := a.SnapshotManager(); m != nil {
 		if err := m.RegisterExtensions(
 			wasmkeeper.NewWasmSnapshotter(a.CommitMultiStore(), &a.WasmKeeper),

@@ -81,10 +81,10 @@ func NewStoreKeys() StoreKeys {
 	}
 }
 
-func (sk StoreKeys) KVKeys() map[string]*sdk.KVStoreKey               { return sk.kv }
-func (sk StoreKeys) MemoryKeys() map[string]*sdk.MemoryStoreKey       { return sk.memory }
-func (sk StoreKeys) TransientKeys() map[string]*sdk.TransientStoreKey { return sk.transient }
+func (sk *StoreKeys) KVKeys() map[string]*sdk.KVStoreKey               { return sk.kv }
+func (sk *StoreKeys) MemoryKeys() map[string]*sdk.MemoryStoreKey       { return sk.memory }
+func (sk *StoreKeys) TransientKeys() map[string]*sdk.TransientStoreKey { return sk.transient }
 
-func (sk StoreKeys) KV(v string) *sdk.KVStoreKey               { return sk.kv[v] }
-func (sk StoreKeys) Memory(v string) *sdk.MemoryStoreKey       { return sk.memory[v] }
-func (sk StoreKeys) Transient(v string) *sdk.TransientStoreKey { return sk.transient[v] }
+func (sk *StoreKeys) KV(v string) *sdk.KVStoreKey               { return sk.kv[v] }
+func (sk *StoreKeys) Memory(v string) *sdk.MemoryStoreKey       { return sk.memory[v] }
+func (sk *StoreKeys) Transient(v string) *sdk.TransientStoreKey { return sk.transient[v] }
