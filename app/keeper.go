@@ -131,6 +131,7 @@ func (k *Keepers) SetParamSubspaces(app *baseapp.BaseApp) {
 
 	// Cosmos IBC subspaces
 	k.ParamsKeeper.Subspace(ibchost.ModuleName)
+	k.ParamsKeeper.Subspace(ibcicacontrollertypes.SubModuleName)
 	k.ParamsKeeper.Subspace(ibcicahosttypes.SubModuleName)
 	k.ParamsKeeper.Subspace(ibctransfertypes.ModuleName)
 
