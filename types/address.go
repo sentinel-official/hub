@@ -74,12 +74,12 @@ var (
 
 type ProvAddress []byte
 
-func (p ProvAddress) Equals(address sdk.Address) bool {
-	if p.Empty() && address == nil {
+func (p ProvAddress) Equals(addr sdk.Address) bool {
+	if p.Empty() && addr == nil {
 		return true
 	}
 
-	return bytes.Equal(p.Bytes(), address.Bytes())
+	return bytes.Equal(p.Bytes(), addr.Bytes())
 }
 
 func (p ProvAddress) Empty() bool {
@@ -95,12 +95,12 @@ func (p ProvAddress) String() string {
 		return ""
 	}
 
-	s, err := bech32.ConvertAndEncode(GetConfig().GetBech32ProviderAddrPrefix(), p.Bytes())
+	str, err := bech32.ConvertAndEncode(GetConfig().GetBech32ProviderAddrPrefix(), p.Bytes())
 	if err != nil {
 		panic(err)
 	}
 
-	return s
+	return str
 }
 
 func (p ProvAddress) Format(f fmt.State, c rune) {
@@ -131,61 +131,61 @@ func (p *ProvAddress) Unmarshal(data []byte) error {
 	return nil
 }
 
-func (p *ProvAddress) UnmarshalJSON(data []byte) error {
-	var s string
-	if err := json.Unmarshal(data, &s); err != nil {
+func (p *ProvAddress) UnmarshalJSON(data []byte) (err error) {
+	var str string
+	if err = json.Unmarshal(data, &str); err != nil {
 		return err
 	}
 
-	address, err := ProvAddressFromBech32(s)
+	addr, err := ProvAddressFromBech32(str)
 	if err != nil {
 		return err
 	}
 
-	*p = address
+	*p = addr
 	return nil
 }
 
-func (p *ProvAddress) UnmarshalYAML(data []byte) error {
-	var s string
-	if err := yaml.Unmarshal(data, &s); err != nil {
+func (p *ProvAddress) UnmarshalYAML(data []byte) (err error) {
+	var str string
+	if err = yaml.Unmarshal(data, &str); err != nil {
 		return err
 	}
 
-	address, err := ProvAddressFromBech32(s)
+	addr, err := ProvAddressFromBech32(str)
 	if err != nil {
 		return err
 	}
 
-	*p = address
+	*p = addr
 	return nil
 }
 
-func ProvAddressFromBech32(s string) (ProvAddress, error) {
-	if len(strings.TrimSpace(s)) == 0 {
+func ProvAddressFromBech32(str string) (ProvAddress, error) {
+	str = strings.TrimSpace(str)
+	if len(str) == 0 {
 		return ProvAddress{}, fmt.Errorf("empty address string is not allowed")
 	}
 
-	bz, err := sdk.GetFromBech32(s, GetConfig().GetBech32ProviderAddrPrefix())
+	buf, err := sdk.GetFromBech32(str, GetConfig().GetBech32ProviderAddrPrefix())
 	if err != nil {
 		return nil, err
 	}
-
-	if err = sdk.VerifyAddressFormat(bz); err != nil {
+	if err = sdk.VerifyAddressFormat(buf); err != nil {
 		return nil, err
 	}
 
-	return bz, nil
+	return buf, nil
 }
 
 type NodeAddress []byte
 
-func (n NodeAddress) Equals(address sdk.Address) bool {
-	if n.Empty() && address == nil {
+func (n NodeAddress) Equals(addr sdk.Address) bool {
+	if n.Empty() && addr == nil {
 		return true
 	}
 
-	return bytes.Equal(n.Bytes(), address.Bytes())
+	return bytes.Equal(n.Bytes(), addr.Bytes())
 }
 
 func (n NodeAddress) Empty() bool {
@@ -201,12 +201,12 @@ func (n NodeAddress) String() string {
 		return ""
 	}
 
-	s, err := bech32.ConvertAndEncode(GetConfig().GetBech32NodeAddrPrefix(), n.Bytes())
+	str, err := bech32.ConvertAndEncode(GetConfig().GetBech32NodeAddrPrefix(), n.Bytes())
 	if err != nil {
 		panic(err)
 	}
 
-	return s
+	return str
 }
 
 func (n NodeAddress) Format(f fmt.State, c rune) {
@@ -237,49 +237,49 @@ func (n *NodeAddress) Unmarshal(data []byte) error {
 	return nil
 }
 
-func (n *NodeAddress) UnmarshalJSON(data []byte) error {
-	var s string
-	if err := json.Unmarshal(data, &s); err != nil {
+func (n *NodeAddress) UnmarshalJSON(data []byte) (err error) {
+	var str string
+	if err = json.Unmarshal(data, &str); err != nil {
 		return err
 	}
 
-	address, err := NodeAddressFromBech32(s)
+	addr, err := NodeAddressFromBech32(str)
 	if err != nil {
 		return err
 	}
 
-	*n = address
+	*n = addr
 	return nil
 }
 
-func (n *NodeAddress) UnmarshalYAML(data []byte) error {
-	var s string
-	if err := yaml.Unmarshal(data, &s); err != nil {
+func (n *NodeAddress) UnmarshalYAML(data []byte) (err error) {
+	var str string
+	if err = yaml.Unmarshal(data, &str); err != nil {
 		return err
 	}
 
-	address, err := NodeAddressFromBech32(s)
+	addr, err := NodeAddressFromBech32(str)
 	if err != nil {
 		return err
 	}
 
-	*n = address
+	*n = addr
 	return nil
 }
 
-func NodeAddressFromBech32(s string) (NodeAddress, error) {
-	if len(strings.TrimSpace(s)) == 0 {
+func NodeAddressFromBech32(str string) (NodeAddress, error) {
+	str = strings.TrimSpace(str)
+	if len(str) == 0 {
 		return NodeAddress{}, fmt.Errorf("empty address string is not allowed")
 	}
 
-	bz, err := sdk.GetFromBech32(s, GetConfig().GetBech32NodeAddrPrefix())
+	buf, err := sdk.GetFromBech32(str, GetConfig().GetBech32NodeAddrPrefix())
 	if err != nil {
 		return nil, err
 	}
-
-	if err = sdk.VerifyAddressFormat(bz); err != nil {
+	if err = sdk.VerifyAddressFormat(buf); err != nil {
 		return nil, err
 	}
 
-	return bz, nil
+	return buf, nil
 }

@@ -7,6 +7,8 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/server"
 	servercmd "github.com/cosmos/cosmos-sdk/server/cmd"
+
+	hubtypes "github.com/sentinel-official/hub/types"
 )
 
 func HomeDir() (string, error) {
@@ -20,6 +22,9 @@ func HomeDir() (string, error) {
 }
 
 func main() {
+	cfg := hubtypes.GetConfig()
+	cfg.Seal()
+
 	homeDir, err := HomeDir()
 	if err != nil {
 		log.Fatal(err)

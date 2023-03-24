@@ -21,7 +21,6 @@ import (
 	tmcli "github.com/tendermint/tendermint/libs/cli"
 
 	"github.com/sentinel-official/hub/app"
-	hubtypes "github.com/sentinel-official/hub/types"
 )
 
 func initAppConfig() (string, interface{}) {
@@ -128,23 +127,20 @@ func NewRootCmd(homeDir string) *cobra.Command {
 		},
 	}
 
-	cfg := hubtypes.GetConfig()
-	cfg.Seal()
-
 	cmd.AddCommand(
-		genutilcli.InitCmd(app.ModuleBasics, homeDir),
-		genutilcli.CollectGenTxsCmd(banktypes.GenesisBalancesIterator{}, homeDir),
-		genutilcli.GenTxCmd(app.ModuleBasics, encCfg.TxConfig, banktypes.GenesisBalancesIterator{}, homeDir),
-		genutilcli.ValidateGenesisCmd(app.ModuleBasics),
 		AddGenesisAccountCmd(homeDir),
 		AddGenesisWasmMsgCmd(homeDir),
-		tmcli.NewCompletionCmd(cmd, true),
-		debug.Cmd(),
 		clientconfig.Cmd(),
-		rpc.StatusCommand(),
-		queryCommand(),
-		txCommand(),
+		debug.Cmd(),
+		genutilcli.CollectGenTxsCmd(banktypes.GenesisBalancesIterator{}, homeDir),
+		genutilcli.GenTxCmd(app.ModuleBasics, encCfg.TxConfig, banktypes.GenesisBalancesIterator{}, homeDir),
+		genutilcli.InitCmd(app.ModuleBasics, homeDir),
+		genutilcli.ValidateGenesisCmd(app.ModuleBasics),
 		keys.Commands(homeDir),
+		queryCommand(),
+		rpc.StatusCommand(),
+		tmcli.NewCompletionCmd(cmd, true),
+		txCommand(),
 	)
 
 	creator := AppCreator{encCfg: encCfg, homeDir: homeDir}

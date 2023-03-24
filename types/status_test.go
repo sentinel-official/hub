@@ -248,3 +248,49 @@ func TestStatus_IsValid(t *testing.T) {
 		})
 	}
 }
+
+func TestStatus_String(t *testing.T) {
+	tests := []struct {
+		name string
+		s    Status
+		want string
+	}{
+		{
+			"minus one",
+			Status(-1),
+			"unspecified",
+		},
+		{
+			"zero",
+			Status(0),
+			"unspecified",
+		},
+		{
+			"one",
+			Status(1),
+			"active",
+		},
+		{
+			"two",
+			Status(2),
+			"inactive_pending",
+		},
+		{
+			"three",
+			Status(3),
+			"inactive",
+		},
+		{
+			"four",
+			Status(4),
+			"unspecified",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.s.String(); got != tt.want {
+				t.Errorf("String() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
