@@ -1,8 +1,7 @@
 .DEFAULT_GOAL := default
-PACKAGES := $(shell go list ./...)
 VERSION := $(shell git describe --tags | sed 's/^v//' | rev | cut -d - -f 2- | rev)
 COMMIT := $(shell git log -1 --format='%H')
-TENDERMINT_VERSION := $(shell go list -m github.com/tendermint/tendermint | sed 's:.* ::')
+TENDERMINT_VERSION := $(shell go list -m github.com/tendermint/tendermint | sed 's/.* //')
 
 BUILD_TAGS := $(strip netgo,ledger)
 LD_FLAGS := -s -w \
@@ -15,7 +14,7 @@ LD_FLAGS := -s -w \
 
 .PHONY: benchmark
 benchmark:
-	@go test -mod=readonly -v -bench ${PACKAGES}
+	@go test -mod=readonly -v -bench ./...
 
 .PHONY: build
 build:
@@ -27,7 +26,7 @@ clean:
 	rm -rf ./bin ./vendor ./coverage.txt
 
 .PHONE: default
-default: clean build
+default: build
 
 .PHONY: install
 install:
@@ -52,11 +51,11 @@ proto-lint:
 
 .PHONY: test
 test:
-	@go test -mod=readonly -timeout 15m -v ${PACKAGES}
+	@go test -mod=readonly -timeout 15m -v ./...
 
 .PHONT: test-coverage
 test-coverage:
-	@go test -mod=readonly -timeout 15m -v -covermode=atomic -coverprofile=coverage.txt ${PACKAGES}
+	@go test -mod=readonly -timeout 15m -v -covermode=atomic -coverprofile=coverage.txt ./...
 
 .PHONY: tools
 tools:
