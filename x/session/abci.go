@@ -19,7 +19,7 @@ func EndBlock(ctx sdk.Context, k keeper.Keeper) []abcitypes.ValidatorUpdate {
 		log.Info("found an inactive session", "id", item.Id)
 
 		accAddr := item.GetAddress()
-		if item.Status.Equal(hubtypes.Active) {
+		if item.Status.Equal(hubtypes.StatusActive) {
 			k.DeleteActiveSessionForAddress(ctx, accAddr, item.Id)
 			k.DeleteInactiveSessionAt(ctx, item.StatusAt.Add(inactiveDuration), item.Id)
 

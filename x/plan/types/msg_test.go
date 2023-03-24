@@ -263,11 +263,11 @@ func TestMsgSetStatusRequest_ValidateBasic(t *testing.T) {
 			true,
 		},
 		{
-			"unknown status",
+			"unspecified status",
 			fields{
 				From:   "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
 				Id:     1000,
-				Status: hubtypes.StatusUnknown,
+				Status: hubtypes.StatusUnspecified,
 			},
 			true,
 		},

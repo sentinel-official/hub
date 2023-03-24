@@ -354,14 +354,14 @@ func TestPlan_Validate(t *testing.T) {
 			true,
 		},
 		{
-			"unknown status",
+			"unspecified status",
 			fields{
 				Id:       1000,
 				Provider: "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
 				Price:    sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
 				Validity: 1000,
 				Bytes:    sdk.NewInt(1000),
-				Status:   hubtypes.StatusUnknown,
+				Status:   hubtypes.StatusUnspecified,
 			},
 			true,
 		},

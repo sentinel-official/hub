@@ -88,7 +88,7 @@ func (q *queryServer) QuerySubscriptionsForAddress(c context.Context, req *types
 		ctx        = sdk.UnwrapSDKContext(c)
 	)
 
-	if req.Status.Equal(hubtypes.Active) {
+	if req.Status.Equal(hubtypes.StatusActive) {
 		store := prefix.NewStore(q.Store(ctx), types.GetActiveSubscriptionForAddressKeyPrefix(address))
 		pagination, err = query.FilteredPaginate(store, req.Pagination, func(key, _ []byte, accumulate bool) (bool, error) {
 			if accumulate {
@@ -102,7 +102,7 @@ func (q *queryServer) QuerySubscriptionsForAddress(c context.Context, req *types
 
 			return true, nil
 		})
-	} else if req.Status.Equal(hubtypes.Inactive) {
+	} else if req.Status.Equal(hubtypes.StatusInactive) {
 		store := prefix.NewStore(q.Store(ctx), types.GetInactiveSubscriptionForAddressKeyPrefix(address))
 		pagination, err = query.FilteredPaginate(store, req.Pagination, func(key, _ []byte, accumulate bool) (bool, error) {
 			if accumulate {

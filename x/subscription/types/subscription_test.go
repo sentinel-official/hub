@@ -443,7 +443,7 @@ func TestSubscription_Validate(t *testing.T) {
 			true,
 		},
 		{
-			"unknown status",
+			"unspecified status",
 			fields{
 				Id:     1000,
 				Owner:  "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
@@ -451,7 +451,7 @@ func TestSubscription_Validate(t *testing.T) {
 				Denom:  "one",
 				Expiry: time.Now(),
 				Free:   sdk.NewInt(1000),
-				Status: hubtypes.StatusUnknown,
+				Status: hubtypes.StatusUnspecified,
 			},
 			true,
 		},

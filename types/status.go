@@ -1,22 +1,19 @@
 package types
 
-const (
-	StatusUnknown Status = iota
-	StatusActive
-	StatusInactivePending
-	StatusInactive
+import (
+	"strings"
 )
 
-func StatusFromString(s string) Status {
+func (s Status) String() string {
 	switch s {
-	case "Active":
-		return StatusActive
-	case "InactivePending":
-		return StatusInactivePending
-	case "Inactive":
-		return StatusInactive
+	case StatusActive:
+		return "active"
+	case StatusInactivePending:
+		return "inactive_pending"
+	case StatusInactive:
+		return "inactive"
 	default:
-		return StatusUnknown
+		return "unspecified"
 	}
 }
 
@@ -28,4 +25,18 @@ func (s Status) IsValid() bool {
 
 func (s Status) Equal(v Status) bool {
 	return s == v
+}
+
+func StatusFromString(s string) Status {
+	s = strings.ToLower(s)
+	switch s {
+	case "active":
+		return StatusActive
+	case "inactive_pending":
+		return StatusInactivePending
+	case "inactive":
+		return StatusInactive
+	default:
+		return StatusUnspecified
+	}
 }

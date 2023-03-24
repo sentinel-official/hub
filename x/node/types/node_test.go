@@ -1485,13 +1485,13 @@ func TestNode_Validate(t *testing.T) {
 			true,
 		},
 		{
-			"unknown status",
+			"unspecified status",
 			fields{
 				Address:   "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
 				Provider:  "",
 				Price:     sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
 				RemoteURL: "https://remote.url:443",
-				Status:    hubtypes.StatusUnknown,
+				Status:    hubtypes.StatusUnspecified,
 			},
 			true,
 		},

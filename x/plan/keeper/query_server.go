@@ -53,7 +53,7 @@ func (q *queryServer) QueryPlans(c context.Context, req *types.QueryPlansRequest
 		ctx        = sdk.UnwrapSDKContext(c)
 	)
 
-	if req.Status.Equal(hubtypes.Active) {
+	if req.Status.Equal(hubtypes.StatusActive) {
 		store := prefix.NewStore(q.Store(ctx), types.ActivePlanKeyPrefix)
 		pagination, err = query.FilteredPaginate(store, req.Pagination, func(key, _ []byte, accumulate bool) (bool, error) {
 			if accumulate {
@@ -67,7 +67,7 @@ func (q *queryServer) QueryPlans(c context.Context, req *types.QueryPlansRequest
 
 			return true, nil
 		})
-	} else if req.Status.Equal(hubtypes.Inactive) {
+	} else if req.Status.Equal(hubtypes.StatusInactive) {
 		store := prefix.NewStore(q.Store(ctx), types.InactivePlanKeyPrefix)
 		pagination, err = query.FilteredPaginate(store, req.Pagination, func(key, _ []byte, accumulate bool) (bool, error) {
 			if accumulate {
@@ -120,7 +120,7 @@ func (q *queryServer) QueryPlansForProvider(c context.Context, req *types.QueryP
 		ctx        = sdk.UnwrapSDKContext(c)
 	)
 
-	if req.Status.Equal(hubtypes.Active) {
+	if req.Status.Equal(hubtypes.StatusActive) {
 		store := prefix.NewStore(q.Store(ctx), types.GetActivePlanForProviderKeyPrefix(address))
 		pagination, err = query.FilteredPaginate(store, req.Pagination, func(key, _ []byte, accumulate bool) (bool, error) {
 			if accumulate {
@@ -134,7 +134,7 @@ func (q *queryServer) QueryPlansForProvider(c context.Context, req *types.QueryP
 
 			return true, nil
 		})
-	} else if req.Status.Equal(hubtypes.Inactive) {
+	} else if req.Status.Equal(hubtypes.StatusInactive) {
 		store := prefix.NewStore(q.Store(ctx), types.GetInactivePlanForProviderKeyPrefix(address))
 		pagination, err = query.FilteredPaginate(store, req.Pagination, func(key, _ []byte, accumulate bool) (bool, error) {
 			if accumulate {

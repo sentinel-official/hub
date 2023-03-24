@@ -213,7 +213,7 @@ func SimulateMsgSubscribeToPlanRequest(ak expected.AccountKeeper, bk expected.Ba
 		if !found {
 			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgSubscribeToPlanRequest, "plan does not exist"), nil, nil
 		}
-		if !plan.Status.Equal(hubtypes.Active) {
+		if !plan.Status.Equal(hubtypes.StatusActive) {
 			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgSubscribeToPlanRequest, "plan status is not active"), nil, nil
 		}
 

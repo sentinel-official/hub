@@ -178,7 +178,7 @@ func SimulateMsgUpdateRequest(ak expected.AccountKeeper, bk expected.BankKeeper,
 		if !found {
 			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgUpdateRequest, "session does not exist"), nil, nil
 		}
-		if rSession.Status.Equal(hubtypes.Inactive) {
+		if rSession.Status.Equal(hubtypes.StatusInactive) {
 			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgUpdateRequest, "session status is inactive"), nil, nil
 		}
 		if rSession.Node == hubtypes.NodeAddress(from.GetAddress()).String() {

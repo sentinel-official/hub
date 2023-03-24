@@ -42,10 +42,10 @@ func GetPrice(flags *pflag.FlagSet) (sdk.Coins, error) {
 func GetStatus(flags *pflag.FlagSet) (hubtypes.Status, error) {
 	s, err := flags.GetString(flagStatus)
 	if err != nil {
-		return hubtypes.Unspecified, err
+		return hubtypes.StatusUnspecified, err
 	}
 	if s == "" {
-		return hubtypes.Unspecified, nil
+		return hubtypes.StatusUnspecified, nil
 	}
 
 	return hubtypes.StatusFromString(s), nil
