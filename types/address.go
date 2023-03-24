@@ -8,47 +8,59 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/bech32"
-	"gopkg.in/yaml.v2"
+	"gopkg.in/yaml.v3"
 )
 
 const (
-	// Bech32MainPrefix defines the Bech32 prefix of an account address.
+	// Bech32MainPrefix defines the main prefix for account addresses in the blockchain.
 	Bech32MainPrefix = "sent"
 
-	// PrefixValidator is the prefix for validator keys.
+	// PrefixValidator is the prefix used for validator keys.
 	PrefixValidator = "val"
-	// PrefixConsensus is the prefix for consensus keys.
+
+	// PrefixConsensus is the prefix used for consensus keys.
 	PrefixConsensus = "cons"
-	// PrefixPublic is the prefix for public keys.
+
+	// PrefixPublic is the prefix used for public keys.
 	PrefixPublic = "pub"
-	// PrefixOperator is the prefix for operator keys.
+
+	// PrefixOperator is the prefix used for operator keys.
 	PrefixOperator = "oper"
 
-	// PrefixProvider is the prefix for provider keys.
+	// PrefixProvider is the prefix used for provider keys.
 	PrefixProvider = "prov"
-	// PrefixNode is the prefix for node keys.
+
+	// PrefixNode is the prefix used for node keys.
 	PrefixNode = "node"
 
-	// Bech32PrefixAccAddr defines the Bech32 prefix of an account address.
+	// Bech32PrefixAccAddr defines the Bech32 prefix for an account address in the blockchain.
 	Bech32PrefixAccAddr = Bech32MainPrefix
-	// Bech32PrefixAccPub defines the Bech32 prefix of an account public key.
+
+	// Bech32PrefixAccPub defines the Bech32 prefix for an account public key in the blockchain.
 	Bech32PrefixAccPub = Bech32MainPrefix + PrefixPublic
-	// Bech32PrefixValAddr defines the Bech32 prefix of a validator operator address.
+
+	// Bech32PrefixValAddr defines the Bech32 prefix for a validator operator address in the blockchain.
 	Bech32PrefixValAddr = Bech32MainPrefix + PrefixValidator + PrefixOperator
-	// Bech32PrefixValPub defines the Bech32 prefix of a validator operator public key.
+
+	// Bech32PrefixValPub defines the Bech32 prefix for a validator operator public key in the blockchain.
 	Bech32PrefixValPub = Bech32MainPrefix + PrefixValidator + PrefixOperator + PrefixPublic
-	// Bech32PrefixConsAddr defines the Bech32 prefix of a validator consensus address.
+
+	// Bech32PrefixConsAddr defines the Bech32 prefix for a validator consensus address in the blockchain.
 	Bech32PrefixConsAddr = Bech32MainPrefix + PrefixValidator + PrefixConsensus
-	// Bech32PrefixConsPub defines the Bech32 prefix of a validator consensus public key.
+
+	// Bech32PrefixConsPub defines the Bech32 prefix for a validator consensus public key in the blockchain.
 	Bech32PrefixConsPub = Bech32MainPrefix + PrefixValidator + PrefixConsensus + PrefixPublic
 
-	// Bech32PrefixProvAddr defines the Bech32 prefix of a provider address.
+	// Bech32PrefixProvAddr defines the Bech32 prefix for a provider address in the blockchain.
 	Bech32PrefixProvAddr = Bech32MainPrefix + PrefixProvider
-	// Bech32PrefixProvPub defines the Bech32 prefix of a provider public key.
+
+	// Bech32PrefixProvPub defines the Bech32 prefix for a provider public key in the blockchain.
 	Bech32PrefixProvPub = Bech32MainPrefix + PrefixProvider + PrefixPublic
-	// Bech32PrefixNodeAddr defines the Bech32 prefix of a node address.
+
+	// Bech32PrefixNodeAddr defines the Bech32 prefix for a node address in the blockchain.
 	Bech32PrefixNodeAddr = Bech32MainPrefix + PrefixNode
-	// Bech32PrefixNodePub defines the Bech32 prefix of a node public key.
+
+	// Bech32PrefixNodePub defines the Bech32 prefix for a node public key in the blockchain.
 	Bech32PrefixNodePub = Bech32MainPrefix + PrefixNode + PrefixPublic
 )
 
