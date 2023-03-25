@@ -65,8 +65,8 @@ func (b Bandwidth) CeilTo(pre sdk.Int) Bandwidth {
 	}
 
 	diff := NewBandwidth(
-		b.Upload.Add(pre.Sub(b.Upload.Mod(pre))),
-		b.Download.Add(pre.Sub(b.Download.Mod(pre))),
+		pre.Sub(b.Upload.Mod(pre)),
+		pre.Sub(b.Download.Mod(pre)),
 	)
 
 	if diff.Upload.Equal(pre) {
