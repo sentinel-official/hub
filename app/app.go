@@ -75,7 +75,7 @@ func NewApp(
 
 	wasmConfig, err := wasm.ReadWasmConfig(appOpts)
 	if err != nil {
-		panic("error while reading the wasm config: " + err.Error())
+		panic("failed to read the wasm config: " + err.Error())
 	}
 
 	var (
@@ -146,7 +146,7 @@ func (a *App) EndBlocker(ctx sdk.Context, req abcitypes.RequestEndBlock) abcityp
 func (a *App) InitChainer(ctx sdk.Context, req abcitypes.RequestInitChain) abcitypes.ResponseInitChain {
 	var state map[string]json.RawMessage
 	if err := tmjson.Unmarshal(req.AppStateBytes, &state); err != nil {
-		panic(err)
+		panic("failed to unmarshal the app state: " + err.Error())
 	}
 
 	a.UpgradeKeeper.SetModuleVersionMap(ctx, a.mm.GetVersionMap())

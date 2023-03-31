@@ -24,19 +24,25 @@ func (a *App) ExportAppStateAndValidators(
 		a.prepForZeroHeightGenesis(ctx, jailAllowedAddrs)
 	}
 
+	consensusParams := a.BaseApp.GetConsensusParams(ctx)
 	genState := a.mm.ExportGenesis(ctx, a.Codec)
+
+	validators, err := staking.WriteValidators(ctx, a.StakingKeeper)
+	if err != nil {
+		return servertypes.ExportedApp{}, err
+	}
+
 	appState, err := json.MarshalIndent(genState, "", "  ")
 	if err != nil {
 		return servertypes.ExportedApp{}, err
 	}
 
-	validators, err := staking.WriteValidators(ctx, a.StakingKeeper)
 	return servertypes.ExportedApp{
 		AppState:        appState,
 		Validators:      validators,
 		Height:          height,
-		ConsensusParams: a.BaseApp.GetConsensusParams(ctx),
-	}, err
+		ConsensusParams: consensusParams,
+	}, nil
 }
 
 func (a *App) prepForZeroHeightGenesis(ctx sdk.Context, jailAllowedAddrs []string) {
