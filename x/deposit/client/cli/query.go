@@ -13,8 +13,8 @@ import (
 
 func queryDeposit() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "deposit [address]",
-		Short: "Query a deposit",
+		Use:   "deposit [account-addr]",
+		Short: "Query the deposit of an account address",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientQueryContext(cmd)
@@ -22,7 +22,7 @@ func queryDeposit() *cobra.Command {
 				return err
 			}
 
-			address, err := sdk.AccAddressFromBech32(args[0])
+			addr, err := sdk.AccAddressFromBech32(args[0])
 			if err != nil {
 				return err
 			}
@@ -34,7 +34,7 @@ func queryDeposit() *cobra.Command {
 			res, err := qc.QueryDeposit(
 				context.Background(),
 				types.NewQueryDepositRequest(
-					address,
+					addr,
 				),
 			)
 			if err != nil {
@@ -53,7 +53,7 @@ func queryDeposit() *cobra.Command {
 func queryDeposits() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "deposits",
-		Short: "Query deposits",
+		Short: "Query all the deposits",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientQueryContext(cmd)
 			if err != nil {

@@ -17,17 +17,17 @@ func DefaultGenesisState() GenesisState {
 }
 
 func ValidateGenesis(state GenesisState) error {
-	deposits := make(map[string]bool)
-	for _, deposit := range state {
-		if deposits[deposit.Address] {
-			return fmt.Errorf("found duplicate deposit for address %s", deposit.Address)
+	m := make(map[string]bool)
+	for _, item := range state {
+		if m[item.Address] {
+			return fmt.Errorf("found a duplicate deposit for address %s", item.Address)
 		}
 
-		deposits[deposit.Address] = true
+		m[item.Address] = true
 	}
 
-	for _, deposit := range state {
-		if err := deposit.Validate(); err != nil {
+	for _, item := range state {
+		if err := item.Validate(); err != nil {
 			return err
 		}
 	}

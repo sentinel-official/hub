@@ -12,12 +12,12 @@ func (m *Deposit) GetAddress() sdk.AccAddress {
 		return nil
 	}
 
-	address, err := sdk.AccAddressFromBech32(m.Address)
+	addr, err := sdk.AccAddressFromBech32(m.Address)
 	if err != nil {
 		panic(err)
 	}
 
-	return address
+	return addr
 }
 
 func (m *Deposit) Validate() error {
