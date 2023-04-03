@@ -1,11 +1,11 @@
 syntax = "proto3";
-package sentinel.provider.v1;
+package sentinel.provider.v2;
 
 option go_package = "github.com/sentinel-official/hub/x/provider/types";
 
 import "gogoproto/gogo.proto";
-import "sentinel/provider/v1/params.proto";
-import "sentinel/provider/v1/provider.proto";
+import "sentinel/provider/v2/params.proto";
+import "sentinel/provider/v2/provider.proto";
 
 option (gogoproto.equal_all)           = false;
 option (gogoproto.goproto_getters_all) = false;
