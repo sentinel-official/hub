@@ -24,14 +24,6 @@ func NewMsgRegisterRequest(from sdk.AccAddress, name, identity, website, descrip
 	}
 }
 
-func (m *MsgRegisterRequest) Route() string {
-	return RouterKey
-}
-
-func (m *MsgRegisterRequest) Type() string {
-	return TypeMsgRegisterRequest
-}
-
 func (m *MsgRegisterRequest) ValidateBasic() error {
 	if m.From == "" {
 		return errors.Wrap(ErrorInvalidFrom, "from cannot be empty")
@@ -63,10 +55,6 @@ func (m *MsgRegisterRequest) ValidateBasic() error {
 	return nil
 }
 
-func (m *MsgRegisterRequest) GetSignBytes() []byte {
-	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(m))
-}
-
 func (m *MsgRegisterRequest) GetSigners() []sdk.AccAddress {
 	from, err := sdk.AccAddressFromBech32(m.From)
 	if err != nil {
@@ -85,14 +73,6 @@ func NewMsgUpdateRequest(from hubtypes.ProvAddress, name, identity, website, des
 		Description: description,
 		Status:      status,
 	}
-}
-
-func (m *MsgUpdateRequest) Route() string {
-	return RouterKey
-}
-
-func (m *MsgUpdateRequest) Type() string {
-	return TypeMsgUpdateRequest
 }
 
 func (m *MsgUpdateRequest) ValidateBasic() error {
@@ -124,10 +104,6 @@ func (m *MsgUpdateRequest) ValidateBasic() error {
 	}
 
 	return nil
-}
-
-func (m *MsgUpdateRequest) GetSignBytes() []byte {
-	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(m))
 }
 
 func (m *MsgUpdateRequest) GetSigners() []sdk.AccAddress {
