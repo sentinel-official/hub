@@ -41,7 +41,7 @@ func DefaultGenesisState() *GenesisState {
 }
 
 func (m *GenesisState) Validate() error {
-	if err := deposittypes.ValidateGenesis(m.Deposits); err != nil {
+	if err := deposittypes.ValidateGenesisState(m.Deposits); err != nil {
 		return errors.Wrapf(err, "invalid deposit genesis")
 	}
 	if err := providertypes.ValidateGenesis(m.Providers); err != nil {

@@ -6,29 +6,29 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-func (m *Inflation) Validate() error {
-	if m.Max.IsNegative() {
+func (i *Inflation) Validate() error {
+	if i.Max.IsNegative() {
 		return fmt.Errorf("max cannot be negative")
 	}
-	if m.Max.GT(sdk.OneDec()) {
+	if i.Max.GT(sdk.OneDec()) {
 		return fmt.Errorf("max cannot be greater than one")
 	}
-	if m.Min.IsNegative() {
+	if i.Min.IsNegative() {
 		return fmt.Errorf("min cannot be negative")
 	}
-	if m.Min.GT(sdk.OneDec()) {
+	if i.Min.GT(sdk.OneDec()) {
 		return fmt.Errorf("min cannot be greater than one")
 	}
-	if m.Min.GT(m.Max) {
+	if i.Min.GT(i.Max) {
 		return fmt.Errorf("min cannot be greater than max")
 	}
-	if m.RateChange.IsNegative() {
+	if i.RateChange.IsNegative() {
 		return fmt.Errorf("rate_change cannot be negative")
 	}
-	if m.RateChange.GT(sdk.OneDec()) {
+	if i.RateChange.GT(sdk.OneDec()) {
 		return fmt.Errorf("rate_change cannot be greater than one")
 	}
-	if m.Timestamp.IsZero() {
+	if i.Timestamp.IsZero() {
 		return fmt.Errorf("timestamp cannot be zero")
 	}
 

@@ -19,10 +19,10 @@ func (k *Keeper) SetInflation(ctx sdk.Context, inflation types.Inflation) {
 	store.Set(key, value)
 }
 
-func (k *Keeper) GetInflation(ctx sdk.Context, timestamp time.Time) (inflation types.Inflation, found bool) {
+func (k *Keeper) GetInflation(ctx sdk.Context, t time.Time) (inflation types.Inflation, found bool) {
 	var (
 		store = k.Store(ctx)
-		key   = types.InflationKey(timestamp)
+		key   = types.InflationKey(t)
 		value = store.Get(key)
 	)
 
@@ -34,10 +34,10 @@ func (k *Keeper) GetInflation(ctx sdk.Context, timestamp time.Time) (inflation t
 	return inflation, true
 }
 
-func (k *Keeper) DeleteInflation(ctx sdk.Context, timestamp time.Time) {
+func (k *Keeper) DeleteInflation(ctx sdk.Context, t time.Time) {
 	var (
 		store = k.Store(ctx)
-		key   = types.InflationKey(timestamp)
+		key   = types.InflationKey(t)
 	)
 
 	store.Delete(key)
