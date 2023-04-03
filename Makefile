@@ -42,7 +42,7 @@ mod-vendor:
 	@modvendor -copy="**/*.proto" -include=github.com/cosmos/cosmos-sdk/proto,github.com/cosmos/cosmos-sdk/third_party/proto
 
 .PHONY: proto-gen
-proto-gen:
+proto-gen: mod-vendor
 	@scripts/proto-gen.sh
 
 .PHONY: proto-lint
