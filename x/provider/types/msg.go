@@ -76,13 +76,14 @@ func (m *MsgRegisterRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{from}
 }
 
-func NewMsgUpdateRequest(from hubtypes.ProvAddress, name, identity, website, description string) *MsgUpdateRequest {
+func NewMsgUpdateRequest(from hubtypes.ProvAddress, name, identity, website, description string, status hubtypes.Status) *MsgUpdateRequest {
 	return &MsgUpdateRequest{
 		From:        from.String(),
 		Name:        name,
 		Identity:    identity,
 		Website:     website,
 		Description: description,
+		Status:      status,
 	}
 }
 
@@ -117,6 +118,9 @@ func (m *MsgUpdateRequest) ValidateBasic() error {
 	}
 	if len(m.Description) > 256 {
 		return errors.Wrapf(ErrorInvalidDescription, "description length cannot be greater than %d", 256)
+	}
+	if !m.Status.IsOneOf(hubtypes.StatusUnspecified, hubtypes.StatusActive, hubtypes.StatusInactive) {
+		return errors.Wrapf(ErrorInvalidStatus, "status must be one of [unspecified, active, inactive]")
 	}
 
 	return nil

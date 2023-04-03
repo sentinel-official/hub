@@ -11,6 +11,7 @@ var (
 	ErrorInvalidIdentity    = errors.Register(ModuleName, 104, "invalid identity")
 	ErrorInvalidWebsite     = errors.Register(ModuleName, 105, "invalid website")
 	ErrorInvalidDescription = errors.Register(ModuleName, 106, "invalid description")
+	ErrorInvalidStatus      = errors.Register(ModuleName, 107, "invalid status")
 )
 
 var (

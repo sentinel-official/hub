@@ -88,12 +88,18 @@ func txUpdate() *cobra.Command {
 				return err
 			}
 
+			status, err := GetStatus(cmd.Flags())
+			if err != nil {
+				return err
+			}
+
 			msg := types.NewMsgUpdateRequest(
 				ctx.FromAddress.Bytes(),
 				name,
 				identity,
 				website,
 				description,
+				status,
 			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err

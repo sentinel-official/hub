@@ -47,6 +47,7 @@ func (k *msgServer) MsgRegister(c context.Context, msg *types.MsgRegisterRequest
 			Identity:    msg.Identity,
 			Website:     msg.Website,
 			Description: msg.Description,
+			Status:      hubtypes.StatusInactive,
 		}
 	)
 
@@ -84,6 +85,9 @@ func (k *msgServer) MsgUpdate(c context.Context, msg *types.MsgUpdateRequest) (*
 	}
 	if len(msg.Description) > 0 {
 		provider.Description = msg.Description
+	}
+	if !msg.Status.Equal(hubtypes.StatusUnspecified) {
+		provider.Status = msg.Status
 	}
 
 	k.SetProvider(ctx, provider)

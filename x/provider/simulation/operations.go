@@ -174,6 +174,13 @@ func SimulateMsgUpdateRequest(ak expected.AccountKeeper, bk expected.BankKeeper,
 			description = simulationtypes.RandStringOfLength(r, r.Intn(MaxDescriptionLength))
 		)
 
+		status := hubtypes.StatusUnspecified
+		if rand.Intn(2) == 0 {
+			status = hubtypes.StatusActive
+		} else {
+			status = hubtypes.StatusInactive
+		}
+
 		var (
 			txConfig = params.MakeTestEncodingConfig().TxConfig
 			message  = types.NewMsgUpdateRequest(
@@ -182,6 +189,7 @@ func SimulateMsgUpdateRequest(ak expected.AccountKeeper, bk expected.BankKeeper,
 				identity,
 				website,
 				description,
+				status,
 			)
 		)
 
