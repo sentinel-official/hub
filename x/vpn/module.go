@@ -141,9 +141,14 @@ func (a AppModule) RegisterServices(configurator module.Configurator) {
 	plantypes.RegisterQueryServiceServer(configurator.QueryServer(), plankeeper.NewQueryServiceServer(a.k.Plan))
 	subscriptiontypes.RegisterQueryServiceServer(configurator.QueryServer(), subscriptionkeeper.NewQueryServiceServer(a.k.Subscription))
 	sessiontypes.RegisterQueryServiceServer(configurator.QueryServer(), sessionkeeper.NewQueryServiceServer(a.k.Session))
+
+	m := keeper.NewMigrator(a.k)
+	if err := configurator.RegisterMigration(types.ModuleName, 2, m.Migrate2to3); err != nil {
+		panic("failed to migrate x/vpn from version 2 to 3: " + err.Error())
+	}
 }
 
-func (a AppModule) ConsensusVersion() uint64 { return 2 }
+func (a AppModule) ConsensusVersion() uint64 { return 3 }
 
 func (a AppModule) BeginBlock(_ sdk.Context, _ abcitypes.RequestBeginBlock) {}
 
