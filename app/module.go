@@ -72,7 +72,7 @@ var (
 		authvesting.AppModuleBasic{},
 		authzmodule.AppModuleBasic{},
 		bank.AppModuleBasic{},
-		capability.AppModule{},
+		capability.AppModuleBasic{},
 		crisis.AppModuleBasic{},
 		distribution.AppModuleBasic{},
 		evidence.AppModuleBasic{},
@@ -108,7 +108,7 @@ var (
 		ibctransfer.AppModuleBasic{},
 
 		// Sentinel Hub module basics
-		custommint.AppModule{},
+		custommint.AppModuleBasic{},
 		swap.AppModuleBasic{},
 		vpn.AppModuleBasic{},
 

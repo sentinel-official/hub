@@ -16,7 +16,7 @@ func DefaultGenesisState() GenesisState {
 	return NewGenesisState(nil)
 }
 
-func ValidateGenesis(state GenesisState) error {
+func ValidateGenesisState(state GenesisState) error {
 	m := make(map[string]bool)
 	for _, item := range state {
 		if m[item.Address] {

@@ -9,19 +9,23 @@ import (
 
 // SetDeposit is for inserting a deposit into the KVStore.
 func (k *Keeper) SetDeposit(ctx sdk.Context, deposit types.Deposit) {
-	key := types.DepositKey(deposit.GetAddress())
-	value := k.cdc.MustMarshal(&deposit)
+	var (
+		store = k.Store(ctx)
+		key   = types.DepositKey(deposit.GetAddress())
+		value = k.cdc.MustMarshal(&deposit)
+	)
 
-	store := k.Store(ctx)
 	store.Set(key, value)
 }
 
 // GetDeposit is for getting a deposit of an address from the KVStore.
 func (k *Keeper) GetDeposit(ctx sdk.Context, addr sdk.AccAddress) (deposit types.Deposit, found bool) {
-	store := k.Store(ctx)
+	var (
+		store = k.Store(ctx)
+		key   = types.DepositKey(addr)
+		value = store.Get(key)
+	)
 
-	key := types.DepositKey(addr)
-	value := store.Get(key)
 	if value == nil {
 		return deposit, false
 	}
