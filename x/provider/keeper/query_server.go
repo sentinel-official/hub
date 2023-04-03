@@ -30,14 +30,14 @@ func (q *queryServer) QueryProvider(c context.Context, req *types.QueryProviderR
 		return nil, status.Error(codes.InvalidArgument, "empty request")
 	}
 
-	address, err := hubtypes.ProvAddressFromBech32(req.Address)
+	addr, err := hubtypes.ProvAddressFromBech32(req.Address)
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid address %s", req.Address)
 	}
 
 	ctx := sdk.UnwrapSDKContext(c)
 
-	item, found := q.GetProvider(ctx, address)
+	item, found := q.GetProvider(ctx, addr)
 	if !found {
 		return nil, status.Errorf(codes.NotFound, "provider does not exist for address %s", req.Address)
 	}
@@ -56,17 +56,14 @@ func (q *queryServer) QueryProviders(c context.Context, req *types.QueryProvider
 		store = prefix.NewStore(q.Store(ctx), types.ProviderKeyPrefix)
 	)
 
-	pagination, err := query.FilteredPaginate(store, req.Pagination, func(_, value []byte, accumulate bool) (bool, error) {
-		if accumulate {
-			var item types.Provider
-			if err := q.cdc.Unmarshal(value, &item); err != nil {
-				return false, err
-			}
-
-			items = append(items, item)
+	pagination, err := query.Paginate(store, req.Pagination, func(_, value []byte) error {
+		var item types.Provider
+		if err := q.cdc.Unmarshal(value, &item); err != nil {
+			return err
 		}
 
-		return true, nil
+		items = append(items, item)
+		return nil
 	})
 
 	if err != nil {

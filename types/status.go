@@ -27,6 +27,16 @@ func (s Status) Equal(v Status) bool {
 	return s == v
 }
 
+func (s Status) IsOneOf(items ...Status) bool {
+	for _, item := range items {
+		if s.Equal(item) {
+			return true
+		}
+	}
+
+	return false
+}
+
 func StatusFromString(s string) Status {
 	s = strings.ToLower(s)
 	switch s {

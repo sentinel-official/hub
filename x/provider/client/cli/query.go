@@ -13,7 +13,7 @@ import (
 
 func queryProvider() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "provider [address]",
+		Use:   "provider [provider-addr]",
 		Short: "Query a provider",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -22,7 +22,7 @@ func queryProvider() *cobra.Command {
 				return err
 			}
 
-			address, err := hubtypes.ProvAddressFromBech32(args[0])
+			addr, err := hubtypes.ProvAddressFromBech32(args[0])
 			if err != nil {
 				return err
 			}
@@ -34,7 +34,7 @@ func queryProvider() *cobra.Command {
 			res, err := qc.QueryProvider(
 				context.Background(),
 				types.NewQueryProviderRequest(
-					address,
+					addr,
 				),
 			)
 			if err != nil {
@@ -84,7 +84,7 @@ func queryProviders() *cobra.Command {
 	}
 
 	flags.AddQueryFlagsToCmd(cmd)
-	flags.AddPaginationFlagsToCmd(cmd, "provider")
+	flags.AddPaginationFlagsToCmd(cmd, "providers")
 
 	return cmd
 }

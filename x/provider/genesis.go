@@ -10,8 +10,8 @@ import (
 func InitGenesis(ctx sdk.Context, k keeper.Keeper, state *types.GenesisState) {
 	k.SetParams(ctx, state.Params)
 
-	for _, provider := range state.Providers {
-		k.SetProvider(ctx, provider)
+	for _, item := range state.Providers {
+		k.SetProvider(ctx, item)
 	}
 }
 

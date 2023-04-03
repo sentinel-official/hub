@@ -9,27 +9,33 @@ import (
 
 // SetProvider is for inserting a provider into the KVStore.
 func (k *Keeper) SetProvider(ctx sdk.Context, provider types.Provider) {
-	key := types.ProviderKey(provider.GetAddress())
-	value := k.cdc.MustMarshal(&provider)
+	var (
+		store = k.Store(ctx)
+		key   = types.ProviderKey(provider.GetAddress())
+		value = k.cdc.MustMarshal(&provider)
+	)
 
-	store := k.Store(ctx)
 	store.Set(key, value)
 }
 
 // HasProvider is for checking whether a provider with an address exists or not in the KVStore.
-func (k *Keeper) HasProvider(ctx sdk.Context, address hubtypes.ProvAddress) bool {
-	store := k.Store(ctx)
+func (k *Keeper) HasProvider(ctx sdk.Context, addr hubtypes.ProvAddress) bool {
+	var (
+		store = k.Store(ctx)
+		key   = types.ProviderKey(addr)
+	)
 
-	key := types.ProviderKey(address)
 	return store.Has(key)
 }
 
 // GetProvider is for getting a provider with an address from the KVStore.
-func (k *Keeper) GetProvider(ctx sdk.Context, address hubtypes.ProvAddress) (provider types.Provider, found bool) {
-	store := k.Store(ctx)
+func (k *Keeper) GetProvider(ctx sdk.Context, addr hubtypes.ProvAddress) (provider types.Provider, found bool) {
+	var (
+		store = k.Store(ctx)
+		key   = types.ProviderKey(addr)
+		value = store.Get(key)
+	)
 
-	key := types.ProviderKey(address)
-	value := store.Get(key)
 	if value == nil {
 		return provider, false
 	}
@@ -67,10 +73,10 @@ func (k *Keeper) IterateProviders(ctx sdk.Context, fn func(index int, item types
 	defer iter.Close()
 
 	for i := 0; iter.Valid(); iter.Next() {
-		var provider types.Provider
-		k.cdc.MustUnmarshal(iter.Value(), &provider)
+		var item types.Provider
+		k.cdc.MustUnmarshal(iter.Value(), &item)
 
-		if stop := fn(i, provider); stop {
+		if stop := fn(i, item); stop {
 			break
 		}
 		i++
