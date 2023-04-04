@@ -48,13 +48,23 @@ func (k *Keeper) GetParams(ctx sdk.Context) types.Params {
 }
 
 func (k *Keeper) IsValidPrice(ctx sdk.Context, price sdk.Coins) bool {
-	var (
-		maxPrice = k.MaxPrice(ctx)
-		minPrice = k.MinPrice(ctx)
-	)
+	maxPrice := k.MaxPrice(ctx)
+	for _, coin := range maxPrice {
+		amount := price.AmountOf(coin.Denom)
+		if amount.GT(coin.Amount) {
+			return false
+		}
+	}
 
-	return price.IsAllLTE(maxPrice) &&
-		price.IsAllGTE(minPrice)
+	minPrice := k.MinPrice(ctx)
+	for _, coin := range minPrice {
+		amount := price.AmountOf(coin.Denom)
+		if amount.LT(coin.Amount) {
+			return false
+		}
+	}
+
+	return true
 }
 
 func (k *Keeper) IsMaxPriceModified(ctx sdk.Context) bool {

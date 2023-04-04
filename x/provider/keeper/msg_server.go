@@ -17,8 +17,8 @@ type msgServer struct {
 	Keeper
 }
 
-func NewMsgServiceServer(keeper Keeper) types.MsgServiceServer {
-	return &msgServer{Keeper: keeper}
+func NewMsgServiceServer(k Keeper) types.MsgServiceServer {
+	return &msgServer{k}
 }
 
 func (k *msgServer) MsgRegister(c context.Context, msg *types.MsgRegisterRequest) (*types.MsgRegisterResponse, error) {
