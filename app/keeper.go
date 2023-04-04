@@ -250,7 +250,7 @@ func NewKeepers(
 	k.ScopedWasmKeeper = k.CapabilityKeeper.ScopeToModule(wasmtypes.ModuleName)
 
 	var (
-		wasmCapabilities = "iterator,staking,stargate,cosmwasm_1_1"
+		wasmCapabilities = "iterator,staking,stargate,cosmwasm_1_1,cosmwasm_1_2"
 		wasmDir          = filepath.Join(homeDir, "data")
 	)
 

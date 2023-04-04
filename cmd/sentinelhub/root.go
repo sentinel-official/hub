@@ -129,7 +129,6 @@ func NewRootCmd(homeDir string) *cobra.Command {
 
 	cmd.AddCommand(
 		AddGenesisAccountCmd(homeDir),
-		AddGenesisWasmMsgCmd(homeDir),
 		clientconfig.Cmd(),
 		debug.Cmd(),
 		genutilcli.CollectGenTxsCmd(banktypes.GenesisBalancesIterator{}, homeDir),
