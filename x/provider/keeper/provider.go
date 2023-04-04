@@ -1,47 +1,131 @@
 package keeper
 
 import (
+	"fmt"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	hubtypes "github.com/sentinel-official/hub/types"
 	"github.com/sentinel-official/hub/x/provider/types"
 )
 
-// SetProvider is for inserting a provider into the KVStore.
-func (k *Keeper) SetProvider(ctx sdk.Context, provider types.Provider) {
+func (k *Keeper) setActiveProvider(ctx sdk.Context, v types.Provider) {
 	var (
 		store = k.Store(ctx)
-		key   = types.ProviderKey(provider.GetAddress())
-		value = k.cdc.MustMarshal(&provider)
+		key   = types.ActiveProviderKey(v.GetAddress())
+		value = k.cdc.MustMarshal(&v)
 	)
 
 	store.Set(key, value)
 }
 
-// HasProvider is for checking whether a provider with an address exists or not in the KVStore.
-func (k *Keeper) HasProvider(ctx sdk.Context, addr hubtypes.ProvAddress) bool {
+func (k *Keeper) hasActiveProvider(ctx sdk.Context, addr hubtypes.ProvAddress) bool {
 	var (
 		store = k.Store(ctx)
-		key   = types.ProviderKey(addr)
+		key   = types.ActiveProviderKey(addr)
 	)
 
 	return store.Has(key)
 }
 
-// GetProvider is for getting a provider with an address from the KVStore.
-func (k *Keeper) GetProvider(ctx sdk.Context, addr hubtypes.ProvAddress) (provider types.Provider, found bool) {
+func (k *Keeper) getActiveProvider(ctx sdk.Context, addr hubtypes.ProvAddress) (v types.Provider, found bool) {
 	var (
 		store = k.Store(ctx)
-		key   = types.ProviderKey(addr)
+		key   = types.ActiveProviderKey(addr)
 		value = store.Get(key)
 	)
 
 	if value == nil {
-		return provider, false
+		return v, false
 	}
 
-	k.cdc.MustUnmarshal(value, &provider)
-	return provider, true
+	k.cdc.MustUnmarshal(value, &v)
+	return v, true
+}
+
+func (k *Keeper) deleteActiveProvider(ctx sdk.Context, addr hubtypes.ProvAddress) {
+	var (
+		store = k.Store(ctx)
+		key   = types.ActiveProviderKey(addr)
+	)
+
+	store.Delete(key)
+}
+
+func (k *Keeper) setInactiveProvider(ctx sdk.Context, v types.Provider) {
+	var (
+		store = k.Store(ctx)
+		key   = types.InactiveProviderKey(v.GetAddress())
+		value = k.cdc.MustMarshal(&v)
+	)
+
+	store.Set(key, value)
+}
+
+func (k *Keeper) hasInactiveProvider(ctx sdk.Context, addr hubtypes.ProvAddress) bool {
+	var (
+		store = k.Store(ctx)
+		key   = types.InactiveProviderKey(addr)
+	)
+
+	return store.Has(key)
+}
+
+func (k *Keeper) getInactiveProvider(ctx sdk.Context, addr hubtypes.ProvAddress) (v types.Provider, found bool) {
+	var (
+		store = k.Store(ctx)
+		key   = types.InactiveProviderKey(addr)
+		value = store.Get(key)
+	)
+
+	if value == nil {
+		return v, false
+	}
+
+	k.cdc.MustUnmarshal(value, &v)
+	return v, true
+}
+
+func (k *Keeper) deleteInactiveProvider(ctx sdk.Context, addr hubtypes.ProvAddress) {
+	var (
+		store = k.Store(ctx)
+		key   = types.InactiveProviderKey(addr)
+	)
+
+	store.Delete(key)
+}
+
+// SetProvider is for inserting a provider into the KVStore.
+func (k *Keeper) SetProvider(ctx sdk.Context, provider types.Provider) {
+	switch provider.Status {
+	case hubtypes.StatusActive:
+		k.setActiveProvider(ctx, provider)
+	case hubtypes.StatusInactive:
+		k.setInactiveProvider(ctx, provider)
+	default:
+		panic(fmt.Errorf("invalid status for the provider %v", provider))
+	}
+}
+
+// HasProvider is for checking whether a provider with an address exists or not in the KVStore.
+func (k *Keeper) HasProvider(ctx sdk.Context, addr hubtypes.ProvAddress) bool {
+	return k.hasActiveProvider(ctx, addr) ||
+		k.hasInactiveProvider(ctx, addr)
+}
+
+// GetProvider is for getting a provider with an address from the KVStore.
+func (k *Keeper) GetProvider(ctx sdk.Context, addr hubtypes.ProvAddress) (provider types.Provider, found bool) {
+	provider, found = k.getActiveProvider(ctx, addr)
+	if found {
+		return
+	}
+
+	provider, found = k.getInactiveProvider(ctx, addr)
+	if found {
+		return
+	}
+
+	return provider, false
 }
 
 // GetProviders is for getting the providers from the KVStore.

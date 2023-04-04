@@ -51,11 +51,21 @@ func (q *queryServer) QueryProviders(c context.Context, req *types.QueryProvider
 	}
 
 	var (
-		items types.Providers
-		ctx   = sdk.UnwrapSDKContext(c)
-		store = prefix.NewStore(q.Store(ctx), types.ProviderKeyPrefix)
+		items     types.Providers
+		keyPrefix []byte
+		ctx       = sdk.UnwrapSDKContext(c)
 	)
 
+	switch req.Status {
+	case hubtypes.StatusActive:
+		keyPrefix = types.ActiveProviderKeyPrefix
+	case hubtypes.StatusInactive:
+		keyPrefix = types.InactiveProviderKeyPrefix
+	default:
+		keyPrefix = types.ProviderKeyPrefix
+	}
+
+	store := prefix.NewStore(q.Store(ctx), keyPrefix)
 	pagination, err := query.Paginate(store, req.Pagination, func(_, value []byte) error {
 		var item types.Provider
 		if err := q.cdc.Unmarshal(value, &item); err != nil {

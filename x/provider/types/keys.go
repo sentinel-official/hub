@@ -23,9 +23,15 @@ var (
 )
 
 var (
-	ProviderKeyPrefix = []byte{0x10}
+	ProviderKeyPrefix         = []byte{0x10}
+	ActiveProviderKeyPrefix   = append(ProviderKeyPrefix, 0x11)
+	InactiveProviderKeyPrefix = append(ProviderKeyPrefix, 0x12)
 )
 
-func ProviderKey(addr hubtypes.ProvAddress) []byte {
-	return append(ProviderKeyPrefix, address.MustLengthPrefix(addr.Bytes())...)
+func ActiveProviderKey(addr hubtypes.ProvAddress) []byte {
+	return append(ActiveProviderKeyPrefix, address.MustLengthPrefix(addr.Bytes())...)
+}
+
+func InactiveProviderKey(addr hubtypes.ProvAddress) (v []byte) {
+	return append(InactiveProviderKeyPrefix, address.MustLengthPrefix(addr.Bytes())...)
 }

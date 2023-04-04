@@ -6,6 +6,7 @@ option go_package = "github.com/sentinel-official/hub/x/provider/types";
 import "cosmos/base/query/v1beta1/pagination.proto";
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
+import "sentinel/types/v1/status.proto";
 import "sentinel/provider/v2/params.proto";
 import "sentinel/provider/v2/provider.proto";
 
@@ -14,6 +15,7 @@ option (gogoproto.goproto_getters_all) = false;
 
 message QueryProvidersRequest {
   cosmos.base.query.v1beta1.PageRequest pagination = 1;
+  sentinel.types.v1.Status status                  = 2;
 }
 
 message QueryProviderRequest { string address = 1; }

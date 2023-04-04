@@ -89,7 +89,7 @@ func txUpdate() *cobra.Command {
 				return err
 			}
 
-			status, err := hubtypes.GetStatusFromFlags(cmd.Flags())
+			status, err := hubtypes.StatusFromFlags(cmd.Flags())
 			if err != nil {
 				return err
 			}
@@ -115,7 +115,7 @@ func txUpdate() *cobra.Command {
 	cmd.Flags().String(flagIdentity, "", "identity of the provider")
 	cmd.Flags().String(flagWebsite, "", "website of the provider")
 	cmd.Flags().String(flagDescription, "", "description of the provider")
-	cmd.Flags().String(hubtypes.FlagStatus, "", "status of the provider")
+	cmd.Flags().String(hubtypes.FlagStatus, "", "status of the provider (active|inactive)")
 
 	return cmd
 }

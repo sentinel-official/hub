@@ -60,6 +60,11 @@ func queryProviders() *cobra.Command {
 				return err
 			}
 
+			status, err := hubtypes.StatusFromFlags(cmd.Flags())
+			if err != nil {
+				return err
+			}
+
 			pagination, err := client.ReadPageRequest(cmd.Flags())
 			if err != nil {
 				return err
@@ -72,9 +77,11 @@ func queryProviders() *cobra.Command {
 			res, err := qc.QueryProviders(
 				context.Background(),
 				types.NewQueryProvidersRequest(
+					status,
 					pagination,
 				),
 			)
+
 			if err != nil {
 				return err
 			}
@@ -85,6 +92,7 @@ func queryProviders() *cobra.Command {
 
 	flags.AddQueryFlagsToCmd(cmd)
 	flags.AddPaginationFlagsToCmd(cmd, "providers")
+	cmd.Flags().String(hubtypes.FlagStatus, "", "filter the providers with status (active|inactive)")
 
 	return cmd
 }

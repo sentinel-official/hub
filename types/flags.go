@@ -8,7 +8,7 @@ const (
 	FlagStatus = "status"
 )
 
-func GetStatusFromFlags(flags *pflag.FlagSet) (Status, error) {
+func StatusFromFlags(flags *pflag.FlagSet) (Status, error) {
 	s, err := flags.GetString(FlagStatus)
 	if err != nil {
 		return StatusUnspecified, err

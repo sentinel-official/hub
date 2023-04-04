@@ -87,6 +87,15 @@ func (k *msgServer) MsgUpdate(c context.Context, msg *types.MsgUpdateRequest) (*
 		provider.Description = msg.Description
 	}
 	if !msg.Status.Equal(hubtypes.StatusUnspecified) {
+		switch provider.Status {
+		case hubtypes.StatusActive:
+			k.deleteActiveProvider(ctx, fromAddr)
+		case hubtypes.StatusInactive:
+			k.deleteInactiveProvider(ctx, fromAddr)
+		default:
+			return nil, types.ErrorInvalidStatus
+		}
+
 		provider.Status = msg.Status
 	}
 
