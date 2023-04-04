@@ -38,10 +38,12 @@ func TestNewQueryProviderRequest(t *testing.T) {
 
 func TestNewQueryProvidersRequest(t *testing.T) {
 	var (
+		status     hubtypes.Status
 		pagination *query.PageRequest
 	)
 
 	for i := 0; i < 20; i++ {
+		status = hubtypes.Status(i % 4)
 		pagination = &query.PageRequest{
 			Key:        make([]byte, i),
 			Offset:     uint64(i),
@@ -54,9 +56,10 @@ func TestNewQueryProvidersRequest(t *testing.T) {
 		require.Equal(
 			t,
 			&QueryProvidersRequest{
+				Status:     status,
 				Pagination: pagination,
 			},
-			NewQueryProvidersRequest(pagination),
+			NewQueryProvidersRequest(status, pagination),
 		)
 	}
 }

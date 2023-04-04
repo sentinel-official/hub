@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestProviderKey(t *testing.T) {
+func TestActiveProviderKey(t *testing.T) {
 	var (
 		addr []byte
 	)
@@ -20,15 +20,40 @@ func TestProviderKey(t *testing.T) {
 		if i < 256 {
 			require.Equal(
 				t,
-				append(ProviderKeyPrefix, address.MustLengthPrefix(addr)...),
-				ProviderKey(addr),
+				append(ActiveProviderKeyPrefix, address.MustLengthPrefix(addr)...),
+				ActiveProviderKey(addr),
 			)
 
 			continue
 		}
 
 		require.Panics(t, func() {
-			ProviderKey(addr)
+			ActiveProviderKey(addr)
+		})
+	}
+}
+
+func TestInactiveProviderKey(t *testing.T) {
+	var (
+		addr []byte
+	)
+
+	for i := 0; i < 512; i++ {
+		addr = make([]byte, i)
+		_, _ = rand.Read(addr)
+
+		if i < 256 {
+			require.Equal(
+				t,
+				append(InactiveProviderKeyPrefix, address.MustLengthPrefix(addr)...),
+				InactiveProviderKey(addr),
+			)
+
+			continue
+		}
+
+		require.Panics(t, func() {
+			InactiveProviderKey(addr)
 		})
 	}
 }
