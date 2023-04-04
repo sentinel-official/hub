@@ -54,14 +54,13 @@ func queryCommand() *cobra.Command {
 
 	cmd.AddCommand(
 		authcli.GetAccountCmd(),
-		rpc.ValidatorCommand(),
-		rpc.BlockCommand(),
-		authcli.QueryTxsByEventsCmd(),
 		authcli.QueryTxCmd(),
+		authcli.QueryTxsByEventsCmd(),
+		rpc.BlockCommand(),
+		rpc.ValidatorCommand(),
 	)
 
 	app.ModuleBasics.AddQueryCommands(cmd)
-	cmd.PersistentFlags().String(flags.FlagChainID, "", "The network chain ID")
 
 	return cmd
 }
@@ -76,14 +75,14 @@ func txCommand() *cobra.Command {
 	}
 
 	cmd.AddCommand(
-		authcli.GetSignCommand(),
-		authcli.GetSignBatchCommand(),
-		authcli.GetMultiSignCommand(),
-		authcli.GetMultiSignBatchCmd(),
-		authcli.GetValidateSignaturesCommand(),
 		authcli.GetBroadcastCommand(),
-		authcli.GetEncodeCommand(),
 		authcli.GetDecodeCommand(),
+		authcli.GetEncodeCommand(),
+		authcli.GetMultiSignBatchCmd(),
+		authcli.GetMultiSignCommand(),
+		authcli.GetSignBatchCommand(),
+		authcli.GetSignCommand(),
+		authcli.GetValidateSignaturesCommand(),
 	)
 
 	app.ModuleBasics.AddTxCommands(cmd)
@@ -99,13 +98,13 @@ func NewRootCmd(homeDir string) *cobra.Command {
 		Short: "Sentinel Hub application",
 		PersistentPreRunE: func(cmd *cobra.Command, _ []string) (err error) {
 			clientCtx := client.Context{}.
-				WithCodec(encCfg.Codec).
-				WithInterfaceRegistry(encCfg.InterfaceRegistry).
-				WithTxConfig(encCfg.TxConfig).
-				WithLegacyAmino(encCfg.Amino).
-				WithInput(os.Stdin).
 				WithAccountRetriever(authtypes.AccountRetriever{}).
+				WithCodec(encCfg.Codec).
 				WithHomeDir(homeDir).
+				WithInput(os.Stdin).
+				WithInterfaceRegistry(encCfg.InterfaceRegistry).
+				WithLegacyAmino(encCfg.Amino).
+				WithTxConfig(encCfg.TxConfig).
 				WithViper("SENTINELHUB")
 
 			clientCtx, err = client.ReadPersistentCommandFlags(clientCtx, cmd.Flags())
@@ -128,7 +127,7 @@ func NewRootCmd(homeDir string) *cobra.Command {
 	}
 
 	cmd.AddCommand(
-		AddGenesisAccountCmd(homeDir),
+		addGenesisAccountCmd(homeDir),
 		clientconfig.Cmd(),
 		debug.Cmd(),
 		genutilcli.CollectGenTxsCmd(banktypes.GenesisBalancesIterator{}, homeDir),
@@ -142,7 +141,7 @@ func NewRootCmd(homeDir string) *cobra.Command {
 		txCommand(),
 	)
 
-	creator := AppCreator{encCfg: encCfg, homeDir: homeDir}
+	creator := appCreator{encCfg: encCfg, homeDir: homeDir}
 	server.AddCommands(cmd, homeDir, creator.NewApp, creator.AppExport, moduleInitFlags)
 
 	return cmd

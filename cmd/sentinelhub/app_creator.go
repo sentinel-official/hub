@@ -21,12 +21,12 @@ import (
 	"github.com/sentinel-official/hub/app"
 )
 
-type AppCreator struct {
+type appCreator struct {
 	encCfg  app.EncodingConfig
 	homeDir string
 }
 
-func (ac AppCreator) NewApp(
+func (ac appCreator) NewApp(
 	logger tmlog.Logger,
 	db tmdb.DB,
 	traceWriter io.Writer,
@@ -81,7 +81,7 @@ func (ac AppCreator) NewApp(
 	)
 }
 
-func (ac AppCreator) AppExport(
+func (ac appCreator) AppExport(
 	logger tmlog.Logger,
 	db tmdb.DB,
 	traceWriter io.Writer,
