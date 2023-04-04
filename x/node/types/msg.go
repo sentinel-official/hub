@@ -15,21 +15,13 @@ var (
 	_ sdk.Msg = (*MsgSetStatusRequest)(nil)
 )
 
-func NewMsgRegisterRequest(from sdk.AccAddress, provider hubtypes.ProvAddress, price sdk.Coins, remoteURL string) *MsgRegisterRequest {
+func NewMsgRegisterRequest(from sdk.AccAddress, provAddr hubtypes.ProvAddress, price sdk.Coins, remoteURL string) *MsgRegisterRequest {
 	return &MsgRegisterRequest{
 		From:      from.String(),
-		Provider:  provider.String(),
+		Provider:  provAddr.String(),
 		Price:     price,
 		RemoteURL: remoteURL,
 	}
-}
-
-func (m *MsgRegisterRequest) Route() string {
-	return RouterKey
-}
-
-func (m *MsgRegisterRequest) Type() string {
-	return TypeMsgRegisterRequest
 }
 
 func (m *MsgRegisterRequest) ValidateBasic() error {
@@ -37,7 +29,7 @@ func (m *MsgRegisterRequest) ValidateBasic() error {
 		return errors.Wrap(ErrorInvalidFrom, "from cannot be empty")
 	}
 	if _, err := sdk.AccAddressFromBech32(m.From); err != nil {
-		return errors.Wrapf(ErrorInvalidFrom, "%s", err)
+		return errors.Wrap(ErrorInvalidFrom, err.Error())
 	}
 	if m.Provider == "" && m.Price == nil {
 		return errors.Wrap(ErrorInvalidField, "both provider and price cannot be empty")
@@ -47,7 +39,7 @@ func (m *MsgRegisterRequest) ValidateBasic() error {
 	}
 	if m.Provider != "" {
 		if _, err := hubtypes.ProvAddressFromBech32(m.Provider); err != nil {
-			return errors.Wrapf(ErrorInvalidProvider, "%s", err)
+			return errors.Wrap(ErrorInvalidProvider, err.Error())
 		}
 	}
 	if m.Price != nil {
@@ -67,7 +59,7 @@ func (m *MsgRegisterRequest) ValidateBasic() error {
 
 	remoteURL, err := url.ParseRequestURI(m.RemoteURL)
 	if err != nil {
-		return errors.Wrapf(ErrorInvalidRemoteURL, "%s", err)
+		return errors.Wrap(ErrorInvalidRemoteURL, err.Error())
 	}
 	if remoteURL.Scheme != "https" {
 		return errors.Wrap(ErrorInvalidRemoteURL, "remote_url scheme must be https")
@@ -79,10 +71,6 @@ func (m *MsgRegisterRequest) ValidateBasic() error {
 	return nil
 }
 
-func (m *MsgRegisterRequest) GetSignBytes() []byte {
-	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(m))
-}
-
 func (m *MsgRegisterRequest) GetSigners() []sdk.AccAddress {
 	from, err := sdk.AccAddressFromBech32(m.From)
 	if err != nil {
@@ -92,21 +80,13 @@ func (m *MsgRegisterRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{from}
 }
 
-func NewMsgUpdateRequest(from hubtypes.NodeAddress, provider hubtypes.ProvAddress, price sdk.Coins, remoteURL string) *MsgUpdateRequest {
+func NewMsgUpdateRequest(from hubtypes.NodeAddress, provAddr hubtypes.ProvAddress, price sdk.Coins, remoteURL string) *MsgUpdateRequest {
 	return &MsgUpdateRequest{
 		From:      from.String(),
-		Provider:  provider.String(),
+		Provider:  provAddr.String(),
 		Price:     price,
 		RemoteURL: remoteURL,
 	}
-}
-
-func (m *MsgUpdateRequest) Route() string {
-	return RouterKey
-}
-
-func (m *MsgUpdateRequest) Type() string {
-	return TypeMsgUpdateRequest
 }
 
 func (m *MsgUpdateRequest) ValidateBasic() error {
@@ -114,14 +94,14 @@ func (m *MsgUpdateRequest) ValidateBasic() error {
 		return errors.Wrap(ErrorInvalidFrom, "from cannot be empty")
 	}
 	if _, err := hubtypes.NodeAddressFromBech32(m.From); err != nil {
-		return errors.Wrapf(ErrorInvalidFrom, "%s", err)
+		return errors.Wrap(ErrorInvalidFrom, err.Error())
 	}
 	if m.Provider != "" && m.Price != nil {
 		return errors.Wrap(ErrorInvalidField, "either provider or price must be empty")
 	}
 	if m.Provider != "" {
 		if _, err := hubtypes.ProvAddressFromBech32(m.Provider); err != nil {
-			return errors.Wrapf(ErrorInvalidProvider, "%s", err)
+			return errors.Wrap(ErrorInvalidProvider, err.Error())
 		}
 	}
 	if m.Price != nil {
@@ -139,7 +119,7 @@ func (m *MsgUpdateRequest) ValidateBasic() error {
 
 		remoteURL, err := url.ParseRequestURI(m.RemoteURL)
 		if err != nil {
-			return errors.Wrapf(ErrorInvalidRemoteURL, "%s", err)
+			return errors.Wrap(ErrorInvalidRemoteURL, err.Error())
 		}
 		if remoteURL.Scheme != "https" {
 			return errors.Wrap(ErrorInvalidRemoteURL, "remote_url scheme must be https")
@@ -150,10 +130,6 @@ func (m *MsgUpdateRequest) ValidateBasic() error {
 	}
 
 	return nil
-}
-
-func (m *MsgUpdateRequest) GetSignBytes() []byte {
-	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(m))
 }
 
 func (m *MsgUpdateRequest) GetSigners() []sdk.AccAddress {
@@ -172,30 +148,18 @@ func NewMsgSetStatusRequest(from hubtypes.NodeAddress, status hubtypes.Status) *
 	}
 }
 
-func (m *MsgSetStatusRequest) Route() string {
-	return RouterKey
-}
-
-func (m *MsgSetStatusRequest) Type() string {
-	return TypeMsgSetStatusRequest
-}
-
 func (m *MsgSetStatusRequest) ValidateBasic() error {
 	if m.From == "" {
 		return errors.Wrap(ErrorInvalidFrom, "from cannot be empty")
 	}
 	if _, err := hubtypes.NodeAddressFromBech32(m.From); err != nil {
-		return errors.Wrapf(ErrorInvalidFrom, "%s", err)
+		return errors.Wrap(ErrorInvalidFrom, err.Error())
 	}
-	if !m.Status.Equal(hubtypes.StatusActive) && !m.Status.Equal(hubtypes.StatusInactive) {
-		return errors.Wrap(ErrorInvalidStatus, "status must be either active or inactive")
+	if !m.Status.IsOneOf(hubtypes.StatusActive, hubtypes.StatusInactive) {
+		return errors.Wrap(ErrorInvalidStatus, "status must be one of [active, inactive]")
 	}
 
 	return nil
-}
-
-func (m *MsgSetStatusRequest) GetSignBytes() []byte {
-	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(m))
 }
 
 func (m *MsgSetStatusRequest) GetSigners() []sdk.AccAddress {
