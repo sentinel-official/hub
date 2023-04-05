@@ -18,14 +18,6 @@ func NewMsgSwapRequest(from sdk.AccAddress, txHash EthereumHash, receiver sdk.Ac
 	}
 }
 
-func (m *MsgSwapRequest) Route() string {
-	return RouterKey
-}
-
-func (m *MsgSwapRequest) Type() string {
-	return TypeMsgSwapRequest
-}
-
 func (m *MsgSwapRequest) ValidateBasic() error {
 	if m.From == "" {
 		return errors.Wrap(ErrorInvalidFrom, "from cannot be empty")
@@ -62,10 +54,6 @@ func (m *MsgSwapRequest) ValidateBasic() error {
 	}
 
 	return nil
-}
-
-func (m *MsgSwapRequest) GetSignBytes() []byte {
-	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(m))
 }
 
 func (m *MsgSwapRequest) GetSigners() []sdk.AccAddress {

@@ -23,8 +23,11 @@ import (
 )
 
 var (
-	_ module.AppModule           = AppModule{}
 	_ module.AppModuleBasic      = AppModuleBasic{}
+	_ module.AppModuleGenesis    = AppModule{}
+	_ module.AppModule           = AppModule{}
+	_ module.BeginBlockAppModule = AppModule{}
+	_ module.EndBlockAppModule   = AppModule{}
 	_ module.AppModuleSimulation = AppModule{}
 )
 
@@ -34,16 +37,15 @@ func (a AppModuleBasic) Name() string {
 	return types.ModuleName
 }
 
-func (a AppModuleBasic) RegisterLegacyAminoCodec(amino *codec.LegacyAmino) {
-	types.RegisterLegacyAminoCodec(amino)
-}
+func (a AppModuleBasic) RegisterLegacyAminoCodec(_ *codec.LegacyAmino) {}
 
 func (a AppModuleBasic) RegisterInterfaces(registry codectypes.InterfaceRegistry) {
 	types.RegisterInterfaces(registry)
 }
 
 func (a AppModuleBasic) DefaultGenesis(cdc codec.JSONCodec) json.RawMessage {
-	return cdc.MustMarshalJSON(types.DefaultGenesisState())
+	state := types.DefaultGenesisState()
+	return cdc.MustMarshalJSON(state)
 }
 
 func (a AppModuleBasic) ValidateGenesis(cdc codec.JSONCodec, _ client.TxEncodingConfig, message json.RawMessage) error {
@@ -91,19 +93,15 @@ func (a AppModule) InitGenesis(ctx sdk.Context, cdc codec.JSONCodec, message jso
 }
 
 func (a AppModule) ExportGenesis(ctx sdk.Context, cdc codec.JSONCodec) json.RawMessage {
-	return cdc.MustMarshalJSON(ExportGenesis(ctx, a.k))
+	state := ExportGenesis(ctx, a.k)
+	return cdc.MustMarshalJSON(state)
 }
 
-func (a AppModule) RegisterInvariants(_ sdk.InvariantRegistry) {
-}
+func (a AppModule) RegisterInvariants(_ sdk.InvariantRegistry) {}
 
-func (a AppModule) Route() sdk.Route {
-	return sdk.NewRoute(types.RouterKey, NewHandler(a.k))
-}
+func (a AppModule) Route() sdk.Route { return sdk.Route{} }
 
-func (a AppModule) QuerierRoute() string {
-	return types.QuerierRoute
-}
+func (a AppModule) QuerierRoute() string { return "" }
 
 func (a AppModule) LegacyQuerierHandler(_ *codec.LegacyAmino) sdk.Querier { return nil }
 
@@ -120,8 +118,8 @@ func (a AppModule) EndBlock(_ sdk.Context, _ abcitypes.RequestEndBlock) []abcity
 	return nil
 }
 
-func (AppModule) GenerateGenesisState(simState *module.SimulationState) {
-	simulation.RandomizedGenesisState(simState)
+func (AppModule) GenerateGenesisState(state *module.SimulationState) {
+	simulation.RandomizedGenesisState(state)
 }
 
 func (a AppModule) ProposalContents(_ module.SimulationState) []sdksimulation.WeightedProposalContent {
@@ -132,8 +130,8 @@ func (a AppModule) RandomizedParams(r *rand.Rand) []sdksimulation.ParamChange {
 	return simulation.ParamChanges(r)
 }
 
-func (a AppModule) RegisterStoreDecoder(sdr sdk.StoreDecoderRegistry) {
-	sdr[types.StoreKey] = simulation.NewStoreDecoder(a.cdc)
+func (a AppModule) RegisterStoreDecoder(registry sdk.StoreDecoderRegistry) {
+	registry[types.StoreKey] = simulation.NewStoreDecoder(a.cdc)
 }
 
 func (a AppModule) WeightedOperations(_ module.SimulationState) []sdksimulation.WeightedOperation {

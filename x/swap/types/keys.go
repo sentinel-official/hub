@@ -5,14 +5,11 @@ import (
 )
 
 const (
-	ModuleName        = "swap"
-	QuerierRoute      = ModuleName
-	DefaultParamspace = ModuleName
+	ModuleName = "swap"
 )
 
 var (
 	ParamsSubspace = ModuleName
-	RouterKey      = ModuleName
 	StoreKey       = ModuleName
 )
 
