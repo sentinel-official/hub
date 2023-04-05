@@ -15,11 +15,11 @@ import (
 
 func InitGenesis(ctx sdk.Context, k keeper.Keeper, state *types.GenesisState) {
 	deposit.InitGenesis(ctx, k.Deposit, state.Deposits)
-	provider.InitGenesis(ctx, k.Provider, state.Providers)
 	node.InitGenesis(ctx, k.Node, state.Nodes)
 	plan.InitGenesis(ctx, k.Plan, state.Plans)
-	subscription.InitGenesis(ctx, k.Subscription, state.Subscriptions)
+	provider.InitGenesis(ctx, k.Provider, state.Providers)
 	session.InitGenesis(ctx, k.Session, state.Sessions)
+	subscription.InitGenesis(ctx, k.Subscription, state.Subscriptions)
 }
 
 func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {

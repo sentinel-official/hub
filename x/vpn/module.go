@@ -10,7 +10,7 @@ import (
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
-	sdksimulation "github.com/cosmos/cosmos-sdk/types/simulation"
+	simulationtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/gorilla/mux"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/spf13/cobra"
@@ -36,8 +36,11 @@ import (
 )
 
 var (
-	_ module.AppModule           = AppModule{}
 	_ module.AppModuleBasic      = AppModuleBasic{}
+	_ module.AppModuleGenesis    = AppModule{}
+	_ module.AppModule           = AppModule{}
+	_ module.BeginBlockAppModule = AppModule{}
+	_ module.EndBlockAppModule   = AppModule{}
 	_ module.AppModuleSimulation = AppModule{}
 )
 
@@ -47,16 +50,15 @@ func (a AppModuleBasic) Name() string {
 	return types.ModuleName
 }
 
-func (a AppModuleBasic) RegisterLegacyAminoCodec(amino *codec.LegacyAmino) {
-	types.RegisterLegacyAminoCodec(amino)
-}
+func (a AppModuleBasic) RegisterLegacyAminoCodec(_ *codec.LegacyAmino) {}
 
 func (a AppModuleBasic) RegisterInterfaces(registry codectypes.InterfaceRegistry) {
 	types.RegisterInterfaces(registry)
 }
 
 func (a AppModuleBasic) DefaultGenesis(cdc codec.JSONCodec) json.RawMessage {
-	return cdc.MustMarshalJSON(types.DefaultGenesisState())
+	state := types.DefaultGenesisState()
+	return cdc.MustMarshalJSON(state)
 }
 
 func (a AppModuleBasic) ValidateGenesis(cdc codec.JSONCodec, _ client.TxEncodingConfig, message json.RawMessage) error {
@@ -72,11 +74,11 @@ func (a AppModuleBasic) RegisterRESTRoutes(_ client.Context, _ *mux.Router) {}
 
 func (a AppModuleBasic) RegisterGRPCGatewayRoutes(ctx client.Context, mux *runtime.ServeMux) {
 	_ = deposittypes.RegisterQueryServiceHandlerClient(context.Background(), mux, deposittypes.NewQueryServiceClient(ctx))
-	_ = providertypes.RegisterQueryServiceHandlerClient(context.Background(), mux, providertypes.NewQueryServiceClient(ctx))
 	_ = nodetypes.RegisterQueryServiceHandlerClient(context.Background(), mux, nodetypes.NewQueryServiceClient(ctx))
 	_ = plantypes.RegisterQueryServiceHandlerClient(context.Background(), mux, plantypes.NewQueryServiceClient(ctx))
-	_ = subscriptiontypes.RegisterQueryServiceHandlerClient(context.Background(), mux, subscriptiontypes.NewQueryServiceClient(ctx))
+	_ = providertypes.RegisterQueryServiceHandlerClient(context.Background(), mux, providertypes.NewQueryServiceClient(ctx))
 	_ = sessiontypes.RegisterQueryServiceHandlerClient(context.Background(), mux, sessiontypes.NewQueryServiceClient(ctx))
+	_ = subscriptiontypes.RegisterQueryServiceHandlerClient(context.Background(), mux, subscriptiontypes.NewQueryServiceClient(ctx))
 }
 
 func (a AppModuleBasic) GetTxCmd() *cobra.Command {
@@ -113,34 +115,31 @@ func (a AppModule) InitGenesis(ctx sdk.Context, cdc codec.JSONCodec, message jso
 }
 
 func (a AppModule) ExportGenesis(ctx sdk.Context, cdc codec.JSONCodec) json.RawMessage {
-	return cdc.MustMarshalJSON(ExportGenesis(ctx, a.k))
+	state := ExportGenesis(ctx, a.k)
+	return cdc.MustMarshalJSON(state)
 }
 
 func (a AppModule) RegisterInvariants(_ sdk.InvariantRegistry) {}
 
-func (a AppModule) Route() sdk.Route {
-	return sdk.NewRoute(types.RouterKey, NewHandler(a.k))
-}
+func (a AppModule) Route() sdk.Route { return sdk.Route{} }
 
-func (a AppModule) QuerierRoute() string {
-	return types.QuerierRoute
-}
+func (a AppModule) QuerierRoute() string { return "" }
 
 func (a AppModule) LegacyQuerierHandler(_ *codec.LegacyAmino) sdk.Querier { return nil }
 
 func (a AppModule) RegisterServices(configurator module.Configurator) {
-	providertypes.RegisterMsgServiceServer(configurator.MsgServer(), providerkeeper.NewMsgServiceServer(a.k.Provider))
 	nodetypes.RegisterMsgServiceServer(configurator.MsgServer(), nodekeeper.NewMsgServiceServer(a.k.Node))
 	plantypes.RegisterMsgServiceServer(configurator.MsgServer(), plankeeper.NewMsgServiceServer(a.k.Plan))
-	subscriptiontypes.RegisterMsgServiceServer(configurator.MsgServer(), subscriptionkeeper.NewMsgServiceServer(a.k.Subscription))
+	providertypes.RegisterMsgServiceServer(configurator.MsgServer(), providerkeeper.NewMsgServiceServer(a.k.Provider))
 	sessiontypes.RegisterMsgServiceServer(configurator.MsgServer(), sessionkeeper.NewMsgServiceServer(a.k.Session))
+	subscriptiontypes.RegisterMsgServiceServer(configurator.MsgServer(), subscriptionkeeper.NewMsgServiceServer(a.k.Subscription))
 
 	deposittypes.RegisterQueryServiceServer(configurator.QueryServer(), depositkeeper.NewQueryServiceServer(a.k.Deposit))
-	providertypes.RegisterQueryServiceServer(configurator.QueryServer(), providerkeeper.NewQueryServiceServer(a.k.Provider))
 	nodetypes.RegisterQueryServiceServer(configurator.QueryServer(), nodekeeper.NewQueryServiceServer(a.k.Node))
 	plantypes.RegisterQueryServiceServer(configurator.QueryServer(), plankeeper.NewQueryServiceServer(a.k.Plan))
-	subscriptiontypes.RegisterQueryServiceServer(configurator.QueryServer(), subscriptionkeeper.NewQueryServiceServer(a.k.Subscription))
+	providertypes.RegisterQueryServiceServer(configurator.QueryServer(), providerkeeper.NewQueryServiceServer(a.k.Provider))
 	sessiontypes.RegisterQueryServiceServer(configurator.QueryServer(), sessionkeeper.NewQueryServiceServer(a.k.Session))
+	subscriptiontypes.RegisterQueryServiceServer(configurator.QueryServer(), subscriptionkeeper.NewQueryServiceServer(a.k.Subscription))
 
 	m := keeper.NewMigrator(a.k)
 	if err := configurator.RegisterMigration(types.ModuleName, 2, m.Migrate2to3); err != nil {
@@ -160,16 +159,16 @@ func (a AppModule) GenerateGenesisState(state *module.SimulationState) {
 	simulation.RandomizedGenesisState(state)
 }
 
-func (a AppModule) ProposalContents(_ module.SimulationState) []sdksimulation.WeightedProposalContent {
+func (a AppModule) ProposalContents(_ module.SimulationState) []simulationtypes.WeightedProposalContent {
 	return nil
 }
 
-func (a AppModule) RandomizedParams(r *rand.Rand) []sdksimulation.ParamChange {
+func (a AppModule) RandomizedParams(r *rand.Rand) []simulationtypes.ParamChange {
 	return simulation.RandomizedParams(r)
 }
 
 func (a AppModule) RegisterStoreDecoder(_ sdk.StoreDecoderRegistry) {}
 
-func (a AppModule) WeightedOperations(state module.SimulationState) []sdksimulation.WeightedOperation {
+func (a AppModule) WeightedOperations(state module.SimulationState) []simulationtypes.WeightedOperation {
 	return simulation.WeightedOperations(state.AppParams, a.cdc, a.ak, a.bk, a.k)
 }

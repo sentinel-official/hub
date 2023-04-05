@@ -16,12 +16,6 @@ func init() {
 	subscriptiontypes.ParamsSubspace = fmt.Sprintf("%s/%s", ModuleName, subscriptiontypes.ModuleName)
 	sessiontypes.ParamsSubspace = fmt.Sprintf("%s/%s", ModuleName, sessiontypes.ModuleName)
 
-	providertypes.RouterKey = ModuleName
-	nodetypes.RouterKey = ModuleName
-	plantypes.RouterKey = ModuleName
-	subscriptiontypes.RouterKey = ModuleName
-	sessiontypes.RouterKey = ModuleName
-
 	providertypes.StoreKey = ModuleName
 	nodetypes.StoreKey = ModuleName
 	plantypes.StoreKey = ModuleName
