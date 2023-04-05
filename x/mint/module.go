@@ -90,7 +90,7 @@ func (a AppModule) RegisterInvariants(_ sdk.InvariantRegistry) {}
 
 func (a AppModule) Route() sdk.Route { return sdk.Route{} }
 
-func (a AppModule) QuerierRoute() string { return types.QuerierRoute }
+func (a AppModule) QuerierRoute() string { return "" }
 
 func (a AppModule) LegacyQuerierHandler(_ *codec.LegacyAmino) sdk.Querier { return nil }
 

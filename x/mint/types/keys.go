@@ -7,9 +7,8 @@ import (
 )
 
 const (
-	ModuleName   = "custommint"
-	StoreKey     = ModuleName
-	QuerierRoute = ModuleName
+	ModuleName = "custommint"
+	StoreKey   = ModuleName
 )
 
 var (
