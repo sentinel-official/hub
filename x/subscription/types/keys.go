@@ -9,13 +9,11 @@ import (
 )
 
 const (
-	ModuleName   = "subscription"
-	QuerierRoute = ModuleName
+	ModuleName = "subscription"
 )
 
 var (
 	ParamsSubspace = ModuleName
-	RouterKey      = ModuleName
 	StoreKey       = ModuleName
 )
 

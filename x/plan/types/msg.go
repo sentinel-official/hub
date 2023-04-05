@@ -1,7 +1,6 @@
 package types
 
 import (
-	"fmt"
 	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -24,14 +23,6 @@ func NewMsgAddRequest(from hubtypes.ProvAddress, price sdk.Coins, validity time.
 		Validity: validity,
 		Bytes:    bytes,
 	}
-}
-
-func (m *MsgAddRequest) Route() string {
-	return RouterKey
-}
-
-func (m *MsgAddRequest) Type() string {
-	return fmt.Sprintf("%s:add", ModuleName)
 }
 
 func (m *MsgAddRequest) ValidateBasic() error {
@@ -65,10 +56,6 @@ func (m *MsgAddRequest) ValidateBasic() error {
 	return nil
 }
 
-func (m *MsgAddRequest) GetSignBytes() []byte {
-	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(m))
-}
-
 func (m *MsgAddRequest) GetSigners() []sdk.AccAddress {
 	from, err := hubtypes.ProvAddressFromBech32(m.From)
 	if err != nil {
@@ -84,14 +71,6 @@ func NewMsgSetStatusRequest(from hubtypes.ProvAddress, id uint64, status hubtype
 		Id:     id,
 		Status: status,
 	}
-}
-
-func (m *MsgSetStatusRequest) Route() string {
-	return RouterKey
-}
-
-func (m *MsgSetStatusRequest) Type() string {
-	return fmt.Sprintf("%s:set_status", ModuleName)
 }
 
 func (m *MsgSetStatusRequest) ValidateBasic() error {
@@ -111,10 +90,6 @@ func (m *MsgSetStatusRequest) ValidateBasic() error {
 	return nil
 }
 
-func (m *MsgSetStatusRequest) GetSignBytes() []byte {
-	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(m))
-}
-
 func (m *MsgSetStatusRequest) GetSigners() []sdk.AccAddress {
 	from, err := hubtypes.ProvAddressFromBech32(m.From)
 	if err != nil {
@@ -130,14 +105,6 @@ func NewMsgAddNodeRequest(from hubtypes.ProvAddress, id uint64, address hubtypes
 		Id:      id,
 		Address: address.String(),
 	}
-}
-
-func (m *MsgAddNodeRequest) Route() string {
-	return RouterKey
-}
-
-func (m *MsgAddNodeRequest) Type() string {
-	return fmt.Sprintf("%s:add_node", ModuleName)
 }
 
 func (m *MsgAddNodeRequest) ValidateBasic() error {
@@ -160,10 +127,6 @@ func (m *MsgAddNodeRequest) ValidateBasic() error {
 	return nil
 }
 
-func (m *MsgAddNodeRequest) GetSignBytes() []byte {
-	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(m))
-}
-
 func (m *MsgAddNodeRequest) GetSigners() []sdk.AccAddress {
 	from, err := hubtypes.ProvAddressFromBech32(m.From)
 	if err != nil {
@@ -179,14 +142,6 @@ func NewMsgRemoveNodeRequest(from sdk.AccAddress, id uint64, address hubtypes.No
 		Id:      id,
 		Address: address.String(),
 	}
-}
-
-func (m *MsgRemoveNodeRequest) Route() string {
-	return RouterKey
-}
-
-func (m *MsgRemoveNodeRequest) Type() string {
-	return fmt.Sprintf("%s:remove_node", ModuleName)
 }
 
 func (m *MsgRemoveNodeRequest) ValidateBasic() error {
@@ -207,10 +162,6 @@ func (m *MsgRemoveNodeRequest) ValidateBasic() error {
 	}
 
 	return nil
-}
-
-func (m *MsgRemoveNodeRequest) GetSignBytes() []byte {
-	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(m))
 }
 
 func (m *MsgRemoveNodeRequest) GetSigners() []sdk.AccAddress {

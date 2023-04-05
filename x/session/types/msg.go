@@ -21,14 +21,6 @@ func NewMsgStartRequest(from sdk.AccAddress, id uint64, node hubtypes.NodeAddres
 	}
 }
 
-func (m *MsgStartRequest) Route() string {
-	return RouterKey
-}
-
-func (m *MsgStartRequest) Type() string {
-	return TypeMsgStartRequest
-}
-
 func (m *MsgStartRequest) ValidateBasic() error {
 	if m.From == "" {
 		return errors.Wrap(ErrorInvalidFrom, "from cannot be empty")
@@ -49,10 +41,6 @@ func (m *MsgStartRequest) ValidateBasic() error {
 	return nil
 }
 
-func (m *MsgStartRequest) GetSignBytes() []byte {
-	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(m))
-}
-
 func (m *MsgStartRequest) GetSigners() []sdk.AccAddress {
 	from, err := sdk.AccAddressFromBech32(m.From)
 	if err != nil {
@@ -68,14 +56,6 @@ func NewMsgUpdateRequest(from hubtypes.NodeAddress, proof Proof, signature []byt
 		Proof:     proof,
 		Signature: signature,
 	}
-}
-
-func (m *MsgUpdateRequest) Route() string {
-	return RouterKey
-}
-
-func (m *MsgUpdateRequest) Type() string {
-	return TypeMsgUpdateRequest
 }
 
 func (m *MsgUpdateRequest) ValidateBasic() error {
@@ -106,10 +86,6 @@ func (m *MsgUpdateRequest) ValidateBasic() error {
 	return nil
 }
 
-func (m *MsgUpdateRequest) GetSignBytes() []byte {
-	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(m))
-}
-
 func (m *MsgUpdateRequest) GetSigners() []sdk.AccAddress {
 	from, err := hubtypes.NodeAddressFromBech32(m.From)
 	if err != nil {
@@ -127,14 +103,6 @@ func NewMsgEndRequest(from sdk.AccAddress, id uint64, rating uint64) *MsgEndRequ
 	}
 }
 
-func (m *MsgEndRequest) Route() string {
-	return RouterKey
-}
-
-func (m *MsgEndRequest) Type() string {
-	return TypeMsgEndRequest
-}
-
 func (m *MsgEndRequest) ValidateBasic() error {
 	if m.From == "" {
 		return errors.Wrap(ErrorInvalidFrom, "from cannot be empty")
@@ -150,10 +118,6 @@ func (m *MsgEndRequest) ValidateBasic() error {
 	}
 
 	return nil
-}
-
-func (m *MsgEndRequest) GetSignBytes() []byte {
-	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(m))
 }
 
 func (m *MsgEndRequest) GetSigners() []sdk.AccAddress {

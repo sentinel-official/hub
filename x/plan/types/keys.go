@@ -10,13 +10,11 @@ import (
 )
 
 const (
-	ModuleName   = "plan"
-	QuerierRoute = ModuleName
+	ModuleName = "plan"
 )
 
 var (
-	RouterKey = ModuleName
-	StoreKey  = ModuleName
+	StoreKey = ModuleName
 )
 
 var (

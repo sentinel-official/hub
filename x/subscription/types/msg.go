@@ -24,14 +24,6 @@ func NewMsgSubscribeToNodeRequest(from sdk.AccAddress, address hubtypes.NodeAddr
 	}
 }
 
-func (m *MsgSubscribeToNodeRequest) Route() string {
-	return RouterKey
-}
-
-func (m *MsgSubscribeToNodeRequest) Type() string {
-	return TypeMsgSubscribeToNodeRequest
-}
-
 func (m *MsgSubscribeToNodeRequest) ValidateBasic() error {
 	if m.From == "" {
 		return errors.Wrap(ErrorInvalidFrom, "from cannot be empty")
@@ -58,10 +50,6 @@ func (m *MsgSubscribeToNodeRequest) ValidateBasic() error {
 	return nil
 }
 
-func (m *MsgSubscribeToNodeRequest) GetSignBytes() []byte {
-	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(m))
-}
-
 func (m *MsgSubscribeToNodeRequest) GetSigners() []sdk.AccAddress {
 	from, err := sdk.AccAddressFromBech32(m.From)
 	if err != nil {
@@ -77,14 +65,6 @@ func NewMsgSubscribeToPlanRequest(from sdk.AccAddress, id uint64, denom string) 
 		Id:    id,
 		Denom: denom,
 	}
-}
-
-func (m *MsgSubscribeToPlanRequest) Route() string {
-	return RouterKey
-}
-
-func (m *MsgSubscribeToPlanRequest) Type() string {
-	return TypeMsgSubscribeToPlanRequest
 }
 
 func (m *MsgSubscribeToPlanRequest) ValidateBasic() error {
@@ -106,10 +86,6 @@ func (m *MsgSubscribeToPlanRequest) ValidateBasic() error {
 	return nil
 }
 
-func (m *MsgSubscribeToPlanRequest) GetSignBytes() []byte {
-	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(m))
-}
-
 func (m *MsgSubscribeToPlanRequest) GetSigners() []sdk.AccAddress {
 	from, err := sdk.AccAddressFromBech32(m.From)
 	if err != nil {
@@ -126,14 +102,6 @@ func NewMsgCancelRequest(from sdk.AccAddress, id uint64) *MsgCancelRequest {
 	}
 }
 
-func (m *MsgCancelRequest) Route() string {
-	return RouterKey
-}
-
-func (m *MsgCancelRequest) Type() string {
-	return TypeMsgCancelRequest
-}
-
 func (m *MsgCancelRequest) ValidateBasic() error {
 	if m.From == "" {
 		return errors.Wrap(ErrorInvalidFrom, "from cannot be empty")
@@ -146,10 +114,6 @@ func (m *MsgCancelRequest) ValidateBasic() error {
 	}
 
 	return nil
-}
-
-func (m *MsgCancelRequest) GetSignBytes() []byte {
-	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(m))
 }
 
 func (m *MsgCancelRequest) GetSigners() []sdk.AccAddress {
@@ -168,14 +132,6 @@ func NewMsgAddQuotaRequest(from sdk.AccAddress, id uint64, address sdk.AccAddres
 		Address: address.String(),
 		Bytes:   bytes,
 	}
-}
-
-func (m *MsgAddQuotaRequest) Route() string {
-	return RouterKey
-}
-
-func (m *MsgAddQuotaRequest) Type() string {
-	return TypeMsgAddQuotaRequest
 }
 
 func (m *MsgAddQuotaRequest) ValidateBasic() error {
@@ -201,10 +157,6 @@ func (m *MsgAddQuotaRequest) ValidateBasic() error {
 	return nil
 }
 
-func (m *MsgAddQuotaRequest) GetSignBytes() []byte {
-	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(m))
-}
-
 func (m *MsgAddQuotaRequest) GetSigners() []sdk.AccAddress {
 	from, err := sdk.AccAddressFromBech32(m.From)
 	if err != nil {
@@ -221,14 +173,6 @@ func NewMsgUpdateQuotaRequest(from sdk.AccAddress, id uint64, address sdk.AccAdd
 		Address: address.String(),
 		Bytes:   bytes,
 	}
-}
-
-func (m *MsgUpdateQuotaRequest) Route() string {
-	return RouterKey
-}
-
-func (m *MsgUpdateQuotaRequest) Type() string {
-	return TypeMsgUpdateQuotaRequest
 }
 
 func (m *MsgUpdateQuotaRequest) ValidateBasic() error {
@@ -252,10 +196,6 @@ func (m *MsgUpdateQuotaRequest) ValidateBasic() error {
 	}
 
 	return nil
-}
-
-func (m *MsgUpdateQuotaRequest) GetSignBytes() []byte {
-	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(m))
 }
 
 func (m *MsgUpdateQuotaRequest) GetSigners() []sdk.AccAddress {
