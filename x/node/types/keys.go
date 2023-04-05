@@ -11,13 +11,11 @@ import (
 )
 
 const (
-	ModuleName   = "node"
-	QuerierRoute = ModuleName
+	ModuleName = "node"
 )
 
 var (
 	ParamsSubspace = ModuleName
-	RouterKey      = ModuleName
 	StoreKey       = ModuleName
 )
 
