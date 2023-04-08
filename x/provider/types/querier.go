@@ -6,9 +6,9 @@ import (
 	hubtypes "github.com/sentinel-official/hub/types"
 )
 
-func NewQueryProviderRequest(address hubtypes.ProvAddress) *QueryProviderRequest {
+func NewQueryProviderRequest(addr hubtypes.ProvAddress) *QueryProviderRequest {
 	return &QueryProviderRequest{
-		Address: address.String(),
+		Address: addr.String(),
 	}
 }
 

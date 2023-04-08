@@ -59,6 +59,7 @@ func TestProvider_Validate(t *testing.T) {
 		Identity    string
 		Website     string
 		Description string
+		Status      hubtypes.Status
 	}
 	tests := []struct {
 		name    string
@@ -120,6 +121,7 @@ func TestProvider_Validate(t *testing.T) {
 			fields{
 				Address: "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
 				Name:    "name",
+				Status:  hubtypes.StatusActive,
 			},
 			false,
 		},
@@ -137,6 +139,7 @@ func TestProvider_Validate(t *testing.T) {
 				Address:  "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
 				Name:     "name",
 				Identity: "",
+				Status:   hubtypes.StatusActive,
 			},
 			false,
 		},
@@ -146,6 +149,7 @@ func TestProvider_Validate(t *testing.T) {
 				Address:  "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
 				Name:     "name",
 				Identity: "identity",
+				Status:   hubtypes.StatusActive,
 			},
 			false,
 		},
@@ -165,6 +169,7 @@ func TestProvider_Validate(t *testing.T) {
 				Name:     "name",
 				Identity: "identity",
 				Website:  "",
+				Status:   hubtypes.StatusActive,
 			},
 			false,
 		},
@@ -175,6 +180,7 @@ func TestProvider_Validate(t *testing.T) {
 				Name:     "name",
 				Identity: "identity",
 				Website:  "https://website",
+				Status:   hubtypes.StatusActive,
 			},
 			false,
 		},
@@ -206,6 +212,7 @@ func TestProvider_Validate(t *testing.T) {
 				Identity:    "identity",
 				Website:     "https://website",
 				Description: "",
+				Status:      hubtypes.StatusActive,
 			},
 			false,
 		},
@@ -217,6 +224,7 @@ func TestProvider_Validate(t *testing.T) {
 				Identity:    "identity",
 				Website:     "https://website",
 				Description: "description",
+				Status:      hubtypes.StatusActive,
 			},
 			false,
 		},
@@ -231,6 +239,42 @@ func TestProvider_Validate(t *testing.T) {
 			},
 			true,
 		},
+		{
+			"unspecified status",
+			fields{
+				Address:     "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
+				Name:        "name",
+				Identity:    "identity",
+				Website:     "https://website",
+				Description: strings.Repeat("d", 256),
+				Status:      hubtypes.StatusUnspecified,
+			},
+			true,
+		},
+		{
+			"active status",
+			fields{
+				Address:     "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
+				Name:        "name",
+				Identity:    "identity",
+				Website:     "https://website",
+				Description: strings.Repeat("d", 256),
+				Status:      hubtypes.StatusActive,
+			},
+			false,
+		},
+		{
+			"inactive status",
+			fields{
+				Address:     "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
+				Name:        "name",
+				Identity:    "identity",
+				Website:     "https://website",
+				Description: strings.Repeat("d", 256),
+				Status:      hubtypes.StatusInactive,
+			},
+			false,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -240,6 +284,7 @@ func TestProvider_Validate(t *testing.T) {
 				Identity:    tt.fields.Identity,
 				Website:     tt.fields.Website,
 				Description: tt.fields.Description,
+				Status:      tt.fields.Status,
 			}
 			if err := p.Validate(); (err != nil) != tt.wantErr {
 				t.Errorf("Validate() error = %v, wantErr %v", err, tt.wantErr)

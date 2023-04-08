@@ -14,12 +14,12 @@ func (m *Provider) GetAddress() hubtypes.ProvAddress {
 		return nil
 	}
 
-	address, err := hubtypes.ProvAddressFromBech32(m.Address)
+	addr, err := hubtypes.ProvAddressFromBech32(m.Address)
 	if err != nil {
 		panic(err)
 	}
 
-	return address
+	return addr
 }
 
 func (m *Provider) Validate() error {
@@ -48,6 +48,9 @@ func (m *Provider) Validate() error {
 	}
 	if len(m.Description) > 256 {
 		return fmt.Errorf("description length cannot be greater than %d", 256)
+	}
+	if !m.Status.IsOneOf(hubtypes.StatusActive, hubtypes.StatusInactive) {
+		return fmt.Errorf("status must be one of [active, inactive]")
 	}
 
 	return nil
