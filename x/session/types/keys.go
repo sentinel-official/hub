@@ -13,11 +13,6 @@ const (
 )
 
 var (
-	ParamsSubspace = ModuleName
-	StoreKey       = ModuleName
-)
-
-var (
 	TypeMsgStartRequest  = ModuleName + ":start"
 	TypeMsgUpdateRequest = ModuleName + ":update"
 	TypeMsgEndRequest    = ModuleName + ":end"

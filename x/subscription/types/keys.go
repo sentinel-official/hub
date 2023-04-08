@@ -13,11 +13,6 @@ const (
 )
 
 var (
-	ParamsSubspace = ModuleName
-	StoreKey       = ModuleName
-)
-
-var (
 	TypeMsgSubscribeToNodeRequest = ModuleName + ":subscribe_to_node"
 	TypeMsgSubscribeToPlanRequest = ModuleName + ":subscribe_to_plan"
 	TypeMsgCancelRequest          = ModuleName + ":cancel"

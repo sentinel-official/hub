@@ -14,10 +14,6 @@ const (
 )
 
 var (
-	StoreKey = ModuleName
-)
-
-var (
 	TypeMsgAddRequest        = ModuleName + ":add"
 	TypeMsgSetStatusRequest  = ModuleName + ":set_status"
 	TypeMsgAddNodeRequest    = ModuleName + ":add_node"
