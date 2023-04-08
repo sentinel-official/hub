@@ -17,7 +17,3 @@ var (
 	ErrorUnauthorized   = errors.Register(ModuleName, 202, "unauthorized")
 	ErrorDuplicateSwap  = errors.Register(ModuleName, 203, "duplicate swap")
 )
-
-var (
-	ErrorUnknownMsgType = errors.Register(ModuleName, 301, "unknown message type")
-)

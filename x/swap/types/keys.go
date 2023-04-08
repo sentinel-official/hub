@@ -6,15 +6,7 @@ import (
 
 const (
 	ModuleName = "swap"
-)
-
-var (
-	ParamsSubspace = ModuleName
-	StoreKey       = ModuleName
-)
-
-var (
-	TypeMsgSwapRequest = ModuleName + ":swap"
+	StoreKey   = ModuleName
 )
 
 var (
