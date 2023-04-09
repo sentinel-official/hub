@@ -15,25 +15,12 @@ func (m *Node) GetAddress() hubtypes.NodeAddress {
 		return nil
 	}
 
-	address, err := hubtypes.NodeAddressFromBech32(m.Address)
+	addr, err := hubtypes.NodeAddressFromBech32(m.Address)
 	if err != nil {
 		panic(err)
 	}
 
-	return address
-}
-
-func (m *Node) GetProvider() hubtypes.ProvAddress {
-	if m.Provider == "" {
-		return nil
-	}
-
-	address, err := hubtypes.ProvAddressFromBech32(m.Provider)
-	if err != nil {
-		panic(err)
-	}
-
-	return address
+	return addr
 }
 
 func (m *Node) Validate() error {
@@ -43,23 +30,20 @@ func (m *Node) Validate() error {
 	if _, err := hubtypes.NodeAddressFromBech32(m.Address); err != nil {
 		return errors.Wrapf(err, "invalid address %s", m.Address)
 	}
-	if m.Provider == "" && m.Price == nil {
-		return fmt.Errorf("both provider and price cannot be empty")
-	}
-	if m.Provider != "" && m.Price != nil {
-		return fmt.Errorf("either provider or price must be empty")
-	}
-	if m.Provider != "" {
-		if _, err := hubtypes.ProvAddressFromBech32(m.Provider); err != nil {
-			return errors.Wrapf(err, "invalid provider %s", m.Provider)
+	if m.GigabytePrices != nil {
+		if m.GigabytePrices.Len() == 0 {
+			return fmt.Errorf("gigabyte_prices cannot be empty")
+		}
+		if !m.GigabytePrices.IsValid() {
+			return fmt.Errorf("gigabyte_prices must be valid")
 		}
 	}
-	if m.Price != nil {
-		if m.Price.Len() == 0 {
-			return fmt.Errorf("price cannot be empty")
+	if m.HourlyPrices != nil {
+		if m.HourlyPrices.Len() == 0 {
+			return fmt.Errorf("hourly_prices cannot be empty")
 		}
-		if !m.Price.IsValid() {
-			return fmt.Errorf("price must be valid")
+		if !m.HourlyPrices.IsValid() {
+			return fmt.Errorf("hourly_prices must be valid")
 		}
 	}
 	if m.RemoteURL == "" {
@@ -80,28 +64,41 @@ func (m *Node) Validate() error {
 		return fmt.Errorf("remote_url port cannot be empty")
 	}
 
-	if !m.Status.Equal(hubtypes.StatusActive) && !m.Status.Equal(hubtypes.StatusInactive) {
-		return fmt.Errorf("status must be either active or inactive")
+	if !m.Status.IsOneOf(hubtypes.StatusActive, hubtypes.StatusInactive) {
+		return fmt.Errorf("status must be one of [active, inactive]")
 	}
-	if m.StatusAt.IsZero() {
+	if m.StatusAt < 0 {
+		return fmt.Errorf("status_at cannot be negative")
+	}
+	if m.StatusAt == 0 {
 		return fmt.Errorf("status_at cannot be zero")
 	}
 
 	return nil
 }
 
-func (m *Node) PriceForDenom(s string) (sdk.Coin, bool) {
-	for _, coin := range m.Price {
-		if coin.Denom == s {
-			return coin, true
+func (m *Node) GigabytePrice(denom string) (sdk.Coin, bool) {
+	for _, v := range m.GigabytePrices {
+		if v.Denom == denom {
+			return v, true
 		}
 	}
 
 	return sdk.Coin{}, false
 }
 
-func (m *Node) BytesForCoin(coin sdk.Coin) (sdk.Int, error) {
-	price, found := m.PriceForDenom(coin.Denom)
+func (m *Node) HourlyPrice(denom string) (sdk.Coin, bool) {
+	for _, v := range m.HourlyPrices {
+		if v.Denom == denom {
+			return v, true
+		}
+	}
+
+	return sdk.Coin{}, false
+}
+
+func (m *Node) Bytes(coin sdk.Coin) (sdk.Int, error) {
+	price, found := m.GigabytePrice(coin.Denom)
 	if !found {
 		return sdk.ZeroInt(), fmt.Errorf("price for denom %s does not exist", coin.Denom)
 	}

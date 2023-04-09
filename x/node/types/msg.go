@@ -15,12 +15,12 @@ var (
 	_ sdk.Msg = (*MsgSetStatusRequest)(nil)
 )
 
-func NewMsgRegisterRequest(from sdk.AccAddress, pricePerGigabyte, pricePerHour sdk.Coins, remoteURL string) *MsgRegisterRequest {
+func NewMsgRegisterRequest(from sdk.AccAddress, gigabytePrices, hourlyPrices sdk.Coins, remoteURL string) *MsgRegisterRequest {
 	return &MsgRegisterRequest{
-		From:             from.String(),
-		PricePerGigabyte: pricePerGigabyte,
-		PricePerHour:     pricePerHour,
-		RemoteURL:        remoteURL,
+		From:           from.String(),
+		GigabytePrices: gigabytePrices,
+		HourlyPrices:   hourlyPrices,
+		RemoteURL:      remoteURL,
 	}
 }
 
@@ -31,20 +31,20 @@ func (m *MsgRegisterRequest) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.From); err != nil {
 		return errors.Wrap(ErrorInvalidMessage, err.Error())
 	}
-	if m.PricePerGigabyte != nil {
-		if m.PricePerGigabyte.Len() == 0 {
-			return errors.Wrap(ErrorInvalidMessage, "price_per_gigabyte length cannot be zero")
+	if m.GigabytePrices != nil {
+		if m.GigabytePrices.Len() == 0 {
+			return errors.Wrap(ErrorInvalidMessage, "gigabyte_prices length cannot be zero")
 		}
-		if !m.PricePerGigabyte.IsValid() {
-			return errors.Wrap(ErrorInvalidMessage, "price_per_gigabyte must be valid")
+		if !m.GigabytePrices.IsValid() {
+			return errors.Wrap(ErrorInvalidMessage, "gigabyte_prices must be valid")
 		}
 	}
-	if m.PricePerHour != nil {
-		if m.PricePerHour.Len() == 0 {
-			return errors.Wrap(ErrorInvalidMessage, "price_per_hour length cannot be zero")
+	if m.HourlyPrices != nil {
+		if m.HourlyPrices.Len() == 0 {
+			return errors.Wrap(ErrorInvalidMessage, "hourly_prices length cannot be zero")
 		}
-		if !m.PricePerHour.IsValid() {
-			return errors.Wrap(ErrorInvalidMessage, "price_per_hour must be valid")
+		if !m.HourlyPrices.IsValid() {
+			return errors.Wrap(ErrorInvalidMessage, "hourly_prices must be valid")
 		}
 	}
 	if m.RemoteURL == "" {
@@ -77,12 +77,12 @@ func (m *MsgRegisterRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{from}
 }
 
-func NewMsgUpdateRequest(from hubtypes.NodeAddress, pricePerGigabyte, pricePerHour sdk.Coins, remoteURL string) *MsgUpdateRequest {
+func NewMsgUpdateRequest(from hubtypes.NodeAddress, gigabytePrices, hourlyPrices sdk.Coins, remoteURL string) *MsgUpdateRequest {
 	return &MsgUpdateRequest{
-		From:             from.String(),
-		PricePerGigabyte: pricePerGigabyte,
-		PricePerHour:     pricePerHour,
-		RemoteURL:        remoteURL,
+		From:           from.String(),
+		GigabytePrices: gigabytePrices,
+		HourlyPrices:   hourlyPrices,
+		RemoteURL:      remoteURL,
 	}
 }
 
@@ -93,20 +93,20 @@ func (m *MsgUpdateRequest) ValidateBasic() error {
 	if _, err := hubtypes.NodeAddressFromBech32(m.From); err != nil {
 		return errors.Wrap(ErrorInvalidMessage, err.Error())
 	}
-	if m.PricePerGigabyte != nil {
-		if m.PricePerGigabyte.Len() == 0 {
-			return errors.Wrap(ErrorInvalidMessage, "price_per_gigabyte length cannot be zero")
+	if m.GigabytePrices != nil {
+		if m.GigabytePrices.Len() == 0 {
+			return errors.Wrap(ErrorInvalidMessage, "gigabyte_prices length cannot be zero")
 		}
-		if !m.PricePerGigabyte.IsValid() {
-			return errors.Wrap(ErrorInvalidMessage, "price_per_gigabyte must be valid")
+		if !m.GigabytePrices.IsValid() {
+			return errors.Wrap(ErrorInvalidMessage, "gigabyte_prices must be valid")
 		}
 	}
-	if m.PricePerHour != nil {
-		if m.PricePerHour.Len() == 0 {
-			return errors.Wrap(ErrorInvalidMessage, "price_per_hour length cannot be zero")
+	if m.HourlyPrices != nil {
+		if m.HourlyPrices.Len() == 0 {
+			return errors.Wrap(ErrorInvalidMessage, "hourly_prices length cannot be zero")
 		}
-		if !m.PricePerHour.IsValid() {
-			return errors.Wrap(ErrorInvalidMessage, "price_per_hour must be valid")
+		if !m.HourlyPrices.IsValid() {
+			return errors.Wrap(ErrorInvalidMessage, "hourly_prices must be valid")
 		}
 	}
 	if m.RemoteURL != "" {

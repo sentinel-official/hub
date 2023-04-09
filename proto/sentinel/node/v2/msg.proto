@@ -11,12 +11,12 @@ option (gogoproto.goproto_getters_all) = false;
 
 // MsgRegisterRequest defines the SDK message for registering a node
 message MsgRegisterRequest {
-  string from                                          = 1;
-  repeated cosmos.base.v1beta1.Coin price_per_gigabyte = 2 [
+  string from                                       = 1;
+  repeated cosmos.base.v1beta1.Coin gigabyte_prices = 2 [
     (gogoproto.nullable)     = false,
     (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
   ];
-  repeated cosmos.base.v1beta1.Coin price_per_hour = 3 [
+  repeated cosmos.base.v1beta1.Coin hourly_prices = 3 [
     (gogoproto.nullable)     = false,
     (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
   ];
@@ -25,12 +25,12 @@ message MsgRegisterRequest {
 
 // MsgUpdateRequest defines the SDK message for updating a node
 message MsgUpdateRequest {
-  string from                                          = 1;
-  repeated cosmos.base.v1beta1.Coin price_per_gigabyte = 2 [
+  string from                                       = 1;
+  repeated cosmos.base.v1beta1.Coin gigabyte_prices = 2 [
     (gogoproto.nullable)     = false,
     (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
   ];
-  repeated cosmos.base.v1beta1.Coin price_per_hour = 3 [
+  repeated cosmos.base.v1beta1.Coin hourly_prices = 3 [
     (gogoproto.nullable)     = false,
     (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
   ];
