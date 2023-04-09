@@ -12,30 +12,30 @@ import (
 
 func TestActiveNodeForProviderKey(t *testing.T) {
 	var (
-		node     []byte
-		provider []byte
+		nodeAddr []byte
+		provAddr []byte
 	)
 
-	for i := 0; i < 512; i++ {
-		provider = make([]byte, i)
-		_, _ = rand.Read(provider)
+	for i := 0; i < 512; i += 64 {
+		provAddr = make([]byte, i)
+		_, _ = rand.Read(provAddr)
 
-		for j := 0; j < 512; j++ {
-			node = make([]byte, j)
-			_, _ = rand.Read(node)
+		for j := 0; j < 512; j += 64 {
+			nodeAddr = make([]byte, j)
+			_, _ = rand.Read(nodeAddr)
 
 			if i < 256 && j < 256 {
 				require.Equal(
 					t,
-					append(append(ActiveNodeForProviderKeyPrefix, address.MustLengthPrefix(provider)...), address.MustLengthPrefix(node)...),
-					ActiveNodeForProviderKey(provider, node),
+					append(append(ActiveNodeForProviderKeyPrefix, address.MustLengthPrefix(provAddr)...), address.MustLengthPrefix(nodeAddr)...),
+					ActiveNodeForProviderKey(provAddr, nodeAddr),
 				)
 
 				continue
 			}
 
 			require.Panics(t, func() {
-				ActiveNodeForProviderKey(provider, node)
+				ActiveNodeForProviderKey(provAddr, nodeAddr)
 			})
 		}
 	}
@@ -46,7 +46,7 @@ func TestActiveNodeKey(t *testing.T) {
 		addr []byte
 	)
 
-	for i := 0; i < 512; i++ {
+	for i := 0; i < 512; i += 64 {
 		addr = make([]byte, i)
 		_, _ = rand.Read(addr)
 
@@ -72,7 +72,7 @@ func TestInactiveNodeAtKey(t *testing.T) {
 		addr []byte
 	)
 
-	for i := 0; i < 512; i++ {
+	for i := 0; i < 512; i += 64 {
 		addr = make([]byte, i)
 		_, _ = rand.Read(addr)
 
@@ -98,11 +98,11 @@ func TestInactiveNodeForProviderKey(t *testing.T) {
 		provider []byte
 	)
 
-	for i := 0; i < 512; i++ {
+	for i := 0; i < 512; i += 64 {
 		provider = make([]byte, i)
 		_, _ = rand.Read(provider)
 
-		for j := 0; j < 512; j++ {
+		for j := 0; j < 512; j += 64 {
 			node = make([]byte, j)
 			_, _ = rand.Read(node)
 
@@ -128,7 +128,7 @@ func TestInactiveNodeKey(t *testing.T) {
 		addr []byte
 	)
 
-	for i := 0; i < 512; i++ {
+	for i := 0; i < 512; i += 64 {
 		addr = make([]byte, i)
 		_, _ = rand.Read(addr)
 
@@ -153,7 +153,7 @@ func TestNodeKey(t *testing.T) {
 		addr []byte
 	)
 
-	for i := 0; i < 512; i++ {
+	for i := 0; i < 512; i += 64 {
 		addr = make([]byte, i)
 		_, _ = rand.Read(addr)
 

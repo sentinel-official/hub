@@ -18,18 +18,28 @@ func (k *Keeper) InactiveDuration(ctx sdk.Context) (v time.Duration) {
 	return
 }
 
-func (k *Keeper) MaxPrice(ctx sdk.Context) (v sdk.Coins) {
-	k.params.Get(ctx, types.KeyMaxPrice, &v)
+func (k *Keeper) MaxGigabytePrices(ctx sdk.Context) (v sdk.Coins) {
+	k.params.Get(ctx, types.KeyMaxGigabytePrices, &v)
 	return
 }
 
-func (k *Keeper) MinPrice(ctx sdk.Context) (v sdk.Coins) {
-	k.params.Get(ctx, types.KeyMinPrice, &v)
+func (k *Keeper) MaxHourlyPrices(ctx sdk.Context) (v sdk.Coins) {
+	k.params.Get(ctx, types.KeyMaxHourlyPrices, &v)
 	return
 }
 
-func (k *Keeper) StakingShare(ctx sdk.Context) (v sdk.Dec) {
-	k.params.Get(ctx, types.KeyStakingShare, &v)
+func (k *Keeper) MinGigabytePrices(ctx sdk.Context) (v sdk.Coins) {
+	k.params.Get(ctx, types.KeyMinGigabytePrices, &v)
+	return
+}
+
+func (k *Keeper) MinHourlyPrices(ctx sdk.Context) (v sdk.Coins) {
+	k.params.Get(ctx, types.KeyMinHourlyPrices, &v)
+	return
+}
+
+func (k *Keeper) RevenueShare(ctx sdk.Context) (v sdk.Dec) {
+	k.params.Get(ctx, types.KeyRevenueShare, &v)
 	return
 }
 
@@ -41,24 +51,26 @@ func (k *Keeper) GetParams(ctx sdk.Context) types.Params {
 	return types.NewParams(
 		k.Deposit(ctx),
 		k.InactiveDuration(ctx),
-		k.MaxPrice(ctx),
-		k.MinPrice(ctx),
-		k.StakingShare(ctx),
+		k.MaxGigabytePrices(ctx),
+		k.MaxHourlyPrices(ctx),
+		k.MinGigabytePrices(ctx),
+		k.MinHourlyPrices(ctx),
+		k.RevenueShare(ctx),
 	)
 }
 
-func (k *Keeper) IsValidPrice(ctx sdk.Context, price sdk.Coins) bool {
-	maxPrice := k.MaxPrice(ctx)
+func (k *Keeper) IsValidGigabytePrices(ctx sdk.Context, prices sdk.Coins) bool {
+	maxPrice := k.MaxGigabytePrices(ctx)
 	for _, coin := range maxPrice {
-		amount := price.AmountOf(coin.Denom)
+		amount := prices.AmountOf(coin.Denom)
 		if amount.GT(coin.Amount) {
 			return false
 		}
 	}
 
-	minPrice := k.MinPrice(ctx)
+	minPrice := k.MinGigabytePrices(ctx)
 	for _, coin := range minPrice {
-		amount := price.AmountOf(coin.Denom)
+		amount := prices.AmountOf(coin.Denom)
 		if amount.LT(coin.Amount) {
 			return false
 		}
@@ -67,10 +79,38 @@ func (k *Keeper) IsValidPrice(ctx sdk.Context, price sdk.Coins) bool {
 	return true
 }
 
-func (k *Keeper) IsMaxPriceModified(ctx sdk.Context) bool {
-	return k.params.Modified(ctx, types.KeyMaxPrice)
+func (k *Keeper) IsValidHourlyPrices(ctx sdk.Context, prices sdk.Coins) bool {
+	maxPrice := k.MaxHourlyPrices(ctx)
+	for _, coin := range maxPrice {
+		amount := prices.AmountOf(coin.Denom)
+		if amount.GT(coin.Amount) {
+			return false
+		}
+	}
+
+	minPrice := k.MinHourlyPrices(ctx)
+	for _, coin := range minPrice {
+		amount := prices.AmountOf(coin.Denom)
+		if amount.LT(coin.Amount) {
+			return false
+		}
+	}
+
+	return true
 }
 
-func (k *Keeper) IsMinPriceModified(ctx sdk.Context) bool {
-	return k.params.Modified(ctx, types.KeyMinPrice)
+func (k *Keeper) IsMaxGigabytePricesModified(ctx sdk.Context) bool {
+	return k.params.Modified(ctx, types.KeyMaxGigabytePrices)
+}
+
+func (k *Keeper) IsMaxHourlyPricesModified(ctx sdk.Context) bool {
+	return k.params.Modified(ctx, types.KeyMaxHourlyPrices)
+}
+
+func (k *Keeper) IsMinGigabytePricesModified(ctx sdk.Context) bool {
+	return k.params.Modified(ctx, types.KeyMinGigabytePrices)
+}
+
+func (k *Keeper) IsMinHourlyPricesModified(ctx sdk.Context) bool {
+	return k.params.Modified(ctx, types.KeyMinHourlyPrices)
 }

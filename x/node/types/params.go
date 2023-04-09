@@ -9,19 +9,23 @@ import (
 )
 
 var (
-	DefaultDeposit          = sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(1000))
-	DefaultInactiveDuration = 5 * time.Minute
-	DefaultMaxPrice         = sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(100)))
-	DefaultMinPrice         = sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(10)))
-	DefaultStakingShare     = sdk.NewDecWithPrec(1, 1)
+	DefaultDeposit           = sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(10))
+	DefaultInactiveDuration  = 1 * time.Minute
+	DefaultMaxGigabytePrices = sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(100)))
+	DefaultMaxHourlyPrices   = sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(100)))
+	DefaultMinGigabytePrices = sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(10)))
+	DefaultMinHourlyPrices   = sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(10)))
+	DefaultRevenueShare      = sdk.NewDecWithPrec(1, 1)
 )
 
 var (
-	KeyDeposit          = []byte("Deposit")
-	KeyInactiveDuration = []byte("InactiveDuration")
-	KeyMaxPrice         = []byte("MaxPrice")
-	KeyMinPrice         = []byte("MinPrice")
-	KeyStakingShare     = []byte("StakingShare")
+	KeyDeposit           = []byte("Deposit")
+	KeyInactiveDuration  = []byte("InactiveDuration")
+	KeyMaxGigabytePrices = []byte("MaxGigabytePrices")
+	KeyMaxHourlyPrices   = []byte("MaxHourlyPrices")
+	KeyMinGigabytePrices = []byte("MinGigabytePrices")
+	KeyMinHourlyPrices   = []byte("MinHourlyPrices")
+	KeyRevenueShare      = []byte("RevenueShare")
 )
 
 var (
@@ -35,13 +39,19 @@ func (m *Params) Validate() error {
 	if err := validateInactiveDuration(m.InactiveDuration); err != nil {
 		return err
 	}
-	if err := validateMaxPrice(m.MaxPrice); err != nil {
+	if err := validateMaxGigabytePrices(m.MaxGigabytePrices); err != nil {
 		return err
 	}
-	if err := validateMinPrice(m.MinPrice); err != nil {
+	if err := validateMaxHourlyPrices(m.MaxHourlyPrices); err != nil {
 		return err
 	}
-	if err := validateStakingShare(m.StakingShare); err != nil {
+	if err := validateMinGigabytePrices(m.MinGigabytePrices); err != nil {
+		return err
+	}
+	if err := validateMinHourlyPrices(m.MinHourlyPrices); err != nil {
+		return err
+	}
+	if err := validateRevenueShare(m.RevenueShare); err != nil {
 		return err
 	}
 
@@ -61,41 +71,58 @@ func (m *Params) ParamSetPairs() params.ParamSetPairs {
 			ValidatorFn: validateInactiveDuration,
 		},
 		{
-			Key:         KeyMaxPrice,
-			Value:       &m.MaxPrice,
-			ValidatorFn: validateMaxPrice,
+			Key:         KeyMaxGigabytePrices,
+			Value:       &m.MaxGigabytePrices,
+			ValidatorFn: validateMaxGigabytePrices,
 		},
 		{
-			Key:         KeyMinPrice,
-			Value:       &m.MinPrice,
-			ValidatorFn: validateMinPrice,
+			Key:         KeyMaxHourlyPrices,
+			Value:       &m.MaxHourlyPrices,
+			ValidatorFn: validateMaxHourlyPrices,
 		},
 		{
-			Key:         KeyStakingShare,
-			Value:       &m.StakingShare,
-			ValidatorFn: validateStakingShare,
+			Key:         KeyMinGigabytePrices,
+			Value:       &m.MinGigabytePrices,
+			ValidatorFn: validateMinGigabytePrices,
+		},
+		{
+			Key:         KeyMinHourlyPrices,
+			Value:       &m.MinHourlyPrices,
+			ValidatorFn: validateMinHourlyPrices,
+		},
+		{
+			Key:         KeyRevenueShare,
+			Value:       &m.RevenueShare,
+			ValidatorFn: validateRevenueShare,
 		},
 	}
 }
 
-func NewParams(deposit sdk.Coin, inactiveDuration time.Duration, maxPrice, minPrice sdk.Coins, stakingShare sdk.Dec) Params {
+func NewParams(
+	deposit sdk.Coin, inactiveDuration time.Duration, maxGigabytePrices,
+	maxHourlyPrices, minGigabytePrices, minHourlyPrices sdk.Coins, revenueShare sdk.Dec,
+) Params {
 	return Params{
-		Deposit:          deposit,
-		InactiveDuration: inactiveDuration,
-		MaxPrice:         maxPrice,
-		MinPrice:         minPrice,
-		StakingShare:     stakingShare,
+		Deposit:           deposit,
+		InactiveDuration:  inactiveDuration,
+		MaxGigabytePrices: maxGigabytePrices,
+		MaxHourlyPrices:   maxHourlyPrices,
+		MinGigabytePrices: minGigabytePrices,
+		MinHourlyPrices:   minHourlyPrices,
+		RevenueShare:      revenueShare,
 	}
 }
 
 func DefaultParams() Params {
-	return Params{
-		Deposit:          DefaultDeposit,
-		InactiveDuration: DefaultInactiveDuration,
-		MaxPrice:         DefaultMaxPrice,
-		MinPrice:         DefaultMinPrice,
-		StakingShare:     DefaultStakingShare,
-	}
+	return NewParams(
+		DefaultDeposit,
+		DefaultInactiveDuration,
+		DefaultMaxGigabytePrices,
+		DefaultMaxHourlyPrices,
+		DefaultMinGigabytePrices,
+		DefaultMinHourlyPrices,
+		DefaultRevenueShare,
+	)
 }
 
 func ParamsKeyTable() params.KeyTable {
@@ -137,7 +164,7 @@ func validateInactiveDuration(v interface{}) error {
 	return nil
 }
 
-func validateMaxPrice(v interface{}) error {
+func validateMaxGigabytePrices(v interface{}) error {
 	value, ok := v.(sdk.Coins)
 	if !ok {
 		return fmt.Errorf("invalid parameter type %T", v)
@@ -147,16 +174,16 @@ func validateMaxPrice(v interface{}) error {
 		return nil
 	}
 	if value.IsAnyNil() {
-		return fmt.Errorf("max_price cannot be nil")
+		return fmt.Errorf("max_gigabyte_prices must not have nil coin")
 	}
 	if !value.IsValid() {
-		return fmt.Errorf("max_price must be valid")
+		return fmt.Errorf("max_gigabyte_prices must be valid")
 	}
 
 	return nil
 }
 
-func validateMinPrice(v interface{}) error {
+func validateMaxHourlyPrices(v interface{}) error {
 	value, ok := v.(sdk.Coins)
 	if !ok {
 		return fmt.Errorf("invalid parameter type %T", v)
@@ -166,29 +193,67 @@ func validateMinPrice(v interface{}) error {
 		return nil
 	}
 	if value.IsAnyNil() {
-		return fmt.Errorf("min_price cannot be nil")
+		return fmt.Errorf("max_hourly_prices must not have nil coin")
 	}
 	if !value.IsValid() {
-		return fmt.Errorf("min_price must be valid")
+		return fmt.Errorf("max_hourly_prices must be valid")
 	}
 
 	return nil
 }
 
-func validateStakingShare(v interface{}) error {
+func validateMinGigabytePrices(v interface{}) error {
+	value, ok := v.(sdk.Coins)
+	if !ok {
+		return fmt.Errorf("invalid parameter type %T", v)
+	}
+
+	if value == nil {
+		return nil
+	}
+	if value.IsAnyNil() {
+		return fmt.Errorf("min_gigabyte_prices must not have nil coin")
+	}
+	if !value.IsValid() {
+		return fmt.Errorf("min_gigabyte_prices must be valid")
+	}
+
+	return nil
+}
+
+func validateMinHourlyPrices(v interface{}) error {
+	value, ok := v.(sdk.Coins)
+	if !ok {
+		return fmt.Errorf("invalid parameter type %T", v)
+	}
+
+	if value == nil {
+		return nil
+	}
+	if value.IsAnyNil() {
+		return fmt.Errorf("min_hourly_prices must not have nil coin")
+	}
+	if !value.IsValid() {
+		return fmt.Errorf("min_hourly_prices must be valid")
+	}
+
+	return nil
+}
+
+func validateRevenueShare(v interface{}) error {
 	value, ok := v.(sdk.Dec)
 	if !ok {
 		return fmt.Errorf("invalid parameter type %T", v)
 	}
 
 	if value.IsNil() {
-		return fmt.Errorf("staking_share cannot be nil")
+		return fmt.Errorf("revenue_share cannot be nil")
 	}
 	if value.IsNegative() {
-		return fmt.Errorf("staking_share cannot be negative")
+		return fmt.Errorf("revenue_share cannot be negative")
 	}
 	if value.GT(sdk.NewDec(1)) {
-		return fmt.Errorf("staking_share cannot be greater than 1")
+		return fmt.Errorf("revenue_share cannot be greater than 1")
 	}
 
 	return nil

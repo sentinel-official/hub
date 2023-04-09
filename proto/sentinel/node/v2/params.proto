@@ -13,15 +13,23 @@ message Params {
   cosmos.base.v1beta1.Coin deposit = 1 [ (gogoproto.nullable) = false ];
   google.protobuf.Duration inactive_duration = 2
       [ (gogoproto.nullable) = false, (gogoproto.stdduration) = true ];
-  repeated cosmos.base.v1beta1.Coin max_price = 3 [
+  repeated cosmos.base.v1beta1.Coin max_gigabyte_prices = 3 [
     (gogoproto.nullable)     = false,
     (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
   ];
-  repeated cosmos.base.v1beta1.Coin min_price = 4 [
+  repeated cosmos.base.v1beta1.Coin max_hourly_prices = 4 [
     (gogoproto.nullable)     = false,
     (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
   ];
-  string staking_share = 5 [
+  repeated cosmos.base.v1beta1.Coin min_gigabyte_prices = 5 [
+    (gogoproto.nullable)     = false,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
+  ];
+  repeated cosmos.base.v1beta1.Coin min_hourly_prices = 6 [
+    (gogoproto.nullable)     = false,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
+  ];
+  string revenue_share = 7 [
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
     (gogoproto.nullable)   = false
   ];
