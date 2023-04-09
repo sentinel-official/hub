@@ -5,12 +5,7 @@ import (
 )
 
 var (
-	ErrorInvalidField     = errors.Register(ModuleName, 101, "invalid field")
-	ErrorInvalidFrom      = errors.Register(ModuleName, 102, "invalid from")
-	ErrorInvalidProvider  = errors.Register(ModuleName, 103, "invalid provider")
-	ErrorInvalidPrice     = errors.Register(ModuleName, 104, "invalid price")
-	ErrorInvalidRemoteURL = errors.Register(ModuleName, 105, "invalid remote_url")
-	ErrorInvalidStatus    = errors.Register(ModuleName, 106, "invalid status")
+	ErrorInvalidMessage = errors.Register(ModuleName, 101, "invalid message")
 )
 
 var (
