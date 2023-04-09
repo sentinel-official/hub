@@ -1,20 +1,22 @@
 syntax = "proto3";
-package sentinel.node.v1;
-
-option go_package = "github.com/sentinel-official/hub/x/node/types";
+package sentinel.node.v2;
 
 import "gogoproto/gogo.proto";
 import "cosmos/base/v1beta1/coin.proto";
 import "sentinel/types/v1/status.proto";
 
-option (gogoproto.equal_all)           = false;
+option go_package            = "github.com/sentinel-official/hub/x/node/types";
+option (gogoproto.equal_all) = false;
 option (gogoproto.goproto_getters_all) = false;
 
 // MsgRegisterRequest defines the SDK message for registering a node
 message MsgRegisterRequest {
-  string from                             = 1;
-  string provider                         = 2;
-  repeated cosmos.base.v1beta1.Coin price = 3 [
+  string from                                          = 1;
+  repeated cosmos.base.v1beta1.Coin price_per_gigabyte = 2 [
+    (gogoproto.nullable)     = false,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
+  ];
+  repeated cosmos.base.v1beta1.Coin price_per_hour = 3 [
     (gogoproto.nullable)     = false,
     (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
   ];
@@ -23,9 +25,12 @@ message MsgRegisterRequest {
 
 // MsgUpdateRequest defines the SDK message for updating a node
 message MsgUpdateRequest {
-  string from                             = 1;
-  string provider                         = 2;
-  repeated cosmos.base.v1beta1.Coin price = 3 [
+  string from                                          = 1;
+  repeated cosmos.base.v1beta1.Coin price_per_gigabyte = 2 [
+    (gogoproto.nullable)     = false,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
+  ];
+  repeated cosmos.base.v1beta1.Coin price_per_hour = 3 [
     (gogoproto.nullable)     = false,
     (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
   ];

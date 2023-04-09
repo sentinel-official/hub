@@ -1,5 +1,5 @@
 syntax = "proto3";
-package sentinel.node.v1;
+package sentinel.node.v2;
 
 import "gogoproto/gogo.proto";
 import "sentinel/types/v1/status.proto";
@@ -9,13 +9,11 @@ option (gogoproto.equal_all) = false;
 option (gogoproto.goproto_getters_all) = false;
 
 message EventRegister {
-  string address  = 1 [ (gogoproto.moretags) = "yaml:\"address\"" ];
-  string provider = 2 [ (gogoproto.moretags) = "yaml:\"provider\"" ];
+  string address = 1 [ (gogoproto.moretags) = "yaml:\"address\"" ];
 }
 
 message EventUpdate {
-  string address  = 1 [ (gogoproto.moretags) = "yaml:\"address\"" ];
-  string provider = 2 [ (gogoproto.moretags) = "yaml:\"provider\"" ];
+  string address = 1 [ (gogoproto.moretags) = "yaml:\"address\"" ];
 }
 
 message EventSetStatus {
