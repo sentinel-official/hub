@@ -23,13 +23,13 @@ func (k *Keeper) MaxGigabytePrices(ctx sdk.Context) (v sdk.Coins) {
 	return
 }
 
-func (k *Keeper) MaxHourlyPrices(ctx sdk.Context) (v sdk.Coins) {
-	k.params.Get(ctx, types.KeyMaxHourlyPrices, &v)
+func (k *Keeper) MinGigabytePrices(ctx sdk.Context) (v sdk.Coins) {
+	k.params.Get(ctx, types.KeyMinGigabytePrices, &v)
 	return
 }
 
-func (k *Keeper) MinGigabytePrices(ctx sdk.Context) (v sdk.Coins) {
-	k.params.Get(ctx, types.KeyMinGigabytePrices, &v)
+func (k *Keeper) MaxHourlyPrices(ctx sdk.Context) (v sdk.Coins) {
+	k.params.Get(ctx, types.KeyMaxHourlyPrices, &v)
 	return
 }
 
@@ -52,24 +52,24 @@ func (k *Keeper) GetParams(ctx sdk.Context) types.Params {
 		k.Deposit(ctx),
 		k.InactiveDuration(ctx),
 		k.MaxGigabytePrices(ctx),
-		k.MaxHourlyPrices(ctx),
 		k.MinGigabytePrices(ctx),
+		k.MaxHourlyPrices(ctx),
 		k.MinHourlyPrices(ctx),
 		k.RevenueShare(ctx),
 	)
 }
 
 func (k *Keeper) IsValidGigabytePrices(ctx sdk.Context, prices sdk.Coins) bool {
-	maxPrice := k.MaxGigabytePrices(ctx)
-	for _, coin := range maxPrice {
+	maxPrices := k.MaxGigabytePrices(ctx)
+	for _, coin := range maxPrices {
 		amount := prices.AmountOf(coin.Denom)
 		if amount.GT(coin.Amount) {
 			return false
 		}
 	}
 
-	minPrice := k.MinGigabytePrices(ctx)
-	for _, coin := range minPrice {
+	minPrices := k.MinGigabytePrices(ctx)
+	for _, coin := range minPrices {
 		amount := prices.AmountOf(coin.Denom)
 		if amount.LT(coin.Amount) {
 			return false
@@ -80,16 +80,16 @@ func (k *Keeper) IsValidGigabytePrices(ctx sdk.Context, prices sdk.Coins) bool {
 }
 
 func (k *Keeper) IsValidHourlyPrices(ctx sdk.Context, prices sdk.Coins) bool {
-	maxPrice := k.MaxHourlyPrices(ctx)
-	for _, coin := range maxPrice {
+	maxPrices := k.MaxHourlyPrices(ctx)
+	for _, coin := range maxPrices {
 		amount := prices.AmountOf(coin.Denom)
 		if amount.GT(coin.Amount) {
 			return false
 		}
 	}
 
-	minPrice := k.MinHourlyPrices(ctx)
-	for _, coin := range minPrice {
+	minPrices := k.MinHourlyPrices(ctx)
+	for _, coin := range minPrices {
 		amount := prices.AmountOf(coin.Denom)
 		if amount.LT(coin.Amount) {
 			return false
@@ -103,12 +103,12 @@ func (k *Keeper) IsMaxGigabytePricesModified(ctx sdk.Context) bool {
 	return k.params.Modified(ctx, types.KeyMaxGigabytePrices)
 }
 
-func (k *Keeper) IsMaxHourlyPricesModified(ctx sdk.Context) bool {
-	return k.params.Modified(ctx, types.KeyMaxHourlyPrices)
-}
-
 func (k *Keeper) IsMinGigabytePricesModified(ctx sdk.Context) bool {
 	return k.params.Modified(ctx, types.KeyMinGigabytePrices)
+}
+
+func (k *Keeper) IsMaxHourlyPricesModified(ctx sdk.Context) bool {
+	return k.params.Modified(ctx, types.KeyMaxHourlyPrices)
 }
 
 func (k *Keeper) IsMinHourlyPricesModified(ctx sdk.Context) bool {

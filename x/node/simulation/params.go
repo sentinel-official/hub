@@ -40,7 +40,7 @@ func ParamChanges(_ *rand.Rand) []simulationtypes.ParamChange {
 		),
 		simulation.NewSimParamChange(
 			types.ModuleName,
-			string(types.KeyMaxPrice),
+			string(types.KeyMaxGigabytePrices),
 			func(r *rand.Rand) string {
 				return sdk.NewCoins(
 					sdk.NewInt64Coin(
@@ -52,7 +52,7 @@ func ParamChanges(_ *rand.Rand) []simulationtypes.ParamChange {
 		),
 		simulation.NewSimParamChange(
 			types.ModuleName,
-			string(types.KeyMinPrice),
+			string(types.KeyMinGigabytePrices),
 			func(r *rand.Rand) string {
 				return sdk.NewCoins(
 					sdk.NewInt64Coin(
@@ -64,7 +64,31 @@ func ParamChanges(_ *rand.Rand) []simulationtypes.ParamChange {
 		),
 		simulation.NewSimParamChange(
 			types.ModuleName,
-			string(types.KeyStakingShare),
+			string(types.KeyMaxHourlyPrices),
+			func(r *rand.Rand) string {
+				return sdk.NewCoins(
+					sdk.NewInt64Coin(
+						sdk.DefaultBondDenom,
+						r.Int63n(MaxInt),
+					),
+				).String()
+			},
+		),
+		simulation.NewSimParamChange(
+			types.ModuleName,
+			string(types.KeyMinHourlyPrices),
+			func(r *rand.Rand) string {
+				return sdk.NewCoins(
+					sdk.NewInt64Coin(
+						sdk.DefaultBondDenom,
+						r.Int63n(MaxInt),
+					),
+				).String()
+			},
+		),
+		simulation.NewSimParamChange(
+			types.ModuleName,
+			string(types.KeyRevenueShare),
 			func(r *rand.Rand) string {
 				return sdk.NewDecWithPrec(
 					MaxInt,
