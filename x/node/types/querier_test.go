@@ -29,38 +29,6 @@ func TestNewQueryNodeRequest(t *testing.T) {
 	}
 }
 
-func TestNewQueryNodesForProviderRequest(t *testing.T) {
-	var (
-		addr       []byte
-		status     hubtypes.Status
-		pagination *query.PageRequest
-	)
-
-	for i := 0; i < 40; i++ {
-		addr = make([]byte, i)
-		status = hubtypes.Status(i % 4)
-		pagination = &query.PageRequest{
-			Key:        make([]byte, i),
-			Offset:     uint64(i),
-			Limit:      uint64(i),
-			CountTotal: i/2 == 0,
-		}
-
-		_, _ = rand.Read(addr)
-		_, _ = rand.Read(pagination.Key)
-
-		require.Equal(
-			t,
-			&QueryNodesForProviderRequest{
-				Address:    hubtypes.ProvAddress(addr).String(),
-				Status:     status,
-				Pagination: pagination,
-			},
-			NewQueryNodesForProviderRequest(addr, status, pagination),
-		)
-	}
-}
-
 func TestNewQueryNodesRequest(t *testing.T) {
 	var (
 		status     hubtypes.Status

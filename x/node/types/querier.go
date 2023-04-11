@@ -19,14 +19,6 @@ func NewQueryNodesRequest(status hubtypes.Status, pagination *query.PageRequest)
 	}
 }
 
-func NewQueryNodesForProviderRequest(addr hubtypes.ProvAddress, status hubtypes.Status, pagination *query.PageRequest) *QueryNodesForProviderRequest {
-	return &QueryNodesForProviderRequest{
-		Address:    addr.String(),
-		Status:     status,
-		Pagination: pagination,
-	}
-}
-
 func NewQueryParamsRequest() *QueryParamsRequest {
 	return &QueryParamsRequest{}
 }
