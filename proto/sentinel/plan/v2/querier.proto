@@ -24,10 +24,10 @@ message QueryPlansForProviderRequest {
   cosmos.base.query.v1beta1.PageRequest pagination = 3;
 }
 
-message QueryPlanRequest { uint64 id = 1 [ (gogoproto.customname) = "ID" ]; }
+message QueryPlanRequest { uint64 id = 1; }
 
 message QueryNodesForPlanRequest {
-  uint64 id = 1 [ (gogoproto.customname) = "ID" ];
+  uint64 id                                        = 1;
   cosmos.base.query.v1beta1.PageRequest pagination = 2;
 }
 

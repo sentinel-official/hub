@@ -136,7 +136,7 @@ func (m *MsgAddNodeRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{from.Bytes()}
 }
 
-func NewMsgRemoveNodeRequest(from sdk.AccAddress, id uint64, address hubtypes.NodeAddress) *MsgRemoveNodeRequest {
+func NewMsgRemoveNodeRequest(from hubtypes.ProvAddress, id uint64, address hubtypes.NodeAddress) *MsgRemoveNodeRequest {
 	return &MsgRemoveNodeRequest{
 		From:    from.String(),
 		ID:      id,
@@ -148,7 +148,7 @@ func (m *MsgRemoveNodeRequest) ValidateBasic() error {
 	if m.From == "" {
 		return errors.Wrap(ErrorInvalidMessage, "from cannot be empty")
 	}
-	if _, err := sdk.AccAddressFromBech32(m.From); err != nil {
+	if _, err := hubtypes.ProvAddressFromBech32(m.From); err != nil {
 		return errors.Wrap(ErrorInvalidMessage, err.Error())
 	}
 	if m.ID == 0 {
@@ -165,10 +165,10 @@ func (m *MsgRemoveNodeRequest) ValidateBasic() error {
 }
 
 func (m *MsgRemoveNodeRequest) GetSigners() []sdk.AccAddress {
-	from, err := sdk.AccAddressFromBech32(m.From)
+	from, err := hubtypes.ProvAddressFromBech32(m.From)
 	if err != nil {
 		panic(err)
 	}
 
-	return []sdk.AccAddress{from}
+	return []sdk.AccAddress{from.Bytes()}
 }

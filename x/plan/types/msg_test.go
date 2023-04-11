@@ -31,7 +31,7 @@ func TestMsgAddRequest_ValidateBasic(t *testing.T) {
 		{
 			"invalid address",
 			fields{
-				From: "invalid",
+				From: "sentprov",
 			},
 			true,
 		},
@@ -45,31 +45,42 @@ func TestMsgAddRequest_ValidateBasic(t *testing.T) {
 		{
 			"10 bytes address",
 			fields{
-				From: "sentprov1qypqxpq9qcrsszgsutj8xr",
+				From:     "sentprov1qypqxpq9qcrsszgsutj8xr",
+				Prices:   sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
+				Validity: 1000,
+				Bytes:    sdk.NewInt(1000),
 			},
-			true,
+			false,
 		},
 		{
 			"20 bytes address",
 			fields{
-				From: "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
+				From:     "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
+				Prices:   sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
+				Validity: 1000,
+				Bytes:    sdk.NewInt(1000),
 			},
-			true,
+			false,
 		},
 		{
 			"30 bytes address",
 			fields{
-				From: "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfqyy3zxfp9ycnjs2fsh33zgx",
+				From:     "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfqyy3zxfp9ycnjs2fsh33zgx",
+				Prices:   sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
+				Validity: 1000,
+				Bytes:    sdk.NewInt(1000),
 			},
-			true,
+			false,
 		},
 		{
 			"nil price",
 			fields{
-				From:   "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Prices: nil,
+				From:     "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
+				Prices:   nil,
+				Validity: 1000,
+				Bytes:    sdk.NewInt(1000),
 			},
-			true,
+			false,
 		},
 		{
 			"empty price",
@@ -114,10 +125,12 @@ func TestMsgAddRequest_ValidateBasic(t *testing.T) {
 		{
 			"positive amount price",
 			fields{
-				From:   "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Prices: sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
+				From:     "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
+				Prices:   sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
+				Validity: 1000,
+				Bytes:    sdk.NewInt(1000),
 			},
-			true,
+			false,
 		},
 		{
 			"negative validity",
@@ -143,9 +156,9 @@ func TestMsgAddRequest_ValidateBasic(t *testing.T) {
 				From:     "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
 				Prices:   sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
 				Validity: 1000,
-				Bytes:    sdk.NewInt(0),
+				Bytes:    sdk.NewInt(1000),
 			},
-			true,
+			false,
 		},
 		{
 			"negative bytes",
@@ -214,7 +227,7 @@ func TestMsgSetStatusRequest_ValidateBasic(t *testing.T) {
 		{
 			"invalid address",
 			fields{
-				From: "invalid",
+				From: "sentprov",
 			},
 			true,
 		},
@@ -228,23 +241,29 @@ func TestMsgSetStatusRequest_ValidateBasic(t *testing.T) {
 		{
 			"10 bytes address",
 			fields{
-				From: "sentprov1qypqxpq9qcrsszgsutj8xr",
+				From:   "sentprov1qypqxpq9qcrsszgsutj8xr",
+				ID:     1000,
+				Status: hubtypes.StatusActive,
 			},
-			true,
+			false,
 		},
 		{
 			"20 bytes address",
 			fields{
-				From: "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
+				From:   "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
+				ID:     1000,
+				Status: hubtypes.StatusActive,
 			},
-			true,
+			false,
 		},
 		{
 			"30 bytes address",
 			fields{
-				From: "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfqyy3zxfp9ycnjs2fsh33zgx",
+				From:   "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfqyy3zxfp9ycnjs2fsh33zgx",
+				ID:     1000,
+				Status: hubtypes.StatusActive,
 			},
-			true,
+			false,
 		},
 		{
 			"zero id",
@@ -257,10 +276,11 @@ func TestMsgSetStatusRequest_ValidateBasic(t *testing.T) {
 		{
 			"positive id",
 			fields{
-				From: "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				ID:   1000,
+				From:   "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
+				ID:     1000,
+				Status: hubtypes.StatusActive,
 			},
-			true,
+			false,
 		},
 		{
 			"unspecified status",
@@ -325,46 +345,52 @@ func TestMsgAddNodeRequest_ValidateBasic(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			"empty address",
+			"empty from",
 			fields{
 				From: "",
 			},
 			true,
 		},
 		{
-			"invalid address",
+			"invalid from",
 			fields{
-				From: "invalid",
+				From: "sentprov",
 			},
 			true,
 		},
 		{
-			"invalid prefix address",
+			"invalid prefix from",
 			fields{
 				From: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
 			},
 			true,
 		},
 		{
-			"10 bytes address",
+			"10 bytes from",
 			fields{
-				From: "sentprov1qypqxpq9qcrsszgsutj8xr",
+				From:    "sentprov1qypqxpq9qcrsszgsutj8xr",
+				ID:      1000,
+				Address: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
 			},
-			true,
+			false,
 		},
 		{
-			"20 bytes address",
+			"20 bytes from",
 			fields{
-				From: "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
+				From:    "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
+				ID:      1000,
+				Address: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
 			},
-			true,
+			false,
 		},
 		{
-			"30 bytes address",
+			"30 bytes from",
 			fields{
-				From: "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfqyy3zxfp9ycnjs2fsh33zgx",
+				From:    "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfqyy3zxfp9ycnjs2fsh33zgx",
+				ID:      1000,
+				Address: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
 			},
-			true,
+			false,
 		},
 		{
 			"zero id",
@@ -377,10 +403,11 @@ func TestMsgAddNodeRequest_ValidateBasic(t *testing.T) {
 		{
 			"positive id",
 			fields{
-				From: "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				ID:   1000,
+				From:    "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
+				ID:      1000,
+				Address: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
 			},
-			true,
+			false,
 		},
 		{
 			"empty address",
@@ -396,7 +423,7 @@ func TestMsgAddNodeRequest_ValidateBasic(t *testing.T) {
 			fields{
 				From:    "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
 				ID:      1000,
-				Address: "invalid",
+				Address: "sentnode",
 			},
 			true,
 		},
@@ -463,51 +490,57 @@ func TestMsgRemoveNodeRequest_ValidateBasic(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			"empty address",
+			"empty from",
 			fields{
 				From: "",
 			},
 			true,
 		},
 		{
-			"invalid address",
+			"invalid from",
 			fields{
-				From: "invalid",
+				From: "sentprov",
 			},
 			true,
 		},
 		{
 			"invalid prefix from",
 			fields{
-				From: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				From: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
 			},
 			true,
 		},
 		{
 			"10 bytes from",
 			fields{
-				From: "sent1qypqxpq9qcrsszgslawd5s",
+				From:    "sentprov1qypqxpq9qcrsszgsutj8xr",
+				ID:      1000,
+				Address: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
 			},
-			true,
+			false,
 		},
 		{
 			"20 bytes from",
 			fields{
-				From: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				From:    "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
+				ID:      1000,
+				Address: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
 			},
-			true,
+			false,
 		},
 		{
 			"30 bytes from",
 			fields{
-				From: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfqyy3zxfp9ycnjs2fszvfck8",
+				From:    "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfqyy3zxfp9ycnjs2fsh33zgx",
+				ID:      1000,
+				Address: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
 			},
-			true,
+			false,
 		},
 		{
 			"zero id",
 			fields{
-				From: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				From: "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
 				ID:   0,
 			},
 			true,
@@ -515,15 +548,16 @@ func TestMsgRemoveNodeRequest_ValidateBasic(t *testing.T) {
 		{
 			"positive id",
 			fields{
-				From: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				ID:   1000,
+				From:    "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
+				ID:      1000,
+				Address: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
 			},
-			true,
+			false,
 		},
 		{
 			"empty address",
 			fields{
-				From:    "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				From:    "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
 				ID:      1000,
 				Address: "",
 			},
@@ -532,16 +566,16 @@ func TestMsgRemoveNodeRequest_ValidateBasic(t *testing.T) {
 		{
 			"invalid address",
 			fields{
-				From:    "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				From:    "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
 				ID:      1000,
-				Address: "invalid",
+				Address: "sentnode",
 			},
 			true,
 		},
 		{
 			"invalid prefix address",
 			fields{
-				From:    "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				From:    "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
 				ID:      1000,
 				Address: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
 			},
@@ -550,7 +584,7 @@ func TestMsgRemoveNodeRequest_ValidateBasic(t *testing.T) {
 		{
 			"10 bytes address",
 			fields{
-				From:    "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				From:    "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
 				ID:      1000,
 				Address: "sentnode1qypqxpq9qcrsszgse4wwrm",
 			},
@@ -559,7 +593,7 @@ func TestMsgRemoveNodeRequest_ValidateBasic(t *testing.T) {
 		{
 			"20 bytes address",
 			fields{
-				From:    "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				From:    "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
 				ID:      1000,
 				Address: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
 			},
@@ -568,7 +602,7 @@ func TestMsgRemoveNodeRequest_ValidateBasic(t *testing.T) {
 		{
 			"30 bytes address",
 			fields{
-				From:    "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				From:    "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
 				ID:      1000,
 				Address: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqyy3zxfp9ycnjs2fsxqglcv",
 			},

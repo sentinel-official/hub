@@ -157,8 +157,8 @@ func TestPlan_Price(t *testing.T) {
 			args{
 				denom: "one",
 			},
-			sdk.Coin{},
-			false,
+			sdk.Coin{Denom: "one", Amount: sdk.NewInt(1)},
+			true,
 		},
 		{
 			"1one price and two denom",
@@ -201,8 +201,8 @@ func TestPlan_Price(t *testing.T) {
 			args{
 				denom: "two",
 			},
-			sdk.Coin{},
-			false,
+			sdk.Coin{Denom: "two", Amount: sdk.NewInt(1)},
+			true,
 		},
 	}
 	for _, tt := range tests {
@@ -241,7 +241,7 @@ func TestPlan_Validate(t *testing.T) {
 			fields{
 				ID: 0,
 			},
-			false,
+			true,
 		},
 		{
 			"positive id",
@@ -262,7 +262,7 @@ func TestPlan_Validate(t *testing.T) {
 				ID:           1000,
 				ProviderAddr: "",
 			},
-			false,
+			true,
 		},
 		{
 			"invalid provider",
@@ -270,7 +270,7 @@ func TestPlan_Validate(t *testing.T) {
 				ID:           1000,
 				ProviderAddr: "sentprov",
 			},
-			false,
+			true,
 		},
 		{
 			"invalid prefix provider",
@@ -278,7 +278,7 @@ func TestPlan_Validate(t *testing.T) {
 				ID:           1000,
 				ProviderAddr: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
 			},
-			false,
+			true,
 		},
 		{
 			"10 bytes provider",
@@ -339,7 +339,7 @@ func TestPlan_Validate(t *testing.T) {
 				ProviderAddr: "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
 				Prices:       sdk.Coins{},
 			},
-			false,
+			true,
 		},
 		{
 			"empty denom price",
@@ -348,7 +348,7 @@ func TestPlan_Validate(t *testing.T) {
 				ProviderAddr: "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
 				Prices:       sdk.Coins{sdk.Coin{Denom: ""}},
 			},
-			false,
+			true,
 		},
 		{
 			"invalid denom price",
@@ -357,7 +357,7 @@ func TestPlan_Validate(t *testing.T) {
 				ProviderAddr: "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
 				Prices:       sdk.Coins{sdk.Coin{Denom: "o"}},
 			},
-			false,
+			true,
 		},
 		{
 			"negative amount price",
@@ -366,7 +366,7 @@ func TestPlan_Validate(t *testing.T) {
 				ProviderAddr: "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
 				Prices:       sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(-1000)}},
 			},
-			false,
+			true,
 		},
 		{
 			"zero amount price",
@@ -375,7 +375,7 @@ func TestPlan_Validate(t *testing.T) {
 				ProviderAddr: "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
 				Prices:       sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(0)}},
 			},
-			false,
+			true,
 		},
 		{
 			"positive amount price",
@@ -398,7 +398,7 @@ func TestPlan_Validate(t *testing.T) {
 				Prices:       sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
 				Validity:     -1000,
 			},
-			false,
+			true,
 		},
 		{
 			"zero validity",
@@ -408,7 +408,7 @@ func TestPlan_Validate(t *testing.T) {
 				Prices:       sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
 				Validity:     0,
 			},
-			false,
+			true,
 		},
 		{
 			"positive validity",
@@ -432,7 +432,7 @@ func TestPlan_Validate(t *testing.T) {
 				Validity:     1000,
 				Bytes:        sdk.NewInt(-1000),
 			},
-			false,
+			true,
 		},
 		{
 			"zero bytes",
@@ -443,7 +443,7 @@ func TestPlan_Validate(t *testing.T) {
 				Validity:     1000,
 				Bytes:        sdk.NewInt(0),
 			},
-			false,
+			true,
 		},
 		{
 			"positive bytes",
@@ -468,7 +468,7 @@ func TestPlan_Validate(t *testing.T) {
 				Bytes:        sdk.NewInt(1000),
 				Status:       hubtypes.StatusUnspecified,
 			},
-			false,
+			true,
 		},
 		{
 			"active status",
@@ -479,6 +479,7 @@ func TestPlan_Validate(t *testing.T) {
 				Validity:     1000,
 				Bytes:        sdk.NewInt(1000),
 				Status:       hubtypes.StatusActive,
+				StatusAt:     time.Now(),
 			},
 			false,
 		},
@@ -492,7 +493,7 @@ func TestPlan_Validate(t *testing.T) {
 				Bytes:        sdk.NewInt(1000),
 				Status:       hubtypes.StatusInactivePending,
 			},
-			false,
+			true,
 		},
 		{
 			"inactive status",
@@ -503,6 +504,7 @@ func TestPlan_Validate(t *testing.T) {
 				Validity:     1000,
 				Bytes:        sdk.NewInt(1000),
 				Status:       hubtypes.StatusInactive,
+				StatusAt:     time.Now(),
 			},
 			false,
 		},
@@ -517,10 +519,10 @@ func TestPlan_Validate(t *testing.T) {
 				Status:       hubtypes.StatusActive,
 				StatusAt:     time.Time{},
 			},
-			false,
+			true,
 		},
 		{
-			"now status_at",
+			"positive status_at",
 			fields{
 				ID:           1000,
 				ProviderAddr: "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
