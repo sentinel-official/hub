@@ -67,10 +67,7 @@ func (m *Node) Validate() error {
 	if !m.Status.IsOneOf(hubtypes.StatusActive, hubtypes.StatusInactive) {
 		return fmt.Errorf("status must be one of [active, inactive]")
 	}
-	if m.StatusAt < 0 {
-		return fmt.Errorf("status_at cannot be negative")
-	}
-	if m.StatusAt == 0 {
+	if m.StatusAt.IsZero() {
 		return fmt.Errorf("status_at cannot be zero")
 	}
 
