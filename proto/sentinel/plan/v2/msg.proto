@@ -1,5 +1,5 @@
 syntax = "proto3";
-package sentinel.plan.v1;
+package sentinel.plan.v2;
 
 option go_package = "github.com/sentinel-official/hub/x/plan/types";
 
@@ -13,8 +13,8 @@ option (gogoproto.goproto_getters_all) = false;
 
 // MsgAddRequest defines the SDK message for adding a plan
 message MsgAddRequest {
-  string from                             = 1;
-  repeated cosmos.base.v1beta1.Coin price = 2 [
+  string from                              = 1;
+  repeated cosmos.base.v1beta1.Coin prices = 2 [
     (gogoproto.nullable)     = false,
     (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
   ];
@@ -30,21 +30,21 @@ message MsgAddRequest {
 // plan
 message MsgSetStatusRequest {
   string from                     = 1;
-  uint64 id                       = 2;
+  uint64 id                       = 2 [ (gogoproto.customname) = "ID" ];
   sentinel.types.v1.Status status = 3;
 }
 
 // MsgAddNodeRequest defines the SDK message for adding a node to a plan
 message MsgAddNodeRequest {
   string from    = 1;
-  uint64 id      = 2;
+  uint64 id      = 2 [ (gogoproto.customname) = "ID" ];
   string address = 3;
 }
 
 // MsgRemoveNodeRequest defines the SDK message for removing a node from a plan
 message MsgRemoveNodeRequest {
   string from    = 1;
-  uint64 id      = 2;
+  uint64 id      = 2 [ (gogoproto.customname) = "ID" ];
   string address = 3;
 }
 

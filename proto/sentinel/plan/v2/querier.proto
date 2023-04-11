@@ -1,14 +1,14 @@
 syntax = "proto3";
-package sentinel.plan.v1;
+package sentinel.plan.v2;
 
 option go_package = "github.com/sentinel-official/hub/x/plan/types";
 
 import "cosmos/base/query/v1beta1/pagination.proto";
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
-import "sentinel/node/v1/node.proto";
-import "sentinel/plan/v1/plan.proto";
 import "sentinel/types/v1/status.proto";
+import "sentinel/node/v2/node.proto";
+import "sentinel/plan/v2/plan.proto";
 
 option (gogoproto.equal_all)           = false;
 option (gogoproto.goproto_getters_all) = false;
@@ -24,10 +24,10 @@ message QueryPlansForProviderRequest {
   cosmos.base.query.v1beta1.PageRequest pagination = 3;
 }
 
-message QueryPlanRequest { uint64 id = 1; }
+message QueryPlanRequest { uint64 id = 1 [ (gogoproto.customname) = "ID" ]; }
 
 message QueryNodesForPlanRequest {
-  uint64 id                                        = 1;
+  uint64 id = 1 [ (gogoproto.customname) = "ID" ];
   cosmos.base.query.v1beta1.PageRequest pagination = 2;
 }
 
@@ -44,7 +44,7 @@ message QueryPlansForProviderResponse {
 message QueryPlanResponse { Plan plan = 1 [ (gogoproto.nullable) = false ]; }
 
 message QueryNodesForPlanResponse {
-  repeated sentinel.node.v1.Node nodes = 1 [ (gogoproto.nullable) = false ];
+  repeated sentinel.node.v2.Node nodes = 1 [ (gogoproto.nullable) = false ];
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
