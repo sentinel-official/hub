@@ -12,7 +12,7 @@ import (
 func TestMsgAddRequest_ValidateBasic(t *testing.T) {
 	type fields struct {
 		From     string
-		Price    sdk.Coins
+		Prices   sdk.Coins
 		Validity time.Duration
 		Bytes    sdk.Int
 	}
@@ -66,56 +66,56 @@ func TestMsgAddRequest_ValidateBasic(t *testing.T) {
 		{
 			"nil price",
 			fields{
-				From:  "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Price: nil,
+				From:   "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
+				Prices: nil,
 			},
 			true,
 		},
 		{
 			"empty price",
 			fields{
-				From:  "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Price: sdk.Coins{},
+				From:   "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
+				Prices: sdk.Coins{},
 			},
 			true,
 		},
 		{
 			"empty denom price",
 			fields{
-				From:  "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Price: sdk.Coins{sdk.Coin{Denom: ""}},
+				From:   "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
+				Prices: sdk.Coins{sdk.Coin{Denom: ""}},
 			},
 			true,
 		},
 		{
 			"invalid denom price",
 			fields{
-				From:  "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Price: sdk.Coins{sdk.Coin{Denom: "o"}},
+				From:   "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
+				Prices: sdk.Coins{sdk.Coin{Denom: "o"}},
 			},
 			true,
 		},
 		{
 			"negative amount price",
 			fields{
-				From:  "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Price: sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(-1000)}},
+				From:   "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
+				Prices: sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(-1000)}},
 			},
 			true,
 		},
 		{
 			"zero amount price",
 			fields{
-				From:  "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Price: sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(0)}},
+				From:   "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
+				Prices: sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(0)}},
 			},
 			true,
 		},
 		{
 			"positive amount price",
 			fields{
-				From:  "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Price: sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
+				From:   "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
+				Prices: sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
 			},
 			true,
 		},
@@ -123,7 +123,7 @@ func TestMsgAddRequest_ValidateBasic(t *testing.T) {
 			"negative validity",
 			fields{
 				From:     "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Price:    sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
+				Prices:   sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
 				Validity: -1000,
 			},
 			true,
@@ -132,7 +132,7 @@ func TestMsgAddRequest_ValidateBasic(t *testing.T) {
 			"zero validity",
 			fields{
 				From:     "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Price:    sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
+				Prices:   sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
 				Validity: 0,
 			},
 			true,
@@ -141,7 +141,7 @@ func TestMsgAddRequest_ValidateBasic(t *testing.T) {
 			"positive validity",
 			fields{
 				From:     "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Price:    sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
+				Prices:   sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
 				Validity: 1000,
 				Bytes:    sdk.NewInt(0),
 			},
@@ -151,7 +151,7 @@ func TestMsgAddRequest_ValidateBasic(t *testing.T) {
 			"negative bytes",
 			fields{
 				From:     "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Price:    sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
+				Prices:   sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
 				Validity: 1000,
 				Bytes:    sdk.NewInt(-1000),
 			},
@@ -161,7 +161,7 @@ func TestMsgAddRequest_ValidateBasic(t *testing.T) {
 			"zero bytes",
 			fields{
 				From:     "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Price:    sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
+				Prices:   sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
 				Validity: 1000,
 				Bytes:    sdk.NewInt(0),
 			},
@@ -171,7 +171,7 @@ func TestMsgAddRequest_ValidateBasic(t *testing.T) {
 			"positive bytes",
 			fields{
 				From:     "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Price:    sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
+				Prices:   sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
 				Validity: 1000,
 				Bytes:    sdk.NewInt(1000),
 			},
@@ -182,7 +182,7 @@ func TestMsgAddRequest_ValidateBasic(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			m := &MsgAddRequest{
 				From:     tt.fields.From,
-				Price:    tt.fields.Price,
+				Prices:   tt.fields.Prices,
 				Validity: tt.fields.Validity,
 				Bytes:    tt.fields.Bytes,
 			}
@@ -196,7 +196,7 @@ func TestMsgAddRequest_ValidateBasic(t *testing.T) {
 func TestMsgSetStatusRequest_ValidateBasic(t *testing.T) {
 	type fields struct {
 		From   string
-		Id     uint64
+		ID     uint64
 		Status hubtypes.Status
 	}
 	tests := []struct {
@@ -250,7 +250,7 @@ func TestMsgSetStatusRequest_ValidateBasic(t *testing.T) {
 			"zero id",
 			fields{
 				From: "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Id:   0,
+				ID:   0,
 			},
 			true,
 		},
@@ -258,7 +258,7 @@ func TestMsgSetStatusRequest_ValidateBasic(t *testing.T) {
 			"positive id",
 			fields{
 				From: "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Id:   1000,
+				ID:   1000,
 			},
 			true,
 		},
@@ -266,7 +266,7 @@ func TestMsgSetStatusRequest_ValidateBasic(t *testing.T) {
 			"unspecified status",
 			fields{
 				From:   "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Id:     1000,
+				ID:     1000,
 				Status: hubtypes.StatusUnspecified,
 			},
 			true,
@@ -275,7 +275,7 @@ func TestMsgSetStatusRequest_ValidateBasic(t *testing.T) {
 			"active status",
 			fields{
 				From:   "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Id:     1000,
+				ID:     1000,
 				Status: hubtypes.StatusActive,
 			},
 			false,
@@ -284,7 +284,7 @@ func TestMsgSetStatusRequest_ValidateBasic(t *testing.T) {
 			"inactive pending status",
 			fields{
 				From:   "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Id:     1000,
+				ID:     1000,
 				Status: hubtypes.StatusInactivePending,
 			},
 			true,
@@ -293,7 +293,7 @@ func TestMsgSetStatusRequest_ValidateBasic(t *testing.T) {
 			"inactive status",
 			fields{
 				From:   "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Id:     1000,
+				ID:     1000,
 				Status: hubtypes.StatusInactive,
 			},
 			false,
@@ -303,7 +303,7 @@ func TestMsgSetStatusRequest_ValidateBasic(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			m := &MsgSetStatusRequest{
 				From:   tt.fields.From,
-				Id:     tt.fields.Id,
+				ID:     tt.fields.ID,
 				Status: tt.fields.Status,
 			}
 			if err := m.ValidateBasic(); (err != nil) != tt.wantErr {
@@ -316,7 +316,7 @@ func TestMsgSetStatusRequest_ValidateBasic(t *testing.T) {
 func TestMsgAddNodeRequest_ValidateBasic(t *testing.T) {
 	type fields struct {
 		From    string
-		Id      uint64
+		ID      uint64
 		Address string
 	}
 	tests := []struct {
@@ -370,7 +370,7 @@ func TestMsgAddNodeRequest_ValidateBasic(t *testing.T) {
 			"zero id",
 			fields{
 				From: "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Id:   0,
+				ID:   0,
 			},
 			true,
 		},
@@ -378,7 +378,7 @@ func TestMsgAddNodeRequest_ValidateBasic(t *testing.T) {
 			"positive id",
 			fields{
 				From: "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Id:   1000,
+				ID:   1000,
 			},
 			true,
 		},
@@ -386,7 +386,7 @@ func TestMsgAddNodeRequest_ValidateBasic(t *testing.T) {
 			"empty address",
 			fields{
 				From:    "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Id:      1000,
+				ID:      1000,
 				Address: "",
 			},
 			true,
@@ -395,7 +395,7 @@ func TestMsgAddNodeRequest_ValidateBasic(t *testing.T) {
 			"invalid address",
 			fields{
 				From:    "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Id:      1000,
+				ID:      1000,
 				Address: "invalid",
 			},
 			true,
@@ -404,7 +404,7 @@ func TestMsgAddNodeRequest_ValidateBasic(t *testing.T) {
 			"invalid prefix address",
 			fields{
 				From:    "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Id:      1000,
+				ID:      1000,
 				Address: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
 			},
 			true,
@@ -413,7 +413,7 @@ func TestMsgAddNodeRequest_ValidateBasic(t *testing.T) {
 			"10 bytes address",
 			fields{
 				From:    "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Id:      1000,
+				ID:      1000,
 				Address: "sentnode1qypqxpq9qcrsszgse4wwrm",
 			},
 			false,
@@ -422,7 +422,7 @@ func TestMsgAddNodeRequest_ValidateBasic(t *testing.T) {
 			"20 bytes address",
 			fields{
 				From:    "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Id:      1000,
+				ID:      1000,
 				Address: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
 			},
 			false,
@@ -431,7 +431,7 @@ func TestMsgAddNodeRequest_ValidateBasic(t *testing.T) {
 			"30 bytes address",
 			fields{
 				From:    "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Id:      1000,
+				ID:      1000,
 				Address: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqyy3zxfp9ycnjs2fsxqglcv",
 			},
 			false,
@@ -441,7 +441,7 @@ func TestMsgAddNodeRequest_ValidateBasic(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			m := &MsgAddNodeRequest{
 				From:    tt.fields.From,
-				Id:      tt.fields.Id,
+				ID:      tt.fields.ID,
 				Address: tt.fields.Address,
 			}
 			if err := m.ValidateBasic(); (err != nil) != tt.wantErr {
@@ -454,7 +454,7 @@ func TestMsgAddNodeRequest_ValidateBasic(t *testing.T) {
 func TestMsgRemoveNodeRequest_ValidateBasic(t *testing.T) {
 	type fields struct {
 		From    string
-		Id      uint64
+		ID      uint64
 		Address string
 	}
 	tests := []struct {
@@ -508,7 +508,7 @@ func TestMsgRemoveNodeRequest_ValidateBasic(t *testing.T) {
 			"zero id",
 			fields{
 				From: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				Id:   0,
+				ID:   0,
 			},
 			true,
 		},
@@ -516,7 +516,7 @@ func TestMsgRemoveNodeRequest_ValidateBasic(t *testing.T) {
 			"positive id",
 			fields{
 				From: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				Id:   1000,
+				ID:   1000,
 			},
 			true,
 		},
@@ -524,7 +524,7 @@ func TestMsgRemoveNodeRequest_ValidateBasic(t *testing.T) {
 			"empty address",
 			fields{
 				From:    "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				Id:      1000,
+				ID:      1000,
 				Address: "",
 			},
 			true,
@@ -533,7 +533,7 @@ func TestMsgRemoveNodeRequest_ValidateBasic(t *testing.T) {
 			"invalid address",
 			fields{
 				From:    "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				Id:      1000,
+				ID:      1000,
 				Address: "invalid",
 			},
 			true,
@@ -542,7 +542,7 @@ func TestMsgRemoveNodeRequest_ValidateBasic(t *testing.T) {
 			"invalid prefix address",
 			fields{
 				From:    "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				Id:      1000,
+				ID:      1000,
 				Address: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
 			},
 			true,
@@ -551,7 +551,7 @@ func TestMsgRemoveNodeRequest_ValidateBasic(t *testing.T) {
 			"10 bytes address",
 			fields{
 				From:    "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				Id:      1000,
+				ID:      1000,
 				Address: "sentnode1qypqxpq9qcrsszgse4wwrm",
 			},
 			false,
@@ -560,7 +560,7 @@ func TestMsgRemoveNodeRequest_ValidateBasic(t *testing.T) {
 			"20 bytes address",
 			fields{
 				From:    "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				Id:      1000,
+				ID:      1000,
 				Address: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
 			},
 			false,
@@ -569,7 +569,7 @@ func TestMsgRemoveNodeRequest_ValidateBasic(t *testing.T) {
 			"30 bytes address",
 			fields{
 				From:    "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				Id:      1000,
+				ID:      1000,
 				Address: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqyy3zxfp9ycnjs2fsxqglcv",
 			},
 			false,
@@ -579,7 +579,7 @@ func TestMsgRemoveNodeRequest_ValidateBasic(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			m := &MsgRemoveNodeRequest{
 				From:    tt.fields.From,
-				Id:      tt.fields.Id,
+				ID:      tt.fields.ID,
 				Address: tt.fields.Address,
 			}
 			if err := m.ValidateBasic(); (err != nil) != tt.wantErr {

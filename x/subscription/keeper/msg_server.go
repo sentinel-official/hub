@@ -116,7 +116,7 @@ func (k *msgServer) MsgSubscribeToPlan(c context.Context, msg *types.MsgSubscrib
 	}
 
 	if plan.Price != nil {
-		price, found := plan.PriceForDenom(msg.Denom)
+		price, found := plan.Price(msg.Denom)
 		if !found {
 			return nil, types.ErrorPriceDoesNotExist
 		}

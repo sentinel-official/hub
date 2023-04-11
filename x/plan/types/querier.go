@@ -8,7 +8,7 @@ import (
 
 func NewQueryPlanRequest(id uint64) *QueryPlanRequest {
 	return &QueryPlanRequest{
-		Id: id,
+		ID: id,
 	}
 }
 
@@ -19,9 +19,9 @@ func NewQueryPlansRequest(status hubtypes.Status, pagination *query.PageRequest)
 	}
 }
 
-func NewQueryPlansForProviderRequest(address hubtypes.ProvAddress, status hubtypes.Status, pagination *query.PageRequest) *QueryPlansForProviderRequest {
+func NewQueryPlansForProviderRequest(addr hubtypes.ProvAddress, status hubtypes.Status, pagination *query.PageRequest) *QueryPlansForProviderRequest {
 	return &QueryPlansForProviderRequest{
-		Address:    address.String(),
+		Address:    addr.String(),
 		Status:     status,
 		Pagination: pagination,
 	}
@@ -29,7 +29,7 @@ func NewQueryPlansForProviderRequest(address hubtypes.ProvAddress, status hubtyp
 
 func NewQueryNodesForPlanRequest(id uint64, pagination *query.PageRequest) *QueryNodesForPlanRequest {
 	return &QueryNodesForPlanRequest{
-		Id:         id,
+		ID:         id,
 		Pagination: pagination,
 	}
 }
