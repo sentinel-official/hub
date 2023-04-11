@@ -92,7 +92,7 @@ func queryProviders() *cobra.Command {
 
 	flags.AddQueryFlagsToCmd(cmd)
 	flags.AddPaginationFlagsToCmd(cmd, "providers")
-	cmd.Flags().String(hubtypes.FlagStatus, "", "filter the providers with status (active|inactive)")
+	cmd.Flags().String(hubtypes.FlagStatus, "", "filter the providers by status (active|inactive)")
 
 	return cmd
 }

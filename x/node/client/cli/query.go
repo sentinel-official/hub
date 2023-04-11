@@ -60,7 +60,7 @@ func queryNodes() *cobra.Command {
 				return err
 			}
 
-			status, err := GetStatus(cmd.Flags())
+			status, err := hubtypes.StatusFromFlags(cmd.Flags())
 			if err != nil {
 				return err
 			}
@@ -91,7 +91,7 @@ func queryNodes() *cobra.Command {
 
 	flags.AddQueryFlagsToCmd(cmd)
 	flags.AddPaginationFlagsToCmd(cmd, "nodes")
-	cmd.Flags().String(flagStatus, "", "filter nodes by status (active|inactive)")
+	cmd.Flags().String(hubtypes.FlagStatus, "", "filter the nodes by status (active|inactive)")
 
 	return cmd
 }
