@@ -21,20 +21,20 @@ func txRegister() *cobra.Command {
 				return err
 			}
 
-			provider, err := GetProvider(cmd.Flags())
+			gigabytePrices, err := GetGigabytePrices(cmd.Flags())
 			if err != nil {
 				return err
 			}
 
-			price, err := GetPrice(cmd.Flags())
+			hourlyPrice, err := GetHourlyPrices(cmd.Flags())
 			if err != nil {
 				return err
 			}
 
 			msg := types.NewMsgRegisterRequest(
 				ctx.FromAddress,
-				provider,
-				price,
+				gigabytePrices,
+				hourlyPrice,
 				args[0],
 			)
 			if err := msg.ValidateBasic(); err != nil {
@@ -46,8 +46,8 @@ func txRegister() *cobra.Command {
 	}
 
 	flags.AddTxFlagsToCmd(cmd)
-	cmd.Flags().String(flagProvider, "", "provider address of the node")
-	cmd.Flags().String(flagPrice, "", "price per Gigabyte of the node")
+	cmd.Flags().String(flagGigabytePrices, "", "prices per one gigabyte of bandwidth provision")
+	cmd.Flags().String(flagHourlyPrices, "", "prices per one hour of bandwidth provision")
 
 	return cmd
 }
@@ -62,12 +62,12 @@ func txUpdate() *cobra.Command {
 				return err
 			}
 
-			provider, err := GetProvider(cmd.Flags())
+			gigabytePrices, err := GetGigabytePrices(cmd.Flags())
 			if err != nil {
 				return err
 			}
 
-			price, err := GetPrice(cmd.Flags())
+			hourlyPrice, err := GetHourlyPrices(cmd.Flags())
 			if err != nil {
 				return err
 			}
@@ -79,8 +79,8 @@ func txUpdate() *cobra.Command {
 
 			msg := types.NewMsgUpdateRequest(
 				ctx.FromAddress.Bytes(),
-				provider,
-				price,
+				gigabytePrices,
+				hourlyPrice,
 				remoteURL,
 			)
 			if err := msg.ValidateBasic(); err != nil {
@@ -92,9 +92,9 @@ func txUpdate() *cobra.Command {
 	}
 
 	flags.AddTxFlagsToCmd(cmd)
-	cmd.Flags().String(flagProvider, "", "provider address of the node")
-	cmd.Flags().String(flagPrice, "", "price per Gigabyte of the node")
-	cmd.Flags().String(flagRemoteURL, "", "remote URL of the node")
+	cmd.Flags().String(flagGigabytePrices, "", "prices per one gigabyte of bandwidth provision")
+	cmd.Flags().String(flagHourlyPrices, "", "prices per one hour of bandwidth provision")
+	cmd.Flags().String(flagRemoteURL, "", "remote URL address of the node")
 
 	return cmd
 }

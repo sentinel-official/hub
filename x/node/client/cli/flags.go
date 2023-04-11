@@ -8,15 +8,14 @@ import (
 )
 
 const (
-	flagProvider  = "provider"
-	flagPlan      = "plan"
-	flagPrice     = "price"
-	flagRemoteURL = "remote-url"
-	flagStatus    = "status"
+	flagGigabytePrices = "gigabyte-prices"
+	flagHourlyPrices   = "hourly-prices"
+	flagRemoteURL      = "remote-url"
+	flagStatus         = "status"
 )
 
-func GetProvider(flags *pflag.FlagSet) (hubtypes.ProvAddress, error) {
-	s, err := flags.GetString(flagProvider)
+func GetGigabytePrices(flags *pflag.FlagSet) (sdk.Coins, error) {
+	s, err := flags.GetString(flagGigabytePrices)
 	if err != nil {
 		return nil, err
 	}
@@ -24,11 +23,11 @@ func GetProvider(flags *pflag.FlagSet) (hubtypes.ProvAddress, error) {
 		return nil, nil
 	}
 
-	return hubtypes.ProvAddressFromBech32(s)
+	return sdk.ParseCoinsNormalized(s)
 }
 
-func GetPrice(flags *pflag.FlagSet) (sdk.Coins, error) {
-	s, err := flags.GetString(flagPrice)
+func GetHourlyPrices(flags *pflag.FlagSet) (sdk.Coins, error) {
+	s, err := flags.GetString(flagHourlyPrices)
 	if err != nil {
 		return nil, err
 	}
