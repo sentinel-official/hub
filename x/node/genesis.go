@@ -12,26 +12,15 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, state *types.GenesisState) {
 	k.SetParams(ctx, state.Params)
 
 	inactiveDuration := k.InactiveDuration(ctx)
-	for _, node := range state.Nodes {
-		var (
-			address  = node.GetAddress()
-			provider = node.GetProvider()
-		)
+	for _, item := range state.Nodes {
+		k.SetNode(ctx, item)
+		if item.Status.Equal(hubtypes.StatusActive) {
+			var (
+				addr     = item.GetAddress()
+				statusAt = item.StatusAt.Add(inactiveDuration)
+			)
 
-		k.SetNode(ctx, node)
-
-		if node.Status.Equal(hubtypes.StatusActive) {
-			k.SetActiveNode(ctx, address)
-			if node.Provider != "" {
-				k.SetActiveNodeForProvider(ctx, provider, address)
-			}
-
-			k.SetInactiveNodeAt(ctx, node.StatusAt.Add(inactiveDuration), address)
-		} else {
-			k.SetInactiveNode(ctx, address)
-			if node.Provider != "" {
-				k.SetInactiveNodeForProvider(ctx, provider, address)
-			}
+			k.SetInactiveNodeAt(ctx, statusAt, addr)
 		}
 	}
 }

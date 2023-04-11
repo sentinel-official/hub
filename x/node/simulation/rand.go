@@ -14,7 +14,7 @@ import (
 )
 
 const (
-	MaxPriceAmount     = 1 << 18
+	MaxPricesAmount    = 1 << 18
 	MaxRemoteURLLength = 48
 )
 
@@ -43,12 +43,21 @@ func RandomNodes(r *rand.Rand, accounts []simulationtypes.Account) types.Nodes {
 		}
 
 		var (
-			price = simulationhubtypes.RandomCoins(
+			gigabytePrices = simulationhubtypes.RandomCoins(
 				r,
 				sdk.NewCoins(
 					sdk.NewInt64Coin(
 						sdk.DefaultBondDenom,
-						MaxPriceAmount,
+						MaxPricesAmount,
+					),
+				),
+			)
+			hourlyPrices = simulationhubtypes.RandomCoins(
+				r,
+				sdk.NewCoins(
+					sdk.NewInt64Coin(
+						sdk.DefaultBondDenom,
+						MaxPricesAmount,
 					),
 				),
 			)
@@ -68,12 +77,12 @@ func RandomNodes(r *rand.Rand, accounts []simulationtypes.Account) types.Nodes {
 		items = append(
 			items,
 			types.Node{
-				Address:   address,
-				Provider:  "",
-				Price:     price,
-				RemoteURL: remoteURL,
-				Status:    status,
-				StatusAt:  statusAt,
+				Address:        address,
+				GigabytePrices: gigabytePrices,
+				HourlyPrices:   hourlyPrices,
+				RemoteURL:      remoteURL,
+				Status:         status,
+				StatusAt:       statusAt,
 			},
 		)
 	}

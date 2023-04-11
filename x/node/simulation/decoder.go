@@ -32,18 +32,6 @@ func NewStoreDecoder(cdc codec.Codec) func(kvA, kvB kv.Pair) string {
 			cdc.MustUnmarshal(kvB.Value, &inactiveNodeB)
 
 			return fmt.Sprintf("%v\n%v", &inactiveNodeA, &inactiveNodeB)
-		case bytes.Equal(kvA.Key[:1], types.ActiveNodeForProviderKeyPrefix):
-			var activeNodeForProviderA, activeNodeForProviderB protobuftypes.BoolValue
-			cdc.MustUnmarshal(kvA.Value, &activeNodeForProviderA)
-			cdc.MustUnmarshal(kvB.Value, &activeNodeForProviderB)
-
-			return fmt.Sprintf("%v\n%v", &activeNodeForProviderA, &activeNodeForProviderB)
-		case bytes.Equal(kvA.Key[:1], types.InactiveNodeForProviderKeyPrefix):
-			var inactiveNodeForProviderA, inactiveNodeForProviderB protobuftypes.BoolValue
-			cdc.MustUnmarshal(kvA.Value, &inactiveNodeForProviderA)
-			cdc.MustUnmarshal(kvB.Value, &inactiveNodeForProviderB)
-
-			return fmt.Sprintf("%v\n%v", &inactiveNodeForProviderA, &inactiveNodeForProviderB)
 		case bytes.Equal(kvA.Key[:1], types.InactiveNodeAtKeyPrefix):
 			var inactiveNodeAtA, inactiveNodeAtB protobuftypes.BoolValue
 			cdc.MustUnmarshal(kvA.Value, &inactiveNodeAtA)
