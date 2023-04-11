@@ -21,19 +21,12 @@ var (
 )
 
 var (
-	CountKey                         = []byte{0x00}
-	PlanKeyPrefix                    = []byte{0x10}
-	ActivePlanKeyPrefix              = []byte{0x20}
-	InactivePlanKeyPrefix            = []byte{0x21}
-	ActivePlanForProviderKeyPrefix   = []byte{0x30}
-	InactivePlanForProviderKeyPrefix = []byte{0x31}
-	NodeForPlanKeyPrefix             = []byte{0x40}
-	CountForNodeByProviderKeyPrefix  = []byte{0x50}
+	CountKey                 = []byte{0x00}
+	PlanKeyPrefix            = []byte{0x10}
+	ActivePlanKeyPrefix      = append(PlanKeyPrefix, 0x01)
+	InactivePlanKeyPrefix    = append(PlanKeyPrefix, 0x02)
+	PlanForProviderKeyPrefix = []byte{0x20}
 )
-
-func PlanKey(id uint64) []byte {
-	return append(PlanKeyPrefix, sdk.Uint64ToBigEndian(id)...)
-}
 
 func ActivePlanKey(id uint64) []byte {
 	return append(ActivePlanKeyPrefix, sdk.Uint64ToBigEndian(id)...)
@@ -43,8 +36,12 @@ func InactivePlanKey(id uint64) []byte {
 	return append(InactivePlanKeyPrefix, sdk.Uint64ToBigEndian(id)...)
 }
 
+func GetPlanForProviderKeyPrefix(addr hubtypes.ProvAddress) []byte {
+	return append(PlanForProviderKeyPrefix, address.MustLengthPrefix(addr.Bytes())...)
+}
+
 func GetActivePlanForProviderKeyPrefix(addr hubtypes.ProvAddress) []byte {
-	return append(ActivePlanForProviderKeyPrefix, address.MustLengthPrefix(addr.Bytes())...)
+	return append(GetPlanForProviderKeyPrefix(addr), 0x01)
 }
 
 func ActivePlanForProviderKey(addr hubtypes.ProvAddress, id uint64) []byte {
@@ -52,25 +49,11 @@ func ActivePlanForProviderKey(addr hubtypes.ProvAddress, id uint64) []byte {
 }
 
 func GetInactivePlanForProviderKeyPrefix(addr hubtypes.ProvAddress) []byte {
-	return append(InactivePlanForProviderKeyPrefix, address.MustLengthPrefix(addr.Bytes())...)
+	return append(GetPlanForProviderKeyPrefix(addr), 0x02)
 }
 
 func InactivePlanForProviderKey(addr hubtypes.ProvAddress, id uint64) []byte {
 	return append(GetInactivePlanForProviderKeyPrefix(addr), sdk.Uint64ToBigEndian(id)...)
-}
-
-func GetNodeForPlanKeyPrefix(id uint64) []byte {
-	return append(NodeForPlanKeyPrefix, sdk.Uint64ToBigEndian(id)...)
-}
-
-func NodeForPlanKey(id uint64, addr hubtypes.NodeAddress) []byte {
-	return append(GetNodeForPlanKeyPrefix(id), address.MustLengthPrefix(addr.Bytes())...)
-}
-
-func CountForNodeByProviderKey(provider hubtypes.ProvAddress, node hubtypes.NodeAddress) []byte {
-	v := append(CountForNodeByProviderKeyPrefix, address.MustLengthPrefix(provider.Bytes())...)
-
-	return append(v, address.MustLengthPrefix(node.Bytes())...)
 }
 
 func IDFromStatusPlanKey(key []byte) uint64 {
