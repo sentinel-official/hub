@@ -9,8 +9,8 @@ var (
 )
 
 var (
-	ErrorProviderDoesNotExist = errors.Register(ModuleName, 201, "provider does not exist")
-	ErrorDuplicateNode        = errors.Register(ModuleName, 202, "duplicate node")
-	ErrorNodeDoesNotExist     = errors.Register(ModuleName, 203, "node does not exist")
-	ErrorInvalidPlanCount     = errors.Register(ModuleName, 204, "invalid plan count")
+	ErrorInvalidGigabytePrices = errors.Register(ModuleName, 201, "invalid gigabyte prices")
+	ErrorInvalidHourlyPrices   = errors.Register(ModuleName, 202, "invalid hourly prices")
+	ErrorDuplicateNode         = errors.Register(ModuleName, 203, "duplicate node")
+	ErrorNodeDoesNotExist      = errors.Register(ModuleName, 204, "node does not exist")
 )

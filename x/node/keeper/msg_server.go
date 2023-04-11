@@ -24,6 +24,17 @@ func NewMsgServiceServer(keeper Keeper) types.MsgServiceServer {
 func (k *msgServer) MsgRegister(c context.Context, msg *types.MsgRegisterRequest) (*types.MsgRegisterResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
+	if msg.GigabytePrices != nil {
+		if !k.IsValidGigabytePrices(ctx, msg.GigabytePrices) {
+			return nil, types.ErrorInvalidGigabytePrices
+		}
+	}
+	if msg.HourlyPrices != nil {
+		if !k.IsValidHourlyPrices(ctx, msg.HourlyPrices) {
+			return nil, types.ErrorInvalidHourlyPrices
+		}
+	}
+
 	fromAddr, err := sdk.AccAddressFromBech32(msg.From)
 	if err != nil {
 		return nil, err
@@ -32,50 +43,27 @@ func (k *msgServer) MsgRegister(c context.Context, msg *types.MsgRegisterRequest
 		return nil, types.ErrorDuplicateNode
 	}
 
-	if msg.Provider != "" {
-		provAddr, err := hubtypes.ProvAddressFromBech32(msg.Provider)
-		if err != nil {
-			return nil, err
-		}
-		if !k.HasProvider(ctx, provAddr) {
-			return nil, types.ErrorProviderDoesNotExist
-		}
-	}
-	if msg.Price != nil {
-		if !k.IsValidPrice(ctx, msg.Price) {
-			return nil, types.ErrorInvalidPrice
-		}
-	}
-
 	deposit := k.Deposit(ctx)
-	if err := k.FundCommunityPool(ctx, fromAddr, deposit); err != nil {
+	if err = k.FundCommunityPool(ctx, fromAddr, deposit); err != nil {
 		return nil, err
 	}
 
 	var (
 		nodeAddr = hubtypes.NodeAddress(fromAddr.Bytes())
 		node     = types.Node{
-			Address:   nodeAddr.String(),
-			Provider:  msg.Provider,
-			Price:     msg.Price,
-			RemoteURL: msg.RemoteURL,
-			Status:    hubtypes.StatusInactive,
-			StatusAt:  ctx.BlockTime(),
+			Address:        nodeAddr.String(),
+			GigabytePrices: msg.GigabytePrices,
+			HourlyPrices:   msg.HourlyPrices,
+			RemoteURL:      msg.RemoteURL,
+			Status:         hubtypes.StatusInactive,
+			StatusAt:       ctx.BlockTime(),
 		}
-		provAddr = node.GetProvider()
 	)
 
 	k.SetNode(ctx, node)
-	k.SetInactiveNode(ctx, nodeAddr)
-
-	if provAddr != nil {
-		k.SetInactiveNodeForProvider(ctx, provAddr, nodeAddr)
-	}
-
 	ctx.EventManager().EmitTypedEvent(
 		&types.EventRegister{
-			Address:  node.Address,
-			Provider: node.Provider,
+			Address: node.Address,
 		},
 	)
 
@@ -95,53 +83,19 @@ func (k *msgServer) MsgUpdate(c context.Context, msg *types.MsgUpdateRequest) (*
 		return nil, types.ErrorNodeDoesNotExist
 	}
 
-	if msg.Provider == node.Provider {
-		msg.Provider = ""
+	if msg.GigabytePrices != nil {
+		if !k.IsValidGigabytePrices(ctx, msg.GigabytePrices) {
+			return nil, types.ErrorInvalidGigabytePrices
+		}
+
+		node.GigabytePrices = msg.GigabytePrices
 	}
-
-	if (msg.Provider != "" || msg.Price != nil) && node.Provider != "" {
-		var (
-			nodeAddr = node.GetAddress()
-			provAddr = node.GetProvider()
-		)
-
-		if k.GetPlanCountForNodeByProvider(ctx, provAddr, nodeAddr) > 0 {
-			return nil, types.ErrorInvalidPlanCount
+	if msg.HourlyPrices != nil {
+		if !k.IsValidHourlyPrices(ctx, msg.HourlyPrices) {
+			return nil, types.ErrorInvalidHourlyPrices
 		}
 
-		if node.Status.Equal(hubtypes.StatusActive) {
-			k.DeleteActiveNodeForProvider(ctx, provAddr, nodeAddr)
-		} else {
-			k.DeleteInactiveNodeForProvider(ctx, provAddr, nodeAddr)
-		}
-	}
-
-	if msg.Provider != "" {
-		provAddr, err := hubtypes.ProvAddressFromBech32(msg.Provider)
-		if err != nil {
-			return nil, err
-		}
-		if !k.HasProvider(ctx, provAddr) {
-			return nil, types.ErrorProviderDoesNotExist
-		}
-
-		node.Price = nil
-		node.Provider = msg.Provider
-
-		nodeAddr := node.GetAddress()
-		if node.Status.Equal(hubtypes.StatusActive) {
-			k.SetActiveNodeForProvider(ctx, provAddr, nodeAddr)
-		} else {
-			k.SetInactiveNodeForProvider(ctx, provAddr, nodeAddr)
-		}
-	}
-	if msg.Price != nil {
-		if !k.IsValidPrice(ctx, msg.Price) {
-			return nil, types.ErrorInvalidPrice
-		}
-
-		node.Provider = ""
-		node.Price = msg.Price
+		node.HourlyPrices = msg.HourlyPrices
 	}
 	if msg.RemoteURL != "" {
 		node.RemoteURL = msg.RemoteURL
@@ -150,8 +104,7 @@ func (k *msgServer) MsgUpdate(c context.Context, msg *types.MsgUpdateRequest) (*
 	k.SetNode(ctx, node)
 	ctx.EventManager().EmitTypedEvent(
 		&types.EventUpdate{
-			Address:  node.Address,
-			Provider: node.Provider,
+			Address: node.Address,
 		},
 	)
 
@@ -173,31 +126,19 @@ func (k *msgServer) MsgSetStatus(c context.Context, msg *types.MsgSetStatusReque
 
 	var (
 		nodeAddr         = node.GetAddress()
-		provAddr         = node.GetProvider()
 		inactiveDuration = k.InactiveDuration(ctx)
 	)
 
 	if node.Status.Equal(hubtypes.StatusActive) {
 		if msg.Status.Equal(hubtypes.StatusInactive) {
 			k.DeleteActiveNode(ctx, nodeAddr)
-			k.SetInactiveNode(ctx, nodeAddr)
-
-			if node.Provider != "" {
-				k.DeleteActiveNodeForProvider(ctx, provAddr, nodeAddr)
-				k.SetInactiveNodeForProvider(ctx, provAddr, nodeAddr)
-			}
 		}
 
-		k.DeleteInactiveNodeAt(ctx, node.StatusAt.Add(inactiveDuration), nodeAddr)
+		inactiveAt := node.StatusAt.Add(inactiveDuration)
+		k.DeleteInactiveNodeAt(ctx, inactiveAt, nodeAddr)
 	} else {
 		if msg.Status.Equal(hubtypes.StatusActive) {
 			k.DeleteInactiveNode(ctx, nodeAddr)
-			k.SetActiveNode(ctx, nodeAddr)
-
-			if node.Provider != "" {
-				k.DeleteInactiveNodeForProvider(ctx, provAddr, nodeAddr)
-				k.SetActiveNodeForProvider(ctx, provAddr, nodeAddr)
-			}
 		}
 	}
 
@@ -205,7 +146,8 @@ func (k *msgServer) MsgSetStatus(c context.Context, msg *types.MsgSetStatusReque
 	node.StatusAt = ctx.BlockTime()
 
 	if node.Status.Equal(hubtypes.StatusActive) {
-		k.SetInactiveNodeAt(ctx, node.StatusAt.Add(inactiveDuration), nodeAddr)
+		inactiveAt := node.StatusAt.Add(inactiveDuration)
+		k.SetInactiveNodeAt(ctx, inactiveAt, nodeAddr)
 	}
 
 	k.SetNode(ctx, node)
