@@ -1,7 +1,7 @@
 syntax = "proto3";
-package sentinel.plan.v1;
+package sentinel.plan.v2;
 
-option go_package = "github.com/sentinel-official/hub/x/plan/legacy/v1/types";
+option go_package = "github.com/sentinel-official/hub/x/plan/types";
 
 import "cosmos/base/v1beta1/coin.proto";
 import "gogoproto/gogo.proto";
@@ -13,9 +13,9 @@ option (gogoproto.equal_all)           = false;
 option (gogoproto.goproto_getters_all) = false;
 
 message Plan {
-  uint64 id                               = 1;
-  string provider                         = 2;
-  repeated cosmos.base.v1beta1.Coin price = 3 [
+  uint64 id            = 1 [ (gogoproto.customname) = "ID" ];
+  string provider_addr = 2;
+  repeated cosmos.base.v1beta1.Coin prices = 3 [
     (gogoproto.nullable)     = false,
     (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
   ];

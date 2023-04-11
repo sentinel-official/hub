@@ -9,22 +9,22 @@ import (
 	hubtypes "github.com/sentinel-official/hub/types"
 )
 
-func (m *Plan) GetProvider() hubtypes.ProvAddress {
-	if m.Provider == "" {
+func (m *Plan) GetProviderAddr() hubtypes.ProvAddress {
+	if m.ProviderAddr == "" {
 		return nil
 	}
 
-	address, err := hubtypes.ProvAddressFromBech32(m.Provider)
+	addr, err := hubtypes.ProvAddressFromBech32(m.ProviderAddr)
 	if err != nil {
 		panic(err)
 	}
 
-	return address
+	return addr
 }
 
-func (m *Plan) PriceForDenom(d string) (sdk.Coin, bool) {
-	for _, coin := range m.Price {
-		if coin.Denom == d {
+func (m *Plan) Price(denom string) (sdk.Coin, bool) {
+	for _, coin := range m.Prices {
+		if coin.Denom == denom {
 			return coin, true
 		}
 	}
@@ -33,21 +33,21 @@ func (m *Plan) PriceForDenom(d string) (sdk.Coin, bool) {
 }
 
 func (m *Plan) Validate() error {
-	if m.Id == 0 {
+	if m.ID == 0 {
 		return fmt.Errorf("id cannot be zero")
 	}
-	if m.Provider == "" {
-		return fmt.Errorf("provider cannot be empty")
+	if m.ProviderAddr == "" {
+		return fmt.Errorf("provider_addr cannot be empty")
 	}
-	if _, err := hubtypes.ProvAddressFromBech32(m.Provider); err != nil {
-		return errors.Wrapf(err, "invalid provider %s", m.Provider)
+	if _, err := hubtypes.ProvAddressFromBech32(m.ProviderAddr); err != nil {
+		return errors.Wrapf(err, "invalid provider_addr %s", m.ProviderAddr)
 	}
-	if m.Price != nil {
-		if m.Price.Len() == 0 {
-			return fmt.Errorf("price cannot be empty")
+	if m.Prices != nil {
+		if m.Prices.Len() == 0 {
+			return fmt.Errorf("prices cannot be empty")
 		}
-		if !m.Price.IsValid() {
-			return fmt.Errorf("price must be valid")
+		if !m.Prices.IsValid() {
+			return fmt.Errorf("prices must be valid")
 		}
 	}
 	if m.Validity < 0 {
@@ -62,8 +62,8 @@ func (m *Plan) Validate() error {
 	if m.Bytes.IsZero() {
 		return fmt.Errorf("bytes cannot be zero")
 	}
-	if !m.Status.Equal(hubtypes.StatusActive) && !m.Status.Equal(hubtypes.StatusInactive) {
-		return fmt.Errorf("status must be either active or inactive")
+	if !m.Status.IsOneOf(hubtypes.StatusActive, hubtypes.StatusInactive) {
+		return fmt.Errorf("status must be one of [active, inactive]")
 	}
 	if m.StatusAt.IsZero() {
 		return fmt.Errorf("status_at cannot be zero")
