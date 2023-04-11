@@ -11,48 +11,86 @@ import (
 
 func EndBlock(ctx sdk.Context, k keeper.Keeper) []abcitypes.ValidatorUpdate {
 	var (
-		log              = k.Logger(ctx)
-		inactiveDuration = k.InactiveDuration(ctx)
-		maxPriceModified = k.IsMaxPriceModified(ctx)
-		minPriceModified = k.IsMinPriceModified(ctx)
+		maxGigabytePricesModified = k.IsMaxGigabytePricesModified(ctx)
+		minGigabytePricesModified = k.IsMinGigabytePricesModified(ctx)
+		maxHourlyPricesModified   = k.IsMaxHourlyPricesModified(ctx)
+		minHourlyPricesModified   = k.IsMinHourlyPricesModified(ctx)
 	)
 
-	if maxPriceModified || minPriceModified {
-		var (
-			maxPrice = sdk.NewCoins()
-			minPrice = sdk.NewCoins()
-		)
-
-		if maxPriceModified {
-			maxPrice = k.MaxPrice(ctx)
-		}
-		if minPriceModified {
-			minPrice = k.MinPrice(ctx)
+	if maxGigabytePricesModified || minGigabytePricesModified || maxHourlyPricesModified || minHourlyPricesModified {
+		maxGigabytePrices := sdk.NewCoins()
+		if maxGigabytePricesModified {
+			maxGigabytePrices = k.MaxGigabytePrices(ctx)
 		}
 
-		k.IterateNodes(ctx, func(_ int, item types.Node) (stop bool) {
-			if item.Price == nil {
-				return false
-			}
+		minGigabytePrices := sdk.NewCoins()
+		if minGigabytePricesModified {
+			minGigabytePrices = k.MinGigabytePrices(ctx)
+		}
 
-			if maxPriceModified {
-				for _, coin := range maxPrice {
-					amount := item.Price.AmountOf(coin.Denom)
-					if amount.GT(coin.Amount) {
-						item.Price = item.Price.Sub(
-							sdk.NewCoins(sdk.NewCoin(coin.Denom, amount)),
-						).Add(coin)
+		maxHourlyPrices := sdk.NewCoins()
+		if maxHourlyPricesModified {
+			maxHourlyPrices = k.MaxHourlyPrices(ctx)
+		}
+
+		minHourlyPrices := sdk.NewCoins()
+		if minHourlyPricesModified {
+			minHourlyPrices = k.MinHourlyPrices(ctx)
+		}
+
+		k.IterateNodes(ctx, func(_ int, item types.Node) bool {
+			if item.GigabytePrices != nil {
+				if maxGigabytePricesModified {
+					for _, coin := range maxGigabytePrices {
+						amount := item.GigabytePrices.AmountOf(coin.Denom)
+						if amount.GT(coin.Amount) {
+							item.GigabytePrices = item.GigabytePrices.Sub(
+								sdk.NewCoins(
+									sdk.NewCoin(coin.Denom, amount),
+								),
+							).Add(coin)
+						}
+					}
+				}
+
+				if minGigabytePricesModified {
+					for _, coin := range minGigabytePrices {
+						amount := item.GigabytePrices.AmountOf(coin.Denom)
+						if amount.LT(coin.Amount) {
+							item.GigabytePrices = item.GigabytePrices.Sub(
+								sdk.NewCoins(
+									sdk.NewCoin(coin.Denom, amount),
+								),
+							).Add(coin)
+						}
 					}
 				}
 			}
 
-			if minPriceModified {
-				for _, coin := range minPrice {
-					amount := item.Price.AmountOf(coin.Denom)
-					if amount.LT(coin.Amount) {
-						item.Price = item.Price.Sub(
-							sdk.NewCoins(sdk.NewCoin(coin.Denom, amount)),
-						).Add(coin)
+			if item.HourlyPrices != nil {
+				if maxHourlyPricesModified {
+					for _, coin := range maxHourlyPrices {
+						amount := item.HourlyPrices.AmountOf(coin.Denom)
+						if amount.GT(coin.Amount) {
+							item.HourlyPrices = item.HourlyPrices.Sub(
+								sdk.NewCoins(
+									sdk.NewCoin(coin.Denom, amount),
+								),
+							).Add(coin)
+						}
+					}
+				}
+
+				if minHourlyPricesModified {
+					for _, coin := range minHourlyPrices {
+						amount := item.HourlyPrices.AmountOf(coin.Denom)
+						if amount.LT(coin.Amount) {
+							item.HourlyPrices = item.HourlyPrices.Sub(
+								sdk.NewCoins(
+									sdk.NewCoin(coin.Denom, amount),
+								),
+							).Add(coin)
+						}
 					}
 				}
 			}
@@ -62,25 +100,26 @@ func EndBlock(ctx sdk.Context, k keeper.Keeper) []abcitypes.ValidatorUpdate {
 		})
 	}
 
+	var (
+		log              = k.Logger(ctx)
+		inactiveDuration = k.InactiveDuration(ctx)
+	)
+
 	k.IterateInactiveNodesAt(ctx, ctx.BlockTime(), func(_ int, item types.Node) bool {
 		log.Info("found an inactive node", "address", item.Address)
 
-		nodeAddr := item.GetAddress()
+		var (
+			nodeAddr   = item.GetAddress()
+			inactiveAt = item.StatusAt.Add(inactiveDuration)
+		)
+
 		k.DeleteActiveNode(ctx, nodeAddr)
-		k.SetInactiveNode(ctx, nodeAddr)
-
-		if item.Provider != "" {
-			provAddr := item.GetProvider()
-			k.DeleteActiveNodeForProvider(ctx, provAddr, nodeAddr)
-			k.SetInactiveNodeForProvider(ctx, provAddr, nodeAddr)
-		}
-
-		k.DeleteInactiveNodeAt(ctx, item.StatusAt.Add(inactiveDuration), nodeAddr)
+		k.DeleteInactiveNodeAt(ctx, inactiveAt, nodeAddr)
 
 		item.Status = hubtypes.StatusInactive
 		item.StatusAt = ctx.BlockTime()
-		k.SetNode(ctx, item)
 
+		k.SetNode(ctx, item)
 		ctx.EventManager().EmitTypedEvent(
 			&types.EventSetStatus{
 				Address: item.Address,
