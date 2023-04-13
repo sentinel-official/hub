@@ -83,6 +83,87 @@ func (q *queryServer) QueryNodes(c context.Context, req *types.QueryNodesRequest
 	return &types.QueryNodesResponse{Nodes: items, Pagination: pagination}, nil
 }
 
+func (q *queryServer) QueryNodesForPlan(c context.Context, req *types.QueryNodesForPlanRequest) (*types.QueryNodesForPlanResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "empty request")
+	}
+
+	var (
+		items     types.Nodes
+		keyPrefix []byte
+		ctx       = sdk.UnwrapSDKContext(c)
+	)
+
+	switch req.Status {
+	case hubtypes.StatusActive:
+		keyPrefix = types.GetActiveNodeForPlanKeyPrefix(req.Id)
+	case hubtypes.StatusInactive:
+		keyPrefix = types.GetInactiveNodeForPlanKeyPrefix(req.Id)
+	default:
+		keyPrefix = types.GetNodeForPlanKeyPrefix(req.Id)
+	}
+
+	store := prefix.NewStore(q.Store(ctx), keyPrefix)
+	pagination, err := query.Paginate(store, req.Pagination, func(_, value []byte) error {
+		var item types.Node
+		if err := q.cdc.Unmarshal(value, &item); err != nil {
+			return err
+		}
+
+		items = append(items, item)
+		return nil
+	})
+
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
+	return &types.QueryNodesForPlanResponse{Nodes: items, Pagination: pagination}, nil
+}
+
+func (q *queryServer) QueryNodesForProvider(c context.Context, req *types.QueryNodesForProviderRequest) (*types.QueryNodesForProviderResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "empty request")
+	}
+
+	addr, err := hubtypes.ProvAddressFromBech32(req.Address)
+	if err != nil {
+		return nil, err
+	}
+
+	var (
+		items     types.Nodes
+		keyPrefix []byte
+		ctx       = sdk.UnwrapSDKContext(c)
+	)
+
+	switch req.Status {
+	case hubtypes.StatusActive:
+		keyPrefix = types.GetActiveNodeForProviderKeyPrefix(addr)
+	case hubtypes.StatusInactive:
+		keyPrefix = types.GetInactiveNodeForProviderKeyPrefix(addr)
+	default:
+		keyPrefix = types.GetNodeForProviderKeyPrefix(addr)
+	}
+
+	store := prefix.NewStore(q.Store(ctx), keyPrefix)
+	pagination, err := query.Paginate(store, req.Pagination, func(_, value []byte) error {
+		var item types.Node
+		if err := q.cdc.Unmarshal(value, &item); err != nil {
+			return err
+		}
+
+		items = append(items, item)
+		return nil
+	})
+
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
+	return &types.QueryNodesForProviderResponse{Nodes: items, Pagination: pagination}, nil
+}
+
 func (q *queryServer) QueryParams(c context.Context, _ *types.QueryParamsRequest) (*types.QueryParamsResponse, error) {
 	var (
 		ctx    = sdk.UnwrapSDKContext(c)
