@@ -17,8 +17,8 @@ var (
 
 var (
 	ProviderKeyPrefix         = []byte{0x10}
-	ActiveProviderKeyPrefix   = append(ProviderKeyPrefix, 0x11)
-	InactiveProviderKeyPrefix = append(ProviderKeyPrefix, 0x12)
+	ActiveProviderKeyPrefix   = append(ProviderKeyPrefix, 0x01)
+	InactiveProviderKeyPrefix = append(ProviderKeyPrefix, 0x02)
 )
 
 func ActiveProviderKey(addr hubtypes.ProvAddress) []byte {

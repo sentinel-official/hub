@@ -24,34 +24,32 @@ func NewMsgServiceServer(k Keeper) types.MsgServiceServer {
 func (k *msgServer) MsgRegister(c context.Context, msg *types.MsgRegisterRequest) (*types.MsgRegisterResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
-	fromAddr, err := sdk.AccAddressFromBech32(msg.From)
+	accAddr, err := sdk.AccAddressFromBech32(msg.From)
 	if err != nil {
 		return nil, err
 	}
 
-	_, found := k.GetProvider(ctx, fromAddr.Bytes())
-	if found {
+	provAddr := hubtypes.ProvAddress(accAddr.Bytes())
+	if k.HasProvider(ctx, provAddr) {
 		return nil, types.ErrorDuplicateProvider
 	}
 
 	deposit := k.Deposit(ctx)
-	if err := k.FundCommunityPool(ctx, fromAddr, deposit); err != nil {
+	if err = k.FundCommunityPool(ctx, accAddr, deposit); err != nil {
 		return nil, err
 	}
 
-	var (
-		provAddr = hubtypes.ProvAddress(fromAddr.Bytes())
-		provider = types.Provider{
-			Address:     provAddr.String(),
-			Name:        msg.Name,
-			Identity:    msg.Identity,
-			Website:     msg.Website,
-			Description: msg.Description,
-			Status:      hubtypes.StatusInactive,
-		}
-	)
+	provider := types.Provider{
+		Address:     provAddr.String(),
+		Name:        msg.Name,
+		Identity:    msg.Identity,
+		Website:     msg.Website,
+		Description: msg.Description,
+		Status:      hubtypes.StatusInactive,
+		StatusAt:    ctx.BlockTime(),
+	}
 
-	k.SetProvider(ctx, provider)
+	k.SetInactiveProvider(ctx, provider)
 	ctx.EventManager().EmitTypedEvent(
 		&types.EventRegister{
 			Address: provider.Address,
@@ -64,12 +62,12 @@ func (k *msgServer) MsgRegister(c context.Context, msg *types.MsgRegisterRequest
 func (k *msgServer) MsgUpdate(c context.Context, msg *types.MsgUpdateRequest) (*types.MsgUpdateResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
-	fromAddr, err := hubtypes.ProvAddressFromBech32(msg.From)
+	provAddr, err := hubtypes.ProvAddressFromBech32(msg.From)
 	if err != nil {
 		return nil, err
 	}
 
-	provider, found := k.GetProvider(ctx, fromAddr)
+	provider, found := k.GetProvider(ctx, provAddr)
 	if !found {
 		return nil, types.ErrorProviderDoesNotExist
 	}
@@ -89,14 +87,15 @@ func (k *msgServer) MsgUpdate(c context.Context, msg *types.MsgUpdateRequest) (*
 	if !msg.Status.Equal(hubtypes.StatusUnspecified) {
 		switch provider.Status {
 		case hubtypes.StatusActive:
-			k.deleteActiveProvider(ctx, fromAddr)
+			k.DeleteActiveProvider(ctx, provAddr)
 		case hubtypes.StatusInactive:
-			k.deleteInactiveProvider(ctx, fromAddr)
+			k.DeleteInactiveProvider(ctx, provAddr)
 		default:
 			return nil, types.ErrorInvalidStatus
 		}
 
 		provider.Status = msg.Status
+		provider.StatusAt = ctx.BlockTime()
 	}
 
 	k.SetProvider(ctx, provider)
