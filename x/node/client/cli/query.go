@@ -60,6 +60,16 @@ func queryNodes() *cobra.Command {
 				return err
 			}
 
+			id, err := cmd.Flags().GetUint64(flagPlan)
+			if err != nil {
+				return err
+			}
+
+			addr, err := GetProviderAddr(cmd.Flags())
+			if err != nil {
+				return err
+			}
+
 			status, err := hubtypes.StatusFromFlags(cmd.Flags())
 			if err != nil {
 				return err
@@ -73,6 +83,36 @@ func queryNodes() *cobra.Command {
 			var (
 				qc = types.NewQueryServiceClient(ctx)
 			)
+
+			if id > 0 {
+				res, err := qc.QueryNodesForPlan(
+					context.Background(),
+					types.NewQueryNodesForPlanRequest(
+						id,
+						status,
+						pagination,
+					),
+				)
+				if err != nil {
+					return err
+				}
+
+				return ctx.PrintProto(res)
+			} else if !addr.Empty() {
+				res, err := qc.QueryNodesForProvider(
+					context.Background(),
+					types.NewQueryNodesForProviderRequest(
+						addr,
+						status,
+						pagination,
+					),
+				)
+				if err != nil {
+					return err
+				}
+
+				return ctx.PrintProto(res)
+			}
 
 			res, err := qc.QueryNodes(
 				context.Background(),
@@ -92,6 +132,8 @@ func queryNodes() *cobra.Command {
 	flags.AddQueryFlagsToCmd(cmd)
 	flags.AddPaginationFlagsToCmd(cmd, "nodes")
 	cmd.Flags().String(hubtypes.FlagStatus, "", "filter the nodes by status (active|inactive)")
+	cmd.Flags().Uint64(flagPlan, 0, "query the nodes of a subscription plan")
+	cmd.Flags().String(flagProvider, "", "query the nodes of a provider")
 
 	return cmd
 }
