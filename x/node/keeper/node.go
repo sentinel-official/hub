@@ -11,11 +11,11 @@ import (
 	"github.com/sentinel-official/hub/x/node/types"
 )
 
-func (k *Keeper) SetActiveNode(ctx sdk.Context, v types.Node) {
+func (k *Keeper) SetActiveNode(ctx sdk.Context, node types.Node) {
 	var (
 		store = k.Store(ctx)
-		key   = types.ActiveNodeKey(v.GetAddress())
-		value = k.cdc.MustMarshal(&v)
+		key   = types.ActiveNodeKey(node.GetAddress())
+		value = k.cdc.MustMarshal(&node)
 	)
 
 	store.Set(key, value)
@@ -54,11 +54,11 @@ func (k *Keeper) DeleteActiveNode(ctx sdk.Context, addr hubtypes.NodeAddress) {
 	store.Delete(key)
 }
 
-func (k *Keeper) SetInactiveNode(ctx sdk.Context, v types.Node) {
+func (k *Keeper) SetInactiveNode(ctx sdk.Context, node types.Node) {
 	var (
 		store = k.Store(ctx)
-		key   = types.InactiveNodeKey(v.GetAddress())
-		value = k.cdc.MustMarshal(&v)
+		key   = types.InactiveNodeKey(node.GetAddress())
+		value = k.cdc.MustMarshal(&node)
 	)
 
 	store.Set(key, value)
@@ -127,22 +127,19 @@ func (k *Keeper) GetNode(ctx sdk.Context, addr hubtypes.NodeAddress) (node types
 	return node, false
 }
 
-func (k *Keeper) GetNodes(ctx sdk.Context, skip, limit int64) (items types.Nodes) {
+func (k *Keeper) GetNodes(ctx sdk.Context) (items types.Nodes) {
 	var (
 		store = k.Store(ctx)
-		iter  = hubtypes.NewPaginatedIterator(
-			sdk.KVStorePrefixIterator(store, types.NodeKeyPrefix),
-		)
+		iter  = sdk.KVStorePrefixIterator(store, types.NodeKeyPrefix)
 	)
 
 	defer iter.Close()
 
-	iter.Skip(skip)
-	iter.Limit(limit, func(iter sdk.Iterator) {
+	for ; iter.Valid(); iter.Next() {
 		var item types.Node
 		k.cdc.MustUnmarshal(iter.Value(), &item)
 		items = append(items, item)
-	})
+	}
 
 	return items
 }

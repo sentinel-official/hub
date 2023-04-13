@@ -3,7 +3,6 @@ package keeper
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	hubtypes "github.com/sentinel-official/hub/types"
 	"github.com/sentinel-official/hub/x/deposit/types"
 )
 
@@ -35,22 +34,19 @@ func (k *Keeper) GetDeposit(ctx sdk.Context, addr sdk.AccAddress) (deposit types
 }
 
 // GetDeposits is for getting the deposits from the KVStore.
-func (k *Keeper) GetDeposits(ctx sdk.Context, skip, limit int64) (items types.Deposits) {
+func (k *Keeper) GetDeposits(ctx sdk.Context) (items types.Deposits) {
 	var (
 		store = k.Store(ctx)
-		iter  = hubtypes.NewPaginatedIterator(
-			sdk.KVStorePrefixIterator(store, types.DepositKeyPrefix),
-		)
+		iter  = sdk.KVStorePrefixIterator(store, types.DepositKeyPrefix)
 	)
 
 	defer iter.Close()
 
-	iter.Skip(skip)
-	iter.Limit(limit, func(iter sdk.Iterator) {
+	for ; iter.Valid(); iter.Next() {
 		var item types.Deposit
 		k.cdc.MustUnmarshal(iter.Value(), &item)
 		items = append(items, item)
-	})
+	}
 
 	return items
 }

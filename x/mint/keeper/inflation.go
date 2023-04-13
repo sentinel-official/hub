@@ -5,7 +5,6 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	hubtypes "github.com/sentinel-official/hub/types"
 	"github.com/sentinel-official/hub/x/mint/types"
 )
 
@@ -43,22 +42,19 @@ func (k *Keeper) DeleteInflation(ctx sdk.Context, t time.Time) {
 	store.Delete(key)
 }
 
-func (k *Keeper) GetInflations(ctx sdk.Context, skip, limit int64) (items []types.Inflation) {
+func (k *Keeper) GetInflations(ctx sdk.Context) (items []types.Inflation) {
 	var (
 		store = k.Store(ctx)
-		iter  = hubtypes.NewPaginatedIterator(
-			sdk.KVStorePrefixIterator(store, types.InflationKeyPrefix),
-		)
+		iter  = sdk.KVStorePrefixIterator(store, types.InflationKeyPrefix)
 	)
 
 	defer iter.Close()
 
-	iter.Skip(skip)
-	iter.Limit(limit, func(iter sdk.Iterator) {
+	for ; iter.Valid(); iter.Next() {
 		var item types.Inflation
 		k.cdc.MustUnmarshal(iter.Value(), &item)
 		items = append(items, item)
-	})
+	}
 
 	return items
 }

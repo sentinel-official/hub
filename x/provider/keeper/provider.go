@@ -9,7 +9,7 @@ import (
 	"github.com/sentinel-official/hub/x/provider/types"
 )
 
-func (k *Keeper) setActiveProvider(ctx sdk.Context, v types.Provider) {
+func (k *Keeper) SetActiveProvider(ctx sdk.Context, v types.Provider) {
 	var (
 		store = k.Store(ctx)
 		key   = types.ActiveProviderKey(v.GetAddress())
@@ -19,7 +19,7 @@ func (k *Keeper) setActiveProvider(ctx sdk.Context, v types.Provider) {
 	store.Set(key, value)
 }
 
-func (k *Keeper) hasActiveProvider(ctx sdk.Context, addr hubtypes.ProvAddress) bool {
+func (k *Keeper) HasActiveProvider(ctx sdk.Context, addr hubtypes.ProvAddress) bool {
 	var (
 		store = k.Store(ctx)
 		key   = types.ActiveProviderKey(addr)
@@ -28,7 +28,7 @@ func (k *Keeper) hasActiveProvider(ctx sdk.Context, addr hubtypes.ProvAddress) b
 	return store.Has(key)
 }
 
-func (k *Keeper) getActiveProvider(ctx sdk.Context, addr hubtypes.ProvAddress) (v types.Provider, found bool) {
+func (k *Keeper) GetActiveProvider(ctx sdk.Context, addr hubtypes.ProvAddress) (v types.Provider, found bool) {
 	var (
 		store = k.Store(ctx)
 		key   = types.ActiveProviderKey(addr)
@@ -43,7 +43,7 @@ func (k *Keeper) getActiveProvider(ctx sdk.Context, addr hubtypes.ProvAddress) (
 	return v, true
 }
 
-func (k *Keeper) deleteActiveProvider(ctx sdk.Context, addr hubtypes.ProvAddress) {
+func (k *Keeper) DeleteActiveProvider(ctx sdk.Context, addr hubtypes.ProvAddress) {
 	var (
 		store = k.Store(ctx)
 		key   = types.ActiveProviderKey(addr)
@@ -52,7 +52,7 @@ func (k *Keeper) deleteActiveProvider(ctx sdk.Context, addr hubtypes.ProvAddress
 	store.Delete(key)
 }
 
-func (k *Keeper) setInactiveProvider(ctx sdk.Context, v types.Provider) {
+func (k *Keeper) SetInactiveProvider(ctx sdk.Context, v types.Provider) {
 	var (
 		store = k.Store(ctx)
 		key   = types.InactiveProviderKey(v.GetAddress())
@@ -62,7 +62,7 @@ func (k *Keeper) setInactiveProvider(ctx sdk.Context, v types.Provider) {
 	store.Set(key, value)
 }
 
-func (k *Keeper) hasInactiveProvider(ctx sdk.Context, addr hubtypes.ProvAddress) bool {
+func (k *Keeper) HasInactiveProvider(ctx sdk.Context, addr hubtypes.ProvAddress) bool {
 	var (
 		store = k.Store(ctx)
 		key   = types.InactiveProviderKey(addr)
@@ -71,7 +71,7 @@ func (k *Keeper) hasInactiveProvider(ctx sdk.Context, addr hubtypes.ProvAddress)
 	return store.Has(key)
 }
 
-func (k *Keeper) getInactiveProvider(ctx sdk.Context, addr hubtypes.ProvAddress) (v types.Provider, found bool) {
+func (k *Keeper) GetInactiveProvider(ctx sdk.Context, addr hubtypes.ProvAddress) (v types.Provider, found bool) {
 	var (
 		store = k.Store(ctx)
 		key   = types.InactiveProviderKey(addr)
@@ -86,7 +86,7 @@ func (k *Keeper) getInactiveProvider(ctx sdk.Context, addr hubtypes.ProvAddress)
 	return v, true
 }
 
-func (k *Keeper) deleteInactiveProvider(ctx sdk.Context, addr hubtypes.ProvAddress) {
+func (k *Keeper) DeleteInactiveProvider(ctx sdk.Context, addr hubtypes.ProvAddress) {
 	var (
 		store = k.Store(ctx)
 		key   = types.InactiveProviderKey(addr)
@@ -99,9 +99,9 @@ func (k *Keeper) deleteInactiveProvider(ctx sdk.Context, addr hubtypes.ProvAddre
 func (k *Keeper) SetProvider(ctx sdk.Context, provider types.Provider) {
 	switch provider.Status {
 	case hubtypes.StatusActive:
-		k.setActiveProvider(ctx, provider)
+		k.SetActiveProvider(ctx, provider)
 	case hubtypes.StatusInactive:
-		k.setInactiveProvider(ctx, provider)
+		k.SetInactiveProvider(ctx, provider)
 	default:
 		panic(fmt.Errorf("invalid status for the provider %v", provider))
 	}
@@ -109,18 +109,18 @@ func (k *Keeper) SetProvider(ctx sdk.Context, provider types.Provider) {
 
 // HasProvider is for checking whether a provider with an address exists or not in the KVStore.
 func (k *Keeper) HasProvider(ctx sdk.Context, addr hubtypes.ProvAddress) bool {
-	return k.hasActiveProvider(ctx, addr) ||
-		k.hasInactiveProvider(ctx, addr)
+	return k.HasActiveProvider(ctx, addr) ||
+		k.HasInactiveProvider(ctx, addr)
 }
 
 // GetProvider is for getting a provider with an address from the KVStore.
 func (k *Keeper) GetProvider(ctx sdk.Context, addr hubtypes.ProvAddress) (provider types.Provider, found bool) {
-	provider, found = k.getActiveProvider(ctx, addr)
+	provider, found = k.GetActiveProvider(ctx, addr)
 	if found {
 		return
 	}
 
-	provider, found = k.getInactiveProvider(ctx, addr)
+	provider, found = k.GetInactiveProvider(ctx, addr)
 	if found {
 		return
 	}
@@ -129,22 +129,19 @@ func (k *Keeper) GetProvider(ctx sdk.Context, addr hubtypes.ProvAddress) (provid
 }
 
 // GetProviders is for getting the providers from the KVStore.
-func (k *Keeper) GetProviders(ctx sdk.Context, skip, limit int64) (items types.Providers) {
+func (k *Keeper) GetProviders(ctx sdk.Context) (items types.Providers) {
 	var (
 		store = k.Store(ctx)
-		iter  = hubtypes.NewPaginatedIterator(
-			sdk.KVStorePrefixIterator(store, types.ProviderKeyPrefix),
-		)
+		iter  = sdk.KVStorePrefixIterator(store, types.ProviderKeyPrefix)
 	)
 
 	defer iter.Close()
 
-	iter.Skip(skip)
-	iter.Limit(limit, func(iter sdk.Iterator) {
+	for ; iter.Valid(); iter.Next() {
 		var item types.Provider
 		k.cdc.MustUnmarshal(iter.Value(), &item)
 		items = append(items, item)
-	})
+	}
 
 	return items
 }

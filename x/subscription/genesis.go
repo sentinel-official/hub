@@ -48,7 +48,7 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, state *types.GenesisState) {
 
 func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 	var (
-		subscriptions = k.GetSubscriptions(ctx, 0, 0)
+		subscriptions = k.GetSubscriptions(ctx)
 		items         = make(types.GenesisSubscriptions, 0, len(subscriptions))
 	)
 

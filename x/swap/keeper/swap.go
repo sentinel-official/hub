@@ -3,7 +3,6 @@ package keeper
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	hubtypes "github.com/sentinel-official/hub/types"
 	"github.com/sentinel-official/hub/x/swap/types"
 )
 
@@ -35,22 +34,19 @@ func (k *Keeper) HasSwap(ctx sdk.Context, txHash types.EthereumHash) bool {
 	return store.Has(key)
 }
 
-func (k *Keeper) GetSwaps(ctx sdk.Context, skip, limit int64) (items types.Swaps) {
+func (k *Keeper) GetSwaps(ctx sdk.Context) (items types.Swaps) {
 	var (
 		store = k.Store(ctx)
-		iter  = hubtypes.NewPaginatedIterator(
-			sdk.KVStorePrefixIterator(store, types.SwapKeyPrefix),
-		)
+		iter  = sdk.KVStorePrefixIterator(store, types.SwapKeyPrefix)
 	)
 
 	defer iter.Close()
 
-	iter.Skip(skip)
-	iter.Limit(limit, func(iter sdk.Iterator) {
+	for ; iter.Valid(); iter.Next() {
 		var item types.Swap
 		k.cdc.MustUnmarshal(iter.Value(), &item)
 		items = append(items, item)
-	})
+	}
 
 	return items
 }
