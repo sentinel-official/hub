@@ -17,11 +17,33 @@ message QueryNodesRequest {
   cosmos.base.query.v1beta1.PageRequest pagination = 2;
 }
 
+message QueryNodesForPlanRequest {
+  uint64 id                                        = 1;
+  sentinel.types.v1.Status status                  = 2;
+  cosmos.base.query.v1beta1.PageRequest pagination = 3;
+}
+
+message QueryNodesForProviderRequest {
+  string address                                   = 1;
+  sentinel.types.v1.Status status                  = 2;
+  cosmos.base.query.v1beta1.PageRequest pagination = 3;
+}
+
 message QueryNodeRequest { string address = 1; }
 
 message QueryParamsRequest {}
 
 message QueryNodesResponse {
+  repeated Node nodes = 1 [ (gogoproto.nullable) = false ];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryNodesForProviderResponse {
+  repeated Node nodes = 1 [ (gogoproto.nullable) = false ];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryNodesForPlanResponse {
   repeated Node nodes = 1 [ (gogoproto.nullable) = false ];
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
@@ -35,6 +57,16 @@ message QueryParamsResponse {
 service QueryService {
   rpc QueryNodes(QueryNodesRequest) returns (QueryNodesResponse) {
     option (google.api.http).get = "/sentinel/nodes";
+  }
+
+  rpc QueryNodesForPlan(QueryNodesForPlanRequest)
+      returns (QueryNodesForPlanResponse) {
+    option (google.api.http).get = "/sentinel/plans/{id}/nodes";
+  }
+
+  rpc QueryNodesForProvider(QueryNodesForProviderRequest)
+      returns (QueryNodesForProviderResponse) {
+    option (google.api.http).get = "/sentinel/providers/{address}/nodes";
   }
 
   rpc QueryNode(QueryNodeRequest) returns (QueryNodeResponse) {
