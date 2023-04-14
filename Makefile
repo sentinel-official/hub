@@ -47,7 +47,7 @@ proto-gen:
 
 .PHONY: proto-lint
 proto-lint:
-	@find proto -name *.proto -exec clang-format-12 -i {} \;
+	@find proto -name *.proto -exec clang-format -i {} \;
 
 .PHONY: test
 test:
