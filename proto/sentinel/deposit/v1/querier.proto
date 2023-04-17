@@ -32,6 +32,6 @@ service QueryService {
   }
 
   rpc QueryDeposit(QueryDepositRequest) returns (QueryDepositResponse) {
-    option (google.api.http).get = "/sentinel/accounts/{address}/deposits";
+    option (google.api.http).get = "/sentinel/deposits/{address}";
   }
 }
