@@ -5,6 +5,7 @@ import "cosmos/base/query/v1beta1/pagination.proto";
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "sentinel/types/v1/status.proto";
+import "sentinel/node/v2/lease.proto";
 import "sentinel/node/v2/node.proto";
 import "sentinel/node/v2/params.proto";
 
@@ -23,22 +24,27 @@ message QueryNodesForPlanRequest {
   cosmos.base.query.v1beta1.PageRequest pagination = 3;
 }
 
-message QueryNodesForProviderRequest {
-  string address                                   = 1;
-  sentinel.types.v1.Status status                  = 2;
-  cosmos.base.query.v1beta1.PageRequest pagination = 3;
+message QueryNodeRequest { string address = 1; }
+
+message QueryLeasesRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
 }
 
-message QueryNodeRequest { string address = 1; }
+message QueryLeasesForAccountRequest {
+  string address                                   = 1;
+  cosmos.base.query.v1beta1.PageRequest pagination = 2;
+}
+
+message QueryLeasesForNodeRequest {
+  string address                                   = 1;
+  cosmos.base.query.v1beta1.PageRequest pagination = 2;
+}
+
+message QueryLeaseRequest { uint64 id = 1; }
 
 message QueryParamsRequest {}
 
 message QueryNodesResponse {
-  repeated Node nodes = 1 [ (gogoproto.nullable) = false ];
-  cosmos.base.query.v1beta1.PageResponse pagination = 2;
-}
-
-message QueryNodesForProviderResponse {
   repeated Node nodes = 1 [ (gogoproto.nullable) = false ];
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
@@ -49,6 +55,23 @@ message QueryNodesForPlanResponse {
 }
 
 message QueryNodeResponse { Node node = 1 [ (gogoproto.nullable) = false ]; }
+
+message QueryLeasesResponse {
+  repeated Lease leases = 1 [ (gogoproto.nullable) = false ];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryLeasesForAccountResponse {
+  repeated Lease leases = 1 [ (gogoproto.nullable) = false ];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryLeasesForNodeResponse {
+  repeated Lease leases = 1 [ (gogoproto.nullable) = false ];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryLeaseResponse { Lease lease = 1 [ (gogoproto.nullable) = false ]; }
 
 message QueryParamsResponse {
   Params params = 1 [ (gogoproto.nullable) = false ];
@@ -64,13 +87,26 @@ service QueryService {
     option (google.api.http).get = "/sentinel/plans/{id}/nodes";
   }
 
-  rpc QueryNodesForProvider(QueryNodesForProviderRequest)
-      returns (QueryNodesForProviderResponse) {
-    option (google.api.http).get = "/sentinel/providers/{address}/nodes";
-  }
-
   rpc QueryNode(QueryNodeRequest) returns (QueryNodeResponse) {
     option (google.api.http).get = "/sentinel/nodes/{address}";
+  }
+
+  rpc QueryLeases(QueryLeasesRequest) returns (QueryLeasesResponse) {
+    option (google.api.http).get = "/sentinel/leases";
+  }
+
+  rpc QueryLeasesForAccount(QueryLeasesForAccountRequest)
+      returns (QueryLeasesForAccountResponse) {
+    option (google.api.http).get = "/sentinel/accounts/{address}/leases";
+  }
+
+  rpc QueryLeasesForNode(QueryLeasesForNodeRequest)
+      returns (QueryLeasesForNodeResponse) {
+    option (google.api.http).get = "/sentinel/nodes/{address}/leases";
+  }
+
+  rpc QueryLease(QueryLeaseRequest) returns (QueryLeaseResponse) {
+    option (google.api.http).get = "/sentinel/leases/{id}";
   }
 
   rpc QueryParams(QueryParamsRequest) returns (QueryParamsResponse) {
