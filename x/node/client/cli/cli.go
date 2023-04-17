@@ -8,6 +8,8 @@ func GetQueryCommands() []*cobra.Command {
 	return []*cobra.Command{
 		queryNode(),
 		queryNodes(),
+		queryLease(),
+		queryLeases(),
 		queryParams(),
 	}
 }
@@ -20,8 +22,8 @@ func GetTxCommands() []*cobra.Command {
 
 	cmd.AddCommand(
 		txRegister(),
-		txUpdate(),
-		txSetStatus(),
+		txUpdateDetails(),
+		txUpdateStatus(),
 	)
 
 	return []*cobra.Command{cmd}

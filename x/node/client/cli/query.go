@@ -2,6 +2,7 @@ package cli
 
 import (
 	"context"
+	"strconv"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
@@ -65,11 +66,6 @@ func queryNodes() *cobra.Command {
 				return err
 			}
 
-			addr, err := GetProviderAddr(cmd.Flags())
-			if err != nil {
-				return err
-			}
-
 			status, err := hubtypes.StatusFromFlags(cmd.Flags())
 			if err != nil {
 				return err
@@ -89,20 +85,6 @@ func queryNodes() *cobra.Command {
 					context.Background(),
 					types.NewQueryNodesForPlanRequest(
 						id,
-						status,
-						pagination,
-					),
-				)
-				if err != nil {
-					return err
-				}
-
-				return ctx.PrintProto(res)
-			} else if !addr.Empty() {
-				res, err := qc.QueryNodesForProvider(
-					context.Background(),
-					types.NewQueryNodesForProviderRequest(
-						addr,
 						status,
 						pagination,
 					),
@@ -133,7 +115,125 @@ func queryNodes() *cobra.Command {
 	flags.AddPaginationFlagsToCmd(cmd, "nodes")
 	cmd.Flags().String(hubtypes.FlagStatus, "", "filter the nodes by status (active|inactive)")
 	cmd.Flags().Uint64(flagPlan, 0, "query the nodes of a subscription plan")
-	cmd.Flags().String(flagProvider, "", "query the nodes of a provider")
+
+	return cmd
+}
+
+func queryLease() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "lease [id]",
+		Short: "Query a lease",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			id, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			var (
+				qc = types.NewQueryServiceClient(ctx)
+			)
+
+			res, err := qc.QueryLease(
+				context.Background(),
+				types.NewQueryLeaseRequest(
+					id,
+				),
+			)
+			if err != nil {
+				return err
+			}
+
+			return ctx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
+}
+
+func queryLeases() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "leases",
+		Short: "Query leases",
+		RunE: func(cmd *cobra.Command, args []string) (err error) {
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			accAddr, err := GetAccountAddress(cmd.Flags())
+			if err != nil {
+				return err
+			}
+
+			nodeAddr, err := GetNodeAddress(cmd.Flags())
+			if err != nil {
+				return err
+			}
+
+			pagination, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
+
+			var (
+				qc = types.NewQueryServiceClient(ctx)
+			)
+
+			if !accAddr.Empty() {
+				res, err := qc.QueryLeasesForAccount(
+					context.Background(),
+					types.NewQueryLeasesForAccountRequest(
+						accAddr,
+						pagination,
+					),
+				)
+				if err != nil {
+					return err
+				}
+
+				return ctx.PrintProto(res)
+			} else if !nodeAddr.Empty() {
+				res, err := qc.QueryLeasesForNode(
+					context.Background(),
+					types.NewQueryLeasesForNodeRequest(
+						nodeAddr,
+						pagination,
+					),
+				)
+				if err != nil {
+					return err
+				}
+
+				return ctx.PrintProto(res)
+			}
+
+			res, err := qc.QueryLeases(
+				context.Background(),
+				types.NewQueryLeasesRequest(
+					pagination,
+				),
+			)
+			if err != nil {
+				return err
+			}
+
+			return ctx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, "leases")
+	cmd.Flags().String(hubtypes.FlagStatus, "", "filter the leases by status (active|inactive)")
+	cmd.Flags().String(flagAccountAddress, "", "query the leases of an account address")
+	cmd.Flags().String(flagNodeAddress, "", "query the leases of a node address")
 
 	return cmd
 }
