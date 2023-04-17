@@ -119,7 +119,7 @@ func EndBlock(ctx sdk.Context, k keeper.Keeper) []abcitypes.ValidatorUpdate {
 		item.Status = hubtypes.StatusInactive
 		item.StatusAt = ctx.BlockTime()
 
-		k.SetNode(ctx, item)
+		k.SetInactiveNode(ctx, item)
 		ctx.EventManager().EmitTypedEvent(
 			&types.EventSetStatus{
 				Address: item.Address,

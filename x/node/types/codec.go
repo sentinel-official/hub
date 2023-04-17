@@ -10,8 +10,9 @@ func RegisterInterfaces(registry codectypes.InterfaceRegistry) {
 	registry.RegisterImplementations(
 		(*sdk.Msg)(nil),
 		&MsgRegisterRequest{},
-		&MsgUpdateRequest{},
-		&MsgSetStatusRequest{},
+		&MsgUpdateDetailsRequest{},
+		&MsgUpdateStatusRequest{},
+		&MsgSubscribeRequest{},
 	)
 
 	msgservice.RegisterMsgServiceDesc(registry, &_MsgService_serviceDesc)
