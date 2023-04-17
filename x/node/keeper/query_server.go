@@ -121,34 +121,34 @@ func (q *queryServer) QueryNodesForPlan(c context.Context, req *types.QueryNodes
 	return &types.QueryNodesForPlanResponse{Nodes: items, Pagination: pagination}, nil
 }
 
-func (q *queryServer) QueryNodesForProvider(c context.Context, req *types.QueryNodesForProviderRequest) (*types.QueryNodesForProviderResponse, error) {
+func (q *queryServer) QueryLease(c context.Context, req *types.QueryLeaseRequest) (*types.QueryLeaseResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "empty request")
 	}
 
-	addr, err := hubtypes.ProvAddressFromBech32(req.Address)
-	if err != nil {
-		return nil, err
+	ctx := sdk.UnwrapSDKContext(c)
+
+	item, found := q.GetLease(ctx, req.Id)
+	if !found {
+		return nil, status.Errorf(codes.NotFound, "lease does not exist for id %d", req.Id)
+	}
+
+	return &types.QueryLeaseResponse{Lease: item}, nil
+}
+
+func (q *queryServer) QueryLeases(c context.Context, req *types.QueryLeasesRequest) (res *types.QueryLeasesResponse, err error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "empty request")
 	}
 
 	var (
-		items     types.Nodes
-		keyPrefix []byte
-		ctx       = sdk.UnwrapSDKContext(c)
+		items types.Leases
+		ctx   = sdk.UnwrapSDKContext(c)
 	)
 
-	switch req.Status {
-	case hubtypes.StatusActive:
-		keyPrefix = types.GetActiveNodeForProviderKeyPrefix(addr)
-	case hubtypes.StatusInactive:
-		keyPrefix = types.GetInactiveNodeForProviderKeyPrefix(addr)
-	default:
-		keyPrefix = types.GetNodeForProviderKeyPrefix(addr)
-	}
-
-	store := prefix.NewStore(q.Store(ctx), keyPrefix)
+	store := prefix.NewStore(q.Store(ctx), types.LeaseKeyPrefix)
 	pagination, err := query.Paginate(store, req.Pagination, func(_, value []byte) error {
-		var item types.Node
+		var item types.Lease
 		if err := q.cdc.Unmarshal(value, &item); err != nil {
 			return err
 		}
@@ -161,7 +161,73 @@ func (q *queryServer) QueryNodesForProvider(c context.Context, req *types.QueryN
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	return &types.QueryNodesForProviderResponse{Nodes: items, Pagination: pagination}, nil
+	return &types.QueryLeasesResponse{Leases: items, Pagination: pagination}, nil
+}
+
+func (q *queryServer) QueryLeasesForAccount(c context.Context, req *types.QueryLeasesForAccountRequest) (res *types.QueryLeasesForAccountResponse, err error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "empty request")
+	}
+
+	addr, err := sdk.AccAddressFromBech32(req.Address)
+	if err != nil {
+		return nil, err
+	}
+
+	var (
+		items types.Leases
+		ctx   = sdk.UnwrapSDKContext(c)
+	)
+
+	store := prefix.NewStore(q.Store(ctx), types.GetLeaseForAccountKeyPrefix(addr))
+	pagination, err := query.Paginate(store, req.Pagination, func(_, value []byte) error {
+		var item types.Lease
+		if err := q.cdc.Unmarshal(value, &item); err != nil {
+			return err
+		}
+
+		items = append(items, item)
+		return nil
+	})
+
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
+	return &types.QueryLeasesForAccountResponse{Leases: items, Pagination: pagination}, nil
+}
+
+func (q *queryServer) QueryLeasesForNode(c context.Context, req *types.QueryLeasesForNodeRequest) (res *types.QueryLeasesForNodeResponse, err error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "empty request")
+	}
+
+	addr, err := hubtypes.NodeAddressFromBech32(req.Address)
+	if err != nil {
+		return nil, err
+	}
+
+	var (
+		items types.Leases
+		ctx   = sdk.UnwrapSDKContext(c)
+	)
+
+	store := prefix.NewStore(q.Store(ctx), types.GetLeaseForNodeKeyPrefix(addr))
+	pagination, err := query.Paginate(store, req.Pagination, func(_, value []byte) error {
+		var item types.Lease
+		if err := q.cdc.Unmarshal(value, &item); err != nil {
+			return err
+		}
+
+		items = append(items, item)
+		return nil
+	})
+
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
+	return &types.QueryLeasesForNodeResponse{Leases: items, Pagination: pagination}, nil
 }
 
 func (q *queryServer) QueryParams(c context.Context, _ *types.QueryParamsRequest) (*types.QueryParamsResponse, error) {
