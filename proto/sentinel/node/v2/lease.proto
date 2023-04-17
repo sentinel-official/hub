@@ -1,0 +1,17 @@
+syntax = "proto3";
+package sentinel.node.v2;
+
+import "cosmos/base/v1beta1/coin.proto";
+import "gogoproto/gogo.proto";
+
+option go_package            = "github.com/sentinel-official/hub/x/node/types";
+option (gogoproto.equal_all) = false;
+option (gogoproto.goproto_getters_all) = false;
+
+message Lease {
+  uint64 id                      = 1 [ (gogoproto.customname) = "ID" ];
+  string node_address            = 2;
+  string account_address         = 3;
+  int64 hours                    = 4;
+  cosmos.base.v1beta1.Coin price = 5 [ (gogoproto.nullable) = false ];
+}
