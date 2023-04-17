@@ -11,8 +11,9 @@ import (
 
 var (
 	_ sdk.Msg = (*MsgRegisterRequest)(nil)
-	_ sdk.Msg = (*MsgUpdateRequest)(nil)
-	_ sdk.Msg = (*MsgSetStatusRequest)(nil)
+	_ sdk.Msg = (*MsgUpdateDetailsRequest)(nil)
+	_ sdk.Msg = (*MsgUpdateStatusRequest)(nil)
+	_ sdk.Msg = (*MsgSubscribeRequest)(nil)
 )
 
 func NewMsgRegisterRequest(from sdk.AccAddress, gigabytePrices, hourlyPrices sdk.Coins, remoteURL string) *MsgRegisterRequest {
@@ -77,8 +78,8 @@ func (m *MsgRegisterRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{from}
 }
 
-func NewMsgUpdateRequest(from hubtypes.NodeAddress, gigabytePrices, hourlyPrices sdk.Coins, remoteURL string) *MsgUpdateRequest {
-	return &MsgUpdateRequest{
+func NewMsgUpdateDetailsRequest(from hubtypes.NodeAddress, gigabytePrices, hourlyPrices sdk.Coins, remoteURL string) *MsgUpdateDetailsRequest {
+	return &MsgUpdateDetailsRequest{
 		From:           from.String(),
 		GigabytePrices: gigabytePrices,
 		HourlyPrices:   hourlyPrices,
@@ -86,7 +87,7 @@ func NewMsgUpdateRequest(from hubtypes.NodeAddress, gigabytePrices, hourlyPrices
 	}
 }
 
-func (m *MsgUpdateRequest) ValidateBasic() error {
+func (m *MsgUpdateDetailsRequest) ValidateBasic() error {
 	if m.From == "" {
 		return errors.Wrap(ErrorInvalidMessage, "from cannot be empty")
 	}
@@ -129,7 +130,7 @@ func (m *MsgUpdateRequest) ValidateBasic() error {
 	return nil
 }
 
-func (m *MsgUpdateRequest) GetSigners() []sdk.AccAddress {
+func (m *MsgUpdateDetailsRequest) GetSigners() []sdk.AccAddress {
 	from, err := hubtypes.NodeAddressFromBech32(m.From)
 	if err != nil {
 		panic(err)
@@ -138,14 +139,14 @@ func (m *MsgUpdateRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{from.Bytes()}
 }
 
-func NewMsgSetStatusRequest(from hubtypes.NodeAddress, status hubtypes.Status) *MsgSetStatusRequest {
-	return &MsgSetStatusRequest{
+func NewMsgUpdateStatusRequest(from hubtypes.NodeAddress, status hubtypes.Status) *MsgUpdateStatusRequest {
+	return &MsgUpdateStatusRequest{
 		From:   from.String(),
 		Status: status,
 	}
 }
 
-func (m *MsgSetStatusRequest) ValidateBasic() error {
+func (m *MsgUpdateStatusRequest) ValidateBasic() error {
 	if m.From == "" {
 		return errors.Wrap(ErrorInvalidMessage, "from cannot be empty")
 	}
@@ -159,11 +160,64 @@ func (m *MsgSetStatusRequest) ValidateBasic() error {
 	return nil
 }
 
-func (m *MsgSetStatusRequest) GetSigners() []sdk.AccAddress {
+func (m *MsgUpdateStatusRequest) GetSigners() []sdk.AccAddress {
 	from, err := hubtypes.NodeAddressFromBech32(m.From)
 	if err != nil {
 		panic(err)
 	}
 
 	return []sdk.AccAddress{from.Bytes()}
+}
+
+func NewMsgSubscribeRequest(from sdk.AccAddress, addr hubtypes.NodeAddress, bytes, hours int64, denom string) *MsgSubscribeRequest {
+	return &MsgSubscribeRequest{
+		From:    from.String(),
+		Address: addr.String(),
+		Bytes:   bytes,
+		Hours:   hours,
+		Denom:   denom,
+	}
+}
+
+func (m *MsgSubscribeRequest) ValidateBasic() error {
+	if m.From == "" {
+		return errors.Wrap(ErrorInvalidMessage, "from cannot be empty")
+	}
+	if _, err := sdk.AccAddressFromBech32(m.From); err != nil {
+		return errors.Wrap(ErrorInvalidMessage, err.Error())
+	}
+	if m.Address == "" {
+		return errors.Wrap(ErrorInvalidMessage, "address cannot be empty")
+	}
+	if _, err := hubtypes.NodeAddressFromBech32(m.Address); err != nil {
+		return errors.Wrap(ErrorInvalidMessage, err.Error())
+	}
+	if m.Bytes < 0 {
+		return errors.Wrap(ErrorInvalidMessage, "bytes cannot be negative")
+	}
+	if m.Hours < 0 {
+		return errors.Wrap(ErrorInvalidMessage, "hours cannot be negative")
+	}
+	if m.Bytes == 0 && m.Hours == 0 {
+		return errors.Wrap(ErrorInvalidMessage, "[bytes, hours] cannot be zero")
+	}
+	if m.Bytes > 0 && m.Hours > 0 {
+		return errors.Wrap(ErrorInvalidMessage, "[bytes, hours] cannot be positive")
+	}
+	if m.Denom != "" {
+		if err := sdk.ValidateDenom(m.Denom); err != nil {
+			return errors.Wrap(ErrorInvalidMessage, err.Error())
+		}
+	}
+
+	return nil
+}
+
+func (m *MsgSubscribeRequest) GetSigners() []sdk.AccAddress {
+	from, err := sdk.AccAddressFromBech32(m.From)
+	if err != nil {
+		panic(err)
+	}
+
+	return []sdk.AccAddress{from}
 }

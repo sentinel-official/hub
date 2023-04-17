@@ -23,8 +23,8 @@ message MsgRegisterRequest {
   string remote_url = 4 [ (gogoproto.customname) = "RemoteURL" ];
 }
 
-// MsgUpdateRequest defines the SDK message for updating a node
-message MsgUpdateRequest {
+// MsgUpdateDetailsRequest defines the SDK message for updating the node details
+message MsgUpdateDetailsRequest {
   string from                                       = 1;
   repeated cosmos.base.v1beta1.Coin gigabyte_prices = 2 [
     (gogoproto.nullable)     = false,
@@ -37,24 +37,39 @@ message MsgUpdateRequest {
   string remote_url = 4 [ (gogoproto.customname) = "RemoteURL" ];
 }
 
-// MsgSetStatusRequest defines the SDK message for modifying the status of a
-// node
-message MsgSetStatusRequest {
+// MsgUpdateStatusRequest defines the SDK message for updating the node status
+message MsgUpdateStatusRequest {
   string from                     = 1;
   sentinel.types.v1.Status status = 2;
+}
+
+// MsgSubscribeRequest defines the SDK message for subscribe to a node
+message MsgSubscribeRequest {
+  string from    = 1;
+  string address = 2;
+  int64 bytes    = 3;
+  int64 hours    = 4;
+  string denom   = 5;
 }
 
 // MsgRegisterResponse defines the response of message MsgRegisterRequest
 message MsgRegisterResponse {}
 
-// MsgUpdateResponse defines the response of message MsgUpdateRequest
-message MsgUpdateResponse {}
+// MsgUpdateDetailsResponse defines the response of message
+// MsgUpdateDetailsRequest
+message MsgUpdateDetailsResponse {}
 
-// MsgSetStatusResponse defines the response of message MsgSetStatusRequest
-message MsgSetStatusResponse {}
+// MsgUpdateStatusResponse defines the response of message
+// MsgUpdateStatusRequest
+message MsgUpdateStatusResponse {}
+
+// MsgSubscribeResponse defines the response of message MsgSubscribeRequest
+message MsgSubscribeResponse {}
 
 service MsgService {
   rpc MsgRegister(MsgRegisterRequest) returns (MsgRegisterResponse);
-  rpc MsgUpdate(MsgUpdateRequest) returns (MsgUpdateResponse);
-  rpc MsgSetStatus(MsgSetStatusRequest) returns (MsgSetStatusResponse);
+  rpc MsgUpdateDetails(MsgUpdateDetailsRequest)
+      returns (MsgUpdateDetailsResponse);
+  rpc MsgUpdateStatus(MsgUpdateStatusRequest) returns (MsgUpdateStatusResponse);
+  rpc MsgSubscribe(MsgSubscribeRequest) returns (MsgSubscribeResponse);
 }

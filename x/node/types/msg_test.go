@@ -273,7 +273,7 @@ func TestMsgRegisterRequest_ValidateBasic(t *testing.T) {
 	}
 }
 
-func TestMsgUpdateRequest_ValidateBasic(t *testing.T) {
+func TestMsgUpdateDetailsRequest_ValidateBasic(t *testing.T) {
 	type fields struct {
 		From           string
 		GigabytePrices sdk.Coins
@@ -524,7 +524,7 @@ func TestMsgUpdateRequest_ValidateBasic(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			m := &MsgUpdateRequest{
+			m := &MsgUpdateDetailsRequest{
 				From:           tt.fields.From,
 				GigabytePrices: tt.fields.GigabytePrices,
 				HourlyPrices:   tt.fields.HourlyPrices,
@@ -537,7 +537,7 @@ func TestMsgUpdateRequest_ValidateBasic(t *testing.T) {
 	}
 }
 
-func TestMsgSetStatusRequest_ValidateBasic(t *testing.T) {
+func TestMsgUpdateStatusRequest_ValidateBasic(t *testing.T) {
 	type fields struct {
 		From   string
 		Status hubtypes.Status
@@ -627,7 +627,7 @@ func TestMsgSetStatusRequest_ValidateBasic(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			m := &MsgSetStatusRequest{
+			m := &MsgUpdateStatusRequest{
 				From:   tt.fields.From,
 				Status: tt.fields.Status,
 			}
