@@ -2,16 +2,19 @@ package cli
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/spf13/pflag"
-
 	hubtypes "github.com/sentinel-official/hub/types"
+	"github.com/spf13/pflag"
 )
 
 const (
+	flagAccountAddress = "account-addr"
+	flagBytes          = "bytes"
+	flagDenom          = "denom"
 	flagGigabytePrices = "gigabyte-prices"
 	flagHourlyPrices   = "hourly-prices"
+	flagHours          = "hours"
+	flagNodeAddress    = "node-addr"
 	flagPlan           = "plan"
-	flagProvider       = "provider"
 	flagRemoteURL      = "remote-url"
 )
 
@@ -39,8 +42,8 @@ func GetHourlyPrices(flags *pflag.FlagSet) (sdk.Coins, error) {
 	return sdk.ParseCoinsNormalized(s)
 }
 
-func GetProviderAddr(flags *pflag.FlagSet) (hubtypes.ProvAddress, error) {
-	s, err := flags.GetString(flagProvider)
+func GetAccountAddress(flags *pflag.FlagSet) (sdk.AccAddress, error) {
+	s, err := flags.GetString(flagAccountAddress)
 	if err != nil {
 		return nil, err
 	}
@@ -48,5 +51,17 @@ func GetProviderAddr(flags *pflag.FlagSet) (hubtypes.ProvAddress, error) {
 		return nil, nil
 	}
 
-	return hubtypes.ProvAddressFromBech32(s)
+	return sdk.AccAddressFromBech32(s)
+}
+
+func GetNodeAddress(flags *pflag.FlagSet) (hubtypes.NodeAddress, error) {
+	s, err := flags.GetString(flagNodeAddress)
+	if err != nil {
+		return nil, err
+	}
+	if s == "" {
+		return nil, nil
+	}
+
+	return hubtypes.NodeAddressFromBech32(s)
 }

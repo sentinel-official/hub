@@ -52,10 +52,10 @@ func txRegister() *cobra.Command {
 	return cmd
 }
 
-func txUpdate() *cobra.Command {
+func txUpdateDetails() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "update",
-		Short: "Update a node",
+		Use:   "update-details",
+		Short: "Update the details of a node",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientTxContext(cmd)
 			if err != nil {
@@ -77,7 +77,7 @@ func txUpdate() *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgUpdateRequest(
+			msg := types.NewMsgUpdateDetailsRequest(
 				ctx.FromAddress.Bytes(),
 				gigabytePrices,
 				hourlyPrice,
@@ -99,10 +99,10 @@ func txUpdate() *cobra.Command {
 	return cmd
 }
 
-func txSetStatus() *cobra.Command {
+func txUpdateStatus() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "status-set [status]",
-		Short: "Set status for a node",
+		Use:   "update-status [status]",
+		Short: "Update the status for a node",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientTxContext(cmd)
@@ -110,7 +110,7 @@ func txSetStatus() *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgSetStatusRequest(
+			msg := types.NewMsgUpdateStatusRequest(
 				ctx.FromAddress.Bytes(),
 				hubtypes.StatusFromString(args[0]),
 			)
@@ -123,6 +123,60 @@ func txSetStatus() *cobra.Command {
 	}
 
 	flags.AddTxFlagsToCmd(cmd)
+
+	return cmd
+}
+
+func txSubscribe() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "subscribe [node-addr]",
+		Short: "Subscribe to a node",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			addr, err := hubtypes.NodeAddressFromBech32(args[0])
+			if err != nil {
+				return err
+			}
+
+			bytes, err := cmd.Flags().GetInt64(flagBytes)
+			if err != nil {
+				return err
+			}
+
+			hours, err := cmd.Flags().GetInt64(flagHours)
+			if err != nil {
+				return err
+			}
+
+			denom, err := cmd.Flags().GetString(flagDenom)
+			if err != nil {
+				return err
+			}
+
+			msg := types.NewMsgSubscribeRequest(
+				ctx.FromAddress,
+				addr,
+				bytes,
+				hours,
+				denom,
+			)
+			if err := msg.ValidateBasic(); err != nil {
+				return err
+			}
+
+			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
+		},
+	}
+
+	flags.AddTxFlagsToCmd(cmd)
+	cmd.Flags().Int64(flagBytes, 0, "total bytes to subscribe for")
+	cmd.Flags().Int64(flagHours, 0, "total hours to subscribe for")
+	cmd.Flags().String(flagDenom, "", "payment coin denomination")
 
 	return cmd
 }
