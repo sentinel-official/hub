@@ -29,7 +29,10 @@ message Params {
     (gogoproto.nullable)     = false,
     (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
   ];
-  string revenue_share = 7 [
+  int64 max_lease_hours = 7;
+  int64 min_lease_hours = 8;
+  int64 max_leases      = 9;
+  string revenue_share  = 10 [
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
     (gogoproto.nullable)   = false
   ];
