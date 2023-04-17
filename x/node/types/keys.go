@@ -15,20 +15,22 @@ const (
 )
 
 var (
-	TypeMsgRegisterRequest  = ModuleName + ":register"
-	TypeMsgUpdateRequest    = ModuleName + ":update"
-	TypeMsgSetStatusRequest = ModuleName + ":set_status"
+	TypeMsgRegisterRequest      = ModuleName + ":register"
+	TypeMsgUpdateDetailsRequest = ModuleName + ":update_details"
+	TypeMsgUpdateStatusRequest  = ModuleName + ":update_status"
 )
 
 var (
 	NodeKeyPrefix         = []byte{0x10}
 	ActiveNodeKeyPrefix   = append(NodeKeyPrefix, 0x01)
 	InactiveNodeKeyPrefix = append(NodeKeyPrefix, 0x02)
-
-	NodeForPlanKeyPrefix     = []byte{0x11}
-	NodeForProviderKeyPrefix = []byte{0x12}
+	NodeForPlanKeyPrefix  = []byte{0x11}
 
 	InactiveNodeAtKeyPrefix = []byte{0x20}
+
+	LeaseKeyPrefix           = []byte{0x30}
+	LeaseForAccountKeyPrefix = []byte{0x31}
+	LeaseForNodeKeyPrefix    = []byte{0x32}
 )
 
 func ActiveNodeKey(addr hubtypes.NodeAddress) []byte {
@@ -59,24 +61,24 @@ func InactiveNodeForPlanKey(id uint64, addr hubtypes.NodeAddress) []byte {
 	return append(GetInactiveNodeForPlanKeyPrefix(id), address.MustLengthPrefix(addr.Bytes())...)
 }
 
-func GetNodeForProviderKeyPrefix(addr hubtypes.ProvAddress) []byte {
-	return append(NodeForProviderKeyPrefix, address.MustLengthPrefix(addr.Bytes())...)
+func LeaseKey(id uint64) []byte {
+	return append(LeaseKeyPrefix, sdk.Uint64ToBigEndian(id)...)
 }
 
-func GetActiveNodeForProviderKeyPrefix(addr hubtypes.ProvAddress) []byte {
-	return append(GetNodeForProviderKeyPrefix(addr), 0x01)
+func GetLeaseForAccountKeyPrefix(addr sdk.AccAddress) []byte {
+	return append(LeaseForAccountKeyPrefix, address.MustLengthPrefix(addr)...)
 }
 
-func ActiveNodeForProviderKey(provAddr hubtypes.ProvAddress, nodeAddr hubtypes.NodeAddress) []byte {
-	return append(GetActiveNodeForProviderKeyPrefix(provAddr), address.MustLengthPrefix(nodeAddr.Bytes())...)
+func LeaseForAccountKey(addr sdk.AccAddress, id uint64) []byte {
+	return append(GetLeaseForAccountKeyPrefix(addr), sdk.Uint64ToBigEndian(id)...)
 }
 
-func GetInactiveNodeForProviderKeyPrefix(addr hubtypes.ProvAddress) []byte {
-	return append(GetNodeForProviderKeyPrefix(addr), 0x02)
+func GetLeaseForNodeKeyPrefix(addr hubtypes.NodeAddress) []byte {
+	return append(LeaseForNodeKeyPrefix, address.MustLengthPrefix(addr)...)
 }
 
-func InactiveNodeForProviderKey(provAddr hubtypes.ProvAddress, nodeAddr hubtypes.NodeAddress) []byte {
-	return append(GetInactiveNodeForProviderKeyPrefix(provAddr), address.MustLengthPrefix(nodeAddr.Bytes())...)
+func LeaseForNodeKey(addr hubtypes.NodeAddress, id uint64) []byte {
+	return append(GetLeaseForNodeKeyPrefix(addr), sdk.Uint64ToBigEndian(id)...)
 }
 
 func GetInactiveNodeAtKeyPrefix(at time.Time) []byte {
