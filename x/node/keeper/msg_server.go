@@ -35,32 +35,31 @@ func (k *msgServer) MsgRegister(c context.Context, msg *types.MsgRegisterRequest
 		}
 	}
 
-	fromAddr, err := sdk.AccAddressFromBech32(msg.From)
+	accAddr, err := sdk.AccAddressFromBech32(msg.From)
 	if err != nil {
 		return nil, err
 	}
-	if k.HasNode(ctx, fromAddr.Bytes()) {
+
+	nodeAddr := hubtypes.NodeAddress(accAddr.Bytes())
+	if k.HasNode(ctx, nodeAddr) {
 		return nil, types.ErrorDuplicateNode
 	}
 
 	deposit := k.Deposit(ctx)
-	if err = k.FundCommunityPool(ctx, fromAddr, deposit); err != nil {
+	if err = k.FundCommunityPool(ctx, accAddr, deposit); err != nil {
 		return nil, err
 	}
 
-	var (
-		nodeAddr = hubtypes.NodeAddress(fromAddr.Bytes())
-		node     = types.Node{
-			Address:        nodeAddr.String(),
-			GigabytePrices: msg.GigabytePrices,
-			HourlyPrices:   msg.HourlyPrices,
-			RemoteURL:      msg.RemoteURL,
-			Status:         hubtypes.StatusInactive,
-			StatusAt:       ctx.BlockTime(),
-		}
-	)
+	node := types.Node{
+		Address:        nodeAddr.String(),
+		GigabytePrices: msg.GigabytePrices,
+		HourlyPrices:   msg.HourlyPrices,
+		RemoteURL:      msg.RemoteURL,
+		Status:         hubtypes.StatusInactive,
+		StatusAt:       ctx.BlockTime(),
+	}
 
-	k.SetNode(ctx, node)
+	k.SetInactiveNode(ctx, node)
 	ctx.EventManager().EmitTypedEvent(
 		&types.EventRegister{
 			Address: node.Address,
@@ -70,15 +69,15 @@ func (k *msgServer) MsgRegister(c context.Context, msg *types.MsgRegisterRequest
 	return &types.MsgRegisterResponse{}, nil
 }
 
-func (k *msgServer) MsgUpdate(c context.Context, msg *types.MsgUpdateRequest) (*types.MsgUpdateResponse, error) {
+func (k *msgServer) MsgUpdateDetails(c context.Context, msg *types.MsgUpdateDetailsRequest) (*types.MsgUpdateDetailsResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
-	fromAddr, err := hubtypes.NodeAddressFromBech32(msg.From)
+	nodeAddr, err := hubtypes.NodeAddressFromBech32(msg.From)
 	if err != nil {
 		return nil, err
 	}
 
-	node, found := k.GetNode(ctx, fromAddr)
+	node, found := k.GetNode(ctx, nodeAddr)
 	if !found {
 		return nil, types.ErrorNodeDoesNotExist
 	}
@@ -108,27 +107,23 @@ func (k *msgServer) MsgUpdate(c context.Context, msg *types.MsgUpdateRequest) (*
 		},
 	)
 
-	return &types.MsgUpdateResponse{}, nil
+	return &types.MsgUpdateDetailsResponse{}, nil
 }
 
-func (k *msgServer) MsgSetStatus(c context.Context, msg *types.MsgSetStatusRequest) (*types.MsgSetStatusResponse, error) {
+func (k *msgServer) MsgUpdateStatus(c context.Context, msg *types.MsgUpdateStatusRequest) (*types.MsgUpdateStatusResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
-	fromAddr, err := hubtypes.NodeAddressFromBech32(msg.From)
+	nodeAddr, err := hubtypes.NodeAddressFromBech32(msg.From)
 	if err != nil {
 		return nil, err
 	}
 
-	node, found := k.GetNode(ctx, fromAddr)
+	node, found := k.GetNode(ctx, nodeAddr)
 	if !found {
 		return nil, types.ErrorNodeDoesNotExist
 	}
 
-	var (
-		nodeAddr         = node.GetAddress()
-		inactiveDuration = k.InactiveDuration(ctx)
-	)
-
+	inactiveDuration := k.InactiveDuration(ctx)
 	if node.Status.Equal(hubtypes.StatusActive) {
 		if msg.Status.Equal(hubtypes.StatusInactive) {
 			k.DeleteActiveNode(ctx, nodeAddr)
@@ -158,5 +153,9 @@ func (k *msgServer) MsgSetStatus(c context.Context, msg *types.MsgSetStatusReque
 		},
 	)
 
-	return &types.MsgSetStatusResponse{}, nil
+	return &types.MsgUpdateStatusResponse{}, nil
+}
+
+func (k *msgServer) MsgSubscribe(c context.Context, msg *types.MsgSubscribeRequest) (*types.MsgSubscribeResponse, error) {
+	return &types.MsgSubscribeResponse{}, nil
 }
