@@ -9,10 +9,11 @@ import (
 func RegisterInterfaces(registry codectypes.InterfaceRegistry) {
 	registry.RegisterImplementations(
 		(*sdk.Msg)(nil),
-		&MsgAddRequest{},
-		&MsgSetStatusRequest{},
-		&MsgAddNodeRequest{},
-		&MsgRemoveNodeRequest{},
+		&MsgCreateRequest{},
+		&MsgUpdateStatusRequest{},
+		&MsgLinkNodeRequest{},
+		&MsgUnlinkNodeRequest{},
+		&MsgSubscribeRequest{},
 	)
 
 	msgservice.RegisterMsgServiceDesc(registry, &_MsgService_serviceDesc)
