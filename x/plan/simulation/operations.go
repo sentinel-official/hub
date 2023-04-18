@@ -20,10 +20,10 @@ import (
 )
 
 var (
-	OperationWeightMsgAddRequest        = "op_weight_" + types.TypeMsgAddRequest
-	OperationWeightMsgSetStatusRequest  = "op_weight_" + types.TypeMsgSetStatusRequest
-	OperationWeightMsgAddNodeRequest    = "op_weight_" + types.TypeMsgAddNodeRequest
-	OperationWeightMsgRemoveNodeRequest = "op_weight_" + types.TypeMsgRemoveNodeRequest
+	OperationWeightMsgCreateRequest       = "op_weight_" + types.TypeMsgCreateRequest
+	OperationWeightMsgUpdateStatusRequest = "op_weight_" + types.TypeMsgUpdateStatusRequest
+	OperationWeightMsgLinkNodeRequest     = "op_weight_" + types.TypeMsgLinkNodeRequest
+	OperationWeightMsgUnlinkNodeRequest   = "op_weight_" + types.TypeMsgUnlinkNodeRequest
 )
 
 func WeightedOperations(
@@ -34,70 +34,70 @@ func WeightedOperations(
 	k keeper.Keeper,
 ) simulation.WeightedOperations {
 	var (
-		weightMsgAddRequest        int
-		weightMsgSetStatusRequest  int
-		weightMsgAddNodeRequest    int
-		weightMsgRemoveNodeRequest int
+		weightMsgCreateRequest       int
+		weightMsgUpdateStatusRequest int
+		weightMsgLinkNodeRequest     int
+		weightMsgUnlinkNodeRequest   int
 	)
 
 	params.GetOrGenerate(
 		cdc,
-		OperationWeightMsgAddRequest,
-		&weightMsgAddRequest,
+		OperationWeightMsgCreateRequest,
+		&weightMsgCreateRequest,
 		nil,
 		func(_ *rand.Rand) {
-			weightMsgAddRequest = 100
+			weightMsgCreateRequest = 100
 		},
 	)
 	params.GetOrGenerate(
 		cdc,
-		OperationWeightMsgSetStatusRequest,
-		&weightMsgSetStatusRequest,
+		OperationWeightMsgUpdateStatusRequest,
+		&weightMsgUpdateStatusRequest,
 		nil,
 		func(_ *rand.Rand) {
-			weightMsgSetStatusRequest = 100
+			weightMsgUpdateStatusRequest = 100
 		},
 	)
 	params.GetOrGenerate(
 		cdc,
-		OperationWeightMsgAddNodeRequest,
-		&weightMsgAddNodeRequest,
+		OperationWeightMsgLinkNodeRequest,
+		&weightMsgLinkNodeRequest,
 		nil,
 		func(_ *rand.Rand) {
-			weightMsgAddNodeRequest = 100
+			weightMsgLinkNodeRequest = 100
 		},
 	)
 	params.GetOrGenerate(
 		cdc,
-		OperationWeightMsgRemoveNodeRequest,
-		&weightMsgRemoveNodeRequest,
+		OperationWeightMsgUnlinkNodeRequest,
+		&weightMsgUnlinkNodeRequest,
 		nil,
 		func(_ *rand.Rand) {
-			weightMsgRemoveNodeRequest = 100
+			weightMsgUnlinkNodeRequest = 100
 		},
 	)
 
 	return simulation.WeightedOperations{
 		simulation.NewWeightedOperation(
-			weightMsgAddRequest,
-			SimulateMsgAddRequest(ak, bk, k),
+			weightMsgCreateRequest,
+			SimulateMsgCreateRequest(ak, bk, k),
 		),
 		simulation.NewWeightedOperation(
-			weightMsgSetStatusRequest,
-			SimulateMsgSetStatusRequest(ak, bk, k),
+			weightMsgUpdateStatusRequest,
+			SimulateMsgUpdateStatusRequest(ak, bk, k),
 		),
 		simulation.NewWeightedOperation(
-			weightMsgAddNodeRequest,
-			SimulateMsgAddNodeRequest(ak, bk, k),
+			weightMsgLinkNodeRequest,
+			SimulateMsgLinkNodeRequest(ak, bk, k),
 		),
 		simulation.NewWeightedOperation(
-			weightMsgRemoveNodeRequest,
-			SimulateMsgRemoveNodeRequest(ak, bk, k),
+			weightMsgUnlinkNodeRequest,
+			SimulateMsgUnlinkNodeRequest(ak, bk, k),
 		),
 	}
 }
 
-func SimulateMsgAddRequest(ak expected.AccountKeeper, bk expected.BankKeeper, k keeper.Keeper) simulationtypes.Operation {
+func SimulateMsgCreateRequest(ak expected.AccountKeeper, bk expected.BankKeeper, k keeper.Keeper) simulationtypes.Operation {
 	return func(
 		r *rand.Rand,
 		app *baseapp.BaseApp,
@@ -112,17 +112,17 @@ func SimulateMsgAddRequest(ak expected.AccountKeeper, bk expected.BankKeeper, k 
 
 		found := k.HasProvider(ctx, hubtypes.ProvAddress(from.GetAddress()))
 		if !found {
-			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgAddRequest, "provider does not exist"), nil, nil
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgCreateRequest, "provider does not exist"), nil, nil
 		}
 
 		balance := bk.SpendableCoins(ctx, from.GetAddress())
 		if !balance.IsAnyNegative() {
-			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgAddRequest, "balance is negative"), nil, nil
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgCreateRequest, "balance is negative"), nil, nil
 		}
 
 		fees, err := simulationtypes.RandomFees(r, ctx, balance)
 		if err != nil {
-			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgAddRequest, err.Error()), nil, err
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgCreateRequest, err.Error()), nil, err
 		}
 
 		var (
@@ -141,7 +141,7 @@ func SimulateMsgAddRequest(ak expected.AccountKeeper, bk expected.BankKeeper, k 
 
 		var (
 			txConfig = params.MakeTestEncodingConfig().TxConfig
-			message  = types.NewMsgAddRequest(
+			message  = types.NewMsgCreateRequest(
 				hubtypes.ProvAddress(from.GetAddress()),
 				price,
 				validity,
@@ -160,19 +160,19 @@ func SimulateMsgAddRequest(ak expected.AccountKeeper, bk expected.BankKeeper, k 
 			rFrom.PrivKey,
 		)
 		if err != nil {
-			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgAddRequest, err.Error()), nil, err
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgCreateRequest, err.Error()), nil, err
 		}
 
 		_, _, err = app.Deliver(txConfig.TxEncoder(), txn)
 		if err != nil {
-			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgAddRequest, err.Error()), nil, err
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgCreateRequest, err.Error()), nil, err
 		}
 
 		return simulationtypes.NewOperationMsg(message, true, "", nil), nil, nil
 	}
 }
 
-func SimulateMsgSetStatusRequest(ak expected.AccountKeeper, bk expected.BankKeeper, k keeper.Keeper) simulationtypes.Operation {
+func SimulateMsgUpdateStatusRequest(ak expected.AccountKeeper, bk expected.BankKeeper, k keeper.Keeper) simulationtypes.Operation {
 	return func(
 		r *rand.Rand,
 		app *baseapp.BaseApp,
@@ -187,17 +187,17 @@ func SimulateMsgSetStatusRequest(ak expected.AccountKeeper, bk expected.BankKeep
 
 		plans := k.GetPlansForProvider(ctx, hubtypes.ProvAddress(from.GetAddress()), 0, 0)
 		if len(plans) == 0 {
-			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgSetStatusRequest, "plans for provider does not exist"), nil, nil
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgUpdateStatusRequest, "plans for provider does not exist"), nil, nil
 		}
 
 		balance := bk.SpendableCoins(ctx, from.GetAddress())
 		if !balance.IsAnyNegative() {
-			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgSetStatusRequest, "balance is negative"), nil, nil
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgUpdateStatusRequest, "balance is negative"), nil, nil
 		}
 
 		fees, err := simulationtypes.RandomFees(r, ctx, balance)
 		if err != nil {
-			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgSetStatusRequest, err.Error()), nil, err
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgUpdateStatusRequest, err.Error()), nil, err
 		}
 
 		var (
@@ -211,7 +211,7 @@ func SimulateMsgSetStatusRequest(ak expected.AccountKeeper, bk expected.BankKeep
 
 		var (
 			txConfig = params.MakeTestEncodingConfig().TxConfig
-			message  = types.NewMsgSetStatusRequest(
+			message  = types.NewMsgUpdateStatusRequest(
 				hubtypes.ProvAddress(from.GetAddress()),
 				id,
 				status,
@@ -229,19 +229,19 @@ func SimulateMsgSetStatusRequest(ak expected.AccountKeeper, bk expected.BankKeep
 			rFrom.PrivKey,
 		)
 		if err != nil {
-			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgSetStatusRequest, err.Error()), nil, err
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgUpdateStatusRequest, err.Error()), nil, err
 		}
 
 		_, _, err = app.Deliver(txConfig.TxEncoder(), txn)
 		if err != nil {
-			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgSetStatusRequest, err.Error()), nil, err
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgUpdateStatusRequest, err.Error()), nil, err
 		}
 
 		return simulationtypes.NewOperationMsg(message, true, "", nil), nil, nil
 	}
 }
 
-func SimulateMsgAddNodeRequest(ak expected.AccountKeeper, bk expected.BankKeeper, k keeper.Keeper) simulationtypes.Operation {
+func SimulateMsgLinkNodeRequest(ak expected.AccountKeeper, bk expected.BankKeeper, k keeper.Keeper) simulationtypes.Operation {
 	return func(
 		r *rand.Rand,
 		app *baseapp.BaseApp,
@@ -258,15 +258,15 @@ func SimulateMsgAddNodeRequest(ak expected.AccountKeeper, bk expected.BankKeeper
 
 		node, found := k.GetNode(ctx, hubtypes.NodeAddress(address.GetAddress()))
 		if !found {
-			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgAddNodeRequest, "node does not exist"), nil, nil
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgLinkNodeRequest, "node does not exist"), nil, nil
 		}
 		if node.Provider != hubtypes.ProvAddress(from.GetAddress()).String() {
-			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgAddNodeRequest, "node has different provider"), nil, nil
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgLinkNodeRequest, "node has different provider"), nil, nil
 		}
 
 		plans := k.GetPlansForProvider(ctx, hubtypes.ProvAddress(from.GetAddress()), 0, 0)
 		if len(plans) == 0 {
-			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgAddNodeRequest, "plans for provider does not exist"), nil, nil
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgLinkNodeRequest, "plans for provider does not exist"), nil, nil
 		}
 
 		var (
@@ -275,22 +275,22 @@ func SimulateMsgAddNodeRequest(ak expected.AccountKeeper, bk expected.BankKeeper
 
 		found = k.HasNodeForPlan(ctx, id, hubtypes.NodeAddress(address.GetAddress()))
 		if found {
-			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgAddNodeRequest, "node for plan already exists"), nil, nil
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgLinkNodeRequest, "node for plan already exists"), nil, nil
 		}
 
 		balance := bk.SpendableCoins(ctx, from.GetAddress())
 		if !balance.IsAnyNegative() {
-			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgAddNodeRequest, "balance is negative"), nil, nil
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgLinkNodeRequest, "balance is negative"), nil, nil
 		}
 
 		fees, err := simulationtypes.RandomFees(r, ctx, balance)
 		if err != nil {
-			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgAddNodeRequest, err.Error()), nil, err
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgLinkNodeRequest, err.Error()), nil, err
 		}
 
 		var (
 			txConfig = params.MakeTestEncodingConfig().TxConfig
-			message  = types.NewMsgAddNodeRequest(
+			message  = types.NewMsgLinkNodeRequest(
 				hubtypes.ProvAddress(from.GetAddress()),
 				id,
 				hubtypes.NodeAddress(address.GetAddress()),
@@ -308,19 +308,19 @@ func SimulateMsgAddNodeRequest(ak expected.AccountKeeper, bk expected.BankKeeper
 			rFrom.PrivKey,
 		)
 		if err != nil {
-			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgAddNodeRequest, err.Error()), nil, err
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgLinkNodeRequest, err.Error()), nil, err
 		}
 
 		_, _, err = app.Deliver(txConfig.TxEncoder(), txn)
 		if err != nil {
-			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgAddNodeRequest, err.Error()), nil, err
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgLinkNodeRequest, err.Error()), nil, err
 		}
 
 		return simulationtypes.NewOperationMsg(message, true, "", nil), nil, nil
 	}
 }
 
-func SimulateMsgRemoveNodeRequest(ak expected.AccountKeeper, bk expected.BankKeeper, k keeper.Keeper) simulationtypes.Operation {
+func SimulateMsgUnlinkNodeRequest(ak expected.AccountKeeper, bk expected.BankKeeper, k keeper.Keeper) simulationtypes.Operation {
 	return func(
 		r *rand.Rand,
 		app *baseapp.BaseApp,
@@ -337,7 +337,7 @@ func SimulateMsgRemoveNodeRequest(ak expected.AccountKeeper, bk expected.BankKee
 
 		plans := k.GetPlansForProvider(ctx, hubtypes.ProvAddress(from.GetAddress()), 0, 0)
 		if len(plans) == 0 {
-			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgRemoveNodeRequest, "plans for provider does not exist"), nil, nil
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgUnlinkNodeRequest, "plans for provider does not exist"), nil, nil
 		}
 
 		var (
@@ -346,22 +346,22 @@ func SimulateMsgRemoveNodeRequest(ak expected.AccountKeeper, bk expected.BankKee
 
 		found := k.HasNodeForPlan(ctx, id, hubtypes.NodeAddress(address.GetAddress()))
 		if !found {
-			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgRemoveNodeRequest, "node for plan does not exist"), nil, nil
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgUnlinkNodeRequest, "node for plan does not exist"), nil, nil
 		}
 
 		balance := bk.SpendableCoins(ctx, from.GetAddress())
 		if !balance.IsAnyNegative() {
-			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgRemoveNodeRequest, "balance is negative"), nil, nil
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgUnlinkNodeRequest, "balance is negative"), nil, nil
 		}
 
 		fees, err := simulationtypes.RandomFees(r, ctx, balance)
 		if err != nil {
-			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgRemoveNodeRequest, err.Error()), nil, err
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgUnlinkNodeRequest, err.Error()), nil, err
 		}
 
 		var (
 			txConfig = params.MakeTestEncodingConfig().TxConfig
-			message  = types.NewMsgRemoveNodeRequest(
+			message  = types.NewMsgUnlinkNodeRequest(
 				from.GetAddress(),
 				id,
 				hubtypes.NodeAddress(address.GetAddress()),
@@ -379,12 +379,12 @@ func SimulateMsgRemoveNodeRequest(ak expected.AccountKeeper, bk expected.BankKee
 			rFrom.PrivKey,
 		)
 		if err != nil {
-			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgRemoveNodeRequest, err.Error()), nil, err
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgUnlinkNodeRequest, err.Error()), nil, err
 		}
 
 		_, _, err = app.Deliver(txConfig.TxEncoder(), txn)
 		if err != nil {
-			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgRemoveNodeRequest, err.Error()), nil, err
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgUnlinkNodeRequest, err.Error()), nil, err
 		}
 
 		return simulationtypes.NewOperationMsg(message, true, "", nil), nil, nil

@@ -2,7 +2,6 @@ package keeper
 
 import (
 	"context"
-	"strings"
 
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -11,7 +10,6 @@ import (
 	"google.golang.org/grpc/status"
 
 	hubtypes "github.com/sentinel-official/hub/types"
-	nodetypes "github.com/sentinel-official/hub/x/node/types"
 	"github.com/sentinel-official/hub/x/plan/types"
 )
 
@@ -48,54 +46,30 @@ func (q *queryServer) QueryPlans(c context.Context, req *types.QueryPlansRequest
 	}
 
 	var (
-		items      types.Plans
-		pagination *query.PageResponse
-		ctx        = sdk.UnwrapSDKContext(c)
+		items     types.Plans
+		keyPrefix []byte
+		ctx       = sdk.UnwrapSDKContext(c)
 	)
 
-	if req.Status.Equal(hubtypes.StatusActive) {
-		store := prefix.NewStore(q.Store(ctx), types.ActivePlanKeyPrefix)
-		pagination, err = query.FilteredPaginate(store, req.Pagination, func(key, _ []byte, accumulate bool) (bool, error) {
-			if accumulate {
-				item, found := q.GetPlan(ctx, sdk.BigEndianToUint64(key))
-				if !found {
-					return false, nil
-				}
-
-				items = append(items, item)
-			}
-
-			return true, nil
-		})
-	} else if req.Status.Equal(hubtypes.StatusInactive) {
-		store := prefix.NewStore(q.Store(ctx), types.InactivePlanKeyPrefix)
-		pagination, err = query.FilteredPaginate(store, req.Pagination, func(key, _ []byte, accumulate bool) (bool, error) {
-			if accumulate {
-				item, found := q.GetPlan(ctx, sdk.BigEndianToUint64(key))
-				if !found {
-					return false, nil
-				}
-
-				items = append(items, item)
-			}
-
-			return true, nil
-		})
-	} else {
-		store := prefix.NewStore(q.Store(ctx), types.PlanKeyPrefix)
-		pagination, err = query.FilteredPaginate(store, req.Pagination, func(_, value []byte, accumulate bool) (bool, error) {
-			if accumulate {
-				var item types.Plan
-				if err := q.cdc.Unmarshal(value, &item); err != nil {
-					return false, err
-				}
-
-				items = append(items, item)
-			}
-
-			return true, nil
-		})
+	switch req.Status {
+	case hubtypes.StatusActive:
+		keyPrefix = types.ActivePlanKeyPrefix
+	case hubtypes.StatusInactive:
+		keyPrefix = types.InactivePlanKeyPrefix
+	default:
+		keyPrefix = types.PlanKeyPrefix
 	}
+
+	store := prefix.NewStore(q.Store(ctx), keyPrefix)
+	pagination, err := query.Paginate(store, req.Pagination, func(_, value []byte) error {
+		var item types.Plan
+		if err := q.cdc.Unmarshal(value, &item); err != nil {
+			return err
+		}
+
+		items = append(items, item)
+		return nil
+	})
 
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
@@ -109,101 +83,40 @@ func (q *queryServer) QueryPlansForProvider(c context.Context, req *types.QueryP
 		return nil, status.Error(codes.InvalidArgument, "empty request")
 	}
 
-	address, err := hubtypes.ProvAddressFromBech32(req.Address)
+	addr, err := hubtypes.ProvAddressFromBech32(req.Address)
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid address %s", req.Address)
 	}
 
 	var (
-		items      types.Plans
-		pagination *query.PageResponse
-		ctx        = sdk.UnwrapSDKContext(c)
+		items     types.Plans
+		keyPrefix []byte
+		ctx       = sdk.UnwrapSDKContext(c)
 	)
 
-	if req.Status.Equal(hubtypes.StatusActive) {
-		store := prefix.NewStore(q.Store(ctx), types.GetActivePlanForProviderKeyPrefix(address))
-		pagination, err = query.FilteredPaginate(store, req.Pagination, func(key, _ []byte, accumulate bool) (bool, error) {
-			if accumulate {
-				item, found := q.GetPlan(ctx, sdk.BigEndianToUint64(key))
-				if !found {
-					return false, nil
-				}
-
-				items = append(items, item)
-			}
-
-			return true, nil
-		})
-	} else if req.Status.Equal(hubtypes.StatusInactive) {
-		store := prefix.NewStore(q.Store(ctx), types.GetInactivePlanForProviderKeyPrefix(address))
-		pagination, err = query.FilteredPaginate(store, req.Pagination, func(key, _ []byte, accumulate bool) (bool, error) {
-			if accumulate {
-				item, found := q.GetPlan(ctx, sdk.BigEndianToUint64(key))
-				if !found {
-					return false, nil
-				}
-
-				items = append(items, item)
-			}
-
-			return true, nil
-		})
-	} else {
-		// NOTE: Do not use this; less efficient; consider using active + inactive
-
-		store := prefix.NewStore(q.Store(ctx), types.PlanKeyPrefix)
-		pagination, err = query.FilteredPaginate(store, req.Pagination, func(_, value []byte, accumulate bool) (bool, error) {
-			if accumulate {
-				var item types.Plan
-				if err := q.cdc.Unmarshal(value, &item); err != nil {
-					return false, err
-				}
-				if !strings.EqualFold(item.Provider, req.Address) {
-					return false, nil
-				}
-
-				items = append(items, item)
-			}
-
-			return true, nil
-		})
+	switch req.Status {
+	case hubtypes.StatusActive:
+		keyPrefix = types.GetActivePlanForProviderKeyPrefix(addr)
+	case hubtypes.StatusInactive:
+		keyPrefix = types.GetInactivePlanForProviderKeyPrefix(addr)
+	default:
+		keyPrefix = types.PlanKeyPrefix
 	}
 
-	if err != nil {
-		return nil, status.Error(codes.Internal, err.Error())
-	}
-
-	return &types.QueryPlansForProviderResponse{Plans: items, Pagination: pagination}, nil
-}
-
-func (q *queryServer) QueryNodesForPlan(c context.Context, req *types.QueryNodesForPlanRequest) (*types.QueryNodesForPlanResponse, error) {
-	if req == nil {
-		return nil, status.Error(codes.InvalidArgument, "empty request")
-	}
-
-	var (
-		items      nodetypes.Nodes
-		pagination *query.PageResponse
-		ctx        = sdk.UnwrapSDKContext(c)
-	)
-
-	store := prefix.NewStore(q.Store(ctx), types.GetNodeForPlanKeyPrefix(req.Id))
-	pagination, err := query.FilteredPaginate(store, req.Pagination, func(key, _ []byte, accumulate bool) (bool, error) {
-		item, found := q.GetNode(ctx, key[1:])
-		if !found {
-			return false, nil
+	store := prefix.NewStore(q.Store(ctx), keyPrefix)
+	pagination, err := query.Paginate(store, req.Pagination, func(_, value []byte) error {
+		var item types.Plan
+		if err := q.cdc.Unmarshal(value, &item); err != nil {
+			return err
 		}
 
-		if accumulate {
-			items = append(items, item)
-		}
-
-		return true, nil
+		items = append(items, item)
+		return nil
 	})
 
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	return &types.QueryNodesForPlanResponse{Nodes: items, Pagination: pagination}, nil
+	return &types.QueryPlansForProviderResponse{Plans: items, Pagination: pagination}, nil
 }
