@@ -17,76 +17,72 @@ type msgServer struct {
 	Keeper
 }
 
-func NewMsgServiceServer(keeper Keeper) types.MsgServiceServer {
-	return &msgServer{Keeper: keeper}
+func NewMsgServiceServer(k Keeper) types.MsgServiceServer {
+	return &msgServer{k}
 }
 
-func (k *msgServer) MsgAdd(c context.Context, msg *types.MsgAddRequest) (*types.MsgAddResponse, error) {
+func (k *msgServer) MsgCreate(c context.Context, msg *types.MsgCreateRequest) (*types.MsgCreateResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
-	fromAddr, err := hubtypes.ProvAddressFromBech32(msg.From)
+	provAddr, err := hubtypes.ProvAddressFromBech32(msg.From)
 	if err != nil {
 		return nil, err
 	}
-	if !k.HasProvider(ctx, fromAddr) {
+	if !k.HasProvider(ctx, provAddr) {
 		return nil, types.ErrorProviderDoesNotExist
 	}
 
 	var (
 		count = k.GetCount(ctx)
 		plan  = types.Plan{
-			Id:       count + 1,
-			Provider: msg.From,
-			Price:    msg.Price,
-			Validity: msg.Validity,
-			Bytes:    msg.Bytes,
-			Status:   hubtypes.StatusInactive,
-			StatusAt: ctx.BlockTime(),
+			ID:              count + 1,
+			ProviderAddress: provAddr.String(),
+			Prices:          msg.Prices,
+			Validity:        msg.Validity,
+			Bytes:           msg.Bytes,
+			Status:          hubtypes.StatusInactive,
+			StatusAt:        ctx.BlockTime(),
 		}
-		provAddr = plan.GetProvider()
 	)
 
 	k.SetCount(ctx, count+1)
-	k.SetPlan(ctx, plan)
-	k.SetInactivePlan(ctx, plan.Id)
-	k.SetInactivePlanForProvider(ctx, provAddr, plan.Id)
+	k.SetInactivePlan(ctx, plan)
+	k.SetInactivePlanForProvider(ctx, provAddr, plan.ID)
 	ctx.EventManager().EmitTypedEvent(
-		&types.EventAdd{
-			Id:       plan.Id,
-			Provider: plan.Provider,
+		&types.EventCreate{
+			ID:              plan.ID,
+			ProviderAddress: plan.ProviderAddress,
 		},
 	)
 
-	return &types.MsgAddResponse{}, nil
+	return &types.MsgCreateResponse{}, nil
 }
 
-func (k *msgServer) MsgSetStatus(c context.Context, msg *types.MsgSetStatusRequest) (*types.MsgSetStatusResponse, error) {
+func (k *msgServer) MsgUpdateStatus(c context.Context, msg *types.MsgUpdateStatusRequest) (*types.MsgUpdateStatusResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
-	plan, found := k.GetPlan(ctx, msg.Id)
+	plan, found := k.GetPlan(ctx, msg.ID)
 	if !found {
 		return nil, types.ErrorPlanDoesNotExist
 	}
-	if msg.From != plan.Provider {
+	if msg.From != plan.ProviderAddress {
 		return nil, types.ErrorUnauthorized
 	}
 
-	provAddr := plan.GetProvider()
+	provAddr := plan.GetProviderAddress()
 	if plan.Status.Equal(hubtypes.StatusActive) {
 		if msg.Status.Equal(hubtypes.StatusInactive) {
-			k.DeleteActivePlan(ctx, plan.Id)
-			k.DeleteActivePlanForProvider(ctx, provAddr, plan.Id)
+			k.DeleteActivePlan(ctx, plan.ID)
+			k.DeleteActivePlanForProvider(ctx, provAddr, plan.ID)
 
-			k.SetInactivePlan(ctx, plan.Id)
-			k.SetInactivePlanForProvider(ctx, provAddr, plan.Id)
+			k.SetInactivePlanForProvider(ctx, provAddr, plan.ID)
 		}
 	} else {
 		if msg.Status.Equal(hubtypes.StatusActive) {
-			k.DeleteInactivePlan(ctx, plan.Id)
-			k.DeleteInactivePlanForProvider(ctx, provAddr, plan.Id)
+			k.DeleteInactivePlan(ctx, plan.ID)
+			k.DeleteInactivePlanForProvider(ctx, provAddr, plan.ID)
 
-			k.SetActivePlan(ctx, plan.Id)
-			k.SetActivePlanForProvider(ctx, provAddr, plan.Id)
+			k.SetActivePlanForProvider(ctx, provAddr, plan.ID)
 		}
 	}
 
@@ -96,23 +92,23 @@ func (k *msgServer) MsgSetStatus(c context.Context, msg *types.MsgSetStatusReque
 	k.SetPlan(ctx, plan)
 	ctx.EventManager().EmitTypedEvent(
 		&types.EventSetStatus{
-			Id:       plan.Id,
-			Provider: plan.Provider,
-			Status:   plan.Status,
+			ID:              plan.ID,
+			ProviderAddress: plan.ProviderAddress,
+			Status:          plan.Status,
 		},
 	)
 
-	return &types.MsgSetStatusResponse{}, nil
+	return &types.MsgUpdateStatusResponse{}, nil
 }
 
-func (k *msgServer) MsgAddNode(c context.Context, msg *types.MsgAddNodeRequest) (*types.MsgAddNodeResponse, error) {
+func (k *msgServer) MsgLinkNode(c context.Context, msg *types.MsgLinkNodeRequest) (*types.MsgLinkNodeResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
-	plan, found := k.GetPlan(ctx, msg.Id)
+	plan, found := k.GetPlan(ctx, msg.ID)
 	if !found {
 		return nil, types.ErrorPlanDoesNotExist
 	}
-	if msg.From != plan.Provider {
+	if msg.From != plan.ProviderAddress {
 		return nil, types.ErrorUnauthorized
 	}
 
@@ -125,9 +121,6 @@ func (k *msgServer) MsgAddNode(c context.Context, msg *types.MsgAddNodeRequest) 
 	if !found {
 		return nil, types.ErrorNodeDoesNotExist
 	}
-	if msg.From != node.Provider {
-		return nil, types.ErrorUnauthorized
-	}
 
 	if k.HasNodeForPlan(ctx, plan.Id, nodeAddr) {
 		return nil, types.DuplicateNodeForPlan
@@ -137,17 +130,17 @@ func (k *msgServer) MsgAddNode(c context.Context, msg *types.MsgAddNodeRequest) 
 	k.SetNodeForPlan(ctx, plan.Id, nodeAddr)
 	k.IncreaseCountForNodeByProvider(ctx, provAddr, nodeAddr)
 	ctx.EventManager().EmitTypedEvent(
-		&types.EventAddNode{
+		&types.EventLinkNode{
 			Id:       plan.Id,
 			Node:     nodeAddr.String(),
 			Provider: plan.Provider,
 		},
 	)
 
-	return &types.MsgAddNodeResponse{}, nil
+	return &types.MsgLinkNodeResponse{}, nil
 }
 
-func (k *msgServer) MsgRemoveNode(c context.Context, msg *types.MsgRemoveNodeRequest) (*types.MsgRemoveNodeResponse, error) {
+func (k *msgServer) MsgUnlinkNode(c context.Context, msg *types.MsgUnlinkNodeRequest) (*types.MsgUnlinkNodeResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
 	fromAddr, err := sdk.AccAddressFromBech32(msg.From)
@@ -179,12 +172,16 @@ func (k *msgServer) MsgRemoveNode(c context.Context, msg *types.MsgRemoveNodeReq
 	k.DeleteNodeForPlan(ctx, plan.Id, nodeAddr)
 	k.DecreaseCountForNodeByProvider(ctx, provAddr, nodeAddr)
 	ctx.EventManager().EmitTypedEvent(
-		&types.EventRemoveNode{
+		&types.EventUnlinkNode{
 			Id:       plan.Id,
 			Node:     nodeAddr.String(),
 			Provider: plan.Provider,
 		},
 	)
 
-	return &types.MsgRemoveNodeResponse{}, nil
+	return &types.MsgUnlinkNodeResponse{}, nil
+}
+
+func (k *msgServer) MsgSubscribe(c context.Context, msg *types.MsgSubscribeRequest) (*types.MsgSubscribeResponse, error) {
+	return &types.MsgSubscribeResponse{}, nil
 }

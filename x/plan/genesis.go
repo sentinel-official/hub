@@ -46,7 +46,7 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, state types.GenesisState) {
 
 func ExportGenesis(ctx sdk.Context, k keeper.Keeper) types.GenesisState {
 	var (
-		plans = k.GetPlans(ctx, 0, 0)
+		plans = k.GetPlans(ctx)
 		items = make(types.GenesisPlans, 0, len(plans))
 	)
 
