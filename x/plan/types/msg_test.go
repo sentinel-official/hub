@@ -9,7 +9,7 @@ import (
 	hubtypes "github.com/sentinel-official/hub/types"
 )
 
-func TestMsgAddRequest_ValidateBasic(t *testing.T) {
+func TestMsgCreateRequest_ValidateBasic(t *testing.T) {
 	type fields struct {
 		From     string
 		Prices   sdk.Coins
@@ -193,7 +193,7 @@ func TestMsgAddRequest_ValidateBasic(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			m := &MsgAddRequest{
+			m := &MsgCreateRequest{
 				From:     tt.fields.From,
 				Prices:   tt.fields.Prices,
 				Validity: tt.fields.Validity,
@@ -206,7 +206,7 @@ func TestMsgAddRequest_ValidateBasic(t *testing.T) {
 	}
 }
 
-func TestMsgSetStatusRequest_ValidateBasic(t *testing.T) {
+func TestMsgUpdateStatusRequest_ValidateBasic(t *testing.T) {
 	type fields struct {
 		From   string
 		ID     uint64
@@ -321,7 +321,7 @@ func TestMsgSetStatusRequest_ValidateBasic(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			m := &MsgSetStatusRequest{
+			m := &MsgUpdateStatusRequest{
 				From:   tt.fields.From,
 				ID:     tt.fields.ID,
 				Status: tt.fields.Status,
@@ -333,7 +333,7 @@ func TestMsgSetStatusRequest_ValidateBasic(t *testing.T) {
 	}
 }
 
-func TestMsgAddNodeRequest_ValidateBasic(t *testing.T) {
+func TestMsgLinkNodeRequest_ValidateBasic(t *testing.T) {
 	type fields struct {
 		From    string
 		ID      uint64
@@ -466,7 +466,7 @@ func TestMsgAddNodeRequest_ValidateBasic(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			m := &MsgAddNodeRequest{
+			m := &MsgLinkNodeRequest{
 				From:    tt.fields.From,
 				ID:      tt.fields.ID,
 				Address: tt.fields.Address,
@@ -478,7 +478,7 @@ func TestMsgAddNodeRequest_ValidateBasic(t *testing.T) {
 	}
 }
 
-func TestMsgRemoveNodeRequest_ValidateBasic(t *testing.T) {
+func TestMsgUnlinkNodeRequest_ValidateBasic(t *testing.T) {
 	type fields struct {
 		From    string
 		ID      uint64
@@ -611,7 +611,7 @@ func TestMsgRemoveNodeRequest_ValidateBasic(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			m := &MsgRemoveNodeRequest{
+			m := &MsgUnlinkNodeRequest{
 				From:    tt.fields.From,
 				ID:      tt.fields.ID,
 				Address: tt.fields.Address,

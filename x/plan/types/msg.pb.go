@@ -12,11 +12,11 @@ import (
 	grpc1 "github.com/gogo/protobuf/grpc"
 	proto "github.com/gogo/protobuf/proto"
 	github_com_gogo_protobuf_types "github.com/gogo/protobuf/types"
-	_ "github.com/golang/protobuf/ptypes/duration"
 	types1 "github.com/sentinel-official/hub/types"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	_ "google.golang.org/protobuf/types/known/durationpb"
 	io "io"
 	math "math"
 	math_bits "math/bits"
@@ -35,26 +35,26 @@ var _ = time.Kitchen
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
-// MsgAddRequest defines the SDK message for adding a plan
-type MsgAddRequest struct {
+// MsgCreateRequest defines the SDK message for creating a subscription plan
+type MsgCreateRequest struct {
 	From     string                                   `protobuf:"bytes,1,opt,name=from,proto3" json:"from,omitempty"`
 	Prices   github_com_cosmos_cosmos_sdk_types.Coins `protobuf:"bytes,2,rep,name=prices,proto3,castrepeated=github.com/cosmos/cosmos-sdk/types.Coins" json:"prices"`
 	Validity time.Duration                            `protobuf:"bytes,3,opt,name=validity,proto3,stdduration" json:"validity"`
 	Bytes    github_com_cosmos_cosmos_sdk_types.Int   `protobuf:"bytes,4,opt,name=bytes,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"bytes"`
 }
 
-func (m *MsgAddRequest) Reset()         { *m = MsgAddRequest{} }
-func (m *MsgAddRequest) String() string { return proto.CompactTextString(m) }
-func (*MsgAddRequest) ProtoMessage()    {}
-func (*MsgAddRequest) Descriptor() ([]byte, []int) {
+func (m *MsgCreateRequest) Reset()         { *m = MsgCreateRequest{} }
+func (m *MsgCreateRequest) String() string { return proto.CompactTextString(m) }
+func (*MsgCreateRequest) ProtoMessage()    {}
+func (*MsgCreateRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_63ad088f8b043deb, []int{0}
 }
-func (m *MsgAddRequest) XXX_Unmarshal(b []byte) error {
+func (m *MsgCreateRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgAddRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgCreateRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgAddRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgCreateRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -64,38 +64,38 @@ func (m *MsgAddRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error
 		return b[:n], nil
 	}
 }
-func (m *MsgAddRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgAddRequest.Merge(m, src)
+func (m *MsgCreateRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgCreateRequest.Merge(m, src)
 }
-func (m *MsgAddRequest) XXX_Size() int {
+func (m *MsgCreateRequest) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgAddRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgAddRequest.DiscardUnknown(m)
+func (m *MsgCreateRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgCreateRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgAddRequest proto.InternalMessageInfo
+var xxx_messageInfo_MsgCreateRequest proto.InternalMessageInfo
 
-// MsgSetStatusRequest defines the SDK message for modifying the status of a
-// plan
-type MsgSetStatusRequest struct {
+// MsgUpdateStatusRequest defines the SDK message for modifying the status of a
+// subscription plan
+type MsgUpdateStatusRequest struct {
 	From   string        `protobuf:"bytes,1,opt,name=from,proto3" json:"from,omitempty"`
 	ID     uint64        `protobuf:"varint,2,opt,name=id,proto3" json:"id,omitempty"`
 	Status types1.Status `protobuf:"varint,3,opt,name=status,proto3,enum=sentinel.types.v1.Status" json:"status,omitempty"`
 }
 
-func (m *MsgSetStatusRequest) Reset()         { *m = MsgSetStatusRequest{} }
-func (m *MsgSetStatusRequest) String() string { return proto.CompactTextString(m) }
-func (*MsgSetStatusRequest) ProtoMessage()    {}
-func (*MsgSetStatusRequest) Descriptor() ([]byte, []int) {
+func (m *MsgUpdateStatusRequest) Reset()         { *m = MsgUpdateStatusRequest{} }
+func (m *MsgUpdateStatusRequest) String() string { return proto.CompactTextString(m) }
+func (*MsgUpdateStatusRequest) ProtoMessage()    {}
+func (*MsgUpdateStatusRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_63ad088f8b043deb, []int{1}
 }
-func (m *MsgSetStatusRequest) XXX_Unmarshal(b []byte) error {
+func (m *MsgUpdateStatusRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgSetStatusRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgUpdateStatusRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgSetStatusRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgUpdateStatusRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -105,37 +105,38 @@ func (m *MsgSetStatusRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte,
 		return b[:n], nil
 	}
 }
-func (m *MsgSetStatusRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgSetStatusRequest.Merge(m, src)
+func (m *MsgUpdateStatusRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgUpdateStatusRequest.Merge(m, src)
 }
-func (m *MsgSetStatusRequest) XXX_Size() int {
+func (m *MsgUpdateStatusRequest) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgSetStatusRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgSetStatusRequest.DiscardUnknown(m)
+func (m *MsgUpdateStatusRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgUpdateStatusRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgSetStatusRequest proto.InternalMessageInfo
+var xxx_messageInfo_MsgUpdateStatusRequest proto.InternalMessageInfo
 
-// MsgAddNodeRequest defines the SDK message for adding a node to a plan
-type MsgAddNodeRequest struct {
+// MsgLinkNodeRequest defines the SDK message for adding a node to a
+// subscription plan
+type MsgLinkNodeRequest struct {
 	From    string `protobuf:"bytes,1,opt,name=from,proto3" json:"from,omitempty"`
 	ID      uint64 `protobuf:"varint,2,opt,name=id,proto3" json:"id,omitempty"`
 	Address string `protobuf:"bytes,3,opt,name=address,proto3" json:"address,omitempty"`
 }
 
-func (m *MsgAddNodeRequest) Reset()         { *m = MsgAddNodeRequest{} }
-func (m *MsgAddNodeRequest) String() string { return proto.CompactTextString(m) }
-func (*MsgAddNodeRequest) ProtoMessage()    {}
-func (*MsgAddNodeRequest) Descriptor() ([]byte, []int) {
+func (m *MsgLinkNodeRequest) Reset()         { *m = MsgLinkNodeRequest{} }
+func (m *MsgLinkNodeRequest) String() string { return proto.CompactTextString(m) }
+func (*MsgLinkNodeRequest) ProtoMessage()    {}
+func (*MsgLinkNodeRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_63ad088f8b043deb, []int{2}
 }
-func (m *MsgAddNodeRequest) XXX_Unmarshal(b []byte) error {
+func (m *MsgLinkNodeRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgAddNodeRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgLinkNodeRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgAddNodeRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgLinkNodeRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -145,37 +146,38 @@ func (m *MsgAddNodeRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, e
 		return b[:n], nil
 	}
 }
-func (m *MsgAddNodeRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgAddNodeRequest.Merge(m, src)
+func (m *MsgLinkNodeRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgLinkNodeRequest.Merge(m, src)
 }
-func (m *MsgAddNodeRequest) XXX_Size() int {
+func (m *MsgLinkNodeRequest) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgAddNodeRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgAddNodeRequest.DiscardUnknown(m)
+func (m *MsgLinkNodeRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgLinkNodeRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgAddNodeRequest proto.InternalMessageInfo
+var xxx_messageInfo_MsgLinkNodeRequest proto.InternalMessageInfo
 
-// MsgRemoveNodeRequest defines the SDK message for removing a node from a plan
-type MsgRemoveNodeRequest struct {
+// MsgUnlinkNodeRequest defines the SDK message for removing a node from a
+// subscription plan
+type MsgUnlinkNodeRequest struct {
 	From    string `protobuf:"bytes,1,opt,name=from,proto3" json:"from,omitempty"`
 	ID      uint64 `protobuf:"varint,2,opt,name=id,proto3" json:"id,omitempty"`
 	Address string `protobuf:"bytes,3,opt,name=address,proto3" json:"address,omitempty"`
 }
 
-func (m *MsgRemoveNodeRequest) Reset()         { *m = MsgRemoveNodeRequest{} }
-func (m *MsgRemoveNodeRequest) String() string { return proto.CompactTextString(m) }
-func (*MsgRemoveNodeRequest) ProtoMessage()    {}
-func (*MsgRemoveNodeRequest) Descriptor() ([]byte, []int) {
+func (m *MsgUnlinkNodeRequest) Reset()         { *m = MsgUnlinkNodeRequest{} }
+func (m *MsgUnlinkNodeRequest) String() string { return proto.CompactTextString(m) }
+func (*MsgUnlinkNodeRequest) ProtoMessage()    {}
+func (*MsgUnlinkNodeRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_63ad088f8b043deb, []int{3}
 }
-func (m *MsgRemoveNodeRequest) XXX_Unmarshal(b []byte) error {
+func (m *MsgUnlinkNodeRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgRemoveNodeRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgUnlinkNodeRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgRemoveNodeRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgUnlinkNodeRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -185,34 +187,38 @@ func (m *MsgRemoveNodeRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte
 		return b[:n], nil
 	}
 }
-func (m *MsgRemoveNodeRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgRemoveNodeRequest.Merge(m, src)
+func (m *MsgUnlinkNodeRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgUnlinkNodeRequest.Merge(m, src)
 }
-func (m *MsgRemoveNodeRequest) XXX_Size() int {
+func (m *MsgUnlinkNodeRequest) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgRemoveNodeRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgRemoveNodeRequest.DiscardUnknown(m)
+func (m *MsgUnlinkNodeRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgUnlinkNodeRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgRemoveNodeRequest proto.InternalMessageInfo
+var xxx_messageInfo_MsgUnlinkNodeRequest proto.InternalMessageInfo
 
-// MsgAddResponse defines the response of message MsgRegisterRequest
-type MsgAddResponse struct {
+// MsgSubscribeRequest defines the SDK message for subscribing to a subscription
+// plan
+type MsgSubscribeRequest struct {
+	From  string `protobuf:"bytes,1,opt,name=from,proto3" json:"from,omitempty"`
+	ID    uint64 `protobuf:"varint,2,opt,name=id,proto3" json:"id,omitempty"`
+	Denom string `protobuf:"bytes,3,opt,name=denom,proto3" json:"denom,omitempty"`
 }
 
-func (m *MsgAddResponse) Reset()         { *m = MsgAddResponse{} }
-func (m *MsgAddResponse) String() string { return proto.CompactTextString(m) }
-func (*MsgAddResponse) ProtoMessage()    {}
-func (*MsgAddResponse) Descriptor() ([]byte, []int) {
+func (m *MsgSubscribeRequest) Reset()         { *m = MsgSubscribeRequest{} }
+func (m *MsgSubscribeRequest) String() string { return proto.CompactTextString(m) }
+func (*MsgSubscribeRequest) ProtoMessage()    {}
+func (*MsgSubscribeRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_63ad088f8b043deb, []int{4}
 }
-func (m *MsgAddResponse) XXX_Unmarshal(b []byte) error {
+func (m *MsgSubscribeRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgAddResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgSubscribeRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgAddResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgSubscribeRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -222,34 +228,34 @@ func (m *MsgAddResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, erro
 		return b[:n], nil
 	}
 }
-func (m *MsgAddResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgAddResponse.Merge(m, src)
+func (m *MsgSubscribeRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgSubscribeRequest.Merge(m, src)
 }
-func (m *MsgAddResponse) XXX_Size() int {
+func (m *MsgSubscribeRequest) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgAddResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgAddResponse.DiscardUnknown(m)
+func (m *MsgSubscribeRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgSubscribeRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgAddResponse proto.InternalMessageInfo
+var xxx_messageInfo_MsgSubscribeRequest proto.InternalMessageInfo
 
-// MsgSetStatusResponse defines the response of message MsgSetStatusRequest
-type MsgSetStatusResponse struct {
+// MsgCreateResponse defines the response of message MsgCreateRequest
+type MsgCreateResponse struct {
 }
 
-func (m *MsgSetStatusResponse) Reset()         { *m = MsgSetStatusResponse{} }
-func (m *MsgSetStatusResponse) String() string { return proto.CompactTextString(m) }
-func (*MsgSetStatusResponse) ProtoMessage()    {}
-func (*MsgSetStatusResponse) Descriptor() ([]byte, []int) {
+func (m *MsgCreateResponse) Reset()         { *m = MsgCreateResponse{} }
+func (m *MsgCreateResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgCreateResponse) ProtoMessage()    {}
+func (*MsgCreateResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_63ad088f8b043deb, []int{5}
 }
-func (m *MsgSetStatusResponse) XXX_Unmarshal(b []byte) error {
+func (m *MsgCreateResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgSetStatusResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgCreateResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgSetStatusResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgCreateResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -259,34 +265,35 @@ func (m *MsgSetStatusResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte
 		return b[:n], nil
 	}
 }
-func (m *MsgSetStatusResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgSetStatusResponse.Merge(m, src)
+func (m *MsgCreateResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgCreateResponse.Merge(m, src)
 }
-func (m *MsgSetStatusResponse) XXX_Size() int {
+func (m *MsgCreateResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgSetStatusResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgSetStatusResponse.DiscardUnknown(m)
+func (m *MsgCreateResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgCreateResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgSetStatusResponse proto.InternalMessageInfo
+var xxx_messageInfo_MsgCreateResponse proto.InternalMessageInfo
 
-// MsgAddNodeResponse defines the response of message MsgAddNodeRequest
-type MsgAddNodeResponse struct {
+// MsgUpdateStatusResponse defines the response of message
+// MsgUpdateStatusRequest
+type MsgUpdateStatusResponse struct {
 }
 
-func (m *MsgAddNodeResponse) Reset()         { *m = MsgAddNodeResponse{} }
-func (m *MsgAddNodeResponse) String() string { return proto.CompactTextString(m) }
-func (*MsgAddNodeResponse) ProtoMessage()    {}
-func (*MsgAddNodeResponse) Descriptor() ([]byte, []int) {
+func (m *MsgUpdateStatusResponse) Reset()         { *m = MsgUpdateStatusResponse{} }
+func (m *MsgUpdateStatusResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgUpdateStatusResponse) ProtoMessage()    {}
+func (*MsgUpdateStatusResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_63ad088f8b043deb, []int{6}
 }
-func (m *MsgAddNodeResponse) XXX_Unmarshal(b []byte) error {
+func (m *MsgUpdateStatusResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgAddNodeResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgUpdateStatusResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgAddNodeResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgUpdateStatusResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -296,34 +303,34 @@ func (m *MsgAddNodeResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, 
 		return b[:n], nil
 	}
 }
-func (m *MsgAddNodeResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgAddNodeResponse.Merge(m, src)
+func (m *MsgUpdateStatusResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgUpdateStatusResponse.Merge(m, src)
 }
-func (m *MsgAddNodeResponse) XXX_Size() int {
+func (m *MsgUpdateStatusResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgAddNodeResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgAddNodeResponse.DiscardUnknown(m)
+func (m *MsgUpdateStatusResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgUpdateStatusResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgAddNodeResponse proto.InternalMessageInfo
+var xxx_messageInfo_MsgUpdateStatusResponse proto.InternalMessageInfo
 
-// MsgRemoveNodeResponse defines the response of message MsgRemoveNodeRequest
-type MsgRemoveNodeResponse struct {
+// MsgLinkNodeResponse defines the response of message MsgLinkNodeRequest
+type MsgLinkNodeResponse struct {
 }
 
-func (m *MsgRemoveNodeResponse) Reset()         { *m = MsgRemoveNodeResponse{} }
-func (m *MsgRemoveNodeResponse) String() string { return proto.CompactTextString(m) }
-func (*MsgRemoveNodeResponse) ProtoMessage()    {}
-func (*MsgRemoveNodeResponse) Descriptor() ([]byte, []int) {
+func (m *MsgLinkNodeResponse) Reset()         { *m = MsgLinkNodeResponse{} }
+func (m *MsgLinkNodeResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgLinkNodeResponse) ProtoMessage()    {}
+func (*MsgLinkNodeResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_63ad088f8b043deb, []int{7}
 }
-func (m *MsgRemoveNodeResponse) XXX_Unmarshal(b []byte) error {
+func (m *MsgLinkNodeResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgRemoveNodeResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgLinkNodeResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgRemoveNodeResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgLinkNodeResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -333,70 +340,150 @@ func (m *MsgRemoveNodeResponse) XXX_Marshal(b []byte, deterministic bool) ([]byt
 		return b[:n], nil
 	}
 }
-func (m *MsgRemoveNodeResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgRemoveNodeResponse.Merge(m, src)
+func (m *MsgLinkNodeResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgLinkNodeResponse.Merge(m, src)
 }
-func (m *MsgRemoveNodeResponse) XXX_Size() int {
+func (m *MsgLinkNodeResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgRemoveNodeResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgRemoveNodeResponse.DiscardUnknown(m)
+func (m *MsgLinkNodeResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgLinkNodeResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgRemoveNodeResponse proto.InternalMessageInfo
+var xxx_messageInfo_MsgLinkNodeResponse proto.InternalMessageInfo
+
+// MsgUnlinkNodeResponse defines the response of message MsgUnlinkNodeRequest
+type MsgUnlinkNodeResponse struct {
+}
+
+func (m *MsgUnlinkNodeResponse) Reset()         { *m = MsgUnlinkNodeResponse{} }
+func (m *MsgUnlinkNodeResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgUnlinkNodeResponse) ProtoMessage()    {}
+func (*MsgUnlinkNodeResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_63ad088f8b043deb, []int{8}
+}
+func (m *MsgUnlinkNodeResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgUnlinkNodeResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgUnlinkNodeResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgUnlinkNodeResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgUnlinkNodeResponse.Merge(m, src)
+}
+func (m *MsgUnlinkNodeResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgUnlinkNodeResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgUnlinkNodeResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgUnlinkNodeResponse proto.InternalMessageInfo
+
+// MsgSubscribeResponse defines the response of message MsgSubscribeRequest
+type MsgSubscribeResponse struct {
+}
+
+func (m *MsgSubscribeResponse) Reset()         { *m = MsgSubscribeResponse{} }
+func (m *MsgSubscribeResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgSubscribeResponse) ProtoMessage()    {}
+func (*MsgSubscribeResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_63ad088f8b043deb, []int{9}
+}
+func (m *MsgSubscribeResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgSubscribeResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgSubscribeResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgSubscribeResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgSubscribeResponse.Merge(m, src)
+}
+func (m *MsgSubscribeResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgSubscribeResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgSubscribeResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgSubscribeResponse proto.InternalMessageInfo
 
 func init() {
-	proto.RegisterType((*MsgAddRequest)(nil), "sentinel.plan.v2.MsgAddRequest")
-	proto.RegisterType((*MsgSetStatusRequest)(nil), "sentinel.plan.v2.MsgSetStatusRequest")
-	proto.RegisterType((*MsgAddNodeRequest)(nil), "sentinel.plan.v2.MsgAddNodeRequest")
-	proto.RegisterType((*MsgRemoveNodeRequest)(nil), "sentinel.plan.v2.MsgRemoveNodeRequest")
-	proto.RegisterType((*MsgAddResponse)(nil), "sentinel.plan.v2.MsgAddResponse")
-	proto.RegisterType((*MsgSetStatusResponse)(nil), "sentinel.plan.v2.MsgSetStatusResponse")
-	proto.RegisterType((*MsgAddNodeResponse)(nil), "sentinel.plan.v2.MsgAddNodeResponse")
-	proto.RegisterType((*MsgRemoveNodeResponse)(nil), "sentinel.plan.v2.MsgRemoveNodeResponse")
+	proto.RegisterType((*MsgCreateRequest)(nil), "sentinel.plan.v2.MsgCreateRequest")
+	proto.RegisterType((*MsgUpdateStatusRequest)(nil), "sentinel.plan.v2.MsgUpdateStatusRequest")
+	proto.RegisterType((*MsgLinkNodeRequest)(nil), "sentinel.plan.v2.MsgLinkNodeRequest")
+	proto.RegisterType((*MsgUnlinkNodeRequest)(nil), "sentinel.plan.v2.MsgUnlinkNodeRequest")
+	proto.RegisterType((*MsgSubscribeRequest)(nil), "sentinel.plan.v2.MsgSubscribeRequest")
+	proto.RegisterType((*MsgCreateResponse)(nil), "sentinel.plan.v2.MsgCreateResponse")
+	proto.RegisterType((*MsgUpdateStatusResponse)(nil), "sentinel.plan.v2.MsgUpdateStatusResponse")
+	proto.RegisterType((*MsgLinkNodeResponse)(nil), "sentinel.plan.v2.MsgLinkNodeResponse")
+	proto.RegisterType((*MsgUnlinkNodeResponse)(nil), "sentinel.plan.v2.MsgUnlinkNodeResponse")
+	proto.RegisterType((*MsgSubscribeResponse)(nil), "sentinel.plan.v2.MsgSubscribeResponse")
 }
 
 func init() { proto.RegisterFile("sentinel/plan/v2/msg.proto", fileDescriptor_63ad088f8b043deb) }
 
 var fileDescriptor_63ad088f8b043deb = []byte{
-	// 587 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xac, 0x54, 0xcb, 0x6e, 0xd3, 0x4c,
-	0x14, 0xb6, 0xdd, 0xfe, 0xf9, 0xdb, 0x01, 0xaa, 0x32, 0x94, 0xe2, 0x7a, 0x61, 0x47, 0x01, 0x4a,
-	0x36, 0x9d, 0x21, 0xe1, 0x01, 0x10, 0xa1, 0x9b, 0x0a, 0x05, 0x24, 0x77, 0x81, 0x40, 0x20, 0xe1,
-	0xcb, 0xc4, 0x1d, 0x91, 0x78, 0x82, 0x67, 0x6c, 0x91, 0xa7, 0x80, 0x25, 0x8f, 0x80, 0x78, 0x92,
-	0x2c, 0xbb, 0x44, 0x2c, 0x52, 0x48, 0x1e, 0x81, 0x17, 0x40, 0x9e, 0x19, 0x87, 0x10, 0x7a, 0x41,
-	0x88, 0x95, 0x67, 0xe6, 0x9c, 0xf3, 0x9d, 0xef, 0x3b, 0x17, 0x03, 0x87, 0x93, 0x54, 0xd0, 0x94,
-	0xf4, 0xf1, 0xb0, 0x1f, 0xa4, 0xb8, 0x68, 0xe3, 0x01, 0x4f, 0xd0, 0x30, 0x63, 0x82, 0xc1, 0xcd,
-	0xca, 0x86, 0x4a, 0x1b, 0x2a, 0xda, 0x8e, 0x1b, 0x31, 0x3e, 0x60, 0x1c, 0x87, 0x01, 0x27, 0xb8,
-	0x68, 0x85, 0x44, 0x04, 0x2d, 0x1c, 0x31, 0x9a, 0xaa, 0x08, 0x67, 0x2b, 0x61, 0x09, 0x93, 0x47,
-	0x5c, 0x9e, 0xf4, 0xab, 0x9b, 0x30, 0x96, 0xf4, 0x09, 0x96, 0xb7, 0x30, 0xef, 0xe1, 0x38, 0xcf,
-	0x02, 0x41, 0x59, 0x15, 0xe5, 0xce, 0x39, 0x88, 0xd1, 0x90, 0x70, 0x5c, 0xb4, 0x30, 0x17, 0x81,
-	0xc8, 0xb9, 0xb2, 0x37, 0xde, 0x59, 0xe0, 0x4a, 0x97, 0x27, 0x0f, 0xe2, 0xd8, 0x27, 0x6f, 0x72,
-	0xc2, 0x05, 0x84, 0x60, 0xb5, 0x97, 0xb1, 0x81, 0x6d, 0xd6, 0xcd, 0xe6, 0xba, 0x2f, 0xcf, 0x30,
-	0x02, 0xb5, 0x61, 0x46, 0x23, 0xc2, 0x6d, 0xab, 0xbe, 0xd2, 0xbc, 0xd4, 0xde, 0x41, 0x8a, 0x2c,
-	0x2a, 0xc9, 0x22, 0x4d, 0x16, 0x3d, 0x64, 0x34, 0xed, 0xdc, 0x1d, 0x4f, 0x3c, 0xe3, 0xd3, 0x89,
-	0xd7, 0x4c, 0xa8, 0x38, 0xca, 0x43, 0x14, 0xb1, 0x01, 0xd6, 0xca, 0xd4, 0x67, 0x8f, 0xc7, 0xaf,
-	0x15, 0x19, 0x19, 0xc0, 0x7d, 0x0d, 0x0d, 0xef, 0x83, 0xb5, 0x22, 0xe8, 0xd3, 0x98, 0x8a, 0x91,
-	0xbd, 0x52, 0x37, 0x65, 0x1a, 0xa5, 0x0e, 0x55, 0xea, 0xd0, 0xbe, 0x56, 0xd7, 0x59, 0x2b, 0xd3,
-	0x7c, 0x38, 0xf1, 0x4c, 0x7f, 0x1e, 0x04, 0xf7, 0xc1, 0x7f, 0xe1, 0x48, 0x10, 0x6e, 0xaf, 0x96,
-	0xd4, 0x3b, 0xa8, 0x74, 0xf9, 0x32, 0xf1, 0x76, 0xff, 0x80, 0xc9, 0x41, 0x2a, 0x7c, 0x15, 0xdc,
-	0x10, 0xe0, 0x5a, 0x97, 0x27, 0x87, 0x44, 0x1c, 0xca, 0x3a, 0x9d, 0x57, 0x96, 0x6d, 0x60, 0xd1,
-	0xd8, 0xb6, 0xea, 0x66, 0x73, 0xb5, 0x53, 0x9b, 0x4e, 0x3c, 0xeb, 0x60, 0xdf, 0xb7, 0x68, 0x0c,
-	0x5b, 0xa0, 0xa6, 0x8a, 0x2c, 0x75, 0x6c, 0xb4, 0x77, 0xd0, 0xbc, 0xdb, 0x2a, 0x5d, 0xd1, 0x42,
-	0x1a, 0x5d, 0x3b, 0x36, 0x9e, 0x81, 0xab, 0xaa, 0x0d, 0x8f, 0x59, 0x4c, 0xfe, 0x26, 0xa7, 0x0d,
-	0xfe, 0x0f, 0xe2, 0x38, 0x23, 0x5c, 0x25, 0x5d, 0xf7, 0xab, 0x6b, 0xe3, 0x05, 0xd8, 0xea, 0xf2,
-	0xc4, 0x27, 0x03, 0x56, 0x90, 0x7f, 0x8f, 0xbe, 0x09, 0x36, 0xaa, 0xf9, 0xe1, 0x43, 0x96, 0x72,
-	0xd2, 0xd8, 0x96, 0xf9, 0x16, 0x0a, 0xa8, 0xdf, 0xb7, 0x00, 0x5c, 0x94, 0xa8, 0x5f, 0x6f, 0x80,
-	0xeb, 0x4b, 0xec, 0x94, 0xa1, 0xfd, 0xdd, 0x02, 0x40, 0xe2, 0x64, 0x05, 0x8d, 0x08, 0x7c, 0x04,
-	0x6a, 0x2a, 0x1a, 0x7a, 0x68, 0x79, 0x77, 0xd0, 0x2f, 0x13, 0xec, 0xd4, 0xcf, 0x76, 0x50, 0xd8,
-	0xf0, 0x25, 0xb8, 0xbc, 0x48, 0x11, 0xde, 0x3e, 0x35, 0x62, 0x79, 0x06, 0x9c, 0xdd, 0x8b, 0xdc,
-	0x34, 0xfc, 0x53, 0xc9, 0x5c, 0x2b, 0x85, 0x37, 0xcf, 0xa2, 0xb3, 0xd0, 0x0c, 0xe7, 0xd6, 0xf9,
-	0x4e, 0x1a, 0xf8, 0x95, 0x5c, 0xd6, 0x9f, 0xc5, 0x82, 0xa7, 0x33, 0xfa, 0xad, 0xd7, 0xce, 0x9d,
-	0x0b, 0xfd, 0x54, 0x86, 0xce, 0x93, 0xf1, 0x37, 0xd7, 0xf8, 0x38, 0x75, 0x8d, 0xf1, 0xd4, 0x35,
-	0x8f, 0xa7, 0xae, 0xf9, 0x75, 0xea, 0x9a, 0xef, 0x67, 0xae, 0x71, 0x3c, 0x73, 0x8d, 0xcf, 0x33,
-	0xd7, 0x78, 0xbe, 0xb7, 0xb0, 0x4e, 0x15, 0xe8, 0x1e, 0xeb, 0xf5, 0x68, 0x44, 0x83, 0x3e, 0x3e,
-	0xca, 0x43, 0xfc, 0x56, 0xfd, 0xef, 0xe4, 0xa8, 0x87, 0x35, 0xb9, 0xbb, 0xf7, 0x7e, 0x04, 0x00,
-	0x00, 0xff, 0xff, 0xde, 0xeb, 0xdc, 0x3d, 0x0d, 0x05, 0x00, 0x00,
+	// 644 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xb4, 0x54, 0xdd, 0x6e, 0xd3, 0x3e,
+	0x14, 0x6f, 0xba, 0xad, 0xff, 0xed, 0xec, 0x0f, 0x0c, 0xef, 0xab, 0xcb, 0x45, 0x5a, 0x05, 0x18,
+	0xe5, 0x62, 0x36, 0x2d, 0x0f, 0x80, 0xd4, 0xed, 0x66, 0x12, 0x05, 0x29, 0x03, 0x21, 0x4d, 0x20,
+	0x91, 0x0f, 0x37, 0xb3, 0xd6, 0xc6, 0x25, 0x76, 0x02, 0x7b, 0x0b, 0xc4, 0x15, 0x8f, 0x80, 0x78,
+	0x92, 0x5d, 0xee, 0x12, 0x71, 0xb1, 0x41, 0x77, 0xc1, 0x6b, 0xa0, 0xc4, 0x6e, 0x29, 0xa1, 0xda,
+	0xa6, 0x49, 0x5c, 0x25, 0xf6, 0x39, 0xe7, 0xf7, 0x71, 0x7c, 0x6c, 0x30, 0x05, 0x8d, 0x24, 0x8b,
+	0x68, 0x8f, 0x0c, 0x7a, 0x6e, 0x44, 0xd2, 0x16, 0xe9, 0x8b, 0x10, 0x0f, 0x62, 0x2e, 0x39, 0x5a,
+	0x1a, 0xc5, 0x70, 0x16, 0xc3, 0x69, 0xcb, 0xb4, 0x7c, 0x2e, 0xfa, 0x5c, 0x10, 0xcf, 0x15, 0x94,
+	0xa4, 0x4d, 0x8f, 0x4a, 0xb7, 0x49, 0x7c, 0xce, 0x22, 0x55, 0x61, 0xae, 0x84, 0x3c, 0xe4, 0xf9,
+	0x2f, 0xc9, 0xfe, 0xf4, 0xae, 0x15, 0x72, 0x1e, 0xf6, 0x28, 0xc9, 0x57, 0x5e, 0xd2, 0x25, 0x41,
+	0x12, 0xbb, 0x92, 0xf1, 0x51, 0x95, 0x35, 0xd6, 0x20, 0x8f, 0x06, 0x54, 0x90, 0xb4, 0x49, 0x84,
+	0x74, 0x65, 0x22, 0x54, 0xdc, 0xfe, 0x58, 0x86, 0xa5, 0x8e, 0x08, 0xb7, 0x63, 0xea, 0x4a, 0xea,
+	0xd0, 0xb7, 0x09, 0x15, 0x12, 0x21, 0x98, 0xed, 0xc6, 0xbc, 0x5f, 0x35, 0xea, 0x46, 0x63, 0xc1,
+	0xc9, 0xff, 0x91, 0x0f, 0x95, 0x41, 0xcc, 0x7c, 0x2a, 0xaa, 0xe5, 0xfa, 0x4c, 0x63, 0xb1, 0xb5,
+	0x81, 0x95, 0x5e, 0x9c, 0xe9, 0xc5, 0x5a, 0x2f, 0xde, 0xe6, 0x2c, 0x6a, 0x3f, 0x3c, 0x3e, 0xad,
+	0x95, 0xbe, 0x9c, 0xd5, 0x1a, 0x21, 0x93, 0x07, 0x89, 0x87, 0x7d, 0xde, 0x27, 0xda, 0x9c, 0xfa,
+	0x6c, 0x89, 0xe0, 0x50, 0xe9, 0xc9, 0x0b, 0x84, 0xa3, 0xa1, 0xd1, 0x63, 0x98, 0x4f, 0xdd, 0x1e,
+	0x0b, 0x98, 0x3c, 0xaa, 0xce, 0xd4, 0x8d, 0x9c, 0x46, 0x19, 0xc4, 0x23, 0x83, 0x78, 0x47, 0x1b,
+	0x6c, 0xcf, 0x67, 0x34, 0x9f, 0xce, 0x6a, 0x86, 0x33, 0x2e, 0x42, 0x3b, 0x30, 0xe7, 0x1d, 0x49,
+	0x2a, 0xaa, 0xb3, 0x99, 0xf4, 0x36, 0xce, 0x52, 0xbe, 0x9d, 0xd6, 0x36, 0xaf, 0xa0, 0x64, 0x37,
+	0x92, 0x8e, 0x2a, 0xb6, 0xdf, 0xc1, 0x5a, 0x47, 0x84, 0x2f, 0x06, 0x81, 0x2b, 0xe9, 0x5e, 0xde,
+	0xad, 0x8b, 0x3a, 0xb3, 0x06, 0x65, 0x16, 0x54, 0xcb, 0x75, 0xa3, 0x31, 0xdb, 0xae, 0x0c, 0x4f,
+	0x6b, 0xe5, 0xdd, 0x1d, 0xa7, 0xcc, 0x02, 0xd4, 0x84, 0x8a, 0x6a, 0x75, 0x6e, 0xe5, 0x66, 0x6b,
+	0x03, 0x8f, 0xcf, 0x5c, 0x31, 0xa6, 0x4d, 0xac, 0xd1, 0x75, 0xa2, 0xbd, 0x0f, 0xa8, 0x23, 0xc2,
+	0x27, 0x2c, 0x3a, 0x7c, 0xca, 0x03, 0x7a, 0x1d, 0xd2, 0x2a, 0xfc, 0xe7, 0x06, 0x41, 0x4c, 0x85,
+	0x62, 0x5d, 0x70, 0x46, 0x4b, 0xfb, 0x15, 0xac, 0x64, 0xa6, 0xa2, 0xde, 0x3f, 0x41, 0x7f, 0x09,
+	0xcb, 0x1d, 0x11, 0xee, 0x25, 0x9e, 0xf0, 0x63, 0xe6, 0x5d, 0x0b, 0x7c, 0x05, 0xe6, 0x02, 0x1a,
+	0xf1, 0xbe, 0x86, 0x56, 0x0b, 0x7b, 0x19, 0x6e, 0x4f, 0xcc, 0xa7, 0x18, 0xf0, 0x48, 0x50, 0x7b,
+	0x03, 0xd6, 0xff, 0x3a, 0x20, 0x1d, 0x5a, 0xcd, 0x85, 0xfc, 0x6e, 0xa1, 0xde, 0x5e, 0x87, 0xd5,
+	0x82, 0x7b, 0x1d, 0x58, 0xcb, 0xdb, 0x32, 0x21, 0x5c, 0xed, 0xb7, 0x7e, 0xce, 0x00, 0x64, 0x01,
+	0x1a, 0xa7, 0xcc, 0xa7, 0xe8, 0x39, 0x2c, 0x8c, 0x65, 0x20, 0x1b, 0x17, 0x6f, 0x2f, 0x2e, 0xde,
+	0x21, 0xf3, 0xce, 0x85, 0x39, 0x8a, 0x04, 0x75, 0xe1, 0x56, 0xc1, 0x07, 0x6a, 0x4c, 0xad, 0x9b,
+	0x32, 0x8b, 0xe6, 0x83, 0x2b, 0x64, 0x6a, 0x9e, 0x7d, 0x58, 0x9c, 0x68, 0x0a, 0xba, 0x3b, 0xb5,
+	0xb2, 0x30, 0x76, 0xe6, 0xbd, 0x4b, 0xb2, 0x34, 0xf6, 0x1b, 0xb8, 0xf1, 0x47, 0x67, 0xd1, 0xe6,
+	0x74, 0x5d, 0xc5, 0xc1, 0x33, 0xef, 0x5f, 0x9a, 0xa7, 0x19, 0x5e, 0xc3, 0xff, 0x93, 0x47, 0x84,
+	0xa6, 0x0b, 0x2b, 0xce, 0x9e, 0xb9, 0x79, 0x59, 0x9a, 0x82, 0x6f, 0x3f, 0x3b, 0xfe, 0x61, 0x95,
+	0x3e, 0x0f, 0xad, 0xd2, 0xf1, 0xd0, 0x32, 0x4e, 0x86, 0x96, 0xf1, 0x7d, 0x68, 0x19, 0x1f, 0xce,
+	0xad, 0xd2, 0xc9, 0xb9, 0x55, 0xfa, 0x7a, 0x6e, 0x95, 0xf6, 0xb7, 0x26, 0x9e, 0x8f, 0x11, 0xe6,
+	0x16, 0xef, 0x76, 0x99, 0xcf, 0xdc, 0x1e, 0x39, 0x48, 0x3c, 0xf2, 0x5e, 0x3d, 0xf1, 0xf9, 0xbd,
+	0xf6, 0x2a, 0xf9, 0x5b, 0xf5, 0xe8, 0x57, 0x00, 0x00, 0x00, 0xff, 0xff, 0x0c, 0xe5, 0x3d, 0xf6,
+	0x00, 0x06, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -411,10 +498,11 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type MsgServiceClient interface {
-	MsgAdd(ctx context.Context, in *MsgAddRequest, opts ...grpc.CallOption) (*MsgAddResponse, error)
-	MsgSetStatus(ctx context.Context, in *MsgSetStatusRequest, opts ...grpc.CallOption) (*MsgSetStatusResponse, error)
-	MsgAddNode(ctx context.Context, in *MsgAddNodeRequest, opts ...grpc.CallOption) (*MsgAddNodeResponse, error)
-	MsgRemoveNode(ctx context.Context, in *MsgRemoveNodeRequest, opts ...grpc.CallOption) (*MsgRemoveNodeResponse, error)
+	MsgCreate(ctx context.Context, in *MsgCreateRequest, opts ...grpc.CallOption) (*MsgCreateResponse, error)
+	MsgUpdateStatus(ctx context.Context, in *MsgUpdateStatusRequest, opts ...grpc.CallOption) (*MsgUpdateStatusResponse, error)
+	MsgLinkNode(ctx context.Context, in *MsgLinkNodeRequest, opts ...grpc.CallOption) (*MsgLinkNodeResponse, error)
+	MsgUnlinkNode(ctx context.Context, in *MsgUnlinkNodeRequest, opts ...grpc.CallOption) (*MsgUnlinkNodeResponse, error)
+	MsgSubscribe(ctx context.Context, in *MsgSubscribeRequest, opts ...grpc.CallOption) (*MsgSubscribeResponse, error)
 }
 
 type msgServiceClient struct {
@@ -425,36 +513,45 @@ func NewMsgServiceClient(cc grpc1.ClientConn) MsgServiceClient {
 	return &msgServiceClient{cc}
 }
 
-func (c *msgServiceClient) MsgAdd(ctx context.Context, in *MsgAddRequest, opts ...grpc.CallOption) (*MsgAddResponse, error) {
-	out := new(MsgAddResponse)
-	err := c.cc.Invoke(ctx, "/sentinel.plan.v2.MsgService/MsgAdd", in, out, opts...)
+func (c *msgServiceClient) MsgCreate(ctx context.Context, in *MsgCreateRequest, opts ...grpc.CallOption) (*MsgCreateResponse, error) {
+	out := new(MsgCreateResponse)
+	err := c.cc.Invoke(ctx, "/sentinel.plan.v2.MsgService/MsgCreate", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *msgServiceClient) MsgSetStatus(ctx context.Context, in *MsgSetStatusRequest, opts ...grpc.CallOption) (*MsgSetStatusResponse, error) {
-	out := new(MsgSetStatusResponse)
-	err := c.cc.Invoke(ctx, "/sentinel.plan.v2.MsgService/MsgSetStatus", in, out, opts...)
+func (c *msgServiceClient) MsgUpdateStatus(ctx context.Context, in *MsgUpdateStatusRequest, opts ...grpc.CallOption) (*MsgUpdateStatusResponse, error) {
+	out := new(MsgUpdateStatusResponse)
+	err := c.cc.Invoke(ctx, "/sentinel.plan.v2.MsgService/MsgUpdateStatus", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *msgServiceClient) MsgAddNode(ctx context.Context, in *MsgAddNodeRequest, opts ...grpc.CallOption) (*MsgAddNodeResponse, error) {
-	out := new(MsgAddNodeResponse)
-	err := c.cc.Invoke(ctx, "/sentinel.plan.v2.MsgService/MsgAddNode", in, out, opts...)
+func (c *msgServiceClient) MsgLinkNode(ctx context.Context, in *MsgLinkNodeRequest, opts ...grpc.CallOption) (*MsgLinkNodeResponse, error) {
+	out := new(MsgLinkNodeResponse)
+	err := c.cc.Invoke(ctx, "/sentinel.plan.v2.MsgService/MsgLinkNode", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *msgServiceClient) MsgRemoveNode(ctx context.Context, in *MsgRemoveNodeRequest, opts ...grpc.CallOption) (*MsgRemoveNodeResponse, error) {
-	out := new(MsgRemoveNodeResponse)
-	err := c.cc.Invoke(ctx, "/sentinel.plan.v2.MsgService/MsgRemoveNode", in, out, opts...)
+func (c *msgServiceClient) MsgUnlinkNode(ctx context.Context, in *MsgUnlinkNodeRequest, opts ...grpc.CallOption) (*MsgUnlinkNodeResponse, error) {
+	out := new(MsgUnlinkNodeResponse)
+	err := c.cc.Invoke(ctx, "/sentinel.plan.v2.MsgService/MsgUnlinkNode", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgServiceClient) MsgSubscribe(ctx context.Context, in *MsgSubscribeRequest, opts ...grpc.CallOption) (*MsgSubscribeResponse, error) {
+	out := new(MsgSubscribeResponse)
+	err := c.cc.Invoke(ctx, "/sentinel.plan.v2.MsgService/MsgSubscribe", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -463,101 +560,123 @@ func (c *msgServiceClient) MsgRemoveNode(ctx context.Context, in *MsgRemoveNodeR
 
 // MsgServiceServer is the server API for MsgService service.
 type MsgServiceServer interface {
-	MsgAdd(context.Context, *MsgAddRequest) (*MsgAddResponse, error)
-	MsgSetStatus(context.Context, *MsgSetStatusRequest) (*MsgSetStatusResponse, error)
-	MsgAddNode(context.Context, *MsgAddNodeRequest) (*MsgAddNodeResponse, error)
-	MsgRemoveNode(context.Context, *MsgRemoveNodeRequest) (*MsgRemoveNodeResponse, error)
+	MsgCreate(context.Context, *MsgCreateRequest) (*MsgCreateResponse, error)
+	MsgUpdateStatus(context.Context, *MsgUpdateStatusRequest) (*MsgUpdateStatusResponse, error)
+	MsgLinkNode(context.Context, *MsgLinkNodeRequest) (*MsgLinkNodeResponse, error)
+	MsgUnlinkNode(context.Context, *MsgUnlinkNodeRequest) (*MsgUnlinkNodeResponse, error)
+	MsgSubscribe(context.Context, *MsgSubscribeRequest) (*MsgSubscribeResponse, error)
 }
 
 // UnimplementedMsgServiceServer can be embedded to have forward compatible implementations.
 type UnimplementedMsgServiceServer struct {
 }
 
-func (*UnimplementedMsgServiceServer) MsgAdd(ctx context.Context, req *MsgAddRequest) (*MsgAddResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method MsgAdd not implemented")
+func (*UnimplementedMsgServiceServer) MsgCreate(ctx context.Context, req *MsgCreateRequest) (*MsgCreateResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MsgCreate not implemented")
 }
-func (*UnimplementedMsgServiceServer) MsgSetStatus(ctx context.Context, req *MsgSetStatusRequest) (*MsgSetStatusResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method MsgSetStatus not implemented")
+func (*UnimplementedMsgServiceServer) MsgUpdateStatus(ctx context.Context, req *MsgUpdateStatusRequest) (*MsgUpdateStatusResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MsgUpdateStatus not implemented")
 }
-func (*UnimplementedMsgServiceServer) MsgAddNode(ctx context.Context, req *MsgAddNodeRequest) (*MsgAddNodeResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method MsgAddNode not implemented")
+func (*UnimplementedMsgServiceServer) MsgLinkNode(ctx context.Context, req *MsgLinkNodeRequest) (*MsgLinkNodeResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MsgLinkNode not implemented")
 }
-func (*UnimplementedMsgServiceServer) MsgRemoveNode(ctx context.Context, req *MsgRemoveNodeRequest) (*MsgRemoveNodeResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method MsgRemoveNode not implemented")
+func (*UnimplementedMsgServiceServer) MsgUnlinkNode(ctx context.Context, req *MsgUnlinkNodeRequest) (*MsgUnlinkNodeResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MsgUnlinkNode not implemented")
+}
+func (*UnimplementedMsgServiceServer) MsgSubscribe(ctx context.Context, req *MsgSubscribeRequest) (*MsgSubscribeResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MsgSubscribe not implemented")
 }
 
 func RegisterMsgServiceServer(s grpc1.Server, srv MsgServiceServer) {
 	s.RegisterService(&_MsgService_serviceDesc, srv)
 }
 
-func _MsgService_MsgAdd_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgAddRequest)
+func _MsgService_MsgCreate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgCreateRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MsgServiceServer).MsgAdd(ctx, in)
+		return srv.(MsgServiceServer).MsgCreate(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/sentinel.plan.v2.MsgService/MsgAdd",
+		FullMethod: "/sentinel.plan.v2.MsgService/MsgCreate",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServiceServer).MsgAdd(ctx, req.(*MsgAddRequest))
+		return srv.(MsgServiceServer).MsgCreate(ctx, req.(*MsgCreateRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _MsgService_MsgSetStatus_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgSetStatusRequest)
+func _MsgService_MsgUpdateStatus_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgUpdateStatusRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MsgServiceServer).MsgSetStatus(ctx, in)
+		return srv.(MsgServiceServer).MsgUpdateStatus(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/sentinel.plan.v2.MsgService/MsgSetStatus",
+		FullMethod: "/sentinel.plan.v2.MsgService/MsgUpdateStatus",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServiceServer).MsgSetStatus(ctx, req.(*MsgSetStatusRequest))
+		return srv.(MsgServiceServer).MsgUpdateStatus(ctx, req.(*MsgUpdateStatusRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _MsgService_MsgAddNode_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgAddNodeRequest)
+func _MsgService_MsgLinkNode_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgLinkNodeRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MsgServiceServer).MsgAddNode(ctx, in)
+		return srv.(MsgServiceServer).MsgLinkNode(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/sentinel.plan.v2.MsgService/MsgAddNode",
+		FullMethod: "/sentinel.plan.v2.MsgService/MsgLinkNode",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServiceServer).MsgAddNode(ctx, req.(*MsgAddNodeRequest))
+		return srv.(MsgServiceServer).MsgLinkNode(ctx, req.(*MsgLinkNodeRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _MsgService_MsgRemoveNode_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgRemoveNodeRequest)
+func _MsgService_MsgUnlinkNode_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgUnlinkNodeRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MsgServiceServer).MsgRemoveNode(ctx, in)
+		return srv.(MsgServiceServer).MsgUnlinkNode(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/sentinel.plan.v2.MsgService/MsgRemoveNode",
+		FullMethod: "/sentinel.plan.v2.MsgService/MsgUnlinkNode",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServiceServer).MsgRemoveNode(ctx, req.(*MsgRemoveNodeRequest))
+		return srv.(MsgServiceServer).MsgUnlinkNode(ctx, req.(*MsgUnlinkNodeRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MsgService_MsgSubscribe_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgSubscribeRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServiceServer).MsgSubscribe(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/sentinel.plan.v2.MsgService/MsgSubscribe",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServiceServer).MsgSubscribe(ctx, req.(*MsgSubscribeRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -567,27 +686,31 @@ var _MsgService_serviceDesc = grpc.ServiceDesc{
 	HandlerType: (*MsgServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "MsgAdd",
-			Handler:    _MsgService_MsgAdd_Handler,
+			MethodName: "MsgCreate",
+			Handler:    _MsgService_MsgCreate_Handler,
 		},
 		{
-			MethodName: "MsgSetStatus",
-			Handler:    _MsgService_MsgSetStatus_Handler,
+			MethodName: "MsgUpdateStatus",
+			Handler:    _MsgService_MsgUpdateStatus_Handler,
 		},
 		{
-			MethodName: "MsgAddNode",
-			Handler:    _MsgService_MsgAddNode_Handler,
+			MethodName: "MsgLinkNode",
+			Handler:    _MsgService_MsgLinkNode_Handler,
 		},
 		{
-			MethodName: "MsgRemoveNode",
-			Handler:    _MsgService_MsgRemoveNode_Handler,
+			MethodName: "MsgUnlinkNode",
+			Handler:    _MsgService_MsgUnlinkNode_Handler,
+		},
+		{
+			MethodName: "MsgSubscribe",
+			Handler:    _MsgService_MsgSubscribe_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
 	Metadata: "sentinel/plan/v2/msg.proto",
 }
 
-func (m *MsgAddRequest) Marshal() (dAtA []byte, err error) {
+func (m *MsgCreateRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -597,12 +720,12 @@ func (m *MsgAddRequest) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgAddRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgCreateRequest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgAddRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgCreateRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -649,7 +772,7 @@ func (m *MsgAddRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgSetStatusRequest) Marshal() (dAtA []byte, err error) {
+func (m *MsgUpdateStatusRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -659,12 +782,12 @@ func (m *MsgSetStatusRequest) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgSetStatusRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgUpdateStatusRequest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgSetStatusRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgUpdateStatusRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -689,7 +812,7 @@ func (m *MsgSetStatusRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgAddNodeRequest) Marshal() (dAtA []byte, err error) {
+func (m *MsgLinkNodeRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -699,12 +822,12 @@ func (m *MsgAddNodeRequest) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgAddNodeRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgLinkNodeRequest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgAddNodeRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgLinkNodeRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -731,7 +854,7 @@ func (m *MsgAddNodeRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgRemoveNodeRequest) Marshal() (dAtA []byte, err error) {
+func (m *MsgUnlinkNodeRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -741,12 +864,12 @@ func (m *MsgRemoveNodeRequest) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgRemoveNodeRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgUnlinkNodeRequest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgRemoveNodeRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgUnlinkNodeRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -773,7 +896,7 @@ func (m *MsgRemoveNodeRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgAddResponse) Marshal() (dAtA []byte, err error) {
+func (m *MsgSubscribeRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -783,12 +906,54 @@ func (m *MsgAddResponse) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgAddResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgSubscribeRequest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgAddResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgSubscribeRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Denom) > 0 {
+		i -= len(m.Denom)
+		copy(dAtA[i:], m.Denom)
+		i = encodeVarintMsg(dAtA, i, uint64(len(m.Denom)))
+		i--
+		dAtA[i] = 0x1a
+	}
+	if m.ID != 0 {
+		i = encodeVarintMsg(dAtA, i, uint64(m.ID))
+		i--
+		dAtA[i] = 0x10
+	}
+	if len(m.From) > 0 {
+		i -= len(m.From)
+		copy(dAtA[i:], m.From)
+		i = encodeVarintMsg(dAtA, i, uint64(len(m.From)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgCreateResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgCreateResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgCreateResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -796,7 +961,7 @@ func (m *MsgAddResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgSetStatusResponse) Marshal() (dAtA []byte, err error) {
+func (m *MsgUpdateStatusResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -806,12 +971,12 @@ func (m *MsgSetStatusResponse) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgSetStatusResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgUpdateStatusResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgSetStatusResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgUpdateStatusResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -819,7 +984,7 @@ func (m *MsgSetStatusResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgAddNodeResponse) Marshal() (dAtA []byte, err error) {
+func (m *MsgLinkNodeResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -829,12 +994,12 @@ func (m *MsgAddNodeResponse) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgAddNodeResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgLinkNodeResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgAddNodeResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgLinkNodeResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -842,7 +1007,7 @@ func (m *MsgAddNodeResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgRemoveNodeResponse) Marshal() (dAtA []byte, err error) {
+func (m *MsgUnlinkNodeResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -852,12 +1017,35 @@ func (m *MsgRemoveNodeResponse) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgRemoveNodeResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgUnlinkNodeResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgRemoveNodeResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgUnlinkNodeResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgSubscribeResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgSubscribeResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgSubscribeResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -876,7 +1064,7 @@ func encodeVarintMsg(dAtA []byte, offset int, v uint64) int {
 	dAtA[offset] = uint8(v)
 	return base
 }
-func (m *MsgAddRequest) Size() (n int) {
+func (m *MsgCreateRequest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -899,7 +1087,7 @@ func (m *MsgAddRequest) Size() (n int) {
 	return n
 }
 
-func (m *MsgSetStatusRequest) Size() (n int) {
+func (m *MsgUpdateStatusRequest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -918,7 +1106,7 @@ func (m *MsgSetStatusRequest) Size() (n int) {
 	return n
 }
 
-func (m *MsgAddNodeRequest) Size() (n int) {
+func (m *MsgLinkNodeRequest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -938,7 +1126,7 @@ func (m *MsgAddNodeRequest) Size() (n int) {
 	return n
 }
 
-func (m *MsgRemoveNodeRequest) Size() (n int) {
+func (m *MsgUnlinkNodeRequest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -958,7 +1146,27 @@ func (m *MsgRemoveNodeRequest) Size() (n int) {
 	return n
 }
 
-func (m *MsgAddResponse) Size() (n int) {
+func (m *MsgSubscribeRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.From)
+	if l > 0 {
+		n += 1 + l + sovMsg(uint64(l))
+	}
+	if m.ID != 0 {
+		n += 1 + sovMsg(uint64(m.ID))
+	}
+	l = len(m.Denom)
+	if l > 0 {
+		n += 1 + l + sovMsg(uint64(l))
+	}
+	return n
+}
+
+func (m *MsgCreateResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -967,7 +1175,7 @@ func (m *MsgAddResponse) Size() (n int) {
 	return n
 }
 
-func (m *MsgSetStatusResponse) Size() (n int) {
+func (m *MsgUpdateStatusResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -976,7 +1184,7 @@ func (m *MsgSetStatusResponse) Size() (n int) {
 	return n
 }
 
-func (m *MsgAddNodeResponse) Size() (n int) {
+func (m *MsgLinkNodeResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -985,7 +1193,16 @@ func (m *MsgAddNodeResponse) Size() (n int) {
 	return n
 }
 
-func (m *MsgRemoveNodeResponse) Size() (n int) {
+func (m *MsgUnlinkNodeResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	return n
+}
+
+func (m *MsgSubscribeResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1000,7 +1217,7 @@ func sovMsg(x uint64) (n int) {
 func sozMsg(x uint64) (n int) {
 	return sovMsg(uint64((x << 1) ^ uint64((int64(x) >> 63))))
 }
-func (m *MsgAddRequest) Unmarshal(dAtA []byte) error {
+func (m *MsgCreateRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1023,10 +1240,10 @@ func (m *MsgAddRequest) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgAddRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgCreateRequest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgAddRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgCreateRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -1183,7 +1400,7 @@ func (m *MsgAddRequest) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgSetStatusRequest) Unmarshal(dAtA []byte) error {
+func (m *MsgUpdateStatusRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1206,10 +1423,10 @@ func (m *MsgSetStatusRequest) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgSetStatusRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgUpdateStatusRequest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgSetStatusRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgUpdateStatusRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -1303,7 +1520,7 @@ func (m *MsgSetStatusRequest) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgAddNodeRequest) Unmarshal(dAtA []byte) error {
+func (m *MsgLinkNodeRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1326,10 +1543,10 @@ func (m *MsgAddNodeRequest) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgAddNodeRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgLinkNodeRequest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgAddNodeRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgLinkNodeRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -1436,7 +1653,7 @@ func (m *MsgAddNodeRequest) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgRemoveNodeRequest) Unmarshal(dAtA []byte) error {
+func (m *MsgUnlinkNodeRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1459,10 +1676,10 @@ func (m *MsgRemoveNodeRequest) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgRemoveNodeRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgUnlinkNodeRequest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgRemoveNodeRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgUnlinkNodeRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -1569,7 +1786,7 @@ func (m *MsgRemoveNodeRequest) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgAddResponse) Unmarshal(dAtA []byte) error {
+func (m *MsgSubscribeRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1592,10 +1809,143 @@ func (m *MsgAddResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgAddResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgSubscribeRequest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgAddResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgSubscribeRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field From", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowMsg
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthMsg
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthMsg
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.From = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ID", wireType)
+			}
+			m.ID = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowMsg
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.ID |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Denom", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowMsg
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthMsg
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthMsg
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Denom = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipMsg(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthMsg
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgCreateResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowMsg
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgCreateResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgCreateResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		default:
@@ -1619,7 +1969,7 @@ func (m *MsgAddResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgSetStatusResponse) Unmarshal(dAtA []byte) error {
+func (m *MsgUpdateStatusResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1642,10 +1992,10 @@ func (m *MsgSetStatusResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgSetStatusResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgUpdateStatusResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgSetStatusResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgUpdateStatusResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		default:
@@ -1669,7 +2019,7 @@ func (m *MsgSetStatusResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgAddNodeResponse) Unmarshal(dAtA []byte) error {
+func (m *MsgLinkNodeResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1692,10 +2042,10 @@ func (m *MsgAddNodeResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgAddNodeResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgLinkNodeResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgAddNodeResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgLinkNodeResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		default:
@@ -1719,7 +2069,7 @@ func (m *MsgAddNodeResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgRemoveNodeResponse) Unmarshal(dAtA []byte) error {
+func (m *MsgUnlinkNodeResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1742,10 +2092,60 @@ func (m *MsgRemoveNodeResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgRemoveNodeResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgUnlinkNodeResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgRemoveNodeResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgUnlinkNodeResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		default:
+			iNdEx = preIndex
+			skippy, err := skipMsg(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthMsg
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgSubscribeResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowMsg
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgSubscribeResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgSubscribeResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		default:

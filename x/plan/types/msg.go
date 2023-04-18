@@ -10,14 +10,15 @@ import (
 )
 
 var (
-	_ sdk.Msg = (*MsgAddRequest)(nil)
-	_ sdk.Msg = (*MsgSetStatusRequest)(nil)
-	_ sdk.Msg = (*MsgAddNodeRequest)(nil)
-	_ sdk.Msg = (*MsgRemoveNodeRequest)(nil)
+	_ sdk.Msg = (*MsgCreateRequest)(nil)
+	_ sdk.Msg = (*MsgUpdateStatusRequest)(nil)
+	_ sdk.Msg = (*MsgLinkNodeRequest)(nil)
+	_ sdk.Msg = (*MsgUnlinkNodeRequest)(nil)
+	_ sdk.Msg = (*MsgSubscribeRequest)(nil)
 )
 
-func NewMsgAddRequest(from hubtypes.ProvAddress, prices sdk.Coins, validity time.Duration, bytes sdk.Int) *MsgAddRequest {
-	return &MsgAddRequest{
+func NewMsgCreateRequest(from hubtypes.ProvAddress, prices sdk.Coins, validity time.Duration, bytes sdk.Int) *MsgCreateRequest {
+	return &MsgCreateRequest{
 		From:     from.String(),
 		Prices:   prices,
 		Validity: validity,
@@ -25,7 +26,7 @@ func NewMsgAddRequest(from hubtypes.ProvAddress, prices sdk.Coins, validity time
 	}
 }
 
-func (m *MsgAddRequest) ValidateBasic() error {
+func (m *MsgCreateRequest) ValidateBasic() error {
 	if m.From == "" {
 		return errors.Wrap(ErrorInvalidMessage, "from cannot be empty")
 	}
@@ -56,7 +57,7 @@ func (m *MsgAddRequest) ValidateBasic() error {
 	return nil
 }
 
-func (m *MsgAddRequest) GetSigners() []sdk.AccAddress {
+func (m *MsgCreateRequest) GetSigners() []sdk.AccAddress {
 	from, err := hubtypes.ProvAddressFromBech32(m.From)
 	if err != nil {
 		panic(err)
@@ -65,15 +66,15 @@ func (m *MsgAddRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{from.Bytes()}
 }
 
-func NewMsgSetStatusRequest(from hubtypes.ProvAddress, id uint64, status hubtypes.Status) *MsgSetStatusRequest {
-	return &MsgSetStatusRequest{
+func NewMsgUpdateStatusRequest(from hubtypes.ProvAddress, id uint64, status hubtypes.Status) *MsgUpdateStatusRequest {
+	return &MsgUpdateStatusRequest{
 		From:   from.String(),
 		ID:     id,
 		Status: status,
 	}
 }
 
-func (m *MsgSetStatusRequest) ValidateBasic() error {
+func (m *MsgUpdateStatusRequest) ValidateBasic() error {
 	if m.From == "" {
 		return errors.Wrap(ErrorInvalidMessage, "from cannot be empty")
 	}
@@ -90,7 +91,7 @@ func (m *MsgSetStatusRequest) ValidateBasic() error {
 	return nil
 }
 
-func (m *MsgSetStatusRequest) GetSigners() []sdk.AccAddress {
+func (m *MsgUpdateStatusRequest) GetSigners() []sdk.AccAddress {
 	from, err := hubtypes.ProvAddressFromBech32(m.From)
 	if err != nil {
 		panic(err)
@@ -99,15 +100,15 @@ func (m *MsgSetStatusRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{from.Bytes()}
 }
 
-func NewMsgAddNodeRequest(from hubtypes.ProvAddress, id uint64, address hubtypes.NodeAddress) *MsgAddNodeRequest {
-	return &MsgAddNodeRequest{
+func NewMsgLinkNodeRequest(from hubtypes.ProvAddress, id uint64, address hubtypes.NodeAddress) *MsgLinkNodeRequest {
+	return &MsgLinkNodeRequest{
 		From:    from.String(),
 		ID:      id,
 		Address: address.String(),
 	}
 }
 
-func (m *MsgAddNodeRequest) ValidateBasic() error {
+func (m *MsgLinkNodeRequest) ValidateBasic() error {
 	if m.From == "" {
 		return errors.Wrap(ErrorInvalidMessage, "from cannot be empty")
 	}
@@ -127,7 +128,7 @@ func (m *MsgAddNodeRequest) ValidateBasic() error {
 	return nil
 }
 
-func (m *MsgAddNodeRequest) GetSigners() []sdk.AccAddress {
+func (m *MsgLinkNodeRequest) GetSigners() []sdk.AccAddress {
 	from, err := hubtypes.ProvAddressFromBech32(m.From)
 	if err != nil {
 		panic(err)
@@ -136,15 +137,15 @@ func (m *MsgAddNodeRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{from.Bytes()}
 }
 
-func NewMsgRemoveNodeRequest(from hubtypes.ProvAddress, id uint64, address hubtypes.NodeAddress) *MsgRemoveNodeRequest {
-	return &MsgRemoveNodeRequest{
+func NewMsgUnlinkNodeRequest(from hubtypes.ProvAddress, id uint64, address hubtypes.NodeAddress) *MsgUnlinkNodeRequest {
+	return &MsgUnlinkNodeRequest{
 		From:    from.String(),
 		ID:      id,
 		Address: address.String(),
 	}
 }
 
-func (m *MsgRemoveNodeRequest) ValidateBasic() error {
+func (m *MsgUnlinkNodeRequest) ValidateBasic() error {
 	if m.From == "" {
 		return errors.Wrap(ErrorInvalidMessage, "from cannot be empty")
 	}
@@ -164,11 +165,47 @@ func (m *MsgRemoveNodeRequest) ValidateBasic() error {
 	return nil
 }
 
-func (m *MsgRemoveNodeRequest) GetSigners() []sdk.AccAddress {
+func (m *MsgUnlinkNodeRequest) GetSigners() []sdk.AccAddress {
 	from, err := hubtypes.ProvAddressFromBech32(m.From)
 	if err != nil {
 		panic(err)
 	}
 
 	return []sdk.AccAddress{from.Bytes()}
+}
+
+func NewMsgSubscribeRequest(from sdk.AccAddress, id uint64, denom string) *MsgSubscribeRequest {
+	return &MsgSubscribeRequest{
+		From:  from.String(),
+		ID:    id,
+		Denom: denom,
+	}
+}
+
+func (m *MsgSubscribeRequest) ValidateBasic() error {
+	if m.From == "" {
+		return errors.Wrap(ErrorInvalidMessage, "from cannot be empty")
+	}
+	if _, err := sdk.AccAddressFromBech32(m.From); err != nil {
+		return errors.Wrap(ErrorInvalidMessage, err.Error())
+	}
+	if m.ID == 0 {
+		return errors.Wrap(ErrorInvalidMessage, "id cannot be zero")
+	}
+	if m.Denom != "" {
+		if err := sdk.ValidateDenom(m.Denom); err != nil {
+			return errors.Wrap(ErrorInvalidMessage, err.Error())
+		}
+	}
+
+	return nil
+}
+
+func (m *MsgSubscribeRequest) GetSigners() []sdk.AccAddress {
+	from, err := sdk.AccAddressFromBech32(m.From)
+	if err != nil {
+		panic(err)
+	}
+
+	return []sdk.AccAddress{from}
 }

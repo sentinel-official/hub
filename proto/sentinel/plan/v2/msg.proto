@@ -11,8 +11,8 @@ import "sentinel/types/v1/status.proto";
 option (gogoproto.equal_all)           = false;
 option (gogoproto.goproto_getters_all) = false;
 
-// MsgAddRequest defines the SDK message for adding a plan
-message MsgAddRequest {
+// MsgCreateRequest defines the SDK message for creating a subscription plan
+message MsgCreateRequest {
   string from                              = 1;
   repeated cosmos.base.v1beta1.Coin prices = 2 [
     (gogoproto.nullable)     = false,
@@ -26,43 +26,58 @@ message MsgAddRequest {
   ];
 }
 
-// MsgSetStatusRequest defines the SDK message for modifying the status of a
-// plan
-message MsgSetStatusRequest {
+// MsgUpdateStatusRequest defines the SDK message for modifying the status of a
+// subscription plan
+message MsgUpdateStatusRequest {
   string from                     = 1;
   uint64 id                       = 2 [ (gogoproto.customname) = "ID" ];
   sentinel.types.v1.Status status = 3;
 }
 
-// MsgAddNodeRequest defines the SDK message for adding a node to a plan
-message MsgAddNodeRequest {
+// MsgLinkNodeRequest defines the SDK message for adding a node to a
+// subscription plan
+message MsgLinkNodeRequest {
   string from    = 1;
   uint64 id      = 2 [ (gogoproto.customname) = "ID" ];
   string address = 3;
 }
 
-// MsgRemoveNodeRequest defines the SDK message for removing a node from a plan
-message MsgRemoveNodeRequest {
+// MsgUnlinkNodeRequest defines the SDK message for removing a node from a
+// subscription plan
+message MsgUnlinkNodeRequest {
   string from    = 1;
   uint64 id      = 2 [ (gogoproto.customname) = "ID" ];
   string address = 3;
 }
 
-// MsgAddResponse defines the response of message MsgRegisterRequest
-message MsgAddResponse {}
+// MsgSubscribeRequest defines the SDK message for subscribing to a subscription
+// plan
+message MsgSubscribeRequest {
+  string from  = 1;
+  uint64 id    = 2 [ (gogoproto.customname) = "ID" ];
+  string denom = 3;
+}
 
-// MsgSetStatusResponse defines the response of message MsgSetStatusRequest
-message MsgSetStatusResponse {}
+// MsgCreateResponse defines the response of message MsgCreateRequest
+message MsgCreateResponse {}
 
-// MsgAddNodeResponse defines the response of message MsgAddNodeRequest
-message MsgAddNodeResponse {}
+// MsgUpdateStatusResponse defines the response of message
+// MsgUpdateStatusRequest
+message MsgUpdateStatusResponse {}
 
-// MsgRemoveNodeResponse defines the response of message MsgRemoveNodeRequest
-message MsgRemoveNodeResponse {}
+// MsgLinkNodeResponse defines the response of message MsgLinkNodeRequest
+message MsgLinkNodeResponse {}
+
+// MsgUnlinkNodeResponse defines the response of message MsgUnlinkNodeRequest
+message MsgUnlinkNodeResponse {}
+
+// MsgSubscribeResponse defines the response of message MsgSubscribeRequest
+message MsgSubscribeResponse {}
 
 service MsgService {
-  rpc MsgAdd(MsgAddRequest) returns (MsgAddResponse);
-  rpc MsgSetStatus(MsgSetStatusRequest) returns (MsgSetStatusResponse);
-  rpc MsgAddNode(MsgAddNodeRequest) returns (MsgAddNodeResponse);
-  rpc MsgRemoveNode(MsgRemoveNodeRequest) returns (MsgRemoveNodeResponse);
+  rpc MsgCreate(MsgCreateRequest) returns (MsgCreateResponse);
+  rpc MsgUpdateStatus(MsgUpdateStatusRequest) returns (MsgUpdateStatusResponse);
+  rpc MsgLinkNode(MsgLinkNodeRequest) returns (MsgLinkNodeResponse);
+  rpc MsgUnlinkNode(MsgUnlinkNodeRequest) returns (MsgUnlinkNodeResponse);
+  rpc MsgSubscribe(MsgSubscribeRequest) returns (MsgSubscribeResponse);
 }
