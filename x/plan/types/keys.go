@@ -14,18 +14,20 @@ const (
 )
 
 var (
-	TypeMsgAddRequest        = ModuleName + ":add"
-	TypeMsgSetStatusRequest  = ModuleName + ":set_status"
-	TypeMsgAddNodeRequest    = ModuleName + ":add_node"
-	TypeMsgRemoveNodeRequest = ModuleName + ":remove_node"
+	TypeMsgCreateRequest       = ModuleName + ":create"
+	TypeMsgUpdateStatusRequest = ModuleName + ":update_status"
+	TypeMsgLinkNodeRequest     = ModuleName + ":link_node"
+	TypeMsgUnlinkNodeRequest   = ModuleName + ":unlink_node"
 )
 
 var (
-	CountKey                 = []byte{0x00}
-	PlanKeyPrefix            = []byte{0x10}
-	ActivePlanKeyPrefix      = append(PlanKeyPrefix, 0x01)
-	InactivePlanKeyPrefix    = append(PlanKeyPrefix, 0x02)
-	PlanForProviderKeyPrefix = []byte{0x20}
+	CountKey = []byte{0x00}
+
+	PlanKeyPrefix         = []byte{0x10}
+	ActivePlanKeyPrefix   = append(PlanKeyPrefix, 0x01)
+	InactivePlanKeyPrefix = append(PlanKeyPrefix, 0x02)
+
+	PlanForProviderKeyPrefix = []byte{0x11}
 )
 
 func ActivePlanKey(id uint64) []byte {
