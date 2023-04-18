@@ -3,7 +3,7 @@ package types
 import (
 	"fmt"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/pkg/errors"
+	"github.com/cosmos/cosmos-sdk/types/errors"
 	hubtypes "github.com/sentinel-official/hub/types"
 )
 
