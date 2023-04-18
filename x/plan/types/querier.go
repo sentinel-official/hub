@@ -26,10 +26,3 @@ func NewQueryPlansForProviderRequest(addr hubtypes.ProvAddress, status hubtypes.
 		Pagination: pagination,
 	}
 }
-
-func NewQueryNodesForPlanRequest(id uint64, pagination *query.PageRequest) *QueryNodesForPlanRequest {
-	return &QueryNodesForPlanRequest{
-		Id:         id,
-		Pagination: pagination,
-	}
-}
