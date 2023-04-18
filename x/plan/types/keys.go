@@ -1,8 +1,6 @@
 package types
 
 import (
-	"fmt"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/address"
 
@@ -56,36 +54,4 @@ func GetInactivePlanForProviderKeyPrefix(addr hubtypes.ProvAddress) []byte {
 
 func InactivePlanForProviderKey(addr hubtypes.ProvAddress, id uint64) []byte {
 	return append(GetInactivePlanForProviderKeyPrefix(addr), sdk.Uint64ToBigEndian(id)...)
-}
-
-func IDFromStatusPlanKey(key []byte) uint64 {
-	// prefix (1 byte) | plan (8 bytes)
-
-	if len(key) != 9 {
-		panic(fmt.Errorf("invalid key length %d; expected %d", len(key), 9))
-	}
-
-	return sdk.BigEndianToUint64(key[1:])
-}
-
-func IDFromStatusPlanForProviderKey(key []byte) uint64 {
-	// prefix (1 byte) | addrLen (1 byte) | addr | plan (8 bytes)
-
-	addrLen := int(key[1])
-	if len(key) != 10+addrLen {
-		panic(fmt.Errorf("invalid key length %d; expected %d", len(key), 10+addrLen))
-	}
-
-	return sdk.BigEndianToUint64(key[2+addrLen:])
-}
-
-func AddressFromNodeForPlanKey(key []byte) hubtypes.NodeAddress {
-	// prefix (1 byte) | plan (8 bytes) | addrLen (1 byte) | addr
-
-	addrLen := int(key[9])
-	if len(key) != 10+addrLen {
-		panic(fmt.Errorf("invalid key length %d; expected %d", len(key), 10+addrLen))
-	}
-
-	return key[10:]
 }

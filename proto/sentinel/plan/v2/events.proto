@@ -15,7 +15,7 @@ message EventCreate {
       [ (gogoproto.moretags) = "yaml:\"provider_address\"" ];
 }
 
-message EventSetStatus {
+message EventUpdateStatus {
   uint64 id = 1
       [ (gogoproto.customname) = "ID", (gogoproto.moretags) = "yaml:\"id\"" ];
   string provider_address = 2

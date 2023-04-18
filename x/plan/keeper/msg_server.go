@@ -91,7 +91,7 @@ func (k *msgServer) MsgUpdateStatus(c context.Context, msg *types.MsgUpdateStatu
 
 	k.SetPlan(ctx, plan)
 	ctx.EventManager().EmitTypedEvent(
-		&types.EventSetStatus{
+		&types.EventUpdateStatus{
 			ID:              plan.ID,
 			ProviderAddress: plan.ProviderAddress,
 			Status:          plan.Status,
