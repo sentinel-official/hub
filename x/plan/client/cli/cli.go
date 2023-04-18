@@ -18,10 +18,10 @@ func GetTxCommands() []*cobra.Command {
 	}
 
 	cmd.AddCommand(
-		txAdd(),
+		txCreate(),
 		txSetStatus(),
-		txAddNode(),
-		txRemoveNode(),
+		txLinkNode(),
+		txUnlinkNode(),
 	)
 
 	return []*cobra.Command{cmd}

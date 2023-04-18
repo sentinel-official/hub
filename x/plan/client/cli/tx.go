@@ -14,10 +14,10 @@ import (
 	"github.com/sentinel-official/hub/x/plan/types"
 )
 
-func txAdd() *cobra.Command {
+func txCreate() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "add [bytes] [price] [validity]",
-		Short: "Add a plan",
+		Use:   "create [prices] [bytes] [validity]",
+		Short: "Create a subscription plan",
 		Args:  cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientTxContext(cmd)
@@ -25,12 +25,12 @@ func txAdd() *cobra.Command {
 				return err
 			}
 
-			bytes, err := strconv.ParseInt(args[0], 10, 64)
+			price, err := sdk.ParseCoinsNormalized(args[0])
 			if err != nil {
 				return err
 			}
 
-			price, err := sdk.ParseCoinsNormalized(args[1])
+			bytes, err := strconv.ParseInt(args[1], 10, 64)
 			if err != nil {
 				return err
 			}
@@ -40,7 +40,7 @@ func txAdd() *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgAddRequest(
+			msg := types.NewMsgCreateRequest(
 				ctx.FromAddress.Bytes(),
 				price,
 				validity,
@@ -61,8 +61,8 @@ func txAdd() *cobra.Command {
 
 func txSetStatus() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "status-set [id] [status]",
-		Short: "Set status for a plan",
+		Use:   "set-status [id] [status]",
+		Short: "Set status for a subscription plan",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientTxContext(cmd)
@@ -75,7 +75,7 @@ func txSetStatus() *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgSetStatusRequest(
+			msg := types.NewMsgUpdateStatusRequest(
 				ctx.FromAddress.Bytes(),
 				id,
 				hubtypes.StatusFromString(args[1]),
@@ -93,10 +93,10 @@ func txSetStatus() *cobra.Command {
 	return cmd
 }
 
-func txAddNode() *cobra.Command {
+func txLinkNode() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "node-add [id] [node]",
-		Short: "Add a node to a plan",
+		Use:   "add-node [id] [node-addr]",
+		Short: "Add a node to a subscription plan",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientTxContext(cmd)
@@ -109,15 +109,15 @@ func txAddNode() *cobra.Command {
 				return err
 			}
 
-			address, err := hubtypes.NodeAddressFromBech32(args[1])
+			addr, err := hubtypes.NodeAddressFromBech32(args[1])
 			if err != nil {
 				return err
 			}
 
-			msg := types.NewMsgAddNodeRequest(
+			msg := types.NewMsgLinkNodeRequest(
 				ctx.FromAddress.Bytes(),
 				id,
-				address,
+				addr,
 			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err
@@ -132,10 +132,10 @@ func txAddNode() *cobra.Command {
 	return cmd
 }
 
-func txRemoveNode() *cobra.Command {
+func txUnlinkNode() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "node-remove [id] [node]",
-		Short: "Remove a node from a plan",
+		Use:   "remove-node [id] [node-addr]",
+		Short: "Remove a node from a subscription plan",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientTxContext(cmd)
@@ -148,15 +148,15 @@ func txRemoveNode() *cobra.Command {
 				return err
 			}
 
-			address, err := hubtypes.NodeAddressFromBech32(args[1])
+			addr, err := hubtypes.NodeAddressFromBech32(args[1])
 			if err != nil {
 				return err
 			}
 
-			msg := types.NewMsgRemoveNodeRequest(
-				ctx.FromAddress,
+			msg := types.NewMsgUnlinkNodeRequest(
+				ctx.FromAddress.Bytes(),
 				id,
-				address,
+				addr,
 			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err
