@@ -2,13 +2,12 @@ package types
 
 import (
 	"crypto/rand"
+	hubtypes "github.com/sentinel-official/hub/types"
 	"testing"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/query"
 	"github.com/stretchr/testify/require"
-
-	hubtypes "github.com/sentinel-official/hub/types"
 )
 
 func TestNewQueryParamsRequest(t *testing.T) {
@@ -20,20 +19,20 @@ func TestNewQueryParamsRequest(t *testing.T) {
 
 func TestNewQueryQuotaRequest(t *testing.T) {
 	var (
-		address []byte
+		addr []byte
 	)
 
-	for i := 0; i < 40; i++ {
-		address = make([]byte, i)
-		_, _ = rand.Read(address)
+	for i := 0; i < 512; i += 64 {
+		addr = make([]byte, i)
+		_, _ = rand.Read(addr)
 
 		require.Equal(
 			t,
 			&QueryQuotaRequest{
 				Id:      uint64(i),
-				Address: sdk.AccAddress(address).String(),
+				Address: sdk.AccAddress(addr).String(),
 			},
-			NewQueryQuotaRequest(uint64(i), address),
+			NewQueryQuotaRequest(uint64(i), addr),
 		)
 	}
 }
@@ -43,7 +42,7 @@ func TestNewQueryQuotasRequest(t *testing.T) {
 		pagination *query.PageRequest
 	)
 
-	for i := 0; i < 20; i++ {
+	for i := 0; i < 512; i += 64 {
 		pagination = &query.PageRequest{
 			Key:        make([]byte, i),
 			Offset:     uint64(i),
@@ -63,7 +62,7 @@ func TestNewQueryQuotasRequest(t *testing.T) {
 }
 
 func TestNewQuerySubscriptionRequest(t *testing.T) {
-	for i := 0; i < 20; i++ {
+	for i := 0; i < 512; i += 64 {
 		require.Equal(
 			t,
 			&QuerySubscriptionRequest{
@@ -74,16 +73,14 @@ func TestNewQuerySubscriptionRequest(t *testing.T) {
 	}
 }
 
-func TestNewQuerySubscriptionsForAddressRequest(t *testing.T) {
+func TestNewQuerySubscriptionsForAccountRequest(t *testing.T) {
 	var (
-		address    []byte
-		status     hubtypes.Status
+		addr       []byte
 		pagination *query.PageRequest
 	)
 
-	for i := 0; i < 40; i++ {
-		address = make([]byte, i)
-		status = hubtypes.Status(i % 4)
+	for i := 0; i < 512; i += 64 {
+		addr = make([]byte, i)
 		pagination = &query.PageRequest{
 			Key:        make([]byte, i),
 			Offset:     uint64(i),
@@ -91,17 +88,70 @@ func TestNewQuerySubscriptionsForAddressRequest(t *testing.T) {
 			CountTotal: i/2 == 0,
 		}
 
-		_, _ = rand.Read(address)
+		_, _ = rand.Read(addr)
 		_, _ = rand.Read(pagination.Key)
 
 		require.Equal(
 			t,
-			&QuerySubscriptionsForAddressRequest{
-				Address:    sdk.AccAddress(address).String(),
-				Status:     status,
+			&QuerySubscriptionsForAccountRequest{
+				Address:    sdk.AccAddress(addr).String(),
 				Pagination: pagination,
 			},
-			NewQuerySubscriptionsForAddressRequest(address, status, pagination),
+			NewQuerySubscriptionsForAccountRequest(addr, pagination),
+		)
+	}
+}
+
+func TestNewQuerySubscriptionsForNodeRequest(t *testing.T) {
+	var (
+		addr       []byte
+		pagination *query.PageRequest
+	)
+
+	for i := 0; i < 512; i += 64 {
+		addr = make([]byte, i)
+		pagination = &query.PageRequest{
+			Key:        make([]byte, i),
+			Offset:     uint64(i),
+			Limit:      uint64(i),
+			CountTotal: i/2 == 0,
+		}
+
+		_, _ = rand.Read(addr)
+		_, _ = rand.Read(pagination.Key)
+
+		require.Equal(
+			t,
+			&QuerySubscriptionsForNodeRequest{
+				Address:    hubtypes.NodeAddress(addr).String(),
+				Pagination: pagination,
+			},
+			NewQuerySubscriptionsForNodeRequest(addr, pagination),
+		)
+	}
+}
+
+func TestNewQuerySubscriptionsForPlanRequest(t *testing.T) {
+	var (
+		pagination *query.PageRequest
+	)
+
+	for i := 0; i < 512; i += 64 {
+		pagination = &query.PageRequest{
+			Key:        make([]byte, i),
+			Offset:     uint64(i),
+			Limit:      uint64(i),
+			CountTotal: i/2 == 0,
+		}
+		_, _ = rand.Read(pagination.Key)
+
+		require.Equal(
+			t,
+			&QuerySubscriptionsForPlanRequest{
+				Id:         uint64(i),
+				Pagination: pagination,
+			},
+			NewQuerySubscriptionsForPlanRequest(uint64(i), pagination),
 		)
 	}
 }
@@ -111,7 +161,7 @@ func TestNewQuerySubscriptionsRequest(t *testing.T) {
 		pagination *query.PageRequest
 	)
 
-	for i := 0; i < 20; i++ {
+	for i := 0; i < 512; i += 64 {
 		pagination = &query.PageRequest{
 			Key:        make([]byte, i),
 			Offset:     uint64(i),

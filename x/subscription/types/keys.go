@@ -14,11 +14,9 @@ const (
 )
 
 var (
-	TypeMsgSubscribeToNodeRequest = ModuleName + ":subscribe_to_node"
-	TypeMsgSubscribeToPlanRequest = ModuleName + ":subscribe_to_plan"
-	TypeMsgCancelRequest          = ModuleName + ":cancel"
-	TypeMsgAddQuotaRequest        = ModuleName + ":add_quota"
-	TypeMsgUpdateQuotaRequest     = ModuleName + ":update_quota"
+	TypeMsgCancelRequest      = ModuleName + ":cancel"
+	TypeMsgShareRequest       = ModuleName + ":share"
+	TypeMsgUpdateQuotaRequest = ModuleName + ":update_quota"
 )
 
 var (

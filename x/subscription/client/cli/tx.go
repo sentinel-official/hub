@@ -112,7 +112,7 @@ func txAddQuota() *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgAddQuotaRequest(
+			msg := types.NewMsgShareRequest(
 				ctx.FromAddress,
 				id,
 				address,

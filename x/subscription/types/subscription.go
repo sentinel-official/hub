@@ -76,6 +76,9 @@ func (s *NodeSubscription) Validate() error {
 		return fmt.Errorf("hours cannot be zero")
 	}
 	if s.Price.Denom != "" {
+		if s.Price.IsNil() {
+			return fmt.Errorf("price cannot be nil")
+		}
 		if s.Price.IsNegative() {
 			return fmt.Errorf("price cannot be negative")
 		}

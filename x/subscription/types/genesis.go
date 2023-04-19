@@ -24,28 +24,34 @@ func ValidateGenesis(state *GenesisState) error {
 		return err
 	}
 
-	subscriptions := make(map[uint64]bool)
+	m := make(map[uint64]bool)
 	for _, item := range state.Subscriptions {
-		if subscriptions[item.Subscription.Id] {
-			return fmt.Errorf("found duplicate subscription for id %d", item.Subscription.Id)
+		id := item.Subscription.GetCachedValue().(*BaseSubscription).ID
+		if m[id] {
+			return fmt.Errorf("found duplicate subscription for id %d", id)
 		}
 
-		subscriptions[item.Subscription.Id] = true
+		m[id] = true
 	}
 
 	for _, item := range state.Subscriptions {
-		quotas := make(map[string]bool)
+		var (
+			m  = make(map[string]bool)
+			id = item.Subscription.GetCachedValue().(*BaseSubscription).ID
+		)
+
 		for _, quota := range item.Quotas {
-			if quotas[quota.Address] {
-				return fmt.Errorf("found duplicate quota for subscription %d and address %s", item.Subscription.Id, quota.Address)
+			if m[quota.AccountAddress] {
+				return fmt.Errorf("found duplicate quota for subscription %d and address %s", id, quota.AccountAddress)
 			}
 
-			quotas[quota.Address] = true
+			m[quota.AccountAddress] = true
 		}
 	}
 
 	for _, item := range state.Subscriptions {
-		if err := item.Subscription.Validate(); err != nil {
+		item := item.Subscription.GetCachedValue().(Subscription)
+		if err := item.Validate(); err != nil {
 			return err
 		}
 	}

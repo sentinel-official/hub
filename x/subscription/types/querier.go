@@ -3,7 +3,6 @@ package types
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/query"
-
 	hubtypes "github.com/sentinel-official/hub/types"
 )
 
@@ -19,18 +18,31 @@ func NewQuerySubscriptionsRequest(pagination *query.PageRequest) *QuerySubscript
 	}
 }
 
-func NewQuerySubscriptionsForAddressRequest(address sdk.AccAddress, status hubtypes.Status, pagination *query.PageRequest) *QuerySubscriptionsForAddressRequest {
-	return &QuerySubscriptionsForAddressRequest{
-		Address:    address.String(),
-		Status:     status,
+func NewQuerySubscriptionsForAccountRequest(addr sdk.AccAddress, pagination *query.PageRequest) *QuerySubscriptionsForAccountRequest {
+	return &QuerySubscriptionsForAccountRequest{
+		Address:    addr.String(),
 		Pagination: pagination,
 	}
 }
 
-func NewQueryQuotaRequest(id uint64, address sdk.AccAddress) *QueryQuotaRequest {
+func NewQuerySubscriptionsForNodeRequest(addr hubtypes.NodeAddress, pagination *query.PageRequest) *QuerySubscriptionsForNodeRequest {
+	return &QuerySubscriptionsForNodeRequest{
+		Address:    addr.String(),
+		Pagination: pagination,
+	}
+}
+
+func NewQuerySubscriptionsForPlanRequest(id uint64, pagination *query.PageRequest) *QuerySubscriptionsForPlanRequest {
+	return &QuerySubscriptionsForPlanRequest{
+		Id:         id,
+		Pagination: pagination,
+	}
+}
+
+func NewQueryQuotaRequest(id uint64, addr sdk.AccAddress) *QueryQuotaRequest {
 	return &QueryQuotaRequest{
 		Id:      id,
-		Address: address.String(),
+		Address: addr.String(),
 	}
 }
 

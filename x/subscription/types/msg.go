@@ -66,6 +66,9 @@ func (m *MsgShareRequest) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.Address); err != nil {
 		return errors.Wrapf(ErrorInvalidMessage, "invalid address %s", err)
 	}
+	if m.Bytes.IsNil() {
+		return errors.Wrap(ErrorInvalidMessage, "bytes cannot be nil")
+	}
 	if m.Bytes.IsNegative() {
 		return errors.Wrap(ErrorInvalidMessage, "bytes cannot be negative")
 	}
@@ -106,6 +109,9 @@ func (m *MsgUpdateQuotaRequest) ValidateBasic() error {
 	}
 	if _, err := sdk.AccAddressFromBech32(m.Address); err != nil {
 		return errors.Wrapf(ErrorInvalidMessage, "invalid address %s", err)
+	}
+	if m.Bytes.IsNil() {
+		return errors.Wrap(ErrorInvalidMessage, "bytes cannot be nil")
 	}
 	if m.Bytes.IsNegative() {
 		return errors.Wrap(ErrorInvalidMessage, "bytes cannot be negative")

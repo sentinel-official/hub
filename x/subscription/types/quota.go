@@ -7,28 +7,34 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-func (m *Quota) GetAddress() sdk.AccAddress {
-	if m.Address == "" {
+func (m *Quota) GetAccountAddress() sdk.AccAddress {
+	if m.AccountAddress == "" {
 		return nil
 	}
 
-	address, err := sdk.AccAddressFromBech32(m.Address)
+	addr, err := sdk.AccAddressFromBech32(m.AccountAddress)
 	if err != nil {
 		panic(err)
 	}
 
-	return address
+	return addr
 }
 
 func (m *Quota) Validate() error {
-	if m.Address == "" {
-		return fmt.Errorf("address cannot be empty")
+	if m.AccountAddress == "" {
+		return fmt.Errorf("account_address cannot be empty")
 	}
-	if _, err := sdk.AccAddressFromBech32(m.Address); err != nil {
-		return errors.Wrapf(err, "invalid address %s", m.Address)
+	if _, err := sdk.AccAddressFromBech32(m.AccountAddress); err != nil {
+		return errors.Wrapf(err, "invalid account_address %s", m.AccountAddress)
+	}
+	if m.Allocated.IsNil() {
+		return fmt.Errorf("allocated cannot be nil")
 	}
 	if m.Allocated.IsNegative() {
 		return fmt.Errorf("allocated cannot be negative")
+	}
+	if m.Consumed.IsNil() {
+		return fmt.Errorf("consumed cannot be nil")
 	}
 	if m.Consumed.IsNegative() {
 		return fmt.Errorf("consumed cannot be negative")

@@ -23,7 +23,7 @@ var (
 	OperationWeightMsgSubscribeToNodeRequest = "op_weight_" + types.TypeMsgSubscribeToNodeRequest
 	OperationWeightMsgSubscribeToPlanRequest = "op_weight_" + types.TypeMsgSubscribeToPlanRequest
 	OperationWeightMsgCancelRequest          = "op_weight_" + types.TypeMsgCancelRequest
-	OperationWeightMsgAddQuotaRequest        = "op_weight_" + types.TypeMsgAddQuotaRequest
+	OperationWeightMsgShareRequest           = "op_weight_" + types.TypeMsgShareRequest
 	OperationWeightMsgUpdateQuotaRequest     = "op_weight_" + types.TypeMsgUpdateQuotaRequest
 )
 
@@ -38,7 +38,7 @@ func WeightedOperations(
 		weightMsgSubscribeToNodeRequest int
 		weightMsgSubscribeToPlanRequest int
 		weightMsgCancelRequest          int
-		weightMsgAddQuotaRequest        int
+		weightMsgShareRequest           int
 		weightMsgUpdateQuotaRequest     int
 	)
 
@@ -71,11 +71,11 @@ func WeightedOperations(
 	)
 	params.GetOrGenerate(
 		cdc,
-		OperationWeightMsgAddQuotaRequest,
-		&weightMsgAddQuotaRequest,
+		OperationWeightMsgShareRequest,
+		&weightMsgShareRequest,
 		nil,
 		func(_ *rand.Rand) {
-			weightMsgAddQuotaRequest = 100
+			weightMsgShareRequest = 100
 		},
 	)
 	params.GetOrGenerate(
@@ -102,8 +102,8 @@ func WeightedOperations(
 			SimulateMsgCancelRequest(ak, bk, k),
 		),
 		simulation.NewWeightedOperation(
-			weightMsgAddQuotaRequest,
-			SimulateMsgAddQuotaRequest(ak, bk, k),
+			weightMsgShareRequest,
+			SimulateMsgShareRequest(ak, bk, k),
 		),
 		simulation.NewWeightedOperation(
 			weightMsgUpdateQuotaRequest,
@@ -322,7 +322,7 @@ func SimulateMsgCancelRequest(ak expected.AccountKeeper, bk expected.BankKeeper,
 	}
 }
 
-func SimulateMsgAddQuotaRequest(ak expected.AccountKeeper, bk expected.BankKeeper, k keeper.Keeper) simulationtypes.Operation {
+func SimulateMsgShareRequest(ak expected.AccountKeeper, bk expected.BankKeeper, k keeper.Keeper) simulationtypes.Operation {
 	return func(
 		r *rand.Rand,
 		app *baseapp.BaseApp,
@@ -339,37 +339,37 @@ func SimulateMsgAddQuotaRequest(ak expected.AccountKeeper, bk expected.BankKeepe
 
 		subscriptions := k.GetActiveSubscriptionsForAddress(ctx, from.GetAddress(), 0, 0)
 		if len(subscriptions) == 0 {
-			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgAddQuotaRequest, "active subscriptions for address does not exist"), nil, nil
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgShareRequest, "active subscriptions for address does not exist"), nil, nil
 		}
 
 		rSubscription := subscriptions[r.Intn(len(subscriptions))]
 		if rSubscription.Plan == 0 {
-			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgAddQuotaRequest, "plan of the subscription is zero"), nil, nil
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgShareRequest, "plan of the subscription is zero"), nil, nil
 		}
 
 		found := k.HasQuota(ctx, rSubscription.Id, address.GetAddress())
 		if found {
-			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgAddQuotaRequest, "quota already exists"), nil, nil
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgShareRequest, "quota already exists"), nil, nil
 		}
 
 		bytes := sdk.NewInt(r.Int63n(math.MaxInt32))
 		if bytes.GT(rSubscription.Free) {
-			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgAddQuotaRequest, "no enough quota"), nil, nil
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgShareRequest, "no enough quota"), nil, nil
 		}
 
 		balance := bk.SpendableCoins(ctx, from.GetAddress())
 		if !balance.IsAnyNegative() {
-			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgAddQuotaRequest, "balance is negative"), nil, nil
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgShareRequest, "balance is negative"), nil, nil
 		}
 
 		fees, err := simulationtypes.RandomFees(r, ctx, balance)
 		if err != nil {
-			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgAddQuotaRequest, err.Error()), nil, err
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgShareRequest, err.Error()), nil, err
 		}
 
 		var (
 			txConfig = params.MakeTestEncodingConfig().TxConfig
-			message  = types.NewMsgAddQuotaRequest(
+			message  = types.NewMsgShareRequest(
 				from.GetAddress(),
 				rSubscription.Id,
 				address.GetAddress(),
@@ -388,12 +388,12 @@ func SimulateMsgAddQuotaRequest(ak expected.AccountKeeper, bk expected.BankKeepe
 			rFrom.PrivKey,
 		)
 		if err != nil {
-			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgAddQuotaRequest, err.Error()), nil, err
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgShareRequest, err.Error()), nil, err
 		}
 
 		_, _, err = app.Deliver(txConfig.TxEncoder(), txn)
 		if err != nil {
-			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgAddQuotaRequest, err.Error()), nil, err
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgShareRequest, err.Error()), nil, err
 		}
 
 		return simulationtypes.NewOperationMsg(message, true, "", nil), nil, nil
@@ -417,22 +417,22 @@ func SimulateMsgUpdateQuotaRequest(ak expected.AccountKeeper, bk expected.BankKe
 
 		subscriptions := k.GetActiveSubscriptionsForAddress(ctx, from.GetAddress(), 0, 0)
 		if len(subscriptions) == 0 {
-			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgAddQuotaRequest, "active subscriptions for address does not exist"), nil, nil
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgShareRequest, "active subscriptions for address does not exist"), nil, nil
 		}
 
 		rSubscription := subscriptions[r.Intn(len(subscriptions))]
 		if rSubscription.Plan == 0 {
-			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgAddQuotaRequest, "plan of the subscription is zero"), nil, nil
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgShareRequest, "plan of the subscription is zero"), nil, nil
 		}
 
 		quota, found := k.GetQuota(ctx, rSubscription.Id, address.GetAddress())
 		if !found {
-			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgAddQuotaRequest, "quota does not exist"), nil, nil
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgShareRequest, "quota does not exist"), nil, nil
 		}
 
 		bytes := sdk.NewInt(r.Int63n(math.MaxInt32))
 		if bytes.LT(quota.Consumed) || bytes.GT(rSubscription.Free.Add(quota.Allocated)) {
-			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgAddQuotaRequest, "no enough quota"), nil, nil
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgShareRequest, "no enough quota"), nil, nil
 		}
 
 		balance := bk.SpendableCoins(ctx, from.GetAddress())

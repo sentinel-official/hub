@@ -2,73 +2,21 @@ package types
 
 import (
 	"crypto/rand"
-	"testing"
-	"time"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/address"
 	"github.com/stretchr/testify/require"
+	"testing"
+	"time"
 )
 
-func TestActiveSubscriptionForAddressKey(t *testing.T) {
-	var (
-		addr []byte
-	)
-
-	for i := 0; i < 512; i++ {
-		addr = make([]byte, i)
-		_, _ = rand.Read(addr)
-
-		if i < 256 {
-			require.Equal(
-				t,
-				append(append(ActiveSubscriptionForAddressKeyPrefix, address.MustLengthPrefix(addr)...), sdk.Uint64ToBigEndian(1000)...),
-				ActiveSubscriptionForAddressKey(addr, 1000),
-			)
-
-			continue
-		}
-
-		require.Panics(t, func() {
-			ActiveSubscriptionForAddressKey(addr, 1000)
-		})
-	}
-}
-
 func TestInactiveSubscriptionAtKey(t *testing.T) {
-	var (
-		at = time.Now()
-	)
-
-	require.Equal(
-		t,
-		append(append(InactiveSubscriptionAtKeyPrefix, sdk.FormatTimeBytes(at)...), sdk.Uint64ToBigEndian(1000)...),
-		InactiveSubscriptionAtKey(at, 1000),
-	)
-}
-
-func TestInactiveSubscriptionForAddressKey(t *testing.T) {
-	var (
-		addr []byte
-	)
-
-	for i := 0; i < 512; i++ {
-		addr = make([]byte, i)
-		_, _ = rand.Read(addr)
-
-		if i < 256 {
-			require.Equal(
-				t,
-				append(append(InactiveSubscriptionForAddressKeyPrefix, address.MustLengthPrefix(addr)...), sdk.Uint64ToBigEndian(1000)...),
-				InactiveSubscriptionForAddressKey(addr, 1000),
-			)
-
-			continue
-		}
-
-		require.Panics(t, func() {
-			InactiveSubscriptionForAddressKey(addr, 1000)
-		})
+	for i := 0; i < 512; i += 64 {
+		at := time.Now()
+		require.Equal(
+			t,
+			append(append(InactiveSubscriptionAtKeyPrefix, sdk.FormatTimeBytes(at)...), sdk.Uint64ToBigEndian(uint64(i))...),
+			InactiveSubscriptionAtKey(at, uint64(i)),
+		)
 	}
 }
 
@@ -77,30 +25,92 @@ func TestQuotaKey(t *testing.T) {
 		addr []byte
 	)
 
-	for i := 0; i < 512; i++ {
+	for i := 0; i < 512; i += 64 {
 		addr = make([]byte, i)
 		_, _ = rand.Read(addr)
 
 		if i < 256 {
 			require.Equal(
 				t,
-				append(append(QuotaKeyPrefix, sdk.Uint64ToBigEndian(1000)...), address.MustLengthPrefix(addr)...),
-				QuotaKey(1000, addr),
+				append(append(QuotaKeyPrefix, sdk.Uint64ToBigEndian(uint64(i))...), address.MustLengthPrefix(addr)...),
+				QuotaKey(uint64(i), addr),
 			)
 
 			continue
 		}
 
 		require.Panics(t, func() {
-			QuotaKey(1000, addr)
+			QuotaKey(uint64(i), addr)
 		})
 	}
 }
 
-func TestSubscriptionKey(t *testing.T) {
-	require.Equal(
-		t,
-		append(SubscriptionKeyPrefix, sdk.Uint64ToBigEndian(1000)...),
-		SubscriptionKey(1000),
+func TestSubscriptionForAddressKey(t *testing.T) {
+	var (
+		addr []byte
 	)
+
+	for i := 0; i < 512; i += 64 {
+		addr = make([]byte, i)
+		_, _ = rand.Read(addr)
+
+		if i < 256 {
+			require.Equal(
+				t,
+				append(append(SubscriptionForAddressKeyPrefix, address.MustLengthPrefix(addr)...), sdk.Uint64ToBigEndian(uint64(i))...),
+				SubscriptionForAddressKey(addr, uint64(i)),
+			)
+
+			continue
+		}
+
+		require.Panics(t, func() {
+			SubscriptionForAddressKey(addr, uint64(i))
+		})
+	}
+}
+
+func TestSubscriptionForNodeKey(t *testing.T) {
+	var (
+		addr []byte
+	)
+
+	for i := 0; i < 512; i += 64 {
+		addr = make([]byte, i)
+		_, _ = rand.Read(addr)
+
+		if i < 256 {
+			require.Equal(
+				t,
+				append(append(SubscriptionForNodeKeyPrefix, address.MustLengthPrefix(addr)...), sdk.Uint64ToBigEndian(uint64(i))...),
+				SubscriptionForNodeKey(addr, uint64(i)),
+			)
+
+			continue
+		}
+
+		require.Panics(t, func() {
+			SubscriptionForNodeKey(addr, uint64(i))
+		})
+	}
+}
+
+func TestSubscriptionForPlanKey(t *testing.T) {
+	for i := 0; i < 512; i += 64 {
+		require.Equal(
+			t,
+			append(append(SubscriptionForPlanKeyPrefix, sdk.Uint64ToBigEndian(uint64(i))...), sdk.Uint64ToBigEndian(uint64(i))...),
+			SubscriptionForPlanKey(uint64(i), uint64(i)),
+		)
+	}
+}
+
+func TestSubscriptionKey(t *testing.T) {
+	for i := 0; i < 512; i += 64 {
+		require.Equal(
+			t,
+			append(SubscriptionKeyPrefix, sdk.Uint64ToBigEndian(uint64(i))...),
+			SubscriptionKey(uint64(i)),
+		)
+	}
 }

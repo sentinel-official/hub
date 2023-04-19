@@ -1,54 +1,17 @@
 package types
 
 import (
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	hubtypes "github.com/sentinel-official/hub/types"
+	"github.com/stretchr/testify/require"
 	"reflect"
 	"testing"
 	"time"
-
-	sdk "github.com/cosmos/cosmos-sdk/types"
-
-	hubtypes "github.com/sentinel-official/hub/types"
 )
 
-func TestSubscription_GetNode(t *testing.T) {
+func TestBaseSubscription_GetAccountAddress(t *testing.T) {
 	type fields struct {
-		Node string
-	}
-	tests := []struct {
-		name   string
-		fields fields
-		want   hubtypes.NodeAddress
-	}{
-		{
-			"empty",
-			fields{
-				Node: "",
-			},
-			nil,
-		},
-		{
-			"20 bytes",
-			fields{
-				Node: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-			},
-			hubtypes.NodeAddress{0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x20},
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			m := &Subscription{
-				Node: tt.fields.Node,
-			}
-			if got := m.GetNode(); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("GetNode() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
-
-func TestSubscription_GetOwner(t *testing.T) {
-	type fields struct {
-		Owner string
+		AccountAddress string
 	}
 	tests := []struct {
 		name   string
@@ -56,45 +19,38 @@ func TestSubscription_GetOwner(t *testing.T) {
 		want   sdk.AccAddress
 	}{
 		{
-			"empty",
+			"empty account address",
 			fields{
-				Owner: "",
+				AccountAddress: "",
 			},
 			nil,
 		},
 		{
-			"20 bytes",
+			"20 bytes account address",
 			fields{
-				Owner: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				AccountAddress: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
 			},
 			sdk.AccAddress{0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x20},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			m := &Subscription{
-				Owner: tt.fields.Owner,
+			s := &BaseSubscription{
+				AccountAddress: tt.fields.AccountAddress,
 			}
-			if got := m.GetOwner(); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("GetOwner() = %v, want %v", got, tt.want)
+			if got := s.GetAccountAddress(); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("GetAccountAddress() = %v, want %v", got, tt.want)
 			}
 		})
 	}
 }
 
-func TestSubscription_Validate(t *testing.T) {
+func TestBaseSubscription_Validate(t *testing.T) {
 	type fields struct {
-		Id       uint64
-		Owner    string
-		Node     string
-		Price    sdk.Coin
-		Deposit  sdk.Coin
-		Plan     uint64
-		Denom    string
-		Expiry   time.Time
-		Free     sdk.Int
-		Status   hubtypes.Status
-		StatusAt time.Time
+		ID             uint64
+		AccountAddress string
+		Status         hubtypes.Status
+		StatusAt       time.Time
 	}
 	tests := []struct {
 		name    string
@@ -104,441 +60,422 @@ func TestSubscription_Validate(t *testing.T) {
 		{
 			"zero id",
 			fields{
-				Id: 0,
+				ID: 0,
 			},
 			true,
 		},
 		{
 			"positive id",
 			fields{
-				Id: 1000,
+				ID:             1000,
+				AccountAddress: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Status:         hubtypes.StatusActive,
+				StatusAt:       time.Now(),
+			},
+			false,
+		},
+		{
+			"empty account address",
+			fields{
+				ID:             1000,
+				AccountAddress: "",
 			},
 			true,
 		},
 		{
-			"empty owner",
+			"invalid account address",
 			fields{
-				Id:    1000,
-				Owner: "",
+				ID:             1000,
+				AccountAddress: "invalid",
 			},
 			true,
 		},
 		{
-			"invalid owner",
+			"invalid prefix account address",
 			fields{
-				Id:    1000,
-				Owner: "invalid",
+				ID:             1000,
+				AccountAddress: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
 			},
 			true,
 		},
 		{
-			"invalid prefix owner",
+			"10 bytes account address",
 			fields{
-				Id:    1000,
-				Owner: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				ID:             1000,
+				AccountAddress: "sent1qypqxpq9qcrsszgslawd5s",
+				Status:         hubtypes.StatusActive,
+				StatusAt:       time.Now(),
 			},
-			true,
+			false,
 		},
 		{
-			"10 bytes owner",
+			"20 bytes account address",
 			fields{
-				Id:    1000,
-				Owner: "sent1qypqxpq9qcrsszgslawd5s",
+				ID:             1000,
+				AccountAddress: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Status:         hubtypes.StatusActive,
+				StatusAt:       time.Now(),
 			},
-			true,
+			false,
 		},
 		{
-			"20 bytes owner",
+			"30 bytes account address",
 			fields{
-				Id:    1000,
-				Owner: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				ID:             1000,
+				AccountAddress: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfqyy3zxfp9ycnjs2fszvfck8",
+				Status:         hubtypes.StatusActive,
+				StatusAt:       time.Now(),
 			},
-			true,
-		},
-		{
-			"30 bytes owner",
-			fields{
-				Id:    1000,
-				Owner: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfqyy3zxfp9ycnjs2fszvfck8",
-			},
-			true,
-		},
-		{
-			"empty node",
-			fields{
-				Id:    1000,
-				Owner: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				Node:  "",
-			},
-			true,
-		},
-		{
-			"invalid node",
-			fields{
-				Id:    1000,
-				Owner: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				Node:  "invalid",
-			},
-			true,
-		},
-		{
-			"invalid prefix node",
-			fields{
-				Id:    1000,
-				Owner: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				Node:  "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-			},
-			true,
-		},
-		{
-			"20 bytes node",
-			fields{
-				Id:    1000,
-				Owner: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				Node:  "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Price: sdk.Coin{Amount: sdk.NewInt(0)},
-			},
-			true,
-		},
-		{
-			"empty price",
-			fields{
-				Id:    1000,
-				Owner: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				Node:  "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Price: sdk.Coin{Amount: sdk.NewInt(0)},
-			},
-			true,
-		},
-		{
-			"empty denom price",
-			fields{
-				Id:    1000,
-				Owner: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				Node:  "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Price: sdk.Coin{Denom: "", Amount: sdk.NewInt(0)},
-			},
-			true,
-		},
-		{
-			"invalid denom price",
-			fields{
-				Id:    1000,
-				Owner: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				Node:  "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Price: sdk.Coin{Denom: "o", Amount: sdk.NewInt(0)},
-			},
-			true,
-		},
-		{
-			"negative amount price",
-			fields{
-				Id:    1000,
-				Owner: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				Node:  "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Price: sdk.Coin{Denom: "one", Amount: sdk.NewInt(-1000)},
-			},
-			true,
-		},
-		{
-			"zero amount price",
-			fields{
-				Id:    1000,
-				Owner: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				Node:  "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Price: sdk.Coin{Denom: "one", Amount: sdk.NewInt(0)},
-			},
-			true,
-		},
-		{
-			"positive amount price",
-			fields{
-				Id:      1000,
-				Owner:   "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				Node:    "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Price:   sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)},
-				Deposit: sdk.Coin{Amount: sdk.NewInt(0)},
-			},
-			true,
-		},
-		{
-			"empty deposit",
-			fields{
-				Id:      1000,
-				Owner:   "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				Node:    "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Price:   sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)},
-				Deposit: sdk.Coin{Amount: sdk.NewInt(0)},
-			},
-			true,
-		},
-		{
-			"empty denom deposit",
-			fields{
-				Id:      1000,
-				Owner:   "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				Node:    "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Price:   sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)},
-				Deposit: sdk.Coin{Denom: "", Amount: sdk.NewInt(0)},
-			},
-			true,
-		},
-		{
-			"invalid denom deposit",
-			fields{
-				Id:      1000,
-				Owner:   "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				Node:    "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Price:   sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)},
-				Deposit: sdk.Coin{Denom: "o", Amount: sdk.NewInt(0)},
-			},
-			true,
-		},
-		{
-			"negative amount deposit",
-			fields{
-				Id:      1000,
-				Owner:   "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				Node:    "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Price:   sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)},
-				Deposit: sdk.Coin{Denom: "one", Amount: sdk.NewInt(-1000)},
-			},
-			true,
-		},
-		{
-			"zero amount deposit",
-			fields{
-				Id:      1000,
-				Owner:   "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				Node:    "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Price:   sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)},
-				Deposit: sdk.Coin{Denom: "one", Amount: sdk.NewInt(0)},
-			},
-			true,
-		},
-		{
-			"positive amount deposit",
-			fields{
-				Id:      1000,
-				Owner:   "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				Node:    "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Price:   sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)},
-				Deposit: sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)},
-				Free:    sdk.NewInt(0),
-			},
-			true,
-		},
-		{
-			"zero plan",
-			fields{
-				Id:      1000,
-				Owner:   "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				Node:    "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Price:   sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)},
-				Deposit: sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)},
-				Plan:    0,
-				Free:    sdk.NewInt(0),
-			},
-			true,
-		},
-		{
-			"positive plan",
-			fields{
-				Id:      1000,
-				Owner:   "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				Node:    "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Price:   sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)},
-				Deposit: sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)},
-				Plan:    1000,
-			},
-			true,
-		},
-		{
-			"empty denom",
-			fields{
-				Id:    1000,
-				Owner: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				Plan:  1000,
-				Denom: "",
-			},
-			true,
-		},
-		{
-			"invalid denom",
-			fields{
-				Id:    1000,
-				Owner: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				Plan:  1000,
-				Denom: "o",
-			},
-			true,
-		},
-		{
-			"one denom",
-			fields{
-				Id:    1000,
-				Owner: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				Plan:  1000,
-				Denom: "one",
-			},
-			true,
-		},
-		{
-			"zero expiry",
-			fields{
-				Id:     1000,
-				Owner:  "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				Plan:   1000,
-				Denom:  "one",
-				Expiry: time.Time{},
-			},
-			true,
-		},
-		{
-			"now expiry",
-			fields{
-				Id:     1000,
-				Owner:  "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				Plan:   1000,
-				Denom:  "one",
-				Expiry: time.Now(),
-				Free:   sdk.NewInt(0),
-			},
-			true,
-		},
-		{
-			"negative free",
-			fields{
-				Id:     1000,
-				Owner:  "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				Plan:   1000,
-				Denom:  "one",
-				Expiry: time.Now(),
-				Free:   sdk.NewInt(-1000),
-			},
-			true,
-		},
-		{
-			"zero free",
-			fields{
-				Id:     1000,
-				Owner:  "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				Plan:   1000,
-				Denom:  "one",
-				Expiry: time.Now(),
-				Free:   sdk.NewInt(0),
-			},
-			true,
-		},
-		{
-			"positive free",
-			fields{
-				Id:     1000,
-				Owner:  "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				Plan:   1000,
-				Denom:  "one",
-				Expiry: time.Now(),
-				Free:   sdk.NewInt(1000),
-			},
-			true,
+			false,
 		},
 		{
 			"unspecified status",
 			fields{
-				Id:     1000,
-				Owner:  "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				Plan:   1000,
-				Denom:  "one",
-				Expiry: time.Now(),
-				Free:   sdk.NewInt(1000),
-				Status: hubtypes.StatusUnspecified,
-			},
-			true,
-		},
-		{
-			"inactive status",
-			fields{
-				Id:     1000,
-				Owner:  "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				Plan:   1000,
-				Denom:  "one",
-				Expiry: time.Now(),
-				Free:   sdk.NewInt(1000),
-				Status: hubtypes.StatusInactive,
-			},
-			true,
-		},
-		{
-			"inactive pending status",
-			fields{
-				Id:     1000,
-				Owner:  "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				Plan:   1000,
-				Denom:  "one",
-				Expiry: time.Now(),
-				Free:   sdk.NewInt(1000),
-				Status: hubtypes.StatusInactivePending,
+				ID:             1000,
+				AccountAddress: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Status:         hubtypes.StatusUnspecified,
 			},
 			true,
 		},
 		{
 			"active status",
 			fields{
-				Id:     1000,
-				Owner:  "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				Plan:   1000,
-				Denom:  "one",
-				Expiry: time.Now(),
-				Free:   sdk.NewInt(1000),
-				Status: hubtypes.StatusActive,
+				ID:             1000,
+				AccountAddress: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Status:         hubtypes.StatusActive,
+				StatusAt:       time.Now(),
+			},
+			false,
+		},
+		{
+			"inactive pending status",
+			fields{
+				ID:             1000,
+				AccountAddress: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Status:         hubtypes.StatusInactivePending,
+				StatusAt:       time.Now(),
+			},
+			false,
+		},
+		{
+			"inactive status",
+			fields{
+				ID:             1000,
+				AccountAddress: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Status:         hubtypes.StatusInactive,
+				StatusAt:       time.Now(),
+			},
+			false,
+		},
+		{
+			"empty status at",
+			fields{
+				ID:             1000,
+				AccountAddress: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Status:         hubtypes.StatusActive,
+				StatusAt:       time.Time{},
 			},
 			true,
 		},
 		{
-			"zero status_at",
+			"positive status at",
 			fields{
-				Id:       1000,
-				Owner:    "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				Plan:     1000,
-				Denom:    "one",
-				Expiry:   time.Now(),
-				Free:     sdk.NewInt(1000),
-				Status:   hubtypes.StatusActive,
-				StatusAt: time.Time{},
-			},
-			true,
-		},
-		{
-			"now status_at",
-			fields{
-				Id:       1000,
-				Owner:    "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				Plan:     1000,
-				Denom:    "one",
-				Expiry:   time.Now(),
-				Free:     sdk.NewInt(1000),
-				Status:   hubtypes.StatusActive,
-				StatusAt: time.Now(),
+				ID:             1000,
+				AccountAddress: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Status:         hubtypes.StatusActive,
+				StatusAt:       time.Now(),
 			},
 			false,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			m := &Subscription{
-				Id:       tt.fields.Id,
-				Owner:    tt.fields.Owner,
-				Node:     tt.fields.Node,
-				Price:    tt.fields.Price,
-				Deposit:  tt.fields.Deposit,
-				Plan:     tt.fields.Plan,
-				Denom:    tt.fields.Denom,
-				Expiry:   tt.fields.Expiry,
-				Free:     tt.fields.Free,
-				Status:   tt.fields.Status,
-				StatusAt: tt.fields.StatusAt,
+			s := &BaseSubscription{
+				ID:             tt.fields.ID,
+				AccountAddress: tt.fields.AccountAddress,
+				Status:         tt.fields.Status,
+				StatusAt:       tt.fields.StatusAt,
 			}
-			if err := m.Validate(); (err != nil) != tt.wantErr {
+			if err := s.Validate(); (err != nil) != tt.wantErr {
+				t.Errorf("Validate() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
+}
+
+func TestNodeSubscription_GetNodeAddress(t *testing.T) {
+	type fields struct {
+		NodeAddress string
+	}
+	tests := []struct {
+		name   string
+		fields fields
+		want   hubtypes.NodeAddress
+	}{
+		{
+			"empty node address",
+			fields{
+				NodeAddress: "",
+			},
+			nil,
+		},
+		{
+			"20 bytes node address",
+			fields{
+				NodeAddress: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+			},
+			hubtypes.NodeAddress{0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x20},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			s := &NodeSubscription{
+				NodeAddress: tt.fields.NodeAddress,
+			}
+			if got := s.GetNodeAddress(); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("GetNodeAddress() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestNodeSubscription_Type(t *testing.T) {
+	v := &NodeSubscription{}
+	require.Equal(t, TypeNode, v.Type())
+}
+
+func TestNodeSubscription_Validate(t *testing.T) {
+	type fields struct {
+		NodeAddress string
+		Hours       int64
+		Price       sdk.Coin
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		wantErr bool
+	}{
+		{
+			"empty node address",
+			fields{
+				NodeAddress: "",
+			},
+			true,
+		},
+		{
+			"invalid node address",
+			fields{
+				NodeAddress: "invalid",
+			},
+			true,
+		},
+		{
+			"invalid prefix node address",
+			fields{
+				NodeAddress: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+			},
+			true,
+		},
+		{
+			"10 bytes node address",
+			fields{
+				NodeAddress: "sentnode1qypqxpq9qcrsszgse4wwrm",
+				Hours:       1000,
+			},
+			false,
+		},
+		{
+			"20 bytes node address",
+			fields{
+				NodeAddress: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				Hours:       1000,
+			},
+			false,
+		},
+		{
+			"30 bytes node address",
+			fields{
+				NodeAddress: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqyy3zxfp9ycnjs2fsxqglcv",
+				Hours:       1000,
+			},
+			false,
+		},
+		{
+			"negative hours",
+			fields{
+				NodeAddress: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				Hours:       -1000,
+			},
+			true,
+		},
+		{
+			"zero hours",
+			fields{
+				NodeAddress: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				Hours:       0,
+			},
+			true,
+		},
+		{
+			"positive hours",
+			fields{
+				NodeAddress: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				Hours:       1000,
+			},
+			false,
+		},
+		{
+			"empty price",
+			fields{
+				NodeAddress: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				Hours:       1000,
+				Price:       sdk.Coin{},
+			},
+			false,
+		},
+		{
+			"empty denom price",
+			fields{
+				NodeAddress: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				Hours:       1000,
+				Price:       sdk.Coin{Denom: ""},
+			},
+			false,
+		},
+		{
+			"invalid denom price",
+			fields{
+				NodeAddress: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				Hours:       1000,
+				Price:       sdk.Coin{Denom: "d"},
+			},
+			true,
+		},
+		{
+			"nil amount price",
+			fields{
+				NodeAddress: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				Hours:       1000,
+				Price:       sdk.Coin{Denom: "one"},
+			},
+			true,
+		},
+		{
+			"negative amount price",
+			fields{
+				NodeAddress: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				Hours:       1000,
+				Price:       sdk.Coin{Denom: "one", Amount: sdk.NewInt(-1000)},
+			},
+			true,
+		},
+		{
+			"zero amount price",
+			fields{
+				NodeAddress: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				Hours:       1000,
+				Price:       sdk.Coin{Denom: "one", Amount: sdk.NewInt(0)},
+			},
+			true,
+		},
+		{
+			"positive amount price",
+			fields{
+				NodeAddress: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				Hours:       1000,
+				Price:       sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)},
+			},
+			false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			s := &NodeSubscription{
+				BaseSubscription: BaseSubscription{
+					ID:             1000,
+					AccountAddress: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+					Status:         hubtypes.StatusActive,
+					StatusAt:       time.Now(),
+				},
+				NodeAddress: tt.fields.NodeAddress,
+				Hours:       tt.fields.Hours,
+				Price:       tt.fields.Price,
+			}
+			if err := s.Validate(); (err != nil) != tt.wantErr {
+				t.Errorf("Validate() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
+}
+
+func TestPlanSubscription_Type(t *testing.T) {
+	v := &PlanSubscription{}
+	require.Equal(t, TypePlan, v.Type())
+}
+
+func TestPlanSubscription_Validate(t *testing.T) {
+	type fields struct {
+		PlanID uint64
+		Denom  string
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		wantErr bool
+	}{
+		{
+			"zero plan id",
+			fields{
+				PlanID: 0,
+			},
+			true,
+		},
+		{
+			"positive plan id",
+			fields{
+				PlanID: 1000,
+				Denom:  "one",
+			},
+			false,
+		},
+		{
+			"empty denom",
+			fields{
+				PlanID: 1000,
+				Denom:  "",
+			},
+			false,
+		},
+		{
+			"invalid denom",
+			fields{
+				PlanID: 1000,
+				Denom:  "d",
+			},
+			true,
+		},
+		{
+			"one denom",
+			fields{
+				PlanID: 1000,
+				Denom:  "one",
+			},
+			false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			s := &PlanSubscription{
+				BaseSubscription: BaseSubscription{
+					ID:             1000,
+					AccountAddress: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+					Status:         hubtypes.StatusActive,
+					StatusAt:       time.Now(),
+				},
+				PlanID: tt.fields.PlanID,
+				Denom:  tt.fields.Denom,
+			}
+			if err := s.Validate(); (err != nil) != tt.wantErr {
 				t.Errorf("Validate() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
