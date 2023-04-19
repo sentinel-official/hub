@@ -14,7 +14,7 @@ import (
 
 func querySubscription() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "subscription [id]",
+		Use:   "subscription [subscription-id]",
 		Short: "Query a subscription",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -61,12 +61,17 @@ func querySubscriptions() *cobra.Command {
 				return err
 			}
 
-			address, err := GetAddress(cmd.Flags())
+			accAddr, err := GetAccountAddress(cmd.Flags())
 			if err != nil {
 				return err
 			}
 
-			status, err := GetStatus(cmd.Flags())
+			nodeAddr, err := GetNodeAddress(cmd.Flags())
+			if err != nil {
+				return err
+			}
+
+			planID, err := cmd.Flags().GetUint64(flagPlanID)
 			if err != nil {
 				return err
 			}
@@ -80,12 +85,37 @@ func querySubscriptions() *cobra.Command {
 				qc = types.NewQueryServiceClient(ctx)
 			)
 
-			if address != nil {
-				res, err := qc.QuerySubscriptionsForAddress(
+			if !accAddr.Empty() {
+				res, err := qc.QuerySubscriptionsForAccount(
 					context.Background(),
-					types.NewQuerySubscriptionsForAddressRequest(
-						address,
-						status,
+					types.NewQuerySubscriptionsForAccountRequest(
+						accAddr,
+						pagination,
+					),
+				)
+				if err != nil {
+					return err
+				}
+
+				return ctx.PrintProto(res)
+			} else if !nodeAddr.Empty() {
+				res, err := qc.QuerySubscriptionsForNode(
+					context.Background(),
+					types.NewQuerySubscriptionsForNodeRequest(
+						nodeAddr,
+						pagination,
+					),
+				)
+				if err != nil {
+					return err
+				}
+
+				return ctx.PrintProto(res)
+			} else if planID > 0 {
+				res, err := qc.QuerySubscriptionsForPlan(
+					context.Background(),
+					types.NewQuerySubscriptionsForPlanRequest(
+						planID,
 						pagination,
 					),
 				)
@@ -112,15 +142,16 @@ func querySubscriptions() *cobra.Command {
 
 	flags.AddQueryFlagsToCmd(cmd)
 	flags.AddPaginationFlagsToCmd(cmd, "subscriptions")
-	cmd.Flags().String(flagAddress, "", "filter by account address")
-	cmd.Flags().String(flagStatus, "", "filter by status")
+	cmd.Flags().String(flagAccountAddress, "", "query the subscriptions of an account address")
+	cmd.Flags().String(flagNodeAddress, "", "query the subscriptions of a node address")
+	cmd.Flags().Uint64(flagPlanID, 0, "query the subscriptions of a subscription plan")
 
 	return cmd
 }
 
 func queryQuota() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "quota [subscription] [address]",
+		Use:   "quota [subscription-id] [account-addr]",
 		Short: "Query a quota of an address",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -134,7 +165,7 @@ func queryQuota() *cobra.Command {
 				return err
 			}
 
-			address, err := sdk.AccAddressFromBech32(args[1])
+			addr, err := sdk.AccAddressFromBech32(args[1])
 			if err != nil {
 				return err
 			}
@@ -147,7 +178,7 @@ func queryQuota() *cobra.Command {
 				context.Background(),
 				types.NewQueryQuotaRequest(
 					id,
-					address,
+					addr,
 				),
 			)
 			if err != nil {
@@ -165,7 +196,7 @@ func queryQuota() *cobra.Command {
 
 func queryQuotas() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "quotas [subscription]",
+		Use:   "quotas [subscription-id]",
 		Short: "Query quotas of a subscription",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {

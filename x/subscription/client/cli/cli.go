@@ -21,10 +21,8 @@ func GetTxCommands() []*cobra.Command {
 	}
 
 	cmd.AddCommand(
-		txSubscribeToNode(),
-		txSubscribeToPlan(),
 		txCancel(),
-		txAddQuota(),
+		txShare(),
 		txUpdateQuota(),
 	)
 
