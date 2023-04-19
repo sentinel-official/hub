@@ -8,11 +8,8 @@ import (
 
 const (
 	flagAccountAddress = "account-addr"
-	flagBytes          = "bytes"
-	flagDenom          = "denom"
 	flagGigabytePrices = "gigabyte-prices"
 	flagHourlyPrices   = "hourly-prices"
-	flagHours          = "hours"
 	flagNodeAddress    = "node-addr"
 	flagPlan           = "plan"
 	flagRemoteURL      = "remote-url"

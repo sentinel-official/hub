@@ -5,6 +5,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	"github.com/spf13/cobra"
+	"strconv"
 
 	hubtypes "github.com/sentinel-official/hub/types"
 	"github.com/sentinel-official/hub/x/node/types"
@@ -37,7 +38,7 @@ func txRegister() *cobra.Command {
 				hourlyPrice,
 				args[0],
 			)
-			if err := msg.ValidateBasic(); err != nil {
+			if err = msg.ValidateBasic(); err != nil {
 				return err
 			}
 
@@ -83,7 +84,7 @@ func txUpdateDetails() *cobra.Command {
 				hourlyPrice,
 				remoteURL,
 			)
-			if err := msg.ValidateBasic(); err != nil {
+			if err = msg.ValidateBasic(); err != nil {
 				return err
 			}
 
@@ -114,7 +115,7 @@ func txUpdateStatus() *cobra.Command {
 				ctx.FromAddress.Bytes(),
 				hubtypes.StatusFromString(args[0]),
 			)
-			if err := msg.ValidateBasic(); err != nil {
+			if err = msg.ValidateBasic(); err != nil {
 				return err
 			}
 
@@ -129,9 +130,9 @@ func txUpdateStatus() *cobra.Command {
 
 func txSubscribe() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "subscribe [node-addr]",
+		Use:   "subscribe [node-addr] [hours] [denom]",
 		Short: "Subscribe to a node",
-		Args:  cobra.ExactArgs(1),
+		Args:  cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientTxContext(cmd)
 			if err != nil {
@@ -143,17 +144,7 @@ func txSubscribe() *cobra.Command {
 				return err
 			}
 
-			bytes, err := cmd.Flags().GetInt64(flagBytes)
-			if err != nil {
-				return err
-			}
-
-			hours, err := cmd.Flags().GetInt64(flagHours)
-			if err != nil {
-				return err
-			}
-
-			denom, err := cmd.Flags().GetString(flagDenom)
+			hours, err := strconv.ParseInt(args[1], 10, 64)
 			if err != nil {
 				return err
 			}
@@ -161,11 +152,10 @@ func txSubscribe() *cobra.Command {
 			msg := types.NewMsgSubscribeRequest(
 				ctx.FromAddress,
 				addr,
-				bytes,
 				hours,
-				denom,
+				args[2],
 			)
-			if err := msg.ValidateBasic(); err != nil {
+			if err = msg.ValidateBasic(); err != nil {
 				return err
 			}
 
@@ -174,9 +164,6 @@ func txSubscribe() *cobra.Command {
 	}
 
 	flags.AddTxFlagsToCmd(cmd)
-	cmd.Flags().Int64(flagBytes, 0, "total bytes to subscribe for")
-	cmd.Flags().Int64(flagHours, 0, "total hours to subscribe for")
-	cmd.Flags().String(flagDenom, "", "payment coin denomination")
 
 	return cmd
 }
