@@ -1,5 +1,5 @@
 syntax = "proto3";
-package sentinel.subscription.v1;
+package sentinel.subscription.v2;
 
 import "gogoproto/gogo.proto";
 import "sentinel/types/v1/status.proto";
