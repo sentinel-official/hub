@@ -1,16 +1,14 @@
 syntax = "proto3";
 package sentinel.subscription.v2;
 
-option go_package = "github.com/sentinel-official/hub/x/subscription/types";
-
 import "cosmos/base/query/v1beta1/pagination.proto";
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "google/protobuf/any.proto";
 import "sentinel/subscription/v2/params.proto";
 import "sentinel/subscription/v2/quota.proto";
-import "sentinel/types/v1/status.proto";
 
+option go_package = "github.com/sentinel-official/hub/x/subscription/types";
 option (gogoproto.equal_all)           = false;
 option (gogoproto.goproto_getters_all) = false;
 
@@ -18,10 +16,19 @@ message QuerySubscriptionsRequest {
   cosmos.base.query.v1beta1.PageRequest pagination = 1;
 }
 
-message QuerySubscriptionsForAddressRequest {
+message QuerySubscriptionsForAccountRequest {
   string address                                   = 1;
-  sentinel.types.v1.Status status                  = 2;
-  cosmos.base.query.v1beta1.PageRequest pagination = 3;
+  cosmos.base.query.v1beta1.PageRequest pagination = 2;
+}
+
+message QuerySubscriptionsForNodeRequest {
+  string address                                   = 1;
+  cosmos.base.query.v1beta1.PageRequest pagination = 2;
+}
+
+message QuerySubscriptionsForPlanRequest {
+  uint64 id                                        = 1;
+  cosmos.base.query.v1beta1.PageRequest pagination = 2;
 }
 
 message QuerySubscriptionRequest { uint64 id = 1; }
@@ -43,7 +50,17 @@ message QuerySubscriptionsResponse {
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
-message QuerySubscriptionsForAddressResponse {
+message QuerySubscriptionsForAccountResponse {
+  repeated google.protobuf.Any subscriptions        = 1;
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QuerySubscriptionsForNodeResponse {
+  repeated google.protobuf.Any subscriptions        = 1;
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QuerySubscriptionsForPlanResponse {
   repeated google.protobuf.Any subscriptions        = 1;
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
@@ -67,9 +84,19 @@ service QueryService {
     option (google.api.http).get = "/sentinel/subscriptions";
   }
 
-  rpc QuerySubscriptionsForAddress(QuerySubscriptionsForAddressRequest)
-      returns (QuerySubscriptionsForAddressResponse) {
+  rpc QuerySubscriptionsForAccount(QuerySubscriptionsForAccountRequest)
+      returns (QuerySubscriptionsForAccountResponse) {
     option (google.api.http).get = "/sentinel/accounts/{address}/subscriptions";
+  }
+
+  rpc QuerySubscriptionsForNode(QuerySubscriptionsForNodeRequest)
+      returns (QuerySubscriptionsForNodeResponse) {
+    option (google.api.http).get = "/sentinel/nodes/{address}/subscriptions";
+  }
+
+  rpc QuerySubscriptionsForPlan(QuerySubscriptionsForPlanRequest)
+      returns (QuerySubscriptionsForPlanResponse) {
+    option (google.api.http).get = "/sentinel/plans/{id}/subscriptions";
   }
 
   rpc QuerySubscription(QuerySubscriptionRequest)
@@ -77,13 +104,12 @@ service QueryService {
     option (google.api.http).get = "/sentinel/subscriptions/{id}";
   }
 
-  rpc QueryQuota(QueryQuotaRequest) returns (QueryQuotaResponse) {
-    option (google.api.http).get =
-        "/accounts/{address}/subscriptions/{id}/quotas";
-  }
-
   rpc QueryQuotas(QueryQuotasRequest) returns (QueryQuotasResponse) {
     option (google.api.http).get = "/sentinel/subscriptions/{id}/quotas";
+  }
+
+  rpc QueryQuota(QueryQuotaRequest) returns (QueryQuotaResponse) {
+    option (google.api.http).get = "/subscriptions/{id}/quotas/{address}";
   }
 
   rpc QueryParams(QueryParamsRequest) returns (QueryParamsResponse) {
