@@ -1,56 +1,43 @@
 package keeper
 
 import (
+	hubtypes "github.com/sentinel-official/hub/types"
 	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	protobuf "github.com/gogo/protobuf/types"
 
-	hubtypes "github.com/sentinel-official/hub/types"
 	"github.com/sentinel-official/hub/x/subscription/types"
 )
 
-func (k *Keeper) SetCount(ctx sdk.Context, count uint64) {
-	key := types.CountKey
-	value := k.cdc.MustMarshal(&protobuf.UInt64Value{Value: count})
+func (k *Keeper) SetSubscription(ctx sdk.Context, subscription types.Subscription) {
+	var (
+		store = k.Store(ctx)
+		key   = types.SubscriptionKey(subscription.GetID())
+	)
 
-	store := k.Store(ctx)
-	store.Set(key, value)
-}
-
-func (k *Keeper) GetCount(ctx sdk.Context) uint64 {
-	store := k.Store(ctx)
-
-	key := types.CountKey
-	value := store.Get(key)
-	if value == nil {
-		return 0
+	value, err := k.cdc.MarshalInterface(subscription)
+	if err != nil {
+		panic(err)
 	}
 
-	var count protobuf.UInt64Value
-	k.cdc.MustUnmarshal(value, &count)
-
-	return count.GetValue()
-}
-
-func (k *Keeper) SetSubscription(ctx sdk.Context, subscription types.Subscription) {
-	key := types.SubscriptionKey(subscription.Id)
-	value := k.cdc.MustMarshal(&subscription)
-
-	store := k.Store(ctx)
 	store.Set(key, value)
 }
 
 func (k *Keeper) GetSubscription(ctx sdk.Context, id uint64) (subscription types.Subscription, found bool) {
-	store := k.Store(ctx)
+	var (
+		store = k.Store(ctx)
+		key   = types.SubscriptionKey(id)
+		value = store.Get(key)
+	)
 
-	key := types.SubscriptionKey(id)
-	value := store.Get(key)
 	if value == nil {
 		return subscription, false
 	}
+	if err := k.cdc.UnmarshalInterface(value, &subscription); err != nil {
+		panic(err)
+	}
 
-	k.cdc.MustUnmarshal(value, &subscription)
 	return subscription, true
 }
 
@@ -71,93 +58,98 @@ func (k *Keeper) GetSubscriptions(ctx sdk.Context) (items types.Subscriptions) {
 
 	for ; iter.Valid(); iter.Next() {
 		var item types.Subscription
-		k.cdc.MustUnmarshal(iter.Value(), &item)
+		if err := k.cdc.UnmarshalInterface(iter.Value(), &item); err != nil {
+			panic(err)
+		}
+
 		items = append(items, item)
 	}
 
 	return items
 }
 
-func (k *Keeper) SetActiveSubscriptionForAddress(ctx sdk.Context, address sdk.AccAddress, id uint64) {
-	key := types.ActiveSubscriptionForAddressKey(address, id)
-	value := k.cdc.MustMarshal(&protobuf.BoolValue{Value: true})
+func (k *Keeper) SetSubscriptionForAccount(ctx sdk.Context, addr sdk.AccAddress, id uint64) {
+	var (
+		store = k.Store(ctx)
+		key   = types.SubscriptionForAccountKey(addr, id)
+		value = k.cdc.MustMarshal(&protobuf.BoolValue{Value: true})
+	)
 
-	store := k.Store(ctx)
 	store.Set(key, value)
 }
 
-func (k *Keeper) DeleteActiveSubscriptionForAddress(ctx sdk.Context, address sdk.AccAddress, id uint64) {
-	store := k.Store(ctx)
+func (k *Keeper) HashSubscriptionForAccount(ctx sdk.Context, addr sdk.AccAddress, id uint64) bool {
+	var (
+		store = k.Store(ctx)
+		key   = types.SubscriptionForAccountKey(addr, id)
+	)
 
-	key := types.ActiveSubscriptionForAddressKey(address, id)
+	return store.Has(key)
+}
+
+func (k *Keeper) DeleteSubscriptionForAccount(ctx sdk.Context, addr sdk.AccAddress, id uint64) {
+	var (
+		store = k.Store(ctx)
+		key   = types.SubscriptionForAccountKey(addr, id)
+	)
+
 	store.Delete(key)
 }
 
-func (k *Keeper) GetActiveSubscriptionsForAddress(ctx sdk.Context, address sdk.AccAddress, skip, limit int64) (items types.Subscriptions) {
+func (k *Keeper) SetSubscriptionForNode(ctx sdk.Context, addr hubtypes.NodeAddress, id uint64) {
 	var (
 		store = k.Store(ctx)
-		iter  = sdk.KVStorePrefixIterator(store, types.GetActiveSubscriptionForAddressKeyPrefix(address))
+		key   = types.SubscriptionForNodeKey(addr, id)
+		value = k.cdc.MustMarshal(&protobuf.BoolValue{Value: true})
 	)
 
-	defer iter.Close()
-
-	for ; iter.Valid(); iter.Next() {
-		item, _ := k.GetSubscription(ctx, types.IDFromStatusSubscriptionForAddressKey(iter.Key()))
-		items = append(items, item)
-	}
-
-	return items
-}
-
-func (k *Keeper) SetInactiveSubscriptionForAddress(ctx sdk.Context, address sdk.AccAddress, id uint64) {
-	key := types.InactiveSubscriptionForAddressKey(address, id)
-	value := k.cdc.MustMarshal(&protobuf.BoolValue{Value: true})
-
-	store := k.Store(ctx)
 	store.Set(key, value)
 }
 
-func (k *Keeper) DeleteInactiveSubscriptionForAddress(ctx sdk.Context, address sdk.AccAddress, id uint64) {
-	store := k.Store(ctx)
+func (k *Keeper) HashSubscriptionForNode(ctx sdk.Context, addr hubtypes.NodeAddress, id uint64) bool {
+	var (
+		store = k.Store(ctx)
+		key   = types.SubscriptionForNodeKey(addr, id)
+	)
 
-	key := types.InactiveSubscriptionForAddressKey(address, id)
+	return store.Has(key)
+}
+
+func (k *Keeper) DeleteSubscriptionForNode(ctx sdk.Context, addr hubtypes.NodeAddress, id uint64) {
+	var (
+		store = k.Store(ctx)
+		key   = types.SubscriptionForNodeKey(addr, id)
+	)
+
 	store.Delete(key)
 }
 
-func (k *Keeper) GetInactiveSubscriptionsForAddress(ctx sdk.Context, address sdk.AccAddress, skip, limit int64) (items types.Subscriptions) {
+func (k *Keeper) SetSubscriptionForPlan(ctx sdk.Context, planID, subscriptionID uint64) {
 	var (
 		store = k.Store(ctx)
-		iter  = sdk.KVStorePrefixIterator(store, types.GetInactiveSubscriptionForAddressKeyPrefix(address))
+		key   = types.SubscriptionForPlanKey(planID, subscriptionID)
+		value = k.cdc.MustMarshal(&protobuf.BoolValue{Value: true})
 	)
 
-	defer iter.Close()
-
-	for ; iter.Valid(); iter.Next() {
-		item, _ := k.GetSubscription(ctx, types.IDFromStatusSubscriptionForAddressKey(iter.Key()))
-		items = append(items, item)
-	}
-
-	return items
+	store.Set(key, value)
 }
 
-func (k *Keeper) GetSubscriptionsForAddress(ctx sdk.Context, address sdk.AccAddress, skip, limit int64) (items types.Subscriptions) {
+func (k *Keeper) HashSubscriptionForPlan(ctx sdk.Context, planID, subscriptionID uint64) bool {
 	var (
 		store = k.Store(ctx)
-		iter  = hubtypes.NewPaginatedIterator(
-			sdk.KVStorePrefixIterator(store, types.GetActiveSubscriptionForAddressKeyPrefix(address)),
-			sdk.KVStorePrefixIterator(store, types.GetInactiveSubscriptionForAddressKeyPrefix(address)),
-		)
+		key   = types.SubscriptionForPlanKey(planID, subscriptionID)
 	)
 
-	defer iter.Close()
+	return store.Has(key)
+}
 
-	iter.Skip(skip)
-	iter.Limit(limit, func(iter sdk.Iterator) {
-		item, _ := k.GetSubscription(ctx, types.IDFromStatusSubscriptionForAddressKey(iter.Key()))
-		items = append(items, item)
-	})
+func (k *Keeper) DeleteSubscriptionForPlan(ctx sdk.Context, planID, subscriptionID uint64) {
+	var (
+		store = k.Store(ctx)
+		key   = types.SubscriptionForPlanKey(planID, subscriptionID)
+	)
 
-	return items
+	store.Delete(key)
 }
 
 func (k *Keeper) SetInactiveSubscriptionAt(ctx sdk.Context, at time.Time, id uint64) {

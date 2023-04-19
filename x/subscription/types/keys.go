@@ -23,7 +23,7 @@ var (
 	CountKey = []byte{0x00}
 
 	SubscriptionKeyPrefix           = []byte{0x10}
-	SubscriptionForAddressKeyPrefix = []byte{0x11}
+	SubscriptionForAccountKeyPrefix = []byte{0x11}
 	SubscriptionForNodeKeyPrefix    = []byte{0x12}
 	SubscriptionForPlanKeyPrefix    = []byte{0x13}
 
@@ -36,12 +36,12 @@ func SubscriptionKey(id uint64) []byte {
 	return append(SubscriptionKeyPrefix, sdk.Uint64ToBigEndian(id)...)
 }
 
-func GetSubscriptionForAddressKeyPrefix(addr sdk.AccAddress) []byte {
-	return append(SubscriptionForAddressKeyPrefix, address.MustLengthPrefix(addr.Bytes())...)
+func GetSubscriptionForAccountKeyPrefix(addr sdk.AccAddress) []byte {
+	return append(SubscriptionForAccountKeyPrefix, address.MustLengthPrefix(addr.Bytes())...)
 }
 
-func SubscriptionForAddressKey(addr sdk.AccAddress, id uint64) []byte {
-	return append(GetSubscriptionForAddressKeyPrefix(addr), sdk.Uint64ToBigEndian(id)...)
+func SubscriptionForAccountKey(addr sdk.AccAddress, id uint64) []byte {
+	return append(GetSubscriptionForAccountKeyPrefix(addr), sdk.Uint64ToBigEndian(id)...)
 }
 
 func GetSubscriptionForNodeKeyPrefix(addr hubtypes.NodeAddress) []byte {
@@ -76,7 +76,7 @@ func QuotaKey(id uint64, addr sdk.AccAddress) []byte {
 	return append(GetQuotaKeyPrefix(id), address.MustLengthPrefix(addr.Bytes())...)
 }
 
-func IDFromStatusSubscriptionForAddressKey(key []byte) uint64 {
+func IDFromStatusSubscriptionForAccountKey(key []byte) uint64 {
 	// prefix (1 byte) | addrLen (1 byte) | addr | subscription (8 bytes)
 
 	addrLen := int(key[1])

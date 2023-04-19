@@ -13,6 +13,9 @@ type (
 		proto.Message
 		Type() SubscriptionType
 		Validate() error
+		GetAccountAddress() sdk.AccAddress
+		GetID() uint64
+		GetStatus() hubtypes.Status
 	}
 	Subscriptions []Subscription
 )
@@ -21,6 +24,9 @@ var (
 	_ Subscription = (*NodeSubscription)(nil)
 	_ Subscription = (*PlanSubscription)(nil)
 )
+
+func (s *BaseSubscription) GetID() uint64              { return s.ID }
+func (s *BaseSubscription) GetStatus() hubtypes.Status { return s.Status }
 
 func (s *BaseSubscription) GetAccountAddress() sdk.AccAddress {
 	if s.AccountAddress == "" {

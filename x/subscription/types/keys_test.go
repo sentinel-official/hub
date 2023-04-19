@@ -45,7 +45,7 @@ func TestQuotaKey(t *testing.T) {
 	}
 }
 
-func TestSubscriptionForAddressKey(t *testing.T) {
+func TestSubscriptionForAccountKey(t *testing.T) {
 	var (
 		addr []byte
 	)
@@ -57,15 +57,15 @@ func TestSubscriptionForAddressKey(t *testing.T) {
 		if i < 256 {
 			require.Equal(
 				t,
-				append(append(SubscriptionForAddressKeyPrefix, address.MustLengthPrefix(addr)...), sdk.Uint64ToBigEndian(uint64(i))...),
-				SubscriptionForAddressKey(addr, uint64(i)),
+				append(append(SubscriptionForAccountKeyPrefix, address.MustLengthPrefix(addr)...), sdk.Uint64ToBigEndian(uint64(i))...),
+				SubscriptionForAccountKey(addr, uint64(i)),
 			)
 
 			continue
 		}
 
 		require.Panics(t, func() {
-			SubscriptionForAddressKey(addr, uint64(i))
+			SubscriptionForAccountKey(addr, uint64(i))
 		})
 	}
 }

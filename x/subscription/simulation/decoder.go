@@ -22,23 +22,10 @@ func NewStoreDecoder(cdc codec.Codec) func(kvA, kvB kv.Pair) string {
 			return fmt.Sprintf("%v\n%v", &countA, &countB)
 		case bytes.Equal(kvA.Key[:1], types.SubscriptionKeyPrefix):
 			var subscriptionA, subscriptionB types.Subscription
-			cdc.MustUnmarshal(kvA.Value, &subscriptionA)
-			cdc.MustUnmarshal(kvB.Value, &subscriptionB)
+			cdc.UnmarshalInterface(kvA.Value, &subscriptionA)
+			cdc.UnmarshalInterface(kvB.Value, &subscriptionB)
 
 			return fmt.Sprintf("%v\n%v", &subscriptionA, &subscriptionB)
-
-		case bytes.Equal(kvA.Key[:1], types.ActiveSubscriptionForAddressKeyPrefix):
-			var activeSubscriptionForAddressA, activeSubscriptionForAddressB protobuftypes.BoolValue
-			cdc.MustUnmarshal(kvA.Value, &activeSubscriptionForAddressA)
-			cdc.MustUnmarshal(kvB.Value, &activeSubscriptionForAddressB)
-
-			return fmt.Sprintf("%v\n%v", &activeSubscriptionForAddressA, &activeSubscriptionForAddressB)
-		case bytes.Equal(kvA.Key[:1], types.InactiveSubscriptionForAddressKeyPrefix):
-			var inactiveSubscriptionForAddressA, inactiveSubscriptionForAddressB protobuftypes.BoolValue
-			cdc.MustUnmarshal(kvA.Value, &inactiveSubscriptionForAddressA)
-			cdc.MustUnmarshal(kvB.Value, &inactiveSubscriptionForAddressB)
-
-			return fmt.Sprintf("%v\n%v", &inactiveSubscriptionForAddressA, &inactiveSubscriptionForAddressB)
 		case bytes.Equal(kvA.Key[:1], types.InactiveSubscriptionAtKeyPrefix):
 			var inactiveSubscriptionAtA, inactiveSubscriptionAtB protobuftypes.BoolValue
 			cdc.MustUnmarshal(kvA.Value, &inactiveSubscriptionAtA)
