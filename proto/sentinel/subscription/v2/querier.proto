@@ -6,10 +6,10 @@ option go_package = "github.com/sentinel-official/hub/x/subscription/types";
 import "cosmos/base/query/v1beta1/pagination.proto";
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
-import "sentinel/types/v1/status.proto";
-import "sentinel/subscription/v2/quota.proto";
-import "sentinel/subscription/v2/subscription.proto";
+import "google/protobuf/any.proto";
 import "sentinel/subscription/v2/params.proto";
+import "sentinel/subscription/v2/quota.proto";
+import "sentinel/types/v1/status.proto";
 
 option (gogoproto.equal_all)           = false;
 option (gogoproto.goproto_getters_all) = false;
@@ -39,18 +39,16 @@ message QueryQuotasRequest {
 message QueryParamsRequest {}
 
 message QuerySubscriptionsResponse {
-  repeated Subscription subscriptions = 1 [ (gogoproto.nullable) = false ];
+  repeated google.protobuf.Any subscriptions        = 1;
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
 message QuerySubscriptionsForAddressResponse {
-  repeated Subscription subscriptions = 1 [ (gogoproto.nullable) = false ];
+  repeated google.protobuf.Any subscriptions        = 1;
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
-message QuerySubscriptionResponse {
-  Subscription subscription = 1 [ (gogoproto.nullable) = false ];
-}
+message QuerySubscriptionResponse { google.protobuf.Any subscription = 1; }
 
 message QueryQuotaResponse { Quota quota = 1 [ (gogoproto.nullable) = false ]; }
 

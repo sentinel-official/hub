@@ -5,12 +5,11 @@ package types
 
 import (
 	fmt "fmt"
-	github_com_cosmos_cosmos_sdk_types "github.com/cosmos/cosmos-sdk/types"
-	types "github.com/cosmos/cosmos-sdk/types"
+	types1 "github.com/cosmos/cosmos-sdk/types"
 	_ "github.com/gogo/protobuf/gogoproto"
 	proto "github.com/gogo/protobuf/proto"
 	github_com_gogo_protobuf_types "github.com/gogo/protobuf/types"
-	types1 "github.com/sentinel-official/hub/types"
+	types "github.com/sentinel-official/hub/types"
 	_ "google.golang.org/protobuf/types/known/timestamppb"
 	io "io"
 	math "math"
@@ -30,32 +29,53 @@ var _ = time.Kitchen
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
-type Subscription struct {
-	Id       uint64                                 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
-	Owner    string                                 `protobuf:"bytes,2,opt,name=owner,proto3" json:"owner,omitempty"`
-	Node     string                                 `protobuf:"bytes,3,opt,name=node,proto3" json:"node,omitempty"`
-	Price    types.Coin                             `protobuf:"bytes,4,opt,name=price,proto3" json:"price"`
-	Deposit  types.Coin                             `protobuf:"bytes,5,opt,name=deposit,proto3" json:"deposit"`
-	Plan     uint64                                 `protobuf:"varint,6,opt,name=plan,proto3" json:"plan,omitempty"`
-	Denom    string                                 `protobuf:"bytes,7,opt,name=denom,proto3" json:"denom,omitempty"`
-	Expiry   time.Time                              `protobuf:"bytes,8,opt,name=expiry,proto3,stdtime" json:"expiry"`
-	Free     github_com_cosmos_cosmos_sdk_types.Int `protobuf:"bytes,9,opt,name=free,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"free"`
-	Status   types1.Status                          `protobuf:"varint,10,opt,name=status,proto3,enum=sentinel.types.v1.Status" json:"status,omitempty"`
-	StatusAt time.Time                              `protobuf:"bytes,11,opt,name=status_at,json=statusAt,proto3,stdtime" json:"status_at"`
+type SubscriptionType int32
+
+const (
+	TypeUnspecified SubscriptionType = 0
+	TypeNode        SubscriptionType = 1
+	TypePlan        SubscriptionType = 2
+)
+
+var SubscriptionType_name = map[int32]string{
+	0: "TYPE_UNSPECIFIED",
+	1: "TYPE_NODE",
+	2: "TYPE_PLAN",
 }
 
-func (m *Subscription) Reset()         { *m = Subscription{} }
-func (m *Subscription) String() string { return proto.CompactTextString(m) }
-func (*Subscription) ProtoMessage()    {}
-func (*Subscription) Descriptor() ([]byte, []int) {
+var SubscriptionType_value = map[string]int32{
+	"TYPE_UNSPECIFIED": 0,
+	"TYPE_NODE":        1,
+	"TYPE_PLAN":        2,
+}
+
+func (x SubscriptionType) String() string {
+	return proto.EnumName(SubscriptionType_name, int32(x))
+}
+
+func (SubscriptionType) EnumDescriptor() ([]byte, []int) {
 	return fileDescriptor_f6350e663da1ca66, []int{0}
 }
-func (m *Subscription) XXX_Unmarshal(b []byte) error {
+
+type BaseSubscription struct {
+	ID             uint64       `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	AccountAddress string       `protobuf:"bytes,2,opt,name=account_address,json=accountAddress,proto3" json:"account_address,omitempty"`
+	Status         types.Status `protobuf:"varint,3,opt,name=status,proto3,enum=sentinel.types.v1.Status" json:"status,omitempty"`
+	StatusAt       time.Time    `protobuf:"bytes,4,opt,name=status_at,json=statusAt,proto3,stdtime" json:"status_at"`
+}
+
+func (m *BaseSubscription) Reset()         { *m = BaseSubscription{} }
+func (m *BaseSubscription) String() string { return proto.CompactTextString(m) }
+func (*BaseSubscription) ProtoMessage()    {}
+func (*BaseSubscription) Descriptor() ([]byte, []int) {
+	return fileDescriptor_f6350e663da1ca66, []int{0}
+}
+func (m *BaseSubscription) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *Subscription) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *BaseSubscription) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_Subscription.Marshal(b, m, deterministic)
+		return xxx_messageInfo_BaseSubscription.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -65,20 +85,102 @@ func (m *Subscription) XXX_Marshal(b []byte, deterministic bool) ([]byte, error)
 		return b[:n], nil
 	}
 }
-func (m *Subscription) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_Subscription.Merge(m, src)
+func (m *BaseSubscription) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_BaseSubscription.Merge(m, src)
 }
-func (m *Subscription) XXX_Size() int {
+func (m *BaseSubscription) XXX_Size() int {
 	return m.Size()
 }
-func (m *Subscription) XXX_DiscardUnknown() {
-	xxx_messageInfo_Subscription.DiscardUnknown(m)
+func (m *BaseSubscription) XXX_DiscardUnknown() {
+	xxx_messageInfo_BaseSubscription.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_Subscription proto.InternalMessageInfo
+var xxx_messageInfo_BaseSubscription proto.InternalMessageInfo
+
+type NodeSubscription struct {
+	*BaseSubscription `protobuf:"bytes,1,opt,name=base,proto3,embedded=base" json:"base,omitempty"`
+	NodeAddress       string      `protobuf:"bytes,2,opt,name=node_address,json=nodeAddress,proto3" json:"node_address,omitempty"`
+	Hours             int64       `protobuf:"varint,3,opt,name=hours,proto3" json:"hours,omitempty"`
+	Price             types1.Coin `protobuf:"bytes,4,opt,name=price,proto3" json:"price"`
+}
+
+func (m *NodeSubscription) Reset()         { *m = NodeSubscription{} }
+func (m *NodeSubscription) String() string { return proto.CompactTextString(m) }
+func (*NodeSubscription) ProtoMessage()    {}
+func (*NodeSubscription) Descriptor() ([]byte, []int) {
+	return fileDescriptor_f6350e663da1ca66, []int{1}
+}
+func (m *NodeSubscription) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *NodeSubscription) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_NodeSubscription.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *NodeSubscription) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_NodeSubscription.Merge(m, src)
+}
+func (m *NodeSubscription) XXX_Size() int {
+	return m.Size()
+}
+func (m *NodeSubscription) XXX_DiscardUnknown() {
+	xxx_messageInfo_NodeSubscription.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_NodeSubscription proto.InternalMessageInfo
+
+type PlanSubscription struct {
+	*BaseSubscription `protobuf:"bytes,1,opt,name=base,proto3,embedded=base" json:"base,omitempty"`
+	PlanID            uint64 `protobuf:"varint,2,opt,name=plan_id,json=planId,proto3" json:"plan_id,omitempty"`
+	Denom             string `protobuf:"bytes,3,opt,name=denom,proto3" json:"denom,omitempty"`
+}
+
+func (m *PlanSubscription) Reset()         { *m = PlanSubscription{} }
+func (m *PlanSubscription) String() string { return proto.CompactTextString(m) }
+func (*PlanSubscription) ProtoMessage()    {}
+func (*PlanSubscription) Descriptor() ([]byte, []int) {
+	return fileDescriptor_f6350e663da1ca66, []int{2}
+}
+func (m *PlanSubscription) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *PlanSubscription) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_PlanSubscription.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *PlanSubscription) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_PlanSubscription.Merge(m, src)
+}
+func (m *PlanSubscription) XXX_Size() int {
+	return m.Size()
+}
+func (m *PlanSubscription) XXX_DiscardUnknown() {
+	xxx_messageInfo_PlanSubscription.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_PlanSubscription proto.InternalMessageInfo
 
 func init() {
-	proto.RegisterType((*Subscription)(nil), "sentinel.subscription.v2.Subscription")
+	proto.RegisterEnum("sentinel.subscription.v2.SubscriptionType", SubscriptionType_name, SubscriptionType_value)
+	proto.RegisterType((*BaseSubscription)(nil), "sentinel.subscription.v2.BaseSubscription")
+	proto.RegisterType((*NodeSubscription)(nil), "sentinel.subscription.v2.NodeSubscription")
+	proto.RegisterType((*PlanSubscription)(nil), "sentinel.subscription.v2.PlanSubscription")
 }
 
 func init() {
@@ -86,39 +188,47 @@ func init() {
 }
 
 var fileDescriptor_f6350e663da1ca66 = []byte{
-	// 460 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x94, 0x92, 0xbd, 0x6e, 0xdb, 0x30,
-	0x14, 0x85, 0x45, 0x47, 0x76, 0x6c, 0xa6, 0xc8, 0x40, 0x64, 0x60, 0x3c, 0xd0, 0x46, 0x87, 0xc2,
-	0x40, 0x11, 0x12, 0x72, 0x91, 0xa1, 0x40, 0x97, 0xa8, 0x53, 0x57, 0xa5, 0x40, 0x81, 0x2e, 0x85,
-	0x7e, 0x68, 0x85, 0xa8, 0x45, 0x0a, 0x22, 0xa5, 0x26, 0x6f, 0x91, 0xc7, 0xe8, 0xa3, 0x78, 0xcc,
-	0x58, 0x14, 0x45, 0xda, 0xda, 0x2f, 0x52, 0x88, 0x94, 0x02, 0x7b, 0x6b, 0x26, 0xdf, 0xcb, 0x7b,
-	0x8e, 0xf9, 0xdd, 0x23, 0xc2, 0xd7, 0x9a, 0x4b, 0x23, 0x24, 0x5f, 0x33, 0x5d, 0x27, 0x3a, 0xad,
-	0x44, 0x69, 0x84, 0x92, 0xac, 0x59, 0x1e, 0xf4, 0xb4, 0xac, 0x94, 0x51, 0x08, 0xf7, 0x62, 0x7a,
-	0x30, 0x6c, 0x96, 0x53, 0x92, 0x2a, 0x5d, 0x28, 0xcd, 0x92, 0x58, 0x73, 0xd6, 0x04, 0x09, 0x37,
-	0x71, 0xc0, 0x52, 0x25, 0x3a, 0xe7, 0xf4, 0x2c, 0x57, 0xb9, 0xb2, 0x25, 0x6b, 0xab, 0xee, 0x74,
-	0x96, 0x2b, 0x95, 0xaf, 0x39, 0xb3, 0x5d, 0x52, 0xaf, 0x98, 0x11, 0x05, 0xd7, 0x26, 0x2e, 0xca,
-	0x4e, 0x40, 0x9e, 0xe8, 0xcc, 0x5d, 0xc9, 0x35, 0x6b, 0x02, 0xa6, 0x4d, 0x6c, 0x6a, 0xed, 0xe6,
-	0x2f, 0x7f, 0x1d, 0xc1, 0x17, 0xd7, 0x7b, 0x28, 0xe8, 0x14, 0x0e, 0x44, 0x86, 0xc1, 0x1c, 0x2c,
-	0xfc, 0x68, 0x20, 0x32, 0x74, 0x06, 0x87, 0xea, 0x9b, 0xe4, 0x15, 0x1e, 0xcc, 0xc1, 0x62, 0x12,
-	0xb9, 0x06, 0x21, 0xe8, 0x4b, 0x95, 0x71, 0x7c, 0x64, 0x0f, 0x6d, 0x8d, 0x2e, 0xe1, 0xb0, 0xac,
-	0x44, 0xca, 0xb1, 0x3f, 0x07, 0x8b, 0x93, 0xe5, 0x39, 0x75, 0x1b, 0xd1, 0x76, 0x23, 0xda, 0x6d,
-	0x44, 0xdf, 0x2b, 0x21, 0x43, 0x7f, 0xf3, 0x38, 0xf3, 0x22, 0xa7, 0x46, 0x6f, 0xe1, 0x71, 0xc6,
-	0x4b, 0xa5, 0x85, 0xc1, 0xc3, 0xff, 0x33, 0xf6, 0xfa, 0x96, 0xa2, 0x5c, 0xc7, 0x12, 0x8f, 0x2c,
-	0xad, 0xad, 0x5b, 0xde, 0x8c, 0x4b, 0x55, 0xe0, 0x63, 0xc7, 0x6b, 0x1b, 0xf4, 0x0e, 0x8e, 0xf8,
-	0x6d, 0x29, 0xaa, 0x3b, 0x3c, 0xb6, 0x77, 0x4c, 0xa9, 0x0b, 0x8e, 0xf6, 0xc1, 0xd1, 0x8f, 0x7d,
-	0x70, 0xe1, 0xb8, 0xbd, 0xe4, 0xfe, 0xf7, 0x0c, 0x44, 0x9d, 0x07, 0x85, 0xd0, 0x5f, 0x55, 0x9c,
-	0xe3, 0x49, 0xfb, 0x97, 0x21, 0x6d, 0xe7, 0x3f, 0x1f, 0x67, 0xaf, 0x72, 0x61, 0x6e, 0xea, 0x84,
-	0xa6, 0xaa, 0x60, 0xdd, 0xc7, 0x73, 0x3f, 0x17, 0x3a, 0xfb, 0xea, 0xe2, 0xa6, 0x1f, 0xa4, 0x89,
-	0xac, 0x17, 0x05, 0x70, 0xe4, 0x82, 0xc7, 0x70, 0x0e, 0x16, 0xa7, 0xcb, 0x73, 0xfa, 0xf4, 0x14,
-	0x9c, 0xb4, 0x09, 0xe8, 0xb5, 0x15, 0x44, 0x9d, 0x10, 0x5d, 0xc1, 0x89, 0xab, 0xbe, 0xc4, 0x06,
-	0x9f, 0x3c, 0x83, 0x7b, 0xec, 0x6c, 0x57, 0x26, 0xfc, 0xb4, 0xf9, 0x4b, 0xbc, 0xef, 0x5b, 0xe2,
-	0x6d, 0xb6, 0x04, 0x3c, 0x6c, 0x09, 0xf8, 0xb3, 0x25, 0xe0, 0x7e, 0x47, 0xbc, 0x87, 0x1d, 0xf1,
-	0x7e, 0xec, 0x88, 0xf7, 0xf9, 0x72, 0x6f, 0x8b, 0x9e, 0xe8, 0x42, 0xad, 0x56, 0x22, 0x15, 0xf1,
-	0x9a, 0xdd, 0xd4, 0x09, 0xbb, 0x3d, 0x7c, 0xd8, 0x96, 0x36, 0x19, 0x59, 0x80, 0x37, 0xff, 0x02,
-	0x00, 0x00, 0xff, 0xff, 0xf9, 0x3b, 0xb8, 0x53, 0xfe, 0x02, 0x00, 0x00,
+	// 582 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xb4, 0x93, 0xcf, 0x6e, 0xd3, 0x40,
+	0x10, 0xc6, 0xbd, 0xa9, 0x1b, 0x9a, 0x6d, 0xd5, 0x5a, 0xa6, 0x42, 0xa9, 0x91, 0x6c, 0x53, 0x0e,
+	0x84, 0x22, 0x76, 0x95, 0xa0, 0x3e, 0x40, 0xdc, 0x04, 0x29, 0x12, 0x0a, 0x91, 0xdb, 0x0a, 0xc1,
+	0x25, 0xf2, 0x9f, 0x4d, 0xba, 0x52, 0xe2, 0xb5, 0xb2, 0xeb, 0x88, 0x1e, 0xb8, 0xa3, 0x9e, 0x2a,
+	0x71, 0xee, 0x89, 0x0b, 0x8f, 0x12, 0x6e, 0x3d, 0x72, 0x0a, 0xe0, 0xbc, 0x08, 0x5a, 0xdb, 0x09,
+	0x4d, 0x25, 0x8e, 0xdc, 0x76, 0xe6, 0xfb, 0xc6, 0x3b, 0xbf, 0x99, 0x35, 0x7c, 0xc1, 0x49, 0x24,
+	0x68, 0x44, 0x46, 0x98, 0x27, 0x3e, 0x0f, 0x26, 0x34, 0x16, 0x94, 0x45, 0x78, 0xda, 0x58, 0x8b,
+	0x51, 0x3c, 0x61, 0x82, 0xe9, 0xd5, 0xa5, 0x19, 0xad, 0x89, 0xd3, 0x86, 0x61, 0x06, 0x8c, 0x8f,
+	0x19, 0xc7, 0xbe, 0xc7, 0x09, 0x9e, 0xd6, 0x7d, 0x22, 0xbc, 0x3a, 0x0e, 0x18, 0x2d, 0x2a, 0x8d,
+	0xfd, 0x21, 0x1b, 0xb2, 0xec, 0x88, 0xe5, 0xa9, 0xc8, 0x5a, 0x43, 0xc6, 0x86, 0x23, 0x82, 0xb3,
+	0xc8, 0x4f, 0x06, 0x58, 0xd0, 0x31, 0xe1, 0xc2, 0x1b, 0xc7, 0x85, 0xc1, 0x5c, 0x75, 0x27, 0x2e,
+	0x63, 0xc2, 0xf1, 0xb4, 0x8e, 0xb9, 0xf0, 0x44, 0xc2, 0x73, 0xfd, 0xf0, 0x3b, 0x80, 0x9a, 0xe3,
+	0x71, 0x72, 0x7a, 0xa7, 0x1d, 0xfd, 0x11, 0x2c, 0xd1, 0xb0, 0x0a, 0x6c, 0x50, 0x53, 0x9d, 0x72,
+	0x3a, 0xb7, 0x4a, 0x9d, 0x96, 0x5b, 0xa2, 0xa1, 0xfe, 0x0c, 0xee, 0x79, 0x41, 0xc0, 0x92, 0x48,
+	0xf4, 0xbd, 0x30, 0x9c, 0x10, 0xce, 0xab, 0x25, 0x1b, 0xd4, 0x2a, 0xee, 0x6e, 0x91, 0x6e, 0xe6,
+	0x59, 0xbd, 0x0e, 0xcb, 0xf9, 0x2d, 0xd5, 0x0d, 0x1b, 0xd4, 0x76, 0x1b, 0x07, 0x68, 0xc5, 0x9d,
+	0xb5, 0x81, 0xa6, 0x75, 0x74, 0x9a, 0x19, 0xdc, 0xc2, 0xa8, 0x37, 0x61, 0x25, 0x3f, 0xf5, 0x3d,
+	0x51, 0x55, 0x6d, 0x50, 0xdb, 0x6e, 0x18, 0x28, 0xa7, 0x43, 0x4b, 0x3a, 0x74, 0xb6, 0xa4, 0x73,
+	0xb6, 0x66, 0x73, 0x4b, 0xb9, 0xfe, 0x69, 0x01, 0x77, 0x2b, 0x2f, 0x6b, 0x8a, 0xc3, 0x19, 0x80,
+	0x5a, 0x97, 0x85, 0xeb, 0x2c, 0x2d, 0xa8, 0xca, 0x91, 0x66, 0x34, 0xdb, 0x8d, 0x23, 0xf4, 0xaf,
+	0x05, 0xa0, 0xfb, 0x53, 0x70, 0xd4, 0xdb, 0xb9, 0x05, 0xdc, 0xac, 0x5a, 0x7f, 0x02, 0x77, 0x22,
+	0x16, 0x92, 0x7b, 0xd8, 0xdb, 0x32, 0xb7, 0x64, 0xde, 0x87, 0x9b, 0x17, 0x2c, 0x99, 0xe4, 0xc8,
+	0x1b, 0x6e, 0x1e, 0xe8, 0xc7, 0x70, 0x33, 0x9e, 0xd0, 0x80, 0x14, 0x48, 0x07, 0x28, 0x5f, 0x33,
+	0x92, 0x5f, 0x45, 0xc5, 0x9a, 0xd1, 0x09, 0xa3, 0x91, 0xa3, 0x4a, 0x22, 0x37, 0x77, 0x1f, 0x7e,
+	0x01, 0x50, 0xeb, 0x8d, 0xbc, 0xe8, 0x3f, 0xa0, 0x3c, 0x85, 0x0f, 0xe2, 0x91, 0x17, 0xf5, 0x69,
+	0x98, 0x51, 0xa8, 0x0e, 0x4c, 0xe7, 0x56, 0x59, 0x5e, 0xd6, 0x69, 0xb9, 0x65, 0x29, 0x75, 0x42,
+	0x09, 0x13, 0x92, 0x88, 0x8d, 0x33, 0x98, 0x8a, 0x9b, 0x07, 0x47, 0x9f, 0xa0, 0x76, 0xf7, 0xb3,
+	0x67, 0x97, 0x31, 0xd1, 0x9f, 0x43, 0xed, 0xec, 0x7d, 0xaf, 0xdd, 0x3f, 0xef, 0x9e, 0xf6, 0xda,
+	0x27, 0x9d, 0xd7, 0x9d, 0x76, 0x4b, 0x53, 0x8c, 0x87, 0x57, 0x37, 0xf6, 0x9e, 0xd4, 0xcf, 0x23,
+	0x1e, 0x93, 0x80, 0x0e, 0x28, 0x09, 0xf5, 0xc7, 0xb0, 0x92, 0x59, 0xbb, 0x6f, 0x5b, 0x6d, 0x0d,
+	0x18, 0x3b, 0x57, 0x37, 0xf6, 0x96, 0xf4, 0xc8, 0x9d, 0xad, 0xc4, 0xde, 0x9b, 0x66, 0x57, 0x2b,
+	0xfd, 0x15, 0x65, 0x63, 0x86, 0xfa, 0xf9, 0xab, 0xa9, 0x38, 0xef, 0x66, 0xbf, 0x4d, 0xe5, 0x5b,
+	0x6a, 0x2a, 0xb3, 0xd4, 0x04, 0xb7, 0xa9, 0x09, 0x7e, 0xa5, 0x26, 0xb8, 0x5e, 0x98, 0xca, 0xed,
+	0xc2, 0x54, 0x7e, 0x2c, 0x4c, 0xe5, 0xc3, 0xf1, 0x90, 0x8a, 0x8b, 0xc4, 0x47, 0x01, 0x1b, 0xe3,
+	0xe5, 0x74, 0x5e, 0xb2, 0xc1, 0x80, 0x06, 0xd4, 0x1b, 0xe1, 0x8b, 0xc4, 0xc7, 0x1f, 0xd7, 0xff,
+	0xd2, 0xec, 0x35, 0xfa, 0xe5, 0xec, 0x81, 0xbd, 0xfa, 0x13, 0x00, 0x00, 0xff, 0xff, 0x0d, 0xf6,
+	0x48, 0x42, 0xcb, 0x03, 0x00, 0x00,
 }
 
-func (m *Subscription) Marshal() (dAtA []byte, err error) {
+func (m *BaseSubscription) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -128,12 +238,12 @@ func (m *Subscription) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *Subscription) MarshalTo(dAtA []byte) (int, error) {
+func (m *BaseSubscription) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *Subscription) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *BaseSubscription) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -145,52 +255,47 @@ func (m *Subscription) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i -= n1
 	i = encodeVarintSubscription(dAtA, i, uint64(n1))
 	i--
-	dAtA[i] = 0x5a
+	dAtA[i] = 0x22
 	if m.Status != 0 {
 		i = encodeVarintSubscription(dAtA, i, uint64(m.Status))
 		i--
-		dAtA[i] = 0x50
+		dAtA[i] = 0x18
 	}
-	{
-		size := m.Free.Size()
-		i -= size
-		if _, err := m.Free.MarshalTo(dAtA[i:]); err != nil {
-			return 0, err
-		}
-		i = encodeVarintSubscription(dAtA, i, uint64(size))
-	}
-	i--
-	dAtA[i] = 0x4a
-	n2, err2 := github_com_gogo_protobuf_types.StdTimeMarshalTo(m.Expiry, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(m.Expiry):])
-	if err2 != nil {
-		return 0, err2
-	}
-	i -= n2
-	i = encodeVarintSubscription(dAtA, i, uint64(n2))
-	i--
-	dAtA[i] = 0x42
-	if len(m.Denom) > 0 {
-		i -= len(m.Denom)
-		copy(dAtA[i:], m.Denom)
-		i = encodeVarintSubscription(dAtA, i, uint64(len(m.Denom)))
+	if len(m.AccountAddress) > 0 {
+		i -= len(m.AccountAddress)
+		copy(dAtA[i:], m.AccountAddress)
+		i = encodeVarintSubscription(dAtA, i, uint64(len(m.AccountAddress)))
 		i--
-		dAtA[i] = 0x3a
+		dAtA[i] = 0x12
 	}
-	if m.Plan != 0 {
-		i = encodeVarintSubscription(dAtA, i, uint64(m.Plan))
+	if m.ID != 0 {
+		i = encodeVarintSubscription(dAtA, i, uint64(m.ID))
 		i--
-		dAtA[i] = 0x30
+		dAtA[i] = 0x8
 	}
-	{
-		size, err := m.Deposit.MarshalToSizedBuffer(dAtA[:i])
-		if err != nil {
-			return 0, err
-		}
-		i -= size
-		i = encodeVarintSubscription(dAtA, i, uint64(size))
+	return len(dAtA) - i, nil
+}
+
+func (m *NodeSubscription) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
 	}
-	i--
-	dAtA[i] = 0x2a
+	return dAtA[:n], nil
+}
+
+func (m *NodeSubscription) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *NodeSubscription) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
 	{
 		size, err := m.Price.MarshalToSizedBuffer(dAtA[:i])
 		if err != nil {
@@ -201,24 +306,76 @@ func (m *Subscription) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	}
 	i--
 	dAtA[i] = 0x22
-	if len(m.Node) > 0 {
-		i -= len(m.Node)
-		copy(dAtA[i:], m.Node)
-		i = encodeVarintSubscription(dAtA, i, uint64(len(m.Node)))
+	if m.Hours != 0 {
+		i = encodeVarintSubscription(dAtA, i, uint64(m.Hours))
 		i--
-		dAtA[i] = 0x1a
+		dAtA[i] = 0x18
 	}
-	if len(m.Owner) > 0 {
-		i -= len(m.Owner)
-		copy(dAtA[i:], m.Owner)
-		i = encodeVarintSubscription(dAtA, i, uint64(len(m.Owner)))
+	if len(m.NodeAddress) > 0 {
+		i -= len(m.NodeAddress)
+		copy(dAtA[i:], m.NodeAddress)
+		i = encodeVarintSubscription(dAtA, i, uint64(len(m.NodeAddress)))
 		i--
 		dAtA[i] = 0x12
 	}
-	if m.Id != 0 {
-		i = encodeVarintSubscription(dAtA, i, uint64(m.Id))
+	if m.BaseSubscription != nil {
+		{
+			size, err := m.BaseSubscription.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintSubscription(dAtA, i, uint64(size))
+		}
 		i--
-		dAtA[i] = 0x8
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *PlanSubscription) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *PlanSubscription) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *PlanSubscription) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Denom) > 0 {
+		i -= len(m.Denom)
+		copy(dAtA[i:], m.Denom)
+		i = encodeVarintSubscription(dAtA, i, uint64(len(m.Denom)))
+		i--
+		dAtA[i] = 0x1a
+	}
+	if m.PlanID != 0 {
+		i = encodeVarintSubscription(dAtA, i, uint64(m.PlanID))
+		i--
+		dAtA[i] = 0x10
+	}
+	if m.BaseSubscription != nil {
+		{
+			size, err := m.BaseSubscription.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintSubscription(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0xa
 	}
 	return len(dAtA) - i, nil
 }
@@ -234,43 +391,66 @@ func encodeVarintSubscription(dAtA []byte, offset int, v uint64) int {
 	dAtA[offset] = uint8(v)
 	return base
 }
-func (m *Subscription) Size() (n int) {
+func (m *BaseSubscription) Size() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
-	if m.Id != 0 {
-		n += 1 + sovSubscription(uint64(m.Id))
+	if m.ID != 0 {
+		n += 1 + sovSubscription(uint64(m.ID))
 	}
-	l = len(m.Owner)
+	l = len(m.AccountAddress)
 	if l > 0 {
 		n += 1 + l + sovSubscription(uint64(l))
 	}
-	l = len(m.Node)
-	if l > 0 {
-		n += 1 + l + sovSubscription(uint64(l))
-	}
-	l = m.Price.Size()
-	n += 1 + l + sovSubscription(uint64(l))
-	l = m.Deposit.Size()
-	n += 1 + l + sovSubscription(uint64(l))
-	if m.Plan != 0 {
-		n += 1 + sovSubscription(uint64(m.Plan))
-	}
-	l = len(m.Denom)
-	if l > 0 {
-		n += 1 + l + sovSubscription(uint64(l))
-	}
-	l = github_com_gogo_protobuf_types.SizeOfStdTime(m.Expiry)
-	n += 1 + l + sovSubscription(uint64(l))
-	l = m.Free.Size()
-	n += 1 + l + sovSubscription(uint64(l))
 	if m.Status != 0 {
 		n += 1 + sovSubscription(uint64(m.Status))
 	}
 	l = github_com_gogo_protobuf_types.SizeOfStdTime(m.StatusAt)
 	n += 1 + l + sovSubscription(uint64(l))
+	return n
+}
+
+func (m *NodeSubscription) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.BaseSubscription != nil {
+		l = m.BaseSubscription.Size()
+		n += 1 + l + sovSubscription(uint64(l))
+	}
+	l = len(m.NodeAddress)
+	if l > 0 {
+		n += 1 + l + sovSubscription(uint64(l))
+	}
+	if m.Hours != 0 {
+		n += 1 + sovSubscription(uint64(m.Hours))
+	}
+	l = m.Price.Size()
+	n += 1 + l + sovSubscription(uint64(l))
+	return n
+}
+
+func (m *PlanSubscription) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.BaseSubscription != nil {
+		l = m.BaseSubscription.Size()
+		n += 1 + l + sovSubscription(uint64(l))
+	}
+	if m.PlanID != 0 {
+		n += 1 + sovSubscription(uint64(m.PlanID))
+	}
+	l = len(m.Denom)
+	if l > 0 {
+		n += 1 + l + sovSubscription(uint64(l))
+	}
 	return n
 }
 
@@ -280,7 +460,7 @@ func sovSubscription(x uint64) (n int) {
 func sozSubscription(x uint64) (n int) {
 	return sovSubscription(uint64((x << 1) ^ uint64((int64(x) >> 63))))
 }
-func (m *Subscription) Unmarshal(dAtA []byte) error {
+func (m *BaseSubscription) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -303,17 +483,17 @@ func (m *Subscription) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: Subscription: wiretype end group for non-group")
+			return fmt.Errorf("proto: BaseSubscription: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: Subscription: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: BaseSubscription: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Id", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field ID", wireType)
 			}
-			m.Id = 0
+			m.ID = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowSubscription
@@ -323,14 +503,14 @@ func (m *Subscription) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.Id |= uint64(b&0x7F) << shift
+				m.ID |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
 		case 2:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Owner", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field AccountAddress", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -358,11 +538,149 @@ func (m *Subscription) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Owner = string(dAtA[iNdEx:postIndex])
+			m.AccountAddress = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 3:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Status", wireType)
+			}
+			m.Status = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowSubscription
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Status |= types.Status(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 4:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Node", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field StatusAt", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowSubscription
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthSubscription
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthSubscription
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := github_com_gogo_protobuf_types.StdTimeUnmarshal(&m.StatusAt, dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipSubscription(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthSubscription
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *NodeSubscription) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowSubscription
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: NodeSubscription: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: NodeSubscription: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field BaseSubscription", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowSubscription
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthSubscription
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthSubscription
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.BaseSubscription == nil {
+				m.BaseSubscription = &BaseSubscription{}
+			}
+			if err := m.BaseSubscription.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field NodeAddress", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -390,8 +708,27 @@ func (m *Subscription) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Node = string(dAtA[iNdEx:postIndex])
+			m.NodeAddress = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
+		case 3:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Hours", wireType)
+			}
+			m.Hours = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowSubscription
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Hours |= int64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
 		case 4:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Price", wireType)
@@ -425,9 +762,59 @@ func (m *Subscription) Unmarshal(dAtA []byte) error {
 				return err
 			}
 			iNdEx = postIndex
-		case 5:
+		default:
+			iNdEx = preIndex
+			skippy, err := skipSubscription(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthSubscription
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *PlanSubscription) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowSubscription
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: PlanSubscription: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: PlanSubscription: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Deposit", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field BaseSubscription", wireType)
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -454,15 +841,18 @@ func (m *Subscription) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := m.Deposit.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			if m.BaseSubscription == nil {
+				m.BaseSubscription = &BaseSubscription{}
+			}
+			if err := m.BaseSubscription.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
-		case 6:
+		case 2:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Plan", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field PlanID", wireType)
 			}
-			m.Plan = 0
+			m.PlanID = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowSubscription
@@ -472,12 +862,12 @@ func (m *Subscription) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.Plan |= uint64(b&0x7F) << shift
+				m.PlanID |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-		case 7:
+		case 3:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Denom", wireType)
 			}
@@ -508,125 +898,6 @@ func (m *Subscription) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			m.Denom = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 8:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Expiry", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowSubscription
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthSubscription
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthSubscription
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if err := github_com_gogo_protobuf_types.StdTimeUnmarshal(&m.Expiry, dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		case 9:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Free", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowSubscription
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthSubscription
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthSubscription
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if err := m.Free.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		case 10:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Status", wireType)
-			}
-			m.Status = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowSubscription
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				m.Status |= types1.Status(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-		case 11:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field StatusAt", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowSubscription
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthSubscription
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthSubscription
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if err := github_com_gogo_protobuf_types.StdTimeUnmarshal(&m.StatusAt, dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex

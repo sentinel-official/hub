@@ -4,17 +4,16 @@ package sentinel.subscription.v2;
 option go_package = "github.com/sentinel-official/hub/x/subscription/types";
 
 import "gogoproto/gogo.proto";
+import "google/protobuf/any.proto";
 import "sentinel/subscription/v2/params.proto";
 import "sentinel/subscription/v2/quota.proto";
-import "sentinel/subscription/v2/subscription.proto";
 
 option (gogoproto.equal_all)           = false;
 option (gogoproto.goproto_getters_all) = false;
 
 message GenesisSubscription {
-  Subscription subscription = 1
-      [ (gogoproto.jsontag) = "_", (gogoproto.nullable) = false ];
-  repeated Quota quotas = 2 [ (gogoproto.nullable) = false ];
+  google.protobuf.Any subscription = 1;
+  repeated Quota quotas            = 2 [ (gogoproto.nullable) = false ];
 }
 
 message GenesisState {
