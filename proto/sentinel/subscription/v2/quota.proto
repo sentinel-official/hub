@@ -1,16 +1,15 @@
 syntax = "proto3";
 package sentinel.subscription.v2;
 
-option go_package = "github.com/sentinel-official/hub/x/subscription/types";
-
 import "gogoproto/gogo.proto";
 
+option go_package = "github.com/sentinel-official/hub/x/subscription/types";
 option (gogoproto.equal_all)           = false;
 option (gogoproto.goproto_getters_all) = false;
 
 message Quota {
-  string address   = 1;
-  string allocated = 2 [
+  string account_address = 1;
+  string allocated       = 2 [
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
     (gogoproto.nullable)   = false
   ];

@@ -26,14 +26,16 @@ message BaseSubscription {
 }
 
 message NodeSubscription {
-  BaseSubscription base          = 1 [ (gogoproto.embed) = true ];
+  BaseSubscription base = 1
+      [ (gogoproto.embed) = true, (gogoproto.nullable) = false ];
   string node_address            = 2;
   int64 hours                    = 3;
   cosmos.base.v1beta1.Coin price = 4 [ (gogoproto.nullable) = false ];
 }
 
 message PlanSubscription {
-  BaseSubscription base = 1 [ (gogoproto.embed) = true ];
-  uint64 plan_id        = 2 [ (gogoproto.customname) = "PlanID" ];
-  string denom          = 3;
+  BaseSubscription base = 1
+      [ (gogoproto.embed) = true, (gogoproto.nullable) = false ];
+  uint64 plan_id = 2 [ (gogoproto.customname) = "PlanID" ];
+  string denom   = 3;
 }

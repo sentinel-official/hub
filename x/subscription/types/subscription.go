@@ -58,9 +58,6 @@ func (s *NodeSubscription) Type() SubscriptionType {
 }
 
 func (s *NodeSubscription) Validate() error {
-	if s.BaseSubscription == nil {
-		return fmt.Errorf("base_subscription cannot be nil")
-	}
 	if err := s.BaseSubscription.Validate(); err != nil {
 		return err
 	}
@@ -109,9 +106,6 @@ func (s *PlanSubscription) Type() SubscriptionType {
 }
 
 func (s *PlanSubscription) Validate() error {
-	if s.BaseSubscription == nil {
-		return fmt.Errorf("base_subscription cannot be nil")
-	}
 	if err := s.BaseSubscription.Validate(); err != nil {
 		return err
 	}
