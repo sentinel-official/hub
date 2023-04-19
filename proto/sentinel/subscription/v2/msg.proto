@@ -1,27 +1,11 @@
 syntax = "proto3";
 package sentinel.subscription.v2;
 
-option go_package = "github.com/sentinel-official/hub/x/subscription/types";
-
 import "gogoproto/gogo.proto";
-import "cosmos/base/v1beta1/coin.proto";
 
+option go_package = "github.com/sentinel-official/hub/x/subscription/types";
 option (gogoproto.equal_all)           = false;
 option (gogoproto.goproto_getters_all) = false;
-
-// MsgSubscribeToNodeRequest defines the SDK message for subscribing to a node
-message MsgSubscribeToNodeRequest {
-  string from                      = 1;
-  string address                   = 2;
-  cosmos.base.v1beta1.Coin deposit = 3 [ (gogoproto.nullable) = false ];
-}
-
-// MsgSubscribeToPlanRequest defines the SDK message for subscribing to a plan
-message MsgSubscribeToPlanRequest {
-  string from  = 1;
-  uint64 id    = 2;
-  string denom = 3;
-}
 
 // MsgCancelRequest defines the SDK message for cancelling a subscription
 message MsgCancelRequest {
@@ -29,8 +13,9 @@ message MsgCancelRequest {
   uint64 id   = 2;
 }
 
-// MsgAddQuotaRequest defines the SDK message for adding the quota to an address
-message MsgAddQuotaRequest {
+// MsgShareRequest defines the SDK message for sharing a subscription with an
+// address
+message MsgShareRequest {
   string from    = 1;
   uint64 id      = 2;
   string address = 3;
@@ -40,8 +25,8 @@ message MsgAddQuotaRequest {
   ];
 }
 
-// MsgUpdateQuotaRequest defines the SDK message for updating the quota of an
-// address
+// MsgUpdateQuotaRequest defines the SDK message for updating the bandwidth
+// quota of an address
 message MsgUpdateQuotaRequest {
   string from    = 1;
   uint64 id      = 2;
@@ -52,29 +37,17 @@ message MsgUpdateQuotaRequest {
   ];
 }
 
-// MsgSubscribeToNodeResponse defines the response of message
-// MsgSubscribeToNodeRequest
-message MsgSubscribeToNodeResponse {}
-
-// MsgSubscribeToPlanResponse defines the response of message
-// MsgSubscribeToPlanRequest
-message MsgSubscribeToPlanResponse {}
-
 // MsgCancelResponse defines the response of message MsgCancelRequest
 message MsgCancelResponse {}
 
-// MsgAddQuotaResponse defines the response of message MsgAddQuotaRequest
-message MsgAddQuotaResponse {}
+// MsgShareResponse defines the response of message MsgShareRequest
+message MsgShareResponse {}
 
 // MsgUpdateQuotaResponse defines the response of message MsgUpdateQuotaRequest
 message MsgUpdateQuotaResponse {}
 
 service MsgService {
-  rpc MsgSubscribeToNode(MsgSubscribeToNodeRequest)
-      returns (MsgSubscribeToNodeResponse);
-  rpc MsgSubscribeToPlan(MsgSubscribeToPlanRequest)
-      returns (MsgSubscribeToPlanResponse);
   rpc MsgCancel(MsgCancelRequest) returns (MsgCancelResponse);
-  rpc MsgAddQuota(MsgAddQuotaRequest) returns (MsgAddQuotaResponse);
+  rpc MsgShare(MsgShareRequest) returns (MsgShareResponse);
   rpc MsgUpdateQuota(MsgUpdateQuotaRequest) returns (MsgUpdateQuotaResponse);
 }
