@@ -2,15 +2,14 @@ package keeper
 
 import (
 	"context"
-	"strings"
-
+	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/query"
+	hubtypes "github.com/sentinel-official/hub/types"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	hubtypes "github.com/sentinel-official/hub/types"
 	"github.com/sentinel-official/hub/x/subscription/types"
 )
 
@@ -33,9 +32,14 @@ func (q *queryServer) QuerySubscription(c context.Context, req *types.QuerySubsc
 
 	ctx := sdk.UnwrapSDKContext(c)
 
-	item, found := q.GetSubscription(ctx, req.Id)
+	v, found := q.GetSubscription(ctx, req.Id)
 	if !found {
 		return nil, status.Errorf(codes.NotFound, "subscription does not exist for id %d", req.Id)
+	}
+
+	item, err := codectypes.NewAnyWithValue(v)
+	if err != nil {
+		return nil, err
 	}
 
 	return &types.QuerySubscriptionResponse{Subscription: item}, nil
@@ -47,22 +51,24 @@ func (q *queryServer) QuerySubscriptions(c context.Context, req *types.QuerySubs
 	}
 
 	var (
-		items types.Subscriptions
+		items []*codectypes.Any
 		ctx   = sdk.UnwrapSDKContext(c)
 		store = prefix.NewStore(q.Store(ctx), types.SubscriptionKeyPrefix)
 	)
 
-	pagination, err := query.FilteredPaginate(store, req.Pagination, func(_, value []byte, accumulate bool) (bool, error) {
-		if accumulate {
-			var item types.Subscription
-			if err := q.cdc.Unmarshal(value, &item); err != nil {
-				return false, err
-			}
-
-			items = append(items, item)
+	pagination, err := query.Paginate(store, req.Pagination, func(_, value []byte) error {
+		var v types.Subscription
+		if err := q.cdc.UnmarshalInterface(value, &v); err != nil {
+			return err
 		}
 
-		return true, nil
+		item, err := codectypes.NewAnyWithValue(v)
+		if err != nil {
+			return err
+		}
+
+		items = append(items, item)
+		return nil
 	})
 
 	if err != nil {
@@ -72,76 +78,113 @@ func (q *queryServer) QuerySubscriptions(c context.Context, req *types.QuerySubs
 	return &types.QuerySubscriptionsResponse{Subscriptions: items, Pagination: pagination}, nil
 }
 
-func (q *queryServer) QuerySubscriptionsForAddress(c context.Context, req *types.QuerySubscriptionsForAddressRequest) (*types.QuerySubscriptionsForAddressResponse, error) {
+func (q *queryServer) QuerySubscriptionsForAccount(c context.Context, req *types.QuerySubscriptionsForAccountRequest) (*types.QuerySubscriptionsForAccountResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "empty request")
 	}
 
-	address, err := sdk.AccAddressFromBech32(req.Address)
+	addr, err := sdk.AccAddressFromBech32(req.Address)
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid address %s", req.Address)
 	}
 
 	var (
-		items      types.Subscriptions
-		pagination *query.PageResponse
-		ctx        = sdk.UnwrapSDKContext(c)
+		items []*codectypes.Any
+		ctx   = sdk.UnwrapSDKContext(c)
+		store = prefix.NewStore(q.Store(ctx), types.GetSubscriptionForAccountKeyPrefix(addr))
 	)
 
-	if req.Status.Equal(hubtypes.StatusActive) {
-		store := prefix.NewStore(q.Store(ctx), types.GetActiveSubscriptionForAddressKeyPrefix(address))
-		pagination, err = query.FilteredPaginate(store, req.Pagination, func(key, _ []byte, accumulate bool) (bool, error) {
-			if accumulate {
-				item, found := q.GetSubscription(ctx, sdk.BigEndianToUint64(key))
-				if !found {
-					return false, nil
-				}
+	pagination, err := query.Paginate(store, req.Pagination, func(_, value []byte) error {
+		var v types.Subscription
+		if err := q.cdc.UnmarshalInterface(value, &v); err != nil {
+			return err
+		}
 
-				items = append(items, item)
-			}
+		item, err := codectypes.NewAnyWithValue(v)
+		if err != nil {
+			return err
+		}
 
-			return true, nil
-		})
-	} else if req.Status.Equal(hubtypes.StatusInactive) {
-		store := prefix.NewStore(q.Store(ctx), types.GetInactiveSubscriptionForAddressKeyPrefix(address))
-		pagination, err = query.FilteredPaginate(store, req.Pagination, func(key, _ []byte, accumulate bool) (bool, error) {
-			if accumulate {
-				item, found := q.GetSubscription(ctx, sdk.BigEndianToUint64(key))
-				if !found {
-					return false, nil
-				}
-
-				items = append(items, item)
-			}
-
-			return true, nil
-		})
-	} else {
-		// NOTE: Do not use this; less efficient; consider using active + inactive
-
-		store := prefix.NewStore(q.Store(ctx), types.SubscriptionKeyPrefix)
-		pagination, err = query.FilteredPaginate(store, req.Pagination, func(_, value []byte, accumulate bool) (bool, error) {
-			if accumulate {
-				var item types.Subscription
-				if err := q.cdc.Unmarshal(value, &item); err != nil {
-					return false, err
-				}
-				if !strings.EqualFold(item.Owner, req.Address) {
-					return false, nil
-				}
-
-				items = append(items, item)
-			}
-
-			return true, nil
-		})
-	}
+		items = append(items, item)
+		return nil
+	})
 
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	return &types.QuerySubscriptionsForAddressResponse{Subscriptions: items, Pagination: pagination}, nil
+	return &types.QuerySubscriptionsForAccountResponse{Subscriptions: items, Pagination: pagination}, nil
+}
+
+func (q *queryServer) QuerySubscriptionsForNode(c context.Context, req *types.QuerySubscriptionsForNodeRequest) (*types.QuerySubscriptionsForNodeResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "empty request")
+	}
+
+	addr, err := hubtypes.NodeAddressFromBech32(req.Address)
+	if err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, "invalid address %s", req.Address)
+	}
+
+	var (
+		items []*codectypes.Any
+		ctx   = sdk.UnwrapSDKContext(c)
+		store = prefix.NewStore(q.Store(ctx), types.GetSubscriptionForNodeKeyPrefix(addr))
+	)
+
+	pagination, err := query.Paginate(store, req.Pagination, func(_, value []byte) error {
+		var v types.Subscription
+		if err := q.cdc.UnmarshalInterface(value, &v); err != nil {
+			return err
+		}
+
+		item, err := codectypes.NewAnyWithValue(v)
+		if err != nil {
+			return err
+		}
+
+		items = append(items, item)
+		return nil
+	})
+
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
+	return &types.QuerySubscriptionsForNodeResponse{Subscriptions: items, Pagination: pagination}, nil
+}
+
+func (q *queryServer) QuerySubscriptionsForPlan(c context.Context, req *types.QuerySubscriptionsForPlanRequest) (*types.QuerySubscriptionsForPlanResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "empty request")
+	}
+
+	var (
+		items []*codectypes.Any
+		ctx   = sdk.UnwrapSDKContext(c)
+		store = prefix.NewStore(q.Store(ctx), types.GetSubscriptionForPlanKeyPrefix(req.Id))
+	)
+
+	pagination, err := query.Paginate(store, req.Pagination, func(_, value []byte) error {
+		var v types.Subscription
+		if err := q.cdc.UnmarshalInterface(value, &v); err != nil {
+			return err
+		}
+
+		item, err := codectypes.NewAnyWithValue(v)
+		if err != nil {
+			return err
+		}
+
+		items = append(items, item)
+		return nil
+	})
+
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
+	return &types.QuerySubscriptionsForPlanResponse{Subscriptions: items, Pagination: pagination}, nil
 }
 
 func (q *queryServer) QueryQuota(c context.Context, req *types.QueryQuotaRequest) (*types.QueryQuotaResponse, error) {
