@@ -9,11 +9,16 @@ import (
 func RegisterInterfaces(registry codectypes.InterfaceRegistry) {
 	registry.RegisterImplementations(
 		(*sdk.Msg)(nil),
-		&MsgSubscribeToNodeRequest{},
-		&MsgSubscribeToPlanRequest{},
 		&MsgCancelRequest{},
-		&MsgAddQuotaRequest{},
+		&MsgShareRequest{},
 		&MsgUpdateQuotaRequest{},
+	)
+
+	registry.RegisterInterface(
+		"sentinel.subscription.v2.Subscription",
+		(*Subscription)(nil),
+		&NodeSubscription{},
+		&PlanSubscription{},
 	)
 
 	msgservice.RegisterMsgServiceDesc(registry, &_MsgService_serviceDesc)

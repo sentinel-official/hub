@@ -4,11 +4,13 @@ import (
 	"fmt"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/errors"
+	"github.com/gogo/protobuf/proto"
 	hubtypes "github.com/sentinel-official/hub/types"
 )
 
 type (
 	Subscription interface {
+		proto.Message
 		Type() SubscriptionType
 		Validate() error
 	}
