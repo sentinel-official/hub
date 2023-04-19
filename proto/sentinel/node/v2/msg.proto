@@ -47,9 +47,8 @@ message MsgUpdateStatusRequest {
 message MsgSubscribeRequest {
   string from    = 1;
   string address = 2;
-  int64 bytes    = 3;
-  int64 hours    = 4;
-  string denom   = 5;
+  int64 hours    = 3;
+  string denom   = 4;
 }
 
 // MsgRegisterResponse defines the response of message MsgRegisterRequest

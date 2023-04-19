@@ -169,11 +169,10 @@ func (m *MsgUpdateStatusRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{from.Bytes()}
 }
 
-func NewMsgSubscribeRequest(from sdk.AccAddress, addr hubtypes.NodeAddress, bytes, hours int64, denom string) *MsgSubscribeRequest {
+func NewMsgSubscribeRequest(from sdk.AccAddress, addr hubtypes.NodeAddress, hours int64, denom string) *MsgSubscribeRequest {
 	return &MsgSubscribeRequest{
 		From:    from.String(),
 		Address: addr.String(),
-		Bytes:   bytes,
 		Hours:   hours,
 		Denom:   denom,
 	}
@@ -192,17 +191,11 @@ func (m *MsgSubscribeRequest) ValidateBasic() error {
 	if _, err := hubtypes.NodeAddressFromBech32(m.Address); err != nil {
 		return errors.Wrap(ErrorInvalidMessage, err.Error())
 	}
-	if m.Bytes < 0 {
-		return errors.Wrap(ErrorInvalidMessage, "bytes cannot be negative")
-	}
 	if m.Hours < 0 {
 		return errors.Wrap(ErrorInvalidMessage, "hours cannot be negative")
 	}
-	if m.Bytes == 0 && m.Hours == 0 {
-		return errors.Wrap(ErrorInvalidMessage, "[bytes, hours] cannot be zero")
-	}
-	if m.Bytes > 0 && m.Hours > 0 {
-		return errors.Wrap(ErrorInvalidMessage, "[bytes, hours] cannot be positive")
+	if m.Hours == 0 {
+		return errors.Wrap(ErrorInvalidMessage, "hours cannot be zero")
 	}
 	if m.Denom != "" {
 		if err := sdk.ValidateDenom(m.Denom); err != nil {
