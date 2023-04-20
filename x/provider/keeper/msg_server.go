@@ -2,7 +2,6 @@ package keeper
 
 import (
 	"context"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	hubtypes "github.com/sentinel-official/hub/types"
@@ -31,7 +30,7 @@ func (k *msgServer) MsgRegister(c context.Context, msg *types.MsgRegisterRequest
 
 	provAddr := hubtypes.ProvAddress(accAddr.Bytes())
 	if k.HasProvider(ctx, provAddr) {
-		return nil, types.ErrorDuplicateProvider
+		return nil, types.NewErrorDuplicateProvider(provAddr)
 	}
 
 	deposit := k.Deposit(ctx)
@@ -69,7 +68,7 @@ func (k *msgServer) MsgUpdate(c context.Context, msg *types.MsgUpdateRequest) (*
 
 	provider, found := k.GetProvider(ctx, provAddr)
 	if !found {
-		return nil, types.ErrorProviderDoesNotExist
+		return nil, types.NewErrorProviderNotFound(provAddr)
 	}
 
 	if len(msg.Name) > 0 {
@@ -91,7 +90,7 @@ func (k *msgServer) MsgUpdate(c context.Context, msg *types.MsgUpdateRequest) (*
 		case hubtypes.StatusInactive:
 			k.DeleteInactiveProvider(ctx, provAddr)
 		default:
-			return nil, types.ErrorInvalidStatus
+			return nil, types.NewErrorInvalidStatus(provider.Status, provAddr)
 		}
 
 		provider.Status = msg.Status

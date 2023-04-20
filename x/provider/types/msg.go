@@ -26,30 +26,30 @@ func NewMsgRegisterRequest(from sdk.AccAddress, name, identity, website, descrip
 
 func (m *MsgRegisterRequest) ValidateBasic() error {
 	if m.From == "" {
-		return errors.Wrap(ErrorInvalidFrom, "from cannot be empty")
+		return errors.Wrap(ErrorInvalidMessage, "from cannot be empty")
 	}
 	if _, err := sdk.AccAddressFromBech32(m.From); err != nil {
-		return errors.Wrapf(ErrorInvalidFrom, "%s", err)
+		return errors.Wrapf(ErrorInvalidMessage, "%s", err)
 	}
 	if m.Name == "" {
-		return errors.Wrap(ErrorInvalidName, "name cannot be empty")
+		return errors.Wrap(ErrorInvalidMessage, "name cannot be empty")
 	}
 	if len(m.Name) > 64 {
-		return errors.Wrapf(ErrorInvalidName, "name length cannot be greater than %d", 64)
+		return errors.Wrapf(ErrorInvalidMessage, "name length cannot be greater than %d", 64)
 	}
 	if len(m.Identity) > 64 {
-		return errors.Wrapf(ErrorInvalidIdentity, "identity length cannot be greater than %d", 64)
+		return errors.Wrapf(ErrorInvalidMessage, "identity length cannot be greater than %d", 64)
 	}
 	if m.Website != "" {
 		if len(m.Website) > 64 {
-			return errors.Wrapf(ErrorInvalidWebsite, "website length cannot be greater than %d", 64)
+			return errors.Wrapf(ErrorInvalidMessage, "website length cannot be greater than %d", 64)
 		}
 		if _, err := url.ParseRequestURI(m.Website); err != nil {
-			return errors.Wrapf(ErrorInvalidWebsite, "%s", err)
+			return errors.Wrapf(ErrorInvalidMessage, "%s", err)
 		}
 	}
 	if len(m.Description) > 256 {
-		return errors.Wrapf(ErrorInvalidDescription, "description length cannot be greater than %d", 256)
+		return errors.Wrapf(ErrorInvalidMessage, "description length cannot be greater than %d", 256)
 	}
 
 	return nil
@@ -77,27 +77,27 @@ func NewMsgUpdateRequest(from hubtypes.ProvAddress, name, identity, website, des
 
 func (m *MsgUpdateRequest) ValidateBasic() error {
 	if m.From == "" {
-		return errors.Wrap(ErrorInvalidFrom, "from cannot be empty")
+		return errors.Wrap(ErrorInvalidMessage, "from cannot be empty")
 	}
 	if _, err := hubtypes.ProvAddressFromBech32(m.From); err != nil {
-		return errors.Wrapf(ErrorInvalidFrom, "%s", err)
+		return errors.Wrapf(ErrorInvalidMessage, "%s", err)
 	}
 	if len(m.Name) > 64 {
-		return errors.Wrapf(ErrorInvalidName, "name length cannot be greater than %d", 64)
+		return errors.Wrapf(ErrorInvalidMessage, "name length cannot be greater than %d", 64)
 	}
 	if len(m.Identity) > 64 {
-		return errors.Wrapf(ErrorInvalidIdentity, "identity length cannot be greater than %d", 64)
+		return errors.Wrapf(ErrorInvalidMessage, "identity length cannot be greater than %d", 64)
 	}
 	if m.Website != "" {
 		if len(m.Website) > 64 {
-			return errors.Wrapf(ErrorInvalidWebsite, "website length cannot be greater than %d", 64)
+			return errors.Wrapf(ErrorInvalidMessage, "website length cannot be greater than %d", 64)
 		}
 		if _, err := url.ParseRequestURI(m.Website); err != nil {
-			return errors.Wrapf(ErrorInvalidWebsite, "%s", err)
+			return errors.Wrapf(ErrorInvalidMessage, "%s", err)
 		}
 	}
 	if len(m.Description) > 256 {
-		return errors.Wrapf(ErrorInvalidDescription, "description length cannot be greater than %d", 256)
+		return errors.Wrapf(ErrorInvalidMessage, "description length cannot be greater than %d", 256)
 	}
 	if !m.Status.IsOneOf(hubtypes.StatusUnspecified, hubtypes.StatusActive, hubtypes.StatusInactive) {
 		return errors.Wrapf(ErrorInvalidStatus, "status must be one of [unspecified, active, inactive]")
