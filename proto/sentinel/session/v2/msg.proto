@@ -10,9 +10,9 @@ option (gogoproto.goproto_getters_all) = false;
 
 // MsgStartRequest defines the SDK message for starting a session
 message MsgStartRequest {
-  string from         = 1;
-  uint64 id           = 2 [ (gogoproto.customname) = "ID" ];
-  string node_address = 3;
+  string from    = 1;
+  uint64 id      = 2 [ (gogoproto.customname) = "ID" ];
+  string address = 3;
 }
 
 // MsgUpdateDetailsRequest defines the SDK message for updating a session

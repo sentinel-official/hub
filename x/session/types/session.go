@@ -14,39 +14,36 @@ func (m *Session) GetAddress() sdk.AccAddress {
 		return nil
 	}
 
-	address, err := sdk.AccAddressFromBech32(m.Address)
+	addr, err := sdk.AccAddressFromBech32(m.Address)
 	if err != nil {
 		panic(err)
 	}
 
-	return address
+	return addr
 }
 
-func (m *Session) GetNode() hubtypes.NodeAddress {
-	if m.Node == "" {
+func (m *Session) GetNodeAddress() hubtypes.NodeAddress {
+	if m.NodeAddress == "" {
 		return nil
 	}
 
-	address, err := hubtypes.NodeAddressFromBech32(m.Node)
+	addr, err := hubtypes.NodeAddressFromBech32(m.NodeAddress)
 	if err != nil {
 		panic(err)
 	}
 
-	return address
+	return addr
 }
 
 func (m *Session) Validate() error {
-	if m.Id == 0 {
+	if m.ID == 0 {
 		return fmt.Errorf("id cannot be zero")
 	}
-	if m.Subscription == 0 {
-		return fmt.Errorf("subscription cannot be zero")
+	if m.NodeAddress == "" {
+		return fmt.Errorf("node_address cannot be empty")
 	}
-	if m.Node == "" {
-		return fmt.Errorf("node cannot be empty")
-	}
-	if _, err := hubtypes.NodeAddressFromBech32(m.Node); err != nil {
-		return errors.Wrapf(err, "invalid node %s", m.Node)
+	if _, err := hubtypes.NodeAddressFromBech32(m.NodeAddress); err != nil {
+		return errors.Wrapf(err, "invalid node_address %s", m.NodeAddress)
 	}
 	if m.Address == "" {
 		return fmt.Errorf("address cannot be empty")

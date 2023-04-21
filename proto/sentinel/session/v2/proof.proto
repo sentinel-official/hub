@@ -10,7 +10,7 @@ option (gogoproto.equal_all)           = false;
 option (gogoproto.goproto_getters_all) = false;
 
 message Proof {
-  uint64 id                         = 1;
+  uint64 id                         = 1 [ (gogoproto.customname) = "ID" ];
   google.protobuf.Duration duration = 2
       [ (gogoproto.stdduration) = true, (gogoproto.nullable) = false ];
   sentinel.types.v1.Bandwidth bandwidth = 3 [ (gogoproto.nullable) = false ];
