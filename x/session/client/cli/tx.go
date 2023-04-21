@@ -15,21 +15,21 @@ import (
 
 func txStart() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "start [id] [node]",
+		Use:   "start [node-addr]",
 		Short: "Start a session",
-		Args:  cobra.ExactArgs(2),
+		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
 			}
 
-			id, err := strconv.ParseUint(args[0], 10, 64)
+			id, err := cmd.Flags().GetUint64(flagSubscriptionID)
 			if err != nil {
 				return err
 			}
 
-			address, err := hubtypes.NodeAddressFromBech32(args[1])
+			addr, err := hubtypes.NodeAddressFromBech32(args[0])
 			if err != nil {
 				return err
 			}
@@ -37,9 +37,9 @@ func txStart() *cobra.Command {
 			msg := types.NewMsgStartRequest(
 				ctx.FromAddress,
 				id,
-				address,
+				addr,
 			)
-			if err := msg.ValidateBasic(); err != nil {
+			if err = msg.ValidateBasic(); err != nil {
 				return err
 			}
 
@@ -48,14 +48,15 @@ func txStart() *cobra.Command {
 	}
 
 	flags.AddTxFlagsToCmd(cmd)
+	cmd.Flags().Uint64(flagSubscriptionID, 0, "")
 
 	return cmd
 }
 
-func txUpdate() *cobra.Command {
+func txUpdateDetails() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "update [id] [upload] [download] [duration]",
-		Short: "Update a session",
+		Use:   "update [session-id] [upload] [download] [duration]",
+		Short: "Update the session details",
 		Args:  cobra.ExactArgs(4),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientTxContext(cmd)
@@ -88,16 +89,16 @@ func txUpdate() *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgUpdateRequest(
+			msg := types.NewMsgUpdateDetailsRequest(
 				ctx.FromAddress.Bytes(),
 				types.Proof{
-					Id:        id,
+					ID:        id,
 					Duration:  duration,
 					Bandwidth: hubtypes.NewBandwidthFromInt64(upload, download),
 				},
 				signature,
 			)
-			if err := msg.ValidateBasic(); err != nil {
+			if err = msg.ValidateBasic(); err != nil {
 				return err
 			}
 
@@ -137,7 +138,7 @@ func txEnd() *cobra.Command {
 				id,
 				rating,
 			)
-			if err := msg.ValidateBasic(); err != nil {
+			if err = msg.ValidateBasic(); err != nil {
 				return err
 			}
 

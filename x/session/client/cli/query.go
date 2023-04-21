@@ -60,12 +60,17 @@ func querySessions() *cobra.Command {
 				return err
 			}
 
-			address, err := GetAddress(cmd.Flags())
+			accAddr, err := GetAccountAddress(cmd.Flags())
 			if err != nil {
 				return err
 			}
 
-			status, err := GetStatus(cmd.Flags())
+			nodeAddr, err := GetNodeAddress(cmd.Flags())
+			if err != nil {
+				return err
+			}
+
+			subscriptionID, err := cmd.Flags().GetUint64(flagSubscriptionID)
 			if err != nil {
 				return err
 			}
@@ -79,24 +84,11 @@ func querySessions() *cobra.Command {
 				qc = types.NewQueryServiceClient(ctx)
 			)
 
-			if address != nil {
-				res, err := qc.QuerySessionsForAddress(
+			if !accAddr.Empty() {
+				res, err := qc.QuerySessionsForAccount(
 					context.Background(),
-					types.NewQuerySessionsForAddressRequest(
-						address,
-						status,
-						pagination,
-					),
-				)
-				if err != nil {
-					return err
-				}
-
-				return ctx.PrintProto(res)
-			} else {
-				res, err := qc.QuerySessions(
-					context.Background(),
-					types.NewQuerySessionsRequest(
+					types.NewQuerySessionsForAccountRequest(
+						accAddr,
 						pagination,
 					),
 				)
@@ -106,13 +98,56 @@ func querySessions() *cobra.Command {
 
 				return ctx.PrintProto(res)
 			}
+
+			if !nodeAddr.Empty() {
+				res, err := qc.QuerySessionsForNode(
+					context.Background(),
+					types.NewQuerySessionsForNodeRequest(
+						nodeAddr,
+						pagination,
+					),
+				)
+				if err != nil {
+					return err
+				}
+
+				return ctx.PrintProto(res)
+			}
+
+			if subscriptionID > 0 {
+				res, err := qc.QuerySessionsForSubscription(
+					context.Background(),
+					types.NewQuerySessionsForSubscriptionRequest(
+						subscriptionID,
+						pagination,
+					),
+				)
+				if err != nil {
+					return err
+				}
+
+				return ctx.PrintProto(res)
+			}
+
+			res, err := qc.QuerySessions(
+				context.Background(),
+				types.NewQuerySessionsRequest(
+					pagination,
+				),
+			)
+			if err != nil {
+				return err
+			}
+
+			return ctx.PrintProto(res)
 		},
 	}
 
 	flags.AddQueryFlagsToCmd(cmd)
 	flags.AddPaginationFlagsToCmd(cmd, "sessions")
-	cmd.Flags().String(flagAddress, "", "filter by account address")
-	cmd.Flags().String(flagStatus, "", "filter by status")
+	cmd.Flags().String(flagAccountAddress, "", "query the sessions of an account address")
+	cmd.Flags().String(flagNodeAddress, "", "query the sessions of a node address")
+	cmd.Flags().Uint64(flagSubscriptionID, 0, "query the sessions of a subscription id")
 
 	return cmd
 }
