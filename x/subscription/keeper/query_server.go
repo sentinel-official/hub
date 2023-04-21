@@ -218,17 +218,14 @@ func (q *queryServer) QueryQuotas(c context.Context, req *types.QueryQuotasReque
 		store = prefix.NewStore(q.Store(ctx), types.GetQuotaKeyPrefix(req.Id))
 	)
 
-	pagination, err := query.FilteredPaginate(store, req.Pagination, func(_, value []byte, accumulate bool) (bool, error) {
-		if accumulate {
-			var item types.Quota
-			if err := q.cdc.Unmarshal(value, &item); err != nil {
-				return false, err
-			}
-
-			items = append(items, item)
+	pagination, err := query.Paginate(store, req.Pagination, func(_, value []byte) error {
+		var item types.Quota
+		if err := q.cdc.Unmarshal(value, &item); err != nil {
+			return err
 		}
 
-		return true, nil
+		items = append(items, item)
+		return nil
 	})
 
 	if err != nil {

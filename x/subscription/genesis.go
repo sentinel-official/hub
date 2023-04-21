@@ -57,7 +57,7 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 			items,
 			types.GenesisSubscription{
 				Subscription: item,
-				Quotas:       k.GetQuotas(ctx, item.Id, 0, 0),
+				Quotas:       k.GetQuotas(ctx, item.Id),
 			},
 		)
 	}

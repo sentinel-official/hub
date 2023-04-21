@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	"fmt"
 	hubtypes "github.com/sentinel-official/hub/types"
 	"time"
 
@@ -78,7 +79,7 @@ func (k *Keeper) SetSubscriptionForAccount(ctx sdk.Context, addr sdk.AccAddress,
 	store.Set(key, value)
 }
 
-func (k *Keeper) HashSubscriptionForAccount(ctx sdk.Context, addr sdk.AccAddress, id uint64) bool {
+func (k *Keeper) HasSubscriptionForAccount(ctx sdk.Context, addr sdk.AccAddress, id uint64) bool {
 	var (
 		store = k.Store(ctx)
 		key   = types.SubscriptionForAccountKey(addr, id)
@@ -94,6 +95,26 @@ func (k *Keeper) DeleteSubscriptionForAccount(ctx sdk.Context, addr sdk.AccAddre
 	)
 
 	store.Delete(key)
+}
+
+func (k *Keeper) GetSubscriptionsForAccount(ctx sdk.Context, addr sdk.AccAddress) (items types.Subscriptions) {
+	var (
+		store = k.Store(ctx)
+		iter  = sdk.KVStorePrefixIterator(store, types.GetSubscriptionForAccountKeyPrefix(addr))
+	)
+
+	defer iter.Close()
+
+	for ; iter.Valid(); iter.Next() {
+		item, found := k.GetSubscription(ctx, types.IDFromSubscriptionForAccountKey(iter.Key()))
+		if !found {
+			panic(fmt.Errorf("subscription for account key %X does not exist", iter.Key()))
+		}
+
+		items = append(items, item)
+	}
+
+	return items
 }
 
 func (k *Keeper) SetSubscriptionForNode(ctx sdk.Context, addr hubtypes.NodeAddress, id uint64) {
@@ -124,6 +145,26 @@ func (k *Keeper) DeleteSubscriptionForNode(ctx sdk.Context, addr hubtypes.NodeAd
 	store.Delete(key)
 }
 
+func (k *Keeper) GetSubscriptionsForNode(ctx sdk.Context, addr hubtypes.NodeAddress) (items types.Subscriptions) {
+	var (
+		store = k.Store(ctx)
+		iter  = sdk.KVStorePrefixIterator(store, types.GetSubscriptionForNodeKeyPrefix(addr))
+	)
+
+	defer iter.Close()
+
+	for ; iter.Valid(); iter.Next() {
+		item, found := k.GetSubscription(ctx, types.IDFromSubscriptionForNodeKey(iter.Key()))
+		if !found {
+			panic(fmt.Errorf("subscription for node key %X does not exist", iter.Key()))
+		}
+
+		items = append(items, item)
+	}
+
+	return items
+}
+
 func (k *Keeper) SetSubscriptionForPlan(ctx sdk.Context, planID, subscriptionID uint64) {
 	var (
 		store = k.Store(ctx)
@@ -150,6 +191,26 @@ func (k *Keeper) DeleteSubscriptionForPlan(ctx sdk.Context, planID, subscription
 	)
 
 	store.Delete(key)
+}
+
+func (k *Keeper) GetSubscriptionsForPlan(ctx sdk.Context, id uint64) (items types.Subscriptions) {
+	var (
+		store = k.Store(ctx)
+		iter  = sdk.KVStorePrefixIterator(store, types.GetSubscriptionForPlanKeyPrefix(id))
+	)
+
+	defer iter.Close()
+
+	for ; iter.Valid(); iter.Next() {
+		item, found := k.GetSubscription(ctx, types.IDFromSubscriptionForPlanKey(iter.Key()))
+		if !found {
+			panic(fmt.Errorf("subscription for plan key %X does not exist", iter.Key()))
+		}
+
+		items = append(items, item)
+	}
+
+	return items
 }
 
 func (k *Keeper) SetInactiveSubscriptionAt(ctx sdk.Context, at time.Time, id uint64) {

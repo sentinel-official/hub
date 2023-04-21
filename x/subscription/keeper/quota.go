@@ -7,18 +7,22 @@ import (
 )
 
 func (k *Keeper) SetQuota(ctx sdk.Context, id uint64, quota types.Quota) {
-	key := types.QuotaKey(id, quota.GetAccountAddress())
-	value := k.cdc.MustMarshal(&quota)
+	var (
+		store = k.Store(ctx)
+		key   = types.QuotaKey(id, quota.GetAccountAddress())
+		value = k.cdc.MustMarshal(&quota)
+	)
 
-	store := k.Store(ctx)
 	store.Set(key, value)
 }
 
-func (k *Keeper) GetQuota(ctx sdk.Context, id uint64, address sdk.AccAddress) (quota types.Quota, found bool) {
-	store := k.Store(ctx)
+func (k *Keeper) GetQuota(ctx sdk.Context, id uint64, addr sdk.AccAddress) (quota types.Quota, found bool) {
+	var (
+		store = k.Store(ctx)
+		key   = types.QuotaKey(id, addr)
+		value = store.Get(key)
+	)
 
-	key := types.QuotaKey(id, address)
-	value := store.Get(key)
 	if value == nil {
 		return quota, false
 	}
@@ -27,21 +31,25 @@ func (k *Keeper) GetQuota(ctx sdk.Context, id uint64, address sdk.AccAddress) (q
 	return quota, true
 }
 
-func (k *Keeper) HasQuota(ctx sdk.Context, id uint64, address sdk.AccAddress) bool {
-	key := types.QuotaKey(id, address)
+func (k *Keeper) HasQuota(ctx sdk.Context, id uint64, addr sdk.AccAddress) bool {
+	var (
+		store = k.Store(ctx)
+		key   = types.QuotaKey(id, addr)
+	)
 
-	store := k.Store(ctx)
 	return store.Has(key)
 }
 
-func (k *Keeper) DeleteQuota(ctx sdk.Context, id uint64, address sdk.AccAddress) {
-	key := types.QuotaKey(id, address)
+func (k *Keeper) DeleteQuota(ctx sdk.Context, id uint64, addr sdk.AccAddress) {
+	var (
+		store = k.Store(ctx)
+		key   = types.QuotaKey(id, addr)
+	)
 
-	store := k.Store(ctx)
 	store.Delete(key)
 }
 
-func (k *Keeper) GetQuotas(ctx sdk.Context, id uint64, skip, limit int64) (items types.Quotas) {
+func (k *Keeper) GetQuotas(ctx sdk.Context, id uint64) (items types.Quotas) {
 	var (
 		store = k.Store(ctx)
 		iter  = sdk.KVStorePrefixIterator(store, types.GetQuotaKeyPrefix(id))

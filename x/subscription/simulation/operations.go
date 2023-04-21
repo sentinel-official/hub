@@ -92,7 +92,7 @@ func SimulateMsgCancelRequest(ak expected.AccountKeeper, bk expected.BankKeeper,
 			from     = ak.GetAccount(ctx, rFrom.Address)
 		)
 
-		subscriptions := k.GetActiveSubscriptionsForAddress(ctx, from.GetAddress(), 0, 0)
+		subscriptions := k.GetSubscriptionsForAccount(ctx, from.GetAddress())
 		if len(subscriptions) == 0 {
 			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgCancelRequest, "active subscriptions for address does not exist"), nil, nil
 		}
@@ -157,7 +157,7 @@ func SimulateMsgShareRequest(ak expected.AccountKeeper, bk expected.BankKeeper, 
 			address     = ak.GetAccount(ctx, rAddress.Address)
 		)
 
-		subscriptions := k.GetActiveSubscriptionsForAddress(ctx, from.GetAddress(), 0, 0)
+		subscriptions := k.GetSubscriptionsForAccount(ctx, from.GetAddress())
 		if len(subscriptions) == 0 {
 			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgShareRequest, "active subscriptions for address does not exist"), nil, nil
 		}
@@ -230,7 +230,7 @@ func SimulateMsgUpdateQuotaRequest(ak expected.AccountKeeper, bk expected.BankKe
 			address     = ak.GetAccount(ctx, rAddress.Address)
 		)
 
-		subscriptions := k.GetActiveSubscriptionsForAddress(ctx, from.GetAddress(), 0, 0)
+		subscriptions := k.GetSubscriptionsForAccount(ctx, from.GetAddress())
 		if len(subscriptions) == 0 {
 			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgShareRequest, "active subscriptions for address does not exist"), nil, nil
 		}
