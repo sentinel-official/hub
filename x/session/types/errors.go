@@ -5,15 +5,7 @@ import (
 )
 
 var (
-	ErrorInvalidField          = errors.Register(ModuleName, 101, "invalid field")
-	ErrorInvalidFrom           = errors.Register(ModuleName, 102, "invalid from")
-	ErrorInvalidId             = errors.Register(ModuleName, 103, "invalid id")
-	ErrorInvalidNode           = errors.Register(ModuleName, 104, "invalid node")
-	ErrorInvalidProofId        = errors.Register(ModuleName, 105, "invalid proof->id")
-	ErrorInvalidProofDuration  = errors.Register(ModuleName, 106, "invalid proof->duration")
-	ErrorInvalidProofBandwidth = errors.Register(ModuleName, 107, "invalid proof->bandwidth")
-	ErrorInvalidSignature      = errors.Register(ModuleName, 108, "invalid signature")
-	ErrorInvalidRating         = errors.Register(ModuleName, 109, "invalid rating")
+	ErrorInvalidMessage = errors.Register(ModuleName, 101, "invalid message")
 )
 
 var (

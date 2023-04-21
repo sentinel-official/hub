@@ -10,7 +10,7 @@ func RegisterInterfaces(registry codectypes.InterfaceRegistry) {
 	registry.RegisterImplementations(
 		(*sdk.Msg)(nil),
 		&MsgStartRequest{},
-		&MsgUpdateRequest{},
+		&MsgUpdateDetailsRequest{},
 		&MsgEndRequest{},
 	)
 

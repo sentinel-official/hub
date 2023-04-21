@@ -7,8 +7,6 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/query"
 	"github.com/stretchr/testify/require"
-
-	hubtypes "github.com/sentinel-official/hub/types"
 )
 
 func TestNewQueryParamsRequest(t *testing.T) {
@@ -30,16 +28,14 @@ func TestNewQuerySessionRequest(t *testing.T) {
 	}
 }
 
-func TestNewQuerySessionsForAddressRequest(t *testing.T) {
+func TestNewQuerySessionsForAccountRequest(t *testing.T) {
 	var (
-		address    []byte
-		status     hubtypes.Status
+		addr       []byte
 		pagination *query.PageRequest
 	)
 
 	for i := 0; i < 40; i++ {
-		address = make([]byte, i)
-		status = hubtypes.Status(i % 4)
+		addr = make([]byte, i)
 		pagination = &query.PageRequest{
 			Key:        make([]byte, i),
 			Offset:     uint64(i),
@@ -47,17 +43,16 @@ func TestNewQuerySessionsForAddressRequest(t *testing.T) {
 			CountTotal: i/2 == 0,
 		}
 
-		_, _ = rand.Read(address)
+		_, _ = rand.Read(addr)
 		_, _ = rand.Read(pagination.Key)
 
 		require.Equal(
 			t,
-			&QuerySessionsForAddressRequest{
-				Address:    sdk.AccAddress(address).String(),
-				Status:     status,
+			&QuerySessionsForAccountRequest{
+				Address:    sdk.AccAddress(addr).String(),
 				Pagination: pagination,
 			},
-			NewQuerySessionsForAddressRequest(address, status, pagination),
+			NewQuerySessionsForAccountRequest(addr, pagination),
 		)
 	}
 }
