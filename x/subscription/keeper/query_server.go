@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"context"
+	"fmt"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -94,10 +95,10 @@ func (q *queryServer) QuerySubscriptionsForAccount(c context.Context, req *types
 		store = prefix.NewStore(q.Store(ctx), types.GetSubscriptionForAccountKeyPrefix(addr))
 	)
 
-	pagination, err := query.Paginate(store, req.Pagination, func(_, value []byte) error {
-		var v types.Subscription
-		if err := q.cdc.UnmarshalInterface(value, &v); err != nil {
-			return err
+	pagination, err := query.Paginate(store, req.Pagination, func(key, _ []byte) error {
+		v, found := q.GetSubscription(ctx, types.IDFromSubscriptionForAccountKey(key))
+		if !found {
+			return fmt.Errorf("subscription for account key %X does not exist", key)
 		}
 
 		item, err := codectypes.NewAnyWithValue(v)
@@ -132,10 +133,10 @@ func (q *queryServer) QuerySubscriptionsForNode(c context.Context, req *types.Qu
 		store = prefix.NewStore(q.Store(ctx), types.GetSubscriptionForNodeKeyPrefix(addr))
 	)
 
-	pagination, err := query.Paginate(store, req.Pagination, func(_, value []byte) error {
-		var v types.Subscription
-		if err := q.cdc.UnmarshalInterface(value, &v); err != nil {
-			return err
+	pagination, err := query.Paginate(store, req.Pagination, func(key, _ []byte) error {
+		v, found := q.GetSubscription(ctx, types.IDFromSubscriptionForNodeKey(key))
+		if !found {
+			return fmt.Errorf("subscription for node key %X does not exist", key)
 		}
 
 		item, err := codectypes.NewAnyWithValue(v)
@@ -165,10 +166,10 @@ func (q *queryServer) QuerySubscriptionsForPlan(c context.Context, req *types.Qu
 		store = prefix.NewStore(q.Store(ctx), types.GetSubscriptionForPlanKeyPrefix(req.Id))
 	)
 
-	pagination, err := query.Paginate(store, req.Pagination, func(_, value []byte) error {
-		var v types.Subscription
-		if err := q.cdc.UnmarshalInterface(value, &v); err != nil {
-			return err
+	pagination, err := query.Paginate(store, req.Pagination, func(key, _ []byte) error {
+		v, found := q.GetSubscription(ctx, types.IDFromSubscriptionForPlanKey(key))
+		if !found {
+			return fmt.Errorf("subscription for plan key %X does not exist", key)
 		}
 
 		item, err := codectypes.NewAnyWithValue(v)
@@ -192,16 +193,16 @@ func (q *queryServer) QueryQuota(c context.Context, req *types.QueryQuotaRequest
 		return nil, status.Error(codes.InvalidArgument, "empty request")
 	}
 
-	address, err := sdk.AccAddressFromBech32(req.Address)
+	addr, err := sdk.AccAddressFromBech32(req.Address)
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid address %s", req.Address)
 	}
 
 	ctx := sdk.UnwrapSDKContext(c)
 
-	item, found := q.GetQuota(ctx, req.Id, address)
+	item, found := q.GetQuota(ctx, req.Id, addr)
 	if !found {
-		return nil, status.Errorf(codes.NotFound, "quota does not exist for id %d, and address %s", req.Id, req.Address)
+		return nil, status.Errorf(codes.NotFound, "quota %d/%s does not exist", req.Id, req.Address)
 	}
 
 	return &types.QueryQuotaResponse{Quota: item}, nil

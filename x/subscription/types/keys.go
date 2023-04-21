@@ -109,7 +109,7 @@ func IDFromSubscriptionForPlanKey(key []byte) uint64 {
 }
 
 func IDFromInactiveSubscriptionAtKey(key []byte) uint64 {
-	// prefix (1 byte) | at (29 bytes) | subscription (8 bytes)
+	// prefix (1 byte) | at (29 bytes) | id (8 bytes)
 
 	if len(key) != 38 {
 		panic(fmt.Errorf("invalid key length %d; expected %d", len(key), 38))

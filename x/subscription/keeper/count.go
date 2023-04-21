@@ -7,18 +7,22 @@ import (
 )
 
 func (k *Keeper) SetCount(ctx sdk.Context, count uint64) {
-	key := types.CountKey
-	value := k.cdc.MustMarshal(&protobuf.UInt64Value{Value: count})
+	var (
+		key   = types.CountKey
+		value = k.cdc.MustMarshal(&protobuf.UInt64Value{Value: count})
+		store = k.Store(ctx)
+	)
 
-	store := k.Store(ctx)
 	store.Set(key, value)
 }
 
 func (k *Keeper) GetCount(ctx sdk.Context) uint64 {
-	store := k.Store(ctx)
+	var (
+		store = k.Store(ctx)
+		key   = types.CountKey
+		value = store.Get(key)
+	)
 
-	key := types.CountKey
-	value := store.Get(key)
 	if value == nil {
 		return 0
 	}
