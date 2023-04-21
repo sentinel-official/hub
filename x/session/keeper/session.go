@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	"fmt"
 	hubtypes "github.com/sentinel-official/hub/types"
 	"time"
 
@@ -97,6 +98,26 @@ func (k *Keeper) DeleteSessionForAccount(ctx sdk.Context, addr sdk.AccAddress, i
 	store.Delete(key)
 }
 
+func (k *Keeper) GetSessionsForAccount(ctx sdk.Context, addr sdk.AccAddress) (items types.Sessions) {
+	var (
+		store = k.Store(ctx)
+		iter  = sdk.KVStorePrefixIterator(store, types.GetSessionForAccountKeyPrefix(addr))
+	)
+
+	defer iter.Close()
+
+	for ; iter.Valid(); iter.Next() {
+		item, found := k.GetSession(ctx, types.IDFromSessionForAccountKey(iter.Key()))
+		if !found {
+			panic(fmt.Errorf("session for account key %X does not exist", iter.Key()))
+		}
+
+		items = append(items, item)
+	}
+
+	return items
+}
+
 func (k *Keeper) SetSessionForNode(ctx sdk.Context, addr hubtypes.NodeAddress, id uint64) {
 	var (
 		store = k.Store(ctx)
@@ -116,6 +137,26 @@ func (k *Keeper) DeleteSessionForNode(ctx sdk.Context, addr hubtypes.NodeAddress
 	store.Delete(key)
 }
 
+func (k *Keeper) GetSessionsForNode(ctx sdk.Context, addr hubtypes.NodeAddress) (items types.Sessions) {
+	var (
+		store = k.Store(ctx)
+		iter  = sdk.KVStorePrefixIterator(store, types.GetSessionForNodeKeyPrefix(addr))
+	)
+
+	defer iter.Close()
+
+	for ; iter.Valid(); iter.Next() {
+		item, found := k.GetSession(ctx, types.IDFromSessionForNodeKey(iter.Key()))
+		if !found {
+			panic(fmt.Errorf("session for node key %X does not exist", iter.Key()))
+		}
+
+		items = append(items, item)
+	}
+
+	return items
+}
+
 func (k *Keeper) SetSessionForSubscription(ctx sdk.Context, subscriptionID, sessionID uint64) {
 	var (
 		store = k.Store(ctx)
@@ -133,6 +174,26 @@ func (k *Keeper) DeleteSessionForSubscription(ctx sdk.Context, subscriptionID, s
 	)
 
 	store.Delete(key)
+}
+
+func (k *Keeper) GetSessionsForSubscription(ctx sdk.Context, id uint64) (items types.Sessions) {
+	var (
+		store = k.Store(ctx)
+		iter  = sdk.KVStorePrefixIterator(store, types.GetSessionForSubscriptionKeyPrefix(id))
+	)
+
+	defer iter.Close()
+
+	for ; iter.Valid(); iter.Next() {
+		item, found := k.GetSession(ctx, types.IDFromSessionForSubscriptionKey(iter.Key()))
+		if !found {
+			panic(fmt.Errorf("session for subscription key %X does not exist", iter.Key()))
+		}
+
+		items = append(items, item)
+	}
+
+	return items
 }
 
 func (k *Keeper) SetInactiveSessionAt(ctx sdk.Context, at time.Time, id uint64) {

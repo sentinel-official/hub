@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"context"
+	"fmt"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/query"
@@ -83,10 +84,10 @@ func (q *queryServer) QuerySessionsForAccount(c context.Context, req *types.Quer
 		store = prefix.NewStore(q.Store(ctx), types.GetSessionForAccountKeyPrefix(addr))
 	)
 
-	pagination, err := query.Paginate(store, req.Pagination, func(_, value []byte) error {
-		var item types.Session
-		if err := q.cdc.Unmarshal(value, &item); err != nil {
-			return err
+	pagination, err := query.Paginate(store, req.Pagination, func(key, _ []byte) error {
+		item, found := q.GetSession(ctx, types.IDFromSessionForAccountKey(key))
+		if !found {
+			return fmt.Errorf("session for account key %X does not exist", key)
 		}
 
 		items = append(items, item)
@@ -116,10 +117,10 @@ func (q *queryServer) QuerySessionsForNode(c context.Context, req *types.QuerySe
 		store = prefix.NewStore(q.Store(ctx), types.GetSessionForNodeKeyPrefix(addr))
 	)
 
-	pagination, err := query.Paginate(store, req.Pagination, func(_, value []byte) error {
-		var item types.Session
-		if err := q.cdc.Unmarshal(value, &item); err != nil {
-			return err
+	pagination, err := query.Paginate(store, req.Pagination, func(key, _ []byte) error {
+		item, found := q.GetSession(ctx, types.IDFromSessionForNodeKey(key))
+		if !found {
+			return fmt.Errorf("session for node key %X does not exist", key)
 		}
 
 		items = append(items, item)
@@ -144,10 +145,10 @@ func (q *queryServer) QuerySessionsForSubscription(c context.Context, req *types
 		store = prefix.NewStore(q.Store(ctx), types.GetSessionForSubscriptionKeyPrefix(req.Id))
 	)
 
-	pagination, err := query.Paginate(store, req.Pagination, func(_, value []byte) error {
-		var item types.Session
-		if err := q.cdc.Unmarshal(value, &item); err != nil {
-			return err
+	pagination, err := query.Paginate(store, req.Pagination, func(key, _ []byte) error {
+		item, found := q.GetSession(ctx, types.IDFromSessionForSubscriptionKey(key))
+		if !found {
+			return fmt.Errorf("session for subscription key %X does not exist", key)
 		}
 
 		items = append(items, item)

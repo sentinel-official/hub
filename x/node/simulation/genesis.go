@@ -18,7 +18,7 @@ func RandomizedGenesisState(state *module.SimulationState) *types.GenesisState {
 		minGigabytePrices sdk.Coins
 		maxHourlyPrices   sdk.Coins
 		minHourlyPrices   sdk.Coins
-		stakingShare      sdk.Dec
+		revenueShare      sdk.Dec
 	)
 
 	state.AppParams.GetOrGenerate(
@@ -101,10 +101,10 @@ func RandomizedGenesisState(state *module.SimulationState) *types.GenesisState {
 	state.AppParams.GetOrGenerate(
 		state.Cdc,
 		string(types.KeyRevenueShare),
-		&stakingShare,
+		&revenueShare,
 		state.Rand,
 		func(r *rand.Rand) {
-			stakingShare = sdk.NewDecWithPrec(
+			revenueShare = sdk.NewDecWithPrec(
 				r.Int63n(MaxInt),
 				6,
 			)
@@ -115,7 +115,7 @@ func RandomizedGenesisState(state *module.SimulationState) *types.GenesisState {
 		RandomNodes(state.Rand, state.Accounts),
 		types.NewParams(
 			deposit, inactiveDuration, maxGigabytePrices, minGigabytePrices,
-			maxHourlyPrices, minHourlyPrices, stakingShare,
+			maxHourlyPrices, minHourlyPrices, revenueShare,
 		),
 	)
 }

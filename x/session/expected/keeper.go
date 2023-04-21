@@ -28,7 +28,7 @@ type PlanKeeper interface {
 
 type NodeKeeper interface {
 	GetNode(ctx sdk.Context, address hubtypes.NodeAddress) (nodetypes.Node, bool)
-	StakingShare(ctx sdk.Context) sdk.Dec
+	RevenueShare(ctx sdk.Context) sdk.Dec
 }
 
 type SubscriptionKeeper interface {

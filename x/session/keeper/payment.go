@@ -48,8 +48,8 @@ func (k *Keeper) ProcessPaymentAndUpdateQuota(ctx sdk.Context, session types.Ses
 		var (
 			amount        = subscription.Amount(consumed)
 			nodeAddr      = session.GetNodeAddress()
-			stakingShare  = k.node.StakingShare(ctx)
-			stakingReward = hubutils.GetProportionOfCoin(amount, stakingShare)
+			revenueShare  = k.node.RevenueShare(ctx)
+			stakingReward = hubutils.GetProportionOfCoin(amount, revenueShare)
 		)
 
 		if err := k.SendCoinFromDepositToModule(ctx, from, k.feeCollectorName, stakingReward); err != nil {

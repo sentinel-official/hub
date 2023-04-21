@@ -66,8 +66,8 @@ func InactiveSessionAtKey(at time.Time, id uint64) []byte {
 	return append(GetInactiveSessionAtKeyPrefix(at), sdk.Uint64ToBigEndian(id)...)
 }
 
-func IDFromStatusSessionForAddressKey(key []byte) uint64 {
-	// prefix (1 byte) | addrLen (1 byte) | addr | session (8 bytes)
+func IDFromSessionForAccountKey(key []byte) uint64 {
+	// prefix (1 byte) | addrLen (1 byte) | addr (addrLen bytes) | id (8 bytes)
 
 	addrLen := int(key[1])
 	if len(key) != 10+addrLen {
@@ -75,6 +75,27 @@ func IDFromStatusSessionForAddressKey(key []byte) uint64 {
 	}
 
 	return sdk.BigEndianToUint64(key[2+addrLen:])
+}
+
+func IDFromSessionForNodeKey(key []byte) uint64 {
+	// prefix (1 byte) | addrLen (1 byte) | addr (addrLen bytes) | id (8 bytes)
+
+	addrLen := int(key[1])
+	if len(key) != 10+addrLen {
+		panic(fmt.Errorf("invalid key length %d; expected %d", len(key), 10+addrLen))
+	}
+
+	return sdk.BigEndianToUint64(key[2+addrLen:])
+}
+
+func IDFromSessionForSubscriptionKey(key []byte) uint64 {
+	// prefix (1 byte) | subscriptionID (8 bytes) | sessionID (8 bytes)
+
+	if len(key) != 17 {
+		panic(fmt.Errorf("invalid key length %d; expected %d", len(key), 17))
+	}
+
+	return sdk.BigEndianToUint64(key[9:])
 }
 
 func IDFromStatusSessionAtKey(key []byte) uint64 {

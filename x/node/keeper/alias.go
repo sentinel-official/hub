@@ -18,7 +18,3 @@ func (k *Keeper) FundCommunityPool(ctx sdk.Context, fromAddr sdk.AccAddress, coi
 func (k *Keeper) HasProvider(ctx sdk.Context, addr hubtypes.ProvAddress) bool {
 	return k.provider.HasProvider(ctx, addr)
 }
-
-func (k *Keeper) GetPlanCountForNodeByProvider(ctx sdk.Context, provAddr hubtypes.ProvAddress, nodeAddr hubtypes.NodeAddress) uint64 {
-	return k.plan.GetCountForNodeByProvider(ctx, provAddr, nodeAddr)
-}

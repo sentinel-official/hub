@@ -26,11 +26,11 @@ type DepositKeeper interface {
 }
 
 type ProviderKeeper interface {
-	StakingShare(ctx sdk.Context) sdk.Dec
+	RevenueShare(ctx sdk.Context) sdk.Dec
 }
 
 type NodeKeeper interface {
-	GetNode(ctx sdk.Context, address hubtypes.NodeAddress) (nodetypes.Node, bool)
+	GetNode(ctx sdk.Context, addr hubtypes.NodeAddress) (nodetypes.Node, bool)
 }
 
 type PlanKeeper interface {
@@ -38,5 +38,5 @@ type PlanKeeper interface {
 }
 
 type SessionKeeper interface {
-	GetActiveSessionsForAddress(ctx sdk.Context, address sdk.AccAddress, skip, limit int64) sessiontypes.Sessions
+	GetSessionsForAccount(ctx sdk.Context, addr sdk.AccAddress) sessiontypes.Sessions
 }

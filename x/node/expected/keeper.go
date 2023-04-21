@@ -20,9 +20,8 @@ type DistributionKeeper interface {
 }
 
 type ProviderKeeper interface {
-	HasProvider(ctx sdk.Context, address hubtypes.ProvAddress) bool
+	HasProvider(ctx sdk.Context, addr hubtypes.ProvAddress) bool
 }
 
 type PlanKeeper interface {
-	GetCountForNodeByProvider(ctx sdk.Context, p hubtypes.ProvAddress, n hubtypes.NodeAddress) uint64
 }
