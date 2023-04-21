@@ -185,7 +185,7 @@ func SimulateMsgUpdateStatusRequest(ak expected.AccountKeeper, bk expected.BankK
 			from     = ak.GetAccount(ctx, rFrom.Address)
 		)
 
-		plans := k.GetPlansForProvider(ctx, hubtypes.ProvAddress(from.GetAddress()), 0, 0)
+		plans := k.GetPlansForProvider(ctx, from.GetAddress().Bytes())
 		if len(plans) == 0 {
 			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgUpdateStatusRequest, "plans for provider does not exist"), nil, nil
 		}
@@ -201,7 +201,7 @@ func SimulateMsgUpdateStatusRequest(ak expected.AccountKeeper, bk expected.BankK
 		}
 
 		var (
-			id     = plans[r.Intn(len(plans))].Id
+			id     = plans[r.Intn(len(plans))].ID
 			status = hubtypes.StatusActive
 		)
 
@@ -256,27 +256,14 @@ func SimulateMsgLinkNodeRequest(ak expected.AccountKeeper, bk expected.BankKeepe
 			address     = ak.GetAccount(ctx, rAddress.Address)
 		)
 
-		node, found := k.GetNode(ctx, hubtypes.NodeAddress(address.GetAddress()))
-		if !found {
-			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgLinkNodeRequest, "node does not exist"), nil, nil
-		}
-		if node.Provider != hubtypes.ProvAddress(from.GetAddress()).String() {
-			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgLinkNodeRequest, "node has different provider"), nil, nil
-		}
-
-		plans := k.GetPlansForProvider(ctx, hubtypes.ProvAddress(from.GetAddress()), 0, 0)
+		plans := k.GetPlansForProvider(ctx, from.GetAddress().Bytes())
 		if len(plans) == 0 {
 			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgLinkNodeRequest, "plans for provider does not exist"), nil, nil
 		}
 
 		var (
-			id = plans[r.Intn(len(plans))].Id
+			id = plans[r.Intn(len(plans))].ID
 		)
-
-		found = k.HasNodeForPlan(ctx, id, hubtypes.NodeAddress(address.GetAddress()))
-		if found {
-			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgLinkNodeRequest, "node for plan already exists"), nil, nil
-		}
 
 		balance := bk.SpendableCoins(ctx, from.GetAddress())
 		if !balance.IsAnyNegative() {
@@ -335,19 +322,14 @@ func SimulateMsgUnlinkNodeRequest(ak expected.AccountKeeper, bk expected.BankKee
 			address     = ak.GetAccount(ctx, rAddress.Address)
 		)
 
-		plans := k.GetPlansForProvider(ctx, hubtypes.ProvAddress(from.GetAddress()), 0, 0)
+		plans := k.GetPlansForProvider(ctx, from.GetAddress().Bytes())
 		if len(plans) == 0 {
 			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgUnlinkNodeRequest, "plans for provider does not exist"), nil, nil
 		}
 
 		var (
-			id = plans[r.Intn(len(plans))].Id
+			id = plans[r.Intn(len(plans))].ID
 		)
-
-		found := k.HasNodeForPlan(ctx, id, hubtypes.NodeAddress(address.GetAddress()))
-		if !found {
-			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgUnlinkNodeRequest, "node for plan does not exist"), nil, nil
-		}
 
 		balance := bk.SpendableCoins(ctx, from.GetAddress())
 		if !balance.IsAnyNegative() {
@@ -362,7 +344,7 @@ func SimulateMsgUnlinkNodeRequest(ak expected.AccountKeeper, bk expected.BankKee
 		var (
 			txConfig = params.MakeTestEncodingConfig().TxConfig
 			message  = types.NewMsgUnlinkNodeRequest(
-				from.GetAddress(),
+				from.GetAddress().Bytes(),
 				id,
 				hubtypes.NodeAddress(address.GetAddress()),
 			)

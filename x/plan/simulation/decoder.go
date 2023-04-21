@@ -38,30 +38,12 @@ func NewStoreDecoder(cdc codec.Codec) func(kvA, kvB kv.Pair) string {
 			cdc.MustUnmarshal(kvB.Value, &inactivePlanB)
 
 			return fmt.Sprintf("%v\n%v", &inactivePlanA, &inactivePlanB)
-		case bytes.Equal(kvA.Key[:1], types.ActivePlanForProviderKeyPrefix):
+		case bytes.Equal(kvA.Key[:1], types.PlanForProviderKeyPrefix):
 			var activePlanForProviderA, activePlanForProviderB protobuftypes.BoolValue
 			cdc.MustUnmarshal(kvA.Value, &activePlanForProviderA)
 			cdc.MustUnmarshal(kvB.Value, &activePlanForProviderB)
 
 			return fmt.Sprintf("%v\n%v", &activePlanForProviderA, &activePlanForProviderB)
-		case bytes.Equal(kvA.Key[:1], types.InactivePlanForProviderKeyPrefix):
-			var inactivePlanForProviderA, inactivePlanForProviderB protobuftypes.BoolValue
-			cdc.MustUnmarshal(kvA.Value, &inactivePlanForProviderA)
-			cdc.MustUnmarshal(kvB.Value, &inactivePlanForProviderB)
-
-			return fmt.Sprintf("%v\n%v", &inactivePlanForProviderA, &inactivePlanForProviderB)
-		case bytes.Equal(kvA.Key[:1], types.NodeForPlanKeyPrefix):
-			var nodeForPlanA, nodeForPlanB protobuftypes.BoolValue
-			cdc.MustUnmarshal(kvA.Value, &nodeForPlanA)
-			cdc.MustUnmarshal(kvB.Value, &nodeForPlanB)
-
-			return fmt.Sprintf("%v\n%v", &nodeForPlanA, &nodeForPlanB)
-		case bytes.Equal(kvA.Key[:1], types.CountForNodeByProviderKeyPrefix):
-			var countForNodeByProviderA, countForNodeByProviderB protobuftypes.UInt64Value
-			cdc.MustUnmarshal(kvA.Value, &countForNodeByProviderA)
-			cdc.MustUnmarshal(kvB.Value, &countForNodeByProviderB)
-
-			return fmt.Sprintf("%v\n%v", &countForNodeByProviderA, &countForNodeByProviderB)
 		}
 
 		panic(fmt.Sprintf("invalid key prefix %X", kvA.Key[:1]))

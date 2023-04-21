@@ -254,3 +254,28 @@ func (k *Keeper) DeleteInactiveNodeForPlan(ctx sdk.Context, id uint64, addr hubt
 
 	store.Delete(key)
 }
+
+func (k *Keeper) HasNodeForPlan(ctx sdk.Context, id uint64, addr hubtypes.NodeAddress) bool {
+	return k.HasActiveNodeForPlan(ctx, id, addr) ||
+		k.HasInactiveNodeForPlan(ctx, id, addr)
+}
+
+func (k *Keeper) GetNodesForPlan(ctx sdk.Context, id uint64) (items types.Nodes) {
+	var (
+		store = k.Store(ctx)
+		iter  = sdk.KVStorePrefixIterator(store, types.GetNodeForPlanKeyPrefix(id))
+	)
+
+	defer iter.Close()
+
+	for ; iter.Valid(); iter.Next() {
+		item, found := k.GetNode(ctx, types.AddressFromNodeForPlanKey(iter.Key()))
+		if !found {
+			panic(fmt.Errorf("node for plan key %X does not exist", iter.Key()))
+		}
+
+		items = append(items, item)
+	}
+
+	return items
+}

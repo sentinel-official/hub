@@ -89,8 +89,19 @@ func InactiveNodeAtKey(at time.Time, addr hubtypes.NodeAddress) []byte {
 	return append(GetInactiveNodeAtKeyPrefix(at), address.MustLengthPrefix(addr.Bytes())...)
 }
 
+func AddressFromNodeForPlanKey(key []byte) hubtypes.NodeAddress {
+	// prefix (1 byte) | id (8 bytes) | addrLen (1 byte) | addr (addrLen bytes)
+
+	addrLen := int(key[9])
+	if len(key) != 10+addrLen {
+		panic(fmt.Errorf("invalid key length %d; expected %d", len(key), 10+addrLen))
+	}
+
+	return key[10:]
+}
+
 func AddressFromInactiveNodeAtKey(key []byte) hubtypes.NodeAddress {
-	// prefix (1 byte) | at (29 bytes) | addrLen (1 byte) | addr
+	// prefix (1 byte) | at (29 bytes) | addrLen (1 byte) | addr (addrLen bytes)
 
 	addrLen := int(key[30])
 	if len(key) != 31+addrLen {

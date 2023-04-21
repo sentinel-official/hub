@@ -180,3 +180,23 @@ func (k *Keeper) DeleteInactivePlanForProvider(ctx sdk.Context, addr hubtypes.Pr
 
 	store.Delete(key)
 }
+
+func (k *Keeper) GetPlansForProvider(ctx sdk.Context, addr hubtypes.ProvAddress) (items types.Plans) {
+	var (
+		store = k.Store(ctx)
+		iter  = sdk.KVStorePrefixIterator(store, types.GetPlanForProviderKeyPrefix(addr))
+	)
+
+	defer iter.Close()
+
+	for ; iter.Valid(); iter.Next() {
+		item, found := k.GetPlan(ctx, types.IDFromPlanForProviderKey(iter.Key()))
+		if !found {
+			panic(fmt.Errorf("plan for provider key %X does not exist", iter.Key()))
+		}
+
+		items = append(items, item)
+	}
+
+	return items
+}

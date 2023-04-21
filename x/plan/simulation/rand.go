@@ -41,7 +41,7 @@ func RandomPlans(r *rand.Rand) types.Plans {
 		}
 
 		var (
-			price = simulationhubtypes.RandomCoins(
+			prices = simulationhubtypes.RandomCoins(
 				r,
 				sdk.NewCoins(
 					sdk.NewInt64Coin(
@@ -64,13 +64,13 @@ func RandomPlans(r *rand.Rand) types.Plans {
 		items = append(
 			items,
 			types.Plan{
-				Id:       id,
-				Provider: "",
-				Price:    price,
-				Validity: validity,
-				Bytes:    bytes,
-				Status:   status,
-				StatusAt: statusAt,
+				ID:              id,
+				ProviderAddress: "",
+				Prices:          prices,
+				Validity:        validity,
+				Bytes:           bytes,
+				Status:          status,
+				StatusAt:        statusAt,
 			},
 		)
 	}
