@@ -2,8 +2,9 @@ package types
 
 import (
 	"fmt"
-	hubtypes "github.com/sentinel-official/hub/types"
 	"time"
+
+	hubtypes "github.com/sentinel-official/hub/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/address"

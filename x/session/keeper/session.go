@@ -2,8 +2,9 @@ package keeper
 
 import (
 	"fmt"
-	hubtypes "github.com/sentinel-official/hub/types"
 	"time"
+
+	hubtypes "github.com/sentinel-official/hub/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	protobuf "github.com/gogo/protobuf/types"

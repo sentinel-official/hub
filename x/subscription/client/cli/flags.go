@@ -2,8 +2,9 @@ package cli
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	hubtypes "github.com/sentinel-official/hub/types"
 	"github.com/spf13/pflag"
+
+	hubtypes "github.com/sentinel-official/hub/types"
 )
 
 const (

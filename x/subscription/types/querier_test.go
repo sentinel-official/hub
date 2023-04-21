@@ -2,8 +2,9 @@ package types
 
 import (
 	"crypto/rand"
-	hubtypes "github.com/sentinel-official/hub/types"
 	"testing"
+
+	hubtypes "github.com/sentinel-official/hub/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/query"

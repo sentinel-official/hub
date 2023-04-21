@@ -2,11 +2,12 @@ package types
 
 import (
 	"crypto/rand"
+	"testing"
+	"time"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/address"
 	"github.com/stretchr/testify/require"
-	"testing"
-	"time"
 )
 
 func TestInactiveSubscriptionAtKey(t *testing.T) {

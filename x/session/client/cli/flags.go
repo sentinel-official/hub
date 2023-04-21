@@ -2,6 +2,7 @@ package cli
 
 import (
 	"encoding/base64"
+
 	hubtypes "github.com/sentinel-official/hub/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"

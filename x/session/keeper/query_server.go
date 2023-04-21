@@ -3,13 +3,14 @@ package keeper
 import (
 	"context"
 	"fmt"
+
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/query"
-	hubtypes "github.com/sentinel-official/hub/types"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
+	hubtypes "github.com/sentinel-official/hub/types"
 	"github.com/sentinel-official/hub/x/session/types"
 )
 

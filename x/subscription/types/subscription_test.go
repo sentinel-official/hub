@@ -1,12 +1,14 @@
 package types
 
 import (
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	hubtypes "github.com/sentinel-official/hub/types"
-	"github.com/stretchr/testify/require"
 	"reflect"
 	"testing"
 	"time"
+
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/stretchr/testify/require"
+
+	hubtypes "github.com/sentinel-official/hub/types"
 )
 
 func TestBaseSubscription_GetAccountAddress(t *testing.T) {
