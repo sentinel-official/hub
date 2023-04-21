@@ -1,51 +1,32 @@
 package keeper
 
 import (
+	hubtypes "github.com/sentinel-official/hub/types"
 	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	protobuf "github.com/gogo/protobuf/types"
 
-	hubtypes "github.com/sentinel-official/hub/types"
 	"github.com/sentinel-official/hub/x/session/types"
 )
 
-func (k *Keeper) SetCount(ctx sdk.Context, count uint64) {
-	key := types.CountKey
-	value := k.cdc.MustMarshal(&protobuf.UInt64Value{Value: count})
-
-	store := k.Store(ctx)
-	store.Set(key, value)
-}
-
-func (k *Keeper) GetCount(ctx sdk.Context) uint64 {
-	store := k.Store(ctx)
-
-	key := types.CountKey
-	value := store.Get(key)
-	if value == nil {
-		return 0
-	}
-
-	var count protobuf.UInt64Value
-	k.cdc.MustUnmarshal(value, &count)
-
-	return count.Value
-}
-
 func (k *Keeper) SetSession(ctx sdk.Context, session types.Session) {
-	key := types.SessionKey(session.Id)
-	value := k.cdc.MustMarshal(&session)
+	var (
+		store = k.Store(ctx)
+		key   = types.SessionKey(session.ID)
+		value = k.cdc.MustMarshal(&session)
+	)
 
-	store := k.Store(ctx)
 	store.Set(key, value)
 }
 
 func (k *Keeper) GetSession(ctx sdk.Context, id uint64) (session types.Session, found bool) {
-	store := k.Store(ctx)
+	var (
+		store = k.Store(ctx)
+		key   = types.SessionKey(id)
+		value = store.Get(key)
+	)
 
-	key := types.SessionKey(id)
-	value := store.Get(key)
 	if value == nil {
 		return session, false
 	}
@@ -55,28 +36,27 @@ func (k *Keeper) GetSession(ctx sdk.Context, id uint64) (session types.Session, 
 }
 
 func (k *Keeper) DeleteSession(ctx sdk.Context, id uint64) {
-	key := types.SessionKey(id)
+	var (
+		store = k.Store(ctx)
+		key   = types.SessionKey(id)
+	)
 
-	store := k.Store(ctx)
 	store.Delete(key)
 }
 
 func (k *Keeper) GetSessions(ctx sdk.Context, skip, limit int64) (items types.Sessions) {
 	var (
 		store = k.Store(ctx)
-		iter  = hubtypes.NewPaginatedIterator(
-			sdk.KVStorePrefixIterator(store, types.SessionKeyPrefix),
-		)
+		iter  = sdk.KVStorePrefixIterator(store, types.SessionKeyPrefix)
 	)
 
 	defer iter.Close()
 
-	iter.Skip(skip)
-	iter.Limit(limit, func(iter sdk.Iterator) {
+	for ; iter.Valid(); iter.Next() {
 		var item types.Session
 		k.cdc.MustUnmarshal(iter.Value(), &item)
 		items = append(items, item)
-	})
+	}
 
 	return items
 }
@@ -98,72 +78,61 @@ func (k *Keeper) IterateSessions(ctx sdk.Context, fn func(index int, item types.
 	}
 }
 
-func (k *Keeper) SetInactiveSessionForAddress(ctx sdk.Context, address sdk.AccAddress, id uint64) {
-	key := types.InactiveSessionForAddressKey(address, id)
-	value := k.cdc.MustMarshal(&protobuf.BoolValue{Value: true})
+func (k *Keeper) SetSessionForAccount(ctx sdk.Context, addr sdk.AccAddress, id uint64) {
+	var (
+		store = k.Store(ctx)
+		key   = types.SessionForAccountKey(addr, id)
+		value = k.cdc.MustMarshal(&protobuf.BoolValue{Value: true})
+	)
 
-	store := k.Store(ctx)
 	store.Set(key, value)
 }
 
-func (k *Keeper) DeleteInactiveSessionForAddress(ctx sdk.Context, address sdk.AccAddress, id uint64) {
-	key := types.InactiveSessionForAddressKey(address, id)
+func (k *Keeper) DeleteSessionForAccount(ctx sdk.Context, addr sdk.AccAddress, id uint64) {
+	var (
+		store = k.Store(ctx)
+		key   = types.SessionForAccountKey(addr, id)
+	)
 
-	store := k.Store(ctx)
 	store.Delete(key)
 }
 
-func (k *Keeper) GetInactiveSessionsForAddress(ctx sdk.Context, address sdk.AccAddress, skip, limit int64) (items types.Sessions) {
+func (k *Keeper) SetSessionForNode(ctx sdk.Context, addr hubtypes.NodeAddress, id uint64) {
 	var (
 		store = k.Store(ctx)
-		iter  = hubtypes.NewPaginatedIterator(
-			sdk.KVStorePrefixIterator(store, types.GetInactiveSessionForAddressKeyPrefix(address)),
-		)
+		key   = types.SessionForNodeKey(addr, id)
+		value = k.cdc.MustMarshal(&protobuf.BoolValue{Value: true})
 	)
 
-	defer iter.Close()
-
-	iter.Skip(skip)
-	iter.Limit(limit, func(iter sdk.Iterator) {
-		item, _ := k.GetSession(ctx, types.IDFromStatusSessionForAddressKey(iter.Key()))
-		items = append(items, item)
-	})
-
-	return items
-}
-
-func (k *Keeper) SetActiveSessionForAddress(ctx sdk.Context, address sdk.AccAddress, id uint64) {
-	key := types.ActiveSessionForAddressKey(address, id)
-	value := k.cdc.MustMarshal(&protobuf.BoolValue{Value: true})
-
-	store := k.Store(ctx)
 	store.Set(key, value)
 }
 
-func (k *Keeper) DeleteActiveSessionForAddress(ctx sdk.Context, address sdk.AccAddress, id uint64) {
-	key := types.ActiveSessionForAddressKey(address, id)
+func (k *Keeper) DeleteSessionForNode(ctx sdk.Context, addr hubtypes.NodeAddress, id uint64) {
+	var (
+		store = k.Store(ctx)
+		key   = types.SessionForNodeKey(addr, id)
+	)
 
-	store := k.Store(ctx)
 	store.Delete(key)
 }
 
-func (k *Keeper) GetActiveSessionsForAddress(ctx sdk.Context, address sdk.AccAddress, skip, limit int64) (items types.Sessions) {
+func (k *Keeper) SetSessionForSubscription(ctx sdk.Context, subscriptionID, sessionID uint64) {
 	var (
 		store = k.Store(ctx)
-		iter  = hubtypes.NewPaginatedIterator(
-			sdk.KVStorePrefixIterator(store, types.GetActiveSessionForAddressKeyPrefix(address)),
-		)
+		key   = types.SessionForSubscriptionKey(subscriptionID, sessionID)
+		value = k.cdc.MustMarshal(&protobuf.BoolValue{Value: true})
 	)
 
-	defer iter.Close()
+	store.Set(key, value)
+}
 
-	iter.Skip(skip)
-	iter.Limit(limit, func(iter sdk.Iterator) {
-		item, _ := k.GetSession(ctx, types.IDFromStatusSessionForAddressKey(iter.Key()))
-		items = append(items, item)
-	})
+func (k *Keeper) DeleteSessionForSubscription(ctx sdk.Context, subscriptionID, sessionID uint64) {
+	var (
+		store = k.Store(ctx)
+		key   = types.SessionForSubscriptionKey(subscriptionID, sessionID)
+	)
 
-	return items
+	store.Delete(key)
 }
 
 func (k *Keeper) SetInactiveSessionAt(ctx sdk.Context, at time.Time, id uint64) {

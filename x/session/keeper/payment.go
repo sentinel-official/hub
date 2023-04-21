@@ -14,7 +14,7 @@ func (k *Keeper) ProcessPaymentAndUpdateQuota(ctx sdk.Context, session types.Ses
 		return err
 	}
 
-	subscription, found := k.GetSubscription(ctx, session.Subscription)
+	subscription, found := k.GetSubscription(ctx, session.SubscriptionID)
 	if !found {
 		return types.ErrorSubscriptionDoesNotExit
 	}
@@ -22,7 +22,7 @@ func (k *Keeper) ProcessPaymentAndUpdateQuota(ctx sdk.Context, session types.Ses
 		return nil
 	}
 
-	quota, found := k.GetQuota(ctx, session.Subscription, from)
+	quota, found := k.GetQuota(ctx, session.SubscriptionID, from)
 	if !found {
 		return types.ErrorQuotaDoesNotExist
 	}
@@ -43,11 +43,11 @@ func (k *Keeper) ProcessPaymentAndUpdateQuota(ctx sdk.Context, session types.Ses
 		}
 
 		quota.Consumed = quota.Consumed.Add(consumed)
-		k.SetQuota(ctx, session.Subscription, quota)
+		k.SetQuota(ctx, session.SubscriptionID, quota)
 
 		var (
 			amount        = subscription.Amount(consumed)
-			nodeAddr      = session.GetNode()
+			nodeAddr      = session.GetNodeAddress()
 			stakingShare  = k.node.StakingShare(ctx)
 			stakingReward = hubutils.GetProportionOfCoin(amount, stakingShare)
 		)
@@ -57,14 +57,14 @@ func (k *Keeper) ProcessPaymentAndUpdateQuota(ctx sdk.Context, session types.Ses
 		}
 
 		amount = amount.Sub(stakingReward)
-		ctx.Logger().Info("processing the payment for session", "id", session.Id,
+		ctx.Logger().Info("processing the payment for session", "id", session.ID,
 			"consumed", consumed, "to_address", nodeAddr, "amount", amount)
 
 		ctx.EventManager().EmitTypedEvent(
 			&types.EventPay{
-				Id:           session.Id,
-				Node:         session.Node,
-				Subscription: session.Subscription,
+				Id:           session.ID,
+				Node:         session.NodeAddress,
+				Subscription: session.SubscriptionID,
 				Amount:       amount,
 			},
 		)
@@ -78,7 +78,7 @@ func (k *Keeper) ProcessPaymentAndUpdateQuota(ctx sdk.Context, session types.Ses
 	}
 
 	quota.Consumed = quota.Consumed.Add(consumed)
-	k.SetQuota(ctx, session.Subscription, quota)
+	k.SetQuota(ctx, session.SubscriptionID, quota)
 
 	return nil
 }

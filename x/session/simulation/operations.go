@@ -19,9 +19,9 @@ import (
 )
 
 var (
-	OperationWeightMsgStartRequest  = "op_weight_" + types.TypeMsgStartRequest
-	OperationWeightMsgUpdateRequest = "op_weight_" + types.TypeMsgUpdateRequest
-	OperationWeightMsgEndRequest    = "op_weight_" + types.TypeMsgEndRequest
+	OperationWeightMsgStartRequest         = "op_weight_" + types.TypeMsgStartRequest
+	OperationWeightMsgUpdateDetailsRequest = "op_weight_" + types.TypeMsgUpdateDetailsRequest
+	OperationWeightMsgEndRequest           = "op_weight_" + types.TypeMsgEndRequest
 )
 
 func WeightedOperations(
@@ -32,9 +32,9 @@ func WeightedOperations(
 	k keeper.Keeper,
 ) simulation.WeightedOperations {
 	var (
-		weightMsgStartRequest  int
-		weightMsgUpdateRequest int
-		weightMsgEndRequest    int
+		weightMsgStartRequest         int
+		weightMsgUpdateDetailsRequest int
+		weightMsgEndRequest           int
 	)
 
 	params.GetOrGenerate(
@@ -48,11 +48,11 @@ func WeightedOperations(
 	)
 	params.GetOrGenerate(
 		cdc,
-		OperationWeightMsgUpdateRequest,
-		&weightMsgUpdateRequest,
+		OperationWeightMsgUpdateDetailsRequest,
+		&weightMsgUpdateDetailsRequest,
 		nil,
 		func(_ *rand.Rand) {
-			weightMsgUpdateRequest = 100
+			weightMsgUpdateDetailsRequest = 100
 		},
 	)
 	params.GetOrGenerate(
@@ -71,8 +71,8 @@ func WeightedOperations(
 			SimulateMsgStartRequest(ak, bk, k),
 		),
 		simulation.NewWeightedOperation(
-			weightMsgUpdateRequest,
-			SimulateMsgUpdateRequest(ak, bk, k),
+			weightMsgUpdateDetailsRequest,
+			SimulateMsgUpdateDetailsRequest(ak, bk, k),
 		),
 		simulation.NewWeightedOperation(
 			weightMsgEndRequest,
@@ -160,7 +160,7 @@ func SimulateMsgStartRequest(ak expected.AccountKeeper, bk expected.BankKeeper, 
 	}
 }
 
-func SimulateMsgUpdateRequest(ak expected.AccountKeeper, bk expected.BankKeeper, k keeper.Keeper) simulationtypes.Operation {
+func SimulateMsgUpdateDetailsRequest(ak expected.AccountKeeper, bk expected.BankKeeper, k keeper.Keeper) simulationtypes.Operation {
 	return func(
 		r *rand.Rand,
 		app *baseapp.BaseApp,
@@ -176,23 +176,23 @@ func SimulateMsgUpdateRequest(ak expected.AccountKeeper, bk expected.BankKeeper,
 
 		rSession, found := k.GetSession(ctx, rId)
 		if !found {
-			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgUpdateRequest, "session does not exist"), nil, nil
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgUpdateDetailsRequest, "session does not exist"), nil, nil
 		}
 		if rSession.Status.Equal(hubtypes.StatusInactive) {
-			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgUpdateRequest, "session status is inactive"), nil, nil
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgUpdateDetailsRequest, "session status is inactive"), nil, nil
 		}
 		if rSession.Node == hubtypes.NodeAddress(from.GetAddress()).String() {
-			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgUpdateRequest, "session does not belong to node"), nil, nil
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgUpdateDetailsRequest, "session does not belong to node"), nil, nil
 		}
 
 		balance := bk.SpendableCoins(ctx, from.GetAddress())
 		if !balance.IsAnyNegative() {
-			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgUpdateRequest, "balance is negative"), nil, nil
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgUpdateDetailsRequest, "balance is negative"), nil, nil
 		}
 
 		fees, err := simulationtypes.RandomFees(r, ctx, balance)
 		if err != nil {
-			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgUpdateRequest, err.Error()), nil, err
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgUpdateDetailsRequest, err.Error()), nil, err
 		}
 
 		var (
@@ -205,7 +205,7 @@ func SimulateMsgUpdateRequest(ak expected.AccountKeeper, bk expected.BankKeeper,
 
 		var (
 			txConfig = params.MakeTestEncodingConfig().TxConfig
-			message  = types.NewMsgUpdateRequest(
+			message  = types.NewMsgUpdateDetailsRequest(
 				hubtypes.NodeAddress(from.GetAddress()),
 				types.Proof{
 					Id:        rSession.Id,
@@ -227,12 +227,12 @@ func SimulateMsgUpdateRequest(ak expected.AccountKeeper, bk expected.BankKeeper,
 			rFrom.PrivKey,
 		)
 		if err != nil {
-			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgUpdateRequest, err.Error()), nil, err
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgUpdateDetailsRequest, err.Error()), nil, err
 		}
 
 		_, _, err = app.Deliver(txConfig.TxEncoder(), txn)
 		if err != nil {
-			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgUpdateRequest, err.Error()), nil, err
+			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgUpdateDetailsRequest, err.Error()), nil, err
 		}
 
 		return simulationtypes.NewOperationMsg(message, true, "", nil), nil, nil

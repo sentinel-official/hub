@@ -103,7 +103,7 @@ func (k *msgServer) MsgStart(c context.Context, msg *types.MsgStartRequest) (*ty
 	return &types.MsgStartResponse{}, nil
 }
 
-func (k *msgServer) MsgUpdate(c context.Context, msg *types.MsgUpdateRequest) (*types.MsgUpdateResponse, error) {
+func (k *msgServer) MsgUpdateDetails(c context.Context, msg *types.MsgUpdateDetailsRequest) (*types.MsgUpdateDetailsResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
 	session, found := k.GetSession(ctx, msg.Proof.Id)
@@ -141,7 +141,7 @@ func (k *msgServer) MsgUpdate(c context.Context, msg *types.MsgUpdateRequest) (*
 		},
 	)
 
-	return &types.MsgUpdateResponse{}, nil
+	return &types.MsgUpdateDetailsResponse{}, nil
 }
 
 func (k *msgServer) MsgEnd(c context.Context, msg *types.MsgEndRequest) (*types.MsgEndResponse, error) {
