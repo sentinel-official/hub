@@ -1,13 +1,12 @@
 syntax = "proto3";
 package sentinel.subscription.v2;
 
-option go_package = "github.com/sentinel-official/hub/x/subscription/types";
-
 import "gogoproto/gogo.proto";
 import "google/protobuf/any.proto";
 import "sentinel/subscription/v2/params.proto";
 import "sentinel/subscription/v2/quota.proto";
 
+option go_package = "github.com/sentinel-official/hub/x/subscription/types";
 option (gogoproto.equal_all)           = false;
 option (gogoproto.goproto_getters_all) = false;
 
@@ -18,6 +17,6 @@ message GenesisSubscription {
 
 message GenesisState {
   repeated GenesisSubscription subscriptions = 1
-      [ (gogoproto.jsontag) = "_,omitempty", (gogoproto.nullable) = false ];
+      [ (gogoproto.nullable) = false ];
   Params params = 2 [ (gogoproto.nullable) = false ];
 }

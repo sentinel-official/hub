@@ -21,10 +21,9 @@ var (
 var (
 	CountKey = []byte{0x00}
 
-	PlanKeyPrefix         = []byte{0x10}
-	ActivePlanKeyPrefix   = append(PlanKeyPrefix, 0x01)
-	InactivePlanKeyPrefix = append(PlanKeyPrefix, 0x02)
-
+	PlanKeyPrefix            = []byte{0x10}
+	ActivePlanKeyPrefix      = append(PlanKeyPrefix, 0x01)
+	InactivePlanKeyPrefix    = append(PlanKeyPrefix, 0x02)
 	PlanForProviderKeyPrefix = []byte{0x11}
 )
 
