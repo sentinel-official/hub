@@ -11,8 +11,8 @@ func (k *Keeper) Deposit(ctx sdk.Context) (v sdk.Coin) {
 	return
 }
 
-func (k *Keeper) StakingShare(ctx sdk.Context) (v sdk.Dec) {
-	k.params.Get(ctx, types.KeyStakingShare, &v)
+func (k *Keeper) RevenueShare(ctx sdk.Context) (v sdk.Dec) {
+	k.params.Get(ctx, types.KeyRevenueShare, &v)
 	return
 }
 
@@ -23,6 +23,6 @@ func (k *Keeper) SetParams(ctx sdk.Context, params types.Params) {
 func (k *Keeper) GetParams(ctx sdk.Context) types.Params {
 	return types.NewParams(
 		k.Deposit(ctx),
-		k.StakingShare(ctx),
+		k.RevenueShare(ctx),
 	)
 }

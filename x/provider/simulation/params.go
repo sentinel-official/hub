@@ -28,7 +28,7 @@ func ParamChanges(_ *rand.Rand) []simulationtypes.ParamChange {
 		),
 		simulation.NewSimParamChange(
 			types.ModuleName,
-			string(types.KeyStakingShare),
+			string(types.KeyRevenueShare),
 			func(r *rand.Rand) string {
 				return sdk.NewDecWithPrec(
 					r.Int63n(MaxInt),
