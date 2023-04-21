@@ -1,7 +1,9 @@
 package types
 
 import (
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/errors"
+	hubtypes "github.com/sentinel-official/hub/types"
 )
 
 var (
@@ -9,8 +11,23 @@ var (
 )
 
 var (
-	ErrorInvalidGigabytePrices = errors.Register(ModuleName, 201, "invalid gigabyte prices")
-	ErrorInvalidHourlyPrices   = errors.Register(ModuleName, 202, "invalid hourly prices")
-	ErrorDuplicateNode         = errors.Register(ModuleName, 203, "duplicate node")
-	ErrorNodeDoesNotExist      = errors.Register(ModuleName, 204, "node does not exist")
+	ErrorInvalidPrices = errors.Register(ModuleName, 201, "invalid prices")
+	ErrorDuplicateNode = errors.Register(ModuleName, 202, "duplicate node")
+	ErrorNodeNotFound  = errors.Register(ModuleName, 203, "node not found")
 )
+
+func NewErrorInvalidGigabytePrices(prices sdk.Coins) error {
+	return errors.Wrapf(ErrorInvalidPrices, "invalid gigabyte prices %s", prices)
+}
+
+func NewErrorInvalidHourlyPrices(prices sdk.Coins) error {
+	return errors.Wrapf(ErrorInvalidPrices, "invalid hourly prices %s", prices)
+}
+
+func NewErrorNodeNotFound(addr hubtypes.NodeAddress) error {
+	return errors.Wrapf(ErrorNodeNotFound, "node %s does not exist", addr)
+}
+
+func NewErrorDuplicateNode(addr hubtypes.NodeAddress) error {
+	return errors.Wrapf(ErrorDuplicateNode, "node %s already exists", addr)
+}

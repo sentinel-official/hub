@@ -2,7 +2,6 @@ package keeper
 
 import (
 	"context"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	hubtypes "github.com/sentinel-official/hub/types"
@@ -26,12 +25,12 @@ func (k *msgServer) MsgRegister(c context.Context, msg *types.MsgRegisterRequest
 
 	if msg.GigabytePrices != nil {
 		if !k.IsValidGigabytePrices(ctx, msg.GigabytePrices) {
-			return nil, types.ErrorInvalidGigabytePrices
+			return nil, types.NewErrorInvalidGigabytePrices(msg.GigabytePrices)
 		}
 	}
 	if msg.HourlyPrices != nil {
 		if !k.IsValidHourlyPrices(ctx, msg.HourlyPrices) {
-			return nil, types.ErrorInvalidHourlyPrices
+			return nil, types.NewErrorInvalidGigabytePrices(msg.HourlyPrices)
 		}
 	}
 
@@ -42,7 +41,7 @@ func (k *msgServer) MsgRegister(c context.Context, msg *types.MsgRegisterRequest
 
 	nodeAddr := hubtypes.NodeAddress(accAddr.Bytes())
 	if k.HasNode(ctx, nodeAddr) {
-		return nil, types.ErrorDuplicateNode
+		return nil, types.NewErrorDuplicateNode(nodeAddr)
 	}
 
 	deposit := k.Deposit(ctx)
@@ -79,19 +78,19 @@ func (k *msgServer) MsgUpdateDetails(c context.Context, msg *types.MsgUpdateDeta
 
 	node, found := k.GetNode(ctx, nodeAddr)
 	if !found {
-		return nil, types.ErrorNodeDoesNotExist
+		return nil, types.NewErrorNodeNotFound(nodeAddr)
 	}
 
 	if msg.GigabytePrices != nil {
 		if !k.IsValidGigabytePrices(ctx, msg.GigabytePrices) {
-			return nil, types.ErrorInvalidGigabytePrices
+			return nil, types.NewErrorInvalidGigabytePrices(msg.GigabytePrices)
 		}
 
 		node.GigabytePrices = msg.GigabytePrices
 	}
 	if msg.HourlyPrices != nil {
 		if !k.IsValidHourlyPrices(ctx, msg.HourlyPrices) {
-			return nil, types.ErrorInvalidHourlyPrices
+			return nil, types.NewErrorInvalidHourlyPrices(msg.HourlyPrices)
 		}
 
 		node.HourlyPrices = msg.HourlyPrices
@@ -120,7 +119,7 @@ func (k *msgServer) MsgUpdateStatus(c context.Context, msg *types.MsgUpdateStatu
 
 	node, found := k.GetNode(ctx, nodeAddr)
 	if !found {
-		return nil, types.ErrorNodeDoesNotExist
+		return nil, types.NewErrorNodeNotFound(nodeAddr)
 	}
 
 	inactiveDuration := k.InactiveDuration(ctx)
