@@ -38,6 +38,26 @@ func (k *Keeper) MinHourlyPrices(ctx sdk.Context) (v sdk.Coins) {
 	return
 }
 
+func (k *Keeper) MaxLeaseHours(ctx sdk.Context) (v int64) {
+	k.params.Get(ctx, types.KeyMaxLeaseHours, &v)
+	return
+}
+
+func (k *Keeper) MinLeaseHours(ctx sdk.Context) (v int64) {
+	k.params.Get(ctx, types.KeyMinLeaseHours, &v)
+	return
+}
+
+func (k *Keeper) MaxLeaseGigabytes(ctx sdk.Context) (v int64) {
+	k.params.Get(ctx, types.KeyMaxLeaseGigabytes, &v)
+	return
+}
+
+func (k *Keeper) MinLeaseGigabytes(ctx sdk.Context) (v int64) {
+	k.params.Get(ctx, types.KeyMinLeaseGigabytes, &v)
+	return
+}
+
 func (k *Keeper) RevenueShare(ctx sdk.Context) (v sdk.Dec) {
 	k.params.Get(ctx, types.KeyRevenueShare, &v)
 	return
@@ -55,6 +75,10 @@ func (k *Keeper) GetParams(ctx sdk.Context) types.Params {
 		k.MinGigabytePrices(ctx),
 		k.MaxHourlyPrices(ctx),
 		k.MinHourlyPrices(ctx),
+		k.MaxLeaseHours(ctx),
+		k.MinLeaseHours(ctx),
+		k.MaxLeaseGigabytes(ctx),
+		k.MinLeaseGigabytes(ctx),
 		k.RevenueShare(ctx),
 	)
 }
@@ -94,6 +118,34 @@ func (k *Keeper) IsValidHourlyPrices(ctx sdk.Context, prices sdk.Coins) bool {
 		if amount.LT(coin.Amount) {
 			return false
 		}
+	}
+
+	return true
+}
+
+func (k *Keeper) IsValidLeaseHours(ctx sdk.Context, hours int64) bool {
+	maxHours := k.MaxLeaseHours(ctx)
+	if maxHours > 0 && hours > maxHours {
+		return false
+	}
+
+	minHours := k.MinLeaseHours(ctx)
+	if minHours > 0 && hours < minHours {
+		return false
+	}
+
+	return true
+}
+
+func (k *Keeper) IsValidLeaseGigabytes(ctx sdk.Context, gigabytes int64) bool {
+	maxGigabytes := k.MaxLeaseGigabytes(ctx)
+	if maxGigabytes > 0 && gigabytes > maxGigabytes {
+		return false
+	}
+
+	minGigabytes := k.MinLeaseGigabytes(ctx)
+	if minGigabytes > 0 && gigabytes < minGigabytes {
+		return false
 	}
 
 	return true
