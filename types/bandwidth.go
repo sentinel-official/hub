@@ -17,6 +17,10 @@ func NewBandwidth(upload, download sdk.Int) Bandwidth {
 	}
 }
 
+func (b Bandwidth) IsAnyNil() bool {
+	return b.Upload.IsNil() || b.Download.IsNil()
+}
+
 func (b Bandwidth) IsAnyZero() bool {
 	return b.Upload.IsZero() || b.Download.IsZero()
 }
