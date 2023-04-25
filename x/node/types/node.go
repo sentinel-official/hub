@@ -75,6 +75,10 @@ func (m *Node) Validate() error {
 }
 
 func (m *Node) GigabytePrice(denom string) (sdk.Coin, bool) {
+	if m.GigabytePrices == nil {
+		return sdk.Coin{}, true
+	}
+
 	for _, v := range m.GigabytePrices {
 		if v.Denom == denom {
 			return v, true
@@ -85,6 +89,10 @@ func (m *Node) GigabytePrice(denom string) (sdk.Coin, bool) {
 }
 
 func (m *Node) HourlyPrice(denom string) (sdk.Coin, bool) {
+	if m.HourlyPrices == nil {
+		return sdk.Coin{}, true
+	}
+
 	for _, v := range m.HourlyPrices {
 		if v.Denom == denom {
 			return v, true
@@ -92,24 +100,6 @@ func (m *Node) HourlyPrice(denom string) (sdk.Coin, bool) {
 	}
 
 	return sdk.Coin{}, false
-}
-
-func (m *Node) Bytes(coin sdk.Coin) (sdk.Int, error) {
-	price, found := m.GigabytePrice(coin.Denom)
-	if !found {
-		return sdk.ZeroInt(), fmt.Errorf("price for denom %s does not exist", coin.Denom)
-	}
-
-	x := hubtypes.Gigabyte.Quo(price.Amount)
-	if x.IsPositive() {
-		return coin.Amount.Mul(x), nil
-	}
-
-	y := sdk.NewDecFromInt(price.Amount).
-		QuoInt(hubtypes.Gigabyte).
-		Ceil().TruncateInt()
-
-	return coin.Amount.Quo(y), nil
 }
 
 type (

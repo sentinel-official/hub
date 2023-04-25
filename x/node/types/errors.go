@@ -12,9 +12,12 @@ var (
 )
 
 var (
-	ErrorInvalidPrices = errors.Register(ModuleName, 201, "invalid prices")
-	ErrorDuplicateNode = errors.Register(ModuleName, 202, "duplicate node")
-	ErrorNodeNotFound  = errors.Register(ModuleName, 203, "node not found")
+	ErrorDuplicateNode    = errors.Register(ModuleName, 201, "duplicate node")
+	ErrorInvalidGigabytes = errors.Register(ModuleName, 202, "invalid gigabytes")
+	ErrorInvalidHours     = errors.Register(ModuleName, 203, "invalid hours")
+	ErrorInvalidPrices    = errors.Register(ModuleName, 204, "invalid prices")
+	ErrorNodeNotFound     = errors.Register(ModuleName, 205, "node not found")
+	ErrorPriceNotFound    = errors.Register(ModuleName, 206, "price not found")
 )
 
 func NewErrorInvalidGigabytePrices(prices sdk.Coins) error {
@@ -31,4 +34,16 @@ func NewErrorNodeNotFound(addr hubtypes.NodeAddress) error {
 
 func NewErrorDuplicateNode(addr hubtypes.NodeAddress) error {
 	return errors.Wrapf(ErrorDuplicateNode, "node %s already exists", addr)
+}
+
+func NewErrorHourlyPriceNotFound(denom string) error {
+	return errors.Wrapf(ErrorPriceNotFound, "hourly price for denom %s does not exist", denom)
+}
+
+func NewErrorInvalidLeaseGigabytes(gigabytes int64) error {
+	return errors.Wrapf(ErrorInvalidGigabytes, "invalid lease gigabytes %d", gigabytes)
+}
+
+func NewErrorInvalidLeaseHours(hours int64) error {
+	return errors.Wrapf(ErrorInvalidHours, "invalid lease hours %d", hours)
 }

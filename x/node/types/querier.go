@@ -40,8 +40,8 @@ func NewQueryLeasesRequest(pagination *query.PageRequest) *QueryLeasesRequest {
 	}
 }
 
-func NewQueryLeasesForAccountRequest(addr sdk.AccAddress, pagination *query.PageRequest) *QueryLeasesForAccountRequest {
-	return &QueryLeasesForAccountRequest{
+func NewQueryLeasesForAccountRequest(addr sdk.AccAddress, pagination *query.PageRequest) *QueryLeasesForNodeRequest {
+	return &QueryLeasesForNodeRequest{
 		Address:    addr.String(),
 		Pagination: pagination,
 	}

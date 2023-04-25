@@ -45,20 +45,8 @@ func GetNodeForPlanKeyPrefix(id uint64) []byte {
 	return append(NodeForPlanKeyPrefix, sdk.Uint64ToBigEndian(id)...)
 }
 
-func GetActiveNodeForPlanKeyPrefix(id uint64) []byte {
-	return append(GetNodeForPlanKeyPrefix(id), 0x01)
-}
-
-func ActiveNodeForPlanKey(id uint64, addr hubtypes.NodeAddress) []byte {
-	return append(GetActiveNodeForPlanKeyPrefix(id), address.MustLengthPrefix(addr.Bytes())...)
-}
-
-func GetInactiveNodeForPlanKeyPrefix(id uint64) []byte {
-	return append(GetNodeForPlanKeyPrefix(id), 0x02)
-}
-
-func InactiveNodeForPlanKey(id uint64, addr hubtypes.NodeAddress) []byte {
-	return append(GetInactiveNodeForPlanKeyPrefix(id), address.MustLengthPrefix(addr.Bytes())...)
+func NodeForPlanKey(id uint64, addr hubtypes.NodeAddress) []byte {
+	return append(GetNodeForPlanKeyPrefix(id), address.MustLengthPrefix(addr.Bytes())...)
 }
 
 func LeaseKey(id uint64) []byte {
@@ -66,7 +54,7 @@ func LeaseKey(id uint64) []byte {
 }
 
 func GetLeaseForAccountKeyPrefix(addr sdk.AccAddress) []byte {
-	return append(LeaseForAccountKeyPrefix, address.MustLengthPrefix(addr)...)
+	return append(LeaseForAccountKeyPrefix, address.MustLengthPrefix(addr.Bytes())...)
 }
 
 func LeaseForAccountKey(addr sdk.AccAddress, id uint64) []byte {
@@ -74,7 +62,7 @@ func LeaseForAccountKey(addr sdk.AccAddress, id uint64) []byte {
 }
 
 func GetLeaseForNodeKeyPrefix(addr hubtypes.NodeAddress) []byte {
-	return append(LeaseForNodeKeyPrefix, address.MustLengthPrefix(addr)...)
+	return append(LeaseForNodeKeyPrefix, address.MustLengthPrefix(addr.Bytes())...)
 }
 
 func LeaseForNodeKey(addr hubtypes.NodeAddress, id uint64) []byte {
