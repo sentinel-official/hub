@@ -12,12 +12,19 @@ message EventRegister {
   string address = 1 [ (gogoproto.moretags) = "yaml:\"address\"" ];
 }
 
-message EventUpdate {
+message EventUpdateDetails {
   string address = 1 [ (gogoproto.moretags) = "yaml:\"address\"" ];
 }
 
-message EventSetStatus {
+message EventUpdateStatus {
   string address = 1 [ (gogoproto.moretags) = "yaml:\"address\"" ];
   sentinel.types.v1.Status status = 2
       [ (gogoproto.moretags) = "yaml:\"status\"" ];
+}
+
+message EventLease {
+  uint64 id = 1
+      [ (gogoproto.customname) = "ID", (gogoproto.moretags) = "yaml:\"id\"" ];
+  string lessor = 2 [ (gogoproto.moretags) = "yaml:\"lessor\"" ];
+  string lessee = 3 [ (gogoproto.moretags) = "yaml:\"lessee\"" ];
 }
