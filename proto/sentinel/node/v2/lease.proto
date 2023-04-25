@@ -9,9 +9,11 @@ option (gogoproto.equal_all) = false;
 option (gogoproto.goproto_getters_all) = false;
 
 message Lease {
-  uint64 id                      = 1 [ (gogoproto.customname) = "ID" ];
-  string node_address            = 2;
-  string account_address         = 3;
-  int64 hours                    = 4;
-  cosmos.base.v1beta1.Coin price = 5 [ (gogoproto.nullable) = false ];
+  uint64 id    = 1 [ (gogoproto.customname) = "ID" ];
+  string bytes = 2 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable)   = false
+  ];
+  int64 hours                    = 3;
+  cosmos.base.v1beta1.Coin price = 4 [ (gogoproto.nullable) = false ];
 }
