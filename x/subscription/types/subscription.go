@@ -2,6 +2,7 @@ package types
 
 import (
 	"fmt"
+	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/errors"
@@ -15,9 +16,14 @@ type (
 		proto.Message
 		Type() SubscriptionType
 		Validate() error
-		GetAccountAddress() sdk.AccAddress
 		GetID() uint64
+		GetSubscriber() string
+		GetExpiryAt() time.Time
 		GetStatus() hubtypes.Status
+		GetStatusAt() time.Time
+		SetExpiryAt(v time.Time)
+		SetStatus(v hubtypes.Status)
+		SetStatusAt(v time.Time)
 	}
 	Subscriptions []Subscription
 )
@@ -27,31 +33,19 @@ var (
 	_ Subscription = (*PlanSubscription)(nil)
 )
 
-func (s *BaseSubscription) GetID() uint64              { return s.ID }
-func (s *BaseSubscription) GetStatus() hubtypes.Status { return s.Status }
-
-func (s *BaseSubscription) GetAccountAddress() sdk.AccAddress {
-	if s.AccountAddress == "" {
-		return nil
-	}
-
-	addr, err := sdk.AccAddressFromBech32(s.AccountAddress)
-	if err != nil {
-		panic(err)
-	}
-
-	return addr
-}
+func (s *BaseSubscription) SetExpiryAt(v time.Time)     { s.ExpiryAt = v }
+func (s *BaseSubscription) SetStatus(v hubtypes.Status) { s.Status = v }
+func (s *BaseSubscription) SetStatusAt(v time.Time)     { s.StatusAt = v }
 
 func (s *BaseSubscription) Validate() error {
 	if s.ID == 0 {
 		return fmt.Errorf("id cannot be zero")
 	}
-	if s.AccountAddress == "" {
-		return fmt.Errorf("account_address cannot be empty")
+	if s.Subscriber == "" {
+		return fmt.Errorf("subscriber cannot be empty")
 	}
-	if _, err := sdk.AccAddressFromBech32(s.AccountAddress); err != nil {
-		return errors.Wrapf(err, "invalid account_address %s", s.AccountAddress)
+	if _, err := sdk.AccAddressFromBech32(s.Subscriber); err != nil {
+		return errors.Wrapf(err, "invalid subscriber %s", s.Subscriber)
 	}
 	if !s.Status.IsValid() {
 		return fmt.Errorf("status must be valid")
@@ -68,6 +62,9 @@ func (s *NodeSubscription) Type() SubscriptionType {
 }
 
 func (s *NodeSubscription) Validate() error {
+	if s.BaseSubscription == nil {
+		return fmt.Errorf("base_subscription cannot be nil")
+	}
 	if err := s.BaseSubscription.Validate(); err != nil {
 		return err
 	}
@@ -77,24 +74,37 @@ func (s *NodeSubscription) Validate() error {
 	if _, err := hubtypes.NodeAddressFromBech32(s.NodeAddress); err != nil {
 		return errors.Wrapf(err, "invalid node_address %s", s.NodeAddress)
 	}
-	if s.Hours < 0 {
-		return fmt.Errorf("hours cannot be negative")
+	if s.Bytes.IsNil() && s.Hours == 0 {
+		return fmt.Errorf("[bytes, hours] cannot be empty")
 	}
-	if s.Hours == 0 {
-		return fmt.Errorf("hours cannot be zero")
+	if !s.Bytes.IsNil() && s.Hours != 0 {
+		return fmt.Errorf("[bytes, hours] cannot be non-empty")
 	}
-	if s.Price.Denom != "" {
-		if s.Price.IsNil() {
-			return fmt.Errorf("price cannot be nil")
+	if !s.Bytes.IsNil() {
+		if s.Bytes.IsNegative() {
+			return fmt.Errorf("bytes cannot be negative")
 		}
-		if s.Price.IsNegative() {
-			return fmt.Errorf("price cannot be negative")
+		if s.Bytes.IsZero() {
+			return fmt.Errorf("bytes cannot be zero")
 		}
-		if s.Price.IsZero() {
-			return fmt.Errorf("price cannot be zero")
+	}
+	if s.Hours != 0 {
+		if s.Hours < 0 {
+			return fmt.Errorf("hours cannot be negative")
 		}
-		if !s.Price.IsValid() {
-			return fmt.Errorf("price must be valid")
+	}
+	if s.Deposit.Denom != "" {
+		if s.Deposit.IsNil() {
+			return fmt.Errorf("deposit cannot be nil")
+		}
+		if s.Deposit.IsNegative() {
+			return fmt.Errorf("deposit cannot be negative")
+		}
+		if s.Deposit.IsZero() {
+			return fmt.Errorf("deposit cannot be zero")
+		}
+		if !s.Deposit.IsValid() {
+			return fmt.Errorf("deposit must be valid")
 		}
 	}
 
@@ -119,6 +129,9 @@ func (s *PlanSubscription) Type() SubscriptionType {
 }
 
 func (s *PlanSubscription) Validate() error {
+	if s.BaseSubscription == nil {
+		return fmt.Errorf("base_subscription cannot be nil")
+	}
 	if err := s.BaseSubscription.Validate(); err != nil {
 		return err
 	}

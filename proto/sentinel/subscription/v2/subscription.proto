@@ -4,6 +4,7 @@ package sentinel.subscription.v2;
 import "cosmos/base/v1beta1/coin.proto";
 import "gogoproto/gogo.proto";
 import "google/protobuf/timestamp.proto";
+import "google/protobuf/duration.proto";
 import "sentinel/types/v1/status.proto";
 
 option go_package = "github.com/sentinel-official/hub/x/subscription/types";
@@ -18,24 +19,32 @@ enum SubscriptionType {
 }
 
 message BaseSubscription {
+  option (gogoproto.goproto_getters) = true;
+
   uint64 id                           = 1 [ (gogoproto.customname) = "ID" ];
-  string account_address              = 2;
-  sentinel.types.v1.Status status     = 3;
-  google.protobuf.Timestamp status_at = 4
+  string subscriber                   = 2;
+  google.protobuf.Timestamp expiry_at = 3
+      [ (gogoproto.nullable) = false, (gogoproto.stdtime) = true ];
+
+  sentinel.types.v1.Status status     = 4;
+  google.protobuf.Timestamp status_at = 5
       [ (gogoproto.nullable) = false, (gogoproto.stdtime) = true ];
 }
 
 message NodeSubscription {
-  BaseSubscription base = 1
-      [ (gogoproto.embed) = true, (gogoproto.nullable) = false ];
-  string node_address            = 2;
-  int64 hours                    = 3;
-  cosmos.base.v1beta1.Coin price = 4 [ (gogoproto.nullable) = false ];
+  BaseSubscription base = 1 [ (gogoproto.embed) = true ];
+  string node_address   = 2;
+  string bytes          = 3 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable)   = false
+  ];
+  google.protobuf.Duration hours = 4
+      [ (gogoproto.nullable) = false, (gogoproto.stdduration) = true ];
+  cosmos.base.v1beta1.Coin deposit = 5 [ (gogoproto.nullable) = false ];
 }
 
 message PlanSubscription {
-  BaseSubscription base = 1
-      [ (gogoproto.embed) = true, (gogoproto.nullable) = false ];
-  uint64 plan_id = 2 [ (gogoproto.customname) = "PlanID" ];
-  string denom   = 3;
+  BaseSubscription base = 1 [ (gogoproto.embed) = true ];
+  uint64 plan_id        = 2 [ (gogoproto.customname) = "PlanID" ];
+  string denom          = 3;
 }

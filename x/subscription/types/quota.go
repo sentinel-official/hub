@@ -7,12 +7,12 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-func (m *Quota) GetAccountAddress() sdk.AccAddress {
-	if m.AccountAddress == "" {
+func (m *Quota) GetAddress() sdk.AccAddress {
+	if m.Address == "" {
 		return nil
 	}
 
-	addr, err := sdk.AccAddressFromBech32(m.AccountAddress)
+	addr, err := sdk.AccAddressFromBech32(m.Address)
 	if err != nil {
 		panic(err)
 	}
@@ -21,26 +21,26 @@ func (m *Quota) GetAccountAddress() sdk.AccAddress {
 }
 
 func (m *Quota) Validate() error {
-	if m.AccountAddress == "" {
-		return fmt.Errorf("account_address cannot be empty")
+	if m.Address == "" {
+		return fmt.Errorf("address cannot be empty")
 	}
-	if _, err := sdk.AccAddressFromBech32(m.AccountAddress); err != nil {
-		return errors.Wrapf(err, "invalid account_address %s", m.AccountAddress)
+	if _, err := sdk.AccAddressFromBech32(m.Address); err != nil {
+		return errors.Wrapf(err, "invalid address %s", m.Address)
 	}
-	if m.Allocated.IsNil() {
-		return fmt.Errorf("allocated cannot be nil")
+	if m.AllocatedBytes.IsNil() {
+		return fmt.Errorf("allocated_bytes cannot be nil")
 	}
-	if m.Allocated.IsNegative() {
-		return fmt.Errorf("allocated cannot be negative")
+	if m.AllocatedBytes.IsNegative() {
+		return fmt.Errorf("allocated_bytes cannot be negative")
 	}
-	if m.Consumed.IsNil() {
-		return fmt.Errorf("consumed cannot be nil")
+	if m.ConsumedBytes.IsNil() {
+		return fmt.Errorf("consumed_bytes cannot be nil")
 	}
-	if m.Consumed.IsNegative() {
-		return fmt.Errorf("consumed cannot be negative")
+	if m.ConsumedBytes.IsNegative() {
+		return fmt.Errorf("consumed_bytes cannot be negative")
 	}
-	if m.Consumed.GT(m.Allocated) {
-		return fmt.Errorf("consumed cannot be greater than allocated")
+	if m.ConsumedBytes.GT(m.AllocatedBytes) {
+		return fmt.Errorf("consumed_bytes cannot be greater than allocated_bytes")
 	}
 
 	return nil
