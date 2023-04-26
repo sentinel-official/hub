@@ -18,14 +18,6 @@ const (
 	MaxRemoteURLLength = 48
 )
 
-func RandomNode(r *rand.Rand, items types.Nodes) types.Node {
-	if len(items) == 0 {
-		return types.Node{}
-	}
-
-	return items[r.Intn(len(items))]
-}
-
 func RandomNodes(r *rand.Rand, accounts []simulationtypes.Account) types.Nodes {
 	var (
 		duplicates = make(map[string]bool)

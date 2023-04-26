@@ -18,6 +18,10 @@ func RandomizedGenesisState(state *module.SimulationState) *types.GenesisState {
 		minGigabytePrices sdk.Coins
 		maxHourlyPrices   sdk.Coins
 		minHourlyPrices   sdk.Coins
+		maxLeaseHours     int64
+		minLeaseHours     int64
+		maxLeaseGigabytes int64
+		minLeaseGigabytes int64
 		revenueShare      sdk.Dec
 	)
 
@@ -115,7 +119,8 @@ func RandomizedGenesisState(state *module.SimulationState) *types.GenesisState {
 		RandomNodes(state.Rand, state.Accounts),
 		types.NewParams(
 			deposit, inactiveDuration, maxGigabytePrices, minGigabytePrices,
-			maxHourlyPrices, minHourlyPrices, revenueShare,
+			maxHourlyPrices, minHourlyPrices, maxLeaseHours, minLeaseHours,
+			maxLeaseGigabytes, minLeaseGigabytes, revenueShare,
 		),
 	)
 }

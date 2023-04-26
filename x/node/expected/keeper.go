@@ -23,5 +23,6 @@ type ProviderKeeper interface {
 	HasProvider(ctx sdk.Context, addr hubtypes.ProvAddress) bool
 }
 
-type PlanKeeper interface {
+type SubscriptionKeeper interface {
+	CreateNodeSubscription(ctx sdk.Context, accAddr sdk.AccAddress, nodeAddr hubtypes.NodeAddress, hours int64, price sdk.Coin) (uint64, error)
 }

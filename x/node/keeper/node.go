@@ -109,8 +109,7 @@ func (k *Keeper) SetNode(ctx sdk.Context, node types.Node) {
 }
 
 func (k *Keeper) HasNode(ctx sdk.Context, addr hubtypes.NodeAddress) bool {
-	return k.HasActiveNode(ctx, addr) ||
-		k.HasInactiveNode(ctx, addr)
+	return k.HasActiveNode(ctx, addr) || k.HasInactiveNode(ctx, addr)
 }
 
 func (k *Keeper) GetNode(ctx sdk.Context, addr hubtypes.NodeAddress) (node types.Node, found bool) {
@@ -199,65 +198,32 @@ func (k *Keeper) IterateInactiveNodesAt(ctx sdk.Context, at time.Time, fn func(i
 	}
 }
 
-func (k *Keeper) SetActiveNodeForPlan(ctx sdk.Context, id uint64, addr hubtypes.NodeAddress) {
+func (k *Keeper) SetNodeForPlan(ctx sdk.Context, id uint64, addr hubtypes.NodeAddress) {
 	var (
 		store = k.Store(ctx)
-		key   = types.ActiveNodeForPlanKey(id, addr)
+		key   = types.NodeForPlanKey(id, addr)
 		value = k.cdc.MustMarshal(&protobuf.BoolValue{Value: true})
 	)
 
 	store.Set(key, value)
-}
-
-func (k *Keeper) HasActiveNodeForPlan(ctx sdk.Context, id uint64, addr hubtypes.NodeAddress) bool {
-	var (
-		store = k.Store(ctx)
-		key   = types.ActiveNodeForPlanKey(id, addr)
-	)
-
-	return store.Has(key)
-}
-
-func (k *Keeper) DeleteActiveNodeForPlan(ctx sdk.Context, id uint64, addr hubtypes.NodeAddress) {
-	var (
-		store = k.Store(ctx)
-		key   = types.ActiveNodeForPlanKey(id, addr)
-	)
-
-	store.Delete(key)
-}
-
-func (k *Keeper) SetInactiveNodeForPlan(ctx sdk.Context, id uint64, addr hubtypes.NodeAddress) {
-	var (
-		store = k.Store(ctx)
-		key   = types.InactiveNodeForPlanKey(id, addr)
-		value = k.cdc.MustMarshal(&protobuf.BoolValue{Value: true})
-	)
-
-	store.Set(key, value)
-}
-
-func (k *Keeper) HasInactiveNodeForPlan(ctx sdk.Context, id uint64, addr hubtypes.NodeAddress) bool {
-	var (
-		store = k.Store(ctx)
-		key   = types.InactiveNodeForPlanKey(id, addr)
-	)
-
-	return store.Has(key)
-}
-
-func (k *Keeper) DeleteInactiveNodeForPlan(ctx sdk.Context, id uint64, addr hubtypes.NodeAddress) {
-	var (
-		store = k.Store(ctx)
-		key   = types.InactiveNodeForPlanKey(id, addr)
-	)
-
-	store.Delete(key)
 }
 
 func (k *Keeper) HasNodeForPlan(ctx sdk.Context, id uint64, addr hubtypes.NodeAddress) bool {
-	return k.HasActiveNodeForPlan(ctx, id, addr) ||
-		k.HasInactiveNodeForPlan(ctx, id, addr)
+	var (
+		store = k.Store(ctx)
+		key   = types.NodeForPlanKey(id, addr)
+	)
+
+	return store.Has(key)
+}
+
+func (k *Keeper) DeleteNodeForPlan(ctx sdk.Context, id uint64, addr hubtypes.NodeAddress) {
+	var (
+		store = k.Store(ctx)
+		key   = types.NodeForPlanKey(id, addr)
+	)
+
+	store.Delete(key)
 }
 
 func (k *Keeper) GetNodesForPlan(ctx sdk.Context, id uint64) (items types.Nodes) {

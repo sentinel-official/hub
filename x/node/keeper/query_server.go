@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -90,28 +91,27 @@ func (q *queryServer) QueryNodesForPlan(c context.Context, req *types.QueryNodes
 
 	var (
 		items     types.Nodes
-		keyPrefix []byte
+		keyPrefix = types.GetNodeForPlanKeyPrefix(req.Id)
 		ctx       = sdk.UnwrapSDKContext(c)
 	)
 
-	switch req.Status {
-	case hubtypes.StatusActive:
-		keyPrefix = types.GetActiveNodeForPlanKeyPrefix(req.Id)
-	case hubtypes.StatusInactive:
-		keyPrefix = types.GetInactiveNodeForPlanKeyPrefix(req.Id)
-	default:
-		keyPrefix = types.GetNodeForPlanKeyPrefix(req.Id)
-	}
-
 	store := prefix.NewStore(q.Store(ctx), keyPrefix)
-	pagination, err := query.Paginate(store, req.Pagination, func(_, value []byte) error {
-		var item types.Node
-		if err := q.cdc.Unmarshal(value, &item); err != nil {
-			return err
+	pagination, err := query.FilteredPaginate(store, req.Pagination, func(key, _ []byte, accumulate bool) (bool, error) {
+		if !accumulate {
+			return false, nil
 		}
 
-		items = append(items, item)
-		return nil
+		item, found := q.GetNode(ctx, types.AddressFromNodeForPlanKey(key))
+		if !found {
+			return false, fmt.Errorf("node for plan key %X does not exist", key)
+		}
+
+		if item.Status.Equal(req.Status) {
+			items = append(items, item)
+			return true, nil
+		}
+
+		return false, nil
 	})
 
 	if err != nil {

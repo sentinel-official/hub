@@ -17,8 +17,8 @@ type msgServer struct {
 	Keeper
 }
 
-func NewMsgServiceServer(keeper Keeper) types.MsgServiceServer {
-	return &msgServer{Keeper: keeper}
+func NewMsgServiceServer(k Keeper) types.MsgServiceServer {
+	return &msgServer{k}
 }
 
 func (k *msgServer) MsgRegister(c context.Context, msg *types.MsgRegisterRequest) (*types.MsgRegisterResponse, error) {
@@ -102,7 +102,7 @@ func (k *msgServer) MsgUpdateDetails(c context.Context, msg *types.MsgUpdateDeta
 
 	k.SetNode(ctx, node)
 	ctx.EventManager().EmitTypedEvent(
-		&types.EventUpdate{
+		&types.EventUpdateDetails{
 			Address: node.Address,
 		},
 	)
@@ -147,7 +147,7 @@ func (k *msgServer) MsgUpdateStatus(c context.Context, msg *types.MsgUpdateStatu
 
 	k.SetNode(ctx, node)
 	ctx.EventManager().EmitTypedEvent(
-		&types.EventSetStatus{
+		&types.EventUpdateStatus{
 			Address: node.Address,
 			Status:  node.Status,
 		},
@@ -157,5 +157,59 @@ func (k *msgServer) MsgUpdateStatus(c context.Context, msg *types.MsgUpdateStatu
 }
 
 func (k *msgServer) MsgSubscribe(c context.Context, msg *types.MsgSubscribeRequest) (*types.MsgSubscribeResponse, error) {
+	ctx := sdk.UnwrapSDKContext(c)
+
+	accAddr, err := sdk.AccAddressFromBech32(msg.From)
+	if err != nil {
+		return nil, err
+	}
+
+	nodeAddr, err := hubtypes.NodeAddressFromBech32(msg.Address)
+	if err != nil {
+		return nil, err
+	}
+	node, found := k.GetNode(ctx, nodeAddr)
+	if !found {
+		return nil, types.NewErrorNodeNotFound(nodeAddr)
+	}
+
+	lease := types.Lease{
+		Bytes: hubtypes.Gigabyte.MulRaw(msg.Gigabytes),
+		Hours: msg.Hours,
+	}
+
+	if msg.Hours != 0 {
+		if !k.IsValidLeaseHours(ctx, msg.Hours) {
+			return nil, types.NewErrorInvalidLeaseHours(msg.Hours)
+		}
+
+		lease.Price, found = node.HourlyPrice(msg.Denom)
+		if !found {
+			return nil, types.NewErrorHourlyPriceNotFound(msg.Denom)
+		}
+	} else if msg.Gigabytes != 0 {
+		if !k.IsValidLeaseGigabytes(ctx, msg.Hours) {
+			return nil, types.NewErrorInvalidLeaseGigabytes(msg.Gigabytes)
+		}
+
+		lease.Price, found = node.GigabytePrice(msg.Denom)
+		if !found {
+			return nil, types.NewErrorHourlyPriceNotFound(msg.Denom)
+		}
+	} else {
+		return nil, nil
+	}
+
+	k.SetLease(ctx, lease)
+	k.SetLeaseForAccount(ctx, accAddr, lease.ID)
+	k.SetLeaseForNode(ctx, nodeAddr, lease.ID)
+	ctx.EventManager().EmitTypedEvent(
+		&types.EventLease{
+			ID:     lease.ID,
+			Lessor: nodeAddr.String(),
+			Lessee: accAddr.String(),
+		},
+	)
+
 	return &types.MsgSubscribeResponse{}, nil
 }
