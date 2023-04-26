@@ -8,24 +8,25 @@ option go_package = "github.com/sentinel-official/hub/x/subscription/types";
 option (gogoproto.equal_all)           = false;
 option (gogoproto.goproto_getters_all) = false;
 
-message EventSubscribe {
-  uint64 id   = 1 [ (gogoproto.moretags) = "yaml:\"id\"" ];
-  string node = 2 [ (gogoproto.moretags) = "yaml:\"node\"" ];
-  uint64 plan = 3 [ (gogoproto.moretags) = "yaml:\"plan\"" ];
-}
-
-message EventSetStatus {
-  uint64 id                       = 1 [ (gogoproto.moretags) = "yaml:\"id\"" ];
+message EventUpdateStatus {
+  uint64 id = 1
+      [ (gogoproto.customname) = "ID", (gogoproto.moretags) = "yaml:\"id\"" ];
   sentinel.types.v1.Status status = 2
       [ (gogoproto.moretags) = "yaml:\"status\"" ];
 }
 
-message EventAddQuota {
-  uint64 id      = 1 [ (gogoproto.moretags) = "yaml:\"id\"" ];
+message EventShare {
+  uint64 id = 1
+      [ (gogoproto.customname) = "ID", (gogoproto.moretags) = "yaml:\"id\"" ];
   string address = 2 [ (gogoproto.moretags) = "yaml:\"address\"" ];
 }
 
-message EventUpdateQuota {
-  uint64 id      = 1 [ (gogoproto.moretags) = "yaml:\"id\"" ];
+message EventAllocate {
+  uint64 id = 1
+      [ (gogoproto.customname) = "ID", (gogoproto.moretags) = "yaml:\"id\"" ];
   string address = 2 [ (gogoproto.moretags) = "yaml:\"address\"" ];
+  string bytes   = 3 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable)   = false
+  ];
 }
