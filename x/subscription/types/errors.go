@@ -1,7 +1,10 @@
 package types
 
 import (
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/errors"
+
+	hubtypes "github.com/sentinel-official/hub/types"
 )
 
 var (
@@ -9,19 +12,39 @@ var (
 )
 
 var (
-	ErrorPlanDoesNotExist          = errors.Register(ModuleName, 201, "plan does not exist")
-	ErrorNodeDoesNotExist          = errors.Register(ModuleName, 202, "node does not exist")
-	ErrorUnauthorized              = errors.Register(ModuleName, 203, "unauthorized")
-	ErrorInvalidPlanStatus         = errors.Register(ModuleName, 204, "invalid plan status")
-	ErrorPriceDoesNotExist         = errors.Register(ModuleName, 205, "price does not exist")
-	ErrorInvalidNodeStatus         = errors.Register(ModuleName, 206, "invalid node status")
-	ErrorSubscriptionDoesNotExist  = errors.Register(ModuleName, 207, "subscription does not exist")
-	ErrorInvalidSubscriptionStatus = errors.Register(ModuleName, 208, "invalid subscription status")
-	ErrorCanNotSubscribe           = errors.Register(ModuleName, 209, "can not subscribe")
-	ErrorInvalidQuota              = errors.Register(ModuleName, 210, "invalid quota")
-	ErrorDuplicateQuota            = errors.Register(ModuleName, 211, "duplicate quota")
-	ErrorQuotaDoesNotExist         = errors.Register(ModuleName, 212, "quota does not exist")
-	ErrorCanNotAddQuota            = errors.Register(ModuleName, 213, "can not add quota")
-	ErrorCanNotUpdateQuota         = errors.Register(ModuleName, 214, "can not update quota")
-	ErrorCanNotCancel              = errors.Register(ModuleName, 215, "can not cancel")
+	ErrorInsufficientBytes         = errors.Register(ModuleName, 201, "insufficient bytes")
+	ErrorInvalidQuota              = errors.Register(ModuleName, 202, "invalid quota")
+	ErrorInvalidSubscriptionStatus = errors.Register(ModuleName, 203, "invalid subscription status")
+	ErrorInvalidSubscriptionType   = errors.Register(ModuleName, 204, "invalid subscription type")
+	ErrorQuotaNotFound             = errors.Register(ModuleName, 205, "quota not found")
+	ErrorSubscriptionNotFound      = errors.Register(ModuleName, 206, "subscription not found")
+	ErrorUnauthorized              = errors.Register(ModuleName, 207, "unauthorized")
 )
+
+func NewErrorInsufficientBytes(id uint64, bytes sdk.Int) error {
+	return errors.Wrapf(ErrorInsufficientBytes, "insufficient bytes %d for subscription %d", bytes, id)
+}
+
+func NewErrorInvalidQuota(id uint64, addr sdk.AccAddress) error {
+	return errors.Wrapf(ErrorInvalidQuota, "invalid quota %d/%s", id, addr)
+}
+
+func NewErrorInvalidSubscriptionStatus(id uint64, status hubtypes.Status) error {
+	return errors.Wrapf(ErrorInvalidSubscriptionStatus, "invalid status %s for subscription %d", status, id)
+}
+
+func NewErrorInvalidSubscriptionType(id uint64, t SubscriptionType) error {
+	return errors.Wrapf(ErrorInvalidSubscriptionType, "invalid type %s for subscription %d", t, id)
+}
+
+func NewErrorQuotaNotFound(id uint64, addr sdk.AccAddress) error {
+	return errors.Wrapf(ErrorQuotaNotFound, "subscription quota %d/%s does not exist", id, addr)
+}
+
+func NewErrorSubscriptionNotFound(id uint64) error {
+	return errors.Wrapf(ErrorSubscriptionNotFound, "subscription %s does not exist", id)
+}
+
+func NewErrorUnauthorized(addr string) error {
+	return errors.Wrapf(ErrorUnauthorized, "address %s is not authorized", addr)
+}

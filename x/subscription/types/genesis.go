@@ -41,11 +41,11 @@ func ValidateGenesis(state *GenesisState) error {
 		)
 
 		for _, quota := range item.Quotas {
-			if m[quota.AccountAddress] {
-				return fmt.Errorf("found duplicate quota for subscription %d and address %s", id, quota.AccountAddress)
+			if m[quota.Address] {
+				return fmt.Errorf("found a duplicate quota %d/%s", id, quota.Address)
 			}
 
-			m[quota.AccountAddress] = true
+			m[quota.Address] = true
 		}
 	}
 

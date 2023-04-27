@@ -18,7 +18,6 @@ func RegisterInterfaces(registry codectypes.InterfaceRegistry) {
 		(*sdk.Msg)(nil),
 		&MsgCancelRequest{},
 		&MsgShareRequest{},
-		&MsgUpdateQuotaRequest{},
 	)
 
 	msgservice.RegisterMsgServiceDesc(registry, &_MsgService_serviceDesc)
