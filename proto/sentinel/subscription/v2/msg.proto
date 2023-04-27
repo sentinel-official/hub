@@ -10,26 +10,14 @@ option (gogoproto.goproto_getters_all) = false;
 // MsgCancelRequest defines the SDK message for cancelling a subscription
 message MsgCancelRequest {
   string from = 1;
-  uint64 id   = 2;
+  uint64 id   = 2 [ (gogoproto.customname) = "ID" ];
 }
 
 // MsgShareRequest defines the SDK message for sharing a subscription with an
 // address
 message MsgShareRequest {
   string from    = 1;
-  uint64 id      = 2;
-  string address = 3;
-  string bytes   = 4 [
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
-    (gogoproto.nullable)   = false
-  ];
-}
-
-// MsgUpdateQuotaRequest defines the SDK message for updating the bandwidth
-// quota of an address
-message MsgUpdateQuotaRequest {
-  string from    = 1;
-  uint64 id      = 2;
+  uint64 id      = 2 [ (gogoproto.customname) = "ID" ];
   string address = 3;
   string bytes   = 4 [
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
@@ -43,11 +31,7 @@ message MsgCancelResponse {}
 // MsgShareResponse defines the response of message MsgShareRequest
 message MsgShareResponse {}
 
-// MsgUpdateQuotaResponse defines the response of message MsgUpdateQuotaRequest
-message MsgUpdateQuotaResponse {}
-
 service MsgService {
   rpc MsgCancel(MsgCancelRequest) returns (MsgCancelResponse);
   rpc MsgShare(MsgShareRequest) returns (MsgShareResponse);
-  rpc MsgUpdateQuota(MsgUpdateQuotaRequest) returns (MsgUpdateQuotaResponse);
 }

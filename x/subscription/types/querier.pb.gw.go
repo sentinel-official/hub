@@ -912,7 +912,7 @@ var (
 
 	pattern_QueryService_QueryQuotas_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3}, []string{"sentinel", "subscriptions", "id", "quotas"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_QueryService_QueryQuota_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"subscriptions", "id", "quotas", "address"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_QueryService_QueryQuota_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"sentinel", "subscriptions", "id", "quotas", "address"}, "", runtime.AssumeColonVerbOpt(true)))
 
 	pattern_QueryService_QueryParams_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"sentinel", "modules", "subscription", "params"}, "", runtime.AssumeColonVerbOpt(true)))
 )

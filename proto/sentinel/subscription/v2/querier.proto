@@ -109,7 +109,8 @@ service QueryService {
   }
 
   rpc QueryQuota(QueryQuotaRequest) returns (QueryQuotaResponse) {
-    option (google.api.http).get = "/subscriptions/{id}/quotas/{address}";
+    option (google.api.http).get =
+        "/sentinel/subscriptions/{id}/quotas/{address}";
   }
 
   rpc QueryParams(QueryParamsRequest) returns (QueryParamsResponse) {

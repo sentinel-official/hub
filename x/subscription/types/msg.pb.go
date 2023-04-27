@@ -32,7 +32,7 @@ const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 // MsgCancelRequest defines the SDK message for cancelling a subscription
 type MsgCancelRequest struct {
 	From string `protobuf:"bytes,1,opt,name=from,proto3" json:"from,omitempty"`
-	Id   uint64 `protobuf:"varint,2,opt,name=id,proto3" json:"id,omitempty"`
+	ID   uint64 `protobuf:"varint,2,opt,name=id,proto3" json:"id,omitempty"`
 }
 
 func (m *MsgCancelRequest) Reset()         { *m = MsgCancelRequest{} }
@@ -72,7 +72,7 @@ var xxx_messageInfo_MsgCancelRequest proto.InternalMessageInfo
 // address
 type MsgShareRequest struct {
 	From    string                                 `protobuf:"bytes,1,opt,name=from,proto3" json:"from,omitempty"`
-	Id      uint64                                 `protobuf:"varint,2,opt,name=id,proto3" json:"id,omitempty"`
+	ID      uint64                                 `protobuf:"varint,2,opt,name=id,proto3" json:"id,omitempty"`
 	Address string                                 `protobuf:"bytes,3,opt,name=address,proto3" json:"address,omitempty"`
 	Bytes   github_com_cosmos_cosmos_sdk_types.Int `protobuf:"bytes,4,opt,name=bytes,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"bytes"`
 }
@@ -110,48 +110,6 @@ func (m *MsgShareRequest) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgShareRequest proto.InternalMessageInfo
 
-// MsgUpdateQuotaRequest defines the SDK message for updating the bandwidth
-// quota of an address
-type MsgUpdateQuotaRequest struct {
-	From    string                                 `protobuf:"bytes,1,opt,name=from,proto3" json:"from,omitempty"`
-	Id      uint64                                 `protobuf:"varint,2,opt,name=id,proto3" json:"id,omitempty"`
-	Address string                                 `protobuf:"bytes,3,opt,name=address,proto3" json:"address,omitempty"`
-	Bytes   github_com_cosmos_cosmos_sdk_types.Int `protobuf:"bytes,4,opt,name=bytes,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"bytes"`
-}
-
-func (m *MsgUpdateQuotaRequest) Reset()         { *m = MsgUpdateQuotaRequest{} }
-func (m *MsgUpdateQuotaRequest) String() string { return proto.CompactTextString(m) }
-func (*MsgUpdateQuotaRequest) ProtoMessage()    {}
-func (*MsgUpdateQuotaRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_4cb96050c6471ce0, []int{2}
-}
-func (m *MsgUpdateQuotaRequest) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *MsgUpdateQuotaRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_MsgUpdateQuotaRequest.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *MsgUpdateQuotaRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgUpdateQuotaRequest.Merge(m, src)
-}
-func (m *MsgUpdateQuotaRequest) XXX_Size() int {
-	return m.Size()
-}
-func (m *MsgUpdateQuotaRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgUpdateQuotaRequest.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_MsgUpdateQuotaRequest proto.InternalMessageInfo
-
 // MsgCancelResponse defines the response of message MsgCancelRequest
 type MsgCancelResponse struct {
 }
@@ -160,7 +118,7 @@ func (m *MsgCancelResponse) Reset()         { *m = MsgCancelResponse{} }
 func (m *MsgCancelResponse) String() string { return proto.CompactTextString(m) }
 func (*MsgCancelResponse) ProtoMessage()    {}
 func (*MsgCancelResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_4cb96050c6471ce0, []int{3}
+	return fileDescriptor_4cb96050c6471ce0, []int{2}
 }
 func (m *MsgCancelResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -197,7 +155,7 @@ func (m *MsgShareResponse) Reset()         { *m = MsgShareResponse{} }
 func (m *MsgShareResponse) String() string { return proto.CompactTextString(m) }
 func (*MsgShareResponse) ProtoMessage()    {}
 func (*MsgShareResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_4cb96050c6471ce0, []int{4}
+	return fileDescriptor_4cb96050c6471ce0, []int{3}
 }
 func (m *MsgShareResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -226,50 +184,11 @@ func (m *MsgShareResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgShareResponse proto.InternalMessageInfo
 
-// MsgUpdateQuotaResponse defines the response of message MsgUpdateQuotaRequest
-type MsgUpdateQuotaResponse struct {
-}
-
-func (m *MsgUpdateQuotaResponse) Reset()         { *m = MsgUpdateQuotaResponse{} }
-func (m *MsgUpdateQuotaResponse) String() string { return proto.CompactTextString(m) }
-func (*MsgUpdateQuotaResponse) ProtoMessage()    {}
-func (*MsgUpdateQuotaResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_4cb96050c6471ce0, []int{5}
-}
-func (m *MsgUpdateQuotaResponse) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *MsgUpdateQuotaResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_MsgUpdateQuotaResponse.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *MsgUpdateQuotaResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgUpdateQuotaResponse.Merge(m, src)
-}
-func (m *MsgUpdateQuotaResponse) XXX_Size() int {
-	return m.Size()
-}
-func (m *MsgUpdateQuotaResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgUpdateQuotaResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_MsgUpdateQuotaResponse proto.InternalMessageInfo
-
 func init() {
 	proto.RegisterType((*MsgCancelRequest)(nil), "sentinel.subscription.v2.MsgCancelRequest")
 	proto.RegisterType((*MsgShareRequest)(nil), "sentinel.subscription.v2.MsgShareRequest")
-	proto.RegisterType((*MsgUpdateQuotaRequest)(nil), "sentinel.subscription.v2.MsgUpdateQuotaRequest")
 	proto.RegisterType((*MsgCancelResponse)(nil), "sentinel.subscription.v2.MsgCancelResponse")
 	proto.RegisterType((*MsgShareResponse)(nil), "sentinel.subscription.v2.MsgShareResponse")
-	proto.RegisterType((*MsgUpdateQuotaResponse)(nil), "sentinel.subscription.v2.MsgUpdateQuotaResponse")
 }
 
 func init() {
@@ -277,33 +196,31 @@ func init() {
 }
 
 var fileDescriptor_4cb96050c6471ce0 = []byte{
-	// 408 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xcc, 0x93, 0xbb, 0xce, 0xd3, 0x30,
-	0x14, 0xc7, 0xe3, 0x50, 0x2e, 0x9f, 0x87, 0x02, 0xe6, 0xa2, 0x28, 0x83, 0x5b, 0x65, 0x40, 0xa5,
-	0xa8, 0x36, 0x2a, 0x82, 0x07, 0x28, 0x2c, 0x0c, 0x1d, 0x08, 0x42, 0x48, 0x6c, 0xb9, 0xb8, 0xa9,
-	0x45, 0x13, 0x87, 0x1c, 0xa7, 0xa2, 0x6f, 0xc1, 0xc2, 0xc4, 0x0b, 0xf0, 0x28, 0x15, 0x53, 0x47,
-	0xc4, 0x50, 0x41, 0xfa, 0x22, 0xa8, 0xb9, 0xa0, 0xb4, 0x88, 0xaa, 0x6c, 0xdf, 0x14, 0xc7, 0xf9,
-	0xfd, 0xcf, 0xed, 0x9f, 0x83, 0x1d, 0x10, 0x89, 0x96, 0x89, 0x58, 0x70, 0xc8, 0x7d, 0x08, 0x32,
-	0x99, 0x6a, 0xa9, 0x12, 0xbe, 0x1c, 0xf3, 0x18, 0x22, 0x96, 0x66, 0x4a, 0x2b, 0x62, 0x35, 0x0c,
-	0x6b, 0x33, 0x6c, 0x39, 0xb6, 0xef, 0x46, 0x2a, 0x52, 0x25, 0xc4, 0xf7, 0xa7, 0x8a, 0x77, 0x9e,
-	0xe1, 0x5b, 0x53, 0x88, 0x9e, 0x7b, 0x49, 0x20, 0x16, 0xae, 0xf8, 0x90, 0x0b, 0xd0, 0x84, 0xe0,
-	0xce, 0x2c, 0x53, 0xb1, 0x85, 0xfa, 0x68, 0x70, 0xe1, 0x96, 0x67, 0xd2, 0xc5, 0xa6, 0x0c, 0x2d,
-	0xb3, 0x8f, 0x06, 0x1d, 0xd7, 0x94, 0xa1, 0xf3, 0x19, 0xe1, 0x9b, 0x53, 0x88, 0x5e, 0xcf, 0xbd,
-	0x4c, 0xfc, 0x87, 0x8e, 0x58, 0xf8, 0xba, 0x17, 0x86, 0x99, 0x00, 0xb0, 0xae, 0x94, 0x58, 0xf3,
-	0x4a, 0x5e, 0xe0, 0xab, 0xfe, 0x4a, 0x0b, 0xb0, 0x3a, 0xfb, 0xfb, 0x09, 0x5b, 0x6f, 0x7b, 0xc6,
-	0x8f, 0x6d, 0xef, 0x41, 0x24, 0xf5, 0x3c, 0xf7, 0x59, 0xa0, 0x62, 0x1e, 0x28, 0x88, 0x15, 0xd4,
-	0x8f, 0x11, 0x84, 0xef, 0xb9, 0x5e, 0xa5, 0x02, 0xd8, 0xcb, 0x44, 0xbb, 0x95, 0xd8, 0xf9, 0x82,
-	0xf0, 0xbd, 0x29, 0x44, 0x6f, 0xd2, 0xd0, 0xd3, 0xe2, 0x55, 0xae, 0xb4, 0x77, 0x99, 0xaa, 0xbb,
-	0x83, 0x6f, 0xb7, 0xa6, 0x0d, 0xa9, 0x4a, 0x40, 0x38, 0xa4, 0xb4, 0xa0, 0x9e, 0x64, 0x7d, 0x67,
-	0xe1, 0xfb, 0xc7, 0x5d, 0x54, 0x5f, 0xc6, 0xdf, 0x4c, 0x8c, 0xf7, 0xb8, 0xc8, 0x96, 0x32, 0x10,
-	0x24, 0xc4, 0x17, 0x7f, 0x22, 0x92, 0x21, 0xfb, 0x97, 0xfb, 0xec, 0xd8, 0x64, 0xfb, 0xd1, 0x59,
-	0x6c, 0x95, 0x94, 0x78, 0xf8, 0x46, 0x53, 0x22, 0x79, 0x78, 0x52, 0xd8, 0xfe, 0x21, 0xec, 0xe1,
-	0x39, 0x68, 0x9d, 0x02, 0x70, 0xf7, 0xb0, 0x63, 0xc2, 0x4f, 0xaa, 0xff, 0x76, 0xd8, 0x7e, 0x7c,
-	0xbe, 0xa0, 0x4a, 0x3a, 0x79, 0xbb, 0xfe, 0x45, 0x8d, 0xaf, 0x05, 0x35, 0xd6, 0x05, 0x45, 0x9b,
-	0x82, 0xa2, 0x9f, 0x05, 0x45, 0x9f, 0x76, 0xd4, 0xd8, 0xec, 0xa8, 0xf1, 0x7d, 0x47, 0x8d, 0x77,
-	0x4f, 0x5b, 0x06, 0x37, 0xd1, 0x47, 0x6a, 0x36, 0x93, 0x81, 0xf4, 0x16, 0x7c, 0x9e, 0xfb, 0xfc,
-	0xe3, 0xe1, 0x36, 0x96, 0x9e, 0xfb, 0xd7, 0xca, 0xed, 0x7a, 0xf2, 0x3b, 0x00, 0x00, 0xff, 0xff,
-	0x58, 0x92, 0x90, 0xd0, 0xb3, 0x03, 0x00, 0x00,
+	// 375 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x9c, 0x92, 0xcf, 0x6e, 0xda, 0x40,
+	0x10, 0xc6, 0xbd, 0x2e, 0xa5, 0x65, 0x2f, 0x6d, 0xb7, 0x55, 0x65, 0x71, 0x58, 0x90, 0x0f, 0x15,
+	0xa5, 0x62, 0x57, 0xa2, 0xea, 0xb5, 0x07, 0xca, 0x85, 0x03, 0x17, 0xf7, 0x50, 0xa9, 0x37, 0xff,
+	0x59, 0xcc, 0x2a, 0xd8, 0xeb, 0x78, 0xd6, 0x28, 0xbc, 0x45, 0x5e, 0x20, 0xf7, 0x3c, 0x0a, 0x47,
+	0x2e, 0x91, 0xa2, 0x1c, 0x50, 0x62, 0x5e, 0x24, 0xc2, 0xc6, 0x91, 0x13, 0x29, 0x11, 0xca, 0xc9,
+	0xe3, 0x4f, 0xbf, 0x6f, 0x67, 0xe6, 0xd3, 0x60, 0x1b, 0x44, 0xac, 0x65, 0x2c, 0x16, 0x1c, 0x32,
+	0x0f, 0xfc, 0x54, 0x26, 0x5a, 0xaa, 0x98, 0x2f, 0x87, 0x3c, 0x82, 0x90, 0x25, 0xa9, 0xd2, 0x8a,
+	0x58, 0x15, 0xc3, 0xea, 0x0c, 0x5b, 0x0e, 0xdb, 0x5f, 0x42, 0x15, 0xaa, 0x02, 0xe2, 0xfb, 0xaa,
+	0xe4, 0xed, 0xdf, 0xf8, 0xe3, 0x14, 0xc2, 0x3f, 0x6e, 0xec, 0x8b, 0x85, 0x23, 0x4e, 0x33, 0x01,
+	0x9a, 0x10, 0xdc, 0x98, 0xa5, 0x2a, 0xb2, 0x50, 0x17, 0xf5, 0x5a, 0x4e, 0x51, 0x93, 0xaf, 0xd8,
+	0x94, 0x81, 0x65, 0x76, 0x51, 0xaf, 0x31, 0x6a, 0xe6, 0xdb, 0x8e, 0x39, 0x19, 0x3b, 0xa6, 0x0c,
+	0xec, 0x0b, 0x84, 0x3f, 0x4c, 0x21, 0xfc, 0x3b, 0x77, 0x53, 0xf1, 0x0a, 0x3f, 0xb1, 0xf0, 0x3b,
+	0x37, 0x08, 0x52, 0x01, 0x60, 0xbd, 0x29, 0xf0, 0xea, 0x97, 0x8c, 0xf1, 0x5b, 0x6f, 0xa5, 0x05,
+	0x58, 0x8d, 0xbd, 0x3e, 0x62, 0xeb, 0x6d, 0xc7, 0xb8, 0xd9, 0x76, 0xbe, 0x85, 0x52, 0xcf, 0x33,
+	0x8f, 0xf9, 0x2a, 0xe2, 0xbe, 0x82, 0x48, 0xc1, 0xe1, 0x33, 0x80, 0xe0, 0x84, 0xeb, 0x55, 0x22,
+	0x80, 0x4d, 0x62, 0xed, 0x94, 0x66, 0xfb, 0x33, 0xfe, 0x54, 0xdb, 0x0f, 0x12, 0x15, 0x83, 0xb0,
+	0x49, 0xb1, 0xf4, 0x61, 0xe6, 0x52, 0x1b, 0x5e, 0x21, 0x8c, 0xf7, 0xa2, 0x48, 0x97, 0xd2, 0x17,
+	0x24, 0xc0, 0xad, 0x07, 0x1f, 0xe9, 0xb3, 0xe7, 0x52, 0x65, 0x4f, 0xc3, 0x6b, 0xff, 0x38, 0x8a,
+	0x2d, 0x9b, 0x12, 0x17, 0xbf, 0xaf, 0x06, 0x21, 0xdf, 0x5f, 0x34, 0xd6, 0x03, 0x6e, 0xf7, 0x8f,
+	0x41, 0xcb, 0x16, 0xa3, 0x7f, 0xeb, 0x3b, 0x6a, 0x5c, 0xe6, 0xd4, 0x58, 0xe7, 0x14, 0x6d, 0x72,
+	0x8a, 0x6e, 0x73, 0x8a, 0xce, 0x77, 0xd4, 0xd8, 0xec, 0xa8, 0x71, 0xbd, 0xa3, 0xc6, 0xff, 0x5f,
+	0xb5, 0x44, 0xab, 0x77, 0x07, 0x6a, 0x36, 0x93, 0xbe, 0x74, 0x17, 0x7c, 0x9e, 0x79, 0xfc, 0xec,
+	0xf1, 0xc1, 0x15, 0x21, 0x7b, 0xcd, 0xe2, 0x80, 0x7e, 0xde, 0x07, 0x00, 0x00, 0xff, 0xff, 0x89,
+	0x4d, 0xbf, 0x78, 0x96, 0x02, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -320,7 +237,6 @@ const _ = grpc.SupportPackageIsVersion4
 type MsgServiceClient interface {
 	MsgCancel(ctx context.Context, in *MsgCancelRequest, opts ...grpc.CallOption) (*MsgCancelResponse, error)
 	MsgShare(ctx context.Context, in *MsgShareRequest, opts ...grpc.CallOption) (*MsgShareResponse, error)
-	MsgUpdateQuota(ctx context.Context, in *MsgUpdateQuotaRequest, opts ...grpc.CallOption) (*MsgUpdateQuotaResponse, error)
 }
 
 type msgServiceClient struct {
@@ -349,20 +265,10 @@ func (c *msgServiceClient) MsgShare(ctx context.Context, in *MsgShareRequest, op
 	return out, nil
 }
 
-func (c *msgServiceClient) MsgUpdateQuota(ctx context.Context, in *MsgUpdateQuotaRequest, opts ...grpc.CallOption) (*MsgUpdateQuotaResponse, error) {
-	out := new(MsgUpdateQuotaResponse)
-	err := c.cc.Invoke(ctx, "/sentinel.subscription.v2.MsgService/MsgUpdateQuota", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 // MsgServiceServer is the server API for MsgService service.
 type MsgServiceServer interface {
 	MsgCancel(context.Context, *MsgCancelRequest) (*MsgCancelResponse, error)
 	MsgShare(context.Context, *MsgShareRequest) (*MsgShareResponse, error)
-	MsgUpdateQuota(context.Context, *MsgUpdateQuotaRequest) (*MsgUpdateQuotaResponse, error)
 }
 
 // UnimplementedMsgServiceServer can be embedded to have forward compatible implementations.
@@ -374,9 +280,6 @@ func (*UnimplementedMsgServiceServer) MsgCancel(ctx context.Context, req *MsgCan
 }
 func (*UnimplementedMsgServiceServer) MsgShare(ctx context.Context, req *MsgShareRequest) (*MsgShareResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method MsgShare not implemented")
-}
-func (*UnimplementedMsgServiceServer) MsgUpdateQuota(ctx context.Context, req *MsgUpdateQuotaRequest) (*MsgUpdateQuotaResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method MsgUpdateQuota not implemented")
 }
 
 func RegisterMsgServiceServer(s grpc1.Server, srv MsgServiceServer) {
@@ -419,24 +322,6 @@ func _MsgService_MsgShare_Handler(srv interface{}, ctx context.Context, dec func
 	return interceptor(ctx, in, info, handler)
 }
 
-func _MsgService_MsgUpdateQuota_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgUpdateQuotaRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(MsgServiceServer).MsgUpdateQuota(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/sentinel.subscription.v2.MsgService/MsgUpdateQuota",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServiceServer).MsgUpdateQuota(ctx, req.(*MsgUpdateQuotaRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 var _MsgService_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "sentinel.subscription.v2.MsgService",
 	HandlerType: (*MsgServiceServer)(nil),
@@ -448,10 +333,6 @@ var _MsgService_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "MsgShare",
 			Handler:    _MsgService_MsgShare_Handler,
-		},
-		{
-			MethodName: "MsgUpdateQuota",
-			Handler:    _MsgService_MsgUpdateQuota_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
@@ -478,8 +359,8 @@ func (m *MsgCancelRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if m.Id != 0 {
-		i = encodeVarintMsg(dAtA, i, uint64(m.Id))
+	if m.ID != 0 {
+		i = encodeVarintMsg(dAtA, i, uint64(m.ID))
 		i--
 		dAtA[i] = 0x10
 	}
@@ -530,60 +411,8 @@ func (m *MsgShareRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x1a
 	}
-	if m.Id != 0 {
-		i = encodeVarintMsg(dAtA, i, uint64(m.Id))
-		i--
-		dAtA[i] = 0x10
-	}
-	if len(m.From) > 0 {
-		i -= len(m.From)
-		copy(dAtA[i:], m.From)
-		i = encodeVarintMsg(dAtA, i, uint64(len(m.From)))
-		i--
-		dAtA[i] = 0xa
-	}
-	return len(dAtA) - i, nil
-}
-
-func (m *MsgUpdateQuotaRequest) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *MsgUpdateQuotaRequest) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *MsgUpdateQuotaRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	{
-		size := m.Bytes.Size()
-		i -= size
-		if _, err := m.Bytes.MarshalTo(dAtA[i:]); err != nil {
-			return 0, err
-		}
-		i = encodeVarintMsg(dAtA, i, uint64(size))
-	}
-	i--
-	dAtA[i] = 0x22
-	if len(m.Address) > 0 {
-		i -= len(m.Address)
-		copy(dAtA[i:], m.Address)
-		i = encodeVarintMsg(dAtA, i, uint64(len(m.Address)))
-		i--
-		dAtA[i] = 0x1a
-	}
-	if m.Id != 0 {
-		i = encodeVarintMsg(dAtA, i, uint64(m.Id))
+	if m.ID != 0 {
+		i = encodeVarintMsg(dAtA, i, uint64(m.ID))
 		i--
 		dAtA[i] = 0x10
 	}
@@ -643,29 +472,6 @@ func (m *MsgShareResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgUpdateQuotaResponse) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *MsgUpdateQuotaResponse) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *MsgUpdateQuotaResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	return len(dAtA) - i, nil
-}
-
 func encodeVarintMsg(dAtA []byte, offset int, v uint64) int {
 	offset -= sovMsg(v)
 	base := offset
@@ -687,8 +493,8 @@ func (m *MsgCancelRequest) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovMsg(uint64(l))
 	}
-	if m.Id != 0 {
-		n += 1 + sovMsg(uint64(m.Id))
+	if m.ID != 0 {
+		n += 1 + sovMsg(uint64(m.ID))
 	}
 	return n
 }
@@ -703,30 +509,8 @@ func (m *MsgShareRequest) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovMsg(uint64(l))
 	}
-	if m.Id != 0 {
-		n += 1 + sovMsg(uint64(m.Id))
-	}
-	l = len(m.Address)
-	if l > 0 {
-		n += 1 + l + sovMsg(uint64(l))
-	}
-	l = m.Bytes.Size()
-	n += 1 + l + sovMsg(uint64(l))
-	return n
-}
-
-func (m *MsgUpdateQuotaRequest) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	l = len(m.From)
-	if l > 0 {
-		n += 1 + l + sovMsg(uint64(l))
-	}
-	if m.Id != 0 {
-		n += 1 + sovMsg(uint64(m.Id))
+	if m.ID != 0 {
+		n += 1 + sovMsg(uint64(m.ID))
 	}
 	l = len(m.Address)
 	if l > 0 {
@@ -747,15 +531,6 @@ func (m *MsgCancelResponse) Size() (n int) {
 }
 
 func (m *MsgShareResponse) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	return n
-}
-
-func (m *MsgUpdateQuotaResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -833,9 +608,9 @@ func (m *MsgCancelRequest) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 2:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Id", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field ID", wireType)
 			}
-			m.Id = 0
+			m.ID = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowMsg
@@ -845,7 +620,7 @@ func (m *MsgCancelRequest) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.Id |= uint64(b&0x7F) << shift
+				m.ID |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -934,9 +709,9 @@ func (m *MsgShareRequest) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 2:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Id", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field ID", wireType)
 			}
-			m.Id = 0
+			m.ID = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowMsg
@@ -946,174 +721,7 @@ func (m *MsgShareRequest) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.Id |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-		case 3:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Address", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowMsg
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthMsg
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthMsg
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Address = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 4:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Bytes", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowMsg
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthMsg
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthMsg
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if err := m.Bytes.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipMsg(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthMsg
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *MsgUpdateQuotaRequest) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowMsg
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: MsgUpdateQuotaRequest: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgUpdateQuotaRequest: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field From", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowMsg
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthMsg
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthMsg
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.From = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 2:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Id", wireType)
-			}
-			m.Id = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowMsg
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				m.Id |= uint64(b&0x7F) << shift
+				m.ID |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -1282,56 +890,6 @@ func (m *MsgShareResponse) Unmarshal(dAtA []byte) error {
 		}
 		if fieldNum <= 0 {
 			return fmt.Errorf("proto: MsgShareResponse: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		default:
-			iNdEx = preIndex
-			skippy, err := skipMsg(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthMsg
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *MsgUpdateQuotaResponse) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowMsg
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: MsgUpdateQuotaResponse: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgUpdateQuotaResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		default:
