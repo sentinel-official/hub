@@ -8,7 +8,6 @@ import (
 )
 
 const (
-	flagBytes          = "bytes"
 	flagAccountAddress = "account-addr"
 	flagNodeAddress    = "node-addr"
 	flagPlanID         = "plan-id"

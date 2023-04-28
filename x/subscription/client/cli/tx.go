@@ -14,54 +14,8 @@ import (
 
 func txShare() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "share [subscription-id] [account-addr]",
+		Use:   "share [subscription-id] [account-addr] [bytes]",
 		Short: "Add a quota for a subscription",
-		Args:  cobra.ExactArgs(2),
-		RunE: func(cmd *cobra.Command, args []string) error {
-			ctx, err := client.GetClientTxContext(cmd)
-			if err != nil {
-				return err
-			}
-
-			id, err := strconv.ParseUint(args[0], 10, 64)
-			if err != nil {
-				return err
-			}
-
-			address, err := sdk.AccAddressFromBech32(args[1])
-			if err != nil {
-				return err
-			}
-
-			bytes, err := cmd.Flags().GetInt64(flagBytes)
-			if err != nil {
-				return err
-			}
-
-			msg := types.NewMsgShareRequest(
-				ctx.FromAddress,
-				id,
-				address,
-				sdk.NewInt(bytes),
-			)
-			if err = msg.ValidateBasic(); err != nil {
-				return err
-			}
-
-			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
-		},
-	}
-
-	flags.AddTxFlagsToCmd(cmd)
-	cmd.Flags().Int64(flagBytes, 0, "")
-
-	return cmd
-}
-
-func txUpdateQuota() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "update-quota [subscription-id] [account-addr] [bytes]",
-		Short: "Update a quota from a subscription",
 		Args:  cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientTxContext(cmd)
@@ -74,7 +28,7 @@ func txUpdateQuota() *cobra.Command {
 				return err
 			}
 
-			address, err := sdk.AccAddressFromBech32(args[1])
+			addr, err := sdk.AccAddressFromBech32(args[1])
 			if err != nil {
 				return err
 			}
@@ -84,10 +38,10 @@ func txUpdateQuota() *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgUpdateQuotaRequest(
+			msg := types.NewMsgShareRequest(
 				ctx.FromAddress,
 				id,
-				address,
+				addr,
 				sdk.NewInt(bytes),
 			)
 			if err = msg.ValidateBasic(); err != nil {
