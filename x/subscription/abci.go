@@ -15,68 +15,43 @@ func EndBlock(ctx sdk.Context, k keeper.Keeper) []abcitypes.ValidatorUpdate {
 		inactiveDuration = k.InactiveDuration(ctx)
 	)
 
-	k.IterateInactiveSubscriptions(ctx, ctx.BlockTime(), func(_ int, item types.Subscription) bool {
-		log.Info("found an inactive subscription", "id", item.Id)
+	k.IterateSubscriptionExpirys(ctx, ctx.BlockTime(), func(_ int, item types.Subscription) bool {
+		log.Info("found an inactive subscription", "id", item.GetID())
 
-		if item.Status.Equal(hubtypes.StatusActive) {
-			k.DeleteInactiveSubscriptionAt(ctx, item.Expiry, item.Id)
-			k.IterateQuotas(ctx, item.Id, func(_ int, quota types.Quota) bool {
-				accAddr := quota.GetAddress()
-				k.DeleteActiveSubscriptionForAddress(ctx, accAddr, item.Id)
-				k.SetInactiveSubscriptionForAddress(ctx, accAddr, item.Id)
-
-				return false
-			})
-
-			item.Status = hubtypes.StatusInactivePending
-			item.StatusAt = ctx.BlockTime()
-
+		if item.GetStatus().Equal(hubtypes.StatusActive) {
+			item.SetStatus(hubtypes.StatusInactivePending)
+			item.SetStatusAt(ctx.BlockTime())
 			k.SetSubscription(ctx, item)
-			k.SetInactiveSubscriptionAt(ctx, item.StatusAt.Add(inactiveDuration), item.Id)
+			k.DeleteSubscriptionExpiryAt(ctx, item.GetExpiryAt(), item.GetID())
+
+			statusAt := item.GetStatusAt().Add(inactiveDuration)
+			k.SetSubscriptionExpiryAt(ctx, statusAt, item.GetID())
 			ctx.EventManager().EmitTypedEvent(
-				&types.EventSetStatus{
-					Id:     item.Id,
-					Status: item.Status,
+				&types.EventUpdateStatus{
+					ID:     item.GetID(),
+					Status: item.GetStatus(),
 				},
 			)
 
 			return false
 		}
 
-		if item.Plan == 0 {
-			consumed := sdk.ZeroInt()
-			k.IterateQuotas(ctx, item.Id, func(_ int, quota types.Quota) bool {
-				consumed = consumed.Add(quota.Consumed)
-				return false
-			})
-
-			var (
-				amount    = item.Deposit.Sub(item.Amount(consumed))
-				ownerAddr = item.GetOwner()
-			)
-
-			log.Info("releasing the amount for subscription", "id", item.Id,
-				"consumed", consumed, "to_address", ownerAddr, "amount", amount)
-
-			if err := k.SubtractDeposit(ctx, ownerAddr, amount); err != nil {
-				log.Error("error occurred while releasing the amount", "cause", err)
-			}
-		}
-
-		k.DeleteSubscription(ctx, item.Id)
-		k.IterateQuotas(ctx, item.Id, func(_ int, quota types.Quota) bool {
-			accAddr := quota.GetAddress()
-			k.DeleteQuota(ctx, item.Id, accAddr)
-			k.DeleteInactiveSubscriptionForAddress(ctx, accAddr, item.Id)
+		k.DeleteSubscription(ctx, item.GetID())
+		k.IterateQuotas(ctx, item.GetID(), func(_ int, quota types.Quota) bool {
+			addr := quota.GetAddress()
+			k.DeleteQuota(ctx, item.GetID(), addr)
+			k.DeleteSubscriptionForAccount(ctx, addr, item.GetID())
 
 			return false
 		})
-		k.DeleteInactiveSubscriptionAt(ctx, item.StatusAt.Add(inactiveDuration), item.Id)
+
+		statusAt := item.GetStatusAt().Add(inactiveDuration)
+		k.DeleteSubscriptionExpiryAt(ctx, statusAt, item.GetID())
 
 		ctx.EventManager().EmitTypedEvent(
-			&types.EventSetStatus{
-				Id:     item.Id,
-				Status: item.Status,
+			&types.EventUpdateStatus{
+				ID:     item.GetID(),
+				Status: hubtypes.StatusInactive,
 			},
 		)
 
