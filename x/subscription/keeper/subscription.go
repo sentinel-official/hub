@@ -214,31 +214,31 @@ func (k *Keeper) GetSubscriptionsForPlan(ctx sdk.Context, id uint64) (items type
 	return items
 }
 
-func (k *Keeper) SetInactiveSubscriptionAt(ctx sdk.Context, at time.Time, id uint64) {
-	key := types.InactiveSubscriptionAtKey(at, id)
+func (k *Keeper) SetSubscriptionExpiryAt(ctx sdk.Context, at time.Time, id uint64) {
+	key := types.SubscriptionExpiryAtKey(at, id)
 	value := k.cdc.MustMarshal(&protobuf.BoolValue{Value: true})
 
 	store := k.Store(ctx)
 	store.Set(key, value)
 }
 
-func (k *Keeper) DeleteInactiveSubscriptionAt(ctx sdk.Context, at time.Time, id uint64) {
-	key := types.InactiveSubscriptionAtKey(at, id)
+func (k *Keeper) DeleteSubscriptionExpiryAt(ctx sdk.Context, at time.Time, id uint64) {
+	key := types.SubscriptionExpiryAtKey(at, id)
 
 	store := k.Store(ctx)
 	store.Delete(key)
 }
 
-func (k *Keeper) IterateInactiveSubscriptions(ctx sdk.Context, end time.Time, fn func(index int, item types.Subscription) (stop bool)) {
+func (k *Keeper) IterateSubscriptionExpirys(ctx sdk.Context, end time.Time, fn func(index int, item types.Subscription) (stop bool)) {
 	store := k.Store(ctx)
 
-	iter := store.Iterator(types.InactiveSubscriptionAtKeyPrefix, sdk.PrefixEndBytes(types.GetInactiveSubscriptionAtKeyPrefix(end)))
+	iter := store.Iterator(types.SubscriptionExpiryAtKeyPrefix, sdk.PrefixEndBytes(types.GetSubscriptionExpiryAtKeyPrefix(end)))
 	defer iter.Close()
 
 	for i := 0; iter.Valid(); iter.Next() {
 		var (
 			key             = iter.Key()
-			subscription, _ = k.GetSubscription(ctx, types.IDFromInactiveSubscriptionAtKey(key))
+			subscription, _ = k.GetSubscription(ctx, types.IDFromSubscriptionExpiryAtKey(key))
 		)
 
 		if stop := fn(i, subscription); stop {
@@ -246,4 +246,12 @@ func (k *Keeper) IterateInactiveSubscriptions(ctx sdk.Context, end time.Time, fn
 		}
 		i++
 	}
+}
+
+func (k *Keeper) CreateNodeSubscription(ctx sdk.Context, accAddr sdk.AccAddress, nodeAddr hubtypes.NodeAddress, hours int64, price sdk.Coin) (uint64, error) {
+	return 0, nil
+}
+
+func (k *Keeper) CreatePlanSubscription(ctx sdk.Context, accAddr sdk.AccAddress, id uint64, price sdk.Coin) (uint64, error) {
+	return 0, nil
 }

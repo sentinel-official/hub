@@ -26,7 +26,7 @@ func NewStoreDecoder(cdc codec.Codec) func(kvA, kvB kv.Pair) string {
 			cdc.UnmarshalInterface(kvB.Value, &subscriptionB)
 
 			return fmt.Sprintf("%v\n%v", &subscriptionA, &subscriptionB)
-		case bytes.Equal(kvA.Key[:1], types.InactiveSubscriptionAtKeyPrefix):
+		case bytes.Equal(kvA.Key[:1], types.SubscriptionExpiryAtKeyPrefix):
 			var inactiveSubscriptionAtA, inactiveSubscriptionAtB protobuftypes.BoolValue
 			cdc.MustUnmarshal(kvA.Value, &inactiveSubscriptionAtA)
 			cdc.MustUnmarshal(kvB.Value, &inactiveSubscriptionAtB)

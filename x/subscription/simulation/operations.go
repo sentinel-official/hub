@@ -17,9 +17,8 @@ import (
 )
 
 var (
-	OperationWeightMsgCancelRequest      = "op_weight_" + types.TypeMsgCancelRequest
-	OperationWeightMsgShareRequest       = "op_weight_" + types.TypeMsgShareRequest
-	OperationWeightMsgUpdateQuotaRequest = "op_weight_" + types.TypeMsgUpdateQuotaRequest
+	OperationWeightMsgCancelRequest = "op_weight_" + types.TypeMsgCancelRequest
+	OperationWeightMsgShareRequest  = "op_weight_" + types.TypeMsgShareRequest
 )
 
 func WeightedOperations(
@@ -30,9 +29,8 @@ func WeightedOperations(
 	k keeper.Keeper,
 ) simulation.WeightedOperations {
 	var (
-		weightMsgCancelRequest      int
-		weightMsgShareRequest       int
-		weightMsgUpdateQuotaRequest int
+		weightMsgCancelRequest int
+		weightMsgShareRequest  int
 	)
 
 	params.GetOrGenerate(
@@ -53,15 +51,6 @@ func WeightedOperations(
 			weightMsgShareRequest = 100
 		},
 	)
-	params.GetOrGenerate(
-		cdc,
-		OperationWeightMsgUpdateQuotaRequest,
-		&weightMsgUpdateQuotaRequest,
-		nil,
-		func(_ *rand.Rand) {
-			weightMsgUpdateQuotaRequest = 100
-		},
-	)
 
 	return simulation.WeightedOperations{
 		simulation.NewWeightedOperation(
@@ -71,10 +60,6 @@ func WeightedOperations(
 		simulation.NewWeightedOperation(
 			weightMsgShareRequest,
 			SimulateMsgShareRequest(ak, bk, k),
-		),
-		simulation.NewWeightedOperation(
-			weightMsgUpdateQuotaRequest,
-			SimulateMsgUpdateQuotaRequest(ak, bk, k),
 		),
 	}
 }
@@ -209,74 +194,6 @@ func SimulateMsgShareRequest(ak expected.AccountKeeper, bk expected.BankKeeper, 
 		_, _, err = app.Deliver(txConfig.TxEncoder(), txn)
 		if err != nil {
 			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgShareRequest, err.Error()), nil, err
-		}
-
-		return simulationtypes.NewOperationMsg(message, true, "", nil), nil, nil
-	}
-}
-
-func SimulateMsgUpdateQuotaRequest(ak expected.AccountKeeper, bk expected.BankKeeper, k keeper.Keeper) simulationtypes.Operation {
-	return func(
-		r *rand.Rand,
-		app *baseapp.BaseApp,
-		ctx sdk.Context,
-		accounts []simulationtypes.Account,
-		chainID string,
-	) (simulationtypes.OperationMsg, []simulationtypes.FutureOperation, error) {
-		var (
-			rFrom, _    = simulationtypes.RandomAcc(r, accounts)
-			from        = ak.GetAccount(ctx, rFrom.Address)
-			rAddress, _ = simulationtypes.RandomAcc(r, accounts)
-			address     = ak.GetAccount(ctx, rAddress.Address)
-		)
-
-		subscriptions := k.GetSubscriptionsForAccount(ctx, from.GetAddress())
-		if len(subscriptions) == 0 {
-			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgShareRequest, "active subscriptions for address does not exist"), nil, nil
-		}
-
-		rSubscription := subscriptions[r.Intn(len(subscriptions))]
-		if rSubscription.Type() == types.TypeNode {
-			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgShareRequest, "plan of the subscription is zero"), nil, nil
-		}
-
-		balance := bk.SpendableCoins(ctx, from.GetAddress())
-		if !balance.IsAnyNegative() {
-			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgUpdateQuotaRequest, "balance is negative"), nil, nil
-		}
-
-		fees, err := simulationtypes.RandomFees(r, ctx, balance)
-		if err != nil {
-			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgUpdateQuotaRequest, err.Error()), nil, err
-		}
-
-		var (
-			txConfig = params.MakeTestEncodingConfig().TxConfig
-			message  = types.NewMsgUpdateQuotaRequest(
-				from.GetAddress(),
-				rSubscription.GetID(),
-				address.GetAddress(),
-				sdk.ZeroInt(),
-			)
-		)
-
-		txn, err := helpers.GenTx(
-			txConfig,
-			[]sdk.Msg{message},
-			fees,
-			helpers.DefaultGenTxGas,
-			chainID,
-			[]uint64{from.GetAccountNumber()},
-			[]uint64{from.GetSequence()},
-			rFrom.PrivKey,
-		)
-		if err != nil {
-			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgUpdateQuotaRequest, err.Error()), nil, err
-		}
-
-		_, _, err = app.Deliver(txConfig.TxEncoder(), txn)
-		if err != nil {
-			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgUpdateQuotaRequest, err.Error()), nil, err
 		}
 
 		return simulationtypes.NewOperationMsg(message, true, "", nil), nil, nil

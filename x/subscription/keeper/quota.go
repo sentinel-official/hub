@@ -9,7 +9,7 @@ import (
 func (k *Keeper) SetQuota(ctx sdk.Context, id uint64, quota types.Quota) {
 	var (
 		store = k.Store(ctx)
-		key   = types.QuotaKey(id, quota.GetAccountAddress())
+		key   = types.QuotaKey(id, quota.GetAddress())
 		value = k.cdc.MustMarshal(&quota)
 	)
 
