@@ -13,8 +13,8 @@ option (gogoproto.equal_all)           = false;
 option (gogoproto.goproto_getters_all) = false;
 
 message Plan {
-  uint64 id               = 1 [ (gogoproto.customname) = "ID" ];
-  string provider_address = 2;
+  uint64 id      = 1 [ (gogoproto.customname) = "ID" ];
+  string address = 2;
   repeated cosmos.base.v1beta1.Coin prices = 3 [
     (gogoproto.nullable)     = false,
     (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"

@@ -9,12 +9,12 @@ import (
 	hubtypes "github.com/sentinel-official/hub/types"
 )
 
-func (m *Plan) GetProviderAddress() hubtypes.ProvAddress {
-	if m.ProviderAddress == "" {
+func (m *Plan) GetAddress() hubtypes.ProvAddress {
+	if m.Address == "" {
 		return nil
 	}
 
-	addr, err := hubtypes.ProvAddressFromBech32(m.ProviderAddress)
+	addr, err := hubtypes.ProvAddressFromBech32(m.Address)
 	if err != nil {
 		panic(err)
 	}
@@ -36,11 +36,11 @@ func (m *Plan) Validate() error {
 	if m.ID == 0 {
 		return fmt.Errorf("id cannot be zero")
 	}
-	if m.ProviderAddress == "" {
-		return fmt.Errorf("provider_address cannot be empty")
+	if m.Address == "" {
+		return fmt.Errorf("address cannot be empty")
 	}
-	if _, err := hubtypes.ProvAddressFromBech32(m.ProviderAddress); err != nil {
-		return errors.Wrapf(err, "invalid provider_address %s", m.ProviderAddress)
+	if _, err := hubtypes.ProvAddressFromBech32(m.Address); err != nil {
+		return errors.Wrapf(err, "invalid address %s", m.Address)
 	}
 	if m.Prices != nil {
 		if m.Prices.Len() == 0 {
