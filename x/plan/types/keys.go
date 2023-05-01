@@ -58,7 +58,7 @@ func InactivePlanForProviderKey(addr hubtypes.ProvAddress, id uint64) []byte {
 }
 
 func IDFromPlanForProviderKey(key []byte) uint64 {
-	// prefix (2 bytes) | addrLen (1 byte) | addr | id (8 bytes)
+	// prefix (2 bytes) | addrLen (1 byte) | addr (addrLen bytes) | id (8 bytes)
 
 	addrLen := int(key[2])
 	if len(key) != 11+addrLen {
