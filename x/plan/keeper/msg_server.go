@@ -35,13 +35,13 @@ func (k *msgServer) MsgCreate(c context.Context, msg *types.MsgCreateRequest) (*
 	var (
 		count = k.GetCount(ctx)
 		plan  = types.Plan{
-			ID:              count + 1,
-			ProviderAddress: provAddr.String(),
-			Prices:          msg.Prices,
-			Validity:        msg.Validity,
-			Bytes:           msg.Bytes,
-			Status:          hubtypes.StatusInactive,
-			StatusAt:        ctx.BlockTime(),
+			ID:       count + 1,
+			Address:  provAddr.String(),
+			Prices:   msg.Prices,
+			Validity: msg.Validity,
+			Bytes:    msg.Bytes,
+			Status:   hubtypes.StatusInactive,
+			StatusAt: ctx.BlockTime(),
 		}
 	)
 
@@ -50,8 +50,7 @@ func (k *msgServer) MsgCreate(c context.Context, msg *types.MsgCreateRequest) (*
 	k.SetInactivePlanForProvider(ctx, provAddr, plan.ID)
 	ctx.EventManager().EmitTypedEvent(
 		&types.EventCreate{
-			ID:              plan.ID,
-			ProviderAddress: plan.ProviderAddress,
+			ID: plan.ID,
 		},
 	)
 
@@ -65,11 +64,11 @@ func (k *msgServer) MsgUpdateStatus(c context.Context, msg *types.MsgUpdateStatu
 	if !found {
 		return nil, types.NewErrorPlanNotFound(msg.ID)
 	}
-	if msg.From != plan.ProviderAddress {
-		return nil, types.ErrorUnauthorized
+	if msg.From != plan.Address {
+		return nil, types.NewErrorUnauthorized(msg.From)
 	}
 
-	provAddr := plan.GetProviderAddress()
+	provAddr := plan.GetAddress()
 	if plan.Status.Equal(hubtypes.StatusActive) {
 		if msg.Status.Equal(hubtypes.StatusInactive) {
 			k.DeleteActivePlan(ctx, plan.ID)
@@ -90,9 +89,8 @@ func (k *msgServer) MsgUpdateStatus(c context.Context, msg *types.MsgUpdateStatu
 	k.SetPlan(ctx, plan)
 	ctx.EventManager().EmitTypedEvent(
 		&types.EventUpdateStatus{
-			ID:              plan.ID,
-			ProviderAddress: plan.ProviderAddress,
-			Status:          plan.Status,
+			ID:     plan.ID,
+			Status: plan.Status,
 		},
 	)
 
@@ -100,10 +98,54 @@ func (k *msgServer) MsgUpdateStatus(c context.Context, msg *types.MsgUpdateStatu
 }
 
 func (k *msgServer) MsgLinkNode(c context.Context, msg *types.MsgLinkNodeRequest) (*types.MsgLinkNodeResponse, error) {
+	ctx := sdk.UnwrapSDKContext(c)
+
+	nodeAddr, err := hubtypes.NodeAddressFromBech32(msg.Address)
+	if err != nil {
+		return nil, err
+	}
+
+	plan, found := k.GetPlan(ctx, msg.ID)
+	if !found {
+		return nil, types.NewErrorPlanNotFound(msg.ID)
+	}
+	if msg.From != plan.Address {
+		return nil, types.NewErrorUnauthorized(msg.From)
+	}
+
+	k.SetNodeForPlan(ctx, plan.ID, nodeAddr)
+	ctx.EventManager().EmitTypedEvent(
+		&types.EventLinkNode{
+			ID: plan.ID,
+		},
+	)
+
 	return &types.MsgLinkNodeResponse{}, nil
 }
 
 func (k *msgServer) MsgUnlinkNode(c context.Context, msg *types.MsgUnlinkNodeRequest) (*types.MsgUnlinkNodeResponse, error) {
+	ctx := sdk.UnwrapSDKContext(c)
+
+	nodeAddr, err := hubtypes.NodeAddressFromBech32(msg.Address)
+	if err != nil {
+		return nil, err
+	}
+
+	plan, found := k.GetPlan(ctx, msg.ID)
+	if !found {
+		return nil, types.NewErrorPlanNotFound(msg.ID)
+	}
+	if msg.From != plan.Address {
+		return nil, types.NewErrorUnauthorized(msg.From)
+	}
+
+	k.DeleteNodeForPlan(ctx, plan.ID, nodeAddr)
+	ctx.EventManager().EmitTypedEvent(
+		&types.EventUnlinkNode{
+			ID: plan.ID,
+		},
+	)
+
 	return &types.MsgUnlinkNodeResponse{}, nil
 }
 

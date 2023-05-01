@@ -21,5 +21,7 @@ type ProviderKeeper interface {
 }
 
 type NodeKeeper interface {
-	GetNode(ctx sdk.Context, address hubtypes.NodeAddress) (nodetypes.Node, bool)
+	SetNodeForPlan(ctx sdk.Context, id uint64, addr hubtypes.NodeAddress)
+	DeleteNodeForPlan(ctx sdk.Context, id uint64, addr hubtypes.NodeAddress)
+	GetNodesForPlan(ctx sdk.Context, id uint64) nodetypes.Nodes
 }
