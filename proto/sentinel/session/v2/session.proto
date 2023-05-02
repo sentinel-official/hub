@@ -15,11 +15,15 @@ message Session {
   uint64 id              = 1 [ (gogoproto.customname) = "ID" ];
   uint64 subscription_id = 2 [ (gogoproto.customname) = "SubscriptionID" ];
   string node_address    = 3;
-  string address         = 4;
-  google.protobuf.Duration duration = 5
+  string account_address = 4;
+
+  sentinel.types.v1.Bandwidth bandwidth = 5 [ (gogoproto.nullable) = false ];
+  google.protobuf.Duration duration     = 6
       [ (gogoproto.stdduration) = true, (gogoproto.nullable) = false ];
-  sentinel.types.v1.Bandwidth bandwidth = 6 [ (gogoproto.nullable) = false ];
-  sentinel.types.v1.Status status       = 7;
-  google.protobuf.Timestamp status_at   = 8
+  google.protobuf.Timestamp expiry_at = 7
+      [ (gogoproto.nullable) = false, (gogoproto.stdtime) = true ];
+
+  sentinel.types.v1.Status status     = 8;
+  google.protobuf.Timestamp status_at = 9
       [ (gogoproto.nullable) = false, (gogoproto.stdtime) = true ];
 }

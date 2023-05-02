@@ -10,9 +10,9 @@ import (
 	hubtypes "github.com/sentinel-official/hub/types"
 )
 
-func TestSession_GetAddress(t *testing.T) {
+func TestSession_GetAccountAddress(t *testing.T) {
 	type fields struct {
-		Address string
+		AccountAddress string
 	}
 	tests := []struct {
 		name   string
@@ -22,14 +22,14 @@ func TestSession_GetAddress(t *testing.T) {
 		{
 			"empty",
 			fields{
-				Address: "",
+				AccountAddress: "",
 			},
 			nil,
 		},
 		{
 			"20 bytes",
 			fields{
-				Address: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				AccountAddress: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
 			},
 			sdk.AccAddress{0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x20},
 		},
@@ -37,10 +37,10 @@ func TestSession_GetAddress(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			m := &Session{
-				Address: tt.fields.Address,
+				AccountAddress: tt.fields.AccountAddress,
 			}
-			if got := m.GetAddress(); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("GetAddress() = %v, want %v", got, tt.want)
+			if got := m.GetAccountAddress(); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("GetAccountAddress() = %v, want %v", got, tt.want)
 			}
 		})
 	}
@@ -87,7 +87,7 @@ func TestSession_Validate(t *testing.T) {
 		ID             uint64
 		SubscriptionID uint64
 		NodeAddress    string
-		Address        string
+		AccountAddress string
 		Duration       time.Duration
 		Bandwidth      hubtypes.Bandwidth
 		Status         hubtypes.Status
@@ -188,7 +188,7 @@ func TestSession_Validate(t *testing.T) {
 				ID:             1000,
 				SubscriptionID: 1000,
 				NodeAddress:    "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Address:        "",
+				AccountAddress: "",
 			},
 			true,
 		},
@@ -198,7 +198,7 @@ func TestSession_Validate(t *testing.T) {
 				ID:             1000,
 				SubscriptionID: 1000,
 				NodeAddress:    "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Address:        "invalid",
+				AccountAddress: "invalid",
 			},
 			true,
 		},
@@ -208,7 +208,7 @@ func TestSession_Validate(t *testing.T) {
 				ID:             1000,
 				SubscriptionID: 1000,
 				NodeAddress:    "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Address:        "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				AccountAddress: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
 			},
 			true,
 		},
@@ -218,7 +218,7 @@ func TestSession_Validate(t *testing.T) {
 				ID:             1000,
 				SubscriptionID: 1000,
 				NodeAddress:    "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Address:        "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				AccountAddress: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
 				Bandwidth:      hubtypes.Bandwidth{Upload: sdk.NewInt(0), Download: sdk.NewInt(0)},
 			},
 			true,
@@ -229,7 +229,7 @@ func TestSession_Validate(t *testing.T) {
 				ID:             1000,
 				SubscriptionID: 1000,
 				NodeAddress:    "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Address:        "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				AccountAddress: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
 				Duration:       -1000,
 			},
 			true,
@@ -240,7 +240,7 @@ func TestSession_Validate(t *testing.T) {
 				ID:             1000,
 				SubscriptionID: 1000,
 				NodeAddress:    "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Address:        "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				AccountAddress: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
 				Duration:       0,
 				Bandwidth:      hubtypes.Bandwidth{Upload: sdk.NewInt(0), Download: sdk.NewInt(0)},
 			},
@@ -252,7 +252,7 @@ func TestSession_Validate(t *testing.T) {
 				ID:             1000,
 				SubscriptionID: 1000,
 				NodeAddress:    "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Address:        "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				AccountAddress: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
 				Duration:       1000,
 				Bandwidth:      hubtypes.Bandwidth{Upload: sdk.NewInt(0), Download: sdk.NewInt(0)},
 			},
@@ -264,7 +264,7 @@ func TestSession_Validate(t *testing.T) {
 				ID:             1000,
 				SubscriptionID: 1000,
 				NodeAddress:    "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Address:        "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				AccountAddress: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
 				Duration:       1000,
 				Bandwidth:      hubtypes.Bandwidth{Upload: sdk.NewInt(-1000), Download: sdk.NewInt(-1000)},
 			},
@@ -276,7 +276,7 @@ func TestSession_Validate(t *testing.T) {
 				ID:             1000,
 				SubscriptionID: 1000,
 				NodeAddress:    "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Address:        "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				AccountAddress: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
 				Duration:       1000,
 				Bandwidth:      hubtypes.Bandwidth{Upload: sdk.NewInt(-1000), Download: sdk.NewInt(0)},
 			},
@@ -288,7 +288,7 @@ func TestSession_Validate(t *testing.T) {
 				ID:             1000,
 				SubscriptionID: 1000,
 				NodeAddress:    "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Address:        "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				AccountAddress: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
 				Duration:       1000,
 				Bandwidth:      hubtypes.Bandwidth{Upload: sdk.NewInt(-1000), Download: sdk.NewInt(1000)},
 			},
@@ -300,7 +300,7 @@ func TestSession_Validate(t *testing.T) {
 				ID:             1000,
 				SubscriptionID: 1000,
 				NodeAddress:    "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Address:        "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				AccountAddress: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
 				Duration:       1000,
 				Bandwidth:      hubtypes.Bandwidth{Upload: sdk.NewInt(0), Download: sdk.NewInt(-1000)},
 			},
@@ -312,7 +312,7 @@ func TestSession_Validate(t *testing.T) {
 				ID:             1000,
 				SubscriptionID: 1000,
 				NodeAddress:    "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Address:        "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				AccountAddress: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
 				Duration:       1000,
 				Bandwidth:      hubtypes.Bandwidth{Upload: sdk.NewInt(0), Download: sdk.NewInt(0)},
 			},
@@ -324,7 +324,7 @@ func TestSession_Validate(t *testing.T) {
 				ID:             1000,
 				SubscriptionID: 1000,
 				NodeAddress:    "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Address:        "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				AccountAddress: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
 				Duration:       1000,
 				Bandwidth:      hubtypes.Bandwidth{Upload: sdk.NewInt(0), Download: sdk.NewInt(1000)},
 			},
@@ -336,7 +336,7 @@ func TestSession_Validate(t *testing.T) {
 				ID:             1000,
 				SubscriptionID: 1000,
 				NodeAddress:    "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Address:        "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				AccountAddress: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
 				Duration:       1000,
 				Bandwidth:      hubtypes.Bandwidth{Upload: sdk.NewInt(1000), Download: sdk.NewInt(-1000)},
 			},
@@ -348,7 +348,7 @@ func TestSession_Validate(t *testing.T) {
 				ID:             1000,
 				SubscriptionID: 1000,
 				NodeAddress:    "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Address:        "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				AccountAddress: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
 				Duration:       1000,
 				Bandwidth:      hubtypes.Bandwidth{Upload: sdk.NewInt(1000), Download: sdk.NewInt(0)},
 			},
@@ -360,7 +360,7 @@ func TestSession_Validate(t *testing.T) {
 				ID:             1000,
 				SubscriptionID: 1000,
 				NodeAddress:    "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Address:        "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				AccountAddress: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
 				Duration:       1000,
 				Bandwidth:      hubtypes.Bandwidth{Upload: sdk.NewInt(1000), Download: sdk.NewInt(1000)},
 			},
@@ -372,7 +372,7 @@ func TestSession_Validate(t *testing.T) {
 				ID:             1000,
 				SubscriptionID: 1000,
 				NodeAddress:    "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Address:        "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				AccountAddress: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
 				Duration:       1000,
 				Bandwidth:      hubtypes.Bandwidth{Upload: sdk.NewInt(1000), Download: sdk.NewInt(1000)},
 				Status:         hubtypes.StatusUnspecified,
@@ -385,7 +385,7 @@ func TestSession_Validate(t *testing.T) {
 				ID:             1000,
 				SubscriptionID: 1000,
 				NodeAddress:    "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Address:        "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				AccountAddress: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
 				Duration:       1000,
 				Bandwidth:      hubtypes.Bandwidth{Upload: sdk.NewInt(1000), Download: sdk.NewInt(1000)},
 				Status:         hubtypes.StatusActive,
@@ -398,7 +398,7 @@ func TestSession_Validate(t *testing.T) {
 				ID:             1000,
 				SubscriptionID: 1000,
 				NodeAddress:    "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Address:        "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				AccountAddress: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
 				Duration:       1000,
 				Bandwidth:      hubtypes.Bandwidth{Upload: sdk.NewInt(1000), Download: sdk.NewInt(1000)},
 				Status:         hubtypes.StatusInactivePending,
@@ -411,7 +411,7 @@ func TestSession_Validate(t *testing.T) {
 				ID:             1000,
 				SubscriptionID: 1000,
 				NodeAddress:    "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Address:        "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				AccountAddress: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
 				Duration:       1000,
 				Bandwidth:      hubtypes.Bandwidth{Upload: sdk.NewInt(1000), Download: sdk.NewInt(1000)},
 				Status:         hubtypes.StatusInactive,
@@ -424,7 +424,7 @@ func TestSession_Validate(t *testing.T) {
 				ID:             1000,
 				SubscriptionID: 1000,
 				NodeAddress:    "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Address:        "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				AccountAddress: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
 				Duration:       1000,
 				Bandwidth:      hubtypes.Bandwidth{Upload: sdk.NewInt(1000), Download: sdk.NewInt(1000)},
 				Status:         hubtypes.StatusInactive,
@@ -438,7 +438,7 @@ func TestSession_Validate(t *testing.T) {
 				ID:             1000,
 				SubscriptionID: 1000,
 				NodeAddress:    "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Address:        "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				AccountAddress: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
 				Duration:       1000,
 				Bandwidth:      hubtypes.Bandwidth{Upload: sdk.NewInt(1000), Download: sdk.NewInt(1000)},
 				Status:         hubtypes.StatusInactive,
@@ -453,7 +453,7 @@ func TestSession_Validate(t *testing.T) {
 				ID:             tt.fields.ID,
 				SubscriptionID: tt.fields.SubscriptionID,
 				NodeAddress:    tt.fields.NodeAddress,
-				Address:        tt.fields.Address,
+				AccountAddress: tt.fields.AccountAddress,
 				Duration:       tt.fields.Duration,
 				Bandwidth:      tt.fields.Bandwidth,
 				Status:         tt.fields.Status,

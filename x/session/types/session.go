@@ -9,12 +9,12 @@ import (
 	hubtypes "github.com/sentinel-official/hub/types"
 )
 
-func (m *Session) GetAddress() sdk.AccAddress {
-	if m.Address == "" {
+func (m *Session) GetAccountAddress() sdk.AccAddress {
+	if m.AccountAddress == "" {
 		return nil
 	}
 
-	addr, err := sdk.AccAddressFromBech32(m.Address)
+	addr, err := sdk.AccAddressFromBech32(m.AccountAddress)
 	if err != nil {
 		panic(err)
 	}
@@ -39,26 +39,32 @@ func (m *Session) Validate() error {
 	if m.ID == 0 {
 		return fmt.Errorf("id cannot be zero")
 	}
+	if m.SubscriptionID == 0 {
+		return fmt.Errorf("subscription_id cannot be zero")
+	}
 	if m.NodeAddress == "" {
 		return fmt.Errorf("node_address cannot be empty")
 	}
 	if _, err := hubtypes.NodeAddressFromBech32(m.NodeAddress); err != nil {
 		return errors.Wrapf(err, "invalid node_address %s", m.NodeAddress)
 	}
-	if m.Address == "" {
-		return fmt.Errorf("address cannot be empty")
+	if m.AccountAddress == "" {
+		return fmt.Errorf("account_address cannot be empty")
 	}
-	if _, err := sdk.AccAddressFromBech32(m.Address); err != nil {
-		return errors.Wrapf(err, "invalid address %s", m.Address)
+	if _, err := sdk.AccAddressFromBech32(m.AccountAddress); err != nil {
+		return errors.Wrapf(err, "invalid account_address %s", m.AccountAddress)
 	}
-	if m.Duration < 0 {
-		return fmt.Errorf("duration cannot be negative")
+	if m.Bandwidth.IsAnyNil() {
+		return fmt.Errorf("bandwidth cannot be empty")
 	}
 	if m.Bandwidth.IsAnyNegative() {
 		return fmt.Errorf("bandwidth cannot be negative")
 	}
-	if !m.Status.IsValid() {
-		return fmt.Errorf("status must be valid")
+	if m.Duration < 0 {
+		return fmt.Errorf("duration cannot be negative")
+	}
+	if !m.Status.IsOneOf(hubtypes.StatusActive, hubtypes.StatusInactivePending) {
+		return fmt.Errorf("status must be oneof [active, inactive_pending]")
 	}
 	if m.StatusAt.IsZero() {
 		return fmt.Errorf("status_at cannot be zero")
