@@ -28,6 +28,9 @@ func (m *MsgStartRequest) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.From); err != nil {
 		return errors.Wrap(ErrorInvalidMessage, err.Error())
 	}
+	if m.ID == 0 {
+		return errors.Wrap(ErrorInvalidMessage, "id cannot be zero")
+	}
 	if m.Address == "" {
 		return errors.Wrap(ErrorInvalidMessage, "address cannot be empty")
 	}
@@ -65,11 +68,14 @@ func (m *MsgUpdateDetailsRequest) ValidateBasic() error {
 	if m.Proof.ID == 0 {
 		return errors.Wrap(ErrorInvalidMessage, "proof.id cannot be zero")
 	}
-	if m.Proof.Duration < 0 {
-		return errors.Wrap(ErrorInvalidMessage, "proof.duration cannot be negative")
+	if m.Proof.Bandwidth.IsAnyNil() {
+		return errors.Wrap(ErrorInvalidMessage, "proof.bandwidth cannot be empty")
 	}
 	if m.Proof.Bandwidth.IsAnyNegative() {
 		return errors.Wrap(ErrorInvalidMessage, "proof.bandwidth cannot be negative")
+	}
+	if m.Proof.Duration < 0 {
+		return errors.Wrap(ErrorInvalidMessage, "proof.duration cannot be negative")
 	}
 	if m.Signature != nil {
 		if len(m.Signature) < 64 {
