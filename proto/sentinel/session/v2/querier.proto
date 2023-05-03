@@ -30,6 +30,12 @@ message QuerySessionsForSubscriptionRequest {
   cosmos.base.query.v1beta1.PageRequest pagination = 2;
 }
 
+message QuerySessionsForQuotaRequest {
+  uint64 id                                        = 1;
+  string address                                   = 2;
+  cosmos.base.query.v1beta1.PageRequest pagination = 3;
+}
+
 message QuerySessionRequest { uint64 id = 1; }
 
 message QueryParamsRequest {}
@@ -50,6 +56,11 @@ message QuerySessionsForNodeResponse {
 }
 
 message QuerySessionsForSubscriptionResponse {
+  repeated Session sessions = 1 [ (gogoproto.nullable) = false ];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QuerySessionsForQuotaResponse {
   repeated Session sessions = 1 [ (gogoproto.nullable) = false ];
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
@@ -80,6 +91,12 @@ service QueryService {
   rpc QuerySessionsForSubscription(QuerySessionsForSubscriptionRequest)
       returns (QuerySessionsForSubscriptionResponse) {
     option (google.api.http).get = "/sentinel/subscriptions/{id}/sessions";
+  }
+
+  rpc QuerySessionsForQuota(QuerySessionsForQuotaRequest)
+      returns (QuerySessionsForQuotaResponse) {
+    option (google.api.http).get =
+        "/sentinel/subscriptions/{id}/quota/{address}/sessions";
   }
 
   rpc QuerySession(QuerySessionRequest) returns (QuerySessionResponse) {

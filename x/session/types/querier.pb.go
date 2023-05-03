@@ -181,6 +181,45 @@ func (m *QuerySessionsForSubscriptionRequest) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QuerySessionsForSubscriptionRequest proto.InternalMessageInfo
 
+type QuerySessionsForQuotaRequest struct {
+	Id         uint64             `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Address    string             `protobuf:"bytes,2,opt,name=address,proto3" json:"address,omitempty"`
+	Pagination *query.PageRequest `protobuf:"bytes,3,opt,name=pagination,proto3" json:"pagination,omitempty"`
+}
+
+func (m *QuerySessionsForQuotaRequest) Reset()         { *m = QuerySessionsForQuotaRequest{} }
+func (m *QuerySessionsForQuotaRequest) String() string { return proto.CompactTextString(m) }
+func (*QuerySessionsForQuotaRequest) ProtoMessage()    {}
+func (*QuerySessionsForQuotaRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_04c827d58fe20039, []int{4}
+}
+func (m *QuerySessionsForQuotaRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QuerySessionsForQuotaRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QuerySessionsForQuotaRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QuerySessionsForQuotaRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QuerySessionsForQuotaRequest.Merge(m, src)
+}
+func (m *QuerySessionsForQuotaRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QuerySessionsForQuotaRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QuerySessionsForQuotaRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QuerySessionsForQuotaRequest proto.InternalMessageInfo
+
 type QuerySessionRequest struct {
 	Id uint64 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 }
@@ -189,7 +228,7 @@ func (m *QuerySessionRequest) Reset()         { *m = QuerySessionRequest{} }
 func (m *QuerySessionRequest) String() string { return proto.CompactTextString(m) }
 func (*QuerySessionRequest) ProtoMessage()    {}
 func (*QuerySessionRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_04c827d58fe20039, []int{4}
+	return fileDescriptor_04c827d58fe20039, []int{5}
 }
 func (m *QuerySessionRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -225,7 +264,7 @@ func (m *QueryParamsRequest) Reset()         { *m = QueryParamsRequest{} }
 func (m *QueryParamsRequest) String() string { return proto.CompactTextString(m) }
 func (*QueryParamsRequest) ProtoMessage()    {}
 func (*QueryParamsRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_04c827d58fe20039, []int{5}
+	return fileDescriptor_04c827d58fe20039, []int{6}
 }
 func (m *QueryParamsRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -263,7 +302,7 @@ func (m *QuerySessionsResponse) Reset()         { *m = QuerySessionsResponse{} }
 func (m *QuerySessionsResponse) String() string { return proto.CompactTextString(m) }
 func (*QuerySessionsResponse) ProtoMessage()    {}
 func (*QuerySessionsResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_04c827d58fe20039, []int{6}
+	return fileDescriptor_04c827d58fe20039, []int{7}
 }
 func (m *QuerySessionsResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -301,7 +340,7 @@ func (m *QuerySessionsForAccountResponse) Reset()         { *m = QuerySessionsFo
 func (m *QuerySessionsForAccountResponse) String() string { return proto.CompactTextString(m) }
 func (*QuerySessionsForAccountResponse) ProtoMessage()    {}
 func (*QuerySessionsForAccountResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_04c827d58fe20039, []int{7}
+	return fileDescriptor_04c827d58fe20039, []int{8}
 }
 func (m *QuerySessionsForAccountResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -339,7 +378,7 @@ func (m *QuerySessionsForNodeResponse) Reset()         { *m = QuerySessionsForNo
 func (m *QuerySessionsForNodeResponse) String() string { return proto.CompactTextString(m) }
 func (*QuerySessionsForNodeResponse) ProtoMessage()    {}
 func (*QuerySessionsForNodeResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_04c827d58fe20039, []int{8}
+	return fileDescriptor_04c827d58fe20039, []int{9}
 }
 func (m *QuerySessionsForNodeResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -377,7 +416,7 @@ func (m *QuerySessionsForSubscriptionResponse) Reset()         { *m = QuerySessi
 func (m *QuerySessionsForSubscriptionResponse) String() string { return proto.CompactTextString(m) }
 func (*QuerySessionsForSubscriptionResponse) ProtoMessage()    {}
 func (*QuerySessionsForSubscriptionResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_04c827d58fe20039, []int{9}
+	return fileDescriptor_04c827d58fe20039, []int{10}
 }
 func (m *QuerySessionsForSubscriptionResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -406,6 +445,44 @@ func (m *QuerySessionsForSubscriptionResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QuerySessionsForSubscriptionResponse proto.InternalMessageInfo
 
+type QuerySessionsForQuotaResponse struct {
+	Sessions   []Session           `protobuf:"bytes,1,rep,name=sessions,proto3" json:"sessions"`
+	Pagination *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+}
+
+func (m *QuerySessionsForQuotaResponse) Reset()         { *m = QuerySessionsForQuotaResponse{} }
+func (m *QuerySessionsForQuotaResponse) String() string { return proto.CompactTextString(m) }
+func (*QuerySessionsForQuotaResponse) ProtoMessage()    {}
+func (*QuerySessionsForQuotaResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_04c827d58fe20039, []int{11}
+}
+func (m *QuerySessionsForQuotaResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QuerySessionsForQuotaResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QuerySessionsForQuotaResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QuerySessionsForQuotaResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QuerySessionsForQuotaResponse.Merge(m, src)
+}
+func (m *QuerySessionsForQuotaResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *QuerySessionsForQuotaResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QuerySessionsForQuotaResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QuerySessionsForQuotaResponse proto.InternalMessageInfo
+
 type QuerySessionResponse struct {
 	Session Session `protobuf:"bytes,1,opt,name=session,proto3" json:"session"`
 }
@@ -414,7 +491,7 @@ func (m *QuerySessionResponse) Reset()         { *m = QuerySessionResponse{} }
 func (m *QuerySessionResponse) String() string { return proto.CompactTextString(m) }
 func (*QuerySessionResponse) ProtoMessage()    {}
 func (*QuerySessionResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_04c827d58fe20039, []int{10}
+	return fileDescriptor_04c827d58fe20039, []int{12}
 }
 func (m *QuerySessionResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -451,7 +528,7 @@ func (m *QueryParamsResponse) Reset()         { *m = QueryParamsResponse{} }
 func (m *QueryParamsResponse) String() string { return proto.CompactTextString(m) }
 func (*QueryParamsResponse) ProtoMessage()    {}
 func (*QueryParamsResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_04c827d58fe20039, []int{11}
+	return fileDescriptor_04c827d58fe20039, []int{13}
 }
 func (m *QueryParamsResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -485,12 +562,14 @@ func init() {
 	proto.RegisterType((*QuerySessionsForAccountRequest)(nil), "sentinel.session.v2.QuerySessionsForAccountRequest")
 	proto.RegisterType((*QuerySessionsForNodeRequest)(nil), "sentinel.session.v2.QuerySessionsForNodeRequest")
 	proto.RegisterType((*QuerySessionsForSubscriptionRequest)(nil), "sentinel.session.v2.QuerySessionsForSubscriptionRequest")
+	proto.RegisterType((*QuerySessionsForQuotaRequest)(nil), "sentinel.session.v2.QuerySessionsForQuotaRequest")
 	proto.RegisterType((*QuerySessionRequest)(nil), "sentinel.session.v2.QuerySessionRequest")
 	proto.RegisterType((*QueryParamsRequest)(nil), "sentinel.session.v2.QueryParamsRequest")
 	proto.RegisterType((*QuerySessionsResponse)(nil), "sentinel.session.v2.QuerySessionsResponse")
 	proto.RegisterType((*QuerySessionsForAccountResponse)(nil), "sentinel.session.v2.QuerySessionsForAccountResponse")
 	proto.RegisterType((*QuerySessionsForNodeResponse)(nil), "sentinel.session.v2.QuerySessionsForNodeResponse")
 	proto.RegisterType((*QuerySessionsForSubscriptionResponse)(nil), "sentinel.session.v2.QuerySessionsForSubscriptionResponse")
+	proto.RegisterType((*QuerySessionsForQuotaResponse)(nil), "sentinel.session.v2.QuerySessionsForQuotaResponse")
 	proto.RegisterType((*QuerySessionResponse)(nil), "sentinel.session.v2.QuerySessionResponse")
 	proto.RegisterType((*QueryParamsResponse)(nil), "sentinel.session.v2.QueryParamsResponse")
 }
@@ -498,53 +577,57 @@ func init() {
 func init() { proto.RegisterFile("sentinel/session/v2/querier.proto", fileDescriptor_04c827d58fe20039) }
 
 var fileDescriptor_04c827d58fe20039 = []byte{
-	// 725 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xcc, 0x96, 0xc1, 0x4f, 0xd4, 0x4e,
-	0x14, 0xc7, 0x77, 0xf6, 0x47, 0xe0, 0xe7, 0xa0, 0x1e, 0x86, 0x35, 0x60, 0x21, 0x05, 0x2b, 0xc8,
-	0x42, 0x42, 0x07, 0x16, 0x0f, 0x92, 0x18, 0x13, 0x39, 0xe0, 0xcd, 0xe0, 0xe2, 0xc9, 0x83, 0xc9,
-	0x6c, 0x3b, 0x94, 0x49, 0x76, 0x3b, 0xa5, 0xd3, 0x6e, 0x24, 0x84, 0x98, 0x10, 0x4f, 0x9e, 0x4c,
-	0xfc, 0x07, 0xbc, 0x61, 0xbc, 0x78, 0xf0, 0x3f, 0xf0, 0xc4, 0xc1, 0x03, 0x89, 0x17, 0x4f, 0x46,
-	0x17, 0xff, 0x10, 0xb3, 0xd3, 0x69, 0xb7, 0x5b, 0xba, 0xee, 0x42, 0x8c, 0xe1, 0xb6, 0xdb, 0x7e,
-	0xdf, 0xfb, 0x7e, 0xde, 0xe4, 0xbd, 0x37, 0x85, 0xb7, 0x04, 0x75, 0x03, 0xe6, 0xd2, 0x3a, 0x16,
-	0x54, 0x08, 0xc6, 0x5d, 0xdc, 0xac, 0xe0, 0xdd, 0x90, 0xfa, 0x8c, 0xfa, 0xa6, 0xe7, 0xf3, 0x80,
-	0xa3, 0xb1, 0x58, 0x62, 0x2a, 0x89, 0xd9, 0xac, 0x68, 0x8b, 0x16, 0x17, 0x0d, 0x2e, 0x70, 0x8d,
-	0x08, 0x2a, 0xf5, 0x7b, 0xb8, 0xb9, 0x52, 0xa3, 0x01, 0x59, 0xc1, 0x1e, 0x71, 0x98, 0x4b, 0x82,
-	0xb6, 0x50, 0x26, 0xd0, 0x4a, 0x0e, 0x77, 0xb8, 0xfc, 0x89, 0xdb, 0xbf, 0xd4, 0xd3, 0x29, 0x87,
-	0x73, 0xa7, 0x4e, 0x31, 0xf1, 0x18, 0x26, 0xae, 0xcb, 0x03, 0x19, 0x22, 0xd4, 0xdb, 0x5c, 0xae,
-	0xd8, 0x3f, 0x92, 0xcc, 0xe4, 0x49, 0x3c, 0xe2, 0x93, 0x86, 0x4a, 0x62, 0x3c, 0x87, 0xa5, 0x27,
-	0x6d, 0xb4, 0xad, 0xe8, 0xbd, 0xa8, 0xd2, 0xdd, 0x90, 0x8a, 0x00, 0x6d, 0x40, 0xd8, 0x81, 0x9c,
-	0x00, 0x33, 0xa0, 0x3c, 0x5a, 0xb9, 0x63, 0x46, 0x15, 0x99, 0xed, 0x8a, 0x4c, 0x59, 0x91, 0xa9,
-	0x2a, 0x32, 0x37, 0x89, 0x43, 0x55, 0x6c, 0x35, 0x15, 0x69, 0x1c, 0x02, 0xa8, 0x77, 0x19, 0x6c,
-	0x70, 0xff, 0xa1, 0x65, 0xf1, 0xd0, 0x0d, 0x62, 0xab, 0x09, 0x38, 0x42, 0x6c, 0xdb, 0xa7, 0x42,
-	0x48, 0x9f, 0x2b, 0xd5, 0xf8, 0x6f, 0x06, 0xa2, 0x78, 0x61, 0x88, 0x97, 0x70, 0x32, 0xcb, 0xf0,
-	0x98, 0xdb, 0xf4, 0xdf, 0x01, 0x1c, 0xc0, 0xdb, 0x59, 0x80, 0xad, 0xb0, 0x26, 0x2c, 0x9f, 0x79,
-	0xed, 0xf7, 0x31, 0xc8, 0x75, 0x58, 0x64, 0xb6, 0x64, 0x18, 0xaa, 0x16, 0x99, 0xfd, 0xd7, 0xec,
-	0xe7, 0xe0, 0x58, 0xda, 0xbe, 0x87, 0x9d, 0x51, 0x82, 0x48, 0xca, 0x36, 0x65, 0x83, 0x28, 0x95,
-	0xf1, 0x0e, 0xc0, 0x1b, 0x99, 0x16, 0x11, 0x1e, 0x77, 0x05, 0x45, 0x0f, 0xe0, 0xff, 0xaa, 0xad,
-	0xda, 0x07, 0xf7, 0x5f, 0x79, 0xb4, 0x32, 0x65, 0xe6, 0x0c, 0x82, 0xa9, 0x02, 0xd7, 0x87, 0x8e,
-	0xbf, 0x4f, 0x17, 0xaa, 0x49, 0x0c, 0x7a, 0x94, 0x53, 0xde, 0x7c, 0xdf, 0xf2, 0x22, 0xf3, 0xae,
-	0xfa, 0x3e, 0x00, 0x38, 0xdd, 0xb3, 0xc9, 0x2e, 0x1b, 0xec, 0x11, 0x80, 0x53, 0xf9, 0xdd, 0x78,
-	0xd9, 0x48, 0x3f, 0x02, 0x38, 0xfb, 0xe7, 0xb6, 0xbd, 0x6c, 0xc4, 0x4f, 0xbb, 0xb7, 0x59, 0x02,
-	0x78, 0x1f, 0x8e, 0x28, 0x33, 0xb5, 0xca, 0x06, 0xe1, 0x8b, 0x43, 0x8c, 0x4d, 0x35, 0x3e, 0xf1,
-	0x5c, 0xa8, 0xa4, 0x6b, 0x70, 0x38, 0x5a, 0xa5, 0x2a, 0xe7, 0x64, 0x6e, 0xce, 0x28, 0x48, 0xa5,
-	0x54, 0x01, 0x95, 0x2f, 0x23, 0xf0, 0xaa, 0x02, 0xf5, 0x9b, 0xcc, 0xa2, 0xe8, 0x10, 0xc0, 0x6b,
-	0x5d, 0x47, 0x8d, 0x16, 0x72, 0xb3, 0xe5, 0xed, 0x6a, 0x6d, 0x71, 0x10, 0x69, 0x04, 0x6d, 0x68,
-	0x87, 0x5f, 0x7f, 0xbd, 0x2d, 0x96, 0x10, 0xc2, 0xd9, 0xab, 0x41, 0xa0, 0x4f, 0x00, 0x8e, 0xf7,
-	0x18, 0x23, 0xb4, 0xda, 0xdf, 0xe3, 0xcc, 0x66, 0xd7, 0xee, 0x9e, 0x2f, 0x48, 0x21, 0x2e, 0x49,
-	0xc4, 0x79, 0x34, 0xd7, 0x41, 0x24, 0x91, 0x44, 0xe0, 0x7d, 0xb5, 0x99, 0x0f, 0x3a, 0xd4, 0x47,
-	0x20, 0x73, 0x85, 0xa9, 0x79, 0x42, 0xcb, 0x03, 0xb9, 0xa7, 0x2e, 0x02, 0x6d, 0xe5, 0x1c, 0x11,
-	0x0a, 0x76, 0x51, 0xc2, 0xce, 0x22, 0xa3, 0x03, 0xeb, 0x72, 0x9b, 0xe6, 0x92, 0x7e, 0xce, 0x99,
-	0xfc, 0xf4, 0x3c, 0xa1, 0x7b, 0x03, 0xf9, 0xe7, 0xdc, 0x1c, 0xda, 0xda, 0x05, 0x22, 0x7b, 0x1f,
-	0xb7, 0x48, 0xe9, 0x04, 0xde, 0x67, 0x76, 0xaa, 0x88, 0x57, 0x20, 0x69, 0x5d, 0xf9, 0x04, 0x95,
-	0xfb, 0x5a, 0xc7, 0x90, 0x0b, 0x03, 0x28, 0x15, 0xd4, 0xb4, 0x84, 0xba, 0x89, 0xc6, 0xcf, 0xb6,
-	0xa9, 0xe4, 0x41, 0xaf, 0x01, 0x1c, 0x4d, 0x0d, 0x25, 0x9a, 0xef, 0x9d, 0xbb, 0xeb, 0x3a, 0xd3,
-	0xca, 0xfd, 0x85, 0x8a, 0xa1, 0x2c, 0x19, 0x0c, 0x34, 0xd3, 0x61, 0x68, 0x70, 0x3b, 0xac, 0x53,
-	0x91, 0x7c, 0x4d, 0x45, 0xe3, 0xbc, 0x5e, 0x3d, 0xfe, 0xa9, 0x17, 0xde, 0xb7, 0xf4, 0xc2, 0x71,
-	0x4b, 0x07, 0x27, 0x2d, 0x1d, 0xfc, 0x68, 0xe9, 0xe0, 0xcd, 0xa9, 0x5e, 0x38, 0x39, 0xd5, 0x0b,
-	0xdf, 0x4e, 0xf5, 0xc2, 0xb3, 0x65, 0x87, 0x05, 0x3b, 0x61, 0xcd, 0xb4, 0x78, 0x23, 0xc9, 0xb6,
-	0xc4, 0xb7, 0xb7, 0x99, 0xc5, 0x48, 0x1d, 0xef, 0x84, 0x35, 0xfc, 0x22, 0x49, 0x1a, 0xec, 0x79,
-	0x54, 0xd4, 0x86, 0xe5, 0xf7, 0xd9, 0xea, 0xef, 0x00, 0x00, 0x00, 0xff, 0xff, 0x8a, 0x9e, 0x35,
-	0xca, 0x7e, 0x0a, 0x00, 0x00,
+	// 788 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xcc, 0x96, 0x41, 0x4f, 0xd4, 0x4c,
+	0x18, 0xc7, 0x77, 0x16, 0x02, 0x2f, 0xc3, 0xfb, 0xbe, 0x87, 0x61, 0x0d, 0x58, 0xb0, 0x60, 0x05,
+	0x59, 0x48, 0xe8, 0xc0, 0xa2, 0x51, 0x12, 0x35, 0x91, 0x03, 0xde, 0x0c, 0x2c, 0x9e, 0x3c, 0x98,
+	0x74, 0xdb, 0xa1, 0x34, 0xd9, 0xed, 0x94, 0x4e, 0xbb, 0x91, 0x10, 0x62, 0x42, 0x3c, 0x19, 0x0f,
+	0x24, 0x7e, 0x01, 0x6f, 0x10, 0x2f, 0x1e, 0x3c, 0x7b, 0xf1, 0xc4, 0x91, 0xc4, 0x8b, 0x27, 0xa3,
+	0x8b, 0x1f, 0xc4, 0x74, 0x3a, 0xdd, 0xed, 0x96, 0x96, 0x5d, 0x88, 0x31, 0x7b, 0xdb, 0x6d, 0xff,
+	0xff, 0xe7, 0xf9, 0x3d, 0xd3, 0x79, 0xe6, 0x19, 0x78, 0x93, 0x11, 0xdb, 0xb3, 0x6c, 0x52, 0xc5,
+	0x8c, 0x30, 0x66, 0x51, 0x1b, 0xd7, 0x4b, 0x78, 0xc7, 0x27, 0xae, 0x45, 0x5c, 0xd5, 0x71, 0xa9,
+	0x47, 0xd1, 0x48, 0x24, 0x51, 0x85, 0x44, 0xad, 0x97, 0xa4, 0x79, 0x9d, 0xb2, 0x1a, 0x65, 0xb8,
+	0xa2, 0x31, 0xc2, 0xf5, 0xbb, 0xb8, 0xbe, 0x54, 0x21, 0x9e, 0xb6, 0x84, 0x1d, 0xcd, 0xb4, 0x6c,
+	0xcd, 0x0b, 0x84, 0x3c, 0x80, 0x54, 0x30, 0xa9, 0x49, 0xf9, 0x4f, 0x1c, 0xfc, 0x12, 0x4f, 0x27,
+	0x4c, 0x4a, 0xcd, 0x2a, 0xc1, 0x9a, 0x63, 0x61, 0xcd, 0xb6, 0xa9, 0xc7, 0x2d, 0x4c, 0xbc, 0x4d,
+	0xe5, 0x8a, 0xf2, 0x87, 0x92, 0xa9, 0x34, 0x89, 0xa3, 0xb9, 0x5a, 0x4d, 0x04, 0x51, 0x5e, 0xc0,
+	0xc2, 0x46, 0x80, 0xb6, 0x19, 0xbe, 0x67, 0x65, 0xb2, 0xe3, 0x13, 0xe6, 0xa1, 0x35, 0x08, 0x5b,
+	0x90, 0x63, 0x60, 0x0a, 0x14, 0x87, 0x4b, 0xb7, 0xd5, 0xb0, 0x22, 0x35, 0xa8, 0x48, 0xe5, 0x15,
+	0xa9, 0xa2, 0x22, 0x75, 0x5d, 0x33, 0x89, 0xf0, 0x96, 0x63, 0x4e, 0xe5, 0x00, 0x40, 0xb9, 0x2d,
+	0xc1, 0x1a, 0x75, 0x1f, 0xeb, 0x3a, 0xf5, 0x6d, 0x2f, 0x4a, 0x35, 0x06, 0x07, 0x35, 0xc3, 0x70,
+	0x09, 0x63, 0x3c, 0xcf, 0x50, 0x39, 0xfa, 0x9b, 0x80, 0xc8, 0x5f, 0x19, 0xe2, 0x15, 0x1c, 0x4f,
+	0x32, 0x3c, 0xa5, 0x06, 0xf9, 0x7b, 0x00, 0xfb, 0xf0, 0x56, 0x12, 0x60, 0xd3, 0xaf, 0x30, 0xdd,
+	0xb5, 0x9c, 0xe0, 0x7d, 0x04, 0xf2, 0x3f, 0xcc, 0x5b, 0x06, 0x67, 0xe8, 0x2f, 0xe7, 0x2d, 0xe3,
+	0x8f, 0xa5, 0x3f, 0x04, 0x70, 0x22, 0x99, 0x7f, 0xc3, 0xa7, 0x9e, 0x96, 0x95, 0x38, 0xb6, 0x22,
+	0xf9, 0x8b, 0x56, 0xa4, 0xef, 0xca, 0x48, 0x33, 0x70, 0x24, 0x4e, 0x94, 0x01, 0xa2, 0x14, 0x20,
+	0xe2, 0xb2, 0x75, 0xbe, 0x67, 0x85, 0x4a, 0x79, 0x0f, 0xe0, 0xb5, 0xc4, 0xae, 0x65, 0x0e, 0xb5,
+	0x19, 0x41, 0x8f, 0xe0, 0x3f, 0x62, 0xa7, 0x07, 0xdf, 0xb2, 0xaf, 0x38, 0x5c, 0x9a, 0x50, 0x53,
+	0x7a, 0x53, 0x15, 0xc6, 0xd5, 0xfe, 0x93, 0xef, 0x93, 0xb9, 0x72, 0xd3, 0x83, 0x9e, 0xa4, 0xac,
+	0xf8, 0x6c, 0xc7, 0xf2, 0xc2, 0xe4, 0x6d, 0xf5, 0x7d, 0x00, 0x70, 0x32, 0x73, 0xdf, 0xf7, 0x1a,
+	0xec, 0x51, 0xca, 0xfe, 0x08, 0x1b, 0xa4, 0xd7, 0x48, 0x3f, 0x02, 0x38, 0x7d, 0x71, 0x27, 0xf5,
+	0x1a, 0xf1, 0x31, 0x80, 0x37, 0x32, 0x7a, 0xaf, 0xd7, 0x50, 0x9f, 0xb5, 0xcf, 0x82, 0x26, 0xe0,
+	0x03, 0x38, 0x28, 0x92, 0x89, 0x41, 0xd0, 0x0d, 0x5f, 0x64, 0x51, 0xd6, 0x45, 0xa7, 0x47, 0x2d,
+	0x2c, 0x82, 0xae, 0xc0, 0x81, 0x70, 0x10, 0x89, 0x98, 0xe3, 0xa9, 0x31, 0x43, 0x93, 0x08, 0x29,
+	0x0c, 0xa5, 0xb7, 0x43, 0xf0, 0x5f, 0x01, 0xea, 0xd6, 0x2d, 0x9d, 0xa0, 0x03, 0x00, 0xff, 0x6b,
+	0x5b, 0x63, 0x34, 0x97, 0x1a, 0x2d, 0x6d, 0xd2, 0x49, 0xf3, 0xdd, 0x48, 0x43, 0x68, 0x45, 0x3a,
+	0xf8, 0xfa, 0xeb, 0x5d, 0xbe, 0x80, 0x10, 0x4e, 0x0e, 0x56, 0x86, 0x3e, 0x01, 0x38, 0x9a, 0xd1,
+	0xf1, 0x68, 0xb9, 0x73, 0x8e, 0x73, 0x73, 0x51, 0xba, 0x73, 0x39, 0x93, 0x40, 0x5c, 0xe0, 0x88,
+	0xb3, 0x68, 0xa6, 0x85, 0xa8, 0x85, 0x12, 0x86, 0xf7, 0xc4, 0x29, 0xbe, 0xdf, 0xa2, 0x3e, 0x02,
+	0x89, 0x0b, 0x80, 0x68, 0x7d, 0xb4, 0xd8, 0x55, 0xf6, 0xd8, 0x18, 0x95, 0x96, 0x2e, 0xe1, 0x10,
+	0xb0, 0xf3, 0x1c, 0x76, 0x1a, 0x29, 0x2d, 0x58, 0x9b, 0x1a, 0x24, 0x95, 0xf4, 0x4b, 0xca, 0x21,
+	0x15, 0x6f, 0x7d, 0x74, 0xbf, 0xab, 0xfc, 0x29, 0x73, 0x57, 0x5a, 0xb9, 0x82, 0x33, 0x7b, 0xb9,
+	0x59, 0x4c, 0xc7, 0xf0, 0x9e, 0x65, 0xc4, 0x8a, 0xf8, 0x9c, 0x9c, 0x5c, 0xd1, 0x69, 0x80, 0xba,
+	0x5b, 0xbd, 0xf8, 0xd4, 0x96, 0x4a, 0x97, 0xb1, 0x08, 0xde, 0x87, 0x9c, 0xf7, 0x1e, 0xba, 0x7b,
+	0x21, 0xef, 0x4e, 0xe0, 0x49, 0xfb, 0x08, 0xaf, 0x41, 0xb3, 0xf5, 0xf8, 0x13, 0x54, 0xec, 0xc8,
+	0x10, 0xd1, 0xce, 0x75, 0xa1, 0x14, 0x90, 0x93, 0x1c, 0xf2, 0x3a, 0x1a, 0x3d, 0xdf, 0x66, 0x9c,
+	0x0f, 0xbd, 0x01, 0x70, 0x38, 0x76, 0xa8, 0xa0, 0xd9, 0xec, 0xd8, 0x6d, 0x37, 0x07, 0xa9, 0xd8,
+	0x59, 0x28, 0x18, 0x8a, 0x9c, 0x41, 0x41, 0x53, 0x2d, 0x86, 0x1a, 0x35, 0xfc, 0x2a, 0x61, 0xcd,
+	0xbb, 0x74, 0x78, 0x1c, 0xad, 0x96, 0x4f, 0x7e, 0xca, 0xb9, 0xe3, 0x86, 0x9c, 0x3b, 0x69, 0xc8,
+	0xe0, 0xb4, 0x21, 0x83, 0x1f, 0x0d, 0x19, 0x1c, 0x9e, 0xc9, 0xb9, 0xd3, 0x33, 0x39, 0xf7, 0xed,
+	0x4c, 0xce, 0x3d, 0x5f, 0x34, 0x2d, 0x6f, 0xdb, 0xaf, 0xa8, 0x3a, 0xad, 0x35, 0xa3, 0x2d, 0xd0,
+	0xad, 0x2d, 0x4b, 0xb7, 0xb4, 0x2a, 0xde, 0xf6, 0x2b, 0xf8, 0x65, 0x33, 0xa8, 0xb7, 0xeb, 0x10,
+	0x56, 0x19, 0xe0, 0xb7, 0xf3, 0xe5, 0xdf, 0x01, 0x00, 0x00, 0xff, 0xff, 0x92, 0x98, 0xbe, 0xb4,
+	0x7c, 0x0c, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -563,6 +646,7 @@ type QueryServiceClient interface {
 	QuerySessionsForAccount(ctx context.Context, in *QuerySessionsForAccountRequest, opts ...grpc.CallOption) (*QuerySessionsForAccountResponse, error)
 	QuerySessionsForNode(ctx context.Context, in *QuerySessionsForNodeRequest, opts ...grpc.CallOption) (*QuerySessionsForNodeResponse, error)
 	QuerySessionsForSubscription(ctx context.Context, in *QuerySessionsForSubscriptionRequest, opts ...grpc.CallOption) (*QuerySessionsForSubscriptionResponse, error)
+	QuerySessionsForQuota(ctx context.Context, in *QuerySessionsForQuotaRequest, opts ...grpc.CallOption) (*QuerySessionsForQuotaResponse, error)
 	QuerySession(ctx context.Context, in *QuerySessionRequest, opts ...grpc.CallOption) (*QuerySessionResponse, error)
 	QueryParams(ctx context.Context, in *QueryParamsRequest, opts ...grpc.CallOption) (*QueryParamsResponse, error)
 }
@@ -611,6 +695,15 @@ func (c *queryServiceClient) QuerySessionsForSubscription(ctx context.Context, i
 	return out, nil
 }
 
+func (c *queryServiceClient) QuerySessionsForQuota(ctx context.Context, in *QuerySessionsForQuotaRequest, opts ...grpc.CallOption) (*QuerySessionsForQuotaResponse, error) {
+	out := new(QuerySessionsForQuotaResponse)
+	err := c.cc.Invoke(ctx, "/sentinel.session.v2.QueryService/QuerySessionsForQuota", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *queryServiceClient) QuerySession(ctx context.Context, in *QuerySessionRequest, opts ...grpc.CallOption) (*QuerySessionResponse, error) {
 	out := new(QuerySessionResponse)
 	err := c.cc.Invoke(ctx, "/sentinel.session.v2.QueryService/QuerySession", in, out, opts...)
@@ -635,6 +728,7 @@ type QueryServiceServer interface {
 	QuerySessionsForAccount(context.Context, *QuerySessionsForAccountRequest) (*QuerySessionsForAccountResponse, error)
 	QuerySessionsForNode(context.Context, *QuerySessionsForNodeRequest) (*QuerySessionsForNodeResponse, error)
 	QuerySessionsForSubscription(context.Context, *QuerySessionsForSubscriptionRequest) (*QuerySessionsForSubscriptionResponse, error)
+	QuerySessionsForQuota(context.Context, *QuerySessionsForQuotaRequest) (*QuerySessionsForQuotaResponse, error)
 	QuerySession(context.Context, *QuerySessionRequest) (*QuerySessionResponse, error)
 	QueryParams(context.Context, *QueryParamsRequest) (*QueryParamsResponse, error)
 }
@@ -654,6 +748,9 @@ func (*UnimplementedQueryServiceServer) QuerySessionsForNode(ctx context.Context
 }
 func (*UnimplementedQueryServiceServer) QuerySessionsForSubscription(ctx context.Context, req *QuerySessionsForSubscriptionRequest) (*QuerySessionsForSubscriptionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method QuerySessionsForSubscription not implemented")
+}
+func (*UnimplementedQueryServiceServer) QuerySessionsForQuota(ctx context.Context, req *QuerySessionsForQuotaRequest) (*QuerySessionsForQuotaResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QuerySessionsForQuota not implemented")
 }
 func (*UnimplementedQueryServiceServer) QuerySession(ctx context.Context, req *QuerySessionRequest) (*QuerySessionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method QuerySession not implemented")
@@ -738,6 +835,24 @@ func _QueryService_QuerySessionsForSubscription_Handler(srv interface{}, ctx con
 	return interceptor(ctx, in, info, handler)
 }
 
+func _QueryService_QuerySessionsForQuota_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QuerySessionsForQuotaRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServiceServer).QuerySessionsForQuota(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/sentinel.session.v2.QueryService/QuerySessionsForQuota",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServiceServer).QuerySessionsForQuota(ctx, req.(*QuerySessionsForQuotaRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _QueryService_QuerySession_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(QuerySessionRequest)
 	if err := dec(in); err != nil {
@@ -793,6 +908,10 @@ var _QueryService_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "QuerySessionsForSubscription",
 			Handler:    _QueryService_QuerySessionsForSubscription_Handler,
+		},
+		{
+			MethodName: "QuerySessionsForQuota",
+			Handler:    _QueryService_QuerySessionsForQuota_Handler,
 		},
 		{
 			MethodName: "QuerySession",
@@ -955,6 +1074,53 @@ func (m *QuerySessionsForSubscriptionRequest) MarshalToSizedBuffer(dAtA []byte) 
 			i -= size
 			i = encodeVarintQuerier(dAtA, i, uint64(size))
 		}
+		i--
+		dAtA[i] = 0x12
+	}
+	if m.Id != 0 {
+		i = encodeVarintQuerier(dAtA, i, uint64(m.Id))
+		i--
+		dAtA[i] = 0x8
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QuerySessionsForQuotaRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QuerySessionsForQuotaRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QuerySessionsForQuotaRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Pagination != nil {
+		{
+			size, err := m.Pagination.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintQuerier(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0x1a
+	}
+	if len(m.Address) > 0 {
+		i -= len(m.Address)
+		copy(dAtA[i:], m.Address)
+		i = encodeVarintQuerier(dAtA, i, uint64(len(m.Address)))
 		i--
 		dAtA[i] = 0x12
 	}
@@ -1213,6 +1379,55 @@ func (m *QuerySessionsForSubscriptionResponse) MarshalToSizedBuffer(dAtA []byte)
 	return len(dAtA) - i, nil
 }
 
+func (m *QuerySessionsForQuotaResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QuerySessionsForQuotaResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QuerySessionsForQuotaResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Pagination != nil {
+		{
+			size, err := m.Pagination.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintQuerier(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.Sessions) > 0 {
+		for iNdEx := len(m.Sessions) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.Sessions[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintQuerier(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0xa
+		}
+	}
+	return len(dAtA) - i, nil
+}
+
 func (m *QuerySessionResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
@@ -1353,6 +1568,26 @@ func (m *QuerySessionsForSubscriptionRequest) Size() (n int) {
 	return n
 }
 
+func (m *QuerySessionsForQuotaRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.Id != 0 {
+		n += 1 + sovQuerier(uint64(m.Id))
+	}
+	l = len(m.Address)
+	if l > 0 {
+		n += 1 + l + sovQuerier(uint64(l))
+	}
+	if m.Pagination != nil {
+		l = m.Pagination.Size()
+		n += 1 + l + sovQuerier(uint64(l))
+	}
+	return n
+}
+
 func (m *QuerySessionRequest) Size() (n int) {
 	if m == nil {
 		return 0
@@ -1432,6 +1667,25 @@ func (m *QuerySessionsForNodeResponse) Size() (n int) {
 }
 
 func (m *QuerySessionsForSubscriptionResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if len(m.Sessions) > 0 {
+		for _, e := range m.Sessions {
+			l = e.Size()
+			n += 1 + l + sovQuerier(uint64(l))
+		}
+	}
+	if m.Pagination != nil {
+		l = m.Pagination.Size()
+		n += 1 + l + sovQuerier(uint64(l))
+	}
+	return n
+}
+
+func (m *QuerySessionsForQuotaResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1849,6 +2103,143 @@ func (m *QuerySessionsForSubscriptionRequest) Unmarshal(dAtA []byte) error {
 				}
 			}
 		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Pagination", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuerier
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuerier
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuerier
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Pagination == nil {
+				m.Pagination = &query.PageRequest{}
+			}
+			if err := m.Pagination.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuerier(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuerier
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QuerySessionsForQuotaRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuerier
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QuerySessionsForQuotaRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QuerySessionsForQuotaRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Id", wireType)
+			}
+			m.Id = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuerier
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Id |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Address", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuerier
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuerier
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuerier
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Address = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Pagination", wireType)
 			}
@@ -2411,6 +2802,126 @@ func (m *QuerySessionsForSubscriptionResponse) Unmarshal(dAtA []byte) error {
 		}
 		if fieldNum <= 0 {
 			return fmt.Errorf("proto: QuerySessionsForSubscriptionResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Sessions", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuerier
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuerier
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuerier
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Sessions = append(m.Sessions, Session{})
+			if err := m.Sessions[len(m.Sessions)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Pagination", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuerier
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuerier
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuerier
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Pagination == nil {
+				m.Pagination = &query.PageResponse{}
+			}
+			if err := m.Pagination.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuerier(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuerier
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QuerySessionsForQuotaResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuerier
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QuerySessionsForQuotaResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QuerySessionsForQuotaResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
