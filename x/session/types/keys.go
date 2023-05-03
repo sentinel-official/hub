@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"time"
 
-	hubtypes "github.com/sentinel-official/hub/types"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/address"
+
+	hubtypes "github.com/sentinel-official/hub/types"
 )
 
 const (
@@ -27,8 +27,9 @@ var (
 	SessionForAccountKeyPrefix      = []byte{0x11}
 	SessionForNodeKeyPrefix         = []byte{0x12}
 	SessionForSubscriptionKeyPrefix = []byte{0x13}
+	SessionForQuotaKeyPrefix        = []byte{0x14}
 
-	InactiveSessionAtKeyPrefix = []byte{0x20}
+	SessionExpiryAtKeyPrefix = []byte{0x20}
 )
 
 func SessionKey(id uint64) []byte {
@@ -59,12 +60,20 @@ func SessionForSubscriptionKey(subscriptionID, sessionID uint64) []byte {
 	return append(GetSessionForSubscriptionKeyPrefix(subscriptionID), sdk.Uint64ToBigEndian(sessionID)...)
 }
 
-func GetInactiveSessionAtKeyPrefix(at time.Time) []byte {
-	return append(InactiveSessionAtKeyPrefix, sdk.FormatTimeBytes(at)...)
+func GetSessionForQuotaKeyPrefix(id uint64, addr sdk.AccAddress) []byte {
+	return append(SessionForQuotaKeyPrefix, append(sdk.Uint64ToBigEndian(id), address.MustLengthPrefix(addr)...)...)
 }
 
-func InactiveSessionAtKey(at time.Time, id uint64) []byte {
-	return append(GetInactiveSessionAtKeyPrefix(at), sdk.Uint64ToBigEndian(id)...)
+func SessionForQuotaKey(subscriptionID uint64, addr sdk.AccAddress, sessionID uint64) []byte {
+	return append(GetSessionForQuotaKeyPrefix(subscriptionID, addr), sdk.Uint64ToBigEndian(sessionID)...)
+}
+
+func GetSessionExpiryAtKeyPrefix(at time.Time) []byte {
+	return append(SessionExpiryAtKeyPrefix, sdk.FormatTimeBytes(at)...)
+}
+
+func SessionExpiryAtKey(at time.Time, id uint64) []byte {
+	return append(GetSessionExpiryAtKeyPrefix(at), sdk.Uint64ToBigEndian(id)...)
 }
 
 func IDFromSessionForAccountKey(key []byte) uint64 {
@@ -97,6 +106,17 @@ func IDFromSessionForSubscriptionKey(key []byte) uint64 {
 	}
 
 	return sdk.BigEndianToUint64(key[9:])
+}
+
+func IDFromSessionForQuotaKey(key []byte) uint64 {
+	// prefix (1 byte) | subscriptionID (8 bytes) | addrLen (1 byte) | addr (addrLen bytes) | id (8 bytes)
+
+	addrLen := int(key[9])
+	if len(key) != 18+addrLen {
+		panic(fmt.Errorf("invalid key length %d; expected %d", len(key), 18+addrLen))
+	}
+
+	return sdk.BigEndianToUint64(key[10+addrLen:])
 }
 
 func IDFromStatusSessionAtKey(key []byte) uint64 {
