@@ -8,15 +8,15 @@ import (
 	"github.com/sentinel-official/hub/x/session/types"
 )
 
-func (k *Keeper) VerifyProof(ctx sdk.Context, address sdk.AccAddress, proof types.Proof, signature []byte) error {
-	account := k.GetAccount(ctx, address)
-	if account == nil {
-		return fmt.Errorf("account for address %s does not exist", address)
+func (k *Keeper) VerifySignature(ctx sdk.Context, addr sdk.AccAddress, proof types.Proof, signature []byte) error {
+	acc := k.GetAccount(ctx, addr)
+	if acc == nil {
+		return fmt.Errorf("account for address %s does not exist", addr)
 	}
 
-	pubKey := account.GetPubKey()
+	pubKey := acc.GetPubKey()
 	if pubKey == nil {
-		return fmt.Errorf("public key for address %s does not exist", address)
+		return fmt.Errorf("public key for address %s does not exist", addr)
 	}
 
 	message, err := proof.Marshal()
@@ -25,7 +25,7 @@ func (k *Keeper) VerifyProof(ctx sdk.Context, address sdk.AccAddress, proof type
 	}
 
 	if !pubKey.VerifySignature(message, signature) {
-		return fmt.Errorf("invalid signature")
+		return fmt.Errorf("invalid signature for message")
 	}
 
 	return nil

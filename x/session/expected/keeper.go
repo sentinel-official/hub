@@ -22,20 +22,14 @@ type DepositKeeper interface {
 	SendCoinsFromDepositToModule(ctx sdk.Context, from sdk.AccAddress, to string, coins sdk.Coins) error
 }
 
-type PlanKeeper interface {
-	HasNodeForPlan(ctx sdk.Context, id uint64, address hubtypes.NodeAddress) bool
-}
-
 type NodeKeeper interface {
 	GetNode(ctx sdk.Context, address hubtypes.NodeAddress) (nodetypes.Node, bool)
+	HasNodeForPlan(ctx sdk.Context, id uint64, addr hubtypes.NodeAddress) bool
 	RevenueShare(ctx sdk.Context) sdk.Dec
 }
 
 type SubscriptionKeeper interface {
 	GetSubscription(ctx sdk.Context, id uint64) (subscriptiontypes.Subscription, bool)
-	GetActiveSubscriptionsForAddress(ctx sdk.Context, address sdk.AccAddress, skip, limit int64) subscriptiontypes.Subscriptions
-
 	SetQuota(ctx sdk.Context, id uint64, quota subscriptiontypes.Quota)
-	HasQuota(ctx sdk.Context, id uint64, address sdk.AccAddress) bool
 	GetQuota(ctx sdk.Context, id uint64, address sdk.AccAddress) (subscriptiontypes.Quota, bool)
 }

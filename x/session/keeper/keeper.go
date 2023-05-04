@@ -21,7 +21,6 @@ type Keeper struct {
 	bank             expected.BankKeeper
 	deposit          expected.DepositKeeper
 	node             expected.NodeKeeper
-	plan             expected.PlanKeeper
 	subscription     expected.SubscriptionKeeper
 	feeCollectorName string
 }
@@ -49,10 +48,6 @@ func (k *Keeper) WithDepositKeeper(keeper expected.DepositKeeper) {
 
 func (k *Keeper) WithNodeKeeper(keeper expected.NodeKeeper) {
 	k.node = keeper
-}
-
-func (k *Keeper) WithPlanKeeper(keeper expected.PlanKeeper) {
-	k.plan = keeper
 }
 
 func (k *Keeper) WithSubscriptionKeeper(keeper expected.SubscriptionKeeper) {

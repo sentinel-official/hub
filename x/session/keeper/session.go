@@ -46,7 +46,7 @@ func (k *Keeper) DeleteSession(ctx sdk.Context, id uint64) {
 	store.Delete(key)
 }
 
-func (k *Keeper) GetSessions(ctx sdk.Context, skip, limit int64) (items types.Sessions) {
+func (k *Keeper) GetSessions(ctx sdk.Context) (items types.Sessions) {
 	var (
 		store = k.Store(ctx)
 		iter  = sdk.KVStorePrefixIterator(store, types.SessionKeyPrefix)
@@ -197,32 +197,70 @@ func (k *Keeper) GetSessionsForSubscription(ctx sdk.Context, id uint64) (items t
 	return items
 }
 
-func (k *Keeper) SetInactiveSessionAt(ctx sdk.Context, at time.Time, id uint64) {
-	key := types.InactiveSessionAtKey(at, id)
+func (k *Keeper) SetSessionForQuota(ctx sdk.Context, subscriptionID uint64, addr sdk.AccAddress, sessionID uint64) {
+	var (
+		store = k.Store(ctx)
+		key   = types.SessionForQuotaKey(subscriptionID, addr, sessionID)
+		value = k.cdc.MustMarshal(&protobuf.BoolValue{Value: true})
+	)
+
+	store.Set(key, value)
+}
+
+func (k *Keeper) DeleteSessionForQuota(ctx sdk.Context, subscriptionID uint64, addr sdk.AccAddress, sessionID uint64) {
+	var (
+		store = k.Store(ctx)
+		key   = types.SessionForQuotaKey(subscriptionID, addr, sessionID)
+	)
+
+	store.Delete(key)
+}
+
+func (k *Keeper) IterateSessionsForQuota(ctx sdk.Context, id uint64, addr sdk.AccAddress, fn func(index int, item types.Session) (stop bool)) {
+	store := k.Store(ctx)
+
+	iter := sdk.KVStoreReversePrefixIterator(store, types.GetSessionForQuotaKeyPrefix(id, addr))
+	defer iter.Close()
+
+	for i := 0; iter.Valid(); iter.Next() {
+		session, found := k.GetSession(ctx, types.IDFromSessionForQuotaKey(iter.Key()))
+		if !found {
+			panic(fmt.Errorf("session for subscription quota key %X does not exist", iter.Key()))
+		}
+
+		if stop := fn(i, session); stop {
+			break
+		}
+		i++
+	}
+}
+
+func (k *Keeper) SetSessionExpiryAt(ctx sdk.Context, at time.Time, id uint64) {
+	key := types.SessionExpiryAtKey(at, id)
 	value := k.cdc.MustMarshal(&protobuf.BoolValue{Value: true})
 
 	store := k.Store(ctx)
 	store.Set(key, value)
 }
 
-func (k *Keeper) DeleteInactiveSessionAt(ctx sdk.Context, at time.Time, id uint64) {
-	key := types.InactiveSessionAtKey(at, id)
+func (k *Keeper) DeleteSessionExpiryAt(ctx sdk.Context, at time.Time, id uint64) {
+	key := types.SessionExpiryAtKey(at, id)
 
 	store := k.Store(ctx)
 	store.Delete(key)
 }
 
-func (k *Keeper) IterateInactiveSessionsAt(ctx sdk.Context, end time.Time, fn func(index int, item types.Session) (stop bool)) {
+func (k *Keeper) IterateSessionsExpiryAt(ctx sdk.Context, end time.Time, fn func(index int, item types.Session) (stop bool)) {
 	store := k.Store(ctx)
 
-	iter := store.Iterator(types.InactiveSessionAtKeyPrefix, sdk.PrefixEndBytes(types.GetInactiveSessionAtKeyPrefix(end)))
+	iter := store.Iterator(types.SessionExpiryAtKeyPrefix, sdk.PrefixEndBytes(types.GetSessionExpiryAtKeyPrefix(end)))
 	defer iter.Close()
 
 	for i := 0; iter.Valid(); iter.Next() {
-		var (
-			key        = iter.Key()
-			session, _ = k.GetSession(ctx, types.IDFromStatusSessionAtKey(key))
-		)
+		session, found := k.GetSession(ctx, types.IDFromStatusSessionAtKey(iter.Key()))
+		if !found {
+			panic(fmt.Errorf("session for expiry at key %X does not exist", iter.Key()))
+		}
 
 		if stop := fn(i, session); stop {
 			break
