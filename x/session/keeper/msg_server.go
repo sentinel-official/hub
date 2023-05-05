@@ -7,6 +7,7 @@ import (
 
 	hubtypes "github.com/sentinel-official/hub/types"
 	"github.com/sentinel-official/hub/x/session/types"
+	subscriptiontypes "github.com/sentinel-official/hub/x/subscription/types"
 )
 
 var (
@@ -24,79 +25,95 @@ func NewMsgServiceServer(keeper Keeper) types.MsgServiceServer {
 func (k *msgServer) MsgStart(c context.Context, msg *types.MsgStartRequest) (*types.MsgStartResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
-	fromAddr, err := sdk.AccAddressFromBech32(msg.From)
-	if err != nil {
-		return nil, err
-	}
-
-	subscription, found := k.GetSubscription(ctx, msg.Id)
+	subscription, found := k.GetSubscription(ctx, msg.ID)
 	if !found {
-		return nil, types.ErrorSubscriptionDoesNotExit
+		return nil, types.NewErrorSubscriptionNotFound(msg.ID)
 	}
-	if !subscription.Status.Equal(hubtypes.StatusActive) {
-		return nil, types.ErrorInvalidSubscriptionStatus
+	if !subscription.GetStatus().Equal(hubtypes.StatusActive) {
+		return nil, types.NewErrorInvalidSubscriptionStatus(subscription.GetID(), subscription.GetStatus())
 	}
 
-	nodeAddr, err := hubtypes.NodeAddressFromBech32(msg.Node)
+	nodeAddr, err := hubtypes.NodeAddressFromBech32(msg.Address)
 	if err != nil {
 		return nil, err
 	}
 
 	node, found := k.GetNode(ctx, nodeAddr)
 	if !found {
-		return nil, types.ErrorNodeDoesNotExist
+		return nil, types.NewErrorNodeNotFound(nodeAddr)
 	}
 	if !node.Status.Equal(hubtypes.StatusActive) {
-		return nil, types.ErrorInvalidNodeStatus
+		return nil, types.NewErrorInvalidNodeStatus(nodeAddr, node.Status)
 	}
 
-	if subscription.Plan == 0 {
-		if node.Address != subscription.Node {
-			return nil, types.ErrorNodeAddressMismatch
+	switch v := subscription.(type) {
+	case *subscriptiontypes.NodeSubscription:
+		if node.Address != v.NodeAddress {
+			return nil, types.NewErrorUnexpectedNode(node.Address)
 		}
-	} else {
-		if !k.HasNodeForPlan(ctx, subscription.Plan, nodeAddr) {
-			return nil, types.ErrorNodeDoesNotExistForPlan
+	case *subscriptiontypes.PlanSubscription:
+		if !k.HasNodeForPlan(ctx, v.PlanID, nodeAddr) {
+			return nil, types.NewErrorUnexpectedNode(node.Address)
 		}
+	default:
+		return nil, types.NewErrorInvalidSubscriptionType(subscription.GetID(), subscription.Type().String())
 	}
 
-	quota, found := k.GetQuota(ctx, subscription.Id, fromAddr)
+	accAddr, err := sdk.AccAddressFromBech32(msg.From)
+	if err != nil {
+		return nil, err
+	}
+
+	var id uint64
+	k.IterateSessionsForQuota(ctx, subscription.GetID(), accAddr, func(_ int, item types.Session) bool {
+		if item.Status.Equal(hubtypes.StatusActive) {
+			id = item.ID
+			return true
+		}
+
+		return false
+	})
+
+	if id > 0 {
+		return nil, types.NewErrorDuplicateSession(subscription.GetID(), accAddr, id)
+	}
+
+	quota, found := k.GetQuota(ctx, subscription.GetID(), accAddr)
 	if !found {
-		return nil, types.ErrorQuotaDoesNotExist
+		return nil, types.NewErrorQuotaNotFound(subscription.GetID(), accAddr)
 	}
-	if quota.Consumed.GTE(quota.Allocated) {
-		return nil, types.ErrorNotEnoughQuota
-	}
-
-	items := k.GetActiveSessionsForAddress(ctx, fromAddr, 0, 1)
-	if len(items) > 0 {
-		return nil, types.ErrorDuplicateSession
+	if quota.ConsumedBytes.GTE(quota.AllocatedBytes) {
+		return nil, types.NewErrorInvalidQuota(subscription.GetID(), accAddr)
 	}
 
 	var (
 		count            = k.GetCount(ctx)
 		inactiveDuration = k.InactiveDuration(ctx)
 		session          = types.Session{
-			Id:           count + 1,
-			Subscription: subscription.Id,
-			Node:         node.Address,
-			Address:      msg.From,
-			Duration:     0,
-			Bandwidth:    hubtypes.NewBandwidthFromInt64(0, 0),
-			Status:       hubtypes.StatusActive,
-			StatusAt:     ctx.BlockTime(),
+			ID:             count + 1,
+			SubscriptionID: subscription.GetID(),
+			NodeAddress:    nodeAddr.String(),
+			AccountAddress: accAddr.String(),
+			Bandwidth:      hubtypes.NewBandwidthFromInt64(0, 0),
+			Duration:       0,
+			ExpiryAt:       ctx.BlockTime().Add(inactiveDuration),
+			Status:         hubtypes.StatusActive,
+			StatusAt:       ctx.BlockTime(),
 		}
 	)
 
 	k.SetCount(ctx, count+1)
 	k.SetSession(ctx, session)
-	k.SetActiveSessionForAddress(ctx, fromAddr, session.Id)
-	k.SetInactiveSessionAt(ctx, session.StatusAt.Add(inactiveDuration), session.Id)
+	k.SetSessionForAccount(ctx, accAddr, session.ID)
+	k.SetSessionForNode(ctx, nodeAddr, session.ID)
+	k.SetSessionForSubscription(ctx, subscription.GetID(), session.ID)
+	k.SetSessionForQuota(ctx, subscription.GetID(), accAddr, session.ID)
+	k.SetSessionExpiryAt(ctx, session.ExpiryAt, session.ID)
 	ctx.EventManager().EmitTypedEvent(
 		&types.EventStart{
-			Id:           session.Id,
-			Node:         session.Node,
-			Subscription: session.Subscription,
+			ID:             session.ID,
+			SubscriptionID: session.SubscriptionID,
+			NodeAddress:    session.NodeAddress,
 		},
 	)
 
@@ -106,38 +123,41 @@ func (k *msgServer) MsgStart(c context.Context, msg *types.MsgStartRequest) (*ty
 func (k *msgServer) MsgUpdateDetails(c context.Context, msg *types.MsgUpdateDetailsRequest) (*types.MsgUpdateDetailsResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
-	session, found := k.GetSession(ctx, msg.Proof.Id)
+	session, found := k.GetSession(ctx, msg.Proof.ID)
 	if !found {
-		return nil, types.ErrorSessionDoesNotExist
+		return nil, types.NewErrorSessionNotFound(msg.Proof.ID)
 	}
-	if session.Status.Equal(hubtypes.StatusInactive) {
-		return nil, types.ErrorInvalidSessionStatus
+	if !session.Status.IsOneOf(hubtypes.StatusActive, hubtypes.StatusInactivePending) {
+		return nil, types.NewErrorInvalidSessionStatus(session.ID, session.Status)
 	}
-	if msg.From != session.Node {
-		return nil, types.ErrorUnauthorized
+	if msg.From != session.NodeAddress {
+		return nil, types.NewErrorUnauthorized(msg.From)
 	}
 
 	if k.ProofVerificationEnabled(ctx) {
-		accAddr := session.GetAddress()
-		if err := k.VerifyProof(ctx, accAddr, msg.Proof, msg.Signature); err != nil {
-			return nil, types.ErrorFailedToVerifyProof
+		accAddr := session.GetAccountAddress()
+		if err := k.VerifySignature(ctx, accAddr, msg.Proof, msg.Signature); err != nil {
+			return nil, types.NewErrorInvalidSignature(msg.Signature)
 		}
 	}
 
-	inactiveDuration := k.InactiveDuration(ctx)
-	k.DeleteInactiveSessionAt(ctx, session.StatusAt.Add(inactiveDuration), session.Id)
+	if session.Status.Equal(hubtypes.StatusActive) {
+		k.DeleteSessionExpiryAt(ctx, session.ExpiryAt, session.ID)
+
+		inactiveDuration := k.InactiveDuration(ctx)
+		session.ExpiryAt = ctx.BlockTime().Add(inactiveDuration)
+		k.SetSessionExpiryAt(ctx, session.ExpiryAt, session.ID)
+	}
 
 	session.Duration = msg.Proof.Duration
 	session.Bandwidth = msg.Proof.Bandwidth
-	session.StatusAt = ctx.BlockTime()
 
 	k.SetSession(ctx, session)
-	k.SetInactiveSessionAt(ctx, session.StatusAt.Add(inactiveDuration), session.Id)
 	ctx.EventManager().EmitTypedEvent(
-		&types.EventUpdate{
-			Id:           session.Id,
-			Node:         session.Node,
-			Subscription: session.Subscription,
+		&types.EventUpdateDetails{
+			ID:             session.ID,
+			SubscriptionID: session.SubscriptionID,
+			NodeAddress:    session.NodeAddress,
 		},
 	)
 
@@ -147,38 +167,33 @@ func (k *msgServer) MsgUpdateDetails(c context.Context, msg *types.MsgUpdateDeta
 func (k *msgServer) MsgEnd(c context.Context, msg *types.MsgEndRequest) (*types.MsgEndResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
-	fromAddr, err := sdk.AccAddressFromBech32(msg.From)
-	if err != nil {
-		return nil, err
-	}
-
-	session, found := k.GetSession(ctx, msg.Id)
+	session, found := k.GetSession(ctx, msg.ID)
 	if !found {
-		return nil, types.ErrorSessionDoesNotExist
+		return nil, types.NewErrorSessionNotFound(msg.ID)
 	}
 	if !session.Status.Equal(hubtypes.StatusActive) {
-		return nil, types.ErrorInvalidSessionStatus
+		return nil, types.NewErrorInvalidSessionStatus(session.ID, session.Status)
 	}
-	if msg.From != session.Address {
-		return nil, types.ErrorUnauthorized
+	if msg.From != session.AccountAddress {
+		return nil, types.NewErrorUnauthorized(msg.From)
 	}
 
+	k.DeleteSessionExpiryAt(ctx, session.ExpiryAt, session.ID)
+
 	inactiveDuration := k.InactiveDuration(ctx)
-	k.DeleteActiveSessionForAddress(ctx, fromAddr, session.Id)
-	k.DeleteInactiveSessionAt(ctx, session.StatusAt.Add(inactiveDuration), session.Id)
+	session.ExpiryAt = ctx.BlockTime().Add(inactiveDuration)
+	k.SetSessionExpiryAt(ctx, session.ExpiryAt, session.ID)
 
 	session.Status = hubtypes.StatusInactivePending
 	session.StatusAt = ctx.BlockTime()
 
 	k.SetSession(ctx, session)
-	k.SetInactiveSessionForAddress(ctx, fromAddr, session.Id)
-	k.SetInactiveSessionAt(ctx, session.StatusAt.Add(inactiveDuration), session.Id)
 	ctx.EventManager().EmitTypedEvent(
-		&types.EventSetStatus{
-			Id:           session.Id,
-			Node:         session.Node,
-			Subscription: session.Subscription,
-			Status:       session.Status,
+		&types.EventUpdateStatus{
+			ID:             session.ID,
+			SubscriptionID: session.SubscriptionID,
+			NodeAddress:    session.NodeAddress,
+			Status:         session.Status,
 		},
 	)
 

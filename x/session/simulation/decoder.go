@@ -27,19 +27,13 @@ func NewStoreDecoder(cdc codec.Codec) func(kvA, kvB kv.Pair) string {
 
 			return fmt.Sprintf("%v\n%v", &sessionA, &sessionB)
 
-		case bytes.Equal(kvA.Key[:1], types.InactiveSessionForAddressKeyPrefix):
-			var inactiveSessionForAddressA, inactiveSessionForAddressB protobuftypes.BoolValue
-			cdc.MustUnmarshal(kvA.Value, &inactiveSessionForAddressA)
-			cdc.MustUnmarshal(kvB.Value, &inactiveSessionForAddressB)
-
-			return fmt.Sprintf("%v\n%v", &inactiveSessionForAddressA, &inactiveSessionForAddressB)
-		case bytes.Equal(kvA.Key[:1], types.ActiveSessionForAddressKeyPrefix):
+		case bytes.Equal(kvA.Key[:1], types.SessionForAccountKeyPrefix):
 			var activeSessionForAddressA, activeSessionForAddressB protobuftypes.BoolValue
 			cdc.MustUnmarshal(kvA.Value, &activeSessionForAddressA)
 			cdc.MustUnmarshal(kvB.Value, &activeSessionForAddressB)
 
 			return fmt.Sprintf("%v\n%v", &activeSessionForAddressA, &activeSessionForAddressB)
-		case bytes.Equal(kvA.Key[:1], types.InactiveSessionAtKeyPrefix):
+		case bytes.Equal(kvA.Key[:1], types.SessionExpiryAtKeyPrefix):
 			var inactiveSessionAtA, inactiveSessionAtB protobuftypes.BoolValue
 			cdc.MustUnmarshal(kvA.Value, &inactiveSessionAtA)
 			cdc.MustUnmarshal(kvB.Value, &inactiveSessionAtB)

@@ -163,6 +163,39 @@ func (q *queryServer) QuerySessionsForSubscription(c context.Context, req *types
 	return &types.QuerySessionsForSubscriptionResponse{Sessions: items, Pagination: pagination}, nil
 }
 
+func (q *queryServer) QuerySessionsForQuota(c context.Context, req *types.QuerySessionsForQuotaRequest) (*types.QuerySessionsForQuotaResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "empty request")
+	}
+
+	addr, err := sdk.AccAddressFromBech32(req.Address)
+	if err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, "invalid address %s", req.Address)
+	}
+
+	var (
+		items types.Sessions
+		ctx   = sdk.UnwrapSDKContext(c)
+		store = prefix.NewStore(q.Store(ctx), types.GetSessionForQuotaKeyPrefix(req.Id, addr))
+	)
+
+	pagination, err := query.Paginate(store, req.Pagination, func(key, _ []byte) error {
+		item, found := q.GetSession(ctx, types.IDFromSessionForQuotaKey(key))
+		if !found {
+			return fmt.Errorf("session for subscription quota key %X does not exist", key)
+		}
+
+		items = append(items, item)
+		return nil
+	})
+
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
+	return &types.QuerySessionsForQuotaResponse{Sessions: items, Pagination: pagination}, nil
+}
+
 func (q *queryServer) QueryParams(c context.Context, _ *types.QueryParamsRequest) (*types.QueryParamsResponse, error) {
 	var (
 		ctx    = sdk.UnwrapSDKContext(c)
