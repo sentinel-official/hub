@@ -22,32 +22,12 @@ func RandomizedGenesisState(state *module.SimulationState) {
 		sessionGenesisState      = sessionsimulation.RandomizedGenesisState(state)
 	)
 
-	for i := 0; i < len(nodeGenesisState.Nodes); i++ {
-		if state.Rand.Intn(2) == 0 {
-			nodeGenesisState.Nodes[i].Provider = providersimulation.RandomProvider(
-				state.Rand,
-				providerGenesisState.Providers,
-			).Address
-		}
-	}
-
 	for i := 0; i < len(planGenesisState); i++ {
 		if state.Rand.Intn(2) == 0 {
-			planGenesisState[i].Plan.Provider = providersimulation.RandomProvider(
+			planGenesisState[i].Plan.Address = providersimulation.RandomProvider(
 				state.Rand,
 				providerGenesisState.Providers,
 			).Address
-		}
-
-		for j := 0; j < len(nodeGenesisState.Nodes); j++ {
-			if nodeGenesisState.Nodes[j].Provider == planGenesisState[i].Plan.Provider {
-				if state.Rand.Intn(2) == 0 {
-					planGenesisState[i].Nodes = append(
-						planGenesisState[i].Nodes,
-						nodeGenesisState.Nodes[j].Address,
-					)
-				}
-			}
 		}
 	}
 

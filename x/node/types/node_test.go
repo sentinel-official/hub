@@ -70,7 +70,7 @@ func TestNode_GigabytePrice(t *testing.T) {
 				denom: "",
 			},
 			sdk.Coin{},
-			false,
+			true,
 		},
 		{
 			"empty gigabyte_prices and empty denom",
@@ -156,7 +156,7 @@ func TestNode_HourlyPrice(t *testing.T) {
 				denom: "",
 			},
 			sdk.Coin{},
-			false,
+			true,
 		},
 		{
 			"empty hourly_prices and empty denom",

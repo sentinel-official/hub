@@ -42,7 +42,7 @@ func NewErrorQuotaNotFound(id uint64, addr sdk.AccAddress) error {
 }
 
 func NewErrorSubscriptionNotFound(id uint64) error {
-	return errors.Wrapf(ErrorSubscriptionNotFound, "subscription %s does not exist", id)
+	return errors.Wrapf(ErrorSubscriptionNotFound, "subscription %d does not exist", id)
 }
 
 func NewErrorUnauthorized(addr string) error {
