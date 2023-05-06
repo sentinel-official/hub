@@ -15,46 +15,48 @@ func EndBlock(ctx sdk.Context, k keeper.Keeper) []abcitypes.ValidatorUpdate {
 		inactiveDuration = k.InactiveDuration(ctx)
 	)
 
-	k.IterateInactiveSessionsAt(ctx, ctx.BlockTime(), func(_ int, item types.Session) bool {
-		log.Info("found an inactive session", "id", item.Id)
+	k.IterateSessionsExpiryAt(ctx, ctx.BlockTime(), func(_ int, item types.Session) bool {
+		log.Info("found an expired session", "id", item.ID)
 
-		accAddr := item.GetAddress()
 		if item.Status.Equal(hubtypes.StatusActive) {
-			k.DeleteActiveSessionForAddress(ctx, accAddr, item.Id)
-			k.DeleteInactiveSessionAt(ctx, item.StatusAt.Add(inactiveDuration), item.Id)
+			k.DeleteSessionExpiryAt(ctx, item.ExpiryAt, item.ID)
+
+			item.ExpiryAt = ctx.BlockTime().Add(inactiveDuration)
+			k.SetSessionExpiryAt(ctx, item.ExpiryAt, item.ID)
 
 			item.Status = hubtypes.StatusInactivePending
 			item.StatusAt = ctx.BlockTime()
 
 			k.SetSession(ctx, item)
-			k.SetInactiveSessionForAddress(ctx, accAddr, item.Id)
-			k.SetInactiveSessionAt(ctx, item.StatusAt.Add(inactiveDuration), item.Id)
 			ctx.EventManager().EmitTypedEvent(
-				&types.EventSetStatus{
-					Id:           item.Id,
-					Node:         item.Node,
-					Subscription: item.Subscription,
-					Status:       item.Status,
+				&types.EventUpdateStatus{
+					ID:             item.ID,
+					SubscriptionID: item.SubscriptionID,
+					NodeAddress:    item.NodeAddress,
+					Status:         item.Status,
 				},
 			)
 
 			return false
 		}
 
-		if err := k.ProcessPaymentAndUpdateQuota(ctx, item); err != nil {
-			log.Error("error occurred while processing the payment", "cause", err)
-		}
+		var (
+			accAddr  = item.GetAccountAddress()
+			nodeAddr = item.GetNodeAddress()
+		)
 
-		k.DeleteSession(ctx, item.Id)
-		k.DeleteInactiveSessionForAddress(ctx, accAddr, item.Id)
-		k.DeleteInactiveSessionAt(ctx, item.StatusAt.Add(inactiveDuration), item.Id)
-
+		k.DeleteSession(ctx, item.ID)
+		k.DeleteSessionForAccount(ctx, accAddr, item.ID)
+		k.DeleteSessionForNode(ctx, nodeAddr, item.ID)
+		k.DeleteSessionForSubscription(ctx, item.SubscriptionID, item.ID)
+		k.DeleteSessionForQuota(ctx, item.SubscriptionID, accAddr, item.ID)
+		k.DeleteSessionExpiryAt(ctx, item.ExpiryAt, item.ID)
 		ctx.EventManager().EmitTypedEvent(
-			&types.EventSetStatus{
-				Id:           item.Id,
-				Node:         item.Node,
-				Subscription: item.Subscription,
-				Status:       item.Status,
+			&types.EventUpdateStatus{
+				ID:             item.ID,
+				SubscriptionID: item.SubscriptionID,
+				NodeAddress:    item.NodeAddress,
+				Status:         item.Status,
 			},
 		)
 
