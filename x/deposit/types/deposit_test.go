@@ -12,7 +12,6 @@ import (
 func TestDeposit_GetAddress(t *testing.T) {
 	type fields struct {
 		Address string
-		Coins   sdk.Coins
 	}
 	tests := []struct {
 		name   string
@@ -38,7 +37,6 @@ func TestDeposit_GetAddress(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			d := &Deposit{
 				Address: tt.fields.Address,
-				Coins:   tt.fields.Coins,
 			}
 			if got := d.GetAddress(); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("GetAddress() = %v, want %v", got, tt.want)
@@ -61,15 +59,13 @@ func TestDeposit_Validate(t *testing.T) {
 			"empty address",
 			fields{
 				Address: "",
-				Coins:   nil,
 			},
 			true,
 		},
 		{
 			"invalid address",
 			fields{
-				Address: "invalid",
-				Coins:   nil,
+				Address: "sent",
 			},
 			true,
 		},
@@ -77,7 +73,6 @@ func TestDeposit_Validate(t *testing.T) {
 			"invalid prefix address",
 			fields{
 				Address: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Coins:   nil,
 			},
 			true,
 		},
@@ -85,23 +80,25 @@ func TestDeposit_Validate(t *testing.T) {
 			"10 bytes address",
 			fields{
 				Address: "sent1qypqxpq9qcrsszgslawd5s",
-				Coins:   nil,
+				Coins:   sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
 			},
-			true,
+			false,
 		},
 		{
 			"20 bytes address",
 			fields{
 				Address: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Coins:   sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
 			},
-			true,
+			false,
 		},
 		{
 			"30 bytes address",
 			fields{
 				Address: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfqyy3zxfp9ycnjs2fszvfck8",
+				Coins:   sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
 			},
-			true,
+			false,
 		},
 		{
 			"nil coins",
@@ -132,6 +129,14 @@ func TestDeposit_Validate(t *testing.T) {
 			fields{
 				Address: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
 				Coins:   sdk.Coins{sdk.Coin{Denom: "o"}},
+			},
+			true,
+		},
+		{
+			"nil amount coins",
+			fields{
+				Address: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Coins:   sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.Int{}}},
 			},
 			true,
 		},

@@ -20,8 +20,8 @@ type queryServer struct {
 	Keeper
 }
 
-func NewQueryServiceServer(keeper Keeper) types.QueryServiceServer {
-	return &queryServer{Keeper: keeper}
+func NewQueryServiceServer(k Keeper) types.QueryServiceServer {
+	return &queryServer{k}
 }
 
 func (q *queryServer) QueryDeposit(c context.Context, req *types.QueryDepositRequest) (*types.QueryDepositResponse, error) {

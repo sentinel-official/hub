@@ -28,10 +28,13 @@ func (m *Deposit) Validate() error {
 		return errors.Wrapf(err, "invalid address %s", m.Address)
 	}
 	if m.Coins == nil {
-		return fmt.Errorf("coins cannot be nil")
+		return fmt.Errorf("coins cannot be empty")
 	}
 	if m.Coins.Len() == 0 {
-		return fmt.Errorf("coins cannot be empty")
+		return fmt.Errorf("coins length cannot be zero")
+	}
+	if m.Coins.IsAnyNil() {
+		return fmt.Errorf("coins cannot be nil")
 	}
 	if !m.Coins.IsValid() {
 		return fmt.Errorf("coins must be valid")
