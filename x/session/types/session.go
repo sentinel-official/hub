@@ -9,12 +9,12 @@ import (
 	hubtypes "github.com/sentinel-official/hub/types"
 )
 
-func (m *Session) GetAccountAddress() sdk.AccAddress {
-	if m.AccountAddress == "" {
+func (m *Session) GetAddress() sdk.AccAddress {
+	if m.Address == "" {
 		return nil
 	}
 
-	addr, err := sdk.AccAddressFromBech32(m.AccountAddress)
+	addr, err := sdk.AccAddressFromBech32(m.Address)
 	if err != nil {
 		panic(err)
 	}
@@ -48,11 +48,11 @@ func (m *Session) Validate() error {
 	if _, err := hubtypes.NodeAddressFromBech32(m.NodeAddress); err != nil {
 		return errors.Wrapf(err, "invalid node_address %s", m.NodeAddress)
 	}
-	if m.AccountAddress == "" {
-		return fmt.Errorf("account_address cannot be empty")
+	if m.Address == "" {
+		return fmt.Errorf("address cannot be empty")
 	}
-	if _, err := sdk.AccAddressFromBech32(m.AccountAddress); err != nil {
-		return errors.Wrapf(err, "invalid account_address %s", m.AccountAddress)
+	if _, err := sdk.AccAddressFromBech32(m.Address); err != nil {
+		return errors.Wrapf(err, "invalid address %s", m.Address)
 	}
 	if m.Bandwidth.IsAnyNil() {
 		return fmt.Errorf("bandwidth cannot be empty")

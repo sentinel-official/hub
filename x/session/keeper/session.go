@@ -235,25 +235,25 @@ func (k *Keeper) IterateSessionsForQuota(ctx sdk.Context, id uint64, addr sdk.Ac
 	}
 }
 
-func (k *Keeper) SetSessionExpiryAt(ctx sdk.Context, at time.Time, id uint64) {
-	key := types.SessionExpiryAtKey(at, id)
+func (k *Keeper) SetSessionForExpiryAt(ctx sdk.Context, at time.Time, id uint64) {
+	key := types.SessionForExpiryAtKey(at, id)
 	value := k.cdc.MustMarshal(&protobuf.BoolValue{Value: true})
 
 	store := k.Store(ctx)
 	store.Set(key, value)
 }
 
-func (k *Keeper) DeleteSessionExpiryAt(ctx sdk.Context, at time.Time, id uint64) {
-	key := types.SessionExpiryAtKey(at, id)
+func (k *Keeper) DeleteSessionForExpiryAt(ctx sdk.Context, at time.Time, id uint64) {
+	key := types.SessionForExpiryAtKey(at, id)
 
 	store := k.Store(ctx)
 	store.Delete(key)
 }
 
-func (k *Keeper) IterateSessionsExpiryAt(ctx sdk.Context, end time.Time, fn func(index int, item types.Session) (stop bool)) {
+func (k *Keeper) IterateSessionsForExpiryAt(ctx sdk.Context, end time.Time, fn func(index int, item types.Session) (stop bool)) {
 	store := k.Store(ctx)
 
-	iter := store.Iterator(types.SessionExpiryAtKeyPrefix, sdk.PrefixEndBytes(types.GetSessionExpiryAtKeyPrefix(end)))
+	iter := store.Iterator(types.SessionForExpiryAtKeyPrefix, sdk.PrefixEndBytes(types.GetSessionForExpiryAtKeyPrefix(end)))
 	defer iter.Close()
 
 	for i := 0; iter.Valid(); iter.Next() {

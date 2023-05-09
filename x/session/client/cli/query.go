@@ -60,7 +60,7 @@ func querySessions() *cobra.Command {
 				return err
 			}
 
-			accAddr, err := GetAccountAddress(cmd.Flags())
+			accAddr, err := GetAddress(cmd.Flags())
 			if err != nil {
 				return err
 			}
@@ -145,7 +145,7 @@ func querySessions() *cobra.Command {
 
 	flags.AddQueryFlagsToCmd(cmd)
 	flags.AddPaginationFlagsToCmd(cmd, "sessions")
-	cmd.Flags().String(flagAccountAddress, "", "query the sessions of an account address")
+	cmd.Flags().String(flagAddress, "", "query the sessions of an account address")
 	cmd.Flags().String(flagNodeAddress, "", "query the sessions of a node address")
 	cmd.Flags().Uint64(flagSubscriptionID, 0, "query the sessions of a subscription id")
 

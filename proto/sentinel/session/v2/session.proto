@@ -15,7 +15,7 @@ message Session {
   uint64 id              = 1 [ (gogoproto.customname) = "ID" ];
   uint64 subscription_id = 2 [ (gogoproto.customname) = "SubscriptionID" ];
   string node_address    = 3;
-  string account_address = 4;
+  string address         = 4;
 
   sentinel.types.v1.Bandwidth bandwidth = 5 [ (gogoproto.nullable) = false ];
   google.protobuf.Duration duration     = 6

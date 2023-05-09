@@ -12,21 +12,18 @@ var (
 )
 
 var (
-	ErrorDuplicateSession        = errors.Register(ModuleName, 201, "duplicate session")
-	ErrorInvalidQuota            = errors.Register(ModuleName, 202, "invalid quota")
-	ErrorInvalidSignature        = errors.Register(ModuleName, 203, "invalid signature")
-	ErrorInvalidStatus           = errors.Register(ModuleName, 204, "invalid status")
-	ErrorNodeNotFound            = errors.Register(ModuleName, 205, "node does not exist")
-	ErrorQuotaNotFound           = errors.Register(ModuleName, 206, "quota not found")
-	ErrorSessionNotFound         = errors.Register(ModuleName, 207, "session not found")
-	ErrorSubscriptionNotFound    = errors.Register(ModuleName, 208, "subscription not found")
-	ErrorUnauthorized            = errors.Register(ModuleName, 209, "unauthorized")
-	ErrorUnexpectedNode          = errors.Register(ModuleName, 210, "unexpected node")
-	ErrorInvalidSubscriptionType = errors.Register(ModuleName, 211, "invalid subscription type")
+	ErrorDuplicate        = errors.Register(ModuleName, 201, "duplicate")
+	ErrorInvalidQuota     = errors.Register(ModuleName, 202, "invalid quota")
+	ErrorInvalidSignature = errors.Register(ModuleName, 203, "invalid signature")
+	ErrorInvalidStatus    = errors.Register(ModuleName, 204, "invalid status")
+	ErrorNotFound         = errors.Register(ModuleName, 205, "not found")
+	ErrorUnauthorized     = errors.Register(ModuleName, 209, "unauthorized")
+	ErrorInvalidNode      = errors.Register(ModuleName, 210, "invalid node")
+	ErrorInvalidType      = errors.Register(ModuleName, 211, "invalid type")
 )
 
 func NewErrorSubscriptionNotFound(id uint64) error {
-	return errors.Wrapf(ErrorSubscriptionNotFound, "subscription %d does not exit", id)
+	return errors.Wrapf(ErrorNotFound, "subscription %d does not exit", id)
 }
 
 func NewErrorInvalidSubscriptionStatus(id uint64, status hubtypes.Status) error {
@@ -34,7 +31,7 @@ func NewErrorInvalidSubscriptionStatus(id uint64, status hubtypes.Status) error 
 }
 
 func NewErrorNodeNotFound(addr hubtypes.NodeAddress) error {
-	return errors.Wrapf(ErrorNodeNotFound, "node %s does not exist", addr)
+	return errors.Wrapf(ErrorNotFound, "node %s does not exist", addr)
 }
 
 func NewErrorInvalidNodeStatus(addr hubtypes.NodeAddress, status hubtypes.Status) error {
@@ -42,11 +39,11 @@ func NewErrorInvalidNodeStatus(addr hubtypes.NodeAddress, status hubtypes.Status
 }
 
 func NewErrorQuotaNotFound(id uint64, addr sdk.AccAddress) error {
-	return errors.Wrapf(ErrorQuotaNotFound, "subscription quota %d/%s does not exist", id, addr)
+	return errors.Wrapf(ErrorNotFound, "subscription quota %d/%s does not exist", id, addr)
 }
 
 func NewErrorDuplicateSession(subscriptionID uint64, addr sdk.AccAddress, sessionID uint64) error {
-	return errors.Wrapf(ErrorDuplicateSession, "session %d already exist for subscription quota %d/%s", sessionID, subscriptionID, addr)
+	return errors.Wrapf(ErrorDuplicate, "session %d already exist for subscription quota %d/%s", sessionID, subscriptionID, addr)
 }
 
 func NewErrorInvalidQuota(id uint64, addr sdk.AccAddress) error {
@@ -54,7 +51,7 @@ func NewErrorInvalidQuota(id uint64, addr sdk.AccAddress) error {
 }
 
 func NewErrorSessionNotFound(id uint64) error {
-	return errors.Wrapf(ErrorSessionNotFound, "session %d does not exist", id)
+	return errors.Wrapf(ErrorNotFound, "session %d does not exist", id)
 }
 
 func NewErrorUnauthorized(addr string) error {
@@ -69,10 +66,10 @@ func NewErrorInvalidSessionStatus(id uint64, status hubtypes.Status) error {
 	return errors.Wrapf(ErrorInvalidStatus, "invalid status %s for session %d", status, id)
 }
 
-func NewErrorUnexpectedNode(addr string) error {
-	return errors.Wrapf(ErrorUnexpectedNode, "node %s is not expected", addr)
+func NewErrorInvalidNode(addr string) error {
+	return errors.Wrapf(ErrorInvalidNode, "invalid node %s", addr)
 }
 
 func NewErrorInvalidSubscriptionType(id uint64, t string) error {
-	return errors.Wrapf(ErrorInvalidSubscriptionType, "invalid type %s for subscription %d", t, id)
+	return errors.Wrapf(ErrorInvalidType, "invalid type %s for subscription %d", t, id)
 }

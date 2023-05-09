@@ -23,7 +23,7 @@ func ValidateGenesis(state *GenesisState) error {
 	m := make(map[uint64]bool)
 	for _, item := range state.Sessions {
 		if m[item.ID] {
-			return fmt.Errorf("found duplicate session %d", item.ID)
+			return fmt.Errorf("found a duplicate session %d", item.ID)
 		}
 
 		m[item.ID] = true

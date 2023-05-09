@@ -35,13 +35,13 @@ func TestSessionForAccountKey(t *testing.T) {
 	}
 }
 
-func TestSessionExpiryAtKey(t *testing.T) {
+func TestSessionForExpiryAtKey(t *testing.T) {
 	for i := 0; i < 512; i += 64 {
 		at := time.Now()
 		require.Equal(
 			t,
-			append(append(SessionExpiryAtKeyPrefix, sdk.FormatTimeBytes(at)...), sdk.Uint64ToBigEndian(uint64(i))...),
-			SessionExpiryAtKey(at, uint64(i)),
+			append(append(SessionForExpiryAtKeyPrefix, sdk.FormatTimeBytes(at)...), sdk.Uint64ToBigEndian(uint64(i))...),
+			SessionForExpiryAtKey(at, uint64(i)),
 		)
 	}
 }

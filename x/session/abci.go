@@ -10,19 +10,15 @@ import (
 )
 
 func EndBlock(ctx sdk.Context, k keeper.Keeper) []abcitypes.ValidatorUpdate {
-	var (
-		log              = k.Logger(ctx)
-		inactiveDuration = k.InactiveDuration(ctx)
-	)
-
-	k.IterateSessionsExpiryAt(ctx, ctx.BlockTime(), func(_ int, item types.Session) bool {
-		log.Info("found an expired session", "id", item.ID)
+	inactiveDuration := k.InactiveDuration(ctx)
+	k.IterateSessionsForExpiryAt(ctx, ctx.BlockTime(), func(_ int, item types.Session) bool {
+		k.Logger(ctx).Info("found an expired session", "id", item.ID)
 
 		if item.Status.Equal(hubtypes.StatusActive) {
-			k.DeleteSessionExpiryAt(ctx, item.ExpiryAt, item.ID)
+			k.DeleteSessionForExpiryAt(ctx, item.ExpiryAt, item.ID)
 
 			item.ExpiryAt = ctx.BlockTime().Add(inactiveDuration)
-			k.SetSessionExpiryAt(ctx, item.ExpiryAt, item.ID)
+			k.SetSessionForExpiryAt(ctx, item.ExpiryAt, item.ID)
 
 			item.Status = hubtypes.StatusInactivePending
 			item.StatusAt = ctx.BlockTime()
@@ -41,7 +37,7 @@ func EndBlock(ctx sdk.Context, k keeper.Keeper) []abcitypes.ValidatorUpdate {
 		}
 
 		var (
-			accAddr  = item.GetAccountAddress()
+			accAddr  = item.GetAddress()
 			nodeAddr = item.GetNodeAddress()
 		)
 
@@ -50,7 +46,7 @@ func EndBlock(ctx sdk.Context, k keeper.Keeper) []abcitypes.ValidatorUpdate {
 		k.DeleteSessionForNode(ctx, nodeAddr, item.ID)
 		k.DeleteSessionForSubscription(ctx, item.SubscriptionID, item.ID)
 		k.DeleteSessionForQuota(ctx, item.SubscriptionID, accAddr, item.ID)
-		k.DeleteSessionExpiryAt(ctx, item.ExpiryAt, item.ID)
+		k.DeleteSessionForExpiryAt(ctx, item.ExpiryAt, item.ID)
 		ctx.EventManager().EmitTypedEvent(
 			&types.EventUpdateStatus{
 				ID:             item.ID,

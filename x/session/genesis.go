@@ -12,7 +12,7 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, state *types.GenesisState) {
 
 	for _, item := range state.Sessions {
 		var (
-			accAddr  = item.GetAccountAddress()
+			accAddr  = item.GetAddress()
 			nodeAddr = item.GetNodeAddress()
 		)
 
@@ -21,7 +21,7 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, state *types.GenesisState) {
 		k.SetSessionForNode(ctx, nodeAddr, item.ID)
 		k.SetSessionForSubscription(ctx, item.SubscriptionID, item.ID)
 		k.SetSessionForQuota(ctx, item.SubscriptionID, accAddr, item.ID)
-		k.SetSessionExpiryAt(ctx, item.ExpiryAt, item.ID)
+		k.SetSessionForExpiryAt(ctx, item.ExpiryAt, item.ID)
 	}
 
 	count := uint64(0)

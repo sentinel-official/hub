@@ -10,15 +10,15 @@ import (
 )
 
 const (
-	flagAccountAddress = "account-addr"
+	flagAddress        = "account-addr"
 	flagNodeAddress    = "node-addr"
 	flagRating         = "rating"
 	flagSignature      = "signature"
 	flagSubscriptionID = "subscription-id"
 )
 
-func GetAccountAddress(flags *pflag.FlagSet) (sdk.AccAddress, error) {
-	s, err := flags.GetString(flagAccountAddress)
+func GetAddress(flags *pflag.FlagSet) (sdk.AccAddress, error) {
+	s, err := flags.GetString(flagAddress)
 	if err != nil {
 		return nil, err
 	}

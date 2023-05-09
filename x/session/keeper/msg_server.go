@@ -49,11 +49,11 @@ func (k *msgServer) MsgStart(c context.Context, msg *types.MsgStartRequest) (*ty
 	switch v := subscription.(type) {
 	case *subscriptiontypes.NodeSubscription:
 		if node.Address != v.NodeAddress {
-			return nil, types.NewErrorUnexpectedNode(node.Address)
+			return nil, types.NewErrorInvalidNode(node.Address)
 		}
 	case *subscriptiontypes.PlanSubscription:
 		if !k.HasNodeForPlan(ctx, v.PlanID, nodeAddr) {
-			return nil, types.NewErrorUnexpectedNode(node.Address)
+			return nil, types.NewErrorInvalidNode(node.Address)
 		}
 	default:
 		return nil, types.NewErrorInvalidSubscriptionType(subscription.GetID(), subscription.Type().String())
@@ -93,7 +93,7 @@ func (k *msgServer) MsgStart(c context.Context, msg *types.MsgStartRequest) (*ty
 			ID:             count + 1,
 			SubscriptionID: subscription.GetID(),
 			NodeAddress:    nodeAddr.String(),
-			AccountAddress: accAddr.String(),
+			Address:        accAddr.String(),
 			Bandwidth:      hubtypes.NewBandwidthFromInt64(0, 0),
 			Duration:       0,
 			ExpiryAt:       ctx.BlockTime().Add(inactiveDuration),
@@ -108,7 +108,7 @@ func (k *msgServer) MsgStart(c context.Context, msg *types.MsgStartRequest) (*ty
 	k.SetSessionForNode(ctx, nodeAddr, session.ID)
 	k.SetSessionForSubscription(ctx, subscription.GetID(), session.ID)
 	k.SetSessionForQuota(ctx, subscription.GetID(), accAddr, session.ID)
-	k.SetSessionExpiryAt(ctx, session.ExpiryAt, session.ID)
+	k.SetSessionForExpiryAt(ctx, session.ExpiryAt, session.ID)
 	ctx.EventManager().EmitTypedEvent(
 		&types.EventStart{
 			ID:             session.ID,
@@ -135,18 +135,18 @@ func (k *msgServer) MsgUpdateDetails(c context.Context, msg *types.MsgUpdateDeta
 	}
 
 	if k.ProofVerificationEnabled(ctx) {
-		accAddr := session.GetAccountAddress()
+		accAddr := session.GetAddress()
 		if err := k.VerifySignature(ctx, accAddr, msg.Proof, msg.Signature); err != nil {
 			return nil, types.NewErrorInvalidSignature(msg.Signature)
 		}
 	}
 
 	if session.Status.Equal(hubtypes.StatusActive) {
-		k.DeleteSessionExpiryAt(ctx, session.ExpiryAt, session.ID)
+		k.DeleteSessionForExpiryAt(ctx, session.ExpiryAt, session.ID)
 
 		inactiveDuration := k.InactiveDuration(ctx)
 		session.ExpiryAt = ctx.BlockTime().Add(inactiveDuration)
-		k.SetSessionExpiryAt(ctx, session.ExpiryAt, session.ID)
+		k.SetSessionForExpiryAt(ctx, session.ExpiryAt, session.ID)
 	}
 
 	session.Duration = msg.Proof.Duration
@@ -174,15 +174,15 @@ func (k *msgServer) MsgEnd(c context.Context, msg *types.MsgEndRequest) (*types.
 	if !session.Status.Equal(hubtypes.StatusActive) {
 		return nil, types.NewErrorInvalidSessionStatus(session.ID, session.Status)
 	}
-	if msg.From != session.AccountAddress {
+	if msg.From != session.Address {
 		return nil, types.NewErrorUnauthorized(msg.From)
 	}
 
-	k.DeleteSessionExpiryAt(ctx, session.ExpiryAt, session.ID)
+	k.DeleteSessionForExpiryAt(ctx, session.ExpiryAt, session.ID)
 
 	inactiveDuration := k.InactiveDuration(ctx)
 	session.ExpiryAt = ctx.BlockTime().Add(inactiveDuration)
-	k.SetSessionExpiryAt(ctx, session.ExpiryAt, session.ID)
+	k.SetSessionForExpiryAt(ctx, session.ExpiryAt, session.ID)
 
 	session.Status = hubtypes.StatusInactivePending
 	session.StatusAt = ctx.BlockTime()
