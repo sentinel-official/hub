@@ -11,19 +11,19 @@ var (
 )
 
 var (
-	ErrorDuplicateProvider = errors.Register(ModuleName, 201, "duplicate provider")
-	ErrorProviderNotFound  = errors.Register(ModuleName, 202, "provider not found")
-	ErrorInvalidStatus     = errors.Register(ModuleName, 203, "invalid status")
+	ErrorDuplicate     = errors.Register(ModuleName, 201, "duplicate")
+	ErrorNotFound      = errors.Register(ModuleName, 202, "not found")
+	ErrorInvalidStatus = errors.Register(ModuleName, 203, "invalid status")
 )
 
 func NewErrorDuplicateProvider(addr hubtypes.ProvAddress) error {
-	return errors.Wrapf(ErrorDuplicateProvider, "provider %s already exists", addr)
+	return errors.Wrapf(ErrorDuplicate, "provider %s already exists", addr)
 }
 
 func NewErrorProviderNotFound(addr hubtypes.ProvAddress) error {
-	return errors.Wrapf(ErrorProviderNotFound, "provider %s does not exist", addr)
+	return errors.Wrapf(ErrorNotFound, "provider %s does not exist", addr)
 }
 
-func NewErrorInvalidStatus(status hubtypes.Status, addr hubtypes.ProvAddress) error {
+func NewErrorInvalidProviderStatus(addr hubtypes.ProvAddress, status hubtypes.Status) error {
 	return errors.Wrapf(ErrorInvalidStatus, "invalid status %s for the provider %s", status, addr)
 }

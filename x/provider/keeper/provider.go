@@ -103,14 +103,13 @@ func (k *Keeper) SetProvider(ctx sdk.Context, provider types.Provider) {
 	case hubtypes.StatusInactive:
 		k.SetInactiveProvider(ctx, provider)
 	default:
-		panic(fmt.Errorf("invalid status for the provider %v", provider))
+		panic(fmt.Errorf("failed to set the provider %v", provider))
 	}
 }
 
 // HasProvider is for checking whether a provider with an address exists or not in the KVStore.
 func (k *Keeper) HasProvider(ctx sdk.Context, addr hubtypes.ProvAddress) bool {
-	return k.HasActiveProvider(ctx, addr) ||
-		k.HasInactiveProvider(ctx, addr)
+	return k.HasActiveProvider(ctx, addr) || k.HasInactiveProvider(ctx, addr)
 }
 
 // GetProvider is for getting a provider with an address from the KVStore.

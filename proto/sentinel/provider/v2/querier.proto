@@ -44,6 +44,6 @@ service QueryService {
   }
 
   rpc QueryParams(QueryParamsRequest) returns (QueryParamsResponse) {
-    option (google.api.http).get = "/sentinel/modules/provider/params";
+    option (google.api.http).get = "/sentinel/params/provider";
   }
 }

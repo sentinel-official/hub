@@ -13,8 +13,8 @@ import (
 
 func queryDeposit() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "deposit [account-addr]",
-		Short: "Query the deposit of an account address",
+		Use:   "deposit [address]",
+		Short: "Query a deposit",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientQueryContext(cmd)
@@ -53,7 +53,7 @@ func queryDeposit() *cobra.Command {
 func queryDeposits() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "deposits",
-		Short: "Query all the deposits",
+		Short: "Query deposits",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientQueryContext(cmd)
 			if err != nil {

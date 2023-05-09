@@ -49,7 +49,7 @@ func (k *msgServer) MsgRegister(c context.Context, msg *types.MsgRegisterRequest
 		StatusAt:    ctx.BlockTime(),
 	}
 
-	k.SetInactiveProvider(ctx, provider)
+	k.SetProvider(ctx, provider)
 	ctx.EventManager().EmitTypedEvent(
 		&types.EventRegister{
 			Address: provider.Address,
@@ -91,7 +91,7 @@ func (k *msgServer) MsgUpdate(c context.Context, msg *types.MsgUpdateRequest) (*
 		case hubtypes.StatusInactive:
 			k.DeleteInactiveProvider(ctx, provAddr)
 		default:
-			return nil, types.NewErrorInvalidStatus(provider.Status, provAddr)
+			return nil, types.NewErrorInvalidProviderStatus(provAddr, provider.Status)
 		}
 
 		provider.Status = msg.Status

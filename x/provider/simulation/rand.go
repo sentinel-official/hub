@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	MaxNameLength        = 56
+	MaxNameLength        = 64
 	MaxIdentityLength    = 64
 	MaxWebsiteLength     = 64
 	MaxDescriptionLength = 256
@@ -41,7 +41,7 @@ func RandomProviders(r *rand.Rand, accounts []simulationtypes.Account) types.Pro
 		}
 
 		var (
-			name        = simulationtypes.RandStringOfLength(r, r.Intn(MaxNameLength)+8)
+			name        = simulationtypes.RandStringOfLength(r, r.Intn(MaxNameLength-8)+8)
 			identity    = simulationtypes.RandStringOfLength(r, r.Intn(MaxIdentityLength))
 			website     = simulationtypes.RandStringOfLength(r, r.Intn(MaxWebsiteLength))
 			description = simulationtypes.RandStringOfLength(r, r.Intn(MaxDescriptionLength))
