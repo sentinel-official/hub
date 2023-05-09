@@ -84,7 +84,7 @@ func (m *Node) Validate() error {
 }
 
 func (m *Node) GigabytePrice(denom string) (sdk.Coin, bool) {
-	if m.GigabytePrices == nil {
+	if m.GigabytePrices == nil && denom == "" {
 		return sdk.Coin{}, true
 	}
 
@@ -98,7 +98,7 @@ func (m *Node) GigabytePrice(denom string) (sdk.Coin, bool) {
 }
 
 func (m *Node) HourlyPrice(denom string) (sdk.Coin, bool) {
-	if m.HourlyPrices == nil {
+	if m.HourlyPrices == nil && denom == "" {
 		return sdk.Coin{}, true
 	}
 

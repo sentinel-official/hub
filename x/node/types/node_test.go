@@ -225,6 +225,7 @@ func TestNode_Validate(t *testing.T) {
 		GigabytePrices sdk.Coins
 		HourlyPrices   sdk.Coins
 		RemoteURL      string
+		ExpiryAt       time.Time
 		Status         hubtypes.Status
 		StatusAt       time.Time
 	}
@@ -259,6 +260,7 @@ func TestNode_Validate(t *testing.T) {
 			fields{
 				Address:   "sentnode1qypqxpq9qcrsszgse4wwrm",
 				RemoteURL: "https://remote.url:443",
+				ExpiryAt:  time.Now(),
 				Status:    hubtypes.StatusActive,
 				StatusAt:  time.Now(),
 			},
@@ -269,6 +271,7 @@ func TestNode_Validate(t *testing.T) {
 			fields{
 				Address:   "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
 				RemoteURL: "https://remote.url:443",
+				ExpiryAt:  time.Now(),
 				Status:    hubtypes.StatusActive,
 				StatusAt:  time.Now(),
 			},
@@ -279,6 +282,7 @@ func TestNode_Validate(t *testing.T) {
 			fields{
 				Address:   "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqyy3zxfp9ycnjs2fsxqglcv",
 				RemoteURL: "https://remote.url:443",
+				ExpiryAt:  time.Now(),
 				Status:    hubtypes.StatusActive,
 				StatusAt:  time.Now(),
 			},
@@ -290,6 +294,7 @@ func TestNode_Validate(t *testing.T) {
 				Address:        "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
 				GigabytePrices: nil,
 				RemoteURL:      "https://remote.url:443",
+				ExpiryAt:       time.Now(),
 				Status:         hubtypes.StatusActive,
 				StatusAt:       time.Now(),
 			},
@@ -341,6 +346,7 @@ func TestNode_Validate(t *testing.T) {
 				Address:        "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
 				GigabytePrices: sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
 				RemoteURL:      "https://remote.url:443",
+				ExpiryAt:       time.Now(),
 				Status:         hubtypes.StatusActive,
 				StatusAt:       time.Now(),
 			},
@@ -352,6 +358,7 @@ func TestNode_Validate(t *testing.T) {
 				Address:      "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
 				HourlyPrices: nil,
 				RemoteURL:    "https://remote.url:443",
+				ExpiryAt:     time.Now(),
 				Status:       hubtypes.StatusActive,
 				StatusAt:     time.Now(),
 			},
@@ -403,6 +410,7 @@ func TestNode_Validate(t *testing.T) {
 				Address:      "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
 				HourlyPrices: sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
 				RemoteURL:    "https://remote.url:443",
+				ExpiryAt:     time.Now(),
 				Status:       hubtypes.StatusActive,
 				StatusAt:     time.Now(),
 			},
@@ -453,6 +461,7 @@ func TestNode_Validate(t *testing.T) {
 			fields{
 				Address:   "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
 				RemoteURL: "https://remote.url:443",
+				ExpiryAt:  time.Now(),
 				Status:    hubtypes.StatusActive,
 				StatusAt:  time.Now(),
 			},
@@ -472,6 +481,7 @@ func TestNode_Validate(t *testing.T) {
 			fields{
 				Address:   "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
 				RemoteURL: "https://remote.url:443",
+				ExpiryAt:  time.Now(),
 				Status:    hubtypes.StatusActive,
 				StatusAt:  time.Now(),
 			},
@@ -491,6 +501,7 @@ func TestNode_Validate(t *testing.T) {
 			fields{
 				Address:   "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
 				RemoteURL: "https://remote.url:443",
+				ExpiryAt:  time.Now(),
 				Status:    hubtypes.StatusInactive,
 				StatusAt:  time.Now(),
 			},
@@ -511,6 +522,7 @@ func TestNode_Validate(t *testing.T) {
 			fields{
 				Address:   "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
 				RemoteURL: "https://remote.url:443",
+				ExpiryAt:  time.Now(),
 				Status:    hubtypes.StatusActive,
 				StatusAt:  time.Now(),
 			},
@@ -524,6 +536,7 @@ func TestNode_Validate(t *testing.T) {
 				GigabytePrices: tt.fields.GigabytePrices,
 				HourlyPrices:   tt.fields.HourlyPrices,
 				RemoteURL:      tt.fields.RemoteURL,
+				ExpiryAt:       tt.fields.ExpiryAt,
 				Status:         tt.fields.Status,
 				StatusAt:       tt.fields.StatusAt,
 			}

@@ -12,13 +12,7 @@ import (
 
 func TestPlan_GetAddress(t *testing.T) {
 	type fields struct {
-		ID       uint64
-		Address  string
-		Prices   sdk.Coins
-		Validity time.Duration
-		Bytes    sdk.Int
-		Status   hubtypes.Status
-		StatusAt time.Time
+		Address string
 	}
 	tests := []struct {
 		name   string
@@ -43,13 +37,7 @@ func TestPlan_GetAddress(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			p := &Plan{
-				ID:       tt.fields.ID,
-				Address:  tt.fields.Address,
-				Prices:   tt.fields.Prices,
-				Validity: tt.fields.Validity,
-				Bytes:    tt.fields.Bytes,
-				Status:   tt.fields.Status,
-				StatusAt: tt.fields.StatusAt,
+				Address: tt.fields.Address,
 			}
 			if got := p.GetAddress(); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("GetAddress() = %v, want %v", got, tt.want)
@@ -73,7 +61,7 @@ func TestPlan_Price(t *testing.T) {
 		want1  bool
 	}{
 		{
-			"nil price and empty denom",
+			"nil prices and empty denom",
 			fields{
 				Prices: nil,
 			},
@@ -81,10 +69,10 @@ func TestPlan_Price(t *testing.T) {
 				denom: "",
 			},
 			sdk.Coin{},
-			false,
+			true,
 		},
 		{
-			"nil price and one denom",
+			"nil prices and one denom",
 			fields{
 				Prices: nil,
 			},
@@ -95,7 +83,7 @@ func TestPlan_Price(t *testing.T) {
 			false,
 		},
 		{
-			"nil price and two denom",
+			"nil prices and two denom",
 			fields{
 				Prices: nil,
 			},
@@ -106,7 +94,7 @@ func TestPlan_Price(t *testing.T) {
 			false,
 		},
 		{
-			"empty price and empty denom",
+			"empty prices and empty denom",
 			fields{
 				Prices: sdk.Coins{},
 			},
@@ -117,7 +105,7 @@ func TestPlan_Price(t *testing.T) {
 			false,
 		},
 		{
-			"empty price and one denom",
+			"empty prices and one denom",
 			fields{
 				Prices: sdk.Coins{},
 			},
@@ -128,7 +116,7 @@ func TestPlan_Price(t *testing.T) {
 			false,
 		},
 		{
-			"empty price and two denom",
+			"empty prices and two denom",
 			fields{
 				Prices: sdk.Coins{},
 			},
@@ -139,7 +127,7 @@ func TestPlan_Price(t *testing.T) {
 			false,
 		},
 		{
-			"1one price and empty denom",
+			"1one prices and empty denom",
 			fields{
 				Prices: sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1)}},
 			},
@@ -150,7 +138,7 @@ func TestPlan_Price(t *testing.T) {
 			false,
 		},
 		{
-			"1one price and one denom",
+			"1one prices and one denom",
 			fields{
 				Prices: sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1)}},
 			},
@@ -161,7 +149,7 @@ func TestPlan_Price(t *testing.T) {
 			true,
 		},
 		{
-			"1one price and two denom",
+			"1one prices and two denom",
 			fields{
 				Prices: sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1)}},
 			},
@@ -172,7 +160,7 @@ func TestPlan_Price(t *testing.T) {
 			false,
 		},
 		{
-			"1two price and empty denom",
+			"1two prices and empty denom",
 			fields{
 				Prices: sdk.Coins{sdk.Coin{Denom: "two", Amount: sdk.NewInt(1)}},
 			},
@@ -183,7 +171,7 @@ func TestPlan_Price(t *testing.T) {
 			false,
 		},
 		{
-			"1two price and one denom",
+			"1two prices and one denom",
 			fields{
 				Prices: sdk.Coins{sdk.Coin{Denom: "two", Amount: sdk.NewInt(1)}},
 			},
@@ -194,7 +182,7 @@ func TestPlan_Price(t *testing.T) {
 			false,
 		},
 		{
-			"1two price and two denom",
+			"1two prices and two denom",
 			fields{
 				Prices: sdk.Coins{sdk.Coin{Denom: "two", Amount: sdk.NewInt(1)}},
 			},
