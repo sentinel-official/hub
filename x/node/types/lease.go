@@ -5,6 +5,9 @@ import (
 )
 
 func (l *Lease) Validate() error {
+	if l.ID == 0 {
+		return fmt.Errorf("id cannot be zero")
+	}
 	if l.Bytes.IsNil() && l.Hours == 0 {
 		return fmt.Errorf("[bytes, hours] cannot be empty")
 	}

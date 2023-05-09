@@ -125,12 +125,12 @@ func (k *Keeper) IsValidHourlyPrices(ctx sdk.Context, prices sdk.Coins) bool {
 
 func (k *Keeper) IsValidLeaseHours(ctx sdk.Context, hours int64) bool {
 	maxHours := k.MaxLeaseHours(ctx)
-	if maxHours > 0 && hours > maxHours {
+	if maxHours != 0 && hours > maxHours {
 		return false
 	}
 
 	minHours := k.MinLeaseHours(ctx)
-	if minHours > 0 && hours < minHours {
+	if minHours != 0 && hours < minHours {
 		return false
 	}
 
@@ -139,12 +139,12 @@ func (k *Keeper) IsValidLeaseHours(ctx sdk.Context, hours int64) bool {
 
 func (k *Keeper) IsValidLeaseGigabytes(ctx sdk.Context, gigabytes int64) bool {
 	maxGigabytes := k.MaxLeaseGigabytes(ctx)
-	if maxGigabytes > 0 && gigabytes > maxGigabytes {
+	if maxGigabytes != 0 && gigabytes > maxGigabytes {
 		return false
 	}
 
 	minGigabytes := k.MinLeaseGigabytes(ctx)
-	if minGigabytes > 0 && gigabytes < minGigabytes {
+	if minGigabytes != 0 && gigabytes < minGigabytes {
 		return false
 	}
 

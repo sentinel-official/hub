@@ -35,7 +35,7 @@ func TestActiveNodeKey(t *testing.T) {
 	}
 }
 
-func TestInactiveNodeAtKey(t *testing.T) {
+func TestNodeForExpiryAtKey(t *testing.T) {
 	var (
 		at   = time.Now()
 		addr []byte
@@ -48,15 +48,15 @@ func TestInactiveNodeAtKey(t *testing.T) {
 		if i < 256 {
 			require.Equal(
 				t,
-				append(append(InactiveNodeAtKeyPrefix, sdk.FormatTimeBytes(at)...), address.MustLengthPrefix(addr)...),
-				InactiveNodeAtKey(at, addr),
+				append(append(NodeForExpiryAtKeyPrefix, sdk.FormatTimeBytes(at)...), address.MustLengthPrefix(addr)...),
+				NodeForExpiryAtKey(at, addr),
 			)
 
 			continue
 		}
 
 		require.Panics(t, func() {
-			InactiveNodeAtKey(at, addr)
+			NodeForExpiryAtKey(at, addr)
 		})
 	}
 }

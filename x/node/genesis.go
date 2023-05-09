@@ -20,7 +20,7 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, state *types.GenesisState) {
 				statusAt = item.StatusAt.Add(inactiveDuration)
 			)
 
-			k.SetInactiveNodeAt(ctx, statusAt, addr)
+			k.SetNodeForExpiryAt(ctx, statusAt, addr)
 		}
 	}
 }

@@ -55,11 +55,12 @@ func (k *msgServer) MsgRegister(c context.Context, msg *types.MsgRegisterRequest
 		GigabytePrices: msg.GigabytePrices,
 		HourlyPrices:   msg.HourlyPrices,
 		RemoteURL:      msg.RemoteURL,
+		ExpiryAt:       ctx.BlockTime(),
 		Status:         hubtypes.StatusInactive,
 		StatusAt:       ctx.BlockTime(),
 	}
 
-	k.SetInactiveNode(ctx, node)
+	k.SetNode(ctx, node)
 	ctx.EventManager().EmitTypedEvent(
 		&types.EventRegister{
 			Address: node.Address,
@@ -123,14 +124,12 @@ func (k *msgServer) MsgUpdateStatus(c context.Context, msg *types.MsgUpdateStatu
 		return nil, types.NewErrorNodeNotFound(nodeAddr)
 	}
 
-	inactiveDuration := k.InactiveDuration(ctx)
 	if node.Status.Equal(hubtypes.StatusActive) {
 		if msg.Status.Equal(hubtypes.StatusInactive) {
 			k.DeleteActiveNode(ctx, nodeAddr)
 		}
 
-		inactiveAt := node.StatusAt.Add(inactiveDuration)
-		k.DeleteInactiveNodeAt(ctx, inactiveAt, nodeAddr)
+		k.DeleteNodeForExpiryAt(ctx, node.ExpiryAt, nodeAddr)
 	} else {
 		if msg.Status.Equal(hubtypes.StatusActive) {
 			k.DeleteInactiveNode(ctx, nodeAddr)
@@ -141,8 +140,9 @@ func (k *msgServer) MsgUpdateStatus(c context.Context, msg *types.MsgUpdateStatu
 	node.StatusAt = ctx.BlockTime()
 
 	if node.Status.Equal(hubtypes.StatusActive) {
-		inactiveAt := node.StatusAt.Add(inactiveDuration)
-		k.SetInactiveNodeAt(ctx, inactiveAt, nodeAddr)
+		inactiveDuration := k.InactiveDuration(ctx)
+		node.ExpiryAt = ctx.BlockTime().Add(inactiveDuration)
+		k.SetNodeForExpiryAt(ctx, node.ExpiryAt, nodeAddr)
 	}
 
 	k.SetNode(ctx, node)
@@ -194,7 +194,7 @@ func (k *msgServer) MsgSubscribe(c context.Context, msg *types.MsgSubscribeReque
 
 		lease.Price, found = node.GigabytePrice(msg.Denom)
 		if !found {
-			return nil, types.NewErrorHourlyPriceNotFound(msg.Denom)
+			return nil, types.NewErrorGigabytePriceNotFound(msg.Denom)
 		}
 	} else {
 		return nil, nil

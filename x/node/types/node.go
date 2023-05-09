@@ -34,6 +34,9 @@ func (m *Node) Validate() error {
 		if m.GigabytePrices.Len() == 0 {
 			return fmt.Errorf("gigabyte_prices cannot be empty")
 		}
+		if m.GigabytePrices.IsAnyNil() {
+			return fmt.Errorf("gigabyte_prices should not contain nil")
+		}
 		if !m.GigabytePrices.IsValid() {
 			return fmt.Errorf("gigabyte_prices must be valid")
 		}
@@ -41,6 +44,9 @@ func (m *Node) Validate() error {
 	if m.HourlyPrices != nil {
 		if m.HourlyPrices.Len() == 0 {
 			return fmt.Errorf("hourly_prices cannot be empty")
+		}
+		if m.GigabytePrices.IsAnyNil() {
+			return fmt.Errorf("hourly_prices should not contain nil")
 		}
 		if !m.HourlyPrices.IsValid() {
 			return fmt.Errorf("hourly_prices must be valid")
@@ -50,7 +56,7 @@ func (m *Node) Validate() error {
 		return fmt.Errorf("remote_url cannot be empty")
 	}
 	if len(m.RemoteURL) > 64 {
-		return fmt.Errorf("remote_url length cannot be greater than %d", 64)
+		return fmt.Errorf("remote_url length cannot be greater than %d chars", 64)
 	}
 
 	remoteURL, err := url.ParseRequestURI(m.RemoteURL)
@@ -64,6 +70,9 @@ func (m *Node) Validate() error {
 		return fmt.Errorf("remote_url port cannot be empty")
 	}
 
+	if m.ExpiryAt.IsZero() {
+		return fmt.Errorf("expiry_at cannot be zero")
+	}
 	if !m.Status.IsOneOf(hubtypes.StatusActive, hubtypes.StatusInactive) {
 		return fmt.Errorf("status must be one of [active, inactive]")
 	}

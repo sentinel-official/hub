@@ -36,6 +36,9 @@ func (m *MsgRegisterRequest) ValidateBasic() error {
 		if m.GigabytePrices.Len() == 0 {
 			return errors.Wrap(ErrorInvalidMessage, "gigabyte_prices length cannot be zero")
 		}
+		if m.GigabytePrices.IsAnyNil() {
+			return errors.Wrap(ErrorInvalidMessage, "gigabyte_prices should not contain nil")
+		}
 		if !m.GigabytePrices.IsValid() {
 			return errors.Wrap(ErrorInvalidMessage, "gigabyte_prices must be valid")
 		}
@@ -43,6 +46,9 @@ func (m *MsgRegisterRequest) ValidateBasic() error {
 	if m.HourlyPrices != nil {
 		if m.HourlyPrices.Len() == 0 {
 			return errors.Wrap(ErrorInvalidMessage, "hourly_prices length cannot be zero")
+		}
+		if m.HourlyPrices.IsAnyNil() {
+			return errors.Wrap(ErrorInvalidMessage, "hourly_prices should not contain nil")
 		}
 		if !m.HourlyPrices.IsValid() {
 			return errors.Wrap(ErrorInvalidMessage, "hourly_prices must be valid")
@@ -52,7 +58,7 @@ func (m *MsgRegisterRequest) ValidateBasic() error {
 		return errors.Wrap(ErrorInvalidMessage, "remote_url cannot be empty")
 	}
 	if len(m.RemoteURL) > 64 {
-		return errors.Wrap(ErrorInvalidMessage, "remote_url length cannot be greater than 64 chars")
+		return errors.Wrapf(ErrorInvalidMessage, "remote_url length cannot be greater than %d chars", 64)
 	}
 
 	remoteURL, err := url.ParseRequestURI(m.RemoteURL)
@@ -98,6 +104,9 @@ func (m *MsgUpdateDetailsRequest) ValidateBasic() error {
 		if m.GigabytePrices.Len() == 0 {
 			return errors.Wrap(ErrorInvalidMessage, "gigabyte_prices length cannot be zero")
 		}
+		if m.GigabytePrices.IsAnyNil() {
+			return errors.Wrap(ErrorInvalidMessage, "gigabyte_prices should not contain nil")
+		}
 		if !m.GigabytePrices.IsValid() {
 			return errors.Wrap(ErrorInvalidMessage, "gigabyte_prices must be valid")
 		}
@@ -106,13 +115,16 @@ func (m *MsgUpdateDetailsRequest) ValidateBasic() error {
 		if m.HourlyPrices.Len() == 0 {
 			return errors.Wrap(ErrorInvalidMessage, "hourly_prices length cannot be zero")
 		}
+		if m.HourlyPrices.IsAnyNil() {
+			return errors.Wrap(ErrorInvalidMessage, "hourly_prices should not contain nil")
+		}
 		if !m.HourlyPrices.IsValid() {
 			return errors.Wrap(ErrorInvalidMessage, "hourly_prices must be valid")
 		}
 	}
 	if m.RemoteURL != "" {
 		if len(m.RemoteURL) > 64 {
-			return errors.Wrap(ErrorInvalidMessage, "remote_url length cannot be greater than 64 chars")
+			return errors.Wrapf(ErrorInvalidMessage, "remote_url length cannot be greater than %d chars", 64)
 		}
 
 		remoteURL, err := url.ParseRequestURI(m.RemoteURL)

@@ -20,8 +20,10 @@ message Node {
     (gogoproto.nullable)     = false,
     (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
   ];
-  string remote_url               = 4 [ (gogoproto.customname) = "RemoteURL" ];
-  sentinel.types.v1.Status status = 5;
-  google.protobuf.Timestamp status_at = 6
+  string remote_url = 4 [ (gogoproto.customname) = "RemoteURL" ];
+  google.protobuf.Timestamp expiry_at = 5
+      [ (gogoproto.nullable) = false, (gogoproto.stdtime) = true ];
+  sentinel.types.v1.Status status     = 6;
+  google.protobuf.Timestamp status_at = 7
       [ (gogoproto.nullable) = false, (gogoproto.stdtime) = true ];
 }

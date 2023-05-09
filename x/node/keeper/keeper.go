@@ -19,7 +19,6 @@ type Keeper struct {
 	params       paramstypes.Subspace
 	distribution expected.DistributionKeeper
 	provider     expected.ProviderKeeper
-	subscription expected.SubscriptionKeeper
 }
 
 func NewKeeper(cdc codec.BinaryCodec, key sdk.StoreKey, params paramstypes.Subspace) Keeper {
@@ -36,10 +35,6 @@ func (k *Keeper) WithDistributionKeeper(keeper expected.DistributionKeeper) {
 
 func (k *Keeper) WithProviderKeeper(keeper expected.ProviderKeeper) {
 	k.provider = keeper
-}
-
-func (k *Keeper) WithSubscriptionKeeper(keeper expected.SubscriptionKeeper) {
-	k.subscription = keeper
 }
 
 func (k *Keeper) Logger(ctx sdk.Context) log.Logger {

@@ -22,8 +22,8 @@ type queryServer struct {
 	Keeper
 }
 
-func NewQueryServiceServer(keeper Keeper) types.QueryServiceServer {
-	return &queryServer{Keeper: keeper}
+func NewQueryServiceServer(k Keeper) types.QueryServiceServer {
+	return &queryServer{k}
 }
 
 func (q *queryServer) QueryNode(c context.Context, req *types.QueryNodeRequest) (*types.QueryNodeResponse, error) {
@@ -90,12 +90,11 @@ func (q *queryServer) QueryNodesForPlan(c context.Context, req *types.QueryNodes
 	}
 
 	var (
-		items     types.Nodes
-		keyPrefix = types.GetNodeForPlanKeyPrefix(req.Id)
-		ctx       = sdk.UnwrapSDKContext(c)
+		items types.Nodes
+		ctx   = sdk.UnwrapSDKContext(c)
 	)
 
-	store := prefix.NewStore(q.Store(ctx), keyPrefix)
+	store := prefix.NewStore(q.Store(ctx), types.GetNodeForPlanKeyPrefix(req.Id))
 	pagination, err := query.FilteredPaginate(store, req.Pagination, func(key, _ []byte, accumulate bool) (bool, error) {
 		if !accumulate {
 			return false, nil
@@ -180,10 +179,10 @@ func (q *queryServer) QueryLeasesForAccount(c context.Context, req *types.QueryL
 	)
 
 	store := prefix.NewStore(q.Store(ctx), types.GetLeaseForAccountKeyPrefix(addr))
-	pagination, err := query.Paginate(store, req.Pagination, func(_, value []byte) error {
-		var item types.Lease
-		if err := q.cdc.Unmarshal(value, &item); err != nil {
-			return err
+	pagination, err := query.Paginate(store, req.Pagination, func(key, _ []byte) error {
+		item, found := q.GetLease(ctx, types.IDFromLeaseForAccountKey(key))
+		if !found {
+			return fmt.Errorf("lease for account key %X does not exist", key)
 		}
 
 		items = append(items, item)
@@ -213,10 +212,10 @@ func (q *queryServer) QueryLeasesForNode(c context.Context, req *types.QueryLeas
 	)
 
 	store := prefix.NewStore(q.Store(ctx), types.GetLeaseForNodeKeyPrefix(addr))
-	pagination, err := query.Paginate(store, req.Pagination, func(_, value []byte) error {
-		var item types.Lease
-		if err := q.cdc.Unmarshal(value, &item); err != nil {
-			return err
+	pagination, err := query.Paginate(store, req.Pagination, func(key, _ []byte) error {
+		item, found := q.GetLease(ctx, types.IDFromLeaseForNodeKey(key))
+		if !found {
+			return fmt.Errorf("lease for node key %X does not exist", key)
 		}
 
 		items = append(items, item)

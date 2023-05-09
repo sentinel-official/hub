@@ -11,8 +11,7 @@ func (k *Keeper) FundCommunityPool(ctx sdk.Context, fromAddr sdk.AccAddress, coi
 		return nil
 	}
 
-	coins := sdk.NewCoins(coin)
-	return k.distribution.FundCommunityPool(ctx, coins, fromAddr)
+	return k.distribution.FundCommunityPool(ctx, sdk.NewCoins(coin), fromAddr)
 }
 
 func (k *Keeper) HasProvider(ctx sdk.Context, addr hubtypes.ProvAddress) bool {

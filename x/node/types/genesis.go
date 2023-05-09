@@ -23,7 +23,7 @@ func ValidateGenesis(state *GenesisState) error {
 	m := make(map[string]bool)
 	for _, node := range state.Nodes {
 		if m[node.Address] {
-			return fmt.Errorf("found duplicate node for address %s", node.Address)
+			return fmt.Errorf("found a duplicate node for address %s", node.Address)
 		}
 
 		m[node.Address] = true
