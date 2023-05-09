@@ -22,7 +22,7 @@ message BaseSubscription {
   option (gogoproto.goproto_getters) = true;
 
   uint64 id                           = 1 [ (gogoproto.customname) = "ID" ];
-  string subscriber                   = 2;
+  string address                      = 2;
   google.protobuf.Timestamp expiry_at = 3
       [ (gogoproto.nullable) = false, (gogoproto.stdtime) = true ];
 

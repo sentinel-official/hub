@@ -214,44 +214,36 @@ func (k *Keeper) GetSubscriptionsForPlan(ctx sdk.Context, id uint64) (items type
 	return items
 }
 
-func (k *Keeper) SetSubscriptionExpiryAt(ctx sdk.Context, at time.Time, id uint64) {
-	key := types.SubscriptionExpiryAtKey(at, id)
+func (k *Keeper) SetSubscriptionForExpiryAt(ctx sdk.Context, at time.Time, id uint64) {
+	key := types.SubscriptionForExpiryAtKey(at, id)
 	value := k.cdc.MustMarshal(&protobuf.BoolValue{Value: true})
 
 	store := k.Store(ctx)
 	store.Set(key, value)
 }
 
-func (k *Keeper) DeleteSubscriptionExpiryAt(ctx sdk.Context, at time.Time, id uint64) {
-	key := types.SubscriptionExpiryAtKey(at, id)
+func (k *Keeper) DeleteSubscriptionForExpiryAt(ctx sdk.Context, at time.Time, id uint64) {
+	key := types.SubscriptionForExpiryAtKey(at, id)
 
 	store := k.Store(ctx)
 	store.Delete(key)
 }
 
-func (k *Keeper) IterateSubscriptionExpirys(ctx sdk.Context, end time.Time, fn func(index int, item types.Subscription) (stop bool)) {
+func (k *Keeper) IterateSubscriptionsForExpiryAt(ctx sdk.Context, endTime time.Time, fn func(index int, item types.Subscription) (stop bool)) {
 	store := k.Store(ctx)
 
-	iter := store.Iterator(types.SubscriptionExpiryAtKeyPrefix, sdk.PrefixEndBytes(types.GetSubscriptionExpiryAtKeyPrefix(end)))
+	iter := store.Iterator(types.SubscriptionForExpiryAtKeyPrefix, sdk.PrefixEndBytes(types.GetSubscriptionForExpiryAtKeyPrefix(endTime)))
 	defer iter.Close()
 
 	for i := 0; iter.Valid(); iter.Next() {
-		var (
-			key             = iter.Key()
-			subscription, _ = k.GetSubscription(ctx, types.IDFromSubscriptionExpiryAtKey(key))
-		)
+		subscription, found := k.GetSubscription(ctx, types.IDFromSubscriptionForExpiryAtKey(iter.Key()))
+		if !found {
+			panic(fmt.Errorf("subscription for expiry at key %X does not exist", iter.Key()))
+		}
 
 		if stop := fn(i, subscription); stop {
 			break
 		}
 		i++
 	}
-}
-
-func (k *Keeper) CreateNodeSubscription(ctx sdk.Context, accAddr sdk.AccAddress, nodeAddr hubtypes.NodeAddress, hours int64, price sdk.Coin) (uint64, error) {
-	return 0, nil
-}
-
-func (k *Keeper) CreatePlanSubscription(ctx sdk.Context, accAddr sdk.AccAddress, id uint64, price sdk.Coin) (uint64, error) {
-	return 0, nil
 }

@@ -28,7 +28,7 @@ func ValidateGenesis(state *GenesisState) error {
 	for _, item := range state.Subscriptions {
 		id := item.Subscription.GetCachedValue().(*BaseSubscription).ID
 		if m[id] {
-			return fmt.Errorf("found duplicate subscription for id %d", id)
+			return fmt.Errorf("found a duplicate subscription for id %d", id)
 		}
 
 		m[id] = true

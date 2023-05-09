@@ -15,22 +15,20 @@ const (
 )
 
 var (
-	TypeMsgCancelRequest      = ModuleName + ":cancel"
-	TypeMsgShareRequest       = ModuleName + ":share"
-	TypeMsgUpdateQuotaRequest = ModuleName + ":update_quota"
+	TypeMsgCancelRequest = ModuleName + ":cancel"
+	TypeMsgShareRequest  = ModuleName + ":share"
 )
 
 var (
 	CountKey = []byte{0x00}
 
-	SubscriptionKeyPrefix           = []byte{0x10}
-	SubscriptionForAccountKeyPrefix = []byte{0x11}
-	SubscriptionForNodeKeyPrefix    = []byte{0x12}
-	SubscriptionForPlanKeyPrefix    = []byte{0x13}
+	SubscriptionKeyPrefix            = []byte{0x10}
+	SubscriptionForExpiryAtKeyPrefix = []byte{0x11}
+	SubscriptionForAccountKeyPrefix  = []byte{0x12}
+	SubscriptionForNodeKeyPrefix     = []byte{0x13}
+	SubscriptionForPlanKeyPrefix     = []byte{0x14}
 
-	SubscriptionExpiryAtKeyPrefix = []byte{0x20}
-
-	QuotaKeyPrefix = []byte{0x30}
+	QuotaKeyPrefix = []byte{0x20}
 )
 
 func SubscriptionKey(id uint64) []byte {
@@ -61,12 +59,12 @@ func SubscriptionForPlanKey(planID, subscriptionID uint64) []byte {
 	return append(GetSubscriptionForPlanKeyPrefix(planID), sdk.Uint64ToBigEndian(subscriptionID)...)
 }
 
-func GetSubscriptionExpiryAtKeyPrefix(at time.Time) []byte {
-	return append(SubscriptionExpiryAtKeyPrefix, sdk.FormatTimeBytes(at)...)
+func GetSubscriptionForExpiryAtKeyPrefix(at time.Time) []byte {
+	return append(SubscriptionForExpiryAtKeyPrefix, sdk.FormatTimeBytes(at)...)
 }
 
-func SubscriptionExpiryAtKey(at time.Time, id uint64) []byte {
-	return append(GetSubscriptionExpiryAtKeyPrefix(at), sdk.Uint64ToBigEndian(id)...)
+func SubscriptionForExpiryAtKey(at time.Time, id uint64) []byte {
+	return append(GetSubscriptionForExpiryAtKeyPrefix(at), sdk.Uint64ToBigEndian(id)...)
 }
 
 func GetQuotaKeyPrefix(id uint64) []byte {
@@ -109,7 +107,7 @@ func IDFromSubscriptionForPlanKey(key []byte) uint64 {
 	return sdk.BigEndianToUint64(key[9:])
 }
 
-func IDFromSubscriptionExpiryAtKey(key []byte) uint64 {
+func IDFromSubscriptionForExpiryAtKey(key []byte) uint64 {
 	// prefix (1 byte) | at (29 bytes) | id (8 bytes)
 
 	if len(key) != 38 {

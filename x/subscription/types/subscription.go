@@ -17,7 +17,7 @@ type (
 		Type() SubscriptionType
 		Validate() error
 		GetID() uint64
-		GetSubscriber() string
+		GetAddress() string
 		GetExpiryAt() time.Time
 		GetStatus() hubtypes.Status
 		GetStatusAt() time.Time
@@ -41,11 +41,11 @@ func (s *BaseSubscription) Validate() error {
 	if s.ID == 0 {
 		return fmt.Errorf("id cannot be zero")
 	}
-	if s.Subscriber == "" {
-		return fmt.Errorf("subscriber cannot be empty")
+	if s.Address == "" {
+		return fmt.Errorf("address cannot be empty")
 	}
-	if _, err := sdk.AccAddressFromBech32(s.Subscriber); err != nil {
-		return errors.Wrapf(err, "invalid subscriber %s", s.Subscriber)
+	if _, err := sdk.AccAddressFromBech32(s.Address); err != nil {
+		return errors.Wrapf(err, "invalid address %s", s.Address)
 	}
 	if !s.Status.IsValid() {
 		return fmt.Errorf("status must be valid")

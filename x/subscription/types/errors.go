@@ -12,13 +12,12 @@ var (
 )
 
 var (
-	ErrorInsufficientBytes         = errors.Register(ModuleName, 201, "insufficient bytes")
-	ErrorInvalidQuota              = errors.Register(ModuleName, 202, "invalid quota")
-	ErrorInvalidSubscriptionStatus = errors.Register(ModuleName, 203, "invalid subscription status")
-	ErrorInvalidSubscriptionType   = errors.Register(ModuleName, 204, "invalid subscription type")
-	ErrorQuotaNotFound             = errors.Register(ModuleName, 205, "quota not found")
-	ErrorSubscriptionNotFound      = errors.Register(ModuleName, 206, "subscription not found")
-	ErrorUnauthorized              = errors.Register(ModuleName, 207, "unauthorized")
+	ErrorInsufficientBytes = errors.Register(ModuleName, 201, "insufficient bytes")
+	ErrorInvalidQuota      = errors.Register(ModuleName, 202, "invalid quota")
+	ErrorInvalidStatus     = errors.Register(ModuleName, 203, "invalid status")
+	ErrorInvalidType       = errors.Register(ModuleName, 204, "invalid type")
+	ErrorNotFound          = errors.Register(ModuleName, 205, "not found")
+	ErrorUnauthorized      = errors.Register(ModuleName, 207, "unauthorized")
 )
 
 func NewErrorInsufficientBytes(id uint64, bytes sdk.Int) error {
@@ -30,19 +29,19 @@ func NewErrorInvalidQuota(id uint64, addr sdk.AccAddress) error {
 }
 
 func NewErrorInvalidSubscriptionStatus(id uint64, status hubtypes.Status) error {
-	return errors.Wrapf(ErrorInvalidSubscriptionStatus, "invalid status %s for subscription %d", status, id)
+	return errors.Wrapf(ErrorInvalidStatus, "invalid status %s for subscription %d", status, id)
 }
 
 func NewErrorInvalidSubscriptionType(id uint64, t SubscriptionType) error {
-	return errors.Wrapf(ErrorInvalidSubscriptionType, "invalid type %s for subscription %d", t, id)
+	return errors.Wrapf(ErrorInvalidType, "invalid type %s for subscription %d", t, id)
 }
 
 func NewErrorQuotaNotFound(id uint64, addr sdk.AccAddress) error {
-	return errors.Wrapf(ErrorQuotaNotFound, "subscription quota %d/%s does not exist", id, addr)
+	return errors.Wrapf(ErrorNotFound, "subscription quota %d/%s does not exist", id, addr)
 }
 
 func NewErrorSubscriptionNotFound(id uint64) error {
-	return errors.Wrapf(ErrorSubscriptionNotFound, "subscription %d does not exist", id)
+	return errors.Wrapf(ErrorNotFound, "subscription %d does not exist", id)
 }
 
 func NewErrorUnauthorized(addr string) error {

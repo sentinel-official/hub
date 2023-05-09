@@ -31,15 +31,15 @@ func (k *msgServer) MsgCancel(c context.Context, msg *types.MsgCancelRequest) (*
 	if !subscription.GetStatus().Equal(hubtypes.StatusActive) {
 		return nil, types.NewErrorInvalidSubscriptionStatus(subscription.GetID(), subscription.GetStatus())
 	}
-	if msg.From != subscription.GetSubscriber() {
+	if msg.From != subscription.GetAddress() {
 		return nil, types.NewErrorUnauthorized(msg.From)
 	}
 
-	k.DeleteSubscriptionExpiryAt(ctx, subscription.GetExpiryAt(), subscription.GetID())
+	k.DeleteSubscriptionForExpiryAt(ctx, subscription.GetExpiryAt(), subscription.GetID())
 
 	inactiveDuration := k.InactiveDuration(ctx)
 	subscription.SetExpiryAt(ctx.BlockTime().Add(inactiveDuration))
-	k.SetSubscriptionExpiryAt(ctx, subscription.GetExpiryAt(), subscription.GetID())
+	k.SetSubscriptionForExpiryAt(ctx, subscription.GetExpiryAt(), subscription.GetID())
 
 	subscription.SetStatus(hubtypes.StatusInactivePending)
 	subscription.SetStatusAt(ctx.BlockTime())
@@ -65,7 +65,7 @@ func (k *msgServer) MsgShare(c context.Context, msg *types.MsgShareRequest) (*ty
 	if subscription.Type() != types.TypePlan {
 		return nil, types.NewErrorInvalidSubscriptionType(subscription.GetID(), subscription.Type())
 	}
-	if msg.From != subscription.GetSubscriber() {
+	if msg.From != subscription.GetAddress() {
 		return nil, types.NewErrorUnauthorized(msg.From)
 	}
 

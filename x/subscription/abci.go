@@ -10,22 +10,18 @@ import (
 )
 
 func EndBlock(ctx sdk.Context, k keeper.Keeper) []abcitypes.ValidatorUpdate {
-	var (
-		log              = k.Logger(ctx)
-		inactiveDuration = k.InactiveDuration(ctx)
-	)
-
-	k.IterateSubscriptionExpirys(ctx, ctx.BlockTime(), func(_ int, item types.Subscription) bool {
-		log.Info("found an inactive subscription", "id", item.GetID())
+	inactiveDuration := k.InactiveDuration(ctx)
+	k.IterateSubscriptionsForExpiryAt(ctx, ctx.BlockTime(), func(_ int, item types.Subscription) bool {
+		k.Logger(ctx).Info("found an expired subscription", "id", item.GetID())
 
 		if item.GetStatus().Equal(hubtypes.StatusActive) {
 			item.SetStatus(hubtypes.StatusInactivePending)
 			item.SetStatusAt(ctx.BlockTime())
 			k.SetSubscription(ctx, item)
-			k.DeleteSubscriptionExpiryAt(ctx, item.GetExpiryAt(), item.GetID())
+			k.DeleteSubscriptionForExpiryAt(ctx, item.GetExpiryAt(), item.GetID())
 
 			statusAt := item.GetStatusAt().Add(inactiveDuration)
-			k.SetSubscriptionExpiryAt(ctx, statusAt, item.GetID())
+			k.SetSubscriptionForExpiryAt(ctx, statusAt, item.GetID())
 			ctx.EventManager().EmitTypedEvent(
 				&types.EventUpdateStatus{
 					ID:     item.GetID(),
@@ -46,7 +42,7 @@ func EndBlock(ctx sdk.Context, k keeper.Keeper) []abcitypes.ValidatorUpdate {
 		})
 
 		statusAt := item.GetStatusAt().Add(inactiveDuration)
-		k.DeleteSubscriptionExpiryAt(ctx, statusAt, item.GetID())
+		k.DeleteSubscriptionForExpiryAt(ctx, statusAt, item.GetID())
 
 		ctx.EventManager().EmitTypedEvent(
 			&types.EventUpdateStatus{

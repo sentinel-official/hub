@@ -11,9 +11,9 @@ import (
 	hubtypes "github.com/sentinel-official/hub/types"
 )
 
-func TestBaseSubscription_GetSubscriber(t *testing.T) {
+func TestBaseSubscription_GetAddress(t *testing.T) {
 	type fields struct {
-		Subscriber string
+		Address string
 	}
 	tests := []struct {
 		name   string
@@ -21,16 +21,16 @@ func TestBaseSubscription_GetSubscriber(t *testing.T) {
 		want   string
 	}{
 		{
-			"empty subscriber",
+			"empty address",
 			fields{
-				Subscriber: "",
+				Address: "",
 			},
 			"",
 		},
 		{
-			"20 bytes subscriber",
+			"20 bytes address",
 			fields{
-				Subscriber: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Address: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
 			},
 			"sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
 		},
@@ -38,10 +38,10 @@ func TestBaseSubscription_GetSubscriber(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			s := &BaseSubscription{
-				Subscriber: tt.fields.Subscriber,
+				Address: tt.fields.Address,
 			}
-			if got := s.GetSubscriber(); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("GetSubscriber() = %v, want %v", got, tt.want)
+			if got := s.GetAddress(); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("GetAddress() = %v, want %v", got, tt.want)
 			}
 		})
 	}
@@ -49,10 +49,10 @@ func TestBaseSubscription_GetSubscriber(t *testing.T) {
 
 func TestBaseSubscription_Validate(t *testing.T) {
 	type fields struct {
-		ID         uint64
-		Subscriber string
-		Status     hubtypes.Status
-		StatusAt   time.Time
+		ID       uint64
+		Address  string
+		Status   hubtypes.Status
+		StatusAt time.Time
 	}
 	tests := []struct {
 		name    string
@@ -69,123 +69,123 @@ func TestBaseSubscription_Validate(t *testing.T) {
 		{
 			"positive id",
 			fields{
-				ID:         1000,
-				Subscriber: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				Status:     hubtypes.StatusActive,
-				StatusAt:   time.Now(),
+				ID:       1000,
+				Address:  "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Status:   hubtypes.StatusActive,
+				StatusAt: time.Now(),
 			},
 			false,
 		},
 		{
-			"empty subscriber",
+			"empty address",
 			fields{
-				ID:         1000,
-				Subscriber: "",
+				ID:      1000,
+				Address: "",
 			},
 			true,
 		},
 		{
-			"invalid subscriber",
+			"invalid address",
 			fields{
-				ID:         1000,
-				Subscriber: "invalid",
+				ID:      1000,
+				Address: "invalid",
 			},
 			true,
 		},
 		{
-			"invalid prefix subscriber",
+			"invalid prefix address",
 			fields{
-				ID:         1000,
-				Subscriber: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				ID:      1000,
+				Address: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
 			},
 			true,
 		},
 		{
-			"10 bytes subscriber",
+			"10 bytes address",
 			fields{
-				ID:         1000,
-				Subscriber: "sent1qypqxpq9qcrsszgslawd5s",
-				Status:     hubtypes.StatusActive,
-				StatusAt:   time.Now(),
+				ID:       1000,
+				Address:  "sent1qypqxpq9qcrsszgslawd5s",
+				Status:   hubtypes.StatusActive,
+				StatusAt: time.Now(),
 			},
 			false,
 		},
 		{
-			"20 bytes subscriber",
+			"20 bytes address",
 			fields{
-				ID:         1000,
-				Subscriber: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				Status:     hubtypes.StatusActive,
-				StatusAt:   time.Now(),
+				ID:       1000,
+				Address:  "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Status:   hubtypes.StatusActive,
+				StatusAt: time.Now(),
 			},
 			false,
 		},
 		{
-			"30 bytes subscriber",
+			"30 bytes address",
 			fields{
-				ID:         1000,
-				Subscriber: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfqyy3zxfp9ycnjs2fszvfck8",
-				Status:     hubtypes.StatusActive,
-				StatusAt:   time.Now(),
+				ID:       1000,
+				Address:  "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfqyy3zxfp9ycnjs2fszvfck8",
+				Status:   hubtypes.StatusActive,
+				StatusAt: time.Now(),
 			},
 			false,
 		},
 		{
 			"unspecified status",
 			fields{
-				ID:         1000,
-				Subscriber: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				Status:     hubtypes.StatusUnspecified,
+				ID:      1000,
+				Address: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Status:  hubtypes.StatusUnspecified,
 			},
 			true,
 		},
 		{
 			"active status",
 			fields{
-				ID:         1000,
-				Subscriber: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				Status:     hubtypes.StatusActive,
-				StatusAt:   time.Now(),
+				ID:       1000,
+				Address:  "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Status:   hubtypes.StatusActive,
+				StatusAt: time.Now(),
 			},
 			false,
 		},
 		{
 			"inactive pending status",
 			fields{
-				ID:         1000,
-				Subscriber: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				Status:     hubtypes.StatusInactivePending,
-				StatusAt:   time.Now(),
+				ID:       1000,
+				Address:  "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Status:   hubtypes.StatusInactivePending,
+				StatusAt: time.Now(),
 			},
 			false,
 		},
 		{
 			"inactive status",
 			fields{
-				ID:         1000,
-				Subscriber: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				Status:     hubtypes.StatusInactive,
-				StatusAt:   time.Now(),
+				ID:       1000,
+				Address:  "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Status:   hubtypes.StatusInactive,
+				StatusAt: time.Now(),
 			},
 			false,
 		},
 		{
 			"empty status at",
 			fields{
-				ID:         1000,
-				Subscriber: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				Status:     hubtypes.StatusActive,
-				StatusAt:   time.Time{},
+				ID:       1000,
+				Address:  "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Status:   hubtypes.StatusActive,
+				StatusAt: time.Time{},
 			},
 			true,
 		},
 		{
 			"positive status at",
 			fields{
-				ID:         1000,
-				Subscriber: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				Status:     hubtypes.StatusActive,
-				StatusAt:   time.Now(),
+				ID:       1000,
+				Address:  "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Status:   hubtypes.StatusActive,
+				StatusAt: time.Now(),
 			},
 			false,
 		},
@@ -193,10 +193,10 @@ func TestBaseSubscription_Validate(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			s := &BaseSubscription{
-				ID:         tt.fields.ID,
-				Subscriber: tt.fields.Subscriber,
-				Status:     tt.fields.Status,
-				StatusAt:   tt.fields.StatusAt,
+				ID:       tt.fields.ID,
+				Address:  tt.fields.Address,
+				Status:   tt.fields.Status,
+				StatusAt: tt.fields.StatusAt,
 			}
 			if err := s.Validate(); (err != nil) != tt.wantErr {
 				t.Errorf("Validate() error = %v, wantErr %v", err, tt.wantErr)
@@ -394,10 +394,10 @@ func TestNodeSubscription_Validate(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			s := &NodeSubscription{
 				BaseSubscription: &BaseSubscription{
-					ID:         1000,
-					Subscriber: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-					Status:     hubtypes.StatusActive,
-					StatusAt:   time.Now(),
+					ID:       1000,
+					Address:  "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+					Status:   hubtypes.StatusActive,
+					StatusAt: time.Now(),
 				},
 				NodeAddress: tt.fields.NodeAddress,
 				Hours:       tt.fields.Hours,
@@ -469,10 +469,10 @@ func TestPlanSubscription_Validate(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			s := &PlanSubscription{
 				BaseSubscription: &BaseSubscription{
-					ID:         1000,
-					Subscriber: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-					Status:     hubtypes.StatusActive,
-					StatusAt:   time.Now(),
+					ID:       1000,
+					Address:  "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+					Status:   hubtypes.StatusActive,
+					StatusAt: time.Now(),
 				},
 				PlanID: tt.fields.PlanID,
 				Denom:  tt.fields.Denom,
