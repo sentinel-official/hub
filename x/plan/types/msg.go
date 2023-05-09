@@ -37,6 +37,9 @@ func (m *MsgCreateRequest) ValidateBasic() error {
 		if m.Prices.Len() == 0 {
 			return errors.Wrap(ErrorInvalidMessage, "prices cannot be empty")
 		}
+		if m.Prices.IsAnyNil() {
+			return errors.Wrap(ErrorInvalidMessage, "prices should not contain nil")
+		}
 		if !m.Prices.IsValid() {
 			return errors.Wrap(ErrorInvalidMessage, "prices must be valid")
 		}
@@ -46,6 +49,9 @@ func (m *MsgCreateRequest) ValidateBasic() error {
 	}
 	if m.Validity == 0 {
 		return errors.Wrap(ErrorInvalidMessage, "validity cannot be zero")
+	}
+	if m.Bytes.IsNil() {
+		return errors.Wrap(ErrorInvalidMessage, "bytes cannot be nil")
 	}
 	if m.Bytes.IsNegative() {
 		return errors.Wrap(ErrorInvalidMessage, "bytes cannot be negative")
@@ -100,11 +106,11 @@ func (m *MsgUpdateStatusRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{from.Bytes()}
 }
 
-func NewMsgLinkNodeRequest(from hubtypes.ProvAddress, id uint64, address hubtypes.NodeAddress) *MsgLinkNodeRequest {
+func NewMsgLinkNodeRequest(from hubtypes.ProvAddress, id uint64, addr hubtypes.NodeAddress) *MsgLinkNodeRequest {
 	return &MsgLinkNodeRequest{
 		From:    from.String(),
 		ID:      id,
-		Address: address.String(),
+		Address: addr.String(),
 	}
 }
 
@@ -137,11 +143,11 @@ func (m *MsgLinkNodeRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{from.Bytes()}
 }
 
-func NewMsgUnlinkNodeRequest(from hubtypes.ProvAddress, id uint64, address hubtypes.NodeAddress) *MsgUnlinkNodeRequest {
+func NewMsgUnlinkNodeRequest(from hubtypes.ProvAddress, id uint64, addr hubtypes.NodeAddress) *MsgUnlinkNodeRequest {
 	return &MsgUnlinkNodeRequest{
 		From:    from.String(),
 		ID:      id,
-		Address: address.String(),
+		Address: addr.String(),
 	}
 }
 

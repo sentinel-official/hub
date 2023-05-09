@@ -11,13 +11,8 @@ import (
 func InitGenesis(ctx sdk.Context, k keeper.Keeper, state types.GenesisState) {
 	for _, item := range state {
 		addr := item.Plan.GetAddress()
-		if item.Plan.Status.Equal(hubtypes.StatusActive) {
-			k.SetActivePlan(ctx, item.Plan)
-			k.SetActivePlanForProvider(ctx, addr, item.Plan.ID)
-		} else {
-			k.SetInactivePlan(ctx, item.Plan)
-			k.SetInactivePlanForProvider(ctx, addr, item.Plan.ID)
-		}
+		k.SetPlan(ctx, item.Plan)
+		k.SetPlanForProvider(ctx, addr, item.Plan.ID)
 
 		for _, node := range item.Nodes {
 			addr, err := hubtypes.NodeAddressFromBech32(node)

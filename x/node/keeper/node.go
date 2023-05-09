@@ -104,7 +104,7 @@ func (k *Keeper) SetNode(ctx sdk.Context, node types.Node) {
 	case hubtypes.StatusInactive:
 		k.SetInactiveNode(ctx, node)
 	default:
-		panic(fmt.Errorf("invalid status for the node %v", node))
+		panic(fmt.Errorf("failed to set the node %v", node))
 	}
 }
 

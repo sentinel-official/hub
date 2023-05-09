@@ -103,7 +103,7 @@ func (k *Keeper) SetPlan(ctx sdk.Context, plan types.Plan) {
 	case hubtypes.StatusInactive:
 		k.SetInactivePlan(ctx, plan)
 	default:
-		panic(fmt.Errorf("invalid status for the plan %v", plan))
+		panic(fmt.Errorf("failed to set the plan %v", plan))
 	}
 }
 
@@ -143,39 +143,20 @@ func (k *Keeper) GetPlans(ctx sdk.Context) (items types.Plans) {
 	return items
 }
 
-func (k *Keeper) SetActivePlanForProvider(ctx sdk.Context, addr hubtypes.ProvAddress, id uint64) {
+func (k *Keeper) SetPlanForProvider(ctx sdk.Context, addr hubtypes.ProvAddress, id uint64) {
 	var (
 		store = k.Store(ctx)
-		key   = types.ActivePlanForProviderKey(addr, id)
+		key   = types.PlanForProviderKey(addr, id)
 		value = k.cdc.MustMarshal(&protobuf.BoolValue{Value: true})
 	)
 
 	store.Set(key, value)
 }
 
-func (k *Keeper) DeleteActivePlanForProvider(ctx sdk.Context, addr hubtypes.ProvAddress, id uint64) {
+func (k *Keeper) DeletePlanForProvider(ctx sdk.Context, addr hubtypes.ProvAddress, id uint64) {
 	var (
 		store = k.Store(ctx)
-		key   = types.ActivePlanForProviderKey(addr, id)
-	)
-
-	store.Delete(key)
-}
-
-func (k *Keeper) SetInactivePlanForProvider(ctx sdk.Context, addr hubtypes.ProvAddress, id uint64) {
-	var (
-		store = k.Store(ctx)
-		key   = types.InactivePlanForProviderKey(addr, id)
-		value = k.cdc.MustMarshal(&protobuf.BoolValue{Value: true})
-	)
-
-	store.Set(key, value)
-}
-
-func (k *Keeper) DeleteInactivePlanForProvider(ctx sdk.Context, addr hubtypes.ProvAddress, id uint64) {
-	var (
-		store = k.Store(ctx)
-		key   = types.InactivePlanForProviderKey(addr, id)
+		key   = types.PlanForProviderKey(addr, id)
 	)
 
 	store.Delete(key)

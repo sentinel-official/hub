@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -89,29 +90,27 @@ func (q *queryServer) QueryPlansForProvider(c context.Context, req *types.QueryP
 	}
 
 	var (
-		items     types.Plans
-		keyPrefix []byte
-		ctx       = sdk.UnwrapSDKContext(c)
+		items types.Plans
+		ctx   = sdk.UnwrapSDKContext(c)
 	)
 
-	switch req.Status {
-	case hubtypes.StatusActive:
-		keyPrefix = types.GetActivePlanForProviderKeyPrefix(addr)
-	case hubtypes.StatusInactive:
-		keyPrefix = types.GetInactivePlanForProviderKeyPrefix(addr)
-	default:
-		keyPrefix = types.PlanKeyPrefix
-	}
-
-	store := prefix.NewStore(q.Store(ctx), keyPrefix)
-	pagination, err := query.Paginate(store, req.Pagination, func(_, value []byte) error {
-		var item types.Plan
-		if err := q.cdc.Unmarshal(value, &item); err != nil {
-			return err
+	store := prefix.NewStore(q.Store(ctx), types.GetPlanForProviderKeyPrefix(addr))
+	pagination, err := query.FilteredPaginate(store, req.Pagination, func(key, _ []byte, accumulate bool) (bool, error) {
+		if !accumulate {
+			return false, nil
 		}
 
-		items = append(items, item)
-		return nil
+		item, found := q.GetPlan(ctx, types.IDFromPlanForProviderKey(key))
+		if !found {
+			return false, fmt.Errorf("plan for provider key %X does not exist", key)
+		}
+
+		if item.Status.Equal(req.Status) {
+			items = append(items, item)
+			return true, nil
+		}
+
+		return false, nil
 	})
 
 	if err != nil {

@@ -7,8 +7,12 @@ import (
 	nodetypes "github.com/sentinel-official/hub/x/node/types"
 )
 
-func (k *Keeper) HasProvider(ctx sdk.Context, address hubtypes.ProvAddress) bool {
-	return k.provider.HasProvider(ctx, address)
+func (k *Keeper) HasProvider(ctx sdk.Context, addr hubtypes.ProvAddress) bool {
+	return k.provider.HasProvider(ctx, addr)
+}
+
+func (k *Keeper) HasNode(ctx sdk.Context, addr hubtypes.NodeAddress) bool {
+	return k.node.HasNode(ctx, addr)
 }
 
 func (k *Keeper) SetNodeForPlan(ctx sdk.Context, id uint64, addr hubtypes.NodeAddress) {

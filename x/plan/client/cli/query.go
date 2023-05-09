@@ -60,7 +60,7 @@ func queryPlans() *cobra.Command {
 				return err
 			}
 
-			provider, err := GetProvider(cmd.Flags())
+			provAddr, err := GetProvider(cmd.Flags())
 			if err != nil {
 				return err
 			}
@@ -79,11 +79,11 @@ func queryPlans() *cobra.Command {
 				qc = types.NewQueryServiceClient(ctx)
 			)
 
-			if provider != nil {
+			if provAddr != nil {
 				res, err := qc.QueryPlansForProvider(
 					context.Background(),
 					types.NewQueryPlansForProviderRequest(
-						provider,
+						provAddr,
 						status,
 						pagination,
 					),
@@ -111,7 +111,7 @@ func queryPlans() *cobra.Command {
 	}
 
 	flags.AddQueryFlagsToCmd(cmd)
-	flags.AddPaginationFlagsToCmd(cmd, "providers")
+	flags.AddPaginationFlagsToCmd(cmd, "plans")
 	cmd.Flags().String(flagProvider, "", "filter by provider address")
 	cmd.Flags().String(flagStatus, "", "filter by status")
 

@@ -23,6 +23,10 @@ func (m *Plan) GetAddress() hubtypes.ProvAddress {
 }
 
 func (m *Plan) Price(denom string) (sdk.Coin, bool) {
+	if m.Prices == nil {
+		return sdk.Coin{}, true
+	}
+
 	for _, coin := range m.Prices {
 		if coin.Denom == denom {
 			return coin, true
@@ -45,6 +49,9 @@ func (m *Plan) Validate() error {
 	if m.Prices != nil {
 		if m.Prices.Len() == 0 {
 			return fmt.Errorf("prices cannot be empty")
+		}
+		if m.Prices.IsAnyNil() {
+			return fmt.Errorf("prices should not contain nil")
 		}
 		if !m.Prices.IsValid() {
 			return fmt.Errorf("prices must be valid")
