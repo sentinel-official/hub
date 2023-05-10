@@ -21,14 +21,14 @@ func TestNode_GetAddress(t *testing.T) {
 		want   hubtypes.NodeAddress
 	}{
 		{
-			"empty",
+			"address empty",
 			fields{
 				Address: "",
 			},
 			nil,
 		},
 		{
-			"20 bytes",
+			"address 20 bytes",
 			fields{
 				Address: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
 			},
@@ -62,7 +62,7 @@ func TestNode_GigabytePrice(t *testing.T) {
 		want1  bool
 	}{
 		{
-			"nil gigabyte_prices and empty denom",
+			"gigabyte_prices nil and denom empty",
 			fields{
 				GigabytePrices: nil,
 			},
@@ -73,7 +73,7 @@ func TestNode_GigabytePrice(t *testing.T) {
 			true,
 		},
 		{
-			"empty gigabyte_prices and empty denom",
+			"gigabyte_prices empty and denom empty",
 			fields{
 				GigabytePrices: sdk.Coins{},
 			},
@@ -84,9 +84,9 @@ func TestNode_GigabytePrice(t *testing.T) {
 			false,
 		},
 		{
-			"1one gigabyte_prices and empty denom",
+			"gigabyte_prices 1000one and denom empty",
 			fields{
-				GigabytePrices: sdk.Coins{sdk.NewInt64Coin("one", 1)},
+				GigabytePrices: sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
 			},
 			args{
 				denom: "",
@@ -95,20 +95,64 @@ func TestNode_GigabytePrice(t *testing.T) {
 			false,
 		},
 		{
-			"1one gigabyte_prices and one denom",
+			"gigabyte_prices nil and denom one",
 			fields{
-				GigabytePrices: sdk.Coins{sdk.NewInt64Coin("one", 1)},
+				GigabytePrices: nil,
 			},
 			args{
 				denom: "one",
 			},
-			sdk.NewInt64Coin("one", 1),
+			sdk.Coin{},
 			true,
 		},
 		{
-			"1one gigabyte_prices and two denom",
+			"gigabyte_prices empty and denom one",
 			fields{
-				GigabytePrices: sdk.Coins{sdk.NewInt64Coin("one", 1)},
+				GigabytePrices: sdk.Coins{},
+			},
+			args{
+				denom: "one",
+			},
+			sdk.Coin{},
+			false,
+		},
+		{
+			"gigabyte_prices 1000one and denom one",
+			fields{
+				GigabytePrices: sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
+			},
+			args{
+				denom: "one",
+			},
+			sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)},
+			true,
+		},
+		{
+			"gigabyte_prices nil and denom two",
+			fields{
+				GigabytePrices: nil,
+			},
+			args{
+				denom: "two",
+			},
+			sdk.Coin{},
+			true,
+		},
+		{
+			"gigabyte_prices empty and denom two",
+			fields{
+				GigabytePrices: sdk.Coins{},
+			},
+			args{
+				denom: "two",
+			},
+			sdk.Coin{},
+			false,
+		},
+		{
+			"gigabyte_prices 1000one and denom two",
+			fields{
+				GigabytePrices: sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
 			},
 			args{
 				denom: "two",
@@ -148,7 +192,7 @@ func TestNode_HourlyPrice(t *testing.T) {
 		want1  bool
 	}{
 		{
-			"nil hourly_prices and empty denom",
+			"hourly_prices nil and denom empty",
 			fields{
 				HourlyPrices: nil,
 			},
@@ -159,7 +203,7 @@ func TestNode_HourlyPrice(t *testing.T) {
 			true,
 		},
 		{
-			"empty hourly_prices and empty denom",
+			"hourly_prices empty and denom empty",
 			fields{
 				HourlyPrices: sdk.Coins{},
 			},
@@ -170,9 +214,9 @@ func TestNode_HourlyPrice(t *testing.T) {
 			false,
 		},
 		{
-			"1one hourly_prices and empty denom",
+			"hourly_prices 1000one and denom empty",
 			fields{
-				HourlyPrices: sdk.Coins{sdk.NewInt64Coin("one", 1)},
+				HourlyPrices: sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
 			},
 			args{
 				denom: "",
@@ -181,20 +225,64 @@ func TestNode_HourlyPrice(t *testing.T) {
 			false,
 		},
 		{
-			"1one hourly_prices and one denom",
+			"hourly_prices nil and denom one",
 			fields{
-				HourlyPrices: sdk.Coins{sdk.NewInt64Coin("one", 1)},
+				HourlyPrices: nil,
 			},
 			args{
 				denom: "one",
 			},
-			sdk.NewInt64Coin("one", 1),
+			sdk.Coin{},
 			true,
 		},
 		{
-			"1one hourly_prices and two denom",
+			"hourly_prices empty and denom one",
 			fields{
-				HourlyPrices: sdk.Coins{sdk.NewInt64Coin("one", 1)},
+				HourlyPrices: sdk.Coins{},
+			},
+			args{
+				denom: "one",
+			},
+			sdk.Coin{},
+			false,
+		},
+		{
+			"hourly_prices 1000one and denom one",
+			fields{
+				HourlyPrices: sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
+			},
+			args{
+				denom: "one",
+			},
+			sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)},
+			true,
+		},
+		{
+			"hourly_prices nil and denom two",
+			fields{
+				HourlyPrices: nil,
+			},
+			args{
+				denom: "two",
+			},
+			sdk.Coin{},
+			true,
+		},
+		{
+			"hourly_prices empty and denom two",
+			fields{
+				HourlyPrices: sdk.Coins{},
+			},
+			args{
+				denom: "two",
+			},
+			sdk.Coin{},
+			false,
+		},
+		{
+			"hourly_prices 1000one and denom two",
+			fields{
+				HourlyPrices: sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
 			},
 			args{
 				denom: "two",
@@ -235,64 +323,32 @@ func TestNode_Validate(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			"empty address",
+			"address empty",
 			fields{
 				Address: "",
 			},
 			true,
 		},
 		{
-			"invalid address",
+			"address invalid",
 			fields{
-				Address: "sentnode",
+				Address: "invalid",
 			},
 			true,
 		},
 		{
-			"invalid address prefix",
+			"address invalid prefix",
 			fields{
 				Address: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
 			},
 			true,
 		},
 		{
-			"10 bytes address",
+			"address 10 bytes",
 			fields{
-				Address:   "sentnode1qypqxpq9qcrsszgse4wwrm",
-				RemoteURL: "https://remote.url:443",
-				ExpiryAt:  time.Now(),
-				Status:    hubtypes.StatusActive,
-				StatusAt:  time.Now(),
-			},
-			false,
-		},
-		{
-			"20 bytes address",
-			fields{
-				Address:   "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				RemoteURL: "https://remote.url:443",
-				ExpiryAt:  time.Now(),
-				Status:    hubtypes.StatusActive,
-				StatusAt:  time.Now(),
-			},
-			false,
-		},
-		{
-			"30 bytes address",
-			fields{
-				Address:   "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqyy3zxfp9ycnjs2fsxqglcv",
-				RemoteURL: "https://remote.url:443",
-				ExpiryAt:  time.Now(),
-				Status:    hubtypes.StatusActive,
-				StatusAt:  time.Now(),
-			},
-			false,
-		},
-		{
-			"nil gigabyte_prices",
-			fields{
-				Address:        "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				Address:        "sentnode1qypqxpq9qcrsszgse4wwrm",
 				GigabytePrices: nil,
+				HourlyPrices:   nil,
 				RemoteURL:      "https://remote.url:443",
 				ExpiryAt:       time.Now(),
 				Status:         hubtypes.StatusActive,
@@ -301,7 +357,46 @@ func TestNode_Validate(t *testing.T) {
 			false,
 		},
 		{
-			"empty gigabyte_prices",
+			"address 20 bytes",
+			fields{
+				Address:        "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				GigabytePrices: nil,
+				HourlyPrices:   nil,
+				RemoteURL:      "https://remote.url:443",
+				ExpiryAt:       time.Now(),
+				Status:         hubtypes.StatusActive,
+				StatusAt:       time.Now(),
+			},
+			false,
+		},
+		{
+			"address 30 bytes",
+			fields{
+				Address:        "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqyy3zxfp9ycnjs2fsxqglcv",
+				GigabytePrices: nil,
+				HourlyPrices:   nil,
+				RemoteURL:      "https://remote.url:443",
+				ExpiryAt:       time.Now(),
+				Status:         hubtypes.StatusActive,
+				StatusAt:       time.Now(),
+			},
+			false,
+		},
+		{
+			"gigabyte_prices nil",
+			fields{
+				Address:        "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				GigabytePrices: nil,
+				HourlyPrices:   nil,
+				RemoteURL:      "https://remote.url:443",
+				ExpiryAt:       time.Now(),
+				Status:         hubtypes.StatusActive,
+				StatusAt:       time.Now(),
+			},
+			false,
+		},
+		{
+			"gigabyte_prices empty",
 			fields{
 				Address:        "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
 				GigabytePrices: sdk.Coins{},
@@ -309,7 +404,7 @@ func TestNode_Validate(t *testing.T) {
 			true,
 		},
 		{
-			"empty denom gigabyte_prices",
+			"gigabyte_prices empty denom",
 			fields{
 				Address:        "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
 				GigabytePrices: sdk.Coins{sdk.Coin{Denom: ""}},
@@ -317,7 +412,7 @@ func TestNode_Validate(t *testing.T) {
 			true,
 		},
 		{
-			"invalid denom gigabyte_prices",
+			"gigabyte_prices invalid denom",
 			fields{
 				Address:        "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
 				GigabytePrices: sdk.Coins{sdk.Coin{Denom: "o"}},
@@ -325,7 +420,15 @@ func TestNode_Validate(t *testing.T) {
 			true,
 		},
 		{
-			"negative gigabyte_prices",
+			"gigabyte_prices empty amount",
+			fields{
+				Address:        "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				GigabytePrices: sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.Int{}}},
+			},
+			true,
+		},
+		{
+			"gigabyte_prices negative amount",
 			fields{
 				Address:        "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
 				GigabytePrices: sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(-1000)}},
@@ -333,7 +436,7 @@ func TestNode_Validate(t *testing.T) {
 			true,
 		},
 		{
-			"zero gigabyte_prices",
+			"gigabyte_prices zero amount",
 			fields{
 				Address:        "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
 				GigabytePrices: sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(0)}},
@@ -341,10 +444,11 @@ func TestNode_Validate(t *testing.T) {
 			true,
 		},
 		{
-			"positive gigabyte_prices",
+			"gigabyte_prices positive amount",
 			fields{
 				Address:        "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
 				GigabytePrices: sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
+				HourlyPrices:   nil,
 				RemoteURL:      "https://remote.url:443",
 				ExpiryAt:       time.Now(),
 				Status:         hubtypes.StatusActive,
@@ -353,178 +457,245 @@ func TestNode_Validate(t *testing.T) {
 			false,
 		},
 		{
-			"nil hourly_prices",
+			"hourly_prices nil",
 			fields{
-				Address:      "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				HourlyPrices: nil,
-				RemoteURL:    "https://remote.url:443",
-				ExpiryAt:     time.Now(),
-				Status:       hubtypes.StatusActive,
-				StatusAt:     time.Now(),
+				Address:        "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				GigabytePrices: nil,
+				HourlyPrices:   nil,
+				RemoteURL:      "https://remote.url:443",
+				ExpiryAt:       time.Now(),
+				Status:         hubtypes.StatusActive,
+				StatusAt:       time.Now(),
 			},
 			false,
 		},
 		{
-			"empty hourly_prices",
+			"hourly_prices empty",
 			fields{
-				Address:      "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				HourlyPrices: sdk.Coins{},
+				Address:        "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				GigabytePrices: nil,
+				HourlyPrices:   sdk.Coins{},
 			},
 			true,
 		},
 		{
-			"empty denom hourly_prices",
+			"hourly_prices empty denom",
 			fields{
-				Address:      "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				HourlyPrices: sdk.Coins{sdk.Coin{Denom: ""}},
+				Address:        "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				GigabytePrices: nil,
+				HourlyPrices:   sdk.Coins{sdk.Coin{Denom: ""}},
 			},
 			true,
 		},
 		{
-			"invalid denom hourly_prices",
+			"hourly_prices invalid denom",
 			fields{
-				Address:      "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				HourlyPrices: sdk.Coins{sdk.Coin{Denom: "o"}},
+				Address:        "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				GigabytePrices: nil,
+				HourlyPrices:   sdk.Coins{sdk.Coin{Denom: "o"}},
 			},
 			true,
 		},
 		{
-			"negative hourly_prices",
+			"hourly_prices empty amount",
 			fields{
-				Address:      "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				HourlyPrices: sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(-1000)}},
+				Address:        "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				GigabytePrices: nil,
+				HourlyPrices:   sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.Int{}}},
 			},
 			true,
 		},
 		{
-			"zero hourly_prices",
+			"hourly_prices negative amount",
 			fields{
-				Address:      "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				HourlyPrices: sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(0)}},
+				Address:        "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				GigabytePrices: nil,
+				HourlyPrices:   sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(-1000)}},
 			},
 			true,
 		},
 		{
-			"positive hourly_prices",
+			"hourly_prices zero amount",
 			fields{
-				Address:      "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				HourlyPrices: sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
-				RemoteURL:    "https://remote.url:443",
-				ExpiryAt:     time.Now(),
-				Status:       hubtypes.StatusActive,
-				StatusAt:     time.Now(),
+				Address:        "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				GigabytePrices: nil,
+				HourlyPrices:   sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(0)}},
+			},
+			true,
+		},
+		{
+			"hourly_prices positive amount",
+			fields{
+				Address:        "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				GigabytePrices: nil,
+				HourlyPrices:   sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
+				RemoteURL:      "https://remote.url:443",
+				ExpiryAt:       time.Now(),
+				Status:         hubtypes.StatusActive,
+				StatusAt:       time.Now(),
 			},
 			false,
 		},
 		{
-			"empty remote_url",
+			"remote_url empty",
 			fields{
-				Address:   "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				RemoteURL: "",
+				Address:        "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				GigabytePrices: nil,
+				HourlyPrices:   nil,
+				RemoteURL:      "",
 			},
 			true,
 		},
 		{
-			"length 72 remote_url",
+			"remote_url 72 chars",
 			fields{
-				Address:   "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				RemoteURL: strings.Repeat("r", 72),
+				Address:        "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				GigabytePrices: nil,
+				HourlyPrices:   nil,
+				RemoteURL:      strings.Repeat("r", 72),
 			},
 			true,
 		},
 		{
-			"invalid remote_url",
+			"remote_url invalid",
 			fields{
-				Address:   "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				RemoteURL: "invalid",
+				Address:        "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				GigabytePrices: nil,
+				HourlyPrices:   nil,
+				RemoteURL:      "invalid",
 			},
 			true,
 		},
 		{
-			"invalid remote_url scheme",
+			"remote_url invalid scheme",
 			fields{
-				Address:   "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				RemoteURL: "tcp://remote.url:80",
+				Address:        "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				GigabytePrices: nil,
+				HourlyPrices:   nil,
+				RemoteURL:      "tcp://remote.url:80",
 			},
 			true,
 		},
 		{
-			"empty remote_url port",
+			"remote_url without port",
 			fields{
-				Address:   "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				RemoteURL: "https://remote.url",
+				Address:        "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				GigabytePrices: nil,
+				HourlyPrices:   nil,
+				RemoteURL:      "https://remote.url",
 			},
 			true,
 		},
 		{
 			"remote_url with port",
 			fields{
-				Address:   "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				RemoteURL: "https://remote.url:443",
-				ExpiryAt:  time.Now(),
-				Status:    hubtypes.StatusActive,
-				StatusAt:  time.Now(),
+				Address:        "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				GigabytePrices: nil,
+				HourlyPrices:   nil,
+				RemoteURL:      "https://remote.url:443",
+				ExpiryAt:       time.Now(),
+				Status:         hubtypes.StatusActive,
+				StatusAt:       time.Now(),
 			},
 			false,
 		},
 		{
-			"unspecified status",
+			"expiry_at empty",
 			fields{
-				Address:   "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				RemoteURL: "https://remote.url:443",
-				Status:    hubtypes.StatusUnspecified,
+				Address:        "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				GigabytePrices: nil,
+				HourlyPrices:   nil,
+				RemoteURL:      "https://remote.url:443",
+				ExpiryAt:       time.Time{},
 			},
 			true,
 		},
 		{
-			"active status",
+			"expiry_at now",
 			fields{
-				Address:   "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				RemoteURL: "https://remote.url:443",
-				ExpiryAt:  time.Now(),
-				Status:    hubtypes.StatusActive,
-				StatusAt:  time.Now(),
+				Address:        "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				GigabytePrices: nil,
+				HourlyPrices:   nil,
+				RemoteURL:      "https://remote.url:443",
+				ExpiryAt:       time.Now(),
+				Status:         hubtypes.StatusActive,
+				StatusAt:       time.Now(),
 			},
 			false,
 		},
 		{
-			"inactive_pending status",
+			"status unspecified",
 			fields{
-				Address:   "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				RemoteURL: "https://remote.url:443",
-				Status:    hubtypes.StatusInactivePending,
+				Address:        "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				GigabytePrices: nil,
+				HourlyPrices:   nil,
+				RemoteURL:      "https://remote.url:443",
+				ExpiryAt:       time.Now(),
+				Status:         hubtypes.StatusUnspecified,
 			},
 			true,
 		},
 		{
-			"inactive status",
+			"status active",
 			fields{
-				Address:   "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				RemoteURL: "https://remote.url:443",
-				ExpiryAt:  time.Now(),
-				Status:    hubtypes.StatusInactive,
-				StatusAt:  time.Now(),
+				Address:        "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				GigabytePrices: nil,
+				HourlyPrices:   nil,
+				RemoteURL:      "https://remote.url:443",
+				ExpiryAt:       time.Now(),
+				Status:         hubtypes.StatusActive,
+				StatusAt:       time.Now(),
 			},
 			false,
 		},
 		{
-			"zero status_at",
+			"status inactive_pending",
 			fields{
-				Address:   "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				RemoteURL: "https://remote.url:443",
-				Status:    hubtypes.StatusActive,
-				StatusAt:  time.Time{},
+				Address:        "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				GigabytePrices: nil,
+				HourlyPrices:   nil,
+				RemoteURL:      "https://remote.url:443",
+				ExpiryAt:       time.Now(),
+				Status:         hubtypes.StatusInactivePending,
 			},
 			true,
 		},
 		{
-			"positive status_at",
+			"status inactive",
 			fields{
-				Address:   "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				RemoteURL: "https://remote.url:443",
-				ExpiryAt:  time.Now(),
-				Status:    hubtypes.StatusActive,
-				StatusAt:  time.Now(),
+				Address:        "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				GigabytePrices: nil,
+				HourlyPrices:   nil,
+				RemoteURL:      "https://remote.url:443",
+				ExpiryAt:       time.Now(),
+				Status:         hubtypes.StatusInactive,
+				StatusAt:       time.Now(),
+			},
+			false,
+		},
+		{
+			"status_at empty",
+			fields{
+				Address:        "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				GigabytePrices: nil,
+				HourlyPrices:   nil,
+				RemoteURL:      "https://remote.url:443",
+				ExpiryAt:       time.Now(),
+				Status:         hubtypes.StatusActive,
+				StatusAt:       time.Time{},
+			},
+			true,
+		},
+		{
+			"status_at now",
+			fields{
+				Address:        "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				GigabytePrices: nil,
+				HourlyPrices:   nil,
+				RemoteURL:      "https://remote.url:443",
+				ExpiryAt:       time.Now(),
+				Status:         hubtypes.StatusActive,
+				StatusAt:       time.Now(),
 			},
 			false,
 		},

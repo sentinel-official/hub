@@ -797,7 +797,7 @@ func TestMsgSubscribeRequest_ValidateBasic(t *testing.T) {
 			false,
 		},
 		{
-			"hours negative gigabytes negative",
+			"hours negative and gigabytes negative",
 			fields{
 				From:      "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
 				Address:   "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
@@ -807,7 +807,7 @@ func TestMsgSubscribeRequest_ValidateBasic(t *testing.T) {
 			true,
 		},
 		{
-			"hours zero gigabytes zero",
+			"hours zero and gigabytes zero",
 			fields{
 				From:      "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
 				Address:   "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
@@ -817,7 +817,7 @@ func TestMsgSubscribeRequest_ValidateBasic(t *testing.T) {
 			true,
 		},
 		{
-			"hours positive gigabytes positive",
+			"hours positive and gigabytes positive",
 			fields{
 				From:      "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
 				Address:   "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",

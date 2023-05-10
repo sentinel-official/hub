@@ -45,7 +45,7 @@ func (m *Node) Validate() error {
 		if m.HourlyPrices.Len() == 0 {
 			return fmt.Errorf("hourly_prices cannot be empty")
 		}
-		if m.GigabytePrices.IsAnyNil() {
+		if m.HourlyPrices.IsAnyNil() {
 			return fmt.Errorf("hourly_prices should not contain nil")
 		}
 		if !m.HourlyPrices.IsValid() {
@@ -84,7 +84,7 @@ func (m *Node) Validate() error {
 }
 
 func (m *Node) GigabytePrice(denom string) (sdk.Coin, bool) {
-	if m.GigabytePrices == nil && denom == "" {
+	if m.GigabytePrices == nil {
 		return sdk.Coin{}, true
 	}
 
@@ -98,7 +98,7 @@ func (m *Node) GigabytePrice(denom string) (sdk.Coin, bool) {
 }
 
 func (m *Node) HourlyPrice(denom string) (sdk.Coin, bool) {
-	if m.HourlyPrices == nil && denom == "" {
+	if m.HourlyPrices == nil {
 		return sdk.Coin{}, true
 	}
 
