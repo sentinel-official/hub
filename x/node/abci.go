@@ -101,8 +101,6 @@ func EndBlock(ctx sdk.Context, k keeper.Keeper) []abcitypes.ValidatorUpdate {
 	}
 
 	k.IterateNodesForExpiryAt(ctx, ctx.BlockTime(), func(_ int, item types.Node) bool {
-		k.Logger(ctx).Info("found an expired node", "address", item.Address)
-
 		nodeAddr := item.GetAddress()
 		k.DeleteActiveNode(ctx, nodeAddr)
 		k.DeleteNodeForExpiryAt(ctx, item.ExpiryAt, nodeAddr)

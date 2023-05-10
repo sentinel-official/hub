@@ -27,7 +27,10 @@ func (l *Lease) Validate() error {
 			return fmt.Errorf("hours cannot be negative")
 		}
 	}
-	if !l.Price.IsNil() {
+	if l.Price.Denom != "" {
+		if l.Price.IsNil() {
+			return fmt.Errorf("price cannot be nil")
+		}
 		if l.Price.IsNegative() {
 			return fmt.Errorf("price cannot be negative")
 		}

@@ -179,10 +179,10 @@ func (k *Keeper) DeleteNodeForExpiryAt(ctx sdk.Context, at time.Time, addr hubty
 	store.Delete(key)
 }
 
-func (k *Keeper) IterateNodesForExpiryAt(ctx sdk.Context, at time.Time, fn func(index int, item types.Node) (stop bool)) {
+func (k *Keeper) IterateNodesForExpiryAt(ctx sdk.Context, endTime time.Time, fn func(index int, item types.Node) (stop bool)) {
 	store := k.Store(ctx)
 
-	iter := store.Iterator(types.NodeForExpiryAtKeyPrefix, sdk.PrefixEndBytes(types.GetNodeForExpiryAtKeyPrefix(at)))
+	iter := store.Iterator(types.NodeForExpiryAtKeyPrefix, sdk.PrefixEndBytes(types.GetNodeForExpiryAtKeyPrefix(endTime)))
 	defer iter.Close()
 
 	for i := 0; iter.Valid(); iter.Next() {
