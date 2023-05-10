@@ -22,28 +22,28 @@ func TestMsgRegisterRequest_ValidateBasic(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			"empty from",
+			"from empty",
 			fields{
 				From: "",
 			},
 			true,
 		},
 		{
-			"invalid from",
+			"from invalid",
 			fields{
-				From: "sent",
+				From: "invalid",
 			},
 			true,
 		},
 		{
-			"invalid from prefix",
+			"from invalid prefix",
 			fields{
 				From: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
 			},
 			true,
 		},
 		{
-			"10 bytes from",
+			"from 10 bytes",
 			fields{
 				From:           "sent1qypqxpq9qcrsszgslawd5s",
 				GigabytePrices: nil,
@@ -53,7 +53,7 @@ func TestMsgRegisterRequest_ValidateBasic(t *testing.T) {
 			false,
 		},
 		{
-			"20 bytes from",
+			"from 20 bytes",
 			fields{
 				From:           "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
 				GigabytePrices: nil,
@@ -63,7 +63,7 @@ func TestMsgRegisterRequest_ValidateBasic(t *testing.T) {
 			false,
 		},
 		{
-			"30 bytes from",
+			"from 30 bytes",
 			fields{
 				From:           "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfqyy3zxfp9ycnjs2fszvfck8",
 				GigabytePrices: nil,
@@ -73,7 +73,7 @@ func TestMsgRegisterRequest_ValidateBasic(t *testing.T) {
 			false,
 		},
 		{
-			"nil gigabyte_prices",
+			"gigabyte_prices nil",
 			fields{
 				From:           "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
 				GigabytePrices: nil,
@@ -83,7 +83,7 @@ func TestMsgRegisterRequest_ValidateBasic(t *testing.T) {
 			false,
 		},
 		{
-			"empty gigabyte_prices",
+			"gigabyte_prices empty",
 			fields{
 				From:           "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
 				GigabytePrices: sdk.Coins{},
@@ -91,7 +91,7 @@ func TestMsgRegisterRequest_ValidateBasic(t *testing.T) {
 			true,
 		},
 		{
-			"empty denom gigabyte_prices",
+			"gigabyte_prices empty denom",
 			fields{
 				From:           "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
 				GigabytePrices: sdk.Coins{sdk.Coin{Denom: ""}},
@@ -99,7 +99,7 @@ func TestMsgRegisterRequest_ValidateBasic(t *testing.T) {
 			true,
 		},
 		{
-			"invalid denom gigabyte_prices",
+			"gigabyte_prices invalid denom",
 			fields{
 				From:           "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
 				GigabytePrices: sdk.Coins{sdk.Coin{Denom: "o"}},
@@ -107,7 +107,15 @@ func TestMsgRegisterRequest_ValidateBasic(t *testing.T) {
 			true,
 		},
 		{
-			"negative gigabyte_prices",
+			"gigabyte_prices empty amount",
+			fields{
+				From:           "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				GigabytePrices: sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.Int{}}},
+			},
+			true,
+		},
+		{
+			"gigabyte_prices negative amount",
 			fields{
 				From:           "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
 				GigabytePrices: sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(-1000)}},
@@ -115,7 +123,7 @@ func TestMsgRegisterRequest_ValidateBasic(t *testing.T) {
 			true,
 		},
 		{
-			"zero gigabyte_prices",
+			"gigabyte_prices zero amount",
 			fields{
 				From:           "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
 				GigabytePrices: sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(0)}},
@@ -123,7 +131,7 @@ func TestMsgRegisterRequest_ValidateBasic(t *testing.T) {
 			true,
 		},
 		{
-			"positive gigabyte_prices",
+			"gigabyte_prices positive amount",
 			fields{
 				From:           "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
 				GigabytePrices: sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
@@ -133,7 +141,7 @@ func TestMsgRegisterRequest_ValidateBasic(t *testing.T) {
 			false,
 		},
 		{
-			"nil hourly_prices",
+			"hourly_prices nil",
 			fields{
 				From:           "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
 				GigabytePrices: nil,
@@ -143,7 +151,7 @@ func TestMsgRegisterRequest_ValidateBasic(t *testing.T) {
 			false,
 		},
 		{
-			"empty hourly_prices",
+			"hourly_prices empty",
 			fields{
 				From:           "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
 				GigabytePrices: nil,
@@ -152,7 +160,7 @@ func TestMsgRegisterRequest_ValidateBasic(t *testing.T) {
 			true,
 		},
 		{
-			"empty denom hourly_prices",
+			"hourly_prices empty denom",
 			fields{
 				From:           "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
 				GigabytePrices: nil,
@@ -161,7 +169,7 @@ func TestMsgRegisterRequest_ValidateBasic(t *testing.T) {
 			true,
 		},
 		{
-			"invalid denom hourly_prices",
+			"hourly_prices invalid denom",
 			fields{
 				From:           "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
 				GigabytePrices: nil,
@@ -170,7 +178,16 @@ func TestMsgRegisterRequest_ValidateBasic(t *testing.T) {
 			true,
 		},
 		{
-			"negative hourly_prices",
+			"hourly_prices empty amount",
+			fields{
+				From:           "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				GigabytePrices: nil,
+				HourlyPrices:   sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.Int{}}},
+			},
+			true,
+		},
+		{
+			"hourly_prices negative amount",
 			fields{
 				From:           "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
 				GigabytePrices: nil,
@@ -179,7 +196,7 @@ func TestMsgRegisterRequest_ValidateBasic(t *testing.T) {
 			true,
 		},
 		{
-			"zero hourly_prices",
+			"hourly_prices zero amount",
 			fields{
 				From:           "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
 				GigabytePrices: nil,
@@ -188,7 +205,7 @@ func TestMsgRegisterRequest_ValidateBasic(t *testing.T) {
 			true,
 		},
 		{
-			"positive hourly_prices",
+			"hourly_prices positive amount",
 			fields{
 				From:           "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
 				GigabytePrices: nil,
@@ -198,7 +215,7 @@ func TestMsgRegisterRequest_ValidateBasic(t *testing.T) {
 			false,
 		},
 		{
-			"empty remote_url",
+			"remote_url empty",
 			fields{
 				From:           "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
 				GigabytePrices: nil,
@@ -208,7 +225,7 @@ func TestMsgRegisterRequest_ValidateBasic(t *testing.T) {
 			true,
 		},
 		{
-			"length 72 remote_url",
+			"remote_url 72 chars",
 			fields{
 				From:           "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
 				GigabytePrices: nil,
@@ -218,7 +235,7 @@ func TestMsgRegisterRequest_ValidateBasic(t *testing.T) {
 			true,
 		},
 		{
-			"invalid remote_url",
+			"remote_url invalid",
 			fields{
 				From:           "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
 				GigabytePrices: nil,
@@ -228,7 +245,7 @@ func TestMsgRegisterRequest_ValidateBasic(t *testing.T) {
 			true,
 		},
 		{
-			"invalid remote_url scheme",
+			"remote_url invalid scheme",
 			fields{
 				From:           "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
 				GigabytePrices: nil,
@@ -238,7 +255,7 @@ func TestMsgRegisterRequest_ValidateBasic(t *testing.T) {
 			true,
 		},
 		{
-			"empty remote_url port",
+			"remote_url without port",
 			fields{
 				From:           "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
 				GigabytePrices: nil,
@@ -286,28 +303,28 @@ func TestMsgUpdateDetailsRequest_ValidateBasic(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			"empty from",
+			"from empty",
 			fields{
 				From: "",
 			},
 			true,
 		},
 		{
-			"invalid from",
+			"from invalid",
 			fields{
-				From: "sentnode",
+				From: "invalid",
 			},
 			true,
 		},
 		{
-			"invalid from prefix",
+			"from invalid prefix",
 			fields{
 				From: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
 			},
 			true,
 		},
 		{
-			"10 bytes from",
+			"from 10 bytes",
 			fields{
 				From:           "sentnode1qypqxpq9qcrsszgse4wwrm",
 				GigabytePrices: nil,
@@ -317,7 +334,7 @@ func TestMsgUpdateDetailsRequest_ValidateBasic(t *testing.T) {
 			false,
 		},
 		{
-			"20 bytes from",
+			"from 20 bytes",
 			fields{
 				From:           "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
 				GigabytePrices: nil,
@@ -327,7 +344,7 @@ func TestMsgUpdateDetailsRequest_ValidateBasic(t *testing.T) {
 			false,
 		},
 		{
-			"30 bytes from",
+			"from 30 bytes",
 			fields{
 				From:           "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqyy3zxfp9ycnjs2fsxqglcv",
 				GigabytePrices: nil,
@@ -337,7 +354,7 @@ func TestMsgUpdateDetailsRequest_ValidateBasic(t *testing.T) {
 			false,
 		},
 		{
-			"nil gigabyte_prices",
+			"gigabyte_prices nil",
 			fields{
 				From:           "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
 				GigabytePrices: nil,
@@ -347,7 +364,7 @@ func TestMsgUpdateDetailsRequest_ValidateBasic(t *testing.T) {
 			false,
 		},
 		{
-			"empty gigabyte_prices",
+			"gigabyte_prices empty",
 			fields{
 				From:           "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
 				GigabytePrices: sdk.Coins{},
@@ -355,7 +372,7 @@ func TestMsgUpdateDetailsRequest_ValidateBasic(t *testing.T) {
 			true,
 		},
 		{
-			"empty denom gigabyte_prices",
+			"gigabyte_prices empty denom",
 			fields{
 				From:           "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
 				GigabytePrices: sdk.Coins{sdk.Coin{Denom: ""}},
@@ -363,7 +380,7 @@ func TestMsgUpdateDetailsRequest_ValidateBasic(t *testing.T) {
 			true,
 		},
 		{
-			"invalid denom gigabyte_prices",
+			"gigabyte_prices invalid denom",
 			fields{
 				From:           "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
 				GigabytePrices: sdk.Coins{sdk.Coin{Denom: "o"}},
@@ -371,7 +388,15 @@ func TestMsgUpdateDetailsRequest_ValidateBasic(t *testing.T) {
 			true,
 		},
 		{
-			"negative gigabyte_prices",
+			"gigabyte_prices empty amount",
+			fields{
+				From:           "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				GigabytePrices: sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.Int{}}},
+			},
+			true,
+		},
+		{
+			"gigabyte_prices negative amount",
 			fields{
 				From:           "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
 				GigabytePrices: sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(-1000)}},
@@ -379,7 +404,7 @@ func TestMsgUpdateDetailsRequest_ValidateBasic(t *testing.T) {
 			true,
 		},
 		{
-			"zero gigabyte_prices",
+			"gigabyte_prices zero amount",
 			fields{
 				From:           "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
 				GigabytePrices: sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(0)}},
@@ -387,7 +412,7 @@ func TestMsgUpdateDetailsRequest_ValidateBasic(t *testing.T) {
 			true,
 		},
 		{
-			"positive gigabyte_prices",
+			"gigabyte_prices positive amount",
 			fields{
 				From:           "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
 				GigabytePrices: sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
@@ -397,7 +422,7 @@ func TestMsgUpdateDetailsRequest_ValidateBasic(t *testing.T) {
 			false,
 		},
 		{
-			"nil hourly_prices",
+			"hourly_prices nil",
 			fields{
 				From:           "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
 				GigabytePrices: nil,
@@ -407,7 +432,7 @@ func TestMsgUpdateDetailsRequest_ValidateBasic(t *testing.T) {
 			false,
 		},
 		{
-			"empty hourly_prices",
+			"hourly_prices empty",
 			fields{
 				From:           "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
 				GigabytePrices: nil,
@@ -416,7 +441,7 @@ func TestMsgUpdateDetailsRequest_ValidateBasic(t *testing.T) {
 			true,
 		},
 		{
-			"empty denom hourly_prices",
+			"hourly_prices empty denom",
 			fields{
 				From:           "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
 				GigabytePrices: nil,
@@ -425,7 +450,7 @@ func TestMsgUpdateDetailsRequest_ValidateBasic(t *testing.T) {
 			true,
 		},
 		{
-			"invalid denom hourly_prices",
+			"hourly_prices invalid denom",
 			fields{
 				From:           "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
 				GigabytePrices: nil,
@@ -434,7 +459,16 @@ func TestMsgUpdateDetailsRequest_ValidateBasic(t *testing.T) {
 			true,
 		},
 		{
-			"negative hourly_prices",
+			"hourly_prices empty amount",
+			fields{
+				From:           "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				GigabytePrices: nil,
+				HourlyPrices:   sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.Int{}}},
+			},
+			true,
+		},
+		{
+			"hourly_prices negative amount",
 			fields{
 				From:           "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
 				GigabytePrices: nil,
@@ -443,7 +477,7 @@ func TestMsgUpdateDetailsRequest_ValidateBasic(t *testing.T) {
 			true,
 		},
 		{
-			"zero hourly_prices",
+			"hourly_prices zero amount",
 			fields{
 				From:           "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
 				GigabytePrices: nil,
@@ -452,7 +486,7 @@ func TestMsgUpdateDetailsRequest_ValidateBasic(t *testing.T) {
 			true,
 		},
 		{
-			"positive hourly_prices",
+			"hourly_prices positive amount",
 			fields{
 				From:           "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
 				GigabytePrices: nil,
@@ -462,7 +496,7 @@ func TestMsgUpdateDetailsRequest_ValidateBasic(t *testing.T) {
 			false,
 		},
 		{
-			"empty remote_url",
+			"remote_url empty",
 			fields{
 				From:           "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
 				GigabytePrices: nil,
@@ -472,7 +506,7 @@ func TestMsgUpdateDetailsRequest_ValidateBasic(t *testing.T) {
 			false,
 		},
 		{
-			"length 72 remote_url",
+			"remote_url 72 chars",
 			fields{
 				From:           "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
 				GigabytePrices: nil,
@@ -482,7 +516,7 @@ func TestMsgUpdateDetailsRequest_ValidateBasic(t *testing.T) {
 			true,
 		},
 		{
-			"invalid remote_url",
+			"remote_url invalid",
 			fields{
 				From:           "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
 				GigabytePrices: nil,
@@ -492,7 +526,7 @@ func TestMsgUpdateDetailsRequest_ValidateBasic(t *testing.T) {
 			true,
 		},
 		{
-			"invalid remote_url scheme",
+			"remote_url invalid scheme",
 			fields{
 				From:           "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
 				GigabytePrices: nil,
@@ -502,7 +536,7 @@ func TestMsgUpdateDetailsRequest_ValidateBasic(t *testing.T) {
 			true,
 		},
 		{
-			"empty remote_url port",
+			"remote_url without port",
 			fields{
 				From:           "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
 				GigabytePrices: nil,
@@ -548,28 +582,28 @@ func TestMsgUpdateStatusRequest_ValidateBasic(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			"empty from",
+			"from empty",
 			fields{
 				From: "",
 			},
 			true,
 		},
 		{
-			"invalid from",
+			"from invalid",
 			fields{
-				From: "sentnode",
+				From: "invalid",
 			},
 			true,
 		},
 		{
-			"invalid prefix from",
+			"from invalid prefix",
 			fields{
 				From: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
 			},
 			true,
 		},
 		{
-			"10 bytes from",
+			"from 10 bytes",
 			fields{
 				From:   "sentnode1qypqxpq9qcrsszgse4wwrm",
 				Status: hubtypes.StatusActive,
@@ -577,7 +611,7 @@ func TestMsgUpdateStatusRequest_ValidateBasic(t *testing.T) {
 			false,
 		},
 		{
-			"20 bytes from",
+			"from 20 bytes",
 			fields{
 				From:   "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
 				Status: hubtypes.StatusActive,
@@ -585,7 +619,7 @@ func TestMsgUpdateStatusRequest_ValidateBasic(t *testing.T) {
 			false,
 		},
 		{
-			"30 bytes from",
+			"from 30 bytes",
 			fields{
 				From:   "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqyy3zxfp9ycnjs2fsxqglcv",
 				Status: hubtypes.StatusActive,
@@ -593,7 +627,7 @@ func TestMsgUpdateStatusRequest_ValidateBasic(t *testing.T) {
 			false,
 		},
 		{
-			"unspecified status",
+			"status unspecified",
 			fields{
 				From:   "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
 				Status: hubtypes.StatusUnspecified,
@@ -601,7 +635,7 @@ func TestMsgUpdateStatusRequest_ValidateBasic(t *testing.T) {
 			true,
 		},
 		{
-			"active status",
+			"status active",
 			fields{
 				From:   "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
 				Status: hubtypes.StatusActive,
@@ -609,7 +643,7 @@ func TestMsgUpdateStatusRequest_ValidateBasic(t *testing.T) {
 			false,
 		},
 		{
-			"inactive pending status",
+			"status inactive_pending",
 			fields{
 				From:   "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
 				Status: hubtypes.StatusInactivePending,
@@ -617,7 +651,7 @@ func TestMsgUpdateStatusRequest_ValidateBasic(t *testing.T) {
 			true,
 		},
 		{
-			"inactive status",
+			"status inactive",
 			fields{
 				From:   "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
 				Status: hubtypes.StatusInactive,
@@ -630,6 +664,248 @@ func TestMsgUpdateStatusRequest_ValidateBasic(t *testing.T) {
 			m := &MsgUpdateStatusRequest{
 				From:   tt.fields.From,
 				Status: tt.fields.Status,
+			}
+			if err := m.ValidateBasic(); (err != nil) != tt.wantErr {
+				t.Errorf("ValidateBasic() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
+}
+
+func TestMsgSubscribeRequest_ValidateBasic(t *testing.T) {
+	type fields struct {
+		From      string
+		Address   string
+		Hours     int64
+		Gigabytes int64
+		Denom     string
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		wantErr bool
+	}{
+		{
+			"from empty",
+			fields{
+				From: "",
+			},
+			true,
+		},
+		{
+			"from invalid",
+			fields{
+				From: "invalid",
+			},
+			true,
+		},
+		{
+			"from invalid prefix",
+			fields{
+				From: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+			},
+			true,
+		},
+		{
+			"from 10 bytes",
+			fields{
+				From:      "sent1qypqxpq9qcrsszgslawd5s",
+				Address:   "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				Hours:     1000,
+				Gigabytes: 0,
+				Denom:     "one",
+			},
+			false,
+		},
+		{
+			"from 20 bytes",
+			fields{
+				From:      "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Address:   "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				Hours:     1000,
+				Gigabytes: 0,
+				Denom:     "one",
+			},
+			false,
+		},
+		{
+			"from 30 bytes",
+			fields{
+				From:      "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfqyy3zxfp9ycnjs2fszvfck8",
+				Address:   "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				Hours:     1000,
+				Gigabytes: 0,
+				Denom:     "one",
+			},
+			false,
+		},
+		{
+			"address empty",
+			fields{
+				From:    "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Address: "",
+			},
+			true,
+		},
+		{
+			"address invalid",
+			fields{
+				From:    "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Address: "invalid",
+			},
+			true,
+		},
+		{
+			"address invalid prefix",
+			fields{
+				From:    "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Address: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+			},
+			true,
+		},
+		{
+			"address 10 bytes",
+			fields{
+				From:      "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Address:   "sentnode1qypqxpq9qcrsszgse4wwrm",
+				Hours:     1000,
+				Gigabytes: 0,
+				Denom:     "one",
+			},
+			false,
+		},
+		{
+			"address 20 bytes",
+			fields{
+				From:      "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Address:   "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				Hours:     1000,
+				Gigabytes: 0,
+				Denom:     "one",
+			},
+			false,
+		},
+		{
+			"address 30 bytes",
+			fields{
+				From:      "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Address:   "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqyy3zxfp9ycnjs2fsxqglcv",
+				Hours:     1000,
+				Gigabytes: 0,
+				Denom:     "one",
+			},
+			false,
+		},
+		{
+			"hours negative gigabytes negative",
+			fields{
+				From:      "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Address:   "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				Hours:     -1000,
+				Gigabytes: -1000,
+			},
+			true,
+		},
+		{
+			"hours zero gigabytes zero",
+			fields{
+				From:      "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Address:   "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				Hours:     0,
+				Gigabytes: 0,
+			},
+			true,
+		},
+		{
+			"hours positive gigabytes positive",
+			fields{
+				From:      "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Address:   "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				Hours:     1000,
+				Gigabytes: 1000,
+			},
+			true,
+		},
+		{
+			"hours negative",
+			fields{
+				From:    "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Address: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				Hours:   -1000,
+			},
+			true,
+		},
+		{
+			"hours positive",
+			fields{
+				From:    "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Address: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				Hours:   1000,
+			},
+			false,
+		},
+		{
+			"gigabytes negative",
+			fields{
+				From:      "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Address:   "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				Hours:     0,
+				Gigabytes: -1000,
+			},
+			true,
+		},
+		{
+			"gigabytes positive",
+			fields{
+				From:      "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Address:   "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				Hours:     0,
+				Gigabytes: 1000,
+			},
+			false,
+		},
+		{
+			"denom empty",
+			fields{
+				From:      "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Address:   "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				Hours:     1000,
+				Gigabytes: 0,
+				Denom:     "",
+			},
+			false,
+		},
+		{
+			"denom invalid",
+			fields{
+				From:      "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Address:   "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				Hours:     1000,
+				Gigabytes: 0,
+				Denom:     "o",
+			},
+			true,
+		},
+		{
+			"denom valid",
+			fields{
+				From:      "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Address:   "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				Hours:     1000,
+				Gigabytes: 0,
+				Denom:     "one",
+			},
+			false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			m := &MsgSubscribeRequest{
+				From:      tt.fields.From,
+				Address:   tt.fields.Address,
+				Hours:     tt.fields.Hours,
+				Gigabytes: tt.fields.Gigabytes,
+				Denom:     tt.fields.Denom,
 			}
 			if err := m.ValidateBasic(); (err != nil) != tt.wantErr {
 				t.Errorf("ValidateBasic() error = %v, wantErr %v", err, tt.wantErr)
