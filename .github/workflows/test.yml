@@ -21,7 +21,7 @@ jobs:
       - name: Generate coverage report
         run: |
           make test-coverage
-          filepaths+=" $(find ./ -type f -name '*.go' -exec grep -l 'DONOTCOVER' {} \;)"
+          filepaths+=" $(find ./ -type f -name '*.go' -exec grep -l 'DO NOT COVER' {} \;)"
           filepaths+=" $(find ./ -type f -name '*.pb.go')"
           filepaths+=" $(find ./ -type f -name '*.pb.gw.go')"
           for filepath in ${filepaths}; do

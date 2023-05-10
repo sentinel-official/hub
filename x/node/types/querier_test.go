@@ -15,7 +15,7 @@ func TestNewQueryNodeRequest(t *testing.T) {
 		addr []byte
 	)
 
-	for i := 0; i < 40; i++ {
+	for i := 1; i <= 256; i += 64 {
 		addr = make([]byte, i)
 		_, _ = rand.Read(addr)
 
@@ -35,7 +35,7 @@ func TestNewQueryNodesRequest(t *testing.T) {
 		pagination *query.PageRequest
 	)
 
-	for i := 0; i < 20; i++ {
+	for i := 1; i <= 16; i++ {
 		status = hubtypes.Status(i % 4)
 		pagination = &query.PageRequest{
 			Key:        make([]byte, i),

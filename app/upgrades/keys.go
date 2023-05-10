@@ -1,3 +1,5 @@
+// DO NOT COVER
+
 package upgrades
 
 import (
