@@ -14,6 +14,6 @@ message Lease {
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
     (gogoproto.nullable)   = false
   ];
-  int64 hours                    = 3;
+  int64 minutes                  = 3;
   cosmos.base.v1beta1.Coin price = 4 [ (gogoproto.nullable) = false ];
 }
