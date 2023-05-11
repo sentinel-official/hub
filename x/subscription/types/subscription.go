@@ -74,18 +74,15 @@ func (s *NodeSubscription) Validate() error {
 	if _, err := hubtypes.NodeAddressFromBech32(s.NodeAddress); err != nil {
 		return errors.Wrapf(err, "invalid node_address %s", s.NodeAddress)
 	}
-	if s.Bytes.IsNil() && s.Hours == 0 {
-		return fmt.Errorf("[bytes, hours] cannot be empty")
+	if s.Gigabytes == 0 && s.Hours == 0 {
+		return fmt.Errorf("[gigabytes, hours] cannot be empty")
 	}
-	if !s.Bytes.IsNil() && s.Hours != 0 {
-		return fmt.Errorf("[bytes, hours] cannot be non-empty")
+	if s.Gigabytes != 0 && s.Hours != 0 {
+		return fmt.Errorf("[gigabytes, hours] cannot be non-empty")
 	}
-	if !s.Bytes.IsNil() {
-		if s.Bytes.IsNegative() {
-			return fmt.Errorf("bytes cannot be negative")
-		}
-		if s.Bytes.IsZero() {
-			return fmt.Errorf("bytes cannot be zero")
+	if s.Gigabytes != 0 {
+		if s.Gigabytes < 0 {
+			return fmt.Errorf("gigabytes cannot be negative")
 		}
 	}
 	if s.Hours != 0 {
