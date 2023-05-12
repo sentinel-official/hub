@@ -49,3 +49,23 @@ func NewErrorSubscriptionNotFound(id uint64) error {
 func NewErrorUnauthorized(addr string) error {
 	return errors.Wrapf(ErrorUnauthorized, "address %s is not authorized", addr)
 }
+
+func NewErrorPlanNotFound(id uint64) error {
+	return errors.Wrapf(ErrorNotFound, "plan %d does not exist", id)
+}
+
+func NewErrorInvalidPlanStatus(id uint64, status hubtypes.Status) error {
+	return errors.Wrapf(ErrorInvalidStatus, "invalid status %s for plan %d", status, id)
+}
+
+func NewErrorPriceNotFound(denom string) error {
+	return errors.Wrapf(ErrorNotFound, "price for denom %s does not exist", denom)
+}
+
+func NewErrorNodeNotFound(addr hubtypes.NodeAddress) error {
+	return errors.Wrapf(ErrorNotFound, "node %s does not exist", addr)
+}
+
+func NewErrorInvalidNodeStatus(addr hubtypes.NodeAddress, status hubtypes.Status) error {
+	return errors.Wrapf(ErrorInvalidStatus, "invalid status %s for node %s", status, addr)
+}

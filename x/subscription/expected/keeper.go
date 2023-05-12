@@ -17,9 +17,9 @@ type AccountKeeper interface {
 }
 
 type BankKeeper interface {
-	SendCoins(ctx sdk.Context, from sdk.AccAddress, to sdk.AccAddress, coins sdk.Coins) error
-	SendCoinsFromAccountToModule(ctx sdk.Context, address sdk.AccAddress, name string, coins sdk.Coins) error
-	SpendableCoins(ctx sdk.Context, address sdk.AccAddress) sdk.Coins
+	SendCoins(ctx sdk.Context, fromAddr sdk.AccAddress, toAddr sdk.AccAddress, amt sdk.Coins) error
+	SendCoinsFromAccountToModule(ctx sdk.Context, senderAddr sdk.AccAddress, recipientModule string, amt sdk.Coins) error
+	SpendableCoins(ctx sdk.Context, addr sdk.AccAddress) sdk.Coins
 }
 
 type DepositKeeper interface {

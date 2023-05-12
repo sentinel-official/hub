@@ -8,12 +8,12 @@ import (
 	plantypes "github.com/sentinel-official/hub/x/plan/types"
 )
 
-func (k *Keeper) SendCoin(ctx sdk.Context, from sdk.AccAddress, to sdk.AccAddress, coin sdk.Coin) error {
+func (k *Keeper) SendCoin(ctx sdk.Context, fromAddr sdk.AccAddress, toAddr sdk.AccAddress, coin sdk.Coin) error {
 	if coin.IsZero() {
 		return nil
 	}
 
-	return k.bank.SendCoins(ctx, from, to, sdk.NewCoins(coin))
+	return k.bank.SendCoins(ctx, fromAddr, toAddr, sdk.NewCoins(coin))
 }
 
 func (k *Keeper) SendCoinFromAccountToModule(ctx sdk.Context, from sdk.AccAddress, to string, coin sdk.Coin) error {

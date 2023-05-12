@@ -4,11 +4,10 @@ import (
 	"fmt"
 	"time"
 
-	hubtypes "github.com/sentinel-official/hub/types"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	protobuf "github.com/gogo/protobuf/types"
 
+	hubtypes "github.com/sentinel-official/hub/types"
 	"github.com/sentinel-official/hub/x/subscription/types"
 )
 
@@ -246,4 +245,131 @@ func (k *Keeper) IterateSubscriptionsForExpiryAt(ctx sdk.Context, endTime time.T
 		}
 		i++
 	}
+}
+
+func (k *Keeper) CreateSubscriptionForNode(
+	ctx sdk.Context, accAddr sdk.AccAddress, nodeAddr hubtypes.NodeAddress, gigabytes, hours int64, denom string,
+) (*types.NodeSubscription, error) {
+	node, found := k.GetNode(ctx, nodeAddr)
+	if !found {
+		return nil, types.NewErrorNodeNotFound(nodeAddr)
+	}
+	if !node.Status.Equal(hubtypes.StatusActive) {
+		return nil, types.NewErrorInvalidNodeStatus(nodeAddr, node.Status)
+	}
+
+	var (
+		count = k.GetCount(ctx)
+		quota = types.Quota{
+			Address:        accAddr.String(),
+			AllocatedBytes: hubtypes.Gigabyte.MulRaw(gigabytes),
+			ConsumedBytes:  sdk.ZeroInt(),
+		}
+		subscription = &types.NodeSubscription{
+			BaseSubscription: &types.BaseSubscription{
+				ID:       count + 1,
+				Address:  accAddr.String(),
+				ExpiryAt: time.Time{},
+				Status:   hubtypes.StatusActive,
+				StatusAt: ctx.BlockTime(),
+			},
+			NodeAddress: nodeAddr.String(),
+			Gigabytes:   gigabytes,
+			Hours:       hours,
+			Deposit:     sdk.Coin{},
+		}
+	)
+
+	if gigabytes != 0 {
+		price, found := node.GigabytePrice(denom)
+		if !found {
+			return nil, types.NewErrorPriceNotFound(denom)
+		}
+
+		subscription.ExpiryAt = ctx.BlockTime().Add(
+			types.Year,
+		)
+		subscription.Deposit = sdk.NewCoin(
+			price.Denom,
+			price.Amount.MulRaw(gigabytes),
+		)
+	}
+	if hours != 0 {
+		price, found := node.HourlyPrice(denom)
+		if !found {
+			return nil, types.NewErrorPriceNotFound(denom)
+		}
+
+		subscription.ExpiryAt = ctx.BlockTime().Add(
+			time.Duration(hours) * time.Hour,
+		)
+		subscription.Deposit = sdk.NewCoin(
+			price.Denom,
+			price.Amount.MulRaw(hours),
+		)
+	}
+
+	if err := k.AddDeposit(ctx, accAddr, subscription.Deposit); err != nil {
+		return nil, err
+	}
+
+	k.SetCount(ctx, count+1)
+	k.SetSubscription(ctx, subscription)
+	k.SetSubscriptionForAccount(ctx, accAddr, subscription.GetID())
+	k.SetSubscriptionForNode(ctx, nodeAddr, subscription.GetID())
+	k.SetSubscriptionForExpiryAt(ctx, subscription.GetExpiryAt(), subscription.GetID())
+	k.SetQuota(ctx, subscription.GetID(), quota)
+
+	return subscription, nil
+}
+
+func (k *Keeper) CreateSubscriptionForPlan(
+	ctx sdk.Context, accAddr sdk.AccAddress, id uint64, denom string,
+) (*types.PlanSubscription, error) {
+	plan, found := k.GetPlan(ctx, id)
+	if !found {
+		return nil, types.NewErrorPlanNotFound(id)
+	}
+	if !plan.Status.Equal(hubtypes.StatusActive) {
+		return nil, types.NewErrorInvalidPlanStatus(plan.ID, plan.Status)
+	}
+
+	price, found := plan.Price(denom)
+	if !found {
+		return nil, types.NewErrorPriceNotFound(denom)
+	}
+
+	provAddr := plan.GetAddress()
+	if err := k.SendCoin(ctx, accAddr, provAddr.Bytes(), price); err != nil {
+		return nil, err
+	}
+
+	var (
+		count = k.GetCount(ctx)
+		quota = types.Quota{
+			Address:        accAddr.String(),
+			AllocatedBytes: plan.Bytes,
+			ConsumedBytes:  sdk.ZeroInt(),
+		}
+		subscription = &types.PlanSubscription{
+			BaseSubscription: &types.BaseSubscription{
+				ID:       count + 1,
+				Address:  accAddr.String(),
+				ExpiryAt: ctx.BlockTime().Add(plan.Validity),
+				Status:   hubtypes.StatusActive,
+				StatusAt: ctx.BlockTime(),
+			},
+			PlanID: plan.ID,
+			Denom:  price.Denom,
+		}
+	)
+
+	k.SetCount(ctx, count+1)
+	k.SetSubscription(ctx, subscription)
+	k.SetSubscriptionForAccount(ctx, accAddr, subscription.GetID())
+	k.SetSubscriptionForPlan(ctx, plan.ID, subscription.GetID())
+	k.SetSubscriptionForExpiryAt(ctx, subscription.GetExpiryAt(), subscription.GetID())
+	k.SetQuota(ctx, subscription.GetID(), quota)
+
+	return subscription, nil
 }
