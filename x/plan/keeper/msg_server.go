@@ -150,5 +150,24 @@ func (k *msgServer) MsgUnlinkNode(c context.Context, msg *types.MsgUnlinkNodeReq
 }
 
 func (k *msgServer) MsgSubscribe(c context.Context, msg *types.MsgSubscribeRequest) (*types.MsgSubscribeResponse, error) {
+	ctx := sdk.UnwrapSDKContext(c)
+
+	accAddr, err := sdk.AccAddressFromBech32(msg.From)
+	if err != nil {
+		return nil, err
+	}
+
+	subscription, err := k.CreateSubscriptionForPlan(ctx, accAddr, msg.ID, msg.Denom)
+	if err != nil {
+		return nil, err
+	}
+
+	ctx.EventManager().EmitTypedEvent(
+		&types.EventCreateSubscription{
+			ID:     subscription.ID,
+			PlanID: subscription.PlanID,
+		},
+	)
+
 	return &types.MsgSubscribeResponse{}, nil
 }

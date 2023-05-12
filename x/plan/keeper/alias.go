@@ -5,6 +5,7 @@ import (
 
 	hubtypes "github.com/sentinel-official/hub/types"
 	nodetypes "github.com/sentinel-official/hub/x/node/types"
+	subscriptiontypes "github.com/sentinel-official/hub/x/subscription/types"
 )
 
 func (k *Keeper) HasProvider(ctx sdk.Context, addr hubtypes.ProvAddress) bool {
@@ -25,4 +26,10 @@ func (k *Keeper) DeleteNodeForPlan(ctx sdk.Context, id uint64, addr hubtypes.Nod
 
 func (k *Keeper) GetNodesForPlan(ctx sdk.Context, id uint64) nodetypes.Nodes {
 	return k.node.GetNodesForPlan(ctx, id)
+}
+
+func (k *Keeper) CreateSubscriptionForPlan(
+	ctx sdk.Context, accAddr sdk.AccAddress, id uint64, denom string,
+) (*subscriptiontypes.PlanSubscription, error) {
+	return k.subscription.CreateSubscriptionForPlan(ctx, accAddr, id, denom)
 }

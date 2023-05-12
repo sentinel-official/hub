@@ -13,8 +13,9 @@ var (
 )
 
 var (
-	ErrorNotFound     = errors.Register(ModuleName, 201, "not found")
-	ErrorUnauthorized = errors.Register(ModuleName, 202, "unauthorized")
+	ErrorNotFound      = errors.Register(ModuleName, 201, "not found")
+	ErrorUnauthorized  = errors.Register(ModuleName, 202, "unauthorized")
+	ErrorInvalidStatus = errors.Register(ModuleName, 203, "invalid status")
 )
 
 func NewErrorProviderNotFound(addr hubtypes.ProvAddress) error {
@@ -31,4 +32,12 @@ func NewErrorUnauthorized(addr string) error {
 
 func NewErrorNodeNotFound(addr hubtypes.NodeAddress) error {
 	return errors.Wrapf(ErrorNotFound, "node %s does not exist", addr)
+}
+
+func NewErrorInvalidPlanStatus(id uint64, status hubtypes.Status) error {
+	return errors.Wrapf(ErrorInvalidStatus, "invalid status %s for plan %d", status, id)
+}
+
+func NewErrorPriceNotFound(denom string) error {
+	return errors.Wrapf(ErrorNotFound, "price for denom %s does not exist", denom)
 }

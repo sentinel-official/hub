@@ -23,7 +23,7 @@ func (m *Plan) GetAddress() hubtypes.ProvAddress {
 }
 
 func (m *Plan) Price(denom string) (sdk.Coin, bool) {
-	if m.Prices == nil && denom == "" {
+	if m.Prices == nil {
 		return sdk.Coin{}, true
 	}
 
