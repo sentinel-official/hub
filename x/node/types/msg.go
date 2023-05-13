@@ -181,12 +181,13 @@ func (m *MsgUpdateStatusRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{from.Bytes()}
 }
 
-func NewMsgSubscribeRequest(from sdk.AccAddress, addr hubtypes.NodeAddress, hours int64, denom string) *MsgSubscribeRequest {
+func NewMsgSubscribeRequest(from sdk.AccAddress, addr hubtypes.NodeAddress, gigabytes, hours int64, denom string) *MsgSubscribeRequest {
 	return &MsgSubscribeRequest{
-		From:    from.String(),
-		Address: addr.String(),
-		Hours:   hours,
-		Denom:   denom,
+		From:      from.String(),
+		Address:   addr.String(),
+		Gigabytes: gigabytes,
+		Hours:     hours,
+		Denom:     denom,
 	}
 }
 
@@ -203,20 +204,20 @@ func (m *MsgSubscribeRequest) ValidateBasic() error {
 	if _, err := hubtypes.NodeAddressFromBech32(m.Address); err != nil {
 		return errors.Wrap(ErrorInvalidMessage, err.Error())
 	}
-	if m.Hours == 0 && m.Gigabytes == 0 {
-		return errors.Wrapf(ErrorInvalidMessage, "[hours, gigabytes] cannot be empty")
+	if m.Gigabytes == 0 && m.Hours == 0 {
+		return errors.Wrapf(ErrorInvalidMessage, "[gigabytes, hours] cannot be empty")
 	}
-	if m.Hours != 0 && m.Gigabytes != 0 {
-		return errors.Wrapf(ErrorInvalidMessage, "[hours, gigabytes] cannot be non-empty")
-	}
-	if m.Hours != 0 {
-		if m.Hours < 0 {
-			return errors.Wrap(ErrorInvalidMessage, "hours cannot be negative")
-		}
+	if m.Gigabytes != 0 && m.Hours != 0 {
+		return errors.Wrapf(ErrorInvalidMessage, "[gigabytes, hours] cannot be non-empty")
 	}
 	if m.Gigabytes != 0 {
 		if m.Gigabytes < 0 {
 			return errors.Wrap(ErrorInvalidMessage, "gigabytes cannot be negative")
+		}
+	}
+	if m.Hours != 0 {
+		if m.Hours < 0 {
+			return errors.Wrap(ErrorInvalidMessage, "hours cannot be negative")
 		}
 	}
 	if m.Denom != "" {

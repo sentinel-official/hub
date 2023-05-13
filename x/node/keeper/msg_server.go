@@ -159,6 +159,17 @@ func (k *msgServer) MsgUpdateStatus(c context.Context, msg *types.MsgUpdateStatu
 func (k *msgServer) MsgSubscribe(c context.Context, msg *types.MsgSubscribeRequest) (*types.MsgSubscribeResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
+	if msg.Gigabytes != 0 {
+		if !k.IsValidLeaseGigabytes(ctx, msg.Gigabytes) {
+			return nil, types.NewErrorInvalidLeaseGigabytes(msg.Gigabytes)
+		}
+	}
+	if msg.Hours != 0 {
+		if !k.IsValidLeaseHours(ctx, msg.Hours) {
+			return nil, types.NewErrorInvalidLeaseHours(msg.Hours)
+		}
+	}
+
 	accAddr, err := sdk.AccAddressFromBech32(msg.From)
 	if err != nil {
 		return nil, err
@@ -168,36 +179,37 @@ func (k *msgServer) MsgSubscribe(c context.Context, msg *types.MsgSubscribeReque
 	if err != nil {
 		return nil, err
 	}
-	node, found := k.GetNode(ctx, nodeAddr)
-	if !found {
-		return nil, types.NewErrorNodeNotFound(nodeAddr)
+
+	subscription, err := k.CreateSubscriptionForNode(ctx, accAddr, nodeAddr, msg.Gigabytes, msg.Hours, msg.Denom)
+	if err != nil {
+		return nil, err
 	}
+
+	ctx.EventManager().EmitTypedEvent(
+		&types.EventCreateSubscription{
+			ID:          subscription.ID,
+			NodeAddress: subscription.NodeAddress,
+		},
+	)
 
 	lease := types.Lease{
-		Bytes: hubtypes.Gigabyte.MulRaw(msg.Gigabytes),
-		Hours: msg.Hours,
+		ID:      subscription.ID,
+		Bytes:   hubtypes.Gigabyte.MulRaw(msg.Gigabytes),
+		Minutes: msg.Hours * 60,
+		Price:   sdk.Coin{},
 	}
 
+	if msg.Gigabytes != 0 {
+		lease.Price = sdk.NewCoin(
+			subscription.Deposit.Denom,
+			subscription.Deposit.Amount.QuoRaw(msg.Gigabytes),
+		)
+	}
 	if msg.Hours != 0 {
-		if !k.IsValidLeaseHours(ctx, msg.Hours) {
-			return nil, types.NewErrorInvalidLeaseHours(msg.Hours)
-		}
-
-		lease.Price, found = node.HourlyPrice(msg.Denom)
-		if !found {
-			return nil, types.NewErrorHourlyPriceNotFound(msg.Denom)
-		}
-	} else if msg.Gigabytes != 0 {
-		if !k.IsValidLeaseGigabytes(ctx, msg.Hours) {
-			return nil, types.NewErrorInvalidLeaseGigabytes(msg.Gigabytes)
-		}
-
-		lease.Price, found = node.GigabytePrice(msg.Denom)
-		if !found {
-			return nil, types.NewErrorGigabytePriceNotFound(msg.Denom)
-		}
-	} else {
-		return nil, nil
+		lease.Price = sdk.NewCoin(
+			subscription.Deposit.Denom,
+			subscription.Deposit.Amount.QuoRaw(msg.Hours),
+		)
 	}
 
 	k.SetLease(ctx, lease)

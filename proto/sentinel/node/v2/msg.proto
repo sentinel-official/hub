@@ -47,8 +47,8 @@ message MsgUpdateStatusRequest {
 message MsgSubscribeRequest {
   string from     = 1;
   string address  = 2;
-  int64 hours     = 3;
-  int64 gigabytes = 4;
+  int64 gigabytes = 3;
+  int64 hours     = 4;
   string denom    = 5;
 }
 
