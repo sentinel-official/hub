@@ -3,8 +3,6 @@
 package cli
 
 import (
-	"strconv"
-
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
@@ -133,9 +131,9 @@ func txUpdateStatus() *cobra.Command {
 
 func txSubscribe() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "subscribe [node-addr] [hours] [denom]",
+		Use:   "subscribe [node-addr] [denom]",
 		Short: "Subscribe to a node",
-		Args:  cobra.ExactArgs(3),
+		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientTxContext(cmd)
 			if err != nil {
@@ -147,7 +145,12 @@ func txSubscribe() *cobra.Command {
 				return err
 			}
 
-			hours, err := strconv.ParseInt(args[1], 10, 64)
+			gigabytes, err := cmd.Flags().GetInt64(flagGigabytes)
+			if err != nil {
+				return err
+			}
+
+			hours, err := cmd.Flags().GetInt64(flagHours)
 			if err != nil {
 				return err
 			}
@@ -155,6 +158,7 @@ func txSubscribe() *cobra.Command {
 			msg := types.NewMsgSubscribeRequest(
 				ctx.FromAddress,
 				addr,
+				gigabytes,
 				hours,
 				args[2],
 			)
@@ -167,6 +171,8 @@ func txSubscribe() *cobra.Command {
 	}
 
 	flags.AddTxFlagsToCmd(cmd)
+	cmd.Flags().Int64(flagGigabytes, 0, "gigabytes")
+	cmd.Flags().Int64(flagHours, 0, "hours")
 
 	return cmd
 }

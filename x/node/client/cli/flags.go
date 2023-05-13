@@ -6,7 +6,9 @@ import (
 )
 
 const (
+	flagGigabytes      = "gigabytes"
 	flagGigabytePrices = "gigabyte-prices"
+	flagHours          = "hours"
 	flagHourlyPrices   = "hourly-prices"
 	flagPlan           = "plan"
 	flagRemoteURL      = "remote-url"
