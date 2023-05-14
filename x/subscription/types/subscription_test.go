@@ -249,7 +249,7 @@ func TestNodeSubscription_Type(t *testing.T) {
 func TestNodeSubscription_Validate(t *testing.T) {
 	type fields struct {
 		NodeAddress string
-		Hours       time.Duration
+		Hours       int64
 		Deposit     sdk.Coin
 	}
 	tests := []struct {

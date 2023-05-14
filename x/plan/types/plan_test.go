@@ -80,7 +80,7 @@ func TestPlan_Price(t *testing.T) {
 				denom: "one",
 			},
 			sdk.Coin{},
-			false,
+			true,
 		},
 		{
 			"nil prices and two denom",
@@ -91,7 +91,7 @@ func TestPlan_Price(t *testing.T) {
 				denom: "two",
 			},
 			sdk.Coin{},
-			false,
+			true,
 		},
 		{
 			"empty prices and empty denom",
