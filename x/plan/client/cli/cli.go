@@ -21,7 +21,7 @@ func GetTxCommands() []*cobra.Command {
 
 	cmd.AddCommand(
 		txCreate(),
-		txSetStatus(),
+		txUpdateStatus(),
 		txLinkNode(),
 		txUnlinkNode(),
 	)

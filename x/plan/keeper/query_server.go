@@ -100,12 +100,12 @@ func (q *queryServer) QueryPlansForProvider(c context.Context, req *types.QueryP
 			return false, nil
 		}
 
-		item, found := q.GetPlan(ctx, types.IDFromPlanForProviderKey(key))
+		item, found := q.GetPlan(ctx, sdk.BigEndianToUint64(key))
 		if !found {
-			return false, fmt.Errorf("plan for provider key %X does not exist", key)
+			return false, fmt.Errorf("plan for key %X does not exist", key)
 		}
 
-		if item.Status.Equal(req.Status) {
+		if req.Status.IsOneOf(item.Status, hubtypes.StatusUnspecified) {
 			items = append(items, item)
 			return true, nil
 		}
