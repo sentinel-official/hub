@@ -1,6 +1,8 @@
 package node
 
 import (
+	"time"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	abcitypes "github.com/tendermint/tendermint/abci/types"
 
@@ -105,6 +107,7 @@ func EndBlock(ctx sdk.Context, k keeper.Keeper) []abcitypes.ValidatorUpdate {
 		k.DeleteActiveNode(ctx, nodeAddr)
 		k.DeleteNodeForExpiryAt(ctx, item.ExpiryAt, nodeAddr)
 
+		item.ExpiryAt = time.Time{}
 		item.Status = hubtypes.StatusInactive
 		item.StatusAt = ctx.BlockTime()
 

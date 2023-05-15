@@ -100,7 +100,7 @@ func (q *queryServer) QuerySubscriptionsForAccount(c context.Context, req *types
 	pagination, err := query.Paginate(store, req.Pagination, func(key, _ []byte) error {
 		v, found := q.GetSubscription(ctx, types.IDFromSubscriptionForAccountKey(key))
 		if !found {
-			return fmt.Errorf("subscription for account key %X does not exist", key)
+			return fmt.Errorf("subscription for key %X does not exist", key)
 		}
 
 		item, err := codectypes.NewAnyWithValue(v)
@@ -138,7 +138,7 @@ func (q *queryServer) QuerySubscriptionsForNode(c context.Context, req *types.Qu
 	pagination, err := query.Paginate(store, req.Pagination, func(key, _ []byte) error {
 		v, found := q.GetSubscription(ctx, types.IDFromSubscriptionForNodeKey(key))
 		if !found {
-			return fmt.Errorf("subscription for node key %X does not exist", key)
+			return fmt.Errorf("subscription for key %X does not exist", key)
 		}
 
 		item, err := codectypes.NewAnyWithValue(v)
@@ -171,7 +171,7 @@ func (q *queryServer) QuerySubscriptionsForPlan(c context.Context, req *types.Qu
 	pagination, err := query.Paginate(store, req.Pagination, func(key, _ []byte) error {
 		v, found := q.GetSubscription(ctx, types.IDFromSubscriptionForPlanKey(key))
 		if !found {
-			return fmt.Errorf("subscription for plan key %X does not exist", key)
+			return fmt.Errorf("subscription for key %X does not exist", key)
 		}
 
 		item, err := codectypes.NewAnyWithValue(v)

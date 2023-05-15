@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"context"
+	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
@@ -55,7 +56,7 @@ func (k *msgServer) MsgRegister(c context.Context, msg *types.MsgRegisterRequest
 		GigabytePrices: msg.GigabytePrices,
 		HourlyPrices:   msg.HourlyPrices,
 		RemoteURL:      msg.RemoteURL,
-		ExpiryAt:       ctx.BlockTime(),
+		ExpiryAt:       time.Time{},
 		Status:         hubtypes.StatusInactive,
 		StatusAt:       ctx.BlockTime(),
 	}
@@ -73,6 +74,17 @@ func (k *msgServer) MsgRegister(c context.Context, msg *types.MsgRegisterRequest
 func (k *msgServer) MsgUpdateDetails(c context.Context, msg *types.MsgUpdateDetailsRequest) (*types.MsgUpdateDetailsResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
+	if msg.GigabytePrices != nil {
+		if !k.IsValidGigabytePrices(ctx, msg.GigabytePrices) {
+			return nil, types.NewErrorInvalidGigabytePrices(msg.GigabytePrices)
+		}
+	}
+	if msg.HourlyPrices != nil {
+		if !k.IsValidHourlyPrices(ctx, msg.HourlyPrices) {
+			return nil, types.NewErrorInvalidHourlyPrices(msg.HourlyPrices)
+		}
+	}
+
 	nodeAddr, err := hubtypes.NodeAddressFromBech32(msg.From)
 	if err != nil {
 		return nil, err
@@ -83,20 +95,9 @@ func (k *msgServer) MsgUpdateDetails(c context.Context, msg *types.MsgUpdateDeta
 		return nil, types.NewErrorNodeNotFound(nodeAddr)
 	}
 
-	if msg.GigabytePrices != nil {
-		if !k.IsValidGigabytePrices(ctx, msg.GigabytePrices) {
-			return nil, types.NewErrorInvalidGigabytePrices(msg.GigabytePrices)
-		}
+	node.GigabytePrices = msg.GigabytePrices
+	node.HourlyPrices = msg.HourlyPrices
 
-		node.GigabytePrices = msg.GigabytePrices
-	}
-	if msg.HourlyPrices != nil {
-		if !k.IsValidHourlyPrices(ctx, msg.HourlyPrices) {
-			return nil, types.NewErrorInvalidHourlyPrices(msg.HourlyPrices)
-		}
-
-		node.HourlyPrices = msg.HourlyPrices
-	}
 	if msg.RemoteURL != "" {
 		node.RemoteURL = msg.RemoteURL
 	}
@@ -130,18 +131,22 @@ func (k *msgServer) MsgUpdateStatus(c context.Context, msg *types.MsgUpdateStatu
 		}
 
 		k.DeleteNodeForExpiryAt(ctx, node.ExpiryAt, nodeAddr)
-	} else {
+	}
+	if node.Status.Equal(hubtypes.StatusInactive) {
 		if msg.Status.Equal(hubtypes.StatusActive) {
 			k.DeleteInactiveNode(ctx, nodeAddr)
 		}
 	}
 
+	node.ExpiryAt = time.Time{}
 	node.Status = msg.Status
 	node.StatusAt = ctx.BlockTime()
 
 	if node.Status.Equal(hubtypes.StatusActive) {
-		inactiveDuration := k.InactiveDuration(ctx)
-		node.ExpiryAt = ctx.BlockTime().Add(inactiveDuration)
+		node.ExpiryAt = ctx.BlockTime().Add(
+			k.InactiveDuration(ctx),
+		)
+
 		k.SetNodeForExpiryAt(ctx, node.ExpiryAt, nodeAddr)
 	}
 

@@ -88,7 +88,7 @@ func (q *queryServer) QuerySessionsForAccount(c context.Context, req *types.Quer
 	pagination, err := query.Paginate(store, req.Pagination, func(key, _ []byte) error {
 		item, found := q.GetSession(ctx, types.IDFromSessionForAccountKey(key))
 		if !found {
-			return fmt.Errorf("session for account key %X does not exist", key)
+			return fmt.Errorf("session for key %X does not exist", key)
 		}
 
 		items = append(items, item)
@@ -121,7 +121,7 @@ func (q *queryServer) QuerySessionsForNode(c context.Context, req *types.QuerySe
 	pagination, err := query.Paginate(store, req.Pagination, func(key, _ []byte) error {
 		item, found := q.GetSession(ctx, types.IDFromSessionForNodeKey(key))
 		if !found {
-			return fmt.Errorf("session for node key %X does not exist", key)
+			return fmt.Errorf("session for key %X does not exist", key)
 		}
 
 		items = append(items, item)
@@ -149,7 +149,7 @@ func (q *queryServer) QuerySessionsForSubscription(c context.Context, req *types
 	pagination, err := query.Paginate(store, req.Pagination, func(key, _ []byte) error {
 		item, found := q.GetSession(ctx, types.IDFromSessionForSubscriptionKey(key))
 		if !found {
-			return fmt.Errorf("session for subscription key %X does not exist", key)
+			return fmt.Errorf("session for key %X does not exist", key)
 		}
 
 		items = append(items, item)
@@ -182,7 +182,7 @@ func (q *queryServer) QuerySessionsForQuota(c context.Context, req *types.QueryS
 	pagination, err := query.Paginate(store, req.Pagination, func(key, _ []byte) error {
 		item, found := q.GetSession(ctx, types.IDFromSessionForQuotaKey(key))
 		if !found {
-			return fmt.Errorf("session for subscription quota key %X does not exist", key)
+			return fmt.Errorf("session for key %X does not exist", key)
 		}
 
 		items = append(items, item)

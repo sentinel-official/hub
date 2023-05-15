@@ -100,12 +100,12 @@ func (q *queryServer) QueryNodesForPlan(c context.Context, req *types.QueryNodes
 			return false, nil
 		}
 
-		item, found := q.GetNode(ctx, types.AddressFromNodeForPlanKey(key))
+		item, found := q.GetNode(ctx, key[1:])
 		if !found {
-			return false, fmt.Errorf("node for plan key %X does not exist", key)
+			return false, fmt.Errorf("node for key %X does not exist", key)
 		}
 
-		if item.Status.Equal(req.Status) {
+		if req.Status.IsOneOf(item.Status, hubtypes.StatusUnspecified) {
 			items = append(items, item)
 			return true, nil
 		}
@@ -180,9 +180,9 @@ func (q *queryServer) QueryLeasesForAccount(c context.Context, req *types.QueryL
 
 	store := prefix.NewStore(q.Store(ctx), types.GetLeaseForAccountKeyPrefix(addr))
 	pagination, err := query.Paginate(store, req.Pagination, func(key, _ []byte) error {
-		item, found := q.GetLease(ctx, types.IDFromLeaseForAccountKey(key))
+		item, found := q.GetLease(ctx, sdk.BigEndianToUint64(key))
 		if !found {
-			return fmt.Errorf("lease for account key %X does not exist", key)
+			return fmt.Errorf("lease for key %X does not exist", key)
 		}
 
 		items = append(items, item)
@@ -213,9 +213,9 @@ func (q *queryServer) QueryLeasesForNode(c context.Context, req *types.QueryLeas
 
 	store := prefix.NewStore(q.Store(ctx), types.GetLeaseForNodeKeyPrefix(addr))
 	pagination, err := query.Paginate(store, req.Pagination, func(key, _ []byte) error {
-		item, found := q.GetLease(ctx, types.IDFromLeaseForNodeKey(key))
+		item, found := q.GetLease(ctx, sdk.BigEndianToUint64(key))
 		if !found {
-			return fmt.Errorf("lease for node key %X does not exist", key)
+			return fmt.Errorf("lease for key %X does not exist", key)
 		}
 
 		items = append(items, item)
