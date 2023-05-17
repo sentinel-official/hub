@@ -257,7 +257,7 @@ func (k *Keeper) IterateSessionsForExpiryAt(ctx sdk.Context, end time.Time, fn f
 	defer iter.Close()
 
 	for i := 0; iter.Valid(); iter.Next() {
-		session, found := k.GetSession(ctx, types.IDFromStatusSessionAtKey(iter.Key()))
+		session, found := k.GetSession(ctx, types.IDFromSessionForExpiryAtKey(iter.Key()))
 		if !found {
 			panic(fmt.Errorf("session for expiry at key %X does not exist", iter.Key()))
 		}

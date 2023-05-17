@@ -118,7 +118,7 @@ func IDFromSessionForQuotaKey(key []byte) uint64 {
 	return sdk.BigEndianToUint64(key[10+addrLen:])
 }
 
-func IDFromStatusSessionAtKey(key []byte) uint64 {
+func IDFromSessionForExpiryAtKey(key []byte) uint64 {
 	// prefix (1 byte) | at (29 bytes) | session (8 bytes)
 
 	if len(key) != 38 {

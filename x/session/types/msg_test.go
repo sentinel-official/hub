@@ -221,47 +221,11 @@ func TestMsgUpdateDetailsRequest_ValidateBasic(t *testing.T) {
 			false,
 		},
 		{
-			"negative proof->duration",
-			fields{
-				From: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Proof: Proof{
-					ID:       1000,
-					Duration: -1000,
-				},
-			},
-			true,
-		},
-		{
-			"zero proof->duration",
-			fields{
-				From: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Proof: Proof{
-					ID:        1000,
-					Duration:  0,
-					Bandwidth: hubtypes.Bandwidth{Upload: sdk.NewInt(0), Download: sdk.NewInt(0)},
-				},
-			},
-			false,
-		},
-		{
-			"positive proof->duration",
-			fields{
-				From: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Proof: Proof{
-					ID:        1000,
-					Duration:  1000,
-					Bandwidth: hubtypes.Bandwidth{Upload: sdk.NewInt(0), Download: sdk.NewInt(0)},
-				},
-			},
-			false,
-		},
-		{
 			"negative proof->bandwidth->upload and negative proof->bandwidth->download",
 			fields{
 				From: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
 				Proof: Proof{
 					ID:        1000,
-					Duration:  1000,
 					Bandwidth: hubtypes.Bandwidth{Upload: sdk.NewInt(-1000), Download: sdk.NewInt(-1000)},
 				},
 			},
@@ -273,7 +237,6 @@ func TestMsgUpdateDetailsRequest_ValidateBasic(t *testing.T) {
 				From: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
 				Proof: Proof{
 					ID:        1000,
-					Duration:  1000,
 					Bandwidth: hubtypes.Bandwidth{Upload: sdk.NewInt(-1000), Download: sdk.NewInt(0)},
 				},
 			},
@@ -285,7 +248,6 @@ func TestMsgUpdateDetailsRequest_ValidateBasic(t *testing.T) {
 				From: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
 				Proof: Proof{
 					ID:        1000,
-					Duration:  1000,
 					Bandwidth: hubtypes.Bandwidth{Upload: sdk.NewInt(-1000), Download: sdk.NewInt(1000)},
 				},
 			},
@@ -297,7 +259,6 @@ func TestMsgUpdateDetailsRequest_ValidateBasic(t *testing.T) {
 				From: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
 				Proof: Proof{
 					ID:        1000,
-					Duration:  1000,
 					Bandwidth: hubtypes.Bandwidth{Upload: sdk.NewInt(0), Download: sdk.NewInt(-1000)},
 				},
 			},
@@ -309,7 +270,6 @@ func TestMsgUpdateDetailsRequest_ValidateBasic(t *testing.T) {
 				From: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
 				Proof: Proof{
 					ID:        1000,
-					Duration:  1000,
 					Bandwidth: hubtypes.Bandwidth{Upload: sdk.NewInt(0), Download: sdk.NewInt(0)},
 				},
 			},
@@ -321,7 +281,6 @@ func TestMsgUpdateDetailsRequest_ValidateBasic(t *testing.T) {
 				From: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
 				Proof: Proof{
 					ID:        1000,
-					Duration:  1000,
 					Bandwidth: hubtypes.Bandwidth{Upload: sdk.NewInt(0), Download: sdk.NewInt(1000)},
 				},
 			},
@@ -333,7 +292,6 @@ func TestMsgUpdateDetailsRequest_ValidateBasic(t *testing.T) {
 				From: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
 				Proof: Proof{
 					ID:        1000,
-					Duration:  1000,
 					Bandwidth: hubtypes.Bandwidth{Upload: sdk.NewInt(1000), Download: sdk.NewInt(-1000)},
 				},
 			},
@@ -345,7 +303,6 @@ func TestMsgUpdateDetailsRequest_ValidateBasic(t *testing.T) {
 				From: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
 				Proof: Proof{
 					ID:        1000,
-					Duration:  1000,
 					Bandwidth: hubtypes.Bandwidth{Upload: sdk.NewInt(1000), Download: sdk.NewInt(0)},
 				},
 			},
@@ -357,8 +314,43 @@ func TestMsgUpdateDetailsRequest_ValidateBasic(t *testing.T) {
 				From: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
 				Proof: Proof{
 					ID:        1000,
-					Duration:  1000,
 					Bandwidth: hubtypes.Bandwidth{Upload: sdk.NewInt(1000), Download: sdk.NewInt(1000)},
+				},
+			},
+			false,
+		},
+		{
+			"negative proof->duration",
+			fields{
+				From: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				Proof: Proof{
+					ID:        1000,
+					Bandwidth: hubtypes.Bandwidth{Upload: sdk.NewInt(0), Download: sdk.NewInt(0)},
+					Duration:  -1000,
+				},
+			},
+			true,
+		},
+		{
+			"zero proof->duration",
+			fields{
+				From: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				Proof: Proof{
+					ID:        1000,
+					Bandwidth: hubtypes.Bandwidth{Upload: sdk.NewInt(0), Download: sdk.NewInt(0)},
+					Duration:  0,
+				},
+			},
+			false,
+		},
+		{
+			"positive proof->duration",
+			fields{
+				From: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				Proof: Proof{
+					ID:        1000,
+					Bandwidth: hubtypes.Bandwidth{Upload: sdk.NewInt(0), Download: sdk.NewInt(0)},
+					Duration:  1000,
 				},
 			},
 			false,
@@ -369,8 +361,8 @@ func TestMsgUpdateDetailsRequest_ValidateBasic(t *testing.T) {
 				From: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
 				Proof: Proof{
 					ID:        1000,
-					Duration:  1000,
 					Bandwidth: hubtypes.Bandwidth{Upload: sdk.NewInt(1000), Download: sdk.NewInt(1000)},
+					Duration:  1000,
 				},
 				Signature: nil,
 			},
@@ -382,8 +374,8 @@ func TestMsgUpdateDetailsRequest_ValidateBasic(t *testing.T) {
 				From: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
 				Proof: Proof{
 					ID:        1000,
-					Duration:  1000,
 					Bandwidth: hubtypes.Bandwidth{Upload: sdk.NewInt(1000), Download: sdk.NewInt(1000)},
+					Duration:  1000,
 				},
 				Signature: []byte{},
 			},
@@ -395,8 +387,8 @@ func TestMsgUpdateDetailsRequest_ValidateBasic(t *testing.T) {
 				From: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
 				Proof: Proof{
 					ID:        1000,
-					Duration:  1000,
 					Bandwidth: hubtypes.Bandwidth{Upload: sdk.NewInt(1000), Download: sdk.NewInt(1000)},
+					Duration:  1000,
 				},
 				Signature: []byte{
 					0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
@@ -413,8 +405,8 @@ func TestMsgUpdateDetailsRequest_ValidateBasic(t *testing.T) {
 				From: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
 				Proof: Proof{
 					ID:        1000,
-					Duration:  1000,
 					Bandwidth: hubtypes.Bandwidth{Upload: sdk.NewInt(1000), Download: sdk.NewInt(1000)},
+					Duration:  1000,
 				},
 				Signature: []byte{
 					0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
@@ -435,8 +427,8 @@ func TestMsgUpdateDetailsRequest_ValidateBasic(t *testing.T) {
 				From: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
 				Proof: Proof{
 					ID:        1000,
-					Duration:  1000,
 					Bandwidth: hubtypes.Bandwidth{Upload: sdk.NewInt(1000), Download: sdk.NewInt(1000)},
+					Duration:  1000,
 				},
 				Signature: []byte{
 					0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
