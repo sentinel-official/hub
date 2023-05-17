@@ -115,3 +115,71 @@ func TestSubscriptionKey(t *testing.T) {
 		)
 	}
 }
+
+func TestIDFromSubscriptionForAccountKey(t *testing.T) {
+	var (
+		addr []byte
+		key  []byte
+	)
+
+	for i := 1; i <= 256; i += 64 {
+		addr = make([]byte, i)
+		_, _ = rand.Read(addr)
+
+		key = SubscriptionForAccountKey(addr, uint64(i))
+		require.Equal(
+			t,
+			uint64(i),
+			IDFromSubscriptionForAccountKey(key),
+		)
+	}
+}
+
+func TestIDFromSubscriptionForExpiryAtKey(t *testing.T) {
+	var (
+		key []byte
+	)
+
+	for i := 1; i <= 256; i += 64 {
+		key = SubscriptionForExpiryAtKey(time.Now(), uint64(i))
+		require.Equal(
+			t,
+			uint64(i),
+			IDFromSubscriptionForExpiryAtKey(key),
+		)
+	}
+}
+
+func TestIDFromSubscriptionForNodeKey(t *testing.T) {
+	var (
+		addr []byte
+		key  []byte
+	)
+
+	for i := 1; i <= 256; i += 64 {
+		addr = make([]byte, i)
+		_, _ = rand.Read(addr)
+
+		key = SubscriptionForNodeKey(addr, uint64(i))
+		require.Equal(
+			t,
+			uint64(i),
+			IDFromSubscriptionForNodeKey(key),
+		)
+	}
+}
+
+func TestIDFromSubscriptionForPlanKey(t *testing.T) {
+	var (
+		key []byte
+	)
+
+	for i := 1; i <= 256; i += 64 {
+		key = SubscriptionForPlanKey(uint64(i+64), uint64(i))
+		require.Equal(
+			t,
+			uint64(i),
+			IDFromSubscriptionForPlanKey(key),
+		)
+	}
+}

@@ -21,14 +21,14 @@ func TestBaseSubscription_GetAddress(t *testing.T) {
 		want   string
 	}{
 		{
-			"empty address",
+			"address empty",
 			fields{
 				Address: "",
 			},
 			"",
 		},
 		{
-			"20 bytes address",
+			"address non-empty",
 			fields{
 				Address: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
 			},
@@ -51,6 +51,7 @@ func TestBaseSubscription_Validate(t *testing.T) {
 	type fields struct {
 		ID       uint64
 		Address  string
+		ExpiryAt time.Time
 		Status   hubtypes.Status
 		StatusAt time.Time
 	}
@@ -60,24 +61,25 @@ func TestBaseSubscription_Validate(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			"zero id",
+			"id zero",
 			fields{
 				ID: 0,
 			},
 			true,
 		},
 		{
-			"positive id",
+			"id positive",
 			fields{
 				ID:       1000,
 				Address:  "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				ExpiryAt: time.Now(),
 				Status:   hubtypes.StatusActive,
 				StatusAt: time.Now(),
 			},
 			false,
 		},
 		{
-			"empty address",
+			"address empty",
 			fields{
 				ID:      1000,
 				Address: "",
@@ -85,7 +87,7 @@ func TestBaseSubscription_Validate(t *testing.T) {
 			true,
 		},
 		{
-			"invalid address",
+			"address invalid",
 			fields{
 				ID:      1000,
 				Address: "invalid",
@@ -93,7 +95,7 @@ func TestBaseSubscription_Validate(t *testing.T) {
 			true,
 		},
 		{
-			"invalid prefix address",
+			"address invalid prefix",
 			fields{
 				ID:      1000,
 				Address: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
@@ -101,37 +103,60 @@ func TestBaseSubscription_Validate(t *testing.T) {
 			true,
 		},
 		{
-			"10 bytes address",
+			"address 10 bytes",
 			fields{
 				ID:       1000,
 				Address:  "sent1qypqxpq9qcrsszgslawd5s",
+				ExpiryAt: time.Now(),
 				Status:   hubtypes.StatusActive,
 				StatusAt: time.Now(),
 			},
 			false,
 		},
 		{
-			"20 bytes address",
+			"address 20 bytes",
 			fields{
 				ID:       1000,
 				Address:  "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				ExpiryAt: time.Now(),
 				Status:   hubtypes.StatusActive,
 				StatusAt: time.Now(),
 			},
 			false,
 		},
 		{
-			"30 bytes address",
+			"address 30 bytes",
 			fields{
 				ID:       1000,
 				Address:  "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfqyy3zxfp9ycnjs2fszvfck8",
+				ExpiryAt: time.Now(),
 				Status:   hubtypes.StatusActive,
 				StatusAt: time.Now(),
 			},
 			false,
 		},
 		{
-			"unspecified status",
+			"expiry_at empty",
+			fields{
+				ID:       1000,
+				Address:  "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfqyy3zxfp9ycnjs2fszvfck8",
+				ExpiryAt: time.Time{},
+			},
+			true,
+		},
+		{
+			"expiry_at non-empty",
+			fields{
+				ID:       1000,
+				Address:  "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfqyy3zxfp9ycnjs2fszvfck8",
+				ExpiryAt: time.Now(),
+				Status:   hubtypes.StatusActive,
+				StatusAt: time.Now(),
+			},
+			false,
+		},
+		{
+			"status unspecified",
 			fields{
 				ID:      1000,
 				Address: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
@@ -140,50 +165,55 @@ func TestBaseSubscription_Validate(t *testing.T) {
 			true,
 		},
 		{
-			"active status",
+			"status active",
 			fields{
 				ID:       1000,
 				Address:  "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				ExpiryAt: time.Now(),
 				Status:   hubtypes.StatusActive,
 				StatusAt: time.Now(),
 			},
 			false,
 		},
 		{
-			"inactive pending status",
+			"status inactive_pending",
 			fields{
 				ID:       1000,
 				Address:  "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				ExpiryAt: time.Now(),
 				Status:   hubtypes.StatusInactivePending,
 				StatusAt: time.Now(),
 			},
 			false,
 		},
 		{
-			"inactive status",
+			"status inactive",
 			fields{
 				ID:       1000,
 				Address:  "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				ExpiryAt: time.Now(),
 				Status:   hubtypes.StatusInactive,
 				StatusAt: time.Now(),
 			},
 			false,
 		},
 		{
-			"empty status at",
+			"status_at empty",
 			fields{
 				ID:       1000,
 				Address:  "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				ExpiryAt: time.Now(),
 				Status:   hubtypes.StatusActive,
 				StatusAt: time.Time{},
 			},
 			true,
 		},
 		{
-			"positive status at",
+			"status_at non-empty",
 			fields{
 				ID:       1000,
 				Address:  "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				ExpiryAt: time.Now(),
 				Status:   hubtypes.StatusActive,
 				StatusAt: time.Now(),
 			},
@@ -195,6 +225,7 @@ func TestBaseSubscription_Validate(t *testing.T) {
 			s := &BaseSubscription{
 				ID:       tt.fields.ID,
 				Address:  tt.fields.Address,
+				ExpiryAt: tt.fields.ExpiryAt,
 				Status:   tt.fields.Status,
 				StatusAt: tt.fields.StatusAt,
 			}
@@ -215,14 +246,14 @@ func TestNodeSubscription_GetNodeAddress(t *testing.T) {
 		want   hubtypes.NodeAddress
 	}{
 		{
-			"empty node address",
+			"node_address empty",
 			fields{
 				NodeAddress: "",
 			},
 			nil,
 		},
 		{
-			"20 bytes node address",
+			"node_address 20 bytes",
 			fields{
 				NodeAddress: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
 			},
@@ -249,6 +280,7 @@ func TestNodeSubscription_Type(t *testing.T) {
 func TestNodeSubscription_Validate(t *testing.T) {
 	type fields struct {
 		NodeAddress string
+		Gigabytes   int64
 		Hours       int64
 		Deposit     sdk.Coin
 	}
@@ -258,52 +290,86 @@ func TestNodeSubscription_Validate(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			"empty node address",
+			"node_address empty",
 			fields{
 				NodeAddress: "",
 			},
 			true,
 		},
 		{
-			"invalid node address",
+			"node_address invalid",
 			fields{
 				NodeAddress: "invalid",
 			},
 			true,
 		},
 		{
-			"invalid prefix node address",
+			"node_address invalid prefix",
 			fields{
 				NodeAddress: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
 			},
 			true,
 		},
 		{
-			"10 bytes node address",
+			"node_address 10 bytes",
 			fields{
 				NodeAddress: "sentnode1qypqxpq9qcrsszgse4wwrm",
-				Hours:       1000,
+				Gigabytes:   1000,
 			},
 			false,
 		},
 		{
-			"20 bytes node address",
+			"node_address 20 bytes",
 			fields{
 				NodeAddress: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Hours:       1000,
+				Gigabytes:   1000,
 			},
 			false,
 		},
 		{
-			"30 bytes node address",
+			"node_address 30 bytes",
 			fields{
 				NodeAddress: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqyy3zxfp9ycnjs2fsxqglcv",
-				Hours:       1000,
+				Gigabytes:   1000,
 			},
 			false,
 		},
 		{
-			"negative hours",
+			"gigabytes empty and hours empty",
+			fields{
+				NodeAddress: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				Gigabytes:   0,
+				Hours:       0,
+			},
+			true,
+		},
+		{
+			"gigabytes non-empty and hours non-empty",
+			fields{
+				NodeAddress: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				Gigabytes:   1000,
+				Hours:       1000,
+			},
+			true,
+		},
+		{
+			"gigabytes negative",
+			fields{
+				NodeAddress: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				Gigabytes:   -1000,
+			},
+			true,
+		},
+		{
+			"gigabytes positive",
+			fields{
+				NodeAddress: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				Gigabytes:   1000,
+			},
+			false,
+		},
+		{
+			"hours negative",
 			fields{
 				NodeAddress: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
 				Hours:       -1000,
@@ -311,15 +377,7 @@ func TestNodeSubscription_Validate(t *testing.T) {
 			true,
 		},
 		{
-			"zero hours",
-			fields{
-				NodeAddress: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Hours:       0,
-			},
-			true,
-		},
-		{
-			"positive hours",
+			"hours positive",
 			fields{
 				NodeAddress: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
 				Hours:       1000,
@@ -327,64 +385,64 @@ func TestNodeSubscription_Validate(t *testing.T) {
 			false,
 		},
 		{
-			"empty price",
+			"deposit empty",
 			fields{
 				NodeAddress: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Hours:       1000,
+				Gigabytes:   1000,
 				Deposit:     sdk.Coin{},
 			},
 			false,
 		},
 		{
-			"empty denom price",
+			"deposit empty denom",
 			fields{
 				NodeAddress: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Hours:       1000,
-				Deposit:     sdk.Coin{Denom: ""},
+				Gigabytes:   1000,
+				Deposit:     sdk.Coin{Denom: "", Amount: sdk.NewInt(1000)},
 			},
 			false,
 		},
 		{
-			"invalid denom price",
+			"deposit invalid denom",
 			fields{
 				NodeAddress: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Hours:       1000,
-				Deposit:     sdk.Coin{Denom: "d"},
+				Gigabytes:   1000,
+				Deposit:     sdk.Coin{Denom: "d", Amount: sdk.NewInt(1000)},
 			},
 			true,
 		},
 		{
-			"nil amount price",
+			"deposit empty amount",
 			fields{
 				NodeAddress: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Hours:       1000,
-				Deposit:     sdk.Coin{Denom: "one"},
+				Gigabytes:   1000,
+				Deposit:     sdk.Coin{Denom: "one", Amount: sdk.Int{}},
 			},
 			true,
 		},
 		{
-			"negative amount price",
+			"deposit negative amount",
 			fields{
 				NodeAddress: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Hours:       1000,
+				Gigabytes:   1000,
 				Deposit:     sdk.Coin{Denom: "one", Amount: sdk.NewInt(-1000)},
 			},
 			true,
 		},
 		{
-			"zero amount price",
+			"deposit zero amount",
 			fields{
 				NodeAddress: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Hours:       1000,
+				Gigabytes:   1000,
 				Deposit:     sdk.Coin{Denom: "one", Amount: sdk.NewInt(0)},
 			},
 			true,
 		},
 		{
-			"positive amount price",
+			"deposit positive amount",
 			fields{
 				NodeAddress: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Hours:       1000,
+				Gigabytes:   1000,
 				Deposit:     sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)},
 			},
 			false,
@@ -396,10 +454,12 @@ func TestNodeSubscription_Validate(t *testing.T) {
 				BaseSubscription: &BaseSubscription{
 					ID:       1000,
 					Address:  "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+					ExpiryAt: time.Now(),
 					Status:   hubtypes.StatusActive,
 					StatusAt: time.Now(),
 				},
 				NodeAddress: tt.fields.NodeAddress,
+				Gigabytes:   tt.fields.Gigabytes,
 				Hours:       tt.fields.Hours,
 				Deposit:     tt.fields.Deposit,
 			}
@@ -426,14 +486,14 @@ func TestPlanSubscription_Validate(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			"zero plan id",
+			"plan_id zero",
 			fields{
 				PlanID: 0,
 			},
 			true,
 		},
 		{
-			"positive plan id",
+			"plan_id positive",
 			fields{
 				PlanID: 1000,
 				Denom:  "one",
@@ -441,7 +501,7 @@ func TestPlanSubscription_Validate(t *testing.T) {
 			false,
 		},
 		{
-			"empty denom",
+			"denom empty",
 			fields{
 				PlanID: 1000,
 				Denom:  "",
@@ -449,7 +509,7 @@ func TestPlanSubscription_Validate(t *testing.T) {
 			false,
 		},
 		{
-			"invalid denom",
+			"denom invalid",
 			fields{
 				PlanID: 1000,
 				Denom:  "d",
@@ -457,7 +517,7 @@ func TestPlanSubscription_Validate(t *testing.T) {
 			true,
 		},
 		{
-			"one denom",
+			"denom one",
 			fields{
 				PlanID: 1000,
 				Denom:  "one",
@@ -471,6 +531,7 @@ func TestPlanSubscription_Validate(t *testing.T) {
 				BaseSubscription: &BaseSubscription{
 					ID:       1000,
 					Address:  "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+					ExpiryAt: time.Now(),
 					Status:   hubtypes.StatusActive,
 					StatusAt: time.Now(),
 				},

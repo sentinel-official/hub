@@ -37,14 +37,6 @@ func NewErrorDuplicateNode(addr hubtypes.NodeAddress) error {
 	return errors.Wrapf(ErrorDuplicate, "node %s already exists", addr)
 }
 
-func NewErrorHourlyPriceNotFound(denom string) error {
-	return errors.Wrapf(ErrorNotFound, "hourly price for denom %s does not exist", denom)
-}
-
-func NewErrorGigabytePriceNotFound(denom string) error {
-	return errors.Wrapf(ErrorNotFound, "gigabyte price for denom %s does not exist", denom)
-}
-
 func NewErrorInvalidLeaseGigabytes(gigabytes int64) error {
 	return errors.Wrapf(ErrorInvalidGigabytes, "invalid lease gigabytes %d", gigabytes)
 }

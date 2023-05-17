@@ -47,6 +47,9 @@ func (s *BaseSubscription) Validate() error {
 	if _, err := sdk.AccAddressFromBech32(s.Address); err != nil {
 		return errors.Wrapf(err, "invalid address %s", s.Address)
 	}
+	if s.ExpiryAt.IsZero() {
+		return fmt.Errorf("expiry_at cannot be zero")
+	}
 	if !s.Status.IsValid() {
 		return fmt.Errorf("status must be valid")
 	}
