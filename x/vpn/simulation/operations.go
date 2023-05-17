@@ -3,6 +3,7 @@
 package simulation
 
 import (
+	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	simulationtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 
@@ -16,14 +17,15 @@ import (
 )
 
 func WeightedOperations(
+	cdc codec.Codec,
+	txConfig client.TxConfig,
 	params simulationtypes.AppParams,
-	cdc codec.JSONCodec,
 	ak expected.AccountKeeper,
 	bk expected.BankKeeper,
 	k keeper.Keeper,
 ) []simulationtypes.WeightedOperation {
 	var operations []simulationtypes.WeightedOperation
-	operations = append(operations, providersimulation.WeightedOperations(params, cdc, ak, bk, k.Provider)...)
+	operations = append(operations, providersimulation.WeightedOperations(cdc, txConfig, params, ak, bk, k.Provider)...)
 	operations = append(operations, nodesimulation.WeightedOperations(params, cdc, ak, bk, k.Node)...)
 	operations = append(operations, plansimulation.WeightedOperations(params, cdc, ak, bk, k.Plan)...)
 	operations = append(operations, subscriptionsimulation.WeightedOperations(params, cdc, ak, bk, k.Subscription)...)

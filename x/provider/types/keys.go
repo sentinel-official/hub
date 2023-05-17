@@ -11,11 +11,6 @@ const (
 )
 
 var (
-	TypeMsgRegisterRequest = ModuleName + ":register"
-	TypeMsgUpdateRequest   = ModuleName + ":update"
-)
-
-var (
 	ProviderKeyPrefix         = []byte{0x10}
 	ActiveProviderKeyPrefix   = append(ProviderKeyPrefix, 0x01)
 	InactiveProviderKeyPrefix = append(ProviderKeyPrefix, 0x02)

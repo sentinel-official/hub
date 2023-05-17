@@ -13,7 +13,8 @@ import (
 )
 
 const (
-	MaxInt = 1 << 18
+	MaxDeposit      = 1 << 8
+	MaxRevenueShare = 1 << 8
 )
 
 func ParamChanges(_ *rand.Rand) []simulationtypes.ParamChange {
@@ -24,7 +25,7 @@ func ParamChanges(_ *rand.Rand) []simulationtypes.ParamChange {
 			func(r *rand.Rand) string {
 				return sdk.NewInt64Coin(
 					sdk.DefaultBondDenom,
-					r.Int63n(MaxInt),
+					r.Int63n(MaxDeposit),
 				).String()
 			},
 		),
@@ -33,7 +34,7 @@ func ParamChanges(_ *rand.Rand) []simulationtypes.ParamChange {
 			string(types.KeyRevenueShare),
 			func(r *rand.Rand) string {
 				return sdk.NewDecWithPrec(
-					r.Int63n(MaxInt),
+					r.Int63n(MaxRevenueShare),
 					6,
 				).String()
 			},

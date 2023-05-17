@@ -91,18 +91,20 @@ func (a AppModuleBasic) GetQueryCmd() *cobra.Command {
 
 type AppModule struct {
 	AppModuleBasic
-	cdc codec.Codec
-	ak  expected.AccountKeeper
-	bk  expected.BankKeeper
-	k   keeper.Keeper
+	cdc      codec.Codec
+	txConfig client.TxConfig
+	ak       expected.AccountKeeper
+	bk       expected.BankKeeper
+	k        keeper.Keeper
 }
 
-func NewAppModule(cdc codec.Codec, ak expected.AccountKeeper, bk expected.BankKeeper, k keeper.Keeper) AppModule {
+func NewAppModule(cdc codec.Codec, txConfig client.TxConfig, ak expected.AccountKeeper, bk expected.BankKeeper, k keeper.Keeper) AppModule {
 	return AppModule{
-		cdc: cdc,
-		ak:  ak,
-		bk:  bk,
-		k:   k,
+		cdc:      cdc,
+		txConfig: txConfig,
+		ak:       ak,
+		bk:       bk,
+		k:        k,
 	}
 }
 
@@ -170,5 +172,5 @@ func (a AppModule) RandomizedParams(r *rand.Rand) []simulationtypes.ParamChange 
 func (a AppModule) RegisterStoreDecoder(_ sdk.StoreDecoderRegistry) {}
 
 func (a AppModule) WeightedOperations(state module.SimulationState) []simulationtypes.WeightedOperation {
-	return simulation.WeightedOperations(state.AppParams, a.cdc, a.ak, a.bk, a.k)
+	return simulation.WeightedOperations(a.cdc, a.txConfig, state.AppParams, a.ak, a.bk, a.k)
 }

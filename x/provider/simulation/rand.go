@@ -28,17 +28,17 @@ func RandomProvider(r *rand.Rand, items types.Providers) types.Provider {
 
 func RandomProviders(r *rand.Rand, accounts []simulationtypes.Account) types.Providers {
 	var (
-		duplicates = make(map[string]bool)
-		items      = make(types.Providers, 0, r.Intn(len(accounts)))
+		m     = make(map[string]bool)
+		items = make(types.Providers, 0, r.Intn(len(accounts)))
 	)
 
 	for len(items) < cap(items) {
 		var (
 			account, _ = simulationtypes.RandomAcc(r, accounts)
-			address    = hubtypes.ProvAddress(account.Address).String()
+			bech32Addr = hubtypes.ProvAddress(account.Address.Bytes()).String()
 		)
 
-		if duplicates[address] {
+		if m[bech32Addr] {
 			continue
 		}
 
@@ -49,11 +49,11 @@ func RandomProviders(r *rand.Rand, accounts []simulationtypes.Account) types.Pro
 			description = simulationtypes.RandStringOfLength(r, r.Intn(MaxDescriptionLength))
 		)
 
-		duplicates[address] = true
+		m[bech32Addr] = true
 		items = append(
 			items,
 			types.Provider{
-				Address:     address,
+				Address:     bech32Addr,
 				Name:        name,
 				Identity:    identity,
 				Website:     website,
