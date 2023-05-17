@@ -17,23 +17,23 @@ func NewMigrator(k Keeper) Migrator {
 	return Migrator{k}
 }
 
-func (m Migrator) Migrate2to3(ctx sdk.Context) error {
-	if err := m.migrateProviders(ctx); err != nil {
+func (k Migrator) Migrate2to3(ctx sdk.Context) error {
+	if err := k.migrateProviders(ctx); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func (m Migrator) migrateProviders(ctx sdk.Context) error {
-	store := prefix.NewStore(m.Store(ctx), types.ProviderKeyPrefix)
+func (k Migrator) migrateProviders(ctx sdk.Context) error {
+	store := prefix.NewStore(k.Store(ctx), []byte{0x10})
 
 	iter := store.Iterator(nil, nil)
 	defer iter.Close()
 
 	for ; iter.Valid(); iter.Next() {
 		var value v1types.Provider
-		m.cdc.MustUnmarshal(iter.Value(), &value)
+		k.cdc.MustUnmarshal(iter.Value(), &value)
 		store.Delete(iter.Key())
 
 		provider := types.Provider{
@@ -45,7 +45,7 @@ func (m Migrator) migrateProviders(ctx sdk.Context) error {
 			Status:      hubtypes.StatusActive,
 		}
 
-		m.SetProvider(ctx, provider)
+		k.SetProvider(ctx, provider)
 	}
 
 	return nil

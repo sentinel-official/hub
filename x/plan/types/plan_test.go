@@ -225,18 +225,17 @@ func TestPlan_Validate(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			"zero id",
+			"id zero",
 			fields{
 				ID: 0,
 			},
 			true,
 		},
 		{
-			"positive id",
+			"id positive",
 			fields{
 				ID:       1000,
 				Address:  "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Prices:   sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
 				Validity: 1000,
 				Bytes:    sdk.NewInt(1000),
 				Status:   hubtypes.StatusActive,
@@ -245,7 +244,7 @@ func TestPlan_Validate(t *testing.T) {
 			false,
 		},
 		{
-			"empty provider",
+			"provider empty",
 			fields{
 				ID:      1000,
 				Address: "",
@@ -253,15 +252,15 @@ func TestPlan_Validate(t *testing.T) {
 			true,
 		},
 		{
-			"invalid provider",
+			"provider invalid",
 			fields{
 				ID:      1000,
-				Address: "sentprov",
+				Address: "invalid",
 			},
 			true,
 		},
 		{
-			"invalid prefix provider",
+			"provider invalid prefix",
 			fields{
 				ID:      1000,
 				Address: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
@@ -269,11 +268,10 @@ func TestPlan_Validate(t *testing.T) {
 			true,
 		},
 		{
-			"10 bytes provider",
+			"provider 10 bytes",
 			fields{
 				ID:       1000,
 				Address:  "sentprov1qypqxpq9qcrsszgsutj8xr",
-				Prices:   sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
 				Validity: 1000,
 				Bytes:    sdk.NewInt(1000),
 				Status:   hubtypes.StatusActive,
@@ -282,11 +280,10 @@ func TestPlan_Validate(t *testing.T) {
 			false,
 		},
 		{
-			"20 bytes provider",
+			"provider 20 bytes",
 			fields{
 				ID:       1000,
 				Address:  "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Prices:   sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
 				Validity: 1000,
 				Bytes:    sdk.NewInt(1000),
 				Status:   hubtypes.StatusActive,
@@ -295,11 +292,10 @@ func TestPlan_Validate(t *testing.T) {
 			false,
 		},
 		{
-			"30 bytes provider",
+			"provider 30 bytes",
 			fields{
 				ID:       1000,
 				Address:  "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfqyy3zxfp9ycnjs2fsh33zgx",
-				Prices:   sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
 				Validity: 1000,
 				Bytes:    sdk.NewInt(1000),
 				Status:   hubtypes.StatusActive,
@@ -308,7 +304,7 @@ func TestPlan_Validate(t *testing.T) {
 			false,
 		},
 		{
-			"nil price",
+			"price nil",
 			fields{
 				ID:       1000,
 				Address:  "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
@@ -321,7 +317,7 @@ func TestPlan_Validate(t *testing.T) {
 			false,
 		},
 		{
-			"empty price",
+			"price empty",
 			fields{
 				ID:      1000,
 				Address: "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
@@ -330,16 +326,25 @@ func TestPlan_Validate(t *testing.T) {
 			true,
 		},
 		{
-			"empty denom price",
+			"price empty denom",
 			fields{
 				ID:      1000,
 				Address: "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Prices:  sdk.Coins{sdk.Coin{Denom: ""}},
+				Prices:  sdk.Coins{sdk.Coin{Denom: "", Amount: sdk.NewInt(1000)}},
 			},
 			true,
 		},
 		{
-			"invalid denom price",
+			"price empty amount",
+			fields{
+				ID:      1000,
+				Address: "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
+				Prices:  sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.Int{}}},
+			},
+			true,
+		},
+		{
+			"price invalid denom",
 			fields{
 				ID:      1000,
 				Address: "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
@@ -348,7 +353,7 @@ func TestPlan_Validate(t *testing.T) {
 			true,
 		},
 		{
-			"negative amount price",
+			"price negative amount",
 			fields{
 				ID:      1000,
 				Address: "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
@@ -357,7 +362,7 @@ func TestPlan_Validate(t *testing.T) {
 			true,
 		},
 		{
-			"zero amount price",
+			"price zero amount",
 			fields{
 				ID:      1000,
 				Address: "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
@@ -366,7 +371,7 @@ func TestPlan_Validate(t *testing.T) {
 			true,
 		},
 		{
-			"positive amount price",
+			"price positive amount",
 			fields{
 				ID:       1000,
 				Address:  "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
@@ -379,31 +384,28 @@ func TestPlan_Validate(t *testing.T) {
 			false,
 		},
 		{
-			"negative validity",
+			"validity negative",
 			fields{
 				ID:       1000,
 				Address:  "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Prices:   sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
 				Validity: -1000,
 			},
 			true,
 		},
 		{
-			"zero validity",
+			"validity zero",
 			fields{
 				ID:       1000,
 				Address:  "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Prices:   sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
 				Validity: 0,
 			},
 			true,
 		},
 		{
-			"positive validity",
+			"validity positive",
 			fields{
 				ID:       1000,
 				Address:  "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Prices:   sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
 				Validity: 1000,
 				Bytes:    sdk.NewInt(1000),
 				Status:   hubtypes.StatusActive,
@@ -412,33 +414,40 @@ func TestPlan_Validate(t *testing.T) {
 			false,
 		},
 		{
-			"negative bytes",
+			"bytes empty",
 			fields{
 				ID:       1000,
 				Address:  "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Prices:   sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
+				Validity: 1000,
+				Bytes:    sdk.Int{},
+			},
+			true,
+		},
+		{
+			"bytes negative",
+			fields{
+				ID:       1000,
+				Address:  "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
 				Validity: 1000,
 				Bytes:    sdk.NewInt(-1000),
 			},
 			true,
 		},
 		{
-			"zero bytes",
+			"bytes zero",
 			fields{
 				ID:       1000,
 				Address:  "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Prices:   sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
 				Validity: 1000,
 				Bytes:    sdk.NewInt(0),
 			},
 			true,
 		},
 		{
-			"positive bytes",
+			"bytes positive",
 			fields{
 				ID:       1000,
 				Address:  "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Prices:   sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
 				Validity: 1000,
 				Bytes:    sdk.NewInt(1000),
 				Status:   hubtypes.StatusActive,
@@ -447,11 +456,10 @@ func TestPlan_Validate(t *testing.T) {
 			false,
 		},
 		{
-			"unspecified status",
+			"status unspecified",
 			fields{
 				ID:       1000,
 				Address:  "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Prices:   sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
 				Validity: 1000,
 				Bytes:    sdk.NewInt(1000),
 				Status:   hubtypes.StatusUnspecified,
@@ -459,11 +467,10 @@ func TestPlan_Validate(t *testing.T) {
 			true,
 		},
 		{
-			"active status",
+			"status active",
 			fields{
 				ID:       1000,
 				Address:  "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Prices:   sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
 				Validity: 1000,
 				Bytes:    sdk.NewInt(1000),
 				Status:   hubtypes.StatusActive,
@@ -472,11 +479,10 @@ func TestPlan_Validate(t *testing.T) {
 			false,
 		},
 		{
-			"inactive pending status",
+			"status inactive pending",
 			fields{
 				ID:       1000,
 				Address:  "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Prices:   sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
 				Validity: 1000,
 				Bytes:    sdk.NewInt(1000),
 				Status:   hubtypes.StatusInactivePending,
@@ -484,11 +490,10 @@ func TestPlan_Validate(t *testing.T) {
 			true,
 		},
 		{
-			"inactive status",
+			"status inactive",
 			fields{
 				ID:       1000,
 				Address:  "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Prices:   sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
 				Validity: 1000,
 				Bytes:    sdk.NewInt(1000),
 				Status:   hubtypes.StatusInactive,
@@ -497,11 +502,10 @@ func TestPlan_Validate(t *testing.T) {
 			false,
 		},
 		{
-			"zero status_at",
+			"status_at zero",
 			fields{
 				ID:       1000,
 				Address:  "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Prices:   sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
 				Validity: 1000,
 				Bytes:    sdk.NewInt(1000),
 				Status:   hubtypes.StatusActive,
@@ -510,11 +514,10 @@ func TestPlan_Validate(t *testing.T) {
 			true,
 		},
 		{
-			"positive status_at",
+			"status_at positive",
 			fields{
 				ID:       1000,
 				Address:  "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Prices:   sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
 				Validity: 1000,
 				Bytes:    sdk.NewInt(1000),
 				Status:   hubtypes.StatusActive,

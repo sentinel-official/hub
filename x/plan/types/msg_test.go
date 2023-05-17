@@ -22,58 +22,55 @@ func TestMsgCreateRequest_ValidateBasic(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			"empty address",
+			"from empty",
 			fields{
 				From: "",
 			},
 			true,
 		},
 		{
-			"invalid address",
+			"from invalid",
 			fields{
-				From: "sentprov",
+				From: "invalid",
 			},
 			true,
 		},
 		{
-			"invalid prefix address",
+			"from invalid prefix",
 			fields{
 				From: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
 			},
 			true,
 		},
 		{
-			"10 bytes address",
+			"from 10 bytes",
 			fields{
 				From:     "sentprov1qypqxpq9qcrsszgsutj8xr",
-				Prices:   sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
 				Validity: 1000,
 				Bytes:    sdk.NewInt(1000),
 			},
 			false,
 		},
 		{
-			"20 bytes address",
+			"from 20 bytes",
 			fields{
 				From:     "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Prices:   sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
 				Validity: 1000,
 				Bytes:    sdk.NewInt(1000),
 			},
 			false,
 		},
 		{
-			"30 bytes address",
+			"from 30 bytes",
 			fields{
 				From:     "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfqyy3zxfp9ycnjs2fsh33zgx",
-				Prices:   sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
 				Validity: 1000,
 				Bytes:    sdk.NewInt(1000),
 			},
 			false,
 		},
 		{
-			"nil price",
+			"price nil",
 			fields{
 				From:     "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
 				Prices:   nil,
@@ -83,7 +80,7 @@ func TestMsgCreateRequest_ValidateBasic(t *testing.T) {
 			false,
 		},
 		{
-			"empty price",
+			"price empty",
 			fields{
 				From:   "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
 				Prices: sdk.Coins{},
@@ -91,23 +88,31 @@ func TestMsgCreateRequest_ValidateBasic(t *testing.T) {
 			true,
 		},
 		{
-			"empty denom price",
+			"price empty denom",
 			fields{
 				From:   "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Prices: sdk.Coins{sdk.Coin{Denom: ""}},
+				Prices: sdk.Coins{sdk.Coin{Denom: "", Amount: sdk.NewInt(1000)}},
 			},
 			true,
 		},
 		{
-			"invalid denom price",
+			"price empty amount",
 			fields{
 				From:   "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Prices: sdk.Coins{sdk.Coin{Denom: "o"}},
+				Prices: sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.Int{}}},
 			},
 			true,
 		},
 		{
-			"negative amount price",
+			"price invalid denom",
+			fields{
+				From:   "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
+				Prices: sdk.Coins{sdk.Coin{Denom: "o", Amount: sdk.NewInt(1000)}},
+			},
+			true,
+		},
+		{
+			"price negative amount",
 			fields{
 				From:   "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
 				Prices: sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(-1000)}},
@@ -115,7 +120,7 @@ func TestMsgCreateRequest_ValidateBasic(t *testing.T) {
 			true,
 		},
 		{
-			"zero amount price",
+			"price zero amount",
 			fields{
 				From:   "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
 				Prices: sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(0)}},
@@ -123,7 +128,7 @@ func TestMsgCreateRequest_ValidateBasic(t *testing.T) {
 			true,
 		},
 		{
-			"positive amount price",
+			"price positive amount",
 			fields{
 				From:     "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
 				Prices:   sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
@@ -133,7 +138,7 @@ func TestMsgCreateRequest_ValidateBasic(t *testing.T) {
 			false,
 		},
 		{
-			"negative validity",
+			"validity negative",
 			fields{
 				From:     "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
 				Prices:   sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
@@ -142,49 +147,53 @@ func TestMsgCreateRequest_ValidateBasic(t *testing.T) {
 			true,
 		},
 		{
-			"zero validity",
+			"validity zero",
 			fields{
 				From:     "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Prices:   sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
 				Validity: 0,
 			},
 			true,
 		},
 		{
-			"positive validity",
+			"validity positive",
 			fields{
 				From:     "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Prices:   sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
 				Validity: 1000,
 				Bytes:    sdk.NewInt(1000),
 			},
 			false,
 		},
 		{
-			"negative bytes",
+			"bytes empty",
 			fields{
 				From:     "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Prices:   sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
+				Validity: 1000,
+				Bytes:    sdk.Int{},
+			},
+			true,
+		},
+		{
+			"bytes negative",
+			fields{
+				From:     "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
 				Validity: 1000,
 				Bytes:    sdk.NewInt(-1000),
 			},
 			true,
 		},
 		{
-			"zero bytes",
+			"bytes zero",
 			fields{
 				From:     "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Prices:   sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
 				Validity: 1000,
 				Bytes:    sdk.NewInt(0),
 			},
 			true,
 		},
 		{
-			"positive bytes",
+			"bytes positive",
 			fields{
 				From:     "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Prices:   sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
 				Validity: 1000,
 				Bytes:    sdk.NewInt(1000),
 			},
@@ -218,28 +227,28 @@ func TestMsgUpdateStatusRequest_ValidateBasic(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			"empty address",
+			"from empty",
 			fields{
 				From: "",
 			},
 			true,
 		},
 		{
-			"invalid address",
+			"from invalid",
 			fields{
-				From: "sentprov",
+				From: "invalid",
 			},
 			true,
 		},
 		{
-			"invalid prefix address",
+			"from invalid prefix",
 			fields{
 				From: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
 			},
 			true,
 		},
 		{
-			"10 bytes address",
+			"from 10 bytes",
 			fields{
 				From:   "sentprov1qypqxpq9qcrsszgsutj8xr",
 				ID:     1000,
@@ -248,7 +257,7 @@ func TestMsgUpdateStatusRequest_ValidateBasic(t *testing.T) {
 			false,
 		},
 		{
-			"20 bytes address",
+			"from 20 bytes",
 			fields{
 				From:   "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
 				ID:     1000,
@@ -257,7 +266,7 @@ func TestMsgUpdateStatusRequest_ValidateBasic(t *testing.T) {
 			false,
 		},
 		{
-			"30 bytes address",
+			"from 30 bytes",
 			fields{
 				From:   "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfqyy3zxfp9ycnjs2fsh33zgx",
 				ID:     1000,
@@ -266,7 +275,7 @@ func TestMsgUpdateStatusRequest_ValidateBasic(t *testing.T) {
 			false,
 		},
 		{
-			"zero id",
+			"id zero",
 			fields{
 				From: "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
 				ID:   0,
@@ -274,7 +283,7 @@ func TestMsgUpdateStatusRequest_ValidateBasic(t *testing.T) {
 			true,
 		},
 		{
-			"positive id",
+			"id positive",
 			fields{
 				From:   "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
 				ID:     1000,
@@ -283,7 +292,7 @@ func TestMsgUpdateStatusRequest_ValidateBasic(t *testing.T) {
 			false,
 		},
 		{
-			"unspecified status",
+			"status unspecified",
 			fields{
 				From:   "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
 				ID:     1000,
@@ -292,7 +301,7 @@ func TestMsgUpdateStatusRequest_ValidateBasic(t *testing.T) {
 			true,
 		},
 		{
-			"active status",
+			"status active",
 			fields{
 				From:   "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
 				ID:     1000,
@@ -301,7 +310,7 @@ func TestMsgUpdateStatusRequest_ValidateBasic(t *testing.T) {
 			false,
 		},
 		{
-			"inactive pending status",
+			"status inactive pending",
 			fields{
 				From:   "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
 				ID:     1000,
@@ -310,7 +319,7 @@ func TestMsgUpdateStatusRequest_ValidateBasic(t *testing.T) {
 			true,
 		},
 		{
-			"inactive status",
+			"status inactive",
 			fields{
 				From:   "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
 				ID:     1000,
@@ -345,28 +354,28 @@ func TestMsgLinkNodeRequest_ValidateBasic(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			"empty from",
+			"from empty",
 			fields{
 				From: "",
 			},
 			true,
 		},
 		{
-			"invalid from",
+			"from invalid",
 			fields{
-				From: "sentprov",
+				From: "invalid",
 			},
 			true,
 		},
 		{
-			"invalid prefix from",
+			"from invalid prefix",
 			fields{
 				From: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
 			},
 			true,
 		},
 		{
-			"10 bytes from",
+			"from 10 bytes",
 			fields{
 				From:    "sentprov1qypqxpq9qcrsszgsutj8xr",
 				ID:      1000,
@@ -375,7 +384,7 @@ func TestMsgLinkNodeRequest_ValidateBasic(t *testing.T) {
 			false,
 		},
 		{
-			"20 bytes from",
+			"from 20 bytes",
 			fields{
 				From:    "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
 				ID:      1000,
@@ -384,7 +393,7 @@ func TestMsgLinkNodeRequest_ValidateBasic(t *testing.T) {
 			false,
 		},
 		{
-			"30 bytes from",
+			"from 30 bytes",
 			fields{
 				From:    "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfqyy3zxfp9ycnjs2fsh33zgx",
 				ID:      1000,
@@ -393,7 +402,7 @@ func TestMsgLinkNodeRequest_ValidateBasic(t *testing.T) {
 			false,
 		},
 		{
-			"zero id",
+			"id zero",
 			fields{
 				From: "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
 				ID:   0,
@@ -401,7 +410,7 @@ func TestMsgLinkNodeRequest_ValidateBasic(t *testing.T) {
 			true,
 		},
 		{
-			"positive id",
+			"id positive",
 			fields{
 				From:    "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
 				ID:      1000,
@@ -410,7 +419,7 @@ func TestMsgLinkNodeRequest_ValidateBasic(t *testing.T) {
 			false,
 		},
 		{
-			"empty address",
+			"address empty",
 			fields{
 				From:    "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
 				ID:      1000,
@@ -419,16 +428,16 @@ func TestMsgLinkNodeRequest_ValidateBasic(t *testing.T) {
 			true,
 		},
 		{
-			"invalid address",
+			"address invalid",
 			fields{
 				From:    "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
 				ID:      1000,
-				Address: "sentnode",
+				Address: "invalid",
 			},
 			true,
 		},
 		{
-			"invalid prefix address",
+			"address invalid prefix",
 			fields{
 				From:    "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
 				ID:      1000,
@@ -437,7 +446,7 @@ func TestMsgLinkNodeRequest_ValidateBasic(t *testing.T) {
 			true,
 		},
 		{
-			"10 bytes address",
+			"address 10 bytes",
 			fields{
 				From:    "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
 				ID:      1000,
@@ -446,7 +455,7 @@ func TestMsgLinkNodeRequest_ValidateBasic(t *testing.T) {
 			false,
 		},
 		{
-			"20 bytes address",
+			"address 20 bytes",
 			fields{
 				From:    "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
 				ID:      1000,
@@ -455,7 +464,7 @@ func TestMsgLinkNodeRequest_ValidateBasic(t *testing.T) {
 			false,
 		},
 		{
-			"30 bytes address",
+			"address 30 bytes",
 			fields{
 				From:    "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
 				ID:      1000,
@@ -490,28 +499,28 @@ func TestMsgUnlinkNodeRequest_ValidateBasic(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			"empty from",
+			"from empty",
 			fields{
 				From: "",
 			},
 			true,
 		},
 		{
-			"invalid from",
+			"from invalid",
 			fields{
-				From: "sentprov",
+				From: "invalid",
 			},
 			true,
 		},
 		{
-			"invalid prefix from",
+			"from invalid prefix",
 			fields{
 				From: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
 			},
 			true,
 		},
 		{
-			"10 bytes from",
+			"from 10 bytes",
 			fields{
 				From:    "sentprov1qypqxpq9qcrsszgsutj8xr",
 				ID:      1000,
@@ -520,7 +529,7 @@ func TestMsgUnlinkNodeRequest_ValidateBasic(t *testing.T) {
 			false,
 		},
 		{
-			"20 bytes from",
+			"from 20 bytes",
 			fields{
 				From:    "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
 				ID:      1000,
@@ -529,7 +538,7 @@ func TestMsgUnlinkNodeRequest_ValidateBasic(t *testing.T) {
 			false,
 		},
 		{
-			"30 bytes from",
+			"from 30 bytes",
 			fields{
 				From:    "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfqyy3zxfp9ycnjs2fsh33zgx",
 				ID:      1000,
@@ -538,7 +547,7 @@ func TestMsgUnlinkNodeRequest_ValidateBasic(t *testing.T) {
 			false,
 		},
 		{
-			"zero id",
+			"id zero",
 			fields{
 				From: "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
 				ID:   0,
@@ -546,7 +555,7 @@ func TestMsgUnlinkNodeRequest_ValidateBasic(t *testing.T) {
 			true,
 		},
 		{
-			"positive id",
+			"id positive",
 			fields{
 				From:    "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
 				ID:      1000,
@@ -555,7 +564,7 @@ func TestMsgUnlinkNodeRequest_ValidateBasic(t *testing.T) {
 			false,
 		},
 		{
-			"empty address",
+			"address empty",
 			fields{
 				From:    "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
 				ID:      1000,
@@ -564,16 +573,16 @@ func TestMsgUnlinkNodeRequest_ValidateBasic(t *testing.T) {
 			true,
 		},
 		{
-			"invalid address",
+			"address invalid",
 			fields{
 				From:    "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
 				ID:      1000,
-				Address: "sentnode",
+				Address: "invalid",
 			},
 			true,
 		},
 		{
-			"invalid prefix address",
+			"address invalid prefix",
 			fields{
 				From:    "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
 				ID:      1000,
@@ -582,7 +591,7 @@ func TestMsgUnlinkNodeRequest_ValidateBasic(t *testing.T) {
 			true,
 		},
 		{
-			"10 bytes address",
+			"address 10 bytes",
 			fields{
 				From:    "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
 				ID:      1000,
@@ -591,7 +600,7 @@ func TestMsgUnlinkNodeRequest_ValidateBasic(t *testing.T) {
 			false,
 		},
 		{
-			"20 bytes address",
+			"address 20 bytes",
 			fields{
 				From:    "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
 				ID:      1000,
@@ -600,7 +609,7 @@ func TestMsgUnlinkNodeRequest_ValidateBasic(t *testing.T) {
 			false,
 		},
 		{
-			"30 bytes address",
+			"address 30 bytes",
 			fields{
 				From:    "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
 				ID:      1000,
@@ -615,6 +624,124 @@ func TestMsgUnlinkNodeRequest_ValidateBasic(t *testing.T) {
 				From:    tt.fields.From,
 				ID:      tt.fields.ID,
 				Address: tt.fields.Address,
+			}
+			if err := m.ValidateBasic(); (err != nil) != tt.wantErr {
+				t.Errorf("ValidateBasic() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
+}
+
+func TestMsgSubscribeRequest_ValidateBasic(t *testing.T) {
+	type fields struct {
+		From  string
+		ID    uint64
+		Denom string
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		wantErr bool
+	}{
+		{
+			"from empty",
+			fields{
+				From: "",
+			},
+			true,
+		},
+		{
+			"from invalid",
+			fields{
+				From: "invalid",
+			},
+			true,
+		},
+		{
+			"from invalid prefix",
+			fields{
+				From: "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
+			},
+			true,
+		},
+		{
+			"from 10 bytes",
+			fields{
+				From:  "sent1qypqxpq9qcrsszgslawd5s",
+				ID:    1000,
+				Denom: "one",
+			},
+			false,
+		},
+		{
+			"from 20 bytes",
+			fields{
+				From:  "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				ID:    1000,
+				Denom: "one",
+			},
+			false,
+		},
+		{
+			"from 30 bytes",
+			fields{
+				From:  "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfqyy3zxfp9ycnjs2fszvfck8",
+				ID:    1000,
+				Denom: "one",
+			},
+			false,
+		},
+		{
+			"id zero",
+			fields{
+				From: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				ID:   0,
+			},
+			true,
+		},
+		{
+			"id positive",
+			fields{
+				From:  "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				ID:    1000,
+				Denom: "one",
+			},
+			false,
+		},
+		{
+			"denom empty",
+			fields{
+				From:  "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				ID:    1000,
+				Denom: "",
+			},
+			false,
+		},
+		{
+			"denom invalid",
+			fields{
+				From:  "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				ID:    1000,
+				Denom: "o",
+			},
+			true,
+		},
+		{
+			"denom one",
+			fields{
+				From:  "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				ID:    1000,
+				Denom: "one",
+			},
+			false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			m := &MsgSubscribeRequest{
+				From:  tt.fields.From,
+				ID:    tt.fields.ID,
+				Denom: tt.fields.Denom,
 			}
 			if err := m.ValidateBasic(); (err != nil) != tt.wantErr {
 				t.Errorf("ValidateBasic() error = %v, wantErr %v", err, tt.wantErr)

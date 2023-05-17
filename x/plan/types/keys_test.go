@@ -49,3 +49,22 @@ func TestPlanForProviderKey(t *testing.T) {
 		})
 	}
 }
+
+func TestIDFromPlanForProviderKey(t *testing.T) {
+	var (
+		addr []byte
+		key  []byte
+	)
+
+	for i := 1; i <= 256; i += 64 {
+		addr = make([]byte, i)
+		_, _ = rand.Read(addr)
+
+		key = PlanForProviderKey(addr, uint64(i))
+		require.Equal(
+			t,
+			uint64(i),
+			IDFromPlanForProviderKey(key),
+		)
+	}
+}

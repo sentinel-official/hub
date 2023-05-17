@@ -63,6 +63,9 @@ func (m *Plan) Validate() error {
 	if m.Validity == 0 {
 		return fmt.Errorf("validity cannot be zero")
 	}
+	if m.Bytes.IsNil() {
+		return fmt.Errorf("bytes cannot be empty")
+	}
 	if m.Bytes.IsNegative() {
 		return fmt.Errorf("bytes cannot be negative")
 	}
