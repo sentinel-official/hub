@@ -7,7 +7,6 @@ import (
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
-	"github.com/cosmos/cosmos-sdk/codec"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	authzkeeper "github.com/cosmos/cosmos-sdk/x/authz/keeper"
@@ -143,10 +142,9 @@ func (k *Keepers) SetParamSubspaces(app *baseapp.BaseApp) {
 }
 
 func NewKeepers(
-	amino *codec.LegacyAmino,
 	app *baseapp.BaseApp,
 	blockedAddrs map[string]bool,
-	cdc codec.Codec,
+	encCfg EncodingConfig,
 	homeDir string,
 	invCheckPeriod uint,
 	keys StoreKeys,
@@ -158,36 +156,36 @@ func NewKeepers(
 ) (k Keepers) {
 	// Cosmos SDK keepers
 	k.ParamsKeeper = paramskeeper.NewKeeper(
-		cdc, amino, keys.KV(paramstypes.StoreKey), keys.Transient(paramstypes.TStoreKey),
+		encCfg.Codec, encCfg.Amino, keys.KV(paramstypes.StoreKey), keys.Transient(paramstypes.TStoreKey),
 	)
 	k.SetParamSubspaces(app)
 
 	k.AccountKeeper = authkeeper.NewAccountKeeper(
-		cdc, keys.KV(authtypes.StoreKey), k.Subspace(authtypes.ModuleName), authtypes.ProtoBaseAccount, mAccPerms,
+		encCfg.Codec, keys.KV(authtypes.StoreKey), k.Subspace(authtypes.ModuleName), authtypes.ProtoBaseAccount, mAccPerms,
 	)
 	k.BankKeeper = bankkeeper.NewBaseKeeper(
-		cdc, keys.KV(banktypes.StoreKey), k.AccountKeeper, k.Subspace(banktypes.ModuleName), blockedAddrs,
+		encCfg.Codec, keys.KV(banktypes.StoreKey), k.AccountKeeper, k.Subspace(banktypes.ModuleName), blockedAddrs,
 	)
 	k.CapabilityKeeper = capabilitykeeper.NewKeeper(
-		cdc, keys.KV(capabilitytypes.StoreKey), keys.Memory(capabilitytypes.MemStoreKey),
+		encCfg.Codec, keys.KV(capabilitytypes.StoreKey), keys.Memory(capabilitytypes.MemStoreKey),
 	)
-	k.AuthzKeeper = authzkeeper.NewKeeper(keys.KV(authzkeeper.StoreKey), cdc, app.MsgServiceRouter())
-	k.FeeGrantKeeper = feegrantkeeper.NewKeeper(cdc, keys.KV(feegrant.StoreKey), k.AccountKeeper)
+	k.AuthzKeeper = authzkeeper.NewKeeper(keys.KV(authzkeeper.StoreKey), encCfg.Codec, app.MsgServiceRouter())
+	k.FeeGrantKeeper = feegrantkeeper.NewKeeper(encCfg.Codec, keys.KV(feegrant.StoreKey), k.AccountKeeper)
 
 	stakingKeeper := stakingkeeper.NewKeeper(
-		cdc, keys.KV(stakingtypes.StoreKey), k.AccountKeeper, k.BankKeeper, k.Subspace(stakingtypes.ModuleName),
+		encCfg.Codec, keys.KV(stakingtypes.StoreKey), k.AccountKeeper, k.BankKeeper, k.Subspace(stakingtypes.ModuleName),
 	)
 
 	k.DistributionKeeper = distributionkeeper.NewKeeper(
-		cdc, keys.KV(distributiontypes.StoreKey), k.Subspace(distributiontypes.ModuleName),
+		encCfg.Codec, keys.KV(distributiontypes.StoreKey), k.Subspace(distributiontypes.ModuleName),
 		k.AccountKeeper, k.BankKeeper, &stakingKeeper, authtypes.FeeCollectorName, blockedAddrs,
 	)
 	k.MintKeeper = mintkeeper.NewKeeper(
-		cdc, keys.KV(minttypes.StoreKey), k.Subspace(minttypes.ModuleName),
+		encCfg.Codec, keys.KV(minttypes.StoreKey), k.Subspace(minttypes.ModuleName),
 		&stakingKeeper, k.AccountKeeper, k.BankKeeper, authtypes.FeeCollectorName,
 	)
 	k.SlashingKeeper = slashingkeeper.NewKeeper(
-		cdc, keys.KV(slashingtypes.StoreKey), &stakingKeeper, k.Subspace(slashingtypes.ModuleName),
+		encCfg.Codec, keys.KV(slashingtypes.StoreKey), &stakingKeeper, k.Subspace(slashingtypes.ModuleName),
 	)
 
 	k.StakingKeeper = *stakingKeeper.SetHooks(
@@ -195,7 +193,7 @@ func NewKeepers(
 	)
 
 	k.EvidenceKeeper = *evidencekeeper.NewKeeper(
-		cdc, keys.KV(evidencetypes.StoreKey), &k.StakingKeeper, k.SlashingKeeper,
+		encCfg.Codec, keys.KV(evidencetypes.StoreKey), &k.StakingKeeper, k.SlashingKeeper,
 	)
 	evidenceRouter := evidencetypes.NewRouter()
 	k.EvidenceKeeper.SetRouter(evidenceRouter)
@@ -203,7 +201,7 @@ func NewKeepers(
 	k.CrisisKeeper = crisiskeeper.NewKeeper(
 		k.Subspace(crisistypes.ModuleName), invCheckPeriod, k.BankKeeper, authtypes.FeeCollectorName,
 	)
-	k.UpgradeKeeper = upgradekeeper.NewKeeper(skipUpgradeHeights, keys.KV(upgradetypes.StoreKey), cdc, homeDir, app)
+	k.UpgradeKeeper = upgradekeeper.NewKeeper(skipUpgradeHeights, keys.KV(upgradetypes.StoreKey), encCfg.Codec, homeDir, app)
 
 	// Cosmos IBC keepers
 	k.ScopedIBCKeeper = k.CapabilityKeeper.ScopeToModule(ibchost.ModuleName)
@@ -213,36 +211,36 @@ func NewKeepers(
 	k.ScopedIBCTransferKeeper = k.CapabilityKeeper.ScopeToModule(ibctransfertypes.ModuleName)
 
 	k.IBCKeeper = ibckeeper.NewKeeper(
-		cdc, keys.KV(ibchost.StoreKey), k.Subspace(ibchost.ModuleName),
+		encCfg.Codec, keys.KV(ibchost.StoreKey), k.Subspace(ibchost.ModuleName),
 		k.StakingKeeper, k.UpgradeKeeper, k.ScopedIBCKeeper,
 	)
 	k.IBCFeeKeeper = ibcfeekeeper.NewKeeper(
-		cdc, keys.KV(ibcfeetypes.StoreKey), k.Subspace(ibcfeetypes.ModuleName),
+		encCfg.Codec, keys.KV(ibcfeetypes.StoreKey), k.Subspace(ibcfeetypes.ModuleName),
 		k.IBCKeeper.ChannelKeeper, k.IBCKeeper.ChannelKeeper, &k.IBCKeeper.PortKeeper, k.AccountKeeper, k.BankKeeper,
 	)
 	k.IBCICAControllerKeeper = ibcicacontrollerkeeper.NewKeeper(
-		cdc, keys.KV(ibcicacontrollertypes.StoreKey), k.Subspace(ibcicacontrollertypes.SubModuleName),
+		encCfg.Codec, keys.KV(ibcicacontrollertypes.StoreKey), k.Subspace(ibcicacontrollertypes.SubModuleName),
 		k.IBCFeeKeeper, k.IBCKeeper.ChannelKeeper, &k.IBCKeeper.PortKeeper,
 		k.ScopedIBCICAControllerKeeper, app.MsgServiceRouter(),
 	)
 	k.IBCICAHostKeeper = ibcicahostkeeper.NewKeeper(
-		cdc, keys.KV(ibcicahosttypes.StoreKey), k.Subspace(ibcicahosttypes.SubModuleName),
+		encCfg.Codec, keys.KV(ibcicahosttypes.StoreKey), k.Subspace(ibcicahosttypes.SubModuleName),
 		k.IBCKeeper.ChannelKeeper, &k.IBCKeeper.PortKeeper, k.AccountKeeper,
 		k.ScopedIBCICAHostKeeper, app.MsgServiceRouter(),
 	)
 	k.IBCTransferKeeper = ibctransferkeeper.NewKeeper(
-		cdc, keys.KV(ibctransfertypes.StoreKey), k.Subspace(ibctransfertypes.ModuleName),
+		encCfg.Codec, keys.KV(ibctransfertypes.StoreKey), k.Subspace(ibctransfertypes.ModuleName),
 		k.IBCKeeper.ChannelKeeper, k.IBCKeeper.ChannelKeeper, &k.IBCKeeper.PortKeeper,
 		k.AccountKeeper, k.BankKeeper, k.ScopedIBCTransferKeeper,
 	)
 
 	// Sentinel Hub keepers
-	k.CustomMintKeeper = custommintkeeper.NewKeeper(cdc, keys.KV(customminttypes.StoreKey), k.MintKeeper)
+	k.CustomMintKeeper = custommintkeeper.NewKeeper(encCfg.Codec, keys.KV(customminttypes.StoreKey), k.MintKeeper)
 	k.SwapKeeper = swapkeeper.NewKeeper(
-		cdc, keys.KV(swaptypes.StoreKey), k.Subspace(swaptypes.ModuleName), k.AccountKeeper, k.BankKeeper,
+		encCfg.Codec, keys.KV(swaptypes.StoreKey), k.Subspace(swaptypes.ModuleName), k.AccountKeeper, k.BankKeeper,
 	)
 	k.VPNKeeper = vpnkeeper.NewKeeper(
-		cdc, keys.KV(vpntypes.StoreKey), k.ParamsKeeper, k.AccountKeeper,
+		encCfg.Codec, keys.KV(vpntypes.StoreKey), k.ParamsKeeper, k.AccountKeeper,
 		k.BankKeeper, k.DistributionKeeper, authtypes.FeeCollectorName,
 	)
 
@@ -255,7 +253,7 @@ func NewKeepers(
 	)
 
 	k.WasmKeeper = wasmkeeper.NewKeeper(
-		cdc, keys.KV(wasmtypes.StoreKey), k.Subspace(wasmtypes.ModuleName), k.AccountKeeper,
+		encCfg.Codec, keys.KV(wasmtypes.StoreKey), k.Subspace(wasmtypes.ModuleName), k.AccountKeeper,
 		k.BankKeeper, k.StakingKeeper, k.DistributionKeeper, k.IBCKeeper.ChannelKeeper,
 		&k.IBCKeeper.PortKeeper, k.ScopedWasmKeeper, k.IBCTransferKeeper, app.MsgServiceRouter(),
 		app.GRPCQueryRouter(), wasmDir, wasmConfig, wasmCapabilities, wasmOpts...,
@@ -273,7 +271,7 @@ func NewKeepers(
 	}
 
 	k.GovKeeper = govkeeper.NewKeeper(
-		cdc, keys.KV(govtypes.StoreKey), k.Subspace(govtypes.ModuleName),
+		encCfg.Codec, keys.KV(govtypes.StoreKey), k.Subspace(govtypes.ModuleName),
 		k.AccountKeeper, k.BankKeeper, &k.StakingKeeper, govRouter,
 	)
 

@@ -4,9 +4,6 @@ import (
 	"github.com/CosmWasm/wasmd/x/wasm"
 	wasmclient "github.com/CosmWasm/wasmd/x/wasm/client"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
-	"github.com/cosmos/cosmos-sdk/client"
-	"github.com/cosmos/cosmos-sdk/codec"
-	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	authsimulation "github.com/cosmos/cosmos-sdk/x/auth/simulation"
@@ -153,30 +150,28 @@ func BlockedAccAddrs() map[string]bool {
 }
 
 func NewModuleManager(
-	cdc codec.Codec,
 	deliverTxFunc func(abcitypes.RequestDeliverTx) abcitypes.ResponseDeliverTx,
-	interfaceRegistry codectypes.InterfaceRegistry,
+	encCfg EncodingConfig,
 	k Keepers,
 	skipGenesisInvariants bool,
-	txConfig client.TxConfig,
 ) *module.Manager {
 	manager := module.NewManager(
 		// Cosmos SDK modules
-		auth.NewAppModule(cdc, k.AccountKeeper, nil),
+		auth.NewAppModule(encCfg.Codec, k.AccountKeeper, nil),
 		authvesting.NewAppModule(k.AccountKeeper, k.BankKeeper),
-		authzmodule.NewAppModule(cdc, k.AuthzKeeper, k.AccountKeeper, k.BankKeeper, interfaceRegistry),
-		bank.NewAppModule(cdc, k.BankKeeper, k.AccountKeeper),
-		capability.NewAppModule(cdc, *k.CapabilityKeeper),
+		authzmodule.NewAppModule(encCfg.Codec, k.AuthzKeeper, k.AccountKeeper, k.BankKeeper, encCfg.InterfaceRegistry),
+		bank.NewAppModule(encCfg.Codec, k.BankKeeper, k.AccountKeeper),
+		capability.NewAppModule(encCfg.Codec, *k.CapabilityKeeper),
 		crisis.NewAppModule(&k.CrisisKeeper, skipGenesisInvariants),
-		distribution.NewAppModule(cdc, k.DistributionKeeper, k.AccountKeeper, k.BankKeeper, k.StakingKeeper),
+		distribution.NewAppModule(encCfg.Codec, k.DistributionKeeper, k.AccountKeeper, k.BankKeeper, k.StakingKeeper),
 		evidence.NewAppModule(k.EvidenceKeeper),
-		feegrantmodule.NewAppModule(cdc, k.AccountKeeper, k.BankKeeper, k.FeeGrantKeeper, interfaceRegistry),
-		genutil.NewAppModule(k.AccountKeeper, k.StakingKeeper, deliverTxFunc, txConfig),
-		gov.NewAppModule(cdc, k.GovKeeper, k.AccountKeeper, k.BankKeeper),
-		mint.NewAppModule(cdc, k.MintKeeper, k.AccountKeeper),
+		feegrantmodule.NewAppModule(encCfg.Codec, k.AccountKeeper, k.BankKeeper, k.FeeGrantKeeper, encCfg.InterfaceRegistry),
+		genutil.NewAppModule(k.AccountKeeper, k.StakingKeeper, deliverTxFunc, encCfg.TxConfig),
+		gov.NewAppModule(encCfg.Codec, k.GovKeeper, k.AccountKeeper, k.BankKeeper),
+		mint.NewAppModule(encCfg.Codec, k.MintKeeper, k.AccountKeeper),
 		params.NewAppModule(k.ParamsKeeper),
-		slashing.NewAppModule(cdc, k.SlashingKeeper, k.AccountKeeper, k.BankKeeper, k.StakingKeeper),
-		staking.NewAppModule(cdc, k.StakingKeeper, k.AccountKeeper, k.BankKeeper),
+		slashing.NewAppModule(encCfg.Codec, k.SlashingKeeper, k.AccountKeeper, k.BankKeeper, k.StakingKeeper),
+		staking.NewAppModule(encCfg.Codec, k.StakingKeeper, k.AccountKeeper, k.BankKeeper),
 		upgrade.NewAppModule(k.UpgradeKeeper),
 
 		// Cosmos IBC modules
@@ -186,12 +181,12 @@ func NewModuleManager(
 		ibctransfer.NewAppModule(k.IBCTransferKeeper),
 
 		// Sentinel Hub modules
-		custommint.NewAppModule(cdc, k.CustomMintKeeper),
-		swap.NewAppModule(cdc, k.SwapKeeper),
-		vpn.NewAppModule(cdc, k.AccountKeeper, k.BankKeeper, k.VPNKeeper),
+		custommint.NewAppModule(encCfg.Codec, k.CustomMintKeeper),
+		swap.NewAppModule(encCfg.Codec, k.SwapKeeper),
+		vpn.NewAppModule(encCfg.Codec, encCfg.TxConfig, k.AccountKeeper, k.BankKeeper, k.VPNKeeper),
 
 		// Other modules
-		wasm.NewAppModule(cdc, &k.WasmKeeper, k.StakingKeeper, k.AccountKeeper, k.BankKeeper),
+		wasm.NewAppModule(encCfg.Codec, &k.WasmKeeper, k.StakingKeeper, k.AccountKeeper, k.BankKeeper),
 	)
 
 	manager.SetOrderBeginBlockers(
@@ -297,25 +292,21 @@ func NewModuleManager(
 	return manager
 }
 
-func NewSimulationManager(
-	cdc codec.Codec,
-	interfaceRegistry codectypes.InterfaceRegistry,
-	k Keepers,
-) *module.SimulationManager {
+func NewSimulationManager(encCfg EncodingConfig, k Keepers) *module.SimulationManager {
 	return module.NewSimulationManager(
 		// Cosmos SDK modules
-		auth.NewAppModule(cdc, k.AccountKeeper, authsimulation.RandomGenesisAccounts),
-		authzmodule.NewAppModule(cdc, k.AuthzKeeper, k.AccountKeeper, k.BankKeeper, interfaceRegistry),
-		bank.NewAppModule(cdc, k.BankKeeper, k.AccountKeeper),
-		capability.NewAppModule(cdc, *k.CapabilityKeeper),
-		distribution.NewAppModule(cdc, k.DistributionKeeper, k.AccountKeeper, k.BankKeeper, k.StakingKeeper),
+		auth.NewAppModule(encCfg.Codec, k.AccountKeeper, authsimulation.RandomGenesisAccounts),
+		authzmodule.NewAppModule(encCfg.Codec, k.AuthzKeeper, k.AccountKeeper, k.BankKeeper, encCfg.InterfaceRegistry),
+		bank.NewAppModule(encCfg.Codec, k.BankKeeper, k.AccountKeeper),
+		capability.NewAppModule(encCfg.Codec, *k.CapabilityKeeper),
+		distribution.NewAppModule(encCfg.Codec, k.DistributionKeeper, k.AccountKeeper, k.BankKeeper, k.StakingKeeper),
 		evidence.NewAppModule(k.EvidenceKeeper),
-		feegrantmodule.NewAppModule(cdc, k.AccountKeeper, k.BankKeeper, k.FeeGrantKeeper, interfaceRegistry),
-		gov.NewAppModule(cdc, k.GovKeeper, k.AccountKeeper, k.BankKeeper),
-		mint.NewAppModule(cdc, k.MintKeeper, k.AccountKeeper),
+		feegrantmodule.NewAppModule(encCfg.Codec, k.AccountKeeper, k.BankKeeper, k.FeeGrantKeeper, encCfg.InterfaceRegistry),
+		gov.NewAppModule(encCfg.Codec, k.GovKeeper, k.AccountKeeper, k.BankKeeper),
+		mint.NewAppModule(encCfg.Codec, k.MintKeeper, k.AccountKeeper),
 		params.NewAppModule(k.ParamsKeeper),
-		slashing.NewAppModule(cdc, k.SlashingKeeper, k.AccountKeeper, k.BankKeeper, k.StakingKeeper),
-		staking.NewAppModule(cdc, k.StakingKeeper, k.AccountKeeper, k.BankKeeper),
+		slashing.NewAppModule(encCfg.Codec, k.SlashingKeeper, k.AccountKeeper, k.BankKeeper, k.StakingKeeper),
+		staking.NewAppModule(encCfg.Codec, k.StakingKeeper, k.AccountKeeper, k.BankKeeper),
 
 		// Cosmos IBC modules
 		ibcfee.NewAppModule(k.IBCFeeKeeper),
@@ -323,11 +314,11 @@ func NewSimulationManager(
 		ibctransfer.NewAppModule(k.IBCTransferKeeper),
 
 		// Sentinel Hub modules
-		custommint.NewAppModule(cdc, k.CustomMintKeeper),
-		swap.NewAppModule(cdc, k.SwapKeeper),
-		vpn.NewAppModule(cdc, k.AccountKeeper, k.BankKeeper, k.VPNKeeper),
+		custommint.NewAppModule(encCfg.Codec, k.CustomMintKeeper),
+		swap.NewAppModule(encCfg.Codec, k.SwapKeeper),
+		vpn.NewAppModule(encCfg.Codec, encCfg.TxConfig, k.AccountKeeper, k.BankKeeper, k.VPNKeeper),
 
 		// Other modules
-		wasm.NewAppModule(cdc, &k.WasmKeeper, k.StakingKeeper, k.AccountKeeper, k.BankKeeper),
+		wasm.NewAppModule(encCfg.Codec, &k.WasmKeeper, k.StakingKeeper, k.AccountKeeper, k.BankKeeper),
 	)
 }

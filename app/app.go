@@ -81,13 +81,11 @@ func NewApp(
 	var (
 		storeKeys = NewStoreKeys()
 		keepers   = NewKeepers(
-			encCfg.Amino, baseApp, BlockedAccAddrs(), encCfg.Codec, homeDir, invCheckPeriod,
-			storeKeys, ModuleAccPerms(), skipUpgradeHeights, wasmConfig, wasmOpts, wasmProposalTypes,
+			baseApp, BlockedAccAddrs(), encCfg, homeDir, invCheckPeriod, storeKeys,
+			ModuleAccPerms(), skipUpgradeHeights, wasmConfig, wasmOpts, wasmProposalTypes,
 		)
-		mm = NewModuleManager(
-			encCfg.Codec, baseApp.DeliverTx, encCfg.InterfaceRegistry, keepers, skipGenesisInvariants, encCfg.TxConfig,
-		)
-		sm = NewSimulationManager(encCfg.Codec, encCfg.InterfaceRegistry, keepers)
+		mm = NewModuleManager(baseApp.DeliverTx, encCfg, keepers, skipGenesisInvariants)
+		sm = NewSimulationManager(encCfg, keepers)
 	)
 
 	app := &App{
