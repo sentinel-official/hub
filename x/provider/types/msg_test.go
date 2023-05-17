@@ -3,6 +3,8 @@ package types
 import (
 	"strings"
 	"testing"
+
+	hubtypes "github.com/sentinel-official/hub/types"
 )
 
 func TestMsgRegisterRequest_ValidateBasic(t *testing.T) {
@@ -19,57 +21,36 @@ func TestMsgRegisterRequest_ValidateBasic(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			"empty from",
+			"from empty",
 			fields{
 				From: "",
 			},
 			true,
 		},
 		{
-			"invalid from",
+			"from invalid",
 			fields{
 				From: "invalid",
 			},
 			true,
 		},
 		{
-			"invalid prefix from",
+			"from invalid prefix",
 			fields{
 				From: "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
 			},
 			true,
 		},
 		{
-			"10 bytes from",
+			"from 10 bytes",
 			fields{
 				From: "sent1qypqxpq9qcrsszgslawd5s",
+				Name: "name",
 			},
-			true,
+			false,
 		},
 		{
-			"20 bytes from",
-			fields{
-				From: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-			},
-			true,
-		},
-		{
-			"30 bytes from",
-			fields{
-				From: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfqyy3zxfp9ycnjs2fszvfck8",
-			},
-			true,
-		},
-		{
-			"empty name",
-			fields{
-				From: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				Name: "",
-			},
-			true,
-		},
-		{
-			"non-empty name",
+			"from 20 bytes",
 			fields{
 				From: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
 				Name: "name",
@@ -77,7 +58,31 @@ func TestMsgRegisterRequest_ValidateBasic(t *testing.T) {
 			false,
 		},
 		{
-			"length 72 name",
+			"from 30 bytes",
+			fields{
+				From: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfqyy3zxfp9ycnjs2fszvfck8",
+				Name: "name",
+			},
+			false,
+		},
+		{
+			"name empty",
+			fields{
+				From: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Name: "",
+			},
+			true,
+		},
+		{
+			"name non-empty",
+			fields{
+				From: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Name: strings.Repeat("n", 8),
+			},
+			false,
+		},
+		{
+			"name length 72 chars",
 			fields{
 				From: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
 				Name: strings.Repeat("n", 72),
@@ -85,7 +90,7 @@ func TestMsgRegisterRequest_ValidateBasic(t *testing.T) {
 			true,
 		},
 		{
-			"empty identity",
+			"identity empty",
 			fields{
 				From:     "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
 				Name:     "name",
@@ -94,7 +99,7 @@ func TestMsgRegisterRequest_ValidateBasic(t *testing.T) {
 			false,
 		},
 		{
-			"non-empty identity",
+			"identity non-empty",
 			fields{
 				From:     "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
 				Name:     "name",
@@ -103,7 +108,7 @@ func TestMsgRegisterRequest_ValidateBasic(t *testing.T) {
 			false,
 		},
 		{
-			"length 72 identity",
+			"identity length 72 chars",
 			fields{
 				From:     "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
 				Name:     "name",
@@ -112,7 +117,7 @@ func TestMsgRegisterRequest_ValidateBasic(t *testing.T) {
 			true,
 		},
 		{
-			"empty website",
+			"website empty",
 			fields{
 				From:     "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
 				Name:     "name",
@@ -122,7 +127,7 @@ func TestMsgRegisterRequest_ValidateBasic(t *testing.T) {
 			false,
 		},
 		{
-			"non-empty website",
+			"website non-empty",
 			fields{
 				From:     "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
 				Name:     "name",
@@ -132,7 +137,7 @@ func TestMsgRegisterRequest_ValidateBasic(t *testing.T) {
 			false,
 		},
 		{
-			"length 72 website",
+			"website length 72 chars",
 			fields{
 				From:     "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
 				Name:     "name",
@@ -142,7 +147,7 @@ func TestMsgRegisterRequest_ValidateBasic(t *testing.T) {
 			true,
 		},
 		{
-			"invalid website",
+			"website invalid",
 			fields{
 				From:     "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
 				Name:     "name",
@@ -152,7 +157,7 @@ func TestMsgRegisterRequest_ValidateBasic(t *testing.T) {
 			true,
 		},
 		{
-			"empty description",
+			"description empty",
 			fields{
 				From:        "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
 				Name:        "name",
@@ -163,7 +168,7 @@ func TestMsgRegisterRequest_ValidateBasic(t *testing.T) {
 			false,
 		},
 		{
-			"non-empty description",
+			"description non-empty",
 			fields{
 				From:        "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
 				Name:        "name",
@@ -174,7 +179,7 @@ func TestMsgRegisterRequest_ValidateBasic(t *testing.T) {
 			false,
 		},
 		{
-			"length 264 description",
+			"description length 264 chars",
 			fields{
 				From:        "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
 				Name:        "name",
@@ -208,6 +213,7 @@ func TestMsgUpdateRequest_ValidateBasic(t *testing.T) {
 		Identity    string
 		Website     string
 		Description string
+		Status      hubtypes.Status
 	}
 	tests := []struct {
 		name    string
@@ -215,49 +221,49 @@ func TestMsgUpdateRequest_ValidateBasic(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			"empty address",
+			"address empty",
 			fields{
 				From: "",
 			},
 			true,
 		},
 		{
-			"invalid address",
+			"address invalid",
 			fields{
 				From: "invalid",
 			},
 			true,
 		},
 		{
-			"invalid prefix address",
+			"address invalid prefix",
 			fields{
 				From: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
 			},
 			true,
 		},
 		{
-			"10 bytes address",
+			"address 10 bytes",
 			fields{
 				From: "sentprov1qypqxpq9qcrsszgsutj8xr",
 			},
 			false,
 		},
 		{
-			"20 bytes address",
+			"address 20 bytes",
 			fields{
 				From: "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
 			},
 			false,
 		},
 		{
-			"30 bytes address",
+			"address 30 bytes",
 			fields{
 				From: "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfqyy3zxfp9ycnjs2fsh33zgx",
 			},
 			false,
 		},
 		{
-			"empty name",
+			"name empty",
 			fields{
 				From: "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
 				Name: "",
@@ -265,7 +271,7 @@ func TestMsgUpdateRequest_ValidateBasic(t *testing.T) {
 			false,
 		},
 		{
-			"non-empty name",
+			"name non-empty",
 			fields{
 				From: "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
 				Name: "name",
@@ -273,7 +279,7 @@ func TestMsgUpdateRequest_ValidateBasic(t *testing.T) {
 			false,
 		},
 		{
-			"length 72 name",
+			"name length 72 chars",
 			fields{
 				From: "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
 				Name: strings.Repeat("n", 72),
@@ -281,104 +287,116 @@ func TestMsgUpdateRequest_ValidateBasic(t *testing.T) {
 			true,
 		},
 		{
-			"empty identity",
+			"identity empty",
 			fields{
 				From:     "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Name:     "name",
 				Identity: "",
 			},
 			false,
 		},
 		{
-			"non-empty identity",
+			"identity non-empty",
 			fields{
 				From:     "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Name:     "name",
 				Identity: "identity",
 			},
 			false,
 		},
 		{
-			"length 72 identity",
+			"identity length 72 chars",
 			fields{
 				From:     "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Name:     "name",
 				Identity: strings.Repeat("i", 72),
 			},
 			true,
 		},
 		{
-			"empty website",
+			"website empty",
 			fields{
-				From:     "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Name:     "name",
-				Identity: "identity",
-				Website:  "",
+				From:    "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
+				Website: "",
 			},
 			false,
 		},
 		{
-			"non-empty website",
+			"website non-empty",
 			fields{
-				From:     "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Name:     "name",
-				Identity: "identity",
-				Website:  "https://website",
+				From:    "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
+				Website: "https://website",
 			},
 			false,
 		},
 		{
-			"length 72 website",
+			"website length 72 chars",
 			fields{
-				From:     "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Name:     "name",
-				Identity: "identity",
-				Website:  strings.Repeat("w", 72),
+				From:    "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
+				Website: strings.Repeat("w", 72),
 			},
 			true,
 		},
 		{
-			"invalid website",
+			"website invalid",
 			fields{
-				From:     "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Name:     "name",
-				Identity: "identity",
-				Website:  "invalid",
+				From:    "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
+				Website: "invalid",
 			},
 			true,
 		},
 		{
-			"empty description",
+			"description empty",
 			fields{
 				From:        "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Name:        "name",
-				Identity:    "identity",
-				Website:     "https://website",
 				Description: "",
 			},
 			false,
 		},
 		{
-			"non-empty description",
+			"description non-empty",
 			fields{
 				From:        "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Name:        "name",
-				Identity:    "identity",
-				Website:     "https://website",
 				Description: "description",
 			},
 			false,
 		},
 		{
-			"length 264 description",
+			"description length 264 chars",
 			fields{
 				From:        "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Name:        "name",
-				Identity:    "identity",
-				Website:     "https://website",
 				Description: strings.Repeat("d", 264),
 			},
 			true,
+		},
+		{
+			"status unspecified",
+			fields{
+				From:   "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
+				Status: hubtypes.StatusUnspecified,
+			},
+			false,
+		},
+		{
+			"status active",
+			fields{
+				From:   "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
+				Status: hubtypes.StatusActive,
+			},
+			false,
+		},
+		{
+			"status inactive_pending",
+			fields{
+				From:   "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
+				Status: hubtypes.StatusInactivePending,
+			},
+			true,
+		},
+		{
+			"status inactive",
+			fields{
+				From:   "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
+				Status: hubtypes.StatusInactive,
+			},
+			false,
 		},
 	}
 	for _, tt := range tests {
@@ -389,6 +407,7 @@ func TestMsgUpdateRequest_ValidateBasic(t *testing.T) {
 				Identity:    tt.fields.Identity,
 				Website:     tt.fields.Website,
 				Description: tt.fields.Description,
+				Status:      tt.fields.Status,
 			}
 			if err := m.ValidateBasic(); (err != nil) != tt.wantErr {
 				t.Errorf("ValidateBasic() error = %v, wantErr %v", err, tt.wantErr)

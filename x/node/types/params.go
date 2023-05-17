@@ -223,7 +223,7 @@ func validateMaxGigabytePrices(v interface{}) error {
 		return nil
 	}
 	if value.IsAnyNil() {
-		return fmt.Errorf("max_gigabyte_prices should not contain nil")
+		return fmt.Errorf("max_gigabyte_prices cannot contain nil")
 	}
 	if !value.IsValid() {
 		return fmt.Errorf("max_gigabyte_prices must be valid")
@@ -242,7 +242,7 @@ func validateMinGigabytePrices(v interface{}) error {
 		return nil
 	}
 	if value.IsAnyNil() {
-		return fmt.Errorf("min_gigabyte_prices should not contain nil")
+		return fmt.Errorf("min_gigabyte_prices cannot contain nil")
 	}
 	if !value.IsValid() {
 		return fmt.Errorf("min_gigabyte_prices must be valid")
@@ -261,7 +261,7 @@ func validateMaxHourlyPrices(v interface{}) error {
 		return nil
 	}
 	if value.IsAnyNil() {
-		return fmt.Errorf("max_hourly_prices should not contain nil")
+		return fmt.Errorf("max_hourly_prices cannot contain nil")
 	}
 	if !value.IsValid() {
 		return fmt.Errorf("max_hourly_prices must be valid")
@@ -280,7 +280,7 @@ func validateMinHourlyPrices(v interface{}) error {
 		return nil
 	}
 	if value.IsAnyNil() {
-		return fmt.Errorf("min_hourly_prices should not contain nil")
+		return fmt.Errorf("min_hourly_prices cannot contain nil")
 	}
 	if !value.IsValid() {
 		return fmt.Errorf("min_hourly_prices must be valid")

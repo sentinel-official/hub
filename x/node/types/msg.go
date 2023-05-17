@@ -37,7 +37,7 @@ func (m *MsgRegisterRequest) ValidateBasic() error {
 			return errors.Wrap(ErrorInvalidMessage, "gigabyte_prices length cannot be zero")
 		}
 		if m.GigabytePrices.IsAnyNil() {
-			return errors.Wrap(ErrorInvalidMessage, "gigabyte_prices should not contain nil")
+			return errors.Wrap(ErrorInvalidMessage, "gigabyte_prices cannot contain nil")
 		}
 		if !m.GigabytePrices.IsValid() {
 			return errors.Wrap(ErrorInvalidMessage, "gigabyte_prices must be valid")
@@ -48,7 +48,7 @@ func (m *MsgRegisterRequest) ValidateBasic() error {
 			return errors.Wrap(ErrorInvalidMessage, "hourly_prices length cannot be zero")
 		}
 		if m.HourlyPrices.IsAnyNil() {
-			return errors.Wrap(ErrorInvalidMessage, "hourly_prices should not contain nil")
+			return errors.Wrap(ErrorInvalidMessage, "hourly_prices cannot contain nil")
 		}
 		if !m.HourlyPrices.IsValid() {
 			return errors.Wrap(ErrorInvalidMessage, "hourly_prices must be valid")
@@ -105,7 +105,7 @@ func (m *MsgUpdateDetailsRequest) ValidateBasic() error {
 			return errors.Wrap(ErrorInvalidMessage, "gigabyte_prices length cannot be zero")
 		}
 		if m.GigabytePrices.IsAnyNil() {
-			return errors.Wrap(ErrorInvalidMessage, "gigabyte_prices should not contain nil")
+			return errors.Wrap(ErrorInvalidMessage, "gigabyte_prices cannot contain nil")
 		}
 		if !m.GigabytePrices.IsValid() {
 			return errors.Wrap(ErrorInvalidMessage, "gigabyte_prices must be valid")
@@ -116,7 +116,7 @@ func (m *MsgUpdateDetailsRequest) ValidateBasic() error {
 			return errors.Wrap(ErrorInvalidMessage, "hourly_prices length cannot be zero")
 		}
 		if m.HourlyPrices.IsAnyNil() {
-			return errors.Wrap(ErrorInvalidMessage, "hourly_prices should not contain nil")
+			return errors.Wrap(ErrorInvalidMessage, "hourly_prices cannot contain nil")
 		}
 		if !m.HourlyPrices.IsValid() {
 			return errors.Wrap(ErrorInvalidMessage, "hourly_prices must be valid")

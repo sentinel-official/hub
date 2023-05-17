@@ -38,7 +38,7 @@ func (m *MsgCreateRequest) ValidateBasic() error {
 			return errors.Wrap(ErrorInvalidMessage, "prices cannot be empty")
 		}
 		if m.Prices.IsAnyNil() {
-			return errors.Wrap(ErrorInvalidMessage, "prices should not contain nil")
+			return errors.Wrap(ErrorInvalidMessage, "prices cannot contain nil")
 		}
 		if !m.Prices.IsValid() {
 			return errors.Wrap(ErrorInvalidMessage, "prices must be valid")

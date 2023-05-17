@@ -51,7 +51,7 @@ func (m *Plan) Validate() error {
 			return fmt.Errorf("prices cannot be empty")
 		}
 		if m.Prices.IsAnyNil() {
-			return fmt.Errorf("prices should not contain nil")
+			return fmt.Errorf("prices cannot contain nil")
 		}
 		if !m.Prices.IsValid() {
 			return fmt.Errorf("prices must be valid")

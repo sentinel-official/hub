@@ -35,7 +35,7 @@ func (m *Node) Validate() error {
 			return fmt.Errorf("gigabyte_prices cannot be empty")
 		}
 		if m.GigabytePrices.IsAnyNil() {
-			return fmt.Errorf("gigabyte_prices should not contain nil")
+			return fmt.Errorf("gigabyte_prices cannot contain nil")
 		}
 		if !m.GigabytePrices.IsValid() {
 			return fmt.Errorf("gigabyte_prices must be valid")
@@ -46,7 +46,7 @@ func (m *Node) Validate() error {
 			return fmt.Errorf("hourly_prices cannot be empty")
 		}
 		if m.HourlyPrices.IsAnyNil() {
-			return fmt.Errorf("hourly_prices should not contain nil")
+			return fmt.Errorf("hourly_prices cannot contain nil")
 		}
 		if !m.HourlyPrices.IsValid() {
 			return fmt.Errorf("hourly_prices must be valid")
