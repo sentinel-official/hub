@@ -75,23 +75,21 @@ func (k *msgServer) MsgUpdate(c context.Context, msg *types.MsgUpdateRequest) (*
 	if len(msg.Name) > 0 {
 		provider.Name = msg.Name
 	}
-	if len(msg.Identity) > 0 {
-		provider.Identity = msg.Identity
-	}
-	if len(msg.Website) > 0 {
-		provider.Website = msg.Website
-	}
-	if len(msg.Description) > 0 {
-		provider.Description = msg.Description
-	}
+
+	provider.Identity = msg.Identity
+	provider.Website = msg.Website
+	provider.Description = msg.Description
+
 	if !msg.Status.Equal(hubtypes.StatusUnspecified) {
-		switch provider.Status {
-		case hubtypes.StatusActive:
-			k.DeleteActiveProvider(ctx, provAddr)
-		case hubtypes.StatusInactive:
-			k.DeleteInactiveProvider(ctx, provAddr)
-		default:
-			return nil, types.NewErrorInvalidProviderStatus(provAddr, provider.Status)
+		if provider.Status.Equal(hubtypes.StatusActive) {
+			if msg.Status.Equal(hubtypes.StatusInactive) {
+				k.DeleteActiveProvider(ctx, provAddr)
+			}
+		}
+		if provider.Status.Equal(hubtypes.StatusInactive) {
+			if msg.Status.Equal(hubtypes.StatusActive) {
+				k.DeleteInactiveProvider(ctx, provAddr)
+			}
 		}
 
 		provider.Status = msg.Status

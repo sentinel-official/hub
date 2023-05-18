@@ -100,7 +100,7 @@ func (m *MsgUpdateRequest) ValidateBasic() error {
 		return errors.Wrapf(ErrorInvalidMessage, "description length cannot be greater than %d chars", 256)
 	}
 	if !m.Status.IsOneOf(hubtypes.StatusUnspecified, hubtypes.StatusActive, hubtypes.StatusInactive) {
-		return errors.Wrap(ErrorInvalidStatus, "status must be one of [unspecified, active, inactive]")
+		return errors.Wrap(ErrorInvalidMessage, "status must be one of [unspecified, active, inactive]")
 	}
 
 	return nil
