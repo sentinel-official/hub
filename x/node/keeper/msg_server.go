@@ -27,12 +27,12 @@ func (k *msgServer) MsgRegister(c context.Context, msg *types.MsgRegisterRequest
 
 	if msg.GigabytePrices != nil {
 		if !k.IsValidGigabytePrices(ctx, msg.GigabytePrices) {
-			return nil, types.NewErrorInvalidGigabytePrices(msg.GigabytePrices)
+			return nil, types.NewErrorInvalidPrices(msg.GigabytePrices)
 		}
 	}
 	if msg.HourlyPrices != nil {
 		if !k.IsValidHourlyPrices(ctx, msg.HourlyPrices) {
-			return nil, types.NewErrorInvalidGigabytePrices(msg.HourlyPrices)
+			return nil, types.NewErrorInvalidPrices(msg.HourlyPrices)
 		}
 	}
 
@@ -76,12 +76,12 @@ func (k *msgServer) MsgUpdateDetails(c context.Context, msg *types.MsgUpdateDeta
 
 	if msg.GigabytePrices != nil {
 		if !k.IsValidGigabytePrices(ctx, msg.GigabytePrices) {
-			return nil, types.NewErrorInvalidGigabytePrices(msg.GigabytePrices)
+			return nil, types.NewErrorInvalidPrices(msg.GigabytePrices)
 		}
 	}
 	if msg.HourlyPrices != nil {
 		if !k.IsValidHourlyPrices(ctx, msg.HourlyPrices) {
-			return nil, types.NewErrorInvalidHourlyPrices(msg.HourlyPrices)
+			return nil, types.NewErrorInvalidPrices(msg.HourlyPrices)
 		}
 	}
 
@@ -126,11 +126,10 @@ func (k *msgServer) MsgUpdateStatus(c context.Context, msg *types.MsgUpdateStatu
 	}
 
 	if node.Status.Equal(hubtypes.StatusActive) {
+		k.DeleteNodeForExpiryAt(ctx, node.ExpiryAt, nodeAddr)
 		if msg.Status.Equal(hubtypes.StatusInactive) {
 			k.DeleteActiveNode(ctx, nodeAddr)
 		}
-
-		k.DeleteNodeForExpiryAt(ctx, node.ExpiryAt, nodeAddr)
 	}
 	if node.Status.Equal(hubtypes.StatusInactive) {
 		if msg.Status.Equal(hubtypes.StatusActive) {
@@ -138,17 +137,18 @@ func (k *msgServer) MsgUpdateStatus(c context.Context, msg *types.MsgUpdateStatu
 		}
 	}
 
-	node.ExpiryAt = time.Time{}
-	node.Status = msg.Status
-	node.StatusAt = ctx.BlockTime()
-
-	if node.Status.Equal(hubtypes.StatusActive) {
+	if msg.Status.Equal(hubtypes.StatusActive) {
 		node.ExpiryAt = ctx.BlockTime().Add(
 			k.InactiveDuration(ctx),
 		)
-
 		k.SetNodeForExpiryAt(ctx, node.ExpiryAt, nodeAddr)
 	}
+	if msg.Status.Equal(hubtypes.StatusInactive) {
+		node.ExpiryAt = time.Time{}
+	}
+
+	node.Status = msg.Status
+	node.StatusAt = ctx.BlockTime()
 
 	k.SetNode(ctx, node)
 	ctx.EventManager().EmitTypedEvent(
@@ -198,10 +198,11 @@ func (k *msgServer) MsgSubscribe(c context.Context, msg *types.MsgSubscribeReque
 	)
 
 	lease := types.Lease{
-		ID:      subscription.ID,
-		Bytes:   hubtypes.Gigabyte.MulRaw(msg.Gigabytes),
-		Minutes: msg.Hours * 60,
-		Price:   sdk.Coin{},
+		ID:             subscription.ID,
+		Bytes:          hubtypes.Gigabyte.MulRaw(msg.Gigabytes),
+		Duration:       msg.Hours * time.Hour.Nanoseconds(),
+		Price:          sdk.Coin{},
+		DistributionAt: time.Time{},
 	}
 
 	if msg.Gigabytes != 0 {
@@ -215,11 +216,17 @@ func (k *msgServer) MsgSubscribe(c context.Context, msg *types.MsgSubscribeReque
 			subscription.Deposit.Denom,
 			subscription.Deposit.Amount.QuoRaw(msg.Hours),
 		)
+		lease.DistributionAt = ctx.BlockTime().Add(time.Hour)
 	}
 
 	k.SetLease(ctx, lease)
 	k.SetLeaseForAccount(ctx, accAddr, lease.ID)
 	k.SetLeaseForNode(ctx, nodeAddr, lease.ID)
+
+	if lease.Duration != 0 {
+		k.SetLeaseForDistributionAt(ctx, lease.DistributionAt, lease.ID)
+	}
+
 	ctx.EventManager().EmitTypedEvent(
 		&types.EventLease{
 			ID:     lease.ID,

@@ -286,9 +286,7 @@ func (k *Keeper) CreateSubscriptionForNode(
 			return nil, types.NewErrorPriceNotFound(denom)
 		}
 
-		subscription.ExpiryAt = ctx.BlockTime().Add(
-			types.Year,
-		)
+		subscription.ExpiryAt = ctx.BlockTime().Add(types.Year)
 		subscription.Deposit = sdk.NewCoin(
 			price.Denom,
 			price.Amount.MulRaw(gigabytes),

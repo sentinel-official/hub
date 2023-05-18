@@ -87,18 +87,19 @@ func (k *msgServer) MsgStart(c context.Context, msg *types.MsgStartRequest) (*ty
 	}
 
 	var (
-		count            = k.GetCount(ctx)
-		inactiveDuration = k.InactiveDuration(ctx)
-		session          = types.Session{
+		count   = k.GetCount(ctx)
+		session = types.Session{
 			ID:             count + 1,
 			SubscriptionID: subscription.GetID(),
 			NodeAddress:    nodeAddr.String(),
 			Address:        accAddr.String(),
 			Bandwidth:      hubtypes.NewBandwidthFromInt64(0, 0),
 			Duration:       0,
-			ExpiryAt:       ctx.BlockTime().Add(inactiveDuration),
-			Status:         hubtypes.StatusActive,
-			StatusAt:       ctx.BlockTime(),
+			ExpiryAt: ctx.BlockTime().Add(
+				k.InactiveDuration(ctx),
+			),
+			Status:   hubtypes.StatusActive,
+			StatusAt: ctx.BlockTime(),
 		}
 	)
 
@@ -144,13 +145,14 @@ func (k *msgServer) MsgUpdateDetails(c context.Context, msg *types.MsgUpdateDeta
 	if session.Status.Equal(hubtypes.StatusActive) {
 		k.DeleteSessionForExpiryAt(ctx, session.ExpiryAt, session.ID)
 
-		inactiveDuration := k.InactiveDuration(ctx)
-		session.ExpiryAt = ctx.BlockTime().Add(inactiveDuration)
+		session.ExpiryAt = ctx.BlockTime().Add(
+			k.InactiveDuration(ctx),
+		)
 		k.SetSessionForExpiryAt(ctx, session.ExpiryAt, session.ID)
 	}
 
-	session.Duration = msg.Proof.Duration
 	session.Bandwidth = msg.Proof.Bandwidth
+	session.Duration = msg.Proof.Duration
 
 	k.SetSession(ctx, session)
 	ctx.EventManager().EmitTypedEvent(
@@ -180,8 +182,9 @@ func (k *msgServer) MsgEnd(c context.Context, msg *types.MsgEndRequest) (*types.
 
 	k.DeleteSessionForExpiryAt(ctx, session.ExpiryAt, session.ID)
 
-	inactiveDuration := k.InactiveDuration(ctx)
-	session.ExpiryAt = ctx.BlockTime().Add(inactiveDuration)
+	session.ExpiryAt = ctx.BlockTime().Add(
+		k.InactiveDuration(ctx),
+	)
 	k.SetSessionForExpiryAt(ctx, session.ExpiryAt, session.ID)
 
 	session.Status = hubtypes.StatusInactivePending
