@@ -1,6 +1,9 @@
 package keeper
 
 import (
+	"fmt"
+	"time"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	protobuf "github.com/gogo/protobuf/types"
 
@@ -139,4 +142,42 @@ func (k *Keeper) DeleteLeaseForNode(ctx sdk.Context, addr hubtypes.NodeAddress, 
 	)
 
 	store.Delete(key)
+}
+
+func (k *Keeper) SetLeaseForDistributionAt(ctx sdk.Context, at time.Time, id uint64) {
+	var (
+		store = k.Store(ctx)
+		key   = types.LeaseForDistributionAtKey(at, id)
+		value = k.cdc.MustMarshal(&protobuf.BoolValue{Value: true})
+	)
+
+	store.Set(key, value)
+}
+
+func (k *Keeper) DeleteLeaseForDistributionAt(ctx sdk.Context, at time.Time, id uint64) {
+	var (
+		store = k.Store(ctx)
+		key   = types.LeaseForDistributionAtKey(at, id)
+	)
+
+	store.Delete(key)
+}
+
+func (k *Keeper) IterateLeasesForExpiryAt(ctx sdk.Context, at time.Time, fn func(index int, item types.Lease) (stop bool)) {
+	store := k.Store(ctx)
+
+	iter := store.Iterator(types.LeaseForDistributionAtKeyPrefix, sdk.PrefixEndBytes(types.GetLeaseForDistributionAtKeyPrefix(at)))
+	defer iter.Close()
+
+	for i := 0; iter.Valid(); iter.Next() {
+		lease, found := k.GetLease(ctx, types.IDFromLeaseForDistributionAtKey(iter.Key()))
+		if !found {
+			panic(fmt.Errorf("lease for expiry at key %X does not exist", iter.Key()))
+		}
+
+		if stop := fn(i, lease); stop {
+			break
+		}
+		i++
+	}
 }

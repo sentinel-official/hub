@@ -27,9 +27,10 @@ var (
 	NodeForExpiryAtKeyPrefix = []byte{0x11}
 	NodeForPlanKeyPrefix     = []byte{0x12}
 
-	LeaseKeyPrefix           = []byte{0x30}
-	LeaseForAccountKeyPrefix = []byte{0x31}
-	LeaseForNodeKeyPrefix    = []byte{0x32}
+	LeaseKeyPrefix                  = []byte{0x30}
+	LeaseForDistributionAtKeyPrefix = []byte{0x31}
+	LeaseForAccountKeyPrefix        = []byte{0x32}
+	LeaseForNodeKeyPrefix           = []byte{0x33}
 )
 
 func ActiveNodeKey(addr hubtypes.NodeAddress) []byte {
@@ -50,6 +51,14 @@ func NodeForPlanKey(id uint64, addr hubtypes.NodeAddress) []byte {
 
 func LeaseKey(id uint64) []byte {
 	return append(LeaseKeyPrefix, sdk.Uint64ToBigEndian(id)...)
+}
+
+func GetLeaseForDistributionAtKeyPrefix(at time.Time) []byte {
+	return append(LeaseForDistributionAtKeyPrefix, sdk.FormatTimeBytes(at)...)
+}
+
+func LeaseForDistributionAtKey(at time.Time, id uint64) []byte {
+	return append(GetLeaseForDistributionAtKeyPrefix(at), sdk.Uint64ToBigEndian(id)...)
 }
 
 func GetLeaseForAccountKeyPrefix(addr sdk.AccAddress) []byte {
@@ -118,4 +127,14 @@ func IDFromLeaseForNodeKey(key []byte) uint64 {
 	}
 
 	return sdk.BigEndianToUint64(key[2+addrLen:])
+}
+
+func IDFromLeaseForDistributionAtKey(key []byte) uint64 {
+	// prefix (1 byte) | at (29 bytes) | id (8 bytes)
+
+	if len(key) != 38 {
+		panic(fmt.Errorf("invalid key length %d; expected %d", len(key), 38))
+	}
+
+	return sdk.BigEndianToUint64(key[30:])
 }
