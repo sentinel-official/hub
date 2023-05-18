@@ -3,6 +3,7 @@ package sentinel.node.v2;
 
 import "cosmos/base/v1beta1/coin.proto";
 import "gogoproto/gogo.proto";
+import "google/protobuf/timestamp.proto";
 
 option go_package            = "github.com/sentinel-official/hub/x/node/types";
 option (gogoproto.equal_all) = false;
@@ -14,6 +15,8 @@ message Lease {
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
     (gogoproto.nullable)   = false
   ];
-  int64 minutes                  = 3;
+  int64 duration                 = 3;
   cosmos.base.v1beta1.Coin price = 4 [ (gogoproto.nullable) = false ];
+  google.protobuf.Timestamp distribution_at = 5
+      [ (gogoproto.nullable) = false, (gogoproto.stdtime) = true ];
 }

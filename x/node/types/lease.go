@@ -8,11 +8,11 @@ func (l *Lease) Validate() error {
 	if l.ID == 0 {
 		return fmt.Errorf("id cannot be zero")
 	}
-	if l.Bytes.IsNil() && l.Minutes == 0 {
-		return fmt.Errorf("[bytes, minutes] cannot be empty")
+	if l.Bytes.IsNil() && l.Duration == 0 {
+		return fmt.Errorf("[bytes, duration] cannot be empty")
 	}
-	if !l.Bytes.IsNil() && l.Minutes != 0 {
-		return fmt.Errorf("[bytes, minutes] cannot be non-empty")
+	if !l.Bytes.IsNil() && l.Duration != 0 {
+		return fmt.Errorf("[bytes, duration] cannot be non-empty")
 	}
 	if !l.Bytes.IsNil() {
 		if l.Bytes.IsNegative() {
@@ -22,9 +22,9 @@ func (l *Lease) Validate() error {
 			return fmt.Errorf("bytes cannot be zero")
 		}
 	}
-	if l.Minutes != 0 {
-		if l.Minutes < 0 {
-			return fmt.Errorf("minutes cannot be negative")
+	if l.Duration != 0 {
+		if l.Duration < 0 {
+			return fmt.Errorf("duration cannot be negative")
 		}
 	}
 	if l.Price.Denom != "" {
@@ -40,6 +40,9 @@ func (l *Lease) Validate() error {
 		if !l.Price.IsValid() {
 			return fmt.Errorf("price must be valid")
 		}
+	}
+	if l.DistributionAt.IsZero() {
+		return fmt.Errorf("distribution_at cannot be zero")
 	}
 
 	return nil
