@@ -21,12 +21,8 @@ var (
 	ErrorNotFound         = errors.Register(ModuleName, 205, "not found")
 )
 
-func NewErrorInvalidGigabytePrices(prices sdk.Coins) error {
-	return errors.Wrapf(ErrorInvalidPrices, "invalid gigabyte prices %s", prices)
-}
-
-func NewErrorInvalidHourlyPrices(prices sdk.Coins) error {
-	return errors.Wrapf(ErrorInvalidPrices, "invalid hourly prices %s", prices)
+func NewErrorInvalidPrices(prices sdk.Coins) error {
+	return errors.Wrapf(ErrorInvalidPrices, "invalid prices %s", prices)
 }
 
 func NewErrorNodeNotFound(addr hubtypes.NodeAddress) error {

@@ -71,7 +71,14 @@ func (m *Node) Validate() error {
 	}
 
 	if m.ExpiryAt.IsZero() {
-		return fmt.Errorf("expiry_at cannot be zero")
+		if !m.Status.Equal(hubtypes.StatusInactive) {
+			return fmt.Errorf("invalid expiry_at %s; expected positive", m.ExpiryAt)
+		}
+	}
+	if !m.ExpiryAt.IsZero() {
+		if !m.Status.Equal(hubtypes.StatusActive) {
+			return fmt.Errorf("invalid expiry_at %s; expected zero", m.ExpiryAt)
+		}
 	}
 	if !m.Status.IsOneOf(hubtypes.StatusActive, hubtypes.StatusInactive) {
 		return fmt.Errorf("status must be one of [active, inactive]")

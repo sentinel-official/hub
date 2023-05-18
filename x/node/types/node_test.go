@@ -667,7 +667,7 @@ func TestNode_Validate(t *testing.T) {
 				GigabytePrices: nil,
 				HourlyPrices:   nil,
 				RemoteURL:      "https://remote.url:443",
-				ExpiryAt:       time.Now(),
+				ExpiryAt:       time.Time{},
 				Status:         hubtypes.StatusInactive,
 				StatusAt:       time.Now(),
 			},
