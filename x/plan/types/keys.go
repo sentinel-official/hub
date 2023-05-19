@@ -14,14 +14,6 @@ const (
 )
 
 var (
-	TypeMsgCreateRequest       = ModuleName + ":create"
-	TypeMsgUpdateStatusRequest = ModuleName + ":update_status"
-	TypeMsgLinkNodeRequest     = ModuleName + ":link_node"
-	TypeMsgUnlinkNodeRequest   = ModuleName + ":unlink_node"
-	TypeMsgSubscribeRequest    = ModuleName + ":subscribe"
-)
-
-var (
 	CountKey = []byte{0x00}
 
 	PlanKeyPrefix            = []byte{0x10}

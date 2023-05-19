@@ -10,11 +10,11 @@ import (
 
 var (
 	DefaultDeposit                 = sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(10))
-	DefaultInactiveDuration        = 1 * time.Minute
+	DefaultExpiryDuration          = 30 * time.Second
 	DefaultMaxGigabytePrices       = sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(100)))
-	DefaultMinGigabytePrices       = sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(10)))
+	DefaultMinGigabytePrices       = sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(1)))
 	DefaultMaxHourlyPrices         = sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(100)))
-	DefaultMinHourlyPrices         = sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(10)))
+	DefaultMinHourlyPrices         = sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(1)))
 	DefaultMaxLeaseHours     int64 = 10
 	DefaultMinLeaseHours     int64 = 1
 	DefaultMaxLeaseGigabytes int64 = 10
@@ -24,7 +24,7 @@ var (
 
 var (
 	KeyDeposit           = []byte("Deposit")
-	KeyInactiveDuration  = []byte("InactiveDuration")
+	KeyExpiryDuration    = []byte("ExpiryDuration")
 	KeyMaxGigabytePrices = []byte("MaxGigabytePrices")
 	KeyMinGigabytePrices = []byte("MinGigabytePrices")
 	KeyMaxHourlyPrices   = []byte("MaxHourlyPrices")
@@ -44,7 +44,7 @@ func (m *Params) Validate() error {
 	if err := validateDeposit(m.Deposit); err != nil {
 		return err
 	}
-	if err := validateInactiveDuration(m.InactiveDuration); err != nil {
+	if err := validateExpiryDuration(m.ExpiryDuration); err != nil {
 		return err
 	}
 	if err := validateMaxGigabytePrices(m.MaxGigabytePrices); err != nil {
@@ -86,9 +86,9 @@ func (m *Params) ParamSetPairs() params.ParamSetPairs {
 			ValidatorFn: validateDeposit,
 		},
 		{
-			Key:         KeyInactiveDuration,
-			Value:       &m.InactiveDuration,
-			ValidatorFn: validateInactiveDuration,
+			Key:         KeyExpiryDuration,
+			Value:       &m.ExpiryDuration,
+			ValidatorFn: validateExpiryDuration,
 		},
 		{
 			Key:         KeyMaxGigabytePrices,
@@ -139,13 +139,13 @@ func (m *Params) ParamSetPairs() params.ParamSetPairs {
 }
 
 func NewParams(
-	deposit sdk.Coin, inactiveDuration time.Duration, maxGigabytePrices, minGigabytePrices,
+	deposit sdk.Coin, expiryDuration time.Duration, maxGigabytePrices, minGigabytePrices,
 	maxHourlyPrices, minHourlyPrices sdk.Coins, maxLeaseHours, minLeaseHours int64,
 	maxLeaseGigabytes, minLeaseGigabytes int64, revenueShare sdk.Dec,
 ) Params {
 	return Params{
 		Deposit:           deposit,
-		InactiveDuration:  inactiveDuration,
+		ExpiryDuration:    expiryDuration,
 		MaxGigabytePrices: maxGigabytePrices,
 		MinGigabytePrices: minGigabytePrices,
 		MaxHourlyPrices:   maxHourlyPrices,
@@ -161,7 +161,7 @@ func NewParams(
 func DefaultParams() Params {
 	return NewParams(
 		DefaultDeposit,
-		DefaultInactiveDuration,
+		DefaultExpiryDuration,
 		DefaultMaxGigabytePrices,
 		DefaultMinGigabytePrices,
 		DefaultMaxHourlyPrices,
@@ -197,17 +197,17 @@ func validateDeposit(v interface{}) error {
 	return nil
 }
 
-func validateInactiveDuration(v interface{}) error {
+func validateExpiryDuration(v interface{}) error {
 	value, ok := v.(time.Duration)
 	if !ok {
 		return fmt.Errorf("invalid parameter type %T", v)
 	}
 
 	if value < 0 {
-		return fmt.Errorf("inactive_duration cannot be negative")
+		return fmt.Errorf("expiry_duration cannot be negative")
 	}
 	if value == 0 {
-		return fmt.Errorf("inactive_duration cannot be zero")
+		return fmt.Errorf("expiry_duration cannot be zero")
 	}
 
 	return nil

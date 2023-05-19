@@ -16,11 +16,6 @@ const (
 )
 
 var (
-	TypeMsgCancelRequest = ModuleName + ":cancel"
-	TypeMsgShareRequest  = ModuleName + ":share"
-)
-
-var (
 	CountKey = []byte{0x00}
 
 	SubscriptionKeyPrefix            = []byte{0x10}

@@ -139,7 +139,7 @@ func (k *msgServer) MsgUpdateStatus(c context.Context, msg *types.MsgUpdateStatu
 
 	if msg.Status.Equal(hubtypes.StatusActive) {
 		node.ExpiryAt = ctx.BlockTime().Add(
-			k.InactiveDuration(ctx),
+			k.ExpiryDuration(ctx),
 		)
 		k.SetNodeForExpiryAt(ctx, node.ExpiryAt, nodeAddr)
 	}

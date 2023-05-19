@@ -15,12 +15,6 @@ const (
 )
 
 var (
-	TypeMsgStartRequest         = ModuleName + ":start"
-	TypeMsgUpdateDetailsRequest = ModuleName + ":update_details"
-	TypeMsgEndRequest           = ModuleName + ":end"
-)
-
-var (
 	CountKey = []byte{0x00}
 
 	SessionKeyPrefix                = []byte{0x10}

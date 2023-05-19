@@ -15,12 +15,6 @@ const (
 )
 
 var (
-	TypeMsgRegisterRequest      = ModuleName + ":register"
-	TypeMsgUpdateDetailsRequest = ModuleName + ":update_details"
-	TypeMsgUpdateStatusRequest  = ModuleName + ":update_status"
-)
-
-var (
 	NodeKeyPrefix            = []byte{0x10}
 	ActiveNodeKeyPrefix      = append(NodeKeyPrefix, 0x01)
 	InactiveNodeKeyPrefix    = append(NodeKeyPrefix, 0x02)

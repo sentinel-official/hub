@@ -11,16 +11,11 @@ import (
 func InitGenesis(ctx sdk.Context, k keeper.Keeper, state *types.GenesisState) {
 	k.SetParams(ctx, state.Params)
 
-	inactiveDuration := k.InactiveDuration(ctx)
 	for _, item := range state.Nodes {
 		k.SetNode(ctx, item)
 		if item.Status.Equal(hubtypes.StatusActive) {
-			var (
-				addr     = item.GetAddress()
-				statusAt = item.StatusAt.Add(inactiveDuration)
-			)
-
-			k.SetNodeForExpiryAt(ctx, statusAt, addr)
+			addr := item.GetAddress()
+			k.SetNodeForExpiryAt(ctx, item.ExpiryAt, addr)
 		}
 	}
 }

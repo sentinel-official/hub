@@ -247,9 +247,7 @@ func (k *Keeper) IterateSubscriptionsForExpiryAt(ctx sdk.Context, endTime time.T
 	}
 }
 
-func (k *Keeper) CreateSubscriptionForNode(
-	ctx sdk.Context, accAddr sdk.AccAddress, nodeAddr hubtypes.NodeAddress, gigabytes, hours int64, denom string,
-) (*types.NodeSubscription, error) {
+func (k *Keeper) CreateSubscriptionForNode(ctx sdk.Context, accAddr sdk.AccAddress, nodeAddr hubtypes.NodeAddress, gigabytes, hours int64, denom string) (*types.NodeSubscription, error) {
 	node, found := k.GetNode(ctx, nodeAddr)
 	if !found {
 		return nil, types.NewErrorNodeNotFound(nodeAddr)
@@ -321,9 +319,7 @@ func (k *Keeper) CreateSubscriptionForNode(
 	return subscription, nil
 }
 
-func (k *Keeper) CreateSubscriptionForPlan(
-	ctx sdk.Context, accAddr sdk.AccAddress, id uint64, denom string,
-) (*types.PlanSubscription, error) {
+func (k *Keeper) CreateSubscriptionForPlan(ctx sdk.Context, accAddr sdk.AccAddress, id uint64, denom string) (*types.PlanSubscription, error) {
 	plan, found := k.GetPlan(ctx, id)
 	if !found {
 		return nil, types.NewErrorPlanNotFound(id)
@@ -341,6 +337,8 @@ func (k *Keeper) CreateSubscriptionForPlan(
 	if err := k.SendCoin(ctx, accAddr, provAddr.Bytes(), price); err != nil {
 		return nil, err
 	}
+
+	// TODO: distribute revenue share
 
 	var (
 		count = k.GetCount(ctx)
@@ -368,6 +366,8 @@ func (k *Keeper) CreateSubscriptionForPlan(
 	k.SetSubscriptionForPlan(ctx, plan.ID, subscription.GetID())
 	k.SetSubscriptionForExpiryAt(ctx, subscription.GetExpiryAt(), subscription.GetID())
 	k.SetQuota(ctx, subscription.GetID(), quota)
+
+	// TODO: add field ID for quota?
 
 	return subscription, nil
 }
