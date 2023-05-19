@@ -27,7 +27,5 @@ type ProviderKeeper interface {
 }
 
 type SubscriptionKeeper interface {
-	CreateSubscriptionForNode(
-		ctx sdk.Context, accAddr sdk.AccAddress, nodeAddr hubtypes.NodeAddress, gigabytes, hours int64, denom string,
-	) (*subscriptiontypes.NodeSubscription, error)
+	CreateSubscriptionForNode(ctx sdk.Context, accAddr sdk.AccAddress, nodeAddr hubtypes.NodeAddress, gigabytes, hours int64, denom string) (*subscriptiontypes.NodeSubscription, error)
 }

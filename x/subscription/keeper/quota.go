@@ -7,6 +7,8 @@ import (
 )
 
 func (k *Keeper) SetQuota(ctx sdk.Context, id uint64, quota types.Quota) {
+	// TODO: add field ID for quota?
+
 	var (
 		store = k.Store(ctx)
 		key   = types.QuotaKey(id, quota.GetAddress())

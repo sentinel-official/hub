@@ -91,8 +91,8 @@ func (m *Node) Validate() error {
 }
 
 func (m *Node) GigabytePrice(denom string) (sdk.Coin, bool) {
-	if m.GigabytePrices == nil {
-		return sdk.Coin{}, true
+	if m.GigabytePrices == nil && denom == "" {
+		return sdk.Coin{Amount: sdk.NewInt(0)}, true
 	}
 
 	for _, v := range m.GigabytePrices {
@@ -101,12 +101,12 @@ func (m *Node) GigabytePrice(denom string) (sdk.Coin, bool) {
 		}
 	}
 
-	return sdk.Coin{}, false
+	return sdk.Coin{Amount: sdk.NewInt(0)}, false
 }
 
 func (m *Node) HourlyPrice(denom string) (sdk.Coin, bool) {
-	if m.HourlyPrices == nil {
-		return sdk.Coin{}, true
+	if m.HourlyPrices == nil && denom == "" {
+		return sdk.Coin{Amount: sdk.NewInt(0)}, true
 	}
 
 	for _, v := range m.HourlyPrices {
@@ -115,7 +115,7 @@ func (m *Node) HourlyPrice(denom string) (sdk.Coin, bool) {
 		}
 	}
 
-	return sdk.Coin{}, false
+	return sdk.Coin{Amount: sdk.NewInt(0)}, false
 }
 
 type (

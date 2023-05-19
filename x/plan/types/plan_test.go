@@ -68,7 +68,7 @@ func TestPlan_Price(t *testing.T) {
 			args{
 				denom: "",
 			},
-			sdk.Coin{},
+			sdk.Coin{Amount: sdk.NewInt(0)},
 			true,
 		},
 		{
@@ -79,8 +79,8 @@ func TestPlan_Price(t *testing.T) {
 			args{
 				denom: "one",
 			},
-			sdk.Coin{},
-			true,
+			sdk.Coin{Amount: sdk.NewInt(0)},
+			false,
 		},
 		{
 			"nil prices and two denom",
@@ -90,8 +90,8 @@ func TestPlan_Price(t *testing.T) {
 			args{
 				denom: "two",
 			},
-			sdk.Coin{},
-			true,
+			sdk.Coin{Amount: sdk.NewInt(0)},
+			false,
 		},
 		{
 			"empty prices and empty denom",
@@ -101,7 +101,7 @@ func TestPlan_Price(t *testing.T) {
 			args{
 				denom: "",
 			},
-			sdk.Coin{},
+			sdk.Coin{Amount: sdk.NewInt(0)},
 			false,
 		},
 		{
@@ -112,7 +112,7 @@ func TestPlan_Price(t *testing.T) {
 			args{
 				denom: "one",
 			},
-			sdk.Coin{},
+			sdk.Coin{Amount: sdk.NewInt(0)},
 			false,
 		},
 		{
@@ -123,7 +123,7 @@ func TestPlan_Price(t *testing.T) {
 			args{
 				denom: "two",
 			},
-			sdk.Coin{},
+			sdk.Coin{Amount: sdk.NewInt(0)},
 			false,
 		},
 		{
@@ -134,7 +134,7 @@ func TestPlan_Price(t *testing.T) {
 			args{
 				denom: "",
 			},
-			sdk.Coin{},
+			sdk.Coin{Amount: sdk.NewInt(0)},
 			false,
 		},
 		{
@@ -156,7 +156,7 @@ func TestPlan_Price(t *testing.T) {
 			args{
 				denom: "two",
 			},
-			sdk.Coin{},
+			sdk.Coin{Amount: sdk.NewInt(0)},
 			false,
 		},
 		{
@@ -167,7 +167,7 @@ func TestPlan_Price(t *testing.T) {
 			args{
 				denom: "",
 			},
-			sdk.Coin{},
+			sdk.Coin{Amount: sdk.NewInt(0)},
 			false,
 		},
 		{
@@ -178,7 +178,7 @@ func TestPlan_Price(t *testing.T) {
 			args{
 				denom: "one",
 			},
-			sdk.Coin{},
+			sdk.Coin{Amount: sdk.NewInt(0)},
 			false,
 		},
 		{

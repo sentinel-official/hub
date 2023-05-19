@@ -23,8 +23,8 @@ func (m *Plan) GetAddress() hubtypes.ProvAddress {
 }
 
 func (m *Plan) Price(denom string) (sdk.Coin, bool) {
-	if m.Prices == nil {
-		return sdk.Coin{}, true
+	if m.Prices == nil && denom == "" {
+		return sdk.Coin{Amount: sdk.NewInt(0)}, true
 	}
 
 	for _, coin := range m.Prices {
@@ -33,7 +33,7 @@ func (m *Plan) Price(denom string) (sdk.Coin, bool) {
 		}
 	}
 
-	return sdk.Coin{}, false
+	return sdk.Coin{Amount: sdk.NewInt(0)}, false
 }
 
 func (m *Plan) Validate() error {

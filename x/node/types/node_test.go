@@ -69,7 +69,7 @@ func TestNode_GigabytePrice(t *testing.T) {
 			args{
 				denom: "",
 			},
-			sdk.Coin{},
+			sdk.Coin{Amount: sdk.NewInt(0)},
 			true,
 		},
 		{
@@ -80,7 +80,7 @@ func TestNode_GigabytePrice(t *testing.T) {
 			args{
 				denom: "",
 			},
-			sdk.Coin{},
+			sdk.Coin{Amount: sdk.NewInt(0)},
 			false,
 		},
 		{
@@ -91,7 +91,7 @@ func TestNode_GigabytePrice(t *testing.T) {
 			args{
 				denom: "",
 			},
-			sdk.Coin{},
+			sdk.Coin{Amount: sdk.NewInt(0)},
 			false,
 		},
 		{
@@ -102,8 +102,8 @@ func TestNode_GigabytePrice(t *testing.T) {
 			args{
 				denom: "one",
 			},
-			sdk.Coin{},
-			true,
+			sdk.Coin{Amount: sdk.NewInt(0)},
+			false,
 		},
 		{
 			"gigabyte_prices empty and denom one",
@@ -113,7 +113,7 @@ func TestNode_GigabytePrice(t *testing.T) {
 			args{
 				denom: "one",
 			},
-			sdk.Coin{},
+			sdk.Coin{Amount: sdk.NewInt(0)},
 			false,
 		},
 		{
@@ -135,8 +135,8 @@ func TestNode_GigabytePrice(t *testing.T) {
 			args{
 				denom: "two",
 			},
-			sdk.Coin{},
-			true,
+			sdk.Coin{Amount: sdk.NewInt(0)},
+			false,
 		},
 		{
 			"gigabyte_prices empty and denom two",
@@ -146,7 +146,7 @@ func TestNode_GigabytePrice(t *testing.T) {
 			args{
 				denom: "two",
 			},
-			sdk.Coin{},
+			sdk.Coin{Amount: sdk.NewInt(0)},
 			false,
 		},
 		{
@@ -157,7 +157,7 @@ func TestNode_GigabytePrice(t *testing.T) {
 			args{
 				denom: "two",
 			},
-			sdk.Coin{},
+			sdk.Coin{Amount: sdk.NewInt(0)},
 			false,
 		},
 	}
@@ -199,7 +199,7 @@ func TestNode_HourlyPrice(t *testing.T) {
 			args{
 				denom: "",
 			},
-			sdk.Coin{},
+			sdk.Coin{Amount: sdk.NewInt(0)},
 			true,
 		},
 		{
@@ -210,7 +210,7 @@ func TestNode_HourlyPrice(t *testing.T) {
 			args{
 				denom: "",
 			},
-			sdk.Coin{},
+			sdk.Coin{Amount: sdk.NewInt(0)},
 			false,
 		},
 		{
@@ -221,7 +221,7 @@ func TestNode_HourlyPrice(t *testing.T) {
 			args{
 				denom: "",
 			},
-			sdk.Coin{},
+			sdk.Coin{Amount: sdk.NewInt(0)},
 			false,
 		},
 		{
@@ -232,8 +232,8 @@ func TestNode_HourlyPrice(t *testing.T) {
 			args{
 				denom: "one",
 			},
-			sdk.Coin{},
-			true,
+			sdk.Coin{Amount: sdk.NewInt(0)},
+			false,
 		},
 		{
 			"hourly_prices empty and denom one",
@@ -243,7 +243,7 @@ func TestNode_HourlyPrice(t *testing.T) {
 			args{
 				denom: "one",
 			},
-			sdk.Coin{},
+			sdk.Coin{Amount: sdk.NewInt(0)},
 			false,
 		},
 		{
@@ -265,8 +265,8 @@ func TestNode_HourlyPrice(t *testing.T) {
 			args{
 				denom: "two",
 			},
-			sdk.Coin{},
-			true,
+			sdk.Coin{Amount: sdk.NewInt(0)},
+			false,
 		},
 		{
 			"hourly_prices empty and denom two",
@@ -276,7 +276,7 @@ func TestNode_HourlyPrice(t *testing.T) {
 			args{
 				denom: "two",
 			},
-			sdk.Coin{},
+			sdk.Coin{Amount: sdk.NewInt(0)},
 			false,
 		},
 		{
@@ -287,7 +287,7 @@ func TestNode_HourlyPrice(t *testing.T) {
 			args{
 				denom: "two",
 			},
-			sdk.Coin{},
+			sdk.Coin{Amount: sdk.NewInt(0)},
 			false,
 		},
 	}

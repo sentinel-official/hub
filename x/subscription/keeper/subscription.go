@@ -367,7 +367,5 @@ func (k *Keeper) CreateSubscriptionForPlan(ctx sdk.Context, accAddr sdk.AccAddre
 	k.SetSubscriptionForExpiryAt(ctx, subscription.GetExpiryAt(), subscription.GetID())
 	k.SetQuota(ctx, subscription.GetID(), quota)
 
-	// TODO: add field ID for quota?
-
 	return subscription, nil
 }
