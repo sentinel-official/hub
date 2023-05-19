@@ -6,9 +6,10 @@ import (
 	"math/rand"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
+	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	simulationtypes "github.com/cosmos/cosmos-sdk/types/simulation"
+	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 
 	"github.com/sentinel-official/hub/x/session/expected"
@@ -17,100 +18,74 @@ import (
 )
 
 var (
-	OperationWeightMsgStartRequest         = "op_weight_" + types.TypeMsgStartRequest
-	OperationWeightMsgUpdateDetailsRequest = "op_weight_" + types.TypeMsgUpdateDetailsRequest
-	OperationWeightMsgEndRequest           = "op_weight_" + types.TypeMsgEndRequest
+	typeMsgStart         = sdk.MsgTypeURL((*types.MsgStartRequest)(nil))
+	typeMsgUpdateDetails = sdk.MsgTypeURL((*types.MsgUpdateDetailsRequest)(nil))
+	typeMsgEnd           = sdk.MsgTypeURL((*types.MsgEndRequest)(nil))
 )
 
 func WeightedOperations(
-	params simulationtypes.AppParams,
-	cdc codec.JSONCodec,
+	cdc codec.Codec,
+	txConfig client.TxConfig,
+	params simtypes.AppParams,
 	ak expected.AccountKeeper,
 	bk expected.BankKeeper,
 	k keeper.Keeper,
 ) simulation.WeightedOperations {
 	var (
-		weightMsgStartRequest         int
-		weightMsgUpdateDetailsRequest int
-		weightMsgEndRequest           int
+		weightMsgStart         int
+		weightMsgUpdateDetails int
+		weightMsgEnd           int
 	)
 
 	params.GetOrGenerate(
 		cdc,
-		OperationWeightMsgStartRequest,
-		&weightMsgStartRequest,
+		typeMsgStart,
+		&weightMsgStart,
 		nil,
 		func(_ *rand.Rand) {
-			weightMsgStartRequest = 100
+			weightMsgStart = 100
 		},
 	)
 	params.GetOrGenerate(
 		cdc,
-		OperationWeightMsgUpdateDetailsRequest,
-		&weightMsgUpdateDetailsRequest,
+		typeMsgUpdateDetails,
+		&weightMsgUpdateDetails,
 		nil,
 		func(_ *rand.Rand) {
-			weightMsgUpdateDetailsRequest = 100
+			weightMsgUpdateDetails = 100
 		},
 	)
 	params.GetOrGenerate(
 		cdc,
-		OperationWeightMsgEndRequest,
-		&weightMsgEndRequest,
+		typeMsgEnd,
+		&weightMsgEnd,
 		nil,
 		func(_ *rand.Rand) {
-			weightMsgEndRequest = 100
+			weightMsgEnd = 100
 		},
 	)
 
 	return simulation.WeightedOperations{
-		simulation.NewWeightedOperation(
-			weightMsgStartRequest,
-			SimulateMsgStartRequest(ak, bk, k),
-		),
-		simulation.NewWeightedOperation(
-			weightMsgUpdateDetailsRequest,
-			SimulateMsgUpdateDetailsRequest(ak, bk, k),
-		),
-		simulation.NewWeightedOperation(
-			weightMsgEndRequest,
-			SimulateMsgEndRequest(ak, bk, k),
-		),
+		simulation.NewWeightedOperation(weightMsgStart, SimulateMsgStart(txConfig, ak, bk, k)),
+		simulation.NewWeightedOperation(weightMsgUpdateDetails, SimulateMsgUpdateDetails(txConfig, ak, bk, k)),
+		simulation.NewWeightedOperation(weightMsgEnd, SimulateMsgEnd(txConfig, ak, bk, k)),
 	}
 }
 
-func SimulateMsgStartRequest(ak expected.AccountKeeper, bk expected.BankKeeper, k keeper.Keeper) simulationtypes.Operation {
-	return func(
-		r *rand.Rand,
-		app *baseapp.BaseApp,
-		ctx sdk.Context,
-		accounts []simulationtypes.Account,
-		chainID string,
-	) (simulationtypes.OperationMsg, []simulationtypes.FutureOperation, error) {
-		return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgStartRequest, ""), nil, nil
+func SimulateMsgStart(txConfig client.TxConfig, ak expected.AccountKeeper, bk expected.BankKeeper, k keeper.Keeper) simtypes.Operation {
+	return func(r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accounts []simtypes.Account, chainID string) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+		return simtypes.NoOpMsg(types.ModuleName, typeMsgStart, ""), nil, nil
 	}
 }
 
-func SimulateMsgUpdateDetailsRequest(ak expected.AccountKeeper, bk expected.BankKeeper, k keeper.Keeper) simulationtypes.Operation {
-	return func(
-		r *rand.Rand,
-		app *baseapp.BaseApp,
-		ctx sdk.Context,
-		accounts []simulationtypes.Account,
-		chainID string,
-	) (simulationtypes.OperationMsg, []simulationtypes.FutureOperation, error) {
-		return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgUpdateDetailsRequest, ""), nil, nil
+func SimulateMsgUpdateDetails(txConfig client.TxConfig, ak expected.AccountKeeper, bk expected.BankKeeper, k keeper.Keeper) simtypes.Operation {
+	return func(r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accounts []simtypes.Account, chainID string) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+		return simtypes.NoOpMsg(types.ModuleName, typeMsgUpdateDetails, ""), nil, nil
 	}
 }
 
-func SimulateMsgEndRequest(ak expected.AccountKeeper, bk expected.BankKeeper, k keeper.Keeper) simulationtypes.Operation {
-	return func(
-		r *rand.Rand,
-		app *baseapp.BaseApp,
-		ctx sdk.Context,
-		accounts []simulationtypes.Account,
-		chainID string,
-	) (simulationtypes.OperationMsg, []simulationtypes.FutureOperation, error) {
-		return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgEndRequest, ""), nil, nil
+func SimulateMsgEnd(txConfig client.TxConfig, ak expected.AccountKeeper, bk expected.BankKeeper, k keeper.Keeper) simtypes.Operation {
+	return func(r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accounts []simtypes.Account, chainID string) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+		return simtypes.NoOpMsg(types.ModuleName, typeMsgEnd, ""), nil, nil
 	}
 }
