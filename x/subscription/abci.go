@@ -12,8 +12,6 @@ import (
 func EndBlock(ctx sdk.Context, k keeper.Keeper) []abcitypes.ValidatorUpdate {
 	inactiveDuration := k.InactiveDuration(ctx)
 	k.IterateSubscriptionsForExpiryAt(ctx, ctx.BlockTime(), func(_ int, item types.Subscription) bool {
-		k.Logger(ctx).Info("found an expired subscription", "id", item.GetID())
-
 		if item.GetStatus().Equal(hubtypes.StatusActive) {
 			item.SetStatus(hubtypes.StatusInactivePending)
 			item.SetStatusAt(ctx.BlockTime())

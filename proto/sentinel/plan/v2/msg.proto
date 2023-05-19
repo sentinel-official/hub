@@ -13,16 +13,16 @@ option (gogoproto.goproto_getters_all) = false;
 
 // MsgCreateRequest defines the SDK message for creating a subscription plan
 message MsgCreateRequest {
-  string from                              = 1;
-  repeated cosmos.base.v1beta1.Coin prices = 2 [
-    (gogoproto.nullable)     = false,
-    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
-  ];
-  google.protobuf.Duration validity = 3
-      [ (gogoproto.stdduration) = true, (gogoproto.nullable) = false ];
-  string bytes = 4 [
+  string from  = 1;
+  string bytes = 2 [
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
     (gogoproto.nullable)   = false
+  ];
+  google.protobuf.Duration duration = 3
+      [ (gogoproto.stdduration) = true, (gogoproto.nullable) = false ];
+  repeated cosmos.base.v1beta1.Coin prices = 4 [
+    (gogoproto.nullable)     = false,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
   ];
 }
 

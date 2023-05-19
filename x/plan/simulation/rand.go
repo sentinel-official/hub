@@ -3,7 +3,6 @@
 package simulation
 
 import (
-	"math"
 	"math/rand"
 	"time"
 
@@ -15,37 +14,37 @@ import (
 )
 
 const (
-	MaxPlanId          = 1 << 18
-	MaxPlans           = 1 << 10
-	MaxPlanPriceAmount = 1 << 10
-	MaxPlanValidity    = 1 << 18
-	MaxPlanBytes       = math.MaxInt64
+	MaxCount      = 1 << 10
+	MaxID         = 1 << 10
+	MaxBytes      = 1 << 10
+	MaxDuration   = 1 << 10
+	MaxCoinAmount = 1 << 10
 )
 
 func RandomPlans(r *rand.Rand) types.Plans {
 	var (
-		items      = make(types.Plans, 0, r.Intn(MaxPlans))
-		duplicates = make(map[uint64]bool)
+		items = make(types.Plans, 0, r.Intn(MaxCount))
+		m     = make(map[uint64]bool)
 	)
 
 	for len(items) < cap(items) {
-		id := uint64(r.Int63n(MaxPlanId))
-		if duplicates[id] {
+		id := uint64(r.Int63n(MaxID))
+		if m[id] {
 			continue
 		}
 
 		var (
-			prices = simulationhubtypes.RandomCoins(
+			bytes    = sdk.NewInt(r.Int63n(MaxBytes))
+			duration = time.Duration(r.Int63n(MaxDuration)) * time.Minute
+			prices   = simulationhubtypes.RandomCoins(
 				r,
 				sdk.NewCoins(
 					sdk.NewInt64Coin(
 						sdk.DefaultBondDenom,
-						MaxPlanPriceAmount,
+						MaxCoinAmount,
 					),
 				),
 			)
-			validity = time.Duration(r.Int63n(MaxPlanValidity)) * time.Minute
-			bytes    = sdk.NewInt(r.Int63n(MaxPlanBytes))
 			status   = hubtypes.StatusActive
 			statusAt = time.Now()
 		)
@@ -54,15 +53,15 @@ func RandomPlans(r *rand.Rand) types.Plans {
 			status = hubtypes.StatusInactive
 		}
 
-		duplicates[id] = true
+		m[id] = true
 		items = append(
 			items,
 			types.Plan{
 				ID:       id,
 				Address:  "",
-				Prices:   prices,
-				Validity: validity,
 				Bytes:    bytes,
+				Duration: duration,
+				Prices:   prices,
 				Status:   status,
 				StatusAt: statusAt,
 			},

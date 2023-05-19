@@ -17,12 +17,12 @@ var (
 	_ sdk.Msg = (*MsgSubscribeRequest)(nil)
 )
 
-func NewMsgCreateRequest(from hubtypes.ProvAddress, prices sdk.Coins, validity time.Duration, bytes sdk.Int) *MsgCreateRequest {
+func NewMsgCreateRequest(from hubtypes.ProvAddress, bytes sdk.Int, duration time.Duration, prices sdk.Coins) *MsgCreateRequest {
 	return &MsgCreateRequest{
 		From:     from.String(),
-		Prices:   prices,
-		Validity: validity,
 		Bytes:    bytes,
+		Duration: duration,
+		Prices:   prices,
 	}
 }
 
@@ -32,6 +32,21 @@ func (m *MsgCreateRequest) ValidateBasic() error {
 	}
 	if _, err := hubtypes.ProvAddressFromBech32(m.From); err != nil {
 		return errors.Wrap(ErrorInvalidMessage, err.Error())
+	}
+	if m.Bytes.IsNil() {
+		return errors.Wrap(ErrorInvalidMessage, "bytes cannot be nil")
+	}
+	if m.Bytes.IsNegative() {
+		return errors.Wrap(ErrorInvalidMessage, "bytes cannot be negative")
+	}
+	if m.Bytes.IsZero() {
+		return errors.Wrap(ErrorInvalidMessage, "bytes cannot be zero")
+	}
+	if m.Duration < 0 {
+		return errors.Wrap(ErrorInvalidMessage, "duration cannot be negative")
+	}
+	if m.Duration == 0 {
+		return errors.Wrap(ErrorInvalidMessage, "duration cannot be zero")
 	}
 	if m.Prices != nil {
 		if m.Prices.Len() == 0 {
@@ -43,21 +58,6 @@ func (m *MsgCreateRequest) ValidateBasic() error {
 		if !m.Prices.IsValid() {
 			return errors.Wrap(ErrorInvalidMessage, "prices must be valid")
 		}
-	}
-	if m.Validity < 0 {
-		return errors.Wrap(ErrorInvalidMessage, "validity cannot be negative")
-	}
-	if m.Validity == 0 {
-		return errors.Wrap(ErrorInvalidMessage, "validity cannot be zero")
-	}
-	if m.Bytes.IsNil() {
-		return errors.Wrap(ErrorInvalidMessage, "bytes cannot be nil")
-	}
-	if m.Bytes.IsNegative() {
-		return errors.Wrap(ErrorInvalidMessage, "bytes cannot be negative")
-	}
-	if m.Bytes.IsZero() {
-		return errors.Wrap(ErrorInvalidMessage, "bytes cannot be zero")
 	}
 
 	return nil

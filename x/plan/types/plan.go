@@ -46,6 +46,21 @@ func (m *Plan) Validate() error {
 	if _, err := hubtypes.ProvAddressFromBech32(m.Address); err != nil {
 		return errors.Wrapf(err, "invalid address %s", m.Address)
 	}
+	if m.Bytes.IsNil() {
+		return fmt.Errorf("bytes cannot be empty")
+	}
+	if m.Bytes.IsNegative() {
+		return fmt.Errorf("bytes cannot be negative")
+	}
+	if m.Bytes.IsZero() {
+		return fmt.Errorf("bytes cannot be zero")
+	}
+	if m.Duration < 0 {
+		return fmt.Errorf("duration cannot be negative")
+	}
+	if m.Duration == 0 {
+		return fmt.Errorf("duration cannot be zero")
+	}
 	if m.Prices != nil {
 		if m.Prices.Len() == 0 {
 			return fmt.Errorf("prices cannot be empty")
@@ -56,21 +71,6 @@ func (m *Plan) Validate() error {
 		if !m.Prices.IsValid() {
 			return fmt.Errorf("prices must be valid")
 		}
-	}
-	if m.Validity < 0 {
-		return fmt.Errorf("validity cannot be negative")
-	}
-	if m.Validity == 0 {
-		return fmt.Errorf("validity cannot be zero")
-	}
-	if m.Bytes.IsNil() {
-		return fmt.Errorf("bytes cannot be empty")
-	}
-	if m.Bytes.IsNegative() {
-		return fmt.Errorf("bytes cannot be negative")
-	}
-	if m.Bytes.IsZero() {
-		return fmt.Errorf("bytes cannot be zero")
 	}
 	if !m.Status.IsOneOf(hubtypes.StatusActive, hubtypes.StatusInactive) {
 		return fmt.Errorf("status must be one of [active, inactive]")

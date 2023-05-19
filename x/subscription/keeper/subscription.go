@@ -353,7 +353,7 @@ func (k *Keeper) CreateSubscriptionForPlan(
 			BaseSubscription: &types.BaseSubscription{
 				ID:       count + 1,
 				Address:  accAddr.String(),
-				ExpiryAt: ctx.BlockTime().Add(plan.Validity),
+				ExpiryAt: ctx.BlockTime().Add(plan.Duration),
 				Status:   hubtypes.StatusActive,
 				StatusAt: ctx.BlockTime(),
 			},

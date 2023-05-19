@@ -18,7 +18,7 @@ import (
 
 func txCreate() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "create [prices] [bytes] [validity]",
+		Use:   "create [bytes] [duration] [prices]",
 		Short: "Create a subscription plan",
 		Args:  cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -27,26 +27,26 @@ func txCreate() *cobra.Command {
 				return err
 			}
 
-			price, err := sdk.ParseCoinsNormalized(args[0])
+			bytes, err := strconv.ParseInt(args[0], 10, 64)
 			if err != nil {
 				return err
 			}
 
-			bytes, err := strconv.ParseInt(args[1], 10, 64)
+			duration, err := time.ParseDuration(args[1])
 			if err != nil {
 				return err
 			}
 
-			validity, err := time.ParseDuration(args[2])
+			prices, err := sdk.ParseCoinsNormalized(args[2])
 			if err != nil {
 				return err
 			}
 
 			msg := types.NewMsgCreateRequest(
 				ctx.FromAddress.Bytes(),
-				price,
-				validity,
 				sdk.NewInt(bytes),
+				duration,
+				prices,
 			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err

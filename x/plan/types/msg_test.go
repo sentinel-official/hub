@@ -12,9 +12,9 @@ import (
 func TestMsgCreateRequest_ValidateBasic(t *testing.T) {
 	type fields struct {
 		From     string
-		Prices   sdk.Coins
-		Validity time.Duration
 		Bytes    sdk.Int
+		Duration time.Duration
+		Prices   sdk.Coins
 	}
 	tests := []struct {
 		name    string
@@ -46,8 +46,8 @@ func TestMsgCreateRequest_ValidateBasic(t *testing.T) {
 			"from 10 bytes",
 			fields{
 				From:     "sentprov1qypqxpq9qcrsszgsutj8xr",
-				Validity: 1000,
 				Bytes:    sdk.NewInt(1000),
+				Duration: 1000,
 			},
 			false,
 		},
@@ -55,8 +55,8 @@ func TestMsgCreateRequest_ValidateBasic(t *testing.T) {
 			"from 20 bytes",
 			fields{
 				From:     "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Validity: 1000,
 				Bytes:    sdk.NewInt(1000),
+				Duration: 1000,
 			},
 			false,
 		},
@@ -64,129 +64,32 @@ func TestMsgCreateRequest_ValidateBasic(t *testing.T) {
 			"from 30 bytes",
 			fields{
 				From:     "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfqyy3zxfp9ycnjs2fsh33zgx",
-				Validity: 1000,
 				Bytes:    sdk.NewInt(1000),
-			},
-			false,
-		},
-		{
-			"price nil",
-			fields{
-				From:     "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Prices:   nil,
-				Validity: 1000,
-				Bytes:    sdk.NewInt(1000),
-			},
-			false,
-		},
-		{
-			"price empty",
-			fields{
-				From:   "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Prices: sdk.Coins{},
-			},
-			true,
-		},
-		{
-			"price empty denom",
-			fields{
-				From:   "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Prices: sdk.Coins{sdk.Coin{Denom: "", Amount: sdk.NewInt(1000)}},
-			},
-			true,
-		},
-		{
-			"price empty amount",
-			fields{
-				From:   "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Prices: sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.Int{}}},
-			},
-			true,
-		},
-		{
-			"price invalid denom",
-			fields{
-				From:   "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Prices: sdk.Coins{sdk.Coin{Denom: "o", Amount: sdk.NewInt(1000)}},
-			},
-			true,
-		},
-		{
-			"price negative amount",
-			fields{
-				From:   "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Prices: sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(-1000)}},
-			},
-			true,
-		},
-		{
-			"price zero amount",
-			fields{
-				From:   "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Prices: sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(0)}},
-			},
-			true,
-		},
-		{
-			"price positive amount",
-			fields{
-				From:     "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Prices:   sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
-				Validity: 1000,
-				Bytes:    sdk.NewInt(1000),
-			},
-			false,
-		},
-		{
-			"validity negative",
-			fields{
-				From:     "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Prices:   sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
-				Validity: -1000,
-			},
-			true,
-		},
-		{
-			"validity zero",
-			fields{
-				From:     "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Validity: 0,
-			},
-			true,
-		},
-		{
-			"validity positive",
-			fields{
-				From:     "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Validity: 1000,
-				Bytes:    sdk.NewInt(1000),
+				Duration: 1000,
 			},
 			false,
 		},
 		{
 			"bytes empty",
 			fields{
-				From:     "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Validity: 1000,
-				Bytes:    sdk.Int{},
+				From:  "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
+				Bytes: sdk.Int{},
 			},
 			true,
 		},
 		{
 			"bytes negative",
 			fields{
-				From:     "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Validity: 1000,
-				Bytes:    sdk.NewInt(-1000),
+				From:  "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
+				Bytes: sdk.NewInt(-1000),
 			},
 			true,
 		},
 		{
 			"bytes zero",
 			fields{
-				From:     "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Validity: 1000,
-				Bytes:    sdk.NewInt(0),
+				From:  "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
+				Bytes: sdk.NewInt(0),
 			},
 			true,
 		},
@@ -194,8 +97,115 @@ func TestMsgCreateRequest_ValidateBasic(t *testing.T) {
 			"bytes positive",
 			fields{
 				From:     "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Validity: 1000,
 				Bytes:    sdk.NewInt(1000),
+				Duration: 1000,
+			},
+			false,
+		},
+		{
+			"duration negative",
+			fields{
+				From:     "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
+				Bytes:    sdk.NewInt(1000),
+				Duration: -1000,
+			},
+			true,
+		},
+		{
+			"duration zero",
+			fields{
+				From:     "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
+				Bytes:    sdk.NewInt(1000),
+				Duration: 0,
+			},
+			true,
+		},
+		{
+			"duration positive",
+			fields{
+				From:     "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
+				Bytes:    sdk.NewInt(1000),
+				Duration: 1000,
+			},
+			false,
+		},
+		{
+			"prices nil",
+			fields{
+				From:     "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
+				Bytes:    sdk.NewInt(1000),
+				Duration: 1000,
+				Prices:   nil,
+			},
+			false,
+		},
+		{
+			"prices empty",
+			fields{
+				From:     "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
+				Bytes:    sdk.NewInt(1000),
+				Duration: 1000,
+				Prices:   sdk.Coins{},
+			},
+			true,
+		},
+		{
+			"prices empty denom",
+			fields{
+				From:     "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
+				Bytes:    sdk.NewInt(1000),
+				Duration: 1000,
+				Prices:   sdk.Coins{sdk.Coin{Denom: "", Amount: sdk.NewInt(1000)}},
+			},
+			true,
+		},
+		{
+			"prices empty amount",
+			fields{
+				From:     "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
+				Bytes:    sdk.NewInt(1000),
+				Duration: 1000,
+				Prices:   sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.Int{}}},
+			},
+			true,
+		},
+		{
+			"prices invalid denom",
+			fields{
+				From:     "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
+				Bytes:    sdk.NewInt(1000),
+				Duration: 1000,
+				Prices:   sdk.Coins{sdk.Coin{Denom: "o", Amount: sdk.NewInt(1000)}},
+			},
+			true,
+		},
+		{
+			"prices negative amount",
+			fields{
+				From:     "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
+				Bytes:    sdk.NewInt(1000),
+				Duration: 1000,
+				Prices:   sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(-1000)}},
+			},
+			true,
+		},
+		{
+			"prices zero amount",
+			fields{
+				From:     "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
+				Bytes:    sdk.NewInt(1000),
+				Duration: 1000,
+				Prices:   sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(0)}},
+			},
+			true,
+		},
+		{
+			"prices positive amount",
+			fields{
+				From:     "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
+				Bytes:    sdk.NewInt(1000),
+				Duration: 1000,
+				Prices:   sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
 			},
 			false,
 		},
@@ -204,9 +214,9 @@ func TestMsgCreateRequest_ValidateBasic(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			m := &MsgCreateRequest{
 				From:     tt.fields.From,
-				Prices:   tt.fields.Prices,
-				Validity: tt.fields.Validity,
 				Bytes:    tt.fields.Bytes,
+				Duration: tt.fields.Duration,
+				Prices:   tt.fields.Prices,
 			}
 			if err := m.ValidateBasic(); (err != nil) != tt.wantErr {
 				t.Errorf("ValidateBasic() error = %v, wantErr %v", err, tt.wantErr)

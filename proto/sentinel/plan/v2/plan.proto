@@ -15,15 +15,15 @@ option (gogoproto.goproto_getters_all) = false;
 message Plan {
   uint64 id      = 1 [ (gogoproto.customname) = "ID" ];
   string address = 2;
-  repeated cosmos.base.v1beta1.Coin prices = 3 [
-    (gogoproto.nullable)     = false,
-    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
-  ];
-  google.protobuf.Duration validity = 4
-      [ (gogoproto.nullable) = false, (gogoproto.stdduration) = true ];
-  string bytes = 5 [
+  string bytes   = 3 [
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
     (gogoproto.nullable)   = false
+  ];
+  google.protobuf.Duration duration = 4
+      [ (gogoproto.nullable) = false, (gogoproto.stdduration) = true ];
+  repeated cosmos.base.v1beta1.Coin prices = 5 [
+    (gogoproto.nullable)     = false,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
   ];
   sentinel.types.v1.Status status     = 6;
   google.protobuf.Timestamp status_at = 7

@@ -37,9 +37,9 @@ func (k *msgServer) MsgCreate(c context.Context, msg *types.MsgCreateRequest) (*
 		plan  = types.Plan{
 			ID:       count + 1,
 			Address:  provAddr.String(),
-			Prices:   msg.Prices,
-			Validity: msg.Validity,
 			Bytes:    msg.Bytes,
+			Duration: msg.Duration,
+			Prices:   msg.Prices,
 			Status:   hubtypes.StatusInactive,
 			StatusAt: ctx.BlockTime(),
 		}
