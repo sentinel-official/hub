@@ -21,10 +21,10 @@ var (
 	NodeForExpiryAtKeyPrefix = []byte{0x11}
 	NodeForPlanKeyPrefix     = []byte{0x12}
 
-	LeaseKeyPrefix                  = []byte{0x30}
-	LeaseForDistributionAtKeyPrefix = []byte{0x31}
-	LeaseForAccountKeyPrefix        = []byte{0x32}
-	LeaseForNodeKeyPrefix           = []byte{0x33}
+	PayoutKeyPrefix             = []byte{0x30}
+	PayoutForTimestampKeyPrefix = []byte{0x31}
+	PayoutForAccountKeyPrefix   = []byte{0x32}
+	PayoutForNodeKeyPrefix      = []byte{0x33}
 )
 
 func ActiveNodeKey(addr hubtypes.NodeAddress) []byte {
@@ -43,32 +43,32 @@ func NodeForPlanKey(id uint64, addr hubtypes.NodeAddress) []byte {
 	return append(GetNodeForPlanKeyPrefix(id), address.MustLengthPrefix(addr.Bytes())...)
 }
 
-func LeaseKey(id uint64) []byte {
-	return append(LeaseKeyPrefix, sdk.Uint64ToBigEndian(id)...)
+func PayoutKey(id uint64) []byte {
+	return append(PayoutKeyPrefix, sdk.Uint64ToBigEndian(id)...)
 }
 
-func GetLeaseForDistributionAtKeyPrefix(at time.Time) []byte {
-	return append(LeaseForDistributionAtKeyPrefix, sdk.FormatTimeBytes(at)...)
+func GetPayoutForTimestampKeyPrefix(at time.Time) []byte {
+	return append(PayoutForTimestampKeyPrefix, sdk.FormatTimeBytes(at)...)
 }
 
-func LeaseForDistributionAtKey(at time.Time, id uint64) []byte {
-	return append(GetLeaseForDistributionAtKeyPrefix(at), sdk.Uint64ToBigEndian(id)...)
+func PayoutForTimestampKey(at time.Time, id uint64) []byte {
+	return append(GetPayoutForTimestampKeyPrefix(at), sdk.Uint64ToBigEndian(id)...)
 }
 
-func GetLeaseForAccountKeyPrefix(addr sdk.AccAddress) []byte {
-	return append(LeaseForAccountKeyPrefix, address.MustLengthPrefix(addr.Bytes())...)
+func GetPayoutForAccountKeyPrefix(addr sdk.AccAddress) []byte {
+	return append(PayoutForAccountKeyPrefix, address.MustLengthPrefix(addr.Bytes())...)
 }
 
-func LeaseForAccountKey(addr sdk.AccAddress, id uint64) []byte {
-	return append(GetLeaseForAccountKeyPrefix(addr), sdk.Uint64ToBigEndian(id)...)
+func PayoutForAccountKey(addr sdk.AccAddress, id uint64) []byte {
+	return append(GetPayoutForAccountKeyPrefix(addr), sdk.Uint64ToBigEndian(id)...)
 }
 
-func GetLeaseForNodeKeyPrefix(addr hubtypes.NodeAddress) []byte {
-	return append(LeaseForNodeKeyPrefix, address.MustLengthPrefix(addr.Bytes())...)
+func GetPayoutForNodeKeyPrefix(addr hubtypes.NodeAddress) []byte {
+	return append(PayoutForNodeKeyPrefix, address.MustLengthPrefix(addr.Bytes())...)
 }
 
-func LeaseForNodeKey(addr hubtypes.NodeAddress, id uint64) []byte {
-	return append(GetLeaseForNodeKeyPrefix(addr), sdk.Uint64ToBigEndian(id)...)
+func PayoutForNodeKey(addr hubtypes.NodeAddress, id uint64) []byte {
+	return append(GetPayoutForNodeKeyPrefix(addr), sdk.Uint64ToBigEndian(id)...)
 }
 
 func GetNodeForExpiryAtKeyPrefix(at time.Time) []byte {
@@ -101,7 +101,7 @@ func AddressFromNodeForExpiryAtKey(key []byte) hubtypes.NodeAddress {
 	return key[31:]
 }
 
-func IDFromLeaseForAccountKey(key []byte) uint64 {
+func IDFromPayoutForAccountKey(key []byte) uint64 {
 	// prefix (1 byte) | addrLen(1 byte) | addr (addrLen bytes) | id (8 bytes)
 
 	addrLen := int(key[1])
@@ -112,7 +112,7 @@ func IDFromLeaseForAccountKey(key []byte) uint64 {
 	return sdk.BigEndianToUint64(key[2+addrLen:])
 }
 
-func IDFromLeaseForNodeKey(key []byte) uint64 {
+func IDFromPayoutForNodeKey(key []byte) uint64 {
 	// prefix (1 byte) | addrLen(1 byte) | addr (addrLen bytes) | id (8 bytes)
 
 	addrLen := int(key[1])
@@ -123,7 +123,7 @@ func IDFromLeaseForNodeKey(key []byte) uint64 {
 	return sdk.BigEndianToUint64(key[2+addrLen:])
 }
 
-func IDFromLeaseForDistributionAtKey(key []byte) uint64 {
+func IDFromPayoutForTimestampKey(key []byte) uint64 {
 	// prefix (1 byte) | at (29 bytes) | id (8 bytes)
 
 	if len(key) != 38 {

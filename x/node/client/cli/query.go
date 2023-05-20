@@ -121,10 +121,10 @@ func queryNodes() *cobra.Command {
 	return cmd
 }
 
-func queryLease() *cobra.Command {
+func queryPayout() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "lease [id]",
-		Short: "Query a lease",
+		Use:   "payout [id]",
+		Short: "Query a payout",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientQueryContext(cmd)
@@ -141,9 +141,9 @@ func queryLease() *cobra.Command {
 				qc = types.NewQueryServiceClient(ctx)
 			)
 
-			res, err := qc.QueryLease(
+			res, err := qc.QueryPayout(
 				context.Background(),
-				types.NewQueryLeaseRequest(
+				types.NewQueryPayoutRequest(
 					id,
 				),
 			)
@@ -160,10 +160,10 @@ func queryLease() *cobra.Command {
 	return cmd
 }
 
-func queryLeases() *cobra.Command {
+func queryPayouts() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "leases",
-		Short: "Query leases",
+		Use:   "payouts",
+		Short: "Query payouts",
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			ctx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
@@ -179,9 +179,9 @@ func queryLeases() *cobra.Command {
 				qc = types.NewQueryServiceClient(ctx)
 			)
 
-			res, err := qc.QueryLeases(
+			res, err := qc.QueryPayouts(
 				context.Background(),
-				types.NewQueryLeasesRequest(
+				types.NewQueryPayoutsRequest(
 					pagination,
 				),
 			)
@@ -194,7 +194,7 @@ func queryLeases() *cobra.Command {
 	}
 
 	flags.AddQueryFlagsToCmd(cmd)
-	flags.AddPaginationFlagsToCmd(cmd, "leases")
+	flags.AddPaginationFlagsToCmd(cmd, "payouts")
 
 	return cmd
 }

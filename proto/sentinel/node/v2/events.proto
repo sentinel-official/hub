@@ -22,11 +22,11 @@ message EventUpdateStatus {
       [ (gogoproto.moretags) = "yaml:\"status\"" ];
 }
 
-message EventLease {
+message EventPayout {
   uint64 id = 1
       [ (gogoproto.customname) = "ID", (gogoproto.moretags) = "yaml:\"id\"" ];
-  string lessor = 2 [ (gogoproto.moretags) = "yaml:\"lessor\"" ];
-  string lessee = 3 [ (gogoproto.moretags) = "yaml:\"lessee\"" ];
+  string from_address = 2 [ (gogoproto.moretags) = "yaml:\"from_address\"" ];
+  string to_address   = 3 [ (gogoproto.moretags) = "yaml:\"to_address\"" ];
 }
 
 message EventCreateSubscription {

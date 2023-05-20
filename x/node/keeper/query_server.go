@@ -120,34 +120,34 @@ func (q *queryServer) QueryNodesForPlan(c context.Context, req *types.QueryNodes
 	return &types.QueryNodesForPlanResponse{Nodes: items, Pagination: pagination}, nil
 }
 
-func (q *queryServer) QueryLease(c context.Context, req *types.QueryLeaseRequest) (*types.QueryLeaseResponse, error) {
+func (q *queryServer) QueryPayout(c context.Context, req *types.QueryPayoutRequest) (*types.QueryPayoutResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "empty request")
 	}
 
 	ctx := sdk.UnwrapSDKContext(c)
 
-	item, found := q.GetLease(ctx, req.Id)
+	item, found := q.GetPayout(ctx, req.Id)
 	if !found {
-		return nil, status.Errorf(codes.NotFound, "lease does not exist for id %d", req.Id)
+		return nil, status.Errorf(codes.NotFound, "payout does not exist for id %d", req.Id)
 	}
 
-	return &types.QueryLeaseResponse{Lease: item}, nil
+	return &types.QueryPayoutResponse{Payout: item}, nil
 }
 
-func (q *queryServer) QueryLeases(c context.Context, req *types.QueryLeasesRequest) (res *types.QueryLeasesResponse, err error) {
+func (q *queryServer) QueryPayouts(c context.Context, req *types.QueryPayoutsRequest) (res *types.QueryPayoutsResponse, err error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "empty request")
 	}
 
 	var (
-		items types.Leases
+		items types.Payouts
 		ctx   = sdk.UnwrapSDKContext(c)
 	)
 
-	store := prefix.NewStore(q.Store(ctx), types.LeaseKeyPrefix)
+	store := prefix.NewStore(q.Store(ctx), types.PayoutKeyPrefix)
 	pagination, err := query.Paginate(store, req.Pagination, func(_, value []byte) error {
-		var item types.Lease
+		var item types.Payout
 		if err := q.cdc.Unmarshal(value, &item); err != nil {
 			return err
 		}
@@ -160,10 +160,10 @@ func (q *queryServer) QueryLeases(c context.Context, req *types.QueryLeasesReque
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	return &types.QueryLeasesResponse{Leases: items, Pagination: pagination}, nil
+	return &types.QueryPayoutsResponse{Payouts: items, Pagination: pagination}, nil
 }
 
-func (q *queryServer) QueryLeasesForAccount(c context.Context, req *types.QueryLeasesForAccountRequest) (res *types.QueryLeasesForAccountResponse, err error) {
+func (q *queryServer) QueryPayoutsForAccount(c context.Context, req *types.QueryPayoutsForAccountRequest) (res *types.QueryPayoutsForAccountResponse, err error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "empty request")
 	}
@@ -174,15 +174,15 @@ func (q *queryServer) QueryLeasesForAccount(c context.Context, req *types.QueryL
 	}
 
 	var (
-		items types.Leases
+		items types.Payouts
 		ctx   = sdk.UnwrapSDKContext(c)
 	)
 
-	store := prefix.NewStore(q.Store(ctx), types.GetLeaseForAccountKeyPrefix(addr))
+	store := prefix.NewStore(q.Store(ctx), types.GetPayoutForAccountKeyPrefix(addr))
 	pagination, err := query.Paginate(store, req.Pagination, func(key, _ []byte) error {
-		item, found := q.GetLease(ctx, sdk.BigEndianToUint64(key))
+		item, found := q.GetPayout(ctx, sdk.BigEndianToUint64(key))
 		if !found {
-			return fmt.Errorf("lease for key %X does not exist", key)
+			return fmt.Errorf("payout for key %X does not exist", key)
 		}
 
 		items = append(items, item)
@@ -193,10 +193,10 @@ func (q *queryServer) QueryLeasesForAccount(c context.Context, req *types.QueryL
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	return &types.QueryLeasesForAccountResponse{Leases: items, Pagination: pagination}, nil
+	return &types.QueryPayoutsForAccountResponse{Payouts: items, Pagination: pagination}, nil
 }
 
-func (q *queryServer) QueryLeasesForNode(c context.Context, req *types.QueryLeasesForNodeRequest) (res *types.QueryLeasesForNodeResponse, err error) {
+func (q *queryServer) QueryPayoutsForNode(c context.Context, req *types.QueryPayoutsForNodeRequest) (res *types.QueryPayoutsForNodeResponse, err error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "empty request")
 	}
@@ -207,15 +207,15 @@ func (q *queryServer) QueryLeasesForNode(c context.Context, req *types.QueryLeas
 	}
 
 	var (
-		items types.Leases
+		items types.Payouts
 		ctx   = sdk.UnwrapSDKContext(c)
 	)
 
-	store := prefix.NewStore(q.Store(ctx), types.GetLeaseForNodeKeyPrefix(addr))
+	store := prefix.NewStore(q.Store(ctx), types.GetPayoutForNodeKeyPrefix(addr))
 	pagination, err := query.Paginate(store, req.Pagination, func(key, _ []byte) error {
-		item, found := q.GetLease(ctx, sdk.BigEndianToUint64(key))
+		item, found := q.GetPayout(ctx, sdk.BigEndianToUint64(key))
 		if !found {
-			return fmt.Errorf("lease for key %X does not exist", key)
+			return fmt.Errorf("payout for key %X does not exist", key)
 		}
 
 		items = append(items, item)
@@ -226,7 +226,7 @@ func (q *queryServer) QueryLeasesForNode(c context.Context, req *types.QueryLeas
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	return &types.QueryLeasesForNodeResponse{Leases: items, Pagination: pagination}, nil
+	return &types.QueryPayoutsForNodeResponse{Payouts: items, Pagination: pagination}, nil
 }
 
 func (q *queryServer) QueryParams(c context.Context, _ *types.QueryParamsRequest) (*types.QueryParamsResponse, error) {

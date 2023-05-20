@@ -165,13 +165,13 @@ func (k *msgServer) MsgSubscribe(c context.Context, msg *types.MsgSubscribeReque
 	ctx := sdk.UnwrapSDKContext(c)
 
 	if msg.Gigabytes != 0 {
-		if !k.IsValidLeaseGigabytes(ctx, msg.Gigabytes) {
-			return nil, types.NewErrorInvalidLeaseGigabytes(msg.Gigabytes)
+		if !k.IsValidSubscriptionGigabytes(ctx, msg.Gigabytes) {
+			return nil, types.NewErrorInvalidGigabytes(msg.Gigabytes)
 		}
 	}
 	if msg.Hours != 0 {
-		if !k.IsValidLeaseHours(ctx, msg.Hours) {
-			return nil, types.NewErrorInvalidLeaseHours(msg.Hours)
+		if !k.IsValidSubscriptionHours(ctx, msg.Hours) {
+			return nil, types.NewErrorInvalidHours(msg.Hours)
 		}
 	}
 
@@ -197,41 +197,29 @@ func (k *msgServer) MsgSubscribe(c context.Context, msg *types.MsgSubscribeReque
 		},
 	)
 
-	lease := types.Lease{
-		ID:             subscription.ID,
-		Bytes:          hubtypes.Gigabyte.MulRaw(msg.Gigabytes),
-		Duration:       msg.Hours * time.Hour.Nanoseconds(),
-		Price:          sdk.Coin{},
-		DistributionAt: time.Time{},
-	}
-
 	if msg.Gigabytes != 0 {
-		lease.Price = sdk.NewCoin(
+		return &types.MsgSubscribeResponse{}, nil
+	}
+
+	payout := types.Payout{
+		ID:    subscription.ID,
+		Hours: subscription.Hours,
+		Price: sdk.NewCoin(
 			subscription.Deposit.Denom,
-			subscription.Deposit.Amount.QuoRaw(msg.Gigabytes),
-		)
-	}
-	if msg.Hours != 0 {
-		lease.Price = sdk.NewCoin(
-			subscription.Deposit.Denom,
-			subscription.Deposit.Amount.QuoRaw(msg.Hours),
-		)
-		lease.DistributionAt = ctx.BlockTime().Add(time.Hour)
+			subscription.Deposit.Amount.QuoRaw(subscription.Hours),
+		),
+		Timestamp: ctx.BlockTime().Add(time.Hour),
 	}
 
-	k.SetLease(ctx, lease)
-	k.SetLeaseForAccount(ctx, accAddr, lease.ID)
-	k.SetLeaseForNode(ctx, nodeAddr, lease.ID)
-
-	if lease.Duration != 0 {
-		k.SetLeaseForDistributionAt(ctx, lease.DistributionAt, lease.ID)
-	}
-
+	k.SetPayout(ctx, payout)
+	k.SetPayoutForAccount(ctx, accAddr, payout.ID)
+	k.SetPayoutForNode(ctx, nodeAddr, payout.ID)
+	k.SetPayoutForTimestamp(ctx, payout.Timestamp, payout.ID)
 	ctx.EventManager().EmitTypedEvent(
-		&types.EventLease{
-			ID:     lease.ID,
-			Lessor: nodeAddr.String(),
-			Lessee: accAddr.String(),
+		&types.EventPayout{
+			ID:          payout.ID,
+			FromAddress: accAddr.String(),
+			ToAddress:   nodeAddr.String(),
 		},
 	)
 

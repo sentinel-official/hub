@@ -33,10 +33,10 @@ func NewErrorDuplicateNode(addr hubtypes.NodeAddress) error {
 	return errors.Wrapf(ErrorDuplicate, "node %s already exists", addr)
 }
 
-func NewErrorInvalidLeaseGigabytes(gigabytes int64) error {
-	return errors.Wrapf(ErrorInvalidGigabytes, "invalid lease gigabytes %d", gigabytes)
+func NewErrorInvalidGigabytes(gigabytes int64) error {
+	return errors.Wrapf(ErrorInvalidGigabytes, "invalid subscription gigabytes %d", gigabytes)
 }
 
-func NewErrorInvalidLeaseHours(hours int64) error {
-	return errors.Wrapf(ErrorInvalidHours, "invalid lease hours %d", hours)
+func NewErrorInvalidHours(hours int64) error {
+	return errors.Wrapf(ErrorInvalidHours, "invalid subscription hours %d", hours)
 }

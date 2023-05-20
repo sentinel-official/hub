@@ -9,14 +9,10 @@ option go_package            = "github.com/sentinel-official/hub/x/node/types";
 option (gogoproto.equal_all) = false;
 option (gogoproto.goproto_getters_all) = false;
 
-message Lease {
-  uint64 id    = 1 [ (gogoproto.customname) = "ID" ];
-  string bytes = 2 [
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
-    (gogoproto.nullable)   = false
-  ];
-  int64 duration                 = 3;
-  cosmos.base.v1beta1.Coin price = 4 [ (gogoproto.nullable) = false ];
-  google.protobuf.Timestamp distribution_at = 5
+message Payout {
+  uint64 id                           = 1 [ (gogoproto.customname) = "ID" ];
+  int64 hours                         = 2;
+  cosmos.base.v1beta1.Coin price      = 3 [ (gogoproto.nullable) = false ];
+  google.protobuf.Timestamp timestamp = 4
       [ (gogoproto.nullable) = false, (gogoproto.stdtime) = true ];
 }

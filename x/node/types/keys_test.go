@@ -76,7 +76,7 @@ func TestAddressFromNodeForPlanKey(t *testing.T) {
 	}
 }
 
-func TestIDFromLeaseForAccountKey(t *testing.T) {
+func TestIDFromPayoutForAccountKey(t *testing.T) {
 	var (
 		addr []byte
 		key  []byte
@@ -86,16 +86,16 @@ func TestIDFromLeaseForAccountKey(t *testing.T) {
 		addr = make([]byte, i)
 		_, _ = rand.Read(addr)
 
-		key = LeaseForAccountKey(addr, uint64(i))
+		key = PayoutForAccountKey(addr, uint64(i))
 		require.Equal(
 			t,
 			uint64(i),
-			IDFromLeaseForAccountKey(key),
+			IDFromPayoutForAccountKey(key),
 		)
 	}
 }
 
-func TestIDFromLeaseForNodeKey(t *testing.T) {
+func TestIDFromPayoutForNodeKey(t *testing.T) {
 	var (
 		addr []byte
 		key  []byte
@@ -105,11 +105,11 @@ func TestIDFromLeaseForNodeKey(t *testing.T) {
 		addr = make([]byte, i)
 		_, _ = rand.Read(addr)
 
-		key = LeaseForNodeKey(addr, uint64(i))
+		key = PayoutForNodeKey(addr, uint64(i))
 		require.Equal(
 			t,
 			uint64(i),
-			IDFromLeaseForNodeKey(key),
+			IDFromPayoutForNodeKey(key),
 		)
 	}
 }
@@ -139,7 +139,7 @@ func TestInactiveNodeKey(t *testing.T) {
 	}
 }
 
-func TestLeaseForAccountKey(t *testing.T) {
+func TestPayoutForAccountKey(t *testing.T) {
 	var (
 		addr []byte
 		id   uint64
@@ -153,20 +153,20 @@ func TestLeaseForAccountKey(t *testing.T) {
 		if i < 256 {
 			require.Equal(
 				t,
-				append(append(LeaseForAccountKeyPrefix, address.MustLengthPrefix(addr)...), sdk.Uint64ToBigEndian(id)...),
-				LeaseForAccountKey(addr, id),
+				append(append(PayoutForAccountKeyPrefix, address.MustLengthPrefix(addr)...), sdk.Uint64ToBigEndian(id)...),
+				PayoutForAccountKey(addr, id),
 			)
 
 			continue
 		}
 
 		require.Panics(t, func() {
-			LeaseForAccountKey(addr, id)
+			PayoutForAccountKey(addr, id)
 		})
 	}
 }
 
-func TestLeaseForNodeKey(t *testing.T) {
+func TestPayoutForNodeKey(t *testing.T) {
 	var (
 		addr []byte
 		id   uint64
@@ -180,20 +180,20 @@ func TestLeaseForNodeKey(t *testing.T) {
 		if i < 256 {
 			require.Equal(
 				t,
-				append(append(LeaseForNodeKeyPrefix, address.MustLengthPrefix(addr)...), sdk.Uint64ToBigEndian(id)...),
-				LeaseForNodeKey(addr, id),
+				append(append(PayoutForNodeKeyPrefix, address.MustLengthPrefix(addr)...), sdk.Uint64ToBigEndian(id)...),
+				PayoutForNodeKey(addr, id),
 			)
 
 			continue
 		}
 
 		require.Panics(t, func() {
-			LeaseForNodeKey(addr, id)
+			PayoutForNodeKey(addr, id)
 		})
 	}
 }
 
-func TestLeaseKey(t *testing.T) {
+func TestPayoutKey(t *testing.T) {
 	var (
 		id uint64
 	)
@@ -202,8 +202,8 @@ func TestLeaseKey(t *testing.T) {
 		id = uint64(i)
 		require.Equal(
 			t,
-			append(LeaseKeyPrefix, sdk.Uint64ToBigEndian(id)...),
-			LeaseKey(id),
+			append(PayoutKeyPrefix, sdk.Uint64ToBigEndian(id)...),
+			PayoutKey(id),
 		)
 	}
 }

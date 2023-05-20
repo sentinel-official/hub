@@ -28,27 +28,27 @@ func NewQueryNodesForPlanRequest(id uint64, status hubtypes.Status, pagination *
 	}
 }
 
-func NewQueryLeaseRequest(id uint64) *QueryLeaseRequest {
-	return &QueryLeaseRequest{
+func NewQueryPayoutRequest(id uint64) *QueryPayoutRequest {
+	return &QueryPayoutRequest{
 		Id: id,
 	}
 }
 
-func NewQueryLeasesRequest(pagination *query.PageRequest) *QueryLeasesRequest {
-	return &QueryLeasesRequest{
+func NewQueryPayoutsRequest(pagination *query.PageRequest) *QueryPayoutsRequest {
+	return &QueryPayoutsRequest{
 		Pagination: pagination,
 	}
 }
 
-func NewQueryLeasesForAccountRequest(addr sdk.AccAddress, pagination *query.PageRequest) *QueryLeasesForNodeRequest {
-	return &QueryLeasesForNodeRequest{
+func NewQueryPayoutsForAccountRequest(addr sdk.AccAddress, pagination *query.PageRequest) *QueryPayoutsForNodeRequest {
+	return &QueryPayoutsForNodeRequest{
 		Address:    addr.String(),
 		Pagination: pagination,
 	}
 }
 
-func NewQueryLeasesForNodeRequest(addr hubtypes.NodeAddress, pagination *query.PageRequest) *QueryLeasesForNodeRequest {
-	return &QueryLeasesForNodeRequest{
+func NewQueryPayoutsForNodeRequest(addr hubtypes.NodeAddress, pagination *query.PageRequest) *QueryPayoutsForNodeRequest {
+	return &QueryPayoutsForNodeRequest{
 		Address:    addr.String(),
 		Pagination: pagination,
 	}

@@ -38,23 +38,23 @@ func (k *Keeper) MinHourlyPrices(ctx sdk.Context) (v sdk.Coins) {
 	return
 }
 
-func (k *Keeper) MaxLeaseHours(ctx sdk.Context) (v int64) {
-	k.params.Get(ctx, types.KeyMaxLeaseHours, &v)
+func (k *Keeper) MaxSubscriptionGigabytes(ctx sdk.Context) (v int64) {
+	k.params.Get(ctx, types.KeyMaxSubscriptionGigabytes, &v)
 	return
 }
 
-func (k *Keeper) MinLeaseHours(ctx sdk.Context) (v int64) {
-	k.params.Get(ctx, types.KeyMinLeaseHours, &v)
+func (k *Keeper) MinSubscriptionGigabytes(ctx sdk.Context) (v int64) {
+	k.params.Get(ctx, types.KeyMinSubscriptionGigabytes, &v)
 	return
 }
 
-func (k *Keeper) MaxLeaseGigabytes(ctx sdk.Context) (v int64) {
-	k.params.Get(ctx, types.KeyMaxLeaseGigabytes, &v)
+func (k *Keeper) MaxSubscriptionHours(ctx sdk.Context) (v int64) {
+	k.params.Get(ctx, types.KeyMaxSubscriptionHours, &v)
 	return
 }
 
-func (k *Keeper) MinLeaseGigabytes(ctx sdk.Context) (v int64) {
-	k.params.Get(ctx, types.KeyMinLeaseGigabytes, &v)
+func (k *Keeper) MinSubscriptionHours(ctx sdk.Context) (v int64) {
+	k.params.Get(ctx, types.KeyMinSubscriptionHours, &v)
 	return
 }
 
@@ -75,10 +75,10 @@ func (k *Keeper) GetParams(ctx sdk.Context) types.Params {
 		k.MinGigabytePrices(ctx),
 		k.MaxHourlyPrices(ctx),
 		k.MinHourlyPrices(ctx),
-		k.MaxLeaseHours(ctx),
-		k.MinLeaseHours(ctx),
-		k.MaxLeaseGigabytes(ctx),
-		k.MinLeaseGigabytes(ctx),
+		k.MaxSubscriptionGigabytes(ctx),
+		k.MinSubscriptionGigabytes(ctx),
+		k.MaxSubscriptionHours(ctx),
+		k.MinSubscriptionHours(ctx),
 		k.RevenueShare(ctx),
 	)
 }
@@ -123,28 +123,28 @@ func (k *Keeper) IsValidHourlyPrices(ctx sdk.Context, prices sdk.Coins) bool {
 	return true
 }
 
-func (k *Keeper) IsValidLeaseHours(ctx sdk.Context, hours int64) bool {
-	maxHours := k.MaxLeaseHours(ctx)
-	if maxHours != 0 && hours > maxHours {
+func (k *Keeper) IsValidSubscriptionGigabytes(ctx sdk.Context, gigabytes int64) bool {
+	maxGigabytes := k.MaxSubscriptionGigabytes(ctx)
+	if maxGigabytes != 0 && gigabytes > maxGigabytes {
 		return false
 	}
 
-	minHours := k.MinLeaseHours(ctx)
-	if minHours != 0 && hours < minHours {
+	minGigabytes := k.MinSubscriptionGigabytes(ctx)
+	if minGigabytes != 0 && gigabytes < minGigabytes {
 		return false
 	}
 
 	return true
 }
 
-func (k *Keeper) IsValidLeaseGigabytes(ctx sdk.Context, gigabytes int64) bool {
-	maxGigabytes := k.MaxLeaseGigabytes(ctx)
-	if maxGigabytes != 0 && gigabytes > maxGigabytes {
+func (k *Keeper) IsValidSubscriptionHours(ctx sdk.Context, hours int64) bool {
+	maxHours := k.MaxSubscriptionHours(ctx)
+	if maxHours != 0 && hours > maxHours {
 		return false
 	}
 
-	minGigabytes := k.MinLeaseGigabytes(ctx)
-	if minGigabytes != 0 && gigabytes < minGigabytes {
+	minHours := k.MinSubscriptionHours(ctx)
+	if minHours != 0 && hours < minHours {
 		return false
 	}
 
