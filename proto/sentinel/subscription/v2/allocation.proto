@@ -7,7 +7,7 @@ option go_package = "github.com/sentinel-official/hub/x/subscription/types";
 option (gogoproto.equal_all)           = false;
 option (gogoproto.goproto_getters_all) = false;
 
-message Quota {
+message Allocation {
   string address       = 1;
   string granted_bytes = 2 [
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",

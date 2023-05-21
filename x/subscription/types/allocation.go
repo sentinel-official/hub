@@ -7,7 +7,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-func (m *Quota) GetAddress() sdk.AccAddress {
+func (m *Allocation) GetAddress() sdk.AccAddress {
 	if m.Address == "" {
 		return nil
 	}
@@ -20,7 +20,7 @@ func (m *Quota) GetAddress() sdk.AccAddress {
 	return addr
 }
 
-func (m *Quota) Validate() error {
+func (m *Allocation) Validate() error {
 	if m.Address == "" {
 		return fmt.Errorf("address cannot be empty")
 	}
@@ -47,5 +47,5 @@ func (m *Quota) Validate() error {
 }
 
 type (
-	Quotas []Quota
+	Allocations []Allocation
 )

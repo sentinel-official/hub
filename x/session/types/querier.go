@@ -40,8 +40,8 @@ func NewQuerySessionsForSubscriptionRequest(id uint64, pagination *query.PageReq
 	}
 }
 
-func NewQuerySessionsForQuotaRequest(id uint64, addr sdk.AccAddress, pagination *query.PageRequest) *QuerySessionsForQuotaRequest {
-	return &QuerySessionsForQuotaRequest{
+func NewQuerySessionsForAllocationRequest(id uint64, addr sdk.AccAddress, pagination *query.PageRequest) *QuerySessionsForAllocationRequest {
+	return &QuerySessionsForAllocationRequest{
 		Id:         id,
 		Address:    addr.String(),
 		Pagination: pagination,

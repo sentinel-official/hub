@@ -22,7 +22,7 @@ var (
 	SessionForAccountKeyPrefix      = []byte{0x12}
 	SessionForNodeKeyPrefix         = []byte{0x13}
 	SessionForSubscriptionKeyPrefix = []byte{0x14}
-	SessionForQuotaKeyPrefix        = []byte{0x15}
+	SessionForAllocationKeyPrefix   = []byte{0x15}
 )
 
 func SessionKey(id uint64) []byte {
@@ -53,12 +53,12 @@ func SessionForSubscriptionKey(subscriptionID, sessionID uint64) []byte {
 	return append(GetSessionForSubscriptionKeyPrefix(subscriptionID), sdk.Uint64ToBigEndian(sessionID)...)
 }
 
-func GetSessionForQuotaKeyPrefix(id uint64, addr sdk.AccAddress) []byte {
-	return append(SessionForQuotaKeyPrefix, append(sdk.Uint64ToBigEndian(id), address.MustLengthPrefix(addr)...)...)
+func GetSessionForAllocationKeyPrefix(id uint64, addr sdk.AccAddress) []byte {
+	return append(SessionForAllocationKeyPrefix, append(sdk.Uint64ToBigEndian(id), address.MustLengthPrefix(addr)...)...)
 }
 
-func SessionForQuotaKey(subscriptionID uint64, addr sdk.AccAddress, sessionID uint64) []byte {
-	return append(GetSessionForQuotaKeyPrefix(subscriptionID, addr), sdk.Uint64ToBigEndian(sessionID)...)
+func SessionForAllocationKey(subscriptionID uint64, addr sdk.AccAddress, sessionID uint64) []byte {
+	return append(GetSessionForAllocationKeyPrefix(subscriptionID, addr), sdk.Uint64ToBigEndian(sessionID)...)
 }
 
 func GetSessionForExpiryAtKeyPrefix(at time.Time) []byte {
@@ -101,7 +101,7 @@ func IDFromSessionForSubscriptionKey(key []byte) uint64 {
 	return sdk.BigEndianToUint64(key[9:])
 }
 
-func IDFromSessionForQuotaKey(key []byte) uint64 {
+func IDFromSessionForAllocationKey(key []byte) uint64 {
 	// prefix (1 byte) | subscriptionID (8 bytes) | addrLen (1 byte) | addr (addrLen bytes) | id (8 bytes)
 
 	addrLen := int(key[9])

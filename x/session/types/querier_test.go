@@ -111,7 +111,7 @@ func TestNewQuerySessionsForNodeRequest(t *testing.T) {
 	}
 }
 
-func TestNewQuerySessionsForQuotaRequest(t *testing.T) {
+func TestNewQuerySessionsForAllocationRequest(t *testing.T) {
 	var (
 		addr       []byte
 		pagination *query.PageRequest
@@ -131,12 +131,12 @@ func TestNewQuerySessionsForQuotaRequest(t *testing.T) {
 
 		require.Equal(
 			t,
-			&QuerySessionsForQuotaRequest{
+			&QuerySessionsForAllocationRequest{
 				Id:         uint64(i),
 				Address:    sdk.AccAddress(addr).String(),
 				Pagination: pagination,
 			},
-			NewQuerySessionsForQuotaRequest(uint64(i), addr, pagination),
+			NewQuerySessionsForAllocationRequest(uint64(i), addr, pagination),
 		)
 	}
 }

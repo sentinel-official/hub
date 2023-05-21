@@ -163,7 +163,7 @@ func (q *queryServer) QuerySessionsForSubscription(c context.Context, req *types
 	return &types.QuerySessionsForSubscriptionResponse{Sessions: items, Pagination: pagination}, nil
 }
 
-func (q *queryServer) QuerySessionsForQuota(c context.Context, req *types.QuerySessionsForQuotaRequest) (*types.QuerySessionsForQuotaResponse, error) {
+func (q *queryServer) QuerySessionsForAllocation(c context.Context, req *types.QuerySessionsForAllocationRequest) (*types.QuerySessionsForAllocationResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "empty request")
 	}
@@ -176,11 +176,11 @@ func (q *queryServer) QuerySessionsForQuota(c context.Context, req *types.QueryS
 	var (
 		items types.Sessions
 		ctx   = sdk.UnwrapSDKContext(c)
-		store = prefix.NewStore(q.Store(ctx), types.GetSessionForQuotaKeyPrefix(req.Id, addr))
+		store = prefix.NewStore(q.Store(ctx), types.GetSessionForAllocationKeyPrefix(req.Id, addr))
 	)
 
 	pagination, err := query.Paginate(store, req.Pagination, func(key, _ []byte) error {
-		item, found := q.GetSession(ctx, types.IDFromSessionForQuotaKey(key))
+		item, found := q.GetSession(ctx, types.IDFromSessionForAllocationKey(key))
 		if !found {
 			return fmt.Errorf("session for key %X does not exist", key)
 		}
@@ -193,7 +193,7 @@ func (q *queryServer) QuerySessionsForQuota(c context.Context, req *types.QueryS
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	return &types.QuerySessionsForQuotaResponse{Sessions: items, Pagination: pagination}, nil
+	return &types.QuerySessionsForAllocationResponse{Sessions: items, Pagination: pagination}, nil
 }
 
 func (q *queryServer) QueryParams(c context.Context, _ *types.QueryParamsRequest) (*types.QueryParamsResponse, error) {

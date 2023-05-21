@@ -17,7 +17,7 @@ import (
 func txAllocate() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "allocate [subscription-id] [account-addr] [bytes]",
-		Short: "Add a quota for a subscription",
+		Short: "Add a allocation for a subscription",
 		Args:  cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientTxContext(cmd)

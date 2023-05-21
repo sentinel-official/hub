@@ -74,9 +74,9 @@ func (k *msgServer) MsgAllocate(c context.Context, msg *types.MsgAllocateRequest
 		return nil, err
 	}
 
-	fromQuota, found := k.GetQuota(ctx, subscription.GetID(), fromAddr)
+	fromAllocation, found := k.GetAllocation(ctx, subscription.GetID(), fromAddr)
 	if !found {
-		return nil, types.NewErrorQuotaNotFound(subscription.GetID(), fromAddr)
+		return nil, types.NewErrorAllocationNotFound(subscription.GetID(), fromAddr)
 	}
 
 	toAddr, err := sdk.AccAddressFromBech32(msg.Address)
@@ -84,9 +84,9 @@ func (k *msgServer) MsgAllocate(c context.Context, msg *types.MsgAllocateRequest
 		return nil, err
 	}
 
-	toQuota, found := k.GetQuota(ctx, subscription.GetID(), toAddr)
+	toAllocation, found := k.GetAllocation(ctx, subscription.GetID(), toAddr)
 	if !found {
-		toQuota = types.Quota{
+		toAllocation = types.Allocation{
 			Address:       toAddr.String(),
 			GrantedBytes:  sdk.ZeroInt(),
 			UtilisedBytes: sdk.ZeroInt(),
@@ -96,8 +96,8 @@ func (k *msgServer) MsgAllocate(c context.Context, msg *types.MsgAllocateRequest
 	}
 
 	var (
-		granted   = fromQuota.GrantedBytes.Add(toQuota.GrantedBytes)
-		utilised  = fromQuota.UtilisedBytes.Add(toQuota.UtilisedBytes)
+		granted   = fromAllocation.GrantedBytes.Add(toAllocation.GrantedBytes)
+		utilised  = fromAllocation.UtilisedBytes.Add(toAllocation.UtilisedBytes)
 		available = granted.Sub(utilised)
 	)
 
@@ -105,31 +105,31 @@ func (k *msgServer) MsgAllocate(c context.Context, msg *types.MsgAllocateRequest
 		return nil, types.NewErrorInsufficientBytes(subscription.GetID(), msg.Bytes)
 	}
 
-	fromQuota.GrantedBytes = available.Sub(msg.Bytes)
-	if fromQuota.GrantedBytes.LT(fromQuota.UtilisedBytes) {
-		return nil, types.NewErrorInvalidQuota(subscription.GetID(), fromAddr)
+	fromAllocation.GrantedBytes = available.Sub(msg.Bytes)
+	if fromAllocation.GrantedBytes.LT(fromAllocation.UtilisedBytes) {
+		return nil, types.NewErrorInvalidAllocation(subscription.GetID(), fromAddr)
 	}
 
-	k.SetQuota(ctx, subscription.GetID(), fromQuota)
+	k.SetAllocation(ctx, subscription.GetID(), fromAllocation)
 	ctx.EventManager().EmitTypedEvent(
 		&types.EventAllocate{
 			ID:      subscription.GetID(),
-			Address: fromQuota.Address,
-			Bytes:   fromQuota.GrantedBytes,
+			Address: fromAllocation.Address,
+			Bytes:   fromAllocation.GrantedBytes,
 		},
 	)
 
-	toQuota.GrantedBytes = msg.Bytes
-	if toQuota.GrantedBytes.LT(toQuota.UtilisedBytes) {
-		return nil, types.NewErrorInvalidQuota(subscription.GetID(), toAddr)
+	toAllocation.GrantedBytes = msg.Bytes
+	if toAllocation.GrantedBytes.LT(toAllocation.UtilisedBytes) {
+		return nil, types.NewErrorInvalidAllocation(subscription.GetID(), toAddr)
 	}
 
-	k.SetQuota(ctx, subscription.GetID(), toQuota)
+	k.SetAllocation(ctx, subscription.GetID(), toAllocation)
 	ctx.EventManager().EmitTypedEvent(
 		&types.EventAllocate{
 			ID:      subscription.GetID(),
-			Address: toQuota.Address,
-			Bytes:   toQuota.GrantedBytes,
+			Address: toAllocation.Address,
+			Bytes:   toAllocation.GrantedBytes,
 		},
 	)
 

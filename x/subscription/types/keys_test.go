@@ -21,7 +21,7 @@ func TestSubscriptionForExpiryAtKey(t *testing.T) {
 	}
 }
 
-func TestQuotaKey(t *testing.T) {
+func TestAllocationKey(t *testing.T) {
 	var (
 		addr []byte
 	)
@@ -33,15 +33,15 @@ func TestQuotaKey(t *testing.T) {
 		if i < 256 {
 			require.Equal(
 				t,
-				append(append(QuotaKeyPrefix, sdk.Uint64ToBigEndian(uint64(i))...), address.MustLengthPrefix(addr)...),
-				QuotaKey(uint64(i), addr),
+				append(append(AllocationKeyPrefix, sdk.Uint64ToBigEndian(uint64(i))...), address.MustLengthPrefix(addr)...),
+				AllocationKey(uint64(i), addr),
 			)
 
 			continue
 		}
 
 		require.Panics(t, func() {
-			QuotaKey(uint64(i), addr)
+			AllocationKey(uint64(i), addr)
 		})
 	}
 }

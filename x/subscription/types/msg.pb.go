@@ -68,8 +68,8 @@ func (m *MsgCancelRequest) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgCancelRequest proto.InternalMessageInfo
 
-// MsgAllocateRequest defines the SDK message for allocating a subscription
-// quota for an address
+// MsgAllocateRequest defines the SDK message for allocating the bytes of a
+// subscription for an address
 type MsgAllocateRequest struct {
 	From    string                                 `protobuf:"bytes,1,opt,name=from,proto3" json:"from,omitempty"`
 	ID      uint64                                 `protobuf:"varint,2,opt,name=id,proto3" json:"id,omitempty"`

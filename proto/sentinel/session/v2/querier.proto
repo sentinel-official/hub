@@ -4,8 +4,8 @@ package sentinel.session.v2;
 import "cosmos/base/query/v1beta1/pagination.proto";
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
-import "sentinel/session/v2/session.proto";
 import "sentinel/session/v2/params.proto";
+import "sentinel/session/v2/session.proto";
 
 option go_package = "github.com/sentinel-official/hub/x/session/types";
 option (gogoproto.equal_all)           = false;
@@ -30,7 +30,7 @@ message QuerySessionsForSubscriptionRequest {
   cosmos.base.query.v1beta1.PageRequest pagination = 2;
 }
 
-message QuerySessionsForQuotaRequest {
+message QuerySessionsForAllocationRequest {
   uint64 id                                        = 1;
   string address                                   = 2;
   cosmos.base.query.v1beta1.PageRequest pagination = 3;
@@ -60,7 +60,7 @@ message QuerySessionsForSubscriptionResponse {
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
-message QuerySessionsForQuotaResponse {
+message QuerySessionsForAllocationResponse {
   repeated Session sessions = 1 [ (gogoproto.nullable) = false ];
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
@@ -93,10 +93,10 @@ service QueryService {
     option (google.api.http).get = "/sentinel/subscriptions/{id}/sessions";
   }
 
-  rpc QuerySessionsForQuota(QuerySessionsForQuotaRequest)
-      returns (QuerySessionsForQuotaResponse) {
+  rpc QuerySessionsForAllocation(QuerySessionsForAllocationRequest)
+      returns (QuerySessionsForAllocationResponse) {
     option (google.api.http).get =
-        "/sentinel/subscriptions/{id}/quota/{address}/sessions";
+        "/sentinel/subscriptions/{id}/allocations/{address}/sessions";
   }
 
   rpc QuerySession(QuerySessionRequest) returns (QuerySessionResponse) {

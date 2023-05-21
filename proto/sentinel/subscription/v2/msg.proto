@@ -13,8 +13,8 @@ message MsgCancelRequest {
   uint64 id   = 2 [ (gogoproto.customname) = "ID" ];
 }
 
-// MsgAllocateRequest defines the SDK message for allocating a subscription
-// quota for an address
+// MsgAllocateRequest defines the SDK message for allocating the bytes of a
+// subscription for an address
 message MsgAllocateRequest {
   string from    = 1;
   uint64 id      = 2 [ (gogoproto.customname) = "ID" ];

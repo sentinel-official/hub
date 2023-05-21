@@ -18,7 +18,7 @@ func TestNewQueryParamsRequest(t *testing.T) {
 	)
 }
 
-func TestNewQueryQuotaRequest(t *testing.T) {
+func TestNewQueryAllocationRequest(t *testing.T) {
 	var (
 		addr []byte
 	)
@@ -29,16 +29,16 @@ func TestNewQueryQuotaRequest(t *testing.T) {
 
 		require.Equal(
 			t,
-			&QueryQuotaRequest{
+			&QueryAllocationRequest{
 				Id:      uint64(i),
 				Address: sdk.AccAddress(addr).String(),
 			},
-			NewQueryQuotaRequest(uint64(i), addr),
+			NewQueryAllocationRequest(uint64(i), addr),
 		)
 	}
 }
 
-func TestNewQueryQuotasRequest(t *testing.T) {
+func TestNewQueryAllocationsRequest(t *testing.T) {
 	var (
 		pagination *query.PageRequest
 	)
@@ -53,11 +53,11 @@ func TestNewQueryQuotasRequest(t *testing.T) {
 
 		require.Equal(
 			t,
-			&QueryQuotasRequest{
+			&QueryAllocationsRequest{
 				Id:         uint64(i),
 				Pagination: pagination,
 			},
-			NewQueryQuotasRequest(uint64(i), pagination),
+			NewQueryAllocationsRequest(uint64(i), pagination),
 		)
 	}
 }

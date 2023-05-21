@@ -40,15 +40,15 @@ func NewQuerySubscriptionsForPlanRequest(id uint64, pagination *query.PageReques
 	}
 }
 
-func NewQueryQuotaRequest(id uint64, addr sdk.AccAddress) *QueryQuotaRequest {
-	return &QueryQuotaRequest{
+func NewQueryAllocationRequest(id uint64, addr sdk.AccAddress) *QueryAllocationRequest {
+	return &QueryAllocationRequest{
 		Id:      id,
 		Address: addr.String(),
 	}
 }
 
-func NewQueryQuotasRequest(id uint64, pagination *query.PageRequest) *QueryQuotasRequest {
-	return &QueryQuotasRequest{
+func NewQueryAllocationsRequest(id uint64, pagination *query.PageRequest) *QueryAllocationsRequest {
+	return &QueryAllocationsRequest{
 		Id:         id,
 		Pagination: pagination,
 	}

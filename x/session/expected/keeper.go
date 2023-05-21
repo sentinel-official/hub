@@ -31,7 +31,7 @@ type NodeKeeper interface {
 }
 
 type SubscriptionKeeper interface {
+	GetAllocation(ctx sdk.Context, id uint64, address sdk.AccAddress) (subscriptiontypes.Allocation, bool)
+	SetAllocation(ctx sdk.Context, id uint64, allocation subscriptiontypes.Allocation)
 	GetSubscription(ctx sdk.Context, id uint64) (subscriptiontypes.Subscription, bool)
-	SetQuota(ctx sdk.Context, id uint64, quota subscriptiontypes.Quota)
-	GetQuota(ctx sdk.Context, id uint64, address sdk.AccAddress) (subscriptiontypes.Quota, bool)
 }

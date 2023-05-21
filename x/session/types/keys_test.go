@@ -109,7 +109,7 @@ func TestIDFromSessionForNodeKey(t *testing.T) {
 	}
 }
 
-func TestIDFromSessionForQuotaKey(t *testing.T) {
+func TestIDFromSessionForAllocationKey(t *testing.T) {
 	var (
 		addr []byte
 		key  []byte
@@ -119,11 +119,11 @@ func TestIDFromSessionForQuotaKey(t *testing.T) {
 		addr = make([]byte, i)
 		_, _ = rand.Read(addr)
 
-		key = SessionForQuotaKey(uint64(i+64), addr, uint64(i))
+		key = SessionForAllocationKey(uint64(i+64), addr, uint64(i))
 		require.Equal(
 			t,
 			uint64(i),
-			IDFromSessionForQuotaKey(key),
+			IDFromSessionForAllocationKey(key),
 		)
 	}
 }
@@ -168,7 +168,7 @@ func TestSessionForNodeKey(t *testing.T) {
 	}
 }
 
-func TestSessionForQuotaKey(t *testing.T) {
+func TestSessionForAllocationKey(t *testing.T) {
 	var (
 		addr []byte
 	)
@@ -180,15 +180,15 @@ func TestSessionForQuotaKey(t *testing.T) {
 		if i < 256 {
 			require.Equal(
 				t,
-				append(append(append(SessionForQuotaKeyPrefix, sdk.Uint64ToBigEndian(uint64(i))...), address.MustLengthPrefix(addr)...), sdk.Uint64ToBigEndian(uint64(i+64))...),
-				SessionForQuotaKey(uint64(i), addr, uint64(i+64)),
+				append(append(append(SessionForAllocationKeyPrefix, sdk.Uint64ToBigEndian(uint64(i))...), address.MustLengthPrefix(addr)...), sdk.Uint64ToBigEndian(uint64(i+64))...),
+				SessionForAllocationKey(uint64(i), addr, uint64(i+64)),
 			)
 
 			continue
 		}
 
 		require.Panics(t, func() {
-			SessionForQuotaKey(uint64(i), addr, uint64(i+64))
+			SessionForAllocationKey(uint64(i), addr, uint64(i+64))
 		})
 	}
 }

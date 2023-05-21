@@ -40,12 +40,12 @@ func ValidateGenesis(state *GenesisState) error {
 			id = item.Subscription.GetCachedValue().(*BaseSubscription).ID
 		)
 
-		for _, quota := range item.Quotas {
-			if m[quota.Address] {
-				return fmt.Errorf("found a duplicate quota %d/%s", id, quota.Address)
+		for _, allocation := range item.Allocations {
+			if m[allocation.Address] {
+				return fmt.Errorf("found a duplicate allocation %d/%s", id, allocation.Address)
 			}
 
-			m[quota.Address] = true
+			m[allocation.Address] = true
 		}
 	}
 
@@ -57,8 +57,8 @@ func ValidateGenesis(state *GenesisState) error {
 	}
 
 	for _, item := range state.Subscriptions {
-		for _, quota := range item.Quotas {
-			if err := quota.Validate(); err != nil {
+		for _, allocation := range item.Allocations {
+			if err := allocation.Validate(); err != nil {
 				return err
 			}
 		}

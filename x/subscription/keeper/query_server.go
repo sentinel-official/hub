@@ -189,7 +189,7 @@ func (q *queryServer) QuerySubscriptionsForPlan(c context.Context, req *types.Qu
 	return &types.QuerySubscriptionsForPlanResponse{Subscriptions: items, Pagination: pagination}, nil
 }
 
-func (q *queryServer) QueryQuota(c context.Context, req *types.QueryQuotaRequest) (*types.QueryQuotaResponse, error) {
+func (q *queryServer) QueryAllocation(c context.Context, req *types.QueryAllocationRequest) (*types.QueryAllocationResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "empty request")
 	}
@@ -201,27 +201,27 @@ func (q *queryServer) QueryQuota(c context.Context, req *types.QueryQuotaRequest
 
 	ctx := sdk.UnwrapSDKContext(c)
 
-	item, found := q.GetQuota(ctx, req.Id, addr)
+	item, found := q.GetAllocation(ctx, req.Id, addr)
 	if !found {
-		return nil, status.Errorf(codes.NotFound, "quota %d/%s does not exist", req.Id, req.Address)
+		return nil, status.Errorf(codes.NotFound, "allocation %d/%s does not exist", req.Id, req.Address)
 	}
 
-	return &types.QueryQuotaResponse{Quota: item}, nil
+	return &types.QueryAllocationResponse{Allocation: item}, nil
 }
 
-func (q *queryServer) QueryQuotas(c context.Context, req *types.QueryQuotasRequest) (*types.QueryQuotasResponse, error) {
+func (q *queryServer) QueryAllocations(c context.Context, req *types.QueryAllocationsRequest) (*types.QueryAllocationsResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "empty request")
 	}
 
 	var (
-		items types.Quotas
+		items types.Allocations
 		ctx   = sdk.UnwrapSDKContext(c)
-		store = prefix.NewStore(q.Store(ctx), types.GetQuotaKeyPrefix(req.Id))
+		store = prefix.NewStore(q.Store(ctx), types.GetAllocationKeyPrefix(req.Id))
 	)
 
 	pagination, err := query.Paginate(store, req.Pagination, func(_, value []byte) error {
-		var item types.Quota
+		var item types.Allocation
 		if err := q.cdc.Unmarshal(value, &item); err != nil {
 			return err
 		}
@@ -234,7 +234,7 @@ func (q *queryServer) QueryQuotas(c context.Context, req *types.QueryQuotasReque
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	return &types.QueryQuotasResponse{Quotas: items, Pagination: pagination}, nil
+	return &types.QueryAllocationsResponse{Allocations: items, Pagination: pagination}, nil
 }
 
 func (q *queryServer) QueryPayout(c context.Context, req *types.QueryPayoutRequest) (*types.QueryPayoutResponse, error) {

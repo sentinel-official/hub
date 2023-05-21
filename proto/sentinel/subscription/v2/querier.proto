@@ -5,9 +5,9 @@ import "cosmos/base/query/v1beta1/pagination.proto";
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "google/protobuf/any.proto";
+import "sentinel/subscription/v2/allocation.proto";
 import "sentinel/subscription/v2/params.proto";
 import "sentinel/subscription/v2/payout.proto";
-import "sentinel/subscription/v2/quota.proto";
 
 option go_package = "github.com/sentinel-official/hub/x/subscription/types";
 option (gogoproto.equal_all)           = false;
@@ -34,12 +34,12 @@ message QuerySubscriptionsForPlanRequest {
 
 message QuerySubscriptionRequest { uint64 id = 1; }
 
-message QueryQuotaRequest {
+message QueryAllocationRequest {
   uint64 id      = 1;
   string address = 2;
 }
 
-message QueryQuotasRequest {
+message QueryAllocationsRequest {
   uint64 id                                        = 1;
   cosmos.base.query.v1beta1.PageRequest pagination = 2;
 }
@@ -84,10 +84,12 @@ message QuerySubscriptionsForPlanResponse {
 
 message QuerySubscriptionResponse { google.protobuf.Any subscription = 1; }
 
-message QueryQuotaResponse { Quota quota = 1 [ (gogoproto.nullable) = false ]; }
+message QueryAllocationResponse {
+  Allocation allocation = 1 [ (gogoproto.nullable) = false ];
+}
 
-message QueryQuotasResponse {
-  repeated Quota quotas = 1 [ (gogoproto.nullable) = false ];
+message QueryAllocationsResponse {
+  repeated Allocation allocations = 1 [ (gogoproto.nullable) = false ];
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
@@ -140,13 +142,15 @@ service QueryService {
     option (google.api.http).get = "/sentinel/subscriptions/{id}";
   }
 
-  rpc QueryQuotas(QueryQuotasRequest) returns (QueryQuotasResponse) {
-    option (google.api.http).get = "/sentinel/subscriptions/{id}/quotas";
+  rpc QueryAllocations(QueryAllocationsRequest)
+      returns (QueryAllocationsResponse) {
+    option (google.api.http).get = "/sentinel/subscriptions/{id}/allocations";
   }
 
-  rpc QueryQuota(QueryQuotaRequest) returns (QueryQuotaResponse) {
+  rpc QueryAllocation(QueryAllocationRequest)
+      returns (QueryAllocationResponse) {
     option (google.api.http).get =
-        "/sentinel/subscriptions/{id}/quotas/{address}";
+        "/sentinel/subscriptions/{id}/allocations/{address}";
   }
 
   rpc QueryPayouts(QueryPayoutsRequest) returns (QueryPayoutsResponse) {

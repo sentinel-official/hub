@@ -197,35 +197,35 @@ func (k *Keeper) GetSessionsForSubscription(ctx sdk.Context, id uint64) (items t
 	return items
 }
 
-func (k *Keeper) SetSessionForQuota(ctx sdk.Context, subscriptionID uint64, addr sdk.AccAddress, sessionID uint64) {
+func (k *Keeper) SetSessionForAllocation(ctx sdk.Context, subscriptionID uint64, addr sdk.AccAddress, sessionID uint64) {
 	var (
 		store = k.Store(ctx)
-		key   = types.SessionForQuotaKey(subscriptionID, addr, sessionID)
+		key   = types.SessionForAllocationKey(subscriptionID, addr, sessionID)
 		value = k.cdc.MustMarshal(&protobuf.BoolValue{Value: true})
 	)
 
 	store.Set(key, value)
 }
 
-func (k *Keeper) DeleteSessionForQuota(ctx sdk.Context, subscriptionID uint64, addr sdk.AccAddress, sessionID uint64) {
+func (k *Keeper) DeleteSessionForAllocation(ctx sdk.Context, subscriptionID uint64, addr sdk.AccAddress, sessionID uint64) {
 	var (
 		store = k.Store(ctx)
-		key   = types.SessionForQuotaKey(subscriptionID, addr, sessionID)
+		key   = types.SessionForAllocationKey(subscriptionID, addr, sessionID)
 	)
 
 	store.Delete(key)
 }
 
-func (k *Keeper) IterateSessionsForQuota(ctx sdk.Context, id uint64, addr sdk.AccAddress, fn func(index int, item types.Session) (stop bool)) {
+func (k *Keeper) IterateSessionsForAllocation(ctx sdk.Context, id uint64, addr sdk.AccAddress, fn func(index int, item types.Session) (stop bool)) {
 	store := k.Store(ctx)
 
-	iter := sdk.KVStoreReversePrefixIterator(store, types.GetSessionForQuotaKeyPrefix(id, addr))
+	iter := sdk.KVStoreReversePrefixIterator(store, types.GetSessionForAllocationKeyPrefix(id, addr))
 	defer iter.Close()
 
 	for i := 0; iter.Valid(); iter.Next() {
-		session, found := k.GetSession(ctx, types.IDFromSessionForQuotaKey(iter.Key()))
+		session, found := k.GetSession(ctx, types.IDFromSessionForAllocationKey(iter.Key()))
 		if !found {
-			panic(fmt.Errorf("session for subscription quota key %X does not exist", iter.Key()))
+			panic(fmt.Errorf("session for subscription allocation key %X does not exist", iter.Key()))
 		}
 
 		if stop := fn(i, session); stop {

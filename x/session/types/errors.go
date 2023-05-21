@@ -14,14 +14,14 @@ var (
 )
 
 var (
-	ErrorDuplicate        = errors.Register(ModuleName, 201, "duplicate")
-	ErrorInvalidQuota     = errors.Register(ModuleName, 202, "invalid quota")
-	ErrorInvalidSignature = errors.Register(ModuleName, 203, "invalid signature")
-	ErrorInvalidStatus    = errors.Register(ModuleName, 204, "invalid status")
-	ErrorNotFound         = errors.Register(ModuleName, 205, "not found")
-	ErrorUnauthorized     = errors.Register(ModuleName, 209, "unauthorized")
-	ErrorInvalidNode      = errors.Register(ModuleName, 210, "invalid node")
-	ErrorInvalidType      = errors.Register(ModuleName, 211, "invalid type")
+	ErrorDuplicate         = errors.Register(ModuleName, 201, "duplicate")
+	ErrorInvalidAllocation = errors.Register(ModuleName, 202, "invalid allocation")
+	ErrorInvalidSignature  = errors.Register(ModuleName, 203, "invalid signature")
+	ErrorInvalidStatus     = errors.Register(ModuleName, 204, "invalid status")
+	ErrorNotFound          = errors.Register(ModuleName, 205, "not found")
+	ErrorUnauthorized      = errors.Register(ModuleName, 209, "unauthorized")
+	ErrorInvalidNode       = errors.Register(ModuleName, 210, "invalid node")
+	ErrorInvalidType       = errors.Register(ModuleName, 211, "invalid type")
 )
 
 func NewErrorSubscriptionNotFound(id uint64) error {
@@ -40,16 +40,16 @@ func NewErrorInvalidNodeStatus(addr hubtypes.NodeAddress, status hubtypes.Status
 	return errors.Wrapf(ErrorInvalidStatus, "invalid status %s for node %s", status, addr)
 }
 
-func NewErrorQuotaNotFound(id uint64, addr sdk.AccAddress) error {
-	return errors.Wrapf(ErrorNotFound, "subscription quota %d/%s does not exist", id, addr)
+func NewErrorAllocationNotFound(id uint64, addr sdk.AccAddress) error {
+	return errors.Wrapf(ErrorNotFound, "subscription allocation %d/%s does not exist", id, addr)
 }
 
 func NewErrorDuplicateSession(subscriptionID uint64, addr sdk.AccAddress, sessionID uint64) error {
-	return errors.Wrapf(ErrorDuplicate, "session %d already exist for subscription quota %d/%s", sessionID, subscriptionID, addr)
+	return errors.Wrapf(ErrorDuplicate, "session %d already exist for subscription allocation %d/%s", sessionID, subscriptionID, addr)
 }
 
-func NewErrorInvalidQuota(id uint64, addr sdk.AccAddress) error {
-	return errors.Wrapf(ErrorInvalidQuota, "invalid subscription quota %d/%s", id, addr)
+func NewErrorInvalidAllocation(id uint64, addr sdk.AccAddress) error {
+	return errors.Wrapf(ErrorInvalidAllocation, "invalid subscription allocation %d/%s", id, addr)
 }
 
 func NewErrorSessionNotFound(id uint64) error {

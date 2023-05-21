@@ -15,7 +15,7 @@ var (
 
 var (
 	ErrorInsufficientBytes = errors.Register(ModuleName, 201, "insufficient bytes")
-	ErrorInvalidQuota      = errors.Register(ModuleName, 202, "invalid quota")
+	ErrorInvalidAllocation = errors.Register(ModuleName, 202, "invalid allocation")
 	ErrorInvalidStatus     = errors.Register(ModuleName, 203, "invalid status")
 	ErrorInvalidType       = errors.Register(ModuleName, 204, "invalid type")
 	ErrorNotFound          = errors.Register(ModuleName, 205, "not found")
@@ -26,8 +26,8 @@ func NewErrorInsufficientBytes(id uint64, bytes sdk.Int) error {
 	return errors.Wrapf(ErrorInsufficientBytes, "insufficient bytes %d for subscription %d", bytes, id)
 }
 
-func NewErrorInvalidQuota(id uint64, addr sdk.AccAddress) error {
-	return errors.Wrapf(ErrorInvalidQuota, "invalid quota %d/%s", id, addr)
+func NewErrorInvalidAllocation(id uint64, addr sdk.AccAddress) error {
+	return errors.Wrapf(ErrorInvalidAllocation, "invalid allocation %d/%s", id, addr)
 }
 
 func NewErrorInvalidSubscriptionStatus(id uint64, status hubtypes.Status) error {
@@ -38,8 +38,8 @@ func NewErrorInvalidSubscriptionType(id uint64, t SubscriptionType) error {
 	return errors.Wrapf(ErrorInvalidType, "invalid type %s for subscription %d", t, id)
 }
 
-func NewErrorQuotaNotFound(id uint64, addr sdk.AccAddress) error {
-	return errors.Wrapf(ErrorNotFound, "subscription quota %d/%s does not exist", id, addr)
+func NewErrorAllocationNotFound(id uint64, addr sdk.AccAddress) error {
+	return errors.Wrapf(ErrorNotFound, "subscription allocation %d/%s does not exist", id, addr)
 }
 
 func NewErrorSubscriptionNotFound(id uint64) error {

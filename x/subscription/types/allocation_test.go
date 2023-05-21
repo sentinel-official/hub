@@ -7,7 +7,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-func TestQuota_GetAddress(t *testing.T) {
+func TestAllocation_GetAddress(t *testing.T) {
 	type fields struct {
 		Address string
 	}
@@ -33,7 +33,7 @@ func TestQuota_GetAddress(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			m := &Quota{
+			m := &Allocation{
 				Address: tt.fields.Address,
 			}
 			if got := m.GetAddress(); !reflect.DeepEqual(got, tt.want) {
@@ -43,7 +43,7 @@ func TestQuota_GetAddress(t *testing.T) {
 	}
 }
 
-func TestQuota_Validate(t *testing.T) {
+func TestAllocation_Validate(t *testing.T) {
 	type fields struct {
 		Address       string
 		GrantedBytes  sdk.Int
@@ -202,7 +202,7 @@ func TestQuota_Validate(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			m := &Quota{
+			m := &Allocation{
 				Address:       tt.fields.Address,
 				GrantedBytes:  tt.fields.GrantedBytes,
 				UtilisedBytes: tt.fields.UtilisedBytes,

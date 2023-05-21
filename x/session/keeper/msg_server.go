@@ -65,7 +65,7 @@ func (k *msgServer) MsgStart(c context.Context, msg *types.MsgStartRequest) (*ty
 	}
 
 	var id uint64
-	k.IterateSessionsForQuota(ctx, subscription.GetID(), accAddr, func(_ int, item types.Session) bool {
+	k.IterateSessionsForAllocation(ctx, subscription.GetID(), accAddr, func(_ int, item types.Session) bool {
 		if item.Status.Equal(hubtypes.StatusActive) {
 			id = item.ID
 			return true
@@ -78,12 +78,12 @@ func (k *msgServer) MsgStart(c context.Context, msg *types.MsgStartRequest) (*ty
 		return nil, types.NewErrorDuplicateSession(subscription.GetID(), accAddr, id)
 	}
 
-	quota, found := k.GetQuota(ctx, subscription.GetID(), accAddr)
+	allocation, found := k.GetAllocation(ctx, subscription.GetID(), accAddr)
 	if !found {
-		return nil, types.NewErrorQuotaNotFound(subscription.GetID(), accAddr)
+		return nil, types.NewErrorAllocationNotFound(subscription.GetID(), accAddr)
 	}
-	if quota.UtilisedBytes.GTE(quota.GrantedBytes) {
-		return nil, types.NewErrorInvalidQuota(subscription.GetID(), accAddr)
+	if allocation.UtilisedBytes.GTE(allocation.GrantedBytes) {
+		return nil, types.NewErrorInvalidAllocation(subscription.GetID(), accAddr)
 	}
 
 	var (
@@ -108,7 +108,7 @@ func (k *msgServer) MsgStart(c context.Context, msg *types.MsgStartRequest) (*ty
 	k.SetSessionForAccount(ctx, accAddr, session.ID)
 	k.SetSessionForNode(ctx, nodeAddr, session.ID)
 	k.SetSessionForSubscription(ctx, subscription.GetID(), session.ID)
-	k.SetSessionForQuota(ctx, subscription.GetID(), accAddr, session.ID)
+	k.SetSessionForAllocation(ctx, subscription.GetID(), accAddr, session.ID)
 	k.SetSessionForExpiryAt(ctx, session.ExpiryAt, session.ID)
 	ctx.EventManager().EmitTypedEvent(
 		&types.EventStart{

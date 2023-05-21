@@ -31,9 +31,9 @@ func EndBlock(ctx sdk.Context, k keeper.Keeper) []abcitypes.ValidatorUpdate {
 		}
 
 		k.DeleteSubscription(ctx, item.GetID())
-		k.IterateQuotas(ctx, item.GetID(), func(_ int, quota types.Quota) bool {
-			addr := quota.GetAddress()
-			k.DeleteQuota(ctx, item.GetID(), addr)
+		k.IterateAllocations(ctx, item.GetID(), func(_ int, allocation types.Allocation) bool {
+			addr := allocation.GetAddress()
+			k.DeleteAllocation(ctx, item.GetID(), addr)
 			k.DeleteSubscriptionForAccount(ctx, addr, item.GetID())
 
 			return false

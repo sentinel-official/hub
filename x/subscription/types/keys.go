@@ -24,7 +24,7 @@ var (
 	SubscriptionForNodeKeyPrefix     = []byte{0x13}
 	SubscriptionForPlanKeyPrefix     = []byte{0x14}
 
-	QuotaKeyPrefix = []byte{0x20}
+	AllocationKeyPrefix = []byte{0x20}
 
 	PayoutKeyPrefix             = []byte{0x30}
 	PayoutForTimestampKeyPrefix = []byte{0x31}
@@ -68,12 +68,12 @@ func SubscriptionForExpiryAtKey(at time.Time, id uint64) []byte {
 	return append(GetSubscriptionForExpiryAtKeyPrefix(at), sdk.Uint64ToBigEndian(id)...)
 }
 
-func GetQuotaKeyPrefix(id uint64) []byte {
-	return append(QuotaKeyPrefix, sdk.Uint64ToBigEndian(id)...)
+func GetAllocationKeyPrefix(id uint64) []byte {
+	return append(AllocationKeyPrefix, sdk.Uint64ToBigEndian(id)...)
 }
 
-func QuotaKey(id uint64, addr sdk.AccAddress) []byte {
-	return append(GetQuotaKeyPrefix(id), address.MustLengthPrefix(addr.Bytes())...)
+func AllocationKey(id uint64, addr sdk.AccAddress) []byte {
+	return append(GetAllocationKeyPrefix(id), address.MustLengthPrefix(addr.Bytes())...)
 }
 
 func PayoutKey(id uint64) []byte {

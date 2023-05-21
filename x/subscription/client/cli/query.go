@@ -151,10 +151,10 @@ func querySubscriptions() *cobra.Command {
 	return cmd
 }
 
-func queryQuota() *cobra.Command {
+func queryAllocation() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "quota [subscription-id] [account-addr]",
-		Short: "Query a quota of an address",
+		Use:   "allocation [subscription-id] [account-addr]",
+		Short: "Query a allocation of an address",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientQueryContext(cmd)
@@ -176,9 +176,9 @@ func queryQuota() *cobra.Command {
 				qc = types.NewQueryServiceClient(ctx)
 			)
 
-			res, err := qc.QueryQuota(
+			res, err := qc.QueryAllocation(
 				context.Background(),
-				types.NewQueryQuotaRequest(
+				types.NewQueryAllocationRequest(
 					id,
 					addr,
 				),
@@ -196,10 +196,10 @@ func queryQuota() *cobra.Command {
 	return cmd
 }
 
-func queryQuotas() *cobra.Command {
+func queryAllocations() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "quotas [subscription-id]",
-		Short: "Query quotas of a subscription",
+		Use:   "allocations [subscription-id]",
+		Short: "Query allocations of a subscription",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			ctx, err := client.GetClientQueryContext(cmd)
@@ -221,9 +221,9 @@ func queryQuotas() *cobra.Command {
 				qc = types.NewQueryServiceClient(ctx)
 			)
 
-			res, err := qc.QueryQuotas(
+			res, err := qc.QueryAllocations(
 				context.Background(),
-				types.NewQueryQuotasRequest(
+				types.NewQueryAllocationsRequest(
 					id,
 					pagination,
 				),
@@ -237,7 +237,7 @@ func queryQuotas() *cobra.Command {
 	}
 
 	flags.AddQueryFlagsToCmd(cmd)
-	flags.AddPaginationFlagsToCmd(cmd, "quotas")
+	flags.AddPaginationFlagsToCmd(cmd, "allocations")
 
 	return cmd
 }

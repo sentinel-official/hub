@@ -20,7 +20,7 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, state *types.GenesisState) {
 		k.SetSessionForAccount(ctx, accAddr, item.ID)
 		k.SetSessionForNode(ctx, nodeAddr, item.ID)
 		k.SetSessionForSubscription(ctx, item.SubscriptionID, item.ID)
-		k.SetSessionForQuota(ctx, item.SubscriptionID, accAddr, item.ID)
+		k.SetSessionForAllocation(ctx, item.SubscriptionID, accAddr, item.ID)
 		k.SetSessionForExpiryAt(ctx, item.ExpiryAt, item.ID)
 	}
 

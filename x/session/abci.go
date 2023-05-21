@@ -45,7 +45,7 @@ func EndBlock(ctx sdk.Context, k keeper.Keeper) []abcitypes.ValidatorUpdate {
 		k.DeleteSessionForAccount(ctx, accAddr, item.ID)
 		k.DeleteSessionForNode(ctx, nodeAddr, item.ID)
 		k.DeleteSessionForSubscription(ctx, item.SubscriptionID, item.ID)
-		k.DeleteSessionForQuota(ctx, item.SubscriptionID, accAddr, item.ID)
+		k.DeleteSessionForAllocation(ctx, item.SubscriptionID, accAddr, item.ID)
 		k.DeleteSessionForExpiryAt(ctx, item.ExpiryAt, item.ID)
 		ctx.EventManager().EmitTypedEvent(
 			&types.EventUpdateStatus{

@@ -38,14 +38,14 @@ func (k *Keeper) GetNode(ctx sdk.Context, addr hubtypes.NodeAddress) (nodetypes.
 	return k.node.GetNode(ctx, addr)
 }
 
+func (k *Keeper) GetAllocation(ctx sdk.Context, id uint64, addr sdk.AccAddress) (subscriptiontypes.Allocation, bool) {
+	return k.subscription.GetAllocation(ctx, id, addr)
+}
+
+func (k *Keeper) SetAllocation(ctx sdk.Context, id uint64, allocation subscriptiontypes.Allocation) {
+	k.subscription.SetAllocation(ctx, id, allocation)
+}
+
 func (k *Keeper) GetSubscription(ctx sdk.Context, id uint64) (subscriptiontypes.Subscription, bool) {
 	return k.subscription.GetSubscription(ctx, id)
-}
-
-func (k *Keeper) SetQuota(ctx sdk.Context, id uint64, quota subscriptiontypes.Quota) {
-	k.subscription.SetQuota(ctx, id, quota)
-}
-
-func (k *Keeper) GetQuota(ctx sdk.Context, id uint64, addr sdk.AccAddress) (subscriptiontypes.Quota, bool) {
-	return k.subscription.GetQuota(ctx, id, addr)
 }
