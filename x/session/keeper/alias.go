@@ -42,8 +42,8 @@ func (k *Keeper) GetAllocation(ctx sdk.Context, id uint64, addr sdk.AccAddress) 
 	return k.subscription.GetAllocation(ctx, id, addr)
 }
 
-func (k *Keeper) SetAllocation(ctx sdk.Context, id uint64, allocation subscriptiontypes.Allocation) {
-	k.subscription.SetAllocation(ctx, id, allocation)
+func (k *Keeper) SetAllocation(ctx sdk.Context, id uint64, alloc subscriptiontypes.Allocation) {
+	k.subscription.SetAllocation(ctx, id, alloc)
 }
 
 func (k *Keeper) GetSubscription(ctx sdk.Context, id uint64) (subscriptiontypes.Subscription, bool) {

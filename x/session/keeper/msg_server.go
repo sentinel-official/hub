@@ -78,11 +78,11 @@ func (k *msgServer) MsgStart(c context.Context, msg *types.MsgStartRequest) (*ty
 		return nil, types.NewErrorDuplicateSession(subscription.GetID(), accAddr, id)
 	}
 
-	allocation, found := k.GetAllocation(ctx, subscription.GetID(), accAddr)
+	alloc, found := k.GetAllocation(ctx, subscription.GetID(), accAddr)
 	if !found {
 		return nil, types.NewErrorAllocationNotFound(subscription.GetID(), accAddr)
 	}
-	if allocation.UtilisedBytes.GTE(allocation.GrantedBytes) {
+	if alloc.UtilisedBytes.GTE(alloc.GrantedBytes) {
 		return nil, types.NewErrorInvalidAllocation(subscription.GetID(), accAddr)
 	}
 

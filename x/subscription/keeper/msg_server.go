@@ -74,7 +74,7 @@ func (k *msgServer) MsgAllocate(c context.Context, msg *types.MsgAllocateRequest
 		return nil, err
 	}
 
-	fromAllocation, found := k.GetAllocation(ctx, subscription.GetID(), fromAddr)
+	fromAlloc, found := k.GetAllocation(ctx, subscription.GetID(), fromAddr)
 	if !found {
 		return nil, types.NewErrorAllocationNotFound(subscription.GetID(), fromAddr)
 	}
@@ -84,9 +84,9 @@ func (k *msgServer) MsgAllocate(c context.Context, msg *types.MsgAllocateRequest
 		return nil, err
 	}
 
-	toAllocation, found := k.GetAllocation(ctx, subscription.GetID(), toAddr)
+	toAlloc, found := k.GetAllocation(ctx, subscription.GetID(), toAddr)
 	if !found {
-		toAllocation = types.Allocation{
+		toAlloc = types.Allocation{
 			Address:       toAddr.String(),
 			GrantedBytes:  sdk.ZeroInt(),
 			UtilisedBytes: sdk.ZeroInt(),
@@ -96,8 +96,8 @@ func (k *msgServer) MsgAllocate(c context.Context, msg *types.MsgAllocateRequest
 	}
 
 	var (
-		granted   = fromAllocation.GrantedBytes.Add(toAllocation.GrantedBytes)
-		utilised  = fromAllocation.UtilisedBytes.Add(toAllocation.UtilisedBytes)
+		granted   = fromAlloc.GrantedBytes.Add(toAlloc.GrantedBytes)
+		utilised  = fromAlloc.UtilisedBytes.Add(toAlloc.UtilisedBytes)
 		available = granted.Sub(utilised)
 	)
 
@@ -105,31 +105,31 @@ func (k *msgServer) MsgAllocate(c context.Context, msg *types.MsgAllocateRequest
 		return nil, types.NewErrorInsufficientBytes(subscription.GetID(), msg.Bytes)
 	}
 
-	fromAllocation.GrantedBytes = available.Sub(msg.Bytes)
-	if fromAllocation.GrantedBytes.LT(fromAllocation.UtilisedBytes) {
+	fromAlloc.GrantedBytes = available.Sub(msg.Bytes)
+	if fromAlloc.GrantedBytes.LT(fromAlloc.UtilisedBytes) {
 		return nil, types.NewErrorInvalidAllocation(subscription.GetID(), fromAddr)
 	}
 
-	k.SetAllocation(ctx, subscription.GetID(), fromAllocation)
+	k.SetAllocation(ctx, subscription.GetID(), fromAlloc)
 	ctx.EventManager().EmitTypedEvent(
 		&types.EventAllocate{
 			ID:      subscription.GetID(),
-			Address: fromAllocation.Address,
-			Bytes:   fromAllocation.GrantedBytes,
+			Address: fromAlloc.Address,
+			Bytes:   fromAlloc.GrantedBytes,
 		},
 	)
 
-	toAllocation.GrantedBytes = msg.Bytes
-	if toAllocation.GrantedBytes.LT(toAllocation.UtilisedBytes) {
+	toAlloc.GrantedBytes = msg.Bytes
+	if toAlloc.GrantedBytes.LT(toAlloc.UtilisedBytes) {
 		return nil, types.NewErrorInvalidAllocation(subscription.GetID(), toAddr)
 	}
 
-	k.SetAllocation(ctx, subscription.GetID(), toAllocation)
+	k.SetAllocation(ctx, subscription.GetID(), toAlloc)
 	ctx.EventManager().EmitTypedEvent(
 		&types.EventAllocate{
 			ID:      subscription.GetID(),
-			Address: toAllocation.Address,
-			Bytes:   toAllocation.GrantedBytes,
+			Address: toAlloc.Address,
+			Bytes:   toAlloc.GrantedBytes,
 		},
 	)
 

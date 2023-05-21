@@ -6,19 +6,19 @@ import (
 	"github.com/sentinel-official/hub/x/subscription/types"
 )
 
-func (k *Keeper) SetAllocation(ctx sdk.Context, id uint64, allocation types.Allocation) {
+func (k *Keeper) SetAllocation(ctx sdk.Context, id uint64, alloc types.Allocation) {
 	// TODO: add field ID for allocation?
 
 	var (
 		store = k.Store(ctx)
-		key   = types.AllocationKey(id, allocation.GetAddress())
-		value = k.cdc.MustMarshal(&allocation)
+		key   = types.AllocationKey(id, alloc.GetAddress())
+		value = k.cdc.MustMarshal(&alloc)
 	)
 
 	store.Set(key, value)
 }
 
-func (k *Keeper) GetAllocation(ctx sdk.Context, id uint64, addr sdk.AccAddress) (allocation types.Allocation, found bool) {
+func (k *Keeper) GetAllocation(ctx sdk.Context, id uint64, addr sdk.AccAddress) (alloc types.Allocation, found bool) {
 	var (
 		store = k.Store(ctx)
 		key   = types.AllocationKey(id, addr)
@@ -26,11 +26,11 @@ func (k *Keeper) GetAllocation(ctx sdk.Context, id uint64, addr sdk.AccAddress) 
 	)
 
 	if value == nil {
-		return allocation, false
+		return alloc, false
 	}
 
-	k.cdc.MustUnmarshal(value, &allocation)
-	return allocation, true
+	k.cdc.MustUnmarshal(value, &alloc)
+	return alloc, true
 }
 
 func (k *Keeper) HasAllocation(ctx sdk.Context, id uint64, addr sdk.AccAddress) bool {
@@ -75,10 +75,10 @@ func (k *Keeper) IterateAllocations(ctx sdk.Context, id uint64, fn func(index in
 	defer iter.Close()
 
 	for i := 0; iter.Valid(); iter.Next() {
-		var allocation types.Allocation
-		k.cdc.MustUnmarshal(iter.Value(), &allocation)
+		var alloc types.Allocation
+		k.cdc.MustUnmarshal(iter.Value(), &alloc)
 
-		if stop := fn(i, allocation); stop {
+		if stop := fn(i, alloc); stop {
 			break
 		}
 		i++
