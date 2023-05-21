@@ -8,10 +8,10 @@ import (
 	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	simulationtypes "github.com/cosmos/cosmos-sdk/types/simulation"
+	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 
 	hubtypes "github.com/sentinel-official/hub/types"
-	simulationhubtypes "github.com/sentinel-official/hub/types/simulation"
+	hubsimtypes "github.com/sentinel-official/hub/types/simulation"
 	"github.com/sentinel-official/hub/x/node/types"
 )
 
@@ -20,7 +20,7 @@ const (
 	MaxRemoteURLLength = 48
 )
 
-func RandomNodes(r *rand.Rand, accounts []simulationtypes.Account) types.Nodes {
+func RandomNodes(r *rand.Rand, accounts []simtypes.Account) types.Nodes {
 	var (
 		duplicates = make(map[string]bool)
 		items      = make(types.Nodes, 0, r.Intn(len(accounts)))
@@ -28,7 +28,7 @@ func RandomNodes(r *rand.Rand, accounts []simulationtypes.Account) types.Nodes {
 
 	for len(items) < cap(items) {
 		var (
-			account, _ = simulationtypes.RandomAcc(r, accounts)
+			account, _ = simtypes.RandomAcc(r, accounts)
 			address    = hubtypes.NodeAddress(account.Address).String()
 		)
 
@@ -37,7 +37,7 @@ func RandomNodes(r *rand.Rand, accounts []simulationtypes.Account) types.Nodes {
 		}
 
 		var (
-			gigabytePrices = simulationhubtypes.RandomCoins(
+			gigabytePrices = hubsimtypes.RandomCoins(
 				r,
 				sdk.NewCoins(
 					sdk.NewInt64Coin(
@@ -46,7 +46,7 @@ func RandomNodes(r *rand.Rand, accounts []simulationtypes.Account) types.Nodes {
 					),
 				),
 			)
-			hourlyPrices = simulationhubtypes.RandomCoins(
+			hourlyPrices = hubsimtypes.RandomCoins(
 				r,
 				sdk.NewCoins(
 					sdk.NewInt64Coin(
@@ -57,7 +57,7 @@ func RandomNodes(r *rand.Rand, accounts []simulationtypes.Account) types.Nodes {
 			)
 			remoteURL = fmt.Sprintf(
 				"https://%s:8080",
-				simulationtypes.RandStringOfLength(r, r.Intn(MaxRemoteURLLength)),
+				simtypes.RandStringOfLength(r, r.Intn(MaxRemoteURLLength)),
 			)
 			status   = hubtypes.StatusActive
 			statusAt = time.Now()

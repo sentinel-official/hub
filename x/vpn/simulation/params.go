@@ -5,7 +5,7 @@ package simulation
 import (
 	"math/rand"
 
-	simulationtypes "github.com/cosmos/cosmos-sdk/types/simulation"
+	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 
 	nodesimulation "github.com/sentinel-official/hub/x/node/simulation"
 	providersimulation "github.com/sentinel-official/hub/x/provider/simulation"
@@ -13,8 +13,8 @@ import (
 	subscriptionsimulation "github.com/sentinel-official/hub/x/subscription/simulation"
 )
 
-func RandomizedParams(r *rand.Rand) []simulationtypes.ParamChange {
-	var params []simulationtypes.ParamChange
+func RandomizedParams(r *rand.Rand) []simtypes.ParamChange {
+	var params []simtypes.ParamChange
 	params = append(params, providersimulation.ParamChanges(r)...)
 	params = append(params, nodesimulation.ParamChanges(r)...)
 	params = append(params, subscriptionsimulation.ParamChanges(r)...)

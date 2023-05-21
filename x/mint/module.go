@@ -9,7 +9,7 @@ import (
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
-	simulationtypes "github.com/cosmos/cosmos-sdk/types/simulation"
+	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/gorilla/mux"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/spf13/cobra"
@@ -108,14 +108,14 @@ func (a AppModule) EndBlock(_ sdk.Context, _ abcitypes.RequestEndBlock) []abcity
 
 func (a AppModule) GenerateGenesisState(_ *module.SimulationState) {}
 
-func (a AppModule) ProposalContents(_ module.SimulationState) []simulationtypes.WeightedProposalContent {
+func (a AppModule) ProposalContents(_ module.SimulationState) []simtypes.WeightedProposalContent {
 	return nil
 }
 
-func (a AppModule) RandomizedParams(_ *rand.Rand) []simulationtypes.ParamChange { return nil }
+func (a AppModule) RandomizedParams(_ *rand.Rand) []simtypes.ParamChange { return nil }
 
 func (a AppModule) RegisterStoreDecoder(_ sdk.StoreDecoderRegistry) {}
 
-func (a AppModule) WeightedOperations(_ module.SimulationState) []simulationtypes.WeightedOperation {
+func (a AppModule) WeightedOperations(_ module.SimulationState) []simtypes.WeightedOperation {
 	return nil
 }

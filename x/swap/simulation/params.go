@@ -5,9 +5,9 @@ package simulation
 import (
 	"math/rand"
 
-	simulationtypes "github.com/cosmos/cosmos-sdk/types/simulation"
+	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 )
 
-func ParamChanges(_ *rand.Rand) []simulationtypes.ParamChange {
+func ParamChanges(_ *rand.Rand) []simtypes.ParamChange {
 	return nil
 }

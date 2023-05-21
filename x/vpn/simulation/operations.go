@@ -5,7 +5,7 @@ package simulation
 import (
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
-	simulationtypes "github.com/cosmos/cosmos-sdk/types/simulation"
+	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 
 	nodesimulation "github.com/sentinel-official/hub/x/node/simulation"
 	plansimulation "github.com/sentinel-official/hub/x/plan/simulation"
@@ -19,12 +19,12 @@ import (
 func WeightedOperations(
 	cdc codec.Codec,
 	txConfig client.TxConfig,
-	params simulationtypes.AppParams,
+	params simtypes.AppParams,
 	ak expected.AccountKeeper,
 	bk expected.BankKeeper,
 	k keeper.Keeper,
-) []simulationtypes.WeightedOperation {
-	var operations []simulationtypes.WeightedOperation
+) []simtypes.WeightedOperation {
+	var operations []simtypes.WeightedOperation
 	operations = append(operations, providersimulation.WeightedOperations(cdc, txConfig, params, ak, bk, k.Provider)...)
 	operations = append(operations, nodesimulation.WeightedOperations(cdc, txConfig, params, ak, bk, k.Node)...)
 	operations = append(operations, plansimulation.WeightedOperations(cdc, txConfig, params, ak, bk, k.Plan)...)

@@ -9,7 +9,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	hubtypes "github.com/sentinel-official/hub/types"
-	simulationhubtypes "github.com/sentinel-official/hub/types/simulation"
+	hubsimtypes "github.com/sentinel-official/hub/types/simulation"
 	"github.com/sentinel-official/hub/x/plan/types"
 )
 
@@ -36,7 +36,7 @@ func RandomPlans(r *rand.Rand) types.Plans {
 		var (
 			bytes    = sdk.NewInt(r.Int63n(MaxBytes))
 			duration = time.Duration(r.Int63n(MaxDuration)) * time.Minute
-			prices   = simulationhubtypes.RandomCoins(
+			prices   = hubsimtypes.RandomCoins(
 				r,
 				sdk.NewCoins(
 					sdk.NewInt64Coin(

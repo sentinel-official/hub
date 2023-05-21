@@ -10,7 +10,7 @@ import (
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
-	sdksimulation "github.com/cosmos/cosmos-sdk/types/simulation"
+	sdksimtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/gorilla/mux"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/spf13/cobra"
@@ -122,11 +122,11 @@ func (AppModule) GenerateGenesisState(state *module.SimulationState) {
 	simulation.RandomizedGenesisState(state)
 }
 
-func (a AppModule) ProposalContents(_ module.SimulationState) []sdksimulation.WeightedProposalContent {
+func (a AppModule) ProposalContents(_ module.SimulationState) []sdksimtypes.WeightedProposalContent {
 	return nil
 }
 
-func (a AppModule) RandomizedParams(r *rand.Rand) []sdksimulation.ParamChange {
+func (a AppModule) RandomizedParams(r *rand.Rand) []sdksimtypes.ParamChange {
 	return simulation.ParamChanges(r)
 }
 
@@ -134,6 +134,6 @@ func (a AppModule) RegisterStoreDecoder(registry sdk.StoreDecoderRegistry) {
 	registry[types.StoreKey] = simulation.NewStoreDecoder(a.cdc)
 }
 
-func (a AppModule) WeightedOperations(_ module.SimulationState) []sdksimulation.WeightedOperation {
+func (a AppModule) WeightedOperations(_ module.SimulationState) []sdksimtypes.WeightedOperation {
 	return nil
 }

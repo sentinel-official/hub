@@ -6,7 +6,7 @@ import (
 	"math/rand"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	simulationtypes "github.com/cosmos/cosmos-sdk/types/simulation"
+	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 
 	"github.com/sentinel-official/hub/x/provider/types"
@@ -17,8 +17,8 @@ const (
 	MaxRevenueShare = 1 << 8
 )
 
-func ParamChanges(_ *rand.Rand) []simulationtypes.ParamChange {
-	return []simulationtypes.ParamChange{
+func ParamChanges(_ *rand.Rand) []simtypes.ParamChange {
+	return []simtypes.ParamChange{
 		simulation.NewSimParamChange(
 			types.ModuleName,
 			string(types.KeyDeposit),
