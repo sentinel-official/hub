@@ -91,7 +91,7 @@ func TestMsgCancelRequest_ValidateBasic(t *testing.T) {
 	}
 }
 
-func TestMsgShareRequest_ValidateBasic(t *testing.T) {
+func TestMsgAllocateRequest_ValidateBasic(t *testing.T) {
 	type fields struct {
 		From    string
 		ID      uint64
@@ -272,7 +272,7 @@ func TestMsgShareRequest_ValidateBasic(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			m := &MsgShareRequest{
+			m := &MsgAllocateRequest{
 				From:    tt.fields.From,
 				ID:      tt.fields.ID,
 				Address: tt.fields.Address,

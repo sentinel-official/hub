@@ -26,7 +26,7 @@ func GetTxCommands() []*cobra.Command {
 
 	cmd.AddCommand(
 		txCancel(),
-		txShare(),
+		txAllocate(),
 	)
 
 	return []*cobra.Command{cmd}

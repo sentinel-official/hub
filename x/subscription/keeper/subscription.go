@@ -318,6 +318,13 @@ func (k *Keeper) CreateSubscriptionForNode(ctx sdk.Context, accAddr sdk.AccAddre
 	}
 
 	k.SetQuota(ctx, subscription.GetID(), quota)
+	ctx.EventManager().EmitTypedEvent(
+		&types.EventAllocate{
+			ID:      subscription.GetID(),
+			Address: quota.Address,
+			Bytes:   quota.GrantedBytes,
+		},
+	)
 
 	if gigabytes != 0 {
 		return subscription, nil
@@ -337,6 +344,13 @@ func (k *Keeper) CreateSubscriptionForNode(ctx sdk.Context, accAddr sdk.AccAddre
 	k.SetPayoutForAccount(ctx, accAddr, payout.ID)
 	k.SetPayoutForNode(ctx, nodeAddr, payout.ID)
 	k.SetPayoutForTimestamp(ctx, payout.Timestamp, payout.ID)
+	ctx.EventManager().EmitTypedEvent(
+		&types.EventPayout{
+			ID:          subscription.GetID(),
+			FromAddress: accAddr.String(),
+			ToAddress:   nodeAddr.String(),
+		},
+	)
 
 	return subscription, nil
 }
@@ -401,6 +415,13 @@ func (k *Keeper) CreateSubscriptionForPlan(ctx sdk.Context, accAddr sdk.AccAddre
 	}
 
 	k.SetQuota(ctx, subscription.GetID(), quota)
+	ctx.EventManager().EmitTypedEvent(
+		&types.EventAllocate{
+			ID:      subscription.GetID(),
+			Address: quota.Address,
+			Bytes:   quota.GrantedBytes,
+		},
+	)
 
 	return subscription, nil
 }

@@ -14,9 +14,9 @@ import (
 	"github.com/sentinel-official/hub/x/subscription/types"
 )
 
-func txShare() *cobra.Command {
+func txAllocate() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "share [subscription-id] [account-addr] [bytes]",
+		Use:   "allocate [subscription-id] [account-addr] [bytes]",
 		Short: "Add a quota for a subscription",
 		Args:  cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -40,7 +40,7 @@ func txShare() *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgShareRequest(
+			msg := types.NewMsgAllocateRequest(
 				ctx.FromAddress,
 				id,
 				addr,

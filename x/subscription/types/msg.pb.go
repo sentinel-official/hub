@@ -68,27 +68,27 @@ func (m *MsgCancelRequest) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgCancelRequest proto.InternalMessageInfo
 
-// MsgShareRequest defines the SDK message for sharing a subscription with an
-// address
-type MsgShareRequest struct {
+// MsgAllocateRequest defines the SDK message for allocating a subscription
+// quota for an address
+type MsgAllocateRequest struct {
 	From    string                                 `protobuf:"bytes,1,opt,name=from,proto3" json:"from,omitempty"`
 	ID      uint64                                 `protobuf:"varint,2,opt,name=id,proto3" json:"id,omitempty"`
 	Address string                                 `protobuf:"bytes,3,opt,name=address,proto3" json:"address,omitempty"`
 	Bytes   github_com_cosmos_cosmos_sdk_types.Int `protobuf:"bytes,4,opt,name=bytes,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"bytes"`
 }
 
-func (m *MsgShareRequest) Reset()         { *m = MsgShareRequest{} }
-func (m *MsgShareRequest) String() string { return proto.CompactTextString(m) }
-func (*MsgShareRequest) ProtoMessage()    {}
-func (*MsgShareRequest) Descriptor() ([]byte, []int) {
+func (m *MsgAllocateRequest) Reset()         { *m = MsgAllocateRequest{} }
+func (m *MsgAllocateRequest) String() string { return proto.CompactTextString(m) }
+func (*MsgAllocateRequest) ProtoMessage()    {}
+func (*MsgAllocateRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_4cb96050c6471ce0, []int{1}
 }
-func (m *MsgShareRequest) XXX_Unmarshal(b []byte) error {
+func (m *MsgAllocateRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgShareRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgAllocateRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgShareRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgAllocateRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -98,17 +98,17 @@ func (m *MsgShareRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, err
 		return b[:n], nil
 	}
 }
-func (m *MsgShareRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgShareRequest.Merge(m, src)
+func (m *MsgAllocateRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgAllocateRequest.Merge(m, src)
 }
-func (m *MsgShareRequest) XXX_Size() int {
+func (m *MsgAllocateRequest) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgShareRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgShareRequest.DiscardUnknown(m)
+func (m *MsgAllocateRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgAllocateRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgShareRequest proto.InternalMessageInfo
+var xxx_messageInfo_MsgAllocateRequest proto.InternalMessageInfo
 
 // MsgCancelResponse defines the response of message MsgCancelRequest
 type MsgCancelResponse struct {
@@ -147,22 +147,22 @@ func (m *MsgCancelResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgCancelResponse proto.InternalMessageInfo
 
-// MsgShareResponse defines the response of message MsgShareRequest
-type MsgShareResponse struct {
+// MsgAllocateResponse defines the response of message MsgAllocateRequest
+type MsgAllocateResponse struct {
 }
 
-func (m *MsgShareResponse) Reset()         { *m = MsgShareResponse{} }
-func (m *MsgShareResponse) String() string { return proto.CompactTextString(m) }
-func (*MsgShareResponse) ProtoMessage()    {}
-func (*MsgShareResponse) Descriptor() ([]byte, []int) {
+func (m *MsgAllocateResponse) Reset()         { *m = MsgAllocateResponse{} }
+func (m *MsgAllocateResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgAllocateResponse) ProtoMessage()    {}
+func (*MsgAllocateResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_4cb96050c6471ce0, []int{3}
 }
-func (m *MsgShareResponse) XXX_Unmarshal(b []byte) error {
+func (m *MsgAllocateResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgShareResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgAllocateResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgShareResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgAllocateResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -172,23 +172,23 @@ func (m *MsgShareResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, er
 		return b[:n], nil
 	}
 }
-func (m *MsgShareResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgShareResponse.Merge(m, src)
+func (m *MsgAllocateResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgAllocateResponse.Merge(m, src)
 }
-func (m *MsgShareResponse) XXX_Size() int {
+func (m *MsgAllocateResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgShareResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgShareResponse.DiscardUnknown(m)
+func (m *MsgAllocateResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgAllocateResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgShareResponse proto.InternalMessageInfo
+var xxx_messageInfo_MsgAllocateResponse proto.InternalMessageInfo
 
 func init() {
 	proto.RegisterType((*MsgCancelRequest)(nil), "sentinel.subscription.v2.MsgCancelRequest")
-	proto.RegisterType((*MsgShareRequest)(nil), "sentinel.subscription.v2.MsgShareRequest")
+	proto.RegisterType((*MsgAllocateRequest)(nil), "sentinel.subscription.v2.MsgAllocateRequest")
 	proto.RegisterType((*MsgCancelResponse)(nil), "sentinel.subscription.v2.MsgCancelResponse")
-	proto.RegisterType((*MsgShareResponse)(nil), "sentinel.subscription.v2.MsgShareResponse")
+	proto.RegisterType((*MsgAllocateResponse)(nil), "sentinel.subscription.v2.MsgAllocateResponse")
 }
 
 func init() {
@@ -196,31 +196,31 @@ func init() {
 }
 
 var fileDescriptor_4cb96050c6471ce0 = []byte{
-	// 375 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x9c, 0x92, 0xcf, 0x6e, 0xda, 0x40,
-	0x10, 0xc6, 0xbd, 0x2e, 0xa5, 0x65, 0x2f, 0x6d, 0xb7, 0x55, 0x65, 0x71, 0x58, 0x90, 0x0f, 0x15,
-	0xa5, 0x62, 0x57, 0xa2, 0xea, 0xb5, 0x07, 0xca, 0x85, 0x03, 0x17, 0xf7, 0x50, 0xa9, 0x37, 0xff,
-	0x59, 0xcc, 0x2a, 0xd8, 0xeb, 0x78, 0xd6, 0x28, 0xbc, 0x45, 0x5e, 0x20, 0xf7, 0x3c, 0x0a, 0x47,
-	0x2e, 0x91, 0xa2, 0x1c, 0x50, 0x62, 0x5e, 0x24, 0xc2, 0xc6, 0x91, 0x13, 0x29, 0x11, 0xca, 0xc9,
-	0xe3, 0x4f, 0xbf, 0x6f, 0x67, 0xe6, 0xd3, 0x60, 0x1b, 0x44, 0xac, 0x65, 0x2c, 0x16, 0x1c, 0x32,
-	0x0f, 0xfc, 0x54, 0x26, 0x5a, 0xaa, 0x98, 0x2f, 0x87, 0x3c, 0x82, 0x90, 0x25, 0xa9, 0xd2, 0x8a,
-	0x58, 0x15, 0xc3, 0xea, 0x0c, 0x5b, 0x0e, 0xdb, 0x5f, 0x42, 0x15, 0xaa, 0x02, 0xe2, 0xfb, 0xaa,
-	0xe4, 0xed, 0xdf, 0xf8, 0xe3, 0x14, 0xc2, 0x3f, 0x6e, 0xec, 0x8b, 0x85, 0x23, 0x4e, 0x33, 0x01,
-	0x9a, 0x10, 0xdc, 0x98, 0xa5, 0x2a, 0xb2, 0x50, 0x17, 0xf5, 0x5a, 0x4e, 0x51, 0x93, 0xaf, 0xd8,
-	0x94, 0x81, 0x65, 0x76, 0x51, 0xaf, 0x31, 0x6a, 0xe6, 0xdb, 0x8e, 0x39, 0x19, 0x3b, 0xa6, 0x0c,
-	0xec, 0x0b, 0x84, 0x3f, 0x4c, 0x21, 0xfc, 0x3b, 0x77, 0x53, 0xf1, 0x0a, 0x3f, 0xb1, 0xf0, 0x3b,
-	0x37, 0x08, 0x52, 0x01, 0x60, 0xbd, 0x29, 0xf0, 0xea, 0x97, 0x8c, 0xf1, 0x5b, 0x6f, 0xa5, 0x05,
-	0x58, 0x8d, 0xbd, 0x3e, 0x62, 0xeb, 0x6d, 0xc7, 0xb8, 0xd9, 0x76, 0xbe, 0x85, 0x52, 0xcf, 0x33,
-	0x8f, 0xf9, 0x2a, 0xe2, 0xbe, 0x82, 0x48, 0xc1, 0xe1, 0x33, 0x80, 0xe0, 0x84, 0xeb, 0x55, 0x22,
-	0x80, 0x4d, 0x62, 0xed, 0x94, 0x66, 0xfb, 0x33, 0xfe, 0x54, 0xdb, 0x0f, 0x12, 0x15, 0x83, 0xb0,
-	0x49, 0xb1, 0xf4, 0x61, 0xe6, 0x52, 0x1b, 0x5e, 0x21, 0x8c, 0xf7, 0xa2, 0x48, 0x97, 0xd2, 0x17,
-	0x24, 0xc0, 0xad, 0x07, 0x1f, 0xe9, 0xb3, 0xe7, 0x52, 0x65, 0x4f, 0xc3, 0x6b, 0xff, 0x38, 0x8a,
-	0x2d, 0x9b, 0x12, 0x17, 0xbf, 0xaf, 0x06, 0x21, 0xdf, 0x5f, 0x34, 0xd6, 0x03, 0x6e, 0xf7, 0x8f,
-	0x41, 0xcb, 0x16, 0xa3, 0x7f, 0xeb, 0x3b, 0x6a, 0x5c, 0xe6, 0xd4, 0x58, 0xe7, 0x14, 0x6d, 0x72,
-	0x8a, 0x6e, 0x73, 0x8a, 0xce, 0x77, 0xd4, 0xd8, 0xec, 0xa8, 0x71, 0xbd, 0xa3, 0xc6, 0xff, 0x5f,
-	0xb5, 0x44, 0xab, 0x77, 0x07, 0x6a, 0x36, 0x93, 0xbe, 0x74, 0x17, 0x7c, 0x9e, 0x79, 0xfc, 0xec,
-	0xf1, 0xc1, 0x15, 0x21, 0x7b, 0xcd, 0xe2, 0x80, 0x7e, 0xde, 0x07, 0x00, 0x00, 0xff, 0xff, 0x89,
-	0x4d, 0xbf, 0x78, 0x96, 0x02, 0x00, 0x00,
+	// 377 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x9c, 0x92, 0xbd, 0x8e, 0xd3, 0x40,
+	0x10, 0xc7, 0xbd, 0x26, 0x04, 0x65, 0x69, 0x60, 0x03, 0xc8, 0x4a, 0xb1, 0x89, 0x5c, 0xa0, 0x08,
+	0xc8, 0xae, 0x14, 0x44, 0x8b, 0x44, 0x48, 0x93, 0x22, 0x8d, 0x29, 0x90, 0xe8, 0xfc, 0xb1, 0x71,
+	0x16, 0x6c, 0xaf, 0xf1, 0xac, 0x23, 0xf2, 0x16, 0x3c, 0x02, 0x25, 0x8f, 0x92, 0x32, 0xe5, 0xe9,
+	0x0a, 0xeb, 0xce, 0x79, 0x91, 0x53, 0xec, 0xcb, 0xc9, 0x89, 0x74, 0xa7, 0xe8, 0xaa, 0x9d, 0x1d,
+	0xfd, 0xfe, 0xf3, 0xf1, 0xd7, 0x60, 0x1b, 0x44, 0xa2, 0x65, 0x22, 0x22, 0x0e, 0xb9, 0x07, 0x7e,
+	0x26, 0x53, 0x2d, 0x55, 0xc2, 0x57, 0x63, 0x1e, 0x43, 0xc8, 0xd2, 0x4c, 0x69, 0x45, 0xac, 0x03,
+	0xc3, 0x9a, 0x0c, 0x5b, 0x8d, 0x7b, 0xaf, 0x42, 0x15, 0xaa, 0x0a, 0xe2, 0xfb, 0xa8, 0xe6, 0xed,
+	0xcf, 0xf8, 0xc5, 0x1c, 0xc2, 0xaf, 0x6e, 0xe2, 0x8b, 0xc8, 0x11, 0xbf, 0x73, 0x01, 0x9a, 0x10,
+	0xdc, 0x5a, 0x64, 0x2a, 0xb6, 0xd0, 0x00, 0x0d, 0x3b, 0x4e, 0x15, 0x93, 0x37, 0xd8, 0x94, 0x81,
+	0x65, 0x0e, 0xd0, 0xb0, 0x35, 0x69, 0x97, 0x45, 0xdf, 0x9c, 0x4d, 0x1d, 0x53, 0x06, 0xf6, 0x3f,
+	0x84, 0xc9, 0x1c, 0xc2, 0x2f, 0x51, 0xa4, 0x7c, 0x57, 0x8b, 0x47, 0x94, 0x20, 0x16, 0x7e, 0xe6,
+	0x06, 0x41, 0x26, 0x00, 0xac, 0x27, 0x15, 0x7e, 0xf8, 0x92, 0x29, 0x7e, 0xea, 0xad, 0xb5, 0x00,
+	0xab, 0xb5, 0xcf, 0x4f, 0xd8, 0xa6, 0xe8, 0x1b, 0x97, 0x45, 0xff, 0x6d, 0x28, 0xf5, 0x32, 0xf7,
+	0x98, 0xaf, 0x62, 0xee, 0x2b, 0x88, 0x15, 0xdc, 0x3e, 0x23, 0x08, 0x7e, 0x71, 0xbd, 0x4e, 0x05,
+	0xb0, 0x59, 0xa2, 0x9d, 0x5a, 0x6c, 0x77, 0xf1, 0xcb, 0xc6, 0x8a, 0x90, 0xaa, 0x04, 0x84, 0xfd,
+	0x1a, 0x77, 0x8f, 0xc6, 0xae, 0xd3, 0xe3, 0x02, 0x61, 0x3c, 0x87, 0xf0, 0x9b, 0xc8, 0x56, 0xd2,
+	0x17, 0x24, 0xc0, 0x9d, 0x3b, 0x29, 0x79, 0xc7, 0xee, 0xf3, 0x96, 0x9d, 0x5a, 0xd8, 0x7b, 0x7f,
+	0x16, 0x5b, 0x37, 0x25, 0x3f, 0xf1, 0xf3, 0xc6, 0x2c, 0xe4, 0xc3, 0x83, 0xda, 0x13, 0xa7, 0x7b,
+	0xa3, 0x33, 0xe9, 0xba, 0xd7, 0xe4, 0xfb, 0xe6, 0x9a, 0x1a, 0xff, 0x4b, 0x6a, 0x6c, 0x4a, 0x8a,
+	0xb6, 0x25, 0x45, 0x57, 0x25, 0x45, 0x7f, 0x77, 0xd4, 0xd8, 0xee, 0xa8, 0x71, 0xb1, 0xa3, 0xc6,
+	0x8f, 0x4f, 0x0d, 0x77, 0x0f, 0xa5, 0x47, 0x6a, 0xb1, 0x90, 0xbe, 0x74, 0x23, 0xbe, 0xcc, 0x3d,
+	0xfe, 0xe7, 0xf8, 0xfe, 0x2a, 0xc3, 0xbd, 0x76, 0x75, 0x4f, 0x1f, 0x6f, 0x02, 0x00, 0x00, 0xff,
+	0xff, 0x2e, 0x00, 0x5a, 0x9f, 0xa5, 0x02, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -236,7 +236,7 @@ const _ = grpc.SupportPackageIsVersion4
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type MsgServiceClient interface {
 	MsgCancel(ctx context.Context, in *MsgCancelRequest, opts ...grpc.CallOption) (*MsgCancelResponse, error)
-	MsgShare(ctx context.Context, in *MsgShareRequest, opts ...grpc.CallOption) (*MsgShareResponse, error)
+	MsgAllocate(ctx context.Context, in *MsgAllocateRequest, opts ...grpc.CallOption) (*MsgAllocateResponse, error)
 }
 
 type msgServiceClient struct {
@@ -256,9 +256,9 @@ func (c *msgServiceClient) MsgCancel(ctx context.Context, in *MsgCancelRequest, 
 	return out, nil
 }
 
-func (c *msgServiceClient) MsgShare(ctx context.Context, in *MsgShareRequest, opts ...grpc.CallOption) (*MsgShareResponse, error) {
-	out := new(MsgShareResponse)
-	err := c.cc.Invoke(ctx, "/sentinel.subscription.v2.MsgService/MsgShare", in, out, opts...)
+func (c *msgServiceClient) MsgAllocate(ctx context.Context, in *MsgAllocateRequest, opts ...grpc.CallOption) (*MsgAllocateResponse, error) {
+	out := new(MsgAllocateResponse)
+	err := c.cc.Invoke(ctx, "/sentinel.subscription.v2.MsgService/MsgAllocate", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -268,7 +268,7 @@ func (c *msgServiceClient) MsgShare(ctx context.Context, in *MsgShareRequest, op
 // MsgServiceServer is the server API for MsgService service.
 type MsgServiceServer interface {
 	MsgCancel(context.Context, *MsgCancelRequest) (*MsgCancelResponse, error)
-	MsgShare(context.Context, *MsgShareRequest) (*MsgShareResponse, error)
+	MsgAllocate(context.Context, *MsgAllocateRequest) (*MsgAllocateResponse, error)
 }
 
 // UnimplementedMsgServiceServer can be embedded to have forward compatible implementations.
@@ -278,8 +278,8 @@ type UnimplementedMsgServiceServer struct {
 func (*UnimplementedMsgServiceServer) MsgCancel(ctx context.Context, req *MsgCancelRequest) (*MsgCancelResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method MsgCancel not implemented")
 }
-func (*UnimplementedMsgServiceServer) MsgShare(ctx context.Context, req *MsgShareRequest) (*MsgShareResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method MsgShare not implemented")
+func (*UnimplementedMsgServiceServer) MsgAllocate(ctx context.Context, req *MsgAllocateRequest) (*MsgAllocateResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MsgAllocate not implemented")
 }
 
 func RegisterMsgServiceServer(s grpc1.Server, srv MsgServiceServer) {
@@ -304,20 +304,20 @@ func _MsgService_MsgCancel_Handler(srv interface{}, ctx context.Context, dec fun
 	return interceptor(ctx, in, info, handler)
 }
 
-func _MsgService_MsgShare_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgShareRequest)
+func _MsgService_MsgAllocate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgAllocateRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MsgServiceServer).MsgShare(ctx, in)
+		return srv.(MsgServiceServer).MsgAllocate(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/sentinel.subscription.v2.MsgService/MsgShare",
+		FullMethod: "/sentinel.subscription.v2.MsgService/MsgAllocate",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServiceServer).MsgShare(ctx, req.(*MsgShareRequest))
+		return srv.(MsgServiceServer).MsgAllocate(ctx, req.(*MsgAllocateRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -331,8 +331,8 @@ var _MsgService_serviceDesc = grpc.ServiceDesc{
 			Handler:    _MsgService_MsgCancel_Handler,
 		},
 		{
-			MethodName: "MsgShare",
-			Handler:    _MsgService_MsgShare_Handler,
+			MethodName: "MsgAllocate",
+			Handler:    _MsgService_MsgAllocate_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
@@ -374,7 +374,7 @@ func (m *MsgCancelRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgShareRequest) Marshal() (dAtA []byte, err error) {
+func (m *MsgAllocateRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -384,12 +384,12 @@ func (m *MsgShareRequest) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgShareRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgAllocateRequest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgShareRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgAllocateRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -449,7 +449,7 @@ func (m *MsgCancelResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgShareResponse) Marshal() (dAtA []byte, err error) {
+func (m *MsgAllocateResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -459,12 +459,12 @@ func (m *MsgShareResponse) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgShareResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgAllocateResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgShareResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgAllocateResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -499,7 +499,7 @@ func (m *MsgCancelRequest) Size() (n int) {
 	return n
 }
 
-func (m *MsgShareRequest) Size() (n int) {
+func (m *MsgAllocateRequest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -530,7 +530,7 @@ func (m *MsgCancelResponse) Size() (n int) {
 	return n
 }
 
-func (m *MsgShareResponse) Size() (n int) {
+func (m *MsgAllocateResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -646,7 +646,7 @@ func (m *MsgCancelRequest) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgShareRequest) Unmarshal(dAtA []byte) error {
+func (m *MsgAllocateRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -669,10 +669,10 @@ func (m *MsgShareRequest) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgShareRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgAllocateRequest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgShareRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgAllocateRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -863,7 +863,7 @@ func (m *MsgCancelResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgShareResponse) Unmarshal(dAtA []byte) error {
+func (m *MsgAllocateResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -886,10 +886,10 @@ func (m *MsgShareResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgShareResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgAllocateResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgShareResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgAllocateResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		default:

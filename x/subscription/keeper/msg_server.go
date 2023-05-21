@@ -55,7 +55,7 @@ func (k *msgServer) MsgCancel(c context.Context, msg *types.MsgCancelRequest) (*
 	return &types.MsgCancelResponse{}, nil
 }
 
-func (k *msgServer) MsgShare(c context.Context, msg *types.MsgShareRequest) (*types.MsgShareResponse, error) {
+func (k *msgServer) MsgAllocate(c context.Context, msg *types.MsgAllocateRequest) (*types.MsgAllocateResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
 	subscription, found := k.GetSubscription(ctx, msg.ID)
@@ -93,12 +93,6 @@ func (k *msgServer) MsgShare(c context.Context, msg *types.MsgShareRequest) (*ty
 		}
 
 		k.SetSubscriptionForAccount(ctx, toAddr, subscription.GetID())
-		ctx.EventManager().EmitTypedEvent(
-			&types.EventShare{
-				ID:      subscription.GetID(),
-				Address: toAddr.String(),
-			},
-		)
 	}
 
 	var (
@@ -139,5 +133,5 @@ func (k *msgServer) MsgShare(c context.Context, msg *types.MsgShareRequest) (*ty
 		},
 	)
 
-	return &types.MsgShareResponse{}, nil
+	return &types.MsgAllocateResponse{}, nil
 }

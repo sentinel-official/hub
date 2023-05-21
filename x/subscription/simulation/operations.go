@@ -18,8 +18,8 @@ import (
 )
 
 var (
-	typeMsgCancel = sdk.MsgTypeURL((*types.MsgCancelRequest)(nil))
-	typeMsgShare  = sdk.MsgTypeURL((*types.MsgShareRequest)(nil))
+	typeMsgCancel   = sdk.MsgTypeURL((*types.MsgCancelRequest)(nil))
+	typeMsgAllocate = sdk.MsgTypeURL((*types.MsgAllocateRequest)(nil))
 )
 
 func WeightedOperations(
@@ -31,8 +31,8 @@ func WeightedOperations(
 	k keeper.Keeper,
 ) simulation.WeightedOperations {
 	var (
-		weightMsgCancel int
-		weightMsgShare  int
+		weightMsgCancel   int
+		weightMsgAllocate int
 	)
 
 	params.GetOrGenerate(
@@ -46,17 +46,17 @@ func WeightedOperations(
 	)
 	params.GetOrGenerate(
 		cdc,
-		typeMsgShare,
-		&weightMsgShare,
+		typeMsgAllocate,
+		&weightMsgAllocate,
 		nil,
 		func(_ *rand.Rand) {
-			weightMsgShare = 100
+			weightMsgAllocate = 100
 		},
 	)
 
 	return simulation.WeightedOperations{
 		simulation.NewWeightedOperation(weightMsgCancel, SimulateMsgCancel(txConfig, ak, bk, k)),
-		simulation.NewWeightedOperation(weightMsgShare, SimulateMsgShare(txConfig, ak, bk, k)),
+		simulation.NewWeightedOperation(weightMsgAllocate, SimulateMsgAllocate(txConfig, ak, bk, k)),
 	}
 }
 
@@ -66,8 +66,8 @@ func SimulateMsgCancel(txConfig client.TxConfig, ak expected.AccountKeeper, bk e
 	}
 }
 
-func SimulateMsgShare(txConfig client.TxConfig, ak expected.AccountKeeper, bk expected.BankKeeper, k keeper.Keeper) simtypes.Operation {
+func SimulateMsgAllocate(txConfig client.TxConfig, ak expected.AccountKeeper, bk expected.BankKeeper, k keeper.Keeper) simtypes.Operation {
 	return func(r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accounts []simtypes.Account, chainID string) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
-		return simtypes.NoOpMsg(types.ModuleName, typeMsgShare, ""), nil, nil
+		return simtypes.NoOpMsg(types.ModuleName, typeMsgAllocate, ""), nil, nil
 	}
 }

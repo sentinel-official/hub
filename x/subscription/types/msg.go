@@ -7,7 +7,7 @@ import (
 
 var (
 	_ sdk.Msg = (*MsgCancelRequest)(nil)
-	_ sdk.Msg = (*MsgShareRequest)(nil)
+	_ sdk.Msg = (*MsgAllocateRequest)(nil)
 )
 
 func NewMsgCancelRequest(from sdk.AccAddress, id uint64) *MsgCancelRequest {
@@ -40,8 +40,8 @@ func (m *MsgCancelRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{from}
 }
 
-func NewMsgShareRequest(from sdk.AccAddress, id uint64, addr sdk.AccAddress, bytes sdk.Int) *MsgShareRequest {
-	return &MsgShareRequest{
+func NewMsgAllocateRequest(from sdk.AccAddress, id uint64, addr sdk.AccAddress, bytes sdk.Int) *MsgAllocateRequest {
+	return &MsgAllocateRequest{
 		From:    from.String(),
 		ID:      id,
 		Address: addr.String(),
@@ -49,7 +49,7 @@ func NewMsgShareRequest(from sdk.AccAddress, id uint64, addr sdk.AccAddress, byt
 	}
 }
 
-func (m *MsgShareRequest) ValidateBasic() error {
+func (m *MsgAllocateRequest) ValidateBasic() error {
 	if m.From == "" {
 		return errors.Wrap(ErrorInvalidMessage, "from cannot be empty")
 	}
@@ -75,7 +75,7 @@ func (m *MsgShareRequest) ValidateBasic() error {
 	return nil
 }
 
-func (m *MsgShareRequest) GetSigners() []sdk.AccAddress {
+func (m *MsgAllocateRequest) GetSigners() []sdk.AccAddress {
 	from, err := sdk.AccAddressFromBech32(m.From)
 	if err != nil {
 		panic(err)

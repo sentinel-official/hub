@@ -13,9 +13,9 @@ message MsgCancelRequest {
   uint64 id   = 2 [ (gogoproto.customname) = "ID" ];
 }
 
-// MsgShareRequest defines the SDK message for sharing a subscription with an
-// address
-message MsgShareRequest {
+// MsgAllocateRequest defines the SDK message for allocating a subscription
+// quota for an address
+message MsgAllocateRequest {
   string from    = 1;
   uint64 id      = 2 [ (gogoproto.customname) = "ID" ];
   string address = 3;
@@ -28,10 +28,10 @@ message MsgShareRequest {
 // MsgCancelResponse defines the response of message MsgCancelRequest
 message MsgCancelResponse {}
 
-// MsgShareResponse defines the response of message MsgShareRequest
-message MsgShareResponse {}
+// MsgAllocateResponse defines the response of message MsgAllocateRequest
+message MsgAllocateResponse {}
 
 service MsgService {
   rpc MsgCancel(MsgCancelRequest) returns (MsgCancelResponse);
-  rpc MsgShare(MsgShareRequest) returns (MsgShareResponse);
+  rpc MsgAllocate(MsgAllocateRequest) returns (MsgAllocateResponse);
 }
