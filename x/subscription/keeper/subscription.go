@@ -258,12 +258,7 @@ func (k *Keeper) CreateSubscriptionForNode(ctx sdk.Context, accAddr sdk.AccAddre
 	}
 
 	var (
-		count = k.GetCount(ctx)
-		quota = types.Quota{
-			Address:       accAddr.String(),
-			GrantedBytes:  hubtypes.Gigabyte.MulRaw(gigabytes),
-			UtilisedBytes: sdk.ZeroInt(),
-		}
+		count        = k.GetCount(ctx)
 		subscription = &types.NodeSubscription{
 			BaseSubscription: &types.BaseSubscription{
 				ID:       count + 1,
@@ -315,7 +310,33 @@ func (k *Keeper) CreateSubscriptionForNode(ctx sdk.Context, accAddr sdk.AccAddre
 	k.SetSubscriptionForAccount(ctx, accAddr, subscription.GetID())
 	k.SetSubscriptionForNode(ctx, nodeAddr, subscription.GetID())
 	k.SetSubscriptionForExpiryAt(ctx, subscription.GetExpiryAt(), subscription.GetID())
+
+	quota := types.Quota{
+		Address:       accAddr.String(),
+		GrantedBytes:  hubtypes.Gigabyte.MulRaw(gigabytes),
+		UtilisedBytes: sdk.ZeroInt(),
+	}
+
 	k.SetQuota(ctx, subscription.GetID(), quota)
+
+	if gigabytes != 0 {
+		return subscription, nil
+	}
+
+	payout := types.Payout{
+		ID:    subscription.GetID(),
+		Hours: hours,
+		Price: sdk.NewCoin(
+			subscription.Deposit.Denom,
+			subscription.Deposit.Amount.QuoRaw(hours),
+		),
+		Timestamp: ctx.BlockTime().Add(time.Hour),
+	}
+
+	k.SetPayout(ctx, payout)
+	k.SetPayoutForAccount(ctx, accAddr, payout.ID)
+	k.SetPayoutForNode(ctx, nodeAddr, payout.ID)
+	k.SetPayoutForTimestamp(ctx, payout.Timestamp, payout.ID)
 
 	return subscription, nil
 }
@@ -353,12 +374,7 @@ func (k *Keeper) CreateSubscriptionForPlan(ctx sdk.Context, accAddr sdk.AccAddre
 	}
 
 	var (
-		count = k.GetCount(ctx)
-		quota = types.Quota{
-			Address:       accAddr.String(),
-			GrantedBytes:  plan.Bytes,
-			UtilisedBytes: sdk.ZeroInt(),
-		}
+		count        = k.GetCount(ctx)
 		subscription = &types.PlanSubscription{
 			BaseSubscription: &types.BaseSubscription{
 				ID:       count + 1,
@@ -377,6 +393,13 @@ func (k *Keeper) CreateSubscriptionForPlan(ctx sdk.Context, accAddr sdk.AccAddre
 	k.SetSubscriptionForAccount(ctx, accAddr, subscription.GetID())
 	k.SetSubscriptionForPlan(ctx, plan.ID, subscription.GetID())
 	k.SetSubscriptionForExpiryAt(ctx, subscription.GetExpiryAt(), subscription.GetID())
+
+	quota := types.Quota{
+		Address:       accAddr.String(),
+		GrantedBytes:  plan.Bytes,
+		UtilisedBytes: sdk.ZeroInt(),
+	}
+
 	k.SetQuota(ctx, subscription.GetID(), quota)
 
 	return subscription, nil
