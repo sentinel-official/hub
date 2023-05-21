@@ -6,7 +6,6 @@ import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "sentinel/types/v1/status.proto";
 import "sentinel/node/v2/node.proto";
-import "sentinel/node/v2/payout.proto";
 import "sentinel/node/v2/params.proto";
 
 option go_package            = "github.com/sentinel-official/hub/x/node/types";
@@ -26,22 +25,6 @@ message QueryNodesForPlanRequest {
 
 message QueryNodeRequest { string address = 1; }
 
-message QueryPayoutsRequest {
-  cosmos.base.query.v1beta1.PageRequest pagination = 1;
-}
-
-message QueryPayoutsForAccountRequest {
-  string address                                   = 1;
-  cosmos.base.query.v1beta1.PageRequest pagination = 2;
-}
-
-message QueryPayoutsForNodeRequest {
-  string address                                   = 1;
-  cosmos.base.query.v1beta1.PageRequest pagination = 2;
-}
-
-message QueryPayoutRequest { uint64 id = 1; }
-
 message QueryParamsRequest {}
 
 message QueryNodesResponse {
@@ -55,25 +38,6 @@ message QueryNodesForPlanResponse {
 }
 
 message QueryNodeResponse { Node node = 1 [ (gogoproto.nullable) = false ]; }
-
-message QueryPayoutsResponse {
-  repeated Payout payouts = 1 [ (gogoproto.nullable) = false ];
-  cosmos.base.query.v1beta1.PageResponse pagination = 2;
-}
-
-message QueryPayoutsForAccountResponse {
-  repeated Payout payouts = 1 [ (gogoproto.nullable) = false ];
-  cosmos.base.query.v1beta1.PageResponse pagination = 2;
-}
-
-message QueryPayoutsForNodeResponse {
-  repeated Payout payouts = 1 [ (gogoproto.nullable) = false ];
-  cosmos.base.query.v1beta1.PageResponse pagination = 2;
-}
-
-message QueryPayoutResponse {
-  Payout payout = 1 [ (gogoproto.nullable) = false ];
-}
 
 message QueryParamsResponse {
   Params params = 1 [ (gogoproto.nullable) = false ];
@@ -91,24 +55,6 @@ service QueryService {
 
   rpc QueryNode(QueryNodeRequest) returns (QueryNodeResponse) {
     option (google.api.http).get = "/sentinel/nodes/{address}";
-  }
-
-  rpc QueryPayouts(QueryPayoutsRequest) returns (QueryPayoutsResponse) {
-    option (google.api.http).get = "/sentinel/payouts";
-  }
-
-  rpc QueryPayoutsForAccount(QueryPayoutsForAccountRequest)
-      returns (QueryPayoutsForAccountResponse) {
-    option (google.api.http).get = "/sentinel/accounts/{address}/payouts";
-  }
-
-  rpc QueryPayoutsForNode(QueryPayoutsForNodeRequest)
-      returns (QueryPayoutsForNodeResponse) {
-    option (google.api.http).get = "/sentinel/nodes/{address}/payouts";
-  }
-
-  rpc QueryPayout(QueryPayoutRequest) returns (QueryPayoutResponse) {
-    option (google.api.http).get = "/sentinel/payouts/{id}";
   }
 
   rpc QueryParams(QueryParamsRequest) returns (QueryParamsResponse) {

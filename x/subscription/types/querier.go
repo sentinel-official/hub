@@ -54,6 +54,32 @@ func NewQueryQuotasRequest(id uint64, pagination *query.PageRequest) *QueryQuota
 	}
 }
 
+func NewQueryPayoutRequest(id uint64) *QueryPayoutRequest {
+	return &QueryPayoutRequest{
+		Id: id,
+	}
+}
+
+func NewQueryPayoutsRequest(pagination *query.PageRequest) *QueryPayoutsRequest {
+	return &QueryPayoutsRequest{
+		Pagination: pagination,
+	}
+}
+
+func NewQueryPayoutsForAccountRequest(addr sdk.AccAddress, pagination *query.PageRequest) *QueryPayoutsForNodeRequest {
+	return &QueryPayoutsForNodeRequest{
+		Address:    addr.String(),
+		Pagination: pagination,
+	}
+}
+
+func NewQueryPayoutsForNodeRequest(addr hubtypes.NodeAddress, pagination *query.PageRequest) *QueryPayoutsForNodeRequest {
+	return &QueryPayoutsForNodeRequest{
+		Address:    addr.String(),
+		Pagination: pagination,
+	}
+}
+
 func NewQueryParamsRequest() *QueryParamsRequest {
 	return &QueryParamsRequest{}
 }

@@ -8,7 +8,7 @@ import (
 	protobuf "github.com/gogo/protobuf/types"
 
 	hubtypes "github.com/sentinel-official/hub/types"
-	"github.com/sentinel-official/hub/x/node/types"
+	"github.com/sentinel-official/hub/x/subscription/types"
 )
 
 func (k *Keeper) SetPayout(ctx sdk.Context, payout types.Payout) {

@@ -10,9 +10,11 @@ func GetQueryCommands() []*cobra.Command {
 	return []*cobra.Command{
 		querySubscription(),
 		querySubscriptions(),
-		queryParams(),
+		queryPayout(),
+		queryPayouts(),
 		queryQuota(),
 		queryQuotas(),
+		queryParams(),
 	}
 }
 

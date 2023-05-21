@@ -242,6 +242,84 @@ func queryQuotas() *cobra.Command {
 	return cmd
 }
 
+func queryPayout() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "payout [id]",
+		Short: "Query a payout",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			id, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			var (
+				qc = types.NewQueryServiceClient(ctx)
+			)
+
+			res, err := qc.QueryPayout(
+				context.Background(),
+				types.NewQueryPayoutRequest(
+					id,
+				),
+			)
+			if err != nil {
+				return err
+			}
+
+			return ctx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
+}
+
+func queryPayouts() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "payouts",
+		Short: "Query payouts",
+		RunE: func(cmd *cobra.Command, args []string) (err error) {
+			ctx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			pagination, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
+
+			var (
+				qc = types.NewQueryServiceClient(ctx)
+			)
+
+			res, err := qc.QueryPayouts(
+				context.Background(),
+				types.NewQueryPayoutsRequest(
+					pagination,
+				),
+			)
+			if err != nil {
+				return err
+			}
+
+			return ctx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+	flags.AddPaginationFlagsToCmd(cmd, "payouts")
+
+	return cmd
+}
+
 func queryParams() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "subscription-params",

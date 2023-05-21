@@ -25,6 +25,11 @@ var (
 	SubscriptionForPlanKeyPrefix     = []byte{0x14}
 
 	QuotaKeyPrefix = []byte{0x20}
+
+	PayoutKeyPrefix             = []byte{0x30}
+	PayoutForTimestampKeyPrefix = []byte{0x31}
+	PayoutForAccountKeyPrefix   = []byte{0x32}
+	PayoutForNodeKeyPrefix      = []byte{0x33}
 )
 
 func SubscriptionKey(id uint64) []byte {
@@ -71,6 +76,34 @@ func QuotaKey(id uint64, addr sdk.AccAddress) []byte {
 	return append(GetQuotaKeyPrefix(id), address.MustLengthPrefix(addr.Bytes())...)
 }
 
+func PayoutKey(id uint64) []byte {
+	return append(PayoutKeyPrefix, sdk.Uint64ToBigEndian(id)...)
+}
+
+func GetPayoutForTimestampKeyPrefix(at time.Time) []byte {
+	return append(PayoutForTimestampKeyPrefix, sdk.FormatTimeBytes(at)...)
+}
+
+func PayoutForTimestampKey(at time.Time, id uint64) []byte {
+	return append(GetPayoutForTimestampKeyPrefix(at), sdk.Uint64ToBigEndian(id)...)
+}
+
+func GetPayoutForAccountKeyPrefix(addr sdk.AccAddress) []byte {
+	return append(PayoutForAccountKeyPrefix, address.MustLengthPrefix(addr.Bytes())...)
+}
+
+func PayoutForAccountKey(addr sdk.AccAddress, id uint64) []byte {
+	return append(GetPayoutForAccountKeyPrefix(addr), sdk.Uint64ToBigEndian(id)...)
+}
+
+func GetPayoutForNodeKeyPrefix(addr hubtypes.NodeAddress) []byte {
+	return append(PayoutForNodeKeyPrefix, address.MustLengthPrefix(addr.Bytes())...)
+}
+
+func PayoutForNodeKey(addr hubtypes.NodeAddress, id uint64) []byte {
+	return append(GetPayoutForNodeKeyPrefix(addr), sdk.Uint64ToBigEndian(id)...)
+}
+
 func IDFromSubscriptionForAccountKey(key []byte) uint64 {
 	// prefix (1 byte) | addrLen (1 byte) | addr (addrLen bytes) | id (8 bytes)
 
@@ -104,6 +137,38 @@ func IDFromSubscriptionForPlanKey(key []byte) uint64 {
 }
 
 func IDFromSubscriptionForExpiryAtKey(key []byte) uint64 {
+	// prefix (1 byte) | at (29 bytes) | id (8 bytes)
+
+	if len(key) != 38 {
+		panic(fmt.Errorf("invalid key length %d; expected %d", len(key), 38))
+	}
+
+	return sdk.BigEndianToUint64(key[30:])
+}
+
+func IDFromPayoutForAccountKey(key []byte) uint64 {
+	// prefix (1 byte) | addrLen(1 byte) | addr (addrLen bytes) | id (8 bytes)
+
+	addrLen := int(key[1])
+	if len(key) != 10+addrLen {
+		panic(fmt.Errorf("invalid key length %d; expected %d", len(key), 10+addrLen))
+	}
+
+	return sdk.BigEndianToUint64(key[2+addrLen:])
+}
+
+func IDFromPayoutForNodeKey(key []byte) uint64 {
+	// prefix (1 byte) | addrLen(1 byte) | addr (addrLen bytes) | id (8 bytes)
+
+	addrLen := int(key[1])
+	if len(key) != 10+addrLen {
+		panic(fmt.Errorf("invalid key length %d; expected %d", len(key), 10+addrLen))
+	}
+
+	return sdk.BigEndianToUint64(key[2+addrLen:])
+}
+
+func IDFromPayoutForTimestampKey(key []byte) uint64 {
 	// prefix (1 byte) | at (29 bytes) | id (8 bytes)
 
 	if len(key) != 38 {

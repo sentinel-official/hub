@@ -1,7 +1,6 @@
 package types
 
 import (
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/query"
 
 	hubtypes "github.com/sentinel-official/hub/types"
@@ -24,32 +23,6 @@ func NewQueryNodesForPlanRequest(id uint64, status hubtypes.Status, pagination *
 	return &QueryNodesForPlanRequest{
 		Id:         id,
 		Status:     status,
-		Pagination: pagination,
-	}
-}
-
-func NewQueryPayoutRequest(id uint64) *QueryPayoutRequest {
-	return &QueryPayoutRequest{
-		Id: id,
-	}
-}
-
-func NewQueryPayoutsRequest(pagination *query.PageRequest) *QueryPayoutsRequest {
-	return &QueryPayoutsRequest{
-		Pagination: pagination,
-	}
-}
-
-func NewQueryPayoutsForAccountRequest(addr sdk.AccAddress, pagination *query.PageRequest) *QueryPayoutsForNodeRequest {
-	return &QueryPayoutsForNodeRequest{
-		Address:    addr.String(),
-		Pagination: pagination,
-	}
-}
-
-func NewQueryPayoutsForNodeRequest(addr hubtypes.NodeAddress, pagination *query.PageRequest) *QueryPayoutsForNodeRequest {
-	return &QueryPayoutsForNodeRequest{
-		Address:    addr.String(),
 		Pagination: pagination,
 	}
 }

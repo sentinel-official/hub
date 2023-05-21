@@ -22,13 +22,6 @@ message EventUpdateStatus {
       [ (gogoproto.moretags) = "yaml:\"status\"" ];
 }
 
-message EventPayout {
-  uint64 id = 1
-      [ (gogoproto.customname) = "ID", (gogoproto.moretags) = "yaml:\"id\"" ];
-  string from_address = 2 [ (gogoproto.moretags) = "yaml:\"from_address\"" ];
-  string to_address   = 3 [ (gogoproto.moretags) = "yaml:\"to_address\"" ];
-}
-
 message EventCreateSubscription {
   uint64 id = 1
       [ (gogoproto.customname) = "ID", (gogoproto.moretags) = "yaml:\"id\"" ];

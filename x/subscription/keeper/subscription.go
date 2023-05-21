@@ -8,6 +8,7 @@ import (
 	protobuf "github.com/gogo/protobuf/types"
 
 	hubtypes "github.com/sentinel-official/hub/types"
+	hubutils "github.com/sentinel-official/hub/utils"
 	"github.com/sentinel-official/hub/x/subscription/types"
 )
 
@@ -284,7 +285,7 @@ func (k *Keeper) CreateSubscriptionForNode(ctx sdk.Context, accAddr sdk.AccAddre
 			return nil, types.NewErrorPriceNotFound(denom)
 		}
 
-		subscription.ExpiryAt = ctx.BlockTime().Add(types.Year)
+		subscription.ExpiryAt = ctx.BlockTime().Add(types.Year) // TODO: move to params
 		subscription.Deposit = sdk.NewCoin(
 			price.Denom,
 			price.Amount.MulRaw(gigabytes),
@@ -333,12 +334,23 @@ func (k *Keeper) CreateSubscriptionForPlan(ctx sdk.Context, accAddr sdk.AccAddre
 		return nil, types.NewErrorPriceNotFound(denom)
 	}
 
-	provAddr := plan.GetAddress()
-	if err := k.SendCoin(ctx, accAddr, provAddr.Bytes(), price); err != nil {
+	var (
+		share  = k.provider.RevenueShare(ctx)
+		reward = hubutils.GetProportionOfCoin(price, share)
+	)
+
+	if err := k.SendCoinFromAccountToModule(ctx, accAddr, k.feeCollectorName, reward); err != nil {
 		return nil, err
 	}
 
-	// TODO: distribute revenue share
+	var (
+		provAddr = plan.GetAddress()
+		amount   = price.Sub(reward)
+	)
+
+	if err := k.SendCoin(ctx, accAddr, provAddr.Bytes(), amount); err != nil {
+		return nil, err
+	}
 
 	var (
 		count = k.GetCount(ctx)

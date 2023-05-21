@@ -76,44 +76,6 @@ func TestAddressFromNodeForPlanKey(t *testing.T) {
 	}
 }
 
-func TestIDFromPayoutForAccountKey(t *testing.T) {
-	var (
-		addr []byte
-		key  []byte
-	)
-
-	for i := 1; i <= 256; i += 64 {
-		addr = make([]byte, i)
-		_, _ = rand.Read(addr)
-
-		key = PayoutForAccountKey(addr, uint64(i))
-		require.Equal(
-			t,
-			uint64(i),
-			IDFromPayoutForAccountKey(key),
-		)
-	}
-}
-
-func TestIDFromPayoutForNodeKey(t *testing.T) {
-	var (
-		addr []byte
-		key  []byte
-	)
-
-	for i := 1; i <= 256; i += 64 {
-		addr = make([]byte, i)
-		_, _ = rand.Read(addr)
-
-		key = PayoutForNodeKey(addr, uint64(i))
-		require.Equal(
-			t,
-			uint64(i),
-			IDFromPayoutForNodeKey(key),
-		)
-	}
-}
-
 func TestInactiveNodeKey(t *testing.T) {
 	var (
 		addr []byte
@@ -136,75 +98,6 @@ func TestInactiveNodeKey(t *testing.T) {
 		require.Panics(t, func() {
 			InactiveNodeKey(addr)
 		})
-	}
-}
-
-func TestPayoutForAccountKey(t *testing.T) {
-	var (
-		addr []byte
-		id   uint64
-	)
-
-	for i := 1; i <= 512; i += 64 {
-		id = uint64(i)
-		addr = make([]byte, i)
-		_, _ = rand.Read(addr)
-
-		if i < 256 {
-			require.Equal(
-				t,
-				append(append(PayoutForAccountKeyPrefix, address.MustLengthPrefix(addr)...), sdk.Uint64ToBigEndian(id)...),
-				PayoutForAccountKey(addr, id),
-			)
-
-			continue
-		}
-
-		require.Panics(t, func() {
-			PayoutForAccountKey(addr, id)
-		})
-	}
-}
-
-func TestPayoutForNodeKey(t *testing.T) {
-	var (
-		addr []byte
-		id   uint64
-	)
-
-	for i := 1; i <= 512; i += 64 {
-		id = uint64(i)
-		addr = make([]byte, i)
-		_, _ = rand.Read(addr)
-
-		if i < 256 {
-			require.Equal(
-				t,
-				append(append(PayoutForNodeKeyPrefix, address.MustLengthPrefix(addr)...), sdk.Uint64ToBigEndian(id)...),
-				PayoutForNodeKey(addr, id),
-			)
-
-			continue
-		}
-
-		require.Panics(t, func() {
-			PayoutForNodeKey(addr, id)
-		})
-	}
-}
-
-func TestPayoutKey(t *testing.T) {
-	var (
-		id uint64
-	)
-
-	for i := 1; i <= 512; i += 64 {
-		id = uint64(i)
-		require.Equal(
-			t,
-			append(PayoutKeyPrefix, sdk.Uint64ToBigEndian(id)...),
-			PayoutKey(id),
-		)
 	}
 }
 

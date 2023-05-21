@@ -197,31 +197,5 @@ func (k *msgServer) MsgSubscribe(c context.Context, msg *types.MsgSubscribeReque
 		},
 	)
 
-	if msg.Gigabytes != 0 {
-		return &types.MsgSubscribeResponse{}, nil
-	}
-
-	payout := types.Payout{
-		ID:    subscription.ID,
-		Hours: subscription.Hours,
-		Price: sdk.NewCoin(
-			subscription.Deposit.Denom,
-			subscription.Deposit.Amount.QuoRaw(subscription.Hours),
-		),
-		Timestamp: ctx.BlockTime().Add(time.Hour),
-	}
-
-	k.SetPayout(ctx, payout)
-	k.SetPayoutForAccount(ctx, accAddr, payout.ID)
-	k.SetPayoutForNode(ctx, nodeAddr, payout.ID)
-	k.SetPayoutForTimestamp(ctx, payout.Timestamp, payout.ID)
-	ctx.EventManager().EmitTypedEvent(
-		&types.EventPayout{
-			ID:          payout.ID,
-			FromAddress: accAddr.String(),
-			ToAddress:   nodeAddr.String(),
-		},
-	)
-
 	return &types.MsgSubscribeResponse{}, nil
 }
