@@ -82,7 +82,7 @@ func (k *msgServer) MsgStart(c context.Context, msg *types.MsgStartRequest) (*ty
 	if !found {
 		return nil, types.NewErrorQuotaNotFound(subscription.GetID(), accAddr)
 	}
-	if quota.ConsumedBytes.GTE(quota.AllocatedBytes) {
+	if quota.UtilisedBytes.GTE(quota.GrantedBytes) {
 		return nil, types.NewErrorInvalidQuota(subscription.GetID(), accAddr)
 	}
 

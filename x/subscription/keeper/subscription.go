@@ -260,9 +260,9 @@ func (k *Keeper) CreateSubscriptionForNode(ctx sdk.Context, accAddr sdk.AccAddre
 	var (
 		count = k.GetCount(ctx)
 		quota = types.Quota{
-			Address:        accAddr.String(),
-			AllocatedBytes: hubtypes.Gigabyte.MulRaw(gigabytes),
-			ConsumedBytes:  sdk.ZeroInt(),
+			Address:       accAddr.String(),
+			GrantedBytes:  hubtypes.Gigabyte.MulRaw(gigabytes),
+			UtilisedBytes: sdk.ZeroInt(),
 		}
 		subscription = &types.NodeSubscription{
 			BaseSubscription: &types.BaseSubscription{
@@ -355,9 +355,9 @@ func (k *Keeper) CreateSubscriptionForPlan(ctx sdk.Context, accAddr sdk.AccAddre
 	var (
 		count = k.GetCount(ctx)
 		quota = types.Quota{
-			Address:        accAddr.String(),
-			AllocatedBytes: plan.Bytes,
-			ConsumedBytes:  sdk.ZeroInt(),
+			Address:       accAddr.String(),
+			GrantedBytes:  plan.Bytes,
+			UtilisedBytes: sdk.ZeroInt(),
 		}
 		subscription = &types.PlanSubscription{
 			BaseSubscription: &types.BaseSubscription{

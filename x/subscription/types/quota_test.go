@@ -45,9 +45,9 @@ func TestQuota_GetAddress(t *testing.T) {
 
 func TestQuota_Validate(t *testing.T) {
 	type fields struct {
-		Address        string
-		AllocatedBytes sdk.Int
-		ConsumedBytes  sdk.Int
+		Address       string
+		GrantedBytes  sdk.Int
+		UtilisedBytes sdk.Int
 	}
 	tests := []struct {
 		name    string
@@ -78,124 +78,124 @@ func TestQuota_Validate(t *testing.T) {
 		{
 			"10 bytes account address",
 			fields{
-				Address:        "sent1qypqxpq9qcrsszgslawd5s",
-				AllocatedBytes: sdk.NewInt(0),
-				ConsumedBytes:  sdk.NewInt(0),
+				Address:       "sent1qypqxpq9qcrsszgslawd5s",
+				GrantedBytes:  sdk.NewInt(0),
+				UtilisedBytes: sdk.NewInt(0),
 			},
 			false,
 		},
 		{
 			"20 bytes account address",
 			fields{
-				Address:        "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				AllocatedBytes: sdk.NewInt(0),
-				ConsumedBytes:  sdk.NewInt(0),
+				Address:       "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				GrantedBytes:  sdk.NewInt(0),
+				UtilisedBytes: sdk.NewInt(0),
 			},
 			false,
 		},
 		{
 			"30 bytes account address",
 			fields{
-				Address:        "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfqyy3zxfp9ycnjs2fszvfck8",
-				AllocatedBytes: sdk.NewInt(0),
-				ConsumedBytes:  sdk.NewInt(0),
+				Address:       "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfqyy3zxfp9ycnjs2fszvfck8",
+				GrantedBytes:  sdk.NewInt(0),
+				UtilisedBytes: sdk.NewInt(0),
 			},
 			false,
 		},
 		{
-			"nil allocated",
+			"nil granted",
 			fields{
-				Address:        "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				AllocatedBytes: sdk.Int{},
+				Address:      "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				GrantedBytes: sdk.Int{},
 			},
 			true,
 		},
 		{
-			"negative allocated",
+			"negative granted",
 			fields{
-				Address:        "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				AllocatedBytes: sdk.NewInt(-1000),
+				Address:      "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				GrantedBytes: sdk.NewInt(-1000),
 			},
 			true,
 		},
 		{
-			"zero allocated",
+			"zero granted",
 			fields{
-				Address:        "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				AllocatedBytes: sdk.NewInt(0),
-				ConsumedBytes:  sdk.NewInt(0),
+				Address:       "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				GrantedBytes:  sdk.NewInt(0),
+				UtilisedBytes: sdk.NewInt(0),
 			},
 			false,
 		},
 		{
-			"positive allocated",
+			"positive granted",
 			fields{
-				Address:        "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				AllocatedBytes: sdk.NewInt(1000),
-				ConsumedBytes:  sdk.NewInt(0),
+				Address:       "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				GrantedBytes:  sdk.NewInt(1000),
+				UtilisedBytes: sdk.NewInt(0),
 			},
 			false,
 		},
 		{
-			"nil consumed",
+			"nil utilised",
 			fields{
-				Address:        "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				AllocatedBytes: sdk.NewInt(1000),
-				ConsumedBytes:  sdk.Int{},
+				Address:       "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				GrantedBytes:  sdk.NewInt(1000),
+				UtilisedBytes: sdk.Int{},
 			},
 			true,
 		},
 		{
-			"negative consumed",
+			"negative utilised",
 			fields{
-				Address:        "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				AllocatedBytes: sdk.NewInt(1000),
-				ConsumedBytes:  sdk.NewInt(-1000),
+				Address:       "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				GrantedBytes:  sdk.NewInt(1000),
+				UtilisedBytes: sdk.NewInt(-1000),
 			},
 			true,
 		},
 		{
-			"zero consumed",
+			"zero utilised",
 			fields{
-				Address:        "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				AllocatedBytes: sdk.NewInt(1000),
-				ConsumedBytes:  sdk.NewInt(0),
+				Address:       "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				GrantedBytes:  sdk.NewInt(1000),
+				UtilisedBytes: sdk.NewInt(0),
 			},
 			false,
 		},
 		{
-			"positive consumed",
+			"positive utilised",
 			fields{
-				Address:        "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				AllocatedBytes: sdk.NewInt(1000),
-				ConsumedBytes:  sdk.NewInt(1000),
+				Address:       "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				GrantedBytes:  sdk.NewInt(1000),
+				UtilisedBytes: sdk.NewInt(1000),
 			},
 			false,
 		},
 		{
-			"allocated less than consumed",
+			"granted less than utilised",
 			fields{
-				Address:        "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				AllocatedBytes: sdk.NewInt(1000),
-				ConsumedBytes:  sdk.NewInt(2000),
+				Address:       "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				GrantedBytes:  sdk.NewInt(1000),
+				UtilisedBytes: sdk.NewInt(2000),
 			},
 			true,
 		},
 		{
-			"allocated equals to consumed",
+			"granted equals to utilised",
 			fields{
-				Address:        "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				AllocatedBytes: sdk.NewInt(2000),
-				ConsumedBytes:  sdk.NewInt(2000),
+				Address:       "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				GrantedBytes:  sdk.NewInt(2000),
+				UtilisedBytes: sdk.NewInt(2000),
 			},
 			false,
 		},
 		{
-			"allocated greater than consumed",
+			"granted greater than utilised",
 			fields{
-				Address:        "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				AllocatedBytes: sdk.NewInt(2000),
-				ConsumedBytes:  sdk.NewInt(1000),
+				Address:       "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				GrantedBytes:  sdk.NewInt(2000),
+				UtilisedBytes: sdk.NewInt(1000),
 			},
 			false,
 		},
@@ -203,9 +203,9 @@ func TestQuota_Validate(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			m := &Quota{
-				Address:        tt.fields.Address,
-				AllocatedBytes: tt.fields.AllocatedBytes,
-				ConsumedBytes:  tt.fields.ConsumedBytes,
+				Address:       tt.fields.Address,
+				GrantedBytes:  tt.fields.GrantedBytes,
+				UtilisedBytes: tt.fields.UtilisedBytes,
 			}
 			if err := m.Validate(); (err != nil) != tt.wantErr {
 				t.Errorf("Validate() error = %v, wantErr %v", err, tt.wantErr)

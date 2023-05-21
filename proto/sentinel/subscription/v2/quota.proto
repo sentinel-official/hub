@@ -8,12 +8,12 @@ option (gogoproto.equal_all)           = false;
 option (gogoproto.goproto_getters_all) = false;
 
 message Quota {
-  string address         = 1;
-  string allocated_bytes = 2 [
+  string address       = 1;
+  string granted_bytes = 2 [
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
     (gogoproto.nullable)   = false
   ];
-  string consumed_bytes = 3 [
+  string utilised_bytes = 3 [
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
     (gogoproto.nullable)   = false
   ];

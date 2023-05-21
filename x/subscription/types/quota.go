@@ -27,20 +27,20 @@ func (m *Quota) Validate() error {
 	if _, err := sdk.AccAddressFromBech32(m.Address); err != nil {
 		return errors.Wrapf(err, "invalid address %s", m.Address)
 	}
-	if m.AllocatedBytes.IsNil() {
-		return fmt.Errorf("allocated_bytes cannot be nil")
+	if m.GrantedBytes.IsNil() {
+		return fmt.Errorf("granted_bytes cannot be nil")
 	}
-	if m.AllocatedBytes.IsNegative() {
-		return fmt.Errorf("allocated_bytes cannot be negative")
+	if m.GrantedBytes.IsNegative() {
+		return fmt.Errorf("granted_bytes cannot be negative")
 	}
-	if m.ConsumedBytes.IsNil() {
-		return fmt.Errorf("consumed_bytes cannot be nil")
+	if m.UtilisedBytes.IsNil() {
+		return fmt.Errorf("utilised_bytes cannot be nil")
 	}
-	if m.ConsumedBytes.IsNegative() {
-		return fmt.Errorf("consumed_bytes cannot be negative")
+	if m.UtilisedBytes.IsNegative() {
+		return fmt.Errorf("utilised_bytes cannot be negative")
 	}
-	if m.ConsumedBytes.GT(m.AllocatedBytes) {
-		return fmt.Errorf("consumed_bytes cannot be greater than allocated_bytes")
+	if m.UtilisedBytes.GT(m.GrantedBytes) {
+		return fmt.Errorf("utilised_bytes cannot be greater than granted_bytes")
 	}
 
 	return nil

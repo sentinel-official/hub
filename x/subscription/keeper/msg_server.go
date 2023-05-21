@@ -87,9 +87,9 @@ func (k *msgServer) MsgShare(c context.Context, msg *types.MsgShareRequest) (*ty
 	toQuota, found := k.GetQuota(ctx, subscription.GetID(), toAddr)
 	if !found {
 		toQuota = types.Quota{
-			Address:        toAddr.String(),
-			AllocatedBytes: sdk.ZeroInt(),
-			ConsumedBytes:  sdk.ZeroInt(),
+			Address:       toAddr.String(),
+			GrantedBytes:  sdk.ZeroInt(),
+			UtilisedBytes: sdk.ZeroInt(),
 		}
 
 		k.SetSubscriptionForAccount(ctx, toAddr, subscription.GetID())
@@ -102,17 +102,17 @@ func (k *msgServer) MsgShare(c context.Context, msg *types.MsgShareRequest) (*ty
 	}
 
 	var (
-		allocated = fromQuota.AllocatedBytes.Add(toQuota.AllocatedBytes)
-		consumed  = fromQuota.ConsumedBytes.Add(toQuota.ConsumedBytes)
-		available = allocated.Sub(consumed)
+		granted   = fromQuota.GrantedBytes.Add(toQuota.GrantedBytes)
+		utilised  = fromQuota.UtilisedBytes.Add(toQuota.UtilisedBytes)
+		available = granted.Sub(utilised)
 	)
 
 	if msg.Bytes.GT(available) {
 		return nil, types.NewErrorInsufficientBytes(subscription.GetID(), msg.Bytes)
 	}
 
-	fromQuota.AllocatedBytes = available.Sub(msg.Bytes)
-	if fromQuota.AllocatedBytes.LT(fromQuota.ConsumedBytes) {
+	fromQuota.GrantedBytes = available.Sub(msg.Bytes)
+	if fromQuota.GrantedBytes.LT(fromQuota.UtilisedBytes) {
 		return nil, types.NewErrorInvalidQuota(subscription.GetID(), fromAddr)
 	}
 
@@ -121,12 +121,12 @@ func (k *msgServer) MsgShare(c context.Context, msg *types.MsgShareRequest) (*ty
 		&types.EventAllocate{
 			ID:      subscription.GetID(),
 			Address: fromQuota.Address,
-			Bytes:   fromQuota.AllocatedBytes,
+			Bytes:   fromQuota.GrantedBytes,
 		},
 	)
 
-	toQuota.AllocatedBytes = msg.Bytes
-	if toQuota.AllocatedBytes.LT(toQuota.ConsumedBytes) {
+	toQuota.GrantedBytes = msg.Bytes
+	if toQuota.GrantedBytes.LT(toQuota.UtilisedBytes) {
 		return nil, types.NewErrorInvalidQuota(subscription.GetID(), toAddr)
 	}
 
@@ -135,7 +135,7 @@ func (k *msgServer) MsgShare(c context.Context, msg *types.MsgShareRequest) (*ty
 		&types.EventAllocate{
 			ID:      subscription.GetID(),
 			Address: toQuota.Address,
-			Bytes:   toQuota.AllocatedBytes,
+			Bytes:   toQuota.GrantedBytes,
 		},
 	)
 
