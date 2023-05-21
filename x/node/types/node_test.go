@@ -30,7 +30,7 @@ func TestNode_GetAddress(t *testing.T) {
 		{
 			"address 20 bytes",
 			fields{
-				Address: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				Address: hubtypes.TestBech32NodeAddr20Bytes,
 			},
 			hubtypes.NodeAddress{0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x20},
 		},
@@ -339,14 +339,14 @@ func TestNode_Validate(t *testing.T) {
 		{
 			"address invalid prefix",
 			fields{
-				Address: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Address: hubtypes.TestBech32AccAddr20Bytes,
 			},
 			true,
 		},
 		{
 			"address 10 bytes",
 			fields{
-				Address:        "sentnode1qypqxpq9qcrsszgse4wwrm",
+				Address:        hubtypes.TestBech32NodeAddr10Bytes,
 				GigabytePrices: nil,
 				HourlyPrices:   nil,
 				RemoteURL:      "https://remote.url:443",
@@ -359,7 +359,7 @@ func TestNode_Validate(t *testing.T) {
 		{
 			"address 20 bytes",
 			fields{
-				Address:        "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				Address:        hubtypes.TestBech32NodeAddr20Bytes,
 				GigabytePrices: nil,
 				HourlyPrices:   nil,
 				RemoteURL:      "https://remote.url:443",
@@ -372,7 +372,7 @@ func TestNode_Validate(t *testing.T) {
 		{
 			"address 30 bytes",
 			fields{
-				Address:        "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqyy3zxfp9ycnjs2fsxqglcv",
+				Address:        hubtypes.TestBech32NodeAddr30Bytes,
 				GigabytePrices: nil,
 				HourlyPrices:   nil,
 				RemoteURL:      "https://remote.url:443",
@@ -385,7 +385,7 @@ func TestNode_Validate(t *testing.T) {
 		{
 			"gigabyte_prices nil",
 			fields{
-				Address:        "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				Address:        hubtypes.TestBech32NodeAddr20Bytes,
 				GigabytePrices: nil,
 				HourlyPrices:   nil,
 				RemoteURL:      "https://remote.url:443",
@@ -398,7 +398,7 @@ func TestNode_Validate(t *testing.T) {
 		{
 			"gigabyte_prices empty",
 			fields{
-				Address:        "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				Address:        hubtypes.TestBech32NodeAddr20Bytes,
 				GigabytePrices: sdk.Coins{},
 			},
 			true,
@@ -406,7 +406,7 @@ func TestNode_Validate(t *testing.T) {
 		{
 			"gigabyte_prices empty denom",
 			fields{
-				Address:        "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				Address:        hubtypes.TestBech32NodeAddr20Bytes,
 				GigabytePrices: sdk.Coins{sdk.Coin{Denom: ""}},
 			},
 			true,
@@ -414,7 +414,7 @@ func TestNode_Validate(t *testing.T) {
 		{
 			"gigabyte_prices invalid denom",
 			fields{
-				Address:        "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				Address:        hubtypes.TestBech32NodeAddr20Bytes,
 				GigabytePrices: sdk.Coins{sdk.Coin{Denom: "o"}},
 			},
 			true,
@@ -422,7 +422,7 @@ func TestNode_Validate(t *testing.T) {
 		{
 			"gigabyte_prices empty amount",
 			fields{
-				Address:        "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				Address:        hubtypes.TestBech32NodeAddr20Bytes,
 				GigabytePrices: sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.Int{}}},
 			},
 			true,
@@ -430,7 +430,7 @@ func TestNode_Validate(t *testing.T) {
 		{
 			"gigabyte_prices negative amount",
 			fields{
-				Address:        "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				Address:        hubtypes.TestBech32NodeAddr20Bytes,
 				GigabytePrices: sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(-1000)}},
 			},
 			true,
@@ -438,7 +438,7 @@ func TestNode_Validate(t *testing.T) {
 		{
 			"gigabyte_prices zero amount",
 			fields{
-				Address:        "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				Address:        hubtypes.TestBech32NodeAddr20Bytes,
 				GigabytePrices: sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(0)}},
 			},
 			true,
@@ -446,7 +446,7 @@ func TestNode_Validate(t *testing.T) {
 		{
 			"gigabyte_prices positive amount",
 			fields{
-				Address:        "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				Address:        hubtypes.TestBech32NodeAddr20Bytes,
 				GigabytePrices: sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
 				HourlyPrices:   nil,
 				RemoteURL:      "https://remote.url:443",
@@ -459,7 +459,7 @@ func TestNode_Validate(t *testing.T) {
 		{
 			"hourly_prices nil",
 			fields{
-				Address:        "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				Address:        hubtypes.TestBech32NodeAddr20Bytes,
 				GigabytePrices: nil,
 				HourlyPrices:   nil,
 				RemoteURL:      "https://remote.url:443",
@@ -472,7 +472,7 @@ func TestNode_Validate(t *testing.T) {
 		{
 			"hourly_prices empty",
 			fields{
-				Address:        "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				Address:        hubtypes.TestBech32NodeAddr20Bytes,
 				GigabytePrices: nil,
 				HourlyPrices:   sdk.Coins{},
 			},
@@ -481,7 +481,7 @@ func TestNode_Validate(t *testing.T) {
 		{
 			"hourly_prices empty denom",
 			fields{
-				Address:        "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				Address:        hubtypes.TestBech32NodeAddr20Bytes,
 				GigabytePrices: nil,
 				HourlyPrices:   sdk.Coins{sdk.Coin{Denom: ""}},
 			},
@@ -490,7 +490,7 @@ func TestNode_Validate(t *testing.T) {
 		{
 			"hourly_prices invalid denom",
 			fields{
-				Address:        "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				Address:        hubtypes.TestBech32NodeAddr20Bytes,
 				GigabytePrices: nil,
 				HourlyPrices:   sdk.Coins{sdk.Coin{Denom: "o"}},
 			},
@@ -499,7 +499,7 @@ func TestNode_Validate(t *testing.T) {
 		{
 			"hourly_prices empty amount",
 			fields{
-				Address:        "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				Address:        hubtypes.TestBech32NodeAddr20Bytes,
 				GigabytePrices: nil,
 				HourlyPrices:   sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.Int{}}},
 			},
@@ -508,7 +508,7 @@ func TestNode_Validate(t *testing.T) {
 		{
 			"hourly_prices negative amount",
 			fields{
-				Address:        "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				Address:        hubtypes.TestBech32NodeAddr20Bytes,
 				GigabytePrices: nil,
 				HourlyPrices:   sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(-1000)}},
 			},
@@ -517,7 +517,7 @@ func TestNode_Validate(t *testing.T) {
 		{
 			"hourly_prices zero amount",
 			fields{
-				Address:        "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				Address:        hubtypes.TestBech32NodeAddr20Bytes,
 				GigabytePrices: nil,
 				HourlyPrices:   sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(0)}},
 			},
@@ -526,7 +526,7 @@ func TestNode_Validate(t *testing.T) {
 		{
 			"hourly_prices positive amount",
 			fields{
-				Address:        "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				Address:        hubtypes.TestBech32NodeAddr20Bytes,
 				GigabytePrices: nil,
 				HourlyPrices:   sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
 				RemoteURL:      "https://remote.url:443",
@@ -539,7 +539,7 @@ func TestNode_Validate(t *testing.T) {
 		{
 			"remote_url empty",
 			fields{
-				Address:        "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				Address:        hubtypes.TestBech32NodeAddr20Bytes,
 				GigabytePrices: nil,
 				HourlyPrices:   nil,
 				RemoteURL:      "",
@@ -549,7 +549,7 @@ func TestNode_Validate(t *testing.T) {
 		{
 			"remote_url 72 chars",
 			fields{
-				Address:        "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				Address:        hubtypes.TestBech32NodeAddr20Bytes,
 				GigabytePrices: nil,
 				HourlyPrices:   nil,
 				RemoteURL:      strings.Repeat("r", 72),
@@ -559,7 +559,7 @@ func TestNode_Validate(t *testing.T) {
 		{
 			"remote_url invalid",
 			fields{
-				Address:        "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				Address:        hubtypes.TestBech32NodeAddr20Bytes,
 				GigabytePrices: nil,
 				HourlyPrices:   nil,
 				RemoteURL:      "invalid",
@@ -569,7 +569,7 @@ func TestNode_Validate(t *testing.T) {
 		{
 			"remote_url invalid scheme",
 			fields{
-				Address:        "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				Address:        hubtypes.TestBech32NodeAddr20Bytes,
 				GigabytePrices: nil,
 				HourlyPrices:   nil,
 				RemoteURL:      "tcp://remote.url:80",
@@ -579,7 +579,7 @@ func TestNode_Validate(t *testing.T) {
 		{
 			"remote_url without port",
 			fields{
-				Address:        "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				Address:        hubtypes.TestBech32NodeAddr20Bytes,
 				GigabytePrices: nil,
 				HourlyPrices:   nil,
 				RemoteURL:      "https://remote.url",
@@ -589,7 +589,7 @@ func TestNode_Validate(t *testing.T) {
 		{
 			"remote_url with port",
 			fields{
-				Address:        "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				Address:        hubtypes.TestBech32NodeAddr20Bytes,
 				GigabytePrices: nil,
 				HourlyPrices:   nil,
 				RemoteURL:      "https://remote.url:443",
@@ -602,7 +602,7 @@ func TestNode_Validate(t *testing.T) {
 		{
 			"expiry_at empty",
 			fields{
-				Address:        "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				Address:        hubtypes.TestBech32NodeAddr20Bytes,
 				GigabytePrices: nil,
 				HourlyPrices:   nil,
 				RemoteURL:      "https://remote.url:443",
@@ -613,7 +613,7 @@ func TestNode_Validate(t *testing.T) {
 		{
 			"expiry_at now",
 			fields{
-				Address:        "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				Address:        hubtypes.TestBech32NodeAddr20Bytes,
 				GigabytePrices: nil,
 				HourlyPrices:   nil,
 				RemoteURL:      "https://remote.url:443",
@@ -626,7 +626,7 @@ func TestNode_Validate(t *testing.T) {
 		{
 			"status unspecified",
 			fields{
-				Address:        "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				Address:        hubtypes.TestBech32NodeAddr20Bytes,
 				GigabytePrices: nil,
 				HourlyPrices:   nil,
 				RemoteURL:      "https://remote.url:443",
@@ -638,7 +638,7 @@ func TestNode_Validate(t *testing.T) {
 		{
 			"status active",
 			fields{
-				Address:        "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				Address:        hubtypes.TestBech32NodeAddr20Bytes,
 				GigabytePrices: nil,
 				HourlyPrices:   nil,
 				RemoteURL:      "https://remote.url:443",
@@ -651,7 +651,7 @@ func TestNode_Validate(t *testing.T) {
 		{
 			"status inactive_pending",
 			fields{
-				Address:        "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				Address:        hubtypes.TestBech32NodeAddr20Bytes,
 				GigabytePrices: nil,
 				HourlyPrices:   nil,
 				RemoteURL:      "https://remote.url:443",
@@ -663,7 +663,7 @@ func TestNode_Validate(t *testing.T) {
 		{
 			"status inactive",
 			fields{
-				Address:        "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				Address:        hubtypes.TestBech32NodeAddr20Bytes,
 				GigabytePrices: nil,
 				HourlyPrices:   nil,
 				RemoteURL:      "https://remote.url:443",
@@ -676,7 +676,7 @@ func TestNode_Validate(t *testing.T) {
 		{
 			"status_at empty",
 			fields{
-				Address:        "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				Address:        hubtypes.TestBech32NodeAddr20Bytes,
 				GigabytePrices: nil,
 				HourlyPrices:   nil,
 				RemoteURL:      "https://remote.url:443",
@@ -689,7 +689,7 @@ func TestNode_Validate(t *testing.T) {
 		{
 			"status_at now",
 			fields{
-				Address:        "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				Address:        hubtypes.TestBech32NodeAddr20Bytes,
 				GigabytePrices: nil,
 				HourlyPrices:   nil,
 				RemoteURL:      "https://remote.url:443",

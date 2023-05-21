@@ -29,7 +29,7 @@ func TestPlan_GetAddress(t *testing.T) {
 		{
 			"20 bytes",
 			fields{
-				Address: "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
+				Address: hubtypes.TestBech32ProvAddr20Bytes,
 			},
 			hubtypes.ProvAddress{0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x20},
 		},
@@ -235,7 +235,7 @@ func TestPlan_Validate(t *testing.T) {
 			"id positive",
 			fields{
 				ID:       1000,
-				Address:  "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
+				Address:  hubtypes.TestBech32ProvAddr20Bytes,
 				Duration: 1000,
 				Bytes:    sdk.NewInt(1000),
 				Status:   hubtypes.StatusActive,
@@ -263,7 +263,7 @@ func TestPlan_Validate(t *testing.T) {
 			"address invalid prefix",
 			fields{
 				ID:      1000,
-				Address: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Address: hubtypes.TestBech32AccAddr20Bytes,
 			},
 			true,
 		},
@@ -271,7 +271,7 @@ func TestPlan_Validate(t *testing.T) {
 			"address 10 bytes",
 			fields{
 				ID:       1000,
-				Address:  "sentprov1qypqxpq9qcrsszgsutj8xr",
+				Address:  hubtypes.TestBech32ProvAddr10Bytes,
 				Bytes:    sdk.NewInt(1000),
 				Duration: 1000,
 				Status:   hubtypes.StatusActive,
@@ -283,7 +283,7 @@ func TestPlan_Validate(t *testing.T) {
 			"address 20 bytes",
 			fields{
 				ID:       1000,
-				Address:  "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
+				Address:  hubtypes.TestBech32ProvAddr20Bytes,
 				Bytes:    sdk.NewInt(1000),
 				Duration: 1000,
 				Status:   hubtypes.StatusActive,
@@ -295,7 +295,7 @@ func TestPlan_Validate(t *testing.T) {
 			"address 30 bytes",
 			fields{
 				ID:       1000,
-				Address:  "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfqyy3zxfp9ycnjs2fsh33zgx",
+				Address:  hubtypes.TestBech32ProvAddr30Bytes,
 				Bytes:    sdk.NewInt(1000),
 				Duration: 1000,
 				Status:   hubtypes.StatusActive,
@@ -307,7 +307,7 @@ func TestPlan_Validate(t *testing.T) {
 			"bytes empty",
 			fields{
 				ID:      1000,
-				Address: "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
+				Address: hubtypes.TestBech32ProvAddr20Bytes,
 				Bytes:   sdk.Int{},
 			},
 			true,
@@ -316,7 +316,7 @@ func TestPlan_Validate(t *testing.T) {
 			"bytes negative",
 			fields{
 				ID:      1000,
-				Address: "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
+				Address: hubtypes.TestBech32ProvAddr20Bytes,
 				Bytes:   sdk.NewInt(-1000),
 			},
 			true,
@@ -325,7 +325,7 @@ func TestPlan_Validate(t *testing.T) {
 			"bytes zero",
 			fields{
 				ID:      1000,
-				Address: "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
+				Address: hubtypes.TestBech32ProvAddr20Bytes,
 				Bytes:   sdk.NewInt(0),
 			},
 			true,
@@ -334,7 +334,7 @@ func TestPlan_Validate(t *testing.T) {
 			"bytes positive",
 			fields{
 				ID:       1000,
-				Address:  "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
+				Address:  hubtypes.TestBech32ProvAddr20Bytes,
 				Bytes:    sdk.NewInt(1000),
 				Duration: 1000,
 				Status:   hubtypes.StatusActive,
@@ -346,7 +346,7 @@ func TestPlan_Validate(t *testing.T) {
 			"duration negative",
 			fields{
 				ID:       1000,
-				Address:  "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
+				Address:  hubtypes.TestBech32ProvAddr20Bytes,
 				Bytes:    sdk.NewInt(1000),
 				Duration: -1000,
 			},
@@ -356,7 +356,7 @@ func TestPlan_Validate(t *testing.T) {
 			"duration zero",
 			fields{
 				ID:       1000,
-				Address:  "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
+				Address:  hubtypes.TestBech32ProvAddr20Bytes,
 				Bytes:    sdk.NewInt(1000),
 				Duration: 0,
 			},
@@ -366,7 +366,7 @@ func TestPlan_Validate(t *testing.T) {
 			"duration positive",
 			fields{
 				ID:       1000,
-				Address:  "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
+				Address:  hubtypes.TestBech32ProvAddr20Bytes,
 				Bytes:    sdk.NewInt(1000),
 				Duration: 1000,
 				Status:   hubtypes.StatusActive,
@@ -378,7 +378,7 @@ func TestPlan_Validate(t *testing.T) {
 			"prices nil",
 			fields{
 				ID:       1000,
-				Address:  "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
+				Address:  hubtypes.TestBech32ProvAddr20Bytes,
 				Bytes:    sdk.NewInt(1000),
 				Duration: 1000,
 				Prices:   nil,
@@ -391,7 +391,7 @@ func TestPlan_Validate(t *testing.T) {
 			"prices empty",
 			fields{
 				ID:       1000,
-				Address:  "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
+				Address:  hubtypes.TestBech32ProvAddr20Bytes,
 				Bytes:    sdk.NewInt(1000),
 				Duration: 1000,
 				Prices:   sdk.Coins{},
@@ -402,7 +402,7 @@ func TestPlan_Validate(t *testing.T) {
 			"prices empty denom",
 			fields{
 				ID:       1000,
-				Address:  "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
+				Address:  hubtypes.TestBech32ProvAddr20Bytes,
 				Bytes:    sdk.NewInt(1000),
 				Duration: 1000,
 				Prices:   sdk.Coins{sdk.Coin{Denom: "", Amount: sdk.NewInt(1000)}},
@@ -413,7 +413,7 @@ func TestPlan_Validate(t *testing.T) {
 			"prices empty amount",
 			fields{
 				ID:       1000,
-				Address:  "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
+				Address:  hubtypes.TestBech32ProvAddr20Bytes,
 				Bytes:    sdk.NewInt(1000),
 				Duration: 1000,
 				Prices:   sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.Int{}}},
@@ -424,7 +424,7 @@ func TestPlan_Validate(t *testing.T) {
 			"prices invalid denom",
 			fields{
 				ID:       1000,
-				Address:  "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
+				Address:  hubtypes.TestBech32ProvAddr20Bytes,
 				Bytes:    sdk.NewInt(1000),
 				Duration: 1000,
 				Prices:   sdk.Coins{sdk.Coin{Denom: "o"}},
@@ -435,7 +435,7 @@ func TestPlan_Validate(t *testing.T) {
 			"prices negative amount",
 			fields{
 				ID:       1000,
-				Address:  "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
+				Address:  hubtypes.TestBech32ProvAddr20Bytes,
 				Bytes:    sdk.NewInt(1000),
 				Duration: 1000,
 				Prices:   sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(-1000)}},
@@ -446,7 +446,7 @@ func TestPlan_Validate(t *testing.T) {
 			"prices zero amount",
 			fields{
 				ID:       1000,
-				Address:  "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
+				Address:  hubtypes.TestBech32ProvAddr20Bytes,
 				Bytes:    sdk.NewInt(1000),
 				Duration: 1000,
 				Prices:   sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(0)}},
@@ -457,7 +457,7 @@ func TestPlan_Validate(t *testing.T) {
 			"prices positive amount",
 			fields{
 				ID:       1000,
-				Address:  "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
+				Address:  hubtypes.TestBech32ProvAddr20Bytes,
 				Bytes:    sdk.NewInt(1000),
 				Duration: 1000,
 				Prices:   sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
@@ -470,7 +470,7 @@ func TestPlan_Validate(t *testing.T) {
 			"status unspecified",
 			fields{
 				ID:       1000,
-				Address:  "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
+				Address:  hubtypes.TestBech32ProvAddr20Bytes,
 				Bytes:    sdk.NewInt(1000),
 				Duration: 1000,
 				Status:   hubtypes.StatusUnspecified,
@@ -481,7 +481,7 @@ func TestPlan_Validate(t *testing.T) {
 			"status active",
 			fields{
 				ID:       1000,
-				Address:  "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
+				Address:  hubtypes.TestBech32ProvAddr20Bytes,
 				Bytes:    sdk.NewInt(1000),
 				Duration: 1000,
 				Status:   hubtypes.StatusActive,
@@ -493,7 +493,7 @@ func TestPlan_Validate(t *testing.T) {
 			"status inactive pending",
 			fields{
 				ID:       1000,
-				Address:  "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
+				Address:  hubtypes.TestBech32ProvAddr20Bytes,
 				Bytes:    sdk.NewInt(1000),
 				Duration: 1000,
 				Status:   hubtypes.StatusInactivePending,
@@ -504,7 +504,7 @@ func TestPlan_Validate(t *testing.T) {
 			"status inactive",
 			fields{
 				ID:       1000,
-				Address:  "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
+				Address:  hubtypes.TestBech32ProvAddr20Bytes,
 				Bytes:    sdk.NewInt(1000),
 				Duration: 1000,
 				Status:   hubtypes.StatusInactive,
@@ -516,7 +516,7 @@ func TestPlan_Validate(t *testing.T) {
 			"status_at zero",
 			fields{
 				ID:       1000,
-				Address:  "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
+				Address:  hubtypes.TestBech32ProvAddr20Bytes,
 				Bytes:    sdk.NewInt(1000),
 				Duration: 1000,
 				Status:   hubtypes.StatusActive,
@@ -528,7 +528,7 @@ func TestPlan_Validate(t *testing.T) {
 			"status_at positive",
 			fields{
 				ID:       1000,
-				Address:  "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
+				Address:  hubtypes.TestBech32ProvAddr20Bytes,
 				Bytes:    sdk.NewInt(1000),
 				Duration: 1000,
 				Status:   hubtypes.StatusActive,

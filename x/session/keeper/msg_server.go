@@ -46,13 +46,13 @@ func (k *msgServer) MsgStart(c context.Context, msg *types.MsgStartRequest) (*ty
 		return nil, types.NewErrorInvalidNodeStatus(nodeAddr, node.Status)
 	}
 
-	switch v := subscription.(type) {
+	switch s := subscription.(type) {
 	case *subscriptiontypes.NodeSubscription:
-		if node.Address != v.NodeAddress {
+		if node.Address != s.NodeAddress {
 			return nil, types.NewErrorInvalidNode(node.Address)
 		}
 	case *subscriptiontypes.PlanSubscription:
-		if !k.HasNodeForPlan(ctx, v.PlanID, nodeAddr) {
+		if !k.HasNodeForPlan(ctx, s.PlanID, nodeAddr) {
 			return nil, types.NewErrorInvalidNode(node.Address)
 		}
 	default:
@@ -74,7 +74,7 @@ func (k *msgServer) MsgStart(c context.Context, msg *types.MsgStartRequest) (*ty
 		return false
 	})
 
-	if id > 0 {
+	if id != 0 {
 		return nil, types.NewErrorDuplicateSession(subscription.GetID(), accAddr, id)
 	}
 
@@ -128,7 +128,7 @@ func (k *msgServer) MsgUpdateDetails(c context.Context, msg *types.MsgUpdateDeta
 	if !found {
 		return nil, types.NewErrorSessionNotFound(msg.Proof.ID)
 	}
-	if !session.Status.IsOneOf(hubtypes.StatusActive, hubtypes.StatusInactivePending) {
+	if session.Status.Equal(hubtypes.StatusInactive) {
 		return nil, types.NewErrorInvalidSessionStatus(session.ID, session.Status)
 	}
 	if msg.From != session.NodeAddress {

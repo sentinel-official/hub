@@ -4,6 +4,8 @@ import (
 	"testing"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
+	hubtypes "github.com/sentinel-official/hub/types"
 )
 
 func TestMsgCancelRequest_ValidateBasic(t *testing.T) {
@@ -33,14 +35,14 @@ func TestMsgCancelRequest_ValidateBasic(t *testing.T) {
 		{
 			"invalid prefix from",
 			fields{
-				From: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				From: hubtypes.TestBech32NodeAddr20Bytes,
 			},
 			true,
 		},
 		{
 			"10 bytes from",
 			fields{
-				From: "sent1qypqxpq9qcrsszgslawd5s",
+				From: hubtypes.TestBech32AccAddr10Bytes,
 				ID:   1000,
 			},
 			false,
@@ -48,7 +50,7 @@ func TestMsgCancelRequest_ValidateBasic(t *testing.T) {
 		{
 			"20 bytes from",
 			fields{
-				From: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				From: hubtypes.TestBech32AccAddr20Bytes,
 				ID:   1000,
 			},
 			false,
@@ -56,7 +58,7 @@ func TestMsgCancelRequest_ValidateBasic(t *testing.T) {
 		{
 			"30 bytes from",
 			fields{
-				From: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfqyy3zxfp9ycnjs2fszvfck8",
+				From: hubtypes.TestBech32AccAddr30Bytes,
 				ID:   1000,
 			},
 			false,
@@ -64,7 +66,7 @@ func TestMsgCancelRequest_ValidateBasic(t *testing.T) {
 		{
 			"zero id",
 			fields{
-				From: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				From: hubtypes.TestBech32AccAddr20Bytes,
 				ID:   0,
 			},
 			true,
@@ -72,7 +74,7 @@ func TestMsgCancelRequest_ValidateBasic(t *testing.T) {
 		{
 			"positive id",
 			fields{
-				From: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				From: hubtypes.TestBech32AccAddr20Bytes,
 				ID:   1000,
 			},
 			false,
@@ -120,16 +122,16 @@ func TestMsgAllocateRequest_ValidateBasic(t *testing.T) {
 		{
 			"invalid prefix from",
 			fields{
-				From: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				From: hubtypes.TestBech32NodeAddr20Bytes,
 			},
 			true,
 		},
 		{
 			"10 bytes from",
 			fields{
-				From:    "sent1qypqxpq9qcrsszgslawd5s",
+				From:    hubtypes.TestBech32AccAddr10Bytes,
 				ID:      1000,
-				Address: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Address: hubtypes.TestBech32AccAddr20Bytes,
 				Bytes:   sdk.NewInt(0),
 			},
 			false,
@@ -137,9 +139,9 @@ func TestMsgAllocateRequest_ValidateBasic(t *testing.T) {
 		{
 			"20 bytes from",
 			fields{
-				From:    "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				From:    hubtypes.TestBech32AccAddr20Bytes,
 				ID:      1000,
-				Address: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Address: hubtypes.TestBech32AccAddr20Bytes,
 				Bytes:   sdk.NewInt(0),
 			},
 			false,
@@ -147,9 +149,9 @@ func TestMsgAllocateRequest_ValidateBasic(t *testing.T) {
 		{
 			"30 bytes from",
 			fields{
-				From:    "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfqyy3zxfp9ycnjs2fszvfck8",
+				From:    hubtypes.TestBech32AccAddr30Bytes,
 				ID:      1000,
-				Address: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Address: hubtypes.TestBech32AccAddr20Bytes,
 				Bytes:   sdk.NewInt(0),
 			},
 			false,
@@ -157,7 +159,7 @@ func TestMsgAllocateRequest_ValidateBasic(t *testing.T) {
 		{
 			"zero id",
 			fields{
-				From: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				From: hubtypes.TestBech32AccAddr20Bytes,
 				ID:   0,
 			},
 			true,
@@ -165,9 +167,9 @@ func TestMsgAllocateRequest_ValidateBasic(t *testing.T) {
 		{
 			"positive id",
 			fields{
-				From:    "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				From:    hubtypes.TestBech32AccAddr20Bytes,
 				ID:      1000,
-				Address: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Address: hubtypes.TestBech32AccAddr20Bytes,
 				Bytes:   sdk.NewInt(0),
 			},
 			false,
@@ -175,7 +177,7 @@ func TestMsgAllocateRequest_ValidateBasic(t *testing.T) {
 		{
 			"empty address",
 			fields{
-				From:    "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				From:    hubtypes.TestBech32AccAddr20Bytes,
 				ID:      1000,
 				Address: "",
 			},
@@ -184,7 +186,7 @@ func TestMsgAllocateRequest_ValidateBasic(t *testing.T) {
 		{
 			"invalid address",
 			fields{
-				From:    "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				From:    hubtypes.TestBech32AccAddr20Bytes,
 				ID:      1000,
 				Address: "invalid",
 			},
@@ -193,18 +195,18 @@ func TestMsgAllocateRequest_ValidateBasic(t *testing.T) {
 		{
 			"invalid prefix address",
 			fields{
-				From:    "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				From:    hubtypes.TestBech32AccAddr20Bytes,
 				ID:      1000,
-				Address: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				Address: hubtypes.TestBech32NodeAddr20Bytes,
 			},
 			true,
 		},
 		{
 			"10 bytes address",
 			fields{
-				From:    "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				From:    hubtypes.TestBech32AccAddr20Bytes,
 				ID:      1000,
-				Address: "sent1qypqxpq9qcrsszgslawd5s",
+				Address: hubtypes.TestBech32AccAddr10Bytes,
 				Bytes:   sdk.NewInt(0),
 			},
 			false,
@@ -212,9 +214,9 @@ func TestMsgAllocateRequest_ValidateBasic(t *testing.T) {
 		{
 			"20 bytes address",
 			fields{
-				From:    "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				From:    hubtypes.TestBech32AccAddr20Bytes,
 				ID:      1000,
-				Address: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Address: hubtypes.TestBech32AccAddr20Bytes,
 				Bytes:   sdk.NewInt(0),
 			},
 			false,
@@ -222,9 +224,9 @@ func TestMsgAllocateRequest_ValidateBasic(t *testing.T) {
 		{
 			"30 bytes address",
 			fields{
-				From:    "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				From:    hubtypes.TestBech32AccAddr20Bytes,
 				ID:      1000,
-				Address: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfqyy3zxfp9ycnjs2fszvfck8",
+				Address: hubtypes.TestBech32AccAddr30Bytes,
 				Bytes:   sdk.NewInt(0),
 			},
 			false,
@@ -232,9 +234,9 @@ func TestMsgAllocateRequest_ValidateBasic(t *testing.T) {
 		{
 			"nil bytes",
 			fields{
-				From:    "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				From:    hubtypes.TestBech32AccAddr20Bytes,
 				ID:      1000,
-				Address: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Address: hubtypes.TestBech32AccAddr20Bytes,
 				Bytes:   sdk.Int{},
 			},
 			true,
@@ -242,9 +244,9 @@ func TestMsgAllocateRequest_ValidateBasic(t *testing.T) {
 		{
 			"negative bytes",
 			fields{
-				From:    "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				From:    hubtypes.TestBech32AccAddr20Bytes,
 				ID:      1000,
-				Address: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Address: hubtypes.TestBech32AccAddr20Bytes,
 				Bytes:   sdk.NewInt(-1000),
 			},
 			true,
@@ -252,9 +254,9 @@ func TestMsgAllocateRequest_ValidateBasic(t *testing.T) {
 		{
 			"zero bytes",
 			fields{
-				From:    "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				From:    hubtypes.TestBech32AccAddr20Bytes,
 				ID:      1000,
-				Address: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Address: hubtypes.TestBech32AccAddr20Bytes,
 				Bytes:   sdk.NewInt(0),
 			},
 			false,
@@ -262,9 +264,9 @@ func TestMsgAllocateRequest_ValidateBasic(t *testing.T) {
 		{
 			"positive bytes",
 			fields{
-				From:    "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				From:    hubtypes.TestBech32AccAddr20Bytes,
 				ID:      1000,
-				Address: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Address: hubtypes.TestBech32AccAddr20Bytes,
 				Bytes:   sdk.NewInt(1000),
 			},
 			false,

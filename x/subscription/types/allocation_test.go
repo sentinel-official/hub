@@ -5,6 +5,8 @@ import (
 	"testing"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
+	hubtypes "github.com/sentinel-official/hub/types"
 )
 
 func TestAllocation_GetAddress(t *testing.T) {
@@ -26,7 +28,7 @@ func TestAllocation_GetAddress(t *testing.T) {
 		{
 			"20 bytes account address",
 			fields{
-				Address: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Address: hubtypes.TestBech32AccAddr20Bytes,
 			},
 			sdk.AccAddress{0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x20},
 		},
@@ -71,14 +73,14 @@ func TestAllocation_Validate(t *testing.T) {
 		{
 			"invalid prefix account address",
 			fields{
-				Address: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				Address: hubtypes.TestBech32NodeAddr20Bytes,
 			},
 			true,
 		},
 		{
 			"10 bytes account address",
 			fields{
-				Address:       "sent1qypqxpq9qcrsszgslawd5s",
+				Address:       hubtypes.TestBech32AccAddr10Bytes,
 				GrantedBytes:  sdk.NewInt(0),
 				UtilisedBytes: sdk.NewInt(0),
 			},
@@ -87,7 +89,7 @@ func TestAllocation_Validate(t *testing.T) {
 		{
 			"20 bytes account address",
 			fields{
-				Address:       "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Address:       hubtypes.TestBech32AccAddr20Bytes,
 				GrantedBytes:  sdk.NewInt(0),
 				UtilisedBytes: sdk.NewInt(0),
 			},
@@ -96,7 +98,7 @@ func TestAllocation_Validate(t *testing.T) {
 		{
 			"30 bytes account address",
 			fields{
-				Address:       "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfqyy3zxfp9ycnjs2fszvfck8",
+				Address:       hubtypes.TestBech32AccAddr30Bytes,
 				GrantedBytes:  sdk.NewInt(0),
 				UtilisedBytes: sdk.NewInt(0),
 			},
@@ -105,7 +107,7 @@ func TestAllocation_Validate(t *testing.T) {
 		{
 			"nil granted",
 			fields{
-				Address:      "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Address:      hubtypes.TestBech32AccAddr20Bytes,
 				GrantedBytes: sdk.Int{},
 			},
 			true,
@@ -113,7 +115,7 @@ func TestAllocation_Validate(t *testing.T) {
 		{
 			"negative granted",
 			fields{
-				Address:      "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Address:      hubtypes.TestBech32AccAddr20Bytes,
 				GrantedBytes: sdk.NewInt(-1000),
 			},
 			true,
@@ -121,7 +123,7 @@ func TestAllocation_Validate(t *testing.T) {
 		{
 			"zero granted",
 			fields{
-				Address:       "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Address:       hubtypes.TestBech32AccAddr20Bytes,
 				GrantedBytes:  sdk.NewInt(0),
 				UtilisedBytes: sdk.NewInt(0),
 			},
@@ -130,7 +132,7 @@ func TestAllocation_Validate(t *testing.T) {
 		{
 			"positive granted",
 			fields{
-				Address:       "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Address:       hubtypes.TestBech32AccAddr20Bytes,
 				GrantedBytes:  sdk.NewInt(1000),
 				UtilisedBytes: sdk.NewInt(0),
 			},
@@ -139,7 +141,7 @@ func TestAllocation_Validate(t *testing.T) {
 		{
 			"nil utilised",
 			fields{
-				Address:       "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Address:       hubtypes.TestBech32AccAddr20Bytes,
 				GrantedBytes:  sdk.NewInt(1000),
 				UtilisedBytes: sdk.Int{},
 			},
@@ -148,7 +150,7 @@ func TestAllocation_Validate(t *testing.T) {
 		{
 			"negative utilised",
 			fields{
-				Address:       "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Address:       hubtypes.TestBech32AccAddr20Bytes,
 				GrantedBytes:  sdk.NewInt(1000),
 				UtilisedBytes: sdk.NewInt(-1000),
 			},
@@ -157,7 +159,7 @@ func TestAllocation_Validate(t *testing.T) {
 		{
 			"zero utilised",
 			fields{
-				Address:       "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Address:       hubtypes.TestBech32AccAddr20Bytes,
 				GrantedBytes:  sdk.NewInt(1000),
 				UtilisedBytes: sdk.NewInt(0),
 			},
@@ -166,7 +168,7 @@ func TestAllocation_Validate(t *testing.T) {
 		{
 			"positive utilised",
 			fields{
-				Address:       "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Address:       hubtypes.TestBech32AccAddr20Bytes,
 				GrantedBytes:  sdk.NewInt(1000),
 				UtilisedBytes: sdk.NewInt(1000),
 			},
@@ -175,7 +177,7 @@ func TestAllocation_Validate(t *testing.T) {
 		{
 			"granted less than utilised",
 			fields{
-				Address:       "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Address:       hubtypes.TestBech32AccAddr20Bytes,
 				GrantedBytes:  sdk.NewInt(1000),
 				UtilisedBytes: sdk.NewInt(2000),
 			},
@@ -184,7 +186,7 @@ func TestAllocation_Validate(t *testing.T) {
 		{
 			"granted equals to utilised",
 			fields{
-				Address:       "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Address:       hubtypes.TestBech32AccAddr20Bytes,
 				GrantedBytes:  sdk.NewInt(2000),
 				UtilisedBytes: sdk.NewInt(2000),
 			},
@@ -193,7 +195,7 @@ func TestAllocation_Validate(t *testing.T) {
 		{
 			"granted greater than utilised",
 			fields{
-				Address:       "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Address:       hubtypes.TestBech32AccAddr20Bytes,
 				GrantedBytes:  sdk.NewInt(2000),
 				UtilisedBytes: sdk.NewInt(1000),
 			},

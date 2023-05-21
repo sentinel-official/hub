@@ -31,7 +31,7 @@ func TestProvider_GetAddress(t *testing.T) {
 		{
 			"20 bytes",
 			fields{
-				Address: "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
+				Address: hubtypes.TestBech32ProvAddr20Bytes,
 			},
 			hubtypes.ProvAddress{0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x20},
 		},
@@ -83,35 +83,35 @@ func TestProvider_Validate(t *testing.T) {
 		{
 			"invalid prefix address",
 			fields{
-				Address: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Address: hubtypes.TestBech32AccAddr20Bytes,
 			},
 			true,
 		},
 		{
 			"10 bytes address",
 			fields{
-				Address: "sentprov1qypqxpq9qcrsszgsutj8xr",
+				Address: hubtypes.TestBech32ProvAddr10Bytes,
 			},
 			true,
 		},
 		{
 			"20 bytes address",
 			fields{
-				Address: "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
+				Address: hubtypes.TestBech32ProvAddr20Bytes,
 			},
 			true,
 		},
 		{
 			"30 bytes address",
 			fields{
-				Address: "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfqyy3zxfp9ycnjs2fsh33zgx",
+				Address: hubtypes.TestBech32ProvAddr30Bytes,
 			},
 			true,
 		},
 		{
 			"empty name",
 			fields{
-				Address: "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
+				Address: hubtypes.TestBech32ProvAddr20Bytes,
 				Name:    "",
 			},
 			true,
@@ -119,7 +119,7 @@ func TestProvider_Validate(t *testing.T) {
 		{
 			"non-empty name",
 			fields{
-				Address: "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
+				Address: hubtypes.TestBech32ProvAddr20Bytes,
 				Name:    "name",
 				Status:  hubtypes.StatusActive,
 			},
@@ -128,7 +128,7 @@ func TestProvider_Validate(t *testing.T) {
 		{
 			"length 72 name",
 			fields{
-				Address: "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
+				Address: hubtypes.TestBech32ProvAddr20Bytes,
 				Name:    strings.Repeat("n", 72),
 			},
 			true,
@@ -136,7 +136,7 @@ func TestProvider_Validate(t *testing.T) {
 		{
 			"empty identity",
 			fields{
-				Address:  "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
+				Address:  hubtypes.TestBech32ProvAddr20Bytes,
 				Name:     "name",
 				Identity: "",
 				Status:   hubtypes.StatusActive,
@@ -146,7 +146,7 @@ func TestProvider_Validate(t *testing.T) {
 		{
 			"non-empty identity",
 			fields{
-				Address:  "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
+				Address:  hubtypes.TestBech32ProvAddr20Bytes,
 				Name:     "name",
 				Identity: "identity",
 				Status:   hubtypes.StatusActive,
@@ -156,7 +156,7 @@ func TestProvider_Validate(t *testing.T) {
 		{
 			"length 72 identity",
 			fields{
-				Address:  "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
+				Address:  hubtypes.TestBech32ProvAddr20Bytes,
 				Name:     "name",
 				Identity: strings.Repeat("i", 72),
 			},
@@ -165,7 +165,7 @@ func TestProvider_Validate(t *testing.T) {
 		{
 			"empty website",
 			fields{
-				Address:  "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
+				Address:  hubtypes.TestBech32ProvAddr20Bytes,
 				Name:     "name",
 				Identity: "identity",
 				Website:  "",
@@ -176,7 +176,7 @@ func TestProvider_Validate(t *testing.T) {
 		{
 			"non-empty website",
 			fields{
-				Address:  "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
+				Address:  hubtypes.TestBech32ProvAddr20Bytes,
 				Name:     "name",
 				Identity: "identity",
 				Website:  "https://website",
@@ -187,7 +187,7 @@ func TestProvider_Validate(t *testing.T) {
 		{
 			"length 72 website",
 			fields{
-				Address:  "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
+				Address:  hubtypes.TestBech32ProvAddr20Bytes,
 				Name:     "name",
 				Identity: "identity",
 				Website:  strings.Repeat("w", 72),
@@ -197,7 +197,7 @@ func TestProvider_Validate(t *testing.T) {
 		{
 			"invalid website",
 			fields{
-				Address:  "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
+				Address:  hubtypes.TestBech32ProvAddr20Bytes,
 				Name:     "name",
 				Identity: "identity",
 				Website:  "invalid",
@@ -207,7 +207,7 @@ func TestProvider_Validate(t *testing.T) {
 		{
 			"empty description",
 			fields{
-				Address:     "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
+				Address:     hubtypes.TestBech32ProvAddr20Bytes,
 				Name:        "name",
 				Identity:    "identity",
 				Website:     "https://website",
@@ -219,7 +219,7 @@ func TestProvider_Validate(t *testing.T) {
 		{
 			"non-empty description",
 			fields{
-				Address:     "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
+				Address:     hubtypes.TestBech32ProvAddr20Bytes,
 				Name:        "name",
 				Identity:    "identity",
 				Website:     "https://website",
@@ -231,7 +231,7 @@ func TestProvider_Validate(t *testing.T) {
 		{
 			"length 264 description",
 			fields{
-				Address:     "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
+				Address:     hubtypes.TestBech32ProvAddr20Bytes,
 				Name:        "name",
 				Identity:    "identity",
 				Website:     "https://website",
@@ -242,7 +242,7 @@ func TestProvider_Validate(t *testing.T) {
 		{
 			"unspecified status",
 			fields{
-				Address:     "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
+				Address:     hubtypes.TestBech32ProvAddr20Bytes,
 				Name:        "name",
 				Identity:    "identity",
 				Website:     "https://website",
@@ -254,7 +254,7 @@ func TestProvider_Validate(t *testing.T) {
 		{
 			"active status",
 			fields{
-				Address:     "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
+				Address:     hubtypes.TestBech32ProvAddr20Bytes,
 				Name:        "name",
 				Identity:    "identity",
 				Website:     "https://website",
@@ -266,7 +266,7 @@ func TestProvider_Validate(t *testing.T) {
 		{
 			"inactive status",
 			fields{
-				Address:     "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
+				Address:     hubtypes.TestBech32ProvAddr20Bytes,
 				Name:        "name",
 				Identity:    "identity",
 				Website:     "https://website",
