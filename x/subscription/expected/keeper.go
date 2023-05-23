@@ -25,6 +25,7 @@ type BankKeeper interface {
 type DepositKeeper interface {
 	Add(ctx sdk.Context, address sdk.AccAddress, coins sdk.Coins) error
 	Subtract(ctx sdk.Context, address sdk.AccAddress, coins sdk.Coins) error
+	SendCoinsFromDepositToAccount(ctx sdk.Context, fromAddr, toAddr sdk.AccAddress, coins sdk.Coins) error
 }
 
 type ProviderKeeper interface {

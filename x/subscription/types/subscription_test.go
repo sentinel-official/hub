@@ -18,21 +18,21 @@ func TestBaseSubscription_GetAddress(t *testing.T) {
 	tests := []struct {
 		name   string
 		fields fields
-		want   string
+		want   sdk.AccAddress
 	}{
 		{
-			"address empty",
+			"empty",
 			fields{
 				Address: "",
 			},
-			"",
+			nil,
 		},
 		{
-			"address non-empty",
+			"20 bytes",
 			fields{
 				Address: hubtypes.TestBech32AccAddr20Bytes,
 			},
-			hubtypes.TestBech32AccAddr20Bytes,
+			sdk.AccAddress{0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x20},
 		},
 	}
 	for _, tt := range tests {

@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"context"
+	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
@@ -24,6 +25,11 @@ func NewMsgServiceServer(k Keeper) types.MsgServiceServer {
 func (k *msgServer) MsgCancel(c context.Context, msg *types.MsgCancelRequest) (*types.MsgCancelResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
+	fromAddr, err := sdk.AccAddressFromBech32(msg.From)
+	if err != nil {
+		return nil, err
+	}
+
 	subscription, found := k.GetSubscription(ctx, msg.ID)
 	if !found {
 		return nil, types.NewErrorSubscriptionNotFound(msg.ID)
@@ -31,20 +37,21 @@ func (k *msgServer) MsgCancel(c context.Context, msg *types.MsgCancelRequest) (*
 	if !subscription.GetStatus().Equal(hubtypes.StatusActive) {
 		return nil, types.NewErrorInvalidSubscriptionStatus(subscription.GetID(), subscription.GetStatus())
 	}
-	if msg.From != subscription.GetAddress() {
+	if !fromAddr.Equals(subscription.GetAddress()) {
 		return nil, types.NewErrorUnauthorized(msg.From)
 	}
 
 	k.DeleteSubscriptionForExpiryAt(ctx, subscription.GetExpiryAt(), subscription.GetID())
 
 	inactiveDuration := k.InactiveDuration(ctx)
-	subscription.SetExpiryAt(ctx.BlockTime().Add(inactiveDuration))
-	k.SetSubscriptionForExpiryAt(ctx, subscription.GetExpiryAt(), subscription.GetID())
-
+	subscription.SetExpiryAt(
+		subscription.GetExpiryAt().Add(inactiveDuration),
+	)
 	subscription.SetStatus(hubtypes.StatusInactivePending)
 	subscription.SetStatusAt(ctx.BlockTime())
 
 	k.SetSubscription(ctx, subscription)
+	k.SetSubscriptionForExpiryAt(ctx, subscription.GetExpiryAt(), subscription.GetID())
 	ctx.EventManager().EmitTypedEvent(
 		&types.EventUpdateStatus{
 			ID:     subscription.GetID(),
@@ -52,11 +59,26 @@ func (k *msgServer) MsgCancel(c context.Context, msg *types.MsgCancelRequest) (*
 		},
 	)
 
+	payout, found := k.GetPayout(ctx, subscription.GetID())
+	if !found {
+		return &types.MsgCancelResponse{}, nil
+	}
+
+	k.DeletePayoutForTimestamp(ctx, payout.Timestamp, payout.ID)
+
+	payout.Timestamp = time.Time{}
+	k.SetPayout(ctx, payout)
+
 	return &types.MsgCancelResponse{}, nil
 }
 
 func (k *msgServer) MsgAllocate(c context.Context, msg *types.MsgAllocateRequest) (*types.MsgAllocateResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
+
+	fromAddr, err := sdk.AccAddressFromBech32(msg.From)
+	if err != nil {
+		return nil, err
+	}
 
 	subscription, found := k.GetSubscription(ctx, msg.ID)
 	if !found {
@@ -65,13 +87,8 @@ func (k *msgServer) MsgAllocate(c context.Context, msg *types.MsgAllocateRequest
 	if subscription.Type() != types.TypePlan {
 		return nil, types.NewErrorInvalidSubscriptionType(subscription.GetID(), subscription.Type())
 	}
-	if msg.From != subscription.GetAddress() {
+	if !fromAddr.Equals(subscription.GetAddress()) {
 		return nil, types.NewErrorUnauthorized(msg.From)
-	}
-
-	fromAddr, err := sdk.AccAddressFromBech32(msg.From)
-	if err != nil {
-		return nil, err
 	}
 
 	fromAlloc, found := k.GetAllocation(ctx, subscription.GetID(), fromAddr)

@@ -2,7 +2,37 @@ package types
 
 import (
 	"fmt"
+
+	sdk "github.com/cosmos/cosmos-sdk/types"
+
+	hubtypes "github.com/sentinel-official/hub/types"
 )
+
+func (p *Payout) GetAddress() sdk.AccAddress {
+	if p.Address == "" {
+		return nil
+	}
+
+	addr, err := sdk.AccAddressFromBech32(p.Address)
+	if err != nil {
+		panic(err)
+	}
+
+	return addr
+}
+
+func (p *Payout) GetNodeAddress() hubtypes.NodeAddress {
+	if p.NodeAddress == "" {
+		return nil
+	}
+
+	addr, err := hubtypes.NodeAddressFromBech32(p.NodeAddress)
+	if err != nil {
+		panic(err)
+	}
+
+	return addr
+}
 
 func (p *Payout) Validate() error {
 	if p.ID == 0 {

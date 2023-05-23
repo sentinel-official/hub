@@ -24,20 +24,28 @@ func (k *Keeper) SendCoinFromAccountToModule(ctx sdk.Context, from sdk.AccAddres
 	return k.bank.SendCoinsFromAccountToModule(ctx, from, to, sdk.NewCoins(coin))
 }
 
-func (k *Keeper) AddDeposit(ctx sdk.Context, address sdk.AccAddress, coin sdk.Coin) error {
+func (k *Keeper) DepositAdd(ctx sdk.Context, addr sdk.AccAddress, coin sdk.Coin) error {
 	if coin.IsZero() {
 		return nil
 	}
 
-	return k.deposit.Add(ctx, address, sdk.NewCoins(coin))
+	return k.deposit.Add(ctx, addr, sdk.NewCoins(coin))
 }
 
-func (k *Keeper) SubtractDeposit(ctx sdk.Context, address sdk.AccAddress, coin sdk.Coin) error {
+func (k *Keeper) DepositSubtract(ctx sdk.Context, addr sdk.AccAddress, coin sdk.Coin) error {
 	if coin.IsZero() {
 		return nil
 	}
 
-	return k.deposit.Subtract(ctx, address, sdk.NewCoins(coin))
+	return k.deposit.Subtract(ctx, addr, sdk.NewCoins(coin))
+}
+
+func (k *Keeper) SendCoinFromDepositToAccount(ctx sdk.Context, fromAddr, toAddr sdk.AccAddress, coin sdk.Coin) error {
+	if coin.IsZero() {
+		return nil
+	}
+
+	return k.deposit.SendCoinsFromDepositToAccount(ctx, fromAddr, toAddr, sdk.NewCoins(coin))
 }
 
 func (k *Keeper) GetNode(ctx sdk.Context, address hubtypes.NodeAddress) (nodetypes.Node, bool) {

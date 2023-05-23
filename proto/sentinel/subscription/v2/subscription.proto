@@ -18,8 +18,6 @@ enum SubscriptionType {
 }
 
 message BaseSubscription {
-  option (gogoproto.goproto_getters) = true;
-
   uint64 id                           = 1 [ (gogoproto.customname) = "ID" ];
   string address                      = 2;
   google.protobuf.Timestamp expiry_at = 3

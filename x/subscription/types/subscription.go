@@ -17,7 +17,7 @@ type (
 		Type() SubscriptionType
 		Validate() error
 		GetID() uint64
-		GetAddress() string
+		GetAddress() sdk.AccAddress
 		GetExpiryAt() time.Time
 		GetStatus() hubtypes.Status
 		GetStatusAt() time.Time
@@ -32,6 +32,24 @@ var (
 	_ Subscription = (*NodeSubscription)(nil)
 	_ Subscription = (*PlanSubscription)(nil)
 )
+
+func (s *BaseSubscription) GetID() uint64              { return s.ID }
+func (s *BaseSubscription) GetExpiryAt() time.Time     { return s.ExpiryAt }
+func (s *BaseSubscription) GetStatus() hubtypes.Status { return s.Status }
+func (s *BaseSubscription) GetStatusAt() time.Time     { return s.StatusAt }
+
+func (s *BaseSubscription) GetAddress() sdk.AccAddress {
+	if s.Address == "" {
+		return nil
+	}
+
+	addr, err := sdk.AccAddressFromBech32(s.Address)
+	if err != nil {
+		panic(err)
+	}
+
+	return addr
+}
 
 func (s *BaseSubscription) SetExpiryAt(v time.Time)     { s.ExpiryAt = v }
 func (s *BaseSubscription) SetStatus(v hubtypes.Status) { s.Status = v }

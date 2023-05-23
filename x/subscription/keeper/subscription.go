@@ -301,7 +301,7 @@ func (k *Keeper) CreateSubscriptionForNode(ctx sdk.Context, accAddr sdk.AccAddre
 		)
 	}
 
-	if err := k.AddDeposit(ctx, accAddr, subscription.Deposit); err != nil {
+	if err := k.DepositAdd(ctx, accAddr, subscription.Deposit); err != nil {
 		return nil, err
 	}
 
@@ -331,24 +331,35 @@ func (k *Keeper) CreateSubscriptionForNode(ctx sdk.Context, accAddr sdk.AccAddre
 	}
 
 	payout := types.Payout{
-		ID:    subscription.GetID(),
-		Hours: hours,
+		ID:          subscription.GetID(),
+		Address:     accAddr.String(),
+		NodeAddress: nodeAddr.String(),
+		Hours:       hours,
 		Price: sdk.NewCoin(
 			subscription.Deposit.Denom,
 			subscription.Deposit.Amount.QuoRaw(hours),
 		),
-		Timestamp: ctx.BlockTime().Add(time.Hour),
+		Timestamp: ctx.BlockTime(),
+	}
+
+	if err := k.SendCoinFromDepositToAccount(ctx, accAddr, nodeAddr.Bytes(), payout.Price); err != nil {
+		return nil, err
+	}
+
+	payout.Hours = payout.Hours - 1
+	if payout.Hours > 0 {
+		payout.Timestamp = payout.Timestamp.Add(time.Hour)
+		k.SetPayoutForTimestamp(ctx, payout.Timestamp, payout.ID)
 	}
 
 	k.SetPayout(ctx, payout)
 	k.SetPayoutForAccount(ctx, accAddr, payout.ID)
 	k.SetPayoutForNode(ctx, nodeAddr, payout.ID)
-	k.SetPayoutForTimestamp(ctx, payout.Timestamp, payout.ID)
 	ctx.EventManager().EmitTypedEvent(
 		&types.EventPayout{
-			ID:          subscription.GetID(),
-			FromAddress: accAddr.String(),
-			ToAddress:   nodeAddr.String(),
+			ID:          payout.ID,
+			FromAddress: payout.Address,
+			ToAddress:   payout.NodeAddress,
 		},
 	)
 
