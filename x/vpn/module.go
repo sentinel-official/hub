@@ -151,7 +151,9 @@ func (a AppModule) RegisterServices(configurator module.Configurator) {
 
 func (a AppModule) ConsensusVersion() uint64 { return 3 }
 
-func (a AppModule) BeginBlock(_ sdk.Context, _ abcitypes.RequestBeginBlock) {}
+func (a AppModule) BeginBlock(ctx sdk.Context, _ abcitypes.RequestBeginBlock) {
+	BeginBlock(ctx, a.k)
+}
 
 func (a AppModule) EndBlock(ctx sdk.Context, _ abcitypes.RequestEndBlock) []abcitypes.ValidatorUpdate {
 	return EndBlock(ctx, a.k)

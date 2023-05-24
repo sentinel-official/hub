@@ -16,6 +16,13 @@ func cacheContext(c sdk.Context) (cc sdk.Context, writeCache func()) {
 	return cc, cms.Write
 }
 
+func BeginBlock(ctx sdk.Context, k keeper.Keeper) {
+	ctx, write := cacheContext(ctx)
+	defer write()
+
+	subscription.BeginBlock(ctx, k.Subscription)
+}
+
 func EndBlock(ctx sdk.Context, k keeper.Keeper) abcitypes.ValidatorUpdates {
 	ctx, write := cacheContext(ctx)
 	defer write()
