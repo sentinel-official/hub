@@ -7,7 +7,7 @@ import (
 
 func TestParams_Validate(t *testing.T) {
 	type fields struct {
-		InactiveDuration time.Duration
+		ExpiryDuration time.Duration
 	}
 	tests := []struct {
 		name    string
@@ -15,23 +15,23 @@ func TestParams_Validate(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			"negative inactive duration",
+			"negative expiry duration",
 			fields{
-				InactiveDuration: -1000,
+				ExpiryDuration: -1000,
 			},
 			true,
 		},
 		{
-			"zero inactive duration",
+			"zero expiry duration",
 			fields{
-				InactiveDuration: 0,
+				ExpiryDuration: 0,
 			},
 			true,
 		},
 		{
-			"positive inactive duration",
+			"positive expiry duration",
 			fields{
-				InactiveDuration: 1000,
+				ExpiryDuration: 1000,
 			},
 			false,
 		},
@@ -39,7 +39,7 @@ func TestParams_Validate(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			m := &Params{
-				InactiveDuration: tt.fields.InactiveDuration,
+				ExpiryDuration: tt.fields.ExpiryDuration,
 			}
 			if err := m.Validate(); (err != nil) != tt.wantErr {
 				t.Errorf("Validate() error = %v, wantErr %v", err, tt.wantErr)

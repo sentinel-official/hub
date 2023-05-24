@@ -43,9 +43,9 @@ func (k *msgServer) MsgCancel(c context.Context, msg *types.MsgCancelRequest) (*
 
 	k.DeleteSubscriptionForExpiryAt(ctx, subscription.GetExpiryAt(), subscription.GetID())
 
-	inactiveDuration := k.InactiveDuration(ctx)
+	expiryDuration := k.ExpiryDuration(ctx)
 	subscription.SetExpiryAt(
-		subscription.GetExpiryAt().Add(inactiveDuration),
+		subscription.GetExpiryAt().Add(expiryDuration),
 	)
 	subscription.SetStatus(hubtypes.StatusInactivePending)
 	subscription.SetStatusAt(ctx.BlockTime())
