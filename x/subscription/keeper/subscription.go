@@ -358,8 +358,8 @@ func (k *Keeper) CreateSubscriptionForNode(ctx sdk.Context, accAddr sdk.AccAddre
 	ctx.EventManager().EmitTypedEvent(
 		&types.EventPayout{
 			ID:          payout.ID,
-			FromAddress: payout.Address,
-			ToAddress:   payout.NodeAddress,
+			Address:     payout.Address,
+			NodeAddress: payout.NodeAddress,
 		},
 	)
 
