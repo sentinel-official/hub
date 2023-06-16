@@ -6,12 +6,10 @@ import (
 	"github.com/sentinel-official/hub/x/subscription/types"
 )
 
-func (k *Keeper) SetAllocation(ctx sdk.Context, id uint64, alloc types.Allocation) {
-	// TODO: add field ID for allocation?
-
+func (k *Keeper) SetAllocation(ctx sdk.Context, alloc types.Allocation) {
 	var (
 		store = k.Store(ctx)
-		key   = types.AllocationKey(id, alloc.GetAddress())
+		key   = types.AllocationKey(alloc.ID, alloc.GetAddress())
 		value = k.cdc.MustMarshal(&alloc)
 	)
 

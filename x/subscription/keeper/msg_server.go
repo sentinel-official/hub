@@ -104,6 +104,7 @@ func (k *msgServer) MsgAllocate(c context.Context, msg *types.MsgAllocateRequest
 	toAlloc, found := k.GetAllocation(ctx, subscription.GetID(), toAddr)
 	if !found {
 		toAlloc = types.Allocation{
+			ID:            subscription.GetID(),
 			Address:       toAddr.String(),
 			GrantedBytes:  sdk.ZeroInt(),
 			UtilisedBytes: sdk.ZeroInt(),
@@ -127,7 +128,7 @@ func (k *msgServer) MsgAllocate(c context.Context, msg *types.MsgAllocateRequest
 		return nil, types.NewErrorInvalidAllocation(subscription.GetID(), fromAddr)
 	}
 
-	k.SetAllocation(ctx, subscription.GetID(), fromAlloc)
+	k.SetAllocation(ctx, fromAlloc)
 	ctx.EventManager().EmitTypedEvent(
 		&types.EventAllocate{
 			ID:      subscription.GetID(),
@@ -141,7 +142,7 @@ func (k *msgServer) MsgAllocate(c context.Context, msg *types.MsgAllocateRequest
 		return nil, types.NewErrorInvalidAllocation(subscription.GetID(), toAddr)
 	}
 
-	k.SetAllocation(ctx, subscription.GetID(), toAlloc)
+	k.SetAllocation(ctx, toAlloc)
 	ctx.EventManager().EmitTypedEvent(
 		&types.EventAllocate{
 			ID:      subscription.GetID(),

@@ -8,12 +8,13 @@ option (gogoproto.equal_all)           = false;
 option (gogoproto.goproto_getters_all) = false;
 
 message Allocation {
-  string address       = 1;
-  string granted_bytes = 2 [
+  uint64 id            = 1 [ (gogoproto.customname) = "ID" ];
+  string address       = 2;
+  string granted_bytes = 3 [
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
     (gogoproto.nullable)   = false
   ];
-  string utilised_bytes = 3 [
+  string utilised_bytes = 4 [
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
     (gogoproto.nullable)   = false
   ];

@@ -312,12 +312,13 @@ func (k *Keeper) CreateSubscriptionForNode(ctx sdk.Context, accAddr sdk.AccAddre
 	k.SetSubscriptionForExpiryAt(ctx, subscription.GetExpiryAt(), subscription.GetID())
 
 	alloc := types.Allocation{
+		ID:            subscription.GetID(),
 		Address:       accAddr.String(),
 		GrantedBytes:  hubtypes.Gigabyte.MulRaw(gigabytes),
 		UtilisedBytes: sdk.ZeroInt(),
 	}
 
-	k.SetAllocation(ctx, subscription.GetID(), alloc)
+	k.SetAllocation(ctx, alloc)
 	ctx.EventManager().EmitTypedEvent(
 		&types.EventAllocate{
 			ID:      subscription.GetID(),
@@ -420,12 +421,13 @@ func (k *Keeper) CreateSubscriptionForPlan(ctx sdk.Context, accAddr sdk.AccAddre
 	k.SetSubscriptionForExpiryAt(ctx, subscription.GetExpiryAt(), subscription.GetID())
 
 	alloc := types.Allocation{
+		ID:            subscription.GetID(),
 		Address:       accAddr.String(),
 		GrantedBytes:  plan.Bytes,
 		UtilisedBytes: sdk.ZeroInt(),
 	}
 
-	k.SetAllocation(ctx, subscription.GetID(), alloc)
+	k.SetAllocation(ctx, alloc)
 	ctx.EventManager().EmitTypedEvent(
 		&types.EventAllocate{
 			ID:      subscription.GetID(),
