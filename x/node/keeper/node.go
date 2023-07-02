@@ -160,35 +160,35 @@ func (k *Keeper) IterateNodes(ctx sdk.Context, fn func(index int, item types.Nod
 	}
 }
 
-func (k *Keeper) SetNodeForExpiryAt(ctx sdk.Context, at time.Time, addr hubtypes.NodeAddress) {
+func (k *Keeper) SetNodeForInactiveAt(ctx sdk.Context, at time.Time, addr hubtypes.NodeAddress) {
 	var (
 		store = k.Store(ctx)
-		key   = types.NodeForExpiryAtKey(at, addr)
+		key   = types.NodeForInactiveAtKey(at, addr)
 		value = k.cdc.MustMarshal(&protobuf.BoolValue{Value: true})
 	)
 
 	store.Set(key, value)
 }
 
-func (k *Keeper) DeleteNodeForExpiryAt(ctx sdk.Context, at time.Time, addr hubtypes.NodeAddress) {
+func (k *Keeper) DeleteNodeForInactiveAt(ctx sdk.Context, at time.Time, addr hubtypes.NodeAddress) {
 	var (
 		store = k.Store(ctx)
-		key   = types.NodeForExpiryAtKey(at, addr)
+		key   = types.NodeForInactiveAtKey(at, addr)
 	)
 
 	store.Delete(key)
 }
 
-func (k *Keeper) IterateNodesForExpiryAt(ctx sdk.Context, at time.Time, fn func(index int, item types.Node) (stop bool)) {
+func (k *Keeper) IterateNodesForInactiveAt(ctx sdk.Context, at time.Time, fn func(index int, item types.Node) (stop bool)) {
 	store := k.Store(ctx)
 
-	iter := store.Iterator(types.NodeForExpiryAtKeyPrefix, sdk.PrefixEndBytes(types.GetNodeForExpiryAtKeyPrefix(at)))
+	iter := store.Iterator(types.NodeForInactiveAtKeyPrefix, sdk.PrefixEndBytes(types.GetNodeForInactiveAtKeyPrefix(at)))
 	defer iter.Close()
 
 	for i := 0; iter.Valid(); iter.Next() {
-		node, found := k.GetNode(ctx, types.AddressFromNodeForExpiryAtKey(iter.Key()))
+		node, found := k.GetNode(ctx, types.AddressFromNodeForInactiveAtKey(iter.Key()))
 		if !found {
-			panic(fmt.Errorf("node for expiry at key %X does not exist", iter.Key()))
+			panic(fmt.Errorf("node for inactive at key %X does not exist", iter.Key()))
 		}
 
 		if stop := fn(i, node); stop {

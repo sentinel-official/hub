@@ -15,7 +15,7 @@ import (
 func RandomizedGenesisState(state *module.SimulationState) *types.GenesisState {
 	var (
 		deposit                  sdk.Coin
-		expiryDuration           time.Duration
+		inactiveDuration         time.Duration
 		maxGigabytePrices        sdk.Coins
 		minGigabytePrices        sdk.Coins
 		maxHourlyPrices          sdk.Coins
@@ -41,11 +41,11 @@ func RandomizedGenesisState(state *module.SimulationState) *types.GenesisState {
 	)
 	state.AppParams.GetOrGenerate(
 		state.Cdc,
-		string(types.KeyExpiryDuration),
-		&expiryDuration,
+		string(types.KeyInactiveDuration),
+		&inactiveDuration,
 		state.Rand,
 		func(r *rand.Rand) {
-			expiryDuration = time.Duration(r.Int63n(MaxInt)) * time.Millisecond
+			inactiveDuration = time.Duration(r.Int63n(MaxInt)) * time.Millisecond
 		},
 	)
 	state.AppParams.GetOrGenerate(
@@ -120,7 +120,7 @@ func RandomizedGenesisState(state *module.SimulationState) *types.GenesisState {
 	return types.NewGenesisState(
 		RandomNodes(state.Rand, state.Accounts),
 		types.NewParams(
-			deposit, expiryDuration, maxGigabytePrices, minGigabytePrices,
+			deposit, inactiveDuration, maxGigabytePrices, minGigabytePrices,
 			maxHourlyPrices, minHourlyPrices, maxSubscriptionGigabytes, minSubscriptionGigabytes,
 			maxSubscriptionHours, minSubscriptionHours, revenueShare,
 		),

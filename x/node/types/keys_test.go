@@ -37,7 +37,7 @@ func TestActiveNodeKey(t *testing.T) {
 	}
 }
 
-func TestAddressFromNodeForExpiryAtKey(t *testing.T) {
+func TestAddressFromNodeForInactiveAtKey(t *testing.T) {
 	var (
 		at   = time.Now()
 		addr []byte
@@ -48,11 +48,11 @@ func TestAddressFromNodeForExpiryAtKey(t *testing.T) {
 		addr = make([]byte, i)
 		_, _ = rand.Read(addr)
 
-		key = NodeForExpiryAtKey(at, addr)
+		key = NodeForInactiveAtKey(at, addr)
 		require.Equal(
 			t,
 			hubtypes.NodeAddress(addr),
-			AddressFromNodeForExpiryAtKey(key),
+			AddressFromNodeForInactiveAtKey(key),
 		)
 	}
 }
@@ -101,7 +101,7 @@ func TestInactiveNodeKey(t *testing.T) {
 	}
 }
 
-func TestNodeForExpiryAtKey(t *testing.T) {
+func TestNodeForInactiveAtKey(t *testing.T) {
 	var (
 		at   = time.Now()
 		addr []byte
@@ -114,15 +114,15 @@ func TestNodeForExpiryAtKey(t *testing.T) {
 		if i < 256 {
 			require.Equal(
 				t,
-				append(append(NodeForExpiryAtKeyPrefix, sdk.FormatTimeBytes(at)...), address.MustLengthPrefix(addr)...),
-				NodeForExpiryAtKey(at, addr),
+				append(append(NodeForInactiveAtKeyPrefix, sdk.FormatTimeBytes(at)...), address.MustLengthPrefix(addr)...),
+				NodeForInactiveAtKey(at, addr),
 			)
 
 			continue
 		}
 
 		require.Panics(t, func() {
-			NodeForExpiryAtKey(at, addr)
+			NodeForInactiveAtKey(at, addr)
 		})
 	}
 }

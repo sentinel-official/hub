@@ -13,8 +13,8 @@ func (k *Keeper) Deposit(ctx sdk.Context) (v sdk.Coin) {
 	return
 }
 
-func (k *Keeper) ExpiryDuration(ctx sdk.Context) (v time.Duration) {
-	k.params.Get(ctx, types.KeyExpiryDuration, &v)
+func (k *Keeper) InactiveDuration(ctx sdk.Context) (v time.Duration) {
+	k.params.Get(ctx, types.KeyInactiveDuration, &v)
 	return
 }
 
@@ -70,7 +70,7 @@ func (k *Keeper) SetParams(ctx sdk.Context, params types.Params) {
 func (k *Keeper) GetParams(ctx sdk.Context) types.Params {
 	return types.NewParams(
 		k.Deposit(ctx),
-		k.ExpiryDuration(ctx),
+		k.InactiveDuration(ctx),
 		k.MaxGigabytePrices(ctx),
 		k.MinGigabytePrices(ctx),
 		k.MaxHourlyPrices(ctx),

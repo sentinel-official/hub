@@ -15,7 +15,7 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, state *types.GenesisState) {
 		k.SetNode(ctx, item)
 		if item.Status.Equal(hubtypes.StatusActive) {
 			addr := item.GetAddress()
-			k.SetNodeForExpiryAt(ctx, item.ExpiryAt, addr)
+			k.SetNodeForInactiveAt(ctx, item.InactiveAt, addr)
 		}
 	}
 }

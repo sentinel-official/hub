@@ -15,11 +15,11 @@ const (
 )
 
 var (
-	NodeKeyPrefix            = []byte{0x10}
-	ActiveNodeKeyPrefix      = append(NodeKeyPrefix, 0x01)
-	InactiveNodeKeyPrefix    = append(NodeKeyPrefix, 0x02)
-	NodeForExpiryAtKeyPrefix = []byte{0x11}
-	NodeForPlanKeyPrefix     = []byte{0x12}
+	NodeKeyPrefix              = []byte{0x10}
+	ActiveNodeKeyPrefix        = append(NodeKeyPrefix, 0x01)
+	InactiveNodeKeyPrefix      = append(NodeKeyPrefix, 0x02)
+	NodeForInactiveAtKeyPrefix = []byte{0x11}
+	NodeForPlanKeyPrefix       = []byte{0x12}
 )
 
 func ActiveNodeKey(addr hubtypes.NodeAddress) []byte {
@@ -38,12 +38,12 @@ func NodeForPlanKey(id uint64, addr hubtypes.NodeAddress) []byte {
 	return append(GetNodeForPlanKeyPrefix(id), address.MustLengthPrefix(addr.Bytes())...)
 }
 
-func GetNodeForExpiryAtKeyPrefix(at time.Time) []byte {
-	return append(NodeForExpiryAtKeyPrefix, sdk.FormatTimeBytes(at)...)
+func GetNodeForInactiveAtKeyPrefix(at time.Time) []byte {
+	return append(NodeForInactiveAtKeyPrefix, sdk.FormatTimeBytes(at)...)
 }
 
-func NodeForExpiryAtKey(at time.Time, addr hubtypes.NodeAddress) []byte {
-	return append(GetNodeForExpiryAtKeyPrefix(at), address.MustLengthPrefix(addr.Bytes())...)
+func NodeForInactiveAtKey(at time.Time, addr hubtypes.NodeAddress) []byte {
+	return append(GetNodeForInactiveAtKeyPrefix(at), address.MustLengthPrefix(addr.Bytes())...)
 }
 
 func AddressFromNodeForPlanKey(key []byte) hubtypes.NodeAddress {
@@ -57,7 +57,7 @@ func AddressFromNodeForPlanKey(key []byte) hubtypes.NodeAddress {
 	return key[10:]
 }
 
-func AddressFromNodeForExpiryAtKey(key []byte) hubtypes.NodeAddress {
+func AddressFromNodeForInactiveAtKey(key []byte) hubtypes.NodeAddress {
 	// prefix (1 byte) | at (29 bytes) | addrLen (1 byte) | addr (addrLen bytes)
 
 	addrLen := int(key[30])

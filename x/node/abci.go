@@ -102,12 +102,12 @@ func EndBlock(ctx sdk.Context, k keeper.Keeper) []abcitypes.ValidatorUpdate {
 		})
 	}
 
-	k.IterateNodesForExpiryAt(ctx, ctx.BlockTime(), func(_ int, item types.Node) bool {
+	k.IterateNodesForInactiveAt(ctx, ctx.BlockTime(), func(_ int, item types.Node) bool {
 		nodeAddr := item.GetAddress()
 		k.DeleteActiveNode(ctx, nodeAddr)
-		k.DeleteNodeForExpiryAt(ctx, item.ExpiryAt, nodeAddr)
+		k.DeleteNodeForInactiveAt(ctx, item.InactiveAt, nodeAddr)
 
-		item.ExpiryAt = time.Time{}
+		item.InactiveAt = time.Time{}
 		item.Status = hubtypes.StatusInactive
 		item.StatusAt = ctx.BlockTime()
 

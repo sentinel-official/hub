@@ -70,14 +70,14 @@ func (m *Node) Validate() error {
 		return fmt.Errorf("remote_url port cannot be empty")
 	}
 
-	if m.ExpiryAt.IsZero() {
+	if m.InactiveAt.IsZero() {
 		if !m.Status.Equal(hubtypes.StatusInactive) {
-			return fmt.Errorf("invalid expiry_at %s; expected positive", m.ExpiryAt)
+			return fmt.Errorf("invalid inactive_at %s; expected positive", m.InactiveAt)
 		}
 	}
-	if !m.ExpiryAt.IsZero() {
+	if !m.InactiveAt.IsZero() {
 		if !m.Status.Equal(hubtypes.StatusActive) {
-			return fmt.Errorf("invalid expiry_at %s; expected zero", m.ExpiryAt)
+			return fmt.Errorf("invalid inactive_at %s; expected zero", m.InactiveAt)
 		}
 	}
 	if !m.Status.IsOneOf(hubtypes.StatusActive, hubtypes.StatusInactive) {
