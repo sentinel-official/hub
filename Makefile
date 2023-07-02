@@ -19,11 +19,11 @@ benchmark:
 .PHONY: build
 build:
 	go build -mod=readonly -tags="${BUILD_TAGS}" -ldflags="${LD_FLAGS}" -trimpath \
-		-o ./bin/sentinelhub ./cmd/sentinelhub
+		-o ./build/sentinelhub ./cmd/sentinelhub
 
 .PHONY: clean
 clean:
-	rm -rf ./bin ./vendor ./coverage.txt
+	rm -rf ./build ./vendor ./coverage.txt
 
 .PHONE: default
 default: build

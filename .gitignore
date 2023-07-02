@@ -1,5 +1,5 @@
 .DS_Store*
 /.idea/
 /vendor/
-/bin/
+/build/
 /coverage.txt
