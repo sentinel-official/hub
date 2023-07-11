@@ -21,6 +21,8 @@ func BeginBlock(ctx sdk.Context, k keeper.Keeper) {
 			nodeAddr = item.GetNodeAddress()
 		)
 
+		// TODO: Revenue
+
 		if err := k.SendCoinFromDepositToAccount(ctx, accAddr, nodeAddr.Bytes(), item.Price); err != nil {
 			panic(err)
 		}
@@ -104,6 +106,15 @@ func EndBlock(ctx sdk.Context, k keeper.Keeper) []abcitypes.ValidatorUpdate {
 				Status: hubtypes.StatusInactive,
 			},
 		)
+
+		payout, found := k.GetPayout(ctx, item.GetID())
+		if !found {
+			return false
+		}
+
+		k.DeletePayout(ctx, payout.ID)
+		k.DeletePayoutForAccount(ctx, payout.GetAddress(), payout.ID)
+		k.DeletePayoutForNode(ctx, payout.GetNodeAddress(), payout.ID)
 
 		return false
 	})
