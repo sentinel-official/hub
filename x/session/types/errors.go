@@ -44,8 +44,8 @@ func NewErrorAllocationNotFound(id uint64, addr sdk.AccAddress) error {
 	return errors.Wrapf(ErrorNotFound, "subscription allocation %d/%s does not exist", id, addr)
 }
 
-func NewErrorDuplicateSession(subscriptionID uint64, addr sdk.AccAddress, sessionID uint64) error {
-	return errors.Wrapf(ErrorDuplicate, "session %d already exist for subscription allocation %d/%s", sessionID, subscriptionID, addr)
+func NewErrorDuplicateActiveSession(subscriptionID uint64, addr sdk.AccAddress, sessionID uint64) error {
+	return errors.Wrapf(ErrorDuplicate, "active session %d already exist for subscription allocation %d/%s", sessionID, subscriptionID, addr)
 }
 
 func NewErrorInvalidAllocation(id uint64, addr sdk.AccAddress) error {

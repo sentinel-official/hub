@@ -72,7 +72,8 @@ func (k *msgServer) MsgUpdateStatus(c context.Context, msg *types.MsgUpdateStatu
 		if msg.Status.Equal(hubtypes.StatusInactive) {
 			k.DeleteActivePlan(ctx, plan.ID)
 		}
-	} else {
+	}
+	if plan.Status.Equal(hubtypes.StatusInactive) {
 		if msg.Status.Equal(hubtypes.StatusActive) {
 			k.DeleteInactivePlan(ctx, plan.ID)
 		}

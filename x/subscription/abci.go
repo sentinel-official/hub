@@ -94,7 +94,7 @@ func EndBlock(ctx sdk.Context, k keeper.Keeper) []abcitypes.ValidatorUpdate {
 		case *types.PlanSubscription:
 			k.DeleteSubscriptionForPlan(ctx, s.PlanID, s.GetID())
 		default:
-			panic(fmt.Errorf("invalid type %T for the subscription %d", item, item.GetID()))
+			panic(fmt.Errorf("invalid subscription %d with type %T", item.GetID(), item))
 		}
 
 		k.DeleteSubscription(ctx, item.GetID())

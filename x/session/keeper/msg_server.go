@@ -64,18 +64,9 @@ func (k *msgServer) MsgStart(c context.Context, msg *types.MsgStartRequest) (*ty
 		return nil, err
 	}
 
-	var id uint64
-	k.IterateSessionsForAllocation(ctx, subscription.GetID(), accAddr, func(_ int, item types.Session) bool {
-		if item.Status.Equal(hubtypes.StatusActive) {
-			id = item.ID
-			return true
-		}
-
-		return false
-	})
-
-	if id != 0 {
-		return nil, types.NewErrorDuplicateSession(subscription.GetID(), accAddr, id)
+	session, found := k.GetActiveSessionForAllocation(ctx, subscription.GetID(), accAddr)
+	if found {
+		return nil, types.NewErrorDuplicateActiveSession(subscription.GetID(), accAddr, session.ID)
 	}
 
 	alloc, found := k.GetAllocation(ctx, subscription.GetID(), accAddr)
@@ -86,22 +77,20 @@ func (k *msgServer) MsgStart(c context.Context, msg *types.MsgStartRequest) (*ty
 		return nil, types.NewErrorInvalidAllocation(subscription.GetID(), accAddr)
 	}
 
-	var (
-		count   = k.GetCount(ctx)
-		session = types.Session{
-			ID:             count + 1,
-			SubscriptionID: subscription.GetID(),
-			NodeAddress:    nodeAddr.String(),
-			Address:        accAddr.String(),
-			Bandwidth:      hubtypes.NewBandwidthFromInt64(0, 0),
-			Duration:       0,
-			ExpiryAt: ctx.BlockTime().Add(
-				k.InactiveDuration(ctx),
-			),
-			Status:   hubtypes.StatusActive,
-			StatusAt: ctx.BlockTime(),
-		}
-	)
+	count := k.GetCount(ctx)
+	session = types.Session{
+		ID:             count + 1,
+		SubscriptionID: subscription.GetID(),
+		NodeAddress:    nodeAddr.String(),
+		Address:        accAddr.String(),
+		Bandwidth:      hubtypes.NewBandwidthFromInt64(0, 0),
+		Duration:       0,
+		ExpiryAt: ctx.BlockTime().Add(
+			k.InactiveDuration(ctx),
+		),
+		Status:   hubtypes.StatusActive,
+		StatusAt: ctx.BlockTime(),
+	}
 
 	k.SetCount(ctx, count+1)
 	k.SetSession(ctx, session)
