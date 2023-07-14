@@ -34,4 +34,5 @@ type SubscriptionKeeper interface {
 	GetAllocation(ctx sdk.Context, id uint64, addr sdk.AccAddress) (subscriptiontypes.Allocation, bool)
 	SetAllocation(ctx sdk.Context, alloc subscriptiontypes.Allocation)
 	GetSubscription(ctx sdk.Context, id uint64) (subscriptiontypes.Subscription, bool)
+	HookEndSession(ctx sdk.Context, subscriptionID uint64, accAddr sdk.AccAddress, nodeAddr hubtypes.NodeAddress, bytes sdk.Int) error
 }
