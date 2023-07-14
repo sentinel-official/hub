@@ -283,7 +283,7 @@ func (k *Keeper) CreateSubscriptionForNode(ctx sdk.Context, accAddr sdk.AccAddre
 		subscription.ExpiryAt = ctx.BlockTime().Add(types.Year) // TODO: move to params
 		subscription.Deposit = sdk.NewCoin(
 			price.Denom,
-			price.Amount.MulRaw(gigabytes),
+			hubtypes.AmountForBytes(price.Amount, hubtypes.Gigabyte.MulRaw(gigabytes)),
 		)
 	}
 	if hours != 0 {

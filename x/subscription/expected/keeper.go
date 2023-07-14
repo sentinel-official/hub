@@ -26,6 +26,7 @@ type DepositKeeper interface {
 	Add(ctx sdk.Context, address sdk.AccAddress, coins sdk.Coins) error
 	Subtract(ctx sdk.Context, address sdk.AccAddress, coins sdk.Coins) error
 	SendCoinsFromDepositToAccount(ctx sdk.Context, fromAddr, toAddr sdk.AccAddress, coins sdk.Coins) error
+	SendCoinsFromDepositToModule(ctx sdk.Context, fromAddr sdk.AccAddress, toModule string, coins sdk.Coins) error
 }
 
 type ProviderKeeper interface {
@@ -33,6 +34,7 @@ type ProviderKeeper interface {
 }
 
 type NodeKeeper interface {
+	RevenueShare(ctx sdk.Context) sdk.Dec
 	GetNode(ctx sdk.Context, addr hubtypes.NodeAddress) (nodetypes.Node, bool)
 }
 

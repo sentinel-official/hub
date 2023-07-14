@@ -39,8 +39,7 @@ func EndBlock(ctx sdk.Context, k keeper.Keeper) []abcitypes.ValidatorUpdate {
 			nodeAddr = item.GetNodeAddress()
 		)
 
-		// TODO: Update bandwidth allocation
-		// TODO: Process payment to node
+		// TODO: call EndSessionHook
 
 		k.DeleteSession(ctx, item.ID)
 		k.DeleteSessionForAccount(ctx, accAddr, item.ID)

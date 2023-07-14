@@ -48,6 +48,14 @@ func (k *Keeper) SendCoinFromDepositToAccount(ctx sdk.Context, fromAddr, toAddr 
 	return k.deposit.SendCoinsFromDepositToAccount(ctx, fromAddr, toAddr, sdk.NewCoins(coin))
 }
 
+func (k *Keeper) SendCoinFromDepositToModule(ctx sdk.Context, fromAddr sdk.AccAddress, toModule string, coin sdk.Coin) error {
+	if coin.IsZero() {
+		return nil
+	}
+
+	return k.deposit.SendCoinsFromDepositToModule(ctx, fromAddr, toModule, sdk.NewCoins(coin))
+}
+
 func (k *Keeper) GetNode(ctx sdk.Context, address hubtypes.NodeAddress) (nodetypes.Node, bool) {
 	return k.node.GetNode(ctx, address)
 }
