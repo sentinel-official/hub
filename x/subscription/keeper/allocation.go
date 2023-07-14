@@ -130,15 +130,15 @@ func (k *Keeper) HookEndSession(ctx sdk.Context, id uint64, accAddr sdk.AccAddre
 	}
 
 	var (
-		share  = k.node.RevenueShare(ctx)
-		cost   = sdk.NewCoin(gigabytePrice.Denom, currentAmount.Sub(previousAmount))
-		reward = hubutils.GetProportionOfCoin(cost, share)
+		payment       = sdk.NewCoin(gigabytePrice.Denom, currentAmount.Sub(previousAmount))
+		stakingShare  = k.node.StakingShare(ctx)
+		stakingReward = hubutils.GetProportionOfCoin(payment, stakingShare)
 	)
 
-	if err := k.SendCoinFromDepositToModule(ctx, accAddr, k.feeCollectorName, reward); err != nil {
+	if err := k.SendCoinFromDepositToModule(ctx, accAddr, k.feeCollectorName, stakingReward); err != nil {
 		return err
 	}
 
-	amount := cost.Sub(reward)
-	return k.SendCoinFromDepositToAccount(ctx, accAddr, nodeAddr.Bytes(), amount)
+	payment = payment.Sub(stakingReward)
+	return k.SendCoinFromDepositToAccount(ctx, accAddr, nodeAddr.Bytes(), payment)
 }

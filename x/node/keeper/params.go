@@ -58,8 +58,8 @@ func (k *Keeper) MinSubscriptionHours(ctx sdk.Context) (v int64) {
 	return
 }
 
-func (k *Keeper) RevenueShare(ctx sdk.Context) (v sdk.Dec) {
-	k.params.Get(ctx, types.KeyRevenueShare, &v)
+func (k *Keeper) StakingShare(ctx sdk.Context) (v sdk.Dec) {
+	k.params.Get(ctx, types.KeyStakingShare, &v)
 	return
 }
 
@@ -79,7 +79,7 @@ func (k *Keeper) GetParams(ctx sdk.Context) types.Params {
 		k.MinSubscriptionGigabytes(ctx),
 		k.MaxSubscriptionHours(ctx),
 		k.MinSubscriptionHours(ctx),
-		k.RevenueShare(ctx),
+		k.StakingShare(ctx),
 	)
 }
 

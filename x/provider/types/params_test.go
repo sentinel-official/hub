@@ -9,7 +9,7 @@ import (
 func TestParams_Validate(t *testing.T) {
 	type fields struct {
 		Deposit      sdk.Coin
-		RevenueShare sdk.Dec
+		StakingShare sdk.Dec
 	}
 	tests := []struct {
 		name    string
@@ -48,7 +48,7 @@ func TestParams_Validate(t *testing.T) {
 			"zero amount deposit",
 			fields{
 				Deposit:      sdk.Coin{Denom: "one", Amount: sdk.NewInt(0)},
-				RevenueShare: sdk.NewDec(0),
+				StakingShare: sdk.NewDec(0),
 			},
 			false,
 		},
@@ -56,55 +56,55 @@ func TestParams_Validate(t *testing.T) {
 			"positive amount deposit",
 			fields{
 				Deposit:      sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)},
-				RevenueShare: sdk.NewDec(0),
+				StakingShare: sdk.NewDec(0),
 			},
 			false,
 		},
 		{
-			"empty revenue share",
+			"empty staking share",
 			fields{
 				Deposit:      sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)},
-				RevenueShare: sdk.Dec{},
+				StakingShare: sdk.Dec{},
 			},
 			true,
 		},
 		{
-			"less than 0 revenue share",
+			"less than 0 staking share",
 			fields{
 				Deposit:      sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)},
-				RevenueShare: sdk.NewDec(-1),
+				StakingShare: sdk.NewDec(-1),
 			},
 			true,
 		},
 		{
-			"equals to 0 revenue share",
+			"equals to 0 staking share",
 			fields{
 				Deposit:      sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)},
-				RevenueShare: sdk.NewDec(0),
+				StakingShare: sdk.NewDec(0),
 			},
 			false,
 		},
 		{
-			"less than 1 revenue share",
+			"less than 1 staking share",
 			fields{
 				Deposit:      sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)},
-				RevenueShare: sdk.NewDecWithPrec(1, 1),
+				StakingShare: sdk.NewDecWithPrec(1, 1),
 			},
 			false,
 		},
 		{
-			"equals to 1 revenue share",
+			"equals to 1 staking share",
 			fields{
 				Deposit:      sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)},
-				RevenueShare: sdk.NewDec(1),
+				StakingShare: sdk.NewDec(1),
 			},
 			false,
 		},
 		{
-			"greater than 1 revenue share",
+			"greater than 1 staking share",
 			fields{
 				Deposit:      sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)},
-				RevenueShare: sdk.NewDec(2),
+				StakingShare: sdk.NewDec(2),
 			},
 			true,
 		},
@@ -113,7 +113,7 @@ func TestParams_Validate(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			p := &Params{
 				Deposit:      tt.fields.Deposit,
-				RevenueShare: tt.fields.RevenueShare,
+				StakingShare: tt.fields.StakingShare,
 			}
 			if err := p.Validate(); (err != nil) != tt.wantErr {
 				t.Errorf("Validate() error = %v, wantErr %v", err, tt.wantErr)

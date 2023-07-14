@@ -14,7 +14,7 @@ import (
 
 const (
 	MaxDeposit      = 1 << 8
-	MaxRevenueShare = 1 << 8
+	MaxStakingShare = 1 << 8
 )
 
 func ParamChanges(_ *rand.Rand) []simtypes.ParamChange {
@@ -31,10 +31,10 @@ func ParamChanges(_ *rand.Rand) []simtypes.ParamChange {
 		),
 		simulation.NewSimParamChange(
 			types.ModuleName,
-			string(types.KeyRevenueShare),
+			string(types.KeyStakingShare),
 			func(r *rand.Rand) string {
 				return sdk.NewDecWithPrec(
-					r.Int63n(MaxRevenueShare),
+					r.Int63n(MaxStakingShare),
 					6,
 				).String()
 			},

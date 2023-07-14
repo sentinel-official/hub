@@ -33,7 +33,7 @@ message Params {
   int64 min_subscription_gigabytes = 8;
   int64 max_subscription_hours     = 9;
   int64 min_subscription_hours     = 10;
-  string revenue_share             = 11 [
+  string staking_share             = 11 [
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
     (gogoproto.nullable)   = false
   ];

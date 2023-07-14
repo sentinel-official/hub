@@ -30,11 +30,11 @@ type DepositKeeper interface {
 }
 
 type ProviderKeeper interface {
-	RevenueShare(ctx sdk.Context) sdk.Dec
+	StakingShare(ctx sdk.Context) sdk.Dec
 }
 
 type NodeKeeper interface {
-	RevenueShare(ctx sdk.Context) sdk.Dec
+	StakingShare(ctx sdk.Context) sdk.Dec
 	GetNode(ctx sdk.Context, addr hubtypes.NodeAddress) (nodetypes.Node, bool)
 }
 

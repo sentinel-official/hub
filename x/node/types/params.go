@@ -19,7 +19,7 @@ var (
 	DefaultMinSubscriptionGigabytes int64 = 1
 	DefaultMaxSubscriptionHours     int64 = 10
 	DefaultMinSubscriptionHours     int64 = 1
-	DefaultRevenueShare                   = sdk.NewDecWithPrec(1, 1)
+	DefaultStakingShare                   = sdk.NewDecWithPrec(1, 1)
 )
 
 var (
@@ -33,7 +33,7 @@ var (
 	KeyMinSubscriptionGigabytes = []byte("MinSubscriptionGigabytes")
 	KeyMaxSubscriptionHours     = []byte("MaxSubscriptionHours")
 	KeyMinSubscriptionHours     = []byte("MinSubscriptionHours")
-	KeyRevenueShare             = []byte("RevenueShare")
+	KeyStakingShare             = []byte("StakingShare")
 )
 
 var (
@@ -71,7 +71,7 @@ func (m *Params) Validate() error {
 	if err := validateMinSubscriptionHours(m.MinSubscriptionHours); err != nil {
 		return err
 	}
-	if err := validateRevenueShare(m.RevenueShare); err != nil {
+	if err := validateStakingShare(m.StakingShare); err != nil {
 		return err
 	}
 
@@ -131,9 +131,9 @@ func (m *Params) ParamSetPairs() params.ParamSetPairs {
 			ValidatorFn: validateMinSubscriptionHours,
 		},
 		{
-			Key:         KeyRevenueShare,
-			Value:       &m.RevenueShare,
-			ValidatorFn: validateRevenueShare,
+			Key:         KeyStakingShare,
+			Value:       &m.StakingShare,
+			ValidatorFn: validateStakingShare,
 		},
 	}
 }
@@ -141,7 +141,7 @@ func (m *Params) ParamSetPairs() params.ParamSetPairs {
 func NewParams(
 	deposit sdk.Coin, inactiveDuration time.Duration, maxGigabytePrices, minGigabytePrices,
 	maxHourlyPrices, minHourlyPrices sdk.Coins, maxSubscriptionGigabytes, minSubscriptionGigabytes int64,
-	maxSubscriptionHours, minSubscriptionHours int64, revenueShare sdk.Dec,
+	maxSubscriptionHours, minSubscriptionHours int64, stakingShare sdk.Dec,
 ) Params {
 	return Params{
 		Deposit:                  deposit,
@@ -154,7 +154,7 @@ func NewParams(
 		MinSubscriptionGigabytes: minSubscriptionGigabytes,
 		MaxSubscriptionHours:     maxSubscriptionHours,
 		MinSubscriptionHours:     minSubscriptionHours,
-		RevenueShare:             revenueShare,
+		StakingShare:             stakingShare,
 	}
 }
 
@@ -170,7 +170,7 @@ func DefaultParams() Params {
 		DefaultMinSubscriptionGigabytes,
 		DefaultMaxSubscriptionHours,
 		DefaultMinSubscriptionHours,
-		DefaultRevenueShare,
+		DefaultStakingShare,
 	)
 }
 
@@ -341,20 +341,20 @@ func validateMinSubscriptionHours(v interface{}) error {
 	return nil
 }
 
-func validateRevenueShare(v interface{}) error {
+func validateStakingShare(v interface{}) error {
 	value, ok := v.(sdk.Dec)
 	if !ok {
 		return fmt.Errorf("invalid parameter type %T", v)
 	}
 
 	if value.IsNil() {
-		return fmt.Errorf("revenue_share cannot be nil")
+		return fmt.Errorf("staking_share cannot be nil")
 	}
 	if value.IsNegative() {
-		return fmt.Errorf("revenue_share cannot be negative")
+		return fmt.Errorf("staking_share cannot be negative")
 	}
 	if value.GT(sdk.OneDec()) {
-		return fmt.Errorf("revenue_share cannot be greater than 1")
+		return fmt.Errorf("staking_share cannot be greater than 1")
 	}
 
 	return nil

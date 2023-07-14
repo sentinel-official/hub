@@ -382,20 +382,20 @@ func (k *Keeper) CreateSubscriptionForPlan(ctx sdk.Context, accAddr sdk.AccAddre
 	}
 
 	var (
-		share  = k.provider.RevenueShare(ctx)
-		reward = hubutils.GetProportionOfCoin(price, share)
+		stakingShare  = k.provider.StakingShare(ctx)
+		stakingReward = hubutils.GetProportionOfCoin(price, stakingShare)
 	)
 
-	if err := k.SendCoinFromAccountToModule(ctx, accAddr, k.feeCollectorName, reward); err != nil {
+	if err := k.SendCoinFromAccountToModule(ctx, accAddr, k.feeCollectorName, stakingReward); err != nil {
 		return nil, err
 	}
 
 	var (
 		provAddr = plan.GetAddress()
-		amount   = price.Sub(reward)
+		payment  = price.Sub(stakingReward)
 	)
 
-	if err := k.SendCoin(ctx, accAddr, provAddr.Bytes(), amount); err != nil {
+	if err := k.SendCoin(ctx, accAddr, provAddr.Bytes(), payment); err != nil {
 		return nil, err
 	}
 

@@ -9,12 +9,12 @@ import (
 
 var (
 	DefaultDeposit      = sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(1000))
-	DefaultRevenueShare = sdk.NewDecWithPrec(1, 1)
+	DefaultStakingShare = sdk.NewDecWithPrec(1, 1)
 )
 
 var (
 	KeyDeposit      = []byte("Deposit")
-	KeyRevenueShare = []byte("RevenueShare")
+	KeyStakingShare = []byte("StakingShare")
 )
 
 var (
@@ -25,7 +25,7 @@ func (m *Params) Validate() error {
 	if err := validateDeposit(m.Deposit); err != nil {
 		return err
 	}
-	if err := validateRevenueShare(m.RevenueShare); err != nil {
+	if err := validateStakingShare(m.StakingShare); err != nil {
 		return err
 	}
 
@@ -40,24 +40,24 @@ func (m *Params) ParamSetPairs() params.ParamSetPairs {
 			ValidatorFn: validateDeposit,
 		},
 		{
-			Key:         KeyRevenueShare,
-			Value:       &m.RevenueShare,
-			ValidatorFn: validateRevenueShare,
+			Key:         KeyStakingShare,
+			Value:       &m.StakingShare,
+			ValidatorFn: validateStakingShare,
 		},
 	}
 }
 
-func NewParams(deposit sdk.Coin, revenueShare sdk.Dec) Params {
+func NewParams(deposit sdk.Coin, stakingShare sdk.Dec) Params {
 	return Params{
 		Deposit:      deposit,
-		RevenueShare: revenueShare,
+		StakingShare: stakingShare,
 	}
 }
 
 func DefaultParams() Params {
 	return Params{
 		Deposit:      DefaultDeposit,
-		RevenueShare: DefaultRevenueShare,
+		StakingShare: DefaultStakingShare,
 	}
 }
 
@@ -84,20 +84,20 @@ func validateDeposit(v interface{}) error {
 	return nil
 }
 
-func validateRevenueShare(v interface{}) error {
+func validateStakingShare(v interface{}) error {
 	value, ok := v.(sdk.Dec)
 	if !ok {
 		return fmt.Errorf("invalid parameter type %T", v)
 	}
 
 	if value.IsNil() {
-		return fmt.Errorf("revenue_share cannot be nil")
+		return fmt.Errorf("staking_share cannot be nil")
 	}
 	if value.IsNegative() {
-		return fmt.Errorf("revenue_share cannot be negative")
+		return fmt.Errorf("staking_share cannot be negative")
 	}
 	if value.GT(sdk.OneDec()) {
-		return fmt.Errorf("revenue_share cannot be greater than 1")
+		return fmt.Errorf("staking_share cannot be greater than 1")
 	}
 
 	return nil

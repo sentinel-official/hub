@@ -21,7 +21,7 @@ func BeginBlock(ctx sdk.Context, k keeper.Keeper) {
 			nodeAddr = item.GetNodeAddress()
 		)
 
-		// TODO: Revenue
+		// TODO: Staking
 
 		if err := k.SendCoinFromDepositToAccount(ctx, accAddr, nodeAddr.Bytes(), item.Price); err != nil {
 			panic(err)

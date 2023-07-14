@@ -90,7 +90,7 @@ func ParamChanges(_ *rand.Rand) []simtypes.ParamChange {
 		),
 		simulation.NewSimParamChange(
 			types.ModuleName,
-			string(types.KeyRevenueShare),
+			string(types.KeyStakingShare),
 			func(r *rand.Rand) string {
 				return sdk.NewDecWithPrec(
 					MaxInt,
