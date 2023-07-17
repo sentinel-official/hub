@@ -35,13 +35,13 @@ func (k *msgServer) MsgCreate(c context.Context, msg *types.MsgCreateRequest) (*
 	var (
 		count = k.GetCount(ctx)
 		plan  = types.Plan{
-			ID:       count + 1,
-			Address:  provAddr.String(),
-			Bytes:    msg.Bytes,
-			Duration: msg.Duration,
-			Prices:   msg.Prices,
-			Status:   hubtypes.StatusInactive,
-			StatusAt: ctx.BlockTime(),
+			ID:        count + 1,
+			Address:   provAddr.String(),
+			Duration:  msg.Duration,
+			Gigabytes: msg.Gigabytes,
+			Prices:    msg.Prices,
+			Status:    hubtypes.StatusInactive,
+			StatusAt:  ctx.BlockTime(),
 		}
 	)
 

@@ -11,10 +11,10 @@ import (
 
 func TestMsgCreateRequest_ValidateBasic(t *testing.T) {
 	type fields struct {
-		From     string
-		Bytes    sdk.Int
-		Duration time.Duration
-		Prices   sdk.Coins
+		From      string
+		Duration  time.Duration
+		Gigabytes int64
+		Prices    sdk.Coins
 	}
 	tests := []struct {
 		name    string
@@ -45,60 +45,27 @@ func TestMsgCreateRequest_ValidateBasic(t *testing.T) {
 		{
 			"from 10 bytes",
 			fields{
-				From:     hubtypes.TestBech32ProvAddr10Bytes,
-				Bytes:    sdk.NewInt(1000),
-				Duration: 1000,
+				From:      hubtypes.TestBech32ProvAddr10Bytes,
+				Duration:  1000,
+				Gigabytes: 1000,
 			},
 			false,
 		},
 		{
 			"from 20 bytes",
 			fields{
-				From:     hubtypes.TestBech32ProvAddr20Bytes,
-				Bytes:    sdk.NewInt(1000),
-				Duration: 1000,
+				From:      hubtypes.TestBech32ProvAddr20Bytes,
+				Duration:  1000,
+				Gigabytes: 1000,
 			},
 			false,
 		},
 		{
 			"from 30 bytes",
 			fields{
-				From:     hubtypes.TestBech32ProvAddr30Bytes,
-				Bytes:    sdk.NewInt(1000),
-				Duration: 1000,
-			},
-			false,
-		},
-		{
-			"bytes empty",
-			fields{
-				From:  hubtypes.TestBech32ProvAddr20Bytes,
-				Bytes: sdk.Int{},
-			},
-			true,
-		},
-		{
-			"bytes negative",
-			fields{
-				From:  hubtypes.TestBech32ProvAddr20Bytes,
-				Bytes: sdk.NewInt(-1000),
-			},
-			true,
-		},
-		{
-			"bytes zero",
-			fields{
-				From:  hubtypes.TestBech32ProvAddr20Bytes,
-				Bytes: sdk.NewInt(0),
-			},
-			true,
-		},
-		{
-			"bytes positive",
-			fields{
-				From:     hubtypes.TestBech32ProvAddr20Bytes,
-				Bytes:    sdk.NewInt(1000),
-				Duration: 1000,
+				From:      hubtypes.TestBech32ProvAddr30Bytes,
+				Duration:  1000,
+				Gigabytes: 1000,
 			},
 			false,
 		},
@@ -106,7 +73,6 @@ func TestMsgCreateRequest_ValidateBasic(t *testing.T) {
 			"duration negative",
 			fields{
 				From:     hubtypes.TestBech32ProvAddr20Bytes,
-				Bytes:    sdk.NewInt(1000),
 				Duration: -1000,
 			},
 			true,
@@ -115,7 +81,6 @@ func TestMsgCreateRequest_ValidateBasic(t *testing.T) {
 			"duration zero",
 			fields{
 				From:     hubtypes.TestBech32ProvAddr20Bytes,
-				Bytes:    sdk.NewInt(1000),
 				Duration: 0,
 			},
 			true,
@@ -123,89 +88,116 @@ func TestMsgCreateRequest_ValidateBasic(t *testing.T) {
 		{
 			"duration positive",
 			fields{
-				From:     hubtypes.TestBech32ProvAddr20Bytes,
-				Bytes:    sdk.NewInt(1000),
-				Duration: 1000,
+				From:      hubtypes.TestBech32ProvAddr20Bytes,
+				Duration:  1000,
+				Gigabytes: 1000,
+			},
+			false,
+		},
+		{
+			"gigabytes negative",
+			fields{
+				From:      hubtypes.TestBech32ProvAddr20Bytes,
+				Duration:  1000,
+				Gigabytes: -1000,
+			},
+			true,
+		},
+		{
+			"gigabytes zero",
+			fields{
+				From:      hubtypes.TestBech32ProvAddr20Bytes,
+				Duration:  1000,
+				Gigabytes: 0,
+			},
+			true,
+		},
+		{
+			"gigabytes positive",
+			fields{
+				From:      hubtypes.TestBech32ProvAddr20Bytes,
+				Duration:  1000,
+				Gigabytes: 1000,
 			},
 			false,
 		},
 		{
 			"prices nil",
 			fields{
-				From:     hubtypes.TestBech32ProvAddr20Bytes,
-				Bytes:    sdk.NewInt(1000),
-				Duration: 1000,
-				Prices:   nil,
+				From:      hubtypes.TestBech32ProvAddr20Bytes,
+				Duration:  1000,
+				Gigabytes: 1000,
+				Prices:    nil,
 			},
 			false,
 		},
 		{
 			"prices empty",
 			fields{
-				From:     hubtypes.TestBech32ProvAddr20Bytes,
-				Bytes:    sdk.NewInt(1000),
-				Duration: 1000,
-				Prices:   sdk.Coins{},
+				From:      hubtypes.TestBech32ProvAddr20Bytes,
+				Duration:  1000,
+				Gigabytes: 1000,
+				Prices:    sdk.Coins{},
 			},
 			true,
 		},
 		{
 			"prices empty denom",
 			fields{
-				From:     hubtypes.TestBech32ProvAddr20Bytes,
-				Bytes:    sdk.NewInt(1000),
-				Duration: 1000,
-				Prices:   sdk.Coins{sdk.Coin{Denom: "", Amount: sdk.NewInt(1000)}},
+				From:      hubtypes.TestBech32ProvAddr20Bytes,
+				Duration:  1000,
+				Gigabytes: 1000,
+				Prices:    sdk.Coins{sdk.Coin{Denom: "", Amount: sdk.NewInt(1000)}},
 			},
 			true,
 		},
 		{
 			"prices empty amount",
 			fields{
-				From:     hubtypes.TestBech32ProvAddr20Bytes,
-				Bytes:    sdk.NewInt(1000),
-				Duration: 1000,
-				Prices:   sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.Int{}}},
+				From:      hubtypes.TestBech32ProvAddr20Bytes,
+				Duration:  1000,
+				Gigabytes: 1000,
+				Prices:    sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.Int{}}},
 			},
 			true,
 		},
 		{
 			"prices invalid denom",
 			fields{
-				From:     hubtypes.TestBech32ProvAddr20Bytes,
-				Bytes:    sdk.NewInt(1000),
-				Duration: 1000,
-				Prices:   sdk.Coins{sdk.Coin{Denom: "o", Amount: sdk.NewInt(1000)}},
+				From:      hubtypes.TestBech32ProvAddr20Bytes,
+				Duration:  1000,
+				Gigabytes: 1000,
+				Prices:    sdk.Coins{sdk.Coin{Denom: "o", Amount: sdk.NewInt(1000)}},
 			},
 			true,
 		},
 		{
 			"prices negative amount",
 			fields{
-				From:     hubtypes.TestBech32ProvAddr20Bytes,
-				Bytes:    sdk.NewInt(1000),
-				Duration: 1000,
-				Prices:   sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(-1000)}},
+				From:      hubtypes.TestBech32ProvAddr20Bytes,
+				Duration:  1000,
+				Gigabytes: 1000,
+				Prices:    sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(-1000)}},
 			},
 			true,
 		},
 		{
 			"prices zero amount",
 			fields{
-				From:     hubtypes.TestBech32ProvAddr20Bytes,
-				Bytes:    sdk.NewInt(1000),
-				Duration: 1000,
-				Prices:   sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(0)}},
+				From:      hubtypes.TestBech32ProvAddr20Bytes,
+				Duration:  1000,
+				Gigabytes: 1000,
+				Prices:    sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(0)}},
 			},
 			true,
 		},
 		{
 			"prices positive amount",
 			fields{
-				From:     hubtypes.TestBech32ProvAddr20Bytes,
-				Bytes:    sdk.NewInt(1000),
-				Duration: 1000,
-				Prices:   sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
+				From:      hubtypes.TestBech32ProvAddr20Bytes,
+				Duration:  1000,
+				Gigabytes: 1000,
+				Prices:    sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
 			},
 			false,
 		},
@@ -213,10 +205,10 @@ func TestMsgCreateRequest_ValidateBasic(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			m := &MsgCreateRequest{
-				From:     tt.fields.From,
-				Bytes:    tt.fields.Bytes,
-				Duration: tt.fields.Duration,
-				Prices:   tt.fields.Prices,
+				From:      tt.fields.From,
+				Duration:  tt.fields.Duration,
+				Gigabytes: tt.fields.Gigabytes,
+				Prices:    tt.fields.Prices,
 			}
 			if err := m.ValidateBasic(); (err != nil) != tt.wantErr {
 				t.Errorf("ValidateBasic() error = %v, wantErr %v", err, tt.wantErr)

@@ -13,14 +13,11 @@ option (gogoproto.equal_all)           = false;
 option (gogoproto.goproto_getters_all) = false;
 
 message Plan {
-  uint64 id      = 1 [ (gogoproto.customname) = "ID" ];
-  string address = 2;
-  string bytes   = 3 [
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
-    (gogoproto.nullable)   = false
-  ];
-  google.protobuf.Duration duration = 4
+  uint64 id                         = 1 [ (gogoproto.customname) = "ID" ];
+  string address                    = 2;
+  google.protobuf.Duration duration = 3
       [ (gogoproto.nullable) = false, (gogoproto.stdduration) = true ];
+  int64 gigabytes                          = 4;
   repeated cosmos.base.v1beta1.Coin prices = 5 [
     (gogoproto.nullable)     = false,
     (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"

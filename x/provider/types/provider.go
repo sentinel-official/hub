@@ -38,10 +38,10 @@ func (m *Provider) Validate() error {
 	if len(m.Identity) > 64 {
 		return fmt.Errorf("identity length cannot be greater than %d chars", 64)
 	}
+	if len(m.Website) > 64 {
+		return fmt.Errorf("website length cannot be greater than %d chars", 64)
+	}
 	if m.Website != "" {
-		if len(m.Website) > 64 {
-			return fmt.Errorf("website length cannot be greater than %d chars", 64)
-		}
 		if _, err := url.ParseRequestURI(m.Website); err != nil {
 			return errors.Wrapf(err, "invalid website %s", m.Website)
 		}

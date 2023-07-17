@@ -46,20 +46,17 @@ func (m *Plan) Validate() error {
 	if _, err := hubtypes.ProvAddressFromBech32(m.Address); err != nil {
 		return errors.Wrapf(err, "invalid address %s", m.Address)
 	}
-	if m.Bytes.IsNil() {
-		return fmt.Errorf("bytes cannot be empty")
-	}
-	if m.Bytes.IsNegative() {
-		return fmt.Errorf("bytes cannot be negative")
-	}
-	if m.Bytes.IsZero() {
-		return fmt.Errorf("bytes cannot be zero")
-	}
 	if m.Duration < 0 {
 		return fmt.Errorf("duration cannot be negative")
 	}
 	if m.Duration == 0 {
 		return fmt.Errorf("duration cannot be zero")
+	}
+	if m.Gigabytes < 0 {
+		return fmt.Errorf("gigabytes cannot be negative")
+	}
+	if m.Gigabytes == 0 {
+		return fmt.Errorf("gigabytes cannot be zero")
 	}
 	if m.Prices != nil {
 		if m.Prices.Len() == 0 {

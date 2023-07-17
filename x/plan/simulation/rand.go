@@ -34,9 +34,9 @@ func RandomPlans(r *rand.Rand) types.Plans {
 		}
 
 		var (
-			bytes    = sdk.NewInt(r.Int63n(MaxBytes))
-			duration = time.Duration(r.Int63n(MaxDuration)) * time.Minute
-			prices   = hubsimtypes.RandomCoins(
+			duration  = time.Duration(r.Int63n(MaxDuration)) * time.Minute
+			gigabytes = r.Int63n(MaxBytes)
+			prices    = hubsimtypes.RandomCoins(
 				r,
 				sdk.NewCoins(
 					sdk.NewInt64Coin(
@@ -57,13 +57,13 @@ func RandomPlans(r *rand.Rand) types.Plans {
 		items = append(
 			items,
 			types.Plan{
-				ID:       id,
-				Address:  "",
-				Bytes:    bytes,
-				Duration: duration,
-				Prices:   prices,
-				Status:   status,
-				StatusAt: statusAt,
+				ID:        id,
+				Address:   "",
+				Duration:  duration,
+				Gigabytes: gigabytes,
+				Prices:    prices,
+				Status:    status,
+				StatusAt:  statusAt,
 			},
 		)
 	}

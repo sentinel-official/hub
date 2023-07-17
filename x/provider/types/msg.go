@@ -40,10 +40,10 @@ func (m *MsgRegisterRequest) ValidateBasic() error {
 	if len(m.Identity) > 64 {
 		return errors.Wrapf(ErrorInvalidMessage, "identity length cannot be greater than %d chars", 64)
 	}
+	if len(m.Website) > 64 {
+		return errors.Wrapf(ErrorInvalidMessage, "website length cannot be greater than %d chars", 64)
+	}
 	if m.Website != "" {
-		if len(m.Website) > 64 {
-			return errors.Wrapf(ErrorInvalidMessage, "website length cannot be greater than %d chars", 64)
-		}
 		if _, err := url.ParseRequestURI(m.Website); err != nil {
 			return errors.Wrap(ErrorInvalidMessage, err.Error())
 		}
@@ -88,10 +88,10 @@ func (m *MsgUpdateRequest) ValidateBasic() error {
 	if len(m.Identity) > 64 {
 		return errors.Wrapf(ErrorInvalidMessage, "identity length cannot be greater than %d chars", 64)
 	}
+	if len(m.Website) > 64 {
+		return errors.Wrapf(ErrorInvalidMessage, "website length cannot be greater than %d chars", 64)
+	}
 	if m.Website != "" {
-		if len(m.Website) > 64 {
-			return errors.Wrapf(ErrorInvalidMessage, "website length cannot be greater than %d chars", 64)
-		}
 		if _, err := url.ParseRequestURI(m.Website); err != nil {
 			return errors.Wrap(ErrorInvalidMessage, err.Error())
 		}

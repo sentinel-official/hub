@@ -423,7 +423,7 @@ func (k *Keeper) CreateSubscriptionForPlan(ctx sdk.Context, accAddr sdk.AccAddre
 	alloc := types.Allocation{
 		ID:            subscription.GetID(),
 		Address:       accAddr.String(),
-		GrantedBytes:  plan.Bytes,
+		GrantedBytes:  hubtypes.Gigabyte.MulRaw(plan.Gigabytes),
 		UtilisedBytes: sdk.ZeroInt(),
 	}
 
