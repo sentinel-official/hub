@@ -14,7 +14,7 @@ import (
 )
 
 const (
-	MaxInactiveDuration = 1 << 18
+	MaxExpiryDuration = 1 << 18
 )
 
 func ParamChanges(_ *rand.Rand) []simtypes.ParamChange {
@@ -28,11 +28,11 @@ func ParamChanges(_ *rand.Rand) []simtypes.ParamChange {
 		),
 		simulation.NewSimParamChange(
 			types.ModuleName,
-			string(types.KeyInactiveDuration),
+			string(types.KeyExpiryDuration),
 			func(r *rand.Rand) string {
 				return fmt.Sprintf(
 					"%s",
-					time.Duration(r.Int63n(MaxInactiveDuration))*time.Millisecond,
+					time.Duration(r.Int63n(MaxExpiryDuration))*time.Millisecond,
 				)
 			},
 		),

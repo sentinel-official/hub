@@ -86,7 +86,7 @@ func (k *msgServer) MsgStart(c context.Context, msg *types.MsgStartRequest) (*ty
 		Bandwidth:      hubtypes.NewBandwidthFromInt64(0, 0),
 		Duration:       0,
 		ExpiryAt: ctx.BlockTime().Add(
-			k.InactiveDuration(ctx),
+			k.ExpiryDuration(ctx),
 		),
 		Status:   hubtypes.StatusActive,
 		StatusAt: ctx.BlockTime(),
@@ -135,7 +135,7 @@ func (k *msgServer) MsgUpdateDetails(c context.Context, msg *types.MsgUpdateDeta
 		k.DeleteSessionForExpiryAt(ctx, session.ExpiryAt, session.ID)
 
 		session.ExpiryAt = ctx.BlockTime().Add(
-			k.InactiveDuration(ctx),
+			k.ExpiryDuration(ctx),
 		)
 		k.SetSessionForExpiryAt(ctx, session.ExpiryAt, session.ID)
 	}
@@ -172,7 +172,7 @@ func (k *msgServer) MsgEnd(c context.Context, msg *types.MsgEndRequest) (*types.
 	k.DeleteSessionForExpiryAt(ctx, session.ExpiryAt, session.ID)
 
 	session.ExpiryAt = ctx.BlockTime().Add(
-		k.InactiveDuration(ctx),
+		k.ExpiryDuration(ctx),
 	)
 	k.SetSessionForExpiryAt(ctx, session.ExpiryAt, session.ID)
 

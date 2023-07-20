@@ -9,12 +9,12 @@ import (
 )
 
 func (k *Keeper) EndBlock(ctx sdk.Context) []abcitypes.ValidatorUpdate {
-	inactiveDuration := k.InactiveDuration(ctx)
+	expiryDuration := k.ExpiryDuration(ctx)
 	k.IterateSessionsForExpiryAt(ctx, ctx.BlockTime(), func(_ int, item types.Session) bool {
 		k.DeleteSessionForExpiryAt(ctx, item.ExpiryAt, item.ID)
 
 		if item.Status.Equal(hubtypes.StatusActive) {
-			item.ExpiryAt = ctx.BlockTime().Add(inactiveDuration)
+			item.ExpiryAt = ctx.BlockTime().Add(expiryDuration)
 			k.SetSessionForExpiryAt(ctx, item.ExpiryAt, item.ID)
 
 			item.Status = hubtypes.StatusInactivePending

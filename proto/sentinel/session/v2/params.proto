@@ -9,7 +9,7 @@ option (gogoproto.equal_all)           = false;
 option (gogoproto.goproto_getters_all) = false;
 
 message Params {
-  google.protobuf.Duration inactive_duration = 1
+  google.protobuf.Duration expiry_duration = 1
       [ (gogoproto.nullable) = false, (gogoproto.stdduration) = true ];
   bool proof_verification_enabled = 2;
 }
