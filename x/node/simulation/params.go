@@ -32,7 +32,7 @@ func ParamChanges(_ *rand.Rand) []simtypes.ParamChange {
 		),
 		simulation.NewSimParamChange(
 			types.ModuleName,
-			string(types.KeyInactiveDuration),
+			string(types.KeyActiveDuration),
 			func(r *rand.Rand) string {
 				return fmt.Sprintf(
 					"%s",
