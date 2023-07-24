@@ -18,9 +18,9 @@ enum SubscriptionType {
 }
 
 message BaseSubscription {
-  uint64 id                           = 1 [ (gogoproto.customname) = "ID" ];
-  string address                      = 2;
-  google.protobuf.Timestamp expiry_at = 3
+  uint64 id                             = 1 [ (gogoproto.customname) = "ID" ];
+  string address                        = 2;
+  google.protobuf.Timestamp inactive_at = 3
       [ (gogoproto.nullable) = false, (gogoproto.stdtime) = true ];
 
   sentinel.types.v1.Status status     = 4;

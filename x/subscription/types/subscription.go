@@ -18,10 +18,10 @@ type (
 		Validate() error
 		GetID() uint64
 		GetAddress() sdk.AccAddress
-		GetExpiryAt() time.Time
+		GetInactiveAt() time.Time
 		GetStatus() hubtypes.Status
 		GetStatusAt() time.Time
-		SetExpiryAt(v time.Time)
+		SetInactiveAt(v time.Time)
 		SetStatus(v hubtypes.Status)
 		SetStatusAt(v time.Time)
 	}
@@ -34,7 +34,7 @@ var (
 )
 
 func (s *BaseSubscription) GetID() uint64              { return s.ID }
-func (s *BaseSubscription) GetExpiryAt() time.Time     { return s.ExpiryAt }
+func (s *BaseSubscription) GetInactiveAt() time.Time   { return s.InactiveAt }
 func (s *BaseSubscription) GetStatus() hubtypes.Status { return s.Status }
 func (s *BaseSubscription) GetStatusAt() time.Time     { return s.StatusAt }
 
@@ -51,7 +51,7 @@ func (s *BaseSubscription) GetAddress() sdk.AccAddress {
 	return addr
 }
 
-func (s *BaseSubscription) SetExpiryAt(v time.Time)     { s.ExpiryAt = v }
+func (s *BaseSubscription) SetInactiveAt(v time.Time)   { s.InactiveAt = v }
 func (s *BaseSubscription) SetStatus(v hubtypes.Status) { s.Status = v }
 func (s *BaseSubscription) SetStatusAt(v time.Time)     { s.StatusAt = v }
 
@@ -65,8 +65,8 @@ func (s *BaseSubscription) Validate() error {
 	if _, err := sdk.AccAddressFromBech32(s.Address); err != nil {
 		return errors.Wrapf(err, "invalid address %s", s.Address)
 	}
-	if s.ExpiryAt.IsZero() {
-		return fmt.Errorf("expiry_at cannot be zero")
+	if s.InactiveAt.IsZero() {
+		return fmt.Errorf("inactive_at cannot be zero")
 	}
 	if !s.Status.IsValid() {
 		return fmt.Errorf("status must be valid")

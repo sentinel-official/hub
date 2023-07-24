@@ -10,13 +10,13 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestSubscriptionForExpiryAtKey(t *testing.T) {
+func TestSubscriptionForInactiveAtKey(t *testing.T) {
 	for i := 0; i < 512; i += 64 {
 		at := time.Now()
 		require.Equal(
 			t,
-			append(append(SubscriptionForExpiryAtKeyPrefix, sdk.FormatTimeBytes(at)...), sdk.Uint64ToBigEndian(uint64(i))...),
-			SubscriptionForExpiryAtKey(at, uint64(i)),
+			append(append(SubscriptionForInactiveAtKeyPrefix, sdk.FormatTimeBytes(at)...), sdk.Uint64ToBigEndian(uint64(i))...),
+			SubscriptionForInactiveAtKey(at, uint64(i)),
 		)
 	}
 }
@@ -173,17 +173,17 @@ func TestIDFromSubscriptionForAccountKey(t *testing.T) {
 	}
 }
 
-func TestIDFromSubscriptionForExpiryAtKey(t *testing.T) {
+func TestIDFromSubscriptionForInactiveAtKey(t *testing.T) {
 	var (
 		key []byte
 	)
 
 	for i := 1; i <= 256; i += 64 {
-		key = SubscriptionForExpiryAtKey(time.Now(), uint64(i))
+		key = SubscriptionForInactiveAtKey(time.Now(), uint64(i))
 		require.Equal(
 			t,
 			uint64(i),
-			IDFromSubscriptionForExpiryAtKey(key),
+			IDFromSubscriptionForInactiveAtKey(key),
 		)
 	}
 }

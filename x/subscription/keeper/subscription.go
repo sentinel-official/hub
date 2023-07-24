@@ -214,31 +214,31 @@ func (k *Keeper) GetSubscriptionsForPlan(ctx sdk.Context, id uint64) (items type
 	return items
 }
 
-func (k *Keeper) SetSubscriptionForExpiryAt(ctx sdk.Context, at time.Time, id uint64) {
-	key := types.SubscriptionForExpiryAtKey(at, id)
+func (k *Keeper) SetSubscriptionForInactiveAt(ctx sdk.Context, at time.Time, id uint64) {
+	key := types.SubscriptionForInactiveAtKey(at, id)
 	value := k.cdc.MustMarshal(&protobuf.BoolValue{Value: true})
 
 	store := k.Store(ctx)
 	store.Set(key, value)
 }
 
-func (k *Keeper) DeleteSubscriptionForExpiryAt(ctx sdk.Context, at time.Time, id uint64) {
-	key := types.SubscriptionForExpiryAtKey(at, id)
+func (k *Keeper) DeleteSubscriptionForInactiveAt(ctx sdk.Context, at time.Time, id uint64) {
+	key := types.SubscriptionForInactiveAtKey(at, id)
 
 	store := k.Store(ctx)
 	store.Delete(key)
 }
 
-func (k *Keeper) IterateSubscriptionsForExpiryAt(ctx sdk.Context, endTime time.Time, fn func(index int, item types.Subscription) (stop bool)) {
+func (k *Keeper) IterateSubscriptionsForInactiveAt(ctx sdk.Context, endTime time.Time, fn func(index int, item types.Subscription) (stop bool)) {
 	store := k.Store(ctx)
 
-	iter := store.Iterator(types.SubscriptionForExpiryAtKeyPrefix, sdk.PrefixEndBytes(types.GetSubscriptionForExpiryAtKeyPrefix(endTime)))
+	iter := store.Iterator(types.SubscriptionForInactiveAtKeyPrefix, sdk.PrefixEndBytes(types.GetSubscriptionForInactiveAtKeyPrefix(endTime)))
 	defer iter.Close()
 
 	for i := 0; iter.Valid(); iter.Next() {
-		subscription, found := k.GetSubscription(ctx, types.IDFromSubscriptionForExpiryAtKey(iter.Key()))
+		subscription, found := k.GetSubscription(ctx, types.IDFromSubscriptionForInactiveAtKey(iter.Key()))
 		if !found {
-			panic(fmt.Errorf("subscription for expiry at key %X does not exist", iter.Key()))
+			panic(fmt.Errorf("subscription for inactive at key %X does not exist", iter.Key()))
 		}
 
 		if stop := fn(i, subscription); stop {
@@ -261,11 +261,11 @@ func (k *Keeper) CreateSubscriptionForNode(ctx sdk.Context, accAddr sdk.AccAddre
 		count        = k.GetCount(ctx)
 		subscription = &types.NodeSubscription{
 			BaseSubscription: &types.BaseSubscription{
-				ID:       count + 1,
-				Address:  accAddr.String(),
-				ExpiryAt: time.Time{},
-				Status:   hubtypes.StatusActive,
-				StatusAt: ctx.BlockTime(),
+				ID:         count + 1,
+				Address:    accAddr.String(),
+				InactiveAt: time.Time{},
+				Status:     hubtypes.StatusActive,
+				StatusAt:   ctx.BlockTime(),
 			},
 			NodeAddress: nodeAddr.String(),
 			Gigabytes:   gigabytes,
@@ -280,7 +280,7 @@ func (k *Keeper) CreateSubscriptionForNode(ctx sdk.Context, accAddr sdk.AccAddre
 			return nil, types.NewErrorPriceNotFound(denom)
 		}
 
-		subscription.ExpiryAt = ctx.BlockTime().Add(types.Year) // TODO: move to params
+		subscription.InactiveAt = ctx.BlockTime().Add(types.Year) // TODO: move to params
 		subscription.Deposit = sdk.NewCoin(
 			price.Denom,
 			hubtypes.AmountForBytes(price.Amount, hubtypes.Gigabyte.MulRaw(gigabytes)),
@@ -292,7 +292,7 @@ func (k *Keeper) CreateSubscriptionForNode(ctx sdk.Context, accAddr sdk.AccAddre
 			return nil, types.NewErrorPriceNotFound(denom)
 		}
 
-		subscription.ExpiryAt = ctx.BlockTime().Add(
+		subscription.InactiveAt = ctx.BlockTime().Add(
 			time.Duration(hours) * time.Hour,
 		)
 		subscription.Deposit = sdk.NewCoin(
@@ -309,7 +309,7 @@ func (k *Keeper) CreateSubscriptionForNode(ctx sdk.Context, accAddr sdk.AccAddre
 	k.SetSubscription(ctx, subscription)
 	k.SetSubscriptionForAccount(ctx, accAddr, subscription.GetID())
 	k.SetSubscriptionForNode(ctx, nodeAddr, subscription.GetID())
-	k.SetSubscriptionForExpiryAt(ctx, subscription.GetExpiryAt(), subscription.GetID())
+	k.SetSubscriptionForInactiveAt(ctx, subscription.GetInactiveAt(), subscription.GetID())
 
 	alloc := types.Allocation{
 		ID:            subscription.GetID(),
@@ -403,11 +403,11 @@ func (k *Keeper) CreateSubscriptionForPlan(ctx sdk.Context, accAddr sdk.AccAddre
 		count        = k.GetCount(ctx)
 		subscription = &types.PlanSubscription{
 			BaseSubscription: &types.BaseSubscription{
-				ID:       count + 1,
-				Address:  accAddr.String(),
-				ExpiryAt: ctx.BlockTime().Add(plan.Duration),
-				Status:   hubtypes.StatusActive,
-				StatusAt: ctx.BlockTime(),
+				ID:         count + 1,
+				Address:    accAddr.String(),
+				InactiveAt: ctx.BlockTime().Add(plan.Duration),
+				Status:     hubtypes.StatusActive,
+				StatusAt:   ctx.BlockTime(),
 			},
 			PlanID: plan.ID,
 			Denom:  price.Denom,
@@ -418,7 +418,7 @@ func (k *Keeper) CreateSubscriptionForPlan(ctx sdk.Context, accAddr sdk.AccAddre
 	k.SetSubscription(ctx, subscription)
 	k.SetSubscriptionForAccount(ctx, accAddr, subscription.GetID())
 	k.SetSubscriptionForPlan(ctx, plan.ID, subscription.GetID())
-	k.SetSubscriptionForExpiryAt(ctx, subscription.GetExpiryAt(), subscription.GetID())
+	k.SetSubscriptionForInactiveAt(ctx, subscription.GetInactiveAt(), subscription.GetID())
 
 	alloc := types.Allocation{
 		ID:            subscription.GetID(),

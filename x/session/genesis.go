@@ -21,7 +21,7 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, state *types.GenesisState) {
 		k.SetSessionForNode(ctx, nodeAddr, item.ID)
 		k.SetSessionForSubscription(ctx, item.SubscriptionID, item.ID)
 		k.SetSessionForAllocation(ctx, item.SubscriptionID, accAddr, item.ID)
-		k.SetSessionForExpiryAt(ctx, item.ExpiryAt, item.ID)
+		k.SetSessionForInactiveAt(ctx, item.InactiveAt, item.ID)
 	}
 
 	count := uint64(0)

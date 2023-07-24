@@ -8,8 +8,8 @@ import (
 	"github.com/sentinel-official/hub/x/session/types"
 )
 
-func (k *Keeper) ExpiryDuration(ctx sdk.Context) (duration time.Duration) {
-	k.params.Get(ctx, types.KeyExpiryDuration, &duration)
+func (k *Keeper) InactivePendingDuration(ctx sdk.Context) (duration time.Duration) {
+	k.params.Get(ctx, types.KeyInactivePendingDuration, &duration)
 	return
 }
 
@@ -24,7 +24,7 @@ func (k *Keeper) SetParams(ctx sdk.Context, params types.Params) {
 
 func (k *Keeper) GetParams(ctx sdk.Context) types.Params {
 	return types.NewParams(
-		k.ExpiryDuration(ctx),
+		k.InactivePendingDuration(ctx),
 		k.ProofVerificationEnabled(ctx),
 	)
 }

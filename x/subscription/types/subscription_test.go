@@ -49,11 +49,11 @@ func TestBaseSubscription_GetAddress(t *testing.T) {
 
 func TestBaseSubscription_Validate(t *testing.T) {
 	type fields struct {
-		ID       uint64
-		Address  string
-		ExpiryAt time.Time
-		Status   hubtypes.Status
-		StatusAt time.Time
+		ID         uint64
+		Address    string
+		InactiveAt time.Time
+		Status     hubtypes.Status
+		StatusAt   time.Time
 	}
 	tests := []struct {
 		name    string
@@ -70,11 +70,11 @@ func TestBaseSubscription_Validate(t *testing.T) {
 		{
 			"id positive",
 			fields{
-				ID:       1000,
-				Address:  hubtypes.TestBech32AccAddr20Bytes,
-				ExpiryAt: time.Now(),
-				Status:   hubtypes.StatusActive,
-				StatusAt: time.Now(),
+				ID:         1000,
+				Address:    hubtypes.TestBech32AccAddr20Bytes,
+				InactiveAt: time.Now(),
+				Status:     hubtypes.StatusActive,
+				StatusAt:   time.Now(),
 			},
 			false,
 		},
@@ -105,53 +105,53 @@ func TestBaseSubscription_Validate(t *testing.T) {
 		{
 			"address 10 bytes",
 			fields{
-				ID:       1000,
-				Address:  hubtypes.TestBech32AccAddr10Bytes,
-				ExpiryAt: time.Now(),
-				Status:   hubtypes.StatusActive,
-				StatusAt: time.Now(),
+				ID:         1000,
+				Address:    hubtypes.TestBech32AccAddr10Bytes,
+				InactiveAt: time.Now(),
+				Status:     hubtypes.StatusActive,
+				StatusAt:   time.Now(),
 			},
 			false,
 		},
 		{
 			"address 20 bytes",
 			fields{
-				ID:       1000,
-				Address:  hubtypes.TestBech32AccAddr20Bytes,
-				ExpiryAt: time.Now(),
-				Status:   hubtypes.StatusActive,
-				StatusAt: time.Now(),
+				ID:         1000,
+				Address:    hubtypes.TestBech32AccAddr20Bytes,
+				InactiveAt: time.Now(),
+				Status:     hubtypes.StatusActive,
+				StatusAt:   time.Now(),
 			},
 			false,
 		},
 		{
 			"address 30 bytes",
 			fields{
-				ID:       1000,
-				Address:  hubtypes.TestBech32AccAddr30Bytes,
-				ExpiryAt: time.Now(),
-				Status:   hubtypes.StatusActive,
-				StatusAt: time.Now(),
+				ID:         1000,
+				Address:    hubtypes.TestBech32AccAddr30Bytes,
+				InactiveAt: time.Now(),
+				Status:     hubtypes.StatusActive,
+				StatusAt:   time.Now(),
 			},
 			false,
 		},
 		{
-			"expiry_at empty",
+			"inactive_at empty",
 			fields{
-				ID:       1000,
-				Address:  hubtypes.TestBech32AccAddr30Bytes,
-				ExpiryAt: time.Time{},
+				ID:         1000,
+				Address:    hubtypes.TestBech32AccAddr30Bytes,
+				InactiveAt: time.Time{},
 			},
 			true,
 		},
 		{
-			"expiry_at non-empty",
+			"inactive_at non-empty",
 			fields{
-				ID:       1000,
-				Address:  hubtypes.TestBech32AccAddr30Bytes,
-				ExpiryAt: time.Now(),
-				Status:   hubtypes.StatusActive,
-				StatusAt: time.Now(),
+				ID:         1000,
+				Address:    hubtypes.TestBech32AccAddr30Bytes,
+				InactiveAt: time.Now(),
+				Status:     hubtypes.StatusActive,
+				StatusAt:   time.Now(),
 			},
 			false,
 		},
@@ -167,55 +167,55 @@ func TestBaseSubscription_Validate(t *testing.T) {
 		{
 			"status active",
 			fields{
-				ID:       1000,
-				Address:  hubtypes.TestBech32AccAddr20Bytes,
-				ExpiryAt: time.Now(),
-				Status:   hubtypes.StatusActive,
-				StatusAt: time.Now(),
+				ID:         1000,
+				Address:    hubtypes.TestBech32AccAddr20Bytes,
+				InactiveAt: time.Now(),
+				Status:     hubtypes.StatusActive,
+				StatusAt:   time.Now(),
 			},
 			false,
 		},
 		{
 			"status inactive_pending",
 			fields{
-				ID:       1000,
-				Address:  hubtypes.TestBech32AccAddr20Bytes,
-				ExpiryAt: time.Now(),
-				Status:   hubtypes.StatusInactivePending,
-				StatusAt: time.Now(),
+				ID:         1000,
+				Address:    hubtypes.TestBech32AccAddr20Bytes,
+				InactiveAt: time.Now(),
+				Status:     hubtypes.StatusInactivePending,
+				StatusAt:   time.Now(),
 			},
 			false,
 		},
 		{
 			"status inactive",
 			fields{
-				ID:       1000,
-				Address:  hubtypes.TestBech32AccAddr20Bytes,
-				ExpiryAt: time.Now(),
-				Status:   hubtypes.StatusInactive,
-				StatusAt: time.Now(),
+				ID:         1000,
+				Address:    hubtypes.TestBech32AccAddr20Bytes,
+				InactiveAt: time.Now(),
+				Status:     hubtypes.StatusInactive,
+				StatusAt:   time.Now(),
 			},
 			false,
 		},
 		{
 			"status_at empty",
 			fields{
-				ID:       1000,
-				Address:  hubtypes.TestBech32AccAddr20Bytes,
-				ExpiryAt: time.Now(),
-				Status:   hubtypes.StatusActive,
-				StatusAt: time.Time{},
+				ID:         1000,
+				Address:    hubtypes.TestBech32AccAddr20Bytes,
+				InactiveAt: time.Now(),
+				Status:     hubtypes.StatusActive,
+				StatusAt:   time.Time{},
 			},
 			true,
 		},
 		{
 			"status_at non-empty",
 			fields{
-				ID:       1000,
-				Address:  hubtypes.TestBech32AccAddr20Bytes,
-				ExpiryAt: time.Now(),
-				Status:   hubtypes.StatusActive,
-				StatusAt: time.Now(),
+				ID:         1000,
+				Address:    hubtypes.TestBech32AccAddr20Bytes,
+				InactiveAt: time.Now(),
+				Status:     hubtypes.StatusActive,
+				StatusAt:   time.Now(),
 			},
 			false,
 		},
@@ -223,11 +223,11 @@ func TestBaseSubscription_Validate(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			s := &BaseSubscription{
-				ID:       tt.fields.ID,
-				Address:  tt.fields.Address,
-				ExpiryAt: tt.fields.ExpiryAt,
-				Status:   tt.fields.Status,
-				StatusAt: tt.fields.StatusAt,
+				ID:         tt.fields.ID,
+				Address:    tt.fields.Address,
+				InactiveAt: tt.fields.InactiveAt,
+				Status:     tt.fields.Status,
+				StatusAt:   tt.fields.StatusAt,
 			}
 			if err := s.Validate(); (err != nil) != tt.wantErr {
 				t.Errorf("Validate() error = %v, wantErr %v", err, tt.wantErr)
@@ -452,11 +452,11 @@ func TestNodeSubscription_Validate(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			s := &NodeSubscription{
 				BaseSubscription: &BaseSubscription{
-					ID:       1000,
-					Address:  hubtypes.TestBech32AccAddr20Bytes,
-					ExpiryAt: time.Now(),
-					Status:   hubtypes.StatusActive,
-					StatusAt: time.Now(),
+					ID:         1000,
+					Address:    hubtypes.TestBech32AccAddr20Bytes,
+					InactiveAt: time.Now(),
+					Status:     hubtypes.StatusActive,
+					StatusAt:   time.Now(),
 				},
 				NodeAddress: tt.fields.NodeAddress,
 				Gigabytes:   tt.fields.Gigabytes,
@@ -529,11 +529,11 @@ func TestPlanSubscription_Validate(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			s := &PlanSubscription{
 				BaseSubscription: &BaseSubscription{
-					ID:       1000,
-					Address:  hubtypes.TestBech32AccAddr20Bytes,
-					ExpiryAt: time.Now(),
-					Status:   hubtypes.StatusActive,
-					StatusAt: time.Now(),
+					ID:         1000,
+					Address:    hubtypes.TestBech32AccAddr20Bytes,
+					InactiveAt: time.Now(),
+					Status:     hubtypes.StatusActive,
+					StatusAt:   time.Now(),
 				},
 				PlanID: tt.fields.PlanID,
 				Denom:  tt.fields.Denom,

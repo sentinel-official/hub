@@ -63,8 +63,8 @@ func (m *Session) Validate() error {
 	if m.Duration < 0 {
 		return fmt.Errorf("duration cannot be negative")
 	}
-	if m.ExpiryAt.IsZero() {
-		return fmt.Errorf("expiryt_at cannot be zero")
+	if m.InactiveAt.IsZero() {
+		return fmt.Errorf("inactive_at cannot be zero")
 	}
 	if !m.Status.IsOneOf(hubtypes.StatusActive, hubtypes.StatusInactivePending) {
 		return fmt.Errorf("status must be oneof [active, inactive_pending]")

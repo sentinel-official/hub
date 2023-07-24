@@ -8,12 +8,12 @@ import (
 )
 
 var (
-	DefaultExpiryDuration           = 5 * time.Minute
+	DefaultInactivePendingDuration  = 1 * time.Minute
 	DefaultProofVerificationEnabled = false
 )
 
 var (
-	KeyExpiryDuration           = []byte("ExpiryDuration")
+	KeyInactivePendingDuration  = []byte("InactivePendingDuration")
 	KeyProofVerificationEnabled = []byte("ProofVerificationEnabled")
 )
 
@@ -22,7 +22,7 @@ var (
 )
 
 func (m *Params) Validate() error {
-	if err := validateExpiryDuration(m.ExpiryDuration); err != nil {
+	if err := validateInactivePendingDuration(m.InactivePendingDuration); err != nil {
 		return err
 	}
 	if err := validateProofVerificationEnabled(m.ProofVerificationEnabled); err != nil {
@@ -35,9 +35,9 @@ func (m *Params) Validate() error {
 func (m *Params) ParamSetPairs() params.ParamSetPairs {
 	return params.ParamSetPairs{
 		{
-			Key:         KeyExpiryDuration,
-			Value:       &m.ExpiryDuration,
-			ValidatorFn: validateExpiryDuration,
+			Key:         KeyInactivePendingDuration,
+			Value:       &m.InactivePendingDuration,
+			ValidatorFn: validateInactivePendingDuration,
 		},
 		{
 			Key:         KeyProofVerificationEnabled,
@@ -47,16 +47,16 @@ func (m *Params) ParamSetPairs() params.ParamSetPairs {
 	}
 }
 
-func NewParams(expiryDuration time.Duration, proofVerificationEnabled bool) Params {
+func NewParams(inactivePendingDuration time.Duration, proofVerificationEnabled bool) Params {
 	return Params{
-		ExpiryDuration:           expiryDuration,
+		InactivePendingDuration:  inactivePendingDuration,
 		ProofVerificationEnabled: proofVerificationEnabled,
 	}
 }
 
 func DefaultParams() Params {
 	return Params{
-		ExpiryDuration:           DefaultExpiryDuration,
+		InactivePendingDuration:  DefaultInactivePendingDuration,
 		ProofVerificationEnabled: DefaultProofVerificationEnabled,
 	}
 }
@@ -65,17 +65,17 @@ func ParamsKeyTable() params.KeyTable {
 	return params.NewKeyTable().RegisterParamSet(&Params{})
 }
 
-func validateExpiryDuration(v interface{}) error {
+func validateInactivePendingDuration(v interface{}) error {
 	value, ok := v.(time.Duration)
 	if !ok {
 		return fmt.Errorf("invalid parameter type %T", v)
 	}
 
 	if value < 0 {
-		return fmt.Errorf("expiry_duration cannot be negative")
+		return fmt.Errorf("inactive_pending_duration cannot be negative")
 	}
 	if value == 0 {
-		return fmt.Errorf("expiry_duration cannot be zero")
+		return fmt.Errorf("inactive_pending_duration cannot be zero")
 	}
 
 	return nil

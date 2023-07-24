@@ -18,11 +18,11 @@ const (
 var (
 	CountKey = []byte{0x00}
 
-	SubscriptionKeyPrefix            = []byte{0x10}
-	SubscriptionForExpiryAtKeyPrefix = []byte{0x11}
-	SubscriptionForAccountKeyPrefix  = []byte{0x12}
-	SubscriptionForNodeKeyPrefix     = []byte{0x13}
-	SubscriptionForPlanKeyPrefix     = []byte{0x14}
+	SubscriptionKeyPrefix              = []byte{0x10}
+	SubscriptionForInactiveAtKeyPrefix = []byte{0x11}
+	SubscriptionForAccountKeyPrefix    = []byte{0x12}
+	SubscriptionForNodeKeyPrefix       = []byte{0x13}
+	SubscriptionForPlanKeyPrefix       = []byte{0x14}
 
 	AllocationKeyPrefix = []byte{0x20}
 
@@ -60,12 +60,12 @@ func SubscriptionForPlanKey(planID, subscriptionID uint64) []byte {
 	return append(GetSubscriptionForPlanKeyPrefix(planID), sdk.Uint64ToBigEndian(subscriptionID)...)
 }
 
-func GetSubscriptionForExpiryAtKeyPrefix(at time.Time) []byte {
-	return append(SubscriptionForExpiryAtKeyPrefix, sdk.FormatTimeBytes(at)...)
+func GetSubscriptionForInactiveAtKeyPrefix(at time.Time) []byte {
+	return append(SubscriptionForInactiveAtKeyPrefix, sdk.FormatTimeBytes(at)...)
 }
 
-func SubscriptionForExpiryAtKey(at time.Time, id uint64) []byte {
-	return append(GetSubscriptionForExpiryAtKeyPrefix(at), sdk.Uint64ToBigEndian(id)...)
+func SubscriptionForInactiveAtKey(at time.Time, id uint64) []byte {
+	return append(GetSubscriptionForInactiveAtKeyPrefix(at), sdk.Uint64ToBigEndian(id)...)
 }
 
 func GetAllocationKeyPrefix(id uint64) []byte {
@@ -136,7 +136,7 @@ func IDFromSubscriptionForPlanKey(key []byte) uint64 {
 	return sdk.BigEndianToUint64(key[9:])
 }
 
-func IDFromSubscriptionForExpiryAtKey(key []byte) uint64 {
+func IDFromSubscriptionForInactiveAtKey(key []byte) uint64 {
 	// prefix (1 byte) | at (29 bytes) | id (8 bytes)
 
 	if len(key) != 38 {

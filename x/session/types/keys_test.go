@@ -35,13 +35,13 @@ func TestSessionForAccountKey(t *testing.T) {
 	}
 }
 
-func TestSessionForExpiryAtKey(t *testing.T) {
+func TestSessionForInactiveAtKey(t *testing.T) {
 	for i := 0; i < 512; i += 64 {
 		at := time.Now()
 		require.Equal(
 			t,
-			append(append(SessionForExpiryAtKeyPrefix, sdk.FormatTimeBytes(at)...), sdk.Uint64ToBigEndian(uint64(i))...),
-			SessionForExpiryAtKey(at, uint64(i)),
+			append(append(SessionForInactiveAtKeyPrefix, sdk.FormatTimeBytes(at)...), sdk.Uint64ToBigEndian(uint64(i))...),
+			SessionForInactiveAtKey(at, uint64(i)),
 		)
 	}
 }
@@ -75,17 +75,17 @@ func TestIDFromSessionForAccountKey(t *testing.T) {
 	}
 }
 
-func TestIDFromSessionForExpiryAtKey(t *testing.T) {
+func TestIDFromSessionForInactiveAtKey(t *testing.T) {
 	var (
 		key []byte
 	)
 
 	for i := 1; i <= 256; i += 64 {
-		key = SessionForExpiryAtKey(time.Now(), uint64(i))
+		key = SessionForInactiveAtKey(time.Now(), uint64(i))
 		require.Equal(
 			t,
 			uint64(i),
-			IDFromSessionForExpiryAtKey(key),
+			IDFromSessionForInactiveAtKey(key),
 		)
 	}
 }

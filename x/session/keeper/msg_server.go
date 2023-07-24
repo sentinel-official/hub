@@ -85,8 +85,8 @@ func (k *msgServer) MsgStart(c context.Context, msg *types.MsgStartRequest) (*ty
 		Address:        accAddr.String(),
 		Bandwidth:      hubtypes.NewBandwidthFromInt64(0, 0),
 		Duration:       0,
-		ExpiryAt: ctx.BlockTime().Add(
-			k.ExpiryDuration(ctx),
+		InactiveAt: ctx.BlockTime().Add(
+			k.InactivePendingDuration(ctx),
 		),
 		Status:   hubtypes.StatusActive,
 		StatusAt: ctx.BlockTime(),
@@ -98,7 +98,7 @@ func (k *msgServer) MsgStart(c context.Context, msg *types.MsgStartRequest) (*ty
 	k.SetSessionForNode(ctx, nodeAddr, session.ID)
 	k.SetSessionForSubscription(ctx, subscription.GetID(), session.ID)
 	k.SetSessionForAllocation(ctx, subscription.GetID(), accAddr, session.ID)
-	k.SetSessionForExpiryAt(ctx, session.ExpiryAt, session.ID)
+	k.SetSessionForInactiveAt(ctx, session.InactiveAt, session.ID)
 	ctx.EventManager().EmitTypedEvent(
 		&types.EventStart{
 			ID:             session.ID,
@@ -132,12 +132,12 @@ func (k *msgServer) MsgUpdateDetails(c context.Context, msg *types.MsgUpdateDeta
 	}
 
 	if session.Status.Equal(hubtypes.StatusActive) {
-		k.DeleteSessionForExpiryAt(ctx, session.ExpiryAt, session.ID)
+		k.DeleteSessionForInactiveAt(ctx, session.InactiveAt, session.ID)
 
-		session.ExpiryAt = ctx.BlockTime().Add(
-			k.ExpiryDuration(ctx),
+		session.InactiveAt = ctx.BlockTime().Add(
+			k.InactivePendingDuration(ctx),
 		)
-		k.SetSessionForExpiryAt(ctx, session.ExpiryAt, session.ID)
+		k.SetSessionForInactiveAt(ctx, session.InactiveAt, session.ID)
 	}
 
 	session.Bandwidth = msg.Proof.Bandwidth
@@ -169,12 +169,12 @@ func (k *msgServer) MsgEnd(c context.Context, msg *types.MsgEndRequest) (*types.
 		return nil, types.NewErrorUnauthorized(msg.From)
 	}
 
-	k.DeleteSessionForExpiryAt(ctx, session.ExpiryAt, session.ID)
+	k.DeleteSessionForInactiveAt(ctx, session.InactiveAt, session.ID)
 
-	session.ExpiryAt = ctx.BlockTime().Add(
-		k.ExpiryDuration(ctx),
+	session.InactiveAt = ctx.BlockTime().Add(
+		k.InactivePendingDuration(ctx),
 	)
-	k.SetSessionForExpiryAt(ctx, session.ExpiryAt, session.ID)
+	k.SetSessionForInactiveAt(ctx, session.InactiveAt, session.ID)
 
 	session.Status = hubtypes.StatusInactivePending
 	session.StatusAt = ctx.BlockTime()

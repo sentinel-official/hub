@@ -18,7 +18,7 @@ var (
 	CountKey = []byte{0x00}
 
 	SessionKeyPrefix                = []byte{0x10}
-	SessionForExpiryAtKeyPrefix     = []byte{0x11}
+	SessionForInactiveAtKeyPrefix   = []byte{0x11}
 	SessionForAccountKeyPrefix      = []byte{0x12}
 	SessionForNodeKeyPrefix         = []byte{0x13}
 	SessionForSubscriptionKeyPrefix = []byte{0x14}
@@ -61,12 +61,12 @@ func SessionForAllocationKey(subscriptionID uint64, addr sdk.AccAddress, session
 	return append(GetSessionForAllocationKeyPrefix(subscriptionID, addr), sdk.Uint64ToBigEndian(sessionID)...)
 }
 
-func GetSessionForExpiryAtKeyPrefix(at time.Time) []byte {
-	return append(SessionForExpiryAtKeyPrefix, sdk.FormatTimeBytes(at)...)
+func GetSessionForInactiveAtKeyPrefix(at time.Time) []byte {
+	return append(SessionForInactiveAtKeyPrefix, sdk.FormatTimeBytes(at)...)
 }
 
-func SessionForExpiryAtKey(at time.Time, id uint64) []byte {
-	return append(GetSessionForExpiryAtKeyPrefix(at), sdk.Uint64ToBigEndian(id)...)
+func SessionForInactiveAtKey(at time.Time, id uint64) []byte {
+	return append(GetSessionForInactiveAtKeyPrefix(at), sdk.Uint64ToBigEndian(id)...)
 }
 
 func IDFromSessionForAccountKey(key []byte) uint64 {
@@ -112,7 +112,7 @@ func IDFromSessionForAllocationKey(key []byte) uint64 {
 	return sdk.BigEndianToUint64(key[10+addrLen:])
 }
 
-func IDFromSessionForExpiryAtKey(key []byte) uint64 {
+func IDFromSessionForInactiveAtKey(key []byte) uint64 {
 	// prefix (1 byte) | at (29 bytes) | session (8 bytes)
 
 	if len(key) != 38 {

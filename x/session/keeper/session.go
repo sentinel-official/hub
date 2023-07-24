@@ -235,31 +235,31 @@ func (k *Keeper) IterateSessionsForAllocation(ctx sdk.Context, id uint64, addr s
 	}
 }
 
-func (k *Keeper) SetSessionForExpiryAt(ctx sdk.Context, at time.Time, id uint64) {
-	key := types.SessionForExpiryAtKey(at, id)
+func (k *Keeper) SetSessionForInactiveAt(ctx sdk.Context, at time.Time, id uint64) {
+	key := types.SessionForInactiveAtKey(at, id)
 	value := k.cdc.MustMarshal(&protobuf.BoolValue{Value: true})
 
 	store := k.Store(ctx)
 	store.Set(key, value)
 }
 
-func (k *Keeper) DeleteSessionForExpiryAt(ctx sdk.Context, at time.Time, id uint64) {
-	key := types.SessionForExpiryAtKey(at, id)
+func (k *Keeper) DeleteSessionForInactiveAt(ctx sdk.Context, at time.Time, id uint64) {
+	key := types.SessionForInactiveAtKey(at, id)
 
 	store := k.Store(ctx)
 	store.Delete(key)
 }
 
-func (k *Keeper) IterateSessionsForExpiryAt(ctx sdk.Context, end time.Time, fn func(index int, item types.Session) (stop bool)) {
+func (k *Keeper) IterateSessionsForInactiveAt(ctx sdk.Context, end time.Time, fn func(index int, item types.Session) (stop bool)) {
 	store := k.Store(ctx)
 
-	iter := store.Iterator(types.SessionForExpiryAtKeyPrefix, sdk.PrefixEndBytes(types.GetSessionForExpiryAtKeyPrefix(end)))
+	iter := store.Iterator(types.SessionForInactiveAtKeyPrefix, sdk.PrefixEndBytes(types.GetSessionForInactiveAtKeyPrefix(end)))
 	defer iter.Close()
 
 	for i := 0; iter.Valid(); iter.Next() {
-		session, found := k.GetSession(ctx, types.IDFromSessionForExpiryAtKey(iter.Key()))
+		session, found := k.GetSession(ctx, types.IDFromSessionForInactiveAtKey(iter.Key()))
 		if !found {
-			panic(fmt.Errorf("session for expiry at key %X does not exist", iter.Key()))
+			panic(fmt.Errorf("session for inactive at key %X does not exist", iter.Key()))
 		}
 
 		if stop := fn(i, session); stop {

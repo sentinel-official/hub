@@ -20,7 +20,7 @@ message Session {
   sentinel.types.v1.Bandwidth bandwidth = 5 [ (gogoproto.nullable) = false ];
   google.protobuf.Duration duration     = 6
       [ (gogoproto.stdduration) = true, (gogoproto.nullable) = false ];
-  google.protobuf.Timestamp expiry_at = 7
+  google.protobuf.Timestamp inactive_at = 7
       [ (gogoproto.nullable) = false, (gogoproto.stdtime) = true ];
 
   sentinel.types.v1.Status status     = 8;

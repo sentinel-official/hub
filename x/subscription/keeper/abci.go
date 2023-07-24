@@ -52,19 +52,19 @@ func (k *Keeper) BeginBlock(ctx sdk.Context) {
 }
 
 func (k *Keeper) EndBlock(ctx sdk.Context) []abcitypes.ValidatorUpdate {
-	expiryDuration := k.ExpiryDuration(ctx)
-	k.IterateSubscriptionsForExpiryAt(ctx, ctx.BlockTime(), func(_ int, item types.Subscription) bool {
-		k.DeleteSubscriptionForExpiryAt(ctx, item.GetExpiryAt(), item.GetID())
+	inactivePendingDuration := k.InactivePendingDuration(ctx)
+	k.IterateSubscriptionsForInactiveAt(ctx, ctx.BlockTime(), func(_ int, item types.Subscription) bool {
+		k.DeleteSubscriptionForInactiveAt(ctx, item.GetInactiveAt(), item.GetID())
 
 		if item.GetStatus().Equal(hubtypes.StatusActive) {
-			item.SetExpiryAt(
-				item.GetExpiryAt().Add(expiryDuration),
+			item.SetInactiveAt(
+				item.GetInactiveAt().Add(inactivePendingDuration),
 			)
 			item.SetStatus(hubtypes.StatusInactivePending)
 			item.SetStatusAt(ctx.BlockTime())
 
 			k.SetSubscription(ctx, item)
-			k.SetSubscriptionForExpiryAt(ctx, item.GetExpiryAt(), item.GetID())
+			k.SetSubscriptionForInactiveAt(ctx, item.GetInactiveAt(), item.GetID())
 			ctx.EventManager().EmitTypedEvent(
 				&types.EventUpdateStatus{
 					ID:     item.GetID(),

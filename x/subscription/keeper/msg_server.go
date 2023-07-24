@@ -41,17 +41,17 @@ func (k *msgServer) MsgCancel(c context.Context, msg *types.MsgCancelRequest) (*
 		return nil, types.NewErrorUnauthorized(msg.From)
 	}
 
-	k.DeleteSubscriptionForExpiryAt(ctx, subscription.GetExpiryAt(), subscription.GetID())
+	k.DeleteSubscriptionForInactiveAt(ctx, subscription.GetInactiveAt(), subscription.GetID())
 
-	expiryDuration := k.ExpiryDuration(ctx)
-	subscription.SetExpiryAt(
-		subscription.GetExpiryAt().Add(expiryDuration),
+	inactivePendingDuration := k.InactivePendingDuration(ctx)
+	subscription.SetInactiveAt(
+		subscription.GetInactiveAt().Add(inactivePendingDuration),
 	)
 	subscription.SetStatus(hubtypes.StatusInactivePending)
 	subscription.SetStatusAt(ctx.BlockTime())
 
 	k.SetSubscription(ctx, subscription)
-	k.SetSubscriptionForExpiryAt(ctx, subscription.GetExpiryAt(), subscription.GetID())
+	k.SetSubscriptionForInactiveAt(ctx, subscription.GetInactiveAt(), subscription.GetID())
 	ctx.EventManager().EmitTypedEvent(
 		&types.EventUpdateStatus{
 			ID:     subscription.GetID(),
