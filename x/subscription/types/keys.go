@@ -26,10 +26,10 @@ var (
 
 	AllocationKeyPrefix = []byte{0x20}
 
-	PayoutKeyPrefix             = []byte{0x30}
-	PayoutForTimestampKeyPrefix = []byte{0x31}
-	PayoutForAccountKeyPrefix   = []byte{0x32}
-	PayoutForNodeKeyPrefix      = []byte{0x33}
+	PayoutKeyPrefix           = []byte{0x30}
+	PayoutForNextAtKeyPrefix  = []byte{0x31}
+	PayoutForAccountKeyPrefix = []byte{0x32}
+	PayoutForNodeKeyPrefix    = []byte{0x33}
 )
 
 func SubscriptionKey(id uint64) []byte {
@@ -80,12 +80,12 @@ func PayoutKey(id uint64) []byte {
 	return append(PayoutKeyPrefix, sdk.Uint64ToBigEndian(id)...)
 }
 
-func GetPayoutForTimestampKeyPrefix(at time.Time) []byte {
-	return append(PayoutForTimestampKeyPrefix, sdk.FormatTimeBytes(at)...)
+func GetPayoutForNextAtKeyPrefix(at time.Time) []byte {
+	return append(PayoutForNextAtKeyPrefix, sdk.FormatTimeBytes(at)...)
 }
 
-func PayoutForTimestampKey(at time.Time, id uint64) []byte {
-	return append(GetPayoutForTimestampKeyPrefix(at), sdk.Uint64ToBigEndian(id)...)
+func PayoutForNextAtKey(at time.Time, id uint64) []byte {
+	return append(GetPayoutForNextAtKeyPrefix(at), sdk.Uint64ToBigEndian(id)...)
 }
 
 func GetPayoutForAccountKeyPrefix(addr sdk.AccAddress) []byte {
@@ -168,7 +168,7 @@ func IDFromPayoutForNodeKey(key []byte) uint64 {
 	return sdk.BigEndianToUint64(key[2+addrLen:])
 }
 
-func IDFromPayoutForTimestampKey(key []byte) uint64 {
+func IDFromPayoutForNextAtKey(key []byte) uint64 {
 	// prefix (1 byte) | at (29 bytes) | id (8 bytes)
 
 	if len(key) != 38 {

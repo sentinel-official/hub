@@ -144,35 +144,35 @@ func (k *Keeper) DeletePayoutForNode(ctx sdk.Context, addr hubtypes.NodeAddress,
 	store.Delete(key)
 }
 
-func (k *Keeper) SetPayoutForTimestamp(ctx sdk.Context, at time.Time, id uint64) {
+func (k *Keeper) SetPayoutForNextAt(ctx sdk.Context, at time.Time, id uint64) {
 	var (
 		store = k.Store(ctx)
-		key   = types.PayoutForTimestampKey(at, id)
+		key   = types.PayoutForNextAtKey(at, id)
 		value = k.cdc.MustMarshal(&protobuf.BoolValue{Value: true})
 	)
 
 	store.Set(key, value)
 }
 
-func (k *Keeper) DeletePayoutForTimestamp(ctx sdk.Context, at time.Time, id uint64) {
+func (k *Keeper) DeletePayoutForNextAt(ctx sdk.Context, at time.Time, id uint64) {
 	var (
 		store = k.Store(ctx)
-		key   = types.PayoutForTimestampKey(at, id)
+		key   = types.PayoutForNextAtKey(at, id)
 	)
 
 	store.Delete(key)
 }
 
-func (k *Keeper) IteratePayoutsForTimestamp(ctx sdk.Context, at time.Time, fn func(index int, item types.Payout) (stop bool)) {
+func (k *Keeper) IteratePayoutsForNextAt(ctx sdk.Context, at time.Time, fn func(index int, item types.Payout) (stop bool)) {
 	store := k.Store(ctx)
 
-	iter := store.Iterator(types.PayoutForTimestampKeyPrefix, sdk.PrefixEndBytes(types.GetPayoutForTimestampKeyPrefix(at)))
+	iter := store.Iterator(types.PayoutForNextAtKeyPrefix, sdk.PrefixEndBytes(types.GetPayoutForNextAtKeyPrefix(at)))
 	defer iter.Close()
 
 	for i := 0; iter.Valid(); iter.Next() {
-		payout, found := k.GetPayout(ctx, types.IDFromPayoutForTimestampKey(iter.Key()))
+		payout, found := k.GetPayout(ctx, types.IDFromPayoutForNextAtKey(iter.Key()))
 		if !found {
-			panic(fmt.Errorf("payout for timestamp key %X does not exist", iter.Key()))
+			panic(fmt.Errorf("payout for next_at key %X does not exist", iter.Key()))
 		}
 
 		if stop := fn(i, payout); stop {

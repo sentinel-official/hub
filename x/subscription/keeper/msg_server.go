@@ -64,9 +64,9 @@ func (k *msgServer) MsgCancel(c context.Context, msg *types.MsgCancelRequest) (*
 		return &types.MsgCancelResponse{}, nil
 	}
 
-	k.DeletePayoutForTimestamp(ctx, payout.Timestamp, payout.ID)
+	k.DeletePayoutForNextAt(ctx, payout.NextAt, payout.ID)
 
-	payout.Timestamp = time.Time{}
+	payout.NextAt = time.Time{}
 	k.SetPayout(ctx, payout)
 
 	return &types.MsgCancelResponse{}, nil

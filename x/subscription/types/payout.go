@@ -58,8 +58,8 @@ func (p *Payout) Validate() error {
 			return fmt.Errorf("price must be valid")
 		}
 	}
-	if p.Timestamp.IsZero() {
-		return fmt.Errorf("timestamp cannot be zero")
+	if p.NextAt.IsZero() {
+		return fmt.Errorf("next_at cannot be zero")
 	}
 
 	return nil

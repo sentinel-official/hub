@@ -9,10 +9,10 @@ import (
 
 func TestPayout_Validate(t *testing.T) {
 	type fields struct {
-		ID        uint64
-		Hours     int64
-		Price     sdk.Coin
-		Timestamp time.Time
+		ID     uint64
+		Hours  int64
+		Price  sdk.Coin
+		NextAt time.Time
 	}
 	tests := []struct {
 		name    string
@@ -29,9 +29,9 @@ func TestPayout_Validate(t *testing.T) {
 		{
 			"id positive",
 			fields{
-				ID:        1000,
-				Hours:     1000,
-				Timestamp: time.Now(),
+				ID:     1000,
+				Hours:  1000,
+				NextAt: time.Now(),
 			},
 			false,
 		},
@@ -54,29 +54,29 @@ func TestPayout_Validate(t *testing.T) {
 		{
 			"hours positive",
 			fields{
-				ID:        1000,
-				Hours:     1000,
-				Timestamp: time.Now(),
+				ID:     1000,
+				Hours:  1000,
+				NextAt: time.Now(),
 			},
 			false,
 		},
 		{
 			"price empty",
 			fields{
-				ID:        1000,
-				Hours:     1000,
-				Price:     sdk.Coin{},
-				Timestamp: time.Now(),
+				ID:     1000,
+				Hours:  1000,
+				Price:  sdk.Coin{},
+				NextAt: time.Now(),
 			},
 			false,
 		},
 		{
 			"price empty denom",
 			fields{
-				ID:        1000,
-				Hours:     1000,
-				Price:     sdk.Coin{Denom: ""},
-				Timestamp: time.Now(),
+				ID:     1000,
+				Hours:  1000,
+				Price:  sdk.Coin{Denom: ""},
+				NextAt: time.Now(),
 			},
 			false,
 		},
@@ -119,28 +119,28 @@ func TestPayout_Validate(t *testing.T) {
 		{
 			"price positive amount",
 			fields{
-				ID:        1000,
-				Hours:     1000,
-				Price:     sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)},
-				Timestamp: time.Now(),
+				ID:     1000,
+				Hours:  1000,
+				Price:  sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)},
+				NextAt: time.Now(),
 			},
 			false,
 		},
 		{
-			"timestamp zero",
+			"next_at zero",
 			fields{
-				ID:        1000,
-				Hours:     1000,
-				Timestamp: time.Time{},
+				ID:     1000,
+				Hours:  1000,
+				NextAt: time.Time{},
 			},
 			true,
 		},
 		{
-			"timestamp positive",
+			"next_at positive",
 			fields{
-				ID:        1000,
-				Hours:     1000,
-				Timestamp: time.Now(),
+				ID:     1000,
+				Hours:  1000,
+				NextAt: time.Now(),
 			},
 			false,
 		},
@@ -148,10 +148,10 @@ func TestPayout_Validate(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			l := &Payout{
-				ID:        tt.fields.ID,
-				Hours:     tt.fields.Hours,
-				Price:     tt.fields.Price,
-				Timestamp: tt.fields.Timestamp,
+				ID:     tt.fields.ID,
+				Hours:  tt.fields.Hours,
+				Price:  tt.fields.Price,
+				NextAt: tt.fields.NextAt,
 			}
 			if err := l.Validate(); (err != nil) != tt.wantErr {
 				t.Errorf("Validate() error = %v, wantErr %v", err, tt.wantErr)

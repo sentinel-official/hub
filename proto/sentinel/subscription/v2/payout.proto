@@ -10,11 +10,11 @@ option (gogoproto.equal_all)           = false;
 option (gogoproto.goproto_getters_all) = false;
 
 message Payout {
-  uint64 id                           = 1 [ (gogoproto.customname) = "ID" ];
-  string address                      = 2;
-  string node_address                 = 3;
-  int64 hours                         = 4;
-  cosmos.base.v1beta1.Coin price      = 5 [ (gogoproto.nullable) = false ];
-  google.protobuf.Timestamp timestamp = 6
+  uint64 id                         = 1 [ (gogoproto.customname) = "ID" ];
+  string address                    = 2;
+  string node_address               = 3;
+  int64 hours                       = 4;
+  cosmos.base.v1beta1.Coin price    = 5 [ (gogoproto.nullable) = false ];
+  google.protobuf.Timestamp next_at = 6
       [ (gogoproto.nullable) = false, (gogoproto.stdtime) = true ];
 }

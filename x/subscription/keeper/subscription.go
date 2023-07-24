@@ -340,7 +340,7 @@ func (k *Keeper) CreateSubscriptionForNode(ctx sdk.Context, accAddr sdk.AccAddre
 			subscription.Deposit.Denom,
 			subscription.Deposit.Amount.QuoRaw(hours),
 		),
-		Timestamp: ctx.BlockTime(),
+		NextAt: ctx.BlockTime(),
 	}
 
 	if err := k.SendCoinFromDepositToAccount(ctx, accAddr, nodeAddr.Bytes(), payout.Price); err != nil {
@@ -349,8 +349,8 @@ func (k *Keeper) CreateSubscriptionForNode(ctx sdk.Context, accAddr sdk.AccAddre
 
 	payout.Hours = payout.Hours - 1
 	if payout.Hours > 0 {
-		payout.Timestamp = payout.Timestamp.Add(time.Hour)
-		k.SetPayoutForTimestamp(ctx, payout.Timestamp, payout.ID)
+		payout.NextAt = payout.NextAt.Add(time.Hour)
+		k.SetPayoutForNextAt(ctx, payout.NextAt, payout.ID)
 	}
 
 	k.SetPayout(ctx, payout)

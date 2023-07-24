@@ -13,8 +13,8 @@ import (
 )
 
 func (k *Keeper) BeginBlock(ctx sdk.Context) {
-	k.IteratePayoutsForTimestamp(ctx, ctx.BlockTime(), func(_ int, item types.Payout) (stop bool) {
-		k.DeletePayoutForTimestamp(ctx, item.Timestamp, item.ID)
+	k.IteratePayoutsForNextAt(ctx, ctx.BlockTime(), func(_ int, item types.Payout) (stop bool) {
+		k.DeletePayoutForNextAt(ctx, item.NextAt, item.ID)
 
 		var (
 			accAddr       = item.GetAddress()
@@ -34,8 +34,8 @@ func (k *Keeper) BeginBlock(ctx sdk.Context) {
 
 		item.Hours = item.Hours - 1
 		if item.Hours > 0 {
-			item.Timestamp = item.Timestamp.Add(time.Hour)
-			k.SetPayoutForTimestamp(ctx, item.Timestamp, item.ID)
+			item.NextAt = item.NextAt.Add(time.Hour)
+			k.SetPayoutForNextAt(ctx, item.NextAt, item.ID)
 		}
 
 		k.SetPayout(ctx, item)
@@ -77,9 +77,9 @@ func (k *Keeper) EndBlock(ctx sdk.Context) []abcitypes.ValidatorUpdate {
 				return false
 			}
 
-			k.DeletePayoutForTimestamp(ctx, payout.Timestamp, payout.ID)
+			k.DeletePayoutForNextAt(ctx, payout.NextAt, payout.ID)
 
-			payout.Timestamp = time.Time{}
+			payout.NextAt = time.Time{}
 			k.SetPayout(ctx, payout)
 
 			return false
