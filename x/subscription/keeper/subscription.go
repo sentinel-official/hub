@@ -311,58 +311,48 @@ func (k *Keeper) CreateSubscriptionForNode(ctx sdk.Context, accAddr sdk.AccAddre
 	k.SetSubscriptionForNode(ctx, nodeAddr, subscription.GetID())
 	k.SetSubscriptionForInactiveAt(ctx, subscription.GetInactiveAt(), subscription.GetID())
 
-	alloc := types.Allocation{
-		ID:            subscription.GetID(),
-		Address:       accAddr.String(),
-		GrantedBytes:  hubtypes.Gigabyte.MulRaw(gigabytes),
-		UtilisedBytes: sdk.ZeroInt(),
-	}
-
-	k.SetAllocation(ctx, alloc)
-	ctx.EventManager().EmitTypedEvent(
-		&types.EventAllocate{
-			ID:      subscription.GetID(),
-			Address: alloc.Address,
-			Bytes:   alloc.GrantedBytes,
-		},
-	)
-
 	if gigabytes != 0 {
-		return subscription, nil
-	}
+		alloc := types.Allocation{
+			ID:            subscription.GetID(),
+			Address:       accAddr.String(),
+			GrantedBytes:  hubtypes.Gigabyte.MulRaw(gigabytes),
+			UtilisedBytes: sdk.ZeroInt(),
+		}
 
-	payout := types.Payout{
-		ID:          subscription.GetID(),
-		Address:     accAddr.String(),
-		NodeAddress: nodeAddr.String(),
-		Hours:       hours,
-		Price: sdk.NewCoin(
-			subscription.Deposit.Denom,
-			subscription.Deposit.Amount.QuoRaw(hours),
-		),
-		NextAt: ctx.BlockTime(),
+		k.SetAllocation(ctx, alloc)
+		ctx.EventManager().EmitTypedEvent(
+			&types.EventAllocate{
+				ID:      subscription.GetID(),
+				Address: alloc.Address,
+				Bytes:   alloc.GrantedBytes,
+			},
+		)
 	}
+	if hours != 0 {
+		payout := types.Payout{
+			ID:          subscription.GetID(),
+			Address:     accAddr.String(),
+			NodeAddress: nodeAddr.String(),
+			Hours:       hours,
+			Price: sdk.NewCoin(
+				subscription.Deposit.Denom,
+				subscription.Deposit.Amount.QuoRaw(hours),
+			),
+			NextAt: ctx.BlockTime(),
+		}
 
-	if err := k.SendCoinFromDepositToAccount(ctx, accAddr, nodeAddr.Bytes(), payout.Price); err != nil {
-		return nil, err
-	}
-
-	payout.Hours = payout.Hours - 1
-	if payout.Hours > 0 {
-		payout.NextAt = payout.NextAt.Add(time.Hour)
+		k.SetPayout(ctx, payout)
+		k.SetPayoutForAccount(ctx, accAddr, payout.ID)
+		k.SetPayoutForNode(ctx, nodeAddr, payout.ID)
 		k.SetPayoutForNextAt(ctx, payout.NextAt, payout.ID)
+		ctx.EventManager().EmitTypedEvent(
+			&types.EventPayout{
+				ID:          payout.ID,
+				Address:     payout.Address,
+				NodeAddress: payout.NodeAddress,
+			},
+		)
 	}
-
-	k.SetPayout(ctx, payout)
-	k.SetPayoutForAccount(ctx, accAddr, payout.ID)
-	k.SetPayoutForNode(ctx, nodeAddr, payout.ID)
-	ctx.EventManager().EmitTypedEvent(
-		&types.EventPayout{
-			ID:          payout.ID,
-			Address:     payout.Address,
-			NodeAddress: payout.NodeAddress,
-		},
-	)
 
 	return subscription, nil
 }

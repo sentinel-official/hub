@@ -60,14 +60,12 @@ func (k *msgServer) MsgCancel(c context.Context, msg *types.MsgCancelRequest) (*
 	)
 
 	payout, found := k.GetPayout(ctx, subscription.GetID())
-	if !found {
-		return &types.MsgCancelResponse{}, nil
+	if found {
+		k.DeletePayoutForNextAt(ctx, payout.NextAt, payout.ID)
+
+		payout.NextAt = time.Time{}
+		k.SetPayout(ctx, payout)
 	}
-
-	k.DeletePayoutForNextAt(ctx, payout.NextAt, payout.ID)
-
-	payout.NextAt = time.Time{}
-	k.SetPayout(ctx, payout)
 
 	return &types.MsgCancelResponse{}, nil
 }
@@ -114,16 +112,16 @@ func (k *msgServer) MsgAllocate(c context.Context, msg *types.MsgAllocateRequest
 	}
 
 	var (
-		granted   = fromAlloc.GrantedBytes.Add(toAlloc.GrantedBytes)
-		utilised  = fromAlloc.UtilisedBytes.Add(toAlloc.UtilisedBytes)
-		available = granted.Sub(utilised)
+		grantedBytes   = fromAlloc.GrantedBytes.Add(toAlloc.GrantedBytes)
+		utilisedBytes  = fromAlloc.UtilisedBytes.Add(toAlloc.UtilisedBytes)
+		availableBytes = grantedBytes.Sub(utilisedBytes)
 	)
 
-	if msg.Bytes.GT(available) {
+	if msg.Bytes.GT(availableBytes) {
 		return nil, types.NewErrorInsufficientBytes(subscription.GetID(), msg.Bytes)
 	}
 
-	fromAlloc.GrantedBytes = available.Sub(msg.Bytes)
+	fromAlloc.GrantedBytes = availableBytes.Sub(msg.Bytes)
 	if fromAlloc.GrantedBytes.LT(fromAlloc.UtilisedBytes) {
 		return nil, types.NewErrorInvalidAllocation(subscription.GetID(), fromAddr)
 	}

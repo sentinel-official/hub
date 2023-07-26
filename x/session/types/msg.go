@@ -69,7 +69,7 @@ func (m *MsgUpdateDetailsRequest) ValidateBasic() error {
 		return errors.Wrap(ErrorInvalidMessage, "proof.id cannot be zero")
 	}
 	if m.Proof.Bandwidth.IsAnyNil() {
-		return errors.Wrap(ErrorInvalidMessage, "proof.bandwidth cannot be empty")
+		return errors.Wrap(ErrorInvalidMessage, "proof.bandwidth cannot contain nil")
 	}
 	if m.Proof.Bandwidth.IsAnyNegative() {
 		return errors.Wrap(ErrorInvalidMessage, "proof.bandwidth cannot be negative")

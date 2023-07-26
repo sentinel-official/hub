@@ -33,19 +33,15 @@ func (k *Keeper) BeginBlock(ctx sdk.Context) {
 		}
 
 		item.Hours = item.Hours - 1
-		if item.Hours > 0 {
-			item.NextAt = item.NextAt.Add(time.Hour)
-			k.SetPayoutForNextAt(ctx, item.NextAt, item.ID)
+		item.NextAt = item.NextAt.Add(time.Hour)
+		if item.Hours == 0 {
+			item.NextAt = time.Time{}
 		}
 
 		k.SetPayout(ctx, item)
-		ctx.EventManager().EmitTypedEvent(
-			&types.EventPayout{
-				ID:          item.ID,
-				Address:     item.Address,
-				NodeAddress: item.NodeAddress,
-			},
-		)
+		if item.Hours > 0 {
+			k.SetPayoutForNextAt(ctx, item.NextAt, item.ID)
+		}
 
 		return false
 	})
@@ -73,14 +69,12 @@ func (k *Keeper) EndBlock(ctx sdk.Context) []abcitypes.ValidatorUpdate {
 			)
 
 			payout, found := k.GetPayout(ctx, item.GetID())
-			if !found {
-				return false
+			if found {
+				k.DeletePayoutForNextAt(ctx, payout.NextAt, payout.ID)
+
+				payout.NextAt = time.Time{}
+				k.SetPayout(ctx, payout)
 			}
-
-			k.DeletePayoutForNextAt(ctx, payout.NextAt, payout.ID)
-
-			payout.NextAt = time.Time{}
-			k.SetPayout(ctx, payout)
 
 			return false
 		}
@@ -141,13 +135,11 @@ func (k *Keeper) EndBlock(ctx sdk.Context) []abcitypes.ValidatorUpdate {
 		)
 
 		payout, found := k.GetPayout(ctx, item.GetID())
-		if !found {
-			return false
+		if found {
+			k.DeletePayout(ctx, payout.ID)
+			k.DeletePayoutForAccount(ctx, payout.GetAddress(), payout.ID)
+			k.DeletePayoutForNode(ctx, payout.GetNodeAddress(), payout.ID)
 		}
-
-		k.DeletePayout(ctx, payout.ID)
-		k.DeletePayoutForAccount(ctx, payout.GetAddress(), payout.ID)
-		k.DeletePayoutForNode(ctx, payout.GetNodeAddress(), payout.ID)
 
 		return false
 	})
