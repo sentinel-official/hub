@@ -10,83 +10,80 @@ import (
 	subscriptiontypes "github.com/sentinel-official/hub/x/subscription/types"
 )
 
+// The following line asserts that the `msgServer` type implements the `types.MsgServiceServer` interface.
 var (
 	_ types.MsgServiceServer = (*msgServer)(nil)
 )
 
+// msgServer is a message server that implements the `types.MsgServiceServer` interface.
 type msgServer struct {
-	Keeper
+	Keeper // Keeper is an instance of the main keeper for the module.
 }
 
+// NewMsgServiceServer creates a new instance of `types.MsgServiceServer` using the provided Keeper.
 func NewMsgServiceServer(keeper Keeper) types.MsgServiceServer {
 	return &msgServer{Keeper: keeper}
 }
 
-// MsgStart handles the MsgStartRequest and starts a new session for a given subscription and account.
-// It takes a context (c) and a MsgStartRequest (msg) as input parameters.
-// It returns a MsgStartResponse and an error.
+// MsgStart starts a new session for a subscription.
+// It validates the start request, checks subscription and node status, and creates a new session.
 func (k *msgServer) MsgStart(c context.Context, msg *types.MsgStartRequest) (*types.MsgStartResponse, error) {
-	// Unwrap the SDK context.
 	ctx := sdk.UnwrapSDKContext(c)
 
-	// Retrieve the subscription using the given ID from the message.
+	// Get the subscription from the Store based on the provided subscription ID (msg.ID).
 	subscription, found := k.GetSubscription(ctx, msg.ID)
 	if !found {
 		return nil, types.NewErrorSubscriptionNotFound(msg.ID)
 	}
 
-	// Check if the subscription status is active.
+	// Check if the subscription is in an active state. If not, return an error.
 	if !subscription.GetStatus().Equal(hubtypes.StatusActive) {
 		return nil, types.NewErrorInvalidSubscriptionStatus(subscription.GetID(), subscription.GetStatus())
 	}
 
-	// Parse the provided node address from Bech32 to NodeAddress format.
+	// Convert the `msg.Address` (node's address) from Bech32 format to a `hubtypes.NodeAddress`.
 	nodeAddr, err := hubtypes.NodeAddressFromBech32(msg.Address)
 	if err != nil {
 		return nil, err
 	}
 
-	// Retrieve the node using the parsed node address.
+	// Get the node from the Store based on the provided node address.
 	node, found := k.GetNode(ctx, nodeAddr)
 	if !found {
 		return nil, types.NewErrorNodeNotFound(nodeAddr)
 	}
 
-	// Check if the node status is active.
+	// Check if the node is in an active state. If not, return an error.
 	if !node.Status.Equal(hubtypes.StatusActive) {
 		return nil, types.NewErrorInvalidNodeStatus(nodeAddr, node.Status)
 	}
 
-	// Check the subscription type and perform necessary validations accordingly.
+	// Validate the association between the subscription and the node.
+	// Depending on the subscription type, it should either match the node address or be associated with the plan.
 	switch s := subscription.(type) {
 	case *subscriptiontypes.NodeSubscription:
-		// If the subscription is a NodeSubscription, verify that the provided node address matches.
 		if node.Address != s.NodeAddress {
 			return nil, types.NewErrorInvalidNode(node.Address)
 		}
 	case *subscriptiontypes.PlanSubscription:
-		// If the subscription is a PlanSubscription, check if the node is associated with the plan.
 		if !k.HasNodeForPlan(ctx, s.PlanID, nodeAddr) {
 			return nil, types.NewErrorInvalidNode(node.Address)
 		}
 	default:
-		// Return an error if the subscription type is unknown or unsupported.
 		return nil, types.NewErrorInvalidSubscriptionType(subscription.GetID(), subscription.Type().String())
 	}
 
-	// Parse the account address from Bech32 format.
+	// Convert the `msg.From` address (in Bech32 format) to an `sdk.AccAddress`.
 	accAddr, err := sdk.AccAddressFromBech32(msg.From)
 	if err != nil {
 		return nil, err
 	}
 
-	// Initialize a flag to determine if allocation should be checked.
+	// Check if an allocation check is required.
 	checkAllocation := true
-
-	// If the subscription is a NodeSubscription and has a non-zero hours value,
-	// then no allocation check is required. Also, the from address should match the subscription creator address.
 	if s, ok := subscription.(*subscriptiontypes.NodeSubscription); ok {
 		if s.Hours != 0 {
+			// If the subscription is for hourly usage, no allocation check is needed.
 			checkAllocation = false
 			if msg.From != s.Address {
 				return nil, types.NewErrorUnauthorized(msg.From)
@@ -94,7 +91,7 @@ func (k *msgServer) MsgStart(c context.Context, msg *types.MsgStartRequest) (*ty
 		}
 	}
 
-	// If allocation check is required, verify that the allocation has enough bytes to start the session.
+	// If an allocation check is required, verify that the user has sufficient allocated bandwidth.
 	if checkAllocation {
 		alloc, found := k.GetAllocation(ctx, subscription.GetID(), accAddr)
 		if !found {
@@ -105,14 +102,14 @@ func (k *msgServer) MsgStart(c context.Context, msg *types.MsgStartRequest) (*ty
 		}
 	}
 
-	// Check if there is an active session for the given subscription and account.
-	// If an active session is found, return an error as only one active session is allowed per account and subscription.
+	// Check if an active session already exists for the same subscription and user.
+	// If found, return an error to prevent multiple active sessions for the same subscription and user.
 	session, found := k.GetActiveSessionForAllocation(ctx, subscription.GetID(), accAddr)
 	if found {
 		return nil, types.NewErrorDuplicateActiveSession(subscription.GetID(), accAddr, session.ID)
 	}
 
-	// Generate a new session ID by incrementing the count.
+	// Create a new session based on the provided parameters.
 	count := k.GetCount(ctx)
 	session = types.Session{
 		ID:             count + 1,
@@ -128,24 +125,16 @@ func (k *msgServer) MsgStart(c context.Context, msg *types.MsgStartRequest) (*ty
 		StatusAt: ctx.BlockTime(),
 	}
 
-	// Increment the count for future sessions.
+	// Update the count in the Store and set the new session.
 	k.SetCount(ctx, count+1)
-
-	// Set the newly created session in the store.
 	k.SetSession(ctx, session)
-
-	// Associate the session with the account and node in the store.
 	k.SetSessionForAccount(ctx, accAddr, session.ID)
 	k.SetSessionForNode(ctx, nodeAddr, session.ID)
-
-	// Associate the session with the subscription and allocation in the store.
 	k.SetSessionForSubscription(ctx, subscription.GetID(), session.ID)
 	k.SetSessionForAllocation(ctx, subscription.GetID(), accAddr, session.ID)
-
-	// Associate the session with the InactiveAt time in the store.
 	k.SetSessionForInactiveAt(ctx, session.InactiveAt, session.ID)
 
-	// Emit a Start event for the newly created session using the context's EventManager.
+	// Emit an event to notify that a new session has started.
 	ctx.EventManager().EmitTypedEvent(
 		&types.EventStart{
 			ID:             session.ID,
@@ -154,65 +143,58 @@ func (k *msgServer) MsgStart(c context.Context, msg *types.MsgStartRequest) (*ty
 		},
 	)
 
-	// Return an empty response and no error to indicate a successful end of the session.
 	return &types.MsgStartResponse{}, nil
 }
 
-// MsgUpdateDetails updates the details of a session based on the provided message.
-// It handles session verification, updates session details, and emits an event for the update.
+// MsgUpdateDetails updates the details of an active session.
+// It validates the update details request, verifies the signature if proof verification is enabled,
+// and updates the bandwidth and duration of the session.
 func (k *msgServer) MsgUpdateDetails(c context.Context, msg *types.MsgUpdateDetailsRequest) (*types.MsgUpdateDetailsResponse, error) {
-	// Unwrap the SDK context.
 	ctx := sdk.UnwrapSDKContext(c)
 
-	// Get the session based on the provided session ID from the message.
+	// Get the session from the Store based on the provided session ID (msg.Proof.ID).
 	session, found := k.GetSession(ctx, msg.Proof.ID)
 	if !found {
 		return nil, types.NewErrorSessionNotFound(msg.Proof.ID)
 	}
 
-	// Check if the session is in the "Inactive" state, if so, return an error.
+	// Check if the session is in an active state. If not, return an error.
 	if session.Status.Equal(hubtypes.StatusInactive) {
 		return nil, types.NewErrorInvalidSessionStatus(session.ID, session.Status)
 	}
 
-	// Verify that the sender of the message is authorized to update the session.
+	// Verify that the `msg.From` address matches the node address of the session. If not, return an error.
 	if msg.From != session.NodeAddress {
 		return nil, types.NewErrorUnauthorized(msg.From)
 	}
 
-	// If proof verification is enabled, verify the signature provided in the message.
+	// If proof verification is enabled, verify the signature using the associated account address.
 	if k.ProofVerificationEnabled(ctx) {
-		// Get the account address associated with the session.
 		accAddr := session.GetAddress()
-
-		// Verify the signature using the account address, provided proof, and signature.
 		if err := k.VerifySignature(ctx, accAddr, msg.Proof, msg.Signature); err != nil {
 			return nil, types.NewErrorInvalidSignature(msg.Signature)
 		}
 	}
 
-	// If the session is in the "Active" state, update the session's inactive time.
+	// If the session is currently active, delete it from the inactive time index.
 	if session.Status.Equal(hubtypes.StatusActive) {
-		// Delete the session from the old inactive time.
 		k.DeleteSessionForInactiveAt(ctx, session.InactiveAt, session.ID)
 
-		// Calculate the new inactive time based on the current block time and the pending duration.
+		// Update the session's inactive time based on the inactive-pending duration.
 		session.InactiveAt = ctx.BlockTime().Add(
 			k.InactivePendingDuration(ctx),
 		)
-
-		// Set the session for the new inactive time.
 		k.SetSessionForInactiveAt(ctx, session.InactiveAt, session.ID)
 	}
 
-	// Update the session's bandwidth and duration.
+	// Update the bandwidth and duration of the session using the provided proof.
 	session.Bandwidth = msg.Proof.Bandwidth
 	session.Duration = msg.Proof.Duration
 
-	// Save the updated session to the state.
+	// Update the session in the Store.
 	k.SetSession(ctx, session)
 
-	// Emit a typed event to signal the session details update.
+	// Emit an event to notify that the session details have been updated.
 	ctx.EventManager().EmitTypedEvent(
 		&types.EventUpdateDetails{
 			ID:             session.ID,
@@ -221,54 +203,45 @@ func (k *msgServer) MsgUpdateDetails(c context.Context, msg *types.MsgUpdateDeta
 		},
 	)
 
-	// Return an empty response and no error to indicate a successful update.
 	return &types.MsgUpdateDetailsResponse{}, nil
 }
 
-// MsgEnd ends an active session based on the provided message.
-// It changes the session status to "InactivePending", sets a new inactive time,
-// and emits an event for the status update.
+// MsgEnd ends an active session.
+// It validates the end request, updates the session status to inactive-pending, and sets the inactive time.
 func (k *msgServer) MsgEnd(c context.Context, msg *types.MsgEndRequest) (*types.MsgEndResponse, error) {
-	// Unwrap the SDK context.
 	ctx := sdk.UnwrapSDKContext(c)
 
-	// Get the session based on the provided session ID from the message.
+	// Get the session from the Store based on the provided session ID (msg.ID).
 	session, found := k.GetSession(ctx, msg.ID)
 	if !found {
 		return nil, types.NewErrorSessionNotFound(msg.ID)
 	}
 
-	// Check if the session is in the "Active" state, if not, return an error.
+	// Check if the session is in an active state. If not, return an error.
 	if !session.Status.Equal(hubtypes.StatusActive) {
 		return nil, types.NewErrorInvalidSessionStatus(session.ID, session.Status)
 	}
 
-	// Verify that the sender of the message is authorized to end the session.
+	// Verify that the `msg.From` address matches the user address of the session. If not, return an error.
 	if msg.From != session.Address {
 		return nil, types.NewErrorUnauthorized(msg.From)
 	}
 
-	// Delete the session from the old inactive time.
+	// Delete the session from the inactive time index and update the inactive time based on the inactive-pending duration.
 	k.DeleteSessionForInactiveAt(ctx, session.InactiveAt, session.ID)
-
-	// Calculate the new inactive time based on the current block time and the pending duration.
 	session.InactiveAt = ctx.BlockTime().Add(
 		k.InactivePendingDuration(ctx),
 	)
-
-	// Set the session for the new inactive time.
 	k.SetSessionForInactiveAt(ctx, session.InactiveAt, session.ID)
 
-	// Update the session status to "InactivePending".
+	// Update the session status to inactive-pending and set the status timestamp.
 	session.Status = hubtypes.StatusInactivePending
-
-	// Set the status change timestamp to the current block time.
 	session.StatusAt = ctx.BlockTime()
 
-	// Save the updated session to the state.
+	// Update the session in the Store.
 	k.SetSession(ctx, session)
 
-	// Emit a typed event to signal the session status update.
+	// Emit an event to notify that the session status has been updated.
 	ctx.EventManager().EmitTypedEvent(
 		&types.EventUpdateStatus{
 			ID:             session.ID,
@@ -278,6 +251,5 @@ func (k *msgServer) MsgEnd(c context.Context, msg *types.MsgEndRequest) (*types.
 		},
 	)
 
-	// Return an empty response and no error to indicate a successful end of the session.
 	return &types.MsgEndResponse{}, nil
 }
