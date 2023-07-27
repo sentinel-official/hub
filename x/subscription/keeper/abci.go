@@ -72,7 +72,7 @@ func (k *Keeper) EndBlock(ctx sdk.Context) []abcitypes.ValidatorUpdate {
 		// If the subscription status is 'Active', update its InactiveAt value and set it to 'InactivePending'.
 		if item.GetStatus().Equal(hubtypes.StatusActive) {
 			item.SetInactiveAt(
-				item.GetInactiveAt().Add(statusChangeDelay),
+				ctx.BlockTime().Add(statusChangeDelay),
 			)
 			item.SetStatus(hubtypes.StatusInactivePending)
 			item.SetStatusAt(ctx.BlockTime())
