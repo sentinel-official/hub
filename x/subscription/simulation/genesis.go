@@ -13,21 +13,21 @@ import (
 
 func RandomizedGenesisState(state *module.SimulationState) *types.GenesisState {
 	var (
-		inactivePendingDuration time.Duration
+		statusChangeDelay time.Duration
 	)
 
 	state.AppParams.GetOrGenerate(
 		state.Cdc,
-		string(types.KeyInactivePendingDuration),
-		&inactivePendingDuration,
+		string(types.KeyStatusChangeDelay),
+		&statusChangeDelay,
 		state.Rand,
 		func(r *rand.Rand) {
-			inactivePendingDuration = time.Duration(r.Int63n(MaxInactivePendingDuration)) * time.Millisecond
+			statusChangeDelay = time.Duration(r.Int63n(MaxStatusChangeDelay)) * time.Millisecond
 		},
 	)
 
 	return types.NewGenesisState(
 		nil,
-		types.NewParams(inactivePendingDuration),
+		types.NewParams(statusChangeDelay),
 	)
 }

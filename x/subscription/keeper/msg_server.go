@@ -56,9 +56,9 @@ func (k *msgServer) MsgCancel(c context.Context, msg *types.MsgCancelRequest) (*
 	k.DeleteSubscriptionForInactiveAt(ctx, subscription.GetInactiveAt(), subscription.GetID())
 
 	// Calculate the duration for which the subscription will be in the inactive state.
-	inactivePendingDuration := k.InactivePendingDuration(ctx)
+	statusChangeDelay := k.StatusChangeDelay(ctx)
 	subscription.SetInactiveAt(
-		subscription.GetInactiveAt().Add(inactivePendingDuration),
+		subscription.GetInactiveAt().Add(statusChangeDelay),
 	)
 	subscription.SetStatus(hubtypes.StatusInactivePending)
 	subscription.SetStatusAt(ctx.BlockTime())

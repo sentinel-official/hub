@@ -8,11 +8,11 @@ import (
 )
 
 var (
-	DefaultInactivePendingDuration = 2 * time.Minute
+	DefaultStatusChangeDelay = 2 * time.Minute
 )
 
 var (
-	KeyInactivePendingDuration = []byte("InactivePendingDuration")
+	KeyStatusChangeDelay = []byte("StatusChangeDelay")
 )
 
 var (
@@ -20,7 +20,7 @@ var (
 )
 
 func (m *Params) Validate() error {
-	if err := validateInactivePendingDuration(m.InactivePendingDuration); err != nil {
+	if err := validateStatusChangeDelay(m.StatusChangeDelay); err != nil {
 		return err
 	}
 
@@ -30,22 +30,22 @@ func (m *Params) Validate() error {
 func (m *Params) ParamSetPairs() params.ParamSetPairs {
 	return params.ParamSetPairs{
 		{
-			Key:         KeyInactivePendingDuration,
-			Value:       &m.InactivePendingDuration,
-			ValidatorFn: validateInactivePendingDuration,
+			Key:         KeyStatusChangeDelay,
+			Value:       &m.StatusChangeDelay,
+			ValidatorFn: validateStatusChangeDelay,
 		},
 	}
 }
 
-func NewParams(inactivePendingDuration time.Duration) Params {
+func NewParams(statusChangeDelay time.Duration) Params {
 	return Params{
-		InactivePendingDuration: inactivePendingDuration,
+		StatusChangeDelay: statusChangeDelay,
 	}
 }
 
 func DefaultParams() Params {
 	return Params{
-		InactivePendingDuration: DefaultInactivePendingDuration,
+		StatusChangeDelay: DefaultStatusChangeDelay,
 	}
 }
 
@@ -53,17 +53,17 @@ func ParamsKeyTable() params.KeyTable {
 	return params.NewKeyTable().RegisterParamSet(&Params{})
 }
 
-func validateInactivePendingDuration(v interface{}) error {
+func validateStatusChangeDelay(v interface{}) error {
 	value, ok := v.(time.Duration)
 	if !ok {
 		return fmt.Errorf("invalid parameter type %T", v)
 	}
 
 	if value < 0 {
-		return fmt.Errorf("inactive_pending_duration cannot be negative")
+		return fmt.Errorf("status_change_delay cannot be negative")
 	}
 	if value == 0 {
-		return fmt.Errorf("inactive_pending_duration cannot be zero")
+		return fmt.Errorf("status_change_delay cannot be zero")
 	}
 
 	return nil

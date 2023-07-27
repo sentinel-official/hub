@@ -248,7 +248,9 @@ func (k *Keeper) IterateSubscriptionsForInactiveAt(ctx sdk.Context, endTime time
 	}
 }
 
+// CreateSubscriptionForNode creates a new NodeSubscription for a specific node and account.
 func (k *Keeper) CreateSubscriptionForNode(ctx sdk.Context, accAddr sdk.AccAddress, nodeAddr hubtypes.NodeAddress, gigabytes, hours int64, denom string) (*types.NodeSubscription, error) {
+	// Check if the node exists and is in an active status.
 	node, found := k.GetNode(ctx, nodeAddr)
 	if !found {
 		return nil, types.NewErrorNodeNotFound(nodeAddr)
@@ -257,29 +259,28 @@ func (k *Keeper) CreateSubscriptionForNode(ctx sdk.Context, accAddr sdk.AccAddre
 		return nil, types.NewErrorInvalidNodeStatus(nodeAddr, node.Status)
 	}
 
-	var (
-		count        = k.GetCount(ctx)
-		subscription = &types.NodeSubscription{
-			BaseSubscription: &types.BaseSubscription{
-				ID:         count + 1,
-				Address:    accAddr.String(),
-				InactiveAt: time.Time{},
-				Status:     hubtypes.StatusActive,
-				StatusAt:   ctx.BlockTime(),
-			},
-			NodeAddress: nodeAddr.String(),
-			Gigabytes:   gigabytes,
-			Hours:       hours,
-			Deposit:     sdk.Coin{},
-		}
-	)
+	// Retrieve the current count and create a new NodeSubscription.
+	count := k.GetCount(ctx)
+	subscription := &types.NodeSubscription{
+		BaseSubscription: &types.BaseSubscription{
+			ID:         count + 1,
+			Address:    accAddr.String(),
+			InactiveAt: time.Time{},
+			Status:     hubtypes.StatusActive,
+			StatusAt:   ctx.BlockTime(),
+		},
+		NodeAddress: nodeAddr.String(),
+		Gigabytes:   gigabytes,
+		Hours:       hours,
+		Deposit:     sdk.Coin{},
+	}
 
+	// Based on the provided gigabytes and hours, calculate the deposit and set the InactiveAt time.
 	if gigabytes != 0 {
 		price, found := node.GigabytePrice(denom)
 		if !found {
 			return nil, types.NewErrorPriceNotFound(denom)
 		}
-
 		subscription.InactiveAt = ctx.BlockTime().Add(types.Year) // TODO: move to params
 		subscription.Deposit = sdk.NewCoin(
 			price.Denom,
@@ -291,7 +292,6 @@ func (k *Keeper) CreateSubscriptionForNode(ctx sdk.Context, accAddr sdk.AccAddre
 		if !found {
 			return nil, types.NewErrorPriceNotFound(denom)
 		}
-
 		subscription.InactiveAt = ctx.BlockTime().Add(
 			time.Duration(hours) * time.Hour,
 		)
@@ -301,16 +301,19 @@ func (k *Keeper) CreateSubscriptionForNode(ctx sdk.Context, accAddr sdk.AccAddre
 		)
 	}
 
+	// Add the required deposit to the account's balance.
 	if err := k.DepositAdd(ctx, accAddr, subscription.Deposit); err != nil {
 		return nil, err
 	}
 
+	// Save the new NodeSubscription to the store and update the count.
 	k.SetCount(ctx, count+1)
 	k.SetSubscription(ctx, subscription)
 	k.SetSubscriptionForAccount(ctx, accAddr, subscription.GetID())
 	k.SetSubscriptionForNode(ctx, nodeAddr, subscription.GetID())
 	k.SetSubscriptionForInactiveAt(ctx, subscription.GetInactiveAt(), subscription.GetID())
 
+	// If the subscription is based on gigabytes, create an allocation and emit an event.
 	if gigabytes != 0 {
 		alloc := types.Allocation{
 			ID:            subscription.GetID(),
@@ -328,6 +331,8 @@ func (k *Keeper) CreateSubscriptionForNode(ctx sdk.Context, accAddr sdk.AccAddre
 			},
 		)
 	}
+
+	// If the subscription is based on hours, create a payout and emit an event.
 	if hours != 0 {
 		payout := types.Payout{
 			ID:          subscription.GetID(),
@@ -357,7 +362,9 @@ func (k *Keeper) CreateSubscriptionForNode(ctx sdk.Context, accAddr sdk.AccAddre
 	return subscription, nil
 }
 
+// CreateSubscriptionForPlan creates a new PlanSubscription for a specific plan and account.
 func (k *Keeper) CreateSubscriptionForPlan(ctx sdk.Context, accAddr sdk.AccAddress, id uint64, denom string) (*types.PlanSubscription, error) {
+	// Check if the plan exists and is in an active status.
 	plan, found := k.GetPlan(ctx, id)
 	if !found {
 		return nil, types.NewErrorPlanNotFound(id)
@@ -366,50 +373,56 @@ func (k *Keeper) CreateSubscriptionForPlan(ctx sdk.Context, accAddr sdk.AccAddre
 		return nil, types.NewErrorInvalidPlanStatus(plan.ID, plan.Status)
 	}
 
+	// Get the price of the plan in the specified denomination.
 	price, found := plan.Price(denom)
 	if !found {
 		return nil, types.NewErrorPriceNotFound(denom)
 	}
 
+	// Calculate the staking reward based on the plan price and staking share.
 	var (
 		stakingShare  = k.provider.StakingShare(ctx)
 		stakingReward = hubutils.GetProportionOfCoin(price, stakingShare)
 	)
 
+	// Move the staking reward from the account to the fee collector module account.
 	if err := k.SendCoinFromAccountToModule(ctx, accAddr, k.feeCollectorName, stakingReward); err != nil {
 		return nil, err
 	}
 
+	// Calculate the payment amount after deducting the staking reward.
 	var (
 		provAddr = plan.GetAddress()
 		payment  = price.Sub(stakingReward)
 	)
 
+	// Send the payment amount from the account to the plan provider address.
 	if err := k.SendCoin(ctx, accAddr, provAddr.Bytes(), payment); err != nil {
 		return nil, err
 	}
 
-	var (
-		count        = k.GetCount(ctx)
-		subscription = &types.PlanSubscription{
-			BaseSubscription: &types.BaseSubscription{
-				ID:         count + 1,
-				Address:    accAddr.String(),
-				InactiveAt: ctx.BlockTime().Add(plan.Duration),
-				Status:     hubtypes.StatusActive,
-				StatusAt:   ctx.BlockTime(),
-			},
-			PlanID: plan.ID,
-			Denom:  price.Denom,
-		}
-	)
+	// Retrieve the current count and create a new PlanSubscription.
+	count := k.GetCount(ctx)
+	subscription := &types.PlanSubscription{
+		BaseSubscription: &types.BaseSubscription{
+			ID:         count + 1,
+			Address:    accAddr.String(),
+			InactiveAt: ctx.BlockTime().Add(plan.Duration),
+			Status:     hubtypes.StatusActive,
+			StatusAt:   ctx.BlockTime(),
+		},
+		PlanID: plan.ID,
+		Denom:  price.Denom,
+	}
 
+	// Save the new PlanSubscription to the store and update the count.
 	k.SetCount(ctx, count+1)
 	k.SetSubscription(ctx, subscription)
 	k.SetSubscriptionForAccount(ctx, accAddr, subscription.GetID())
 	k.SetSubscriptionForPlan(ctx, plan.ID, subscription.GetID())
 	k.SetSubscriptionForInactiveAt(ctx, subscription.GetInactiveAt(), subscription.GetID())
 
+	// Create an allocation for the plan subscription and emit an event.
 	alloc := types.Allocation{
 		ID:            subscription.GetID(),
 		Address:       accAddr.String(),

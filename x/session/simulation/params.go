@@ -14,7 +14,7 @@ import (
 )
 
 const (
-	MaxInactivePendingDuration = 1 << 18
+	MaxStatusChangeDelay = 1 << 18
 )
 
 func ParamChanges(_ *rand.Rand) []simtypes.ParamChange {
@@ -28,11 +28,11 @@ func ParamChanges(_ *rand.Rand) []simtypes.ParamChange {
 		),
 		simulation.NewSimParamChange(
 			types.ModuleName,
-			string(types.KeyInactivePendingDuration),
+			string(types.KeyStatusChangeDelay),
 			func(r *rand.Rand) string {
 				return fmt.Sprintf(
 					"%s",
-					time.Duration(r.Int63n(MaxInactivePendingDuration))*time.Millisecond,
+					time.Duration(r.Int63n(MaxStatusChangeDelay))*time.Millisecond,
 				)
 			},
 		),
