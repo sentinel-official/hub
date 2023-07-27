@@ -51,10 +51,13 @@ func NewKeeper(
 	)
 	k.Node.WithDistributionKeeper(distributionKeeper)
 	k.Node.WithProviderKeeper(&k.Provider)
+	k.Node.WithSubscriptionKeeper(&k.Subscription)
 
 	k.Plan = plankeeper.NewKeeper(cdc, key)
+	k.Plan.WithBankKeeper(bankKeeper)
 	k.Plan.WithProviderKeeper(&k.Provider)
 	k.Plan.WithNodeKeeper(&k.Node)
+	k.Plan.WithSubscriptionKeeper(&k.Subscription)
 
 	k.Subscription = subscriptionkeeper.NewKeeper(
 		cdc, key, paramsKeeper.Subspace(fmt.Sprintf("%s/%s", types.ModuleName, subscriptiontypes.ModuleName)),

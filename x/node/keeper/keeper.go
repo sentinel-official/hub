@@ -38,6 +38,10 @@ func (k *Keeper) WithProviderKeeper(keeper expected.ProviderKeeper) {
 	k.provider = keeper
 }
 
+func (k *Keeper) WithSubscriptionKeeper(keeper expected.SubscriptionKeeper) {
+	k.subscription = keeper
+}
+
 func (k *Keeper) Logger(ctx sdk.Context) log.Logger {
 	return ctx.Logger().With("module", "x/"+types.ModuleName)
 }
