@@ -9,11 +9,16 @@ import (
 	hubtypes "github.com/sentinel-official/hub/types"
 )
 
+// The `types` package contains custom message types for the Cosmos SDK.
+
+// The following variables implement the sdk.Msg interface for MsgRegisterRequest and MsgUpdateRequest.
+// These variables ensure that the corresponding types can be used as messages in the Cosmos SDK.
 var (
 	_ sdk.Msg = (*MsgRegisterRequest)(nil)
 	_ sdk.Msg = (*MsgUpdateRequest)(nil)
 )
 
+// NewMsgRegisterRequest creates a new MsgRegisterRequest instance with the given parameters.
 func NewMsgRegisterRequest(from sdk.AccAddress, name, identity, website, description string) *MsgRegisterRequest {
 	return &MsgRegisterRequest{
 		From:        from.String(),
@@ -24,6 +29,13 @@ func NewMsgRegisterRequest(from sdk.AccAddress, name, identity, website, descrip
 	}
 }
 
+// ValidateBasic performs basic validation checks on the MsgRegisterRequest fields.
+// It checks if the 'From' field is not empty and represents a valid account address,
+// if the 'Name' field is not empty and its length is not greater than 64 characters,
+// if the 'Identity' field's length is not greater than 64 characters,
+// if the 'Website' field's length is not greater than 64 characters (if not empty),
+// if the 'Website' field represents a valid URL (if not empty),
+// and if the 'Description' field's length is not greater than 256 characters.
 func (m *MsgRegisterRequest) ValidateBasic() error {
 	if m.From == "" {
 		return errors.Wrap(ErrorInvalidMessage, "from cannot be empty")
@@ -55,6 +67,7 @@ func (m *MsgRegisterRequest) ValidateBasic() error {
 	return nil
 }
 
+// GetSigners returns an array containing the signer's account address extracted from the 'From' field of the MsgRegisterRequest.
 func (m *MsgRegisterRequest) GetSigners() []sdk.AccAddress {
 	from, err := sdk.AccAddressFromBech32(m.From)
 	if err != nil {
@@ -64,6 +77,7 @@ func (m *MsgRegisterRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{from}
 }
 
+// NewMsgUpdateRequest creates a new MsgUpdateRequest instance with the given parameters.
 func NewMsgUpdateRequest(from hubtypes.ProvAddress, name, identity, website, description string, status hubtypes.Status) *MsgUpdateRequest {
 	return &MsgUpdateRequest{
 		From:        from.String(),
@@ -75,6 +89,14 @@ func NewMsgUpdateRequest(from hubtypes.ProvAddress, name, identity, website, des
 	}
 }
 
+// ValidateBasic performs basic validation checks on the MsgUpdateRequest fields.
+// It checks if the 'From' field is not empty and represents a valid provider address,
+// if the 'Name' field's length is not greater than 64 characters,
+// if the 'Identity' field's length is not greater than 64 characters,
+// if the 'Website' field's length is not greater than 64 characters (if not empty),
+// if the 'Website' field represents a valid URL (if not empty),
+// if the 'Description' field's length is not greater than 256 characters,
+// and if the 'Status' field is one of the allowed values [unspecified, active, inactive].
 func (m *MsgUpdateRequest) ValidateBasic() error {
 	if m.From == "" {
 		return errors.Wrap(ErrorInvalidMessage, "from cannot be empty")
@@ -106,6 +128,7 @@ func (m *MsgUpdateRequest) ValidateBasic() error {
 	return nil
 }
 
+// GetSigners returns an array containing the signer's account address extracted from the 'From' field of the MsgUpdateRequest.
 func (m *MsgUpdateRequest) GetSigners() []sdk.AccAddress {
 	from, err := hubtypes.ProvAddressFromBech32(m.From)
 	if err != nil {

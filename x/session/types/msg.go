@@ -7,12 +7,17 @@ import (
 	hubtypes "github.com/sentinel-official/hub/types"
 )
 
+// The `types` package contains custom message types for the Cosmos SDK.
+
+// The following variables implement the sdk.Msg interface for MsgStartRequest, MsgUpdateDetailsRequest, and MsgEndRequest.
+// These variables ensure that the corresponding types can be used as messages in the Cosmos SDK.
 var (
 	_ sdk.Msg = (*MsgStartRequest)(nil)
 	_ sdk.Msg = (*MsgUpdateDetailsRequest)(nil)
 	_ sdk.Msg = (*MsgEndRequest)(nil)
 )
 
+// NewMsgStartRequest creates a new MsgStartRequest instance with the given parameters.
 func NewMsgStartRequest(from sdk.AccAddress, id uint64, addr hubtypes.NodeAddress) *MsgStartRequest {
 	return &MsgStartRequest{
 		From:    from.String(),
@@ -21,6 +26,10 @@ func NewMsgStartRequest(from sdk.AccAddress, id uint64, addr hubtypes.NodeAddres
 	}
 }
 
+// ValidateBasic performs basic validation checks on the MsgStartRequest fields.
+// It checks if the 'From' field is not empty and represents a valid account address,
+// if the 'ID' field is not zero,
+// if the 'Address' field is not empty and represents a valid node address.
 func (m *MsgStartRequest) ValidateBasic() error {
 	if m.From == "" {
 		return errors.Wrap(ErrorInvalidMessage, "from cannot be empty")
@@ -41,6 +50,7 @@ func (m *MsgStartRequest) ValidateBasic() error {
 	return nil
 }
 
+// GetSigners returns an array containing the signer's account address extracted from the 'From' field of the MsgStartRequest.
 func (m *MsgStartRequest) GetSigners() []sdk.AccAddress {
 	from, err := sdk.AccAddressFromBech32(m.From)
 	if err != nil {
@@ -50,6 +60,7 @@ func (m *MsgStartRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{from}
 }
 
+// NewMsgUpdateDetailsRequest creates a new MsgUpdateDetailsRequest instance with the given parameters.
 func NewMsgUpdateDetailsRequest(from hubtypes.NodeAddress, proof Proof, signature []byte) *MsgUpdateDetailsRequest {
 	return &MsgUpdateDetailsRequest{
 		From:      from.String(),
@@ -58,6 +69,12 @@ func NewMsgUpdateDetailsRequest(from hubtypes.NodeAddress, proof Proof, signatur
 	}
 }
 
+// ValidateBasic performs basic validation checks on the MsgUpdateDetailsRequest fields.
+// It checks if the 'From' field is not empty and represents a valid node address,
+// if the 'Proof.ID' field is not zero,
+// if the 'Proof.Bandwidth' field does not contain nil or negative values,
+// if the 'Proof.Duration' field is not negative,
+// and if the 'Signature' field has a length of exactly 64 bytes (if not nil).
 func (m *MsgUpdateDetailsRequest) ValidateBasic() error {
 	if m.From == "" {
 		return errors.Wrap(ErrorInvalidMessage, "from cannot be empty")
@@ -89,6 +106,7 @@ func (m *MsgUpdateDetailsRequest) ValidateBasic() error {
 	return nil
 }
 
+// GetSigners returns an array containing the signer's account address extracted from the 'From' field of the MsgUpdateDetailsRequest.
 func (m *MsgUpdateDetailsRequest) GetSigners() []sdk.AccAddress {
 	from, err := hubtypes.NodeAddressFromBech32(m.From)
 	if err != nil {
@@ -98,6 +116,7 @@ func (m *MsgUpdateDetailsRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{from.Bytes()}
 }
 
+// NewMsgEndRequest creates a new MsgEndRequest instance with the given parameters.
 func NewMsgEndRequest(from sdk.AccAddress, id uint64, rating uint64) *MsgEndRequest {
 	return &MsgEndRequest{
 		From:   from.String(),
@@ -106,6 +125,10 @@ func NewMsgEndRequest(from sdk.AccAddress, id uint64, rating uint64) *MsgEndRequ
 	}
 }
 
+// ValidateBasic performs basic validation checks on the MsgEndRequest fields.
+// It checks if the 'From' field is not empty and represents a valid account address,
+// if the 'ID' field is not zero,
+// and if the 'Rating' field is not greater than 10.
 func (m *MsgEndRequest) ValidateBasic() error {
 	if m.From == "" {
 		return errors.Wrap(ErrorInvalidMessage, "from cannot be empty")
@@ -123,6 +146,7 @@ func (m *MsgEndRequest) ValidateBasic() error {
 	return nil
 }
 
+// GetSigners returns an array containing the signer's account address extracted from the 'From' field of the MsgEndRequest.
 func (m *MsgEndRequest) GetSigners() []sdk.AccAddress {
 	from, err := sdk.AccAddressFromBech32(m.From)
 	if err != nil {

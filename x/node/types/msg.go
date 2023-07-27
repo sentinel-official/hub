@@ -9,6 +9,10 @@ import (
 	hubtypes "github.com/sentinel-official/hub/types"
 )
 
+// The `types` package contains custom message types for the Cosmos SDK.
+
+// The following variables implement the sdk.Msg interface for the provided message types.
+// These variables ensure that the corresponding types can be used as messages in the Cosmos SDK.
 var (
 	_ sdk.Msg = (*MsgRegisterRequest)(nil)
 	_ sdk.Msg = (*MsgUpdateDetailsRequest)(nil)
@@ -16,6 +20,7 @@ var (
 	_ sdk.Msg = (*MsgSubscribeRequest)(nil)
 )
 
+// NewMsgRegisterRequest creates a new MsgRegisterRequest instance with the given parameters.
 func NewMsgRegisterRequest(from sdk.AccAddress, gigabytePrices, hourlyPrices sdk.Coins, remoteURL string) *MsgRegisterRequest {
 	return &MsgRegisterRequest{
 		From:           from.String(),
@@ -25,6 +30,10 @@ func NewMsgRegisterRequest(from sdk.AccAddress, gigabytePrices, hourlyPrices sdk
 	}
 }
 
+// ValidateBasic performs basic validation checks on the MsgRegisterRequest fields.
+// It checks if the 'From' field is not empty and represents a valid account address,
+// if the 'GigabytePrices' and 'HourlyPrices' fields are valid coins (not empty, not containing nil coins, and having valid coin denominations),
+// and if the 'RemoteURL' field is valid (not empty, not longer than 64 characters, and has a valid "https" scheme and non-empty port).
 func (m *MsgRegisterRequest) ValidateBasic() error {
 	if m.From == "" {
 		return errors.Wrap(ErrorInvalidMessage, "from cannot be empty")
@@ -75,6 +84,7 @@ func (m *MsgRegisterRequest) ValidateBasic() error {
 	return nil
 }
 
+// GetSigners returns an array containing the signer's account address extracted from the 'From' field of the MsgRegisterRequest.
 func (m *MsgRegisterRequest) GetSigners() []sdk.AccAddress {
 	from, err := sdk.AccAddressFromBech32(m.From)
 	if err != nil {
@@ -84,6 +94,7 @@ func (m *MsgRegisterRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{from}
 }
 
+// NewMsgUpdateDetailsRequest creates a new MsgUpdateDetailsRequest instance with the given parameters.
 func NewMsgUpdateDetailsRequest(from hubtypes.NodeAddress, gigabytePrices, hourlyPrices sdk.Coins, remoteURL string) *MsgUpdateDetailsRequest {
 	return &MsgUpdateDetailsRequest{
 		From:           from.String(),
@@ -93,6 +104,10 @@ func NewMsgUpdateDetailsRequest(from hubtypes.NodeAddress, gigabytePrices, hourl
 	}
 }
 
+// ValidateBasic performs basic validation checks on the MsgUpdateDetailsRequest fields.
+// It checks if the 'From' field is not empty and represents a valid node address,
+// if the 'GigabytePrices' and 'HourlyPrices' fields are valid coins (not empty, not containing nil coins, and having valid coin denominations),
+// and if the 'RemoteURL' field is valid (not empty, not longer than 64 characters, and has a valid "https" scheme and non-empty port).
 func (m *MsgUpdateDetailsRequest) ValidateBasic() error {
 	if m.From == "" {
 		return errors.Wrap(ErrorInvalidMessage, "from cannot be empty")
@@ -142,6 +157,7 @@ func (m *MsgUpdateDetailsRequest) ValidateBasic() error {
 	return nil
 }
 
+// GetSigners returns an array containing the signer's account address extracted from the 'From' field of the MsgUpdateDetailsRequest.
 func (m *MsgUpdateDetailsRequest) GetSigners() []sdk.AccAddress {
 	from, err := hubtypes.NodeAddressFromBech32(m.From)
 	if err != nil {
@@ -151,6 +167,7 @@ func (m *MsgUpdateDetailsRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{from.Bytes()}
 }
 
+// NewMsgUpdateStatusRequest creates a new MsgUpdateStatusRequest instance with the given parameters.
 func NewMsgUpdateStatusRequest(from hubtypes.NodeAddress, status hubtypes.Status) *MsgUpdateStatusRequest {
 	return &MsgUpdateStatusRequest{
 		From:   from.String(),
@@ -158,6 +175,9 @@ func NewMsgUpdateStatusRequest(from hubtypes.NodeAddress, status hubtypes.Status
 	}
 }
 
+// ValidateBasic performs basic validation checks on the MsgUpdateStatusRequest fields.
+// It checks if the 'From' field is not empty and represents a valid node address,
+// and if the 'Status' field is one of the allowed values [active, inactive].
 func (m *MsgUpdateStatusRequest) ValidateBasic() error {
 	if m.From == "" {
 		return errors.Wrap(ErrorInvalidMessage, "from cannot be empty")
@@ -172,6 +192,7 @@ func (m *MsgUpdateStatusRequest) ValidateBasic() error {
 	return nil
 }
 
+// GetSigners returns an array containing the signer's account address extracted from the 'From' field of the MsgUpdateStatusRequest.
 func (m *MsgUpdateStatusRequest) GetSigners() []sdk.AccAddress {
 	from, err := hubtypes.NodeAddressFromBech32(m.From)
 	if err != nil {
@@ -181,6 +202,7 @@ func (m *MsgUpdateStatusRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{from.Bytes()}
 }
 
+// NewMsgSubscribeRequest creates a new MsgSubscribeRequest instance with the given parameters.
 func NewMsgSubscribeRequest(from sdk.AccAddress, addr hubtypes.NodeAddress, gigabytes, hours int64, denom string) *MsgSubscribeRequest {
 	return &MsgSubscribeRequest{
 		From:      from.String(),
@@ -191,6 +213,11 @@ func NewMsgSubscribeRequest(from sdk.AccAddress, addr hubtypes.NodeAddress, giga
 	}
 }
 
+// ValidateBasic performs basic validation checks on the MsgSubscribeRequest fields.
+// It checks if the 'From' field is not empty and represents a valid account address,
+// if the 'Address' field is not empty and represents a valid node address,
+// if either 'Gigabytes' or 'Hours' field (but not both) are non-zero and non-negative,
+// and if the 'Denom' field is valid according to the Cosmos SDK's ValidateDenom function.
 func (m *MsgSubscribeRequest) ValidateBasic() error {
 	if m.From == "" {
 		return errors.Wrap(ErrorInvalidMessage, "from cannot be empty")
@@ -229,6 +256,7 @@ func (m *MsgSubscribeRequest) ValidateBasic() error {
 	return nil
 }
 
+// GetSigners returns an array containing the signer's account address extracted from the 'From' field of the MsgSubscribeRequest.
 func (m *MsgSubscribeRequest) GetSigners() []sdk.AccAddress {
 	from, err := sdk.AccAddressFromBech32(m.From)
 	if err != nil {
