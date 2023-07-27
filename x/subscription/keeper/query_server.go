@@ -97,7 +97,7 @@ func (q *queryServer) QuerySubscriptionsForAccount(c context.Context, req *types
 	)
 
 	pagination, err := query.Paginate(store, req.Pagination, func(key, _ []byte) error {
-		v, found := q.GetSubscription(ctx, types.IDFromSubscriptionForAccountKey(key))
+		v, found := q.GetSubscription(ctx, sdk.BigEndianToUint64(key))
 		if !found {
 			return fmt.Errorf("subscription for key %X does not exist", key)
 		}
@@ -135,7 +135,7 @@ func (q *queryServer) QuerySubscriptionsForNode(c context.Context, req *types.Qu
 	)
 
 	pagination, err := query.Paginate(store, req.Pagination, func(key, _ []byte) error {
-		v, found := q.GetSubscription(ctx, types.IDFromSubscriptionForNodeKey(key))
+		v, found := q.GetSubscription(ctx, sdk.BigEndianToUint64(key))
 		if !found {
 			return fmt.Errorf("subscription for key %X does not exist", key)
 		}
@@ -168,7 +168,7 @@ func (q *queryServer) QuerySubscriptionsForPlan(c context.Context, req *types.Qu
 	)
 
 	pagination, err := query.Paginate(store, req.Pagination, func(key, _ []byte) error {
-		v, found := q.GetSubscription(ctx, types.IDFromSubscriptionForPlanKey(key))
+		v, found := q.GetSubscription(ctx, sdk.BigEndianToUint64(key))
 		if !found {
 			return fmt.Errorf("subscription for key %X does not exist", key)
 		}
@@ -260,9 +260,9 @@ func (q *queryServer) QueryPayouts(c context.Context, req *types.QueryPayoutsReq
 	var (
 		items types.Payouts
 		ctx   = sdk.UnwrapSDKContext(c)
+		store = prefix.NewStore(q.Store(ctx), types.PayoutKeyPrefix)
 	)
 
-	store := prefix.NewStore(q.Store(ctx), types.PayoutKeyPrefix)
 	pagination, err := query.Paginate(store, req.Pagination, func(_, value []byte) error {
 		var item types.Payout
 		if err := q.cdc.Unmarshal(value, &item); err != nil {
@@ -293,9 +293,9 @@ func (q *queryServer) QueryPayoutsForAccount(c context.Context, req *types.Query
 	var (
 		items types.Payouts
 		ctx   = sdk.UnwrapSDKContext(c)
+		store = prefix.NewStore(q.Store(ctx), types.GetPayoutForAccountKeyPrefix(addr))
 	)
 
-	store := prefix.NewStore(q.Store(ctx), types.GetPayoutForAccountKeyPrefix(addr))
 	pagination, err := query.Paginate(store, req.Pagination, func(key, _ []byte) error {
 		item, found := q.GetPayout(ctx, sdk.BigEndianToUint64(key))
 		if !found {
@@ -326,9 +326,9 @@ func (q *queryServer) QueryPayoutsForNode(c context.Context, req *types.QueryPay
 	var (
 		items types.Payouts
 		ctx   = sdk.UnwrapSDKContext(c)
+		store = prefix.NewStore(q.Store(ctx), types.GetPayoutForNodeKeyPrefix(addr))
 	)
 
-	store := prefix.NewStore(q.Store(ctx), types.GetPayoutForNodeKeyPrefix(addr))
 	pagination, err := query.Paginate(store, req.Pagination, func(key, _ []byte) error {
 		item, found := q.GetPayout(ctx, sdk.BigEndianToUint64(key))
 		if !found {

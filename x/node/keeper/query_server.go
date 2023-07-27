@@ -92,9 +92,9 @@ func (q *queryServer) QueryNodesForPlan(c context.Context, req *types.QueryNodes
 	var (
 		items types.Nodes
 		ctx   = sdk.UnwrapSDKContext(c)
+		store = prefix.NewStore(q.Store(ctx), types.GetNodeForPlanKeyPrefix(req.Id))
 	)
 
-	store := prefix.NewStore(q.Store(ctx), types.GetNodeForPlanKeyPrefix(req.Id))
 	pagination, err := query.FilteredPaginate(store, req.Pagination, func(key, _ []byte, accumulate bool) (bool, error) {
 		if !accumulate {
 			return false, nil
@@ -105,7 +105,7 @@ func (q *queryServer) QueryNodesForPlan(c context.Context, req *types.QueryNodes
 			return false, fmt.Errorf("node for key %X does not exist", key)
 		}
 
-		if req.Status.IsOneOf(item.Status, hubtypes.StatusUnspecified) {
+		if req.Status.Equal(hubtypes.StatusUnspecified) || item.Status.Equal(req.Status) {
 			items = append(items, item)
 			return true, nil
 		}
