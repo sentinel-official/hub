@@ -17,6 +17,9 @@ func (k *Keeper) EndBlock(ctx sdk.Context) []abcitypes.ValidatorUpdate {
 
 	// Iterate over all sessions that have become inactive at the current block time.
 	k.IterateSessionsForInactiveAt(ctx, ctx.BlockTime(), func(_ int, item types.Session) bool {
+		// Delete the session from the InactiveAt index before updating the InactiveAt value.
+		k.DeleteSessionForInactiveAt(ctx, item.InactiveAt, item.ID)
+
 		// If the session's status is active, set it to inactive-pending and schedule
 		// its next status update based on the status change delay.
 		if item.Status.Equal(hubtypes.StatusActive) {
