@@ -115,8 +115,8 @@ func (k *msgServer) MsgStart(c context.Context, msg *types.MsgStartRequest) (*ty
 	}
 
 	// Check if there is already an active session for the given subscription and account.
-	session, found := k.GetActiveSessionForAllocation(ctx, subscription.GetID(), accAddr)
-	if found {
+	session, found := k.GetLatestSessionForAllocation(ctx, subscription.GetID(), accAddr)
+	if found && session.Status.Equal(hubtypes.StatusActive) {
 		// If an active session already exists, return an error indicating a duplicate active session.
 		return nil, types.NewErrorDuplicateActiveSession(subscription.GetID(), accAddr, session.ID)
 	}

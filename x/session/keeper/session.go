@@ -269,7 +269,23 @@ func (k *Keeper) IterateSessionsForInactiveAt(ctx sdk.Context, end time.Time, fn
 	}
 }
 
-func (k *Keeper) GetActiveSessionForAllocation(ctx sdk.Context, subscriptionID uint64, addr sdk.AccAddress) (session types.Session, found bool) {
+func (k *Keeper) GetLatestSessionForSubscription(ctx sdk.Context, subscriptionID uint64) (session types.Session, found bool) {
+	store := k.Store(ctx)
+
+	iter := sdk.KVStoreReversePrefixIterator(store, types.GetSessionForSubscriptionKeyPrefix(subscriptionID))
+	defer iter.Close()
+
+	if iter.Valid() {
+		session, found = k.GetSession(ctx, types.IDFromSessionForSubscriptionKey(iter.Key()))
+		if !found {
+			panic(fmt.Errorf("session for subscription key %X does not exist", iter.Key()))
+		}
+	}
+
+	return session, false
+}
+
+func (k *Keeper) GetLatestSessionForAllocation(ctx sdk.Context, subscriptionID uint64, addr sdk.AccAddress) (session types.Session, found bool) {
 	store := k.Store(ctx)
 
 	iter := sdk.KVStoreReversePrefixIterator(store, types.GetSessionForAllocationKeyPrefix(subscriptionID, addr))
@@ -280,10 +296,7 @@ func (k *Keeper) GetActiveSessionForAllocation(ctx sdk.Context, subscriptionID u
 		if !found {
 			panic(fmt.Errorf("session for subscription allocation key %X does not exist", iter.Key()))
 		}
-		if session.Status.Equal(hubtypes.StatusActive) {
-			return session, true
-		}
 	}
 
-	return session, false
+	return session, found
 }

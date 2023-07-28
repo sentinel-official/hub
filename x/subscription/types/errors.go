@@ -16,9 +16,10 @@ var (
 var (
 	ErrorInsufficientBytes = errors.Register(ModuleName, 201, "insufficient bytes")
 	ErrorInvalidAllocation = errors.Register(ModuleName, 202, "invalid allocation")
-	ErrorInvalidStatus     = errors.Register(ModuleName, 203, "invalid status")
-	ErrorInvalidType       = errors.Register(ModuleName, 204, "invalid type")
-	ErrorNotFound          = errors.Register(ModuleName, 205, "not found")
+	ErrorInvalidCount      = errors.Register(ModuleName, 203, "invalid count")
+	ErrorInvalidStatus     = errors.Register(ModuleName, 204, "invalid status")
+	ErrorInvalidType       = errors.Register(ModuleName, 205, "invalid type")
+	ErrorNotFound          = errors.Register(ModuleName, 206, "not found")
 	ErrorUnauthorized      = errors.Register(ModuleName, 207, "unauthorized")
 )
 
@@ -68,4 +69,8 @@ func NewErrorNodeNotFound(addr hubtypes.NodeAddress) error {
 
 func NewErrorInvalidNodeStatus(addr hubtypes.NodeAddress, status hubtypes.Status) error {
 	return errors.Wrapf(ErrorInvalidStatus, "invalid status %s for node %s", status, addr)
+}
+
+func NewErrorInvalidSessionCount(id uint64) error {
+	return errors.Wrapf(ErrorInvalidCount, "found non-zero session count for subscription %d", id)
 }

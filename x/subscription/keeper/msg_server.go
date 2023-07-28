@@ -52,6 +52,11 @@ func (k *msgServer) MsgCancel(c context.Context, msg *types.MsgCancelRequest) (*
 		return nil, types.NewErrorUnauthorized(msg.From)
 	}
 
+	// Check if there is an active or inactive-pending session for the given subscription. If there is, return an error.
+	if _, found = k.GetLatestSessionForSubscription(ctx, subscription.GetID()); found {
+		return nil, types.NewErrorInvalidSessionCount(subscription.GetID())
+	}
+
 	// Delete the subscription from the Store for the time it becomes inactive.
 	k.DeleteSubscriptionForInactiveAt(ctx, subscription.GetInactiveAt(), subscription.GetID())
 

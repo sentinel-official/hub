@@ -43,5 +43,5 @@ type PlanKeeper interface {
 }
 
 type SessionKeeper interface {
-	GetSessionsForAccount(ctx sdk.Context, addr sdk.AccAddress) sessiontypes.Sessions
+	GetLatestSessionForSubscription(ctx sdk.Context, subscriptionID uint64) (sessiontypes.Session, bool)
 }
