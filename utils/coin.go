@@ -7,6 +7,6 @@ import (
 func GetProportionOfCoin(coin sdk.Coin, share sdk.Dec) sdk.Coin {
 	return sdk.NewCoin(
 		coin.Denom,
-		coin.Amount.ToDec().Mul(share).TruncateInt(),
+		coin.Amount.ToDec().Mul(share).RoundInt(),
 	)
 }
