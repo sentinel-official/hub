@@ -43,6 +43,7 @@ func (k Migrator) migrateProviders(ctx sdk.Context) error {
 			Website:     value.Website,
 			Description: value.Description,
 			Status:      hubtypes.StatusActive,
+			StatusAt:    ctx.BlockTime(),
 		}
 
 		k.SetProvider(ctx, provider)

@@ -106,7 +106,7 @@ func (k *Keeper) EndBlock(ctx sdk.Context) []abcitypes.ValidatorUpdate {
 
 		switch s := item.(type) {
 		case *types.NodeSubscription:
-			// For node-level subscriptions, check if it has a non-zero bandwidth (Gigabytes != 0).
+			// Check if it has a non-zero bandwidth (Gigabytes != 0).
 			if s.Gigabytes != 0 {
 				// Calculate the gigabyte price based on the deposit amount and gigabytes.
 				var (
@@ -133,6 +133,29 @@ func (k *Keeper) EndBlock(ctx sdk.Context) []abcitypes.ValidatorUpdate {
 				)
 
 				// Refund the difference between the deposit and the amount paid to the node's account.
+				if err := k.DepositSubtract(ctx, accAddr, refund); err != nil {
+					panic(err)
+				}
+			}
+
+			// Check if the number of hours for the subscription is not zero.
+			if s.Hours != 0 {
+				// Get the payout information associated with the subscription ID.
+				payout, found := k.GetPayout(ctx, item.GetID())
+				if !found {
+					panic(fmt.Errorf("payout for subscription %d does not exist", item.GetID()))
+				}
+
+				// Calculate the refund amount by multiplying the payout price with the number of remaining hours.
+				var (
+					accAddr = payout.GetAddress()
+					refund  = sdk.NewCoin(
+						payout.Price.Denom,
+						payout.Price.Amount.MulRaw(payout.Hours),
+					)
+				)
+
+				// Subtract the refund amount from the account's deposit balance.
 				if err := k.DepositSubtract(ctx, accAddr, refund); err != nil {
 					panic(err)
 				}

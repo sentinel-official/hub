@@ -6,7 +6,7 @@ import (
 	"github.com/sentinel-official/hub/x/deposit/types"
 )
 
-// SetDeposit is for inserting a deposit into the KVStore.
+// SetDeposit stores a deposit in the module's KVStore.
 func (k *Keeper) SetDeposit(ctx sdk.Context, deposit types.Deposit) {
 	var (
 		store = k.Store(ctx)
@@ -17,7 +17,8 @@ func (k *Keeper) SetDeposit(ctx sdk.Context, deposit types.Deposit) {
 	store.Set(key, value)
 }
 
-// GetDeposit is for getting a deposit of an address from the KVStore.
+// GetDeposit retrieves a deposit from the module's KVStore based on the account address.
+// If the deposit exists, it returns the deposit and 'found' as true; otherwise, it returns 'found' as false.
 func (k *Keeper) GetDeposit(ctx sdk.Context, addr sdk.AccAddress) (deposit types.Deposit, found bool) {
 	var (
 		store = k.Store(ctx)
@@ -33,7 +34,7 @@ func (k *Keeper) GetDeposit(ctx sdk.Context, addr sdk.AccAddress) (deposit types
 	return deposit, true
 }
 
-// GetDeposits is for getting the deposits from the KVStore.
+// GetDeposits retrieves all deposits stored in the module's KVStore.
 func (k *Keeper) GetDeposits(ctx sdk.Context) (items types.Deposits) {
 	var (
 		store = k.Store(ctx)
@@ -51,7 +52,8 @@ func (k *Keeper) GetDeposits(ctx sdk.Context) (items types.Deposits) {
 	return items
 }
 
-// IterateDeposits is for iterating over all the deposits to perform an action.
+// IterateDeposits iterates over all deposits stored in the module's KVStore and calls the provided function for each deposit.
+// The iteration stops when the provided function returns 'true'.
 func (k *Keeper) IterateDeposits(ctx sdk.Context, fn func(index int, item types.Deposit) (stop bool)) {
 	store := k.Store(ctx)
 
@@ -69,8 +71,9 @@ func (k *Keeper) IterateDeposits(ctx sdk.Context, fn func(index int, item types.
 	}
 }
 
-// SendCoinsFromAccountToDeposit is for sending an amount
-// from a bank account of an address to a deposit account of an address.
+// SendCoinsFromAccountToDeposit transfers coins from an account to a deposit and updates the deposit in the KVStore.
+// If the deposit does not exist, a new deposit will be created.
+// It returns an error if the account doesn't have enough balance.
 func (k *Keeper) SendCoinsFromAccountToDeposit(ctx sdk.Context, fromAddr, toAddr sdk.AccAddress, coins sdk.Coins) error {
 	if err := k.bank.SendCoinsFromAccountToModule(ctx, fromAddr, types.ModuleName, coins); err != nil {
 		return err
@@ -100,8 +103,8 @@ func (k *Keeper) SendCoinsFromAccountToDeposit(ctx sdk.Context, fromAddr, toAddr
 	return nil
 }
 
-// SendCoinsFromDepositToAccount is for sending an amount
-// from a deposit account of an address to a bank account of an address.
+// SendCoinsFromDepositToAccount transfers coins from a deposit to an account and updates the deposit in the KVStore.
+// It returns an error if the deposit doesn't have enough balance.
 func (k *Keeper) SendCoinsFromDepositToAccount(ctx sdk.Context, fromAddr, toAddr sdk.AccAddress, coins sdk.Coins) error {
 	deposit, found := k.GetDeposit(ctx, fromAddr)
 	if !found {
@@ -128,8 +131,8 @@ func (k *Keeper) SendCoinsFromDepositToAccount(ctx sdk.Context, fromAddr, toAddr
 	return nil
 }
 
-// SendCoinsFromDepositToModule is for sending an amount
-// from a deposit account of an address to a module account.
+// SendCoinsFromDepositToModule transfers coins from a deposit to a module and updates the deposit in the KVStore.
+// It returns an error if the deposit doesn't have enough balance.
 func (k *Keeper) SendCoinsFromDepositToModule(ctx sdk.Context, fromAddr sdk.AccAddress, toModule string, coins sdk.Coins) error {
 	deposit, found := k.GetDeposit(ctx, fromAddr)
 	if !found {
@@ -156,12 +159,12 @@ func (k *Keeper) SendCoinsFromDepositToModule(ctx sdk.Context, fromAddr sdk.AccA
 	return nil
 }
 
-// Add is for adding an amount to a deposit account from a bank account of an address.
+// Add is a utility function to add coins to a deposit by transferring from the account to the deposit.
 func (k *Keeper) Add(ctx sdk.Context, addr sdk.AccAddress, coins sdk.Coins) error {
 	return k.SendCoinsFromAccountToDeposit(ctx, addr, addr, coins)
 }
 
-// Subtract is for adding an amount to a bank account from a deposit account of an address.
+// Subtract is a utility function to subtract coins from a deposit by transferring from the deposit to the account.
 func (k *Keeper) Subtract(ctx sdk.Context, addr sdk.AccAddress, coins sdk.Coins) error {
 	return k.SendCoinsFromDepositToAccount(ctx, addr, addr, coins)
 }
