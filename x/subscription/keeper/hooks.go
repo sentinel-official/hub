@@ -32,15 +32,12 @@ func (k *Keeper) HookEndSession(ctx sdk.Context, subscriptionID uint64, accAddr 
 	)
 
 	// Based on the subscription type (NodeSubscription), calculate the payment amounts.
-	switch s := subscription.(type) {
-	case *types.NodeSubscription:
-		if s.Gigabytes != 0 {
-			gigabytePrice = sdk.NewCoin(
-				s.Deposit.Denom,
-				s.Deposit.Amount.QuoRaw(s.Gigabytes),
-			)
-			previousAmount = hubutils.AmountForBytes(gigabytePrice.Amount, alloc.UtilisedBytes)
-		}
+	if s, ok := subscription.(*types.NodeSubscription); ok && s.Gigabytes != 0 {
+		gigabytePrice = sdk.NewCoin(
+			s.Deposit.Denom,
+			s.Deposit.Amount.QuoRaw(s.Gigabytes),
+		)
+		previousAmount = hubutils.AmountForBytes(gigabytePrice.Amount, alloc.UtilisedBytes)
 	}
 
 	// Update the allocation's utilized bytes by adding the provided bytes.
@@ -54,28 +51,27 @@ func (k *Keeper) HookEndSession(ctx sdk.Context, subscriptionID uint64, accAddr 
 	k.SetAllocation(ctx, alloc)
 
 	// Based on the subscription type (NodeSubscription), calculate the current payment amount.
-	switch s := subscription.(type) {
-	case *types.NodeSubscription:
-		if s.Gigabytes != 0 {
-			currentAmount = hubutils.AmountForBytes(gigabytePrice.Amount, alloc.UtilisedBytes)
+	if s, ok := subscription.(*types.NodeSubscription); ok && s.Gigabytes != 0 {
+		currentAmount = hubutils.AmountForBytes(gigabytePrice.Amount, alloc.UtilisedBytes)
+
+		// Calculate the payment to be made for the current utilization.
+		var (
+			payment       = sdk.NewCoin(gigabytePrice.Denom, currentAmount.Sub(previousAmount))
+			stakingShare  = k.node.StakingShare(ctx)
+			stakingReward = hubutils.GetProportionOfCoin(payment, stakingShare)
+		)
+
+		// Move the staking reward from the deposit to the fee collector module account.
+		if err := k.SendCoinFromDepositToModule(ctx, accAddr, k.feeCollectorName, stakingReward); err != nil {
+			return err
 		}
+
+		// Subtract the staking reward from the payment to get the final payment amount.
+		payment = payment.Sub(stakingReward)
+
+		// Send the payment amount from the deposit to the node address.
+		return k.SendCoinFromDepositToAccount(ctx, accAddr, nodeAddr.Bytes(), payment)
 	}
 
-	// Calculate the payment to be made for the current utilization.
-	var (
-		payment       = sdk.NewCoin(gigabytePrice.Denom, currentAmount.Sub(previousAmount))
-		stakingShare  = k.node.StakingShare(ctx)
-		stakingReward = hubutils.GetProportionOfCoin(payment, stakingShare)
-	)
-
-	// Move the staking reward from the deposit to the fee collector module account.
-	if err := k.SendCoinFromDepositToModule(ctx, accAddr, k.feeCollectorName, stakingReward); err != nil {
-		return err
-	}
-
-	// Subtract the staking reward from the payment to get the final payment amount.
-	payment = payment.Sub(stakingReward)
-
-	// Send the payment amount from the deposit to the node address.
-	return k.SendCoinFromDepositToAccount(ctx, accAddr, nodeAddr.Bytes(), payment)
+	return nil
 }
