@@ -125,7 +125,7 @@ func (k *Keeper) EndBlock(ctx sdk.Context) []abcitypes.ValidatorUpdate {
 
 				// Calculate the amount paid based on the gigabyte price and utilized bandwidth.
 				var (
-					paidAmount = hubtypes.AmountForBytes(gigabytePrice.Amount, alloc.UtilisedBytes)
+					paidAmount = hubutils.AmountForBytes(gigabytePrice.Amount, alloc.UtilisedBytes)
 					refund     = sdk.NewCoin(
 						s.Deposit.Denom,
 						s.Deposit.Amount.Sub(paidAmount),
@@ -133,7 +133,7 @@ func (k *Keeper) EndBlock(ctx sdk.Context) []abcitypes.ValidatorUpdate {
 				)
 
 				// Refund the difference between the deposit and the amount paid to the node's account.
-				if err := k.DepositSubtract(ctx, accAddr, refund); err != nil {
+				if err := k.SubtractDeposit(ctx, accAddr, refund); err != nil {
 					panic(err)
 				}
 			}
@@ -156,7 +156,7 @@ func (k *Keeper) EndBlock(ctx sdk.Context) []abcitypes.ValidatorUpdate {
 				)
 
 				// Subtract the refund amount from the account's deposit balance.
-				if err := k.DepositSubtract(ctx, accAddr, refund); err != nil {
+				if err := k.SubtractDeposit(ctx, accAddr, refund); err != nil {
 					panic(err)
 				}
 			}

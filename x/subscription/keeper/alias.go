@@ -25,7 +25,7 @@ func (k *Keeper) SendCoinFromAccountToModule(ctx sdk.Context, from sdk.AccAddres
 	return k.bank.SendCoinsFromAccountToModule(ctx, from, to, sdk.NewCoins(coin))
 }
 
-func (k *Keeper) DepositAdd(ctx sdk.Context, addr sdk.AccAddress, coin sdk.Coin) error {
+func (k *Keeper) AddDeposit(ctx sdk.Context, addr sdk.AccAddress, coin sdk.Coin) error {
 	if coin.IsZero() {
 		return nil
 	}
@@ -33,7 +33,7 @@ func (k *Keeper) DepositAdd(ctx sdk.Context, addr sdk.AccAddress, coin sdk.Coin)
 	return k.deposit.Add(ctx, addr, sdk.NewCoins(coin))
 }
 
-func (k *Keeper) DepositSubtract(ctx sdk.Context, addr sdk.AccAddress, coin sdk.Coin) error {
+func (k *Keeper) SubtractDeposit(ctx sdk.Context, addr sdk.AccAddress, coin sdk.Coin) error {
 	if coin.IsZero() {
 		return nil
 	}

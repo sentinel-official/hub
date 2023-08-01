@@ -39,7 +39,7 @@ func (k *Keeper) HookEndSession(ctx sdk.Context, subscriptionID uint64, accAddr 
 				s.Deposit.Denom,
 				s.Deposit.Amount.QuoRaw(s.Gigabytes),
 			)
-			previousAmount = hubtypes.AmountForBytes(gigabytePrice.Amount, alloc.UtilisedBytes)
+			previousAmount = hubutils.AmountForBytes(gigabytePrice.Amount, alloc.UtilisedBytes)
 		}
 	}
 
@@ -57,7 +57,7 @@ func (k *Keeper) HookEndSession(ctx sdk.Context, subscriptionID uint64, accAddr 
 	switch s := subscription.(type) {
 	case *types.NodeSubscription:
 		if s.Gigabytes != 0 {
-			currentAmount = hubtypes.AmountForBytes(gigabytePrice.Amount, alloc.UtilisedBytes)
+			currentAmount = hubutils.AmountForBytes(gigabytePrice.Amount, alloc.UtilisedBytes)
 		}
 	}
 

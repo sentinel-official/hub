@@ -284,7 +284,7 @@ func (k *Keeper) CreateSubscriptionForNode(ctx sdk.Context, accAddr sdk.AccAddre
 		subscription.InactiveAt = ctx.BlockTime().Add(types.Year) // TODO: move to params
 		subscription.Deposit = sdk.NewCoin(
 			price.Denom,
-			hubtypes.AmountForBytes(price.Amount, hubtypes.Gigabyte.MulRaw(gigabytes)),
+			hubutils.AmountForBytes(price.Amount, hubtypes.Gigabyte.MulRaw(gigabytes)),
 		)
 	}
 	if hours != 0 {
@@ -302,7 +302,7 @@ func (k *Keeper) CreateSubscriptionForNode(ctx sdk.Context, accAddr sdk.AccAddre
 	}
 
 	// Add the required deposit to the account's balance.
-	if err := k.DepositAdd(ctx, accAddr, subscription.Deposit); err != nil {
+	if err := k.AddDeposit(ctx, accAddr, subscription.Deposit); err != nil {
 		return nil, err
 	}
 
