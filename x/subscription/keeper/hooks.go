@@ -10,9 +10,9 @@ import (
 	"github.com/sentinel-official/hub/x/subscription/types"
 )
 
-// HookEndSession is a function that handles the end of a session.
+// SessionEndHook is a function that handles the end of a session.
 // It updates the allocation's utilized bytes, calculates and sends payments, and staking rewards.
-func (k *Keeper) HookEndSession(ctx sdk.Context, subscriptionID uint64, accAddr sdk.AccAddress, nodeAddr hubtypes.NodeAddress, bytes sdk.Int) error {
+func (k *Keeper) SessionEndHook(ctx sdk.Context, subscriptionID uint64, accAddr sdk.AccAddress, nodeAddr hubtypes.NodeAddress, bytes sdk.Int) error {
 	// Get the subscription associated with the provided subscription ID.
 	subscription, found := k.GetSubscription(ctx, subscriptionID)
 	if !found {

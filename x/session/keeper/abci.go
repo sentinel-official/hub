@@ -54,10 +54,10 @@ func (k *Keeper) EndBlock(ctx sdk.Context) []abcitypes.ValidatorUpdate {
 			nodeAddr = item.GetNodeAddress()
 		)
 
-		// Call the HookEndSession method of the subscription handler to notify the subscription
+		// Call the SessionEndHook method of the subscription handler to notify the subscription
 		// module that the session has ended. The method handles the necessary logic for refunds
 		// or other actions related to the session's termination.
-		if err := k.subscription.HookEndSession(ctx, item.SubscriptionID, accAddr, nodeAddr, item.Bandwidth.Sum()); err != nil {
+		if err := k.subscription.SessionEndHook(ctx, item.SubscriptionID, accAddr, nodeAddr, item.Bandwidth.Sum()); err != nil {
 			// If an error occurs during the hook execution, panic to halt the chain.
 			// This is done to prevent any inconsistencies or unexpected behavior.
 			panic(err)

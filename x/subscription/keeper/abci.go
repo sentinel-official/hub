@@ -104,8 +104,7 @@ func (k *Keeper) EndBlock(ctx sdk.Context) []abcitypes.ValidatorUpdate {
 
 		// If the subscription status is not 'Active', handle the different types of subscriptions based on their attributes.
 
-		switch s := item.(type) {
-		case *types.NodeSubscription:
+		if s, ok := item.(*types.NodeSubscription); ok {
 			// Check if it has a non-zero bandwidth (Gigabytes != 0).
 			if s.Gigabytes != 0 {
 				// Calculate the gigabyte price based on the deposit amount and gigabytes.
