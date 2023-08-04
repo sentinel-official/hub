@@ -68,6 +68,14 @@ func NewErrorInvalidSessionStatus(id uint64, status hubtypes.Status) error {
 	return errors.Wrapf(ErrorInvalidStatus, "invalid status %s for session %d", status, id)
 }
 
+func NewErrorPlanNotFound(id uint64) error {
+	return errors.Wrapf(ErrorNotFound, "plan %d does not exist", id)
+}
+
+func NewErrorPayoutNotFound(accAddr sdk.AccAddress, nodeAddr hubtypes.NodeAddress) error {
+	return errors.Wrapf(ErrorNotFound, "payout for account %d and node %s does not exist", accAddr, nodeAddr)
+}
+
 func NewErrorInvalidNode(addr string) error {
 	return errors.Wrapf(ErrorInvalidNode, "invalid node %s", addr)
 }

@@ -71,7 +71,18 @@ func (k *msgServer) MsgStart(c context.Context, msg *types.MsgStartRequest) (*ty
 			return nil, types.NewErrorInvalidNode(node.Address)
 		}
 	case *subscriptiontypes.PlanSubscription:
-		// For plan-level subscriptions, check if the node is associated with the plan.
+		// For plan-level subscriptions, ensure that there exists a payout between the plan provider and the node.
+		plan, found := k.GetPlan(ctx, s.PlanID)
+		if !found {
+			return nil, types.NewErrorPlanNotFound(s.PlanID)
+		}
+
+		provAddr := plan.GetProviderAddress()
+		if _, found = k.GetLatestPayoutForAccountByNode(ctx, provAddr.Bytes(), nodeAddr); !found {
+			return nil, types.NewErrorPayoutNotFound(provAddr.Bytes(), nodeAddr)
+		}
+
+		// Ensure that the node is associated with the plan.
 		if !k.HasNodeForPlan(ctx, s.PlanID, nodeAddr) {
 			return nil, types.NewErrorInvalidNode(node.Address)
 		}
