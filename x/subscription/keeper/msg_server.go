@@ -85,6 +85,7 @@ func (k *msgServer) MsgCancel(c context.Context, msg *types.MsgCancelRequest) (*
 	// Check if there is an associated payout for this subscription and remove it.
 	payout, found := k.GetPayout(ctx, subscription.GetID())
 	if found {
+		k.DeletePayoutForAccountByNode(ctx, payout.GetAddress(), payout.GetNodeAddress(), payout.ID)
 		k.DeletePayoutForNextAt(ctx, payout.NextAt, payout.ID)
 
 		// Reset the `NextAt` field of the payout and update it in the Store.

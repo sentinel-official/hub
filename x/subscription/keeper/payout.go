@@ -144,6 +144,50 @@ func (k *Keeper) DeletePayoutForNode(ctx sdk.Context, addr hubtypes.NodeAddress,
 	store.Delete(key)
 }
 
+func (k *Keeper) SetPayoutForAccountByNode(ctx sdk.Context, accAddr sdk.AccAddress, nodeAddr hubtypes.NodeAddress, id uint64) {
+	var (
+		store = k.Store(ctx)
+		key   = types.PayoutForAccountByNodeKey(accAddr, nodeAddr, id)
+		value = k.cdc.MustMarshal(&protobuf.BoolValue{Value: true})
+	)
+
+	store.Set(key, value)
+}
+
+func (k *Keeper) HashPayoutForAccountByNode(ctx sdk.Context, accAddr sdk.AccAddress, nodeAddr hubtypes.NodeAddress, id uint64) bool {
+	var (
+		store = k.Store(ctx)
+		key   = types.PayoutForAccountByNodeKey(accAddr, nodeAddr, id)
+	)
+
+	return store.Has(key)
+}
+
+func (k *Keeper) DeletePayoutForAccountByNode(ctx sdk.Context, accAddr sdk.AccAddress, nodeAddr hubtypes.NodeAddress, id uint64) {
+	var (
+		store = k.Store(ctx)
+		key   = types.PayoutForAccountByNodeKey(accAddr, nodeAddr, id)
+	)
+
+	store.Delete(key)
+}
+
+func (k *Keeper) GetLatestPayoutForAccountByNode(ctx sdk.Context, accAddr sdk.AccAddress, nodeAddr hubtypes.NodeAddress) (payout types.Payout, found bool) {
+	store := k.Store(ctx)
+
+	iter := sdk.KVStoreReversePrefixIterator(store, types.GetPayoutForAccountByNodeKeyPrefix(accAddr, nodeAddr))
+	defer iter.Close()
+
+	if iter.Valid() {
+		payout, found = k.GetPayout(ctx, types.IDFromPayoutForAccountByNodeKey(iter.Key()))
+		if !found {
+			panic(fmt.Errorf("payout for account by node key %X does not exist", iter.Key()))
+		}
+	}
+
+	return payout, found
+}
+
 func (k *Keeper) SetPayoutForNextAt(ctx sdk.Context, at time.Time, id uint64) {
 	var (
 		store = k.Store(ctx)

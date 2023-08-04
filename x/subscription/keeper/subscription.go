@@ -349,6 +349,7 @@ func (k *Keeper) CreateSubscriptionForNode(ctx sdk.Context, accAddr sdk.AccAddre
 		k.SetPayout(ctx, payout)
 		k.SetPayoutForAccount(ctx, accAddr, payout.ID)
 		k.SetPayoutForNode(ctx, nodeAddr, payout.ID)
+		k.SetPayoutForAccountByNode(ctx, accAddr, nodeAddr, payout.ID)
 		k.SetPayoutForNextAt(ctx, payout.NextAt, payout.ID)
 		ctx.EventManager().EmitTypedEvent(
 			&types.EventPayout{

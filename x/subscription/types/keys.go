@@ -26,10 +26,11 @@ var (
 
 	AllocationKeyPrefix = []byte{0x20}
 
-	PayoutKeyPrefix           = []byte{0x30}
-	PayoutForNextAtKeyPrefix  = []byte{0x31}
-	PayoutForAccountKeyPrefix = []byte{0x32}
-	PayoutForNodeKeyPrefix    = []byte{0x33}
+	PayoutKeyPrefix                 = []byte{0x30}
+	PayoutForNextAtKeyPrefix        = []byte{0x31}
+	PayoutForAccountKeyPrefix       = []byte{0x32}
+	PayoutForNodeKeyPrefix          = []byte{0x33}
+	PayoutForAccountByNodeKeyPrefix = []byte{0x34}
 )
 
 func SubscriptionKey(id uint64) []byte {
@@ -104,6 +105,14 @@ func PayoutForNodeKey(addr hubtypes.NodeAddress, id uint64) []byte {
 	return append(GetPayoutForNodeKeyPrefix(addr), sdk.Uint64ToBigEndian(id)...)
 }
 
+func GetPayoutForAccountByNodeKeyPrefix(accAddr sdk.AccAddress, nodeAddr hubtypes.NodeAddress) (key []byte) {
+	return append(append(PayoutForAccountByNodeKeyPrefix, address.MustLengthPrefix(accAddr.Bytes())...), address.MustLengthPrefix(nodeAddr.Bytes())...)
+}
+
+func PayoutForAccountByNodeKey(accAddr sdk.AccAddress, nodeAddr hubtypes.NodeAddress, id uint64) []byte {
+	return append(GetPayoutForAccountByNodeKeyPrefix(accAddr, nodeAddr), sdk.Uint64ToBigEndian(id)...)
+}
+
 func IDFromSubscriptionForAccountKey(key []byte) uint64 {
 	// prefix (1 byte) | addrLen (1 byte) | addr (addrLen bytes) | id (8 bytes)
 
@@ -166,6 +175,17 @@ func IDFromPayoutForNodeKey(key []byte) uint64 {
 	}
 
 	return sdk.BigEndianToUint64(key[2+addrLen:])
+}
+
+func IDFromPayoutForAccountByNodeKey(key []byte) uint64 {
+	// prefix (1 byte) | accAddrLen(1 byte) | accAddr (accAddrLen bytes) | nodeAddrLen(1 byte) | nodeAddr (nodeAddrLen bytes) | id (8 bytes)
+
+	accAddrLen, nodeAddrLen := int(key[1]), int(key[2+int(key[1])])
+	if len(key) != 11+accAddrLen+nodeAddrLen {
+		panic(fmt.Errorf("invalid key length %d; expected %d", len(key), 11+accAddrLen+nodeAddrLen))
+	}
+
+	return sdk.BigEndianToUint64(key[3+accAddrLen+nodeAddrLen:])
 }
 
 func IDFromPayoutForNextAtKey(key []byte) uint64 {

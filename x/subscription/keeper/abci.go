@@ -92,6 +92,7 @@ func (k *Keeper) EndBlock(ctx sdk.Context) []abcitypes.ValidatorUpdate {
 			// If the subscription has a corresponding payout, delete its NextAt value.
 			payout, found := k.GetPayout(ctx, item.GetID())
 			if found {
+				k.DeletePayoutForAccountByNode(ctx, payout.GetAddress(), payout.GetNodeAddress(), payout.ID)
 				k.DeletePayoutForNextAt(ctx, payout.NextAt, payout.ID)
 
 				// Reset the NextAt value to an empty time.Time as the payout has become inactive.
