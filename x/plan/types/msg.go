@@ -123,9 +123,9 @@ func (m *MsgUpdateStatusRequest) GetSigners() []sdk.AccAddress {
 // NewMsgLinkNodeRequest creates a new MsgLinkNodeRequest instance with the given parameters.
 func NewMsgLinkNodeRequest(from hubtypes.ProvAddress, id uint64, addr hubtypes.NodeAddress) *MsgLinkNodeRequest {
 	return &MsgLinkNodeRequest{
-		From:    from.String(),
-		ID:      id,
-		Address: addr.String(),
+		From:        from.String(),
+		ID:          id,
+		NodeAddress: addr.String(),
 	}
 }
 
@@ -143,10 +143,10 @@ func (m *MsgLinkNodeRequest) ValidateBasic() error {
 	if m.ID == 0 {
 		return errors.Wrap(ErrorInvalidMessage, "id cannot be zero")
 	}
-	if m.Address == "" {
-		return errors.Wrap(ErrorInvalidMessage, "address cannot be empty")
+	if m.NodeAddress == "" {
+		return errors.Wrap(ErrorInvalidMessage, "node_address cannot be empty")
 	}
-	if _, err := hubtypes.NodeAddressFromBech32(m.Address); err != nil {
+	if _, err := hubtypes.NodeAddressFromBech32(m.NodeAddress); err != nil {
 		return errors.Wrap(ErrorInvalidMessage, err.Error())
 	}
 
@@ -166,9 +166,9 @@ func (m *MsgLinkNodeRequest) GetSigners() []sdk.AccAddress {
 // NewMsgUnlinkNodeRequest creates a new MsgUnlinkNodeRequest instance with the given parameters.
 func NewMsgUnlinkNodeRequest(from hubtypes.ProvAddress, id uint64, addr hubtypes.NodeAddress) *MsgUnlinkNodeRequest {
 	return &MsgUnlinkNodeRequest{
-		From:    from.String(),
-		ID:      id,
-		Address: addr.String(),
+		From:        from.String(),
+		ID:          id,
+		NodeAddress: addr.String(),
 	}
 }
 
@@ -186,10 +186,10 @@ func (m *MsgUnlinkNodeRequest) ValidateBasic() error {
 	if m.ID == 0 {
 		return errors.Wrap(ErrorInvalidMessage, "id cannot be zero")
 	}
-	if m.Address == "" {
-		return errors.Wrap(ErrorInvalidMessage, "address cannot be empty")
+	if m.NodeAddress == "" {
+		return errors.Wrap(ErrorInvalidMessage, "node_address cannot be empty")
 	}
-	if _, err := hubtypes.NodeAddressFromBech32(m.Address); err != nil {
+	if _, err := hubtypes.NodeAddressFromBech32(m.NodeAddress); err != nil {
 		return errors.Wrap(ErrorInvalidMessage, err.Error())
 	}
 

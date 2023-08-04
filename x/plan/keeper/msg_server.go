@@ -43,13 +43,13 @@ func (k *msgServer) MsgCreate(c context.Context, msg *types.MsgCreateRequest) (*
 	// Get the current count of plans to assign a unique ID to the new plan.
 	count := k.GetCount(ctx)
 	plan := types.Plan{
-		ID:        count + 1,
-		Address:   provAddr.String(),
-		Duration:  msg.Duration,
-		Gigabytes: msg.Gigabytes,
-		Prices:    msg.Prices,
-		Status:    hubtypes.StatusInactive,
-		StatusAt:  ctx.BlockTime(),
+		ID:              count + 1,
+		ProviderAddress: provAddr.String(),
+		Duration:        msg.Duration,
+		Gigabytes:       msg.Gigabytes,
+		Prices:          msg.Prices,
+		Status:          hubtypes.StatusInactive,
+		StatusAt:        ctx.BlockTime(),
 	}
 
 	// Save the new plan in the Store and update the count for future plans.
@@ -78,8 +78,8 @@ func (k *msgServer) MsgUpdateStatus(c context.Context, msg *types.MsgUpdateStatu
 		return nil, types.NewErrorPlanNotFound(msg.ID)
 	}
 
-	// Check if the provided address (`msg.From`) matches the plan's address to verify authorization.
-	if msg.From != plan.Address {
+	// Check if the provided address (`msg.From`) matches the plan's provider address to verify authorization.
+	if msg.From != plan.ProviderAddress {
 		return nil, types.NewErrorUnauthorized(msg.From)
 	}
 
@@ -126,13 +126,13 @@ func (k *msgServer) MsgLinkNode(c context.Context, msg *types.MsgLinkNodeRequest
 		return nil, types.NewErrorPlanNotFound(msg.ID)
 	}
 
-	// Check if the provided address (`msg.From`) matches the plan's address to verify authorization.
-	if msg.From != plan.Address {
+	// Check if the provided address (`msg.From`) matches the plan's provider address to verify authorization.
+	if msg.From != plan.ProviderAddress {
 		return nil, types.NewErrorUnauthorized(msg.From)
 	}
 
-	// Convert the `msg.Address` (node address) to a `hubtypes.NodeAddress`.
-	nodeAddr, err := hubtypes.NodeAddressFromBech32(msg.Address)
+	// Convert the `msg.NodeAddress` (node address) to a `hubtypes.NodeAddress`.
+	nodeAddr, err := hubtypes.NodeAddressFromBech32(msg.NodeAddress)
 	if err != nil {
 		return nil, err
 	}
@@ -167,13 +167,13 @@ func (k *msgServer) MsgUnlinkNode(c context.Context, msg *types.MsgUnlinkNodeReq
 		return nil, types.NewErrorPlanNotFound(msg.ID)
 	}
 
-	// Check if the provided address (`msg.From`) matches the plan's address to verify authorization.
-	if msg.From != plan.Address {
+	// Check if the provided address (`msg.From`) matches the plan's provider address to verify authorization.
+	if msg.From != plan.ProviderAddress {
 		return nil, types.NewErrorUnauthorized(msg.From)
 	}
 
-	// Convert the `msg.Address` (node address) to a `hubtypes.NodeAddress`.
-	nodeAddr, err := hubtypes.NodeAddressFromBech32(msg.Address)
+	// Convert the `msg.NodeAddress` (node address) to a `hubtypes.NodeAddress`.
+	nodeAddr, err := hubtypes.NodeAddressFromBech32(msg.NodeAddress)
 	if err != nil {
 		return nil, err
 	}

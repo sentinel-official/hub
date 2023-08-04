@@ -346,9 +346,9 @@ func TestMsgUpdateStatusRequest_ValidateBasic(t *testing.T) {
 
 func TestMsgLinkNodeRequest_ValidateBasic(t *testing.T) {
 	type fields struct {
-		From    string
-		ID      uint64
-		Address string
+		From        string
+		ID          uint64
+		NodeAddress string
 	}
 	tests := []struct {
 		name    string
@@ -379,27 +379,27 @@ func TestMsgLinkNodeRequest_ValidateBasic(t *testing.T) {
 		{
 			"from 10 bytes",
 			fields{
-				From:    hubtypes.TestBech32ProvAddr10Bytes,
-				ID:      1000,
-				Address: hubtypes.TestBech32NodeAddr20Bytes,
+				From:        hubtypes.TestBech32ProvAddr10Bytes,
+				ID:          1000,
+				NodeAddress: hubtypes.TestBech32NodeAddr20Bytes,
 			},
 			false,
 		},
 		{
 			"from 20 bytes",
 			fields{
-				From:    hubtypes.TestBech32ProvAddr20Bytes,
-				ID:      1000,
-				Address: hubtypes.TestBech32NodeAddr20Bytes,
+				From:        hubtypes.TestBech32ProvAddr20Bytes,
+				ID:          1000,
+				NodeAddress: hubtypes.TestBech32NodeAddr20Bytes,
 			},
 			false,
 		},
 		{
 			"from 30 bytes",
 			fields{
-				From:    hubtypes.TestBech32ProvAddr30Bytes,
-				ID:      1000,
-				Address: hubtypes.TestBech32NodeAddr20Bytes,
+				From:        hubtypes.TestBech32ProvAddr30Bytes,
+				ID:          1000,
+				NodeAddress: hubtypes.TestBech32NodeAddr20Bytes,
 			},
 			false,
 		},
@@ -414,63 +414,63 @@ func TestMsgLinkNodeRequest_ValidateBasic(t *testing.T) {
 		{
 			"id positive",
 			fields{
-				From:    hubtypes.TestBech32ProvAddr20Bytes,
-				ID:      1000,
-				Address: hubtypes.TestBech32NodeAddr20Bytes,
+				From:        hubtypes.TestBech32ProvAddr20Bytes,
+				ID:          1000,
+				NodeAddress: hubtypes.TestBech32NodeAddr20Bytes,
 			},
 			false,
 		},
 		{
-			"address empty",
+			"node_address empty",
 			fields{
-				From:    hubtypes.TestBech32ProvAddr20Bytes,
-				ID:      1000,
-				Address: "",
+				From:        hubtypes.TestBech32ProvAddr20Bytes,
+				ID:          1000,
+				NodeAddress: "",
 			},
 			true,
 		},
 		{
-			"address invalid",
+			"node_address invalid",
 			fields{
-				From:    hubtypes.TestBech32ProvAddr20Bytes,
-				ID:      1000,
-				Address: "invalid",
+				From:        hubtypes.TestBech32ProvAddr20Bytes,
+				ID:          1000,
+				NodeAddress: "invalid",
 			},
 			true,
 		},
 		{
-			"address invalid prefix",
+			"node_address invalid prefix",
 			fields{
-				From:    hubtypes.TestBech32ProvAddr20Bytes,
-				ID:      1000,
-				Address: hubtypes.TestBech32AccAddr20Bytes,
+				From:        hubtypes.TestBech32ProvAddr20Bytes,
+				ID:          1000,
+				NodeAddress: hubtypes.TestBech32AccAddr20Bytes,
 			},
 			true,
 		},
 		{
-			"address 10 bytes",
+			"node_address 10 bytes",
 			fields{
-				From:    hubtypes.TestBech32ProvAddr20Bytes,
-				ID:      1000,
-				Address: hubtypes.TestBech32NodeAddr10Bytes,
+				From:        hubtypes.TestBech32ProvAddr20Bytes,
+				ID:          1000,
+				NodeAddress: hubtypes.TestBech32NodeAddr10Bytes,
 			},
 			false,
 		},
 		{
-			"address 20 bytes",
+			"node_address 20 bytes",
 			fields{
-				From:    hubtypes.TestBech32ProvAddr20Bytes,
-				ID:      1000,
-				Address: hubtypes.TestBech32NodeAddr20Bytes,
+				From:        hubtypes.TestBech32ProvAddr20Bytes,
+				ID:          1000,
+				NodeAddress: hubtypes.TestBech32NodeAddr20Bytes,
 			},
 			false,
 		},
 		{
-			"address 30 bytes",
+			"node_address 30 bytes",
 			fields{
-				From:    hubtypes.TestBech32ProvAddr20Bytes,
-				ID:      1000,
-				Address: hubtypes.TestBech32NodeAddr30Bytes,
+				From:        hubtypes.TestBech32ProvAddr20Bytes,
+				ID:          1000,
+				NodeAddress: hubtypes.TestBech32NodeAddr30Bytes,
 			},
 			false,
 		},
@@ -478,9 +478,9 @@ func TestMsgLinkNodeRequest_ValidateBasic(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			m := &MsgLinkNodeRequest{
-				From:    tt.fields.From,
-				ID:      tt.fields.ID,
-				Address: tt.fields.Address,
+				From:        tt.fields.From,
+				ID:          tt.fields.ID,
+				NodeAddress: tt.fields.NodeAddress,
 			}
 			if err := m.ValidateBasic(); (err != nil) != tt.wantErr {
 				t.Errorf("ValidateBasic() error = %v, wantErr %v", err, tt.wantErr)
@@ -491,9 +491,9 @@ func TestMsgLinkNodeRequest_ValidateBasic(t *testing.T) {
 
 func TestMsgUnlinkNodeRequest_ValidateBasic(t *testing.T) {
 	type fields struct {
-		From    string
-		ID      uint64
-		Address string
+		From        string
+		ID          uint64
+		NodeAddress string
 	}
 	tests := []struct {
 		name    string
@@ -524,27 +524,27 @@ func TestMsgUnlinkNodeRequest_ValidateBasic(t *testing.T) {
 		{
 			"from 10 bytes",
 			fields{
-				From:    hubtypes.TestBech32ProvAddr10Bytes,
-				ID:      1000,
-				Address: hubtypes.TestBech32NodeAddr20Bytes,
+				From:        hubtypes.TestBech32ProvAddr10Bytes,
+				ID:          1000,
+				NodeAddress: hubtypes.TestBech32NodeAddr20Bytes,
 			},
 			false,
 		},
 		{
 			"from 20 bytes",
 			fields{
-				From:    hubtypes.TestBech32ProvAddr20Bytes,
-				ID:      1000,
-				Address: hubtypes.TestBech32NodeAddr20Bytes,
+				From:        hubtypes.TestBech32ProvAddr20Bytes,
+				ID:          1000,
+				NodeAddress: hubtypes.TestBech32NodeAddr20Bytes,
 			},
 			false,
 		},
 		{
 			"from 30 bytes",
 			fields{
-				From:    hubtypes.TestBech32ProvAddr30Bytes,
-				ID:      1000,
-				Address: hubtypes.TestBech32NodeAddr20Bytes,
+				From:        hubtypes.TestBech32ProvAddr30Bytes,
+				ID:          1000,
+				NodeAddress: hubtypes.TestBech32NodeAddr20Bytes,
 			},
 			false,
 		},
@@ -559,63 +559,63 @@ func TestMsgUnlinkNodeRequest_ValidateBasic(t *testing.T) {
 		{
 			"id positive",
 			fields{
-				From:    hubtypes.TestBech32ProvAddr20Bytes,
-				ID:      1000,
-				Address: hubtypes.TestBech32NodeAddr20Bytes,
+				From:        hubtypes.TestBech32ProvAddr20Bytes,
+				ID:          1000,
+				NodeAddress: hubtypes.TestBech32NodeAddr20Bytes,
 			},
 			false,
 		},
 		{
-			"address empty",
+			"node_address empty",
 			fields{
-				From:    hubtypes.TestBech32ProvAddr20Bytes,
-				ID:      1000,
-				Address: "",
+				From:        hubtypes.TestBech32ProvAddr20Bytes,
+				ID:          1000,
+				NodeAddress: "",
 			},
 			true,
 		},
 		{
-			"address invalid",
+			"node_address invalid",
 			fields{
-				From:    hubtypes.TestBech32ProvAddr20Bytes,
-				ID:      1000,
-				Address: "invalid",
+				From:        hubtypes.TestBech32ProvAddr20Bytes,
+				ID:          1000,
+				NodeAddress: "invalid",
 			},
 			true,
 		},
 		{
-			"address invalid prefix",
+			"node_address invalid prefix",
 			fields{
-				From:    hubtypes.TestBech32ProvAddr20Bytes,
-				ID:      1000,
-				Address: hubtypes.TestBech32AccAddr20Bytes,
+				From:        hubtypes.TestBech32ProvAddr20Bytes,
+				ID:          1000,
+				NodeAddress: hubtypes.TestBech32AccAddr20Bytes,
 			},
 			true,
 		},
 		{
-			"address 10 bytes",
+			"node_address 10 bytes",
 			fields{
-				From:    hubtypes.TestBech32ProvAddr20Bytes,
-				ID:      1000,
-				Address: hubtypes.TestBech32NodeAddr10Bytes,
+				From:        hubtypes.TestBech32ProvAddr20Bytes,
+				ID:          1000,
+				NodeAddress: hubtypes.TestBech32NodeAddr10Bytes,
 			},
 			false,
 		},
 		{
-			"address 20 bytes",
+			"node_address 20 bytes",
 			fields{
-				From:    hubtypes.TestBech32ProvAddr20Bytes,
-				ID:      1000,
-				Address: hubtypes.TestBech32NodeAddr20Bytes,
+				From:        hubtypes.TestBech32ProvAddr20Bytes,
+				ID:          1000,
+				NodeAddress: hubtypes.TestBech32NodeAddr20Bytes,
 			},
 			false,
 		},
 		{
-			"address 30 bytes",
+			"node_address 30 bytes",
 			fields{
-				From:    hubtypes.TestBech32ProvAddr20Bytes,
-				ID:      1000,
-				Address: hubtypes.TestBech32NodeAddr30Bytes,
+				From:        hubtypes.TestBech32ProvAddr20Bytes,
+				ID:          1000,
+				NodeAddress: hubtypes.TestBech32NodeAddr30Bytes,
 			},
 			false,
 		},
@@ -623,9 +623,9 @@ func TestMsgUnlinkNodeRequest_ValidateBasic(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			m := &MsgUnlinkNodeRequest{
-				From:    tt.fields.From,
-				ID:      tt.fields.ID,
-				Address: tt.fields.Address,
+				From:        tt.fields.From,
+				ID:          tt.fields.ID,
+				NodeAddress: tt.fields.NodeAddress,
 			}
 			if err := m.ValidateBasic(); (err != nil) != tt.wantErr {
 				t.Errorf("ValidateBasic() error = %v, wantErr %v", err, tt.wantErr)

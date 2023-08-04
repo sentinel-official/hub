@@ -392,7 +392,7 @@ func (k *Keeper) CreateSubscriptionForPlan(ctx sdk.Context, accAddr sdk.AccAddre
 
 	// Calculate the payment amount after deducting the staking reward.
 	var (
-		provAddr = plan.GetAddress()
+		provAddr = plan.GetProviderAddress()
 		payment  = price.Sub(stakingReward)
 	)
 

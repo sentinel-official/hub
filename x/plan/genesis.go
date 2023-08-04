@@ -10,7 +10,7 @@ import (
 
 func InitGenesis(ctx sdk.Context, k keeper.Keeper, state types.GenesisState) {
 	for _, item := range state {
-		addr := item.Plan.GetAddress()
+		addr := item.Plan.GetProviderAddress()
 		k.SetPlan(ctx, item.Plan)
 		k.SetPlanForProvider(ctx, addr, item.Plan.ID)
 

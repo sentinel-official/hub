@@ -26,7 +26,7 @@ func RandomizedGenesisState(state *module.SimulationState) {
 
 	for i := 0; i < len(planGenesisState); i++ {
 		if state.Rand.Intn(2) == 0 {
-			planGenesisState[i].Plan.Address = providersimulation.RandomProvider(
+			planGenesisState[i].Plan.ProviderAddress = providersimulation.RandomProvider(
 				state.Rand,
 				providerGenesisState.Providers,
 			).Address

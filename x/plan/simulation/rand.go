@@ -57,13 +57,13 @@ func RandomPlans(r *rand.Rand) types.Plans {
 		items = append(
 			items,
 			types.Plan{
-				ID:        id,
-				Address:   "",
-				Duration:  duration,
-				Gigabytes: gigabytes,
-				Prices:    prices,
-				Status:    status,
-				StatusAt:  statusAt,
+				ID:              id,
+				ProviderAddress: "",
+				Duration:        duration,
+				Gigabytes:       gigabytes,
+				Prices:          prices,
+				Status:          status,
+				StatusAt:        statusAt,
 			},
 		)
 	}
