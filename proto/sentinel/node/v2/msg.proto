@@ -45,11 +45,11 @@ message MsgUpdateStatusRequest {
 
 // MsgSubscribeRequest defines the SDK message for subscribe to a node
 message MsgSubscribeRequest {
-  string from     = 1;
-  string address  = 2;
-  int64 gigabytes = 3;
-  int64 hours     = 4;
-  string denom    = 5;
+  string from         = 1;
+  string node_address = 2;
+  int64 gigabytes     = 3;
+  int64 hours         = 4;
+  string denom        = 5;
 }
 
 // MsgRegisterResponse defines the response of message MsgRegisterRequest

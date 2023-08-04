@@ -674,11 +674,11 @@ func TestMsgUpdateStatusRequest_ValidateBasic(t *testing.T) {
 
 func TestMsgSubscribeRequest_ValidateBasic(t *testing.T) {
 	type fields struct {
-		From      string
-		Address   string
-		Hours     int64
-		Gigabytes int64
-		Denom     string
+		From        string
+		NodeAddress string
+		Hours       int64
+		Gigabytes   int64
+		Denom       string
 	}
 	tests := []struct {
 		name    string
@@ -709,191 +709,191 @@ func TestMsgSubscribeRequest_ValidateBasic(t *testing.T) {
 		{
 			"from 10 bytes",
 			fields{
-				From:      hubtypes.TestBech32AccAddr10Bytes,
-				Address:   hubtypes.TestBech32NodeAddr20Bytes,
-				Hours:     1000,
-				Gigabytes: 0,
-				Denom:     "one",
+				From:        hubtypes.TestBech32AccAddr10Bytes,
+				NodeAddress: hubtypes.TestBech32NodeAddr20Bytes,
+				Hours:       1000,
+				Gigabytes:   0,
+				Denom:       "one",
 			},
 			false,
 		},
 		{
 			"from 20 bytes",
 			fields{
-				From:      hubtypes.TestBech32AccAddr20Bytes,
-				Address:   hubtypes.TestBech32NodeAddr20Bytes,
-				Hours:     1000,
-				Gigabytes: 0,
-				Denom:     "one",
+				From:        hubtypes.TestBech32AccAddr20Bytes,
+				NodeAddress: hubtypes.TestBech32NodeAddr20Bytes,
+				Hours:       1000,
+				Gigabytes:   0,
+				Denom:       "one",
 			},
 			false,
 		},
 		{
 			"from 30 bytes",
 			fields{
-				From:      hubtypes.TestBech32AccAddr30Bytes,
-				Address:   hubtypes.TestBech32NodeAddr20Bytes,
-				Hours:     1000,
-				Gigabytes: 0,
-				Denom:     "one",
+				From:        hubtypes.TestBech32AccAddr30Bytes,
+				NodeAddress: hubtypes.TestBech32NodeAddr20Bytes,
+				Hours:       1000,
+				Gigabytes:   0,
+				Denom:       "one",
 			},
 			false,
 		},
 		{
-			"address empty",
+			"node_address empty",
 			fields{
-				From:    hubtypes.TestBech32AccAddr20Bytes,
-				Address: "",
+				From:        hubtypes.TestBech32AccAddr20Bytes,
+				NodeAddress: "",
 			},
 			true,
 		},
 		{
-			"address invalid",
+			"node_address invalid",
 			fields{
-				From:    hubtypes.TestBech32AccAddr20Bytes,
-				Address: "invalid",
+				From:        hubtypes.TestBech32AccAddr20Bytes,
+				NodeAddress: "invalid",
 			},
 			true,
 		},
 		{
-			"address invalid prefix",
+			"node_address invalid prefix",
 			fields{
-				From:    hubtypes.TestBech32AccAddr20Bytes,
-				Address: hubtypes.TestBech32AccAddr20Bytes,
+				From:        hubtypes.TestBech32AccAddr20Bytes,
+				NodeAddress: hubtypes.TestBech32AccAddr20Bytes,
 			},
 			true,
 		},
 		{
-			"address 10 bytes",
+			"node_address 10 bytes",
 			fields{
-				From:      hubtypes.TestBech32AccAddr20Bytes,
-				Address:   hubtypes.TestBech32NodeAddr10Bytes,
-				Hours:     1000,
-				Gigabytes: 0,
-				Denom:     "one",
+				From:        hubtypes.TestBech32AccAddr20Bytes,
+				NodeAddress: hubtypes.TestBech32NodeAddr10Bytes,
+				Hours:       1000,
+				Gigabytes:   0,
+				Denom:       "one",
 			},
 			false,
 		},
 		{
-			"address 20 bytes",
+			"node_address 20 bytes",
 			fields{
-				From:      hubtypes.TestBech32AccAddr20Bytes,
-				Address:   hubtypes.TestBech32NodeAddr20Bytes,
-				Hours:     1000,
-				Gigabytes: 0,
-				Denom:     "one",
+				From:        hubtypes.TestBech32AccAddr20Bytes,
+				NodeAddress: hubtypes.TestBech32NodeAddr20Bytes,
+				Hours:       1000,
+				Gigabytes:   0,
+				Denom:       "one",
 			},
 			false,
 		},
 		{
-			"address 30 bytes",
+			"node_address 30 bytes",
 			fields{
-				From:      hubtypes.TestBech32AccAddr20Bytes,
-				Address:   hubtypes.TestBech32NodeAddr30Bytes,
-				Hours:     1000,
-				Gigabytes: 0,
-				Denom:     "one",
+				From:        hubtypes.TestBech32AccAddr20Bytes,
+				NodeAddress: hubtypes.TestBech32NodeAddr30Bytes,
+				Hours:       1000,
+				Gigabytes:   0,
+				Denom:       "one",
 			},
 			false,
 		},
 		{
 			"hours negative and gigabytes negative",
 			fields{
-				From:      hubtypes.TestBech32AccAddr20Bytes,
-				Address:   hubtypes.TestBech32NodeAddr20Bytes,
-				Hours:     -1000,
-				Gigabytes: -1000,
+				From:        hubtypes.TestBech32AccAddr20Bytes,
+				NodeAddress: hubtypes.TestBech32NodeAddr20Bytes,
+				Hours:       -1000,
+				Gigabytes:   -1000,
 			},
 			true,
 		},
 		{
 			"hours zero and gigabytes zero",
 			fields{
-				From:      hubtypes.TestBech32AccAddr20Bytes,
-				Address:   hubtypes.TestBech32NodeAddr20Bytes,
-				Hours:     0,
-				Gigabytes: 0,
+				From:        hubtypes.TestBech32AccAddr20Bytes,
+				NodeAddress: hubtypes.TestBech32NodeAddr20Bytes,
+				Hours:       0,
+				Gigabytes:   0,
 			},
 			true,
 		},
 		{
 			"hours positive and gigabytes positive",
 			fields{
-				From:      hubtypes.TestBech32AccAddr20Bytes,
-				Address:   hubtypes.TestBech32NodeAddr20Bytes,
-				Hours:     1000,
-				Gigabytes: 1000,
+				From:        hubtypes.TestBech32AccAddr20Bytes,
+				NodeAddress: hubtypes.TestBech32NodeAddr20Bytes,
+				Hours:       1000,
+				Gigabytes:   1000,
 			},
 			true,
 		},
 		{
 			"hours negative",
 			fields{
-				From:    hubtypes.TestBech32AccAddr20Bytes,
-				Address: hubtypes.TestBech32NodeAddr20Bytes,
-				Hours:   -1000,
+				From:        hubtypes.TestBech32AccAddr20Bytes,
+				NodeAddress: hubtypes.TestBech32NodeAddr20Bytes,
+				Hours:       -1000,
 			},
 			true,
 		},
 		{
 			"hours positive",
 			fields{
-				From:    hubtypes.TestBech32AccAddr20Bytes,
-				Address: hubtypes.TestBech32NodeAddr20Bytes,
-				Hours:   1000,
+				From:        hubtypes.TestBech32AccAddr20Bytes,
+				NodeAddress: hubtypes.TestBech32NodeAddr20Bytes,
+				Hours:       1000,
 			},
 			false,
 		},
 		{
 			"gigabytes negative",
 			fields{
-				From:      hubtypes.TestBech32AccAddr20Bytes,
-				Address:   hubtypes.TestBech32NodeAddr20Bytes,
-				Hours:     0,
-				Gigabytes: -1000,
+				From:        hubtypes.TestBech32AccAddr20Bytes,
+				NodeAddress: hubtypes.TestBech32NodeAddr20Bytes,
+				Hours:       0,
+				Gigabytes:   -1000,
 			},
 			true,
 		},
 		{
 			"gigabytes positive",
 			fields{
-				From:      hubtypes.TestBech32AccAddr20Bytes,
-				Address:   hubtypes.TestBech32NodeAddr20Bytes,
-				Hours:     0,
-				Gigabytes: 1000,
+				From:        hubtypes.TestBech32AccAddr20Bytes,
+				NodeAddress: hubtypes.TestBech32NodeAddr20Bytes,
+				Hours:       0,
+				Gigabytes:   1000,
 			},
 			false,
 		},
 		{
 			"denom empty",
 			fields{
-				From:      hubtypes.TestBech32AccAddr20Bytes,
-				Address:   hubtypes.TestBech32NodeAddr20Bytes,
-				Hours:     1000,
-				Gigabytes: 0,
-				Denom:     "",
+				From:        hubtypes.TestBech32AccAddr20Bytes,
+				NodeAddress: hubtypes.TestBech32NodeAddr20Bytes,
+				Hours:       1000,
+				Gigabytes:   0,
+				Denom:       "",
 			},
 			false,
 		},
 		{
 			"denom invalid",
 			fields{
-				From:      hubtypes.TestBech32AccAddr20Bytes,
-				Address:   hubtypes.TestBech32NodeAddr20Bytes,
-				Hours:     1000,
-				Gigabytes: 0,
-				Denom:     "o",
+				From:        hubtypes.TestBech32AccAddr20Bytes,
+				NodeAddress: hubtypes.TestBech32NodeAddr20Bytes,
+				Hours:       1000,
+				Gigabytes:   0,
+				Denom:       "o",
 			},
 			true,
 		},
 		{
 			"denom valid",
 			fields{
-				From:      hubtypes.TestBech32AccAddr20Bytes,
-				Address:   hubtypes.TestBech32NodeAddr20Bytes,
-				Hours:     1000,
-				Gigabytes: 0,
-				Denom:     "one",
+				From:        hubtypes.TestBech32AccAddr20Bytes,
+				NodeAddress: hubtypes.TestBech32NodeAddr20Bytes,
+				Hours:       1000,
+				Gigabytes:   0,
+				Denom:       "one",
 			},
 			false,
 		},
@@ -901,11 +901,11 @@ func TestMsgSubscribeRequest_ValidateBasic(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			m := &MsgSubscribeRequest{
-				From:      tt.fields.From,
-				Address:   tt.fields.Address,
-				Hours:     tt.fields.Hours,
-				Gigabytes: tt.fields.Gigabytes,
-				Denom:     tt.fields.Denom,
+				From:        tt.fields.From,
+				NodeAddress: tt.fields.NodeAddress,
+				Hours:       tt.fields.Hours,
+				Gigabytes:   tt.fields.Gigabytes,
+				Denom:       tt.fields.Denom,
 			}
 			if err := m.ValidateBasic(); (err != nil) != tt.wantErr {
 				t.Errorf("ValidateBasic() error = %v, wantErr %v", err, tt.wantErr)

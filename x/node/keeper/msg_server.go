@@ -231,8 +231,8 @@ func (k *msgServer) MsgSubscribe(c context.Context, msg *types.MsgSubscribeReque
 		return nil, err
 	}
 
-	// Convert the `msg.Address` (node address) to a `hubtypes.NodeAddress`.
-	nodeAddr, err := hubtypes.NodeAddressFromBech32(msg.Address)
+	// Convert the `msg.NodeAddress` (node address) to a `hubtypes.NodeAddress`.
+	nodeAddr, err := hubtypes.NodeAddressFromBech32(msg.NodeAddress)
 	if err != nil {
 		return nil, err
 	}

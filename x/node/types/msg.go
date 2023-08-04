@@ -205,17 +205,17 @@ func (m *MsgUpdateStatusRequest) GetSigners() []sdk.AccAddress {
 // NewMsgSubscribeRequest creates a new MsgSubscribeRequest instance with the given parameters.
 func NewMsgSubscribeRequest(from sdk.AccAddress, addr hubtypes.NodeAddress, gigabytes, hours int64, denom string) *MsgSubscribeRequest {
 	return &MsgSubscribeRequest{
-		From:      from.String(),
-		Address:   addr.String(),
-		Gigabytes: gigabytes,
-		Hours:     hours,
-		Denom:     denom,
+		From:        from.String(),
+		NodeAddress: addr.String(),
+		Gigabytes:   gigabytes,
+		Hours:       hours,
+		Denom:       denom,
 	}
 }
 
 // ValidateBasic performs basic validation checks on the MsgSubscribeRequest fields.
 // It checks if the 'From' field is not empty and represents a valid account address,
-// if the 'Address' field is not empty and represents a valid node address,
+// if the 'NodeAddress' field is not empty and represents a valid node address,
 // if either 'Gigabytes' or 'Hours' field (but not both) are non-zero and non-negative,
 // and if the 'Denom' field is valid according to the Cosmos SDK's ValidateDenom function.
 func (m *MsgSubscribeRequest) ValidateBasic() error {
@@ -225,10 +225,10 @@ func (m *MsgSubscribeRequest) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.From); err != nil {
 		return errors.Wrap(ErrorInvalidMessage, err.Error())
 	}
-	if m.Address == "" {
-		return errors.Wrap(ErrorInvalidMessage, "address cannot be empty")
+	if m.NodeAddress == "" {
+		return errors.Wrap(ErrorInvalidMessage, "node_address cannot be empty")
 	}
-	if _, err := hubtypes.NodeAddressFromBech32(m.Address); err != nil {
+	if _, err := hubtypes.NodeAddressFromBech32(m.NodeAddress); err != nil {
 		return errors.Wrap(ErrorInvalidMessage, err.Error())
 	}
 	if m.Gigabytes == 0 && m.Hours == 0 {
