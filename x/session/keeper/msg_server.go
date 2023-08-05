@@ -100,16 +100,18 @@ func (k *msgServer) MsgStart(c context.Context, msg *types.MsgStartRequest) (*ty
 	// Determine if an allocation check is required based on the subscription type.
 	checkAllocation := true
 	if s, ok := subscription.(*subscriptiontypes.NodeSubscription); ok {
+		// Check if the message sender matches the subscription's address to prevent unauthorized session starts.
+		if msg.From != s.Address {
+			return nil, types.NewErrorUnauthorized(msg.From)
+		}
+
+		// If the subscription's duration is specified in hours (non-zero), no allocation check is needed.
 		if s.Hours != 0 {
-			// If the subscription's duration is specified in hours (non-zero), no allocation check is needed.
 			checkAllocation = false
-			// Additionally, check if the message sender matches the subscription's address to prevent unauthorized session starts.
-			if msg.From != s.Address {
-				return nil, types.NewErrorUnauthorized(msg.From)
-			}
 		}
 	}
 
+	// Check if an allocation check is required for this session.
 	if checkAllocation {
 		// If an allocation check is required, get the allocation associated with the subscription and account.
 		alloc, found := k.GetAllocation(ctx, subscription.GetID(), accAddr)
@@ -198,8 +200,7 @@ func (k *msgServer) MsgUpdateDetails(c context.Context, msg *types.MsgUpdateDeta
 
 	// If proof verification is enabled, verify the signature of the message using the account address associated with the session.
 	if k.ProofVerificationEnabled(ctx) {
-		accAddr := session.GetAddress()
-		if err := k.VerifySignature(ctx, accAddr, msg.Proof, msg.Signature); err != nil {
+		if err := k.VerifySignature(ctx, session.GetAddress(), msg.Proof, msg.Signature); err != nil {
 			// If the signature verification fails, return an error indicating an invalid signature.
 			return nil, types.NewErrorInvalidSignature(msg.Signature)
 		}
@@ -272,9 +273,6 @@ func (k *msgServer) MsgEnd(c context.Context, msg *types.MsgEndRequest) (*types.
 		k.StatusChangeDelay(ctx),
 	)
 
-	// Update the session entry in the InactiveAt index with the new InactiveAt value.
-	k.SetSessionForInactiveAt(ctx, session.InactiveAt, session.ID)
-
 	// Set the session status to 'InactivePending' to mark it for an upcoming status update.
 	session.Status = hubtypes.StatusInactivePending
 
@@ -283,6 +281,9 @@ func (k *msgServer) MsgEnd(c context.Context, msg *types.MsgEndRequest) (*types.
 
 	// Update the session entry in the store with the new status and status update time.
 	k.SetSession(ctx, session)
+
+	// Update the session entry in the InactiveAt index with the new InactiveAt value.
+	k.SetSessionForInactiveAt(ctx, session.InactiveAt, session.ID)
 
 	// Emit an event to notify that the session status has been updated.
 	ctx.EventManager().EmitTypedEvent(

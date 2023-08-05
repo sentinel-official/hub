@@ -74,3 +74,7 @@ func NewErrorInvalidNodeStatus(addr hubtypes.NodeAddress, status hubtypes.Status
 func NewErrorInvalidSessionCount(id uint64) error {
 	return errors.Wrapf(ErrorInvalidCount, "found non-zero session count for subscription %d", id)
 }
+
+func NewErrorPayoutNotFound(id uint64) error {
+	return errors.Wrapf(ErrorNotFound, "payout %d does not exist", id)
+}

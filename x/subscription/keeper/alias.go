@@ -6,7 +6,6 @@ import (
 	hubtypes "github.com/sentinel-official/hub/types"
 	nodetypes "github.com/sentinel-official/hub/x/node/types"
 	plantypes "github.com/sentinel-official/hub/x/plan/types"
-	sessiontypes "github.com/sentinel-official/hub/x/session/types"
 )
 
 func (k *Keeper) SendCoin(ctx sdk.Context, fromAddr sdk.AccAddress, toAddr sdk.AccAddress, coin sdk.Coin) error {
@@ -65,6 +64,6 @@ func (k *Keeper) GetPlan(ctx sdk.Context, id uint64) (plantypes.Plan, bool) {
 	return k.plan.GetPlan(ctx, id)
 }
 
-func (k *Keeper) GetLatestSessionForSubscription(ctx sdk.Context, subscriptionID uint64) (sessiontypes.Session, bool) {
-	return k.session.GetLatestSessionForSubscription(ctx, subscriptionID)
+func (k *Keeper) SubscriptionInactivePendingHook(ctx sdk.Context, id uint64) error {
+	return k.session.SubscriptionInactivePendingHook(ctx, id)
 }

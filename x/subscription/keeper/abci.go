@@ -41,15 +41,19 @@ func (k *Keeper) BeginBlock(ctx sdk.Context) {
 			panic(err)
 		}
 
-		// Decrement the remaining hours of the payout by one and update the NextAt value for the next payout.
+		// Decrement the remaining payout duration (in hours) by 1 and update the NextAt value.
 		item.Hours = item.Hours - 1
 		item.NextAt = item.NextAt.Add(time.Hour)
+
+		// If the payout duration has reached 0, set the NextAt value to an empty time.
 		if item.Hours == 0 {
 			item.NextAt = time.Time{}
 		}
 
-		// Save the updated payout to the store.
+		// Update the payout in the store with the updated duration and NextAt value.
 		k.SetPayout(ctx, item)
+
+		// If the payout still has remaining duration (hours), update the NextAt index.
 		if item.Hours > 0 {
 			k.SetPayoutForNextAt(ctx, item.NextAt, item.ID)
 		}
@@ -66,6 +70,11 @@ func (k *Keeper) EndBlock(ctx sdk.Context) []abcitypes.ValidatorUpdate {
 
 	// Iterate over all subscriptions that have become inactive at the current block time.
 	k.IterateSubscriptionsForInactiveAt(ctx, ctx.BlockTime(), func(_ int, item types.Subscription) bool {
+		// Run the SubscriptionInactivePendingHook to perform custom actions before setting the subscription to inactive pending state.
+		if err := k.SubscriptionInactivePendingHook(ctx, item.GetID()); err != nil {
+			panic(err)
+		}
+
 		// Delete the subscription from the InactiveAt index before updating the InactiveAt value.
 		k.DeleteSubscriptionForInactiveAt(ctx, item.GetInactiveAt(), item.GetID())
 
@@ -89,13 +98,18 @@ func (k *Keeper) EndBlock(ctx sdk.Context) []abcitypes.ValidatorUpdate {
 				},
 			)
 
-			// If the subscription has a corresponding payout, delete its NextAt value.
-			payout, found := k.GetPayout(ctx, item.GetID())
-			if found {
+			// If the subscription is a NodeSubscription and the duration is specified in hours (non-zero), update the associated payout.
+			if s, ok := item.(*types.NodeSubscription); ok && s.Hours != 0 {
+				payout, found := k.GetPayout(ctx, s.GetID())
+				if !found {
+					panic(fmt.Errorf("payout %d does not exist", s.GetID()))
+				}
+
+				// Delete the payout from the Store for the given account and node.
 				k.DeletePayoutForAccountByNode(ctx, payout.GetAddress(), payout.GetNodeAddress(), payout.ID)
 				k.DeletePayoutForNextAt(ctx, payout.NextAt, payout.ID)
 
-				// Reset the NextAt value to an empty time.Time as the payout has become inactive.
+				// Reset the `NextAt` field of the payout and update it in the Store.
 				payout.NextAt = time.Time{}
 				k.SetPayout(ctx, payout)
 			}
@@ -164,9 +178,9 @@ func (k *Keeper) EndBlock(ctx sdk.Context) []abcitypes.ValidatorUpdate {
 
 		// Iterate over all allocations associated with the subscription and delete them from the store.
 		k.IterateAllocations(ctx, item.GetID(), func(_ int, alloc types.Allocation) bool {
-			addr := alloc.GetAddress()
-			k.DeleteAllocation(ctx, item.GetID(), addr)
-			k.DeleteSubscriptionForAccount(ctx, addr, item.GetID())
+			accAddr := alloc.GetAddress()
+			k.DeleteAllocation(ctx, item.GetID(), accAddr)
+			k.DeleteSubscriptionForAccount(ctx, accAddr, item.GetID())
 
 			return false
 		})
@@ -193,9 +207,16 @@ func (k *Keeper) EndBlock(ctx sdk.Context) []abcitypes.ValidatorUpdate {
 			},
 		)
 
-		// If the subscription has a corresponding payout, delete the payout from the store and its associated indexes.
-		payout, found := k.GetPayout(ctx, item.GetID())
-		if found {
+		// If the subscription is a NodeSubscription and the duration is specified in hours (non-zero),
+		// delete the payout from the store and its associated indexes.
+		if s, ok := item.(*types.NodeSubscription); ok && s.Hours != 0 {
+			payout, found := k.GetPayout(ctx, item.GetID())
+			if !found {
+				// If the payout is not found, panic with an error indicating the missing payout.
+				panic(fmt.Errorf("payout %d does not exist", item.GetID()))
+			}
+
+			// Delete the payout and its associated indexes from the Store.
 			k.DeletePayout(ctx, payout.ID)
 			k.DeletePayoutForAccount(ctx, payout.GetAddress(), payout.ID)
 			k.DeletePayoutForNode(ctx, payout.GetNodeAddress(), payout.ID)

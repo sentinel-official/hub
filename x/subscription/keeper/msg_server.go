@@ -52,9 +52,9 @@ func (k *msgServer) MsgCancel(c context.Context, msg *types.MsgCancelRequest) (*
 		return nil, types.NewErrorUnauthorized(msg.From)
 	}
 
-	// Check if there is an active or inactive-pending session for the given subscription. If there is, return an error.
-	if _, found = k.GetLatestSessionForSubscription(ctx, subscription.GetID()); found {
-		return nil, types.NewErrorInvalidSessionCount(subscription.GetID())
+	// Run the SubscriptionInactivePendingHook to perform custom actions before setting the subscription to inactive pending state.
+	if err = k.SubscriptionInactivePendingHook(ctx, subscription.GetID()); err != nil {
+		return nil, err
 	}
 
 	// Delete the subscription from the Store for the time it becomes inactive.
@@ -82,9 +82,14 @@ func (k *msgServer) MsgCancel(c context.Context, msg *types.MsgCancelRequest) (*
 		},
 	)
 
-	// Check if there is an associated payout for this subscription and remove it.
-	payout, found := k.GetPayout(ctx, subscription.GetID())
-	if found {
+	// If the subscription is a NodeSubscription and the duration is specified in hours (non-zero), update the associated payout.
+	if s, ok := subscription.(*types.NodeSubscription); ok && s.Hours != 0 {
+		payout, found := k.GetPayout(ctx, s.GetID())
+		if !found {
+			return nil, types.NewErrorPayoutNotFound(s.GetID())
+		}
+
+		// Delete the payout from the Store for the given account and node.
 		k.DeletePayoutForAccountByNode(ctx, payout.GetAddress(), payout.GetNodeAddress(), payout.ID)
 		k.DeletePayoutForNextAt(ctx, payout.NextAt, payout.ID)
 

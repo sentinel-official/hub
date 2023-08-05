@@ -197,6 +197,25 @@ func (k *Keeper) GetSessionsForSubscription(ctx sdk.Context, id uint64) (items t
 	return items
 }
 
+func (k *Keeper) IterateSessionsForSubscription(ctx sdk.Context, id uint64, fn func(index int, item types.Session) (stop bool)) {
+	store := k.Store(ctx)
+
+	iter := sdk.KVStoreReversePrefixIterator(store, types.GetSessionForSubscriptionKeyPrefix(id))
+	defer iter.Close()
+
+	for i := 0; iter.Valid(); iter.Next() {
+		session, found := k.GetSession(ctx, types.IDFromSessionForSubscriptionKey(iter.Key()))
+		if !found {
+			panic(fmt.Errorf("session for subscription key %X does not exist", iter.Key()))
+		}
+
+		if stop := fn(i, session); stop {
+			break
+		}
+		i++
+	}
+}
+
 func (k *Keeper) SetSessionForAllocation(ctx sdk.Context, subscriptionID uint64, addr sdk.AccAddress, sessionID uint64) {
 	var (
 		store = k.Store(ctx)

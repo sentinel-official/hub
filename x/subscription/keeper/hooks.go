@@ -10,13 +10,13 @@ import (
 	"github.com/sentinel-official/hub/x/subscription/types"
 )
 
-// SessionEndHook is a function that handles the end of a session.
+// SessionInactiveHook is a function that handles the end of a session.
 // It updates the allocation's utilized bytes, calculates and sends payments, and staking rewards.
-func (k *Keeper) SessionEndHook(ctx sdk.Context, subscriptionID uint64, accAddr sdk.AccAddress, nodeAddr hubtypes.NodeAddress, bytes sdk.Int) error {
+func (k *Keeper) SessionInactiveHook(ctx sdk.Context, id uint64, accAddr sdk.AccAddress, nodeAddr hubtypes.NodeAddress, bytes sdk.Int) error {
 	// Get the subscription associated with the provided subscription ID.
-	subscription, found := k.GetSubscription(ctx, subscriptionID)
+	subscription, found := k.GetSubscription(ctx, id)
 	if !found {
-		return fmt.Errorf("subscription %d does not exist", subscriptionID)
+		return fmt.Errorf("subscription %d does not exist", id)
 	}
 
 	// Get the allocation associated with the subscription and account address.
