@@ -19,6 +19,11 @@ func (k *Keeper) SessionInactiveHook(ctx sdk.Context, id uint64, accAddr sdk.Acc
 		return fmt.Errorf("subscription %d does not exist", id)
 	}
 
+	// If the subscription is a NodeSubscription with non-zero duration (hours), no further action is needed.
+	if s, ok := subscription.(*types.NodeSubscription); ok && s.Hours != 0 {
+		return nil
+	}
+
 	// Get the allocation associated with the subscription and account address.
 	alloc, found := k.GetAllocation(ctx, subscription.GetID(), accAddr)
 	if !found {
