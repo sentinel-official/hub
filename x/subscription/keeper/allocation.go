@@ -49,10 +49,10 @@ func (k *Keeper) DeleteAllocation(ctx sdk.Context, id uint64, addr sdk.AccAddres
 	store.Delete(key)
 }
 
-func (k *Keeper) GetAllocations(ctx sdk.Context, id uint64) (items types.Allocations) {
+func (k *Keeper) GetAllocationsForSubscription(ctx sdk.Context, id uint64) (items types.Allocations) {
 	var (
 		store = k.Store(ctx)
-		iter  = sdk.KVStorePrefixIterator(store, types.GetAllocationKeyPrefix(id))
+		iter  = sdk.KVStorePrefixIterator(store, types.GetAllocationForSubscriptionKeyPrefix(id))
 	)
 
 	defer iter.Close()
@@ -66,10 +66,10 @@ func (k *Keeper) GetAllocations(ctx sdk.Context, id uint64) (items types.Allocat
 	return items
 }
 
-func (k *Keeper) IterateAllocations(ctx sdk.Context, id uint64, fn func(index int, item types.Allocation) (stop bool)) {
+func (k *Keeper) IterateAllocationsForSubscription(ctx sdk.Context, id uint64, fn func(index int, item types.Allocation) (stop bool)) {
 	store := k.Store(ctx)
 
-	iter := sdk.KVStorePrefixIterator(store, types.GetAllocationKeyPrefix(id))
+	iter := sdk.KVStorePrefixIterator(store, types.GetAllocationForSubscriptionKeyPrefix(id))
 	defer iter.Close()
 
 	for i := 0; iter.Valid(); iter.Next() {

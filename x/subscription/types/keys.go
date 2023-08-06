@@ -69,12 +69,12 @@ func SubscriptionForInactiveAtKey(at time.Time, id uint64) []byte {
 	return append(GetSubscriptionForInactiveAtKeyPrefix(at), sdk.Uint64ToBigEndian(id)...)
 }
 
-func GetAllocationKeyPrefix(id uint64) []byte {
+func GetAllocationForSubscriptionKeyPrefix(id uint64) []byte {
 	return append(AllocationKeyPrefix, sdk.Uint64ToBigEndian(id)...)
 }
 
 func AllocationKey(id uint64, addr sdk.AccAddress) []byte {
-	return append(GetAllocationKeyPrefix(id), address.MustLengthPrefix(addr.Bytes())...)
+	return append(GetAllocationForSubscriptionKeyPrefix(id), address.MustLengthPrefix(addr.Bytes())...)
 }
 
 func PayoutKey(id uint64) []byte {

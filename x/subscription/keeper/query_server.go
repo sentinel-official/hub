@@ -217,7 +217,7 @@ func (q *queryServer) QueryAllocations(c context.Context, req *types.QueryAlloca
 	var (
 		items types.Allocations
 		ctx   = sdk.UnwrapSDKContext(c)
-		store = prefix.NewStore(q.Store(ctx), types.GetAllocationKeyPrefix(req.Id))
+		store = prefix.NewStore(q.Store(ctx), types.GetAllocationForSubscriptionKeyPrefix(req.Id))
 	)
 
 	pagination, err := query.Paginate(store, req.Pagination, func(_, value []byte) error {

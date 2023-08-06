@@ -177,7 +177,7 @@ func (k *Keeper) EndBlock(ctx sdk.Context) []abcitypes.ValidatorUpdate {
 		}
 
 		// Iterate over all allocations associated with the subscription and delete them from the store.
-		k.IterateAllocations(ctx, item.GetID(), func(_ int, alloc types.Allocation) bool {
+		k.IterateAllocationsForSubscription(ctx, item.GetID(), func(_ int, alloc types.Allocation) bool {
 			accAddr := alloc.GetAddress()
 			k.DeleteAllocation(ctx, item.GetID(), accAddr)
 			k.DeleteSubscriptionForAccount(ctx, accAddr, item.GetID())

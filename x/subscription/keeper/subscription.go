@@ -70,6 +70,25 @@ func (k *Keeper) GetSubscriptions(ctx sdk.Context) (items types.Subscriptions) {
 	return items
 }
 
+func (k *Keeper) IterateSubscriptions(ctx sdk.Context, fn func(index int, item types.Subscription) (stop bool)) {
+	store := k.Store(ctx)
+
+	iter := sdk.KVStorePrefixIterator(store, types.SubscriptionKeyPrefix)
+	defer iter.Close()
+
+	for i := 0; iter.Valid(); iter.Next() {
+		var subscription types.Subscription
+		if err := k.cdc.UnmarshalInterface(iter.Value(), &subscription); err != nil {
+			panic(err)
+		}
+
+		if stop := fn(i, subscription); stop {
+			break
+		}
+		i++
+	}
+}
+
 func (k *Keeper) SetSubscriptionForAccount(ctx sdk.Context, addr sdk.AccAddress, id uint64) {
 	var (
 		store = k.Store(ctx)
