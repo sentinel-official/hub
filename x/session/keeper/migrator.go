@@ -1,8 +1,12 @@
 package keeper
 
 import (
+	"time"
+
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
+	"github.com/sentinel-official/hub/x/session/types"
 )
 
 type Migrator struct {
@@ -24,6 +28,10 @@ func (k Migrator) Migrate2to3(ctx sdk.Context) error {
 		return err
 	}
 	if err := k.deleteInactiveSessionAtKeys(ctx); err != nil {
+		return err
+	}
+
+	if err := k.setParams(ctx); err != nil {
 		return err
 	}
 
@@ -57,4 +65,16 @@ func (k Migrator) deleteInactiveSessionForAddressKeys(ctx sdk.Context) error {
 
 func (k Migrator) deleteInactiveSessionAtKeys(ctx sdk.Context) error {
 	return k.deleteKeys(ctx, []byte{0x40})
+}
+
+func (k Migrator) setParams(ctx sdk.Context) error {
+	k.SetParams(
+		ctx,
+		types.Params{
+			StatusChangeDelay:        2 * 60 * time.Minute,
+			ProofVerificationEnabled: false,
+		},
+	)
+
+	return nil
 }

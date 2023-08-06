@@ -39,6 +39,9 @@ func (k Migrator) Migrate2to3(ctx sdk.Context) error {
 	if err := k.migrateNodes(ctx); err != nil {
 		return err
 	}
+	if err := k.setParams(ctx); err != nil {
+		return err
+	}
 
 	return nil
 }
@@ -106,6 +109,27 @@ func (k Migrator) migrateNodes(ctx sdk.Context) error {
 
 		k.SetNode(ctx, node)
 	}
+
+	return nil
+}
+
+func (k Migrator) setParams(ctx sdk.Context) error {
+	k.SetParams(
+		ctx,
+		types.Params{
+			Deposit:                  sdk.NewInt64Coin("udvpn", 0),
+			ActiveDuration:           60 * time.Minute,
+			MaxGigabytePrices:        nil,
+			MinGigabytePrices:        nil,
+			MaxHourlyPrices:          nil,
+			MinHourlyPrices:          nil,
+			MaxSubscriptionGigabytes: 1e6,
+			MinSubscriptionGigabytes: 1,
+			MaxSubscriptionHours:     720,
+			MinSubscriptionHours:     1,
+			StakingShare:             sdk.NewDecWithPrec(2, 1),
+		},
+	)
 
 	return nil
 }

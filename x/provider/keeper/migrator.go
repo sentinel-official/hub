@@ -21,6 +21,9 @@ func (k Migrator) Migrate2to3(ctx sdk.Context) error {
 	if err := k.migrateProviders(ctx); err != nil {
 		return err
 	}
+	if err := k.setParams(ctx); err != nil {
+		return err
+	}
 
 	return nil
 }
@@ -48,6 +51,18 @@ func (k Migrator) migrateProviders(ctx sdk.Context) error {
 
 		k.SetProvider(ctx, provider)
 	}
+
+	return nil
+}
+
+func (k Migrator) setParams(ctx sdk.Context) error {
+	k.SetParams(
+		ctx,
+		types.Params{
+			Deposit:      sdk.NewInt64Coin("udvpn", 25000000000),
+			StakingShare: sdk.NewDecWithPrec(2, 1),
+		},
+	)
 
 	return nil
 }

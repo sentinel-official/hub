@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -34,6 +35,9 @@ func (k Migrator) Migrate2to3(ctx sdk.Context) error {
 		return err
 	}
 	if err := k.migrateQuotas(ctx); err != nil {
+		return err
+	}
+	if err := k.setParams(ctx); err != nil {
 		return err
 	}
 
@@ -168,6 +172,17 @@ func (k Migrator) updateAllocations(ctx sdk.Context) error {
 
 		return false
 	})
+
+	return nil
+}
+
+func (k Migrator) setParams(ctx sdk.Context) error {
+	k.SetParams(
+		ctx,
+		types.Params{
+			StatusChangeDelay: 4 * 60 * time.Minute,
+		},
+	)
 
 	return nil
 }

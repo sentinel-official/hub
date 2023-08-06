@@ -22,6 +22,7 @@ import (
 	authrest "github.com/cosmos/cosmos-sdk/x/auth/client/rest"
 	authtx "github.com/cosmos/cosmos-sdk/x/auth/tx"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 	abcitypes "github.com/tendermint/tendermint/abci/types"
 	tmjson "github.com/tendermint/tendermint/libs/json"
@@ -111,7 +112,7 @@ func NewApp(
 	app.SetBeginBlocker(app.BeginBlocker)
 	app.SetEndBlocker(app.EndBlocker)
 	app.SetInitChainer(app.InitChainer)
-	app.SetUpgradeHandler(configurator)
+	app.SetUpgradeHandler(configurator, storeKeys.KV(paramstypes.StoreKey))
 	app.SetUpgradeStoreLoader()
 	app.RegisterSnapshotExtensions()
 
@@ -227,11 +228,12 @@ func (a *App) SetUpgradeStoreLoader() {
 	}
 }
 
-func (a *App) SetUpgradeHandler(configurator module.Configurator) {
+func (a *App) SetUpgradeHandler(configurator module.Configurator, paramsStoreKey sdk.StoreKey) {
 	a.UpgradeKeeper.SetUpgradeHandler(
 		upgrades.Name,
 		upgrades.Handler(
 			a.mm, configurator,
+			paramsStoreKey,
 			a.IBCICAControllerKeeper,
 			a.IBCICAHostKeeper,
 		),

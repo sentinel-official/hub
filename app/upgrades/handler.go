@@ -15,6 +15,7 @@ import (
 func Handler(
 	mm *module.Manager,
 	configurator module.Configurator,
+	paramsStoreKey sdk.StoreKey,
 	ibcICAControllerKeeper ibcicacontrollerkeeper.Keeper,
 	ibcICAHostKeeper ibcicahostkeeper.Keeper,
 ) upgradetypes.UpgradeHandler {
@@ -25,6 +26,20 @@ func Handler(
 		newVM, err := mm.RunMigrations(ctx, configurator, fromVM)
 		if err != nil {
 			return newVM, err
+		}
+
+		var (
+			store = ctx.KVStore(paramsStoreKey)
+			iter  = sdk.KVStorePrefixIterator(store, []byte("vpn"))
+		)
+
+		for ; iter.Valid(); iter.Next() {
+			ctx.Logger().Info("deleting the parameter", "key", iter.Key(), "value", iter.Value())
+			store.Delete(iter.Key())
+		}
+
+		if err = iter.Close(); err != nil {
+			return nil, err
 		}
 
 		var (
