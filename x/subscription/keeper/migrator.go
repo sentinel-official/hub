@@ -21,6 +21,12 @@ func NewMigrator(k Keeper) Migrator {
 }
 
 func (k Migrator) Migrate2to3(ctx sdk.Context) error {
+	if err := k.deleteSubscriptionForNodeKeys(ctx); err != nil {
+		return err
+	}
+	if err := k.deleteSubscriptionForPlanKeys(ctx); err != nil {
+		return err
+	}
 	if err := k.deleteActiveSubscriptionForAddressKeys(ctx); err != nil {
 		return err
 	}
@@ -31,13 +37,16 @@ func (k Migrator) Migrate2to3(ctx sdk.Context) error {
 		return err
 	}
 
+	if err := k.setParams(ctx); err != nil {
+		return err
+	}
 	if err := k.migrateSubscriptions(ctx); err != nil {
 		return err
 	}
 	if err := k.migrateQuotas(ctx); err != nil {
 		return err
 	}
-	if err := k.setParams(ctx); err != nil {
+	if err := k.updateAllocations(ctx); err != nil {
 		return err
 	}
 
@@ -55,6 +64,14 @@ func (k Migrator) deleteKeys(ctx sdk.Context, keyPrefix []byte) error {
 	}
 
 	return nil
+}
+
+func (k Migrator) deleteSubscriptionForNodeKeys(ctx sdk.Context) error {
+	return k.deleteKeys(ctx, []byte{0x11})
+}
+
+func (k Migrator) deleteSubscriptionForPlanKeys(ctx sdk.Context) error {
+	return k.deleteKeys(ctx, []byte{0x12})
 }
 
 func (k Migrator) deleteActiveSubscriptionForAddressKeys(ctx sdk.Context) error {

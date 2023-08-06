@@ -18,10 +18,10 @@ func NewMigrator(k Keeper) Migrator {
 }
 
 func (k Migrator) Migrate2to3(ctx sdk.Context) error {
-	if err := k.migrateProviders(ctx); err != nil {
+	if err := k.setParams(ctx); err != nil {
 		return err
 	}
-	if err := k.setParams(ctx); err != nil {
+	if err := k.migrateProviders(ctx); err != nil {
 		return err
 	}
 

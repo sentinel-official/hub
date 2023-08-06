@@ -23,11 +23,6 @@ func Handler(
 		fromVM[ibcicatypes.ModuleName] = mm.Modules[ibcicatypes.ModuleName].ConsensusVersion()
 		fromVM[ibcfeetypes.ModuleName] = mm.Modules[ibcfeetypes.ModuleName].ConsensusVersion()
 
-		newVM, err := mm.RunMigrations(ctx, configurator, fromVM)
-		if err != nil {
-			return newVM, err
-		}
-
 		var (
 			store = ctx.KVStore(paramsStoreKey)
 			iter  = sdk.KVStorePrefixIterator(store, []byte("vpn"))
@@ -38,8 +33,13 @@ func Handler(
 			store.Delete(iter.Key())
 		}
 
-		if err = iter.Close(); err != nil {
+		if err := iter.Close(); err != nil {
 			return nil, err
+		}
+
+		newVM, err := mm.RunMigrations(ctx, configurator, fromVM)
+		if err != nil {
+			return newVM, err
 		}
 
 		var (

@@ -21,10 +21,16 @@ func (k Migrator) Migrate2to3(ctx sdk.Context) error {
 	if err := k.deleteSessions(ctx); err != nil {
 		return err
 	}
-	if err := k.deleteActiveSessionForAddressKeys(ctx); err != nil {
+	if err := k.deleteSessionForSubscriptionKeys(ctx); err != nil {
+		return err
+	}
+	if err := k.deleteSessionForNodeKeys(ctx); err != nil {
 		return err
 	}
 	if err := k.deleteInactiveSessionForAddressKeys(ctx); err != nil {
+		return err
+	}
+	if err := k.deleteActiveSessionForAddressKeys(ctx); err != nil {
 		return err
 	}
 	if err := k.deleteInactiveSessionAtKeys(ctx); err != nil {
@@ -55,11 +61,19 @@ func (k Migrator) deleteSessions(ctx sdk.Context) error {
 	return k.deleteKeys(ctx, []byte{0x11})
 }
 
-func (k Migrator) deleteActiveSessionForAddressKeys(ctx sdk.Context) error {
-	return k.deleteKeys(ctx, []byte{0x30})
+func (k Migrator) deleteSessionForSubscriptionKeys(ctx sdk.Context) error {
+	return k.deleteKeys(ctx, []byte{0x20})
+}
+
+func (k Migrator) deleteSessionForNodeKeys(ctx sdk.Context) error {
+	return k.deleteKeys(ctx, []byte{0x21})
 }
 
 func (k Migrator) deleteInactiveSessionForAddressKeys(ctx sdk.Context) error {
+	return k.deleteKeys(ctx, []byte{0x30})
+}
+
+func (k Migrator) deleteActiveSessionForAddressKeys(ctx sdk.Context) error {
 	return k.deleteKeys(ctx, []byte{0x31})
 }
 

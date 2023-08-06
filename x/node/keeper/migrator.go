@@ -36,10 +36,10 @@ func (k Migrator) Migrate2to3(ctx sdk.Context) error {
 		return err
 	}
 
-	if err := k.migrateNodes(ctx); err != nil {
+	if err := k.setParams(ctx); err != nil {
 		return err
 	}
-	if err := k.setParams(ctx); err != nil {
+	if err := k.migrateNodes(ctx); err != nil {
 		return err
 	}
 
