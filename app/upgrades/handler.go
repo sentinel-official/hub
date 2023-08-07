@@ -10,6 +10,9 @@ import (
 	ibcicahosttypes "github.com/cosmos/ibc-go/v4/modules/apps/27-interchain-accounts/host/types"
 	ibcicatypes "github.com/cosmos/ibc-go/v4/modules/apps/27-interchain-accounts/types"
 	ibcfeetypes "github.com/cosmos/ibc-go/v4/modules/apps/29-fee/types"
+
+	custommintkeeper "github.com/sentinel-official/hub/x/mint/keeper"
+	customminttypes "github.com/sentinel-official/hub/x/mint/types"
 )
 
 func Handler(
@@ -18,6 +21,7 @@ func Handler(
 	paramsStoreKey sdk.StoreKey,
 	ibcICAControllerKeeper ibcicacontrollerkeeper.Keeper,
 	ibcICAHostKeeper ibcicahostkeeper.Keeper,
+	customMintKeeper custommintkeeper.Keeper,
 ) upgradetypes.UpgradeHandler {
 	return func(ctx sdk.Context, _ upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
 		fromVM[ibcicatypes.ModuleName] = mm.Modules[ibcicatypes.ModuleName].ConsensusVersion()
@@ -36,6 +40,11 @@ func Handler(
 		if err := iter.Close(); err != nil {
 			return nil, err
 		}
+
+		customMintKeeper.IterateInflations(ctx, func(_ int, item customminttypes.Inflation) (stop bool) {
+			customMintKeeper.DeleteInflation(ctx, item.Timestamp)
+			return false
+		})
 
 		newVM, err := mm.RunMigrations(ctx, configurator, fromVM)
 		if err != nil {

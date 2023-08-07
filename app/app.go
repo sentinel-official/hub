@@ -112,7 +112,7 @@ func NewApp(
 	app.SetBeginBlocker(app.BeginBlocker)
 	app.SetEndBlocker(app.EndBlocker)
 	app.SetInitChainer(app.InitChainer)
-	app.SetUpgradeHandler(configurator, storeKeys.KV(paramstypes.StoreKey))
+	app.SetUpgradeHandler(configurator)
 	app.SetUpgradeStoreLoader()
 	app.RegisterSnapshotExtensions()
 
@@ -228,14 +228,15 @@ func (a *App) SetUpgradeStoreLoader() {
 	}
 }
 
-func (a *App) SetUpgradeHandler(configurator module.Configurator, paramsStoreKey sdk.StoreKey) {
+func (a *App) SetUpgradeHandler(configurator module.Configurator) {
 	a.UpgradeKeeper.SetUpgradeHandler(
 		upgrades.Name,
 		upgrades.Handler(
 			a.mm, configurator,
-			paramsStoreKey,
+			a.StoreKeys.KV(paramstypes.StoreKey),
 			a.IBCICAControllerKeeper,
 			a.IBCICAHostKeeper,
+			a.CustomMintKeeper,
 		),
 	)
 }
