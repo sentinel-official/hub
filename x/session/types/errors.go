@@ -73,7 +73,7 @@ func NewErrorPlanNotFound(id uint64) error {
 }
 
 func NewErrorPayoutNotFound(accAddr sdk.AccAddress, nodeAddr hubtypes.NodeAddress) error {
-	return errors.Wrapf(ErrorNotFound, "payout for account %d and node %s does not exist", accAddr, nodeAddr)
+	return errors.Wrapf(ErrorNotFound, "payout for account %s and node %s does not exist", accAddr, nodeAddr)
 }
 
 func NewErrorInvalidNode(addr string) error {

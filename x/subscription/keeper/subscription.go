@@ -300,7 +300,7 @@ func (k *Keeper) CreateSubscriptionForNode(ctx sdk.Context, accAddr sdk.AccAddre
 		if !found {
 			return nil, types.NewErrorPriceNotFound(denom)
 		}
-		subscription.InactiveAt = ctx.BlockTime().Add(types.Year) // TODO: move to params
+		subscription.InactiveAt = ctx.BlockTime().Add(90 * types.Day) // TODO: move to params
 		subscription.Deposit = sdk.NewCoin(
 			price.Denom,
 			hubutils.AmountForBytes(price.Amount, hubtypes.Gigabyte.MulRaw(gigabytes)),

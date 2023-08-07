@@ -12,7 +12,7 @@ import (
 
 const (
 	ModuleName = "subscription"
-	Year       = 365.25 * 24 * time.Hour
+	Day        = 24 * time.Hour
 )
 
 var (
