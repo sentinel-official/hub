@@ -18,40 +18,40 @@ func TestStatusFromString(t *testing.T) {
 			args{
 				s: "",
 			},
-			StatusUnknown,
+			StatusUnspecified,
 		},
 		{
 			"invalid",
 			args{
 				s: "invalid",
 			},
-			StatusUnknown,
+			StatusUnspecified,
 		},
 		{
-			"unknown",
+			"unspecified",
 			args{
-				s: "unknown",
+				s: "unspecified",
 			},
-			StatusUnknown,
+			StatusUnspecified,
 		},
 		{
 			"active",
 			args{
-				s: "Active",
+				s: "active",
 			},
 			StatusActive,
 		},
 		{
 			"inactive pending",
 			args{
-				s: "InactivePending",
+				s: "inactive_pending",
 			},
 			StatusInactivePending,
 		},
 		{
 			"inactive",
 			args{
-				s: "Inactive",
+				s: "inactive",
 			},
 			StatusInactive,
 		},
@@ -76,42 +76,42 @@ func TestStatus_Equal(t *testing.T) {
 		want bool
 	}{
 		{
-			"unknown and unknown",
-			StatusUnknown,
+			"unspecified and unspecified",
+			StatusUnspecified,
 			args{
-				v: StatusUnknown,
+				v: StatusUnspecified,
 			},
 			true,
 		},
 		{
-			"unknown and active",
-			StatusUnknown,
+			"unspecified and active",
+			StatusUnspecified,
 			args{
 				v: StatusActive,
 			},
 			false,
 		},
 		{
-			"unknown and inactive pending",
-			StatusUnknown,
+			"unspecified and inactive pending",
+			StatusUnspecified,
 			args{
 				v: StatusInactivePending,
 			},
 			false,
 		},
 		{
-			"unknown and inactive",
-			StatusUnknown,
+			"unspecified and inactive",
+			StatusUnspecified,
 			args{
 				v: StatusInactive,
 			},
 			false,
 		},
 		{
-			"active and unknown",
+			"active and unspecified",
 			StatusActive,
 			args{
-				v: StatusUnknown,
+				v: StatusUnspecified,
 			},
 			false,
 		},
@@ -140,10 +140,10 @@ func TestStatus_Equal(t *testing.T) {
 			false,
 		},
 		{
-			"inactive pending and unknown",
+			"inactive pending and unspecified",
 			StatusInactivePending,
 			args{
-				v: StatusUnknown,
+				v: StatusUnspecified,
 			},
 			false,
 		},
@@ -172,10 +172,10 @@ func TestStatus_Equal(t *testing.T) {
 			false,
 		},
 		{
-			"inactive and unknown",
+			"inactive and unspecified",
 			StatusInactive,
 			args{
-				v: StatusUnknown,
+				v: StatusUnspecified,
 			},
 			false,
 		},
@@ -220,8 +220,8 @@ func TestStatus_IsValid(t *testing.T) {
 		want bool
 	}{
 		{
-			"unknown",
-			StatusUnknown,
+			"unspecified",
+			StatusUnspecified,
 			false,
 		},
 		{
@@ -244,6 +244,52 @@ func TestStatus_IsValid(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := tt.s.IsValid(); got != tt.want {
 				t.Errorf("IsValid() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestStatus_String(t *testing.T) {
+	tests := []struct {
+		name string
+		s    Status
+		want string
+	}{
+		{
+			"minus one",
+			Status(-1),
+			"unspecified",
+		},
+		{
+			"zero",
+			Status(0),
+			"unspecified",
+		},
+		{
+			"one",
+			Status(1),
+			"active",
+		},
+		{
+			"two",
+			Status(2),
+			"inactive_pending",
+		},
+		{
+			"three",
+			Status(3),
+			"inactive",
+		},
+		{
+			"four",
+			Status(4),
+			"unspecified",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.s.String(); got != tt.want {
+				t.Errorf("String() = %v, want %v", got, tt.want)
 			}
 		})
 	}

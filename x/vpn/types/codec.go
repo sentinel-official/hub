@@ -1,9 +1,9 @@
+// DO NOT COVER
+
 package types
 
 import (
-	"github.com/cosmos/cosmos-sdk/codec"
-	"github.com/cosmos/cosmos-sdk/codec/types"
-	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
+	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 
 	deposittypes "github.com/sentinel-official/hub/x/deposit/types"
 	nodetypes "github.com/sentinel-official/hub/x/node/types"
@@ -13,20 +13,7 @@ import (
 	subscriptiontypes "github.com/sentinel-official/hub/x/subscription/types"
 )
 
-var (
-	amino     = codec.NewLegacyAmino()
-	ModuleCdc = codec.NewAminoCodec(amino)
-)
-
-func init() {
-	RegisterLegacyAminoCodec(amino)
-	cryptocodec.RegisterCrypto(amino)
-	amino.Seal()
-}
-
-func RegisterLegacyAminoCodec(_ *codec.LegacyAmino) {}
-
-func RegisterInterfaces(registry types.InterfaceRegistry) {
+func RegisterInterfaces(registry codectypes.InterfaceRegistry) {
 	deposittypes.RegisterInterfaces(registry)
 	providertypes.RegisterInterfaces(registry)
 	nodetypes.RegisterInterfaces(registry)

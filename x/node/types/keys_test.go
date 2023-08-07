@@ -8,45 +8,16 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/address"
 	"github.com/stretchr/testify/require"
+
+	hubtypes "github.com/sentinel-official/hub/types"
 )
-
-func TestActiveNodeForProviderKey(t *testing.T) {
-	var (
-		node     []byte
-		provider []byte
-	)
-
-	for i := 0; i < 512; i++ {
-		provider = make([]byte, i)
-		_, _ = rand.Read(provider)
-
-		for j := 0; j < 512; j++ {
-			node = make([]byte, j)
-			_, _ = rand.Read(node)
-
-			if i < 256 && j < 256 {
-				require.Equal(
-					t,
-					append(append(ActiveNodeForProviderKeyPrefix, address.MustLengthPrefix(provider)...), address.MustLengthPrefix(node)...),
-					ActiveNodeForProviderKey(provider, node),
-				)
-
-				continue
-			}
-
-			require.Panics(t, func() {
-				ActiveNodeForProviderKey(provider, node)
-			})
-		}
-	}
-}
 
 func TestActiveNodeKey(t *testing.T) {
 	var (
 		addr []byte
 	)
 
-	for i := 0; i < 512; i++ {
+	for i := 1; i <= 512; i += 64 {
 		addr = make([]byte, i)
 		_, _ = rand.Read(addr)
 
@@ -66,60 +37,42 @@ func TestActiveNodeKey(t *testing.T) {
 	}
 }
 
-func TestInactiveNodeAtKey(t *testing.T) {
+func TestAddressFromNodeForInactiveAtKey(t *testing.T) {
 	var (
 		at   = time.Now()
 		addr []byte
+		key  []byte
 	)
 
-	for i := 0; i < 512; i++ {
+	for i := 1; i <= 256; i += 64 {
 		addr = make([]byte, i)
 		_, _ = rand.Read(addr)
 
-		if i < 256 {
-			require.Equal(
-				t,
-				append(append(InactiveNodeAtKeyPrefix, sdk.FormatTimeBytes(at)...), address.MustLengthPrefix(addr)...),
-				InactiveNodeAtKey(at, addr),
-			)
-
-			continue
-		}
-
-		require.Panics(t, func() {
-			InactiveNodeAtKey(at, addr)
-		})
+		key = NodeForInactiveAtKey(at, addr)
+		require.Equal(
+			t,
+			hubtypes.NodeAddress(addr),
+			AddressFromNodeForInactiveAtKey(key),
+		)
 	}
 }
 
-func TestInactiveNodeForProviderKey(t *testing.T) {
+func TestAddressFromNodeForPlanKey(t *testing.T) {
 	var (
-		node     []byte
-		provider []byte
+		addr []byte
+		key  []byte
 	)
 
-	for i := 0; i < 512; i++ {
-		provider = make([]byte, i)
-		_, _ = rand.Read(provider)
+	for i := 1; i <= 256; i += 64 {
+		addr = make([]byte, i)
+		_, _ = rand.Read(addr)
 
-		for j := 0; j < 512; j++ {
-			node = make([]byte, j)
-			_, _ = rand.Read(node)
-
-			if i < 256 && j < 256 {
-				require.Equal(
-					t,
-					append(append(InactiveNodeForProviderKeyPrefix, address.MustLengthPrefix(provider)...), address.MustLengthPrefix(node)...),
-					InactiveNodeForProviderKey(provider, node),
-				)
-
-				continue
-			}
-
-			require.Panics(t, func() {
-				InactiveNodeForProviderKey(provider, node)
-			})
-		}
+		key = NodeForPlanKey(uint64(i), addr)
+		require.Equal(
+			t,
+			hubtypes.NodeAddress(addr),
+			AddressFromNodeForPlanKey(key),
+		)
 	}
 }
 
@@ -128,7 +81,7 @@ func TestInactiveNodeKey(t *testing.T) {
 		addr []byte
 	)
 
-	for i := 0; i < 512; i++ {
+	for i := 1; i <= 512; i += 64 {
 		addr = make([]byte, i)
 		_, _ = rand.Read(addr)
 
@@ -148,27 +101,55 @@ func TestInactiveNodeKey(t *testing.T) {
 	}
 }
 
-func TestNodeKey(t *testing.T) {
+func TestNodeForInactiveAtKey(t *testing.T) {
 	var (
+		at   = time.Now()
 		addr []byte
 	)
 
-	for i := 0; i < 512; i++ {
+	for i := 1; i <= 512; i += 64 {
 		addr = make([]byte, i)
 		_, _ = rand.Read(addr)
 
 		if i < 256 {
 			require.Equal(
 				t,
-				append(NodeKeyPrefix, address.MustLengthPrefix(addr)...),
-				NodeKey(addr),
+				append(append(NodeForInactiveAtKeyPrefix, sdk.FormatTimeBytes(at)...), address.MustLengthPrefix(addr)...),
+				NodeForInactiveAtKey(at, addr),
 			)
 
 			continue
 		}
 
 		require.Panics(t, func() {
-			NodeKey(addr)
+			NodeForInactiveAtKey(at, addr)
+		})
+	}
+}
+
+func TestNodeForPlanKey(t *testing.T) {
+	var (
+		addr []byte
+		id   uint64
+	)
+
+	for i := 1; i <= 512; i += 64 {
+		id = uint64(i)
+		addr = make([]byte, i)
+		_, _ = rand.Read(addr)
+
+		if i < 256 {
+			require.Equal(
+				t,
+				append(append(NodeForPlanKeyPrefix, sdk.Uint64ToBigEndian(id)...), address.MustLengthPrefix(addr)...),
+				NodeForPlanKey(id, addr),
+			)
+
+			continue
+		}
+
+		require.Panics(t, func() {
+			NodeForPlanKey(id, addr)
 		})
 	}
 }

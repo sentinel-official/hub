@@ -9,22 +9,22 @@ import (
 )
 
 func BeginBlock(ctx sdk.Context, k keeper.Keeper) []abcitypes.ValidatorUpdate {
-	k.IterateInflations(ctx, func(_ int, inflation types.Inflation) bool {
-		if inflation.Timestamp.After(ctx.BlockTime()) {
+	k.IterateInflations(ctx, func(_ int, item types.Inflation) bool {
+		if item.Timestamp.After(ctx.BlockTime()) {
 			return true
 		}
 
 		params := k.GetParams(ctx)
-		params.InflationMax = inflation.Max
-		params.InflationMin = inflation.Min
-		params.InflationRateChange = inflation.RateChange
+		params.InflationMax = item.Max
+		params.InflationMin = item.Min
+		params.InflationRateChange = item.RateChange
 		k.SetParams(ctx, params)
 
 		minter := k.GetMinter(ctx)
-		minter.Inflation = inflation.Min
+		minter.Inflation = item.Min
 		k.SetMinter(ctx, minter)
 
-		k.DeleteInflation(ctx, inflation.Timestamp)
+		k.DeleteInflation(ctx, item.Timestamp)
 		return false
 	})
 

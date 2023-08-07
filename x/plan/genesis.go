@@ -10,34 +10,24 @@ import (
 
 func InitGenesis(ctx sdk.Context, k keeper.Keeper, state types.GenesisState) {
 	for _, item := range state {
-		var (
-			provider = item.Plan.GetProvider()
-		)
-
+		addr := item.Plan.GetProviderAddress()
 		k.SetPlan(ctx, item.Plan)
-		if item.Plan.Status.Equal(hubtypes.StatusActive) {
-			k.SetActivePlan(ctx, item.Plan.Id)
-			k.SetActivePlanForProvider(ctx, provider, item.Plan.Id)
-		} else {
-			k.SetInactivePlan(ctx, item.Plan.Id)
-			k.SetInactivePlanForProvider(ctx, provider, item.Plan.Id)
-		}
+		k.SetPlanForProvider(ctx, addr, item.Plan.ID)
 
 		for _, node := range item.Nodes {
-			address, err := hubtypes.NodeAddressFromBech32(node)
+			addr, err := hubtypes.NodeAddressFromBech32(node)
 			if err != nil {
 				panic(err)
 			}
 
-			k.SetNodeForPlan(ctx, item.Plan.Id, address)
-			k.IncreaseCountForNodeByProvider(ctx, provider, address)
+			k.SetNodeForPlan(ctx, item.Plan.ID, addr)
 		}
 	}
 
 	count := uint64(0)
 	for _, item := range state {
-		if item.Plan.Id > count {
-			count = item.Plan.Id
+		if item.Plan.ID > count {
+			count = item.Plan.ID
 		}
 	}
 
@@ -46,7 +36,7 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, state types.GenesisState) {
 
 func ExportGenesis(ctx sdk.Context, k keeper.Keeper) types.GenesisState {
 	var (
-		plans = k.GetPlans(ctx, 0, 0)
+		plans = k.GetPlans(ctx)
 		items = make(types.GenesisPlans, 0, len(plans))
 	)
 
@@ -56,7 +46,7 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) types.GenesisState {
 			Nodes: []string{},
 		}
 
-		nodes := k.GetNodesForPlan(ctx, plan.Id, 0, 0)
+		nodes := k.GetNodesForPlan(ctx, plan.ID)
 		for _, node := range nodes {
 			item.Nodes = append(item.Nodes, node.Address)
 		}

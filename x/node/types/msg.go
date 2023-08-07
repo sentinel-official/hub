@@ -9,80 +9,82 @@ import (
 	hubtypes "github.com/sentinel-official/hub/types"
 )
 
+// The `types` package contains custom message types for the Cosmos SDK.
+
+// The following variables implement the sdk.Msg interface for the provided message types.
+// These variables ensure that the corresponding types can be used as messages in the Cosmos SDK.
 var (
 	_ sdk.Msg = (*MsgRegisterRequest)(nil)
-	_ sdk.Msg = (*MsgUpdateRequest)(nil)
-	_ sdk.Msg = (*MsgSetStatusRequest)(nil)
+	_ sdk.Msg = (*MsgUpdateDetailsRequest)(nil)
+	_ sdk.Msg = (*MsgUpdateStatusRequest)(nil)
+	_ sdk.Msg = (*MsgSubscribeRequest)(nil)
 )
 
-func NewMsgRegisterRequest(from sdk.AccAddress, provider hubtypes.ProvAddress, price sdk.Coins, remoteURL string) *MsgRegisterRequest {
+// NewMsgRegisterRequest creates a new MsgRegisterRequest instance with the given parameters.
+func NewMsgRegisterRequest(from sdk.AccAddress, gigabytePrices, hourlyPrices sdk.Coins, remoteURL string) *MsgRegisterRequest {
 	return &MsgRegisterRequest{
-		From:      from.String(),
-		Provider:  provider.String(),
-		Price:     price,
-		RemoteURL: remoteURL,
+		From:           from.String(),
+		GigabytePrices: gigabytePrices,
+		HourlyPrices:   hourlyPrices,
+		RemoteURL:      remoteURL,
 	}
 }
 
-func (m *MsgRegisterRequest) Route() string {
-	return RouterKey
-}
-
-func (m *MsgRegisterRequest) Type() string {
-	return TypeMsgRegisterRequest
-}
-
+// ValidateBasic performs basic validation checks on the MsgRegisterRequest fields.
+// It checks if the 'From' field is not empty and represents a valid account address,
+// if the 'GigabytePrices' and 'HourlyPrices' fields are valid coins (not empty, not containing nil coins, and having valid coin denominations),
+// and if the 'RemoteURL' field is valid (not empty, not longer than 64 characters, and has a valid "https" scheme and non-empty port).
 func (m *MsgRegisterRequest) ValidateBasic() error {
 	if m.From == "" {
-		return errors.Wrap(ErrorInvalidFrom, "from cannot be empty")
+		return errors.Wrap(ErrorInvalidMessage, "from cannot be empty")
 	}
 	if _, err := sdk.AccAddressFromBech32(m.From); err != nil {
-		return errors.Wrapf(ErrorInvalidFrom, "%s", err)
+		return errors.Wrap(ErrorInvalidMessage, err.Error())
 	}
-	if m.Provider == "" && m.Price == nil {
-		return errors.Wrap(ErrorInvalidField, "both provider and price cannot be empty")
-	}
-	if m.Provider != "" && m.Price != nil {
-		return errors.Wrap(ErrorInvalidField, "either provider or price must be empty")
-	}
-	if m.Provider != "" {
-		if _, err := hubtypes.ProvAddressFromBech32(m.Provider); err != nil {
-			return errors.Wrapf(ErrorInvalidProvider, "%s", err)
+	if m.GigabytePrices != nil {
+		if m.GigabytePrices.Len() == 0 {
+			return errors.Wrap(ErrorInvalidMessage, "gigabyte_prices length cannot be zero")
+		}
+		if m.GigabytePrices.IsAnyNil() {
+			return errors.Wrap(ErrorInvalidMessage, "gigabyte_prices cannot contain nil")
+		}
+		if !m.GigabytePrices.IsValid() {
+			return errors.Wrap(ErrorInvalidMessage, "gigabyte_prices must be valid")
 		}
 	}
-	if m.Price != nil {
-		if m.Price.Len() == 0 {
-			return errors.Wrap(ErrorInvalidPrice, "price cannot be empty")
+	if m.HourlyPrices != nil {
+		if m.HourlyPrices.Len() == 0 {
+			return errors.Wrap(ErrorInvalidMessage, "hourly_prices length cannot be zero")
 		}
-		if !m.Price.IsValid() {
-			return errors.Wrap(ErrorInvalidPrice, "price must be valid")
+		if m.HourlyPrices.IsAnyNil() {
+			return errors.Wrap(ErrorInvalidMessage, "hourly_prices cannot contain nil")
+		}
+		if !m.HourlyPrices.IsValid() {
+			return errors.Wrap(ErrorInvalidMessage, "hourly_prices must be valid")
 		}
 	}
 	if m.RemoteURL == "" {
-		return errors.Wrap(ErrorInvalidRemoteURL, "remote_url cannot be empty")
+		return errors.Wrap(ErrorInvalidMessage, "remote_url cannot be empty")
 	}
 	if len(m.RemoteURL) > 64 {
-		return errors.Wrapf(ErrorInvalidRemoteURL, "remote_url length cannot be greater than %d", 64)
+		return errors.Wrapf(ErrorInvalidMessage, "remote_url length cannot be greater than %d chars", 64)
 	}
 
 	remoteURL, err := url.ParseRequestURI(m.RemoteURL)
 	if err != nil {
-		return errors.Wrapf(ErrorInvalidRemoteURL, "%s", err)
+		return errors.Wrap(ErrorInvalidMessage, err.Error())
 	}
 	if remoteURL.Scheme != "https" {
-		return errors.Wrap(ErrorInvalidRemoteURL, "remote_url scheme must be https")
+		return errors.Wrap(ErrorInvalidMessage, "remote_url scheme must be https")
 	}
 	if remoteURL.Port() == "" {
-		return errors.Wrap(ErrorInvalidRemoteURL, "remote_url port cannot be empty")
+		return errors.Wrap(ErrorInvalidMessage, "remote_url port cannot be empty")
 	}
 
 	return nil
 }
 
-func (m *MsgRegisterRequest) GetSignBytes() []byte {
-	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(m))
-}
-
+// GetSigners returns an array containing the signer's account address extracted from the 'From' field of the MsgRegisterRequest.
 func (m *MsgRegisterRequest) GetSigners() []sdk.AccAddress {
 	from, err := sdk.AccAddressFromBech32(m.From)
 	if err != nil {
@@ -92,71 +94,71 @@ func (m *MsgRegisterRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{from}
 }
 
-func NewMsgUpdateRequest(from hubtypes.NodeAddress, provider hubtypes.ProvAddress, price sdk.Coins, remoteURL string) *MsgUpdateRequest {
-	return &MsgUpdateRequest{
-		From:      from.String(),
-		Provider:  provider.String(),
-		Price:     price,
-		RemoteURL: remoteURL,
+// NewMsgUpdateDetailsRequest creates a new MsgUpdateDetailsRequest instance with the given parameters.
+func NewMsgUpdateDetailsRequest(from hubtypes.NodeAddress, gigabytePrices, hourlyPrices sdk.Coins, remoteURL string) *MsgUpdateDetailsRequest {
+	return &MsgUpdateDetailsRequest{
+		From:           from.String(),
+		GigabytePrices: gigabytePrices,
+		HourlyPrices:   hourlyPrices,
+		RemoteURL:      remoteURL,
 	}
 }
 
-func (m *MsgUpdateRequest) Route() string {
-	return RouterKey
-}
-
-func (m *MsgUpdateRequest) Type() string {
-	return TypeMsgUpdateRequest
-}
-
-func (m *MsgUpdateRequest) ValidateBasic() error {
+// ValidateBasic performs basic validation checks on the MsgUpdateDetailsRequest fields.
+// It checks if the 'From' field is not empty and represents a valid node address,
+// if the 'GigabytePrices' and 'HourlyPrices' fields are valid coins (not empty, not containing nil coins, and having valid coin denominations),
+// and if the 'RemoteURL' field is valid (not empty, not longer than 64 characters, and has a valid "https" scheme and non-empty port).
+func (m *MsgUpdateDetailsRequest) ValidateBasic() error {
 	if m.From == "" {
-		return errors.Wrap(ErrorInvalidFrom, "from cannot be empty")
+		return errors.Wrap(ErrorInvalidMessage, "from cannot be empty")
 	}
 	if _, err := hubtypes.NodeAddressFromBech32(m.From); err != nil {
-		return errors.Wrapf(ErrorInvalidFrom, "%s", err)
+		return errors.Wrap(ErrorInvalidMessage, err.Error())
 	}
-	if m.Provider != "" && m.Price != nil {
-		return errors.Wrap(ErrorInvalidField, "either provider or price must be empty")
-	}
-	if m.Provider != "" {
-		if _, err := hubtypes.ProvAddressFromBech32(m.Provider); err != nil {
-			return errors.Wrapf(ErrorInvalidProvider, "%s", err)
+	if m.GigabytePrices != nil {
+		if m.GigabytePrices.Len() == 0 {
+			return errors.Wrap(ErrorInvalidMessage, "gigabyte_prices length cannot be zero")
+		}
+		if m.GigabytePrices.IsAnyNil() {
+			return errors.Wrap(ErrorInvalidMessage, "gigabyte_prices cannot contain nil")
+		}
+		if !m.GigabytePrices.IsValid() {
+			return errors.Wrap(ErrorInvalidMessage, "gigabyte_prices must be valid")
 		}
 	}
-	if m.Price != nil {
-		if m.Price.Len() == 0 {
-			return errors.Wrap(ErrorInvalidPrice, "price cannot be empty")
+	if m.HourlyPrices != nil {
+		if m.HourlyPrices.Len() == 0 {
+			return errors.Wrap(ErrorInvalidMessage, "hourly_prices length cannot be zero")
 		}
-		if !m.Price.IsValid() {
-			return errors.Wrap(ErrorInvalidPrice, "price must be valid")
+		if m.HourlyPrices.IsAnyNil() {
+			return errors.Wrap(ErrorInvalidMessage, "hourly_prices cannot contain nil")
+		}
+		if !m.HourlyPrices.IsValid() {
+			return errors.Wrap(ErrorInvalidMessage, "hourly_prices must be valid")
 		}
 	}
 	if m.RemoteURL != "" {
 		if len(m.RemoteURL) > 64 {
-			return errors.Wrapf(ErrorInvalidRemoteURL, "remote_url length cannot be greater than %d", 64)
+			return errors.Wrapf(ErrorInvalidMessage, "remote_url length cannot be greater than %d chars", 64)
 		}
 
 		remoteURL, err := url.ParseRequestURI(m.RemoteURL)
 		if err != nil {
-			return errors.Wrapf(ErrorInvalidRemoteURL, "%s", err)
+			return errors.Wrap(ErrorInvalidMessage, err.Error())
 		}
 		if remoteURL.Scheme != "https" {
-			return errors.Wrap(ErrorInvalidRemoteURL, "remote_url scheme must be https")
+			return errors.Wrap(ErrorInvalidMessage, "remote_url scheme must be https")
 		}
 		if remoteURL.Port() == "" {
-			return errors.Wrap(ErrorInvalidRemoteURL, "remote_url port cannot be empty")
+			return errors.Wrap(ErrorInvalidMessage, "remote_url port cannot be empty")
 		}
 	}
 
 	return nil
 }
 
-func (m *MsgUpdateRequest) GetSignBytes() []byte {
-	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(m))
-}
-
-func (m *MsgUpdateRequest) GetSigners() []sdk.AccAddress {
+// GetSigners returns an array containing the signer's account address extracted from the 'From' field of the MsgUpdateDetailsRequest.
+func (m *MsgUpdateDetailsRequest) GetSigners() []sdk.AccAddress {
 	from, err := hubtypes.NodeAddressFromBech32(m.From)
 	if err != nil {
 		panic(err)
@@ -165,44 +167,101 @@ func (m *MsgUpdateRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{from.Bytes()}
 }
 
-func NewMsgSetStatusRequest(from hubtypes.NodeAddress, status hubtypes.Status) *MsgSetStatusRequest {
-	return &MsgSetStatusRequest{
+// NewMsgUpdateStatusRequest creates a new MsgUpdateStatusRequest instance with the given parameters.
+func NewMsgUpdateStatusRequest(from hubtypes.NodeAddress, status hubtypes.Status) *MsgUpdateStatusRequest {
+	return &MsgUpdateStatusRequest{
 		From:   from.String(),
 		Status: status,
 	}
 }
 
-func (m *MsgSetStatusRequest) Route() string {
-	return RouterKey
-}
-
-func (m *MsgSetStatusRequest) Type() string {
-	return TypeMsgSetStatusRequest
-}
-
-func (m *MsgSetStatusRequest) ValidateBasic() error {
+// ValidateBasic performs basic validation checks on the MsgUpdateStatusRequest fields.
+// It checks if the 'From' field is not empty and represents a valid node address,
+// and if the 'Status' field is one of the allowed values [active, inactive].
+func (m *MsgUpdateStatusRequest) ValidateBasic() error {
 	if m.From == "" {
-		return errors.Wrap(ErrorInvalidFrom, "from cannot be empty")
+		return errors.Wrap(ErrorInvalidMessage, "from cannot be empty")
 	}
 	if _, err := hubtypes.NodeAddressFromBech32(m.From); err != nil {
-		return errors.Wrapf(ErrorInvalidFrom, "%s", err)
+		return errors.Wrap(ErrorInvalidMessage, err.Error())
 	}
-	if !m.Status.Equal(hubtypes.StatusActive) && !m.Status.Equal(hubtypes.StatusInactive) {
-		return errors.Wrap(ErrorInvalidStatus, "status must be either active or inactive")
+	if !m.Status.IsOneOf(hubtypes.StatusActive, hubtypes.StatusInactive) {
+		return errors.Wrap(ErrorInvalidMessage, "status must be one of [active, inactive]")
 	}
 
 	return nil
 }
 
-func (m *MsgSetStatusRequest) GetSignBytes() []byte {
-	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(m))
-}
-
-func (m *MsgSetStatusRequest) GetSigners() []sdk.AccAddress {
+// GetSigners returns an array containing the signer's account address extracted from the 'From' field of the MsgUpdateStatusRequest.
+func (m *MsgUpdateStatusRequest) GetSigners() []sdk.AccAddress {
 	from, err := hubtypes.NodeAddressFromBech32(m.From)
 	if err != nil {
 		panic(err)
 	}
 
 	return []sdk.AccAddress{from.Bytes()}
+}
+
+// NewMsgSubscribeRequest creates a new MsgSubscribeRequest instance with the given parameters.
+func NewMsgSubscribeRequest(from sdk.AccAddress, addr hubtypes.NodeAddress, gigabytes, hours int64, denom string) *MsgSubscribeRequest {
+	return &MsgSubscribeRequest{
+		From:        from.String(),
+		NodeAddress: addr.String(),
+		Gigabytes:   gigabytes,
+		Hours:       hours,
+		Denom:       denom,
+	}
+}
+
+// ValidateBasic performs basic validation checks on the MsgSubscribeRequest fields.
+// It checks if the 'From' field is not empty and represents a valid account address,
+// if the 'NodeAddress' field is not empty and represents a valid node address,
+// if either 'Gigabytes' or 'Hours' field (but not both) are non-zero and non-negative,
+// and if the 'Denom' field is valid according to the Cosmos SDK's ValidateDenom function.
+func (m *MsgSubscribeRequest) ValidateBasic() error {
+	if m.From == "" {
+		return errors.Wrap(ErrorInvalidMessage, "from cannot be empty")
+	}
+	if _, err := sdk.AccAddressFromBech32(m.From); err != nil {
+		return errors.Wrap(ErrorInvalidMessage, err.Error())
+	}
+	if m.NodeAddress == "" {
+		return errors.Wrap(ErrorInvalidMessage, "node_address cannot be empty")
+	}
+	if _, err := hubtypes.NodeAddressFromBech32(m.NodeAddress); err != nil {
+		return errors.Wrap(ErrorInvalidMessage, err.Error())
+	}
+	if m.Gigabytes == 0 && m.Hours == 0 {
+		return errors.Wrapf(ErrorInvalidMessage, "[gigabytes, hours] cannot be empty")
+	}
+	if m.Gigabytes != 0 && m.Hours != 0 {
+		return errors.Wrapf(ErrorInvalidMessage, "[gigabytes, hours] cannot be non-empty")
+	}
+	if m.Gigabytes != 0 {
+		if m.Gigabytes < 0 {
+			return errors.Wrap(ErrorInvalidMessage, "gigabytes cannot be negative")
+		}
+	}
+	if m.Hours != 0 {
+		if m.Hours < 0 {
+			return errors.Wrap(ErrorInvalidMessage, "hours cannot be negative")
+		}
+	}
+	if m.Denom != "" {
+		if err := sdk.ValidateDenom(m.Denom); err != nil {
+			return errors.Wrap(ErrorInvalidMessage, err.Error())
+		}
+	}
+
+	return nil
+}
+
+// GetSigners returns an array containing the signer's account address extracted from the 'From' field of the MsgSubscribeRequest.
+func (m *MsgSubscribeRequest) GetSigners() []sdk.AccAddress {
+	from, err := sdk.AccAddressFromBech32(m.From)
+	if err != nil {
+		panic(err)
+	}
+
+	return []sdk.AccAddress{from}
 }

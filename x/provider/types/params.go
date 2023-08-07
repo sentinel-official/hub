@@ -96,7 +96,7 @@ func validateStakingShare(v interface{}) error {
 	if value.IsNegative() {
 		return fmt.Errorf("staking_share cannot be negative")
 	}
-	if value.GT(sdk.NewDec(1)) {
+	if value.GT(sdk.OneDec()) {
 		return fmt.Errorf("staking_share cannot be greater than 1")
 	}
 

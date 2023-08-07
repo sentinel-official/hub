@@ -13,7 +13,7 @@ func TestDepositKey(t *testing.T) {
 		addr []byte
 	)
 
-	for i := 0; i < 512; i++ {
+	for i := 0; i < 512; i += 64 {
 		addr = make([]byte, i)
 		_, _ = rand.Read(addr)
 

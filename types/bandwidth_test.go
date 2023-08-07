@@ -148,7 +148,162 @@ func TestBandwidth_CeilTo(t *testing.T) {
 		args   args
 		want   Bandwidth
 	}{
-		// TODO: Add test cases.
+		{
+			"negative pre",
+			fields{Upload: sdk.NewInt(10), Download: sdk.NewInt(10)},
+			args{precision: sdk.NewInt(-17)},
+			Bandwidth{sdk.NewInt(10), sdk.NewInt(10)},
+		},
+		{
+			"0 upload 0 download",
+			fields{Upload: sdk.NewInt(0), Download: sdk.NewInt(0)},
+			args{precision: sdk.NewInt(17)},
+			Bandwidth{sdk.NewInt(0), sdk.NewInt(0)},
+		},
+		{
+			"0 upload 10 download",
+			fields{Upload: sdk.NewInt(0), Download: sdk.NewInt(10)},
+			args{precision: sdk.NewInt(17)},
+			Bandwidth{sdk.NewInt(0), sdk.NewInt(17)},
+		},
+		{
+			"0 upload 17 download",
+			fields{Upload: sdk.NewInt(0), Download: sdk.NewInt(17)},
+			args{precision: sdk.NewInt(17)},
+			Bandwidth{sdk.NewInt(0), sdk.NewInt(17)},
+		},
+		{
+			"0 upload 20 download",
+			fields{Upload: sdk.NewInt(0), Download: sdk.NewInt(20)},
+			args{precision: sdk.NewInt(17)},
+			Bandwidth{sdk.NewInt(0), sdk.NewInt(34)},
+		},
+		{
+			"0 upload 34 download",
+			fields{Upload: sdk.NewInt(0), Download: sdk.NewInt(34)},
+			args{precision: sdk.NewInt(17)},
+			Bandwidth{sdk.NewInt(0), sdk.NewInt(34)},
+		},
+		{
+			"10 upload 0 download",
+			fields{Upload: sdk.NewInt(10), Download: sdk.NewInt(0)},
+			args{precision: sdk.NewInt(17)},
+			Bandwidth{sdk.NewInt(17), sdk.NewInt(0)},
+		},
+		{
+			"10 upload 10 download",
+			fields{Upload: sdk.NewInt(10), Download: sdk.NewInt(10)},
+			args{precision: sdk.NewInt(17)},
+			Bandwidth{sdk.NewInt(17), sdk.NewInt(17)},
+		},
+		{
+			"10 upload 17 download",
+			fields{Upload: sdk.NewInt(10), Download: sdk.NewInt(17)},
+			args{precision: sdk.NewInt(17)},
+			Bandwidth{sdk.NewInt(17), sdk.NewInt(17)},
+		},
+		{
+			"10 upload 20 download",
+			fields{Upload: sdk.NewInt(10), Download: sdk.NewInt(20)},
+			args{precision: sdk.NewInt(17)},
+			Bandwidth{sdk.NewInt(17), sdk.NewInt(34)},
+		},
+		{
+			"10 upload 34 download",
+			fields{Upload: sdk.NewInt(10), Download: sdk.NewInt(34)},
+			args{precision: sdk.NewInt(17)},
+			Bandwidth{sdk.NewInt(17), sdk.NewInt(34)},
+		},
+		{
+			"17 upload 0 download",
+			fields{Upload: sdk.NewInt(17), Download: sdk.NewInt(0)},
+			args{precision: sdk.NewInt(17)},
+			Bandwidth{sdk.NewInt(17), sdk.NewInt(0)},
+		},
+		{
+			"17 upload 10 download",
+			fields{Upload: sdk.NewInt(17), Download: sdk.NewInt(10)},
+			args{precision: sdk.NewInt(17)},
+			Bandwidth{sdk.NewInt(17), sdk.NewInt(17)},
+		},
+		{
+			"17 upload 17 download",
+			fields{Upload: sdk.NewInt(17), Download: sdk.NewInt(17)},
+			args{precision: sdk.NewInt(17)},
+			Bandwidth{sdk.NewInt(17), sdk.NewInt(17)},
+		},
+		{
+			"17 upload 20 download",
+			fields{Upload: sdk.NewInt(17), Download: sdk.NewInt(20)},
+			args{precision: sdk.NewInt(17)},
+			Bandwidth{sdk.NewInt(17), sdk.NewInt(34)},
+		},
+		{
+			"17 upload 34 download",
+			fields{Upload: sdk.NewInt(17), Download: sdk.NewInt(34)},
+			args{precision: sdk.NewInt(17)},
+			Bandwidth{sdk.NewInt(17), sdk.NewInt(34)},
+		},
+		{
+			"20 upload 0 download",
+			fields{Upload: sdk.NewInt(20), Download: sdk.NewInt(0)},
+			args{precision: sdk.NewInt(17)},
+			Bandwidth{sdk.NewInt(34), sdk.NewInt(0)},
+		},
+		{
+			"20 upload 10 download",
+			fields{Upload: sdk.NewInt(20), Download: sdk.NewInt(10)},
+			args{precision: sdk.NewInt(17)},
+			Bandwidth{sdk.NewInt(34), sdk.NewInt(17)},
+		},
+		{
+			"20 upload 17 download",
+			fields{Upload: sdk.NewInt(20), Download: sdk.NewInt(17)},
+			args{precision: sdk.NewInt(17)},
+			Bandwidth{sdk.NewInt(34), sdk.NewInt(17)},
+		},
+		{
+			"20 upload 20 download",
+			fields{Upload: sdk.NewInt(20), Download: sdk.NewInt(20)},
+			args{precision: sdk.NewInt(17)},
+			Bandwidth{sdk.NewInt(34), sdk.NewInt(34)},
+		},
+		{
+			"20 upload 34 download",
+			fields{Upload: sdk.NewInt(20), Download: sdk.NewInt(34)},
+			args{precision: sdk.NewInt(17)},
+			Bandwidth{sdk.NewInt(34), sdk.NewInt(34)},
+		},
+		{
+			"34 upload 0 download",
+			fields{Upload: sdk.NewInt(34), Download: sdk.NewInt(0)},
+			args{precision: sdk.NewInt(17)},
+			Bandwidth{sdk.NewInt(34), sdk.NewInt(0)},
+		},
+		{
+			"34 upload 10 download",
+			fields{Upload: sdk.NewInt(34), Download: sdk.NewInt(10)},
+			args{precision: sdk.NewInt(17)},
+			Bandwidth{sdk.NewInt(34), sdk.NewInt(17)},
+		},
+		{
+			"34 upload 17 download",
+			fields{Upload: sdk.NewInt(34), Download: sdk.NewInt(17)},
+			args{precision: sdk.NewInt(17)},
+			Bandwidth{sdk.NewInt(34), sdk.NewInt(17)},
+		},
+		{
+			"34 upload 20 download",
+			fields{Upload: sdk.NewInt(34), Download: sdk.NewInt(20)},
+			args{precision: sdk.NewInt(17)},
+			Bandwidth{sdk.NewInt(34), sdk.NewInt(34)},
+		},
+		{
+			"34 upload 34 download",
+			fields{Upload: sdk.NewInt(34), Download: sdk.NewInt(34)},
+			args{precision: sdk.NewInt(17)},
+			Bandwidth{sdk.NewInt(34), sdk.NewInt(34)},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -954,14 +1109,14 @@ func TestBandwidth_Sum(t *testing.T) {
 			},
 			sdk.NewInt(-1000),
 		},
-		// {
-		// 	"negative upload and positive download",
-		// 	fields{
-		// 		Upload:   sdk.NewInt(-1000),
-		// 		Download: sdk.NewInt(1000),
-		// 	},
-		// 	sdk.NewInt(0),
-		// },
+		{
+			"negative upload and positive download",
+			fields{
+				Upload:   sdk.NewInt(-1000),
+				Download: sdk.NewInt(1000),
+			},
+			sdk.NewInt(1).Add(sdk.NewInt(-1)),
+		},
 		{
 			"zero upload and negative download",
 			fields{
@@ -986,14 +1141,14 @@ func TestBandwidth_Sum(t *testing.T) {
 			},
 			sdk.NewInt(1000),
 		},
-		// {
-		// 	"positive upload and negative download",
-		// 	fields{
-		// 		Upload:   sdk.NewInt(1000),
-		// 		Download: sdk.NewInt(-1000),
-		// 	},
-		// 	sdk.NewInt(0),
-		// },
+		{
+			"positive upload and negative download",
+			fields{
+				Upload:   sdk.NewInt(1000),
+				Download: sdk.NewInt(-1000),
+			},
+			sdk.NewInt(1).Add(sdk.NewInt(-1)),
+		},
 		{
 			"positive upload and zero download",
 			fields{
@@ -1034,7 +1189,26 @@ func TestNewBandwidth(t *testing.T) {
 		args args
 		want Bandwidth
 	}{
-		// TODO: Add test cases.
+		{
+			"0 upload 0 download",
+			args{upload: sdk.NewInt(0), download: sdk.NewInt(0)},
+			Bandwidth{sdk.NewInt(0), sdk.NewInt(0)},
+		},
+		{
+			"0 upload 10 download",
+			args{upload: sdk.NewInt(0), download: sdk.NewInt(10)},
+			Bandwidth{sdk.NewInt(0), sdk.NewInt(10)},
+		},
+		{
+			"10 upload 0 download",
+			args{upload: sdk.NewInt(10), download: sdk.NewInt(0)},
+			Bandwidth{sdk.NewInt(10), sdk.NewInt(0)},
+		},
+		{
+			"10 upload 10 download",
+			args{upload: sdk.NewInt(10), download: sdk.NewInt(10)},
+			Bandwidth{sdk.NewInt(10), sdk.NewInt(10)},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -1055,7 +1229,26 @@ func TestNewBandwidthFromInt64(t *testing.T) {
 		args args
 		want Bandwidth
 	}{
-		// TODO: Add test cases.
+		{
+			"0 upload 0 download",
+			args{upload: 0, download: 0},
+			Bandwidth{sdk.NewInt(0), sdk.NewInt(0)},
+		},
+		{
+			"0 upload 10 download",
+			args{upload: 0, download: 10},
+			Bandwidth{sdk.NewInt(0), sdk.NewInt(10)},
+		},
+		{
+			"10 upload 0 download",
+			args{upload: 10, download: 0},
+			Bandwidth{sdk.NewInt(10), sdk.NewInt(0)},
+		},
+		{
+			"10 upload 10 download",
+			args{upload: 10, download: 10},
+			Bandwidth{sdk.NewInt(10), sdk.NewInt(10)},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

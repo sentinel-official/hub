@@ -12,14 +12,7 @@ import (
 
 func TestSession_GetAddress(t *testing.T) {
 	type fields struct {
-		Id           uint64
-		Subscription uint64
-		Node         string
-		Address      string
-		Duration     time.Duration
-		Bandwidth    hubtypes.Bandwidth
-		Status       hubtypes.Status
-		StatusAt     time.Time
+		Address string
 	}
 	tests := []struct {
 		name   string
@@ -36,7 +29,7 @@ func TestSession_GetAddress(t *testing.T) {
 		{
 			"20 bytes",
 			fields{
-				Address: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Address: hubtypes.TestBech32AccAddr20Bytes,
 			},
 			sdk.AccAddress{0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x20},
 		},
@@ -44,14 +37,7 @@ func TestSession_GetAddress(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			m := &Session{
-				Id:           tt.fields.Id,
-				Subscription: tt.fields.Subscription,
-				Node:         tt.fields.Node,
-				Address:      tt.fields.Address,
-				Duration:     tt.fields.Duration,
-				Bandwidth:    tt.fields.Bandwidth,
-				Status:       tt.fields.Status,
-				StatusAt:     tt.fields.StatusAt,
+				Address: tt.fields.Address,
 			}
 			if got := m.GetAddress(); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("GetAddress() = %v, want %v", got, tt.want)
@@ -60,16 +46,9 @@ func TestSession_GetAddress(t *testing.T) {
 	}
 }
 
-func TestSession_GetNode(t *testing.T) {
+func TestSession_GetNodeAddress(t *testing.T) {
 	type fields struct {
-		Id           uint64
-		Subscription uint64
-		Node         string
-		Address      string
-		Duration     time.Duration
-		Bandwidth    hubtypes.Bandwidth
-		Status       hubtypes.Status
-		StatusAt     time.Time
+		NodeAddress string
 	}
 	tests := []struct {
 		name   string
@@ -79,14 +58,14 @@ func TestSession_GetNode(t *testing.T) {
 		{
 			"empty",
 			fields{
-				Node: "",
+				NodeAddress: "",
 			},
 			nil,
 		},
 		{
 			"20 bytes",
 			fields{
-				Node: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				NodeAddress: hubtypes.TestBech32NodeAddr20Bytes,
 			},
 			hubtypes.NodeAddress{0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x20},
 		},
@@ -94,17 +73,10 @@ func TestSession_GetNode(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			m := &Session{
-				Id:           tt.fields.Id,
-				Subscription: tt.fields.Subscription,
-				Node:         tt.fields.Node,
-				Address:      tt.fields.Address,
-				Duration:     tt.fields.Duration,
-				Bandwidth:    tt.fields.Bandwidth,
-				Status:       tt.fields.Status,
-				StatusAt:     tt.fields.StatusAt,
+				NodeAddress: tt.fields.NodeAddress,
 			}
-			if got := m.GetNode(); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("GetNode() = %v, want %v", got, tt.want)
+			if got := m.GetNodeAddress(); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("GetNodeAddress() = %v, want %v", got, tt.want)
 			}
 		})
 	}
@@ -112,14 +84,15 @@ func TestSession_GetNode(t *testing.T) {
 
 func TestSession_Validate(t *testing.T) {
 	type fields struct {
-		Id           uint64
-		Subscription uint64
-		Node         string
-		Address      string
-		Duration     time.Duration
-		Bandwidth    hubtypes.Bandwidth
-		Status       hubtypes.Status
-		StatusAt     time.Time
+		ID             uint64
+		SubscriptionID uint64
+		NodeAddress    string
+		Address        string
+		Bandwidth      hubtypes.Bandwidth
+		Duration       time.Duration
+		InactiveAt     time.Time
+		Status         hubtypes.Status
+		StatusAt       time.Time
 	}
 	tests := []struct {
 		name    string
@@ -127,350 +100,482 @@ func TestSession_Validate(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			"zero id",
+			"id zero",
 			fields{
-				Id: 0,
+				ID: 0,
 			},
 			true,
 		},
 		{
-			"positive id",
+			"id positive",
 			fields{
-				Id: 1000,
+				ID:             1000,
+				SubscriptionID: 1000,
+				NodeAddress:    hubtypes.TestBech32NodeAddr20Bytes,
+				Address:        hubtypes.TestBech32AccAddr20Bytes,
+				Bandwidth:      hubtypes.Bandwidth{Upload: sdk.NewInt(1000), Download: sdk.NewInt(1000)},
+				Duration:       1000,
+				InactiveAt:     time.Now(),
+				Status:         hubtypes.StatusActive,
+				StatusAt:       time.Now(),
+			},
+			false,
+		},
+		{
+			"subscription_id zero",
+			fields{
+				ID:             1000,
+				SubscriptionID: 0,
 			},
 			true,
 		},
 		{
-			"zero subscription",
+			"subscription_id positive",
 			fields{
-				Id:           1000,
-				Subscription: 0,
+				ID:             1000,
+				SubscriptionID: 1000,
+				NodeAddress:    hubtypes.TestBech32NodeAddr20Bytes,
+				Address:        hubtypes.TestBech32AccAddr20Bytes,
+				Bandwidth:      hubtypes.Bandwidth{Upload: sdk.NewInt(1000), Download: sdk.NewInt(1000)},
+				Duration:       1000,
+				InactiveAt:     time.Now(),
+				Status:         hubtypes.StatusActive,
+				StatusAt:       time.Now(),
+			},
+			false,
+		},
+		{
+			"node_address empty",
+			fields{
+				ID:             1000,
+				SubscriptionID: 1000,
+				NodeAddress:    "",
 			},
 			true,
 		},
 		{
-			"positive subscription",
+			"node_address invalid",
 			fields{
-				Id:           1000,
-				Subscription: 1000,
+				ID:             1000,
+				SubscriptionID: 1000,
+				NodeAddress:    "invalid",
 			},
 			true,
 		},
 		{
-			"empty node",
+			"node_address invalid prefix",
 			fields{
-				Id:           1000,
-				Subscription: 1000,
-				Node:         "",
+				ID:             1000,
+				SubscriptionID: 1000,
+				NodeAddress:    hubtypes.TestBech32AccAddr20Bytes,
 			},
 			true,
 		},
 		{
-			"invalid node",
+			"node_address 10 bytes",
 			fields{
-				Id:           1000,
-				Subscription: 1000,
-				Node:         "invalid",
+				ID:             1000,
+				SubscriptionID: 1000,
+				NodeAddress:    hubtypes.TestBech32NodeAddr10Bytes,
+				Address:        hubtypes.TestBech32AccAddr20Bytes,
+				Bandwidth:      hubtypes.Bandwidth{Upload: sdk.NewInt(1000), Download: sdk.NewInt(1000)},
+				Duration:       1000,
+				InactiveAt:     time.Now(),
+				Status:         hubtypes.StatusActive,
+				StatusAt:       time.Now(),
+			},
+			false,
+		},
+		{
+			"node_address 20 bytes",
+			fields{
+				ID:             1000,
+				SubscriptionID: 1000,
+				NodeAddress:    hubtypes.TestBech32NodeAddr20Bytes,
+				Address:        hubtypes.TestBech32AccAddr20Bytes,
+				Bandwidth:      hubtypes.Bandwidth{Upload: sdk.NewInt(1000), Download: sdk.NewInt(1000)},
+				Duration:       1000,
+				InactiveAt:     time.Now(),
+				Status:         hubtypes.StatusActive,
+				StatusAt:       time.Now(),
+			},
+			false,
+		},
+		{
+			"node_address 30 bytes",
+			fields{
+				ID:             1000,
+				SubscriptionID: 1000,
+				NodeAddress:    hubtypes.TestBech32NodeAddr30Bytes,
+				Address:        hubtypes.TestBech32AccAddr20Bytes,
+				Bandwidth:      hubtypes.Bandwidth{Upload: sdk.NewInt(1000), Download: sdk.NewInt(1000)},
+				Duration:       1000,
+				InactiveAt:     time.Now(),
+				Status:         hubtypes.StatusActive,
+				StatusAt:       time.Now(),
+			},
+			false,
+		},
+		{
+			"address empty",
+			fields{
+				ID:             1000,
+				SubscriptionID: 1000,
+				NodeAddress:    hubtypes.TestBech32NodeAddr20Bytes,
+				Address:        "",
 			},
 			true,
 		},
 		{
-			"invalid prefix node",
+			"address invalid",
 			fields{
-				Id:           1000,
-				Subscription: 1000,
-				Node:         "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				ID:             1000,
+				SubscriptionID: 1000,
+				NodeAddress:    hubtypes.TestBech32NodeAddr20Bytes,
+				Address:        "invalid",
 			},
 			true,
 		},
 		{
-			"10 bytes node",
+			"address invalid prefix",
 			fields{
-				Id:           1000,
-				Subscription: 1000,
-				Node:         "sentnode1qypqxpq9qcrsszgse4wwrm",
+				ID:             1000,
+				SubscriptionID: 1000,
+				NodeAddress:    hubtypes.TestBech32NodeAddr20Bytes,
+				Address:        hubtypes.TestBech32NodeAddr20Bytes,
 			},
 			true,
 		},
 		{
-			"20 bytes node",
+			"address 20 bytes",
 			fields{
-				Id:           1000,
-				Subscription: 1000,
-				Node:         "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				ID:             1000,
+				SubscriptionID: 1000,
+				NodeAddress:    hubtypes.TestBech32NodeAddr20Bytes,
+				Address:        hubtypes.TestBech32AccAddr20Bytes,
+				Bandwidth:      hubtypes.Bandwidth{Upload: sdk.NewInt(1000), Download: sdk.NewInt(1000)},
+				Duration:       1000,
+				InactiveAt:     time.Now(),
+				Status:         hubtypes.StatusActive,
+				StatusAt:       time.Now(),
+			},
+			false,
+		},
+		{
+			"upload empty and download empty",
+			fields{
+				ID:             1000,
+				SubscriptionID: 1000,
+				NodeAddress:    hubtypes.TestBech32NodeAddr20Bytes,
+				Address:        hubtypes.TestBech32AccAddr20Bytes,
+				Bandwidth:      hubtypes.Bandwidth{Upload: sdk.Int{}, Download: sdk.Int{}},
 			},
 			true,
 		},
 		{
-			"30 bytes node",
+			"upload empty and download non-empty",
 			fields{
-				Id:           1000,
-				Subscription: 1000,
-				Node:         "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqyy3zxfp9ycnjs2fsxqglcv",
+				ID:             1000,
+				SubscriptionID: 1000,
+				NodeAddress:    hubtypes.TestBech32NodeAddr20Bytes,
+				Address:        hubtypes.TestBech32AccAddr20Bytes,
+				Bandwidth:      hubtypes.Bandwidth{Upload: sdk.Int{}, Download: sdk.NewInt(1000)},
 			},
 			true,
 		},
 		{
-			"empty address",
+			"upload non-empty and download empty",
 			fields{
-				Id:           1000,
-				Subscription: 1000,
-				Node:         "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Address:      "",
+				ID:             1000,
+				SubscriptionID: 1000,
+				NodeAddress:    hubtypes.TestBech32NodeAddr20Bytes,
+				Address:        hubtypes.TestBech32AccAddr20Bytes,
+				Bandwidth:      hubtypes.Bandwidth{Upload: sdk.NewInt(1000), Download: sdk.Int{}},
 			},
 			true,
 		},
 		{
-			"invalid address",
+			"upload non-empty and download non-empty",
 			fields{
-				Id:           1000,
-				Subscription: 1000,
-				Node:         "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Address:      "invalid",
+				ID:             1000,
+				SubscriptionID: 1000,
+				NodeAddress:    hubtypes.TestBech32NodeAddr20Bytes,
+				Address:        hubtypes.TestBech32AccAddr20Bytes,
+				Bandwidth:      hubtypes.Bandwidth{Upload: sdk.NewInt(1000), Download: sdk.NewInt(1000)},
 			},
 			true,
 		},
 		{
-			"invalid prefix address",
+			"upload negative and download negative",
 			fields{
-				Id:           1000,
-				Subscription: 1000,
-				Node:         "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Address:      "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				ID:             1000,
+				SubscriptionID: 1000,
+				NodeAddress:    hubtypes.TestBech32NodeAddr20Bytes,
+				Address:        hubtypes.TestBech32AccAddr20Bytes,
+				Bandwidth:      hubtypes.Bandwidth{Upload: sdk.NewInt(-1000), Download: sdk.NewInt(-1000)},
 			},
 			true,
 		},
 		{
-			"20 bytes address",
+			"upload negative and download zero",
 			fields{
-				Id:           1000,
-				Subscription: 1000,
-				Node:         "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Address:      "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				Bandwidth:    hubtypes.Bandwidth{Upload: sdk.NewInt(0), Download: sdk.NewInt(0)},
+				ID:             1000,
+				SubscriptionID: 1000,
+				NodeAddress:    hubtypes.TestBech32NodeAddr20Bytes,
+				Address:        hubtypes.TestBech32AccAddr20Bytes,
+				Bandwidth:      hubtypes.Bandwidth{Upload: sdk.NewInt(-1000), Download: sdk.NewInt(0)},
 			},
 			true,
 		},
 		{
-			"negative duration",
+			"negative upload and download positive",
 			fields{
-				Id:           1000,
-				Subscription: 1000,
-				Node:         "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Address:      "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				Duration:     -1000,
+				ID:             1000,
+				SubscriptionID: 1000,
+				NodeAddress:    hubtypes.TestBech32NodeAddr20Bytes,
+				Address:        hubtypes.TestBech32AccAddr20Bytes,
+				Bandwidth:      hubtypes.Bandwidth{Upload: sdk.NewInt(-1000), Download: sdk.NewInt(1000)},
 			},
 			true,
 		},
 		{
-			"zero duration",
+			"upload zero and download negative",
 			fields{
-				Id:           1000,
-				Subscription: 1000,
-				Node:         "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Address:      "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				Duration:     0,
-				Bandwidth:    hubtypes.Bandwidth{Upload: sdk.NewInt(0), Download: sdk.NewInt(0)},
+				ID:             1000,
+				SubscriptionID: 1000,
+				NodeAddress:    hubtypes.TestBech32NodeAddr20Bytes,
+				Address:        hubtypes.TestBech32AccAddr20Bytes,
+				Bandwidth:      hubtypes.Bandwidth{Upload: sdk.NewInt(0), Download: sdk.NewInt(-1000)},
 			},
 			true,
 		},
 		{
-			"positive duration",
+			"upload zero and download zero",
 			fields{
-				Id:           1000,
-				Subscription: 1000,
-				Node:         "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Address:      "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				Duration:     1000,
-				Bandwidth:    hubtypes.Bandwidth{Upload: sdk.NewInt(0), Download: sdk.NewInt(0)},
+				ID:             1000,
+				SubscriptionID: 1000,
+				NodeAddress:    hubtypes.TestBech32NodeAddr20Bytes,
+				Address:        hubtypes.TestBech32AccAddr20Bytes,
+				Bandwidth:      hubtypes.Bandwidth{Upload: sdk.NewInt(0), Download: sdk.NewInt(0)},
+				Duration:       1000,
+				InactiveAt:     time.Now(),
+				Status:         hubtypes.StatusActive,
+				StatusAt:       time.Now(),
+			},
+			false,
+		},
+		{
+			"upload zero and download positive",
+			fields{
+				ID:             1000,
+				SubscriptionID: 1000,
+				NodeAddress:    hubtypes.TestBech32NodeAddr20Bytes,
+				Address:        hubtypes.TestBech32AccAddr20Bytes,
+				Bandwidth:      hubtypes.Bandwidth{Upload: sdk.NewInt(0), Download: sdk.NewInt(1000)},
+				Duration:       1000,
+				InactiveAt:     time.Now(),
+				Status:         hubtypes.StatusActive,
+				StatusAt:       time.Now(),
+			},
+			false,
+		},
+		{
+			"upload positive and download negative",
+			fields{
+				ID:             1000,
+				SubscriptionID: 1000,
+				NodeAddress:    hubtypes.TestBech32NodeAddr20Bytes,
+				Address:        hubtypes.TestBech32AccAddr20Bytes,
+				Bandwidth:      hubtypes.Bandwidth{Upload: sdk.NewInt(1000), Download: sdk.NewInt(-1000)},
 			},
 			true,
 		},
 		{
-			"negative upload and negative download",
+			"upload positive and download zero",
 			fields{
-				Id:           1000,
-				Subscription: 1000,
-				Node:         "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Address:      "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				Duration:     1000,
-				Bandwidth:    hubtypes.Bandwidth{Upload: sdk.NewInt(-1000), Download: sdk.NewInt(-1000)},
+				ID:             1000,
+				SubscriptionID: 1000,
+				NodeAddress:    hubtypes.TestBech32NodeAddr20Bytes,
+				Address:        hubtypes.TestBech32AccAddr20Bytes,
+				Bandwidth:      hubtypes.Bandwidth{Upload: sdk.NewInt(1000), Download: sdk.NewInt(0)},
+				Duration:       1000,
+				InactiveAt:     time.Now(),
+				Status:         hubtypes.StatusActive,
+				StatusAt:       time.Now(),
+			},
+			false,
+		},
+		{
+			"upload positive and download positive",
+			fields{
+				ID:             1000,
+				SubscriptionID: 1000,
+				NodeAddress:    hubtypes.TestBech32NodeAddr20Bytes,
+				Address:        hubtypes.TestBech32AccAddr20Bytes,
+				Bandwidth:      hubtypes.Bandwidth{Upload: sdk.NewInt(1000), Download: sdk.NewInt(1000)},
+				Duration:       1000,
+				InactiveAt:     time.Now(),
+				Status:         hubtypes.StatusActive,
+				StatusAt:       time.Now(),
+			},
+			false,
+		},
+		{
+			"duration negative",
+			fields{
+				ID:             1000,
+				SubscriptionID: 1000,
+				NodeAddress:    hubtypes.TestBech32NodeAddr20Bytes,
+				Address:        hubtypes.TestBech32AccAddr20Bytes,
+				Bandwidth:      hubtypes.Bandwidth{Upload: sdk.NewInt(1000), Download: sdk.NewInt(1000)},
+				Duration:       -1000,
 			},
 			true,
 		},
 		{
-			"negative upload and zero download",
+			"duration zero",
 			fields{
-				Id:           1000,
-				Subscription: 1000,
-				Node:         "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Address:      "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				Duration:     1000,
-				Bandwidth:    hubtypes.Bandwidth{Upload: sdk.NewInt(-1000), Download: sdk.NewInt(0)},
+				ID:             1000,
+				SubscriptionID: 1000,
+				NodeAddress:    hubtypes.TestBech32NodeAddr20Bytes,
+				Address:        hubtypes.TestBech32AccAddr20Bytes,
+				Bandwidth:      hubtypes.Bandwidth{Upload: sdk.NewInt(1000), Download: sdk.NewInt(1000)},
+				Duration:       0,
+				InactiveAt:     time.Now(),
+				Status:         hubtypes.StatusActive,
+				StatusAt:       time.Now(),
+			},
+			false,
+		},
+		{
+			"duration positive",
+			fields{
+				ID:             1000,
+				SubscriptionID: 1000,
+				NodeAddress:    hubtypes.TestBech32NodeAddr20Bytes,
+				Address:        hubtypes.TestBech32AccAddr20Bytes,
+				Bandwidth:      hubtypes.Bandwidth{Upload: sdk.NewInt(1000), Download: sdk.NewInt(1000)},
+				Duration:       1000,
+				InactiveAt:     time.Now(),
+				Status:         hubtypes.StatusActive,
+				StatusAt:       time.Now(),
+			},
+			false,
+		},
+		{
+			"inactive_at empty",
+			fields{
+				ID:             1000,
+				SubscriptionID: 1000,
+				NodeAddress:    hubtypes.TestBech32NodeAddr20Bytes,
+				Address:        hubtypes.TestBech32AccAddr20Bytes,
+				Bandwidth:      hubtypes.Bandwidth{Upload: sdk.NewInt(1000), Download: sdk.NewInt(1000)},
+				Duration:       1000,
+				InactiveAt:     time.Time{},
 			},
 			true,
 		},
 		{
-			"negative upload and positive download",
+			"inactive_at non-empty",
 			fields{
-				Id:           1000,
-				Subscription: 1000,
-				Node:         "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Address:      "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				Duration:     1000,
-				Bandwidth:    hubtypes.Bandwidth{Upload: sdk.NewInt(-1000), Download: sdk.NewInt(1000)},
+				ID:             1000,
+				SubscriptionID: 1000,
+				NodeAddress:    hubtypes.TestBech32NodeAddr20Bytes,
+				Address:        hubtypes.TestBech32AccAddr20Bytes,
+				Bandwidth:      hubtypes.Bandwidth{Upload: sdk.NewInt(1000), Download: sdk.NewInt(1000)},
+				Duration:       1000,
+				InactiveAt:     time.Now(),
+				Status:         hubtypes.StatusActive,
+				StatusAt:       time.Now(),
+			},
+			false,
+		},
+		{
+			"status unspecified",
+			fields{
+				ID:             1000,
+				SubscriptionID: 1000,
+				NodeAddress:    hubtypes.TestBech32NodeAddr20Bytes,
+				Address:        hubtypes.TestBech32AccAddr20Bytes,
+				Bandwidth:      hubtypes.Bandwidth{Upload: sdk.NewInt(1000), Download: sdk.NewInt(1000)},
+				Duration:       1000,
+				InactiveAt:     time.Now(),
+				Status:         hubtypes.StatusUnspecified,
 			},
 			true,
 		},
 		{
-			"zero upload and negative download",
+			"status active",
 			fields{
-				Id:           1000,
-				Subscription: 1000,
-				Node:         "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Address:      "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				Duration:     1000,
-				Bandwidth:    hubtypes.Bandwidth{Upload: sdk.NewInt(0), Download: sdk.NewInt(-1000)},
+				ID:             1000,
+				SubscriptionID: 1000,
+				NodeAddress:    hubtypes.TestBech32NodeAddr20Bytes,
+				Address:        hubtypes.TestBech32AccAddr20Bytes,
+				Bandwidth:      hubtypes.Bandwidth{Upload: sdk.NewInt(1000), Download: sdk.NewInt(1000)},
+				Duration:       1000,
+				InactiveAt:     time.Now(),
+				Status:         hubtypes.StatusActive,
+				StatusAt:       time.Now(),
+			},
+			false,
+		},
+		{
+			"status inactive_pending",
+			fields{
+				ID:             1000,
+				SubscriptionID: 1000,
+				NodeAddress:    hubtypes.TestBech32NodeAddr20Bytes,
+				Address:        hubtypes.TestBech32AccAddr20Bytes,
+				Bandwidth:      hubtypes.Bandwidth{Upload: sdk.NewInt(1000), Download: sdk.NewInt(1000)},
+				Duration:       1000,
+				InactiveAt:     time.Now(),
+				Status:         hubtypes.StatusInactivePending,
+				StatusAt:       time.Now(),
+			},
+			false,
+		},
+		{
+			"status inactive",
+			fields{
+				ID:             1000,
+				SubscriptionID: 1000,
+				NodeAddress:    hubtypes.TestBech32NodeAddr20Bytes,
+				Address:        hubtypes.TestBech32AccAddr20Bytes,
+				Bandwidth:      hubtypes.Bandwidth{Upload: sdk.NewInt(1000), Download: sdk.NewInt(1000)},
+				Duration:       1000,
+				InactiveAt:     time.Now(),
+				Status:         hubtypes.StatusActive,
+				StatusAt:       time.Now(),
+			},
+			false,
+		},
+		{
+			"status_at empty",
+			fields{
+				ID:             1000,
+				SubscriptionID: 1000,
+				NodeAddress:    hubtypes.TestBech32NodeAddr20Bytes,
+				Address:        hubtypes.TestBech32AccAddr20Bytes,
+				Bandwidth:      hubtypes.Bandwidth{Upload: sdk.NewInt(1000), Download: sdk.NewInt(1000)},
+				Duration:       1000,
+				InactiveAt:     time.Now(),
+				Status:         hubtypes.StatusActive,
+				StatusAt:       time.Time{},
 			},
 			true,
 		},
 		{
-			"zero upload and zero download",
+			"status_at non-empty",
 			fields{
-				Id:           1000,
-				Subscription: 1000,
-				Node:         "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Address:      "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				Duration:     1000,
-				Bandwidth:    hubtypes.Bandwidth{Upload: sdk.NewInt(0), Download: sdk.NewInt(0)},
-			},
-			true,
-		},
-		{
-			"zero upload and positive download",
-			fields{
-				Id:           1000,
-				Subscription: 1000,
-				Node:         "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Address:      "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				Duration:     1000,
-				Bandwidth:    hubtypes.Bandwidth{Upload: sdk.NewInt(0), Download: sdk.NewInt(1000)},
-			},
-			true,
-		},
-		{
-			"positive upload and negative download",
-			fields{
-				Id:           1000,
-				Subscription: 1000,
-				Node:         "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Address:      "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				Duration:     1000,
-				Bandwidth:    hubtypes.Bandwidth{Upload: sdk.NewInt(1000), Download: sdk.NewInt(-1000)},
-			},
-			true,
-		},
-		{
-			"positive upload and zero download",
-			fields{
-				Id:           1000,
-				Subscription: 1000,
-				Node:         "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Address:      "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				Duration:     1000,
-				Bandwidth:    hubtypes.Bandwidth{Upload: sdk.NewInt(1000), Download: sdk.NewInt(0)},
-			},
-			true,
-		},
-		{
-			"positive upload and positive download",
-			fields{
-				Id:           1000,
-				Subscription: 1000,
-				Node:         "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Address:      "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				Duration:     1000,
-				Bandwidth:    hubtypes.Bandwidth{Upload: sdk.NewInt(1000), Download: sdk.NewInt(1000)},
-			},
-			true,
-		},
-		{
-			"unknown status",
-			fields{
-				Id:           1000,
-				Subscription: 1000,
-				Node:         "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Address:      "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				Duration:     1000,
-				Bandwidth:    hubtypes.Bandwidth{Upload: sdk.NewInt(1000), Download: sdk.NewInt(1000)},
-				Status:       hubtypes.StatusUnknown,
-			},
-			true,
-		},
-		{
-			"active status",
-			fields{
-				Id:           1000,
-				Subscription: 1000,
-				Node:         "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Address:      "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				Duration:     1000,
-				Bandwidth:    hubtypes.Bandwidth{Upload: sdk.NewInt(1000), Download: sdk.NewInt(1000)},
-				Status:       hubtypes.Active,
-			},
-			true,
-		},
-		{
-			"inactive pending status",
-			fields{
-				Id:           1000,
-				Subscription: 1000,
-				Node:         "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Address:      "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				Duration:     1000,
-				Bandwidth:    hubtypes.Bandwidth{Upload: sdk.NewInt(1000), Download: sdk.NewInt(1000)},
-				Status:       hubtypes.StatusInactivePending,
-			},
-			true,
-		},
-		{
-			"inactive status",
-			fields{
-				Id:           1000,
-				Subscription: 1000,
-				Node:         "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Address:      "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				Duration:     1000,
-				Bandwidth:    hubtypes.Bandwidth{Upload: sdk.NewInt(1000), Download: sdk.NewInt(1000)},
-				Status:       hubtypes.Inactive,
-			},
-			true,
-		},
-		{
-			"zero status",
-			fields{
-				Id:           1000,
-				Subscription: 1000,
-				Node:         "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Address:      "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				Duration:     1000,
-				Bandwidth:    hubtypes.Bandwidth{Upload: sdk.NewInt(1000), Download: sdk.NewInt(1000)},
-				Status:       hubtypes.Inactive,
-				StatusAt:     time.Time{},
-			},
-			true,
-		},
-		{
-			"now status",
-			fields{
-				Id:           1000,
-				Subscription: 1000,
-				Node:         "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Address:      "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				Duration:     1000,
-				Bandwidth:    hubtypes.Bandwidth{Upload: sdk.NewInt(1000), Download: sdk.NewInt(1000)},
-				Status:       hubtypes.Inactive,
-				StatusAt:     time.Now(),
+				ID:             1000,
+				SubscriptionID: 1000,
+				NodeAddress:    hubtypes.TestBech32NodeAddr20Bytes,
+				Address:        hubtypes.TestBech32AccAddr20Bytes,
+				Bandwidth:      hubtypes.Bandwidth{Upload: sdk.NewInt(1000), Download: sdk.NewInt(1000)},
+				Duration:       1000,
+				InactiveAt:     time.Now(),
+				Status:         hubtypes.StatusActive,
+				StatusAt:       time.Now(),
 			},
 			false,
 		},
@@ -478,14 +583,15 @@ func TestSession_Validate(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			m := &Session{
-				Id:           tt.fields.Id,
-				Subscription: tt.fields.Subscription,
-				Node:         tt.fields.Node,
-				Address:      tt.fields.Address,
-				Duration:     tt.fields.Duration,
-				Bandwidth:    tt.fields.Bandwidth,
-				Status:       tt.fields.Status,
-				StatusAt:     tt.fields.StatusAt,
+				ID:             tt.fields.ID,
+				SubscriptionID: tt.fields.SubscriptionID,
+				NodeAddress:    tt.fields.NodeAddress,
+				Address:        tt.fields.Address,
+				Bandwidth:      tt.fields.Bandwidth,
+				Duration:       tt.fields.Duration,
+				InactiveAt:     tt.fields.InactiveAt,
+				Status:         tt.fields.Status,
+				StatusAt:       tt.fields.StatusAt,
 			}
 			if err := m.Validate(); (err != nil) != tt.wantErr {
 				t.Errorf("Validate() error = %v, wantErr %v", err, tt.wantErr)

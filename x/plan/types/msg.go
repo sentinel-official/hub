@@ -1,7 +1,6 @@
 package types
 
 import (
-	"fmt"
 	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -10,66 +9,69 @@ import (
 	hubtypes "github.com/sentinel-official/hub/types"
 )
 
+// The `types` package contains custom message types for the Cosmos SDK.
+
+// The following variables implement the sdk.Msg interface for the provided message types.
+// These variables ensure that the corresponding types can be used as messages in the Cosmos SDK.
 var (
-	_ sdk.Msg = (*MsgAddRequest)(nil)
-	_ sdk.Msg = (*MsgSetStatusRequest)(nil)
-	_ sdk.Msg = (*MsgAddNodeRequest)(nil)
-	_ sdk.Msg = (*MsgRemoveNodeRequest)(nil)
+	_ sdk.Msg = (*MsgCreateRequest)(nil)
+	_ sdk.Msg = (*MsgUpdateStatusRequest)(nil)
+	_ sdk.Msg = (*MsgLinkNodeRequest)(nil)
+	_ sdk.Msg = (*MsgUnlinkNodeRequest)(nil)
+	_ sdk.Msg = (*MsgSubscribeRequest)(nil)
 )
 
-func NewMsgAddRequest(from hubtypes.ProvAddress, price sdk.Coins, validity time.Duration, bytes sdk.Int) *MsgAddRequest {
-	return &MsgAddRequest{
-		From:     from.String(),
-		Price:    price,
-		Validity: validity,
-		Bytes:    bytes,
+// NewMsgCreateRequest creates a new MsgCreateRequest instance with the given parameters.
+func NewMsgCreateRequest(from hubtypes.ProvAddress, duration time.Duration, gigabytes int64, prices sdk.Coins) *MsgCreateRequest {
+	return &MsgCreateRequest{
+		From:      from.String(),
+		Duration:  duration,
+		Gigabytes: gigabytes,
+		Prices:    prices,
 	}
 }
 
-func (m *MsgAddRequest) Route() string {
-	return RouterKey
-}
-
-func (m *MsgAddRequest) Type() string {
-	return fmt.Sprintf("%s:add", ModuleName)
-}
-
-func (m *MsgAddRequest) ValidateBasic() error {
+// ValidateBasic performs basic validation checks on the MsgCreateRequest fields.
+// It checks if the 'From' field is not empty and represents a valid provider address,
+// if the 'Duration' field is not negative or zero,
+// if the 'Gigabytes' field is not negative or zero,
+// and if the 'Prices' field is valid (not empty, not containing nil coins, and having valid coin denominations).
+func (m *MsgCreateRequest) ValidateBasic() error {
 	if m.From == "" {
-		return errors.Wrap(ErrorInvalidFrom, "from cannot be empty")
+		return errors.Wrap(ErrorInvalidMessage, "from cannot be empty")
 	}
 	if _, err := hubtypes.ProvAddressFromBech32(m.From); err != nil {
-		return errors.Wrapf(ErrorInvalidFrom, "%s", err)
+		return errors.Wrap(ErrorInvalidMessage, err.Error())
 	}
-	if m.Price != nil {
-		if m.Price.Len() == 0 {
-			return errors.Wrap(ErrorInvalidPrice, "price cannot be empty")
+	if m.Duration < 0 {
+		return errors.Wrap(ErrorInvalidMessage, "duration cannot be negative")
+	}
+	if m.Duration == 0 {
+		return errors.Wrap(ErrorInvalidMessage, "duration cannot be zero")
+	}
+	if m.Gigabytes < 0 {
+		return errors.Wrap(ErrorInvalidMessage, "gigabytes cannot be negative")
+	}
+	if m.Gigabytes == 0 {
+		return errors.Wrap(ErrorInvalidMessage, "gigabytes cannot be zero")
+	}
+	if m.Prices != nil {
+		if m.Prices.Len() == 0 {
+			return errors.Wrap(ErrorInvalidMessage, "prices cannot be empty")
 		}
-		if !m.Price.IsValid() {
-			return errors.Wrap(ErrorInvalidPrice, "price must be valid")
+		if m.Prices.IsAnyNil() {
+			return errors.Wrap(ErrorInvalidMessage, "prices cannot contain nil")
 		}
-	}
-	if m.Validity < 0 {
-		return errors.Wrap(ErrorInvalidValidity, "validity cannot be negative")
-	}
-	if m.Validity == 0 {
-		return errors.Wrap(ErrorInvalidValidity, "validity cannot be zero")
-	}
-	if m.Bytes.IsNegative() {
-		return errors.Wrap(ErrorInvalidBytes, "bytes cannot be negative")
-	}
-	if m.Bytes.IsZero() {
-		return errors.Wrap(ErrorInvalidBytes, "bytes cannot be zero")
+		if !m.Prices.IsValid() {
+			return errors.Wrap(ErrorInvalidMessage, "prices must be valid")
+		}
 	}
 
 	return nil
 }
 
-func (m *MsgAddRequest) GetSignBytes() []byte {
-	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(m))
-}
-
-func (m *MsgAddRequest) GetSigners() []sdk.AccAddress {
+// GetSigners returns an array containing the signer's account address extracted from the 'From' field of the MsgCreateRequest.
+func (m *MsgCreateRequest) GetSigners() []sdk.AccAddress {
 	from, err := hubtypes.ProvAddressFromBech32(m.From)
 	if err != nil {
 		panic(err)
@@ -78,44 +80,38 @@ func (m *MsgAddRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{from.Bytes()}
 }
 
-func NewMsgSetStatusRequest(from hubtypes.ProvAddress, id uint64, status hubtypes.Status) *MsgSetStatusRequest {
-	return &MsgSetStatusRequest{
+// NewMsgUpdateStatusRequest creates a new MsgUpdateStatusRequest instance with the given parameters.
+func NewMsgUpdateStatusRequest(from hubtypes.ProvAddress, id uint64, status hubtypes.Status) *MsgUpdateStatusRequest {
+	return &MsgUpdateStatusRequest{
 		From:   from.String(),
-		Id:     id,
+		ID:     id,
 		Status: status,
 	}
 }
 
-func (m *MsgSetStatusRequest) Route() string {
-	return RouterKey
-}
-
-func (m *MsgSetStatusRequest) Type() string {
-	return fmt.Sprintf("%s:set_status", ModuleName)
-}
-
-func (m *MsgSetStatusRequest) ValidateBasic() error {
+// ValidateBasic performs basic validation checks on the MsgUpdateStatusRequest fields.
+// It checks if the 'From' field is not empty and represents a valid provider address,
+// if the 'ID' field is not zero,
+// and if the 'Status' field is one of the allowed values [active, inactive].
+func (m *MsgUpdateStatusRequest) ValidateBasic() error {
 	if m.From == "" {
-		return errors.Wrap(ErrorInvalidFrom, "from cannot be empty")
+		return errors.Wrap(ErrorInvalidMessage, "from cannot be empty")
 	}
 	if _, err := hubtypes.ProvAddressFromBech32(m.From); err != nil {
-		return errors.Wrapf(ErrorInvalidFrom, "%s", err)
+		return errors.Wrap(ErrorInvalidMessage, err.Error())
 	}
-	if m.Id == 0 {
-		return errors.Wrap(ErrorInvalidId, "id cannot be zero")
+	if m.ID == 0 {
+		return errors.Wrap(ErrorInvalidMessage, "id cannot be zero")
 	}
-	if !m.Status.Equal(hubtypes.StatusActive) && !m.Status.Equal(hubtypes.StatusInactive) {
-		return errors.Wrap(ErrorInvalidStatus, "status must be either active or inactive")
+	if !m.Status.IsOneOf(hubtypes.StatusActive, hubtypes.StatusInactive) {
+		return errors.Wrap(ErrorInvalidMessage, "status must be one of [active, inactive]")
 	}
 
 	return nil
 }
 
-func (m *MsgSetStatusRequest) GetSignBytes() []byte {
-	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(m))
-}
-
-func (m *MsgSetStatusRequest) GetSigners() []sdk.AccAddress {
+// GetSigners returns an array containing the signer's account address extracted from the 'From' field of the MsgUpdateStatusRequest.
+func (m *MsgUpdateStatusRequest) GetSigners() []sdk.AccAddress {
 	from, err := hubtypes.ProvAddressFromBech32(m.From)
 	if err != nil {
 		panic(err)
@@ -124,47 +120,41 @@ func (m *MsgSetStatusRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{from.Bytes()}
 }
 
-func NewMsgAddNodeRequest(from hubtypes.ProvAddress, id uint64, address hubtypes.NodeAddress) *MsgAddNodeRequest {
-	return &MsgAddNodeRequest{
-		From:    from.String(),
-		Id:      id,
-		Address: address.String(),
+// NewMsgLinkNodeRequest creates a new MsgLinkNodeRequest instance with the given parameters.
+func NewMsgLinkNodeRequest(from hubtypes.ProvAddress, id uint64, addr hubtypes.NodeAddress) *MsgLinkNodeRequest {
+	return &MsgLinkNodeRequest{
+		From:        from.String(),
+		ID:          id,
+		NodeAddress: addr.String(),
 	}
 }
 
-func (m *MsgAddNodeRequest) Route() string {
-	return RouterKey
-}
-
-func (m *MsgAddNodeRequest) Type() string {
-	return fmt.Sprintf("%s:add_node", ModuleName)
-}
-
-func (m *MsgAddNodeRequest) ValidateBasic() error {
+// ValidateBasic performs basic validation checks on the MsgLinkNodeRequest fields.
+// It checks if the 'From' field is not empty and represents a valid provider address,
+// if the 'ID' field is not zero,
+// and if the 'Address' field is not empty and represents a valid node address.
+func (m *MsgLinkNodeRequest) ValidateBasic() error {
 	if m.From == "" {
-		return errors.Wrap(ErrorInvalidFrom, "from cannot be empty")
+		return errors.Wrap(ErrorInvalidMessage, "from cannot be empty")
 	}
 	if _, err := hubtypes.ProvAddressFromBech32(m.From); err != nil {
-		return errors.Wrapf(ErrorInvalidFrom, "%s", err)
+		return errors.Wrap(ErrorInvalidMessage, err.Error())
 	}
-	if m.Id == 0 {
-		return errors.Wrap(ErrorInvalidId, "id cannot be zero")
+	if m.ID == 0 {
+		return errors.Wrap(ErrorInvalidMessage, "id cannot be zero")
 	}
-	if m.Address == "" {
-		return errors.Wrap(ErrorInvalidAddress, "address cannot be empty")
+	if m.NodeAddress == "" {
+		return errors.Wrap(ErrorInvalidMessage, "node_address cannot be empty")
 	}
-	if _, err := hubtypes.NodeAddressFromBech32(m.Address); err != nil {
-		return errors.Wrapf(ErrorInvalidAddress, "%s", err)
+	if _, err := hubtypes.NodeAddressFromBech32(m.NodeAddress); err != nil {
+		return errors.Wrap(ErrorInvalidMessage, err.Error())
 	}
 
 	return nil
 }
 
-func (m *MsgAddNodeRequest) GetSignBytes() []byte {
-	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(m))
-}
-
-func (m *MsgAddNodeRequest) GetSigners() []sdk.AccAddress {
+// GetSigners returns an array containing the signer's account address extracted from the 'From' field of the MsgLinkNodeRequest.
+func (m *MsgLinkNodeRequest) GetSigners() []sdk.AccAddress {
 	from, err := hubtypes.ProvAddressFromBech32(m.From)
 	if err != nil {
 		panic(err)
@@ -173,47 +163,83 @@ func (m *MsgAddNodeRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{from.Bytes()}
 }
 
-func NewMsgRemoveNodeRequest(from sdk.AccAddress, id uint64, address hubtypes.NodeAddress) *MsgRemoveNodeRequest {
-	return &MsgRemoveNodeRequest{
-		From:    from.String(),
-		Id:      id,
-		Address: address.String(),
+// NewMsgUnlinkNodeRequest creates a new MsgUnlinkNodeRequest instance with the given parameters.
+func NewMsgUnlinkNodeRequest(from hubtypes.ProvAddress, id uint64, addr hubtypes.NodeAddress) *MsgUnlinkNodeRequest {
+	return &MsgUnlinkNodeRequest{
+		From:        from.String(),
+		ID:          id,
+		NodeAddress: addr.String(),
 	}
 }
 
-func (m *MsgRemoveNodeRequest) Route() string {
-	return RouterKey
-}
-
-func (m *MsgRemoveNodeRequest) Type() string {
-	return fmt.Sprintf("%s:remove_node", ModuleName)
-}
-
-func (m *MsgRemoveNodeRequest) ValidateBasic() error {
+// ValidateBasic performs basic validation checks on the MsgUnlinkNodeRequest fields.
+// It checks if the 'From' field is not empty and represents a valid provider address,
+// if the 'ID' field is not zero,
+// and if the 'Address' field is not empty and represents a valid node address.
+func (m *MsgUnlinkNodeRequest) ValidateBasic() error {
 	if m.From == "" {
-		return errors.Wrap(ErrorInvalidFrom, "from cannot be empty")
+		return errors.Wrap(ErrorInvalidMessage, "from cannot be empty")
+	}
+	if _, err := hubtypes.ProvAddressFromBech32(m.From); err != nil {
+		return errors.Wrap(ErrorInvalidMessage, err.Error())
+	}
+	if m.ID == 0 {
+		return errors.Wrap(ErrorInvalidMessage, "id cannot be zero")
+	}
+	if m.NodeAddress == "" {
+		return errors.Wrap(ErrorInvalidMessage, "node_address cannot be empty")
+	}
+	if _, err := hubtypes.NodeAddressFromBech32(m.NodeAddress); err != nil {
+		return errors.Wrap(ErrorInvalidMessage, err.Error())
+	}
+
+	return nil
+}
+
+// GetSigners returns an array containing the signer's account address extracted from the 'From' field of the MsgUnlinkNodeRequest.
+func (m *MsgUnlinkNodeRequest) GetSigners() []sdk.AccAddress {
+	from, err := hubtypes.ProvAddressFromBech32(m.From)
+	if err != nil {
+		panic(err)
+	}
+
+	return []sdk.AccAddress{from.Bytes()}
+}
+
+// NewMsgSubscribeRequest creates a new MsgSubscribeRequest instance with the given parameters.
+func NewMsgSubscribeRequest(from sdk.AccAddress, id uint64, denom string) *MsgSubscribeRequest {
+	return &MsgSubscribeRequest{
+		From:  from.String(),
+		ID:    id,
+		Denom: denom,
+	}
+}
+
+// ValidateBasic performs basic validation checks on the MsgSubscribeRequest fields.
+// It checks if the 'From' field is not empty and represents a valid account address,
+// if the 'ID' field is not zero,
+// and if the 'Denom' field is valid according to the Cosmos SDK's ValidateDenom function.
+func (m *MsgSubscribeRequest) ValidateBasic() error {
+	if m.From == "" {
+		return errors.Wrap(ErrorInvalidMessage, "from cannot be empty")
 	}
 	if _, err := sdk.AccAddressFromBech32(m.From); err != nil {
-		return errors.Wrapf(ErrorInvalidFrom, "%s", err)
+		return errors.Wrap(ErrorInvalidMessage, err.Error())
 	}
-	if m.Id == 0 {
-		return errors.Wrap(ErrorInvalidId, "id cannot be zero")
+	if m.ID == 0 {
+		return errors.Wrap(ErrorInvalidMessage, "id cannot be zero")
 	}
-	if m.Address == "" {
-		return errors.Wrap(ErrorInvalidAddress, "address cannot be empty")
-	}
-	if _, err := hubtypes.NodeAddressFromBech32(m.Address); err != nil {
-		return errors.Wrapf(ErrorInvalidAddress, "%s", err)
+	if m.Denom != "" {
+		if err := sdk.ValidateDenom(m.Denom); err != nil {
+			return errors.Wrap(ErrorInvalidMessage, err.Error())
+		}
 	}
 
 	return nil
 }
 
-func (m *MsgRemoveNodeRequest) GetSignBytes() []byte {
-	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(m))
-}
-
-func (m *MsgRemoveNodeRequest) GetSigners() []sdk.AccAddress {
+// GetSigners returns an array containing the signer's account address extracted from the 'From' field of the MsgSubscribeRequest.
+func (m *MsgSubscribeRequest) GetSigners() []sdk.AccAddress {
 	from, err := sdk.AccAddressFromBech32(m.From)
 	if err != nil {
 		panic(err)

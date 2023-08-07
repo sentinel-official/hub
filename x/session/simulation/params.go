@@ -1,3 +1,5 @@
+// DO NOT COVER
+
 package simulation
 
 import (
@@ -5,18 +7,18 @@ import (
 	"math/rand"
 	"time"
 
-	simulationtypes "github.com/cosmos/cosmos-sdk/types/simulation"
+	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 
 	"github.com/sentinel-official/hub/x/session/types"
 )
 
 const (
-	MaxInactiveDuration = 1 << 18
+	MaxStatusChangeDelay = 1 << 18
 )
 
-func ParamChanges(_ *rand.Rand) []simulationtypes.ParamChange {
-	return []simulationtypes.ParamChange{
+func ParamChanges(_ *rand.Rand) []simtypes.ParamChange {
+	return []simtypes.ParamChange{
 		simulation.NewSimParamChange(
 			types.ModuleName,
 			string(types.KeyProofVerificationEnabled),
@@ -26,11 +28,11 @@ func ParamChanges(_ *rand.Rand) []simulationtypes.ParamChange {
 		),
 		simulation.NewSimParamChange(
 			types.ModuleName,
-			string(types.KeyInactiveDuration),
+			string(types.KeyStatusChangeDelay),
 			func(r *rand.Rand) string {
 				return fmt.Sprintf(
 					"%s",
-					time.Duration(r.Int63n(MaxInactiveDuration))*time.Millisecond,
+					time.Duration(r.Int63n(MaxStatusChangeDelay))*time.Millisecond,
 				)
 			},
 		),

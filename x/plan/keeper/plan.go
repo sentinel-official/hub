@@ -1,6 +1,8 @@
 package keeper
 
 import (
+	"fmt"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	protobuf "github.com/gogo/protobuf/types"
 
@@ -8,42 +10,32 @@ import (
 	"github.com/sentinel-official/hub/x/plan/types"
 )
 
-func (k *Keeper) SetCount(ctx sdk.Context, count uint64) {
-	key := types.CountKey
-	value := k.cdc.MustMarshal(&protobuf.UInt64Value{Value: count})
+func (k *Keeper) SetActivePlan(ctx sdk.Context, plan types.Plan) {
+	var (
+		store = k.Store(ctx)
+		key   = types.ActivePlanKey(plan.ID)
+		value = k.cdc.MustMarshal(&plan)
+	)
 
-	store := k.Store(ctx)
 	store.Set(key, value)
 }
 
-func (k *Keeper) GetCount(ctx sdk.Context) uint64 {
-	store := k.Store(ctx)
+func (k *Keeper) HasActivePlan(ctx sdk.Context, id uint64) bool {
+	var (
+		store = k.Store(ctx)
+		key   = types.ActivePlanKey(id)
+	)
 
-	key := types.CountKey
-	value := store.Get(key)
-	if value == nil {
-		return 0
-	}
-
-	var count protobuf.UInt64Value
-	k.cdc.MustUnmarshal(value, &count)
-
-	return count.GetValue()
+	return store.Has(key)
 }
 
-func (k *Keeper) SetPlan(ctx sdk.Context, plan types.Plan) {
-	key := types.PlanKey(plan.Id)
-	value := k.cdc.MustMarshal(&plan)
+func (k *Keeper) GetActivePlan(ctx sdk.Context, id uint64) (plan types.Plan, found bool) {
+	var (
+		store = k.Store(ctx)
+		key   = types.ActivePlanKey(id)
+		value = store.Get(key)
+	)
 
-	store := k.Store(ctx)
-	store.Set(key, value)
-}
-
-func (k *Keeper) GetPlan(ctx sdk.Context, id uint64) (plan types.Plan, found bool) {
-	store := k.Store(ctx)
-
-	key := types.PlanKey(id)
-	value := store.Get(key)
 	if value == nil {
 		return plan, false
 	}
@@ -52,178 +44,140 @@ func (k *Keeper) GetPlan(ctx sdk.Context, id uint64) (plan types.Plan, found boo
 	return plan, true
 }
 
-func (k *Keeper) GetPlans(ctx sdk.Context, skip, limit int64) (items types.Plans) {
+func (k *Keeper) DeleteActivePlan(ctx sdk.Context, id uint64) {
 	var (
 		store = k.Store(ctx)
-		iter  = hubtypes.NewPaginatedIterator(
-			sdk.KVStorePrefixIterator(store, types.PlanKeyPrefix),
-		)
+		key   = types.ActivePlanKey(id)
 	)
 
-	defer iter.Close()
-
-	iter.Skip(skip)
-	iter.Limit(limit, func(iter sdk.Iterator) {
-		var item types.Plan
-		k.cdc.MustUnmarshal(iter.Value(), &item)
-		items = append(items, item)
-	})
-
-	return items
-}
-
-func (k *Keeper) SetActivePlan(ctx sdk.Context, id uint64) {
-	key := types.ActivePlanKey(id)
-	value := k.cdc.MustMarshal(&protobuf.BoolValue{Value: true})
-
-	store := k.Store(ctx)
-	store.Set(key, value)
-}
-
-func (k *Keeper) DeleteActivePlan(ctx sdk.Context, id uint64) {
-	key := types.ActivePlanKey(id)
-
-	store := k.Store(ctx)
 	store.Delete(key)
 }
 
-func (k *Keeper) GetActivePlans(ctx sdk.Context, skip, limit int64) (items types.Plans) {
+func (k *Keeper) SetInactivePlan(ctx sdk.Context, plan types.Plan) {
 	var (
 		store = k.Store(ctx)
-		iter  = hubtypes.NewPaginatedIterator(
-			sdk.KVStorePrefixIterator(store, types.ActivePlanKeyPrefix),
-		)
+		key   = types.InactivePlanKey(plan.ID)
+		value = k.cdc.MustMarshal(&plan)
 	)
 
-	defer iter.Close()
-
-	iter.Skip(skip)
-	iter.Limit(limit, func(iter sdk.Iterator) {
-		item, _ := k.GetPlan(ctx, types.IDFromStatusPlanKey(iter.Key()))
-		items = append(items, item)
-	})
-
-	return items
+	store.Set(key, value)
 }
 
-func (k *Keeper) SetInactivePlan(ctx sdk.Context, id uint64) {
-	key := types.InactivePlanKey(id)
-	value := k.cdc.MustMarshal(&protobuf.BoolValue{Value: true})
+func (k *Keeper) HasInactivePlan(ctx sdk.Context, id uint64) bool {
+	var (
+		store = k.Store(ctx)
+		key   = types.InactivePlanKey(id)
+	)
 
-	store := k.Store(ctx)
-	store.Set(key, value)
+	return store.Has(key)
+}
+
+func (k *Keeper) GetInactivePlan(ctx sdk.Context, id uint64) (plan types.Plan, found bool) {
+	var (
+		store = k.Store(ctx)
+		key   = types.InactivePlanKey(id)
+		value = store.Get(key)
+	)
+
+	if value == nil {
+		return plan, false
+	}
+
+	k.cdc.MustUnmarshal(value, &plan)
+	return plan, true
 }
 
 func (k *Keeper) DeleteInactivePlan(ctx sdk.Context, id uint64) {
-	key := types.InactivePlanKey(id)
+	var (
+		store = k.Store(ctx)
+		key   = types.InactivePlanKey(id)
+	)
 
-	store := k.Store(ctx)
 	store.Delete(key)
 }
 
-func (k *Keeper) GetInactivePlans(ctx sdk.Context, skip, limit int64) (items types.Plans) {
+func (k *Keeper) SetPlan(ctx sdk.Context, plan types.Plan) {
+	switch plan.Status {
+	case hubtypes.StatusActive:
+		k.SetActivePlan(ctx, plan)
+	case hubtypes.StatusInactive:
+		k.SetInactivePlan(ctx, plan)
+	default:
+		panic(fmt.Errorf("failed to set the plan %v", plan))
+	}
+}
+
+func (k *Keeper) HasPlan(ctx sdk.Context, id uint64) bool {
+	return k.HasActivePlan(ctx, id) ||
+		k.HasInactivePlan(ctx, id)
+}
+
+func (k *Keeper) GetPlan(ctx sdk.Context, id uint64) (plan types.Plan, found bool) {
+	plan, found = k.GetActivePlan(ctx, id)
+	if found {
+		return
+	}
+
+	plan, found = k.GetInactivePlan(ctx, id)
+	if found {
+		return
+	}
+
+	return plan, false
+}
+
+func (k *Keeper) GetPlans(ctx sdk.Context) (items types.Plans) {
 	var (
 		store = k.Store(ctx)
-		iter  = hubtypes.NewPaginatedIterator(
-			sdk.KVStorePrefixIterator(store, types.InactivePlanKeyPrefix),
-		)
+		iter  = sdk.KVStorePrefixIterator(store, types.PlanKeyPrefix)
 	)
 
 	defer iter.Close()
 
-	iter.Skip(skip)
-	iter.Limit(limit, func(iter sdk.Iterator) {
-		item, _ := k.GetPlan(ctx, types.IDFromStatusPlanKey(iter.Key()))
+	for ; iter.Valid(); iter.Next() {
+		var item types.Plan
+		k.cdc.MustUnmarshal(iter.Value(), &item)
 		items = append(items, item)
-	})
+	}
 
 	return items
 }
 
-func (k *Keeper) SetActivePlanForProvider(ctx sdk.Context, address hubtypes.ProvAddress, id uint64) {
-	key := types.ActivePlanForProviderKey(address, id)
-	value := k.cdc.MustMarshal(&protobuf.BoolValue{Value: true})
+func (k *Keeper) SetPlanForProvider(ctx sdk.Context, addr hubtypes.ProvAddress, id uint64) {
+	var (
+		store = k.Store(ctx)
+		key   = types.PlanForProviderKey(addr, id)
+		value = k.cdc.MustMarshal(&protobuf.BoolValue{Value: true})
+	)
 
-	store := k.Store(ctx)
 	store.Set(key, value)
 }
 
-func (k *Keeper) DeleteActivePlanForProvider(ctx sdk.Context, address hubtypes.ProvAddress, id uint64) {
-	store := k.Store(ctx)
+func (k *Keeper) DeletePlanForProvider(ctx sdk.Context, addr hubtypes.ProvAddress, id uint64) {
+	var (
+		store = k.Store(ctx)
+		key   = types.PlanForProviderKey(addr, id)
+	)
 
-	key := types.ActivePlanForProviderKey(address, id)
 	store.Delete(key)
 }
 
-func (k *Keeper) GetActivePlansForProvider(ctx sdk.Context, address hubtypes.ProvAddress, skip, limit int64) (items types.Plans) {
+func (k *Keeper) GetPlansForProvider(ctx sdk.Context, addr hubtypes.ProvAddress) (items types.Plans) {
 	var (
 		store = k.Store(ctx)
-		iter  = hubtypes.NewPaginatedIterator(
-			sdk.KVStorePrefixIterator(store, types.GetActivePlanForProviderKeyPrefix(address)),
-		)
+		iter  = sdk.KVStorePrefixIterator(store, types.GetPlanForProviderKeyPrefix(addr))
 	)
 
 	defer iter.Close()
 
-	iter.Skip(skip)
-	iter.Limit(limit, func(iter sdk.Iterator) {
-		item, _ := k.GetPlan(ctx, types.IDFromStatusPlanForProviderKey(iter.Key()))
+	for ; iter.Valid(); iter.Next() {
+		item, found := k.GetPlan(ctx, types.IDFromPlanForProviderKey(iter.Key()))
+		if !found {
+			panic(fmt.Errorf("plan for provider key %X does not exist", iter.Key()))
+		}
+
 		items = append(items, item)
-	})
-
-	return items
-}
-
-func (k *Keeper) SetInactivePlanForProvider(ctx sdk.Context, address hubtypes.ProvAddress, id uint64) {
-	key := types.InactivePlanForProviderKey(address, id)
-	value := k.cdc.MustMarshal(&protobuf.BoolValue{Value: true})
-
-	store := k.Store(ctx)
-	store.Set(key, value)
-}
-
-func (k *Keeper) DeleteInactivePlanForProvider(ctx sdk.Context, address hubtypes.ProvAddress, id uint64) {
-	store := k.Store(ctx)
-
-	key := types.InactivePlanForProviderKey(address, id)
-	store.Delete(key)
-}
-
-func (k *Keeper) GetInactivePlansForProvider(ctx sdk.Context, address hubtypes.ProvAddress, skip, limit int64) (items types.Plans) {
-	var (
-		store = k.Store(ctx)
-		iter  = hubtypes.NewPaginatedIterator(
-			sdk.KVStorePrefixIterator(store, types.GetInactivePlanForProviderKeyPrefix(address)),
-		)
-	)
-
-	defer iter.Close()
-
-	iter.Skip(skip)
-	iter.Limit(limit, func(iter sdk.Iterator) {
-		item, _ := k.GetPlan(ctx, types.IDFromStatusPlanForProviderKey(iter.Key()))
-		items = append(items, item)
-	})
-
-	return items
-}
-
-func (k *Keeper) GetPlansForProvider(ctx sdk.Context, address hubtypes.ProvAddress, skip, limit int64) (items types.Plans) {
-	var (
-		store = k.Store(ctx)
-		iter  = hubtypes.NewPaginatedIterator(
-			sdk.KVStorePrefixIterator(store, types.GetActivePlanForProviderKeyPrefix(address)),
-			sdk.KVStorePrefixIterator(store, types.GetInactivePlanForProviderKeyPrefix(address)),
-		)
-	)
-
-	defer iter.Close()
-
-	iter.Skip(skip)
-	iter.Limit(limit, func(iter sdk.Iterator) {
-		item, _ := k.GetPlan(ctx, types.IDFromStatusPlanForProviderKey(iter.Key()))
-		items = append(items, item)
-	})
+	}
 
 	return items
 }

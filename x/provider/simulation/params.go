@@ -1,28 +1,31 @@
+// DO NOT COVER
+
 package simulation
 
 import (
 	"math/rand"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	simulationtypes "github.com/cosmos/cosmos-sdk/types/simulation"
+	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 
 	"github.com/sentinel-official/hub/x/provider/types"
 )
 
 const (
-	MaxInt = 1 << 18
+	MaxDeposit      = 1 << 8
+	MaxStakingShare = 1 << 8
 )
 
-func ParamChanges(_ *rand.Rand) []simulationtypes.ParamChange {
-	return []simulationtypes.ParamChange{
+func ParamChanges(_ *rand.Rand) []simtypes.ParamChange {
+	return []simtypes.ParamChange{
 		simulation.NewSimParamChange(
 			types.ModuleName,
 			string(types.KeyDeposit),
 			func(r *rand.Rand) string {
 				return sdk.NewInt64Coin(
 					sdk.DefaultBondDenom,
-					r.Int63n(MaxInt),
+					r.Int63n(MaxDeposit),
 				).String()
 			},
 		),
@@ -31,7 +34,7 @@ func ParamChanges(_ *rand.Rand) []simulationtypes.ParamChange {
 			string(types.KeyStakingShare),
 			func(r *rand.Rand) string {
 				return sdk.NewDecWithPrec(
-					r.Int63n(MaxInt),
+					r.Int63n(MaxStakingShare),
 					6,
 				).String()
 			},

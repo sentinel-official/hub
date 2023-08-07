@@ -4,14 +4,14 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 
-	nodetypes "github.com/sentinel-official/hub/x/node/types"
-
 	hubtypes "github.com/sentinel-official/hub/types"
+	nodetypes "github.com/sentinel-official/hub/x/node/types"
+	plantypes "github.com/sentinel-official/hub/x/plan/types"
 	subscriptiontypes "github.com/sentinel-official/hub/x/subscription/types"
 )
 
-func (k *Keeper) GetAccount(ctx sdk.Context, address sdk.AccAddress) authtypes.AccountI {
-	return k.account.GetAccount(ctx, address)
+func (k *Keeper) GetAccount(ctx sdk.Context, addr sdk.AccAddress) authtypes.AccountI {
+	return k.account.GetAccount(ctx, addr)
 }
 
 func (k *Keeper) SendCoinFromDepositToAccount(ctx sdk.Context, from, to sdk.AccAddress, coin sdk.Coin) error {
@@ -30,30 +30,30 @@ func (k *Keeper) SendCoinFromDepositToModule(ctx sdk.Context, from sdk.AccAddres
 	return k.deposit.SendCoinsFromDepositToModule(ctx, from, to, sdk.NewCoins(coin))
 }
 
-func (k *Keeper) HasNodeForPlan(ctx sdk.Context, id uint64, address hubtypes.NodeAddress) bool {
-	return k.plan.HasNodeForPlan(ctx, id, address)
+func (k *Keeper) HasNodeForPlan(ctx sdk.Context, id uint64, addr hubtypes.NodeAddress) bool {
+	return k.node.HasNodeForPlan(ctx, id, addr)
 }
 
-func (k *Keeper) GetNode(ctx sdk.Context, address hubtypes.NodeAddress) (nodetypes.Node, bool) {
-	return k.node.GetNode(ctx, address)
+func (k *Keeper) GetNode(ctx sdk.Context, addr hubtypes.NodeAddress) (nodetypes.Node, bool) {
+	return k.node.GetNode(ctx, addr)
+}
+
+func (k *Keeper) GetPlan(ctx sdk.Context, id uint64) (plantypes.Plan, bool) {
+	return k.plan.GetPlan(ctx, id)
+}
+
+func (k *Keeper) GetAllocation(ctx sdk.Context, id uint64, addr sdk.AccAddress) (subscriptiontypes.Allocation, bool) {
+	return k.subscription.GetAllocation(ctx, id, addr)
+}
+
+func (k *Keeper) SetAllocation(ctx sdk.Context, alloc subscriptiontypes.Allocation) {
+	k.subscription.SetAllocation(ctx, alloc)
+}
+
+func (k *Keeper) GetLatestPayoutForAccountByNode(ctx sdk.Context, accAddr sdk.AccAddress, nodeAddr hubtypes.NodeAddress) (subscriptiontypes.Payout, bool) {
+	return k.subscription.GetLatestPayoutForAccountByNode(ctx, accAddr, nodeAddr)
 }
 
 func (k *Keeper) GetSubscription(ctx sdk.Context, id uint64) (subscriptiontypes.Subscription, bool) {
 	return k.subscription.GetSubscription(ctx, id)
-}
-
-func (k *Keeper) GetActiveSubscriptionsForAddress(ctx sdk.Context, address sdk.AccAddress, skip, limit int64) subscriptiontypes.Subscriptions {
-	return k.subscription.GetActiveSubscriptionsForAddress(ctx, address, skip, limit)
-}
-
-func (k *Keeper) SetQuota(ctx sdk.Context, id uint64, quota subscriptiontypes.Quota) {
-	k.subscription.SetQuota(ctx, id, quota)
-}
-
-func (k *Keeper) HasQuota(ctx sdk.Context, id uint64, address sdk.AccAddress) bool {
-	return k.subscription.HasQuota(ctx, id, address)
-}
-
-func (k *Keeper) GetQuota(ctx sdk.Context, id uint64, address sdk.AccAddress) (subscriptiontypes.Quota, bool) {
-	return k.subscription.GetQuota(ctx, id, address)
 }

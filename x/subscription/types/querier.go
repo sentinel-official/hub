@@ -19,24 +19,63 @@ func NewQuerySubscriptionsRequest(pagination *query.PageRequest) *QuerySubscript
 	}
 }
 
-func NewQuerySubscriptionsForAddressRequest(address sdk.AccAddress, status hubtypes.Status, pagination *query.PageRequest) *QuerySubscriptionsForAddressRequest {
-	return &QuerySubscriptionsForAddressRequest{
-		Address:    address.String(),
-		Status:     status,
+func NewQuerySubscriptionsForAccountRequest(addr sdk.AccAddress, pagination *query.PageRequest) *QuerySubscriptionsForAccountRequest {
+	return &QuerySubscriptionsForAccountRequest{
+		Address:    addr.String(),
 		Pagination: pagination,
 	}
 }
 
-func NewQueryQuotaRequest(id uint64, address sdk.AccAddress) *QueryQuotaRequest {
-	return &QueryQuotaRequest{
-		Id:      id,
-		Address: address.String(),
+func NewQuerySubscriptionsForNodeRequest(addr hubtypes.NodeAddress, pagination *query.PageRequest) *QuerySubscriptionsForNodeRequest {
+	return &QuerySubscriptionsForNodeRequest{
+		Address:    addr.String(),
+		Pagination: pagination,
 	}
 }
 
-func NewQueryQuotasRequest(id uint64, pagination *query.PageRequest) *QueryQuotasRequest {
-	return &QueryQuotasRequest{
+func NewQuerySubscriptionsForPlanRequest(id uint64, pagination *query.PageRequest) *QuerySubscriptionsForPlanRequest {
+	return &QuerySubscriptionsForPlanRequest{
 		Id:         id,
+		Pagination: pagination,
+	}
+}
+
+func NewQueryAllocationRequest(id uint64, addr sdk.AccAddress) *QueryAllocationRequest {
+	return &QueryAllocationRequest{
+		Id:      id,
+		Address: addr.String(),
+	}
+}
+
+func NewQueryAllocationsRequest(id uint64, pagination *query.PageRequest) *QueryAllocationsRequest {
+	return &QueryAllocationsRequest{
+		Id:         id,
+		Pagination: pagination,
+	}
+}
+
+func NewQueryPayoutRequest(id uint64) *QueryPayoutRequest {
+	return &QueryPayoutRequest{
+		Id: id,
+	}
+}
+
+func NewQueryPayoutsRequest(pagination *query.PageRequest) *QueryPayoutsRequest {
+	return &QueryPayoutsRequest{
+		Pagination: pagination,
+	}
+}
+
+func NewQueryPayoutsForAccountRequest(addr sdk.AccAddress, pagination *query.PageRequest) *QueryPayoutsForNodeRequest {
+	return &QueryPayoutsForNodeRequest{
+		Address:    addr.String(),
+		Pagination: pagination,
+	}
+}
+
+func NewQueryPayoutsForNodeRequest(addr hubtypes.NodeAddress, pagination *query.PageRequest) *QueryPayoutsForNodeRequest {
+	return &QueryPayoutsForNodeRequest{
+		Address:    addr.String(),
 		Pagination: pagination,
 	}
 }

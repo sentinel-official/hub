@@ -5,19 +5,8 @@ import (
 )
 
 const (
-	ModuleName        = "swap"
-	QuerierRoute      = ModuleName
-	DefaultParamspace = ModuleName
-)
-
-var (
-	ParamsSubspace = ModuleName
-	RouterKey      = ModuleName
-	StoreKey       = ModuleName
-)
-
-var (
-	TypeMsgSwapRequest = ModuleName + ":swap"
+	ModuleName = "swap"
+	StoreKey   = ModuleName
 )
 
 var (

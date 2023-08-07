@@ -30,16 +30,14 @@ func TestNewQuerySessionRequest(t *testing.T) {
 	}
 }
 
-func TestNewQuerySessionsForAddressRequest(t *testing.T) {
+func TestNewQuerySessionsForAccountRequest(t *testing.T) {
 	var (
-		address    []byte
-		status     hubtypes.Status
+		addr       []byte
 		pagination *query.PageRequest
 	)
 
 	for i := 0; i < 40; i++ {
-		address = make([]byte, i)
-		status = hubtypes.Status(i % 4)
+		addr = make([]byte, i)
 		pagination = &query.PageRequest{
 			Key:        make([]byte, i),
 			Offset:     uint64(i),
@@ -47,17 +45,16 @@ func TestNewQuerySessionsForAddressRequest(t *testing.T) {
 			CountTotal: i/2 == 0,
 		}
 
-		_, _ = rand.Read(address)
+		_, _ = rand.Read(addr)
 		_, _ = rand.Read(pagination.Key)
 
 		require.Equal(
 			t,
-			&QuerySessionsForAddressRequest{
-				Address:    sdk.AccAddress(address).String(),
-				Status:     status,
+			&QuerySessionsForAccountRequest{
+				Address:    sdk.AccAddress(addr).String(),
 				Pagination: pagination,
 			},
-			NewQuerySessionsForAddressRequest(address, status, pagination),
+			NewQuerySessionsForAccountRequest(addr, pagination),
 		)
 	}
 }
@@ -81,6 +78,91 @@ func TestNewQuerySessionsRequest(t *testing.T) {
 				Pagination: pagination,
 			},
 			NewQuerySessionsRequest(pagination),
+		)
+	}
+}
+
+func TestNewQuerySessionsForNodeRequest(t *testing.T) {
+	var (
+		addr       []byte
+		pagination *query.PageRequest
+	)
+
+	for i := 0; i < 40; i++ {
+		addr = make([]byte, i)
+		pagination = &query.PageRequest{
+			Key:        make([]byte, i),
+			Offset:     uint64(i),
+			Limit:      uint64(i),
+			CountTotal: i/2 == 0,
+		}
+
+		_, _ = rand.Read(addr)
+		_, _ = rand.Read(pagination.Key)
+
+		require.Equal(
+			t,
+			&QuerySessionsForNodeRequest{
+				Address:    hubtypes.NodeAddress(addr).String(),
+				Pagination: pagination,
+			},
+			NewQuerySessionsForNodeRequest(addr, pagination),
+		)
+	}
+}
+
+func TestNewQuerySessionsForAllocationRequest(t *testing.T) {
+	var (
+		addr       []byte
+		pagination *query.PageRequest
+	)
+
+	for i := 0; i < 40; i++ {
+		addr = make([]byte, i)
+		pagination = &query.PageRequest{
+			Key:        make([]byte, i),
+			Offset:     uint64(i),
+			Limit:      uint64(i),
+			CountTotal: i/2 == 0,
+		}
+
+		_, _ = rand.Read(addr)
+		_, _ = rand.Read(pagination.Key)
+
+		require.Equal(
+			t,
+			&QuerySessionsForAllocationRequest{
+				Id:         uint64(i),
+				Address:    sdk.AccAddress(addr).String(),
+				Pagination: pagination,
+			},
+			NewQuerySessionsForAllocationRequest(uint64(i), addr, pagination),
+		)
+	}
+}
+
+func TestNewQuerySessionsForSubscriptionRequest(t *testing.T) {
+	var (
+		pagination *query.PageRequest
+	)
+
+	for i := 0; i < 40; i++ {
+		pagination = &query.PageRequest{
+			Key:        make([]byte, i),
+			Offset:     uint64(i),
+			Limit:      uint64(i),
+			CountTotal: i/2 == 0,
+		}
+
+		_, _ = rand.Read(pagination.Key)
+
+		require.Equal(
+			t,
+			&QuerySessionsForSubscriptionRequest{
+				Id:         uint64(i),
+				Pagination: pagination,
+			},
+			NewQuerySessionsForSubscriptionRequest(uint64(i), pagination),
 		)
 	}
 }

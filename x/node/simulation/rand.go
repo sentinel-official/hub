@@ -1,3 +1,5 @@
+// DO NOT COVER
+
 package simulation
 
 import (
@@ -6,27 +8,19 @@ import (
 	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	simulationtypes "github.com/cosmos/cosmos-sdk/types/simulation"
+	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 
 	hubtypes "github.com/sentinel-official/hub/types"
-	simulationhubtypes "github.com/sentinel-official/hub/types/simulation"
+	hubsimtypes "github.com/sentinel-official/hub/types/simulation"
 	"github.com/sentinel-official/hub/x/node/types"
 )
 
 const (
-	MaxPriceAmount     = 1 << 18
+	MaxPricesAmount    = 1 << 18
 	MaxRemoteURLLength = 48
 )
 
-func RandomNode(r *rand.Rand, items types.Nodes) types.Node {
-	if len(items) == 0 {
-		return types.Node{}
-	}
-
-	return items[r.Intn(len(items))]
-}
-
-func RandomNodes(r *rand.Rand, accounts []simulationtypes.Account) types.Nodes {
+func RandomNodes(r *rand.Rand, accounts []simtypes.Account) types.Nodes {
 	var (
 		duplicates = make(map[string]bool)
 		items      = make(types.Nodes, 0, r.Intn(len(accounts)))
@@ -34,7 +28,7 @@ func RandomNodes(r *rand.Rand, accounts []simulationtypes.Account) types.Nodes {
 
 	for len(items) < cap(items) {
 		var (
-			account, _ = simulationtypes.RandomAcc(r, accounts)
+			account, _ = simtypes.RandomAcc(r, accounts)
 			address    = hubtypes.NodeAddress(account.Address).String()
 		)
 
@@ -43,18 +37,27 @@ func RandomNodes(r *rand.Rand, accounts []simulationtypes.Account) types.Nodes {
 		}
 
 		var (
-			price = simulationhubtypes.RandomCoins(
+			gigabytePrices = hubsimtypes.RandomCoins(
 				r,
 				sdk.NewCoins(
 					sdk.NewInt64Coin(
 						sdk.DefaultBondDenom,
-						MaxPriceAmount,
+						MaxPricesAmount,
+					),
+				),
+			)
+			hourlyPrices = hubsimtypes.RandomCoins(
+				r,
+				sdk.NewCoins(
+					sdk.NewInt64Coin(
+						sdk.DefaultBondDenom,
+						MaxPricesAmount,
 					),
 				),
 			)
 			remoteURL = fmt.Sprintf(
 				"https://%s:8080",
-				simulationtypes.RandStringOfLength(r, r.Intn(MaxRemoteURLLength)),
+				simtypes.RandStringOfLength(r, r.Intn(MaxRemoteURLLength)),
 			)
 			status   = hubtypes.StatusActive
 			statusAt = time.Now()
@@ -68,12 +71,12 @@ func RandomNodes(r *rand.Rand, accounts []simulationtypes.Account) types.Nodes {
 		items = append(
 			items,
 			types.Node{
-				Address:   address,
-				Provider:  "",
-				Price:     price,
-				RemoteURL: remoteURL,
-				Status:    status,
-				StatusAt:  statusAt,
+				Address:        address,
+				GigabytePrices: gigabytePrices,
+				HourlyPrices:   hourlyPrices,
+				RemoteURL:      remoteURL,
+				Status:         status,
+				StatusAt:       statusAt,
 			},
 		)
 	}

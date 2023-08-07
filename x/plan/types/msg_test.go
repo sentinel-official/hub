@@ -9,12 +9,12 @@ import (
 	hubtypes "github.com/sentinel-official/hub/types"
 )
 
-func TestMsgAddRequest_ValidateBasic(t *testing.T) {
+func TestMsgCreateRequest_ValidateBasic(t *testing.T) {
 	type fields struct {
-		From     string
-		Price    sdk.Coins
-		Validity time.Duration
-		Bytes    sdk.Int
+		From      string
+		Duration  time.Duration
+		Gigabytes int64
+		Prices    sdk.Coins
 	}
 	tests := []struct {
 		name    string
@@ -22,169 +22,193 @@ func TestMsgAddRequest_ValidateBasic(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			"empty address",
+			"from empty",
 			fields{
 				From: "",
 			},
 			true,
 		},
 		{
-			"invalid address",
+			"from invalid",
 			fields{
 				From: "invalid",
 			},
 			true,
 		},
 		{
-			"invalid prefix address",
+			"from invalid prefix",
 			fields{
-				From: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				From: hubtypes.TestBech32AccAddr20Bytes,
 			},
 			true,
 		},
 		{
-			"10 bytes address",
+			"from 10 bytes",
 			fields{
-				From: "sentprov1qypqxpq9qcrsszgsutj8xr",
+				From:      hubtypes.TestBech32ProvAddr10Bytes,
+				Duration:  1000,
+				Gigabytes: 1000,
+			},
+			false,
+		},
+		{
+			"from 20 bytes",
+			fields{
+				From:      hubtypes.TestBech32ProvAddr20Bytes,
+				Duration:  1000,
+				Gigabytes: 1000,
+			},
+			false,
+		},
+		{
+			"from 30 bytes",
+			fields{
+				From:      hubtypes.TestBech32ProvAddr30Bytes,
+				Duration:  1000,
+				Gigabytes: 1000,
+			},
+			false,
+		},
+		{
+			"duration negative",
+			fields{
+				From:     hubtypes.TestBech32ProvAddr20Bytes,
+				Duration: -1000,
 			},
 			true,
 		},
 		{
-			"20 bytes address",
+			"duration zero",
 			fields{
-				From: "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
+				From:     hubtypes.TestBech32ProvAddr20Bytes,
+				Duration: 0,
 			},
 			true,
 		},
 		{
-			"30 bytes address",
+			"duration positive",
 			fields{
-				From: "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfqyy3zxfp9ycnjs2fsh33zgx",
+				From:      hubtypes.TestBech32ProvAddr20Bytes,
+				Duration:  1000,
+				Gigabytes: 1000,
+			},
+			false,
+		},
+		{
+			"gigabytes negative",
+			fields{
+				From:      hubtypes.TestBech32ProvAddr20Bytes,
+				Duration:  1000,
+				Gigabytes: -1000,
 			},
 			true,
 		},
 		{
-			"nil price",
+			"gigabytes zero",
 			fields{
-				From:  "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Price: nil,
+				From:      hubtypes.TestBech32ProvAddr20Bytes,
+				Duration:  1000,
+				Gigabytes: 0,
 			},
 			true,
 		},
 		{
-			"empty price",
+			"gigabytes positive",
 			fields{
-				From:  "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Price: sdk.Coins{},
+				From:      hubtypes.TestBech32ProvAddr20Bytes,
+				Duration:  1000,
+				Gigabytes: 1000,
+			},
+			false,
+		},
+		{
+			"prices nil",
+			fields{
+				From:      hubtypes.TestBech32ProvAddr20Bytes,
+				Duration:  1000,
+				Gigabytes: 1000,
+				Prices:    nil,
+			},
+			false,
+		},
+		{
+			"prices empty",
+			fields{
+				From:      hubtypes.TestBech32ProvAddr20Bytes,
+				Duration:  1000,
+				Gigabytes: 1000,
+				Prices:    sdk.Coins{},
 			},
 			true,
 		},
 		{
-			"empty denom price",
+			"prices empty denom",
 			fields{
-				From:  "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Price: sdk.Coins{sdk.Coin{Denom: ""}},
+				From:      hubtypes.TestBech32ProvAddr20Bytes,
+				Duration:  1000,
+				Gigabytes: 1000,
+				Prices:    sdk.Coins{sdk.Coin{Denom: "", Amount: sdk.NewInt(1000)}},
 			},
 			true,
 		},
 		{
-			"invalid denom price",
+			"prices empty amount",
 			fields{
-				From:  "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Price: sdk.Coins{sdk.Coin{Denom: "o"}},
+				From:      hubtypes.TestBech32ProvAddr20Bytes,
+				Duration:  1000,
+				Gigabytes: 1000,
+				Prices:    sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.Int{}}},
 			},
 			true,
 		},
 		{
-			"negative amount price",
+			"prices invalid denom",
 			fields{
-				From:  "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Price: sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(-1000)}},
+				From:      hubtypes.TestBech32ProvAddr20Bytes,
+				Duration:  1000,
+				Gigabytes: 1000,
+				Prices:    sdk.Coins{sdk.Coin{Denom: "o", Amount: sdk.NewInt(1000)}},
 			},
 			true,
 		},
 		{
-			"zero amount price",
+			"prices negative amount",
 			fields{
-				From:  "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Price: sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(0)}},
+				From:      hubtypes.TestBech32ProvAddr20Bytes,
+				Duration:  1000,
+				Gigabytes: 1000,
+				Prices:    sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(-1000)}},
 			},
 			true,
 		},
 		{
-			"positive amount price",
+			"prices zero amount",
 			fields{
-				From:  "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Price: sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
+				From:      hubtypes.TestBech32ProvAddr20Bytes,
+				Duration:  1000,
+				Gigabytes: 1000,
+				Prices:    sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(0)}},
 			},
 			true,
 		},
 		{
-			"negative validity",
+			"prices positive amount",
 			fields{
-				From:     "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Price:    sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
-				Validity: -1000,
-			},
-			true,
-		},
-		{
-			"zero validity",
-			fields{
-				From:     "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Price:    sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
-				Validity: 0,
-			},
-			true,
-		},
-		{
-			"positive validity",
-			fields{
-				From:     "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Price:    sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
-				Validity: 1000,
-				Bytes:    sdk.NewInt(0),
-			},
-			true,
-		},
-		{
-			"negative bytes",
-			fields{
-				From:     "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Price:    sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
-				Validity: 1000,
-				Bytes:    sdk.NewInt(-1000),
-			},
-			true,
-		},
-		{
-			"zero bytes",
-			fields{
-				From:     "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Price:    sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
-				Validity: 1000,
-				Bytes:    sdk.NewInt(0),
-			},
-			true,
-		},
-		{
-			"positive bytes",
-			fields{
-				From:     "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Price:    sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
-				Validity: 1000,
-				Bytes:    sdk.NewInt(1000),
+				From:      hubtypes.TestBech32ProvAddr20Bytes,
+				Duration:  1000,
+				Gigabytes: 1000,
+				Prices:    sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
 			},
 			false,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			m := &MsgAddRequest{
-				From:     tt.fields.From,
-				Price:    tt.fields.Price,
-				Validity: tt.fields.Validity,
-				Bytes:    tt.fields.Bytes,
+			m := &MsgCreateRequest{
+				From:      tt.fields.From,
+				Duration:  tt.fields.Duration,
+				Gigabytes: tt.fields.Gigabytes,
+				Prices:    tt.fields.Prices,
 			}
 			if err := m.ValidateBasic(); (err != nil) != tt.wantErr {
 				t.Errorf("ValidateBasic() error = %v, wantErr %v", err, tt.wantErr)
@@ -193,10 +217,10 @@ func TestMsgAddRequest_ValidateBasic(t *testing.T) {
 	}
 }
 
-func TestMsgSetStatusRequest_ValidateBasic(t *testing.T) {
+func TestMsgUpdateStatusRequest_ValidateBasic(t *testing.T) {
 	type fields struct {
 		From   string
-		Id     uint64
+		ID     uint64
 		Status hubtypes.Status
 	}
 	tests := []struct {
@@ -205,95 +229,102 @@ func TestMsgSetStatusRequest_ValidateBasic(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			"empty address",
+			"from empty",
 			fields{
 				From: "",
 			},
 			true,
 		},
 		{
-			"invalid address",
+			"from invalid",
 			fields{
 				From: "invalid",
 			},
 			true,
 		},
 		{
-			"invalid prefix address",
+			"from invalid prefix",
 			fields{
-				From: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				From: hubtypes.TestBech32AccAddr20Bytes,
 			},
 			true,
 		},
 		{
-			"10 bytes address",
+			"from 10 bytes",
 			fields{
-				From: "sentprov1qypqxpq9qcrsszgsutj8xr",
-			},
-			true,
-		},
-		{
-			"20 bytes address",
-			fields{
-				From: "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-			},
-			true,
-		},
-		{
-			"30 bytes address",
-			fields{
-				From: "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfqyy3zxfp9ycnjs2fsh33zgx",
-			},
-			true,
-		},
-		{
-			"zero id",
-			fields{
-				From: "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Id:   0,
-			},
-			true,
-		},
-		{
-			"positive id",
-			fields{
-				From: "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Id:   1000,
-			},
-			true,
-		},
-		{
-			"unknown status",
-			fields{
-				From:   "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Id:     1000,
-				Status: hubtypes.StatusUnknown,
-			},
-			true,
-		},
-		{
-			"active status",
-			fields{
-				From:   "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Id:     1000,
+				From:   hubtypes.TestBech32ProvAddr10Bytes,
+				ID:     1000,
 				Status: hubtypes.StatusActive,
 			},
 			false,
 		},
 		{
-			"inactive pending status",
+			"from 20 bytes",
 			fields{
-				From:   "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Id:     1000,
+				From:   hubtypes.TestBech32ProvAddr20Bytes,
+				ID:     1000,
+				Status: hubtypes.StatusActive,
+			},
+			false,
+		},
+		{
+			"from 30 bytes",
+			fields{
+				From:   hubtypes.TestBech32ProvAddr30Bytes,
+				ID:     1000,
+				Status: hubtypes.StatusActive,
+			},
+			false,
+		},
+		{
+			"id zero",
+			fields{
+				From: hubtypes.TestBech32ProvAddr20Bytes,
+				ID:   0,
+			},
+			true,
+		},
+		{
+			"id positive",
+			fields{
+				From:   hubtypes.TestBech32ProvAddr20Bytes,
+				ID:     1000,
+				Status: hubtypes.StatusActive,
+			},
+			false,
+		},
+		{
+			"status unspecified",
+			fields{
+				From:   hubtypes.TestBech32ProvAddr20Bytes,
+				ID:     1000,
+				Status: hubtypes.StatusUnspecified,
+			},
+			true,
+		},
+		{
+			"status active",
+			fields{
+				From:   hubtypes.TestBech32ProvAddr20Bytes,
+				ID:     1000,
+				Status: hubtypes.StatusActive,
+			},
+			false,
+		},
+		{
+			"status inactive pending",
+			fields{
+				From:   hubtypes.TestBech32ProvAddr20Bytes,
+				ID:     1000,
 				Status: hubtypes.StatusInactivePending,
 			},
 			true,
 		},
 		{
-			"inactive status",
+			"status inactive",
 			fields{
-				From:   "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Id:     1000,
+				From:   hubtypes.TestBech32ProvAddr20Bytes,
+				ID:     1000,
 				Status: hubtypes.StatusInactive,
 			},
 			false,
@@ -301,9 +332,9 @@ func TestMsgSetStatusRequest_ValidateBasic(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			m := &MsgSetStatusRequest{
+			m := &MsgUpdateStatusRequest{
 				From:   tt.fields.From,
-				Id:     tt.fields.Id,
+				ID:     tt.fields.ID,
 				Status: tt.fields.Status,
 			}
 			if err := m.ValidateBasic(); (err != nil) != tt.wantErr {
@@ -313,11 +344,11 @@ func TestMsgSetStatusRequest_ValidateBasic(t *testing.T) {
 	}
 }
 
-func TestMsgAddNodeRequest_ValidateBasic(t *testing.T) {
+func TestMsgLinkNodeRequest_ValidateBasic(t *testing.T) {
 	type fields struct {
-		From    string
-		Id      uint64
-		Address string
+		From        string
+		ID          uint64
+		NodeAddress string
 	}
 	tests := []struct {
 		name    string
@@ -325,124 +356,131 @@ func TestMsgAddNodeRequest_ValidateBasic(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			"empty address",
+			"from empty",
 			fields{
 				From: "",
 			},
 			true,
 		},
 		{
-			"invalid address",
+			"from invalid",
 			fields{
 				From: "invalid",
 			},
 			true,
 		},
 		{
-			"invalid prefix address",
+			"from invalid prefix",
 			fields{
-				From: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				From: hubtypes.TestBech32AccAddr20Bytes,
 			},
 			true,
 		},
 		{
-			"10 bytes address",
+			"from 10 bytes",
 			fields{
-				From: "sentprov1qypqxpq9qcrsszgsutj8xr",
-			},
-			true,
-		},
-		{
-			"20 bytes address",
-			fields{
-				From: "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-			},
-			true,
-		},
-		{
-			"30 bytes address",
-			fields{
-				From: "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfqyy3zxfp9ycnjs2fsh33zgx",
-			},
-			true,
-		},
-		{
-			"zero id",
-			fields{
-				From: "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Id:   0,
-			},
-			true,
-		},
-		{
-			"positive id",
-			fields{
-				From: "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Id:   1000,
-			},
-			true,
-		},
-		{
-			"empty address",
-			fields{
-				From:    "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Id:      1000,
-				Address: "",
-			},
-			true,
-		},
-		{
-			"invalid address",
-			fields{
-				From:    "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Id:      1000,
-				Address: "invalid",
-			},
-			true,
-		},
-		{
-			"invalid prefix address",
-			fields{
-				From:    "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Id:      1000,
-				Address: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-			},
-			true,
-		},
-		{
-			"10 bytes address",
-			fields{
-				From:    "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Id:      1000,
-				Address: "sentnode1qypqxpq9qcrsszgse4wwrm",
+				From:        hubtypes.TestBech32ProvAddr10Bytes,
+				ID:          1000,
+				NodeAddress: hubtypes.TestBech32NodeAddr20Bytes,
 			},
 			false,
 		},
 		{
-			"20 bytes address",
+			"from 20 bytes",
 			fields{
-				From:    "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Id:      1000,
-				Address: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				From:        hubtypes.TestBech32ProvAddr20Bytes,
+				ID:          1000,
+				NodeAddress: hubtypes.TestBech32NodeAddr20Bytes,
 			},
 			false,
 		},
 		{
-			"30 bytes address",
+			"from 30 bytes",
 			fields{
-				From:    "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Id:      1000,
-				Address: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqyy3zxfp9ycnjs2fsxqglcv",
+				From:        hubtypes.TestBech32ProvAddr30Bytes,
+				ID:          1000,
+				NodeAddress: hubtypes.TestBech32NodeAddr20Bytes,
+			},
+			false,
+		},
+		{
+			"id zero",
+			fields{
+				From: hubtypes.TestBech32ProvAddr20Bytes,
+				ID:   0,
+			},
+			true,
+		},
+		{
+			"id positive",
+			fields{
+				From:        hubtypes.TestBech32ProvAddr20Bytes,
+				ID:          1000,
+				NodeAddress: hubtypes.TestBech32NodeAddr20Bytes,
+			},
+			false,
+		},
+		{
+			"node_address empty",
+			fields{
+				From:        hubtypes.TestBech32ProvAddr20Bytes,
+				ID:          1000,
+				NodeAddress: "",
+			},
+			true,
+		},
+		{
+			"node_address invalid",
+			fields{
+				From:        hubtypes.TestBech32ProvAddr20Bytes,
+				ID:          1000,
+				NodeAddress: "invalid",
+			},
+			true,
+		},
+		{
+			"node_address invalid prefix",
+			fields{
+				From:        hubtypes.TestBech32ProvAddr20Bytes,
+				ID:          1000,
+				NodeAddress: hubtypes.TestBech32AccAddr20Bytes,
+			},
+			true,
+		},
+		{
+			"node_address 10 bytes",
+			fields{
+				From:        hubtypes.TestBech32ProvAddr20Bytes,
+				ID:          1000,
+				NodeAddress: hubtypes.TestBech32NodeAddr10Bytes,
+			},
+			false,
+		},
+		{
+			"node_address 20 bytes",
+			fields{
+				From:        hubtypes.TestBech32ProvAddr20Bytes,
+				ID:          1000,
+				NodeAddress: hubtypes.TestBech32NodeAddr20Bytes,
+			},
+			false,
+		},
+		{
+			"node_address 30 bytes",
+			fields{
+				From:        hubtypes.TestBech32ProvAddr20Bytes,
+				ID:          1000,
+				NodeAddress: hubtypes.TestBech32NodeAddr30Bytes,
 			},
 			false,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			m := &MsgAddNodeRequest{
-				From:    tt.fields.From,
-				Id:      tt.fields.Id,
-				Address: tt.fields.Address,
+			m := &MsgLinkNodeRequest{
+				From:        tt.fields.From,
+				ID:          tt.fields.ID,
+				NodeAddress: tt.fields.NodeAddress,
 			}
 			if err := m.ValidateBasic(); (err != nil) != tt.wantErr {
 				t.Errorf("ValidateBasic() error = %v, wantErr %v", err, tt.wantErr)
@@ -451,11 +489,11 @@ func TestMsgAddNodeRequest_ValidateBasic(t *testing.T) {
 	}
 }
 
-func TestMsgRemoveNodeRequest_ValidateBasic(t *testing.T) {
+func TestMsgUnlinkNodeRequest_ValidateBasic(t *testing.T) {
 	type fields struct {
-		From    string
-		Id      uint64
-		Address string
+		From        string
+		ID          uint64
+		NodeAddress string
 	}
 	tests := []struct {
 		name    string
@@ -463,124 +501,249 @@ func TestMsgRemoveNodeRequest_ValidateBasic(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			"empty address",
+			"from empty",
 			fields{
 				From: "",
 			},
 			true,
 		},
 		{
-			"invalid address",
+			"from invalid",
 			fields{
 				From: "invalid",
 			},
 			true,
 		},
 		{
-			"invalid prefix from",
+			"from invalid prefix",
 			fields{
-				From: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				From: hubtypes.TestBech32AccAddr20Bytes,
 			},
 			true,
 		},
 		{
-			"10 bytes from",
+			"from 10 bytes",
 			fields{
-				From: "sent1qypqxpq9qcrsszgslawd5s",
-			},
-			true,
-		},
-		{
-			"20 bytes from",
-			fields{
-				From: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-			},
-			true,
-		},
-		{
-			"30 bytes from",
-			fields{
-				From: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfqyy3zxfp9ycnjs2fszvfck8",
-			},
-			true,
-		},
-		{
-			"zero id",
-			fields{
-				From: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				Id:   0,
-			},
-			true,
-		},
-		{
-			"positive id",
-			fields{
-				From: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				Id:   1000,
-			},
-			true,
-		},
-		{
-			"empty address",
-			fields{
-				From:    "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				Id:      1000,
-				Address: "",
-			},
-			true,
-		},
-		{
-			"invalid address",
-			fields{
-				From:    "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				Id:      1000,
-				Address: "invalid",
-			},
-			true,
-		},
-		{
-			"invalid prefix address",
-			fields{
-				From:    "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				Id:      1000,
-				Address: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-			},
-			true,
-		},
-		{
-			"10 bytes address",
-			fields{
-				From:    "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				Id:      1000,
-				Address: "sentnode1qypqxpq9qcrsszgse4wwrm",
+				From:        hubtypes.TestBech32ProvAddr10Bytes,
+				ID:          1000,
+				NodeAddress: hubtypes.TestBech32NodeAddr20Bytes,
 			},
 			false,
 		},
 		{
-			"20 bytes address",
+			"from 20 bytes",
 			fields{
-				From:    "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				Id:      1000,
-				Address: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				From:        hubtypes.TestBech32ProvAddr20Bytes,
+				ID:          1000,
+				NodeAddress: hubtypes.TestBech32NodeAddr20Bytes,
 			},
 			false,
 		},
 		{
-			"30 bytes address",
+			"from 30 bytes",
 			fields{
-				From:    "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				Id:      1000,
-				Address: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqyy3zxfp9ycnjs2fsxqglcv",
+				From:        hubtypes.TestBech32ProvAddr30Bytes,
+				ID:          1000,
+				NodeAddress: hubtypes.TestBech32NodeAddr20Bytes,
+			},
+			false,
+		},
+		{
+			"id zero",
+			fields{
+				From: hubtypes.TestBech32ProvAddr20Bytes,
+				ID:   0,
+			},
+			true,
+		},
+		{
+			"id positive",
+			fields{
+				From:        hubtypes.TestBech32ProvAddr20Bytes,
+				ID:          1000,
+				NodeAddress: hubtypes.TestBech32NodeAddr20Bytes,
+			},
+			false,
+		},
+		{
+			"node_address empty",
+			fields{
+				From:        hubtypes.TestBech32ProvAddr20Bytes,
+				ID:          1000,
+				NodeAddress: "",
+			},
+			true,
+		},
+		{
+			"node_address invalid",
+			fields{
+				From:        hubtypes.TestBech32ProvAddr20Bytes,
+				ID:          1000,
+				NodeAddress: "invalid",
+			},
+			true,
+		},
+		{
+			"node_address invalid prefix",
+			fields{
+				From:        hubtypes.TestBech32ProvAddr20Bytes,
+				ID:          1000,
+				NodeAddress: hubtypes.TestBech32AccAddr20Bytes,
+			},
+			true,
+		},
+		{
+			"node_address 10 bytes",
+			fields{
+				From:        hubtypes.TestBech32ProvAddr20Bytes,
+				ID:          1000,
+				NodeAddress: hubtypes.TestBech32NodeAddr10Bytes,
+			},
+			false,
+		},
+		{
+			"node_address 20 bytes",
+			fields{
+				From:        hubtypes.TestBech32ProvAddr20Bytes,
+				ID:          1000,
+				NodeAddress: hubtypes.TestBech32NodeAddr20Bytes,
+			},
+			false,
+		},
+		{
+			"node_address 30 bytes",
+			fields{
+				From:        hubtypes.TestBech32ProvAddr20Bytes,
+				ID:          1000,
+				NodeAddress: hubtypes.TestBech32NodeAddr30Bytes,
 			},
 			false,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			m := &MsgRemoveNodeRequest{
-				From:    tt.fields.From,
-				Id:      tt.fields.Id,
-				Address: tt.fields.Address,
+			m := &MsgUnlinkNodeRequest{
+				From:        tt.fields.From,
+				ID:          tt.fields.ID,
+				NodeAddress: tt.fields.NodeAddress,
+			}
+			if err := m.ValidateBasic(); (err != nil) != tt.wantErr {
+				t.Errorf("ValidateBasic() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
+}
+
+func TestMsgSubscribeRequest_ValidateBasic(t *testing.T) {
+	type fields struct {
+		From  string
+		ID    uint64
+		Denom string
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		wantErr bool
+	}{
+		{
+			"from empty",
+			fields{
+				From: "",
+			},
+			true,
+		},
+		{
+			"from invalid",
+			fields{
+				From: "invalid",
+			},
+			true,
+		},
+		{
+			"from invalid prefix",
+			fields{
+				From: hubtypes.TestBech32ProvAddr20Bytes,
+			},
+			true,
+		},
+		{
+			"from 10 bytes",
+			fields{
+				From:  hubtypes.TestBech32AccAddr10Bytes,
+				ID:    1000,
+				Denom: "one",
+			},
+			false,
+		},
+		{
+			"from 20 bytes",
+			fields{
+				From:  hubtypes.TestBech32AccAddr20Bytes,
+				ID:    1000,
+				Denom: "one",
+			},
+			false,
+		},
+		{
+			"from 30 bytes",
+			fields{
+				From:  hubtypes.TestBech32AccAddr30Bytes,
+				ID:    1000,
+				Denom: "one",
+			},
+			false,
+		},
+		{
+			"id zero",
+			fields{
+				From: hubtypes.TestBech32AccAddr20Bytes,
+				ID:   0,
+			},
+			true,
+		},
+		{
+			"id positive",
+			fields{
+				From:  hubtypes.TestBech32AccAddr20Bytes,
+				ID:    1000,
+				Denom: "one",
+			},
+			false,
+		},
+		{
+			"denom empty",
+			fields{
+				From:  hubtypes.TestBech32AccAddr20Bytes,
+				ID:    1000,
+				Denom: "",
+			},
+			false,
+		},
+		{
+			"denom invalid",
+			fields{
+				From:  hubtypes.TestBech32AccAddr20Bytes,
+				ID:    1000,
+				Denom: "o",
+			},
+			true,
+		},
+		{
+			"denom one",
+			fields{
+				From:  hubtypes.TestBech32AccAddr20Bytes,
+				ID:    1000,
+				Denom: "one",
+			},
+			false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			m := &MsgSubscribeRequest{
+				From:  tt.fields.From,
+				ID:    tt.fields.ID,
+				Denom: tt.fields.Denom,
 			}
 			if err := m.ValidateBasic(); (err != nil) != tt.wantErr {
 				t.Errorf("ValidateBasic() error = %v, wantErr %v", err, tt.wantErr)

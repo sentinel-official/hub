@@ -1,8 +1,6 @@
 package types
 
 import (
-	"math/big"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -17,6 +15,10 @@ func NewBandwidth(upload, download sdk.Int) Bandwidth {
 		Upload:   upload,
 		Download: download,
 	}
+}
+
+func (b Bandwidth) IsAnyNil() bool {
+	return b.Upload.IsNil() || b.Download.IsNil()
 }
 
 func (b Bandwidth) IsAnyZero() bool {
@@ -61,31 +63,26 @@ func (b Bandwidth) IsAnyGT(v Bandwidth) bool {
 	return b.Upload.GT(v.Upload) || b.Download.GT(v.Download)
 }
 
-func (b Bandwidth) CeilTo(precision sdk.Int) Bandwidth {
-	if !precision.IsPositive() {
+func (b Bandwidth) CeilTo(pre sdk.Int) Bandwidth {
+	if !pre.IsPositive() {
 		return b
 	}
 
-	v := NewBandwidth(
-		precision.Sub(sdk.NewIntFromBigInt(
-			big.NewInt(0).Rem(b.Upload.BigInt(), precision.BigInt()))),
-		precision.Sub(sdk.NewIntFromBigInt(
-			big.NewInt(0).Rem(b.Download.BigInt(), precision.BigInt()))),
+	diff := NewBandwidth(
+		pre.Sub(b.Upload.Mod(pre)),
+		pre.Sub(b.Download.Mod(pre)),
 	)
 
-	if v.Upload.Equal(precision) {
-		v.Upload = sdk.NewInt(0)
+	if diff.Upload.Equal(pre) {
+		diff.Upload = sdk.ZeroInt()
 	}
-	if v.Download.Equal(precision) {
-		v.Download = sdk.NewInt(0)
+	if diff.Download.Equal(pre) {
+		diff.Download = sdk.ZeroInt()
 	}
 
-	return b.Add(v)
+	return b.Add(diff)
 }
 
 func NewBandwidthFromInt64(upload, download int64) Bandwidth {
-	return Bandwidth{
-		Upload:   sdk.NewInt(upload),
-		Download: sdk.NewInt(download),
-	}
+	return NewBandwidth(sdk.NewInt(upload), sdk.NewInt(download))
 }

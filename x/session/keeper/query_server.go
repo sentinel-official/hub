@@ -2,7 +2,7 @@ package keeper
 
 import (
 	"context"
-	"strings"
+	"fmt"
 
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -52,17 +52,14 @@ func (q *queryServer) QuerySessions(c context.Context, req *types.QuerySessionsR
 		store = prefix.NewStore(q.Store(ctx), types.SessionKeyPrefix)
 	)
 
-	pagination, err := query.FilteredPaginate(store, req.Pagination, func(_, value []byte, accumulate bool) (bool, error) {
-		if accumulate {
-			var item types.Session
-			if err := q.cdc.Unmarshal(value, &item); err != nil {
-				return false, err
-			}
-
-			items = append(items, item)
+	pagination, err := query.Paginate(store, req.Pagination, func(_, value []byte) error {
+		var item types.Session
+		if err := q.cdc.Unmarshal(value, &item); err != nil {
+			return err
 		}
 
-		return true, nil
+		items = append(items, item)
+		return nil
 	})
 
 	if err != nil {
@@ -72,76 +69,131 @@ func (q *queryServer) QuerySessions(c context.Context, req *types.QuerySessionsR
 	return &types.QuerySessionsResponse{Sessions: items, Pagination: pagination}, nil
 }
 
-func (q *queryServer) QuerySessionsForAddress(c context.Context, req *types.QuerySessionsForAddressRequest) (*types.QuerySessionsForAddressResponse, error) {
+func (q *queryServer) QuerySessionsForAccount(c context.Context, req *types.QuerySessionsForAccountRequest) (*types.QuerySessionsForAccountResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "empty request")
 	}
 
-	address, err := sdk.AccAddressFromBech32(req.Address)
+	addr, err := sdk.AccAddressFromBech32(req.Address)
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid address %s", req.Address)
 	}
 
 	var (
-		items      types.Sessions
-		pagination *query.PageResponse
-		ctx        = sdk.UnwrapSDKContext(c)
+		items types.Sessions
+		ctx   = sdk.UnwrapSDKContext(c)
+		store = prefix.NewStore(q.Store(ctx), types.GetSessionForAccountKeyPrefix(addr))
 	)
 
-	if req.Status.Equal(hubtypes.StatusActive) {
-		store := prefix.NewStore(q.Store(ctx), types.GetActiveSessionForAddressKeyPrefix(address))
-		pagination, err = query.FilteredPaginate(store, req.Pagination, func(key []byte, _ []byte, accumulate bool) (bool, error) {
-			if accumulate {
-				item, found := q.GetSession(ctx, sdk.BigEndianToUint64(key))
-				if !found {
-					return false, nil
-				}
+	pagination, err := query.Paginate(store, req.Pagination, func(key, _ []byte) error {
+		item, found := q.GetSession(ctx, sdk.BigEndianToUint64(key))
+		if !found {
+			return fmt.Errorf("session for key %X does not exist", key)
+		}
 
-				items = append(items, item)
-			}
-
-			return true, nil
-		})
-	} else if req.Status.Equal(hubtypes.StatusInactive) {
-		store := prefix.NewStore(q.Store(ctx), types.GetInactiveSessionForAddressKeyPrefix(address))
-		pagination, err = query.FilteredPaginate(store, req.Pagination, func(key []byte, _ []byte, accumulate bool) (bool, error) {
-			if accumulate {
-				item, found := q.GetSession(ctx, sdk.BigEndianToUint64(key))
-				if !found {
-					return false, nil
-				}
-
-				items = append(items, item)
-			}
-
-			return true, nil
-		})
-	} else {
-		// NOTE: Do not use this; less efficient; consider using active + inactive
-
-		store := prefix.NewStore(q.Store(ctx), types.SessionKeyPrefix)
-		pagination, err = query.FilteredPaginate(store, req.Pagination, func(_, value []byte, accumulate bool) (bool, error) {
-			if accumulate {
-				var item types.Session
-				if err := q.cdc.Unmarshal(value, &item); err != nil {
-					return false, err
-				}
-				if !strings.EqualFold(item.Address, req.Address) {
-					return false, nil
-				}
-
-				items = append(items, item)
-			}
-
-			return true, nil
-		})
-	}
+		items = append(items, item)
+		return nil
+	})
 
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	return &types.QuerySessionsForAddressResponse{Sessions: items, Pagination: pagination}, nil
+	return &types.QuerySessionsForAccountResponse{Sessions: items, Pagination: pagination}, nil
+}
+
+func (q *queryServer) QuerySessionsForNode(c context.Context, req *types.QuerySessionsForNodeRequest) (*types.QuerySessionsForNodeResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "empty request")
+	}
+
+	addr, err := hubtypes.NodeAddressFromBech32(req.Address)
+	if err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, "invalid address %s", req.Address)
+	}
+
+	var (
+		items types.Sessions
+		ctx   = sdk.UnwrapSDKContext(c)
+		store = prefix.NewStore(q.Store(ctx), types.GetSessionForNodeKeyPrefix(addr))
+	)
+
+	pagination, err := query.Paginate(store, req.Pagination, func(key, _ []byte) error {
+		item, found := q.GetSession(ctx, sdk.BigEndianToUint64(key))
+		if !found {
+			return fmt.Errorf("session for key %X does not exist", key)
+		}
+
+		items = append(items, item)
+		return nil
+	})
+
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
+	return &types.QuerySessionsForNodeResponse{Sessions: items, Pagination: pagination}, nil
+}
+
+func (q *queryServer) QuerySessionsForSubscription(c context.Context, req *types.QuerySessionsForSubscriptionRequest) (*types.QuerySessionsForSubscriptionResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "empty request")
+	}
+
+	var (
+		items types.Sessions
+		ctx   = sdk.UnwrapSDKContext(c)
+		store = prefix.NewStore(q.Store(ctx), types.GetSessionForSubscriptionKeyPrefix(req.Id))
+	)
+
+	pagination, err := query.Paginate(store, req.Pagination, func(key, _ []byte) error {
+		item, found := q.GetSession(ctx, sdk.BigEndianToUint64(key))
+		if !found {
+			return fmt.Errorf("session for key %X does not exist", key)
+		}
+
+		items = append(items, item)
+		return nil
+	})
+
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
+	return &types.QuerySessionsForSubscriptionResponse{Sessions: items, Pagination: pagination}, nil
+}
+
+func (q *queryServer) QuerySessionsForAllocation(c context.Context, req *types.QuerySessionsForAllocationRequest) (*types.QuerySessionsForAllocationResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "empty request")
+	}
+
+	addr, err := sdk.AccAddressFromBech32(req.Address)
+	if err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, "invalid address %s", req.Address)
+	}
+
+	var (
+		items types.Sessions
+		ctx   = sdk.UnwrapSDKContext(c)
+		store = prefix.NewStore(q.Store(ctx), types.GetSessionForAllocationKeyPrefix(req.Id, addr))
+	)
+
+	pagination, err := query.Paginate(store, req.Pagination, func(key, _ []byte) error {
+		item, found := q.GetSession(ctx, sdk.BigEndianToUint64(key))
+		if !found {
+			return fmt.Errorf("session for key %X does not exist", key)
+		}
+
+		items = append(items, item)
+		return nil
+	})
+
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
+	return &types.QuerySessionsForAllocationResponse{Sessions: items, Pagination: pagination}, nil
 }
 
 func (q *queryServer) QueryParams(c context.Context, _ *types.QueryParamsRequest) (*types.QueryParamsResponse, error) {

@@ -1,33 +1,25 @@
+// DO NOT COVER
+
 package types
 
 import (
-	"github.com/cosmos/cosmos-sdk/codec"
-	"github.com/cosmos/cosmos-sdk/codec/types"
-	crypto "github.com/cosmos/cosmos-sdk/crypto/codec"
+	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/msgservice"
 )
 
-var (
-	amino     = codec.NewLegacyAmino()
-	ModuleCdc = codec.NewAminoCodec(amino)
-)
+func RegisterInterfaces(registry codectypes.InterfaceRegistry) {
+	registry.RegisterInterface(
+		"sentinel.subscription.v2.Subscription",
+		(*Subscription)(nil),
+		&NodeSubscription{},
+		&PlanSubscription{},
+	)
 
-func init() {
-	RegisterLegacyAminoCodec(amino)
-	crypto.RegisterCrypto(amino)
-	amino.Seal()
-}
-
-func RegisterLegacyAminoCodec(_ *codec.LegacyAmino) {}
-
-func RegisterInterfaces(registry types.InterfaceRegistry) {
-	registry.RegisterImplementations((*sdk.Msg)(nil),
-		&MsgSubscribeToNodeRequest{},
-		&MsgSubscribeToPlanRequest{},
+	registry.RegisterImplementations(
+		(*sdk.Msg)(nil),
 		&MsgCancelRequest{},
-		&MsgAddQuotaRequest{},
-		&MsgUpdateQuotaRequest{},
+		&MsgAllocateRequest{},
 	)
 
 	msgservice.RegisterMsgServiceDesc(registry, &_MsgService_serviceDesc)

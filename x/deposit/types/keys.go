@@ -6,13 +6,7 @@ import (
 )
 
 const (
-	ModuleName   = "deposit"
-	QuerierRoute = ModuleName
-)
-
-var (
-	RouterKey = ModuleName
-	StoreKey  = ModuleName
+	ModuleName = "deposit"
 )
 
 var (

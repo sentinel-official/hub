@@ -20,8 +20,8 @@ type queryServer struct {
 	Keeper
 }
 
-func NewQueryServiceServer(keeper Keeper) types.QueryServiceServer {
-	return &queryServer{Keeper: keeper}
+func NewQueryServiceServer(k Keeper) types.QueryServiceServer {
+	return &queryServer{k}
 }
 
 func (q *queryServer) QueryDeposit(c context.Context, req *types.QueryDepositRequest) (*types.QueryDepositResponse, error) {
@@ -29,14 +29,14 @@ func (q *queryServer) QueryDeposit(c context.Context, req *types.QueryDepositReq
 		return nil, status.Error(codes.InvalidArgument, "empty request")
 	}
 
-	address, err := sdk.AccAddressFromBech32(req.Address)
+	addr, err := sdk.AccAddressFromBech32(req.Address)
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid address %s", req.Address)
 	}
 
 	ctx := sdk.UnwrapSDKContext(c)
 
-	item, found := q.GetDeposit(ctx, address)
+	item, found := q.GetDeposit(ctx, addr)
 	if !found {
 		return nil, status.Errorf(codes.NotFound, "deposit does not exist for address %s", req.Address)
 	}
@@ -55,17 +55,14 @@ func (q *queryServer) QueryDeposits(c context.Context, req *types.QueryDepositsR
 		store = prefix.NewStore(q.Store(ctx), types.DepositKeyPrefix)
 	)
 
-	pagination, err := query.FilteredPaginate(store, req.Pagination, func(_, value []byte, accumulate bool) (bool, error) {
+	pagination, err := query.Paginate(store, req.Pagination, func(_ []byte, value []byte) error {
 		var item types.Deposit
 		if err := q.cdc.Unmarshal(value, &item); err != nil {
-			return false, err
+			return err
 		}
 
-		if accumulate {
-			items = append(items, item)
-		}
-
-		return true, nil
+		items = append(items, item)
+		return nil
 	})
 
 	if err != nil {

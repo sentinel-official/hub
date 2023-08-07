@@ -1,33 +1,85 @@
+// DO NOT COVER
+
 package types
 
 import (
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/errors"
+
+	hubtypes "github.com/sentinel-official/hub/types"
 )
 
 var (
-	ErrorInvalidField          = errors.Register(ModuleName, 101, "invalid field")
-	ErrorInvalidFrom           = errors.Register(ModuleName, 102, "invalid from")
-	ErrorInvalidId             = errors.Register(ModuleName, 103, "invalid id")
-	ErrorInvalidNode           = errors.Register(ModuleName, 104, "invalid node")
-	ErrorInvalidProofId        = errors.Register(ModuleName, 105, "invalid proof->id")
-	ErrorInvalidProofDuration  = errors.Register(ModuleName, 106, "invalid proof->duration")
-	ErrorInvalidProofBandwidth = errors.Register(ModuleName, 107, "invalid proof->bandwidth")
-	ErrorInvalidSignature      = errors.Register(ModuleName, 108, "invalid signature")
-	ErrorInvalidRating         = errors.Register(ModuleName, 109, "invalid rating")
+	ErrorInvalidMessage = errors.Register(ModuleName, 101, "invalid message")
 )
 
 var (
-	ErrorSubscriptionDoesNotExit   = errors.Register(ModuleName, 201, "subscription does not exist")
-	ErrorInvalidSubscriptionStatus = errors.Register(ModuleName, 202, "invalid subscription status")
-	ErrorUnauthorized              = errors.Register(ModuleName, 203, "unauthorized")
-	ErrorQuotaDoesNotExist         = errors.Register(ModuleName, 204, "quota does not exist")
-	ErrorFailedToVerifyProof       = errors.Register(ModuleName, 205, "failed to verify proof")
-	ErrorNotEnoughQuota            = errors.Register(ModuleName, 206, "not enough quota")
-	ErrorNodeDoesNotExist          = errors.Register(ModuleName, 207, "node does not exist")
-	ErrorInvalidNodeStatus         = errors.Register(ModuleName, 208, "invalid node status")
-	ErrorSessionDoesNotExist       = errors.Register(ModuleName, 209, "session does not exist")
-	ErrorInvalidSessionStatus      = errors.Register(ModuleName, 210, "invalid session status")
-	ErrorNodeAddressMismatch       = errors.Register(ModuleName, 211, "node address mismatch")
-	ErrorNodeDoesNotExistForPlan   = errors.Register(ModuleName, 212, "node does not exist for plan")
-	ErrorDuplicateSession          = errors.Register(ModuleName, 213, "duplicate session")
+	ErrorDuplicate         = errors.Register(ModuleName, 201, "duplicate")
+	ErrorInvalidAllocation = errors.Register(ModuleName, 202, "invalid allocation")
+	ErrorInvalidSignature  = errors.Register(ModuleName, 203, "invalid signature")
+	ErrorInvalidStatus     = errors.Register(ModuleName, 204, "invalid status")
+	ErrorNotFound          = errors.Register(ModuleName, 205, "not found")
+	ErrorUnauthorized      = errors.Register(ModuleName, 209, "unauthorized")
+	ErrorInvalidNode       = errors.Register(ModuleName, 210, "invalid node")
+	ErrorInvalidType       = errors.Register(ModuleName, 211, "invalid type")
 )
+
+func NewErrorSubscriptionNotFound(id uint64) error {
+	return errors.Wrapf(ErrorNotFound, "subscription %d does not exit", id)
+}
+
+func NewErrorInvalidSubscriptionStatus(id uint64, status hubtypes.Status) error {
+	return errors.Wrapf(ErrorInvalidStatus, "invalid status %s for subscription %d", status, id)
+}
+
+func NewErrorNodeNotFound(addr hubtypes.NodeAddress) error {
+	return errors.Wrapf(ErrorNotFound, "node %s does not exist", addr)
+}
+
+func NewErrorInvalidNodeStatus(addr hubtypes.NodeAddress, status hubtypes.Status) error {
+	return errors.Wrapf(ErrorInvalidStatus, "invalid status %s for node %s", status, addr)
+}
+
+func NewErrorAllocationNotFound(id uint64, addr sdk.AccAddress) error {
+	return errors.Wrapf(ErrorNotFound, "subscription allocation %d/%s does not exist", id, addr)
+}
+
+func NewErrorDuplicateActiveSession(subscriptionID uint64, addr sdk.AccAddress, sessionID uint64) error {
+	return errors.Wrapf(ErrorDuplicate, "active session %d already exist for subscription allocation %d/%s", sessionID, subscriptionID, addr)
+}
+
+func NewErrorInvalidAllocation(id uint64, addr sdk.AccAddress) error {
+	return errors.Wrapf(ErrorInvalidAllocation, "invalid subscription allocation %d/%s", id, addr)
+}
+
+func NewErrorSessionNotFound(id uint64) error {
+	return errors.Wrapf(ErrorNotFound, "session %d does not exist", id)
+}
+
+func NewErrorUnauthorized(addr string) error {
+	return errors.Wrapf(ErrorUnauthorized, "address %s is not authorized", addr)
+}
+
+func NewErrorInvalidSignature(signature []byte) error {
+	return errors.Wrapf(ErrorInvalidSignature, "invalid bandwidth proof signature %X", signature)
+}
+
+func NewErrorInvalidSessionStatus(id uint64, status hubtypes.Status) error {
+	return errors.Wrapf(ErrorInvalidStatus, "invalid status %s for session %d", status, id)
+}
+
+func NewErrorPlanNotFound(id uint64) error {
+	return errors.Wrapf(ErrorNotFound, "plan %d does not exist", id)
+}
+
+func NewErrorPayoutNotFound(accAddr sdk.AccAddress, nodeAddr hubtypes.NodeAddress) error {
+	return errors.Wrapf(ErrorNotFound, "payout for account %s and node %s does not exist", accAddr, nodeAddr)
+}
+
+func NewErrorInvalidNode(addr string) error {
+	return errors.Wrapf(ErrorInvalidNode, "invalid node %s", addr)
+}
+
+func NewErrorInvalidSubscriptionType(id uint64, t string) error {
+	return errors.Wrapf(ErrorInvalidType, "invalid type %s for subscription %d", t, id)
+}

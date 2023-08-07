@@ -1,8 +1,11 @@
+// DO NOT COVER
+
 package simulation
 
 import (
+	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
-	simulationtypes "github.com/cosmos/cosmos-sdk/types/simulation"
+	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 
 	nodesimulation "github.com/sentinel-official/hub/x/node/simulation"
 	plansimulation "github.com/sentinel-official/hub/x/plan/simulation"
@@ -14,18 +17,19 @@ import (
 )
 
 func WeightedOperations(
-	params simulationtypes.AppParams,
-	cdc codec.JSONCodec,
+	cdc codec.Codec,
+	txConfig client.TxConfig,
+	params simtypes.AppParams,
 	ak expected.AccountKeeper,
 	bk expected.BankKeeper,
 	k keeper.Keeper,
-) []simulationtypes.WeightedOperation {
-	var operations []simulationtypes.WeightedOperation
-	operations = append(operations, providersimulation.WeightedOperations(params, cdc, ak, bk, k.Provider)...)
-	operations = append(operations, nodesimulation.WeightedOperations(params, cdc, ak, bk, k.Node)...)
-	operations = append(operations, plansimulation.WeightedOperations(params, cdc, ak, bk, k.Plan)...)
-	operations = append(operations, subscriptionsimulation.WeightedOperations(params, cdc, ak, bk, k.Subscription)...)
-	operations = append(operations, sessionsimulation.WeightedOperations(params, cdc, ak, bk, k.Session)...)
+) []simtypes.WeightedOperation {
+	var operations []simtypes.WeightedOperation
+	operations = append(operations, providersimulation.WeightedOperations(cdc, txConfig, params, ak, bk, k.Provider)...)
+	operations = append(operations, nodesimulation.WeightedOperations(cdc, txConfig, params, ak, bk, k.Node)...)
+	operations = append(operations, plansimulation.WeightedOperations(cdc, txConfig, params, ak, bk, k.Plan)...)
+	operations = append(operations, subscriptionsimulation.WeightedOperations(cdc, txConfig, params, ak, bk, k.Subscription)...)
+	operations = append(operations, sessionsimulation.WeightedOperations(cdc, txConfig, params, ak, bk, k.Session)...)
 
 	return operations
 }

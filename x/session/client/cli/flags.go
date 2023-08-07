@@ -3,17 +3,18 @@ package cli
 import (
 	"encoding/base64"
 
+	hubtypes "github.com/sentinel-official/hub/types"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/spf13/pflag"
-
-	hubtypes "github.com/sentinel-official/hub/types"
 )
 
 const (
-	flagAddress   = "address"
-	flagRating    = "rating"
-	flagSignature = "signature"
-	flagStatus    = "status"
+	flagAddress        = "account-addr"
+	flagNodeAddress    = "node-addr"
+	flagRating         = "rating"
+	flagSignature      = "signature"
+	flagSubscriptionID = "subscription-id"
 )
 
 func GetAddress(flags *pflag.FlagSet) (sdk.AccAddress, error) {
@@ -28,6 +29,18 @@ func GetAddress(flags *pflag.FlagSet) (sdk.AccAddress, error) {
 	return sdk.AccAddressFromBech32(s)
 }
 
+func GetNodeAddress(flags *pflag.FlagSet) (hubtypes.NodeAddress, error) {
+	s, err := flags.GetString(flagNodeAddress)
+	if err != nil {
+		return nil, err
+	}
+	if s == "" {
+		return nil, nil
+	}
+
+	return hubtypes.NodeAddressFromBech32(s)
+}
+
 func GetSignature(flags *pflag.FlagSet) ([]byte, error) {
 	s, err := flags.GetString(flagSignature)
 	if err != nil {
@@ -38,16 +51,4 @@ func GetSignature(flags *pflag.FlagSet) ([]byte, error) {
 	}
 
 	return base64.StdEncoding.DecodeString(s)
-}
-
-func GetStatus(flags *pflag.FlagSet) (hubtypes.Status, error) {
-	s, err := flags.GetString(flagStatus)
-	if err != nil {
-		return hubtypes.Unspecified, err
-	}
-	if s == "" {
-		return hubtypes.Unspecified, nil
-	}
-
-	return hubtypes.StatusFromString(s), nil
 }

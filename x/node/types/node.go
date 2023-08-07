@@ -15,25 +15,12 @@ func (m *Node) GetAddress() hubtypes.NodeAddress {
 		return nil
 	}
 
-	address, err := hubtypes.NodeAddressFromBech32(m.Address)
+	addr, err := hubtypes.NodeAddressFromBech32(m.Address)
 	if err != nil {
 		panic(err)
 	}
 
-	return address
-}
-
-func (m *Node) GetProvider() hubtypes.ProvAddress {
-	if m.Provider == "" {
-		return nil
-	}
-
-	address, err := hubtypes.ProvAddressFromBech32(m.Provider)
-	if err != nil {
-		panic(err)
-	}
-
-	return address
+	return addr
 }
 
 func (m *Node) Validate() error {
@@ -43,30 +30,33 @@ func (m *Node) Validate() error {
 	if _, err := hubtypes.NodeAddressFromBech32(m.Address); err != nil {
 		return errors.Wrapf(err, "invalid address %s", m.Address)
 	}
-	if m.Provider == "" && m.Price == nil {
-		return fmt.Errorf("both provider and price cannot be empty")
-	}
-	if m.Provider != "" && m.Price != nil {
-		return fmt.Errorf("either provider or price must be empty")
-	}
-	if m.Provider != "" {
-		if _, err := hubtypes.ProvAddressFromBech32(m.Provider); err != nil {
-			return errors.Wrapf(err, "invalid provider %s", m.Provider)
+	if m.GigabytePrices != nil {
+		if m.GigabytePrices.Len() == 0 {
+			return fmt.Errorf("gigabyte_prices cannot be empty")
+		}
+		if m.GigabytePrices.IsAnyNil() {
+			return fmt.Errorf("gigabyte_prices cannot contain nil")
+		}
+		if !m.GigabytePrices.IsValid() {
+			return fmt.Errorf("gigabyte_prices must be valid")
 		}
 	}
-	if m.Price != nil {
-		if m.Price.Len() == 0 {
-			return fmt.Errorf("price cannot be empty")
+	if m.HourlyPrices != nil {
+		if m.HourlyPrices.Len() == 0 {
+			return fmt.Errorf("hourly_prices cannot be empty")
 		}
-		if !m.Price.IsValid() {
-			return fmt.Errorf("price must be valid")
+		if m.HourlyPrices.IsAnyNil() {
+			return fmt.Errorf("hourly_prices cannot contain nil")
+		}
+		if !m.HourlyPrices.IsValid() {
+			return fmt.Errorf("hourly_prices must be valid")
 		}
 	}
 	if m.RemoteURL == "" {
 		return fmt.Errorf("remote_url cannot be empty")
 	}
 	if len(m.RemoteURL) > 64 {
-		return fmt.Errorf("remote_url length cannot be greater than %d", 64)
+		return fmt.Errorf("remote_url length cannot be greater than %d chars", 64)
 	}
 
 	remoteURL, err := url.ParseRequestURI(m.RemoteURL)
@@ -80,8 +70,18 @@ func (m *Node) Validate() error {
 		return fmt.Errorf("remote_url port cannot be empty")
 	}
 
-	if !m.Status.Equal(hubtypes.StatusActive) && !m.Status.Equal(hubtypes.StatusInactive) {
-		return fmt.Errorf("status must be either active or inactive")
+	if m.InactiveAt.IsZero() {
+		if !m.Status.Equal(hubtypes.StatusInactive) {
+			return fmt.Errorf("invalid inactive_at %s; expected positive", m.InactiveAt)
+		}
+	}
+	if !m.InactiveAt.IsZero() {
+		if !m.Status.Equal(hubtypes.StatusActive) {
+			return fmt.Errorf("invalid inactive_at %s; expected zero", m.InactiveAt)
+		}
+	}
+	if !m.Status.IsOneOf(hubtypes.StatusActive, hubtypes.StatusInactive) {
+		return fmt.Errorf("status must be one of [active, inactive]")
 	}
 	if m.StatusAt.IsZero() {
 		return fmt.Errorf("status_at cannot be zero")
@@ -90,32 +90,32 @@ func (m *Node) Validate() error {
 	return nil
 }
 
-func (m *Node) PriceForDenom(s string) (sdk.Coin, bool) {
-	for _, coin := range m.Price {
-		if coin.Denom == s {
-			return coin, true
+func (m *Node) GigabytePrice(denom string) (sdk.Coin, bool) {
+	if m.GigabytePrices == nil && denom == "" {
+		return sdk.Coin{Amount: sdk.NewInt(0)}, true
+	}
+
+	for _, v := range m.GigabytePrices {
+		if v.Denom == denom {
+			return v, true
 		}
 	}
 
-	return sdk.Coin{}, false
+	return sdk.Coin{Amount: sdk.NewInt(0)}, false
 }
 
-func (m *Node) BytesForCoin(coin sdk.Coin) (sdk.Int, error) {
-	price, found := m.PriceForDenom(coin.Denom)
-	if !found {
-		return sdk.ZeroInt(), fmt.Errorf("price for denom %s does not exist", coin.Denom)
+func (m *Node) HourlyPrice(denom string) (sdk.Coin, bool) {
+	if m.HourlyPrices == nil && denom == "" {
+		return sdk.Coin{Amount: sdk.NewInt(0)}, true
 	}
 
-	x := hubtypes.Gigabyte.Quo(price.Amount)
-	if x.IsPositive() {
-		return coin.Amount.Mul(x), nil
+	for _, v := range m.HourlyPrices {
+		if v.Denom == denom {
+			return v, true
+		}
 	}
 
-	y := sdk.NewDecFromInt(price.Amount).
-		QuoInt(hubtypes.Gigabyte).
-		Ceil().TruncateInt()
-
-	return coin.Amount.Quo(y), nil
+	return sdk.Coin{Amount: sdk.NewInt(0)}, false
 }
 
 type (

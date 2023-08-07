@@ -21,8 +21,8 @@ type queryServer struct {
 	Keeper
 }
 
-func NewQueryServiceServer(keeper Keeper) types.QueryServiceServer {
-	return &queryServer{Keeper: keeper}
+func NewQueryServiceServer(k Keeper) types.QueryServiceServer {
+	return &queryServer{k}
 }
 
 func (q *queryServer) QueryProvider(c context.Context, req *types.QueryProviderRequest) (*types.QueryProviderResponse, error) {
@@ -30,16 +30,16 @@ func (q *queryServer) QueryProvider(c context.Context, req *types.QueryProviderR
 		return nil, status.Error(codes.InvalidArgument, "empty request")
 	}
 
-	address, err := hubtypes.ProvAddressFromBech32(req.Address)
+	addr, err := hubtypes.ProvAddressFromBech32(req.Address)
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid address %s", req.Address)
 	}
 
 	ctx := sdk.UnwrapSDKContext(c)
 
-	item, found := q.GetProvider(ctx, address)
+	item, found := q.GetProvider(ctx, addr)
 	if !found {
-		return nil, status.Errorf(codes.NotFound, "provider does not exist for address %s", req.Address)
+		return nil, status.Errorf(codes.NotFound, "provider %s does not exist", req.Address)
 	}
 
 	return &types.QueryProviderResponse{Provider: item}, nil
@@ -51,22 +51,29 @@ func (q *queryServer) QueryProviders(c context.Context, req *types.QueryProvider
 	}
 
 	var (
-		items types.Providers
-		ctx   = sdk.UnwrapSDKContext(c)
-		store = prefix.NewStore(q.Store(ctx), types.ProviderKeyPrefix)
+		items     types.Providers
+		keyPrefix []byte
+		ctx       = sdk.UnwrapSDKContext(c)
 	)
 
-	pagination, err := query.FilteredPaginate(store, req.Pagination, func(_, value []byte, accumulate bool) (bool, error) {
-		if accumulate {
-			var item types.Provider
-			if err := q.cdc.Unmarshal(value, &item); err != nil {
-				return false, err
-			}
+	switch req.Status {
+	case hubtypes.StatusActive:
+		keyPrefix = types.ActiveProviderKeyPrefix
+	case hubtypes.StatusInactive:
+		keyPrefix = types.InactiveProviderKeyPrefix
+	default:
+		keyPrefix = types.ProviderKeyPrefix
+	}
 
-			items = append(items, item)
+	store := prefix.NewStore(q.Store(ctx), keyPrefix)
+	pagination, err := query.Paginate(store, req.Pagination, func(_, value []byte) error {
+		var item types.Provider
+		if err := q.cdc.Unmarshal(value, &item); err != nil {
+			return err
 		}
 
-		return true, nil
+		items = append(items, item)
+		return nil
 	})
 
 	if err != nil {

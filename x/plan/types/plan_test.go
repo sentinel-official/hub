@@ -10,15 +10,9 @@ import (
 	hubtypes "github.com/sentinel-official/hub/types"
 )
 
-func TestPlan_GetProvider(t *testing.T) {
+func TestPlan_GetProviderAddress(t *testing.T) {
 	type fields struct {
-		Id       uint64
-		Provider string
-		Price    sdk.Coins
-		Validity time.Duration
-		Bytes    sdk.Int
-		Status   hubtypes.Status
-		StatusAt time.Time
+		ProviderAddress string
 	}
 	tests := []struct {
 		name   string
@@ -28,14 +22,14 @@ func TestPlan_GetProvider(t *testing.T) {
 		{
 			"empty",
 			fields{
-				Provider: "",
+				ProviderAddress: "",
 			},
 			nil,
 		},
 		{
 			"20 bytes",
 			fields{
-				Provider: "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
+				ProviderAddress: hubtypes.TestBech32ProvAddr20Bytes,
 			},
 			hubtypes.ProvAddress{0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x20},
 		},
@@ -43,33 +37,21 @@ func TestPlan_GetProvider(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			p := &Plan{
-				Id:       tt.fields.Id,
-				Provider: tt.fields.Provider,
-				Price:    tt.fields.Price,
-				Validity: tt.fields.Validity,
-				Bytes:    tt.fields.Bytes,
-				Status:   tt.fields.Status,
-				StatusAt: tt.fields.StatusAt,
+				ProviderAddress: tt.fields.ProviderAddress,
 			}
-			if got := p.GetProvider(); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("GetProvider() = %v, want %v", got, tt.want)
+			if got := p.GetProviderAddress(); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("GetProviderAddress() = %v, want %v", got, tt.want)
 			}
 		})
 	}
 }
 
-func TestPlan_PriceForDenom(t *testing.T) {
+func TestPlan_Price(t *testing.T) {
 	type fields struct {
-		Id       uint64
-		Provider string
-		Price    sdk.Coins
-		Validity time.Duration
-		Bytes    sdk.Int
-		Status   hubtypes.Status
-		StatusAt time.Time
+		Prices sdk.Coins
 	}
 	type args struct {
-		d string
+		denom string
 	}
 	tests := []struct {
 		name   string
@@ -79,78 +61,149 @@ func TestPlan_PriceForDenom(t *testing.T) {
 		want1  bool
 	}{
 		{
-			"nil price and empty denom",
+			"nil prices and empty denom",
 			fields{
-				Price: nil,
+				Prices: nil,
 			},
 			args{
-				d: "",
+				denom: "",
 			},
-			sdk.Coin{},
-			false,
-		},
-		{
-			"empty price and empty denom",
-			fields{
-				Price: sdk.Coins{},
-			},
-			args{
-				d: "",
-			},
-			sdk.Coin{},
-			false,
-		},
-		{
-			"1one price and empty denom",
-			fields{
-				Price: sdk.Coins{sdk.NewInt64Coin("one", 1)},
-			},
-			args{
-				d: "",
-			},
-			sdk.Coin{},
-			false,
-		},
-		{
-			"1one price and one denom",
-			fields{
-				Price: sdk.Coins{sdk.NewInt64Coin("one", 1)},
-			},
-			args{
-				d: "one",
-			},
-			sdk.NewInt64Coin("one", 1),
+			sdk.Coin{Amount: sdk.NewInt(0)},
 			true,
 		},
 		{
-			"1one price and two denom",
+			"nil prices and one denom",
 			fields{
-				Price: sdk.Coins{sdk.NewInt64Coin("one", 1)},
+				Prices: nil,
 			},
 			args{
-				d: "two",
+				denom: "one",
 			},
-			sdk.Coin{},
+			sdk.Coin{Amount: sdk.NewInt(0)},
 			false,
+		},
+		{
+			"nil prices and two denom",
+			fields{
+				Prices: nil,
+			},
+			args{
+				denom: "two",
+			},
+			sdk.Coin{Amount: sdk.NewInt(0)},
+			false,
+		},
+		{
+			"empty prices and empty denom",
+			fields{
+				Prices: sdk.Coins{},
+			},
+			args{
+				denom: "",
+			},
+			sdk.Coin{Amount: sdk.NewInt(0)},
+			false,
+		},
+		{
+			"empty prices and one denom",
+			fields{
+				Prices: sdk.Coins{},
+			},
+			args{
+				denom: "one",
+			},
+			sdk.Coin{Amount: sdk.NewInt(0)},
+			false,
+		},
+		{
+			"empty prices and two denom",
+			fields{
+				Prices: sdk.Coins{},
+			},
+			args{
+				denom: "two",
+			},
+			sdk.Coin{Amount: sdk.NewInt(0)},
+			false,
+		},
+		{
+			"1one prices and empty denom",
+			fields{
+				Prices: sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1)}},
+			},
+			args{
+				denom: "",
+			},
+			sdk.Coin{Amount: sdk.NewInt(0)},
+			false,
+		},
+		{
+			"1one prices and one denom",
+			fields{
+				Prices: sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1)}},
+			},
+			args{
+				denom: "one",
+			},
+			sdk.Coin{Denom: "one", Amount: sdk.NewInt(1)},
+			true,
+		},
+		{
+			"1one prices and two denom",
+			fields{
+				Prices: sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1)}},
+			},
+			args{
+				denom: "two",
+			},
+			sdk.Coin{Amount: sdk.NewInt(0)},
+			false,
+		},
+		{
+			"1two prices and empty denom",
+			fields{
+				Prices: sdk.Coins{sdk.Coin{Denom: "two", Amount: sdk.NewInt(1)}},
+			},
+			args{
+				denom: "",
+			},
+			sdk.Coin{Amount: sdk.NewInt(0)},
+			false,
+		},
+		{
+			"1two prices and one denom",
+			fields{
+				Prices: sdk.Coins{sdk.Coin{Denom: "two", Amount: sdk.NewInt(1)}},
+			},
+			args{
+				denom: "one",
+			},
+			sdk.Coin{Amount: sdk.NewInt(0)},
+			false,
+		},
+		{
+			"1two prices and two denom",
+			fields{
+				Prices: sdk.Coins{sdk.Coin{Denom: "two", Amount: sdk.NewInt(1)}},
+			},
+			args{
+				denom: "two",
+			},
+			sdk.Coin{Denom: "two", Amount: sdk.NewInt(1)},
+			true,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			p := &Plan{
-				Id:       tt.fields.Id,
-				Provider: tt.fields.Provider,
-				Price:    tt.fields.Price,
-				Validity: tt.fields.Validity,
-				Bytes:    tt.fields.Bytes,
-				Status:   tt.fields.Status,
-				StatusAt: tt.fields.StatusAt,
+				Prices: tt.fields.Prices,
 			}
-			got, got1 := p.PriceForDenom(tt.args.d)
+			got, got1 := p.Price(tt.args.denom)
 			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("PriceForDenom() got = %v, want %v", got, tt.want)
+				t.Errorf("Price() got = %v, want %v", got, tt.want)
 			}
 			if got1 != tt.want1 {
-				t.Errorf("PriceForDenom() got1 = %v, want %v", got1, tt.want1)
+				t.Errorf("Price() got1 = %v, want %v", got1, tt.want1)
 			}
 		})
 	}
@@ -158,13 +211,13 @@ func TestPlan_PriceForDenom(t *testing.T) {
 
 func TestPlan_Validate(t *testing.T) {
 	type fields struct {
-		Id       uint64
-		Provider string
-		Price    sdk.Coins
-		Validity time.Duration
-		Bytes    sdk.Int
-		Status   hubtypes.Status
-		StatusAt time.Time
+		ID              uint64
+		ProviderAddress string
+		Duration        time.Duration
+		Gigabytes       int64
+		Prices          sdk.Coins
+		Status          hubtypes.Status
+		StatusAt        time.Time
 	}
 	tests := []struct {
 		name    string
@@ -172,258 +225,305 @@ func TestPlan_Validate(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			"zero id",
+			"id zero",
 			fields{
-				Id: 0,
+				ID: 0,
 			},
 			true,
 		},
 		{
-			"empty provider",
+			"id positive",
 			fields{
-				Id:       1000,
-				Provider: "",
+				ID:              1000,
+				ProviderAddress: hubtypes.TestBech32ProvAddr20Bytes,
+				Duration:        1000,
+				Gigabytes:       1000,
+				Status:          hubtypes.StatusActive,
+				StatusAt:        time.Now(),
+			},
+			false,
+		},
+		{
+			"provider_address empty",
+			fields{
+				ID:              1000,
+				ProviderAddress: "",
 			},
 			true,
 		},
 		{
-			"invalid provider",
+			"provider_address invalid",
 			fields{
-				Id:       1000,
-				Provider: "invalid",
+				ID:              1000,
+				ProviderAddress: "invalid",
 			},
 			true,
 		},
 		{
-			"invalid prefix provider",
+			"provider_address invalid prefix",
 			fields{
-				Id:       1000,
-				Provider: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				ID:              1000,
+				ProviderAddress: hubtypes.TestBech32AccAddr20Bytes,
 			},
 			true,
 		},
 		{
-			"10 bytes provider",
+			"provider_address 10 bytes",
 			fields{
-				Id:       1000,
-				Provider: "sentprov1qypqxpq9qcrsszgsutj8xr",
+				ID:              1000,
+				ProviderAddress: hubtypes.TestBech32ProvAddr10Bytes,
+				Duration:        1000,
+				Gigabytes:       1000,
+				Status:          hubtypes.StatusActive,
+				StatusAt:        time.Now(),
+			},
+			false,
+		},
+		{
+			"provider_address 20 bytes",
+			fields{
+				ID:              1000,
+				ProviderAddress: hubtypes.TestBech32ProvAddr20Bytes,
+				Duration:        1000,
+				Gigabytes:       1000,
+				Status:          hubtypes.StatusActive,
+				StatusAt:        time.Now(),
+			},
+			false,
+		},
+		{
+			"provider_address 30 bytes",
+			fields{
+				ID:              1000,
+				ProviderAddress: hubtypes.TestBech32ProvAddr30Bytes,
+				Duration:        1000,
+				Gigabytes:       1000,
+				Status:          hubtypes.StatusActive,
+				StatusAt:        time.Now(),
+			},
+			false,
+		},
+		{
+			"duration negative",
+			fields{
+				ID:              1000,
+				ProviderAddress: hubtypes.TestBech32ProvAddr20Bytes,
+				Duration:        -1000,
 			},
 			true,
 		},
 		{
-			"20 bytes provider",
+			"duration zero",
 			fields{
-				Id:       1000,
-				Provider: "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
+				ID:              1000,
+				ProviderAddress: hubtypes.TestBech32ProvAddr20Bytes,
+				Duration:        0,
 			},
 			true,
 		},
 		{
-			"30 bytes provider",
+			"duration positive",
 			fields{
-				Id:       1000,
-				Provider: "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfqyy3zxfp9ycnjs2fsh33zgx",
+				ID:              1000,
+				ProviderAddress: hubtypes.TestBech32ProvAddr20Bytes,
+				Duration:        1000,
+				Gigabytes:       1000,
+				Status:          hubtypes.StatusActive,
+				StatusAt:        time.Now(),
+			},
+			false,
+		},
+		{
+			"gigabytes negative",
+			fields{
+				ID:              1000,
+				ProviderAddress: hubtypes.TestBech32ProvAddr20Bytes,
+				Duration:        1000,
+				Gigabytes:       -1000,
 			},
 			true,
 		},
 		{
-			"nil price",
+			"gigabytes zero",
 			fields{
-				Id:       1000,
-				Provider: "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Price:    nil,
+				ID:              1000,
+				ProviderAddress: hubtypes.TestBech32ProvAddr20Bytes,
+				Duration:        1000,
+				Gigabytes:       0,
 			},
 			true,
 		},
 		{
-			"empty price",
+			"gigabytes positive",
 			fields{
-				Id:       1000,
-				Provider: "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Price:    sdk.Coins{},
+				ID:              1000,
+				ProviderAddress: hubtypes.TestBech32ProvAddr20Bytes,
+				Duration:        1000,
+				Gigabytes:       1000,
+				Status:          hubtypes.StatusActive,
+				StatusAt:        time.Now(),
+			},
+			false,
+		},
+		{
+			"prices nil",
+			fields{
+				ID:              1000,
+				ProviderAddress: hubtypes.TestBech32ProvAddr20Bytes,
+				Duration:        1000,
+				Gigabytes:       1000,
+				Prices:          nil,
+				Status:          hubtypes.StatusActive,
+				StatusAt:        time.Now(),
+			},
+			false,
+		},
+		{
+			"prices empty",
+			fields{
+				ID:              1000,
+				ProviderAddress: hubtypes.TestBech32ProvAddr20Bytes,
+				Duration:        1000,
+				Gigabytes:       1000,
+				Prices:          sdk.Coins{},
 			},
 			true,
 		},
 		{
-			"empty denom price",
+			"prices empty denom",
 			fields{
-				Id:       1000,
-				Provider: "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Price:    sdk.Coins{sdk.Coin{Denom: ""}},
+				ID:              1000,
+				ProviderAddress: hubtypes.TestBech32ProvAddr20Bytes,
+				Duration:        1000,
+				Gigabytes:       1000,
+				Prices:          sdk.Coins{sdk.Coin{Denom: "", Amount: sdk.NewInt(1000)}},
 			},
 			true,
 		},
 		{
-			"invalid denom price",
+			"prices empty amount",
 			fields{
-				Id:       1000,
-				Provider: "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Price:    sdk.Coins{sdk.Coin{Denom: "o"}},
+				ID:              1000,
+				ProviderAddress: hubtypes.TestBech32ProvAddr20Bytes,
+				Duration:        1000,
+				Gigabytes:       1000,
+				Prices:          sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.Int{}}},
 			},
 			true,
 		},
 		{
-			"negative amount price",
+			"prices invalid denom",
 			fields{
-				Id:       1000,
-				Provider: "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Price:    sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(-1000)}},
+				ID:              1000,
+				ProviderAddress: hubtypes.TestBech32ProvAddr20Bytes,
+				Duration:        1000,
+				Gigabytes:       1000,
+				Prices:          sdk.Coins{sdk.Coin{Denom: "o"}},
 			},
 			true,
 		},
 		{
-			"zero amount price",
+			"prices negative amount",
 			fields{
-				Id:       1000,
-				Provider: "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Price:    sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(0)}},
+				ID:              1000,
+				ProviderAddress: hubtypes.TestBech32ProvAddr20Bytes,
+				Duration:        1000,
+				Gigabytes:       1000,
+				Prices:          sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(-1000)}},
 			},
 			true,
 		},
 		{
-			"positive amount price",
+			"prices zero amount",
 			fields{
-				Id:       1000,
-				Provider: "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Price:    sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
+				ID:              1000,
+				ProviderAddress: hubtypes.TestBech32ProvAddr20Bytes,
+				Duration:        1000,
+				Gigabytes:       1000,
+				Prices:          sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(0)}},
 			},
 			true,
 		},
 		{
-			"negative validity",
+			"prices positive amount",
 			fields{
-				Id:       1000,
-				Provider: "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Price:    sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
-				Validity: -1000,
+				ID:              1000,
+				ProviderAddress: hubtypes.TestBech32ProvAddr20Bytes,
+				Duration:        1000,
+				Gigabytes:       1000,
+				Prices:          sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
+				Status:          hubtypes.StatusActive,
+				StatusAt:        time.Now(),
+			},
+			false,
+		},
+		{
+			"status unspecified",
+			fields{
+				ID:              1000,
+				ProviderAddress: hubtypes.TestBech32ProvAddr20Bytes,
+				Duration:        1000,
+				Gigabytes:       1000,
+				Status:          hubtypes.StatusUnspecified,
 			},
 			true,
 		},
 		{
-			"zero validity",
+			"status active",
 			fields{
-				Id:       1000,
-				Provider: "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Price:    sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
-				Validity: 0,
+				ID:              1000,
+				ProviderAddress: hubtypes.TestBech32ProvAddr20Bytes,
+				Duration:        1000,
+				Gigabytes:       1000,
+				Status:          hubtypes.StatusActive,
+				StatusAt:        time.Now(),
+			},
+			false,
+		},
+		{
+			"status inactive pending",
+			fields{
+				ID:              1000,
+				ProviderAddress: hubtypes.TestBech32ProvAddr20Bytes,
+				Duration:        1000,
+				Gigabytes:       1000,
+				Status:          hubtypes.StatusInactivePending,
 			},
 			true,
 		},
 		{
-			"positive validity",
+			"status inactive",
 			fields{
-				Id:       1000,
-				Provider: "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Price:    sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
-				Validity: 1000,
-				Bytes:    sdk.NewInt(0),
+				ID:              1000,
+				ProviderAddress: hubtypes.TestBech32ProvAddr20Bytes,
+				Duration:        1000,
+				Gigabytes:       1000,
+				Status:          hubtypes.StatusInactive,
+				StatusAt:        time.Now(),
+			},
+			false,
+		},
+		{
+			"status_at zero",
+			fields{
+				ID:              1000,
+				ProviderAddress: hubtypes.TestBech32ProvAddr20Bytes,
+				Duration:        1000,
+				Gigabytes:       1000,
+				Status:          hubtypes.StatusActive,
+				StatusAt:        time.Time{},
 			},
 			true,
 		},
 		{
-			"negative bytes",
+			"status_at positive",
 			fields{
-				Id:       1000,
-				Provider: "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Price:    sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
-				Validity: 1000,
-				Bytes:    sdk.NewInt(-1000),
-			},
-			true,
-		},
-		{
-			"zero bytes",
-			fields{
-				Id:       1000,
-				Provider: "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Price:    sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
-				Validity: 1000,
-				Bytes:    sdk.NewInt(0),
-			},
-			true,
-		},
-		{
-			"positive bytes",
-			fields{
-				Id:       1000,
-				Provider: "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Price:    sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
-				Validity: 1000,
-				Bytes:    sdk.NewInt(1000),
-			},
-			true,
-		},
-		{
-			"unknown status",
-			fields{
-				Id:       1000,
-				Provider: "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Price:    sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
-				Validity: 1000,
-				Bytes:    sdk.NewInt(1000),
-				Status:   hubtypes.StatusUnknown,
-			},
-			true,
-		},
-		{
-			"active status",
-			fields{
-				Id:       1000,
-				Provider: "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Price:    sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
-				Validity: 1000,
-				Bytes:    sdk.NewInt(1000),
-				Status:   hubtypes.StatusActive,
-			},
-			true,
-		},
-		{
-			"inactive pending status",
-			fields{
-				Id:       1000,
-				Provider: "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Price:    sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
-				Validity: 1000,
-				Bytes:    sdk.NewInt(1000),
-				Status:   hubtypes.StatusInactivePending,
-			},
-			true,
-		},
-		{
-			"inactive status",
-			fields{
-				Id:       1000,
-				Provider: "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Price:    sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
-				Validity: 1000,
-				Bytes:    sdk.NewInt(1000),
-				Status:   hubtypes.StatusInactive,
-			},
-			true,
-		},
-		{
-			"zero status_at",
-			fields{
-				Id:       1000,
-				Provider: "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Price:    sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
-				Validity: 1000,
-				Bytes:    sdk.NewInt(1000),
-				Status:   hubtypes.StatusInactive,
-				StatusAt: time.Time{},
-			},
-			true,
-		},
-		{
-			"now status_at",
-			fields{
-				Id:       1000,
-				Provider: "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Price:    sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
-				Validity: 1000,
-				Bytes:    sdk.NewInt(1000),
-				Status:   hubtypes.StatusInactive,
-				StatusAt: time.Now(),
+				ID:              1000,
+				ProviderAddress: hubtypes.TestBech32ProvAddr20Bytes,
+				Duration:        1000,
+				Gigabytes:       1000,
+				Status:          hubtypes.StatusActive,
+				StatusAt:        time.Now(),
 			},
 			false,
 		},
@@ -431,13 +531,13 @@ func TestPlan_Validate(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			p := &Plan{
-				Id:       tt.fields.Id,
-				Provider: tt.fields.Provider,
-				Price:    tt.fields.Price,
-				Validity: tt.fields.Validity,
-				Bytes:    tt.fields.Bytes,
-				Status:   tt.fields.Status,
-				StatusAt: tt.fields.StatusAt,
+				ID:              tt.fields.ID,
+				ProviderAddress: tt.fields.ProviderAddress,
+				Duration:        tt.fields.Duration,
+				Gigabytes:       tt.fields.Gigabytes,
+				Prices:          tt.fields.Prices,
+				Status:          tt.fields.Status,
+				StatusAt:        tt.fields.StatusAt,
 			}
 			if err := p.Validate(); (err != nil) != tt.wantErr {
 				t.Errorf("Validate() error = %v, wantErr %v", err, tt.wantErr)

@@ -1,3 +1,5 @@
+// DO NOT COVER
+
 package cli
 
 import (
@@ -22,7 +24,7 @@ func queryDeposit() *cobra.Command {
 				return err
 			}
 
-			address, err := sdk.AccAddressFromBech32(args[0])
+			addr, err := sdk.AccAddressFromBech32(args[0])
 			if err != nil {
 				return err
 			}
@@ -34,7 +36,7 @@ func queryDeposit() *cobra.Command {
 			res, err := qc.QueryDeposit(
 				context.Background(),
 				types.NewQueryDepositRequest(
-					address,
+					addr,
 				),
 			)
 			if err != nil {

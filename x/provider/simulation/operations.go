@@ -1,14 +1,16 @@
+// DO NOT COVER
+
 package simulation
 
 import (
 	"math/rand"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
+	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/simapp/helpers"
-	"github.com/cosmos/cosmos-sdk/simapp/params"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	simulationtypes "github.com/cosmos/cosmos-sdk/types/simulation"
+	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 
 	hubtypes "github.com/sentinel-official/hub/types"
@@ -18,192 +20,177 @@ import (
 )
 
 var (
-	OperationWeightMsgRegisterRequest = "op_weight_" + types.TypeMsgRegisterRequest
-	OperationWeightMsgUpdateRequest   = "op_weight_" + types.TypeMsgUpdateRequest
+	typeMsgRegister = sdk.MsgTypeURL((*types.MsgRegisterRequest)(nil))
+	typeMsgUpdate   = sdk.MsgTypeURL((*types.MsgUpdateRequest)(nil))
 )
 
 func WeightedOperations(
-	params simulationtypes.AppParams,
-	cdc codec.JSONCodec,
+	cdc codec.Codec,
+	txConfig client.TxConfig,
+	params simtypes.AppParams,
 	ak expected.AccountKeeper,
 	bk expected.BankKeeper,
 	k keeper.Keeper,
 ) simulation.WeightedOperations {
 	var (
-		weightMsgRegisterRequest int
-		weightMsgUpdateRequest   int
+		weightMsgRegister int
+		weightMsgUpdate   int
 	)
 
 	params.GetOrGenerate(
 		cdc,
-		OperationWeightMsgRegisterRequest,
-		&weightMsgRegisterRequest,
+		typeMsgRegister,
+		&weightMsgRegister,
 		nil,
 		func(_ *rand.Rand) {
-			weightMsgRegisterRequest = 100
+			weightMsgRegister = 100
 		},
 	)
 	params.GetOrGenerate(
 		cdc,
-		OperationWeightMsgUpdateRequest,
-		&weightMsgUpdateRequest,
+		typeMsgUpdate,
+		&weightMsgUpdate,
 		nil,
 		func(_ *rand.Rand) {
-			weightMsgUpdateRequest = 100
+			weightMsgUpdate = 100
 		},
 	)
 
 	return simulation.WeightedOperations{
-		simulation.NewWeightedOperation(
-			weightMsgRegisterRequest,
-			SimulateMsgRegisterRequest(ak, bk, k),
-		),
-		simulation.NewWeightedOperation(
-			weightMsgUpdateRequest,
-			SimulateMsgUpdateRequest(ak, bk, k),
-		),
+		simulation.NewWeightedOperation(weightMsgRegister, SimulateMsgRegister(txConfig, ak, bk, k)),
+		simulation.NewWeightedOperation(weightMsgUpdate, SimulateMsgUpdate(txConfig, ak, bk, k)),
 	}
 }
 
-func SimulateMsgRegisterRequest(ak expected.AccountKeeper, bk expected.BankKeeper, k keeper.Keeper) simulationtypes.Operation {
-	return func(
-		r *rand.Rand,
-		app *baseapp.BaseApp,
-		ctx sdk.Context,
-		accounts []simulationtypes.Account,
-		chainID string,
-	) (simulationtypes.OperationMsg, []simulationtypes.FutureOperation, error) {
+func SimulateMsgRegister(txConfig client.TxConfig, ak expected.AccountKeeper, bk expected.BankKeeper, k keeper.Keeper) simtypes.Operation {
+	return func(r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accounts []simtypes.Account, chainID string) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
 		var (
-			rAccount, _ = simulationtypes.RandomAcc(r, accounts)
-			account     = ak.GetAccount(ctx, rAccount.Address)
+			rAccount, _ = simtypes.RandomAcc(r, accounts)
+			fromAccount = ak.GetAccount(ctx, rAccount.Address)
 		)
 
-		found := k.HasProvider(ctx, hubtypes.ProvAddress(account.GetAddress()))
+		found := k.HasProvider(ctx, hubtypes.ProvAddress(fromAccount.GetAddress()))
 		if found {
-			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgUpdateRequest, "provider already exists"), nil, nil
+			return simtypes.NoOpMsg(types.ModuleName, typeMsgRegister, ""), nil, nil
 		}
 
-		balance := bk.SpendableCoins(ctx, account.GetAddress())
-		if !balance.IsAnyNegative() {
-			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgRegisterRequest, "balance is negative"), nil, nil
+		sCoins := bk.SpendableCoins(ctx, fromAccount.GetAddress())
+		if !sCoins.IsAnyNegative() {
+			return simtypes.NoOpMsg(types.ModuleName, typeMsgRegister, ""), nil, nil
 		}
 
-		fees, err := simulationtypes.RandomFees(r, ctx, balance)
+		rFees, err := simtypes.RandomFees(r, ctx, sCoins)
 		if err != nil {
-			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgRegisterRequest, err.Error()), nil, err
+			return simtypes.NoOpMsg(types.ModuleName, typeMsgRegister, err.Error()), nil, err
 		}
 
 		deposit := k.Deposit(ctx)
-		if balance.Sub(fees).AmountOf(deposit.Denom).LT(deposit.Amount) {
-			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgRegisterRequest, "balance is less than deposit"), nil, nil
+		if sCoins.Sub(rFees).AmountOf(deposit.Denom).LT(deposit.Amount) {
+			return simtypes.NoOpMsg(types.ModuleName, typeMsgRegister, ""), nil, nil
 		}
 
 		var (
-			name        = simulationtypes.RandStringOfLength(r, r.Intn(MaxNameLength)+8)
-			identity    = simulationtypes.RandStringOfLength(r, r.Intn(MaxIdentityLength))
-			website     = simulationtypes.RandStringOfLength(r, r.Intn(MaxWebsiteLength))
-			description = simulationtypes.RandStringOfLength(r, r.Intn(MaxDescriptionLength))
+			name        = simtypes.RandStringOfLength(r, r.Intn(MaxNameLength)+8)
+			identity    = simtypes.RandStringOfLength(r, r.Intn(MaxIdentityLength))
+			website     = simtypes.RandStringOfLength(r, r.Intn(MaxWebsiteLength))
+			description = simtypes.RandStringOfLength(r, r.Intn(MaxDescriptionLength))
 		)
 
-		var (
-			txConfig = params.MakeTestEncodingConfig().TxConfig
-			message  = types.NewMsgRegisterRequest(
-				account.GetAddress(),
-				name,
-				identity,
-				website,
-				description,
-			)
+		msg := types.NewMsgRegisterRequest(
+			fromAccount.GetAddress(),
+			name,
+			identity,
+			website,
+			description,
 		)
 
-		txn, err := helpers.GenTx(
+		tx, err := helpers.GenTx(
 			txConfig,
-			[]sdk.Msg{message},
-			fees,
+			[]sdk.Msg{msg},
+			rFees,
 			helpers.DefaultGenTxGas,
 			chainID,
-			[]uint64{account.GetAccountNumber()},
-			[]uint64{account.GetSequence()},
+			[]uint64{fromAccount.GetAccountNumber()},
+			[]uint64{fromAccount.GetSequence()},
 			rAccount.PrivKey,
 		)
 		if err != nil {
-			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgRegisterRequest, err.Error()), nil, err
+			return simtypes.NoOpMsg(types.ModuleName, typeMsgRegister, err.Error()), nil, err
 		}
 
-		_, _, err = app.Deliver(txConfig.TxEncoder(), txn)
+		_, _, err = app.Deliver(txConfig.TxEncoder(), tx)
 		if err != nil {
-			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgRegisterRequest, err.Error()), nil, err
+			return simtypes.NoOpMsg(types.ModuleName, typeMsgRegister, err.Error()), nil, err
 		}
 
-		return simulationtypes.NewOperationMsg(message, true, "", nil), nil, nil
+		return simtypes.NewOperationMsg(msg, true, "", nil), nil, nil
 	}
 }
 
-func SimulateMsgUpdateRequest(ak expected.AccountKeeper, bk expected.BankKeeper, k keeper.Keeper) simulationtypes.Operation {
-	return func(
-		r *rand.Rand,
-		app *baseapp.BaseApp,
-		ctx sdk.Context,
-		accounts []simulationtypes.Account,
-		chainID string,
-	) (simulationtypes.OperationMsg, []simulationtypes.FutureOperation, error) {
+func SimulateMsgUpdate(txConfig client.TxConfig, ak expected.AccountKeeper, bk expected.BankKeeper, k keeper.Keeper) simtypes.Operation {
+	return func(r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accounts []simtypes.Account, chainID string) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
 		var (
-			rAccount, _ = simulationtypes.RandomAcc(r, accounts)
-			account     = ak.GetAccount(ctx, rAccount.Address)
+			rAccount, _ = simtypes.RandomAcc(r, accounts)
+			fromAccount = ak.GetAccount(ctx, rAccount.Address)
 		)
 
-		found := k.HasProvider(ctx, hubtypes.ProvAddress(account.GetAddress()))
+		found := k.HasProvider(ctx, hubtypes.ProvAddress(fromAccount.GetAddress()))
 		if !found {
-			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgUpdateRequest, "provider does not exist"), nil, nil
+			return simtypes.NoOpMsg(types.ModuleName, typeMsgUpdate, ""), nil, nil
 		}
 
-		balance := bk.SpendableCoins(ctx, account.GetAddress())
-		if !balance.IsAnyNegative() {
-			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgUpdateRequest, "balance is negative"), nil, nil
+		sCoins := bk.SpendableCoins(ctx, fromAccount.GetAddress())
+		if !sCoins.IsAnyNegative() {
+			return simtypes.NoOpMsg(types.ModuleName, typeMsgUpdate, ""), nil, nil
 		}
 
-		fees, err := simulationtypes.RandomFees(r, ctx, balance)
+		rFees, err := simtypes.RandomFees(r, ctx, sCoins)
 		if err != nil {
-			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgUpdateRequest, err.Error()), nil, err
+			return simtypes.NoOpMsg(types.ModuleName, typeMsgUpdate, err.Error()), nil, err
 		}
 
 		var (
-			name        = simulationtypes.RandStringOfLength(r, r.Intn(MaxNameLength+8))
-			identity    = simulationtypes.RandStringOfLength(r, r.Intn(MaxIdentityLength))
-			website     = simulationtypes.RandStringOfLength(r, r.Intn(MaxWebsiteLength))
-			description = simulationtypes.RandStringOfLength(r, r.Intn(MaxDescriptionLength))
+			name        = simtypes.RandStringOfLength(r, r.Intn(MaxNameLength+8))
+			identity    = simtypes.RandStringOfLength(r, r.Intn(MaxIdentityLength))
+			website     = simtypes.RandStringOfLength(r, r.Intn(MaxWebsiteLength))
+			description = simtypes.RandStringOfLength(r, r.Intn(MaxDescriptionLength))
 		)
 
-		var (
-			txConfig = params.MakeTestEncodingConfig().TxConfig
-			message  = types.NewMsgUpdateRequest(
-				hubtypes.ProvAddress(account.GetAddress()),
-				name,
-				identity,
-				website,
-				description,
-			)
+		status := hubtypes.StatusUnspecified
+		if rand.Intn(2) == 0 {
+			status = hubtypes.StatusActive
+		} else {
+			status = hubtypes.StatusInactive
+		}
+
+		msg := types.NewMsgUpdateRequest(
+			hubtypes.ProvAddress(fromAccount.GetAddress()),
+			name,
+			identity,
+			website,
+			description,
+			status,
 		)
 
 		txn, err := helpers.GenTx(
 			txConfig,
-			[]sdk.Msg{message},
-			fees,
+			[]sdk.Msg{msg},
+			rFees,
 			helpers.DefaultGenTxGas,
 			chainID,
-			[]uint64{account.GetAccountNumber()},
-			[]uint64{account.GetSequence()},
+			[]uint64{fromAccount.GetAccountNumber()},
+			[]uint64{fromAccount.GetSequence()},
 			rAccount.PrivKey,
 		)
 		if err != nil {
-			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgUpdateRequest, err.Error()), nil, err
+			return simtypes.NoOpMsg(types.ModuleName, typeMsgUpdate, err.Error()), nil, err
 		}
 
 		_, _, err = app.Deliver(txConfig.TxEncoder(), txn)
 		if err != nil {
-			return simulationtypes.NoOpMsg(types.ModuleName, types.TypeMsgUpdateRequest, err.Error()), nil, err
+			return simtypes.NoOpMsg(types.ModuleName, typeMsgUpdate, err.Error()), nil, err
 		}
 
-		return simulationtypes.NewOperationMsg(message, true, "", nil), nil, nil
+		return simtypes.NewOperationMsg(msg, true, "", nil), nil, nil
 	}
 }

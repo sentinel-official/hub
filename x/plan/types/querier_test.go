@@ -10,30 +10,6 @@ import (
 	hubtypes "github.com/sentinel-official/hub/types"
 )
 
-func TestNewQueryNodesForPlanRequest(t *testing.T) {
-	var (
-		pagination *query.PageRequest
-	)
-
-	for i := 0; i < 20; i++ {
-		pagination = &query.PageRequest{
-			Key:        make([]byte, i),
-			Offset:     uint64(i),
-			Limit:      uint64(i),
-			CountTotal: i/2 == 0,
-		}
-
-		require.Equal(
-			t,
-			&QueryNodesForPlanRequest{
-				Id:         uint64(i),
-				Pagination: pagination,
-			},
-			NewQueryNodesForPlanRequest(uint64(i), pagination),
-		)
-	}
-}
-
 func TestNewQueryPlanRequest(t *testing.T) {
 	for i := 0; i < 20; i++ {
 		require.Equal(

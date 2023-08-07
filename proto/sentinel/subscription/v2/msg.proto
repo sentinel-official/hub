@@ -1,0 +1,37 @@
+syntax = "proto3";
+package sentinel.subscription.v2;
+
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/sentinel-official/hub/x/subscription/types";
+option (gogoproto.equal_all)           = false;
+option (gogoproto.goproto_getters_all) = false;
+
+// MsgCancelRequest defines the SDK message for cancelling a subscription
+message MsgCancelRequest {
+  string from = 1;
+  uint64 id   = 2 [ (gogoproto.customname) = "ID" ];
+}
+
+// MsgAllocateRequest defines the SDK message for allocating the bytes of a
+// subscription for an address
+message MsgAllocateRequest {
+  string from    = 1;
+  uint64 id      = 2 [ (gogoproto.customname) = "ID" ];
+  string address = 3;
+  string bytes   = 4 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable)   = false
+  ];
+}
+
+// MsgCancelResponse defines the response of message MsgCancelRequest
+message MsgCancelResponse {}
+
+// MsgAllocateResponse defines the response of message MsgAllocateRequest
+message MsgAllocateResponse {}
+
+service MsgService {
+  rpc MsgCancel(MsgCancelRequest) returns (MsgCancelResponse);
+  rpc MsgAllocate(MsgAllocateRequest) returns (MsgAllocateResponse);
+}

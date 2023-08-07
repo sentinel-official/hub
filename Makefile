@@ -1,7 +1,7 @@
-PACKAGES := $(shell go list ./...)
-VERSION := $(shell echo $(shell git describe --tags) | sed 's/^v//')
+.DEFAULT_GOAL := default
+VERSION := $(shell git describe --tags | sed 's/^v//' | rev | cut -d - -f 2- | rev)
 COMMIT := $(shell git log -1 --format='%H')
-TENDERMINT_VERSION := $(shell go list -m github.com/tendermint/tendermint | sed 's:.* ::')
+TENDERMINT_VERSION := $(shell go list -m github.com/tendermint/tendermint | sed 's/.* //')
 
 BUILD_TAGS := $(strip netgo,ledger)
 LD_FLAGS := -s -w \
@@ -14,11 +14,19 @@ LD_FLAGS := -s -w \
 
 .PHONY: benchmark
 benchmark:
-	@go test -mod=readonly -v -bench ${PACKAGES}
+	@go test -mod=readonly -v -bench ./...
+
+.PHONY: build
+build:
+	go build -mod=readonly -tags="${BUILD_TAGS}" -ldflags="${LD_FLAGS}" -trimpath \
+		-o ./build/sentinelhub ./cmd/sentinelhub
 
 .PHONY: clean
 clean:
-	rm -rf ./vendor
+	rm -rf ./build ./vendor ./coverage.txt
+
+.PHONE: default
+default: build
 
 .PHONY: install
 install:
@@ -29,7 +37,7 @@ go-lint:
 	@golangci-lint run --fix
 
 .PHONY: mod-vendor
-mod-vendor: tools
+mod-vendor:
 	@go mod vendor
 	@modvendor -copy="**/*.proto" -include=github.com/cosmos/cosmos-sdk/proto,github.com/cosmos/cosmos-sdk/third_party/proto
 
@@ -39,15 +47,15 @@ proto-gen:
 
 .PHONY: proto-lint
 proto-lint:
-	@find proto -name *.proto -exec clang-format-12 -i {} \;
+	@find proto -name *.proto -exec clang-format -i {} \;
 
 .PHONY: test
 test:
-	@go test -mod=readonly -timeout 15m -v ${PACKAGES}
+	@go test -mod=readonly -timeout 15m -v ./...
 
 .PHONT: test-coverage
 test-coverage:
-	@go test -mod=readonly -timeout 15m -v -covermode=atomic -coverprofile=coverage.txt ${PACKAGES}
+	@go test -mod=readonly -timeout 15m -v -covermode=atomic -coverprofile=coverage.txt ./...
 
 .PHONY: tools
 tools:

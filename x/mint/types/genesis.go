@@ -15,17 +15,17 @@ func DefaultGenesisState() *GenesisState {
 	return NewGenesisState(nil)
 }
 
-func (m *GenesisState) Validate() error {
-	inflations := make(map[time.Time]bool)
-	for _, item := range m.Inflations {
-		if inflations[item.Timestamp] {
-			return fmt.Errorf("found duplicate inflation for timestamp %s", item.Timestamp)
+func (gs *GenesisState) Validate() error {
+	m := make(map[time.Time]bool)
+	for _, item := range gs.Inflations {
+		if m[item.Timestamp] {
+			return fmt.Errorf("found a duplicate inflation for timestamp %s", item.Timestamp)
 		}
 
-		inflations[item.Timestamp] = true
+		m[item.Timestamp] = true
 	}
 
-	for _, item := range m.Inflations {
+	for _, item := range gs.Inflations {
 		if err := item.Validate(); err != nil {
 			return err
 		}

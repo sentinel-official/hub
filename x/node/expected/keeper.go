@@ -1,3 +1,5 @@
+// DO NOT COVER
+
 package expected
 
 import (
@@ -5,6 +7,7 @@ import (
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 
 	hubtypes "github.com/sentinel-official/hub/types"
+	subscriptiontypes "github.com/sentinel-official/hub/x/subscription/types"
 )
 
 type AccountKeeper interface {
@@ -20,9 +23,9 @@ type DistributionKeeper interface {
 }
 
 type ProviderKeeper interface {
-	HasProvider(ctx sdk.Context, address hubtypes.ProvAddress) bool
+	HasProvider(ctx sdk.Context, addr hubtypes.ProvAddress) bool
 }
 
-type PlanKeeper interface {
-	GetCountForNodeByProvider(ctx sdk.Context, p hubtypes.ProvAddress, n hubtypes.NodeAddress) uint64
+type SubscriptionKeeper interface {
+	CreateSubscriptionForNode(ctx sdk.Context, accAddr sdk.AccAddress, nodeAddr hubtypes.NodeAddress, gigabytes, hours int64, denom string) (*subscriptiontypes.NodeSubscription, error)
 }

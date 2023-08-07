@@ -7,15 +7,14 @@ import (
 )
 
 const (
-	ModuleName   = "custommint"
-	StoreKey     = ModuleName
-	QuerierRoute = ModuleName
+	ModuleName = "custommint"
+	StoreKey   = ModuleName
 )
 
 var (
 	InflationKeyPrefix = []byte{0x01}
 )
 
-func InflationKey(timestamp time.Time) []byte {
-	return append(InflationKeyPrefix, sdk.FormatTimeBytes(timestamp)...)
+func InflationKey(t time.Time) []byte {
+	return append(InflationKeyPrefix, sdk.FormatTimeBytes(t)...)
 }

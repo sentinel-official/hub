@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"context"
+	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
@@ -9,212 +10,246 @@ import (
 	"github.com/sentinel-official/hub/x/node/types"
 )
 
+// The following line asserts that the `msgServer` type implements the `types.MsgServiceServer` interface.
 var (
 	_ types.MsgServiceServer = (*msgServer)(nil)
 )
 
+// msgServer is a message server that implements the `types.MsgServiceServer` interface.
 type msgServer struct {
-	Keeper
+	Keeper // Keeper is an instance of the main keeper for the module.
 }
 
-func NewMsgServiceServer(keeper Keeper) types.MsgServiceServer {
-	return &msgServer{Keeper: keeper}
+// NewMsgServiceServer creates a new instance of `types.MsgServiceServer` using the provided Keeper.
+func NewMsgServiceServer(k Keeper) types.MsgServiceServer {
+	return &msgServer{k}
 }
 
+// MsgRegister registers a new node in the network.
+// It validates the registration request, checks prices, and creates a new node.
 func (k *msgServer) MsgRegister(c context.Context, msg *types.MsgRegisterRequest) (*types.MsgRegisterResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
-	fromAddr, err := sdk.AccAddressFromBech32(msg.From)
+	// Check if the provided GigabytePrices are valid, if not, return an error.
+	if msg.GigabytePrices != nil {
+		if !k.IsValidGigabytePrices(ctx, msg.GigabytePrices) {
+			return nil, types.NewErrorInvalidPrices(msg.GigabytePrices)
+		}
+	}
+
+	// Check if the provided HourlyPrices are valid, if not, return an error.
+	if msg.HourlyPrices != nil {
+		if !k.IsValidHourlyPrices(ctx, msg.HourlyPrices) {
+			return nil, types.NewErrorInvalidPrices(msg.HourlyPrices)
+		}
+	}
+
+	// Convert the `msg.From` address (in Bech32 format) to an `sdk.AccAddress`.
+	accAddr, err := sdk.AccAddressFromBech32(msg.From)
 	if err != nil {
 		return nil, err
 	}
-	if k.HasNode(ctx, fromAddr.Bytes()) {
-		return nil, types.ErrorDuplicateNode
+
+	// Convert the account address to a `hubtypes.NodeAddress`.
+	nodeAddr := hubtypes.NodeAddress(accAddr.Bytes())
+
+	// Check if the node already exists in the network. If found, return an error to prevent duplicate registration.
+	if k.HasNode(ctx, nodeAddr) {
+		return nil, types.NewErrorDuplicateNode(nodeAddr)
 	}
 
-	if msg.Provider != "" {
-		provAddr, err := hubtypes.ProvAddressFromBech32(msg.Provider)
-		if err != nil {
-			return nil, err
-		}
-		if !k.HasProvider(ctx, provAddr) {
-			return nil, types.ErrorProviderDoesNotExist
-		}
-	}
-	if msg.Price != nil {
-		if !k.IsValidPrice(ctx, msg.Price) {
-			return nil, types.ErrorInvalidPrice
-		}
-	}
-
+	// Get the required deposit for registering a new node.
 	deposit := k.Deposit(ctx)
-	if err := k.FundCommunityPool(ctx, fromAddr, deposit); err != nil {
+
+	// Fund the community pool with the required deposit from the registrant's account.
+	if err = k.FundCommunityPool(ctx, accAddr, deposit); err != nil {
 		return nil, err
 	}
 
-	var (
-		nodeAddr = hubtypes.NodeAddress(fromAddr.Bytes())
-		node     = types.Node{
-			Address:   nodeAddr.String(),
-			Provider:  msg.Provider,
-			Price:     msg.Price,
-			RemoteURL: msg.RemoteURL,
-			Status:    hubtypes.StatusInactive,
-			StatusAt:  ctx.BlockTime(),
-		}
-		provAddr = node.GetProvider()
-	)
-
-	k.SetNode(ctx, node)
-	k.SetInactiveNode(ctx, nodeAddr)
-
-	if provAddr != nil {
-		k.SetInactiveNodeForProvider(ctx, provAddr, nodeAddr)
+	// Create a new node with the provided information and set its status to `Inactive`.
+	node := types.Node{
+		Address:        nodeAddr.String(),
+		GigabytePrices: msg.GigabytePrices,
+		HourlyPrices:   msg.HourlyPrices,
+		RemoteURL:      msg.RemoteURL,
+		InactiveAt:     time.Time{},
+		Status:         hubtypes.StatusInactive,
+		StatusAt:       ctx.BlockTime(),
 	}
 
+	// Save the new node in the Store.
+	k.SetNode(ctx, node)
+
+	// Emit an event to notify that a new node has been registered.
 	ctx.EventManager().EmitTypedEvent(
 		&types.EventRegister{
-			Address:  node.Address,
-			Provider: node.Provider,
+			Address: node.Address,
 		},
 	)
 
 	return &types.MsgRegisterResponse{}, nil
 }
 
-func (k *msgServer) MsgUpdate(c context.Context, msg *types.MsgUpdateRequest) (*types.MsgUpdateResponse, error) {
+// MsgUpdateDetails updates the details of a registered node.
+// It validates the update details request, checks prices, and updates the node information.
+func (k *msgServer) MsgUpdateDetails(c context.Context, msg *types.MsgUpdateDetailsRequest) (*types.MsgUpdateDetailsResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
-	fromAddr, err := hubtypes.NodeAddressFromBech32(msg.From)
+	// Check if the provided GigabytePrices are valid, if not, return an error.
+	if msg.GigabytePrices != nil {
+		if !k.IsValidGigabytePrices(ctx, msg.GigabytePrices) {
+			return nil, types.NewErrorInvalidPrices(msg.GigabytePrices)
+		}
+	}
+
+	// Check if the provided HourlyPrices are valid, if not, return an error.
+	if msg.HourlyPrices != nil {
+		if !k.IsValidHourlyPrices(ctx, msg.HourlyPrices) {
+			return nil, types.NewErrorInvalidPrices(msg.HourlyPrices)
+		}
+	}
+
+	// Convert the `msg.From` address (in Bech32 format) to a `hubtypes.NodeAddress`.
+	nodeAddr, err := hubtypes.NodeAddressFromBech32(msg.From)
 	if err != nil {
 		return nil, err
 	}
 
-	node, found := k.GetNode(ctx, fromAddr)
+	// Get the node from the Store based on the provided node address.
+	node, found := k.GetNode(ctx, nodeAddr)
 	if !found {
-		return nil, types.ErrorNodeDoesNotExist
+		return nil, types.NewErrorNodeNotFound(nodeAddr)
 	}
 
-	if msg.Provider == node.Provider {
-		msg.Provider = ""
-	}
+	// Update the node's GigabytePrices and HourlyPrices with the provided values.
+	node.GigabytePrices = msg.GigabytePrices
+	node.HourlyPrices = msg.HourlyPrices
 
-	if (msg.Provider != "" || msg.Price != nil) && node.Provider != "" {
-		var (
-			nodeAddr = node.GetAddress()
-			provAddr = node.GetProvider()
-		)
-
-		if k.GetPlanCountForNodeByProvider(ctx, provAddr, nodeAddr) > 0 {
-			return nil, types.ErrorInvalidPlanCount
-		}
-
-		if node.Status.Equal(hubtypes.StatusActive) {
-			k.DeleteActiveNodeForProvider(ctx, provAddr, nodeAddr)
-		} else {
-			k.DeleteInactiveNodeForProvider(ctx, provAddr, nodeAddr)
-		}
-	}
-
-	if msg.Provider != "" {
-		provAddr, err := hubtypes.ProvAddressFromBech32(msg.Provider)
-		if err != nil {
-			return nil, err
-		}
-		if !k.HasProvider(ctx, provAddr) {
-			return nil, types.ErrorProviderDoesNotExist
-		}
-
-		node.Price = nil
-		node.Provider = msg.Provider
-
-		nodeAddr := node.GetAddress()
-		if node.Status.Equal(hubtypes.StatusActive) {
-			k.SetActiveNodeForProvider(ctx, provAddr, nodeAddr)
-		} else {
-			k.SetInactiveNodeForProvider(ctx, provAddr, nodeAddr)
-		}
-	}
-	if msg.Price != nil {
-		if !k.IsValidPrice(ctx, msg.Price) {
-			return nil, types.ErrorInvalidPrice
-		}
-
-		node.Provider = ""
-		node.Price = msg.Price
-	}
+	// If a RemoteURL is provided, update the node's RemoteURL as well.
 	if msg.RemoteURL != "" {
 		node.RemoteURL = msg.RemoteURL
 	}
 
+	// Save the updated node in the Store.
 	k.SetNode(ctx, node)
+
+	// Emit an event to notify that the node details have been updated.
 	ctx.EventManager().EmitTypedEvent(
-		&types.EventUpdate{
-			Address:  node.Address,
-			Provider: node.Provider,
+		&types.EventUpdateDetails{
+			Address: node.Address,
 		},
 	)
 
-	return &types.MsgUpdateResponse{}, nil
+	return &types.MsgUpdateDetailsResponse{}, nil
 }
 
-func (k *msgServer) MsgSetStatus(c context.Context, msg *types.MsgSetStatusRequest) (*types.MsgSetStatusResponse, error) {
+// MsgUpdateStatus updates the status of a registered node.
+// It validates the update status request, checks the node's current status, and updates the status and inactive time accordingly.
+func (k *msgServer) MsgUpdateStatus(c context.Context, msg *types.MsgUpdateStatusRequest) (*types.MsgUpdateStatusResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
-	fromAddr, err := hubtypes.NodeAddressFromBech32(msg.From)
+	// Convert the `msg.From` address (in Bech32 format) to a `hubtypes.NodeAddress`.
+	nodeAddr, err := hubtypes.NodeAddressFromBech32(msg.From)
 	if err != nil {
 		return nil, err
 	}
 
-	node, found := k.GetNode(ctx, fromAddr)
+	// Get the node from the Store based on the provided node address.
+	node, found := k.GetNode(ctx, nodeAddr)
 	if !found {
-		return nil, types.ErrorNodeDoesNotExist
+		return nil, types.NewErrorNodeNotFound(nodeAddr)
 	}
 
-	var (
-		nodeAddr         = node.GetAddress()
-		provAddr         = node.GetProvider()
-		inactiveDuration = k.InactiveDuration(ctx)
-	)
-
+	// If the current status of the node is `Active`, handle the necessary updates for changing to `Inactive` status.
 	if node.Status.Equal(hubtypes.StatusActive) {
+		k.DeleteNodeForInactiveAt(ctx, node.InactiveAt, nodeAddr)
 		if msg.Status.Equal(hubtypes.StatusInactive) {
 			k.DeleteActiveNode(ctx, nodeAddr)
-			k.SetInactiveNode(ctx, nodeAddr)
-
-			if node.Provider != "" {
-				k.DeleteActiveNodeForProvider(ctx, provAddr, nodeAddr)
-				k.SetInactiveNodeForProvider(ctx, provAddr, nodeAddr)
-			}
-		}
-
-		k.DeleteInactiveNodeAt(ctx, node.StatusAt.Add(inactiveDuration), nodeAddr)
-	} else {
-		if msg.Status.Equal(hubtypes.StatusActive) {
-			k.DeleteInactiveNode(ctx, nodeAddr)
-			k.SetActiveNode(ctx, nodeAddr)
-
-			if node.Provider != "" {
-				k.DeleteInactiveNodeForProvider(ctx, provAddr, nodeAddr)
-				k.SetActiveNodeForProvider(ctx, provAddr, nodeAddr)
-			}
 		}
 	}
 
+	// If the current status of the node is `Inactive`, handle the necessary updates for changing to `Active` status.
+	if node.Status.Equal(hubtypes.StatusInactive) {
+		if msg.Status.Equal(hubtypes.StatusActive) {
+			k.DeleteInactiveNode(ctx, nodeAddr)
+		}
+	}
+
+	// If the new status is `Active`, update the node's inactive time based on the active duration.
+	if msg.Status.Equal(hubtypes.StatusActive) {
+		node.InactiveAt = ctx.BlockTime().Add(
+			k.ActiveDuration(ctx),
+		)
+		k.SetNodeForInactiveAt(ctx, node.InactiveAt, nodeAddr)
+	}
+
+	// If the new status is `Inactive`, set the node's inactive time to zero.
+	if msg.Status.Equal(hubtypes.StatusInactive) {
+		node.InactiveAt = time.Time{}
+	}
+
+	// Update the node's status and status timestamp.
 	node.Status = msg.Status
 	node.StatusAt = ctx.BlockTime()
 
-	if node.Status.Equal(hubtypes.StatusActive) {
-		k.SetInactiveNodeAt(ctx, node.StatusAt.Add(inactiveDuration), nodeAddr)
-	}
-
+	// Save the updated node in the Store.
 	k.SetNode(ctx, node)
+
+	// Emit an event to notify that the node status has been updated.
 	ctx.EventManager().EmitTypedEvent(
-		&types.EventSetStatus{
+		&types.EventUpdateStatus{
 			Address: node.Address,
 			Status:  node.Status,
 		},
 	)
 
-	return &types.MsgSetStatusResponse{}, nil
+	return &types.MsgUpdateStatusResponse{}, nil
+}
+
+// MsgSubscribe subscribes to a node for a specific amount of gigabytes or hours.
+// It validates the subscription request and creates a new subscription for the provided node and user account.
+func (k *msgServer) MsgSubscribe(c context.Context, msg *types.MsgSubscribeRequest) (*types.MsgSubscribeResponse, error) {
+	ctx := sdk.UnwrapSDKContext(c)
+
+	// Check if the provided Gigabytes value is valid, if not, return an error.
+	if msg.Gigabytes != 0 {
+		if !k.IsValidSubscriptionGigabytes(ctx, msg.Gigabytes) {
+			return nil, types.NewErrorInvalidGigabytes(msg.Gigabytes)
+		}
+	}
+
+	// Check if the provided Hours value is valid, if not, return an error.
+	if msg.Hours != 0 {
+		if !k.IsValidSubscriptionHours(ctx, msg.Hours) {
+			return nil, types.NewErrorInvalidHours(msg.Hours)
+		}
+	}
+
+	// Convert the `msg.From` address (in Bech32 format) to an `sdk.AccAddress`.
+	accAddr, err := sdk.AccAddressFromBech32(msg.From)
+	if err != nil {
+		return nil, err
+	}
+
+	// Convert the `msg.NodeAddress` (node address) to a `hubtypes.NodeAddress`.
+	nodeAddr, err := hubtypes.NodeAddressFromBech32(msg.NodeAddress)
+	if err != nil {
+		return nil, err
+	}
+
+	// Create a new subscription for the provided node, user account, gigabytes, hours, and denom.
+	subscription, err := k.CreateSubscriptionForNode(ctx, accAddr, nodeAddr, msg.Gigabytes, msg.Hours, msg.Denom)
+	if err != nil {
+		return nil, err
+	}
+
+	// Emit an event to notify that a new subscription has been created.
+	ctx.EventManager().EmitTypedEvent(
+		&types.EventCreateSubscription{
+			ID:          subscription.ID,
+			NodeAddress: subscription.NodeAddress,
+		},
+	)
+
+	return &types.MsgSubscribeResponse{}, nil
 }

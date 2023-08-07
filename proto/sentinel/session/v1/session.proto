@@ -1,14 +1,13 @@
 syntax = "proto3";
 package sentinel.session.v1;
 
-option go_package = "github.com/sentinel-official/hub/x/session/types";
-
 import "gogoproto/gogo.proto";
 import "google/protobuf/duration.proto";
 import "google/protobuf/timestamp.proto";
 import "sentinel/types/v1/bandwidth.proto";
 import "sentinel/types/v1/status.proto";
 
+option go_package = "github.com/sentinel-official/hub/x/session/legacy/v1/types";
 option (gogoproto.equal_all)           = false;
 option (gogoproto.goproto_getters_all) = false;
 

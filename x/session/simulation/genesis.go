@@ -1,3 +1,5 @@
+// DO NOT COVER
+
 package simulation
 
 import (
@@ -11,21 +13,21 @@ import (
 
 func RandomizedGenesisState(state *module.SimulationState) *types.GenesisState {
 	var (
-		inactiveDuration time.Duration
+		statusChangeDelay time.Duration
 	)
 
 	state.AppParams.GetOrGenerate(
 		state.Cdc,
-		string(types.KeyInactiveDuration),
-		&inactiveDuration,
+		string(types.KeyStatusChangeDelay),
+		&statusChangeDelay,
 		state.Rand,
 		func(r *rand.Rand) {
-			inactiveDuration = time.Duration(r.Int63n(MaxInactiveDuration)) * time.Millisecond
+			statusChangeDelay = time.Duration(r.Int63n(MaxStatusChangeDelay)) * time.Millisecond
 		},
 	)
 
 	return types.NewGenesisState(
 		nil,
-		types.NewParams(inactiveDuration, false),
+		types.NewParams(statusChangeDelay, false),
 	)
 }

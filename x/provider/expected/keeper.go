@@ -1,3 +1,5 @@
+// DO NOT COVER
+
 package expected
 
 import (
@@ -6,11 +8,11 @@ import (
 )
 
 type AccountKeeper interface {
-	GetAccount(ctx sdk.Context, address sdk.AccAddress) authtypes.AccountI
+	GetAccount(sdk.Context, sdk.AccAddress) authtypes.AccountI
 }
 
 type BankKeeper interface {
-	SpendableCoins(ctx sdk.Context, address sdk.AccAddress) sdk.Coins
+	SpendableCoins(ctx sdk.Context, addr sdk.AccAddress) sdk.Coins
 }
 
 type DistributionKeeper interface {

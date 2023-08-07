@@ -6,63 +6,71 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/address"
+
+	hubtypes "github.com/sentinel-official/hub/types"
 )
 
 const (
-	ModuleName   = "session"
-	QuerierRoute = ModuleName
+	ModuleName = "session"
 )
 
 var (
-	ParamsSubspace = ModuleName
-	RouterKey      = ModuleName
-	StoreKey       = ModuleName
-)
+	CountKey = []byte{0x00}
 
-var (
-	TypeMsgStartRequest  = ModuleName + ":start"
-	TypeMsgUpdateRequest = ModuleName + ":update"
-	TypeMsgEndRequest    = ModuleName + ":end"
-)
-
-var (
-	CountKey                           = []byte{0x00}
-	SessionKeyPrefix                   = []byte{0x11}
-	InactiveSessionForAddressKeyPrefix = []byte{0x30}
-	ActiveSessionForAddressKeyPrefix   = []byte{0x31}
-	InactiveSessionAtKeyPrefix         = []byte{0x40}
+	SessionKeyPrefix                = []byte{0x10}
+	SessionForInactiveAtKeyPrefix   = []byte{0x11}
+	SessionForAccountKeyPrefix      = []byte{0x12}
+	SessionForNodeKeyPrefix         = []byte{0x13}
+	SessionForSubscriptionKeyPrefix = []byte{0x14}
+	SessionForAllocationKeyPrefix   = []byte{0x15}
 )
 
 func SessionKey(id uint64) []byte {
 	return append(SessionKeyPrefix, sdk.Uint64ToBigEndian(id)...)
 }
 
-func GetInactiveSessionForAddressKeyPrefix(addr sdk.AccAddress) []byte {
-	return append(InactiveSessionForAddressKeyPrefix, address.MustLengthPrefix(addr.Bytes())...)
+func GetSessionForAccountKeyPrefix(addr sdk.AccAddress) []byte {
+	return append(SessionForAccountKeyPrefix, address.MustLengthPrefix(addr.Bytes())...)
 }
 
-func InactiveSessionForAddressKey(addr sdk.AccAddress, id uint64) []byte {
-	return append(GetInactiveSessionForAddressKeyPrefix(addr), sdk.Uint64ToBigEndian(id)...)
+func SessionForAccountKey(addr sdk.AccAddress, id uint64) []byte {
+	return append(GetSessionForAccountKeyPrefix(addr), sdk.Uint64ToBigEndian(id)...)
 }
 
-func GetActiveSessionForAddressKeyPrefix(addr sdk.AccAddress) []byte {
-	return append(ActiveSessionForAddressKeyPrefix, address.MustLengthPrefix(addr.Bytes())...)
+func GetSessionForNodeKeyPrefix(addr hubtypes.NodeAddress) []byte {
+	return append(SessionForNodeKeyPrefix, address.MustLengthPrefix(addr.Bytes())...)
 }
 
-func ActiveSessionForAddressKey(addr sdk.AccAddress, id uint64) []byte {
-	return append(GetActiveSessionForAddressKeyPrefix(addr), sdk.Uint64ToBigEndian(id)...)
+func SessionForNodeKey(addr hubtypes.NodeAddress, id uint64) []byte {
+	return append(GetSessionForNodeKeyPrefix(addr), sdk.Uint64ToBigEndian(id)...)
 }
 
-func GetInactiveSessionAtKeyPrefix(at time.Time) []byte {
-	return append(InactiveSessionAtKeyPrefix, sdk.FormatTimeBytes(at)...)
+func GetSessionForSubscriptionKeyPrefix(id uint64) []byte {
+	return append(SessionForSubscriptionKeyPrefix, sdk.Uint64ToBigEndian(id)...)
 }
 
-func InactiveSessionAtKey(at time.Time, id uint64) []byte {
-	return append(GetInactiveSessionAtKeyPrefix(at), sdk.Uint64ToBigEndian(id)...)
+func SessionForSubscriptionKey(subscriptionID, sessionID uint64) []byte {
+	return append(GetSessionForSubscriptionKeyPrefix(subscriptionID), sdk.Uint64ToBigEndian(sessionID)...)
 }
 
-func IDFromStatusSessionForAddressKey(key []byte) uint64 {
-	// prefix (1 byte) | addrLen (1 byte) | addr | session (8 bytes)
+func GetSessionForAllocationKeyPrefix(id uint64, addr sdk.AccAddress) []byte {
+	return append(SessionForAllocationKeyPrefix, append(sdk.Uint64ToBigEndian(id), address.MustLengthPrefix(addr)...)...)
+}
+
+func SessionForAllocationKey(subscriptionID uint64, addr sdk.AccAddress, sessionID uint64) []byte {
+	return append(GetSessionForAllocationKeyPrefix(subscriptionID, addr), sdk.Uint64ToBigEndian(sessionID)...)
+}
+
+func GetSessionForInactiveAtKeyPrefix(at time.Time) []byte {
+	return append(SessionForInactiveAtKeyPrefix, sdk.FormatTimeBytes(at)...)
+}
+
+func SessionForInactiveAtKey(at time.Time, id uint64) []byte {
+	return append(GetSessionForInactiveAtKeyPrefix(at), sdk.Uint64ToBigEndian(id)...)
+}
+
+func IDFromSessionForAccountKey(key []byte) uint64 {
+	// prefix (1 byte) | addrLen (1 byte) | addr (addrLen bytes) | id (8 bytes)
 
 	addrLen := int(key[1])
 	if len(key) != 10+addrLen {
@@ -72,7 +80,39 @@ func IDFromStatusSessionForAddressKey(key []byte) uint64 {
 	return sdk.BigEndianToUint64(key[2+addrLen:])
 }
 
-func IDFromStatusSessionAtKey(key []byte) uint64 {
+func IDFromSessionForNodeKey(key []byte) uint64 {
+	// prefix (1 byte) | addrLen (1 byte) | addr (addrLen bytes) | id (8 bytes)
+
+	addrLen := int(key[1])
+	if len(key) != 10+addrLen {
+		panic(fmt.Errorf("invalid key length %d; expected %d", len(key), 10+addrLen))
+	}
+
+	return sdk.BigEndianToUint64(key[2+addrLen:])
+}
+
+func IDFromSessionForSubscriptionKey(key []byte) uint64 {
+	// prefix (1 byte) | subscriptionID (8 bytes) | sessionID (8 bytes)
+
+	if len(key) != 17 {
+		panic(fmt.Errorf("invalid key length %d; expected %d", len(key), 17))
+	}
+
+	return sdk.BigEndianToUint64(key[9:])
+}
+
+func IDFromSessionForAllocationKey(key []byte) uint64 {
+	// prefix (1 byte) | subscriptionID (8 bytes) | addrLen (1 byte) | addr (addrLen bytes) | id (8 bytes)
+
+	addrLen := int(key[9])
+	if len(key) != 18+addrLen {
+		panic(fmt.Errorf("invalid key length %d; expected %d", len(key), 18+addrLen))
+	}
+
+	return sdk.BigEndianToUint64(key[10+addrLen:])
+}
+
+func IDFromSessionForInactiveAtKey(key []byte) uint64 {
 	// prefix (1 byte) | at (29 bytes) | session (8 bytes)
 
 	if len(key) != 38 {

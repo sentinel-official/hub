@@ -1,3 +1,5 @@
+// DO NOT COVER
+
 package cli
 
 import (
@@ -6,6 +8,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	"github.com/spf13/cobra"
 
+	hubtypes "github.com/sentinel-official/hub/types"
 	"github.com/sentinel-official/hub/x/provider/types"
 )
 
@@ -88,12 +91,18 @@ func txUpdate() *cobra.Command {
 				return err
 			}
 
+			status, err := hubtypes.StatusFromFlags(cmd.Flags())
+			if err != nil {
+				return err
+			}
+
 			msg := types.NewMsgUpdateRequest(
 				ctx.FromAddress.Bytes(),
 				name,
 				identity,
 				website,
 				description,
+				status,
 			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err
@@ -108,6 +117,7 @@ func txUpdate() *cobra.Command {
 	cmd.Flags().String(flagIdentity, "", "identity of the provider")
 	cmd.Flags().String(flagWebsite, "", "website of the provider")
 	cmd.Flags().String(flagDescription, "", "description of the provider")
+	cmd.Flags().String(hubtypes.FlagStatus, "", "status of the provider (active|inactive)")
 
 	return cmd
 }

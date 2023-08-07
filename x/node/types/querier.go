@@ -6,9 +6,9 @@ import (
 	hubtypes "github.com/sentinel-official/hub/types"
 )
 
-func NewQueryNodeRequest(address hubtypes.NodeAddress) *QueryNodeRequest {
+func NewQueryNodeRequest(addr hubtypes.NodeAddress) *QueryNodeRequest {
 	return &QueryNodeRequest{
-		Address: address.String(),
+		Address: addr.String(),
 	}
 }
 
@@ -19,9 +19,9 @@ func NewQueryNodesRequest(status hubtypes.Status, pagination *query.PageRequest)
 	}
 }
 
-func NewQueryNodesForProviderRequest(address hubtypes.ProvAddress, status hubtypes.Status, pagination *query.PageRequest) *QueryNodesForProviderRequest {
-	return &QueryNodesForProviderRequest{
-		Address:    address.String(),
+func NewQueryNodesForPlanRequest(id uint64, status hubtypes.Status, pagination *query.PageRequest) *QueryNodesForPlanRequest {
+	return &QueryNodesForPlanRequest{
+		Id:         id,
 		Status:     status,
 		Pagination: pagination,
 	}

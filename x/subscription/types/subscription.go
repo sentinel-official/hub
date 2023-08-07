@@ -2,115 +2,165 @@ package types
 
 import (
 	"fmt"
+	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/errors"
+	"github.com/gogo/protobuf/proto"
 
 	hubtypes "github.com/sentinel-official/hub/types"
 )
 
-func (m *Subscription) GetNode() hubtypes.NodeAddress {
-	if m.Node == "" {
+type (
+	Subscription interface {
+		proto.Message
+		Type() SubscriptionType
+		Validate() error
+		GetID() uint64
+		GetAddress() sdk.AccAddress
+		GetInactiveAt() time.Time
+		GetStatus() hubtypes.Status
+		GetStatusAt() time.Time
+		SetInactiveAt(v time.Time)
+		SetStatus(v hubtypes.Status)
+		SetStatusAt(v time.Time)
+	}
+	Subscriptions []Subscription
+)
+
+var (
+	_ Subscription = (*NodeSubscription)(nil)
+	_ Subscription = (*PlanSubscription)(nil)
+)
+
+func (s *BaseSubscription) GetID() uint64              { return s.ID }
+func (s *BaseSubscription) GetInactiveAt() time.Time   { return s.InactiveAt }
+func (s *BaseSubscription) GetStatus() hubtypes.Status { return s.Status }
+func (s *BaseSubscription) GetStatusAt() time.Time     { return s.StatusAt }
+
+func (s *BaseSubscription) GetAddress() sdk.AccAddress {
+	if s.Address == "" {
 		return nil
 	}
 
-	address, err := hubtypes.NodeAddressFromBech32(m.Node)
+	addr, err := sdk.AccAddressFromBech32(s.Address)
 	if err != nil {
 		panic(err)
 	}
 
-	return address
+	return addr
 }
 
-func (m *Subscription) GetOwner() sdk.AccAddress {
-	if m.Owner == "" {
-		return nil
-	}
+func (s *BaseSubscription) SetInactiveAt(v time.Time)   { s.InactiveAt = v }
+func (s *BaseSubscription) SetStatus(v hubtypes.Status) { s.Status = v }
+func (s *BaseSubscription) SetStatusAt(v time.Time)     { s.StatusAt = v }
 
-	address, err := sdk.AccAddressFromBech32(m.Owner)
-	if err != nil {
-		panic(err)
-	}
-
-	return address
-}
-
-func (m *Subscription) Amount(consumed sdk.Int) sdk.Coin {
-	var (
-		amount sdk.Int
-		x      = hubtypes.Gigabyte.Quo(m.Price.Amount)
-	)
-
-	if x.IsPositive() {
-		amount = hubtypes.NewBandwidth(consumed, sdk.ZeroInt()).
-			CeilTo(x).
-			Sum().Quo(x)
-	} else {
-		y := sdk.NewDecFromInt(m.Price.Amount).
-			QuoInt(hubtypes.Gigabyte).
-			Ceil().TruncateInt()
-		amount = consumed.Mul(y)
-	}
-
-	return sdk.NewCoin(m.Price.Denom, amount)
-}
-
-func (m *Subscription) Validate() error {
-	if m.Id == 0 {
+func (s *BaseSubscription) Validate() error {
+	if s.ID == 0 {
 		return fmt.Errorf("id cannot be zero")
 	}
-	if m.Owner == "" {
-		return fmt.Errorf("owner cannot be empty")
+	if s.Address == "" {
+		return fmt.Errorf("address cannot be empty")
 	}
-	if _, err := sdk.AccAddressFromBech32(m.Owner); err != nil {
-		return errors.Wrapf(err, "invalid owner %s", m.Owner)
+	if _, err := sdk.AccAddressFromBech32(s.Address); err != nil {
+		return errors.Wrapf(err, "invalid address %s", s.Address)
 	}
-	if m.Node == "" && m.Plan == 0 {
-		return fmt.Errorf("both node and plan cannot be empty")
+	if s.InactiveAt.IsZero() {
+		return fmt.Errorf("inactive_at cannot be zero")
 	}
-	if m.Node != "" && m.Plan != 0 {
-		return fmt.Errorf("either node or plan must be empty")
-	}
-	if m.Node != "" {
-		if _, err := hubtypes.NodeAddressFromBech32(m.Node); err != nil {
-			return errors.Wrapf(err, "invalid node %s", m.Node)
-		}
-		if m.Price.IsZero() {
-			return fmt.Errorf("price cannot be zero")
-		}
-		if !m.Price.IsValid() {
-			return fmt.Errorf("price must be valid")
-		}
-		if m.Deposit.IsZero() {
-			return fmt.Errorf("deposit cannot be zero")
-		}
-		if !m.Deposit.IsValid() {
-			return fmt.Errorf("deposit must be valid")
-		}
-	}
-	if m.Plan != 0 {
-		if m.Denom != "" {
-			if err := sdk.ValidateDenom(m.Denom); err != nil {
-				return errors.Wrapf(err, "invalid denom %s", m.Denom)
-			}
-		}
-		if m.Expiry.IsZero() {
-			return fmt.Errorf("expiry cannot be zero")
-		}
-	}
-	if m.Free.IsNegative() {
-		return fmt.Errorf("free cannot not be negative")
-	}
-	if !m.Status.IsValid() {
+	if !s.Status.IsValid() {
 		return fmt.Errorf("status must be valid")
 	}
-	if m.StatusAt.IsZero() {
+	if s.StatusAt.IsZero() {
 		return fmt.Errorf("status_at cannot be zero")
 	}
 
 	return nil
 }
 
-type (
-	Subscriptions []Subscription
-)
+func (s *NodeSubscription) Type() SubscriptionType {
+	return TypeNode
+}
+
+func (s *NodeSubscription) Validate() error {
+	if s.BaseSubscription == nil {
+		return fmt.Errorf("base_subscription cannot be nil")
+	}
+	if err := s.BaseSubscription.Validate(); err != nil {
+		return err
+	}
+	if s.NodeAddress == "" {
+		return fmt.Errorf("node_address cannot be empty")
+	}
+	if _, err := hubtypes.NodeAddressFromBech32(s.NodeAddress); err != nil {
+		return errors.Wrapf(err, "invalid node_address %s", s.NodeAddress)
+	}
+	if s.Gigabytes == 0 && s.Hours == 0 {
+		return fmt.Errorf("[gigabytes, hours] cannot be empty")
+	}
+	if s.Gigabytes != 0 && s.Hours != 0 {
+		return fmt.Errorf("[gigabytes, hours] cannot be non-empty")
+	}
+	if s.Gigabytes != 0 {
+		if s.Gigabytes < 0 {
+			return fmt.Errorf("gigabytes cannot be negative")
+		}
+	}
+	if s.Hours != 0 {
+		if s.Hours < 0 {
+			return fmt.Errorf("hours cannot be negative")
+		}
+	}
+	if s.Deposit.Denom != "" {
+		if s.Deposit.IsNil() {
+			return fmt.Errorf("deposit cannot be nil")
+		}
+		if s.Deposit.IsNegative() {
+			return fmt.Errorf("deposit cannot be negative")
+		}
+		if s.Deposit.IsZero() {
+			return fmt.Errorf("deposit cannot be zero")
+		}
+		if !s.Deposit.IsValid() {
+			return fmt.Errorf("deposit must be valid")
+		}
+	}
+
+	return nil
+}
+
+func (s *NodeSubscription) GetNodeAddress() hubtypes.NodeAddress {
+	if s.NodeAddress == "" {
+		return nil
+	}
+
+	addr, err := hubtypes.NodeAddressFromBech32(s.NodeAddress)
+	if err != nil {
+		panic(err)
+	}
+
+	return addr
+}
+
+func (s *PlanSubscription) Type() SubscriptionType {
+	return TypePlan
+}
+
+func (s *PlanSubscription) Validate() error {
+	if s.BaseSubscription == nil {
+		return fmt.Errorf("base_subscription cannot be nil")
+	}
+	if err := s.BaseSubscription.Validate(); err != nil {
+		return err
+	}
+	if s.PlanID == 0 {
+		return fmt.Errorf("plan_id cannot be zero")
+	}
+	if s.Denom != "" {
+		if err := sdk.ValidateDenom(s.Denom); err != nil {
+			return errors.Wrapf(err, "invalid denom %s", s.Denom)
+		}
+	}
+
+	return nil
+}

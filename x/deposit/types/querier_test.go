@@ -11,19 +11,19 @@ import (
 
 func TestNewQueryDepositRequest(t *testing.T) {
 	var (
-		address []byte
+		addr []byte
 	)
 
-	for i := 0; i < 40; i++ {
-		address = make([]byte, i)
-		_, _ = rand.Read(address)
+	for i := 0; i < 256; i += 64 {
+		addr = make([]byte, i)
+		_, _ = rand.Read(addr)
 
 		require.Equal(
 			t,
 			&QueryDepositRequest{
-				Address: sdk.AccAddress(address).String(),
+				Address: sdk.AccAddress(addr).String(),
 			},
-			NewQueryDepositRequest(address),
+			NewQueryDepositRequest(addr),
 		)
 	}
 }

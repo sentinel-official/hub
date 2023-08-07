@@ -1,3 +1,5 @@
+// DO NOT COVER
+
 package simulation
 
 import (
@@ -6,7 +8,7 @@ import (
 	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	simulationtypes "github.com/cosmos/cosmos-sdk/types/simulation"
+	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 
 	"github.com/sentinel-official/hub/x/node/types"
@@ -16,8 +18,8 @@ const (
 	MaxInt = 1 << 18
 )
 
-func ParamChanges(_ *rand.Rand) []simulationtypes.ParamChange {
-	return []simulationtypes.ParamChange{
+func ParamChanges(_ *rand.Rand) []simtypes.ParamChange {
+	return []simtypes.ParamChange{
 		simulation.NewSimParamChange(
 			types.ModuleName,
 			string(types.KeyDeposit),
@@ -30,7 +32,7 @@ func ParamChanges(_ *rand.Rand) []simulationtypes.ParamChange {
 		),
 		simulation.NewSimParamChange(
 			types.ModuleName,
-			string(types.KeyInactiveDuration),
+			string(types.KeyActiveDuration),
 			func(r *rand.Rand) string {
 				return fmt.Sprintf(
 					"%s",
@@ -40,7 +42,7 @@ func ParamChanges(_ *rand.Rand) []simulationtypes.ParamChange {
 		),
 		simulation.NewSimParamChange(
 			types.ModuleName,
-			string(types.KeyMaxPrice),
+			string(types.KeyMaxGigabytePrices),
 			func(r *rand.Rand) string {
 				return sdk.NewCoins(
 					sdk.NewInt64Coin(
@@ -52,7 +54,31 @@ func ParamChanges(_ *rand.Rand) []simulationtypes.ParamChange {
 		),
 		simulation.NewSimParamChange(
 			types.ModuleName,
-			string(types.KeyMinPrice),
+			string(types.KeyMinGigabytePrices),
+			func(r *rand.Rand) string {
+				return sdk.NewCoins(
+					sdk.NewInt64Coin(
+						sdk.DefaultBondDenom,
+						r.Int63n(MaxInt),
+					),
+				).String()
+			},
+		),
+		simulation.NewSimParamChange(
+			types.ModuleName,
+			string(types.KeyMaxHourlyPrices),
+			func(r *rand.Rand) string {
+				return sdk.NewCoins(
+					sdk.NewInt64Coin(
+						sdk.DefaultBondDenom,
+						r.Int63n(MaxInt),
+					),
+				).String()
+			},
+		),
+		simulation.NewSimParamChange(
+			types.ModuleName,
+			string(types.KeyMinHourlyPrices),
 			func(r *rand.Rand) string {
 				return sdk.NewCoins(
 					sdk.NewInt64Coin(

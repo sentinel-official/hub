@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	"fmt"
 	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -10,50 +11,134 @@ import (
 	"github.com/sentinel-official/hub/x/node/types"
 )
 
-func (k *Keeper) SetNode(ctx sdk.Context, node types.Node) {
-	key := types.NodeKey(node.GetAddress())
-	value := k.cdc.MustMarshal(&node)
+func (k *Keeper) SetActiveNode(ctx sdk.Context, node types.Node) {
+	var (
+		store = k.Store(ctx)
+		key   = types.ActiveNodeKey(node.GetAddress())
+		value = k.cdc.MustMarshal(&node)
+	)
 
-	store := k.Store(ctx)
 	store.Set(key, value)
 }
 
-func (k *Keeper) HasNode(ctx sdk.Context, address hubtypes.NodeAddress) bool {
-	store := k.Store(ctx)
+func (k *Keeper) HasActiveNode(ctx sdk.Context, addr hubtypes.NodeAddress) bool {
+	var (
+		store = k.Store(ctx)
+		key   = types.ActiveNodeKey(addr)
+	)
 
-	key := types.NodeKey(address)
 	return store.Has(key)
 }
 
-func (k *Keeper) GetNode(ctx sdk.Context, address hubtypes.NodeAddress) (node types.Node, found bool) {
-	store := k.Store(ctx)
-
-	key := types.NodeKey(address)
-	value := store.Get(key)
-	if value == nil {
-		return node, false
-	}
-
-	k.cdc.MustUnmarshal(value, &node)
-	return node, true
-}
-
-func (k *Keeper) GetNodes(ctx sdk.Context, skip, limit int64) (items types.Nodes) {
+func (k *Keeper) GetActiveNode(ctx sdk.Context, addr hubtypes.NodeAddress) (v types.Node, found bool) {
 	var (
 		store = k.Store(ctx)
-		iter  = hubtypes.NewPaginatedIterator(
-			sdk.KVStorePrefixIterator(store, types.NodeKeyPrefix),
-		)
+		key   = types.ActiveNodeKey(addr)
+		value = store.Get(key)
+	)
+
+	if value == nil {
+		return v, false
+	}
+
+	k.cdc.MustUnmarshal(value, &v)
+	return v, true
+}
+
+func (k *Keeper) DeleteActiveNode(ctx sdk.Context, addr hubtypes.NodeAddress) {
+	var (
+		store = k.Store(ctx)
+		key   = types.ActiveNodeKey(addr)
+	)
+
+	store.Delete(key)
+}
+
+func (k *Keeper) SetInactiveNode(ctx sdk.Context, node types.Node) {
+	var (
+		store = k.Store(ctx)
+		key   = types.InactiveNodeKey(node.GetAddress())
+		value = k.cdc.MustMarshal(&node)
+	)
+
+	store.Set(key, value)
+}
+
+func (k *Keeper) HasInactiveNode(ctx sdk.Context, addr hubtypes.NodeAddress) bool {
+	var (
+		store = k.Store(ctx)
+		key   = types.InactiveNodeKey(addr)
+	)
+
+	return store.Has(key)
+}
+
+func (k *Keeper) GetInactiveNode(ctx sdk.Context, addr hubtypes.NodeAddress) (v types.Node, found bool) {
+	var (
+		store = k.Store(ctx)
+		key   = types.InactiveNodeKey(addr)
+		value = store.Get(key)
+	)
+
+	if value == nil {
+		return v, false
+	}
+
+	k.cdc.MustUnmarshal(value, &v)
+	return v, true
+}
+
+func (k *Keeper) DeleteInactiveNode(ctx sdk.Context, addr hubtypes.NodeAddress) {
+	var (
+		store = k.Store(ctx)
+		key   = types.InactiveNodeKey(addr)
+	)
+
+	store.Delete(key)
+}
+
+func (k *Keeper) SetNode(ctx sdk.Context, node types.Node) {
+	switch node.Status {
+	case hubtypes.StatusActive:
+		k.SetActiveNode(ctx, node)
+	case hubtypes.StatusInactive:
+		k.SetInactiveNode(ctx, node)
+	default:
+		panic(fmt.Errorf("failed to set the node %v", node))
+	}
+}
+
+func (k *Keeper) HasNode(ctx sdk.Context, addr hubtypes.NodeAddress) bool {
+	return k.HasActiveNode(ctx, addr) || k.HasInactiveNode(ctx, addr)
+}
+
+func (k *Keeper) GetNode(ctx sdk.Context, addr hubtypes.NodeAddress) (node types.Node, found bool) {
+	node, found = k.GetActiveNode(ctx, addr)
+	if found {
+		return
+	}
+
+	node, found = k.GetInactiveNode(ctx, addr)
+	if found {
+		return
+	}
+
+	return node, false
+}
+
+func (k *Keeper) GetNodes(ctx sdk.Context) (items types.Nodes) {
+	var (
+		store = k.Store(ctx)
+		iter  = sdk.KVStorePrefixIterator(store, types.NodeKeyPrefix)
 	)
 
 	defer iter.Close()
 
-	iter.Skip(skip)
-	iter.Limit(limit, func(iter sdk.Iterator) {
+	for ; iter.Valid(); iter.Next() {
 		var item types.Node
 		k.cdc.MustUnmarshal(iter.Value(), &item)
 		items = append(items, item)
-	})
+	}
 
 	return items
 }
@@ -75,192 +160,88 @@ func (k *Keeper) IterateNodes(ctx sdk.Context, fn func(index int, item types.Nod
 	}
 }
 
-func (k *Keeper) SetActiveNode(ctx sdk.Context, address hubtypes.NodeAddress) {
-	key := types.ActiveNodeKey(address)
-	value := k.cdc.MustMarshal(&protobuf.BoolValue{Value: true})
+func (k *Keeper) SetNodeForInactiveAt(ctx sdk.Context, at time.Time, addr hubtypes.NodeAddress) {
+	var (
+		store = k.Store(ctx)
+		key   = types.NodeForInactiveAtKey(at, addr)
+		value = k.cdc.MustMarshal(&protobuf.BoolValue{Value: true})
+	)
 
-	store := k.Store(ctx)
 	store.Set(key, value)
 }
 
-func (k *Keeper) DeleteActiveNode(ctx sdk.Context, address hubtypes.NodeAddress) {
-	key := types.ActiveNodeKey(address)
+func (k *Keeper) DeleteNodeForInactiveAt(ctx sdk.Context, at time.Time, addr hubtypes.NodeAddress) {
+	var (
+		store = k.Store(ctx)
+		key   = types.NodeForInactiveAtKey(at, addr)
+	)
 
-	store := k.Store(ctx)
 	store.Delete(key)
 }
 
-func (k *Keeper) GetActiveNodes(ctx sdk.Context, skip, limit int64) (items types.Nodes) {
-	var (
-		store = k.Store(ctx)
-		iter  = hubtypes.NewPaginatedIterator(
-			sdk.KVStorePrefixIterator(store, types.ActiveNodeKeyPrefix),
-		)
-	)
-
-	defer iter.Close()
-
-	iter.Skip(skip)
-	iter.Limit(limit, func(iter sdk.Iterator) {
-		item, _ := k.GetNode(ctx, types.AddressFromStatusNodeKey(iter.Key()))
-		items = append(items, item)
-	})
-
-	return items
-}
-
-func (k *Keeper) SetInactiveNode(ctx sdk.Context, address hubtypes.NodeAddress) {
-	key := types.InactiveNodeKey(address)
-	value := k.cdc.MustMarshal(&protobuf.BoolValue{Value: true})
-
-	store := k.Store(ctx)
-	store.Set(key, value)
-}
-
-func (k *Keeper) DeleteInactiveNode(ctx sdk.Context, address hubtypes.NodeAddress) {
-	key := types.InactiveNodeKey(address)
-
-	store := k.Store(ctx)
-	store.Delete(key)
-}
-
-func (k *Keeper) GetInactiveNodes(ctx sdk.Context, skip, limit int64) (items types.Nodes) {
-	var (
-		store = k.Store(ctx)
-		iter  = hubtypes.NewPaginatedIterator(
-			sdk.KVStorePrefixIterator(store, types.InactiveNodeKeyPrefix),
-		)
-	)
-
-	defer iter.Close()
-
-	iter.Skip(skip)
-	iter.Limit(limit, func(iter sdk.Iterator) {
-		item, _ := k.GetNode(ctx, types.AddressFromStatusNodeKey(iter.Key()))
-		items = append(items, item)
-	})
-
-	return items
-}
-
-func (k *Keeper) SetActiveNodeForProvider(ctx sdk.Context, provider hubtypes.ProvAddress, address hubtypes.NodeAddress) {
-	key := types.ActiveNodeForProviderKey(provider, address)
-	value := k.cdc.MustMarshal(&protobuf.BoolValue{Value: true})
-
-	store := k.Store(ctx)
-	store.Set(key, value)
-}
-
-func (k *Keeper) DeleteActiveNodeForProvider(ctx sdk.Context, provider hubtypes.ProvAddress, address hubtypes.NodeAddress) {
+func (k *Keeper) IterateNodesForInactiveAt(ctx sdk.Context, at time.Time, fn func(index int, item types.Node) (stop bool)) {
 	store := k.Store(ctx)
 
-	key := types.ActiveNodeForProviderKey(provider, address)
-	store.Delete(key)
-}
-
-func (k *Keeper) GetActiveNodesForProvider(ctx sdk.Context, address hubtypes.ProvAddress, skip, limit int64) (items types.Nodes) {
-	var (
-		store = k.Store(ctx)
-		iter  = hubtypes.NewPaginatedIterator(
-			sdk.KVStorePrefixIterator(store, types.GetActiveNodeForProviderKeyPrefix(address)),
-		)
-	)
-
-	defer iter.Close()
-
-	iter.Skip(skip)
-	iter.Limit(limit, func(iter sdk.Iterator) {
-		item, _ := k.GetNode(ctx, types.AddressFromStatusNodeForProviderKey(iter.Key()))
-		items = append(items, item)
-	})
-
-	return items
-}
-
-func (k *Keeper) SetInactiveNodeForProvider(ctx sdk.Context, provider hubtypes.ProvAddress, address hubtypes.NodeAddress) {
-	key := types.InactiveNodeForProviderKey(provider, address)
-	value := k.cdc.MustMarshal(&protobuf.BoolValue{Value: true})
-
-	store := k.Store(ctx)
-	store.Set(key, value)
-}
-
-func (k *Keeper) DeleteInactiveNodeForProvider(ctx sdk.Context, provider hubtypes.ProvAddress, address hubtypes.NodeAddress) {
-	store := k.Store(ctx)
-
-	key := types.InactiveNodeForProviderKey(provider, address)
-	store.Delete(key)
-}
-
-func (k *Keeper) GetInactiveNodesForProvider(ctx sdk.Context, address hubtypes.ProvAddress, skip, limit int64) (items types.Nodes) {
-	var (
-		store = k.Store(ctx)
-		iter  = hubtypes.NewPaginatedIterator(
-			sdk.KVStorePrefixIterator(store, types.GetInactiveNodeForProviderKeyPrefix(address)),
-		)
-	)
-
-	defer iter.Close()
-
-	iter.Skip(skip)
-	iter.Limit(limit, func(iter sdk.Iterator) {
-		item, _ := k.GetNode(ctx, types.AddressFromStatusNodeForProviderKey(iter.Key()))
-		items = append(items, item)
-	})
-
-	return items
-}
-
-func (k *Keeper) GetNodesForProvider(ctx sdk.Context, address hubtypes.ProvAddress, skip, limit int64) (items types.Nodes) {
-	var (
-		store = k.Store(ctx)
-		iter  = hubtypes.NewPaginatedIterator(
-			sdk.KVStorePrefixIterator(store, types.GetActiveNodeForProviderKeyPrefix(address)),
-			sdk.KVStorePrefixIterator(store, types.GetInactiveNodeForProviderKeyPrefix(address)),
-		)
-	)
-
-	defer iter.Close()
-
-	iter.Skip(skip)
-	iter.Limit(limit, func(iter sdk.Iterator) {
-		item, _ := k.GetNode(ctx, types.AddressFromStatusNodeForProviderKey(iter.Key()))
-		items = append(items, item)
-	})
-
-	return items
-}
-
-func (k *Keeper) SetInactiveNodeAt(ctx sdk.Context, at time.Time, address hubtypes.NodeAddress) {
-	key := types.InactiveNodeAtKey(at, address)
-	value := k.cdc.MustMarshal(&protobuf.BoolValue{Value: true})
-
-	store := k.Store(ctx)
-	store.Set(key, value)
-}
-
-func (k *Keeper) DeleteInactiveNodeAt(ctx sdk.Context, at time.Time, address hubtypes.NodeAddress) {
-	key := types.InactiveNodeAtKey(at, address)
-
-	store := k.Store(ctx)
-	store.Delete(key)
-}
-
-func (k *Keeper) IterateInactiveNodesAt(ctx sdk.Context, at time.Time, fn func(index int, item types.Node) (stop bool)) {
-	store := k.Store(ctx)
-
-	iter := store.Iterator(types.InactiveNodeAtKeyPrefix, sdk.PrefixEndBytes(types.GetInactiveNodeAtKeyPrefix(at)))
+	iter := store.Iterator(types.NodeForInactiveAtKeyPrefix, sdk.PrefixEndBytes(types.GetNodeForInactiveAtKeyPrefix(at)))
 	defer iter.Close()
 
 	for i := 0; iter.Valid(); iter.Next() {
-		var (
-			key     = iter.Key()
-			node, _ = k.GetNode(ctx, types.AddressFromStatusNodeAtKey(key))
-		)
+		node, found := k.GetNode(ctx, types.AddressFromNodeForInactiveAtKey(iter.Key()))
+		if !found {
+			panic(fmt.Errorf("node for inactive at key %X does not exist", iter.Key()))
+		}
 
 		if stop := fn(i, node); stop {
 			break
 		}
 		i++
 	}
+}
+
+func (k *Keeper) SetNodeForPlan(ctx sdk.Context, id uint64, addr hubtypes.NodeAddress) {
+	var (
+		store = k.Store(ctx)
+		key   = types.NodeForPlanKey(id, addr)
+		value = k.cdc.MustMarshal(&protobuf.BoolValue{Value: true})
+	)
+
+	store.Set(key, value)
+}
+
+func (k *Keeper) HasNodeForPlan(ctx sdk.Context, id uint64, addr hubtypes.NodeAddress) bool {
+	var (
+		store = k.Store(ctx)
+		key   = types.NodeForPlanKey(id, addr)
+	)
+
+	return store.Has(key)
+}
+
+func (k *Keeper) DeleteNodeForPlan(ctx sdk.Context, id uint64, addr hubtypes.NodeAddress) {
+	var (
+		store = k.Store(ctx)
+		key   = types.NodeForPlanKey(id, addr)
+	)
+
+	store.Delete(key)
+}
+
+func (k *Keeper) GetNodesForPlan(ctx sdk.Context, id uint64) (items types.Nodes) {
+	var (
+		store = k.Store(ctx)
+		iter  = sdk.KVStorePrefixIterator(store, types.GetNodeForPlanKeyPrefix(id))
+	)
+
+	defer iter.Close()
+
+	for ; iter.Valid(); iter.Next() {
+		item, found := k.GetNode(ctx, types.AddressFromNodeForPlanKey(iter.Key()))
+		if !found {
+			panic(fmt.Errorf("node for plan key %X does not exist", iter.Key()))
+		}
+
+		items = append(items, item)
+	}
+
+	return items
 }

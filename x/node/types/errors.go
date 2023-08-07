@@ -1,21 +1,42 @@
+// DO NOT COVER
+
 package types
 
 import (
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/errors"
+
+	hubtypes "github.com/sentinel-official/hub/types"
 )
 
 var (
-	ErrorInvalidField     = errors.Register(ModuleName, 101, "invalid field")
-	ErrorInvalidFrom      = errors.Register(ModuleName, 102, "invalid from")
-	ErrorInvalidProvider  = errors.Register(ModuleName, 103, "invalid provider")
-	ErrorInvalidPrice     = errors.Register(ModuleName, 104, "invalid price")
-	ErrorInvalidRemoteURL = errors.Register(ModuleName, 105, "invalid remote_url")
-	ErrorInvalidStatus    = errors.Register(ModuleName, 106, "invalid status")
+	ErrorInvalidMessage = errors.Register(ModuleName, 101, "invalid message")
 )
 
 var (
-	ErrorProviderDoesNotExist = errors.Register(ModuleName, 201, "provider does not exist")
-	ErrorDuplicateNode        = errors.Register(ModuleName, 202, "duplicate node")
-	ErrorNodeDoesNotExist     = errors.Register(ModuleName, 203, "node does not exist")
-	ErrorInvalidPlanCount     = errors.Register(ModuleName, 204, "invalid plan count")
+	ErrorDuplicate        = errors.Register(ModuleName, 201, "duplicate")
+	ErrorInvalidGigabytes = errors.Register(ModuleName, 202, "invalid gigabytes")
+	ErrorInvalidHours     = errors.Register(ModuleName, 203, "invalid hours")
+	ErrorInvalidPrices    = errors.Register(ModuleName, 204, "invalid prices")
+	ErrorNotFound         = errors.Register(ModuleName, 205, "not found")
 )
+
+func NewErrorInvalidPrices(prices sdk.Coins) error {
+	return errors.Wrapf(ErrorInvalidPrices, "invalid prices %s", prices)
+}
+
+func NewErrorNodeNotFound(addr hubtypes.NodeAddress) error {
+	return errors.Wrapf(ErrorNotFound, "node %s does not exist", addr)
+}
+
+func NewErrorDuplicateNode(addr hubtypes.NodeAddress) error {
+	return errors.Wrapf(ErrorDuplicate, "node %s already exists", addr)
+}
+
+func NewErrorInvalidGigabytes(gigabytes int64) error {
+	return errors.Wrapf(ErrorInvalidGigabytes, "invalid subscription gigabytes %d", gigabytes)
+}
+
+func NewErrorInvalidHours(hours int64) error {
+	return errors.Wrapf(ErrorInvalidHours, "invalid subscription hours %d", hours)
+}

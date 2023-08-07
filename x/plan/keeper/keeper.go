@@ -13,10 +13,12 @@ import (
 )
 
 type Keeper struct {
-	cdc      codec.BinaryCodec
-	key      sdk.StoreKey
-	provider expected.ProviderKeeper
-	node     expected.NodeKeeper
+	cdc          codec.BinaryCodec
+	key          sdk.StoreKey
+	bank         expected.BankKeeper
+	provider     expected.ProviderKeeper
+	node         expected.NodeKeeper
+	subscription expected.SubscriptionKeeper
 }
 
 func NewKeeper(cdc codec.BinaryCodec, key sdk.StoreKey) Keeper {
@@ -26,12 +28,20 @@ func NewKeeper(cdc codec.BinaryCodec, key sdk.StoreKey) Keeper {
 	}
 }
 
+func (k *Keeper) WithBankKeeper(keeper expected.BankKeeper) {
+	k.bank = keeper
+}
+
 func (k *Keeper) WithProviderKeeper(keeper expected.ProviderKeeper) {
 	k.provider = keeper
 }
 
 func (k *Keeper) WithNodeKeeper(keeper expected.NodeKeeper) {
 	k.node = keeper
+}
+
+func (k *Keeper) WithSubscriptionKeeper(keeper expected.SubscriptionKeeper) {
+	k.subscription = keeper
 }
 
 func (k *Keeper) Logger(ctx sdk.Context) log.Logger {

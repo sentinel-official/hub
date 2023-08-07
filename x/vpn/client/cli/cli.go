@@ -1,14 +1,16 @@
+// DO NOT COVER
+
 package cli
 
 import (
 	"github.com/spf13/cobra"
 
-	deposit "github.com/sentinel-official/hub/x/deposit/client/cli"
-	node "github.com/sentinel-official/hub/x/node/client/cli"
-	plan "github.com/sentinel-official/hub/x/plan/client/cli"
-	provider "github.com/sentinel-official/hub/x/provider/client/cli"
-	session "github.com/sentinel-official/hub/x/session/client/cli"
-	subscription "github.com/sentinel-official/hub/x/subscription/client/cli"
+	depositcli "github.com/sentinel-official/hub/x/deposit/client/cli"
+	nodecli "github.com/sentinel-official/hub/x/node/client/cli"
+	plancli "github.com/sentinel-official/hub/x/plan/client/cli"
+	providercli "github.com/sentinel-official/hub/x/provider/client/cli"
+	sessioncli "github.com/sentinel-official/hub/x/session/client/cli"
+	subscriptioncli "github.com/sentinel-official/hub/x/subscription/client/cli"
 )
 
 func GetQueryCmd() *cobra.Command {
@@ -17,12 +19,12 @@ func GetQueryCmd() *cobra.Command {
 		Short: "Querying commands for the VPN module",
 	}
 
-	cmd.AddCommand(deposit.GetQueryCommands()...)
-	cmd.AddCommand(provider.GetQueryCommands()...)
-	cmd.AddCommand(node.GetQueryCommands()...)
-	cmd.AddCommand(plan.GetQueryCommands()...)
-	cmd.AddCommand(subscription.GetQueryCommands()...)
-	cmd.AddCommand(session.GetQueryCommands()...)
+	cmd.AddCommand(depositcli.GetQueryCommands()...)
+	cmd.AddCommand(providercli.GetQueryCommands()...)
+	cmd.AddCommand(nodecli.GetQueryCommands()...)
+	cmd.AddCommand(plancli.GetQueryCommands()...)
+	cmd.AddCommand(subscriptioncli.GetQueryCommands()...)
+	cmd.AddCommand(sessioncli.GetQueryCommands()...)
 
 	return cmd
 }
@@ -33,11 +35,11 @@ func GetTxCmd() *cobra.Command {
 		Short: "VPN transactions subcommands",
 	}
 
-	cmd.AddCommand(provider.GetTxCommands()...)
-	cmd.AddCommand(node.GetTxCommands()...)
-	cmd.AddCommand(plan.GetTxCommands()...)
-	cmd.AddCommand(subscription.GetTxCommands()...)
-	cmd.AddCommand(session.GetTxCommands()...)
+	cmd.AddCommand(providercli.GetTxCommands()...)
+	cmd.AddCommand(nodecli.GetTxCommands()...)
+	cmd.AddCommand(plancli.GetTxCommands()...)
+	cmd.AddCommand(subscriptioncli.GetTxCommands()...)
+	cmd.AddCommand(sessioncli.GetTxCommands()...)
 
 	return cmd
 }

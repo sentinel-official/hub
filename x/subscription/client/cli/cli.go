@@ -1,3 +1,5 @@
+// DO NOT COVER
+
 package cli
 
 import (
@@ -8,9 +10,11 @@ func GetQueryCommands() []*cobra.Command {
 	return []*cobra.Command{
 		querySubscription(),
 		querySubscriptions(),
+		queryAllocation(),
+		queryAllocations(),
+		queryPayout(),
+		queryPayouts(),
 		queryParams(),
-		queryQuota(),
-		queryQuotas(),
 	}
 }
 
@@ -21,11 +25,8 @@ func GetTxCommands() []*cobra.Command {
 	}
 
 	cmd.AddCommand(
-		txSubscribeToNode(),
-		txSubscribeToPlan(),
 		txCancel(),
-		txAddQuota(),
-		txUpdateQuota(),
+		txAllocate(),
 	)
 
 	return []*cobra.Command{cmd}

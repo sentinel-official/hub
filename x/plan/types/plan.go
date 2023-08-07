@@ -9,61 +9,68 @@ import (
 	hubtypes "github.com/sentinel-official/hub/types"
 )
 
-func (m *Plan) GetProvider() hubtypes.ProvAddress {
-	if m.Provider == "" {
+func (m *Plan) GetProviderAddress() hubtypes.ProvAddress {
+	if m.ProviderAddress == "" {
 		return nil
 	}
 
-	address, err := hubtypes.ProvAddressFromBech32(m.Provider)
+	addr, err := hubtypes.ProvAddressFromBech32(m.ProviderAddress)
 	if err != nil {
 		panic(err)
 	}
 
-	return address
+	return addr
 }
 
-func (m *Plan) PriceForDenom(d string) (sdk.Coin, bool) {
-	for _, coin := range m.Price {
-		if coin.Denom == d {
+func (m *Plan) Price(denom string) (sdk.Coin, bool) {
+	if m.Prices == nil && denom == "" {
+		return sdk.Coin{Amount: sdk.NewInt(0)}, true
+	}
+
+	for _, coin := range m.Prices {
+		if coin.Denom == denom {
 			return coin, true
 		}
 	}
 
-	return sdk.Coin{}, false
+	return sdk.Coin{Amount: sdk.NewInt(0)}, false
 }
 
 func (m *Plan) Validate() error {
-	if m.Id == 0 {
+	if m.ID == 0 {
 		return fmt.Errorf("id cannot be zero")
 	}
-	if m.Provider == "" {
-		return fmt.Errorf("provider cannot be empty")
+	if m.ProviderAddress == "" {
+		return fmt.Errorf("provider_address cannot be empty")
 	}
-	if _, err := hubtypes.ProvAddressFromBech32(m.Provider); err != nil {
-		return errors.Wrapf(err, "invalid provider %s", m.Provider)
+	if _, err := hubtypes.ProvAddressFromBech32(m.ProviderAddress); err != nil {
+		return errors.Wrapf(err, "invalid provider_address %s", m.ProviderAddress)
 	}
-	if m.Price != nil {
-		if m.Price.Len() == 0 {
-			return fmt.Errorf("price cannot be empty")
+	if m.Duration < 0 {
+		return fmt.Errorf("duration cannot be negative")
+	}
+	if m.Duration == 0 {
+		return fmt.Errorf("duration cannot be zero")
+	}
+	if m.Gigabytes < 0 {
+		return fmt.Errorf("gigabytes cannot be negative")
+	}
+	if m.Gigabytes == 0 {
+		return fmt.Errorf("gigabytes cannot be zero")
+	}
+	if m.Prices != nil {
+		if m.Prices.Len() == 0 {
+			return fmt.Errorf("prices cannot be empty")
 		}
-		if !m.Price.IsValid() {
-			return fmt.Errorf("price must be valid")
+		if m.Prices.IsAnyNil() {
+			return fmt.Errorf("prices cannot contain nil")
+		}
+		if !m.Prices.IsValid() {
+			return fmt.Errorf("prices must be valid")
 		}
 	}
-	if m.Validity < 0 {
-		return fmt.Errorf("validity cannot be negative")
-	}
-	if m.Validity == 0 {
-		return fmt.Errorf("validity cannot be zero")
-	}
-	if m.Bytes.IsNegative() {
-		return fmt.Errorf("bytes cannot be negative")
-	}
-	if m.Bytes.IsZero() {
-		return fmt.Errorf("bytes cannot be zero")
-	}
-	if !m.Status.Equal(hubtypes.StatusActive) && !m.Status.Equal(hubtypes.StatusInactive) {
-		return fmt.Errorf("status must be either active or inactive")
+	if !m.Status.IsOneOf(hubtypes.StatusActive, hubtypes.StatusInactive) {
+		return fmt.Errorf("status must be one of [active, inactive]")
 	}
 	if m.StatusAt.IsZero() {
 		return fmt.Errorf("status_at cannot be zero")

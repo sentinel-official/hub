@@ -11,1079 +11,9 @@ import (
 	hubtypes "github.com/sentinel-official/hub/types"
 )
 
-func TestNode_BytesForCoin(t *testing.T) {
-	type fields struct {
-		Address   string
-		Provider  string
-		Price     sdk.Coins
-		RemoteURL string
-		Status    hubtypes.Status
-		StatusAt  time.Time
-	}
-	type args struct {
-		coin sdk.Coin
-	}
-	tests := []struct {
-		name    string
-		fields  fields
-		args    args
-		want    sdk.Int
-		wantErr bool
-	}{
-		{
-			"nil price and empty coin",
-			fields{
-				Price: nil,
-			},
-			args{
-				coin: sdk.Coin{},
-			},
-			sdk.NewInt(0),
-			true,
-		},
-		{
-			"empty price and empty coin",
-			fields{
-				Price: sdk.Coins{},
-			},
-			args{
-				coin: sdk.Coin{},
-			},
-			sdk.NewInt(0),
-			true,
-		},
-		{
-			"1one price and empty coin",
-			fields{
-				Price: sdk.Coins{sdk.NewInt64Coin("one", 1)},
-			},
-			args{
-				coin: sdk.Coin{},
-			},
-			sdk.NewInt(0),
-			true,
-		},
-		{
-			"1one price and 0one coin",
-			fields{
-				Price: sdk.Coins{sdk.NewInt64Coin("one", 1)},
-			},
-			args{
-				coin: sdk.NewInt64Coin("one", 0),
-			},
-			sdk.NewInt(0),
-			false,
-		},
-		{
-			"1one price and 1one coin",
-			fields{
-				Price: sdk.Coins{sdk.NewInt64Coin("one", 1)},
-			},
-			args{
-				coin: sdk.NewInt64Coin("one", 1),
-			},
-			sdk.NewInt(1000000000),
-			false,
-		},
-		{
-			"1one price and 2one coin",
-			fields{
-				Price: sdk.Coins{sdk.NewInt64Coin("one", 1)},
-			},
-			args{
-				coin: sdk.NewInt64Coin("one", 2),
-			},
-			sdk.NewInt(2000000000),
-			false,
-		},
-		{
-			"1one price and 3one coin",
-			fields{
-				Price: sdk.Coins{sdk.NewInt64Coin("one", 1)},
-			},
-			args{
-				coin: sdk.NewInt64Coin("one", 3),
-			},
-			sdk.NewInt(3000000000),
-			false,
-		},
-		{
-			"1one price and 4one coin",
-			fields{
-				Price: sdk.Coins{sdk.NewInt64Coin("one", 1)},
-			},
-			args{
-				coin: sdk.NewInt64Coin("one", 4),
-			},
-			sdk.NewInt(4000000000),
-			false,
-		},
-		{
-			"1one price and 5one coin",
-			fields{
-				Price: sdk.Coins{sdk.NewInt64Coin("one", 1)},
-			},
-			args{
-				coin: sdk.NewInt64Coin("one", 5),
-			},
-			sdk.NewInt(5000000000),
-			false,
-		},
-		{
-			"1one price and 6one coin",
-			fields{
-				Price: sdk.Coins{sdk.NewInt64Coin("one", 1)},
-			},
-			args{
-				coin: sdk.NewInt64Coin("one", 6),
-			},
-			sdk.NewInt(6000000000),
-			false,
-		},
-		{
-			"1one price and 7one coin",
-			fields{
-				Price: sdk.Coins{sdk.NewInt64Coin("one", 1)},
-			},
-			args{
-				coin: sdk.NewInt64Coin("one", 7),
-			},
-			sdk.NewInt(7000000000),
-			false,
-		},
-		{
-			"1one price and 8one coin",
-			fields{
-				Price: sdk.Coins{sdk.NewInt64Coin("one", 1)},
-			},
-			args{
-				coin: sdk.NewInt64Coin("one", 8),
-			},
-			sdk.NewInt(8000000000),
-			false,
-		},
-		{
-			"1one price and 9one coin",
-			fields{
-				Price: sdk.Coins{sdk.NewInt64Coin("one", 1)},
-			},
-			args{
-				coin: sdk.NewInt64Coin("one", 9),
-			},
-			sdk.NewInt(9000000000),
-			false,
-		},
-		{
-			"2one price and 0one coin",
-			fields{
-				Price: sdk.Coins{sdk.NewInt64Coin("one", 2)},
-			},
-			args{
-				coin: sdk.NewInt64Coin("one", 0),
-			},
-			sdk.NewInt(0),
-			false,
-		},
-		{
-			"2one price and 1one coin",
-			fields{
-				Price: sdk.Coins{sdk.NewInt64Coin("one", 2)},
-			},
-			args{
-				coin: sdk.NewInt64Coin("one", 1),
-			},
-			sdk.NewInt(500000000),
-			false,
-		},
-		{
-			"2one price and 2one coin",
-			fields{
-				Price: sdk.Coins{sdk.NewInt64Coin("one", 2)},
-			},
-			args{
-				coin: sdk.NewInt64Coin("one", 2),
-			},
-			sdk.NewInt(1000000000),
-			false,
-		},
-		{
-			"2one price and 3one coin",
-			fields{
-				Price: sdk.Coins{sdk.NewInt64Coin("one", 2)},
-			},
-			args{
-				coin: sdk.NewInt64Coin("one", 3),
-			},
-			sdk.NewInt(1500000000),
-			false,
-		},
-		{
-			"2one price and 4one coin",
-			fields{
-				Price: sdk.Coins{sdk.NewInt64Coin("one", 2)},
-			},
-			args{
-				coin: sdk.NewInt64Coin("one", 4),
-			},
-			sdk.NewInt(2000000000),
-			false,
-		},
-		{
-			"2one price and 5one coin",
-			fields{
-				Price: sdk.Coins{sdk.NewInt64Coin("one", 2)},
-			},
-			args{
-				coin: sdk.NewInt64Coin("one", 5),
-			},
-			sdk.NewInt(2500000000),
-			false,
-		},
-		{
-			"2one price and 6one coin",
-			fields{
-				Price: sdk.Coins{sdk.NewInt64Coin("one", 2)},
-			},
-			args{
-				coin: sdk.NewInt64Coin("one", 6),
-			},
-			sdk.NewInt(3000000000),
-			false,
-		},
-		{
-			"2one price and 7one coin",
-			fields{
-				Price: sdk.Coins{sdk.NewInt64Coin("one", 2)},
-			},
-			args{
-				coin: sdk.NewInt64Coin("one", 7),
-			},
-			sdk.NewInt(3500000000),
-			false,
-		},
-		{
-			"2one price and 8one coin",
-			fields{
-				Price: sdk.Coins{sdk.NewInt64Coin("one", 2)},
-			},
-			args{
-				coin: sdk.NewInt64Coin("one", 8),
-			},
-			sdk.NewInt(4000000000),
-			false,
-		},
-		{
-			"2one price and 9one coin",
-			fields{
-				Price: sdk.Coins{sdk.NewInt64Coin("one", 2)},
-			},
-			args{
-				coin: sdk.NewInt64Coin("one", 9),
-			},
-			sdk.NewInt(4500000000),
-			false,
-		},
-		{
-			"3one price and 0one coin",
-			fields{
-				Price: sdk.Coins{sdk.NewInt64Coin("one", 3)},
-			},
-			args{
-				coin: sdk.NewInt64Coin("one", 0),
-			},
-			sdk.NewInt(0),
-			false,
-		},
-		{
-			"3one price and 1one coin",
-			fields{
-				Price: sdk.Coins{sdk.NewInt64Coin("one", 3)},
-			},
-			args{
-				coin: sdk.NewInt64Coin("one", 1),
-			},
-			sdk.NewInt(333333333),
-			false,
-		},
-		{
-			"3one price and 2one coin",
-			fields{
-				Price: sdk.Coins{sdk.NewInt64Coin("one", 3)},
-			},
-			args{
-				coin: sdk.NewInt64Coin("one", 2),
-			},
-			sdk.NewInt(666666666),
-			false,
-		},
-		{
-			"3one price and 3one coin",
-			fields{
-				Price: sdk.Coins{sdk.NewInt64Coin("one", 3)},
-			},
-			args{
-				coin: sdk.NewInt64Coin("one", 3),
-			},
-			sdk.NewInt(999999999),
-			false,
-		},
-		{
-			"3one price and 4one coin",
-			fields{
-				Price: sdk.Coins{sdk.NewInt64Coin("one", 3)},
-			},
-			args{
-				coin: sdk.NewInt64Coin("one", 4),
-			},
-			sdk.NewInt(1333333332),
-			false,
-		},
-		{
-			"3one price and 5one coin",
-			fields{
-				Price: sdk.Coins{sdk.NewInt64Coin("one", 3)},
-			},
-			args{
-				coin: sdk.NewInt64Coin("one", 5),
-			},
-			sdk.NewInt(1666666665),
-			false,
-		},
-		{
-			"3one price and 6one coin",
-			fields{
-				Price: sdk.Coins{sdk.NewInt64Coin("one", 3)},
-			},
-			args{
-				coin: sdk.NewInt64Coin("one", 6),
-			},
-			sdk.NewInt(1999999998),
-			false,
-		},
-		{
-			"3one price and 7one coin",
-			fields{
-				Price: sdk.Coins{sdk.NewInt64Coin("one", 3)},
-			},
-			args{
-				coin: sdk.NewInt64Coin("one", 7),
-			},
-			sdk.NewInt(2333333331),
-			false,
-		},
-		{
-			"3one price and 8one coin",
-			fields{
-				Price: sdk.Coins{sdk.NewInt64Coin("one", 3)},
-			},
-			args{
-				coin: sdk.NewInt64Coin("one", 8),
-			},
-			sdk.NewInt(2666666664),
-			false,
-		},
-		{
-			"3one price and 9one coin",
-			fields{
-				Price: sdk.Coins{sdk.NewInt64Coin("one", 3)},
-			},
-			args{
-				coin: sdk.NewInt64Coin("one", 9),
-			},
-			sdk.NewInt(2999999997),
-			false,
-		},
-		{
-			"4one price and 0one coin",
-			fields{
-				Price: sdk.Coins{sdk.NewInt64Coin("one", 4)},
-			},
-			args{
-				coin: sdk.NewInt64Coin("one", 0),
-			},
-			sdk.NewInt(0),
-			false,
-		},
-		{
-			"4one price and 1one coin",
-			fields{
-				Price: sdk.Coins{sdk.NewInt64Coin("one", 4)},
-			},
-			args{
-				coin: sdk.NewInt64Coin("one", 1),
-			},
-			sdk.NewInt(250000000),
-			false,
-		},
-		{
-			"4one price and 2one coin",
-			fields{
-				Price: sdk.Coins{sdk.NewInt64Coin("one", 4)},
-			},
-			args{
-				coin: sdk.NewInt64Coin("one", 2),
-			},
-			sdk.NewInt(500000000),
-			false,
-		},
-		{
-			"4one price and 3one coin",
-			fields{
-				Price: sdk.Coins{sdk.NewInt64Coin("one", 4)},
-			},
-			args{
-				coin: sdk.NewInt64Coin("one", 3),
-			},
-			sdk.NewInt(750000000),
-			false,
-		},
-		{
-			"4one price and 4one coin",
-			fields{
-				Price: sdk.Coins{sdk.NewInt64Coin("one", 4)},
-			},
-			args{
-				coin: sdk.NewInt64Coin("one", 4),
-			},
-			sdk.NewInt(1000000000),
-			false,
-		},
-		{
-			"4one price and 5one coin",
-			fields{
-				Price: sdk.Coins{sdk.NewInt64Coin("one", 4)},
-			},
-			args{
-				coin: sdk.NewInt64Coin("one", 5),
-			},
-			sdk.NewInt(1250000000),
-			false,
-		},
-		{
-			"4one price and 6one coin",
-			fields{
-				Price: sdk.Coins{sdk.NewInt64Coin("one", 4)},
-			},
-			args{
-				coin: sdk.NewInt64Coin("one", 6),
-			},
-			sdk.NewInt(1500000000),
-			false,
-		},
-		{
-			"4one price and 7one coin",
-			fields{
-				Price: sdk.Coins{sdk.NewInt64Coin("one", 4)},
-			},
-			args{
-				coin: sdk.NewInt64Coin("one", 7),
-			},
-			sdk.NewInt(1750000000),
-			false,
-		},
-		{
-			"4one price and 8one coin",
-			fields{
-				Price: sdk.Coins{sdk.NewInt64Coin("one", 4)},
-			},
-			args{
-				coin: sdk.NewInt64Coin("one", 8),
-			},
-			sdk.NewInt(2000000000),
-			false,
-		},
-		{
-			"4one price and 9one coin",
-			fields{
-				Price: sdk.Coins{sdk.NewInt64Coin("one", 4)},
-			},
-			args{
-				coin: sdk.NewInt64Coin("one", 9),
-			},
-			sdk.NewInt(2250000000),
-			false,
-		},
-		{
-			"5one price and 0one coin",
-			fields{
-				Price: sdk.Coins{sdk.NewInt64Coin("one", 5)},
-			},
-			args{
-				coin: sdk.NewInt64Coin("one", 0),
-			},
-			sdk.NewInt(0),
-			false,
-		},
-		{
-			"5one price and 1one coin",
-			fields{
-				Price: sdk.Coins{sdk.NewInt64Coin("one", 5)},
-			},
-			args{
-				coin: sdk.NewInt64Coin("one", 1),
-			},
-			sdk.NewInt(200000000),
-			false,
-		},
-		{
-			"5one price and 2one coin",
-			fields{
-				Price: sdk.Coins{sdk.NewInt64Coin("one", 5)},
-			},
-			args{
-				coin: sdk.NewInt64Coin("one", 2),
-			},
-			sdk.NewInt(400000000),
-			false,
-		},
-		{
-			"5one price and 3one coin",
-			fields{
-				Price: sdk.Coins{sdk.NewInt64Coin("one", 5)},
-			},
-			args{
-				coin: sdk.NewInt64Coin("one", 3),
-			},
-			sdk.NewInt(600000000),
-			false,
-		},
-		{
-			"5one price and 4one coin",
-			fields{
-				Price: sdk.Coins{sdk.NewInt64Coin("one", 5)},
-			},
-			args{
-				coin: sdk.NewInt64Coin("one", 4),
-			},
-			sdk.NewInt(800000000),
-			false,
-		},
-		{
-			"5one price and 5one coin",
-			fields{
-				Price: sdk.Coins{sdk.NewInt64Coin("one", 5)},
-			},
-			args{
-				coin: sdk.NewInt64Coin("one", 5),
-			},
-			sdk.NewInt(1000000000),
-			false,
-		},
-		{
-			"5one price and 6one coin",
-			fields{
-				Price: sdk.Coins{sdk.NewInt64Coin("one", 5)},
-			},
-			args{
-				coin: sdk.NewInt64Coin("one", 6),
-			},
-			sdk.NewInt(1200000000),
-			false,
-		},
-		{
-			"5one price and 7one coin",
-			fields{
-				Price: sdk.Coins{sdk.NewInt64Coin("one", 5)},
-			},
-			args{
-				coin: sdk.NewInt64Coin("one", 7),
-			},
-			sdk.NewInt(1400000000),
-			false,
-		},
-		{
-			"5one price and 8one coin",
-			fields{
-				Price: sdk.Coins{sdk.NewInt64Coin("one", 5)},
-			},
-			args{
-				coin: sdk.NewInt64Coin("one", 8),
-			},
-			sdk.NewInt(1600000000),
-			false,
-		},
-		{
-			"5one price and 9one coin",
-			fields{
-				Price: sdk.Coins{sdk.NewInt64Coin("one", 5)},
-			},
-			args{
-				coin: sdk.NewInt64Coin("one", 9),
-			},
-			sdk.NewInt(1800000000),
-			false,
-		},
-		{
-			"6one price and 0one coin",
-			fields{
-				Price: sdk.Coins{sdk.NewInt64Coin("one", 6)},
-			},
-			args{
-				coin: sdk.NewInt64Coin("one", 0),
-			},
-			sdk.NewInt(0),
-			false,
-		},
-		{
-			"6one price and 1one coin",
-			fields{
-				Price: sdk.Coins{sdk.NewInt64Coin("one", 6)},
-			},
-			args{
-				coin: sdk.NewInt64Coin("one", 1),
-			},
-			sdk.NewInt(166666666),
-			false,
-		},
-		{
-			"6one price and 2one coin",
-			fields{
-				Price: sdk.Coins{sdk.NewInt64Coin("one", 6)},
-			},
-			args{
-				coin: sdk.NewInt64Coin("one", 2),
-			},
-			sdk.NewInt(333333332),
-			false,
-		},
-		{
-			"6one price and 3one coin",
-			fields{
-				Price: sdk.Coins{sdk.NewInt64Coin("one", 6)},
-			},
-			args{
-				coin: sdk.NewInt64Coin("one", 3),
-			},
-			sdk.NewInt(499999998),
-			false,
-		},
-		{
-			"6one price and 4one coin",
-			fields{
-				Price: sdk.Coins{sdk.NewInt64Coin("one", 6)},
-			},
-			args{
-				coin: sdk.NewInt64Coin("one", 4),
-			},
-			sdk.NewInt(666666664),
-			false,
-		},
-		{
-			"6one price and 5one coin",
-			fields{
-				Price: sdk.Coins{sdk.NewInt64Coin("one", 6)},
-			},
-			args{
-				coin: sdk.NewInt64Coin("one", 5),
-			},
-			sdk.NewInt(833333330),
-			false,
-		},
-		{
-			"6one price and 6one coin",
-			fields{
-				Price: sdk.Coins{sdk.NewInt64Coin("one", 6)},
-			},
-			args{
-				coin: sdk.NewInt64Coin("one", 6),
-			},
-			sdk.NewInt(999999996),
-			false,
-		},
-		{
-			"6one price and 7one coin",
-			fields{
-				Price: sdk.Coins{sdk.NewInt64Coin("one", 6)},
-			},
-			args{
-				coin: sdk.NewInt64Coin("one", 7),
-			},
-			sdk.NewInt(1166666662),
-			false,
-		},
-		{
-			"6one price and 8one coin",
-			fields{
-				Price: sdk.Coins{sdk.NewInt64Coin("one", 6)},
-			},
-			args{
-				coin: sdk.NewInt64Coin("one", 8),
-			},
-			sdk.NewInt(1333333328),
-			false,
-		},
-		{
-			"6one price and 9one coin",
-			fields{
-				Price: sdk.Coins{sdk.NewInt64Coin("one", 6)},
-			},
-			args{
-				coin: sdk.NewInt64Coin("one", 9),
-			},
-			sdk.NewInt(1499999994),
-			false,
-		},
-		{
-			"7one price and 0one coin",
-			fields{
-				Price: sdk.Coins{sdk.NewInt64Coin("one", 7)},
-			},
-			args{
-				coin: sdk.NewInt64Coin("one", 0),
-			},
-			sdk.NewInt(0),
-			false,
-		},
-		{
-			"7one price and 1one coin",
-			fields{
-				Price: sdk.Coins{sdk.NewInt64Coin("one", 7)},
-			},
-			args{
-				coin: sdk.NewInt64Coin("one", 1),
-			},
-			sdk.NewInt(142857142),
-			false,
-		},
-		{
-			"7one price and 2one coin",
-			fields{
-				Price: sdk.Coins{sdk.NewInt64Coin("one", 7)},
-			},
-			args{
-				coin: sdk.NewInt64Coin("one", 2),
-			},
-			sdk.NewInt(285714284),
-			false,
-		},
-		{
-			"7one price and 3one coin",
-			fields{
-				Price: sdk.Coins{sdk.NewInt64Coin("one", 7)},
-			},
-			args{
-				coin: sdk.NewInt64Coin("one", 3),
-			},
-			sdk.NewInt(428571426),
-			false,
-		},
-		{
-			"7one price and 4one coin",
-			fields{
-				Price: sdk.Coins{sdk.NewInt64Coin("one", 7)},
-			},
-			args{
-				coin: sdk.NewInt64Coin("one", 4),
-			},
-			sdk.NewInt(571428568),
-			false,
-		},
-		{
-			"7one price and 5one coin",
-			fields{
-				Price: sdk.Coins{sdk.NewInt64Coin("one", 7)},
-			},
-			args{
-				coin: sdk.NewInt64Coin("one", 5),
-			},
-			sdk.NewInt(714285710),
-			false,
-		},
-		{
-			"7one price and 6one coin",
-			fields{
-				Price: sdk.Coins{sdk.NewInt64Coin("one", 7)},
-			},
-			args{
-				coin: sdk.NewInt64Coin("one", 6),
-			},
-			sdk.NewInt(857142852),
-			false,
-		},
-		{
-			"7one price and 7one coin",
-			fields{
-				Price: sdk.Coins{sdk.NewInt64Coin("one", 7)},
-			},
-			args{
-				coin: sdk.NewInt64Coin("one", 7),
-			},
-			sdk.NewInt(999999994),
-			false,
-		},
-		{
-			"7one price and 8one coin",
-			fields{
-				Price: sdk.Coins{sdk.NewInt64Coin("one", 7)},
-			},
-			args{
-				coin: sdk.NewInt64Coin("one", 8),
-			},
-			sdk.NewInt(1142857136),
-			false,
-		},
-		{
-			"7one price and 9one coin",
-			fields{
-				Price: sdk.Coins{sdk.NewInt64Coin("one", 7)},
-			},
-			args{
-				coin: sdk.NewInt64Coin("one", 9),
-			},
-			sdk.NewInt(1285714278),
-			false,
-		},
-		{
-			"8one price and 0one coin",
-			fields{
-				Price: sdk.Coins{sdk.NewInt64Coin("one", 8)},
-			},
-			args{
-				coin: sdk.NewInt64Coin("one", 0),
-			},
-			sdk.NewInt(0),
-			false,
-		},
-		{
-			"8one price and 1one coin",
-			fields{
-				Price: sdk.Coins{sdk.NewInt64Coin("one", 8)},
-			},
-			args{
-				coin: sdk.NewInt64Coin("one", 1),
-			},
-			sdk.NewInt(125000000),
-			false,
-		},
-		{
-			"8one price and 2one coin",
-			fields{
-				Price: sdk.Coins{sdk.NewInt64Coin("one", 8)},
-			},
-			args{
-				coin: sdk.NewInt64Coin("one", 2),
-			},
-			sdk.NewInt(250000000),
-			false,
-		},
-		{
-			"8one price and 3one coin",
-			fields{
-				Price: sdk.Coins{sdk.NewInt64Coin("one", 8)},
-			},
-			args{
-				coin: sdk.NewInt64Coin("one", 3),
-			},
-			sdk.NewInt(375000000),
-			false,
-		},
-		{
-			"8one price and 4one coin",
-			fields{
-				Price: sdk.Coins{sdk.NewInt64Coin("one", 8)},
-			},
-			args{
-				coin: sdk.NewInt64Coin("one", 4),
-			},
-			sdk.NewInt(500000000),
-			false,
-		},
-		{
-			"8one price and 5one coin",
-			fields{
-				Price: sdk.Coins{sdk.NewInt64Coin("one", 8)},
-			},
-			args{
-				coin: sdk.NewInt64Coin("one", 5),
-			},
-			sdk.NewInt(625000000),
-			false,
-		},
-		{
-			"8one price and 6one coin",
-			fields{
-				Price: sdk.Coins{sdk.NewInt64Coin("one", 8)},
-			},
-			args{
-				coin: sdk.NewInt64Coin("one", 6),
-			},
-			sdk.NewInt(750000000),
-			false,
-		},
-		{
-			"8one price and 7one coin",
-			fields{
-				Price: sdk.Coins{sdk.NewInt64Coin("one", 8)},
-			},
-			args{
-				coin: sdk.NewInt64Coin("one", 7),
-			},
-			sdk.NewInt(875000000),
-			false,
-		},
-		{
-			"8one price and 8one coin",
-			fields{
-				Price: sdk.Coins{sdk.NewInt64Coin("one", 8)},
-			},
-			args{
-				coin: sdk.NewInt64Coin("one", 8),
-			},
-			sdk.NewInt(1000000000),
-			false,
-		},
-		{
-			"8one price and 9one coin",
-			fields{
-				Price: sdk.Coins{sdk.NewInt64Coin("one", 8)},
-			},
-			args{
-				coin: sdk.NewInt64Coin("one", 9),
-			},
-			sdk.NewInt(1125000000),
-			false,
-		},
-		{
-			"9one price and 0one coin",
-			fields{
-				Price: sdk.Coins{sdk.NewInt64Coin("one", 9)},
-			},
-			args{
-				coin: sdk.NewInt64Coin("one", 0),
-			},
-			sdk.NewInt(0),
-			false,
-		},
-		{
-			"9one price and 1one coin",
-			fields{
-				Price: sdk.Coins{sdk.NewInt64Coin("one", 9)},
-			},
-			args{
-				coin: sdk.NewInt64Coin("one", 1),
-			},
-			sdk.NewInt(111111111),
-			false,
-		},
-		{
-			"9one price and 2one coin",
-			fields{
-				Price: sdk.Coins{sdk.NewInt64Coin("one", 9)},
-			},
-			args{
-				coin: sdk.NewInt64Coin("one", 2),
-			},
-			sdk.NewInt(222222222),
-			false,
-		},
-		{
-			"9one price and 3one coin",
-			fields{
-				Price: sdk.Coins{sdk.NewInt64Coin("one", 9)},
-			},
-			args{
-				coin: sdk.NewInt64Coin("one", 3),
-			},
-			sdk.NewInt(333333333),
-			false,
-		},
-		{
-			"9one price and 4one coin",
-			fields{
-				Price: sdk.Coins{sdk.NewInt64Coin("one", 9)},
-			},
-			args{
-				coin: sdk.NewInt64Coin("one", 4),
-			},
-			sdk.NewInt(444444444),
-			false,
-		},
-		{
-			"9one price and 5one coin",
-			fields{
-				Price: sdk.Coins{sdk.NewInt64Coin("one", 9)},
-			},
-			args{
-				coin: sdk.NewInt64Coin("one", 5),
-			},
-			sdk.NewInt(555555555),
-			false,
-		},
-		{
-			"9one price and 6one coin",
-			fields{
-				Price: sdk.Coins{sdk.NewInt64Coin("one", 9)},
-			},
-			args{
-				coin: sdk.NewInt64Coin("one", 6),
-			},
-			sdk.NewInt(666666666),
-			false,
-		},
-		{
-			"9one price and 7one coin",
-			fields{
-				Price: sdk.Coins{sdk.NewInt64Coin("one", 9)},
-			},
-			args{
-				coin: sdk.NewInt64Coin("one", 7),
-			},
-			sdk.NewInt(777777777),
-			false,
-		},
-		{
-			"9one price and 8one coin",
-			fields{
-				Price: sdk.Coins{sdk.NewInt64Coin("one", 9)},
-			},
-			args{
-				coin: sdk.NewInt64Coin("one", 8),
-			},
-			sdk.NewInt(888888888),
-			false,
-		},
-		{
-			"9one price and 9one coin",
-			fields{
-				Price: sdk.Coins{sdk.NewInt64Coin("one", 9)},
-			},
-			args{
-				coin: sdk.NewInt64Coin("one", 9),
-			},
-			sdk.NewInt(999999999),
-			false,
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			n := &Node{
-				Address:   tt.fields.Address,
-				Provider:  tt.fields.Provider,
-				Price:     tt.fields.Price,
-				RemoteURL: tt.fields.RemoteURL,
-				Status:    tt.fields.Status,
-				StatusAt:  tt.fields.StatusAt,
-			}
-			got, err := n.BytesForCoin(tt.args.coin)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("BytesForCoin() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("BytesForCoin() got = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
-
 func TestNode_GetAddress(t *testing.T) {
 	type fields struct {
-		Address   string
-		Provider  string
-		Price     sdk.Coins
-		RemoteURL string
-		Status    hubtypes.Status
-		StatusAt  time.Time
+		Address string
 	}
 	tests := []struct {
 		name   string
@@ -1091,94 +21,38 @@ func TestNode_GetAddress(t *testing.T) {
 		want   hubtypes.NodeAddress
 	}{
 		{
-			"empty",
+			"address empty",
 			fields{
 				Address: "",
 			},
 			nil,
 		},
 		{
-			"20 bytes",
+			"address 20 bytes",
 			fields{
-				Address: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				Address: hubtypes.TestBech32NodeAddr20Bytes,
 			},
 			hubtypes.NodeAddress{0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x20},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			n := &Node{
-				Address:   tt.fields.Address,
-				Provider:  tt.fields.Provider,
-				Price:     tt.fields.Price,
-				RemoteURL: tt.fields.RemoteURL,
-				Status:    tt.fields.Status,
-				StatusAt:  tt.fields.StatusAt,
+			m := &Node{
+				Address: tt.fields.Address,
 			}
-			if got := n.GetAddress(); !reflect.DeepEqual(got, tt.want) {
+			if got := m.GetAddress(); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("GetAddress() = %v, want %v", got, tt.want)
 			}
 		})
 	}
 }
 
-func TestNode_GetProvider(t *testing.T) {
+func TestNode_GigabytePrice(t *testing.T) {
 	type fields struct {
-		Address   string
-		Provider  string
-		Price     sdk.Coins
-		RemoteURL string
-		Status    hubtypes.Status
-		StatusAt  time.Time
-	}
-	tests := []struct {
-		name   string
-		fields fields
-		want   hubtypes.ProvAddress
-	}{
-		{
-			"empty",
-			fields{
-				Provider: "",
-			},
-			nil,
-		},
-		{
-			"20 bytes",
-			fields{
-				Provider: "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-			},
-			hubtypes.ProvAddress{0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x20},
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			n := &Node{
-				Address:   tt.fields.Address,
-				Provider:  tt.fields.Provider,
-				Price:     tt.fields.Price,
-				RemoteURL: tt.fields.RemoteURL,
-				Status:    tt.fields.Status,
-				StatusAt:  tt.fields.StatusAt,
-			}
-			if got := n.GetProvider(); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("GetProvider() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
-
-func TestNode_PriceForDenom(t *testing.T) {
-	type fields struct {
-		Address   string
-		Provider  string
-		Price     sdk.Coins
-		RemoteURL string
-		Status    hubtypes.Status
-		StatusAt  time.Time
+		GigabytePrices sdk.Coins
 	}
 	type args struct {
-		s string
+		denom string
 	}
 	tests := []struct {
 		name   string
@@ -1188,77 +62,246 @@ func TestNode_PriceForDenom(t *testing.T) {
 		want1  bool
 	}{
 		{
-			"nil price and empty denom",
+			"gigabyte_prices nil and denom empty",
 			fields{
-				Price: nil,
+				GigabytePrices: nil,
 			},
 			args{
-				s: "",
+				denom: "",
 			},
-			sdk.Coin{},
-			false,
-		},
-		{
-			"empty price and empty denom",
-			fields{
-				Price: sdk.Coins{},
-			},
-			args{
-				s: "",
-			},
-			sdk.Coin{},
-			false,
-		},
-		{
-			"1one price and empty denom",
-			fields{
-				Price: sdk.Coins{sdk.NewInt64Coin("one", 1)},
-			},
-			args{
-				s: "",
-			},
-			sdk.Coin{},
-			false,
-		},
-		{
-			"1one price and one denom",
-			fields{
-				Price: sdk.Coins{sdk.NewInt64Coin("one", 1)},
-			},
-			args{
-				s: "one",
-			},
-			sdk.NewInt64Coin("one", 1),
+			sdk.Coin{Amount: sdk.NewInt(0)},
 			true,
 		},
 		{
-			"1one price and two denom",
+			"gigabyte_prices empty and denom empty",
 			fields{
-				Price: sdk.Coins{sdk.NewInt64Coin("one", 1)},
+				GigabytePrices: sdk.Coins{},
 			},
 			args{
-				s: "two",
+				denom: "",
 			},
-			sdk.Coin{},
+			sdk.Coin{Amount: sdk.NewInt(0)},
+			false,
+		},
+		{
+			"gigabyte_prices 1000one and denom empty",
+			fields{
+				GigabytePrices: sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
+			},
+			args{
+				denom: "",
+			},
+			sdk.Coin{Amount: sdk.NewInt(0)},
+			false,
+		},
+		{
+			"gigabyte_prices nil and denom one",
+			fields{
+				GigabytePrices: nil,
+			},
+			args{
+				denom: "one",
+			},
+			sdk.Coin{Amount: sdk.NewInt(0)},
+			false,
+		},
+		{
+			"gigabyte_prices empty and denom one",
+			fields{
+				GigabytePrices: sdk.Coins{},
+			},
+			args{
+				denom: "one",
+			},
+			sdk.Coin{Amount: sdk.NewInt(0)},
+			false,
+		},
+		{
+			"gigabyte_prices 1000one and denom one",
+			fields{
+				GigabytePrices: sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
+			},
+			args{
+				denom: "one",
+			},
+			sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)},
+			true,
+		},
+		{
+			"gigabyte_prices nil and denom two",
+			fields{
+				GigabytePrices: nil,
+			},
+			args{
+				denom: "two",
+			},
+			sdk.Coin{Amount: sdk.NewInt(0)},
+			false,
+		},
+		{
+			"gigabyte_prices empty and denom two",
+			fields{
+				GigabytePrices: sdk.Coins{},
+			},
+			args{
+				denom: "two",
+			},
+			sdk.Coin{Amount: sdk.NewInt(0)},
+			false,
+		},
+		{
+			"gigabyte_prices 1000one and denom two",
+			fields{
+				GigabytePrices: sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
+			},
+			args{
+				denom: "two",
+			},
+			sdk.Coin{Amount: sdk.NewInt(0)},
 			false,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			n := &Node{
-				Address:   tt.fields.Address,
-				Provider:  tt.fields.Provider,
-				Price:     tt.fields.Price,
-				RemoteURL: tt.fields.RemoteURL,
-				Status:    tt.fields.Status,
-				StatusAt:  tt.fields.StatusAt,
+			m := &Node{
+				GigabytePrices: tt.fields.GigabytePrices,
 			}
-			got, got1 := n.PriceForDenom(tt.args.s)
+			got, got1 := m.GigabytePrice(tt.args.denom)
 			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("PriceForDenom() got = %v, want %v", got, tt.want)
+				t.Errorf("GigabytePrice() got = %v, want %v", got, tt.want)
 			}
 			if got1 != tt.want1 {
-				t.Errorf("PriceForDenom() got1 = %v, want %v", got1, tt.want1)
+				t.Errorf("GigabytePrice() got1 = %v, want %v", got1, tt.want1)
+			}
+		})
+	}
+}
+
+func TestNode_HourlyPrice(t *testing.T) {
+	type fields struct {
+		HourlyPrices sdk.Coins
+	}
+	type args struct {
+		denom string
+	}
+	tests := []struct {
+		name   string
+		fields fields
+		args   args
+		want   sdk.Coin
+		want1  bool
+	}{
+		{
+			"hourly_prices nil and denom empty",
+			fields{
+				HourlyPrices: nil,
+			},
+			args{
+				denom: "",
+			},
+			sdk.Coin{Amount: sdk.NewInt(0)},
+			true,
+		},
+		{
+			"hourly_prices empty and denom empty",
+			fields{
+				HourlyPrices: sdk.Coins{},
+			},
+			args{
+				denom: "",
+			},
+			sdk.Coin{Amount: sdk.NewInt(0)},
+			false,
+		},
+		{
+			"hourly_prices 1000one and denom empty",
+			fields{
+				HourlyPrices: sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
+			},
+			args{
+				denom: "",
+			},
+			sdk.Coin{Amount: sdk.NewInt(0)},
+			false,
+		},
+		{
+			"hourly_prices nil and denom one",
+			fields{
+				HourlyPrices: nil,
+			},
+			args{
+				denom: "one",
+			},
+			sdk.Coin{Amount: sdk.NewInt(0)},
+			false,
+		},
+		{
+			"hourly_prices empty and denom one",
+			fields{
+				HourlyPrices: sdk.Coins{},
+			},
+			args{
+				denom: "one",
+			},
+			sdk.Coin{Amount: sdk.NewInt(0)},
+			false,
+		},
+		{
+			"hourly_prices 1000one and denom one",
+			fields{
+				HourlyPrices: sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
+			},
+			args{
+				denom: "one",
+			},
+			sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)},
+			true,
+		},
+		{
+			"hourly_prices nil and denom two",
+			fields{
+				HourlyPrices: nil,
+			},
+			args{
+				denom: "two",
+			},
+			sdk.Coin{Amount: sdk.NewInt(0)},
+			false,
+		},
+		{
+			"hourly_prices empty and denom two",
+			fields{
+				HourlyPrices: sdk.Coins{},
+			},
+			args{
+				denom: "two",
+			},
+			sdk.Coin{Amount: sdk.NewInt(0)},
+			false,
+		},
+		{
+			"hourly_prices 1000one and denom two",
+			fields{
+				HourlyPrices: sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
+			},
+			args{
+				denom: "two",
+			},
+			sdk.Coin{Amount: sdk.NewInt(0)},
+			false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			m := &Node{
+				HourlyPrices: tt.fields.HourlyPrices,
+			}
+			got, got1 := m.HourlyPrice(tt.args.denom)
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("HourlyPrice() got = %v, want %v", got, tt.want)
+			}
+			if got1 != tt.want1 {
+				t.Errorf("HourlyPrice() got1 = %v, want %v", got1, tt.want1)
 			}
 		})
 	}
@@ -1266,12 +309,13 @@ func TestNode_PriceForDenom(t *testing.T) {
 
 func TestNode_Validate(t *testing.T) {
 	type fields struct {
-		Address   string
-		Provider  string
-		Price     sdk.Coins
-		RemoteURL string
-		Status    hubtypes.Status
-		StatusAt  time.Time
+		Address        string
+		GigabytePrices sdk.Coins
+		HourlyPrices   sdk.Coins
+		RemoteURL      string
+		InactiveAt     time.Time
+		Status         hubtypes.Status
+		StatusAt       time.Time
 	}
 	tests := []struct {
 		name    string
@@ -1279,291 +323,395 @@ func TestNode_Validate(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			"empty address",
+			"address empty",
 			fields{
 				Address: "",
 			},
 			true,
 		},
 		{
-			"invalid address",
+			"address invalid",
 			fields{
 				Address: "invalid",
 			},
 			true,
 		},
 		{
-			"invalid prefix address",
+			"address invalid prefix",
 			fields{
-				Address: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Address: hubtypes.TestBech32AccAddr20Bytes,
 			},
 			true,
 		},
 		{
-			"10 bytes address",
+			"address 10 bytes",
 			fields{
-				Address: "sentnode1qypqxpq9qcrsszgse4wwrm",
+				Address:        hubtypes.TestBech32NodeAddr10Bytes,
+				GigabytePrices: nil,
+				HourlyPrices:   nil,
+				RemoteURL:      "https://remote.url:443",
+				InactiveAt:     time.Now(),
+				Status:         hubtypes.StatusActive,
+				StatusAt:       time.Now(),
+			},
+			false,
+		},
+		{
+			"address 20 bytes",
+			fields{
+				Address:        hubtypes.TestBech32NodeAddr20Bytes,
+				GigabytePrices: nil,
+				HourlyPrices:   nil,
+				RemoteURL:      "https://remote.url:443",
+				InactiveAt:     time.Now(),
+				Status:         hubtypes.StatusActive,
+				StatusAt:       time.Now(),
+			},
+			false,
+		},
+		{
+			"address 30 bytes",
+			fields{
+				Address:        hubtypes.TestBech32NodeAddr30Bytes,
+				GigabytePrices: nil,
+				HourlyPrices:   nil,
+				RemoteURL:      "https://remote.url:443",
+				InactiveAt:     time.Now(),
+				Status:         hubtypes.StatusActive,
+				StatusAt:       time.Now(),
+			},
+			false,
+		},
+		{
+			"gigabyte_prices nil",
+			fields{
+				Address:        hubtypes.TestBech32NodeAddr20Bytes,
+				GigabytePrices: nil,
+				HourlyPrices:   nil,
+				RemoteURL:      "https://remote.url:443",
+				InactiveAt:     time.Now(),
+				Status:         hubtypes.StatusActive,
+				StatusAt:       time.Now(),
+			},
+			false,
+		},
+		{
+			"gigabyte_prices empty",
+			fields{
+				Address:        hubtypes.TestBech32NodeAddr20Bytes,
+				GigabytePrices: sdk.Coins{},
 			},
 			true,
 		},
 		{
-			"20 bytes address",
+			"gigabyte_prices empty denom",
 			fields{
-				Address: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				Address:        hubtypes.TestBech32NodeAddr20Bytes,
+				GigabytePrices: sdk.Coins{sdk.Coin{Denom: ""}},
 			},
 			true,
 		},
 		{
-			"30 bytes address",
+			"gigabyte_prices invalid denom",
 			fields{
-				Address: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqyy3zxfp9ycnjs2fsxqglcv",
+				Address:        hubtypes.TestBech32NodeAddr20Bytes,
+				GigabytePrices: sdk.Coins{sdk.Coin{Denom: "o"}},
 			},
 			true,
 		},
 		{
-			"empty provider and nil price",
+			"gigabyte_prices empty amount",
 			fields{
-				Address:  "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Provider: "",
-				Price:    nil,
+				Address:        hubtypes.TestBech32NodeAddr20Bytes,
+				GigabytePrices: sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.Int{}}},
 			},
 			true,
 		},
 		{
-			"non-empty provider and non-nil price",
+			"gigabyte_prices negative amount",
 			fields{
-				Address:  "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Provider: "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Price:    sdk.Coins{},
+				Address:        hubtypes.TestBech32NodeAddr20Bytes,
+				GigabytePrices: sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(-1000)}},
 			},
 			true,
 		},
 		{
-			"invalid prefix provider",
+			"gigabyte_prices zero amount",
 			fields{
-				Address:  "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Provider: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				Address:        hubtypes.TestBech32NodeAddr20Bytes,
+				GigabytePrices: sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(0)}},
 			},
 			true,
 		},
 		{
-			"10 bytes provider",
+			"gigabyte_prices positive amount",
 			fields{
-				Address:  "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Provider: "sentprov1qypqxpq9qcrsszgsutj8xr",
+				Address:        hubtypes.TestBech32NodeAddr20Bytes,
+				GigabytePrices: sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
+				HourlyPrices:   nil,
+				RemoteURL:      "https://remote.url:443",
+				InactiveAt:     time.Now(),
+				Status:         hubtypes.StatusActive,
+				StatusAt:       time.Now(),
+			},
+			false,
+		},
+		{
+			"hourly_prices nil",
+			fields{
+				Address:        hubtypes.TestBech32NodeAddr20Bytes,
+				GigabytePrices: nil,
+				HourlyPrices:   nil,
+				RemoteURL:      "https://remote.url:443",
+				InactiveAt:     time.Now(),
+				Status:         hubtypes.StatusActive,
+				StatusAt:       time.Now(),
+			},
+			false,
+		},
+		{
+			"hourly_prices empty",
+			fields{
+				Address:        hubtypes.TestBech32NodeAddr20Bytes,
+				GigabytePrices: nil,
+				HourlyPrices:   sdk.Coins{},
 			},
 			true,
 		},
 		{
-			"20 bytes provider",
+			"hourly_prices empty denom",
 			fields{
-				Address:  "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Provider: "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
+				Address:        hubtypes.TestBech32NodeAddr20Bytes,
+				GigabytePrices: nil,
+				HourlyPrices:   sdk.Coins{sdk.Coin{Denom: ""}},
 			},
 			true,
 		},
 		{
-			"30 bytes provider",
+			"hourly_prices invalid denom",
 			fields{
-				Address:  "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Provider: "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfqyy3zxfp9ycnjs2fsh33zgx",
+				Address:        hubtypes.TestBech32NodeAddr20Bytes,
+				GigabytePrices: nil,
+				HourlyPrices:   sdk.Coins{sdk.Coin{Denom: "o"}},
 			},
 			true,
 		},
 		{
-			"empty price",
+			"hourly_prices empty amount",
 			fields{
-				Address:  "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Provider: "",
-				Price:    sdk.Coins{},
+				Address:        hubtypes.TestBech32NodeAddr20Bytes,
+				GigabytePrices: nil,
+				HourlyPrices:   sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.Int{}}},
 			},
 			true,
 		},
 		{
-			"empty denom price",
+			"hourly_prices negative amount",
 			fields{
-				Address:  "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Provider: "",
-				Price:    sdk.Coins{sdk.Coin{Denom: ""}},
+				Address:        hubtypes.TestBech32NodeAddr20Bytes,
+				GigabytePrices: nil,
+				HourlyPrices:   sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(-1000)}},
 			},
 			true,
 		},
 		{
-			"invalid denom price",
+			"hourly_prices zero amount",
 			fields{
-				Address:  "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Provider: "",
-				Price:    sdk.Coins{sdk.Coin{Denom: "o"}},
+				Address:        hubtypes.TestBech32NodeAddr20Bytes,
+				GigabytePrices: nil,
+				HourlyPrices:   sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(0)}},
 			},
 			true,
 		},
 		{
-			"negative amount price",
+			"hourly_prices positive amount",
 			fields{
-				Address:  "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Provider: "",
-				Price:    sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(-1000)}},
+				Address:        hubtypes.TestBech32NodeAddr20Bytes,
+				GigabytePrices: nil,
+				HourlyPrices:   sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
+				RemoteURL:      "https://remote.url:443",
+				InactiveAt:     time.Now(),
+				Status:         hubtypes.StatusActive,
+				StatusAt:       time.Now(),
+			},
+			false,
+		},
+		{
+			"remote_url empty",
+			fields{
+				Address:        hubtypes.TestBech32NodeAddr20Bytes,
+				GigabytePrices: nil,
+				HourlyPrices:   nil,
+				RemoteURL:      "",
 			},
 			true,
 		},
 		{
-			"zero amount price",
+			"remote_url 72 chars",
 			fields{
-				Address:  "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Provider: "",
-				Price:    sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(0)}},
+				Address:        hubtypes.TestBech32NodeAddr20Bytes,
+				GigabytePrices: nil,
+				HourlyPrices:   nil,
+				RemoteURL:      strings.Repeat("r", 72),
 			},
 			true,
 		},
 		{
-			"positive amount price",
+			"remote_url invalid",
 			fields{
-				Address:  "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Provider: "",
-				Price:    sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
+				Address:        hubtypes.TestBech32NodeAddr20Bytes,
+				GigabytePrices: nil,
+				HourlyPrices:   nil,
+				RemoteURL:      "invalid",
 			},
 			true,
 		},
 		{
-			"empty remote_url",
+			"remote_url invalid scheme",
 			fields{
-				Address:   "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Provider:  "",
-				Price:     sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
-				RemoteURL: "",
+				Address:        hubtypes.TestBech32NodeAddr20Bytes,
+				GigabytePrices: nil,
+				HourlyPrices:   nil,
+				RemoteURL:      "tcp://remote.url:80",
 			},
 			true,
 		},
 		{
-			"length 72 remote_url",
+			"remote_url without port",
 			fields{
-				Address:   "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Provider:  "",
-				Price:     sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
-				RemoteURL: strings.Repeat("r", 72),
+				Address:        hubtypes.TestBech32NodeAddr20Bytes,
+				GigabytePrices: nil,
+				HourlyPrices:   nil,
+				RemoteURL:      "https://remote.url",
 			},
 			true,
 		},
 		{
-			"invalid remote_url",
+			"remote_url with port",
 			fields{
-				Address:   "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Provider:  "",
-				Price:     sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
-				RemoteURL: "invalid",
+				Address:        hubtypes.TestBech32NodeAddr20Bytes,
+				GigabytePrices: nil,
+				HourlyPrices:   nil,
+				RemoteURL:      "https://remote.url:443",
+				InactiveAt:     time.Now(),
+				Status:         hubtypes.StatusActive,
+				StatusAt:       time.Now(),
+			},
+			false,
+		},
+		{
+			"inactive_at empty",
+			fields{
+				Address:        hubtypes.TestBech32NodeAddr20Bytes,
+				GigabytePrices: nil,
+				HourlyPrices:   nil,
+				RemoteURL:      "https://remote.url:443",
+				InactiveAt:     time.Time{},
 			},
 			true,
 		},
 		{
-			"invalid remote_url scheme",
+			"inactive_at now",
 			fields{
-				Address:   "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Provider:  "",
-				Price:     sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
-				RemoteURL: "tcp://remote.url:80",
+				Address:        hubtypes.TestBech32NodeAddr20Bytes,
+				GigabytePrices: nil,
+				HourlyPrices:   nil,
+				RemoteURL:      "https://remote.url:443",
+				InactiveAt:     time.Now(),
+				Status:         hubtypes.StatusActive,
+				StatusAt:       time.Now(),
+			},
+			false,
+		},
+		{
+			"status unspecified",
+			fields{
+				Address:        hubtypes.TestBech32NodeAddr20Bytes,
+				GigabytePrices: nil,
+				HourlyPrices:   nil,
+				RemoteURL:      "https://remote.url:443",
+				InactiveAt:     time.Now(),
+				Status:         hubtypes.StatusUnspecified,
 			},
 			true,
 		},
 		{
-			"empty remote_url port",
+			"status active",
 			fields{
-				Address:   "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Provider:  "",
-				Price:     sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
-				RemoteURL: "https://remote.url",
+				Address:        hubtypes.TestBech32NodeAddr20Bytes,
+				GigabytePrices: nil,
+				HourlyPrices:   nil,
+				RemoteURL:      "https://remote.url:443",
+				InactiveAt:     time.Now(),
+				Status:         hubtypes.StatusActive,
+				StatusAt:       time.Now(),
+			},
+			false,
+		},
+		{
+			"status inactive_pending",
+			fields{
+				Address:        hubtypes.TestBech32NodeAddr20Bytes,
+				GigabytePrices: nil,
+				HourlyPrices:   nil,
+				RemoteURL:      "https://remote.url:443",
+				InactiveAt:     time.Now(),
+				Status:         hubtypes.StatusInactivePending,
 			},
 			true,
 		},
 		{
-			"non-empty remote_url port",
+			"status inactive",
 			fields{
-				Address:   "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Provider:  "",
-				Price:     sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
-				RemoteURL: "https://remote.url:443",
+				Address:        hubtypes.TestBech32NodeAddr20Bytes,
+				GigabytePrices: nil,
+				HourlyPrices:   nil,
+				RemoteURL:      "https://remote.url:443",
+				InactiveAt:     time.Time{},
+				Status:         hubtypes.StatusInactive,
+				StatusAt:       time.Now(),
+			},
+			false,
+		},
+		{
+			"status_at empty",
+			fields{
+				Address:        hubtypes.TestBech32NodeAddr20Bytes,
+				GigabytePrices: nil,
+				HourlyPrices:   nil,
+				RemoteURL:      "https://remote.url:443",
+				InactiveAt:     time.Now(),
+				Status:         hubtypes.StatusActive,
+				StatusAt:       time.Time{},
 			},
 			true,
 		},
 		{
-			"unknown status",
+			"status_at now",
 			fields{
-				Address:   "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Provider:  "",
-				Price:     sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
-				RemoteURL: "https://remote.url:443",
-				Status:    hubtypes.StatusUnknown,
-			},
-			true,
-		},
-		{
-			"active status",
-			fields{
-				Address:   "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Provider:  "",
-				Price:     sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
-				RemoteURL: "https://remote.url:443",
-				Status:    hubtypes.StatusActive,
-			},
-			true,
-		},
-		{
-			"inactive pending status",
-			fields{
-				Address:   "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Provider:  "",
-				Price:     sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
-				RemoteURL: "https://remote.url:443",
-				Status:    hubtypes.StatusInactivePending,
-			},
-			true,
-		},
-		{
-			"inactive status",
-			fields{
-				Address:   "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Provider:  "",
-				Price:     sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
-				RemoteURL: "https://remote.url:443",
-				Status:    hubtypes.StatusInactive,
-			},
-			true,
-		},
-		{
-			"zero status_at",
-			fields{
-				Address:   "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Provider:  "",
-				Price:     sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
-				RemoteURL: "https://remote.url:443",
-				Status:    hubtypes.StatusInactive,
-				StatusAt:  time.Time{},
-			},
-			true,
-		},
-		{
-			"now status_at",
-			fields{
-				Address:   "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Provider:  "",
-				Price:     sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
-				RemoteURL: "https://remote.url:443",
-				Status:    hubtypes.StatusInactive,
-				StatusAt:  time.Now(),
+				Address:        hubtypes.TestBech32NodeAddr20Bytes,
+				GigabytePrices: nil,
+				HourlyPrices:   nil,
+				RemoteURL:      "https://remote.url:443",
+				InactiveAt:     time.Now(),
+				Status:         hubtypes.StatusActive,
+				StatusAt:       time.Now(),
 			},
 			false,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			n := &Node{
-				Address:   tt.fields.Address,
-				Provider:  tt.fields.Provider,
-				Price:     tt.fields.Price,
-				RemoteURL: tt.fields.RemoteURL,
-				Status:    tt.fields.Status,
-				StatusAt:  tt.fields.StatusAt,
+			m := &Node{
+				Address:        tt.fields.Address,
+				GigabytePrices: tt.fields.GigabytePrices,
+				HourlyPrices:   tt.fields.HourlyPrices,
+				RemoteURL:      tt.fields.RemoteURL,
+				InactiveAt:     tt.fields.InactiveAt,
+				Status:         tt.fields.Status,
+				StatusAt:       tt.fields.StatusAt,
 			}
-			if err := n.Validate(); (err != nil) != tt.wantErr {
+			if err := m.Validate(); (err != nil) != tt.wantErr {
 				t.Errorf("Validate() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})

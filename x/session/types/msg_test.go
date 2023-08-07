@@ -10,9 +10,9 @@ import (
 
 func TestMsgStartRequest_ValidateBasic(t *testing.T) {
 	type fields struct {
-		From string
-		Id   uint64
-		Node string
+		From    string
+		ID      uint64
+		Address string
 	}
 	tests := []struct {
 		name    string
@@ -36,98 +36,98 @@ func TestMsgStartRequest_ValidateBasic(t *testing.T) {
 		{
 			"invalid prefix from",
 			fields{
-				From: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				From: hubtypes.TestBech32NodeAddr20Bytes,
 			},
 			true,
 		},
 		{
 			"10 bytes from",
 			fields{
-				From: "sent1qypqxpq9qcrsszgslawd5s",
+				From: hubtypes.TestBech32AccAddr10Bytes,
 			},
 			true,
 		},
 		{
 			"20 bytes from",
 			fields{
-				From: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				From: hubtypes.TestBech32AccAddr20Bytes,
 			},
 			true,
 		},
 		{
 			"30 bytes from",
 			fields{
-				From: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfqyy3zxfp9ycnjs2fszvfck8",
+				From: hubtypes.TestBech32AccAddr30Bytes,
 			},
 			true,
 		},
 		{
 			"zero id",
 			fields{
-				From: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				Id:   0,
+				From: hubtypes.TestBech32AccAddr20Bytes,
+				ID:   0,
 			},
 			true,
 		},
 		{
 			"positive id",
 			fields{
-				From: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				Id:   1000,
+				From: hubtypes.TestBech32AccAddr20Bytes,
+				ID:   1000,
 			},
 			true,
 		},
 		{
 			"empty node",
 			fields{
-				From: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				Id:   1000,
-				Node: "",
+				From:    hubtypes.TestBech32AccAddr20Bytes,
+				ID:      1000,
+				Address: "",
 			},
 			true,
 		},
 		{
 			"invalid node",
 			fields{
-				From: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				Id:   1000,
-				Node: "invalid",
+				From:    hubtypes.TestBech32AccAddr20Bytes,
+				ID:      1000,
+				Address: "invalid",
 			},
 			true,
 		},
 		{
 			"invalid prefix node",
 			fields{
-				From: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				Id:   1000,
-				Node: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				From:    hubtypes.TestBech32AccAddr20Bytes,
+				ID:      1000,
+				Address: hubtypes.TestBech32AccAddr20Bytes,
 			},
 			true,
 		},
 		{
 			"10 bytes node",
 			fields{
-				From: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				Id:   1000,
-				Node: "sentnode1qypqxpq9qcrsszgse4wwrm",
+				From:    hubtypes.TestBech32AccAddr20Bytes,
+				ID:      1000,
+				Address: hubtypes.TestBech32NodeAddr10Bytes,
 			},
 			false,
 		},
 		{
 			"20 bytes node",
 			fields{
-				From: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				Id:   1000,
-				Node: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				From:    hubtypes.TestBech32AccAddr20Bytes,
+				ID:      1000,
+				Address: hubtypes.TestBech32NodeAddr20Bytes,
 			},
 			false,
 		},
 		{
 			"30 bytes node",
 			fields{
-				From: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				Id:   1000,
-				Node: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqyy3zxfp9ycnjs2fsxqglcv",
+				From:    hubtypes.TestBech32AccAddr20Bytes,
+				ID:      1000,
+				Address: hubtypes.TestBech32NodeAddr30Bytes,
 			},
 			false,
 		},
@@ -135,9 +135,9 @@ func TestMsgStartRequest_ValidateBasic(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			m := &MsgStartRequest{
-				From: tt.fields.From,
-				Id:   tt.fields.Id,
-				Node: tt.fields.Node,
+				From:    tt.fields.From,
+				ID:      tt.fields.ID,
+				Address: tt.fields.Address,
 			}
 			if err := m.ValidateBasic(); (err != nil) != tt.wantErr {
 				t.Errorf("ValidateBasic() error = %v, wantErr %v", err, tt.wantErr)
@@ -146,7 +146,7 @@ func TestMsgStartRequest_ValidateBasic(t *testing.T) {
 	}
 }
 
-func TestMsgUpdateRequest_ValidateBasic(t *testing.T) {
+func TestMsgUpdateDetailsRequest_ValidateBasic(t *testing.T) {
 	type fields struct {
 		From      string
 		Proof     Proof
@@ -174,37 +174,37 @@ func TestMsgUpdateRequest_ValidateBasic(t *testing.T) {
 		{
 			"invalid prefix from",
 			fields{
-				From: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				From: hubtypes.TestBech32AccAddr20Bytes,
 			},
 			true,
 		},
 		{
 			"10 bytes from",
 			fields{
-				From: "sentnode1qypqxpq9qcrsszgse4wwrm",
+				From: hubtypes.TestBech32NodeAddr10Bytes,
 			},
 			true,
 		},
 		{
 			"20 bytes from",
 			fields{
-				From: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				From: hubtypes.TestBech32NodeAddr20Bytes,
 			},
 			true,
 		},
 		{
 			"30 bytes from",
 			fields{
-				From: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqyy3zxfp9ycnjs2fsxqglcv",
+				From: hubtypes.TestBech32NodeAddr30Bytes,
 			},
 			true,
 		},
 		{
 			"zero proof->id",
 			fields{
-				From: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				From: hubtypes.TestBech32NodeAddr20Bytes,
 				Proof: Proof{
-					Id: 0,
+					ID: 0,
 				},
 			},
 			true,
@@ -212,44 +212,9 @@ func TestMsgUpdateRequest_ValidateBasic(t *testing.T) {
 		{
 			"positive proof->id",
 			fields{
-				From: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				From: hubtypes.TestBech32NodeAddr20Bytes,
 				Proof: Proof{
-					Id:        1000,
-					Bandwidth: hubtypes.Bandwidth{Upload: sdk.NewInt(0), Download: sdk.NewInt(0)},
-				},
-			},
-			false,
-		},
-		{
-			"negative proof->duration",
-			fields{
-				From: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Proof: Proof{
-					Id:       1000,
-					Duration: -1000,
-				},
-			},
-			true,
-		},
-		{
-			"zero proof->duration",
-			fields{
-				From: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Proof: Proof{
-					Id:        1000,
-					Duration:  0,
-					Bandwidth: hubtypes.Bandwidth{Upload: sdk.NewInt(0), Download: sdk.NewInt(0)},
-				},
-			},
-			false,
-		},
-		{
-			"positive proof->duration",
-			fields{
-				From: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Proof: Proof{
-					Id:        1000,
-					Duration:  1000,
+					ID:        1000,
 					Bandwidth: hubtypes.Bandwidth{Upload: sdk.NewInt(0), Download: sdk.NewInt(0)},
 				},
 			},
@@ -258,10 +223,9 @@ func TestMsgUpdateRequest_ValidateBasic(t *testing.T) {
 		{
 			"negative proof->bandwidth->upload and negative proof->bandwidth->download",
 			fields{
-				From: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				From: hubtypes.TestBech32NodeAddr20Bytes,
 				Proof: Proof{
-					Id:        1000,
-					Duration:  1000,
+					ID:        1000,
 					Bandwidth: hubtypes.Bandwidth{Upload: sdk.NewInt(-1000), Download: sdk.NewInt(-1000)},
 				},
 			},
@@ -270,10 +234,9 @@ func TestMsgUpdateRequest_ValidateBasic(t *testing.T) {
 		{
 			"negative proof->bandwidth->upload and zero proof->bandwidth->download",
 			fields{
-				From: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				From: hubtypes.TestBech32NodeAddr20Bytes,
 				Proof: Proof{
-					Id:        1000,
-					Duration:  1000,
+					ID:        1000,
 					Bandwidth: hubtypes.Bandwidth{Upload: sdk.NewInt(-1000), Download: sdk.NewInt(0)},
 				},
 			},
@@ -282,10 +245,9 @@ func TestMsgUpdateRequest_ValidateBasic(t *testing.T) {
 		{
 			"negative proof->bandwidth->upload and positive proof->bandwidth->download",
 			fields{
-				From: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				From: hubtypes.TestBech32NodeAddr20Bytes,
 				Proof: Proof{
-					Id:        1000,
-					Duration:  1000,
+					ID:        1000,
 					Bandwidth: hubtypes.Bandwidth{Upload: sdk.NewInt(-1000), Download: sdk.NewInt(1000)},
 				},
 			},
@@ -294,10 +256,9 @@ func TestMsgUpdateRequest_ValidateBasic(t *testing.T) {
 		{
 			"zero proof->bandwidth->upload and negative proof->bandwidth->download",
 			fields{
-				From: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				From: hubtypes.TestBech32NodeAddr20Bytes,
 				Proof: Proof{
-					Id:        1000,
-					Duration:  1000,
+					ID:        1000,
 					Bandwidth: hubtypes.Bandwidth{Upload: sdk.NewInt(0), Download: sdk.NewInt(-1000)},
 				},
 			},
@@ -306,10 +267,9 @@ func TestMsgUpdateRequest_ValidateBasic(t *testing.T) {
 		{
 			"zero proof->bandwidth->upload and zero proof->bandwidth->download",
 			fields{
-				From: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				From: hubtypes.TestBech32NodeAddr20Bytes,
 				Proof: Proof{
-					Id:        1000,
-					Duration:  1000,
+					ID:        1000,
 					Bandwidth: hubtypes.Bandwidth{Upload: sdk.NewInt(0), Download: sdk.NewInt(0)},
 				},
 			},
@@ -318,10 +278,9 @@ func TestMsgUpdateRequest_ValidateBasic(t *testing.T) {
 		{
 			"zero proof->bandwidth->upload and positive proof->bandwidth->download",
 			fields{
-				From: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				From: hubtypes.TestBech32NodeAddr20Bytes,
 				Proof: Proof{
-					Id:        1000,
-					Duration:  1000,
+					ID:        1000,
 					Bandwidth: hubtypes.Bandwidth{Upload: sdk.NewInt(0), Download: sdk.NewInt(1000)},
 				},
 			},
@@ -330,10 +289,9 @@ func TestMsgUpdateRequest_ValidateBasic(t *testing.T) {
 		{
 			"positive proof->bandwidth->upload and negative proof->bandwidth->download",
 			fields{
-				From: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				From: hubtypes.TestBech32NodeAddr20Bytes,
 				Proof: Proof{
-					Id:        1000,
-					Duration:  1000,
+					ID:        1000,
 					Bandwidth: hubtypes.Bandwidth{Upload: sdk.NewInt(1000), Download: sdk.NewInt(-1000)},
 				},
 			},
@@ -342,10 +300,9 @@ func TestMsgUpdateRequest_ValidateBasic(t *testing.T) {
 		{
 			"positive proof->bandwidth->upload and zero proof->bandwidth->download",
 			fields{
-				From: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				From: hubtypes.TestBech32NodeAddr20Bytes,
 				Proof: Proof{
-					Id:        1000,
-					Duration:  1000,
+					ID:        1000,
 					Bandwidth: hubtypes.Bandwidth{Upload: sdk.NewInt(1000), Download: sdk.NewInt(0)},
 				},
 			},
@@ -354,11 +311,46 @@ func TestMsgUpdateRequest_ValidateBasic(t *testing.T) {
 		{
 			"positive proof->bandwidth->upload and positive proof->bandwidth->download",
 			fields{
-				From: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				From: hubtypes.TestBech32NodeAddr20Bytes,
 				Proof: Proof{
-					Id:        1000,
-					Duration:  1000,
+					ID:        1000,
 					Bandwidth: hubtypes.Bandwidth{Upload: sdk.NewInt(1000), Download: sdk.NewInt(1000)},
+				},
+			},
+			false,
+		},
+		{
+			"negative proof->duration",
+			fields{
+				From: hubtypes.TestBech32NodeAddr20Bytes,
+				Proof: Proof{
+					ID:        1000,
+					Bandwidth: hubtypes.Bandwidth{Upload: sdk.NewInt(0), Download: sdk.NewInt(0)},
+					Duration:  -1000,
+				},
+			},
+			true,
+		},
+		{
+			"zero proof->duration",
+			fields{
+				From: hubtypes.TestBech32NodeAddr20Bytes,
+				Proof: Proof{
+					ID:        1000,
+					Bandwidth: hubtypes.Bandwidth{Upload: sdk.NewInt(0), Download: sdk.NewInt(0)},
+					Duration:  0,
+				},
+			},
+			false,
+		},
+		{
+			"positive proof->duration",
+			fields{
+				From: hubtypes.TestBech32NodeAddr20Bytes,
+				Proof: Proof{
+					ID:        1000,
+					Bandwidth: hubtypes.Bandwidth{Upload: sdk.NewInt(0), Download: sdk.NewInt(0)},
+					Duration:  1000,
 				},
 			},
 			false,
@@ -366,11 +358,11 @@ func TestMsgUpdateRequest_ValidateBasic(t *testing.T) {
 		{
 			"nil signature",
 			fields{
-				From: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				From: hubtypes.TestBech32NodeAddr20Bytes,
 				Proof: Proof{
-					Id:        1000,
-					Duration:  1000,
+					ID:        1000,
 					Bandwidth: hubtypes.Bandwidth{Upload: sdk.NewInt(1000), Download: sdk.NewInt(1000)},
+					Duration:  1000,
 				},
 				Signature: nil,
 			},
@@ -379,11 +371,11 @@ func TestMsgUpdateRequest_ValidateBasic(t *testing.T) {
 		{
 			"empty signature",
 			fields{
-				From: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				From: hubtypes.TestBech32NodeAddr20Bytes,
 				Proof: Proof{
-					Id:        1000,
-					Duration:  1000,
+					ID:        1000,
 					Bandwidth: hubtypes.Bandwidth{Upload: sdk.NewInt(1000), Download: sdk.NewInt(1000)},
+					Duration:  1000,
 				},
 				Signature: []byte{},
 			},
@@ -392,11 +384,11 @@ func TestMsgUpdateRequest_ValidateBasic(t *testing.T) {
 		{
 			"32 byte signature",
 			fields{
-				From: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				From: hubtypes.TestBech32NodeAddr20Bytes,
 				Proof: Proof{
-					Id:        1000,
-					Duration:  1000,
+					ID:        1000,
 					Bandwidth: hubtypes.Bandwidth{Upload: sdk.NewInt(1000), Download: sdk.NewInt(1000)},
+					Duration:  1000,
 				},
 				Signature: []byte{
 					0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
@@ -410,11 +402,11 @@ func TestMsgUpdateRequest_ValidateBasic(t *testing.T) {
 		{
 			"64 byte signature",
 			fields{
-				From: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				From: hubtypes.TestBech32NodeAddr20Bytes,
 				Proof: Proof{
-					Id:        1000,
-					Duration:  1000,
+					ID:        1000,
 					Bandwidth: hubtypes.Bandwidth{Upload: sdk.NewInt(1000), Download: sdk.NewInt(1000)},
+					Duration:  1000,
 				},
 				Signature: []byte{
 					0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
@@ -432,11 +424,11 @@ func TestMsgUpdateRequest_ValidateBasic(t *testing.T) {
 		{
 			"96 byte signature",
 			fields{
-				From: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				From: hubtypes.TestBech32NodeAddr20Bytes,
 				Proof: Proof{
-					Id:        1000,
-					Duration:  1000,
+					ID:        1000,
 					Bandwidth: hubtypes.Bandwidth{Upload: sdk.NewInt(1000), Download: sdk.NewInt(1000)},
+					Duration:  1000,
 				},
 				Signature: []byte{
 					0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
@@ -458,7 +450,7 @@ func TestMsgUpdateRequest_ValidateBasic(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			m := &MsgUpdateRequest{
+			m := &MsgUpdateDetailsRequest{
 				From:      tt.fields.From,
 				Proof:     tt.fields.Proof,
 				Signature: tt.fields.Signature,
@@ -473,7 +465,7 @@ func TestMsgUpdateRequest_ValidateBasic(t *testing.T) {
 func TestMsgEndRequest_ValidateBasic(t *testing.T) {
 	type fields struct {
 		From   string
-		Id     uint64
+		ID     uint64
 		Rating uint64
 	}
 	tests := []struct {
@@ -498,52 +490,52 @@ func TestMsgEndRequest_ValidateBasic(t *testing.T) {
 		{
 			"invalid prefix from",
 			fields{
-				From: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				From: hubtypes.TestBech32NodeAddr20Bytes,
 			},
 			true,
 		},
 		{
 			"10 bytes from",
 			fields{
-				From: "sent1qypqxpq9qcrsszgslawd5s",
+				From: hubtypes.TestBech32AccAddr10Bytes,
 			},
 			true,
 		},
 		{
 			"20 bytes from",
 			fields{
-				From: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				From: hubtypes.TestBech32AccAddr20Bytes,
 			},
 			true,
 		},
 		{
 			"30 bytes from",
 			fields{
-				From: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfqyy3zxfp9ycnjs2fszvfck8",
+				From: hubtypes.TestBech32AccAddr30Bytes,
 			},
 			true,
 		},
 		{
 			"zero id",
 			fields{
-				From: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				Id:   0,
+				From: hubtypes.TestBech32AccAddr20Bytes,
+				ID:   0,
 			},
 			true,
 		},
 		{
 			"positive id",
 			fields{
-				From: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				Id:   1000,
+				From: hubtypes.TestBech32AccAddr20Bytes,
+				ID:   1000,
 			},
 			false,
 		},
 		{
 			"zero rating",
 			fields{
-				From:   "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				Id:     1000,
+				From:   hubtypes.TestBech32AccAddr20Bytes,
+				ID:     1000,
 				Rating: 0,
 			},
 			false,
@@ -551,8 +543,8 @@ func TestMsgEndRequest_ValidateBasic(t *testing.T) {
 		{
 			"5 rating",
 			fields{
-				From:   "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				Id:     1000,
+				From:   hubtypes.TestBech32AccAddr20Bytes,
+				ID:     1000,
 				Rating: 5,
 			},
 			false,
@@ -560,8 +552,8 @@ func TestMsgEndRequest_ValidateBasic(t *testing.T) {
 		{
 			"10 rating",
 			fields{
-				From:   "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				Id:     1000,
+				From:   hubtypes.TestBech32AccAddr20Bytes,
+				ID:     1000,
 				Rating: 10,
 			},
 			false,
@@ -569,8 +561,8 @@ func TestMsgEndRequest_ValidateBasic(t *testing.T) {
 		{
 			"15 rating",
 			fields{
-				From:   "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				Id:     1000,
+				From:   hubtypes.TestBech32AccAddr20Bytes,
+				ID:     1000,
 				Rating: 15,
 			},
 			true,
@@ -580,7 +572,7 @@ func TestMsgEndRequest_ValidateBasic(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			m := &MsgEndRequest{
 				From:   tt.fields.From,
-				Id:     tt.fields.Id,
+				ID:     tt.fields.ID,
 				Rating: tt.fields.Rating,
 			}
 			if err := m.ValidateBasic(); (err != nil) != tt.wantErr {

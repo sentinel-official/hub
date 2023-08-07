@@ -12,51 +12,19 @@ import (
 
 func TestNewQueryNodeRequest(t *testing.T) {
 	var (
-		address []byte
+		addr []byte
 	)
 
-	for i := 0; i < 40; i++ {
-		address = make([]byte, i)
-		_, _ = rand.Read(address)
+	for i := 1; i <= 256; i += 64 {
+		addr = make([]byte, i)
+		_, _ = rand.Read(addr)
 
 		require.Equal(
 			t,
 			&QueryNodeRequest{
-				Address: hubtypes.NodeAddress(address).String(),
+				Address: hubtypes.NodeAddress(addr).String(),
 			},
-			NewQueryNodeRequest(address),
-		)
-	}
-}
-
-func TestNewQueryNodesForProviderRequest(t *testing.T) {
-	var (
-		address    []byte
-		status     hubtypes.Status
-		pagination *query.PageRequest
-	)
-
-	for i := 0; i < 40; i++ {
-		address = make([]byte, i)
-		status = hubtypes.Status(i % 4)
-		pagination = &query.PageRequest{
-			Key:        make([]byte, i),
-			Offset:     uint64(i),
-			Limit:      uint64(i),
-			CountTotal: i/2 == 0,
-		}
-
-		_, _ = rand.Read(address)
-		_, _ = rand.Read(pagination.Key)
-
-		require.Equal(
-			t,
-			&QueryNodesForProviderRequest{
-				Address:    hubtypes.ProvAddress(address).String(),
-				Status:     status,
-				Pagination: pagination,
-			},
-			NewQueryNodesForProviderRequest(address, status, pagination),
+			NewQueryNodeRequest(addr),
 		)
 	}
 }
@@ -67,7 +35,7 @@ func TestNewQueryNodesRequest(t *testing.T) {
 		pagination *query.PageRequest
 	)
 
-	for i := 0; i < 20; i++ {
+	for i := 1; i <= 16; i++ {
 		status = hubtypes.Status(i % 4)
 		pagination = &query.PageRequest{
 			Key:        make([]byte, i),

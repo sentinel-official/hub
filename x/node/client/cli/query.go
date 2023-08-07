@@ -1,3 +1,5 @@
+// DO NOT COVER
+
 package cli
 
 import (
@@ -13,7 +15,7 @@ import (
 
 func queryNode() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "node [address]",
+		Use:   "node [node-addr]",
 		Short: "Query a node",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -22,7 +24,7 @@ func queryNode() *cobra.Command {
 				return err
 			}
 
-			address, err := hubtypes.NodeAddressFromBech32(args[0])
+			addr, err := hubtypes.NodeAddressFromBech32(args[0])
 			if err != nil {
 				return err
 			}
@@ -34,7 +36,7 @@ func queryNode() *cobra.Command {
 			res, err := qc.QueryNode(
 				context.Background(),
 				types.NewQueryNodeRequest(
-					address,
+					addr,
 				),
 			)
 			if err != nil {
@@ -60,17 +62,12 @@ func queryNodes() *cobra.Command {
 				return err
 			}
 
-			provider, err := GetProvider(cmd.Flags())
+			id, err := cmd.Flags().GetUint64(flagPlan)
 			if err != nil {
 				return err
 			}
 
-			plan, err := cmd.Flags().GetUint64(flagPlan)
-			if err != nil {
-				return err
-			}
-
-			status, err := GetStatus(cmd.Flags())
+			status, err := hubtypes.StatusFromFlags(cmd.Flags())
 			if err != nil {
 				return err
 			}
@@ -84,11 +81,11 @@ func queryNodes() *cobra.Command {
 				qc = types.NewQueryServiceClient(ctx)
 			)
 
-			if provider != nil {
-				res, err := qc.QueryNodesForProvider(
+			if id > 0 {
+				res, err := qc.QueryNodesForPlan(
 					context.Background(),
-					types.NewQueryNodesForProviderRequest(
-						provider,
+					types.NewQueryNodesForPlanRequest(
+						id,
 						status,
 						pagination,
 					),
@@ -98,8 +95,6 @@ func queryNodes() *cobra.Command {
 				}
 
 				return ctx.PrintProto(res)
-			} else if plan > 0 {
-				return nil
 			}
 
 			res, err := qc.QueryNodes(
@@ -119,9 +114,8 @@ func queryNodes() *cobra.Command {
 
 	flags.AddQueryFlagsToCmd(cmd)
 	flags.AddPaginationFlagsToCmd(cmd, "nodes")
-	cmd.Flags().String(flagProvider, "", "filter by provider address")
-	cmd.Flags().Uint64(flagPlan, 0, "filter by plan identity")
-	cmd.Flags().String(flagStatus, "", "filter by status")
+	cmd.Flags().String(hubtypes.FlagStatus, "", "filter the nodes by status (active|inactive)")
+	cmd.Flags().Uint64(flagPlan, 0, "query the nodes of a subscription plan")
 
 	return cmd
 }

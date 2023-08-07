@@ -1,3 +1,5 @@
+// DO NOT COVER
+
 package simulation
 
 import (
@@ -23,7 +25,7 @@ func RandomizedGenesisState(state *module.SimulationState) *types.GenesisState {
 		func(r *rand.Rand) {
 			deposit = sdk.NewInt64Coin(
 				sdk.DefaultBondDenom,
-				r.Int63n(MaxInt),
+				r.Int63n(MaxDeposit),
 			)
 		},
 	)
@@ -34,7 +36,7 @@ func RandomizedGenesisState(state *module.SimulationState) *types.GenesisState {
 		state.Rand,
 		func(r *rand.Rand) {
 			stakingShare = sdk.NewDecWithPrec(
-				r.Int63n(MaxInt),
+				r.Int63n(MaxStakingShare),
 				6,
 			)
 		},

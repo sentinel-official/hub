@@ -8,13 +8,13 @@ import (
 )
 
 func InitGenesis(ctx sdk.Context, k keeper.Keeper, state types.GenesisState) {
-	for _, deposit := range state {
-		k.SetDeposit(ctx, deposit)
+	for _, item := range state {
+		k.SetDeposit(ctx, item)
 	}
 }
 
 func ExportGenesis(ctx sdk.Context, k keeper.Keeper) types.GenesisState {
 	return types.NewGenesisState(
-		k.GetDeposits(ctx, 0, 0),
+		k.GetDeposits(ctx),
 	)
 }

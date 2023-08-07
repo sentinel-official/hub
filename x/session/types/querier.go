@@ -19,10 +19,31 @@ func NewQuerySessionsRequest(pagination *query.PageRequest) *QuerySessionsReques
 	}
 }
 
-func NewQuerySessionsForAddressRequest(address sdk.AccAddress, status hubtypes.Status, pagination *query.PageRequest) *QuerySessionsForAddressRequest {
-	return &QuerySessionsForAddressRequest{
-		Address:    address.String(),
-		Status:     status,
+func NewQuerySessionsForAccountRequest(addr sdk.AccAddress, pagination *query.PageRequest) *QuerySessionsForAccountRequest {
+	return &QuerySessionsForAccountRequest{
+		Address:    addr.String(),
+		Pagination: pagination,
+	}
+}
+
+func NewQuerySessionsForNodeRequest(addr hubtypes.NodeAddress, pagination *query.PageRequest) *QuerySessionsForNodeRequest {
+	return &QuerySessionsForNodeRequest{
+		Address:    addr.String(),
+		Pagination: pagination,
+	}
+}
+
+func NewQuerySessionsForSubscriptionRequest(id uint64, pagination *query.PageRequest) *QuerySessionsForSubscriptionRequest {
+	return &QuerySessionsForSubscriptionRequest{
+		Id:         id,
+		Pagination: pagination,
+	}
+}
+
+func NewQuerySessionsForAllocationRequest(id uint64, addr sdk.AccAddress, pagination *query.PageRequest) *QuerySessionsForAllocationRequest {
+	return &QuerySessionsForAllocationRequest{
+		Id:         id,
+		Address:    addr.String(),
 		Pagination: pagination,
 	}
 }

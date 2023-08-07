@@ -2,342 +2,203 @@ package keeper
 
 import (
 	"context"
+	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	hubtypes "github.com/sentinel-official/hub/types"
-	hubutils "github.com/sentinel-official/hub/utils"
 	"github.com/sentinel-official/hub/x/subscription/types"
 )
 
+// The following line asserts that the `msgServer` type implements the `types.MsgServiceServer` interface.
 var (
 	_ types.MsgServiceServer = (*msgServer)(nil)
 )
 
+// msgServer is a message server that implements the `types.MsgServiceServer` interface.
 type msgServer struct {
-	Keeper
+	Keeper // Keeper is an instance of the main keeper for the module.
 }
 
-func NewMsgServiceServer(keeper Keeper) types.MsgServiceServer {
-	return &msgServer{Keeper: keeper}
+// NewMsgServiceServer creates a new instance of `types.MsgServiceServer` using the provided Keeper.
+func NewMsgServiceServer(k Keeper) types.MsgServiceServer {
+	return &msgServer{k}
 }
 
-func (k *msgServer) MsgSubscribeToNode(c context.Context, msg *types.MsgSubscribeToNodeRequest) (*types.MsgSubscribeToNodeResponse, error) {
-	ctx := sdk.UnwrapSDKContext(c)
-
-	nodeAddr, err := hubtypes.NodeAddressFromBech32(msg.Address)
-	if err != nil {
-		return nil, err
-	}
-
-	node, found := k.GetNode(ctx, nodeAddr)
-	if !found {
-		return nil, types.ErrorNodeDoesNotExist
-	}
-	if node.Provider != "" {
-		return nil, types.ErrorCanNotSubscribe
-	}
-	if !node.Status.Equal(hubtypes.StatusActive) {
-		return nil, types.ErrorInvalidNodeStatus
-	}
-
-	price, found := node.PriceForDenom(msg.Deposit.Denom)
-	if !found {
-		return nil, types.ErrorPriceDoesNotExist
-	}
-
-	fromAddr, err := sdk.AccAddressFromBech32(msg.From)
-	if err != nil {
-		return nil, err
-	}
-
-	if err := k.AddDeposit(ctx, fromAddr, msg.Deposit); err != nil {
-		return nil, err
-	}
-
-	var (
-		count        = k.GetCount(ctx)
-		subscription = types.Subscription{
-			Id:       count + 1,
-			Owner:    msg.From,
-			Node:     node.Address,
-			Price:    price,
-			Deposit:  msg.Deposit,
-			Free:     sdk.ZeroInt(),
-			Status:   hubtypes.StatusActive,
-			StatusAt: ctx.BlockTime(),
-		}
-	)
-
-	k.SetCount(ctx, count+1)
-	k.SetSubscription(ctx, subscription)
-	ctx.EventManager().EmitTypedEvent(
-		&types.EventSubscribe{
-			Id:   subscription.Id,
-			Node: subscription.Node,
-		},
-	)
-
-	var (
-		bandwidth, _ = node.BytesForCoin(msg.Deposit)
-		quota        = types.Quota{
-			Address:   msg.From,
-			Consumed:  sdk.ZeroInt(),
-			Allocated: bandwidth,
-		}
-	)
-
-	k.SetQuota(ctx, subscription.Id, quota)
-	k.SetActiveSubscriptionForAddress(ctx, fromAddr, subscription.Id)
-	ctx.EventManager().EmitTypedEvent(
-		&types.EventAddQuota{
-			Id:      subscription.Id,
-			Address: quota.Address,
-		},
-	)
-
-	return &types.MsgSubscribeToNodeResponse{}, nil
-}
-
-func (k *msgServer) MsgSubscribeToPlan(c context.Context, msg *types.MsgSubscribeToPlanRequest) (*types.MsgSubscribeToPlanResponse, error) {
-	ctx := sdk.UnwrapSDKContext(c)
-
-	plan, found := k.GetPlan(ctx, msg.Id)
-	if !found {
-		return nil, types.ErrorPlanDoesNotExist
-	}
-	if !plan.Status.Equal(hubtypes.StatusActive) {
-		return nil, types.ErrorInvalidPlanStatus
-	}
-
-	fromAddr, err := sdk.AccAddressFromBech32(msg.From)
-	if err != nil {
-		return nil, err
-	}
-
-	if plan.Price != nil {
-		price, found := plan.PriceForDenom(msg.Denom)
-		if !found {
-			return nil, types.ErrorPriceDoesNotExist
-		}
-
-		var (
-			stakingShare  = k.provider.StakingShare(ctx)
-			stakingReward = hubutils.GetProportionOfCoin(price, stakingShare)
-		)
-
-		if err := k.SendCoinFromAccountToModule(ctx, fromAddr, k.feeCollectorName, stakingReward); err != nil {
-			return nil, err
-		}
-
-		var (
-			provAddr = plan.GetProvider()
-			amount   = price.Sub(stakingReward)
-		)
-
-		if err := k.SendCoin(ctx, fromAddr, provAddr.Bytes(), amount); err != nil {
-			return nil, err
-		}
-	}
-
-	var (
-		count        = k.GetCount(ctx)
-		subscription = types.Subscription{
-			Id:       count + 1,
-			Owner:    msg.From,
-			Plan:     plan.Id,
-			Denom:    msg.Denom,
-			Expiry:   ctx.BlockTime().Add(plan.Validity),
-			Free:     sdk.ZeroInt(),
-			Status:   hubtypes.StatusActive,
-			StatusAt: ctx.BlockTime(),
-		}
-	)
-
-	k.SetCount(ctx, count+1)
-	k.SetSubscription(ctx, subscription)
-	k.SetInactiveSubscriptionAt(ctx, subscription.Expiry, subscription.Id)
-	ctx.EventManager().EmitTypedEvent(
-		&types.EventSubscribe{
-			Id:   subscription.Id,
-			Plan: subscription.Plan,
-		},
-	)
-
-	var (
-		quota = types.Quota{
-			Address:   msg.From,
-			Consumed:  sdk.ZeroInt(),
-			Allocated: plan.Bytes,
-		}
-	)
-
-	k.SetQuota(ctx, subscription.Id, quota)
-	k.SetActiveSubscriptionForAddress(ctx, fromAddr, subscription.Id)
-	ctx.EventManager().EmitTypedEvent(
-		&types.EventAddQuota{
-			Id:      subscription.Id,
-			Address: quota.Address,
-		},
-	)
-
-	return &types.MsgSubscribeToPlanResponse{}, nil
-}
-
+// MsgCancel cancels an active subscription.
+// It validates the cancel request and performs necessary operations to set the subscription to the inactive state.
 func (k *msgServer) MsgCancel(c context.Context, msg *types.MsgCancelRequest) (*types.MsgCancelResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
-	subscription, found := k.GetSubscription(ctx, msg.Id)
+	// Convert the `msg.From` address (in Bech32 format) to an `sdk.AccAddress`.
+	fromAddr, err := sdk.AccAddressFromBech32(msg.From)
+	if err != nil {
+		return nil, err
+	}
+
+	// Get the subscription from the Store based on the provided subscription ID (msg.ID).
+	subscription, found := k.GetSubscription(ctx, msg.ID)
 	if !found {
-		return nil, types.ErrorSubscriptionDoesNotExist
-	}
-	if msg.From != subscription.Owner {
-		return nil, types.ErrorUnauthorized
-	}
-	if !subscription.Status.Equal(hubtypes.StatusActive) {
-		return nil, types.ErrorInvalidSubscriptionStatus
+		return nil, types.NewErrorSubscriptionNotFound(msg.ID)
 	}
 
-	activeSessionExist := false
-	k.IterateQuotas(ctx, subscription.Id, func(_ int, quota types.Quota) bool {
-		var (
-			accAddr = quota.GetAddress()
-			items   = k.GetActiveSessionsForAddress(ctx, accAddr, 0, 1)
-		)
-
-		if len(items) > 0 {
-			activeSessionExist = true
-		}
-
-		return activeSessionExist
-	})
-
-	if activeSessionExist {
-		return nil, types.ErrorCanNotCancel
+	// Check if the subscription is in an active state. If not, return an error.
+	if !subscription.GetStatus().Equal(hubtypes.StatusActive) {
+		return nil, types.NewErrorInvalidSubscriptionStatus(subscription.GetID(), subscription.GetStatus())
 	}
 
-	inactiveDuration := k.InactiveDuration(ctx)
-	if subscription.Plan > 0 {
-		k.DeleteInactiveSubscriptionAt(ctx, subscription.Expiry, subscription.Id)
+	// Check if the `msg.From` address matches the owner address of the subscription. If not, return an error.
+	if !fromAddr.Equals(subscription.GetAddress()) {
+		return nil, types.NewErrorUnauthorized(msg.From)
 	}
 
-	k.IterateQuotas(ctx, subscription.Id, func(_ int, quota types.Quota) bool {
-		accAddr := quota.GetAddress()
-		k.DeleteActiveSubscriptionForAddress(ctx, accAddr, subscription.Id)
-		k.SetInactiveSubscriptionForAddress(ctx, accAddr, subscription.Id)
+	// Run the SubscriptionInactivePendingHook to perform custom actions before setting the subscription to inactive pending state.
+	if err = k.SubscriptionInactivePendingHook(ctx, subscription.GetID()); err != nil {
+		return nil, err
+	}
 
-		return false
-	})
+	// Delete the subscription from the Store for the time it becomes inactive.
+	k.DeleteSubscriptionForInactiveAt(ctx, subscription.GetInactiveAt(), subscription.GetID())
 
-	subscription.Status = hubtypes.StatusInactivePending
-	subscription.StatusAt = ctx.BlockTime()
+	// Calculate the duration for which the subscription will be in the inactive state.
+	statusChangeDelay := k.StatusChangeDelay(ctx)
+	subscription.SetInactiveAt(
+		ctx.BlockTime().Add(statusChangeDelay),
+	)
+	subscription.SetStatus(hubtypes.StatusInactivePending)
+	subscription.SetStatusAt(ctx.BlockTime())
 
+	// Update the subscription in the Store.
 	k.SetSubscription(ctx, subscription)
-	k.SetInactiveSubscriptionAt(ctx, subscription.StatusAt.Add(inactiveDuration), subscription.Id)
+
+	// Add the subscription back to the Store with the new inactive time.
+	k.SetSubscriptionForInactiveAt(ctx, subscription.GetInactiveAt(), subscription.GetID())
+
+	// Emit an event to notify that the subscription status has been updated.
 	ctx.EventManager().EmitTypedEvent(
-		&types.EventSetStatus{
-			Id:     subscription.Id,
-			Status: subscription.Status,
+		&types.EventUpdateStatus{
+			ID:     subscription.GetID(),
+			Status: subscription.GetStatus(),
 		},
 	)
+
+	// If the subscription is a NodeSubscription and the duration is specified in hours (non-zero), update the associated payout.
+	if s, ok := subscription.(*types.NodeSubscription); ok && s.Hours != 0 {
+		payout, found := k.GetPayout(ctx, s.GetID())
+		if !found {
+			return nil, types.NewErrorPayoutNotFound(s.GetID())
+		}
+
+		// Delete the payout from the Store for the given account and node.
+		k.DeletePayoutForAccountByNode(ctx, payout.GetAddress(), payout.GetNodeAddress(), payout.ID)
+		k.DeletePayoutForNextAt(ctx, payout.NextAt, payout.ID)
+
+		// Reset the `NextAt` field of the payout and update it in the Store.
+		payout.NextAt = time.Time{}
+		k.SetPayout(ctx, payout)
+	}
 
 	return &types.MsgCancelResponse{}, nil
 }
 
-func (k *msgServer) MsgAddQuota(c context.Context, msg *types.MsgAddQuotaRequest) (*types.MsgAddQuotaResponse, error) {
+// MsgAllocate allocates bandwidth to another address.
+// It validates the allocation request and updates the granted bytes for both the sender and receiver of the bandwidth.
+func (k *msgServer) MsgAllocate(c context.Context, msg *types.MsgAllocateRequest) (*types.MsgAllocateResponse, error) {
 	ctx := sdk.UnwrapSDKContext(c)
 
-	accAddr, err := sdk.AccAddressFromBech32(msg.Address)
+	// Convert the `msg.From` address (in Bech32 format) to an `sdk.AccAddress`.
+	fromAddr, err := sdk.AccAddressFromBech32(msg.From)
 	if err != nil {
 		return nil, err
 	}
 
-	subscription, found := k.GetSubscription(ctx, msg.Id)
+	// Get the subscription from the Store based on the provided subscription ID (msg.ID).
+	subscription, found := k.GetSubscription(ctx, msg.ID)
 	if !found {
-		return nil, types.ErrorSubscriptionDoesNotExist
-	}
-	if subscription.Plan == 0 {
-		return nil, types.ErrorCanNotAddQuota
-	}
-	if msg.From != subscription.Owner {
-		return nil, types.ErrorUnauthorized
-	}
-	if !subscription.Status.Equal(hubtypes.StatusActive) {
-		return nil, types.ErrorInvalidSubscriptionStatus
-	}
-	if k.HasQuota(ctx, subscription.Id, accAddr) {
-		return nil, types.ErrorDuplicateQuota
-	}
-	if msg.Bytes.GT(subscription.Free) {
-		return nil, types.ErrorInvalidQuota
+		return nil, types.NewErrorSubscriptionNotFound(msg.ID)
 	}
 
-	subscription.Free = subscription.Free.Sub(msg.Bytes)
-	k.SetSubscription(ctx, subscription)
+	// Check if the subscription type is a plan. If not, return an error.
+	if subscription.Type() != types.TypePlan {
+		return nil, types.NewErrorInvalidSubscriptionType(subscription.GetID(), subscription.Type())
+	}
 
-	var (
-		quota = types.Quota{
-			Address:   msg.Address,
-			Consumed:  sdk.ZeroInt(),
-			Allocated: msg.Bytes,
+	// Check if the `msg.From` address matches the owner address of the subscription. If not, return an error.
+	if !fromAddr.Equals(subscription.GetAddress()) {
+		return nil, types.NewErrorUnauthorized(msg.From)
+	}
+
+	// Get the existing allocation for the sender.
+	fromAlloc, found := k.GetAllocation(ctx, subscription.GetID(), fromAddr)
+	if !found {
+		return nil, types.NewErrorAllocationNotFound(subscription.GetID(), fromAddr)
+	}
+
+	// Convert the `msg.Address` (receiver's address) from Bech32 format to an `sdk.AccAddress`.
+	toAddr, err := sdk.AccAddressFromBech32(msg.Address)
+	if err != nil {
+		return nil, err
+	}
+
+	// Get the existing allocation for the receiver.
+	toAlloc, found := k.GetAllocation(ctx, subscription.GetID(), toAddr)
+	if !found {
+		// If the receiver has no existing allocation, create a new one.
+		toAlloc = types.Allocation{
+			ID:            subscription.GetID(),
+			Address:       toAddr.String(),
+			GrantedBytes:  sdk.ZeroInt(),
+			UtilisedBytes: sdk.ZeroInt(),
 		}
-	)
 
-	k.SetQuota(ctx, subscription.Id, quota)
-	k.SetActiveSubscriptionForAddress(ctx, accAddr, subscription.Id)
+		// Update the subscription in the Store to associate it with the new receiver.
+		k.SetSubscriptionForAccount(ctx, toAddr, subscription.GetID())
+	}
+
+	// Calculate the available bytes for the sender and check if it is sufficient for the allocation.
+	grantedBytes := fromAlloc.GrantedBytes.Add(toAlloc.GrantedBytes)
+	utilisedBytes := fromAlloc.UtilisedBytes.Add(toAlloc.UtilisedBytes)
+	availableBytes := grantedBytes.Sub(utilisedBytes)
+
+	if msg.Bytes.GT(availableBytes) {
+		return nil, types.NewErrorInsufficientBytes(subscription.GetID(), msg.Bytes)
+	}
+
+	// Update the allocation for the sender after deducting the allocated bytes.
+	fromAlloc.GrantedBytes = availableBytes.Sub(msg.Bytes)
+	if fromAlloc.GrantedBytes.LT(fromAlloc.UtilisedBytes) {
+		return nil, types.NewErrorInvalidAllocation(subscription.GetID(), fromAddr)
+	}
+
+	// Update the sender's allocation in the Store.
+	k.SetAllocation(ctx, fromAlloc)
+
+	// Emit an event to notify that the sender's allocation has been updated.
 	ctx.EventManager().EmitTypedEvent(
-		&types.EventAddQuota{
-			Id:      subscription.Id,
-			Address: quota.Address,
+		&types.EventAllocate{
+			ID:      subscription.GetID(),
+			Address: fromAlloc.Address,
+			Bytes:   fromAlloc.GrantedBytes,
 		},
 	)
 
-	return &types.MsgAddQuotaResponse{}, nil
-}
-
-func (k *msgServer) MsgUpdateQuota(c context.Context, msg *types.MsgUpdateQuotaRequest) (*types.MsgUpdateQuotaResponse, error) {
-	ctx := sdk.UnwrapSDKContext(c)
-
-	subscription, found := k.GetSubscription(ctx, msg.Id)
-	if !found {
-		return nil, types.ErrorSubscriptionDoesNotExist
-	}
-	if subscription.Plan == 0 {
-		return nil, types.ErrorCanNotUpdateQuota
-	}
-	if msg.From != subscription.Owner {
-		return nil, types.ErrorUnauthorized
-	}
-	if !subscription.Status.Equal(hubtypes.StatusActive) {
-		return nil, types.ErrorInvalidSubscriptionStatus
+	// Update the allocation for the receiver after adding the allocated bytes.
+	toAlloc.GrantedBytes = msg.Bytes
+	if toAlloc.GrantedBytes.LT(toAlloc.UtilisedBytes) {
+		return nil, types.NewErrorInvalidAllocation(subscription.GetID(), toAddr)
 	}
 
-	accAddr, err := sdk.AccAddressFromBech32(msg.Address)
-	if err != nil {
-		return nil, err
-	}
+	// Update the receiver's allocation in the Store.
+	k.SetAllocation(ctx, toAlloc)
 
-	quota, found := k.GetQuota(ctx, subscription.Id, accAddr)
-	if !found {
-		return nil, types.ErrorQuotaDoesNotExist
-	}
-
-	subscription.Free = subscription.Free.Add(quota.Allocated)
-	if msg.Bytes.LT(quota.Consumed) || msg.Bytes.GT(subscription.Free) {
-		return nil, types.ErrorInvalidQuota
-	}
-
-	subscription.Free = subscription.Free.Sub(msg.Bytes)
-	k.SetSubscription(ctx, subscription)
-
-	quota.Allocated = msg.Bytes
-	k.SetQuota(ctx, subscription.Id, quota)
+	// Emit an event to notify that the receiver's allocation has been updated.
 	ctx.EventManager().EmitTypedEvent(
-		&types.EventUpdateQuota{
-			Id:      subscription.Id,
-			Address: quota.Address,
+		&types.EventAllocate{
+			ID:      subscription.GetID(),
+			Address: toAlloc.Address,
+			Bytes:   toAlloc.GrantedBytes,
 		},
 	)
 
-	return &types.MsgUpdateQuotaResponse{}, nil
+	return &types.MsgAllocateResponse{}, nil
 }

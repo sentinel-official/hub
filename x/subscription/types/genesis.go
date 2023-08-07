@@ -24,35 +24,41 @@ func ValidateGenesis(state *GenesisState) error {
 		return err
 	}
 
-	subscriptions := make(map[uint64]bool)
+	m := make(map[uint64]bool)
 	for _, item := range state.Subscriptions {
-		if subscriptions[item.Subscription.Id] {
-			return fmt.Errorf("found duplicate subscription for id %d", item.Subscription.Id)
+		id := item.Subscription.GetCachedValue().(*BaseSubscription).ID
+		if m[id] {
+			return fmt.Errorf("found a duplicate subscription for id %d", id)
 		}
 
-		subscriptions[item.Subscription.Id] = true
+		m[id] = true
 	}
 
 	for _, item := range state.Subscriptions {
-		quotas := make(map[string]bool)
-		for _, quota := range item.Quotas {
-			if quotas[quota.Address] {
-				return fmt.Errorf("found duplicate quota for subscription %d and address %s", item.Subscription.Id, quota.Address)
+		var (
+			m  = make(map[string]bool)
+			id = item.Subscription.GetCachedValue().(*BaseSubscription).ID
+		)
+
+		for _, alloc := range item.Allocations {
+			if m[alloc.Address] {
+				return fmt.Errorf("found a duplicate allocation %d/%s", id, alloc.Address)
 			}
 
-			quotas[quota.Address] = true
+			m[alloc.Address] = true
 		}
 	}
 
 	for _, item := range state.Subscriptions {
-		if err := item.Subscription.Validate(); err != nil {
+		item := item.Subscription.GetCachedValue().(Subscription)
+		if err := item.Validate(); err != nil {
 			return err
 		}
 	}
 
 	for _, item := range state.Subscriptions {
-		for _, quota := range item.Quotas {
-			if err := quota.Validate(); err != nil {
+		for _, alloc := range item.Allocations {
+			if err := alloc.Validate(); err != nil {
 				return err
 			}
 		}

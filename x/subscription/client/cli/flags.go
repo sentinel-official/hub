@@ -8,12 +8,13 @@ import (
 )
 
 const (
-	flagStatus  = "status"
-	flagAddress = "address"
+	flagAccountAddress = "account-addr"
+	flagNodeAddress    = "node-addr"
+	flagPlanID         = "plan-id"
 )
 
-func GetAddress(flags *pflag.FlagSet) (sdk.AccAddress, error) {
-	s, err := flags.GetString(flagAddress)
+func GetAccountAddress(flags *pflag.FlagSet) (sdk.AccAddress, error) {
+	s, err := flags.GetString(flagAccountAddress)
 	if err != nil {
 		return nil, err
 	}
@@ -24,14 +25,14 @@ func GetAddress(flags *pflag.FlagSet) (sdk.AccAddress, error) {
 	return sdk.AccAddressFromBech32(s)
 }
 
-func GetStatus(flags *pflag.FlagSet) (hubtypes.Status, error) {
-	s, err := flags.GetString(flagStatus)
+func GetNodeAddress(flags *pflag.FlagSet) (hubtypes.NodeAddress, error) {
+	s, err := flags.GetString(flagNodeAddress)
 	if err != nil {
-		return hubtypes.Unspecified, err
+		return nil, err
 	}
 	if s == "" {
-		return hubtypes.Unspecified, nil
+		return nil, nil
 	}
 
-	return hubtypes.StatusFromString(s), nil
+	return hubtypes.NodeAddressFromBech32(s)
 }

@@ -7,25 +7,19 @@ import (
 )
 
 const (
-	ModuleName   = "provider"
-	QuerierRoute = ModuleName
+	ModuleName = "provider"
 )
 
 var (
-	ParamsSubspace = ModuleName
-	RouterKey      = ModuleName
-	StoreKey       = ModuleName
+	ProviderKeyPrefix         = []byte{0x10}
+	ActiveProviderKeyPrefix   = append(ProviderKeyPrefix, 0x01)
+	InactiveProviderKeyPrefix = append(ProviderKeyPrefix, 0x02)
 )
 
-var (
-	TypeMsgRegisterRequest = ModuleName + ":register"
-	TypeMsgUpdateRequest   = ModuleName + ":update"
-)
+func ActiveProviderKey(addr hubtypes.ProvAddress) []byte {
+	return append(ActiveProviderKeyPrefix, address.MustLengthPrefix(addr.Bytes())...)
+}
 
-var (
-	ProviderKeyPrefix = []byte{0x10}
-)
-
-func ProviderKey(addr hubtypes.ProvAddress) []byte {
-	return append(ProviderKeyPrefix, address.MustLengthPrefix(addr.Bytes())...)
+func InactiveProviderKey(addr hubtypes.ProvAddress) (v []byte) {
+	return append(InactiveProviderKeyPrefix, address.MustLengthPrefix(addr.Bytes())...)
 }

@@ -15,6 +15,6 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, state *types.GenesisState) {
 
 func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 	return types.NewGenesisState(
-		k.GetInflations(ctx, 0, 0),
+		k.GetInflations(ctx),
 	)
 }

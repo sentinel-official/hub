@@ -11,10 +11,10 @@ import (
 
 func TestMsgRegisterRequest_ValidateBasic(t *testing.T) {
 	type fields struct {
-		From      string
-		Provider  string
-		Price     sdk.Coins
-		RemoteURL string
+		From           string
+		GigabytePrices sdk.Coins
+		HourlyPrices   sdk.Coins
+		RemoteURL      string
 	}
 	tests := []struct {
 		name    string
@@ -22,208 +22,255 @@ func TestMsgRegisterRequest_ValidateBasic(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			"empty from",
+			"from empty",
 			fields{
 				From: "",
 			},
 			true,
 		},
 		{
-			"invalid from",
+			"from invalid",
 			fields{
 				From: "invalid",
 			},
 			true,
 		},
 		{
-			"invalid prefix from",
+			"from invalid prefix",
 			fields{
-				From: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				From: hubtypes.TestBech32NodeAddr20Bytes,
 			},
 			true,
 		},
 		{
-			"10 bytes from",
+			"from 10 bytes",
 			fields{
-				From: "sent1qypqxpq9qcrsszgslawd5s",
+				From:           hubtypes.TestBech32AccAddr10Bytes,
+				GigabytePrices: nil,
+				HourlyPrices:   nil,
+				RemoteURL:      "https://remote.url:443",
+			},
+			false,
+		},
+		{
+			"from 20 bytes",
+			fields{
+				From:           hubtypes.TestBech32AccAddr20Bytes,
+				GigabytePrices: nil,
+				HourlyPrices:   nil,
+				RemoteURL:      "https://remote.url:443",
+			},
+			false,
+		},
+		{
+			"from 30 bytes",
+			fields{
+				From:           hubtypes.TestBech32AccAddr30Bytes,
+				GigabytePrices: nil,
+				HourlyPrices:   nil,
+				RemoteURL:      "https://remote.url:443",
+			},
+			false,
+		},
+		{
+			"gigabyte_prices nil",
+			fields{
+				From:           hubtypes.TestBech32AccAddr20Bytes,
+				GigabytePrices: nil,
+				HourlyPrices:   nil,
+				RemoteURL:      "https://remote.url:443",
+			},
+			false,
+		},
+		{
+			"gigabyte_prices empty",
+			fields{
+				From:           hubtypes.TestBech32AccAddr20Bytes,
+				GigabytePrices: sdk.Coins{},
 			},
 			true,
 		},
 		{
-			"20 bytes from",
+			"gigabyte_prices empty denom",
 			fields{
-				From: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				From:           hubtypes.TestBech32AccAddr20Bytes,
+				GigabytePrices: sdk.Coins{sdk.Coin{Denom: ""}},
 			},
 			true,
 		},
 		{
-			"30 bytes from",
+			"gigabyte_prices invalid denom",
 			fields{
-				From: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfqyy3zxfp9ycnjs2fszvfck8",
+				From:           hubtypes.TestBech32AccAddr20Bytes,
+				GigabytePrices: sdk.Coins{sdk.Coin{Denom: "o"}},
 			},
 			true,
 		},
 		{
-			"empty provider and nil price",
+			"gigabyte_prices empty amount",
 			fields{
-				From:     "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				Provider: "",
-				Price:    nil,
+				From:           hubtypes.TestBech32AccAddr20Bytes,
+				GigabytePrices: sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.Int{}}},
 			},
 			true,
 		},
 		{
-			"non-empty provider and non-nil price",
+			"gigabyte_prices negative amount",
 			fields{
-				From:     "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				Provider: "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Price:    sdk.Coins{},
+				From:           hubtypes.TestBech32AccAddr20Bytes,
+				GigabytePrices: sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(-1000)}},
 			},
 			true,
 		},
 		{
-			"invalid prefix provider",
+			"gigabyte_prices zero amount",
 			fields{
-				From:     "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				Provider: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				From:           hubtypes.TestBech32AccAddr20Bytes,
+				GigabytePrices: sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(0)}},
 			},
 			true,
 		},
 		{
-			"10 bytes provider",
+			"gigabyte_prices positive amount",
 			fields{
-				From:     "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				Provider: "sentprov1qypqxpq9qcrsszgsutj8xr",
+				From:           hubtypes.TestBech32AccAddr20Bytes,
+				GigabytePrices: sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
+				HourlyPrices:   nil,
+				RemoteURL:      "https://remote.url:443",
+			},
+			false,
+		},
+		{
+			"hourly_prices nil",
+			fields{
+				From:           hubtypes.TestBech32AccAddr20Bytes,
+				GigabytePrices: nil,
+				HourlyPrices:   nil,
+				RemoteURL:      "https://remote.url:443",
+			},
+			false,
+		},
+		{
+			"hourly_prices empty",
+			fields{
+				From:           hubtypes.TestBech32AccAddr20Bytes,
+				GigabytePrices: nil,
+				HourlyPrices:   sdk.Coins{},
 			},
 			true,
 		},
 		{
-			"20 bytes provider",
+			"hourly_prices empty denom",
 			fields{
-				From:     "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				Provider: "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
+				From:           hubtypes.TestBech32AccAddr20Bytes,
+				GigabytePrices: nil,
+				HourlyPrices:   sdk.Coins{sdk.Coin{Denom: ""}},
 			},
 			true,
 		},
 		{
-			"30 bytes provider",
+			"hourly_prices invalid denom",
 			fields{
-				From:     "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				Provider: "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfqyy3zxfp9ycnjs2fsh33zgx",
+				From:           hubtypes.TestBech32AccAddr20Bytes,
+				GigabytePrices: nil,
+				HourlyPrices:   sdk.Coins{sdk.Coin{Denom: "o"}},
 			},
 			true,
 		},
 		{
-			"empty price",
+			"hourly_prices empty amount",
 			fields{
-				From:     "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				Provider: "",
-				Price:    sdk.Coins{},
+				From:           hubtypes.TestBech32AccAddr20Bytes,
+				GigabytePrices: nil,
+				HourlyPrices:   sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.Int{}}},
 			},
 			true,
 		},
 		{
-			"empty denom price",
+			"hourly_prices negative amount",
 			fields{
-				From:     "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				Provider: "",
-				Price:    sdk.Coins{sdk.Coin{Denom: ""}},
+				From:           hubtypes.TestBech32AccAddr20Bytes,
+				GigabytePrices: nil,
+				HourlyPrices:   sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(-1000)}},
 			},
 			true,
 		},
 		{
-			"invalid denom price",
+			"hourly_prices zero amount",
 			fields{
-				From:     "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				Provider: "",
-				Price:    sdk.Coins{sdk.Coin{Denom: "o"}},
+				From:           hubtypes.TestBech32AccAddr20Bytes,
+				GigabytePrices: nil,
+				HourlyPrices:   sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(0)}},
 			},
 			true,
 		},
 		{
-			"negative amount price",
+			"hourly_prices positive amount",
 			fields{
-				From:     "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				Provider: "",
-				Price:    sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(-1000)}},
+				From:           hubtypes.TestBech32AccAddr20Bytes,
+				GigabytePrices: nil,
+				HourlyPrices:   sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
+				RemoteURL:      "https://remote.url:443",
+			},
+			false,
+		},
+		{
+			"remote_url empty",
+			fields{
+				From:           hubtypes.TestBech32AccAddr20Bytes,
+				GigabytePrices: nil,
+				HourlyPrices:   nil,
+				RemoteURL:      "",
 			},
 			true,
 		},
 		{
-			"zero amount price",
+			"remote_url 72 chars",
 			fields{
-				From:     "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				Provider: "",
-				Price:    sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(0)}},
+				From:           hubtypes.TestBech32AccAddr20Bytes,
+				GigabytePrices: nil,
+				HourlyPrices:   nil,
+				RemoteURL:      strings.Repeat("r", 72),
 			},
 			true,
 		},
 		{
-			"positive amount price",
+			"remote_url invalid",
 			fields{
-				From:     "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				Provider: "",
-				Price:    sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
+				From:           hubtypes.TestBech32AccAddr20Bytes,
+				GigabytePrices: nil,
+				HourlyPrices:   nil,
+				RemoteURL:      "invalid",
 			},
 			true,
 		},
 		{
-			"empty remote_url",
+			"remote_url invalid scheme",
 			fields{
-				From:      "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				Provider:  "",
-				Price:     sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
-				RemoteURL: "",
+				From:           hubtypes.TestBech32AccAddr20Bytes,
+				GigabytePrices: nil,
+				HourlyPrices:   nil,
+				RemoteURL:      "tcp://remote.url:80",
 			},
 			true,
 		},
 		{
-			"length 72 remote_url",
+			"remote_url without port",
 			fields{
-				From:      "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				Provider:  "",
-				Price:     sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
-				RemoteURL: strings.Repeat("r", 72),
+				From:           hubtypes.TestBech32AccAddr20Bytes,
+				GigabytePrices: nil,
+				HourlyPrices:   nil,
+				RemoteURL:      "https://remote.url",
 			},
 			true,
 		},
 		{
-			"invalid remote_url",
+			"remote_url with port",
 			fields{
-				From:      "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				Provider:  "",
-				Price:     sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
-				RemoteURL: "invalid",
-			},
-			true,
-		},
-		{
-			"invalid remote_url scheme",
-			fields{
-				From:      "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				Provider:  "",
-				Price:     sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
-				RemoteURL: "tcp://remote.url:80",
-			},
-			true,
-		},
-		{
-			"empty remote_url port",
-			fields{
-				From:      "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				Provider:  "",
-				Price:     sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
-				RemoteURL: "https://remote.url",
-			},
-			true,
-		},
-		{
-			"non-empty remote_url port",
-			fields{
-				From:      "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
-				Provider:  "",
-				Price:     sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
-				RemoteURL: "https://remote.url:443",
+				From:           hubtypes.TestBech32AccAddr20Bytes,
+				GigabytePrices: nil,
+				HourlyPrices:   nil,
+				RemoteURL:      "https://remote.url:443",
 			},
 			false,
 		},
@@ -231,10 +278,10 @@ func TestMsgRegisterRequest_ValidateBasic(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			m := &MsgRegisterRequest{
-				From:      tt.fields.From,
-				Provider:  tt.fields.Provider,
-				Price:     tt.fields.Price,
-				RemoteURL: tt.fields.RemoteURL,
+				From:           tt.fields.From,
+				GigabytePrices: tt.fields.GigabytePrices,
+				HourlyPrices:   tt.fields.HourlyPrices,
+				RemoteURL:      tt.fields.RemoteURL,
 			}
 			if err := m.ValidateBasic(); (err != nil) != tt.wantErr {
 				t.Errorf("ValidateBasic() error = %v, wantErr %v", err, tt.wantErr)
@@ -243,12 +290,12 @@ func TestMsgRegisterRequest_ValidateBasic(t *testing.T) {
 	}
 }
 
-func TestMsgUpdateRequest_ValidateBasic(t *testing.T) {
+func TestMsgUpdateDetailsRequest_ValidateBasic(t *testing.T) {
 	type fields struct {
-		From      string
-		Provider  string
-		Price     sdk.Coins
-		RemoteURL string
+		From           string
+		GigabytePrices sdk.Coins
+		HourlyPrices   sdk.Coins
+		RemoteURL      string
 	}
 	tests := []struct {
 		name    string
@@ -256,219 +303,266 @@ func TestMsgUpdateRequest_ValidateBasic(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			"empty from",
+			"from empty",
 			fields{
 				From: "",
 			},
 			true,
 		},
 		{
-			"invalid from",
+			"from invalid",
 			fields{
 				From: "invalid",
 			},
 			true,
 		},
 		{
-			"invalid prefix from",
+			"from invalid prefix",
 			fields{
-				From: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				From: hubtypes.TestBech32AccAddr20Bytes,
 			},
 			true,
 		},
 		{
-			"10 bytes from",
+			"from 10 bytes",
 			fields{
-				From: "sentnode1qypqxpq9qcrsszgse4wwrm",
+				From:           hubtypes.TestBech32NodeAddr10Bytes,
+				GigabytePrices: nil,
+				HourlyPrices:   nil,
+				RemoteURL:      "https://remote.url:443",
 			},
 			false,
 		},
 		{
-			"20 bytes from",
+			"from 20 bytes",
 			fields{
-				From: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				From:           hubtypes.TestBech32NodeAddr20Bytes,
+				GigabytePrices: nil,
+				HourlyPrices:   nil,
+				RemoteURL:      "https://remote.url:443",
 			},
 			false,
 		},
 		{
-			"30 bytes from",
+			"from 30 bytes",
 			fields{
-				From: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqyy3zxfp9ycnjs2fsxqglcv",
+				From:           hubtypes.TestBech32NodeAddr30Bytes,
+				GigabytePrices: nil,
+				HourlyPrices:   nil,
+				RemoteURL:      "https://remote.url:443",
 			},
 			false,
 		},
 		{
-			"empty provider and nil price",
+			"gigabyte_prices nil",
 			fields{
-				From:     "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Provider: "",
-				Price:    nil,
+				From:           hubtypes.TestBech32NodeAddr20Bytes,
+				GigabytePrices: nil,
+				HourlyPrices:   nil,
+				RemoteURL:      "https://remote.url:443",
 			},
 			false,
 		},
 		{
-			"non-empty provider and non-nil price",
+			"gigabyte_prices empty",
 			fields{
-				From:     "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Provider: "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
-				Price:    sdk.Coins{},
+				From:           hubtypes.TestBech32NodeAddr20Bytes,
+				GigabytePrices: sdk.Coins{},
 			},
 			true,
 		},
 		{
-			"invalid prefix provider",
+			"gigabyte_prices empty denom",
 			fields{
-				From:     "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Provider: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				From:           hubtypes.TestBech32NodeAddr20Bytes,
+				GigabytePrices: sdk.Coins{sdk.Coin{Denom: ""}},
 			},
 			true,
 		},
 		{
-			"10 bytes provider",
+			"gigabyte_prices invalid denom",
 			fields{
-				From:     "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Provider: "sentprov1qypqxpq9qcrsszgsutj8xr",
+				From:           hubtypes.TestBech32NodeAddr20Bytes,
+				GigabytePrices: sdk.Coins{sdk.Coin{Denom: "o"}},
+			},
+			true,
+		},
+		{
+			"gigabyte_prices empty amount",
+			fields{
+				From:           hubtypes.TestBech32NodeAddr20Bytes,
+				GigabytePrices: sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.Int{}}},
+			},
+			true,
+		},
+		{
+			"gigabyte_prices negative amount",
+			fields{
+				From:           hubtypes.TestBech32NodeAddr20Bytes,
+				GigabytePrices: sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(-1000)}},
+			},
+			true,
+		},
+		{
+			"gigabyte_prices zero amount",
+			fields{
+				From:           hubtypes.TestBech32NodeAddr20Bytes,
+				GigabytePrices: sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(0)}},
+			},
+			true,
+		},
+		{
+			"gigabyte_prices positive amount",
+			fields{
+				From:           hubtypes.TestBech32NodeAddr20Bytes,
+				GigabytePrices: sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
+				HourlyPrices:   nil,
+				RemoteURL:      "https://remote.url:443",
 			},
 			false,
 		},
 		{
-			"20 bytes provider",
+			"hourly_prices nil",
 			fields{
-				From:     "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Provider: "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfq877k82",
+				From:           hubtypes.TestBech32NodeAddr20Bytes,
+				GigabytePrices: nil,
+				HourlyPrices:   nil,
+				RemoteURL:      "https://remote.url:443",
 			},
 			false,
 		},
 		{
-			"30 bytes provider",
+			"hourly_prices empty",
 			fields{
-				From:     "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Provider: "sentprov1qypqxpq9qcrsszgszyfpx9q4zct3sxfqyy3zxfp9ycnjs2fsh33zgx",
+				From:           hubtypes.TestBech32NodeAddr20Bytes,
+				GigabytePrices: nil,
+				HourlyPrices:   sdk.Coins{},
+			},
+			true,
+		},
+		{
+			"hourly_prices empty denom",
+			fields{
+				From:           hubtypes.TestBech32NodeAddr20Bytes,
+				GigabytePrices: nil,
+				HourlyPrices:   sdk.Coins{sdk.Coin{Denom: ""}},
+			},
+			true,
+		},
+		{
+			"hourly_prices invalid denom",
+			fields{
+				From:           hubtypes.TestBech32NodeAddr20Bytes,
+				GigabytePrices: nil,
+				HourlyPrices:   sdk.Coins{sdk.Coin{Denom: "o"}},
+			},
+			true,
+		},
+		{
+			"hourly_prices empty amount",
+			fields{
+				From:           hubtypes.TestBech32NodeAddr20Bytes,
+				GigabytePrices: nil,
+				HourlyPrices:   sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.Int{}}},
+			},
+			true,
+		},
+		{
+			"hourly_prices negative amount",
+			fields{
+				From:           hubtypes.TestBech32NodeAddr20Bytes,
+				GigabytePrices: nil,
+				HourlyPrices:   sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(-1000)}},
+			},
+			true,
+		},
+		{
+			"hourly_prices zero amount",
+			fields{
+				From:           hubtypes.TestBech32NodeAddr20Bytes,
+				GigabytePrices: nil,
+				HourlyPrices:   sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(0)}},
+			},
+			true,
+		},
+		{
+			"hourly_prices positive amount",
+			fields{
+				From:           hubtypes.TestBech32NodeAddr20Bytes,
+				GigabytePrices: nil,
+				HourlyPrices:   sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
+				RemoteURL:      "https://remote.url:443",
 			},
 			false,
 		},
 		{
-			"empty price",
+			"remote_url empty",
 			fields{
-				From:     "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Provider: "",
-				Price:    sdk.Coins{},
-			},
-			true,
-		},
-		{
-			"empty denom price",
-			fields{
-				From:     "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Provider: "",
-				Price:    sdk.Coins{sdk.Coin{Denom: ""}},
-			},
-			true,
-		},
-		{
-			"invalid denom price",
-			fields{
-				From:     "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Provider: "",
-				Price:    sdk.Coins{sdk.Coin{Denom: "o"}},
-			},
-			true,
-		},
-		{
-			"negative amount price",
-			fields{
-				From:     "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Provider: "",
-				Price:    sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(-1000)}},
-			},
-			true,
-		},
-		{
-			"zero amount price",
-			fields{
-				From:     "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Provider: "",
-				Price:    sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(0)}},
-			},
-			true,
-		},
-		{
-			"positive amount price",
-			fields{
-				From:     "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Provider: "",
-				Price:    sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
+				From:           hubtypes.TestBech32NodeAddr20Bytes,
+				GigabytePrices: nil,
+				HourlyPrices:   nil,
+				RemoteURL:      "",
 			},
 			false,
 		},
 		{
-			"empty remote_url",
+			"remote_url 72 chars",
 			fields{
-				From:      "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Provider:  "",
-				Price:     sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
-				RemoteURL: "",
-			},
-			false,
-		},
-		{
-			"length 72 remote_url",
-			fields{
-				From:      "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Provider:  "",
-				Price:     sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
-				RemoteURL: strings.Repeat("r", 72),
+				From:           hubtypes.TestBech32NodeAddr20Bytes,
+				GigabytePrices: nil,
+				HourlyPrices:   nil,
+				RemoteURL:      strings.Repeat("r", 72),
 			},
 			true,
 		},
 		{
-			"invalid remote_url",
+			"remote_url invalid",
 			fields{
-				From:      "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Provider:  "",
-				Price:     sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
-				RemoteURL: "invalid",
+				From:           hubtypes.TestBech32NodeAddr20Bytes,
+				GigabytePrices: nil,
+				HourlyPrices:   nil,
+				RemoteURL:      "invalid",
 			},
 			true,
 		},
 		{
-			"invalid remote_url scheme",
+			"remote_url invalid scheme",
 			fields{
-				From:      "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Provider:  "",
-				Price:     sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
-				RemoteURL: "tcp://remote.url:80",
+				From:           hubtypes.TestBech32NodeAddr20Bytes,
+				GigabytePrices: nil,
+				HourlyPrices:   nil,
+				RemoteURL:      "tcp://remote.url:80",
 			},
 			true,
 		},
 		{
-			"empty remote_url port",
+			"remote_url without port",
 			fields{
-				From:      "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Provider:  "",
-				Price:     sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
-				RemoteURL: "https://remote.url",
+				From:           hubtypes.TestBech32NodeAddr20Bytes,
+				GigabytePrices: nil,
+				HourlyPrices:   nil,
+				RemoteURL:      "https://remote.url",
 			},
 			true,
 		},
 		{
-			"non-empty remote_url port",
+			"remote_url with port",
 			fields{
-				From:      "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Provider:  "",
-				Price:     sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
-				RemoteURL: "https://remote.url:443",
+				From:           hubtypes.TestBech32NodeAddr20Bytes,
+				GigabytePrices: nil,
+				HourlyPrices:   nil,
+				RemoteURL:      "https://remote.url:443",
 			},
 			false,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			m := &MsgUpdateRequest{
-				From:      tt.fields.From,
-				Provider:  tt.fields.Provider,
-				Price:     tt.fields.Price,
-				RemoteURL: tt.fields.RemoteURL,
+			m := &MsgUpdateDetailsRequest{
+				From:           tt.fields.From,
+				GigabytePrices: tt.fields.GigabytePrices,
+				HourlyPrices:   tt.fields.HourlyPrices,
+				RemoteURL:      tt.fields.RemoteURL,
 			}
 			if err := m.ValidateBasic(); (err != nil) != tt.wantErr {
 				t.Errorf("ValidateBasic() error = %v, wantErr %v", err, tt.wantErr)
@@ -477,7 +571,7 @@ func TestMsgUpdateRequest_ValidateBasic(t *testing.T) {
 	}
 }
 
-func TestMsgSetStatusRequest_ValidateBasic(t *testing.T) {
+func TestMsgUpdateStatusRequest_ValidateBasic(t *testing.T) {
 	type fields struct {
 		From   string
 		Status hubtypes.Status
@@ -488,75 +582,78 @@ func TestMsgSetStatusRequest_ValidateBasic(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			"empty from",
+			"from empty",
 			fields{
 				From: "",
 			},
 			true,
 		},
 		{
-			"invalid from",
+			"from invalid",
 			fields{
 				From: "invalid",
 			},
 			true,
 		},
 		{
-			"invalid prefix from",
+			"from invalid prefix",
 			fields{
-				From: "sent1qypqxpq9qcrsszgszyfpx9q4zct3sxfq0fzduj",
+				From: hubtypes.TestBech32AccAddr20Bytes,
 			},
 			true,
 		},
 		{
-			"10 bytes from",
+			"from 10 bytes",
 			fields{
-				From: "sentnode1qypqxpq9qcrsszgse4wwrm",
-			},
-			true,
-		},
-		{
-			"20 bytes from",
-			fields{
-				From: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-			},
-			true,
-		},
-		{
-			"30 bytes from",
-			fields{
-				From: "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqyy3zxfp9ycnjs2fsxqglcv",
-			},
-			true,
-		},
-		{
-			"unknown status",
-			fields{
-				From:   "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
-				Status: hubtypes.StatusUnknown,
-			},
-			true,
-		},
-		{
-			"active status",
-			fields{
-				From:   "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				From:   hubtypes.TestBech32NodeAddr10Bytes,
 				Status: hubtypes.StatusActive,
 			},
 			false,
 		},
 		{
-			"inactive pending status",
+			"from 20 bytes",
 			fields{
-				From:   "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				From:   hubtypes.TestBech32NodeAddr20Bytes,
+				Status: hubtypes.StatusActive,
+			},
+			false,
+		},
+		{
+			"from 30 bytes",
+			fields{
+				From:   hubtypes.TestBech32NodeAddr30Bytes,
+				Status: hubtypes.StatusActive,
+			},
+			false,
+		},
+		{
+			"status unspecified",
+			fields{
+				From:   hubtypes.TestBech32NodeAddr20Bytes,
+				Status: hubtypes.StatusUnspecified,
+			},
+			true,
+		},
+		{
+			"status active",
+			fields{
+				From:   hubtypes.TestBech32NodeAddr20Bytes,
+				Status: hubtypes.StatusActive,
+			},
+			false,
+		},
+		{
+			"status inactive_pending",
+			fields{
+				From:   hubtypes.TestBech32NodeAddr20Bytes,
 				Status: hubtypes.StatusInactivePending,
 			},
 			true,
 		},
 		{
-			"inactive status",
+			"status inactive",
 			fields{
-				From:   "sentnode1qypqxpq9qcrsszgszyfpx9q4zct3sxfqelr5ey",
+				From:   hubtypes.TestBech32NodeAddr20Bytes,
 				Status: hubtypes.StatusInactive,
 			},
 			false,
@@ -564,9 +661,251 @@ func TestMsgSetStatusRequest_ValidateBasic(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			m := &MsgSetStatusRequest{
+			m := &MsgUpdateStatusRequest{
 				From:   tt.fields.From,
 				Status: tt.fields.Status,
+			}
+			if err := m.ValidateBasic(); (err != nil) != tt.wantErr {
+				t.Errorf("ValidateBasic() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
+}
+
+func TestMsgSubscribeRequest_ValidateBasic(t *testing.T) {
+	type fields struct {
+		From        string
+		NodeAddress string
+		Hours       int64
+		Gigabytes   int64
+		Denom       string
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		wantErr bool
+	}{
+		{
+			"from empty",
+			fields{
+				From: "",
+			},
+			true,
+		},
+		{
+			"from invalid",
+			fields{
+				From: "invalid",
+			},
+			true,
+		},
+		{
+			"from invalid prefix",
+			fields{
+				From: hubtypes.TestBech32NodeAddr20Bytes,
+			},
+			true,
+		},
+		{
+			"from 10 bytes",
+			fields{
+				From:        hubtypes.TestBech32AccAddr10Bytes,
+				NodeAddress: hubtypes.TestBech32NodeAddr20Bytes,
+				Hours:       1000,
+				Gigabytes:   0,
+				Denom:       "one",
+			},
+			false,
+		},
+		{
+			"from 20 bytes",
+			fields{
+				From:        hubtypes.TestBech32AccAddr20Bytes,
+				NodeAddress: hubtypes.TestBech32NodeAddr20Bytes,
+				Hours:       1000,
+				Gigabytes:   0,
+				Denom:       "one",
+			},
+			false,
+		},
+		{
+			"from 30 bytes",
+			fields{
+				From:        hubtypes.TestBech32AccAddr30Bytes,
+				NodeAddress: hubtypes.TestBech32NodeAddr20Bytes,
+				Hours:       1000,
+				Gigabytes:   0,
+				Denom:       "one",
+			},
+			false,
+		},
+		{
+			"node_address empty",
+			fields{
+				From:        hubtypes.TestBech32AccAddr20Bytes,
+				NodeAddress: "",
+			},
+			true,
+		},
+		{
+			"node_address invalid",
+			fields{
+				From:        hubtypes.TestBech32AccAddr20Bytes,
+				NodeAddress: "invalid",
+			},
+			true,
+		},
+		{
+			"node_address invalid prefix",
+			fields{
+				From:        hubtypes.TestBech32AccAddr20Bytes,
+				NodeAddress: hubtypes.TestBech32AccAddr20Bytes,
+			},
+			true,
+		},
+		{
+			"node_address 10 bytes",
+			fields{
+				From:        hubtypes.TestBech32AccAddr20Bytes,
+				NodeAddress: hubtypes.TestBech32NodeAddr10Bytes,
+				Hours:       1000,
+				Gigabytes:   0,
+				Denom:       "one",
+			},
+			false,
+		},
+		{
+			"node_address 20 bytes",
+			fields{
+				From:        hubtypes.TestBech32AccAddr20Bytes,
+				NodeAddress: hubtypes.TestBech32NodeAddr20Bytes,
+				Hours:       1000,
+				Gigabytes:   0,
+				Denom:       "one",
+			},
+			false,
+		},
+		{
+			"node_address 30 bytes",
+			fields{
+				From:        hubtypes.TestBech32AccAddr20Bytes,
+				NodeAddress: hubtypes.TestBech32NodeAddr30Bytes,
+				Hours:       1000,
+				Gigabytes:   0,
+				Denom:       "one",
+			},
+			false,
+		},
+		{
+			"hours negative and gigabytes negative",
+			fields{
+				From:        hubtypes.TestBech32AccAddr20Bytes,
+				NodeAddress: hubtypes.TestBech32NodeAddr20Bytes,
+				Hours:       -1000,
+				Gigabytes:   -1000,
+			},
+			true,
+		},
+		{
+			"hours zero and gigabytes zero",
+			fields{
+				From:        hubtypes.TestBech32AccAddr20Bytes,
+				NodeAddress: hubtypes.TestBech32NodeAddr20Bytes,
+				Hours:       0,
+				Gigabytes:   0,
+			},
+			true,
+		},
+		{
+			"hours positive and gigabytes positive",
+			fields{
+				From:        hubtypes.TestBech32AccAddr20Bytes,
+				NodeAddress: hubtypes.TestBech32NodeAddr20Bytes,
+				Hours:       1000,
+				Gigabytes:   1000,
+			},
+			true,
+		},
+		{
+			"hours negative",
+			fields{
+				From:        hubtypes.TestBech32AccAddr20Bytes,
+				NodeAddress: hubtypes.TestBech32NodeAddr20Bytes,
+				Hours:       -1000,
+			},
+			true,
+		},
+		{
+			"hours positive",
+			fields{
+				From:        hubtypes.TestBech32AccAddr20Bytes,
+				NodeAddress: hubtypes.TestBech32NodeAddr20Bytes,
+				Hours:       1000,
+			},
+			false,
+		},
+		{
+			"gigabytes negative",
+			fields{
+				From:        hubtypes.TestBech32AccAddr20Bytes,
+				NodeAddress: hubtypes.TestBech32NodeAddr20Bytes,
+				Hours:       0,
+				Gigabytes:   -1000,
+			},
+			true,
+		},
+		{
+			"gigabytes positive",
+			fields{
+				From:        hubtypes.TestBech32AccAddr20Bytes,
+				NodeAddress: hubtypes.TestBech32NodeAddr20Bytes,
+				Hours:       0,
+				Gigabytes:   1000,
+			},
+			false,
+		},
+		{
+			"denom empty",
+			fields{
+				From:        hubtypes.TestBech32AccAddr20Bytes,
+				NodeAddress: hubtypes.TestBech32NodeAddr20Bytes,
+				Hours:       1000,
+				Gigabytes:   0,
+				Denom:       "",
+			},
+			false,
+		},
+		{
+			"denom invalid",
+			fields{
+				From:        hubtypes.TestBech32AccAddr20Bytes,
+				NodeAddress: hubtypes.TestBech32NodeAddr20Bytes,
+				Hours:       1000,
+				Gigabytes:   0,
+				Denom:       "o",
+			},
+			true,
+		},
+		{
+			"denom valid",
+			fields{
+				From:        hubtypes.TestBech32AccAddr20Bytes,
+				NodeAddress: hubtypes.TestBech32NodeAddr20Bytes,
+				Hours:       1000,
+				Gigabytes:   0,
+				Denom:       "one",
+			},
+			false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			m := &MsgSubscribeRequest{
+				From:        tt.fields.From,
+				NodeAddress: tt.fields.NodeAddress,
+				Hours:       tt.fields.Hours,
+				Gigabytes:   tt.fields.Gigabytes,
+				Denom:       tt.fields.Denom,
 			}
 			if err := m.ValidateBasic(); (err != nil) != tt.wantErr {
 				t.Errorf("ValidateBasic() error = %v, wantErr %v", err, tt.wantErr)

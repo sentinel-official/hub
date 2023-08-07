@@ -1,0 +1,33 @@
+syntax = "proto3";
+package sentinel.subscription.v2;
+
+import "gogoproto/gogo.proto";
+import "sentinel/types/v1/status.proto";
+
+option go_package = "github.com/sentinel-official/hub/x/subscription/types";
+option (gogoproto.equal_all)           = false;
+option (gogoproto.goproto_getters_all) = false;
+
+message EventUpdateStatus {
+  uint64 id = 1
+      [ (gogoproto.customname) = "ID", (gogoproto.moretags) = "yaml:\"id\"" ];
+  sentinel.types.v1.Status status = 2
+      [ (gogoproto.moretags) = "yaml:\"status\"" ];
+}
+
+message EventAllocate {
+  uint64 id = 1
+      [ (gogoproto.customname) = "ID", (gogoproto.moretags) = "yaml:\"id\"" ];
+  string address = 2 [ (gogoproto.moretags) = "yaml:\"address\"" ];
+  string bytes   = 3 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.nullable)   = false
+  ];
+}
+
+message EventPayout {
+  uint64 id = 1
+      [ (gogoproto.customname) = "ID", (gogoproto.moretags) = "yaml:\"id\"" ];
+  string address      = 2 [ (gogoproto.moretags) = "yaml:\"address\"" ];
+  string node_address = 3 [ (gogoproto.moretags) = "yaml:\"node_address\"" ];
+}

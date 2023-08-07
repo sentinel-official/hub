@@ -1,3 +1,5 @@
+// DO NOT COVER
+
 package cli
 
 import (
@@ -21,23 +23,23 @@ func txRegister() *cobra.Command {
 				return err
 			}
 
-			provider, err := GetProvider(cmd.Flags())
+			gigabytePrices, err := GetGigabytePrices(cmd.Flags())
 			if err != nil {
 				return err
 			}
 
-			price, err := GetPrice(cmd.Flags())
+			hourlyPrice, err := GetHourlyPrices(cmd.Flags())
 			if err != nil {
 				return err
 			}
 
 			msg := types.NewMsgRegisterRequest(
 				ctx.FromAddress,
-				provider,
-				price,
+				gigabytePrices,
+				hourlyPrice,
 				args[0],
 			)
-			if err := msg.ValidateBasic(); err != nil {
+			if err = msg.ValidateBasic(); err != nil {
 				return err
 			}
 
@@ -46,28 +48,28 @@ func txRegister() *cobra.Command {
 	}
 
 	flags.AddTxFlagsToCmd(cmd)
-	cmd.Flags().String(flagProvider, "", "provider address of the node")
-	cmd.Flags().String(flagPrice, "", "price per Gigabyte of the node")
+	cmd.Flags().String(flagGigabytePrices, "", "prices per one gigabyte of bandwidth provision")
+	cmd.Flags().String(flagHourlyPrices, "", "prices per one hour of bandwidth provision")
 
 	return cmd
 }
 
-func txUpdate() *cobra.Command {
+func txUpdateDetails() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "update",
-		Short: "Update a node",
+		Use:   "update-details",
+		Short: "Update the details of a node",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
 			}
 
-			provider, err := GetProvider(cmd.Flags())
+			gigabytePrices, err := GetGigabytePrices(cmd.Flags())
 			if err != nil {
 				return err
 			}
 
-			price, err := GetPrice(cmd.Flags())
+			hourlyPrice, err := GetHourlyPrices(cmd.Flags())
 			if err != nil {
 				return err
 			}
@@ -77,13 +79,13 @@ func txUpdate() *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgUpdateRequest(
+			msg := types.NewMsgUpdateDetailsRequest(
 				ctx.FromAddress.Bytes(),
-				provider,
-				price,
+				gigabytePrices,
+				hourlyPrice,
 				remoteURL,
 			)
-			if err := msg.ValidateBasic(); err != nil {
+			if err = msg.ValidateBasic(); err != nil {
 				return err
 			}
 
@@ -92,17 +94,17 @@ func txUpdate() *cobra.Command {
 	}
 
 	flags.AddTxFlagsToCmd(cmd)
-	cmd.Flags().String(flagProvider, "", "provider address of the node")
-	cmd.Flags().String(flagPrice, "", "price per Gigabyte of the node")
-	cmd.Flags().String(flagRemoteURL, "", "remote URL of the node")
+	cmd.Flags().String(flagGigabytePrices, "", "prices per one gigabyte of bandwidth provision")
+	cmd.Flags().String(flagHourlyPrices, "", "prices per one hour of bandwidth provision")
+	cmd.Flags().String(flagRemoteURL, "", "remote URL address of the node")
 
 	return cmd
 }
 
-func txSetStatus() *cobra.Command {
+func txUpdateStatus() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "status-set [status]",
-		Short: "Set status for a node",
+		Use:   "update-status [status]",
+		Short: "Update the status for a node",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientTxContext(cmd)
@@ -110,11 +112,11 @@ func txSetStatus() *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgSetStatusRequest(
+			msg := types.NewMsgUpdateStatusRequest(
 				ctx.FromAddress.Bytes(),
 				hubtypes.StatusFromString(args[0]),
 			)
-			if err := msg.ValidateBasic(); err != nil {
+			if err = msg.ValidateBasic(); err != nil {
 				return err
 			}
 
@@ -123,6 +125,54 @@ func txSetStatus() *cobra.Command {
 	}
 
 	flags.AddTxFlagsToCmd(cmd)
+
+	return cmd
+}
+
+func txSubscribe() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "subscribe [node-addr] [denom]",
+		Short: "Subscribe to a node",
+		Args:  cobra.ExactArgs(2),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			addr, err := hubtypes.NodeAddressFromBech32(args[0])
+			if err != nil {
+				return err
+			}
+
+			gigabytes, err := cmd.Flags().GetInt64(flagGigabytes)
+			if err != nil {
+				return err
+			}
+
+			hours, err := cmd.Flags().GetInt64(flagHours)
+			if err != nil {
+				return err
+			}
+
+			msg := types.NewMsgSubscribeRequest(
+				ctx.FromAddress,
+				addr,
+				gigabytes,
+				hours,
+				args[2],
+			)
+			if err = msg.ValidateBasic(); err != nil {
+				return err
+			}
+
+			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
+		},
+	}
+
+	flags.AddTxFlagsToCmd(cmd)
+	cmd.Flags().Int64(flagGigabytes, 0, "gigabytes")
+	cmd.Flags().Int64(flagHours, 0, "hours")
 
 	return cmd
 }

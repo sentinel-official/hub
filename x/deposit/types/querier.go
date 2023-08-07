@@ -5,9 +5,9 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/query"
 )
 
-func NewQueryDepositRequest(address sdk.AccAddress) *QueryDepositRequest {
+func NewQueryDepositRequest(addr sdk.AccAddress) *QueryDepositRequest {
 	return &QueryDepositRequest{
-		Address: address.String(),
+		Address: addr.String(),
 	}
 }
 

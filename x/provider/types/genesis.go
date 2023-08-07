@@ -20,19 +20,19 @@ func ValidateGenesis(state *GenesisState) error {
 		return err
 	}
 
-	for _, provider := range state.Providers {
-		if err := provider.Validate(); err != nil {
-			return err
+	m := make(map[string]bool)
+	for _, item := range state.Providers {
+		if m[item.Address] {
+			return fmt.Errorf("found a duplicate provider %s", item.Address)
 		}
+
+		m[item.Address] = true
 	}
 
-	providers := make(map[string]bool)
-	for _, provider := range state.Providers {
-		if providers[provider.Address] {
-			return fmt.Errorf("found duplicate provider address %s", provider.Address)
+	for _, item := range state.Providers {
+		if err := item.Validate(); err != nil {
+			return err
 		}
-
-		providers[provider.Address] = true
 	}
 
 	return nil

@@ -6,7 +6,6 @@ import (
 
 type (
 	GenesisPlans []GenesisPlan
-
 	GenesisState GenesisPlans
 )
 
@@ -19,23 +18,23 @@ func DefaultGenesisState() GenesisState {
 }
 
 func ValidateGenesis(state GenesisState) error {
-	plans := make(map[uint64]bool)
+	m := make(map[uint64]bool)
 	for _, item := range state {
-		if plans[item.Plan.Id] {
-			return fmt.Errorf("found duplicate plan for id %d", item.Plan.Id)
+		if m[item.Plan.ID] {
+			return fmt.Errorf("found a duplicate plan for id %d", item.Plan.ID)
 		}
 
-		plans[item.Plan.Id] = true
+		m[item.Plan.ID] = true
 	}
 
 	for _, item := range state {
-		nodes := make(map[string]bool)
-		for _, address := range item.Nodes {
-			if nodes[address] {
-				return fmt.Errorf("found duplicate node %s for plan %d", address, item.Plan.Id)
+		m := make(map[string]bool)
+		for _, addr := range item.Nodes {
+			if m[addr] {
+				return fmt.Errorf("found a duplicate node %s for the plan %d", addr, item.Plan.ID)
 			}
 
-			nodes[address] = true
+			m[addr] = true
 		}
 	}
 

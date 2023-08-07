@@ -3,7 +3,6 @@ package session
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	hubtypes "github.com/sentinel-official/hub/types"
 	"github.com/sentinel-official/hub/x/session/keeper"
 	"github.com/sentinel-official/hub/x/session/types"
 )
@@ -11,29 +10,24 @@ import (
 func InitGenesis(ctx sdk.Context, k keeper.Keeper, state *types.GenesisState) {
 	k.SetParams(ctx, state.Params)
 
-	inactiveDuration := k.InactiveDuration(ctx)
-	for _, session := range state.Sessions {
-		address := session.GetAddress()
-		k.SetSession(ctx, session)
+	for _, item := range state.Sessions {
+		var (
+			accAddr  = item.GetAddress()
+			nodeAddr = item.GetNodeAddress()
+		)
 
-		if session.Status.Equal(hubtypes.StatusActive) {
-			k.SetActiveSessionForAddress(ctx, address, session.Id)
-		} else {
-			k.SetInactiveSessionForAddress(ctx, address, session.Id)
-		}
-
-		if session.Status.Equal(hubtypes.StatusActive) {
-			k.SetInactiveSessionAt(ctx, session.StatusAt.Add(inactiveDuration), session.Id)
-		}
-		if session.Status.Equal(hubtypes.StatusInactivePending) {
-			k.SetInactiveSessionAt(ctx, session.StatusAt.Add(inactiveDuration), session.Id)
-		}
+		k.SetSession(ctx, item)
+		k.SetSessionForAccount(ctx, accAddr, item.ID)
+		k.SetSessionForNode(ctx, nodeAddr, item.ID)
+		k.SetSessionForSubscription(ctx, item.SubscriptionID, item.ID)
+		k.SetSessionForAllocation(ctx, item.SubscriptionID, accAddr, item.ID)
+		k.SetSessionForInactiveAt(ctx, item.InactiveAt, item.ID)
 	}
 
 	count := uint64(0)
 	for _, item := range state.Sessions {
-		if item.Id > count {
-			count = item.Id
+		if item.ID > count {
+			count = item.ID
 		}
 	}
 
@@ -42,7 +36,7 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, state *types.GenesisState) {
 
 func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 	return types.NewGenesisState(
-		k.GetSessions(ctx, 0, 0),
+		k.GetSessions(ctx),
 		k.GetParams(ctx),
 	)
 }

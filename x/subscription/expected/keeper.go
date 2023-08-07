@@ -1,3 +1,5 @@
+// DO NOT COVER
+
 package expected
 
 import (
@@ -7,7 +9,6 @@ import (
 	hubtypes "github.com/sentinel-official/hub/types"
 	nodetypes "github.com/sentinel-official/hub/x/node/types"
 	plantypes "github.com/sentinel-official/hub/x/plan/types"
-	sessiontypes "github.com/sentinel-official/hub/x/session/types"
 )
 
 type AccountKeeper interface {
@@ -15,14 +16,16 @@ type AccountKeeper interface {
 }
 
 type BankKeeper interface {
-	SendCoins(ctx sdk.Context, from sdk.AccAddress, to sdk.AccAddress, coins sdk.Coins) error
-	SendCoinsFromAccountToModule(ctx sdk.Context, address sdk.AccAddress, name string, coins sdk.Coins) error
-	SpendableCoins(ctx sdk.Context, address sdk.AccAddress) sdk.Coins
+	SendCoins(ctx sdk.Context, fromAddr sdk.AccAddress, toAddr sdk.AccAddress, amt sdk.Coins) error
+	SendCoinsFromAccountToModule(ctx sdk.Context, senderAddr sdk.AccAddress, recipientModule string, amt sdk.Coins) error
+	SpendableCoins(ctx sdk.Context, addr sdk.AccAddress) sdk.Coins
 }
 
 type DepositKeeper interface {
 	Add(ctx sdk.Context, address sdk.AccAddress, coins sdk.Coins) error
 	Subtract(ctx sdk.Context, address sdk.AccAddress, coins sdk.Coins) error
+	SendCoinsFromDepositToAccount(ctx sdk.Context, fromAddr, toAddr sdk.AccAddress, coins sdk.Coins) error
+	SendCoinsFromDepositToModule(ctx sdk.Context, fromAddr sdk.AccAddress, toModule string, coins sdk.Coins) error
 }
 
 type ProviderKeeper interface {
@@ -30,7 +33,8 @@ type ProviderKeeper interface {
 }
 
 type NodeKeeper interface {
-	GetNode(ctx sdk.Context, address hubtypes.NodeAddress) (nodetypes.Node, bool)
+	StakingShare(ctx sdk.Context) sdk.Dec
+	GetNode(ctx sdk.Context, addr hubtypes.NodeAddress) (nodetypes.Node, bool)
 }
 
 type PlanKeeper interface {
@@ -38,5 +42,5 @@ type PlanKeeper interface {
 }
 
 type SessionKeeper interface {
-	GetActiveSessionsForAddress(ctx sdk.Context, address sdk.AccAddress, skip, limit int64) sessiontypes.Sessions
+	SubscriptionInactivePendingHook(ctx sdk.Context, id uint64) error
 }

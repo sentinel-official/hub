@@ -1,0 +1,29 @@
+syntax = "proto3";
+package sentinel.node.v2;
+
+import "gogoproto/gogo.proto";
+import "sentinel/types/v1/status.proto";
+
+option go_package            = "github.com/sentinel-official/hub/x/node/types";
+option (gogoproto.equal_all) = false;
+option (gogoproto.goproto_getters_all) = false;
+
+message EventRegister {
+  string address = 1 [ (gogoproto.moretags) = "yaml:\"address\"" ];
+}
+
+message EventUpdateDetails {
+  string address = 1 [ (gogoproto.moretags) = "yaml:\"address\"" ];
+}
+
+message EventUpdateStatus {
+  string address = 1 [ (gogoproto.moretags) = "yaml:\"address\"" ];
+  sentinel.types.v1.Status status = 2
+      [ (gogoproto.moretags) = "yaml:\"status\"" ];
+}
+
+message EventCreateSubscription {
+  uint64 id = 1
+      [ (gogoproto.customname) = "ID", (gogoproto.moretags) = "yaml:\"id\"" ];
+  string node_address = 2 [ (gogoproto.moretags) = "yaml:\"node_address\"" ];
+}

@@ -6,14 +6,15 @@ import (
 	hubtypes "github.com/sentinel-official/hub/types"
 )
 
-func NewQueryProviderRequest(address hubtypes.ProvAddress) *QueryProviderRequest {
+func NewQueryProviderRequest(addr hubtypes.ProvAddress) *QueryProviderRequest {
 	return &QueryProviderRequest{
-		Address: address.String(),
+		Address: addr.String(),
 	}
 }
 
-func NewQueryProvidersRequest(pagination *query.PageRequest) *QueryProvidersRequest {
+func NewQueryProvidersRequest(status hubtypes.Status, pagination *query.PageRequest) *QueryProvidersRequest {
 	return &QueryProvidersRequest{
+		Status:     status,
 		Pagination: pagination,
 	}
 }
