@@ -32,7 +32,6 @@ func (k *Keeper) SessionInactiveHook(ctx sdk.Context, id uint64, accAddr sdk.Acc
 
 	var (
 		gigabytePrice  sdk.Coin        // Gigabyte price based on the deposit amount and gigabytes (for NodeSubscription).
-		currentAmount  = sdk.ZeroInt() // Amount to be paid for the current utilization (for NodeSubscription).
 		previousAmount = sdk.ZeroInt() // Amount paid for previous utilization (for NodeSubscription).
 	)
 
@@ -57,10 +56,9 @@ func (k *Keeper) SessionInactiveHook(ctx sdk.Context, id uint64, accAddr sdk.Acc
 
 	// Based on the subscription type (NodeSubscription), calculate the current payment amount.
 	if s, ok := subscription.(*types.NodeSubscription); ok && s.Gigabytes != 0 {
-		currentAmount = hubutils.AmountForBytes(gigabytePrice.Amount, alloc.UtilisedBytes)
-
 		// Calculate the payment to be made for the current utilization.
 		var (
+			currentAmount = hubutils.AmountForBytes(gigabytePrice.Amount, alloc.UtilisedBytes)
 			payment       = sdk.NewCoin(gigabytePrice.Denom, currentAmount.Sub(previousAmount))
 			stakingShare  = k.node.StakingShare(ctx)
 			stakingReward = hubutils.GetProportionOfCoin(payment, stakingShare)
