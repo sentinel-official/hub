@@ -1,5 +1,5 @@
 .DEFAULT_GOAL := default
-VERSION := $(shell git describe --tags | sed 's/^v//' | rev | cut -d - -f 2- | rev)
+VERSION := $(shell git describe --tags | sed 's/^v//')
 COMMIT := $(shell git log -1 --format='%H')
 TENDERMINT_VERSION := $(shell go list -m github.com/tendermint/tendermint | sed 's/.* //')
 
