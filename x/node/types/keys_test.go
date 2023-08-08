@@ -39,7 +39,6 @@ func TestActiveNodeKey(t *testing.T) {
 
 func TestAddressFromNodeForInactiveAtKey(t *testing.T) {
 	var (
-		at   = time.Now()
 		addr []byte
 		key  []byte
 	)
@@ -48,7 +47,7 @@ func TestAddressFromNodeForInactiveAtKey(t *testing.T) {
 		addr = make([]byte, i)
 		_, _ = rand.Read(addr)
 
-		key = NodeForInactiveAtKey(at, addr)
+		key = NodeForInactiveAtKey(time.Now(), addr)
 		require.Equal(
 			t,
 			hubtypes.NodeAddress(addr),

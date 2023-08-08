@@ -290,3 +290,41 @@ func TestPayoutKey(t *testing.T) {
 		)
 	}
 }
+
+func TestIDFromPayoutForAccountByNodeKey(t *testing.T) {
+	var (
+		accAddr  []byte
+		nodeAddr []byte
+		key      []byte
+	)
+
+	for i := 1; i <= 256; i += 64 {
+		accAddr = make([]byte, i)
+		_, _ = rand.Read(accAddr)
+
+		nodeAddr = make([]byte, i)
+		_, _ = rand.Read(nodeAddr)
+
+		key = PayoutForAccountByNodeKey(accAddr, nodeAddr, uint64(i))
+		require.Equal(
+			t,
+			uint64(i),
+			IDFromPayoutForAccountByNodeKey(key),
+		)
+	}
+}
+
+func TestIDFromPayoutForNextAtKey(t *testing.T) {
+	var (
+		key []byte
+	)
+
+	for i := 1; i <= 256; i += 64 {
+		key = PayoutForNextAtKey(time.Now(), uint64(i))
+		require.Equal(
+			t,
+			uint64(i),
+			IDFromPayoutForNextAtKey(key),
+		)
+	}
+}
