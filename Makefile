@@ -8,7 +8,7 @@ whitespace := $() $()
 
 build_tags := $(strip netgo ledger)
 ld_flags := -s -w \
-	-X github.com/cosmos/cosmos-sdk/version.Name=sentinel \
+    -X github.com/cosmos/cosmos-sdk/version.Name=sentinel \
     -X github.com/cosmos/cosmos-sdk/version.AppName=sentinelhub \
     -X github.com/cosmos/cosmos-sdk/version.Version=${VERSION} \
     -X github.com/cosmos/cosmos-sdk/version.Commit=${COMMIT} \
