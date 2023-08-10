@@ -117,10 +117,22 @@ func (k Migrator) setParams(ctx sdk.Context) error {
 	k.SetParams(
 		ctx,
 		types.Params{
-			Deposit:                  sdk.NewInt64Coin("udvpn", 0),
-			ActiveDuration:           60 * time.Minute,
-			MaxGigabytePrices:        nil,
-			MinGigabytePrices:        nil,
+			Deposit:        sdk.NewInt64Coin("udvpn", 0),
+			ActiveDuration: 60 * time.Minute,
+			MaxGigabytePrices: sdk.NewCoins(
+				sdk.NewInt64Coin("ibc/31FEE1A2A9F9C01113F90BD0BBCCE8FD6BBB8585FAF109A2101827DD1D5B95B8", 7000000),
+				sdk.NewInt64Coin("ibc/A8C2D23A1E6F95DA4E48BA349667E322BD7A6C996D8A4AAE8BA72E190F3D1477", 390000),
+				sdk.NewInt64Coin("ibc/B1C0DDB14F25279A2026BC8794E12B259F8BDA546A3C5132CCAEE4431CE36783", 525000000),
+				sdk.NewInt64Coin("ibc/ED07A3391A112B175915CD8FAF43A2DA8E4790EDE12566649D0C2F97716B8518", 5250000),
+				sdk.NewInt64Coin("udvpn", 7000000000),
+			),
+			MinGigabytePrices: sdk.NewCoins(
+				sdk.NewInt64Coin("ibc/31FEE1A2A9F9C01113F90BD0BBCCE8FD6BBB8585FAF109A2101827DD1D5B95B8", 105000),
+				sdk.NewInt64Coin("ibc/A8C2D23A1E6F95DA4E48BA349667E322BD7A6C996D8A4AAE8BA72E190F3D1477", 6000),
+				sdk.NewInt64Coin("ibc/B1C0DDB14F25279A2026BC8794E12B259F8BDA546A3C5132CCAEE4431CE36783", 800000),
+				sdk.NewInt64Coin("ibc/ED07A3391A112B175915CD8FAF43A2DA8E4790EDE12566649D0C2F97716B8518", 80000),
+				sdk.NewInt64Coin("udvpn", 11000000),
+			),
 			MaxHourlyPrices:          nil,
 			MinHourlyPrices:          nil,
 			MaxSubscriptionGigabytes: 1e6,
