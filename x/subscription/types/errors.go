@@ -35,8 +35,8 @@ func NewErrorInvalidSubscriptionStatus(id uint64, status hubtypes.Status) error 
 	return errors.Wrapf(ErrorInvalidStatus, "invalid status %s for subscription %d", status, id)
 }
 
-func NewErrorInvalidSubscriptionType(id uint64, t SubscriptionType) error {
-	return errors.Wrapf(ErrorInvalidType, "invalid type %s for subscription %d", t, id)
+func NewErrorInvalidSubscription(id uint64) error {
+	return errors.Wrapf(ErrorInvalidType, "invalid subscription %d", id)
 }
 
 func NewErrorAllocationNotFound(id uint64, addr sdk.AccAddress) error {
