@@ -39,11 +39,11 @@ func NewErrorInvalidAllocation(id uint64, addr interface{}) error {
 }
 
 func NewErrorInvalidNodeStatus(addr interface{}, status hubtypes.Status) error {
-	return errors.Wrapf(ErrorInvalidNodeStatus, "invalid status %s for node %s ", status, addr)
+	return errors.Wrapf(ErrorInvalidNodeStatus, "invalid status %s for node %s", status, addr)
 }
 
 func NewErrorInvalidPlanStatus(id uint64, status hubtypes.Status) error {
-	return errors.Wrapf(ErrorInvalidPlanStatus, "invalid status %s for plan %d ", status, id)
+	return errors.Wrapf(ErrorInvalidPlanStatus, "invalid status %s for plan %d", status, id)
 }
 
 func NewErrorInvalidSubscription(id uint64) error {
@@ -71,7 +71,7 @@ func NewErrorPriceNotFound(denom string) error {
 }
 
 func NewErrorSubscriptionNotFound(id uint64) error {
-	return errors.Wrapf(ErrorSubscriptionNotFound, "subscription %s does not exist", id)
+	return errors.Wrapf(ErrorSubscriptionNotFound, "subscription %d does not exist", id)
 }
 
 func NewErrorUnauthorized(addr interface{}) error {
