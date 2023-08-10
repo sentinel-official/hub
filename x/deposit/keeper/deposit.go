@@ -89,7 +89,7 @@ func (k *Keeper) SendCoinsFromAccountToDeposit(ctx sdk.Context, fromAddr, toAddr
 
 	deposit.Coins = deposit.Coins.Add(coins...)
 	if deposit.Coins.IsAnyNegative() {
-		return types.NewErrorInsufficientFunds(fromAddr, deposit.Coins)
+		return types.NewErrorInsufficientFunds(fromAddr)
 	}
 
 	k.SetDeposit(ctx, deposit)
@@ -113,7 +113,7 @@ func (k *Keeper) SendCoinsFromDepositToAccount(ctx sdk.Context, fromAddr, toAddr
 
 	deposit.Coins, _ = deposit.Coins.SafeSub(coins)
 	if deposit.Coins.IsAnyNegative() {
-		return types.NewErrorInsufficientFunds(fromAddr, coins)
+		return types.NewErrorInsufficientDeposit(fromAddr)
 	}
 
 	if err := k.bank.SendCoinsFromModuleToAccount(ctx, types.ModuleName, toAddr, coins); err != nil {
@@ -141,7 +141,7 @@ func (k *Keeper) SendCoinsFromDepositToModule(ctx sdk.Context, fromAddr sdk.AccA
 
 	deposit.Coins, _ = deposit.Coins.SafeSub(coins)
 	if deposit.Coins.IsAnyNegative() {
-		return types.NewErrorInsufficientFunds(fromAddr, coins)
+		return types.NewErrorInsufficientDeposit(fromAddr)
 	}
 
 	if err := k.bank.SendCoinsFromModuleToModule(ctx, types.ModuleName, toModule, coins); err != nil {

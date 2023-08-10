@@ -79,7 +79,7 @@ func (k *msgServer) MsgStart(c context.Context, msg *types.MsgStartRequest) (*ty
 
 		provAddr := plan.GetProviderAddress()
 		if _, found = k.GetLatestPayoutForAccountByNode(ctx, provAddr.Bytes(), nodeAddr); !found {
-			return nil, types.NewErrorPayoutNotFound(provAddr.Bytes(), nodeAddr)
+			return nil, types.NewErrorPayoutForAddressByNodeNotFound(provAddr, nodeAddr)
 		}
 
 		// Ensure that the node is associated with the plan.
@@ -87,8 +87,8 @@ func (k *msgServer) MsgStart(c context.Context, msg *types.MsgStartRequest) (*ty
 			return nil, types.NewErrorInvalidNode(node.Address)
 		}
 	default:
-		// If the subscription type is not recognized, return an error indicating an invalid subscription type.
-		return nil, types.NewErrorInvalidSubscriptionType(subscription.GetID(), subscription.Type().String())
+		// If the subscription type is not recognized, return an error indicating an invalid subscription.
+		return nil, types.NewErrorInvalidSubscription(subscription.GetID())
 	}
 
 	// Parse the account address from the Bech32 encoded address provided in the message.
@@ -131,7 +131,7 @@ func (k *msgServer) MsgStart(c context.Context, msg *types.MsgStartRequest) (*ty
 	session, found := k.GetLatestSessionForAllocation(ctx, subscription.GetID(), accAddr)
 	if found && session.Status.Equal(hubtypes.StatusActive) {
 		// If an active session already exists, return an error indicating a duplicate active session.
-		return nil, types.NewErrorDuplicateActiveSession(subscription.GetID(), accAddr, session.ID)
+		return nil, types.NewErrorDuplicateActiveSession(session.ID)
 	}
 
 	// Increment the session count to assign a new session ID.
