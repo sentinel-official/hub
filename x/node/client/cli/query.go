@@ -81,7 +81,7 @@ func queryNodes() *cobra.Command {
 				qc = types.NewQueryServiceClient(ctx)
 			)
 
-			if id > 0 {
+			if id != 0 {
 				res, err := qc.QueryNodesForPlan(
 					context.Background(),
 					types.NewQueryNodesForPlanRequest(
@@ -115,7 +115,7 @@ func queryNodes() *cobra.Command {
 	flags.AddQueryFlagsToCmd(cmd)
 	flags.AddPaginationFlagsToCmd(cmd, "nodes")
 	cmd.Flags().String(hubtypes.FlagStatus, "", "filter the nodes by status (active|inactive)")
-	cmd.Flags().Uint64(flagPlan, 0, "query the nodes of a subscription plan")
+	cmd.Flags().Uint64(flagPlan, 0, "filter the nodes by subscription plan")
 
 	return cmd
 }

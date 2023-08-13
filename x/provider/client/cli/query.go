@@ -15,7 +15,7 @@ import (
 
 func queryProvider() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "provider [address]",
+		Use:   "provider [provider-addr]",
 		Short: "Query a provider",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {

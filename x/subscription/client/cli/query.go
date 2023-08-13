@@ -87,7 +87,7 @@ func querySubscriptions() *cobra.Command {
 				qc = types.NewQueryServiceClient(ctx)
 			)
 
-			if !accAddr.Empty() {
+			if accAddr != nil {
 				res, err := qc.QuerySubscriptionsForAccount(
 					context.Background(),
 					types.NewQuerySubscriptionsForAccountRequest(
@@ -100,7 +100,8 @@ func querySubscriptions() *cobra.Command {
 				}
 
 				return ctx.PrintProto(res)
-			} else if !nodeAddr.Empty() {
+			}
+			if nodeAddr != nil {
 				res, err := qc.QuerySubscriptionsForNode(
 					context.Background(),
 					types.NewQuerySubscriptionsForNodeRequest(
@@ -113,7 +114,8 @@ func querySubscriptions() *cobra.Command {
 				}
 
 				return ctx.PrintProto(res)
-			} else if planID > 0 {
+			}
+			if planID != 0 {
 				res, err := qc.QuerySubscriptionsForPlan(
 					context.Background(),
 					types.NewQuerySubscriptionsForPlanRequest(
@@ -144,9 +146,9 @@ func querySubscriptions() *cobra.Command {
 
 	flags.AddQueryFlagsToCmd(cmd)
 	flags.AddPaginationFlagsToCmd(cmd, "subscriptions")
-	cmd.Flags().String(flagAccountAddress, "", "query the subscriptions of an account address")
-	cmd.Flags().String(flagNodeAddress, "", "query the subscriptions of a node address")
-	cmd.Flags().Uint64(flagPlanID, 0, "query the subscriptions of a subscription plan")
+	cmd.Flags().String(flagAccountAddress, "", "filter the subscriptions by an account address")
+	cmd.Flags().String(flagNodeAddress, "", "filter the subscriptions by a node address")
+	cmd.Flags().Uint64(flagPlanID, 0, "filter the subscriptions by a subscription plan")
 
 	return cmd
 }
@@ -291,6 +293,16 @@ func queryPayouts() *cobra.Command {
 				return err
 			}
 
+			accAddr, err := GetAccountAddress(cmd.Flags())
+			if err != nil {
+				return err
+			}
+
+			nodeAddr, err := GetNodeAddress(cmd.Flags())
+			if err != nil {
+				return err
+			}
+
 			pagination, err := client.ReadPageRequest(cmd.Flags())
 			if err != nil {
 				return err
@@ -299,6 +311,35 @@ func queryPayouts() *cobra.Command {
 			var (
 				qc = types.NewQueryServiceClient(ctx)
 			)
+
+			if accAddr != nil {
+				res, err := qc.QueryPayoutsForAccount(
+					context.Background(),
+					types.NewQueryPayoutsForAccountRequest(
+						accAddr,
+						pagination,
+					),
+				)
+				if err != nil {
+					return err
+				}
+
+				return ctx.PrintProto(res)
+			}
+			if nodeAddr != nil {
+				res, err := qc.QueryPayoutsForNode(
+					context.Background(),
+					types.NewQueryPayoutsForNodeRequest(
+						nodeAddr,
+						pagination,
+					),
+				)
+				if err != nil {
+					return err
+				}
+
+				return ctx.PrintProto(res)
+			}
 
 			res, err := qc.QueryPayouts(
 				context.Background(),
@@ -316,6 +357,8 @@ func queryPayouts() *cobra.Command {
 
 	flags.AddQueryFlagsToCmd(cmd)
 	flags.AddPaginationFlagsToCmd(cmd, "payouts")
+	cmd.Flags().String(flagAccountAddress, "", "filter the subscriptions by an account address")
+	cmd.Flags().String(flagNodeAddress, "", "filter the subscriptions by a node address")
 
 	return cmd
 }

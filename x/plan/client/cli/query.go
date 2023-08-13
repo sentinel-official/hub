@@ -114,8 +114,8 @@ func queryPlans() *cobra.Command {
 
 	flags.AddQueryFlagsToCmd(cmd)
 	flags.AddPaginationFlagsToCmd(cmd, "plans")
-	cmd.Flags().String(flagProvider, "", "filter by provider address")
-	cmd.Flags().String(flagStatus, "", "filter by status")
+	cmd.Flags().String(flagProvider, "", "filter the plans by provider address")
+	cmd.Flags().String(flagStatus, "", "filter the plans by by status (active|inactive)")
 
 	return cmd
 }
