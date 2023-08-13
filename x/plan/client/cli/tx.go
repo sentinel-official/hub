@@ -63,7 +63,7 @@ func txCreate() *cobra.Command {
 
 func txUpdateStatus() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "update-status [id] [status]",
+		Use:   "update-status [plan-id] [status]",
 		Short: "Update status for a subscription plan",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -97,7 +97,7 @@ func txUpdateStatus() *cobra.Command {
 
 func txLinkNode() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "add-node [id] [node-addr]",
+		Use:   "add-node [plan-id] [node-addr]",
 		Short: "Add node to a subscription plan",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -136,7 +136,7 @@ func txLinkNode() *cobra.Command {
 
 func txUnlinkNode() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "remove-node [id] [node-addr]",
+		Use:   "remove-node [plan-id] [node-addr]",
 		Short: "Remove node from a subscription plan",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -161,6 +161,40 @@ func txUnlinkNode() *cobra.Command {
 				addr,
 			)
 			if err := msg.ValidateBasic(); err != nil {
+				return err
+			}
+
+			return tx.GenerateOrBroadcastTxCLI(ctx, cmd.Flags(), msg)
+		},
+	}
+
+	flags.AddTxFlagsToCmd(cmd)
+
+	return cmd
+}
+
+func txSubscribe() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "subscribe [plan-id] [denom]",
+		Short: "Subscribe to a subscription plan",
+		Args:  cobra.ExactArgs(2),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, err := client.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			id, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			msg := types.NewMsgSubscribeRequest(
+				ctx.FromAddress,
+				id,
+				args[1],
+			)
+			if err = msg.ValidateBasic(); err != nil {
 				return err
 			}
 
