@@ -38,7 +38,7 @@ func (k *Keeper) SubscriptionInactivePendingHook(ctx sdk.Context, id uint64) err
 				ID:             item.ID,
 				SubscriptionID: item.SubscriptionID,
 				NodeAddress:    item.NodeAddress,
-				Status:         item.Status,
+				Status:         hubtypes.StatusInactivePending,
 			},
 		)
 

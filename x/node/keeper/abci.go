@@ -114,7 +114,7 @@ func (k *Keeper) EndBlock(ctx sdk.Context) []abcitypes.ValidatorUpdate {
 		ctx.EventManager().EmitTypedEvent(
 			&types.EventUpdateStatus{
 				Address: item.Address,
-				Status:  item.Status,
+				Status:  hubtypes.StatusInactive,
 			},
 		)
 

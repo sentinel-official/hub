@@ -24,13 +24,12 @@ func (k *Keeper) EndBlock(ctx sdk.Context) []abcitypes.ValidatorUpdate {
 		// its next status update based on the status change delay.
 		if item.Status.Equal(hubtypes.StatusActive) {
 			item.InactiveAt = ctx.BlockTime().Add(statusChangeDelay)
-			k.SetSessionForInactiveAt(ctx, item.InactiveAt, item.ID)
-
 			item.Status = hubtypes.StatusInactivePending
 			item.StatusAt = ctx.BlockTime()
 
 			// Save the updated session to the store.
 			k.SetSession(ctx, item)
+			k.SetSessionForInactiveAt(ctx, item.InactiveAt, item.ID)
 
 			// Emit an event to notify that the session status has been updated.
 			ctx.EventManager().EmitTypedEvent(
@@ -38,7 +37,7 @@ func (k *Keeper) EndBlock(ctx sdk.Context) []abcitypes.ValidatorUpdate {
 					ID:             item.ID,
 					SubscriptionID: item.SubscriptionID,
 					NodeAddress:    item.NodeAddress,
-					Status:         item.Status,
+					Status:         hubtypes.StatusInactivePending,
 				},
 			)
 
@@ -76,7 +75,7 @@ func (k *Keeper) EndBlock(ctx sdk.Context) []abcitypes.ValidatorUpdate {
 				ID:             item.ID,
 				SubscriptionID: item.SubscriptionID,
 				NodeAddress:    item.NodeAddress,
-				Status:         item.Status,
+				Status:         hubtypes.StatusInactive,
 			},
 		)
 

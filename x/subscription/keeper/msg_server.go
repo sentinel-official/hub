@@ -78,7 +78,7 @@ func (k *msgServer) MsgCancel(c context.Context, msg *types.MsgCancelRequest) (*
 	ctx.EventManager().EmitTypedEvent(
 		&types.EventUpdateStatus{
 			ID:     subscription.GetID(),
-			Status: subscription.GetStatus(),
+			Status: hubtypes.StatusInactivePending,
 		},
 	)
 
