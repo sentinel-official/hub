@@ -8,8 +8,12 @@ import (
 )
 
 func (k *Keeper) SubscriptionInactivePendingHook(ctx sdk.Context, id uint64) error {
+	// Get the status change delay from the store.
 	statusChangeDelay := k.StatusChangeDelay(ctx)
+
+	// Iterate through sessions associated with the subscription.
 	k.IterateSessionsForSubscription(ctx, id, func(_ int, item types.Session) (stop bool) {
+		// Skip non-active sessions.
 		if !item.Status.Equal(hubtypes.StatusActive) {
 			return false
 		}

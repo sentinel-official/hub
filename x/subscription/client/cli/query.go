@@ -156,7 +156,7 @@ func querySubscriptions() *cobra.Command {
 func queryAllocation() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "allocation [subscription-id] [account-addr]",
-		Short: "Query a allocation of an address",
+		Short: "Query an allocation",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx, err := client.GetClientQueryContext(cmd)
@@ -201,7 +201,7 @@ func queryAllocation() *cobra.Command {
 func queryAllocations() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "allocations [subscription-id]",
-		Short: "Query allocations of a subscription",
+		Short: "Query allocations",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			ctx, err := client.GetClientQueryContext(cmd)
