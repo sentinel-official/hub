@@ -198,8 +198,8 @@ func (k *msgServer) MsgUpdateStatus(c context.Context, msg *types.MsgUpdateStatu
 	// Emit an event to notify that the node status has been updated.
 	ctx.EventManager().EmitTypedEvent(
 		&types.EventUpdateStatus{
-			Address: node.Address,
 			Status:  node.Status,
+			Address: node.Address,
 		},
 	)
 
@@ -246,8 +246,9 @@ func (k *msgServer) MsgSubscribe(c context.Context, msg *types.MsgSubscribeReque
 	// Emit an event to notify that a new subscription has been created.
 	ctx.EventManager().EmitTypedEvent(
 		&types.EventCreateSubscription{
-			ID:          subscription.ID,
+			Address:     subscription.Address,
 			NodeAddress: subscription.NodeAddress,
+			ID:          subscription.ID,
 		},
 	)
 

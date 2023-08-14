@@ -113,9 +113,7 @@ func (k Migrator) migrateSubscriptions(ctx sdk.Context) error {
 			}
 
 			if value.Status.Equal(hubtypes.StatusInactivePending) {
-				subscription.SetInactiveAt(
-					value.StatusAt.Add(statusChangeDelay),
-				)
+				subscription.SetInactiveAt(value.StatusAt.Add(statusChangeDelay))
 			}
 
 			k.SetSubscription(ctx, subscription)

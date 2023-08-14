@@ -52,6 +52,9 @@ func (k *msgServer) MsgCancel(c context.Context, msg *types.MsgCancelRequest) (*
 		return nil, types.NewErrorUnauthorized(msg.From)
 	}
 
+	// Get the status change delay from the store.
+	statusChangeDelay := k.StatusChangeDelay(ctx)
+
 	// Delete the subscription from the Store for the time it becomes inactive.
 	k.DeleteSubscriptionForInactiveAt(ctx, subscription.GetInactiveAt(), subscription.GetID())
 
@@ -61,10 +64,7 @@ func (k *msgServer) MsgCancel(c context.Context, msg *types.MsgCancelRequest) (*
 	}
 
 	// Calculate the duration for which the subscription will be in the inactive state.
-	statusChangeDelay := k.StatusChangeDelay(ctx)
-	subscription.SetInactiveAt(
-		ctx.BlockTime().Add(statusChangeDelay),
-	)
+	subscription.SetInactiveAt(ctx.BlockTime().Add(statusChangeDelay))
 	subscription.SetStatus(hubtypes.StatusInactivePending)
 	subscription.SetStatusAt(ctx.BlockTime())
 
@@ -77,8 +77,10 @@ func (k *msgServer) MsgCancel(c context.Context, msg *types.MsgCancelRequest) (*
 	// Emit an event to notify that the subscription status has been updated.
 	ctx.EventManager().EmitTypedEvent(
 		&types.EventUpdateStatus{
-			ID:     subscription.GetID(),
-			Status: hubtypes.StatusInactivePending,
+			Status:  hubtypes.StatusInactivePending,
+			Address: subscription.GetAddress().String(),
+			ID:      subscription.GetID(),
+			PlanID:  0,
 		},
 	)
 
@@ -181,9 +183,10 @@ func (k *msgServer) MsgAllocate(c context.Context, msg *types.MsgAllocateRequest
 	// Emit an event to notify that the sender's allocation has been updated.
 	ctx.EventManager().EmitTypedEvent(
 		&types.EventAllocate{
-			ID:      subscription.GetID(),
-			Address: fromAlloc.Address,
-			Bytes:   fromAlloc.GrantedBytes,
+			Address:       fromAlloc.Address,
+			GrantedBytes:  fromAlloc.GrantedBytes,
+			UtilisedBytes: fromAlloc.UtilisedBytes,
+			ID:            fromAlloc.ID,
 		},
 	)
 
@@ -199,9 +202,10 @@ func (k *msgServer) MsgAllocate(c context.Context, msg *types.MsgAllocateRequest
 	// Emit an event to notify that the receiver's allocation has been updated.
 	ctx.EventManager().EmitTypedEvent(
 		&types.EventAllocate{
-			ID:      subscription.GetID(),
-			Address: toAlloc.Address,
-			Bytes:   toAlloc.GrantedBytes,
+			Address:       toAlloc.Address,
+			GrantedBytes:  toAlloc.GrantedBytes,
+			UtilisedBytes: toAlloc.UtilisedBytes,
+			ID:            toAlloc.ID,
 		},
 	)
 

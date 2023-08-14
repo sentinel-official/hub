@@ -97,6 +97,12 @@ func (k *Keeper) EndBlock(ctx sdk.Context) []abcitypes.ValidatorUpdate {
 			}
 
 			k.SetNode(ctx, item)
+			ctx.EventManager().EmitTypedEvent(
+				&types.EventUpdateDetails{
+					Address: item.Address,
+				},
+			)
+
 			return false
 		})
 	}
@@ -113,8 +119,8 @@ func (k *Keeper) EndBlock(ctx sdk.Context) []abcitypes.ValidatorUpdate {
 		k.SetNode(ctx, item)
 		ctx.EventManager().EmitTypedEvent(
 			&types.EventUpdateStatus{
-				Address: item.Address,
 				Status:  hubtypes.StatusInactive,
+				Address: item.Address,
 			},
 		)
 

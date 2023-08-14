@@ -134,6 +134,10 @@ func (k *msgServer) MsgStart(c context.Context, msg *types.MsgStartRequest) (*ty
 		return nil, types.NewErrorDuplicateActiveSession(session.ID)
 	}
 
+	//
+	// Get the status change delay from the Store.
+	statusChangeDelay := k.StatusChangeDelay(ctx)
+
 	// Increment the session count to assign a new session ID.
 	count := k.GetCount(ctx)
 	session = types.Session{
@@ -143,11 +147,9 @@ func (k *msgServer) MsgStart(c context.Context, msg *types.MsgStartRequest) (*ty
 		Address:        accAddr.String(),
 		Bandwidth:      hubtypes.NewBandwidthFromInt64(0, 0),
 		Duration:       0,
-		InactiveAt: ctx.BlockTime().Add(
-			k.StatusChangeDelay(ctx),
-		),
-		Status:   hubtypes.StatusActive,
-		StatusAt: ctx.BlockTime(),
+		InactiveAt:     ctx.BlockTime().Add(statusChangeDelay),
+		Status:         hubtypes.StatusActive,
+		StatusAt:       ctx.BlockTime(),
 	}
 
 	// Save the new session to the store.
@@ -162,9 +164,11 @@ func (k *msgServer) MsgStart(c context.Context, msg *types.MsgStartRequest) (*ty
 	// Emit an event to notify that a new session has started.
 	ctx.EventManager().EmitTypedEvent(
 		&types.EventStart{
-			ID:             session.ID,
-			SubscriptionID: session.SubscriptionID,
+			Address:        session.Address,
 			NodeAddress:    session.NodeAddress,
+			ID:             session.ID,
+			PlanID:         0,
+			SubscriptionID: session.SubscriptionID,
 		},
 	)
 
@@ -208,13 +212,14 @@ func (k *msgServer) MsgUpdateDetails(c context.Context, msg *types.MsgUpdateDeta
 
 	// If the session status is 'Active', update the session's InactiveAt value based on the status change delay.
 	if session.Status.Equal(hubtypes.StatusActive) {
+		// Get the status change delay from the Store.
+		statusChangeDelay := k.StatusChangeDelay(ctx)
+
 		// Delete the session's entry from the InactiveAt index before updating the InactiveAt value.
 		k.DeleteSessionForInactiveAt(ctx, session.InactiveAt, session.ID)
 
 		// Calculate the new InactiveAt value by adding the status change delay to the current block time.
-		session.InactiveAt = ctx.BlockTime().Add(
-			k.StatusChangeDelay(ctx),
-		)
+		session.InactiveAt = ctx.BlockTime().Add(statusChangeDelay)
 
 		// Update the session entry in the InactiveAt index with the new InactiveAt value.
 		k.SetSessionForInactiveAt(ctx, session.InactiveAt, session.ID)
@@ -230,9 +235,11 @@ func (k *msgServer) MsgUpdateDetails(c context.Context, msg *types.MsgUpdateDeta
 	// Emit an event to notify that the session details have been updated.
 	ctx.EventManager().EmitTypedEvent(
 		&types.EventUpdateDetails{
-			ID:             session.ID,
-			SubscriptionID: session.SubscriptionID,
+			Address:        session.Address,
 			NodeAddress:    session.NodeAddress,
+			ID:             session.ID,
+			PlanID:         0,
+			SubscriptionID: session.SubscriptionID,
 		},
 	)
 
@@ -265,13 +272,14 @@ func (k *msgServer) MsgEnd(c context.Context, msg *types.MsgEndRequest) (*types.
 		return nil, types.NewErrorUnauthorized(msg.From)
 	}
 
+	// Get the status change delay from the Store.
+	statusChangeDelay := k.StatusChangeDelay(ctx)
+
 	// Delete the session's entry from the InactiveAt index before updating the InactiveAt value.
 	k.DeleteSessionForInactiveAt(ctx, session.InactiveAt, session.ID)
 
 	// Calculate the new InactiveAt value by adding the status change delay to the current block time.
-	session.InactiveAt = ctx.BlockTime().Add(
-		k.StatusChangeDelay(ctx),
-	)
+	session.InactiveAt = ctx.BlockTime().Add(statusChangeDelay)
 
 	// Set the session status to 'InactivePending' to mark it for an upcoming status update.
 	session.Status = hubtypes.StatusInactivePending
@@ -288,10 +296,12 @@ func (k *msgServer) MsgEnd(c context.Context, msg *types.MsgEndRequest) (*types.
 	// Emit an event to notify that the session status has been updated.
 	ctx.EventManager().EmitTypedEvent(
 		&types.EventUpdateStatus{
-			ID:             session.ID,
-			SubscriptionID: session.SubscriptionID,
-			NodeAddress:    session.NodeAddress,
 			Status:         hubtypes.StatusInactivePending,
+			Address:        session.Address,
+			NodeAddress:    session.NodeAddress,
+			ID:             session.ID,
+			PlanID:         0,
+			SubscriptionID: session.SubscriptionID,
 		},
 	)
 

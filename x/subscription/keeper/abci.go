@@ -41,6 +41,17 @@ func (k *Keeper) BeginBlock(ctx sdk.Context) {
 			panic(err)
 		}
 
+		// Emit an event for the payout payment.
+		ctx.EventManager().EmitTypedEvent(
+			&types.EventPayForPayout{
+				Address:       item.Address,
+				NodeAddress:   item.NodeAddress,
+				Payment:       payment.String(),
+				StakingReward: stakingReward.String(),
+				ID:            item.ID,
+			},
+		)
+
 		// Decrement the remaining payout duration (in hours) by 1 and update the NextAt value.
 		item.Hours = item.Hours - 1
 		item.NextAt = item.NextAt.Add(time.Hour)
@@ -80,9 +91,7 @@ func (k *Keeper) EndBlock(ctx sdk.Context) []abcitypes.ValidatorUpdate {
 				panic(err)
 			}
 
-			item.SetInactiveAt(
-				ctx.BlockTime().Add(statusChangeDelay),
-			)
+			item.SetInactiveAt(ctx.BlockTime().Add(statusChangeDelay))
 			item.SetStatus(hubtypes.StatusInactivePending)
 			item.SetStatusAt(ctx.BlockTime())
 
@@ -93,8 +102,10 @@ func (k *Keeper) EndBlock(ctx sdk.Context) []abcitypes.ValidatorUpdate {
 			// Emit an event to notify that the subscription status has been updated.
 			ctx.EventManager().EmitTypedEvent(
 				&types.EventUpdateStatus{
-					ID:     item.GetID(),
-					Status: hubtypes.StatusInactivePending,
+					Status:  hubtypes.StatusInactivePending,
+					Address: item.GetAddress().String(),
+					ID:      item.GetID(),
+					PlanID:  0,
 				},
 			)
 
@@ -154,6 +165,15 @@ func (k *Keeper) EndBlock(ctx sdk.Context) []abcitypes.ValidatorUpdate {
 				if err := k.SubtractDeposit(ctx, accAddr, refund); err != nil {
 					panic(err)
 				}
+
+				// Emit an event for the refund.
+				ctx.EventManager().EmitTypedEvent(
+					&types.EventRefund{
+						Address: s.Address,
+						Amount:  refund.String(),
+						ID:      s.ID,
+					},
+				)
 			}
 
 			// Check if the number of hours for the subscription is not zero.
@@ -177,6 +197,15 @@ func (k *Keeper) EndBlock(ctx sdk.Context) []abcitypes.ValidatorUpdate {
 				if err := k.SubtractDeposit(ctx, accAddr, refund); err != nil {
 					panic(err)
 				}
+
+				// Emit an event for the refund.
+				ctx.EventManager().EmitTypedEvent(
+					&types.EventRefund{
+						Address: s.Address,
+						Amount:  refund.String(),
+						ID:      s.ID,
+					},
+				)
 			}
 		}
 
@@ -206,8 +235,10 @@ func (k *Keeper) EndBlock(ctx sdk.Context) []abcitypes.ValidatorUpdate {
 		k.DeleteSubscription(ctx, item.GetID())
 		ctx.EventManager().EmitTypedEvent(
 			&types.EventUpdateStatus{
-				ID:     item.GetID(),
-				Status: hubtypes.StatusInactive,
+				Status:  hubtypes.StatusInactive,
+				Address: item.GetAddress().String(),
+				ID:      item.GetID(),
+				PlanID:  0,
 			},
 		)
 

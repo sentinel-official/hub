@@ -35,10 +35,12 @@ func (k *Keeper) SubscriptionInactivePendingHook(ctx sdk.Context, id uint64) err
 		// Emit an event to notify that the session status has been updated.
 		ctx.EventManager().EmitTypedEvent(
 			&types.EventUpdateStatus{
-				ID:             item.ID,
-				SubscriptionID: item.SubscriptionID,
-				NodeAddress:    item.NodeAddress,
 				Status:         hubtypes.StatusInactivePending,
+				Address:        item.Address,
+				NodeAddress:    item.NodeAddress,
+				ID:             item.ID,
+				PlanID:         0,
+				SubscriptionID: item.SubscriptionID,
 			},
 		)
 
