@@ -17,6 +17,8 @@ import (
 func (k *Keeper) BeginBlock(ctx sdk.Context) {
 	// Iterate over all payouts that are scheduled to happen at the current block time.
 	k.IteratePayoutsForNextAt(ctx, ctx.BlockTime(), func(_ int, item types.Payout) (stop bool) {
+		k.Logger(ctx).Info("Found a scheduled payout", "id", item.ID)
+
 		// Delete the payout from the NextAt index before updating the NextAt value.
 		k.DeletePayoutForNextAt(ctx, item.NextAt, item.ID)
 
@@ -81,6 +83,8 @@ func (k *Keeper) EndBlock(ctx sdk.Context) []abcitypes.ValidatorUpdate {
 
 	// Iterate over all subscriptions that have become inactive at the current block time.
 	k.IterateSubscriptionsForInactiveAt(ctx, ctx.BlockTime(), func(_ int, item types.Subscription) bool {
+		k.Logger(ctx).Info("Found an inactive subscription", "id", item.GetID(), "status", item.GetStatus())
+
 		// Delete the subscription from the InactiveAt index before updating the InactiveAt value.
 		k.DeleteSubscriptionForInactiveAt(ctx, item.GetInactiveAt(), item.GetID())
 

@@ -40,6 +40,8 @@ func (k *Keeper) EndBlock(ctx sdk.Context) []abcitypes.ValidatorUpdate {
 		}
 
 		k.IterateNodes(ctx, func(_ int, item types.Node) bool {
+			k.Logger(ctx).Info("Updating prices for node", "address", item.Address)
+
 			if item.GigabytePrices != nil {
 				if maxGigabytePricesModified {
 					for _, coin := range maxGigabytePrices {
@@ -108,6 +110,8 @@ func (k *Keeper) EndBlock(ctx sdk.Context) []abcitypes.ValidatorUpdate {
 	}
 
 	k.IterateNodesForInactiveAt(ctx, ctx.BlockTime(), func(_ int, item types.Node) bool {
+		k.Logger(ctx).Info("Found an inactive node", "address", item.Address)
+
 		nodeAddr := item.GetAddress()
 		k.DeleteActiveNode(ctx, nodeAddr)
 		k.DeleteNodeForInactiveAt(ctx, item.InactiveAt, nodeAddr)
