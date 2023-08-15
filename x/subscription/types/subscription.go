@@ -111,19 +111,17 @@ func (s *NodeSubscription) Validate() error {
 			return fmt.Errorf("hours cannot be negative")
 		}
 	}
-	if s.Deposit.Denom != "" {
-		if s.Deposit.IsNil() {
-			return fmt.Errorf("deposit cannot be nil")
-		}
-		if s.Deposit.IsNegative() {
-			return fmt.Errorf("deposit cannot be negative")
-		}
-		if s.Deposit.IsZero() {
-			return fmt.Errorf("deposit cannot be zero")
-		}
-		if !s.Deposit.IsValid() {
-			return fmt.Errorf("deposit must be valid")
-		}
+	if s.Deposit.IsNil() {
+		return fmt.Errorf("deposit cannot be nil")
+	}
+	if s.Deposit.IsNegative() {
+		return fmt.Errorf("deposit cannot be negative")
+	}
+	if s.Deposit.IsZero() {
+		return fmt.Errorf("deposit cannot be zero")
+	}
+	if !s.Deposit.IsValid() {
+		return fmt.Errorf("deposit must be valid")
 	}
 
 	return nil
@@ -156,10 +154,11 @@ func (s *PlanSubscription) Validate() error {
 	if s.PlanID == 0 {
 		return fmt.Errorf("plan_id cannot be zero")
 	}
-	if s.Denom != "" {
-		if err := sdk.ValidateDenom(s.Denom); err != nil {
-			return errors.Wrapf(err, "invalid denom %s", s.Denom)
-		}
+	if s.Denom == "" {
+		return fmt.Errorf("denom cannot be empty")
+	}
+	if err := sdk.ValidateDenom(s.Denom); err != nil {
+		return errors.Wrapf(err, "invalid denom %s", s.Denom)
 	}
 
 	return nil

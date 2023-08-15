@@ -95,7 +95,7 @@ func (k Migrator) migrateNodes(ctx sdk.Context) error {
 		node := types.Node{
 			Address:        value.Address,
 			GigabytePrices: value.Price,
-			HourlyPrices:   nil,
+			HourlyPrices:   value.Price,
 			RemoteURL:      value.RemoteURL,
 			InactiveAt:     time.Time{},
 			Status:         value.Status,

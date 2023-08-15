@@ -31,17 +31,13 @@ func (k *msgServer) MsgRegister(c context.Context, msg *types.MsgRegisterRequest
 	ctx := sdk.UnwrapSDKContext(c)
 
 	// Check if the provided GigabytePrices are valid, if not, return an error.
-	if msg.GigabytePrices != nil {
-		if !k.IsValidGigabytePrices(ctx, msg.GigabytePrices) {
-			return nil, types.NewErrorInvalidPrices(msg.GigabytePrices)
-		}
+	if !k.IsValidGigabytePrices(ctx, msg.GigabytePrices) {
+		return nil, types.NewErrorInvalidPrices(msg.GigabytePrices)
 	}
 
 	// Check if the provided HourlyPrices are valid, if not, return an error.
-	if msg.HourlyPrices != nil {
-		if !k.IsValidHourlyPrices(ctx, msg.HourlyPrices) {
-			return nil, types.NewErrorInvalidPrices(msg.HourlyPrices)
-		}
+	if !k.IsValidHourlyPrices(ctx, msg.HourlyPrices) {
+		return nil, types.NewErrorInvalidPrices(msg.HourlyPrices)
 	}
 
 	// Convert the `msg.From` address (in Bech32 format) to an `sdk.AccAddress`.
@@ -121,11 +117,13 @@ func (k *msgServer) MsgUpdateDetails(c context.Context, msg *types.MsgUpdateDeta
 		return nil, types.NewErrorNodeNotFound(nodeAddr)
 	}
 
-	// Update the node's GigabytePrices and HourlyPrices with the provided values.
-	node.GigabytePrices = msg.GigabytePrices
-	node.HourlyPrices = msg.HourlyPrices
-
-	// If a RemoteURL is provided, update the node's RemoteURL as well.
+	// Update the node's GigabytePrices, HourlyPrices, and RemoteURL with the provided values.
+	if msg.GigabytePrices != nil {
+		node.GigabytePrices = msg.GigabytePrices
+	}
+	if msg.HourlyPrices != nil {
+		node.HourlyPrices = msg.HourlyPrices
+	}
 	if msg.RemoteURL != "" {
 		node.RemoteURL = msg.RemoteURL
 	}

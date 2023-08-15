@@ -298,6 +298,9 @@ func validateMaxSubscriptionGigabytes(v interface{}) error {
 	if value < 0 {
 		return fmt.Errorf("max_subscription_gigabytes cannot be negative")
 	}
+	if value == 0 {
+		return fmt.Errorf("max_subscription_gigabytes cannot be zero")
+	}
 
 	return nil
 }
@@ -310,6 +313,9 @@ func validateMinSubscriptionGigabytes(v interface{}) error {
 
 	if value < 0 {
 		return fmt.Errorf("min_subscription_gigabytes cannot be negative")
+	}
+	if value == 0 {
+		return fmt.Errorf("min_subscription_gigabytes cannot be zero")
 	}
 
 	return nil
@@ -324,6 +330,9 @@ func validateMaxSubscriptionHours(v interface{}) error {
 	if value < 0 {
 		return fmt.Errorf("max_subscription_hours cannot be negative")
 	}
+	if value == 0 {
+		return fmt.Errorf("max_subscription_hours cannot be zero")
+	}
 
 	return nil
 }
@@ -336,6 +345,9 @@ func validateMinSubscriptionHours(v interface{}) error {
 
 	if value < 0 {
 		return fmt.Errorf("min_subscription_hours cannot be negative")
+	}
+	if value == 0 {
+		return fmt.Errorf("min_subscription_hours cannot be zero")
 	}
 
 	return nil

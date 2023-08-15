@@ -41,27 +41,29 @@ func (m *MsgRegisterRequest) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.From); err != nil {
 		return errors.Wrap(ErrorInvalidMessage, err.Error())
 	}
-	if m.GigabytePrices != nil {
-		if m.GigabytePrices.Len() == 0 {
-			return errors.Wrap(ErrorInvalidMessage, "gigabyte_prices length cannot be zero")
-		}
-		if m.GigabytePrices.IsAnyNil() {
-			return errors.Wrap(ErrorInvalidMessage, "gigabyte_prices cannot contain nil")
-		}
-		if !m.GigabytePrices.IsValid() {
-			return errors.Wrap(ErrorInvalidMessage, "gigabyte_prices must be valid")
-		}
+	if m.GigabytePrices == nil {
+		return errors.Wrap(ErrorInvalidMessage, "gigabyte_prices cannot be nil")
 	}
-	if m.HourlyPrices != nil {
-		if m.HourlyPrices.Len() == 0 {
-			return errors.Wrap(ErrorInvalidMessage, "hourly_prices length cannot be zero")
-		}
-		if m.HourlyPrices.IsAnyNil() {
-			return errors.Wrap(ErrorInvalidMessage, "hourly_prices cannot contain nil")
-		}
-		if !m.HourlyPrices.IsValid() {
-			return errors.Wrap(ErrorInvalidMessage, "hourly_prices must be valid")
-		}
+	if m.GigabytePrices.Len() == 0 {
+		return errors.Wrap(ErrorInvalidMessage, "gigabyte_prices length cannot be zero")
+	}
+	if m.GigabytePrices.IsAnyNil() {
+		return errors.Wrap(ErrorInvalidMessage, "gigabyte_prices cannot contain nil")
+	}
+	if !m.GigabytePrices.IsValid() {
+		return errors.Wrap(ErrorInvalidMessage, "gigabyte_prices must be valid")
+	}
+	if m.HourlyPrices == nil {
+		return errors.Wrap(ErrorInvalidMessage, "hourly_prices cannot be nil")
+	}
+	if m.HourlyPrices.Len() == 0 {
+		return errors.Wrap(ErrorInvalidMessage, "hourly_prices length cannot be zero")
+	}
+	if m.HourlyPrices.IsAnyNil() {
+		return errors.Wrap(ErrorInvalidMessage, "hourly_prices cannot contain nil")
+	}
+	if !m.HourlyPrices.IsValid() {
+		return errors.Wrap(ErrorInvalidMessage, "hourly_prices must be valid")
 	}
 	if m.RemoteURL == "" {
 		return errors.Wrap(ErrorInvalidMessage, "remote_url cannot be empty")
@@ -247,10 +249,11 @@ func (m *MsgSubscribeRequest) ValidateBasic() error {
 			return errors.Wrap(ErrorInvalidMessage, "hours cannot be negative")
 		}
 	}
-	if m.Denom != "" {
-		if err := sdk.ValidateDenom(m.Denom); err != nil {
-			return errors.Wrap(ErrorInvalidMessage, err.Error())
-		}
+	if m.Denom == "" {
+		return errors.Wrap(ErrorInvalidMessage, "denom cannot be empty")
+	}
+	if err := sdk.ValidateDenom(m.Denom); err != nil {
+		return errors.Wrap(ErrorInvalidMessage, err.Error())
 	}
 
 	return nil
