@@ -3,11 +3,12 @@ package types
 import (
 	"crypto/rand"
 	"testing"
-	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/address"
 	"github.com/stretchr/testify/require"
+
+	hubtypes "github.com/sentinel-official/hub/types"
 )
 
 func TestSessionForAccountKey(t *testing.T) {
@@ -37,11 +38,10 @@ func TestSessionForAccountKey(t *testing.T) {
 
 func TestSessionForInactiveAtKey(t *testing.T) {
 	for i := 0; i < 512; i += 64 {
-		at := time.Now()
 		require.Equal(
 			t,
-			append(append(SessionForInactiveAtKeyPrefix, sdk.FormatTimeBytes(at)...), sdk.Uint64ToBigEndian(uint64(i))...),
-			SessionForInactiveAtKey(at, uint64(i)),
+			append(append(SessionForInactiveAtKeyPrefix, sdk.FormatTimeBytes(hubtypes.TestTimeNow)...), sdk.Uint64ToBigEndian(uint64(i))...),
+			SessionForInactiveAtKey(hubtypes.TestTimeNow, uint64(i)),
 		)
 	}
 }
@@ -81,7 +81,7 @@ func TestIDFromSessionForInactiveAtKey(t *testing.T) {
 	)
 
 	for i := 1; i <= 256; i += 64 {
-		key = SessionForInactiveAtKey(time.Now(), uint64(i))
+		key = SessionForInactiveAtKey(hubtypes.TestTimeNow, uint64(i))
 		require.Equal(
 			t,
 			uint64(i),

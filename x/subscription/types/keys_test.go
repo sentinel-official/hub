@@ -3,20 +3,20 @@ package types
 import (
 	"crypto/rand"
 	"testing"
-	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/address"
 	"github.com/stretchr/testify/require"
+
+	hubtypes "github.com/sentinel-official/hub/types"
 )
 
 func TestSubscriptionForInactiveAtKey(t *testing.T) {
 	for i := 0; i < 512; i += 64 {
-		at := time.Now()
 		require.Equal(
 			t,
-			append(append(SubscriptionForInactiveAtKeyPrefix, sdk.FormatTimeBytes(at)...), sdk.Uint64ToBigEndian(uint64(i))...),
-			SubscriptionForInactiveAtKey(at, uint64(i)),
+			append(append(SubscriptionForInactiveAtKeyPrefix, sdk.FormatTimeBytes(hubtypes.TestTimeNow)...), sdk.Uint64ToBigEndian(uint64(i))...),
+			SubscriptionForInactiveAtKey(hubtypes.TestTimeNow, uint64(i)),
 		)
 	}
 }
@@ -179,7 +179,7 @@ func TestIDFromSubscriptionForInactiveAtKey(t *testing.T) {
 	)
 
 	for i := 1; i <= 256; i += 64 {
-		key = SubscriptionForInactiveAtKey(time.Now(), uint64(i))
+		key = SubscriptionForInactiveAtKey(hubtypes.TestTimeNow, uint64(i))
 		require.Equal(
 			t,
 			uint64(i),
@@ -320,7 +320,7 @@ func TestIDFromPayoutForNextAtKey(t *testing.T) {
 	)
 
 	for i := 1; i <= 256; i += 64 {
-		key = PayoutForNextAtKey(time.Now(), uint64(i))
+		key = PayoutForNextAtKey(hubtypes.TestTimeNow, uint64(i))
 		require.Equal(
 			t,
 			uint64(i),

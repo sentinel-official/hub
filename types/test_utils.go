@@ -29,6 +29,7 @@ var (
 	TestDenomEmpty   = ""
 	TestDenomInvalid = "i"
 	TestDenomOne     = "one"
+	TestDenomTwo     = "two"
 
 	TestIntEmpty    = sdk.Int{}
 	TestIntNegative = sdk.NewInt(-1000)
@@ -45,10 +46,10 @@ var (
 
 	TestCoinsNil            sdk.Coins = nil
 	TestCoinsEmpty                    = sdk.Coins{}
-	TestCoinsEmptyDenom               = sdk.Coins{sdk.Coin{Denom: TestDenomEmpty, Amount: TestIntPositive}}
-	TestCoinsInvalidDenom             = sdk.Coins{sdk.Coin{Denom: TestDenomInvalid, Amount: TestIntPositive}}
-	TestCoinsEmptyAmount              = sdk.Coins{sdk.Coin{Denom: TestDenomOne, Amount: TestIntEmpty}}
-	TestCoinsNegativeAmount           = sdk.Coins{sdk.Coin{Denom: TestDenomOne, Amount: TestIntNegative}}
-	TestCoinsZeroAmount               = sdk.Coins{sdk.Coin{Denom: TestDenomOne, Amount: TestIntZero}}
-	TestCoinsPositiveAmount           = sdk.Coins{sdk.Coin{Denom: TestDenomOne, Amount: TestIntPositive}}
+	TestCoinsEmptyDenom               = sdk.Coins{TestCoinEmptyDenom}
+	TestCoinsInvalidDenom             = sdk.Coins{TestCoinInvalidDenom}
+	TestCoinsEmptyAmount              = sdk.Coins{TestCoinEmptyAmount}
+	TestCoinsNegativeAmount           = sdk.Coins{TestCoinNegativeAmount}
+	TestCoinsZeroAmount               = sdk.Coins{TestCoinZeroAmount}
+	TestCoinsPositiveAmount           = sdk.Coins{TestCoinPositiveAmount}
 )

@@ -24,14 +24,14 @@ func TestMsgRegisterRequest_ValidateBasic(t *testing.T) {
 		{
 			"from empty",
 			fields{
-				From: "",
+				From: hubtypes.TestAddrEmpty,
 			},
 			true,
 		},
 		{
 			"from invalid",
 			fields{
-				From: "invalid",
+				From: hubtypes.TestAddrInvalid,
 			},
 			true,
 		},
@@ -46,8 +46,8 @@ func TestMsgRegisterRequest_ValidateBasic(t *testing.T) {
 			"from 10 bytes",
 			fields{
 				From:           hubtypes.TestBech32AccAddr10Bytes,
-				GigabytePrices: nil,
-				HourlyPrices:   nil,
+				GigabytePrices: hubtypes.TestCoinsPositiveAmount,
+				HourlyPrices:   hubtypes.TestCoinsPositiveAmount,
 				RemoteURL:      "https://remote.url:443",
 			},
 			false,
@@ -56,8 +56,8 @@ func TestMsgRegisterRequest_ValidateBasic(t *testing.T) {
 			"from 20 bytes",
 			fields{
 				From:           hubtypes.TestBech32AccAddr20Bytes,
-				GigabytePrices: nil,
-				HourlyPrices:   nil,
+				GigabytePrices: hubtypes.TestCoinsPositiveAmount,
+				HourlyPrices:   hubtypes.TestCoinsPositiveAmount,
 				RemoteURL:      "https://remote.url:443",
 			},
 			false,
@@ -66,8 +66,8 @@ func TestMsgRegisterRequest_ValidateBasic(t *testing.T) {
 			"from 30 bytes",
 			fields{
 				From:           hubtypes.TestBech32AccAddr30Bytes,
-				GigabytePrices: nil,
-				HourlyPrices:   nil,
+				GigabytePrices: hubtypes.TestCoinsPositiveAmount,
+				HourlyPrices:   hubtypes.TestCoinsPositiveAmount,
 				RemoteURL:      "https://remote.url:443",
 			},
 			false,
@@ -76,17 +76,15 @@ func TestMsgRegisterRequest_ValidateBasic(t *testing.T) {
 			"gigabyte_prices nil",
 			fields{
 				From:           hubtypes.TestBech32AccAddr20Bytes,
-				GigabytePrices: nil,
-				HourlyPrices:   nil,
-				RemoteURL:      "https://remote.url:443",
+				GigabytePrices: hubtypes.TestCoinsNil,
 			},
-			false,
+			true,
 		},
 		{
 			"gigabyte_prices empty",
 			fields{
 				From:           hubtypes.TestBech32AccAddr20Bytes,
-				GigabytePrices: sdk.Coins{},
+				GigabytePrices: hubtypes.TestCoinsEmpty,
 			},
 			true,
 		},
@@ -94,7 +92,7 @@ func TestMsgRegisterRequest_ValidateBasic(t *testing.T) {
 			"gigabyte_prices empty denom",
 			fields{
 				From:           hubtypes.TestBech32AccAddr20Bytes,
-				GigabytePrices: sdk.Coins{sdk.Coin{Denom: ""}},
+				GigabytePrices: hubtypes.TestCoinsEmptyDenom,
 			},
 			true,
 		},
@@ -102,7 +100,7 @@ func TestMsgRegisterRequest_ValidateBasic(t *testing.T) {
 			"gigabyte_prices invalid denom",
 			fields{
 				From:           hubtypes.TestBech32AccAddr20Bytes,
-				GigabytePrices: sdk.Coins{sdk.Coin{Denom: "o"}},
+				GigabytePrices: hubtypes.TestCoinsInvalidDenom,
 			},
 			true,
 		},
@@ -110,7 +108,7 @@ func TestMsgRegisterRequest_ValidateBasic(t *testing.T) {
 			"gigabyte_prices empty amount",
 			fields{
 				From:           hubtypes.TestBech32AccAddr20Bytes,
-				GigabytePrices: sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.Int{}}},
+				GigabytePrices: hubtypes.TestCoinsEmptyAmount,
 			},
 			true,
 		},
@@ -118,7 +116,7 @@ func TestMsgRegisterRequest_ValidateBasic(t *testing.T) {
 			"gigabyte_prices negative amount",
 			fields{
 				From:           hubtypes.TestBech32AccAddr20Bytes,
-				GigabytePrices: sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(-1000)}},
+				GigabytePrices: hubtypes.TestCoinsNegativeAmount,
 			},
 			true,
 		},
@@ -126,7 +124,7 @@ func TestMsgRegisterRequest_ValidateBasic(t *testing.T) {
 			"gigabyte_prices zero amount",
 			fields{
 				From:           hubtypes.TestBech32AccAddr20Bytes,
-				GigabytePrices: sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(0)}},
+				GigabytePrices: hubtypes.TestCoinsZeroAmount,
 			},
 			true,
 		},
@@ -134,8 +132,8 @@ func TestMsgRegisterRequest_ValidateBasic(t *testing.T) {
 			"gigabyte_prices positive amount",
 			fields{
 				From:           hubtypes.TestBech32AccAddr20Bytes,
-				GigabytePrices: sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
-				HourlyPrices:   nil,
+				GigabytePrices: hubtypes.TestCoinsPositiveAmount,
+				HourlyPrices:   hubtypes.TestCoinsPositiveAmount,
 				RemoteURL:      "https://remote.url:443",
 			},
 			false,
@@ -144,18 +142,18 @@ func TestMsgRegisterRequest_ValidateBasic(t *testing.T) {
 			"hourly_prices nil",
 			fields{
 				From:           hubtypes.TestBech32AccAddr20Bytes,
-				GigabytePrices: nil,
+				GigabytePrices: hubtypes.TestCoinsPositiveAmount,
 				HourlyPrices:   nil,
 				RemoteURL:      "https://remote.url:443",
 			},
-			false,
+			true,
 		},
 		{
 			"hourly_prices empty",
 			fields{
 				From:           hubtypes.TestBech32AccAddr20Bytes,
-				GigabytePrices: nil,
-				HourlyPrices:   sdk.Coins{},
+				GigabytePrices: hubtypes.TestCoinsPositiveAmount,
+				HourlyPrices:   hubtypes.TestCoinsEmpty,
 			},
 			true,
 		},
@@ -163,8 +161,8 @@ func TestMsgRegisterRequest_ValidateBasic(t *testing.T) {
 			"hourly_prices empty denom",
 			fields{
 				From:           hubtypes.TestBech32AccAddr20Bytes,
-				GigabytePrices: nil,
-				HourlyPrices:   sdk.Coins{sdk.Coin{Denom: ""}},
+				GigabytePrices: hubtypes.TestCoinsPositiveAmount,
+				HourlyPrices:   hubtypes.TestCoinsEmptyDenom,
 			},
 			true,
 		},
@@ -172,8 +170,8 @@ func TestMsgRegisterRequest_ValidateBasic(t *testing.T) {
 			"hourly_prices invalid denom",
 			fields{
 				From:           hubtypes.TestBech32AccAddr20Bytes,
-				GigabytePrices: nil,
-				HourlyPrices:   sdk.Coins{sdk.Coin{Denom: "o"}},
+				GigabytePrices: hubtypes.TestCoinsPositiveAmount,
+				HourlyPrices:   hubtypes.TestCoinsInvalidDenom,
 			},
 			true,
 		},
@@ -181,8 +179,8 @@ func TestMsgRegisterRequest_ValidateBasic(t *testing.T) {
 			"hourly_prices empty amount",
 			fields{
 				From:           hubtypes.TestBech32AccAddr20Bytes,
-				GigabytePrices: nil,
-				HourlyPrices:   sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.Int{}}},
+				GigabytePrices: hubtypes.TestCoinsPositiveAmount,
+				HourlyPrices:   hubtypes.TestCoinsEmptyAmount,
 			},
 			true,
 		},
@@ -190,8 +188,8 @@ func TestMsgRegisterRequest_ValidateBasic(t *testing.T) {
 			"hourly_prices negative amount",
 			fields{
 				From:           hubtypes.TestBech32AccAddr20Bytes,
-				GigabytePrices: nil,
-				HourlyPrices:   sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(-1000)}},
+				GigabytePrices: hubtypes.TestCoinsPositiveAmount,
+				HourlyPrices:   hubtypes.TestCoinsNegativeAmount,
 			},
 			true,
 		},
@@ -199,8 +197,8 @@ func TestMsgRegisterRequest_ValidateBasic(t *testing.T) {
 			"hourly_prices zero amount",
 			fields{
 				From:           hubtypes.TestBech32AccAddr20Bytes,
-				GigabytePrices: nil,
-				HourlyPrices:   sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(0)}},
+				GigabytePrices: hubtypes.TestCoinsPositiveAmount,
+				HourlyPrices:   hubtypes.TestCoinsZeroAmount,
 			},
 			true,
 		},
@@ -208,8 +206,8 @@ func TestMsgRegisterRequest_ValidateBasic(t *testing.T) {
 			"hourly_prices positive amount",
 			fields{
 				From:           hubtypes.TestBech32AccAddr20Bytes,
-				GigabytePrices: nil,
-				HourlyPrices:   sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
+				GigabytePrices: hubtypes.TestCoinsPositiveAmount,
+				HourlyPrices:   hubtypes.TestCoinsPositiveAmount,
 				RemoteURL:      "https://remote.url:443",
 			},
 			false,
@@ -218,8 +216,8 @@ func TestMsgRegisterRequest_ValidateBasic(t *testing.T) {
 			"remote_url empty",
 			fields{
 				From:           hubtypes.TestBech32AccAddr20Bytes,
-				GigabytePrices: nil,
-				HourlyPrices:   nil,
+				GigabytePrices: hubtypes.TestCoinsPositiveAmount,
+				HourlyPrices:   hubtypes.TestCoinsPositiveAmount,
 				RemoteURL:      "",
 			},
 			true,
@@ -228,8 +226,8 @@ func TestMsgRegisterRequest_ValidateBasic(t *testing.T) {
 			"remote_url 72 chars",
 			fields{
 				From:           hubtypes.TestBech32AccAddr20Bytes,
-				GigabytePrices: nil,
-				HourlyPrices:   nil,
+				GigabytePrices: hubtypes.TestCoinsPositiveAmount,
+				HourlyPrices:   hubtypes.TestCoinsPositiveAmount,
 				RemoteURL:      strings.Repeat("r", 72),
 			},
 			true,
@@ -238,8 +236,8 @@ func TestMsgRegisterRequest_ValidateBasic(t *testing.T) {
 			"remote_url invalid",
 			fields{
 				From:           hubtypes.TestBech32AccAddr20Bytes,
-				GigabytePrices: nil,
-				HourlyPrices:   nil,
+				GigabytePrices: hubtypes.TestCoinsPositiveAmount,
+				HourlyPrices:   hubtypes.TestCoinsPositiveAmount,
 				RemoteURL:      "invalid",
 			},
 			true,
@@ -248,8 +246,8 @@ func TestMsgRegisterRequest_ValidateBasic(t *testing.T) {
 			"remote_url invalid scheme",
 			fields{
 				From:           hubtypes.TestBech32AccAddr20Bytes,
-				GigabytePrices: nil,
-				HourlyPrices:   nil,
+				GigabytePrices: hubtypes.TestCoinsPositiveAmount,
+				HourlyPrices:   hubtypes.TestCoinsPositiveAmount,
 				RemoteURL:      "tcp://remote.url:80",
 			},
 			true,
@@ -258,8 +256,8 @@ func TestMsgRegisterRequest_ValidateBasic(t *testing.T) {
 			"remote_url without port",
 			fields{
 				From:           hubtypes.TestBech32AccAddr20Bytes,
-				GigabytePrices: nil,
-				HourlyPrices:   nil,
+				GigabytePrices: hubtypes.TestCoinsPositiveAmount,
+				HourlyPrices:   hubtypes.TestCoinsPositiveAmount,
 				RemoteURL:      "https://remote.url",
 			},
 			true,
@@ -268,8 +266,8 @@ func TestMsgRegisterRequest_ValidateBasic(t *testing.T) {
 			"remote_url with port",
 			fields{
 				From:           hubtypes.TestBech32AccAddr20Bytes,
-				GigabytePrices: nil,
-				HourlyPrices:   nil,
+				GigabytePrices: hubtypes.TestCoinsPositiveAmount,
+				HourlyPrices:   hubtypes.TestCoinsPositiveAmount,
 				RemoteURL:      "https://remote.url:443",
 			},
 			false,
@@ -305,14 +303,14 @@ func TestMsgUpdateDetailsRequest_ValidateBasic(t *testing.T) {
 		{
 			"from empty",
 			fields{
-				From: "",
+				From: hubtypes.TestAddrEmpty,
 			},
 			true,
 		},
 		{
 			"from invalid",
 			fields{
-				From: "invalid",
+				From: hubtypes.TestAddrInvalid,
 			},
 			true,
 		},
@@ -367,7 +365,7 @@ func TestMsgUpdateDetailsRequest_ValidateBasic(t *testing.T) {
 			"gigabyte_prices empty",
 			fields{
 				From:           hubtypes.TestBech32NodeAddr20Bytes,
-				GigabytePrices: sdk.Coins{},
+				GigabytePrices: hubtypes.TestCoinsEmpty,
 			},
 			true,
 		},
@@ -375,7 +373,7 @@ func TestMsgUpdateDetailsRequest_ValidateBasic(t *testing.T) {
 			"gigabyte_prices empty denom",
 			fields{
 				From:           hubtypes.TestBech32NodeAddr20Bytes,
-				GigabytePrices: sdk.Coins{sdk.Coin{Denom: ""}},
+				GigabytePrices: hubtypes.TestCoinsEmptyDenom,
 			},
 			true,
 		},
@@ -383,7 +381,7 @@ func TestMsgUpdateDetailsRequest_ValidateBasic(t *testing.T) {
 			"gigabyte_prices invalid denom",
 			fields{
 				From:           hubtypes.TestBech32NodeAddr20Bytes,
-				GigabytePrices: sdk.Coins{sdk.Coin{Denom: "o"}},
+				GigabytePrices: hubtypes.TestCoinsInvalidDenom,
 			},
 			true,
 		},
@@ -391,7 +389,7 @@ func TestMsgUpdateDetailsRequest_ValidateBasic(t *testing.T) {
 			"gigabyte_prices empty amount",
 			fields{
 				From:           hubtypes.TestBech32NodeAddr20Bytes,
-				GigabytePrices: sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.Int{}}},
+				GigabytePrices: hubtypes.TestCoinsEmptyAmount,
 			},
 			true,
 		},
@@ -399,7 +397,7 @@ func TestMsgUpdateDetailsRequest_ValidateBasic(t *testing.T) {
 			"gigabyte_prices negative amount",
 			fields{
 				From:           hubtypes.TestBech32NodeAddr20Bytes,
-				GigabytePrices: sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(-1000)}},
+				GigabytePrices: hubtypes.TestCoinsNegativeAmount,
 			},
 			true,
 		},
@@ -407,7 +405,7 @@ func TestMsgUpdateDetailsRequest_ValidateBasic(t *testing.T) {
 			"gigabyte_prices zero amount",
 			fields{
 				From:           hubtypes.TestBech32NodeAddr20Bytes,
-				GigabytePrices: sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(0)}},
+				GigabytePrices: hubtypes.TestCoinsZeroAmount,
 			},
 			true,
 		},
@@ -415,7 +413,7 @@ func TestMsgUpdateDetailsRequest_ValidateBasic(t *testing.T) {
 			"gigabyte_prices positive amount",
 			fields{
 				From:           hubtypes.TestBech32NodeAddr20Bytes,
-				GigabytePrices: sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
+				GigabytePrices: hubtypes.TestCoinsPositiveAmount,
 				HourlyPrices:   nil,
 				RemoteURL:      "https://remote.url:443",
 			},
@@ -436,7 +434,7 @@ func TestMsgUpdateDetailsRequest_ValidateBasic(t *testing.T) {
 			fields{
 				From:           hubtypes.TestBech32NodeAddr20Bytes,
 				GigabytePrices: nil,
-				HourlyPrices:   sdk.Coins{},
+				HourlyPrices:   hubtypes.TestCoinsEmpty,
 			},
 			true,
 		},
@@ -445,7 +443,7 @@ func TestMsgUpdateDetailsRequest_ValidateBasic(t *testing.T) {
 			fields{
 				From:           hubtypes.TestBech32NodeAddr20Bytes,
 				GigabytePrices: nil,
-				HourlyPrices:   sdk.Coins{sdk.Coin{Denom: ""}},
+				HourlyPrices:   hubtypes.TestCoinsEmptyDenom,
 			},
 			true,
 		},
@@ -454,7 +452,7 @@ func TestMsgUpdateDetailsRequest_ValidateBasic(t *testing.T) {
 			fields{
 				From:           hubtypes.TestBech32NodeAddr20Bytes,
 				GigabytePrices: nil,
-				HourlyPrices:   sdk.Coins{sdk.Coin{Denom: "o"}},
+				HourlyPrices:   hubtypes.TestCoinsInvalidDenom,
 			},
 			true,
 		},
@@ -463,7 +461,7 @@ func TestMsgUpdateDetailsRequest_ValidateBasic(t *testing.T) {
 			fields{
 				From:           hubtypes.TestBech32NodeAddr20Bytes,
 				GigabytePrices: nil,
-				HourlyPrices:   sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.Int{}}},
+				HourlyPrices:   hubtypes.TestCoinsEmptyAmount,
 			},
 			true,
 		},
@@ -472,7 +470,7 @@ func TestMsgUpdateDetailsRequest_ValidateBasic(t *testing.T) {
 			fields{
 				From:           hubtypes.TestBech32NodeAddr20Bytes,
 				GigabytePrices: nil,
-				HourlyPrices:   sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(-1000)}},
+				HourlyPrices:   hubtypes.TestCoinsNegativeAmount,
 			},
 			true,
 		},
@@ -481,7 +479,7 @@ func TestMsgUpdateDetailsRequest_ValidateBasic(t *testing.T) {
 			fields{
 				From:           hubtypes.TestBech32NodeAddr20Bytes,
 				GigabytePrices: nil,
-				HourlyPrices:   sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(0)}},
+				HourlyPrices:   hubtypes.TestCoinsZeroAmount,
 			},
 			true,
 		},
@@ -490,7 +488,7 @@ func TestMsgUpdateDetailsRequest_ValidateBasic(t *testing.T) {
 			fields{
 				From:           hubtypes.TestBech32NodeAddr20Bytes,
 				GigabytePrices: nil,
-				HourlyPrices:   sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
+				HourlyPrices:   hubtypes.TestCoinsPositiveAmount,
 				RemoteURL:      "https://remote.url:443",
 			},
 			false,
@@ -584,14 +582,14 @@ func TestMsgUpdateStatusRequest_ValidateBasic(t *testing.T) {
 		{
 			"from empty",
 			fields{
-				From: "",
+				From: hubtypes.TestAddrEmpty,
 			},
 			true,
 		},
 		{
 			"from invalid",
 			fields{
-				From: "invalid",
+				From: hubtypes.TestAddrInvalid,
 			},
 			true,
 		},
@@ -688,14 +686,14 @@ func TestMsgSubscribeRequest_ValidateBasic(t *testing.T) {
 		{
 			"from empty",
 			fields{
-				From: "",
+				From: hubtypes.TestAddrEmpty,
 			},
 			true,
 		},
 		{
 			"from invalid",
 			fields{
-				From: "invalid",
+				From: hubtypes.TestAddrInvalid,
 			},
 			true,
 		},
@@ -743,7 +741,7 @@ func TestMsgSubscribeRequest_ValidateBasic(t *testing.T) {
 			"node_address empty",
 			fields{
 				From:        hubtypes.TestBech32AccAddr20Bytes,
-				NodeAddress: "",
+				NodeAddress: hubtypes.TestAddrEmpty,
 			},
 			true,
 		},
@@ -751,7 +749,7 @@ func TestMsgSubscribeRequest_ValidateBasic(t *testing.T) {
 			"node_address invalid",
 			fields{
 				From:        hubtypes.TestBech32AccAddr20Bytes,
-				NodeAddress: "invalid",
+				NodeAddress: hubtypes.TestAddrInvalid,
 			},
 			true,
 		},
@@ -841,6 +839,7 @@ func TestMsgSubscribeRequest_ValidateBasic(t *testing.T) {
 				From:        hubtypes.TestBech32AccAddr20Bytes,
 				NodeAddress: hubtypes.TestBech32NodeAddr20Bytes,
 				Hours:       1000,
+				Denom:       hubtypes.TestDenomOne,
 			},
 			false,
 		},
@@ -861,6 +860,7 @@ func TestMsgSubscribeRequest_ValidateBasic(t *testing.T) {
 				NodeAddress: hubtypes.TestBech32NodeAddr20Bytes,
 				Hours:       0,
 				Gigabytes:   1000,
+				Denom:       hubtypes.TestDenomOne,
 			},
 			false,
 		},
@@ -873,7 +873,7 @@ func TestMsgSubscribeRequest_ValidateBasic(t *testing.T) {
 				Gigabytes:   0,
 				Denom:       "",
 			},
-			false,
+			true,
 		},
 		{
 			"denom invalid",

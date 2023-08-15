@@ -23,14 +23,14 @@ func TestMsgRegisterRequest_ValidateBasic(t *testing.T) {
 		{
 			"from empty",
 			fields{
-				From: "",
+				From: hubtypes.TestAddrEmpty,
 			},
 			true,
 		},
 		{
 			"from invalid",
 			fields{
-				From: "invalid",
+				From: hubtypes.TestAddrInvalid,
 			},
 			true,
 		},
@@ -223,14 +223,14 @@ func TestMsgUpdateRequest_ValidateBasic(t *testing.T) {
 		{
 			"address empty",
 			fields{
-				From: "",
+				From: hubtypes.TestAddrEmpty,
 			},
 			true,
 		},
 		{
 			"address invalid",
 			fields{
-				From: "invalid",
+				From: hubtypes.TestAddrInvalid,
 			},
 			true,
 		},

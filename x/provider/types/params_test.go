@@ -4,6 +4,8 @@ import (
 	"testing"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
+	hubtypes "github.com/sentinel-official/hub/types"
 )
 
 func TestParams_Validate(t *testing.T) {
@@ -19,35 +21,35 @@ func TestParams_Validate(t *testing.T) {
 		{
 			"empty denom deposit",
 			fields{
-				Deposit: sdk.Coin{Denom: "", Amount: sdk.NewInt(1000)},
+				Deposit: hubtypes.TestCoinEmptyDenom,
 			},
 			true,
 		},
 		{
 			"invalid denom deposit",
 			fields{
-				Deposit: sdk.Coin{Denom: "o", Amount: sdk.NewInt(1000)},
+				Deposit: hubtypes.TestCoinInvalidDenom,
 			},
 			true,
 		},
 		{
 			"empty amount deposit",
 			fields{
-				Deposit: sdk.Coin{Denom: "one", Amount: sdk.Int{}},
+				Deposit: hubtypes.TestCoinEmptyAmount,
 			},
 			true,
 		},
 		{
 			"negative amount deposit",
 			fields{
-				Deposit: sdk.Coin{Denom: "one", Amount: sdk.NewInt(-1000)},
+				Deposit: hubtypes.TestCoinNegativeAmount,
 			},
 			true,
 		},
 		{
 			"zero amount deposit",
 			fields{
-				Deposit:      sdk.Coin{Denom: "one", Amount: sdk.NewInt(0)},
+				Deposit:      hubtypes.TestCoinZeroAmount,
 				StakingShare: sdk.NewDec(0),
 			},
 			false,
@@ -55,7 +57,7 @@ func TestParams_Validate(t *testing.T) {
 		{
 			"positive amount deposit",
 			fields{
-				Deposit:      sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)},
+				Deposit:      hubtypes.TestCoinPositiveAmount,
 				StakingShare: sdk.NewDec(0),
 			},
 			false,
@@ -63,7 +65,7 @@ func TestParams_Validate(t *testing.T) {
 		{
 			"empty staking share",
 			fields{
-				Deposit:      sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)},
+				Deposit:      hubtypes.TestCoinPositiveAmount,
 				StakingShare: sdk.Dec{},
 			},
 			true,
@@ -71,7 +73,7 @@ func TestParams_Validate(t *testing.T) {
 		{
 			"less than 0 staking share",
 			fields{
-				Deposit:      sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)},
+				Deposit:      hubtypes.TestCoinPositiveAmount,
 				StakingShare: sdk.NewDec(-1),
 			},
 			true,
@@ -79,7 +81,7 @@ func TestParams_Validate(t *testing.T) {
 		{
 			"equals to 0 staking share",
 			fields{
-				Deposit:      sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)},
+				Deposit:      hubtypes.TestCoinPositiveAmount,
 				StakingShare: sdk.NewDec(0),
 			},
 			false,
@@ -87,7 +89,7 @@ func TestParams_Validate(t *testing.T) {
 		{
 			"less than 1 staking share",
 			fields{
-				Deposit:      sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)},
+				Deposit:      hubtypes.TestCoinPositiveAmount,
 				StakingShare: sdk.NewDecWithPrec(1, 1),
 			},
 			false,
@@ -95,7 +97,7 @@ func TestParams_Validate(t *testing.T) {
 		{
 			"equals to 1 staking share",
 			fields{
-				Deposit:      sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)},
+				Deposit:      hubtypes.TestCoinPositiveAmount,
 				StakingShare: sdk.NewDec(1),
 			},
 			false,
@@ -103,7 +105,7 @@ func TestParams_Validate(t *testing.T) {
 		{
 			"greater than 1 staking share",
 			fields{
-				Deposit:      sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)},
+				Deposit:      hubtypes.TestCoinPositiveAmount,
 				StakingShare: sdk.NewDec(2),
 			},
 			true,

@@ -22,14 +22,14 @@ func TestMsgStartRequest_ValidateBasic(t *testing.T) {
 		{
 			"empty from",
 			fields{
-				From: "",
+				From: hubtypes.TestAddrEmpty,
 			},
 			true,
 		},
 		{
 			"invalid from",
 			fields{
-				From: "invalid",
+				From: hubtypes.TestAddrInvalid,
 			},
 			true,
 		},
@@ -82,7 +82,7 @@ func TestMsgStartRequest_ValidateBasic(t *testing.T) {
 			fields{
 				From:    hubtypes.TestBech32AccAddr20Bytes,
 				ID:      1000,
-				Address: "",
+				Address: hubtypes.TestAddrEmpty,
 			},
 			true,
 		},
@@ -91,7 +91,7 @@ func TestMsgStartRequest_ValidateBasic(t *testing.T) {
 			fields{
 				From:    hubtypes.TestBech32AccAddr20Bytes,
 				ID:      1000,
-				Address: "invalid",
+				Address: hubtypes.TestAddrInvalid,
 			},
 			true,
 		},
@@ -160,14 +160,14 @@ func TestMsgUpdateDetailsRequest_ValidateBasic(t *testing.T) {
 		{
 			"empty from",
 			fields{
-				From: "",
+				From: hubtypes.TestAddrEmpty,
 			},
 			true,
 		},
 		{
 			"invalid from",
 			fields{
-				From: "invalid",
+				From: hubtypes.TestAddrInvalid,
 			},
 			true,
 		},
@@ -476,14 +476,14 @@ func TestMsgEndRequest_ValidateBasic(t *testing.T) {
 		{
 			"empty from",
 			fields{
-				From: "",
+				From: hubtypes.TestAddrEmpty,
 			},
 			true,
 		},
 		{
 			"invalid from",
 			fields{
-				From: "invalid",
+				From: hubtypes.TestAddrInvalid,
 			},
 			true,
 		},

@@ -24,14 +24,14 @@ func TestMsgCreateRequest_ValidateBasic(t *testing.T) {
 		{
 			"from empty",
 			fields{
-				From: "",
+				From: hubtypes.TestAddrEmpty,
 			},
 			true,
 		},
 		{
 			"from invalid",
 			fields{
-				From: "invalid",
+				From: hubtypes.TestAddrInvalid,
 			},
 			true,
 		},
@@ -48,6 +48,7 @@ func TestMsgCreateRequest_ValidateBasic(t *testing.T) {
 				From:      hubtypes.TestBech32ProvAddr10Bytes,
 				Duration:  1000,
 				Gigabytes: 1000,
+				Prices:    hubtypes.TestCoinsPositiveAmount,
 			},
 			false,
 		},
@@ -57,6 +58,7 @@ func TestMsgCreateRequest_ValidateBasic(t *testing.T) {
 				From:      hubtypes.TestBech32ProvAddr20Bytes,
 				Duration:  1000,
 				Gigabytes: 1000,
+				Prices:    hubtypes.TestCoinsPositiveAmount,
 			},
 			false,
 		},
@@ -66,6 +68,7 @@ func TestMsgCreateRequest_ValidateBasic(t *testing.T) {
 				From:      hubtypes.TestBech32ProvAddr30Bytes,
 				Duration:  1000,
 				Gigabytes: 1000,
+				Prices:    hubtypes.TestCoinsPositiveAmount,
 			},
 			false,
 		},
@@ -91,6 +94,7 @@ func TestMsgCreateRequest_ValidateBasic(t *testing.T) {
 				From:      hubtypes.TestBech32ProvAddr20Bytes,
 				Duration:  1000,
 				Gigabytes: 1000,
+				Prices:    hubtypes.TestCoinsPositiveAmount,
 			},
 			false,
 		},
@@ -118,6 +122,7 @@ func TestMsgCreateRequest_ValidateBasic(t *testing.T) {
 				From:      hubtypes.TestBech32ProvAddr20Bytes,
 				Duration:  1000,
 				Gigabytes: 1000,
+				Prices:    hubtypes.TestCoinsPositiveAmount,
 			},
 			false,
 		},
@@ -127,9 +132,9 @@ func TestMsgCreateRequest_ValidateBasic(t *testing.T) {
 				From:      hubtypes.TestBech32ProvAddr20Bytes,
 				Duration:  1000,
 				Gigabytes: 1000,
-				Prices:    nil,
+				Prices:    hubtypes.TestCoinsNil,
 			},
-			false,
+			true,
 		},
 		{
 			"prices empty",
@@ -137,7 +142,7 @@ func TestMsgCreateRequest_ValidateBasic(t *testing.T) {
 				From:      hubtypes.TestBech32ProvAddr20Bytes,
 				Duration:  1000,
 				Gigabytes: 1000,
-				Prices:    sdk.Coins{},
+				Prices:    hubtypes.TestCoinsEmpty,
 			},
 			true,
 		},
@@ -147,7 +152,7 @@ func TestMsgCreateRequest_ValidateBasic(t *testing.T) {
 				From:      hubtypes.TestBech32ProvAddr20Bytes,
 				Duration:  1000,
 				Gigabytes: 1000,
-				Prices:    sdk.Coins{sdk.Coin{Denom: "", Amount: sdk.NewInt(1000)}},
+				Prices:    hubtypes.TestCoinsEmptyDenom,
 			},
 			true,
 		},
@@ -157,7 +162,7 @@ func TestMsgCreateRequest_ValidateBasic(t *testing.T) {
 				From:      hubtypes.TestBech32ProvAddr20Bytes,
 				Duration:  1000,
 				Gigabytes: 1000,
-				Prices:    sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.Int{}}},
+				Prices:    hubtypes.TestCoinsEmptyAmount,
 			},
 			true,
 		},
@@ -167,7 +172,7 @@ func TestMsgCreateRequest_ValidateBasic(t *testing.T) {
 				From:      hubtypes.TestBech32ProvAddr20Bytes,
 				Duration:  1000,
 				Gigabytes: 1000,
-				Prices:    sdk.Coins{sdk.Coin{Denom: "o", Amount: sdk.NewInt(1000)}},
+				Prices:    hubtypes.TestCoinsInvalidDenom,
 			},
 			true,
 		},
@@ -177,7 +182,7 @@ func TestMsgCreateRequest_ValidateBasic(t *testing.T) {
 				From:      hubtypes.TestBech32ProvAddr20Bytes,
 				Duration:  1000,
 				Gigabytes: 1000,
-				Prices:    sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(-1000)}},
+				Prices:    hubtypes.TestCoinsNegativeAmount,
 			},
 			true,
 		},
@@ -187,7 +192,7 @@ func TestMsgCreateRequest_ValidateBasic(t *testing.T) {
 				From:      hubtypes.TestBech32ProvAddr20Bytes,
 				Duration:  1000,
 				Gigabytes: 1000,
-				Prices:    sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(0)}},
+				Prices:    hubtypes.TestCoinsZeroAmount,
 			},
 			true,
 		},
@@ -197,7 +202,7 @@ func TestMsgCreateRequest_ValidateBasic(t *testing.T) {
 				From:      hubtypes.TestBech32ProvAddr20Bytes,
 				Duration:  1000,
 				Gigabytes: 1000,
-				Prices:    sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
+				Prices:    hubtypes.TestCoinsPositiveAmount,
 			},
 			false,
 		},
@@ -231,14 +236,14 @@ func TestMsgUpdateStatusRequest_ValidateBasic(t *testing.T) {
 		{
 			"from empty",
 			fields{
-				From: "",
+				From: hubtypes.TestAddrEmpty,
 			},
 			true,
 		},
 		{
 			"from invalid",
 			fields{
-				From: "invalid",
+				From: hubtypes.TestAddrInvalid,
 			},
 			true,
 		},
@@ -358,14 +363,14 @@ func TestMsgLinkNodeRequest_ValidateBasic(t *testing.T) {
 		{
 			"from empty",
 			fields{
-				From: "",
+				From: hubtypes.TestAddrEmpty,
 			},
 			true,
 		},
 		{
 			"from invalid",
 			fields{
-				From: "invalid",
+				From: hubtypes.TestAddrInvalid,
 			},
 			true,
 		},
@@ -425,7 +430,7 @@ func TestMsgLinkNodeRequest_ValidateBasic(t *testing.T) {
 			fields{
 				From:        hubtypes.TestBech32ProvAddr20Bytes,
 				ID:          1000,
-				NodeAddress: "",
+				NodeAddress: hubtypes.TestAddrEmpty,
 			},
 			true,
 		},
@@ -434,7 +439,7 @@ func TestMsgLinkNodeRequest_ValidateBasic(t *testing.T) {
 			fields{
 				From:        hubtypes.TestBech32ProvAddr20Bytes,
 				ID:          1000,
-				NodeAddress: "invalid",
+				NodeAddress: hubtypes.TestAddrInvalid,
 			},
 			true,
 		},
@@ -503,14 +508,14 @@ func TestMsgUnlinkNodeRequest_ValidateBasic(t *testing.T) {
 		{
 			"from empty",
 			fields{
-				From: "",
+				From: hubtypes.TestAddrEmpty,
 			},
 			true,
 		},
 		{
 			"from invalid",
 			fields{
-				From: "invalid",
+				From: hubtypes.TestAddrInvalid,
 			},
 			true,
 		},
@@ -570,7 +575,7 @@ func TestMsgUnlinkNodeRequest_ValidateBasic(t *testing.T) {
 			fields{
 				From:        hubtypes.TestBech32ProvAddr20Bytes,
 				ID:          1000,
-				NodeAddress: "",
+				NodeAddress: hubtypes.TestAddrEmpty,
 			},
 			true,
 		},
@@ -579,7 +584,7 @@ func TestMsgUnlinkNodeRequest_ValidateBasic(t *testing.T) {
 			fields{
 				From:        hubtypes.TestBech32ProvAddr20Bytes,
 				ID:          1000,
-				NodeAddress: "invalid",
+				NodeAddress: hubtypes.TestAddrInvalid,
 			},
 			true,
 		},
@@ -648,14 +653,14 @@ func TestMsgSubscribeRequest_ValidateBasic(t *testing.T) {
 		{
 			"from empty",
 			fields{
-				From: "",
+				From: hubtypes.TestAddrEmpty,
 			},
 			true,
 		},
 		{
 			"from invalid",
 			fields{
-				From: "invalid",
+				From: hubtypes.TestAddrInvalid,
 			},
 			true,
 		},
@@ -717,7 +722,7 @@ func TestMsgSubscribeRequest_ValidateBasic(t *testing.T) {
 				ID:    1000,
 				Denom: "",
 			},
-			false,
+			true,
 		},
 		{
 			"denom invalid",

@@ -24,7 +24,7 @@ func TestProvider_GetAddress(t *testing.T) {
 		{
 			"empty",
 			fields{
-				Address: "",
+				Address: hubtypes.TestAddrEmpty,
 			},
 			nil,
 		},
@@ -69,14 +69,14 @@ func TestProvider_Validate(t *testing.T) {
 		{
 			"empty address",
 			fields{
-				Address: "",
+				Address: hubtypes.TestAddrEmpty,
 			},
 			true,
 		},
 		{
 			"invalid address",
 			fields{
-				Address: "invalid",
+				Address: hubtypes.TestAddrInvalid,
 			},
 			true,
 		},
