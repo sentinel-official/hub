@@ -116,7 +116,7 @@ func txUpdateDetails() *cobra.Command {
 
 func txEnd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "end [id]",
+		Use:   "end [session-id]",
 		Short: "End a session",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {

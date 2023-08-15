@@ -124,13 +124,10 @@ func (k *Keeper) IsValidHourlyPrices(ctx sdk.Context, prices sdk.Coins) bool {
 }
 
 func (k *Keeper) IsValidSubscriptionGigabytes(ctx sdk.Context, gigabytes int64) bool {
-	maxGigabytes := k.MaxSubscriptionGigabytes(ctx)
-	if maxGigabytes != 0 && gigabytes > maxGigabytes {
+	if gigabytes < k.MinSubscriptionGigabytes(ctx) {
 		return false
 	}
-
-	minGigabytes := k.MinSubscriptionGigabytes(ctx)
-	if minGigabytes != 0 && gigabytes < minGigabytes {
+	if gigabytes > k.MaxSubscriptionGigabytes(ctx) {
 		return false
 	}
 
@@ -138,13 +135,10 @@ func (k *Keeper) IsValidSubscriptionGigabytes(ctx sdk.Context, gigabytes int64) 
 }
 
 func (k *Keeper) IsValidSubscriptionHours(ctx sdk.Context, hours int64) bool {
-	maxHours := k.MaxSubscriptionHours(ctx)
-	if maxHours != 0 && hours > maxHours {
+	if hours < k.MinSubscriptionHours(ctx) {
 		return false
 	}
-
-	minHours := k.MinSubscriptionHours(ctx)
-	if minHours != 0 && hours < minHours {
+	if hours > k.MaxSubscriptionHours(ctx) {
 		return false
 	}
 

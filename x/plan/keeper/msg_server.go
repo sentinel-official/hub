@@ -60,7 +60,8 @@ func (k *msgServer) MsgCreate(c context.Context, msg *types.MsgCreateRequest) (*
 	// Emit an event to notify that a new plan has been created.
 	ctx.EventManager().EmitTypedEvent(
 		&types.EventCreate{
-			ID: plan.ID,
+			Address: plan.ProviderAddress,
+			ID:      plan.ID,
 		},
 	)
 
@@ -107,8 +108,9 @@ func (k *msgServer) MsgUpdateStatus(c context.Context, msg *types.MsgUpdateStatu
 	// Emit an event to notify that the plan status has been updated.
 	ctx.EventManager().EmitTypedEvent(
 		&types.EventUpdateStatus{
-			ID:     plan.ID,
-			Status: plan.Status,
+			Status:  plan.Status,
+			Address: plan.ProviderAddress,
+			ID:      plan.ID,
 		},
 	)
 
@@ -148,8 +150,9 @@ func (k *msgServer) MsgLinkNode(c context.Context, msg *types.MsgLinkNodeRequest
 	// Emit an event to notify that a node has been linked to the plan.
 	ctx.EventManager().EmitTypedEvent(
 		&types.EventLinkNode{
-			ID:      plan.ID,
-			Address: nodeAddr.String(),
+			Address:     plan.ProviderAddress,
+			NodeAddress: msg.NodeAddress,
+			ID:          plan.ID,
 		},
 	)
 
@@ -184,8 +187,9 @@ func (k *msgServer) MsgUnlinkNode(c context.Context, msg *types.MsgUnlinkNodeReq
 	// Emit an event to notify that a node has been unlinked from the plan.
 	ctx.EventManager().EmitTypedEvent(
 		&types.EventUnlinkNode{
-			ID:      plan.ID,
-			Address: nodeAddr.String(),
+			Address:     plan.ProviderAddress,
+			NodeAddress: msg.NodeAddress,
+			ID:          plan.ID,
 		},
 	)
 
@@ -212,8 +216,10 @@ func (k *msgServer) MsgSubscribe(c context.Context, msg *types.MsgSubscribeReque
 	// Emit an event to notify that a new subscription has been created.
 	ctx.EventManager().EmitTypedEvent(
 		&types.EventCreateSubscription{
-			ID:     subscription.ID,
-			PlanID: subscription.PlanID,
+			Address:         subscription.Address,
+			ProviderAddress: "",
+			ID:              subscription.ID,
+			PlanID:          subscription.PlanID,
 		},
 	)
 

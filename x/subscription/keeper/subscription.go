@@ -344,9 +344,10 @@ func (k *Keeper) CreateSubscriptionForNode(ctx sdk.Context, accAddr sdk.AccAddre
 		k.SetAllocation(ctx, alloc)
 		ctx.EventManager().EmitTypedEvent(
 			&types.EventAllocate{
-				ID:      subscription.GetID(),
-				Address: alloc.Address,
-				Bytes:   alloc.GrantedBytes,
+				Address:       alloc.Address,
+				GrantedBytes:  alloc.GrantedBytes,
+				UtilisedBytes: alloc.UtilisedBytes,
+				ID:            alloc.ID,
 			},
 		)
 	}
@@ -371,10 +372,10 @@ func (k *Keeper) CreateSubscriptionForNode(ctx sdk.Context, accAddr sdk.AccAddre
 		k.SetPayoutForAccountByNode(ctx, accAddr, nodeAddr, payout.ID)
 		k.SetPayoutForNextAt(ctx, payout.NextAt, payout.ID)
 		ctx.EventManager().EmitTypedEvent(
-			&types.EventPayout{
-				ID:          payout.ID,
+			&types.EventCreatePayout{
 				Address:     payout.Address,
 				NodeAddress: payout.NodeAddress,
+				ID:          payout.ID,
 			},
 		)
 	}
@@ -421,6 +422,17 @@ func (k *Keeper) CreateSubscriptionForPlan(ctx sdk.Context, accAddr sdk.AccAddre
 		return nil, err
 	}
 
+	// Emit an event for the plan payment.
+	ctx.EventManager().EmitTypedEvent(
+		&types.EventPayForPlan{
+			Address:         accAddr.String(),
+			Payment:         payment.String(),
+			ProviderAddress: plan.ProviderAddress,
+			StakingReward:   stakingReward.String(),
+			ID:              plan.ID,
+		},
+	)
+
 	// Retrieve the current count and create a new PlanSubscription.
 	count := k.GetCount(ctx)
 	subscription := &types.PlanSubscription{
@@ -453,9 +465,10 @@ func (k *Keeper) CreateSubscriptionForPlan(ctx sdk.Context, accAddr sdk.AccAddre
 	k.SetAllocation(ctx, alloc)
 	ctx.EventManager().EmitTypedEvent(
 		&types.EventAllocate{
-			ID:      subscription.GetID(),
-			Address: alloc.Address,
-			Bytes:   alloc.GrantedBytes,
+			Address:       alloc.Address,
+			GrantedBytes:  alloc.GrantedBytes,
+			UtilisedBytes: alloc.UtilisedBytes,
+			ID:            alloc.ID,
 		},
 	)
 

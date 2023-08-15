@@ -25,7 +25,8 @@ var _ = math.Inf
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
 type EventCreate struct {
-	ID uint64 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty" yaml:"id"`
+	Address string `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty" yaml:"address"`
+	ID      uint64 `protobuf:"varint,2,opt,name=id,proto3" json:"id,omitempty" yaml:"id"`
 }
 
 func (m *EventCreate) Reset()         { *m = EventCreate{} }
@@ -62,8 +63,9 @@ func (m *EventCreate) XXX_DiscardUnknown() {
 var xxx_messageInfo_EventCreate proto.InternalMessageInfo
 
 type EventUpdateStatus struct {
-	ID     uint64       `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty" yaml:"id"`
-	Status types.Status `protobuf:"varint,3,opt,name=status,proto3,enum=sentinel.types.v1.Status" json:"status,omitempty" yaml:"status"`
+	Status  types.Status `protobuf:"varint,1,opt,name=status,proto3,enum=sentinel.types.v1.Status" json:"status,omitempty" yaml:"status"`
+	Address string       `protobuf:"bytes,2,opt,name=address,proto3" json:"address,omitempty" yaml:"address"`
+	ID      uint64       `protobuf:"varint,3,opt,name=id,proto3" json:"id,omitempty" yaml:"id"`
 }
 
 func (m *EventUpdateStatus) Reset()         { *m = EventUpdateStatus{} }
@@ -100,8 +102,9 @@ func (m *EventUpdateStatus) XXX_DiscardUnknown() {
 var xxx_messageInfo_EventUpdateStatus proto.InternalMessageInfo
 
 type EventLinkNode struct {
-	ID      uint64 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty" yaml:"id"`
-	Address string `protobuf:"bytes,2,opt,name=address,proto3" json:"address,omitempty" yaml:"address"`
+	Address     string `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty" yaml:"address"`
+	NodeAddress string `protobuf:"bytes,2,opt,name=node_address,json=nodeAddress,proto3" json:"node_address,omitempty" yaml:"node_address"`
+	ID          uint64 `protobuf:"varint,3,opt,name=id,proto3" json:"id,omitempty" yaml:"id"`
 }
 
 func (m *EventLinkNode) Reset()         { *m = EventLinkNode{} }
@@ -138,8 +141,9 @@ func (m *EventLinkNode) XXX_DiscardUnknown() {
 var xxx_messageInfo_EventLinkNode proto.InternalMessageInfo
 
 type EventUnlinkNode struct {
-	ID      uint64 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty" yaml:"id"`
-	Address string `protobuf:"bytes,2,opt,name=address,proto3" json:"address,omitempty" yaml:"address"`
+	Address     string `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty" yaml:"address"`
+	NodeAddress string `protobuf:"bytes,2,opt,name=node_address,json=nodeAddress,proto3" json:"node_address,omitempty" yaml:"node_address"`
+	ID          uint64 `protobuf:"varint,3,opt,name=id,proto3" json:"id,omitempty" yaml:"id"`
 }
 
 func (m *EventUnlinkNode) Reset()         { *m = EventUnlinkNode{} }
@@ -176,8 +180,10 @@ func (m *EventUnlinkNode) XXX_DiscardUnknown() {
 var xxx_messageInfo_EventUnlinkNode proto.InternalMessageInfo
 
 type EventCreateSubscription struct {
-	ID     uint64 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty" yaml:"id"`
-	PlanID uint64 `protobuf:"varint,2,opt,name=plan_id,json=planId,proto3" json:"plan_id,omitempty" yaml:"plan_id"`
+	Address         string `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty" yaml:"address"`
+	ProviderAddress string `protobuf:"bytes,2,opt,name=provider_address,json=providerAddress,proto3" json:"provider_address,omitempty" yaml:"provider_address"`
+	ID              uint64 `protobuf:"varint,3,opt,name=id,proto3" json:"id,omitempty" yaml:"id"`
+	PlanID          uint64 `protobuf:"varint,4,opt,name=plan_id,json=planId,proto3" json:"plan_id,omitempty" yaml:"plan_id"`
 }
 
 func (m *EventCreateSubscription) Reset()         { *m = EventCreateSubscription{} }
@@ -224,32 +230,36 @@ func init() {
 func init() { proto.RegisterFile("sentinel/plan/v2/events.proto", fileDescriptor_4222ab50472303c2) }
 
 var fileDescriptor_4222ab50472303c2 = []byte{
-	// 388 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xb4, 0x52, 0xbf, 0x8e, 0xd3, 0x30,
-	0x18, 0x4f, 0xc2, 0x29, 0xa7, 0x33, 0xba, 0x83, 0x0b, 0x48, 0x94, 0x0a, 0x9c, 0xca, 0x2c, 0x1d,
-	0x68, 0xac, 0x06, 0xb1, 0x30, 0x86, 0x32, 0x54, 0x42, 0x80, 0x52, 0xb1, 0xb0, 0x20, 0xa7, 0x76,
-	0x5b, 0x8b, 0xd4, 0x8e, 0x12, 0x27, 0xa2, 0x0b, 0xcf, 0xc0, 0x63, 0xf0, 0x28, 0x1d, 0x3b, 0x32,
-	0x45, 0x90, 0xbe, 0x41, 0x9f, 0x00, 0xc5, 0x4e, 0x2b, 0xc6, 0x2e, 0xb7, 0x59, 0xfa, 0xfd, 0xfb,
-	0x3e, 0xff, 0x3e, 0xf0, 0xbc, 0x60, 0x42, 0x71, 0xc1, 0x52, 0x9c, 0xa5, 0x44, 0xe0, 0x2a, 0xc4,
-	0xac, 0x62, 0x42, 0x15, 0x41, 0x96, 0x4b, 0x25, 0xbd, 0x87, 0x47, 0x38, 0x68, 0xe1, 0xa0, 0x0a,
-	0xfb, 0x8f, 0x97, 0x72, 0x29, 0x35, 0x88, 0xdb, 0x97, 0xe1, 0xf5, 0xe1, 0xc9, 0x46, 0x6d, 0x32,
-	0x56, 0xe0, 0x6a, 0x8c, 0x0b, 0x45, 0x54, 0xd9, 0xf9, 0xa0, 0x10, 0xdc, 0x7f, 0xd7, 0xfa, 0xbe,
-	0xcd, 0x19, 0x51, 0xcc, 0x7b, 0x01, 0x1c, 0x4e, 0x7b, 0xf6, 0xc0, 0x1e, 0x5e, 0x44, 0x8f, 0x9a,
-	0xda, 0x77, 0xa6, 0x93, 0x43, 0xed, 0x5f, 0x6d, 0xc8, 0x3a, 0x7d, 0x83, 0x38, 0x45, 0xb1, 0xc3,
-	0x29, 0xfa, 0x01, 0x6e, 0xb5, 0xe6, 0x73, 0x46, 0x89, 0x62, 0x33, 0x6d, 0x77, 0x96, 0xd2, 0x9b,
-	0x00, 0xd7, 0xa4, 0xf7, 0xee, 0x0d, 0xec, 0xe1, 0x4d, 0xf8, 0x34, 0x38, 0xad, 0xa1, 0xc7, 0x0b,
-	0xaa, 0x71, 0x60, 0xfc, 0xa2, 0xdb, 0x43, 0xed, 0x5f, 0x1b, 0xb5, 0x91, 0xa0, 0xb8, 0xd3, 0xa2,
-	0x04, 0x5c, 0xeb, 0xfc, 0xf7, 0x5c, 0x7c, 0xfb, 0x20, 0xe9, 0x79, 0x53, 0x7b, 0x2f, 0xc1, 0x25,
-	0xa1, 0x34, 0x67, 0x45, 0xd1, 0x73, 0x06, 0xf6, 0xf0, 0x2a, 0xf2, 0x0e, 0xb5, 0x7f, 0x63, 0x38,
-	0x1d, 0x80, 0xe2, 0x23, 0x05, 0x51, 0xf0, 0xc0, 0xec, 0x28, 0xd2, 0x3b, 0x4c, 0x29, 0xc1, 0x93,
-	0xff, 0x7e, 0x7f, 0x56, 0x26, 0xc5, 0x3c, 0xe7, 0x99, 0xe2, 0x52, 0x9c, 0x97, 0xf6, 0x1a, 0x5c,
-	0xb6, 0xf5, 0x7f, 0xe5, 0x54, 0xa7, 0x5d, 0x44, 0xcf, 0x9a, 0xda, 0x77, 0x3f, 0xa5, 0x44, 0x68,
-	0x76, 0x97, 0xdb, 0x51, 0x50, 0xec, 0xb6, 0xaf, 0x29, 0x8d, 0x3e, 0x6e, 0xff, 0x42, 0xeb, 0x57,
-	0x03, 0xad, 0x6d, 0x03, 0xed, 0x5d, 0x03, 0xed, 0x3f, 0x0d, 0xb4, 0x7f, 0xee, 0xa1, 0xb5, 0xdb,
-	0x43, 0xeb, 0xf7, 0x1e, 0x5a, 0x5f, 0x46, 0x4b, 0xae, 0x56, 0x65, 0x12, 0xcc, 0xe5, 0x1a, 0x1f,
-	0x2b, 0x1a, 0xc9, 0xc5, 0x82, 0xcf, 0x39, 0x49, 0xf1, 0xaa, 0x4c, 0xf0, 0x77, 0x73, 0x97, 0xba,
-	0xb6, 0xc4, 0xd5, 0xc7, 0xf4, 0xea, 0x5f, 0x00, 0x00, 0x00, 0xff, 0xff, 0xfc, 0x57, 0x13, 0x29,
-	0xb5, 0x02, 0x00, 0x00,
+	// 455 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xcc, 0x93, 0x3f, 0x6f, 0xd4, 0x30,
+	0x18, 0xc6, 0xe3, 0x50, 0x5d, 0x55, 0x97, 0xfe, 0x4b, 0x91, 0xee, 0x28, 0xe0, 0x54, 0x66, 0xe9,
+	0x40, 0x63, 0xf5, 0x10, 0x4b, 0x37, 0x8e, 0x82, 0x54, 0x09, 0x01, 0x4a, 0xc5, 0xc2, 0x52, 0x7c,
+	0x67, 0xf7, 0x6a, 0x91, 0xda, 0x51, 0xe2, 0x44, 0xf4, 0x5b, 0xf0, 0x09, 0x10, 0x23, 0x03, 0x1f,
+	0xa4, 0x63, 0x47, 0xa6, 0x08, 0x72, 0x23, 0x5b, 0x3e, 0x01, 0x8a, 0x9d, 0x54, 0xc7, 0x0d, 0x88,
+	0x6c, 0x6c, 0x4e, 0x9e, 0xe7, 0x7d, 0xde, 0x9f, 0xad, 0xf7, 0x85, 0x0f, 0x52, 0x2e, 0xb5, 0x90,
+	0x3c, 0x22, 0x71, 0x44, 0x25, 0xc9, 0x87, 0x84, 0xe7, 0x5c, 0xea, 0x34, 0x88, 0x13, 0xa5, 0x95,
+	0xb7, 0xd9, 0xca, 0x41, 0x2d, 0x07, 0xf9, 0x70, 0xe7, 0xce, 0x54, 0x4d, 0x95, 0x11, 0x49, 0x7d,
+	0xb2, 0xbe, 0x1d, 0x74, 0x13, 0xa3, 0x2f, 0x63, 0x9e, 0x92, 0xfc, 0x80, 0xa4, 0x9a, 0xea, 0xac,
+	0xc9, 0xc1, 0xef, 0xe1, 0xea, 0xf3, 0x3a, 0xf7, 0x59, 0xc2, 0xa9, 0xe6, 0xde, 0x23, 0xb8, 0x4c,
+	0x19, 0x4b, 0x78, 0x9a, 0x0e, 0xc0, 0x2e, 0xd8, 0x5b, 0x19, 0x79, 0x55, 0xe1, 0xaf, 0x5f, 0xd2,
+	0x8b, 0xe8, 0x10, 0x37, 0x02, 0x0e, 0x5b, 0x8b, 0xf7, 0x10, 0xba, 0x82, 0x0d, 0xdc, 0x5d, 0xb0,
+	0xb7, 0x34, 0xda, 0x2e, 0x0b, 0xdf, 0x3d, 0x3e, 0xaa, 0x0a, 0x7f, 0xc5, 0xda, 0x05, 0xc3, 0xa1,
+	0x2b, 0x18, 0xfe, 0x06, 0xe0, 0x96, 0x69, 0xf1, 0x36, 0x66, 0x54, 0xf3, 0x13, 0xd3, 0xdd, 0x3b,
+	0x82, 0x3d, 0xcb, 0x61, 0xfa, 0xac, 0x0f, 0xef, 0x06, 0x37, 0x17, 0x32, 0xa0, 0x41, 0x7e, 0x10,
+	0x58, 0xeb, 0x68, 0xab, 0x2a, 0xfc, 0x35, 0x9b, 0x69, 0x4b, 0x70, 0xd8, 0xd4, 0xce, 0xe3, 0xba,
+	0xff, 0x8a, 0x7b, 0xeb, 0xef, 0xb8, 0x9f, 0x01, 0x5c, 0x33, 0xb8, 0x2f, 0x85, 0xfc, 0xf0, 0x4a,
+	0xb1, 0xae, 0x6f, 0x72, 0x08, 0x6f, 0x4b, 0xc5, 0xf8, 0xe9, 0x9f, 0x5c, 0xfd, 0xaa, 0xf0, 0xb7,
+	0x6d, 0xc9, 0xbc, 0x8a, 0xc3, 0xd5, 0xfa, 0xf3, 0x69, 0x17, 0xc0, 0x2f, 0x00, 0x6e, 0xd8, 0xf7,
+	0x94, 0xd1, 0x7f, 0x8a, 0xf8, 0x0b, 0xc0, 0xfe, 0xdc, 0x54, 0x9d, 0x64, 0xe3, 0x74, 0x92, 0x88,
+	0x58, 0x0b, 0x25, 0x3b, 0xa2, 0xbe, 0x80, 0x9b, 0x71, 0xa2, 0x72, 0xc1, 0x78, 0xb2, 0x80, 0x7b,
+	0xaf, 0x2a, 0xfc, 0xbe, 0x2d, 0x5b, 0x74, 0xe0, 0x70, 0xa3, 0xfd, 0xd5, 0x05, 0xdb, 0x7b, 0x02,
+	0x97, 0xeb, 0x65, 0x3a, 0x15, 0x6c, 0xb0, 0x64, 0x9c, 0xf7, 0xcb, 0xc2, 0xef, 0xbd, 0x89, 0xa8,
+	0x34, 0xee, 0x06, 0xb2, 0xb1, 0xe0, 0xb0, 0x57, 0x9f, 0x8e, 0xd9, 0xe8, 0xf5, 0xd5, 0x4f, 0xe4,
+	0x7c, 0x2d, 0x91, 0x73, 0x55, 0x22, 0x70, 0x5d, 0x22, 0xf0, 0xa3, 0x44, 0xe0, 0xd3, 0x0c, 0x39,
+	0xd7, 0x33, 0xe4, 0x7c, 0x9f, 0x21, 0xe7, 0xdd, 0xfe, 0x54, 0xe8, 0xf3, 0x6c, 0x1c, 0x4c, 0xd4,
+	0x05, 0x69, 0xc7, 0x7c, 0x5f, 0x9d, 0x9d, 0x89, 0x89, 0xa0, 0x11, 0x39, 0xcf, 0xc6, 0xe4, 0xa3,
+	0xdd, 0x72, 0x33, 0xfa, 0xe3, 0x9e, 0x59, 0xcd, 0xc7, 0xbf, 0x03, 0x00, 0x00, 0xff, 0xff, 0x8c,
+	0x33, 0x2b, 0xfd, 0x03, 0x04, 0x00, 0x00,
 }
 
 func (m *EventCreate) Marshal() (dAtA []byte, err error) {
@@ -275,7 +285,14 @@ func (m *EventCreate) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	if m.ID != 0 {
 		i = encodeVarintEvents(dAtA, i, uint64(m.ID))
 		i--
-		dAtA[i] = 0x8
+		dAtA[i] = 0x10
+	}
+	if len(m.Address) > 0 {
+		i -= len(m.Address)
+		copy(dAtA[i:], m.Address)
+		i = encodeVarintEvents(dAtA, i, uint64(len(m.Address)))
+		i--
+		dAtA[i] = 0xa
 	}
 	return len(dAtA) - i, nil
 }
@@ -300,13 +317,20 @@ func (m *EventUpdateStatus) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if m.Status != 0 {
-		i = encodeVarintEvents(dAtA, i, uint64(m.Status))
+	if m.ID != 0 {
+		i = encodeVarintEvents(dAtA, i, uint64(m.ID))
 		i--
 		dAtA[i] = 0x18
 	}
-	if m.ID != 0 {
-		i = encodeVarintEvents(dAtA, i, uint64(m.ID))
+	if len(m.Address) > 0 {
+		i -= len(m.Address)
+		copy(dAtA[i:], m.Address)
+		i = encodeVarintEvents(dAtA, i, uint64(len(m.Address)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if m.Status != 0 {
+		i = encodeVarintEvents(dAtA, i, uint64(m.Status))
 		i--
 		dAtA[i] = 0x8
 	}
@@ -333,17 +357,24 @@ func (m *EventLinkNode) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
+	if m.ID != 0 {
+		i = encodeVarintEvents(dAtA, i, uint64(m.ID))
+		i--
+		dAtA[i] = 0x18
+	}
+	if len(m.NodeAddress) > 0 {
+		i -= len(m.NodeAddress)
+		copy(dAtA[i:], m.NodeAddress)
+		i = encodeVarintEvents(dAtA, i, uint64(len(m.NodeAddress)))
+		i--
+		dAtA[i] = 0x12
+	}
 	if len(m.Address) > 0 {
 		i -= len(m.Address)
 		copy(dAtA[i:], m.Address)
 		i = encodeVarintEvents(dAtA, i, uint64(len(m.Address)))
 		i--
-		dAtA[i] = 0x12
-	}
-	if m.ID != 0 {
-		i = encodeVarintEvents(dAtA, i, uint64(m.ID))
-		i--
-		dAtA[i] = 0x8
+		dAtA[i] = 0xa
 	}
 	return len(dAtA) - i, nil
 }
@@ -368,17 +399,24 @@ func (m *EventUnlinkNode) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
+	if m.ID != 0 {
+		i = encodeVarintEvents(dAtA, i, uint64(m.ID))
+		i--
+		dAtA[i] = 0x18
+	}
+	if len(m.NodeAddress) > 0 {
+		i -= len(m.NodeAddress)
+		copy(dAtA[i:], m.NodeAddress)
+		i = encodeVarintEvents(dAtA, i, uint64(len(m.NodeAddress)))
+		i--
+		dAtA[i] = 0x12
+	}
 	if len(m.Address) > 0 {
 		i -= len(m.Address)
 		copy(dAtA[i:], m.Address)
 		i = encodeVarintEvents(dAtA, i, uint64(len(m.Address)))
 		i--
-		dAtA[i] = 0x12
-	}
-	if m.ID != 0 {
-		i = encodeVarintEvents(dAtA, i, uint64(m.ID))
-		i--
-		dAtA[i] = 0x8
+		dAtA[i] = 0xa
 	}
 	return len(dAtA) - i, nil
 }
@@ -406,12 +444,26 @@ func (m *EventCreateSubscription) MarshalToSizedBuffer(dAtA []byte) (int, error)
 	if m.PlanID != 0 {
 		i = encodeVarintEvents(dAtA, i, uint64(m.PlanID))
 		i--
-		dAtA[i] = 0x10
+		dAtA[i] = 0x20
 	}
 	if m.ID != 0 {
 		i = encodeVarintEvents(dAtA, i, uint64(m.ID))
 		i--
-		dAtA[i] = 0x8
+		dAtA[i] = 0x18
+	}
+	if len(m.ProviderAddress) > 0 {
+		i -= len(m.ProviderAddress)
+		copy(dAtA[i:], m.ProviderAddress)
+		i = encodeVarintEvents(dAtA, i, uint64(len(m.ProviderAddress)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.Address) > 0 {
+		i -= len(m.Address)
+		copy(dAtA[i:], m.Address)
+		i = encodeVarintEvents(dAtA, i, uint64(len(m.Address)))
+		i--
+		dAtA[i] = 0xa
 	}
 	return len(dAtA) - i, nil
 }
@@ -433,6 +485,10 @@ func (m *EventCreate) Size() (n int) {
 	}
 	var l int
 	_ = l
+	l = len(m.Address)
+	if l > 0 {
+		n += 1 + l + sovEvents(uint64(l))
+	}
 	if m.ID != 0 {
 		n += 1 + sovEvents(uint64(m.ID))
 	}
@@ -445,11 +501,15 @@ func (m *EventUpdateStatus) Size() (n int) {
 	}
 	var l int
 	_ = l
-	if m.ID != 0 {
-		n += 1 + sovEvents(uint64(m.ID))
-	}
 	if m.Status != 0 {
 		n += 1 + sovEvents(uint64(m.Status))
+	}
+	l = len(m.Address)
+	if l > 0 {
+		n += 1 + l + sovEvents(uint64(l))
+	}
+	if m.ID != 0 {
+		n += 1 + sovEvents(uint64(m.ID))
 	}
 	return n
 }
@@ -460,12 +520,16 @@ func (m *EventLinkNode) Size() (n int) {
 	}
 	var l int
 	_ = l
-	if m.ID != 0 {
-		n += 1 + sovEvents(uint64(m.ID))
-	}
 	l = len(m.Address)
 	if l > 0 {
 		n += 1 + l + sovEvents(uint64(l))
+	}
+	l = len(m.NodeAddress)
+	if l > 0 {
+		n += 1 + l + sovEvents(uint64(l))
+	}
+	if m.ID != 0 {
+		n += 1 + sovEvents(uint64(m.ID))
 	}
 	return n
 }
@@ -476,12 +540,16 @@ func (m *EventUnlinkNode) Size() (n int) {
 	}
 	var l int
 	_ = l
-	if m.ID != 0 {
-		n += 1 + sovEvents(uint64(m.ID))
-	}
 	l = len(m.Address)
 	if l > 0 {
 		n += 1 + l + sovEvents(uint64(l))
+	}
+	l = len(m.NodeAddress)
+	if l > 0 {
+		n += 1 + l + sovEvents(uint64(l))
+	}
+	if m.ID != 0 {
+		n += 1 + sovEvents(uint64(m.ID))
 	}
 	return n
 }
@@ -492,6 +560,14 @@ func (m *EventCreateSubscription) Size() (n int) {
 	}
 	var l int
 	_ = l
+	l = len(m.Address)
+	if l > 0 {
+		n += 1 + l + sovEvents(uint64(l))
+	}
+	l = len(m.ProviderAddress)
+	if l > 0 {
+		n += 1 + l + sovEvents(uint64(l))
+	}
 	if m.ID != 0 {
 		n += 1 + sovEvents(uint64(m.ID))
 	}
@@ -537,6 +613,38 @@ func (m *EventCreate) Unmarshal(dAtA []byte) error {
 		}
 		switch fieldNum {
 		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Address", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowEvents
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthEvents
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthEvents
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Address = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field ID", wireType)
 			}
@@ -607,25 +715,6 @@ func (m *EventUpdateStatus) Unmarshal(dAtA []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field ID", wireType)
-			}
-			m.ID = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowEvents
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				m.ID |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-		case 3:
-			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Status", wireType)
 			}
 			m.Status = 0
@@ -639,6 +728,57 @@ func (m *EventUpdateStatus) Unmarshal(dAtA []byte) error {
 				b := dAtA[iNdEx]
 				iNdEx++
 				m.Status |= types.Status(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Address", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowEvents
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthEvents
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthEvents
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Address = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ID", wireType)
+			}
+			m.ID = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowEvents
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.ID |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -694,25 +834,6 @@ func (m *EventLinkNode) Unmarshal(dAtA []byte) error {
 		}
 		switch fieldNum {
 		case 1:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field ID", wireType)
-			}
-			m.ID = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowEvents
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				m.ID |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-		case 2:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Address", wireType)
 			}
@@ -744,6 +865,57 @@ func (m *EventLinkNode) Unmarshal(dAtA []byte) error {
 			}
 			m.Address = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field NodeAddress", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowEvents
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthEvents
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthEvents
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.NodeAddress = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ID", wireType)
+			}
+			m.ID = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowEvents
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.ID |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
 		default:
 			iNdEx = preIndex
 			skippy, err := skipEvents(dAtA[iNdEx:])
@@ -795,25 +967,6 @@ func (m *EventUnlinkNode) Unmarshal(dAtA []byte) error {
 		}
 		switch fieldNum {
 		case 1:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field ID", wireType)
-			}
-			m.ID = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowEvents
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				m.ID |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-		case 2:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Address", wireType)
 			}
@@ -845,6 +998,57 @@ func (m *EventUnlinkNode) Unmarshal(dAtA []byte) error {
 			}
 			m.Address = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field NodeAddress", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowEvents
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthEvents
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthEvents
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.NodeAddress = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ID", wireType)
+			}
+			m.ID = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowEvents
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.ID |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
 		default:
 			iNdEx = preIndex
 			skippy, err := skipEvents(dAtA[iNdEx:])
@@ -896,6 +1100,70 @@ func (m *EventCreateSubscription) Unmarshal(dAtA []byte) error {
 		}
 		switch fieldNum {
 		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Address", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowEvents
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthEvents
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthEvents
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Address = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ProviderAddress", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowEvents
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthEvents
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthEvents
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.ProviderAddress = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field ID", wireType)
 			}
@@ -914,7 +1182,7 @@ func (m *EventCreateSubscription) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 2:
+		case 4:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field PlanID", wireType)
 			}

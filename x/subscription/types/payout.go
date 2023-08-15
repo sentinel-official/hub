@@ -42,24 +42,21 @@ func (p *Payout) Validate() error {
 		return fmt.Errorf("hours cannot be negative")
 	}
 	if p.Hours == 0 {
-		return fmt.Errorf("hours cannot be zero")
-	}
-	if p.Price.Denom != "" {
-		if p.Price.IsNil() {
-			return fmt.Errorf("price cannot be nil")
-		}
-		if p.Price.IsNegative() {
-			return fmt.Errorf("price cannot be negative")
-		}
-		if p.Price.IsZero() {
-			return fmt.Errorf("price cannot be zero")
-		}
-		if !p.Price.IsValid() {
-			return fmt.Errorf("price must be valid")
+		if !p.NextAt.IsZero() {
+			return fmt.Errorf("hours cannot be zero")
 		}
 	}
-	if p.NextAt.IsZero() {
-		return fmt.Errorf("next_at cannot be zero")
+	if p.Price.IsNil() {
+		return fmt.Errorf("price cannot be nil")
+	}
+	if p.Price.IsNegative() {
+		return fmt.Errorf("price cannot be negative")
+	}
+	if p.Price.IsZero() {
+		return fmt.Errorf("price cannot be zero")
+	}
+	if !p.Price.IsValid() {
+		return fmt.Errorf("price must be valid")
 	}
 
 	return nil

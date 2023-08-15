@@ -17,6 +17,8 @@ import (
 func (k *Keeper) BeginBlock(ctx sdk.Context) {
 	// Iterate over all payouts that are scheduled to happen at the current block time.
 	k.IteratePayoutsForNextAt(ctx, ctx.BlockTime(), func(_ int, item types.Payout) (stop bool) {
+		k.Logger(ctx).Info("Found a scheduled payout", "id", item.ID)
+
 		// Delete the payout from the NextAt index before updating the NextAt value.
 		k.DeletePayoutForNextAt(ctx, item.NextAt, item.ID)
 
@@ -40,6 +42,17 @@ func (k *Keeper) BeginBlock(ctx sdk.Context) {
 		if err := k.SendCoinFromDepositToAccount(ctx, accAddr, nodeAddr.Bytes(), payment); err != nil {
 			panic(err)
 		}
+
+		// Emit an event for the payout payment.
+		ctx.EventManager().EmitTypedEvent(
+			&types.EventPayForPayout{
+				Address:       item.Address,
+				NodeAddress:   item.NodeAddress,
+				Payment:       payment.String(),
+				StakingReward: stakingReward.String(),
+				ID:            item.ID,
+			},
+		)
 
 		// Decrement the remaining payout duration (in hours) by 1 and update the NextAt value.
 		item.Hours = item.Hours - 1
@@ -70,19 +83,19 @@ func (k *Keeper) EndBlock(ctx sdk.Context) []abcitypes.ValidatorUpdate {
 
 	// Iterate over all subscriptions that have become inactive at the current block time.
 	k.IterateSubscriptionsForInactiveAt(ctx, ctx.BlockTime(), func(_ int, item types.Subscription) bool {
-		// Run the SubscriptionInactivePendingHook to perform custom actions before setting the subscription to inactive pending state.
-		if err := k.SubscriptionInactivePendingHook(ctx, item.GetID()); err != nil {
-			panic(err)
-		}
+		k.Logger(ctx).Info("Found an inactive subscription", "id", item.GetID(), "status", item.GetStatus())
 
 		// Delete the subscription from the InactiveAt index before updating the InactiveAt value.
 		k.DeleteSubscriptionForInactiveAt(ctx, item.GetInactiveAt(), item.GetID())
 
 		// If the subscription status is 'Active', update its InactiveAt value and set it to 'InactivePending'.
 		if item.GetStatus().Equal(hubtypes.StatusActive) {
-			item.SetInactiveAt(
-				ctx.BlockTime().Add(statusChangeDelay),
-			)
+			// Run the SubscriptionInactivePendingHook to perform custom actions before setting the subscription to inactive pending state.
+			if err := k.SubscriptionInactivePendingHook(ctx, item.GetID()); err != nil {
+				panic(err)
+			}
+
+			item.SetInactiveAt(ctx.BlockTime().Add(statusChangeDelay))
 			item.SetStatus(hubtypes.StatusInactivePending)
 			item.SetStatusAt(ctx.BlockTime())
 
@@ -93,8 +106,10 @@ func (k *Keeper) EndBlock(ctx sdk.Context) []abcitypes.ValidatorUpdate {
 			// Emit an event to notify that the subscription status has been updated.
 			ctx.EventManager().EmitTypedEvent(
 				&types.EventUpdateStatus{
-					ID:     item.GetID(),
-					Status: item.GetStatus(),
+					Status:  hubtypes.StatusInactivePending,
+					Address: item.GetAddress().String(),
+					ID:      item.GetID(),
+					PlanID:  0,
 				},
 			)
 
@@ -102,11 +117,16 @@ func (k *Keeper) EndBlock(ctx sdk.Context) []abcitypes.ValidatorUpdate {
 			if s, ok := item.(*types.NodeSubscription); ok && s.Hours != 0 {
 				payout, found := k.GetPayout(ctx, s.GetID())
 				if !found {
-					panic(fmt.Errorf("payout %d does not exist", s.GetID()))
+					panic(fmt.Errorf("payout for subscription %d does not exist", s.GetID()))
 				}
 
+				var (
+					accAddr  = payout.GetAddress()
+					nodeAddr = payout.GetNodeAddress()
+				)
+
 				// Delete the payout from the Store for the given account and node.
-				k.DeletePayoutForAccountByNode(ctx, payout.GetAddress(), payout.GetNodeAddress(), payout.ID)
+				k.DeletePayoutForAccountByNode(ctx, accAddr, nodeAddr, payout.ID)
 				k.DeletePayoutForNextAt(ctx, payout.NextAt, payout.ID)
 
 				// Reset the `NextAt` field of the payout and update it in the Store.
@@ -118,7 +138,6 @@ func (k *Keeper) EndBlock(ctx sdk.Context) []abcitypes.ValidatorUpdate {
 		}
 
 		// If the subscription status is not 'Active', handle the different types of subscriptions based on their attributes.
-
 		if s, ok := item.(*types.NodeSubscription); ok {
 			// Check if it has a non-zero bandwidth (Gigabytes != 0).
 			if s.Gigabytes != 0 {
@@ -150,6 +169,15 @@ func (k *Keeper) EndBlock(ctx sdk.Context) []abcitypes.ValidatorUpdate {
 				if err := k.SubtractDeposit(ctx, accAddr, refund); err != nil {
 					panic(err)
 				}
+
+				// Emit an event for the refund.
+				ctx.EventManager().EmitTypedEvent(
+					&types.EventRefund{
+						Address: s.Address,
+						Amount:  refund.String(),
+						ID:      s.ID,
+					},
+				)
 			}
 
 			// Check if the number of hours for the subscription is not zero.
@@ -173,6 +201,15 @@ func (k *Keeper) EndBlock(ctx sdk.Context) []abcitypes.ValidatorUpdate {
 				if err := k.SubtractDeposit(ctx, accAddr, refund); err != nil {
 					panic(err)
 				}
+
+				// Emit an event for the refund.
+				ctx.EventManager().EmitTypedEvent(
+					&types.EventRefund{
+						Address: s.Address,
+						Amount:  refund.String(),
+						ID:      s.ID,
+					},
+				)
 			}
 		}
 
@@ -202,8 +239,10 @@ func (k *Keeper) EndBlock(ctx sdk.Context) []abcitypes.ValidatorUpdate {
 		k.DeleteSubscription(ctx, item.GetID())
 		ctx.EventManager().EmitTypedEvent(
 			&types.EventUpdateStatus{
-				ID:     item.GetID(),
-				Status: hubtypes.StatusInactive,
+				Status:  hubtypes.StatusInactive,
+				Address: item.GetAddress().String(),
+				ID:      item.GetID(),
+				PlanID:  0,
 			},
 		)
 
@@ -213,7 +252,7 @@ func (k *Keeper) EndBlock(ctx sdk.Context) []abcitypes.ValidatorUpdate {
 			payout, found := k.GetPayout(ctx, item.GetID())
 			if !found {
 				// If the payout is not found, panic with an error indicating the missing payout.
-				panic(fmt.Errorf("payout %d does not exist", item.GetID()))
+				panic(fmt.Errorf("payout for subscription %d does not exist", item.GetID()))
 			}
 
 			// Delete the payout and its associated indexes from the Store.

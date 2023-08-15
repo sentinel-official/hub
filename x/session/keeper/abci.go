@@ -17,6 +17,8 @@ func (k *Keeper) EndBlock(ctx sdk.Context) []abcitypes.ValidatorUpdate {
 
 	// Iterate over all sessions that have become inactive at the current block time.
 	k.IterateSessionsForInactiveAt(ctx, ctx.BlockTime(), func(_ int, item types.Session) bool {
+		k.Logger(ctx).Info("Found an inactive session", "id", item.ID, "status", item.Status)
+
 		// Delete the session from the InactiveAt index before updating the InactiveAt value.
 		k.DeleteSessionForInactiveAt(ctx, item.InactiveAt, item.ID)
 
@@ -24,21 +26,22 @@ func (k *Keeper) EndBlock(ctx sdk.Context) []abcitypes.ValidatorUpdate {
 		// its next status update based on the status change delay.
 		if item.Status.Equal(hubtypes.StatusActive) {
 			item.InactiveAt = ctx.BlockTime().Add(statusChangeDelay)
-			k.SetSessionForInactiveAt(ctx, item.InactiveAt, item.ID)
-
 			item.Status = hubtypes.StatusInactivePending
 			item.StatusAt = ctx.BlockTime()
 
 			// Save the updated session to the store.
 			k.SetSession(ctx, item)
+			k.SetSessionForInactiveAt(ctx, item.InactiveAt, item.ID)
 
 			// Emit an event to notify that the session status has been updated.
 			ctx.EventManager().EmitTypedEvent(
 				&types.EventUpdateStatus{
-					ID:             item.ID,
-					SubscriptionID: item.SubscriptionID,
+					Status:         hubtypes.StatusInactivePending,
+					Address:        item.Address,
 					NodeAddress:    item.NodeAddress,
-					Status:         item.Status,
+					ID:             item.ID,
+					PlanID:         0,
+					SubscriptionID: item.SubscriptionID,
 				},
 			)
 
@@ -55,9 +58,9 @@ func (k *Keeper) EndBlock(ctx sdk.Context) []abcitypes.ValidatorUpdate {
 		)
 
 		// Call the SessionInactiveHook method of the subscription handler to notify the subscription
-		// module that the session has ended. The method handles the necessary logic for refunds
+		// module that the session has ended. The method handles the necessary logic for payments
 		// or other actions related to the session's termination.
-		if err := k.subscription.SessionInactiveHook(ctx, item.SubscriptionID, accAddr, nodeAddr, item.Bandwidth.Sum()); err != nil {
+		if err := k.subscription.SessionInactiveHook(ctx, item.ID, accAddr, nodeAddr, item.Bandwidth.Sum()); err != nil {
 			// If an error occurs during the hook execution, panic to halt the chain.
 			// This is done to prevent any inconsistencies or unexpected behavior.
 			panic(err)
@@ -73,10 +76,12 @@ func (k *Keeper) EndBlock(ctx sdk.Context) []abcitypes.ValidatorUpdate {
 		// Emit an event to notify that the session has been terminated.
 		ctx.EventManager().EmitTypedEvent(
 			&types.EventUpdateStatus{
-				ID:             item.ID,
-				SubscriptionID: item.SubscriptionID,
+				Status:         hubtypes.StatusInactive,
+				Address:        item.Address,
 				NodeAddress:    item.NodeAddress,
-				Status:         item.Status,
+				ID:             item.ID,
+				PlanID:         0,
+				SubscriptionID: item.SubscriptionID,
 			},
 		)
 

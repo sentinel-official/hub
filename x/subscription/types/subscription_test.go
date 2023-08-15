@@ -23,7 +23,7 @@ func TestBaseSubscription_GetAddress(t *testing.T) {
 		{
 			"empty",
 			fields{
-				Address: "",
+				Address: hubtypes.TestAddrEmpty,
 			},
 			nil,
 		},
@@ -72,9 +72,9 @@ func TestBaseSubscription_Validate(t *testing.T) {
 			fields{
 				ID:         1000,
 				Address:    hubtypes.TestBech32AccAddr20Bytes,
-				InactiveAt: time.Now(),
+				InactiveAt: hubtypes.TestTimeNow,
 				Status:     hubtypes.StatusActive,
-				StatusAt:   time.Now(),
+				StatusAt:   hubtypes.TestTimeNow,
 			},
 			false,
 		},
@@ -82,7 +82,7 @@ func TestBaseSubscription_Validate(t *testing.T) {
 			"address empty",
 			fields{
 				ID:      1000,
-				Address: "",
+				Address: hubtypes.TestAddrEmpty,
 			},
 			true,
 		},
@@ -90,7 +90,7 @@ func TestBaseSubscription_Validate(t *testing.T) {
 			"address invalid",
 			fields{
 				ID:      1000,
-				Address: "invalid",
+				Address: hubtypes.TestAddrInvalid,
 			},
 			true,
 		},
@@ -107,9 +107,9 @@ func TestBaseSubscription_Validate(t *testing.T) {
 			fields{
 				ID:         1000,
 				Address:    hubtypes.TestBech32AccAddr10Bytes,
-				InactiveAt: time.Now(),
+				InactiveAt: hubtypes.TestTimeNow,
 				Status:     hubtypes.StatusActive,
-				StatusAt:   time.Now(),
+				StatusAt:   hubtypes.TestTimeNow,
 			},
 			false,
 		},
@@ -118,9 +118,9 @@ func TestBaseSubscription_Validate(t *testing.T) {
 			fields{
 				ID:         1000,
 				Address:    hubtypes.TestBech32AccAddr20Bytes,
-				InactiveAt: time.Now(),
+				InactiveAt: hubtypes.TestTimeNow,
 				Status:     hubtypes.StatusActive,
-				StatusAt:   time.Now(),
+				StatusAt:   hubtypes.TestTimeNow,
 			},
 			false,
 		},
@@ -129,9 +129,9 @@ func TestBaseSubscription_Validate(t *testing.T) {
 			fields{
 				ID:         1000,
 				Address:    hubtypes.TestBech32AccAddr30Bytes,
-				InactiveAt: time.Now(),
+				InactiveAt: hubtypes.TestTimeNow,
 				Status:     hubtypes.StatusActive,
-				StatusAt:   time.Now(),
+				StatusAt:   hubtypes.TestTimeNow,
 			},
 			false,
 		},
@@ -140,7 +140,7 @@ func TestBaseSubscription_Validate(t *testing.T) {
 			fields{
 				ID:         1000,
 				Address:    hubtypes.TestBech32AccAddr30Bytes,
-				InactiveAt: time.Time{},
+				InactiveAt: hubtypes.TestTimeZero,
 			},
 			true,
 		},
@@ -149,9 +149,9 @@ func TestBaseSubscription_Validate(t *testing.T) {
 			fields{
 				ID:         1000,
 				Address:    hubtypes.TestBech32AccAddr30Bytes,
-				InactiveAt: time.Now(),
+				InactiveAt: hubtypes.TestTimeNow,
 				Status:     hubtypes.StatusActive,
-				StatusAt:   time.Now(),
+				StatusAt:   hubtypes.TestTimeNow,
 			},
 			false,
 		},
@@ -169,9 +169,9 @@ func TestBaseSubscription_Validate(t *testing.T) {
 			fields{
 				ID:         1000,
 				Address:    hubtypes.TestBech32AccAddr20Bytes,
-				InactiveAt: time.Now(),
+				InactiveAt: hubtypes.TestTimeNow,
 				Status:     hubtypes.StatusActive,
-				StatusAt:   time.Now(),
+				StatusAt:   hubtypes.TestTimeNow,
 			},
 			false,
 		},
@@ -180,9 +180,9 @@ func TestBaseSubscription_Validate(t *testing.T) {
 			fields{
 				ID:         1000,
 				Address:    hubtypes.TestBech32AccAddr20Bytes,
-				InactiveAt: time.Now(),
+				InactiveAt: hubtypes.TestTimeNow,
 				Status:     hubtypes.StatusInactivePending,
-				StatusAt:   time.Now(),
+				StatusAt:   hubtypes.TestTimeNow,
 			},
 			false,
 		},
@@ -191,9 +191,9 @@ func TestBaseSubscription_Validate(t *testing.T) {
 			fields{
 				ID:         1000,
 				Address:    hubtypes.TestBech32AccAddr20Bytes,
-				InactiveAt: time.Now(),
+				InactiveAt: hubtypes.TestTimeNow,
 				Status:     hubtypes.StatusInactive,
-				StatusAt:   time.Now(),
+				StatusAt:   hubtypes.TestTimeNow,
 			},
 			false,
 		},
@@ -202,9 +202,9 @@ func TestBaseSubscription_Validate(t *testing.T) {
 			fields{
 				ID:         1000,
 				Address:    hubtypes.TestBech32AccAddr20Bytes,
-				InactiveAt: time.Now(),
+				InactiveAt: hubtypes.TestTimeNow,
 				Status:     hubtypes.StatusActive,
-				StatusAt:   time.Time{},
+				StatusAt:   hubtypes.TestTimeZero,
 			},
 			true,
 		},
@@ -213,9 +213,9 @@ func TestBaseSubscription_Validate(t *testing.T) {
 			fields{
 				ID:         1000,
 				Address:    hubtypes.TestBech32AccAddr20Bytes,
-				InactiveAt: time.Now(),
+				InactiveAt: hubtypes.TestTimeNow,
 				Status:     hubtypes.StatusActive,
-				StatusAt:   time.Now(),
+				StatusAt:   hubtypes.TestTimeNow,
 			},
 			false,
 		},
@@ -248,7 +248,7 @@ func TestNodeSubscription_GetNodeAddress(t *testing.T) {
 		{
 			"node_address empty",
 			fields{
-				NodeAddress: "",
+				NodeAddress: hubtypes.TestAddrEmpty,
 			},
 			nil,
 		},
@@ -292,14 +292,14 @@ func TestNodeSubscription_Validate(t *testing.T) {
 		{
 			"node_address empty",
 			fields{
-				NodeAddress: "",
+				NodeAddress: hubtypes.TestAddrEmpty,
 			},
 			true,
 		},
 		{
 			"node_address invalid",
 			fields{
-				NodeAddress: "invalid",
+				NodeAddress: hubtypes.TestAddrInvalid,
 			},
 			true,
 		},
@@ -315,6 +315,7 @@ func TestNodeSubscription_Validate(t *testing.T) {
 			fields{
 				NodeAddress: hubtypes.TestBech32NodeAddr10Bytes,
 				Gigabytes:   1000,
+				Deposit:     hubtypes.TestCoinPositiveAmount,
 			},
 			false,
 		},
@@ -323,6 +324,7 @@ func TestNodeSubscription_Validate(t *testing.T) {
 			fields{
 				NodeAddress: hubtypes.TestBech32NodeAddr20Bytes,
 				Gigabytes:   1000,
+				Deposit:     hubtypes.TestCoinPositiveAmount,
 			},
 			false,
 		},
@@ -331,6 +333,7 @@ func TestNodeSubscription_Validate(t *testing.T) {
 			fields{
 				NodeAddress: hubtypes.TestBech32NodeAddr30Bytes,
 				Gigabytes:   1000,
+				Deposit:     hubtypes.TestCoinPositiveAmount,
 			},
 			false,
 		},
@@ -365,6 +368,7 @@ func TestNodeSubscription_Validate(t *testing.T) {
 			fields{
 				NodeAddress: hubtypes.TestBech32NodeAddr20Bytes,
 				Gigabytes:   1000,
+				Deposit:     hubtypes.TestCoinPositiveAmount,
 			},
 			false,
 		},
@@ -381,6 +385,7 @@ func TestNodeSubscription_Validate(t *testing.T) {
 			fields{
 				NodeAddress: hubtypes.TestBech32NodeAddr20Bytes,
 				Hours:       1000,
+				Deposit:     hubtypes.TestCoinPositiveAmount,
 			},
 			false,
 		},
@@ -389,25 +394,25 @@ func TestNodeSubscription_Validate(t *testing.T) {
 			fields{
 				NodeAddress: hubtypes.TestBech32NodeAddr20Bytes,
 				Gigabytes:   1000,
-				Deposit:     sdk.Coin{},
+				Deposit:     hubtypes.TestCoinEmpty,
 			},
-			false,
+			true,
 		},
 		{
 			"deposit empty denom",
 			fields{
 				NodeAddress: hubtypes.TestBech32NodeAddr20Bytes,
 				Gigabytes:   1000,
-				Deposit:     sdk.Coin{Denom: "", Amount: sdk.NewInt(1000)},
+				Deposit:     hubtypes.TestCoinEmptyDenom,
 			},
-			false,
+			true,
 		},
 		{
 			"deposit invalid denom",
 			fields{
 				NodeAddress: hubtypes.TestBech32NodeAddr20Bytes,
 				Gigabytes:   1000,
-				Deposit:     sdk.Coin{Denom: "d", Amount: sdk.NewInt(1000)},
+				Deposit:     hubtypes.TestCoinInvalidDenom,
 			},
 			true,
 		},
@@ -416,7 +421,7 @@ func TestNodeSubscription_Validate(t *testing.T) {
 			fields{
 				NodeAddress: hubtypes.TestBech32NodeAddr20Bytes,
 				Gigabytes:   1000,
-				Deposit:     sdk.Coin{Denom: "one", Amount: sdk.Int{}},
+				Deposit:     hubtypes.TestCoinEmptyAmount,
 			},
 			true,
 		},
@@ -425,7 +430,7 @@ func TestNodeSubscription_Validate(t *testing.T) {
 			fields{
 				NodeAddress: hubtypes.TestBech32NodeAddr20Bytes,
 				Gigabytes:   1000,
-				Deposit:     sdk.Coin{Denom: "one", Amount: sdk.NewInt(-1000)},
+				Deposit:     hubtypes.TestCoinNegativeAmount,
 			},
 			true,
 		},
@@ -434,7 +439,7 @@ func TestNodeSubscription_Validate(t *testing.T) {
 			fields{
 				NodeAddress: hubtypes.TestBech32NodeAddr20Bytes,
 				Gigabytes:   1000,
-				Deposit:     sdk.Coin{Denom: "one", Amount: sdk.NewInt(0)},
+				Deposit:     hubtypes.TestCoinZeroAmount,
 			},
 			true,
 		},
@@ -443,7 +448,7 @@ func TestNodeSubscription_Validate(t *testing.T) {
 			fields{
 				NodeAddress: hubtypes.TestBech32NodeAddr20Bytes,
 				Gigabytes:   1000,
-				Deposit:     sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)},
+				Deposit:     hubtypes.TestCoinPositiveAmount,
 			},
 			false,
 		},
@@ -454,9 +459,9 @@ func TestNodeSubscription_Validate(t *testing.T) {
 				BaseSubscription: &BaseSubscription{
 					ID:         1000,
 					Address:    hubtypes.TestBech32AccAddr20Bytes,
-					InactiveAt: time.Now(),
+					InactiveAt: hubtypes.TestTimeNow,
 					Status:     hubtypes.StatusActive,
-					StatusAt:   time.Now(),
+					StatusAt:   hubtypes.TestTimeNow,
 				},
 				NodeAddress: tt.fields.NodeAddress,
 				Gigabytes:   tt.fields.Gigabytes,
@@ -506,7 +511,7 @@ func TestPlanSubscription_Validate(t *testing.T) {
 				PlanID: 1000,
 				Denom:  "",
 			},
-			false,
+			true,
 		},
 		{
 			"denom invalid",
@@ -531,9 +536,9 @@ func TestPlanSubscription_Validate(t *testing.T) {
 				BaseSubscription: &BaseSubscription{
 					ID:         1000,
 					Address:    hubtypes.TestBech32AccAddr20Bytes,
-					InactiveAt: time.Now(),
+					InactiveAt: hubtypes.TestTimeNow,
 					Status:     hubtypes.StatusActive,
-					StatusAt:   time.Now(),
+					StatusAt:   hubtypes.TestTimeNow,
 				},
 				PlanID: tt.fields.PlanID,
 				Denom:  tt.fields.Denom,

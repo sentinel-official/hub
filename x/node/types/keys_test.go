@@ -3,7 +3,6 @@ package types
 import (
 	"crypto/rand"
 	"testing"
-	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/address"
@@ -39,7 +38,6 @@ func TestActiveNodeKey(t *testing.T) {
 
 func TestAddressFromNodeForInactiveAtKey(t *testing.T) {
 	var (
-		at   = time.Now()
 		addr []byte
 		key  []byte
 	)
@@ -48,7 +46,7 @@ func TestAddressFromNodeForInactiveAtKey(t *testing.T) {
 		addr = make([]byte, i)
 		_, _ = rand.Read(addr)
 
-		key = NodeForInactiveAtKey(at, addr)
+		key = NodeForInactiveAtKey(hubtypes.TestTimeNow, addr)
 		require.Equal(
 			t,
 			hubtypes.NodeAddress(addr),
@@ -103,7 +101,6 @@ func TestInactiveNodeKey(t *testing.T) {
 
 func TestNodeForInactiveAtKey(t *testing.T) {
 	var (
-		at   = time.Now()
 		addr []byte
 	)
 
@@ -114,15 +111,15 @@ func TestNodeForInactiveAtKey(t *testing.T) {
 		if i < 256 {
 			require.Equal(
 				t,
-				append(append(NodeForInactiveAtKeyPrefix, sdk.FormatTimeBytes(at)...), address.MustLengthPrefix(addr)...),
-				NodeForInactiveAtKey(at, addr),
+				append(append(NodeForInactiveAtKeyPrefix, sdk.FormatTimeBytes(hubtypes.TestTimeNow)...), address.MustLengthPrefix(addr)...),
+				NodeForInactiveAtKey(hubtypes.TestTimeNow, addr),
 			)
 
 			continue
 		}
 
 		require.Panics(t, func() {
-			NodeForInactiveAtKey(at, addr)
+			NodeForInactiveAtKey(hubtypes.TestTimeNow, addr)
 		})
 	}
 }

@@ -30,27 +30,29 @@ func (m *Node) Validate() error {
 	if _, err := hubtypes.NodeAddressFromBech32(m.Address); err != nil {
 		return errors.Wrapf(err, "invalid address %s", m.Address)
 	}
-	if m.GigabytePrices != nil {
-		if m.GigabytePrices.Len() == 0 {
-			return fmt.Errorf("gigabyte_prices cannot be empty")
-		}
-		if m.GigabytePrices.IsAnyNil() {
-			return fmt.Errorf("gigabyte_prices cannot contain nil")
-		}
-		if !m.GigabytePrices.IsValid() {
-			return fmt.Errorf("gigabyte_prices must be valid")
-		}
+	if m.GigabytePrices == nil {
+		return fmt.Errorf("gigabyte_prices cannot be nil")
 	}
-	if m.HourlyPrices != nil {
-		if m.HourlyPrices.Len() == 0 {
-			return fmt.Errorf("hourly_prices cannot be empty")
-		}
-		if m.HourlyPrices.IsAnyNil() {
-			return fmt.Errorf("hourly_prices cannot contain nil")
-		}
-		if !m.HourlyPrices.IsValid() {
-			return fmt.Errorf("hourly_prices must be valid")
-		}
+	if m.GigabytePrices.Len() == 0 {
+		return fmt.Errorf("gigabyte_prices cannot be empty")
+	}
+	if m.GigabytePrices.IsAnyNil() {
+		return fmt.Errorf("gigabyte_prices cannot contain nil")
+	}
+	if !m.GigabytePrices.IsValid() {
+		return fmt.Errorf("gigabyte_prices must be valid")
+	}
+	if m.HourlyPrices == nil {
+		return fmt.Errorf("hourly_prices cannot be nil")
+	}
+	if m.HourlyPrices.Len() == 0 {
+		return fmt.Errorf("hourly_prices cannot be empty")
+	}
+	if m.HourlyPrices.IsAnyNil() {
+		return fmt.Errorf("hourly_prices cannot contain nil")
+	}
+	if !m.HourlyPrices.IsValid() {
+		return fmt.Errorf("hourly_prices must be valid")
 	}
 	if m.RemoteURL == "" {
 		return fmt.Errorf("remote_url cannot be empty")
@@ -91,31 +93,23 @@ func (m *Node) Validate() error {
 }
 
 func (m *Node) GigabytePrice(denom string) (sdk.Coin, bool) {
-	if m.GigabytePrices == nil && denom == "" {
-		return sdk.Coin{Amount: sdk.NewInt(0)}, true
-	}
-
 	for _, v := range m.GigabytePrices {
 		if v.Denom == denom {
 			return v, true
 		}
 	}
 
-	return sdk.Coin{Amount: sdk.NewInt(0)}, false
+	return sdk.Coin{}, false
 }
 
 func (m *Node) HourlyPrice(denom string) (sdk.Coin, bool) {
-	if m.HourlyPrices == nil && denom == "" {
-		return sdk.Coin{Amount: sdk.NewInt(0)}, true
-	}
-
 	for _, v := range m.HourlyPrices {
 		if v.Denom == denom {
 			return v, true
 		}
 	}
 
-	return sdk.Coin{Amount: sdk.NewInt(0)}, false
+	return sdk.Coin{}, false
 }
 
 type (

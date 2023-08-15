@@ -23,17 +23,13 @@ func (m *Plan) GetProviderAddress() hubtypes.ProvAddress {
 }
 
 func (m *Plan) Price(denom string) (sdk.Coin, bool) {
-	if m.Prices == nil && denom == "" {
-		return sdk.Coin{Amount: sdk.NewInt(0)}, true
-	}
-
-	for _, coin := range m.Prices {
-		if coin.Denom == denom {
-			return coin, true
+	for _, v := range m.Prices {
+		if v.Denom == denom {
+			return v, true
 		}
 	}
 
-	return sdk.Coin{Amount: sdk.NewInt(0)}, false
+	return sdk.Coin{}, false
 }
 
 func (m *Plan) Validate() error {
@@ -58,16 +54,17 @@ func (m *Plan) Validate() error {
 	if m.Gigabytes == 0 {
 		return fmt.Errorf("gigabytes cannot be zero")
 	}
-	if m.Prices != nil {
-		if m.Prices.Len() == 0 {
-			return fmt.Errorf("prices cannot be empty")
-		}
-		if m.Prices.IsAnyNil() {
-			return fmt.Errorf("prices cannot contain nil")
-		}
-		if !m.Prices.IsValid() {
-			return fmt.Errorf("prices must be valid")
-		}
+	if m.Prices == nil {
+		return fmt.Errorf("prices cannot be nil")
+	}
+	if m.Prices.Len() == 0 {
+		return fmt.Errorf("prices cannot be empty")
+	}
+	if m.Prices.IsAnyNil() {
+		return fmt.Errorf("prices cannot contain nil")
+	}
+	if !m.Prices.IsValid() {
+		return fmt.Errorf("prices must be valid")
 	}
 	if !m.Status.IsOneOf(hubtypes.StatusActive, hubtypes.StatusInactive) {
 		return fmt.Errorf("status must be one of [active, inactive]")

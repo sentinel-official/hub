@@ -9,33 +9,40 @@ option (gogoproto.equal_all) = false;
 option (gogoproto.goproto_getters_all) = false;
 
 message EventCreate {
-  uint64 id = 1
+  string address = 1 [ (gogoproto.moretags) = "yaml:\"address\"" ];
+  uint64 id      = 2
       [ (gogoproto.customname) = "ID", (gogoproto.moretags) = "yaml:\"id\"" ];
 }
 
 message EventUpdateStatus {
-  uint64 id = 1
-      [ (gogoproto.customname) = "ID", (gogoproto.moretags) = "yaml:\"id\"" ];
-  sentinel.types.v1.Status status = 3
+  sentinel.types.v1.Status status = 1
       [ (gogoproto.moretags) = "yaml:\"status\"" ];
+  string address = 2 [ (gogoproto.moretags) = "yaml:\"address\"" ];
+  uint64 id      = 3
+      [ (gogoproto.customname) = "ID", (gogoproto.moretags) = "yaml:\"id\"" ];
 }
 
 message EventLinkNode {
-  uint64 id = 1
+  string address      = 1 [ (gogoproto.moretags) = "yaml:\"address\"" ];
+  string node_address = 2 [ (gogoproto.moretags) = "yaml:\"node_address\"" ];
+  uint64 id           = 3
       [ (gogoproto.customname) = "ID", (gogoproto.moretags) = "yaml:\"id\"" ];
-  string address = 2 [ (gogoproto.moretags) = "yaml:\"address\"" ];
 }
 
 message EventUnlinkNode {
-  uint64 id = 1
+  string address      = 1 [ (gogoproto.moretags) = "yaml:\"address\"" ];
+  string node_address = 2 [ (gogoproto.moretags) = "yaml:\"node_address\"" ];
+  uint64 id           = 3
       [ (gogoproto.customname) = "ID", (gogoproto.moretags) = "yaml:\"id\"" ];
-  string address = 2 [ (gogoproto.moretags) = "yaml:\"address\"" ];
 }
 
 message EventCreateSubscription {
-  uint64 id = 1
+  string address          = 1 [ (gogoproto.moretags) = "yaml:\"address\"" ];
+  string provider_address = 2
+      [ (gogoproto.moretags) = "yaml:\"provider_address\"" ];
+  uint64 id = 3
       [ (gogoproto.customname) = "ID", (gogoproto.moretags) = "yaml:\"id\"" ];
-  uint64 plan_id = 2 [
+  uint64 plan_id = 4 [
     (gogoproto.customname) = "PlanID",
     (gogoproto.moretags)   = "yaml:\"plan_id\""
   ];

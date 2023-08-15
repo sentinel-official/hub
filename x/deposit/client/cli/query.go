@@ -15,7 +15,7 @@ import (
 
 func queryDeposit() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "deposit [address]",
+		Use:   "deposit [account-addr]",
 		Short: "Query a deposit",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {

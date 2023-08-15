@@ -21,7 +21,7 @@ func TestDeposit_GetAddress(t *testing.T) {
 		{
 			"empty",
 			fields{
-				Address: "",
+				Address: hubtypes.TestAddrEmpty,
 			},
 			nil,
 		},
@@ -58,14 +58,14 @@ func TestDeposit_Validate(t *testing.T) {
 		{
 			"empty address",
 			fields{
-				Address: "",
+				Address: hubtypes.TestAddrEmpty,
 			},
 			true,
 		},
 		{
 			"invalid address",
 			fields{
-				Address: "sent",
+				Address: hubtypes.TestAddrInvalid,
 			},
 			true,
 		},
@@ -80,7 +80,7 @@ func TestDeposit_Validate(t *testing.T) {
 			"10 bytes address",
 			fields{
 				Address: hubtypes.TestBech32AccAddr10Bytes,
-				Coins:   sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
+				Coins:   hubtypes.TestCoinsPositiveAmount,
 			},
 			false,
 		},
@@ -88,7 +88,7 @@ func TestDeposit_Validate(t *testing.T) {
 			"20 bytes address",
 			fields{
 				Address: hubtypes.TestBech32AccAddr20Bytes,
-				Coins:   sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
+				Coins:   hubtypes.TestCoinsPositiveAmount,
 			},
 			false,
 		},
@@ -96,7 +96,7 @@ func TestDeposit_Validate(t *testing.T) {
 			"30 bytes address",
 			fields{
 				Address: hubtypes.TestBech32AccAddr30Bytes,
-				Coins:   sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
+				Coins:   hubtypes.TestCoinsPositiveAmount,
 			},
 			false,
 		},
@@ -112,7 +112,7 @@ func TestDeposit_Validate(t *testing.T) {
 			"empty coins",
 			fields{
 				Address: hubtypes.TestBech32AccAddr20Bytes,
-				Coins:   sdk.Coins{},
+				Coins:   hubtypes.TestCoinsEmpty,
 			},
 			true,
 		},
@@ -120,7 +120,7 @@ func TestDeposit_Validate(t *testing.T) {
 			"empty denom coins",
 			fields{
 				Address: hubtypes.TestBech32AccAddr20Bytes,
-				Coins:   sdk.Coins{sdk.Coin{Denom: ""}},
+				Coins:   hubtypes.TestCoinsEmptyDenom,
 			},
 			true,
 		},
@@ -128,7 +128,7 @@ func TestDeposit_Validate(t *testing.T) {
 			"invalid denom coins",
 			fields{
 				Address: hubtypes.TestBech32AccAddr20Bytes,
-				Coins:   sdk.Coins{sdk.Coin{Denom: "o"}},
+				Coins:   hubtypes.TestCoinsInvalidDenom,
 			},
 			true,
 		},
@@ -136,7 +136,7 @@ func TestDeposit_Validate(t *testing.T) {
 			"nil amount coins",
 			fields{
 				Address: hubtypes.TestBech32AccAddr20Bytes,
-				Coins:   sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.Int{}}},
+				Coins:   hubtypes.TestCoinsEmptyAmount,
 			},
 			true,
 		},
@@ -144,7 +144,7 @@ func TestDeposit_Validate(t *testing.T) {
 			"negative amount coins",
 			fields{
 				Address: hubtypes.TestBech32AccAddr20Bytes,
-				Coins:   sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(-1000)}},
+				Coins:   hubtypes.TestCoinsNegativeAmount,
 			},
 			true,
 		},
@@ -152,7 +152,7 @@ func TestDeposit_Validate(t *testing.T) {
 			"zero amount coins",
 			fields{
 				Address: hubtypes.TestBech32AccAddr20Bytes,
-				Coins:   sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(0)}},
+				Coins:   hubtypes.TestCoinsZeroAmount,
 			},
 			true,
 		},
@@ -160,7 +160,7 @@ func TestDeposit_Validate(t *testing.T) {
 			"positive amount coins",
 			fields{
 				Address: hubtypes.TestBech32AccAddr20Bytes,
-				Coins:   sdk.Coins{sdk.Coin{Denom: "one", Amount: sdk.NewInt(1000)}},
+				Coins:   hubtypes.TestCoinsPositiveAmount,
 			},
 			false,
 		},

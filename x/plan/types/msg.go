@@ -55,16 +55,17 @@ func (m *MsgCreateRequest) ValidateBasic() error {
 	if m.Gigabytes == 0 {
 		return errors.Wrap(ErrorInvalidMessage, "gigabytes cannot be zero")
 	}
-	if m.Prices != nil {
-		if m.Prices.Len() == 0 {
-			return errors.Wrap(ErrorInvalidMessage, "prices cannot be empty")
-		}
-		if m.Prices.IsAnyNil() {
-			return errors.Wrap(ErrorInvalidMessage, "prices cannot contain nil")
-		}
-		if !m.Prices.IsValid() {
-			return errors.Wrap(ErrorInvalidMessage, "prices must be valid")
-		}
+	if m.Prices == nil {
+		return errors.Wrap(ErrorInvalidMessage, "prices cannot be nil")
+	}
+	if m.Prices.Len() == 0 {
+		return errors.Wrap(ErrorInvalidMessage, "prices cannot be empty")
+	}
+	if m.Prices.IsAnyNil() {
+		return errors.Wrap(ErrorInvalidMessage, "prices cannot contain nil")
+	}
+	if !m.Prices.IsValid() {
+		return errors.Wrap(ErrorInvalidMessage, "prices must be valid")
 	}
 
 	return nil
@@ -229,10 +230,11 @@ func (m *MsgSubscribeRequest) ValidateBasic() error {
 	if m.ID == 0 {
 		return errors.Wrap(ErrorInvalidMessage, "id cannot be zero")
 	}
-	if m.Denom != "" {
-		if err := sdk.ValidateDenom(m.Denom); err != nil {
-			return errors.Wrap(ErrorInvalidMessage, err.Error())
-		}
+	if m.Denom == "" {
+		return errors.Wrap(ErrorInvalidMessage, "denom cannot be empty")
+	}
+	if err := sdk.ValidateDenom(m.Denom); err != nil {
+		return errors.Wrap(ErrorInvalidMessage, err.Error())
 	}
 
 	return nil

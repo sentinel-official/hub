@@ -1,16 +1,26 @@
 .DEFAULT_GOAL := default
-VERSION := $(shell git describe --tags | sed 's/^v//' | rev | cut -d - -f 2- | rev)
+VERSION := $(shell git describe --tags | sed 's/^v//')
 COMMIT := $(shell git log -1 --format='%H')
 TENDERMINT_VERSION := $(shell go list -m github.com/tendermint/tendermint | sed 's/.* //')
 
-BUILD_TAGS := $(strip netgo,ledger)
-LD_FLAGS := -s -w \
+comma := ,
+whitespace := $() $()
+
+build_tags := $(strip netgo ledger)
+ld_flags := -s -w \
     -X github.com/cosmos/cosmos-sdk/version.Name=sentinel \
     -X github.com/cosmos/cosmos-sdk/version.AppName=sentinelhub \
     -X github.com/cosmos/cosmos-sdk/version.Version=${VERSION} \
     -X github.com/cosmos/cosmos-sdk/version.Commit=${COMMIT} \
-    -X github.com/cosmos/cosmos-sdk/version.BuildTags=${BUILD_TAGS} \
     -X github.com/tendermint/tendermint/version.TMCoreSemVer=$(TENDERMINT_VERSION)
+
+ifeq ($(STATIC),true)
+	build_tags += muslc
+	ld_flags += -linkmode=external -extldflags '-Wl,-z,muldefs -static'
+endif
+
+BUILD_TAGS = $(subst $(whitespace),$(comma),$(build_tags))
+LD_FLAGS = ${ld_flags} -X github.com/cosmos/cosmos-sdk/version.BuildTags=${BUILD_TAGS}
 
 .PHONY: benchmark
 benchmark:

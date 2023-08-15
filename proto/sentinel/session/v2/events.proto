@@ -9,33 +9,48 @@ option (gogoproto.equal_all)           = false;
 option (gogoproto.goproto_getters_all) = false;
 
 message EventStart {
-  uint64 id = 1
+  string address      = 1 [ (gogoproto.moretags) = "yaml:\"address\"" ];
+  string node_address = 2 [ (gogoproto.moretags) = "yaml:\"node_address\"" ];
+  uint64 id           = 3
       [ (gogoproto.customname) = "ID", (gogoproto.moretags) = "yaml:\"id\"" ];
-  uint64 subscription_id = 2 [
+  uint64 plan_id = 4 [
+    (gogoproto.customname) = "PlanID",
+    (gogoproto.moretags)   = "yaml:\"plan_id\""
+  ];
+  uint64 subscription_id = 5 [
     (gogoproto.customname) = "SubscriptionID",
     (gogoproto.moretags)   = "yaml:\"subscription_id\""
   ];
-  string node_address = 3 [ (gogoproto.moretags) = "yaml:\"node_address\"" ];
 }
 
 message EventUpdateDetails {
-  uint64 id = 1
+  string address      = 1 [ (gogoproto.moretags) = "yaml:\"address\"" ];
+  string node_address = 2 [ (gogoproto.moretags) = "yaml:\"node_address\"" ];
+  uint64 id           = 3
       [ (gogoproto.customname) = "ID", (gogoproto.moretags) = "yaml:\"id\"" ];
-  uint64 subscription_id = 2 [
+  uint64 plan_id = 4 [
+    (gogoproto.customname) = "PlanID",
+    (gogoproto.moretags)   = "yaml:\"plan_id\""
+  ];
+  uint64 subscription_id = 5 [
     (gogoproto.customname) = "SubscriptionID",
     (gogoproto.moretags)   = "yaml:\"subscription_id\""
   ];
-  string node_address = 3 [ (gogoproto.moretags) = "yaml:\"node_address\"" ];
 }
 
 message EventUpdateStatus {
-  uint64 id = 1
+  sentinel.types.v1.Status status = 1
+      [ (gogoproto.moretags) = "yaml:\"status\"" ];
+  string address      = 2 [ (gogoproto.moretags) = "yaml:\"address\"" ];
+  string node_address = 3 [ (gogoproto.moretags) = "yaml:\"node_address\"" ];
+  uint64 id           = 4
       [ (gogoproto.customname) = "ID", (gogoproto.moretags) = "yaml:\"id\"" ];
-  uint64 subscription_id = 2 [
+  uint64 plan_id = 5 [
+    (gogoproto.customname) = "PlanID",
+    (gogoproto.moretags)   = "yaml:\"plan_id\""
+  ];
+  uint64 subscription_id = 6 [
     (gogoproto.customname) = "SubscriptionID",
     (gogoproto.moretags)   = "yaml:\"subscription_id\""
   ];
-  string node_address = 3 [ (gogoproto.moretags) = "yaml:\"node_address\"" ];
-  sentinel.types.v1.Status status = 4
-      [ (gogoproto.moretags) = "yaml:\"status\"" ];
 }

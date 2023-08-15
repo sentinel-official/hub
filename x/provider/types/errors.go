@@ -4,23 +4,19 @@ package types
 
 import (
 	"github.com/cosmos/cosmos-sdk/types/errors"
-
-	hubtypes "github.com/sentinel-official/hub/types"
 )
 
 var (
 	ErrorInvalidMessage = errors.Register(ModuleName, 101, "invalid message")
+
+	ErrorDuplicateProvider = errors.Register(ModuleName, 201, "duplicate provider")
+	ErrorProviderNotFound  = errors.Register(ModuleName, 202, "provider not found")
 )
 
-var (
-	ErrorDuplicate = errors.Register(ModuleName, 201, "duplicate")
-	ErrorNotFound  = errors.Register(ModuleName, 202, "not found")
-)
-
-func NewErrorDuplicateProvider(addr hubtypes.ProvAddress) error {
-	return errors.Wrapf(ErrorDuplicate, "provider %s already exists", addr)
+func NewErrorDuplicateProvider(addr interface{}) error {
+	return errors.Wrapf(ErrorDuplicateProvider, "provider %s already exist", addr)
 }
 
-func NewErrorProviderNotFound(addr hubtypes.ProvAddress) error {
-	return errors.Wrapf(ErrorNotFound, "provider %s does not exist", addr)
+func NewErrorProviderNotFound(addr interface{}) error {
+	return errors.Wrapf(ErrorProviderNotFound, "provider %s does not exist", addr)
 }

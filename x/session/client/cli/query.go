@@ -15,7 +15,7 @@ import (
 
 func querySession() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "session [id]",
+		Use:   "session [session-id]",
 		Short: "Query a session",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -86,7 +86,7 @@ func querySessions() *cobra.Command {
 				qc = types.NewQueryServiceClient(ctx)
 			)
 
-			if !accAddr.Empty() {
+			if accAddr != nil {
 				res, err := qc.QuerySessionsForAccount(
 					context.Background(),
 					types.NewQuerySessionsForAccountRequest(
@@ -101,7 +101,7 @@ func querySessions() *cobra.Command {
 				return ctx.PrintProto(res)
 			}
 
-			if !nodeAddr.Empty() {
+			if nodeAddr != nil {
 				res, err := qc.QuerySessionsForNode(
 					context.Background(),
 					types.NewQuerySessionsForNodeRequest(
@@ -116,7 +116,7 @@ func querySessions() *cobra.Command {
 				return ctx.PrintProto(res)
 			}
 
-			if subscriptionID > 0 {
+			if subscriptionID != 0 {
 				res, err := qc.QuerySessionsForSubscription(
 					context.Background(),
 					types.NewQuerySessionsForSubscriptionRequest(
@@ -147,9 +147,9 @@ func querySessions() *cobra.Command {
 
 	flags.AddQueryFlagsToCmd(cmd)
 	flags.AddPaginationFlagsToCmd(cmd, "sessions")
-	cmd.Flags().String(flagAddress, "", "query the sessions of an account address")
-	cmd.Flags().String(flagNodeAddress, "", "query the sessions of a node address")
-	cmd.Flags().Uint64(flagSubscriptionID, 0, "query the sessions of a subscription id")
+	cmd.Flags().String(flagAddress, "", "filter the sessions by an account address")
+	cmd.Flags().String(flagNodeAddress, "", "filter the sessions by a node address")
+	cmd.Flags().Uint64(flagSubscriptionID, 0, "filter the sessions by a subscription id")
 
 	return cmd
 }

@@ -12,11 +12,22 @@ import (
 
 // SessionInactiveHook is a function that handles the end of a session.
 // It updates the allocation's utilized bytes, calculates and sends payments, and staking rewards.
-func (k *Keeper) SessionInactiveHook(ctx sdk.Context, id uint64, accAddr sdk.AccAddress, nodeAddr hubtypes.NodeAddress, bytes sdk.Int) error {
-	// Get the subscription associated with the provided subscription ID.
-	subscription, found := k.GetSubscription(ctx, id)
+func (k *Keeper) SessionInactiveHook(ctx sdk.Context, id uint64, accAddr sdk.AccAddress, nodeAddr hubtypes.NodeAddress, utilisedBytes sdk.Int) error {
+	// Retrieve the session associated with the provided session ID.
+	session, found := k.GetSession(ctx, id)
 	if !found {
-		return fmt.Errorf("subscription %d does not exist", id)
+		return fmt.Errorf("session %d does not exist", id)
+	}
+
+	// Check if the session has the correct status for processing.
+	if !session.Status.Equal(hubtypes.StatusInactivePending) {
+		return fmt.Errorf("invalid status %s for session %d", session.Status, session.ID)
+	}
+
+	// Retrieve the subscription associated with the session.
+	subscription, found := k.GetSubscription(ctx, session.SubscriptionID)
+	if !found {
+		return fmt.Errorf("subscription %d does not exist", session.SubscriptionID)
 	}
 
 	// If the subscription is a NodeSubscription with non-zero duration (hours), no further action is needed.
@@ -24,7 +35,7 @@ func (k *Keeper) SessionInactiveHook(ctx sdk.Context, id uint64, accAddr sdk.Acc
 		return nil
 	}
 
-	// Get the allocation associated with the subscription and account address.
+	// Retrieve the allocation associated with the subscription and account address.
 	alloc, found := k.GetAllocation(ctx, subscription.GetID(), accAddr)
 	if !found {
 		return fmt.Errorf("subscription allocation %d/%s does not exist", subscription.GetID(), accAddr)
@@ -32,11 +43,10 @@ func (k *Keeper) SessionInactiveHook(ctx sdk.Context, id uint64, accAddr sdk.Acc
 
 	var (
 		gigabytePrice  sdk.Coin        // Gigabyte price based on the deposit amount and gigabytes (for NodeSubscription).
-		currentAmount  = sdk.ZeroInt() // Amount to be paid for the current utilization (for NodeSubscription).
 		previousAmount = sdk.ZeroInt() // Amount paid for previous utilization (for NodeSubscription).
 	)
 
-	// Based on the subscription type (NodeSubscription), calculate the payment amounts.
+	// Calculate payment amounts based on the subscription type (NodeSubscription).
 	if s, ok := subscription.(*types.NodeSubscription); ok && s.Gigabytes != 0 {
 		gigabytePrice = sdk.NewCoin(
 			s.Deposit.Denom,
@@ -46,7 +56,7 @@ func (k *Keeper) SessionInactiveHook(ctx sdk.Context, id uint64, accAddr sdk.Acc
 	}
 
 	// Update the allocation's utilized bytes by adding the provided bytes.
-	alloc.UtilisedBytes = alloc.UtilisedBytes.Add(bytes)
+	alloc.UtilisedBytes = alloc.UtilisedBytes.Add(utilisedBytes)
 	// Ensure that the utilized bytes don't exceed the granted bytes.
 	if alloc.UtilisedBytes.GT(alloc.GrantedBytes) {
 		alloc.UtilisedBytes = alloc.GrantedBytes
@@ -54,13 +64,20 @@ func (k *Keeper) SessionInactiveHook(ctx sdk.Context, id uint64, accAddr sdk.Acc
 
 	// Save the updated allocation to the store.
 	k.SetAllocation(ctx, alloc)
+	ctx.EventManager().EmitTypedEvent(
+		&types.EventAllocate{
+			Address:       alloc.Address,
+			GrantedBytes:  alloc.GrantedBytes,
+			UtilisedBytes: alloc.UtilisedBytes,
+			ID:            alloc.ID,
+		},
+	)
 
-	// Based on the subscription type (NodeSubscription), calculate the current payment amount.
+	// Calculate the current payment amount based on the subscription type (NodeSubscription).
 	if s, ok := subscription.(*types.NodeSubscription); ok && s.Gigabytes != 0 {
-		currentAmount = hubutils.AmountForBytes(gigabytePrice.Amount, alloc.UtilisedBytes)
-
 		// Calculate the payment to be made for the current utilization.
 		var (
+			currentAmount = hubutils.AmountForBytes(gigabytePrice.Amount, alloc.UtilisedBytes)
 			payment       = sdk.NewCoin(gigabytePrice.Denom, currentAmount.Sub(previousAmount))
 			stakingShare  = k.node.StakingShare(ctx)
 			stakingReward = hubutils.GetProportionOfCoin(payment, stakingShare)
@@ -75,7 +92,21 @@ func (k *Keeper) SessionInactiveHook(ctx sdk.Context, id uint64, accAddr sdk.Acc
 		payment = payment.Sub(stakingReward)
 
 		// Send the payment amount from the deposit to the node address.
-		return k.SendCoinFromDepositToAccount(ctx, accAddr, nodeAddr.Bytes(), payment)
+		if err := k.SendCoinFromDepositToAccount(ctx, accAddr, nodeAddr.Bytes(), payment); err != nil {
+			return err
+		}
+
+		// Emit an event for the session payment.
+		ctx.EventManager().EmitTypedEvent(
+			&types.EventPayForSession{
+				Address:        session.NodeAddress,
+				NodeAddress:    session.NodeAddress,
+				Payment:        payment.String(),
+				StakingReward:  stakingReward.String(),
+				SessionID:      session.ID,
+				SubscriptionID: session.SubscriptionID,
+			},
+		)
 	}
 
 	return nil

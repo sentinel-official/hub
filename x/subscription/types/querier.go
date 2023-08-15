@@ -66,8 +66,8 @@ func NewQueryPayoutsRequest(pagination *query.PageRequest) *QueryPayoutsRequest 
 	}
 }
 
-func NewQueryPayoutsForAccountRequest(addr sdk.AccAddress, pagination *query.PageRequest) *QueryPayoutsForNodeRequest {
-	return &QueryPayoutsForNodeRequest{
+func NewQueryPayoutsForAccountRequest(addr sdk.AccAddress, pagination *query.PageRequest) *QueryPayoutsForAccountRequest {
+	return &QueryPayoutsForAccountRequest{
 		Address:    addr.String(),
 		Pagination: pagination,
 	}

@@ -52,19 +52,19 @@ func (k *msgServer) MsgCancel(c context.Context, msg *types.MsgCancelRequest) (*
 		return nil, types.NewErrorUnauthorized(msg.From)
 	}
 
+	// Get the status change delay from the store.
+	statusChangeDelay := k.StatusChangeDelay(ctx)
+
+	// Delete the subscription from the Store for the time it becomes inactive.
+	k.DeleteSubscriptionForInactiveAt(ctx, subscription.GetInactiveAt(), subscription.GetID())
+
 	// Run the SubscriptionInactivePendingHook to perform custom actions before setting the subscription to inactive pending state.
 	if err = k.SubscriptionInactivePendingHook(ctx, subscription.GetID()); err != nil {
 		return nil, err
 	}
 
-	// Delete the subscription from the Store for the time it becomes inactive.
-	k.DeleteSubscriptionForInactiveAt(ctx, subscription.GetInactiveAt(), subscription.GetID())
-
 	// Calculate the duration for which the subscription will be in the inactive state.
-	statusChangeDelay := k.StatusChangeDelay(ctx)
-	subscription.SetInactiveAt(
-		ctx.BlockTime().Add(statusChangeDelay),
-	)
+	subscription.SetInactiveAt(ctx.BlockTime().Add(statusChangeDelay))
 	subscription.SetStatus(hubtypes.StatusInactivePending)
 	subscription.SetStatusAt(ctx.BlockTime())
 
@@ -77,8 +77,10 @@ func (k *msgServer) MsgCancel(c context.Context, msg *types.MsgCancelRequest) (*
 	// Emit an event to notify that the subscription status has been updated.
 	ctx.EventManager().EmitTypedEvent(
 		&types.EventUpdateStatus{
-			ID:     subscription.GetID(),
-			Status: subscription.GetStatus(),
+			Status:  hubtypes.StatusInactivePending,
+			Address: subscription.GetAddress().String(),
+			ID:      subscription.GetID(),
+			PlanID:  0,
 		},
 	)
 
@@ -89,8 +91,13 @@ func (k *msgServer) MsgCancel(c context.Context, msg *types.MsgCancelRequest) (*
 			return nil, types.NewErrorPayoutNotFound(s.GetID())
 		}
 
+		var (
+			accAddr  = payout.GetAddress()
+			nodeAddr = payout.GetNodeAddress()
+		)
+
 		// Delete the payout from the Store for the given account and node.
-		k.DeletePayoutForAccountByNode(ctx, payout.GetAddress(), payout.GetNodeAddress(), payout.ID)
+		k.DeletePayoutForAccountByNode(ctx, accAddr, nodeAddr, payout.ID)
 		k.DeletePayoutForNextAt(ctx, payout.NextAt, payout.ID)
 
 		// Reset the `NextAt` field of the payout and update it in the Store.
@@ -119,8 +126,8 @@ func (k *msgServer) MsgAllocate(c context.Context, msg *types.MsgAllocateRequest
 	}
 
 	// Check if the subscription type is a plan. If not, return an error.
-	if subscription.Type() != types.TypePlan {
-		return nil, types.NewErrorInvalidSubscriptionType(subscription.GetID(), subscription.Type())
+	if _, ok := subscription.(*types.PlanSubscription); !ok {
+		return nil, types.NewErrorInvalidSubscription(subscription.GetID())
 	}
 
 	// Check if the `msg.From` address matches the owner address of the subscription. If not, return an error.
@@ -176,9 +183,10 @@ func (k *msgServer) MsgAllocate(c context.Context, msg *types.MsgAllocateRequest
 	// Emit an event to notify that the sender's allocation has been updated.
 	ctx.EventManager().EmitTypedEvent(
 		&types.EventAllocate{
-			ID:      subscription.GetID(),
-			Address: fromAlloc.Address,
-			Bytes:   fromAlloc.GrantedBytes,
+			Address:       fromAlloc.Address,
+			GrantedBytes:  fromAlloc.GrantedBytes,
+			UtilisedBytes: fromAlloc.UtilisedBytes,
+			ID:            fromAlloc.ID,
 		},
 	)
 
@@ -194,9 +202,10 @@ func (k *msgServer) MsgAllocate(c context.Context, msg *types.MsgAllocateRequest
 	// Emit an event to notify that the receiver's allocation has been updated.
 	ctx.EventManager().EmitTypedEvent(
 		&types.EventAllocate{
-			ID:      subscription.GetID(),
-			Address: toAlloc.Address,
-			Bytes:   toAlloc.GrantedBytes,
+			Address:       toAlloc.Address,
+			GrantedBytes:  toAlloc.GrantedBytes,
+			UtilisedBytes: toAlloc.UtilisedBytes,
+			ID:            toAlloc.ID,
 		},
 	)
 

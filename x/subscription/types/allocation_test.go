@@ -21,7 +21,7 @@ func TestAllocation_GetAddress(t *testing.T) {
 		{
 			"empty account address",
 			fields{
-				Address: "",
+				Address: hubtypes.TestAddrEmpty,
 			},
 			nil,
 		},
@@ -59,14 +59,14 @@ func TestAllocation_Validate(t *testing.T) {
 		{
 			"empty account address",
 			fields{
-				Address: "",
+				Address: hubtypes.TestAddrEmpty,
 			},
 			true,
 		},
 		{
 			"invalid account address",
 			fields{
-				Address: "invalid",
+				Address: hubtypes.TestAddrInvalid,
 			},
 			true,
 		},
