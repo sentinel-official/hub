@@ -96,7 +96,7 @@ func (k *Keeper) SendCoinsFromAccountToDeposit(ctx sdk.Context, fromAddr, toAddr
 	ctx.EventManager().EmitTypedEvent(
 		&types.EventAdd{
 			Address: toAddr.String(),
-			Coins:   coins,
+			Coins:   coins.String(),
 		},
 	)
 
@@ -124,7 +124,7 @@ func (k *Keeper) SendCoinsFromDepositToAccount(ctx sdk.Context, fromAddr, toAddr
 	ctx.EventManager().EmitTypedEvent(
 		&types.EventSubtract{
 			Address: fromAddr.String(),
-			Coins:   coins,
+			Coins:   coins.String(),
 		},
 	)
 
@@ -152,7 +152,7 @@ func (k *Keeper) SendCoinsFromDepositToModule(ctx sdk.Context, fromAddr sdk.AccA
 	ctx.EventManager().EmitTypedEvent(
 		&types.EventSubtract{
 			Address: fromAddr.String(),
-			Coins:   coins,
+			Coins:   coins.String(),
 		},
 	)
 
