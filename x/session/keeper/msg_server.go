@@ -134,7 +134,6 @@ func (k *msgServer) MsgStart(c context.Context, msg *types.MsgStartRequest) (*ty
 		return nil, types.NewErrorDuplicateActiveSession(session.ID)
 	}
 
-	//
 	// Get the status change delay from the Store.
 	statusChangeDelay := k.StatusChangeDelay(ctx)
 

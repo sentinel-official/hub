@@ -99,7 +99,7 @@ func (k *Keeper) SessionInactiveHook(ctx sdk.Context, id uint64, accAddr sdk.Acc
 		// Emit an event for the session payment.
 		ctx.EventManager().EmitTypedEvent(
 			&types.EventPayForSession{
-				Address:        session.NodeAddress,
+				Address:        session.Address,
 				NodeAddress:    session.NodeAddress,
 				Payment:        payment.String(),
 				StakingReward:  stakingReward.String(),
