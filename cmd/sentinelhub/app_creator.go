@@ -6,6 +6,7 @@ import (
 
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	"github.com/cosmos/cosmos-sdk/baseapp"
+	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/server"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
 	"github.com/cosmos/cosmos-sdk/snapshots"
@@ -22,8 +23,7 @@ import (
 )
 
 type appCreator struct {
-	encCfg  app.EncodingConfig
-	homeDir string
+	encCfg app.EncodingConfig
 }
 
 func (ac appCreator) NewApp(
@@ -47,7 +47,8 @@ func (ac appCreator) NewApp(
 		panic(err)
 	}
 
-	snapshotDir := filepath.Join(ac.homeDir, "data", "snapshots")
+	homeDir := cast.ToString(appOpts.Get(flags.FlagHome))
+	snapshotDir := filepath.Join(homeDir, "data", "snapshots")
 
 	snapshotDB, err := sdk.NewLevelDB("metadata", snapshotDir)
 	if err != nil {
@@ -64,7 +65,7 @@ func (ac appCreator) NewApp(
 	}
 
 	return app.NewApp(
-		appOpts, db, ac.encCfg, ac.homeDir, cast.ToUint(appOpts.Get(server.FlagInvCheckPeriod)), true,
+		appOpts, db, ac.encCfg, homeDir, cast.ToUint(appOpts.Get(server.FlagInvCheckPeriod)), true,
 		logger, cast.ToBool(appOpts.Get(crisis.FlagSkipGenesisInvariants)), skipUpgradeHeights, traceWriter,
 		version.Version, wasmOpts, app.GetWasmEnabledProposals(app.DefaultWasmProposals),
 		baseapp.SetHaltHeight(cast.ToUint64(appOpts.Get(server.FlagHaltHeight))),
@@ -91,8 +92,9 @@ func (ac appCreator) AppExport(
 	appOpts servertypes.AppOptions,
 ) (servertypes.ExportedApp, error) {
 	v := app.NewApp(
-		appOpts, db, ac.encCfg, ac.homeDir, cast.ToUint(appOpts.Get(server.FlagInvCheckPeriod)), height == -1,
-		logger, cast.ToBool(appOpts.Get(crisis.FlagSkipGenesisInvariants)), map[int64]bool{}, traceWriter,
+		appOpts, db, ac.encCfg, cast.ToString(appOpts.Get(flags.FlagHome)),
+		cast.ToUint(appOpts.Get(server.FlagInvCheckPeriod)), height == -1, logger,
+		cast.ToBool(appOpts.Get(crisis.FlagSkipGenesisInvariants)), map[int64]bool{}, traceWriter,
 		version.Version, nil, nil,
 	)
 
