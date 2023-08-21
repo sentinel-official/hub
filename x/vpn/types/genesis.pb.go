@@ -5,8 +5,8 @@ package types
 
 import (
 	fmt "fmt"
-	_ "github.com/gogo/protobuf/gogoproto"
-	proto "github.com/gogo/protobuf/proto"
+	_ "github.com/cosmos/gogoproto/gogoproto"
+	proto "github.com/cosmos/gogoproto/proto"
 	types "github.com/sentinel-official/hub/x/deposit/types"
 	types1 "github.com/sentinel-official/hub/x/node/types"
 	types2 "github.com/sentinel-official/hub/x/plan/types"

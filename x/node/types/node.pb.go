@@ -7,9 +7,9 @@ import (
 	fmt "fmt"
 	github_com_cosmos_cosmos_sdk_types "github.com/cosmos/cosmos-sdk/types"
 	types "github.com/cosmos/cosmos-sdk/types"
-	_ "github.com/gogo/protobuf/gogoproto"
-	proto "github.com/gogo/protobuf/proto"
-	github_com_gogo_protobuf_types "github.com/gogo/protobuf/types"
+	_ "github.com/cosmos/gogoproto/gogoproto"
+	proto "github.com/cosmos/gogoproto/proto"
+	github_com_cosmos_gogoproto_types "github.com/cosmos/gogoproto/types"
 	types1 "github.com/sentinel-official/hub/types"
 	_ "google.golang.org/protobuf/types/known/timestamppb"
 	io "io"
@@ -131,7 +131,7 @@ func (m *Node) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	n1, err1 := github_com_gogo_protobuf_types.StdTimeMarshalTo(m.StatusAt, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(m.StatusAt):])
+	n1, err1 := github_com_cosmos_gogoproto_types.StdTimeMarshalTo(m.StatusAt, dAtA[i-github_com_cosmos_gogoproto_types.SizeOfStdTime(m.StatusAt):])
 	if err1 != nil {
 		return 0, err1
 	}
@@ -144,7 +144,7 @@ func (m *Node) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x30
 	}
-	n2, err2 := github_com_gogo_protobuf_types.StdTimeMarshalTo(m.InactiveAt, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(m.InactiveAt):])
+	n2, err2 := github_com_cosmos_gogoproto_types.StdTimeMarshalTo(m.InactiveAt, dAtA[i-github_com_cosmos_gogoproto_types.SizeOfStdTime(m.InactiveAt):])
 	if err2 != nil {
 		return 0, err2
 	}
@@ -234,12 +234,12 @@ func (m *Node) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovNode(uint64(l))
 	}
-	l = github_com_gogo_protobuf_types.SizeOfStdTime(m.InactiveAt)
+	l = github_com_cosmos_gogoproto_types.SizeOfStdTime(m.InactiveAt)
 	n += 1 + l + sovNode(uint64(l))
 	if m.Status != 0 {
 		n += 1 + sovNode(uint64(m.Status))
 	}
-	l = github_com_gogo_protobuf_types.SizeOfStdTime(m.StatusAt)
+	l = github_com_cosmos_gogoproto_types.SizeOfStdTime(m.StatusAt)
 	n += 1 + l + sovNode(uint64(l))
 	return n
 }
@@ -440,7 +440,7 @@ func (m *Node) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := github_com_gogo_protobuf_types.StdTimeUnmarshal(&m.InactiveAt, dAtA[iNdEx:postIndex]); err != nil {
+			if err := github_com_cosmos_gogoproto_types.StdTimeUnmarshal(&m.InactiveAt, dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -492,7 +492,7 @@ func (m *Node) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := github_com_gogo_protobuf_types.StdTimeUnmarshal(&m.StatusAt, dAtA[iNdEx:postIndex]); err != nil {
+			if err := github_com_cosmos_gogoproto_types.StdTimeUnmarshal(&m.StatusAt, dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
