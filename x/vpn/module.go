@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"math/rand"
 
+	abcitypes "github.com/cometbft/cometbft/abci/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
@@ -14,7 +15,6 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/spf13/cobra"
-	abcitypes "github.com/tendermint/tendermint/abci/types"
 
 	depositkeeper "github.com/sentinel-official/hub/x/deposit/keeper"
 	deposittypes "github.com/sentinel-official/hub/x/deposit/types"

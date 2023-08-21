@@ -1,8 +1,8 @@
 package keeper
 
 import (
+	abcitypes "github.com/cometbft/cometbft/abci/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	abcitypes "github.com/tendermint/tendermint/abci/types"
 
 	hubtypes "github.com/sentinel-official/hub/types"
 	"github.com/sentinel-official/hub/x/session/types"

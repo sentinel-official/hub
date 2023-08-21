@@ -1,9 +1,9 @@
 package keeper
 
 import (
+	"github.com/cometbft/cometbft/libs/log"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/tendermint/tendermint/libs/log"
 
 	"github.com/sentinel-official/hub/x/mint/expected"
 	"github.com/sentinel-official/hub/x/mint/types"

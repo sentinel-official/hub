@@ -1,7 +1,7 @@
 .DEFAULT_GOAL := default
 VERSION := $(shell git describe --tags | sed 's/^v//')
 COMMIT := $(shell git log -1 --format='%H')
-TENDERMINT_VERSION := $(shell go list -m github.com/tendermint/tendermint | sed 's/.* //')
+TENDERMINT_VERSION := $(shell go list -m github.com/cometbft/cometbft | sed 's/.* //')
 
 comma := ,
 whitespace := $() $()
@@ -12,7 +12,7 @@ ld_flags := -s -w \
     -X github.com/cosmos/cosmos-sdk/version.AppName=sentinelhub \
     -X github.com/cosmos/cosmos-sdk/version.Version=${VERSION} \
     -X github.com/cosmos/cosmos-sdk/version.Commit=${COMMIT} \
-    -X github.com/tendermint/tendermint/version.TMCoreSemVer=$(TENDERMINT_VERSION)
+    -X github.com/cometbft/cometbft/version.TMCoreSemVer=$(TENDERMINT_VERSION)
 
 ifeq ($(STATIC),true)
 	build_tags += muslc

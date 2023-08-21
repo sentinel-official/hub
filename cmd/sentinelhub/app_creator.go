@@ -5,6 +5,8 @@ import (
 	"path/filepath"
 
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
+	tmdb "github.com/cometbft/cometbft-db"
+	tmlog "github.com/cometbft/cometbft/libs/log"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/server"
@@ -16,8 +18,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/crisis"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/spf13/cast"
-	tmlog "github.com/tendermint/tendermint/libs/log"
-	tmdb "github.com/tendermint/tm-db"
 
 	"github.com/sentinel-official/hub/app"
 )
