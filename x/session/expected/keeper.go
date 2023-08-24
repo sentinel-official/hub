@@ -3,6 +3,7 @@
 package expected
 
 import (
+	sdkmath "cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 
@@ -40,5 +41,5 @@ type SubscriptionKeeper interface {
 	SetAllocation(ctx sdk.Context, alloc subscriptiontypes.Allocation)
 	GetSubscription(ctx sdk.Context, id uint64) (subscriptiontypes.Subscription, bool)
 	GetLatestPayoutForAccountByNode(ctx sdk.Context, accAddr sdk.AccAddress, nodeAddr hubtypes.NodeAddress) (subscriptiontypes.Payout, bool)
-	SessionInactiveHook(ctx sdk.Context, subscriptionID uint64, accAddr sdk.AccAddress, nodeAddr hubtypes.NodeAddress, bytes sdk.Int) error
+	SessionInactiveHook(ctx sdk.Context, subscriptionID uint64, accAddr sdk.AccAddress, nodeAddr hubtypes.NodeAddress, bytes sdkmath.Int) error
 }

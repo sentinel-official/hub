@@ -5,6 +5,7 @@ import (
 	"testing"
 	"time"
 
+	sdkmath "cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	hubtypes "github.com/sentinel-official/hub/types"
@@ -268,7 +269,7 @@ func TestSession_Validate(t *testing.T) {
 				SubscriptionID: 1000,
 				NodeAddress:    hubtypes.TestBech32NodeAddr20Bytes,
 				Address:        hubtypes.TestBech32AccAddr20Bytes,
-				Bandwidth:      hubtypes.Bandwidth{Upload: sdk.Int{}, Download: sdk.Int{}},
+				Bandwidth:      hubtypes.Bandwidth{Upload: sdkmath.Int{}, Download: sdkmath.Int{}},
 			},
 			true,
 		},
@@ -279,7 +280,7 @@ func TestSession_Validate(t *testing.T) {
 				SubscriptionID: 1000,
 				NodeAddress:    hubtypes.TestBech32NodeAddr20Bytes,
 				Address:        hubtypes.TestBech32AccAddr20Bytes,
-				Bandwidth:      hubtypes.Bandwidth{Upload: sdk.Int{}, Download: sdk.NewInt(1000)},
+				Bandwidth:      hubtypes.Bandwidth{Upload: sdkmath.Int{}, Download: sdk.NewInt(1000)},
 			},
 			true,
 		},
@@ -290,7 +291,7 @@ func TestSession_Validate(t *testing.T) {
 				SubscriptionID: 1000,
 				NodeAddress:    hubtypes.TestBech32NodeAddr20Bytes,
 				Address:        hubtypes.TestBech32AccAddr20Bytes,
-				Bandwidth:      hubtypes.Bandwidth{Upload: sdk.NewInt(1000), Download: sdk.Int{}},
+				Bandwidth:      hubtypes.Bandwidth{Upload: sdk.NewInt(1000), Download: sdkmath.Int{}},
 			},
 			true,
 		},

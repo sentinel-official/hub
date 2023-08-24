@@ -1,8 +1,8 @@
 package types
 
 import (
+	sdkerrors "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/types/errors"
 
 	hubtypes "github.com/sentinel-official/hub/types"
 )
@@ -32,19 +32,19 @@ func NewMsgStartRequest(from sdk.AccAddress, id uint64, addr hubtypes.NodeAddres
 // if the 'Address' field is not empty and represents a valid node address.
 func (m *MsgStartRequest) ValidateBasic() error {
 	if m.From == "" {
-		return errors.Wrap(ErrorInvalidMessage, "from cannot be empty")
+		return sdkerrors.Wrap(ErrorInvalidMessage, "from cannot be empty")
 	}
 	if _, err := sdk.AccAddressFromBech32(m.From); err != nil {
-		return errors.Wrap(ErrorInvalidMessage, err.Error())
+		return sdkerrors.Wrap(ErrorInvalidMessage, err.Error())
 	}
 	if m.ID == 0 {
-		return errors.Wrap(ErrorInvalidMessage, "id cannot be zero")
+		return sdkerrors.Wrap(ErrorInvalidMessage, "id cannot be zero")
 	}
 	if m.Address == "" {
-		return errors.Wrap(ErrorInvalidMessage, "address cannot be empty")
+		return sdkerrors.Wrap(ErrorInvalidMessage, "address cannot be empty")
 	}
 	if _, err := hubtypes.NodeAddressFromBech32(m.Address); err != nil {
-		return errors.Wrap(ErrorInvalidMessage, err.Error())
+		return sdkerrors.Wrap(ErrorInvalidMessage, err.Error())
 	}
 
 	return nil
@@ -77,29 +77,29 @@ func NewMsgUpdateDetailsRequest(from hubtypes.NodeAddress, proof Proof, signatur
 // and if the 'Signature' field has a length of exactly 64 bytes (if not nil).
 func (m *MsgUpdateDetailsRequest) ValidateBasic() error {
 	if m.From == "" {
-		return errors.Wrap(ErrorInvalidMessage, "from cannot be empty")
+		return sdkerrors.Wrap(ErrorInvalidMessage, "from cannot be empty")
 	}
 	if _, err := hubtypes.NodeAddressFromBech32(m.From); err != nil {
-		return errors.Wrap(ErrorInvalidMessage, err.Error())
+		return sdkerrors.Wrap(ErrorInvalidMessage, err.Error())
 	}
 	if m.Proof.ID == 0 {
-		return errors.Wrap(ErrorInvalidMessage, "proof.id cannot be zero")
+		return sdkerrors.Wrap(ErrorInvalidMessage, "proof.id cannot be zero")
 	}
 	if m.Proof.Bandwidth.IsAnyNil() {
-		return errors.Wrap(ErrorInvalidMessage, "proof.bandwidth cannot contain nil")
+		return sdkerrors.Wrap(ErrorInvalidMessage, "proof.bandwidth cannot contain nil")
 	}
 	if m.Proof.Bandwidth.IsAnyNegative() {
-		return errors.Wrap(ErrorInvalidMessage, "proof.bandwidth cannot be negative")
+		return sdkerrors.Wrap(ErrorInvalidMessage, "proof.bandwidth cannot be negative")
 	}
 	if m.Proof.Duration < 0 {
-		return errors.Wrap(ErrorInvalidMessage, "proof.duration cannot be negative")
+		return sdkerrors.Wrap(ErrorInvalidMessage, "proof.duration cannot be negative")
 	}
 	if m.Signature != nil {
 		if len(m.Signature) < 64 {
-			return errors.Wrapf(ErrorInvalidMessage, "signature length cannot be less than %d", 64)
+			return sdkerrors.Wrapf(ErrorInvalidMessage, "signature length cannot be less than %d", 64)
 		}
 		if len(m.Signature) > 64 {
-			return errors.Wrapf(ErrorInvalidMessage, "signature length cannot be greater than %d", 64)
+			return sdkerrors.Wrapf(ErrorInvalidMessage, "signature length cannot be greater than %d", 64)
 		}
 	}
 
@@ -131,16 +131,16 @@ func NewMsgEndRequest(from sdk.AccAddress, id uint64, rating uint64) *MsgEndRequ
 // and if the 'Rating' field is not greater than 10.
 func (m *MsgEndRequest) ValidateBasic() error {
 	if m.From == "" {
-		return errors.Wrap(ErrorInvalidMessage, "from cannot be empty")
+		return sdkerrors.Wrap(ErrorInvalidMessage, "from cannot be empty")
 	}
 	if _, err := sdk.AccAddressFromBech32(m.From); err != nil {
-		return errors.Wrap(ErrorInvalidMessage, err.Error())
+		return sdkerrors.Wrap(ErrorInvalidMessage, err.Error())
 	}
 	if m.ID == 0 {
-		return errors.Wrap(ErrorInvalidMessage, "id cannot be zero")
+		return sdkerrors.Wrap(ErrorInvalidMessage, "id cannot be zero")
 	}
 	if m.Rating > 10 {
-		return errors.Wrapf(ErrorInvalidMessage, "rating cannot be greater than %d", 10)
+		return sdkerrors.Wrapf(ErrorInvalidMessage, "rating cannot be greater than %d", 10)
 	}
 
 	return nil

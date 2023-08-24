@@ -3,20 +3,20 @@
 package types
 
 import (
-	"github.com/cosmos/cosmos-sdk/types/errors"
+	sdkerrors "cosmossdk.io/errors"
 )
 
 var (
-	ErrorInvalidMessage = errors.Register(ModuleName, 101, "invalid message")
+	ErrorInvalidMessage = sdkerrors.Register(ModuleName, 101, "invalid message")
 
-	ErrorDuplicateProvider = errors.Register(ModuleName, 201, "duplicate provider")
-	ErrorProviderNotFound  = errors.Register(ModuleName, 202, "provider not found")
+	ErrorDuplicateProvider = sdkerrors.Register(ModuleName, 201, "duplicate provider")
+	ErrorProviderNotFound  = sdkerrors.Register(ModuleName, 202, "provider not found")
 )
 
 func NewErrorDuplicateProvider(addr interface{}) error {
-	return errors.Wrapf(ErrorDuplicateProvider, "provider %s already exist", addr)
+	return sdkerrors.Wrapf(ErrorDuplicateProvider, "provider %s already exist", addr)
 }
 
 func NewErrorProviderNotFound(addr interface{}) error {
-	return errors.Wrapf(ErrorProviderNotFound, "provider %s does not exist", addr)
+	return sdkerrors.Wrapf(ErrorProviderNotFound, "provider %s does not exist", addr)
 }

@@ -1,8 +1,9 @@
 package types
 
 import (
+	sdkerrors "cosmossdk.io/errors"
+	sdkmath "cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 // The `types` package contains custom message types for the Cosmos SDK.
@@ -27,13 +28,13 @@ func NewMsgCancelRequest(from sdk.AccAddress, id uint64) *MsgCancelRequest {
 // and if the 'ID' field is not zero.
 func (m *MsgCancelRequest) ValidateBasic() error {
 	if m.From == "" {
-		return errors.Wrap(ErrorInvalidMessage, "from cannot be empty")
+		return sdkerrors.Wrap(ErrorInvalidMessage, "from cannot be empty")
 	}
 	if _, err := sdk.AccAddressFromBech32(m.From); err != nil {
-		return errors.Wrapf(ErrorInvalidMessage, "invalid from %s", err)
+		return sdkerrors.Wrapf(ErrorInvalidMessage, "invalid from %s", err)
 	}
 	if m.ID == 0 {
-		return errors.Wrap(ErrorInvalidMessage, "id cannot be zero")
+		return sdkerrors.Wrap(ErrorInvalidMessage, "id cannot be zero")
 	}
 
 	return nil
@@ -50,7 +51,7 @@ func (m *MsgCancelRequest) GetSigners() []sdk.AccAddress {
 }
 
 // NewMsgAllocateRequest creates a new MsgAllocateRequest instance with the given parameters.
-func NewMsgAllocateRequest(from sdk.AccAddress, id uint64, addr sdk.AccAddress, bytes sdk.Int) *MsgAllocateRequest {
+func NewMsgAllocateRequest(from sdk.AccAddress, id uint64, addr sdk.AccAddress, bytes sdkmath.Int) *MsgAllocateRequest {
 	return &MsgAllocateRequest{
 		From:    from.String(),
 		ID:      id,
@@ -66,25 +67,25 @@ func NewMsgAllocateRequest(from sdk.AccAddress, id uint64, addr sdk.AccAddress, 
 // and if the 'Bytes' field is not nil and not negative.
 func (m *MsgAllocateRequest) ValidateBasic() error {
 	if m.From == "" {
-		return errors.Wrap(ErrorInvalidMessage, "from cannot be empty")
+		return sdkerrors.Wrap(ErrorInvalidMessage, "from cannot be empty")
 	}
 	if _, err := sdk.AccAddressFromBech32(m.From); err != nil {
-		return errors.Wrapf(ErrorInvalidMessage, "invalid from %s", err)
+		return sdkerrors.Wrapf(ErrorInvalidMessage, "invalid from %s", err)
 	}
 	if m.ID == 0 {
-		return errors.Wrap(ErrorInvalidMessage, "id cannot be zero")
+		return sdkerrors.Wrap(ErrorInvalidMessage, "id cannot be zero")
 	}
 	if m.Address == "" {
-		return errors.Wrap(ErrorInvalidMessage, "address cannot be empty")
+		return sdkerrors.Wrap(ErrorInvalidMessage, "address cannot be empty")
 	}
 	if _, err := sdk.AccAddressFromBech32(m.Address); err != nil {
-		return errors.Wrapf(ErrorInvalidMessage, "invalid address %s", err)
+		return sdkerrors.Wrapf(ErrorInvalidMessage, "invalid address %s", err)
 	}
 	if m.Bytes.IsNil() {
-		return errors.Wrap(ErrorInvalidMessage, "bytes cannot be nil")
+		return sdkerrors.Wrap(ErrorInvalidMessage, "bytes cannot be nil")
 	}
 	if m.Bytes.IsNegative() {
-		return errors.Wrap(ErrorInvalidMessage, "bytes cannot be negative")
+		return sdkerrors.Wrap(ErrorInvalidMessage, "bytes cannot be negative")
 	}
 
 	return nil

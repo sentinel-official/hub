@@ -47,9 +47,7 @@ func (k *Keeper) EndBlock(ctx sdk.Context) []abcitypes.ValidatorUpdate {
 					amount := item.GigabytePrices.AmountOf(coin.Denom)
 					if amount.GT(coin.Amount) {
 						item.GigabytePrices = item.GigabytePrices.Sub(
-							sdk.NewCoins(
-								sdk.NewCoin(coin.Denom, amount),
-							),
+							sdk.NewCoin(coin.Denom, amount),
 						).Add(coin)
 					}
 				}
@@ -60,9 +58,7 @@ func (k *Keeper) EndBlock(ctx sdk.Context) []abcitypes.ValidatorUpdate {
 					amount := item.GigabytePrices.AmountOf(coin.Denom)
 					if amount.LT(coin.Amount) {
 						item.GigabytePrices = item.GigabytePrices.Sub(
-							sdk.NewCoins(
-								sdk.NewCoin(coin.Denom, amount),
-							),
+							sdk.NewCoin(coin.Denom, amount),
 						).Add(coin)
 					}
 				}
@@ -73,9 +69,7 @@ func (k *Keeper) EndBlock(ctx sdk.Context) []abcitypes.ValidatorUpdate {
 					amount := item.HourlyPrices.AmountOf(coin.Denom)
 					if amount.GT(coin.Amount) {
 						item.HourlyPrices = item.HourlyPrices.Sub(
-							sdk.NewCoins(
-								sdk.NewCoin(coin.Denom, amount),
-							),
+							sdk.NewCoin(coin.Denom, amount),
 						).Add(coin)
 					}
 				}
@@ -86,9 +80,7 @@ func (k *Keeper) EndBlock(ctx sdk.Context) []abcitypes.ValidatorUpdate {
 					amount := item.HourlyPrices.AmountOf(coin.Denom)
 					if amount.LT(coin.Amount) {
 						item.HourlyPrices = item.HourlyPrices.Sub(
-							sdk.NewCoins(
-								sdk.NewCoin(coin.Denom, amount),
-							),
+							sdk.NewCoin(coin.Denom, amount),
 						).Add(coin)
 					}
 				}

@@ -3,8 +3,8 @@ package types
 import (
 	"time"
 
+	sdkerrors "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/types/errors"
 
 	hubtypes "github.com/sentinel-official/hub/types"
 )
@@ -38,34 +38,34 @@ func NewMsgCreateRequest(from hubtypes.ProvAddress, duration time.Duration, giga
 // and if the 'Prices' field is valid (not empty, not containing nil coins, and having valid coin denominations).
 func (m *MsgCreateRequest) ValidateBasic() error {
 	if m.From == "" {
-		return errors.Wrap(ErrorInvalidMessage, "from cannot be empty")
+		return sdkerrors.Wrap(ErrorInvalidMessage, "from cannot be empty")
 	}
 	if _, err := hubtypes.ProvAddressFromBech32(m.From); err != nil {
-		return errors.Wrap(ErrorInvalidMessage, err.Error())
+		return sdkerrors.Wrap(ErrorInvalidMessage, err.Error())
 	}
 	if m.Duration < 0 {
-		return errors.Wrap(ErrorInvalidMessage, "duration cannot be negative")
+		return sdkerrors.Wrap(ErrorInvalidMessage, "duration cannot be negative")
 	}
 	if m.Duration == 0 {
-		return errors.Wrap(ErrorInvalidMessage, "duration cannot be zero")
+		return sdkerrors.Wrap(ErrorInvalidMessage, "duration cannot be zero")
 	}
 	if m.Gigabytes < 0 {
-		return errors.Wrap(ErrorInvalidMessage, "gigabytes cannot be negative")
+		return sdkerrors.Wrap(ErrorInvalidMessage, "gigabytes cannot be negative")
 	}
 	if m.Gigabytes == 0 {
-		return errors.Wrap(ErrorInvalidMessage, "gigabytes cannot be zero")
+		return sdkerrors.Wrap(ErrorInvalidMessage, "gigabytes cannot be zero")
 	}
 	if m.Prices == nil {
-		return errors.Wrap(ErrorInvalidMessage, "prices cannot be nil")
+		return sdkerrors.Wrap(ErrorInvalidMessage, "prices cannot be nil")
 	}
 	if m.Prices.Len() == 0 {
-		return errors.Wrap(ErrorInvalidMessage, "prices cannot be empty")
+		return sdkerrors.Wrap(ErrorInvalidMessage, "prices cannot be empty")
 	}
 	if m.Prices.IsAnyNil() {
-		return errors.Wrap(ErrorInvalidMessage, "prices cannot contain nil")
+		return sdkerrors.Wrap(ErrorInvalidMessage, "prices cannot contain nil")
 	}
 	if !m.Prices.IsValid() {
-		return errors.Wrap(ErrorInvalidMessage, "prices must be valid")
+		return sdkerrors.Wrap(ErrorInvalidMessage, "prices must be valid")
 	}
 
 	return nil
@@ -96,16 +96,16 @@ func NewMsgUpdateStatusRequest(from hubtypes.ProvAddress, id uint64, status hubt
 // and if the 'Status' field is one of the allowed values [active, inactive].
 func (m *MsgUpdateStatusRequest) ValidateBasic() error {
 	if m.From == "" {
-		return errors.Wrap(ErrorInvalidMessage, "from cannot be empty")
+		return sdkerrors.Wrap(ErrorInvalidMessage, "from cannot be empty")
 	}
 	if _, err := hubtypes.ProvAddressFromBech32(m.From); err != nil {
-		return errors.Wrap(ErrorInvalidMessage, err.Error())
+		return sdkerrors.Wrap(ErrorInvalidMessage, err.Error())
 	}
 	if m.ID == 0 {
-		return errors.Wrap(ErrorInvalidMessage, "id cannot be zero")
+		return sdkerrors.Wrap(ErrorInvalidMessage, "id cannot be zero")
 	}
 	if !m.Status.IsOneOf(hubtypes.StatusActive, hubtypes.StatusInactive) {
-		return errors.Wrap(ErrorInvalidMessage, "status must be one of [active, inactive]")
+		return sdkerrors.Wrap(ErrorInvalidMessage, "status must be one of [active, inactive]")
 	}
 
 	return nil
@@ -136,19 +136,19 @@ func NewMsgLinkNodeRequest(from hubtypes.ProvAddress, id uint64, addr hubtypes.N
 // and if the 'Address' field is not empty and represents a valid node address.
 func (m *MsgLinkNodeRequest) ValidateBasic() error {
 	if m.From == "" {
-		return errors.Wrap(ErrorInvalidMessage, "from cannot be empty")
+		return sdkerrors.Wrap(ErrorInvalidMessage, "from cannot be empty")
 	}
 	if _, err := hubtypes.ProvAddressFromBech32(m.From); err != nil {
-		return errors.Wrap(ErrorInvalidMessage, err.Error())
+		return sdkerrors.Wrap(ErrorInvalidMessage, err.Error())
 	}
 	if m.ID == 0 {
-		return errors.Wrap(ErrorInvalidMessage, "id cannot be zero")
+		return sdkerrors.Wrap(ErrorInvalidMessage, "id cannot be zero")
 	}
 	if m.NodeAddress == "" {
-		return errors.Wrap(ErrorInvalidMessage, "node_address cannot be empty")
+		return sdkerrors.Wrap(ErrorInvalidMessage, "node_address cannot be empty")
 	}
 	if _, err := hubtypes.NodeAddressFromBech32(m.NodeAddress); err != nil {
-		return errors.Wrap(ErrorInvalidMessage, err.Error())
+		return sdkerrors.Wrap(ErrorInvalidMessage, err.Error())
 	}
 
 	return nil
@@ -179,19 +179,19 @@ func NewMsgUnlinkNodeRequest(from hubtypes.ProvAddress, id uint64, addr hubtypes
 // and if the 'Address' field is not empty and represents a valid node address.
 func (m *MsgUnlinkNodeRequest) ValidateBasic() error {
 	if m.From == "" {
-		return errors.Wrap(ErrorInvalidMessage, "from cannot be empty")
+		return sdkerrors.Wrap(ErrorInvalidMessage, "from cannot be empty")
 	}
 	if _, err := hubtypes.ProvAddressFromBech32(m.From); err != nil {
-		return errors.Wrap(ErrorInvalidMessage, err.Error())
+		return sdkerrors.Wrap(ErrorInvalidMessage, err.Error())
 	}
 	if m.ID == 0 {
-		return errors.Wrap(ErrorInvalidMessage, "id cannot be zero")
+		return sdkerrors.Wrap(ErrorInvalidMessage, "id cannot be zero")
 	}
 	if m.NodeAddress == "" {
-		return errors.Wrap(ErrorInvalidMessage, "node_address cannot be empty")
+		return sdkerrors.Wrap(ErrorInvalidMessage, "node_address cannot be empty")
 	}
 	if _, err := hubtypes.NodeAddressFromBech32(m.NodeAddress); err != nil {
-		return errors.Wrap(ErrorInvalidMessage, err.Error())
+		return sdkerrors.Wrap(ErrorInvalidMessage, err.Error())
 	}
 
 	return nil
@@ -222,19 +222,19 @@ func NewMsgSubscribeRequest(from sdk.AccAddress, id uint64, denom string) *MsgSu
 // and if the 'Denom' field is valid according to the Cosmos SDK's ValidateDenom function.
 func (m *MsgSubscribeRequest) ValidateBasic() error {
 	if m.From == "" {
-		return errors.Wrap(ErrorInvalidMessage, "from cannot be empty")
+		return sdkerrors.Wrap(ErrorInvalidMessage, "from cannot be empty")
 	}
 	if _, err := sdk.AccAddressFromBech32(m.From); err != nil {
-		return errors.Wrap(ErrorInvalidMessage, err.Error())
+		return sdkerrors.Wrap(ErrorInvalidMessage, err.Error())
 	}
 	if m.ID == 0 {
-		return errors.Wrap(ErrorInvalidMessage, "id cannot be zero")
+		return sdkerrors.Wrap(ErrorInvalidMessage, "id cannot be zero")
 	}
 	if m.Denom == "" {
-		return errors.Wrap(ErrorInvalidMessage, "denom cannot be empty")
+		return sdkerrors.Wrap(ErrorInvalidMessage, "denom cannot be empty")
 	}
 	if err := sdk.ValidateDenom(m.Denom); err != nil {
-		return errors.Wrap(ErrorInvalidMessage, err.Error())
+		return sdkerrors.Wrap(ErrorInvalidMessage, err.Error())
 	}
 
 	return nil

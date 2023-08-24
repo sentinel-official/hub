@@ -1,12 +1,13 @@
 package utils
 
 import (
+	sdkmath "cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/sentinel-official/hub/types"
 )
 
-func AmountForBytes(gigabytePrice, bytes sdk.Int) sdk.Int {
+func AmountForBytes(gigabytePrice, bytes sdkmath.Int) sdkmath.Int {
 	bytePrice := gigabytePrice.ToDec().QuoInt(types.Gigabyte)
 	return bytes.ToDec().Mul(bytePrice).Ceil().TruncateInt()
 }

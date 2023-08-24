@@ -3,8 +3,8 @@ package types
 import (
 	"fmt"
 
+	sdkerrors "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 func (m *Deposit) GetAddress() sdk.AccAddress {
@@ -25,7 +25,7 @@ func (m *Deposit) Validate() error {
 		return fmt.Errorf("address cannot be empty")
 	}
 	if _, err := sdk.AccAddressFromBech32(m.Address); err != nil {
-		return errors.Wrapf(err, "invalid address %s", m.Address)
+		return sdkerrors.Wrapf(err, "invalid address %s", m.Address)
 	}
 	if m.Coins == nil {
 		return fmt.Errorf("coins cannot be empty")

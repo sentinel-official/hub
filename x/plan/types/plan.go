@@ -3,8 +3,8 @@ package types
 import (
 	"fmt"
 
+	sdkerrors "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/types/errors"
 
 	hubtypes "github.com/sentinel-official/hub/types"
 )
@@ -40,7 +40,7 @@ func (m *Plan) Validate() error {
 		return fmt.Errorf("provider_address cannot be empty")
 	}
 	if _, err := hubtypes.ProvAddressFromBech32(m.ProviderAddress); err != nil {
-		return errors.Wrapf(err, "invalid provider_address %s", m.ProviderAddress)
+		return sdkerrors.Wrapf(err, "invalid provider_address %s", m.ProviderAddress)
 	}
 	if m.Duration < 0 {
 		return fmt.Errorf("duration cannot be negative")

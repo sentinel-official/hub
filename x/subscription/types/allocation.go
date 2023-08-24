@@ -3,8 +3,8 @@ package types
 import (
 	"fmt"
 
+	sdkerrors "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 func (m *Allocation) GetAddress() sdk.AccAddress {
@@ -25,7 +25,7 @@ func (m *Allocation) Validate() error {
 		return fmt.Errorf("address cannot be empty")
 	}
 	if _, err := sdk.AccAddressFromBech32(m.Address); err != nil {
-		return errors.Wrapf(err, "invalid address %s", m.Address)
+		return sdkerrors.Wrapf(err, "invalid address %s", m.Address)
 	}
 	if m.GrantedBytes.IsNil() {
 		return fmt.Errorf("granted_bytes cannot be nil")

@@ -4,6 +4,7 @@ import (
 	"reflect"
 	"testing"
 
+	sdkmath "cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	hubtypes "github.com/sentinel-official/hub/types"
@@ -48,8 +49,8 @@ func TestAllocation_GetAddress(t *testing.T) {
 func TestAllocation_Validate(t *testing.T) {
 	type fields struct {
 		Address       string
-		GrantedBytes  sdk.Int
-		UtilisedBytes sdk.Int
+		GrantedBytes  sdkmath.Int
+		UtilisedBytes sdkmath.Int
 	}
 	tests := []struct {
 		name    string
@@ -108,7 +109,7 @@ func TestAllocation_Validate(t *testing.T) {
 			"nil granted",
 			fields{
 				Address:      hubtypes.TestBech32AccAddr20Bytes,
-				GrantedBytes: sdk.Int{},
+				GrantedBytes: sdkmath.Int{},
 			},
 			true,
 		},
@@ -143,7 +144,7 @@ func TestAllocation_Validate(t *testing.T) {
 			fields{
 				Address:       hubtypes.TestBech32AccAddr20Bytes,
 				GrantedBytes:  sdk.NewInt(1000),
-				UtilisedBytes: sdk.Int{},
+				UtilisedBytes: sdkmath.Int{},
 			},
 			true,
 		},

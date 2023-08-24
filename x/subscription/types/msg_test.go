@@ -3,6 +3,7 @@ package types
 import (
 	"testing"
 
+	sdkmath "cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	hubtypes "github.com/sentinel-official/hub/types"
@@ -98,7 +99,7 @@ func TestMsgAllocateRequest_ValidateBasic(t *testing.T) {
 		From    string
 		ID      uint64
 		Address string
-		Bytes   sdk.Int
+		Bytes   sdkmath.Int
 	}
 	tests := []struct {
 		name    string
@@ -237,7 +238,7 @@ func TestMsgAllocateRequest_ValidateBasic(t *testing.T) {
 				From:    hubtypes.TestBech32AccAddr20Bytes,
 				ID:      1000,
 				Address: hubtypes.TestBech32AccAddr20Bytes,
-				Bytes:   sdk.Int{},
+				Bytes:   sdkmath.Int{},
 			},
 			true,
 		},

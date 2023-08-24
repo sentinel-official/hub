@@ -111,7 +111,7 @@ func (k *Keeper) SendCoinsFromDepositToAccount(ctx sdk.Context, fromAddr, toAddr
 		return types.NewErrorDepositNotFound(fromAddr)
 	}
 
-	deposit.Coins, _ = deposit.Coins.SafeSub(coins)
+	deposit.Coins, _ = deposit.Coins.SafeSub(coins...)
 	if deposit.Coins.IsAnyNegative() {
 		return types.NewErrorInsufficientDeposit(fromAddr)
 	}
@@ -139,7 +139,7 @@ func (k *Keeper) SendCoinsFromDepositToModule(ctx sdk.Context, fromAddr sdk.AccA
 		return types.NewErrorDepositNotFound(fromAddr)
 	}
 
-	deposit.Coins, _ = deposit.Coins.SafeSub(coins)
+	deposit.Coins, _ = deposit.Coins.SafeSub(coins...)
 	if deposit.Coins.IsAnyNegative() {
 		return types.NewErrorInsufficientDeposit(fromAddr)
 	}

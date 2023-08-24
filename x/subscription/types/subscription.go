@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"time"
 
+	sdkerrors "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/gogo/protobuf/proto"
 
 	hubtypes "github.com/sentinel-official/hub/types"
@@ -63,7 +63,7 @@ func (s *BaseSubscription) Validate() error {
 		return fmt.Errorf("address cannot be empty")
 	}
 	if _, err := sdk.AccAddressFromBech32(s.Address); err != nil {
-		return errors.Wrapf(err, "invalid address %s", s.Address)
+		return sdkerrors.Wrapf(err, "invalid address %s", s.Address)
 	}
 	if s.InactiveAt.IsZero() {
 		return fmt.Errorf("inactive_at cannot be zero")
@@ -93,7 +93,7 @@ func (s *NodeSubscription) Validate() error {
 		return fmt.Errorf("node_address cannot be empty")
 	}
 	if _, err := hubtypes.NodeAddressFromBech32(s.NodeAddress); err != nil {
-		return errors.Wrapf(err, "invalid node_address %s", s.NodeAddress)
+		return sdkerrors.Wrapf(err, "invalid node_address %s", s.NodeAddress)
 	}
 	if s.Gigabytes == 0 && s.Hours == 0 {
 		return fmt.Errorf("[gigabytes, hours] cannot be empty")
@@ -158,7 +158,7 @@ func (s *PlanSubscription) Validate() error {
 		return fmt.Errorf("denom cannot be empty")
 	}
 	if err := sdk.ValidateDenom(s.Denom); err != nil {
-		return errors.Wrapf(err, "invalid denom %s", s.Denom)
+		return sdkerrors.Wrapf(err, "invalid denom %s", s.Denom)
 	}
 
 	return nil

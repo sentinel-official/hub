@@ -3,6 +3,7 @@ package keeper
 import (
 	"fmt"
 
+	sdkmath "cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	hubtypes "github.com/sentinel-official/hub/types"
@@ -12,7 +13,7 @@ import (
 
 // SessionInactiveHook is a function that handles the end of a session.
 // It updates the allocation's utilized bytes, calculates and sends payments, and staking rewards.
-func (k *Keeper) SessionInactiveHook(ctx sdk.Context, id uint64, accAddr sdk.AccAddress, nodeAddr hubtypes.NodeAddress, utilisedBytes sdk.Int) error {
+func (k *Keeper) SessionInactiveHook(ctx sdk.Context, id uint64, accAddr sdk.AccAddress, nodeAddr hubtypes.NodeAddress, utilisedBytes sdkmath.Int) error {
 	// Retrieve the session associated with the provided session ID.
 	session, found := k.GetSession(ctx, id)
 	if !found {

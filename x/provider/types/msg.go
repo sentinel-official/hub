@@ -3,8 +3,8 @@ package types
 import (
 	"net/url"
 
+	sdkerrors "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/types/errors"
 
 	hubtypes "github.com/sentinel-official/hub/types"
 )
@@ -38,30 +38,30 @@ func NewMsgRegisterRequest(from sdk.AccAddress, name, identity, website, descrip
 // and if the 'Description' field's length is not greater than 256 characters.
 func (m *MsgRegisterRequest) ValidateBasic() error {
 	if m.From == "" {
-		return errors.Wrap(ErrorInvalidMessage, "from cannot be empty")
+		return sdkerrors.Wrap(ErrorInvalidMessage, "from cannot be empty")
 	}
 	if _, err := sdk.AccAddressFromBech32(m.From); err != nil {
-		return errors.Wrap(ErrorInvalidMessage, err.Error())
+		return sdkerrors.Wrap(ErrorInvalidMessage, err.Error())
 	}
 	if m.Name == "" {
-		return errors.Wrap(ErrorInvalidMessage, "name cannot be empty")
+		return sdkerrors.Wrap(ErrorInvalidMessage, "name cannot be empty")
 	}
 	if len(m.Name) > 64 {
-		return errors.Wrapf(ErrorInvalidMessage, "name length cannot be greater than %d chars", 64)
+		return sdkerrors.Wrapf(ErrorInvalidMessage, "name length cannot be greater than %d chars", 64)
 	}
 	if len(m.Identity) > 64 {
-		return errors.Wrapf(ErrorInvalidMessage, "identity length cannot be greater than %d chars", 64)
+		return sdkerrors.Wrapf(ErrorInvalidMessage, "identity length cannot be greater than %d chars", 64)
 	}
 	if len(m.Website) > 64 {
-		return errors.Wrapf(ErrorInvalidMessage, "website length cannot be greater than %d chars", 64)
+		return sdkerrors.Wrapf(ErrorInvalidMessage, "website length cannot be greater than %d chars", 64)
 	}
 	if m.Website != "" {
 		if _, err := url.ParseRequestURI(m.Website); err != nil {
-			return errors.Wrap(ErrorInvalidMessage, err.Error())
+			return sdkerrors.Wrap(ErrorInvalidMessage, err.Error())
 		}
 	}
 	if len(m.Description) > 256 {
-		return errors.Wrapf(ErrorInvalidMessage, "description length cannot be greater than %d chars", 256)
+		return sdkerrors.Wrapf(ErrorInvalidMessage, "description length cannot be greater than %d chars", 256)
 	}
 
 	return nil
@@ -99,30 +99,30 @@ func NewMsgUpdateRequest(from hubtypes.ProvAddress, name, identity, website, des
 // and if the 'Status' field is one of the allowed values [unspecified, active, inactive].
 func (m *MsgUpdateRequest) ValidateBasic() error {
 	if m.From == "" {
-		return errors.Wrap(ErrorInvalidMessage, "from cannot be empty")
+		return sdkerrors.Wrap(ErrorInvalidMessage, "from cannot be empty")
 	}
 	if _, err := hubtypes.ProvAddressFromBech32(m.From); err != nil {
-		return errors.Wrap(ErrorInvalidMessage, err.Error())
+		return sdkerrors.Wrap(ErrorInvalidMessage, err.Error())
 	}
 	if len(m.Name) > 64 {
-		return errors.Wrapf(ErrorInvalidMessage, "name length cannot be greater than %d chars", 64)
+		return sdkerrors.Wrapf(ErrorInvalidMessage, "name length cannot be greater than %d chars", 64)
 	}
 	if len(m.Identity) > 64 {
-		return errors.Wrapf(ErrorInvalidMessage, "identity length cannot be greater than %d chars", 64)
+		return sdkerrors.Wrapf(ErrorInvalidMessage, "identity length cannot be greater than %d chars", 64)
 	}
 	if len(m.Website) > 64 {
-		return errors.Wrapf(ErrorInvalidMessage, "website length cannot be greater than %d chars", 64)
+		return sdkerrors.Wrapf(ErrorInvalidMessage, "website length cannot be greater than %d chars", 64)
 	}
 	if m.Website != "" {
 		if _, err := url.ParseRequestURI(m.Website); err != nil {
-			return errors.Wrap(ErrorInvalidMessage, err.Error())
+			return sdkerrors.Wrap(ErrorInvalidMessage, err.Error())
 		}
 	}
 	if len(m.Description) > 256 {
-		return errors.Wrapf(ErrorInvalidMessage, "description length cannot be greater than %d chars", 256)
+		return sdkerrors.Wrapf(ErrorInvalidMessage, "description length cannot be greater than %d chars", 256)
 	}
 	if !m.Status.IsOneOf(hubtypes.StatusUnspecified, hubtypes.StatusActive, hubtypes.StatusInactive) {
-		return errors.Wrap(ErrorInvalidMessage, "status must be one of [unspecified, active, inactive]")
+		return sdkerrors.Wrap(ErrorInvalidMessage, "status must be one of [unspecified, active, inactive]")
 	}
 
 	return nil

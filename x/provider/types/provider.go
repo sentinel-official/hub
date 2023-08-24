@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/url"
 
-	"github.com/cosmos/cosmos-sdk/types/errors"
+	sdkerrors "cosmossdk.io/errors"
 
 	hubtypes "github.com/sentinel-official/hub/types"
 )
@@ -27,7 +27,7 @@ func (m *Provider) Validate() error {
 		return fmt.Errorf("address cannot be empty")
 	}
 	if _, err := hubtypes.ProvAddressFromBech32(m.Address); err != nil {
-		return errors.Wrapf(err, "invalid address %s", m.Address)
+		return sdkerrors.Wrapf(err, "invalid address %s", m.Address)
 	}
 	if m.Name == "" {
 		return fmt.Errorf("name cannot be empty")
@@ -43,7 +43,7 @@ func (m *Provider) Validate() error {
 	}
 	if m.Website != "" {
 		if _, err := url.ParseRequestURI(m.Website); err != nil {
-			return errors.Wrapf(err, "invalid website %s", m.Website)
+			return sdkerrors.Wrapf(err, "invalid website %s", m.Website)
 		}
 	}
 	if len(m.Description) > 256 {

@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"net/url"
 
+	sdkerrors "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/types/errors"
 
 	hubtypes "github.com/sentinel-official/hub/types"
 )
@@ -28,7 +28,7 @@ func (m *Node) Validate() error {
 		return fmt.Errorf("address cannot be empty")
 	}
 	if _, err := hubtypes.NodeAddressFromBech32(m.Address); err != nil {
-		return errors.Wrapf(err, "invalid address %s", m.Address)
+		return sdkerrors.Wrapf(err, "invalid address %s", m.Address)
 	}
 	if m.GigabytePrices == nil {
 		return fmt.Errorf("gigabyte_prices cannot be nil")
@@ -63,7 +63,7 @@ func (m *Node) Validate() error {
 
 	remoteURL, err := url.ParseRequestURI(m.RemoteURL)
 	if err != nil {
-		return errors.Wrapf(err, "invalid remote_url %s", m.RemoteURL)
+		return sdkerrors.Wrapf(err, "invalid remote_url %s", m.RemoteURL)
 	}
 	if remoteURL.Scheme != "https" {
 		return fmt.Errorf("remote_url scheme must be https")

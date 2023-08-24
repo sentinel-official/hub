@@ -3,8 +3,8 @@ package types
 import (
 	"fmt"
 
+	sdkerrors "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 func (m *Swap) GetTxHash() (hash EthereumHash) {
@@ -28,7 +28,7 @@ func (m *Swap) Validate() error {
 		return fmt.Errorf("receiver cannot be empty")
 	}
 	if _, err := sdk.AccAddressFromBech32(m.Receiver); err != nil {
-		return errors.Wrapf(err, "invalid receiver %s", m.Receiver)
+		return sdkerrors.Wrapf(err, "invalid receiver %s", m.Receiver)
 	}
 	if m.Amount.IsNegative() {
 		return fmt.Errorf("amount cannot be negative")

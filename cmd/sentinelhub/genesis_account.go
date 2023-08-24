@@ -101,7 +101,7 @@ contain valid denominations. Accounts may optionally be supplied with vesting pa
 
 				if (balances.Coins.IsZero() && !baseVestingAccount.OriginalVesting.IsZero()) ||
 					baseVestingAccount.OriginalVesting.IsAnyGT(balances.Coins) {
-					return errors.New("vesting amount cannot be greater than total amount")
+					return sdkerrors.New("vesting amount cannot be greater than total amount")
 				}
 
 				switch {
@@ -112,7 +112,7 @@ contain valid denominations. Accounts may optionally be supplied with vesting pa
 					genAccount = authvesting.NewDelayedVestingAccountRaw(baseVestingAccount)
 
 				default:
-					return errors.New("invalid vesting parameters; must supply start and end time or end time")
+					return sdkerrors.New("invalid vesting parameters; must supply start and end time or end time")
 				}
 			} else {
 				genAccount = baseAccount
