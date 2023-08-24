@@ -15,6 +15,7 @@ import (
 func (a *App) ExportAppStateAndValidators(
 	forZeroHeight bool,
 	jailAllowedAddrs []string,
+	modulesToExport []string,
 ) (servertypes.ExportedApp, error) {
 	ctx := a.NewContext(true, tmproto.Header{Height: a.LastBlockHeight()})
 

@@ -15,20 +15,18 @@ import (
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
+	"github.com/cosmos/cosmos-sdk/client/grpc/node"
 	"github.com/cosmos/cosmos-sdk/client/grpc/tmservice"
-	"github.com/cosmos/cosmos-sdk/client/rpc"
 	"github.com/cosmos/cosmos-sdk/codec"
+	"github.com/cosmos/cosmos-sdk/runtime"
 	"github.com/cosmos/cosmos-sdk/server/api"
 	serverconfig "github.com/cosmos/cosmos-sdk/server/config"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
-	"github.com/cosmos/cosmos-sdk/simapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	authante "github.com/cosmos/cosmos-sdk/x/auth/ante"
-	authrest "github.com/cosmos/cosmos-sdk/x/auth/client/rest"
 	authtx "github.com/cosmos/cosmos-sdk/x/auth/tx"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 
 	"github.com/sentinel-official/hub/app/ante"
@@ -40,7 +38,7 @@ const (
 )
 
 var (
-	_ simapp.App              = (*App)(nil)
+	_ runtime.AppI            = (*App)(nil)
 	_ servertypes.Application = (*App)(nil)
 )
 
@@ -55,6 +53,7 @@ type App struct {
 
 func NewApp(
 	appOpts servertypes.AppOptions,
+	bech32Prefix string,
 	db tmdb.DB,
 	encCfg EncodingConfig,
 	homeDir string,
@@ -82,11 +81,11 @@ func NewApp(
 	var (
 		storeKeys = NewStoreKeys()
 		keepers   = NewKeepers(
-			baseApp, BlockedAccAddrs(), encCfg, homeDir, invCheckPeriod, storeKeys,
+			baseApp, bech32Prefix, BlockedAccAddrs(), encCfg, homeDir, invCheckPeriod, storeKeys,
 			ModuleAccPerms(), skipUpgradeHeights, wasmConfig, wasmOpts, wasmProposalTypes,
 		)
-		mm = NewModuleManager(baseApp.DeliverTx, encCfg, keepers, skipGenesisInvariants)
-		sm = NewSimulationManager(encCfg, keepers)
+		mm = NewModuleManager(baseApp.DeliverTx, encCfg, keepers, baseApp.MsgServiceRouter(), skipGenesisInvariants)
+		sm = NewSimulationManager(encCfg, keepers, baseApp.MsgServiceRouter())
 	)
 
 	app := &App{
@@ -98,8 +97,7 @@ func NewApp(
 		sm:             sm,
 	}
 
-	app.mm.RegisterInvariants(&keepers.CrisisKeeper)
-	app.mm.RegisterRoutes(app.Router(), app.QueryRouter(), encCfg.Amino)
+	app.mm.RegisterInvariants(keepers.CrisisKeeper)
 
 	configurator := module.NewConfigurator(encCfg.Codec, app.MsgServiceRouter(), app.GRPCQueryRouter())
 	app.mm.RegisterServices(configurator)
@@ -156,6 +154,29 @@ func (a *App) LoadHeight(height int64) error {
 	return a.LoadVersion(height)
 }
 
+func (a *App) SimulationManager() *module.SimulationManager {
+	return a.sm
+}
+
+func (a *App) RegisterAPIRoutes(server *api.Server, _ serverconfig.APIConfig) {
+	authtx.RegisterGRPCGatewayRoutes(server.ClientCtx, server.GRPCGatewayRouter)
+	tmservice.RegisterGRPCGatewayRoutes(server.ClientCtx, server.GRPCGatewayRouter)
+	node.RegisterGRPCGatewayRoutes(server.ClientCtx, server.GRPCGatewayRouter)
+	ModuleBasics.RegisterGRPCGatewayRoutes(server.ClientCtx, server.GRPCGatewayRouter)
+}
+
+func (a *App) RegisterTxService(ctx client.Context) {
+	authtx.RegisterTxService(a.BaseApp.GRPCQueryRouter(), ctx, a.BaseApp.Simulate, a.InterfaceRegistry)
+}
+
+func (a *App) RegisterTendermintService(ctx client.Context) {
+	tmservice.RegisterTendermintService(ctx, a.BaseApp.GRPCQueryRouter(), a.InterfaceRegistry, a.Query)
+}
+
+func (a *App) RegisterNodeService(ctx client.Context) {
+	node.RegisterNodeService(ctx, a.GRPCQueryRouter())
+}
+
 func (a *App) ModuleAccountAddrs() map[string]bool {
 	addrs := make(map[string]bool)
 	for v := range ModuleAccPerms() {
@@ -164,29 +185,6 @@ func (a *App) ModuleAccountAddrs() map[string]bool {
 	}
 
 	return addrs
-}
-
-func (a *App) SimulationManager() *module.SimulationManager {
-	return a.sm
-}
-
-func (a *App) RegisterAPIRoutes(server *api.Server, _ serverconfig.APIConfig) {
-	ctx := server.ClientCtx
-	rpc.RegisterRoutes(ctx, server.Router)
-	authrest.RegisterTxRoutes(ctx, server.Router)
-	authtx.RegisterGRPCGatewayRoutes(ctx, server.GRPCGatewayRouter)
-	tmservice.RegisterGRPCGatewayRoutes(ctx, server.GRPCGatewayRouter)
-
-	ModuleBasics.RegisterRESTRoutes(ctx, server.Router)
-	ModuleBasics.RegisterGRPCGatewayRoutes(ctx, server.GRPCGatewayRouter)
-}
-
-func (a *App) RegisterTxService(ctx client.Context) {
-	authtx.RegisterTxService(a.BaseApp.GRPCQueryRouter(), ctx, a.BaseApp.Simulate, a.InterfaceRegistry)
-}
-
-func (a *App) RegisterTendermintService(ctx client.Context) {
-	tmservice.RegisterTendermintService(a.BaseApp.GRPCQueryRouter(), ctx, a.InterfaceRegistry)
 }
 
 func (a *App) SetupAnteHandler(wasmConfig wasmtypes.WasmConfig) {
@@ -233,10 +231,6 @@ func (a *App) SetUpgradeHandler(configurator module.Configurator) {
 		upgrades.Name,
 		upgrades.Handler(
 			a.mm, configurator,
-			a.StoreKeys.KV(paramstypes.StoreKey),
-			a.IBCICAControllerKeeper,
-			a.IBCICAHostKeeper,
-			a.CustomMintKeeper,
 		),
 	)
 }
