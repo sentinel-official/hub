@@ -4,6 +4,7 @@ import (
 	"os"
 
 	"github.com/CosmWasm/wasmd/x/wasm"
+	tmcfg "github.com/cometbft/cometbft/config"
 	tmcli "github.com/cometbft/cometbft/libs/cli"
 	"github.com/cosmos/cosmos-sdk/client"
 	clientconfig "github.com/cosmos/cosmos-sdk/client/config"
@@ -15,7 +16,6 @@ import (
 	serverconfig "github.com/cosmos/cosmos-sdk/server/config"
 	authcli "github.com/cosmos/cosmos-sdk/x/auth/client/cli"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	"github.com/cosmos/cosmos-sdk/x/crisis"
 	genutilcli "github.com/cosmos/cosmos-sdk/x/genutil/client/cli"
 	"github.com/spf13/cobra"
@@ -35,6 +35,12 @@ func initAppConfig() (string, interface{}) {
 	cfgTemplate := serverconfig.DefaultConfigTemplate
 
 	return cfgTemplate, cfg
+}
+
+func initTendermintConfig() *tmcfg.Config {
+	cfg := tmcfg.DefaultConfig()
+
+	return cfg
 }
 
 func moduleInitFlags(cmd *cobra.Command) {
@@ -105,7 +111,7 @@ func NewRootCmd(homeDir string) *cobra.Command {
 				WithInterfaceRegistry(encCfg.InterfaceRegistry).
 				WithLegacyAmino(encCfg.Amino).
 				WithTxConfig(encCfg.TxConfig).
-				WithViper("SENTINELHUB")
+				WithViper("")
 
 			clientCtx, err = client.ReadPersistentCommandFlags(clientCtx, cmd.Flags())
 			if err != nil {
@@ -121,19 +127,18 @@ func NewRootCmd(homeDir string) *cobra.Command {
 				return err
 			}
 
-			cfgTemplate, cfg := initAppConfig()
-			return server.InterceptConfigsPreRunHandler(cmd, cfgTemplate, cfg)
+			appConfigTemplate, appConfig := initAppConfig()
+			tmConfig := initTendermintConfig()
+
+			return server.InterceptConfigsPreRunHandler(cmd, appConfigTemplate, appConfig, tmConfig)
 		},
 	}
 
 	cmd.AddCommand(
-		addGenesisAccountCmd(homeDir),
 		clientconfig.Cmd(),
 		debug.Cmd(),
-		genutilcli.CollectGenTxsCmd(banktypes.GenesisBalancesIterator{}, homeDir),
-		genutilcli.GenTxCmd(app.ModuleBasics, encCfg.TxConfig, banktypes.GenesisBalancesIterator{}, homeDir),
 		genutilcli.InitCmd(app.ModuleBasics, homeDir),
-		genutilcli.ValidateGenesisCmd(app.ModuleBasics),
+		genutilcli.GenesisCoreCommand(encCfg.TxConfig, app.ModuleBasics, homeDir),
 		keys.Commands(homeDir),
 		queryCommand(),
 		rpc.StatusCommand(),

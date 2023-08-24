@@ -31,7 +31,7 @@ func main() {
 	}
 
 	cmd := NewRootCmd(homeDir)
-	if err = servercmd.Execute(cmd, homeDir); err != nil {
+	if err = servercmd.Execute(cmd, "SENTINELHUB", homeDir); err != nil {
 		switch e := err.(type) {
 		case server.ErrorCode:
 			os.Exit(e.Code)

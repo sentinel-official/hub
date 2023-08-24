@@ -2,7 +2,6 @@ package main
 
 import (
 	"io"
-	"path/filepath"
 
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	tmdb "github.com/cometbft/cometbft-db"
@@ -11,7 +10,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/server"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
-	"github.com/cosmos/cosmos-sdk/snapshots"
 	"github.com/cosmos/cosmos-sdk/store"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/version"
@@ -20,6 +18,7 @@ import (
 	"github.com/spf13/cast"
 
 	"github.com/sentinel-official/hub/app"
+	hubtypes "github.com/sentinel-official/hub/types"
 )
 
 type appCreator struct {
@@ -47,27 +46,16 @@ func (ac appCreator) NewApp(
 		panic(err)
 	}
 
-	homeDir := cast.ToString(appOpts.Get(flags.FlagHome))
-	snapshotDir := filepath.Join(homeDir, "data", "snapshots")
-
-	snapshotDB, err := sdk.NewLevelDB("metadata", snapshotDir)
-	if err != nil {
-		panic(err)
-	}
-	snapshotStore, err := snapshots.NewStore(snapshotDB, snapshotDir)
-	if err != nil {
-		panic(err)
-	}
-
 	var wasmOpts []wasmkeeper.Option
 	if cast.ToBool(appOpts.Get("telemetry.enabled")) {
 		wasmOpts = append(wasmOpts, wasmkeeper.WithVMCacheMetrics(prometheus.DefaultRegisterer))
 	}
 
 	return app.NewApp(
-		appOpts, db, ac.encCfg, homeDir, cast.ToUint(appOpts.Get(server.FlagInvCheckPeriod)), true,
-		logger, cast.ToBool(appOpts.Get(crisis.FlagSkipGenesisInvariants)), skipUpgradeHeights, traceWriter,
-		version.Version, wasmOpts, app.GetWasmEnabledProposals(app.DefaultWasmProposals),
+		appOpts, hubtypes.Bech32MainPrefix, db, ac.encCfg, cast.ToString(appOpts.Get(flags.FlagHome)),
+		cast.ToUint(appOpts.Get(server.FlagInvCheckPeriod)), true, logger,
+		cast.ToBool(appOpts.Get(crisis.FlagSkipGenesisInvariants)), skipUpgradeHeights, traceWriter, version.Version,
+		wasmOpts, app.GetWasmEnabledProposals(app.DefaultWasmProposals),
 		baseapp.SetHaltHeight(cast.ToUint64(appOpts.Get(server.FlagHaltHeight))),
 		baseapp.SetHaltTime(cast.ToUint64(appOpts.Get(server.FlagHaltTime))),
 		baseapp.SetIndexEvents(cast.ToStringSlice(appOpts.Get(server.FlagIndexEvents))),
@@ -75,9 +63,6 @@ func (ac appCreator) NewApp(
 		baseapp.SetMinGasPrices(cast.ToString(appOpts.Get(server.FlagMinGasPrices))),
 		baseapp.SetMinRetainBlocks(cast.ToUint64(appOpts.Get(server.FlagMinRetainBlocks))),
 		baseapp.SetPruning(pruningOpts),
-		baseapp.SetSnapshotInterval(cast.ToUint64(appOpts.Get(server.FlagStateSyncSnapshotInterval))),
-		baseapp.SetSnapshotKeepRecent(cast.ToUint32(appOpts.Get(server.FlagStateSyncSnapshotKeepRecent))),
-		baseapp.SetSnapshotStore(snapshotStore),
 		baseapp.SetTrace(cast.ToBool(appOpts.Get(server.FlagTrace))),
 	)
 }
@@ -90,9 +75,10 @@ func (ac appCreator) AppExport(
 	forZeroHeight bool,
 	jailWhitelist []string,
 	appOpts servertypes.AppOptions,
+	modulesToExport []string,
 ) (servertypes.ExportedApp, error) {
 	v := app.NewApp(
-		appOpts, db, ac.encCfg, cast.ToString(appOpts.Get(flags.FlagHome)),
+		appOpts, hubtypes.Bech32MainPrefix, db, ac.encCfg, cast.ToString(appOpts.Get(flags.FlagHome)),
 		cast.ToUint(appOpts.Get(server.FlagInvCheckPeriod)), height == -1, logger,
 		cast.ToBool(appOpts.Get(crisis.FlagSkipGenesisInvariants)), map[int64]bool{}, traceWriter,
 		version.Version, nil, nil,
@@ -104,5 +90,5 @@ func (ac appCreator) AppExport(
 		}
 	}
 
-	return v.ExportAppStateAndValidators(forZeroHeight, jailWhitelist)
+	return v.ExportAppStateAndValidators(forZeroHeight, jailWhitelist, modulesToExport)
 }
