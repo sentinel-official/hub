@@ -8,13 +8,13 @@ import (
 )
 
 func AmountForBytes(gigabytePrice, bytes sdkmath.Int) sdkmath.Int {
-	bytePrice := gigabytePrice.ToDec().QuoInt(types.Gigabyte)
-	return bytes.ToDec().Mul(bytePrice).Ceil().TruncateInt()
+	bytePrice := sdkmath.LegacyNewDecFromInt(gigabytePrice).QuoInt(types.Gigabyte)
+	return sdkmath.LegacyNewDecFromInt(bytes).Mul(bytePrice).Ceil().TruncateInt()
 }
 
-func GetProportionOfCoin(coin sdk.Coin, share sdk.Dec) sdk.Coin {
+func GetProportionOfCoin(coin sdk.Coin, share sdkmath.LegacyDec) sdk.Coin {
 	return sdk.NewCoin(
 		coin.Denom,
-		coin.Amount.ToDec().Mul(share).RoundInt(),
+		sdkmath.LegacyNewDecFromInt(coin.Amount).Mul(share).RoundInt(),
 	)
 }

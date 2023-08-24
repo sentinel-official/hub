@@ -29,7 +29,7 @@ type DepositKeeper interface {
 type NodeKeeper interface {
 	GetNode(ctx sdk.Context, address hubtypes.NodeAddress) (nodetypes.Node, bool)
 	HasNodeForPlan(ctx sdk.Context, id uint64, addr hubtypes.NodeAddress) bool
-	StakingShare(ctx sdk.Context) sdk.Dec
+	StakingShare(ctx sdk.Context) sdkmath.LegacyDec
 }
 
 type PlanKeeper interface {

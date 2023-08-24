@@ -4,6 +4,7 @@ import (
 	"context"
 	"time"
 
+	sdkmath "cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	hubtypes "github.com/sentinel-official/hub/types"
@@ -154,8 +155,8 @@ func (k *msgServer) MsgAllocate(c context.Context, msg *types.MsgAllocateRequest
 		toAlloc = types.Allocation{
 			ID:            subscription.GetID(),
 			Address:       toAddr.String(),
-			GrantedBytes:  sdk.ZeroInt(),
-			UtilisedBytes: sdk.ZeroInt(),
+			GrantedBytes:  sdkmath.ZeroInt(),
+			UtilisedBytes: sdkmath.ZeroInt(),
 		}
 
 		// Update the subscription in the Store to associate it with the new receiver.

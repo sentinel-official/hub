@@ -3,6 +3,7 @@ package keeper
 import (
 	"time"
 
+	sdkmath "cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/sentinel-official/hub/x/node/types"
@@ -58,7 +59,7 @@ func (k *Keeper) MinSubscriptionHours(ctx sdk.Context) (v int64) {
 	return
 }
 
-func (k *Keeper) StakingShare(ctx sdk.Context) (v sdk.Dec) {
+func (k *Keeper) StakingShare(ctx sdk.Context) (v sdkmath.LegacyDec) {
 	k.params.Get(ctx, types.KeyStakingShare, &v)
 	return
 }

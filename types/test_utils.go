@@ -3,6 +3,7 @@ package types
 import (
 	"time"
 
+	sdkmath "cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -31,10 +32,10 @@ var (
 	TestDenomOne     = "one"
 	TestDenomTwo     = "two"
 
-	TestIntEmpty    = sdk.Int{}
-	TestIntNegative = sdk.NewInt(-1000)
-	TestIntZero     = sdk.NewInt(0)
-	TestIntPositive = sdk.NewInt(1000)
+	TestIntEmpty    = sdkmath.Int{}
+	TestIntNegative = sdkmath.NewInt(-1000)
+	TestIntZero     = sdkmath.NewInt(0)
+	TestIntPositive = sdkmath.NewInt(1000)
 
 	TestCoinEmpty          = sdk.Coin{}
 	TestCoinEmptyDenom     = sdk.Coin{Denom: TestDenomEmpty, Amount: TestIntPositive}

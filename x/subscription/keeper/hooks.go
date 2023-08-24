@@ -43,8 +43,8 @@ func (k *Keeper) SessionInactiveHook(ctx sdk.Context, id uint64, accAddr sdk.Acc
 	}
 
 	var (
-		gigabytePrice  sdk.Coin        // Gigabyte price based on the deposit amount and gigabytes (for NodeSubscription).
-		previousAmount = sdk.ZeroInt() // Amount paid for previous utilization (for NodeSubscription).
+		gigabytePrice  sdk.Coin            // Gigabyte price based on the deposit amount and gigabytes (for NodeSubscription).
+		previousAmount = sdkmath.ZeroInt() // Amount paid for previous utilization (for NodeSubscription).
 	)
 
 	// Calculate payment amounts based on the subscription type (NodeSubscription).

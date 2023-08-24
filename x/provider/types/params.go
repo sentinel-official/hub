@@ -3,13 +3,14 @@ package types
 import (
 	"fmt"
 
+	sdkmath "cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	params "github.com/cosmos/cosmos-sdk/x/params/types"
 )
 
 var (
-	DefaultDeposit      = sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(1000))
-	DefaultStakingShare = sdk.NewDecWithPrec(1, 1)
+	DefaultDeposit      = sdk.NewCoin(sdk.DefaultBondDenom, sdkmath.NewInt(1000))
+	DefaultStakingShare = sdkmath.LegacyNewDecWithPrec(1, 1)
 )
 
 var (
@@ -47,7 +48,7 @@ func (m *Params) ParamSetPairs() params.ParamSetPairs {
 	}
 }
 
-func NewParams(deposit sdk.Coin, stakingShare sdk.Dec) Params {
+func NewParams(deposit sdk.Coin, stakingShare sdkmath.LegacyDec) Params {
 	return Params{
 		Deposit:      deposit,
 		StakingShare: stakingShare,
@@ -85,7 +86,7 @@ func validateDeposit(v interface{}) error {
 }
 
 func validateStakingShare(v interface{}) error {
-	value, ok := v.(sdk.Dec)
+	value, ok := v.(sdkmath.LegacyDec)
 	if !ok {
 		return fmt.Errorf("invalid parameter type %T", v)
 	}
@@ -96,7 +97,7 @@ func validateStakingShare(v interface{}) error {
 	if value.IsNegative() {
 		return fmt.Errorf("staking_share cannot be negative")
 	}
-	if value.GT(sdk.OneDec()) {
+	if value.GT(sdkmath.LegacyOneDec()) {
 		return fmt.Errorf("staking_share cannot be greater than 1")
 	}
 

@@ -4,13 +4,13 @@ import (
 	"reflect"
 	"testing"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkmath "cosmossdk.io/math"
 )
 
 func TestBandwidth_Add(t *testing.T) {
 	type fields struct {
-		Upload   sdk.Int
-		Download sdk.Int
+		Upload   sdkmath.Int
+		Download sdkmath.Int
 	}
 	type args struct {
 		v Bandwidth
@@ -24,101 +24,101 @@ func TestBandwidth_Add(t *testing.T) {
 		{
 			"negative upload and negative download",
 			fields{
-				Upload:   sdk.NewInt(0),
-				Download: sdk.NewInt(0),
+				Upload:   sdkmath.NewInt(0),
+				Download: sdkmath.NewInt(0),
 			},
 			args{
-				Bandwidth{Upload: sdk.NewInt(-1000), Download: sdk.NewInt(-1000)},
+				Bandwidth{Upload: sdkmath.NewInt(-1000), Download: sdkmath.NewInt(-1000)},
 			},
-			Bandwidth{Upload: sdk.NewInt(-1000), Download: sdk.NewInt(-1000)},
+			Bandwidth{Upload: sdkmath.NewInt(-1000), Download: sdkmath.NewInt(-1000)},
 		},
 		{
 			"negative upload and zero download",
 			fields{
-				Upload:   sdk.NewInt(0),
-				Download: sdk.NewInt(0),
+				Upload:   sdkmath.NewInt(0),
+				Download: sdkmath.NewInt(0),
 			},
 			args{
-				Bandwidth{Upload: sdk.NewInt(-1000), Download: sdk.NewInt(0)},
+				Bandwidth{Upload: sdkmath.NewInt(-1000), Download: sdkmath.NewInt(0)},
 			},
-			Bandwidth{Upload: sdk.NewInt(-1000), Download: sdk.NewInt(0)},
+			Bandwidth{Upload: sdkmath.NewInt(-1000), Download: sdkmath.NewInt(0)},
 		},
 		{
 			"negative upload and positive download",
 			fields{
-				Upload:   sdk.NewInt(0),
-				Download: sdk.NewInt(0),
+				Upload:   sdkmath.NewInt(0),
+				Download: sdkmath.NewInt(0),
 			},
 			args{
-				Bandwidth{Upload: sdk.NewInt(-1000), Download: sdk.NewInt(1000)},
+				Bandwidth{Upload: sdkmath.NewInt(-1000), Download: sdkmath.NewInt(1000)},
 			},
-			Bandwidth{Upload: sdk.NewInt(-1000), Download: sdk.NewInt(1000)},
+			Bandwidth{Upload: sdkmath.NewInt(-1000), Download: sdkmath.NewInt(1000)},
 		},
 		{
 			"zero upload and negative download",
 			fields{
-				Upload:   sdk.NewInt(0),
-				Download: sdk.NewInt(0),
+				Upload:   sdkmath.NewInt(0),
+				Download: sdkmath.NewInt(0),
 			},
 			args{
-				Bandwidth{Upload: sdk.NewInt(0), Download: sdk.NewInt(-1000)},
+				Bandwidth{Upload: sdkmath.NewInt(0), Download: sdkmath.NewInt(-1000)},
 			},
-			Bandwidth{Upload: sdk.NewInt(0), Download: sdk.NewInt(-1000)},
+			Bandwidth{Upload: sdkmath.NewInt(0), Download: sdkmath.NewInt(-1000)},
 		},
 		{
 			"zero upload and zero download",
 			fields{
-				Upload:   sdk.NewInt(0),
-				Download: sdk.NewInt(0),
+				Upload:   sdkmath.NewInt(0),
+				Download: sdkmath.NewInt(0),
 			},
 			args{
-				Bandwidth{Upload: sdk.NewInt(0), Download: sdk.NewInt(0)},
+				Bandwidth{Upload: sdkmath.NewInt(0), Download: sdkmath.NewInt(0)},
 			},
-			Bandwidth{Upload: sdk.NewInt(0), Download: sdk.NewInt(0)},
+			Bandwidth{Upload: sdkmath.NewInt(0), Download: sdkmath.NewInt(0)},
 		},
 		{
 			"zero upload and positive download",
 			fields{
-				Upload:   sdk.NewInt(0),
-				Download: sdk.NewInt(0),
+				Upload:   sdkmath.NewInt(0),
+				Download: sdkmath.NewInt(0),
 			},
 			args{
-				Bandwidth{Upload: sdk.NewInt(0), Download: sdk.NewInt(1000)},
+				Bandwidth{Upload: sdkmath.NewInt(0), Download: sdkmath.NewInt(1000)},
 			},
-			Bandwidth{Upload: sdk.NewInt(0), Download: sdk.NewInt(1000)},
+			Bandwidth{Upload: sdkmath.NewInt(0), Download: sdkmath.NewInt(1000)},
 		},
 		{
 			"positive upload and negative download",
 			fields{
-				Upload:   sdk.NewInt(0),
-				Download: sdk.NewInt(0),
+				Upload:   sdkmath.NewInt(0),
+				Download: sdkmath.NewInt(0),
 			},
 			args{
-				Bandwidth{Upload: sdk.NewInt(1000), Download: sdk.NewInt(-1000)},
+				Bandwidth{Upload: sdkmath.NewInt(1000), Download: sdkmath.NewInt(-1000)},
 			},
-			Bandwidth{Upload: sdk.NewInt(1000), Download: sdk.NewInt(-1000)},
+			Bandwidth{Upload: sdkmath.NewInt(1000), Download: sdkmath.NewInt(-1000)},
 		},
 		{
 			"positive upload and zero download",
 			fields{
-				Upload:   sdk.NewInt(0),
-				Download: sdk.NewInt(0),
+				Upload:   sdkmath.NewInt(0),
+				Download: sdkmath.NewInt(0),
 			},
 			args{
-				Bandwidth{Upload: sdk.NewInt(1000), Download: sdk.NewInt(0)},
+				Bandwidth{Upload: sdkmath.NewInt(1000), Download: sdkmath.NewInt(0)},
 			},
-			Bandwidth{Upload: sdk.NewInt(1000), Download: sdk.NewInt(0)},
+			Bandwidth{Upload: sdkmath.NewInt(1000), Download: sdkmath.NewInt(0)},
 		},
 		{
 			"positive upload and positive download",
 			fields{
-				Upload:   sdk.NewInt(0),
-				Download: sdk.NewInt(0),
+				Upload:   sdkmath.NewInt(0),
+				Download: sdkmath.NewInt(0),
 			},
 			args{
-				Bandwidth{Upload: sdk.NewInt(1000), Download: sdk.NewInt(1000)},
+				Bandwidth{Upload: sdkmath.NewInt(1000), Download: sdkmath.NewInt(1000)},
 			},
-			Bandwidth{Upload: sdk.NewInt(1000), Download: sdk.NewInt(1000)},
+			Bandwidth{Upload: sdkmath.NewInt(1000), Download: sdkmath.NewInt(1000)},
 		},
 	}
 	for _, tt := range tests {
@@ -136,11 +136,11 @@ func TestBandwidth_Add(t *testing.T) {
 
 func TestBandwidth_CeilTo(t *testing.T) {
 	type fields struct {
-		Upload   sdk.Int
-		Download sdk.Int
+		Upload   sdkmath.Int
+		Download sdkmath.Int
 	}
 	type args struct {
-		precision sdk.Int
+		precision sdkmath.Int
 	}
 	tests := []struct {
 		name   string
@@ -150,159 +150,159 @@ func TestBandwidth_CeilTo(t *testing.T) {
 	}{
 		{
 			"negative pre",
-			fields{Upload: sdk.NewInt(10), Download: sdk.NewInt(10)},
-			args{precision: sdk.NewInt(-17)},
-			Bandwidth{sdk.NewInt(10), sdk.NewInt(10)},
+			fields{Upload: sdkmath.NewInt(10), Download: sdkmath.NewInt(10)},
+			args{precision: sdkmath.NewInt(-17)},
+			Bandwidth{sdkmath.NewInt(10), sdkmath.NewInt(10)},
 		},
 		{
 			"0 upload 0 download",
-			fields{Upload: sdk.NewInt(0), Download: sdk.NewInt(0)},
-			args{precision: sdk.NewInt(17)},
-			Bandwidth{sdk.NewInt(0), sdk.NewInt(0)},
+			fields{Upload: sdkmath.NewInt(0), Download: sdkmath.NewInt(0)},
+			args{precision: sdkmath.NewInt(17)},
+			Bandwidth{sdkmath.NewInt(0), sdkmath.NewInt(0)},
 		},
 		{
 			"0 upload 10 download",
-			fields{Upload: sdk.NewInt(0), Download: sdk.NewInt(10)},
-			args{precision: sdk.NewInt(17)},
-			Bandwidth{sdk.NewInt(0), sdk.NewInt(17)},
+			fields{Upload: sdkmath.NewInt(0), Download: sdkmath.NewInt(10)},
+			args{precision: sdkmath.NewInt(17)},
+			Bandwidth{sdkmath.NewInt(0), sdkmath.NewInt(17)},
 		},
 		{
 			"0 upload 17 download",
-			fields{Upload: sdk.NewInt(0), Download: sdk.NewInt(17)},
-			args{precision: sdk.NewInt(17)},
-			Bandwidth{sdk.NewInt(0), sdk.NewInt(17)},
+			fields{Upload: sdkmath.NewInt(0), Download: sdkmath.NewInt(17)},
+			args{precision: sdkmath.NewInt(17)},
+			Bandwidth{sdkmath.NewInt(0), sdkmath.NewInt(17)},
 		},
 		{
 			"0 upload 20 download",
-			fields{Upload: sdk.NewInt(0), Download: sdk.NewInt(20)},
-			args{precision: sdk.NewInt(17)},
-			Bandwidth{sdk.NewInt(0), sdk.NewInt(34)},
+			fields{Upload: sdkmath.NewInt(0), Download: sdkmath.NewInt(20)},
+			args{precision: sdkmath.NewInt(17)},
+			Bandwidth{sdkmath.NewInt(0), sdkmath.NewInt(34)},
 		},
 		{
 			"0 upload 34 download",
-			fields{Upload: sdk.NewInt(0), Download: sdk.NewInt(34)},
-			args{precision: sdk.NewInt(17)},
-			Bandwidth{sdk.NewInt(0), sdk.NewInt(34)},
+			fields{Upload: sdkmath.NewInt(0), Download: sdkmath.NewInt(34)},
+			args{precision: sdkmath.NewInt(17)},
+			Bandwidth{sdkmath.NewInt(0), sdkmath.NewInt(34)},
 		},
 		{
 			"10 upload 0 download",
-			fields{Upload: sdk.NewInt(10), Download: sdk.NewInt(0)},
-			args{precision: sdk.NewInt(17)},
-			Bandwidth{sdk.NewInt(17), sdk.NewInt(0)},
+			fields{Upload: sdkmath.NewInt(10), Download: sdkmath.NewInt(0)},
+			args{precision: sdkmath.NewInt(17)},
+			Bandwidth{sdkmath.NewInt(17), sdkmath.NewInt(0)},
 		},
 		{
 			"10 upload 10 download",
-			fields{Upload: sdk.NewInt(10), Download: sdk.NewInt(10)},
-			args{precision: sdk.NewInt(17)},
-			Bandwidth{sdk.NewInt(17), sdk.NewInt(17)},
+			fields{Upload: sdkmath.NewInt(10), Download: sdkmath.NewInt(10)},
+			args{precision: sdkmath.NewInt(17)},
+			Bandwidth{sdkmath.NewInt(17), sdkmath.NewInt(17)},
 		},
 		{
 			"10 upload 17 download",
-			fields{Upload: sdk.NewInt(10), Download: sdk.NewInt(17)},
-			args{precision: sdk.NewInt(17)},
-			Bandwidth{sdk.NewInt(17), sdk.NewInt(17)},
+			fields{Upload: sdkmath.NewInt(10), Download: sdkmath.NewInt(17)},
+			args{precision: sdkmath.NewInt(17)},
+			Bandwidth{sdkmath.NewInt(17), sdkmath.NewInt(17)},
 		},
 		{
 			"10 upload 20 download",
-			fields{Upload: sdk.NewInt(10), Download: sdk.NewInt(20)},
-			args{precision: sdk.NewInt(17)},
-			Bandwidth{sdk.NewInt(17), sdk.NewInt(34)},
+			fields{Upload: sdkmath.NewInt(10), Download: sdkmath.NewInt(20)},
+			args{precision: sdkmath.NewInt(17)},
+			Bandwidth{sdkmath.NewInt(17), sdkmath.NewInt(34)},
 		},
 		{
 			"10 upload 34 download",
-			fields{Upload: sdk.NewInt(10), Download: sdk.NewInt(34)},
-			args{precision: sdk.NewInt(17)},
-			Bandwidth{sdk.NewInt(17), sdk.NewInt(34)},
+			fields{Upload: sdkmath.NewInt(10), Download: sdkmath.NewInt(34)},
+			args{precision: sdkmath.NewInt(17)},
+			Bandwidth{sdkmath.NewInt(17), sdkmath.NewInt(34)},
 		},
 		{
 			"17 upload 0 download",
-			fields{Upload: sdk.NewInt(17), Download: sdk.NewInt(0)},
-			args{precision: sdk.NewInt(17)},
-			Bandwidth{sdk.NewInt(17), sdk.NewInt(0)},
+			fields{Upload: sdkmath.NewInt(17), Download: sdkmath.NewInt(0)},
+			args{precision: sdkmath.NewInt(17)},
+			Bandwidth{sdkmath.NewInt(17), sdkmath.NewInt(0)},
 		},
 		{
 			"17 upload 10 download",
-			fields{Upload: sdk.NewInt(17), Download: sdk.NewInt(10)},
-			args{precision: sdk.NewInt(17)},
-			Bandwidth{sdk.NewInt(17), sdk.NewInt(17)},
+			fields{Upload: sdkmath.NewInt(17), Download: sdkmath.NewInt(10)},
+			args{precision: sdkmath.NewInt(17)},
+			Bandwidth{sdkmath.NewInt(17), sdkmath.NewInt(17)},
 		},
 		{
 			"17 upload 17 download",
-			fields{Upload: sdk.NewInt(17), Download: sdk.NewInt(17)},
-			args{precision: sdk.NewInt(17)},
-			Bandwidth{sdk.NewInt(17), sdk.NewInt(17)},
+			fields{Upload: sdkmath.NewInt(17), Download: sdkmath.NewInt(17)},
+			args{precision: sdkmath.NewInt(17)},
+			Bandwidth{sdkmath.NewInt(17), sdkmath.NewInt(17)},
 		},
 		{
 			"17 upload 20 download",
-			fields{Upload: sdk.NewInt(17), Download: sdk.NewInt(20)},
-			args{precision: sdk.NewInt(17)},
-			Bandwidth{sdk.NewInt(17), sdk.NewInt(34)},
+			fields{Upload: sdkmath.NewInt(17), Download: sdkmath.NewInt(20)},
+			args{precision: sdkmath.NewInt(17)},
+			Bandwidth{sdkmath.NewInt(17), sdkmath.NewInt(34)},
 		},
 		{
 			"17 upload 34 download",
-			fields{Upload: sdk.NewInt(17), Download: sdk.NewInt(34)},
-			args{precision: sdk.NewInt(17)},
-			Bandwidth{sdk.NewInt(17), sdk.NewInt(34)},
+			fields{Upload: sdkmath.NewInt(17), Download: sdkmath.NewInt(34)},
+			args{precision: sdkmath.NewInt(17)},
+			Bandwidth{sdkmath.NewInt(17), sdkmath.NewInt(34)},
 		},
 		{
 			"20 upload 0 download",
-			fields{Upload: sdk.NewInt(20), Download: sdk.NewInt(0)},
-			args{precision: sdk.NewInt(17)},
-			Bandwidth{sdk.NewInt(34), sdk.NewInt(0)},
+			fields{Upload: sdkmath.NewInt(20), Download: sdkmath.NewInt(0)},
+			args{precision: sdkmath.NewInt(17)},
+			Bandwidth{sdkmath.NewInt(34), sdkmath.NewInt(0)},
 		},
 		{
 			"20 upload 10 download",
-			fields{Upload: sdk.NewInt(20), Download: sdk.NewInt(10)},
-			args{precision: sdk.NewInt(17)},
-			Bandwidth{sdk.NewInt(34), sdk.NewInt(17)},
+			fields{Upload: sdkmath.NewInt(20), Download: sdkmath.NewInt(10)},
+			args{precision: sdkmath.NewInt(17)},
+			Bandwidth{sdkmath.NewInt(34), sdkmath.NewInt(17)},
 		},
 		{
 			"20 upload 17 download",
-			fields{Upload: sdk.NewInt(20), Download: sdk.NewInt(17)},
-			args{precision: sdk.NewInt(17)},
-			Bandwidth{sdk.NewInt(34), sdk.NewInt(17)},
+			fields{Upload: sdkmath.NewInt(20), Download: sdkmath.NewInt(17)},
+			args{precision: sdkmath.NewInt(17)},
+			Bandwidth{sdkmath.NewInt(34), sdkmath.NewInt(17)},
 		},
 		{
 			"20 upload 20 download",
-			fields{Upload: sdk.NewInt(20), Download: sdk.NewInt(20)},
-			args{precision: sdk.NewInt(17)},
-			Bandwidth{sdk.NewInt(34), sdk.NewInt(34)},
+			fields{Upload: sdkmath.NewInt(20), Download: sdkmath.NewInt(20)},
+			args{precision: sdkmath.NewInt(17)},
+			Bandwidth{sdkmath.NewInt(34), sdkmath.NewInt(34)},
 		},
 		{
 			"20 upload 34 download",
-			fields{Upload: sdk.NewInt(20), Download: sdk.NewInt(34)},
-			args{precision: sdk.NewInt(17)},
-			Bandwidth{sdk.NewInt(34), sdk.NewInt(34)},
+			fields{Upload: sdkmath.NewInt(20), Download: sdkmath.NewInt(34)},
+			args{precision: sdkmath.NewInt(17)},
+			Bandwidth{sdkmath.NewInt(34), sdkmath.NewInt(34)},
 		},
 		{
 			"34 upload 0 download",
-			fields{Upload: sdk.NewInt(34), Download: sdk.NewInt(0)},
-			args{precision: sdk.NewInt(17)},
-			Bandwidth{sdk.NewInt(34), sdk.NewInt(0)},
+			fields{Upload: sdkmath.NewInt(34), Download: sdkmath.NewInt(0)},
+			args{precision: sdkmath.NewInt(17)},
+			Bandwidth{sdkmath.NewInt(34), sdkmath.NewInt(0)},
 		},
 		{
 			"34 upload 10 download",
-			fields{Upload: sdk.NewInt(34), Download: sdk.NewInt(10)},
-			args{precision: sdk.NewInt(17)},
-			Bandwidth{sdk.NewInt(34), sdk.NewInt(17)},
+			fields{Upload: sdkmath.NewInt(34), Download: sdkmath.NewInt(10)},
+			args{precision: sdkmath.NewInt(17)},
+			Bandwidth{sdkmath.NewInt(34), sdkmath.NewInt(17)},
 		},
 		{
 			"34 upload 17 download",
-			fields{Upload: sdk.NewInt(34), Download: sdk.NewInt(17)},
-			args{precision: sdk.NewInt(17)},
-			Bandwidth{sdk.NewInt(34), sdk.NewInt(17)},
+			fields{Upload: sdkmath.NewInt(34), Download: sdkmath.NewInt(17)},
+			args{precision: sdkmath.NewInt(17)},
+			Bandwidth{sdkmath.NewInt(34), sdkmath.NewInt(17)},
 		},
 		{
 			"34 upload 20 download",
-			fields{Upload: sdk.NewInt(34), Download: sdk.NewInt(20)},
-			args{precision: sdk.NewInt(17)},
-			Bandwidth{sdk.NewInt(34), sdk.NewInt(34)},
+			fields{Upload: sdkmath.NewInt(34), Download: sdkmath.NewInt(20)},
+			args{precision: sdkmath.NewInt(17)},
+			Bandwidth{sdkmath.NewInt(34), sdkmath.NewInt(34)},
 		},
 		{
 			"34 upload 34 download",
-			fields{Upload: sdk.NewInt(34), Download: sdk.NewInt(34)},
-			args{precision: sdk.NewInt(17)},
-			Bandwidth{sdk.NewInt(34), sdk.NewInt(34)},
+			fields{Upload: sdkmath.NewInt(34), Download: sdkmath.NewInt(34)},
+			args{precision: sdkmath.NewInt(17)},
+			Bandwidth{sdkmath.NewInt(34), sdkmath.NewInt(34)},
 		},
 	}
 	for _, tt := range tests {
@@ -320,8 +320,8 @@ func TestBandwidth_CeilTo(t *testing.T) {
 
 func TestBandwidth_IsAllLTE(t *testing.T) {
 	type fields struct {
-		Upload   sdk.Int
-		Download sdk.Int
+		Upload   sdkmath.Int
+		Download sdkmath.Int
 	}
 	type args struct {
 		v Bandwidth
@@ -335,99 +335,99 @@ func TestBandwidth_IsAllLTE(t *testing.T) {
 		{
 			"negative upload and negative download",
 			fields{
-				Upload:   sdk.NewInt(0),
-				Download: sdk.NewInt(0),
+				Upload:   sdkmath.NewInt(0),
+				Download: sdkmath.NewInt(0),
 			},
 			args{
-				Bandwidth{Upload: sdk.NewInt(-1000), Download: sdk.NewInt(-1000)},
+				Bandwidth{Upload: sdkmath.NewInt(-1000), Download: sdkmath.NewInt(-1000)},
 			},
 			false,
 		},
 		{
 			"negative upload and zero download",
 			fields{
-				Upload:   sdk.NewInt(0),
-				Download: sdk.NewInt(0),
+				Upload:   sdkmath.NewInt(0),
+				Download: sdkmath.NewInt(0),
 			},
 			args{
-				Bandwidth{Upload: sdk.NewInt(-1000), Download: sdk.NewInt(0)},
+				Bandwidth{Upload: sdkmath.NewInt(-1000), Download: sdkmath.NewInt(0)},
 			},
 			false,
 		},
 		{
 			"negative upload and positive download",
 			fields{
-				Upload:   sdk.NewInt(0),
-				Download: sdk.NewInt(0),
+				Upload:   sdkmath.NewInt(0),
+				Download: sdkmath.NewInt(0),
 			},
 			args{
-				Bandwidth{Upload: sdk.NewInt(-1000), Download: sdk.NewInt(1000)},
+				Bandwidth{Upload: sdkmath.NewInt(-1000), Download: sdkmath.NewInt(1000)},
 			},
 			false,
 		},
 		{
 			"zero upload and negative download",
 			fields{
-				Upload:   sdk.NewInt(0),
-				Download: sdk.NewInt(0),
+				Upload:   sdkmath.NewInt(0),
+				Download: sdkmath.NewInt(0),
 			},
 			args{
-				Bandwidth{Upload: sdk.NewInt(0), Download: sdk.NewInt(-1000)},
+				Bandwidth{Upload: sdkmath.NewInt(0), Download: sdkmath.NewInt(-1000)},
 			},
 			false,
 		},
 		{
 			"zero upload and zero download",
 			fields{
-				Upload:   sdk.NewInt(0),
-				Download: sdk.NewInt(0),
+				Upload:   sdkmath.NewInt(0),
+				Download: sdkmath.NewInt(0),
 			},
 			args{
-				Bandwidth{Upload: sdk.NewInt(0), Download: sdk.NewInt(0)},
+				Bandwidth{Upload: sdkmath.NewInt(0), Download: sdkmath.NewInt(0)},
 			},
 			true,
 		},
 		{
 			"zero upload and positive download",
 			fields{
-				Upload:   sdk.NewInt(0),
-				Download: sdk.NewInt(0),
+				Upload:   sdkmath.NewInt(0),
+				Download: sdkmath.NewInt(0),
 			},
 			args{
-				Bandwidth{Upload: sdk.NewInt(0), Download: sdk.NewInt(1000)},
+				Bandwidth{Upload: sdkmath.NewInt(0), Download: sdkmath.NewInt(1000)},
 			},
 			true,
 		},
 		{
 			"positive upload and negative download",
 			fields{
-				Upload:   sdk.NewInt(0),
-				Download: sdk.NewInt(0),
+				Upload:   sdkmath.NewInt(0),
+				Download: sdkmath.NewInt(0),
 			},
 			args{
-				Bandwidth{Upload: sdk.NewInt(1000), Download: sdk.NewInt(-1000)},
+				Bandwidth{Upload: sdkmath.NewInt(1000), Download: sdkmath.NewInt(-1000)},
 			},
 			false,
 		},
 		{
 			"positive upload and zero download",
 			fields{
-				Upload:   sdk.NewInt(0),
-				Download: sdk.NewInt(0),
+				Upload:   sdkmath.NewInt(0),
+				Download: sdkmath.NewInt(0),
 			},
 			args{
-				Bandwidth{Upload: sdk.NewInt(1000), Download: sdk.NewInt(0)},
+				Bandwidth{Upload: sdkmath.NewInt(1000), Download: sdkmath.NewInt(0)},
 			},
 			true,
 		},
 		{
 			"positive upload and positive download",
 			fields{
-				Upload:   sdk.NewInt(0),
-				Download: sdk.NewInt(0),
+				Upload:   sdkmath.NewInt(0),
+				Download: sdkmath.NewInt(0),
 			},
 			args{
-				Bandwidth{Upload: sdk.NewInt(1000), Download: sdk.NewInt(1000)},
+				Bandwidth{Upload: sdkmath.NewInt(1000), Download: sdkmath.NewInt(1000)},
 			},
 			true,
 		},
@@ -447,8 +447,8 @@ func TestBandwidth_IsAllLTE(t *testing.T) {
 
 func TestBandwidth_IsAllPositive(t *testing.T) {
 	type fields struct {
-		Upload   sdk.Int
-		Download sdk.Int
+		Upload   sdkmath.Int
+		Download sdkmath.Int
 	}
 	tests := []struct {
 		name   string
@@ -458,72 +458,72 @@ func TestBandwidth_IsAllPositive(t *testing.T) {
 		{
 			"negative upload and negative download",
 			fields{
-				Upload:   sdk.NewInt(-1000),
-				Download: sdk.NewInt(-1000),
+				Upload:   sdkmath.NewInt(-1000),
+				Download: sdkmath.NewInt(-1000),
 			},
 			false,
 		},
 		{
 			"negative upload and zero download",
 			fields{
-				Upload:   sdk.NewInt(-1000),
-				Download: sdk.NewInt(0),
+				Upload:   sdkmath.NewInt(-1000),
+				Download: sdkmath.NewInt(0),
 			},
 			false,
 		},
 		{
 			"negative upload and positive download",
 			fields{
-				Upload:   sdk.NewInt(-1000),
-				Download: sdk.NewInt(1000),
+				Upload:   sdkmath.NewInt(-1000),
+				Download: sdkmath.NewInt(1000),
 			},
 			false,
 		},
 		{
 			"zero upload and negative download",
 			fields{
-				Upload:   sdk.NewInt(0),
-				Download: sdk.NewInt(-1000),
+				Upload:   sdkmath.NewInt(0),
+				Download: sdkmath.NewInt(-1000),
 			},
 			false,
 		},
 		{
 			"zero upload and zero download",
 			fields{
-				Upload:   sdk.NewInt(0),
-				Download: sdk.NewInt(0),
+				Upload:   sdkmath.NewInt(0),
+				Download: sdkmath.NewInt(0),
 			},
 			false,
 		},
 		{
 			"zero upload and positive download",
 			fields{
-				Upload:   sdk.NewInt(0),
-				Download: sdk.NewInt(1000),
+				Upload:   sdkmath.NewInt(0),
+				Download: sdkmath.NewInt(1000),
 			},
 			false,
 		},
 		{
 			"positive upload and negative download",
 			fields{
-				Upload:   sdk.NewInt(1000),
-				Download: sdk.NewInt(-1000),
+				Upload:   sdkmath.NewInt(1000),
+				Download: sdkmath.NewInt(-1000),
 			},
 			false,
 		},
 		{
 			"positive upload and zero download",
 			fields{
-				Upload:   sdk.NewInt(1000),
-				Download: sdk.NewInt(0),
+				Upload:   sdkmath.NewInt(1000),
+				Download: sdkmath.NewInt(0),
 			},
 			false,
 		},
 		{
 			"positive upload and positive download",
 			fields{
-				Upload:   sdk.NewInt(1000),
-				Download: sdk.NewInt(1000),
+				Upload:   sdkmath.NewInt(1000),
+				Download: sdkmath.NewInt(1000),
 			},
 			true,
 		},
@@ -543,8 +543,8 @@ func TestBandwidth_IsAllPositive(t *testing.T) {
 
 func TestBandwidth_IsAllZero(t *testing.T) {
 	type fields struct {
-		Upload   sdk.Int
-		Download sdk.Int
+		Upload   sdkmath.Int
+		Download sdkmath.Int
 	}
 	tests := []struct {
 		name   string
@@ -554,72 +554,72 @@ func TestBandwidth_IsAllZero(t *testing.T) {
 		{
 			"negative upload and negative download",
 			fields{
-				Upload:   sdk.NewInt(-1000),
-				Download: sdk.NewInt(-1000),
+				Upload:   sdkmath.NewInt(-1000),
+				Download: sdkmath.NewInt(-1000),
 			},
 			false,
 		},
 		{
 			"negative upload and zero download",
 			fields{
-				Upload:   sdk.NewInt(-1000),
-				Download: sdk.NewInt(0),
+				Upload:   sdkmath.NewInt(-1000),
+				Download: sdkmath.NewInt(0),
 			},
 			false,
 		},
 		{
 			"negative upload and positive download",
 			fields{
-				Upload:   sdk.NewInt(-1000),
-				Download: sdk.NewInt(1000),
+				Upload:   sdkmath.NewInt(-1000),
+				Download: sdkmath.NewInt(1000),
 			},
 			false,
 		},
 		{
 			"zero upload and negative download",
 			fields{
-				Upload:   sdk.NewInt(0),
-				Download: sdk.NewInt(-1000),
+				Upload:   sdkmath.NewInt(0),
+				Download: sdkmath.NewInt(-1000),
 			},
 			false,
 		},
 		{
 			"zero upload and zero download",
 			fields{
-				Upload:   sdk.NewInt(0),
-				Download: sdk.NewInt(0),
+				Upload:   sdkmath.NewInt(0),
+				Download: sdkmath.NewInt(0),
 			},
 			true,
 		},
 		{
 			"zero upload and positive download",
 			fields{
-				Upload:   sdk.NewInt(0),
-				Download: sdk.NewInt(1000),
+				Upload:   sdkmath.NewInt(0),
+				Download: sdkmath.NewInt(1000),
 			},
 			false,
 		},
 		{
 			"positive upload and negative download",
 			fields{
-				Upload:   sdk.NewInt(1000),
-				Download: sdk.NewInt(-1000),
+				Upload:   sdkmath.NewInt(1000),
+				Download: sdkmath.NewInt(-1000),
 			},
 			false,
 		},
 		{
 			"positive upload and zero download",
 			fields{
-				Upload:   sdk.NewInt(1000),
-				Download: sdk.NewInt(0),
+				Upload:   sdkmath.NewInt(1000),
+				Download: sdkmath.NewInt(0),
 			},
 			false,
 		},
 		{
 			"positive upload and positive download",
 			fields{
-				Upload:   sdk.NewInt(1000),
-				Download: sdk.NewInt(1000),
+				Upload:   sdkmath.NewInt(1000),
+				Download: sdkmath.NewInt(1000),
 			},
 			false,
 		},
@@ -639,8 +639,8 @@ func TestBandwidth_IsAllZero(t *testing.T) {
 
 func TestBandwidth_IsAnyGT(t *testing.T) {
 	type fields struct {
-		Upload   sdk.Int
-		Download sdk.Int
+		Upload   sdkmath.Int
+		Download sdkmath.Int
 	}
 	type args struct {
 		v Bandwidth
@@ -654,99 +654,99 @@ func TestBandwidth_IsAnyGT(t *testing.T) {
 		{
 			"negative upload and negative download",
 			fields{
-				Upload:   sdk.NewInt(0),
-				Download: sdk.NewInt(0),
+				Upload:   sdkmath.NewInt(0),
+				Download: sdkmath.NewInt(0),
 			},
 			args{
-				Bandwidth{Upload: sdk.NewInt(-1000), Download: sdk.NewInt(-1000)},
+				Bandwidth{Upload: sdkmath.NewInt(-1000), Download: sdkmath.NewInt(-1000)},
 			},
 			true,
 		},
 		{
 			"negative upload and zero download",
 			fields{
-				Upload:   sdk.NewInt(0),
-				Download: sdk.NewInt(0),
+				Upload:   sdkmath.NewInt(0),
+				Download: sdkmath.NewInt(0),
 			},
 			args{
-				Bandwidth{Upload: sdk.NewInt(-1000), Download: sdk.NewInt(0)},
+				Bandwidth{Upload: sdkmath.NewInt(-1000), Download: sdkmath.NewInt(0)},
 			},
 			true,
 		},
 		{
 			"negative upload and positive download",
 			fields{
-				Upload:   sdk.NewInt(0),
-				Download: sdk.NewInt(0),
+				Upload:   sdkmath.NewInt(0),
+				Download: sdkmath.NewInt(0),
 			},
 			args{
-				Bandwidth{Upload: sdk.NewInt(-1000), Download: sdk.NewInt(1000)},
+				Bandwidth{Upload: sdkmath.NewInt(-1000), Download: sdkmath.NewInt(1000)},
 			},
 			true,
 		},
 		{
 			"zero upload and negative download",
 			fields{
-				Upload:   sdk.NewInt(0),
-				Download: sdk.NewInt(0),
+				Upload:   sdkmath.NewInt(0),
+				Download: sdkmath.NewInt(0),
 			},
 			args{
-				Bandwidth{Upload: sdk.NewInt(0), Download: sdk.NewInt(-1000)},
+				Bandwidth{Upload: sdkmath.NewInt(0), Download: sdkmath.NewInt(-1000)},
 			},
 			true,
 		},
 		{
 			"zero upload and zero download",
 			fields{
-				Upload:   sdk.NewInt(0),
-				Download: sdk.NewInt(0),
+				Upload:   sdkmath.NewInt(0),
+				Download: sdkmath.NewInt(0),
 			},
 			args{
-				Bandwidth{Upload: sdk.NewInt(0), Download: sdk.NewInt(0)},
+				Bandwidth{Upload: sdkmath.NewInt(0), Download: sdkmath.NewInt(0)},
 			},
 			false,
 		},
 		{
 			"zero upload and positive download",
 			fields{
-				Upload:   sdk.NewInt(0),
-				Download: sdk.NewInt(0),
+				Upload:   sdkmath.NewInt(0),
+				Download: sdkmath.NewInt(0),
 			},
 			args{
-				Bandwidth{Upload: sdk.NewInt(0), Download: sdk.NewInt(1000)},
+				Bandwidth{Upload: sdkmath.NewInt(0), Download: sdkmath.NewInt(1000)},
 			},
 			false,
 		},
 		{
 			"positive upload and negative download",
 			fields{
-				Upload:   sdk.NewInt(0),
-				Download: sdk.NewInt(0),
+				Upload:   sdkmath.NewInt(0),
+				Download: sdkmath.NewInt(0),
 			},
 			args{
-				Bandwidth{Upload: sdk.NewInt(1000), Download: sdk.NewInt(-1000)},
+				Bandwidth{Upload: sdkmath.NewInt(1000), Download: sdkmath.NewInt(-1000)},
 			},
 			true,
 		},
 		{
 			"positive upload and zero download",
 			fields{
-				Upload:   sdk.NewInt(0),
-				Download: sdk.NewInt(0),
+				Upload:   sdkmath.NewInt(0),
+				Download: sdkmath.NewInt(0),
 			},
 			args{
-				Bandwidth{Upload: sdk.NewInt(1000), Download: sdk.NewInt(0)},
+				Bandwidth{Upload: sdkmath.NewInt(1000), Download: sdkmath.NewInt(0)},
 			},
 			false,
 		},
 		{
 			"positive upload and positive download",
 			fields{
-				Upload:   sdk.NewInt(0),
-				Download: sdk.NewInt(0),
+				Upload:   sdkmath.NewInt(0),
+				Download: sdkmath.NewInt(0),
 			},
 			args{
-				Bandwidth{Upload: sdk.NewInt(1000), Download: sdk.NewInt(1000)},
+				Bandwidth{Upload: sdkmath.NewInt(1000), Download: sdkmath.NewInt(1000)},
 			},
 			false,
 		},
@@ -766,8 +766,8 @@ func TestBandwidth_IsAnyGT(t *testing.T) {
 
 func TestBandwidth_IsAnyNegative(t *testing.T) {
 	type fields struct {
-		Upload   sdk.Int
-		Download sdk.Int
+		Upload   sdkmath.Int
+		Download sdkmath.Int
 	}
 	tests := []struct {
 		name   string
@@ -777,72 +777,72 @@ func TestBandwidth_IsAnyNegative(t *testing.T) {
 		{
 			"negative upload and negative download",
 			fields{
-				Upload:   sdk.NewInt(-1000),
-				Download: sdk.NewInt(-1000),
+				Upload:   sdkmath.NewInt(-1000),
+				Download: sdkmath.NewInt(-1000),
 			},
 			true,
 		},
 		{
 			"negative upload and zero download",
 			fields{
-				Upload:   sdk.NewInt(-1000),
-				Download: sdk.NewInt(0),
+				Upload:   sdkmath.NewInt(-1000),
+				Download: sdkmath.NewInt(0),
 			},
 			true,
 		},
 		{
 			"negative upload and positive download",
 			fields{
-				Upload:   sdk.NewInt(-1000),
-				Download: sdk.NewInt(1000),
+				Upload:   sdkmath.NewInt(-1000),
+				Download: sdkmath.NewInt(1000),
 			},
 			true,
 		},
 		{
 			"zero upload and negative download",
 			fields{
-				Upload:   sdk.NewInt(0),
-				Download: sdk.NewInt(-1000),
+				Upload:   sdkmath.NewInt(0),
+				Download: sdkmath.NewInt(-1000),
 			},
 			true,
 		},
 		{
 			"zero upload and zero download",
 			fields{
-				Upload:   sdk.NewInt(0),
-				Download: sdk.NewInt(0),
+				Upload:   sdkmath.NewInt(0),
+				Download: sdkmath.NewInt(0),
 			},
 			false,
 		},
 		{
 			"zero upload and positive download",
 			fields{
-				Upload:   sdk.NewInt(0),
-				Download: sdk.NewInt(1000),
+				Upload:   sdkmath.NewInt(0),
+				Download: sdkmath.NewInt(1000),
 			},
 			false,
 		},
 		{
 			"positive upload and negative download",
 			fields{
-				Upload:   sdk.NewInt(1000),
-				Download: sdk.NewInt(-1000),
+				Upload:   sdkmath.NewInt(1000),
+				Download: sdkmath.NewInt(-1000),
 			},
 			true,
 		},
 		{
 			"positive upload and zero download",
 			fields{
-				Upload:   sdk.NewInt(1000),
-				Download: sdk.NewInt(0),
+				Upload:   sdkmath.NewInt(1000),
+				Download: sdkmath.NewInt(0),
 			},
 			false,
 		},
 		{
 			"positive upload and positive download",
 			fields{
-				Upload:   sdk.NewInt(1000),
-				Download: sdk.NewInt(1000),
+				Upload:   sdkmath.NewInt(1000),
+				Download: sdkmath.NewInt(1000),
 			},
 			false,
 		},
@@ -862,8 +862,8 @@ func TestBandwidth_IsAnyNegative(t *testing.T) {
 
 func TestBandwidth_IsAnyZero(t *testing.T) {
 	type fields struct {
-		Upload   sdk.Int
-		Download sdk.Int
+		Upload   sdkmath.Int
+		Download sdkmath.Int
 	}
 	tests := []struct {
 		name   string
@@ -873,72 +873,72 @@ func TestBandwidth_IsAnyZero(t *testing.T) {
 		{
 			"negative upload and negative download",
 			fields{
-				Upload:   sdk.NewInt(-1000),
-				Download: sdk.NewInt(-1000),
+				Upload:   sdkmath.NewInt(-1000),
+				Download: sdkmath.NewInt(-1000),
 			},
 			false,
 		},
 		{
 			"negative upload and zero download",
 			fields{
-				Upload:   sdk.NewInt(-1000),
-				Download: sdk.NewInt(0),
+				Upload:   sdkmath.NewInt(-1000),
+				Download: sdkmath.NewInt(0),
 			},
 			true,
 		},
 		{
 			"negative upload and positive download",
 			fields{
-				Upload:   sdk.NewInt(-1000),
-				Download: sdk.NewInt(1000),
+				Upload:   sdkmath.NewInt(-1000),
+				Download: sdkmath.NewInt(1000),
 			},
 			false,
 		},
 		{
 			"zero upload and negative download",
 			fields{
-				Upload:   sdk.NewInt(0),
-				Download: sdk.NewInt(-1000),
+				Upload:   sdkmath.NewInt(0),
+				Download: sdkmath.NewInt(-1000),
 			},
 			true,
 		},
 		{
 			"zero upload and zero download",
 			fields{
-				Upload:   sdk.NewInt(0),
-				Download: sdk.NewInt(0),
+				Upload:   sdkmath.NewInt(0),
+				Download: sdkmath.NewInt(0),
 			},
 			true,
 		},
 		{
 			"zero upload and positive download",
 			fields{
-				Upload:   sdk.NewInt(0),
-				Download: sdk.NewInt(1000),
+				Upload:   sdkmath.NewInt(0),
+				Download: sdkmath.NewInt(1000),
 			},
 			true,
 		},
 		{
 			"positive upload and negative download",
 			fields{
-				Upload:   sdk.NewInt(1000),
-				Download: sdk.NewInt(-1000),
+				Upload:   sdkmath.NewInt(1000),
+				Download: sdkmath.NewInt(-1000),
 			},
 			false,
 		},
 		{
 			"positive upload and zero download",
 			fields{
-				Upload:   sdk.NewInt(1000),
-				Download: sdk.NewInt(0),
+				Upload:   sdkmath.NewInt(1000),
+				Download: sdkmath.NewInt(0),
 			},
 			true,
 		},
 		{
 			"positive upload and positive download",
 			fields{
-				Upload:   sdk.NewInt(1000),
-				Download: sdk.NewInt(1000),
+				Upload:   sdkmath.NewInt(1000),
+				Download: sdkmath.NewInt(1000),
 			},
 			false,
 		},
@@ -958,8 +958,8 @@ func TestBandwidth_IsAnyZero(t *testing.T) {
 
 func TestBandwidth_Sub(t *testing.T) {
 	type fields struct {
-		Upload   sdk.Int
-		Download sdk.Int
+		Upload   sdkmath.Int
+		Download sdkmath.Int
 	}
 	type args struct {
 		v Bandwidth
@@ -973,101 +973,101 @@ func TestBandwidth_Sub(t *testing.T) {
 		{
 			"negative upload and negative download",
 			fields{
-				Upload:   sdk.NewInt(0),
-				Download: sdk.NewInt(0),
+				Upload:   sdkmath.NewInt(0),
+				Download: sdkmath.NewInt(0),
 			},
 			args{
-				Bandwidth{Upload: sdk.NewInt(-1000), Download: sdk.NewInt(-1000)},
+				Bandwidth{Upload: sdkmath.NewInt(-1000), Download: sdkmath.NewInt(-1000)},
 			},
-			Bandwidth{Upload: sdk.NewInt(1000), Download: sdk.NewInt(1000)},
+			Bandwidth{Upload: sdkmath.NewInt(1000), Download: sdkmath.NewInt(1000)},
 		},
 		{
 			"negative upload and zero download",
 			fields{
-				Upload:   sdk.NewInt(0),
-				Download: sdk.NewInt(0),
+				Upload:   sdkmath.NewInt(0),
+				Download: sdkmath.NewInt(0),
 			},
 			args{
-				Bandwidth{Upload: sdk.NewInt(-1000), Download: sdk.NewInt(0)},
+				Bandwidth{Upload: sdkmath.NewInt(-1000), Download: sdkmath.NewInt(0)},
 			},
-			Bandwidth{Upload: sdk.NewInt(1000), Download: sdk.NewInt(0)},
+			Bandwidth{Upload: sdkmath.NewInt(1000), Download: sdkmath.NewInt(0)},
 		},
 		{
 			"negative upload and positive download",
 			fields{
-				Upload:   sdk.NewInt(0),
-				Download: sdk.NewInt(0),
+				Upload:   sdkmath.NewInt(0),
+				Download: sdkmath.NewInt(0),
 			},
 			args{
-				Bandwidth{Upload: sdk.NewInt(-1000), Download: sdk.NewInt(1000)},
+				Bandwidth{Upload: sdkmath.NewInt(-1000), Download: sdkmath.NewInt(1000)},
 			},
-			Bandwidth{Upload: sdk.NewInt(1000), Download: sdk.NewInt(-1000)},
+			Bandwidth{Upload: sdkmath.NewInt(1000), Download: sdkmath.NewInt(-1000)},
 		},
 		{
 			"zero upload and negative download",
 			fields{
-				Upload:   sdk.NewInt(0),
-				Download: sdk.NewInt(0),
+				Upload:   sdkmath.NewInt(0),
+				Download: sdkmath.NewInt(0),
 			},
 			args{
-				Bandwidth{Upload: sdk.NewInt(0), Download: sdk.NewInt(-1000)},
+				Bandwidth{Upload: sdkmath.NewInt(0), Download: sdkmath.NewInt(-1000)},
 			},
-			Bandwidth{Upload: sdk.NewInt(0), Download: sdk.NewInt(1000)},
+			Bandwidth{Upload: sdkmath.NewInt(0), Download: sdkmath.NewInt(1000)},
 		},
 		{
 			"zero upload and zero download",
 			fields{
-				Upload:   sdk.NewInt(0),
-				Download: sdk.NewInt(0),
+				Upload:   sdkmath.NewInt(0),
+				Download: sdkmath.NewInt(0),
 			},
 			args{
-				Bandwidth{Upload: sdk.NewInt(0), Download: sdk.NewInt(0)},
+				Bandwidth{Upload: sdkmath.NewInt(0), Download: sdkmath.NewInt(0)},
 			},
-			Bandwidth{Upload: sdk.NewInt(0), Download: sdk.NewInt(0)},
+			Bandwidth{Upload: sdkmath.NewInt(0), Download: sdkmath.NewInt(0)},
 		},
 		{
 			"zero upload and positive download",
 			fields{
-				Upload:   sdk.NewInt(0),
-				Download: sdk.NewInt(0),
+				Upload:   sdkmath.NewInt(0),
+				Download: sdkmath.NewInt(0),
 			},
 			args{
-				Bandwidth{Upload: sdk.NewInt(0), Download: sdk.NewInt(1000)},
+				Bandwidth{Upload: sdkmath.NewInt(0), Download: sdkmath.NewInt(1000)},
 			},
-			Bandwidth{Upload: sdk.NewInt(0), Download: sdk.NewInt(-1000)},
+			Bandwidth{Upload: sdkmath.NewInt(0), Download: sdkmath.NewInt(-1000)},
 		},
 		{
 			"positive upload and negative download",
 			fields{
-				Upload:   sdk.NewInt(0),
-				Download: sdk.NewInt(0),
+				Upload:   sdkmath.NewInt(0),
+				Download: sdkmath.NewInt(0),
 			},
 			args{
-				Bandwidth{Upload: sdk.NewInt(1000), Download: sdk.NewInt(-1000)},
+				Bandwidth{Upload: sdkmath.NewInt(1000), Download: sdkmath.NewInt(-1000)},
 			},
-			Bandwidth{Upload: sdk.NewInt(-1000), Download: sdk.NewInt(1000)},
+			Bandwidth{Upload: sdkmath.NewInt(-1000), Download: sdkmath.NewInt(1000)},
 		},
 		{
 			"positive upload and zero download",
 			fields{
-				Upload:   sdk.NewInt(0),
-				Download: sdk.NewInt(0),
+				Upload:   sdkmath.NewInt(0),
+				Download: sdkmath.NewInt(0),
 			},
 			args{
-				Bandwidth{Upload: sdk.NewInt(1000), Download: sdk.NewInt(0)},
+				Bandwidth{Upload: sdkmath.NewInt(1000), Download: sdkmath.NewInt(0)},
 			},
-			Bandwidth{Upload: sdk.NewInt(-1000), Download: sdk.NewInt(0)},
+			Bandwidth{Upload: sdkmath.NewInt(-1000), Download: sdkmath.NewInt(0)},
 		},
 		{
 			"positive upload and positive download",
 			fields{
-				Upload:   sdk.NewInt(0),
-				Download: sdk.NewInt(0),
+				Upload:   sdkmath.NewInt(0),
+				Download: sdkmath.NewInt(0),
 			},
 			args{
-				Bandwidth{Upload: sdk.NewInt(1000), Download: sdk.NewInt(1000)},
+				Bandwidth{Upload: sdkmath.NewInt(1000), Download: sdkmath.NewInt(1000)},
 			},
-			Bandwidth{Upload: sdk.NewInt(-1000), Download: sdk.NewInt(-1000)},
+			Bandwidth{Upload: sdkmath.NewInt(-1000), Download: sdkmath.NewInt(-1000)},
 		},
 	}
 	for _, tt := range tests {
@@ -1085,85 +1085,85 @@ func TestBandwidth_Sub(t *testing.T) {
 
 func TestBandwidth_Sum(t *testing.T) {
 	type fields struct {
-		Upload   sdk.Int
-		Download sdk.Int
+		Upload   sdkmath.Int
+		Download sdkmath.Int
 	}
 	tests := []struct {
 		name   string
 		fields fields
-		want   sdk.Int
+		want   sdkmath.Int
 	}{
 		{
 			"negative upload and negative download",
 			fields{
-				Upload:   sdk.NewInt(-1000),
-				Download: sdk.NewInt(-1000),
+				Upload:   sdkmath.NewInt(-1000),
+				Download: sdkmath.NewInt(-1000),
 			},
-			sdk.NewInt(-2000),
+			sdkmath.NewInt(-2000),
 		},
 		{
 			"negative upload and zero download",
 			fields{
-				Upload:   sdk.NewInt(-1000),
-				Download: sdk.NewInt(0),
+				Upload:   sdkmath.NewInt(-1000),
+				Download: sdkmath.NewInt(0),
 			},
-			sdk.NewInt(-1000),
+			sdkmath.NewInt(-1000),
 		},
 		{
 			"negative upload and positive download",
 			fields{
-				Upload:   sdk.NewInt(-1000),
-				Download: sdk.NewInt(1000),
+				Upload:   sdkmath.NewInt(-1000),
+				Download: sdkmath.NewInt(1000),
 			},
-			sdk.NewInt(1).Add(sdk.NewInt(-1)),
+			sdkmath.NewInt(1).Add(sdkmath.NewInt(-1)),
 		},
 		{
 			"zero upload and negative download",
 			fields{
-				Upload:   sdk.NewInt(0),
-				Download: sdk.NewInt(-1000),
+				Upload:   sdkmath.NewInt(0),
+				Download: sdkmath.NewInt(-1000),
 			},
-			sdk.NewInt(-1000),
+			sdkmath.NewInt(-1000),
 		},
 		{
 			"zero upload and zero download",
 			fields{
-				Upload:   sdk.NewInt(0),
-				Download: sdk.NewInt(0),
+				Upload:   sdkmath.NewInt(0),
+				Download: sdkmath.NewInt(0),
 			},
-			sdk.NewInt(0),
+			sdkmath.NewInt(0),
 		},
 		{
 			"zero upload and positive download",
 			fields{
-				Upload:   sdk.NewInt(0),
-				Download: sdk.NewInt(1000),
+				Upload:   sdkmath.NewInt(0),
+				Download: sdkmath.NewInt(1000),
 			},
-			sdk.NewInt(1000),
+			sdkmath.NewInt(1000),
 		},
 		{
 			"positive upload and negative download",
 			fields{
-				Upload:   sdk.NewInt(1000),
-				Download: sdk.NewInt(-1000),
+				Upload:   sdkmath.NewInt(1000),
+				Download: sdkmath.NewInt(-1000),
 			},
-			sdk.NewInt(1).Add(sdk.NewInt(-1)),
+			sdkmath.NewInt(1).Add(sdkmath.NewInt(-1)),
 		},
 		{
 			"positive upload and zero download",
 			fields{
-				Upload:   sdk.NewInt(1000),
-				Download: sdk.NewInt(0),
+				Upload:   sdkmath.NewInt(1000),
+				Download: sdkmath.NewInt(0),
 			},
-			sdk.NewInt(1000),
+			sdkmath.NewInt(1000),
 		},
 		{
 			"positive upload and positive download",
 			fields{
-				Upload:   sdk.NewInt(1000),
-				Download: sdk.NewInt(1000),
+				Upload:   sdkmath.NewInt(1000),
+				Download: sdkmath.NewInt(1000),
 			},
-			sdk.NewInt(2000),
+			sdkmath.NewInt(2000),
 		},
 	}
 	for _, tt := range tests {
@@ -1181,8 +1181,8 @@ func TestBandwidth_Sum(t *testing.T) {
 
 func TestNewBandwidth(t *testing.T) {
 	type args struct {
-		upload   sdk.Int
-		download sdk.Int
+		upload   sdkmath.Int
+		download sdkmath.Int
 	}
 	tests := []struct {
 		name string
@@ -1191,23 +1191,23 @@ func TestNewBandwidth(t *testing.T) {
 	}{
 		{
 			"0 upload 0 download",
-			args{upload: sdk.NewInt(0), download: sdk.NewInt(0)},
-			Bandwidth{sdk.NewInt(0), sdk.NewInt(0)},
+			args{upload: sdkmath.NewInt(0), download: sdkmath.NewInt(0)},
+			Bandwidth{sdkmath.NewInt(0), sdkmath.NewInt(0)},
 		},
 		{
 			"0 upload 10 download",
-			args{upload: sdk.NewInt(0), download: sdk.NewInt(10)},
-			Bandwidth{sdk.NewInt(0), sdk.NewInt(10)},
+			args{upload: sdkmath.NewInt(0), download: sdkmath.NewInt(10)},
+			Bandwidth{sdkmath.NewInt(0), sdkmath.NewInt(10)},
 		},
 		{
 			"10 upload 0 download",
-			args{upload: sdk.NewInt(10), download: sdk.NewInt(0)},
-			Bandwidth{sdk.NewInt(10), sdk.NewInt(0)},
+			args{upload: sdkmath.NewInt(10), download: sdkmath.NewInt(0)},
+			Bandwidth{sdkmath.NewInt(10), sdkmath.NewInt(0)},
 		},
 		{
 			"10 upload 10 download",
-			args{upload: sdk.NewInt(10), download: sdk.NewInt(10)},
-			Bandwidth{sdk.NewInt(10), sdk.NewInt(10)},
+			args{upload: sdkmath.NewInt(10), download: sdkmath.NewInt(10)},
+			Bandwidth{sdkmath.NewInt(10), sdkmath.NewInt(10)},
 		},
 	}
 	for _, tt := range tests {
@@ -1232,22 +1232,22 @@ func TestNewBandwidthFromInt64(t *testing.T) {
 		{
 			"0 upload 0 download",
 			args{upload: 0, download: 0},
-			Bandwidth{sdk.NewInt(0), sdk.NewInt(0)},
+			Bandwidth{sdkmath.NewInt(0), sdkmath.NewInt(0)},
 		},
 		{
 			"0 upload 10 download",
 			args{upload: 0, download: 10},
-			Bandwidth{sdk.NewInt(0), sdk.NewInt(10)},
+			Bandwidth{sdkmath.NewInt(0), sdkmath.NewInt(10)},
 		},
 		{
 			"10 upload 0 download",
 			args{upload: 10, download: 0},
-			Bandwidth{sdk.NewInt(10), sdk.NewInt(0)},
+			Bandwidth{sdkmath.NewInt(10), sdkmath.NewInt(0)},
 		},
 		{
 			"10 upload 10 download",
 			args{upload: 10, download: 10},
-			Bandwidth{sdk.NewInt(10), sdk.NewInt(10)},
+			Bandwidth{sdkmath.NewInt(10), sdkmath.NewInt(10)},
 		},
 	}
 	for _, tt := range tests {

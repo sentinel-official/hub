@@ -5,6 +5,7 @@ package cli
 import (
 	"strconv"
 
+	sdkmath "cosmossdk.io/math"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
@@ -44,7 +45,7 @@ func txAllocate() *cobra.Command {
 				ctx.FromAddress,
 				id,
 				addr,
-				sdk.NewInt(bytes),
+				sdkmath.NewInt(bytes),
 			)
 			if err = msg.ValidateBasic(); err != nil {
 				return err

@@ -3,7 +3,7 @@ package types
 import (
 	"testing"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkmath "cosmossdk.io/math"
 
 	hubtypes "github.com/sentinel-official/hub/types"
 )
@@ -215,7 +215,7 @@ func TestMsgUpdateDetailsRequest_ValidateBasic(t *testing.T) {
 				From: hubtypes.TestBech32NodeAddr20Bytes,
 				Proof: Proof{
 					ID:        1000,
-					Bandwidth: hubtypes.Bandwidth{Upload: sdk.NewInt(0), Download: sdk.NewInt(0)},
+					Bandwidth: hubtypes.Bandwidth{Upload: sdkmath.NewInt(0), Download: sdkmath.NewInt(0)},
 				},
 			},
 			false,
@@ -226,7 +226,7 @@ func TestMsgUpdateDetailsRequest_ValidateBasic(t *testing.T) {
 				From: hubtypes.TestBech32NodeAddr20Bytes,
 				Proof: Proof{
 					ID:        1000,
-					Bandwidth: hubtypes.Bandwidth{Upload: sdk.NewInt(-1000), Download: sdk.NewInt(-1000)},
+					Bandwidth: hubtypes.Bandwidth{Upload: sdkmath.NewInt(-1000), Download: sdkmath.NewInt(-1000)},
 				},
 			},
 			true,
@@ -237,7 +237,7 @@ func TestMsgUpdateDetailsRequest_ValidateBasic(t *testing.T) {
 				From: hubtypes.TestBech32NodeAddr20Bytes,
 				Proof: Proof{
 					ID:        1000,
-					Bandwidth: hubtypes.Bandwidth{Upload: sdk.NewInt(-1000), Download: sdk.NewInt(0)},
+					Bandwidth: hubtypes.Bandwidth{Upload: sdkmath.NewInt(-1000), Download: sdkmath.NewInt(0)},
 				},
 			},
 			true,
@@ -248,7 +248,7 @@ func TestMsgUpdateDetailsRequest_ValidateBasic(t *testing.T) {
 				From: hubtypes.TestBech32NodeAddr20Bytes,
 				Proof: Proof{
 					ID:        1000,
-					Bandwidth: hubtypes.Bandwidth{Upload: sdk.NewInt(-1000), Download: sdk.NewInt(1000)},
+					Bandwidth: hubtypes.Bandwidth{Upload: sdkmath.NewInt(-1000), Download: sdkmath.NewInt(1000)},
 				},
 			},
 			true,
@@ -259,7 +259,7 @@ func TestMsgUpdateDetailsRequest_ValidateBasic(t *testing.T) {
 				From: hubtypes.TestBech32NodeAddr20Bytes,
 				Proof: Proof{
 					ID:        1000,
-					Bandwidth: hubtypes.Bandwidth{Upload: sdk.NewInt(0), Download: sdk.NewInt(-1000)},
+					Bandwidth: hubtypes.Bandwidth{Upload: sdkmath.NewInt(0), Download: sdkmath.NewInt(-1000)},
 				},
 			},
 			true,
@@ -270,7 +270,7 @@ func TestMsgUpdateDetailsRequest_ValidateBasic(t *testing.T) {
 				From: hubtypes.TestBech32NodeAddr20Bytes,
 				Proof: Proof{
 					ID:        1000,
-					Bandwidth: hubtypes.Bandwidth{Upload: sdk.NewInt(0), Download: sdk.NewInt(0)},
+					Bandwidth: hubtypes.Bandwidth{Upload: sdkmath.NewInt(0), Download: sdkmath.NewInt(0)},
 				},
 			},
 			false,
@@ -281,7 +281,7 @@ func TestMsgUpdateDetailsRequest_ValidateBasic(t *testing.T) {
 				From: hubtypes.TestBech32NodeAddr20Bytes,
 				Proof: Proof{
 					ID:        1000,
-					Bandwidth: hubtypes.Bandwidth{Upload: sdk.NewInt(0), Download: sdk.NewInt(1000)},
+					Bandwidth: hubtypes.Bandwidth{Upload: sdkmath.NewInt(0), Download: sdkmath.NewInt(1000)},
 				},
 			},
 			false,
@@ -292,7 +292,7 @@ func TestMsgUpdateDetailsRequest_ValidateBasic(t *testing.T) {
 				From: hubtypes.TestBech32NodeAddr20Bytes,
 				Proof: Proof{
 					ID:        1000,
-					Bandwidth: hubtypes.Bandwidth{Upload: sdk.NewInt(1000), Download: sdk.NewInt(-1000)},
+					Bandwidth: hubtypes.Bandwidth{Upload: sdkmath.NewInt(1000), Download: sdkmath.NewInt(-1000)},
 				},
 			},
 			true,
@@ -303,7 +303,7 @@ func TestMsgUpdateDetailsRequest_ValidateBasic(t *testing.T) {
 				From: hubtypes.TestBech32NodeAddr20Bytes,
 				Proof: Proof{
 					ID:        1000,
-					Bandwidth: hubtypes.Bandwidth{Upload: sdk.NewInt(1000), Download: sdk.NewInt(0)},
+					Bandwidth: hubtypes.Bandwidth{Upload: sdkmath.NewInt(1000), Download: sdkmath.NewInt(0)},
 				},
 			},
 			false,
@@ -314,7 +314,7 @@ func TestMsgUpdateDetailsRequest_ValidateBasic(t *testing.T) {
 				From: hubtypes.TestBech32NodeAddr20Bytes,
 				Proof: Proof{
 					ID:        1000,
-					Bandwidth: hubtypes.Bandwidth{Upload: sdk.NewInt(1000), Download: sdk.NewInt(1000)},
+					Bandwidth: hubtypes.Bandwidth{Upload: sdkmath.NewInt(1000), Download: sdkmath.NewInt(1000)},
 				},
 			},
 			false,
@@ -325,7 +325,7 @@ func TestMsgUpdateDetailsRequest_ValidateBasic(t *testing.T) {
 				From: hubtypes.TestBech32NodeAddr20Bytes,
 				Proof: Proof{
 					ID:        1000,
-					Bandwidth: hubtypes.Bandwidth{Upload: sdk.NewInt(0), Download: sdk.NewInt(0)},
+					Bandwidth: hubtypes.Bandwidth{Upload: sdkmath.NewInt(0), Download: sdkmath.NewInt(0)},
 					Duration:  -1000,
 				},
 			},
@@ -337,7 +337,7 @@ func TestMsgUpdateDetailsRequest_ValidateBasic(t *testing.T) {
 				From: hubtypes.TestBech32NodeAddr20Bytes,
 				Proof: Proof{
 					ID:        1000,
-					Bandwidth: hubtypes.Bandwidth{Upload: sdk.NewInt(0), Download: sdk.NewInt(0)},
+					Bandwidth: hubtypes.Bandwidth{Upload: sdkmath.NewInt(0), Download: sdkmath.NewInt(0)},
 					Duration:  0,
 				},
 			},
@@ -349,7 +349,7 @@ func TestMsgUpdateDetailsRequest_ValidateBasic(t *testing.T) {
 				From: hubtypes.TestBech32NodeAddr20Bytes,
 				Proof: Proof{
 					ID:        1000,
-					Bandwidth: hubtypes.Bandwidth{Upload: sdk.NewInt(0), Download: sdk.NewInt(0)},
+					Bandwidth: hubtypes.Bandwidth{Upload: sdkmath.NewInt(0), Download: sdkmath.NewInt(0)},
 					Duration:  1000,
 				},
 			},
@@ -361,7 +361,7 @@ func TestMsgUpdateDetailsRequest_ValidateBasic(t *testing.T) {
 				From: hubtypes.TestBech32NodeAddr20Bytes,
 				Proof: Proof{
 					ID:        1000,
-					Bandwidth: hubtypes.Bandwidth{Upload: sdk.NewInt(1000), Download: sdk.NewInt(1000)},
+					Bandwidth: hubtypes.Bandwidth{Upload: sdkmath.NewInt(1000), Download: sdkmath.NewInt(1000)},
 					Duration:  1000,
 				},
 				Signature: nil,
@@ -374,7 +374,7 @@ func TestMsgUpdateDetailsRequest_ValidateBasic(t *testing.T) {
 				From: hubtypes.TestBech32NodeAddr20Bytes,
 				Proof: Proof{
 					ID:        1000,
-					Bandwidth: hubtypes.Bandwidth{Upload: sdk.NewInt(1000), Download: sdk.NewInt(1000)},
+					Bandwidth: hubtypes.Bandwidth{Upload: sdkmath.NewInt(1000), Download: sdkmath.NewInt(1000)},
 					Duration:  1000,
 				},
 				Signature: []byte{},
@@ -387,7 +387,7 @@ func TestMsgUpdateDetailsRequest_ValidateBasic(t *testing.T) {
 				From: hubtypes.TestBech32NodeAddr20Bytes,
 				Proof: Proof{
 					ID:        1000,
-					Bandwidth: hubtypes.Bandwidth{Upload: sdk.NewInt(1000), Download: sdk.NewInt(1000)},
+					Bandwidth: hubtypes.Bandwidth{Upload: sdkmath.NewInt(1000), Download: sdkmath.NewInt(1000)},
 					Duration:  1000,
 				},
 				Signature: []byte{
@@ -405,7 +405,7 @@ func TestMsgUpdateDetailsRequest_ValidateBasic(t *testing.T) {
 				From: hubtypes.TestBech32NodeAddr20Bytes,
 				Proof: Proof{
 					ID:        1000,
-					Bandwidth: hubtypes.Bandwidth{Upload: sdk.NewInt(1000), Download: sdk.NewInt(1000)},
+					Bandwidth: hubtypes.Bandwidth{Upload: sdkmath.NewInt(1000), Download: sdkmath.NewInt(1000)},
 					Duration:  1000,
 				},
 				Signature: []byte{
@@ -427,7 +427,7 @@ func TestMsgUpdateDetailsRequest_ValidateBasic(t *testing.T) {
 				From: hubtypes.TestBech32NodeAddr20Bytes,
 				Proof: Proof{
 					ID:        1000,
-					Bandwidth: hubtypes.Bandwidth{Upload: sdk.NewInt(1000), Download: sdk.NewInt(1000)},
+					Bandwidth: hubtypes.Bandwidth{Upload: sdkmath.NewInt(1000), Download: sdkmath.NewInt(1000)},
 					Duration:  1000,
 				},
 				Signature: []byte{

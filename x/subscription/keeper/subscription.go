@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"time"
 
+	sdkmath "cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	protobuf "github.com/gogo/protobuf/types"
 
@@ -338,7 +339,7 @@ func (k *Keeper) CreateSubscriptionForNode(ctx sdk.Context, accAddr sdk.AccAddre
 			ID:            subscription.GetID(),
 			Address:       accAddr.String(),
 			GrantedBytes:  hubtypes.Gigabyte.MulRaw(gigabytes),
-			UtilisedBytes: sdk.ZeroInt(),
+			UtilisedBytes: sdkmath.ZeroInt(),
 		}
 
 		k.SetAllocation(ctx, alloc)
@@ -459,7 +460,7 @@ func (k *Keeper) CreateSubscriptionForPlan(ctx sdk.Context, accAddr sdk.AccAddre
 		ID:            subscription.GetID(),
 		Address:       accAddr.String(),
 		GrantedBytes:  hubtypes.Gigabyte.MulRaw(plan.Gigabytes),
-		UtilisedBytes: sdk.ZeroInt(),
+		UtilisedBytes: sdkmath.ZeroInt(),
 	}
 
 	k.SetAllocation(ctx, alloc)

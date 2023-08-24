@@ -4,22 +4,23 @@ import (
 	"fmt"
 	"time"
 
+	sdkmath "cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	params "github.com/cosmos/cosmos-sdk/x/params/types"
 )
 
 var (
-	DefaultDeposit                        = sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(10))
+	DefaultDeposit                        = sdk.NewCoin(sdk.DefaultBondDenom, sdkmath.NewInt(10))
 	DefaultActiveDuration                 = 30 * time.Second
-	DefaultMaxGigabytePrices              = sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(100)))
-	DefaultMinGigabytePrices              = sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(1)))
-	DefaultMaxHourlyPrices                = sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(100)))
-	DefaultMinHourlyPrices                = sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(1)))
+	DefaultMaxGigabytePrices              = sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdkmath.NewInt(100)))
+	DefaultMinGigabytePrices              = sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdkmath.NewInt(1)))
+	DefaultMaxHourlyPrices                = sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdkmath.NewInt(100)))
+	DefaultMinHourlyPrices                = sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdkmath.NewInt(1)))
 	DefaultMaxSubscriptionGigabytes int64 = 10
 	DefaultMinSubscriptionGigabytes int64 = 1
 	DefaultMaxSubscriptionHours     int64 = 10
 	DefaultMinSubscriptionHours     int64 = 1
-	DefaultStakingShare                   = sdk.NewDecWithPrec(1, 1)
+	DefaultStakingShare                   = sdkmath.LegacyNewDecWithPrec(1, 1)
 )
 
 var (
@@ -141,7 +142,7 @@ func (m *Params) ParamSetPairs() params.ParamSetPairs {
 func NewParams(
 	deposit sdk.Coin, activeDuration time.Duration, maxGigabytePrices, minGigabytePrices,
 	maxHourlyPrices, minHourlyPrices sdk.Coins, maxSubscriptionGigabytes, minSubscriptionGigabytes int64,
-	maxSubscriptionHours, minSubscriptionHours int64, stakingShare sdk.Dec,
+	maxSubscriptionHours, minSubscriptionHours int64, stakingShare sdkmath.LegacyDec,
 ) Params {
 	return Params{
 		Deposit:                  deposit,
@@ -354,7 +355,7 @@ func validateMinSubscriptionHours(v interface{}) error {
 }
 
 func validateStakingShare(v interface{}) error {
-	value, ok := v.(sdk.Dec)
+	value, ok := v.(sdkmath.LegacyDec)
 	if !ok {
 		return fmt.Errorf("invalid parameter type %T", v)
 	}
@@ -365,7 +366,7 @@ func validateStakingShare(v interface{}) error {
 	if value.IsNegative() {
 		return fmt.Errorf("staking_share cannot be negative")
 	}
-	if value.GT(sdk.OneDec()) {
+	if value.GT(sdkmath.LegacyOneDec()) {
 		return fmt.Errorf("staking_share cannot be greater than 1")
 	}
 

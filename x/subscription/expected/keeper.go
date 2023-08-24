@@ -3,6 +3,7 @@
 package expected
 
 import (
+	sdkmath "cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 
@@ -30,11 +31,11 @@ type DepositKeeper interface {
 }
 
 type ProviderKeeper interface {
-	StakingShare(ctx sdk.Context) sdk.Dec
+	StakingShare(ctx sdk.Context) sdkmath.LegacyDec
 }
 
 type NodeKeeper interface {
-	StakingShare(ctx sdk.Context) sdk.Dec
+	StakingShare(ctx sdk.Context) sdkmath.LegacyDec
 	GetNode(ctx sdk.Context, addr hubtypes.NodeAddress) (nodetypes.Node, bool)
 }
 

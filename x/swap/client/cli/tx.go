@@ -6,6 +6,7 @@ import (
 	"encoding/hex"
 	"strconv"
 
+	sdkmath "cosmossdk.io/math"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
@@ -45,7 +46,7 @@ func txSwap() *cobra.Command {
 				ctx.FromAddress,
 				types.BytesToHash(txHash),
 				receiver,
-				sdk.NewInt(amount),
+				sdkmath.NewInt(amount),
 			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err
