@@ -3,7 +3,6 @@ package vpn
 import (
 	"context"
 	"encoding/json"
-	"math/rand"
 
 	abcitypes "github.com/cometbft/cometbft/abci/types"
 	"github.com/cosmos/cosmos-sdk/client"
@@ -12,7 +11,6 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
-	"github.com/gorilla/mux"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/spf13/cobra"
 
@@ -31,14 +29,12 @@ import (
 	"github.com/sentinel-official/hub/x/vpn/client/cli"
 	"github.com/sentinel-official/hub/x/vpn/expected"
 	"github.com/sentinel-official/hub/x/vpn/keeper"
-	"github.com/sentinel-official/hub/x/vpn/simulation"
 	"github.com/sentinel-official/hub/x/vpn/types"
 )
 
 var (
 	_ module.AppModuleBasic      = AppModuleBasic{}
 	_ module.AppModuleGenesis    = AppModule{}
-	_ module.AppModule           = AppModule{}
 	_ module.BeginBlockAppModule = AppModule{}
 	_ module.EndBlockAppModule   = AppModule{}
 	_ module.AppModuleSimulation = AppModule{}
@@ -46,31 +42,13 @@ var (
 
 type AppModuleBasic struct{}
 
-func (a AppModuleBasic) Name() string {
-	return types.ModuleName
-}
+func (a AppModuleBasic) Name() string { return types.ModuleName }
 
 func (a AppModuleBasic) RegisterLegacyAminoCodec(_ *codec.LegacyAmino) {}
 
 func (a AppModuleBasic) RegisterInterfaces(registry codectypes.InterfaceRegistry) {
 	types.RegisterInterfaces(registry)
 }
-
-func (a AppModuleBasic) DefaultGenesis(cdc codec.JSONCodec) json.RawMessage {
-	state := types.DefaultGenesisState()
-	return cdc.MustMarshalJSON(state)
-}
-
-func (a AppModuleBasic) ValidateGenesis(cdc codec.JSONCodec, _ client.TxEncodingConfig, message json.RawMessage) error {
-	var state types.GenesisState
-	if err := cdc.UnmarshalJSON(message, &state); err != nil {
-		return err
-	}
-
-	return state.Validate()
-}
-
-func (a AppModuleBasic) RegisterRESTRoutes(_ client.Context, _ *mux.Router) {}
 
 func (a AppModuleBasic) RegisterGRPCGatewayRoutes(ctx client.Context, mux *runtime.ServeMux) {
 	_ = deposittypes.RegisterQueryServiceHandlerClient(context.Background(), mux, deposittypes.NewQueryServiceClient(ctx))
@@ -81,53 +59,73 @@ func (a AppModuleBasic) RegisterGRPCGatewayRoutes(ctx client.Context, mux *runti
 	_ = subscriptiontypes.RegisterQueryServiceHandlerClient(context.Background(), mux, subscriptiontypes.NewQueryServiceClient(ctx))
 }
 
-func (a AppModuleBasic) GetTxCmd() *cobra.Command {
-	return cli.GetTxCmd()
-}
+func (a AppModuleBasic) GetTxCmd() *cobra.Command { return cli.GetTxCmd() }
 
-func (a AppModuleBasic) GetQueryCmd() *cobra.Command {
-	return cli.GetQueryCmd()
-}
+func (a AppModuleBasic) GetQueryCmd() *cobra.Command { return cli.GetQueryCmd() }
 
 type AppModule struct {
 	AppModuleBasic
-	cdc      codec.Codec
-	txConfig client.TxConfig
-	ak       expected.AccountKeeper
-	bk       expected.BankKeeper
-	k        keeper.Keeper
+	cdc codec.Codec
+	ak  expected.AccountKeeper
+	bk  expected.BankKeeper
+	k   keeper.Keeper
 }
 
-func NewAppModule(cdc codec.Codec, txConfig client.TxConfig, ak expected.AccountKeeper, bk expected.BankKeeper, k keeper.Keeper) AppModule {
+func NewAppModule(cdc codec.Codec, ak expected.AccountKeeper, bk expected.BankKeeper, k keeper.Keeper) AppModule {
 	return AppModule{
-		cdc:      cdc,
-		txConfig: txConfig,
-		ak:       ak,
-		bk:       bk,
-		k:        k,
+		cdc: cdc,
+		ak:  ak,
+		bk:  bk,
+		k:   k,
 	}
 }
 
-func (a AppModule) InitGenesis(ctx sdk.Context, cdc codec.JSONCodec, message json.RawMessage) []abcitypes.ValidatorUpdate {
+func (a AppModule) DefaultGenesis(jsonCodec codec.JSONCodec) json.RawMessage {
+	state := types.DefaultGenesisState()
+	return jsonCodec.MustMarshalJSON(state)
+}
+
+func (a AppModule) ValidateGenesis(jsonCodec codec.JSONCodec, _ client.TxEncodingConfig, message json.RawMessage) error {
 	var state types.GenesisState
-	cdc.MustUnmarshalJSON(message, &state)
+	if err := jsonCodec.UnmarshalJSON(message, &state); err != nil {
+		return err
+	}
+
+	return state.Validate()
+}
+
+func (a AppModule) InitGenesis(ctx sdk.Context, jsonCodec codec.JSONCodec, message json.RawMessage) []abcitypes.ValidatorUpdate {
+	var state types.GenesisState
+	jsonCodec.MustUnmarshalJSON(message, &state)
 	InitGenesis(ctx, a.k, &state)
 
 	return nil
 }
 
-func (a AppModule) ExportGenesis(ctx sdk.Context, cdc codec.JSONCodec) json.RawMessage {
+func (a AppModule) ExportGenesis(ctx sdk.Context, jsonCodec codec.JSONCodec) json.RawMessage {
 	state := ExportGenesis(ctx, a.k)
-	return cdc.MustMarshalJSON(state)
+	return jsonCodec.MustMarshalJSON(state)
 }
 
+func (a AppModule) BeginBlock(ctx sdk.Context, _ abcitypes.RequestBeginBlock) {
+	BeginBlock(ctx, a.k)
+}
+
+func (a AppModule) EndBlock(ctx sdk.Context, _ abcitypes.RequestEndBlock) []abcitypes.ValidatorUpdate {
+	return EndBlock(ctx, a.k)
+}
+
+func (a AppModule) GenerateGenesisState(_ *module.SimulationState) {}
+
+func (a AppModule) RegisterStoreDecoder(_ sdk.StoreDecoderRegistry) {}
+
+func (a AppModule) WeightedOperations(_ module.SimulationState) []simtypes.WeightedOperation {
+	return nil
+}
+
+func (a AppModule) ConsensusVersion() uint64 { return 3 }
+
 func (a AppModule) RegisterInvariants(_ sdk.InvariantRegistry) {}
-
-func (a AppModule) Route() sdk.Route { return sdk.Route{} }
-
-func (a AppModule) QuerierRoute() string { return "" }
-
-func (a AppModule) LegacyQuerierHandler(_ *codec.LegacyAmino) sdk.Querier { return nil }
 
 func (a AppModule) RegisterServices(configurator module.Configurator) {
 	nodetypes.RegisterMsgServiceServer(configurator.MsgServer(), nodekeeper.NewMsgServiceServer(a.k.Node))
@@ -142,37 +140,4 @@ func (a AppModule) RegisterServices(configurator module.Configurator) {
 	providertypes.RegisterQueryServiceServer(configurator.QueryServer(), providerkeeper.NewQueryServiceServer(a.k.Provider))
 	sessiontypes.RegisterQueryServiceServer(configurator.QueryServer(), sessionkeeper.NewQueryServiceServer(a.k.Session))
 	subscriptiontypes.RegisterQueryServiceServer(configurator.QueryServer(), subscriptionkeeper.NewQueryServiceServer(a.k.Subscription))
-
-	m := keeper.NewMigrator(a.k)
-	if err := configurator.RegisterMigration(types.ModuleName, 2, m.Migrate2to3); err != nil {
-		panic("failed to migrate x/vpn from version 2 to 3: " + err.Error())
-	}
-}
-
-func (a AppModule) ConsensusVersion() uint64 { return 3 }
-
-func (a AppModule) BeginBlock(ctx sdk.Context, _ abcitypes.RequestBeginBlock) {
-	BeginBlock(ctx, a.k)
-}
-
-func (a AppModule) EndBlock(ctx sdk.Context, _ abcitypes.RequestEndBlock) []abcitypes.ValidatorUpdate {
-	return EndBlock(ctx, a.k)
-}
-
-func (a AppModule) GenerateGenesisState(state *module.SimulationState) {
-	simulation.RandomizedGenesisState(state)
-}
-
-func (a AppModule) ProposalContents(_ module.SimulationState) []simtypes.WeightedProposalContent {
-	return nil
-}
-
-func (a AppModule) RandomizedParams(r *rand.Rand) []simtypes.ParamChange {
-	return simulation.RandomizedParams(r)
-}
-
-func (a AppModule) RegisterStoreDecoder(_ sdk.StoreDecoderRegistry) {}
-
-func (a AppModule) WeightedOperations(state module.SimulationState) []simtypes.WeightedOperation {
-	return simulation.WeightedOperations(a.cdc, a.txConfig, state.AppParams, a.ak, a.bk, a.k)
 }

@@ -1,6 +1,7 @@
 package upgrades
 
 import (
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
@@ -18,7 +19,7 @@ import (
 func Handler(
 	mm *module.Manager,
 	configurator module.Configurator,
-	paramsStoreKey sdk.StoreKey,
+	paramsStoreKey storetypes.StoreKey,
 	ibcICAControllerKeeper ibcicacontrollerkeeper.Keeper,
 	ibcICAHostKeeper ibcicahostkeeper.Keeper,
 	customMintKeeper custommintkeeper.Keeper,

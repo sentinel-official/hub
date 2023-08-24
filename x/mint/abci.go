@@ -18,7 +18,9 @@ func BeginBlock(ctx sdk.Context, k keeper.Keeper) []abcitypes.ValidatorUpdate {
 		params.InflationMax = item.Max
 		params.InflationMin = item.Min
 		params.InflationRateChange = item.RateChange
-		k.SetParams(ctx, params)
+		if err := k.SetParams(ctx, params); err != nil {
+			panic(err)
+		}
 
 		minter := k.GetMinter(ctx)
 		minter.Inflation = item.Min

@@ -2,7 +2,6 @@ package mint
 
 import (
 	"encoding/json"
-	"math/rand"
 
 	abcitypes "github.com/cometbft/cometbft/abci/types"
 	"github.com/cosmos/cosmos-sdk/client"
@@ -10,8 +9,7 @@ import (
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
-	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
-	"github.com/gorilla/mux"
+	simulationtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/spf13/cobra"
 
@@ -22,7 +20,6 @@ import (
 var (
 	_ module.AppModuleBasic      = AppModuleBasic{}
 	_ module.AppModuleGenesis    = AppModule{}
-	_ module.AppModule           = AppModule{}
 	_ module.BeginBlockAppModule = AppModule{}
 	_ module.EndBlockAppModule   = AppModule{}
 	_ module.AppModuleSimulation = AppModule{}
@@ -30,29 +27,11 @@ var (
 
 type AppModuleBasic struct{}
 
-func (a AppModuleBasic) Name() string {
-	return types.ModuleName
-}
+func (a AppModuleBasic) Name() string { return types.ModuleName }
 
 func (a AppModuleBasic) RegisterLegacyAminoCodec(_ *codec.LegacyAmino) {}
 
 func (a AppModuleBasic) RegisterInterfaces(_ codectypes.InterfaceRegistry) {}
-
-func (a AppModuleBasic) DefaultGenesis(cdc codec.JSONCodec) json.RawMessage {
-	state := types.DefaultGenesisState()
-	return cdc.MustMarshalJSON(state)
-}
-
-func (a AppModuleBasic) ValidateGenesis(cdc codec.JSONCodec, _ client.TxEncodingConfig, message json.RawMessage) error {
-	var state types.GenesisState
-	if err := cdc.UnmarshalJSON(message, &state); err != nil {
-		return err
-	}
-
-	return state.Validate()
-}
-
-func (a AppModuleBasic) RegisterRESTRoutes(_ client.Context, _ *mux.Router) {}
 
 func (a AppModuleBasic) RegisterGRPCGatewayRoutes(_ client.Context, _ *runtime.ServeMux) {}
 
@@ -73,30 +52,32 @@ func NewAppModule(cdc codec.Codec, k keeper.Keeper) AppModule {
 	}
 }
 
-func (a AppModule) InitGenesis(ctx sdk.Context, cdc codec.JSONCodec, message json.RawMessage) []abcitypes.ValidatorUpdate {
+func (a AppModule) DefaultGenesis(jsonCodec codec.JSONCodec) json.RawMessage {
+	state := types.DefaultGenesisState()
+	return jsonCodec.MustMarshalJSON(state)
+}
+
+func (a AppModule) ValidateGenesis(jsonCodec codec.JSONCodec, _ client.TxEncodingConfig, message json.RawMessage) error {
 	var state types.GenesisState
-	cdc.MustUnmarshalJSON(message, &state)
+	if err := jsonCodec.UnmarshalJSON(message, &state); err != nil {
+		return err
+	}
+
+	return state.Validate()
+}
+
+func (a AppModule) InitGenesis(ctx sdk.Context, jsonCodec codec.JSONCodec, message json.RawMessage) []abcitypes.ValidatorUpdate {
+	var state types.GenesisState
+	jsonCodec.MustUnmarshalJSON(message, &state)
 	InitGenesis(ctx, a.k, &state)
 
 	return nil
 }
 
-func (a AppModule) ExportGenesis(ctx sdk.Context, cdc codec.JSONCodec) json.RawMessage {
+func (a AppModule) ExportGenesis(ctx sdk.Context, jsonCodec codec.JSONCodec) json.RawMessage {
 	state := ExportGenesis(ctx, a.k)
-	return cdc.MustMarshalJSON(state)
+	return jsonCodec.MustMarshalJSON(state)
 }
-
-func (a AppModule) RegisterInvariants(_ sdk.InvariantRegistry) {}
-
-func (a AppModule) Route() sdk.Route { return sdk.Route{} }
-
-func (a AppModule) QuerierRoute() string { return "" }
-
-func (a AppModule) LegacyQuerierHandler(_ *codec.LegacyAmino) sdk.Querier { return nil }
-
-func (a AppModule) RegisterServices(_ module.Configurator) {}
-
-func (a AppModule) ConsensusVersion() uint64 { return 1 }
 
 func (a AppModule) BeginBlock(ctx sdk.Context, _ abcitypes.RequestBeginBlock) {
 	BeginBlock(ctx, a.k)
@@ -108,14 +89,14 @@ func (a AppModule) EndBlock(_ sdk.Context, _ abcitypes.RequestEndBlock) []abcity
 
 func (a AppModule) GenerateGenesisState(_ *module.SimulationState) {}
 
-func (a AppModule) ProposalContents(_ module.SimulationState) []simtypes.WeightedProposalContent {
-	return nil
-}
-
-func (a AppModule) RandomizedParams(_ *rand.Rand) []simtypes.ParamChange { return nil }
-
 func (a AppModule) RegisterStoreDecoder(_ sdk.StoreDecoderRegistry) {}
 
-func (a AppModule) WeightedOperations(_ module.SimulationState) []simtypes.WeightedOperation {
+func (a AppModule) WeightedOperations(_ module.SimulationState) []simulationtypes.WeightedOperation {
 	return nil
 }
+
+func (a AppModule) ConsensusVersion() uint64 { return 1 }
+
+func (a AppModule) RegisterInvariants(_ sdk.InvariantRegistry) {}
+
+func (a AppModule) RegisterServices(_ module.Configurator) {}

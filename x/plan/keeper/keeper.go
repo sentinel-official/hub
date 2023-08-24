@@ -6,6 +6,7 @@ import (
 	"github.com/cometbft/cometbft/libs/log"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/sentinel-official/hub/x/plan/expected"
@@ -14,14 +15,14 @@ import (
 
 type Keeper struct {
 	cdc          codec.BinaryCodec
-	key          sdk.StoreKey
+	key          storetypes.StoreKey
 	bank         expected.BankKeeper
 	provider     expected.ProviderKeeper
 	node         expected.NodeKeeper
 	subscription expected.SubscriptionKeeper
 }
 
-func NewKeeper(cdc codec.BinaryCodec, key sdk.StoreKey) Keeper {
+func NewKeeper(cdc codec.BinaryCodec, key storetypes.StoreKey) Keeper {
 	return Keeper{
 		cdc: cdc,
 		key: key,
