@@ -1,6 +1,6 @@
 module github.com/sentinel-official/hub
 
-go 1.21.0
+go 1.21
 
 require (
 	cosmossdk.io/errors v1.0.0
