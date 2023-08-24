@@ -46,11 +46,6 @@ install:
 go-lint:
 	@golangci-lint run --fix
 
-.PHONY: mod-vendor
-mod-vendor:
-	@go mod vendor
-	@modvendor -copy="**/*.proto" -include=github.com/cosmos/cosmos-sdk/proto,github.com/cosmos/cosmos-sdk/third_party/proto
-
 .PHONY: proto-gen
 proto-gen:
 	@scripts/proto-gen.sh
@@ -70,5 +65,4 @@ test-coverage:
 .PHONY: tools
 tools:
 	@go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.50.1
-	@go install github.com/goware/modvendor@v0.5.0
 	@go install github.com/grpc-ecosystem/grpc-gateway/protoc-gen-grpc-gateway@v1.16.0
