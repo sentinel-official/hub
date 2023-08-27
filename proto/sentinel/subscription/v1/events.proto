@@ -33,7 +33,7 @@ message EventSubscribeToPlan {
   string from                      = 2;
   string owner                     = 3;
   uint64 plan                      = 4;
-  string denom                     = 5;
+  cosmos.base.v1beta1.Coin price   = 5 [ (gogoproto.nullable) = false ];
   google.protobuf.Timestamp expiry = 6
       [ (gogoproto.nullable) = false, (gogoproto.stdtime) = true ];
   string free = 7 [

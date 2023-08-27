@@ -132,8 +132,9 @@ func (k *msgServer) MsgSubscribeToPlan(c context.Context, msg *types.MsgSubscrib
 		return nil, err
 	}
 
+	var price sdk.Coin
 	if plan.Price != nil {
-		price, found := plan.PriceForDenom(msg.Denom)
+		price, found = plan.PriceForDenom(msg.Denom)
 		if !found {
 			return nil, types.ErrorPriceDoesNotExist
 		}
@@ -167,7 +168,7 @@ func (k *msgServer) MsgSubscribeToPlan(c context.Context, msg *types.MsgSubscrib
 			From:   sdk.AccAddress(msgFrom.Bytes()).String(),
 			Owner:  subscription.Owner,
 			Plan:   subscription.Plan,
-			Denom:  subscription.Denom,
+			Price:  price,
 			Expiry: subscription.Expiry,
 			Free:   subscription.Free,
 		},
