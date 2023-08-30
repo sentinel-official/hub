@@ -141,7 +141,7 @@ func NewRootCmd(homeDir string) *cobra.Command {
 		txCommand(),
 	)
 
-	creator := appCreator{encCfg: encCfg, homeDir: homeDir}
+	creator := appCreator{encCfg: encCfg}
 	server.AddCommands(cmd, homeDir, creator.NewApp, creator.AppExport, moduleInitFlags)
 
 	return cmd
