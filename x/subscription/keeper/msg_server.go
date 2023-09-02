@@ -245,8 +245,9 @@ func (k *msgServer) MsgCancel(c context.Context, msg *types.MsgCancelRequest) (*
 	k.SetInactiveSubscriptionAt(ctx, subscription.StatusAt.Add(inactiveDuration), subscription.Id)
 	ctx.EventManager().EmitTypedEvent(
 		&types.EventCancelSubscription{
-			From: sdk.AccAddress(msgFrom.Bytes()).String(),
-			Id:   subscription.Id,
+			From:   sdk.AccAddress(msgFrom.Bytes()).String(),
+			Id:     subscription.Id,
+			Status: subscription.Status,
 		},
 	)
 
@@ -303,6 +304,7 @@ func (k *msgServer) MsgAddQuota(c context.Context, msg *types.MsgAddQuotaRequest
 			Address:   quota.Address,
 			Consumed:  quota.Consumed,
 			Allocated: quota.Allocated,
+			Free:      subscription.Free,
 		},
 	)
 
@@ -351,6 +353,7 @@ func (k *msgServer) MsgUpdateQuota(c context.Context, msg *types.MsgUpdateQuotaR
 			Address:   quota.Address,
 			Consumed:  quota.Consumed,
 			Allocated: quota.Allocated,
+			Free:      subscription.Free,
 		},
 	)
 

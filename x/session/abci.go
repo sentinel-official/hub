@@ -34,6 +34,7 @@ func EndBlock(ctx sdk.Context, k keeper.Keeper) []abcitypes.ValidatorUpdate {
 					Id:           item.Id,
 					Subscription: item.Subscription,
 					Node:         item.Node,
+					Status:       item.Status,
 				},
 			)
 
@@ -49,6 +50,14 @@ func EndBlock(ctx sdk.Context, k keeper.Keeper) []abcitypes.ValidatorUpdate {
 		item.Status = hubtypes.StatusInactive
 		item.StatusAt = ctx.BlockTime()
 		k.SetSession(ctx, item)
+		ctx.EventManager().EmitTypedEvent(
+			&types.EventEndSession{
+				Id:           item.Id,
+				Subscription: item.Subscription,
+				Node:         item.Node,
+				Status:       item.Status,
+			},
+		)
 
 		return false
 	})

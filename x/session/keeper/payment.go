@@ -5,6 +5,7 @@ import (
 
 	hubtypes "github.com/sentinel-official/hub/types"
 	"github.com/sentinel-official/hub/x/session/types"
+	subscriptiontypes "github.com/sentinel-official/hub/x/subscription/types"
 )
 
 func (k *Keeper) ProcessPaymentAndUpdateQuota(ctx sdk.Context, session types.Session) error {
@@ -43,6 +44,14 @@ func (k *Keeper) ProcessPaymentAndUpdateQuota(ctx sdk.Context, session types.Ses
 
 		quota.Consumed = quota.Consumed.Add(bandwidth)
 		k.SetQuota(ctx, session.Subscription, quota)
+		ctx.EventManager().EmitTypedEvent(
+			&subscriptiontypes.EventUpdateQuota{
+				Id:        session.Subscription,
+				Address:   quota.Address,
+				Consumed:  quota.Consumed,
+				Allocated: quota.Allocated,
+			},
+		)
 
 		amount := subscription.Amount(bandwidth)
 		ctx.Logger().Info("calculated payment for session", "id", session.Id,
@@ -50,7 +59,20 @@ func (k *Keeper) ProcessPaymentAndUpdateQuota(ctx sdk.Context, session types.Ses
 			"consumed", session.Bandwidth.Sum(), "rounded", bandwidth)
 
 		sessionNode := session.GetNode()
-		return k.SendCoinsFromDepositToAccount(ctx, from, sessionNode.Bytes(), amount)
+		if err := k.SendCoinsFromDepositToAccount(ctx, from, sessionNode.Bytes(), amount); err != nil {
+			return err
+		}
+
+		ctx.EventManager().EmitTypedEvent(
+			&types.EventPay{
+				Id:           session.Id,
+				Subscription: session.Subscription,
+				Node:         session.Node,
+				Payment:      amount,
+			},
+		)
+
+		return nil
 	}
 
 	bandwidth := session.Bandwidth.Sum()
@@ -60,6 +82,14 @@ func (k *Keeper) ProcessPaymentAndUpdateQuota(ctx sdk.Context, session types.Ses
 
 	quota.Consumed = quota.Consumed.Add(bandwidth)
 	k.SetQuota(ctx, session.Subscription, quota)
+	ctx.EventManager().EmitTypedEvent(
+		&subscriptiontypes.EventUpdateQuota{
+			Id:        session.Subscription,
+			Address:   quota.Address,
+			Consumed:  quota.Consumed,
+			Allocated: quota.Allocated,
+		},
+	)
 
 	ctx.Logger().Info("calculated bandwidth for session", "id", session.Id,
 		"plan", subscription.Plan, "consumed", session.Bandwidth.Sum(), "rounded", bandwidth)

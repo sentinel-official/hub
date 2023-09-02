@@ -202,6 +202,7 @@ func (k *msgServer) MsgEnd(c context.Context, msg *types.MsgEndRequest) (*types.
 			Id:           session.Id,
 			Subscription: session.Subscription,
 			Node:         session.Node,
+			Status:       session.Status,
 		},
 	)
 

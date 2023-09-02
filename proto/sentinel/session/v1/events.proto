@@ -3,9 +3,11 @@ package sentinel.session.v1;
 
 option go_package = "github.com/sentinel-official/hub/x/session/types";
 
+import "cosmos/base/v1beta1/coin.proto";
 import "gogoproto/gogo.proto";
 import "google/protobuf/duration.proto";
 import "sentinel/types/v1/bandwidth.proto";
+import "sentinel/types/v1/status.proto";
 
 option (gogoproto.equal_all)           = false;
 option (gogoproto.goproto_getters_all) = false;
@@ -37,4 +39,12 @@ message EventEndSession {
   uint64 id           = 2;
   uint64 subscription = 3;
   string node         = 4;
+  sentinel.types.v1.Status status = 5;
+}
+
+message EventPay {
+  uint64 id           = 1;
+  uint64 subscription = 2;
+  string node         = 3;
+  cosmos.base.v1beta1.Coin payment   = 4 [ (gogoproto.nullable) = false ];
 }
