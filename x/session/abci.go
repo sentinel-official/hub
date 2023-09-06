@@ -30,10 +30,10 @@ func EndBlock(ctx sdk.Context, k keeper.Keeper) []abcitypes.ValidatorUpdate {
 			k.SetInactiveSessionForAddress(ctx, itemAddress, item.Id)
 			k.SetInactiveSessionAt(ctx, item.StatusAt.Add(inactiveDuration), item.Id)
 			ctx.EventManager().EmitTypedEvent(
-				&types.EventSetStatus{
+				&types.EventEndSession{
 					Id:           item.Id,
-					Node:         item.Node,
 					Subscription: item.Subscription,
+					Node:         item.Node,
 					Status:       item.Status,
 				},
 			)
@@ -52,10 +52,10 @@ func EndBlock(ctx sdk.Context, k keeper.Keeper) []abcitypes.ValidatorUpdate {
 		k.SetSession(ctx, item)
 
 		ctx.EventManager().EmitTypedEvent(
-			&types.EventSetStatus{
+			&types.EventEndSession{
 				Id:           item.Id,
-				Node:         item.Node,
 				Subscription: item.Subscription,
+				Node:         item.Node,
 				Status:       item.Status,
 			},
 		)

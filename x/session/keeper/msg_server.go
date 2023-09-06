@@ -94,10 +94,11 @@ func (k *msgServer) MsgStart(c context.Context, msg *types.MsgStartRequest) (*ty
 	k.SetActiveSessionForAddress(ctx, sessionAddress, session.Id)
 	k.SetInactiveSessionAt(ctx, session.StatusAt.Add(inactiveDuration), session.Id)
 	ctx.EventManager().EmitTypedEvent(
-		&types.EventStart{
+		&types.EventStartSession{
+			From:         msg.From,
 			Id:           session.Id,
-			Node:         session.Node,
 			Subscription: session.Subscription,
+			Node:         session.Node,
 		},
 	)
 
@@ -135,10 +136,14 @@ func (k *msgServer) MsgUpdate(c context.Context, msg *types.MsgUpdateRequest) (*
 	k.SetSession(ctx, session)
 	k.SetInactiveSessionAt(ctx, session.StatusAt.Add(inactiveDuration), session.Id)
 	ctx.EventManager().EmitTypedEvent(
-		&types.EventUpdate{
+		&types.EventUpdateSession{
+			From:         msg.From,
 			Id:           session.Id,
-			Node:         session.Node,
 			Subscription: session.Subscription,
+			Node:         session.Node,
+			Address:      session.Address,
+			Duration:     session.Duration,
+			Bandwidth:    session.Bandwidth,
 		},
 	)
 
@@ -175,10 +180,11 @@ func (k *msgServer) MsgEnd(c context.Context, msg *types.MsgEndRequest) (*types.
 	k.SetInactiveSessionForAddress(ctx, msgFrom, session.Id)
 	k.SetInactiveSessionAt(ctx, session.StatusAt.Add(inactiveDuration), session.Id)
 	ctx.EventManager().EmitTypedEvent(
-		&types.EventSetStatus{
+		&types.EventEndSession{
+			From:         msg.From,
 			Id:           session.Id,
-			Node:         session.Node,
 			Subscription: session.Subscription,
+			Node:         session.Node,
 			Status:       session.Status,
 		},
 	)

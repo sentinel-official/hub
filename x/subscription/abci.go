@@ -34,7 +34,7 @@ func EndBlock(ctx sdk.Context, k keeper.Keeper) []abcitypes.ValidatorUpdate {
 			k.SetSubscription(ctx, item)
 			k.SetInactiveSubscriptionAt(ctx, item.StatusAt.Add(inactiveDuration), item.Id)
 			ctx.EventManager().EmitTypedEvent(
-				&types.EventSetStatus{
+				&types.EventCancelSubscription{
 					Id:     item.Id,
 					Status: item.Status,
 				},
@@ -58,6 +58,14 @@ func EndBlock(ctx sdk.Context, k keeper.Keeper) []abcitypes.ValidatorUpdate {
 			if err := k.SubtractDeposit(ctx, itemOwner, amount); err != nil {
 				log.Error("failed to subtract the deposit", "cause", err)
 			}
+
+			ctx.EventManager().EmitTypedEvent(
+				&types.EventRefund{
+					Id:      item.Id,
+					Address: item.Owner,
+					Payment: amount,
+				},
+			)
 		}
 
 		k.DeleteInactiveSubscriptionAt(ctx, item.StatusAt.Add(inactiveDuration), item.Id)
@@ -67,7 +75,7 @@ func EndBlock(ctx sdk.Context, k keeper.Keeper) []abcitypes.ValidatorUpdate {
 		k.SetSubscription(ctx, item)
 
 		ctx.EventManager().EmitTypedEvent(
-			&types.EventSetStatus{
+			&types.EventCancelSubscription{
 				Id:     item.Id,
 				Status: item.Status,
 			},

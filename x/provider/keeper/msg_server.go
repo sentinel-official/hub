@@ -54,8 +54,13 @@ func (k *msgServer) MsgRegister(c context.Context, msg *types.MsgRegisterRequest
 
 	k.SetProvider(ctx, provider)
 	ctx.EventManager().EmitTypedEvent(
-		&types.EventRegister{
-			Address: provider.Address,
+		&types.EventRegisterProvider{
+			From:        msg.From,
+			Address:     provider.Address,
+			Name:        provider.Name,
+			Identity:    provider.Identity,
+			Website:     provider.Website,
+			Description: provider.Description,
 		},
 	)
 
@@ -90,8 +95,13 @@ func (k *msgServer) MsgUpdate(c context.Context, msg *types.MsgUpdateRequest) (*
 
 	k.SetProvider(ctx, provider)
 	ctx.EventManager().EmitTypedEvent(
-		&types.EventUpdate{
-			Address: provider.Address,
+		&types.EventUpdateProvider{
+			From:        msg.From,
+			Address:     provider.Address,
+			Name:        provider.Name,
+			Identity:    provider.Identity,
+			Website:     provider.Website,
+			Description: provider.Description,
 		},
 	)
 
