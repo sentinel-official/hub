@@ -29,8 +29,8 @@ import (
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 
-	"github.com/sentinel-official/hub/app/ante"
-	"github.com/sentinel-official/hub/app/upgrades"
+	"github.com/sentinel-official/hub/v1/app/ante"
+	"github.com/sentinel-official/hub/v1/app/upgrades"
 )
 
 const (

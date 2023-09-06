@@ -5,7 +5,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/sentinel-official/hub/x/swap/types"
+	"github.com/sentinel-official/hub/v1/x/swap/types"
 )
 
 var (

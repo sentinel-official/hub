@@ -58,13 +58,13 @@ import (
 	ibcexported "github.com/cosmos/ibc-go/v7/modules/core/exported"
 	ibctm "github.com/cosmos/ibc-go/v7/modules/light-clients/07-tendermint"
 
-	deposittypes "github.com/sentinel-official/hub/x/deposit/types"
-	custommint "github.com/sentinel-official/hub/x/mint"
-	customminttypes "github.com/sentinel-official/hub/x/mint/types"
-	"github.com/sentinel-official/hub/x/swap"
-	swaptypes "github.com/sentinel-official/hub/x/swap/types"
-	"github.com/sentinel-official/hub/x/vpn"
-	vpntypes "github.com/sentinel-official/hub/x/vpn/types"
+	deposittypes "github.com/sentinel-official/hub/v1/x/deposit/types"
+	custommint "github.com/sentinel-official/hub/v1/x/mint"
+	customminttypes "github.com/sentinel-official/hub/v1/x/mint/types"
+	"github.com/sentinel-official/hub/v1/x/swap"
+	swaptypes "github.com/sentinel-official/hub/v1/x/swap/types"
+	"github.com/sentinel-official/hub/v1/x/vpn"
+	vpntypes "github.com/sentinel-official/hub/v1/x/vpn/types"
 )
 
 var (

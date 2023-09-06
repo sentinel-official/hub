@@ -6,8 +6,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	protobuf "github.com/gogo/protobuf/types"
 
-	hubtypes "github.com/sentinel-official/hub/types"
-	"github.com/sentinel-official/hub/x/plan/types"
+	hubtypes "github.com/sentinel-official/hub/v1/types"
+	"github.com/sentinel-official/hub/v1/x/plan/types"
 )
 
 func (k *Keeper) SetActivePlan(ctx sdk.Context, plan types.Plan) {

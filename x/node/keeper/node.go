@@ -7,8 +7,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	protobuf "github.com/gogo/protobuf/types"
 
-	hubtypes "github.com/sentinel-official/hub/types"
-	"github.com/sentinel-official/hub/x/node/types"
+	hubtypes "github.com/sentinel-official/hub/v1/types"
+	"github.com/sentinel-official/hub/v1/x/node/types"
 )
 
 func (k *Keeper) SetActiveNode(ctx sdk.Context, node types.Node) {

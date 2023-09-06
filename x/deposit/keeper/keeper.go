@@ -9,8 +9,8 @@ import (
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/sentinel-official/hub/x/deposit/expected"
-	"github.com/sentinel-official/hub/x/deposit/types"
+	"github.com/sentinel-official/hub/v1/x/deposit/expected"
+	"github.com/sentinel-official/hub/v1/x/deposit/types"
 )
 
 type Keeper struct {

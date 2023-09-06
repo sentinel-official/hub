@@ -4,7 +4,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	protobuf "github.com/gogo/protobuf/types"
 
-	"github.com/sentinel-official/hub/x/plan/types"
+	"github.com/sentinel-official/hub/v1/x/plan/types"
 )
 
 func (k *Keeper) SetCount(ctx sdk.Context, count uint64) {

@@ -7,7 +7,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	hubtypes "github.com/sentinel-official/hub/types"
+	hubtypes "github.com/sentinel-official/hub/v1/types"
 )
 
 func TestPlan_GetProviderAddress(t *testing.T) {

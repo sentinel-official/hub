@@ -11,8 +11,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	"github.com/spf13/cobra"
 
-	hubtypes "github.com/sentinel-official/hub/types"
-	"github.com/sentinel-official/hub/x/session/types"
+	hubtypes "github.com/sentinel-official/hub/v1/types"
+	"github.com/sentinel-official/hub/v1/x/session/types"
 )
 
 func txStart() *cobra.Command {

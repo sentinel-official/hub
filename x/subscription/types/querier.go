@@ -4,7 +4,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/query"
 
-	hubtypes "github.com/sentinel-official/hub/types"
+	hubtypes "github.com/sentinel-official/hub/v1/types"
 )
 
 func NewQuerySubscriptionRequest(id uint64) *QuerySubscriptionRequest {

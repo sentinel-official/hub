@@ -8,7 +8,7 @@ import (
 	sdkmath "cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	hubtypes "github.com/sentinel-official/hub/types"
+	hubtypes "github.com/sentinel-official/hub/v1/types"
 )
 
 func TestSession_GetAddress(t *testing.T) {

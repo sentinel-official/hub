@@ -8,7 +8,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/server"
 	servercmd "github.com/cosmos/cosmos-sdk/server/cmd"
 
-	hubtypes "github.com/sentinel-official/hub/types"
+	hubtypes "github.com/sentinel-official/hub/v1/types"
 )
 
 func HomeDir() (string, error) {

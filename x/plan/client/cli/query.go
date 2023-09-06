@@ -10,7 +10,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/spf13/cobra"
 
-	"github.com/sentinel-official/hub/x/plan/types"
+	"github.com/sentinel-official/hub/v1/x/plan/types"
 )
 
 func queryPlan() *cobra.Command {

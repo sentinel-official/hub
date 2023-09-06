@@ -7,10 +7,10 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 
-	hubtypes "github.com/sentinel-official/hub/types"
-	nodetypes "github.com/sentinel-official/hub/x/node/types"
-	plantypes "github.com/sentinel-official/hub/x/plan/types"
-	sessiontypes "github.com/sentinel-official/hub/x/session/types"
+	hubtypes "github.com/sentinel-official/hub/v1/types"
+	nodetypes "github.com/sentinel-official/hub/v1/x/node/types"
+	plantypes "github.com/sentinel-official/hub/v1/x/plan/types"
+	sessiontypes "github.com/sentinel-official/hub/v1/x/session/types"
 )
 
 type AccountKeeper interface {

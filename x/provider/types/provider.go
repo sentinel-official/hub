@@ -6,7 +6,7 @@ import (
 
 	sdkerrors "cosmossdk.io/errors"
 
-	hubtypes "github.com/sentinel-official/hub/types"
+	hubtypes "github.com/sentinel-official/hub/v1/types"
 )
 
 func (m *Provider) GetAddress() hubtypes.ProvAddress {

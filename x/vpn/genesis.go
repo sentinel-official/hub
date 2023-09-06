@@ -3,14 +3,14 @@ package vpn
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/sentinel-official/hub/x/deposit"
-	"github.com/sentinel-official/hub/x/node"
-	"github.com/sentinel-official/hub/x/plan"
-	"github.com/sentinel-official/hub/x/provider"
-	"github.com/sentinel-official/hub/x/session"
-	"github.com/sentinel-official/hub/x/subscription"
-	"github.com/sentinel-official/hub/x/vpn/keeper"
-	"github.com/sentinel-official/hub/x/vpn/types"
+	"github.com/sentinel-official/hub/v1/x/deposit"
+	"github.com/sentinel-official/hub/v1/x/node"
+	"github.com/sentinel-official/hub/v1/x/plan"
+	"github.com/sentinel-official/hub/v1/x/provider"
+	"github.com/sentinel-official/hub/v1/x/session"
+	"github.com/sentinel-official/hub/v1/x/subscription"
+	"github.com/sentinel-official/hub/v1/x/vpn/keeper"
+	"github.com/sentinel-official/hub/v1/x/vpn/types"
 )
 
 func InitGenesis(ctx sdk.Context, k keeper.Keeper, state *types.GenesisState) {

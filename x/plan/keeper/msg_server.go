@@ -5,8 +5,8 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	hubtypes "github.com/sentinel-official/hub/types"
-	"github.com/sentinel-official/hub/x/plan/types"
+	hubtypes "github.com/sentinel-official/hub/v1/types"
+	"github.com/sentinel-official/hub/v1/x/plan/types"
 )
 
 // The following line asserts that the `msgServer` type implements the `types.MsgServiceServer` interface.

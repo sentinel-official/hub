@@ -5,8 +5,8 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	hubtypes "github.com/sentinel-official/hub/types"
-	"github.com/sentinel-official/hub/x/provider/types"
+	hubtypes "github.com/sentinel-official/hub/v1/types"
+	"github.com/sentinel-official/hub/v1/x/provider/types"
 )
 
 func (k *Keeper) SetActiveProvider(ctx sdk.Context, v types.Provider) {

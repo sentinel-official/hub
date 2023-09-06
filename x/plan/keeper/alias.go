@@ -3,9 +3,9 @@ package keeper
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	hubtypes "github.com/sentinel-official/hub/types"
-	nodetypes "github.com/sentinel-official/hub/x/node/types"
-	subscriptiontypes "github.com/sentinel-official/hub/x/subscription/types"
+	hubtypes "github.com/sentinel-official/hub/v1/types"
+	nodetypes "github.com/sentinel-official/hub/v1/x/node/types"
+	subscriptiontypes "github.com/sentinel-official/hub/v1/x/subscription/types"
 )
 
 func (k *Keeper) HasProvider(ctx sdk.Context, addr hubtypes.ProvAddress) bool {

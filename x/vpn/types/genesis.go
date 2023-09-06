@@ -3,12 +3,12 @@ package types
 import (
 	sdkerrors "cosmossdk.io/errors"
 
-	deposittypes "github.com/sentinel-official/hub/x/deposit/types"
-	nodetypes "github.com/sentinel-official/hub/x/node/types"
-	plantypes "github.com/sentinel-official/hub/x/plan/types"
-	providertypes "github.com/sentinel-official/hub/x/provider/types"
-	sessiontypes "github.com/sentinel-official/hub/x/session/types"
-	subscriptiontypes "github.com/sentinel-official/hub/x/subscription/types"
+	deposittypes "github.com/sentinel-official/hub/v1/x/deposit/types"
+	nodetypes "github.com/sentinel-official/hub/v1/x/node/types"
+	plantypes "github.com/sentinel-official/hub/v1/x/plan/types"
+	providertypes "github.com/sentinel-official/hub/v1/x/provider/types"
+	sessiontypes "github.com/sentinel-official/hub/v1/x/session/types"
+	subscriptiontypes "github.com/sentinel-official/hub/v1/x/subscription/types"
 )
 
 func NewGenesisState(

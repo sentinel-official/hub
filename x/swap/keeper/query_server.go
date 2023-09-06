@@ -9,7 +9,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	"github.com/sentinel-official/hub/x/swap/types"
+	"github.com/sentinel-official/hub/v1/x/swap/types"
 )
 
 var (

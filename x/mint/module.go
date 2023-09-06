@@ -13,8 +13,8 @@ import (
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/spf13/cobra"
 
-	"github.com/sentinel-official/hub/x/mint/keeper"
-	"github.com/sentinel-official/hub/x/mint/types"
+	"github.com/sentinel-official/hub/v1/x/mint/keeper"
+	"github.com/sentinel-official/hub/v1/x/mint/types"
 )
 
 var (

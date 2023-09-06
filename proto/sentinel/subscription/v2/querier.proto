@@ -9,7 +9,7 @@ import "sentinel/subscription/v2/allocation.proto";
 import "sentinel/subscription/v2/params.proto";
 import "sentinel/subscription/v2/payout.proto";
 
-option go_package = "github.com/sentinel-official/hub/x/subscription/types";
+option go_package = "github.com/sentinel-official/hub/v1/x/subscription/types";
 option (gogoproto.equal_all)           = false;
 option (gogoproto.goproto_getters_all) = false;
 

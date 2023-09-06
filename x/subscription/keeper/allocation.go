@@ -3,7 +3,7 @@ package keeper
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/sentinel-official/hub/x/subscription/types"
+	"github.com/sentinel-official/hub/v1/x/subscription/types"
 )
 
 func (k *Keeper) SetAllocation(ctx sdk.Context, alloc types.Allocation) {

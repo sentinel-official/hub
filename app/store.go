@@ -27,9 +27,9 @@ import (
 	ibctransfertypes "github.com/cosmos/ibc-go/v7/modules/apps/transfer/types"
 	ibcexported "github.com/cosmos/ibc-go/v7/modules/core/exported"
 
-	customminttypes "github.com/sentinel-official/hub/x/mint/types"
-	swaptypes "github.com/sentinel-official/hub/x/swap/types"
-	vpntypes "github.com/sentinel-official/hub/x/vpn/types"
+	customminttypes "github.com/sentinel-official/hub/v1/x/mint/types"
+	swaptypes "github.com/sentinel-official/hub/v1/x/swap/types"
+	vpntypes "github.com/sentinel-official/hub/v1/x/vpn/types"
 )
 
 type StoreKeys struct {

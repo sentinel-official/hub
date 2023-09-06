@@ -10,7 +10,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/spf13/cobra"
 
-	"github.com/sentinel-official/hub/x/session/types"
+	"github.com/sentinel-official/hub/v1/x/session/types"
 )
 
 func querySession() *cobra.Command {

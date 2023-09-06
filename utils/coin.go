@@ -4,7 +4,7 @@ import (
 	sdkmath "cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/sentinel-official/hub/types"
+	"github.com/sentinel-official/hub/v1/types"
 )
 
 func AmountForBytes(gigabytePrice, bytes sdkmath.Int) sdkmath.Int {

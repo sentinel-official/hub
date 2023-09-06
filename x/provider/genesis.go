@@ -3,8 +3,8 @@ package provider
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/sentinel-official/hub/x/provider/keeper"
-	"github.com/sentinel-official/hub/x/provider/types"
+	"github.com/sentinel-official/hub/v1/x/provider/keeper"
+	"github.com/sentinel-official/hub/v1/x/provider/types"
 )
 
 func InitGenesis(ctx sdk.Context, k keeper.Keeper, state *types.GenesisState) {
