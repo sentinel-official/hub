@@ -5,6 +5,7 @@ import (
 
 	hubtypes "github.com/sentinel-official/hub/types"
 	"github.com/sentinel-official/hub/x/session/types"
+	subscriptiontypes "github.com/sentinel-official/hub/x/subscription/types"
 )
 
 func (k *Keeper) ProcessPaymentAndUpdateQuota(ctx sdk.Context, session types.Session) error {
@@ -43,6 +44,14 @@ func (k *Keeper) ProcessPaymentAndUpdateQuota(ctx sdk.Context, session types.Ses
 
 		quota.Consumed = quota.Consumed.Add(bandwidth)
 		k.SetQuota(ctx, session.Subscription, quota)
+		ctx.EventManager().EmitTypedEvent(
+			&subscriptiontypes.EventUpdateQuota{
+				Id:        session.Subscription,
+				Address:   quota.Address,
+				Consumed:  quota.Consumed,
+				Allocated: quota.Allocated,
+			},
+		)
 
 		var (
 			amount      = subscription.Amount(bandwidth)
@@ -56,9 +65,9 @@ func (k *Keeper) ProcessPaymentAndUpdateQuota(ctx sdk.Context, session types.Ses
 		ctx.EventManager().EmitTypedEvent(
 			&types.EventPay{
 				Id:           session.Id,
-				Node:         session.Node,
 				Subscription: session.Subscription,
-				Amount:       amount,
+				Node:         session.Node,
+				Payment:      amount,
 			},
 		)
 
@@ -72,6 +81,14 @@ func (k *Keeper) ProcessPaymentAndUpdateQuota(ctx sdk.Context, session types.Ses
 
 	quota.Consumed = quota.Consumed.Add(bandwidth)
 	k.SetQuota(ctx, session.Subscription, quota)
+	ctx.EventManager().EmitTypedEvent(
+		&subscriptiontypes.EventUpdateQuota{
+			Id:        session.Subscription,
+			Address:   quota.Address,
+			Consumed:  quota.Consumed,
+			Allocated: quota.Allocated,
+		},
+	)
 
 	ctx.Logger().Info("calculated bandwidth for session", "id", session.Id,
 		"plan", subscription.Plan, "consumed", session.Bandwidth.Sum(), "rounded", bandwidth)

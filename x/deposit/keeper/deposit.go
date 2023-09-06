@@ -57,13 +57,6 @@ func (k *Keeper) Add(ctx sdk.Context, address sdk.AccAddress, coins sdk.Coins) e
 		return err
 	}
 
-	ctx.EventManager().EmitTypedEvent(
-		&types.EventAdd{
-			Address: address.String(),
-			Coins:   coins,
-		},
-	)
-
 	return nil
 }
 
@@ -72,13 +65,6 @@ func (k *Keeper) Subtract(ctx sdk.Context, address sdk.AccAddress, coins sdk.Coi
 	if err := k.SendCoinsFromDepositToAccount(ctx, address, address, coins); err != nil {
 		return err
 	}
-
-	ctx.EventManager().EmitTypedEvent(
-		&types.EventSubtract{
-			Address: address.String(),
-			Coins:   coins,
-		},
-	)
 
 	return nil
 }
@@ -98,6 +84,14 @@ func (k *Keeper) SendCoinsFromAccountToDeposit(ctx sdk.Context, from, to sdk.Acc
 		}
 	}
 
+	ctx.EventManager().EmitTypedEvent(
+		&types.EventAdd{
+			Address:  deposit.Address,
+			Previous: deposit.Coins,
+			Coins:    coins,
+		},
+	)
+
 	deposit.Coins = deposit.Coins.Add(coins...)
 	if deposit.Coins.IsAnyNegative() {
 		return types.ErrorInsufficientDepositFunds
@@ -114,6 +108,14 @@ func (k *Keeper) SendCoinsFromDepositToAccount(ctx sdk.Context, from, to sdk.Acc
 	if !found {
 		return types.ErrorDepositDoesNotExist
 	}
+
+	ctx.EventManager().EmitTypedEvent(
+		&types.EventAdd{
+			Address:  deposit.Address,
+			Previous: deposit.Coins,
+			Coins:    coins,
+		},
+	)
 
 	deposit.Coins, _ = deposit.Coins.SafeSub(coins)
 	if deposit.Coins.IsAnyNegative() {
