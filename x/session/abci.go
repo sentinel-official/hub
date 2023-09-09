@@ -45,6 +45,9 @@ func EndBlock(ctx sdk.Context, k keeper.Keeper) []abcitypes.ValidatorUpdate {
 			log.Error("error occurred while processing the payment", "cause", err)
 		}
 
+		item.Status = hubtypes.StatusInactive
+		item.StatusAt = ctx.BlockTime()
+
 		k.DeleteSession(ctx, item.Id)
 		k.DeleteInactiveSessionForAddress(ctx, accAddr, item.Id)
 		k.DeleteInactiveSessionAt(ctx, item.StatusAt.Add(inactiveDuration), item.Id)
