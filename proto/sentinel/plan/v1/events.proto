@@ -13,13 +13,14 @@ option (gogoproto.goproto_getters_all) = false;
 message EventAddPlan {
   string from                             = 1;
   string provider                         = 2;
-  repeated cosmos.base.v1beta1.Coin price = 3 [
+  uint64 id = 3;
+  repeated cosmos.base.v1beta1.Coin price = 4 [
     (gogoproto.nullable)     = false,
     (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
   ];
-  google.protobuf.Duration validity = 4
+  google.protobuf.Duration validity = 5
   [ (gogoproto.stdduration) = true, (gogoproto.nullable) = false ];
-  string bytes = 5 [
+  string bytes = 6 [
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
     (gogoproto.nullable)   = false
   ];
