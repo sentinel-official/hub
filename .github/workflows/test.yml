@@ -14,7 +14,7 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-      - name: Setup Go
+      - name: Set up Go
         uses: actions/setup-go@v4
         with:
           go-version: '1.21'
@@ -25,9 +25,9 @@ jobs:
           filepaths+=" $(find ./ -type f -name '*.pb.go')"
           filepaths+=" $(find ./ -type f -name '*.pb.gw.go')"
           for filepath in ${filepaths}; do
-            filepath=$(echo ${filepath} | sed 's/^./github.com\/sentinel-official\/hub/g')
+            filepath=$(echo ${filepath} | sed 's@^.@github.com/sentinel-official/hub/v[0-9]*@g')
             echo "Excluding file ${filepath} from coverage report..."
-            sed -i "/$(echo ${filepath} | sed 's/\//\\\//g')/d" ./coverage.txt
+            sed -i "/$(echo ${filepath} | sed 's@/@\\/@g')/d" ./coverage.txt
           done
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
