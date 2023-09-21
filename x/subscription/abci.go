@@ -71,9 +71,6 @@ func EndBlock(ctx sdk.Context, k keeper.Keeper) []abcitypes.ValidatorUpdate {
 			)
 		}
 
-		item.Status = hubtypes.StatusInactive
-		item.StatusAt = ctx.BlockTime()
-
 		k.DeleteSubscription(ctx, item.Id)
 		k.IterateQuotas(ctx, item.Id, func(_ int, quota types.Quota) bool {
 			accAddr := quota.GetAddress()
@@ -83,6 +80,9 @@ func EndBlock(ctx sdk.Context, k keeper.Keeper) []abcitypes.ValidatorUpdate {
 			return false
 		})
 		k.DeleteInactiveSubscriptionAt(ctx, item.StatusAt.Add(inactiveDuration), item.Id)
+
+		item.Status = hubtypes.StatusInactive
+		item.StatusAt = ctx.BlockTime()
 
 		ctx.EventManager().EmitTypedEvent(
 			&types.EventCancelSubscription{
