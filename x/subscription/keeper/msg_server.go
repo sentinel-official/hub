@@ -169,7 +169,7 @@ func (k *msgServer) MsgSubscribeToPlan(c context.Context, msg *types.MsgSubscrib
 	ctx.EventManager().EmitTypedEvent(
 		&types.EventSubscribeToPlan{
 			Id:     subscription.Id,
-			From:   sdk.AccAddress(msgFrom.Bytes()).String(),
+			From:   msg.From,
 			Owner:  subscription.Owner,
 			Plan:   subscription.Plan,
 			Price:  price,
