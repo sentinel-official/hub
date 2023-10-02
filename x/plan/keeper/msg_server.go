@@ -54,6 +54,7 @@ func (k *msgServer) MsgAdd(c context.Context, msg *types.MsgAddRequest) (*types.
 		&types.EventAddPlan{
 			From:     msg.From,
 			Provider: plan.Provider,
+			Id:       plan.Id,
 			Price:    plan.Price,
 			Validity: plan.Validity,
 			Bytes:    plan.Bytes,
