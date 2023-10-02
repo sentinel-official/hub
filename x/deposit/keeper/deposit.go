@@ -138,6 +138,14 @@ func (k *Keeper) SendCoinsFromDepositToModule(ctx sdk.Context, from sdk.AccAddre
 		return types.ErrorDepositDoesNotExist
 	}
 
+	ctx.EventManager().EmitTypedEvent(
+		&types.EventSubtract{
+			Address:  deposit.Address,
+			Previous: deposit.Coins,
+			Coins:    coins,
+		},
+	)
+
 	deposit.Coins, _ = deposit.Coins.SafeSub(coins)
 	if deposit.Coins.IsAnyNegative() {
 		return types.ErrorInsufficientDepositFunds
