@@ -28,10 +28,11 @@ message EventSubscribeToPlan {
   string from                      = 2;
   string owner                     = 3;
   uint64 plan                      = 4;
-  cosmos.base.v1beta1.Coin price   = 5 [ (gogoproto.nullable) = false ];
-  google.protobuf.Timestamp expiry = 6
+  cosmos.base.v1beta1.Coin payment   = 5 [ (gogoproto.nullable) = false ];
+  cosmos.base.v1beta1.Coin staking_reward   = 6 [ (gogoproto.nullable) = false ];
+  google.protobuf.Timestamp expiry = 7
   [ (gogoproto.nullable) = false, (gogoproto.stdtime) = true ];
-  string free = 7 [
+  string free = 8 [
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
     (gogoproto.nullable)   = false
   ];

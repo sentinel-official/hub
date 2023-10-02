@@ -42,4 +42,5 @@ message EventPay {
   uint64 subscription = 2;
   string node         = 3;
   cosmos.base.v1beta1.Coin payment   = 4 [ (gogoproto.nullable) = false ];
+  cosmos.base.v1beta1.Coin staking_reward   = 5 [ (gogoproto.nullable) = false ];
 }

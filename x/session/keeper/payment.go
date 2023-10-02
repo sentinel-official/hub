@@ -71,10 +71,11 @@ func (k *Keeper) ProcessPaymentAndUpdateQuota(ctx sdk.Context, session types.Ses
 
 		ctx.EventManager().EmitTypedEvent(
 			&types.EventPay{
-				Id:           session.Id,
-				Subscription: session.Subscription,
-				Node:         session.Node,
-				Payment:      amount,
+				Id:            session.Id,
+				Subscription:  session.Subscription,
+				Node:          session.Node,
+				Payment:       amount,
+				StakingReward: stakingReward,
 			},
 		)
 
