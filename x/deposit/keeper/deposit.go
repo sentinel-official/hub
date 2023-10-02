@@ -110,7 +110,7 @@ func (k *Keeper) SendCoinsFromDepositToAccount(ctx sdk.Context, from, to sdk.Acc
 	}
 
 	ctx.EventManager().EmitTypedEvent(
-		&types.EventAdd{
+		&types.EventSubtract{
 			Address:  deposit.Address,
 			Previous: deposit.Coins,
 			Coins:    coins,
