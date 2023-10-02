@@ -82,7 +82,8 @@ func EndBlock(ctx sdk.Context, k keeper.Keeper) []abcitypes.ValidatorUpdate {
 		k.SetNode(ctx, item)
 
 		ctx.EventManager().EmitTypedEvent(
-			&types.EventSetStatus{
+			&types.EventSetNodeStatus{
+				From:    "",
 				Address: item.Address,
 				Status:  item.Status,
 			},

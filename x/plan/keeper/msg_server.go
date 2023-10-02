@@ -51,9 +51,12 @@ func (k *msgServer) MsgAdd(c context.Context, msg *types.MsgAddRequest) (*types.
 	k.SetInactivePlan(ctx, plan.Id)
 	k.SetInactivePlanForProvider(ctx, provAddr, plan.Id)
 	ctx.EventManager().EmitTypedEvent(
-		&types.EventAdd{
-			Id:       plan.Id,
+		&types.EventAddPlan{
+			From:     msg.From,
 			Provider: plan.Provider,
+			Price:    plan.Price,
+			Validity: plan.Validity,
+			Bytes:    plan.Bytes,
 		},
 	)
 
@@ -95,9 +98,10 @@ func (k *msgServer) MsgSetStatus(c context.Context, msg *types.MsgSetStatusReque
 
 	k.SetPlan(ctx, plan)
 	ctx.EventManager().EmitTypedEvent(
-		&types.EventSetStatus{
-			Id:       plan.Id,
+		&types.EventSetPlanStatus{
+			From:     msg.From,
 			Provider: plan.Provider,
+			Id:       plan.Id,
 			Status:   plan.Status,
 		},
 	)
@@ -137,10 +141,11 @@ func (k *msgServer) MsgAddNode(c context.Context, msg *types.MsgAddNodeRequest) 
 	k.SetNodeForPlan(ctx, plan.Id, nodeAddr)
 	k.IncreaseCountForNodeByProvider(ctx, provAddr, nodeAddr)
 	ctx.EventManager().EmitTypedEvent(
-		&types.EventAddNode{
-			Id:       plan.Id,
-			Node:     nodeAddr.String(),
+		&types.EventAddNodeForPlan{
+			From:     msg.From,
 			Provider: plan.Provider,
+			Id:       plan.Id,
+			Address:  msg.Address,
 		},
 	)
 
@@ -179,10 +184,10 @@ func (k *msgServer) MsgRemoveNode(c context.Context, msg *types.MsgRemoveNodeReq
 	k.DeleteNodeForPlan(ctx, plan.Id, nodeAddr)
 	k.DecreaseCountForNodeByProvider(ctx, provAddr, nodeAddr)
 	ctx.EventManager().EmitTypedEvent(
-		&types.EventRemoveNode{
-			Id:       plan.Id,
-			Node:     nodeAddr.String(),
-			Provider: plan.Provider,
+		&types.EventRemoveNodeForPlan{
+			From:    msg.From,
+			Id:      plan.Id,
+			Address: msg.Address,
 		},
 	)
 

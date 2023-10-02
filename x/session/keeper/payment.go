@@ -6,6 +6,7 @@ import (
 	hubtypes "github.com/sentinel-official/hub/types"
 	hubutils "github.com/sentinel-official/hub/utils"
 	"github.com/sentinel-official/hub/x/session/types"
+	subscriptiontypes "github.com/sentinel-official/hub/x/subscription/types"
 )
 
 func (k *Keeper) ProcessPaymentAndUpdateQuota(ctx sdk.Context, session types.Session) error {
@@ -44,6 +45,14 @@ func (k *Keeper) ProcessPaymentAndUpdateQuota(ctx sdk.Context, session types.Ses
 
 		quota.Consumed = quota.Consumed.Add(consumed)
 		k.SetQuota(ctx, session.Subscription, quota)
+		ctx.EventManager().EmitTypedEvent(
+			&subscriptiontypes.EventUpdateQuota{
+				Id:        session.Subscription,
+				Address:   quota.Address,
+				Consumed:  quota.Consumed,
+				Allocated: quota.Allocated,
+			},
+		)
 
 		var (
 			amount        = subscription.Amount(consumed)
@@ -63,9 +72,9 @@ func (k *Keeper) ProcessPaymentAndUpdateQuota(ctx sdk.Context, session types.Ses
 		ctx.EventManager().EmitTypedEvent(
 			&types.EventPay{
 				Id:           session.Id,
-				Node:         session.Node,
 				Subscription: session.Subscription,
-				Amount:       amount,
+				Node:         session.Node,
+				Payment:      amount,
 			},
 		)
 
@@ -79,6 +88,14 @@ func (k *Keeper) ProcessPaymentAndUpdateQuota(ctx sdk.Context, session types.Ses
 
 	quota.Consumed = quota.Consumed.Add(consumed)
 	k.SetQuota(ctx, session.Subscription, quota)
+	ctx.EventManager().EmitTypedEvent(
+		&subscriptiontypes.EventUpdateQuota{
+			Id:        session.Subscription,
+			Address:   quota.Address,
+			Consumed:  quota.Consumed,
+			Allocated: quota.Allocated,
+		},
+	)
 
 	return nil
 }

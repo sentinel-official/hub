@@ -3,38 +3,43 @@ package sentinel.session.v1;
 
 import "cosmos/base/v1beta1/coin.proto";
 import "gogoproto/gogo.proto";
+import "google/protobuf/duration.proto";
+import "sentinel/types/v1/bandwidth.proto";
 import "sentinel/types/v1/status.proto";
 
 option go_package = "github.com/sentinel-official/hub/x/session/types";
 option (gogoproto.equal_all)           = false;
 option (gogoproto.goproto_getters_all) = false;
 
-message EventStart {
-  uint64 id           = 1 [ (gogoproto.moretags) = "yaml:\"id\"" ];
-  string node         = 2 [ (gogoproto.moretags) = "yaml:\"node\"" ];
-  uint64 subscription = 3 [ (gogoproto.moretags) = "yaml:\"subscription\"" ];
+message EventStartSession {
+  string from         = 1;
+  uint64 id           = 2;
+  uint64 subscription = 3;
+  string node         = 4;
 }
 
-message EventUpdate {
-  uint64 id           = 1 [ (gogoproto.moretags) = "yaml:\"id\"" ];
-  string node         = 2 [ (gogoproto.moretags) = "yaml:\"node\"" ];
-  uint64 subscription = 3 [ (gogoproto.moretags) = "yaml:\"subscription\"" ];
+message EventUpdateSession {
+  string from                       = 1;
+  uint64 id                         = 2;
+  uint64 subscription               = 3;
+  string node                       = 4;
+  string address                    = 5;
+  google.protobuf.Duration duration = 6
+  [ (gogoproto.stdduration) = true, (gogoproto.nullable) = false ];
+  sentinel.types.v1.Bandwidth bandwidth = 7 [ (gogoproto.nullable) = false ];
 }
 
-message EventSetStatus {
-  uint64 id           = 1 [ (gogoproto.moretags) = "yaml:\"id\"" ];
-  string node         = 2 [ (gogoproto.moretags) = "yaml:\"node\"" ];
-  uint64 subscription = 3 [ (gogoproto.moretags) = "yaml:\"subscription\"" ];
-  sentinel.types.v1.Status status = 4
-      [ (gogoproto.moretags) = "yaml:\"status\"" ];
+message EventEndSession {
+  string from         = 1;
+  uint64 id           = 2;
+  uint64 subscription = 3;
+  string node         = 4;
+  sentinel.types.v1.Status status = 5;
 }
 
 message EventPay {
-  uint64 id           = 1 [ (gogoproto.moretags) = "yaml:\"id\"" ];
-  string node         = 2 [ (gogoproto.moretags) = "yaml:\"node\"" ];
-  uint64 subscription = 3 [ (gogoproto.moretags) = "yaml:\"subscription\"" ];
-  cosmos.base.v1beta1.Coin amount = 4 [
-    (gogoproto.moretags) = "yaml:\"amount\"",
-    (gogoproto.nullable) = false
-  ];
+  uint64 id           = 1;
+  uint64 subscription = 2;
+  string node         = 3;
+  cosmos.base.v1beta1.Coin payment   = 4 [ (gogoproto.nullable) = false ];
 }
