@@ -160,7 +160,7 @@ func txSubscribe() *cobra.Command {
 				addr,
 				gigabytes,
 				hours,
-				args[2],
+				args[1],
 			)
 			if err = msg.ValidateBasic(); err != nil {
 				return err
