@@ -56,6 +56,7 @@ import (
 	ibc "github.com/cosmos/ibc-go/v7/modules/core"
 	ibcclientclient "github.com/cosmos/ibc-go/v7/modules/core/02-client/client"
 	ibcexported "github.com/cosmos/ibc-go/v7/modules/core/exported"
+	ibcsolomachine "github.com/cosmos/ibc-go/v7/modules/light-clients/06-solomachine"
 	ibctm "github.com/cosmos/ibc-go/v7/modules/light-clients/07-tendermint"
 
 	deposittypes "github.com/sentinel-official/hub/v1/x/deposit/types"
@@ -103,6 +104,8 @@ var (
 
 		// Cosmos IBC module basics
 		ibc.AppModuleBasic{},
+		ibcsolomachine.AppModuleBasic{},
+		ibctm.AppModuleBasic{},
 		ibcfee.AppModuleBasic{},
 		ibcica.AppModuleBasic{},
 		ibctm.AppModuleBasic{},
