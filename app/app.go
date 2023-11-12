@@ -230,7 +230,8 @@ func (a *App) SetUpgradeHandler(configurator module.Configurator) {
 	a.UpgradeKeeper.SetUpgradeHandler(
 		upgrades.Name,
 		upgrades.Handler(
-			a.mm, configurator,
+			a.Codec, a.mm, configurator,
+			a.ConsensusKeeper, a.GovKeeper, a.ParamsKeeper, a.StakingKeeper, a.IBCKeeper,
 		),
 	)
 }
