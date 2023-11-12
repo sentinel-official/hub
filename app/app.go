@@ -228,10 +228,7 @@ func (a *App) SetUpgradeStoreLoader() {
 func (a *App) SetUpgradeHandler(configurator module.Configurator) {
 	a.UpgradeKeeper.SetUpgradeHandler(
 		UpgradeName,
-		UpgradeHandler(
-			a.Codec, a.mm, configurator,
-			a.ConsensusKeeper, a.GovKeeper, a.ParamsKeeper, a.StakingKeeper, a.IBCKeeper,
-		),
+		UpgradeHandler(a.Codec, a.mm, configurator, a.Keepers),
 	)
 }
 
