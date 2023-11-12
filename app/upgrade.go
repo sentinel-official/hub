@@ -1,4 +1,6 @@
-package upgrades
+// DO NOT COVER
+
+package app
 
 import (
 	"fmt"
@@ -7,17 +9,20 @@ import (
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	consensuskeeper "github.com/cosmos/cosmos-sdk/x/consensus/keeper"
+	consensustypes "github.com/cosmos/cosmos-sdk/x/consensus/types"
 	crisistypes "github.com/cosmos/cosmos-sdk/x/crisis/types"
 	distributiontypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	govkeeper "github.com/cosmos/cosmos-sdk/x/gov/keeper"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	govv1types "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
 	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
+	"github.com/cosmos/cosmos-sdk/x/nft"
 	paramskeeper "github.com/cosmos/cosmos-sdk/x/params/keeper"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
@@ -29,7 +34,21 @@ import (
 	ibctmmigrations "github.com/cosmos/ibc-go/v7/modules/light-clients/07-tendermint/migrations"
 )
 
-func Handler(
+const (
+	UpgradeName = "v1_0_0"
+)
+
+var (
+	StoreUpgrades = &storetypes.StoreUpgrades{
+		Added: []string{
+			consensustypes.ModuleName,
+			crisistypes.ModuleName,
+			nft.ModuleName,
+		},
+	}
+)
+
+func UpgradeHandler(
 	cdc codec.Codec,
 	mm *module.Manager,
 	configurator module.Configurator,
@@ -70,14 +89,14 @@ func Handler(
 		legacyParamStore := paramsKeeper.Subspace(baseapp.Paramspace).WithKeyTable(paramstypes.ConsensusParamsKeyTable())
 		baseapp.MigrateParams(ctx, legacyParamStore, &consensusKeeper)
 
-		_, err := ibctmmigrations.PruneExpiredConsensusStates(ctx, cdc, ibcKeeper.ClientKeeper)
-		if err != nil {
-			return nil, err
-		}
-
 		newVM, err := mm.RunMigrations(ctx, configurator, fromVM)
 		if err != nil {
 			return newVM, err
+		}
+
+		_, err = ibctmmigrations.PruneExpiredConsensusStates(ctx, cdc, ibcKeeper.ClientKeeper)
+		if err != nil {
+			return nil, err
 		}
 
 		govParams := govKeeper.GetParams(ctx)

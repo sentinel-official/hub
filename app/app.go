@@ -30,7 +30,6 @@ import (
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 
 	"github.com/sentinel-official/hub/v1/app/ante"
-	"github.com/sentinel-official/hub/v1/app/upgrades"
 )
 
 const (
@@ -219,17 +218,17 @@ func (a *App) SetUpgradeStoreLoader() {
 		return
 	}
 
-	if upgradeInfo.Name == upgrades.Name {
+	if upgradeInfo.Name == UpgradeName {
 		a.SetStoreLoader(
-			upgradetypes.UpgradeStoreLoader(upgradeInfo.Height, upgrades.StoreUpgrades),
+			upgradetypes.UpgradeStoreLoader(upgradeInfo.Height, StoreUpgrades),
 		)
 	}
 }
 
 func (a *App) SetUpgradeHandler(configurator module.Configurator) {
 	a.UpgradeKeeper.SetUpgradeHandler(
-		upgrades.Name,
-		upgrades.Handler(
+		UpgradeName,
+		UpgradeHandler(
 			a.Codec, a.mm, configurator,
 			a.ConsensusKeeper, a.GovKeeper, a.ParamsKeeper, a.StakingKeeper, a.IBCKeeper,
 		),
