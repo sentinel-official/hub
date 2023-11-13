@@ -21,13 +21,13 @@ jobs:
           docker cp container:/usr/local/bin/sentinelhub ./sentinelhub && \
           docker rm container
 
-      - name: Save SHA256 sum
-        run: sha256sum ./sentinelhub > ./sentinelhub_sha256.txt
+      - name: Save SHA256 checksum
+        run: sha256sum sentinelhub > ./checksums.txt
 
       - name: Upload release artifacts
         uses: softprops/action-gh-release@v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           files: |
+            checksums.txt
             sentinelhub
-            sentinelhub_sha256.txt
