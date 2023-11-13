@@ -213,23 +213,34 @@ func (k *Keeper) EndBlock(ctx sdk.Context) []abcitypes.ValidatorUpdate {
 			}
 		}
 
-		// Iterate over all allocations associated with the subscription and delete them from the store.
-		k.IterateAllocationsForSubscription(ctx, item.GetID(), func(_ int, alloc types.Allocation) bool {
-			accAddr := alloc.GetAddress()
-			k.DeleteAllocation(ctx, item.GetID(), accAddr)
-			k.DeleteSubscriptionForAccount(ctx, accAddr, item.GetID())
-
-			return false
-		})
-
 		// Based on the subscription type, perform additional cleanup actions.
 		switch s := item.(type) {
 		case *types.NodeSubscription:
 			// For node-level subscriptions, delete the subscription from the NodeAddress index.
 			k.DeleteSubscriptionForNode(ctx, s.GetNodeAddress(), s.GetID())
+
+			// Delete the allocation associated with the node-level subscription.
+			accAddr := s.GetAddress()
+			k.DeleteAllocation(ctx, s.GetID(), accAddr)
+
+			// Delete the node-level subscription from the Account index.
+			k.DeleteSubscriptionForAccount(ctx, accAddr, s.GetID())
 		case *types.PlanSubscription:
 			// For plan-level subscriptions, delete the subscription from the PlanID index.
 			k.DeleteSubscriptionForPlan(ctx, s.PlanID, s.GetID())
+
+			// Iterate over all allocations associated with the plan-level subscription and delete them from the store.
+			k.IterateAllocationsForSubscription(ctx, s.GetID(), func(_ int, alloc types.Allocation) bool {
+				accAddr := alloc.GetAddress()
+
+				// Delete the allocation associated with the plan-level subscription.
+				k.DeleteAllocation(ctx, s.GetID(), accAddr)
+
+				// Delete the plan-level subscription from the Account index.
+				k.DeleteSubscriptionForAccount(ctx, accAddr, s.GetID())
+
+				return false
+			})
 		default:
 			// If the subscription type is not recognized, panic with an error indicating an invalid subscription type.
 			panic(fmt.Errorf("invalid subscription %d with type %T", item.GetID(), item))
