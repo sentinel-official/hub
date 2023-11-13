@@ -28,10 +28,14 @@ var _ = time.Kitchen
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
+// Proof represents the proof associated with a session.
 type Proof struct {
-	ID        uint64          `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	// Field 1: Identifier of the proof.
+	ID uint64 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	// Field 2: Bandwidth information for the proof.
 	Bandwidth types.Bandwidth `protobuf:"bytes,2,opt,name=bandwidth,proto3" json:"bandwidth"`
-	Duration  time.Duration   `protobuf:"bytes,3,opt,name=duration,proto3,stdduration" json:"duration"`
+	// Field 3: Duration of the proof.
+	Duration time.Duration `protobuf:"bytes,3,opt,name=duration,proto3,stdduration" json:"duration"`
 }
 
 func (m *Proof) Reset()         { *m = Proof{} }

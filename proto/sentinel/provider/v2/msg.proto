@@ -8,32 +8,56 @@ option go_package = "github.com/sentinel-official/hub/v1/x/provider/types";
 option (gogoproto.equal_all) = false;
 option (gogoproto.goproto_getters_all) = false;
 
-// MsgRegisterRequest defines the SDK message for registering a provider
+// MsgRegisterRequest defines the SDK message for registering a provider.
 message MsgRegisterRequest {
+  // Field 1: Sender's address initiating the registration.
   string from = 1;
+
+  // Field 2: Provider name.
   string name = 2;
+
+  // Field 3: Identity of the provider.
   string identity = 3;
+
+  // Field 4: Website associated with the provider.
   string website = 4;
+
+  // Field 5: Description of the provider.
   string description = 5;
 }
 
-// MsgUpdateRequest defines the SDK message for updating a provider
+// MsgUpdateRequest defines the SDK message for updating a provider.
 message MsgUpdateRequest {
+  // Field 1: Sender's address initiating the update.
   string from = 1;
+
+  // Field 2: New provider name.
   string name = 2;
+
+  // Field 3: New identity of the provider.
   string identity = 3;
+
+  // Field 4: New website associated with the provider.
   string website = 4;
+
+  // Field 5: New description of the provider.
   string description = 5;
+
+  // Field 6: New status of the provider, using the sentinel.types.v1.Status enum.
   sentinel.types.v1.Status status = 6;
 }
 
-// MsgRegisterResponse defines the response of message MsgRegisterRequest
+// MsgRegisterResponse defines the response of message MsgRegisterRequest.
 message MsgRegisterResponse {}
 
-// MsgUpdateResponse defines the response of message MsgUpdateRequest
+// MsgUpdateResponse defines the response of message MsgUpdateRequest.
 message MsgUpdateResponse {}
 
+// MsgService is the service definition for the provider module's messages.
 service MsgService {
+  // RPC method for registering a provider.
   rpc MsgRegister(MsgRegisterRequest) returns (MsgRegisterResponse);
+
+  // RPC method for updating a provider.
   rpc MsgUpdate(MsgUpdateRequest) returns (MsgUpdateResponse);
 }

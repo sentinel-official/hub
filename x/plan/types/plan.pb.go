@@ -31,14 +31,22 @@ var _ = time.Kitchen
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
+// Plan represents a subscription plan.
 type Plan struct {
-	ID              uint64                                   `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
-	ProviderAddress string                                   `protobuf:"bytes,2,opt,name=provider_address,json=providerAddress,proto3" json:"provider_address,omitempty"`
-	Duration        time.Duration                            `protobuf:"bytes,3,opt,name=duration,proto3,stdduration" json:"duration"`
-	Gigabytes       int64                                    `protobuf:"varint,4,opt,name=gigabytes,proto3" json:"gigabytes,omitempty"`
-	Prices          github_com_cosmos_cosmos_sdk_types.Coins `protobuf:"bytes,5,rep,name=prices,proto3,castrepeated=github.com/cosmos/cosmos-sdk/types.Coins" json:"prices"`
-	Status          types1.Status                            `protobuf:"varint,6,opt,name=status,proto3,enum=sentinel.types.v1.Status" json:"status,omitempty"`
-	StatusAt        time.Time                                `protobuf:"bytes,7,opt,name=status_at,json=statusAt,proto3,stdtime" json:"status_at"`
+	// Field 1: Identifier of the subscription plan.
+	ID uint64 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	// Field 2: Provider's address associated with the plan.
+	ProviderAddress string `protobuf:"bytes,2,opt,name=provider_address,json=providerAddress,proto3" json:"provider_address,omitempty"`
+	// Field 3: Duration of the subscription plan.
+	Duration time.Duration `protobuf:"bytes,3,opt,name=duration,proto3,stdduration" json:"duration"`
+	// Field 4: Amount of gigabytes in the subscription plan.
+	Gigabytes int64 `protobuf:"varint,4,opt,name=gigabytes,proto3" json:"gigabytes,omitempty"`
+	// Field 5: Prices associated with the subscription plan.
+	Prices github_com_cosmos_cosmos_sdk_types.Coins `protobuf:"bytes,5,rep,name=prices,proto3,castrepeated=github.com/cosmos/cosmos-sdk/types.Coins" json:"prices"`
+	// Field 6: Status of the subscription plan.
+	Status types1.Status `protobuf:"varint,6,opt,name=status,proto3,enum=sentinel.types.v1.Status" json:"status,omitempty"`
+	// Field 7: Timestamp when the status was last updated.
+	StatusAt time.Time `protobuf:"bytes,7,opt,name=status_at,json=statusAt,proto3,stdtime" json:"status_at"`
 }
 
 func (m *Plan) Reset()         { *m = Plan{} }

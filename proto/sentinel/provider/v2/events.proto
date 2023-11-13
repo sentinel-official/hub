@@ -7,10 +7,14 @@ option go_package = "github.com/sentinel-official/hub/v1/x/provider/types";
 option (gogoproto.equal_all) = false;
 option (gogoproto.goproto_getters_all) = false;
 
+// Message representing an event registration.
 message EventRegister {
+  // Field 1: Address associated with the registration.
   string address = 1 [(gogoproto.moretags) = "yaml:\"address\""];
 }
 
+// Message representing an event update.
 message EventUpdate {
+  // Field 1: Address associated with the update.
   string address = 1 [(gogoproto.moretags) = "yaml:\"address\""];
 }

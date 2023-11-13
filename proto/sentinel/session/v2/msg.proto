@@ -8,39 +8,59 @@ option go_package = "github.com/sentinel-official/hub/v1/x/session/types";
 option (gogoproto.equal_all) = false;
 option (gogoproto.goproto_getters_all) = false;
 
-// MsgStartRequest defines the SDK message for starting a session
+// MsgStartRequest defines the SDK message for starting a session.
 message MsgStartRequest {
+  // Field 1: Sender's address.
   string from = 1;
+
+  // Field 2: Identifier of the session.
   uint64 id = 2 [(gogoproto.customname) = "ID"];
+
+  // Field 3: Address associated with the session.
   string address = 3;
 }
 
-// MsgUpdateDetailsRequest defines the SDK message for updating a session
+// MsgUpdateDetailsRequest defines the SDK message for updating a session.
 message MsgUpdateDetailsRequest {
+  // Field 1: Sender's address.
   string from = 1;
+
+  // Field 2: Proof associated with the session.
   Proof proof = 2 [(gogoproto.nullable) = false];
+
+  // Field 3: Signature associated with the session.
   bytes signature = 3;
 }
 
-// MsgEndRequest defines the SDK message for ending a session
+// MsgEndRequest defines the SDK message for ending a session.
 message MsgEndRequest {
+  // Field 1: Sender's address.
   string from = 1;
+
+  // Field 2: Identifier of the session.
   uint64 id = 2 [(gogoproto.customname) = "ID"];
+
+  // Field 3: Rating associated with the session.
   uint64 rating = 3;
 }
 
-// MsgStartResponse defines the response of message MsgStartRequest
+// MsgStartResponse defines the response of message MsgStartRequest.
 message MsgStartResponse {}
 
-// MsgUpdateDetailsResponse defines the response of message
-// MsgUpdateDetailsRequest
+// MsgUpdateDetailsResponse defines the response of message MsgUpdateDetailsRequest.
 message MsgUpdateDetailsResponse {}
 
-// MsgEndResponse defines the response of message MsgEndRequest
+// MsgEndResponse defines the response of message MsgEndRequest.
 message MsgEndResponse {}
 
+// MsgService represents the service for session-related messages.
 service MsgService {
+  // RPC method for handling MsgStart messages.
   rpc MsgStart(MsgStartRequest) returns (MsgStartResponse);
+
+  // RPC method for handling MsgUpdateDetails messages.
   rpc MsgUpdateDetails(MsgUpdateDetailsRequest) returns (MsgUpdateDetailsResponse);
+
+  // RPC method for handling MsgEnd messages.
   rpc MsgEnd(MsgEndRequest) returns (MsgEndResponse);
 }

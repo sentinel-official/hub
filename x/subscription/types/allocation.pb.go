@@ -24,10 +24,15 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
+// Allocation represents an allocation.
 type Allocation struct {
-	ID            uint64                                 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
-	Address       string                                 `protobuf:"bytes,2,opt,name=address,proto3" json:"address,omitempty"`
-	GrantedBytes  github_com_cosmos_cosmos_sdk_types.Int `protobuf:"bytes,3,opt,name=granted_bytes,json=grantedBytes,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"granted_bytes"`
+	// Field 1: Allocation ID.
+	ID uint64 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	// Field 2: Account address.
+	Address string `protobuf:"bytes,2,opt,name=address,proto3" json:"address,omitempty"`
+	// Field 3: Granted bytes.
+	GrantedBytes github_com_cosmos_cosmos_sdk_types.Int `protobuf:"bytes,3,opt,name=granted_bytes,json=grantedBytes,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"granted_bytes"`
+	// Field 4: Utilized bytes.
 	UtilisedBytes github_com_cosmos_cosmos_sdk_types.Int `protobuf:"bytes,4,opt,name=utilised_bytes,json=utilisedBytes,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"utilised_bytes"`
 }
 

@@ -11,19 +11,33 @@ option go_package = "github.com/sentinel-official/hub/v1/x/plan/types";
 option (gogoproto.equal_all) = false;
 option (gogoproto.goproto_getters_all) = false;
 
+// Plan represents a subscription plan.
 message Plan {
+  // Field 1: Identifier of the subscription plan.
   uint64 id = 1 [(gogoproto.customname) = "ID"];
+
+  // Field 2: Provider's address associated with the plan.
   string provider_address = 2;
+
+  // Field 3: Duration of the subscription plan.
   google.protobuf.Duration duration = 3 [
     (gogoproto.nullable) = false,
     (gogoproto.stdduration) = true
   ];
+
+  // Field 4: Amount of gigabytes in the subscription plan.
   int64 gigabytes = 4;
+
+  // Field 5: Prices associated with the subscription plan.
   repeated cosmos.base.v1beta1.Coin prices = 5 [
     (gogoproto.nullable) = false,
     (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
   ];
+
+  // Field 6: Status of the subscription plan.
   sentinel.types.v1.Status status = 6;
+
+  // Field 7: Timestamp when the status was last updated.
   google.protobuf.Timestamp status_at = 7 [
     (gogoproto.nullable) = false,
     (gogoproto.stdtime) = true

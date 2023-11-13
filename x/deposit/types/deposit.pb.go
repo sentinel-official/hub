@@ -25,9 +25,15 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
+// Deposit represents a message for handling deposits.
 type Deposit struct {
-	Address string                                   `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
-	Coins   github_com_cosmos_cosmos_sdk_types.Coins `protobuf:"bytes,2,rep,name=coins,proto3,castrepeated=github.com/cosmos/cosmos-sdk/types.Coins" json:"coins"`
+	// Field 1: Deposit address represented as a string.
+	Address string `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
+	// Field 2: List of coins involved in the deposit.
+	// - (gogoproto.nullable) = false: Field is not nullable.
+	// - (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins":
+	//   Type to cast to when repeating this field.
+	Coins github_com_cosmos_cosmos_sdk_types.Coins `protobuf:"bytes,2,rep,name=coins,proto3,castrepeated=github.com/cosmos/cosmos-sdk/types.Coins" json:"coins"`
 }
 
 func (m *Deposit) Reset()         { *m = Deposit{} }

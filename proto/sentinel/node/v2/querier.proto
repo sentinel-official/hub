@@ -12,54 +12,84 @@ option go_package = "github.com/sentinel-official/hub/v1/x/node/types";
 option (gogoproto.equal_all) = false;
 option (gogoproto.goproto_getters_all) = false;
 
+// QueryNodesRequest represents a request to query nodes with a specific status and pagination.
 message QueryNodesRequest {
+  // Field 1: Status to filter nodes by.
   sentinel.types.v1.Status status = 1;
+
+  // Field 2: Pagination parameters for the query.
   cosmos.base.query.v1beta1.PageRequest pagination = 2;
 }
 
+// QueryNodesForPlanRequest represents a request to query nodes for a specific plan with status and pagination.
 message QueryNodesForPlanRequest {
+  // Field 1: Plan ID to filter nodes by.
   uint64 id = 1;
+
+  // Field 2: Status to filter nodes by.
   sentinel.types.v1.Status status = 2;
+
+  // Field 3: Pagination parameters for the query.
   cosmos.base.query.v1beta1.PageRequest pagination = 3;
 }
 
+// QueryNodeRequest represents a request to query information about a specific node.
 message QueryNodeRequest {
+  // Field 1: Address of the node to query.
   string address = 1;
 }
 
+// QueryParamsRequest represents a request to query module parameters.
 message QueryParamsRequest {}
 
+// QueryNodesResponse represents a response containing a list of nodes and pagination information.
 message QueryNodesResponse {
+  // Field 1: List of nodes in the response.
   repeated Node nodes = 1 [(gogoproto.nullable) = false];
+
+  // Field 2: Pagination information in the response.
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
+// QueryNodesForPlanResponse represents a response containing a list of nodes for a specific plan and pagination information.
 message QueryNodesForPlanResponse {
+  // Field 1: List of nodes in the response.
   repeated Node nodes = 1 [(gogoproto.nullable) = false];
+
+  // Field 2: Pagination information in the response.
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
+// QueryNodeResponse represents a response containing information about a specific node.
 message QueryNodeResponse {
+  // Field 1: Information about the queried node.
   Node node = 1 [(gogoproto.nullable) = false];
 }
 
+// QueryParamsResponse represents a response containing module parameters.
 message QueryParamsResponse {
+  // Field 1: Module parameters in the response.
   Params params = 1 [(gogoproto.nullable) = false];
 }
 
+// QueryService is the service definition for the node module's queries.
 service QueryService {
+  // RPC method for querying nodes with a specific status and pagination.
   rpc QueryNodes(QueryNodesRequest) returns (QueryNodesResponse) {
     option (google.api.http).get = "/sentinel/nodes";
   }
 
+  // RPC method for querying nodes for a specific plan with status and pagination.
   rpc QueryNodesForPlan(QueryNodesForPlanRequest) returns (QueryNodesForPlanResponse) {
     option (google.api.http).get = "/sentinel/plans/{id}/nodes";
   }
 
+  // RPC method for querying information about a specific node.
   rpc QueryNode(QueryNodeRequest) returns (QueryNodeResponse) {
     option (google.api.http).get = "/sentinel/nodes/{address}";
   }
 
+  // RPC method for querying module parameters.
   rpc QueryParams(QueryParamsRequest) returns (QueryParamsResponse) {
     option (google.api.http).get = "/sentinel/modules/node/params";
   }

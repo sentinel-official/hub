@@ -11,95 +11,150 @@ option go_package = "github.com/sentinel-official/hub/v1/x/session/types";
 option (gogoproto.equal_all) = false;
 option (gogoproto.goproto_getters_all) = false;
 
+// QuerySessionsRequest represents the request to query sessions.
 message QuerySessionsRequest {
+  // Field 1: Pagination parameters.
   cosmos.base.query.v1beta1.PageRequest pagination = 1;
 }
 
+// QuerySessionsForAccountRequest represents the request to query sessions for an account.
 message QuerySessionsForAccountRequest {
+  // Field 1: Account address.
   string address = 1;
+
+  // Field 2: Pagination parameters.
   cosmos.base.query.v1beta1.PageRequest pagination = 2;
 }
 
+// QuerySessionsForNodeRequest represents the request to query sessions for a node.
 message QuerySessionsForNodeRequest {
+  // Field 1: Node address.
   string address = 1;
+
+  // Field 2: Pagination parameters.
   cosmos.base.query.v1beta1.PageRequest pagination = 2;
 }
 
+// QuerySessionsForSubscriptionRequest represents the request to query sessions for a subscription.
 message QuerySessionsForSubscriptionRequest {
+  // Field 1: Subscription ID.
   uint64 id = 1;
+
+  // Field 2: Pagination parameters.
   cosmos.base.query.v1beta1.PageRequest pagination = 2;
 }
 
+// QuerySessionsForAllocationRequest represents the request to query sessions for an allocation.
 message QuerySessionsForAllocationRequest {
+  // Field 1: Subscription ID.
   uint64 id = 1;
+
+  // Field 2: Allocation address.
   string address = 2;
+
+  // Field 3: Pagination parameters.
   cosmos.base.query.v1beta1.PageRequest pagination = 3;
 }
 
+// QuerySessionRequest represents the request to query a specific session.
 message QuerySessionRequest {
+  // Field 1: Session ID.
   uint64 id = 1;
 }
 
+// QueryParamsRequest represents the request to query session parameters.
 message QueryParamsRequest {}
 
+// QuerySessionsResponse represents the response for querying sessions.
 message QuerySessionsResponse {
+  // Field 1: List of sessions.
   repeated Session sessions = 1 [(gogoproto.nullable) = false];
+
+  // Field 2: Pagination details.
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
+// QuerySessionsForAccountResponse represents the response for querying sessions for an account.
 message QuerySessionsForAccountResponse {
+  // Field 1: List of sessions.
   repeated Session sessions = 1 [(gogoproto.nullable) = false];
+
+  // Field 2: Pagination details.
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
+// QuerySessionsForNodeResponse represents the response for querying sessions for a node.
 message QuerySessionsForNodeResponse {
+  // Field 1: List of sessions.
   repeated Session sessions = 1 [(gogoproto.nullable) = false];
+
+  // Field 2: Pagination details.
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
+// QuerySessionsForSubscriptionResponse represents the response for querying sessions for a subscription.
 message QuerySessionsForSubscriptionResponse {
+  // Field 1: List of sessions.
   repeated Session sessions = 1 [(gogoproto.nullable) = false];
+
+  // Field 2: Pagination details.
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
+// QuerySessionsForAllocationResponse represents the response for querying sessions for an allocation.
 message QuerySessionsForAllocationResponse {
+  // Field 1: List of sessions.
   repeated Session sessions = 1 [(gogoproto.nullable) = false];
+
+  // Field 2: Pagination details.
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
+// QuerySessionResponse represents the response for querying a specific session.
 message QuerySessionResponse {
+  // Field 1: Session details.
   Session session = 1 [(gogoproto.nullable) = false];
 }
 
+// QueryParamsResponse represents the response for querying session parameters.
 message QueryParamsResponse {
+  // Field 1: Session parameters.
   Params params = 1 [(gogoproto.nullable) = false];
 }
 
+// QueryService represents the service for querying sessions.
 service QueryService {
+  // RPC method to query sessions.
   rpc QuerySessions(QuerySessionsRequest) returns (QuerySessionsResponse) {
     option (google.api.http).get = "/sentinel/sessions";
   }
 
+  // RPC method to query sessions for an account.
   rpc QuerySessionsForAccount(QuerySessionsForAccountRequest) returns (QuerySessionsForAccountResponse) {
     option (google.api.http).get = "/sentinel/accounts/{address}/sessions";
   }
 
+  // RPC method to query sessions for a node.
   rpc QuerySessionsForNode(QuerySessionsForNodeRequest) returns (QuerySessionsForNodeResponse) {
     option (google.api.http).get = "/sentinel/nodes/{address}/sessions";
   }
 
+  // RPC method to query sessions for a subscription.
   rpc QuerySessionsForSubscription(QuerySessionsForSubscriptionRequest) returns (QuerySessionsForSubscriptionResponse) {
     option (google.api.http).get = "/sentinel/subscriptions/{id}/sessions";
   }
 
+  // RPC method to query sessions for an allocation.
   rpc QuerySessionsForAllocation(QuerySessionsForAllocationRequest) returns (QuerySessionsForAllocationResponse) {
     option (google.api.http).get = "/sentinel/subscriptions/{id}/allocations/{address}/sessions";
   }
 
+  // RPC method to query a specific session.
   rpc QuerySession(QuerySessionRequest) returns (QuerySessionResponse) {
     option (google.api.http).get = "/sentinel/sessions/{id}";
   }
 
+  // RPC method to query session parameters.
   rpc QueryParams(QueryParamsRequest) returns (QueryParamsResponse) {
     option (google.api.http).get = "/sentinel/modules/session/params";
   }

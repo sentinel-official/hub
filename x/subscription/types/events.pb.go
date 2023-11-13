@@ -25,11 +25,16 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
+// EventUpdateStatus represents an update to the status of an event.
 type EventUpdateStatus struct {
-	Status  types.Status `protobuf:"varint,1,opt,name=status,proto3,enum=sentinel.types.v1.Status" json:"status,omitempty" yaml:"status"`
-	Address string       `protobuf:"bytes,2,opt,name=address,proto3" json:"address,omitempty" yaml:"address"`
-	ID      uint64       `protobuf:"varint,3,opt,name=id,proto3" json:"id,omitempty" yaml:"id"`
-	PlanID  uint64       `protobuf:"varint,4,opt,name=plan_id,json=planId,proto3" json:"plan_id,omitempty" yaml:"plan_id"`
+	// Field 1: Status of the event.
+	Status types.Status `protobuf:"varint,1,opt,name=status,proto3,enum=sentinel.types.v1.Status" json:"status,omitempty" yaml:"status"`
+	// Field 2: Address associated with the event.
+	Address string `protobuf:"bytes,2,opt,name=address,proto3" json:"address,omitempty" yaml:"address"`
+	// Field 3: Unique identifier for the event.
+	ID uint64 `protobuf:"varint,3,opt,name=id,proto3" json:"id,omitempty" yaml:"id"`
+	// Field 4: Unique identifier for the associated plan.
+	PlanID uint64 `protobuf:"varint,4,opt,name=plan_id,json=planId,proto3" json:"plan_id,omitempty" yaml:"plan_id"`
 }
 
 func (m *EventUpdateStatus) Reset()         { *m = EventUpdateStatus{} }
@@ -65,11 +70,16 @@ func (m *EventUpdateStatus) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_EventUpdateStatus proto.InternalMessageInfo
 
+// EventAllocate represents an allocation event.
 type EventAllocate struct {
-	Address       string                                 `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty" yaml:"address"`
-	GrantedBytes  github_com_cosmos_cosmos_sdk_types.Int `protobuf:"bytes,2,opt,name=granted_bytes,json=grantedBytes,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"granted_bytes"`
+	// Field 1: Address associated with the allocation.
+	Address string `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty" yaml:"address"`
+	// Field 2: Granted bytes in the allocation.
+	GrantedBytes github_com_cosmos_cosmos_sdk_types.Int `protobuf:"bytes,2,opt,name=granted_bytes,json=grantedBytes,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"granted_bytes"`
+	// Field 3: Utilized bytes in the allocation.
 	UtilisedBytes github_com_cosmos_cosmos_sdk_types.Int `protobuf:"bytes,3,opt,name=utilised_bytes,json=utilisedBytes,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"utilised_bytes"`
-	ID            uint64                                 `protobuf:"varint,4,opt,name=id,proto3" json:"id,omitempty" yaml:"id"`
+	// Field 4: Unique identifier for the allocation.
+	ID uint64 `protobuf:"varint,4,opt,name=id,proto3" json:"id,omitempty" yaml:"id"`
 }
 
 func (m *EventAllocate) Reset()         { *m = EventAllocate{} }
@@ -105,10 +115,14 @@ func (m *EventAllocate) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_EventAllocate proto.InternalMessageInfo
 
+// EventCreatePayout represents an event for creating a payout.
 type EventCreatePayout struct {
-	Address     string `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty" yaml:"address"`
+	// Field 1: Address associated with the payout.
+	Address string `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty" yaml:"address"`
+	// Field 2: Node address associated with the payout.
 	NodeAddress string `protobuf:"bytes,2,opt,name=node_address,json=nodeAddress,proto3" json:"node_address,omitempty" yaml:"node_address"`
-	ID          uint64 `protobuf:"varint,3,opt,name=id,proto3" json:"id,omitempty" yaml:"id"`
+	// Field 3: Unique identifier for the payout.
+	ID uint64 `protobuf:"varint,3,opt,name=id,proto3" json:"id,omitempty" yaml:"id"`
 }
 
 func (m *EventCreatePayout) Reset()         { *m = EventCreatePayout{} }
@@ -144,12 +158,18 @@ func (m *EventCreatePayout) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_EventCreatePayout proto.InternalMessageInfo
 
+// EventPayForPayout represents an event for paying for a payout.
 type EventPayForPayout struct {
-	Address       string `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty" yaml:"address"`
-	NodeAddress   string `protobuf:"bytes,2,opt,name=node_address,json=nodeAddress,proto3" json:"node_address,omitempty" yaml:"node_address"`
-	Payment       string `protobuf:"bytes,3,opt,name=payment,proto3" json:"payment,omitempty" yaml:"payment"`
+	// Field 1: Address associated with the payout payment.
+	Address string `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty" yaml:"address"`
+	// Field 2: Node address associated with the payout payment.
+	NodeAddress string `protobuf:"bytes,2,opt,name=node_address,json=nodeAddress,proto3" json:"node_address,omitempty" yaml:"node_address"`
+	// Field 3: Payment amount for the payout.
+	Payment string `protobuf:"bytes,3,opt,name=payment,proto3" json:"payment,omitempty" yaml:"payment"`
+	// Field 4: Staking reward associated with the payout.
 	StakingReward string `protobuf:"bytes,4,opt,name=staking_reward,json=stakingReward,proto3" json:"staking_reward,omitempty" yaml:"staking_reward"`
-	ID            uint64 `protobuf:"varint,5,opt,name=id,proto3" json:"id,omitempty" yaml:"id"`
+	// Field 5: Unique identifier for the payout.
+	ID uint64 `protobuf:"varint,5,opt,name=id,proto3" json:"id,omitempty" yaml:"id"`
 }
 
 func (m *EventPayForPayout) Reset()         { *m = EventPayForPayout{} }
@@ -185,12 +205,18 @@ func (m *EventPayForPayout) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_EventPayForPayout proto.InternalMessageInfo
 
+// EventPayForPlan represents an event for paying for a plan.
 type EventPayForPlan struct {
-	Address         string `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty" yaml:"address"`
-	Payment         string `protobuf:"bytes,2,opt,name=payment,proto3" json:"payment,omitempty" yaml:"payment"`
+	// Field 1: Address associated with the plan payment.
+	Address string `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty" yaml:"address"`
+	// Field 2: Payment amount for the plan.
+	Payment string `protobuf:"bytes,2,opt,name=payment,proto3" json:"payment,omitempty" yaml:"payment"`
+	// Field 3: Provider address associated with the plan payment.
 	ProviderAddress string `protobuf:"bytes,3,opt,name=provider_address,json=providerAddress,proto3" json:"provider_address,omitempty" yaml:"provider_address"`
-	StakingReward   string `protobuf:"bytes,4,opt,name=staking_reward,json=stakingReward,proto3" json:"staking_reward,omitempty" yaml:"staking_reward"`
-	ID              uint64 `protobuf:"varint,5,opt,name=id,proto3" json:"id,omitempty" yaml:"id"`
+	// Field 4: Staking reward associated with the plan.
+	StakingReward string `protobuf:"bytes,4,opt,name=staking_reward,json=stakingReward,proto3" json:"staking_reward,omitempty" yaml:"staking_reward"`
+	// Field 5: Unique identifier for the plan.
+	ID uint64 `protobuf:"varint,5,opt,name=id,proto3" json:"id,omitempty" yaml:"id"`
 }
 
 func (m *EventPayForPlan) Reset()         { *m = EventPayForPlan{} }
@@ -226,12 +252,19 @@ func (m *EventPayForPlan) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_EventPayForPlan proto.InternalMessageInfo
 
+// EventPayForSession represents an event for paying for a session.
 type EventPayForSession struct {
-	Address        string `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty" yaml:"address"`
-	NodeAddress    string `protobuf:"bytes,2,opt,name=node_address,json=nodeAddress,proto3" json:"node_address,omitempty" yaml:"node_address"`
-	Payment        string `protobuf:"bytes,3,opt,name=payment,proto3" json:"payment,omitempty" yaml:"payment"`
-	StakingReward  string `protobuf:"bytes,4,opt,name=staking_reward,json=stakingReward,proto3" json:"staking_reward,omitempty" yaml:"staking_reward"`
-	SessionID      uint64 `protobuf:"varint,5,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty" yaml:"session_id"`
+	// Field 1: Address associated with the session payment.
+	Address string `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty" yaml:"address"`
+	// Field 2: Node address associated with the session payment.
+	NodeAddress string `protobuf:"bytes,2,opt,name=node_address,json=nodeAddress,proto3" json:"node_address,omitempty" yaml:"node_address"`
+	// Field 3: Payment amount for the session.
+	Payment string `protobuf:"bytes,3,opt,name=payment,proto3" json:"payment,omitempty" yaml:"payment"`
+	// Field 4: Staking reward associated with the session.
+	StakingReward string `protobuf:"bytes,4,opt,name=staking_reward,json=stakingReward,proto3" json:"staking_reward,omitempty" yaml:"staking_reward"`
+	// Field 5: Unique identifier for the session.
+	SessionID uint64 `protobuf:"varint,5,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty" yaml:"session_id"`
+	// Field 6: Unique identifier for the subscription.
 	SubscriptionID uint64 `protobuf:"varint,6,opt,name=subscription_id,json=subscriptionId,proto3" json:"subscription_id,omitempty" yaml:"subscription_id"`
 }
 
@@ -268,10 +301,14 @@ func (m *EventPayForSession) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_EventPayForSession proto.InternalMessageInfo
 
+// EventRefund represents an event for processing a refund.
 type EventRefund struct {
+	// Field 1: Address associated with the refund.
 	Address string `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty" yaml:"address"`
-	Amount  string `protobuf:"bytes,2,opt,name=amount,proto3" json:"amount,omitempty" yaml:"amount"`
-	ID      uint64 `protobuf:"varint,3,opt,name=id,proto3" json:"id,omitempty" yaml:"id"`
+	// Field 2: Amount to be refunded.
+	Amount string `protobuf:"bytes,2,opt,name=amount,proto3" json:"amount,omitempty" yaml:"amount"`
+	// Field 3: Unique identifier for the refund.
+	ID uint64 `protobuf:"varint,3,opt,name=id,proto3" json:"id,omitempty" yaml:"id"`
 }
 
 func (m *EventRefund) Reset()         { *m = EventRefund{} }

@@ -10,22 +10,47 @@ option go_package = "github.com/sentinel-official/hub/v1/x/node/types";
 option (gogoproto.equal_all) = false;
 option (gogoproto.goproto_getters_all) = false;
 
+// Node represents a message for handling node information.
 message Node {
+  // Field 1: Address associated with the node.
   string address = 1;
+
+  // Field 2: Prices in gigabytes for the node.
+  // - (gogoproto.nullable) = false: Field is not nullable.
+  // - (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins":
+  //   Type to cast to when repeating this field.
   repeated cosmos.base.v1beta1.Coin gigabyte_prices = 2 [
     (gogoproto.nullable) = false,
     (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
   ];
+
+  // Field 3: Hourly prices for the node.
+  // - (gogoproto.nullable) = false: Field is not nullable.
+  // - (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins":
+  //   Type to cast to when repeating this field.
   repeated cosmos.base.v1beta1.Coin hourly_prices = 3 [
     (gogoproto.nullable) = false,
     (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
   ];
+
+  // Field 4: Remote URL associated with the node.
+  // - (gogoproto.customname) = "RemoteURL": Custom name for the field.
   string remote_url = 4 [(gogoproto.customname) = "RemoteURL"];
+
+  // Field 5: Timestamp indicating when the node became inactive.
+  // - (gogoproto.nullable) = false: Field is not nullable.
+  // - (gogoproto.stdtime) = true: Use standard time representation for Go.
   google.protobuf.Timestamp inactive_at = 5 [
     (gogoproto.nullable) = false,
     (gogoproto.stdtime) = true
   ];
+
+  // Field 6: Status of the node, using the sentinel.types.v1.Status enum.
   sentinel.types.v1.Status status = 6;
+
+  // Field 7: Timestamp indicating when the status of the node was last updated.
+  // - (gogoproto.nullable) = false: Field is not nullable.
+  // - (gogoproto.stdtime) = true: Use standard time representation for Go.
   google.protobuf.Timestamp status_at = 7 [
     (gogoproto.nullable) = false,
     (gogoproto.stdtime) = true

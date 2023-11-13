@@ -28,11 +28,31 @@ var _ = time.Kitchen
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
+// Inflation represents a message for handling inflation parameters.
 type Inflation struct {
-	Max        github_com_cosmos_cosmos_sdk_types.Dec `protobuf:"bytes,1,opt,name=max,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"max" yaml:"max"`
-	Min        github_com_cosmos_cosmos_sdk_types.Dec `protobuf:"bytes,2,opt,name=min,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"min" yaml:"min"`
+	// Field 1: Maximum inflation rate.
+	// - (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec":
+	//   Custom type definition for the field.
+	// - (gogoproto.moretags) = "yaml:\"max\"": YAML tag for better representation.
+	// - (gogoproto.nullable) = false: Field is not nullable.
+	Max github_com_cosmos_cosmos_sdk_types.Dec `protobuf:"bytes,1,opt,name=max,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"max" yaml:"max"`
+	// Field 2: Minimum inflation rate.
+	// - (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec":
+	//   Custom type definition for the field.
+	// - (gogoproto.moretags) = "yaml:\"min\"": YAML tag for better representation.
+	// - (gogoproto.nullable) = false: Field is not nullable.
+	Min github_com_cosmos_cosmos_sdk_types.Dec `protobuf:"bytes,2,opt,name=min,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"min" yaml:"min"`
+	// Field 3: Rate of change of inflation.
+	// - (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec":
+	//   Custom type definition for the field.
+	// - (gogoproto.moretags) = "yaml:\"rate_change\"": YAML tag for better representation.
+	// - (gogoproto.nullable) = false: Field is not nullable.
 	RateChange github_com_cosmos_cosmos_sdk_types.Dec `protobuf:"bytes,3,opt,name=rate_change,json=rateChange,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"rate_change" yaml:"rate_change"`
-	Timestamp  time.Time                              `protobuf:"bytes,4,opt,name=timestamp,proto3,stdtime" json:"timestamp" yaml:"timestamp"`
+	// Field 4: Timestamp indicating when the inflation parameters were set.
+	// - (gogoproto.moretags) = "yaml:\"timestamp\"": YAML tag for better representation.
+	// - (gogoproto.nullable) = false: Field is not nullable.
+	// - (gogoproto.stdtime) = true: Use standard time representation for Go.
+	Timestamp time.Time `protobuf:"bytes,4,opt,name=timestamp,proto3,stdtime" json:"timestamp" yaml:"timestamp"`
 }
 
 func (m *Inflation) Reset()         { *m = Inflation{} }

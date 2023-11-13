@@ -10,38 +10,72 @@ option go_package = "github.com/sentinel-official/hub/v1/x/subscription/types";
 option (gogoproto.equal_all) = false;
 option (gogoproto.goproto_getters_all) = false;
 
+// SubscriptionType represents the type of a subscription.
 enum SubscriptionType {
+  // Use of goproto_enum_prefix is disabled for this enum.
   option (gogoproto.goproto_enum_prefix) = false;
+
+  // TYPE_UNSPECIFIED indicates an unspecified subscription type.
   TYPE_UNSPECIFIED = 0 [(gogoproto.enumvalue_customname) = "TypeUnspecified"];
+
+  // TYPE_NODE indicates a subscription associated with a node.
   TYPE_NODE = 1 [(gogoproto.enumvalue_customname) = "TypeNode"];
+
+  // TYPE_PLAN indicates a subscription associated with a plan.
   TYPE_PLAN = 2 [(gogoproto.enumvalue_customname) = "TypePlan"];
 }
 
+// BaseSubscription represents the common base for different subscription types.
 message BaseSubscription {
+  // Field 1: Unique identifier for the subscription.
   uint64 id = 1 [(gogoproto.customname) = "ID"];
+
+  // Field 2: Address associated with the subscription.
   string address = 2;
+
+  // Field 3: Timestamp indicating when the subscription became inactive.
   google.protobuf.Timestamp inactive_at = 3 [
     (gogoproto.nullable) = false,
     (gogoproto.stdtime) = true
   ];
 
+  // Field 4: Status of the subscription.
   sentinel.types.v1.Status status = 4;
+
+  // Field 5: Timestamp indicating when the subscription status was last updated.
   google.protobuf.Timestamp status_at = 5 [
     (gogoproto.nullable) = false,
     (gogoproto.stdtime) = true
   ];
 }
 
+// NodeSubscription represents a subscription associated with a node.
 message NodeSubscription {
+  // Field 1: Common base subscription information.
   BaseSubscription base = 1 [(gogoproto.embed) = true];
+
+  // Field 2: Node address associated with the subscription.
   string node_address = 2;
+
+  // Field 3: Number of gigabytes associated with the subscription.
   int64 gigabytes = 3;
+
+  // Field 4: Duration, in hours, for which the subscription is active.
   int64 hours = 4;
+
+  // Field 5: Deposit required for the subscription, represented as a Cosmos Coin.
+  // This field is not nullable.
   cosmos.base.v1beta1.Coin deposit = 5 [(gogoproto.nullable) = false];
 }
 
+// PlanSubscription represents a subscription associated with a plan.
 message PlanSubscription {
+  // Field 1: Common base subscription information.
   BaseSubscription base = 1 [(gogoproto.embed) = true];
+
+  // Field 2: Unique identifier for the plan associated with the subscription.
   uint64 plan_id = 2 [(gogoproto.customname) = "PlanID"];
+
+  // Field 3: Denomination associated with the subscription.
   string denom = 3;
 }

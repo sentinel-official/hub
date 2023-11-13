@@ -29,16 +29,26 @@ var _ = time.Kitchen
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
+// Session represents a session.
 type Session struct {
-	ID             uint64          `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
-	SubscriptionID uint64          `protobuf:"varint,2,opt,name=subscription_id,json=subscriptionId,proto3" json:"subscription_id,omitempty"`
-	NodeAddress    string          `protobuf:"bytes,3,opt,name=node_address,json=nodeAddress,proto3" json:"node_address,omitempty"`
-	Address        string          `protobuf:"bytes,4,opt,name=address,proto3" json:"address,omitempty"`
-	Bandwidth      types.Bandwidth `protobuf:"bytes,5,opt,name=bandwidth,proto3" json:"bandwidth"`
-	Duration       time.Duration   `protobuf:"bytes,6,opt,name=duration,proto3,stdduration" json:"duration"`
-	InactiveAt     time.Time       `protobuf:"bytes,7,opt,name=inactive_at,json=inactiveAt,proto3,stdtime" json:"inactive_at"`
-	Status         types.Status    `protobuf:"varint,8,opt,name=status,proto3,enum=sentinel.types.v1.Status" json:"status,omitempty"`
-	StatusAt       time.Time       `protobuf:"bytes,9,opt,name=status_at,json=statusAt,proto3,stdtime" json:"status_at"`
+	// Field 1: Session ID.
+	ID uint64 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	// Field 2: Subscription ID.
+	SubscriptionID uint64 `protobuf:"varint,2,opt,name=subscription_id,json=subscriptionId,proto3" json:"subscription_id,omitempty"`
+	// Field 3: Node address.
+	NodeAddress string `protobuf:"bytes,3,opt,name=node_address,json=nodeAddress,proto3" json:"node_address,omitempty"`
+	// Field 4: Account address.
+	Address string `protobuf:"bytes,4,opt,name=address,proto3" json:"address,omitempty"`
+	// Field 5: Bandwidth details.
+	Bandwidth types.Bandwidth `protobuf:"bytes,5,opt,name=bandwidth,proto3" json:"bandwidth"`
+	// Field 6: Session duration.
+	Duration time.Duration `protobuf:"bytes,6,opt,name=duration,proto3,stdduration" json:"duration"`
+	// Field 7: Inactive timestamp.
+	InactiveAt time.Time `protobuf:"bytes,7,opt,name=inactive_at,json=inactiveAt,proto3,stdtime" json:"inactive_at"`
+	// Field 8: Session status.
+	Status types.Status `protobuf:"varint,8,opt,name=status,proto3,enum=sentinel.types.v1.Status" json:"status,omitempty"`
+	// Field 9: Status timestamp.
+	StatusAt time.Time `protobuf:"bytes,9,opt,name=status_at,json=statusAt,proto3,stdtime" json:"status_at"`
 }
 
 func (m *Session) Reset()         { *m = Session{} }

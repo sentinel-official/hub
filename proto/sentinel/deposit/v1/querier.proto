@@ -10,28 +10,41 @@ option go_package = "github.com/sentinel-official/hub/v1/x/deposit/types";
 option (gogoproto.equal_all) = false;
 option (gogoproto.goproto_getters_all) = false;
 
+// QueryDepositsRequest represents a request to query deposits with optional pagination.
 message QueryDepositsRequest {
+  // Field 1: Pagination parameters for the query.
   cosmos.base.query.v1beta1.PageRequest pagination = 1;
 }
 
+// QueryDepositRequest represents a request to query a specific deposit by address.
 message QueryDepositRequest {
+  // Field 1: Address of the deposit to be queried.
   string address = 1;
 }
 
+// QueryDepositsResponse represents the response to a query for deposits.
 message QueryDepositsResponse {
+  // Field 1: List of deposits returned in the response.
   repeated Deposit deposits = 1 [(gogoproto.nullable) = false];
+
+  // Field 2: Pagination details for the response.
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
+// QueryDepositResponse represents the response to a query for a specific deposit.
 message QueryDepositResponse {
+  // Field 1: The queried deposit.
   Deposit deposit = 1 [(gogoproto.nullable) = false];
 }
 
+// QueryService is the service definition for the deposit module's queries.
 service QueryService {
+  // RPC method for querying deposits with optional pagination.
   rpc QueryDeposits(QueryDepositsRequest) returns (QueryDepositsResponse) {
     option (google.api.http).get = "/sentinel/deposits";
   }
 
+  // RPC method for querying a specific deposit by address.
   rpc QueryDeposit(QueryDepositRequest) returns (QueryDepositResponse) {
     option (google.api.http).get = "/sentinel/deposits/{address}";
   }

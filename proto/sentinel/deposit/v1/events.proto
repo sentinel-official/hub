@@ -7,12 +7,20 @@ option go_package = "github.com/sentinel-official/hub/v1/x/deposit/types";
 option (gogoproto.equal_all) = false;
 option (gogoproto.goproto_getters_all) = false;
 
+// EventAdd represents a message for adding events.
 message EventAdd {
+  // Field 1: Address associated with the event.
   string address = 1 [(gogoproto.moretags) = "yaml:\"address\""];
+
+  // Field 2: Coins associated with the event.
   string coins = 2 [(gogoproto.moretags) = "yaml:\"coins\""];
 }
 
+// EventSubtract represents a message for subtracting events.
 message EventSubtract {
+  // Field 1: Address associated with the event.
   string address = 1 [(gogoproto.moretags) = "yaml:\"address\""];
+
+  // Field 2: Coins associated with the event.
   string coins = 2 [(gogoproto.moretags) = "yaml:\"coins\""];
 }

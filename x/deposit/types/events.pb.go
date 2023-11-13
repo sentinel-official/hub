@@ -23,9 +23,12 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
+// EventAdd represents a message for adding events.
 type EventAdd struct {
+	// Field 1: Address associated with the event.
 	Address string `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty" yaml:"address"`
-	Coins   string `protobuf:"bytes,2,opt,name=coins,proto3" json:"coins,omitempty" yaml:"coins"`
+	// Field 2: Coins associated with the event.
+	Coins string `protobuf:"bytes,2,opt,name=coins,proto3" json:"coins,omitempty" yaml:"coins"`
 }
 
 func (m *EventAdd) Reset()         { *m = EventAdd{} }
@@ -61,9 +64,12 @@ func (m *EventAdd) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_EventAdd proto.InternalMessageInfo
 
+// EventSubtract represents a message for subtracting events.
 type EventSubtract struct {
+	// Field 1: Address associated with the event.
 	Address string `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty" yaml:"address"`
-	Coins   string `protobuf:"bytes,2,opt,name=coins,proto3" json:"coins,omitempty" yaml:"coins"`
+	// Field 2: Coins associated with the event.
+	Coins string `protobuf:"bytes,2,opt,name=coins,proto3" json:"coins,omitempty" yaml:"coins"`
 }
 
 func (m *EventSubtract) Reset()         { *m = EventSubtract{} }

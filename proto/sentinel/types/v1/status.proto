@@ -8,9 +8,17 @@ option (gogoproto.goproto_enum_prefix_all) = false;
 option (gogoproto.goproto_enum_stringer_all) = false;
 option (gogoproto.goproto_getters_all) = false;
 
+// Status represents the status of a subscription.
 enum Status {
+  // STATUS_UNSPECIFIED indicates an unspecified subscription status.
   STATUS_UNSPECIFIED = 0 [(gogoproto.enumvalue_customname) = "StatusUnspecified"];
+
+  // STATUS_ACTIVE indicates that the subscription is currently active.
   STATUS_ACTIVE = 1 [(gogoproto.enumvalue_customname) = "StatusActive"];
+
+  // STATUS_INACTIVE_PENDING indicates that the subscription is pending deactivation.
   STATUS_INACTIVE_PENDING = 2 [(gogoproto.enumvalue_customname) = "StatusInactivePending"];
+
+  // STATUS_INACTIVE indicates that the subscription is inactive.
   STATUS_INACTIVE = 3 [(gogoproto.enumvalue_customname) = "StatusInactive"];
 }

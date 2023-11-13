@@ -8,7 +8,12 @@ option go_package = "github.com/sentinel-official/hub/v1/x/plan/types";
 option (gogoproto.equal_all) = false;
 option (gogoproto.goproto_getters_all) = false;
 
+// GenesisPlan represents the genesis state for a plan.
 message GenesisPlan {
+  // Field 1: Plan information.
+  // - (gogoproto.nullable) = false: Field is not nullable.
   Plan plan = 1 [(gogoproto.nullable) = false];
+
+  // Field 2: List of node addresses associated with the plan.
   repeated string nodes = 2;
 }

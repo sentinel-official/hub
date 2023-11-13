@@ -24,9 +24,13 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
+// GenesisSubscription represents the initial state for a subscription in the genesis block.
 type GenesisSubscription struct {
-	Subscription *types.Any   `protobuf:"bytes,1,opt,name=subscription,proto3" json:"subscription,omitempty"`
-	Allocations  []Allocation `protobuf:"bytes,2,rep,name=allocations,proto3" json:"allocations"`
+	// Field 1: Subscription information stored as a serialized Any message.
+	Subscription *types.Any `protobuf:"bytes,1,opt,name=subscription,proto3" json:"subscription,omitempty"`
+	// Field 2: Allocations associated with the subscription.
+	// Each allocation contains information about granted and utilized bytes.
+	Allocations []Allocation `protobuf:"bytes,2,rep,name=allocations,proto3" json:"allocations"`
 }
 
 func (m *GenesisSubscription) Reset()         { *m = GenesisSubscription{} }
@@ -62,9 +66,13 @@ func (m *GenesisSubscription) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_GenesisSubscription proto.InternalMessageInfo
 
+// GenesisState represents the initial state of the module in the genesis block.
 type GenesisState struct {
+	// Field 1: Subscriptions in the genesis block.
+	// Each GenesisSubscription contains subscription information and associated allocations.
 	Subscriptions []GenesisSubscription `protobuf:"bytes,1,rep,name=subscriptions,proto3" json:"subscriptions"`
-	Params        Params                `protobuf:"bytes,2,opt,name=params,proto3" json:"params"`
+	// Field 2: Parameters for the module stored in the genesis block.
+	Params Params `protobuf:"bytes,2,opt,name=params,proto3" json:"params"`
 }
 
 func (m *GenesisState) Reset()         { *m = GenesisState{} }

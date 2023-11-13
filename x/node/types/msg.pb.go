@@ -31,12 +31,23 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
-// MsgRegisterRequest defines the SDK message for registering a node
+// MsgRegisterRequest defines the SDK message for registering a node.
 type MsgRegisterRequest struct {
-	From           string                                   `protobuf:"bytes,1,opt,name=from,proto3" json:"from,omitempty"`
+	// Field 1: Sender's address initiating the registration.
+	From string `protobuf:"bytes,1,opt,name=from,proto3" json:"from,omitempty"`
+	// Field 2: Prices in gigabytes for the registered node.
+	// - (gogoproto.nullable) = false: Field is not nullable.
+	// - (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins":
+	//   Type to cast to when repeating this field.
 	GigabytePrices github_com_cosmos_cosmos_sdk_types.Coins `protobuf:"bytes,2,rep,name=gigabyte_prices,json=gigabytePrices,proto3,castrepeated=github.com/cosmos/cosmos-sdk/types.Coins" json:"gigabyte_prices"`
-	HourlyPrices   github_com_cosmos_cosmos_sdk_types.Coins `protobuf:"bytes,3,rep,name=hourly_prices,json=hourlyPrices,proto3,castrepeated=github.com/cosmos/cosmos-sdk/types.Coins" json:"hourly_prices"`
-	RemoteURL      string                                   `protobuf:"bytes,4,opt,name=remote_url,json=remoteUrl,proto3" json:"remote_url,omitempty"`
+	// Field 3: Hourly prices for the registered node.
+	// - (gogoproto.nullable) = false: Field is not nullable.
+	// - (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins":
+	//   Type to cast to when repeating this field.
+	HourlyPrices github_com_cosmos_cosmos_sdk_types.Coins `protobuf:"bytes,3,rep,name=hourly_prices,json=hourlyPrices,proto3,castrepeated=github.com/cosmos/cosmos-sdk/types.Coins" json:"hourly_prices"`
+	// Field 4: Remote URL associated with the registered node.
+	// - (gogoproto.customname) = "RemoteURL": Custom name for the field.
+	RemoteURL string `protobuf:"bytes,4,opt,name=remote_url,json=remoteUrl,proto3" json:"remote_url,omitempty"`
 }
 
 func (m *MsgRegisterRequest) Reset()         { *m = MsgRegisterRequest{} }
@@ -72,12 +83,23 @@ func (m *MsgRegisterRequest) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgRegisterRequest proto.InternalMessageInfo
 
-// MsgUpdateDetailsRequest defines the SDK message for updating the node details
+// MsgUpdateDetailsRequest defines the SDK message for updating node details.
 type MsgUpdateDetailsRequest struct {
-	From           string                                   `protobuf:"bytes,1,opt,name=from,proto3" json:"from,omitempty"`
+	// Field 1: Sender's address initiating the update.
+	From string `protobuf:"bytes,1,opt,name=from,proto3" json:"from,omitempty"`
+	// Field 2: Updated prices in gigabytes for the node.
+	// - (gogoproto.nullable) = false: Field is not nullable.
+	// - (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins":
+	//   Type to cast to when repeating this field.
 	GigabytePrices github_com_cosmos_cosmos_sdk_types.Coins `protobuf:"bytes,2,rep,name=gigabyte_prices,json=gigabytePrices,proto3,castrepeated=github.com/cosmos/cosmos-sdk/types.Coins" json:"gigabyte_prices"`
-	HourlyPrices   github_com_cosmos_cosmos_sdk_types.Coins `protobuf:"bytes,3,rep,name=hourly_prices,json=hourlyPrices,proto3,castrepeated=github.com/cosmos/cosmos-sdk/types.Coins" json:"hourly_prices"`
-	RemoteURL      string                                   `protobuf:"bytes,4,opt,name=remote_url,json=remoteUrl,proto3" json:"remote_url,omitempty"`
+	// Field 3: Updated hourly prices for the node.
+	// - (gogoproto.nullable) = false: Field is not nullable.
+	// - (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins":
+	//   Type to cast to when repeating this field.
+	HourlyPrices github_com_cosmos_cosmos_sdk_types.Coins `protobuf:"bytes,3,rep,name=hourly_prices,json=hourlyPrices,proto3,castrepeated=github.com/cosmos/cosmos-sdk/types.Coins" json:"hourly_prices"`
+	// Field 4: Updated remote URL for the node.
+	// - (gogoproto.customname) = "RemoteURL": Custom name for the field.
+	RemoteURL string `protobuf:"bytes,4,opt,name=remote_url,json=remoteUrl,proto3" json:"remote_url,omitempty"`
 }
 
 func (m *MsgUpdateDetailsRequest) Reset()         { *m = MsgUpdateDetailsRequest{} }
@@ -113,9 +135,11 @@ func (m *MsgUpdateDetailsRequest) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgUpdateDetailsRequest proto.InternalMessageInfo
 
-// MsgUpdateStatusRequest defines the SDK message for updating the node status
+// MsgUpdateStatusRequest defines the SDK message for updating node status.
 type MsgUpdateStatusRequest struct {
-	From   string        `protobuf:"bytes,1,opt,name=from,proto3" json:"from,omitempty"`
+	// Field 1: Sender's address initiating the status update.
+	From string `protobuf:"bytes,1,opt,name=from,proto3" json:"from,omitempty"`
+	// Field 2: New status for the node.
 	Status types1.Status `protobuf:"varint,2,opt,name=status,proto3,enum=sentinel.types.v1.Status" json:"status,omitempty"`
 }
 
@@ -152,13 +176,18 @@ func (m *MsgUpdateStatusRequest) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgUpdateStatusRequest proto.InternalMessageInfo
 
-// MsgSubscribeRequest defines the SDK message for subscribe to a node
+// MsgSubscribeRequest defines the SDK message for subscribing to a node.
 type MsgSubscribeRequest struct {
-	From        string `protobuf:"bytes,1,opt,name=from,proto3" json:"from,omitempty"`
+	// Field 1: Sender's address initiating the subscription.
+	From string `protobuf:"bytes,1,opt,name=from,proto3" json:"from,omitempty"`
+	// Field 2: Node address to subscribe to.
 	NodeAddress string `protobuf:"bytes,2,opt,name=node_address,json=nodeAddress,proto3" json:"node_address,omitempty"`
-	Gigabytes   int64  `protobuf:"varint,3,opt,name=gigabytes,proto3" json:"gigabytes,omitempty"`
-	Hours       int64  `protobuf:"varint,4,opt,name=hours,proto3" json:"hours,omitempty"`
-	Denom       string `protobuf:"bytes,5,opt,name=denom,proto3" json:"denom,omitempty"`
+	// Field 3: Number of gigabytes for the subscription.
+	Gigabytes int64 `protobuf:"varint,3,opt,name=gigabytes,proto3" json:"gigabytes,omitempty"`
+	// Field 4: Number of hours for the subscription.
+	Hours int64 `protobuf:"varint,4,opt,name=hours,proto3" json:"hours,omitempty"`
+	// Field 5: Denomination for the subscription.
+	Denom string `protobuf:"bytes,5,opt,name=denom,proto3" json:"denom,omitempty"`
 }
 
 func (m *MsgSubscribeRequest) Reset()         { *m = MsgSubscribeRequest{} }
@@ -194,7 +223,7 @@ func (m *MsgSubscribeRequest) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgSubscribeRequest proto.InternalMessageInfo
 
-// MsgRegisterResponse defines the response of message MsgRegisterRequest
+// MsgRegisterResponse defines the response of message MsgRegisterRequest.
 type MsgRegisterResponse struct {
 }
 
@@ -231,8 +260,7 @@ func (m *MsgRegisterResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgRegisterResponse proto.InternalMessageInfo
 
-// MsgUpdateDetailsResponse defines the response of message
-// MsgUpdateDetailsRequest
+// MsgUpdateDetailsResponse defines the response of message MsgUpdateDetailsRequest.
 type MsgUpdateDetailsResponse struct {
 }
 
@@ -269,8 +297,7 @@ func (m *MsgUpdateDetailsResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgUpdateDetailsResponse proto.InternalMessageInfo
 
-// MsgUpdateStatusResponse defines the response of message
-// MsgUpdateStatusRequest
+// MsgUpdateStatusResponse defines the response of message MsgUpdateStatusRequest.
 type MsgUpdateStatusResponse struct {
 }
 
@@ -307,7 +334,7 @@ func (m *MsgUpdateStatusResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgUpdateStatusResponse proto.InternalMessageInfo
 
-// MsgSubscribeResponse defines the response of message MsgSubscribeRequest
+// MsgSubscribeResponse defines the response of message MsgSubscribeRequest.
 type MsgSubscribeResponse struct {
 }
 
@@ -412,9 +439,13 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type MsgServiceClient interface {
+	// RPC method for registering a node.
 	MsgRegister(ctx context.Context, in *MsgRegisterRequest, opts ...grpc.CallOption) (*MsgRegisterResponse, error)
+	// RPC method for updating node details.
 	MsgUpdateDetails(ctx context.Context, in *MsgUpdateDetailsRequest, opts ...grpc.CallOption) (*MsgUpdateDetailsResponse, error)
+	// RPC method for updating node status.
 	MsgUpdateStatus(ctx context.Context, in *MsgUpdateStatusRequest, opts ...grpc.CallOption) (*MsgUpdateStatusResponse, error)
+	// RPC method for subscribing to a node.
 	MsgSubscribe(ctx context.Context, in *MsgSubscribeRequest, opts ...grpc.CallOption) (*MsgSubscribeResponse, error)
 }
 
@@ -464,9 +495,13 @@ func (c *msgServiceClient) MsgSubscribe(ctx context.Context, in *MsgSubscribeReq
 
 // MsgServiceServer is the server API for MsgService service.
 type MsgServiceServer interface {
+	// RPC method for registering a node.
 	MsgRegister(context.Context, *MsgRegisterRequest) (*MsgRegisterResponse, error)
+	// RPC method for updating node details.
 	MsgUpdateDetails(context.Context, *MsgUpdateDetailsRequest) (*MsgUpdateDetailsResponse, error)
+	// RPC method for updating node status.
 	MsgUpdateStatus(context.Context, *MsgUpdateStatusRequest) (*MsgUpdateStatusResponse, error)
+	// RPC method for subscribing to a node.
 	MsgSubscribe(context.Context, *MsgSubscribeRequest) (*MsgSubscribeResponse, error)
 }
 

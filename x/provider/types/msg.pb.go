@@ -29,12 +29,17 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
-// MsgRegisterRequest defines the SDK message for registering a provider
+// MsgRegisterRequest defines the SDK message for registering a provider.
 type MsgRegisterRequest struct {
-	From        string `protobuf:"bytes,1,opt,name=from,proto3" json:"from,omitempty"`
-	Name        string `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
-	Identity    string `protobuf:"bytes,3,opt,name=identity,proto3" json:"identity,omitempty"`
-	Website     string `protobuf:"bytes,4,opt,name=website,proto3" json:"website,omitempty"`
+	// Field 1: Sender's address initiating the registration.
+	From string `protobuf:"bytes,1,opt,name=from,proto3" json:"from,omitempty"`
+	// Field 2: Provider name.
+	Name string `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	// Field 3: Identity of the provider.
+	Identity string `protobuf:"bytes,3,opt,name=identity,proto3" json:"identity,omitempty"`
+	// Field 4: Website associated with the provider.
+	Website string `protobuf:"bytes,4,opt,name=website,proto3" json:"website,omitempty"`
+	// Field 5: Description of the provider.
 	Description string `protobuf:"bytes,5,opt,name=description,proto3" json:"description,omitempty"`
 }
 
@@ -71,14 +76,20 @@ func (m *MsgRegisterRequest) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgRegisterRequest proto.InternalMessageInfo
 
-// MsgUpdateRequest defines the SDK message for updating a provider
+// MsgUpdateRequest defines the SDK message for updating a provider.
 type MsgUpdateRequest struct {
-	From        string       `protobuf:"bytes,1,opt,name=from,proto3" json:"from,omitempty"`
-	Name        string       `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
-	Identity    string       `protobuf:"bytes,3,opt,name=identity,proto3" json:"identity,omitempty"`
-	Website     string       `protobuf:"bytes,4,opt,name=website,proto3" json:"website,omitempty"`
-	Description string       `protobuf:"bytes,5,opt,name=description,proto3" json:"description,omitempty"`
-	Status      types.Status `protobuf:"varint,6,opt,name=status,proto3,enum=sentinel.types.v1.Status" json:"status,omitempty"`
+	// Field 1: Sender's address initiating the update.
+	From string `protobuf:"bytes,1,opt,name=from,proto3" json:"from,omitempty"`
+	// Field 2: New provider name.
+	Name string `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	// Field 3: New identity of the provider.
+	Identity string `protobuf:"bytes,3,opt,name=identity,proto3" json:"identity,omitempty"`
+	// Field 4: New website associated with the provider.
+	Website string `protobuf:"bytes,4,opt,name=website,proto3" json:"website,omitempty"`
+	// Field 5: New description of the provider.
+	Description string `protobuf:"bytes,5,opt,name=description,proto3" json:"description,omitempty"`
+	// Field 6: New status of the provider, using the sentinel.types.v1.Status enum.
+	Status types.Status `protobuf:"varint,6,opt,name=status,proto3,enum=sentinel.types.v1.Status" json:"status,omitempty"`
 }
 
 func (m *MsgUpdateRequest) Reset()         { *m = MsgUpdateRequest{} }
@@ -114,7 +125,7 @@ func (m *MsgUpdateRequest) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgUpdateRequest proto.InternalMessageInfo
 
-// MsgRegisterResponse defines the response of message MsgRegisterRequest
+// MsgRegisterResponse defines the response of message MsgRegisterRequest.
 type MsgRegisterResponse struct {
 }
 
@@ -151,7 +162,7 @@ func (m *MsgRegisterResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgRegisterResponse proto.InternalMessageInfo
 
-// MsgUpdateResponse defines the response of message MsgUpdateRequest
+// MsgUpdateResponse defines the response of message MsgUpdateRequest.
 type MsgUpdateResponse struct {
 }
 
@@ -238,7 +249,9 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type MsgServiceClient interface {
+	// RPC method for registering a provider.
 	MsgRegister(ctx context.Context, in *MsgRegisterRequest, opts ...grpc.CallOption) (*MsgRegisterResponse, error)
+	// RPC method for updating a provider.
 	MsgUpdate(ctx context.Context, in *MsgUpdateRequest, opts ...grpc.CallOption) (*MsgUpdateResponse, error)
 }
 
@@ -270,7 +283,9 @@ func (c *msgServiceClient) MsgUpdate(ctx context.Context, in *MsgUpdateRequest, 
 
 // MsgServiceServer is the server API for MsgService service.
 type MsgServiceServer interface {
+	// RPC method for registering a provider.
 	MsgRegister(context.Context, *MsgRegisterRequest) (*MsgRegisterResponse, error)
+	// RPC method for updating a provider.
 	MsgUpdate(context.Context, *MsgUpdateRequest) (*MsgUpdateResponse, error)
 }
 

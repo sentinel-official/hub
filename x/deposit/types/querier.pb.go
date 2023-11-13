@@ -30,7 +30,9 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
+// QueryDepositsRequest represents a request to query deposits with optional pagination.
 type QueryDepositsRequest struct {
+	// Field 1: Pagination parameters for the query.
 	Pagination *query.PageRequest `protobuf:"bytes,1,opt,name=pagination,proto3" json:"pagination,omitempty"`
 }
 
@@ -67,7 +69,9 @@ func (m *QueryDepositsRequest) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QueryDepositsRequest proto.InternalMessageInfo
 
+// QueryDepositRequest represents a request to query a specific deposit by address.
 type QueryDepositRequest struct {
+	// Field 1: Address of the deposit to be queried.
 	Address string `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
 }
 
@@ -104,8 +108,11 @@ func (m *QueryDepositRequest) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QueryDepositRequest proto.InternalMessageInfo
 
+// QueryDepositsResponse represents the response to a query for deposits.
 type QueryDepositsResponse struct {
-	Deposits   []Deposit           `protobuf:"bytes,1,rep,name=deposits,proto3" json:"deposits"`
+	// Field 1: List of deposits returned in the response.
+	Deposits []Deposit `protobuf:"bytes,1,rep,name=deposits,proto3" json:"deposits"`
+	// Field 2: Pagination details for the response.
 	Pagination *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
 }
 
@@ -142,7 +149,9 @@ func (m *QueryDepositsResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QueryDepositsResponse proto.InternalMessageInfo
 
+// QueryDepositResponse represents the response to a query for a specific deposit.
 type QueryDepositResponse struct {
+	// Field 1: The queried deposit.
 	Deposit Deposit `protobuf:"bytes,1,opt,name=deposit,proto3" json:"deposit"`
 }
 
@@ -233,7 +242,9 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type QueryServiceClient interface {
+	// RPC method for querying deposits with optional pagination.
 	QueryDeposits(ctx context.Context, in *QueryDepositsRequest, opts ...grpc.CallOption) (*QueryDepositsResponse, error)
+	// RPC method for querying a specific deposit by address.
 	QueryDeposit(ctx context.Context, in *QueryDepositRequest, opts ...grpc.CallOption) (*QueryDepositResponse, error)
 }
 
@@ -265,7 +276,9 @@ func (c *queryServiceClient) QueryDeposit(ctx context.Context, in *QueryDepositR
 
 // QueryServiceServer is the server API for QueryService service.
 type QueryServiceServer interface {
+	// RPC method for querying deposits with optional pagination.
 	QueryDeposits(context.Context, *QueryDepositsRequest) (*QueryDepositsResponse, error)
+	// RPC method for querying a specific deposit by address.
 	QueryDeposit(context.Context, *QueryDepositRequest) (*QueryDepositResponse, error)
 }
 

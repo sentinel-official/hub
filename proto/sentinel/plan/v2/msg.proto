@@ -10,72 +10,104 @@ option go_package = "github.com/sentinel-official/hub/v1/x/plan/types";
 option (gogoproto.equal_all) = false;
 option (gogoproto.goproto_getters_all) = false;
 
-// MsgCreateRequest defines the SDK message for creating a subscription plan
+// MsgCreateRequest defines the SDK message for creating a subscription plan.
 message MsgCreateRequest {
+  // Field 1: Sender's address.
   string from = 1;
+
+  // Field 2: Duration of the subscription plan.
   google.protobuf.Duration duration = 2 [
     (gogoproto.stdduration) = true,
     (gogoproto.nullable) = false
   ];
+
+  // Field 3: Amount of gigabytes in the subscription plan.
   int64 gigabytes = 3;
+
+  // Field 4: Prices associated with the subscription plan.
   repeated cosmos.base.v1beta1.Coin prices = 4 [
     (gogoproto.nullable) = false,
     (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
   ];
 }
 
-// MsgUpdateStatusRequest defines the SDK message for modifying the status of a
-// subscription plan
+// MsgUpdateStatusRequest defines the SDK message for modifying the status of a subscription plan.
 message MsgUpdateStatusRequest {
+  // Field 1: Sender's address.
   string from = 1;
+
+  // Field 2: Identifier of the subscription plan.
   uint64 id = 2 [(gogoproto.customname) = "ID"];
+
+  // Field 3: New status for the subscription plan.
   sentinel.types.v1.Status status = 3;
 }
 
-// MsgLinkNodeRequest defines the SDK message for adding a node to a
-// subscription plan
+// MsgLinkNodeRequest defines the SDK message for adding a node to a subscription plan.
 message MsgLinkNodeRequest {
+  // Field 1: Sender's address.
   string from = 1;
+
+  // Field 2: Identifier of the subscription plan.
   uint64 id = 2 [(gogoproto.customname) = "ID"];
+
+  // Field 3: Node address to be linked to the subscription plan.
   string node_address = 3;
 }
 
-// MsgUnlinkNodeRequest defines the SDK message for removing a node from a
-// subscription plan
+// MsgUnlinkNodeRequest defines the SDK message for removing a node from a subscription plan.
 message MsgUnlinkNodeRequest {
+  // Field 1: Sender's address.
   string from = 1;
+
+  // Field 2: Identifier of the subscription plan.
   uint64 id = 2 [(gogoproto.customname) = "ID"];
+
+  // Field 3: Node address to be unlinked from the subscription plan.
   string node_address = 3;
 }
 
-// MsgSubscribeRequest defines the SDK message for subscribing to a subscription
-// plan
+// MsgSubscribeRequest defines the SDK message for subscribing to a subscription plan.
 message MsgSubscribeRequest {
+  // Field 1: Sender's address.
   string from = 1;
+
+  // Field 2: Identifier of the subscription plan.
   uint64 id = 2 [(gogoproto.customname) = "ID"];
+
+  // Field 3: Denomination for the subscription.
   string denom = 3;
 }
 
-// MsgCreateResponse defines the response of message MsgCreateRequest
+// MsgCreateResponse defines the response of message MsgCreateRequest.
 message MsgCreateResponse {}
 
-// MsgUpdateStatusResponse defines the response of message
-// MsgUpdateStatusRequest
+// MsgUpdateStatusResponse defines the response of message MsgUpdateStatusRequest.
 message MsgUpdateStatusResponse {}
 
-// MsgLinkNodeResponse defines the response of message MsgLinkNodeRequest
+// MsgLinkNodeResponse defines the response of message MsgLinkNodeRequest.
 message MsgLinkNodeResponse {}
 
-// MsgUnlinkNodeResponse defines the response of message MsgUnlinkNodeRequest
+// MsgUnlinkNodeResponse defines the response of message MsgUnlinkNodeRequest.
 message MsgUnlinkNodeResponse {}
 
-// MsgSubscribeResponse defines the response of message MsgSubscribeRequest
+// MsgSubscribeResponse defines the response of message MsgSubscribeRequest.
 message MsgSubscribeResponse {}
 
+// MsgService is the service definition for subscription plan messages.
 service MsgService {
+  // RPC method for creating a subscription plan.
   rpc MsgCreate(MsgCreateRequest) returns (MsgCreateResponse);
+
+  // RPC method for modifying the status of a subscription plan.
   rpc MsgUpdateStatus(MsgUpdateStatusRequest) returns (MsgUpdateStatusResponse);
+
+  // RPC method for linking a node to a subscription plan.
   rpc MsgLinkNode(MsgLinkNodeRequest) returns (MsgLinkNodeResponse);
+
+  // RPC method for unlinking a node from a subscription plan.
   rpc MsgUnlinkNode(MsgUnlinkNodeRequest) returns (MsgUnlinkNodeResponse);
+
+  // RPC method for subscribing to a subscription plan.
   rpc MsgSubscribe(MsgSubscribeRequest) returns (MsgSubscribeResponse);
 }

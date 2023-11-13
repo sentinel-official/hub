@@ -29,18 +29,48 @@ var _ = time.Kitchen
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
+// Params represents a message for handling node parameters.
 type Params struct {
-	Deposit                  types.Coin                               `protobuf:"bytes,1,opt,name=deposit,proto3" json:"deposit"`
-	ActiveDuration           time.Duration                            `protobuf:"bytes,2,opt,name=active_duration,json=activeDuration,proto3,stdduration" json:"active_duration"`
-	MaxGigabytePrices        github_com_cosmos_cosmos_sdk_types.Coins `protobuf:"bytes,3,rep,name=max_gigabyte_prices,json=maxGigabytePrices,proto3,castrepeated=github.com/cosmos/cosmos-sdk/types.Coins" json:"max_gigabyte_prices"`
-	MinGigabytePrices        github_com_cosmos_cosmos_sdk_types.Coins `protobuf:"bytes,4,rep,name=min_gigabyte_prices,json=minGigabytePrices,proto3,castrepeated=github.com/cosmos/cosmos-sdk/types.Coins" json:"min_gigabyte_prices"`
-	MaxHourlyPrices          github_com_cosmos_cosmos_sdk_types.Coins `protobuf:"bytes,5,rep,name=max_hourly_prices,json=maxHourlyPrices,proto3,castrepeated=github.com/cosmos/cosmos-sdk/types.Coins" json:"max_hourly_prices"`
-	MinHourlyPrices          github_com_cosmos_cosmos_sdk_types.Coins `protobuf:"bytes,6,rep,name=min_hourly_prices,json=minHourlyPrices,proto3,castrepeated=github.com/cosmos/cosmos-sdk/types.Coins" json:"min_hourly_prices"`
-	MaxSubscriptionGigabytes int64                                    `protobuf:"varint,7,opt,name=max_subscription_gigabytes,json=maxSubscriptionGigabytes,proto3" json:"max_subscription_gigabytes,omitempty"`
-	MinSubscriptionGigabytes int64                                    `protobuf:"varint,8,opt,name=min_subscription_gigabytes,json=minSubscriptionGigabytes,proto3" json:"min_subscription_gigabytes,omitempty"`
-	MaxSubscriptionHours     int64                                    `protobuf:"varint,9,opt,name=max_subscription_hours,json=maxSubscriptionHours,proto3" json:"max_subscription_hours,omitempty"`
-	MinSubscriptionHours     int64                                    `protobuf:"varint,10,opt,name=min_subscription_hours,json=minSubscriptionHours,proto3" json:"min_subscription_hours,omitempty"`
-	StakingShare             github_com_cosmos_cosmos_sdk_types.Dec   `protobuf:"bytes,11,opt,name=staking_share,json=stakingShare,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"staking_share"`
+	// Field 1: Deposit required for registering a node.
+	// - (gogoproto.nullable) = false: Field is not nullable.
+	Deposit types.Coin `protobuf:"bytes,1,opt,name=deposit,proto3" json:"deposit"`
+	// Field 2: Duration for which a node remains active.
+	// - (gogoproto.nullable) = false: Field is not nullable.
+	// - (gogoproto.stdduration) = true: Use standard duration representation for Go.
+	ActiveDuration time.Duration `protobuf:"bytes,2,opt,name=active_duration,json=activeDuration,proto3,stdduration" json:"active_duration"`
+	// Field 3: Maximum prices in gigabytes for a node's subscription.
+	// - (gogoproto.nullable) = false: Field is not nullable.
+	// - (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins":
+	//   Type to cast to when repeating this field.
+	MaxGigabytePrices github_com_cosmos_cosmos_sdk_types.Coins `protobuf:"bytes,3,rep,name=max_gigabyte_prices,json=maxGigabytePrices,proto3,castrepeated=github.com/cosmos/cosmos-sdk/types.Coins" json:"max_gigabyte_prices"`
+	// Field 4: Minimum prices in gigabytes for a node's subscription.
+	// - (gogoproto.nullable) = false: Field is not nullable.
+	// - (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins":
+	//   Type to cast to when repeating this field.
+	MinGigabytePrices github_com_cosmos_cosmos_sdk_types.Coins `protobuf:"bytes,4,rep,name=min_gigabyte_prices,json=minGigabytePrices,proto3,castrepeated=github.com/cosmos/cosmos-sdk/types.Coins" json:"min_gigabyte_prices"`
+	// Field 5: Maximum prices in hours for a node's subscription.
+	// - (gogoproto.nullable) = false: Field is not nullable.
+	// - (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins":
+	//   Type to cast to when repeating this field.
+	MaxHourlyPrices github_com_cosmos_cosmos_sdk_types.Coins `protobuf:"bytes,5,rep,name=max_hourly_prices,json=maxHourlyPrices,proto3,castrepeated=github.com/cosmos/cosmos-sdk/types.Coins" json:"max_hourly_prices"`
+	// Field 6: Minimum prices in hours for a node's subscription.
+	// - (gogoproto.nullable) = false: Field is not nullable.
+	// - (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins":
+	//   Type to cast to when repeating this field.
+	MinHourlyPrices github_com_cosmos_cosmos_sdk_types.Coins `protobuf:"bytes,6,rep,name=min_hourly_prices,json=minHourlyPrices,proto3,castrepeated=github.com/cosmos/cosmos-sdk/types.Coins" json:"min_hourly_prices"`
+	// Field 7: Maximum gigabytes allowed for a subscription.
+	MaxSubscriptionGigabytes int64 `protobuf:"varint,7,opt,name=max_subscription_gigabytes,json=maxSubscriptionGigabytes,proto3" json:"max_subscription_gigabytes,omitempty"`
+	// Field 8: Minimum gigabytes required for a subscription.
+	MinSubscriptionGigabytes int64 `protobuf:"varint,8,opt,name=min_subscription_gigabytes,json=minSubscriptionGigabytes,proto3" json:"min_subscription_gigabytes,omitempty"`
+	// Field 9: Maximum hours allowed for a subscription.
+	MaxSubscriptionHours int64 `protobuf:"varint,9,opt,name=max_subscription_hours,json=maxSubscriptionHours,proto3" json:"max_subscription_hours,omitempty"`
+	// Field 10: Minimum hours required for a subscription.
+	MinSubscriptionHours int64 `protobuf:"varint,10,opt,name=min_subscription_hours,json=minSubscriptionHours,proto3" json:"min_subscription_hours,omitempty"`
+	// Field 11: Staking share required for a node.
+	// - (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec":
+	//   Custom type definition for the field.
+	// - (gogoproto.nullable) = false: Field is not nullable.
+	StakingShare github_com_cosmos_cosmos_sdk_types.Dec `protobuf:"bytes,11,opt,name=staking_share,json=stakingShare,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"staking_share"`
 }
 
 func (m *Params) Reset()         { *m = Params{} }

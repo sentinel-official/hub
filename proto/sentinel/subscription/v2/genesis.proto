@@ -10,12 +10,22 @@ option go_package = "github.com/sentinel-official/hub/v1/x/subscription/types";
 option (gogoproto.equal_all) = false;
 option (gogoproto.goproto_getters_all) = false;
 
+// GenesisSubscription represents the initial state for a subscription in the genesis block.
 message GenesisSubscription {
+  // Field 1: Subscription information stored as a serialized Any message.
   google.protobuf.Any subscription = 1;
+
+  // Field 2: Allocations associated with the subscription.
+  // Each allocation contains information about granted and utilized bytes.
   repeated Allocation allocations = 2 [(gogoproto.nullable) = false];
 }
 
+// GenesisState represents the initial state of the module in the genesis block.
 message GenesisState {
+  // Field 1: Subscriptions in the genesis block.
+  // Each GenesisSubscription contains subscription information and associated allocations.
   repeated GenesisSubscription subscriptions = 1 [(gogoproto.nullable) = false];
+
+  // Field 2: Parameters for the module stored in the genesis block.
   Params params = 2 [(gogoproto.nullable) = false];
 }

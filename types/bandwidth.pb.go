@@ -24,8 +24,13 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
+// Bandwidth represents information about upload and download bandwidth.
 type Bandwidth struct {
-	Upload   github_com_cosmos_cosmos_sdk_types.Int `protobuf:"bytes,1,opt,name=upload,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"upload"`
+	// Field 1: Upload bandwidth, represented as a Cosmos SDK Int type.
+	// This field is not nullable.
+	Upload github_com_cosmos_cosmos_sdk_types.Int `protobuf:"bytes,1,opt,name=upload,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"upload"`
+	// Field 2: Download bandwidth, represented as a Cosmos SDK Int type.
+	// This field is not nullable.
 	Download github_com_cosmos_cosmos_sdk_types.Int `protobuf:"bytes,2,opt,name=download,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"download"`
 }
 

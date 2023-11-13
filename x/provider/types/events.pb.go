@@ -23,7 +23,9 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
+// Message representing an event registration.
 type EventRegister struct {
+	// Field 1: Address associated with the registration.
 	Address string `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty" yaml:"address"`
 }
 
@@ -60,7 +62,9 @@ func (m *EventRegister) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_EventRegister proto.InternalMessageInfo
 
+// Message representing an event update.
 type EventUpdate struct {
+	// Field 1: Address associated with the update.
 	Address string `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty" yaml:"address"`
 }
 

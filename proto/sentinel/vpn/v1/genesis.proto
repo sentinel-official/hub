@@ -13,11 +13,25 @@ option go_package = "github.com/sentinel-official/hub/v1/x/vpn/types";
 option (gogoproto.equal_all) = false;
 option (gogoproto.goproto_getters_all) = false;
 
+// GenesisState represents the initial state of the Sentinel module at genesis.
 message GenesisState {
+  // Field 1: List of deposits associated with the Sentinel module.
+  // This field is not nullable.
   repeated sentinel.deposit.v1.Deposit deposits = 1 [(gogoproto.nullable) = false];
+
+  // Field 2: Genesis state for nodes in the Sentinel module.
   sentinel.node.v2.GenesisState nodes = 2;
+
+  // Field 3: List of plans associated with the Sentinel module.
+  // This field is not nullable.
   repeated sentinel.plan.v2.GenesisPlan plans = 3 [(gogoproto.nullable) = false];
+
+  // Field 4: Genesis state for providers in the Sentinel module.
   sentinel.provider.v2.GenesisState providers = 4;
+
+  // Field 5: Genesis state for sessions in the Sentinel module.
   sentinel.session.v2.GenesisState sessions = 5;
+
+  // Field 6: Genesis state for subscriptions in the Sentinel module.
   sentinel.subscription.v2.GenesisState subscriptions = 6;
 }

@@ -21,13 +21,18 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
+// Status represents the status of a subscription.
 type Status int32
 
 const (
-	StatusUnspecified     Status = 0
-	StatusActive          Status = 1
+	// STATUS_UNSPECIFIED indicates an unspecified subscription status.
+	StatusUnspecified Status = 0
+	// STATUS_ACTIVE indicates that the subscription is currently active.
+	StatusActive Status = 1
+	// STATUS_INACTIVE_PENDING indicates that the subscription is pending deactivation.
 	StatusInactivePending Status = 2
-	StatusInactive        Status = 3
+	// STATUS_INACTIVE indicates that the subscription is inactive.
+	StatusInactive Status = 3
 )
 
 var Status_name = map[int32]string{

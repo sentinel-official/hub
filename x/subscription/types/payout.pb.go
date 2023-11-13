@@ -28,13 +28,22 @@ var _ = time.Kitchen
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
+// Payout represents information about a payout.
 type Payout struct {
-	ID          uint64     `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
-	Address     string     `protobuf:"bytes,2,opt,name=address,proto3" json:"address,omitempty"`
-	NodeAddress string     `protobuf:"bytes,3,opt,name=node_address,json=nodeAddress,proto3" json:"node_address,omitempty"`
-	Hours       int64      `protobuf:"varint,4,opt,name=hours,proto3" json:"hours,omitempty"`
-	Price       types.Coin `protobuf:"bytes,5,opt,name=price,proto3" json:"price"`
-	NextAt      time.Time  `protobuf:"bytes,6,opt,name=next_at,json=nextAt,proto3,stdtime" json:"next_at"`
+	// Field 1: Unique identifier for the payout.
+	ID uint64 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	// Field 2: Address associated with the payout.
+	Address string `protobuf:"bytes,2,opt,name=address,proto3" json:"address,omitempty"`
+	// Field 3: Node address associated with the payout.
+	NodeAddress string `protobuf:"bytes,3,opt,name=node_address,json=nodeAddress,proto3" json:"node_address,omitempty"`
+	// Field 4: Duration, in hours, for which the payout is calculated.
+	Hours int64 `protobuf:"varint,4,opt,name=hours,proto3" json:"hours,omitempty"`
+	// Field 5: Price of the payout, represented as a Cosmos Coin.
+	// This field is not nullable.
+	Price types.Coin `protobuf:"bytes,5,opt,name=price,proto3" json:"price"`
+	// Field 6: Timestamp indicating when the next payout is scheduled.
+	// This field is not nullable and is represented using the standard Timestamp format.
+	NextAt time.Time `protobuf:"bytes,6,opt,name=next_at,json=nextAt,proto3,stdtime" json:"next_at"`
 }
 
 func (m *Payout) Reset()         { *m = Payout{} }

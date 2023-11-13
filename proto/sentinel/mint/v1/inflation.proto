@@ -8,22 +8,45 @@ option go_package = "github.com/sentinel-official/hub/v1/x/mint/types";
 option (gogoproto.equal_all) = false;
 option (gogoproto.goproto_getters_all) = false;
 
+// Inflation represents a message for handling inflation parameters.
 message Inflation {
+  // Field 1: Maximum inflation rate.
+  // - (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec":
+  //   Custom type definition for the field.
+  // - (gogoproto.moretags) = "yaml:\"max\"": YAML tag for better representation.
+  // - (gogoproto.nullable) = false: Field is not nullable.
   string max = 1 [
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
     (gogoproto.moretags) = "yaml:\"max\"",
     (gogoproto.nullable) = false
   ];
+
+  // Field 2: Minimum inflation rate.
+  // - (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec":
+  //   Custom type definition for the field.
+  // - (gogoproto.moretags) = "yaml:\"min\"": YAML tag for better representation.
+  // - (gogoproto.nullable) = false: Field is not nullable.
   string min = 2 [
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
     (gogoproto.moretags) = "yaml:\"min\"",
     (gogoproto.nullable) = false
   ];
+
+  // Field 3: Rate of change of inflation.
+  // - (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec":
+  //   Custom type definition for the field.
+  // - (gogoproto.moretags) = "yaml:\"rate_change\"": YAML tag for better representation.
+  // - (gogoproto.nullable) = false: Field is not nullable.
   string rate_change = 3 [
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
     (gogoproto.moretags) = "yaml:\"rate_change\"",
     (gogoproto.nullable) = false
   ];
+
+  // Field 4: Timestamp indicating when the inflation parameters were set.
+  // - (gogoproto.moretags) = "yaml:\"timestamp\"": YAML tag for better representation.
+  // - (gogoproto.nullable) = false: Field is not nullable.
+  // - (gogoproto.stdtime) = true: Use standard time representation for Go.
   google.protobuf.Timestamp timestamp = 4 [
     (gogoproto.moretags) = "yaml:\"timestamp\"",
     (gogoproto.nullable) = false,

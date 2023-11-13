@@ -8,22 +8,36 @@ option go_package = "github.com/sentinel-official/hub/v1/x/node/types";
 option (gogoproto.equal_all) = false;
 option (gogoproto.goproto_getters_all) = false;
 
+// EventRegister represents an event for registration.
 message EventRegister {
+  // Field 1: Address associated with the registration event.
   string address = 1 [(gogoproto.moretags) = "yaml:\"address\""];
 }
 
+// EventUpdateDetails represents an event for updating details.
 message EventUpdateDetails {
+  // Field 1: Address associated with the update details event.
   string address = 1 [(gogoproto.moretags) = "yaml:\"address\""];
 }
 
+// EventUpdateStatus represents an event for updating status.
 message EventUpdateStatus {
+  // Field 1: Status to be updated in the event.
   sentinel.types.v1.Status status = 1 [(gogoproto.moretags) = "yaml:\"status\""];
+
+  // Field 2: Address associated with the update status event.
   string address = 2 [(gogoproto.moretags) = "yaml:\"address\""];
 }
 
+// EventCreateSubscription represents an event for creating a subscription.
 message EventCreateSubscription {
+  // Field 1: Address associated with the create subscription event.
   string address = 1 [(gogoproto.moretags) = "yaml:\"address\""];
+
+  // Field 2: Node address associated with the create subscription event.
   string node_address = 2 [(gogoproto.moretags) = "yaml:\"node_address\""];
+
+  // Field 3: ID associated with the create subscription event.
   uint64 id = 3 [
     (gogoproto.customname) = "ID",
     (gogoproto.moretags) = "yaml:\"id\""

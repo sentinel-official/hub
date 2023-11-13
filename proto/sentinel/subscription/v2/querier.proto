@@ -13,160 +13,250 @@ option go_package = "github.com/sentinel-official/hub/v1/x/subscription/types";
 option (gogoproto.equal_all) = false;
 option (gogoproto.goproto_getters_all) = false;
 
+// QuerySubscriptionsRequest represents the request for querying subscriptions.
 message QuerySubscriptionsRequest {
+  // Field 1: Pagination options for the query.
   cosmos.base.query.v1beta1.PageRequest pagination = 1;
 }
 
+// QuerySubscriptionsForAccountRequest represents the request for querying subscriptions for a specific account.
 message QuerySubscriptionsForAccountRequest {
+  // Field 1: Address of the account for which subscriptions are queried.
   string address = 1;
+
+  // Field 2: Pagination options for the query.
   cosmos.base.query.v1beta1.PageRequest pagination = 2;
 }
 
+// QuerySubscriptionsForNodeRequest represents the request for querying subscriptions for a specific node.
 message QuerySubscriptionsForNodeRequest {
+  // Field 1: Address of the node for which subscriptions are queried.
   string address = 1;
+
+  // Field 2: Pagination options for the query.
   cosmos.base.query.v1beta1.PageRequest pagination = 2;
 }
 
+// QuerySubscriptionsForPlanRequest represents the request for querying subscriptions for a specific plan.
 message QuerySubscriptionsForPlanRequest {
+  // Field 1: Unique identifier for the plan for which subscriptions are queried.
   uint64 id = 1;
+
+  // Field 2: Pagination options for the query.
   cosmos.base.query.v1beta1.PageRequest pagination = 2;
 }
 
+// QuerySubscriptionRequest represents the request for querying a specific subscription.
 message QuerySubscriptionRequest {
+  // Field 1: Unique identifier for the subscription being queried.
   uint64 id = 1;
 }
 
+// QueryAllocationRequest represents the request for querying a specific allocation.
 message QueryAllocationRequest {
+  // Field 1: Unique identifier for the subscription associated with the allocation.
   uint64 id = 1;
+
+  // Field 2: Address for which the allocation is queried.
   string address = 2;
 }
 
+// QueryAllocationsRequest represents the request for querying allocations associated with a subscription.
 message QueryAllocationsRequest {
+  // Field 1: Unique identifier for the subscription for which allocations are queried.
   uint64 id = 1;
+
+  // Field 2: Pagination options for the query.
   cosmos.base.query.v1beta1.PageRequest pagination = 2;
 }
 
+// QueryPayoutsRequest represents the request for querying payouts.
 message QueryPayoutsRequest {
+  // Field 1: Pagination options for the query.
   cosmos.base.query.v1beta1.PageRequest pagination = 1;
 }
 
+// QueryPayoutsForAccountRequest represents the request for querying payouts for a specific account.
 message QueryPayoutsForAccountRequest {
+  // Field 1: Address of the account for which payouts are queried.
   string address = 1;
+
+  // Field 2: Pagination options for the query.
   cosmos.base.query.v1beta1.PageRequest pagination = 2;
 }
 
+// QueryPayoutsForNodeRequest represents the request for querying payouts for a specific node.
 message QueryPayoutsForNodeRequest {
+  // Field 1: Address of the node for which payouts are queried.
   string address = 1;
+
+  // Field 2: Pagination options for the query.
   cosmos.base.query.v1beta1.PageRequest pagination = 2;
 }
 
+// QueryPayoutRequest represents the request for querying a specific payout.
 message QueryPayoutRequest {
+  // Field 1: Unique identifier for the payout being queried.
   uint64 id = 1;
 }
 
+// QueryParamsRequest represents the request for querying subscription module parameters.
 message QueryParamsRequest {}
 
+// QuerySubscriptionsResponse represents the response for querying subscriptions.
 message QuerySubscriptionsResponse {
+  // Field 1: List of serialized subscription information.
   repeated google.protobuf.Any subscriptions = 1;
+
+  // Field 2: Pagination information for the response.
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
+// QuerySubscriptionsForAccountResponse represents the response for querying subscriptions for a specific account.
 message QuerySubscriptionsForAccountResponse {
+  // Field 1: List of serialized subscription information.
   repeated google.protobuf.Any subscriptions = 1;
+
+  // Field 2: Pagination information for the response.
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
+// QuerySubscriptionsForNodeResponse represents the response for querying subscriptions for a specific node.
 message QuerySubscriptionsForNodeResponse {
+  // Field 1: List of serialized subscription information.
   repeated google.protobuf.Any subscriptions = 1;
+
+  // Field 2: Pagination information for the response.
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
+// QuerySubscriptionsForPlanResponse represents the response for querying subscriptions for a specific plan.
 message QuerySubscriptionsForPlanResponse {
+  // Field 1: List of serialized subscription information.
   repeated google.protobuf.Any subscriptions = 1;
+
+  // Field 2: Pagination information for the response.
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
+// QuerySubscriptionResponse represents the response for querying a specific subscription.
 message QuerySubscriptionResponse {
+  // Field 1: Serialized subscription information.
   google.protobuf.Any subscription = 1;
 }
 
+// QueryAllocationResponse represents the response for querying a specific allocation.
 message QueryAllocationResponse {
+  // Field 1: Allocation information.
   Allocation allocation = 1 [(gogoproto.nullable) = false];
 }
 
+// QueryAllocationsResponse represents the response for querying allocations associated with a subscription.
 message QueryAllocationsResponse {
+  // Field 1: List of allocation information.
   repeated Allocation allocations = 1 [(gogoproto.nullable) = false];
+
+  // Field 2: Pagination information for the response.
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
+// QueryPayoutsResponse represents the response for querying payouts.
 message QueryPayoutsResponse {
+  // Field 1: List of payout information.
   repeated Payout payouts = 1 [(gogoproto.nullable) = false];
+
+  // Field 2: Pagination information for the response.
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
+// QueryPayoutsForAccountResponse represents the response for querying payouts for a specific account.
 message QueryPayoutsForAccountResponse {
+  // Field 1: List of payout information.
   repeated Payout payouts = 1 [(gogoproto.nullable) = false];
+
+  // Field 2: Pagination information for the response.
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
+// QueryPayoutsForNodeResponse represents the response for querying payouts for a specific node.
 message QueryPayoutsForNodeResponse {
+  // Field 1: List of payout information.
   repeated Payout payouts = 1 [(gogoproto.nullable) = false];
+
+  // Field 2: Pagination information for the response.
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
+// QueryPayoutResponse represents the response for querying a specific payout.
 message QueryPayoutResponse {
+  // Field 1: Payout information.
   Payout payout = 1 [(gogoproto.nullable) = false];
 }
 
+// QueryParamsResponse represents the response for querying subscription module parameters.
 message QueryParamsResponse {
+  // Field 1: Subscription module parameters.
   Params params = 1 [(gogoproto.nullable) = false];
 }
 
+// QueryService defines the gRPC service for subscription-related queries.
 service QueryService {
+  // RPC method for querying subscriptions.
   rpc QuerySubscriptions(QuerySubscriptionsRequest) returns (QuerySubscriptionsResponse) {
     option (google.api.http).get = "/sentinel/subscriptions";
   }
 
+  // RPC method for querying subscriptions for a specific account.
   rpc QuerySubscriptionsForAccount(QuerySubscriptionsForAccountRequest) returns (QuerySubscriptionsForAccountResponse) {
     option (google.api.http).get = "/sentinel/accounts/{address}/subscriptions";
   }
 
+  // RPC method for querying subscriptions for a specific node.
   rpc QuerySubscriptionsForNode(QuerySubscriptionsForNodeRequest) returns (QuerySubscriptionsForNodeResponse) {
     option (google.api.http).get = "/sentinel/nodes/{address}/subscriptions";
   }
 
+  // RPC method for querying subscriptions for a specific plan.
   rpc QuerySubscriptionsForPlan(QuerySubscriptionsForPlanRequest) returns (QuerySubscriptionsForPlanResponse) {
     option (google.api.http).get = "/sentinel/plans/{id}/subscriptions";
   }
 
+  // RPC method for querying a specific subscription.
   rpc QuerySubscription(QuerySubscriptionRequest) returns (QuerySubscriptionResponse) {
     option (google.api.http).get = "/sentinel/subscriptions/{id}";
   }
 
+  // RPC method for querying allocations associated with a subscription.
   rpc QueryAllocations(QueryAllocationsRequest) returns (QueryAllocationsResponse) {
     option (google.api.http).get = "/sentinel/subscriptions/{id}/allocations";
   }
 
+  // RPC method for querying a specific allocation.
   rpc QueryAllocation(QueryAllocationRequest) returns (QueryAllocationResponse) {
     option (google.api.http).get = "/sentinel/subscriptions/{id}/allocations/{address}";
   }
 
+  // RPC method for querying payouts.
   rpc QueryPayouts(QueryPayoutsRequest) returns (QueryPayoutsResponse) {
     option (google.api.http).get = "/sentinel/payouts";
   }
 
+  // RPC method for querying payouts for a specific account.
   rpc QueryPayoutsForAccount(QueryPayoutsForAccountRequest) returns (QueryPayoutsForAccountResponse) {
     option (google.api.http).get = "/sentinel/accounts/{address}/payouts";
   }
 
+  // RPC method for querying payouts for a specific node.
   rpc QueryPayoutsForNode(QueryPayoutsForNodeRequest) returns (QueryPayoutsForNodeResponse) {
     option (google.api.http).get = "/sentinel/nodes/{address}/payouts";
   }
 
+  // RPC method for querying a specific payout.
   rpc QueryPayout(QueryPayoutRequest) returns (QueryPayoutResponse) {
     option (google.api.http).get = "/sentinel/payouts/{id}";
   }
 
+  // RPC method for querying subscription module parameters.
   rpc QueryParams(QueryParamsRequest) returns (QueryParamsResponse) {
     option (google.api.http).get = "/sentinel/modules/subscription/params";
   }

@@ -29,12 +29,21 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
+// GenesisState represents the initial state of the Sentinel module at genesis.
 type GenesisState struct {
-	Deposits      []types.Deposit      `protobuf:"bytes,1,rep,name=deposits,proto3" json:"deposits"`
-	Nodes         *types1.GenesisState `protobuf:"bytes,2,opt,name=nodes,proto3" json:"nodes,omitempty"`
-	Plans         []types2.GenesisPlan `protobuf:"bytes,3,rep,name=plans,proto3" json:"plans"`
-	Providers     *types3.GenesisState `protobuf:"bytes,4,opt,name=providers,proto3" json:"providers,omitempty"`
-	Sessions      *types4.GenesisState `protobuf:"bytes,5,opt,name=sessions,proto3" json:"sessions,omitempty"`
+	// Field 1: List of deposits associated with the Sentinel module.
+	// This field is not nullable.
+	Deposits []types.Deposit `protobuf:"bytes,1,rep,name=deposits,proto3" json:"deposits"`
+	// Field 2: Genesis state for nodes in the Sentinel module.
+	Nodes *types1.GenesisState `protobuf:"bytes,2,opt,name=nodes,proto3" json:"nodes,omitempty"`
+	// Field 3: List of plans associated with the Sentinel module.
+	// This field is not nullable.
+	Plans []types2.GenesisPlan `protobuf:"bytes,3,rep,name=plans,proto3" json:"plans"`
+	// Field 4: Genesis state for providers in the Sentinel module.
+	Providers *types3.GenesisState `protobuf:"bytes,4,opt,name=providers,proto3" json:"providers,omitempty"`
+	// Field 5: Genesis state for sessions in the Sentinel module.
+	Sessions *types4.GenesisState `protobuf:"bytes,5,opt,name=sessions,proto3" json:"sessions,omitempty"`
+	// Field 6: Genesis state for subscriptions in the Sentinel module.
 	Subscriptions *types5.GenesisState `protobuf:"bytes,6,opt,name=subscriptions,proto3" json:"subscriptions,omitempty"`
 }
 

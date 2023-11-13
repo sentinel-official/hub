@@ -23,9 +23,12 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
+// GenesisState represents the initial state for the sessions module.
 type GenesisState struct {
+	// Field 1: List of sessions.
 	Sessions []Session `protobuf:"bytes,1,rep,name=sessions,proto3" json:"sessions"`
-	Params   Params    `protobuf:"bytes,2,opt,name=params,proto3" json:"params"`
+	// Field 2: Parameters for the sessions module.
+	Params Params `protobuf:"bytes,2,opt,name=params,proto3" json:"params"`
 }
 
 func (m *GenesisState) Reset()         { *m = GenesisState{} }

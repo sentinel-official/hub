@@ -24,11 +24,17 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
+// EventStart represents an event signaling the start of a subscription.
 type EventStart struct {
-	Address        string `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty" yaml:"address"`
-	NodeAddress    string `protobuf:"bytes,2,opt,name=node_address,json=nodeAddress,proto3" json:"node_address,omitempty" yaml:"node_address"`
-	ID             uint64 `protobuf:"varint,3,opt,name=id,proto3" json:"id,omitempty" yaml:"id"`
-	PlanID         uint64 `protobuf:"varint,4,opt,name=plan_id,json=planId,proto3" json:"plan_id,omitempty" yaml:"plan_id"`
+	// Field 1: Address associated with the event.
+	Address string `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty" yaml:"address"`
+	// Field 2: Node address associated with the event.
+	NodeAddress string `protobuf:"bytes,2,opt,name=node_address,json=nodeAddress,proto3" json:"node_address,omitempty" yaml:"node_address"`
+	// Field 3: Identifier of the event.
+	ID uint64 `protobuf:"varint,3,opt,name=id,proto3" json:"id,omitempty" yaml:"id"`
+	// Field 4: Identifier of the plan associated with the event.
+	PlanID uint64 `protobuf:"varint,4,opt,name=plan_id,json=planId,proto3" json:"plan_id,omitempty" yaml:"plan_id"`
+	// Field 5: Identifier of the subscription associated with the event.
 	SubscriptionID uint64 `protobuf:"varint,5,opt,name=subscription_id,json=subscriptionId,proto3" json:"subscription_id,omitempty" yaml:"subscription_id"`
 }
 
@@ -65,11 +71,17 @@ func (m *EventStart) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_EventStart proto.InternalMessageInfo
 
+// EventUpdateDetails represents an event signaling an update in subscription details.
 type EventUpdateDetails struct {
-	Address        string `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty" yaml:"address"`
-	NodeAddress    string `protobuf:"bytes,2,opt,name=node_address,json=nodeAddress,proto3" json:"node_address,omitempty" yaml:"node_address"`
-	ID             uint64 `protobuf:"varint,3,opt,name=id,proto3" json:"id,omitempty" yaml:"id"`
-	PlanID         uint64 `protobuf:"varint,4,opt,name=plan_id,json=planId,proto3" json:"plan_id,omitempty" yaml:"plan_id"`
+	// Field 1: Address associated with the event.
+	Address string `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty" yaml:"address"`
+	// Field 2: Node address associated with the event.
+	NodeAddress string `protobuf:"bytes,2,opt,name=node_address,json=nodeAddress,proto3" json:"node_address,omitempty" yaml:"node_address"`
+	// Field 3: Identifier of the event.
+	ID uint64 `protobuf:"varint,3,opt,name=id,proto3" json:"id,omitempty" yaml:"id"`
+	// Field 4: Identifier of the plan associated with the event.
+	PlanID uint64 `protobuf:"varint,4,opt,name=plan_id,json=planId,proto3" json:"plan_id,omitempty" yaml:"plan_id"`
+	// Field 5: Identifier of the subscription associated with the event.
 	SubscriptionID uint64 `protobuf:"varint,5,opt,name=subscription_id,json=subscriptionId,proto3" json:"subscription_id,omitempty" yaml:"subscription_id"`
 }
 
@@ -106,13 +118,20 @@ func (m *EventUpdateDetails) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_EventUpdateDetails proto.InternalMessageInfo
 
+// EventUpdateStatus represents an event signaling an update in subscription status.
 type EventUpdateStatus struct {
-	Status         types.Status `protobuf:"varint,1,opt,name=status,proto3,enum=sentinel.types.v1.Status" json:"status,omitempty" yaml:"status"`
-	Address        string       `protobuf:"bytes,2,opt,name=address,proto3" json:"address,omitempty" yaml:"address"`
-	NodeAddress    string       `protobuf:"bytes,3,opt,name=node_address,json=nodeAddress,proto3" json:"node_address,omitempty" yaml:"node_address"`
-	ID             uint64       `protobuf:"varint,4,opt,name=id,proto3" json:"id,omitempty" yaml:"id"`
-	PlanID         uint64       `protobuf:"varint,5,opt,name=plan_id,json=planId,proto3" json:"plan_id,omitempty" yaml:"plan_id"`
-	SubscriptionID uint64       `protobuf:"varint,6,opt,name=subscription_id,json=subscriptionId,proto3" json:"subscription_id,omitempty" yaml:"subscription_id"`
+	// Field 1: Status associated with the event.
+	Status types.Status `protobuf:"varint,1,opt,name=status,proto3,enum=sentinel.types.v1.Status" json:"status,omitempty" yaml:"status"`
+	// Field 2: Address associated with the event.
+	Address string `protobuf:"bytes,2,opt,name=address,proto3" json:"address,omitempty" yaml:"address"`
+	// Field 3: Node address associated with the event.
+	NodeAddress string `protobuf:"bytes,3,opt,name=node_address,json=nodeAddress,proto3" json:"node_address,omitempty" yaml:"node_address"`
+	// Field 4: Identifier of the event.
+	ID uint64 `protobuf:"varint,4,opt,name=id,proto3" json:"id,omitempty" yaml:"id"`
+	// Field 5: Identifier of the plan associated with the event.
+	PlanID uint64 `protobuf:"varint,5,opt,name=plan_id,json=planId,proto3" json:"plan_id,omitempty" yaml:"plan_id"`
+	// Field 6: Identifier of the subscription associated with the event.
+	SubscriptionID uint64 `protobuf:"varint,6,opt,name=subscription_id,json=subscriptionId,proto3" json:"subscription_id,omitempty" yaml:"subscription_id"`
 }
 
 func (m *EventUpdateStatus) Reset()         { *m = EventUpdateStatus{} }

@@ -27,9 +27,12 @@ var _ = time.Kitchen
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
+// Params represents the parameters for the sessions module.
 type Params struct {
-	StatusChangeDelay        time.Duration `protobuf:"bytes,1,opt,name=status_change_delay,json=statusChangeDelay,proto3,stdduration" json:"status_change_delay"`
-	ProofVerificationEnabled bool          `protobuf:"varint,2,opt,name=proof_verification_enabled,json=proofVerificationEnabled,proto3" json:"proof_verification_enabled,omitempty"`
+	// Field 1: Duration for status change delay.
+	StatusChangeDelay time.Duration `protobuf:"bytes,1,opt,name=status_change_delay,json=statusChangeDelay,proto3,stdduration" json:"status_change_delay"`
+	// Field 2: Flag indicating whether proof verification is enabled.
+	ProofVerificationEnabled bool `protobuf:"varint,2,opt,name=proof_verification_enabled,json=proofVerificationEnabled,proto3" json:"proof_verification_enabled,omitempty"`
 }
 
 func (m *Params) Reset()         { *m = Params{} }

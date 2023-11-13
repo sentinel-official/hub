@@ -9,7 +9,13 @@ option go_package = "github.com/sentinel-official/hub/v1/x/node/types";
 option (gogoproto.equal_all) = false;
 option (gogoproto.goproto_getters_all) = false;
 
+// GenesisState represents the genesis state for the module.
 message GenesisState {
+  // Field 1: List of nodes included in the genesis state.
+  // - (gogoproto.nullable) = false: Field is not nullable.
   repeated Node nodes = 1 [(gogoproto.nullable) = false];
+
+  // Field 2: Parameters associated with the genesis state.
+  // - (gogoproto.nullable) = false: Field is not nullable.
   Params params = 2 [(gogoproto.nullable) = false];
 }

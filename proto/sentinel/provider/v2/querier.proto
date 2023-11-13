@@ -12,39 +12,58 @@ option go_package = "github.com/sentinel-official/hub/v1/x/provider/types";
 option (gogoproto.equal_all) = false;
 option (gogoproto.goproto_getters_all) = false;
 
+// QueryProvidersRequest represents a request to query providers with optional pagination and status filter.
 message QueryProvidersRequest {
+  // Field 1: Pagination parameters for the query.
   cosmos.base.query.v1beta1.PageRequest pagination = 1;
+
+  // Field 2: Status filter for querying providers.
   sentinel.types.v1.Status status = 2;
 }
 
+// QueryProviderRequest represents a request to query a specific provider by address.
 message QueryProviderRequest {
+  // Field 1: Address of the provider to be queried.
   string address = 1;
 }
 
+// QueryParamsRequest represents a request to query parameters for providers.
 message QueryParamsRequest {}
 
+// QueryProvidersResponse represents the response to a query for providers.
 message QueryProvidersResponse {
+  // Field 1: List of providers returned in the response.
   repeated Provider providers = 1 [(gogoproto.nullable) = false];
+
+  // Field 2: Pagination details for the response.
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
+// QueryProviderResponse represents the response to a query for a specific provider.
 message QueryProviderResponse {
+  // Field 1: The queried provider.
   Provider provider = 1 [(gogoproto.nullable) = false];
 }
 
+// QueryParamsResponse represents the response to a query for provider parameters.
 message QueryParamsResponse {
+  // Field 1: Parameters for providers returned in the response.
   Params params = 1 [(gogoproto.nullable) = false];
 }
 
+// QueryService is the service definition for the provider module's queries.
 service QueryService {
+  // RPC method for querying providers with optional pagination and status filter.
   rpc QueryProviders(QueryProvidersRequest) returns (QueryProvidersResponse) {
     option (google.api.http).get = "/sentinel/providers";
   }
 
+  // RPC method for querying a specific provider by address.
   rpc QueryProvider(QueryProviderRequest) returns (QueryProviderResponse) {
     option (google.api.http).get = "/sentinel/providers/{address}";
   }
 
+  // RPC method for querying parameters for providers.
   rpc QueryParams(QueryParamsRequest) returns (QueryParamsResponse) {
     option (google.api.http).get = "/sentinel/params/provider";
   }

@@ -9,32 +9,72 @@ option go_package = "github.com/sentinel-official/hub/v1/x/node/types";
 option (gogoproto.equal_all) = false;
 option (gogoproto.goproto_getters_all) = false;
 
+// Params represents a message for handling node parameters.
 message Params {
+  // Field 1: Deposit required for registering a node.
+  // - (gogoproto.nullable) = false: Field is not nullable.
   cosmos.base.v1beta1.Coin deposit = 1 [(gogoproto.nullable) = false];
+
+  // Field 2: Duration for which a node remains active.
+  // - (gogoproto.nullable) = false: Field is not nullable.
+  // - (gogoproto.stdduration) = true: Use standard duration representation for Go.
   google.protobuf.Duration active_duration = 2 [
     (gogoproto.nullable) = false,
     (gogoproto.stdduration) = true
   ];
+
+  // Field 3: Maximum prices in gigabytes for a node's subscription.
+  // - (gogoproto.nullable) = false: Field is not nullable.
+  // - (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins":
+  //   Type to cast to when repeating this field.
   repeated cosmos.base.v1beta1.Coin max_gigabyte_prices = 3 [
     (gogoproto.nullable) = false,
     (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
   ];
+
+  // Field 4: Minimum prices in gigabytes for a node's subscription.
+  // - (gogoproto.nullable) = false: Field is not nullable.
+  // - (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins":
+  //   Type to cast to when repeating this field.
   repeated cosmos.base.v1beta1.Coin min_gigabyte_prices = 4 [
     (gogoproto.nullable) = false,
     (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
   ];
+
+  // Field 5: Maximum prices in hours for a node's subscription.
+  // - (gogoproto.nullable) = false: Field is not nullable.
+  // - (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins":
+  //   Type to cast to when repeating this field.
   repeated cosmos.base.v1beta1.Coin max_hourly_prices = 5 [
     (gogoproto.nullable) = false,
     (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
   ];
+
+  // Field 6: Minimum prices in hours for a node's subscription.
+  // - (gogoproto.nullable) = false: Field is not nullable.
+  // - (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins":
+  //   Type to cast to when repeating this field.
   repeated cosmos.base.v1beta1.Coin min_hourly_prices = 6 [
     (gogoproto.nullable) = false,
     (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
   ];
+
+  // Field 7: Maximum gigabytes allowed for a subscription.
   int64 max_subscription_gigabytes = 7;
+
+  // Field 8: Minimum gigabytes required for a subscription.
   int64 min_subscription_gigabytes = 8;
+
+  // Field 9: Maximum hours allowed for a subscription.
   int64 max_subscription_hours = 9;
+
+  // Field 10: Minimum hours required for a subscription.
   int64 min_subscription_hours = 10;
+
+  // Field 11: Staking share required for a node.
+  // - (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec":
+  //   Custom type definition for the field.
+  // - (gogoproto.nullable) = false: Field is not nullable.
   string staking_share = 11 [
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
     (gogoproto.nullable) = false

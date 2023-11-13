@@ -8,8 +8,15 @@ option go_package = "github.com/sentinel-official/hub/v1/x/deposit/types";
 option (gogoproto.equal_all) = false;
 option (gogoproto.goproto_getters_all) = false;
 
+// Deposit represents a message for handling deposits.
 message Deposit {
+  // Field 1: Deposit address represented as a string.
   string address = 1;
+
+  // Field 2: List of coins involved in the deposit.
+  // - (gogoproto.nullable) = false: Field is not nullable.
+  // - (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins":
+  //   Type to cast to when repeating this field.
   repeated cosmos.base.v1beta1.Coin coins = 2 [
     (gogoproto.nullable) = false,
     (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"

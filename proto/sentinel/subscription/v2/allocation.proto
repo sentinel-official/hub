@@ -7,13 +7,21 @@ option go_package = "github.com/sentinel-official/hub/v1/x/subscription/types";
 option (gogoproto.equal_all) = false;
 option (gogoproto.goproto_getters_all) = false;
 
+// Allocation represents an allocation.
 message Allocation {
+  // Field 1: Allocation ID.
   uint64 id = 1 [(gogoproto.customname) = "ID"];
+
+  // Field 2: Account address.
   string address = 2;
+
+  // Field 3: Granted bytes.
   string granted_bytes = 3 [
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
     (gogoproto.nullable) = false
   ];
+
+  // Field 4: Utilized bytes.
   string utilised_bytes = 4 [
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
     (gogoproto.nullable) = false

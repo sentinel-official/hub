@@ -27,7 +27,10 @@ var _ = time.Kitchen
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
+// Params represents the configurable parameters for subscription status changes.
 type Params struct {
+	// Field 1: status_change_delay specifies the duration before a subscription status change takes effect.
+	// The value is a duration specified in the standard Duration format.
 	StatusChangeDelay time.Duration `protobuf:"bytes,1,opt,name=status_change_delay,json=statusChangeDelay,proto3,stdduration" json:"status_change_delay"`
 }
 

@@ -11,21 +11,39 @@ option go_package = "github.com/sentinel-official/hub/v1/x/session/types";
 option (gogoproto.equal_all) = false;
 option (gogoproto.goproto_getters_all) = false;
 
+// Session represents a session.
 message Session {
+  // Field 1: Session ID.
   uint64 id = 1 [(gogoproto.customname) = "ID"];
+
+  // Field 2: Subscription ID.
   uint64 subscription_id = 2 [(gogoproto.customname) = "SubscriptionID"];
+
+  // Field 3: Node address.
   string node_address = 3;
+
+  // Field 4: Account address.
   string address = 4;
+
+  // Field 5: Bandwidth details.
   sentinel.types.v1.Bandwidth bandwidth = 5 [(gogoproto.nullable) = false];
+
+  // Field 6: Session duration.
   google.protobuf.Duration duration = 6 [
     (gogoproto.stdduration) = true,
     (gogoproto.nullable) = false
   ];
+
+  // Field 7: Inactive timestamp.
   google.protobuf.Timestamp inactive_at = 7 [
     (gogoproto.nullable) = false,
     (gogoproto.stdtime) = true
   ];
+
+  // Field 8: Session status.
   sentinel.types.v1.Status status = 8;
+
+  // Field 9: Status timestamp.
   google.protobuf.Timestamp status_at = 9 [
     (gogoproto.nullable) = false,
     (gogoproto.stdtime) = true

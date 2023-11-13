@@ -29,12 +29,16 @@ var _ = time.Kitchen
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
+// SubscriptionType represents the type of a subscription.
 type SubscriptionType int32
 
 const (
+	// TYPE_UNSPECIFIED indicates an unspecified subscription type.
 	TypeUnspecified SubscriptionType = 0
-	TypeNode        SubscriptionType = 1
-	TypePlan        SubscriptionType = 2
+	// TYPE_NODE indicates a subscription associated with a node.
+	TypeNode SubscriptionType = 1
+	// TYPE_PLAN indicates a subscription associated with a plan.
+	TypePlan SubscriptionType = 2
 )
 
 var SubscriptionType_name = map[int32]string{
@@ -57,12 +61,18 @@ func (SubscriptionType) EnumDescriptor() ([]byte, []int) {
 	return fileDescriptor_f6350e663da1ca66, []int{0}
 }
 
+// BaseSubscription represents the common base for different subscription types.
 type BaseSubscription struct {
-	ID         uint64       `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
-	Address    string       `protobuf:"bytes,2,opt,name=address,proto3" json:"address,omitempty"`
-	InactiveAt time.Time    `protobuf:"bytes,3,opt,name=inactive_at,json=inactiveAt,proto3,stdtime" json:"inactive_at"`
-	Status     types.Status `protobuf:"varint,4,opt,name=status,proto3,enum=sentinel.types.v1.Status" json:"status,omitempty"`
-	StatusAt   time.Time    `protobuf:"bytes,5,opt,name=status_at,json=statusAt,proto3,stdtime" json:"status_at"`
+	// Field 1: Unique identifier for the subscription.
+	ID uint64 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	// Field 2: Address associated with the subscription.
+	Address string `protobuf:"bytes,2,opt,name=address,proto3" json:"address,omitempty"`
+	// Field 3: Timestamp indicating when the subscription became inactive.
+	InactiveAt time.Time `protobuf:"bytes,3,opt,name=inactive_at,json=inactiveAt,proto3,stdtime" json:"inactive_at"`
+	// Field 4: Status of the subscription.
+	Status types.Status `protobuf:"varint,4,opt,name=status,proto3,enum=sentinel.types.v1.Status" json:"status,omitempty"`
+	// Field 5: Timestamp indicating when the subscription status was last updated.
+	StatusAt time.Time `protobuf:"bytes,5,opt,name=status_at,json=statusAt,proto3,stdtime" json:"status_at"`
 }
 
 func (m *BaseSubscription) Reset()         { *m = BaseSubscription{} }
@@ -98,12 +108,19 @@ func (m *BaseSubscription) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_BaseSubscription proto.InternalMessageInfo
 
+// NodeSubscription represents a subscription associated with a node.
 type NodeSubscription struct {
+	// Field 1: Common base subscription information.
 	*BaseSubscription `protobuf:"bytes,1,opt,name=base,proto3,embedded=base" json:"base,omitempty"`
-	NodeAddress       string      `protobuf:"bytes,2,opt,name=node_address,json=nodeAddress,proto3" json:"node_address,omitempty"`
-	Gigabytes         int64       `protobuf:"varint,3,opt,name=gigabytes,proto3" json:"gigabytes,omitempty"`
-	Hours             int64       `protobuf:"varint,4,opt,name=hours,proto3" json:"hours,omitempty"`
-	Deposit           types1.Coin `protobuf:"bytes,5,opt,name=deposit,proto3" json:"deposit"`
+	// Field 2: Node address associated with the subscription.
+	NodeAddress string `protobuf:"bytes,2,opt,name=node_address,json=nodeAddress,proto3" json:"node_address,omitempty"`
+	// Field 3: Number of gigabytes associated with the subscription.
+	Gigabytes int64 `protobuf:"varint,3,opt,name=gigabytes,proto3" json:"gigabytes,omitempty"`
+	// Field 4: Duration, in hours, for which the subscription is active.
+	Hours int64 `protobuf:"varint,4,opt,name=hours,proto3" json:"hours,omitempty"`
+	// Field 5: Deposit required for the subscription, represented as a Cosmos Coin.
+	// This field is not nullable.
+	Deposit types1.Coin `protobuf:"bytes,5,opt,name=deposit,proto3" json:"deposit"`
 }
 
 func (m *NodeSubscription) Reset()         { *m = NodeSubscription{} }
@@ -139,10 +156,14 @@ func (m *NodeSubscription) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_NodeSubscription proto.InternalMessageInfo
 
+// PlanSubscription represents a subscription associated with a plan.
 type PlanSubscription struct {
+	// Field 1: Common base subscription information.
 	*BaseSubscription `protobuf:"bytes,1,opt,name=base,proto3,embedded=base" json:"base,omitempty"`
-	PlanID            uint64 `protobuf:"varint,2,opt,name=plan_id,json=planId,proto3" json:"plan_id,omitempty"`
-	Denom             string `protobuf:"bytes,3,opt,name=denom,proto3" json:"denom,omitempty"`
+	// Field 2: Unique identifier for the plan associated with the subscription.
+	PlanID uint64 `protobuf:"varint,2,opt,name=plan_id,json=planId,proto3" json:"plan_id,omitempty"`
+	// Field 3: Denomination associated with the subscription.
+	Denom string `protobuf:"bytes,3,opt,name=denom,proto3" json:"denom,omitempty"`
 }
 
 func (m *PlanSubscription) Reset()         { *m = PlanSubscription{} }

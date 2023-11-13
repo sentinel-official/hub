@@ -8,7 +8,10 @@ option go_package = "github.com/sentinel-official/hub/v1/x/subscription/types";
 option (gogoproto.equal_all) = false;
 option (gogoproto.goproto_getters_all) = false;
 
+// Params represents the configurable parameters for subscription status changes.
 message Params {
+  // Field 1: status_change_delay specifies the duration before a subscription status change takes effect.
+  // The value is a duration specified in the standard Duration format.
   google.protobuf.Duration status_change_delay = 1 [
     (gogoproto.nullable) = false,
     (gogoproto.stdduration) = true

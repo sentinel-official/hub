@@ -11,44 +11,72 @@ option go_package = "github.com/sentinel-official/hub/v1/x/plan/types";
 option (gogoproto.equal_all) = false;
 option (gogoproto.goproto_getters_all) = false;
 
+// QueryPlansRequest defines the request for querying subscription plans.
 message QueryPlansRequest {
+  // Field 1: Status filter for subscription plans.
   sentinel.types.v1.Status status = 1;
+
+  // Field 2: Pagination information.
   cosmos.base.query.v1beta1.PageRequest pagination = 2;
 }
 
+// QueryPlansForProviderRequest defines the request for querying subscription plans
+// associated with a provider.
 message QueryPlansForProviderRequest {
+  // Field 1: Provider's address for filtering subscription plans.
   string address = 1;
+
+  // Field 2: Status filter for subscription plans.
   sentinel.types.v1.Status status = 2;
+
+  // Field 3: Pagination information.
   cosmos.base.query.v1beta1.PageRequest pagination = 3;
 }
 
+// QueryPlanRequest defines the request for querying a specific subscription plan.
 message QueryPlanRequest {
+  // Field 1: Identifier of the subscription plan.
   uint64 id = 1;
 }
 
+// QueryPlansResponse defines the response for querying subscription plans.
 message QueryPlansResponse {
+  // Field 1: List of subscription plans.
   repeated Plan plans = 1 [(gogoproto.nullable) = false];
+
+  // Field 2: Pagination information.
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
+// QueryPlansForProviderResponse defines the response for querying subscription
+// plans associated with a provider.
 message QueryPlansForProviderResponse {
+  // Field 1: List of subscription plans.
   repeated Plan plans = 1 [(gogoproto.nullable) = false];
+
+  // Field 2: Pagination information.
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
+// QueryPlanResponse defines the response for querying a specific subscription plan.
 message QueryPlanResponse {
+  // Field 1: Subscription plan information.
   Plan plan = 1 [(gogoproto.nullable) = false];
 }
 
+// QueryService is the service definition for subscription plan queries.
 service QueryService {
+  // RPC method for querying all subscription plans.
   rpc QueryPlans(QueryPlansRequest) returns (QueryPlansResponse) {
     option (google.api.http).get = "/sentinel/plans";
   }
 
+  // RPC method for querying subscription plans associated with a provider.
   rpc QueryPlansForProvider(QueryPlansForProviderRequest) returns (QueryPlansForProviderResponse) {
     option (google.api.http).get = "/sentinel/providers/{address}/plans";
   }
 
+  // RPC method for querying a specific subscription plan.
   rpc QueryPlan(QueryPlanRequest) returns (QueryPlanResponse) {
     option (google.api.http).get = "/sentinel/plans/{id}";
   }

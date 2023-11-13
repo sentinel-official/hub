@@ -9,12 +9,26 @@ option go_package = "github.com/sentinel-official/hub/v1/x/subscription/types";
 option (gogoproto.equal_all) = false;
 option (gogoproto.goproto_getters_all) = false;
 
+// Payout represents information about a payout.
 message Payout {
+  // Field 1: Unique identifier for the payout.
   uint64 id = 1 [(gogoproto.customname) = "ID"];
+
+  // Field 2: Address associated with the payout.
   string address = 2;
+
+  // Field 3: Node address associated with the payout.
   string node_address = 3;
+
+  // Field 4: Duration, in hours, for which the payout is calculated.
   int64 hours = 4;
+
+  // Field 5: Price of the payout, represented as a Cosmos Coin.
+  // This field is not nullable.
   cosmos.base.v1beta1.Coin price = 5 [(gogoproto.nullable) = false];
+
+  // Field 6: Timestamp indicating when the next payout is scheduled.
+  // This field is not nullable and is represented using the standard Timestamp format.
   google.protobuf.Timestamp next_at = 6 [
     (gogoproto.nullable) = false,
     (gogoproto.stdtime) = true

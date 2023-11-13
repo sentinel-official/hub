@@ -7,31 +7,44 @@ option go_package = "github.com/sentinel-official/hub/v1/x/subscription/types";
 option (gogoproto.equal_all) = false;
 option (gogoproto.goproto_getters_all) = false;
 
-// MsgCancelRequest defines the SDK message for cancelling a subscription
+// MsgCancelRequest defines the SDK message for cancelling a subscription.
 message MsgCancelRequest {
+  // Field 1: Address initiating the cancel request.
   string from = 1;
+
+  // Field 2: Unique identifier for the subscription to be cancelled.
   uint64 id = 2 [(gogoproto.customname) = "ID"];
 }
 
-// MsgAllocateRequest defines the SDK message for allocating the bytes of a
-// subscription for an address
+// MsgAllocateRequest defines the SDK message for allocating bytes of a subscription for an address.
 message MsgAllocateRequest {
+  // Field 1: Address initiating the allocate request.
   string from = 1;
+
+  // Field 2: Unique identifier for the subscription.
   uint64 id = 2 [(gogoproto.customname) = "ID"];
+
+  // Field 3: Address for which bytes are allocated.
   string address = 3;
+
+  // Field 4: Number of bytes to allocate.
   string bytes = 4 [
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
     (gogoproto.nullable) = false
   ];
 }
 
-// MsgCancelResponse defines the response of message MsgCancelRequest
+// MsgCancelResponse defines the response of message MsgCancelRequest.
 message MsgCancelResponse {}
 
-// MsgAllocateResponse defines the response of message MsgAllocateRequest
+// MsgAllocateResponse defines the response of message MsgAllocateRequest.
 message MsgAllocateResponse {}
 
+// MsgService defines the gRPC service for subscription-related messages.
 service MsgService {
+  // RPC method for cancelling a subscription.
   rpc MsgCancel(MsgCancelRequest) returns (MsgCancelResponse);
+
+  // RPC method for allocating bytes of a subscription for an address.
   rpc MsgAllocate(MsgAllocateRequest) returns (MsgAllocateResponse);
 }

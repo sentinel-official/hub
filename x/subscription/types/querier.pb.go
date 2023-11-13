@@ -31,7 +31,9 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
+// QuerySubscriptionsRequest represents the request for querying subscriptions.
 type QuerySubscriptionsRequest struct {
+	// Field 1: Pagination options for the query.
 	Pagination *query.PageRequest `protobuf:"bytes,1,opt,name=pagination,proto3" json:"pagination,omitempty"`
 }
 
@@ -68,8 +70,11 @@ func (m *QuerySubscriptionsRequest) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QuerySubscriptionsRequest proto.InternalMessageInfo
 
+// QuerySubscriptionsForAccountRequest represents the request for querying subscriptions for a specific account.
 type QuerySubscriptionsForAccountRequest struct {
-	Address    string             `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
+	// Field 1: Address of the account for which subscriptions are queried.
+	Address string `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
+	// Field 2: Pagination options for the query.
 	Pagination *query.PageRequest `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
 }
 
@@ -106,8 +111,11 @@ func (m *QuerySubscriptionsForAccountRequest) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QuerySubscriptionsForAccountRequest proto.InternalMessageInfo
 
+// QuerySubscriptionsForNodeRequest represents the request for querying subscriptions for a specific node.
 type QuerySubscriptionsForNodeRequest struct {
-	Address    string             `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
+	// Field 1: Address of the node for which subscriptions are queried.
+	Address string `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
+	// Field 2: Pagination options for the query.
 	Pagination *query.PageRequest `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
 }
 
@@ -144,8 +152,11 @@ func (m *QuerySubscriptionsForNodeRequest) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QuerySubscriptionsForNodeRequest proto.InternalMessageInfo
 
+// QuerySubscriptionsForPlanRequest represents the request for querying subscriptions for a specific plan.
 type QuerySubscriptionsForPlanRequest struct {
-	Id         uint64             `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	// Field 1: Unique identifier for the plan for which subscriptions are queried.
+	Id uint64 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	// Field 2: Pagination options for the query.
 	Pagination *query.PageRequest `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
 }
 
@@ -182,7 +193,9 @@ func (m *QuerySubscriptionsForPlanRequest) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QuerySubscriptionsForPlanRequest proto.InternalMessageInfo
 
+// QuerySubscriptionRequest represents the request for querying a specific subscription.
 type QuerySubscriptionRequest struct {
+	// Field 1: Unique identifier for the subscription being queried.
 	Id uint64 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 }
 
@@ -219,8 +232,11 @@ func (m *QuerySubscriptionRequest) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QuerySubscriptionRequest proto.InternalMessageInfo
 
+// QueryAllocationRequest represents the request for querying a specific allocation.
 type QueryAllocationRequest struct {
-	Id      uint64 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	// Field 1: Unique identifier for the subscription associated with the allocation.
+	Id uint64 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	// Field 2: Address for which the allocation is queried.
 	Address string `protobuf:"bytes,2,opt,name=address,proto3" json:"address,omitempty"`
 }
 
@@ -257,8 +273,11 @@ func (m *QueryAllocationRequest) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QueryAllocationRequest proto.InternalMessageInfo
 
+// QueryAllocationsRequest represents the request for querying allocations associated with a subscription.
 type QueryAllocationsRequest struct {
-	Id         uint64             `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	// Field 1: Unique identifier for the subscription for which allocations are queried.
+	Id uint64 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	// Field 2: Pagination options for the query.
 	Pagination *query.PageRequest `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
 }
 
@@ -295,7 +314,9 @@ func (m *QueryAllocationsRequest) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QueryAllocationsRequest proto.InternalMessageInfo
 
+// QueryPayoutsRequest represents the request for querying payouts.
 type QueryPayoutsRequest struct {
+	// Field 1: Pagination options for the query.
 	Pagination *query.PageRequest `protobuf:"bytes,1,opt,name=pagination,proto3" json:"pagination,omitempty"`
 }
 
@@ -332,8 +353,11 @@ func (m *QueryPayoutsRequest) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QueryPayoutsRequest proto.InternalMessageInfo
 
+// QueryPayoutsForAccountRequest represents the request for querying payouts for a specific account.
 type QueryPayoutsForAccountRequest struct {
-	Address    string             `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
+	// Field 1: Address of the account for which payouts are queried.
+	Address string `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
+	// Field 2: Pagination options for the query.
 	Pagination *query.PageRequest `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
 }
 
@@ -370,8 +394,11 @@ func (m *QueryPayoutsForAccountRequest) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QueryPayoutsForAccountRequest proto.InternalMessageInfo
 
+// QueryPayoutsForNodeRequest represents the request for querying payouts for a specific node.
 type QueryPayoutsForNodeRequest struct {
-	Address    string             `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
+	// Field 1: Address of the node for which payouts are queried.
+	Address string `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
+	// Field 2: Pagination options for the query.
 	Pagination *query.PageRequest `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
 }
 
@@ -408,7 +435,9 @@ func (m *QueryPayoutsForNodeRequest) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QueryPayoutsForNodeRequest proto.InternalMessageInfo
 
+// QueryPayoutRequest represents the request for querying a specific payout.
 type QueryPayoutRequest struct {
+	// Field 1: Unique identifier for the payout being queried.
 	Id uint64 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 }
 
@@ -445,6 +474,7 @@ func (m *QueryPayoutRequest) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QueryPayoutRequest proto.InternalMessageInfo
 
+// QueryParamsRequest represents the request for querying subscription module parameters.
 type QueryParamsRequest struct {
 }
 
@@ -481,9 +511,12 @@ func (m *QueryParamsRequest) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QueryParamsRequest proto.InternalMessageInfo
 
+// QuerySubscriptionsResponse represents the response for querying subscriptions.
 type QuerySubscriptionsResponse struct {
-	Subscriptions []*types.Any        `protobuf:"bytes,1,rep,name=subscriptions,proto3" json:"subscriptions,omitempty"`
-	Pagination    *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+	// Field 1: List of serialized subscription information.
+	Subscriptions []*types.Any `protobuf:"bytes,1,rep,name=subscriptions,proto3" json:"subscriptions,omitempty"`
+	// Field 2: Pagination information for the response.
+	Pagination *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
 }
 
 func (m *QuerySubscriptionsResponse) Reset()         { *m = QuerySubscriptionsResponse{} }
@@ -519,9 +552,12 @@ func (m *QuerySubscriptionsResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QuerySubscriptionsResponse proto.InternalMessageInfo
 
+// QuerySubscriptionsForAccountResponse represents the response for querying subscriptions for a specific account.
 type QuerySubscriptionsForAccountResponse struct {
-	Subscriptions []*types.Any        `protobuf:"bytes,1,rep,name=subscriptions,proto3" json:"subscriptions,omitempty"`
-	Pagination    *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+	// Field 1: List of serialized subscription information.
+	Subscriptions []*types.Any `protobuf:"bytes,1,rep,name=subscriptions,proto3" json:"subscriptions,omitempty"`
+	// Field 2: Pagination information for the response.
+	Pagination *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
 }
 
 func (m *QuerySubscriptionsForAccountResponse) Reset()         { *m = QuerySubscriptionsForAccountResponse{} }
@@ -557,9 +593,12 @@ func (m *QuerySubscriptionsForAccountResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QuerySubscriptionsForAccountResponse proto.InternalMessageInfo
 
+// QuerySubscriptionsForNodeResponse represents the response for querying subscriptions for a specific node.
 type QuerySubscriptionsForNodeResponse struct {
-	Subscriptions []*types.Any        `protobuf:"bytes,1,rep,name=subscriptions,proto3" json:"subscriptions,omitempty"`
-	Pagination    *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+	// Field 1: List of serialized subscription information.
+	Subscriptions []*types.Any `protobuf:"bytes,1,rep,name=subscriptions,proto3" json:"subscriptions,omitempty"`
+	// Field 2: Pagination information for the response.
+	Pagination *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
 }
 
 func (m *QuerySubscriptionsForNodeResponse) Reset()         { *m = QuerySubscriptionsForNodeResponse{} }
@@ -595,9 +634,12 @@ func (m *QuerySubscriptionsForNodeResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QuerySubscriptionsForNodeResponse proto.InternalMessageInfo
 
+// QuerySubscriptionsForPlanResponse represents the response for querying subscriptions for a specific plan.
 type QuerySubscriptionsForPlanResponse struct {
-	Subscriptions []*types.Any        `protobuf:"bytes,1,rep,name=subscriptions,proto3" json:"subscriptions,omitempty"`
-	Pagination    *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+	// Field 1: List of serialized subscription information.
+	Subscriptions []*types.Any `protobuf:"bytes,1,rep,name=subscriptions,proto3" json:"subscriptions,omitempty"`
+	// Field 2: Pagination information for the response.
+	Pagination *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
 }
 
 func (m *QuerySubscriptionsForPlanResponse) Reset()         { *m = QuerySubscriptionsForPlanResponse{} }
@@ -633,7 +675,9 @@ func (m *QuerySubscriptionsForPlanResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QuerySubscriptionsForPlanResponse proto.InternalMessageInfo
 
+// QuerySubscriptionResponse represents the response for querying a specific subscription.
 type QuerySubscriptionResponse struct {
+	// Field 1: Serialized subscription information.
 	Subscription *types.Any `protobuf:"bytes,1,opt,name=subscription,proto3" json:"subscription,omitempty"`
 }
 
@@ -670,7 +714,9 @@ func (m *QuerySubscriptionResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QuerySubscriptionResponse proto.InternalMessageInfo
 
+// QueryAllocationResponse represents the response for querying a specific allocation.
 type QueryAllocationResponse struct {
+	// Field 1: Allocation information.
 	Allocation Allocation `protobuf:"bytes,1,opt,name=allocation,proto3" json:"allocation"`
 }
 
@@ -707,9 +753,12 @@ func (m *QueryAllocationResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QueryAllocationResponse proto.InternalMessageInfo
 
+// QueryAllocationsResponse represents the response for querying allocations associated with a subscription.
 type QueryAllocationsResponse struct {
-	Allocations []Allocation        `protobuf:"bytes,1,rep,name=allocations,proto3" json:"allocations"`
-	Pagination  *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+	// Field 1: List of allocation information.
+	Allocations []Allocation `protobuf:"bytes,1,rep,name=allocations,proto3" json:"allocations"`
+	// Field 2: Pagination information for the response.
+	Pagination *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
 }
 
 func (m *QueryAllocationsResponse) Reset()         { *m = QueryAllocationsResponse{} }
@@ -745,8 +794,11 @@ func (m *QueryAllocationsResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QueryAllocationsResponse proto.InternalMessageInfo
 
+// QueryPayoutsResponse represents the response for querying payouts.
 type QueryPayoutsResponse struct {
-	Payouts    []Payout            `protobuf:"bytes,1,rep,name=payouts,proto3" json:"payouts"`
+	// Field 1: List of payout information.
+	Payouts []Payout `protobuf:"bytes,1,rep,name=payouts,proto3" json:"payouts"`
+	// Field 2: Pagination information for the response.
 	Pagination *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
 }
 
@@ -783,8 +835,11 @@ func (m *QueryPayoutsResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QueryPayoutsResponse proto.InternalMessageInfo
 
+// QueryPayoutsForAccountResponse represents the response for querying payouts for a specific account.
 type QueryPayoutsForAccountResponse struct {
-	Payouts    []Payout            `protobuf:"bytes,1,rep,name=payouts,proto3" json:"payouts"`
+	// Field 1: List of payout information.
+	Payouts []Payout `protobuf:"bytes,1,rep,name=payouts,proto3" json:"payouts"`
+	// Field 2: Pagination information for the response.
 	Pagination *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
 }
 
@@ -821,8 +876,11 @@ func (m *QueryPayoutsForAccountResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QueryPayoutsForAccountResponse proto.InternalMessageInfo
 
+// QueryPayoutsForNodeResponse represents the response for querying payouts for a specific node.
 type QueryPayoutsForNodeResponse struct {
-	Payouts    []Payout            `protobuf:"bytes,1,rep,name=payouts,proto3" json:"payouts"`
+	// Field 1: List of payout information.
+	Payouts []Payout `protobuf:"bytes,1,rep,name=payouts,proto3" json:"payouts"`
+	// Field 2: Pagination information for the response.
 	Pagination *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
 }
 
@@ -859,7 +917,9 @@ func (m *QueryPayoutsForNodeResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QueryPayoutsForNodeResponse proto.InternalMessageInfo
 
+// QueryPayoutResponse represents the response for querying a specific payout.
 type QueryPayoutResponse struct {
+	// Field 1: Payout information.
 	Payout Payout `protobuf:"bytes,1,opt,name=payout,proto3" json:"payout"`
 }
 
@@ -896,7 +956,9 @@ func (m *QueryPayoutResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QueryPayoutResponse proto.InternalMessageInfo
 
+// QueryParamsResponse represents the response for querying subscription module parameters.
 type QueryParamsResponse struct {
+	// Field 1: Subscription module parameters.
 	Params Params `protobuf:"bytes,1,opt,name=params,proto3" json:"params"`
 }
 
@@ -1049,17 +1111,29 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type QueryServiceClient interface {
+	// RPC method for querying subscriptions.
 	QuerySubscriptions(ctx context.Context, in *QuerySubscriptionsRequest, opts ...grpc.CallOption) (*QuerySubscriptionsResponse, error)
+	// RPC method for querying subscriptions for a specific account.
 	QuerySubscriptionsForAccount(ctx context.Context, in *QuerySubscriptionsForAccountRequest, opts ...grpc.CallOption) (*QuerySubscriptionsForAccountResponse, error)
+	// RPC method for querying subscriptions for a specific node.
 	QuerySubscriptionsForNode(ctx context.Context, in *QuerySubscriptionsForNodeRequest, opts ...grpc.CallOption) (*QuerySubscriptionsForNodeResponse, error)
+	// RPC method for querying subscriptions for a specific plan.
 	QuerySubscriptionsForPlan(ctx context.Context, in *QuerySubscriptionsForPlanRequest, opts ...grpc.CallOption) (*QuerySubscriptionsForPlanResponse, error)
+	// RPC method for querying a specific subscription.
 	QuerySubscription(ctx context.Context, in *QuerySubscriptionRequest, opts ...grpc.CallOption) (*QuerySubscriptionResponse, error)
+	// RPC method for querying allocations associated with a subscription.
 	QueryAllocations(ctx context.Context, in *QueryAllocationsRequest, opts ...grpc.CallOption) (*QueryAllocationsResponse, error)
+	// RPC method for querying a specific allocation.
 	QueryAllocation(ctx context.Context, in *QueryAllocationRequest, opts ...grpc.CallOption) (*QueryAllocationResponse, error)
+	// RPC method for querying payouts.
 	QueryPayouts(ctx context.Context, in *QueryPayoutsRequest, opts ...grpc.CallOption) (*QueryPayoutsResponse, error)
+	// RPC method for querying payouts for a specific account.
 	QueryPayoutsForAccount(ctx context.Context, in *QueryPayoutsForAccountRequest, opts ...grpc.CallOption) (*QueryPayoutsForAccountResponse, error)
+	// RPC method for querying payouts for a specific node.
 	QueryPayoutsForNode(ctx context.Context, in *QueryPayoutsForNodeRequest, opts ...grpc.CallOption) (*QueryPayoutsForNodeResponse, error)
+	// RPC method for querying a specific payout.
 	QueryPayout(ctx context.Context, in *QueryPayoutRequest, opts ...grpc.CallOption) (*QueryPayoutResponse, error)
+	// RPC method for querying subscription module parameters.
 	QueryParams(ctx context.Context, in *QueryParamsRequest, opts ...grpc.CallOption) (*QueryParamsResponse, error)
 }
 
@@ -1181,17 +1255,29 @@ func (c *queryServiceClient) QueryParams(ctx context.Context, in *QueryParamsReq
 
 // QueryServiceServer is the server API for QueryService service.
 type QueryServiceServer interface {
+	// RPC method for querying subscriptions.
 	QuerySubscriptions(context.Context, *QuerySubscriptionsRequest) (*QuerySubscriptionsResponse, error)
+	// RPC method for querying subscriptions for a specific account.
 	QuerySubscriptionsForAccount(context.Context, *QuerySubscriptionsForAccountRequest) (*QuerySubscriptionsForAccountResponse, error)
+	// RPC method for querying subscriptions for a specific node.
 	QuerySubscriptionsForNode(context.Context, *QuerySubscriptionsForNodeRequest) (*QuerySubscriptionsForNodeResponse, error)
+	// RPC method for querying subscriptions for a specific plan.
 	QuerySubscriptionsForPlan(context.Context, *QuerySubscriptionsForPlanRequest) (*QuerySubscriptionsForPlanResponse, error)
+	// RPC method for querying a specific subscription.
 	QuerySubscription(context.Context, *QuerySubscriptionRequest) (*QuerySubscriptionResponse, error)
+	// RPC method for querying allocations associated with a subscription.
 	QueryAllocations(context.Context, *QueryAllocationsRequest) (*QueryAllocationsResponse, error)
+	// RPC method for querying a specific allocation.
 	QueryAllocation(context.Context, *QueryAllocationRequest) (*QueryAllocationResponse, error)
+	// RPC method for querying payouts.
 	QueryPayouts(context.Context, *QueryPayoutsRequest) (*QueryPayoutsResponse, error)
+	// RPC method for querying payouts for a specific account.
 	QueryPayoutsForAccount(context.Context, *QueryPayoutsForAccountRequest) (*QueryPayoutsForAccountResponse, error)
+	// RPC method for querying payouts for a specific node.
 	QueryPayoutsForNode(context.Context, *QueryPayoutsForNodeRequest) (*QueryPayoutsForNodeResponse, error)
+	// RPC method for querying a specific payout.
 	QueryPayout(context.Context, *QueryPayoutRequest) (*QueryPayoutResponse, error)
+	// RPC method for querying subscription module parameters.
 	QueryParams(context.Context, *QueryParamsRequest) (*QueryParamsResponse, error)
 }
 

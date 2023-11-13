@@ -9,7 +9,11 @@ option go_package = "github.com/sentinel-official/hub/v1/x/session/types";
 option (gogoproto.equal_all) = false;
 option (gogoproto.goproto_getters_all) = false;
 
+// GenesisState represents the initial state for the sessions module.
 message GenesisState {
+  // Field 1: List of sessions.
   repeated Session sessions = 1 [(gogoproto.nullable) = false];
+
+  // Field 2: Parameters for the sessions module.
   Params params = 2 [(gogoproto.nullable) = false];
 }

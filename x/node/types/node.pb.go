@@ -30,14 +30,33 @@ var _ = time.Kitchen
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
+// Node represents a message for handling node information.
 type Node struct {
-	Address        string                                   `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
+	// Field 1: Address associated with the node.
+	Address string `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
+	// Field 2: Prices in gigabytes for the node.
+	// - (gogoproto.nullable) = false: Field is not nullable.
+	// - (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins":
+	//   Type to cast to when repeating this field.
 	GigabytePrices github_com_cosmos_cosmos_sdk_types.Coins `protobuf:"bytes,2,rep,name=gigabyte_prices,json=gigabytePrices,proto3,castrepeated=github.com/cosmos/cosmos-sdk/types.Coins" json:"gigabyte_prices"`
-	HourlyPrices   github_com_cosmos_cosmos_sdk_types.Coins `protobuf:"bytes,3,rep,name=hourly_prices,json=hourlyPrices,proto3,castrepeated=github.com/cosmos/cosmos-sdk/types.Coins" json:"hourly_prices"`
-	RemoteURL      string                                   `protobuf:"bytes,4,opt,name=remote_url,json=remoteUrl,proto3" json:"remote_url,omitempty"`
-	InactiveAt     time.Time                                `protobuf:"bytes,5,opt,name=inactive_at,json=inactiveAt,proto3,stdtime" json:"inactive_at"`
-	Status         types1.Status                            `protobuf:"varint,6,opt,name=status,proto3,enum=sentinel.types.v1.Status" json:"status,omitempty"`
-	StatusAt       time.Time                                `protobuf:"bytes,7,opt,name=status_at,json=statusAt,proto3,stdtime" json:"status_at"`
+	// Field 3: Hourly prices for the node.
+	// - (gogoproto.nullable) = false: Field is not nullable.
+	// - (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins":
+	//   Type to cast to when repeating this field.
+	HourlyPrices github_com_cosmos_cosmos_sdk_types.Coins `protobuf:"bytes,3,rep,name=hourly_prices,json=hourlyPrices,proto3,castrepeated=github.com/cosmos/cosmos-sdk/types.Coins" json:"hourly_prices"`
+	// Field 4: Remote URL associated with the node.
+	// - (gogoproto.customname) = "RemoteURL": Custom name for the field.
+	RemoteURL string `protobuf:"bytes,4,opt,name=remote_url,json=remoteUrl,proto3" json:"remote_url,omitempty"`
+	// Field 5: Timestamp indicating when the node became inactive.
+	// - (gogoproto.nullable) = false: Field is not nullable.
+	// - (gogoproto.stdtime) = true: Use standard time representation for Go.
+	InactiveAt time.Time `protobuf:"bytes,5,opt,name=inactive_at,json=inactiveAt,proto3,stdtime" json:"inactive_at"`
+	// Field 6: Status of the node, using the sentinel.types.v1.Status enum.
+	Status types1.Status `protobuf:"varint,6,opt,name=status,proto3,enum=sentinel.types.v1.Status" json:"status,omitempty"`
+	// Field 7: Timestamp indicating when the status of the node was last updated.
+	// - (gogoproto.nullable) = false: Field is not nullable.
+	// - (gogoproto.stdtime) = true: Use standard time representation for Go.
+	StatusAt time.Time `protobuf:"bytes,7,opt,name=status_at,json=statusAt,proto3,stdtime" json:"status_at"`
 }
 
 func (m *Node) Reset()         { *m = Node{} }

@@ -9,66 +9,112 @@ option go_package = "github.com/sentinel-official/hub/v1/x/node/types";
 option (gogoproto.equal_all) = false;
 option (gogoproto.goproto_getters_all) = false;
 
-// MsgRegisterRequest defines the SDK message for registering a node
+// MsgRegisterRequest defines the SDK message for registering a node.
 message MsgRegisterRequest {
+  // Field 1: Sender's address initiating the registration.
   string from = 1;
+
+  // Field 2: Prices in gigabytes for the registered node.
+  // - (gogoproto.nullable) = false: Field is not nullable.
+  // - (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins":
+  //   Type to cast to when repeating this field.
   repeated cosmos.base.v1beta1.Coin gigabyte_prices = 2 [
     (gogoproto.nullable) = false,
     (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
   ];
+
+  // Field 3: Hourly prices for the registered node.
+  // - (gogoproto.nullable) = false: Field is not nullable.
+  // - (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins":
+  //   Type to cast to when repeating this field.
   repeated cosmos.base.v1beta1.Coin hourly_prices = 3 [
     (gogoproto.nullable) = false,
     (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
   ];
+
+  // Field 4: Remote URL associated with the registered node.
+  // - (gogoproto.customname) = "RemoteURL": Custom name for the field.
   string remote_url = 4 [(gogoproto.customname) = "RemoteURL"];
 }
 
-// MsgUpdateDetailsRequest defines the SDK message for updating the node details
+// MsgUpdateDetailsRequest defines the SDK message for updating node details.
 message MsgUpdateDetailsRequest {
+  // Field 1: Sender's address initiating the update.
   string from = 1;
+
+  // Field 2: Updated prices in gigabytes for the node.
+  // - (gogoproto.nullable) = false: Field is not nullable.
+  // - (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins":
+  //   Type to cast to when repeating this field.
   repeated cosmos.base.v1beta1.Coin gigabyte_prices = 2 [
     (gogoproto.nullable) = false,
     (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
   ];
+
+  // Field 3: Updated hourly prices for the node.
+  // - (gogoproto.nullable) = false: Field is not nullable.
+  // - (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins":
+  //   Type to cast to when repeating this field.
   repeated cosmos.base.v1beta1.Coin hourly_prices = 3 [
     (gogoproto.nullable) = false,
     (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
   ];
+
+  // Field 4: Updated remote URL for the node.
+  // - (gogoproto.customname) = "RemoteURL": Custom name for the field.
   string remote_url = 4 [(gogoproto.customname) = "RemoteURL"];
 }
 
-// MsgUpdateStatusRequest defines the SDK message for updating the node status
+// MsgUpdateStatusRequest defines the SDK message for updating node status.
 message MsgUpdateStatusRequest {
+  // Field 1: Sender's address initiating the status update.
   string from = 1;
+
+  // Field 2: New status for the node.
   sentinel.types.v1.Status status = 2;
 }
 
-// MsgSubscribeRequest defines the SDK message for subscribe to a node
+// MsgSubscribeRequest defines the SDK message for subscribing to a node.
 message MsgSubscribeRequest {
+  // Field 1: Sender's address initiating the subscription.
   string from = 1;
+
+  // Field 2: Node address to subscribe to.
   string node_address = 2;
+
+  // Field 3: Number of gigabytes for the subscription.
   int64 gigabytes = 3;
+
+  // Field 4: Number of hours for the subscription.
   int64 hours = 4;
+
+  // Field 5: Denomination for the subscription.
   string denom = 5;
 }
 
-// MsgRegisterResponse defines the response of message MsgRegisterRequest
+// MsgRegisterResponse defines the response of message MsgRegisterRequest.
 message MsgRegisterResponse {}
 
-// MsgUpdateDetailsResponse defines the response of message
-// MsgUpdateDetailsRequest
+// MsgUpdateDetailsResponse defines the response of message MsgUpdateDetailsRequest.
 message MsgUpdateDetailsResponse {}
 
-// MsgUpdateStatusResponse defines the response of message
-// MsgUpdateStatusRequest
+// MsgUpdateStatusResponse defines the response of message MsgUpdateStatusRequest.
 message MsgUpdateStatusResponse {}
 
-// MsgSubscribeResponse defines the response of message MsgSubscribeRequest
+// MsgSubscribeResponse defines the response of message MsgSubscribeRequest.
 message MsgSubscribeResponse {}
 
+// MsgService is the service definition for the node module's messages.
 service MsgService {
+  // RPC method for registering a node.
   rpc MsgRegister(MsgRegisterRequest) returns (MsgRegisterResponse);
+
+  // RPC method for updating node details.
   rpc MsgUpdateDetails(MsgUpdateDetailsRequest) returns (MsgUpdateDetailsResponse);
+
+  // RPC method for updating node status.
   rpc MsgUpdateStatus(MsgUpdateStatusRequest) returns (MsgUpdateStatusResponse);
+
+  // RPC method for subscribing to a node.
   rpc MsgSubscribe(MsgSubscribeRequest) returns (MsgSubscribeResponse);
 }

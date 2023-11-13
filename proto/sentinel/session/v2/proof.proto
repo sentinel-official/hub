@@ -9,9 +9,15 @@ option go_package = "github.com/sentinel-official/hub/v1/x/session/types";
 option (gogoproto.equal_all) = false;
 option (gogoproto.goproto_getters_all) = false;
 
+// Proof represents the proof associated with a session.
 message Proof {
+  // Field 1: Identifier of the proof.
   uint64 id = 1 [(gogoproto.customname) = "ID"];
+
+  // Field 2: Bandwidth information for the proof.
   sentinel.types.v1.Bandwidth bandwidth = 2 [(gogoproto.nullable) = false];
+
+  // Field 3: Duration of the proof.
   google.protobuf.Duration duration = 3 [
     (gogoproto.stdduration) = true,
     (gogoproto.nullable) = false

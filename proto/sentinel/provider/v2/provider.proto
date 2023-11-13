@@ -1,4 +1,5 @@
 syntax = "proto3";
+
 package sentinel.provider.v2;
 
 import "gogoproto/gogo.proto";
@@ -9,13 +10,29 @@ option go_package = "github.com/sentinel-official/hub/v1/x/provider/types";
 option (gogoproto.equal_all) = false;
 option (gogoproto.goproto_getters_all) = false;
 
+// Message representing a provider.
 message Provider {
+  // Field 1: Provider address represented as a string.
   string address = 1;
+
+  // Field 2: Provider name.
   string name = 2;
+
+  // Field 3: Identity of the provider.
   string identity = 3;
+
+  // Field 4: Website associated with the provider.
   string website = 4;
+
+  // Field 5: Description of the provider.
   string description = 5;
+
+  // Field 6: Status of the provider, using the sentinel.types.v1.Status enum.
   sentinel.types.v1.Status status = 6;
+
+  // Field 7: Timestamp indicating when the status was last updated.
+  // - (gogoproto.nullable) = false: Field is not nullable.
+  // - (gogoproto.stdtime) = true: Use standard time representation for Go.
   google.protobuf.Timestamp status_at = 7 [
     (gogoproto.nullable) = false,
     (gogoproto.stdtime) = true

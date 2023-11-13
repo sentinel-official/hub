@@ -28,14 +28,24 @@ var _ = time.Kitchen
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
+// Message representing a provider.
 type Provider struct {
-	Address     string       `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
-	Name        string       `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
-	Identity    string       `protobuf:"bytes,3,opt,name=identity,proto3" json:"identity,omitempty"`
-	Website     string       `protobuf:"bytes,4,opt,name=website,proto3" json:"website,omitempty"`
-	Description string       `protobuf:"bytes,5,opt,name=description,proto3" json:"description,omitempty"`
-	Status      types.Status `protobuf:"varint,6,opt,name=status,proto3,enum=sentinel.types.v1.Status" json:"status,omitempty"`
-	StatusAt    time.Time    `protobuf:"bytes,7,opt,name=status_at,json=statusAt,proto3,stdtime" json:"status_at"`
+	// Field 1: Provider address represented as a string.
+	Address string `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
+	// Field 2: Provider name.
+	Name string `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	// Field 3: Identity of the provider.
+	Identity string `protobuf:"bytes,3,opt,name=identity,proto3" json:"identity,omitempty"`
+	// Field 4: Website associated with the provider.
+	Website string `protobuf:"bytes,4,opt,name=website,proto3" json:"website,omitempty"`
+	// Field 5: Description of the provider.
+	Description string `protobuf:"bytes,5,opt,name=description,proto3" json:"description,omitempty"`
+	// Field 6: Status of the provider, using the sentinel.types.v1.Status enum.
+	Status types.Status `protobuf:"varint,6,opt,name=status,proto3,enum=sentinel.types.v1.Status" json:"status,omitempty"`
+	// Field 7: Timestamp indicating when the status was last updated.
+	// - (gogoproto.nullable) = false: Field is not nullable.
+	// - (gogoproto.stdtime) = true: Use standard time representation for Go.
+	StatusAt time.Time `protobuf:"bytes,7,opt,name=status_at,json=statusAt,proto3,stdtime" json:"status_at"`
 }
 
 func (m *Provider) Reset()         { *m = Provider{} }

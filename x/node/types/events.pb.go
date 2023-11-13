@@ -24,7 +24,9 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
+// EventRegister represents an event for registration.
 type EventRegister struct {
+	// Field 1: Address associated with the registration event.
 	Address string `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty" yaml:"address"`
 }
 
@@ -61,7 +63,9 @@ func (m *EventRegister) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_EventRegister proto.InternalMessageInfo
 
+// EventUpdateDetails represents an event for updating details.
 type EventUpdateDetails struct {
+	// Field 1: Address associated with the update details event.
 	Address string `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty" yaml:"address"`
 }
 
@@ -98,9 +102,12 @@ func (m *EventUpdateDetails) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_EventUpdateDetails proto.InternalMessageInfo
 
+// EventUpdateStatus represents an event for updating status.
 type EventUpdateStatus struct {
-	Status  types.Status `protobuf:"varint,1,opt,name=status,proto3,enum=sentinel.types.v1.Status" json:"status,omitempty" yaml:"status"`
-	Address string       `protobuf:"bytes,2,opt,name=address,proto3" json:"address,omitempty" yaml:"address"`
+	// Field 1: Status to be updated in the event.
+	Status types.Status `protobuf:"varint,1,opt,name=status,proto3,enum=sentinel.types.v1.Status" json:"status,omitempty" yaml:"status"`
+	// Field 2: Address associated with the update status event.
+	Address string `protobuf:"bytes,2,opt,name=address,proto3" json:"address,omitempty" yaml:"address"`
 }
 
 func (m *EventUpdateStatus) Reset()         { *m = EventUpdateStatus{} }
@@ -136,10 +143,14 @@ func (m *EventUpdateStatus) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_EventUpdateStatus proto.InternalMessageInfo
 
+// EventCreateSubscription represents an event for creating a subscription.
 type EventCreateSubscription struct {
-	Address     string `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty" yaml:"address"`
+	// Field 1: Address associated with the create subscription event.
+	Address string `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty" yaml:"address"`
+	// Field 2: Node address associated with the create subscription event.
 	NodeAddress string `protobuf:"bytes,2,opt,name=node_address,json=nodeAddress,proto3" json:"node_address,omitempty" yaml:"node_address"`
-	ID          uint64 `protobuf:"varint,3,opt,name=id,proto3" json:"id,omitempty" yaml:"id"`
+	// Field 3: ID associated with the create subscription event.
+	ID uint64 `protobuf:"varint,3,opt,name=id,proto3" json:"id,omitempty" yaml:"id"`
 }
 
 func (m *EventCreateSubscription) Reset()         { *m = EventCreateSubscription{} }
