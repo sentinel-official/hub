@@ -96,23 +96,19 @@ func (q *queryServer) QuerySubscriptionsForAccount(c context.Context, req *types
 		store = prefix.NewStore(q.Store(ctx), types.GetSubscriptionForAccountKeyPrefix(addr))
 	)
 
-	pagination, err := query.FilteredPaginate(store, req.Pagination, func(key, _ []byte, accumulate bool) (bool, error) {
-		if !accumulate {
-			return false, nil
-		}
-
+	pagination, err := query.Paginate(store, req.Pagination, func(key, _ []byte) error {
 		v, found := q.GetSubscription(ctx, sdk.BigEndianToUint64(key))
 		if !found {
-			return false, nil
+			return fmt.Errorf("subscription for key %X does not exist", key)
 		}
 
 		item, err := codectypes.NewAnyWithValue(v)
 		if err != nil {
-			return false, err
+			return err
 		}
 
 		items = append(items, item)
-		return true, nil
+		return nil
 	})
 
 	if err != nil {
