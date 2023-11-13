@@ -1,11 +1,10 @@
 syntax = "proto3";
 package sentinel.swap.v1;
 
-option go_package = "github.com/sentinel-official/hub/v1/x/swap/types";
-
 import "gogoproto/gogo.proto";
 
-option (gogoproto.equal_all)           = false;
+option go_package = "github.com/sentinel-official/hub/v1/x/swap/types";
+option (gogoproto.equal_all) = false;
 option (gogoproto.goproto_getters_all) = false;
 
 message Params {

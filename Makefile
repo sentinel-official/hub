@@ -52,7 +52,7 @@ proto-gen:
 
 .PHONY: proto-lint
 proto-lint:
-	@find proto -name *.proto -exec clang-format -i {} \;
+	@find proto -name *.proto -exec buf format -w {} \;
 
 .PHONY: test
 test:
@@ -65,5 +65,6 @@ test-coverage:
 .PHONY: tools
 tools:
 	@go install github.com/bufbuild/buf/cmd/buf@v1.28.0
+	@go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.55.2
 	@go install github.com/cosmos/gogoproto/protoc-gen-gocosmos@v1.4.10
 	@go install github.com/grpc-ecosystem/grpc-gateway/protoc-gen-grpc-gateway@v1.16.0

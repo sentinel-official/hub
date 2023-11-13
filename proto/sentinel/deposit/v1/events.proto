@@ -4,15 +4,15 @@ package sentinel.deposit.v1;
 import "gogoproto/gogo.proto";
 
 option go_package = "github.com/sentinel-official/hub/v1/x/deposit/types";
-option (gogoproto.equal_all)           = false;
+option (gogoproto.equal_all) = false;
 option (gogoproto.goproto_getters_all) = false;
 
 message EventAdd {
-  string address = 1 [ (gogoproto.moretags) = "yaml:\"address\"" ];
-  string coins   = 2 [ (gogoproto.moretags) = "yaml:\"coins\"" ];
+  string address = 1 [(gogoproto.moretags) = "yaml:\"address\""];
+  string coins = 2 [(gogoproto.moretags) = "yaml:\"coins\""];
 }
 
 message EventSubtract {
-  string address = 1 [ (gogoproto.moretags) = "yaml:\"address\"" ];
-  string coins   = 2 [ (gogoproto.moretags) = "yaml:\"coins\"" ];
+  string address = 1 [(gogoproto.moretags) = "yaml:\"address\""];
+  string coins = 2 [(gogoproto.moretags) = "yaml:\"coins\""];
 }
