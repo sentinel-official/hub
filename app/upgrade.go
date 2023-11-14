@@ -102,6 +102,32 @@ func UpgradeHandler(
 			return nil, err
 		}
 
+		validators := keepers.StakingKeeper.GetAllValidators(ctx)
+		for _, validator := range validators {
+			if validator.Commission.Rate.GTE(stakingParams.MinCommissionRate) {
+				continue
+			}
+
+			validator.Commission.Rate = stakingParams.MinCommissionRate
+			validator.Commission.UpdateTime = ctx.BlockTime()
+			if validator.Commission.MaxRate.LT(validator.Commission.Rate) {
+				validator.Commission.MaxRate = validator.Commission.Rate
+			}
+
+			if err := keepers.StakingKeeper.Hooks().BeforeValidatorModified(ctx, validator.GetOperator()); err != nil {
+				return nil, err
+			}
+
+			keepers.StakingKeeper.SetValidator(ctx, validator)
+			ctx.EventManager().EmitEvents(sdk.Events{
+				sdk.NewEvent(
+					stakingtypes.EventTypeEditValidator,
+					sdk.NewAttribute(stakingtypes.AttributeKeyCommissionRate, validator.Commission.String()),
+					sdk.NewAttribute(stakingtypes.AttributeKeyMinSelfDelegation, validator.MinSelfDelegation.String()),
+				),
+			})
+		}
+
 		ibcClientParams := keepers.IBCKeeper.ClientKeeper.GetParams(ctx)
 		ibcClientParams.AllowedClients = append(ibcClientParams.AllowedClients, exported.Localhost)
 		keepers.IBCKeeper.ClientKeeper.SetParams(ctx, ibcClientParams)
