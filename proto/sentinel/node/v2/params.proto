@@ -72,11 +72,11 @@ message Params {
   int64 min_subscription_hours = 10;
 
   // Field 11: Staking share required for a node.
-  // - (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec":
+  // - (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec":
   //   Custom type definition for the field.
   // - (gogoproto.nullable) = false: Field is not nullable.
   string staking_share = 11 [
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
     (gogoproto.nullable) = false
   ];
 }

@@ -15,11 +15,11 @@ message Params {
   cosmos.base.v1beta1.Coin deposit = 1 [(gogoproto.nullable) = false];
 
   // Field 2: Staking share associated with the providers.
-  // - (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec":
+  // - (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec":
   //   Custom type definition for the field.
   // - (gogoproto.nullable) = false: Field is not nullable.
   string staking_share = 2 [
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
     (gogoproto.nullable) = false
   ];
 }

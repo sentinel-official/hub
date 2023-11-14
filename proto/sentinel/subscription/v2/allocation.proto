@@ -17,13 +17,13 @@ message Allocation {
 
   // Field 3: Granted bytes.
   string granted_bytes = 3 [
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.nullable) = false
   ];
 
   // Field 4: Utilized bytes.
   string utilised_bytes = 4 [
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.nullable) = false
   ];
 }

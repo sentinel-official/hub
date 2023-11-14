@@ -36,13 +36,13 @@ message EventAllocate {
 
   // Field 2: Granted bytes in the allocation.
   string granted_bytes = 2 [
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.nullable) = false
   ];
 
   // Field 3: Utilized bytes in the allocation.
   string utilised_bytes = 3 [
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.nullable) = false
   ];
 

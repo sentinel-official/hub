@@ -11,34 +11,34 @@ option (gogoproto.goproto_getters_all) = false;
 // Inflation represents a message for handling inflation parameters.
 message Inflation {
   // Field 1: Maximum inflation rate.
-  // - (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec":
+  // - (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec":
   //   Custom type definition for the field.
   // - (gogoproto.moretags) = "yaml:\"max\"": YAML tag for better representation.
   // - (gogoproto.nullable) = false: Field is not nullable.
   string max = 1 [
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
     (gogoproto.moretags) = "yaml:\"max\"",
     (gogoproto.nullable) = false
   ];
 
   // Field 2: Minimum inflation rate.
-  // - (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec":
+  // - (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec":
   //   Custom type definition for the field.
   // - (gogoproto.moretags) = "yaml:\"min\"": YAML tag for better representation.
   // - (gogoproto.nullable) = false: Field is not nullable.
   string min = 2 [
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
     (gogoproto.moretags) = "yaml:\"min\"",
     (gogoproto.nullable) = false
   ];
 
   // Field 3: Rate of change of inflation.
-  // - (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec":
+  // - (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec":
   //   Custom type definition for the field.
   // - (gogoproto.moretags) = "yaml:\"rate_change\"": YAML tag for better representation.
   // - (gogoproto.nullable) = false: Field is not nullable.
   string rate_change = 3 [
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
     (gogoproto.moretags) = "yaml:\"rate_change\"",
     (gogoproto.nullable) = false
   ];
