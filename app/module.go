@@ -105,7 +105,6 @@ var (
 		// Cosmos IBC module basics
 		ibc.AppModuleBasic{},
 		ibcsolomachine.AppModuleBasic{},
-		ibctm.AppModuleBasic{},
 		ibcfee.AppModuleBasic{},
 		ibcica.AppModuleBasic{},
 		ibctm.AppModuleBasic{},
