@@ -6,6 +6,6 @@
 [![GoReport](https://goreportcard.com/badge/github.com/sentinel-official/hub)](https://goreportcard.com/report/github.com/sentinel-official/hub)
 [![Licence](https://img.shields.io/github/license/sentinel-official/hub.svg)](https://github.com/sentinel-official/hub/blob/development/LICENSE)
 [![Tag](https://img.shields.io/github/tag/sentinel-official/hub.svg)](https://github.com/sentinel-official/hub/releases/latest)
-![TotalLines](https://tokei.rs/b1/github/sentinel-official/hub)
+![TotalLines](https://tokei.ekzhang.com/b1/github/sentinel-official/hub)
 
 For documentation click [here](https://docs.sentinel.co/sentinelhub/setup)
