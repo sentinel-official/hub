@@ -8,4 +8,4 @@
 [![Tag](https://img.shields.io/github/tag/sentinel-official/hub.svg)](https://github.com/sentinel-official/hub/releases/latest)
 ![TotalLines](https://tokei.ekzhang.com/b1/github/sentinel-official/hub)
 
-For documentation click [here](https://docs.sentinel.co/sentinelhub/setup)
+For documentation click [here](https://docs.sentinel.co/sentinel-hub/build)
