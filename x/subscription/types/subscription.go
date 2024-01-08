@@ -8,7 +8,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/gogo/protobuf/proto"
 
-	hubtypes "github.com/sentinel-official/hub/v1/types"
+	hubtypes "github.com/sentinel-official/hub/v12/types"
 )
 
 type (

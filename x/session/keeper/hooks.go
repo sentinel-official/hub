@@ -3,8 +3,8 @@ package keeper
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	hubtypes "github.com/sentinel-official/hub/v1/types"
-	"github.com/sentinel-official/hub/v1/x/session/types"
+	hubtypes "github.com/sentinel-official/hub/v12/types"
+	"github.com/sentinel-official/hub/v12/x/session/types"
 )
 
 func (k *Keeper) SubscriptionInactivePendingHook(ctx sdk.Context, id uint64) error {

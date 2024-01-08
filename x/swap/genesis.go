@@ -3,8 +3,8 @@ package swap
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/sentinel-official/hub/v1/x/swap/keeper"
-	"github.com/sentinel-official/hub/v1/x/swap/types"
+	"github.com/sentinel-official/hub/v12/x/swap/keeper"
+	"github.com/sentinel-official/hub/v12/x/swap/types"
 )
 
 func InitGenesis(ctx sdk.Context, k keeper.Keeper, state *types.GenesisState) {

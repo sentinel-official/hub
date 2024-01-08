@@ -14,9 +14,9 @@ import (
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/spf13/cobra"
 
-	"github.com/sentinel-official/hub/v1/x/swap/client/cli"
-	"github.com/sentinel-official/hub/v1/x/swap/keeper"
-	"github.com/sentinel-official/hub/v1/x/swap/types"
+	"github.com/sentinel-official/hub/v12/x/swap/client/cli"
+	"github.com/sentinel-official/hub/v12/x/swap/keeper"
+	"github.com/sentinel-official/hub/v12/x/swap/types"
 )
 
 var (

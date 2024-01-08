@@ -20,7 +20,7 @@ import (
 	genutilcli "github.com/cosmos/cosmos-sdk/x/genutil/client/cli"
 	"github.com/spf13/cobra"
 
-	"github.com/sentinel-official/hub/v1/app"
+	"github.com/sentinel-official/hub/v12/app"
 )
 
 func initAppConfig() (string, interface{}) {

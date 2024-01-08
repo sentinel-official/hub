@@ -4,7 +4,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/spf13/pflag"
 
-	hubtypes "github.com/sentinel-official/hub/v1/types"
+	hubtypes "github.com/sentinel-official/hub/v12/types"
 )
 
 const (

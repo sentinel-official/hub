@@ -3,7 +3,7 @@ package types
 import (
 	"github.com/cosmos/cosmos-sdk/types/query"
 
-	hubtypes "github.com/sentinel-official/hub/v1/types"
+	hubtypes "github.com/sentinel-official/hub/v12/types"
 )
 
 func NewQueryPlanRequest(id uint64) *QueryPlanRequest {

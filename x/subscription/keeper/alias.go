@@ -3,10 +3,10 @@ package keeper
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	hubtypes "github.com/sentinel-official/hub/v1/types"
-	nodetypes "github.com/sentinel-official/hub/v1/x/node/types"
-	plantypes "github.com/sentinel-official/hub/v1/x/plan/types"
-	sessiontypes "github.com/sentinel-official/hub/v1/x/session/types"
+	hubtypes "github.com/sentinel-official/hub/v12/types"
+	nodetypes "github.com/sentinel-official/hub/v12/x/node/types"
+	plantypes "github.com/sentinel-official/hub/v12/x/plan/types"
+	sessiontypes "github.com/sentinel-official/hub/v12/x/session/types"
 )
 
 func (k *Keeper) SendCoin(ctx sdk.Context, fromAddr sdk.AccAddress, toAddr sdk.AccAddress, coin sdk.Coin) error {

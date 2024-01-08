@@ -3,7 +3,7 @@ package keeper
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/sentinel-official/hub/v1/x/deposit/types"
+	"github.com/sentinel-official/hub/v12/x/deposit/types"
 )
 
 // SetDeposit stores a deposit in the module's KVStore.

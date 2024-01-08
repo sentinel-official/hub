@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	hubtypes "github.com/sentinel-official/hub/v1/types"
+	hubtypes "github.com/sentinel-official/hub/v12/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/address"

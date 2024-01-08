@@ -7,7 +7,7 @@ import (
 	sdkerrors "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	hubtypes "github.com/sentinel-official/hub/v1/types"
+	hubtypes "github.com/sentinel-official/hub/v12/types"
 )
 
 func (m *Node) GetAddress() hubtypes.NodeAddress {

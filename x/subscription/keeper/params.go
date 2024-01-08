@@ -5,7 +5,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/sentinel-official/hub/v1/x/subscription/types"
+	"github.com/sentinel-official/hub/v12/x/subscription/types"
 )
 
 func (k *Keeper) StatusChangeDelay(ctx sdk.Context) (duration time.Duration) {

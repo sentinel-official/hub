@@ -13,7 +13,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/spf13/cobra"
 
-	"github.com/sentinel-official/hub/v1/x/swap/types"
+	"github.com/sentinel-official/hub/v12/x/swap/types"
 )
 
 func txSwap() *cobra.Command {

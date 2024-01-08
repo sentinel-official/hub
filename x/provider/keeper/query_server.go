@@ -9,8 +9,8 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	hubtypes "github.com/sentinel-official/hub/v1/types"
-	"github.com/sentinel-official/hub/v1/x/provider/types"
+	hubtypes "github.com/sentinel-official/hub/v12/types"
+	"github.com/sentinel-official/hub/v12/x/provider/types"
 )
 
 var (

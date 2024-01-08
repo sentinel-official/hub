@@ -5,7 +5,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/sentinel-official/hub/v1/x/session/types"
+	"github.com/sentinel-official/hub/v12/x/session/types"
 )
 
 func (k *Keeper) VerifySignature(ctx sdk.Context, addr sdk.AccAddress, proof types.Proof, signature []byte) error {

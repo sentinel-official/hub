@@ -4,12 +4,12 @@ import (
 	"fmt"
 	"time"
 
-	hubtypes "github.com/sentinel-official/hub/v1/types"
+	hubtypes "github.com/sentinel-official/hub/v12/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	protobuf "github.com/gogo/protobuf/types"
 
-	"github.com/sentinel-official/hub/v1/x/session/types"
+	"github.com/sentinel-official/hub/v12/x/session/types"
 )
 
 func (k *Keeper) SetSession(ctx sdk.Context, session types.Session) {

@@ -1,4 +1,4 @@
-module github.com/sentinel-official/hub/v1
+module github.com/sentinel-official/hub/v12
 
 go 1.21
 

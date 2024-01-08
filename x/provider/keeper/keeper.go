@@ -10,8 +10,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 
-	"github.com/sentinel-official/hub/v1/x/provider/expected"
-	"github.com/sentinel-official/hub/v1/x/provider/types"
+	"github.com/sentinel-official/hub/v12/x/provider/expected"
+	"github.com/sentinel-official/hub/v12/x/provider/types"
 )
 
 type Keeper struct {

@@ -12,8 +12,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/spf13/cobra"
 
-	hubtypes "github.com/sentinel-official/hub/v1/types"
-	"github.com/sentinel-official/hub/v1/x/plan/types"
+	hubtypes "github.com/sentinel-official/hub/v12/types"
+	"github.com/sentinel-official/hub/v12/x/plan/types"
 )
 
 func txCreate() *cobra.Command {

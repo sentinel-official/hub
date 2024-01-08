@@ -3,9 +3,9 @@ package plan
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	hubtypes "github.com/sentinel-official/hub/v1/types"
-	"github.com/sentinel-official/hub/v1/x/plan/keeper"
-	"github.com/sentinel-official/hub/v1/x/plan/types"
+	hubtypes "github.com/sentinel-official/hub/v12/types"
+	"github.com/sentinel-official/hub/v12/x/plan/keeper"
+	"github.com/sentinel-official/hub/v12/x/plan/types"
 )
 
 func InitGenesis(ctx sdk.Context, k keeper.Keeper, state types.GenesisState) {

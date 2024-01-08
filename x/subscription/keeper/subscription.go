@@ -8,9 +8,9 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	protobuf "github.com/gogo/protobuf/types"
 
-	hubtypes "github.com/sentinel-official/hub/v1/types"
-	hubutils "github.com/sentinel-official/hub/v1/utils"
-	"github.com/sentinel-official/hub/v1/x/subscription/types"
+	hubtypes "github.com/sentinel-official/hub/v12/types"
+	hubutils "github.com/sentinel-official/hub/v12/utils"
+	"github.com/sentinel-official/hub/v12/x/subscription/types"
 )
 
 func (k *Keeper) SetSubscription(ctx sdk.Context, subscription types.Subscription) {

@@ -4,7 +4,7 @@ import (
 	abcitypes "github.com/cometbft/cometbft/abci/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/sentinel-official/hub/v1/x/subscription/keeper"
+	"github.com/sentinel-official/hub/v12/x/subscription/keeper"
 )
 
 func BeginBlock(ctx sdk.Context, k keeper.Keeper) {

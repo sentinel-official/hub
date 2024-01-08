@@ -3,7 +3,7 @@ package keeper
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/sentinel-official/hub/v1/x/swap/types"
+	"github.com/sentinel-official/hub/v12/x/swap/types"
 )
 
 func (k *Keeper) SetSwap(ctx sdk.Context, swap types.Swap) {

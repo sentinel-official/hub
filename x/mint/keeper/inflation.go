@@ -5,7 +5,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/sentinel-official/hub/v1/x/mint/types"
+	"github.com/sentinel-official/hub/v12/x/mint/types"
 )
 
 func (k *Keeper) SetInflation(ctx sdk.Context, inflation types.Inflation) {

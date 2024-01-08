@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	hubtypes "github.com/sentinel-official/hub/v1/types"
+	hubtypes "github.com/sentinel-official/hub/v12/types"
 )
 
 func TestProvider_GetAddress(t *testing.T) {

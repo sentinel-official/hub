@@ -4,10 +4,10 @@ import (
 	abcitypes "github.com/cometbft/cometbft/abci/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/sentinel-official/hub/v1/x/node"
-	"github.com/sentinel-official/hub/v1/x/session"
-	"github.com/sentinel-official/hub/v1/x/subscription"
-	"github.com/sentinel-official/hub/v1/x/vpn/keeper"
+	"github.com/sentinel-official/hub/v12/x/node"
+	"github.com/sentinel-official/hub/v12/x/session"
+	"github.com/sentinel-official/hub/v12/x/subscription"
+	"github.com/sentinel-official/hub/v12/x/vpn/keeper"
 )
 
 func cacheContext(c sdk.Context) (cc sdk.Context, writeCache func()) {

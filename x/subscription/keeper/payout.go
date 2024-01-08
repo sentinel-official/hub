@@ -7,8 +7,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	protobuf "github.com/gogo/protobuf/types"
 
-	hubtypes "github.com/sentinel-official/hub/v1/types"
-	"github.com/sentinel-official/hub/v1/x/subscription/types"
+	hubtypes "github.com/sentinel-official/hub/v12/types"
+	"github.com/sentinel-official/hub/v12/x/subscription/types"
 )
 
 func (k *Keeper) SetPayout(ctx sdk.Context, payout types.Payout) {

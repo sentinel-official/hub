@@ -3,8 +3,8 @@ package mint
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/sentinel-official/hub/v1/x/mint/keeper"
-	"github.com/sentinel-official/hub/v1/x/mint/types"
+	"github.com/sentinel-official/hub/v12/x/mint/keeper"
+	"github.com/sentinel-official/hub/v12/x/mint/types"
 )
 
 func InitGenesis(ctx sdk.Context, k keeper.Keeper, state *types.GenesisState) {

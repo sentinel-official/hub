@@ -9,7 +9,7 @@ import "sentinel/provider/v2/genesis.proto";
 import "sentinel/session/v2/genesis.proto";
 import "sentinel/subscription/v2/genesis.proto";
 
-option go_package = "github.com/sentinel-official/hub/v1/x/vpn/types";
+option go_package = "github.com/sentinel-official/hub/v12/x/vpn/types";
 option (gogoproto.equal_all) = false;
 option (gogoproto.goproto_getters_all) = false;
 

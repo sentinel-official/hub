@@ -4,8 +4,8 @@ import (
 	abcitypes "github.com/cometbft/cometbft/abci/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/sentinel-official/hub/v1/x/mint/keeper"
-	"github.com/sentinel-official/hub/v1/x/mint/types"
+	"github.com/sentinel-official/hub/v12/x/mint/keeper"
+	"github.com/sentinel-official/hub/v12/x/mint/types"
 )
 
 func BeginBlock(ctx sdk.Context, k keeper.Keeper) []abcitypes.ValidatorUpdate {
