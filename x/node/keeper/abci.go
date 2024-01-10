@@ -97,7 +97,9 @@ func (k *Keeper) EndBlock(ctx sdk.Context) []abcitypes.ValidatorUpdate {
 			k.SetNode(ctx, item)
 			ctx.EventManager().EmitTypedEvent(
 				&types.EventUpdateDetails{
-					Address: item.Address,
+					Address:        item.Address,
+					GigabytePrices: item.GigabytePrices.String(),
+					HourlyPrices:   item.HourlyPrices.String(),
 				},
 			)
 

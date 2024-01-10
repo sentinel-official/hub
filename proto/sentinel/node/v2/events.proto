@@ -13,7 +13,11 @@ message EventRegister {
 }
 
 message EventUpdateDetails {
-  string address = 1 [ (gogoproto.moretags) = "yaml:\"address\"" ];
+  string address         = 1 [ (gogoproto.moretags) = "yaml:\"address\"" ];
+  string gigabyte_prices = 2
+      [ (gogoproto.moretags) = "yaml:\"gigabyte_prices\"" ];
+  string hourly_prices = 3 [ (gogoproto.moretags) = "yaml:\"hourly_prices\"" ];
+  string remote_url    = 4 [ (gogoproto.customname) = "RemoteURL" ];
 }
 
 message EventUpdateStatus {
