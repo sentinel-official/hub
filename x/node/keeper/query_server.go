@@ -97,7 +97,7 @@ func (q *queryServer) QueryNodesForPlan(c context.Context, req *types.QueryNodes
 
 	pagination, err := query.FilteredPaginate(store, req.Pagination, func(key, _ []byte, accumulate bool) (bool, error) {
 		if !accumulate {
-			return false, nil
+			return true, nil
 		}
 
 		item, found := q.GetNode(ctx, key[1:])

@@ -97,7 +97,7 @@ func (q *queryServer) QueryPlansForProvider(c context.Context, req *types.QueryP
 
 	pagination, err := query.FilteredPaginate(store, req.Pagination, func(key, _ []byte, accumulate bool) (bool, error) {
 		if !accumulate {
-			return false, nil
+			return true, nil
 		}
 
 		item, found := q.GetPlan(ctx, sdk.BigEndianToUint64(key))

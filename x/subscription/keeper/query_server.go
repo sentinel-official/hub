@@ -98,7 +98,7 @@ func (q *queryServer) QuerySubscriptionsForAccount(c context.Context, req *types
 
 	pagination, err := query.FilteredPaginate(store, req.Pagination, func(key, _ []byte, accumulate bool) (bool, error) {
 		if !accumulate {
-			return false, nil
+			return true, nil
 		}
 
 		v, found := q.GetSubscription(ctx, sdk.BigEndianToUint64(key))
