@@ -16,8 +16,10 @@ message EventRegister {
 
 // EventUpdateDetails represents an event for updating details.
 message EventUpdateDetails {
-  // Field 1: Address associated with the update details event.
   string address = 1 [(gogoproto.moretags) = "yaml:\"address\""];
+  string gigabyte_prices = 2 [(gogoproto.moretags) = "yaml:\"gigabyte_prices\""];
+  string hourly_prices = 3 [(gogoproto.moretags) = "yaml:\"hourly_prices\""];
+  string remote_url = 4 [(gogoproto.customname) = "RemoteURL"];
 }
 
 // EventUpdateStatus represents an event for updating status.
