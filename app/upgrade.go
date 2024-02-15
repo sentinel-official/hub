@@ -30,7 +30,7 @@ import (
 )
 
 const (
-	UpgradeName = "v1_0_0"
+	UpgradeName = "v12_0_0"
 )
 
 var (
