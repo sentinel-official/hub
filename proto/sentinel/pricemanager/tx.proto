@@ -1,0 +1,28 @@
+syntax = "proto3";
+package sentinel.pricemanager;
+
+import "cosmos/base/query/v1beta1/pagination.proto";
+// this line is used by starport scaffolding # proto/tx/import
+
+option go_package = "github.com/sentinel-official/hub/v12/x/pricemanager/types";
+
+// Msg defines the Msg service.
+service Msg {
+  option (cosmos.msg.v1.service) = true;
+
+  rpc SendQueryDVPNPrice(MsgSendQueryDVPNPrice)
+      returns (MsgSendQueryDVPNPriceResponse);
+  // this line is used by starport scaffolding # proto/tx/rpc
+}
+
+message MsgSendQueryDVPNPrice {
+  string creator = 1;
+  string channel_id = 2;
+  string base_asset_denom = 3;
+  string quote_asset_denom = 4;
+  cosmos.base.query.v1beta1.PageRequest pagination = 5;
+}
+
+message MsgSendQueryDVPNPriceResponse { uint64 sequence = 1; }
+
+// this line is used by starport scaffolding # proto/tx/message

@@ -1,0 +1,45 @@
+syntax = "proto3";
+package sentinel.pricemanager;
+
+import "gogoproto/gogo.proto";
+import "google/api/annotations.proto";
+import "cosmos/base/query/v1beta1/pagination.proto";
+import "sentinel/pricemanager/params.proto";
+import "google/protobuf/any.proto";
+// this line is used by starport scaffolding # 1
+
+option go_package = "github.com/sentinel-official/hub/v12/x/pricemanager/types";
+
+// Query defines the gRPC querier service.
+service Query {
+  // Parameters queries the parameters of the module.
+  rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
+    option (google.api.http).get = "/sentinel/pricemanager/params";
+  }
+  // Queries a list of QueryState items.
+	rpc QueryState(QueryQueryStateRequest) returns (QueryQueryStateResponse) {
+		option (google.api.http).get = "/sentinel/pricemanager/query_state";
+	}
+
+// this line is used by starport scaffolding # 2
+}
+
+// QueryParamsRequest is request type for the Query/Params RPC method.
+message QueryParamsRequest {}
+
+// QueryParamsResponse is response type for the Query/Params RPC method.
+message QueryParamsResponse {
+  // params holds all the parameters of this module.
+  Params params = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryQueryStateRequest {
+  uint64 sequence = 1;
+}
+
+message QueryQueryStateResponse {
+  google.protobuf.Any request = 1 [(gogoproto.nullable) = false];
+  google.protobuf.Any response = 2 [(gogoproto.nullable) = true];
+}
+
+// this line is used by starport scaffolding # 3

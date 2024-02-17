@@ -1,0 +1,11 @@
+syntax = "proto3";
+package sentinel.pricemanager;
+
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/sentinel-official/hub/v12/x/pricemanager/types";
+
+// Params defines the parameters for the module.
+message Params {
+
+}
