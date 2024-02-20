@@ -27,6 +27,9 @@ import (
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 	"github.com/cosmos/ibc-go/v7/modules/core/exported"
 	ibctmmigrations "github.com/cosmos/ibc-go/v7/modules/light-clients/07-tendermint/migrations"
+
+	subscriptionkeeper "github.com/sentinel-official/hub/v12/x/subscription/keeper"
+	subscriptiontypes "github.com/sentinel-official/hub/v12/x/subscription/types"
 )
 
 const (
@@ -132,6 +135,34 @@ func UpgradeHandler(
 		ibcClientParams.AllowedClients = append(ibcClientParams.AllowedClients, exported.Localhost)
 		keepers.IBCKeeper.ClientKeeper.SetParams(ctx, ibcClientParams)
 
+		if err := deleteInactiveSubscriptionsForAccounts(ctx, keepers.VPNKeeper.Subscription); err != nil {
+			return nil, err
+		}
+
 		return newVM, nil
 	}
+}
+
+func deleteInactiveSubscriptionsForAccounts(ctx sdk.Context, k subscriptionkeeper.Keeper) error {
+	var (
+		store = k.Store(ctx)
+		iter  = sdk.KVStorePrefixIterator(store, subscriptiontypes.SubscriptionForAccountKeyPrefix)
+	)
+
+	defer iter.Close()
+
+	for ; iter.Valid(); iter.Next() {
+		var (
+			accAddr = subscriptiontypes.AccAddrFromSubscriptionForAccountKey(iter.Key())
+			id      = subscriptiontypes.IDFromSubscriptionForAccountKey(iter.Key())
+		)
+
+		if _, found := k.GetSubscription(ctx, id); found {
+			continue
+		}
+
+		k.DeleteSubscriptionForAccount(ctx, accAddr, id)
+	}
+
+	return nil
 }

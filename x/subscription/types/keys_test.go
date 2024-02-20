@@ -154,6 +154,25 @@ func TestIDFromPayoutForNodeKey(t *testing.T) {
 	}
 }
 
+func TestAccAddrFromSubscriptionForAccountKey(t *testing.T) {
+	var (
+		addr []byte
+		key  []byte
+	)
+
+	for i := 1; i <= 256; i += 64 {
+		addr = make([]byte, i)
+		_, _ = rand.Read(addr)
+
+		key = SubscriptionForAccountKey(addr, uint64(i))
+		require.Equal(
+			t,
+			sdk.AccAddress(addr),
+			AccAddrFromSubscriptionForAccountKey(key),
+		)
+	}
+}
+
 func TestIDFromSubscriptionForAccountKey(t *testing.T) {
 	var (
 		addr []byte

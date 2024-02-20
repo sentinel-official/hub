@@ -113,6 +113,17 @@ func PayoutForAccountByNodeKey(accAddr sdk.AccAddress, nodeAddr hubtypes.NodeAdd
 	return append(GetPayoutForAccountByNodeKeyPrefix(accAddr, nodeAddr), sdk.Uint64ToBigEndian(id)...)
 }
 
+func AccAddrFromSubscriptionForAccountKey(key []byte) sdk.AccAddress {
+	// prefix (1 byte) | addrLen (1 byte) | addr (addrLen bytes) | id (8 bytes)
+
+	addrLen := int(key[1])
+	if len(key) != 10+addrLen {
+		panic(fmt.Errorf("invalid key length %d; expected %d", len(key), 10+addrLen))
+	}
+
+	return key[2 : 2+addrLen]
+}
+
 func IDFromSubscriptionForAccountKey(key []byte) uint64 {
 	// prefix (1 byte) | addrLen (1 byte) | addr (addrLen bytes) | id (8 bytes)
 
