@@ -8,7 +8,7 @@ option go_package = "github.com/sentinel-official/hub/v12/x/pricemanager/types";
 
 // Msg defines the Msg service.
 service Msg {
-  option (cosmos.msg.v1.service) = true;
+  // option (cosmos.msg.v1.ServiceOptions) = true;
 
   rpc SendQueryDVPNPrice(MsgSendQueryDVPNPrice)
       returns (MsgSendQueryDVPNPriceResponse);

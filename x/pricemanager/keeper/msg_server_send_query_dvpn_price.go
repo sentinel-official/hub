@@ -12,7 +12,7 @@ import (
 
 	sdkerrors "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	poolmanagertypes "github.com/osmosis-labs/osmosis/v23/x/poolmanager/types"
+	// poolmanagertypes "github.com/osmosis-labs/osmosis/v23/x/poolmanager/types"
 )
 
 func (k msgServer) SendQueryDVPNPrice(goCtx context.Context, msg *types.MsgSendQueryDVPNPrice) (*types.MsgSendQueryDVPNPriceResponse, error) {
@@ -23,16 +23,16 @@ func (k msgServer) SendQueryDVPNPrice(goCtx context.Context, msg *types.MsgSendQ
 		return nil, sdkerrors.Wrap(channeltypes.ErrChannelCapabilityNotFound, "module does not own channel capability")
 	}
 
-	q := poolmanagertypes.QuerySpotPriceRequest{
-		PoolId:          msg.PoolId,
-		BaseAssetDenom:  msg.BaseAssetDenom,
-		QuoteAssetDenom: msg.QuoteAssetDenom,
-		Pagination:      msg.Pagination,
-	}
+	// q := poolmanagertypes.QuerySpotPriceRequest{
+	// 	PoolId:          msg.PoolId,
+	// 	BaseAssetDenom:  msg.BaseAssetDenom,
+	// 	QuoteAssetDenom: msg.QuoteAssetDenom,
+	// 	Pagination:      msg.Pagination,
+	// }
 	reqs := []abcitypes.RequestQuery{
 		{
 			Path: "/osmosis.poolmanager.v1beta1.Query/SpotPrice",
-			Data: k.cdc.MustMarshal(&q),
+			// Data: k.cdc.MustMarshal(&q),
 		},
 	}
 
