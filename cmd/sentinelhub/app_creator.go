@@ -2,10 +2,12 @@ package main
 
 import (
 	"io"
+	"path/filepath"
 
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	tmdb "github.com/cometbft/cometbft-db"
 	tmlog "github.com/cometbft/cometbft/libs/log"
+	tmtypes "github.com/cometbft/cometbft/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/server"
@@ -36,6 +38,13 @@ func (ac appCreator) NewApp(
 		cache = store.NewCommitKVStoreCacheManager()
 	}
 
+	homeDir := cast.ToString(appOpts.Get(flags.FlagHome))
+
+	genDoc, err := tmtypes.GenesisDocFromFile(filepath.Join(homeDir, "config", "genesis.json"))
+	if err != nil {
+		panic(err)
+	}
+
 	skipUpgradeHeights := make(map[int64]bool)
 	for _, height := range cast.ToIntSlice(appOpts.Get(server.FlagUnsafeSkipUpgrades)) {
 		skipUpgradeHeights[int64(height)] = true
@@ -52,10 +61,11 @@ func (ac appCreator) NewApp(
 	}
 
 	return app.NewApp(
-		appOpts, hubtypes.Bech32MainPrefix, db, ac.encCfg, cast.ToString(appOpts.Get(flags.FlagHome)),
+		appOpts, hubtypes.Bech32MainPrefix, db, ac.encCfg, homeDir,
 		cast.ToUint(appOpts.Get(server.FlagInvCheckPeriod)), true, logger,
 		cast.ToBool(appOpts.Get(crisis.FlagSkipGenesisInvariants)), skipUpgradeHeights, traceWriter, version.Version,
-		wasmOpts, baseapp.SetHaltHeight(cast.ToUint64(appOpts.Get(server.FlagHaltHeight))),
+		wasmOpts, baseapp.SetChainID(genDoc.ChainID),
+		baseapp.SetHaltHeight(cast.ToUint64(appOpts.Get(server.FlagHaltHeight))),
 		baseapp.SetHaltTime(cast.ToUint64(appOpts.Get(server.FlagHaltTime))),
 		baseapp.SetIndexEvents(cast.ToStringSlice(appOpts.Get(server.FlagIndexEvents))),
 		baseapp.SetInterBlockCache(cache),
