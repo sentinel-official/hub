@@ -64,7 +64,6 @@ func NewApp(
 	traceWriter io.Writer,
 	version string,
 	wasmOpts []wasmkeeper.Option,
-	wasmProposalTypes []wasmtypes.ProposalType,
 	baseAppOpts ...func(*baseapp.BaseApp),
 ) *App {
 	baseApp := baseapp.NewBaseApp(appName, logger, db, encCfg.TxConfig.TxDecoder(), baseAppOpts...)
@@ -81,7 +80,7 @@ func NewApp(
 		storeKeys = NewStoreKeys()
 		keepers   = NewKeepers(
 			baseApp, bech32Prefix, BlockedAccAddrs(), encCfg, homeDir, invCheckPeriod, storeKeys,
-			ModuleAccPerms(), skipUpgradeHeights, wasmConfig, wasmOpts, wasmProposalTypes,
+			ModuleAccPerms(), skipUpgradeHeights, wasmConfig, wasmOpts,
 		)
 		mm = NewModuleManager(baseApp.DeliverTx, encCfg, keepers, baseApp.MsgServiceRouter(), skipGenesisInvariants)
 		sm = NewSimulationManager(encCfg, keepers, baseApp.MsgServiceRouter())

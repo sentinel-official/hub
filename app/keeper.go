@@ -160,7 +160,6 @@ func NewKeepers(
 	skipUpgradeHeights map[int64]bool,
 	wasmConfig wasmtypes.WasmConfig,
 	wasmOpts []wasmkeeper.Option,
-	wasmProposalTypes []wasmtypes.ProposalType,
 ) (k Keepers) {
 	govModuleAddr := authtypes.NewModuleAddress(govtypes.ModuleName).String()
 
@@ -295,10 +294,6 @@ func NewKeepers(
 		AddRoute(paramsproposal.RouterKey, params.NewParamChangeProposalHandler(k.ParamsKeeper)).
 		AddRoute(upgradetypes.RouterKey, upgrade.NewSoftwareUpgradeProposalHandler(k.UpgradeKeeper)).
 		AddRoute(ibcclienttypes.RouterKey, ibcclient.NewClientProposalHandler(k.IBCKeeper.ClientKeeper))
-	if len(wasmProposalTypes) != 0 {
-		govRouter.AddRoute(wasmtypes.RouterKey, wasmkeeper.NewWasmProposalHandler(k.WasmKeeper, wasmProposalTypes))
-	}
-
 	k.GovKeeper.SetLegacyRouter(govRouter)
 
 	// Cosmos IBC port router
