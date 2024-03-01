@@ -19,6 +19,7 @@ import (
 	distributiontypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	govv1types "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
+	"github.com/cosmos/cosmos-sdk/x/group"
 	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
 	"github.com/cosmos/cosmos-sdk/x/nft"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
@@ -41,6 +42,7 @@ var (
 		Added: []string{
 			consensustypes.ModuleName,
 			crisistypes.ModuleName,
+			group.ModuleName,
 			nft.ModuleName,
 		},
 	}
