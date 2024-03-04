@@ -150,6 +150,7 @@ require (
 
 replace (
 	github.com/CosmWasm/wasmvm => github.com/CosmWasm/wasmvm v1.2.6
+	github.com/cosmos/cosmos-sdk => github.com/sentinel-official/cosmos-sdk v0.45.17-0.20240304143714-3af4c2699d4b
 	github.com/cosmos/ledger-cosmos-go => github.com/cosmos/ledger-cosmos-go v0.12.4
 	github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
 	github.com/tendermint/tendermint => github.com/cometbft/cometbft v0.34.27
